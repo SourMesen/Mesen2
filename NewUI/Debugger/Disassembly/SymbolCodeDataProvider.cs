@@ -92,7 +92,7 @@ namespace Mesen.Debugger.Disassembly
 
 		public int GetLineIndex(uint cpuAddress)
 		{
-			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)cpuAddress, Type = SnesMemoryType.CpuMemory });
+			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)cpuAddress, Type = MemoryType.SnesMemory });
 			for(int i = 0; i < _lineCount; i++) {
 				AddressInfo? lineAddr = _symbolProvider.GetLineAddress(_file, i);
 				if(lineAddr != null && lineAddr.Value.Address == absAddress.Address && lineAddr.Value.Type == absAddress.Type) {

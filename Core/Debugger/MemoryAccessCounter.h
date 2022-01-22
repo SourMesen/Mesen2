@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DebugTypes.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 class Debugger;
 class SnesMemoryManager;
@@ -29,7 +29,7 @@ struct AddressCounters
 class MemoryAccessCounter
 {
 private:
-	vector<AddressCounters> _counters[(int)SnesMemoryType::Register];
+	vector<AddressCounters> _counters[(int)MemoryType::Register];
 
 	Debugger* _debugger;
 
@@ -46,5 +46,5 @@ public:
 
 	void ResetCounts();
 
-	void GetAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters counts[]);
+	void GetAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters counts[]);
 };

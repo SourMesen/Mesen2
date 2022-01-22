@@ -26,19 +26,19 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	_memoryDumper = _debugger->GetMemoryDumper();
 
-	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
-		InitSource((SnesMemoryType)i);
+	for(int i = (int)MemoryType::SnesPrgRom; i < (int)MemoryType::Register; i++) {
+		InitSource((MemoryType)i);
 	}
 }
 
-void Disassembler::InitSource(SnesMemoryType type)
+void Disassembler::InitSource(MemoryType type)
 {
 	uint8_t* src = _memoryDumper->GetMemoryBuffer(type);
 	uint32_t size = _memoryDumper->GetMemorySize(type);
 	_sources[(int)type] = { src, vector<DisassemblyInfo>(size), size };
 }
 
-DisassemblerSource& Disassembler::GetSource(SnesMemoryType type)
+DisassemblerSource& Disassembler::GetSource(MemoryType type)
 {
 #if _DEBUG
 	if(_sources[(int)type].Data == nullptr) {
@@ -84,9 +84,9 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 
 void Disassembler::ResetPrgCache()
 {
-	InitSource(SnesMemoryType::PrgRom);
-	InitSource(SnesMemoryType::GbPrgRom);
-	InitSource(SnesMemoryType::NesPrgRom);
+	InitSource(MemoryType::SnesPrgRom);
+	InitSource(MemoryType::GbPrgRom);
+	InitSource(MemoryType::NesPrgRom);
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -123,7 +123,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	int byteCounter = 0;
 	
 	CodeDataLogger* cdl = _debugger->GetCodeDataLogger(cpuType);
-	SnesMemoryType cdlMemType = cdl->GetPrgMemoryType();
+	MemoryType cdlMemType = cdl->GetPrgMemoryType();
 
 	AddressInfo relAddress = {};
 	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);
@@ -159,7 +159,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		relAddress.Address = i;
 		AddressInfo addrInfo = _console->GetAbsoluteAddress(relAddress);
 
-		if(addrInfo.Address < 0 || addrInfo.Type == SnesMemoryType::Register) {
+		if(addrInfo.Address < 0 || addrInfo.Type == MemoryType::Register) {
 			pushEndBlock();
 			inUnmappedBlock = true;
 			continue;
@@ -190,7 +190,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(opSize > 0) {
 			pushEndBlock();
 
-			if(addrInfo.Type == SnesMemoryType::PrgRom && cdl->IsSubEntryPoint(addrInfo.Address)) {
+			if(addrInfo.Type == MemoryType::SnesPrgRom && cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 
@@ -281,7 +281,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	return results;
 }
 
-CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, SnesMemoryType memType)
+CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType memType)
 {
 	CodeLineData data = {};
 	data.Address = -1;
@@ -291,22 +291,22 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 
 	switch(row.Address.Type) {
 		default: break;
-		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::PrgRom:
-		case SnesMemoryType::NesPrgRom:
-			data.Flags |= (uint8_t)LineFlags::PrgRom;
+		case MemoryType::GbPrgRom:
+		case MemoryType::SnesPrgRom:
+		case MemoryType::NesPrgRom:
+			data.Flags |= (uint8_t)LineFlags::SnesPrgRom;
 			break;
 
-		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::WorkRam:
-		case SnesMemoryType::NesWorkRam:
-			data.Flags |= (uint8_t)LineFlags::WorkRam;
+		case MemoryType::GbWorkRam:
+		case MemoryType::SnesWorkRam:
+		case MemoryType::NesWorkRam:
+			data.Flags |= (uint8_t)LineFlags::SnesWorkRam;
 			break;
 
-		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::SaveRam:
-		case SnesMemoryType::NesSaveRam:
-			data.Flags |= (uint8_t)LineFlags::SaveRam;
+		case MemoryType::GbCartRam:
+		case MemoryType::SnesSaveRam:
+		case MemoryType::NesSaveRam:
+			data.Flags |= (uint8_t)LineFlags::SnesSaveRam;
 			break;
 	}
 
@@ -349,7 +349,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(src.Data + row.Address.Address, state.PS, lineCpuType);
 					} else {
-						data.Flags |= (row.Address.Type != SnesMemoryType::PrgRom || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+						data.Flags |= (row.Address.Type != MemoryType::SnesPrgRom || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();
@@ -521,7 +521,7 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 		return 0;
 	}
 
-	SnesMemoryType memType = DebugUtilities::GetCpuMemoryType(type);
+	MemoryType memType = DebugUtilities::GetCpuMemoryType(type);
 	uint32_t maxBank = (_memoryDumper->GetMemorySize(memType) - 1) >> 16;
 
 	int32_t row;

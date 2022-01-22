@@ -29,7 +29,7 @@ namespace Mesen.Debugger.Labels
 			_reverseLookup.Clear();
 		}
 
-		public static CodeLabel? GetLabel(UInt32 address, SnesMemoryType type)
+		public static CodeLabel? GetLabel(UInt32 address, MemoryType type)
 		{
 			CodeLabel? label;
 			_labelsByKey.TryGetValue(GetKey(address, type), out label);
@@ -82,12 +82,12 @@ namespace Mesen.Debugger.Labels
 			return _labels.ToList();
 		}
 
-		private static UInt64 GetKey(UInt32 address, SnesMemoryType memType)
+		private static UInt64 GetKey(UInt32 address, MemoryType memType)
 		{
 			return address | ((UInt64)memType << 32);
 		}
 
-		public static void SetLabel(uint address, SnesMemoryType memType, string label, string comment)
+		public static void SetLabel(uint address, MemoryType memType, string label, string comment)
 		{
 			LabelManager.SetLabel(new CodeLabel() {
 				Address = address,

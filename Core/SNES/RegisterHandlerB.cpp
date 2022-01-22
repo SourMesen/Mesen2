@@ -10,7 +10,7 @@
 #include "Shared/CheatManager.h"
 #include "Utilities/Serializer.h"
 
-RegisterHandlerB::RegisterHandlerB(SnesConsole *console, SnesPpu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(SnesMemoryType::Register)
+RegisterHandlerB::RegisterHandlerB(SnesConsole *console, SnesPpu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(MemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -83,7 +83,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 
 AddressInfo RegisterHandlerB::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::CpuMemory };
+	return { -1, MemoryType::SnesMemory };
 }
 
 void RegisterHandlerB::Serialize(Serializer &s)

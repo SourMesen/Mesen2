@@ -11,7 +11,7 @@
 #include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
-BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack) : BaseCoprocessor(SnesMemoryType::Register)
+BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack) : BaseCoprocessor(MemoryType::Register)
 {
 	_console = console;
 	_memoryManager = _console->GetMemoryManager();
@@ -28,11 +28,11 @@ BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack) : BaseCoprocessor
 
 	_psRamSize = 512 * 1024;
 	_psRam = new uint8_t[_psRamSize];
-	console->GetEmulator()->RegisterMemory(SnesMemoryType::BsxPsRam, _psRam, _psRamSize);
+	console->GetEmulator()->RegisterMemory(MemoryType::BsxPsRam, _psRam, _psRamSize);
 	console->GetEmulator()->GetSettings()->InitializeRam(_psRam, _psRamSize);
 
 	for(uint32_t i = 0; i < _psRamSize / 0x1000; i++) {
-		_psRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_psRam, i * 0x1000, _psRamSize, SnesMemoryType::BsxPsRam)));
+		_psRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_psRam, i * 0x1000, _psRamSize, MemoryType::BsxPsRam)));
 	}
 
 	Reset();
@@ -210,7 +210,7 @@ void BsxCart::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo BsxCart::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 uint8_t* BsxCart::DebugGetPsRam()

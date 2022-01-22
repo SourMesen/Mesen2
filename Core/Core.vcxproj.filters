@@ -544,7 +544,7 @@
     <ClInclude Include="Gameboy\GbCartFactory.h">
       <Filter>GB\Carts</Filter>
     </ClInclude>
-    <ClInclude Include="SnesMemoryType.h">
+    <ClInclude Include="MemoryType.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GameboyHeader.h">

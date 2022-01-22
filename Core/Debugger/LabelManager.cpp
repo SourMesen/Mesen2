@@ -16,7 +16,7 @@ void LabelManager::ClearLabels()
 	_codeLabelReverseLookup.clear();
 }
 
-void LabelManager::SetLabel(uint32_t address, SnesMemoryType memType, string label, string comment)
+void LabelManager::SetLabel(uint32_t address, MemoryType memType, string label, string comment)
 {
 	DebugBreakHelper helper(_debugger);
 	uint64_t key = GetLabelKey(address, memType);
@@ -42,14 +42,14 @@ void LabelManager::SetLabel(uint32_t address, SnesMemoryType memType, string lab
 	}
 }
 
-int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType)
+int64_t LabelManager::GetLabelKey(uint32_t absoluteAddr, MemoryType memType)
 {
 	return absoluteAddr | ((uint64_t)memType << 32);
 }
 
-SnesMemoryType LabelManager::GetKeyMemoryType(uint64_t key)
+MemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 {
-	return (SnesMemoryType)(key >> 32);
+	return (MemoryType)(key >> 32);
 }
 
 string LabelManager::GetLabel(AddressInfo address, bool checkRegisterLabels)
@@ -127,7 +127,7 @@ int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 	auto result = _codeLabelReverseLookup.find(label);
 	if(result != _codeLabelReverseLookup.end()) {
 		uint64_t key = result->second;
-		SnesMemoryType type = GetKeyMemoryType(key);
+		MemoryType type = GetKeyMemoryType(key);
 		AddressInfo addr { (int32_t)(key & 0xFFFFFFFF), type };
 		if(type <= DebugUtilities::GetLastCpuMemoryType()) {
 			return addr.Address;

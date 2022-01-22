@@ -122,7 +122,7 @@ namespace Mesen.Debugger.Windows
 
 		private ContextMenuAction GetEditLabelAction()
 		{
-			AddressInfo? GetAddress(SnesMemoryType memType, int address)
+			AddressInfo? GetAddress(MemoryType memType, int address)
 			{
 				if(memType.IsRelativeMemory()) {
 					AddressInfo relAddress = new AddressInfo() {
@@ -190,7 +190,7 @@ namespace Mesen.Debugger.Windows
 					uint startAddress = (uint)_editor.SelectionStart;
 					uint endAddress = (uint)(_editor.SelectionStart + Math.Max(1, _editor.SelectionLength) - 1);
 
-					SnesMemoryType memType = _model.Config.MemoryType;
+					MemoryType memType = _model.Config.MemoryType;
 					Breakpoint? bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, memType);
 					if(bp == null) {
 						bp = new Breakpoint() { 
@@ -241,7 +241,7 @@ namespace Mesen.Debugger.Windows
 
 		private bool GetMarkStartEnd(out int start, out int end)
 		{
-			SnesMemoryType memType = _model.Config.MemoryType;
+			MemoryType memType = _model.Config.MemoryType;
 			start = _editor.SelectionStart;
 			end = start + Math.Max(1, _editor.SelectionLength) - 1;
 

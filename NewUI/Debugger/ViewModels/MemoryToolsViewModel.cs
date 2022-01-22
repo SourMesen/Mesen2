@@ -54,21 +54,21 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}));
 
-			AddDisposable(this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((SnesMemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
+			AddDisposable(this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((MemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
 				o.memType, Config, o.conv
 			)));
 
 			AddDisposable(this.WhenAnyValue(
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
-			).Select(((SnesMemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
+			).Select(((MemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
 		}
 
 		public void UpdateAvailableMemoryTypes()
 		{
-			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
-				Config.MemoryType = (SnesMemoryType)AvailableMemoryTypes.First();
+				Config.MemoryType = (MemoryType)AvailableMemoryTypes.First();
 			}
 		}
 

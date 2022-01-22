@@ -44,7 +44,7 @@ namespace Mesen.Debugger.Utilities
 		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo codeSegment, int address)
 		{
 			FontFamily monoFont = ConfigManager.Config.Debug.Font.FontFamilyObject;
-			SnesMemoryType memType = cpuType.ToMemoryType();
+			MemoryType memType = cpuType.ToMemoryType();
 			bool isCode = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
 
 			TooltipEntries items = new();
@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Utilities
 		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, int address, CodeLabel? label)
 		{
 			FontFamily monoFont = ConfigManager.Config.Debug.Font.FontFamilyObject;
-			SnesMemoryType memType = cpuType.ToMemoryType();
+			MemoryType memType = cpuType.ToMemoryType();
 			int byteValue = DebugApi.GetMemoryValue(memType, (uint)address);
 			int wordValue = (DebugApi.GetMemoryValue(memType, (uint)address + 1) << 8) | byteValue;
 
@@ -99,7 +99,7 @@ namespace Mesen.Debugger.Utilities
 			return new DynamicTooltip() { Items = items };
 		}
 
-		private static string GetAddressField(CpuType cpuType, int address, SnesMemoryType memType)
+		private static string GetAddressField(CpuType cpuType, int address, MemoryType memType)
 		{
 			string addressField = "$" + address.ToString("X" + cpuType.GetAddressSize()) + " (CPU)";
 			AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = memType });

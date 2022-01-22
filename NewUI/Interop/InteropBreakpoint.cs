@@ -8,7 +8,7 @@ namespace Mesen.Interop
 	{
 		public Int32 Id;
 		public CpuType CpuType;
-		public SnesMemoryType MemoryType;
+		public MemoryType MemoryType;
 		public BreakpointTypeFlags Type;
 		public Int32 StartAddress;
 		public Int32 EndAddress;

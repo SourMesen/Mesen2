@@ -95,24 +95,24 @@ extern "C"
 		return _logString.c_str();
 	}
 
-	DllExport void __stdcall SetMemoryState(SnesMemoryType type, uint8_t *buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
-	DllExport uint32_t __stdcall GetMemorySize(SnesMemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }
-	DllExport void __stdcall GetMemoryState(SnesMemoryType type, uint8_t *buffer) { WithDebugger(void, GetMemoryDumper()->GetMemoryState(type, buffer)); }
-	DllExport uint8_t __stdcall GetMemoryValue(SnesMemoryType type, uint32_t address) { return WithDebugger(uint8_t, GetMemoryDumper()->GetMemoryValue(type, address)); }
-	DllExport void __stdcall GetMemoryValues(SnesMemoryType type, uint32_t start, uint32_t end, uint8_t* output) { return WithDebugger(void, GetMemoryDumper()->GetMemoryValues(type, start, end, output)); }
-	DllExport void __stdcall SetMemoryValue(SnesMemoryType type, uint32_t address, uint8_t value) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValue(type, address, value)); }
-	DllExport void __stdcall SetMemoryValues(SnesMemoryType type, uint32_t address, uint8_t* data, int32_t length) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValues(type, address, data, length)); }
+	DllExport void __stdcall SetMemoryState(MemoryType type, uint8_t *buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
+	DllExport uint32_t __stdcall GetMemorySize(MemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }
+	DllExport void __stdcall GetMemoryState(MemoryType type, uint8_t *buffer) { WithDebugger(void, GetMemoryDumper()->GetMemoryState(type, buffer)); }
+	DllExport uint8_t __stdcall GetMemoryValue(MemoryType type, uint32_t address) { return WithDebugger(uint8_t, GetMemoryDumper()->GetMemoryValue(type, address)); }
+	DllExport void __stdcall GetMemoryValues(MemoryType type, uint32_t start, uint32_t end, uint8_t* output) { return WithDebugger(void, GetMemoryDumper()->GetMemoryValues(type, start, end, output)); }
+	DllExport void __stdcall SetMemoryValue(MemoryType type, uint32_t address, uint8_t value) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValue(type, address, value)); }
+	DllExport void __stdcall SetMemoryValues(MemoryType type, uint32_t address, uint8_t* data, int32_t length) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValues(type, address, data, length)); }
 
 	DllExport AddressInfo __stdcall GetAbsoluteAddress(AddressInfo relAddress) { return WithDebugger(AddressInfo, GetAbsoluteAddress(relAddress)); }
 	DllExport AddressInfo __stdcall GetRelativeAddress(AddressInfo absAddress, CpuType cpuType) { return WithDebugger(AddressInfo, GetRelativeAddress(absAddress, cpuType)); }
 
-	DllExport void __stdcall SetLabel(uint32_t address, SnesMemoryType memType, char* label, char* comment) { WithDebugger(void, GetLabelManager()->SetLabel(address, memType, label, comment)); }
+	DllExport void __stdcall SetLabel(uint32_t address, MemoryType memType, char* label, char* comment) { WithDebugger(void, GetLabelManager()->SetLabel(address, memType, label, comment)); }
 	DllExport void __stdcall ClearLabels() { WithDebugger(void, GetLabelManager()->ClearLabels()); }
 
 	DllExport void __stdcall ResetMemoryAccessCounts() { WithDebugger(void, GetMemoryAccessCounter()->ResetCounts()); }
-	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
+	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
 	
-	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
+	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
 	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(cpuType, cdlData, length)); }
 	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(cpuType, start, end, flags)); }
 	

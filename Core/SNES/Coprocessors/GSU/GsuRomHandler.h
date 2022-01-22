@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "SNES/IMemoryHandler.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 class GsuRomHandler : public IMemoryHandler
 {
@@ -11,7 +11,7 @@ private:
 	IMemoryHandler *_romHandler;
 
 public:
-	GsuRomHandler(GsuState &state, IMemoryHandler *romHandler) : IMemoryHandler(SnesMemoryType::PrgRom)
+	GsuRomHandler(GsuState &state, IMemoryHandler *romHandler) : IMemoryHandler(MemoryType::SnesPrgRom)
 	{
 		_romHandler = romHandler;
 		_state = &state;
@@ -60,7 +60,7 @@ public:
 		if(!_state->SFR.Running || !_state->GsuRomAccess) {
 			return _romHandler->GetAbsoluteAddress(address);
 		} else {
-			return { -1, SnesMemoryType::Register };
+			return { -1, MemoryType::Register };
 		}
 	}
 };

@@ -171,7 +171,7 @@ namespace Mesen.Debugger
 			if(address >= 0) {
 				List<string> values = new List<string>(elemCount);
 				for(int j = address, end = address + elemCount; j < end; j++) {
-					int memValue = DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, (uint)j);
+					int memValue = DebugApi.GetMemoryValue(MemoryType.SnesMemory, (uint)j);
 					values.Add(FormatValue(memValue, style, 1));
 				}
 				newValue = string.Join(" ", values);

@@ -77,7 +77,7 @@ namespace Mesen.Debugger.ViewModels
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (uint)cpu.SP + 1; (i & 0xFF) != 0; i++) {
 				sb.Append("$");
-				sb.Append(DebugApi.GetMemoryValue(SnesMemoryType.CpuMemory, i).ToString("X2"));
+				sb.Append(DebugApi.GetMemoryValue(MemoryType.SnesMemory, i).ToString("X2"));
 				sb.Append(", ");
 			}
 			string stack = sb.ToString();

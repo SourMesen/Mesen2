@@ -96,7 +96,7 @@ namespace Mesen.Debugger
 			return Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
 		}
 
-		public static Breakpoint? GetMatchingBreakpoint(UInt32 startAddress, UInt32 endAddress, SnesMemoryType memoryType)
+		public static Breakpoint? GetMatchingBreakpoint(UInt32 startAddress, UInt32 endAddress, MemoryType memoryType)
 		{
 			bool isAddressRange = startAddress != endAddress;
 			return Breakpoints.Where((bp) =>

@@ -4,7 +4,7 @@ namespace Mesen.Debugger.Integration
 {
 	public class SnesDbgImporter : DbgImporter
 	{
-		public SnesDbgImporter(RomFormat romFormat) : base(CpuType.Snes, romFormat, new() { SnesMemoryType.PrgRom, SnesMemoryType.WorkRam, SnesMemoryType.SaveRam })
+		public SnesDbgImporter(RomFormat romFormat) : base(CpuType.Snes, romFormat, new() { MemoryType.SnesPrgRom, MemoryType.SnesWorkRam, MemoryType.SnesSaveRam })
 		{
 		}
 

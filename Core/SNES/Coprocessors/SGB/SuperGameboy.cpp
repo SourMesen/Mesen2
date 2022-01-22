@@ -14,7 +14,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Audio/HermiteResampler.h"
 
-SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoprocessor(SnesMemoryType::Register)
+SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoprocessor(MemoryType::Register)
 {
 	_mixBuffer = new int16_t[0x10000];
 
@@ -349,7 +349,7 @@ void SuperGameboy::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo SuperGameboy::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 void SuperGameboy::Serialize(Serializer& s)

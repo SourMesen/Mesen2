@@ -5,10 +5,10 @@
 class IMemoryHandler
 {
 protected:
-	SnesMemoryType _memoryType;
+	MemoryType _memoryType;
 
 public:
-	IMemoryHandler(SnesMemoryType memType)
+	IMemoryHandler(MemoryType memType)
 	{
 		_memoryType = memType;
 	}
@@ -20,7 +20,7 @@ public:
 	virtual void PeekBlock(uint32_t addr, uint8_t *output) = 0;
 	virtual void Write(uint32_t addr, uint8_t value) = 0;
 
-	__forceinline SnesMemoryType GetMemoryType()
+	__forceinline MemoryType GetMemoryType()
 	{
 		return _memoryType;
 	}

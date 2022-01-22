@@ -20,8 +20,8 @@ namespace Mesen.Debugger.Disassembly
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
 		public virtual CpuType CpuType { get { return CpuType.Snes; } }
-		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
-		public virtual SnesMemoryType PrgMemoryType { get { return SnesMemoryType.PrgRom; } }
+		public virtual MemoryType RelativeMemoryType { get { return MemoryType.SnesMemory; } }
+		public virtual MemoryType PrgMemoryType { get { return MemoryType.SnesPrgRom; } }
 		public virtual int AddressSize { get { return 6; } }
 		public virtual int ByteCodeSize { get { return 4; } }
 		public virtual bool AllowSourceView { get { return true; } }

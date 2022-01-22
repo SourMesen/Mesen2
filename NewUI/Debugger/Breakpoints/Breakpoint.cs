@@ -17,7 +17,7 @@ namespace Mesen.Debugger
 
 		[Reactive] public bool Enabled { get; set; } = true;
 		[Reactive] public bool MarkEvent { get; set; }
-		[Reactive] public SnesMemoryType MemoryType { get; set; }
+		[Reactive] public MemoryType MemoryType { get; set; }
 		[Reactive] public UInt32 StartAddress { get; set; }
 		[Reactive] public UInt32 EndAddress { get; set; }
 		[Reactive] public CpuType CpuType { get; set; }
@@ -49,12 +49,12 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public static bool IsTypeCpuBreakpoint(SnesMemoryType type)
+		public static bool IsTypeCpuBreakpoint(MemoryType type)
 		{
-			return type != SnesMemoryType.Register && !type.IsPpuMemory();
+			return type != MemoryType.Register && !type.IsPpuMemory();
 		}
 
-		public bool Matches(UInt32 address, SnesMemoryType type, CpuType? cpuType)
+		public bool Matches(UInt32 address, MemoryType type, CpuType? cpuType)
 		{
 			if((cpuType.HasValue && cpuType.Value != CpuType)) {
 				return false;

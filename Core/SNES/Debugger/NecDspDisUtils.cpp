@@ -6,7 +6,7 @@
 #include "Shared/EmuSettings.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings)
 {
@@ -123,7 +123,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		}
 		str.Write(' ');
 
-		AddressInfo absAddress = { (int32_t)target*3, SnesMemoryType::DspProgramRom };
+		AddressInfo absAddress = { (int32_t)target*3, MemoryType::DspProgramRom };
 		string label = labelManager->GetLabel(absAddress);
 		if(label.empty()) {
 			str.WriteAll('$', HexUtilities::ToHex(target * 3));

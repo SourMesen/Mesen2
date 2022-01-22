@@ -3,9 +3,9 @@
 #include "Sdd1Types.h"
 #include "SNES/BaseCartridge.h"
 #include "Utilities/Serializer.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
-Sdd1Mmc::Sdd1Mmc(Sdd1State &state, BaseCartridge *cart) : IMemoryHandler(SnesMemoryType::Register)
+Sdd1Mmc::Sdd1Mmc(Sdd1State &state, BaseCartridge *cart) : IMemoryHandler(MemoryType::Register)
 {
 	_romHandlers = &cart->GetPrgRomHandlers();
 	_handlerMask = (uint32_t)((*_romHandlers).size() - 1);

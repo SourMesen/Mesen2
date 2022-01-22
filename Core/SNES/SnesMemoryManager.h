@@ -3,7 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "MemoryMappings.h"
 #include "Utilities/ISerializable.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 class IMemoryHandler;
 class RegisterHandlerA;
@@ -50,7 +50,7 @@ private:
 	uint16_t _nextEventClock = 0;
 	uint16_t _dramRefreshPosition = 0;
 	SnesEventType _nextEvent = SnesEventType::DramRefresh;
-	SnesMemoryType _memTypeBusA = SnesMemoryType::PrgRom;
+	MemoryType _memTypeBusA = MemoryType::SnesPrgRom;
 
 	uint8_t _cpuSpeed = 8;
 	uint8_t _openBus = 0;
@@ -98,7 +98,7 @@ public:
 	uint8_t GetCpuSpeed(uint32_t addr);
 	uint8_t GetCpuSpeed();
 	void SetCpuSpeed(uint8_t speed);
-	SnesMemoryType GetMemoryTypeBusA();
+	MemoryType GetMemoryTypeBusA();
 
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);

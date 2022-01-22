@@ -1,22 +1,22 @@
 #pragma once
 #include "stdafx.h"
 #include "Core/Debugger/DebugTypes.h"
-#include "Core/SnesMemoryType.h"
+#include "Core/MemoryType.h"
 
 class DebugUtilities
 {
 public:
-	static constexpr SnesMemoryType GetCpuMemoryType(CpuType type)
+	static constexpr MemoryType GetCpuMemoryType(CpuType type)
 	{
 		switch(type) {
-			case CpuType::Snes: return SnesMemoryType::CpuMemory;
-			case CpuType::Spc: return SnesMemoryType::SpcMemory;
-			case CpuType::NecDsp: return SnesMemoryType::NecDspMemory;
-			case CpuType::Sa1: return SnesMemoryType::Sa1Memory;
-			case CpuType::Gsu: return SnesMemoryType::GsuMemory;
-			case CpuType::Cx4: return SnesMemoryType::Cx4Memory;
-			case CpuType::Gameboy: return SnesMemoryType::GameboyMemory;
-			case CpuType::Nes: return SnesMemoryType::NesMemory;
+			case CpuType::Snes: return MemoryType::SnesMemory;
+			case CpuType::Spc: return MemoryType::SpcMemory;
+			case CpuType::NecDsp: return MemoryType::NecDspMemory;
+			case CpuType::Sa1: return MemoryType::Sa1Memory;
+			case CpuType::Gsu: return MemoryType::GsuMemory;
+			case CpuType::Cx4: return MemoryType::Cx4Memory;
+			case CpuType::Gameboy: return MemoryType::GameboyMemory;
+			case CpuType::Nes: return MemoryType::NesMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -38,53 +38,53 @@ public:
 		throw std::runtime_error("Invalid CPU type");
 	}
 
-	static constexpr CpuType ToCpuType(SnesMemoryType type)
+	static constexpr CpuType ToCpuType(MemoryType type)
 	{
 		switch(type) {
-			case SnesMemoryType::SpcMemory:
-			case SnesMemoryType::SpcRam:
-			case SnesMemoryType::SpcRom:
+			case MemoryType::SpcMemory:
+			case MemoryType::SpcRam:
+			case MemoryType::SpcRom:
 				return CpuType::Spc;
 
-			case SnesMemoryType::GsuMemory:
-			case SnesMemoryType::GsuWorkRam:
+			case MemoryType::GsuMemory:
+			case MemoryType::GsuWorkRam:
 				return CpuType::Gsu;
 
-			case SnesMemoryType::Sa1InternalRam:
-			case SnesMemoryType::Sa1Memory:
+			case MemoryType::Sa1InternalRam:
+			case MemoryType::Sa1Memory:
 				return CpuType::Sa1;
 
-			case SnesMemoryType::DspDataRam:
-			case SnesMemoryType::DspDataRom:
-			case SnesMemoryType::DspProgramRom:
+			case MemoryType::DspDataRam:
+			case MemoryType::DspDataRom:
+			case MemoryType::DspProgramRom:
 				return CpuType::NecDsp;
 
-			case SnesMemoryType::Cx4DataRam:
-			case SnesMemoryType::Cx4Memory:
+			case MemoryType::Cx4DataRam:
+			case MemoryType::Cx4Memory:
 				return CpuType::Cx4;
 				
-			case SnesMemoryType::GbPrgRom:
-			case SnesMemoryType::GbWorkRam:
-			case SnesMemoryType::GbCartRam:
-			case SnesMemoryType::GbHighRam:
-			case SnesMemoryType::GbBootRom:
-			case SnesMemoryType::GbVideoRam:
-			case SnesMemoryType::GbSpriteRam:
-			case SnesMemoryType::GameboyMemory:
+			case MemoryType::GbPrgRom:
+			case MemoryType::GbWorkRam:
+			case MemoryType::GbCartRam:
+			case MemoryType::GbHighRam:
+			case MemoryType::GbBootRom:
+			case MemoryType::GbVideoRam:
+			case MemoryType::GbSpriteRam:
+			case MemoryType::GameboyMemory:
 				return CpuType::Gameboy;
 
-			case SnesMemoryType::NesChrRam:
-			case SnesMemoryType::NesChrRom:
-			case SnesMemoryType::NesInternalRam:
-			case SnesMemoryType::NesMemory:
-			case SnesMemoryType::NesNametableRam:
-			case SnesMemoryType::NesPaletteRam:
-			case SnesMemoryType::NesPpuMemory:
-			case SnesMemoryType::NesPrgRom:
-			case SnesMemoryType::NesSaveRam:
-			case SnesMemoryType::NesSpriteRam:
-			case SnesMemoryType::NesSecondarySpriteRam:
-			case SnesMemoryType::NesWorkRam:
+			case MemoryType::NesChrRam:
+			case MemoryType::NesChrRom:
+			case MemoryType::NesInternalRam:
+			case MemoryType::NesMemory:
+			case MemoryType::NesNametableRam:
+			case MemoryType::NesPaletteRam:
+			case MemoryType::NesPpuMemory:
+			case MemoryType::NesPrgRom:
+			case MemoryType::NesSaveRam:
+			case MemoryType::NesSpriteRam:
+			case MemoryType::NesSecondarySpriteRam:
+			case MemoryType::NesWorkRam:
 				return CpuType::Nes;
 
 			default:
@@ -94,33 +94,33 @@ public:
 		throw std::runtime_error("Invalid CPU type");
 	}
 
-	static constexpr bool IsRelativeMemory(SnesMemoryType memType)
+	static constexpr bool IsRelativeMemory(MemoryType memType)
 	{
 		return memType <= GetLastCpuMemoryType();
 	}
 
-	static constexpr SnesMemoryType GetLastCpuMemoryType()
+	static constexpr MemoryType GetLastCpuMemoryType()
 	{
 		//TODO refactor to "IsRelativeMemory"?
-		return SnesMemoryType::NesPpuMemory;
+		return MemoryType::NesPpuMemory;
 	}
 
-	static constexpr bool IsPpuMemory(SnesMemoryType memType)
+	static constexpr bool IsPpuMemory(MemoryType memType)
 	{
 		switch(memType) {
-			case SnesMemoryType::VideoRam:
-			case SnesMemoryType::SpriteRam:
-			case SnesMemoryType::CGRam:
-			case SnesMemoryType::GbVideoRam:
-			case SnesMemoryType::GbSpriteRam:
+			case MemoryType::SnesVideoRam:
+			case MemoryType::SnesSpriteRam:
+			case MemoryType::SnesCgRam:
+			case MemoryType::GbVideoRam:
+			case MemoryType::GbSpriteRam:
 			
-			case SnesMemoryType::NesChrRam:
-			case SnesMemoryType::NesChrRom:
-			case SnesMemoryType::NesSpriteRam:
-			case SnesMemoryType::NesPaletteRam:
-			case SnesMemoryType::NesNametableRam:
-			case SnesMemoryType::NesSecondarySpriteRam:
-			case SnesMemoryType::NesPpuMemory:
+			case MemoryType::NesChrRam:
+			case MemoryType::NesChrRom:
+			case MemoryType::NesSpriteRam:
+			case MemoryType::NesPaletteRam:
+			case MemoryType::NesNametableRam:
+			case MemoryType::NesSecondarySpriteRam:
+			case MemoryType::NesPpuMemory:
 				return true;
 
 			default: 
@@ -128,15 +128,15 @@ public:
 		}
 	}
 
-	static constexpr bool IsRomMemory(SnesMemoryType memType)
+	static constexpr bool IsRomMemory(MemoryType memType)
 	{
 		switch(memType) {
-			case SnesMemoryType::PrgRom:
-			case SnesMemoryType::GbPrgRom:
-			case SnesMemoryType::GbBootRom:
-			case SnesMemoryType::NesPrgRom:
-			case SnesMemoryType::NesChrRom:
-			case SnesMemoryType::SaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
+			case MemoryType::SnesPrgRom:
+			case MemoryType::GbPrgRom:
+			case MemoryType::GbBootRom:
+			case MemoryType::NesPrgRom:
+			case MemoryType::NesChrRom:
+			case MemoryType::SnesSaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
 				return true;
 
 			default:

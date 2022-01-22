@@ -2,7 +2,7 @@
 #include "CodeDataLogger.h"
 #include "Utilities/VirtualFile.h"
 
-CodeDataLogger::CodeDataLogger(SnesMemoryType prgMemType, uint32_t prgSize, CpuType cpuType)
+CodeDataLogger::CodeDataLogger(MemoryType prgMemType, uint32_t prgSize, CpuType cpuType)
 {
 	_prgMemType = prgMemType;
 	_cpuType = cpuType;
@@ -28,7 +28,7 @@ uint32_t CodeDataLogger::GetPrgSize()
 	return _prgSize;
 }
 
-SnesMemoryType CodeDataLogger::GetPrgMemoryType()
+MemoryType CodeDataLogger::GetPrgMemoryType()
 {
 	return _prgMemType;
 }

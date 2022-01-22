@@ -7,7 +7,7 @@ class LabelManager;
 class Debugger;
 class EmuSettings;
 
-enum class SnesMemoryType;
+enum class MemoryType;
 enum class CpuType : uint8_t;
 
 class DisassemblyInfo
@@ -49,6 +49,6 @@ public:
 	void UpdateCpuFlags(uint8_t& cpuFlags);
 
 	int32_t GetEffectiveAddress(Debugger* debugger, void *cpuState, CpuType type);
-	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize);
+	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType, uint8_t &valueSize);
 };
 

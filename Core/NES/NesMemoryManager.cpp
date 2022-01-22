@@ -14,7 +14,7 @@ NesMemoryManager::NesMemoryManager(NesConsole* console)
 	_emu = console->GetEmulator();
 	_cheatManager = _emu->GetCheatManager();
 	_internalRAM = new uint8_t[InternalRAMSize];
-	_emu->RegisterMemory(SnesMemoryType::NesInternalRam, _internalRAM, InternalRAMSize);
+	_emu->RegisterMemory(MemoryType::NesInternalRam, _internalRAM, InternalRAMSize);
 	_internalRamHandler.SetInternalRam(_internalRAM);
 
 	_ramReadHandlers = new INesMemoryHandler*[RAMSize];

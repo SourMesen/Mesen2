@@ -817,7 +817,7 @@ uint8_t GbPpu::ReadVram(uint16_t addr)
 {
 	if(IsVramReadAllowed()) {
 		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
-		_emu->ProcessPpuRead<CpuType::Gameboy>(vramAddr, _vram[vramAddr], SnesMemoryType::GbVideoRam);
+		_emu->ProcessPpuRead<CpuType::Gameboy>(vramAddr, _vram[vramAddr], MemoryType::GbVideoRam);
 		return _vram[vramAddr];
 	} else {
 		_emu->BreakIfDebugging(BreakSource::GbInvalidVramAccess);
@@ -834,7 +834,7 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 {
 	if(IsVramWriteAllowed()) {
 		uint16_t vramAddr = (_state.CgbVramBank << 13) | (addr & 0x1FFF);
-		_emu->ProcessPpuWrite<CpuType::Gameboy>(vramAddr, value, SnesMemoryType::GbVideoRam);
+		_emu->ProcessPpuWrite<CpuType::Gameboy>(vramAddr, value, MemoryType::GbVideoRam);
 		_vram[vramAddr] = value;
 	} else {
 		_emu->BreakIfDebugging(BreakSource::GbInvalidVramAccess);
@@ -879,7 +879,7 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 {
 	if(addr < 0xA0) {
 		if(IsOamReadAllowed()) {
-			_emu->ProcessPpuRead<CpuType::Gameboy>(addr, _oam[addr], SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuRead<CpuType::Gameboy>(addr, _oam[addr], MemoryType::GbSpriteRam);
 			return _oam[addr];
 		} else {
 			_emu->BreakIfDebugging(BreakSource::GbInvalidOamAccess);
@@ -897,10 +897,10 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 	if(addr < 0xA0) {
 		if(forDma) {
 			_oam[addr] = value;
-			_emu->ProcessPpuWrite<CpuType::Gameboy>(addr, value, SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuWrite<CpuType::Gameboy>(addr, value, MemoryType::GbSpriteRam);
 		} else if(IsOamWriteAllowed()) {
 			_oam[addr] = value;
-			_emu->ProcessPpuWrite<CpuType::Gameboy>(addr, value, SnesMemoryType::GbSpriteRam);
+			_emu->ProcessPpuWrite<CpuType::Gameboy>(addr, value, MemoryType::GbSpriteRam);
 		} else {
 			_emu->BreakIfDebugging(BreakSource::GbInvalidOamAccess);
 		}

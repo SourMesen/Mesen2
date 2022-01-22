@@ -30,14 +30,14 @@ private:
 
 	Debugger *_debugger;
 
-	int64_t GetLabelKey(uint32_t absoluteAddr, SnesMemoryType memType);
-	SnesMemoryType GetKeyMemoryType(uint64_t key);
+	int64_t GetLabelKey(uint32_t absoluteAddr, MemoryType memType);
+	MemoryType GetKeyMemoryType(uint64_t key);
 	bool InternalGetLabel(AddressInfo address, string& label);
 
 public:
 	LabelManager(Debugger *debugger);
 
-	void SetLabel(uint32_t address, SnesMemoryType memType, string label, string comment);
+	void SetLabel(uint32_t address, MemoryType memType, string label, string comment);
 	void ClearLabels();
 
 	int32_t GetLabelRelativeAddress(string &label, CpuType cpuType = CpuType::Snes);

@@ -4,47 +4,47 @@ namespace Mesen.Interop
 {
 	public static class SnesMemoryTypeExtensions
 	{
-		public static CpuType ToCpuType(this SnesMemoryType memType)
+		public static CpuType ToCpuType(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.SpcMemory:
-				case SnesMemoryType.SpcRam:
-				case SnesMemoryType.SpcRom:
+				case MemoryType.SpcMemory:
+				case MemoryType.SpcRam:
+				case MemoryType.SpcRom:
 					return CpuType.Spc;
 
-				case SnesMemoryType.GsuMemory:
-				case SnesMemoryType.GsuWorkRam:
+				case MemoryType.GsuMemory:
+				case MemoryType.GsuWorkRam:
 					return CpuType.Gsu;
 
-				case SnesMemoryType.Sa1InternalRam:
-				case SnesMemoryType.Sa1Memory:
+				case MemoryType.Sa1InternalRam:
+				case MemoryType.Sa1Memory:
 					return CpuType.Sa1;
 
-				case SnesMemoryType.DspDataRam:
-				case SnesMemoryType.DspDataRom:
-				case SnesMemoryType.DspProgramRom:
+				case MemoryType.DspDataRam:
+				case MemoryType.DspDataRom:
+				case MemoryType.DspProgramRom:
 					return CpuType.NecDsp;
 
-				case SnesMemoryType.GbPrgRom:
-				case SnesMemoryType.GbWorkRam:
-				case SnesMemoryType.GbCartRam:
-				case SnesMemoryType.GbHighRam:
-				case SnesMemoryType.GbBootRom:
-				case SnesMemoryType.GbVideoRam:
-				case SnesMemoryType.GbSpriteRam:
-				case SnesMemoryType.GameboyMemory:
+				case MemoryType.GbPrgRom:
+				case MemoryType.GbWorkRam:
+				case MemoryType.GbCartRam:
+				case MemoryType.GbHighRam:
+				case MemoryType.GbBootRom:
+				case MemoryType.GbVideoRam:
+				case MemoryType.GbSpriteRam:
+				case MemoryType.GameboyMemory:
 					return CpuType.Gameboy;
 
-				case SnesMemoryType.NesMemory:
-				case SnesMemoryType.NesPrgRom:
-				case SnesMemoryType.NesWorkRam:
-				case SnesMemoryType.NesSaveRam:
-				case SnesMemoryType.NesChrRam:
-				case SnesMemoryType.NesChrRom:
-				case SnesMemoryType.NesInternalRam:
-				case SnesMemoryType.NesNametableRam:
-				case SnesMemoryType.NesPaletteRam:
-				case SnesMemoryType.NesSpriteRam:
+				case MemoryType.NesMemory:
+				case MemoryType.NesPrgRom:
+				case MemoryType.NesWorkRam:
+				case MemoryType.NesSaveRam:
+				case MemoryType.NesChrRam:
+				case MemoryType.NesChrRom:
+				case MemoryType.NesInternalRam:
+				case MemoryType.NesNametableRam:
+				case MemoryType.NesPaletteRam:
+				case MemoryType.NesSpriteRam:
 					return CpuType.Nes;
 
 				default:
@@ -52,23 +52,23 @@ namespace Mesen.Interop
 			}
 		}
 
-		public static bool IsPpuMemory(this SnesMemoryType memType)
+		public static bool IsPpuMemory(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.VideoRam:
-				case SnesMemoryType.SpriteRam:
-				case SnesMemoryType.CGRam:
+				case MemoryType.SnesVideoRam:
+				case MemoryType.SnesSpriteRam:
+				case MemoryType.SnesCgRam:
 				
-				case SnesMemoryType.GbVideoRam:
-				case SnesMemoryType.GbSpriteRam:
+				case MemoryType.GbVideoRam:
+				case MemoryType.GbSpriteRam:
 
-				case SnesMemoryType.NesPpuMemory:
-				case SnesMemoryType.NesSecondarySpriteRam:
-				case SnesMemoryType.NesSpriteRam:
-				case SnesMemoryType.NesNametableRam:
-				case SnesMemoryType.NesChrRam:
-				case SnesMemoryType.NesChrRom:
-				case SnesMemoryType.NesPaletteRam:
+				case MemoryType.NesPpuMemory:
+				case MemoryType.NesSecondarySpriteRam:
+				case MemoryType.NesSpriteRam:
+				case MemoryType.NesNametableRam:
+				case MemoryType.NesChrRam:
+				case MemoryType.NesChrRom:
+				case MemoryType.NesPaletteRam:
 					return true;
 
 				default:
@@ -76,147 +76,147 @@ namespace Mesen.Interop
 			}
 		}
 
-		public static bool IsRelativeMemory(this SnesMemoryType memType)
+		public static bool IsRelativeMemory(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.CpuMemory:
-				case SnesMemoryType.SpcMemory:
-				case SnesMemoryType.Sa1Memory:
-				case SnesMemoryType.GsuMemory:
-				case SnesMemoryType.NecDspMemory:
-				case SnesMemoryType.Cx4Memory:
-				case SnesMemoryType.GameboyMemory:
-				case SnesMemoryType.NesMemory:
-				case SnesMemoryType.NesPpuMemory:
+				case MemoryType.SnesMemory:
+				case MemoryType.SpcMemory:
+				case MemoryType.Sa1Memory:
+				case MemoryType.GsuMemory:
+				case MemoryType.NecDspMemory:
+				case MemoryType.Cx4Memory:
+				case MemoryType.GameboyMemory:
+				case MemoryType.NesMemory:
+				case MemoryType.NesPpuMemory:
 					return true;
 			}
 			return false;
 		}
 
-		public static bool SupportsLabels(this SnesMemoryType memType)
+		public static bool SupportsLabels(this MemoryType memType)
 		{
 			switch(memType) {
 				//SNES
-				case SnesMemoryType.PrgRom:
-				case SnesMemoryType.WorkRam:
-				case SnesMemoryType.SaveRam:
-				case SnesMemoryType.Register:
-				case SnesMemoryType.SpcRam:
-				case SnesMemoryType.SpcRom:
-				case SnesMemoryType.Sa1InternalRam:
+				case MemoryType.SnesPrgRom:
+				case MemoryType.SnesWorkRam:
+				case MemoryType.SnesSaveRam:
+				case MemoryType.Register:
+				case MemoryType.SpcRam:
+				case MemoryType.SpcRom:
+				case MemoryType.Sa1InternalRam:
 				
 				//Gameboy
-				case SnesMemoryType.GbPrgRom:
-				case SnesMemoryType.GbWorkRam:
-				case SnesMemoryType.GbCartRam:
-				case SnesMemoryType.GbHighRam:
-				case SnesMemoryType.GbBootRom:
-				case SnesMemoryType.GameboyMemory:
+				case MemoryType.GbPrgRom:
+				case MemoryType.GbWorkRam:
+				case MemoryType.GbCartRam:
+				case MemoryType.GbHighRam:
+				case MemoryType.GbBootRom:
+				case MemoryType.GameboyMemory:
 
 				//NES
-				case SnesMemoryType.NesPrgRom:
-				case SnesMemoryType.NesWorkRam:
-				case SnesMemoryType.NesSaveRam:
-				case SnesMemoryType.NesInternalRam:
-				case SnesMemoryType.NesMemory:
+				case MemoryType.NesPrgRom:
+				case MemoryType.NesWorkRam:
+				case MemoryType.NesSaveRam:
+				case MemoryType.NesInternalRam:
+				case MemoryType.NesMemory:
 					return true;
 			}
 
 			return false;
 		}
 
-		public static bool SupportsWatch(this SnesMemoryType memType)
+		public static bool SupportsWatch(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.CpuMemory:
-				case SnesMemoryType.SpcMemory:
-				case SnesMemoryType.Sa1Memory:
-				case SnesMemoryType.GsuMemory:
-				case SnesMemoryType.NecDspMemory:
-				case SnesMemoryType.Cx4Memory:
-				case SnesMemoryType.GameboyMemory:
-				case SnesMemoryType.NesMemory:
+				case MemoryType.SnesMemory:
+				case MemoryType.SpcMemory:
+				case MemoryType.Sa1Memory:
+				case MemoryType.GsuMemory:
+				case MemoryType.NecDspMemory:
+				case MemoryType.Cx4Memory:
+				case MemoryType.GameboyMemory:
+				case MemoryType.NesMemory:
 					return true;
 			}
 
 			return false;
 		}
 
-		public static bool SupportsCdl(this SnesMemoryType memType)
+		public static bool SupportsCdl(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.CpuMemory:
-				case SnesMemoryType.GameboyMemory:
-				case SnesMemoryType.NesMemory:
-				case SnesMemoryType.PrgRom:
-				case SnesMemoryType.GbPrgRom:
-				case SnesMemoryType.NesPrgRom:
+				case MemoryType.SnesMemory:
+				case MemoryType.GameboyMemory:
+				case MemoryType.NesMemory:
+				case MemoryType.SnesPrgRom:
+				case MemoryType.GbPrgRom:
+				case MemoryType.NesPrgRom:
 					return true;
 			}
 
 			return false;
 		}
 
-		public static bool SupportsBreakpoints(this SnesMemoryType memType)
+		public static bool SupportsBreakpoints(this MemoryType memType)
 		{
 			switch(memType) {
-				case SnesMemoryType.NesSecondarySpriteRam:
+				case MemoryType.NesSecondarySpriteRam:
 					return false;
 			}
 
 			return true;
 		}
 
-		public static string GetShortName(this SnesMemoryType memType)
+		public static string GetShortName(this MemoryType memType)
 		{
 			return memType switch {
-				SnesMemoryType.CpuMemory => "CPU",
-				SnesMemoryType.SpcMemory => "SPC",
-				SnesMemoryType.Sa1Memory => "SA1",
-				SnesMemoryType.GsuMemory => "GSU",
-				SnesMemoryType.NecDspMemory => "DSP",
+				MemoryType.SnesMemory => "CPU",
+				MemoryType.SpcMemory => "SPC",
+				MemoryType.Sa1Memory => "SA1",
+				MemoryType.GsuMemory => "GSU",
+				MemoryType.NecDspMemory => "DSP",
 
-				SnesMemoryType.PrgRom => "PRG",
-				SnesMemoryType.WorkRam => "WRAM",
-				SnesMemoryType.SaveRam => "SRAM",
-				SnesMemoryType.VideoRam => "VRAM",
-				SnesMemoryType.SpriteRam => "OAM",
-				SnesMemoryType.CGRam => "CG",
+				MemoryType.SnesPrgRom => "PRG",
+				MemoryType.SnesWorkRam => "WRAM",
+				MemoryType.SnesSaveRam => "SRAM",
+				MemoryType.SnesVideoRam => "VRAM",
+				MemoryType.SnesSpriteRam => "OAM",
+				MemoryType.SnesCgRam => "CG",
 
-				SnesMemoryType.SpcRam => "RAM",
-				SnesMemoryType.SpcRom => "ROM",
+				MemoryType.SpcRam => "RAM",
+				MemoryType.SpcRom => "ROM",
 
-				SnesMemoryType.DspProgramRom => "DSP",
-				SnesMemoryType.Sa1InternalRam => "IRAM",
-				SnesMemoryType.GsuWorkRam => "GWRAM",
+				MemoryType.DspProgramRom => "DSP",
+				MemoryType.Sa1InternalRam => "IRAM",
+				MemoryType.GsuWorkRam => "GWRAM",
 
-				SnesMemoryType.BsxPsRam => "PSRAM",
-				SnesMemoryType.BsxMemoryPack => "MPACK",
+				MemoryType.BsxPsRam => "PSRAM",
+				MemoryType.BsxMemoryPack => "MPACK",
 
-				SnesMemoryType.GameboyMemory => "CPU",
-				SnesMemoryType.GbPrgRom => "PRG",
-				SnesMemoryType.GbWorkRam => "WRAM",
-				SnesMemoryType.GbCartRam => "SRAM",
-				SnesMemoryType.GbHighRam => "HRAM",
-				SnesMemoryType.GbBootRom => "BOOT",
-				SnesMemoryType.GbVideoRam => "VRAM",
-				SnesMemoryType.GbSpriteRam => "OAM",
+				MemoryType.GameboyMemory => "CPU",
+				MemoryType.GbPrgRom => "PRG",
+				MemoryType.GbWorkRam => "WRAM",
+				MemoryType.GbCartRam => "SRAM",
+				MemoryType.GbHighRam => "HRAM",
+				MemoryType.GbBootRom => "BOOT",
+				MemoryType.GbVideoRam => "VRAM",
+				MemoryType.GbSpriteRam => "OAM",
 
-				SnesMemoryType.NesMemory => "CPU",
-				SnesMemoryType.NesPpuMemory => "PPU",
-				SnesMemoryType.NesPrgRom => "PRG",
-				SnesMemoryType.NesWorkRam => "WRAM",
-				SnesMemoryType.NesSaveRam => "SRAM",
-				SnesMemoryType.NesInternalRam => "RAM",
+				MemoryType.NesMemory => "CPU",
+				MemoryType.NesPpuMemory => "PPU",
+				MemoryType.NesPrgRom => "PRG",
+				MemoryType.NesWorkRam => "WRAM",
+				MemoryType.NesSaveRam => "SRAM",
+				MemoryType.NesInternalRam => "RAM",
 
-				SnesMemoryType.NesSpriteRam => "SPR",
-				SnesMemoryType.NesSecondarySpriteRam => "SPR2",
-				SnesMemoryType.NesPaletteRam => "PAL",
-				SnesMemoryType.NesNametableRam => "NTRAM",
-				SnesMemoryType.NesChrRom => "CHR",
-				SnesMemoryType.NesChrRam => "CHR",
+				MemoryType.NesSpriteRam => "SPR",
+				MemoryType.NesSecondarySpriteRam => "SPR2",
+				MemoryType.NesPaletteRam => "PAL",
+				MemoryType.NesNametableRam => "NTRAM",
+				MemoryType.NesChrRom => "CHR",
+				MemoryType.NesChrRam => "CHR",
 
-				SnesMemoryType.Register => "REG",
+				MemoryType.Register => "REG",
 
 				_ => throw new Exception("invalid type"),
 			};

@@ -612,10 +612,10 @@ namespace Mesen.Interop
 	public enum GbMemoryType
 	{
 		None = 0,
-		PrgRom = (int)SnesMemoryType.GbPrgRom,
-		WorkRam = (int)SnesMemoryType.GbWorkRam,
-		CartRam = (int)SnesMemoryType.GbCartRam,
-		BootRom = (int)SnesMemoryType.GbBootRom,
+		PrgRom = (int)MemoryType.GbPrgRom,
+		WorkRam = (int)MemoryType.GbWorkRam,
+		CartRam = (int)MemoryType.GbCartRam,
+		BootRom = (int)MemoryType.GbBootRom,
 	}
 
 	public enum RegisterAccess

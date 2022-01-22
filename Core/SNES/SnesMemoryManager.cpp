@@ -31,7 +31,7 @@ void SnesMemoryManager::Initialize(SnesConsole *console)
 	_cheatManager = _emu->GetCheatManager();
 
 	_workRam = new uint8_t[SnesMemoryManager::WorkRamSize];
-	_emu->RegisterMemory(SnesMemoryType::WorkRam, _workRam, SnesMemoryManager::WorkRamSize);
+	_emu->RegisterMemory(MemoryType::SnesWorkRam, _workRam, SnesMemoryManager::WorkRamSize);
 	_emu->GetSettings()->InitializeRam(_workRam, SnesMemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
@@ -48,7 +48,7 @@ void SnesMemoryManager::Initialize(SnesConsole *console)
 	));
 
 	for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
-		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, SnesMemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
+		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, SnesMemoryManager::WorkRamSize, MemoryType::SnesWorkRam)));
 	}
 
 	_mappings.RegisterHandler(0x7E, 0x7F, 0x0000, 0xFFFF, _workRamHandlers);
@@ -392,7 +392,7 @@ void SnesMemoryManager::SetCpuSpeed(uint8_t speed)
 	_cpuSpeed = speed;
 }
 
-SnesMemoryType SnesMemoryManager::GetMemoryTypeBusA()
+MemoryType SnesMemoryManager::GetMemoryTypeBusA()
 {
 	return _memTypeBusA;
 }
@@ -406,7 +406,7 @@ bool SnesMemoryManager::IsRegister(uint32_t cpuAddress)
 bool SnesMemoryManager::IsWorkRam(uint32_t cpuAddress)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(cpuAddress);
-	return handler && handler->GetMemoryType() == SnesMemoryType::WorkRam;
+	return handler && handler->GetMemoryType() == MemoryType::SnesWorkRam;
 }
 
 void SnesMemoryManager::Serialize(Serializer &s)

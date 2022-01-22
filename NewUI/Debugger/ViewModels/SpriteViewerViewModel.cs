@@ -311,13 +311,13 @@ namespace Mesen.Debugger.ViewModels
 			_ppuState = DebugApi.GetPpuState<T>(CpuType);
 			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
 
-			SnesMemoryType spriteMemType = CpuType.GetSpriteRamMemoryType();
+			MemoryType spriteMemType = CpuType.GetSpriteRamMemoryType();
 			int spriteRamSize = DebugApi.GetMemorySize(spriteMemType);
 
 			if(Config.Source == SpriteViewerSource.SpriteRam) {
 				_spriteRam = DebugApi.GetMemoryState(spriteMemType);
 			} else {
-				SnesMemoryType cpuMemory = CpuType.ToMemoryType();
+				MemoryType cpuMemory = CpuType.ToMemoryType();
 				_spriteRam = DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1));
 				MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
 			}

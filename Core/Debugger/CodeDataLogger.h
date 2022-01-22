@@ -7,7 +7,7 @@ class CodeDataLogger
 private:
 	uint8_t* _cdlData = nullptr;
 	CpuType _cpuType = CpuType::Snes;
-	SnesMemoryType _prgMemType;
+	MemoryType _prgMemType;
 	uint32_t _prgSize = 0;
 	uint32_t _codeSize = 0;
 	uint32_t _dataSize = 0;
@@ -15,12 +15,12 @@ private:
 	void CalculateStats();
 
 public:
-	CodeDataLogger(SnesMemoryType prgMemType, uint32_t prgSize, CpuType cpuType);
+	CodeDataLogger(MemoryType prgMemType, uint32_t prgSize, CpuType cpuType);
 	~CodeDataLogger();
 
 	void Reset();
 	uint32_t GetPrgSize();
-	SnesMemoryType GetPrgMemoryType();
+	MemoryType GetPrgMemoryType();
 
 	bool LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc);
 	bool SaveCdlFile(string cdlFilepath, uint32_t romCrc);

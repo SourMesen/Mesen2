@@ -146,7 +146,7 @@ private:
 	Debugger* _debugger;
 	LabelManager* _labelManager;
 	CpuType _cpuType;
-	SnesMemoryType _cpuMemory;
+	MemoryType _cpuMemory;
 
 	bool IsOperator(string token, int &precedence, bool unaryOperator);
 	EvalOperators GetOperator(string token, bool unaryOperator);

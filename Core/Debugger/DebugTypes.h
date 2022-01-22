@@ -2,12 +2,12 @@
 #include "stdafx.h"
 #include "Core/MemoryOperationType.h"
 
-enum class SnesMemoryType;
+enum class MemoryType;
 
 struct AddressInfo
 {
 	int32_t Address;
-	SnesMemoryType Type;
+	MemoryType Type;
 };
 
 struct MemoryOperationInfo
@@ -15,17 +15,17 @@ struct MemoryOperationInfo
 	uint32_t Address;
 	int32_t Value;
 	MemoryOperationType Type;
-	SnesMemoryType MemType;
+	MemoryType MemType;
 
 	MemoryOperationInfo()
 	{
 		Address = 0;
 		Value = 0;
 		Type = (MemoryOperationType)0;
-		MemType = (SnesMemoryType)0;
+		MemType = (MemoryType)0;
 	}
 
-	MemoryOperationInfo(uint32_t addr, int32_t val, MemoryOperationType opType, SnesMemoryType memType)
+	MemoryOperationInfo(uint32_t addr, int32_t val, MemoryOperationType opType, MemoryType memType)
 	{
 		Address = addr;
 		Value = val;
@@ -52,7 +52,7 @@ enum class BreakpointType
 enum class BreakpointCategory
 {
 	Snes = 0,
-	VideoRam = 1,
+	SnesVideoRam = 1,
 	Oam = 2,
 	CgRam = 3,
 	Spc = 4
@@ -129,9 +129,9 @@ namespace LineFlags
 	enum LineFlags : uint16_t
 	{
 		None = 0,
-		PrgRom = 0x01,
-		WorkRam = 0x02,
-		SaveRam = 0x04,
+		SnesPrgRom = 0x01,
+		SnesWorkRam = 0x02,
+		SnesSaveRam = 0x04,
 		VerifiedData = 0x08,
 		VerifiedCode = 0x10,
 		BlockStart = 0x20,

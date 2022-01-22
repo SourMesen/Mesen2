@@ -32,12 +32,12 @@ public:
 	{
 		_currentTrack = selectedTrack;
 
-		uint8_t* prg = _gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
+		uint8_t* prg = _gameboy->DebugGetMemory(MemoryType::GbPrgRom);
 
 		//Clear high ram and cart ram
-		memset(_cartRam, 0, _gameboy->DebugGetMemorySize(SnesMemoryType::GbCartRam));
-		memset(_gameboy->DebugGetMemory(SnesMemoryType::GbHighRam), 0, _gameboy->DebugGetMemorySize(SnesMemoryType::GbHighRam));
-		memset(_gameboy->DebugGetMemory(SnesMemoryType::GbWorkRam), 0, _gameboy->DebugGetMemorySize(SnesMemoryType::GbWorkRam));
+		memset(_cartRam, 0, _gameboy->DebugGetMemorySize(MemoryType::GbCartRam));
+		memset(_gameboy->DebugGetMemory(MemoryType::GbHighRam), 0, _gameboy->DebugGetMemorySize(MemoryType::GbHighRam));
+		memset(_gameboy->DebugGetMemory(MemoryType::GbWorkRam), 0, _gameboy->DebugGetMemorySize(MemoryType::GbWorkRam));
 
 		//Patch ROM to call INIT and PLAY routines
 

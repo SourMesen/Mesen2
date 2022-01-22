@@ -37,7 +37,7 @@ struct RomInfo;
 struct TimingInfo;
 
 enum class MemoryOperationType;
-enum class SnesMemoryType;
+enum class MemoryType;
 enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;
@@ -95,7 +95,7 @@ private:
 
 	RomInfo _rom;
 
-	ConsoleMemoryInfo _consoleMemory[(int)SnesMemoryType::Register] = {};
+	ConsoleMemoryInfo _consoleMemory[(int)MemoryType::Register] = {};
 
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;
@@ -214,8 +214,8 @@ public:
 
 	thread::id GetEmulationThreadId();
 
-	void RegisterMemory(SnesMemoryType type, void* memory, uint32_t size);
-	ConsoleMemoryInfo GetMemory(SnesMemoryType type);
+	void RegisterMemory(MemoryType type, void* memory, uint32_t size);
+	ConsoleMemoryInfo GetMemory(MemoryType type);
 
 	AudioTrackInfo GetAudioTrackInfo();
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p);
@@ -242,14 +242,14 @@ public:
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, MemoryType memoryType)
 	{
 		if(_debugger) {
 			_debugger->ProcessPpuRead<type>(addr, value, memoryType);
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessPpuWrite(uint32_t addr, uint8_t value, SnesMemoryType memoryType)
+	template<CpuType type> __forceinline void ProcessPpuWrite(uint32_t addr, uint8_t value, MemoryType memoryType)
 	{
 		if(_debugger) {
 			_debugger->ProcessPpuWrite<type>(addr, value, memoryType);

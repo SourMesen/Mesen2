@@ -910,12 +910,12 @@ thread::id Emulator::GetEmulationThreadId()
 	return _emulationThreadId;
 }
 
-void Emulator::RegisterMemory(SnesMemoryType type, void* memory, uint32_t size)
+void Emulator::RegisterMemory(MemoryType type, void* memory, uint32_t size)
 {
 	_consoleMemory[(int)type] = { memory, size };
 }
 
-ConsoleMemoryInfo Emulator::GetMemory(SnesMemoryType type)
+ConsoleMemoryInfo Emulator::GetMemory(MemoryType type)
 {
 	return _consoleMemory[(int)type];
 }

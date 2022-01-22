@@ -6,7 +6,7 @@ namespace Mesen.Debugger.Disassembly
 	public class SpcDisassemblyManager : CpuDisassemblyManager
 	{
 		public override CpuType CpuType { get { return CpuType.Spc; } }
-		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.SpcMemory; } }
+		public override MemoryType RelativeMemoryType { get { return MemoryType.SpcMemory; } }
 		public override int AddressSize { get { return 4; } }
 		public override int ByteCodeSize { get { return 3; } }
 		public override bool AllowSourceView { get { return false; } }

@@ -15,15 +15,15 @@
 //TODO: CPU shouldn't have access to PRG ROM while the CX4 is loading from PRG ROM
 //TODO: Timings are apparently not perfect (desync in MMX2 intro)
 
-Cx4::Cx4(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
+Cx4::Cx4(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
 {
 	_emu = console->GetEmulator();
 	_console = console;
-	_memoryType = SnesMemoryType::Register;
+	_memoryType = MemoryType::Register;
 	_memoryManager = console->GetMemoryManager();
 	_cpu = console->GetCpu();
 	
-	_emu->RegisterMemory(SnesMemoryType::Cx4DataRam, _dataRam, Cx4::DataRamSize);
+	_emu->RegisterMemory(MemoryType::Cx4DataRam, _dataRam, Cx4::DataRamSize);
 	_emu->GetSettings()->InitializeRam(_dataRam, Cx4::DataRamSize);
 	
 	auto &prgRomHandlers = console->GetCartridge()->GetPrgRomHandlers();
@@ -220,7 +220,7 @@ void Cx4::ProcessDma(uint64_t targetCycle)
 
 		IMemoryHandler *srcHandler = _mappings.GetHandler(src);
 		IMemoryHandler *destHandler = _mappings.GetHandler(dest);
-		if(!srcHandler || !destHandler || srcHandler->GetMemoryType() == destHandler->GetMemoryType() || destHandler->GetMemoryType() == SnesMemoryType::PrgRom) {
+		if(!srcHandler || !destHandler || srcHandler->GetMemoryType() == destHandler->GetMemoryType() || destHandler->GetMemoryType() == MemoryType::SnesPrgRom) {
 			//Invalid DMA, the chip is locked until it gets restarted by a write to $7F53
 			_state.Locked = true;
 			_state.Dma.Pos = 0;
@@ -249,9 +249,9 @@ void Cx4::ProcessDma(uint64_t targetCycle)
 uint8_t Cx4::GetAccessDelay(uint32_t addr)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
-	if(handler->GetMemoryType() == SnesMemoryType::PrgRom) {
+	if(handler->GetMemoryType() == MemoryType::SnesPrgRom) {
 		return 1 + _state.RomAccessDelay;
-	} else if(handler->GetMemoryType() == SnesMemoryType::SaveRam) {
+	} else if(handler->GetMemoryType() == MemoryType::SnesSaveRam) {
 		return 1 + _state.RamAccessDelay;
 	}
 
@@ -461,7 +461,7 @@ void Cx4::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo Cx4::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 MemoryMappings* Cx4::GetMemoryMappings()

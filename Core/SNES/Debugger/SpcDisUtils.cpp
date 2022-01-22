@@ -88,7 +88,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 {
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
-	AddressInfo addrInfo { 0, SnesMemoryType::SpcMemory };
+	AddressInfo addrInfo { 0, MemoryType::SpcMemory };
 	auto getOperand = [&str, &addrInfo, labelManager](uint16_t addr) {
 		addrInfo.Address = addr;
 		string label = labelManager ? labelManager->GetLabel(addrInfo) : "";

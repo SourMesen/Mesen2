@@ -188,7 +188,7 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 }
 
 template<CpuType type>
-void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
@@ -199,7 +199,7 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memor
 }
 
 template<CpuType type>
-void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
@@ -316,7 +316,7 @@ void Debugger::ProcessEvent(EventType type)
 
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
-	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, SnesMemoryType::Register };
+	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::Register };
 	BaseState& state = _debuggers[(int)cpuType].Debugger->GetState();
 	if(useCache) {
 		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, state, resultType, operationInfo);
@@ -551,11 +551,11 @@ void Debugger::RebuildPrgCache(CpuType cpuType)
 	}
 }
 
-void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData)
+void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData)
 {
 	CpuType cpuType = DebugUtilities::ToCpuType(memoryType);
 	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
-	SnesMemoryType prgType = cdl->GetPrgMemoryType();
+	MemoryType prgType = cdl->GetPrgMemoryType();
 	if(memoryType == prgType) {
 		cdl->GetCdlData(offset, length, cdlData);
 	} else {
@@ -606,8 +606,8 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 
 	vector<uint8_t> rom;
 	if(gb) {
-		uint8_t* prgRom = _memoryDumper->GetMemoryBuffer(SnesMemoryType::GbPrgRom);
-		uint32_t prgRomSize = _memoryDumper->GetMemorySize(SnesMemoryType::GbPrgRom);
+		uint8_t* prgRom = _memoryDumper->GetMemoryBuffer(MemoryType::GbPrgRom);
+		uint32_t prgRomSize = _memoryDumper->GetMemorySize(MemoryType::GbPrgRom);
 		rom = vector<uint8_t>(prgRom, prgRom+prgRomSize);
 	} else {
 		rom = vector<uint8_t>(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
@@ -791,13 +791,13 @@ template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint
 template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
-template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType);
 
-template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType);
 
 template void Debugger::ProcessPpuCycle<CpuType::Snes>();
 template void Debugger::ProcessPpuCycle<CpuType::Gameboy>();

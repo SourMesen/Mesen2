@@ -32,7 +32,7 @@ public:
 	{
 		_gameboy = gameboy;
 		_memoryManager = memoryManager;
-		_cartRam = gameboy->DebugGetMemory(SnesMemoryType::GbCartRam);
+		_cartRam = gameboy->DebugGetMemory(MemoryType::GbCartRam);
 	}
 
 	virtual void InitCart()

@@ -6,7 +6,7 @@ namespace Mesen.Debugger.Disassembly
 	public class Sa1DisassemblyManager : CpuDisassemblyManager
 	{
 		public override CpuType CpuType { get { return CpuType.Sa1; } }
-		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.Sa1Memory; } }
+		public override MemoryType RelativeMemoryType { get { return MemoryType.Sa1Memory; } }
 		public override bool AllowSourceView { get { return false; } }
 
 		public override void RefreshCode(ISymbolProvider symbolProvider, SourceFileInfo? file)

@@ -43,7 +43,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
 
-	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::NesPrgRom, _emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
+	_codeDataLogger.reset(new CodeDataLogger(MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes));
 
 	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -67,7 +67,7 @@ void NesDebugger::Reset()
 void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NesMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
 	NesCpuState& state = _cpu->GetState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
@@ -78,7 +78,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	if(type == MemoryOperationType::ExecOpCode) {
 		bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 		if(addressInfo.Address >= 0) {
-			if(addressInfo.Type == SnesMemoryType::NesPrgRom) {
+			if(addressInfo.Type == MemoryType::NesPrgRom) {
 				uint8_t flags = CdlFlags::Code;
 				if(_prevOpCode == 0x20) {
 					//JSR
@@ -132,7 +132,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
-		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
 
@@ -146,7 +146,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
 		}
 
-		if(addressInfo.Type == SnesMemoryType::NesPrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 		
@@ -175,8 +175,8 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::NesMemory);
-	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
+	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SnesWorkRam || addressInfo.Type == MemoryType::SnesSaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Nes);
 	}
 
@@ -231,7 +231,7 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	//_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -242,7 +242,7 @@ void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType me
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
-void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };

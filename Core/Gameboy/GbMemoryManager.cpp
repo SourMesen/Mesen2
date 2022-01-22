@@ -20,7 +20,7 @@
 
 void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {
-	_highRam = gameboy->DebugGetMemory(SnesMemoryType::GbHighRam);
+	_highRam = gameboy->DebugGetMemory(MemoryType::GbHighRam);
 
 	_emu = emu;
 	_apu = apu;
@@ -106,8 +106,8 @@ void GbMemoryManager::MapRegisters(uint16_t start, uint16_t end, RegisterAccess 
 
 void GbMemoryManager::Map(uint16_t start, uint16_t end, GbMemoryType type, uint32_t offset, bool readonly)
 {
-	uint8_t* src = _gameboy->DebugGetMemory((SnesMemoryType)type);
-	uint32_t size = _gameboy->DebugGetMemorySize((SnesMemoryType)type);
+	uint8_t* src = _gameboy->DebugGetMemory((MemoryType)type);
+	uint32_t size = _gameboy->DebugGetMemorySize((MemoryType)type);
 
 	if(size > 0) {
 		while(offset >= size) {
@@ -128,7 +128,7 @@ void GbMemoryManager::Map(uint16_t start, uint16_t end, GbMemoryType type, uint3
 				offset = (offset + 0x100);
 				if(offset >= size) {
 					offset = 0;
-					src = _gameboy->DebugGetMemory((SnesMemoryType)type);
+					src = _gameboy->DebugGetMemory((MemoryType)type);
 				}
 			}
 		}

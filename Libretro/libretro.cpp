@@ -604,21 +604,21 @@ extern "C" {
 				count++;
 			};
 
-			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbPrgRom), 0x0000, std::min(0x8000, (int)gb->DebugGetMemorySize(SnesMemoryType::GbPrgRom)));
-			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbVideoRam), 0x8000, 0x2000);
-			if(gb->DebugGetMemory(SnesMemoryType::GbCartRam)) {
-				uint32_t size = std::min(0x2000u, gb->DebugGetMemorySize(SnesMemoryType::GbCartRam));
-				addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbCartRam), 0xA000, size);
+			addDescriptor(gb->DebugGetMemory(MemoryType::GbPrgRom), 0x0000, std::min(0x8000, (int)gb->DebugGetMemorySize(MemoryType::GbPrgRom)));
+			addDescriptor(gb->DebugGetMemory(MemoryType::GbVideoRam), 0x8000, 0x2000);
+			if(gb->DebugGetMemory(MemoryType::GbCartRam)) {
+				uint32_t size = std::min(0x2000u, gb->DebugGetMemorySize(MemoryType::GbCartRam));
+				addDescriptor(gb->DebugGetMemory(MemoryType::GbCartRam), 0xA000, size);
 			}
 
-			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbWorkRam), 0xC000, 0x2000);
-			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbWorkRam), 0xE000, 0x1E00); //WRAM Mirror
+			addDescriptor(gb->DebugGetMemory(MemoryType::GbWorkRam), 0xC000, 0x2000);
+			addDescriptor(gb->DebugGetMemory(MemoryType::GbWorkRam), 0xE000, 0x1E00); //WRAM Mirror
 
-			addDescriptor(gb->DebugGetMemory(SnesMemoryType::GbHighRam), 0xFF80, 0x80);
+			addDescriptor(gb->DebugGetMemory(MemoryType::GbHighRam), 0xFF80, 0x80);
 
-			if(gb->DebugGetMemorySize(SnesMemoryType::GbWorkRam) == 0x8000) {
+			if(gb->DebugGetMemorySize(MemoryType::GbWorkRam) == 0x8000) {
 				//GBC - map extra work ram at "fake" 0x10000-0x16000 range
-				addDescriptor(gb->DebugGetMemory(SnesMemoryType::WorkRam) + 0x2000, 0x10000, 0x6000);
+				addDescriptor(gb->DebugGetMemory(MemoryType::SnesWorkRam) + 0x2000, 0x10000, 0x6000);
 			}
 
 			retro_memory_map memoryMap = {};
@@ -732,8 +732,8 @@ extern "C" {
 		shared_ptr<BaseCartridge> cart = _console->GetCartridge();
 		if(cart->GetGameboy()) {
 			switch(id) {
-				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemory(SnesMemoryType::GbCartRam);
-				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemory(SnesMemoryType::GbWorkRam);
+				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemory(MemoryType::GbCartRam);
+				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemory(MemoryType::GbWorkRam);
 			}
 		} else {
 			switch(id) {
@@ -749,8 +749,8 @@ extern "C" {
 		shared_ptr<BaseCartridge> cart = _console->GetCartridge();
 		if(cart->GetGameboy()) {
 			switch(id) {
-				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemorySize(SnesMemoryType::GbCartRam);
-				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemorySize(SnesMemoryType::GbWorkRam);
+				case RETRO_MEMORY_SAVE_RAM: return cart->GetGameboy()->DebugGetMemorySize(MemoryType::GbCartRam);
+				case RETRO_MEMORY_SYSTEM_RAM: return cart->GetGameboy()->DebugGetMemorySize(MemoryType::GbWorkRam);
 			}
 		} else {
 			switch(id) {

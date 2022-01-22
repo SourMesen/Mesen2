@@ -40,7 +40,7 @@ void DisassemblyInfo::Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType 
 	_cpuType = type;
 	_flags = cpuFlags;
 
-	SnesMemoryType cpuMemType = DebugUtilities::GetCpuMemoryType(type);
+	MemoryType cpuMemType = DebugUtilities::GetCpuMemoryType(type);
 	_byteCode[0] = memoryDumper->GetMemoryValue(cpuMemType, cpuAddress);
 
 	_opSize = GetOpSize(_byteCode[0], _flags, _cpuType);
@@ -330,7 +330,7 @@ void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 	}
 }
 
-uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, SnesMemoryType memType, uint8_t &valueSize)
+uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType, uint8_t &valueSize)
 {
 	if((_cpuType == CpuType::Spc || _cpuType == CpuType::Gameboy || _cpuType == CpuType::Nes) || (_flags & ProcFlags::MemoryMode8)) {
 		valueSize = 1;

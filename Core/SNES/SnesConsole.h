@@ -37,7 +37,7 @@ class Msu1;
 class Emulator;
 
 enum class MemoryOperationType;
-enum class SnesMemoryType;
+enum class MemoryType;
 enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;

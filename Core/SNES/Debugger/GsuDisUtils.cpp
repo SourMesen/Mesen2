@@ -6,7 +6,7 @@
 #include "Shared/EmuSettings.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {
@@ -21,7 +21,7 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 	auto getJumpTarget = [&str, labelManager, memoryAddr, &info]() {
 		uint32_t jmpTarget = memoryAddr + (int8_t)info.GetByteCode()[1] + 2;
-		AddressInfo address = { (int32_t)jmpTarget, SnesMemoryType::GsuMemory };
+		AddressInfo address = { (int32_t)jmpTarget, MemoryType::GsuMemory };
 		string label = labelManager->GetLabel(address);
 		if(label.empty()) {
 			str.WriteAll('$', HexUtilities::ToHex24(jmpTarget));

@@ -69,10 +69,10 @@ void Sa1Cpu::Idle()
 void Sa1Cpu::IdleEndJump()
 {
 	IMemoryHandler* handler = _sa1->GetMemoryMappings()->GetHandler(_state.PC);
-	if(handler && handler->GetMemoryType() == SnesMemoryType::PrgRom) {
+	if(handler && handler->GetMemoryType() == MemoryType::SnesPrgRom) {
 		//Jumps/returns in PRG ROM take an extra cycle
 		_state.CycleCount++;
-		if(_sa1->GetSnesCpuMemoryType() == SnesMemoryType::PrgRom) {
+		if(_sa1->GetSnesCpuMemoryType() == MemoryType::SnesPrgRom) {
 			//Add an extra wait cycle if a conflict occurs at the same time
 			_state.CycleCount++;
 		}
@@ -83,7 +83,7 @@ void Sa1Cpu::IdleTakeBranch()
 {
 	if(_state.PC & 0x01) {
 		IMemoryHandler* handler = _sa1->GetMemoryMappings()->GetHandler(_state.PC);
-		if(handler && handler->GetMemoryType() == SnesMemoryType::PrgRom) {
+		if(handler && handler->GetMemoryType() == MemoryType::SnesPrgRom) {
 			//Branches to an odd address take an extra cycle
 			_state.CycleCount++;
 		}
@@ -92,14 +92,14 @@ void Sa1Cpu::IdleTakeBranch()
 
 bool Sa1Cpu::IsAccessConflict()
 {
-	return _sa1->GetSnesCpuMemoryType() == _sa1->GetSa1MemoryType() && _sa1->GetSa1MemoryType() != SnesMemoryType::Register;
+	return _sa1->GetSnesCpuMemoryType() == _sa1->GetSa1MemoryType() && _sa1->GetSa1MemoryType() != MemoryType::Register;
 }
 
 void Sa1Cpu::ProcessCpuCycle(uint32_t addr)
 {
 	_state.CycleCount++;
 
-	if(_sa1->GetSa1MemoryType() == SnesMemoryType::SaveRam) {
+	if(_sa1->GetSa1MemoryType() == MemoryType::SnesSaveRam) {
 		//BWRAM (save ram) access takes 2 cycles
 		_state.CycleCount++;
 		if(IsAccessConflict()) {
@@ -108,7 +108,7 @@ void Sa1Cpu::ProcessCpuCycle(uint32_t addr)
 	} else if(IsAccessConflict()) {
 		//Add a wait cycle when a conflict occurs between both CPUs
 		_state.CycleCount++;
-		if(_sa1->GetSa1MemoryType() == SnesMemoryType::Sa1InternalRam && _sa1->IsSnesCpuFastRomSpeed()) {
+		if(_sa1->GetSa1MemoryType() == MemoryType::Sa1InternalRam && _sa1->IsSnesCpuFastRomSpeed()) {
 			//If it's an IRAM access during FastROM access (speed = 6), add another wait cycle
 			_state.CycleCount++;
 		}

@@ -13,7 +13,7 @@ protected:
 	uint32_t _offset;
 
 public:
-	RamHandler(uint8_t *ram, uint32_t offset, uint32_t size, SnesMemoryType memoryType) : IMemoryHandler(memoryType)
+	RamHandler(uint8_t *ram, uint32_t offset, uint32_t size, MemoryType memoryType) : IMemoryHandler(memoryType)
 	{
 		_ram = ram + offset;
 		_offset = offset;

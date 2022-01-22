@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Integration
 		private HashSet<int> _usedFileIds = new HashSet<int>();
 		private HashSet<string> _usedLabels = new HashSet<string>();
 
-		private Dictionary<SnesMemoryType, Dictionary<int, CodeLabel>> _labelsByType = new();
+		private Dictionary<MemoryType, Dictionary<int, CodeLabel>> _labelsByType = new();
 
 		private HashSet<string> _filesNotFound = new HashSet<string>();
 		private int _errorCount = 0;
@@ -56,12 +56,12 @@ namespace Mesen.Debugger.Integration
 		public List<SourceFileInfo> SourceFiles { get { return _sourceFiles; } }
 
 		private CpuType _cpuType;
-		private SnesMemoryType _cpuMemType;
-		private SnesMemoryType _prgMemType;
-		private List<SnesMemoryType> _memTypesToImport;
+		private MemoryType _cpuMemType;
+		private MemoryType _prgMemType;
+		private List<MemoryType> _memTypesToImport;
 		private int _headerSize;
 
-		public DbgImporter(CpuType type, RomFormat format, List<SnesMemoryType> memTypesToImport)
+		public DbgImporter(CpuType type, RomFormat format, List<MemoryType> memTypesToImport)
 		{
 			_cpuType = type;
 			_cpuMemType = _cpuType.ToMemoryType();
@@ -269,7 +269,7 @@ namespace Mesen.Debugger.Integration
 					return new AddressInfo() { Address = symbol.Address.Value, Type = segment.MemType.Value };
 				} else {
 					int labelAddress;
-					SnesMemoryType? addressType;
+					MemoryType? addressType;
 					GetRamLabelAddressAndType(symbol.Address.Value, out labelAddress, out addressType);
 					if(addressType.HasValue) {
 						return new AddressInfo() { Address = labelAddress, Type = addressType.Value };
@@ -291,7 +291,7 @@ namespace Mesen.Debugger.Integration
 				int size = Int32.Parse(match.Groups[3].Value, NumberStyles.HexNumber);
 				bool isRam = true;
 				int fileOffset = 0;
-				SnesMemoryType? memType = null;
+				MemoryType? memType = null;
 
 				match = _segmentPrgRomRegex.Match(row);
 				if(match.Success) {
@@ -302,7 +302,7 @@ namespace Mesen.Debugger.Integration
 						//TODO fix this
 						//Assume a RW segment inside the .sfc file is SPC code
 						isRam = true;
-						memType = SnesMemoryType.SpcRam;
+						memType = MemoryType.SpcRam;
 					}
 				}
 
@@ -519,7 +519,7 @@ namespace Mesen.Debugger.Integration
 			return 1;
 		}
 
-		private void GetRamLabelAddressAndType(int address, out int absoluteAddress, out SnesMemoryType? memoryType)
+		private void GetRamLabelAddressAndType(int address, out int absoluteAddress, out MemoryType? memoryType)
 		{
 			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = _cpuMemType });
 			absoluteAddress = absAddress.Address;
@@ -530,7 +530,7 @@ namespace Mesen.Debugger.Integration
 			}
 		}
 
-		private CodeLabel CreateLabel(Int32 address, SnesMemoryType memoryType, UInt32 length)
+		private CodeLabel CreateLabel(Int32 address, MemoryType memoryType, UInt32 length)
 		{
 			if(!_labelsByType.TryGetValue(memoryType, out Dictionary<int, CodeLabel>? labels)) {
 				labels = new();
@@ -635,7 +635,7 @@ namespace Mesen.Debugger.Integration
 
 					if(comment.Length > 0) {
 						int address = -1;
-						SnesMemoryType? memoryType;
+						MemoryType? memoryType;
 						if(segment.IsRam) {
 							if(segment.MemType != null) {
 								address = span.Offset + segment.Start;
@@ -897,7 +897,7 @@ namespace Mesen.Debugger.Integration
 			}
 			
 			List<CodeLabel> labelsToImport = new List<CodeLabel>();
-			foreach(SnesMemoryType memType in _memTypesToImport) {
+			foreach(MemoryType memType in _memTypesToImport) {
 				if(_labelsByType.TryGetValue(memType, out var labels)) {
 					labelsToImport.AddRange(labels.Values);
 				}
@@ -939,9 +939,9 @@ namespace Mesen.Debugger.Integration
 			public int Size { get; }
 			public int FileOffset { get; }
 			public bool IsRam { get; }
-			public SnesMemoryType? MemType { get; }
+			public MemoryType? MemType { get; }
 
-			public SegmentInfo(int id, int start, int size, bool isRam, int fileOffset, SnesMemoryType? memType)
+			public SegmentInfo(int id, int start, int size, bool isRam, int fileOffset, MemoryType? memType)
 			{
 				ID = id;
 				Start = start;

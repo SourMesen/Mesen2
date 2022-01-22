@@ -19,19 +19,19 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Sa1::Sa1(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
+Sa1::Sa1(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager();
-	_memoryType = SnesMemoryType::Register;
-	_lastAccessMemType = SnesMemoryType::PrgRom;
+	_memoryType = MemoryType::Register;
+	_lastAccessMemType = MemoryType::SnesPrgRom;
 	_openBus = 0;
 	_cart = _console->GetCartridge();
 	_snesCpu = _console->GetCpu();
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
-	_emu->RegisterMemory(SnesMemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);
+	_emu->RegisterMemory(MemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);
 	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
 	_emu->GetSettings()->InitializeRam(_iRam, 0x800);
 	
@@ -492,7 +492,7 @@ void Sa1::Write(uint32_t addr, uint8_t value)
 
 AddressInfo Sa1::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 void Sa1::Run()
@@ -528,9 +528,9 @@ void Sa1::RunDma()
 		if(_state.DmaSrcDevice == Sa1DmaSrcDevice::PrgRom && _state.DmaDestDevice == Sa1DmaDestDevice::InternalRam) {
 			_cpu->IncreaseCycleCount<1>();
 
-			if(GetSnesCpuMemoryType() == SnesMemoryType::PrgRom || GetSnesCpuMemoryType() == SnesMemoryType::Sa1InternalRam) {
+			if(GetSnesCpuMemoryType() == MemoryType::SnesPrgRom || GetSnesCpuMemoryType() == MemoryType::Sa1InternalRam) {
 				_cpu->IncreaseCycleCount<1>();
-				if(GetSnesCpuMemoryType() == SnesMemoryType::Sa1InternalRam) {
+				if(GetSnesCpuMemoryType() == MemoryType::Sa1InternalRam) {
 					_cpu->IncreaseCycleCount<1>();
 				}
 			}
@@ -539,7 +539,7 @@ void Sa1::RunDma()
 		} else if(_state.DmaSrcDevice == Sa1DmaSrcDevice::PrgRom && _state.DmaDestDevice == Sa1DmaDestDevice::BwRam) {
 			_cpu->IncreaseCycleCount<2>();
 			
-			if(GetSnesCpuMemoryType() == SnesMemoryType::SaveRam) {
+			if(GetSnesCpuMemoryType() == MemoryType::SnesSaveRam) {
 				_cpu->IncreaseCycleCount<2>();
 			}
 
@@ -547,9 +547,9 @@ void Sa1::RunDma()
 		} else if(_state.DmaSrcDevice == Sa1DmaSrcDevice::BwRam && _state.DmaDestDevice == Sa1DmaDestDevice::InternalRam) {
 			_cpu->IncreaseCycleCount<2>();
 				
-			if(GetSnesCpuMemoryType() == SnesMemoryType::SaveRam || GetSnesCpuMemoryType() == SnesMemoryType::Sa1InternalRam) {
+			if(GetSnesCpuMemoryType() == MemoryType::SnesSaveRam || GetSnesCpuMemoryType() == MemoryType::Sa1InternalRam) {
 				_cpu->IncreaseCycleCount<1>();
-				if(GetSnesCpuMemoryType() == SnesMemoryType::SaveRam) {
+				if(GetSnesCpuMemoryType() == MemoryType::SnesSaveRam) {
 					_cpu->IncreaseCycleCount<1>();
 				}
 			}
@@ -558,9 +558,9 @@ void Sa1::RunDma()
 		} else if(_state.DmaSrcDevice == Sa1DmaSrcDevice::InternalRam && _state.DmaDestDevice == Sa1DmaDestDevice::BwRam) {
 			_cpu->IncreaseCycleCount<2>();
 
-			if(GetSnesCpuMemoryType() == SnesMemoryType::SaveRam || GetSnesCpuMemoryType() == SnesMemoryType::Sa1InternalRam) {
+			if(GetSnesCpuMemoryType() == MemoryType::SnesSaveRam || GetSnesCpuMemoryType() == MemoryType::Sa1InternalRam) {
 				_cpu->IncreaseCycleCount<1>();
-				if(GetSnesCpuMemoryType() == SnesMemoryType::SaveRam) {
+				if(GetSnesCpuMemoryType() == MemoryType::SnesSaveRam) {
 					_cpu->IncreaseCycleCount<1>();
 				}
 			}
@@ -763,7 +763,7 @@ void Sa1::Reset()
 	_cpu->Reset();
 }
 
-SnesMemoryType Sa1::GetSa1MemoryType()
+MemoryType Sa1::GetSa1MemoryType()
 {
 	return _lastAccessMemType;
 }
@@ -774,7 +774,7 @@ bool Sa1::IsSnesCpuFastRomSpeed()
 	return _memoryManager->GetCpuSpeed() == 6;
 }
 
-SnesMemoryType Sa1::GetSnesCpuMemoryType()
+MemoryType Sa1::GetSnesCpuMemoryType()
 {
 	return _memoryManager->GetMemoryTypeBusA();
 }

@@ -30,12 +30,12 @@ private:
 	LabelManager* _labelManager;
 	MemoryDumper *_memoryDumper;
 
-	DisassemblerSource _sources[(int)SnesMemoryType::Register] = {};
+	DisassemblerSource _sources[(int)MemoryType::Register] = {};
 	
-	void InitSource(SnesMemoryType type);
-	DisassemblerSource& GetSource(SnesMemoryType type);
+	void InitSource(MemoryType type);
+	DisassemblerSource& GetSource(MemoryType type);
 
-	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, SnesMemoryType memType);
+	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, MemoryType memType);
 	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address);
 	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint16_t bank);
 	uint16_t GetMaxBank(CpuType cpuType);

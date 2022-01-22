@@ -13,7 +13,7 @@ private:
 	SnesControlManager *_controlManager;
 
 public:
-	RegisterHandlerA(SnesDmaController *dmaController, InternalRegisters *regs, SnesControlManager *controlManager) : IMemoryHandler(SnesMemoryType::Register)
+	RegisterHandlerA(SnesDmaController *dmaController, InternalRegisters *regs, SnesControlManager *controlManager) : IMemoryHandler(MemoryType::Register)
 	{
 		_regs = regs;
 		_dmaController = dmaController;
@@ -65,6 +65,6 @@ public:
 
 	AddressInfo GetAbsoluteAddress(uint32_t address) override
 	{
-		return { -1, SnesMemoryType::CpuMemory };
+		return { -1, MemoryType::SnesMemory };
 	}
 };

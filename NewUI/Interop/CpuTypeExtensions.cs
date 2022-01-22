@@ -4,47 +4,47 @@ namespace Mesen.Interop
 {
 	public static class CpuTypeExtensions
 	{
-		public static SnesMemoryType ToMemoryType(this CpuType cpuType)
+		public static MemoryType ToMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Snes => SnesMemoryType.CpuMemory,
-				CpuType.Spc => SnesMemoryType.SpcMemory,
-				CpuType.NecDsp => SnesMemoryType.NecDspMemory,
-				CpuType.Sa1 => SnesMemoryType.Sa1Memory,
-				CpuType.Gsu => SnesMemoryType.GsuMemory,
-				CpuType.Cx4 => SnesMemoryType.Cx4Memory,
-				CpuType.Gameboy => SnesMemoryType.GameboyMemory,
-				CpuType.Nes => SnesMemoryType.NesMemory,
+				CpuType.Snes => MemoryType.SnesMemory,
+				CpuType.Spc => MemoryType.SpcMemory,
+				CpuType.NecDsp => MemoryType.NecDspMemory,
+				CpuType.Sa1 => MemoryType.Sa1Memory,
+				CpuType.Gsu => MemoryType.GsuMemory,
+				CpuType.Cx4 => MemoryType.Cx4Memory,
+				CpuType.Gameboy => MemoryType.GameboyMemory,
+				CpuType.Nes => MemoryType.NesMemory,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
 
-		public static SnesMemoryType GetVramMemoryType(this CpuType cpuType)
+		public static MemoryType GetVramMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Snes => SnesMemoryType.VideoRam,
-				CpuType.Gameboy => SnesMemoryType.GbVideoRam,
-				CpuType.Nes => SnesMemoryType.NesPpuMemory,
+				CpuType.Snes => MemoryType.SnesVideoRam,
+				CpuType.Gameboy => MemoryType.GbVideoRam,
+				CpuType.Nes => MemoryType.NesPpuMemory,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
 
-		public static SnesMemoryType GetSpriteRamMemoryType(this CpuType cpuType)
+		public static MemoryType GetSpriteRamMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Snes => SnesMemoryType.SpriteRam,
-				CpuType.Gameboy => SnesMemoryType.GbSpriteRam,
-				CpuType.Nes => SnesMemoryType.NesSpriteRam,
+				CpuType.Snes => MemoryType.SnesSpriteRam,
+				CpuType.Gameboy => MemoryType.GbSpriteRam,
+				CpuType.Nes => MemoryType.NesSpriteRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
 
-		public static SnesMemoryType GetPrgRomMemoryType(this CpuType cpuType)
+		public static MemoryType GetPrgRomMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Snes => SnesMemoryType.PrgRom,
-				CpuType.Gameboy => SnesMemoryType.GbPrgRom,
-				CpuType.Nes => SnesMemoryType.NesPrgRom,
+				CpuType.Snes => MemoryType.SnesPrgRom,
+				CpuType.Gameboy => MemoryType.GbPrgRom,
+				CpuType.Nes => MemoryType.NesPrgRom,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}

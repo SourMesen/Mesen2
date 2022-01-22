@@ -120,32 +120,32 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
 
-		[DllImport(DllPath)] public static extern Int32 GetMemorySize(SnesMemoryType type);
-		[DllImport(DllPath)] public static extern Byte GetMemoryValue(SnesMemoryType type, UInt32 address);
-		[DllImport(DllPath)] public static extern void SetMemoryValue(SnesMemoryType type, UInt32 address, byte value);
-		[DllImport(DllPath)] public static extern void SetMemoryValues(SnesMemoryType type, UInt32 address, [In] byte[] data, Int32 length);
-		[DllImport(DllPath)] public static extern void SetMemoryState(SnesMemoryType type, [In] byte[] buffer, Int32 length);
+		[DllImport(DllPath)] public static extern Int32 GetMemorySize(MemoryType type);
+		[DllImport(DllPath)] public static extern Byte GetMemoryValue(MemoryType type, UInt32 address);
+		[DllImport(DllPath)] public static extern void SetMemoryValue(MemoryType type, UInt32 address, byte value);
+		[DllImport(DllPath)] public static extern void SetMemoryValues(MemoryType type, UInt32 address, [In] byte[] data, Int32 length);
+		[DllImport(DllPath)] public static extern void SetMemoryState(MemoryType type, [In] byte[] buffer, Int32 length);
 
 		[DllImport(DllPath)] public static extern AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 		[DllImport(DllPath)] public static extern AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
 
-		[DllImport(DllPath)] public static extern void SetLabel(uint address, SnesMemoryType memType, string label, string comment);
+		[DllImport(DllPath)] public static extern void SetLabel(uint address, MemoryType memType, string label, string comment);
 		[DllImport(DllPath)] public static extern void ClearLabels();
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
 
 		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
 
-		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(SnesMemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);
-		public static byte[] GetMemoryValues(SnesMemoryType type, UInt32 start, UInt32 end)
+		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(MemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);
+		public static byte[] GetMemoryValues(MemoryType type, UInt32 start, UInt32 end)
 		{
 			byte[] buffer = new byte[end - start + 1];
 			DebugApi.GetMemoryValuesWrapper(type, start, end, buffer);
 			return buffer;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(SnesMemoryType type, [In, Out] byte[] buffer);
-		public static byte[] GetMemoryState(SnesMemoryType type)
+		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(MemoryType type, [In, Out] byte[] buffer);
+		public static byte[] GetMemoryState(MemoryType type)
 		{
 			byte[] buffer = new byte[DebugApi.GetMemorySize(type)];
 			DebugApi.GetMemoryStateWrapper(type, buffer);
@@ -302,23 +302,23 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern void ResetMemoryAccessCounts();
-		public static void GetMemoryAccessCounts(SnesMemoryType type, ref AddressCounters[] counters)
+		public static void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counters)
 		{
 			int size = DebugApi.GetMemorySize(type);
 			Array.Resize(ref counters, size);
 			DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, counters);
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, SnesMemoryType type, [In,Out]AddressCounters[] counts);
-		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, SnesMemoryType type)
+		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, MemoryType type, [In,Out]AddressCounters[] counts);
+		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, MemoryType type)
 		{
 			AddressCounters[] counts = new AddressCounters[length];
 			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, counts);
 			return counts;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, SnesMemoryType memType, [In,Out] CdlFlags[] cdlData);
-		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, SnesMemoryType memType)
+		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, MemoryType memType, [In,Out] CdlFlags[] cdlData);
+		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, MemoryType memType)
 		{
 			CdlFlags[] cdlData = new CdlFlags[length];
 			DebugApi.GetCdlDataWrapper(offset, length, memType, cdlData);
@@ -359,9 +359,9 @@ namespace Mesen.Interop
 		}
 	}
 
-	public enum SnesMemoryType
+	public enum MemoryType
 	{
-		CpuMemory,
+		SnesMemory,
 		SpcMemory,
 		Sa1Memory,
 		NecDspMemory,
@@ -371,12 +371,12 @@ namespace Mesen.Interop
 		NesMemory,
 		NesPpuMemory,
 
-		PrgRom,
-		WorkRam,
-		SaveRam,
-		VideoRam,
-		SpriteRam,
-		CGRam,
+		SnesPrgRom,
+		SnesWorkRam,
+		SnesSaveRam,
+		SnesVideoRam,
+		SnesSpriteRam,
+		SnesCgRam,
 		SpcRam,
 		SpcRom,
 		DspProgramRom,
@@ -428,7 +428,7 @@ namespace Mesen.Interop
 	public struct AddressInfo
 	{
 		public Int32 Address;
-		public SnesMemoryType Type;
+		public MemoryType Type;
 	}
 
 	public enum MemoryOperationType
@@ -449,7 +449,7 @@ namespace Mesen.Interop
 		public UInt32 Address;
 		public Int32 Value;
 		public MemoryOperationType Type;
-		public SnesMemoryType MemType;
+		public MemoryType MemType;
 	}
 
 	public enum DebugEventType

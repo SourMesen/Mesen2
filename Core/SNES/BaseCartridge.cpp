@@ -79,7 +79,7 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 				cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
 			}
 			cart->_prgRom = new uint8_t[cart->_prgRomSize];
-			cart->_emu->RegisterMemory(SnesMemoryType::PrgRom, cart->_prgRom, cart->_prgRomSize);
+			cart->_emu->RegisterMemory(MemoryType::SnesPrgRom, cart->_prgRom, cart->_prgRomSize);
 
 			memset(cart->_prgRom, 0, cart->_prgRomSize);
 			memcpy(cart->_prgRom, romData.data(), romData.size());
@@ -228,7 +228,7 @@ void BaseCartridge::LoadRom()
 	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
 	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
-	_emu->RegisterMemory(SnesMemoryType::SaveRam, _saveRam, _saveRamSize);
+	_emu->RegisterMemory(MemoryType::SnesSaveRam, _saveRam, _saveRamSize);
 	_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 
 	DisplayCartInfo();
@@ -333,8 +333,8 @@ vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
 	//TODO
 	unique_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile);
 	if(originalCart->_gameboy) {
-		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
-		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);
+		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(MemoryType::GbPrgRom);
+		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(MemoryType::GbPrgRom);
 		return vector<uint8_t>(orgPrgRom, orgPrgRom + orgRomSize);
 	} else {
 		return vector<uint8_t>(originalCart->DebugGetPrgRom(), originalCart->DebugGetPrgRom() + originalCart->DebugGetPrgRomSize());
@@ -344,7 +344,7 @@ vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
 uint32_t BaseCartridge::GetCrc32()
 {
 	if(_gameboy) {
-		return CRC32::GetCRC(_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom));
+		return CRC32::GetCRC(_gameboy->DebugGetMemory(MemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom));
 	} else {
 		return CRC32::GetCRC(_prgRom, _prgRomSize);
 	}
@@ -353,7 +353,7 @@ uint32_t BaseCartridge::GetCrc32()
 string BaseCartridge::GetSha1Hash()
 {
 	if(_gameboy) {
-		return SHA1::GetHash(_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom));
+		return SHA1::GetHash(_gameboy->DebugGetMemory(MemoryType::GbPrgRom), _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom));
 	} else {
 		return SHA1::GetHash(_prgRom, _prgRomSize);
 	}
@@ -404,7 +404,7 @@ void BaseCartridge::Init(MemoryMappings &mm)
 	_saveRamHandlers.clear();
 
 	for(uint32_t i = 0; i < _prgRomSize; i += 0x1000) {
-		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, SnesMemoryType::PrgRom)));
+		_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, i, _prgRomSize, MemoryType::SnesPrgRom)));
 	}
 
 	uint32_t power = (uint32_t)std::log2(_prgRomSize);
@@ -416,13 +416,13 @@ void BaseCartridge::Init(MemoryMappings &mm)
 
 		while(_prgRomHandlers.size() < fullSize / 0x1000) {
 			for(uint32_t i = 0; i < extraHandlers; i += 0x1000) {
-				_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, halfSize + i, _prgRomSize, SnesMemoryType::PrgRom)));
+				_prgRomHandlers.push_back(unique_ptr<RomHandler>(new RomHandler(_prgRom, halfSize + i, _prgRomSize, MemoryType::SnesPrgRom)));
 			}
 		}
 	}
 
 	for(uint32_t i = 0; i < _saveRamSize; i += 0x1000) {
-		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, SnesMemoryType::SaveRam)));
+		_saveRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_saveRam, i, _saveRamSize, MemoryType::SnesSaveRam)));
 	}
 
 	RegisterHandlers(mm);
@@ -630,7 +630,7 @@ bool BaseCartridge::LoadGameboy(VirtualFile& romFile)
 		if(_coprocessorType == CoprocessorType::SGB) {
 			_gameboy.reset(new Gameboy(_emu, true));
 			if(_gameboy->LoadRom(romFile) == LoadRomResult::Success) {
-				_emu->RegisterMemory(SnesMemoryType::PrgRom, _prgRom, _prgRomSize);
+				_emu->RegisterMemory(MemoryType::SnesPrgRom, _prgRom, _prgRomSize);
 				return _gameboy->IsSgb();
 			}
 		}

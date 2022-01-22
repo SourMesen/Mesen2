@@ -15,8 +15,8 @@ namespace Mesen.Debugger.Disassembly
 		ICodeDataProvider Provider { get; }
 
 		CpuType CpuType { get; }
-		SnesMemoryType RelativeMemoryType { get; }
-		SnesMemoryType PrgMemoryType { get; }
+		MemoryType RelativeMemoryType { get; }
+		MemoryType PrgMemoryType { get; }
 		int AddressSize { get; }
 		int ByteCodeSize { get; }
 		bool AllowSourceView { get; }

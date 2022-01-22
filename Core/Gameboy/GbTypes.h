@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "SnesMemoryType.h"
-	#include "Shared/BaseState.h"
+#include "MemoryType.h"
+#include "Shared/BaseState.h"
 
 struct GbCpuState : BaseState
 {
@@ -339,10 +339,10 @@ enum class RegisterAccess
 enum class GbMemoryType
 {
 	None = 0,
-	PrgRom = (int)SnesMemoryType::GbPrgRom,
-	WorkRam = (int)SnesMemoryType::GbWorkRam,
-	CartRam = (int)SnesMemoryType::GbCartRam,
-	BootRom = (int)SnesMemoryType::GbBootRom,
+	PrgRom = (int)MemoryType::GbPrgRom,
+	WorkRam = (int)MemoryType::GbWorkRam,
+	CartRam = (int)MemoryType::GbCartRam,
+	BootRom = (int)MemoryType::GbBootRom,
 };
 
 struct GbMemoryManagerState

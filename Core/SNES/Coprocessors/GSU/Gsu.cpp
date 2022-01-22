@@ -15,13 +15,13 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
+Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(MemoryType::Register)
 {
 	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
 	_cpu = console->GetCpu();
-	_memoryType = SnesMemoryType::Register;
+	_memoryType = MemoryType::Register;
 	_settings = _emu->GetSettings();
 
 	_clockMultiplier = _settings->GetSnesConfig().GsuClockSpeed / 100;
@@ -33,11 +33,11 @@ Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemory
 
 	_gsuRamSize = gsuRamSize;
 	_gsuRam = new uint8_t[_gsuRamSize];
-	_emu->RegisterMemory(SnesMemoryType::GsuWorkRam, _gsuRam, _gsuRamSize);
+	_emu->RegisterMemory(MemoryType::GsuWorkRam, _gsuRam, _gsuRamSize);
 	_settings->InitializeRam(_gsuRam, _gsuRamSize);
 
 	for(uint32_t i = 0; i < _gsuRamSize / 0x1000; i++) {
-		_gsuRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_gsuRam, i * 0x1000, _gsuRamSize, SnesMemoryType::GsuWorkRam)));
+		_gsuRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_gsuRam, i * 0x1000, _gsuRamSize, MemoryType::GsuWorkRam)));
 		_gsuCpuRamHandlers.push_back(unique_ptr<IMemoryHandler>(new GsuRamHandler(_state, _gsuRamHandlers.back().get())));
 	}
 	
@@ -600,7 +600,7 @@ void Gsu::PeekBlock(uint32_t addr, uint8_t *output)
 
 AddressInfo Gsu::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 void Gsu::Serialize(Serializer &s)

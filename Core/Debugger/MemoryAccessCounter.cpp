@@ -16,8 +16,8 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 {
 	_debugger = debugger;
 
-	for(int i = (int)SnesMemoryType::PrgRom; i < (int)SnesMemoryType::Register; i++) {
-		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((SnesMemoryType)i);
+	for(int i = (int)MemoryType::SnesPrgRom; i < (int)MemoryType::Register; i++) {
+		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
 		_counters[i].reserve(memSize);
 		for(uint32_t j = 0; j < memSize; j++) {
 			_counters[i].push_back({ j });
@@ -80,14 +80,14 @@ void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t m
 void MemoryAccessCounter::ResetCounts()
 {
 	DebugBreakHelper helper(_debugger);
-	for(int i = 0; i < (int)SnesMemoryType::Register; i++) {
+	for(int i = 0; i < (int)MemoryType::Register; i++) {
 		for(uint32_t j = 0; j < _counters[i].size(); j++) {
 			_counters[i][j] = { j };
 		}
 	}
 }
 
-void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, SnesMemoryType memoryType, AddressCounters counts[])
+void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters counts[])
 {
 	if(memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
 		AddressInfo addr = {};
@@ -95,7 +95,7 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Snes
 		for(uint32_t i = 0; i < length; i++) {
 			addr.Address = offset + i;
 			AddressInfo info = _debugger->GetAbsoluteAddress(addr);
-			if(info.Address >= 0 && info.Type != SnesMemoryType::Register) {
+			if(info.Address >= 0 && info.Type != MemoryType::Register) {
 				counts[i] = _counters[(int)info.Type][info.Address];
 			}
 		}

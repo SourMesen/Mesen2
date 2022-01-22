@@ -1,8 +1,8 @@
 #pragma once
 
-enum class SnesMemoryType
+enum class MemoryType
 {
-	CpuMemory,
+	SnesMemory,
 	SpcMemory,
 	Sa1Memory,
 	NecDspMemory,
@@ -12,12 +12,12 @@ enum class SnesMemoryType
 	NesMemory,
 	NesPpuMemory,
 
-	PrgRom,
-	WorkRam,
-	SaveRam,
-	VideoRam,
-	SpriteRam,
-	CGRam,
+	SnesPrgRom,
+	SnesWorkRam,
+	SnesSaveRam,
+	SnesVideoRam,
+	SnesSpriteRam,
+	SnesCgRam,
 	SpcRam,
 	SpcRom,
 	DspProgramRom,

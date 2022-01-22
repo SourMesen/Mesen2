@@ -48,10 +48,10 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GsuMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
 		}
 
@@ -74,7 +74,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
-		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
 		}
 		if(_traceLogger->IsEnabled()) {
@@ -89,7 +89,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GsuMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {

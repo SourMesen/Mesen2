@@ -12,7 +12,7 @@ BsxMemoryPack::BsxMemoryPack(SnesConsole* console, vector<uint8_t>& data, bool p
 	_orgData = data;
 	_dataSize = (uint32_t)data.size();
 	_data = new uint8_t[_dataSize];
-	console->GetEmulator()->RegisterMemory(SnesMemoryType::BsxMemoryPack, _data, _dataSize);
+	console->GetEmulator()->RegisterMemory(MemoryType::BsxMemoryPack, _data, _dataSize);
 	_persistFlash = persistFlash;
 	memcpy(_data, data.data(), _dataSize);
 
@@ -111,7 +111,7 @@ uint32_t BsxMemoryPack::DebugGetMemoryPackSize()
 	return _dataSize;
 }
 
-BsxMemoryPack::BsxMemoryPackHandler::BsxMemoryPackHandler(BsxMemoryPack* memPack, uint32_t offset) : RamHandler(memPack->_data, offset, memPack->_dataSize, SnesMemoryType::BsxMemoryPack)
+BsxMemoryPack::BsxMemoryPackHandler::BsxMemoryPackHandler(BsxMemoryPack* memPack, uint32_t offset) : RamHandler(memPack->_data, offset, memPack->_dataSize, MemoryType::BsxMemoryPack)
 {
 	_memPack = memPack;
 	_page = offset / 0x10000;

@@ -319,7 +319,7 @@ vector<CpuType> NesConsole::GetCpuTypes()
 
 AddressInfo NesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
-	if(relAddress.Type == SnesMemoryType::NesMemory) {
+	if(relAddress.Type == MemoryType::NesMemory) {
 		return _mapper->GetAbsoluteAddress(relAddress.Address);
 	} else {
 		return _mapper->GetPpuAbsoluteAddress(relAddress.Address);
@@ -330,7 +330,7 @@ AddressInfo NesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuT
 {
 	AddressInfo addr;
 	addr.Address = _mapper->GetRelativeAddress(absAddress);
-	addr.Type = SnesMemoryType::NesMemory;
+	addr.Type = MemoryType::NesMemory;
 	return addr;
 }
 

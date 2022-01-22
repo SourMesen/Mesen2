@@ -1439,7 +1439,7 @@ x == [$150] || y == [10]
 		</Enum>
 
 		<Enum ID="CpuType">
-			<Value ID="Cpu">SNES (65816)</Value>
+			<Value ID="Snes">SNES (65816)</Value>
 			<Value ID="Spc">SPC</Value>
 			<Value ID="NecDsp">DSP-n</Value>
 			<Value ID="Sa1">SA-1</Value>
@@ -1449,18 +1449,18 @@ x == [$150] || y == [10]
 			<Value ID="Nes">NES</Value>
 		</Enum>
 		
-		<Enum ID="SnesMemoryType">
-			<Value ID="CpuMemory">CPU Memory</Value>
+		<Enum ID="MemoryType">
+			<Value ID="SnesMemory">CPU Memory</Value>
 			<Value ID="SpcMemory">SPC Memory</Value>
 			<Value ID="Sa1Memory">SA-1 Memory</Value>
 			<Value ID="GsuMemory">GSU Memory</Value>
 			<Value ID="Cx4Memory">CX4 Memory</Value>
-			<Value ID="PrgRom">PRG ROM</Value>
-			<Value ID="WorkRam">Work RAM</Value>
-			<Value ID="SaveRam">Save RAM</Value>
-			<Value ID="VideoRam">Video RAM</Value>
-			<Value ID="SpriteRam">OAM (Sprites)</Value>
-			<Value ID="CGRam">CG RAM (Palette)</Value>
+			<Value ID="SnesPrgRom">PRG ROM</Value>
+			<Value ID="SnesWorkRam">Work RAM</Value>
+			<Value ID="SnesSaveRam">Save RAM</Value>
+			<Value ID="SnesVideoRam">Video RAM</Value>
+			<Value ID="SnesSpriteRam">OAM (Sprites)</Value>
+			<Value ID="SnesCgRam">CG RAM (Palette)</Value>
 			<Value ID="SpcRam">SPC RAM</Value>
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
 			<Value ID="DspProgramRom">DSP-n Program ROM</Value>

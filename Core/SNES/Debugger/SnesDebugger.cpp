@@ -56,7 +56,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	}
 
 	if(cpuType == CpuType::Snes) {
-		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes));
+		_codeDataLogger.reset(new CodeDataLogger(MemoryType::SnesPrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes));
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
@@ -89,7 +89,7 @@ void SnesDebugger::Reset()
 void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::SnesMemory);
 	SnesCpuState& state = GetCpuState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
@@ -100,7 +100,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(addressInfo.Address >= 0) {
 			uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
-			if(addressInfo.Type == SnesMemoryType::PrgRom) {
+			if(addressInfo.Type == MemoryType::SnesPrgRom) {
 				uint8_t flags = CdlFlags::Code | cpuFlags;
 				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 					flags |= CdlFlags::SubEntryPoint;
@@ -161,7 +161,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
-		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
 		if(_traceLogger->IsEnabled()) {
@@ -169,7 +169,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
-		if(addressInfo.Type == SnesMemoryType::PrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
 		}
 		if(_traceLogger->IsEnabled()) {
@@ -197,8 +197,8 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
-	if(addressInfo.Address >= 0 && (addressInfo.Type == SnesMemoryType::WorkRam || addressInfo.Type == SnesMemoryType::SaveRam)) {
+	MemoryOperationInfo operation(addr, value, type, MemoryType::SnesMemory);
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SnesWorkRam || addressInfo.Type == MemoryType::SnesSaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, _cpuType);
 	}
 
@@ -258,7 +258,7 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -266,7 +266,7 @@ void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType m
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
-void SnesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void SnesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };

@@ -25,7 +25,7 @@ void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t m
 	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	if(opSize > 1) {
 		if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng || opSize == 4) {
-			AddressInfo address { (int32_t)opAddr, SnesMemoryType::CpuMemory };
+			AddressInfo address { (int32_t)opAddr, MemoryType::SnesMemory };
 			string label = labelManager ? labelManager->GetLabel(address) : "";
 			if(label.size()) {
 				operand.Write(label, true);

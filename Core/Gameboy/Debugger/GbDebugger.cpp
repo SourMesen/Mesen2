@@ -42,7 +42,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_ppu = _gameboy->GetPpu();
 
 	_settings = debugger->GetEmulator()->GetSettings();
-	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom), CpuType::Gameboy));
+	_codeDataLogger.reset(new CodeDataLogger(MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy));
 	_traceLogger.reset(new GbTraceLogger(debugger, _ppu));
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
@@ -71,7 +71,7 @@ void GbDebugger::Reset()
 void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GameboyMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	GbCpuState& state = _cpu->GetState();
@@ -80,7 +80,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 			if(addressInfo.Address >= 0) {
-				if(addressInfo.Type == SnesMemoryType::GbPrgRom) {
+				if(addressInfo.Type == MemoryType::GbPrgRom) {
 					_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 				}
 				_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
@@ -135,7 +135,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
-		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
+		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
 
@@ -145,7 +145,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else {
-		if(addressInfo.Address >= 0 && addressInfo.Type == SnesMemoryType::GbPrgRom) {
+		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
 
@@ -180,10 +180,10 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::GameboyMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
-	if(addressInfo.Type == SnesMemoryType::GbWorkRam || addressInfo.Type == SnesMemoryType::GbCartRam || addressInfo.Type == SnesMemoryType::GbHighRam) {
+	if(addressInfo.Type == MemoryType::GbWorkRam || addressInfo.Type == MemoryType::GbCartRam || addressInfo.Type == MemoryType::GbHighRam) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Gameboy);
 	}
 
@@ -241,7 +241,7 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	_eventManager->AddEvent(DebugEventType::Irq);
 }
 
-void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -249,7 +249,7 @@ void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType mem
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
 }
 
-void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };

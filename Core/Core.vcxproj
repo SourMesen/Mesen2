@@ -361,7 +361,7 @@
     <ClInclude Include="Shared\SettingTypes.h" />
     <ClInclude Include="Shared\ShortcutKeyHandler.h" />
     <ClInclude Include="SNES\Input\SnesController.h" />
-    <ClInclude Include="SnesMemoryType.h" />
+    <ClInclude Include="MemoryType.h" />
     <ClInclude Include="SNES\Input\SnesMouse.h" />
     <ClInclude Include="Shared\Audio\SoundMixer.h" />
     <ClInclude Include="Shared\Audio\SoundResampler.h" />

@@ -89,8 +89,8 @@ public:
 
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
-	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
-	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType);
+	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	template<CpuType type> void ProcessPpuCycle();
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
@@ -124,7 +124,7 @@ public:
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
 
-	void GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData);
+	void GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData);
 	void SetCdlData(CpuType cpuType, uint8_t * cdlData, uint32_t length);
 	void MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags);
 	

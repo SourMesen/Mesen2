@@ -12,7 +12,7 @@ class Gameboy;
 class Emulator;
 class Debugger;
 class Disassembler;
-enum class SnesMemoryType;
+enum class MemoryType;
 
 class MemoryDumper
 {
@@ -30,15 +30,15 @@ private:
 public:
 	MemoryDumper(Debugger* debugger);
 
-	uint8_t* GetMemoryBuffer(SnesMemoryType type);
-	uint32_t GetMemorySize(SnesMemoryType type);
-	void GetMemoryState(SnesMemoryType type, uint8_t *buffer);
+	uint8_t* GetMemoryBuffer(MemoryType type);
+	uint32_t GetMemorySize(MemoryType type);
+	void GetMemoryState(MemoryType type, uint8_t *buffer);
 
-	uint8_t GetMemoryValue(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects = true);
-	void GetMemoryValues(SnesMemoryType memoryType, uint32_t start, uint32_t end, uint8_t* output);
-	uint16_t GetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, bool disableSideEffects = true);
-	void SetMemoryValueWord(SnesMemoryType memoryType, uint32_t address, uint16_t value, bool disableSideEffects = true);
-	void SetMemoryValue(SnesMemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects = true);
-	void SetMemoryValues(SnesMemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length);
-	void SetMemoryState(SnesMemoryType type, uint8_t *buffer, uint32_t length);
+	uint8_t GetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects = true);
+	void GetMemoryValues(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t* output);
+	uint16_t GetMemoryValueWord(MemoryType memoryType, uint32_t address, bool disableSideEffects = true);
+	void SetMemoryValueWord(MemoryType memoryType, uint32_t address, uint16_t value, bool disableSideEffects = true);
+	void SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects = true);
+	void SetMemoryValues(MemoryType memoryType, uint32_t address, uint8_t* data, uint32_t length);
+	void SetMemoryState(MemoryType type, uint8_t *buffer, uint32_t length);
 };

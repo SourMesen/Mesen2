@@ -15,13 +15,13 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
 
-NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(SnesMemoryType::Register)
+NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(MemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
 	_type = type;
 	_memoryManager = console->GetMemoryManager();
-	_memoryType = SnesMemoryType::Register;
+	_memoryType = MemoryType::Register;
 	MemoryMappings *mm = _memoryManager->GetMemoryMappings();
 	
 	if(type == CoprocessorType::ST010 || type == CoprocessorType::ST011) {
@@ -58,18 +58,18 @@ NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &prog
 
 	_progSize = (uint32_t)programRom.size();
 	_progRom = new uint8_t[_progSize];
-	_emu->RegisterMemory(SnesMemoryType::DspProgramRom, _progRom, _progSize);
+	_emu->RegisterMemory(MemoryType::DspProgramRom, _progRom, _progSize);
 
 	_prgCache = new uint32_t[_progSize / 3];
 	_progMask = (_progSize / 3)- 1;
 
 	_dataSize = (uint32_t)dataRom.size() / 2;
 	_dataRom = new uint16_t[_dataSize];
-	_emu->RegisterMemory(SnesMemoryType::DspDataRom, _dataRom, _dataSize * sizeof(uint16_t));
+	_emu->RegisterMemory(MemoryType::DspDataRom, _dataRom, _dataSize * sizeof(uint16_t));
 	_dataMask = _dataSize - 1;
 
 	_ram = new uint16_t[_ramSize];
-	_emu->RegisterMemory(SnesMemoryType::DspDataRam, _ram, _ramSize * sizeof(uint16_t));
+	_emu->RegisterMemory(MemoryType::DspDataRam, _ram, _ramSize * sizeof(uint16_t));
 	_ramMask = _ramSize - 1;
 
 	_stackMask = _stackSize - 1;
@@ -260,7 +260,7 @@ void NecDsp::PeekBlock(uint32_t addr, uint8_t *output)
 
 AddressInfo NecDsp::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)

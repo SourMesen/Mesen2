@@ -380,7 +380,7 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo()
 	info.SpriteColorCount = 16 * 8;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
-	uint8_t* cgram= _debugger->GetMemoryDumper()->GetMemoryBuffer(SnesMemoryType::CGRam);
+	uint8_t* cgram= _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::SnesCgRam);
 	for(int i = 0; i < 256; i++) {
 		info.RawPalette[i] = cgram[i*2] | (cgram[i*2+1] << 8);
 		info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);

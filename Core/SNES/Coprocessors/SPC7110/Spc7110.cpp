@@ -12,7 +12,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-Spc7110::Spc7110(SnesConsole* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
+Spc7110::Spc7110(SnesConsole* console, bool useRtc) : BaseCoprocessor(MemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -434,7 +434,7 @@ void Spc7110::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo Spc7110::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }
 
 void Spc7110::Reset()

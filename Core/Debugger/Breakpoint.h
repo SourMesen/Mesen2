@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 enum class CpuType : uint8_t; 
-enum class SnesMemoryType;
+enum class MemoryType;
 struct AddressInfo;
 enum class BreakpointType;
 enum class BreakpointTypeFlags;
@@ -25,7 +25,7 @@ public:
 private:
 	uint32_t _id;
 	CpuType _cpuType;
-	SnesMemoryType _memoryType;
+	MemoryType _memoryType;
 	BreakpointTypeFlags _type;
 	int32_t _startAddr;
 	int32_t _endAddr;

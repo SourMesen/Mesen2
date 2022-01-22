@@ -14,7 +14,7 @@ namespace Mesen.Debugger
 	{
 		public int Length { get; private set; }
 
-		private SnesMemoryType _memoryType;
+		private MemoryType _memoryType;
 		private HexEditorConfig _cfg;
 		private AddressCounters[] _counters = Array.Empty<AddressCounters>();
 		private CdlFlags[]? _cdlData;
@@ -26,7 +26,7 @@ namespace Mesen.Debugger
 		private long _firstByteIndex = 0;
 		private TblByteCharConverter? _tblConverter = null;
 
-		public HexEditorDataProvider(SnesMemoryType memoryType, HexEditorConfig cfg, TblByteCharConverter? tblConverter)
+		public HexEditorDataProvider(MemoryType memoryType, HexEditorConfig cfg, TblByteCharConverter? tblConverter)
 		{
 			_memoryType = memoryType;
 			_cfg = cfg;
@@ -75,16 +75,16 @@ namespace Mesen.Debugger
 			_cdlData = null;
 			if(_cfg.DataHighlight.Highlight || _cfg.CodeHighlight.Highlight) {
 				switch(_memoryType) {
-					case SnesMemoryType.CpuMemory:
-					case SnesMemoryType.Sa1Memory:
-					case SnesMemoryType.Cx4Memory:
-					case SnesMemoryType.GsuMemory:
-					case SnesMemoryType.GameboyMemory:
-					case SnesMemoryType.NesMemory:
-					case SnesMemoryType.PrgRom:
-					case SnesMemoryType.GbPrgRom:
-					case SnesMemoryType.NesPrgRom:
-					case SnesMemoryType.NesChrRom:
+					case MemoryType.SnesMemory:
+					case MemoryType.Sa1Memory:
+					case MemoryType.Cx4Memory:
+					case MemoryType.GsuMemory:
+					case MemoryType.GameboyMemory:
+					case MemoryType.NesMemory:
+					case MemoryType.SnesPrgRom:
+					case MemoryType.GbPrgRom:
+					case MemoryType.NesPrgRom:
+					case MemoryType.NesChrRom:
 						_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 						break;
 				}

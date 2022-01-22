@@ -388,19 +388,19 @@ bool SnesConsole::IsRunning()
 AddressInfo SnesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
 	switch(relAddress.Type) {
-		case SnesMemoryType::CpuMemory:
+		case MemoryType::SnesMemory:
 			if(_memoryManager->IsRegister(relAddress.Address)) {
-				return { relAddress.Address & 0xFFFF, SnesMemoryType::Register };
+				return { relAddress.Address & 0xFFFF, MemoryType::Register };
 			} else {
 				return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
 			}
 		
-		case SnesMemoryType::SpcMemory: return _spc->GetAbsoluteAddress(relAddress.Address);
-		case SnesMemoryType::Sa1Memory: return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-		case SnesMemoryType::GsuMemory: return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-		case SnesMemoryType::Cx4Memory: return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
-		case SnesMemoryType::NecDspMemory: return { relAddress.Address, SnesMemoryType::DspProgramRom };
-		case SnesMemoryType::GameboyMemory: return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
+		case MemoryType::SpcMemory: return _spc->GetAbsoluteAddress(relAddress.Address);
+		case MemoryType::Sa1Memory: return _cart->GetSa1()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case MemoryType::GsuMemory: return _cart->GetGsu()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case MemoryType::Cx4Memory: return _cart->GetCx4()->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
+		case MemoryType::NecDspMemory: return { relAddress.Address, MemoryType::DspProgramRom };
+		case MemoryType::GameboyMemory: return _cart->GetGameboy()->GetAbsoluteAddress(relAddress.Address);
 		default: throw std::runtime_error("Unsupported address type");
 	}
 }
@@ -420,9 +420,9 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 	}
 
 	switch(absAddress.Type) {
-		case SnesMemoryType::PrgRom:
-		case SnesMemoryType::WorkRam:
-		case SnesMemoryType::SaveRam:
+		case MemoryType::SnesPrgRom:
+		case MemoryType::SnesWorkRam:
+		case MemoryType::SnesSaveRam:
 		{
 			if(!mappings) {
 				throw std::runtime_error("Unsupported cpu type");
@@ -431,7 +431,7 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 			uint8_t startBank = 0;
 			//Try to find a mirror close to where the PC is
 			if(cpuType == CpuType::Snes) {
-				if(absAddress.Type == SnesMemoryType::WorkRam) {
+				if(absAddress.Type == MemoryType::SnesWorkRam) {
 					startBank = 0x7E;
 				} else {
 					startBank = _cpu->GetState().K & 0xC0;
@@ -445,25 +445,25 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 			return { mappings->GetRelativeAddress(absAddress, startBank), DebugUtilities::GetCpuMemoryType(cpuType) };
 		}
 
-		case SnesMemoryType::SpcRam:
-		case SnesMemoryType::SpcRom:
-			return { _spc->GetRelativeAddress(absAddress), SnesMemoryType::SpcMemory };
+		case MemoryType::SpcRam:
+		case MemoryType::SpcRom:
+			return { _spc->GetRelativeAddress(absAddress), MemoryType::SpcMemory };
 
-		case SnesMemoryType::GbPrgRom:
-		case SnesMemoryType::GbWorkRam:
-		case SnesMemoryType::GbCartRam:
-		case SnesMemoryType::GbHighRam:
-		case SnesMemoryType::GbBootRom:
-			return { _cart->GetGameboy()->GetRelativeAddress(absAddress), SnesMemoryType::GameboyMemory };
+		case MemoryType::GbPrgRom:
+		case MemoryType::GbWorkRam:
+		case MemoryType::GbCartRam:
+		case MemoryType::GbHighRam:
+		case MemoryType::GbBootRom:
+			return { _cart->GetGameboy()->GetRelativeAddress(absAddress), MemoryType::GameboyMemory };
 
-		case SnesMemoryType::DspProgramRom:
-			return { absAddress.Address, SnesMemoryType::NecDspMemory };
+		case MemoryType::DspProgramRom:
+			return { absAddress.Address, MemoryType::NecDspMemory };
 
-		case SnesMemoryType::Register:
-			return { absAddress.Address & 0xFFFF, SnesMemoryType::Register };
+		case MemoryType::Register:
+			return { absAddress.Address & 0xFFFF, MemoryType::Register };
 
 		default:
-			return { -1, SnesMemoryType::Register };
+			return { -1, MemoryType::Register };
 	}
 }
 

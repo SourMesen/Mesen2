@@ -8,7 +8,7 @@
 #include "Debugger/MemoryDumper.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 static constexpr uint8_t _opSize[17] = {
 	1, 1, 1, 2, 2,
@@ -93,7 +93,7 @@ void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	if(opSize > 1) {
 		if(addrMode != NesAddrMode::Imm) {
-			AddressInfo address { (int32_t)opAddr, SnesMemoryType::NesMemory };
+			AddressInfo address { (int32_t)opAddr, MemoryType::NesMemory };
 			string label = labelManager ? labelManager->GetLabel(address, !info.IsJump()) : "";
 			if(label.size()) {
 				operand.Write(label, true);
@@ -174,13 +174,13 @@ int32_t NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& sta
 
 		case NesAddrMode::IndX: {
 			uint8_t zeroAddr = byteCode[1] + state.X;
-			return memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
+			return memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
 		}
 
 		case NesAddrMode::IndY:
 		case NesAddrMode::IndYW: {
 			uint8_t zeroAddr = byteCode[1];
-			uint16_t addr = memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
+			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
 			return (uint16_t)(addr + state.Y);
 		}
 
@@ -188,11 +188,11 @@ int32_t NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& sta
 			uint16_t addr = byteCode[1] | (byteCode[2] << 8);
 			if((addr & 0xFF) == 0xFF) {
 				//CPU bug when indirect address starts at the end of a page
-				uint8_t lo = memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, addr);
-				uint8_t hi = memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, addr & 0xFF00);
+				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
+				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr & 0xFF00);
 				return lo | (hi << 8);
 			} else {
-				return memoryDumper->GetMemoryValue(SnesMemoryType::NesMemory, addr);
+				return memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
 			}
 		}
 	

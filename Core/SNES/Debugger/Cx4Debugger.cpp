@@ -46,11 +46,11 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	addr = (state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF;
 
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::Cx4Memory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr + 1);
-		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Cx4);
 			_codeDataLogger->SetFlags(addressInfo.Address + 1, CdlFlags::Code | CdlFlags::Cx4);
 		}
@@ -71,7 +71,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 		_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
 	} else {
-		if(addressInfo.Type == SnesMemoryType::PrgRom) {
+		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Cx4);
 		}
 		if(_traceLogger->IsEnabled()) {
@@ -86,7 +86,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::Cx4Memory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	if(_traceLogger->IsEnabled()) {

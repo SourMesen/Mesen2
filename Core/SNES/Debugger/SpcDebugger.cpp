@@ -47,7 +47,7 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::SpcMemory);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
@@ -112,8 +112,8 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo { (int32_t)addr, SnesMemoryType::SpcRam }; //Writes never affect the SPC ROM
-	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::SpcMemory);
+	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the SPC ROM
+	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
 
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);

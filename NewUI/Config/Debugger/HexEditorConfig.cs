@@ -40,7 +40,7 @@ namespace Mesen.Config
 		[Reactive] public HighlightConfig DataHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.LightSteelBlue.ToUint32() };
 		[Reactive] public bool HighlightBreakpoints { get; set; } = false;
 
-		[Reactive] public SnesMemoryType MemoryType { get; set; } = SnesMemoryType.CpuMemory;
+		[Reactive] public MemoryType MemoryType { get; set; } = MemoryType.SnesMemory;
 
 		public HexEditorConfig()
 		{

@@ -37,7 +37,7 @@ private:
 	}
 
 public:
-	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state) : IMemoryHandler(SnesMemoryType::SaveRam)
+	Sa1BwRamHandler(uint8_t* bwRam, uint32_t bwRamSize, Sa1State* state) : IMemoryHandler(MemoryType::SnesSaveRam)
 	{
 		_ram = bwRam;
 		_mask = bwRamSize - 1;
@@ -105,7 +105,7 @@ public:
 		} else {
 			info.Address = GetBwRamAddress(addr) & _mask;
 		}
-		info.Type = SnesMemoryType::SaveRam;
+		info.Type = MemoryType::SnesSaveRam;
 		return info;
 	}
 };

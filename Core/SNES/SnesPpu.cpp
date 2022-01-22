@@ -35,10 +35,10 @@ SnesPpu::SnesPpu(Emulator* emu, SnesConsole* console)
 	_console = console;
 
 	_vram = new uint16_t[SnesPpu::VideoRamSize >> 1];
-	_emu->RegisterMemory(SnesMemoryType::VideoRam, _vram, SnesPpu::VideoRamSize);
+	_emu->RegisterMemory(MemoryType::SnesVideoRam, _vram, SnesPpu::VideoRamSize);
 
-	_emu->RegisterMemory(SnesMemoryType::SpriteRam, _oamRam, SnesPpu::SpriteRamSize);
-	_emu->RegisterMemory(SnesMemoryType::CGRam, _cgram, SnesPpu::CgRamSize);
+	_emu->RegisterMemory(MemoryType::SnesSpriteRam, _oamRam, SnesPpu::SpriteRamSize);
+	_emu->RegisterMemory(MemoryType::SnesCgRam, _cgram, SnesPpu::CgRamSize);
 
 	_outputBuffers[0] = new uint16_t[512 * 478];
 	_outputBuffers[1] = new uint16_t[512 * 478];
@@ -1628,10 +1628,10 @@ uint8_t SnesPpu::Read(uint16_t addr)
 			uint8_t value;
 			if(oamAddr < 512) {
 				value = _oamRam[oamAddr];
-				_emu->ProcessPpuRead<CpuType::Snes>(oamAddr, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead<CpuType::Snes>(oamAddr, value, MemoryType::SnesSpriteRam);
 			} else {
 				value = _oamRam[0x200 | (oamAddr & 0x1F)];
-				_emu->ProcessPpuRead<CpuType::Snes>(0x200 | (oamAddr & 0x1F), value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuRead<CpuType::Snes>(0x200 | (oamAddr & 0x1F), value, MemoryType::SnesSpriteRam);
 			}
 			
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1642,7 +1642,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 		case 0x2139: {
 			//VMDATALREAD - VRAM Data Read low byte
 			uint8_t returnValue = (uint8_t)_state.VramReadBuffer;
-			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress(), returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress(), returnValue, MemoryType::SnesVideoRam);
 			if(!_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1654,7 +1654,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 		case 0x213A: {
 			//VMDATAHREAD - VRAM Data Read high byte
 			uint8_t returnValue = (uint8_t)(_state.VramReadBuffer >> 8);
-			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress() + 1, returnValue, SnesMemoryType::VideoRam);
+			_emu->ProcessPpuRead<CpuType::Snes>(GetVramAddress() + 1, returnValue, MemoryType::SnesVideoRam);
 			if(_state.VramAddrIncrementOnSecondReg) {
 				UpdateVramReadBuffer();
 				_state.VramAddress = (_state.VramAddress + _state.VramIncrementValue) & 0x7FFF;
@@ -1670,10 +1670,10 @@ uint8_t SnesPpu::Read(uint16_t addr)
 				value = ((_cgram[_state.CgramAddress] >> 8) & 0x7F) | (_state.Ppu2OpenBus & 0x80);
 				_state.CgramAddress++;
 				
-				_emu->ProcessPpuRead<CpuType::Snes>((_state.CgramAddress >> 1) + 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead<CpuType::Snes>((_state.CgramAddress >> 1) + 1, value, MemoryType::SnesCgRam);
 			} else {
 				value = (uint8_t)_cgram[_state.CgramAddress];
-				_emu->ProcessPpuRead<CpuType::Snes>(_state.CgramAddress >> 1, value, SnesMemoryType::CGRam);
+				_emu->ProcessPpuRead<CpuType::Snes>(_state.CgramAddress >> 1, value, MemoryType::SnesCgRam);
 			}
 			_state.CgramAddressLatch = !_state.CgramAddressLatch;
 			
@@ -1802,10 +1802,10 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			
 			if(oamAddr < 512) {
 				if(oamAddr & 0x01) {
-					_emu->ProcessPpuWrite<CpuType::Snes>(oamAddr - 1, _oamWriteBuffer, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite<CpuType::Snes>(oamAddr - 1, _oamWriteBuffer, MemoryType::SnesSpriteRam);
 					_oamRam[oamAddr - 1] = _oamWriteBuffer;
 	
-					_emu->ProcessPpuWrite<CpuType::Snes>(oamAddr, value, SnesMemoryType::SpriteRam);
+					_emu->ProcessPpuWrite<CpuType::Snes>(oamAddr, value, MemoryType::SnesSpriteRam);
 					_oamRam[oamAddr] = value;
 				} else {
 					_oamWriteBuffer = value;
@@ -1822,7 +1822,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 				if((oamAddr & 0x01) == 0) {
 					_oamWriteBuffer = value;
 				}
-				_emu->ProcessPpuWrite<CpuType::Snes>(address, value, SnesMemoryType::SpriteRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>(address, value, MemoryType::SnesSpriteRam);
 				_oamRam[address] = value;
 			}
 			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
@@ -1928,7 +1928,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//VMDATAL - VRAM Data Write low byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_emu->ProcessPpuWrite<CpuType::Snes>(GetVramAddress() << 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>(GetVramAddress() << 1, value, MemoryType::SnesVideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
 			}
 
@@ -1942,7 +1942,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//VMDATAH - VRAM Data Write high byte
 			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
-				_emu->ProcessPpuWrite<CpuType::Snes>((GetVramAddress() << 1) + 1, value, SnesMemoryType::VideoRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>((GetVramAddress() << 1) + 1, value, MemoryType::SnesVideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
 			}
 			
@@ -1988,8 +1988,8 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			if(_state.CgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
-				_emu->ProcessPpuWrite<CpuType::Snes>(_state.CgramAddress >> 1, _state.CgramWriteBuffer, SnesMemoryType::CGRam);
-				_emu->ProcessPpuWrite<CpuType::Snes>((_state.CgramAddress >> 1) + 1, value & 0x7F, SnesMemoryType::CGRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>(_state.CgramAddress >> 1, _state.CgramWriteBuffer, MemoryType::SnesCgRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>((_state.CgramAddress >> 1) + 1, value & 0x7F, MemoryType::SnesCgRam);
 
 				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | ((value & 0x7F) << 8);
 				_state.CgramAddress++;

@@ -84,8 +84,8 @@ public:
 	void GetConsoleState(BaseState& state, ConsoleType consoleType);
 	GameboyHeader GetHeader();
 
-	uint32_t DebugGetMemorySize(SnesMemoryType type);
-	uint8_t* DebugGetMemory(SnesMemoryType type);
+	uint32_t DebugGetMemorySize(MemoryType type);
+	uint8_t* DebugGetMemory(MemoryType type);
 	GbMemoryManager* GetMemoryManager();
 	AddressInfo GetAbsoluteAddress(uint16_t addr);
 	int32_t GetRelativeAddress(AddressInfo& absAddress);

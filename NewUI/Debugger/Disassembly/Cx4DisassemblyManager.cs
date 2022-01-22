@@ -6,7 +6,7 @@ namespace Mesen.Debugger.Disassembly
 	public class Cx4DisassemblyManager : CpuDisassemblyManager
 	{
 		public override CpuType CpuType { get { return CpuType.Cx4; } }
-		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.Cx4Memory; } }
+		public override MemoryType RelativeMemoryType { get { return MemoryType.Cx4Memory; } }
 		public override int AddressSize { get { return 6; } }
 		public override int ByteCodeSize { get { return 4; } }
 		public override bool AllowSourceView { get { return false; } }

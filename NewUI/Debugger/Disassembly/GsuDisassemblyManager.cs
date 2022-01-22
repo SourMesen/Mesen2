@@ -6,7 +6,7 @@ namespace Mesen.Debugger.Disassembly
 	public class GsuDisassemblyManager : CpuDisassemblyManager
 	{
 		public override CpuType CpuType { get { return CpuType.Gsu; } }
-		public override SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.GsuMemory; } }
+		public override MemoryType RelativeMemoryType { get { return MemoryType.GsuMemory; } }
 		public override int AddressSize { get { return 6; } }
 		public override int ByteCodeSize { get { return 3; } }
 		public override bool AllowSourceView { get { return false; } }

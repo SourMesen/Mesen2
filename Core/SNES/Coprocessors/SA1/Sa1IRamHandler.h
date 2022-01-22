@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "SNES/IMemoryHandler.h"
 #include "Debugger/DebugTypes.h"
-#include "SnesMemoryType.h"
+#include "MemoryType.h"
 
 class Sa1IRamHandler : public IMemoryHandler
 {
@@ -19,7 +19,7 @@ private:
 	}
 
 public:
-	Sa1IRamHandler(uint8_t *ram) : IMemoryHandler(SnesMemoryType::Sa1InternalRam)
+	Sa1IRamHandler(uint8_t *ram) : IMemoryHandler(MemoryType::Sa1InternalRam)
 	{
 		_ram = ram;
 	}
@@ -53,7 +53,7 @@ public:
 		AddressInfo info;
 		if(addr & 0x800) {
 			info.Address = -1;
-			info.Type = SnesMemoryType::CpuMemory;
+			info.Type = MemoryType::SnesMemory;
 		} else {
 			info.Address = (addr & 0x7FF);
 			info.Type = _memoryType;

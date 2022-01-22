@@ -11,7 +11,7 @@
 
 class NesConsole;
 class BaseControlDevice;
-enum class SnesMemoryType;
+enum class MemoryType;
 struct MapperStateEntry;
 
 class BaseMapper : public INesMemoryHandler, public ISerializable
@@ -194,7 +194,7 @@ public:
 	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value = MapperReadVram(addr, type);
-		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, SnesMemoryType::NesPpuMemory);
+		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, MemoryType::NesPpuMemory);
 		return value;
 	}
 
@@ -214,12 +214,12 @@ public:
 	uint8_t* GetWorkRam();
 	uint8_t* GetSaveRam();
 	
-	uint8_t GetMemoryValue(SnesMemoryType memoryType, uint32_t address);
-	void SetMemoryValue(SnesMemoryType memoryType, uint32_t address, uint8_t value);
-	uint32_t GetMemorySize(SnesMemoryType type);
+	uint8_t GetMemoryValue(MemoryType memoryType, uint32_t address);
+	void SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value);
+	uint32_t GetMemorySize(MemoryType type);
 
-	uint32_t CopyMemory(SnesMemoryType type, uint8_t* buffer);
-	void WriteMemory(SnesMemoryType type, uint8_t* buffer, int32_t length);
+	uint32_t CopyMemory(MemoryType type, uint8_t* buffer);
+	void WriteMemory(MemoryType type, uint8_t* buffer, int32_t length);
 
 	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
 	void GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info);

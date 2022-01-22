@@ -7,7 +7,7 @@
 #include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
-Sdd1::Sdd1(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
+Sdd1::Sdd1(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
 {
 	//This handler is used to dynamically map the ROM based on the banking registers
 	_sdd1Mmc.reset(new Sdd1Mmc(_state, console->GetCartridge()));
@@ -117,5 +117,5 @@ void Sdd1::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo Sdd1::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, SnesMemoryType::Register };
+	return { -1, MemoryType::Register };
 }

@@ -24,10 +24,10 @@ Spc::Spc(SnesConsole* console)
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
-	_emu->RegisterMemory(SnesMemoryType::SpcRam, _ram, Spc::SpcRamSize);
+	_emu->RegisterMemory(MemoryType::SpcRam, _ram, Spc::SpcRamSize);
 	_emu->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
 
-	_emu->RegisterMemory(SnesMemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
+	_emu->RegisterMemory(MemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
 
 	_dsp.reset(new SPC_DSP());
 	#ifndef DUMMYSPC
@@ -409,14 +409,14 @@ bool Spc::IsMuted()
 AddressInfo Spc::GetAbsoluteAddress(uint16_t addr)
 {
 	if(addr < 0xFFC0 || !_state.RomEnabled) {
-		return AddressInfo { addr, SnesMemoryType::SpcRam };
+		return AddressInfo { addr, MemoryType::SpcRam };
 	}
-	return AddressInfo { addr & 0x3F, SnesMemoryType::SpcRom };
+	return AddressInfo { addr & 0x3F, MemoryType::SpcRom };
 }
 
 int Spc::GetRelativeAddress(AddressInfo &absAddress)
 {
-	if(absAddress.Type == SnesMemoryType::SpcRom) {
+	if(absAddress.Type == MemoryType::SpcRom) {
 		if(_state.RomEnabled) {
 			return 0xFFC0 | (absAddress.Address & 0x3F);
 		}

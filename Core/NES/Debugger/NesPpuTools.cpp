@@ -311,7 +311,7 @@ DebugPaletteInfo NesPpuTools::GetPaletteInfo()
 	uint32_t rgbPalette[512];
 	NesDefaultVideoFilter::GetFullPalette(rgbPalette, console->GetNesConfig(), console->GetPpu()->GetPpuModel());
 
-	uint8_t* paletteRam = _debugger->GetMemoryDumper()->GetMemoryBuffer(SnesMemoryType::NesPaletteRam);
+	uint8_t* paletteRam = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::NesPaletteRam);
 	for(int i = 0; i < 32; i++) {
 		info.RawPalette[i] = paletteRam[i];
 		info.RgbPalette[i] = rgbPalette[paletteRam[i]];

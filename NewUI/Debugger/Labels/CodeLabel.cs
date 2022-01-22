@@ -11,7 +11,7 @@ namespace Mesen.Debugger.Labels
 	public class CodeLabel
 	{
 		public UInt32 Address { get; set; }
-		public SnesMemoryType MemoryType { get; set; }
+		public MemoryType MemoryType { get; set; }
 		public string Label { get; set; } = "";
 		public string Comment { get; set; } = "";
 		public CodeLabelFlags Flags { get; set; }
@@ -21,22 +21,22 @@ namespace Mesen.Debugger.Labels
 		{
 			StringBuilder sb = new StringBuilder();
 			switch(MemoryType) {
-				case SnesMemoryType.Register: sb.Append("REG:"); break;
-				case SnesMemoryType.PrgRom: sb.Append("PRG:"); break;
-				case SnesMemoryType.WorkRam: sb.Append("WORK:"); break;
-				case SnesMemoryType.SaveRam: sb.Append("SAVE:"); break;
-				case SnesMemoryType.Sa1InternalRam: sb.Append("IRAM:"); break;
-				case SnesMemoryType.SpcRam: sb.Append("SPCRAM:"); break;
-				case SnesMemoryType.SpcRom: sb.Append("SPCROM:"); break;
-				case SnesMemoryType.BsxPsRam: sb.Append("PSRAM:"); break;
-				case SnesMemoryType.BsxMemoryPack: sb.Append("MPACK:"); break;
-				case SnesMemoryType.DspProgramRom: sb.Append("DSPPRG:"); break;
-				case SnesMemoryType.GbPrgRom: sb.Append("GBPRG:"); break;
-				case SnesMemoryType.GbWorkRam: sb.Append("GBWRAM:"); break;
-				case SnesMemoryType.GbCartRam: sb.Append("GBSRAM:"); break;
-				case SnesMemoryType.GbHighRam: sb.Append("GBHRAM:"); break;
-				case SnesMemoryType.GbBootRom: sb.Append("GBBOOT:"); break;
-				case SnesMemoryType.GameboyMemory: sb.Append("GBREG:"); break;
+				case MemoryType.Register: sb.Append("REG:"); break;
+				case MemoryType.SnesPrgRom: sb.Append("PRG:"); break;
+				case MemoryType.SnesWorkRam: sb.Append("WORK:"); break;
+				case MemoryType.SnesSaveRam: sb.Append("SAVE:"); break;
+				case MemoryType.Sa1InternalRam: sb.Append("IRAM:"); break;
+				case MemoryType.SpcRam: sb.Append("SPCRAM:"); break;
+				case MemoryType.SpcRom: sb.Append("SPCROM:"); break;
+				case MemoryType.BsxPsRam: sb.Append("PSRAM:"); break;
+				case MemoryType.BsxMemoryPack: sb.Append("MPACK:"); break;
+				case MemoryType.DspProgramRom: sb.Append("DSPPRG:"); break;
+				case MemoryType.GbPrgRom: sb.Append("GBPRG:"); break;
+				case MemoryType.GbWorkRam: sb.Append("GBWRAM:"); break;
+				case MemoryType.GbCartRam: sb.Append("GBSRAM:"); break;
+				case MemoryType.GbHighRam: sb.Append("GBHRAM:"); break;
+				case MemoryType.GbBootRom: sb.Append("GBBOOT:"); break;
+				case MemoryType.GameboyMemory: sb.Append("GBREG:"); break;
 			}
 
 			sb.Append(Address.ToString("X4"));
@@ -61,24 +61,24 @@ namespace Mesen.Debugger.Labels
 				return null;
 			}
 
-			SnesMemoryType type;
+			MemoryType type;
 			switch(rowData[0]) {
-				case "REG": type = SnesMemoryType.Register; break;
-				case "PRG": type = SnesMemoryType.PrgRom; break;
-				case "SAVE": type = SnesMemoryType.SaveRam; break;
-				case "WORK": type = SnesMemoryType.WorkRam; break;
-				case "IRAM": type = SnesMemoryType.Sa1InternalRam; break;
-				case "SPCRAM": type = SnesMemoryType.SpcRam; break;
-				case "SPCROM": type = SnesMemoryType.SpcRom; break;
-				case "PSRAM": type = SnesMemoryType.BsxPsRam; break;
-				case "MPACK": type = SnesMemoryType.BsxMemoryPack; break;
-				case "DSPPRG": type = SnesMemoryType.DspProgramRom; break;
-				case "GBPRG": type = SnesMemoryType.GbPrgRom; break;
-				case "GBWRAM": type = SnesMemoryType.GbWorkRam; break;
-				case "GBSRAM": type = SnesMemoryType.GbCartRam; break;
-				case "GBHRAM": type = SnesMemoryType.GbHighRam; break;
-				case "GBBOOT": type = SnesMemoryType.GbBootRom; break;
-				case "GBREG": type = SnesMemoryType.GameboyMemory; break;
+				case "REG": type = MemoryType.Register; break;
+				case "PRG": type = MemoryType.SnesPrgRom; break;
+				case "SAVE": type = MemoryType.SnesSaveRam; break;
+				case "WORK": type = MemoryType.SnesWorkRam; break;
+				case "IRAM": type = MemoryType.Sa1InternalRam; break;
+				case "SPCRAM": type = MemoryType.SpcRam; break;
+				case "SPCROM": type = MemoryType.SpcRom; break;
+				case "PSRAM": type = MemoryType.BsxPsRam; break;
+				case "MPACK": type = MemoryType.BsxMemoryPack; break;
+				case "DSPPRG": type = MemoryType.DspProgramRom; break;
+				case "GBPRG": type = MemoryType.GbPrgRom; break;
+				case "GBWRAM": type = MemoryType.GbWorkRam; break;
+				case "GBSRAM": type = MemoryType.GbCartRam; break;
+				case "GBHRAM": type = MemoryType.GbHighRam; break;
+				case "GBBOOT": type = MemoryType.GbBootRom; break;
+				case "GBREG": type = MemoryType.GameboyMemory; break;
 				default: return null;
 			}
 

@@ -103,31 +103,31 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	luaL_newlib(lua, apilib);
 
-	//Expose SnesMemoryType enum as "emu.memType"
+	//Expose MemoryType enum as "emu.memType"
 	lua_pushliteral(lua, "memType");
 	lua_newtable(lua);
-	lua_pushintvalue(cpu, SnesMemoryType::CpuMemory);
-	lua_pushintvalue(spc, SnesMemoryType::SpcMemory);
-	lua_pushintvalue(sa1, SnesMemoryType::Sa1Memory);
-	lua_pushintvalue(gsu, SnesMemoryType::GsuMemory);
-	lua_pushintvalue(cx4, SnesMemoryType::Cx4Memory);
-	lua_pushintvalue(gameboy, SnesMemoryType::GameboyMemory);
-	lua_pushintvalue(cgram, SnesMemoryType::CGRam);
-	lua_pushintvalue(vram, SnesMemoryType::VideoRam);
-	lua_pushintvalue(oam, SnesMemoryType::SpriteRam);
-	lua_pushintvalue(prgRom, SnesMemoryType::PrgRom);
-	lua_pushintvalue(workRam, SnesMemoryType::WorkRam);
-	lua_pushintvalue(saveRam, SnesMemoryType::SaveRam);
-	lua_pushintvalue(gbPrgRom, SnesMemoryType::GbPrgRom);
-	lua_pushintvalue(gbWorkRam, SnesMemoryType::GbWorkRam);
-	lua_pushintvalue(gbCartRam, SnesMemoryType::GbCartRam);
-	lua_pushintvalue(gbVideoRam, SnesMemoryType::GbVideoRam);
-	lua_pushintvalue(cpuDebug, SnesMemoryType::CpuMemory | 0x100);
-	lua_pushintvalue(spcDebug, SnesMemoryType::SpcMemory | 0x100);
-	lua_pushintvalue(sa1Debug, SnesMemoryType::Sa1Memory | 0x100);
-	lua_pushintvalue(gsuDebug, SnesMemoryType::GsuMemory | 0x100);
-	lua_pushintvalue(cx4Debug, SnesMemoryType::Cx4Memory | 0x100);
-	lua_pushintvalue(gameboyDebug, SnesMemoryType::GameboyMemory | 0x100);
+	lua_pushintvalue(cpu, MemoryType::SnesMemory);
+	lua_pushintvalue(spc, MemoryType::SpcMemory);
+	lua_pushintvalue(sa1, MemoryType::Sa1Memory);
+	lua_pushintvalue(gsu, MemoryType::GsuMemory);
+	lua_pushintvalue(cx4, MemoryType::Cx4Memory);
+	lua_pushintvalue(gameboy, MemoryType::GameboyMemory);
+	lua_pushintvalue(cgram, MemoryType::SnesCgRam);
+	lua_pushintvalue(vram, MemoryType::SnesVideoRam);
+	lua_pushintvalue(oam, MemoryType::SnesSpriteRam);
+	lua_pushintvalue(prgRom, MemoryType::SnesPrgRom);
+	lua_pushintvalue(workRam, MemoryType::SnesWorkRam);
+	lua_pushintvalue(saveRam, MemoryType::SnesSaveRam);
+	lua_pushintvalue(gbPrgRom, MemoryType::GbPrgRom);
+	lua_pushintvalue(gbWorkRam, MemoryType::GbWorkRam);
+	lua_pushintvalue(gbCartRam, MemoryType::GbCartRam);
+	lua_pushintvalue(gbVideoRam, MemoryType::GbVideoRam);
+	lua_pushintvalue(cpuDebug, MemoryType::SnesMemory | 0x100);
+	lua_pushintvalue(spcDebug, MemoryType::SpcMemory | 0x100);
+	lua_pushintvalue(sa1Debug, MemoryType::Sa1Memory | 0x100);
+	lua_pushintvalue(gsuDebug, MemoryType::GsuMemory | 0x100);
+	lua_pushintvalue(cx4Debug, MemoryType::Cx4Memory | 0x100);
+	lua_pushintvalue(gameboyDebug, MemoryType::GameboyMemory | 0x100);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "memCallbackType");
@@ -139,28 +139,28 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "counterMemType");
 	lua_newtable(lua);
-	lua_pushintvalue(prgRom, SnesMemoryType::PrgRom);
-	lua_pushintvalue(workRam, SnesMemoryType::WorkRam);
-	lua_pushintvalue(saveRam, SnesMemoryType::SaveRam);
-	lua_pushintvalue(videoRam, SnesMemoryType::VideoRam);
-	lua_pushintvalue(spriteRam, SnesMemoryType::SpriteRam);
-	lua_pushintvalue(cgRam, SnesMemoryType::CGRam);
-	lua_pushintvalue(spcRam, SnesMemoryType::SpcRam);
-	lua_pushintvalue(spcRom, SnesMemoryType::SpcRom);
-	lua_pushintvalue(dspProgramRom, SnesMemoryType::DspProgramRom);
-	lua_pushintvalue(dspDataRom, SnesMemoryType::DspDataRom);
-	lua_pushintvalue(dspDataRam, SnesMemoryType::DspDataRam);
-	lua_pushintvalue(sa1InternalRam, SnesMemoryType::Sa1InternalRam);
-	lua_pushintvalue(gsuWorkRam, SnesMemoryType::GsuWorkRam);
-	lua_pushintvalue(cx4DataRam, SnesMemoryType::Cx4DataRam);
-	lua_pushintvalue(bsxPsRam, SnesMemoryType::BsxPsRam);
-	lua_pushintvalue(bsxMemoryPack, SnesMemoryType::BsxMemoryPack);
-	lua_pushintvalue(gbPrgRom, SnesMemoryType::GbPrgRom);
-	lua_pushintvalue(gbWorkRam, SnesMemoryType::GbWorkRam);
-	lua_pushintvalue(gbCartRam, SnesMemoryType::GbCartRam);
-	lua_pushintvalue(gbVideoRam, SnesMemoryType::GbVideoRam);
-	lua_pushintvalue(gbHighRam, SnesMemoryType::GbHighRam);
-	lua_pushintvalue(gbBootRom, SnesMemoryType::GbBootRom);
+	lua_pushintvalue(prgRom, MemoryType::SnesPrgRom);
+	lua_pushintvalue(workRam, MemoryType::SnesWorkRam);
+	lua_pushintvalue(saveRam, MemoryType::SnesSaveRam);
+	lua_pushintvalue(videoRam, MemoryType::SnesVideoRam);
+	lua_pushintvalue(spriteRam, MemoryType::SnesSpriteRam);
+	lua_pushintvalue(cgRam, MemoryType::SnesCgRam);
+	lua_pushintvalue(spcRam, MemoryType::SpcRam);
+	lua_pushintvalue(spcRom, MemoryType::SpcRom);
+	lua_pushintvalue(dspProgramRom, MemoryType::DspProgramRom);
+	lua_pushintvalue(dspDataRom, MemoryType::DspDataRom);
+	lua_pushintvalue(dspDataRam, MemoryType::DspDataRam);
+	lua_pushintvalue(sa1InternalRam, MemoryType::Sa1InternalRam);
+	lua_pushintvalue(gsuWorkRam, MemoryType::GsuWorkRam);
+	lua_pushintvalue(cx4DataRam, MemoryType::Cx4DataRam);
+	lua_pushintvalue(bsxPsRam, MemoryType::BsxPsRam);
+	lua_pushintvalue(bsxMemoryPack, MemoryType::BsxMemoryPack);
+	lua_pushintvalue(gbPrgRom, MemoryType::GbPrgRom);
+	lua_pushintvalue(gbWorkRam, MemoryType::GbWorkRam);
+	lua_pushintvalue(gbCartRam, MemoryType::GbCartRam);
+	lua_pushintvalue(gbVideoRam, MemoryType::GbVideoRam);
+	lua_pushintvalue(gbHighRam, MemoryType::GbHighRam);
+	lua_pushintvalue(gbBootRom, MemoryType::GbBootRom);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "counterOpType");
@@ -236,7 +236,7 @@ int LuaApi::ReadMemory(lua_State *lua)
 	bool returnSignedValue = l.ReadBool();
 	int type = l.ReadInteger();
 	bool disableSideEffects = (type & 0x100) == 0x100;
-	SnesMemoryType memType = (SnesMemoryType)(type & 0xFF);
+	MemoryType memType = (MemoryType)(type & 0xFF);
 	int address = l.ReadInteger();
 	checkminparams(2);
 	errorCond(address < 0, "address must be >= 0");
@@ -250,7 +250,7 @@ int LuaApi::WriteMemory(lua_State *lua)
 	LuaCallHelper l(lua);
 	int type = l.ReadInteger();
 	bool disableSideEffects = (type & 0x100) == 0x100;
-	SnesMemoryType memType = (SnesMemoryType)(type & 0xFF);
+	MemoryType memType = (MemoryType)(type & 0xFF);
 	int value = l.ReadInteger();
 	int address = l.ReadInteger();
 	checkparams();
@@ -267,7 +267,7 @@ int LuaApi::ReadMemoryWord(lua_State *lua)
 	bool returnSignedValue = l.ReadBool();
 	int type = l.ReadInteger();
 	bool disableSideEffects = (type & 0x100) == 0x100;
-	SnesMemoryType memType = (SnesMemoryType)(type & 0xFF);
+	MemoryType memType = (MemoryType)(type & 0xFF);
 	int address = l.ReadInteger();
 	checkminparams(2);
 	errorCond(address < 0, "address must be >= 0");
@@ -281,7 +281,7 @@ int LuaApi::WriteMemoryWord(lua_State *lua)
 	LuaCallHelper l(lua);
 	int type = l.ReadInteger();
 	bool disableSideEffects = (type & 0x100) == 0x100;
-	SnesMemoryType memType = (SnesMemoryType)(type & 0xFF);
+	MemoryType memType = (MemoryType)(type & 0xFF);
 	int value = l.ReadInteger();
 	int address = l.ReadInteger();
 	checkparams();
@@ -298,7 +298,7 @@ int LuaApi::GetPrgRomOffset(lua_State *lua)
 	checkminparams(1);
 	errorCond(address < 0 || address > 0xFFFF, "address must be between 0 and $FFFF");
 	
-	AddressInfo relAddress { address, SnesMemoryType::CpuMemory };
+	AddressInfo relAddress { address, MemoryType::SnesMemory };
 	int32_t prgRomOffset = _debugger->GetAbsoluteAddress(relAddress).Address;
 	l.Return(prgRomOffset);
 	return l.ReturnCount();
@@ -651,9 +651,9 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	LuaCallHelper l(lua);
 	l.ForceParamCount(2);
 	MemoryOperationType operationType = (MemoryOperationType)l.ReadInteger();
-	SnesMemoryType memoryType = (SnesMemoryType)l.ReadInteger();
+	MemoryType memoryType = (MemoryType)l.ReadInteger();
 	errorCond(operationType >= MemoryOperationType::ExecOperand, "Invalid operation type");
-	errorCond(memoryType >= SnesMemoryType::Register, "Invalid memory type");
+	errorCond(memoryType >= MemoryType::Register, "Invalid memory type");
 	checkparams();
 
 	uint32_t size = 0;

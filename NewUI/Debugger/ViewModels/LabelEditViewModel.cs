@@ -32,7 +32,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AvailableMemoryTypes = Enum.GetValues<SnesMemoryType>().Where(t => t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			AddDisposable(this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;
@@ -105,7 +105,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			[Reactive] public UInt32 Address { get; set; }
-			[Reactive] public SnesMemoryType MemoryType { get; set; }
+			[Reactive] public MemoryType MemoryType { get; set; }
 			[Reactive] public string Label { get; set; } = "";
 			[Reactive] public string Comment { get; set; } = "";
 			[Reactive] public CodeLabelFlags Flags { get; set; }

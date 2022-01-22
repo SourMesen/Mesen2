@@ -31,7 +31,7 @@ private:
 	Sa1State _state = {};
 	uint8_t* _iRam;
 	
-	SnesMemoryType _lastAccessMemType;
+	MemoryType _lastAccessMemType;
 	uint8_t _openBus;
 
 	unique_ptr<IMemoryHandler> _iRamHandler;
@@ -85,9 +85,9 @@ public:
 	void Run() override;
 	void Reset() override;
 
-	SnesMemoryType GetSa1MemoryType();
+	MemoryType GetSa1MemoryType();
 	bool IsSnesCpuFastRomSpeed();
-	SnesMemoryType GetSnesCpuMemoryType();
+	MemoryType GetSnesCpuMemoryType();
 
 	uint8_t* DebugGetInternalRam();
 	uint32_t DebugGetInternalRamSize();

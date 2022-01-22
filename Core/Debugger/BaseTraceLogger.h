@@ -121,7 +121,7 @@ protected:
 	Debugger* _debugger;
 
 	CpuType _cpuType = CpuType::Snes;
-	SnesMemoryType _cpuMemoryType = SnesMemoryType::CpuMemory;
+	MemoryType _cpuMemoryType = MemoryType::SnesMemory;
 
 	vector<RowPart> _rowParts;
 
@@ -165,7 +165,7 @@ protected:
 		WriteStringValue(output, code, rowPart);
 	}
 	
-	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, SnesMemoryType cpuMemoryType, CpuType cpuType)
+	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
 	{
 		int32_t effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
 		if(effectiveAddress >= 0) {
@@ -181,7 +181,7 @@ protected:
 		}
 	}
 
-	void WriteMemoryValue(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, SnesMemoryType memType, CpuType cpuType)
+	void WriteMemoryValue(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType memType, CpuType cpuType)
 	{
 		int32_t address = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
 		if(address >= 0) {

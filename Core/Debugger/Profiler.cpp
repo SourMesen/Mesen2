@@ -102,7 +102,7 @@ void Profiler::InternalReset()
 	
 	_functions.clear();
 	_functions[ResetFunctionIndex] = ProfiledFunction();
-	_functions[ResetFunctionIndex].Address = { ResetFunctionIndex, SnesMemoryType::Register };
+	_functions[ResetFunctionIndex].Address = { ResetFunctionIndex, MemoryType::Register };
 }
 
 void Profiler::GetProfilerData(ProfiledFunction* profilerData, uint32_t& functionCount)
