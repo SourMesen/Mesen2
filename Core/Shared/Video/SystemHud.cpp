@@ -5,10 +5,10 @@
 #include "Shared/Video/DrawStringCommand.h"
 #include "Shared/Interfaces/IMessageManager.h"
 
-SystemHud::SystemHud(Emulator* emu)
+SystemHud::SystemHud(Emulator* emu, DebugHud* hud)
 {
 	_emu = emu;
-	_hud = emu->GetDebugHud();
+	_hud = hud;
 	MessageManager::RegisterMessageManager(this);
 }
 
@@ -17,13 +17,16 @@ SystemHud::~SystemHud()
 	MessageManager::UnregisterMessageManager(this);
 }
 
-void SystemHud::Draw(FrameInfo info, OverscanDimensions overscan)
+void SystemHud::Draw(uint32_t width, uint32_t height)
 {
-	_screenWidth = info.Width - _overscan.Left - _overscan.Right;
-	_screenHeight = info.Height - _overscan.Top - _overscan.Bottom;
-	_overscan = overscan;
+	_screenWidth = width;
+	_screenHeight = height;
 	DrawCounters();
 	DrawMessages();
+
+	if(_emu->IsPaused()) {
+		DrawPauseIcon();
+	}
 }
 
 void SystemHud::DrawMessage(MessageInfo &msg, int& lastHeight)
@@ -43,8 +46,6 @@ void SystemHud::DrawMessage(MessageInfo &msg, int& lastHeight)
 void SystemHud::DrawString(string text, int x, int y, uint8_t opacity)
 {
 	int maxWidth = _screenWidth - x;
-	x += _overscan.Left;
-	y += _overscan.Top;
 	opacity = 255 - opacity;
 	for(int i = -1; i <= 1; i++) {
 		for(int j = -1; j <= 1; j++) {
@@ -56,7 +57,7 @@ void SystemHud::DrawString(string text, int x, int y, uint8_t opacity)
 
 void SystemHud::ShowFpsCounter(int lineNumber)
 {
-	int yPos = 13 + 10 * lineNumber;
+	int yPos = 10 + 10 * lineNumber;
 	if(_fpsTimer.GetElapsedMS() > 1000) {
 		//Update fps every sec
 		uint32_t frameCount = _emu->GetFrameCount();
@@ -85,7 +86,7 @@ void SystemHud::ShowFpsCounter(int lineNumber)
 
 void SystemHud::ShowGameTimer(int lineNumber)
 {
-	int yPos = 13 + 10 * lineNumber;
+	int yPos = 10 + 10 * lineNumber;
 	uint32_t frameCount = _emu->GetFrameCount();
 	double frameRate = _emu->GetFps();
 	uint32_t seconds = (uint32_t)(frameCount / frameRate) % 60;
@@ -104,7 +105,7 @@ void SystemHud::ShowGameTimer(int lineNumber)
 
 void SystemHud::ShowFrameCounter(int lineNumber)
 {
-	int yPos = 13 + 10 * lineNumber;
+	int yPos = 10 + 10 * lineNumber;
 	uint32_t frameCount = _emu->GetFrameCount();
 
 	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(frameCount);
@@ -152,4 +153,26 @@ void SystemHud::DrawMessages()
 		}
 		counter++;
 	}
+}
+
+void SystemHud::DrawBar(int x, int y, int width, int height)
+{
+	_hud->DrawRectangle(x, y, width, height, 0xFFFFFF, true, 1);
+	_hud->DrawLine(x, y + 1, x + width, y + 1, 0x4FBECE, 1);
+	_hud->DrawLine(x+1, y, x+1, y + height, 0x4FBECE, 1);
+
+	_hud->DrawLine(x + width - 1, y, x + width - 1, y + height, 0xCC9E22, 1);
+	_hud->DrawLine(x, y + height - 1, x + width, y + height - 1, 0xCC9E22, 1);
+
+	_hud->DrawLine(x, y, x + width, y, 0x303030, 1);
+	_hud->DrawLine(x, y, x, y + height, 0x303030, 1);
+
+	_hud->DrawLine(x + width, y, x + width, y + height, 0x303030, 1);
+	_hud->DrawLine(x, y + height, x + width, y + height, 0x303030, 1);
+}
+
+void SystemHud::DrawPauseIcon()
+{
+	DrawBar(10, 7, 5, 12);
+	DrawBar(17, 7, 5, 12);
 }

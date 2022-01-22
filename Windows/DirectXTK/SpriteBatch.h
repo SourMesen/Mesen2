@@ -57,6 +57,8 @@ namespace DirectX
 
         virtual ~SpriteBatch();
 
+		  void XM_CALLCONV Begin(SpriteSortMode sortMode, bool useBilinearInterpolation);
+
         // Begin/End a batch of sprite drawing operations.
         void XM_CALLCONV Begin(SpriteSortMode sortMode = SpriteSortMode_Deferred,
             _In_opt_ ID3D11BlendState* blendState = nullptr,

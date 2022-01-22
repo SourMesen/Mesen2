@@ -28,26 +28,26 @@ private:
 	
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
-	OverscanDimensions _overscan = {};
 
-public:
-	SystemHud(Emulator* emu);
-	virtual ~SystemHud();
-
-	void Draw(FrameInfo info, OverscanDimensions overscan);
 
 	void DrawMessages();
-
+	void DrawBar(int x, int y, int width, int height);
+	void DrawPauseIcon();
 	void DrawMessage(MessageInfo& msg, int& lastHeight);
-
 	void DrawString(string msg, int x, int y, uint8_t opacity = 255);
+	void DisplayMessage(string title, string message) override;
 
 	void ShowFpsCounter(int lineNumber);
 	void ShowFrameCounter(int lineNumber);
 	void ShowGameTimer(int lineNumber);
+
 	void DrawCounters();
 
-	void DisplayMessage(string title, string message) override;
+public:
+	SystemHud(Emulator* emu, DebugHud* hud);
+	~SystemHud();
+
+	void Draw(uint32_t width, uint32_t height);
 };
 
 

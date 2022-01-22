@@ -42,7 +42,8 @@ namespace DirectX
         ID3D11RasterizerState* __cdecl CullCounterClockwise() const;
 
         // Sampler states.
-        ID3D11SamplerState* __cdecl LinearClamp() const;
+		  ID3D11SamplerState* __cdecl PointClamp() const;
+		  ID3D11SamplerState* __cdecl LinearClamp() const;
 
     private:
         // Private implementation.

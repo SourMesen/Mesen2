@@ -59,6 +59,8 @@ XM_ALIGNED_STRUCT(16) SpriteBatch::Impl : public AlignedNew<SpriteBatch::Impl>
 public:
     Impl(_In_ ID3D11DeviceContext* deviceContext);
 
+	 void XM_CALLCONV Begin(SpriteSortMode sortMode, bool useBilinearInterpolation);
+
     void XM_CALLCONV Begin(SpriteSortMode sortMode,
         _In_opt_ ID3D11BlendState* blendState,
         _In_opt_ ID3D11SamplerState* samplerState,
@@ -348,6 +350,18 @@ SpriteBatch::Impl::Impl(_In_ ID3D11DeviceContext* deviceContext)
 {
 }
 
+void XM_CALLCONV SpriteBatch::Impl::Begin(SpriteSortMode sortMode, bool useBilinearInterpolation)
+{
+	auto func = std::function<void __cdecl ()>();
+	Begin(sortMode,
+		nullptr,
+		useBilinearInterpolation ? mDeviceResources->stateObjects.LinearClamp() : mDeviceResources->stateObjects.PointClamp(),
+		nullptr,
+		nullptr,
+		func,
+		MatrixIdentity
+	);
+}
 
 // Begins a batch of sprite drawing operations.
 _Use_decl_annotations_
@@ -982,6 +996,11 @@ SpriteBatch::~SpriteBatch()
 {
 }
 
+_Use_decl_annotations_
+void XM_CALLCONV SpriteBatch::Begin(SpriteSortMode sortMode, bool useBilinearInterpolation)
+{
+	pImpl->Begin(sortMode, useBilinearInterpolation);
+}
 
 _Use_decl_annotations_
 void XM_CALLCONV SpriteBatch::Begin(SpriteSortMode sortMode,

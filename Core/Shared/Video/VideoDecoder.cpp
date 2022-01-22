@@ -19,10 +19,8 @@ VideoDecoder::VideoDecoder(Emulator* emu)
 	_emu = emu;
 	_frameChanged = false;
 	_stopFlag = false;
-	_baseFrameInfo = { 512, 478 };
+	_baseFrameInfo = { 256, 239 };
 	_lastFrameInfo = _baseFrameInfo;
-	_inputHud.reset(new InputHud(emu));
-	_systemHud.reset(new SystemHud(emu));
 }
 
 VideoDecoder::~VideoDecoder()
@@ -82,9 +80,6 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	
 	OverscanDimensions overscan = _videoFilter->GetOverscan();
 
-	_inputHud->DrawControllers(overscan, _frameNumber);
-	_systemHud->Draw(frameInfo, overscan);
-
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
@@ -94,7 +89,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 		overscan.Bottom *= _scaleFilter->GetScale();
 	}
 
-	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber);
+	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber, true);
 
 	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), _baseFrameInfo);
 	if(frameInfo.Height != _lastFrameInfo.Height || frameInfo.Width != _lastFrameInfo.Width || aspectRatio != _lastAspectRatio) {

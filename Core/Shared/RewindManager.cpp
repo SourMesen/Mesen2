@@ -220,7 +220,7 @@ void RewindManager::ProcessEndOfFrame()
 	}
 }
 
-void RewindManager::ProcessFrame(void * frameBuffer, uint32_t width, uint32_t height, bool forRewind)
+void RewindManager::ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind)
 {
 	if(_rewindState == RewindState::Starting || _rewindState == RewindState::Started) {
 		if(!forRewind) {
@@ -231,7 +231,7 @@ void RewindManager::ProcessFrame(void * frameBuffer, uint32_t width, uint32_t he
 		}
 
 		VideoFrame newFrame;
-		newFrame.Data = vector<uint32_t>((uint32_t*)frameBuffer, (uint32_t*)frameBuffer + width * height);
+		newFrame.Data = vector<uint32_t>(frameBuffer, frameBuffer + width * height);
 		newFrame.Width = width;
 		newFrame.Height = height;
 		_videoHistoryBuilder.push_back(newFrame);
@@ -352,12 +352,12 @@ bool RewindManager::HasHistory()
 	return _hasHistory;
 }
 
-void RewindManager::SendFrame(void * frameBuffer, uint32_t width, uint32_t height, bool forRewind)
+void RewindManager::SendFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind)
 {
 	ProcessFrame(frameBuffer, width, height, forRewind);
 }
 
-bool RewindManager::SendAudio(int16_t * soundBuffer, uint32_t sampleCount)
+bool RewindManager::SendAudio(int16_t* soundBuffer, uint32_t sampleCount)
 {
 	return ProcessAudio(soundBuffer, sampleCount);
 }

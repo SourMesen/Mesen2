@@ -28,18 +28,19 @@ private:
 	ID3D11DepthStencilState* _pDepthDisabledStencilState = nullptr;
 	ID3D11BlendState*			_pAlphaEnableBlendingState = nullptr;
 
-	ID3D11SamplerState*		_samplerState = nullptr;
-		
 	atomic<bool>				_needFlip = false;
 	uint8_t*						_textureBuffer[2] = { nullptr, nullptr };
 	ID3D11Texture2D*			_pTexture = nullptr;
 	ID3D11ShaderResourceView*	_pTextureSrv = nullptr;
 
+	ID3D11Texture2D* _pHudTexture = nullptr;
+	ID3D11ShaderResourceView* _pHudTextureSrv = nullptr;
+	uint32_t _hudWidth = 0;
+	uint32_t _hudHeight = 0;
+
 	bool							_frameChanged = true;
 	SimpleLock					_frameLock;
 	SimpleLock					_textureLock;
-
-	bool _useBilinearInterpolation = false;
 
 	unique_ptr<SpriteBatch> _spriteBatch;
 
@@ -60,8 +61,6 @@ private:
 	uint32_t _nesFrameWidth = 0;
 	uint32_t _newFrameBufferSize = 0;
 
-	uint32_t _noUpdateCount = 0;
-
 	HRESULT InitDevice();
 	void CleanupDevice();
 
@@ -70,12 +69,14 @@ private:
 	ID3D11Texture2D* CreateTexture(uint32_t width, uint32_t height);
 	ID3D11ShaderResourceView* GetShaderResourceView(ID3D11Texture2D* texture);
 	void DrawScreen();
+
+	bool CreateHudTexture(uint32_t width, uint32_t height);
+	void DrawHud(uint32_t* hudBuffer, uint32_t width, uint32_t height);
 		
 	HRESULT CreateRenderTargetView();
 	void ReleaseRenderTargetView();
 	HRESULT CreateNesBuffers();
 	void ResetNesBuffers();
-	HRESULT CreateSamplerState();
 
 public:
 	Renderer(Emulator* emu, HWND hWnd, bool registerAsMessageManager);
@@ -84,7 +85,7 @@ public:
 	void SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight);
 
 	void Reset();
-	void Render();
+	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight);
 
-	void UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height);
+	void UpdateFrame(uint32_t *frameBuffer, uint32_t width, uint32_t height);
 };

@@ -8,8 +8,6 @@ class BaseVideoFilter;
 class ScaleFilter;
 //class RotateFilter;
 class IRenderingDevice;
-class InputHud;
-class SystemHud;
 class Emulator;
 
 class VideoDecoder
@@ -23,8 +21,6 @@ private:
 	ConsoleType _consoleType = ConsoleType::Snes;
 
 	unique_ptr<thread> _decodeThread;
-	unique_ptr<InputHud> _inputHud;
-	unique_ptr<SystemHud> _systemHud;
 
 	SimpleLock _stopStartLock;
 	AutoResetEvent _waitForFrame;

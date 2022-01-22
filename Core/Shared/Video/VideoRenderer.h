@@ -7,6 +7,8 @@
 
 class IRenderingDevice;
 class Emulator;
+class SystemHud;
+class DebugHud;
 
 class IVideoRecorder;
 enum class VideoCodec;
@@ -25,6 +27,11 @@ private:
 	uint32_t _rendererWidth = 512;
 	uint32_t _rendererHeight = 480;
 
+	unique_ptr<DebugHud> _rendererHud;
+	unique_ptr<SystemHud> _systemHud;
+	uint32_t* _hudSurface = nullptr;
+	FrameInfo _hudSize = {};
+
 	shared_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
@@ -39,7 +46,7 @@ public:
 	void StartThread();
 	void StopThread();
 
-	void UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height);
+	void UpdateFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height);
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 

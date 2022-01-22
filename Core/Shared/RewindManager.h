@@ -54,8 +54,8 @@ private:
 	void Stop();
 	void ForceStop();
 
-	void ProcessFrame(void *frameBuffer, uint32_t width, uint32_t height, bool forRewind);
-	bool ProcessAudio(int16_t *soundBuffer, uint32_t sampleCount);
+	void ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind);
+	bool ProcessAudio(int16_t* soundBuffer, uint32_t sampleCount);
 	
 	void ClearBuffer();
 
@@ -77,6 +77,6 @@ public:
 
 	bool HasHistory();
 
-	void SendFrame(void *frameBuffer, uint32_t width, uint32_t height, bool forRewind);
+	void SendFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind);
 	bool SendAudio(int16_t *soundBuffer, uint32_t sampleCount);
 };

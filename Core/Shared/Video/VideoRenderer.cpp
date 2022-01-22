@@ -4,6 +4,9 @@
 #include "Shared/Interfaces/IRenderingDevice.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/Video/DebugHud.h"
+#include "Shared/Video/SystemHud.h"
+#include "Shared/InputHud.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Video/IVideoRecorder.h"
 #include "Utilities/Video/AviRecorder.h"
@@ -12,11 +15,20 @@
 VideoRenderer::VideoRenderer(Emulator* emu)
 {
 	_emu = emu;
-	_stopFlag = false;	
+	_stopFlag = false;
+
+	_rendererHud.reset(new DebugHud());
+	_systemHud.reset(new SystemHud(_emu, _rendererHud.get()));
+
+	_hudSurface = new uint32_t[256*240];
+	_hudSize.Width = 256;
+	_hudSize.Height = 240;
 }
 
 VideoRenderer::~VideoRenderer()
 {
+	delete[] _hudSurface;
+
 	_stopFlag = true;
 	StopThread();
 }
@@ -71,15 +83,25 @@ void VideoRenderer::RenderThread()
 	}
 
 	while(!_stopFlag.load()) {
-		//Wait until a frame is ready, or until 16ms have passed (to allow UI to run at a minimum of 60fps)
-		_waitForRender.Wait(16);
+		//Wait until a frame is ready, or until 32ms have passed (to allow HUD to update at ~30fps when paused)
+		_waitForRender.Wait(32);
 		if(_renderer) {
-			_renderer->Render();
+			FrameInfo size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
+			if(_hudSize.Width != size.Width || _hudSize.Height != size.Height) {
+				delete[] _hudSurface;
+				_hudSurface = new uint32_t[size.Height * size.Width];
+				_hudSize = size;
+			}
+
+			memset(_hudSurface, 0, _hudSize.Width * _hudSize.Height * sizeof(uint32_t));
+			_systemHud->Draw(_hudSize.Width, _hudSize.Height);
+			_rendererHud->Draw(_hudSurface, _hudSize, {}, 0, false);
+			_renderer->Render(_hudSurface, _hudSize.Width, _hudSize.Height);
 		}
 	}
 }
 
-void VideoRenderer::UpdateFrame(void* frameBuffer, uint32_t width, uint32_t height)
+void VideoRenderer::UpdateFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height)
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder;
 	if(recorder) {

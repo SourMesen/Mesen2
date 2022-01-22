@@ -558,7 +558,11 @@ uint32_t Emulator::GetMasterClockRate()
 
 uint32_t Emulator::GetFrameCount()
 {
-	return _console->GetPpuFrame().FrameCount;
+	if(_console) {
+		return _console->GetPpuFrame().FrameCount;
+	} else {
+		return 0;
+	}
 }
 
 double Emulator::GetFps()

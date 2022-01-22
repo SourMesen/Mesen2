@@ -37,7 +37,8 @@ public:
     ComPtr<ID3D11BlendState> alphaBlend;
     ComPtr<ID3D11DepthStencilState> depthNone;
     ComPtr<ID3D11RasterizerState> cullCounterClockwise;
-    ComPtr<ID3D11SamplerState> linearClamp;
+	 ComPtr<ID3D11SamplerState> linearClamp;
+	 ComPtr<ID3D11SamplerState> pointClamp;
 
     std::mutex mutex;
 
@@ -207,6 +208,14 @@ ID3D11RasterizerState* CommonStates::CullCounterClockwise() const
     {
         return pImpl->CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, pResult);
     });
+}
+
+ID3D11SamplerState* CommonStates::PointClamp() const
+{
+	return DemandCreate(pImpl->pointClamp, pImpl->mutex, [&](ID3D11SamplerState** pResult)
+	{
+		return pImpl->CreateSamplerState(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, pResult);
+	});
 }
 
 ID3D11SamplerState* CommonStates::LinearClamp() const
