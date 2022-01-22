@@ -30,6 +30,7 @@ public:
 
 	void Acquire();
 	bool IsFree();
+	bool IsLockedByCurrentThread();
 	void WaitForRelease();
 	void Release();
 };

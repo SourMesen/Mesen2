@@ -37,6 +37,11 @@ bool SimpleLock::IsFree()
 	return _lockCount == 0;
 }
 
+bool SimpleLock::IsLockedByCurrentThread()
+{
+	return _lockCount > 0 && _holderThreadID == _threadID;
+}
+
 void SimpleLock::WaitForRelease()
 {
 	//Wait until we are able to grab a lock, and then release it again
@@ -46,7 +51,7 @@ void SimpleLock::WaitForRelease()
 
 void SimpleLock::Release()
 {
-	if(_lockCount > 0 && _holderThreadID == _threadID) {
+	if(IsLockedByCurrentThread()) {
 		_lockCount--;
 		if(_lockCount == 0) {
 			_holderThreadID = std::thread::id();

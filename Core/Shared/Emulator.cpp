@@ -102,8 +102,7 @@ void Emulator::Run()
 		return;
 	}
 
-	auto lock = _runLock.AcquireSafe();
-	auto emulationLock = _emulationLock.AcquireSafe();
+	_runLock.Acquire();
 
 	_stopFlag = false;
 	_isRunAheadFrame = false;
@@ -150,6 +149,11 @@ void Emulator::Run()
 	_movieManager->Stop();
 
 	_emulationThreadId = thread::id();
+
+	if(_runLock.IsLockedByCurrentThread()) {
+		//Lock might not be held by current frame is _stopFlag was set to interrupt the thread
+		_runLock.Release();
+	}
 
 	PlatformUtilities::RestoreTimerResolution();
 }
@@ -287,8 +291,6 @@ void Emulator::Stop(bool sendNotification)
 		debugger->SuspendDebugger(false);
 		debugger->Run();
 	}
-
-	_emulationLock.WaitForRelease();
 
 	if(_emuThread) {
 		_emuThread->join();
@@ -686,8 +688,8 @@ void Emulator::WaitForPauseEnd()
 	PlatformUtilities::DisableScreensaver();
 	PlatformUtilities::EnableHighResolutionTimer();
 
-	_runLock.Acquire();
 	if(!_stopFlag) {
+		_runLock.Acquire();
 		_notificationManager->SendNotification(ConsoleNotificationType::GameResumed);
 	}
 }
