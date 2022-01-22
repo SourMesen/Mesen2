@@ -4,11 +4,11 @@
 #include "SNES/MemoryMappings.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class Cpu;
+class SnesCpu;
 class Sa1Cpu;
-class MemoryManager;
+class SnesMemoryManager;
 class BaseCartridge;
 
 enum class MemoryOperationType;
@@ -22,11 +22,11 @@ private:
 	static constexpr int InternalRamSize = 0x800;
 
 	unique_ptr<Sa1Cpu> _cpu;
-	Console* _console;
+	SnesConsole* _console;
 	Emulator* _emu;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	BaseCartridge* _cart;
-	Cpu* _snesCpu;
+	SnesCpu* _snesCpu;
 
 	Sa1State _state = {};
 	uint8_t* _iRam;
@@ -63,7 +63,7 @@ private:
 	void WriteBwRam(uint32_t addr, uint8_t value);
 
 public:
-	Sa1(Console* console);
+	Sa1(SnesConsole* console);
 	virtual ~Sa1();
 	
 	void WriteSa1(uint32_t addr, uint8_t value, MemoryOperationType type);
@@ -93,7 +93,7 @@ public:
 	uint32_t DebugGetInternalRamSize();
 
 	DebugSa1State GetState();
-	CpuState& GetCpuState();
+	SnesCpuState& GetCpuState();
 
 	uint16_t ReadVector(uint16_t vector);
 	MemoryMappings* GetMemoryMappings();

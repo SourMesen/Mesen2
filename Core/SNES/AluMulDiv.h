@@ -3,12 +3,12 @@
 #include "InternalRegisterTypes.h"
 #include "Utilities/ISerializable.h"
 
-class Cpu;
+class SnesCpu;
 
 class AluMulDiv final : public ISerializable
 {
 private:
-	Cpu *_cpu;
+	SnesCpu *_cpu;
 
 	uint64_t _prevCpuCycle = 0;
 
@@ -19,7 +19,7 @@ private:
 	uint8_t _divCounter = 0;
 	
 public:
-	void Initialize(Cpu* cpu);
+	void Initialize(SnesCpu* cpu);
 	
 	void Run(bool isRead);
 

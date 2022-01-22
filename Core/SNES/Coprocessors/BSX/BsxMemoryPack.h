@@ -5,12 +5,12 @@
 #include "Utilities/ISerializable.h"
 
 class BsxMemoryPackHandler;
-class Console;
+class SnesConsole;
 
 class BsxMemoryPack : public ISerializable
 {
 private:
-	Console* _console = nullptr;
+	SnesConsole* _console = nullptr;
 	vector<uint8_t> _orgData;
 	uint8_t* _data = nullptr;
 	uint32_t _dataSize = 0;
@@ -26,7 +26,7 @@ private:
 	uint16_t _command = 0;
 
 public:
-	BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash);
+	BsxMemoryPack(SnesConsole* console, vector<uint8_t>& data, bool persistFlash);
 	virtual ~BsxMemoryPack();
 
 	void SaveBattery();

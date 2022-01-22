@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "Debugger/DebugTypes.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/Disassembler.h"
@@ -11,7 +11,7 @@
 #include "Debugger/DebugUtilities.h"
 #include "Shared/BaseState.h"
 #include "Utilities/HexUtilities.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "NES/NesTypes.h"
 #include "Gameboy/GbTypes.h"
@@ -502,9 +502,9 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 
 					default:
 						switch(_cpuType) {
-							case CpuType::Cpu:
+							case CpuType::Snes:
 							case CpuType::Sa1: {
-								CpuState& s = (CpuState&)state;
+								SnesCpuState& s = (SnesCpuState&)state;
 								switch(token) {
 									case EvalValues::RegA: token = s.A; break;
 									case EvalValues::RegX: token = s.X; break;
@@ -513,7 +513,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 									case EvalValues::RegPS: token = s.PS; break;
 									case EvalValues::RegPC: token = (s.K << 16) | s.PC; break;
 									case EvalValues::Nmi: token = s.NmiFlag; resultType = EvalResultType::Boolean; break;
-									case EvalValues::Irq: token = s.IrqSource != 0; resultType = EvalResultType::Boolean; break;
+									case EvalValues::Irq: token = s.SnesIrqSource != 0; resultType = EvalResultType::Boolean; break;
 								}
 								break;
 							}

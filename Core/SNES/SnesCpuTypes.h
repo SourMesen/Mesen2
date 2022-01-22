@@ -2,14 +2,14 @@
 #include "stdafx.h"
 #include "Shared/BaseState.h"
 
-enum class CpuStopState : uint8_t
+enum class SnesCpuStopState : uint8_t
 {
 	Running = 0,
 	Stopped = 1,
 	WaitingForIrq = 2
 };
 
-struct CpuState : BaseState
+struct SnesCpuState : BaseState
 {
 	uint64_t CycleCount;
 
@@ -47,9 +47,9 @@ struct CpuState : BaseState
 	bool PrevNeedNmi;
 	bool NeedNmi;
 
-	uint8_t IrqSource;
+	uint8_t SnesIrqSource;
 	uint8_t PrevIrqSource;
-	CpuStopState StopState;
+	SnesCpuStopState StopState;
 };
 
 namespace ProcFlags
@@ -72,7 +72,7 @@ namespace ProcFlags
 	};
 }
 
-enum class IrqSource
+enum class SnesIrqSource
 {
 	None = 0,
 	Ppu = 1,

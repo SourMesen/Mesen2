@@ -4,15 +4,15 @@
 #include "SNES/Coprocessors/BSX/BsxStream.h"
 #include "Utilities/ISerializable.h"
 
-class Console;
-class MemoryManager;
+class SnesConsole;
+class SnesMemoryManager;
 
 class BsxSatellaview : public IMemoryHandler, public ISerializable
 {
 private:
 	IMemoryHandler* _bBusHandler;
-	Console* _console;
-	MemoryManager* _memoryManager;
+	SnesConsole* _console;
+	SnesMemoryManager* _memoryManager;
 
 	BsxStream _stream[2];
 	uint8_t _streamReg;
@@ -24,7 +24,7 @@ private:
 	void ProcessClocks();
 
 public:
-	BsxSatellaview(Console* console, IMemoryHandler *bBusHandler);
+	BsxSatellaview(SnesConsole* console, IMemoryHandler *bBusHandler);
 
 	void Reset();
 

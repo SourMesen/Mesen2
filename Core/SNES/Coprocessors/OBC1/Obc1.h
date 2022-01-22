@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 
-class Console;
+class SnesConsole;
 
 class Obc1 : public BaseCoprocessor
 {
@@ -18,7 +18,7 @@ private:
 	void WriteRam(uint16_t addr, uint8_t value);
 
 public:
-	Obc1(Console* console, uint8_t* saveRam, uint32_t saveRamSize);
+	Obc1(SnesConsole* console, uint8_t* saveRam, uint32_t saveRamSize);
 
 	void Reset() override;
 

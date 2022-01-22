@@ -17,7 +17,7 @@ namespace Mesen.Debugger.Windows
 		private PaletteViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public PaletteViewerWindow() : this(CpuType.Cpu) { }
+		public PaletteViewerWindow() : this(CpuType.Snes) { }
 
 		public PaletteViewerWindow(CpuType cpuType)
 		{

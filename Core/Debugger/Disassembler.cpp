@@ -8,7 +8,7 @@
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/DebugUtilities.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Gameboy/GbTypes.h"
@@ -338,10 +338,10 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 			data.AbsoluteAddress = row.Address.Address;
 
 			switch(lineCpuType) {
-				case CpuType::Cpu:
+				case CpuType::Snes:
 				case CpuType::Sa1:
 				{
-					CpuState state = (CpuState&)_debugger->GetCpuStateRef(lineCpuType);
+					SnesCpuState state = (SnesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 					state.K = (row.CpuAddress >> 16);
 

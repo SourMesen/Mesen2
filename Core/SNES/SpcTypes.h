@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "SNES/SpcTimer.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "Shared/BaseState.h"
 
 struct SpcState : BaseState
@@ -20,7 +20,7 @@ struct SpcState : BaseState
 	uint8_t ExternalSpeed;
 	bool TimersEnabled;
 	bool TimersDisabled;
-	CpuStopState StopState;
+	SnesCpuStopState StopState;
 
 	uint8_t DspReg;
 	uint8_t OutputReg[4];

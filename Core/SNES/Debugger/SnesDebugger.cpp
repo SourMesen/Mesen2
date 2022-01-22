@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "SNES/Cpu.h"
+#include "SNES/SnesCpu.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/Spc.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesPpu.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/Debugger/SnesAssembler.h"
-#include "SNES/Debugger/CpuDebugger.h"
+#include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"
 #include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
 #include "SNES/Debugger/SnesPpuTools.h"
@@ -30,12 +30,12 @@
 #include "Utilities/FolderUtilities.h"
 #include "MemoryOperationType.h"
 
-CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
+SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 {
 	_cpuType = cpuType;
 
 	_debugger = debugger;
-	Console* console = (Console*)debugger->GetConsole();
+	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 	_console = console;
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
@@ -49,14 +49,14 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_traceLogger.reset(new SnesCpuTraceLogger(debugger, cpuType, _ppu, _memoryManager));
 	_ppuTools.reset(new SnesPpuTools(debugger, debugger->GetEmulator()));
 	
-	if(_cpuType == CpuType::Cpu) {
+	if(_cpuType == CpuType::Snes) {
 		_memoryMappings = _memoryManager->GetMemoryMappings();
 	} else {
 		_memoryMappings = _sa1->GetMemoryMappings();
 	}
 
-	if(cpuType == CpuType::Cpu) {
-		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
+	if(cpuType == CpuType::Snes) {
+		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes));
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
@@ -70,27 +70,27 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 		_enableBreakOnUninitRead = true;
 	}
 
-	_debuggerEnabledFlag = _cpuType == CpuType::Cpu ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled;
+	_debuggerEnabledFlag = _cpuType == CpuType::Snes ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled;
 }
 
-void CpuDebugger::Init()
+void SnesDebugger::Init()
 {
 	_spcTraceLogger = _debugger->GetTraceLogger(CpuType::Spc);
 	_dspTraceLogger = _debugger->GetTraceLogger(CpuType::NecDsp);
 }
 
-void CpuDebugger::Reset()
+void SnesDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
 	_callstackManager.reset(new CallstackManager(_debugger));
 	_prevOpCode = 0xFF;
 }
 
-void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
-	CpuState& state = GetCpuState();
+	SnesCpuState& state = GetCpuState();
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(IsRegister(addr)) {
@@ -194,7 +194,7 @@ void CpuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 }
 
-void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
+void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, SnesMemoryType::CpuMemory);
@@ -215,15 +215,15 @@ void CpuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
 }
 
-void CpuDebugger::Run()
+void SnesDebugger::Run()
 {
 	_step.reset(new StepRequest());
 }
 
-void CpuDebugger::Step(int32_t stepCount, StepType type)
+void SnesDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step;
-	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetCpuState().StopState == CpuStopState::Stopped) {
+	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetCpuState().StopState == SnesCpuStopState::Stopped) {
 		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
 		step.PpuStepCount = 1;
 	} else {
@@ -249,7 +249,7 @@ void CpuDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
+void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _memoryMappings->GetAbsoluteAddress(originalPc);
@@ -258,7 +258,7 @@ void CpuDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
-void CpuDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -266,7 +266,7 @@ void CpuDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType me
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
-void CpuDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
+void SnesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -274,7 +274,7 @@ void CpuDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType m
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 
-void CpuDebugger::ProcessPpuCycle()
+void SnesDebugger::ProcessPpuCycle()
 {
 	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
 	if(_spcTraceLogger->IsEnabled()) {
@@ -300,71 +300,71 @@ void CpuDebugger::ProcessPpuCycle()
 	}
 }
 
-CpuState& CpuDebugger::GetCpuState()
+SnesCpuState& SnesDebugger::GetCpuState()
 {
-	if(_cpuType == CpuType::Cpu) {
+	if(_cpuType == CpuType::Snes) {
 		return _cpu->GetState();
 	} else {
 		return _sa1->GetCpuState();
 	}
 }
 
-bool CpuDebugger::IsRegister(uint32_t addr)
+bool SnesDebugger::IsRegister(uint32_t addr)
 {
-	return _cpuType == CpuType::Cpu && _memoryManager->IsRegister(addr);
+	return _cpuType == CpuType::Snes && _memoryManager->IsRegister(addr);
 }
 
-CallstackManager* CpuDebugger::GetCallstackManager()
+CallstackManager* SnesDebugger::GetCallstackManager()
 {
 	return _callstackManager.get();
 }
 
-ITraceLogger* CpuDebugger::GetTraceLogger()
+ITraceLogger* SnesDebugger::GetTraceLogger()
 {
 	return _traceLogger.get();
 }
 
-BreakpointManager* CpuDebugger::GetBreakpointManager()
+BreakpointManager* SnesDebugger::GetBreakpointManager()
 {
 	return _breakpointManager.get();
 }
 
-IAssembler* CpuDebugger::GetAssembler()
+IAssembler* SnesDebugger::GetAssembler()
 {
 	return _assembler.get();
 }
 
-BaseEventManager* CpuDebugger::GetEventManager()
+BaseEventManager* SnesDebugger::GetEventManager()
 {
 	return _eventManager.get();
 }
 
-CodeDataLogger* CpuDebugger::GetCodeDataLogger()
+CodeDataLogger* SnesDebugger::GetCodeDataLogger()
 {
 	if(_cpuType == CpuType::Sa1) {
-		return _debugger->GetCodeDataLogger(CpuType::Cpu);
+		return _debugger->GetCodeDataLogger(CpuType::Snes);
 	} else {
 		return _codeDataLogger.get();
 	}
 }
 
-PpuTools* CpuDebugger::GetPpuTools()
+PpuTools* SnesDebugger::GetPpuTools()
 {
 	return _ppuTools.get();
 }
 
-BaseState& CpuDebugger::GetState()
+BaseState& SnesDebugger::GetState()
 {
 	return GetCpuState();
 }
 
-void CpuDebugger::GetPpuState(BaseState& state)
+void SnesDebugger::GetPpuState(BaseState& state)
 {
-	(PpuState&)state = _ppu->GetStateRef();
+	(SnesPpuState&)state = _ppu->GetStateRef();
 }
 
-void CpuDebugger::SetPpuState(BaseState& srcState)
+void SnesDebugger::SetPpuState(BaseState& srcState)
 {
-	PpuState& dstState = _ppu->GetStateRef();
-	dstState = (PpuState&)srcState;
+	SnesPpuState& dstState = _ppu->GetStateRef();
+	dstState = (SnesPpuState&)srcState;
 }

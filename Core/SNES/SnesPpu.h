@@ -1,17 +1,17 @@
 #pragma once
 #include "stdafx.h"
-#include "PpuTypes.h"
+#include "SNES/SnesPpuTypes.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Timer.h"
 
 class Emulator;
-class Console;
+class SnesConsole;
 class InternalRegisters;
-class MemoryManager;
+class SnesMemoryManager;
 class Spc;
 class EmuSettings;
 
-class Ppu : public ISerializable
+class SnesPpu : public ISerializable
 {
 public:
 	constexpr static uint32_t SpriteRamSize = 544;
@@ -23,9 +23,9 @@ private:
 	constexpr static int ColorWindowIndex = 5;
 
 	Emulator* _emu;
-	Console* _console;
+	SnesConsole* _console;
 	InternalRegisters* _regs;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	Spc* _spc;
 	EmuSettings* _settings;
 
@@ -62,14 +62,14 @@ private:
 
 	uint8_t _oddFrame = 0;
 
-	PpuState _state;
+	SnesPpuState _state;
 
 	uint16_t _drawStartX = 0;
 	uint16_t _drawEndX = 0;
 	
 	uint16_t *_vram = nullptr;
-	uint16_t _cgram[Ppu::CgRamSize >> 1] = {};
-	uint8_t _oamRam[Ppu::SpriteRamSize] = {};
+	uint16_t _cgram[SnesPpu::CgRamSize >> 1] = {};
+	uint8_t _oamRam[SnesPpu::SpriteRamSize] = {};
 
 	uint16_t *_outputBuffers[2] = {};
 	uint16_t *_currentBuffer = nullptr;
@@ -205,8 +205,8 @@ private:
 	void RandomizeState();
 
 public:
-	Ppu(Emulator* emu, Console* console);
-	virtual ~Ppu();
+	SnesPpu(Emulator* emu, SnesConsole* console);
+	virtual ~SnesPpu();
 
 	void PowerOn();
 	void Reset();
@@ -221,9 +221,9 @@ public:
 	uint16_t GetNmiScanline();
 	uint16_t GetVblankStart();
 
-	PpuState GetState();
-	PpuState& GetStateRef();
-	void GetState(PpuState &state, bool returnPartialState);
+	SnesPpuState GetState();
+	SnesPpuState& GetStateRef();
+	void GetState(SnesPpuState &state, bool returnPartialState);
 
 	bool ProcessEndOfScanline(uint16_t hClock);
 	void UpdateSpcState();

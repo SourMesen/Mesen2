@@ -9,26 +9,26 @@
 class BaseControlDevice;
 class IInputRecorder;
 class IInputProvider;
-class Console;
+class SnesConsole;
 class Emulator;
 class SystemActionManager;
 struct ControllerData;
 enum class ControllerType;
 enum class ExpansionPortDevice;
 
-class ControlManager : public ISerializable, public BaseControlManager
+class SnesControlManager : public ISerializable, public BaseControlManager
 {
 private:
 	uint32_t _inputConfigVersion;
 
 protected:
-	Console* _console;
+	SnesConsole* _console;
 
 	ControllerType GetControllerType(uint8_t port);
 
 public:
-	ControlManager(Console* console);
-	virtual ~ControlManager();
+	SnesControlManager(SnesConsole* console);
+	virtual ~SnesControlManager();
 
 	void UpdateControlDevices() override;
 

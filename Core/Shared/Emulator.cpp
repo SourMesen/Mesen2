@@ -26,7 +26,7 @@
 #include "Netplay/GameClient.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IControlManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
@@ -376,7 +376,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	
 	if(result == LoadRomResult::UnknownType && std::find(_snesExtensions.begin(), _snesExtensions.end(), romExt) != _snesExtensions.end()) {
 		memset(_consoleMemory, 0, sizeof(_consoleMemory));
-		console.reset(new Console(this));
+		console.reset(new SnesConsole(this));
 		result = console->LoadRom(romFile);
 	}
 	
@@ -585,7 +585,7 @@ void Emulator::PauseOnNextFrame()
 	if(debugger) {
 		switch(GetConsoleType()) {
 			case ConsoleType::Snes:
-				debugger->Step(CpuType::Cpu, 240, StepType::SpecificScanline);
+				debugger->Step(CpuType::Snes, 240, StepType::SpecificScanline);
 				break;
 
 			case ConsoleType::Gameboy:
@@ -609,7 +609,7 @@ void Emulator::Pause()
 	if(debugger) {
 		switch(GetConsoleType()) {
 			case ConsoleType::Snes:
-				debugger->Step(CpuType::Cpu, 1, StepType::Step);
+				debugger->Step(CpuType::Snes, 1, StepType::Step);
 				break;
 
 			case ConsoleType::Gameboy:
@@ -981,7 +981,7 @@ void Emulator::BreakIfDebugging(BreakSource source)
 	}
 }
 
-template void Emulator::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Emulator::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -989,7 +989,7 @@ template void Emulator::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_
 template void Emulator::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
-template void Emulator::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Emulator::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -997,11 +997,11 @@ template void Emulator::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8
 template void Emulator::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
-template void Emulator::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Emulator::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
-template void Emulator::AddDebugEvent<CpuType::Cpu>(DebugEventType evtType);
+template void Emulator::AddDebugEvent<CpuType::Snes>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Gameboy>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Nes>(DebugEventType evtType);

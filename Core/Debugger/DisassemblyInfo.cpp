@@ -5,9 +5,9 @@
 #include "Debugger/DebugUtilities.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Console.h"
-#include "SNES/Debugger/CpuDisUtils.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/Debugger/SnesDisUtils.h"
 #include "SNES/Debugger/SpcDisUtils.h"
 #include "SNES/Debugger/GsuDisUtils.h"
 #include "SNES/Debugger/NecDspDisUtils.h"
@@ -71,8 +71,8 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
-			CpuDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings);
+		case CpuType::Snes:
+			SnesDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings);
 			break;
 
 		case CpuType::Spc: SpcDisUtils::GetDisassembly(*this, out, memoryAddr, labelManager, settings); break;
@@ -92,11 +92,11 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState,
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
-			return CpuDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(CpuState*)cpuState, cpuType);
+		case CpuType::Snes:
+			return SnesDisUtils::GetEffectiveAddress(*this, (SnesConsole*)debugger->GetConsole(), *(SnesCpuState*)cpuState, cpuType);
 
-		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(SpcState*)cpuState);
-		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (Console*)debugger->GetConsole(), *(GsuState*)cpuState);
+		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (SnesConsole*)debugger->GetConsole(), *(SpcState*)cpuState);
+		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (SnesConsole*)debugger->GetConsole(), *(GsuState*)cpuState);
 
 		case CpuType::Cx4:
 		case CpuType::NecDsp:
@@ -156,8 +156,8 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 {
 	switch(type) {
 		case CpuType::Sa1:
-		case CpuType::Cpu: 
-			return CpuDisUtils::GetOpSize(opCode, flags);
+		case CpuType::Snes: 
+			return SnesDisUtils::GetOpSize(opCode, flags);
 
 		case CpuType::Spc: return SpcDisUtils::GetOpSize(opCode);
 		
@@ -186,7 +186,7 @@ bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
 {
 	switch(type) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
+		case CpuType::Snes:
 			return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
 
 		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
@@ -210,7 +210,7 @@ bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
 	//RTS/RTI
 	switch(type) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
+		case CpuType::Snes:
 			return opCode == 0x60 || opCode == 0x6B || opCode == 0x40;
 
 		case CpuType::Spc: return opCode == 0x6F || opCode == 0x7F;
@@ -234,7 +234,7 @@ bool DisassemblyInfo::IsUnconditionalJump()
 	uint8_t opCode = GetOpCode();
 	switch(_cpuType) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
+		case CpuType::Snes:
 			if(opCode == 0x00 || opCode == 0x20 || opCode == 0x40 || opCode == 0x60 || opCode == 0x80 || opCode == 0x22 || opCode == 0xFC || opCode == 0x6B || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C || opCode == 0x7C || opCode == 0x02) {
 				//Jumps, RTI, RTS, BRK, COP, etc., stop disassembling
 				return true;
@@ -280,7 +280,7 @@ bool DisassemblyInfo::IsJump()
 	uint8_t opCode = GetOpCode();
 	switch(_cpuType) {
 		case CpuType::Sa1:
-		case CpuType::Cpu:
+		case CpuType::Snes:
 			//TODO
 			return false;
 
@@ -316,7 +316,7 @@ bool DisassemblyInfo::IsJump()
 
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 {
-	if(_cpuType == CpuType::Cpu || _cpuType == CpuType::Sa1) {
+	if(_cpuType == CpuType::Snes || _cpuType == CpuType::Sa1) {
 		uint8_t opCode = GetOpCode();
 		if(opCode == 0xC2) {
 			//REP, update the flags and keep disassembling

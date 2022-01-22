@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Spc.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/SpcFileData.h"
 #ifndef DUMMYSPC
 #include "SNES/DSP/SPC_DSP.h"
@@ -16,7 +16,7 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Spc::Spc(Console* console)
+Spc::Spc(SnesConsole* console)
 {
 	_emu = console->GetEmulator();
 	_console = console;
@@ -42,7 +42,7 @@ Spc::Spc(Console* console)
 	_state.RomEnabled = true;
 	_state.SP = 0xFF;
 	_state.PC = ReadWord(Spc::ResetVector);
-	_state.StopState = CpuStopState::Running;
+	_state.StopState = SnesCpuStopState::Running;
 
 	_opCode = 0;
 	_opStep = SpcOpStep::ReadOpCode;
@@ -67,7 +67,7 @@ Spc::~Spc()
 
 void Spc::Reset()
 {
-	_state.StopState = CpuStopState::Running;
+	_state.StopState = SnesCpuStopState::Running;
 
 	_state.Timer0.Reset();
 	_state.Timer1.Reset();
@@ -354,7 +354,7 @@ void Spc::DspWriteRam(uint16_t addr, uint8_t value)
 
 void Spc::Run()
 {
-	if(!_enabled || _state.StopState != CpuStopState::Running) {
+	if(!_enabled || _state.StopState != SnesCpuStopState::Running) {
 		//STOP or SLEEP were executed - execution is stopped forever.
 		return;
 	}

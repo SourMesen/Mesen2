@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "Gsu.h"
-#include "SNES/Cpu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesMemoryManager.h"
 
 void Gsu::STOP()
 {
 	if(!_state.IrqDisabled) {
 		_state.SFR.Irq = true;
-		_cpu->SetIrqSource(IrqSource::Coprocessor);
+		_cpu->SetIrqSource(SnesIrqSource::Coprocessor);
 	}
 	_state.ProgramReadBuffer = 0x01; //Run a NOP first when the GSU is restarted
 	_state.SFR.Running = false;

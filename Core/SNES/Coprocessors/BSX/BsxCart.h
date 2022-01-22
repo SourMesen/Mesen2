@@ -2,16 +2,16 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 
-class Console;
-class MemoryManager;
+class SnesConsole;
+class SnesMemoryManager;
 class BsxMemoryPack;
 class BsxSatellaview;
 
 class BsxCart : public BaseCoprocessor
 {
 private:
-	Console* _console;
-	MemoryManager* _memoryManager;
+	SnesConsole* _console;
+	SnesMemoryManager* _memoryManager;
 	BsxMemoryPack* _memPack;
 	unique_ptr<BsxSatellaview> _satellaview;
 
@@ -26,7 +26,7 @@ private:
 	void UpdateMemoryMappings();
 
 public:
-	BsxCart(Console* console, BsxMemoryPack* memPack);
+	BsxCart(SnesConsole* console, BsxMemoryPack* memPack);
 	virtual ~BsxCart();
 
 	uint8_t Read(uint32_t addr) override;

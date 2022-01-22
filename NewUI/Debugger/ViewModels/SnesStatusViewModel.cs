@@ -45,8 +45,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public override void UpdateUiState()
 		{
-			CpuState cpu = DebugApi.GetCpuState<CpuState>(CpuType.Cpu);
-			PpuState ppu = DebugApi.GetPpuState<PpuState>(CpuType.Cpu);
+			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(CpuType.Snes);
+			SnesPpuState ppu = DebugApi.GetPpuState<SnesPpuState>(CpuType.Snes);
 
 			RegA = cpu.A;
 			RegX = cpu.X;

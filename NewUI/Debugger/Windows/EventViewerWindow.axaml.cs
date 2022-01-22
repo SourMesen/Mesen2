@@ -22,7 +22,7 @@ namespace Mesen.Debugger.Windows
 		private PixelPoint? _prevMousePos = null;
 
 		[Obsolete("For designer only")]
-		public EventViewerWindow() : this(CpuType.Cpu) { }
+		public EventViewerWindow() : this(CpuType.Snes) { }
 
 		public EventViewerWindow(CpuType cpuType)
 		{
@@ -135,7 +135,7 @@ namespace Mesen.Debugger.Windows
 			TooltipEntries entries = new();
 			entries.AddEntry("Type", ResourceHelper.GetEnumText(evt.Type));
 			entries.AddEntry("Scanline", evt.Scanline.ToString());
-			entries.AddEntry(_model.CpuType == CpuType.Cpu ? "H-Clock" : "Cycle", evt.Cycle.ToString());
+			entries.AddEntry(_model.CpuType == CpuType.Snes ? "H-Clock" : "Cycle", evt.Cycle.ToString());
 			entries.AddEntry("PC", "$" + evt.ProgramCounter.ToString("X" + _model.CpuType.GetAddressSize()));
 
 			switch(evt.Type) {

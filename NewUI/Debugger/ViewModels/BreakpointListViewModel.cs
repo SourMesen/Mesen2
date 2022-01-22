@@ -23,7 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		public DisassemblyViewModel Disassembly { get; }
 
 		[Obsolete("For designer only")]
-		public BreakpointListViewModel() : this(CpuType.Cpu, new()) { }
+		public BreakpointListViewModel() : this(CpuType.Snes, new()) { }
 
 		public BreakpointListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{

@@ -61,7 +61,7 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
-		public SpriteViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), new Grid(), null) { }
+		public SpriteViewerViewModel() : this(CpuType.Snes, new PictureViewer(), new Grid(), null) { }
 
 		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Window? wnd)
 		{
@@ -300,7 +300,7 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			switch(CpuType) {
-				case CpuType.Cpu: RefreshData<PpuState>(); break;
+				case CpuType.Snes: RefreshData<SnesPpuState>(); break;
 				case CpuType.Nes: RefreshData<NesPpuState>(); break;
 				case CpuType.Gameboy: RefreshData<GbPpuState>(); break;
 			}

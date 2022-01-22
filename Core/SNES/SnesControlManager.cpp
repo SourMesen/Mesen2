@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "SNES/ControlManager.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesControlManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
@@ -16,23 +16,23 @@
 #include "Utilities/Serializer.h"
 #include "Shared/SystemActionManager.h"
 
-ControlManager::ControlManager(Console* console) : BaseControlManager(console->GetEmulator())
+SnesControlManager::SnesControlManager(SnesConsole* console) : BaseControlManager(console->GetEmulator())
 {
 	_console = console;
 	_inputConfigVersion = -1;
 	UpdateControlDevices();
 }
 
-ControlManager::~ControlManager()
+SnesControlManager::~SnesControlManager()
 {
 }
 
-ControllerType ControlManager::GetControllerType(uint8_t port)
+ControllerType SnesControlManager::GetControllerType(uint8_t port)
 {
 	return _emu->GetSettings()->GetSnesConfig().Controllers[port].Type;
 }
 
-shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
+shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
 	
@@ -52,7 +52,7 @@ shared_ptr<BaseControlDevice> ControlManager::CreateControllerDevice(ControllerT
 	return device;
 }
 
-void ControlManager::UpdateControlDevices()
+void SnesControlManager::UpdateControlDevices()
 {
 	uint32_t version = _emu->GetSettings()->GetInputConfigVersion();
 	if(_inputConfigVersion != version) {
@@ -69,7 +69,7 @@ void ControlManager::UpdateControlDevices()
 	}
 }
 
-uint8_t ControlManager::Read(uint16_t addr)
+uint8_t SnesControlManager::Read(uint16_t addr)
 {
 	uint8_t value = _console->GetMemoryManager()->GetOpenBus() & (addr == 0x4016 ? 0xFC : 0xE0);
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
@@ -79,14 +79,14 @@ uint8_t ControlManager::Read(uint16_t addr)
 	return value;
 }
 
-void ControlManager::Write(uint16_t addr, uint8_t value)
+void SnesControlManager::Write(uint16_t addr, uint8_t value)
 {
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->WriteRam(addr, value);
 	}
 }
 
-void ControlManager::Serialize(Serializer &s)
+void SnesControlManager::Serialize(Serializer &s)
 {
 	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
 	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);

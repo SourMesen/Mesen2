@@ -11,7 +11,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "SNES/Coprocessors/SGB/SuperGameboy.h"
-#include "SNES/ControlManager.h"
+#include "SNES/SnesControlManager.h"
 #include "SNES/Input/SnesController.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"

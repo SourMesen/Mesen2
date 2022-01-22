@@ -71,7 +71,7 @@ namespace Mesen.Debugger.Labels
 		{
 			if(cpu == CpuType.Sa1 || cpu == CpuType.Gsu) {
 				//Share label list between SNES CPU, SA1 and GSU (since the share the same PRG ROM)
-				cpu = CpuType.Cpu;
+				cpu = CpuType.Snes;
 			}
 
 			return _labels.Where((lbl) => lbl.Matches(cpu)).ToList<CodeLabel>();
@@ -208,7 +208,7 @@ namespace Mesen.Debugger.Labels
 					if(m.Success) {
 						CpuType cpuType = label.MemoryType.ToCpuType();
 						addAssert(label, m.Groups[1].Value, cpuType);
-						if(cpuType == CpuType.Cpu) {
+						if(cpuType == CpuType.Snes) {
 							addAssert(label, m.Groups[1].Value, CpuType.Sa1);
 						}
 					}

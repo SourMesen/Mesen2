@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Coprocessors/BSX/BsxCart.h"
 #include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
@@ -11,7 +11,7 @@
 #include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
-BsxCart::BsxCart(Console* console, BsxMemoryPack* memPack) : BaseCoprocessor(SnesMemoryType::Register)
+BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryManager = _console->GetMemoryManager();

@@ -126,7 +126,7 @@ namespace Mesen.Debugger.ViewModels
 	public class TraceLoggerOptionTab
 	{
 		[Reactive] public string TabName { get; set; } = "";
-		[Reactive] public CpuType CpuType { get; set; } = CpuType.Cpu;
+		[Reactive] public CpuType CpuType { get; set; } = CpuType.Snes;
 
 		public TraceLoggerCpuConfig Options { get; set; } = new TraceLoggerCpuConfig();
 	}
@@ -139,7 +139,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public bool UseOptimizedSearch { get { return false; } }
 
-		public CpuType CpuType => CpuType.Cpu;
+		public CpuType CpuType => CpuType.Snes;
 
 		public int GetLineCount()
 		{
@@ -166,7 +166,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			while(lines.Count < rowCount) {
-				lines.Insert(0, new CodeLineData(CpuType.Cpu));
+				lines.Insert(0, new CodeLineData(CpuType.Snes));
 			}
 
 			return lines.ToArray();

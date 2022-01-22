@@ -9,15 +9,15 @@
 #include "Utilities/SimpleLock.h"
 #include "Shared/RomInfo.h"
 
-class Cpu;
-class Ppu;
+class SnesCpu;
+class SnesPpu;
 class Spc;
 class BaseCartridge;
-class MemoryManager;
+class SnesMemoryManager;
 class InternalRegisters;
-class ControlManager;
+class SnesControlManager;
 class IControlManager;
-class DmaController;
+class SnesDmaController;
 class Debugger;
 class DebugHud;
 class SoundMixer;
@@ -42,17 +42,17 @@ enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;
 
-class Console final : public std::enable_shared_from_this<Console>, public IConsole
+class SnesConsole final : public IConsole
 {
 private:
-	unique_ptr<Cpu> _cpu;
-	unique_ptr<Ppu> _ppu;
+	unique_ptr<SnesCpu> _cpu;
+	unique_ptr<SnesPpu> _ppu;
 	unique_ptr<Spc> _spc;
-	unique_ptr<MemoryManager> _memoryManager;
+	unique_ptr<SnesMemoryManager> _memoryManager;
 	unique_ptr<BaseCartridge> _cart;
 	unique_ptr<InternalRegisters> _internalRegisters;
-	unique_ptr<ControlManager> _controlManager;
-	unique_ptr<DmaController> _dmaController;
+	unique_ptr<SnesControlManager> _controlManager;
+	unique_ptr<SnesDmaController> _dmaController;
 	
 	unique_ptr<Msu1> _msu1;
 	EmuSettings* _settings;
@@ -68,8 +68,8 @@ private:
 	void UpdateRegion();
 
 public:
-	Console(Emulator* emu);
-	~Console();
+	SnesConsole(Emulator* emu);
+	~SnesConsole();
 
 	void Initialize();
 	void Release();
@@ -93,14 +93,14 @@ public:
 
 	void Serialize(Serializer& s) override;
 
-	Cpu* GetCpu();
-	Ppu* GetPpu();
+	SnesCpu* GetCpu();
+	SnesPpu* GetPpu();
 	Spc* GetSpc();
 	BaseCartridge* GetCartridge();
-	MemoryManager* GetMemoryManager();
+	SnesMemoryManager* GetMemoryManager();
 	InternalRegisters* GetInternalRegisters();
 	IControlManager* GetControlManager() override;
-	DmaController* GetDmaController();
+	SnesDmaController* GetDmaController();
 	Msu1* GetMsu1();
 	
 	Emulator* GetEmulator();

@@ -9,7 +9,7 @@ struct BaseState;
 class SnesPpuTools : public PpuTools
 {
 private:
-	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
 	SnesPpuTools(Debugger* debugger, Emulator *emu);

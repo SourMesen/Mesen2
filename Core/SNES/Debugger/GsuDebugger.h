@@ -8,7 +8,7 @@ class Debugger;
 class CodeDataLogger;
 class Gsu;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class BreakpointManager;
 class EmuSettings;
 class GsuTraceLogger;
@@ -21,7 +21,7 @@ class GsuDebugger final : public IDebugger
 	Disassembler* _disassembler;
 	CodeDataLogger* _codeDataLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	Gsu* _gsu;
 	EmuSettings* _settings;
 

@@ -48,7 +48,7 @@ namespace Mesen.Interop
 					return CpuType.Nes;
 
 				default:
-					return CpuType.Cpu;
+					return CpuType.Snes;
 			}
 		}
 

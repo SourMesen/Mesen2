@@ -12,9 +12,9 @@ namespace Mesen.Debugger
 		public static uint GetProgramCounter(CpuType cpuType)
 		{
 			switch(cpuType) {
-				case CpuType.Cpu:
+				case CpuType.Snes:
 				case CpuType.Sa1: {
-					CpuState state = DebugApi.GetCpuState<CpuState>(cpuType);
+					SnesCpuState state = DebugApi.GetCpuState<SnesCpuState>(cpuType);
 					return (uint)(state.K << 16) | state.PC;
 				}
 

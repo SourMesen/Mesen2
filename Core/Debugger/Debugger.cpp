@@ -15,25 +15,25 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/TraceLogFileSaver.h"
-#include "SNES/Cpu.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
 #include "SNES/Spc.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/MemoryMappings.h"
-#include "SNES/Debugger/CpuDebugger.h"
+#include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SpcDebugger.h"
 #include "SNES/Debugger/GsuDebugger.h"
 #include "SNES/Debugger/NecDspDebugger.h"
 #include "SNES/Debugger/Cx4Debugger.h"
 #include "SNES/InternalRegisters.h"
 #include "SNES/AluMulDiv.h"
-#include "SNES/DmaController.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesDmaController.h"
+#include "SNES/SnesCpuTypes.h"
 #include "NES/Debugger/NesDebugger.h"
 #include "NES/NesTypes.h"
 #include "Gameboy/Debugger/GbDebugger.h"
@@ -79,10 +79,10 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	for(CpuType type : _cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
 		switch(type) {
-			case CpuType::Cpu: debugger.reset(new CpuDebugger(this, CpuType::Cpu)); break;
+			case CpuType::Snes: debugger.reset(new SnesDebugger(this, CpuType::Snes)); break;
 			case CpuType::Spc: debugger.reset(new SpcDebugger(this)); break;
 			case CpuType::NecDsp: debugger.reset(new NecDspDebugger(this)); break;
-			case CpuType::Sa1: debugger.reset(new CpuDebugger(this, CpuType::Sa1)); break;
+			case CpuType::Sa1: debugger.reset(new SnesDebugger(this, CpuType::Sa1)); break;
 			case CpuType::Gsu: debugger.reset(new GsuDebugger(this)); break;
 			case CpuType::Cx4: debugger.reset(new Cx4Debugger(this)); break;
 			case CpuType::Gameboy: debugger.reset(new GbDebugger(this)); break;
@@ -153,10 +153,10 @@ template<CpuType type>
 void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Sa1: GetDebugger<type, CpuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessRead(addr, value, opType); break;
@@ -172,10 +172,10 @@ template<CpuType type>
 void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Sa1: GetDebugger<type, CpuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessWrite(addr, value, opType); break;
@@ -191,7 +191,7 @@ template<CpuType type>
 void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		default: throw std::runtime_error("Invalid cpu type");
@@ -202,7 +202,7 @@ template<CpuType type>
 void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, SnesMemoryType memoryType)
 {
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		default: throw std::runtime_error("Invalid cpu type");
@@ -213,7 +213,7 @@ template<CpuType type>
 void Debugger::ProcessPpuCycle()
 {
 	switch(type) {
-		case CpuType::Cpu: GetDebugger<type, CpuDebugger>()->ProcessPpuCycle(); break;
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuCycle(); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuCycle(); break;
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuCycle(); break;
 		default: throw std::runtime_error("Invalid cpu type");
@@ -411,10 +411,10 @@ void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)
 {
 	BaseState& srcState = GetCpuStateRef(cpuType);
 	switch(cpuType) {
-		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Snes: memcpy(&dstState, &srcState, sizeof(SnesCpuState)); break;
 		case CpuType::Spc: memcpy(&dstState, &srcState, sizeof(SpcState)); break;
 		case CpuType::NecDsp: memcpy(&dstState, &srcState, sizeof(NecDspState)); break;
-		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(SnesCpuState)); break;
 		case CpuType::Gsu: memcpy(&dstState, &srcState, sizeof(GsuState)); break;
 		case CpuType::Cx4: memcpy(&dstState, &srcState, sizeof(Cx4State)); break;
 		case CpuType::Gameboy: memcpy(&dstState, &srcState, sizeof(GbCpuState)); break;
@@ -427,10 +427,10 @@ void Debugger::SetCpuState(BaseState& srcState, CpuType cpuType)
 	DebugBreakHelper helper(this);
 	BaseState& dstState = GetCpuStateRef(cpuType);
 	switch(cpuType) {
-		case CpuType::Cpu: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Snes: memcpy(&dstState, &srcState, sizeof(SnesCpuState)); break;
 		case CpuType::Spc: memcpy(&dstState, &srcState, sizeof(SpcState)); break;
 		case CpuType::NecDsp: memcpy(&dstState, &srcState, sizeof(NecDspState)); break;
-		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(CpuState)); break;
+		case CpuType::Sa1: memcpy(&dstState, &srcState, sizeof(SnesCpuState)); break;
 		case CpuType::Gsu: memcpy(&dstState, &srcState, sizeof(GsuState)); break;
 		case CpuType::Cx4: memcpy(&dstState, &srcState, sizeof(Cx4State)); break;
 		case CpuType::Gameboy: memcpy(&dstState, &srcState, sizeof(GbCpuState)); break;
@@ -446,13 +446,13 @@ BaseState& Debugger::GetCpuStateRef(CpuType cpuType)
 void Debugger::GetPpuState(BaseState& state, CpuType cpuType)
 {
 	switch(cpuType) {
-		case CpuType::Cpu:
+		case CpuType::Snes:
 		case CpuType::Spc:
 		case CpuType::NecDsp:
 		case CpuType::Sa1:
 		case CpuType::Gsu:
 		case CpuType::Cx4: {
-			GetDebugger<CpuType::Cpu, CpuDebugger>()->GetPpuState(state);
+			GetDebugger<CpuType::Snes, SnesDebugger>()->GetPpuState(state);
 			break;
 		}
 
@@ -472,13 +472,13 @@ void Debugger::SetPpuState(BaseState& state, CpuType cpuType)
 {
 	DebugBreakHelper helper(this);
 	switch(cpuType) {
-		case CpuType::Cpu:
+		case CpuType::Snes:
 		case CpuType::Spc:
 		case CpuType::NecDsp:
 		case CpuType::Sa1:
 		case CpuType::Gsu:
 		case CpuType::Cx4: {
-			GetDebugger<CpuType::Cpu, CpuDebugger>()->SetPpuState(state);
+			GetDebugger<CpuType::Snes, SnesDebugger>()->SetPpuState(state);
 			break;
 		}
 
@@ -768,7 +768,7 @@ IAssembler* Debugger::GetAssembler(CpuType cpuType)
 	throw std::runtime_error("GetAssembler() - Unsupported CPU type");
 }
 
-template void Debugger::ProcessMemoryRead<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -777,7 +777,7 @@ template void Debugger::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t v
 template void Debugger::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Nes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
-template void Debugger::ProcessMemoryWrite<CpuType::Cpu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -786,19 +786,19 @@ template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t 
 template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
-template void Debugger::ProcessInterrupt<CpuType::Cpu>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Debugger::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
-template void Debugger::ProcessPpuRead<CpuType::Cpu>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 
-template void Debugger::ProcessPpuWrite<CpuType::Cpu>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t value, SnesMemoryType memoryType);
 
-template void Debugger::ProcessPpuCycle<CpuType::Cpu>();
+template void Debugger::ProcessPpuCycle<CpuType::Snes>();
 template void Debugger::ProcessPpuCycle<CpuType::Gameboy>();
 template void Debugger::ProcessPpuCycle<CpuType::Nes>();

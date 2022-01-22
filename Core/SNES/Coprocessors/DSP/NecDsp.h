@@ -3,18 +3,18 @@
 #include "NecDspTypes.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class MemoryManager;
+class SnesMemoryManager;
 class RamHandler;
 enum class CoprocessorType;
 
 class NecDsp final : public BaseCoprocessor
 {
 private:
-	Console* _console = nullptr;
+	SnesConsole* _console = nullptr;
 	Emulator* _emu = nullptr;
-	MemoryManager* _memoryManager = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 	NecDspState _state = {};
 	unique_ptr<RamHandler> _ramHandler;
 	CoprocessorType _type;
@@ -53,12 +53,12 @@ private:
 	void Load(uint8_t dest, uint16_t value);
 	uint16_t GetSourceValue(uint8_t source);
 
-	NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
+	NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 
 public:
 	virtual ~NecDsp();
 
-	static NecDsp* InitCoprocessor(CoprocessorType type, Console* console, vector<uint8_t> &embeddedFirmware);
+	static NecDsp* InitCoprocessor(CoprocessorType type, SnesConsole* console, vector<uint8_t> &embeddedFirmware);
 
 	void Reset() override;
 	void Run() override;

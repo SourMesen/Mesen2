@@ -9,7 +9,7 @@ class SpcTraceLogger;
 class Spc;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
@@ -20,7 +20,7 @@ class SpcDebugger final : public IDebugger
 	Debugger* _debugger;
 	Disassembler* _disassembler;
 	MemoryAccessCounter* _memoryAccessCounter;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	Spc* _spc;
 	EmuSettings* _settings;
 

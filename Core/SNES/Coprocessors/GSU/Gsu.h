@@ -6,9 +6,9 @@
 #include "SNES/IMemoryHandler.h"
 
 class Emulator;
-class Console;
-class Cpu;
-class MemoryManager;
+class SnesConsole;
+class SnesCpu;
+class SnesMemoryManager;
 class EmuSettings;
 
 enum class MemoryOperationType;
@@ -17,9 +17,9 @@ class Gsu : public BaseCoprocessor
 {
 private:
 	Emulator* _emu;
-	Console *_console;
-	MemoryManager *_memoryManager;
-	Cpu *_cpu;
+	SnesConsole *_console;
+	SnesMemoryManager *_memoryManager;
+	SnesCpu *_cpu;
 	EmuSettings *_settings;
 	uint8_t _clockMultiplier;
 
@@ -148,7 +148,7 @@ private:
 	void GETB();
 
 public:
-	Gsu(Console *console, uint32_t gsuRamSize);
+	Gsu(SnesConsole *console, uint32_t gsuRamSize);
 	virtual ~Gsu();
 
 	void ProcessEndOfFrame() override;

@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "SNES/Console.h"
-#include "SNES/Cpu.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
 #include "SNES/Spc.h"
 #include "SNES/InternalRegisters.h"
-#include "SNES/ControlManager.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/DmaController.h"
+#include "SNES/SnesControlManager.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesDmaController.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/RamHandler.h"
 #include "SNES/CartTypes.h"
@@ -35,25 +35,25 @@
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
 
-Console::Console(Emulator* emu)
+SnesConsole::SnesConsole(Emulator* emu)
 {
 	_emu = emu;
 	_settings = emu->GetSettings();
 }
 
-Console::~Console()
+SnesConsole::~SnesConsole()
 {
 }
 
-void Console::Initialize()
+void SnesConsole::Initialize()
 {
 }
 
-void Console::Release()
+void SnesConsole::Release()
 {
 }
 
-void Console::RunFrame()
+void SnesConsole::RunFrame()
 {
 	_frameRunning = true;
 
@@ -62,7 +62,7 @@ void Console::RunFrame()
 	}
 }
 
-void Console::OnBeforeRun()
+void SnesConsole::OnBeforeRun()
 {
 	_memoryManager->IncMasterClockStartup();
 
@@ -70,7 +70,7 @@ void Console::OnBeforeRun()
 	//_controlManager->UpdateInputState();
 }
 
-void Console::ProcessEndOfFrame()
+void SnesConsole::ProcessEndOfFrame()
 {
 #ifndef LIBRETRO
 	_cart->RunCoprocessors();
@@ -87,7 +87,7 @@ void Console::ProcessEndOfFrame()
 	_frameRunning = false;
 }
 
-void Console::RunSingleFrame()
+void SnesConsole::RunSingleFrame()
 {
 	//Used by Libretro
 	/*_emulationThreadId = std::this_thread::get_id();
@@ -106,11 +106,11 @@ void Console::RunSingleFrame()
 	_controlManager->UpdateControlDevices();*/
 }
 
-void Console::Stop()
+void SnesConsole::Stop()
 {
 }
 
-void Console::Reset()
+void SnesConsole::Reset()
 {
 	_dmaController->Reset();
 	_internalRegisters->Reset();
@@ -124,7 +124,7 @@ void Console::Reset()
 	_cpu->Reset();
 }
 
-LoadRomResult Console::LoadRom(VirtualFile& romFile)
+LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 {
 	unique_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
 	if(cart) {
@@ -133,10 +133,10 @@ LoadRomResult Console::LoadRom(VirtualFile& romFile)
 		UpdateRegion();
 
 		_internalRegisters.reset(new InternalRegisters());
-		_memoryManager.reset(new MemoryManager());
-		_ppu.reset(new Ppu(_emu, this));
-		_controlManager.reset(new ControlManager(this));
-		_dmaController.reset(new DmaController(_memoryManager.get()));
+		_memoryManager.reset(new SnesMemoryManager());
+		_ppu.reset(new SnesPpu(_emu, this));
+		_controlManager.reset(new SnesControlManager(this));
+		_dmaController.reset(new SnesDmaController(_memoryManager.get()));
 		_spc.reset(new Spc(this));
 
 		_msu1.reset(Msu1::Init(romFile, _spc.get()));
@@ -150,7 +150,7 @@ LoadRomResult Console::LoadRom(VirtualFile& romFile)
 			_spcTrackNumber = (uint32_t)std::distance(_spcPlaylist.begin(), result);
 		}
 
-		_cpu.reset(new Cpu(this));
+		_cpu.reset(new SnesCpu(this));
 		_memoryManager->Initialize(this);
 		_internalRegisters->Initialize(this);
 
@@ -167,31 +167,31 @@ LoadRomResult Console::LoadRom(VirtualFile& romFile)
 	return LoadRomResult::UnknownType;
 }
 
-void Console::Init()
+void SnesConsole::Init()
 {
 }
 
-uint64_t Console::GetMasterClock()
+uint64_t SnesConsole::GetMasterClock()
 {
 	return _memoryManager->GetMasterClock();
 }
 
-uint32_t Console::GetMasterClockRate()
+uint32_t SnesConsole::GetMasterClockRate()
 {
 	return _masterClockRate;
 }
 
-ConsoleRegion Console::GetRegion()
+ConsoleRegion SnesConsole::GetRegion()
 {
 	return _region;
 }
 
-ConsoleType Console::GetConsoleType()
+ConsoleType SnesConsole::GetConsoleType()
 {
 	return ConsoleType::Snes;
 }
 
-void Console::UpdateRegion()
+void SnesConsole::UpdateRegion()
 {
 	switch(_settings->GetSnesConfig().Region) {
 		case ConsoleRegion::Auto: _region = _cart->GetRegion(); break;
@@ -204,7 +204,7 @@ void Console::UpdateRegion()
 	_masterClockRate = _region == ConsoleRegion::Pal ? 21281370 : 21477270;
 }
 
-double Console::GetFps()
+double SnesConsole::GetFps()
 {
 	UpdateRegion();
 	if(_region == ConsoleRegion::Ntsc) {
@@ -214,7 +214,7 @@ double Console::GetFps()
 	}
 }
 
-PpuFrameInfo Console::GetPpuFrame()
+PpuFrameInfo SnesConsole::GetPpuFrame()
 {
 	//TODO null checks
 	PpuFrameInfo frame = {};
@@ -228,9 +228,9 @@ PpuFrameInfo Console::GetPpuFrame()
 	return frame;
 }
 
-vector<CpuType> Console::GetCpuTypes()
+vector<CpuType> SnesConsole::GetCpuTypes()
 {
-	vector<CpuType> cpuTypes = { CpuType::Cpu, CpuType::Spc };
+	vector<CpuType> cpuTypes = { CpuType::Snes, CpuType::Spc };
 	if(_cart->GetGsu()) {
 		cpuTypes.push_back(CpuType::Gsu);
 	} else if(_cart->GetDsp()) {
@@ -245,14 +245,14 @@ vector<CpuType> Console::GetCpuTypes()
 	return cpuTypes;
 }
 
-void Console::SaveBattery()
+void SnesConsole::SaveBattery()
 {
 	if(_cart) {
 		_cart->SaveBattery();
 	}
 }
 
-BaseVideoFilter* Console::GetVideoFilter()
+BaseVideoFilter* SnesConsole::GetVideoFilter()
 {
 	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
 	if(filterType == VideoFilterType::NTSC && GetRomFormat() != RomFormat::Spc) {
@@ -262,12 +262,12 @@ BaseVideoFilter* Console::GetVideoFilter()
 	}
 }
 
-RomFormat Console::GetRomFormat()
+RomFormat SnesConsole::GetRomFormat()
 {
 	return _cart->GetSpcData() ? RomFormat::Spc : RomFormat::Sfc;
 }
 
-AudioTrackInfo Console::GetAudioTrackInfo()
+AudioTrackInfo SnesConsole::GetAudioTrackInfo()
 {
 	AudioTrackInfo track = {};
 	SpcFileData* spc = _cart->GetSpcData();
@@ -286,7 +286,7 @@ AudioTrackInfo Console::GetAudioTrackInfo()
 	return track;
 }
 
-void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
+void SnesConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 {
 	if(_spcTrackNumber >= 0) {
 		int i = (int)_spcTrackNumber;
@@ -315,7 +315,7 @@ void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	}
 }
 
-void Console::Serialize(Serializer& s)
+void SnesConsole::Serialize(Serializer& s)
 {
 	s.Stream(_cpu.get());
 	s.Stream(_memoryManager.get());
@@ -330,62 +330,62 @@ void Console::Serialize(Serializer& s)
 	}
 }
 
-Cpu* Console::GetCpu()
+SnesCpu* SnesConsole::GetCpu()
 {
 	return _cpu.get();
 }
 
-Ppu* Console::GetPpu()
+SnesPpu* SnesConsole::GetPpu()
 {
 	return _ppu.get();
 }
 
-Spc* Console::GetSpc()
+Spc* SnesConsole::GetSpc()
 {
 	return _spc.get();
 }
 
-BaseCartridge* Console::GetCartridge()
+BaseCartridge* SnesConsole::GetCartridge()
 {
 	return _cart.get();
 }
 
-MemoryManager* Console::GetMemoryManager()
+SnesMemoryManager* SnesConsole::GetMemoryManager()
 {
 	return _memoryManager.get();
 }
 
-InternalRegisters* Console::GetInternalRegisters()
+InternalRegisters* SnesConsole::GetInternalRegisters()
 {
 	return _internalRegisters.get();
 }
 
-IControlManager* Console::GetControlManager()
+IControlManager* SnesConsole::GetControlManager()
 {
 	return _controlManager.get();
 }
 
-DmaController* Console::GetDmaController()
+SnesDmaController* SnesConsole::GetDmaController()
 {
 	return _dmaController.get();
 }
 
-Msu1* Console::GetMsu1()
+Msu1* SnesConsole::GetMsu1()
 {
 	return _msu1.get();
 }
 
-Emulator* Console::GetEmulator()
+Emulator* SnesConsole::GetEmulator()
 {
 	return _emu;
 }
 
-bool Console::IsRunning()
+bool SnesConsole::IsRunning()
 {
 	return _cpu != nullptr;
 }
 
-AddressInfo Console::GetAbsoluteAddress(AddressInfo& relAddress)
+AddressInfo SnesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
 	switch(relAddress.Type) {
 		case SnesMemoryType::CpuMemory:
@@ -405,11 +405,11 @@ AddressInfo Console::GetAbsoluteAddress(AddressInfo& relAddress)
 	}
 }
 
-AddressInfo Console::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
+AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
 	MemoryMappings* mappings = nullptr;
 	switch(cpuType) {
-		case CpuType::Cpu: mappings = _memoryManager->GetMemoryMappings(); break;
+		case CpuType::Snes: mappings = _memoryManager->GetMemoryMappings(); break;
 		case CpuType::Spc: break;
 		case CpuType::NecDsp: break;
 		case CpuType::Sa1: mappings = _cart->GetSa1()->GetMemoryMappings(); break;
@@ -430,7 +430,7 @@ AddressInfo Console::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType
 
 			uint8_t startBank = 0;
 			//Try to find a mirror close to where the PC is
-			if(cpuType == CpuType::Cpu) {
+			if(cpuType == CpuType::Snes) {
 				if(absAddress.Type == SnesMemoryType::WorkRam) {
 					startBank = 0x7E;
 				} else {
@@ -467,7 +467,7 @@ AddressInfo Console::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType
 	}
 }
 
-void Console::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
+void SnesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 {
 	if(consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor) {
 		_cart->GetGameboy()->GetConsoleState(baseState, consoleType);
@@ -476,7 +476,7 @@ void Console::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 
 	SnesState& state = (SnesState&)baseState;
 	state.MasterClock = GetMasterClock();
-	state.Cpu = _cpu->GetState();
+	state.Snes = _cpu->GetState();
 	_ppu->GetState(state.Ppu, false);
 	state.Spc = _spc->GetState();
 	state.Dsp = _spc->GetDspState();

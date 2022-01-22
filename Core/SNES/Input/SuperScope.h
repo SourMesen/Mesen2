@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/KeyManager.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesPpu.h"
 #include "Utilities/Serializer.h"
 
 class SuperScope : public BaseControlDevice
@@ -14,7 +14,7 @@ private:
 	bool _prevTurboButton = false;
 	bool _prevPauseButton = false;
 	bool _turbo = false;
-	Ppu *_ppu;
+	SnesPpu *_ppu;
 
 protected:
 	bool HasCoordinates() override { return true; }
@@ -93,7 +93,7 @@ protected:
 	}
 
 public:
-	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), ControllerType::SuperScope, port, keyMappings)
+	SuperScope(SnesConsole* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), ControllerType::SuperScope, port, keyMappings)
 	{
 		_ppu = console->GetPpu();
 	}

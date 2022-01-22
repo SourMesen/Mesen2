@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/Debugger/SpcDisUtils.h"
 #include "SNES/Debugger/DummySpc.h"
 #include "Debugger/DisassemblyInfo.h"
@@ -128,7 +128,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, SpcState &state)
+int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SpcState &state)
 {
 	if(_needAddress[info.GetOpCode()]) {
 		Spc* spc = console->GetSpc();

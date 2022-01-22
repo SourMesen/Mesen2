@@ -212,7 +212,7 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t GsuDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Console* console, GsuState& state)
+int32_t GsuDisUtils::GetEffectiveAddress(DisassemblyInfo& info, SnesConsole* console, GsuState& state)
 {
 	uint8_t opCode = info.GetOpCode();
 	bool alt1 = (info.GetFlags() & 0x01) != 0;

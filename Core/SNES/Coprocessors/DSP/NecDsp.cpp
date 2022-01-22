@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/CartTypes.h"
 #include "SNES/MemoryMappings.h"
@@ -15,7 +15,7 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
 
-NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(SnesMemoryType::Register)
+NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -93,7 +93,7 @@ NecDsp::~NecDsp()
 	delete[] _ram;
 }
 
-NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, Console *console, vector<uint8_t> &embeddedFirware)
+NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, SnesConsole *console, vector<uint8_t> &embeddedFirware)
 {
 	Emulator* emu = console->GetEmulator();
 	bool firmwareLoaded = false;

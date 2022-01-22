@@ -48,7 +48,7 @@ namespace Mesen.Debugger.ViewModels
 	public class ProfilerTab : ReactiveObject
 	{
 		[Reactive] public string TabName { get; set; } = "";
-		[Reactive] public CpuType CpuType { get; set; } = CpuType.Cpu;
+		[Reactive] public CpuType CpuType { get; set; } = CpuType.Snes;
 		[Reactive] public ObservableCollection<ProfiledFunctionViewModel> GridData { get; private set; } = new ObservableCollection<ProfiledFunctionViewModel>();
 		
 		private ProfiledFunction[] _profilerData = new ProfiledFunction[0];

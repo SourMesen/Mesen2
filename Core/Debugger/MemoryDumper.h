@@ -3,10 +3,10 @@
 #include <unordered_map>
 #include "DebugTypes.h"
 
-class MemoryManager;
+class SnesMemoryManager;
 class NesConsole;
 class BaseCartridge;
-class Ppu;
+class SnesPpu;
 class Spc;
 class Gameboy;
 class Emulator;
@@ -18,10 +18,10 @@ class MemoryDumper
 {
 private:
 	Emulator* _emu = nullptr;
-	Ppu* _ppu = nullptr;
+	SnesPpu* _ppu = nullptr;
 	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
-	MemoryManager* _memoryManager = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 	NesConsole* _nesConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;

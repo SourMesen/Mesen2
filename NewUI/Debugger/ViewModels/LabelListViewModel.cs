@@ -24,7 +24,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<LabelViewModel> Labels { get; private set; } = new();
 
 		[Obsolete("For designer only")]
-		public LabelListViewModel() : this(CpuType.Cpu, new()) { }
+		public LabelListViewModel() : this(CpuType.Snes, new()) { }
 
 		public LabelListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{

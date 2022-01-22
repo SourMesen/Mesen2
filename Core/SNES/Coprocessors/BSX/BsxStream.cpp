@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BsxStream.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
@@ -10,7 +10,7 @@ BsxStream::BsxStream()
 {
 }
 
-void BsxStream::Reset(Console* console, int64_t resetDate)
+void BsxStream::Reset(SnesConsole* console, int64_t resetDate)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager();

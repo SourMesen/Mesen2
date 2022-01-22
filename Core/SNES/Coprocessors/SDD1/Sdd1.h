@@ -3,7 +3,7 @@
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 #include "Sdd1Types.h"
 
-class Console;
+class SnesConsole;
 class Sdd1Mmc;
 
 class Sdd1 : public BaseCoprocessor
@@ -14,7 +14,7 @@ private:
 	IMemoryHandler* _cpuRegisterHandler;
 
 public:
-	Sdd1(Console *console);
+	Sdd1(SnesConsole *console);
 
 	void Serialize(Serializer &s) override;
 	uint8_t Read(uint32_t addr) override;

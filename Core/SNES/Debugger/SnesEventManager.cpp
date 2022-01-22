@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "SNES/Debugger/SnesEventManager.h"
-#include "SNES/Cpu.h"
-#include "SNES/Ppu.h"
-#include "SNES/DmaController.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesDmaController.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 
-SnesEventManager::SnesEventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController)
+SnesEventManager::SnesEventManager(Debugger *debugger, SnesCpu *cpu, SnesPpu *ppu, SnesMemoryManager *memoryManager, SnesDmaController *dmaController)
 {
 	_debugger = debugger;
 	_cpu = cpu;
@@ -43,7 +43,7 @@ void SnesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operat
 		evt.DmaChannel = -1;
 	}
 
-	CpuState state = _cpu->GetState();
+	SnesCpuState state = _cpu->GetState();
 	evt.ProgramCounter = (state.K << 16) | state.PC;
 
 	_debugEvents.push_back(evt);
@@ -58,7 +58,7 @@ void SnesEventManager::AddEvent(DebugEventType type)
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
 	
-	CpuState state = _cpu->GetState();
+	SnesCpuState state = _cpu->GetState();
 	evt.ProgramCounter = (state.K << 16) | state.PC;
 
 	_debugEvents.push_back(evt);

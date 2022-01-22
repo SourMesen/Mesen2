@@ -120,7 +120,7 @@ protected:
 	MemoryDumper* _memoryDumper;
 	Debugger* _debugger;
 
-	CpuType _cpuType = CpuType::Cpu;
+	CpuType _cpuType = CpuType::Snes;
 	SnesMemoryType _cpuMemoryType = SnesMemoryType::CpuMemory;
 
 	vector<RowPart> _rowParts;

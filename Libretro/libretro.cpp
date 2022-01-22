@@ -10,7 +10,7 @@
 #include "../Core/Spc.h"
 #include "../Core/Gameboy.h"
 #include "../Core/BaseCartridge.h"
-#include "../Core/MemoryManager.h"
+#include "../Core/SnesMemoryManager.h"
 #include "../Core/VideoDecoder.h"
 #include "../Core/VideoRenderer.h"
 #include "../Core/EmuSettings.h"

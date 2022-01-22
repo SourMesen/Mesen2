@@ -341,7 +341,7 @@ namespace Mesen.Interop
 		private static bool IsValidCpuState(ref BaseState state, CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => state is CpuState,
+				CpuType.Snes => state is SnesCpuState,
 				CpuType.Nes => state is NesCpuState,
 				CpuType.Gameboy => state is GbCpuState,
 				_ => false
@@ -351,7 +351,7 @@ namespace Mesen.Interop
 		private static bool IsValidPpuState(ref BaseState state, CpuType cpuType)
 		{
 			return cpuType.GetConsoleType() switch {
-				ConsoleType.Snes => state is PpuState,
+				ConsoleType.Snes => state is SnesPpuState,
 				ConsoleType.Nes => state is NesPpuState,
 				ConsoleType.Gameboy => state is GbPpuState,
 				_ => false
@@ -861,7 +861,7 @@ namespace Mesen.Interop
 	
 	public enum CpuType : byte
 	{
-		Cpu,
+		Snes,
 		Spc,
 		NecDsp,
 		Sa1,

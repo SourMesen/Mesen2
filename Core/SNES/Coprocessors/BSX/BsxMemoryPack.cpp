@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/BatteryManager.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
 
-BsxMemoryPack::BsxMemoryPack(Console* console, vector<uint8_t>& data, bool persistFlash)
+BsxMemoryPack::BsxMemoryPack(SnesConsole* console, vector<uint8_t>& data, bool persistFlash)
 {
 	_console = console;
 	_orgData = data;

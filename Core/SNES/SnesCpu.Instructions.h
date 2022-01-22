@@ -1,7 +1,7 @@
 /************************
 Add/substract operations
 *************************/
-void Cpu::Add8(uint8_t value)
+void SnesCpu::Add8(uint8_t value)
 {
 	uint32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
@@ -32,7 +32,7 @@ void Cpu::Add8(uint8_t value)
 	_state.A = (_state.A & 0xFF00) | (uint8_t)result;
 }
 
-void Cpu::Add16(uint16_t value)
+void SnesCpu::Add16(uint16_t value)
 {
 	uint32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
@@ -70,7 +70,7 @@ void Cpu::Add16(uint16_t value)
 	_state.A = (uint16_t)result;
 }
 
-void Cpu::ADC()
+void SnesCpu::ADC()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		Add8(GetByteValue());
@@ -79,7 +79,7 @@ void Cpu::ADC()
 	}
 }
 
-void Cpu::Sub8(uint8_t value)
+void SnesCpu::Sub8(uint8_t value)
 {
 	int32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
@@ -110,7 +110,7 @@ void Cpu::Sub8(uint8_t value)
 	_state.A = (_state.A & 0xFF00) | (uint8_t)result;
 }
 
-void Cpu::Sub16(uint16_t value)
+void SnesCpu::Sub16(uint16_t value)
 {
 	int32_t result;
 	if(CheckFlag(ProcFlags::Decimal)) {
@@ -148,7 +148,7 @@ void Cpu::Sub16(uint16_t value)
 	_state.A = (uint16_t)result;
 }
 
-void Cpu::SBC()
+void SnesCpu::SBC()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		Sub8(~GetByteValue());
@@ -160,58 +160,58 @@ void Cpu::SBC()
 /****************
 Branch operations
 ****************/
-void Cpu::BCC()
+void SnesCpu::BCC()
 {
 	BranchRelative(!CheckFlag(ProcFlags::Carry));
 }
 
-void Cpu::BCS()
+void SnesCpu::BCS()
 {
 	BranchRelative(CheckFlag(ProcFlags::Carry));
 }
 
-void Cpu::BEQ()
+void SnesCpu::BEQ()
 {
 	BranchRelative(CheckFlag(ProcFlags::Zero));
 }
 
-void Cpu::BMI()
+void SnesCpu::BMI()
 {
 	BranchRelative(CheckFlag(ProcFlags::Negative));
 }
 
-void Cpu::BNE()
+void SnesCpu::BNE()
 {
 	BranchRelative(!CheckFlag(ProcFlags::Zero));
 }
 
-void Cpu::BPL()
+void SnesCpu::BPL()
 {
 	BranchRelative(!CheckFlag(ProcFlags::Negative));
 }
 
-void Cpu::BRA()
+void SnesCpu::BRA()
 {
 	BranchRelative(true);
 }
 
-void Cpu::BRL()
+void SnesCpu::BRL()
 {
 	_state.PC = (uint16_t)(_state.PC + (int16_t)_operand);
 	IdleTakeBranch();
 }
 
-void Cpu::BVC()
+void SnesCpu::BVC()
 {
 	BranchRelative(!CheckFlag(ProcFlags::Overflow));
 }
 
-void Cpu::BVS()
+void SnesCpu::BVS()
 {
 	BranchRelative(CheckFlag(ProcFlags::Overflow));
 }
 
-void Cpu::BranchRelative(bool branch)
+void SnesCpu::BranchRelative(bool branch)
 {
 	if(branch) {
 		int8_t offset = _operand;
@@ -228,48 +228,48 @@ void Cpu::BranchRelative(bool branch)
 /***************************
 Set/clear flag instructions
 ****************************/
-void Cpu::CLC()
+void SnesCpu::CLC()
 {
 	ClearFlags(ProcFlags::Carry);
 }
 
-void Cpu::CLD()
+void SnesCpu::CLD()
 {
 	ClearFlags(ProcFlags::Decimal);
 }
 
-void Cpu::CLI()
+void SnesCpu::CLI()
 {
 	ClearFlags(ProcFlags::IrqDisable);
 }
 
-void Cpu::CLV()
+void SnesCpu::CLV()
 {
 	ClearFlags(ProcFlags::Overflow);
 }
 
-void Cpu::SEC()
+void SnesCpu::SEC()
 {
 	SetFlags(ProcFlags::Carry);
 }
 
-void Cpu::SED()
+void SnesCpu::SED()
 {
 	SetFlags(ProcFlags::Decimal);
 }
 
-void Cpu::SEI()
+void SnesCpu::SEI()
 {
 	SetFlags(ProcFlags::IrqDisable);
 }
 
-void Cpu::REP()
+void SnesCpu::REP()
 {
 	Idle();
 	ClearFlags((uint8_t)_operand);
 }
 
-void Cpu::SEP()
+void SnesCpu::SEP()
 {
 	Idle();
 	SetFlags((uint8_t)_operand);
@@ -283,52 +283,52 @@ void Cpu::SEP()
 /******************************
 Increment/decrement operations
 *******************************/
-void Cpu::DEX()
+void SnesCpu::DEX()
 {
 	IncDecReg(_state.X, -1);
 }
 
-void Cpu::DEY()
+void SnesCpu::DEY()
 {
 	IncDecReg(_state.Y, -1);
 }
 
-void Cpu::INX()
+void SnesCpu::INX()
 {
 	IncDecReg(_state.X, 1);
 }
 
-void Cpu::INY()
+void SnesCpu::INY()
 {
 	IncDecReg(_state.Y, 1);
 }
 
-void Cpu::DEC()
+void SnesCpu::DEC()
 {
 	IncDec(-1);
 }
 
-void Cpu::INC()
+void SnesCpu::INC()
 {
 	IncDec(1);
 }
 
-void Cpu::DEC_Acc()
+void SnesCpu::DEC_Acc()
 {
 	SetRegister(_state.A, _state.A - 1, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::INC_Acc()
+void SnesCpu::INC_Acc()
 {
 	SetRegister(_state.A, _state.A + 1, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::IncDecReg(uint16_t &reg, int8_t offset)
+void SnesCpu::IncDecReg(uint16_t &reg, int8_t offset)
 {
 	SetRegister(reg, reg + offset, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::IncDec(int8_t offset)
+void SnesCpu::IncDec(int8_t offset)
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue() + offset;
@@ -346,7 +346,7 @@ void Cpu::IncDec(int8_t offset)
 /********************
 Compare instructions
 *********************/
-void Cpu::Compare(uint16_t reg, bool eightBitMode)
+void SnesCpu::Compare(uint16_t reg, bool eightBitMode)
 {
 	if(eightBitMode) {
 		uint8_t value = GetByteValue();
@@ -370,17 +370,17 @@ void Cpu::Compare(uint16_t reg, bool eightBitMode)
 	}
 }
 
-void Cpu::CMP()
+void SnesCpu::CMP()
 {
 	Compare(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::CPX()
+void SnesCpu::CPX()
 {
 	Compare(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::CPY()
+void SnesCpu::CPY()
 {
 	Compare(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
@@ -388,20 +388,20 @@ void Cpu::CPY()
 /*****************
 Jump instructions
 ******************/
-void Cpu::JML()
+void SnesCpu::JML()
 {
 	_state.K = (_operand >> 16) & 0xFF;
 	_state.PC = (uint16_t)_operand;
 	IdleEndJump();
 }
 
-void Cpu::JMP()
+void SnesCpu::JMP()
 {
 	_state.PC = (uint16_t)_operand;
 	IdleEndJump();
 }
 
-void Cpu::JSL()
+void SnesCpu::JSL()
 {
 	PushByte(_state.K);
 	Idle();
@@ -411,14 +411,14 @@ void Cpu::JSL()
 	IdleEndJump();
 }
 
-void Cpu::JSR()
+void SnesCpu::JSR()
 {
 	PushWord(_state.PC - 1);
 	_state.PC = (uint16_t)_operand;
 	IdleEndJump();
 }
 
-void Cpu::RTI()
+void SnesCpu::RTI()
 {
 	Idle();
 	Idle();
@@ -434,7 +434,7 @@ void Cpu::RTI()
 	IdleEndJump();
 }
 
-void Cpu::RTL()
+void SnesCpu::RTL()
 {
 	Idle();
 	Idle();
@@ -445,7 +445,7 @@ void Cpu::RTL()
 	IdleEndJump();
 }
 
-void Cpu::RTS()
+void SnesCpu::RTS()
 {
 	Idle();
 	Idle();
@@ -459,7 +459,7 @@ void Cpu::RTS()
 /**********
 Interrupts
 ***********/
-void Cpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
+void SnesCpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
 {
 	if(forHardwareInterrupt) {
 		//IRQ/NMI waste 2 cycles here.  BRK/COP do not (because they do those 2 cycles while loading the OP code + signature byte)
@@ -489,20 +489,20 @@ void Cpu::ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt)
 	}
 }
 
-void Cpu::BRK()
+void SnesCpu::BRK()
 {
-	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::BreakVector, false);
+	ProcessInterrupt(_state.EmulationMode ? SnesCpu::LegacyIrqVector : SnesCpu::BreakVector, false);
 }
 
-void Cpu::COP()
+void SnesCpu::COP()
 {
-	ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyCoprocessorVector : Cpu::CoprocessorVector, false);
+	ProcessInterrupt(_state.EmulationMode ? SnesCpu::LegacyCoprocessorVector : SnesCpu::CoprocessorVector, false);
 }
 
 /******************
 Bitwise operations
 *******************/
-void Cpu::AND()
+void SnesCpu::AND()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		SetRegister(_state.A, _state.A & GetByteValue(), true);
@@ -511,7 +511,7 @@ void Cpu::AND()
 	}
 }
 
-void Cpu::EOR()
+void SnesCpu::EOR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		SetRegister(_state.A, _state.A ^ GetByteValue(), true);
@@ -520,7 +520,7 @@ void Cpu::EOR()
 	}
 }
 
-void Cpu::ORA()
+void SnesCpu::ORA()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		SetRegister(_state.A, _state.A | GetByteValue(), true);
@@ -532,7 +532,7 @@ void Cpu::ORA()
 /****************
 Shift operations
 *****************/
-template<typename T> T Cpu::ShiftLeft(T value)
+template<typename T> T SnesCpu::ShiftLeft(T value)
 {
 	T result = value << 1;
 	if(value & (1 << (sizeof(T) * 8 - 1))) {
@@ -544,7 +544,7 @@ template<typename T> T Cpu::ShiftLeft(T value)
 	return result;
 }
 
-template<typename T> T Cpu::RollLeft(T value)
+template<typename T> T SnesCpu::RollLeft(T value)
 {
 	T result = value << 1 | (_state.PS & ProcFlags::Carry);
 	if(value & (1 << (sizeof(T) * 8 - 1))) {
@@ -556,7 +556,7 @@ template<typename T> T Cpu::RollLeft(T value)
 	return result;
 }
 
-template<typename T> T Cpu::ShiftRight(T value)
+template<typename T> T SnesCpu::ShiftRight(T value)
 {
 	T result = value >> 1;
 	if(value & 0x01) {
@@ -568,7 +568,7 @@ template<typename T> T Cpu::ShiftRight(T value)
 	return result;
 }
 
-template<typename T> T Cpu::RollRight(T value)
+template<typename T> T SnesCpu::RollRight(T value)
 {
 	T result = value >> 1 | ((_state.PS & 0x01) << (sizeof(T) * 8 - 1));
 	if(value & 0x01) {
@@ -580,7 +580,7 @@ template<typename T> T Cpu::RollRight(T value)
 	return result;
 }
 
-void Cpu::ASL_Acc()
+void SnesCpu::ASL_Acc()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		_state.A = (_state.A & 0xFF00) | (ShiftLeft<uint8_t>((uint8_t)_state.A));
@@ -589,7 +589,7 @@ void Cpu::ASL_Acc()
 	}
 }
 
-void Cpu::ASL()
+void SnesCpu::ASL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -602,7 +602,7 @@ void Cpu::ASL()
 	}
 }
 
-void Cpu::LSR_Acc()
+void SnesCpu::LSR_Acc()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		_state.A = (_state.A & 0xFF00) | ShiftRight<uint8_t>((uint8_t)_state.A);
@@ -611,7 +611,7 @@ void Cpu::LSR_Acc()
 	}
 }
 
-void Cpu::LSR()
+void SnesCpu::LSR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -624,7 +624,7 @@ void Cpu::LSR()
 	}
 }
 
-void Cpu::ROL_Acc()
+void SnesCpu::ROL_Acc()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		_state.A = (_state.A & 0xFF00) | RollLeft<uint8_t>((uint8_t)_state.A);
@@ -633,7 +633,7 @@ void Cpu::ROL_Acc()
 	}
 }
 
-void Cpu::ROL()
+void SnesCpu::ROL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -646,7 +646,7 @@ void Cpu::ROL()
 	}
 }
 
-void Cpu::ROR_Acc()
+void SnesCpu::ROR_Acc()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		_state.A = (_state.A & 0xFF00) | RollRight<uint8_t>((uint8_t)_state.A);
@@ -655,7 +655,7 @@ void Cpu::ROR_Acc()
 	}
 }
 
-void Cpu::ROR()
+void SnesCpu::ROR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -671,7 +671,7 @@ void Cpu::ROR()
 /***************
 Move operations
 ****************/
-void Cpu::MVN()
+void SnesCpu::MVN()
 {
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
@@ -698,7 +698,7 @@ void Cpu::MVN()
 	}
 }
 
-void Cpu::MVP()
+void SnesCpu::MVP()
 {
 	_state.DBR = _operand & 0xFF;
 	uint32_t destBank = _state.DBR << 16;
@@ -728,51 +728,51 @@ void Cpu::MVP()
 /********************
 Push/pull operations
 *********************/
-void Cpu::PEA()
+void SnesCpu::PEA()
 {
 	//Push Effective Address
 	PushWord((uint16_t)_operand);
 }
 
-void Cpu::PEI()
+void SnesCpu::PEI()
 {
 	//Push Effective Indirect address
 	PushWord(ReadDataWord(_operand));
 }
 
-void Cpu::PER()
+void SnesCpu::PER()
 {
 	//Push Effective Relative address
 	PushWord((uint16_t)((int16_t)_operand + _state.PC));
 }
 
-void Cpu::PHB()
+void SnesCpu::PHB()
 {
 	Idle();
 	PushByte(_state.DBR);
 }
 
-void Cpu::PHD()
+void SnesCpu::PHD()
 {
 	Idle();
 	PushWord(_state.D);
 }
 
-void Cpu::PHK()
+void SnesCpu::PHK()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
 	Idle();
 	PushByte(_state.K);
 }
 
-void Cpu::PHP()
+void SnesCpu::PHP()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
 	Idle();
 	PushByte(_state.PS);
 }
 
-void Cpu::PLB()
+void SnesCpu::PLB()
 {
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
 	Idle();
@@ -780,7 +780,7 @@ void Cpu::PLB()
 	SetRegister(_state.DBR, PopByte());
 }
 
-void Cpu::PLD()
+void SnesCpu::PLD()
 {
 	//"PHD and PLD push and pull two bytes from the stack."
 	Idle();
@@ -788,7 +788,7 @@ void Cpu::PLD()
 	SetRegister(_state.D, PopWord(), false);
 }
 
-void Cpu::PLP()
+void SnesCpu::PLP()
 {
 	//"For PLP, (all of) the flags are pulled from the stack. Note that when the e flag is 1, the m and x flag are forced to 1, so after the PLP, both flags will still be 1 no matter what value is pulled from the stack."
 	Idle();
@@ -800,26 +800,26 @@ void Cpu::PLP()
 	}
 }
 
-void Cpu::PHA()
+void SnesCpu::PHA()
 {
 	//"When the m flag is 0, PHA and PLA push and pull a 16-bit value, and when the m flag is 1, PHA and PLA push and pull an 8-bit value. "
 	Idle();
 	PushRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::PHX()
+void SnesCpu::PHX()
 {
 	Idle();
 	PushRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::PHY()
+void SnesCpu::PHY()
 {
 	Idle();
 	PushRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::PLA()
+void SnesCpu::PLA()
 {
 	//"When the m flag is 0, PHA and PLA push and pull a 16-bit value, and when the m flag is 1, PHA and PLA push and pull an 8-bit value."
 	Idle();
@@ -827,21 +827,21 @@ void Cpu::PLA()
 	PullRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::PLX()
+void SnesCpu::PLX()
 {
 	Idle();
 	Idle();
 	PullRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::PLY()
+void SnesCpu::PLY()
 {
 	Idle();
 	Idle();
 	PullRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::PushRegister(uint16_t reg, bool eightBitMode)
+void SnesCpu::PushRegister(uint16_t reg, bool eightBitMode)
 {
 	//"When the x flag is 0, PHX, PHY, PLX, and PLY push and pull a 16-bit value, and when the x flag is 1, PHX, PHY, PLX, and PLY push and pull an 8-bit value."
 	if(eightBitMode) {
@@ -851,7 +851,7 @@ void Cpu::PushRegister(uint16_t reg, bool eightBitMode)
 	}
 }
 
-void Cpu::PullRegister(uint16_t &reg, bool eightBitMode)
+void SnesCpu::PullRegister(uint16_t &reg, bool eightBitMode)
 {
 	//"When the x flag is 0, PHX, PHY, PLX, and PLY push and pull a 16-bit value, and when the x flag is 1, PHX, PHY, PLX, and PLY push and pull an 8-bit value."
 	if(eightBitMode) {
@@ -864,7 +864,7 @@ void Cpu::PullRegister(uint16_t &reg, bool eightBitMode)
 /*********************
 Store/load operations
 **********************/
-void Cpu::LoadRegister(uint16_t &reg, bool eightBitMode)
+void SnesCpu::LoadRegister(uint16_t &reg, bool eightBitMode)
 {
 	if(eightBitMode) {
 		SetRegister(reg, GetByteValue(), true);
@@ -873,7 +873,7 @@ void Cpu::LoadRegister(uint16_t &reg, bool eightBitMode)
 	}
 }
 
-void Cpu::StoreRegister(uint16_t val, bool eightBitMode)
+void SnesCpu::StoreRegister(uint16_t val, bool eightBitMode)
 {
 	if(eightBitMode) {
 		Write(_operand, (uint8_t)val);
@@ -882,43 +882,43 @@ void Cpu::StoreRegister(uint16_t val, bool eightBitMode)
 	}
 }
 
-void Cpu::LDA()
+void SnesCpu::LDA()
 {
 	//"When the m flag is 0, LDA, STA, and STZ are 16-bit operations"
 	LoadRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::LDX()
+void SnesCpu::LDX()
 {
 	//"When the x flag is 0, LDX, LDY, STX, and STY are 16-bit operations"
 	LoadRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::LDY()
+void SnesCpu::LDY()
 {
 	//"When the x flag is 0, LDX, LDY, STX, and STY are 16-bit operations"
 	LoadRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::STA()
+void SnesCpu::STA()
 {
 	//"When the m flag is 0, LDA, STA, and STZ are 16-bit operations"
 	StoreRegister(_state.A, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::STX()
+void SnesCpu::STX()
 {
 	//"When the x flag is 0, LDX, LDY, STX, and STY are 16-bit operations"
 	StoreRegister(_state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::STY()
+void SnesCpu::STY()
 {
 	//"When the x flag is 0, LDX, LDY, STX, and STY are 16-bit operations"
 	StoreRegister(_state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::STZ()
+void SnesCpu::STZ()
 {
 	//"When the m flag is 0, LDA, STA, and STZ are 16-bit operations"
 	StoreRegister(0, CheckFlag(ProcFlags::MemoryMode8));
@@ -927,7 +927,7 @@ void Cpu::STZ()
 /*******************
 Bit test operations
 ********************/
-template<typename T> void Cpu::TestBits(T value, bool alterZeroFlagOnly)
+template<typename T> void SnesCpu::TestBits(T value, bool alterZeroFlagOnly)
 {
 	if(alterZeroFlagOnly) {
 		//"Immediate addressing only affects the z flag (with the result of the bitwise And), but does not affect the n and v flags."
@@ -952,7 +952,7 @@ template<typename T> void Cpu::TestBits(T value, bool alterZeroFlagOnly)
 	}
 }
 
-void Cpu::BIT()
+void SnesCpu::BIT()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		TestBits<uint8_t>(GetByteValue(), _immediateMode);
@@ -961,7 +961,7 @@ void Cpu::BIT()
 	}
 }
 
-void Cpu::TRB()
+void SnesCpu::TRB()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -982,7 +982,7 @@ void Cpu::TRB()
 	}
 }
 
-void Cpu::TSB()
+void SnesCpu::TSB()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
@@ -1006,74 +1006,74 @@ void Cpu::TSB()
 /******************
 Transfer operations
 *******************/
-void Cpu::TAX()
+void SnesCpu::TAX()
 {
 	SetRegister(_state.X, _state.A, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::TAY()
+void SnesCpu::TAY()
 {
 	SetRegister(_state.Y, _state.A, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::TCD()
+void SnesCpu::TCD()
 {
 	SetRegister(_state.D, _state.A, false);
 }
 
-void Cpu::TCS()
+void SnesCpu::TCS()
 {
 	SetSP(_state.A);
 }
 
-void Cpu::TDC()
+void SnesCpu::TDC()
 {
 	SetRegister(_state.A, _state.D, false);
 }
 
-void Cpu::TSC()
+void SnesCpu::TSC()
 {
 	SetRegister(_state.A, _state.SP, false);
 }
 
-void Cpu::TSX()
+void SnesCpu::TSX()
 {
 	SetRegister(_state.X, _state.SP, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::TXA()
+void SnesCpu::TXA()
 {
 	SetRegister(_state.A, _state.X, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::TXS()
+void SnesCpu::TXS()
 {
 	SetSP(_state.X);
 }
 
-void Cpu::TXY()
+void SnesCpu::TXY()
 {
 	SetRegister(_state.Y, _state.X, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::TYA()
+void SnesCpu::TYA()
 {
 	SetRegister(_state.A, _state.Y, CheckFlag(ProcFlags::MemoryMode8));
 }
 
-void Cpu::TYX()
+void SnesCpu::TYX()
 {
 	SetRegister(_state.X, _state.Y, CheckFlag(ProcFlags::IndexMode8));
 }
 
-void Cpu::XBA()
+void SnesCpu::XBA()
 {
 	Idle();
 	_state.A = ((_state.A & 0xFF) << 8) | ((_state.A >> 8) & 0xFF);
 	SetZeroNegativeFlags((uint8_t)_state.A);
 }
 
-void Cpu::XCE()
+void SnesCpu::XCE()
 {
 	bool carry = CheckFlag(ProcFlags::Carry);
 	if(_state.EmulationMode) {
@@ -1092,12 +1092,12 @@ void Cpu::XCE()
 /*****************
 No operation (NOP)
 ******************/
-void Cpu::NOP()
+void SnesCpu::NOP()
 {
 	//1-byte NOP
 }
 
-void Cpu::WDM()
+void SnesCpu::WDM()
 {
 	//2-byte NOP
 }
@@ -1105,27 +1105,27 @@ void Cpu::WDM()
 /****************
 Misc. operations
 *****************/
-void Cpu::STP()
+void SnesCpu::STP()
 {
 	//Stop the CPU
-	_state.StopState = CpuStopState::Stopped;
+	_state.StopState = SnesCpuStopState::Stopped;
 }
 
-void Cpu::WAI()
+void SnesCpu::WAI()
 {
 	//Wait for interrupt
-	_state.StopState = CpuStopState::WaitingForIrq;
+	_state.StopState = SnesCpuStopState::WaitingForIrq;
 }
 
 /****************
 Addressing modes
 *****************/
-void Cpu::AddrMode_Abs()
+void SnesCpu::AddrMode_Abs()
 {
 	_operand = GetDataAddress(ReadOperandWord());
 }
 
-void Cpu::AddrMode_AbsIdxX(bool isWrite)
+void SnesCpu::AddrMode_AbsIdxX(bool isWrite)
 {
 	uint32_t baseAddr = GetDataAddress(ReadOperandWord());
 	_operand = (baseAddr + _state.X) & 0xFFFFFF;
@@ -1134,7 +1134,7 @@ void Cpu::AddrMode_AbsIdxX(bool isWrite)
 	}
 }
 
-void Cpu::AddrMode_AbsIdxY(bool isWrite)
+void SnesCpu::AddrMode_AbsIdxY(bool isWrite)
 {
 	uint32_t baseAddr = GetDataAddress(ReadOperandWord());
 	_operand = (baseAddr + _state.Y) & 0xFFFFFF;
@@ -1143,53 +1143,53 @@ void Cpu::AddrMode_AbsIdxY(bool isWrite)
 	}
 }
 
-void Cpu::AddrMode_AbsLng()
+void SnesCpu::AddrMode_AbsLng()
 {
 	_operand = ReadOperandLong();
 }
 
-void Cpu::AddrMode_AbsLngIdxX()
+void SnesCpu::AddrMode_AbsLngIdxX()
 {
 	_operand = (ReadOperandLong() + _state.X) & 0xFFFFFF;
 }
 
-void Cpu::AddrMode_AbsJmp()
+void SnesCpu::AddrMode_AbsJmp()
 {
 	_operand = GetProgramAddress(ReadOperandWord());
 }
 
-void Cpu::AddrMode_AbsLngJmp()
+void SnesCpu::AddrMode_AbsLngJmp()
 {
 	_operand = ReadOperandLong();
 }
 
-void Cpu::AddrMode_AbsIdxXInd()
+void SnesCpu::AddrMode_AbsIdxXInd()
 {
 	_operand = GetProgramAddress(ReadDataWord(GetProgramAddress(ReadOperandWord() + _state.X)));
 	Idle();
 }
 
-void Cpu::AddrMode_AbsInd()
+void SnesCpu::AddrMode_AbsInd()
 {
 	_operand = ReadDataWord(ReadOperandWord());
 }
 
-void Cpu::AddrMode_AbsIndLng()
+void SnesCpu::AddrMode_AbsIndLng()
 {
 	_operand = ReadDataLong(ReadOperandWord());
 }
 
-void Cpu::AddrMode_Acc()
+void SnesCpu::AddrMode_Acc()
 {
 	IdleOrRead();
 }
 
-void Cpu::AddrMode_BlkMov()
+void SnesCpu::AddrMode_BlkMov()
 {
 	_operand = ReadOperandWord();
 }
 
-uint8_t Cpu::ReadDirectOperandByte()
+uint8_t SnesCpu::ReadDirectOperandByte()
 {
 	uint8_t value = ReadOperandByte();
 	if(_state.D & 0xFF) {
@@ -1199,36 +1199,36 @@ uint8_t Cpu::ReadDirectOperandByte()
 	return value;
 }
 
-void Cpu::AddrMode_Dir()
+void SnesCpu::AddrMode_Dir()
 {
 	_operand = GetDirectAddress(ReadDirectOperandByte());
 }
 
-void Cpu::AddrMode_DirIdxX()
+void SnesCpu::AddrMode_DirIdxX()
 {
 	_operand = GetDirectAddress(ReadDirectOperandByte() + _state.X);
 	Idle();
 }
 
-void Cpu::AddrMode_DirIdxY()
+void SnesCpu::AddrMode_DirIdxY()
 {
 	_operand = GetDirectAddress(ReadDirectOperandByte() + _state.Y);
 	Idle();
 }
 
-void Cpu::AddrMode_DirInd()
+void SnesCpu::AddrMode_DirInd()
 {
 	_operand = GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte()));
 }
 
-void Cpu::AddrMode_DirIdxIndX()
+void SnesCpu::AddrMode_DirIdxIndX()
 {
 	uint8_t operandByte = ReadDirectOperandByte();
 	Idle();
 	_operand = GetDataAddress(GetDirectAddressIndirectWord(operandByte + _state.X));
 }
 
-void Cpu::AddrMode_DirIndIdxY(bool isWrite)
+void SnesCpu::AddrMode_DirIndIdxY(bool isWrite)
 {
 	uint32_t baseAddr = GetDataAddress(GetDirectAddressIndirectWord(ReadDirectOperandByte()));
 	_operand = (baseAddr + _state.Y) & 0xFFFFFF;
@@ -1238,63 +1238,63 @@ void Cpu::AddrMode_DirIndIdxY(bool isWrite)
 	}
 }
 
-void Cpu::AddrMode_DirIndLng()
+void SnesCpu::AddrMode_DirIndLng()
 {
 	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte());
 }
 
-void Cpu::AddrMode_DirIndLngIdxY()
+void SnesCpu::AddrMode_DirIndLngIdxY()
 {
 	_operand = (GetDirectAddressIndirectLong(ReadDirectOperandByte()) + _state.Y) & 0xFFFFFF;
 }
 
-void Cpu::AddrMode_Imm8()
+void SnesCpu::AddrMode_Imm8()
 {
 	_immediateMode = true;
 	_operand = ReadOperandByte();
 }
 
-void Cpu::AddrMode_Imm16()
+void SnesCpu::AddrMode_Imm16()
 {
 	_immediateMode = true;
 	_operand = ReadOperandWord();
 }
 
-void Cpu::AddrMode_ImmX()
+void SnesCpu::AddrMode_ImmX()
 {
 	_immediateMode = true;
 	_operand = CheckFlag(ProcFlags::IndexMode8) ? ReadOperandByte() : ReadOperandWord();
 }
 
-void Cpu::AddrMode_ImmM()
+void SnesCpu::AddrMode_ImmM()
 {
 	_immediateMode = true; 
 	_operand = CheckFlag(ProcFlags::MemoryMode8) ? ReadOperandByte() : ReadOperandWord();
 }
 
-void Cpu::AddrMode_Imp()
+void SnesCpu::AddrMode_Imp()
 {
 	IdleOrRead();
 }
 
-void Cpu::AddrMode_RelLng()
+void SnesCpu::AddrMode_RelLng()
 {
 	_operand = ReadOperandWord();
 	Idle();
 }
 
-void Cpu::AddrMode_Rel()
+void SnesCpu::AddrMode_Rel()
 {
 	_operand = ReadOperandByte();
 }
 
-void Cpu::AddrMode_StkRel()
+void SnesCpu::AddrMode_StkRel()
 {
 	_operand = (uint16_t)(ReadOperandByte() + _state.SP);
 	Idle();
 }
 
-void Cpu::AddrMode_StkRelIndIdxY()
+void SnesCpu::AddrMode_StkRelIndIdxY()
 {
 	uint16_t addr = (uint16_t)(ReadOperandByte() + _state.SP);
 	Idle();

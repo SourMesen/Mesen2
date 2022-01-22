@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
-#include "SNES/Cpu.h"
+#include "SNES/SnesCpu.h"
 #include "SNES/Debugger/SnesAssembler.h"
-#include "SNES/Debugger/CpuDisUtils.h"
+#include "SNES/Debugger/SnesDisUtils.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 
@@ -336,8 +336,8 @@ void SnesAssembler::AssembleInstruction(SnesLineData& lineData, uint32_t& instru
 	bool foundMatch = false;
 
 	for(int i = 0; i < 256; i++) {
-		AddrMode opMode = CpuDisUtils::OpMode[i];
-		if(lineData.OpCode == CpuDisUtils::OpName[i]) {
+		AddrMode opMode = SnesDisUtils::OpMode[i];
+		if(lineData.OpCode == SnesDisUtils::OpName[i]) {
 			bool modeMatch = opMode == lineData.Mode;
 			if(!modeMatch) {
 				if(lineData.Mode == AddrMode::Imp && (opMode == AddrMode::Acc || opMode == AddrMode::Stk)) {
@@ -422,10 +422,10 @@ SnesAssembler::~SnesAssembler()
 uint32_t SnesAssembler::AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode)
 {
 	for(uint8_t i = 0; i < 255; i++) {
-		if(_availableModesByOpName.find(CpuDisUtils::OpName[i]) == _availableModesByOpName.end()) {
-			_availableModesByOpName[CpuDisUtils::OpName[i]] = std::unordered_set<int>();
+		if(_availableModesByOpName.find(SnesDisUtils::OpName[i]) == _availableModesByOpName.end()) {
+			_availableModesByOpName[SnesDisUtils::OpName[i]] = std::unordered_set<int>();
 		}
-		_availableModesByOpName[CpuDisUtils::OpName[i]].emplace((int)CpuDisUtils::OpMode[i]);
+		_availableModesByOpName[SnesDisUtils::OpName[i]].emplace((int)SnesDisUtils::OpMode[i]);
 	}
 
 	std::unordered_map<string, uint32_t> temporaryLabels;

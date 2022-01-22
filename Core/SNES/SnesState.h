@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Shared/BaseState.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/PpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesPpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Coprocessors/DSP/NecDspTypes.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
@@ -14,8 +14,8 @@
 struct SnesState : public BaseState
 {
 	uint64_t MasterClock;
-	CpuState Cpu;
-	PpuState Ppu;
+	SnesCpuState Snes;
+	SnesPpuState Ppu;
 	SpcState Spc;
 	DspState Dsp;
 	NecDspState NecDsp;

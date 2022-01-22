@@ -2,14 +2,14 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 
-class Console;
-class MemoryManager;
+class SnesConsole;
+class SnesMemoryManager;
 
 class BsxStream : public ISerializable
 {
 private:
-	Console* _console;
-	MemoryManager* _memoryManager;
+	SnesConsole* _console;
+	SnesMemoryManager* _memoryManager;
 
 	ifstream _file;
 	tm _tm = {};
@@ -43,7 +43,7 @@ private:
 
 public:
 	BsxStream();
-	void Reset(Console* console, int64_t customDate);
+	void Reset(SnesConsole* console, int64_t customDate);
 
 	uint16_t GetChannel();
 	bool NeedUpdate();

@@ -45,7 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		private byte[] _sourceData = Array.Empty<byte>();
 
 		[Obsolete("For designer only")]
-		public TileViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), null) { }
+		public TileViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
 
 		public TileViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
@@ -144,7 +144,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			AvailableFormats = CpuType switch {
-				CpuType.Cpu => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
+				CpuType.Snes => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
 				_ => throw new Exception("Unsupported CPU type")
@@ -176,7 +176,7 @@ namespace Mesen.Debugger.ViewModels
 				InitBitmap();
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTileView(CpuType.Cpu, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
+					DebugApi.GetTileView(CpuType.Snes, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
 				}
 			});
 		}

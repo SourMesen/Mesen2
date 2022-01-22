@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "Utilities/ISerializable.h"
 #include "MemoryOperationType.h"
 
@@ -28,7 +28,7 @@ private:
 
 	bool _immediateMode = false;
 
-	CpuState _state = {};
+	SnesCpuState _state = {};
 	uint32_t _operand = -1;
 
 	uint32_t GetProgramAddress(uint16_t addr);
@@ -319,16 +319,16 @@ public:
 	void Reset();
 	void Exec();
 
-	CpuState& GetState();
+	SnesCpuState& GetState();
 	uint64_t GetCycleCount();
 
 	template<uint64_t value>
 	void IncreaseCycleCount();
 
 	void SetNmiFlag(bool nmiFlag);
-	void SetIrqSource(IrqSource source);
-	bool CheckIrqSource(IrqSource source);
-	void ClearIrqSource(IrqSource source);
+	void SetIrqSource(SnesIrqSource source);
+	bool CheckIrqSource(SnesIrqSource source);
+	void ClearIrqSource(SnesIrqSource source);
 
 	void IncreaseCycleCount(uint64_t cycleCount);
 

@@ -434,7 +434,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetSnesPpuTab(ref SnesState state)
 		{
-			PpuState ppu = state.Ppu;
+			SnesPpuState ppu = state.Ppu;
 
 			string GetLayerSize(LayerConfig layer)
 			{

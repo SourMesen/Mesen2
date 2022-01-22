@@ -12,9 +12,9 @@ class InternalRegisters;
 class RamHandler;
 class BaseCartridge;
 class Emulator;
-class Console;
-class Ppu;
-class Cpu;
+class SnesConsole;
+class SnesPpu;
+class SnesCpu;
 class CheatManager;
 enum class MemoryOperationType;
 
@@ -26,21 +26,21 @@ enum class SnesEventType : uint8_t
 	EndOfScanline
 };
 
-class MemoryManager : public ISerializable
+class SnesMemoryManager : public ISerializable
 {
 public:
 	constexpr static uint32_t WorkRamSize = 0x20000;
 
 private:
-	Console* _console;
+	SnesConsole* _console;
 	Emulator* _emu;
 
 	unique_ptr<RegisterHandlerA> _registerHandlerA;
 	unique_ptr<RegisterHandlerB> _registerHandlerB;
 
 	InternalRegisters *_regs;
-	Ppu* _ppu;
-	Cpu* _cpu;
+	SnesPpu* _ppu;
+	SnesCpu* _cpu;
 	BaseCartridge* _cart;
 	CheatManager* _cheatManager;
 	uint8_t *_workRam;
@@ -64,8 +64,8 @@ private:
 	void ProcessEvent();
 
 public:
-	void Initialize(Console* console);
-	virtual ~MemoryManager();
+	void Initialize(SnesConsole* console);
+	virtual ~SnesMemoryManager();
 
 	void Reset();
 

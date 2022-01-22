@@ -6,8 +6,6 @@
 #include "Utilities/Video/AviWriter.h"
 #include "Utilities/Video/IVideoRecorder.h"
 
-class Console;
-
 class AviRecorder : public IVideoRecorder
 {
 private:

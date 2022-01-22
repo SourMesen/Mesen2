@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "AluMulDiv.h"
-#include "Cpu.h"
-#include "InternalRegisterTypes.h"
+#include "SNES/AluMulDiv.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/InternalRegisterTypes.h"
 #include "Utilities/Serializer.h"
 
-void AluMulDiv::Initialize(Cpu* cpu)
+void AluMulDiv::Initialize(SnesCpu* cpu)
 {
 	_cpu = cpu;
 

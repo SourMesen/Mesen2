@@ -3,9 +3,9 @@
 #include "IMemoryHandler.h"
 #include "Utilities/ISerializable.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class Ppu;
+class SnesPpu;
 class Spc;
 class Sa1;
 class Msu1;
@@ -15,9 +15,9 @@ class RegisterHandlerB : public IMemoryHandler, public ISerializable
 {
 private:
 	Emulator* _emu;
-	Console *_console;
+	SnesConsole *_console;
 	CheatManager *_cheatManager;
-	Ppu *_ppu;
+	SnesPpu *_ppu;
 	Spc *_spc;
 	Sa1 *_sa1;
 	Msu1 *_msu1;
@@ -26,7 +26,7 @@ private:
 	uint32_t _wramPosition;
 
 public:
-	RegisterHandlerB(Console *console, Ppu *ppu, Spc *spc, uint8_t *workRam);
+	RegisterHandlerB(SnesConsole *console, SnesPpu *ppu, Spc *spc, uint8_t *workRam);
 
 	uint8_t Read(uint32_t addr) override;
 	uint8_t Peek(uint32_t addr) override;

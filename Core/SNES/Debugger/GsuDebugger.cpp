@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Debugger/GsuDebugger.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Debugger/TraceLogger/GsuTraceLogger.h"
@@ -19,10 +19,10 @@
 
 GsuDebugger::GsuDebugger(Debugger* debugger)
 {
-	Console* console = (Console*)debugger->GetConsole();
+	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu);
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Snes);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_gsu = console->GetCartridge()->GetGsu();
@@ -31,7 +31,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	
 	_traceLogger.reset(new GsuTraceLogger(debugger, console->GetPpu(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Cpu)));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

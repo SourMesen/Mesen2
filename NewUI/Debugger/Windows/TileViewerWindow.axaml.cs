@@ -16,7 +16,7 @@ namespace Mesen.Debugger.Windows
 		private TileViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public TileViewerWindow() : this(CpuType.Cpu) { }
+		public TileViewerWindow() : this(CpuType.Snes) { }
 
 		public TileViewerWindow(CpuType cpuType)
 		{

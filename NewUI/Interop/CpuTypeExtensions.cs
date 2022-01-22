@@ -7,7 +7,7 @@ namespace Mesen.Interop
 		public static SnesMemoryType ToMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => SnesMemoryType.CpuMemory,
+				CpuType.Snes => SnesMemoryType.CpuMemory,
 				CpuType.Spc => SnesMemoryType.SpcMemory,
 				CpuType.NecDsp => SnesMemoryType.NecDspMemory,
 				CpuType.Sa1 => SnesMemoryType.Sa1Memory,
@@ -22,7 +22,7 @@ namespace Mesen.Interop
 		public static SnesMemoryType GetVramMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => SnesMemoryType.VideoRam,
+				CpuType.Snes => SnesMemoryType.VideoRam,
 				CpuType.Gameboy => SnesMemoryType.GbVideoRam,
 				CpuType.Nes => SnesMemoryType.NesPpuMemory,
 				_ => throw new Exception("Invalid CPU type"),
@@ -32,7 +32,7 @@ namespace Mesen.Interop
 		public static SnesMemoryType GetSpriteRamMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => SnesMemoryType.SpriteRam,
+				CpuType.Snes => SnesMemoryType.SpriteRam,
 				CpuType.Gameboy => SnesMemoryType.GbSpriteRam,
 				CpuType.Nes => SnesMemoryType.NesSpriteRam,
 				_ => throw new Exception("Invalid CPU type"),
@@ -42,7 +42,7 @@ namespace Mesen.Interop
 		public static SnesMemoryType GetPrgRomMemoryType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => SnesMemoryType.PrgRom,
+				CpuType.Snes => SnesMemoryType.PrgRom,
 				CpuType.Gameboy => SnesMemoryType.GbPrgRom,
 				CpuType.Nes => SnesMemoryType.NesPrgRom,
 				_ => throw new Exception("Invalid CPU type"),
@@ -52,7 +52,7 @@ namespace Mesen.Interop
 		public static int GetAddressSize(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => 6,
+				CpuType.Snes => 6,
 				CpuType.Spc => 4,
 				CpuType.NecDsp => 4,
 				CpuType.Sa1 => 6,
@@ -67,7 +67,7 @@ namespace Mesen.Interop
 		public static int GetByteCodeSize(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => 4,
+				CpuType.Snes => 4,
 				CpuType.Spc => 3,
 				CpuType.NecDsp => 3,
 				CpuType.Sa1 => 4,
@@ -82,7 +82,7 @@ namespace Mesen.Interop
 		public static DebuggerFlags GetDebuggerFlag(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => DebuggerFlags.CpuDebuggerEnabled,
+				CpuType.Snes => DebuggerFlags.CpuDebuggerEnabled,
 				CpuType.Spc => DebuggerFlags.SpcDebuggerEnabled,
 				CpuType.NecDsp => DebuggerFlags.NecDspDebuggerEnabled,
 				CpuType.Sa1 => DebuggerFlags.Sa1DebuggerEnabled,
@@ -97,7 +97,7 @@ namespace Mesen.Interop
 		public static ConsoleType GetConsoleType(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Cpu => ConsoleType.Snes,
+				CpuType.Snes => ConsoleType.Snes,
 				CpuType.Spc => ConsoleType.Snes,
 				CpuType.NecDsp => ConsoleType.Snes,
 				CpuType.Sa1 => ConsoleType.Snes,

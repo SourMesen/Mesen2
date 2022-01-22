@@ -8,7 +8,7 @@ enum class ConsoleRegion;
 
 class Emulator;
 class BaseMapper;
-class ControlManager;
+class SnesControlManager;
 class NesConsole;
 class EmuSettings;
 

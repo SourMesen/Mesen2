@@ -121,7 +121,7 @@ struct WindowConfig
 	}
 };
 
-struct PpuState : public BaseState
+struct SnesPpuState : public BaseState
 {
 	uint16_t Cycle;
 	uint16_t Scanline;

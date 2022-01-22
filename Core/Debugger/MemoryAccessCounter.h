@@ -4,9 +4,9 @@
 #include "SnesMemoryType.h"
 
 class Debugger;
-class MemoryManager;
+class SnesMemoryManager;
 class Spc;
-class Console;
+class SnesConsole;
 class Sa1;
 class Gsu;
 class Cx4;

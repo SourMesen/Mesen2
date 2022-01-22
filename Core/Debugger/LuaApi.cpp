@@ -7,11 +7,11 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/ScriptingContext.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/ControlManager.h"
+#include "SNES/SnesControlManager.h"
 #include "SNES/Input/SnesController.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesPpu.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/LabelManager.h"
 #include "Shared/Video/DebugHud.h"
@@ -45,7 +45,7 @@
 
 Debugger* LuaApi::_debugger = nullptr;
 Emulator* LuaApi::_emu = nullptr;
-Ppu* LuaApi::_ppu = nullptr;
+SnesPpu* LuaApi::_ppu = nullptr;
 MemoryDumper* LuaApi::_memoryDumper = nullptr;
 ScriptingContext* LuaApi::_context = nullptr;
 
@@ -196,7 +196,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "cpuType");
 	lua_newtable(lua);
-	lua_pushintvalue(cpu, CpuType::Cpu);
+	lua_pushintvalue(cpu, CpuType::Snes);
 	lua_pushintvalue(spc, CpuType::Spc);
 	lua_pushintvalue(dsp, CpuType::NecDsp);
 	lua_pushintvalue(sa1, CpuType::Sa1);
@@ -308,7 +308,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
-	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Cpu);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Snes);
 	int32_t endAddr = l.ReadInteger(-1);
 	int32_t startAddr = l.ReadInteger();
 	CallbackType callbackType = (CallbackType)l.ReadInteger();
@@ -321,7 +321,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 
 	errorCond(startAddr > endAddr, "start address must be <= end address");
 	errorCond(callbackType < CallbackType::CpuRead || callbackType > CallbackType::CpuExec, "the specified type is invalid");
-	errorCond(cpuType < CpuType::Cpu || cpuType > CpuType::Gameboy, "the cpu type is invalid");
+	errorCond(cpuType < CpuType::Snes || cpuType > CpuType::Gameboy, "the cpu type is invalid");
 	errorCond(reference == LUA_NOREF, "the specified function could not be found");
 	_context->RegisterMemoryCallback(callbackType, startAddr, endAddr, cpuType, reference);
 	_context->Log("Registered memory callback from $" + HexUtilities::ToHex((uint32_t)startAddr) + " to $" + HexUtilities::ToHex((uint32_t)endAddr));
@@ -334,7 +334,7 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
 
-	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Cpu);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Snes);
 	int endAddr = l.ReadInteger(-1);
 	int startAddr = l.ReadInteger();
 	CallbackType type = (CallbackType)l.ReadInteger();
@@ -559,7 +559,7 @@ int LuaApi::Break(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
-	_debugger->Step(CpuType::Cpu, 1, StepType::Step);
+	_debugger->Step(CpuType::Snes, 1, StepType::Step);
 	return l.ReturnCount();
 }
 
@@ -582,7 +582,7 @@ int LuaApi::Execute(lua_State *lua)
 	errorCond(count <= 0, "count must be >= 1");
 	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 
-	_debugger->Step(CpuType::Cpu, count, type);
+	_debugger->Step(CpuType::Snes, count, type);
 
 	return l.ReturnCount();
 }

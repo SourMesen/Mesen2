@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesPpu.h"
 #include "SNES/Spc.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
@@ -12,7 +12,7 @@
 #include "Gameboy/GbMemoryManager.h"
 #include "SNES/Coprocessors/BSX/BsxCart.h"
 #include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "Debugger/MemoryDumper.h"
 #include "SNES/BaseCartridge.h"
 #include "NES/NesConsole.h"
@@ -29,7 +29,7 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 
 	IConsole* console = _debugger->GetConsole();
 	//TODO
-	if(Console* c = dynamic_cast<Console*>(console)) {
+	if(SnesConsole* c = dynamic_cast<SnesConsole*>(console)) {
 		_ppu = c->GetPpu();
 		_spc = c->GetSpc();
 		_memoryManager = c->GetMemoryManager();

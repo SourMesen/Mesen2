@@ -13,7 +13,7 @@ namespace Mesen.Debugger.Labels
 				SetGameboyDefaultLabels();
 			} else if(cpuTypes.Contains(CpuType.Nes)) {
 				SetDefaultNesLabels();
-			} else if(cpuTypes.Contains(CpuType.Cpu)) {
+			} else if(cpuTypes.Contains(CpuType.Snes)) {
 				SetSnesDefaultLabels();
 			}
 		}

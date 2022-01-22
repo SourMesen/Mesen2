@@ -38,7 +38,7 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo? _palette;
 
 		[Obsolete("For designer only")]
-		public PaletteViewerViewModel() : this(CpuType.Cpu, null) { }
+		public PaletteViewerViewModel() : this(CpuType.Snes, null) { }
 
 		public PaletteViewerViewModel(CpuType cpuType, Window? wnd)
 		{

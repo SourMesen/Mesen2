@@ -466,7 +466,7 @@ enum class AudioChannel
 
 struct NesState : public BaseState
 {
-	NesCpuState Cpu;
+	NesCpuState Snes;
 	NesPpuState Ppu;
 	CartridgeState Cartridge;
 	ApuState Apu;

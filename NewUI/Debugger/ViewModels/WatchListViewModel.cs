@@ -14,7 +14,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public WatchManager Manager { get; }
 
-		public WatchListViewModel() : this(CpuType.Cpu) { }
+		public WatchListViewModel() : this(CpuType.Snes) { }
 
 		public WatchListViewModel(CpuType cpuType)
 		{

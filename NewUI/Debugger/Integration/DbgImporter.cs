@@ -825,7 +825,7 @@ namespace Mesen.Debugger.Integration
 		public static DbgImporter Import(CpuType cpu, RomFormat romFormat, string path, bool importComments, bool silent)
 		{
 			DbgImporter? importer = cpu switch {
-				CpuType.Cpu => new SnesDbgImporter(romFormat),
+				CpuType.Snes => new SnesDbgImporter(romFormat),
 				CpuType.Nes => new NesDbgImporter(romFormat),
 				_ => throw new NotImplementedException()
 			};

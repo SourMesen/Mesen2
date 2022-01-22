@@ -385,7 +385,7 @@ enum class GbType
 struct GbState : public BaseState
 {
 	GbType Type;
-	GbCpuState Cpu;
+	GbCpuState Snes;
 	GbPpuState Ppu;	
 	GbApuDebugState Apu;
 	GbMemoryManagerState MemoryManager;

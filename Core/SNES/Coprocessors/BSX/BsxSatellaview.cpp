@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/BSX/BsxSatellaview.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
-BsxSatellaview::BsxSatellaview(Console* console, IMemoryHandler* bBusHandler) : IMemoryHandler(SnesMemoryType::Register)
+BsxSatellaview::BsxSatellaview(SnesConsole* console, IMemoryHandler* bBusHandler) : IMemoryHandler(SnesMemoryType::Register)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager();

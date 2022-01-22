@@ -6,15 +6,15 @@
 #endif
 
 #include "stdafx.h"
-#include "SpcTypes.h"
-#include "CpuTypes.h"
-#include "SpcTimer.h"
+#include "SNES/SpcTypes.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SpcTimer.h"
 #include "MemoryOperationType.h"
 #include "Utilities/ISerializable.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class MemoryManager;
+class SnesMemoryManager;
 class SpcFileData;
 class SPC_DSP;
 struct AddressInfo;
@@ -31,8 +31,8 @@ private:
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
 	Emulator* _emu;
-	Console* _console;
-	MemoryManager* _memoryManager;
+	SnesConsole* _console;
+	SnesMemoryManager* _memoryManager;
 	unique_ptr<SPC_DSP> _dsp;
 
 	double _clockRatio;
@@ -287,7 +287,7 @@ private:
 	void UpdateClockRatio();
 
 public:
-	Spc(Console* console);
+	Spc(SnesConsole* console);
 	virtual ~Spc();
 
 	void SetSpcState(bool enabled);

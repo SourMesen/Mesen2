@@ -7,11 +7,11 @@
 enum class DebugEventType;
 struct DebugEventInfo;
 struct EventViewerDisplayOptions;
-class Cpu;
-class Ppu;
+class SnesCpu;
+class SnesPpu;
 class Debugger;
-class DmaController;
-class MemoryManager;
+class SnesDmaController;
+class SnesMemoryManager;
 
 struct SnesEventViewerConfig : public BaseEventViewerConfig
 {
@@ -47,10 +47,10 @@ private:
 
 	SnesEventViewerConfig _config;
 
-	Cpu * _cpu;
-	Ppu *_ppu;
-	MemoryManager* _memoryManager;
-	DmaController *_dmaController;
+	SnesCpu * _cpu;
+	SnesPpu *_ppu;
+	SnesMemoryManager* _memoryManager;
+	SnesDmaController *_dmaController;
 	Debugger *_debugger;
 
 	bool _overscanMode = false;
@@ -64,7 +64,7 @@ protected:
 	bool ShowPreviousFrameEvents() override;
 
 public:
-	SnesEventManager(Debugger *debugger, Cpu *cpu, Ppu *ppu, MemoryManager *memoryManager, DmaController *dmaController);
+	SnesEventManager(Debugger *debugger, SnesCpu *cpu, SnesPpu *ppu, SnesMemoryManager *memoryManager, SnesDmaController *dmaController);
 	~SnesEventManager();
 
 	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1);

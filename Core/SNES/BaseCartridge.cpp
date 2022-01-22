@@ -4,7 +4,7 @@
 #include "SNES/RomHandler.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/IMemoryHandler.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/SpcFileData.h"
 #include "Gameboy/Gameboy.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
@@ -40,7 +40,7 @@ BaseCartridge::~BaseCartridge()
 	delete[] _saveRam;
 }
 
-unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile)
+unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, VirtualFile &romFile)
 {
 	if(romFile.IsValid()) {
 		unique_ptr<BaseCartridge> cart(new BaseCartridge());

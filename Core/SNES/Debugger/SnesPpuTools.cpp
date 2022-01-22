@@ -4,7 +4,7 @@
 #include "Debugger/MemoryDumper.h"
 #include "Shared/SettingTypes.h"
 #include "SNES/SnesDefaultVideoFilter.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesPpu.h"
 
 static constexpr uint8_t layerBpp[8][4] = {
 	{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,0,0,0 }
@@ -16,7 +16,7 @@ SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugge
 
 DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
-	PpuState& state = (PpuState&)baseState;
+	SnesPpuState& state = (SnesPpuState&)baseState;
 	FrameInfo outputSize = GetTilemapSize(options, state);
 
 	bool directColor = state.DirectColorMode && (state.BgMode == 3 || state.BgMode == 4 || state.BgMode == 7);
@@ -90,7 +90,7 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 						uint16_t pixelStart = tileStart + yOffset * 2;
 
 						uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
-						uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, bpp, pixelStart, shift, 1);
+						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, bpp, pixelStart, shift, 1);
 						if(color != 0) {
 							uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
 							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(palette, color, paletteIndex, bpp, directColor, basePaletteOffset);
@@ -130,7 +130,7 @@ static constexpr uint8_t _oamSizes[8][2][2] = {
 
 void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t *vram, uint8_t *oamRam, uint32_t* palette, uint32_t* outBuffer)
 {
-	PpuState& state = (PpuState&)baseState;
+	SnesPpuState& state = (SnesPpuState&)baseState;
 	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
 	//TODO
 	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
@@ -174,7 +174,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 	}
 }
 
-void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 4) & 0x1FF;
 
@@ -252,7 +252,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 			uint8_t tileIndex = (row << 4) | column;
 			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 
-			uint8_t color = GetTilePixelColor(vram, Ppu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
+			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = GetRgbPixelColor(palette, color, sprite.Palette + 8, 4, false, 0);
 			} else {
@@ -264,7 +264,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
-	PpuState& state = (PpuState&)baseState;
+	SnesPpuState& state = (SnesPpuState&)baseState;
 	for(int i = 0; i < 128; i++) {
 		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
@@ -275,7 +275,7 @@ FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& bas
 {
 	FrameInfo size = { 256, 256 };
 
-	PpuState& state = (PpuState&)baseState;
+	SnesPpuState& state = (SnesPpuState&)baseState;
 	if(state.BgMode == 7) {
 		return { 1024, 1024 };
 	}
@@ -310,7 +310,7 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		return result;
 	}
 
-	PpuState& state = (PpuState&)baseState;
+	SnesPpuState& state = (SnesPpuState&)baseState;
 	LayerConfig layer = state.Layers[options.Layer];
 
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];

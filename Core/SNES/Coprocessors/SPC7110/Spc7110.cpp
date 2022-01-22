@@ -2,9 +2,9 @@
 #include "SNES/Coprocessors/SPC7110/Spc7110.h"
 #include "SNES/Coprocessors/SPC7110/Spc7110Decomp.h"
 #include "SNES/MemoryMappings.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BatteryManager.h"
@@ -12,7 +12,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
+Spc7110::Spc7110(SnesConsole* console, bool useRtc) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();

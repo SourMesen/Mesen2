@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Debugger/NecDspDebugger.h"
 #include "SNES/Debugger/TraceLogger/NecDspTraceLogger.h"
@@ -18,7 +18,7 @@
 
 NecDspDebugger::NecDspDebugger(Debugger* debugger)
 {
-	Console* console = (Console*)debugger->GetConsole();
+	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
 	_disassembler = debugger->GetDisassembler();
@@ -27,7 +27,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	
 	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Cpu)));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

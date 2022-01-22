@@ -1,25 +1,25 @@
 #include "stdafx.h"
-#include "SNES/Debugger/CpuDisUtils.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Cpu.h"
-#include "SNES/Console.h"
+#include "SNES/Debugger/SnesDisUtils.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesConsole.h"
 #include "Shared/EmuSettings.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
-#include "SNES/Debugger/DummyCpu.h"
+#include "SNES/Debugger/DummySnesCpu.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
 
-void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
+void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
 	uint8_t opCode = info.GetOpCode();
-	AddrMode addrMode = CpuDisUtils::OpMode[opCode];
-	str.Write(CpuDisUtils::OpName[opCode]);
+	AddrMode addrMode = SnesDisUtils::OpMode[opCode];
+	str.Write(SnesDisUtils::OpName[opCode]);
 	str.Write(' ');
 
-	uint32_t opAddr = CpuDisUtils::GetOperandAddress(info, memoryAddr);
+	uint32_t opAddr = SnesDisUtils::GetOperandAddress(info, memoryAddr);
 	uint32_t opSize = info.GetOpSize();
 
 	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
@@ -79,7 +79,7 @@ void CpuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	out += str.ToString();
 }
 
-uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAddr)
+uint32_t SnesDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAddr)
 {
 	uint32_t opSize = info.GetOpSize();
 	uint32_t opAddr = 0;
@@ -92,7 +92,7 @@ uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAd
 		opAddr = byteCode[1] | (byteCode[2] << 8) | (byteCode[3] << 16);
 	}
 
-	AddrMode addrMode = CpuDisUtils::OpMode[byteCode[0]];
+	AddrMode addrMode = SnesDisUtils::OpMode[byteCode[0]];
 	if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng) {
 		if(opSize == 2) {
 			opAddr = (memoryAddr & 0xFF0000) | (((int8_t)opAddr + memoryAddr + 2) & 0xFFFF);
@@ -104,10 +104,10 @@ uint32_t CpuDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryAd
 	return opAddr;
 }
 
-int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console, CpuState &state, CpuType type)
+int32_t SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SnesCpuState &state, CpuType type)
 {
-	if(HasEffectiveAddress(CpuDisUtils::OpMode[info.GetOpCode()])) {
-		DummyCpu cpu(console, type);
+	if(HasEffectiveAddress(SnesDisUtils::OpMode[info.GetOpCode()])) {
+		DummySnesCpu cpu(console, type);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= info.GetFlags();
 		cpu.SetDummyState(state);
@@ -117,7 +117,7 @@ int32_t CpuDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Console *console
 	return -1;
 }
 
-bool CpuDisUtils::HasEffectiveAddress(AddrMode addrMode)
+bool SnesDisUtils::HasEffectiveAddress(AddrMode addrMode)
 {
 	switch(addrMode) {
 		case AddrMode::Acc:
@@ -159,7 +159,7 @@ bool CpuDisUtils::HasEffectiveAddress(AddrMode addrMode)
 	throw std::runtime_error("Invalid mode");
 }
 
-uint8_t CpuDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
+uint8_t SnesDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
 {
 	if(addrMode == AddrMode::ImmX) {
 		return (flags & ProcFlags::IndexMode8) ? 2 : 3;
@@ -167,22 +167,22 @@ uint8_t CpuDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
 		return (flags & ProcFlags::MemoryMode8) ? 2 : 3;
 	}
 
-	return CpuDisUtils::OpSize[(int)addrMode];
+	return SnesDisUtils::OpSize[(int)addrMode];
 }
 
-uint8_t CpuDisUtils::GetOpSize(uint8_t opCode, uint8_t flags)
+uint8_t SnesDisUtils::GetOpSize(uint8_t opCode, uint8_t flags)
 {
-	return GetOpSize(CpuDisUtils::OpMode[opCode], flags);
+	return GetOpSize(SnesDisUtils::OpMode[opCode], flags);
 }
 
-uint8_t CpuDisUtils::OpSize[0x1F] = {
+uint8_t SnesDisUtils::OpSize[0x1F] = {
 	2, 2, 3, 0, 0, 3, 3, 3, 3, 3,
 	3, 4, 4, 3, 4, 1, 3, 2, 2, 2,
 	2, 2, 2, 2, 2, 1, 3, 2, 1, 2,
 	2
 };
 
-string CpuDisUtils::OpName[256] = {
+string SnesDisUtils::OpName[256] = {
 	//0    1      2      3      4      5      6      7      8      9      A      B      C      D      E      F
 	"BRK", "ORA", "COP", "ORA", "TSB", "ORA", "ASL", "ORA", "PHP", "ORA", "ASL", "PHD", "TSB", "ORA", "ASL", "ORA", // 0
 	"BPL", "ORA", "ORA", "ORA", "TRB", "ORA", "ASL", "ORA", "CLC", "ORA", "INC", "TCS", "TRB", "ORA", "ASL", "ORA", // 1
@@ -203,7 +203,7 @@ string CpuDisUtils::OpName[256] = {
 };
 
 typedef AddrMode M;
-AddrMode CpuDisUtils::OpMode[256] = {
+AddrMode SnesDisUtils::OpMode[256] = {
 	//0       1              2            3                 4           5           6           7                 8       9           A       B       C              D           E           F           
 	M::Sig8,  M::DirIdxIndX, M::Sig8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
 	M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Dir,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::Abs,        M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 1

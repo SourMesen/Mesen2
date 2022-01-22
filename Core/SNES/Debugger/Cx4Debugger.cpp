@@ -9,8 +9,8 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/CodeDataLogger.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/Debugger/TraceLogger/Cx4TraceLogger.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "Shared/Emulator.h"
@@ -20,10 +20,10 @@
 
 Cx4Debugger::Cx4Debugger(Debugger* debugger)
 {
-	Console* console = (Console*)debugger->GetConsole();
+	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu);
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Snes);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_cx4 = console->GetCartridge()->GetCx4();
@@ -32,7 +32,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	
 	_traceLogger.reset(new Cx4TraceLogger(debugger, console->GetPpu(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4, debugger->GetEventManager(CpuType::Cpu)));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

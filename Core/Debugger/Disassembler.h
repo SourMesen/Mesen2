@@ -11,7 +11,7 @@ class LabelManager;
 class CodeDataLogger;
 class MemoryDumper;
 class EmuSettings;
-struct CpuState;
+struct SnesCpuState;
 enum class CpuType : uint8_t;
 
 struct DisassemblerSource

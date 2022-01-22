@@ -5,9 +5,9 @@
 #include "SNES/Coprocessors/SA1/Sa1IRamHandler.h"
 #include "SNES/Coprocessors/SA1/Sa1BwRamHandler.h"
 #include "SNES/Coprocessors/SA1/CpuBwRamHandler.h"
-#include "SNES/Cpu.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/RamHandler.h"
@@ -19,7 +19,7 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
+Sa1::Sa1(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -426,17 +426,17 @@ uint8_t Sa1::CpuRegisterRead(uint16_t addr)
 void Sa1::ProcessInterrupts()
 {
 	if((_state.Sa1IrqRequested && _state.Sa1IrqEnabled) || (_state.DmaIrqFlag && _state.DmaIrqEnabled)) {
-		_cpu->SetIrqSource(IrqSource::Coprocessor);
+		_cpu->SetIrqSource(SnesIrqSource::Coprocessor);
 	} else {
-		_cpu->ClearIrqSource(IrqSource::Coprocessor);
+		_cpu->ClearIrqSource(SnesIrqSource::Coprocessor);
 	}
 
 	_cpu->SetNmiFlag(_state.Sa1NmiRequested && _state.Sa1NmiEnabled);
 
 	if((_state.CpuIrqRequested && _state.CpuIrqEnabled) || (_state.CharConvIrqFlag && _state.CharConvIrqEnabled)) {
-		_snesCpu->SetIrqSource(IrqSource::Coprocessor);
+		_snesCpu->SetIrqSource(SnesIrqSource::Coprocessor);
 	} else {
-		_snesCpu->ClearIrqSource(IrqSource::Coprocessor);
+		_snesCpu->ClearIrqSource(SnesIrqSource::Coprocessor);
 	}
 }
 
@@ -797,7 +797,7 @@ DebugSa1State Sa1::GetState()
 	};
 }
 
-CpuState& Sa1::GetCpuState()
+SnesCpuState& Sa1::GetCpuState()
 {
 	return _cpu->GetState();
 }

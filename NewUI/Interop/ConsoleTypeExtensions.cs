@@ -7,7 +7,7 @@ namespace Mesen.Interop
 		public static CpuType GetMainCpuType(this ConsoleType type)
 		{
 			return type switch {
-				ConsoleType.Snes => CpuType.Cpu,
+				ConsoleType.Snes => CpuType.Snes,
 				ConsoleType.Nes => CpuType.Nes,
 				ConsoleType.Gameboy or ConsoleType.GameboyColor => CpuType.Gameboy,
 				_ => throw new Exception("Invalid type")

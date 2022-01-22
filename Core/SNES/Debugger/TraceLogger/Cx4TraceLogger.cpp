@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "SNES/Debugger/TraceLogger/Cx4TraceLogger.h"
-#include "SNES/Ppu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-Cx4TraceLogger::Cx4TraceLogger(Debugger* debugger, Ppu* ppu, MemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Gsu)
+Cx4TraceLogger::Cx4TraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Gsu)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

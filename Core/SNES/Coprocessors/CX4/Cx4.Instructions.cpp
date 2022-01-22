@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Cx4.h"
-#include "SNES/Cpu.h"
+#include "SNES/SnesCpu.h"
 #include "SNES/Debugger/Cx4DisUtils.h"
 #include "Utilities/HexUtilities.h"
 
@@ -634,7 +634,7 @@ void Cx4::Stop()
 	_state.Stopped = true;
 	if(!_state.IrqDisabled) {
 		_state.IrqFlag = true;
-		_cpu->SetIrqSource(IrqSource::Coprocessor);
+		_cpu->SetIrqSource(SnesIrqSource::Coprocessor);
 	}
 }
 

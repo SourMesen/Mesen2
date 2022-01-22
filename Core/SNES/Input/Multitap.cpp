@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Input/Multitap.h"
 #include "SNES/Input/SnesController.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/InternalRegisters.h"
 #include "Shared/Emulator.h"
 
@@ -94,7 +94,7 @@ void Multitap::RefreshStateBuffer()
 	}
 }
 
-Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console->GetEmulator(), ControllerType::Multitap, port, keyMappings1)
+Multitap::Multitap(SnesConsole* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4) : BaseControlDevice(console->GetEmulator(), ControllerType::Multitap, port, keyMappings1)
 {
 	_turboSpeed[0] = keyMappings1.TurboSpeed;
 	_turboSpeed[1] = keyMappings2.TurboSpeed;

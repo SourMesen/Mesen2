@@ -22,7 +22,7 @@ enum class DebugEventType;
 enum class EventType;
 enum class ConsoleRegion;
 
-class NesConsole final : public IConsole, public std::enable_shared_from_this<NesConsole>
+class NesConsole final : public IConsole
 {
 private:
 	Emulator* _emu = nullptr;

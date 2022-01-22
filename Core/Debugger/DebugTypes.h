@@ -51,7 +51,7 @@ enum class BreakpointType
 
 enum class BreakpointCategory
 {
-	Cpu = 0,
+	Snes = 0,
 	VideoRam = 1,
 	Oam = 2,
 	CgRam = 3,
@@ -332,7 +332,7 @@ struct StepRequest
 
 enum class CpuType : uint8_t
 {
-	Cpu,
+	Snes,
 	Spc,
 	NecDsp,
 	Sa1,

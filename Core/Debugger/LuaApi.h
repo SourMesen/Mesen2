@@ -5,8 +5,8 @@ struct lua_State;
 class ScriptingContext;
 class Debugger;
 class Emulator;
-class Console;
-class Ppu;
+class SnesConsole;
+class SnesPpu;
 class MemoryDumper;
 
 class LuaApi
@@ -78,7 +78,7 @@ public:
 
 private:
 	static Emulator* _emu;
-	static Ppu* _ppu;
+	static SnesPpu* _ppu;
 	static Debugger* _debugger;
 	static MemoryDumper* _memoryDumper;
 	static ScriptingContext* _context;

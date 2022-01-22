@@ -29,7 +29,7 @@ namespace Mesen.Debugger.ViewModels
 		private int _ignoreScrollUpdates = 0;
 
 		[Obsolete("For designer only")]
-		public DisassemblyViewModel(): this(new DebugConfig(), CpuType.Cpu) { }
+		public DisassemblyViewModel(): this(new DebugConfig(), CpuType.Snes) { }
 
 		public DisassemblyViewModel(DebugConfig config, CpuType cpuType)
 		{

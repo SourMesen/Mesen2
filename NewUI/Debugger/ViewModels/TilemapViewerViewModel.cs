@@ -52,7 +52,7 @@ namespace Mesen.Debugger.ViewModels
 		private DebugPaletteInfo _palette = new();
 
 		[Obsolete("For designer only")]
-		public TilemapViewerViewModel() : this(CpuType.Cpu, new PictureViewer(), null) { }
+		public TilemapViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
 
 		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
@@ -126,7 +126,7 @@ namespace Mesen.Debugger.ViewModels
 		private void InitForCpuType()
 		{
 			switch(CpuType) {
-				case CpuType.Cpu:
+				case CpuType.Snes:
 					Tabs = new List<TilemapViewerTab>() {
 						new() { Title = "Layer 1", Layer = 0 },
 						new() { Title = "Layer 2", Layer = 1 },
@@ -237,7 +237,7 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			switch(CpuType) {
-				case CpuType.Cpu: RefreshData<PpuState>(); break;
+				case CpuType.Snes: RefreshData<SnesPpuState>(); break;
 				case CpuType.Nes: RefreshData<NesPpuState>(); break;
 				case CpuType.Gameboy: RefreshData<GbPpuState>(); break;
 			}

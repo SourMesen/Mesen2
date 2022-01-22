@@ -107,7 +107,7 @@ namespace Mesen.Debugger.ViewModels
 		private void InitForCpuType()
 		{
 			ConsoleConfig = CpuType switch {
-				CpuType.Cpu => Config.SnesConfig,
+				CpuType.Snes => Config.SnesConfig,
 				CpuType.Nes => Config.NesConfig,
 				CpuType.Gameboy => Config.GbConfig,
 				_ => throw new Exception("Invalid cpu type")

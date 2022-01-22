@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "SNES/DmaController.h"
+#include "SNES/SnesDmaController.h"
 #include "SNES/DmaControllerTypes.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Serializer.h"
 
@@ -11,7 +11,7 @@ static constexpr uint8_t _transferOffset[8][4] = {
 	{ 0, 1, 2, 3 }, { 0, 1, 0, 1 }, { 0, 0, 0, 0 }, { 0, 0, 1, 1 }
 };
 
-DmaController::DmaController(MemoryManager *memoryManager)
+SnesDmaController::SnesDmaController(SnesMemoryManager *memoryManager)
 {
 	_memoryManager = memoryManager;
 	Reset();
@@ -23,7 +23,7 @@ DmaController::DmaController(MemoryManager *memoryManager)
 	}
 }
 
-void DmaController::Reset()
+void SnesDmaController::Reset()
 {
 	_hdmaChannels = 0;
 
@@ -38,7 +38,7 @@ void DmaController::Reset()
 	}
 }
 
-void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)
+void SnesDmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA)
 {
 	if(fromBtoA) {
 		if(addressBusB != 0x2180 || !_memoryManager->IsWorkRam(addressBusA)) {
@@ -60,7 +60,7 @@ void DmaController::CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool
 	}
 }
 
-void DmaController::RunDma(DmaChannelConfig &channel)
+void SnesDmaController::RunDma(DmaChannelConfig &channel)
 {
 	if(!channel.DmaActive) {
 		return;
@@ -93,7 +93,7 @@ void DmaController::RunDma(DmaChannelConfig &channel)
 	channel.DmaActive = false;
 }
 
-bool DmaController::InitHdmaChannels()
+bool SnesDmaController::InitHdmaChannels()
 {
 	_hdmaInitPending = false;
 
@@ -154,7 +154,7 @@ bool DmaController::InitHdmaChannels()
 	return true;
 }
 
-void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
+void SnesDmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 {
 	const uint8_t *transferOffsets = _transferOffset[channel.TransferMode];
 	uint8_t transferByteCount = _transferByteCount[channel.TransferMode];
@@ -184,21 +184,21 @@ void DmaController::RunHdmaTransfer(DmaChannelConfig &channel)
 	}
 }
 
-void DmaController::SyncStartDma()
+void SnesDmaController::SyncStartDma()
 {
 	//"after the pause, wait 2-8 master cycles to reach a whole multiple of 8 master cycles since reset"
 	_dmaStartClock = _memoryManager->GetMasterClock();
 	_memoryManager->IncrementMasterClockValue(8 - (_memoryManager->GetMasterClock() & 0x07));
 }
 
-void DmaController::SyncEndDma()
+void SnesDmaController::SyncEndDma()
 {
 	//"Then wait 2-8 master cycles to reach a whole number of CPU Clock cycles since the pause"
 	uint8_t cpuSpeed = _memoryManager->GetCpuSpeed();
 	_memoryManager->IncrementMasterClockValue(cpuSpeed - ((_memoryManager->GetMasterClock() - _dmaStartClock) % cpuSpeed));
 }
 
-bool DmaController::HasActiveDmaChannel()
+bool SnesDmaController::HasActiveDmaChannel()
 {
 	for(int i = 0; i < 8; i++) {
 		if(_channel[i].DmaActive) {
@@ -208,7 +208,7 @@ bool DmaController::HasActiveDmaChannel()
 	return false;
 }
 
-bool DmaController::ProcessHdmaChannels()
+bool SnesDmaController::ProcessHdmaChannels()
 {
 	_hdmaPending = false;
 
@@ -241,7 +241,7 @@ bool DmaController::ProcessHdmaChannels()
 		//1. If DoTransfer is false, skip to step 3.
 		if(ch.DoTransfer) {
 			//2. For the number of bytes (1, 2, or 4) required for this Transfer Mode...
-			_activeChannel = DmaController::HdmaChannelFlag | i;
+			_activeChannel = SnesDmaController::HdmaChannelFlag | i;
 			RunHdmaTransfer(ch);
 		}
 	}
@@ -310,7 +310,7 @@ bool DmaController::ProcessHdmaChannels()
 	return true;
 }
 
-bool DmaController::IsLastActiveHdmaChannel(uint8_t channel)
+bool SnesDmaController::IsLastActiveHdmaChannel(uint8_t channel)
 {
 	for(int i = channel + 1; i < 8; i++) {
 		if((_hdmaChannels & (1 << i)) && !_channel[i].HdmaFinished) {
@@ -320,13 +320,13 @@ bool DmaController::IsLastActiveHdmaChannel(uint8_t channel)
 	return true;
 }
 
-void DmaController::UpdateNeedToProcessFlag()
+void SnesDmaController::UpdateNeedToProcessFlag()
 {
 	//Slightly faster execution time by doing this rather than processing all 4 flags on each cycle
 	_needToProcess = _hdmaPending || _hdmaInitPending || _dmaStartDelay || _dmaPending;
 }
 
-void DmaController::BeginHdmaTransfer()
+void SnesDmaController::BeginHdmaTransfer()
 {
 	if(_hdmaChannels) {
 		_hdmaPending = true;
@@ -334,13 +334,13 @@ void DmaController::BeginHdmaTransfer()
 	}
 }
 
-void DmaController::BeginHdmaInit()
+void SnesDmaController::BeginHdmaInit()
 {
 	_hdmaInitPending = true;
 	UpdateNeedToProcessFlag();
 }
 
-bool DmaController::ProcessPendingTransfers()
+bool SnesDmaController::ProcessPendingTransfers()
 {
 	if(!_needToProcess) {
 		return false;
@@ -378,7 +378,7 @@ bool DmaController::ProcessPendingTransfers()
 	return false;
 }
 
-void DmaController::Write(uint16_t addr, uint8_t value)
+void SnesDmaController::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
 		case 0x420B: {
@@ -494,7 +494,7 @@ void DmaController::Write(uint16_t addr, uint8_t value)
 	}
 }
 
-uint8_t DmaController::Read(uint16_t addr)
+uint8_t SnesDmaController::Read(uint16_t addr)
 {
 	switch(addr) {
 		case 0x4300: case 0x4310: case 0x4320: case 0x4330: case 0x4340: case 0x4350: case 0x4360: case 0x4370:
@@ -581,17 +581,17 @@ uint8_t DmaController::Read(uint16_t addr)
 	return _memoryManager->GetOpenBus();
 }
 
-uint8_t DmaController::GetActiveChannel()
+uint8_t SnesDmaController::GetActiveChannel()
 {
 	return _activeChannel;
 }
 
-DmaChannelConfig DmaController::GetChannelConfig(uint8_t channel)
+DmaChannelConfig SnesDmaController::GetChannelConfig(uint8_t channel)
 {
 	return _channel[channel];
 }
 
-void DmaController::Serialize(Serializer &s)
+void SnesDmaController::Serialize(Serializer &s)
 {
 	s.Stream(_hdmaPending, _hdmaChannels, _dmaPending, _dmaStartClock, _hdmaInitPending, _dmaStartDelay, _needToProcess);
 	for(int i = 0; i < 8; i++) {

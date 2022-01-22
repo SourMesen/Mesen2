@@ -6,7 +6,7 @@
 
 class Debugger;
 struct GbPpuState;
-struct PpuState;
+struct SnesPpuState;
 
 struct ViewerRefreshConfig
 {

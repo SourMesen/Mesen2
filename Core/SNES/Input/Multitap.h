@@ -5,7 +5,7 @@
 
 class InternalRegisters;
 class SnesController;
-class Console;
+class SnesConsole;
 
 class Multitap : public BaseControlDevice
 {
@@ -27,7 +27,7 @@ protected:
 	void RefreshStateBuffer() override;
 
 public:
-	Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4);
+	Multitap(SnesConsole* console, uint8_t port, KeyMappingSet keyMappings1, KeyMappingSet keyMappings2, KeyMappingSet keyMappings3, KeyMappingSet keyMappings4);
 
 	void SetControllerState(uint8_t controllerNumber, ControlDeviceState state);
 

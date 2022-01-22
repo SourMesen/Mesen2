@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <regex>
 #include "Debugger/IAssembler.h"
-#include "SNES/Debugger/CpuDisUtils.h"
+#include "SNES/Debugger/SnesDisUtils.h"
 
 class LabelManager;
 

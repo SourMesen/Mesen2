@@ -19,7 +19,7 @@ namespace Mesen.Debugger.Disassembly
 
 		public ICodeDataProvider Provider { get { return this._provider; } }
 
-		public virtual CpuType CpuType { get { return CpuType.Cpu; } }
+		public virtual CpuType CpuType { get { return CpuType.Snes; } }
 		public virtual SnesMemoryType RelativeMemoryType { get { return SnesMemoryType.CpuMemory; } }
 		public virtual SnesMemoryType PrgMemoryType { get { return SnesMemoryType.PrgRom; } }
 		public virtual int AddressSize { get { return 6; } }
@@ -30,15 +30,15 @@ namespace Mesen.Debugger.Disassembly
 		{
 			_symbolProvider = symbolProvider;
 			if(file == null) {
-				this._provider = new CodeDataProvider(CpuType.Cpu);
+				this._provider = new CodeDataProvider(CpuType.Snes);
 			} else {
-				this._provider = new SymbolCodeDataProvider(CpuType.Cpu, symbolProvider, file);
+				this._provider = new SymbolCodeDataProvider(CpuType.Snes, symbolProvider, file);
 			}
 		}
 
 		protected virtual int GetFullAddress(int address, int length)
 		{
-			CpuState state = DebugApi.GetCpuState<CpuState>(CpuType.Cpu);
+			SnesCpuState state = DebugApi.GetCpuState<SnesCpuState>(CpuType.Snes);
 			if(length == 4) {
 				//Append current DB register to 2-byte addresses
 				return (state.DBR << 16) | address;

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
-#include "SNES/Console.h"
-#include "SNES/Cpu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/RamHandler.h"
@@ -15,7 +15,7 @@
 //TODO: CPU shouldn't have access to PRG ROM while the CX4 is loading from PRG ROM
 //TODO: Timings are apparently not perfect (desync in MMX2 intro)
 
-Cx4::Cx4(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
+Cx4::Cx4(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_emu = console->GetEmulator();
 	_console = console;
@@ -397,7 +397,7 @@ void Cx4::Write(uint32_t addr, uint8_t value)
 				_state.IrqDisabled = value & 0x01;
 				if(_state.IrqDisabled) {
 					_state.IrqFlag = true;
-					_cpu->ClearIrqSource(IrqSource::Coprocessor);
+					_cpu->ClearIrqSource(SnesIrqSource::Coprocessor);
 				}
 				break;
 

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SNES/Debugger/TraceLogger/SpcTraceLogger.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Ppu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 
-SpcTraceLogger::SpcTraceLogger(Debugger* debugger, Ppu* ppu, MemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Spc)
+SpcTraceLogger::SpcTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Spc)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

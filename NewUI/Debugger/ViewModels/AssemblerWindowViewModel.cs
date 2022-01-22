@@ -26,7 +26,7 @@ namespace Mesen.Debugger.ViewModels
 		private CpuType _cpuType;
 
 		[Obsolete("For designer only")]
-		public AssemblerWindowViewModel() : this(CpuType.Cpu, "") { }
+		public AssemblerWindowViewModel() : this(CpuType.Snes, "") { }
 
 		public AssemblerWindowViewModel(CpuType cpuType, string code = "")
 		{

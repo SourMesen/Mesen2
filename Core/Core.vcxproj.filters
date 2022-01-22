@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="SNES\Cpu.h">
+    <ClInclude Include="SNES\SnesCpu.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\CpuTypes.h">
+    <ClInclude Include="SNES\SnesCpuTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\MemoryManager.h">
+    <ClInclude Include="SNES\SnesMemoryManager.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Debugger\Debugger.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Console.h">
+    <ClInclude Include="SNES\SnesConsole.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Interfaces\IAudioDevice.h">
@@ -43,10 +43,10 @@
     <ClInclude Include="Shared\KeyManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Ppu.h">
+    <ClInclude Include="SNES\SnesPpu.h">
       <Filter>SNES</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\PpuTypes.h">
+    <ClInclude Include="SNES\SnesPpuTypes.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Video\VideoRenderer.h">
@@ -88,7 +88,7 @@
     <ClInclude Include="Shared\Video\DrawStringCommand.h">
       <Filter>Video\DebugHud</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\DmaController.h">
+    <ClInclude Include="SNES\SnesDmaController.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Debugger\MemoryDumper.h">
@@ -145,7 +145,7 @@
     <ClInclude Include="Shared\ControlDeviceState.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\ControlManager.h">
+    <ClInclude Include="SNES\SnesControlManager.h">
       <Filter>SNES\Input</Filter>
     </ClInclude>
     <ClInclude Include="Debugger\CodeDataLogger.h">
@@ -160,7 +160,7 @@
     <ClInclude Include="Debugger\ExpressionEvaluator.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Debugger\DummyCpu.h">
+    <ClInclude Include="SNES\Debugger\DummySnesCpu.h">
       <Filter>Debugger</Filter>
     </ClInclude>
     <ClInclude Include="Debugger\BreakpointManager.h">
@@ -244,7 +244,7 @@
     <ClInclude Include="Debugger\DisassemblyInfo.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Debugger\CpuDisUtils.h">
+    <ClInclude Include="SNES\Debugger\SnesDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Debugger\SpcDisUtils.h">
@@ -307,10 +307,10 @@
     <ClInclude Include="SNES\Debugger\SpcDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Debugger\CpuDebugger.h">
+    <ClInclude Include="SNES\Debugger\SnesDebugger.h">
       <Filter>Debugger\Debuggers</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Cpu.Shared.h">
+    <ClInclude Include="SNES\SnesCpu.Shared.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\GSU\GsuTypes.h">
@@ -325,7 +325,7 @@
     <ClInclude Include="SNES\Debugger\GsuDisUtils.h">
       <Filter>Debugger\Disassembler</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\Cpu.Instructions.h">
+    <ClInclude Include="SNES\SnesCpu.Instructions.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="SNES\Coprocessors\GSU\GsuRomHandler.h">
@@ -815,13 +815,13 @@
     <ClInclude Include="Shared\TimingInfo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SNES\Cpu.cpp">
+    <ClCompile Include="SNES\SnesCpu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\Debugger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Console.cpp">
+    <ClCompile Include="SNES\SnesConsole.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Shared\MessageManager.cpp">
@@ -830,7 +830,7 @@
     <ClCompile Include="Shared\KeyManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Ppu.cpp">
+    <ClCompile Include="SNES\SnesPpu.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Shared\Video\VideoDecoder.cpp">
@@ -851,7 +851,7 @@
     <ClCompile Include="Shared\Video\DebugHud.cpp">
       <Filter>Video\DebugHud</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\DmaController.cpp">
+    <ClCompile Include="SNES\SnesDmaController.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\MemoryDumper.cpp">
@@ -878,13 +878,13 @@
     <ClCompile Include="Shared\BaseControlDevice.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\ControlManager.cpp">
+    <ClCompile Include="SNES\SnesControlManager.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\CodeDataLogger.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\MemoryManager.cpp">
+    <ClCompile Include="SNES\SnesMemoryManager.cpp">
       <Filter>SNES</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\ExpressionEvaluator.cpp">
@@ -953,7 +953,7 @@
     <ClCompile Include="Debugger\DisassemblyInfo.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Debugger\CpuDisUtils.cpp">
+    <ClCompile Include="SNES\Debugger\SnesDisUtils.cpp">
       <Filter>Debugger\Disassembler</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Debugger\SpcDisUtils.cpp">
@@ -1001,7 +1001,7 @@
     <ClCompile Include="SNES\Debugger\SpcDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
-    <ClCompile Include="SNES\Debugger\CpuDebugger.cpp">
+    <ClCompile Include="SNES\Debugger\SnesDebugger.cpp">
       <Filter>Debugger\Debuggers</Filter>
     </ClCompile>
     <ClCompile Include="SNES\Coprocessors\GSU\Gsu.cpp">

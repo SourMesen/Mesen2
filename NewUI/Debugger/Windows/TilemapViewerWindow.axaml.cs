@@ -18,7 +18,7 @@ namespace Mesen.Debugger.Windows
 		private PictureViewer _picViewer;
 
 		[Obsolete("For designer only")]
-		public TilemapViewerWindow() : this(CpuType.Cpu) { }
+		public TilemapViewerWindow() : this(CpuType.Snes) { }
 
 		public TilemapViewerWindow(CpuType cpuType)
 		{

@@ -25,7 +25,7 @@ namespace Mesen.Debugger.ViewModels
 		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
 
 		[Obsolete("For designer only")]
-		public CallStackViewModel() : this(CpuType.Cpu, new()) { }
+		public CallStackViewModel() : this(CpuType.Snes, new()) { }
 
 		public CallStackViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
 		{

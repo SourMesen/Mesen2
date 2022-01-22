@@ -2105,13 +2105,13 @@ void Spc::NOP()
 void Spc::SLEEP()
 {
 	//WAI
-	_state.StopState = CpuStopState::WaitingForIrq;
+	_state.StopState = SnesCpuStopState::WaitingForIrq;
 	EndOp();
 }
 
 void Spc::STOP()
 {
 	//STP
-	_state.StopState = CpuStopState::Stopped;
+	_state.StopState = SnesCpuStopState::Stopped;
 	EndOp();
 }

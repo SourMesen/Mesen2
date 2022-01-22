@@ -17,7 +17,7 @@ namespace Mesen.Debugger.Windows
 		private SpriteViewerViewModel _model;
 
 		[Obsolete("For designer only")]
-		public SpriteViewerWindow() : this(CpuType.Cpu) { }
+		public SpriteViewerWindow() : this(CpuType.Snes) { }
 
 		public SpriteViewerWindow(CpuType cpuType)
 		{

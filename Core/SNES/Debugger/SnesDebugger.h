@@ -2,16 +2,16 @@
 #include "stdafx.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/IDebugger.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 
-class Console;
+class SnesConsole;
 class Disassembler;
 class Debugger;
 class SnesCpuTraceLogger;
-class Cpu;
+class SnesCpu;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class CodeDataLogger;
 class EmuSettings;
 class ScriptManager;
@@ -21,25 +21,25 @@ class BreakpointManager;
 class Sa1;
 class BaseCartridge;
 class Spc;
-class Ppu;
+class SnesPpu;
 class SnesAssembler;
 class SnesPpuTools;
 class PpuTools;
 enum class MemoryOperationType;
 
-class CpuDebugger final : public IDebugger
+class SnesDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;
 	MemoryAccessCounter* _memoryAccessCounter;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	EmuSettings* _settings;
-	Console* _console;
-	Cpu* _cpu;
+	SnesConsole* _console;
+	SnesCpu* _cpu;
 	Sa1* _sa1;
 	BaseCartridge* _cart;
 	Spc* _spc;
-	Ppu* _ppu;
+	SnesPpu* _ppu;
 	MemoryMappings* _memoryMappings;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
@@ -60,11 +60,11 @@ class CpuDebugger final : public IDebugger
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 
-	CpuState& GetCpuState();
+	SnesCpuState& GetCpuState();
 	bool IsRegister(uint32_t addr);
 
 public:
-	CpuDebugger(Debugger* debugger, CpuType cpuType);
+	SnesDebugger(Debugger* debugger, CpuType cpuType);
 
 	void Init() override;
 	void Reset() override;

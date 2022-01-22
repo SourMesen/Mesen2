@@ -8,7 +8,7 @@ class Disassembler;
 class Debugger;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class CodeDataLogger;
 class EmuSettings;
 class ScriptManager;

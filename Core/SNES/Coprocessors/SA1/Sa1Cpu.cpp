@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "Utilities/Serializer.h"
 #include "Shared/Emulator.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "SNES/Coprocessors/SA1/Sa1Cpu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/MemoryMappings.h"
 #include "MemoryOperationType.h"
 #include "EventType.h"
 
-#define Cpu Sa1Cpu
-#include "SNES/Cpu.Instructions.h"
-#include "SNES/Cpu.Shared.h"
-#undef Cpu
+#define SnesCpu Sa1Cpu
+#include "SNES/SnesCpu.Instructions.h"
+#include "SNES/SnesCpu.Shared.h"
+#undef SnesCpu
 
 Sa1Cpu::Sa1Cpu(Sa1* sa1, Emulator* emu)
 {
@@ -29,18 +29,18 @@ void Sa1Cpu::Exec()
 	_immediateMode = false;
 
 	switch(_state.StopState) {
-		case CpuStopState::Running: RunOp(); break;
-		case CpuStopState::Stopped:
+		case SnesCpuStopState::Running: RunOp(); break;
+		case SnesCpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
 			_state.CycleCount++;
 			return;
 
-		case CpuStopState::WaitingForIrq:
+		case SnesCpuStopState::WaitingForIrq:
 			//WAI
 			Idle();
-			if(_state.IrqSource || _state.NeedNmi) {
+			if(_state.SnesIrqSource || _state.NeedNmi) {
 				Idle();
-				_state.StopState = CpuStopState::Running;
+				_state.StopState = SnesCpuStopState::Running;
 			}
 			break;
 	}

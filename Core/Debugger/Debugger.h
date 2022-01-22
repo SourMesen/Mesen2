@@ -7,13 +7,13 @@
 
 class IConsole;
 class Emulator;
-class Cpu;
-class Ppu;
+class SnesCpu;
+class SnesPpu;
 class Spc;
 class BaseCartridge;
-class MemoryManager;
+class SnesMemoryManager;
 class InternalRegisters;
-class DmaController;
+class SnesDmaController;
 class EmuSettings;
 
 class ExpressionEvaluator;
@@ -56,7 +56,7 @@ private:
 
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 
-	CpuType _mainCpuType = CpuType::Cpu;
+	CpuType _mainCpuType = CpuType::Snes;
 	vector<CpuType> _cpuTypes;
 	ConsoleType _consoleType = ConsoleType::Snes;
 

@@ -4,10 +4,10 @@
 #include "SNES/Coprocessors/CX4/Cx4Types.h"
 #include "SNES/MemoryMappings.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class MemoryManager;
-class Cpu;
+class SnesMemoryManager;
+class SnesCpu;
 
 class Cx4 : public BaseCoprocessor
 {
@@ -15,9 +15,9 @@ private:
 	static constexpr int DataRamSize = 0xC00;
 
 	Emulator *_emu;
-	Console *_console;
-	MemoryManager *_memoryManager;
-	Cpu *_cpu;
+	SnesConsole *_console;
+	SnesMemoryManager *_memoryManager;
+	SnesCpu *_cpu;
 	MemoryMappings _mappings;
 	double _clockRatio;
 
@@ -112,7 +112,7 @@ private:
 	void Stop();
 
 public:
-	Cx4(Console* console);
+	Cx4(SnesConsole* console);
 
 	void Reset() override;
 

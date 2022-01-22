@@ -10,7 +10,7 @@ class CodeDataLogger;
 class Cx4;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class BreakpointManager;
 class EmuSettings;
 
@@ -22,7 +22,7 @@ class Cx4Debugger final : public IDebugger
 	Disassembler* _disassembler;
 	CodeDataLogger* _codeDataLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
-	MemoryManager* _memoryManager;
+	SnesMemoryManager* _memoryManager;
 	Cx4* _cx4;
 	EmuSettings* _settings;
 

@@ -25,7 +25,7 @@ namespace Mesen.Config
 		public TraceLoggerConfig()
 		{
 			CpuConfig = new Dictionary<CpuType, TraceLoggerCpuConfig>();
-			CpuConfig[CpuType.Cpu] = new TraceLoggerCpuConfig() {
+			CpuConfig[CpuType.Snes] = new TraceLoggerCpuConfig() {
 				Enabled = true,
 				Format = "[Disassembly][EffectiveAddress] [MemoryValue,h][Align,38] A:[A,4h] X:[X,4h] Y:[Y,4h] S:[SP,4h] D:[D,4h] DB:[DB,2h] P:[P,8] H:[HClock,3] V:[Scanline,3]"
 			};

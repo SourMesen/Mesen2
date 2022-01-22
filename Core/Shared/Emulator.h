@@ -49,7 +49,7 @@ struct ConsoleMemoryInfo
 	uint32_t Size;
 };
 
-class Emulator : public std::enable_shared_from_this<Emulator>
+class Emulator
 {
 private:
 	unique_ptr<thread> _emuThread;

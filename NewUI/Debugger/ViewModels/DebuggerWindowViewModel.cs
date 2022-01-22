@@ -59,7 +59,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			if(Design.IsDesignMode) {
-				CpuType = CpuType.Cpu;
+				CpuType = CpuType.Snes;
 			} else if(cpuType != null) {
 				CpuType = cpuType.Value;
 			} else {
@@ -82,7 +82,7 @@ namespace Mesen.Debugger.ViewModels
 			CallStack = new CallStackViewModel(CpuType, Disassembly);
 			WatchList = new WatchListViewModel(CpuType);
 			ConsoleStatus = CpuType switch {
-				CpuType.Cpu => new SnesStatusViewModel(),
+				CpuType.Snes => new SnesStatusViewModel(),
 				CpuType.Nes => new NesStatusViewModel(),
 				_ => null
 			};

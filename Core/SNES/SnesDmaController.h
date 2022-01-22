@@ -1,12 +1,12 @@
 #pragma once
 #include "stdafx.h"
-#include "CpuTypes.h"
-#include "DmaControllerTypes.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/DmaControllerTypes.h"
 #include "Utilities/ISerializable.h"
 
-class MemoryManager;
+class SnesMemoryManager;
 
-class DmaController final : public ISerializable
+class SnesDmaController final : public ISerializable
 {
 private:
 	static constexpr uint8_t HdmaChannelFlag = 0x40;
@@ -22,7 +22,7 @@ private:
 	uint8_t _activeChannel = 0; //Used by debugger's event viewer
 
 	DmaChannelConfig _channel[8] = {};
-	MemoryManager *_memoryManager;
+	SnesMemoryManager *_memoryManager;
 	
 	void CopyDmaByte(uint32_t addressBusA, uint16_t addressBusB, bool fromBtoA);
 
@@ -40,7 +40,7 @@ private:
 	bool HasActiveDmaChannel();
 
 public:
-	DmaController(MemoryManager *memoryManager);
+	SnesDmaController(SnesMemoryManager *memoryManager);
 
 	void Reset();
 

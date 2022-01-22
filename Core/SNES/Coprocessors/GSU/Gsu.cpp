@@ -2,9 +2,9 @@
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/GSU/GsuRomHandler.h"
 #include "SNES/Coprocessors/GSU/GsuRamHandler.h"
-#include "SNES/Console.h"
-#include "SNES/Cpu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/RamHandler.h"
 #include "Shared/Emulator.h"
@@ -15,7 +15,7 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
+Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_emu = console->GetEmulator();
 	_console = console;
@@ -479,7 +479,7 @@ uint8_t Gsu::Read(uint32_t addr)
 		case 0x3031: {
 			uint8_t flags = _state.SFR.GetFlagsHigh();
 			_state.SFR.Irq = false;
-			_cpu->ClearIrqSource(IrqSource::Coprocessor);
+			_cpu->ClearIrqSource(SnesIrqSource::Coprocessor);
 			return flags;
 		}
 

@@ -4,7 +4,7 @@
 #include "Spc7110Decomp.h"
 #include "Rtc4513.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
 class Spc7110Decomp;
 class IMemoryHandler;
@@ -18,7 +18,7 @@ private:
 
 	IMemoryHandler* _cpuRegisterHandler = nullptr;
 	Emulator* _emu = nullptr;
-	Console* _console = nullptr;
+	SnesConsole* _console = nullptr;
 	BaseCartridge* _cart = nullptr;
 	bool _useRtc = false;
 	uint32_t _realDataRomSize = 0;
@@ -69,7 +69,7 @@ private:
 	uint8_t ReadDecompressedByte();
 
 public:
-	Spc7110(Console* console, bool useRtc);
+	Spc7110(SnesConsole* console, bool useRtc);
 	
 	uint8_t ReadDataRom(uint32_t addr);
 

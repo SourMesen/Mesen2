@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Ppu.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesMemoryManager.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 
-SnesCpuTraceLogger::SnesCpuTraceLogger(Debugger* debugger, CpuType cpuType, Ppu* ppu, MemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuType)
+SnesCpuTraceLogger::SnesCpuTraceLogger(Debugger* debugger, CpuType cpuType, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuType)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;
@@ -37,7 +37,7 @@ RowDataType SnesCpuTraceLogger::GetFormatTagType(string& tag)
 	}
 }
 
-void SnesCpuTraceLogger::GetTraceRow(string &output, CpuState &cpuState, TraceLogPpuState &ppuState, DisassemblyInfo &disassemblyInfo)
+void SnesCpuTraceLogger::GetTraceRow(string &output, SnesCpuState &cpuState, TraceLogPpuState &ppuState, DisassemblyInfo &disassemblyInfo)
 {
 	constexpr char activeStatusLetters[8] = { 'N', 'V', 'M', 'X', 'D', 'I', 'Z', 'C' };
 	constexpr char inactiveStatusLetters[8] = { 'n', 'v', 'm', 'x', 'd', 'i', 'z', 'c' };

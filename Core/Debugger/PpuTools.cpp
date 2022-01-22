@@ -4,7 +4,7 @@
 #include "Debugger/DebugBreakHelper.h"
 #include "Shared/SettingTypes.h"
 #include "SNES/SnesDefaultVideoFilter.h"
-#include "SNES/Ppu.h"
+#include "SNES/SnesPpu.h"
 #include "Gameboy/GbTypes.h"
 
 PpuTools::PpuTools(Debugger* debugger, Emulator *emu)

@@ -1,18 +1,18 @@
 ﻿#include "stdafx.h"
 #include "Utilities/Serializer.h"
 #include "Shared/Emulator.h"
-#include "SNES/CpuTypes.h"
-#include "SNES/Cpu.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/DmaController.h"
-#include "SNES/Cpu.Instructions.h"
-#include "SNES/Cpu.Shared.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesDmaController.h"
+#include "SNES/SnesCpu.Instructions.h"
+#include "SNES/SnesCpu.Shared.h"
 #include "EventType.h"
 #include "MemoryOperationType.h"
 
 #ifndef DUMMYCPU
-Cpu::Cpu(Console *console)
+SnesCpu::SnesCpu(SnesConsole *console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -21,30 +21,30 @@ Cpu::Cpu(Console *console)
 }
 #endif
 
-Cpu::~Cpu()
+SnesCpu::~SnesCpu()
 {
 }
 
-void Cpu::Exec()
+void SnesCpu::Exec()
 {
 	_immediateMode = false;
 
 	switch(_state.StopState) {
-		case CpuStopState::Running: RunOp(); break;
-		case CpuStopState::Stopped:
+		case SnesCpuStopState::Running: RunOp(); break;
+		case SnesCpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
 		#ifndef DUMMYCPU
 			_memoryManager->IncMasterClock4();
 		#endif
 			return;
 
-		case CpuStopState::WaitingForIrq:
+		case SnesCpuStopState::WaitingForIrq:
 			//WAI
 			Idle();
-			if(_state.IrqSource || _state.NeedNmi) {
+			if(_state.SnesIrqSource || _state.NeedNmi) {
 				Idle();
 				Idle();
-				_state.StopState = CpuStopState::Running;
+				_state.StopState = SnesCpuStopState::Running;
 			}
 			break;
 	}
@@ -54,17 +54,17 @@ void Cpu::Exec()
 	if(_state.PrevNeedNmi) {
 		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyNmiVector : Cpu::NmiVector, true);
-		_emu->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), true);
+		ProcessInterrupt(_state.EmulationMode ? SnesCpu::LegacyNmiVector : SnesCpu::NmiVector, true);
+		_emu->ProcessInterrupt<CpuType::Snes>(originalPc, GetProgramAddress(_state.PC), true);
 	} else if(_state.PrevIrqSource) {
 		uint32_t originalPc = GetProgramAddress(_state.PC);
-		ProcessInterrupt(_state.EmulationMode ? Cpu::LegacyIrqVector : Cpu::IrqVector, true);
-		_emu->ProcessInterrupt<CpuType::Cpu>(originalPc, GetProgramAddress(_state.PC), false);
+		ProcessInterrupt(_state.EmulationMode ? SnesCpu::LegacyIrqVector : SnesCpu::IrqVector, true);
+		_emu->ProcessInterrupt<CpuType::Snes>(originalPc, GetProgramAddress(_state.PC), false);
 	}
 #endif
 }
 
-void Cpu::Idle()
+void SnesCpu::Idle()
 {
 #ifndef DUMMYCPU
 	_memoryManager->SetCpuSpeed(6);
@@ -74,36 +74,36 @@ void Cpu::Idle()
 #endif
 }
 
-void Cpu::IdleEndJump()
+void SnesCpu::IdleEndJump()
 {
 	//Used by SA1
 }
 
-void Cpu::IdleTakeBranch()
+void SnesCpu::IdleTakeBranch()
 {
 	//Used by SA1
 }
 
-void Cpu::ProcessCpuCycle()
+void SnesCpu::ProcessCpuCycle()
 {
 	_state.CycleCount++;
 	DetectNmiSignalEdge();
 	_state.IrqLock = _dmaController->ProcessPendingTransfers();
 }
 
-uint16_t Cpu::ReadVector(uint16_t vector)
+uint16_t SnesCpu::ReadVector(uint16_t vector)
 {
 	//Overridden in SA-1 to return the correct value directly, rather than loading from ROM
 	return ReadDataWord(vector);
 }
 
-uint16_t Cpu::GetResetVector()
+uint16_t SnesCpu::GetResetVector()
 {
-	return _memoryManager->PeekWord(Cpu::ResetVector);
+	return _memoryManager->PeekWord(SnesCpu::ResetVector);
 }
 
 #ifndef DUMMYCPU
-uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
+uint8_t SnesCpu::Read(uint32_t addr, MemoryOperationType type)
 {
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();
@@ -112,7 +112,7 @@ uint8_t Cpu::Read(uint32_t addr, MemoryOperationType type)
 	return value;
 }
 
-void Cpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
+void SnesCpu::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	_memoryManager->SetCpuSpeed(_memoryManager->GetCpuSpeed(addr));
 	ProcessCpuCycle();

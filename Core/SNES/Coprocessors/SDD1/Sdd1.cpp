@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/SDD1/Sdd1.h"
 #include "SNES/Coprocessors/SDD1/Sdd1Mmc.h"
-#include "SNES/Console.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
-Sdd1::Sdd1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
+Sdd1::Sdd1(SnesConsole* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	//This handler is used to dynamically map the ROM based on the banking registers
 	_sdd1Mmc.reset(new Sdd1Mmc(_state, console->GetCartridge()));

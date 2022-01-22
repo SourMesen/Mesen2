@@ -13,7 +13,7 @@ namespace Mesen.Interop
 	{
 	}
 
-	public enum CpuStopState : byte
+	public enum SnesCpuStopState : byte
 	{
 		Running = 0,
 		Stopped = 1,
@@ -46,7 +46,7 @@ namespace Mesen.Interop
 		Negative = 0x80
 	}
 
-	public struct CpuState : BaseState
+	public struct SnesCpuState : BaseState
 	{
 		public UInt64 CycleCount;
 
@@ -72,10 +72,10 @@ namespace Mesen.Interop
 
 		public byte IrqSource;
 		public byte PrevIrqSource;
-		public CpuStopState StopState;
+		public SnesCpuStopState StopState;
 	}
 
-	public struct PpuState : BaseState
+	public struct SnesPpuState : BaseState
 	{
 		public UInt16 Cycle;
 		public UInt16 Scanline;
@@ -239,7 +239,7 @@ namespace Mesen.Interop
 		public byte ExternalSpeed;
 		[MarshalAs(UnmanagedType.I1)] public bool TimersEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool TimersDisabled;
-		public CpuStopState StopState;
+		public SnesCpuStopState StopState;
 
 		public byte DspReg;
 
@@ -556,7 +556,7 @@ namespace Mesen.Interop
 
 	public struct DebugSa1State
 	{
-		public CpuState Cpu;
+		public SnesCpuState Cpu;
 		public Sa1State Sa1;
 	}
 
@@ -923,8 +923,8 @@ namespace Mesen.Interop
 	public struct SnesState : BaseState
 	{
 		public UInt64 MasterClock;
-		public CpuState Cpu;
-		public PpuState Ppu;
+		public SnesCpuState Cpu;
+		public SnesPpuState Ppu;
 		public SpcState Spc;
 		public DspState Dsp;
 		public NecDspState NecDsp;

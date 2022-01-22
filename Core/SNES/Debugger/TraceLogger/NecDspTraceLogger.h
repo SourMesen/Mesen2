@@ -5,14 +5,14 @@
 
 class DisassemblyInfo;
 class Debugger;
-class Ppu;
-class MemoryManager;
+class SnesPpu;
+class SnesMemoryManager;
 
 class NecDspTraceLogger : public BaseTraceLogger<NecDspTraceLogger, NecDspState>
 {
 private:
-	Ppu* _ppu = nullptr;
-	MemoryManager* _memoryManager = nullptr;
+	SnesPpu* _ppu = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 	
 protected:
 	RowDataType GetFormatTagType(string& tag) override;
@@ -20,7 +20,7 @@ protected:
 	void WriteAccFlagsValue(string& output, NecDspAccFlags flags, RowPart& rowPart);
 
 public:
-	NecDspTraceLogger(Debugger* debugger, Ppu* ppu, MemoryManager* memoryManager);
+	NecDspTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
 	
 	void GetTraceRow(string& output, NecDspState& cpuState, TraceLogPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void LogPpuState();

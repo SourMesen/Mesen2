@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Spc.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/Debugger/SpcDebugger.h"
 #include "SNES/Debugger/TraceLogger/SpcTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
@@ -21,7 +21,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 
-	Console* console = (Console*)debugger->GetConsole();
+	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 	_spc = console->GetSpc();
 	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -29,7 +29,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Cpu)));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

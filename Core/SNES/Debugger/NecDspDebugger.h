@@ -9,7 +9,7 @@ class NecDspTraceLogger;
 class NecDsp;
 class CallstackManager;
 class MemoryAccessCounter;
-class MemoryManager;
+class SnesMemoryManager;
 class BreakpointManager;
 class EmuSettings;
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SNES/Coprocessors/SGB/SuperGameboy.h"
-#include "SNES/Console.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Spc.h"
 #include "Gameboy/Gameboy.h"
@@ -14,7 +14,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Audio/HermiteResampler.h"
 
-SuperGameboy::SuperGameboy(Console* console, Gameboy* gameboy) : BaseCoprocessor(SnesMemoryType::Register)
+SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_mixBuffer = new int16_t[0x10000];
 

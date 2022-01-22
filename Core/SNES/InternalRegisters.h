@@ -1,21 +1,21 @@
 #pragma once
 #include "stdafx.h"
-#include "AluMulDiv.h"
-#include "Console.h"
-#include "Cpu.h"
-#include "Ppu.h"
-#include "InternalRegisterTypes.h"
+#include "SNES/AluMulDiv.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/InternalRegisterTypes.h"
 #include "Utilities/ISerializable.h"
 
-class MemoryManager;
+class SnesMemoryManager;
 
 class InternalRegisters final : public ISerializable
 {
 private:
-	Console* _console;
-	Cpu* _cpu;
-	Ppu* _ppu;
-	MemoryManager* _memoryManager;
+	SnesConsole* _console;
+	SnesCpu* _cpu;
+	SnesPpu* _ppu;
+	SnesMemoryManager* _memoryManager;
 
 	AluMulDiv _aluMulDiv;
 
@@ -29,7 +29,7 @@ private:
 
 public:
 	InternalRegisters();
-	void Initialize(Console* console);
+	void Initialize(SnesConsole* console);
 
 	void Reset();
 

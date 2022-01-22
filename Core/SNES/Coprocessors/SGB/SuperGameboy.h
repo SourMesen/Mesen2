@@ -4,9 +4,9 @@
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"
 
-class Console;
+class SnesConsole;
 class Emulator;
-class MemoryManager;
+class SnesMemoryManager;
 class BaseCartridge;
 class Spc;
 class Gameboy;
@@ -15,9 +15,9 @@ class GbPpu;
 class SuperGameboy : public BaseCoprocessor, public IAudioProvider
 {
 private:
-	Console* _console = nullptr;
+	SnesConsole* _console = nullptr;
 	Emulator* _emu = nullptr;
-	MemoryManager* _memoryManager = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 	BaseCartridge* _cart = nullptr;
 	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
@@ -52,7 +52,7 @@ private:
 	uint8_t GetPlayerCount();
 
 public:
-	SuperGameboy(Console* console, Gameboy* gameboy);
+	SuperGameboy(SnesConsole* console, Gameboy* gameboy);
 	~SuperGameboy();
 
 	void Reset() override;

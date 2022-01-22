@@ -1,4 +1,4 @@
-﻿void Cpu::PowerOn()
+﻿void SnesCpu::PowerOn()
 {
 	_state = {};
 	_state.PC = GetResetVector();
@@ -7,14 +7,14 @@
 	_state.EmulationMode = true;
 	_state.NmiFlag = false;
 	_state.PrevNmiFlag = false;
-	_state.StopState = CpuStopState::Running;
-	_state.IrqSource = (uint8_t)IrqSource::None;
-	_state.PrevIrqSource = (uint8_t)IrqSource::None;
+	_state.StopState = SnesCpuStopState::Running;
+	_state.SnesIrqSource = (uint8_t)SnesIrqSource::None;
+	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
 }
 
-void Cpu::Reset()
+void SnesCpu::Reset()
 {
 	SetFlags(ProcFlags::IrqDisable | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
 	ClearFlags(ProcFlags::Decimal);
@@ -32,12 +32,12 @@ void Cpu::Reset()
 
 	_state.NmiFlag = false;
 	_state.PrevNmiFlag = false;
-	_state.StopState = CpuStopState::Running;
-	_state.IrqSource = (uint8_t)IrqSource::None;
-	_state.PrevIrqSource = (uint8_t)IrqSource::None;
+	_state.StopState = SnesCpuStopState::Running;
+	_state.SnesIrqSource = (uint8_t)SnesIrqSource::None;
+	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
 }
 
-void Cpu::RunOp()
+void SnesCpu::RunOp()
 {
 	switch(GetOpCode()) {
 		case 0x00: AddrMode_Imm8(); BRK(); break;
@@ -299,22 +299,22 @@ void Cpu::RunOp()
 	}
 }
 
-CpuState& Cpu::GetState()
+SnesCpuState& SnesCpu::GetState()
 {
 	return _state;
 }
 
-uint64_t Cpu::GetCycleCount()
+uint64_t SnesCpu::GetCycleCount()
 {
 	return _state.CycleCount;
 }
 
-void Cpu::SetNmiFlag(bool nmiFlag)
+void SnesCpu::SetNmiFlag(bool nmiFlag)
 {
 	_state.NmiFlag = nmiFlag;
 }
 
-void Cpu::DetectNmiSignalEdge()
+void SnesCpu::DetectNmiSignalEdge()
 {
 	//"This edge detector polls the status of the NMI line during φ2 of each CPU cycle (i.e., during the 
 	//second half of each cycle) and raises an internal signal if the input goes from being high during 
@@ -325,54 +325,54 @@ void Cpu::DetectNmiSignalEdge()
 	_state.PrevNmiFlag = _state.NmiFlag;
 }
 
-void Cpu::UpdateIrqNmiFlags()
+void SnesCpu::UpdateIrqNmiFlags()
 {
 	if(!_state.IrqLock) {
 		//"The internal signal goes high during φ1 of the cycle that follows the one where the edge is detected,
 		//and stays high until the NMI has been handled. "
 		_state.PrevNeedNmi = _state.NeedNmi;
-		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
+		_state.PrevIrqSource = _state.SnesIrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	}
 	_state.IrqLock = false;
 }
 
-void Cpu::SetIrqSource(IrqSource source)
+void SnesCpu::SetIrqSource(SnesIrqSource source)
 {
-	_state.IrqSource |= (uint8_t)source;
+	_state.SnesIrqSource |= (uint8_t)source;
 }
 
-bool Cpu::CheckIrqSource(IrqSource source)
+bool SnesCpu::CheckIrqSource(SnesIrqSource source)
 {
-	if(_state.IrqSource & (uint8_t)source) {
+	if(_state.SnesIrqSource & (uint8_t)source) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-void Cpu::ClearIrqSource(IrqSource source)
+void SnesCpu::ClearIrqSource(SnesIrqSource source)
 {
-	_state.IrqSource &= ~(uint8_t)source;
+	_state.SnesIrqSource &= ~(uint8_t)source;
 }
 
-uint32_t Cpu::GetProgramAddress(uint16_t addr)
+uint32_t SnesCpu::GetProgramAddress(uint16_t addr)
 {
 	return (_state.K << 16) | addr;
 }
 
-uint32_t Cpu::GetDataAddress(uint16_t addr)
+uint32_t SnesCpu::GetDataAddress(uint16_t addr)
 {
 	return (_state.DBR << 16) | addr;
 }
 
-uint8_t Cpu::GetOpCode()
+uint8_t SnesCpu::GetOpCode()
 {
 	uint8_t opCode = ReadCode(_state.PC, MemoryOperationType::ExecOpCode);
 	_state.PC++;
 	return opCode;
 }
 
-void Cpu::IdleOrRead()
+void SnesCpu::IdleOrRead()
 {
 	if(_state.PrevIrqSource) {
 		ReadCode(_state.PC);
@@ -381,21 +381,21 @@ void Cpu::IdleOrRead()
 	}
 }
 
-uint8_t Cpu::ReadOperandByte()
+uint8_t SnesCpu::ReadOperandByte()
 {
 	uint8_t value = ReadCode(_state.PC, MemoryOperationType::ExecOperand);
 	_state.PC++;
 	return value;
 }
 
-uint16_t Cpu::ReadOperandWord()
+uint16_t SnesCpu::ReadOperandWord()
 {
 	uint8_t lsb = ReadOperandByte();
 	uint8_t msb = ReadOperandByte();
 	return (msb << 8) | lsb;
 }
 
-uint32_t Cpu::ReadOperandLong()
+uint32_t SnesCpu::ReadOperandLong()
 {
 	uint8_t b1 = ReadOperandByte();
 	uint8_t b2 = ReadOperandByte();
@@ -403,31 +403,31 @@ uint32_t Cpu::ReadOperandLong()
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-uint8_t Cpu::ReadCode(uint16_t addr, MemoryOperationType type)
+uint8_t SnesCpu::ReadCode(uint16_t addr, MemoryOperationType type)
 {
 	return Read((_state.K << 16) | addr, type);
 }
 
-uint16_t Cpu::ReadCodeWord(uint16_t addr, MemoryOperationType type)
+uint16_t SnesCpu::ReadCodeWord(uint16_t addr, MemoryOperationType type)
 {
 	uint8_t lsb = ReadCode(addr);
 	uint8_t msb = ReadCode(addr + 1);
 	return (msb << 8) | lsb;
 }
 
-uint8_t Cpu::ReadData(uint32_t addr, MemoryOperationType type)
+uint8_t SnesCpu::ReadData(uint32_t addr, MemoryOperationType type)
 {
 	return Read(addr & 0xFFFFFF, type);
 }
 
-uint16_t Cpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
+uint16_t SnesCpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
 {
 	uint8_t lsb = ReadData(addr);
 	uint8_t msb = ReadData(addr + 1);
 	return (msb << 8) | lsb;
 }
 
-uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
+uint32_t SnesCpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 {
 	uint8_t b1 = ReadData(addr);
 	uint8_t b2 = ReadData(addr + 1);
@@ -435,13 +435,13 @@ uint32_t Cpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-void Cpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
+void SnesCpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
 {
 	Write(addr, (uint8_t)value);
 	Write((addr + 1) & 0xFFFFFF, (uint8_t)(value >> 8));
 }
 
-uint8_t Cpu::GetByteValue()
+uint8_t SnesCpu::GetByteValue()
 {
 	if(_immediateMode) {
 		return (uint8_t)_operand;
@@ -450,7 +450,7 @@ uint8_t Cpu::GetByteValue()
 	}
 }
 
-uint16_t Cpu::GetWordValue()
+uint16_t SnesCpu::GetWordValue()
 {
 	if(_immediateMode) {
 		return (uint16_t)_operand;
@@ -459,32 +459,32 @@ uint16_t Cpu::GetWordValue()
 	}
 }
 
-void Cpu::PushByte(uint8_t value)
+void SnesCpu::PushByte(uint8_t value)
 {
 	Write(_state.SP, value);
 	SetSP(_state.SP - 1);
 }
 
-uint8_t Cpu::PopByte()
+uint8_t SnesCpu::PopByte()
 {
 	SetSP(_state.SP + 1);
 	return ReadData(_state.SP);
 }
 
-void Cpu::PushWord(uint16_t value)
+void SnesCpu::PushWord(uint16_t value)
 {
 	PushByte(value >> 8);
 	PushByte((uint8_t)value);
 }
 
-uint16_t Cpu::PopWord()
+uint16_t SnesCpu::PopWord()
 {
 	uint8_t lo = PopByte();
 	uint8_t hi = PopByte();
 	return lo | hi << 8;
 }
 
-uint16_t Cpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
+uint16_t SnesCpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
 {
 	if(allowEmulationMode && _state.EmulationMode && (_state.D & 0xFF) == 0) {
 		//TODO: Check if new instruction or not (PEI)
@@ -494,14 +494,14 @@ uint16_t Cpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
 	}
 }
 
-uint16_t Cpu::GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode)
+uint16_t SnesCpu::GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode)
 {
 	uint8_t lsb = ReadData(GetDirectAddress(offset + 0));
 	uint8_t msb = ReadData(GetDirectAddress(offset + 1));
 	return (msb << 8) | lsb;
 }
 
-uint32_t Cpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode)
+uint32_t SnesCpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode)
 {
 	uint8_t b1 = ReadData(GetDirectAddress(offset + 0));
 	uint8_t b2 = ReadData(GetDirectAddress(offset + 1));
@@ -509,7 +509,7 @@ uint32_t Cpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationM
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-void Cpu::SetSP(uint16_t sp)
+void SnesCpu::SetSP(uint16_t sp)
 {
 	if(_state.EmulationMode) {
 		_state.SP = 0x100 | (sp & 0xFF);
@@ -518,7 +518,7 @@ void Cpu::SetSP(uint16_t sp)
 	}
 }
 
-void Cpu::SetPS(uint8_t ps)
+void SnesCpu::SetPS(uint8_t ps)
 {
 	_state.PS = ps;
 	if(CheckFlag(ProcFlags::IndexMode8)) {
@@ -528,13 +528,13 @@ void Cpu::SetPS(uint8_t ps)
 	}
 }
 
-void Cpu::SetRegister(uint8_t &reg, uint8_t value)
+void SnesCpu::SetRegister(uint8_t &reg, uint8_t value)
 {
 	SetZeroNegativeFlags(value);
 	reg = value;
 }
 
-void Cpu::SetRegister(uint16_t &reg, uint16_t value, bool eightBitMode)
+void SnesCpu::SetRegister(uint16_t &reg, uint16_t value, bool eightBitMode)
 {
 	if(eightBitMode) {
 		SetZeroNegativeFlags((uint8_t)value);
@@ -545,7 +545,7 @@ void Cpu::SetRegister(uint16_t &reg, uint16_t value, bool eightBitMode)
 	}
 }
 
-void Cpu::SetZeroNegativeFlags(uint16_t value)
+void SnesCpu::SetZeroNegativeFlags(uint16_t value)
 {
 	ClearFlags(ProcFlags::Zero | ProcFlags::Negative);
 	if(value == 0) {
@@ -555,7 +555,7 @@ void Cpu::SetZeroNegativeFlags(uint16_t value)
 	}
 }
 
-void Cpu::SetZeroNegativeFlags(uint8_t value)
+void SnesCpu::SetZeroNegativeFlags(uint8_t value)
 {
 	ClearFlags(ProcFlags::Zero | ProcFlags::Negative);
 	if(value == 0) {
@@ -565,25 +565,25 @@ void Cpu::SetZeroNegativeFlags(uint8_t value)
 	}
 }
 
-void Cpu::ClearFlags(uint8_t flags)
+void SnesCpu::ClearFlags(uint8_t flags)
 {
 	_state.PS &= ~flags;
 }
 
-void Cpu::SetFlags(uint8_t flags)
+void SnesCpu::SetFlags(uint8_t flags)
 {
 	_state.PS |= flags;
 }
 
-bool Cpu::CheckFlag(uint8_t flag)
+bool SnesCpu::CheckFlag(uint8_t flag)
 {
 	return (_state.PS & flag) == flag;
 }
 
-void Cpu::Serialize(Serializer &s)
+void SnesCpu::Serialize(Serializer &s)
 {
 	s.Stream(
-		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.IrqSource, _state.K,
+		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.SnesIrqSource, _state.K,
 		_state.NmiFlag, _state.PC, _state.PrevIrqSource, _state.PrevNmiFlag, _state.PS, _state.SP, _state.StopState,
 		_state.X, _state.Y, _state.IrqLock, _state.NeedNmi, _state.PrevNeedNmi
 	);

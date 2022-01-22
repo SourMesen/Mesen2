@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "SNES/CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 
 enum class Sa1MathOp
 {
@@ -110,6 +110,6 @@ struct Sa1State
 
 struct DebugSa1State
 {
-	CpuState Cpu;
+	SnesCpuState Snes;
 	Sa1State Sa1;
 };

@@ -6,17 +6,17 @@
 #endif
 
 #include "stdafx.h"
-#include "CpuTypes.h"
+#include "SNES/SnesCpuTypes.h"
 #include "Utilities/ISerializable.h"
 #include "MemoryOperationType.h"
 
 class MemoryMappings;
-class MemoryManager;
-class DmaController;
-class Console;
+class SnesMemoryManager;
+class SnesDmaController;
+class SnesConsole;
 class Emulator;
 
-class Cpu : public ISerializable
+class SnesCpu : public ISerializable
 {
 private:
 	static constexpr uint32_t NmiVector = 0x00FFEA;
@@ -30,16 +30,16 @@ private:
 	static constexpr uint32_t LegacyIrqVector = 0xFFFE;
 	static constexpr uint32_t LegacyCoprocessorVector = 0x00FFF4;
 
-	typedef void(Cpu::*Func)();
+	typedef void(SnesCpu::*Func)();
 	
-	MemoryManager *_memoryManager = nullptr;
-	DmaController *_dmaController = nullptr;
+	SnesMemoryManager *_memoryManager = nullptr;
+	SnesDmaController *_dmaController = nullptr;
 	Emulator *_emu = nullptr;
-	Console *_console = nullptr;
+	SnesConsole *_console = nullptr;
 
 	bool _immediateMode = false;
 
-	CpuState _state = {};
+	SnesCpuState _state = {};
 	uint32_t _operand = -1;
 
 	uint32_t GetProgramAddress(uint16_t addr);
@@ -320,19 +320,19 @@ private:
 
 public:
 #ifndef DUMMYCPU
-	Cpu(Console *console);
+	SnesCpu(SnesConsole *console);
 #else
-	DummyCpu(Console* console, CpuType type);
+	DummySnesCpu(SnesConsole* console, CpuType type);
 #endif
 
-	virtual ~Cpu();
+	virtual ~SnesCpu();
 
 	void PowerOn();
 
 	void Reset();
 	void Exec();
 
-	CpuState& GetState();
+	SnesCpuState& GetState();
 	uint64_t GetCycleCount();
 
 	template<uint64_t value>
@@ -341,9 +341,9 @@ public:
 	void SetNmiFlag(bool nmiFlag);
 	void DetectNmiSignalEdge();
 
-	void SetIrqSource(IrqSource source);
-	bool CheckIrqSource(IrqSource source);
-	void ClearIrqSource(IrqSource source);
+	void SetIrqSource(SnesIrqSource source);
+	bool CheckIrqSource(SnesIrqSource source);
+	void ClearIrqSource(SnesIrqSource source);
 
 	// Inherited via ISerializable
 	void Serialize(Serializer &s) override;
@@ -363,7 +363,7 @@ private:
 	void LogWrite(uint32_t addr, uint8_t value);
 
 public:
-	void SetDummyState(CpuState &state);
+	void SetDummyState(SnesCpuState &state);
 	int32_t GetLastOperand();
 
 	uint32_t GetWriteCount();
@@ -374,7 +374,7 @@ public:
 };
 
 template<uint64_t count>
-void Cpu::IncreaseCycleCount()
+void SnesCpu::IncreaseCycleCount()
 {
 	_state.CycleCount += count;
 }

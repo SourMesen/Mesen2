@@ -9,7 +9,7 @@ public:
 	static constexpr SnesMemoryType GetCpuMemoryType(CpuType type)
 	{
 		switch(type) {
-			case CpuType::Cpu: return SnesMemoryType::CpuMemory;
+			case CpuType::Snes: return SnesMemoryType::CpuMemory;
 			case CpuType::Spc: return SnesMemoryType::SpcMemory;
 			case CpuType::NecDsp: return SnesMemoryType::NecDspMemory;
 			case CpuType::Sa1: return SnesMemoryType::Sa1Memory;
@@ -25,7 +25,7 @@ public:
 	static constexpr int GetProgramCounterSize(CpuType type)
 	{
 		switch(type) {
-			case CpuType::Cpu: return 6;
+			case CpuType::Snes: return 6;
 			case CpuType::Spc: return 4;
 			case CpuType::NecDsp: return 6;
 			case CpuType::Sa1: return 6;
@@ -88,7 +88,7 @@ public:
 				return CpuType::Nes;
 
 			default:
-				return CpuType::Cpu;
+				return CpuType::Snes;
 		}
 
 		throw std::runtime_error("Invalid CPU type");

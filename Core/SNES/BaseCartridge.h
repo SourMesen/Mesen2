@@ -17,7 +17,7 @@ class SuperGameboy;
 class BsxCart;
 class BsxMemoryPack;
 class Gameboy;
-class Console;
+class SnesConsole;
 class Emulator;
 class SpcFileData;
 enum class ConsoleRegion;
@@ -26,7 +26,7 @@ class BaseCartridge : public ISerializable
 {
 private:
 	Emulator *_emu;
-	Console *_console;
+	SnesConsole *_console;
 
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
@@ -87,7 +87,7 @@ private:
 public:
 	virtual ~BaseCartridge();
 
-	static unique_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile);
+	static unique_ptr<BaseCartridge> CreateCartridge(SnesConsole* console, VirtualFile &romFile);
 
 	void Reset();
 

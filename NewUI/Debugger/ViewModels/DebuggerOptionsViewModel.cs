@@ -12,12 +12,12 @@ namespace Mesen.Debugger.ViewModels
 		public bool IsNes { get; }
 		public bool IsGameboy { get; }
 
-		public DebuggerOptionsViewModel() : this(new DebuggerConfig(), CpuType.Cpu) { }
+		public DebuggerOptionsViewModel() : this(new DebuggerConfig(), CpuType.Snes) { }
 
 		public DebuggerOptionsViewModel(DebuggerConfig config, CpuType cpuType)
 		{
 			Config = config;
-			IsSnes = cpuType == CpuType.Cpu;
+			IsSnes = cpuType == CpuType.Snes;
 			IsNes = cpuType == CpuType.Nes;
 			IsGameboy = cpuType == CpuType.Gameboy;
 		}

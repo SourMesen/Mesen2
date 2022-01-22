@@ -152,7 +152,7 @@ uint8_t CodeDataLogger::GetCpuFlags(uint32_t absoluteAddr)
 CpuType CodeDataLogger::GetCpuType(uint32_t absoluteAddr)
 {
 	//TODO?
-	if(_cpuType == CpuType::Cpu) {
+	if(_cpuType == CpuType::Snes) {
 		if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
 			return CpuType::Gsu;
 		} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {

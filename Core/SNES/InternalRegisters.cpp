@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "SNES/InternalRegisters.h"
-#include "SNES/Console.h"
-#include "SNES/Cpu.h"
-#include "SNES/Ppu.h"
-#include "SNES/ControlManager.h"
-#include "SNES/MemoryManager.h"
+#include "SNES/SnesConsole.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesControlManager.h"
+#include "SNES/SnesMemoryManager.h"
 #include "SNES/InternalRegisterTypes.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Serializer.h"
@@ -14,7 +14,7 @@ InternalRegisters::InternalRegisters()
 {
 }
 
-void InternalRegisters::Initialize(Console* console)
+void InternalRegisters::Initialize(SnesConsole* console)
 {
 	_cpu = console->GetCpu();
 	_aluMulDiv.Initialize(_cpu);
@@ -48,7 +48,7 @@ void InternalRegisters::ProcessAutoJoypadRead()
 		return;
 	}
 
-	ControlManager* controlManager = (ControlManager*)_console->GetControlManager();
+	SnesControlManager* controlManager = (SnesControlManager*)_console->GetControlManager();
 
 	controlManager->Write(0x4016, 1);
 	controlManager->Write(0x4016, 0);
@@ -87,9 +87,9 @@ void InternalRegisters::SetIrqFlag(bool irqFlag)
 {
 	_irqFlag = irqFlag && (_state.EnableHorizontalIrq || _state.EnableVerticalIrq);
 	if(_irqFlag) {
-		_cpu->SetIrqSource(IrqSource::Ppu);
+		_cpu->SetIrqSource(SnesIrqSource::Ppu);
 	} else {
-		_cpu->ClearIrqSource(IrqSource::Ppu);
+		_cpu->ClearIrqSource(SnesIrqSource::Ppu);
 	}
 }
 

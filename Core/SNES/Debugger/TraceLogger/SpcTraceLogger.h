@@ -5,20 +5,20 @@
 
 class DisassemblyInfo;
 class Debugger;
-class Ppu;
-class MemoryManager;
+class SnesPpu;
+class SnesMemoryManager;
 
 class SpcTraceLogger : public BaseTraceLogger<SpcTraceLogger, SpcState>
 {
 private:
-	Ppu* _ppu = nullptr;
-	MemoryManager* _memoryManager = nullptr;
+	SnesPpu* _ppu = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 
 protected:
 	RowDataType GetFormatTagType(string& tag) override;
 
 public:
-	SpcTraceLogger(Debugger* debugger, Ppu* ppu, MemoryManager* memoryManager);
+	SpcTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
 
 	void GetTraceRow(string &output, SpcState &cpuState, TraceLogPpuState &ppuState, DisassemblyInfo &disassemblyInfo);
 	void LogPpuState();

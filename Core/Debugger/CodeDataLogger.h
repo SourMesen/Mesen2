@@ -6,7 +6,7 @@ class CodeDataLogger
 {
 private:
 	uint8_t* _cdlData = nullptr;
-	CpuType _cpuType = CpuType::Cpu;
+	CpuType _cpuType = CpuType::Snes;
 	SnesMemoryType _prgMemType;
 	uint32_t _prgSize = 0;
 	uint32_t _codeSize = 0;

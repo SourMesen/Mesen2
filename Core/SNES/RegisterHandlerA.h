@@ -1,19 +1,19 @@
 #pragma once
 #include "stdafx.h"
-#include "IMemoryHandler.h"
-#include "DmaController.h"
-#include "InternalRegisters.h"
-#include "ControlManager.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/SnesDmaController.h"
+#include "SNES/InternalRegisters.h"
+#include "SNES/SnesControlManager.h"
 
 class RegisterHandlerA : public IMemoryHandler
 {
 private:
-	DmaController *_dmaController;
+	SnesDmaController *_dmaController;
 	InternalRegisters *_regs;
-	ControlManager *_controlManager;
+	SnesControlManager *_controlManager;
 
 public:
-	RegisterHandlerA(DmaController *dmaController, InternalRegisters *regs, ControlManager *controlManager) : IMemoryHandler(SnesMemoryType::Register)
+	RegisterHandlerA(SnesDmaController *dmaController, InternalRegisters *regs, SnesControlManager *controlManager) : IMemoryHandler(SnesMemoryType::Register)
 	{
 		_regs = regs;
 		_dmaController = dmaController;

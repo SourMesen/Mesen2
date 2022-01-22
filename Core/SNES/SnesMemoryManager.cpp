@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "SNES/MemoryManager.h"
-#include "SNES/Console.h"
+#include "SNES/SnesMemoryManager.h"
+#include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
-#include "SNES/Cpu.h"
-#include "SNES/Ppu.h"
-#include "SNES/DmaController.h"
+#include "SNES/SnesCpu.h"
+#include "SNES/SnesPpu.h"
+#include "SNES/SnesDmaController.h"
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
 #include "SNES/RamHandler.h"
@@ -17,7 +17,7 @@
 #include "Utilities/HexUtilities.h"
 #include "MemoryOperationType.h"
 
-void MemoryManager::Initialize(Console *console)
+void SnesMemoryManager::Initialize(SnesConsole *console)
 {
 	_masterClock = 0;
 	_openBus = 0;
@@ -30,14 +30,14 @@ void MemoryManager::Initialize(Console *console)
 	_cart = console->GetCartridge();
 	_cheatManager = _emu->GetCheatManager();
 
-	_workRam = new uint8_t[MemoryManager::WorkRamSize];
-	_emu->RegisterMemory(SnesMemoryType::WorkRam, _workRam, MemoryManager::WorkRamSize);
-	_emu->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
+	_workRam = new uint8_t[SnesMemoryManager::WorkRamSize];
+	_emu->RegisterMemory(SnesMemoryType::WorkRam, _workRam, SnesMemoryManager::WorkRamSize);
+	_emu->GetSettings()->InitializeRam(_workRam, SnesMemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
 		console->GetDmaController(),
 		console->GetInternalRegisters(),
-		(ControlManager*)console->GetControlManager()
+		(SnesControlManager*)console->GetControlManager()
 	));
 
 	_registerHandlerB.reset(new RegisterHandlerB(
@@ -48,7 +48,7 @@ void MemoryManager::Initialize(Console *console)
 	));
 
 	for(uint32_t i = 0; i < 128 * 1024; i += 0x1000) {
-		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, MemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
+		_workRamHandlers.push_back(unique_ptr<RamHandler>(new RamHandler(_workRam, i, SnesMemoryManager::WorkRamSize, SnesMemoryType::WorkRam)));
 	}
 
 	_mappings.RegisterHandler(0x7E, 0x7F, 0x0000, 0xFFFF, _workRamHandlers);
@@ -70,12 +70,12 @@ void MemoryManager::Initialize(Console *console)
 	Reset();
 }
 
-MemoryManager::~MemoryManager()
+SnesMemoryManager::~SnesMemoryManager()
 {
 	delete[] _workRam;
 }
 
-void MemoryManager::Reset()
+void SnesMemoryManager::Reset()
 {
 	_masterClock = 0;
 	_hClock = 0;
@@ -84,7 +84,7 @@ void MemoryManager::Reset()
 	_nextEvent = SnesEventType::DramRefresh;
 }
 
-void MemoryManager::GenerateMasterClockTable()
+void SnesMemoryManager::GenerateMasterClockTable()
 {
 	for(int i = 0; i < 0x800; i++) {
 		uint8_t bank = (i & 0x300) >> 8;
@@ -125,20 +125,20 @@ void MemoryManager::GenerateMasterClockTable()
 	}
 }
 
-void MemoryManager::IncMasterClock4()
+void SnesMemoryManager::IncMasterClock4()
 {
 	Exec();
 	Exec();
 }
 
-void MemoryManager::IncMasterClock6()
+void SnesMemoryManager::IncMasterClock6()
 {
 	Exec();
 	Exec();
 	Exec();
 }
 
-void MemoryManager::IncMasterClock8()
+void SnesMemoryManager::IncMasterClock8()
 {
 	Exec();
 	Exec();
@@ -146,7 +146,7 @@ void MemoryManager::IncMasterClock8()
 	Exec();
 }
 
-void MemoryManager::IncMasterClock40()
+void SnesMemoryManager::IncMasterClock40()
 {
 	Exec(); Exec(); Exec(); Exec(); Exec();
 	Exec(); Exec(); Exec(); Exec(); Exec();
@@ -154,14 +154,14 @@ void MemoryManager::IncMasterClock40()
 	Exec(); Exec(); Exec(); Exec(); Exec();
 }
 
-void MemoryManager::IncMasterClockStartup()
+void SnesMemoryManager::IncMasterClockStartup()
 {
 	for(int i = 0; i < 182 / 2; i++) {
 		Exec();
 	}
 }
 
-void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
+void SnesMemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 {
 	switch(cyclesToRun) {
 		case 12: Exec();
@@ -173,7 +173,7 @@ void MemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 	}
 }
 
-void MemoryManager::Exec()
+void SnesMemoryManager::Exec()
 {
 	_masterClock += 2;
 	_hClock += 2;
@@ -183,14 +183,14 @@ void MemoryManager::Exec()
 	} 
 	
 	if((_hClock & 0x03) == 0) {
-		_emu->ProcessPpuCycle<CpuType::Cpu>();
+		_emu->ProcessPpuCycle<CpuType::Snes>();
 		_regs->ProcessIrqCounters();
 	}
 
 	_cart->SyncCoprocessors();
 }
 
-void MemoryManager::ProcessEvent()
+void SnesMemoryManager::ProcessEvent()
 {
 	switch(_nextEvent) {
 		case SnesEventType::HdmaInit:
@@ -237,7 +237,7 @@ void MemoryManager::ProcessEvent()
 	}
 }
 
-uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
+uint8_t SnesMemoryManager::Read(uint32_t addr, MemoryOperationType type)
 {
 	IncrementMasterClockValue(_cpuSpeed - 4);
 
@@ -253,13 +253,13 @@ uint8_t MemoryManager::Read(uint32_t addr, MemoryOperationType type)
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_cheatManager->ApplyCheat(addr, value);
-	_emu->ProcessMemoryRead<CpuType::Cpu>(addr, value, type);
+	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, type);
 
 	IncMasterClock4();
 	return value;
 }
 
-uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
+uint8_t SnesMemoryManager::ReadDma(uint32_t addr, bool forBusA)
 {
 	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
@@ -291,30 +291,30 @@ uint8_t MemoryManager::ReadDma(uint32_t addr, bool forBusA)
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
 	_cheatManager->ApplyCheat(addr, value);
-	_emu->ProcessMemoryRead<CpuType::Cpu>(addr, value, MemoryOperationType::DmaRead);
+	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, MemoryOperationType::DmaRead);
 	return value;
 }
 
-uint8_t MemoryManager::Peek(uint32_t addr)
+uint8_t SnesMemoryManager::Peek(uint32_t addr)
 {
 	return _mappings.Peek(addr);
 }
 
-uint16_t MemoryManager::PeekWord(uint32_t addr)
+uint16_t SnesMemoryManager::PeekWord(uint32_t addr)
 {
 	return _mappings.PeekWord(addr);
 }
 
-void MemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
+void SnesMemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
 {
 	_mappings.PeekBlock(addr, dest);
 }
 
-void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
+void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncrementMasterClockValue(_cpuSpeed);
 
-	_emu->ProcessMemoryWrite<CpuType::Cpu>(addr, value, type);
+	_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, type);
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
 		handler->Write(addr, value);
@@ -324,11 +324,11 @@ void MemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type
 	}
 }
 
-void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
+void SnesMemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
 	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
-	_emu->ProcessMemoryWrite<CpuType::Cpu>(addr, value, MemoryOperationType::DmaWrite);
+	_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, MemoryOperationType::DmaWrite);
 
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
@@ -352,67 +352,67 @@ void MemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 	}
 }
 
-uint8_t MemoryManager::GetOpenBus()
+uint8_t SnesMemoryManager::GetOpenBus()
 {
 	return _openBus;
 }
 
-uint64_t MemoryManager::GetMasterClock()
+uint64_t SnesMemoryManager::GetMasterClock()
 {
 	return _masterClock;
 }
 
-uint16_t MemoryManager::GetHClock()
+uint16_t SnesMemoryManager::GetHClock()
 {
 	return _hClock;
 }
 
-uint8_t * MemoryManager::DebugGetWorkRam()
+uint8_t * SnesMemoryManager::DebugGetWorkRam()
 {
 	return _workRam;
 }
 
-MemoryMappings* MemoryManager::GetMemoryMappings()
+MemoryMappings* SnesMemoryManager::GetMemoryMappings()
 {
 	return &_mappings;
 }
 
-uint8_t MemoryManager::GetCpuSpeed(uint32_t addr)
+uint8_t SnesMemoryManager::GetCpuSpeed(uint32_t addr)
 {
 	return _masterClockTable[(_regs->IsFastRomEnabled() << 10) | ((addr & 0xC00000) >> 14) | ((addr & 0xFF00) >> 8)];
 }
 
-uint8_t MemoryManager::GetCpuSpeed()
+uint8_t SnesMemoryManager::GetCpuSpeed()
 {
 	return _cpuSpeed;
 }
 
-void MemoryManager::SetCpuSpeed(uint8_t speed)
+void SnesMemoryManager::SetCpuSpeed(uint8_t speed)
 {
 	_cpuSpeed = speed;
 }
 
-SnesMemoryType MemoryManager::GetMemoryTypeBusA()
+SnesMemoryType SnesMemoryManager::GetMemoryTypeBusA()
 {
 	return _memTypeBusA;
 }
 
-bool MemoryManager::IsRegister(uint32_t cpuAddress)
+bool SnesMemoryManager::IsRegister(uint32_t cpuAddress)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(cpuAddress);
 	return handler == _registerHandlerA.get() || handler == _registerHandlerB.get();
 }
 
-bool MemoryManager::IsWorkRam(uint32_t cpuAddress)
+bool SnesMemoryManager::IsWorkRam(uint32_t cpuAddress)
 {
 	IMemoryHandler* handler = _mappings.GetHandler(cpuAddress);
 	return handler && handler->GetMemoryType() == SnesMemoryType::WorkRam;
 }
 
-void MemoryManager::Serialize(Serializer &s)
+void SnesMemoryManager::Serialize(Serializer &s)
 {
 	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition);
-	s.StreamArray(_workRam, MemoryManager::WorkRamSize);
+	s.StreamArray(_workRam, SnesMemoryManager::WorkRamSize);
 
 	if(s.GetVersion() < 8) {
 		bool unusedHasEvent[1369];
