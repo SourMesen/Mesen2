@@ -75,12 +75,13 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			this.WhenAnyValue(x => x.RegPS).Subscribe(x => {
-				FlagN = (RegPS & (byte)NesCpuFlags.Negative) != 0;
-				FlagV = (RegPS & (byte)NesCpuFlags.Overflow) != 0;
-				FlagD = (RegPS & (byte)NesCpuFlags.Decimal) != 0;
-				FlagI = (RegPS & (byte)NesCpuFlags.IrqDisable) != 0;
-				FlagZ = (RegPS & (byte)NesCpuFlags.Zero) != 0;
-				FlagC = (RegPS & (byte)NesCpuFlags.Carry) != 0;
+				using var delayNotifs = DelayChangeNotifications(); //don't reupdate PS while updating the flags
+				FlagN = (x & (byte)NesCpuFlags.Negative) != 0;
+				FlagV = (x & (byte)NesCpuFlags.Overflow) != 0;
+				FlagD = (x & (byte)NesCpuFlags.Decimal) != 0;
+				FlagI = (x & (byte)NesCpuFlags.IrqDisable) != 0;
+				FlagZ = (x & (byte)NesCpuFlags.Zero) != 0;
+				FlagC = (x & (byte)NesCpuFlags.Carry) != 0;
 			});
 		}
 

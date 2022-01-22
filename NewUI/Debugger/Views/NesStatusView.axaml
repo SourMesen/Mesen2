@@ -154,9 +154,9 @@
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Hex="True" Max="16383" IsEnabled="False" />
 						<TextBlock Grid.Row="3">V:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="16383" />
+						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="32767" />
 						<TextBlock Grid.Row="4">T:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="16383" />
+						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="32767" />
 						<TextBlock Grid.Row="5">X:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Hex="True" Max="7" />
 					</Grid>
