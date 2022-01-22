@@ -229,6 +229,9 @@
     <ClInclude Include="spng.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="safe_ptr.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">

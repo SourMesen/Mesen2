@@ -104,6 +104,7 @@ public:
 
 	bool HasBreakRequest();
 	void BreakRequest(bool release);
+	void ResetSuspendCounter();
 	void SuspendDebugger(bool release);
 
 	void BreakImmediately(BreakSource source);

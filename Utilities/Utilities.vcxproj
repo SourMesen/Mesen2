@@ -465,6 +465,7 @@
     <ClInclude Include="Patches\UpsPatcher.h" />
     <ClInclude Include="PlatformUtilities.h" />
     <ClInclude Include="PNGHelper.h" />
+    <ClInclude Include="safe_ptr.h" />
     <ClInclude Include="Scale2x\scale2x.h" />
     <ClInclude Include="Scale2x\scale3x.h" />
     <ClInclude Include="Scale2x\scalebit.h" />

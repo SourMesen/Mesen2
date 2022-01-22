@@ -373,6 +373,11 @@ void Debugger::BreakRequest(bool release)
 	}
 }
 
+void Debugger::ResetSuspendCounter()
+{
+	_suspendRequestCount = 0;
+}
+
 void Debugger::SuspendDebugger(bool release)
 {
 	if(release) {

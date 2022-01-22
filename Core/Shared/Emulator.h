@@ -6,6 +6,7 @@
 #include "Core/Shared/Interfaces/IConsole.h"
 #include "Core/Shared/Audio/AudioPlayerTypes.h"
 #include "Utilities/Timer.h"
+#include "Utilities/safe_ptr.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/VirtualFile.h"
 
@@ -57,7 +58,7 @@ private:
 
 	shared_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
 	shared_ptr<RewindManager> _rewindManager;
-	shared_ptr<Debugger> _debugger;
+	safe_ptr<Debugger> _debugger;
 	shared_ptr<SystemActionManager> _systemActionManager;
 
 	const unique_ptr<EmuSettings> _settings;
@@ -108,8 +109,7 @@ private:
 	void RunFrameWithRunAhead();
 
 	void BlockDebuggerRequests();
-	shared_ptr<Debugger> SafeGetDebugger();
-	void SafeResetDebugger(Debugger* dbg);
+	void ResetDebugger(Debugger* dbg = nullptr);
 
 public:
 	class DebuggerRequest
@@ -123,7 +123,7 @@ public:
 		{
 			if(emu) {
 				_emu = emu;
-				_debugger = _emu->_debugger;
+				_debugger = _emu->_debugger.lock();
 				_emu->_debugRequestCount++;
 			}
 		}

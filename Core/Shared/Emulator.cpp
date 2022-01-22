@@ -258,26 +258,6 @@ void Emulator::RunSingleFrame()
 	_controlManager->UpdateControlDevices();*/
 }
 
-shared_ptr<Debugger> Emulator::SafeGetDebugger()
-{
-	auto lock = _debuggerLock.AcquireSafe();
-	shared_ptr<Debugger> debugger = _debugger;
-	return debugger;
-}
-
-void Emulator::SafeResetDebugger(Debugger* dbg = nullptr)
-{
-	if(_emulationThreadId == std::this_thread::get_id()) {
-		auto dbgLock = _debuggerLock.AcquireSafe();
-		_debugger.reset(dbg);
-	} else {
-		//Need to pause emulator to change _debugger (when not called from the emulation thread)
-		auto emuLock = AcquireLock();
-		auto dbgLock = _debuggerLock.AcquireSafe();
-		_debugger.reset(dbg);
-	}
-}
-
 void Emulator::Stop(bool sendNotification)
 {
 	BlockDebuggerRequests();
@@ -286,11 +266,7 @@ void Emulator::Stop(bool sendNotification)
 
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
 
-	shared_ptr<Debugger> debugger = SafeGetDebugger();
-	if(debugger) {
-		debugger->SuspendDebugger(false);
-		debugger->Run();
-	}
+	ResetDebugger();
 
 	if(_emuThread) {
 		_emuThread->join();
@@ -305,10 +281,6 @@ void Emulator::Stop(bool sendNotification)
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}
-
-	//Make sure we release both pointers to destroy the debugger before everything else
-	_debugger.reset();
-	debugger.reset();
 
 	_videoDecoder->StopThread();
 	_videoRenderer->StopThread();
@@ -359,12 +331,15 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		return false;
 	}
 
-	BlockDebuggerRequests();
-
-	//Keep a reference to the original debugger, and reset the member to avoid any calls to the debugger by the init process
-	shared_ptr<Debugger> debugger = SafeGetDebugger();
+	//Keep a reference to the original debugger
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	bool debuggerActive = debugger != nullptr;
-	SafeResetDebugger();
+	
+	//Unset _debugger to ensure nothing calls the debugger while initializing the new rom
+	{
+		auto dbgLock = _debuggerLock.AcquireSafe();
+		ResetDebugger();
+	}
 
 	if(patchFile.IsValid()) {
 		if(romFile.ApplyPatch(patchFile)) {
@@ -415,7 +390,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	if(result != LoadRomResult::Success) {
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
-		_debugger = debugger;
+		_debugger.reset(debugger);
+		debugger->ResetSuspendCounter();
 		_allowDebuggerRequest = true;
 		return false;
 	}
@@ -605,7 +581,7 @@ double Emulator::GetFrameDelay()
 
 void Emulator::PauseOnNextFrame()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		switch(GetConsoleType()) {
 			case ConsoleType::Snes:
@@ -629,7 +605,7 @@ void Emulator::PauseOnNextFrame()
 
 void Emulator::Pause()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		switch(GetConsoleType()) {
 			case ConsoleType::Snes:
@@ -652,7 +628,7 @@ void Emulator::Pause()
 
 void Emulator::Resume()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		debugger->Run();
 	} else {
@@ -662,7 +638,7 @@ void Emulator::Resume()
 
 bool Emulator::IsPaused()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		return debugger->IsExecutionStopped();
 	} else {
@@ -701,7 +677,7 @@ EmulatorLock Emulator::AcquireLock()
 
 void Emulator::Lock()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		debugger->SuspendDebugger(false);
 	}
@@ -712,7 +688,7 @@ void Emulator::Lock()
 
 void Emulator::Unlock()
 {
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
 		debugger->SuspendDebugger(true);
 	}
@@ -737,7 +713,7 @@ void Emulator::WaitForLock()
 		//Spin wait until we are allowed to start again
 		while(_lockCounter > 0 && !_stopFlag) {}
 
-		shared_ptr<Debugger> debugger = _debugger;
+		shared_ptr<Debugger> debugger = _debugger.lock();
 		if(debugger) {
 			while(debugger->HasBreakRequest() && !_stopFlag) {}
 		}
@@ -870,15 +846,32 @@ void Emulator::BlockDebuggerRequests()
 Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 {
 	if(IsRunning() && _allowDebuggerRequest) {
-		auto lock = _debuggerLock.AcquireSafe();
-		if(IsRunning() && _allowDebuggerRequest) {
-			if(!_debugger && autoInit) {
-				InitDebugger();
-			}
-			return DebuggerRequest(this);
+		if(!_debugger && autoInit) {
+			InitDebugger();
 		}
+		return DebuggerRequest(this);
 	}
 	return DebuggerRequest(nullptr);
+}
+
+void Emulator::ResetDebugger(Debugger* dbg)
+{
+	BlockDebuggerRequests();
+
+	shared_ptr<Debugger> currentDbg = _debugger.lock();
+	if(currentDbg) {
+		currentDbg->SuspendDebugger(false);
+	}
+
+	if(_emulationThreadId == std::this_thread::get_id()) {
+		_debugger.reset(dbg);
+	} else {
+		//Need to pause emulator to change _debugger (when not called from the emulation thread)
+		auto emuLock = AcquireLock();
+		_debugger.reset(dbg);
+	}
+
+	_allowDebuggerRequest = true;
 }
 
 void Emulator::InitDebugger()
@@ -887,7 +880,7 @@ void Emulator::InitDebugger()
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
 		if(!_debugger) {
-			SafeResetDebugger(new Debugger(this, _console.get()));
+			ResetDebugger(new Debugger(this, _console.get()));
 		}
 	}
 }
@@ -898,23 +891,16 @@ void Emulator::StopDebugger()
 	_paused = IsPaused();
 
 	if(_debugger) {
-		BlockDebuggerRequests();
-
 		auto lock = _debuggerLock.AcquireSafe();
 		if(_debugger) {
-			_debugger->SuspendDebugger(false);
-			Lock();
-			_debugger.reset();
-			Unlock();
+			ResetDebugger();
 		}
-
-		_allowDebuggerRequest = true;
 	}
 }
 
 bool Emulator::IsDebugging()
 {
-	return SafeGetDebugger() != nullptr;
+	return !!_debugger;
 }
 
 thread::id Emulator::GetEmulationThreadId()
