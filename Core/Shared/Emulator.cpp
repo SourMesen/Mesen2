@@ -836,6 +836,7 @@ BaseVideoFilter* Emulator::GetVideoFilter()
 void Emulator::BlockDebuggerRequests()
 {
 	//Block all new debugger calls
+	auto lock = _debuggerLock.AcquireSafe();
 	_allowDebuggerRequest = false;
 	while(_debugRequestCount > 0) {
 		//Wait until debugger calls are all done
@@ -846,6 +847,7 @@ void Emulator::BlockDebuggerRequests()
 Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 {
 	if(IsRunning() && _allowDebuggerRequest) {
+		auto lock = _debuggerLock.AcquireSafe();
 		if(!_debugger && autoInit) {
 			InitDebugger();
 		}
