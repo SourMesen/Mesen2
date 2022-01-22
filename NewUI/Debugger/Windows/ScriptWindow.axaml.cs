@@ -43,6 +43,7 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			_model = model;
+			DataContext = model;
 			_textEditor = this.FindControl<MesenTextEditor>("Editor");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateLog());
 
