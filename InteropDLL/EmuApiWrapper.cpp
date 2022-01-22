@@ -222,10 +222,10 @@ extern "C" {
 		_emu->Stop(true);
 		_emu->Release();
 
-		_emu.reset();
 		_renderer.reset();
 		_soundManager.reset();
 		_keyManager.reset();
+		_emu.reset();
 	}
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
