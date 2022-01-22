@@ -111,7 +111,6 @@ public:
 	IControlManager* GetControlManager() override;
 	ConsoleRegion GetRegion() override;
 	ConsoleType GetConsoleType() override;
-	double GetFrameDelay() override;
 	double GetFps() override;
 	void RunSingleFrame() override;
 	PpuFrameInfo GetPpuFrame() override;

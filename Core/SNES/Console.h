@@ -111,7 +111,6 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;
 
-	double GetFrameDelay() override;
 	double GetFps() override;
 	PpuFrameInfo GetPpuFrame() override;
 

@@ -573,7 +573,7 @@ double Emulator::GetFrameDelay()
 	if(emulationSpeed == 0) {
 		frameDelay = 0;
 	} else {
-		frameDelay = _console->GetFrameDelay();
+		frameDelay = 1000 / _console->GetFps();
 		frameDelay /= (emulationSpeed / 100.0);
 	}
 	return frameDelay;

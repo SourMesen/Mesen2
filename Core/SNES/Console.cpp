@@ -206,10 +206,11 @@ void Console::UpdateRegion()
 
 double Console::GetFps()
 {
+	UpdateRegion();
 	if(_region == ConsoleRegion::Ntsc) {
 		return _settings->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
 	} else {
-		return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.00697796826829;
+		return _settings->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.0069789081886;
 	}
 }
 
@@ -311,16 +312,6 @@ void Console::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 			_emu->LoadRom(VirtualFile(_spcPlaylist[i]), VirtualFile());
 		});
 		switchTrackTask.detach();
-	}
-}
-
-double Console::GetFrameDelay()
-{
-	UpdateRegion();
-	switch(_region) {
-		default:
-		case ConsoleRegion::Ntsc: return _settings->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.63926405550947;
-		case ConsoleRegion::Pal: return _settings->GetVideoConfig().IntegerFpsMode ? 20 : 19.99720882631146;
 	}
 }
 

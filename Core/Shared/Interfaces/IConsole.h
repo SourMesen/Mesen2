@@ -56,7 +56,6 @@ public:
 	virtual uint64_t GetMasterClock() = 0;
 	virtual uint32_t GetMasterClockRate() = 0;
 
-	virtual double GetFrameDelay() = 0;
 	virtual double GetFps() = 0;
 
 	virtual BaseVideoFilter* GetVideoFilter() = 0;

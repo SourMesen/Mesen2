@@ -78,7 +78,6 @@ public:
 	void Init() override;
 	void RunFrame() override;
 	IControlManager* GetControlManager() override;
-	double GetFrameDelay() override;
 	double GetFps() override;
 	void RunSingleFrame() override;
 	PpuFrameInfo GetPpuFrame() override;

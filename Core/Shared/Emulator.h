@@ -111,6 +111,8 @@ private:
 	void BlockDebuggerRequests();
 	void ResetDebugger(Debugger* dbg = nullptr);
 
+	double GetFrameDelay();
+
 public:
 	class DebuggerRequest
 	{
@@ -225,7 +227,6 @@ public:
 	TimingInfo GetTimingInfo();
 	uint32_t GetFrameCount();
 	double GetFps();
-	double GetFrameDelay();
 
 	template<CpuType type> __forceinline void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 	{

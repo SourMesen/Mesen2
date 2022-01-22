@@ -457,11 +457,6 @@ ConsoleType Gameboy::GetConsoleType()
 	return _model == GameboyModel::GameboyColor ? ConsoleType::GameboyColor : ConsoleType::Gameboy;
 }
 
-double Gameboy::GetFrameDelay()
-{
-	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 16.6666666666666666667 : 16.74270629882813;
-}
-
 double Gameboy::GetFps()
 {
 	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 59.72750056960583;
