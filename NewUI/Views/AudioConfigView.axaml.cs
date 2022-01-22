@@ -15,16 +15,5 @@ namespace Mesen.Views
 		{
 			AvaloniaXamlLoader.Load(this);
 		}
-
-		protected override void OnInitialized()
-		{
-			base.OnInitialized();
-
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			this.FindControl<ComboBox>("AudioDevice").Items = ConfigApi.GetAudioDevices();
-		}
 	}
 }
