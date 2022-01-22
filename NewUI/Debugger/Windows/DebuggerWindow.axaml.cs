@@ -37,17 +37,24 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			if(_model.Config.BreakOnOpen) {
-				EmuApi.Pause();
-			}
-
-			_model.UpdateDebugger(true);
 			_model.Config.LoadWindowSettings(this);
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+
+			//Do this in OnOpened to ensure the window is ready to receive notifications
+			_model.UpdateDebugger(true);
+
+			if(_model.Config.BreakOnOpen) {
+				EmuApi.Pause();
+			}
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
