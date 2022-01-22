@@ -1,42 +1,35 @@
 #pragma once
 #include "stdafx.h"
-#include <thread>
 #include "Shared/Interfaces/INotificationListener.h"
 
-using std::thread;
 class Socket;
 class GameClientConnection;
 class ClientConnectionData;
 class Emulator;
 
-class GameClient : public INotificationListener
+class GameClient : public INotificationListener, public std::enable_shared_from_this<GameClient>
 {
 private:
-	static shared_ptr<GameClient> _instance;
-
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	unique_ptr<thread> _clientThread;
+	unique_ptr<GameClientConnection> _connection;
+
 	atomic<bool> _stop;
+	atomic<bool> _connected;
 
-	shared_ptr<GameClientConnection> _connection;
-	bool _connected = false;
-
-	static shared_ptr<GameClientConnection> GetConnection();
-
-	void PrivateConnect(ClientConnectionData &connectionData);
 	void Exec();
 
 public:
-	GameClient(shared_ptr<Emulator> emu);
+	GameClient(Emulator* emu);
 	virtual ~GameClient();
 
-	static bool Connected();
-	static void Connect(shared_ptr<Emulator> emu, ClientConnectionData &connectionData);
-	static void Disconnect();
+	bool Connected();
+	void Connect(ClientConnectionData &connectionData);
+	void Disconnect();
 
-	static void SelectController(uint8_t port);
-	static uint8_t GetControllerPort();
-	static uint8_t GetAvailableControllers();
+	void SelectController(uint8_t port);
+	uint8_t GetControllerPort();
+	uint8_t GetAvailableControllers();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 };

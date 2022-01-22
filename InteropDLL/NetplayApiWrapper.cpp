@@ -5,46 +5,46 @@
 #include "Core/Netplay/GameServer.h"
 #include "Core/Netplay/GameClient.h"
 
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 
 extern "C" {
-	DllExport void __stdcall StartServer(uint16_t port, char* password) { GameServer::StartServer(_emu, port, password); }
-	DllExport void __stdcall StopServer() { GameServer::StopServer(); }
-	DllExport bool __stdcall IsServerRunning() { return GameServer::Started(); }
+	DllExport void __stdcall StartServer(uint16_t port, char* password) { _emu->GetGameServer()->StartServer(port, password); }
+	DllExport void __stdcall StopServer() { _emu->GetGameServer()->StopServer(); }
+	DllExport bool __stdcall IsServerRunning() { return _emu->GetGameServer()->Started(); }
 
 	DllExport void __stdcall Connect(char* host, uint16_t port, char* password, bool spectator)
 	{
 		ClientConnectionData connectionData(host, port, password, spectator);
-		GameClient::Connect(_emu, connectionData);
+		_emu->GetGameClient()->Connect(connectionData);
 	}
 
-	DllExport void __stdcall Disconnect() { GameClient::Disconnect(); }
-	DllExport bool __stdcall IsConnected() { return GameClient::Connected(); }
+	DllExport void __stdcall Disconnect() { _emu->GetGameClient()->Disconnect(); }
+	DllExport bool __stdcall IsConnected() { return _emu->GetGameClient()->Connected(); }
 
 	DllExport int32_t __stdcall NetPlayGetAvailableControllers()
 	{
-		if(GameServer::Started()) {
-			return GameServer::GetAvailableControllers();
+		if(_emu->GetGameServer()->Started()) {
+			return _emu->GetGameServer()->GetAvailableControllers();
 		} else {
-			return GameClient::GetAvailableControllers();
+			return _emu->GetGameServer()->GetAvailableControllers();
 		}
 	}
 
 	DllExport void __stdcall NetPlaySelectController(int32_t port)
 	{
-		if(GameServer::Started()) {
-			return GameServer::SetHostControllerPort(port);
+		if(_emu->GetGameServer()->Started()) {
+			return _emu->GetGameServer()->SetHostControllerPort(port);
 		} else {
-			return GameClient::SelectController(port);
+			return _emu->GetGameClient()->SelectController(port);
 		}
 	}
 
 	DllExport int32_t __stdcall NetPlayGetControllerPort()
 	{
-		if(GameServer::Started()) {
-			return GameServer::GetHostControllerPort();
+		if(_emu->GetGameServer()->Started()) {
+			return _emu->GetGameServer()->GetHostControllerPort();
 		} else {
-			return GameClient::GetControllerPort();
+			return _emu->GetGameClient()->GetControllerPort();
 		}
 	}
 }

@@ -8,7 +8,7 @@
 
 static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*)", std::regex_constants::icase);
 
-GbAssembler::GbAssembler(shared_ptr<LabelManager> labelManager)
+GbAssembler::GbAssembler(LabelManager* labelManager)
 {
 	_labelManager = labelManager;
 	InitAssembler();

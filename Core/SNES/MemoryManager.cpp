@@ -24,26 +24,26 @@ void MemoryManager::Initialize(Console *console)
 	_cpuSpeed = 8;
 	_console = console;
 	_emu = console->GetEmulator();
-	_regs = console->GetInternalRegisters().get();
-	_cpu = console->GetCpu().get();
-	_ppu = console->GetPpu().get();
-	_cart = console->GetCartridge().get();
-	_cheatManager = _emu->GetCheatManager().get();
+	_regs = console->GetInternalRegisters();
+	_cpu = console->GetCpu();
+	_ppu = console->GetPpu();
+	_cart = console->GetCartridge();
+	_cheatManager = _emu->GetCheatManager();
 
 	_workRam = new uint8_t[MemoryManager::WorkRamSize];
 	_emu->RegisterMemory(SnesMemoryType::WorkRam, _workRam, MemoryManager::WorkRamSize);
 	_emu->GetSettings()->InitializeRam(_workRam, MemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
-		console->GetDmaController().get(),
-		console->GetInternalRegisters().get(),
-		(ControlManager*)console->GetControlManager().get()
+		console->GetDmaController(),
+		console->GetInternalRegisters(),
+		(ControlManager*)console->GetControlManager()
 	));
 
 	_registerHandlerB.reset(new RegisterHandlerB(
 		_console,
 		_ppu,
-		console->GetSpc().get(),
+		console->GetSpc(),
 		_workRam
 	));
 

@@ -30,7 +30,7 @@ protected:
 public:
 	SaveStateMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) { }
 	
-	SaveStateMessage(shared_ptr<Emulator> emu) : NetMessage(MessageType::SaveState)
+	SaveStateMessage(Emulator* emu) : NetMessage(MessageType::SaveState)
 	{
 		//Used when sending state to clients
 		emu->Lock();
@@ -59,7 +59,7 @@ public:
 		state.read((char*)_stateData.data(), dataSize);
 	}
 	
-	void LoadState(shared_ptr<Emulator> emu)
+	void LoadState(Emulator* emu)
 	{
 		std::stringstream ss;
 		ss.write((char*)_stateData.data(), _stateData.size());

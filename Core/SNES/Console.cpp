@@ -32,6 +32,8 @@
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "EventType.h"
+#include "SNES/RegisterHandlerA.h"
+#include "SNES/RegisterHandlerB.h"
 
 Console::Console(Emulator* emu)
 {
@@ -124,9 +126,9 @@ void Console::Reset()
 
 LoadRomResult Console::LoadRom(VirtualFile& romFile)
 {
-	shared_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
+	unique_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
 	if(cart) {
-		_cart = cart;
+		_cart.swap(cart);
 		
 		UpdateRegion();
 
@@ -337,49 +339,49 @@ void Console::Serialize(Serializer& s)
 	}
 }
 
-shared_ptr<Cpu> Console::GetCpu()
+Cpu* Console::GetCpu()
 {
-	return _cpu;
+	return _cpu.get();
 }
 
-shared_ptr<Ppu> Console::GetPpu()
+Ppu* Console::GetPpu()
 {
-	return _ppu;
+	return _ppu.get();
 }
 
-shared_ptr<Spc> Console::GetSpc()
+Spc* Console::GetSpc()
 {
-	return _spc;
+	return _spc.get();
 }
 
-shared_ptr<BaseCartridge> Console::GetCartridge()
+BaseCartridge* Console::GetCartridge()
 {
-	return _cart;
+	return _cart.get();
 }
 
-shared_ptr<MemoryManager> Console::GetMemoryManager()
+MemoryManager* Console::GetMemoryManager()
 {
-	return _memoryManager;
+	return _memoryManager.get();
 }
 
-shared_ptr<InternalRegisters> Console::GetInternalRegisters()
+InternalRegisters* Console::GetInternalRegisters()
 {
-	return _internalRegisters;
+	return _internalRegisters.get();
 }
 
-shared_ptr<IControlManager> Console::GetControlManager()
+IControlManager* Console::GetControlManager()
 {
-	return _controlManager;
+	return _controlManager.get();
 }
 
-shared_ptr<DmaController> Console::GetDmaController()
+DmaController* Console::GetDmaController()
 {
-	return _dmaController;
+	return _dmaController.get();
 }
 
-shared_ptr<Msu1> Console::GetMsu1()
+Msu1* Console::GetMsu1()
 {
-	return _msu1;
+	return _msu1.get();
 }
 
 Emulator* Console::GetEmulator()

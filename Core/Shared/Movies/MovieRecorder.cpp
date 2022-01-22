@@ -17,7 +17,7 @@
 #include "Shared/BatteryManager.h"
 #include "Shared/CheatManager.h"
 
-MovieRecorder::MovieRecorder(shared_ptr<Emulator> emu)
+MovieRecorder::MovieRecorder(Emulator* emu)
 {
 	_emu = emu;
 }

@@ -22,16 +22,16 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	Console* console = (Console*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu);
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_gsu = console->GetCartridge()->GetGsu();
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_traceLogger.reset(new GsuTraceLogger(debugger, console->GetPpu().get(), _memoryManager));
+	_traceLogger.reset(new GsuTraceLogger(debugger, console->GetPpu(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Cpu).get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Cpu)));
 	_step.reset(new StepRequest());
 }
 
@@ -127,22 +127,22 @@ BreakpointManager* GsuDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<CallstackManager> GsuDebugger::GetCallstackManager()
+CallstackManager* GsuDebugger::GetCallstackManager()
 {
 	throw std::runtime_error("Call stack not supported for GSU");
 }
 
-shared_ptr<IAssembler> GsuDebugger::GetAssembler()
+IAssembler* GsuDebugger::GetAssembler()
 {
 	throw std::runtime_error("Assembler not supported for GSU");
 }
 
-shared_ptr<BaseEventManager> GsuDebugger::GetEventManager()
+BaseEventManager* GsuDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for GSU");
 }
 
-shared_ptr<CodeDataLogger> GsuDebugger::GetCodeDataLogger()
+CodeDataLogger* GsuDebugger::GetCodeDataLogger()
 {
 	return nullptr;
 }

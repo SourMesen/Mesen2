@@ -35,7 +35,7 @@ private:
 	unique_ptr<NesApu> _apu;
 	unique_ptr<NesMemoryManager> _memoryManager;
 	unique_ptr<BaseMapper> _mapper;
-	shared_ptr<NesControlManager> _controlManager;
+	unique_ptr<NesControlManager> _controlManager;
 	unique_ptr<NesSoundMixer> _mixer;
 
 	unique_ptr<HdPackData> _hdData;
@@ -77,7 +77,7 @@ public:
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 	void RunFrame() override;
-	shared_ptr<IControlManager> GetControlManager() override;
+	IControlManager* GetControlManager() override;
 	double GetFrameDelay() override;
 	double GetFps() override;
 	void RunSingleFrame() override;

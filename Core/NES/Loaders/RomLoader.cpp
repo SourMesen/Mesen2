@@ -106,7 +106,7 @@ RomData RomLoader::GetRomData()
 
 string RomLoader::FindMatchingRomInFile(string filePath, HashInfo hashInfo, int &iterationCount)
 {
-	shared_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filePath);
+	unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filePath);
 	if(reader) {
 		for(string file : reader->GetFileList(VirtualFile::RomExtensions)) {
 			RomLoader loader(true);

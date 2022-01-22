@@ -45,16 +45,16 @@ enum class ConsoleType;
 class Console final : public std::enable_shared_from_this<Console>, public IConsole
 {
 private:
-	shared_ptr<Cpu> _cpu;
-	shared_ptr<Ppu> _ppu;
-	shared_ptr<Spc> _spc;
-	shared_ptr<MemoryManager> _memoryManager;
-	shared_ptr<BaseCartridge> _cart;
-	shared_ptr<InternalRegisters> _internalRegisters;
-	shared_ptr<ControlManager> _controlManager;
-	shared_ptr<DmaController> _dmaController;
+	unique_ptr<Cpu> _cpu;
+	unique_ptr<Ppu> _ppu;
+	unique_ptr<Spc> _spc;
+	unique_ptr<MemoryManager> _memoryManager;
+	unique_ptr<BaseCartridge> _cart;
+	unique_ptr<InternalRegisters> _internalRegisters;
+	unique_ptr<ControlManager> _controlManager;
+	unique_ptr<DmaController> _dmaController;
 	
-	shared_ptr<Msu1> _msu1;
+	unique_ptr<Msu1> _msu1;
 	EmuSettings* _settings;
 	Emulator* _emu;
 
@@ -93,15 +93,15 @@ public:
 
 	void Serialize(Serializer& s) override;
 
-	shared_ptr<Cpu> GetCpu();
-	shared_ptr<Ppu> GetPpu();
-	shared_ptr<Spc> GetSpc();
-	shared_ptr<BaseCartridge> GetCartridge();
-	shared_ptr<MemoryManager> GetMemoryManager();
-	shared_ptr<InternalRegisters> GetInternalRegisters();
-	shared_ptr<IControlManager> GetControlManager() override;
-	shared_ptr<DmaController> GetDmaController();
-	shared_ptr<Msu1> GetMsu1();
+	Cpu* GetCpu();
+	Ppu* GetPpu();
+	Spc* GetSpc();
+	BaseCartridge* GetCartridge();
+	MemoryManager* GetMemoryManager();
+	InternalRegisters* GetInternalRegisters();
+	IControlManager* GetControlManager() override;
+	DmaController* GetDmaController();
+	Msu1* GetMsu1();
 	
 	Emulator* GetEmulator();
 	

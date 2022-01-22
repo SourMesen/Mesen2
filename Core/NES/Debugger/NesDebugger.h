@@ -38,11 +38,10 @@ class NesDebugger final : public IDebugger
 	BaseNesPpu* _ppu;
 	BaseMapper* _mapper;
 
-	shared_ptr<CodeDataLogger> _codeDataLogger;
-
-	shared_ptr<BaseEventManager> _eventManager;
-	shared_ptr<IAssembler> _assembler;
-	shared_ptr<CallstackManager> _callstackManager;
+	unique_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<BaseEventManager> _eventManager;
+	unique_ptr<IAssembler> _assembler;
+	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<NesTraceLogger> _traceLogger;
 	unique_ptr<StepRequest> _step;
@@ -72,10 +71,10 @@ public:
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;
-	shared_ptr<CallstackManager> GetCallstackManager() override;
-	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<BaseEventManager> GetEventManager() override;
-	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	CallstackManager* GetCallstackManager() override;
+	IAssembler* GetAssembler() override;
+	BaseEventManager* GetEventManager() override;
+	CodeDataLogger* GetCodeDataLogger() override;
 
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;

@@ -105,7 +105,7 @@ Multitap::Multitap(Console* console, uint8_t port, KeyMappingSet keyMappings1, K
 	_mappings[1] = keyMappings2.GetKeyMappingArray();
 	_mappings[2] = keyMappings3.GetKeyMappingArray();
 	_mappings[3] = keyMappings4.GetKeyMappingArray();
-	_internalRegs = console->GetInternalRegisters().get();
+	_internalRegs = console->GetInternalRegisters();
 }
 
 void Multitap::SetControllerState(uint8_t controllerNumber, ControlDeviceState state)

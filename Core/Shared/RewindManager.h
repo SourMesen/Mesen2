@@ -30,7 +30,7 @@ class RewindManager : public INotificationListener, public IInputProvider, publi
 private:
 	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
 
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	EmuSettings* _settings;
 	
 	bool _hasHistory;
@@ -60,7 +60,7 @@ private:
 	void ClearBuffer();
 
 public:
-	RewindManager(shared_ptr<Emulator> emu);
+	RewindManager(Emulator* emu);
 	virtual ~RewindManager();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

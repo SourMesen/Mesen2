@@ -23,12 +23,12 @@ Sa1::Sa1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	_console = console;
 	_emu = console->GetEmulator();
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 	_memoryType = SnesMemoryType::Register;
 	_lastAccessMemType = SnesMemoryType::PrgRom;
 	_openBus = 0;
-	_cart = _console->GetCartridge().get();
-	_snesCpu = _console->GetCpu().get();
+	_cart = _console->GetCartridge();
+	_snesCpu = _console->GetCpu();
 	
 	_iRam = new uint8_t[Sa1::InternalRamSize];
 	_emu->RegisterMemory(SnesMemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);

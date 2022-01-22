@@ -20,7 +20,7 @@ NecDsp::NecDsp(CoprocessorType type, Console* console, vector<uint8_t> &programR
 	_console = console;
 	_emu = console->GetEmulator();
 	_type = type;
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 	_memoryType = SnesMemoryType::Register;
 	MemoryMappings *mm = _memoryManager->GetMemoryMappings();
 	

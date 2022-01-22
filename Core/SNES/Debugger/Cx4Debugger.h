@@ -44,10 +44,10 @@ public:
 	void Step(int32_t stepCount, StepType type) override;
 
 	BreakpointManager* GetBreakpointManager() override;
-	shared_ptr<CallstackManager> GetCallstackManager() override;
-	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<BaseEventManager> GetEventManager() override;
-	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	CallstackManager* GetCallstackManager() override;
+	IAssembler* GetAssembler() override;
+	BaseEventManager* GetEventManager() override;
+	CodeDataLogger* GetCodeDataLogger() override;
 	ITraceLogger* GetTraceLogger() override;
 
 	BaseState& GetState() override;

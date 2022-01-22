@@ -16,7 +16,7 @@
 #include "Shared/NotificationManager.h"
 #include "RomFinder.h"
 
-GameClientConnection::GameClientConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, ClientConnectionData &connectionData) : GameConnection(emu, socket)
+GameClientConnection::GameClientConnection(Emulator* emu, unique_ptr<Socket> socket, ClientConnectionData &connectionData) : GameConnection(emu, std::move(socket))
 {
 	_connectionData = connectionData;
 	_shutdown = false;
@@ -38,7 +38,7 @@ void GameClientConnection::Shutdown()
 		DisableControllers();
 
 		if(_emu->IsRunning()) {
-			shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+			IControlManager* controlManager = _emu->GetControlManager();
 			if(controlManager) {
 				controlManager->UnregisterInputProvider(this);
 			}
@@ -144,7 +144,7 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 bool GameClientConnection::AttemptLoadGame(string filename, string sha1Hash)
 {
 	if(filename.size() > 0) {
-		if(!RomFinder::LoadMatchingRom(_emu.get(), filename, sha1Hash)) {
+		if(!RomFinder::LoadMatchingRom(_emu, filename, sha1Hash)) {
 			MessageManager::DisplayMessage("NetPlay", "CouldNotFindRom", filename);
 			return false;
 		} else {
@@ -216,7 +216,7 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 void GameClientConnection::InitControlDevice()
 {
 	//Pretend we are using port 0 (to use player 1's keybindings during netplay)
-	shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+	IControlManager* controlManager = _emu->GetControlManager();
 	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort);
 	if(device) {
 		ControllerType type = device->GetControllerType();

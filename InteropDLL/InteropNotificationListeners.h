@@ -14,7 +14,7 @@ class InteropNotificationListeners
 	vector<shared_ptr<INotificationListener>> _externalNotificationListeners;
 
 public:
-	INotificationListener* RegisterNotificationCallback(NotificationListenerCallback callback, shared_ptr<Emulator> emu)
+	INotificationListener* RegisterNotificationCallback(NotificationListenerCallback callback, Emulator* emu)
 	{
 		auto lock = _externalNotificationListenerLock.AcquireSafe();
 		auto listener = shared_ptr<INotificationListener>(new InteropNotificationListener(callback));

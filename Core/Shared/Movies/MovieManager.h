@@ -3,8 +3,8 @@
 #include "Shared/MessageManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Movies/MovieTypes.h"
+#include "Shared/Movies/MovieRecorder.h"
 
-class MovieRecorder;
 class VirtualFile;
 class Emulator;
 
@@ -18,12 +18,12 @@ public:
 class MovieManager
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	shared_ptr<IMovie> _player;
 	shared_ptr<MovieRecorder> _recorder;
 
 public:
-	MovieManager(shared_ptr<Emulator> emu);
+	MovieManager(Emulator* emu);
 
 	void Record(RecordMovieOptions options);
 	void Play(VirtualFile file, bool silent = false);

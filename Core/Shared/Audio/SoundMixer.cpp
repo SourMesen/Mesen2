@@ -118,7 +118,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		}
 	}
 
-	shared_ptr<RewindManager> rewindManager = _emu->GetRewindManager();
+	RewindManager* rewindManager = _emu->GetRewindManager();
 	if(!_emu->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
 		bool isRecording = _waveRecorder || _emu->GetVideoRenderer()->IsRecording();
 		if(isRecording) {

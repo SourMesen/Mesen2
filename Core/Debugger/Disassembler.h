@@ -27,7 +27,7 @@ private:
 	IConsole *_console;
 	EmuSettings* _settings;
 	Debugger *_debugger;
-	shared_ptr<LabelManager> _labelManager;
+	LabelManager* _labelManager;
 	MemoryDumper *_memoryDumper;
 
 	DisassemblerSource _sources[(int)SnesMemoryType::Register] = {};

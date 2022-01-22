@@ -27,7 +27,7 @@ private:
 	std::unordered_map<string, std::unordered_set<int>> _availableModesByOpName;
 	bool _needSecondPass = false;
 
-	shared_ptr<LabelManager> _labelManager;
+	LabelManager* _labelManager;
 	void ProcessLine(string code, uint32_t& instructionAddress, vector<int16_t>& output, std::unordered_map<string, uint32_t>& labels, bool firstPass, std::unordered_map<string, uint32_t>& currentPassLabels);
 	AssemblerSpecialCodes GetLineData(std::smatch match, SnesLineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass);
 	AssemblerSpecialCodes GetAddrModeAndOperandSize(SnesLineData& lineData, std::unordered_map<string, uint32_t>& labels, bool firstPass);
@@ -36,7 +36,7 @@ private:
 	bool IsOpModeAvailable(string& opCode, AddrMode mode);
 
 public:
-	SnesAssembler(shared_ptr<LabelManager> labelManager);
+	SnesAssembler(LabelManager* labelManager);
 	virtual ~SnesAssembler();
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);

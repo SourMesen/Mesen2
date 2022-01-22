@@ -20,9 +20,9 @@ SuperGameboy::SuperGameboy(Console* console, Gameboy* gameboy) : BaseCoprocessor
 
 	_console = console;
 	_emu = console->GetEmulator();
-	_memoryManager = console->GetMemoryManager().get();
-	_cart = _console->GetCartridge().get();
-	_spc = _console->GetSpc().get();
+	_memoryManager = console->GetMemoryManager();
+	_cart = _console->GetCartridge();
+	_spc = _console->GetSpc();
 	
 	_gameboy = gameboy;
 	_ppu = gameboy->GetPpu();

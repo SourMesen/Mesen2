@@ -26,7 +26,7 @@ private:
 	std::unordered_map<string, unordered_set<int>> _availableModesByOpName;
 	bool _needSecondPass = false;
 
-	shared_ptr<LabelManager> _labelManager;
+	LabelManager* _labelManager;
 	void ProcessLine(string code, uint32_t &instructionAddress, vector<int16_t>& output, unordered_map<string, uint16_t> &labels, bool firstPass, unordered_map<string, uint16_t> &currentPassLabels);
 	AssemblerSpecialCodes GetLineData(std::smatch match, NesLineData& lineData, unordered_map<string, uint16_t> &labels, bool firstPass);
 	AssemblerSpecialCodes GetAddrModeAndOperandSize(NesLineData& lineData, unordered_map<string, uint16_t> &labels, bool firstPass);
@@ -35,7 +35,7 @@ private:
 	bool IsOpModeAvailable(string &opCode, NesAddrMode mode);
 
 public:
-	NesAssembler(shared_ptr<LabelManager> labelManager);
+	NesAssembler(LabelManager* labelManager);
 	virtual ~NesAssembler() = default;
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);

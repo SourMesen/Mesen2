@@ -4,7 +4,7 @@
 #include "Core/Shared/ShortcutKeyHandler.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 
 static string _returnString;
 

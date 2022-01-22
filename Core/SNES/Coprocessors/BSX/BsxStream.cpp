@@ -13,7 +13,7 @@ BsxStream::BsxStream()
 void BsxStream::Reset(Console* console, int64_t resetDate)
 {
 	_console = console;
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 
 	_file.close();
 

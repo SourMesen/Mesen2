@@ -18,18 +18,18 @@
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {
 	_debugger = debugger;
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 
 	Console* console = (Console*)debugger->GetConsole();
-	_spc = console->GetSpc().get();
-	_memoryManager = console->GetMemoryManager().get();
+	_spc = console->GetSpc();
+	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
 
-	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
+	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Cpu).get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Cpu)));
 	_step.reset(new StepRequest());
 }
 
@@ -155,9 +155,9 @@ void SpcDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-shared_ptr<CallstackManager> SpcDebugger::GetCallstackManager()
+CallstackManager* SpcDebugger::GetCallstackManager()
 {
-	return _callstackManager;
+	return _callstackManager.get();
 }
 
 BreakpointManager* SpcDebugger::GetBreakpointManager()
@@ -165,17 +165,17 @@ BreakpointManager* SpcDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<IAssembler> SpcDebugger::GetAssembler()
+IAssembler* SpcDebugger::GetAssembler()
 {
 	throw std::runtime_error("Assembler not supported for SPC");
 }
 
-shared_ptr<BaseEventManager> SpcDebugger::GetEventManager()
+BaseEventManager* SpcDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for SPC");
 }
 
-shared_ptr<CodeDataLogger> SpcDebugger::GetCodeDataLogger()
+CodeDataLogger* SpcDebugger::GetCodeDataLogger()
 {
 	return nullptr;
 }

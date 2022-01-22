@@ -16,7 +16,7 @@ Spc7110::Spc7110(Console* console, bool useRtc) : BaseCoprocessor(SnesMemoryType
 {
 	_console = console;
 	_emu = console->GetEmulator();
-	_cart = console->GetCartridge().get();
+	_cart = console->GetCartridge();
 	_useRtc = useRtc;
 
 	MemoryMappings* mappings = console->GetMemoryManager()->GetMemoryMappings();

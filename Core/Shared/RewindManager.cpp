@@ -8,7 +8,7 @@
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Interfaces/IControlManager.h"
 
-RewindManager::RewindManager(shared_ptr<Emulator> emu)
+RewindManager::RewindManager(Emulator* emu)
 {
 	_emu = emu;
 	_settings = emu->GetSettings();

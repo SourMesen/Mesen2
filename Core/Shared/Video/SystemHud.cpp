@@ -8,7 +8,7 @@
 SystemHud::SystemHud(Emulator* emu)
 {
 	_emu = emu;
-	_hud = emu->GetDebugHud().get();
+	_hud = emu->GetDebugHud();
 	MessageManager::RegisterMessageManager(this);
 }
 

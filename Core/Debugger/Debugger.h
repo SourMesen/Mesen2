@@ -60,12 +60,12 @@ private:
 	vector<CpuType> _cpuTypes;
 	ConsoleType _consoleType = ConsoleType::Snes;
 
-	shared_ptr<ScriptManager> _scriptManager;
-	shared_ptr<MemoryDumper> _memoryDumper;
-	shared_ptr<MemoryAccessCounter> _memoryAccessCounter;
-	shared_ptr<CodeDataLogger> _codeDataLogger;
-	shared_ptr<Disassembler> _disassembler;
-	shared_ptr<LabelManager> _labelManager;
+	unique_ptr<ScriptManager> _scriptManager;
+	unique_ptr<MemoryDumper> _memoryDumper;
+	unique_ptr<MemoryAccessCounter> _memoryAccessCounter;
+	unique_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<Disassembler> _disassembler;
+	unique_ptr<LabelManager> _labelManager;
 
 	unique_ptr<TraceLogFileSaver> _traceLogSaver;
 
@@ -142,15 +142,15 @@ public:
 	TraceLogFileSaver* GetTraceLogFileSaver();
 	ITraceLogger* GetTraceLogger(CpuType cpuType);
 	MemoryDumper* GetMemoryDumper();
-	shared_ptr<MemoryAccessCounter> GetMemoryAccessCounter();
-	shared_ptr<CodeDataLogger> GetCodeDataLogger(CpuType cpuType);
-	shared_ptr<Disassembler> GetDisassembler();
+	MemoryAccessCounter* GetMemoryAccessCounter();
+	CodeDataLogger* GetCodeDataLogger(CpuType cpuType);
+	Disassembler* GetDisassembler();
 	PpuTools* GetPpuTools(CpuType cpuType);
-	shared_ptr<BaseEventManager> GetEventManager(CpuType cpuType);
-	shared_ptr<LabelManager> GetLabelManager();
-	shared_ptr<ScriptManager> GetScriptManager();
-	shared_ptr<CallstackManager> GetCallstackManager(CpuType cpuType);
+	BaseEventManager* GetEventManager(CpuType cpuType);
+	LabelManager* GetLabelManager();
+	ScriptManager* GetScriptManager();
+	CallstackManager* GetCallstackManager(CpuType cpuType);
 	IConsole* GetConsole();
 	Emulator* GetEmulator();
-	shared_ptr<IAssembler> GetAssembler(CpuType cpuType);
+	IAssembler* GetAssembler(CpuType cpuType);
 };

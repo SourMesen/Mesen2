@@ -146,7 +146,7 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 
 	pngBuffer = frameBuffer;
 
-	shared_ptr<ScaleFilter> scaleFilter = ScaleFilter::GetScaleFilter(filterType);
+	unique_ptr<ScaleFilter> scaleFilter = ScaleFilter::GetScaleFilter(filterType);
 	if(scaleFilter) {
 		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameInfo = scaleFilter->GetFrameInfo(frameInfo);

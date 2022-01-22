@@ -8,11 +8,11 @@ class Emulator;
 class BaseRenderer
 {
 protected:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
 	
-	BaseRenderer(shared_ptr<Emulator> emu, bool registerAsMessageManager);
+	BaseRenderer(Emulator* emu, bool registerAsMessageManager);
 	virtual ~BaseRenderer();
 };

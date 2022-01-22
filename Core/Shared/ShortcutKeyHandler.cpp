@@ -17,6 +17,7 @@ ShortcutKeyHandler::ShortcutKeyHandler(Emulator* emu)
 	_keySetIndex = 0;
 	_isKeyUp = false;
 	_repeatStarted = false;
+	_needRepeat = false;
 
 	_stopThread = false;
 	_thread = std::thread([=]() {
@@ -99,20 +100,15 @@ bool ShortcutKeyHandler::DetectKeyRelease(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::ProcessRunSingleFrame()
 {
-	shared_ptr<Timer> timer = _runSingleFrameRepeatTimer;
-	if(!timer) {
-		timer.reset(new Timer());
-		_runSingleFrameRepeatTimer = timer;
-	}
-	timer->Reset();
-
+	_runSingleFrameRepeatTimer.Reset();
+	_needRepeat = true;
 	_emu->PauseOnNextFrame();
 }
 
 bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 {
 	bool isRunning = _emu->IsRunning();
-	bool isNetplayClient = GameClient::Connected();
+	bool isNetplayClient = _emu->GetGameClient()->Connected();
 	bool isMoviePlaying = _emu->GetMovieManager()->Playing();
 	bool isMovieRecording = _emu->GetMovieManager()->Recording();
 	bool isMovieActive = isMoviePlaying || isMovieRecording;
@@ -261,8 +257,8 @@ void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
 		case EmulatorShortcut::Rewind: _emu->GetRewindManager()->StopRewinding(); break;
 		
 		case EmulatorShortcut::RunSingleFrame:
-			_runSingleFrameRepeatTimer.reset();
 			_repeatStarted = false;
+			_needRepeat = false;
 			break;
 	}
 }
@@ -323,9 +319,8 @@ void ShortcutKeyHandler::ProcessKeys()
 		_lastPressedKeys = _pressedKeys;
 	}
 
-	shared_ptr<Timer> timer = _runSingleFrameRepeatTimer;
-	if(timer) {
-		double elapsedMs = timer->GetElapsedMS();
+	if(_needRepeat) {
+		double elapsedMs = _runSingleFrameRepeatTimer.GetElapsedMS();
 		if((_repeatStarted && elapsedMs >= 50) || (!_repeatStarted && elapsedMs >= 500)) {
 			//Over 500ms has elapsed since the key was first pressed, or over 50ms since repeat mode started (20fps)
 			//In this case, run another frame and pause again.

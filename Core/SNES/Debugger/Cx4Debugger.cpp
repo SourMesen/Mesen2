@@ -23,16 +23,16 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	Console* console = (Console*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu).get();
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
+	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Cpu);
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_cx4 = console->GetCartridge()->GetCx4();
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_traceLogger.reset(new Cx4TraceLogger(debugger, console->GetPpu().get(), _memoryManager));
+	_traceLogger.reset(new Cx4TraceLogger(debugger, console->GetPpu(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4, debugger->GetEventManager(CpuType::Cpu).get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Cx4, debugger->GetEventManager(CpuType::Cpu)));
 	_step.reset(new StepRequest());
 }
 
@@ -124,22 +124,22 @@ BreakpointManager* Cx4Debugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<CallstackManager> Cx4Debugger::GetCallstackManager()
+CallstackManager* Cx4Debugger::GetCallstackManager()
 {
 	throw std::runtime_error("Call stack not supported for CX4");
 }
 
-shared_ptr<IAssembler> Cx4Debugger::GetAssembler()
+IAssembler* Cx4Debugger::GetAssembler()
 {
 	throw std::runtime_error("Assembler not supported for CX4");
 }
 
-shared_ptr<BaseEventManager> Cx4Debugger::GetEventManager()
+BaseEventManager* Cx4Debugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for CX4");
 }
 
-shared_ptr<CodeDataLogger> Cx4Debugger::GetCodeDataLogger()
+CodeDataLogger* Cx4Debugger::GetCodeDataLogger()
 {
 	return nullptr;
 }

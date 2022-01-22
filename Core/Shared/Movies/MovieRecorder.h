@@ -15,7 +15,7 @@ class MovieRecorder : public INotificationListener, public IInputRecorder, publi
 private:
 	static const uint32_t MovieFormatVersion = 1;
 
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	string _filename;
 	string _author;
 	string _description;
@@ -32,7 +32,7 @@ private:
 	void WriteBool(stringstream &out, string name, bool enabled);
 
 public:
-	MovieRecorder(shared_ptr<Emulator> emu);
+	MovieRecorder(Emulator* emu);
 	virtual ~MovieRecorder();
 
 	bool Record(RecordMovieOptions options);

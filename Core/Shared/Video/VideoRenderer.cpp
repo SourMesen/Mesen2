@@ -9,7 +9,7 @@
 #include "Utilities/Video/AviRecorder.h"
 #include "Utilities/Video/GifRecorder.h"
 
-VideoRenderer::VideoRenderer(shared_ptr<Emulator> emu)
+VideoRenderer::VideoRenderer(Emulator* emu)
 {
 	_emu = emu;
 	_stopFlag = false;	

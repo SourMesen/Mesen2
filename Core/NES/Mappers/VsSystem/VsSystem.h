@@ -64,7 +64,7 @@ protected:
 		uint8_t chrOuter = _console->IsVsMainConsole() ? 0 : 2;
 		SelectCHRPage(0, 0 | chrOuter);
 
-		_controlManager = dynamic_cast<VsControlManager*>(_console->GetControlManager().get());
+		_controlManager = (VsControlManager*)_console->GetControlManager();
 	}
 
 	void Reset(bool softReset) override

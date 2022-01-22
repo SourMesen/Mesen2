@@ -17,6 +17,6 @@ public:
 
 	void GetStateData(stringstream &stateData);
 
-	void LoadState(shared_ptr<Emulator> &emu);
-	void SaveState(shared_ptr<Emulator> &emu);
+	void LoadState(Emulator* emu);
+	void SaveState(Emulator* emu);
 };

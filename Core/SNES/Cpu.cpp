@@ -16,8 +16,8 @@ Cpu::Cpu(Console *console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
-	_memoryManager = console->GetMemoryManager().get();
-	_dmaController = console->GetDmaController().get();
+	_memoryManager = console->GetMemoryManager();
+	_dmaController = console->GetDmaController();
 }
 #endif
 

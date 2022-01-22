@@ -24,5 +24,5 @@ public:
 	uint32_t* ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, uint32_t height, double scanlineIntensity);
 	FrameInfo GetFrameInfo(FrameInfo baseFrameInfo);
 
-	static shared_ptr<ScaleFilter> GetScaleFilter(VideoFilterType filter);
+	static unique_ptr<ScaleFilter> GetScaleFilter(VideoFilterType filter);
 };

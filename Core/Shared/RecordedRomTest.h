@@ -11,7 +11,7 @@ class Emulator;
 class RecordedRomTest : public INotificationListener, public std::enable_shared_from_this<RecordedRomTest>
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	bool _recording = false;
 	bool _runningTest = false;
@@ -34,7 +34,7 @@ private:
 	void Save();
 
 public:
-	RecordedRomTest(shared_ptr<Emulator> console = nullptr);
+	RecordedRomTest(Emulator* console = nullptr);
 	virtual ~RecordedRomTest();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

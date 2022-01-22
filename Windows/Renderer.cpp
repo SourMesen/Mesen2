@@ -11,7 +11,7 @@
 
 using namespace DirectX;
 
-Renderer::Renderer(shared_ptr<Emulator> emu, HWND hWnd, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager)
+Renderer::Renderer(Emulator* emu, HWND hWnd, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager)
 {
 	_hWnd = hWnd;
 
@@ -20,7 +20,7 @@ Renderer::Renderer(shared_ptr<Emulator> emu, HWND hWnd, bool registerAsMessageMa
 
 Renderer::~Renderer()
 {
-	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
+	VideoRenderer* videoRenderer = _emu->GetVideoRenderer();
 	if(videoRenderer) {
 		videoRenderer->UnregisterRenderingDevice(this);
 	}

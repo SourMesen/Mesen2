@@ -99,7 +99,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	}
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	shared_ptr<CodeDataLogger> cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
+	CodeDataLogger* cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
 	if(cdl) {
 		cdl->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());
 	}
@@ -123,7 +123,7 @@ Debugger::~Debugger()
 void Debugger::Release()
 {
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	shared_ptr<CodeDataLogger> cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
+	CodeDataLogger* cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
 	if(cdl) {
 		cdl->SaveCdlFile(cdlFile, _emu->GetCrc32());
 	}
@@ -283,7 +283,7 @@ void Debugger::ProcessEvent(EventType type)
 
 		case EventType::StartFrame: {
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)_mainCpuType);
-			shared_ptr<BaseEventManager> evtMgr = GetEventManager(_mainCpuType);
+			BaseEventManager* evtMgr = GetEventManager(_mainCpuType);
 			if(evtMgr) {
 				evtMgr->ClearFrameEvents();
 			}
@@ -530,7 +530,7 @@ void Debugger::RefreshCodeCache()
 
 void Debugger::RebuildPrgCache(CpuType cpuType)
 {
-	shared_ptr<CodeDataLogger> cdl = GetCodeDataLogger(cpuType);
+	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
 	if(!cdl) {
 		return;
 	}
@@ -549,7 +549,7 @@ void Debugger::RebuildPrgCache(CpuType cpuType)
 void Debugger::GetCdlData(uint32_t offset, uint32_t length, SnesMemoryType memoryType, uint8_t* cdlData)
 {
 	CpuType cpuType = DebugUtilities::ToCpuType(memoryType);
-	shared_ptr<CodeDataLogger> cdl = GetCodeDataLogger(cpuType);
+	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
 	SnesMemoryType prgType = cdl->GetPrgMemoryType();
 	if(memoryType == prgType) {
 		cdl->GetCdlData(offset, length, cdlData);
@@ -693,12 +693,12 @@ MemoryDumper* Debugger::GetMemoryDumper()
 	return _memoryDumper.get();
 }
 
-shared_ptr<MemoryAccessCounter> Debugger::GetMemoryAccessCounter()
+MemoryAccessCounter* Debugger::GetMemoryAccessCounter()
 {
-	return _memoryAccessCounter;
+	return _memoryAccessCounter.get();
 }
 
-shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger(CpuType cpuType)
+CodeDataLogger* Debugger::GetCodeDataLogger(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetCodeDataLogger();
@@ -706,9 +706,9 @@ shared_ptr<CodeDataLogger> Debugger::GetCodeDataLogger(CpuType cpuType)
 	throw std::runtime_error("GetCodeDataLogger() - Unsupported CPU type");
 }
 
-shared_ptr<Disassembler> Debugger::GetDisassembler()
+Disassembler* Debugger::GetDisassembler()
 {
-	return _disassembler;
+	return _disassembler.get();
 }
 
 PpuTools* Debugger::GetPpuTools(CpuType cpuType)
@@ -719,7 +719,7 @@ PpuTools* Debugger::GetPpuTools(CpuType cpuType)
 	return nullptr;
 }
 
-shared_ptr<BaseEventManager> Debugger::GetEventManager(CpuType cpuType)
+BaseEventManager* Debugger::GetEventManager(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetEventManager();
@@ -727,17 +727,17 @@ shared_ptr<BaseEventManager> Debugger::GetEventManager(CpuType cpuType)
 	return nullptr;
 }
 
-shared_ptr<LabelManager> Debugger::GetLabelManager()
+LabelManager* Debugger::GetLabelManager()
 {
-	return _labelManager;
+	return _labelManager.get();
 }
 
-shared_ptr<ScriptManager> Debugger::GetScriptManager()
+ScriptManager* Debugger::GetScriptManager()
 {
-	return _scriptManager;
+	return _scriptManager.get();
 }
 
-shared_ptr<CallstackManager> Debugger::GetCallstackManager(CpuType cpuType)
+CallstackManager* Debugger::GetCallstackManager(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetCallstackManager();
@@ -755,7 +755,7 @@ Emulator* Debugger::GetEmulator()
 	return _emu;
 }
 
-shared_ptr<IAssembler> Debugger::GetAssembler(CpuType cpuType)
+IAssembler* Debugger::GetAssembler(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetAssembler();

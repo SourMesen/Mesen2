@@ -20,7 +20,7 @@ class NesMemoryManager : public ISerializable
 		static constexpr int VRAMSize = 0x4000;
 		
 		Emulator* _emu = nullptr;
-		shared_ptr<CheatManager> _cheatManager;
+		CheatManager* _cheatManager;
 		NesConsole* _console;
 		BaseMapper* _mapper;
 

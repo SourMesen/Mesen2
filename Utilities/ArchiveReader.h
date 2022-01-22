@@ -23,6 +23,6 @@ public:
 
 	virtual bool ExtractFile(string filename, vector<uint8_t> &output) = 0;
 
-	static shared_ptr<ArchiveReader> GetReader(std::istream &in);
-	static shared_ptr<ArchiveReader> GetReader(string filepath);
+	static unique_ptr<ArchiveReader> GetReader(std::istream &in);
+	static unique_ptr<ArchiveReader> GetReader(string filepath);
 };

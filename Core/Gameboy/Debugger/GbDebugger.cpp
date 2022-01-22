@@ -29,8 +29,8 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
 
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 
 	if(_emu->GetConsoleType() == ConsoleType::Snes) {
 		_gameboy = ((Console*)debugger->GetConsole())->GetCartridge()->GetGameboy();
@@ -275,24 +275,24 @@ void GbDebugger::ProcessPpuCycle()
 	}
 }
 
-shared_ptr<BaseEventManager> GbDebugger::GetEventManager()
+BaseEventManager* GbDebugger::GetEventManager()
 {
-	return _eventManager;
+	return _eventManager.get();
 }
 
-shared_ptr<IAssembler> GbDebugger::GetAssembler()
+IAssembler* GbDebugger::GetAssembler()
 {
-	return _assembler;
+	return _assembler.get();
 }
 
-shared_ptr<CallstackManager> GbDebugger::GetCallstackManager()
+CallstackManager* GbDebugger::GetCallstackManager()
 {
-	return _callstackManager;
+	return _callstackManager.get();
 }
 
-shared_ptr<CodeDataLogger> GbDebugger::GetCodeDataLogger()
+CodeDataLogger* GbDebugger::GetCodeDataLogger()
 {
-	return _codeDataLogger;
+	return _codeDataLogger.get();
 }
 
 BreakpointManager* GbDebugger::GetBreakpointManager()

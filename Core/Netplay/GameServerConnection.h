@@ -7,12 +7,12 @@
 #include "Shared/ControlDeviceState.h"
 
 class HandShakeMessage;
+class GameServer;
 
 class GameServerConnection : public GameConnection, public INotificationListener
 {
 private:
-	static GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount];
-
+	GameServer* _server;
 	list<ControlDeviceState> _inputData;
 	int _controllerPort = 0;
 	string _connectionHash;
@@ -28,15 +28,11 @@ private:
 
 	void ProcessHandshakeResponse(HandShakeMessage* message);
 
-	static void RegisterNetPlayDevice(GameServerConnection* connection, uint8_t port);
-	static void UnregisterNetPlayDevice(GameServerConnection* device);
-	static uint8_t GetFirstFreeControllerPort();
-
 protected:
 	void ProcessMessage(NetMessage* message) override;
 	
 public:
-	GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, string serverPassword);
+	GameServerConnection(GameServer* gameServer, Emulator* emu, unique_ptr<Socket> socket, string serverPassword);
 	virtual ~GameServerConnection();
 
 	ControlDeviceState GetState();
@@ -45,6 +41,4 @@ public:
 	uint8_t GetControllerPort();
 
 	virtual void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
-
-	static GameServerConnection* GetNetPlayDevice(uint8_t port);
 };

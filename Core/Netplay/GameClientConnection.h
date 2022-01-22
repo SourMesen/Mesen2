@@ -45,7 +45,7 @@ protected:
 	void ProcessMessage(NetMessage* message) override;
 
 public:
-	GameClientConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, ClientConnectionData &connectionData);
+	GameClientConnection(Emulator* emu, unique_ptr<Socket> socket, ClientConnectionData &connectionData);
 	virtual ~GameClientConnection();
 
 	void Shutdown();

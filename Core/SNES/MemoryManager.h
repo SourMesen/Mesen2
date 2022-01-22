@@ -35,8 +35,8 @@ private:
 	Console* _console;
 	Emulator* _emu;
 
-	shared_ptr<RegisterHandlerA> _registerHandlerA;
-	shared_ptr<RegisterHandlerB> _registerHandlerB;
+	unique_ptr<RegisterHandlerA> _registerHandlerA;
+	unique_ptr<RegisterHandlerB> _registerHandlerB;
 
 	InternalRegisters *_regs;
 	Ppu* _ppu;

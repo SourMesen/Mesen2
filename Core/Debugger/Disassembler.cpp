@@ -122,7 +122,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	AddressInfo prevAddrInfo = {};
 	int byteCounter = 0;
 	
-	shared_ptr<CodeDataLogger> cdl = _debugger->GetCodeDataLogger(cpuType);
+	CodeDataLogger* cdl = _debugger->GetCodeDataLogger(cpuType);
 	SnesMemoryType cdlMemType = cdl->GetPrgMemoryType();
 
 	AddressInfo relAddress = {};
@@ -345,7 +345,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 					state.PC = (uint16_t)row.CpuAddress;
 					state.K = (row.CpuAddress >> 16);
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType).get();
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(src.Data + row.Address.Address, state.PS, lineCpuType);
 					} else {
@@ -454,7 +454,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Sne
 			}
 
 			string text;
-			disInfo.GetDisassembly(text, row.CpuAddress, _labelManager.get(), _settings);
+			disInfo.GetDisassembly(text, row.CpuAddress, _labelManager, _settings);
 			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
 
 			disInfo.GetByteCode(data.ByteCode);

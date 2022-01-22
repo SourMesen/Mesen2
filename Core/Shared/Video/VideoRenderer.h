@@ -14,7 +14,7 @@ enum class VideoCodec;
 class VideoRenderer
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	AutoResetEvent _waitForRender;
 	unique_ptr<std::thread> _renderThread;
@@ -30,7 +30,7 @@ private:
 	void RenderThread();
 
 public:
-	VideoRenderer(shared_ptr<Emulator> emu);
+	VideoRenderer(Emulator* emu);
 	~VideoRenderer();
 
 	FrameInfo GetRendererSize();

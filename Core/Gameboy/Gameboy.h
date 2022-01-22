@@ -36,7 +36,7 @@ private:
 	unique_ptr<GbCart> _cart;
 	unique_ptr<GbTimer> _timer;
 	unique_ptr<GbDmaController> _dmaController;
-	shared_ptr<GbControlManager> _controlManager;
+	unique_ptr<GbControlManager> _controlManager;
 
 	GameboyModel _model = GameboyModel::Auto;
 
@@ -108,7 +108,7 @@ public:
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 	void RunFrame() override;
-	shared_ptr<IControlManager> GetControlManager() override;
+	IControlManager* GetControlManager() override;
 	ConsoleRegion GetRegion() override;
 	ConsoleType GetConsoleType() override;
 	double GetFrameDelay() override;

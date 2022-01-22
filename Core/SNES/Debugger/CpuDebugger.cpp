@@ -37,15 +37,15 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 	_debugger = debugger;
 	Console* console = (Console*)debugger->GetConsole();
 	_console = console;
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
-	_cpu = console->GetCpu().get();
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
+	_cpu = console->GetCpu();
 	_sa1 = console->GetCartridge()->GetSa1();
 	_settings = debugger->GetEmulator()->GetSettings();
-	_memoryManager = console->GetMemoryManager().get();
-	_cart = console->GetCartridge().get();
-	_spc = console->GetSpc().get();
-	_ppu = console->GetPpu().get();
+	_memoryManager = console->GetMemoryManager();
+	_cart = console->GetCartridge();
+	_spc = console->GetSpc();
+	_ppu = console->GetPpu();
 	_traceLogger.reset(new SnesCpuTraceLogger(debugger, cpuType, _ppu, _memoryManager));
 	_ppuTools.reset(new SnesPpuTools(debugger, debugger->GetEmulator()));
 	
@@ -55,13 +55,11 @@ CpuDebugger::CpuDebugger(Debugger* debugger, CpuType cpuType)
 		_memoryMappings = _sa1->GetMemoryMappings();
 	}
 
-	if(cpuType == CpuType::Sa1) {
-		_codeDataLogger = _debugger->GetCodeDataLogger(CpuType::Cpu);
-	} else {
+	if(cpuType == CpuType::Cpu) {
 		_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::PrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Cpu));
 	}
 
-	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu().get(), _memoryManager, console->GetDmaController().get()));
+	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
@@ -316,9 +314,9 @@ bool CpuDebugger::IsRegister(uint32_t addr)
 	return _cpuType == CpuType::Cpu && _memoryManager->IsRegister(addr);
 }
 
-shared_ptr<CallstackManager> CpuDebugger::GetCallstackManager()
+CallstackManager* CpuDebugger::GetCallstackManager()
 {
-	return _callstackManager;
+	return _callstackManager.get();
 }
 
 ITraceLogger* CpuDebugger::GetTraceLogger()
@@ -331,19 +329,23 @@ BreakpointManager* CpuDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<IAssembler> CpuDebugger::GetAssembler()
+IAssembler* CpuDebugger::GetAssembler()
 {
-	return _assembler;
+	return _assembler.get();
 }
 
-shared_ptr<BaseEventManager> CpuDebugger::GetEventManager()
+BaseEventManager* CpuDebugger::GetEventManager()
 {
-	return _eventManager;
+	return _eventManager.get();
 }
 
-shared_ptr<CodeDataLogger> CpuDebugger::GetCodeDataLogger()
+CodeDataLogger* CpuDebugger::GetCodeDataLogger()
 {
-	return _codeDataLogger;
+	if(_cpuType == CpuType::Sa1) {
+		return _debugger->GetCodeDataLogger(CpuType::Cpu);
+	} else {
+		return _codeDataLogger.get();
+	}
 }
 
 PpuTools* CpuDebugger::GetPpuTools()

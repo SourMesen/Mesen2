@@ -447,9 +447,9 @@ void Gameboy::ProcessEndOfFrame()
 	_controlManager->UpdateInputState();
 }
 
-shared_ptr<IControlManager> Gameboy::GetControlManager()
+IControlManager* Gameboy::GetControlManager()
 {
-	return _controlManager;
+	return _controlManager.get();
 }
 
 ConsoleType Gameboy::GetConsoleType()

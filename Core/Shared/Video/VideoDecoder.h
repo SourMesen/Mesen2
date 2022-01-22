@@ -15,7 +15,7 @@ class Emulator;
 class VideoDecoder
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	uint16_t *_ppuOutputBuffer = nullptr;
 	void* _frameData = nullptr;
@@ -39,7 +39,7 @@ private:
 
 	VideoFilterType _videoFilterType = VideoFilterType::None;
 	unique_ptr<BaseVideoFilter> _videoFilter;
-	shared_ptr<ScaleFilter> _scaleFilter;
+	unique_ptr<ScaleFilter> _scaleFilter;
 	//shared_ptr<RotateFilter> _rotateFilter;
 
 	void UpdateVideoFilter();
@@ -47,8 +47,10 @@ private:
 	void DecodeThread();
 
 public:
-	VideoDecoder(shared_ptr<Emulator> console);
+	VideoDecoder(Emulator* console);
 	~VideoDecoder();
+
+	void Init();
 
 	void DecodeFrame(bool synchronous = false);
 	void TakeScreenshot();

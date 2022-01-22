@@ -5,7 +5,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 
-BaseRenderer::BaseRenderer(shared_ptr<Emulator> emu, bool registerAsMessageManager)
+BaseRenderer::BaseRenderer(Emulator* emu, bool registerAsMessageManager)
 {
 	_emu = emu;
 

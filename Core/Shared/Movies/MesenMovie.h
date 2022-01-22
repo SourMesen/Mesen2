@@ -13,10 +13,10 @@ struct CheatCode;
 class MesenMovie : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 
 	VirtualFile _movieFile;
-	shared_ptr<ZipReader> _reader;
+	unique_ptr<ZipReader> _reader;
 	bool _playing = false;
 	size_t _deviceIndex = 0;
 	uint32_t _lastPollCounter = 0;
@@ -41,7 +41,7 @@ private:
 	bool LoadCheat(string cheatData, CheatCode &code);
 
 public:
-	MesenMovie(shared_ptr<Emulator> emu, bool silent);
+	MesenMovie(Emulator* emu, bool silent);
 	virtual ~MesenMovie();
 
 	bool Play(VirtualFile &file) override;

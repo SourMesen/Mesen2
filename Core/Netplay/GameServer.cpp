@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include <thread>
-using std::thread;
-
 #include "Netplay/GameServer.h"
+#include "Netplay/GameServerConnection.h"
 #include "Netplay/PlayerListMessage.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
@@ -11,40 +9,22 @@ using std::thread;
 #include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
 
-shared_ptr<GameServer> GameServer::Instance;
-
-GameServer::GameServer(shared_ptr<Emulator> emu, uint16_t listenPort, string password)
+GameServer::GameServer(Emulator* emu)
 {
 	_emu = emu;
 	_stop = false;
-	_port = listenPort;
-	_password = password;
+	_initialized = false;
 	_hostControllerPort = 0;
-
-	//If a game is already running, register ourselves as an input recorder/provider right away
-	RegisterServerInput();
 }
 
 GameServer::~GameServer()
 {
-	_stop = true;
-	_serverThread->join();
-
-	Stop();
-	
-	if(_emu->IsRunning()) {
-		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
-		if(controlManager) {
-			controlManager->UnregisterInputRecorder(this);
-			controlManager->UnregisterInputProvider(this);
-		}
-	}
 }
 
 void GameServer::RegisterServerInput()
 {
 	if(_emu->IsRunning()) {
-		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+		IControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			controlManager->RegisterInputRecorder(this);
 			controlManager->RegisterInputProvider(this);
@@ -55,11 +35,9 @@ void GameServer::RegisterServerInput()
 void GameServer::AcceptConnections()
 {
 	while(true) {
-		shared_ptr<Socket> socket = _listener->Accept();
+		unique_ptr<Socket> socket = _listener->Accept();
 		if(!socket->ConnectionError()) {
-			auto connection = shared_ptr<GameServerConnection>(new GameServerConnection(_emu, socket, _password));
-			_emu->GetNotificationManager()->RegisterNotificationListener(connection);
-			_openConnections.push_back(connection);
+			_openConnections.push_back(unique_ptr<GameServerConnection>(new GameServerConnection(this, _emu, std::move(socket), _password)));
 		} else {
 			break;
 		}
@@ -69,26 +47,13 @@ void GameServer::AcceptConnections()
 
 void GameServer::UpdateConnections()
 {
-	vector<shared_ptr<GameServerConnection>> connectionsToRemove;
-	for(shared_ptr<GameServerConnection> connection : _openConnections) {
-		if(connection->ConnectionError()) {
-			connectionsToRemove.push_back(connection);
+	vector<unique_ptr<GameServerConnection>> connectionsToRemove;
+	for(int i = (int)_openConnections.size() - 1; i>=0; i++) {
+		if(_openConnections[i]->ConnectionError()) {
+			_openConnections.erase(_openConnections.begin() + i);
 		} else {
-			connection->ProcessMessages();
+			_openConnections[i]->ProcessMessages();
 		}
-	}
-
-	for(shared_ptr<GameServerConnection> gameConnection : connectionsToRemove) {
-		_openConnections.remove(gameConnection);
-	}
-}
-
-list<shared_ptr<GameServerConnection>> GameServer::GetConnectionList()
-{
-	if(GameServer::Started()) {
-		return Instance->_openConnections;
-	} else {
-		return list<shared_ptr<GameServerConnection>>();
 	}
 }
 
@@ -99,19 +64,19 @@ bool GameServer::SetInput(BaseControlDevice *device)
 	//TODO?
 	if(device->GetControllerType() == ControllerType::Multitap) {
 		//Need special handling for the multitap, merge data from P3/4/5 with P1 (or P2, depending which port the multitap is plugged into)
-		GameServerConnection* connection = GameServerConnection::GetNetPlayDevice(port);
+		GameServerConnection* connection = GetNetPlayDevice(port);
 		if(connection) {
 			((Multitap*)device)->SetControllerState(0, connection->GetState());
 		}
 
 		for(int i = 2; i < 5; i++) {
-			GameServerConnection* connection = GameServerConnection::GetNetPlayDevice(i);
+			GameServerConnection* connection = GetNetPlayDevice(i);
 			if(connection) {
 				((Multitap*)device)->SetControllerState(i - 1, connection->GetState());
 			}
 		}
 	} else {
-		GameServerConnection* connection = GameServerConnection::GetNetPlayDevice(port);
+		GameServerConnection* connection = GetNetPlayDevice(port);
 		if(connection) {
 			//Device is controlled by a client
 			device->SetRawState(connection->GetState());
@@ -126,7 +91,7 @@ bool GameServer::SetInput(BaseControlDevice *device)
 void GameServer::RecordInput(vector<shared_ptr<BaseControlDevice>> devices)
 {
 	for(shared_ptr<BaseControlDevice> &device : devices) {
-		for(shared_ptr<GameServerConnection> connection : _openConnections) {
+		for(unique_ptr<GameServerConnection>& connection : _openConnections) {
 			if(!connection->ConnectionError()) {
 				//Send movie stream
 				connection->SendMovieData(device->GetPort(), device->GetRawState());
@@ -137,6 +102,10 @@ void GameServer::RecordInput(vector<shared_ptr<BaseControlDevice>> devices)
 
 void GameServer::ProcessNotification(ConsoleNotificationType type, void * parameter)
 {
+	for(unique_ptr<GameServerConnection>& connection : _openConnections) {
+		connection->ProcessNotification(type, parameter);
+	}
+
 	if(type == ConsoleNotificationType::GameLoaded) {
 		//Register the server as an input provider/recorder
 		RegisterServerInput();
@@ -160,54 +129,60 @@ void GameServer::Exec()
 	}
 }
 
-void GameServer::Stop()
+void GameServer::StartServer(uint16_t port, string password)
 {
-	_initialized = false;
-	_listener.reset();
-	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
-}
+	_port = port;
+	_password = password;
 
-void GameServer::StartServer(shared_ptr<Emulator> emu, uint16_t port, string password)
-{
-	Instance.reset(new GameServer(emu, port, password));
-	emu->GetNotificationManager()->RegisterNotificationListener(Instance);
-	Instance->_serverThread.reset(new thread(&GameServer::Exec, Instance.get()));
+	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+
+	//If a game is already running, register ourselves as an input recorder/provider
+	RegisterServerInput();
+
+	_serverThread.reset(new thread(&GameServer::Exec, this));
 }
 
 void GameServer::StopServer()
 {
-	if(Instance) {
-		Instance.reset();
+	_stop = true;
+
+	if(_serverThread) {
+		_serverThread->join();
+		_serverThread.reset();
+	}
+
+	_initialized = false;
+	_listener.reset();
+	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
+
+	if(_emu->IsRunning()) {
+		IControlManager* controlManager = _emu->GetControlManager();
+		if(controlManager) {
+			controlManager->UnregisterInputRecorder(this);
+			controlManager->UnregisterInputProvider(this);
+		}
 	}
 }
 
 bool GameServer::Started()
 {
-	if(Instance) {
-		return Instance->_initialized;
-	} else {
-		return false;
-	}
+	return _initialized;
 }
 
 uint8_t GameServer::GetHostControllerPort()
 {
-	if(GameServer::Started()) {
-		return Instance->_hostControllerPort;
-	}
-	return GameConnection::SpectatorPort;
+	return _hostControllerPort;
 }
 
 void GameServer::SetHostControllerPort(uint8_t port)
 {
-	if(GameServer::Started()) {
-		Instance->_emu->Lock();
+	if(Started()) {
+		auto lock = _emu->AcquireLock();
 		if(port == GameConnection::SpectatorPort || GetAvailableControllers() & (1 << port)) {
 			//Port is available
-			Instance->_hostControllerPort = port;
+			_hostControllerPort = port;
 			SendPlayerList();
 		}
-		Instance->_emu->Unlock();
 	}
 }
 
@@ -231,7 +206,7 @@ vector<PlayerInfo> GameServer::GetPlayerList()
 	playerInfo.IsHost = true;
 	playerList.push_back(playerInfo);
 
-	for(shared_ptr<GameServerConnection> &connection : GetConnectionList()) {
+	for(unique_ptr<GameServerConnection>& connection : _openConnections) {
 		playerInfo.ControllerPort = connection->GetControllerPort();
 		playerInfo.IsHost = false;
 		playerList.push_back(playerInfo);
@@ -244,9 +219,42 @@ void GameServer::SendPlayerList()
 {
 	vector<PlayerInfo> playerList = GetPlayerList();
 
-	for(shared_ptr<GameServerConnection> &connection : GetConnectionList()) {
+	for(unique_ptr<GameServerConnection>& connection : _openConnections) {
 		//Send player list update to all connections
 		PlayerListMessage message(playerList);
 		connection->SendNetMessage(message);
 	}
+}
+
+void GameServer::RegisterNetPlayDevice(GameServerConnection* device, uint8_t port)
+{
+	_netPlayDevices[port] = device;
+}
+
+void GameServer::UnregisterNetPlayDevice(GameServerConnection* device)
+{
+	if(device != nullptr) {
+		for(int i = 0; i < BaseControlDevice::PortCount; i++) {
+			if(_netPlayDevices[i] == device) {
+				_netPlayDevices[i] = nullptr;
+				break;
+			}
+		}
+	}
+}
+
+GameServerConnection* GameServer::GetNetPlayDevice(uint8_t port)
+{
+	return _netPlayDevices[port];
+}
+
+uint8_t GameServer::GetFirstFreeControllerPort()
+{
+	uint8_t hostPost = _emu->GetGameServer()->GetHostControllerPort();
+	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
+		if(hostPost != i && _netPlayDevices[i] == nullptr) {
+			return i;
+		}
+	}
+	return GameConnection::SpectatorPort;
 }

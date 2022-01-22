@@ -16,11 +16,11 @@ InternalRegisters::InternalRegisters()
 
 void InternalRegisters::Initialize(Console* console)
 {
-	_cpu = console->GetCpu().get();
+	_cpu = console->GetCpu();
 	_aluMulDiv.Initialize(_cpu);
 	_console = console;
-	_memoryManager = console->GetMemoryManager().get();
-	_ppu = _console->GetPpu().get();
+	_memoryManager = console->GetMemoryManager();
+	_ppu = _console->GetPpu();
 	Reset();
 
 	//Power on values
@@ -48,7 +48,7 @@ void InternalRegisters::ProcessAutoJoypadRead()
 		return;
 	}
 
-	ControlManager* controlManager = (ControlManager*)_console->GetControlManager().get();
+	ControlManager* controlManager = (ControlManager*)_console->GetControlManager();
 
 	controlManager->Write(0x4016, 1);
 	controlManager->Write(0x4016, 0);

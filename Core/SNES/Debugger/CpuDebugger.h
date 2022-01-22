@@ -42,10 +42,10 @@ class CpuDebugger final : public IDebugger
 	Ppu* _ppu;
 	MemoryMappings* _memoryMappings;
 
-	shared_ptr<CodeDataLogger> _codeDataLogger;
-	shared_ptr<BaseEventManager> _eventManager;
-	shared_ptr<SnesAssembler> _assembler;
-	shared_ptr<CallstackManager> _callstackManager;
+	unique_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<BaseEventManager> _eventManager;
+	unique_ptr<SnesAssembler> _assembler;
+	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 	unique_ptr<SnesCpuTraceLogger> _traceLogger;
@@ -81,10 +81,10 @@ public:
 
 	ITraceLogger* GetTraceLogger() override;
 	BreakpointManager* GetBreakpointManager() override;
-	shared_ptr<CallstackManager> GetCallstackManager() override;
-	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<BaseEventManager> GetEventManager() override;
-	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	CallstackManager* GetCallstackManager() override;
+	IAssembler* GetAssembler() override;
+	BaseEventManager* GetEventManager() override;
+	CodeDataLogger* GetCodeDataLogger() override;
 	PpuTools* GetPpuTools() override;
 
 	BaseState& GetState() override;

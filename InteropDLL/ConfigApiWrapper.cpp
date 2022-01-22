@@ -6,7 +6,7 @@
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/SettingTypes.h"
 
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 extern unique_ptr<IAudioDevice> _soundManager;
 static string _returnString;
 
@@ -64,7 +64,7 @@ extern "C" {
 
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
-		shared_ptr<IControlManager> controlManager = _emu->GetControlManager();
+		IControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(player);
 			if(device) {

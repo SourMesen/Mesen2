@@ -34,7 +34,7 @@ class GbAssembler : public IAssembler
 {
 private:
 	unordered_map<string, vector<OpCodeEntry>> _opCodes;
-	shared_ptr<LabelManager> _labelManager;
+	LabelManager* _labelManager;
 
 	void InitParamEntry(ParamEntry& entry, string param);
 	bool IsRegisterName(string op);
@@ -49,7 +49,7 @@ private:
 	void RunPass(vector<int16_t>& output, string code, uint32_t address, int16_t* assembledCode, bool firstPass, unordered_map<string, uint16_t>& localLabels);
 
 public:
-	GbAssembler(shared_ptr<LabelManager> labelManager);
+	GbAssembler(LabelManager* labelManager);
 	virtual ~GbAssembler();
 
 	uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode);

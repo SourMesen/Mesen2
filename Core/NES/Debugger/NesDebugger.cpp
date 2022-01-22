@@ -39,8 +39,8 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_traceLogger.reset(new NesTraceLogger(debugger, _ppu));
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
-	_disassembler = debugger->GetDisassembler().get();
-	_memoryAccessCounter = debugger->GetMemoryAccessCounter().get();
+	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
 
 	_codeDataLogger.reset(new CodeDataLogger(SnesMemoryType::NesPrgRom, _emu->GetMemory(SnesMemoryType::NesPrgRom).Size, CpuType::Nes));
@@ -285,9 +285,9 @@ bool NesDebugger::IsRegister(MemoryOperationInfo& op)
 	return false;
 }
 
-shared_ptr<CallstackManager> NesDebugger::GetCallstackManager()
+CallstackManager* NesDebugger::GetCallstackManager()
 {
-	return _callstackManager;
+	return _callstackManager.get();
 }
 
 BreakpointManager* NesDebugger::GetBreakpointManager()
@@ -295,19 +295,19 @@ BreakpointManager* NesDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<IAssembler> NesDebugger::GetAssembler()
+IAssembler* NesDebugger::GetAssembler()
 {
-	return _assembler;
+	return _assembler.get();
 }
 
-shared_ptr<BaseEventManager> NesDebugger::GetEventManager()
+BaseEventManager* NesDebugger::GetEventManager()
 {
-	return _eventManager;
+	return _eventManager.get();
 }
 
-shared_ptr<CodeDataLogger> NesDebugger::GetCodeDataLogger()
+CodeDataLogger* NesDebugger::GetCodeDataLogger()
 {
-	return _codeDataLogger;
+	return _codeDataLogger.get();
 }
 
 BaseState& NesDebugger::GetState()

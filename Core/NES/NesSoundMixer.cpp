@@ -13,7 +13,7 @@ NesSoundMixer::NesSoundMixer(NesConsole* console)
 {
 	_clockRate = 0;
 	_console = console;
-	_mixer = console->GetEmulator()->GetSoundMixer().get();
+	_mixer = console->GetEmulator()->GetSoundMixer();
 	_outputBuffer = new int16_t[NesSoundMixer::MaxSamplesPerFrame];
 	_blipBufLeft = blip_new(NesSoundMixer::MaxSamplesPerFrame);
 	_blipBufRight = blip_new(NesSoundMixer::MaxSamplesPerFrame);

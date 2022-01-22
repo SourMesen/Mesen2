@@ -149,7 +149,7 @@ bool SaveStateManager::GetScreenshotData(vector<uint8_t>& out, uint32_t &width, 
 
 bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 {
-	if(GameClient::Connected()) {
+	if(_emu->GetGameClient()->Connected()) {
 		MessageManager::DisplayMessage("Netplay", "NetplayNotAllowed");
 		return false;
 	}

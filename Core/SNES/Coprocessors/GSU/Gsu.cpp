@@ -19,8 +19,8 @@ Gsu::Gsu(Console *console, uint32_t gsuRamSize) : BaseCoprocessor(SnesMemoryType
 {
 	_emu = console->GetEmulator();
 	_console = console;
-	_memoryManager = console->GetMemoryManager().get();
-	_cpu = console->GetCpu().get();
+	_memoryManager = console->GetMemoryManager();
+	_cpu = console->GetCpu();
 	_memoryType = SnesMemoryType::Register;
 	_settings = _emu->GetSettings();
 

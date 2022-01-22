@@ -27,10 +27,10 @@ public:
 	virtual void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) {}
 
 	virtual BreakpointManager* GetBreakpointManager() = 0;
-	virtual shared_ptr<CallstackManager> GetCallstackManager() = 0;
-	virtual shared_ptr<IAssembler> GetAssembler() = 0;
-	virtual shared_ptr<BaseEventManager> GetEventManager() = 0;
-	virtual shared_ptr<CodeDataLogger> GetCodeDataLogger() = 0;
+	virtual CallstackManager* GetCallstackManager() = 0;
+	virtual IAssembler* GetAssembler() = 0;
+	virtual BaseEventManager* GetEventManager() = 0;
+	virtual CodeDataLogger* GetCodeDataLogger() = 0;
 	virtual ITraceLogger* GetTraceLogger() = 0;
 	virtual PpuTools* GetPpuTools() { return nullptr; }
 

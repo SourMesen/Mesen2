@@ -199,10 +199,10 @@ void Socket::Listen(int backlog)
 	}
 }
 
-shared_ptr<Socket> Socket::Accept()
+unique_ptr<Socket> Socket::Accept()
 {
 	uintptr_t socket = accept(_socket, nullptr, nullptr);
-	return shared_ptr<Socket>(new Socket(socket));
+	return unique_ptr<Socket>(new Socket(socket));
 }
 
 bool WouldBlock(int nError)
@@ -311,9 +311,9 @@ void Socket::Listen(int backlog)
 {
 }
 
-shared_ptr<Socket> Socket::Accept()
+unique_ptr<Socket> Socket::Accept()
 {
-	return shared_ptr<Socket>(new Socket(0));
+	return unique_ptr<Socket>(new Socket(0));
 }
 
 bool WouldBlock(int nError)

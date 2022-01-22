@@ -661,7 +661,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger, CpuType cpuType)
 {
 	_debugger = debugger;
-	_labelManager = debugger->GetLabelManager().get();
+	_labelManager = debugger->GetLabelManager();
 	_cpuType = cpuType;
 	_cpuMemory = DebugUtilities::GetCpuMemoryType(cpuType);
 }

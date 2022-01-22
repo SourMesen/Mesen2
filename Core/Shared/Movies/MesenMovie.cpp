@@ -16,7 +16,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/VirtualFile.h"
 
-MesenMovie::MesenMovie(shared_ptr<Emulator> emu, bool forTest)
+MesenMovie::MesenMovie(Emulator* emu, bool forTest)
 {
 	_emu = emu;
 	_forTest = forTest;
@@ -127,7 +127,7 @@ bool MesenMovie::Play(VirtualFile &file)
 	//bool autoConfigureInput = _console->GetSettings()->CheckFlag(EmulationFlags::AutoConfigureInput);
 	//_console->GetSettings()->ClearFlags(EmulationFlags::AutoConfigureInput);
 
-	IControlManager *controlManager = _emu->GetControlManager().get();
+	IControlManager *controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		//ControlManager can be empty if no game is loaded
 		controlManager->SetPollCounter(0);

@@ -14,7 +14,7 @@ class WindowsKeyManager : public IKeyManager
 {
 	private:
 		HWND _hWnd;
-		shared_ptr<Emulator> _emu;
+		Emulator* _emu;
 
 		bool _keyState[0x200];
 		bool _mouseState[0x03];
@@ -32,7 +32,7 @@ class WindowsKeyManager : public IKeyManager
 		void StartUpdateDeviceThread();
 
 	public:
-		WindowsKeyManager(shared_ptr<Emulator> emu, HWND hWnd);
+		WindowsKeyManager(Emulator* emu, HWND hWnd);
 		~WindowsKeyManager();
 
 		void RefreshState();

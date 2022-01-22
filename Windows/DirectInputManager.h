@@ -18,7 +18,7 @@ class DirectInputManager
 {
 private:
 	static HWND _hWnd;
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	bool _needToUpdate = false;
 	bool _requestUpdate = false;
 	static LPDIRECTINPUT8 _directInput;
@@ -36,7 +36,7 @@ private:
 	static int __stdcall EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, void* pContext);
 
 public:
-	DirectInputManager(shared_ptr<Emulator> emu, HWND window);
+	DirectInputManager(Emulator* emu, HWND window);
 	~DirectInputManager();
 
 	void RefreshState();

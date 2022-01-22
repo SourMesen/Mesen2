@@ -21,13 +21,13 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	Console* console = (Console*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_disassembler = debugger->GetDisassembler().get();
+	_disassembler = debugger->GetDisassembler();
 	_dsp = console->GetCartridge()->GetDsp();
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu().get(), console->GetMemoryManager().get()));
+	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Cpu).get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Cpu)));
 	_step.reset(new StepRequest());
 }
 
@@ -93,7 +93,7 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-shared_ptr<CallstackManager> NecDspDebugger::GetCallstackManager()
+CallstackManager* NecDspDebugger::GetCallstackManager()
 {
 	throw std::runtime_error("Callstack not supported for NEC DSP");
 }
@@ -103,17 +103,17 @@ BreakpointManager* NecDspDebugger::GetBreakpointManager()
 	return _breakpointManager.get();
 }
 
-shared_ptr<IAssembler> NecDspDebugger::GetAssembler()
+IAssembler* NecDspDebugger::GetAssembler()
 {
 	throw std::runtime_error("Assembler not supported for NEC DSP");
 }
 
-shared_ptr<BaseEventManager> NecDspDebugger::GetEventManager()
+BaseEventManager* NecDspDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for NEC DSP");
 }
 
-shared_ptr<CodeDataLogger> NecDspDebugger::GetCodeDataLogger()
+CodeDataLogger* NecDspDebugger::GetCodeDataLogger()
 {
 	return nullptr;
 }

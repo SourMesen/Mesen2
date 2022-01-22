@@ -56,10 +56,10 @@ Ppu::~Ppu()
 void Ppu::PowerOn()
 {
 	_skipRender = false;
-	_regs = _console->GetInternalRegisters().get();
+	_regs = _console->GetInternalRegisters();
 	_settings = _emu->GetSettings();
-	_spc = _console->GetSpc().get();
-	_memoryManager = _console->GetMemoryManager().get();
+	_spc = _console->GetSpc();
+	_memoryManager = _console->GetMemoryManager();
 
 	_currentBuffer = _outputBuffers[0];
 	

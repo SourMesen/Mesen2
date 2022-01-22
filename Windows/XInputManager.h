@@ -8,12 +8,12 @@ class Emulator;
 class XInputManager
 {
 	private:
-		shared_ptr<Emulator> _emu;
-		vector<shared_ptr<XINPUT_STATE>> _gamePadStates;
+		Emulator* _emu;
+		vector<unique_ptr<XINPUT_STATE>> _gamePadStates;
 		vector<uint8_t> _gamePadConnected;
 
 	public:
-		XInputManager(shared_ptr<Emulator> emu);
+		XInputManager(Emulator* emu);
 
 		bool NeedToUpdate();
 		void UpdateDeviceList();

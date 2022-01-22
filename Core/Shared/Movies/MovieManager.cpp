@@ -8,7 +8,7 @@
 #include "Shared/Movies/MesenMovie.h"
 #include "Shared/Movies/MovieRecorder.h"
 
-MovieManager::MovieManager(shared_ptr<Emulator> emu)
+MovieManager::MovieManager(Emulator* emu)
 {
 	_emu = emu;
 }
@@ -54,8 +54,7 @@ void MovieManager::Stop()
 
 bool MovieManager::Playing()
 {
-	shared_ptr<IMovie> player = _player;
-	return player && player->IsPlaying();
+	return _player != nullptr;
 }
 
 bool MovieManager::Recording()

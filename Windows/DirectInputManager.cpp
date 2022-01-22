@@ -419,7 +419,7 @@ void DirectInputManager::UpdateInputState(DirectInputData &data)
 }
 
 
-DirectInputManager::DirectInputManager(shared_ptr<Emulator> emu, HWND hWnd)
+DirectInputManager::DirectInputManager(Emulator* emu, HWND hWnd)
 {
 	_emu = emu;
 	_hWnd = hWnd;

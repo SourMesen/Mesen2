@@ -1256,8 +1256,8 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 	UpdateApuStatus();
 
 	if(_scanline == _console->GetNesConfig().InputScanline) {
-		((NesControlManager*)_console->GetControlManager().get())->UpdateControlDevices();
-		((NesControlManager*)_console->GetControlManager().get())->UpdateInputState();
+		_console->GetControlManager()->UpdateControlDevices();
+		_console->GetControlManager()->UpdateInputState();
 	}
 
 	//Cycle = 0

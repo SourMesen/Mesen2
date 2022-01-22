@@ -121,7 +121,7 @@ uint8_t VsControlManager::ReadRam(uint16_t addr)
 	if(!_console->IsVsMainConsole()) {
 		//Copy the insert coin 3/4 + service button "2" bits from the main console to this one
 		NesConsole* mainConsole = _console->GetVsMainConsole();
-		VsInputButtons* mainButtons = ((VsControlManager*)mainConsole->GetControlManager().get())->_input.get();
+		VsInputButtons* mainButtons = ((VsControlManager*)mainConsole->GetControlManager())->_input.get();
 		_input->SetBitValue(VsInputButtons::VsButtons::InsertCoin1, mainButtons->IsPressed(VsInputButtons::VsButtons::InsertCoin3));
 		_input->SetBitValue(VsInputButtons::VsButtons::InsertCoin2, mainButtons->IsPressed(VsInputButtons::VsButtons::InsertCoin4));
 		_input->SetBitValue(VsInputButtons::VsButtons::ServiceButton, mainButtons->IsPressed(VsInputButtons::VsButtons::ServiceButton2));
@@ -264,7 +264,7 @@ void VsControlManager::UpdateControlDevices()
 bool VsControlManager::SetInput(BaseControlDevice* device)
 {
 	uint8_t port = device->GetPort();
-	NesControlManager* mainControlManager = (NesControlManager*)_console->GetVsMainConsole()->GetControlManager().get();
+	NesControlManager* mainControlManager = (NesControlManager*)_console->GetVsMainConsole()->GetControlManager();
 	if(mainControlManager && port <= 1) {
 		shared_ptr<BaseControlDevice> controlDevice = mainControlManager->GetControlDevice(port + 2);
 		if(controlDevice) {

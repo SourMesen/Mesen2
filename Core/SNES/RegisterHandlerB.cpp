@@ -14,11 +14,11 @@ RegisterHandlerB::RegisterHandlerB(Console *console, Ppu * ppu, Spc * spc, uint8
 {
 	_console = console;
 	_emu = console->GetEmulator();
-	_cheatManager = _emu->GetCheatManager().get();
+	_cheatManager = _emu->GetCheatManager();
 	_sa1 = console->GetCartridge()->GetSa1();
 	_ppu = ppu;
 	_spc = spc;
-	_msu1 = console->GetMsu1().get();
+	_msu1 = console->GetMsu1();
 	_workRam = workRam;
 	_wramPosition = 0;
 }

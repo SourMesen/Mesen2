@@ -1226,7 +1226,7 @@ bool BaseMapper::HasPrgChrChanges()
 	return false;
 }
 
-void BaseMapper::CopyPrgChrRom(shared_ptr<BaseMapper> mapper)
+void BaseMapper::CopyPrgChrRom(BaseMapper* mapper)
 {
 	if(_prgSize == mapper->_prgSize && _chrRomSize == mapper->_chrRomSize) {
 		memcpy(_prgRom, mapper->_prgRom, _prgSize);

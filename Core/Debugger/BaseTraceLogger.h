@@ -399,7 +399,7 @@ public:
 		_debugger = debugger;
 		_console = debugger->GetConsole();
 		_settings = debugger->GetEmulator()->GetSettings();
-		_labelManager = debugger->GetLabelManager().get();
+		_labelManager = debugger->GetLabelManager();
 		_memoryDumper = debugger->GetMemoryDumper();
 		_options = {};
 		_currentPos = 0;

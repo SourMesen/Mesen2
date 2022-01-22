@@ -13,14 +13,9 @@
 #include "Utilities/ZipReader.h"
 #include "Utilities/ArchiveReader.h"
 
-RecordedRomTest::RecordedRomTest(shared_ptr<Emulator> emu)
+RecordedRomTest::RecordedRomTest(Emulator* emu)
 {
-	if(emu) {
-		_emu = emu;
-	} else {
-		_emu.reset(new Emulator());
-		_emu->Initialize();
-	}
+	_emu = emu;
 	Reset();
 }
 

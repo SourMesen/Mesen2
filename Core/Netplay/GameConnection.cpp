@@ -11,10 +11,10 @@
 #include "Netplay/ForceDisconnectMessage.h"
 #include "Netplay/ServerInformationMessage.h"
 
-GameConnection::GameConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket)
+GameConnection::GameConnection(Emulator* emu, unique_ptr<Socket> socket)
 {
 	_emu = emu;
-	_socket = socket;
+	_socket.swap(socket);
 }
 
 void GameConnection::ReadSocket()

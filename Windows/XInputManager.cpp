@@ -3,11 +3,11 @@
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/EmuSettings.h"
 
-XInputManager::XInputManager(shared_ptr<Emulator> emu)
+XInputManager::XInputManager(Emulator* emu)
 {
 	_emu = emu;
 	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
-		_gamePadStates.push_back(shared_ptr<XINPUT_STATE>(new XINPUT_STATE()));
+		_gamePadStates.push_back(unique_ptr<XINPUT_STATE>(new XINPUT_STATE()));
 		_gamePadConnected.push_back(true);
 	}
 }

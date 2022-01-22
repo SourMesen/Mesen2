@@ -410,7 +410,7 @@ void SnesAssembler::AssembleInstruction(SnesLineData& lineData, uint32_t& instru
 	}
 }
 
-SnesAssembler::SnesAssembler(shared_ptr<LabelManager> labelManager)
+SnesAssembler::SnesAssembler(LabelManager* labelManager)
 {
 	_labelManager = labelManager;
 }

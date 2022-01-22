@@ -2,7 +2,7 @@
 #include "WindowsKeyManager.h"
 #include "Shared/KeyDefinitions.h"
 
-WindowsKeyManager::WindowsKeyManager(shared_ptr<Emulator> emu, HWND hWnd)
+WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 {
 	_emu = emu;
 	_hWnd = hWnd;

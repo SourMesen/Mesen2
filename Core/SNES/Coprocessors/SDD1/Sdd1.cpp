@@ -10,7 +10,7 @@
 Sdd1::Sdd1(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 {
 	//This handler is used to dynamically map the ROM based on the banking registers
-	_sdd1Mmc.reset(new Sdd1Mmc(_state, console->GetCartridge().get()));
+	_sdd1Mmc.reset(new Sdd1Mmc(_state, console->GetCartridge()));
 	
 	MemoryMappings *cpuMappings = console->GetMemoryManager()->GetMemoryMappings();
 	vector<unique_ptr<IMemoryHandler>> &prgRomHandlers = console->GetCartridge()->GetPrgRomHandlers();

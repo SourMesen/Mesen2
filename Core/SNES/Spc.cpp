@@ -20,7 +20,7 @@ Spc::Spc(Console* console)
 {
 	_emu = console->GetEmulator();
 	_console = console;
-	_memoryManager = console->GetMemoryManager().get();
+	_memoryManager = console->GetMemoryManager();
 	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];

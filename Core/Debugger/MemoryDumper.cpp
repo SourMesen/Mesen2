@@ -25,15 +25,15 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
-	_disassembler = debugger->GetDisassembler().get();
+	_disassembler = debugger->GetDisassembler();
 
 	IConsole* console = _debugger->GetConsole();
 	//TODO
 	if(Console* c = dynamic_cast<Console*>(console)) {
-		_ppu = c->GetPpu().get();
-		_spc = c->GetSpc().get();
-		_memoryManager = c->GetMemoryManager().get();
-		_cartridge = c->GetCartridge().get();
+		_ppu = c->GetPpu();
+		_spc = c->GetSpc();
+		_memoryManager = c->GetMemoryManager();
+		_cartridge = c->GetCartridge();
 		_gameboy = c->GetCartridge()->GetGameboy();
 	} else if(NesConsole* c = dynamic_cast<NesConsole*>(console)) {
 		_nesConsole = c;

@@ -21,8 +21,9 @@ private:
 	vector<uint32_t> _lastPressedKeys;
 	bool _isKeyUp;
 
-	shared_ptr<Timer> _runSingleFrameRepeatTimer;
-	bool _repeatStarted;
+	Timer _runSingleFrameRepeatTimer;
+	atomic<bool> _repeatStarted;
+	atomic<bool> _needRepeat;
 
 	unordered_set<uint32_t> _keysDown[2];
 	unordered_set<uint32_t> _prevKeysDown[2];

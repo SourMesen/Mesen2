@@ -40,10 +40,10 @@ BaseCartridge::~BaseCartridge()
 	delete[] _saveRam;
 }
 
-shared_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile)
+unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(Console* console, VirtualFile &romFile)
 {
 	if(romFile.IsValid()) {
-		shared_ptr<BaseCartridge> cart(new BaseCartridge());
+		unique_ptr<BaseCartridge> cart(new BaseCartridge());
 
 		vector<uint8_t> romData;
 		romFile.ReadFile(romData);
@@ -331,7 +331,7 @@ vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
 {
 	RomInfo romInfo = GetRomInfo();
 	//TODO
-	shared_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile);
+	unique_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile);
 	if(originalCart->_gameboy) {
 		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(SnesMemoryType::GbPrgRom);
 		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(SnesMemoryType::GbPrgRom);

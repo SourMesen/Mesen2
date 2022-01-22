@@ -20,8 +20,8 @@ Cx4::Cx4(Console* console) : BaseCoprocessor(SnesMemoryType::Register)
 	_emu = console->GetEmulator();
 	_console = console;
 	_memoryType = SnesMemoryType::Register;
-	_memoryManager = console->GetMemoryManager().get();
-	_cpu = console->GetCpu().get();
+	_memoryManager = console->GetMemoryManager();
+	_cpu = console->GetCpu();
 	
 	_emu->RegisterMemory(SnesMemoryType::Cx4DataRam, _dataRam, Cx4::DataRamSize);
 	_emu->GetSettings()->InitializeRam(_dataRam, Cx4::DataRamSize);

@@ -94,9 +94,9 @@ uint32_t* ScaleFilter::ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, ui
 	return _outputBuffer;
 }
 
-shared_ptr<ScaleFilter> ScaleFilter::GetScaleFilter(VideoFilterType filter)
+unique_ptr<ScaleFilter> ScaleFilter::GetScaleFilter(VideoFilterType filter)
 {
-	shared_ptr<ScaleFilter> scaleFilter;
+	unique_ptr<ScaleFilter> scaleFilter;
 	switch(filter) {
 		case VideoFilterType::NTSC:
 		case VideoFilterType::None:

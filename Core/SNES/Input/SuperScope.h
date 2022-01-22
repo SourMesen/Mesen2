@@ -95,7 +95,7 @@ protected:
 public:
 	SuperScope(Console* console, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), ControllerType::SuperScope, port, keyMappings)
 	{
-		_ppu = console->GetPpu().get();
+		_ppu = console->GetPpu();
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

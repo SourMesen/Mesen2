@@ -58,7 +58,7 @@ private:
 	uint32_t _saveRamSize = 0;
 	uint32_t _coprocessorRamSize = 0;
 	
-	shared_ptr<SpcFileData> _spcData;
+	unique_ptr<SpcFileData> _spcData;
 	vector<uint8_t> _embeddedFirmware;
 
 	void LoadBattery();
@@ -87,7 +87,7 @@ private:
 public:
 	virtual ~BaseCartridge();
 
-	static shared_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile);
+	static unique_ptr<BaseCartridge> CreateCartridge(Console* console, VirtualFile &romFile);
 
 	void Reset();
 

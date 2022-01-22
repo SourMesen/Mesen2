@@ -11,8 +11,8 @@ static constexpr double PI = 3.14159265358979323846;
 AudioPlayerHud::AudioPlayerHud(Emulator* emu)
 {
 	_emu = emu;
-	_mixer = emu->GetSoundMixer().get();
-	_hud = emu->GetDebugHud().get();
+	_mixer = emu->GetSoundMixer();
+	_hud = emu->GetDebugHud();
 
 	for(int i = 0; i < N; i++) {
 		_hannWindow[i] = 0.5f * (1.0f - cos(2.0f * PI * (float)(i) / (float)(N - 1.0f)));

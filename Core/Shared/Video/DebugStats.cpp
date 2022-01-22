@@ -10,7 +10,7 @@ void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
 {
 	AudioStatistics stats = emu->GetSoundMixer()->GetStatistics();
 	AudioConfig audioCfg = emu->GetSettings()->GetAudioConfig();
-	shared_ptr<DebugHud> hud = emu->GetDebugHud();
+	DebugHud* hud = emu->GetDebugHud();
 
 	_frameDurations[_frameDurationIndex] = lastFrameTime;
 	_frameDurationIndex = (_frameDurationIndex + 1) % 60;

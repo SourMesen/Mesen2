@@ -383,7 +383,7 @@ void NesAssembler::AssembleInstruction(NesLineData& lineData, uint32_t &instruct
 	}
 }
 
-NesAssembler::NesAssembler(shared_ptr<LabelManager> labelManager)
+NesAssembler::NesAssembler(LabelManager* labelManager)
 {
 	_labelManager = labelManager;
 }

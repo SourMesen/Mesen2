@@ -17,11 +17,10 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/BaseControlDevice.h"
 
-GameServerConnection* GameServerConnection::_netPlayDevices[BaseControlDevice::PortCount] = { };
-
-GameServerConnection::GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<Socket> socket, string serverPassword) : GameConnection(emu, socket)
+GameServerConnection::GameServerConnection(GameServer* gameServer, Emulator* emu, unique_ptr<Socket> socket, string serverPassword) : GameConnection(emu, std::move(socket))
 {
 	//Server-side connection
+	_server = gameServer;
 	_serverPassword = serverPassword;
 	_controllerPort = GameConnection::SpectatorPort;
 	SendServerInformation();
@@ -30,7 +29,7 @@ GameServerConnection::GameServerConnection(shared_ptr<Emulator> emu, shared_ptr<
 GameServerConnection::~GameServerConnection()
 {
 	MessageManager::DisplayMessage("NetPlay", "Player " + std::to_string(_controllerPort + 1) + " disconnected.");
-	UnregisterNetPlayDevice(this);
+	_server->UnregisterNetPlayDevice(this);
 }
 
 void GameServerConnection::SendServerInformation()
@@ -106,7 +105,7 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 		if(message->CheckPassword(_serverPassword, _connectionHash)) {
 			_emu->Lock();
 
-			_controllerPort = message->IsSpectator() ? GameConnection::SpectatorPort : GetFirstFreeControllerPort();
+			_controllerPort = message->IsSpectator() ? GameConnection::SpectatorPort : _server->GetFirstFreeControllerPort();
 
 			MessageManager::DisplayMessage("NetPlay", playerPortMessage + " connected.");
 
@@ -115,8 +114,8 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 			}
 
 			_handshakeCompleted = true;
-			RegisterNetPlayDevice(this, _controllerPort);
-			GameServer::SendPlayerList();
+			_server->RegisterNetPlayDevice(this, _controllerPort);
+			_server->SendPlayerList();
 			_emu->Unlock();
 		} else {
 			SendForceDisconnectMessage("The password you provided did not match - you have been disconnected.");
@@ -160,23 +159,23 @@ void GameServerConnection::SelectControllerPort(uint8_t port)
 	_emu->Lock();
 	if(port == GameConnection::SpectatorPort) {
 		//Client wants to be a spectator, make sure we are not using any controller
-		UnregisterNetPlayDevice(this);
+		_server->UnregisterNetPlayDevice(this);
 		_controllerPort = port;
 	} else {
-		GameServerConnection* netPlayDevice = GetNetPlayDevice(port);
+		GameServerConnection* netPlayDevice = _server->GetNetPlayDevice(port);
 		if(netPlayDevice == this) {
 			//Nothing to do, we're already this player
 		} else if(netPlayDevice == nullptr) {
 			//This port is free, we can switch
-			UnregisterNetPlayDevice(this);
-			RegisterNetPlayDevice(this, port);
+			_server->UnregisterNetPlayDevice(this);
+			_server->RegisterNetPlayDevice(this, port);
 			_controllerPort = port;
 		} else {
 			//Another player is using this port, we can't use it
 		}
 	}
 	SendGameInformation();
-	GameServer::SendPlayerList();
+	_server->SendPlayerList();
 	_emu->Unlock();
 }
 
@@ -203,39 +202,6 @@ void GameServerConnection::ProcessNotification(ConsoleNotificationType type, voi
 		default:
 			break;
 	}
-}
-
-void GameServerConnection::RegisterNetPlayDevice(GameServerConnection* device, uint8_t port)
-{
-	GameServerConnection::_netPlayDevices[port] = device;
-}
-
-void GameServerConnection::UnregisterNetPlayDevice(GameServerConnection* device)
-{
-	if(device != nullptr) {
-		for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-			if(GameServerConnection::_netPlayDevices[i] == device) {
-				GameServerConnection::_netPlayDevices[i] = nullptr;
-				break;
-			}
-		}
-	}
-}
-
-GameServerConnection* GameServerConnection::GetNetPlayDevice(uint8_t port)
-{
-	return GameServerConnection::_netPlayDevices[port];
-}
-
-uint8_t GameServerConnection::GetFirstFreeControllerPort()
-{
-	uint8_t hostPost = GameServer::GetHostControllerPort();
-	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-		if(hostPost != i && GameServerConnection::_netPlayDevices[i] == nullptr) {
-			return i;
-		}
-	}
-	return GameConnection::SpectatorPort;
 }
 
 uint8_t GameServerConnection::GetControllerPort()

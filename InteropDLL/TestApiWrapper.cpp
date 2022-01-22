@@ -2,20 +2,27 @@
 #include "Core/Shared/RecordedRomTest.h"
 #include "Core/Shared/Emulator.h"
 
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 shared_ptr<RecordedRomTest> _recordedRomTest;
 
 extern "C"
 {
 	DllExport int32_t __stdcall RunRecordedTest(char* filename, bool inBackground)
 	{
-		shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(inBackground ? nullptr : _emu));
-		return romTest->Run(filename);
+		if(inBackground) {
+			unique_ptr<Emulator> emu(new Emulator());
+			emu->Initialize();
+			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(emu.get()));
+			return romTest->Run(filename);
+		} else {
+			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(_emu.get()));
+			return romTest->Run(filename);
+		}
 	}
 
 	DllExport void __stdcall RomTestRecord(char* filename, bool reset)
 	{
-		_recordedRomTest.reset(new RecordedRomTest(_emu));
+		_recordedRomTest.reset(new RecordedRomTest(_emu.get()));
 		_recordedRomTest->Record(filename, reset);
 	}
 	

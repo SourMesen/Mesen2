@@ -269,9 +269,9 @@ void NesConsole::RunVsSubConsole()
 	}
 }
 
-shared_ptr<IControlManager> NesConsole::GetControlManager()
+IControlManager* NesConsole::GetControlManager()
 {
-	return std::dynamic_pointer_cast<IControlManager>(_controlManager);
+	return _controlManager.get();
 }
 
 double NesConsole::GetFrameDelay()

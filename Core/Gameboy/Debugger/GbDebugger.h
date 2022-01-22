@@ -33,12 +33,12 @@ class GbDebugger final : public IDebugger
 	Gameboy* _gameboy;
 	EmuSettings* _settings;
 
-	shared_ptr<GbEventManager> _eventManager;
-	shared_ptr<CallstackManager> _callstackManager;
-	shared_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<GbEventManager> _eventManager;
+	unique_ptr<CallstackManager> _callstackManager;
+	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
-	shared_ptr<GbAssembler> _assembler;
+	unique_ptr<GbAssembler> _assembler;
 	unique_ptr<GbTraceLogger> _traceLogger;
 	unique_ptr<GbPpuTools> _ppuTools;
 
@@ -62,10 +62,10 @@ public:
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
 
-	shared_ptr<BaseEventManager> GetEventManager() override;
-	shared_ptr<IAssembler> GetAssembler() override;
-	shared_ptr<CallstackManager> GetCallstackManager() override;
-	shared_ptr<CodeDataLogger> GetCodeDataLogger() override;
+	BaseEventManager* GetEventManager() override;
+	IAssembler* GetAssembler() override;
+	CallstackManager* GetCallstackManager() override;
+	CodeDataLogger* GetCodeDataLogger() override;
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;

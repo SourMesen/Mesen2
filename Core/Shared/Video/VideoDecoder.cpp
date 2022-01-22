@@ -14,22 +14,26 @@
 #include "Shared/Video/SystemHud.h"
 #include "SNES/CartTypes.h"
 
-VideoDecoder::VideoDecoder(shared_ptr<Emulator> emu)
+VideoDecoder::VideoDecoder(Emulator* emu)
 {
 	_emu = emu;
 	_frameChanged = false;
 	_stopFlag = false;
 	_baseFrameInfo = { 512, 478 };
 	_lastFrameInfo = _baseFrameInfo;
-	UpdateVideoFilter();
-	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
-	_inputHud.reset(new InputHud(emu.get()));
-	_systemHud.reset(new SystemHud(emu.get()));
+	_inputHud.reset(new InputHud(emu));
+	_systemHud.reset(new SystemHud(emu));
 }
 
 VideoDecoder::~VideoDecoder()
 {
 	StopThread();
+}
+
+void VideoDecoder::Init()
+{
+	UpdateVideoFilter();
+	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
 }
 
 FrameInfo VideoDecoder::GetBaseFrameInfo(bool removeOverscan)

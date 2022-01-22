@@ -47,7 +47,7 @@ public:
 
 	virtual void SaveBattery() = 0;
 
-	virtual shared_ptr<IControlManager> GetControlManager() = 0;
+	virtual IControlManager* GetControlManager() = 0;
 
 	virtual ConsoleRegion GetRegion() = 0;
 	virtual ConsoleType GetConsoleType() = 0;

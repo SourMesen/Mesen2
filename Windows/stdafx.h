@@ -45,5 +45,6 @@
 using std::list;
 using std::vector;
 using std::shared_ptr;
+using std::unique_ptr;
 using std::string;
 using namespace std::literals::string_literals;

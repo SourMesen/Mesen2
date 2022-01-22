@@ -215,7 +215,7 @@ int LuaApi::GetLabelAddress(lua_State *lua)
 	checkparams();
 	errorCond(label.length() == 0, "label cannot be empty");
 
-	std::shared_ptr<LabelManager> lblMan = _debugger->GetLabelManager();
+	LabelManager* lblMan = _debugger->GetLabelManager();
 	int32_t value = lblMan->GetLabelRelativeAddress(label);
 	if(value == -2) {
 		//Check to see if the label is a multi-byte label instead

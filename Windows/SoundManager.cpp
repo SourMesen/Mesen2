@@ -5,7 +5,7 @@
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/MessageManager.h"
 
-SoundManager::SoundManager(shared_ptr<Emulator> emu, HWND hwnd)
+SoundManager::SoundManager(Emulator* emu, HWND hwnd)
 {
 	_emu = emu;
 	_hWnd = hwnd;

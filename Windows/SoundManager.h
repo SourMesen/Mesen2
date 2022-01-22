@@ -14,7 +14,7 @@ struct SoundDeviceInfo
 class SoundManager : public BaseSoundManager
 {
 public:
-	SoundManager(shared_ptr<Emulator> emu, HWND hWnd);
+	SoundManager(Emulator* emu, HWND hWnd);
 	~SoundManager();
 
 	void Release();
@@ -36,7 +36,7 @@ private:
 	void ValidateWriteCursor(DWORD safeWriteCursor);
 
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	HWND _hWnd;
 	GUID _audioDeviceID;
 	bool _needReset = false;

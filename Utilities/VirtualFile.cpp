@@ -79,7 +79,7 @@ void VirtualFile::LoadFile()
 {
 	if(_data.size() == 0) {
 		if(!_innerFile.empty()) {
-			shared_ptr<ArchiveReader> reader = ArchiveReader::GetReader(_path);
+			unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(_path);
 			if(reader) {
 				if(_innerFileIndex >= 0) {
 					vector<string> filelist = reader->GetFileList(VirtualFile::RomExtensions);
@@ -106,7 +106,7 @@ bool VirtualFile::IsValid()
 	}
 
 	if(!_innerFile.empty()) {
-		shared_ptr<ArchiveReader> reader = ArchiveReader::GetReader(_path);
+		unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(_path);
 		if(reader) {
 			vector<string> filelist = reader->GetFileList();
 			if(_innerFileIndex >= 0) {

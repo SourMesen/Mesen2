@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <assert.h>
 #include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/Audio/SoundMixer.h"
@@ -21,6 +22,8 @@
 #include "Shared/SystemActionManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/TimingInfo.h"
+#include "Netplay/GameServer.h"
+#include "Netplay/GameClient.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "SNES/Console.h"
@@ -39,19 +42,32 @@
 #include "MemoryOperationType.h"
 #include "EventType.h"
 
-Emulator::Emulator()
+Emulator::Emulator() :
+	_settings(new EmuSettings(this)),
+	_debugHud(new DebugHud()),
+	_notificationManager(new NotificationManager()),
+	_batteryManager(new BatteryManager()),
+	_videoDecoder(new VideoDecoder(this)),
+	_videoRenderer(new VideoRenderer(this)),
+	_saveStateManager(new SaveStateManager(this)),
+	_soundMixer(new SoundMixer(this)),
+	_cheatManager(new CheatManager(this)),
+	_movieManager(new MovieManager(this)),
+	_gameServer(new GameServer(this)),
+	_gameClient(new GameClient(this))
 {
-	_settings.reset(new EmuSettings(this));
-
 	_paused = false;
 	_pauseOnNextFrame = false;
 	_stopFlag = false;
 	_isRunAheadFrame = false;
 	_lockCounter = 0;
 	_threadPaused = false;
-	
+	_lockCounter = 0;
+
 	_debugRequestCount = 0;
 	_allowDebuggerRequest = true;
+
+	_videoDecoder->Init();
 }
 
 Emulator::~Emulator()
@@ -60,22 +76,9 @@ Emulator::~Emulator()
 
 void Emulator::Initialize()
 {
-	_lockCounter = 0;
-
-	_debugHud.reset(new DebugHud());
-	_notificationManager.reset(new NotificationManager());
-	
+	_systemActionManager.reset(new SystemActionManager(this));
 	_shortcutKeyHandler.reset(new ShortcutKeyHandler(this));
 	_notificationManager->RegisterNotificationListener(_shortcutKeyHandler);
-
-	_batteryManager.reset(new BatteryManager());
-	_videoDecoder.reset(new VideoDecoder(shared_from_this()));
-	_videoRenderer.reset(new VideoRenderer(shared_from_this()));
-	_saveStateManager.reset(new SaveStateManager(this));
-	_soundMixer.reset(new SoundMixer(this));
-	_cheatManager.reset(new CheatManager(this));
-	_movieManager.reset(new MovieManager(shared_from_this()));
-	_systemActionManager.reset(new SystemActionManager(this));
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
@@ -85,19 +88,12 @@ void Emulator::Release()
 {
 	Stop(true);
 
+	_gameClient->Disconnect();
+	_gameServer->StopServer();
+
 	_videoDecoder->StopThread();
 	_videoRenderer->StopThread();
-
-	_videoDecoder.reset();
-	_videoRenderer.reset();
-	_debugHud.reset();
 	_shortcutKeyHandler.reset();
-	_notificationManager.reset();
-	_saveStateManager.reset();
-	_soundMixer.reset();
-	_settings.reset();
-	_cheatManager.reset();
-	_movieManager.reset();
 }
 
 void Emulator::Run()
@@ -258,6 +254,26 @@ void Emulator::RunSingleFrame()
 	_controlManager->UpdateControlDevices();*/
 }
 
+shared_ptr<Debugger> Emulator::SafeGetDebugger()
+{
+	auto lock = _debuggerLock.AcquireSafe();
+	shared_ptr<Debugger> debugger = _debugger;
+	return debugger;
+}
+
+void Emulator::SafeResetDebugger(Debugger* dbg = nullptr)
+{
+	if(_emulationThreadId == std::this_thread::get_id()) {
+		auto dbgLock = _debuggerLock.AcquireSafe();
+		_debugger.reset(dbg);
+	} else {
+		//Need to pause emulator to change _debugger (when not called from the emulation thread)
+		auto emuLock = AcquireLock();
+		auto dbgLock = _debuggerLock.AcquireSafe();
+		_debugger.reset(dbg);
+	}
+}
+
 void Emulator::Stop(bool sendNotification)
 {
 	BlockDebuggerRequests();
@@ -266,7 +282,7 @@ void Emulator::Stop(bool sendNotification)
 
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameUnload);
 
-	shared_ptr<Debugger> debugger = _debugger;
+	shared_ptr<Debugger> debugger = SafeGetDebugger();
 	if(debugger) {
 		debugger->SuspendDebugger(false);
 		debugger->Run();
@@ -324,9 +340,7 @@ void Emulator::Reset()
 void Emulator::ReloadRom(bool forPowerCycle)
 {
 	RomInfo info = GetRomInfo();
-	Lock();
 	LoadRom(info.RomFile, info.PatchFile, false, forPowerCycle);
-	Unlock();
 }
 
 void Emulator::PowerCycle()
@@ -336,20 +350,19 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	auto emuLock = AcquireLock();
 	auto lock = _loadLock.AcquireSafe();
 
 	if(!romFile.IsValid()) {
 		return false;
 	}
 
-	_debuggerLock.Acquire();
 	BlockDebuggerRequests();
 
 	//Keep a reference to the original debugger, and reset the member to avoid any calls to the debugger by the init process
-	bool debuggerActive = _debugger != nullptr;
-	shared_ptr<Debugger> debugger = _debugger;
-	_debugger.reset();
-	_debuggerLock.Release();
+	shared_ptr<Debugger> debugger = SafeGetDebugger();
+	bool debuggerActive = debugger != nullptr;
+	SafeResetDebugger();
 
 	if(patchFile.IsValid()) {
 		if(romFile.ApplyPatch(patchFile)) {
@@ -373,7 +386,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	static const vector<string> _snesExtensions = { { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" } };
 	static const vector<string> _gbExtensions = { { ".gb", ".gbc", ".gbs" } };
 
-	shared_ptr<IConsole> console;
+	unique_ptr<IConsole> console;
 	string romExt = romFile.GetFileExtension();
 	LoadRomResult result = LoadRomResult::UnknownType;
 
@@ -438,14 +451,14 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//TODO
 	//UpdateRegion();
 
-	_console = console;
-	console->Init();
+	_console.swap(console);
+	_console->Init();
 
 	if(debuggerActive) {
 		InitDebugger();
 	}
 
-	_rewindManager.reset(new RewindManager(shared_from_this()));
+	_rewindManager.reset(new RewindManager(this));
 	_notificationManager->RegisterNotificationListener(_rewindManager);
 
 	//TODO
@@ -749,29 +762,29 @@ void Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool compres
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }
 
-shared_ptr<SoundMixer> Emulator::GetSoundMixer()
+SoundMixer* Emulator::GetSoundMixer()
 {
-	return _soundMixer;
+	return _soundMixer.get();
 }
 
-shared_ptr<VideoRenderer> Emulator::GetVideoRenderer()
+VideoRenderer* Emulator::GetVideoRenderer()
 {
-	return _videoRenderer;
+	return _videoRenderer.get();
 }
 
-shared_ptr<VideoDecoder> Emulator::GetVideoDecoder()
+VideoDecoder* Emulator::GetVideoDecoder()
 {
-	return _videoDecoder;
+	return _videoDecoder.get();
 }
 
-shared_ptr<ShortcutKeyHandler> Emulator::GetShortcutKeyHandler()
+ShortcutKeyHandler* Emulator::GetShortcutKeyHandler()
 {
-	return _shortcutKeyHandler;
+	return _shortcutKeyHandler.get();
 }
 
-shared_ptr<NotificationManager> Emulator::GetNotificationManager()
+NotificationManager* Emulator::GetNotificationManager()
 {
-	return _notificationManager;
+	return _notificationManager.get();
 }
 
 EmuSettings* Emulator::GetSettings()
@@ -779,34 +792,44 @@ EmuSettings* Emulator::GetSettings()
 	return _settings.get();
 }
 
-shared_ptr<SaveStateManager> Emulator::GetSaveStateManager()
+SaveStateManager* Emulator::GetSaveStateManager()
 {
-	return _saveStateManager;
+	return _saveStateManager.get();
 }
 
-shared_ptr<RewindManager> Emulator::GetRewindManager()
+RewindManager* Emulator::GetRewindManager()
 {
-	return _rewindManager;
+	return _rewindManager.get();
 }
 
-shared_ptr<DebugHud> Emulator::GetDebugHud()
+DebugHud* Emulator::GetDebugHud()
 {
-	return _debugHud;
+	return _debugHud.get();
 }
 
-shared_ptr<BatteryManager> Emulator::GetBatteryManager()
+BatteryManager* Emulator::GetBatteryManager()
 {
-	return _batteryManager;
+	return _batteryManager.get();
 }
 
-shared_ptr<CheatManager> Emulator::GetCheatManager()
+CheatManager* Emulator::GetCheatManager()
 {
-	return _cheatManager;
+	return _cheatManager.get();
 }
 
-shared_ptr<MovieManager> Emulator::GetMovieManager()
+MovieManager* Emulator::GetMovieManager()
 {
-	return _movieManager;
+	return _movieManager.get();
+}
+
+GameServer* Emulator::GetGameServer()
+{
+	return _gameServer.get();
+}
+
+GameClient* Emulator::GetGameClient()
+{
+	return _gameClient.get();
 }
 
 shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
@@ -814,9 +837,13 @@ shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
 	return _systemActionManager;
 }
 
-shared_ptr<IControlManager> Emulator::GetControlManager()
+IControlManager* Emulator::GetControlManager()
 {
-	return _console->GetControlManager();
+	if(_console) {
+		return _console->GetControlManager();
+	} else {
+		return nullptr;
+	}
 }
 
 BaseVideoFilter* Emulator::GetVideoFilter()
@@ -858,7 +885,7 @@ void Emulator::InitDebugger()
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
 		if(!_debugger) {
-			_debugger.reset(new Debugger(this, _console.get()));
+			SafeResetDebugger(new Debugger(this, _console.get()));
 		}
 	}
 }
@@ -885,7 +912,7 @@ void Emulator::StopDebugger()
 
 bool Emulator::IsDebugging()
 {
-	return _debugger != nullptr;
+	return SafeGetDebugger() != nullptr;
 }
 
 thread::id Emulator::GetEmulationThreadId()

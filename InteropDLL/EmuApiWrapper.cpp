@@ -31,7 +31,7 @@
 unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
-shared_ptr<Emulator> _emu;
+unique_ptr<Emulator> _emu(new Emulator());
 
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
@@ -65,7 +65,6 @@ extern "C" {
 
 	DllExport void __stdcall InitDll()
 	{
-		_emu.reset(new Emulator());
 		_emu->Initialize();
 		KeyManager::SetSettings(_emu->GetSettings());
 	}
@@ -80,25 +79,25 @@ extern "C" {
 
 			if(!noVideo) {
 				#ifdef _WIN32
-					_renderer.reset(new Renderer(_emu, (HWND)_viewerHandle, true));
+					_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle, true));
 				#else 
-					_renderer.reset(new SdlRenderer(_emu, _viewerHandle, true));
+					_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle, true));
 				#endif
 			} 
 
 			if(!noAudio) {
 				#ifdef _WIN32
-					_soundManager.reset(new SoundManager(_emu, (HWND)_windowHandle));
+					_soundManager.reset(new SoundManager(_emu.get(), (HWND)_windowHandle));
 				#else
-					_soundManager.reset(new SdlSoundManager(_emu));
+					_soundManager.reset(new SdlSoundManager(_emu.get()));
 				#endif
 			}
 
 			if(!noInput) {
 				#ifdef _WIN32
-					_keyManager.reset(new WindowsKeyManager(_emu, (HWND)_windowHandle));
+					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
 				#else 
-					_keyManager.reset(new LinuxKeyManager(_emu));
+					_keyManager.reset(new LinuxKeyManager(_emu.get()));
 				#endif				
 					
 				KeyManager::RegisterKeyManager(_keyManager.get());
@@ -115,7 +114,7 @@ extern "C" {
 
 	DllExport bool __stdcall LoadRom(char* filename, char* patchFile)
 	{
-		GameClient::Disconnect();
+		_emu->GetGameClient()->Disconnect();
 		return _emu->LoadRom((VirtualFile)filename, patchFile ? (VirtualFile)patchFile : VirtualFile());
 	}
 
@@ -157,7 +156,7 @@ extern "C" {
 
 	DllExport const char* __stdcall GetArchiveRomList(char* filename) { 
 		std::ostringstream out;
-		shared_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filename);
+		unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filename);
 		if(reader) {
 			for(string romName : reader->GetFileList(VirtualFile::RomExtensions)) {
 				out << romName << "[!|!]";
@@ -174,64 +173,56 @@ extern "C" {
 
 	DllExport void __stdcall Stop()
 	{
-		GameClient::Disconnect();
+		_emu->GetGameClient()->Disconnect();
 		_emu->Stop(true);
 	}
 
 	DllExport void __stdcall Pause()
 	{
-		if(!GameClient::Connected()) {
+		if(!_emu->GetGameClient()->Connected()) {
 			_emu->Pause();
 		}
 	}
 
 	DllExport void __stdcall Resume()
 	{
-		if(!GameClient::Connected()) {
+		if(!_emu->GetGameClient()->Connected()) {
 			_emu->Resume();
 		}
 	}
 
 	DllExport bool __stdcall IsPaused()
 	{
-		shared_ptr<Emulator> emu = _emu;
-		if(emu) {
-			return emu->IsPaused();
-		}
-		return true;
+		return _emu->IsPaused();
 	}
 
 	DllExport void __stdcall Reset()
 	{
-		if(!GameClient::Connected()) {
+		if(!_emu->GetGameClient()->Connected()) {
 			_emu->GetSystemActionManager()->Reset();
 		}
 	}
 
 	DllExport void __stdcall PowerCycle()
 	{
-		if(!GameClient::Connected()) {
+		if(!_emu->GetGameClient()->Connected()) {
 			_emu->GetSystemActionManager()->PowerCycle();
 		}
 	}
 
 	DllExport void __stdcall ReloadRom()
 	{
-		if(!GameClient::Connected()) {
+		if(!_emu->GetGameClient()->Connected()) {
 			_emu->ReloadRom(false);
 		}
 	}
 
 	DllExport void __stdcall Release()
 	{
-		GameClient::Disconnect();
-		GameServer::StopServer();
-
 		_emu->Stop(true);
-		
 		_emu->Release();
-		_emu.reset();
 
+		_emu.reset();
 		_renderer.reset();
 		_soundManager.reset();
 		_keyManager.reset();
@@ -239,7 +230,7 @@ extern "C" {
 
 	DllExport INotificationListener* __stdcall RegisterNotificationCallback(NotificationListenerCallback callback)
 	{
-		return _listeners.RegisterNotificationCallback(callback, _emu);
+		return _listeners.RegisterNotificationCallback(callback, _emu.get());
 	}
 
 	DllExport void __stdcall UnregisterNotificationCallback(INotificationListener *listener)
@@ -296,7 +287,6 @@ extern "C" {
 		for(size_t i = 0; i < testRoms.size(); i++) {
 			std::cout << "Running: " << testRoms[i] << std::endl;
 
-			_emu.reset(new Emulator());
 			KeyManager::SetSettings(_emu->GetSettings());
 			_emu->Initialize();
 			GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();

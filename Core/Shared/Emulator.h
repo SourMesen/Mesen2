@@ -29,6 +29,8 @@ class BaseVideoFilter;
 class ShortcutKeyHandler;
 class SystemActionManager;
 class AudioPlayerHud;
+class GameServer;
+class GameClient;
 
 struct RomInfo;
 struct TimingInfo;
@@ -50,26 +52,27 @@ class Emulator : public std::enable_shared_from_this<Emulator>
 {
 private:
 	unique_ptr<thread> _emuThread;
-
-	shared_ptr<Debugger> _debugger;
+	unique_ptr<AudioPlayerHud> _audioPlayerHud;
+	unique_ptr<IConsole> _console;
 
 	shared_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
-	shared_ptr<NotificationManager> _notificationManager;
-	shared_ptr<BatteryManager> _batteryManager;
-	shared_ptr<SoundMixer> _soundMixer;
-	shared_ptr<VideoRenderer> _videoRenderer;
-	shared_ptr<VideoDecoder> _videoDecoder;
-	shared_ptr<DebugHud> _debugHud;
-	shared_ptr<EmuSettings> _settings;
-	shared_ptr<SaveStateManager> _saveStateManager;
 	shared_ptr<RewindManager> _rewindManager;
-	shared_ptr<CheatManager> _cheatManager;
-	shared_ptr<MovieManager> _movieManager;
+	shared_ptr<Debugger> _debugger;
 	shared_ptr<SystemActionManager> _systemActionManager;
 
-	shared_ptr<IConsole> _console;
-
-	unique_ptr<AudioPlayerHud> _audioPlayerHud;
+	const unique_ptr<EmuSettings> _settings;
+	const unique_ptr<DebugHud> _debugHud;
+	const unique_ptr<NotificationManager> _notificationManager;
+	const unique_ptr<BatteryManager> _batteryManager;
+	const unique_ptr<SoundMixer> _soundMixer;
+	const unique_ptr<VideoRenderer> _videoRenderer;
+	const unique_ptr<VideoDecoder> _videoDecoder;
+	const unique_ptr<SaveStateManager> _saveStateManager;
+	const unique_ptr<CheatManager> _cheatManager;
+	const unique_ptr<MovieManager> _movieManager;
+	
+	const shared_ptr<GameServer> _gameServer;
+	const shared_ptr<GameClient> _gameClient;
 
 	thread::id _emulationThreadId;
 
@@ -106,6 +109,8 @@ private:
 	void RunFrameWithRunAhead();
 
 	void BlockDebuggerRequests();
+	shared_ptr<Debugger> SafeGetDebugger();
+	void SafeResetDebugger(Debugger* dbg);
 
 public:
 	class DebuggerRequest
@@ -181,21 +186,23 @@ public:
 	void Serialize(ostream& out, int compressionLevel = 1);
 	void Deserialize(istream& in, uint32_t fileFormatVersion, bool compressed = true);
 
-	shared_ptr<SoundMixer> GetSoundMixer();
-	shared_ptr<VideoRenderer> GetVideoRenderer();
-	shared_ptr<VideoDecoder> GetVideoDecoder();
-	shared_ptr<ShortcutKeyHandler> GetShortcutKeyHandler();
-	shared_ptr<NotificationManager> GetNotificationManager();
+	SoundMixer* GetSoundMixer();
+	VideoRenderer* GetVideoRenderer();
+	VideoDecoder* GetVideoDecoder();
+	ShortcutKeyHandler* GetShortcutKeyHandler();
+	NotificationManager* GetNotificationManager();
 	EmuSettings* GetSettings();
-	shared_ptr<SaveStateManager> GetSaveStateManager();
-	shared_ptr<RewindManager> GetRewindManager();
-	shared_ptr<DebugHud> GetDebugHud();
-	shared_ptr<BatteryManager> GetBatteryManager();
-	shared_ptr<CheatManager> GetCheatManager();
-	shared_ptr<MovieManager> GetMovieManager();
+	SaveStateManager* GetSaveStateManager();
+	RewindManager* GetRewindManager();
+	DebugHud* GetDebugHud();
+	BatteryManager* GetBatteryManager();
+	CheatManager* GetCheatManager();
+	MovieManager* GetMovieManager();
+	GameServer* GetGameServer();
+	GameClient* GetGameClient();
 	shared_ptr<SystemActionManager> GetSystemActionManager();
 
-	shared_ptr<IControlManager> GetControlManager();
+	IControlManager* GetControlManager();
 	
 	BaseVideoFilter* GetVideoFilter();
 

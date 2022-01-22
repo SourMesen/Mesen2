@@ -19,7 +19,7 @@
 #include "Core/Debugger/TraceLogFileSaver.h"
 #include "Core/Gameboy/GbTypes.h"
 
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 static string _logString;
 
 template<typename T>

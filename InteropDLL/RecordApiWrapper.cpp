@@ -4,7 +4,7 @@
 #include "Core/Shared/Audio/SoundMixer.h"
 #include "Core/Shared/Movies/MovieManager.h"
 
-extern shared_ptr<Emulator> _emu;
+extern unique_ptr<Emulator> _emu;
 enum class VideoCodec;
 
 extern "C"

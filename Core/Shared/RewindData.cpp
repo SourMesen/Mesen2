@@ -9,7 +9,7 @@ void RewindData::GetStateData(stringstream &stateData)
 	stateData.write((char*)SaveStateData.data(), SaveStateData.size());
 }
 
-void RewindData::LoadState(shared_ptr<Emulator> &emu)
+void RewindData::LoadState(Emulator* emu)
 {
 	if(SaveStateData.size() > 0) {
 		stringstream stream;
@@ -20,7 +20,7 @@ void RewindData::LoadState(shared_ptr<Emulator> &emu)
 	}
 }
 
-void RewindData::SaveState(shared_ptr<Emulator> &emu)
+void RewindData::SaveState(Emulator* emu)
 {
 	std::stringstream state;
 	emu->Serialize(state);
