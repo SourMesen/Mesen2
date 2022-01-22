@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System;
@@ -11,6 +12,7 @@ namespace Mesen.Debugger.Utilities
 	{
 		private static int _debugWindowCounter = 0;
 		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
+		private static object _windowNotifLock = new();
 
 		public static void OpenDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
@@ -31,13 +33,21 @@ namespace Mesen.Debugger.Utilities
 
 		private static void CloseDebugWindow(Window wnd)
 		{
+			//Remove window from list first, to ensure no more notifications are sent to it
+			_openedWindows.TryRemove(wnd, out _);
+
 			if(Interlocked.Decrement(ref _debugWindowCounter) == 0) {
 				//Closed the last debug window, save the workspace and turn off the debugger
+				//Run any jobs pending on the UI thread, to ensure the debugger
+				//doesn't get restarted by a pending job from the window that was closed
+				//Lock to prevent this from running while ProcessNotification is sending
+				//notifications out to the debug windows
+				lock(_windowNotifLock) {
+					Dispatcher.UIThread.RunJobs();
+				}
 				DebugWorkspaceManager.Save(true);
 				DebugApi.ReleaseDebugger();
 			}
-
-			_openedWindows.TryRemove(wnd, out _);
 		}
 
 		public static void CloseAllWindows()
@@ -54,9 +64,11 @@ namespace Mesen.Debugger.Utilities
 				return;
 			}
 
-			foreach(Window window in _openedWindows.Keys) {
-				if(window is INotificationHandler handler) {
-					handler.ProcessNotification(e);
+			lock(_windowNotifLock) {
+				foreach(Window window in _openedWindows.Keys) {
+					if(window is INotificationHandler handler) {
+						handler.ProcessNotification(e);
+					}
 				}
 			}
 
