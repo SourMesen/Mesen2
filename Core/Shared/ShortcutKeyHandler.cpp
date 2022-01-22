@@ -126,6 +126,9 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 		case EmulatorShortcut::MaxSpeed:
 			return !isNetplayClient;
 
+		case EmulatorShortcut::Pause:
+			return isRunning && !isNetplayClient;
+
 		case EmulatorShortcut::Reset:
 		case EmulatorShortcut::PowerCycle:
 		case EmulatorShortcut::ReloadRom:

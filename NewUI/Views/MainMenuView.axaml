@@ -91,7 +91,18 @@
 			</c:ShortcutMenuItem>
 		
 	</MenuItem>
-		<MenuItem Header="{l:Translate mnuGame}">
+		<MenuItem Header="{l:Translate mnuGame}" SubmenuOpened="OnGameMenuOpened">
+			<c:ShortcutMenuItem Header="{l:Translate mnuPause}" Shortcut="Pause" Name="mnuPause">
+				<MenuItem.Icon>
+					<Image Source="/Assets/MediaPause.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
+			<c:ShortcutMenuItem Header="{l:Translate mnuResume}" Shortcut="Pause" Name="mnuResume">
+				<MenuItem.Icon>
+					<Image Source="/Assets/MediaPlay.png" />
+				</MenuItem.Icon>
+			</c:ShortcutMenuItem>
+			<Separator />
 			<c:ShortcutMenuItem Header="{l:Translate mnuReset}" Shortcut="Reset">
 				<MenuItem.Icon>
 					<Image Source="/Assets/Refresh.png" />

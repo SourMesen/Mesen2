@@ -23,6 +23,7 @@
 			<Control ID="mnuRecentFiles">Recent Files</Control>
 			<Control ID="mnuExit">Exit</Control>
 			<Control ID="mnuGame">Game</Control>
+			<Control ID="mnuResume">Resume</Control>
 			<Control ID="mnuPause">Pause</Control>
 			<Control ID="mnuReset">Reset</Control>
 			<Control ID="mnuPowerCycle">Power Cycle</Control>

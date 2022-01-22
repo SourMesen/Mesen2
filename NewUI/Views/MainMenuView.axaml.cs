@@ -17,6 +17,7 @@ using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Mesen.Localization;
 using Mesen.Debugger.Utilities;
+using Mesen.Controls;
 
 namespace Mesen.Views
 {
@@ -298,6 +299,13 @@ namespace Mesen.Views
 				items.Add(item);
 			}
 			menu.Items = items;
+		}
+
+		private void OnGameMenuOpened(object sender, RoutedEventArgs e)
+		{
+			bool isPaused = EmuApi.IsPaused();
+			this.FindControl<ShortcutMenuItem>("mnuPause").IsVisible = !isPaused;
+			this.FindControl<ShortcutMenuItem>("mnuResume").IsVisible = isPaused;
 		}
 
 		private void OnRegionMenuOpened(object sender, RoutedEventArgs e)
