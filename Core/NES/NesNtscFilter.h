@@ -18,11 +18,11 @@ private:
 
 protected:
 	void OnBeforeApplyFilter();
+	virtual FrameInfo GetFrameInfo();
 
 public:
 	NesNtscFilter(Emulator* emu);
 	virtual ~NesNtscFilter();
 
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer);
-	virtual FrameInfo GetFrameInfo();
 };

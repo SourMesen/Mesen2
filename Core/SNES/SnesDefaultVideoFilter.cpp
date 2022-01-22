@@ -92,7 +92,7 @@ void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	}
 
 	uint32_t *out = GetOutputBuffer();
-	FrameInfo frameInfo = GetFrameInfo();
+	FrameInfo frameInfo = _frameInfo;
 	OverscanDimensions overscan = GetOverscan();
 	
 	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;

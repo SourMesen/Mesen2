@@ -22,12 +22,11 @@ private:
 
 protected:
 	void OnBeforeApplyFilter() override;
+	FrameInfo GetFrameInfo() override;
 
 public:
 	GbDefaultVideoFilter(Emulator* emu);
 	~GbDefaultVideoFilter();
-
-	FrameInfo GetFrameInfo() override;
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override;
 };

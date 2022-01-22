@@ -38,7 +38,7 @@ FrameInfo BaseVideoFilter::GetFrameInfo()
 
 void BaseVideoFilter::UpdateBufferSize()
 {
-	uint32_t newBufferSize = GetFrameInfo().Width*GetFrameInfo().Height;
+	uint32_t newBufferSize = _frameInfo.Width*_frameInfo.Height;
 	if(_bufferSize != newBufferSize) {
 		_frameLock.Acquire();
 		delete[] _outputBuffer;
@@ -67,17 +67,18 @@ uint32_t BaseVideoFilter::GetBufferSize()
 	return _bufferSize * sizeof(uint32_t);
 }
 
-void BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData)
+FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData)
 {
-	_frameLock.Acquire();
+	auto lock = _frameLock.AcquireSafe();
 	_overscan = _emu->GetSettings()->GetOverscan();
 	_isOddFrame = frameNumber % 2;
 	_frameData = frameData;
+	FrameInfo frameInfo = GetFrameInfo();
+	_frameInfo = frameInfo;
 	UpdateBufferSize();
 	OnBeforeApplyFilter();
 	ApplyFilter(ppuOutputBuffer);
-
-	_frameLock.Release();
+	return frameInfo;
 }
 
 uint32_t* BaseVideoFilter::GetOutputBuffer()
@@ -141,7 +142,7 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 
 		frameBuffer = new uint32_t[_bufferSize];
 		memcpy(frameBuffer, GetOutputBuffer(), _bufferSize * sizeof(frameBuffer[0]));
-		frameInfo = GetFrameInfo();
+		frameInfo = _frameInfo;
 	}
 
 	pngBuffer = frameBuffer;

@@ -73,10 +73,9 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	UpdateVideoFilter();
 
 	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
-	_videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber, _frameData);
+	FrameInfo frameInfo = _videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber, _frameData);
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
-	FrameInfo frameInfo = _videoFilter->GetFrameInfo();
 	
 	OverscanDimensions overscan = _videoFilter->GetOverscan();
 

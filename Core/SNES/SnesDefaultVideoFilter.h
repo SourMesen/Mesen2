@@ -20,11 +20,11 @@ private:
 
 protected:
 	void OnBeforeApplyFilter() override;
+	FrameInfo GetFrameInfo() override;
 
 public:
 	SnesDefaultVideoFilter(Emulator* emu);
 	
-	FrameInfo GetFrameInfo() override;
 	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
 
 	static uint32_t ToArgb(uint16_t rgb555);

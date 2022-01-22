@@ -67,7 +67,7 @@ void NesNtscFilter::OnBeforeApplyFilter()
 
 void NesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
-	FrameInfo frameInfo = GetFrameInfo();
+	FrameInfo frameInfo = _frameInfo;
 	OverscanDimensions overscan = GetOverscan();
 	
 	uint32_t baseWidth = NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width);

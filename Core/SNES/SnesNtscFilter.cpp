@@ -49,7 +49,7 @@ void SnesNtscFilter::OnBeforeApplyFilter()
 
 void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
-	FrameInfo frameInfo = GetFrameInfo();
+	FrameInfo frameInfo = _frameInfo;
 	OverscanDimensions overscan = GetOverscan();
 	
 	bool useHighResOutput = _baseFrameInfo.Width == 512;

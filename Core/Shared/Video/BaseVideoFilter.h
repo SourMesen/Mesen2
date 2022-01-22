@@ -20,6 +20,7 @@ private:
 protected:
 	Emulator* _emu = nullptr;
 	FrameInfo _baseFrameInfo = {};
+	FrameInfo _frameInfo = {};
 	void* _frameData = nullptr;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
@@ -31,18 +32,18 @@ protected:
 	bool IsOddFrame();
 	uint32_t GetBufferSize();
 	uint32_t ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity);
+	virtual FrameInfo GetFrameInfo();
 
 public:
 	BaseVideoFilter(Emulator* emu);
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();
-	void SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData);
+	FrameInfo SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData);
 	void TakeScreenshot(string romName, VideoFilterType filterType);
 	void TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream = nullptr);
 
 	virtual OverscanDimensions GetOverscan();
 	
 	void SetBaseFrameInfo(FrameInfo frameInfo);
-	virtual FrameInfo GetFrameInfo();
 };

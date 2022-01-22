@@ -104,7 +104,7 @@ void GbDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)
 	}
 
 	uint32_t* out = GetOutputBuffer();
-	FrameInfo frameInfo = GetFrameInfo();
+	FrameInfo frameInfo = _frameInfo;
 	OverscanDimensions overscan = GetOverscan();
 
 	uint32_t width = _baseFrameInfo.Width;
