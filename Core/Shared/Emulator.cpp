@@ -362,7 +362,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	static const vector<string> _nesExtensions = { { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" } };
 	static const vector<string> _snesExtensions = { { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" } };
 	static const vector<string> _gbExtensions = { { ".gb", ".gbc", ".gbs" } };
-
+	
 	unique_ptr<IConsole> console;
 	string romExt = romFile.GetFileExtension();
 	LoadRomResult result = LoadRomResult::UnknownType;
@@ -390,8 +390,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	if(result != LoadRomResult::Success) {
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
-		_debugger.reset(debugger);
-		debugger->ResetSuspendCounter();
+		if(debugger) {
+			_debugger.reset(debugger);
+			debugger->ResetSuspendCounter();
+		}
 		_allowDebuggerRequest = true;
 		return false;
 	}
