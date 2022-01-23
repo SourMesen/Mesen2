@@ -324,6 +324,9 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	BlockDebuggerRequests();
+
+	auto dbgLock = _debuggerLock.AcquireSafe();
 	auto emuLock = AcquireLock();
 	auto lock = _loadLock.AcquireSafe();
 
@@ -336,10 +339,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	bool debuggerActive = debugger != nullptr;
 	
 	//Unset _debugger to ensure nothing calls the debugger while initializing the new rom
-	{
-		auto dbgLock = _debuggerLock.AcquireSafe();
-		ResetDebugger();
-	}
+	ResetDebugger();
 
 	if(patchFile.IsValid()) {
 		if(romFile.ApplyPatch(patchFile)) {
@@ -854,10 +854,12 @@ Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 {
 	if(IsRunning() && _allowDebuggerRequest) {
 		auto lock = _debuggerLock.AcquireSafe();
-		if(!_debugger && autoInit) {
-			InitDebugger();
+		if(IsRunning() && _allowDebuggerRequest) {
+			if(!_debugger && autoInit) {
+				InitDebugger();
+			}
+			return DebuggerRequest(this);
 		}
-		return DebuggerRequest(this);
 	}
 	return DebuggerRequest(nullptr);
 }
