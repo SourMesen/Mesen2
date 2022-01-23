@@ -34,6 +34,8 @@ struct PpuFrameInfo
 class IConsole : public ISerializable
 {
 public:
+	virtual ~IConsole() {}
+
 	virtual void Stop() = 0;
 	virtual void Reset() = 0;
 
