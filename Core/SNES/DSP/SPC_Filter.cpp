@@ -22,8 +22,8 @@ void SPC_Filter::clear() { memset( ch, 0, sizeof ch ); }
 
 SPC_Filter::SPC_Filter()
 {
-	gain = gain_unit;
-	bass = bass_norm;
+	_gain = gain_unit;
+	_bass = bass_norm;
 	clear();
 }
 
@@ -31,8 +31,8 @@ void SPC_Filter::run( short* io, int count )
 {
 	require( (count & 1) == 0 ); // must be even
 	
-	int const gain = this->gain;
-	int const bass = this->bass;
+	int const gain = this->_gain;
+	int const bass = this->_bass;
 	chan_t* c = &ch [2];
 	do
 	{

@@ -40,7 +40,7 @@ private:
 	bool _immediateMode = false;
 
 	SnesCpuState _state = {};
-	uint32_t _operand = -1;
+	uint32_t _operand = 0;
 
 	uint32_t GetProgramAddress(uint16_t addr);
 	uint32_t GetDataAddress(uint16_t addr);

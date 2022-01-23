@@ -142,9 +142,6 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	
-	bool largeSprites = state.Control.LargeSprites;
-	uint16_t sprAddr = state.Control.SpritePatternAddr;
-
 	std::fill(outBuffer, outBuffer + 256 * 240, 0xFF666666);
 	std::fill(outBuffer + 256 * 240, outBuffer + 256 * 256, 0xFF333333);
 

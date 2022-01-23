@@ -5,6 +5,7 @@
 #include "Utilities/ISerializable.h"
 #include "Shared/Interfaces/IControlManager.h"
 #include "Shared/BaseControlManager.h"
+#include "Shared/SettingTypes.h"
 
 class BaseControlDevice;
 class IInputRecorder;
@@ -19,7 +20,7 @@ enum class ExpansionPortDevice;
 class SnesControlManager : public ISerializable, public BaseControlManager
 {
 private:
-	uint32_t _inputConfigVersion;
+	SnesConfig _prevConfig = {};
 
 protected:
 	SnesConsole* _console;

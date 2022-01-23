@@ -125,7 +125,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			//Create 2nd console (sub) dualsystem games
 			_vsSubConsole.reset(new NesConsole(_emu));
 			_vsSubConsole->_vsMainConsole = this;
-			LoadRomResult result = _vsSubConsole->LoadRom(romFile);
+			result = _vsSubConsole->LoadRom(romFile);
 			if(result != LoadRomResult::Success) {
 				return result;
 			}
@@ -246,7 +246,7 @@ void NesConsole::Init()
 
 void NesConsole::RunFrame()
 {
-	int frame = _ppu->GetFrameCount();
+	uint32_t frame = _ppu->GetFrameCount();
 	while(frame == _ppu->GetFrameCount()) {
 		_cpu->Exec();
 		if(_vsSubConsole) {

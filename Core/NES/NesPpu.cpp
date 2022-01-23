@@ -288,8 +288,8 @@ template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 				if(_scanline <= 239 && IsRenderingEnabled()) {
 					if(_cycle >= 257 && _cycle <= 320) {
 						uint8_t step = ((_cycle - 257) % 8) > 3 ? 3 : ((_cycle - 257) % 8);
-						uint8_t addr = (_cycle - 257) / 8 * 4 + step;
-						returnValue = _secondarySpriteRAM[addr];
+						uint8_t oamAddr = (_cycle - 257) / 8 * 4 + step;
+						returnValue = _secondarySpriteRAM[oamAddr];
 					} else {
 						returnValue = _oamCopybuffer;
 					}

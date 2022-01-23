@@ -1,5 +1,9 @@
 #pragma once
 
+#pragma warning( disable : 4100 ) //unreferenced formal parameter
+#pragma warning( disable : 4244 ) //conversion from 'x' to 'y', possible loss of data
+#pragma warning( disable : 4245 ) //conversion from 'x' to 'y', signed/unsigned mismatch
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>

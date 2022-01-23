@@ -23,8 +23,6 @@ private:
 	NesConfig _nes;
 
 	atomic<uint32_t> _flags;
-	atomic<uint32_t> _inputConfigVersion;
-
 	atomic<uint64_t> _debuggerFlags;
 
 	string _audioDevice;
@@ -99,4 +97,14 @@ public:
 
 	bool IsInputEnabled();
 	double GetControllerDeadzoneRatio();
+
+	template<typename T>
+	bool IsEqual(T& prevCfg, T& newCfg)
+	{
+		if(memcmp(&prevCfg, &newCfg, sizeof(SnesConfig)) == 0) {
+			return true;
+		}
+		memcpy(&prevCfg, &newCfg, sizeof(SnesConfig));
+		return false;
+	}
 };

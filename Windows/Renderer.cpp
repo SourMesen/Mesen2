@@ -542,8 +542,6 @@ void Renderer::DrawHud(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 
 void Renderer::Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight)
 {
-	bool paused = _emu->IsPaused();
-
 	auto lock = _frameLock.AcquireSafe();
 	if(_newFullscreen != _fullscreen) {
 		SetScreenSize(_nesFrameWidth, _nesFrameHeight);

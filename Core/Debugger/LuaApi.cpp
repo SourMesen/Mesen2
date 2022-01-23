@@ -26,6 +26,8 @@
 #include "Utilities/FolderUtilities.h"
 #include "MemoryOperationType.h"
 
+#pragma warning( disable : 4702 ) //unreachable code
+
 #define lua_pushintvalue(name, value) lua_pushliteral(lua, #name); lua_pushinteger(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);
 #define lua_pushboolvalue(name, value) lua_pushliteral(lua, #name); lua_pushboolean(lua, (int)value); lua_settable(lua, -3);
@@ -40,8 +42,8 @@
 #define errorCond(cond, text) if(cond) { luaL_error(lua, text); return 0; }
 #define checkparams() if(!l.CheckParamCount()) { return 0; }
 #define checkminparams(x) if(!l.CheckParamCount(x)) { return 0; }
-#define checkinitdone() if(!_context->CheckInitDone()) { error("This function cannot be called outside a callback"); return 0; }
-#define checksavestateconditions() if(!_context->CheckInStartFrameEvent() && !_context->CheckInExecOpEvent()) { error("This function must be called inside a StartFrame event callback or a CpuExec memory operation callback"); return 0; }
+#define checkinitdone() if(!_context->CheckInitDone()) { error("This function cannot be called outside a callback"); }
+#define checksavestateconditions() if(!_context->CheckInStartFrameEvent() && !_context->CheckInExecOpEvent()) { error("This function must be called inside a StartFrame event callback or a CpuExec memory operation callback"); }
 
 Debugger* LuaApi::_debugger = nullptr;
 Emulator* LuaApi::_emu = nullptr;
@@ -310,7 +312,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 	l.ForceParamCount(5);
 	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Snes);
 	int32_t endAddr = l.ReadInteger(-1);
-	int32_t startAddr = l.ReadInteger();
+	uint32_t startAddr = l.ReadInteger();
 	CallbackType callbackType = (CallbackType)l.ReadInteger();
 	int reference = l.GetReference();
 	checkminparams(3);
@@ -319,7 +321,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 		endAddr = startAddr;
 	}
 
-	errorCond(startAddr > endAddr, "start address must be <= end address");
+	errorCond(startAddr > (uint32_t)endAddr, "start address must be <= end address");
 	errorCond(callbackType < CallbackType::CpuRead || callbackType > CallbackType::CpuExec, "the specified type is invalid");
 	errorCond(cpuType < CpuType::Snes || cpuType > CpuType::Gameboy, "the cpu type is invalid");
 	errorCond(reference == LUA_NOREF, "the specified function could not be found");
@@ -466,7 +468,7 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 
-	int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+	//int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
 
 	lua_newtable(lua);
 	for(int y = 0; y < 239; y++) {
@@ -504,7 +506,7 @@ int LuaApi::GetPixel(lua_State *lua)
 	checkparams();
 	errorCond(x < 0 || x > 255 || y < 0 || y > 238, "invalid x,y coordinates (must be between 0-255, 0-238)");
 
-	int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+	//int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
 
 	//Ignores intensify & grayscale bits
 	//TODO

@@ -216,7 +216,7 @@ struct KeyMapping
 	
 	uint32_t Microphone = 0;
 
-	uint32_t CustomKeys[100];
+	uint32_t CustomKeys[100] = {};
 
 	bool HasKeySet()
 	{
@@ -262,7 +262,7 @@ struct KeyMappingSet
 struct ControllerConfig
 {
 	KeyMappingSet Keys;
-	ControllerType Type = ControllerType::SnesController;
+	ControllerType Type = ControllerType::None;
 };
 
 enum class InputDisplayPosition
@@ -400,7 +400,7 @@ enum class NesConsoleType
 
 struct NesConfig
 {
-	ControllerConfig Controllers[5];
+	ControllerConfig Controllers[5] = {};
 	uint32_t ZapperDetectionRadius = 0;
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
@@ -458,14 +458,14 @@ struct NesConfig
 	bool IsFullColorPalette = false;
 	uint32_t UserPalette[512] = { };
 
-	uint32_t ChannelVolumes[11];
-	uint32_t ChannelPanning[11];
+	uint32_t ChannelVolumes[11] = {};
+	uint32_t ChannelPanning[11] = {};
 
-	StereoFilterType StereoFilter;
-	int32_t StereoDelay;
-	int32_t StereoPanningAngle;
-	int32_t StereoCombFilterDelay;
-	int32_t StereoCombFilterStrength;
+	StereoFilterType StereoFilter = StereoFilterType::None;
+	int32_t StereoDelay = 0;
+	int32_t StereoPanningAngle = 0;
+	int32_t StereoCombFilterDelay = 0;
+	int32_t StereoCombFilterStrength = 0;
 };
 
 struct AudioPlayerConfig

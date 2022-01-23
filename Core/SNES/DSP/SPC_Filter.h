@@ -34,14 +34,14 @@ public:
 	BLARGG_DISABLE_NOTHROW
 private:
 	enum { gain_bits = 8 };
-	int gain;
-	int bass;
+	int _gain;
+	int _bass;
 	struct chan_t { int p1, pp1, sum; };
 	chan_t ch [2];
 };
 
-inline void SPC_Filter::set_gain( int g ) { gain = g; }
+inline void SPC_Filter::set_gain( int g ) { _gain = g; }
 
-inline void SPC_Filter::set_bass( int b ) { bass = b; }
+inline void SPC_Filter::set_bass( int b ) { _bass = b; }
 
 #endif

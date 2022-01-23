@@ -54,6 +54,8 @@ protected:
 	virtual int GetScanlineOffset() { return 0; }
 
 public:
+	virtual ~BaseEventManager() {}
+
 	virtual void SetConfiguration(BaseEventViewerConfig& config) = 0;
 
 	virtual void AddEvent(DebugEventType type, MemoryOperationInfo& operation, int32_t breakpointId = -1) = 0;

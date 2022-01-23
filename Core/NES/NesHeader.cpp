@@ -128,7 +128,7 @@ uint32_t NesHeader::GetChrSize()
 	}
 }
 
-uint32_t NesHeader::GetWorkRamSize()
+int32_t NesHeader::GetWorkRamSize()
 {
 	if(GetRomHeaderVersion() == RomHeaderVersion::Nes2_0) {
 		uint8_t value = Byte10 & 0x0F;
@@ -138,7 +138,7 @@ uint32_t NesHeader::GetWorkRamSize()
 	}
 }
 
-uint32_t NesHeader::GetSaveRamSize()
+int32_t NesHeader::GetSaveRamSize()
 {
 	if(GetRomHeaderVersion() == RomHeaderVersion::Nes2_0) {
 		uint8_t value = (Byte10 & 0xF0) >> 4;
@@ -158,7 +158,7 @@ int32_t NesHeader::GetChrRamSize()
 	}
 }
 
-uint32_t NesHeader::GetSaveChrRamSize()
+int32_t NesHeader::GetSaveChrRamSize()
 {
 	if(GetRomHeaderVersion() == RomHeaderVersion::Nes2_0) {
 		uint8_t value = (Byte11 & 0xF0) >> 4;

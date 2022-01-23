@@ -109,11 +109,9 @@ EventViewerCategoryCfg GbEventManager::GetEventConfig(DebugEventInfo& evt)
 				return isWrite ? _config.PpuRegisterOtherWrites : _config.PpuRegisterReads;
 			} else if(reg >= 0xFF10 && reg <= 0xFF3F) {
 				return isWrite ? _config.ApuRegisterWrites : _config.ApuRegisterReads;
-			} else {
-				return isWrite ? _config.CpuRegisterWrites : _config.CpuRegisterReads;
 			}
 
-			return {};
+			return isWrite ? _config.CpuRegisterWrites : _config.CpuRegisterReads;
 	}
 }
 

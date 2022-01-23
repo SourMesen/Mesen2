@@ -202,15 +202,15 @@ protected:
 				}
 
 				int rowOffset = (c == 'y' || c == 'g' || c == 'p' || c == 'q') ? 1 : 0;
-				for(int j = 0; j < 8; j++) {
-					uint8_t rowData = ((j == 7 && rowOffset == 0) || (j == 0 && rowOffset == 1)) ? 0 : _font[ch * 8 + 1 + j - rowOffset];
-					for(int i = 0; i < width; i++) {
-						int drawFg = (rowData >> (7 - i)) & 0x01;
-						DrawPixel(x + i, y + j, drawFg ? _color : _backColor);
+				for(int row = 0; row < 8; row++) {
+					uint8_t rowData = ((row == 7 && rowOffset == 0) || (row == 0 && rowOffset == 1)) ? 0 : _font[ch * 8 + 1 + row - rowOffset];
+					for(int col = 0; col < width; col++) {
+						int drawFg = (rowData >> (7 - col)) & 0x01;
+						DrawPixel(x + col, y + row, drawFg ? _color : _backColor);
 					}
 				}
-				for(int i = 0; i < width; i++) {
-					DrawPixel(x + i, y - 1, _backColor);
+				for(int col = 0; col < width; col++) {
+					DrawPixel(x + col, y - 1, _backColor);
 				}
 				x += width;
 			}

@@ -38,7 +38,7 @@ struct DebugSpriteInfo
 	int32_t TileAddress;
 	int32_t PaletteAddress;
 
-	uint16_t SpriteIndex;
+	int16_t SpriteIndex;
 
 	int16_t X;
 	int16_t Y;

@@ -34,7 +34,6 @@ bool RomLoader::LoadFile(VirtualFile &romFile)
 	_filename = romFile.GetFileName();
 	string romName = FolderUtilities::GetFilename(_filename, true);
 
-	bool skipSha1Hash = false;
 	uint32_t crc = CRC32::GetCRC(fileData.data(), fileData.size());
 	_romData.Info.Hash.Crc32 = crc;
 

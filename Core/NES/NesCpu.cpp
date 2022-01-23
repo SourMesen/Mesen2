@@ -131,7 +131,7 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 			break;
 	}
 
-	_state.CycleCount = -1;
+	_state.CycleCount = (uint64_t)-1;
 	_masterClock = 0;
 
 	uint8_t cpuOffset = 0;

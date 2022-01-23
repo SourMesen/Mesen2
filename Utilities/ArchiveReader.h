@@ -9,7 +9,7 @@ protected:
 	virtual bool InternalLoadArchive(void* buffer, size_t size) = 0;
 	virtual vector<string> InternalGetFileList() = 0;
 public:
-	~ArchiveReader();
+	virtual ~ArchiveReader();
 
 	bool LoadArchive(void* buffer, size_t size);
 	bool LoadArchive(vector<uint8_t>& data);

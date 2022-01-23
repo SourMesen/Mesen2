@@ -39,10 +39,10 @@ struct NesHeader
 	uint32_t GetSizeValue(uint32_t exponent, uint32_t multiplier);
 	uint32_t GetPrgSize();
 	uint32_t GetChrSize();
-	uint32_t GetWorkRamSize();
-	uint32_t GetSaveRamSize();
+	int32_t GetWorkRamSize();
+	int32_t GetSaveRamSize();
 	int32_t GetChrRamSize();
-	uint32_t GetSaveChrRamSize();
+	int32_t GetSaveChrRamSize();
 	uint8_t GetSubMapper();
 	MirroringType GetMirroringType();
 	GameInputType GetInputType();

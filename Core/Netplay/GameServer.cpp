@@ -70,7 +70,7 @@ bool GameServer::SetInput(BaseControlDevice *device)
 		}
 
 		for(int i = 2; i < 5; i++) {
-			GameServerConnection* connection = GetNetPlayDevice(i);
+			connection = GetNetPlayDevice(i);
 			if(connection) {
 				((Multitap*)device)->SetControllerState(i - 1, connection->GetState());
 			}

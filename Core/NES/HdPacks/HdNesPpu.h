@@ -125,7 +125,6 @@ public:
 						tileInfo.Sprite[j].VerticalMirroring = spriteEx.VerticalMirror;
 						tileInfo.Sprite[j].BackgroundPriority = sprite.BackgroundPriority;
 
-						int32_t shift = (int32_t)_cycle - sprite.SpriteX - 1;
 						if(sprite.HorizontalMirror) {
 							tileInfo.Sprite[j].SpriteColorIndex = ((sprite.LowByte >> shift) & 0x01) | ((sprite.HighByte >> shift) & 0x01) << 1;
 						} else {

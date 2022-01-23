@@ -157,7 +157,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 	for(int32_t i = bankStart; i < bankEnd; i++) {
 		relAddress.Address = i;
-		AddressInfo addrInfo = _console->GetAbsoluteAddress(relAddress);
+		addrInfo = _console->GetAbsoluteAddress(relAddress);
 
 		if(addrInfo.Address < 0 || addrInfo.Type == MemoryType::Register) {
 			pushEndBlock();

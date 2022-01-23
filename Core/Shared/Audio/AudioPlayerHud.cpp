@@ -130,8 +130,8 @@ void AudioPlayerHud::Draw()
 				int endIndex = (int)(endFreq / (_sampleRate / N));
 
 				double avgAmp = 0;
-				for(int j = startIndex; j <= endIndex && j < _amplitudes.size(); j++) {
-					avgAmp += _amplitudes[j];
+				for(int ampIndex = startIndex; ampIndex <= endIndex && ampIndex < _amplitudes.size(); ampIndex++) {
+					avgAmp += _amplitudes[ampIndex];
 				}
 				avgAmp /= (endIndex - startIndex + 1);
 				avgAmp *= ranges[i][2];

@@ -47,9 +47,9 @@ void SnesDefaultVideoFilter::InitLookupTable()
 			y += config.Brightness * 0.5f;
 			YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
 
-			int r = std::min(255, (int)(redChannel * 255));
-			int g = std::min(255, (int)(greenChannel * 255));
-			int b = std::min(255, (int)(blueChannel * 255));
+			r = (uint8_t)std::min(255, (int)(redChannel * 255));
+			g = (uint8_t)std::min(255, (int)(greenChannel * 255));
+			b = (uint8_t)std::min(255, (int)(blueChannel * 255));
 			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;
 		} else {
 			_calculatedPalette[rgb555] = 0xFF000000 | (r << 16) | (g << 8) | b;

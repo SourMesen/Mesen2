@@ -29,16 +29,16 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 
 	IConsole* console = _debugger->GetConsole();
 	//TODO
-	if(SnesConsole* c = dynamic_cast<SnesConsole*>(console)) {
-		_ppu = c->GetPpu();
-		_spc = c->GetSpc();
-		_memoryManager = c->GetMemoryManager();
-		_cartridge = c->GetCartridge();
-		_gameboy = c->GetCartridge()->GetGameboy();
-	} else if(NesConsole* c = dynamic_cast<NesConsole*>(console)) {
-		_nesConsole = c;
-	} else if(Gameboy* c = dynamic_cast<Gameboy*>(console)) {
-		_gameboy = c;
+	if(SnesConsole* snes = dynamic_cast<SnesConsole*>(console)) {
+		_ppu = snes->GetPpu();
+		_spc = snes->GetSpc();
+		_memoryManager = snes->GetMemoryManager();
+		_cartridge = snes->GetCartridge();
+		_gameboy = snes->GetCartridge()->GetGameboy();
+	} else if(NesConsole* nes = dynamic_cast<NesConsole*>(console)) {
+		_nesConsole = nes;
+	} else if(Gameboy* gb = dynamic_cast<Gameboy*>(console)) {
+		_gameboy = gb;
 	}
 }
 

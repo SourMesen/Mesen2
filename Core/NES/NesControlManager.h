@@ -19,7 +19,7 @@ enum class ExpansionPortDevice;
 class NesControlManager : public ISerializable, public INesMemoryHandler, public BaseControlManager
 {
 private:
-	NesConfig _prevConfig;
+	NesConfig _prevConfig = {};
 	uint32_t _lagCounter = 0;
 	bool _isLagging = false;
 

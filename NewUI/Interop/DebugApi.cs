@@ -729,7 +729,7 @@ namespace Mesen.Interop
 		public Int32 TileAddress;
 		public Int32 PaletteAddress;
 
-		public UInt16 SpriteIndex;
+		public Int16 SpriteIndex;
 
 		public Int16 X;
 		public Int16 Y;

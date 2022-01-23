@@ -74,7 +74,7 @@ namespace Vrc7Opll
 		};
 
 		uint32_t adr = 0;
-		int32_t out = 0;
+		int32_t _out = 0;
 
 		uint32_t realstep = 0;
 		uint32_t oplltime = 0;
@@ -105,7 +105,7 @@ namespace Vrc7Opll
 		/* Slot */
 		OpllChannel slot[6 * 2];
 
-		uint32_t mask = 0;
+		uint32_t _mask = 0;
 		shared_ptr<OpllTables> tables;
 
 		OpllChannel* GetModulator(uint8_t i)
@@ -144,7 +144,7 @@ namespace Vrc7Opll
 				s.Stream(&slot[i]);
 			}
 
-			s.Stream(adr, out, realstep, oplltime, opllstep, prev, next, pm_phase, lfo_pm, am_phase, lfo_am, mask,
+			s.Stream(adr, _out, realstep, oplltime, opllstep, prev, next, pm_phase, lfo_pm, am_phase, lfo_am, _mask,
 				lowFreq, hiFreq, instVol, custInst, slotOnFlag, patchNumber, keyStatus
 			);
 		}
@@ -159,7 +159,7 @@ namespace Vrc7Opll
 				slot[i].SetTables(tables);
 			}
 
-			mask = 0;
+			_mask = 0;
 			Reset(tables->clk, tables->rate);
 		}
 
@@ -405,14 +405,14 @@ namespace Vrc7Opll
 		uint32_t SetMask(uint32_t mask)
 		{
 			uint32_t ret = mask;
-			this->mask = mask;
+			this->_mask = mask;
 			return ret;
 		}
 
 		uint32_t ToggleMask(uint32_t mask)
 		{
 			uint32_t ret = mask;
-			this->mask ^= mask;
+			this->_mask ^= mask;
 			return ret;
 		}
 
@@ -494,7 +494,7 @@ namespace Vrc7Opll
 			}
 
 			for(i = 0; i < 6; i++) {
-				if(!(mask & OPLL_MASK_CH(i)) && (GetCarrier(i)->GetEgMode() != FINISH)) {
+				if(!(_mask & OPLL_MASK_CH(i)) && (GetCarrier(i)->GetEgMode() != FINISH)) {
 					inst += GetCarrier(i)->calc_slot_car(GetModulator(i)->calc_slot_mod());
 				}
 			}
@@ -512,9 +512,9 @@ namespace Vrc7Opll
 			}
 
 			oplltime -= realstep;
-			out = (int16_t)(((double)next * (opllstep - oplltime) + (double)prev * oplltime) / opllstep);
+			_out = (int16_t)(((double)next * (opllstep - oplltime) + (double)prev * oplltime) / opllstep);
 
-			return (int16_t)out;
+			return (int16_t)_out;
 		}
 	};
 }

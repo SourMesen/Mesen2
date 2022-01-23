@@ -12,7 +12,6 @@ EmuSettings::EmuSettings(Emulator* emu)
 	_emu = emu;
 	_flags = 0;
 	_debuggerFlags = 0;
-	_inputConfigVersion = 0;
 
 	std::random_device rd;
 	_mt = std::mt19937(rd());
@@ -75,7 +74,6 @@ void EmuSettings::SetInputConfig(InputConfig config)
 	}
 	*/
 	_input = config;
-	_inputConfigVersion++; //TODO
 	//TODO
 	/*
 	if(controllersChanged) {
@@ -87,11 +85,6 @@ void EmuSettings::SetInputConfig(InputConfig config)
 InputConfig EmuSettings::GetInputConfig()
 {
 	return _input;
-}
-
-uint32_t EmuSettings::GetInputConfigVersion()
-{
-	return _inputConfigVersion;
 }
 
 void EmuSettings::SetEmulationConfig(EmulationConfig config)

@@ -134,9 +134,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
 	//TODO
 	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
-	uint16_t baseAddr = 0;
 
-	bool filled[512*256] = {};
 	std::fill(outBuffer, outBuffer + size.Width * size.Height, 0xFF333333);
 	for(int i = 0; i < (state.OverscanMode ? 239 : 224); i++) {
 		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF888888);
@@ -186,17 +184,17 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 	uint8_t width = _oamSizes[state.OamMode][largeSprite][0] << 3;
 	uint16_t sign = (highTableValue & 0x01) << 8;
-	int16_t x = (int16_t)((sign | oamRam[addr]) << 7) >> 7;
-	uint8_t y = oamRam[addr + 1];
+	int16_t spriteX = (int16_t)((sign | oamRam[addr]) << 7) >> 7;
+	uint8_t spriteY = oamRam[addr + 1];
 	uint8_t flags = oamRam[addr + 3];
 
 	bool visible = true;
-	if(x + width <= 0 || x > 255) {
+	if(spriteX + width <= 0 || spriteX > 255) {
 		visible = false;
 	} else {
 		uint16_t scanlineCount = state.OverscanMode ? 239 : 224;
-		uint8_t endY = (y + (state.ObjInterlace ? (height >> 1) : height)) & 0xFF;
-		if(endY >= scanlineCount && y >= scanlineCount) {
+		uint8_t endY = (spriteY + (state.ObjInterlace ? (height >> 1) : height)) & 0xFF;
+		if(endY >= scanlineCount && spriteY >= scanlineCount) {
 			visible = false;
 		}
 	}
@@ -205,8 +203,8 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 	sprite.Bpp = 4;
 	sprite.SpriteIndex = spriteIndex;
-	sprite.X = x;
-	sprite.Y = y;
+	sprite.X = spriteX;
+	sprite.Y = spriteY;
 	sprite.Height = height;
 	sprite.Width = width;
 	sprite.TileIndex = oamRam[addr + 2];

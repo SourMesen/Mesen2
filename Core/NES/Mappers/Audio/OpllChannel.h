@@ -100,7 +100,7 @@ namespace Vrc7Opll
 		shared_ptr<OpllTables> _tables;
 		OpllPatch patch;
 
-		int32_t type;          /* 0 : modulator 1 : carrier */
+		int32_t _type;          /* 0 : modulator 1 : carrier */
 
 									  /* OUTPUT */
 		int32_t feedback;
@@ -113,21 +113,21 @@ namespace Vrc7Opll
 		uint32_t pgout;      /* output */
 
 									/* for Envelope Generator (EG) */
-		int32_t fnum;          /* F-Number */
-		int32_t block;         /* Block */
-		int32_t volume;        /* Current volume */
-		int32_t sustine;       /* Sustine 1 = ON, 0 = OFF */
+		int32_t _fnum;          /* F-Number */
+		int32_t _block;         /* Block */
+		int32_t _volume;        /* Current volume */
+		int32_t _sustine;       /* Sustine 1 = ON, 0 = OFF */
 		uint32_t tll;	      /* Total Level + Key scale level*/
 		uint32_t rks;        /* Key scale offset (Rks) */
 		int32_t eg_mode;       /* Current state */
 		uint32_t eg_phase;   /* Phase */
 		uint32_t eg_dphase;  /* Phase increment amount */
-		uint32_t egout;      /* output */
+		uint32_t _egout;      /* output */
 
 	protected:
 		void Serialize(Serializer& s) override
 		{
-			s.Stream(type, feedback, output[0], output[1], phase, dphase, pgout, fnum, block, volume, sustine, tll, rks, eg_mode, eg_phase, eg_dphase, egout,
+			s.Stream(_type, feedback, output[0], output[1], phase, dphase, pgout, _fnum, _block, _volume, _sustine, tll, rks, eg_mode, eg_phase, eg_dphase, _egout,
 				patch.TL, patch.FB, patch.EG, patch.ML, patch.AR, patch.DR, patch.SL, patch.RR, patch.KR, patch.KL, patch.AM, patch.PM, patch.WF);
 
 			if(!s.IsSaving()) {
@@ -145,7 +145,7 @@ namespace Vrc7Opll
 
 		int32_t GetType()
 		{
-			return type;
+			return _type;
 		}
 
 		int32_t GetEgMode()
@@ -160,27 +160,27 @@ namespace Vrc7Opll
 
 		void setSustine(int32_t sustine)
 		{
-			this->sustine = sustine;
+			this->_sustine = sustine;
 		}
 
 		void setVolume(int32_t volume)
 		{
-			this->volume = volume;
+			this->_volume = volume;
 		}
 
 		void setFnumber(int32_t fnum)
 		{
-			this->fnum = fnum;
+			this->_fnum = fnum;
 		}
 
 		void setBlock(int32_t block)
 		{
-			this->block = block;
+			this->_block = block;
 		}
 
 		void reset(int type)
 		{
-			this->type = type;
+			this->_type = type;
 			sintbl = _tables->waveform[0];
 			phase = 0;
 			dphase = 0;
@@ -192,12 +192,12 @@ namespace Vrc7Opll
 			eg_dphase = 0;
 			rks = 0;
 			tll = 0;
-			sustine = 0;
-			fnum = 0;
-			block = 0;
-			volume = 0;
+			_sustine = 0;
+			_fnum = 0;
+			_block = 0;
+			_volume = 0;
 			pgout = 0;
-			egout = 0;
+			_egout = 0;
 		}
 
 		/* Slot key on	*/
@@ -226,7 +226,7 @@ namespace Vrc7Opll
 
 		void setSlotVolume(int32_t volume)
 		{
-			this->volume = volume;
+			this->_volume = volume;
 		}
 
 		void calc_phase(int32_t lfo)
@@ -246,10 +246,10 @@ namespace Vrc7Opll
 		{
 			output[1] = output[0];
 
-			if(egout >= (DB_MUTE - 1)) {
+			if(_egout >= (DB_MUTE - 1)) {
 				output[0] = 0;
 			} else {
-				output[0] = _tables->DB2LIN_TABLE[sintbl[(pgout + wave2_8pi(fm))&(PG_WIDTH - 1)] + egout];
+				output[0] = _tables->DB2LIN_TABLE[sintbl[(pgout + wave2_8pi(fm))&(PG_WIDTH - 1)] + _egout];
 			}
 
 			return (output[1] + output[0]) >> 1;
@@ -261,13 +261,13 @@ namespace Vrc7Opll
 
 			output[1] = output[0];
 
-			if(egout >= (DB_MUTE - 1)) {
+			if(_egout >= (DB_MUTE - 1)) {
 				output[0] = 0;
 			} else if(patch.FB != 0) {
 				fm = wave2_4pi(feedback) >> (7 - patch.FB);
-				output[0] = _tables->DB2LIN_TABLE[sintbl[(pgout + fm)&(PG_WIDTH - 1)] + egout];
+				output[0] = _tables->DB2LIN_TABLE[sintbl[(pgout + fm)&(PG_WIDTH - 1)] + _egout];
 			} else {
-				output[0] = _tables->DB2LIN_TABLE[sintbl[pgout] + egout];
+				output[0] = _tables->DB2LIN_TABLE[sintbl[pgout] + _egout];
 			}
 
 			feedback = (output[1] + output[0]) >> 1;
@@ -277,21 +277,21 @@ namespace Vrc7Opll
 
 		void UpdatePg()
 		{
-			dphase = _tables->dphaseTable[fnum][block][patch.ML];
+			dphase = _tables->dphaseTable[_fnum][_block][patch.ML];
 		}
 
 		void UpdateTll()
 		{
-			if(type == 0) {
-				tll = _tables->tllTable[(fnum) >> 5][block][patch.TL][patch.KL];
+			if(_type == 0) {
+				tll = _tables->tllTable[(_fnum) >> 5][_block][patch.TL][patch.KL];
 			} else {
-				tll = _tables->tllTable[(fnum) >> 5][block][volume][patch.KL];
+				tll = _tables->tllTable[(_fnum) >> 5][_block][_volume][patch.KL];
 			}
 		}
 
 		void UpdateRks()
 		{
-			rks = _tables->rksTable[(fnum) >> 8][block][patch.KR];
+			rks = _tables->rksTable[(_fnum) >> 8][_block][patch.KR];
 		}
 
 		void UpdateWf()
@@ -329,7 +329,7 @@ namespace Vrc7Opll
 					return _tables->dphaseDRTable[patch.RR][rks];
 
 				case RELEASE:
-					if(sustine) {
+					if(_sustine) {
 						return _tables->dphaseDRTable[5][rks];
 					} else if(patch.EG) {
 						return _tables->dphaseDRTable[patch.RR][rks];
@@ -421,7 +421,7 @@ namespace Vrc7Opll
 				egout = DB_MUTE - 1;
 			}
 
-			this->egout = egout;
+			this->_egout = egout;
 		}
 	};
 }

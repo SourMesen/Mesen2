@@ -41,6 +41,18 @@ public:
 	static constexpr CpuType ToCpuType(MemoryType type)
 	{
 		switch(type) {
+			case MemoryType::SnesMemory:
+			case MemoryType::SnesCgRam:
+			case MemoryType::SnesPrgRom:
+			case MemoryType::SnesSaveRam:
+			case MemoryType::SnesSpriteRam:
+			case MemoryType::SnesVideoRam:
+			case MemoryType::SnesWorkRam:
+			case MemoryType::BsxMemoryPack:
+			case MemoryType::BsxPsRam:
+			case MemoryType::Register:
+				return CpuType::Snes;
+
 			case MemoryType::SpcMemory:
 			case MemoryType::SpcRam:
 			case MemoryType::SpcRom:
@@ -54,6 +66,7 @@ public:
 			case MemoryType::Sa1Memory:
 				return CpuType::Sa1;
 
+			case MemoryType::NecDspMemory:
 			case MemoryType::DspDataRam:
 			case MemoryType::DspDataRom:
 			case MemoryType::DspProgramRom:
@@ -88,10 +101,8 @@ public:
 				return CpuType::Nes;
 
 			default:
-				return CpuType::Snes;
+				throw std::runtime_error("Invalid CPU type");
 		}
-
-		throw std::runtime_error("Invalid CPU type");
 	}
 
 	static constexpr bool IsRelativeMemory(MemoryType memType)

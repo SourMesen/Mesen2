@@ -99,13 +99,11 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 
 void NesControlManager::UpdateControlDevices()
 {
-	NesConfig cfg = _console->GetNesConfig();
-	if(_controlDevices.size() > 0 && memcmp(&_prevConfig, &cfg, sizeof(NesConfig)) == 0) {
+	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
+	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg)) {
 		//Do nothing if configuration is unchanged
 		return;
 	}
-	
-	_prevConfig = cfg;
 
 	auto lock = _deviceLock.AcquireSafe();
 	//bool hadKeyboard = HasKeyboard();
@@ -234,7 +232,6 @@ void NesControlManager::Serialize(Serializer& s)
 {
 	//Restore controllers that were being used at the time the snapshot was made
 	//This is particularely important to ensure proper sync during NetPlay
-	EmuSettings* settings = _emu->GetSettings();
 	ControllerType controllerTypes[4];
 	ExpansionPortDevice expansionDevice;
 	ConsoleType consoleType;

@@ -4,6 +4,7 @@
 class IAssembler
 {
 public:
+	virtual ~IAssembler() {}
 	virtual uint32_t AssembleCode(string code, uint32_t startAddress, int16_t* assembledCode) = 0;
 };
 

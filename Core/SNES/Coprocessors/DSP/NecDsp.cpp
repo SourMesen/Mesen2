@@ -275,7 +275,7 @@ void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)
 
 	//Select the 2nd operand for the operation
 	uint8_t pSelect = (_opCode >> 20) & 0x03;
-	uint16_t p;
+	uint16_t p = 0;
 	switch(pSelect) {
 		case 0: p = _ram[_state.DP & _ramMask]; break;
 		case 1: p = source; break;

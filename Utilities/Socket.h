@@ -10,7 +10,7 @@ private:
 	bool _cleanupWSA = false;
 	#endif
 	
-	uintptr_t _socket = ~0;
+	uintptr_t _socket = (uintptr_t)~0;
 	bool _connectionError = false;
 	int32_t _UPnPPort = -1;
 #endif

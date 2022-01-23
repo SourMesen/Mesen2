@@ -19,7 +19,6 @@
 SnesControlManager::SnesControlManager(SnesConsole* console) : BaseControlManager(console->GetEmulator())
 {
 	_console = console;
-	_inputConfigVersion = -1;
 	UpdateControlDevices();
 }
 
@@ -35,7 +34,7 @@ ControllerType SnesControlManager::GetControllerType(uint8_t port)
 shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
-	
+
 	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
 
 	switch(type) {
@@ -48,23 +47,24 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 		default:
 			throw std::runtime_error("Unsupported controller type");
 	}
-	
+
 	return device;
 }
 
 void SnesControlManager::UpdateControlDevices()
 {
-	uint32_t version = _emu->GetSettings()->GetInputConfigVersion();
-	if(_inputConfigVersion != version) {
-		_inputConfigVersion = version;
+	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
+	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg)) {
+		//Do nothing if configuration is unchanged
+		return;
+	}
 
-		auto lock = _deviceLock.AcquireSafe();
-		ClearDevices();
-		for(int i = 0; i < 2; i++) {
-			shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
-			if(device) {
-				RegisterControlDevice(device);
-			}
+	auto lock = _deviceLock.AcquireSafe();
+	ClearDevices();
+	for(int i = 0; i < 2; i++) {
+		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
+		if(device) {
+			RegisterControlDevice(device);
 		}
 	}
 }
