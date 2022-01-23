@@ -327,6 +327,9 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\SelectRomWindow.axaml.cs">
+      <DependentUpon>SelectRomWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\NetplayConnectWindow.axaml.cs">
       <DependentUpon>NetplayConnectWindow.axaml</DependentUpon>
     </Compile>

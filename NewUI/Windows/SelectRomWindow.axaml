@@ -1,0 +1,47 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:w="using:Mesen.Windows"
+	mc:Ignorable="d"
+	Width="400"
+	Height="450"
+	x:Class="Mesen.Windows.SelectRomWindow"
+	Icon="/Assets/Icon.ico"
+	Title="{l:Translate wndTitle}"
+	x:DataType="w:SelectRomViewModel"
+>
+	<DockPanel HorizontalAlignment="Stretch">
+		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto" DockPanel.Dock="Top">
+			<TextBlock Text="{l:Translate lblSearch}" />
+			<TextBox Grid.Column="1" Text="{CompiledBinding SearchString}" Name="Search" />
+		</Grid>
+
+		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
+			<StackPanel.Styles>
+				<Style Selector="Button">
+					<Setter Property="Margin" Value="5"/>
+					<Setter Property="Width" Value="73"/>
+					<Setter Property="HorizontalContentAlignment" Value="Center"/>
+				</Style>
+			</StackPanel.Styles>
+			<Button Content="{l:Translate btnOK}" Click="OnOkClick" IsEnabled="{CompiledBinding !!SelectedEntry}" />
+			<Button Content="{l:Translate btnCancel}" Click="OnCancelClick" />
+		</StackPanel>
+
+		<ListBox
+			Name="ListBox"
+			Items="{CompiledBinding FilteredEntries}"
+			SelectedItem="{CompiledBinding SelectedEntry}"
+			DoubleTapped="OnDoubleClick"
+		>
+			<ListBox.Styles>
+				<Style Selector="ScrollViewer">
+					<Setter Property="AllowAutoHide" Value="False" />
+				</Style>
+			</ListBox.Styles>
+		</ListBox>
+	</DockPanel>
+</Window>

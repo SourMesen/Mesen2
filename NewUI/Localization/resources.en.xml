@@ -733,6 +733,12 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+		<Form ID="SelectRomWindow">
+			<Control ID="wndTitle">Select rom...</Control>
+			<Control ID="lblSearch">Search:</Control>
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
 		<Form ID="BaseInputConfigForm">
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -805,7 +811,7 @@
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 			<Control ID="chkShowPaletteIndexes">Show palette indexes</Control>
 		</Form>
-
+		
 		<Form ID="SpriteViewerWindow">
 			<Control ID="wndTitle">Sprite Viewer</Control>
 			

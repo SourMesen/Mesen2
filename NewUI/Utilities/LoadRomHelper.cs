@@ -1,5 +1,6 @@
 ﻿using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +13,15 @@ namespace Mesen.Utilities
 {
 	public static class LoadRomHelper
 	{
-		public static void LoadRom(ResourcePath romPath, ResourcePath? patchPath = null)
+		public static async void LoadRom(ResourcePath romPath, ResourcePath? patchPath = null)
 		{
-			//TODO
-			/*if(!frmSelectRom.SelectRom(ref romPath)) {
-				return;
-			}*/
+			if(FolderHelper.IsArchiveFile(romPath)) {
+				ResourcePath? selectedRom = await SelectRomWindow.Show(romPath);
+				if(selectedRom == null) {
+					return;
+				}
+				romPath = selectedRom.Value;
+			}
 
 			if(patchPath == null && ConfigManager.Config.Preferences.AutoLoadPatches) {
 				string[] extensions = new string[3] { ".ips", ".ups", ".bps" };
