@@ -52,7 +52,7 @@ namespace Mesen.Debugger.Controls
 			var text = new FormattedText("", new Typeface("Microsoft Sans Serif", FontStyle.Normal, FontWeight.Bold), 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			foreach(var item in Items) {
 				text.Text = item.Name;
-				maxWidth = Math.Max(maxWidth, (int)text.Bounds.Width);
+				maxWidth = Math.Max(maxWidth, (int)text.Bounds.Width + 5);
 			}
 			FirstColumnWidth = maxWidth;
 		}
@@ -75,6 +75,7 @@ namespace Mesen.Debugger.Controls
 	public class TooltipEntries : List<TooltipEntry>, INotifyCollectionChanged
 	{
 		private Dictionary<string, TooltipEntry> _entries = new();
+		private HashSet<string> _updatedKeys = new();
 
 		public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
@@ -86,6 +87,8 @@ namespace Mesen.Debugger.Controls
 
 		public void AddPicture(string name, IImage source, double zoom, PixelRect? cropRect = null)
 		{
+			_updatedKeys.Add(name);
+
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				if(entry.Value is TooltipPictureEntry picEntry) {
 					picEntry.Zoom = zoom;
@@ -104,19 +107,42 @@ namespace Mesen.Debugger.Controls
 			} else {
 				entry = new TooltipEntry(name, new TooltipPictureEntry(source, zoom, cropRect));
 				_entries[entry.Name] = entry;
-				base.Add(entry);
+				base.Insert(_updatedKeys.Count - 1, entry);
 				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
 		public void AddEntry(string name, object value, FontFamily? font = null)
 		{
+			_updatedKeys.Add(name);
+
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				entry.Value = value;
 			} else {
 				entry = new TooltipEntry(name, value, font);
 				_entries[entry.Name] = entry;
-				base.Add(entry);
+				base.Insert(_updatedKeys.Count - 1, entry);
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+
+		public void StartUpdate()
+		{
+			_updatedKeys = new();
+		}
+
+		public void EndUpdate()
+		{
+			bool updated = false;
+			for(int i = Count - 1; i >= 0; i--) {
+				if(!_updatedKeys.Contains(this[i].Name)) {
+					_entries.Remove(this[i].Name);
+					RemoveAt(i);
+					updated = true;
+				}
+			}
+
+			if(updated) {
 				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}

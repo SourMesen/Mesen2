@@ -37,8 +37,17 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 
 	bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
 	bool largeTileHeight = layer.LargeTiles;
+	int tileHeight = largeTileHeight ? 16 : 8;
+	int tileWidth = largeTileWidth ? 16 : 8;
+	int columnCount = layer.DoubleWidth ? 64 : 32;
+	int rowCount = layer.DoubleHeight ? 64 : 32;
 
 	if(state.BgMode == 7) {
+		tileHeight = 8;
+		tileWidth = 8;
+		columnCount = 128;
+		rowCount = 128;
+		
 		for(int row = 0; row < 128; row++) {
 			for(int column = 0; column < 128; column++) {
 				uint32_t tileIndex = vram[row * 256 + column * 2];
@@ -64,13 +73,11 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 			}
 		}
 	} else {
-		int tileHeight = largeTileHeight ? 16 : 8;
-		int tileWidth = largeTileWidth ? 16 : 8;
-		for(int row = 0; row < (layer.DoubleHeight ? 64 : 32); row++) {
+		for(int row = 0; row < rowCount; row++) {
 			uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 			uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
 
-			for(int column = 0; column < (layer.DoubleWidth ? 64 : 32); column++) {
+			for(int column = 0; column < columnCount; column++) {
 				uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
 
 				bool vMirror = (vram[addr + 1] & 0x80) != 0;
@@ -110,6 +117,12 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 	
 	DebugTilemapInfo result = {};
 	result.Bpp = bpp;
+	result.TileWidth = tileWidth;
+	result.TileHeight = tileHeight;
+	result.ColumnCount = columnCount;
+	result.RowCount = rowCount;
+	result.TilemapAddress = state.BgMode == 7 ? 0 : (layer.TilemapAddress << 1);
+	result.TilesetAddress = state.BgMode == 7 ? 0 : (layer.ChrAddress << 1);
 	result.ScrollX = hScroll;
 	result.ScrollY = vScroll;
 	result.ScrollWidth = isDoubleWidthScreen ? 512 : 256;
@@ -271,9 +284,15 @@ void SnesPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& bas
 
 FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
 {
+	SnesPpuState& state = (SnesPpuState&)baseState;
+
+	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
+	if(bpp == 0) {
+		return {};
+	}
+
 	FrameInfo size = { 256, 256 };
 
-	SnesPpuState& state = (SnesPpuState&)baseState;
 	if(state.BgMode == 7) {
 		return { 1024, 1024 };
 	}

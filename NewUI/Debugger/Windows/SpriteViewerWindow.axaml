@@ -75,16 +75,14 @@
 					
 					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 
-					<Border
-						BorderBrush="Gray"
-						BorderThickness="1"
-						Margin="0 10"
-						Padding="2"
+					<c:GroupBox
+						Header="{l:Translate lblSelectedSprite}"
+						Margin="0 5 0 0"
 						MinWidth="170"
-						IsVisible="{CompiledBinding SelectedPreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+						IsVisible="{CompiledBinding !!SelectedPreviewPanel}"
 					>
 						<ContentControl Content="{CompiledBinding SelectedPreviewPanel}" />
-					</Border>
+					</c:GroupBox>
 				</StackPanel>
 			</ScrollViewer>
 		</Panel>

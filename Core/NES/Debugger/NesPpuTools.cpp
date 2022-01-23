@@ -89,6 +89,12 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 2;
+	result.TileWidth = 8;
+	result.TileHeight = 8;
+	result.ColumnCount = 64;
+	result.RowCount = 60;
+	result.TilemapAddress = 0x2000;
+	result.TilesetAddress = bgAddr;
 	result.ScrollWidth = NesConstants::ScreenWidth;
 	result.ScrollHeight = NesConstants::ScreenHeight;
 

@@ -173,6 +173,7 @@ namespace Mesen.Debugger.ViewModels
 		public DynamicTooltip GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
 		{
 			TooltipEntries entries = existingTooltip?.Items ?? new();
+			entries.StartUpdate();
 			entries.AddPicture("Sprite", sprite.SpritePreview, 48.0 / sprite.Width);
 
 			DebugPaletteInfo palette = _palette;
@@ -201,6 +202,7 @@ namespace Mesen.Debugger.ViewModels
 			if(sprite.UseSecondTable != NullableBoolean.Undefined) {
 				entries.AddEntry("Second table", sprite.UseSecondTable == NullableBoolean.True);
 			}
+			entries.EndUpdate();
 
 			if(existingTooltip != null) {
 				return existingTooltip;

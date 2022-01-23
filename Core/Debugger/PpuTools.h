@@ -80,13 +80,18 @@ struct DebugTilemapInfo
 {
 	uint32_t Bpp;
 	
+	uint32_t TileWidth;
+	uint32_t TileHeight;
+
 	uint32_t ScrollX;
 	uint32_t ScrollWidth;
 	uint32_t ScrollY;
 	uint32_t ScrollHeight;
 
-	uint32_t CurrentRow;
-	uint32_t CurrentColumn;
+	uint32_t RowCount;
+	uint32_t ColumnCount;
+	uint32_t TilemapAddress;
+	uint32_t TilesetAddress;
 };
 
 struct DebugTilemapTileInfo

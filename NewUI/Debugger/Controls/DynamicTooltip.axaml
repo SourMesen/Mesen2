@@ -12,7 +12,6 @@
 >
 	<UserControl.Styles>
 		<Style Selector="TextBlock">
-			<Setter Property="Margin" Value="0 2" />
 			<Setter Property="VerticalAlignment" Value="Top" />
 		</Style>
 	</UserControl.Styles>
@@ -27,7 +26,7 @@
 						FontWeight="Bold"
 						MinWidth="{Binding FirstColumnWidth, ElementName=root}"
 						IsVisible="{Binding Name.Length}"
-						Margin="0 2 10 2"
+						Margin="0 3 10 2"
 					/>
 					<ContentControl Content="{Binding Value}">
 						<ContentControl.DataTemplates>
@@ -36,6 +35,7 @@
 									Text="{Binding}"
 									FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
 									FontSize="12"
+									Margin="0"
 								/>
 							</DataTemplate>
 							<DataTemplate DataType="x:Boolean">

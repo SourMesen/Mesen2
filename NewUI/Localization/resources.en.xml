@@ -797,6 +797,8 @@
 		<Form ID="TilemapViewerWindow">
 			<Control ID="wndTitle">Tilemap Viewer</Control>
 			<Control ID="lblDisplayMode">Display mode: </Control>
+			<Control ID="lblSelectedTile">Selected Tile</Control>
+			<Control ID="lblTilemap">Tilemap</Control>
 			<Control ID="chkShowGrid">Show tile grid</Control>
 			<Control ID="chkShowAltGrid">Show attribute grid</Control>
 			<Control ID="chkHighlightTileChanges">Highlight tile changes</Control>
@@ -810,10 +812,13 @@
 			<Control ID="mnuView">View</Control>
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 			<Control ID="chkShowPaletteIndexes">Show palette indexes</Control>
+			<Control ID="lblSelectedColor">Selected Color</Control>
 		</Form>
 		
 		<Form ID="SpriteViewerWindow">
 			<Control ID="wndTitle">Sprite Viewer</Control>
+
+			<Control ID="lblSelectedSprite">Selected Sprite</Control>
 			
 			<Control ID="colSpriteIndex">#</Control>
 			<Control ID="colX">X</Control>

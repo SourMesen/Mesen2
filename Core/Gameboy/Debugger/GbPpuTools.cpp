@@ -13,7 +13,7 @@ GbPpuTools::GbPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, e
 DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	GbPpuState& state = (GbPpuState&)baseState;
-	int offset = options.Layer == 1 ? 0x1C00 : 0x1800;
+	uint32_t offset = options.Layer == 1 ? 0x1C00 : 0x1800;
 	bool isCgb = state.CgbEnabled;
 
 	uint16_t baseTile = state.BgTileSelect ? 0 : 0x1000;
@@ -54,6 +54,12 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 2;
+	result.TileWidth = 8;
+	result.TileHeight = 8;
+	result.ColumnCount = 32;
+	result.RowCount = 32;
+	result.TilemapAddress = offset;
+	result.TilesetAddress = baseTile;
 	result.ScrollX = state.ScrollX;
 	result.ScrollY = state.ScrollY;
 	result.ScrollWidth = GbConstants::ScreenWidth;

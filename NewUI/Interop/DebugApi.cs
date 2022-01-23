@@ -657,13 +657,18 @@ namespace Mesen.Interop
 	{
 		public UInt32 Bpp;
 
+		public UInt32 TileWidth;
+		public UInt32 TileHeight;
+
 		public UInt32 ScrollX;
 		public UInt32 ScrollWidth;
 		public UInt32 ScrollY;
 		public UInt32 ScrollHeight;
 
-		public UInt32 CurrentRow;
-		public UInt32 CurrentColumn;
+		public UInt32 RowCount;
+		public UInt32 ColumnCount;
+		public UInt32 TilemapAddress;
+		public UInt32 TilesetAddress;
 	}
 
 	public struct DebugTilemapTileInfo

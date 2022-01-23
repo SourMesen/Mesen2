@@ -46,27 +46,28 @@
 		</Panel>
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" IsVisible="{CompiledBinding IsNes}">
 					<TextBlock Text="{l:Translate lblDisplayMode}" />
 					<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayMode}" Width="100" />
 				</StackPanel>
 				<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
-				<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" />
+				<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" IsVisible="{CompiledBinding IsNes}" />
 				<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
-				<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" />
-				<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" />
+				<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" IsVisible="{CompiledBinding IsNes}" />
+				<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" IsVisible="{CompiledBinding IsNes}" />
 
 				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 
-				<Border
-					BorderBrush="Gray"
-					BorderThickness="1"
-					Margin="0 10"
-					Padding="2"
-					IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+				<c:GroupBox Header="{l:Translate lblTilemap}" Margin="0 5 0 0">
+					<ContentControl Content="{CompiledBinding TilemapInfoPanel}" />
+				</c:GroupBox>
+				
+				<c:GroupBox
+					Header="{l:Translate lblSelectedTile}"
+					IsVisible="{CompiledBinding !!PreviewPanel}}"
 				>
 					<ContentControl Content="{CompiledBinding PreviewPanel}" />
-				</Border>
+				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
 		
@@ -79,7 +80,7 @@
 		>
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding Title}" />
+					<TextBlock Text="{Binding Title}" IsVisible="{Binding Enabled}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 			<TabControl.ContentTemplate>
@@ -102,6 +103,8 @@
 					ShowGrid="{CompiledBinding Config.ShowGrid}"
 					SelectionRect="{CompiledBinding SelectionRect}"
 					OverlayRect="{CompiledBinding ScrollOverlayRect}"
+					GridSizeX="{CompiledBinding GridSizeX}"
+					GridSizeY="{CompiledBinding GridSizeY}"
 					AltGridSizeX="16"
 					AltGridSizeY="16"
 					ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
