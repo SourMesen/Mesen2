@@ -258,7 +258,15 @@ namespace Mesen.Windows
 
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
+			base.OnLostFocus(e);
 			InputApi.ResetKeyState();
+			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, true);
+		}
+
+		protected override void OnGotFocus(GotFocusEventArgs e)
+		{
+			base.OnGotFocus(e);
+			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, false);
 		}
 	}
 }
