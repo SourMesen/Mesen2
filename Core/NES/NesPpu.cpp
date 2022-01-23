@@ -54,6 +54,8 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	_settings->InitializeRam(_spriteRAM, 0x100);
 	_settings->InitializeRam(_secondarySpriteRAM, 0x20);
 
+	SetRegion(ConsoleRegion::Ntsc);
+
 	Reset();
 }
 
@@ -103,8 +105,6 @@ template<class T> void NesPpu<T>::Reset()
 	_spriteAddrH = 0;
 	_spriteAddrL = 0;
 	_oamCopyDone = false;
-	_renderingEnabled = false;
-	_prevRenderingEnabled = false;
 
 	memset(_hasSprite, 0, sizeof(_hasSprite));
 	memset(_spriteTiles, 0, sizeof(_spriteTiles));
@@ -127,6 +127,9 @@ template<class T> void NesPpu<T>::Reset()
 
 	_updateVramAddrDelay = 0;
 	_updateVramAddr = 0;
+
+	_firstVisibleSpriteAddr = 0;
+	_lastVisibleSpriteAddr = 0;
 
 	memset(_oamDecayCycles, 0, sizeof(_oamDecayCycles));
 	_enableOamDecay = _console->GetNesConfig().EnableOamDecay;
