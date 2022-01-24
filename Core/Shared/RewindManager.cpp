@@ -220,7 +220,7 @@ void RewindManager::ProcessEndOfFrame()
 	}
 }
 
-void RewindManager::ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind)
+void RewindManager::ProcessFrame(RenderedFrame frame, bool forRewind)
 {
 	if(_rewindState == RewindState::Starting || _rewindState == RewindState::Started) {
 		if(!forRewind) {
@@ -231,9 +231,10 @@ void RewindManager::ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t
 		}
 
 		VideoFrame newFrame;
-		newFrame.Data = vector<uint32_t>(frameBuffer, frameBuffer + width * height);
-		newFrame.Width = width;
-		newFrame.Height = height;
+		newFrame.Data = vector<uint32_t>((uint32_t*)frame.FrameBuffer, (uint32_t*)frame.FrameBuffer + frame.Width * frame.Height);
+		newFrame.Width = frame.Width;
+		newFrame.Height = frame.Height;
+		newFrame.Scale = frame.Scale;
 		_videoHistoryBuilder.push_back(newFrame);
 
 		if(_videoHistoryBuilder.size() == (size_t)_historyBackup.front().FrameCount) {
@@ -248,14 +249,15 @@ void RewindManager::ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t
 			_settings->ClearFlag(EmulationFlags::MaximumSpeed);
 			if(!_videoHistory.empty()) {
 				VideoFrame &frameData = _videoHistory.back();
-				_emu->GetVideoRenderer()->UpdateFrame(frameData.Data.data(), frameData.Width, frameData.Height);
+				RenderedFrame oldFrame(frameData.Data.data(), frameData.Width, frameData.Height, frameData.Scale, frame.FrameNumber);
+				_emu->GetVideoRenderer()->UpdateFrame(oldFrame);
 				_videoHistory.pop_back();
 			}
 		}
 	} else if(_rewindState == RewindState::Stopping || _rewindState == RewindState::Debugging) {
 		//Display nothing while resyncing
 	} else {
-		_emu->GetVideoRenderer()->UpdateFrame(frameBuffer, width, height);
+		_emu->GetVideoRenderer()->UpdateFrame(frame);
 	}
 }
 
@@ -352,9 +354,9 @@ bool RewindManager::HasHistory()
 	return _hasHistory;
 }
 
-void RewindManager::SendFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind)
+void RewindManager::SendFrame(RenderedFrame frame, bool forRewind)
 {
-	ProcessFrame(frameBuffer, width, height, forRewind);
+	ProcessFrame(frame, forRewind);
 }
 
 bool RewindManager::SendAudio(int16_t* soundBuffer, uint32_t sampleCount)

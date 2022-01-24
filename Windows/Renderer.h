@@ -57,9 +57,8 @@ private:
 	uint32_t _monitorWidth = 0;
 	uint32_t _monitorHeight = 0;
 
-	uint32_t _nesFrameHeight = 0;
-	uint32_t _nesFrameWidth = 0;
-	uint32_t _newFrameBufferSize = 0;
+	uint32_t _emuFrameHeight = 0;
+	uint32_t _emuFrameWidth = 0;
 
 	HRESULT InitDevice();
 	void CleanupDevice();
@@ -75,7 +74,7 @@ private:
 		
 	HRESULT CreateRenderTargetView();
 	void ReleaseRenderTargetView();
-	HRESULT CreateNesBuffers();
+	HRESULT CreateEmuTextureBuffers();
 	void ResetNesBuffers();
 
 public:
@@ -87,5 +86,5 @@ public:
 	void Reset();
 	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight);
 
-	void UpdateFrame(uint32_t *frameBuffer, uint32_t width, uint32_t height);
+	void UpdateFrame(RenderedFrame frame);
 };

@@ -46,7 +46,7 @@ public:
 	void StartThread();
 	void StopThread();
 
-	void UpdateFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height);
+	void UpdateFrame(RenderedFrame frame);
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 

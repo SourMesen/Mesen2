@@ -650,11 +650,12 @@ void GbPpu::SendFrame()
 	}
 	_isFirstFrame = false;
 
+	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount);
 #ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrameSync(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, _state.FrameCount, true, false);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 #else
 	bool rewinding = _emu->GetRewindManager()->IsRewinding();
-	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, _state.FrameCount, rewinding, rewinding);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
 #endif
 
 	_emu->ProcessEndOfFrame();

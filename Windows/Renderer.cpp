@@ -41,13 +41,12 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
-	if(_nesFrameHeight != height || _nesFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
+	if(_emuFrameHeight != height || _emuFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		if(_nesFrameHeight != height || _nesFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
-			_nesFrameHeight = height;
-			_nesFrameWidth = width;
-			_newFrameBufferSize = width*height;
+		if(_emuFrameHeight != height || _emuFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
+			_emuFrameHeight = height;
+			_emuFrameWidth = width;
 
 			bool needReset = _fullscreen != _newFullscreen;
 			bool fullscreenResizeMode = _fullscreen && _newFullscreen;
@@ -93,13 +92,13 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			} else {
 				if(fullscreenResizeMode) {
 					ResetNesBuffers();
-					CreateNesBuffers();
+					CreateEmuTextureBuffers();
 				} else {
 					ResetNesBuffers();
 					ReleaseRenderTargetView();
 					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, 0);
 					CreateRenderTargetView();
-					CreateNesBuffers();
+					CreateEmuTextureBuffers();
 				}
 			}
 		}
@@ -199,7 +198,7 @@ HRESULT Renderer::CreateRenderTargetView()
 	return S_OK;
 }
 
-HRESULT Renderer::CreateNesBuffers()
+HRESULT Renderer::CreateEmuTextureBuffers()
 {
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
@@ -211,12 +210,12 @@ HRESULT Renderer::CreateNesBuffers()
 	vp.TopLeftY = 0;
 	_pDeviceContext->RSSetViewports(1, &vp);
 
-	_textureBuffer[0] = new uint8_t[_nesFrameWidth*_nesFrameHeight * 4];
-	_textureBuffer[1] = new uint8_t[_nesFrameWidth*_nesFrameHeight * 4];
-	memset(_textureBuffer[0], 0, _nesFrameWidth*_nesFrameHeight * 4);
-	memset(_textureBuffer[1], 0, _nesFrameWidth*_nesFrameHeight * 4);
+	_textureBuffer[0] = new uint8_t[_emuFrameWidth*_emuFrameHeight * 4];
+	_textureBuffer[1] = new uint8_t[_emuFrameWidth*_emuFrameHeight * 4];
+	memset(_textureBuffer[0], 0, _emuFrameWidth*_emuFrameHeight * 4);
+	memset(_textureBuffer[1], 0, _emuFrameWidth*_emuFrameHeight * 4);
 
-	_pTexture = CreateTexture(_nesFrameWidth, _nesFrameHeight);
+	_pTexture = CreateTexture(_emuFrameWidth, _emuFrameHeight);
 	if(!_pTexture) {
 		return S_FALSE;
 	}
@@ -374,7 +373,7 @@ HRESULT Renderer::InitDevice()
 	_pDeviceContext->OMSetBlendState(_pAlphaEnableBlendingState, blendFactor, 0xffffffff);
 	_pDeviceContext->OMSetDepthStencilState(_pDepthDisabledStencilState, 1);
 
-	hr = CreateNesBuffers();
+	hr = CreateEmuTextureBuffers();
 	if(FAILED(hr)) {
 		return hr;
 	}
@@ -421,14 +420,14 @@ ID3D11ShaderResourceView* Renderer::GetShaderResourceView(ID3D11Texture2D* textu
 	return shaderResourceView;
 }
 
-void Renderer::UpdateFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height)
+void Renderer::UpdateFrame(RenderedFrame frame)
 {
-	SetScreenSize(width, height);
+	SetScreenSize(frame.Width, frame.Height);
 
 	auto lock = _textureLock.AcquireSafe();
 	if(_textureBuffer[0]) {
 		//_textureBuffer[0] may be null if directx failed to initialize properly
-		memcpy(_textureBuffer[0], frameBuffer, width*height*sizeof(uint32_t));
+		memcpy(_textureBuffer[0], frame.FrameBuffer, frame.Width*frame.Height*sizeof(uint32_t));
 		_needFlip = true;
 		_frameChanged = true;
 	}
@@ -451,7 +450,7 @@ void Renderer::DrawScreen()
 
 	//Copy buffer to texture
 	uint32_t bpp = 4;
-	uint32_t rowPitch = _nesFrameWidth * bpp;
+	uint32_t rowPitch = _emuFrameWidth * bpp;
 	D3D11_MAPPED_SUBRESOURCE dd;
 	HRESULT hr = _pDeviceContext->Map(_pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
 	if(FAILED(hr)) {
@@ -460,7 +459,7 @@ void Renderer::DrawScreen()
 	}
 	uint8_t* surfacePointer = (uint8_t*)dd.pData;
 	uint8_t* videoBuffer = _textureBuffer[1];
-	for(uint32_t i = 0, iMax = _nesFrameHeight; i < iMax; i++) {
+	for(uint32_t i = 0, iMax = _emuFrameHeight; i < iMax; i++) {
 		memcpy(surfacePointer, videoBuffer, rowPitch);
 		videoBuffer += rowPitch;
 		surfacePointer += dd.RowPitch;
@@ -544,7 +543,7 @@ void Renderer::Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight
 {
 	auto lock = _frameLock.AcquireSafe();
 	if(_newFullscreen != _fullscreen) {
-		SetScreenSize(_nesFrameWidth, _nesFrameHeight);
+		SetScreenSize(_emuFrameWidth, _emuFrameHeight);
 	}
 
 	if(_pDeviceContext == nullptr) {

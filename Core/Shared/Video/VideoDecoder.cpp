@@ -19,8 +19,8 @@ VideoDecoder::VideoDecoder(Emulator* emu)
 	_emu = emu;
 	_frameChanged = false;
 	_stopFlag = false;
-	_baseFrameInfo = { 256, 239 };
-	_lastFrameInfo = _baseFrameInfo;
+	_baseFrameSize = { 256, 239 };
+	_lastFrameSize = _baseFrameSize;
 }
 
 VideoDecoder::~VideoDecoder()
@@ -31,22 +31,28 @@ VideoDecoder::~VideoDecoder()
 void VideoDecoder::Init()
 {
 	UpdateVideoFilter();
-	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
+	_videoFilter->SetBaseFrameInfo(_baseFrameSize);
 }
 
 FrameInfo VideoDecoder::GetBaseFrameInfo(bool removeOverscan)
 {
 	if(removeOverscan) {
 		OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
-		return { _baseFrameInfo.Width - overscan.Left - overscan.Right, _baseFrameInfo.Height - overscan.Top - overscan.Bottom };
+		return {
+			(uint32_t)(_baseFrameSize.Width * _frame.Scale) - overscan.Left - overscan.Right,
+			(uint32_t)(_baseFrameSize.Height * _frame.Scale) - overscan.Top - overscan.Bottom
+		};
 	} else {
-		return _baseFrameInfo;
+		return {
+			(uint32_t)(_baseFrameSize.Width * _frame.Scale),
+			(uint32_t)(_baseFrameSize.Height * _frame.Scale)
+		};
 	}
 }
 
 FrameInfo VideoDecoder::GetFrameInfo()
 {
-	return _lastFrameInfo;
+	return _lastFrameSize;
 }
 
 void VideoDecoder::UpdateVideoFilter()
@@ -72,33 +78,38 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 {
 	UpdateVideoFilter();
 
-	_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
-	FrameInfo frameInfo = _videoFilter->SendFrame(_ppuOutputBuffer, _frameNumber, _frameData);
+	_baseFrameSize.Width = _frame.Width;
+	_baseFrameSize.Height = _frame.Height;
+
+	_videoFilter->SetBaseFrameInfo(_baseFrameSize);
+	FrameInfo frameSize = _videoFilter->SendFrame((uint16_t*)_frame.FrameBuffer, _frame.FrameNumber, _frame.Data);
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	
 	OverscanDimensions overscan = _videoFilter->GetOverscan();
 
 	if(_scaleFilter) {
-		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
-		frameInfo = _scaleFilter->GetFrameInfo(frameInfo);
+		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
+		frameSize = _scaleFilter->GetFrameInfo(frameSize);
 		overscan.Left *= _scaleFilter->GetScale();
 		overscan.Right *= _scaleFilter->GetScale();
 		overscan.Top *= _scaleFilter->GetScale();
 		overscan.Bottom *= _scaleFilter->GetScale();
 	}
 
-	_emu->GetDebugHud()->Draw(outputBuffer, frameInfo, overscan, _frameNumber, true);
+	RenderedFrame convertedFrame((void*)outputBuffer, frameSize.Width, frameSize.Height, _frame.Scale, _frame.FrameNumber);
 
-	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), _baseFrameInfo);
-	if(frameInfo.Height != _lastFrameInfo.Height || frameInfo.Width != _lastFrameInfo.Width || aspectRatio != _lastAspectRatio) {
+	_emu->GetDebugHud()->Draw(outputBuffer, frameSize, overscan, _frame.FrameNumber, true);
+
+	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), _baseFrameSize);
+	if(frameSize.Height != _lastFrameSize.Height || frameSize.Width != _lastFrameSize.Width || aspectRatio != _lastAspectRatio) {
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ResolutionChanged);
 	}
 	_lastAspectRatio = aspectRatio;
-	_lastFrameInfo = frameInfo;
-
+	_lastFrameSize = frameSize;
+	
 	//Rewind manager will take care of sending the correct frame to the video renderer
-	_emu->GetRewindManager()->SendFrame(outputBuffer, frameInfo.Width, frameInfo.Height, forRewind);
+	_emu->GetRewindManager()->SendFrame(convertedFrame, forRewind);
 
 	_frameChanged = false;
 }
@@ -124,7 +135,7 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
-void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData)
+void VideoDecoder::UpdateFrame(RenderedFrame frame, bool sync, bool forRewind)
 {
 	if(_emu->IsRunAheadFrame()) {
 		return;
@@ -140,11 +151,7 @@ void VideoDecoder::UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16
 		//At this point, we are sure that the decode thread is no longer busy
 	}
 	
-	_baseFrameInfo.Width = width;
-	_baseFrameInfo.Height = height;
-	_frameNumber = frameNumber;
-	_ppuOutputBuffer = ppuOutputBuffer;
-	_frameData = frameData;
+	_frame = frame;
 	if(sync) {
 		DecodeFrame(forRewind);
 	} else {
@@ -161,7 +168,7 @@ void VideoDecoder::StartThread()
 	if(!_decodeThread) {
 		_videoFilter.reset();
 		UpdateVideoFilter();
-		_videoFilter->SetBaseFrameInfo(_baseFrameInfo);
+		_videoFilter->SetBaseFrameInfo(_baseFrameSize);
 		_stopFlag = false;
 		_frameChanged = false;
 		_frameCount = 0;
@@ -186,10 +193,10 @@ void VideoDecoder::StopThread()
 		//Clear whole screen
 		if(_frameCount > 0) {
 			vector<uint16_t> outputBuffer(512 * 478, 0);
-			_ppuOutputBuffer = outputBuffer.data();
-			memset(_ppuOutputBuffer, 0, 512 * 478 * 2);
+			_frame.FrameBuffer = outputBuffer.data();
+			memset(_frame.FrameBuffer, 0, 512 * 478 * 2);
 			DecodeFrame();
-			_ppuOutputBuffer = nullptr;
+			_frame.FrameBuffer = nullptr;
 		}
 	}
 #endif

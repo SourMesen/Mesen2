@@ -23,6 +23,7 @@ struct VideoFrame
 	vector<uint32_t> Data;
 	uint32_t Width;
 	uint32_t Height;
+	double Scale;
 };
 
 class RewindManager : public INotificationListener, public IInputProvider, public IInputRecorder
@@ -54,7 +55,7 @@ private:
 	void Stop();
 	void ForceStop();
 
-	void ProcessFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind);
+	void ProcessFrame(RenderedFrame frame, bool forRewind);
 	bool ProcessAudio(int16_t* soundBuffer, uint32_t sampleCount);
 	
 	void ClearBuffer();
@@ -77,6 +78,6 @@ public:
 
 	bool HasHistory();
 
-	void SendFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height, bool forRewind);
+	void SendFrame(RenderedFrame frame, bool forRewind);
 	bool SendAudio(int16_t *soundBuffer, uint32_t sampleCount);
 };

@@ -101,15 +101,15 @@ void VideoRenderer::RenderThread()
 	}
 }
 
-void VideoRenderer::UpdateFrame(uint32_t* frameBuffer, uint32_t width, uint32_t height)
+void VideoRenderer::UpdateFrame(RenderedFrame frame)
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder;
 	if(recorder) {
-		recorder->AddFrame(frameBuffer, width, height, _emu->GetFps());
+		recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps());
 	}
 
 	if(_renderer) {
-		_renderer->UpdateFrame(frameBuffer, width, height);
+		_renderer->UpdateFrame(frame);
 		_waitForRender.Signal();
 	}
 }

@@ -1069,8 +1069,11 @@ template<class T> void NesPpu<T>::SendFrame()
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+	frame.Data = frameData; //HD packs
+
 #ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, true, false, frameData);
+	_console->GetVideoDecoder()->UpdateFrame(frame, true, false);
 #else 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
 		SendFrameVsDualSystem();
@@ -1079,7 +1082,7 @@ template<class T> void NesPpu<T>::SendFrame()
 		}
 	} else {
 		bool forRewind = _emu->GetRewindManager()->IsRewinding();
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind, frameData);
+		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 		_emu->ProcessEndOfFrame();
 	}
 
@@ -1092,10 +1095,12 @@ template<class T> void NesPpu<T>::SendFrameVsDualSystem()
 	NesConfig& cfg = _settings->GetNesConfig();
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+
 	if(cfg.VsDualVideoOutput == VsDualOutputOption::MainSystemOnly && _console->IsVsMainConsole()) {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 	} else if(cfg.VsDualVideoOutput == VsDualOutputOption::SubSystemOnly && !_console->IsVsMainConsole()) {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, forRewind, forRewind);
+		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 	} else if(cfg.VsDualVideoOutput == VsDualOutputOption::Both) {
 		if(_console->IsVsMainConsole()) {
 			uint16_t* mergedBuffer = new uint16_t[NesConstants::ScreenWidth * NesConstants::ScreenHeight * 2];
@@ -1112,7 +1117,8 @@ template<class T> void NesPpu<T>::SendFrameVsDualSystem()
 				in2 += NesConstants::ScreenWidth;
 			}
 
-			_emu->GetVideoDecoder()->UpdateFrame(mergedBuffer, NesConstants::ScreenWidth * 2, NesConstants::ScreenHeight, _frameCount, true, forRewind);
+			RenderedFrame mergedFrame(mergedBuffer, NesConstants::ScreenWidth*2, NesConstants::ScreenHeight, 1.0, _frameCount);
+			_emu->GetVideoDecoder()->UpdateFrame(mergedFrame, true, forRewind);
 			delete[] mergedBuffer;
 		}
 	}

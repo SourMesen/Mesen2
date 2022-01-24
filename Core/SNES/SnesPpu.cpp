@@ -1473,13 +1473,14 @@ void SnesPpu::SendFrame()
 
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
+	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount);
 #ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, true, isRewinding);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
 #else
 	if(isRewinding || _interlacedFrame) {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, true, isRewinding);
+		_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
 	} else {
-		_emu->GetVideoDecoder()->UpdateFrame(_currentBuffer, width, height, _frameCount, false, false);
+		_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 	}
 #endif
 

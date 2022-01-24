@@ -15,9 +15,6 @@ class VideoDecoder
 private:
 	Emulator* _emu;
 
-	uint16_t *_ppuOutputBuffer = nullptr;
-	void* _frameData = nullptr;
-	uint32_t _frameNumber = 0;
 	ConsoleType _consoleType = ConsoleType::Snes;
 
 	unique_ptr<thread> _decodeThread;
@@ -30,8 +27,10 @@ private:
 	uint32_t _frameCount = 0;
 
 	double _lastAspectRatio = 0.0;
-	FrameInfo _baseFrameInfo = {};
-	FrameInfo _lastFrameInfo = {};
+
+	FrameInfo _baseFrameSize = {};
+	FrameInfo _lastFrameSize = {};
+	RenderedFrame _frame = {};
 
 	VideoFilterType _videoFilterType = VideoFilterType::None;
 	unique_ptr<BaseVideoFilter> _videoFilter;
@@ -56,7 +55,7 @@ public:
 	FrameInfo GetBaseFrameInfo(bool removeOverscan);
 	FrameInfo GetFrameInfo();
 
-	void UpdateFrame(uint16_t *ppuOutputBuffer, uint16_t width, uint16_t height, uint32_t frameNumber, bool sync, bool forRewind, void* frameData = nullptr);
+	void UpdateFrame(RenderedFrame frame, bool sync, bool forRewind);
 
 	bool IsRunning();
 	void StartThread();
