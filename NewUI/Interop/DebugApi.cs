@@ -493,6 +493,7 @@ namespace Mesen.Interop
 	{
 		PreviousFrame = 1,
 		NesPpuSecondWrite = 2,
+		HasTargetMemory = 4,
 	}
 
 	public struct DebugEventInfo
@@ -506,6 +507,7 @@ namespace Mesen.Interop
 		public byte DmaChannel;
 		public DmaChannelConfig DmaChannelInfo;
 		public EventFlags Flags;
+		public MemoryOperationInfo TargetMemory;
 	};
 
 	[StructLayout(LayoutKind.Sequential)]

@@ -2,7 +2,7 @@
 
 namespace Mesen.Interop
 {
-	public static class SnesMemoryTypeExtensions
+	public static class MemoryTypeExtensions
 	{
 		public static CpuType ToCpuType(this MemoryType memType)
 		{
@@ -219,6 +219,15 @@ namespace Mesen.Interop
 				MemoryType.Register => "REG",
 
 				_ => throw new Exception("invalid type"),
+			};
+		}
+
+		public static string GetFormatString(this MemoryType memType)
+		{
+			return memType switch {
+				MemoryType.NesPpuMemory => "X4",
+				MemoryType.NesSpriteRam => "X2",
+				_ => "X" + (DebugApi.GetMemorySize(memType) - 1).ToString("X").Length
 			};
 		}
 	}

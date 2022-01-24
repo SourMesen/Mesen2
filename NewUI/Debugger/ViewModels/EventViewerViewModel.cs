@@ -189,6 +189,9 @@ namespace Mesen.Debugger.ViewModels
 			if(evt.Flags.HasFlag(EventFlags.NesPpuSecondWrite)) {
 				details.Add("2nd register write");
 			}
+			if(evt.Flags.HasFlag(EventFlags.HasTargetMemory)) {
+				details.Add("Target: " + evt.TargetMemory.MemType.GetShortName() + " $" + evt.TargetMemory.Address.ToString(evt.TargetMemory.MemType.GetFormatString()));
+			}
 
 			if(evt.Type == DebugEventType.Breakpoint && evt.BreakpointId >= 0) {
 				var breakpoints = BreakpointManager.Breakpoints;

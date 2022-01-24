@@ -41,12 +41,35 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	evt.ProgramCounter = _cpu->GetState().PC;
 
 	uint32_t addr = operation.Address;
-	if(operation.Type == MemoryOperationType::Write && (addr & 0xE000) == 0x2000 && ((addr & 0x07) == 5 || (addr & 0x07) == 6)) {
-		//2005/2006 PPU register writes, mark as 2nd write when needed
+	if(operation.Type == MemoryOperationType::Write && (addr & 0xE000) == 0x2000) {
 		NesPpuState state;
 		_ppu->GetState(state);
-		if(state.WriteToggle) {
-			evt.Flags = (uint32_t)EventFlags::NesPpuSecondWrite;
+		switch(addr & 0x07) {
+			case 4:
+				//OAM write
+				evt.TargetMemory.Type = MemoryOperationType::Write;
+				evt.TargetMemory.MemType = MemoryType::NesSpriteRam;
+				evt.TargetMemory.Address = state.SpriteRamAddr;
+				evt.TargetMemory.Value = operation.Value;
+				evt.Flags = (uint32_t)EventFlags::WithTargetMemory;
+				break;
+
+			case 5:
+			case 6:
+				//2005/2006 PPU register writes, mark as 2nd write when needed
+				if(state.WriteToggle) {
+					evt.Flags = (uint32_t)EventFlags::NesPpuSecondWrite;
+				}
+				break;
+
+			case 7:
+				//VRAM write
+				evt.TargetMemory.Type = MemoryOperationType::Write;
+				evt.TargetMemory.MemType = MemoryType::NesPpuMemory;
+				evt.TargetMemory.Address = state.BusAddress;
+				evt.TargetMemory.Value = operation.Value;
+				evt.Flags = (uint32_t)EventFlags::WithTargetMemory;
+				break;
 		}
 	}
 

@@ -9,6 +9,7 @@ enum class EventFlags
 {
 	PreviousFrame = 1,
 	NesPpuSecondWrite = 2,
+	WithTargetMemory = 4,
 };
 
 struct DebugEventInfo
@@ -22,6 +23,7 @@ struct DebugEventInfo
 	int8_t DmaChannel;
 	DmaChannelConfig DmaChannelInfo;
 	uint32_t Flags;
+	MemoryOperationInfo TargetMemory;
 };
 
 struct EventViewerCategoryCfg
