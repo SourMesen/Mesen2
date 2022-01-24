@@ -169,6 +169,7 @@ namespace Mesen.Debugger.Windows
 					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
 						_model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();
 					}
+					UpdateConfig();
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:

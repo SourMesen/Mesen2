@@ -180,7 +180,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public static string GetEventDetails(DebugEventInfo evt, bool singleLine)
 		{
-			bool isDma = evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead;
+			bool isDma = evt.DmaChannel >= 0 && (evt.Operation.Type == MemoryOperationType.DmaWrite || evt.Operation.Type == MemoryOperationType.DmaRead);
 
 			List<string> details = new List<string>();
 			if(evt.Flags.HasFlag(EventFlags.PreviousFrame)) {
