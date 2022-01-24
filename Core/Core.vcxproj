@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Mesen\Core\BF909x.h" />
     <ClInclude Include="Debugger\BaseTraceLogger.h" />
     <ClInclude Include="Debugger\ITraceLogger.h" />
     <ClInclude Include="Debugger\stdafx.h" />
@@ -109,6 +110,8 @@
     <ClInclude Include="NES\Mappers\Audio\Vrc6Pulse.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc6Saw.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc7Audio.h" />
+    <ClInclude Include="NES\Mappers\AXROM.h" />
+    <ClInclude Include="NES\Mappers\BF909x.h" />
     <ClInclude Include="NES\Mappers\FDS\BaseFdsChannel.h" />
     <ClInclude Include="NES\Mappers\FDS\Fds.h" />
     <ClInclude Include="NES\Mappers\FDS\FdsAudio.h" />

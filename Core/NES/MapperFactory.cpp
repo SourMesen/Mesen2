@@ -12,14 +12,14 @@
 #include "Ac08.h"
 #include "Action53.h"
 #include "ActionEnterprises.h"
-#include "Ax5705.h"
-#include "AXROM.h"
-#include "Bandai74161_7432.h"
+#include "Ax5705.h"*/
+#include "NES/Mappers/AXROM.h"
+/*#include "Bandai74161_7432.h"
 #include "BandaiFcg.h"
 #include "BandaiKaraoke.h"
-#include "Bb.h"
-#include "BF909x.h"
-#include "BF9096.h"
+#include "Bb.h"*/
+#include "NES/Mappers/BF909x.h"
+/*#include "BF9096.h"
 #include "Bmc11160.h"
 #include "Bmc12in1.h"
 #include "Bmc51.h"
@@ -317,9 +317,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 				return new MMC3();
 			}
 		case 5: return new MMC5();
-		/*case 6: return new FrontFareast();
+		//case 6: return new FrontFareast();
 		case 7: return new AXROM();
-		case 8: return new FrontFareast();
+		/*case 8: return new FrontFareast();
 		case 9: return new MMC2();
 		case 10: return new MMC4();
 		case 11: return new ColorDreams();
@@ -384,9 +384,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 67: return new Sunsoft3();
 		case 68: return new Sunsoft4();
 		case 69: return new SunsoftFme7();
-		case 70: return new Bandai74161_7432(false);
+		case 70: return new Bandai74161_7432(false);*/
 		case 71: return new BF909x();
-		case 72: return new JalecoJf17_19(false);
+		/*case 72: return new JalecoJf17_19(false);
 		case 73: return new VRC3();
 		case 74: return new MMC3_ChrRam(0x08, 0x09, 2);
 		case 75: return new VRC1();
