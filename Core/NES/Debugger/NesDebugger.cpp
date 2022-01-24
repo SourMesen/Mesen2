@@ -228,7 +228,7 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	AddressInfo ret = _mapper->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _mapper->GetAbsoluteAddress(currentPc);
 	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
-	//_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 }
 
 void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
