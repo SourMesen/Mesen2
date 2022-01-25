@@ -12,6 +12,7 @@ using Mesen.Debugger.Utilities;
 using Mesen.Config;
 using System;
 using static Mesen.Debugger.ViewModels.BreakpointListViewModel;
+using Avalonia.Input;
 
 namespace Mesen.Debugger.Views
 {
@@ -35,7 +36,7 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridClick(object sender, RoutedEventArgs e)
+		private void OnGridClick(object sender, TappedEventArgs e)
 		{
 			DataGrid? grid = (sender as DataGrid);
 			if(grid?.SelectedItem is BreakpointViewModel vm) {
@@ -51,7 +52,7 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnGridDoubleClick(object sender, TappedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid?.SelectedItem is BreakpointViewModel vm) {

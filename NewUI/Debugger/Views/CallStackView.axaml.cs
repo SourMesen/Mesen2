@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Debugger.ViewModels;
@@ -27,7 +28,7 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnGridDoubleClick(object sender, TappedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid.SelectedItem is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {

@@ -15,14 +15,14 @@ namespace Mesen.Debugger.Views
 		{
 			InitializeComponent();
 
-			ComboBox cboFontFamily = this.Find<ComboBox>("cboFontFamily");
+			ComboBox cboFontFamily = this.FindControl<ComboBox>("cboFontFamily");
 			List<string> fontFamilies = FontManager.Current.GetInstalledFontFamilyNames().Where((family) => {
 				return new Typeface(new FontFamily(family)).GlyphTypeface.IsFixedPitch;
 			}).ToList();
 			fontFamilies.Sort();
 			cboFontFamily.Items = fontFamilies;
 
-			ComboBox cboFontSize = this.Find<ComboBox>("cboFontSize");
+			ComboBox cboFontSize = this.FindControl<ComboBox>("cboFontSize");
 			cboFontSize.Items = new float[] { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18 };
 		}
 

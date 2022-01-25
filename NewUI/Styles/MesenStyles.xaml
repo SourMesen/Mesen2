@@ -479,6 +479,10 @@
 		<Setter Property="MinHeight" Value="44" />
 	</Style>
 
+	<Style Selector="ScrollViewer">
+		<Setter Property="AllowAutoHide" Value="False" />
+	</Style>
+
 	<Style Selector="ComboBox">
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="3 2" />
@@ -548,9 +552,10 @@
 	</Style>
 
 	<Style Selector="NumericUpDown">
+		<Setter Property="FormatString" Value="0" />
 		<Setter Property="HorizontalContentAlignment" Value="Left" />
 		<Setter Property="HorizontalAlignment" Value="Left" />
-		<Setter Property="MinWidth" Value="30" />
+		<Setter Property="MinWidth" Value="70" />
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="MaxHeight" Value="21" />
 		<Setter Property="Margin" Value="1" />

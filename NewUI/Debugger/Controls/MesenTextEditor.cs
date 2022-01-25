@@ -83,7 +83,6 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnApplyTemplate(e);
 			ScrollViewer = e.NameScope.Find<ScrollViewer>("PART_ScrollViewer");
-			ScrollViewer.AllowAutoHide = false;
 		}
 
 		public void ScrollLineToTop(int line)

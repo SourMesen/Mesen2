@@ -6,6 +6,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Windows;
 using System;
 using static Mesen.Debugger.ViewModels.LabelListViewModel;
+using Avalonia.Input;
 
 namespace Mesen.Debugger.Views
 {
@@ -29,7 +30,7 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnGridDoubleClick(object sender, TappedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid.SelectedItem is LabelViewModel label) {

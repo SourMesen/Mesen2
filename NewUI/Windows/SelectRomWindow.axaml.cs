@@ -117,7 +117,7 @@ namespace Mesen.Windows
 			Close();
 		}
 
-		private void OnDoubleClick(object sender, RoutedEventArgs e)
+		private void OnDoubleClick(object sender, TappedEventArgs e)
 		{
 			if(DataContext is SelectRomViewModel model && model.SelectedEntry != null) {
 				model.Cancelled = false;
