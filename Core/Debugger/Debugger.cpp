@@ -708,7 +708,7 @@ CodeDataLogger* Debugger::GetCodeDataLogger(CpuType cpuType)
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetCodeDataLogger();
 	}
-	throw std::runtime_error("GetCodeDataLogger() - Unsupported CPU type");
+	return nullptr;
 }
 
 Disassembler* Debugger::GetDisassembler()
@@ -747,7 +747,7 @@ CallstackManager* Debugger::GetCallstackManager(CpuType cpuType)
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetCallstackManager();
 	}
-	throw std::runtime_error("GetCallstackManager() - Unsupported CPU type");
+	return nullptr;
 }
 
 IConsole* Debugger::GetConsole()
@@ -765,7 +765,7 @@ IAssembler* Debugger::GetAssembler(CpuType cpuType)
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetAssembler();
 	}
-	throw std::runtime_error("GetAssembler() - Unsupported CPU type");
+	return nullptr;
 }
 
 template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
