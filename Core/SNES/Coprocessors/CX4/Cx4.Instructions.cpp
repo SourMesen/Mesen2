@@ -165,11 +165,11 @@ uint32_t Cx4::GetSourceValue(uint8_t src)
 	return 0;
 }
 
-void  Cx4::WriteRegister(uint8_t reg, uint32_t value)
+void Cx4::WriteRegister(uint8_t reg, uint32_t value)
 {
 	value &= 0xFFFFFF;
 	switch(reg & 0x7F) {
-		case 0x01: _state.Mult = (_state.Mult & 0xFFFFFF) | (value << 24); break;
+		case 0x01: _state.Mult = (_state.Mult & 0xFFFFFF) | ((uint64_t)value << 24); break;
 		case 0x02: _state.Mult = (_state.Mult & 0xFFFFFF000000) | value; break;
 		case 0x03: _state.MemoryDataReg = value; break;
 		case 0x08: _state.RomBuffer = value; break;

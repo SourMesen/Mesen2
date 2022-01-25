@@ -813,7 +813,6 @@
     <ClInclude Include="NES\Debugger\NesPpuTools.h" />
     <ClInclude Include="SNES\SnesState.h" />
     <ClInclude Include="Shared\TimingInfo.h" />
-    <ClInclude Include="..\..\Mesen\Core\BF909x.h" />
     <ClInclude Include="NES\Mappers\BF909x.h" />
     <ClInclude Include="NES\Mappers\AXROM.h" />
   </ItemGroup>
