@@ -283,5 +283,11 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Expand")]
 		GoToLocation,
+
+		[IconFile("Export")]
+		ExportToPng,
+
+		[IconFile("VerticalLayout")]
+		ViewInTileViewer,
 	}
 }

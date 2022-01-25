@@ -98,14 +98,16 @@ namespace Mesen.Debugger.Controls
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
 			base.OnAttachedToVisualTree(e);
-			_timer.Interval = TimeSpan.FromMilliseconds(50);
+			_timer.Interval = TimeSpan.FromMilliseconds(100);
 			_timer.Tick += timer_Tick;
 			_timer.Start();
 		}
 
 		private void timer_Tick(object? sender, EventArgs e)
 		{
-			InvalidateVisual();
+			if(SelectionMode != PaletteSelectionMode.None) {
+				InvalidateVisual();
+			}
 		}
 
 		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

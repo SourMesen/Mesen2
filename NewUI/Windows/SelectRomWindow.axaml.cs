@@ -87,10 +87,8 @@ namespace Mesen.Windows
 			SelectRomViewModel model = new(entries) { SelectedEntry = entries[0] };
 			SelectRomWindow wnd = new SelectRomWindow() { DataContext = model };
 
-			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-				wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-				await wnd.ShowDialog(desktop.MainWindow);
-			}
+			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			await wnd.ShowDialog(ApplicationHelper.GetMainWindow());
 
 			if(model.Cancelled || model.SelectedEntry == null) {
 				return null;

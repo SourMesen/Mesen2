@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Mesen.Utilities;
 using System;
@@ -208,6 +209,16 @@ namespace Mesen.Debugger.Controls
 		public void ZoomOut()
 		{
 			Zoom = Math.Min(20, Math.Max(1, Zoom - 1));
+		}
+
+		public async void ExportToPng()
+		{
+			if(Source is Bitmap bitmap) {
+				string? filename = await FileDialogHelper.SaveFile(null, null, this.VisualRoot, FileDialogHelper.PngExt);
+				if(filename != null) {
+					bitmap.Save(filename);
+				}
+			}
 		}
 
 		private void UpdateSize()

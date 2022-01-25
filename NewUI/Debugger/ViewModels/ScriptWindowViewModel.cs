@@ -167,7 +167,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			string? filename = await FileDialogHelper.OpenFile(InitialFolder, _wnd, FileDialogHelper.LuaFileExt);
+			string? filename = await FileDialogHelper.OpenFile(InitialFolder, _wnd, FileDialogHelper.LuaExt);
 			if(filename != null) {
 				LoadScript(filename);
 			}
@@ -215,7 +215,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private async Task<bool> SaveAs(string newName)
 		{
-			string? filename = await FileDialogHelper.SaveFile(InitialFolder, newName, _wnd, FileDialogHelper.LuaFileExt);
+			string? filename = await FileDialogHelper.SaveFile(InitialFolder, newName, _wnd, FileDialogHelper.LuaExt);
 			if(filename != null) {
 				FilePath = filename;
 				File.WriteAllText(FilePath, Code, Encoding.UTF8);

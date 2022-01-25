@@ -21,7 +21,8 @@ namespace Mesen.Utilities
 		public static string WaveExt = "wav";
 		public static string MesenSaveStateExt = "mss";
 		public static string WatchFileExt = "txt";
-		public static string LuaFileExt = "lua";
+		public static string LuaExt = "lua";
+		public static string PngExt = "png";
 
 		public static async Task<string?> OpenFile(string? initialFolder, IRenderRoot? parent, params string[] extensions)
 		{

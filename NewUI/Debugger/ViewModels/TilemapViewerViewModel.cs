@@ -46,6 +46,7 @@ namespace Mesen.Debugger.ViewModels
 		
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
+		public List<object> ContextMenuActions { get; } = new();
 
 		private DebugTilemapInfo _tilemapInfo;
 		private PictureViewer _picViewer;
@@ -106,6 +107,19 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => _picViewer.ZoomOut()
 				},
+			});
+
+			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInTileViewer,
+					IsEnabled = () => false,
+					OnClick = () => { }
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ExportToPng,
+					OnClick = () => _picViewer.ExportToPng()
+				}
 			});
 
 			if(Design.IsDesignMode || wnd == null) {
