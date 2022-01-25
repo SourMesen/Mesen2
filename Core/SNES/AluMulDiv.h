@@ -8,7 +8,7 @@ class SnesCpu;
 class AluMulDiv final : public ISerializable
 {
 private:
-	SnesCpu *_cpu;
+	SnesCpu *_cpu = nullptr;
 
 	uint64_t _prevCpuCycle = 0;
 

@@ -15,102 +15,102 @@ class EmuSettings;
 class BaseNesPpu : public INesMemoryHandler, public ISerializable
 {
 protected:
-	uint64_t _masterClock;
-	uint32_t _cycle;
-	int16_t _scanline;
-	bool _emulatorBgEnabled;
-	bool _emulatorSpritesEnabled;
+	uint64_t _masterClock = 0;
+	uint32_t _cycle = 0;
+	int16_t _scanline = 0;
+	bool _emulatorBgEnabled = false;
+	bool _emulatorSpritesEnabled = false;
 	//16
-	uint16_t _videoRamAddr;
-	uint16_t _tmpVideoRamAddr;
-	uint16_t _highBitShift;
-	uint16_t _lowBitShift;
-	uint8_t _masterClockDivider;
-	uint8_t _spriteRamAddr;
-	uint8_t _openBus;
-	uint8_t _xScroll;
-	bool _enableOamDecay;
-	bool _needStateUpdate;
-	bool _renderingEnabled;
-	bool _prevRenderingEnabled;
+	uint16_t _videoRamAddr = 0;
+	uint16_t _tmpVideoRamAddr = 0;
+	uint16_t _highBitShift = 0;
+	uint16_t _lowBitShift = 0;
+	uint8_t _masterClockDivider = 0;
+	uint8_t _spriteRamAddr = 0;
+	uint8_t _openBus = 0;
+	uint8_t _xScroll = 0;
+	bool _enableOamDecay = false;
+	bool _needStateUpdate = false;
+	bool _renderingEnabled = false;
+	bool _prevRenderingEnabled = false;
 	//32
-	bool _sprite0Visible;
-	uint8_t _spriteCount;
-	uint8_t _secondaryOAMAddr;
-	uint8_t _oamCopybuffer;
-	bool _spriteInRange;
-	bool _sprite0Added;
-	uint8_t _spriteAddrH;
-	uint8_t _spriteAddrL;
-	uint8_t _overflowBugCounter;
-	bool _oamCopyDone;
-	uint16_t _minimumDrawBgCycle;
-	uint16_t _minimumDrawSpriteCycle;
-	uint16_t _minimumDrawSpriteStandardCycle;
+	bool _sprite0Visible = false;
+	uint8_t _spriteCount = 0;
+	uint8_t _secondaryOAMAddr = 0;
+	uint8_t _oamCopybuffer = 0;
+	bool _spriteInRange = false;
+	bool _sprite0Added = false;
+	uint8_t _spriteAddrH = 0;
+	uint8_t _spriteAddrL = 0;
+	uint8_t _overflowBugCounter = 0;
+	bool _oamCopyDone = false;
+	uint16_t _minimumDrawBgCycle = 0;
+	uint16_t _minimumDrawSpriteCycle = 0;
+	uint16_t _minimumDrawSpriteStandardCycle = 0;
 	//48
-	BaseMapper* _mapper;
-	uint16_t* _currentOutputBuffer;
+	BaseMapper* _mapper = nullptr;
+	uint16_t* _currentOutputBuffer = nullptr;
 	////////////////////////
 	//64 : end of cache line
 	////////////////////////
-	uint8_t _paletteRAM[0x20];
-	uint8_t _secondarySpriteRAM[0x20];
+	uint8_t _paletteRAM[0x20] = {};
+	uint8_t _secondarySpriteRAM[0x20] = {};
 	////////////////////////
 	//128 : end of cache line
 	////////////////////////
-	TileInfo _tile;
-	uint16_t _ppuBusAddress;
-	uint16_t _nmiScanline;
-	uint8_t _currentTilePalette;
-	uint8_t _previousTilePalette;
-	uint16_t _intensifyColorBits;
-	uint8_t _paletteRamMask;
-	uint8_t _updateVramAddrDelay;
+	TileInfo _tile = {};
+	uint16_t _ppuBusAddress = 0;
+	uint16_t _nmiScanline = 0;
+	uint8_t _currentTilePalette = 0;
+	uint8_t _previousTilePalette = 0;
+	uint16_t _intensifyColorBits = 0;
+	uint8_t _paletteRamMask = 0;
+	uint8_t _updateVramAddrDelay = 0;
 	//144
-	uint32_t _spriteIndex;
-	int32_t _lastUpdatedPixel;
-	uint32_t _frameCount;
-	uint16_t _updateVramAddr;
-	bool _preventVblFlag;
-	bool _writeToggle; //not used in rendering
+	uint32_t _spriteIndex = 0;
+	int32_t _lastUpdatedPixel = 0;
+	uint32_t _frameCount = 0;
+	uint16_t _updateVramAddr = 0;
+	bool _preventVblFlag = false;
+	bool _writeToggle = false; //not used in rendering
 	//160
-	NesSpriteInfo* _lastSprite; //used by HD ppu
-	NesConsole* _console;
+	NesSpriteInfo* _lastSprite = nullptr; //used by HD ppu
+	NesConsole* _console = nullptr;
 	//176
-	PpuControlFlags _control; // 8 bytes
-	PpuMaskFlags _mask; // 8 bytes
+	PpuControlFlags _control = {}; // 8 bytes
+	PpuMaskFlags _mask = {}; // 8 bytes
   ////////////////////////
 	//192 : end of cache line
 	////////////////////////
-	uint8_t _spriteRAM[0x100];
+	uint8_t _spriteRAM[0x100] = {};
 	////////////////////////
 	//448 : end of cache line
 	////////////////////////
-	bool _hasSprite[257];
+	bool _hasSprite[257] = {};
 	//705
-	NesSpriteInfo _spriteTiles[64];
+	NesSpriteInfo _spriteTiles[64] = {};
 
-	Emulator* _emu;
-	EmuSettings* _settings;
-	uint16_t* _outputBuffers[2];
+	Emulator* _emu = nullptr;
+	EmuSettings* _settings = nullptr;
+	uint16_t* _outputBuffers[2] = {};
 
-	ConsoleRegion _region;
-	uint16_t _standardVblankEnd;
-	uint16_t _standardNmiScanline;
-	uint16_t _vblankEnd;
-	uint16_t _palSpriteEvalScanline;
+	ConsoleRegion _region = {};
+	uint16_t _standardVblankEnd = 0;
+	uint16_t _standardNmiScanline = 0;
+	uint16_t _vblankEnd = 0;
+	uint16_t _palSpriteEvalScanline = 0;
 
-	uint8_t _memoryReadBuffer;
-	PPUStatusFlags _statusFlags;
+	uint8_t _memoryReadBuffer = 0;
+	PPUStatusFlags _statusFlags = {};
 
-	uint8_t _firstVisibleSpriteAddr; //For extra sprites
-	uint8_t _lastVisibleSpriteAddr; //For extra sprites
+	uint8_t _firstVisibleSpriteAddr = 0; //For extra sprites
+	uint8_t _lastVisibleSpriteAddr = 0; //For extra sprites
 
-	uint32_t _ignoreVramRead;
-	int32_t _openBusDecayStamp[8];
+	uint32_t _ignoreVramRead = 0;
+	int32_t _openBusDecayStamp[8] = {};
 
-	uint64_t _oamDecayCycles[0x40];
-	bool _corruptOamRow[32];
+	uint64_t _oamDecayCycles[0x40] = {};
+	bool _corruptOamRow[32] = {};
 	
 	__forceinline bool IsRenderingEnabled();
 	void UpdateGrayscaleAndIntensifyBits();

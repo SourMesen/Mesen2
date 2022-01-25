@@ -16,9 +16,9 @@ private:
 	Register16 _regDE = Register16(&_state.D, &_state.E);
 	Register16 _regHL = Register16(&_state.H, &_state.L);
 
-	GbMemoryManager* _memoryManager;
-	Emulator* _emu;
-	Gameboy* _gameboy;
+	GbMemoryManager* _memoryManager = nullptr;
+	Emulator* _emu = nullptr;
+	Gameboy* _gameboy = nullptr;
 
 	void ExecOpCode(uint8_t opCode);
 

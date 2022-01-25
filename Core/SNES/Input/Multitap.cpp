@@ -15,7 +15,7 @@ void Multitap::InternalSetStateFromInput()
 {
 	for(int i = 0; i < 4; i++) {
 		int offset = Multitap::ButtonCount * i;
-		for(KeyMapping keyMapping : _mappings[i]) {
+		for(KeyMapping& keyMapping : _mappings[i]) {
 			SetPressedState(Buttons::A + offset, keyMapping.A);
 			SetPressedState(Buttons::B + offset, keyMapping.B);
 			SetPressedState(Buttons::X + offset, keyMapping.X);

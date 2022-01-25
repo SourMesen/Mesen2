@@ -51,6 +51,7 @@ protected:
 public:
 	BandaiHyperShot(NesConsole* console, KeyMappingSet keyMappings) : NesController(console->GetEmulator(), ControllerType::BandaiHyperShot, BaseControlDevice::ExpDevicePort, keyMappings)
 	{
+		_console = console;
 	}
 
 	void RefreshStateBuffer() override

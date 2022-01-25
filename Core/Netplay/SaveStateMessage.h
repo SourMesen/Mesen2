@@ -12,11 +12,11 @@ private:
 	vector<CheatCode> _activeCheats;
 	vector<uint8_t> _stateData;
 	
-	ControllerType _controllerTypes[5];
-	ConsoleRegion _region;
-	uint32_t _ppuExtraScanlinesAfterNmi;
-	uint32_t _ppuExtraScanlinesBeforeNmi;
-	uint32_t _gsuClockSpeed;
+	ControllerType _controllerTypes[5] = {};
+	ConsoleRegion _region = {};
+	uint32_t _ppuExtraScanlinesAfterNmi = 0;
+	uint32_t _ppuExtraScanlinesBeforeNmi = 0;
+	uint32_t _gsuClockSpeed = 0;
 
 protected:
 	void Serialize(Serializer &s) override

@@ -31,7 +31,7 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		for(KeyMapping keyMapping : _keyMappings) {
+		for(KeyMapping& keyMapping : _keyMappings) {
 			SetPressedState(Buttons::A, keyMapping.A);
 			SetPressedState(Buttons::B, keyMapping.B);
 			SetPressedState(Buttons::Start, keyMapping.Start);

@@ -32,18 +32,18 @@ public:
 	constexpr static uint32_t WorkRamSize = 0x20000;
 
 private:
-	SnesConsole* _console;
-	Emulator* _emu;
+	SnesConsole* _console = nullptr;
+	Emulator* _emu = nullptr;
 
 	unique_ptr<RegisterHandlerA> _registerHandlerA;
 	unique_ptr<RegisterHandlerB> _registerHandlerB;
 
-	InternalRegisters *_regs;
-	SnesPpu* _ppu;
-	SnesCpu* _cpu;
-	BaseCartridge* _cart;
-	CheatManager* _cheatManager;
-	uint8_t *_workRam;
+	InternalRegisters *_regs = nullptr;
+	SnesPpu* _ppu = nullptr;
+	SnesCpu* _cpu = nullptr;
+	BaseCartridge* _cart = nullptr;
+	CheatManager* _cheatManager = nullptr;
+	uint8_t *_workRam = nullptr;
 
 	uint64_t _masterClock = 0;
 	uint16_t _hClock = 0;
@@ -55,9 +55,9 @@ private:
 	uint8_t _cpuSpeed = 8;
 	uint8_t _openBus = 0;
 
-	MemoryMappings _mappings;
+	MemoryMappings _mappings = {};
 	vector<unique_ptr<IMemoryHandler>> _workRamHandlers;
-	uint8_t _masterClockTable[0x800];
+	uint8_t _masterClockTable[0x800] = {};
 
 	void Exec();
 

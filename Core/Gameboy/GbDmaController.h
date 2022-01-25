@@ -10,10 +10,10 @@ class GbCpu;
 class GbDmaController final : public ISerializable
 {
 private:
-	GbDmaControllerState _state;
-	GbMemoryManager* _memoryManager;
-	GbPpu* _ppu;
-	GbCpu* _cpu;
+	GbDmaControllerState _state = {};
+	GbMemoryManager* _memoryManager = nullptr;
+	GbPpu* _ppu = nullptr;
+	GbCpu* _cpu = nullptr;
 	
 	void ProcessDmaBlock();
 

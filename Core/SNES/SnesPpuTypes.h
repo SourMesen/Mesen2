@@ -62,37 +62,37 @@ struct LayerData
 
 struct LayerConfig
 {
-	uint16_t TilemapAddress;
-	uint16_t ChrAddress;
+	uint16_t TilemapAddress = 0;
+	uint16_t ChrAddress = 0;
 
-	uint16_t HScroll;
-	uint16_t VScroll;
+	uint16_t HScroll = 0;
+	uint16_t VScroll = 0;
 
-	bool DoubleWidth;
-	bool DoubleHeight;
+	bool DoubleWidth = false;
+	bool DoubleHeight = false;
 
-	bool LargeTiles;
+	bool LargeTiles = false;
 };
 
 struct Mode7Config
 {
-	int16_t Matrix[4];
+	int16_t Matrix[4] = {};
 
-	int16_t HScroll;
-	int16_t VScroll;
-	int16_t CenterX;
-	int16_t CenterY;
+	int16_t HScroll = 0;
+	int16_t VScroll = 0;
+	int16_t CenterX = 0;
+	int16_t CenterY = 0;
 
-	uint8_t ValueLatch;
+	uint8_t ValueLatch = 0;
 	
-	bool LargeMap;
-	bool FillWithTile0;
-	bool HorizontalMirroring;
-	bool VerticalMirroring;
+	bool LargeMap = false;
+	bool FillWithTile0 = false;
+	bool HorizontalMirroring = false;
+	bool VerticalMirroring = false;
 
 	//Holds the scroll values at the start of a scanline for the entire scanline
-	int16_t HScrollLatch;
-	int16_t VScrollLatch;
+	int16_t HScrollLatch = 0;
+	int16_t VScrollLatch = 0;
 };
 
 struct WindowConfig
@@ -123,50 +123,50 @@ struct WindowConfig
 
 struct SnesPpuState : public BaseState
 {
-	uint16_t Cycle;
-	uint16_t Scanline;
-	uint16_t HClock;
-	uint32_t FrameCount;
+	uint16_t Cycle = 0;
+	uint16_t Scanline = 0;
+	uint16_t HClock = 0;
+	uint32_t FrameCount = 0;
 
-	bool ForcedVblank;
-	uint8_t ScreenBrightness;
+	bool ForcedVblank = false;
+	uint8_t ScreenBrightness = 0;
 
-	Mode7Config Mode7;
+	Mode7Config Mode7 = {};
 
-	uint8_t BgMode;
-	bool Mode1Bg3Priority;
+	uint8_t BgMode = 0;
+	bool Mode1Bg3Priority = false;
 
-	uint8_t MainScreenLayers;
-	uint8_t SubScreenLayers;
-	LayerConfig Layers[4];
+	uint8_t MainScreenLayers = 0;
+	uint8_t SubScreenLayers = 0;
+	LayerConfig Layers[4] = {};
 
-	WindowConfig Window[2];
-	WindowMaskLogic MaskLogic[6];
-	bool WindowMaskMain[5];
-	bool WindowMaskSub[5];
+	WindowConfig Window[2] = {};
+	WindowMaskLogic MaskLogic[6] = {};
+	bool WindowMaskMain[5] = {};
+	bool WindowMaskSub[5] = {};
 
-	uint16_t VramAddress;
-	uint8_t VramIncrementValue;
-	uint8_t VramAddressRemapping;
-	bool VramAddrIncrementOnSecondReg;
-	uint16_t VramReadBuffer;
+	uint16_t VramAddress = 0;
+	uint8_t VramIncrementValue = 0;
+	uint8_t VramAddressRemapping = 0;
+	bool VramAddrIncrementOnSecondReg = false;
+	uint16_t VramReadBuffer = 0;
 
-	uint8_t Ppu1OpenBus;
-	uint8_t Ppu2OpenBus;
+	uint8_t Ppu1OpenBus = 0;
+	uint8_t Ppu2OpenBus = 0;
 
-	uint8_t CgramAddress;
-	uint8_t CgramWriteBuffer;
-	bool CgramAddressLatch;
+	uint8_t CgramAddress = 0;
+	uint8_t CgramWriteBuffer = 0;
+	bool CgramAddressLatch = false;
 
 	uint8_t MosaicSize = 0;
 	uint8_t MosaicEnabled = 0;
 
 	uint16_t OamRamAddress = 0;
 
-	uint8_t OamMode;
-	uint16_t OamBaseAddress;
-	uint16_t OamAddressOffset;
-	bool EnableOamPriority;
+	uint8_t OamMode = 0;
+	uint16_t OamBaseAddress = 0;
+	uint16_t OamAddressOffset = 0;
+	bool EnableOamPriority = false;
 
 	bool ExtBgEnabled = false;
 	bool HiResMode = false;

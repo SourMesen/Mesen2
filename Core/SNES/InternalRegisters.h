@@ -12,14 +12,14 @@ class SnesMemoryManager;
 class InternalRegisters final : public ISerializable
 {
 private:
-	SnesConsole* _console;
-	SnesCpu* _cpu;
-	SnesPpu* _ppu;
-	SnesMemoryManager* _memoryManager;
+	SnesConsole* _console = nullptr;
+	SnesCpu* _cpu = nullptr;
+	SnesPpu* _ppu = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 
-	AluMulDiv _aluMulDiv;
+	AluMulDiv _aluMulDiv = {};
 
-	InternalRegisterState _state;
+	InternalRegisterState _state = {};
 	bool _nmiFlag = false;
 	bool _irqLevel = false;
 	uint8_t _needIrq = 0;

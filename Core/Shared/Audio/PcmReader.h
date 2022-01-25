@@ -9,24 +9,24 @@ private:
 	static constexpr int PcmSampleRate = 44100;
 	static constexpr int SamplesToRead = 100;
 
-	int16_t* _outputBuffer;
+	int16_t* _outputBuffer = nullptr;
 
 	ifstream _file;
-	uint32_t _fileOffset;
-	uint32_t _fileSize;
-	uint32_t _loopOffset;
+	uint32_t _fileOffset = 0;
+	uint32_t _fileSize = 0;
+	uint32_t _loopOffset = 0;
 
-	int16_t _prevLeft;
-	int16_t _prevRight;
+	int16_t _prevLeft = 0;
+	int16_t _prevRight = 0;
 
-	bool _loop;
-	bool _done;
+	bool _loop = false;
+	bool _done = false;
 
 	HermiteResampler _resampler;
 	vector<int16_t> _pcmBuffer;
 	uint32_t _leftoverSampleCount = 0;
 
-	uint32_t _sampleRate;
+	uint32_t _sampleRate = 0;
 
 	void LoadSamples(uint32_t samplesToLoad);
 	void ReadSample(int16_t &left, int16_t &right);

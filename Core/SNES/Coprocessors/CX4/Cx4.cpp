@@ -282,7 +282,7 @@ uint8_t Cx4::Read(uint32_t addr)
 {
 	addr = 0x7000 | (addr & 0xFFF);
 	if(addr <= 0x7BFF) {
-		return _dataRam[addr & 0xFFF];
+		return _dataRam[addr & 0xBFF];
 	} else if(addr >= 0x7F60 && addr <= 0x7F7F) {
 		return _state.Vectors[addr & 0x1F];
 	} else if((addr >= 0x7F80 && addr <= 0x7FAF) || (addr >= 0x7FC0 && addr <= 0x7FEF)) {
@@ -327,7 +327,7 @@ void Cx4::Write(uint32_t addr, uint8_t value)
 	addr = 0x7000 | (addr & 0xFFF);
 
 	if(addr <= 0x7BFF) {
-		_dataRam[addr & 0xFFF] = value;
+		_dataRam[addr & 0xBFF] = value;
 		return;
 	} 
 	

@@ -14,7 +14,7 @@ string SnesController::GetKeyNames()
 
 void SnesController::InternalSetStateFromInput()
 {
-	for(KeyMapping keyMapping : _keyMappings) {
+	for(KeyMapping& keyMapping : _keyMappings) {
 		SetPressedState(Buttons::A, keyMapping.A);
 		SetPressedState(Buttons::B, keyMapping.B);
 		SetPressedState(Buttons::X, keyMapping.X);

@@ -26,5 +26,5 @@ struct RomInfo
 {
 	VirtualFile RomFile;
 	VirtualFile PatchFile;
-	RomFormat Format;
+	RomFormat Format = RomFormat::Unknown;
 };

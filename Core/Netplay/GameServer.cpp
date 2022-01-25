@@ -48,7 +48,7 @@ void GameServer::AcceptConnections()
 void GameServer::UpdateConnections()
 {
 	vector<unique_ptr<GameServerConnection>> connectionsToRemove;
-	for(int i = (int)_openConnections.size() - 1; i>=0; i++) {
+	for(int i = (int)_openConnections.size() - 1; i >= 0; i--) {
 		if(_openConnections[i]->ConnectionError()) {
 			_openConnections.erase(_openConnections.begin() + i);
 		} else {

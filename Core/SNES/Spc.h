@@ -30,24 +30,24 @@ private:
 	static constexpr int SampleBufferSize = 0x20000;
 	static constexpr uint16_t ResetVector = 0xFFFE;
 
-	Emulator* _emu;
-	SnesConsole* _console;
-	SnesMemoryManager* _memoryManager;
+	Emulator* _emu = nullptr;
+	SnesConsole* _console = nullptr;
+	SnesMemoryManager* _memoryManager = nullptr;
 	unique_ptr<SPC_DSP> _dsp;
 
-	double _clockRatio;
+	double _clockRatio = 0.0;
 
 	/* Temporary data used in the middle of operations */
-	uint16_t _operandA;
-	uint16_t _operandB;
-	uint16_t _tmp1;
-	uint16_t _tmp2;
-	uint16_t _tmp3;
-	uint8_t _opCode;
-	SpcOpStep _opStep;
-	uint8_t _opSubStep;
+	uint16_t _operandA = 0;
+	uint16_t _operandB = 0;
+	uint16_t _tmp1 = 0;
+	uint16_t _tmp2 = 0;
+	uint16_t _tmp3 = 0;
+	uint8_t _opCode = 0;
+	SpcOpStep _opStep = {};
+	uint8_t _opSubStep = 0;
 
-	bool _enabled;
+	bool _enabled = false;
 
 	SpcState _state;
 	uint8_t* _ram;
@@ -62,7 +62,7 @@ private:
 		0x5D, 0xD0, 0xDB, 0x1F, 0x00, 0x00, 0xC0, 0xFF
 	};
 
-	int16_t *_soundBuffer;
+	int16_t *_soundBuffer = nullptr;
 
 	//Store operations
 	void STA();
@@ -323,12 +323,12 @@ public:
 #ifdef DUMMYSPC
 private:
 	uint32_t _writeCounter = 0;
-	uint32_t _writeAddresses[10];
-	uint8_t _writeValue[10];
+	uint32_t _writeAddresses[10] = {};
+	uint8_t _writeValue[10] = {};
 
 	uint32_t _readCounter = 0;
-	uint32_t _readAddresses[10];
-	uint8_t _readValue[10];
+	uint32_t _readAddresses[10] = {};
+	uint8_t _readValue[10] = {};
 
 	void LogRead(uint32_t addr, uint8_t value);
 	void LogWrite(uint32_t addr, uint8_t value);

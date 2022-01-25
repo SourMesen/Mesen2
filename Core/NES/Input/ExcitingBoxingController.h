@@ -25,7 +25,7 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		for(KeyMapping keyMapping : _keyMappings) {
+		for(KeyMapping& keyMapping : _keyMappings) {
 			for(int i = 0; i < 8; i++) {
 				SetPressedState(i, keyMapping.CustomKeys[i]);
 			}

@@ -110,12 +110,12 @@ struct AudioConfig
 	bool ReduceSoundInFastForward = false;
 	uint32_t VolumeReduction = 75;
 
-	bool ReverbEnabled;
-	uint32_t ReverbStrength;
-	uint32_t ReverbDelay;
+	bool ReverbEnabled = false;
+	uint32_t ReverbStrength = 0;
+	uint32_t ReverbDelay = 0;
 
-	bool CrossFeedEnabled;
-	uint32_t CrossFeedRatio;
+	bool CrossFeedEnabled = false;
+	uint32_t CrossFeedRatio = 0;
 
 	bool EnableEqualizer = false;
 	double Band1Gain = 0;

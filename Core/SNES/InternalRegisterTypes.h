@@ -3,27 +3,27 @@
 
 struct AluState
 {
-	uint8_t MultOperand1;
-	uint8_t MultOperand2;
-	uint16_t MultOrRemainderResult;
+	uint8_t MultOperand1 = 0;
+	uint8_t MultOperand2 = 0;
+	uint16_t MultOrRemainderResult = 0;
 
-	uint16_t Dividend;
-	uint8_t Divisor;
-	uint16_t DivResult;
+	uint16_t Dividend = 0;
+	uint8_t Divisor = 0;
+	uint16_t DivResult = 0;
 };
 
 struct InternalRegisterState
 {
-	bool EnableAutoJoypadRead;
-	bool EnableFastRom;
+	bool EnableAutoJoypadRead = false;
+	bool EnableFastRom = false;
 
-	bool EnableNmi;
-	bool EnableHorizontalIrq;
-	bool EnableVerticalIrq;
-	uint16_t HorizontalTimer;
-	uint16_t VerticalTimer;
+	bool EnableNmi = false;
+	bool EnableHorizontalIrq = false;
+	bool EnableVerticalIrq = false;
+	uint16_t HorizontalTimer = 0;
+	uint16_t VerticalTimer = 0;
 
-	uint8_t IoPortOutput;
+	uint8_t IoPortOutput = 0;
 
-	uint16_t ControllerData[4];
+	uint16_t ControllerData[4] = {};
 };

@@ -23,7 +23,7 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		for(KeyMapping keyMapping : _keyMappings) {
+		for(KeyMapping& keyMapping : _keyMappings) {
 			SetPressedState(Buttons::Player1Jump, keyMapping.A);
 			SetPressedState(Buttons::Player1Run, keyMapping.B);
 
@@ -35,7 +35,7 @@ protected:
 			}
 		}
 
-		for(KeyMapping keyMapping : _p2KeyMappings) {
+		for(KeyMapping& keyMapping : _p2KeyMappings) {
 			SetPressedState(Buttons::Player2Jump, keyMapping.A);
 			SetPressedState(Buttons::Player2Run, keyMapping.B);
 

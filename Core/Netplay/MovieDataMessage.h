@@ -6,8 +6,8 @@
 class MovieDataMessage : public NetMessage
 {
 private:
-	uint8_t _portNumber;
-	ControlDeviceState _inputState;
+	uint8_t _portNumber = 0;
+	ControlDeviceState _inputState = {};
 
 protected:
 	void Serialize(Serializer &s) override

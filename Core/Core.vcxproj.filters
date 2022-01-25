@@ -1363,4 +1363,7 @@
       <UniqueIdentifier>{37f1c0e4-e6fd-4ba4-b2a0-7239ca48f81a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Core.ruleset" />
+  </ItemGroup>
 </Project>

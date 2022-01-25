@@ -5,7 +5,7 @@
 class SelectControllerMessage : public NetMessage
 {
 private:
-	uint8_t _portNumber;
+	uint8_t _portNumber = 0;
 
 protected:
 	void Serialize(Serializer &s) override

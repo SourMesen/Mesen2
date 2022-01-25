@@ -29,7 +29,7 @@ protected:
 		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 		SetPressedState(Buttons::Cursor, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
 		SetPressedState(Buttons::Turbo, KeyManager::IsMouseButtonPressed(MouseButton::MiddleButton));
-		for(KeyMapping keyMapping : _keyMappings) {
+		for(KeyMapping& keyMapping : _keyMappings) {
 			SetPressedState(Buttons::Pause, KeyManager::IsKeyPressed(keyMapping.Start));
 		}
 

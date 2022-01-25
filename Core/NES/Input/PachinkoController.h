@@ -14,7 +14,7 @@ protected:
 	{
 		NesController::InternalSetStateFromInput();
 
-		for(KeyMapping keyMapping : _keyMappings) {
+		for(KeyMapping& keyMapping : _keyMappings) {
 			SetPressedState(PachinkoButtons::Press, keyMapping.CustomKeys[0]);
 			SetPressedState(PachinkoButtons::Release, keyMapping.CustomKeys[1]);
 		}

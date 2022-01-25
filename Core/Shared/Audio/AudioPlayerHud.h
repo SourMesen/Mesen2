@@ -24,7 +24,7 @@ private:
 	Timer _silenceTimer;
 	bool _changeTrackPending = false;
 
-	uint32_t _sampleRate;
+	uint32_t _sampleRate = 48000;
 	double _hannWindow[N] = {};
 	double _input[N] = {};
 	std::complex<double> _out[N] = {};

@@ -12,7 +12,7 @@ private:
 	uint64_t _newBarcode = 0;
 	uint32_t _newBarcodeDigitCount = 0;
 
-	uint8_t _barcodeStream[BarcodeBattlerReader::StreamSize];
+	uint8_t _barcodeStream[BarcodeBattlerReader::StreamSize] = {};
 	uint64_t _insertCycle = 0;
 
 protected:

@@ -6,9 +6,9 @@ class ClientConnectionData
 {
 public:
 	string Host;
-	uint16_t Port;
+	uint16_t Port = 0;
 	string Password;
-	bool Spectator;
+	bool Spectator = false;
 
 	ClientConnectionData() {}
 

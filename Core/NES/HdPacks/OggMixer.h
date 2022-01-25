@@ -10,11 +10,11 @@ private:
 	shared_ptr<OggReader> _bgm;
 	vector<shared_ptr<OggReader>> _sfx;
 
-	uint32_t _sampleRate;
-	uint8_t _bgmVolume;
-	uint8_t _sfxVolume;
-	uint8_t _options;
-	bool _paused;
+	uint32_t _sampleRate = 0;
+	uint8_t _bgmVolume = 0;
+	uint8_t _sfxVolume = 0;
+	uint8_t _options = 0;
+	bool _paused = false;
 
 public:
 	OggMixer();

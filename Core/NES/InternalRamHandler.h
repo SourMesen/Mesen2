@@ -6,7 +6,7 @@ template<size_t Mask>
 class InternalRamHandler : public INesMemoryHandler
 {
 private:
-	uint8_t *_internalRam;
+	uint8_t *_internalRam = nullptr;
 
 public:
 	void SetInternalRam(uint8_t* internalRam)

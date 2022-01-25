@@ -350,14 +350,14 @@ public:
 
 #ifdef DUMMYCPU
 private:
-	MemoryMappings* _memoryMappings;
+	MemoryMappings* _memoryMappings = nullptr;
 	uint32_t _writeCounter = 0;
-	uint32_t _writeAddresses[10];
-	uint8_t _writeValue[10];
+	uint32_t _writeAddresses[10] = {};
+	uint8_t _writeValue[10] = {};
 
 	uint32_t _readCounter = 0;
-	uint32_t _readAddresses[10];
-	uint8_t _readValue[10];
+	uint32_t _readAddresses[10] = {};
+	uint8_t _readValue[10] = {};
 
 	void LogRead(uint32_t addr, uint8_t value);
 	void LogWrite(uint32_t addr, uint8_t value);

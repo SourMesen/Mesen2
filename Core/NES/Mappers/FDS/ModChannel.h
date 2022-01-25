@@ -11,7 +11,7 @@ private:
 	int8_t _counter = 0;
 	bool _modulationDisabled = false;
 
-	uint8_t _modTable[64];
+	uint8_t _modTable[64] = {};
 	uint8_t _modTablePosition = 0;
 	uint16_t _overflowCounter = 0;
 	int32_t _output = 0;

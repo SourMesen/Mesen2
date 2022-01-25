@@ -40,31 +40,31 @@ struct NsfHeader
 
 struct GameInfo
 {
-	uint32_t Crc;
+	uint32_t Crc = 0;
 	string System;
 	string Board;
 	string Pcb;
 	string Chip;
-	uint16_t MapperID;
-	uint32_t PrgRomSize;
-	uint32_t ChrRomSize;
-	uint32_t ChrRamSize;
-	uint32_t WorkRamSize;
-	uint32_t SaveRamSize;
-	bool HasBattery;
+	uint16_t MapperID = 0;
+	uint32_t PrgRomSize = 0;
+	uint32_t ChrRomSize = 0;
+	uint32_t ChrRamSize = 0;
+	uint32_t WorkRamSize = 0;
+	uint32_t SaveRamSize = 0;
+	bool HasBattery = false;
 	string Mirroring;
-	GameInputType InputType;
+	GameInputType InputType = {};
 	string BusConflicts;
 	string SubmapperID;
-	VsSystemType VsType;
-	PpuModel VsPpuModel;
+	VsSystemType VsType = {};
+	PpuModel VsPpuModel = {};
 };
 
 struct NesRomInfo
 {
 	string RomName;
 	string Filename;
-	RomFormat Format;
+	RomFormat Format = {};
 
 	bool IsNes20Header = false;
 	bool IsInDatabase = false;
@@ -86,17 +86,17 @@ struct NesRomInfo
 	MirroringType Mirroring = MirroringType::Horizontal;
 	BusConflictType BusConflicts = BusConflictType::Default;
 
-	HashInfo Hash;
+	HashInfo Hash = {};
 
-	NesHeader NesHeader;
-	NsfHeader NsfInfo;
-	GameInfo DatabaseInfo;
+	NesHeader NesHeader = {};
+	NsfHeader NsfInfo = {};
+	GameInfo DatabaseInfo = {};
 };
 
 struct PageInfo
 {
-	uint32_t LeadInOffset;
-	uint32_t AudioOffset;
+	uint32_t LeadInOffset = 0;
+	uint32_t AudioOffset = 0;
 	vector<uint8_t> Data;
 };
 
@@ -109,19 +109,19 @@ struct StudyBoxData
 
 struct RomData
 {
-	NesRomInfo Info;
+	NesRomInfo Info = {};
 
 	int32_t ChrRamSize = -1;
 	int32_t SaveChrRamSize = -1;
 	int32_t SaveRamSize = -1;
 	int32_t WorkRamSize = -1;
-	
+
 	vector<uint8_t> PrgRom;
 	vector<uint8_t> ChrRom;
 	vector<uint8_t> TrainerData;
 	vector<vector<uint8_t>> FdsDiskData;
 	vector<vector<uint8_t>> FdsDiskHeaders;
-	StudyBoxData StudyBox;
+	StudyBoxData StudyBox = {};
 
 	vector<uint8_t> RawData;
 

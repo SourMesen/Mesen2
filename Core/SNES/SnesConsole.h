@@ -55,14 +55,14 @@ private:
 	unique_ptr<SnesDmaController> _dmaController;
 	
 	unique_ptr<Msu1> _msu1;
-	EmuSettings* _settings;
-	Emulator* _emu;
+	EmuSettings* _settings = nullptr;
+	Emulator* _emu = nullptr;
 
 	vector<string> _spcPlaylist;
 	uint32_t _spcTrackNumber = 0;
 
-	uint32_t _masterClockRate;
-	ConsoleRegion _region;
+	uint32_t _masterClockRate = 0;
+	ConsoleRegion _region = {};
 	bool _frameRunning = false;
 
 	void UpdateRegion();

@@ -12,7 +12,7 @@ struct ProfiledFunction
 	uint64_t CallCount = 0;
 	uint64_t MinCycles = UINT64_MAX;
 	uint64_t MaxCycles = 0;
-	AddressInfo Address;
+	AddressInfo Address = {};
 };
 
 class Profiler

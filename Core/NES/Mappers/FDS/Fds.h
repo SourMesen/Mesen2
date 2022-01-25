@@ -62,7 +62,7 @@ private:
 	uint32_t _diskNumber = Fds::NoDiskInserted;
 	uint32_t _diskPosition = 0;
 	uint32_t _delay = 0;	
-	uint16_t _crcAccumulator;
+	uint16_t _crcAccumulator = 0;
 	bool _previousCrcControlFlag = false;
 	bool _gapEnded = true;
 	bool _scanningDisk = false;

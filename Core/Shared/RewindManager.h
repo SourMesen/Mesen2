@@ -21,9 +21,9 @@ enum class RewindState
 struct VideoFrame
 {
 	vector<uint32_t> Data;
-	uint32_t Width;
-	uint32_t Height;
-	double Scale;
+	uint32_t Width = 0;
+	uint32_t Height = 0;
+	double Scale = 0;
 };
 
 class RewindManager : public INotificationListener, public IInputProvider, public IInputRecorder

@@ -11,7 +11,7 @@ public:
 	static bool LoadHdNesPack(VirtualFile &romFile, HdPackData &outData);
 
 private:
-	HdPackData* _data;
+	HdPackData* _data = nullptr;
 	bool _loadFromZip = false;
 	ZipReader _reader;
 	string _hdPackDefinitionFile;

@@ -137,31 +137,31 @@ struct MapperStateEntry
 
 struct CartridgeState
 {
-	uint32_t PrgRomSize;
-	uint32_t ChrRomSize;
-	uint32_t ChrRamSize;
+	uint32_t PrgRomSize = 0;
+	uint32_t ChrRomSize = 0;
+	uint32_t ChrRamSize = 0;
 	
-	uint32_t PrgPageCount;
-	uint32_t PrgPageSize;
-	int32_t PrgMemoryOffset[0x100];
-	PrgMemoryType PrgType[0x100];
-	MemoryAccessType PrgMemoryAccess[0x100];
+	uint32_t PrgPageCount = 0;
+	uint32_t PrgPageSize = 0;
+	int32_t PrgMemoryOffset[0x100] = {};
+	PrgMemoryType PrgType[0x100] = {};
+	MemoryAccessType PrgMemoryAccess[0x100] = {};
 
-	uint32_t ChrPageCount;
-	uint32_t ChrPageSize;
-	uint32_t ChrRamPageSize;
-	int32_t ChrMemoryOffset[0x40];
-	ChrMemoryType ChrType[0x40];
-	MemoryAccessType ChrMemoryAccess[0x40];
+	uint32_t ChrPageCount = 0;
+	uint32_t ChrPageSize = 0;
+	uint32_t ChrRamPageSize = 0;
+	int32_t ChrMemoryOffset[0x40] = {};
+	ChrMemoryType ChrType[0x40] = {};
+	MemoryAccessType ChrMemoryAccess[0x40] = {};
 
-	uint32_t WorkRamPageSize;
-	uint32_t SaveRamPageSize;
+	uint32_t WorkRamPageSize = 0;
+	uint32_t SaveRamPageSize = 0;
 
-	MirroringType Mirroring;
-	bool HasBattery;
+	MirroringType Mirroring = {};
+	bool HasBattery = false;
 
-	uint32_t CustomEntryCount;
-	MapperStateEntry CustomEntries[100];
+	uint32_t CustomEntryCount = 0;
+	MapperStateEntry CustomEntries[100] = {};
 };
 
 struct PPUStatusFlags

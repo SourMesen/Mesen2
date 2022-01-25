@@ -17,7 +17,7 @@ struct MapperStateEntry;
 class BaseMapper : public INesMemoryHandler, public ISerializable
 {
 private:
-	MirroringType _mirroringType;
+	MirroringType _mirroringType = {};
 	string _batteryFilename;
 
 	uint16_t InternalGetPrgPageSize();
@@ -33,29 +33,29 @@ private:
 	bool _hasBusConflicts = false;
 	
 	bool _allowRegisterRead = false;
-	bool _isReadRegisterAddr[0x10000];
-	bool _isWriteRegisterAddr[0x10000];
+	bool _isReadRegisterAddr[0x10000] = {};
+	bool _isWriteRegisterAddr[0x10000] = {};
 
-	MemoryAccessType _prgMemoryAccess[0x100];
-	uint8_t* _prgPages[0x100];
+	MemoryAccessType _prgMemoryAccess[0x100] = {};
+	uint8_t* _prgPages[0x100] = {};
 
-	MemoryAccessType _chrMemoryAccess[0x100];
-	uint8_t* _chrPages[0x100];
+	MemoryAccessType _chrMemoryAccess[0x100] = {};
+	uint8_t* _chrPages[0x100] = {};
 
-	int32_t _prgMemoryOffset[0x100];
-	PrgMemoryType _prgMemoryType[0x100];
+	int32_t _prgMemoryOffset[0x100] = {};
+	PrgMemoryType _prgMemoryType[0x100] = {};
 
-	int32_t _chrMemoryOffset[0x100];
-	ChrMemoryType _chrMemoryType[0x100];
+	int32_t _chrMemoryOffset[0x100] = {};
+	ChrMemoryType _chrMemoryType[0x100] = {};
 
 	vector<uint8_t> _originalPrgRom;
 	vector<uint8_t> _originalChrRom;
 
 protected:
-	NesRomInfo _romInfo;
+	NesRomInfo _romInfo = {};
 
-	NesConsole* _console;
-	Emulator* _emu;
+	NesConsole* _console = nullptr;
+	Emulator* _emu = nullptr;
 
 	uint8_t* _prgRom = nullptr;
 	uint8_t* _chrRom = nullptr;

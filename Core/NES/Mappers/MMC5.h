@@ -619,7 +619,7 @@ protected:
 		entries.push_back(MapperStateEntry("$5106", "Fill Mode Tile", _fillModeTile, MapperStateValueType::Number8));
 		entries.push_back(MapperStateEntry("$5107", "Fill Mode Color", _fillModeColor, MapperStateValueType::Number8));
 
-		for(int i = 0; i < 6; i++) {
+		for(int i = 0; i < 5; i++) {
 			entries.push_back(MapperStateEntry("$" + HexUtilities::ToHex(0x5113 + i), "PRG Bank Register " + std::to_string(i), _prgBanks[i], MapperStateValueType::Number8));
 		}
 

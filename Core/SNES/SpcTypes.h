@@ -6,26 +6,26 @@
 
 struct SpcState : BaseState
 {
-	uint64_t Cycle;
-	uint16_t PC;
-	uint8_t A;
-	uint8_t X;
-	uint8_t Y;
-	uint8_t SP;
-	uint8_t PS;
+	uint64_t Cycle = 0;
+	uint16_t PC = 0;
+	uint8_t A = 0;
+	uint8_t X = 0;
+	uint8_t Y = 0;
+	uint8_t SP = 0;
+	uint8_t PS = 0;
 
-	bool WriteEnabled;
-	bool RomEnabled;
-	uint8_t InternalSpeed;
-	uint8_t ExternalSpeed;
-	bool TimersEnabled;
-	bool TimersDisabled;
-	SnesCpuStopState StopState;
+	bool WriteEnabled = false;
+	bool RomEnabled = false;
+	uint8_t InternalSpeed = 0;
+	uint8_t ExternalSpeed = 0;
+	bool TimersEnabled = false;
+	bool TimersDisabled = false;
+	SnesCpuStopState StopState = {};
 
-	uint8_t DspReg;
-	uint8_t OutputReg[4];
-	uint8_t RamReg[2];
-	uint8_t CpuRegs[4];
+	uint8_t DspReg = 0;
+	uint8_t OutputReg[4] = {};
+	uint8_t RamReg[2] = {};
+	uint8_t CpuRegs[4] = {};
 
 	SpcTimer<128> Timer0;
 	SpcTimer<128> Timer1;

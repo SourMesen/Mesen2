@@ -6,11 +6,7 @@
 PcmReader::PcmReader()
 {
 	_done = true;
-	_loop = false;
-	_prevLeft = 0;
-	_prevRight = 0;
 	_loopOffset = 8;
-	_sampleRate = 0;
 	_outputBuffer = new int16_t[20000];
 }
 
