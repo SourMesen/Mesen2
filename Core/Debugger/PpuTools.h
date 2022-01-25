@@ -109,6 +109,8 @@ struct DebugTilemapTileInfo
 	int32_t PaletteIndex = -1;
 	int32_t PaletteAddress = -1;
 
+	int32_t AttributeAddress = -1;
+
 	NullableBoolean HorizontalMirroring = NullableBoolean::Undefined;
 	NullableBoolean VerticalMirroring = NullableBoolean::Undefined;
 	NullableBoolean HighPriority = NullableBoolean::Undefined;

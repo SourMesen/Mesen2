@@ -27,8 +27,8 @@ namespace Mesen.Debugger.ViewModels
 		public RefreshTimingViewModel RefreshTiming { get; }
 
 		[Reactive] public Rect SelectionRect { get; set; }
-		[Reactive] public int GridSizeX { get; set; }
-		[Reactive] public int GridSizeY { get; set; }
+		[Reactive] public int GridSizeX { get; set; } = 8;
+		[Reactive] public int GridSizeY { get; set; } = 8;
 
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
@@ -326,6 +326,9 @@ namespace Mesen.Debugger.ViewModels
 			}
 			if(tileInfo.PaletteAddress >= 0) {
 				entries.AddEntry("Palette address", "$" + tileInfo.PaletteAddress.ToString("X2"));
+			}
+			if(tileInfo.AttributeAddress >= 0) {
+				entries.AddEntry("Attribute address", "$" + tileInfo.AttributeAddress.ToString("X4"));
 			}
 			if(tileInfo.HorizontalMirroring != NullableBoolean.Undefined) {
 				entries.AddEntry("Horizontal mirror", tileInfo.HorizontalMirroring == NullableBoolean.True);

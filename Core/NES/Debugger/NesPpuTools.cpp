@@ -225,6 +225,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	result.TileAddress = bgAddr + (result.TileIndex << 4);
 	result.PaletteIndex = paletteBaseAddr >> 2;
 	result.PaletteAddress = 0x3F00 | paletteBaseAddr;
+	result.AttributeAddress = attributeAddress;
 
 	return result;
 }

@@ -144,6 +144,7 @@ DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint
 	if(isCgb) {
 		result.PaletteIndex = (attributes & 0x07);
 		result.PaletteAddress = (result.PaletteIndex << 2);
+		result.AttributeAddress = addr | 0x2000;
 		result.HorizontalMirroring = (NullableBoolean)((attributes & 0x20) != 0);
 		result.VerticalMirroring = (NullableBoolean)((attributes & 0x40) != 0);
 		result.HighPriority = (NullableBoolean)((attributes & 0x80) != 0);
