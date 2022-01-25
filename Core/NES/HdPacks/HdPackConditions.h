@@ -6,12 +6,12 @@
 
 struct HdPackBaseTileCondition : public HdPackCondition
 {
-	int32_t TileX;
-	int32_t TileY;
-	uint32_t PaletteColors;
-	uint8_t TileData[16];
-	int32_t TileIndex;
-	int32_t PixelOffset;
+	int32_t TileX = 0;
+	int32_t TileY = 0;
+	uint32_t PaletteColors = 0;
+	uint8_t TileData[16] = {};
+	int32_t TileIndex = 0;
+	int32_t PixelOffset = 0;
 
 	void Initialize(int32_t x, int32_t y, uint32_t palette, int32_t tileIndex, string tileData = "")
 	{
@@ -60,10 +60,10 @@ enum class HdPackConditionOperator
 struct HdPackBaseMemoryCondition : public HdPackCondition
 {
 	static constexpr uint32_t PpuMemoryMarker = 0x80000000;
-	uint32_t OperandA;
-	HdPackConditionOperator Operator;
-	uint32_t OperandB;
-	uint8_t Mask;
+	uint32_t OperandA = 0;
+	HdPackConditionOperator Operator = {};
+	uint32_t OperandB = 0;
+	uint8_t Mask = 0;
 
 	void Initialize(uint32_t operandA, HdPackConditionOperator op, uint32_t operandB, uint8_t mask)
 	{
@@ -182,10 +182,11 @@ struct HdPackMemoryCheckConstantCondition : public HdPackBaseMemoryCondition
 
 struct HdPackFrameRangeCondition : public HdPackCondition
 {
-	uint32_t OperandA;
-	uint32_t OperandB;
+	uint32_t OperandA = 0;
+	uint32_t OperandB = 0;
 
 	HdPackFrameRangeCondition() { _useCache = true; }
+
 	string GetConditionName() override { return "frameRange"; }
 
 	void Initialize(uint32_t operandA, uint32_t operandB)

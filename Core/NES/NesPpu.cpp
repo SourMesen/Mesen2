@@ -738,7 +738,7 @@ template<class T> void NesPpu<T>::LoadExtraSprites()
 		}
 
 		if(loadExtraSprites) {
-			for(uint32_t i = (_lastVisibleSpriteAddr + 4) & 0xFC; i != (_firstVisibleSpriteAddr & 0xFC); i = (i + 4) & 0xFC) {
+			for(uint32_t i = (_lastVisibleSpriteAddr + 4) & 0xFC; i != (uint32_t)(_firstVisibleSpriteAddr & 0xFC); i = (i + 4) & 0xFC) {
 				uint8_t spriteY = _spriteRAM[i];
 				if(_scanline >= spriteY && _scanline < spriteY + (_control.LargeSprites ? 16 : 8)) {
 					LoadSprite(spriteY, _spriteRAM[i + 1], _spriteRAM[i + 2], _spriteRAM[i + 3], true);

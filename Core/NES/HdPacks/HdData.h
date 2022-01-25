@@ -7,9 +7,9 @@ struct HdTileKey
 {
 	static constexpr int32_t NoTile = -1;
 
-	uint32_t PaletteColors;
-	uint8_t TileData[16];
-	int32_t TileIndex;
+	uint32_t PaletteColors = 0;
+	uint8_t TileData[16] = {};
+	int32_t TileIndex = 0;
 	bool IsChrRamTile = false;
 
 	HdTileKey GetKey(bool defaultKey)
@@ -78,36 +78,36 @@ namespace std {
 
 struct HdPpuTileInfo : public HdTileKey
 {
-	uint8_t OffsetX;
-	uint8_t OffsetY;
-	bool HorizontalMirroring;
-	bool VerticalMirroring;
-	bool BackgroundPriority;
+	uint8_t OffsetX = 0;
+	uint8_t OffsetY = 0;
+	bool HorizontalMirroring = false;
+	bool VerticalMirroring = false;
+	bool BackgroundPriority = false;
 	
-	uint8_t BgColorIndex;
-	uint8_t SpriteColorIndex;
-	uint8_t BgColor;
-	uint8_t SpriteColor;
-	uint8_t PpuBackgroundColor;
+	uint8_t BgColorIndex = 0;
+	uint8_t SpriteColorIndex = 0;
+	uint8_t BgColor = 0;
+	uint8_t SpriteColor = 0;
+	uint8_t PpuBackgroundColor = 0;
 };
 
 struct HdPpuPixelInfo
 {
-	HdPpuTileInfo Tile;
-	HdPpuTileInfo Sprite[4];
+	HdPpuTileInfo Tile = {};
+	HdPpuTileInfo Sprite[4] = {};
 	
-	uint16_t TmpVideoRamAddr;
-	uint8_t XScroll;
-	uint8_t EmphasisBits;
-	bool Grayscale;
-	uint8_t SpriteCount;
+	uint16_t TmpVideoRamAddr = 0;
+	uint8_t XScroll = 0;
+	uint8_t EmphasisBits = 0;
+	bool Grayscale = false;
+	uint8_t SpriteCount = 0;
 };
 
 struct HdScreenInfo
 {
 	HdPpuPixelInfo* ScreenTiles;
 	unordered_map<uint32_t, uint8_t> WatchedAddressValues;
-	uint32_t FrameNumber;
+	uint32_t FrameNumber = 0;
 
 	HdScreenInfo(const HdScreenInfo& that) = delete;
 

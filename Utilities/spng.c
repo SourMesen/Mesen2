@@ -601,7 +601,7 @@ static int spng__inflate_init(spng_ctx *ctx)
     if(inflateValidate(&ctx->zstream, validate)) return SPNG_EZLIB_INIT;
 
 #else /* This requires zlib >= 1.2.11 */
-    #pragma message ("inflateValidate() not available, SPNG_CTX_IGNORE_ADLER32 will be ignored")
+    //#pragma message ("inflateValidate() not available, SPNG_CTX_IGNORE_ADLER32 will be ignored")
 #endif
 
     return 0;
