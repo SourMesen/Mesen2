@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -111,6 +112,30 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomOut),
 					OnClick = () => picViewer.ZoomOut()
 				},
+			});
+
+			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					IsEnabled = () => SelectedSprite != null,
+					OnClick = () => {
+						if(SelectedSprite != null && SelectedSprite.TileAddress >= 0) {
+							MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
+							wnd.SetCursorPosition(CpuType.GetVramMemoryType(), SelectedSprite.TileAddress);
+							wnd.Activate();
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInTileViewer,
+					IsEnabled = () => false,
+					OnClick = () => { }
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ExportToPng,
+					OnClick = () => picViewer.ExportToPng()
+				}
 			});
 
 			if(Design.IsDesignMode || wnd == null) {

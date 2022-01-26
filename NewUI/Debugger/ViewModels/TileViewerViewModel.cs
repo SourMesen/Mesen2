@@ -96,6 +96,19 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
+			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					IsEnabled = () => false,
+					OnClick = () => { }
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ExportToPng,
+					OnClick = () => picViewer.ExportToPng()
+				}
+			});
+
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 
@@ -176,7 +189,7 @@ namespace Mesen.Debugger.ViewModels
 				InitBitmap();
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetTileView(CpuType.Snes, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
+					DebugApi.GetTileView(CpuType, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
 				}
 			});
 		}

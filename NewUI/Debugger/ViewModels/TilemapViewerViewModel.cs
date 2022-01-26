@@ -250,7 +250,6 @@ namespace Mesen.Debugger.ViewModels
 				byte[] vram = _vram;
 				uint[] palette = _palette.RgbPalette;
 
-
 				GetTilemapOptions options;
 				FrameInfo size;
 
