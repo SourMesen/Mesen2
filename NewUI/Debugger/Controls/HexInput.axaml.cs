@@ -14,7 +14,6 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> MinimumProperty = AvaloniaProperty.Register<HexInput, int>(nameof(Minimum));
 		public static readonly StyledProperty<int> SmallIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(SmallIncrement));
 		public static readonly StyledProperty<int> LargeIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(LargeIncrement));
-		public static readonly StyledProperty<string> TextValueProperty = AvaloniaProperty.Register<HexInput, string>(nameof(TextValue), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
 		public int Value
 		{
@@ -46,30 +45,8 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(LargeIncrementProperty, value); }
 		}
 
-		public string TextValue
-		{
-			get { return GetValue(TextValueProperty); }
-			set { SetValue(TextValueProperty, value); }
-		}
-
-		private string _format = "X2";
-
 		static HexInput()
 		{
-			ValueProperty.Changed.AddClassHandler<HexInput>((x, e) => {
-				x.UpdateTextValue();
-			});
-
-			TextValueProperty.Changed.AddClassHandler<HexInput>((x, e) => {
-				if(int.TryParse(x.TextValue, System.Globalization.NumberStyles.HexNumber, null, out int result)) {
-					x.Value = result;
-				}
-			});
-
-			MaximumProperty.Changed.AddClassHandler<HexInput>((x, e) => {
-				x._format = "X" + x.Maximum.ToString("X").Length;
-				x.UpdateTextValue();
-			});
 		}
 
 		public HexInput()
@@ -80,16 +57,6 @@ namespace Mesen.Debugger.Controls
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-		}
-
-		protected override void OnInitialized()
-		{
-			UpdateTextValue();
-		}
-
-		private void UpdateTextValue()
-		{
-			TextValue = Value.ToString(_format);
 		}
 
 		private void SetValue(int offset)
@@ -153,11 +120,6 @@ namespace Mesen.Debugger.Controls
 		public bool CanIncrementSmall(object parameter)
 		{
 			return Value < Maximum;
-		}
-
-		private void OnTextLostFocus(object sender, RoutedEventArgs e)
-		{
-			UpdateTextValue();
 		}
 	}
 }

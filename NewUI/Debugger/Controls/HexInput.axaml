@@ -51,10 +51,11 @@
 			<Path Data="{StaticResource NextSmallButton}" />
 		</RepeatButton>
 
-		<TextBox
-			MinWidth="0"
-			LostFocus="OnTextLostFocus"
-			Text="{Binding TextValue}"
+		<c:MesenNumericTextBox
+			Hex="True"
+			Value="{Binding Value}"
+			Max="{Binding Maximum}"
+			Min="{Binding Minimum}"
 		/>
 	</DockPanel>
 </UserControl>

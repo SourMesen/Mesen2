@@ -59,6 +59,7 @@ namespace Mesen.Controls
 
 			MaxProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
 				x.MaxLength = x.GetMaxLength();
+				x.UpdateText(true);
 			});
 
 			TextProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
@@ -101,6 +102,14 @@ namespace Mesen.Controls
 
 		private void UpdateValueFromText()
 		{
+			if(string.IsNullOrWhiteSpace(Text)) {
+				if(Min != null) {
+					SetNewValue(Math.Min(0, Min.Value));
+				} else {
+					SetNewValue(0);
+				}
+			}
+
 			IComparable? val;
 			if(Hex) {
 				val = (IComparable?)_hexConverter.ConvertBack(Text, Value.GetType(), null, System.Globalization.CultureInfo.InvariantCulture);
@@ -156,7 +165,8 @@ namespace Mesen.Controls
 		{
 			string? text;
 			if(Hex) {
-				text = (string?)_hexConverter.Convert(Value, typeof(string), null, System.Globalization.CultureInfo.InvariantCulture);
+				string format = "X" + MaxLength;
+				text = (string?)_hexConverter.Convert(Value, typeof(string), format, System.Globalization.CultureInfo.InvariantCulture);
 			} else {
 				text = Value.ToString();
 			}
