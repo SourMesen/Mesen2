@@ -23,6 +23,8 @@ enum class ConsoleNotificationType
 	EventViewerRefresh,
 	MissingFirmware,
 	BeforeGameUnload,
+	BeforeGameLoad,
+	GameLoadFailed,
 	CheatsChanged
 };
 

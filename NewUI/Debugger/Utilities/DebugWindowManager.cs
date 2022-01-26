@@ -13,6 +13,7 @@ namespace Mesen.Debugger.Utilities
 		private static int _debugWindowCounter = 0;
 		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
 		private static object _windowNotifLock = new();
+		private static bool _loadingGame = false;
 
 		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
@@ -75,10 +76,32 @@ namespace Mesen.Debugger.Utilities
 				return;
 			}
 
-			lock(_windowNotifLock) {
-				foreach(Window window in _openedWindows.Keys) {
-					if(window is INotificationHandler handler) {
-						handler.ProcessNotification(e);
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.BeforeGameLoad:
+					//Suspend all other events until game load is done (or cancelled)
+					_loadingGame = true;
+
+					//Run any pending UI calls (and wait for them to complete)
+					if(Dispatcher.UIThread.CheckAccess()) {
+						Dispatcher.UIThread.RunJobs();
+					} else {
+						Dispatcher.UIThread.InvokeAsync(() => Dispatcher.UIThread.RunJobs()).Wait();
+					}
+					break;
+				
+				case ConsoleNotificationType.GameLoaded:
+				case ConsoleNotificationType.GameLoadFailed:
+					//Load operation is done, allow notifications to be sent to windows
+					_loadingGame = false;
+					break;
+			}
+
+			if(!_loadingGame) {
+				lock(_windowNotifLock) {
+					foreach(Window window in _openedWindows.Keys) {
+						if(window is INotificationHandler handler) {
+							handler.ProcessNotification(e);
+						}
 					}
 				}
 			}
@@ -89,7 +112,7 @@ namespace Mesen.Debugger.Utilities
 					break;
 
 				case ConsoleNotificationType.EmulationStopped:
-					DebugWindowManager.CloseAllWindows();
+					Dispatcher.UIThread.Post(() => DebugWindowManager.CloseAllWindows());
 					break;
 			}
 		}

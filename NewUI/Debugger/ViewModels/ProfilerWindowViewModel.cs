@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
@@ -42,6 +43,15 @@ namespace Mesen.Debugger.ViewModels
 
 			ProfilerTabs = tabs;
 			SelectedTab = tabs[0];
+		}
+
+		public void RefreshData()
+		{
+			ProfilerTab tab = (SelectedTab ?? ProfilerTabs[0]);
+			tab.RefreshData();
+			Dispatcher.UIThread.Post(() => {
+				tab.RefreshGrid();
+			});
 		}
 	}
 

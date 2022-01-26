@@ -51,11 +51,8 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.PpuFrameDone:
-					if(ToolRefreshHelper.LimitFps(this, 30)) {
-						_model.SelectedTab.RefreshData();
-						Dispatcher.UIThread.Post(() => {
-							_model.SelectedTab.RefreshGrid();
-						});
+					if(ToolRefreshHelper.LimitFps(this, 10)) {
+						_model.RefreshData();
 					}
 					break;
 			}

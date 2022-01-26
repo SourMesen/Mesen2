@@ -324,6 +324,8 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
+
 	BlockDebuggerRequests();
 
 	auto dbgLock = _debuggerLock.AcquireSafe();
@@ -389,6 +391,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_settings->SetEmulationConfig(orgConfig);
 
 	if(result != LoadRomResult::Success) {
+		_notificationManager->SendNotification(ConsoleNotificationType::GameLoadFailed);
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
 		if(debugger) {
 			_debugger.reset(debugger);

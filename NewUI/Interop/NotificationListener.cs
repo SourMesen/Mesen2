@@ -73,6 +73,8 @@ namespace Mesen.Interop
 		EventViewerRefresh,
 		MissingFirmware,
 		BeforeGameUnload,
+		BeforeGameLoad,
+		GameLoadFailed,
 		CheatsChanged
 	}
 }
