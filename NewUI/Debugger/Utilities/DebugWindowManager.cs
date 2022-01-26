@@ -14,7 +14,7 @@ namespace Mesen.Debugger.Utilities
 		private static ConcurrentDictionary<Window, bool> _openedWindows = new();
 		private static object _windowNotifLock = new();
 
-		public static void OpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
 			if(Interlocked.Increment(ref _debugWindowCounter) == 1) {
 				//Opened a debug window and nothing else was opened, load the saved workspace
@@ -29,6 +29,17 @@ namespace Mesen.Debugger.Utilities
 			};
 			_openedWindows.TryAdd(wnd, true);
 			wnd.Show();
+			return wnd;
+		}
+
+		public static T GetOrOpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		{
+			foreach(Window wnd in _openedWindows.Keys) {
+				if(wnd is T) {
+					return (T)wnd;
+				}
+			}
+			return OpenDebugWindow<T>(createWindow);
 		}
 
 		private static void CloseDebugWindow(Window wnd)

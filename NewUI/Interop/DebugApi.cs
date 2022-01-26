@@ -302,18 +302,35 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern void ResetMemoryAccessCounts();
-		public static void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counters)
+		public static void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counts)
 		{
 			int size = DebugApi.GetMemorySize(type);
-			Array.Resize(ref counters, size);
-			DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, counters);
+			Array.Resize(ref counts, size);
+
+			GCHandle handle = GCHandle.Alloc(counts, GCHandleType.Pinned);
+			IntPtr ptr = handle.AddrOfPinnedObject();
+			DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, ptr);
+			handle.Free();
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, MemoryType type, [In,Out]AddressCounters[] counts);
+		public static AddressCounters[] GetMemoryAccessCounts(MemoryType type)
+		{
+			int size = DebugApi.GetMemorySize(type);
+			AddressCounters[] counts = new AddressCounters[size];
+			GetMemoryAccessCounts(type, ref counts);
+			return counts;
+		}
+
+		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, MemoryType type, IntPtr counts);
 		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, MemoryType type)
 		{
 			AddressCounters[] counts = new AddressCounters[length];
-			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, counts);
+
+			GCHandle handle = GCHandle.Alloc(counts, GCHandleType.Pinned);
+			IntPtr ptr = handle.AddrOfPinnedObject();
+			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, ptr);
+			handle.Free();
+
 			return counts;
 		}
 

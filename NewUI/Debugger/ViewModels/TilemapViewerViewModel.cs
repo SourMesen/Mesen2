@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -111,6 +112,17 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.TileMapAddress >= 0) {
+							MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
+							wnd.SetCursorPosition(CpuType.GetVramMemoryType(), tile.Value.TileMapAddress);
+							wnd.Activate();
+						}
+					}
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.ViewInTileViewer,
 					IsEnabled = () => false,
 					OnClick = () => { }
@@ -165,6 +177,16 @@ namespace Mesen.Debugger.ViewModels
 						new() { Title = "$9C00", Layer = 1 }
 					};
 					break;
+			}
+		}
+
+		private DebugTilemapTileInfo? GetSelectedTileInfo()
+		{
+			if(SelectionRect.IsEmpty || _ppuState == null || _prevVram == null) {
+				return null;
+			} else {
+				PixelPoint p =PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+				return DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _prevVram, _ppuState);
 			}
 		}
 

@@ -159,6 +159,9 @@ namespace Mesen.Debugger.Controls
 		public PictureViewer()
 		{
 			Focusable = true;
+			VerticalAlignment = VerticalAlignment.Top;
+			HorizontalAlignment = HorizontalAlignment.Left;
+			ClipToBounds = true;
 		}
 
 		private void OnSourceInvalidated(object? sender, EventArgs e)

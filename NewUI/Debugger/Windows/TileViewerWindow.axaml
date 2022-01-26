@@ -111,8 +111,6 @@
 				AllowAutoHide="False"
 			>
 				<dc:PictureViewer
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Stretch"
 					x:Name="picViewer"
 					Source="{CompiledBinding ViewerBitmap}"
 					Zoom="{CompiledBinding Config.ImageScale}"

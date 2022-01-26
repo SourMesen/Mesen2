@@ -289,5 +289,8 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("VerticalLayout")]
 		ViewInTileViewer,
+
+		[IconFile("CheatCode")]
+		ViewInMemoryViewer,
 	}
 }

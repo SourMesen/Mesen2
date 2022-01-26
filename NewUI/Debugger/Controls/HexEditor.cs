@@ -118,7 +118,7 @@ namespace Mesen.Debugger.Controls
 		private double RowWidth => LetterSize.Width * (3 * BytesPerRow - 1);
 		private double StringViewMargin => 20;
 		private double ColumnHeaderHeight => LetterSize.Height + 5;
-		private int VisibleRows => (int)((Bounds.Height - ColumnHeaderHeight) / RowHeight) - 1;
+		private int VisibleRows => Math.Max(0, (int)((Bounds.Height - ColumnHeaderHeight) / RowHeight) - 1);
 		private string HexFormat => "X2";
 
 		private int _cursorPosition = 0;
@@ -136,11 +136,20 @@ namespace Mesen.Debugger.Controls
 				SelectedRowColumnColorProperty, HeaderBackgroundProperty, HeaderForegroundProperty, HeaderHighlightProperty,
 				IsFocusedProperty
 			);
+
+			FontFamilyProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
+				x.InitFontAndLetterSize();
+			});
+
+			FontSizeProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
+				x.InitFontAndLetterSize();
+			});
 		}
 
 		public HexEditor()
 		{
 			Focusable = true;
+			InitFontAndLetterSize();
 		}
 
 		protected override void OnPointerEnter(PointerEventArgs e)
@@ -178,7 +187,7 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		private void SetCursorPosition(int pos, bool keepNibble = false)
+		public void SetCursorPosition(int pos, bool keepNibble = false, bool scrollToTop = false)
 		{
 			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length - 1);
 			this.SelectionLength = 0;
@@ -188,7 +197,7 @@ namespace Mesen.Debugger.Controls
 				_lastNibble = false;
 			}
 
-			ScrollIntoView(_cursorPosition);
+			ScrollIntoView(_cursorPosition, scrollToTop);
 		}
 
 		private void ChangeSelectionLength(int offset)
@@ -426,14 +435,14 @@ namespace Mesen.Debugger.Controls
 			return null;
 		}
 
-		private void ScrollIntoView(int byteIndex)
+		private void ScrollIntoView(int byteIndex, bool scrollToTop = false)
 		{
 			int topRow = TopRow;
 			if(byteIndex < 0) {
 				topRow = 0;
 			} else if(byteIndex >= DataProvider.Length) {
 				topRow = (DataProvider.Length / BytesPerRow) - VisibleRows;
-			} else if(byteIndex < TopRow * BytesPerRow) {
+			} else if(byteIndex < TopRow * BytesPerRow || scrollToTop) {
 				//scroll up
 				topRow = byteIndex / BytesPerRow;
 			} else if(byteIndex > (TopRow + VisibleRows) * BytesPerRow) {
@@ -543,9 +552,6 @@ namespace Mesen.Debugger.Controls
 			using var clipRect = context.PushClip(new Rect(this.Bounds.Size));
 
 			context.DrawRectangle(ColorHelper.GetBrush(Colors.White), null, new Rect(Bounds.Size));
-
-			//Init font and letter size
-			InitFontAndLetterSize();
 
 			//Draw column headers
 			DrawColumnHeaders(context);

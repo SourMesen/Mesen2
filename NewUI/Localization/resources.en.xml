@@ -1800,6 +1800,7 @@ x == [$150] || y == [10]
 			
 			<Value ID="ExportToPng">Export to PNG</Value>
 			<Value ID="ViewInTileViewer">View in Tile Viewer</Value>
+			<Value ID="ViewInMemoryViewer">View in Memory Viewer</Value>
 		</Enum>
 	</Enums>
 </Resources>

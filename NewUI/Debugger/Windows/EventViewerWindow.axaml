@@ -64,8 +64,6 @@
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
 						<dc:PictureViewer
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch"
 							x:Name="picViewer"
 							Source="{CompiledBinding ViewerBitmap}"
 							Zoom="{CompiledBinding Config.ImageScale}"

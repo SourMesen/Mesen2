@@ -44,6 +44,14 @@ namespace Mesen.Debugger.Windows
 			_editor.ByteUpdated += editor_ByteUpdated;
 		}
 
+		public void SetCursorPosition(MemoryType memType, int address)
+		{
+			if(_model.AvailableMemoryTypes.Contains(memType)) {
+				_model.Config.MemoryType = memType;
+				_editor.SetCursorPosition(address, scrollToTop: true);
+			}
+		}
+
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -57,6 +65,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnOpened(e);
 			InitializeActions();
+			_editor.Focus();
 		}
 
 		private void InitializeComponent()
