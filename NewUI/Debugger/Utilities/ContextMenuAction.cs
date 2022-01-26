@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -96,7 +97,13 @@ namespace Mesen.Debugger.Utilities
 			set {
 				_onClick = () => {
 					if(IsEnabled == null || IsEnabled()) {
-						value();
+						if(ActionType == ActionType.Exit) {
+							//When using exit, the command is disposed while the command is running, which causes a crash
+							//Run the code in a posted action to prevent the crash
+							Dispatcher.UIThread.Post(() => { value(); });
+						} else {
+							value();
+						}
 					}
 				};
 				_clickCommand = ReactiveCommand.Create(_onClick, this.WhenAnyValue(x => x.Enabled));
