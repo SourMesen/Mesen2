@@ -47,7 +47,6 @@ namespace Mesen.Config
 			if(RecentScripts.Count > ScriptWindowConfig.MaxRecentScripts) {
 				RecentScripts.RemoveAt(ScriptWindowConfig.MaxRecentScripts);
 			}
-			ConfigManager.SaveConfig();
 		}
 	}
 

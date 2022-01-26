@@ -71,10 +71,5 @@ namespace Mesen.Debugger.ViewModels
 				Config.MemoryType = (MemoryType)AvailableMemoryTypes.First();
 			}
 		}
-
-		internal void SaveConfig()
-		{
-			ConfigManager.SaveConfig();
-		}
 	}
 }

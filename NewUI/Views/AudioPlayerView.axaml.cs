@@ -57,14 +57,12 @@ namespace Mesen.Views
 		{
 			ConfigManager.Config.AudioPlayer.Shuffle = !ConfigManager.Config.AudioPlayer.Shuffle;
 			ConfigManager.Config.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void OnToggleRepeatClick(object sender, RoutedEventArgs e)
 		{
 			ConfigManager.Config.AudioPlayer.Repeat = !ConfigManager.Config.AudioPlayer.Repeat;
 			ConfigManager.Config.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 	}
 }

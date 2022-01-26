@@ -53,9 +53,6 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
 			DebugApi.StopLogTraceToFile();
-			_model.SaveConfig();
-			_model.Dispose();
-			DataContext = null;
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)

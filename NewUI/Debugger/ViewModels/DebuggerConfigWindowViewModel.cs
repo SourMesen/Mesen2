@@ -171,7 +171,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			//TODO
 			ConfigManager.Config.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 	}
 

@@ -56,8 +56,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateAvailableTabs()
 		{
-			SaveConfig();
-
 			List<TraceLoggerOptionTab> tabs = new();
 			RomInfo romInfo = EmuApi.GetRomInfo();
 			StyleProvider.SetConsoleType(romInfo.ConsoleType);
@@ -65,19 +63,11 @@ namespace Mesen.Debugger.ViewModels
 				tabs.Add(new TraceLoggerOptionTab() {
 					TabName = ResourceHelper.GetEnumText(type),
 					CpuType = type,
-					Options = Config.CpuConfig[type].Clone()
+					Options = Config.CpuConfig[type]
 				});
 			}
 
 			Tabs = tabs;
-		}
-
-		public void SaveConfig()
-		{
-			foreach(TraceLoggerOptionTab tab in Tabs) {
-				Config.CpuConfig[tab.CpuType] = tab.Options;
-			}
-			ConfigManager.Config.Save();
 		}
 
 		private void UpdateCoreOptions()

@@ -85,7 +85,7 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Snes = Snes?.Config.Clone() ?? ConfigManager.Config.Snes;
 			ConfigManager.Config.Gameboy = Gameboy?.Config.Clone() ?? ConfigManager.Config.Gameboy;
 			ConfigManager.Config.ApplyConfig();
-			ConfigManager.SaveConfig();
+			ConfigManager.Config.Save();
 
 			ConfigManager.Config.Preferences.UpdateFileAssociations();
 		}

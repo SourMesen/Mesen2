@@ -30,7 +30,6 @@ namespace Mesen.Config
 			if(Items.Count > RecentItems.MaxRecentFiles) {
 				Items.RemoveAt(RecentItems.MaxRecentFiles);
 			}
-			ConfigManager.SaveConfig();
 		}
 	}
 

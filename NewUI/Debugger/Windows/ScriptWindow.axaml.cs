@@ -76,8 +76,6 @@ namespace Mesen.Debugger.Windows
 
 			_timer.Stop();
 			_model.Config.SaveWindowSettings(this);
-			ConfigManager.Config.Save();
-			DataContext = null;
 		}
 
 		private void UpdateLog()

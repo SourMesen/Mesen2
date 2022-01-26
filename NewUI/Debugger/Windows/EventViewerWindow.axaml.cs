@@ -49,43 +49,10 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnOpened(EventArgs e)
-		{
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			UpdateConfig();
-			ReactiveHelper.RegisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
-			_model.RefreshData(true);
-		}
-
-		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			UpdateConfig();
-		}
-
-		private void UpdateConfig()
-		{
-			if(_model.ConsoleConfig is SnesEventViewerConfig snesCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, snesCfg.ToInterop());
-			} else if(_model.ConsoleConfig is NesEventViewerConfig nesCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, nesCfg.ToInterop());
-			} else if(_model.ConsoleConfig is GbEventViewerConfig gbCfg) {
-				DebugApi.SetEventViewerConfig(_model.CpuType, gbCfg.ToInterop());
-			}
-
-			_model.RefreshTab(true);
-		}
-
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			ReactiveHelper.UnregisterRecursiveObserver(_model.ConsoleConfig, Config_PropertyChanged);
-			_model.SaveConfig();
-			_model.Dispose();
-			DataContext = null;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
@@ -169,7 +136,6 @@ namespace Mesen.Debugger.Windows
 					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
 						_model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();
 					}
-					UpdateConfig();
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:

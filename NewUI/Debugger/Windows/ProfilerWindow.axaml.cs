@@ -40,7 +40,6 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			DataContext = null;
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)

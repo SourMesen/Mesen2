@@ -44,7 +44,6 @@ namespace Mesen.Controls
 				Click += (object? sender, RoutedEventArgs e) => {
 					ConfigManager.Config.Video.VideoFilter = Filter;
 					ConfigManager.Config.Video.ApplyConfig();
-					ConfigManager.SaveConfig();
 				};
 			}
 		}

@@ -65,10 +65,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_model.Dispose();
 			_model.Config.SaveWindowSettings(this);
-			ConfigManager.SaveConfig();
-			DataContext = null;
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)

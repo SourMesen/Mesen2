@@ -13,7 +13,7 @@ namespace Mesen.Config
 {
 	public partial class Configuration
 	{
-		private bool _needToSave = false;
+		private string _fileData = "";
 
 		public string Version { get; set; } = "0.4.0";
 		public VideoConfig Video { get; set; }
@@ -66,14 +66,6 @@ namespace Mesen.Config
 			Serialize(ConfigManager.ConfigFile);
 		}
 
-		public bool NeedToSave
-		{
-			set
-			{
-				_needToSave = value;
-			}
-		}
-
 		public void ApplyConfig()
 		{
 			Video.ApplyConfig();
@@ -97,7 +89,7 @@ namespace Mesen.Config
 				FirstRun = false;
 			}
 			Preferences.InitializeDefaultShortcuts();
-			ConfigManager.SaveConfig();
+			ConfigManager.Config.Save();
 		}
 
 		public static Configuration Deserialize(string configFile)
@@ -105,7 +97,9 @@ namespace Mesen.Config
 			Configuration config;
 
 			try {
-				config = JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFile), JsonHelper.Options) ?? new Configuration();
+				string fileData = File.ReadAllText(configFile);
+				config = JsonSerializer.Deserialize<Configuration>(fileData, JsonHelper.Options) ?? new Configuration();
+				config._fileData = fileData;
 			} catch {
 				config = new Configuration();
 			}
@@ -117,20 +111,16 @@ namespace Mesen.Config
 		{
 			try {
 				if(!ConfigManager.DoNotSaveSettings) {
-					File.WriteAllText(configFile, JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options));
+					string cfgData = JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options);
+					if(_fileData != cfgData) {
+						File.WriteAllText(configFile, cfgData);
+						_fileData = cfgData;
+					}
 				}
-				_needToSave = false;
 			} catch {
 				//This can sometime fail due to the file being used by another Mesen instance, etc.
 				//In this case, the _needToSave flag will still be set, and the config will be saved when the emulator is closed
 			}
-		}
-
-		public Configuration Clone()
-		{
-			Configuration config = JsonSerializer.Deserialize<Configuration>(JsonSerializer.Serialize(this, typeof(Configuration))) ?? new Configuration();
-			config.NeedToSave = false;
-			return config;
 		}
 	}
 

@@ -215,7 +215,6 @@ namespace Mesen.Utilities
 		{
 			ConfigManager.Config.Video.VideoFilter = filter;
 			ConfigManager.Config.Video.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		//TODO
@@ -276,7 +275,6 @@ namespace Mesen.Utilities
 		{
 			ConfigManager.Config.Emulation.EmulationSpeed = emulationSpeed;
 			ConfigManager.Config.Emulation.ApplyConfig();
-			ConfigManager.SaveConfig();
 
 			if(emulationSpeed == 0) {
 				EmuApi.DisplayMessage("EmulationSpeed", "EmulationMaximumSpeed");
@@ -335,63 +333,54 @@ namespace Mesen.Utilities
 		{
 			ConfigManager.Config.Preferences.DisableOsd = !ConfigManager.Config.Preferences.DisableOsd;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void ToggleFps()
 		{
 			ConfigManager.Config.Preferences.ShowFps = !ConfigManager.Config.Preferences.ShowFps;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void ToggleAudio()
 		{
 			ConfigManager.Config.Audio.EnableAudio = !ConfigManager.Config.Audio.EnableAudio;
 			ConfigManager.Config.Audio.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void IncreaseVolume()
 		{
 			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Min(100, (int)ConfigManager.Config.Audio.MasterVolume + 5);
 			ConfigManager.Config.Audio.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void DecreaseVolume()
 		{
 			ConfigManager.Config.Audio.MasterVolume = (uint)Math.Max(0, (int)ConfigManager.Config.Audio.MasterVolume - 5);
 			ConfigManager.Config.Audio.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void ToggleFrameCounter()
 		{
 			ConfigManager.Config.Preferences.ShowFrameCounter = !ConfigManager.Config.Preferences.ShowFrameCounter;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig(); 
 		}
 		
 		private void ToggleGameTimer()
 		{
 			ConfigManager.Config.Preferences.ShowGameTimer = !ConfigManager.Config.Preferences.ShowGameTimer;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void ToggleAlwaysOnTop()
 		{
 			ConfigManager.Config.Preferences.AlwaysOnTop = !ConfigManager.Config.Preferences.AlwaysOnTop;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 
 		private void ToggleDebugInfo()
 		{
 			ConfigManager.Config.Preferences.ShowDebugInfo = !ConfigManager.Config.Preferences.ShowDebugInfo;
 			ConfigManager.Config.Preferences.ApplyConfig();
-			ConfigManager.SaveConfig();
 		}
 	}
 }

@@ -333,13 +333,11 @@ namespace Mesen.Views
 						case ConsoleType.Snes:
 							ConfigManager.Config.Snes.Region = r;
 							ConfigManager.Config.Snes.ApplyConfig();
-							ConfigManager.SaveConfig();
 							break;
 
 						case ConsoleType.Nes:
 							ConfigManager.Config.Nes.Region = r;
 							ConfigManager.Config.Nes.ApplyConfig();
-							ConfigManager.SaveConfig();
 							break;
 
 						default: break;
@@ -427,7 +425,6 @@ namespace Mesen.Views
 					if(!ConfigManager.Config.Nes.EnableHdPacks) {
 						ConfigManager.Config.Nes.EnableHdPacks = true;
 						ConfigManager.Config.Nes.ApplyConfig();
-						ConfigManager.SaveConfig();
 					}
 
 					if(await MesenMsgBox.Show(VisualRoot, "InstallHdPackConfirmReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {

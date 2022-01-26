@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
+using Mesen.Config;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System;
@@ -26,6 +27,11 @@ namespace Mesen.Debugger.Utilities
 			wnd.Closed += (s, e) => {
 				if(s is Window window) {
 					CloseDebugWindow(window);
+					if(window.DataContext is IDisposable disposable) {
+						disposable.Dispose();
+					}
+					window.DataContext = null;
+					ConfigManager.Config.Save();
 				}
 			};
 			_openedWindows.TryAdd(wnd, true);

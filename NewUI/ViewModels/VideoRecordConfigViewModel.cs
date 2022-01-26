@@ -34,7 +34,6 @@ namespace Mesen.ViewModels
 		public void SaveConfig()
 		{
 			ConfigManager.Config.VideoRecord = Config.Clone();
-			ConfigManager.SaveConfig();
 		}
    }
 }

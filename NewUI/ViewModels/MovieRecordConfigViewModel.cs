@@ -23,7 +23,6 @@ namespace Mesen.ViewModels
 		public void SaveConfig()
 		{
 			ConfigManager.Config.MovieRecord = Config.Clone();
-			ConfigManager.SaveConfig();
 		}
    }
 }

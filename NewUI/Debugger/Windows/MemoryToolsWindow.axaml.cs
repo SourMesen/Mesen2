@@ -56,9 +56,6 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			_model.SaveConfig();
-			_model.Dispose();
-			DataContext = null;
 		}
 
 		protected override void OnOpened(EventArgs e)

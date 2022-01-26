@@ -93,12 +93,21 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			UpdateConfig();
+			RefreshData(true);
+
 			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
 				InitForCpuType();
+				UpdateConfig();
 				RefreshData(true);
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true)));
+			
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(ConsoleConfig, (s, e) => {
+				UpdateConfig();
+				RefreshTab(true);
+			}));
 
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
@@ -112,11 +121,6 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Gameboy => Config.GbConfig,
 				_ => throw new Exception("Invalid cpu type")
 			};
-		}
-
-		public void SaveConfig()
-		{
-			ConfigManager.Config.Save();
 		}
 
 		private void InitBitmap()
@@ -170,6 +174,17 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			});
+		}
+
+		private void UpdateConfig()
+		{
+			if(ConsoleConfig is SnesEventViewerConfig snesCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, snesCfg.ToInterop());
+			} else if(ConsoleConfig is NesEventViewerConfig nesCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, nesCfg.ToInterop());
+			} else if(ConsoleConfig is GbEventViewerConfig gbCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, gbCfg.ToInterop());
+			}
 		}
 
 		public enum EventViewerTab

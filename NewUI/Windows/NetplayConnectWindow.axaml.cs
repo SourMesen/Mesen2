@@ -30,7 +30,6 @@ namespace Mesen.Windows
 
 			NetplayConfig cfg = (NetplayConfig)DataContext!;
 			ConfigManager.Config.Netplay = cfg.Clone();
-			ConfigManager.SaveConfig();
 
 			NetplayApi.Connect(cfg.Host, cfg.Port, cfg.Password, false);
 		}

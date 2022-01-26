@@ -144,11 +144,6 @@ namespace Mesen.Config
 			}
 		}
 
-		public static void SaveConfig()
-		{
-			_config?.Save();
-		}
-
 		public static string HomeFolder {
 			get
 			{
@@ -239,7 +234,7 @@ namespace Mesen.Config
 			_config = new Configuration();
 			Config.DefaultKeyMappings = defaultMappings;
 			Config.InitializeDefaults();
-			SaveConfig();
+			Config.Save();
 			Config.ApplyConfig();
 		}
 

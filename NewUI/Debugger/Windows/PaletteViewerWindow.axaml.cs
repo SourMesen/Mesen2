@@ -102,8 +102,6 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-			_model.Dispose();
-			DataContext = null;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
