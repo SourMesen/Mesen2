@@ -304,7 +304,7 @@ namespace Mesen.Debugger.Controls
 		protected override void OnTextInput(TextInputEventArgs e)
 		{
 			if(e.Text != null) {
-				char c = e.Text.ToLower()[0];
+				char c = e.Text[0];
 
 				if(_inStringView) {
 					SelectionLength = 0;
@@ -312,7 +312,7 @@ namespace Mesen.Debugger.Controls
 					CommitByteChanges();
 					MoveCursor(1);
 				} else {
-					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
+					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 						int keyValue = Int32.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber);
 
 						SelectionLength = 0;
