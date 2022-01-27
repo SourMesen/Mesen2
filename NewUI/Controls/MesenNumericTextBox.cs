@@ -163,6 +163,10 @@ namespace Mesen.Controls
 
 		private void UpdateText(bool force = false)
 		{
+			if(Value == null) {
+				return;
+			}
+
 			string? text;
 			if(Hex) {
 				string format = "X" + MaxLength;
