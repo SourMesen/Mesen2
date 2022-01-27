@@ -23,10 +23,11 @@ namespace Mesen.Utilities
 		public static string WatchFileExt = "txt";
 		public static string LuaExt = "lua";
 		public static string PngExt = "png";
+		public static string DmpExt = "dmp";
 
 		public static async Task<string?> OpenFile(string? initialFolder, IRenderRoot? parent, params string[] extensions)
 		{
-			if(!(parent is Window wnd)) {
+			if(!((parent ?? ApplicationHelper.GetMainWindow()) is Window wnd)) {
 				throw new Exception("Invalid parent window");
 			}
 
@@ -54,7 +55,7 @@ namespace Mesen.Utilities
 
 		public static async Task<string?> SaveFile(string? initialFolder, string? initialFile, IRenderRoot? parent, params string[] extensions)
 		{
-			if(!(parent is Window wnd)) {
+			if(!((parent ?? ApplicationHelper.GetMainWindow()) is Window wnd)) {
 				throw new Exception("Invalid parent window");
 			}
 

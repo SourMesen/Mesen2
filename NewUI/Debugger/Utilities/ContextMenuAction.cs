@@ -299,5 +299,8 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("CheatCode")]
 		ViewInMemoryViewer,
+		
+		LoadTblFile,
+		ResetTblMappings,
 	}
 }

@@ -30,9 +30,10 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectionLength { get; set; }
 		[Reactive] public string StatusBarText { get; private set; } = "";
 
-		[ObservableAsProperty] public int MaxScrollValue { get; }
+		[Reactive] public List<object> FileMenuItems { get; set; } = new();
+		[Reactive] public List<object> ToolbarItems { get; set; } = new();
 
-		public int[] AvailableWidths { get => new int[] { 4, 8, 16, 32, 48, 64, 80, 96, 112, 128 }; }
+		[ObservableAsProperty] public int MaxScrollValue { get; }
 
 		public MemoryToolsViewModel()
 		{
@@ -42,6 +43,10 @@ namespace Mesen.Debugger.ViewModels
 
 			if(Design.IsDesignMode) {
 				return;
+			}
+
+			if(DebugWorkspaceManager.Workspace.TblMappings.Length > 0) {
+				TblConverter = TblLoader.Load(DebugWorkspaceManager.Workspace.TblMappings);
 			}
 
 			UpdateAvailableMemoryTypes();

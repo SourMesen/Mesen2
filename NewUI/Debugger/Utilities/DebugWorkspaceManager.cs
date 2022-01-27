@@ -2,7 +2,9 @@
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,6 +19,18 @@ namespace Mesen.Debugger.Utilities
 		private static RomInfo _romInfo = new();
 		private static string _path = "";
 
+		public static DebugWorkspace Workspace 
+		{
+			get
+			{
+				if(_workspace == null) {
+					Load();
+				}
+				return _workspace;
+			}
+		}
+
+		[MemberNotNull(nameof(DebugWorkspaceManager._workspace))]
 		public static void Load()
 		{
 			if(_workspace != null) {
@@ -47,7 +61,7 @@ namespace Mesen.Debugger.Utilities
 	public class DebugWorkspace
 	{
 		public Dictionary<CpuType, CpuDebugWorkspace> WorkspaceByCpu { get; set; } = new();
-		public List<string> TblMappings = new();
+		public string[] TblMappings = Array.Empty<string>();
 
 		public static DebugWorkspace Load(string path)
 		{

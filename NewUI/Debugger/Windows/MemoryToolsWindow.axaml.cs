@@ -14,6 +14,7 @@ using Mesen.Utilities;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Mesen.Debugger.Windows
 {
@@ -75,24 +76,9 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel;
 		}
 
-		private async void OnLoadTblFileClick(object sender, RoutedEventArgs e)
-		{
-			string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.TblExt);
-			if(filename != null) {
-				_model.TblConverter = TblLoader.Load(File.ReadAllLines(filename));
-			}
-		}
-
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
 		{
 			DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)e.ByteOffset, e.Value);
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(this.DataContext is MemoryToolsViewModel model) {
-				_model = model;
-			}
 		}
 
 		private void InitializeActions()
@@ -124,6 +110,79 @@ namespace Mesen.Debugger.Windows
 					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.SelectAll)
 				},
 			});
+
+			_model.FileMenuItems = _model.AddDisposables(new List<object>() {
+				GetImportAction(),
+				GetExportAction(),
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.LoadTblFile,
+					OnClick = async () => {
+						string? filename = await FileDialogHelper.OpenFile(null, this, FileDialogHelper.TblExt);
+						if(filename != null) {
+							string[] tblData = File.ReadAllLines(filename);
+							_model.TblConverter = TblLoader.Load(tblData);
+							DebugWorkspaceManager.Workspace.TblMappings = tblData;
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ResetTblMappings,
+					OnClick = () => {
+						_model.TblConverter = null;
+						DebugWorkspaceManager.Workspace.TblMappings = Array.Empty<string>();
+					}
+				},
+				new Separator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => Close()
+				}
+			});
+
+			_model.ToolbarItems = _model.AddDisposables(new List<object>() { 
+				GetImportAction(),
+				GetExportAction(),
+			});
+
+			DebugShortcutManager.RegisterActions(this, _model.ToolbarItems);
+		}
+
+		private ContextMenuAction GetImportAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.Import,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_Import),
+				IsEnabled = () => !_model.Config.MemoryType.IsRelativeMemory(),
+				OnClick = () => Import()
+			};
+		}
+
+		private ContextMenuAction GetExportAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.Export,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_Export),
+				OnClick = () => Export()
+			};
+		}
+
+		public async void Import()
+		{
+			string? filename = await FileDialogHelper.OpenFile(ConfigManager.DebuggerFolder, this, FileDialogHelper.DmpExt);
+			if(filename != null) {
+				byte[] dmpData = File.ReadAllBytes(filename);
+				DebugApi.SetMemoryState(_model.Config.MemoryType, dmpData, dmpData.Length);
+			}
+		}
+
+		public async void Export()
+		{
+			string name = EmuApi.GetRomInfo().GetRomName() + " - " + _model.Config.MemoryType.ToString() + ".dmp";
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, name, this, FileDialogHelper.DmpExt);
+			if(filename != null) {
+				File.WriteAllBytes(filename, DebugApi.GetMemoryState(_model.Config.MemoryType));
+			}
 		}
 
 		private ContextMenuAction GetEditLabelAction()

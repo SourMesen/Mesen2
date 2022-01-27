@@ -11,6 +11,7 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="410"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	Name="root"
 	x:DataType="cfg:HexEditorConfig"
 	x:Class="Mesen.Debugger.Views.MemoryToolsDisplayOptionsView"
 >
@@ -67,6 +68,13 @@
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblMiscSettings}">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Columns: </TextBlock>
+				<ComboBox
+					SelectedItem="{CompiledBinding BytesPerRow}"
+					Items="{Binding AvailableWidths, ElementName=root}"
+				/>
+			</StackPanel>
 			<CheckBox
 				IsChecked="{CompiledBinding HighDensityTextMode}"
 				Content="{l:Translate chkHighDensityTextMode}"

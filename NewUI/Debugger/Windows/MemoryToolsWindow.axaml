@@ -30,23 +30,20 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File">
-				<MenuItem Header="Load TBL file..." Click="OnLoadTblFileClick">
-					<MenuItem.Icon>
-						<Image Source="/Assets/Folder.png" />
-					</MenuItem.Icon>
-				</MenuItem>
-			</MenuItem>
+			<MenuItem Header="File" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="View" />
 			<MenuItem Header="Find" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
-			<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
-			<c:EnumComboBox
-				DockPanel.Dock="Left"
-				SelectedItem="{CompiledBinding Config.MemoryType}"
-				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
-			/>
+			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+				<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
+				<c:EnumComboBox
+					SelectedItem="{CompiledBinding Config.MemoryType}"
+					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+				/>
+				<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+			</StackPanel>
+			
 			<c:IconButton
 				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
@@ -54,12 +51,6 @@
 				Click="OnSettingsClick"
 				Icon="Assets/Settings.png"
 			/>
-			<ComboBox
-				DockPanel.Dock="Right"
-				SelectedItem="{CompiledBinding Config.BytesPerRow}"
-				Items="{CompiledBinding AvailableWidths}"
-			/>
-			<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Number of Columns: </TextBlock>
 		</DockPanel>
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
 			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Config}" />
