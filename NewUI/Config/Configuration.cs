@@ -16,43 +16,27 @@ namespace Mesen.Config
 		private string _fileData = "";
 
 		public string Version { get; set; } = "0.4.0";
-		public VideoConfig Video { get; set; }
-		public AudioConfig Audio { get; set; }
-		public InputConfig Input { get; set; }
-		public EmulationConfig Emulation { get; set; }
-		public SnesConfig Snes { get; set; }
-		public NesConfig Nes { get; set; }
-		public GameboyConfig Gameboy { get; set; }
-		public PreferencesConfig Preferences { get; set; }
-		public AudioPlayerConfig AudioPlayer { get; set; }
-		public DebugConfig Debug { get; set; }
-		public RecentItems RecentFiles { get; set; }
-		public VideoRecordConfig VideoRecord { get; set; }
-		public MovieRecordConfig MovieRecord { get; set; }
-		public CheatWindowConfig Cheats { get; set; }
-		public NetplayConfig Netplay { get; set; }
-		public Point WindowLocation { get; set; }
-		public Size WindowSize { get; set; }
+		public VideoConfig Video { get; set; } = new();
+		public AudioConfig Audio { get; set; } = new();
+		public InputConfig Input { get; set; } = new();
+		public EmulationConfig Emulation { get; set; } = new();
+		public SnesConfig Snes { get; set; } = new();
+		public NesConfig Nes { get; set; } = new();
+		public GameboyConfig Gameboy { get; set; } = new();
+		public PreferencesConfig Preferences { get; set; } = new();
+		public AudioPlayerConfig AudioPlayer { get; set; } = new();
+		public DebugConfig Debug { get; set; } = new();
+		public RecentItems RecentFiles { get; set; } = new();
+		public VideoRecordConfig VideoRecord { get; set; } = new();
+		public MovieRecordConfig MovieRecord { get; set; } = new();
+		public CheatWindowConfig Cheats { get; set; } = new();
+		public NetplayConfig Netplay { get; set; } = new();
+		public MainWindowConfig MainWindow { get; set; } = new();
 		public bool FirstRun { get; set; } = true;
 		public DefaultKeyMappingType DefaultKeyMappings { get; set; } = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 
 		public Configuration()
 		{
-			RecentFiles = new RecentItems();
-			Debug = new DebugConfig();
-			Video = new VideoConfig();
-			Audio = new AudioConfig();
-			Input = new InputConfig();
-			Emulation = new EmulationConfig();
-			Gameboy = new GameboyConfig();
-			Snes = new SnesConfig();
-			Nes = new NesConfig();
-			Preferences = new PreferencesConfig();
-			AudioPlayer = new AudioPlayerConfig();
-			VideoRecord = new VideoRecordConfig();
-			MovieRecord = new MovieRecordConfig();
-			Cheats = new CheatWindowConfig();
-			Netplay = new NetplayConfig();
 		}
 
 		~Configuration()

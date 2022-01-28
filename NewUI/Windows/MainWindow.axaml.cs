@@ -16,6 +16,7 @@ using Mesen.Interop;
 using Mesen.Views;
 using Avalonia.Layout;
 using Mesen.Debugger.Utilities;
+using System.ComponentModel;
 
 namespace Mesen.Windows
 {
@@ -48,8 +49,10 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
-			_renderer = this.FindControl<NativeRenderer>("Renderer")!;
-			_mainMenu = this.FindControl<MainMenuView>("MainMenu")!;
+			_renderer = this.FindControl<NativeRenderer>("Renderer");
+			_mainMenu = this.FindControl<MainMenuView>("MainMenu");
+
+			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
 #if DEBUG
 			this.AttachDevTools();
@@ -60,6 +63,12 @@ namespace Mesen.Windows
 		{
 			//TODO why is this needed to make resizing the window by setting ClientSize work?
 			base.ArrangeCore(new Rect(ClientSize));
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
 		}
 
 		protected override void OnClosed(EventArgs e)
@@ -113,11 +122,11 @@ namespace Mesen.Windows
 			
 			Task.Run(() => {
 				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl.Handle.Handle, _renderer.Handle, false, false, false);
-
+				_baseScreenSize = EmuApi.GetBaseScreenSize();
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
 
-				this._model.Init();
+				_model.Init();
 				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 
@@ -179,13 +188,8 @@ namespace Mesen.Windows
 
 				case ConsoleNotificationType.ResolutionChanged:
 					Dispatcher.UIThread.Post(() => {
-						double scale;
-						if(_baseScreenSize.Width == 0) {
-							scale = _initialScale;
-						} else {
-							double dpiScale = LayoutHelper.GetLayoutScale(this);
-							scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
-						}
+						double dpiScale = LayoutHelper.GetLayoutScale(this);
+						double scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
 						SetScale(scale);
 						_baseScreenSize = EmuApi.GetBaseScreenSize();
 					});
