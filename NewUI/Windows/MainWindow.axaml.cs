@@ -263,10 +263,22 @@ namespace Mesen.Windows
 			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, true);
 		}
 
+		protected override void HandleWindowStateChanged(WindowState state)
+		{
+			base.HandleWindowStateChanged(state);
+			if(state == WindowState.Minimized) {
+				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, true);
+			} else {
+				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsFocused);
+			}
+		}
+
 		protected override void OnGotFocus(GotFocusEventArgs e)
 		{
 			base.OnGotFocus(e);
-			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, false);
+			if(WindowState != WindowState.Minimized) {
+				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, false);
+			}
 		}
 	}
 }
