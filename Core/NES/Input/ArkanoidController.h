@@ -3,7 +3,6 @@
 #include "Shared/BaseControlDevice.h"
 #include "Shared/KeyManager.h"
 #include "Shared/Emulator.h"
-#include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
 class ArkanoidController : public BaseControlDevice
@@ -23,10 +22,8 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		if(_emu->GetSettings()->IsInputEnabled()) {
-			SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-			SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
-		}
+		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
 	void Serialize(Serializer& s) override

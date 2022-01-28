@@ -25,16 +25,14 @@ protected:
 	{
 		NesController::InternalSetStateFromInput();
 
-		if(_emu->GetSettings()->IsInputEnabled()) {
-			SetPressedState(ZapperButtons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		SetPressedState(ZapperButtons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 
-			MousePosition pos = KeyManager::GetMousePosition();
-			if(KeyManager::IsMouseButtonPressed(MouseButton::RightButton)) {
-				pos.X = -1;
-				pos.Y = -1;
-			}
-			SetCoordinates(pos);
+		MousePosition pos = KeyManager::GetMousePosition();
+		if(KeyManager::IsMouseButtonPressed(MouseButton::RightButton)) {
+			pos.X = -1;
+			pos.Y = -1;
 		}
+		SetCoordinates(pos);
 	}
 
 	bool IsLightFound()

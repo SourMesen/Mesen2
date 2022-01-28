@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "BaseControlDevice.h"
-#include "Emulator.h"
-#include "KeyManager.h"
+#include "Shared/BaseControlDevice.h"
+#include "Shared/Emulator.h"
+#include "Shared/KeyManager.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 
@@ -233,6 +234,10 @@ void BaseControlDevice::SetPressedState(uint8_t bit, bool enabled)
 
 void BaseControlDevice::SetCoordinates(MousePosition pos)
 {
+	if(!_emu->GetSettings()->IsInputEnabled()) {
+		return;
+	}
+
 	auto lock = _stateLock.AcquireSafe();
 	EnsureCapacity(-1);
 
@@ -270,6 +275,10 @@ bool BaseControlDevice::IsConnected()
 
 void BaseControlDevice::SetMovement(MouseMovement mov)
 {
+	if(!_emu->GetSettings()->IsInputEnabled()) {
+		return;
+	}
+
 	MouseMovement prev = GetMovement();
 	mov.dx += prev.dx;
 	mov.dy += prev.dy;

@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
-#include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
 #include "Utilities/Serializer.h"
 
@@ -24,12 +23,10 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		if(_emu->GetSettings()->IsInputEnabled()) {
-			MousePosition pos = KeyManager::GetMousePosition();
-			SetPressedState(Buttons::Click, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-			SetPressedState(Buttons::Touch, pos.Y >= 48 || KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-			SetCoordinates(pos);
-		}
+		MousePosition pos = KeyManager::GetMousePosition();
+		SetPressedState(Buttons::Click, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		SetPressedState(Buttons::Touch, pos.Y >= 48 || KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		SetCoordinates(pos);
 	}
 
 	void Serialize(Serializer& s) override
