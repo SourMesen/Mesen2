@@ -33,6 +33,8 @@ private:
 	void DrawMessages();
 	void DrawBar(int x, int y, int width, int height);
 	void DrawPauseIcon();
+	void DrawPlayIcon();
+	void DrawRecordIcon();
 	void DrawMessage(MessageInfo& msg, int& lastHeight);
 	void DrawString(string msg, int x, int y, uint8_t opacity = 255);
 	void DisplayMessage(string title, string message) override;

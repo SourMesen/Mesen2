@@ -28,6 +28,7 @@ namespace Mesen.Config
 		[Reactive] public bool PauseWhenInDebuggingTools { get; set; } = false;
 		[Reactive] public bool AllowBackgroundInput { get; set; } = false;
 		[Reactive] public bool PauseOnMovieEnd { get; set; } = true;
+		[Reactive] public bool ShowMovieIcons { get; set; } = true;
 
 		[Reactive] public bool AssociateSnesRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateSnesMusicFiles { get; set; } = false;
@@ -186,6 +187,7 @@ namespace Mesen.Config
 				DisableOsd = DisableOsd,
 				AllowBackgroundInput = AllowBackgroundInput,
 				PauseOnMovieEnd = PauseOnMovieEnd,
+				ShowMovieIcons = ShowMovieIcons,
 				DisableGameSelectionScreen = DisableGameSelectionScreen,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
@@ -210,6 +212,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOsd;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowBackgroundInput;
 		[MarshalAs(UnmanagedType.I1)] public bool PauseOnMovieEnd;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowMovieIcons;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameSelectionScreen;
 		
 		public UInt32 RewindBufferSize;

@@ -36,12 +36,13 @@
 						<CheckBox Content="{l:Translate chkPauseInDebugger}" IsChecked="{CompiledBinding Config.PauseWhenInDebuggingTools}" Margin="5 0" />
 					</StackPanel>
 					<CheckBox Content="{l:Translate chkAllowBackgroundInput}" IsChecked="{CompiledBinding Config.AllowBackgroundInput}" />
-					<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
 				</c:OptionSection>
 
 				<c:OptionSection Header="{l:Translate lblMiscSettings}">
 					<CheckBox Content="{l:Translate chkAutoLoadIps}" IsChecked="{CompiledBinding Config.AutoLoadPatches}" />
 					<CheckBox Content="{l:Translate chkAutoHideMenu}" IsChecked="{CompiledBinding Config.AutoHideMenu}" />
+					<CheckBox Content="{l:Translate chkShowMovieIcons}" IsChecked="{CompiledBinding Config.ShowMovieIcons}" />
+					<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>

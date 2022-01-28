@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Shared/Video/SystemHud.h"
 #include "Shared/Video/DebugHud.h"
+#include "Shared/Movies/MovieManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Video/DrawStringCommand.h"
 #include "Shared/Interfaces/IMessageManager.h"
@@ -24,8 +25,13 @@ void SystemHud::Draw(uint32_t width, uint32_t height)
 	DrawCounters();
 	DrawMessages();
 
+	bool showMovieIcons = _emu->GetSettings()->GetPreferences().ShowMovieIcons;
 	if(_emu->IsPaused()) {
 		DrawPauseIcon();
+	} else if(showMovieIcons && _emu->GetMovieManager()->Playing()) {
+		DrawPlayIcon();
+	} else if(showMovieIcons && _emu->GetMovieManager()->Recording()) {
+		DrawRecordIcon();
 	}
 }
 
@@ -175,4 +181,46 @@ void SystemHud::DrawPauseIcon()
 {
 	DrawBar(10, 7, 5, 12);
 	DrawBar(17, 7, 5, 12);
+}
+
+void SystemHud::DrawPlayIcon()
+{
+	int x = 12;
+	int y = 9;
+	int width = 5;
+	int height = 8;
+	int borderColor = 0x00000;
+	int color = 0xFFFFFF;
+
+	for(int i = 0; i < width; i++) {
+		int left = x + i * 2;
+		int top = y + i;
+		_hud->DrawLine(left, top - 1, left, y + height - i + 1, borderColor, 1);
+		_hud->DrawLine(left + 1, top - 1, left + 1, y + height - i + 1, borderColor, 1);
+
+		if(i > 0) {
+			_hud->DrawLine(left, top, left, y + height - i, color, 1);
+		}
+
+		if(i < width - 1) {
+			_hud->DrawLine(left + 1, top, left + 1, y + height - i, color, 1);
+		}
+	}
+}
+
+void SystemHud::DrawRecordIcon()
+{
+	int x = 12;
+	int y = 8;
+	int borderColor = 0x00000;
+	int color = 0xFF0000;
+
+	_hud->DrawRectangle(x + 3, y, 4, 10, borderColor, true, 1);
+	_hud->DrawRectangle(x, y + 3, 10, 4, borderColor, true, 1);
+	_hud->DrawRectangle(x + 2, y + 1, 6, 8, borderColor, true, 1);
+	_hud->DrawRectangle(x + 1, y + 2, 8, 6, borderColor, true, 1);
+
+	_hud->DrawRectangle(x + 3, y + 1, 4, 8, color, true, 1);
+	_hud->DrawRectangle(x + 2, y + 2, 6, 6, color, true, 1);
+	_hud->DrawRectangle(x + 1, y + 3, 8, 4, color, true, 1);
 }

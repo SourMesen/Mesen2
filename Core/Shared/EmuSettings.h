@@ -54,7 +54,6 @@ public:
 
 	void SetInputConfig(InputConfig config);
 	InputConfig GetInputConfig();
-	uint32_t GetInputConfigVersion();
 
 	void SetEmulationConfig(EmulationConfig config);
 	EmulationConfig GetEmulationConfig();
@@ -69,7 +68,7 @@ public:
 	GameboyConfig GetGameboyConfig();
 
 	void SetPreferences(PreferencesConfig config);
-	PreferencesConfig GetPreferences();
+	PreferencesConfig& GetPreferences();
 	
 	void SetAudioPlayerConfig(AudioPlayerConfig config);
 	AudioPlayerConfig GetAudioPlayerConfig();

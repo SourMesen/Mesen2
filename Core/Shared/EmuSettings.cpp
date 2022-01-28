@@ -160,7 +160,7 @@ void EmuSettings::SetPreferences(PreferencesConfig config)
 	_preferences = config;
 }
 
-PreferencesConfig EmuSettings::GetPreferences()
+PreferencesConfig& EmuSettings::GetPreferences()
 {
 	return _preferences;
 }

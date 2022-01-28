@@ -75,7 +75,7 @@ namespace Mesen.ViewModels
 		{
 			IsVideoRecording = RecordApi.AviIsRecording();
 			IsSoundRecording = RecordApi.WaveIsRecording();
-			IsMovieActive = RecordApi.MovieRecording() || RecordApi.MovieRecording();
+			IsMovieActive = RecordApi.MovieRecording() || RecordApi.MoviePlaying();
 			
 			IsNetPlayClient = NetplayApi.IsConnected();
 			IsNetPlayServer = NetplayApi.IsServerRunning();

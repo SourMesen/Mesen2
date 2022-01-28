@@ -458,6 +458,7 @@
 
 			<Control ID="chkConfirmExitResetPower">Display confirmation dialog before reset/power cycle/exit</Control>
 			<Control ID="chkPauseOnMovieEnd">Pause when a movie finishes playing</Control>
+			<Control ID="chkShowMovieIcons">Display play/pause icon when playing/recording a movie</Control>
 			<Control ID="chkAllowBackgroundInput">Allow input when in background</Control>
 
 			<Control ID="lblPauseIn">Pause when in:</Control>

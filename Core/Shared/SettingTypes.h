@@ -484,6 +484,7 @@ struct PreferencesConfig
 	bool DisableOsd = false;
 	bool AllowBackgroundInput = false;
 	bool PauseOnMovieEnd = false;
+	bool ShowMovieIcons = false;
 	bool DisableGameSelectionScreen = false;
 
 	uint32_t RewindBufferSize = 30;
