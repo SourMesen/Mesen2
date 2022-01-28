@@ -1,17 +1,14 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls;
+using Mesen.Config;
+using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class VideoConfigViewModel : ViewModelBase
+	public class VideoConfigViewModel : DisposableViewModel
 	{
 		[ObservableAsProperty] public bool ShowCustomRatio { get; }
 
@@ -20,7 +17,12 @@ namespace Mesen.ViewModels
 		public VideoConfigViewModel()
 		{
 			Config = ConfigManager.Config.Video.Clone();
-			this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio);
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
+			AddDisposable(this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio));
 		}
    }
 }

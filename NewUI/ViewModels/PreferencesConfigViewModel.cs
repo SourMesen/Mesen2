@@ -1,17 +1,13 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Config.Shortcuts;
-using ReactiveUI;
+using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class PreferencesConfigViewModel : ViewModelBase
+	public class PreferencesConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public PreferencesConfig Config { get; set; }
 
@@ -130,6 +126,12 @@ namespace Mesen.ViewModels
 			for(int i = 0; i < displayOrder.Length; i++) {
 				ShortcutKeys.Add(shortcuts[displayOrder[i]]);
 			}
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
 		}
    }
 }

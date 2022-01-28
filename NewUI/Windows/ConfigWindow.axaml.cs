@@ -12,24 +12,20 @@ namespace Mesen.Windows
 {
 	public class ConfigWindow : Window
 	{
-		private ConfigViewModel? _model;
-		private DispatcherTimer _timer;
+		private ConfigViewModel _model;
 
-		public ConfigWindow()
+		[Obsolete("For designer only")]
+		public ConfigWindow() : this(ConfigWindowTab.Audio) { }
+
+		public ConfigWindow(ConfigWindowTab tab)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
 
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => _model?.ApplyConfig());
-		}
-
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(DataContext is ConfigViewModel model) {
-				_model = model;
-			}
+			_model = new ConfigViewModel(tab);
+			DataContext = _model;
 		}
 
 		private void InitializeComponent()
@@ -37,20 +33,9 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnOpened(EventArgs e)
-		{
-			base.OnOpened(e);
-
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			_timer.Start();
-		}
-
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			_model?.SaveConfig();
+			_model.SaveConfig();
 			Close();
 		}
 
@@ -66,8 +51,8 @@ namespace Mesen.Windows
 				return;
 			}
 
-			_timer.Stop();
 			ConfigManager.Config.ApplyConfig();
+			_model.Dispose();
 			DataContext = null;
 		}
 	}

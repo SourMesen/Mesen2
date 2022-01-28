@@ -1,22 +1,23 @@
-﻿using Mesen.Config;
-using ReactiveUI;
+﻿using Avalonia.Controls;
+using Mesen.Config;
+using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class EmulationConfigViewModel : ViewModelBase
+	public class EmulationConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public EmulationConfig Config { get; set; }
 		
 		public EmulationConfigViewModel()
 		{
 			Config = ConfigManager.Config.Emulation.Clone();
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
 		}
    }
 }

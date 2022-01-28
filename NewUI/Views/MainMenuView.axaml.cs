@@ -127,7 +127,7 @@ namespace Mesen.Views
 		private void OpenConfig(ConfigWindowTab tab)
 		{
 			if(_cfgWindow == null) {
-				_cfgWindow = new ConfigWindow { DataContext = new ConfigViewModel(tab) };
+				_cfgWindow = new ConfigWindow(tab);
 				_cfgWindow.Closed += cfgWindow_Closed;
 				_cfgWindow.ShowCentered(VisualRoot);
 			} else {

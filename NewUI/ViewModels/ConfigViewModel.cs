@@ -3,16 +3,11 @@ using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mesen.ViewModels
 {
-	public class ConfigViewModel : ViewModelBase
+	public class ConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public AudioConfigViewModel? Audio { get; set; }
 		[Reactive] public VideoConfigViewModel? Video { get; set; }
@@ -25,49 +20,39 @@ namespace Mesen.ViewModels
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
 
-		//For designer
+		[Obsolete("For designer only")]
 		public ConfigViewModel() : this(ConfigWindowTab.Audio) { }
 
 		public ConfigViewModel(ConfigWindowTab selectedTab)
 		{
-			this.SelectedIndex = selectedTab;
+			SelectedIndex = selectedTab;
 
-			this.WhenAnyValue(x => x.SelectedIndex).Subscribe((tab) => {
+			AddDisposable(this.WhenAnyValue(x => x.SelectedIndex).Subscribe((tab) => {
 				this.SelectTab(tab);
-			});
+			}));
 		}
 
 		public void SelectTab(ConfigWindowTab tab)
 		{
 			//Create each view model when the corresponding tab is clicked, for performance
 			switch(tab) {
-				case ConfigWindowTab.Audio: Audio ??= new AudioConfigViewModel(); break;
-				case ConfigWindowTab.Emulation: Emulation ??= new EmulationConfigViewModel(); break;
-				case ConfigWindowTab.Video: Video ??= new VideoConfigViewModel(); break;
+				case ConfigWindowTab.Audio: Audio ??= AddDisposable(new AudioConfigViewModel()); break;
+				case ConfigWindowTab.Emulation: Emulation ??= AddDisposable(new EmulationConfigViewModel()); break;
+				case ConfigWindowTab.Video: Video ??= AddDisposable(new VideoConfigViewModel()); break;
 
 				case ConfigWindowTab.Nes:
-					Preferences ??= new PreferencesConfigViewModel();
-					Nes ??= new NesConfigViewModel(Preferences.Config);
+					//TODO fix this patch
+					Preferences ??= AddDisposable(new PreferencesConfigViewModel());
+					Nes ??= AddDisposable(new NesConfigViewModel(Preferences.Config));
 					break;
 
-				case ConfigWindowTab.Snes: Snes ??= new SnesConfigViewModel(); break;
-				case ConfigWindowTab.Gameboy: Gameboy ??= new GameboyConfigViewModel(); break;
+				case ConfigWindowTab.Snes: Snes ??= AddDisposable(new SnesConfigViewModel()); break;
+				case ConfigWindowTab.Gameboy: Gameboy ??= AddDisposable(new GameboyConfigViewModel()); break;
 
-				case ConfigWindowTab.Preferences: Preferences ??= new PreferencesConfigViewModel(); break;
+				case ConfigWindowTab.Preferences: Preferences ??= AddDisposable(new PreferencesConfigViewModel()); break;
 			}
 
-			this.SelectedIndex = tab;
-		}
-
-		public void ApplyConfig()
-		{
-			Audio?.Config.ApplyConfig();
-			Video?.Config.ApplyConfig();
-			Preferences?.Config.ApplyConfig();
-			Emulation?.Config.ApplyConfig();
-			Nes?.Config.ApplyConfig();
-			Snes?.Config.ApplyConfig();
-			Gameboy?.Config.ApplyConfig();
+			SelectedIndex = tab;
 		}
 
 		public void SaveConfig()

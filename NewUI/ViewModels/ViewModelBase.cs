@@ -33,9 +33,10 @@ namespace Mesen.ViewModels
 
 		protected virtual void DisposeView() { }
 
-		public void AddDisposable(IDisposable obj)
+		public T AddDisposable<T>(T obj) where T : IDisposable
 		{
 			_disposables.Add(obj);
+			return obj;
 		}
 
 		public T AddDisposables<T>(T disposables) where T : IEnumerable
