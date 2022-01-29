@@ -69,7 +69,7 @@ bool ShortcutKeyHandler::IsKeyPressed(uint32_t keyCode, bool mergeCtrlAltShift)
 	if(keyCode >= 116 && keyCode <= 121 && mergeCtrlAltShift) {
 		//Left/right ctrl/alt/shift
 		//Return true if either the left or right key is pressed
-		KeyManager::IsKeyPressed(keyCode | 1) || KeyManager::IsKeyPressed(keyCode & ~0x01);
+		return KeyManager::IsKeyPressed(keyCode | 1) || KeyManager::IsKeyPressed(keyCode & ~0x01);
 	}
 
 	return KeyManager::IsKeyPressed(keyCode);

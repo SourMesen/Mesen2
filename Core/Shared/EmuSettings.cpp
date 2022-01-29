@@ -186,7 +186,7 @@ void EmuSettings::ClearShortcutKeys()
 
 	//Add Alt-F4 as a fake shortcut to prevent Alt-F4 from triggering Alt or F4 key bindings. (e.g load save state 4)
 	KeyCombination keyComb;
-	keyComb.Key1 = KeyManager::GetKeyCode("Alt");
+	keyComb.Key1 = KeyManager::GetKeyCode("Left Alt");
 	keyComb.Key2 = KeyManager::GetKeyCode("F4");
 	SetShortcutKey(EmulatorShortcut::Exit, keyComb, 2);
 }
