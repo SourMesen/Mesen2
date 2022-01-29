@@ -73,6 +73,7 @@
 					Name="Hex"
 					DataProvider="{CompiledBinding DataProvider}"
 					BytesPerRow="{CompiledBinding Config.BytesPerRow}"
+					HighDensityMode="{CompiledBinding Config.HighDensityTextMode}"
 					SelectionStart="{CompiledBinding SelectionStart}"
 					SelectionLength="{CompiledBinding SelectionLength}"
 					TopRow="{CompiledBinding ScrollPosition}"

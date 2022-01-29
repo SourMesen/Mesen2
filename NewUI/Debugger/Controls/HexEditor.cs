@@ -25,6 +25,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<HexEditor, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
 
 		public static readonly StyledProperty<bool> ShowStringViewProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(ShowStringView), false);
+		public static readonly StyledProperty<bool> HighDensityModeProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(HighDensityMode), false);
 
 		public static readonly StyledProperty<SolidColorBrush> SelectedRowColumnColorProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(SelectedRowColumnColor), new SolidColorBrush(0xFFF0F0F0));
 
@@ -71,6 +72,12 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowStringViewProperty, value); }
 		}
 
+		public bool HighDensityMode
+		{
+			get { return GetValue(HighDensityModeProperty); }
+			set { SetValue(HighDensityModeProperty, value); }
+		}
+
 		public string FontFamily
 		{
 			get { return GetValue(FontFamilyProperty); }
@@ -111,7 +118,7 @@ namespace Mesen.Debugger.Controls
 
 		private Typeface Font { get; set; }
 		private Size LetterSize { get; set; }
-		private double RowHeight => this.LetterSize.Height;
+		private double RowHeight => HighDensityMode ? LetterSize.Height * 0.8 : LetterSize.Height;
 
 		private int HeaderCharLength => DataProvider.Length > 0 ? (DataProvider.Length - 1).ToString(HexFormat).Length : 0;
 		private double RowHeaderWidth => HeaderCharLength * LetterSize.Width + 5;
@@ -134,7 +141,7 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<HexEditor>(
 				DataProviderProperty, TopRowProperty, BytesPerRowProperty, SelectionStartProperty, SelectionLengthProperty,
 				SelectedRowColumnColorProperty, HeaderBackgroundProperty, HeaderForegroundProperty, HeaderHighlightProperty,
-				IsFocusedProperty
+				IsFocusedProperty, HighDensityModeProperty
 			);
 
 			FontFamilyProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
@@ -555,7 +562,7 @@ namespace Mesen.Debugger.Controls
 
 			//Draw column headers
 			DrawColumnHeaders(context);
-			using var columnHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(0, this.ColumnHeaderHeight));
+			using var columnHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(0, ColumnHeaderHeight));
 
 			//Draw row headers
 			DrawRowHeaders(context);
@@ -646,29 +653,11 @@ namespace Mesen.Debugger.Controls
 
 		private void DrawRowHeaders(DrawingContext context)
 		{
-			Rect bounds = Bounds;
-			int dataLength = DataProvider.Length;
-			int bytesPerRow = BytesPerRow;
-
-			int headerCharLength = HeaderCharLength;
-			double rowHeaderWidth = RowHeaderWidth;
-			double textWidth = headerCharLength * LetterSize.Width;
-			double xOffset = (rowHeaderWidth - textWidth) / 2;
-
 			//Draw background
-			context.DrawRectangle(ColorHelper.GetBrush(HeaderBackground), null, new Rect(0, 0, rowHeaderWidth, bounds.Height));
+			context.DrawRectangle(ColorHelper.GetBrush(HeaderBackground), null, new Rect(0, 0, RowHeaderWidth, Bounds.Height));
 
-			int headerByte = TopRow * bytesPerRow;
-			double y = 0;
-
-			//Draw row headers for each row
-			var text = new FormattedText("", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			while(y < bounds.Height && headerByte < dataLength) {
-				text.Text = headerByte.ToString("X" + headerCharLength);
-				context.DrawText(ColorHelper.GetBrush(HeaderForeground), new Point(xOffset, y), text);
-				y += RowHeight;
-				headerByte += bytesPerRow;
-			}
+			//Draw row addresses
+			context.Custom(new HexViewDrawRowHeaderOperation(this));
 		}
 
 		private void DrawColumnHeaders(DrawingContext context)

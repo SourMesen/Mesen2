@@ -30,6 +30,7 @@ namespace Mesen.Debugger.Controls
 			private Dictionary<Color, SKPaint> _skFillPaints = new Dictionary<Color, SKPaint>();
 			private Dictionary<Color, SKPaint> _skBorderPaints = new Dictionary<Color, SKPaint>();
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
+			private bool _highDensityMode;
 
 			public HexViewDrawOperation(HexEditor he, List<ByteInfo> dataToDraw, HashSet<Color> fgColors)
 			{
@@ -46,6 +47,7 @@ namespace Mesen.Debugger.Controls
 				_letterSize = _he.LetterSize;
 				_showStringView = _he.ShowStringView;
 				_stringViewPosition = _he.RowWidth + _he.StringViewMargin;
+				_highDensityMode = _he.HighDensityMode;
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
 					if(!_skFillPaints.ContainsKey(byteInfo.BackColor)) {
@@ -75,7 +77,6 @@ namespace Mesen.Debugger.Controls
 
 					DrawBackground(canvas);
 
-					canvas.Translate(0, 13);
 					foreach(Color color in _fgColors) {
 						DrawHexView(canvas, color);
 					}
@@ -103,6 +104,7 @@ namespace Mesen.Debugger.Controls
 				using var builder = new SKTextBlobBuilder();
 
 				int pos = 0;
+				double drawOffsetY = _highDensityMode ? -_rowHeight * 0.1 : -_rowHeight * 0.2;
 
 				StringBuilder sb = new StringBuilder();
 				int row = 0;
@@ -123,7 +125,7 @@ namespace Mesen.Debugger.Controls
 
 					string rowText = sb.ToString();
 					int count = font.CountGlyphs(rowText);
-					var buffer = builder.AllocateRun(font, count, 0, (float)(row*_rowHeight));
+					var buffer = builder.AllocateRun(font, count, 0, (float)(row * _rowHeight + drawOffsetY));
 					font.GetGlyphs(rowText, buffer.GetGlyphSpan());
 					row++;
 					sb.Clear();
@@ -131,7 +133,7 @@ namespace Mesen.Debugger.Controls
 
 				SKTextBlob? textToDraw = builder.Build();
 				if(textToDraw != null) {
-					canvas.DrawText(textToDraw, 0, 0, paint);
+					canvas.DrawText(textToDraw, 0, (float)_rowHeight, paint);
 				}
 			}
 
@@ -181,7 +183,7 @@ namespace Mesen.Debugger.Controls
 							xPos += _letterSize.Width * str.Length;
 							endPositionByByte[index] = (float)xPos;
 						}
-						
+
 						for(int j = 1; j < byteInfo.StringValueKeyLength && index + j < startPositionByByte.Length; j++) {
 							startPositionByByte[index + j] = startPositionByByte[index];
 							endPositionByByte[index + j] = endPositionByByte[index];
@@ -205,19 +207,20 @@ namespace Mesen.Debugger.Controls
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont monoFont = new SKFont(typeface, _fontSize);
 				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
-				
+
 				using var builder = new SKTextBlobBuilder();
 
 				int pos = 0;
 				int row = 0;
+				double drawOffsetY = _highDensityMode ? -_rowHeight * 0.1 : -_rowHeight * 0.2;
 
 				SKPaint selectedPaint = new SKPaint() { Color = new SKColor(_selectedColor.R, _selectedColor.G, _selectedColor.B, 255) };
 
 				SKRect GetRect(int i) => new SKRect(
 					(float)_he._startPositionByByte[i],
-					(float)(row * _rowHeight) - 13,
+					(float)(row * _rowHeight),
 					(float)_he._endPositionByByte[i],
-					(float)((row + 1) * _rowHeight) - 13
+					(float)((row + 1) * _rowHeight)
 				);
 
 				while(pos < _dataToDraw.Count) {
@@ -246,7 +249,7 @@ namespace Mesen.Debugger.Controls
 							}
 
 							int count = currentFont.CountGlyphs(byteInfo.StringValue);
-							var buffer = builder.AllocateRun(currentFont, count, _he._startPositionByByte[pos+i], (float)(row * _rowHeight));
+							var buffer = builder.AllocateRun(currentFont, count, _he._startPositionByByte[pos + i], (float)(row * _rowHeight + drawOffsetY));
 							currentFont.GetGlyphs(byteInfo.StringValue, buffer.GetGlyphSpan());
 						}
 
@@ -259,7 +262,7 @@ namespace Mesen.Debugger.Controls
 
 				SKTextBlob? textToDraw = builder.Build();
 				if(textToDraw != null) {
-					canvas.DrawText(textToDraw, 0, 0, paint);
+					canvas.DrawText(textToDraw, 0, (float)_rowHeight, paint);
 				}
 			}
 
@@ -336,6 +339,100 @@ namespace Mesen.Debugger.Controls
 						canvas.DrawRect(GetRect(selectedStartPos, _bytesPerRow), selectedPaint);
 					}
 					row++;
+				}
+			}
+		}
+
+		class HexViewDrawRowHeaderOperation : ICustomDrawOperation
+		{
+			private HexEditor _he;
+			private Size _letterSize;
+			private int _bytesPerRow;
+			private double _rowHeight;
+			private string _fontFamily;
+			private float _fontSize;
+			private IHexEditorDataProvider _dataProvider;
+			private double _headerCharLength;
+			private double _rowHeaderWidth;
+			private double _columnHeaderHeight;
+			private Color _headerForeground;
+			private int _firstByte;
+			private bool _highDensityMode;
+
+			public HexViewDrawRowHeaderOperation(HexEditor he)
+			{
+				_he = he;
+				Bounds = _he.Bounds;
+				_fontFamily = _he.FontFamily;
+				_fontSize = _he.FontSize;
+				_bytesPerRow = _he.BytesPerRow;
+				_rowHeight = _he.RowHeight;
+				_rowHeaderWidth = _he.RowHeaderWidth;
+				_columnHeaderHeight = _he.ColumnHeaderHeight;
+				_headerCharLength = _he.HeaderCharLength;
+				_headerForeground = _he.HeaderForeground.Color;
+				_highDensityMode = _he.HighDensityMode;
+				_dataProvider = _he.DataProvider;
+				_letterSize = _he.LetterSize;
+				_firstByte = _he.TopRow * _bytesPerRow;
+			}
+
+			public Rect Bounds { get; private set; }
+
+			public void Dispose()
+			{
+			}
+
+			public bool Equals(ICustomDrawOperation? other) => false;
+			public bool HitTest(Point p) => false;
+
+			public void Render(IDrawingContextImpl context)
+			{
+				var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
+				if(canvas == null) {
+					//context.DrawText(Brushes.Black, new Point(), _noSkia.PlatformImpl);
+				} else {
+					canvas.Save();
+
+					canvas.Translate(0, 0);
+
+					SKPaint paint = new SKPaint();
+					paint.Color = new SKColor(ColorHelper.GetColor(_headerForeground).ToUint32());
+
+					SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
+					SKFont font = new SKFont(typeface, _fontSize);
+
+					using var builder = new SKTextBlobBuilder();
+
+					int dataLength = _dataProvider.Length;
+					int bytesPerRow = _bytesPerRow;
+
+					double rowHeaderWidth = _rowHeaderWidth;
+					double textWidth = _headerCharLength * _letterSize.Width;
+					double xOffset = (rowHeaderWidth - textWidth) / 2;
+
+					int headerByte = _firstByte;
+					double y = 0;
+					int row = 0;
+					double drawOffsetY = _highDensityMode ? -_rowHeight * 0.1 : -_rowHeight * 0.2;
+
+					//Draw row headers for each row
+					while(y < Bounds.Height && headerByte < dataLength) {
+						string rowText = headerByte.ToString("X" + _headerCharLength);
+						int count = font.CountGlyphs(rowText);
+						var buffer = builder.AllocateRun(font, count, (float)xOffset, (float)(row * _rowHeight + drawOffsetY));
+						font.GetGlyphs(rowText, buffer.GetGlyphSpan());
+						row++;
+						y += _rowHeight;
+						headerByte += bytesPerRow;
+					}
+
+					SKTextBlob? textToDraw = builder.Build();
+					if(textToDraw != null) {
+						canvas.DrawText(textToDraw, 0, (float)_rowHeight, paint);
+					}
+
+					canvas.Restore();
 				}
 			}
 		}
