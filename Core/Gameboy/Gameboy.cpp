@@ -55,7 +55,7 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRam
 	_memoryManager.reset(new GbMemoryManager());
 	_timer.reset(new GbTimer());
 	_dmaController.reset(new GbDmaController());
-	_controlManager.reset(new GbControlManager(_emu));
+	_controlManager.reset(new GbControlManager(_emu, this));
 
 	_prgRomSize = (uint32_t)romData.size();
 	_prgRom = new uint8_t[_prgRomSize];
@@ -192,6 +192,7 @@ GbState Gameboy::GetState()
 	state.Ppu = _ppu->GetState();
 	state.Apu = _apu->GetState();
 	state.MemoryManager = _memoryManager->GetState();
+	state.ControlManager = _controlManager->GetState();
 	state.Dma = _dmaController->GetState();
 	state.Timer = _timer->GetState();
 	state.HasBattery = _hasBattery;
@@ -347,6 +348,7 @@ void Gameboy::Serialize(Serializer& s)
 	s.Stream(_cart.get());
 	s.Stream(_timer.get());
 	s.Stream(_dmaController.get());
+	s.Stream(_controlManager.get());
 	s.Stream(_hasBattery);
 
 	s.StreamArray(_cartRam, _cartRamSize);
@@ -444,6 +446,7 @@ void Gameboy::RunFrame()
 
 void Gameboy::ProcessEndOfFrame()
 {
+	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
 }
 

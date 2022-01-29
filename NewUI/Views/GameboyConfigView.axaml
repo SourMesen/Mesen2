@@ -49,6 +49,19 @@
 				</c:GroupBox>
 			</StackPanel>
 		</TabItem>
+		<TabItem Header="{l:Translate tpgInput}">
+			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblPlayer1}" />
+					<Button
+						Margin="10 0 0 0"
+						Command="{CompiledBinding SetupPlayer}"
+						CommandParameter="{Binding $self}"
+						Content="{l:Translate btnSetup}"
+					/>
+				</StackPanel>
+			</c:OptionSection>
+		</TabItem>
 		<TabItem Header="{l:Translate tpgVideo}">
 			<StackPanel>
 				<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">

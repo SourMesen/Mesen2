@@ -815,6 +815,7 @@
     <ClInclude Include="Shared\TimingInfo.h" />
     <ClInclude Include="NES\Mappers\BF909x.h" />
     <ClInclude Include="NES\Mappers\AXROM.h" />
+    <ClInclude Include="Gameboy\Input\GbController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\SnesCpu.cpp">

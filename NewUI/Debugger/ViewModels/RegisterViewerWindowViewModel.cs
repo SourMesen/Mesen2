@@ -169,7 +169,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FFFF.4", "IE - Joypad IRQ Enabled", (memManager.IrqEnabled & 0x10) != 0),
 
 				new RegEntry("", "Misc", null),
-				new RegEntry("$FF00", "Input Select", memManager.InputSelect, Format.X8),
+				new RegEntry("$FF00", "Input Select", gb.ControlManager.InputSelect, Format.X8),
 				new RegEntry("$FF01", "Serial Data", memManager.SerialData, Format.X8),
 				new RegEntry("$FF02", "Serial Control", memManager.SerialControl, Format.X8),
 				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),

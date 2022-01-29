@@ -7,6 +7,7 @@
 #include "Gameboy/GbTypes.h"
 #include "Gameboy/Carts/GbCart.h"
 #include "Gameboy/GbDmaController.h"
+#include "Gameboy/GbControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
@@ -29,7 +30,7 @@ void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu*
 	_cart = cart;
 	_timer = timer;
 	_dmaController = dmaController;
-	_controlManager = gameboy->GetControlManager();
+	_controlManager = (GbControlManager*)gameboy->GetControlManager();
 	_settings = _emu->GetSettings();
 
 	memset(_reads, 0, sizeof(_reads));
@@ -294,7 +295,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 		} else {
 			//00-0F
 			switch(addr) {
-				case 0xFF00: return ReadInputPort(); break;
+				case 0xFF00: return _controlManager->ReadInputPort(); break;
 				
 				case 0xFF01: return _state.SerialData; //SB - Serial transfer data (R/W)
 				case 0xFF02: return _state.SerialControl | 0x7E; //SC - Serial Transfer Control (R/W)
@@ -388,7 +389,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 		} else {
 			//00-0F
 			switch(addr) {
-				case 0xFF00: WriteInputPort(value); break;
+				case 0xFF00: _controlManager->WriteInputPort(value); break;
 				case 0xFF01: _state.SerialData = value; break; //FF01 - SB - Serial transfer data (R/W)
 				case 0xFF02: 
 					//FF02 - SC - Serial Transfer Control (R/W)
@@ -471,64 +472,10 @@ uint64_t GbMemoryManager::GetApuCycleCount()
 	return _state.ApuCycleCount;
 }
 
-uint8_t GbMemoryManager::ReadInputPort()
-{
-	//Bit 7 - Not used
-	//Bit 6 - Not used
-	//Bit 5 - P15 Select Button Keys      (0=Select)
-	//Bit 4 - P14 Select Direction Keys   (0=Select)
-	//Bit 3 - P13 Input Down  or Start    (0=Pressed) (Read Only)
-	//Bit 2 - P12 Input Up    or Select   (0=Pressed) (Read Only)
-	//Bit 1 - P11 Input Left  or Button B (0=Pressed) (Read Only)
-	//Bit 0 - P10 Input Right or Button A (0=Pressed) (Read Only)
-	uint8_t result = 0x0F;
-
-	SuperGameboy* sgb = _gameboy->GetSgb();
-	if(sgb) {
-		if((_state.InputSelect & 0x30) == 0x30) {
-			result = sgb->GetInputIndex();
-		} else {
-			if(!(_state.InputSelect & 0x20)) {
-				result &= sgb->GetInput() >> 4;
-			}
-			if(!(_state.InputSelect & 0x10)) {
-				result &= sgb->GetInput() & 0x0F;
-			}
-		}
-	} else {
-		BaseControlDevice* controller = (SnesController*)_controlManager->GetControlDevice(0).get();
-		if(controller && controller->GetControllerType() == ControllerType::SnesController) {
-			if(!(_state.InputSelect & 0x20)) {
-				result &= ~(controller->IsPressed(SnesController::A) ? 0x01 : 0);
-				result &= ~(controller->IsPressed(SnesController::B) ? 0x02 : 0);
-				result &= ~(controller->IsPressed(SnesController::Select) ? 0x04 : 0);
-				result &= ~(controller->IsPressed(SnesController::Start) ? 0x08 : 0);
-			}
-			if(!(_state.InputSelect & 0x10)) {
-				result &= ~(controller->IsPressed(SnesController::Right) ? 0x01 : 0);
-				result &= ~(controller->IsPressed(SnesController::Left) ? 0x02 : 0);
-				result &= ~(controller->IsPressed(SnesController::Up) ? 0x04 : 0);
-				result &= ~(controller->IsPressed(SnesController::Down) ? 0x08 : 0);
-			}
-		}
-	}
-
-	return result | (_state.InputSelect & 0x30) | 0xC0;
-}
-
-void GbMemoryManager::WriteInputPort(uint8_t value)
-{
-	_state.InputSelect = value;
-	SuperGameboy* sgb = _gameboy->GetSgb();
-	if(sgb) {
-		sgb->ProcessInputPortWrite(value & 0x30);
-	}
-}
-
 void GbMemoryManager::Serialize(Serializer& s)
 {
 	s.Stream(
-		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests, _state.InputSelect,
+		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests,
 		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank,
 		_state.SerialData, _state.SerialControl, _state.SerialBitCount, _state.CycleCount,
 		_state.CgbRegFF72, _state.CgbRegFF73, _state.CgbRegFF74, _state.CgbRegFF75

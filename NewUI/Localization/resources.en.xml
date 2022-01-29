@@ -424,13 +424,17 @@
 			<Control ID="lblGreen">Green</Control>
 			<Control ID="lblBrown">Brown</Control>
 
-
 			<Control ID="lblLcdSettings">LCD Settings</Control>
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
+
+			<Control ID="tpgInput">Input</Control>
+			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="lblPlayer1">Player 1</Control>
+			<Control ID="btnSetup">Setup</Control>
 		</Form>
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not <Value ID="intentional">intentional</Value>, please review and correct your key bindings.</Control>

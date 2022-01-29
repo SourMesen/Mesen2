@@ -362,7 +362,6 @@ struct GbMemoryManagerState
 	bool DisableBootRom;
 	uint8_t IrqRequests;
 	uint8_t IrqEnabled;
-	uint8_t InputSelect;
 
 	uint8_t SerialData;
 	uint8_t SerialControl;
@@ -374,6 +373,11 @@ struct GbMemoryManagerState
 	GbMemoryType MemoryType[0x100];
 	uint32_t MemoryOffset[0x100];
 	RegisterAccess MemoryAccessType[0x100];
+};
+
+struct GbControlManagerState
+{
+	uint8_t InputSelect;
 };
 
 enum class GbType
@@ -391,5 +395,6 @@ struct GbState : public BaseState
 	GbMemoryManagerState MemoryManager;
 	GbTimerState Timer;
 	GbDmaControllerState Dma;
+	GbControlManagerState ControlManager;
 	bool HasBattery;
 };

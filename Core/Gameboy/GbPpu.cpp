@@ -659,14 +659,7 @@ void GbPpu::SendFrame()
 #endif
 
 	_emu->ProcessEndOfFrame();
-
-	//TODO move this somewhere that makes more sense
-	uint8_t prevInput = _memoryManager->ReadInputPort();
 	_gameboy->ProcessEndOfFrame();
-	uint8_t newInput = _memoryManager->ReadInputPort();
-	if(prevInput != newInput) {
-		_memoryManager->RequestIrq(GbIrqSource::Joypad);
-	}
 
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
 }

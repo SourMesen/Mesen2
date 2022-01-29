@@ -325,6 +325,8 @@ struct EmulationConfig
 
 struct GameboyConfig
 {
+	ControllerConfig Controller;
+
 	GameboyModel Model = GameboyModel::Auto;
 	bool UseSgb2 = true;
 

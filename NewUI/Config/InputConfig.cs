@@ -104,6 +104,7 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.NesController:
 				case ControllerType.SnesController:
+				case ControllerType.GameboyController:
 					switch(preset) {
 						case KeyPresetType.WasdKeys: KeyPresets.ApplyWasdLayout(this, type); break;
 						case KeyPresetType.ArrowKeys: KeyPresets.ApplyArrowLayout(this, type); break;
@@ -301,6 +302,7 @@ namespace Mesen.Config
 				case ControllerType.VbController:
 				case ControllerType.JissenMahjong:
 				case ControllerType.ExcitingBoxing:
+				case ControllerType.GameboyController:
 					return true;
 			}
 

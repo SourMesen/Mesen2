@@ -34,8 +34,8 @@ namespace Mesen.ViewModels
 			KeyMapping3 = new KeyMappingViewModel(config.Type, config.Mapping3);
 			KeyMapping4 = new KeyMappingViewModel(config.Type, config.Mapping4);
 
-			ShowPresets = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController;
-			ShowTurbo = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController;
+			ShowPresets = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController || config.Type == ControllerType.GameboyController;
+			ShowTurbo = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController || config.Type == ControllerType.GameboyController;
 		}
 	}
 

@@ -12,7 +12,7 @@ class GbDmaController;
 
 class EmuSettings;
 class Emulator;
-class IControlManager;
+class GbControlManager;
 
 enum class MemoryOperationType;
 
@@ -21,7 +21,7 @@ class GbMemoryManager : public ISerializable
 private:
 	Emulator* _emu = nullptr;
 	EmuSettings* _settings = nullptr;
-	IControlManager* _controlManager = nullptr;
+	GbControlManager* _controlManager = nullptr;
 
 	Gameboy* _gameboy = nullptr;
 	GbCart* _cart = nullptr;
@@ -75,9 +75,6 @@ public:
 	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 	
-	uint8_t ReadInputPort();
-	void WriteInputPort(uint8_t value);
-
 	uint8_t DebugRead(uint16_t addr);
 	void DebugWrite(uint16_t addr, uint8_t value);
 

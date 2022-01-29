@@ -100,10 +100,10 @@ public:
 	template<typename T>
 	bool IsEqual(T& prevCfg, T& newCfg)
 	{
-		if(memcmp(&prevCfg, &newCfg, sizeof(SnesConfig)) == 0) {
+		if(memcmp(&prevCfg, &newCfg, sizeof(T)) == 0) {
 			return true;
 		}
-		memcpy(&prevCfg, &newCfg, sizeof(SnesConfig));
+		memcpy(&prevCfg, &newCfg, sizeof(T));
 		return false;
 	}
 };

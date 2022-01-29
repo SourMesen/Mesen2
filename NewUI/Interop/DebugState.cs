@@ -643,7 +643,6 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBootRom;
 		public byte IrqRequests;
 		public byte IrqEnabled;
-		public byte InputSelect;
 
 		public byte SerialData;
 		public byte SerialControl;
@@ -663,6 +662,11 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public RegisterAccess[] MemoryAccessType;
+	}
+
+	public struct GbControlManagerState
+	{
+		public byte InputSelect;
 	}
 
 	public struct GbDmaControllerState
@@ -709,6 +713,7 @@ namespace Mesen.Interop
 		public GbMemoryManagerState MemoryManager;
 		public GbTimerState Timer;
 		public GbDmaControllerState Dma;
+		public GbControlManagerState ControlManager;
 		[MarshalAs(UnmanagedType.I1)] public bool HasBattery;
 	}
 

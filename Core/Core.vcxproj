@@ -53,6 +53,7 @@
     <ClInclude Include="Gameboy\GbConstants.h" />
     <ClInclude Include="Gameboy\GbDefaultVideoFilter.h" />
     <ClInclude Include="Gameboy\GbsHeader.h" />
+    <ClInclude Include="Gameboy\Input\GbController.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
     <ClInclude Include="NES\Debugger\NesPpuTools.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
