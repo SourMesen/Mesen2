@@ -17,19 +17,11 @@ namespace Mesen.Views
 			KeyMappingViewModel mappings = (KeyMappingViewModel)data;
 
 			if(mappings != null) {
-				Control? ctrl = null;
-				switch(mappings.Type) {
-					case ControllerType.Multitap:
-					case ControllerType.SnesController:
-						ctrl = new SnesControllerView();
-						break;
-
-					case ControllerType.NesController: ctrl = new NesControllerView(); break;
-				}
-				if(ctrl != null) {
-					ctrl.DataContext = mappings.Mapping;
-					return ctrl;
-				}
+				return mappings.Type switch {
+					ControllerType.SnesController or ControllerType.Multitap => new SnesControllerView(),
+					ControllerType.NesController => new NesControllerView(),
+					_ => new DefaultControllerView()
+				};
 			}
 
 			return new TextBlock { Text = "No matching view found for controller type" };

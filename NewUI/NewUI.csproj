@@ -309,6 +309,9 @@
     <Compile Update="Controls\StateGridEntry.axaml.cs">
       <DependentUpon>StateGridEntry.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DefaultControllerView.axaml.cs">
+      <DependentUpon>DefaultControllerView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SnesConfigView.axaml.cs">
       <DependentUpon>SnesConfigView.axaml</DependentUpon>
     </Compile>

@@ -1,4 +1,5 @@
 ﻿using Mesen.Interop;
+using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -92,27 +93,75 @@ namespace Mesen.Config
 				TurboStart = this.TurboStart
 			};
 		}
+
+		public virtual List<CustomKeyMapping> ToCustomKeys(ControllerType type)
+		{
+			return new();
+		}
+
+		public virtual void SetDefaultKeys(ControllerType type, KeyPresetType? preset = null)
+		{
+			switch(type) {
+				case ControllerType.NesController:
+				case ControllerType.SnesController:
+					switch(preset) {
+						case KeyPresetType.WasdKeys: KeyPresets.ApplyWasdLayout(this, type); break;
+						case KeyPresetType.ArrowKeys: KeyPresets.ApplyArrowLayout(this, type); break;
+						case KeyPresetType.XboxP1: KeyPresets.ApplyXboxLayout(this, 0, type); break;
+						case KeyPresetType.XboxP2: KeyPresets.ApplyXboxLayout(this, 1, type); break;
+						case KeyPresetType.Ps4P1: KeyPresets.ApplyPs4Layout(this, 0, type); break;
+						case KeyPresetType.Ps4P2: KeyPresets.ApplyPs4Layout(this, 1, type); break;
+					}
+					break;
+			}
+		}
+
+		public virtual void ClearKeys(ControllerType type)
+		{
+			A = 0;
+			B = 0;
+			X = 0;
+			Y = 0;
+			L = 0;
+			R = 0;
+			Up = 0;
+			Down = 0;
+			Left = 0;
+			Right = 0;
+			Select = 0;
+			Start = 0;
+			TurboA = 0;
+			TurboB = 0;
+			TurboX = 0;
+			TurboY = 0;
+			TurboL = 0;
+			TurboR = 0;
+			TurboSelect = 0;
+			TurboStart = 0;
+		}
 	}
 
-	public class NesKeyMapping : KeyMapping
+	public enum KeyPresetType
 	{
-		public UInt32[] PowerPadButtons = new UInt32[12];
-		public UInt32[] FamilyBasicKeyboardButtons = new UInt32[72];
-		public UInt32[] PartyTapButtons = new UInt32[6];
-		public UInt32[] PachinkoButtons = new UInt32[2];
-		public UInt32[] ExcitingBoxingButtons = new UInt32[8];
-		public UInt32[] JissenMahjongButtons = new UInt32[21];
-		public UInt32[] SuborKeyboardButtons = new UInt32[99];
-		public UInt32[] BandaiMicrophoneButtons = new UInt32[3];
-		public UInt32[] VirtualBoyButtons = new UInt32[14];
+		XboxP1,
+		XboxP2,
+		Ps4P1,
+		Ps4P2,
+		WasdKeys,
+		ArrowKeys
 	}
 
 	public class ControllerConfig : ReactiveObject
 	{
-		[Reactive] public KeyMapping Mapping1 { get; set; } = new KeyMapping();
-		[Reactive] public KeyMapping Mapping2 { get; set; } = new KeyMapping();
-		[Reactive] public KeyMapping Mapping3 { get; set; } = new KeyMapping();
-		[Reactive] public KeyMapping Mapping4 { get; set; } = new KeyMapping();
+		protected KeyMapping _mapping1 = new();
+		protected KeyMapping _mapping2 = new();
+		protected KeyMapping _mapping3 = new();
+		protected KeyMapping _mapping4 = new();
+
+		public KeyMapping Mapping1 { get => _mapping1; set => _mapping1 = value; }
+		public KeyMapping Mapping2 { get => _mapping2; set => _mapping2 = value; }
+		public KeyMapping Mapping3 { get => _mapping3; set => _mapping3 = value; }
+		public KeyMapping Mapping4 { get => _mapping4; set => _mapping4 = value; }
 		[Reactive] public UInt32 TurboSpeed { get; set; } = 0;
 		[Reactive] public ControllerType Type { get; set; } = ControllerType.None;
 
@@ -243,6 +292,15 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
+				case ControllerType.PowerPad:
+				case ControllerType.FamilyTrainerMat:
+				case ControllerType.SuborKeyboard:
+				case ControllerType.FamilyBasicKeyboard:
+				case ControllerType.Pachinko:
+				case ControllerType.PartyTap:
+				case ControllerType.VbController:
+				case ControllerType.JissenMahjong:
+				case ControllerType.ExcitingBoxing:
 					return true;
 			}
 

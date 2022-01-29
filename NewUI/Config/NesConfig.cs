@@ -2,6 +2,7 @@
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Mesen.Config
 	public class NesConfig : BaseConfig<NesConfig>
 	{
 		//Input
-		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
+		[Reactive] public List<NesControllerConfig> Controllers { get; set; } = new List<NesControllerConfig> { new (), new (), new (), new (), new () };
 		[Reactive] public UInt32 ZapperDetectionRadius { get; set; } = 0;
 
 		//General
@@ -207,19 +208,26 @@ namespace Mesen.Config
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			KeyPresets presets = new KeyPresets();
-			List<KeyMapping> mappings = new List<KeyMapping>();
+			List<NesKeyMapping> mappings = new List<NesKeyMapping>();
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				mappings.Add(presets.XboxLayout1);
+				NesKeyMapping mapping = new();
+				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.NesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				mappings.Add(presets.Ps4Layout1);
+				NesKeyMapping mapping = new();
+				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.NesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				mappings.Add(presets.WasdLayout);
+				NesKeyMapping mapping = new();
+				KeyPresets.ApplyWasdLayout(mapping, ControllerType.NesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				mappings.Add(presets.ArrowLayout);
+				NesKeyMapping mapping = new();
+				KeyPresets.ApplyArrowLayout(mapping, ControllerType.NesController);
+				mappings.Add(mapping);
 			}
 
 			Controllers[0].Type = ControllerType.NesController;

@@ -15,6 +15,7 @@
 	x:DataType="vm:ControllerConfigViewModel"
 	x:Class="Mesen.Windows.ControllerConfigWindow"
 	SizeToContent="WidthAndHeight"
+	CanResize="False"
 	Title="{l:Translate Title}"
 >
 	<Design.DataContext>
@@ -40,7 +41,14 @@
 		</TabControl>
 
 		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
-			<Button Name="PresetButton" Content="{l:Translate btnSelectPreset}" Click="btnPreset_OnClick"  VerticalAlignment="Top" Margin="12">
+			<Button 
+				Name="PresetButton"
+				Content="{l:Translate btnSelectPreset}"
+				Click="btnPreset_OnClick" 
+				VerticalAlignment="Top"
+				Margin="12"
+				IsVisible="{CompiledBinding ShowPresets}"
+			>
 				<Button.ContextMenu>
 					<ContextMenu Name="Preset" PlacementMode="Bottom">
 						<MenuItem Header="{l:Translate mnuKeyboard}">
@@ -56,13 +64,18 @@
 							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" />
 							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" />
 						</MenuItem>
-						<MenuItem Header="{l:Translate mnuSnes30Controller}">
-							<MenuItem Header="{l:Translate mnuSnes30Layout1}" Click="mnuSnes30Layout1_OnClick" />
-							<MenuItem Header="{l:Translate mnuSnes30Layout2}" Click="mnuSnes30Layout2_OnClick" />
-						</MenuItem>
 					</ContextMenu>
 				</Button.ContextMenu>
 			</Button>
+
+			<Button
+				Margin="12 10 0 3"
+				Grid.Column="0"
+				Grid.Row="0"
+				Click="btnSetDefaultBindings_OnClick"
+				Content="{l:Translate btnSetDefaultBindings}"
+				IsVisible="{CompiledBinding !ShowPresets}"
+			/>
 
 			<Button
 				Margin="12 10 0 3"
@@ -72,7 +85,7 @@
 				Content="{l:Translate btnClear}"
 			/>
 
-			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2">
+			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2" IsVisible="{CompiledBinding ShowTurbo}">
 				<TextBlock Text="{l:Translate lblTurboSpeed}" Margin="0 -16 0 0" />
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 					<c:MesenSlider Value="{CompiledBinding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />

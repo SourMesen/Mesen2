@@ -2,12 +2,13 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
 using Avalonia.Interactivity;
+using Mesen.ViewModels;
 
 namespace Mesen.Windows
 {
 	public class ControllerConfigWindow : Window
 	{
-		private KeyPresets _presets = new KeyPresets();
+		private ControllerConfigViewModel Model => (ControllerConfigViewModel)DataContext!;
 
 		public ControllerConfigWindow()
 		{
@@ -21,12 +22,12 @@ namespace Mesen.Windows
 
 		private void btnOk_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.Close(true);
+			Close(true);
 		}
 
 		private void btnCancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.Close(false);
+			Close(false);
 		}
 
 		private void btnPreset_OnClick(object sender, RoutedEventArgs e)
@@ -34,63 +35,67 @@ namespace Mesen.Windows
 			((Button)sender).ContextMenu?.Open();
 		}
 
-		private void ApplyPreset(KeyMapping preset)
+		private void SetDefaultMappings(KeyPresetType? preset)
 		{
 			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
-			ControllerConfig? cfg = (this.DataContext as ControllerConfig);
+			ControllerConfig cfg = Model.Config;
 			if(cfg != null) {
 				switch(index) {
-					case 0: cfg.Mapping1 = preset; break;
-					case 1: cfg.Mapping2 = preset; break;
-					case 2: cfg.Mapping3 = preset; break;
-					case 3: cfg.Mapping4 = preset; break;
+					case 0: cfg.Mapping1.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping1.RefreshCustomKeys(); break;
+					case 1: cfg.Mapping2.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping2.RefreshCustomKeys(); break;
+					case 2: cfg.Mapping3.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping3.RefreshCustomKeys(); break;
+					case 3: cfg.Mapping4.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping4.RefreshCustomKeys(); break;
+				}
+			}
+		}
+
+		private void btnClearBindings_OnClick(object sender, RoutedEventArgs e)
+		{
+			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
+			ControllerConfig cfg = Model.Config;
+			if(cfg != null) {
+				switch(index) {
+					case 0: cfg.Mapping1.ClearKeys(cfg.Type); Model.KeyMapping1.RefreshCustomKeys(); break;
+					case 1: cfg.Mapping2.ClearKeys(cfg.Type); Model.KeyMapping2.RefreshCustomKeys(); break;
+					case 2: cfg.Mapping3.ClearKeys(cfg.Type); Model.KeyMapping3.RefreshCustomKeys(); break;
+					case 3: cfg.Mapping4.ClearKeys(cfg.Type); Model.KeyMapping4.RefreshCustomKeys(); break;
 				}
 			}
 		}
 
 		private void mnuWasdLayout_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.WasdLayout);
+			SetDefaultMappings(KeyPresetType.WasdKeys);
 		}
 
 		private void mnuArrowLayout_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.ArrowLayout);
+			SetDefaultMappings(KeyPresetType.ArrowKeys);
 		}
 
 		private void mnuXboxLayout1_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.XboxLayout1);
+			SetDefaultMappings(KeyPresetType.XboxP1);
 		}
 
 		private void mnuXboxLayout2_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.XboxLayout2);
+			SetDefaultMappings(KeyPresetType.XboxP2);
 		}
 
 		private void mnuPs4Layout1_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.Ps4Layout1);
+			SetDefaultMappings(KeyPresetType.Ps4P1);
 		}
 
 		private void mnuPs4Layout2_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.Ps4Layout2);
+			SetDefaultMappings(KeyPresetType.Ps4P2);
 		}
 
-		private void mnuSnes30Layout1_OnClick(object sender, RoutedEventArgs e)
+		private void btnSetDefaultBindings_OnClick(object sender, RoutedEventArgs e)
 		{
-			this.ApplyPreset(_presets.Snes30Layout1);
-		}
-
-		private void mnuSnes30Layout2_OnClick(object sender, RoutedEventArgs e)
-		{
-			this.ApplyPreset(_presets.Snes30Layout2);
-		}
-
-		private void btnClearBindings_OnClick(object sender, RoutedEventArgs e)
-		{
-			this.ApplyPreset(new KeyMapping());
+			SetDefaultMappings(null);
 		}
 	}
 }

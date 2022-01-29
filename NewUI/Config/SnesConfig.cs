@@ -97,19 +97,26 @@ namespace Mesen.Config
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			KeyPresets presets = new KeyPresets();
 			List<KeyMapping> mappings = new List<KeyMapping>();
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				mappings.Add(presets.XboxLayout1);
+				KeyMapping mapping = new();
+				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.SnesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				mappings.Add(presets.Ps4Layout1);
+				KeyMapping mapping = new();
+				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.SnesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				mappings.Add(presets.WasdLayout);
+				KeyMapping mapping = new();
+				KeyPresets.ApplyWasdLayout(mapping, ControllerType.SnesController);
+				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				mappings.Add(presets.ArrowLayout);
+				KeyMapping mapping = new();
+				KeyPresets.ApplyArrowLayout(mapping, ControllerType.SnesController);
+				mappings.Add(mapping);
 			}
 
 			Controllers[0].Type = ControllerType.SnesController;

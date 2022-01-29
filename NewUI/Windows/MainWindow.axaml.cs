@@ -28,7 +28,6 @@ namespace Mesen.Windows
 		private ShortcutHandler _shortcutHandler;
 
 		private FrameInfo _baseScreenSize;
-		private double _initialScale = 2.0;
 
 		public NativeRenderer _renderer;
 		public MainMenuView _mainMenu;

@@ -10,36 +10,36 @@
 	mc:Ignorable="d" d:DesignWidth="610" d:DesignHeight="280"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:DataType="cfg:KeyMapping"
+	x:DataType="vm:KeyMappingViewModel"
 	x:Class="Mesen.Views.SnesControllerView"
 >
 	<Design.DataContext>
-		<cfg:KeyMapping />
+		<vm:KeyMappingViewModel />
 	</Design.DataContext>
 
 	<Border BorderBrush="LightGray" BorderThickness="2" Padding="3" Width="610" Height="280" HorizontalAlignment="Left" VerticalAlignment="Top">
 		<Canvas>
 			<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" Width="580" Canvas.Left="10">
-				<c:KeyBindingButton Grid.Column="0" Width="120" KeyBinding="{CompiledBinding L}" />
+				<c:KeyBindingButton Grid.Column="0" Width="120" KeyBinding="{CompiledBinding Mapping.L}" />
 				<TextBlock Grid.Column="0" Grid.Row="1" Text="L" FontSize="18	" HorizontalAlignment="Center" />
 
-				<c:KeyBindingButton Grid.Column="1" Width="70" KeyBinding="{CompiledBinding TurboL}" />
+				<c:KeyBindingButton Grid.Column="1" Width="70" KeyBinding="{CompiledBinding Mapping.TurboL}" />
 				<TextBlock Grid.Column="1" Grid.Row="1" Text="Turbo L" FontSize="14" HorizontalAlignment="Center" />
 
-				<c:KeyBindingButton Grid.Column="3" Width="120" KeyBinding="{CompiledBinding R}" />
+				<c:KeyBindingButton Grid.Column="3" Width="120" KeyBinding="{CompiledBinding Mapping.R}" />
 				<TextBlock Grid.Column="3" Grid.Row="1" Text="R" FontSize="18" HorizontalAlignment="Center" />
 
-				<c:KeyBindingButton Grid.Column="4" Width="70" KeyBinding="{CompiledBinding TurboR}" />
+				<c:KeyBindingButton Grid.Column="4" Width="70" KeyBinding="{CompiledBinding Mapping.TurboR}" />
 				<TextBlock Grid.Column="4" Grid.Row="1" Text="Turbo R" FontSize="14" HorizontalAlignment="Center" />
 			</Grid>
 
 			<Panel Canvas.Top="60" >
 				<Ellipse Width="200" Height="200" Stroke="LightGray" StrokeThickness="2" />
 				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
-					<c:KeyBindingButton KeyBinding="{CompiledBinding Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
 				</Grid>
 			</Panel>
 
@@ -48,35 +48,35 @@
 				<StackPanel Orientation="Horizontal" Width="195" Height="220">
 					<StackPanel VerticalAlignment="Center" Margin="0 -30 5 0">
 						<TextBlock Text="Y" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding Y}" Width="60" Height="40" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboY}" Width="60" Height="20" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Y}" Width="60" Height="40" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.TurboY}" Width="60" Height="20" />
 						<TextBlock Text="Turbo Y" FontSize="14" HorizontalAlignment="Center" />
 					</StackPanel>
 					<StackPanel HorizontalAlignment="Center">
 						<TextBlock Text="X" FontSize="18" HorizontalAlignment="Center" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding X}" Width="60" Height="40" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboX}" Width="60" Height="20" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.X}" Width="60" Height="40" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.TurboX}" Width="60" Height="20" />
 						<TextBlock Text="Turbo X" FontSize="14" HorizontalAlignment="Center" />
 
 						<TextBlock Text="B" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding B}" Width="60" Height="40" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboB}" Width="60" Height="20" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.B}" Width="60" Height="40" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.TurboB}" Width="60" Height="20" />
 						<TextBlock Text="Turbo B" FontSize="14" HorizontalAlignment="Center" />
 					</StackPanel>
 					<StackPanel VerticalAlignment="Center" Margin="5 -30 0 0">
 						<TextBlock Text="A" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding A}" Width="60" Height="40" />
-						<c:KeyBindingButton KeyBinding="{CompiledBinding TurboA}" Width="60" Height="20" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.A}" Width="60" Height="40" />
+						<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.TurboA}" Width="60" Height="20" />
 						<TextBlock Text="Turbo A" FontSize="14" HorizontalAlignment="Center" />
 					</StackPanel>
 				</StackPanel>
 			</Panel>
 
 			<Grid ColumnDefinitions="*,Auto,Auto,*" RowDefinitions="Auto,Auto" Width="580" Canvas.Bottom="10">
-				<c:KeyBindingButton KeyBinding="{CompiledBinding Select}" Grid.Column="1" Width="80" />
+				<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Select}" Grid.Column="1" Width="80" />
 				<TextBlock Grid.Column="1" Grid.Row="1" Text="Select" FontSize="14" HorizontalAlignment="Center" />
 
-				<c:KeyBindingButton KeyBinding="{CompiledBinding Start}" Grid.Column="2" Width="80" />
+				<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Start}" Grid.Column="2" Width="80" />
 				<TextBlock Grid.Column="2" Grid.Row="1" Text="Start" FontSize="14" HorizontalAlignment="Center" />
 			</Grid>
 		</Canvas>

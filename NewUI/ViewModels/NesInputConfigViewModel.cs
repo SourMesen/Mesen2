@@ -135,11 +135,14 @@ namespace Mesen.ViewModels
 			wnd.WindowStartupLocation = WindowStartupLocation.Manual;
 			wnd.Position = startPosition;
 
-			ControllerConfig cfg = JsonHelper.Clone(this.Config.Controllers[port]);
+			NesControllerConfig cfg = JsonHelper.Clone(this.Config.Controllers[port]);
 			wnd.DataContext = new ControllerConfigViewModel(cfg);
 
 			if(await wnd.ShowDialog<bool>(btn.Parent?.VisualRoot as Window)) {
-				this.Config.Controllers[port] = cfg;
+				//Create a new list to trigger UI refresh
+				List<NesControllerConfig> controllers = new List<NesControllerConfig>(Config.Controllers);
+				controllers[port] = cfg;
+				Config.Controllers = controllers;
 			}
 		}
 	}

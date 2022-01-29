@@ -5,147 +5,97 @@ using System.Runtime.InteropServices;
 
 namespace Mesen.Config
 {
-	public class KeyPresets
+	public static class KeyPresets
 	{
-		KeyMapping _wasdLayout;
-		KeyMapping _arrowLayout;
-		KeyMapping[] _xboxLayouts = new KeyMapping[2];
-		KeyMapping[] _ps4Layouts = new KeyMapping[2];
-		KeyMapping[] _snes30Layouts = new KeyMapping[2];
-
-		public KeyMapping WasdLayout { get { return JsonHelper.Clone(_wasdLayout); } }
-		public KeyMapping ArrowLayout { get { return JsonHelper.Clone(_arrowLayout); } }
-		public KeyMapping XboxLayout1 { get { return JsonHelper.Clone(_xboxLayouts[0]); } }
-		public KeyMapping XboxLayout2 { get { return JsonHelper.Clone(_xboxLayouts[1]); } }
-		public KeyMapping Ps4Layout1 { get { return JsonHelper.Clone(_ps4Layouts[0]); } }
-		public KeyMapping Ps4Layout2 { get { return JsonHelper.Clone(_ps4Layouts[1]); } }
-		public KeyMapping Snes30Layout1 { get { return JsonHelper.Clone(_snes30Layouts[0]); } }
-		public KeyMapping Snes30Layout2 { get { return JsonHelper.Clone(_snes30Layouts[1]); } }
-
-		public KeyPresets()
+		public static void ApplyWasdLayout(KeyMapping m, ControllerType type)
 		{
-			_wasdLayout = new KeyMapping() {
-				A = InputApi.GetKeyCode("K"),
-				B = InputApi.GetKeyCode("J"),
-				X = InputApi.GetKeyCode(","),
-				Y = InputApi.GetKeyCode("M"),
-				Select = InputApi.GetKeyCode("O"),
-				Start = InputApi.GetKeyCode("L"),
-				L = InputApi.GetKeyCode("U"),
-				R = InputApi.GetKeyCode("I"),
-				Up = InputApi.GetKeyCode("W"),
-				Down = InputApi.GetKeyCode("S"),
-				Left = InputApi.GetKeyCode("A"),
-				Right = InputApi.GetKeyCode("D")
-			};
-
-			_arrowLayout = new KeyMapping() {
-				A = InputApi.GetKeyCode("S"),
-				B = InputApi.GetKeyCode("A"),
-				X = InputApi.GetKeyCode("X"),
-				Y = InputApi.GetKeyCode("Z"),
-				Select = InputApi.GetKeyCode("E"),
-				Start = InputApi.GetKeyCode("D"),
-				L = InputApi.GetKeyCode("Q"),
-				R = InputApi.GetKeyCode("W"),
-				Up = InputApi.GetKeyCode("Up Arrow"),
-				Down = InputApi.GetKeyCode("Down Arrow"),
-				Left = InputApi.GetKeyCode("Left Arrow"),
-				Right = InputApi.GetKeyCode("Right Arrow")
-			};
-			
-			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-				for(int i = 0; i < 2; i++) {
-					string prefix = "Pad" + (i + 1).ToString() + " ";
-					_xboxLayouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "A"),
-						B = InputApi.GetKeyCode(prefix + "X"),
-						X = InputApi.GetKeyCode(prefix + "B"),
-						Y = InputApi.GetKeyCode(prefix + "Y"),
-						Select = InputApi.GetKeyCode(prefix + "Select"),
-						Start = InputApi.GetKeyCode(prefix + "Start"),
-						Up = InputApi.GetKeyCode(prefix + "Up"),
-						Down = InputApi.GetKeyCode(prefix + "Down"),
-						Left = InputApi.GetKeyCode(prefix + "Left"),
-						Right = InputApi.GetKeyCode(prefix + "Right")
-					};
-
-					_ps4Layouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "B"),
-						B = InputApi.GetKeyCode(prefix + "A"),
-						X = InputApi.GetKeyCode(prefix + "C"),
-						Y = InputApi.GetKeyCode(prefix + "X"),
-						Select = InputApi.GetKeyCode(prefix + "L2"),
-						Start = InputApi.GetKeyCode(prefix + "R2"),
-						Up = InputApi.GetKeyCode(prefix + "Up"),
-						Down = InputApi.GetKeyCode(prefix + "Down"),
-						Left = InputApi.GetKeyCode(prefix + "Left"),
-						Right = InputApi.GetKeyCode(prefix + "Right")
-					};
-
-					_snes30Layouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "Thumb"),
-						B = InputApi.GetKeyCode(prefix + "Top2"),
-						X = InputApi.GetKeyCode(prefix + "Trigger"),
-						Y = InputApi.GetKeyCode(prefix + "Top"),
-						Select = InputApi.GetKeyCode(prefix + "Base5"),
-						Start = InputApi.GetKeyCode(prefix + "Base6"),
-						Up = InputApi.GetKeyCode(prefix + "Y-"),
-						Down = InputApi.GetKeyCode(prefix + "Y+"),
-						Left = InputApi.GetKeyCode(prefix + "X-"),
-						Right = InputApi.GetKeyCode(prefix + "X+")
-					};
-				}
+			m.A = InputApi.GetKeyCode("K");
+			m.B = InputApi.GetKeyCode("J");
+			if(type == ControllerType.SnesController) {
+				m.X = InputApi.GetKeyCode(";");
+				m.Y = InputApi.GetKeyCode("M");
+				m.L = InputApi.GetKeyCode("U");
+				m.R = InputApi.GetKeyCode("I");
+				m.Select = InputApi.GetKeyCode("O");
+				m.Start = InputApi.GetKeyCode("L");
 			} else {
-				for(int i = 0; i < 2; i++) {
-					string prefix = "Pad" + (i + 1).ToString() + " ";
-					_xboxLayouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "B"),
-						B = InputApi.GetKeyCode(prefix + "A"),
-						X = InputApi.GetKeyCode(prefix + "Y"),
-						Y = InputApi.GetKeyCode(prefix + "X"),
-						Select = InputApi.GetKeyCode(prefix + "Back"),
-						Start = InputApi.GetKeyCode(prefix + "Start"),
-						L = InputApi.GetKeyCode(prefix + "L1"),
-						R = InputApi.GetKeyCode(prefix + "R1"),
-						Up = InputApi.GetKeyCode(prefix + "Up"),
-						Down = InputApi.GetKeyCode(prefix + "Down"),
-						Left = InputApi.GetKeyCode(prefix + "Left"),
-						Right = InputApi.GetKeyCode(prefix + "Right")
-					};
-
-					prefix = "Joy" + (i + 1).ToString() + " ";
-					_ps4Layouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "But3"),
-						B = InputApi.GetKeyCode(prefix + "But2"),
-						X = InputApi.GetKeyCode(prefix + "But4"),
-						Y = InputApi.GetKeyCode(prefix + "But1"),
-						Select = InputApi.GetKeyCode(prefix + "But9"),
-						Start = InputApi.GetKeyCode(prefix + "But10"),
-						L = InputApi.GetKeyCode(prefix + "But5"),
-						R = InputApi.GetKeyCode(prefix + "But6"),
-						Up = InputApi.GetKeyCode(prefix + "DPad Up"),
-						Down = InputApi.GetKeyCode(prefix + "DPad Down"),
-						Left = InputApi.GetKeyCode(prefix + "DPad Left"),
-						Right = InputApi.GetKeyCode(prefix + "DPad Right")
-					};
-
-					_snes30Layouts[i] = new KeyMapping() {
-						A = InputApi.GetKeyCode(prefix + "But1"),
-						B = InputApi.GetKeyCode(prefix + "But2"),
-						X = InputApi.GetKeyCode(prefix + "But4"),
-						Y = InputApi.GetKeyCode(prefix + "But5"),
-						Select = InputApi.GetKeyCode(prefix + "But11"),
-						Start = InputApi.GetKeyCode(prefix + "But12"),
-						L = InputApi.GetKeyCode(prefix + "But7"),
-						R = InputApi.GetKeyCode(prefix + "But8"),
-						Up = InputApi.GetKeyCode(prefix + "Y+"),
-						Down = InputApi.GetKeyCode(prefix + "Y-"),
-						Left = InputApi.GetKeyCode(prefix + "X-"),
-						Right = InputApi.GetKeyCode(prefix + "X+")
-					};
-				}
+				m.TurboA = InputApi.GetKeyCode(";");
+				m.TurboB = InputApi.GetKeyCode("M");
+				m.Select = InputApi.GetKeyCode("U");
+				m.Start = InputApi.GetKeyCode("I");
 			}
+
+			m.Up = InputApi.GetKeyCode("W");
+			m.Down = InputApi.GetKeyCode("S");
+			m.Left = InputApi.GetKeyCode("A");
+			m.Right = InputApi.GetKeyCode("D");
+		}
+
+		public static void ApplyArrowLayout(KeyMapping m, ControllerType type)
+		{
+			m.A = InputApi.GetKeyCode("S");
+			m.B = InputApi.GetKeyCode("A");
+			if(type == ControllerType.SnesController) {
+				m.X = InputApi.GetKeyCode("X");
+				m.Y = InputApi.GetKeyCode("Z");
+				m.L = InputApi.GetKeyCode("Q");
+				m.R = InputApi.GetKeyCode("W");
+				m.Select = InputApi.GetKeyCode("E");
+				m.Start = InputApi.GetKeyCode("D");
+			} else {
+				m.TurboA = InputApi.GetKeyCode("X");
+				m.TurboB = InputApi.GetKeyCode("Z");
+				m.Select = InputApi.GetKeyCode("Q");
+				m.Start = InputApi.GetKeyCode("W");
+			}
+			m.Up = InputApi.GetKeyCode("Up Arrow");
+			m.Down = InputApi.GetKeyCode("Down Arrow");
+			m.Left = InputApi.GetKeyCode("Left Arrow");
+			m.Right = InputApi.GetKeyCode("Right Arrow");
+		}
+
+		public static void ApplyXboxLayout(KeyMapping m, int player, ControllerType type)
+		{
+			string prefix = "Pad" + (player + 1).ToString() + " ";
+			m.A = InputApi.GetKeyCode(prefix + "B");
+			m.B = InputApi.GetKeyCode(prefix + "A");
+			if(type == ControllerType.SnesController) {
+				m.X = InputApi.GetKeyCode(prefix + "Y");
+				m.Y = InputApi.GetKeyCode(prefix + "X");
+				m.L = InputApi.GetKeyCode(prefix + "L1");
+				m.R = InputApi.GetKeyCode(prefix + "R1");
+			} else {
+				m.TurboA = InputApi.GetKeyCode(prefix + "Y");
+				m.TurboB = InputApi.GetKeyCode(prefix + "X");
+			}
+			m.Select = InputApi.GetKeyCode(prefix + "Back");
+			m.Start = InputApi.GetKeyCode(prefix + "Start");
+			m.Up = InputApi.GetKeyCode(prefix + "Up");
+			m.Down = InputApi.GetKeyCode(prefix + "Down");
+			m.Left = InputApi.GetKeyCode(prefix + "Left");
+			m.Right = InputApi.GetKeyCode(prefix + "Right");
+		}
+
+		public static void ApplyPs4Layout(KeyMapping m, int player, ControllerType type)
+		{
+			string prefix = "Joy" + (player + 1).ToString() + " ";
+			m.A = InputApi.GetKeyCode(prefix + "But3");
+			m.B = InputApi.GetKeyCode(prefix + "But2");
+			if(type == ControllerType.SnesController) {
+				m.X = InputApi.GetKeyCode(prefix + "But4");
+				m.Y = InputApi.GetKeyCode(prefix + "But1");
+				m.L = InputApi.GetKeyCode(prefix + "But5");
+				m.R = InputApi.GetKeyCode(prefix + "But6");
+			} else {
+				m.TurboA = InputApi.GetKeyCode(prefix + "But4");
+				m.TurboB = InputApi.GetKeyCode(prefix + "But1");
+			}
+			m.Select = InputApi.GetKeyCode(prefix + "But9");
+			m.Start = InputApi.GetKeyCode(prefix + "But10");
+			m.Up = InputApi.GetKeyCode(prefix + "DPad Up");
+			m.Down = InputApi.GetKeyCode(prefix + "DPad Down");
+			m.Left = InputApi.GetKeyCode(prefix + "DPad Left");
+			m.Right = InputApi.GetKeyCode(prefix + "DPad Right");
 		}
 	}
 }

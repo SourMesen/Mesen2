@@ -106,7 +106,11 @@ namespace Mesen.ViewModels
 			wnd.DataContext = new ControllerConfigViewModel(cfg);
 
 			if(await wnd.ShowDialog<bool>(btn.Parent?.VisualRoot as Window)) {
-				this.Config.Controllers[port] = cfg;
+				//Create a new list to trigger UI refresh
+				List<ControllerConfig> controllers = new List<ControllerConfig>(Config.Controllers);
+				controllers[port] = cfg;
+				Config.Controllers = controllers;
+
 			}
 		}
 

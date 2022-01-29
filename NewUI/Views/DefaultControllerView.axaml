@@ -1,0 +1,36 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d" d:DesignWidth="610" d:DesignHeight="230"
+	x:DataType="vm:KeyMappingViewModel"
+	x:Class="Mesen.Views.DefaultControllerView"
+>
+	<Design.DataContext>
+		<vm:KeyMappingViewModel />
+	</Design.DataContext>
+
+	<Border MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="1" Margin="5">
+		<ScrollViewer>
+			<ItemsRepeater Items="{CompiledBinding CustomKeys}">
+				<ItemsRepeater.ItemTemplate>
+					<DataTemplate>
+						<StackPanel>
+							<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 -1 0 0">
+								<Grid ColumnDefinitions="3*, 1*" Margin="5 0 5 0">
+									<TextBlock Grid.Column="0" Text="{Binding Name}}" />
+									<c:KeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyMapping}" HorizontalAlignment="Stretch" />
+								</Grid>
+							</Border>
+						</StackPanel>
+					</DataTemplate>
+				</ItemsRepeater.ItemTemplate>
+			</ItemsRepeater>
+		</ScrollViewer>
+	</Border>
+</UserControl>
