@@ -390,7 +390,7 @@ void SnesPpu::FetchTileData()
 	}
 }
 
-bool SnesPpu::ProcessEndOfScanline(uint16_t hClock)
+bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 {
 	if(hClock >= 1364 || (hClock == 1360 && _scanline == 240 && _oddFrame && !_state.ScreenInterlace)) {
 		//"In non-interlace mode scanline 240 of every other frame (those with $213f.7=1) is only 1360 cycles."
@@ -450,6 +450,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t hClock)
 		}
 
 		_scanline++;
+		hClock = 0;
 
 		if(_scanline == _nmiScanline) {
 			ProcessLocationLatchRequest();

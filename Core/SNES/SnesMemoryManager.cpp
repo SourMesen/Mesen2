@@ -220,8 +220,6 @@ void SnesMemoryManager::ProcessEvent()
 
 		case SnesEventType::EndOfScanline:
 			if(_ppu->ProcessEndOfScanline(_hClock)) {
-				_hClock = 0;
-
 				if(_ppu->GetScanline() == 0) {
 					_nextEvent = SnesEventType::HdmaInit;
 					_nextEventClock = 12 + (_masterClock & 0x07);

@@ -225,7 +225,7 @@ public:
 	SnesPpuState& GetStateRef();
 	void GetState(SnesPpuState &state, bool returnPartialState);
 
-	bool ProcessEndOfScanline(uint16_t hClock);
+	bool ProcessEndOfScanline(uint16_t& hClock);
 	void UpdateSpcState();
 	void UpdateNmiScanline();
 	uint16_t GetLastScanline();
