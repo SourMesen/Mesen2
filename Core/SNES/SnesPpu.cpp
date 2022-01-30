@@ -130,6 +130,10 @@ SnesPpuState SnesPpu::GetState()
 
 SnesPpuState& SnesPpu::GetStateRef()
 {
+	_state.Cycle = GetCycle();
+	_state.Scanline = _scanline;
+	_state.HClock = _memoryManager->GetHClock();
+	_state.FrameCount = _frameCount;
 	return _state;
 }
 
