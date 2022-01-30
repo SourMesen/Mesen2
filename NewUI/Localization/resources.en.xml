@@ -2097,6 +2097,27 @@ x == [$150] || y == [10]
 
 			<Value ID="GoToAddress">Go to address...</Value>
 			<Value ID="GoToAll">Go to all...</Value>
+
+			<Value ID="OpenAssembler">Assembler</Value>
+			<Value ID="OpenDebugger">Debugger</Value>
+			<Value ID="OpenSpcDebugger">SPC Debugger</Value>
+			<Value ID="OpenSa1Debugger">SA-1 Debugger</Value>
+			<Value ID="OpenGsuDebugger">GSU Debugger</Value>
+			<Value ID="OpenNecDspDebugger">DSP Debugger</Value>
+			<Value ID="OpenCx4Debugger">CX4 Debugger</Value>
+			<Value ID="OpenGameboyDebugger">Game Boy Debugger</Value>
+			<Value ID="OpenEventViewer">Event Viewer</Value>
+			<Value ID="OpenMemoryTools">Memory Tools</Value>
+			<Value ID="OpenProfiler">Profiler</Value>
+			<Value ID="OpenScriptWindow">Script Window</Value>
+			<Value ID="OpenTraceLogger">Trace Logger</Value>
+			<Value ID="OpenRegisterViewer">Register Viewer</Value>
+			<Value ID="OpenDebugLog">Debug Log</Value>
+			<Value ID="OpenTilemapViewer">Tilemap Viewer</Value>
+			<Value ID="OpenTileViewer">Tile Viewer</Value>
+			<Value ID="OpenSpriteViewer">Sprite Viewer</Value>
+			<Value ID="OpenPaletteViewer">Palette Viewer</Value>
+			<Value ID="OpenDebugSettings">Settings</Value>
 		</Enum>
 	</Enums>
 </Resources>

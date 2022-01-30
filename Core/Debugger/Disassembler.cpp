@@ -123,7 +123,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	int byteCounter = 0;
 	
 	CodeDataLogger* cdl = _debugger->GetCodeDataLogger(cpuType);
-	MemoryType cdlMemType = cdl->GetPrgMemoryType();
+	MemoryType cdlMemType = cdl ? cdl->GetPrgMemoryType() : MemoryType::Register;
 
 	AddressInfo relAddress = {};
 	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);
@@ -178,8 +178,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		
 		uint8_t opSize = 0;
 
-		bool isCode = addrInfo.Type == cdlMemType ? cdl->IsCode(addrInfo.Address) : false;
-		bool isData = addrInfo.Type == cdlMemType ? cdl->IsData(addrInfo.Address) : false;
+		bool isCode = addrInfo.Type == cdlMemType && cdl ? cdl->IsCode(addrInfo.Address) : false;
+		bool isData = addrInfo.Type == cdlMemType && cdl ? cdl->IsData(addrInfo.Address) : false;
 
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
@@ -190,7 +190,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(opSize > 0) {
 			pushEndBlock();
 
-			if(addrInfo.Type == MemoryType::SnesPrgRom && cdl->IsSubEntryPoint(addrInfo.Address)) {
+			if(addrInfo.Type == cdlMemType && cdl && cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
 			}
 

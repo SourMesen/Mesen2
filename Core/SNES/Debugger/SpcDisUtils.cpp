@@ -8,7 +8,7 @@
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
 
-constexpr const char* _altOpTemplate[256] = {
+constexpr const char* _opTemplate[256] = {
 	"NOP",	"TCALL 0",	"SET1 d.0",	"BBS d.0,q",	"OR A,d",		"OR A,!a",		"OR A,(X)",		"OR A,[d+X]",	"OR A,#i",	"OR t,s",		"OR1 C,m.b",	"ASL d",			"ASL !a",	"PUSH PSW",	"TSET1 !a",		"BRK",
 	"BPL r",	"TCALL 1",	"CLR1 d.0",	"BBC d.0,q",	"OR A,d+X",		"OR A,!a+X",	"OR A,!a+Y",	"OR A,[d]+Y",	"OR e,#i",	"OR (X),(Y)",	"DECW d",		"ASL d+X",		"ASL A",		"DEC X",		"CMP X,!a",		"JMP [!a+X]",
 	"CLRP",	"TCALL 2",	"SET1 d.1",	"BBS d.1,q",	"AND A,d",		"AND A,!a",		"AND A,(X)",	"AND A,[d+X]",	"AND A,#i",	"AND t,s",		"OR1 C,/m.b",	"ROL d",			"ROL !a",	"PUSH A",	"CBNE d,q",		"BRA r",
@@ -27,7 +27,7 @@ constexpr const char* _altOpTemplate[256] = {
 	"BEQ r",	"TCALL 15",	"CLR1 d.7",	"BBC d.7,q",	"MOV A,d+X",	"MOV A,!a+X",	"MOV A,!a+Y",	"MOV A,[d]+Y",	"MOV X,d",	"MOV X,d+Y",	"MOV t,s",		"MOV Y,d+X",	"INC Y",		"MOV Y,A",	"DBNZ Y,q",		"STOP"
 };
 
-constexpr const char* _opTemplate[256] = {
+constexpr const char* _altOpTemplate[256] = {
 	"NOP",	"JST0",	"SET1 d.0",	"BBS d.0,q",	"ORA d",		"ORA a",		"ORA (X)",	"ORA [d,X]",	"ORA #i",	"OR t,s",		"ORC m.b",		"ASL d",		"ASL a",	"PHP",	"SET1 a",		"BRK",
 	"BPL r",	"JST1",	"CLR1 d.0",	"BBC d.0,q",	"ORA d,X",	"ORA a,X",	"ORA a,Y",	"ORA [d],Y",	"OR e,#i",	"OR (X),(Y)",	"DEW d",			"ASL d,X",	"ASL A",	"DEX",	"CPX a",			"JMP [a,X]",
 	"CLP",	"JST2",	"SET1 d.1",	"BBS d.1,q",	"AND d",		"AND a",		"AND (X)",	"AND [d,X]",	"AND #i",	"AND t,s",		"ORC /m.b",		"ROL d",		"ROL a",	"PHA",	"CBNE d,q",		"BRA r",

@@ -1,4 +1,9 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls;
+using Mesen.Config;
+using Mesen.Controls;
+using Mesen.Debugger.Utilities;
+using Mesen.Debugger.ViewModels;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -37,7 +42,9 @@ namespace Mesen.ViewModels
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
-		//For designer
+		[Reactive] public List<object> DebugMenuItems { get; set; } = new();
+
+		[Obsolete("For designer only")]
 		public MainMenuViewModel() : this(new MainWindowViewModel()) { }
 
 		public MainMenuViewModel(MainWindowViewModel windowModel)
@@ -80,6 +87,106 @@ namespace Mesen.ViewModels
 			IsNetPlayClient = NetplayApi.IsConnected();
 			IsNetPlayServer = NetplayApi.IsServerRunning();
 			IsNetPlayActive = IsNetPlayClient || IsNetPlayServer;
+		}
+
+		public void Initialize()
+		{
+			InitDebugMenu();
+		}
+
+		private void InitDebugMenu()
+		{
+			DebugMenuItems = new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenDebugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenDebugger),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(null))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenSpcDebugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenSpcDebugger),
+					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.Spc),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Spc))
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenEventViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenEventViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new EventViewerWindow(MainWindow.RomInfo.ConsoleType.GetMainCpuType()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenMemoryTools,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenMemoryTools),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenRegisterViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenRegisterViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new RegisterViewerWindow(new RegisterViewerWindowViewModel()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenTraceLogger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenTraceLogger),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new TraceLoggerWindow(new TraceLoggerViewModel()))
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenTilemapViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenTilemapViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new TilemapViewerWindow(MainWindow.RomInfo.ConsoleType.GetMainCpuType()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenTileViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenTileViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new TileViewerWindow(MainWindow.RomInfo.ConsoleType.GetMainCpuType()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenSpriteViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenSpriteViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new SpriteViewerWindow(MainWindow.RomInfo.ConsoleType.GetMainCpuType()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenPaletteViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenPaletteViewer),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new PaletteViewerWindow(MainWindow.RomInfo.ConsoleType.GetMainCpuType()))
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenAssembler,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenAssembler),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(new AssemblerWindowViewModel(MainWindow.RomInfo.ConsoleType.GetMainCpuType())))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenProfiler,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenProfiler),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new ProfilerWindow(new ProfilerWindowViewModel()))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenScriptWindow,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenScriptWindow),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(new ScriptWindowViewModel()))
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenDebugSettings,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenDebugSettings),
+					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.Debugger, ApplicationHelper.GetMainWindow())
+				}
+			};
+
+			DebugShortcutManager.RegisterActions(ApplicationHelper.GetMainWindow()!, DebugMenuItems);
 		}
 	}
 }

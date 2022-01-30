@@ -385,76 +385,7 @@
 				</MenuItem.Icon>
 			</c:ShortcutMenuItem>
 		</MenuItem>
-		<MenuItem Header="_Debug">
-			<MenuItem Header="_Debugger" Click="OnDebuggerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Debugger.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Event Viewer" Click="OnEventViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/EventViewer.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Memory Tools" Click="OnMemoryToolsClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/CheatCode.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Register Viewer" Click="OnRegisterViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/RegisterIcon.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Trace Logger" Click="OnTraceLoggerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/LogWindow.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="Tile_map Viewer" Click="OnTilemapViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/VideoOptions.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Tile Viewer" Click="OnTileViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/VerticalLayout.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Sprite Viewer" Click="OnSpriteViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/PerfTracker.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Palette Viewer" Click="OnPaletteViewerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/VideoFilter.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="_Assembler" Click="OnAssemblerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Chip.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Profiler" Click="OnProfilerClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Speed.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Script Window" Click="OnScriptWindowClick" IsEnabled="{CompiledBinding IsGameRunning}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Script.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="_Settings" Click="OnDebuggerSettingsClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Settings.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
+		<MenuItem Header="_Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 		<MenuItem Header="{l:Translate mnuHelp}">
 			<MenuItem Header="{l:Translate mnuOnlineHelp}">
 				<MenuItem.Icon>

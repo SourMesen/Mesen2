@@ -555,6 +555,10 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryTyp
 {
 	CpuType cpuType = DebugUtilities::ToCpuType(memoryType);
 	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
+	if(!cdl) {
+		return;
+	}
+
 	MemoryType prgType = cdl->GetPrgMemoryType();
 	if(memoryType == prgType) {
 		cdl->GetCdlData(offset, length, cdlData);

@@ -116,6 +116,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.OpenTraceLogger, KeyBinding = new(KeyModifiers.Control, Key.J) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenRegisterViewer, KeyBinding = new(KeyModifiers.Control, Key.K) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenDebugLog, KeyBinding = new(KeyModifiers.Control, Key.B) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenDebugSettings, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.OpenTilemapViewer, KeyBinding = new(KeyModifiers.Control, Key.D1) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenTileViewer, KeyBinding = new(KeyModifiers.Control, Key.D2) });
@@ -247,6 +248,7 @@ namespace Mesen.Config
 		OpenTileViewer,
 		OpenSpriteViewer,
 		OpenPaletteViewer,
+		OpenDebugSettings,
 		Reset,
 		PowerCycle,
 		ReloadRom,

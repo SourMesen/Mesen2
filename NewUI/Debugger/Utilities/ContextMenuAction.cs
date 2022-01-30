@@ -18,7 +18,7 @@ namespace Mesen.Debugger.Utilities
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
 
-		public string Name
+		public virtual string Name
 		{
 			get
 			{
@@ -74,17 +74,20 @@ namespace Mesen.Debugger.Utilities
 		public Func<string>? HintText { get; set; }
 		public Func<bool>? IsEnabled { get; set; }
 		public Func<bool>? IsSelected { get; set; }
+		public Func<bool>? IsVisible { get; set; }
 
 		public Func<DbgShortKeys>? Shortcut { get; set; }
 		public string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
 
 		[Reactive] public bool Enabled { get; set; }
+		[Reactive] public bool Visible { get; set; }
 
 		private ReactiveCommand<Unit, Unit>? _clickCommand;
 		public ReactiveCommand<Unit, Unit>? ClickCommand
 		{
 			get
 			{
+				Visible = IsVisible?.Invoke() ?? true;
 				Enabled = IsEnabled?.Invoke() ?? true;
 				return _clickCommand;
 			}
@@ -96,7 +99,7 @@ namespace Mesen.Debugger.Utilities
 			get => _onClick;
 			set {
 				_onClick = () => {
-					if(IsEnabled == null || IsEnabled()) {
+					if((IsVisible == null || IsVisible()) && (IsEnabled == null || IsEnabled())) {
 						if(ActionType == ActionType.Exit) {
 							//When using exit, the command is disposed while the command is running, which causes a crash
 							//Run the code in a posted action to prevent the crash
@@ -113,6 +116,7 @@ namespace Mesen.Debugger.Utilities
 		public void Update()
 		{
 			Enabled = IsEnabled?.Invoke() ?? true;
+			Visible = IsVisible?.Invoke() ?? true;
 		}
 
 		public void Dispose()
@@ -123,6 +127,7 @@ namespace Mesen.Debugger.Utilities
 			Shortcut = null;
 			IsSelected = null;
 			IsEnabled = null;
+			IsVisible = null;
 			if(_subActions != null) {
 				foreach(object subAction in _subActions) {
 					if(subAction is ContextMenuAction action) {
@@ -131,6 +136,11 @@ namespace Mesen.Debugger.Utilities
 				}
 			}
 		}
+	}
+
+	public class ContextMenuSeparator : ContextMenuAction
+	{
+		public override string Name => "-";
 	}
 
 	public enum ActionType
@@ -304,5 +314,47 @@ namespace Mesen.Debugger.Utilities
 		ResetTblMappings,
 		GoToAddress,
 		GoToAll,
+
+		[IconFile("Debugger")]
+		OpenDebugger,
+
+		[IconFile("EventViewer")]
+		OpenEventViewer,
+
+		[IconFile("CheatCode")]
+		OpenMemoryTools,
+
+		[IconFile("RegisterIcon")]
+		OpenRegisterViewer,
+
+		[IconFile("LogWindow")]
+		OpenTraceLogger,
+
+		[IconFile("VideoOptions")]
+		OpenTilemapViewer,
+
+		[IconFile("VerticalLayout")]
+		OpenTileViewer,
+
+		[IconFile("PerfTracker")]
+		OpenSpriteViewer,
+
+		[IconFile("VideoFilter")]
+		OpenPaletteViewer,
+
+		[IconFile("Chip")]
+		OpenAssembler,
+
+		[IconFile("Speed")]
+		OpenProfiler,
+
+		[IconFile("Script")]
+		OpenScriptWindow,
+
+		[IconFile("Settings")]
+		OpenDebugSettings,
+
+		[IconFile("SpcDebugger")]
+		OpenSpcDebugger,
 	}
 }

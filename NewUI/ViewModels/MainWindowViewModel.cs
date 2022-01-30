@@ -30,6 +30,7 @@ namespace Mesen.ViewModels
 		public void Init()
 		{
 			MainMenu = new MainMenuViewModel(this);
+			MainMenu.Initialize();
 			RecentGames.Init(GameScreenMode.RecentGames);
 
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {
