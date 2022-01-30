@@ -426,8 +426,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.BreakOn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakOn),
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
+					OnClick = () => new BreakOnWindow(CpuType).ShowCenteredDialog(wnd)
 				},
 			};
 		}

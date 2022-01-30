@@ -79,6 +79,8 @@ namespace Mesen.Controls
 				return;
 			}
 
+			bool allowNegative = Min != null && Min.Value < 0;
+
 			if(Hex) {
 				foreach(char c in e.Text.ToLowerInvariant()) {
 					if(!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
@@ -91,6 +93,11 @@ namespace Mesen.Controls
 				foreach(char c in e.Text) {
 					if(c < '0' || c > '9') {
 						//not a number
+						if(c == '-' && allowNegative) {
+							//Allow negative sign
+							continue;
+						}
+
 						e.Handled = true;
 						return;
 					}

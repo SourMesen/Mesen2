@@ -1019,7 +1019,14 @@
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
+		<Form ID="BreakOnWindow">
+			<Control ID="wndTitle">Break On...</Control>
+			<Control ID="lblBreakOn">Break on scanline:</Control>
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="RegisterViewerWindow">
 			<Control ID="wndTitle">Register Viewer</Control>
 

@@ -15,12 +15,12 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
 	Icon="/Assets/Icon.ico"
-	x:Class="Mesen.Debugger.Windows.BreakInWindow"
-	Width="340"
-	Height="100"
+	x:Class="Mesen.Debugger.Windows.BreakOnWindow"
+	Width="225"
+	Height="60"
+	Name="root"
 	ShowInTaskbar="False"
 	CanResize="False"
-	Name="root"
 	Title="{l:Translate wndTitle}"
 >
 	<DockPanel Margin="3">
@@ -29,49 +29,20 @@
 			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 
-		<Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+		<Grid VerticalAlignment="Top" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
 			<TextBlock
-				Text="{l:Translate lblBreakIn}"
+				Text="{l:Translate lblBreakOn}"
 				VerticalAlignment="Center"
 				Margin="0 0 5 0"
 			/>
 			<c:MesenNumericTextBox
 				Grid.Column="1"
 				Name="txtValue"
-				VerticalAlignment="Center"
 				HorizontalAlignment="Stretch"
 				Trim="True"
-				Min="1"
-				Max="2000000000"
+				Min="{Binding Min, ElementName=root}"
+				Max="{Binding Max, ElementName=root}"
 				Value="{Binding Value, ElementName=root}"
-			/>
-			<c:EnumRadioButton
-				Margin="10 0"
-				Grid.Column="2"
-				Content="{l:Translate lblCpuInst}"
-				Value="{Binding StepType, ElementName=root}"
-				CheckedWhen="{x:Static i:StepType.Step}"
-			/>
-			<c:EnumRadioButton
-				Grid.Column="3"
-				Grid.Row="0"
-				Content="{l:Translate lblPpuCycles}"
-				Value="{Binding StepType, ElementName=root}"
-				CheckedWhen="{x:Static i:StepType.PpuStep}"
-			/>
-			<c:EnumRadioButton
-				Grid.Column="3"
-				Grid.Row="1"
-				Content="{l:Translate lblPpuScanlines}"
-				Value="{Binding StepType, ElementName=root}"
-				CheckedWhen="{x:Static i:StepType.PpuScanline}"
-			/>
-			<c:EnumRadioButton
-				Grid.Column="3"
-				Grid.Row="2"
-				Content="{l:Translate lblPpuFrames}"
-				Value="{Binding StepType, ElementName=root}"
-				CheckedWhen="{x:Static i:StepType.PpuFrame}"
 			/>
 		</Grid>
 	</DockPanel>

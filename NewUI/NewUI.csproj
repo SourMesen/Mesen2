@@ -255,6 +255,9 @@
     <Compile Update="Debugger\Views\NesStatusView.axaml.cs">
       <DependentUpon>NesStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\BreakOnWindow.axaml.cs">
+      <DependentUpon>BreakOnWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\DebuggerConfigWindow.axaml.cs">
       <DependentUpon>DebuggerConfigWindow.axaml</DependentUpon>
     </Compile>
