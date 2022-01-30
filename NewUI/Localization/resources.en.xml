@@ -1002,6 +1002,24 @@
 			<Control ID="colMaxCycles">Max. Cycles</Control>
 		</Form>
 		
+		<Form ID="GoToWindow">
+			<Control ID="wndTitle">Go To...</Control>
+			<Control ID="lblAddress">Address:</Control>
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		
+		<Form ID="BreakInWindow">
+			<Control ID="wndTitle">Break In...</Control>
+			<Control ID="lblBreakIn">Break in:</Control>
+			<Control ID="lblCpuInst">CPU instructions</Control>
+			<Control ID="lblPpuCycles">PPU cycles</Control>
+			<Control ID="lblPpuScanlines">Scanlines</Control>
+			<Control ID="lblPpuFrames">Frames</Control>
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		
 		<Form ID="RegisterViewerWindow">
 			<Control ID="wndTitle">Register Viewer</Control>
 

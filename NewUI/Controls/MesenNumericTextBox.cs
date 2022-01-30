@@ -175,9 +175,9 @@ namespace Mesen.Controls
 				text = Value.ToString();
 			}
 
-			if(force || text?.Trim('0', ' ').ToLowerInvariant() != Text?.Trim('0', ' ').ToLowerInvariant()) {
+			if(force || text?.TrimStart('0', ' ').ToLowerInvariant() != Text?.TrimStart('0', ' ').ToLowerInvariant()) {
 				if(Trim) {
-					text = text?.Trim('0', ' ');
+					text = text?.TrimStart('0', ' ');
 				}
 
 				if(text?.Length == 0) {

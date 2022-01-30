@@ -268,8 +268,8 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			
-			ToolbarItems = GetDebugMenu();
-			DebugMenuItems = GetDebugMenu();
+			ToolbarItems = GetDebugMenu(wnd);
+			DebugMenuItems = GetDebugMenu(wnd);
 
 			OptionMenuItems = new List<object>() {
 				new ContextMenuAction() {
@@ -340,7 +340,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
 		}
 
-		private List<object> GetDebugMenu()
+		private List<object> GetDebugMenu(Control wnd)
 		{
 			Func<bool> isPaused = () => EmuApi.IsPaused();
 			Func<bool> isRunning = () => !EmuApi.IsPaused();
@@ -421,8 +421,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.BreakIn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakIn),
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
+					OnClick = () => new BreakInWindow(CpuType).ShowCenteredDialog(wnd)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.BreakOn,

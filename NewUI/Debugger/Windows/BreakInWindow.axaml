@@ -1,0 +1,75 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	Icon="/Assets/Icon.ico"
+	x:Class="Mesen.Debugger.Windows.BreakInWindow"
+	Width="360"
+	Height="95"
+	Name="root"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<DockPanel>
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Top" DockPanel.Dock="Left">
+				<TextBlock
+					Text="{l:Translate lblBreakIn}"
+					VerticalAlignment="Center"
+					Margin="0 0 5 0"
+				/>
+				<c:MesenNumericTextBox
+					Name="txtValue"
+					HorizontalAlignment="Stretch"
+					Trim="True"
+					Width="80"
+					Min="1"
+					Max="2000000000"
+					Value="{Binding Value, ElementName=root}"
+				/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal">
+				<StackPanel Margin="10 0">
+					<c:EnumRadioButton
+						Content="{l:Translate lblCpuInst}"
+						Value="{Binding StepType, ElementName=root}"
+						CheckedWhen="{x:Static i:StepType.Step}"
+					/>
+				</StackPanel>
+				<StackPanel>
+					<c:EnumRadioButton
+						Content="{l:Translate lblPpuCycles}"
+						Value="{Binding StepType, ElementName=root}"
+						CheckedWhen="{x:Static i:StepType.PpuStep}"
+					/>
+					<c:EnumRadioButton
+						Content="{l:Translate lblPpuScanlines}"
+						Value="{Binding StepType, ElementName=root}"
+						CheckedWhen="{x:Static i:StepType.PpuScanline}"
+					/>
+					<c:EnumRadioButton
+						Content="{l:Translate lblPpuFrames}"
+						Value="{Binding StepType, ElementName=root}"
+						CheckedWhen="{x:Static i:StepType.PpuFrame}"
+					/>
+				</StackPanel>
+			</StackPanel>
+		</DockPanel>
+	</DockPanel>
+</Window>

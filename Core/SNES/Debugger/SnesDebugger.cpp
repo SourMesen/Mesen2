@@ -241,7 +241,7 @@ void SnesDebugger::Step(int32_t stepCount, StepType type)
 				break;
 
 			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
-			case StepType::PpuScanline: step.PpuStepCount = 341; break;
+			case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
 			case StepType::PpuFrame: step.PpuStepCount = 341 * (_ppu->GetVblankEndScanline() + 1); break;
 			case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 		}

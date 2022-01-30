@@ -258,6 +258,9 @@
     <Compile Update="Debugger\Windows\DebuggerConfigWindow.axaml.cs">
       <DependentUpon>DebuggerConfigWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\BreakInWindow.axaml.cs">
+      <DependentUpon>BreakInWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\RegisterViewerWindow.axaml.cs">
       <DependentUpon>RegisterViewerWindow.axaml</DependentUpon>
     </Compile>
