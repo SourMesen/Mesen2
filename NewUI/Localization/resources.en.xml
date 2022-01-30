@@ -2069,6 +2069,9 @@ x == [$150] || y == [10]
 			
 			<Value ID="LoadTblFile">Load TBL file...</Value>
 			<Value ID="ResetTblMappings">Reset TBL mappings</Value>
+
+			<Value ID="GoToAddress">Go to address...</Value>
+			<Value ID="GoToAll">Go to all...</Value>
 		</Enum>
 	</Enums>
 </Resources>

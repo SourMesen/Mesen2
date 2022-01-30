@@ -31,8 +31,7 @@
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="File" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="View" />
-			<MenuItem Header="Find" />
+			<MenuItem Header="Search" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">

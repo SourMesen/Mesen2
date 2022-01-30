@@ -302,5 +302,7 @@ namespace Mesen.Debugger.Utilities
 		
 		LoadTblFile,
 		ResetTblMappings,
+		GoToAddress,
+		GoToAll,
 	}
 }

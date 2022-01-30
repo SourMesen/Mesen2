@@ -31,6 +31,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public string StatusBarText { get; private set; } = "";
 
 		[Reactive] public List<object> FileMenuItems { get; set; } = new();
+		[Reactive] public List<object> SearchMenuItems { get; set; } = new();
 		[Reactive] public List<object> ToolbarItems { get; set; } = new();
 
 		[ObservableAsProperty] public int MaxScrollValue { get; }

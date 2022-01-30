@@ -188,6 +188,12 @@ namespace Mesen.Controls
 			}
 		}
 
+		protected override void OnGotFocus(GotFocusEventArgs e)
+		{
+			base.OnGotFocus(e);
+			this.SelectAll();
+		}
+
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
 			base.OnLostFocus(e);

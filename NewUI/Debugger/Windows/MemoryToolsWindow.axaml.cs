@@ -140,12 +140,32 @@ namespace Mesen.Debugger.Windows
 				}
 			});
 
+			_model.SearchMenuItems = _model.AddDisposables(new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToAddress,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
+					OnClick = async () => {
+						int? address = await new GoToWindow(DebugApi.GetMemorySize(_model.Config.MemoryType) - 1).ShowCenteredDialog<int?>(this);
+						if(address != null) {
+							_editor.SetCursorPosition(address.Value, scrollToTop: true);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToAll,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
+					IsEnabled = () => false,
+					OnClick = () => { }
+				}
+			});
+
 			_model.ToolbarItems = _model.AddDisposables(new List<object>() { 
 				GetImportAction(),
 				GetExportAction(),
 			});
 
-			DebugShortcutManager.RegisterActions(this, _model.ToolbarItems);
+			DebugShortcutManager.RegisterActions(this, _model.FileMenuItems);
+			DebugShortcutManager.RegisterActions(this, _model.SearchMenuItems);
 		}
 
 		private ContextMenuAction GetImportAction()

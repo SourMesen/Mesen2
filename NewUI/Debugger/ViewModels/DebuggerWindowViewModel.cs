@@ -44,6 +44,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public List<object> ToolbarItems { get; private set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<object> SearchMenuItems { get; private set; } = new();
 		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
 
 		public CpuType CpuType { get; private set; }
@@ -314,8 +315,29 @@ namespace Mesen.Debugger.ViewModels
 				},
 			};
 
+			SearchMenuItems = new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToAddress,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
+					OnClick = async () => {
+						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
+						if(address != null) {
+							Disassembly.ScrollToAddress((uint)address.Value);
+							DockFactory.SetActiveDockable(DockFactory.DisassemblyTool);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToAll,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
+					IsEnabled = () => false,
+					OnClick = () => { }
+				}
+			};
+
 			DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
 		}
 
 		private List<object> GetDebugMenu()

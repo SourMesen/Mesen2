@@ -1,0 +1,41 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	Icon="/Assets/Icon.ico"
+	x:Class="Mesen.Debugger.Windows.GoToWindow"
+	Width="250" Height="55"
+	Name="root"
+	Title="Go To..."
+>
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="OK" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="Cancel" />
+		</StackPanel>
+
+		<DockPanel>
+			<TextBlock Text="Address:" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 5 0" />
+			<c:MesenNumericTextBox
+				Name="txtAddress"
+				HorizontalAlignment="Stretch"
+				Hex="True"
+				Trim="True"
+				Min="0"
+				Max="{Binding Maximum, ElementName=root}"
+				Value="{Binding Address, ElementName=root}"
+			/>
+		</DockPanel>
+	</DockPanel>
+</Window>
