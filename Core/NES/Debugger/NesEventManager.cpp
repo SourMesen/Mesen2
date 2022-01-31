@@ -271,7 +271,7 @@ void NesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
 	}
 
 	//Draw dot over current pixel
-	if(_snapshotScanline != 0 && _snapshotCycle != 0) {
+	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
 		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFF990099, true, buffer);
 		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFFFF00FF, false, buffer);
 	}
