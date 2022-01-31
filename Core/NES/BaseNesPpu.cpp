@@ -60,10 +60,10 @@ bool BaseNesPpu::IsRenderingEnabled()
 uint16_t BaseNesPpu::GetCurrentBgColor()
 {
 	uint16_t color;
-	if(IsRenderingEnabled() || (_videoRamAddr & 0x3F00) != 0x3F00) {
+	if((IsRenderingEnabled() && _scanline < 240) || (_ppuBusAddress & 0x3F00) != 0x3F00) {
 		color = _paletteRAM[0];
 	} else {
-		color = _paletteRAM[_videoRamAddr & 0x1F];
+		color = _paletteRAM[_ppuBusAddress & 0x1F];
 	}
 	return (color & _paletteRamMask) | _intensifyColorBits;
 }

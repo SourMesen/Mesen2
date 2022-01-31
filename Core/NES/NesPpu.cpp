@@ -194,13 +194,13 @@ template<class T> void NesPpu<T>::UpdateVideoRamAddr()
 	if(_scanline >= 240 || !IsRenderingEnabled()) {
 		_videoRamAddr = (_videoRamAddr + (_control.VerticalWrite ? 32 : 1)) & 0x7FFF;
 
-		if(!_renderingEnabled) {
-			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
-		}
-
 		//Trigger memory read when setting the vram address - needed by MMC3 IRQ counter
 		//"Should be clocked when A12 changes to 1 via $2007 read/write"
 		SetBusAddress(_videoRamAddr & 0x3FFF);
+
+		if(!_renderingEnabled) {
+			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
+		}
 	} else {
 		//"During rendering (on the pre-render line and the visible lines 0-239, provided either background or sprite rendering is enabled), "
 		//it will update v in an odd way, triggering a coarse X increment and a Y increment simultaneously"
@@ -1276,10 +1276,13 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 
 		//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
 		_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];
+
+		_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 	} else if(_scanline == 240) {
 		//At the start of vblank, the bus address is set back to VideoRamAddr.
-		//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle for performance reasons
-		SetBusAddress(_videoRamAddr);
+		//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle 0 for performance reasons
+		SetBusAddress(_videoRamAddr & 0x3FFF);
+		_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 		SendFrame();
 		_frameCount++;
 	}
@@ -1302,6 +1305,7 @@ template<class T> void NesPpu<T>::UpdateState()
 
 				//When rendering is disabled midscreen, set the vram bus back to the value of 'v'
 				SetBusAddress(_videoRamAddr & 0x3FFF);
+				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 
 				if(_cycle >= 65 && _cycle <= 256) {
 					//Disabling rendering during OAM evaluation will trigger a glitch causing the current address to be incremented by 1
@@ -1326,8 +1330,6 @@ template<class T> void NesPpu<T>::UpdateState()
 		_needStateUpdate = true;
 	}
 
-	_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
-
 	if(_updateVramAddrDelay > 0) {
 		_updateVramAddrDelay--;
 		if(_updateVramAddrDelay == 0) {
@@ -1350,10 +1352,6 @@ template<class T> void NesPpu<T>::UpdateState()
 				_videoRamAddr = _updateVramAddr;
 			}
 
-			if(!_renderingEnabled) {
-				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
-			}
-
 			//The glitches updates corrupt both V and T, so set the new value of V back into T
 			_tmpVideoRamAddr = _videoRamAddr;
 
@@ -1363,12 +1361,13 @@ template<class T> void NesPpu<T>::UpdateState()
 				//Trigger bus address change when setting the vram address - needed by MMC3 IRQ counter
 				//"4) Should be clocked when A12 changes to 1 via $2006 write"
 				SetBusAddress(_videoRamAddr & 0x3FFF);
+				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 			}
 		} else {
 			_needStateUpdate = true;
 		}
 	}
-	
+
 	if(_ignoreVramRead > 0) {
 		_ignoreVramRead--;
 		if(_ignoreVramRead > 0) {
