@@ -80,14 +80,14 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Cx4, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 }
 
 void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Cx4, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	if(_traceLogger->IsEnabled()) {
 		_traceLogger->LogNonExec(operation);
@@ -126,7 +126,7 @@ BreakpointManager* Cx4Debugger::GetBreakpointManager()
 
 CallstackManager* Cx4Debugger::GetCallstackManager()
 {
-	throw std::runtime_error("Call stack not supported for CX4");
+	return nullptr;
 }
 
 IAssembler* Cx4Debugger::GetAssembler()

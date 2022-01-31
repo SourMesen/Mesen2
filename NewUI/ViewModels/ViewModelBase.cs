@@ -12,15 +12,15 @@ namespace Mesen.ViewModels
 	public class DisposableViewModel : ViewModelBase, IDisposable
 	{
 		private HashSet<IDisposable> _disposables = new();
-		private bool _disposed = false;
+		public bool Disposed { get; private set; } = false;
 
 		public void Dispose()
 		{
-			if(_disposed) {
+			if(Disposed) {
 				return;
 			}
 
-			_disposed = true;
+			Disposed = true;
 
 			foreach(IDisposable obj in _disposables) {
 				obj.Dispose();

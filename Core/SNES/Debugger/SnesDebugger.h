@@ -41,6 +41,7 @@ class SnesDebugger final : public IDebugger
 	Spc* _spc;
 	SnesPpu* _ppu;
 	MemoryMappings* _memoryMappings;
+	CodeDataLogger* _cdl;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<BaseEventManager> _eventManager;

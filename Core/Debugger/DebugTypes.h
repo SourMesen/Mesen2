@@ -3,6 +3,7 @@
 #include "Core/MemoryOperationType.h"
 
 enum class MemoryType;
+enum class CpuType : uint8_t;
 
 struct AddressInfo
 {
@@ -278,6 +279,7 @@ enum class BreakSource
 struct BreakEvent
 {
 	BreakSource Source;
+	CpuType SourceCpu;
 	MemoryOperationInfo Operation;
 	int32_t BreakpointId;
 };

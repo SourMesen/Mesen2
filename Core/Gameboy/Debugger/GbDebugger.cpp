@@ -174,14 +174,14 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
 }
 
 void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
-	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, GetBreakpointManager(), operation, addressInfo);
 
 	if(addressInfo.Type == MemoryType::GbWorkRam || addressInfo.Type == MemoryType::GbCartRam || addressInfo.Type == MemoryType::GbHighRam) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Gameboy);
@@ -245,7 +245,7 @@ void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryT
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
 }
 
@@ -253,7 +253,7 @@ void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memory
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _gameboy->GetMasterClock());
 }
 
@@ -265,11 +265,11 @@ void GbDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _ppu->GetCycle() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
-			_debugger->SleepUntilResume(BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Gameboy, BreakSource::PpuStep);
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
 			if(_step->PpuStepCount == 0) {
-				_debugger->SleepUntilResume(BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Gameboy, BreakSource::PpuStep);
 			}
 		}
 	}

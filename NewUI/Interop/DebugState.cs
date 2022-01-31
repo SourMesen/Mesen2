@@ -273,7 +273,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool Sign1;
 	}
 
-	public struct NecDspState
+	public struct NecDspState : BaseState
 	{
 		public UInt16 A;
 		public NecDspAccFlags FlagsA;
@@ -320,7 +320,7 @@ namespace Mesen.Interop
 		public byte ValidBits;
 	}
 
-	public struct GsuState
+	public struct GsuState : BaseState
 	{
 		public UInt64 CycleCount;
 
@@ -415,7 +415,7 @@ namespace Mesen.Interop
 		public UInt32 Address;
 	}
 
-	public struct Cx4State
+	public struct Cx4State : BaseState
 	{
 		public UInt64 CycleCount;
 		public UInt16 PB;

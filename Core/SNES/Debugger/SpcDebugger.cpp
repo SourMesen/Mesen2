@@ -107,14 +107,14 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Spc, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
 }
 
 void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the SPC ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
-	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo);
 
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
 

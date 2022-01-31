@@ -80,9 +80,20 @@ extern "C"
 
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { WithDebugger(void, SetBreakpoints(breakpoints, length)); }
 	DllExport int32_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType *resultType, bool useCache) { return WithDebugger(int32_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
-	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo *callstackArray, uint32_t &callstackSize) { WithDebugger(void, GetCallstackManager(cpuType)->GetCallstack(callstackArray, callstackSize)); }
-	DllExport void __stdcall GetProfilerData(CpuType cpuType, ProfiledFunction* profilerData, uint32_t& functionCount) { WithDebugger(void, GetCallstackManager(cpuType)->GetProfiler()->GetProfilerData(profilerData, functionCount)); }
-	DllExport void __stdcall ResetProfiler(CpuType cpuType) { WithDebugger(void, GetCallstackManager(cpuType)->GetProfiler()->Reset()); }
+	
+	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo *callstackArray, uint32_t &callstackSize)
+	{
+		callstackSize = 0;
+		WithToolVoid(GetCallstackManager(cpuType), GetCallstack(callstackArray, callstackSize));
+	}
+
+	DllExport void __stdcall GetProfilerData(CpuType cpuType, ProfiledFunction* profilerData, uint32_t& functionCount)
+	{ 
+		functionCount = 0;
+		WithToolVoid(GetCallstackManager(cpuType), GetProfiler()->GetProfilerData(profilerData, functionCount)); 
+	}
+
+	DllExport void __stdcall ResetProfiler(CpuType cpuType) { WithToolVoid(GetCallstackManager(cpuType), GetProfiler()->Reset()); }
 
 	DllExport void __stdcall GetConsoleState(BaseState& state, ConsoleType consoleType) { WithDebugger(void, GetConsoleState(state, consoleType)); }
 	DllExport void __stdcall GetCpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, GetCpuState(state, cpuType)); }

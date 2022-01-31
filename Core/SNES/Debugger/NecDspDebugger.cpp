@@ -54,14 +54,14 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 		_step->ProcessCpuExec();
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::NecDsp, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 }
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { (int32_t)addr, MemoryType::DspDataRam }; //Writes never affect the DSP ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NecDspMemory);
-	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::NecDsp, false, GetBreakpointManager(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {
 		_traceLogger->LogNonExec(operation);
@@ -95,7 +95,7 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 
 CallstackManager* NecDspDebugger::GetCallstackManager()
 {
-	throw std::runtime_error("Callstack not supported for NEC DSP");
+	return nullptr;
 }
 
 BreakpointManager* NecDspDebugger::GetBreakpointManager()

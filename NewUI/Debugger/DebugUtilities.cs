@@ -11,6 +11,7 @@ namespace Mesen.Debugger
 	{
 		public static uint GetProgramCounter(CpuType cpuType)
 		{
+			//TODO move to C++ core
 			switch(cpuType) {
 				case CpuType.Snes:
 				case CpuType.Sa1: {
@@ -31,6 +32,21 @@ namespace Mesen.Debugger
 				case CpuType.Nes: {
 					NesCpuState state = DebugApi.GetCpuState<NesCpuState>(cpuType);
 					return (uint)state.PC;
+				}
+
+				case CpuType.NecDsp: {
+					NecDspState state = DebugApi.GetCpuState<NecDspState>(cpuType);
+					return state.PC;
+				}
+
+				case CpuType.Gsu: {
+					GsuState state = DebugApi.GetCpuState<GsuState>(cpuType);
+					return state.R[15];
+				}
+
+				case CpuType.Cx4: {
+					Cx4State state = DebugApi.GetCpuState<Cx4State>(cpuType);
+					return (uint)(state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF;
 				}
 
 				default: throw new Exception("Invalid cpu type");

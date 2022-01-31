@@ -107,10 +107,10 @@ public:
 	void ResetSuspendCounter();
 	void SuspendDebugger(bool release);
 
-	void BreakImmediately(BreakSource source);
+	void BreakImmediately(CpuType sourceCpu, BreakSource source);
 
-	void ProcessBreakConditions(bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
-	void SleepUntilResume(BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
+	void ProcessBreakConditions(CpuType sourceCpu, bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
+	void SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
 	void GetCpuState(BaseState& dstState, CpuType cpuType);
 	void SetCpuState(BaseState& srcState, CpuType cpuType);

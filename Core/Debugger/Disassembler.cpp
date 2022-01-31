@@ -134,6 +134,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 	int32_t bankStart = bank << 16;
 	int32_t bankEnd = (bank + 1) << 16;
+	bankEnd = std::min<int32_t>(bankEnd, (int32_t)_memoryDumper->GetMemorySize(relAddress.Type));
 
 	AddressInfo addrInfo = {};
 

@@ -109,6 +109,36 @@ namespace Mesen.ViewModels
 					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.Spc),
 					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Spc))
 				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenCx4Debugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenCx4Debugger),
+					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.Cx4),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Cx4))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenNecDspDebugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenNecDspDebugger),
+					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.NecDsp),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.NecDsp))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenGsuDebugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenGsuDebugger),
+					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.Gsu),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Gsu))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenSa1Debugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenSa1Debugger),
+					IsVisible = () => MainWindow.RomInfo.CpuTypes.Contains(CpuType.Sa1),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Sa1))
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenGameboyDebugger,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenGameboyDebugger),
+					IsVisible = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Snes && MainWindow.RomInfo.CpuTypes.Contains(CpuType.Gameboy),
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebuggerWindow(CpuType.Gameboy))
+				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenEventViewer,

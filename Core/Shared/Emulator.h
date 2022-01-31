@@ -273,7 +273,7 @@ public:
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type);
 	template<CpuType cpuType> void AddDebugEvent(DebugEventType evtType);
-	void BreakIfDebugging(BreakSource source);
+	void BreakIfDebugging(CpuType sourceCpu, BreakSource source);
 };
 
 enum class HashType

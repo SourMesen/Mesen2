@@ -356,5 +356,15 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("SpcDebugger")]
 		OpenSpcDebugger,
+		[IconFile("Cx4Debugger")]
+		OpenCx4Debugger,
+		[IconFile("NecDspDebugger")]
+		OpenNecDspDebugger,
+		[IconFile("GsuDebugger")]
+		OpenGsuDebugger,
+		[IconFile("Sa1Debugger")]
+		OpenSa1Debugger,
+		[IconFile("GameboyDebugger")]
+		OpenGameboyDebugger,
 	}
 }

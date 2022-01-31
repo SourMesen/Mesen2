@@ -83,14 +83,14 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gsu, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
 }
 
 void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
-	_debugger->ProcessBreakConditions(false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gsu, false, GetBreakpointManager(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {
 		_traceLogger->LogNonExec(operation);
@@ -129,7 +129,7 @@ BreakpointManager* GsuDebugger::GetBreakpointManager()
 
 CallstackManager* GsuDebugger::GetCallstackManager()
 {
-	throw std::runtime_error("Call stack not supported for GSU");
+	return nullptr;
 }
 
 IAssembler* GsuDebugger::GetAssembler()

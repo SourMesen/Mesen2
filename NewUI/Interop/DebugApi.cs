@@ -937,6 +937,7 @@ namespace Mesen.Interop
 	public struct BreakEvent
 	{
 		public BreakSource Source;
+		public CpuType SourceCpu;
 		public MemoryOperationInfo Operation;
 		public Int32 BreakpointId;
 	}

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
@@ -24,6 +25,10 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class DebuggerWindowViewModel : DisposableViewModel
 	{
+		[Reactive] public string Title { get; private set; } = "Debugger";
+		[Reactive] public WindowIcon? Icon { get; private set; } = null;
+		[Reactive] public bool IsMainCpuDebugger { get; private set; } = true;
+
 		[Reactive] public DebuggerConfig Config { get; private set; }
 
 		[Reactive] public DebuggerOptionsViewModel Options { get; private set; }
@@ -61,16 +66,24 @@ namespace Mesen.Debugger.ViewModels
 
 			if(Design.IsDesignMode) {
 				CpuType = CpuType.Snes;
-			} else if(cpuType != null) {
-				CpuType = cpuType.Value;
 			} else {
 				RomInfo romInfo = EmuApi.GetRomInfo();
-				CpuType = romInfo.ConsoleType.GetMainCpuType();
+				if(cpuType != null) {
+					CpuType = cpuType.Value;
+					if(romInfo.ConsoleType.GetMainCpuType() != CpuType) {
+						Title = ResourceHelper.GetEnumText(CpuType) + " Debugger";
+						Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/" + CpuType.ToString() + "Debugger.png"));
+						IsMainCpuDebugger = false;
+					}
+				} else {
+					CpuType = romInfo.ConsoleType.GetMainCpuType();
+					Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/Debugger.png"));
 
-				//TODO temporary - try to load DBG file if it exists
-				string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
-				if(File.Exists(dbgPath)) {
-					SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
+					//TODO temporary - try to load DBG file if it exists
+					string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
+					if(File.Exists(dbgPath)) {
+						SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
+					}
 				}
 			}
 
@@ -433,7 +446,17 @@ namespace Mesen.Debugger.ViewModels
 
 		private void Step(int instructionCount, StepType type)
 		{
-			DebugApi.Step(CpuType, instructionCount, type);
+			switch(type) {
+				case StepType.PpuStep:
+				case StepType.PpuScanline:
+				case StepType.PpuFrame:
+					DebugApi.Step(CpuType.GetConsoleType().GetMainCpuType(), instructionCount, type);
+					break;
+
+				default:
+					DebugApi.Step(CpuType, instructionCount, type);
+					break;
+			}
 		}
 	}
 }

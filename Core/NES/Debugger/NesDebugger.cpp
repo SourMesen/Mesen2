@@ -169,7 +169,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 	}
 
-	_debugger->ProcessBreakConditions(_step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Nes, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 }
 
 void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -190,7 +190,7 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
 
-	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
 }
 
 void NesDebugger::Run()
@@ -238,7 +238,7 @@ void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memory
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
 	}
-	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
@@ -249,7 +249,7 @@ void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memor
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
 	}
-	_debugger->ProcessBreakConditions(false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 
@@ -261,11 +261,11 @@ void NesDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _ppu->GetCurrentCycle() == 0 && _ppu->GetCurrentScanline() == _step->BreakScanline) {
-			_debugger->SleepUntilResume(BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Nes, BreakSource::PpuStep);
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
 			if(_step->PpuStepCount == 0) {
-				_debugger->SleepUntilResume(BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Nes, BreakSource::PpuStep);
 			}
 		}
 	}

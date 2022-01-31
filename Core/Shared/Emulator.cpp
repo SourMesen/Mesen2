@@ -985,10 +985,10 @@ void Emulator::AddDebugEvent(DebugEventType evtType)
 	}
 }
 
-void Emulator::BreakIfDebugging(BreakSource source)
+void Emulator::BreakIfDebugging(CpuType sourceCpu, BreakSource source)
 {
 	if(_debugger) {
-		_debugger->BreakImmediately(source);
+		_debugger->BreakImmediately(sourceCpu, source);
 	}
 }
 

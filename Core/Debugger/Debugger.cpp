@@ -220,7 +220,7 @@ void Debugger::ProcessPpuCycle()
 	}
 }
 
-void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operation, int breakpointId)
+void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOperationInfo *operation, int breakpointId)
 {
 	if(_suspendRequestCount) {
 		return;
@@ -234,6 +234,7 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 
 		//Only trigger code break event if the pause was caused by user action
 		BreakEvent evt = {};
+		evt.SourceCpu = sourceCpu;
 		evt.BreakpointId = breakpointId;
 		evt.Source = source;
 		if(operation) {
@@ -255,14 +256,14 @@ void Debugger::SleepUntilResume(BreakSource source, MemoryOperationInfo *operati
 	_executionStopped = false;
 }
 
-void Debugger::ProcessBreakConditions(bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
+void Debugger::ProcessBreakConditions(CpuType sourceCpu, bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
 {
 	if(needBreak || _breakRequestCount || _waitForBreakResume) {
-		SleepUntilResume(source);
+		SleepUntilResume(sourceCpu, source);
 	} else {
 		int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo);
 		if(breakpointId >= 0) {
-			SleepUntilResume(BreakSource::Breakpoint, &operation, breakpointId);
+			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
 		}
 	}
 }
@@ -393,7 +394,7 @@ void Debugger::SuspendDebugger(bool release)
 	}
 }
 
-void Debugger::BreakImmediately(BreakSource source)
+void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 {
 	//TODO
 	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
@@ -404,7 +405,7 @@ void Debugger::BreakImmediately(BreakSource source)
 	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOamAccess))) {
 		return;
 	}
-	SleepUntilResume(source);
+	SleepUntilResume(sourceCpu, source);
 }
 
 void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)

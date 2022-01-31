@@ -1756,6 +1756,7 @@ x == [$150] || y == [10]
 			<Value ID="SpcMemory">SPC Memory</Value>
 			<Value ID="Sa1Memory">SA-1 Memory</Value>
 			<Value ID="GsuMemory">GSU Memory</Value>
+			<Value ID="NecDspMemory">DSP-n Memory</Value>
 			<Value ID="Cx4Memory">CX4 Memory</Value>
 			<Value ID="SnesPrgRom">PRG ROM</Value>
 			<Value ID="SnesWorkRam">Work RAM</Value>

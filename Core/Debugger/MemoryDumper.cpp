@@ -70,6 +70,7 @@ uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 	switch(type) {
 		case MemoryType::SnesMemory: return 0x1000000;
 		case MemoryType::SpcMemory: return 0x10000;
+		case MemoryType::NecDspMemory: return _emu->GetMemory(MemoryType::DspProgramRom).Size;
 		case MemoryType::Sa1Memory: return 0x1000000;
 		case MemoryType::GsuMemory: return 0x1000000;
 		case MemoryType::Cx4Memory: return 0x1000000;
@@ -152,6 +153,10 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 			break;
 		}
 
+		case MemoryType::NecDspMemory:
+			GetMemoryState(MemoryType::DspProgramRom, buffer);
+			break;
+
 		default: 
 			uint8_t* src = GetMemoryBuffer(type);
 			if(src) {
@@ -198,6 +203,9 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
 		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
+		case MemoryType::NecDspMemory: 
+			SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects);
+			return;
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);
@@ -233,7 +241,8 @@ uint8_t MemoryDumper::GetMemoryValue(MemoryType memoryType, uint32_t address, bo
 		case MemoryType::GameboyMemory: return _gameboy->GetMemoryManager()->DebugRead(address);
 		case MemoryType::NesMemory: return _nesConsole->DebugRead(address);
 		case MemoryType::NesPpuMemory: return _nesConsole->DebugReadVram(address);
-		
+		case MemoryType::NecDspMemory: return GetMemoryValue(MemoryType::DspProgramRom, address);
+
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);
 			return src ? src[address] : 0;

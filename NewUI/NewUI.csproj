@@ -66,8 +66,8 @@
 	  <None Remove="Assets\Font.png" />
 	  <None Remove="Assets\Fullscreen.png" />
 	  <None Remove="Assets\Function.png" />
+	  <None Remove="Assets\GameboyDebugger.png" />
 	  <None Remove="Assets\GameboyIcon.png" />
-	  <None Remove="Assets\GbDebugger.png" />
 	  <None Remove="Assets\GsuDebugger.png" />
 	  <None Remove="Assets\HdPack.png" />
 	  <None Remove="Assets\Help.png" />
@@ -446,7 +446,7 @@
 	  <AvaloniaResource Include="Assets\Fullscreen.png" />
 	  <AvaloniaResource Include="Assets\Function.png" />
 	  <AvaloniaResource Include="Assets\GameboyIcon.png" />
-	  <AvaloniaResource Include="Assets\GbDebugger.png" />
+	  <AvaloniaResource Include="Assets\GameboyDebugger.png" />
 	  <AvaloniaResource Include="Assets\GsuDebugger.png" />
 	  <AvaloniaResource Include="Assets\HdPack.png" />
 	  <AvaloniaResource Include="Assets\Help.png" />

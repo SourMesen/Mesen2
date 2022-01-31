@@ -17,9 +17,9 @@
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
-	Icon="/Assets/Debugger.png"
+	Title="{CompiledBinding Title}"
+	Icon="{CompiledBinding Icon}"
 	Width="400" Height="500"
-	Title="Debugger"
 	x:Name="Debugger"
 >
 	<Design.DataContext>

@@ -11,6 +11,7 @@ using Mesen.Config;
 using System.Runtime.InteropServices;
 using Mesen.Debugger.Utilities;
 using Mesen.Utilities;
+using System.Collections.Generic;
 
 namespace Mesen.Debugger.Windows
 {
@@ -70,12 +71,16 @@ namespace Mesen.Debugger.Windows
 
 		public void ProcessNotification(NotificationEventArgs e)
 		{
+			if(_model.Disposed) {
+				return;
+			}
+
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
 					BreakEvent evt = Marshal.PtrToStructure<BreakEvent>(e.Parameter);
 					Dispatcher.UIThread.Post(() => {
 						_model.UpdateDebugger(true, evt);
-						if(_model.Config.BringToFrontOnBreak) {
+						if(_model.Config.BringToFrontOnBreak && evt.SourceCpu == _model.CpuType && evt.Source != BreakSource.PpuStep) {
 							Activate();
 						}
 					});
@@ -95,14 +100,26 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.GameLoaded:
-					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
-						_model.Dispose();
-						_model = new DebuggerWindowViewModel(null);
-						
-						Dispatcher.UIThread.Post(() => {
-							_model.InitializeMenu(this);
-							DataContext = _model;
-						});
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					HashSet<CpuType> cpuTypes = romInfo.CpuTypes;
+					if(!cpuTypes.Contains(_model.CpuType)) {
+						if(!_model.IsMainCpuDebugger || _model.CpuType == romInfo.ConsoleType.GetMainCpuType()) {
+							//Close the debugger window if this is not the main cpu debugger,
+							//and this cpu is not supported (or it's the main cpu type for this game)
+							_model.Dispose();
+							Dispatcher.UIThread.Post(() => {
+								Dispatcher.UIThread.RunJobs();
+								Close();
+							});
+						} else {
+							_model.Dispose();
+							_model = new DebuggerWindowViewModel(null);
+
+							Dispatcher.UIThread.Post(() => {
+								_model.InitializeMenu(this);
+								DataContext = _model;
+							});
+						}
 					}
 
 					if(_model.Config.BreakOnPowerCycleReset) {
