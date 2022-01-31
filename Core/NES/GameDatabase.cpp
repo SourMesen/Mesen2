@@ -81,7 +81,7 @@ void GameDatabase::LoadGameDb(std::istream &db)
 void GameDatabase::InitDatabase()
 {
 	if(_gameDatabase.size() == 0) {
-		string dbPath = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "MesenDB.txt");
+		string dbPath = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "MesenNesDB.txt");
 		ifstream db(dbPath, ios::in | ios::binary);
 		LoadGameDb(db);
 	}
