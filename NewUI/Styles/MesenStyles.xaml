@@ -255,6 +255,8 @@
 										  VerticalAlignment="Center" />
 							<TextBlock 
 										  Grid.Column="2"
+										  MaxWidth="200"
+										  TextTrimming="CharacterEllipsis"
 										  Classes="CaptionTextBlockStyle"
 										  Margin="{DynamicResource MenuInputGestureTextMargin}"
 										  Text="{TemplateBinding Tag}"
