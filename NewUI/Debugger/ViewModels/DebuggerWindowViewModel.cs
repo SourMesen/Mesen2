@@ -40,6 +40,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public LabelListViewModel LabelList { get; private set; }
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
 		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
+		[Reactive] public MemoryMappingViewModel? MemoryMappings { get; private set; }
 
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
@@ -120,6 +121,10 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
+			if(CpuType == CpuType.Nes || CpuType == CpuType.Gameboy) {
+				MemoryMappings = new MemoryMappingViewModel(CpuType);
+			}
+
 			WatchList.Manager.WatchChanged += Manager_WatchChanged;
 			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
@@ -178,6 +183,7 @@ namespace Mesen.Debugger.ViewModels
 			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
 			SourceView?.Refresh(Disassembly.StyleProvider.ActiveAddress);
+			MemoryMappings?.Refresh();
 			BreakpointList.RefreshBreakpointList();
 			LabelList.RefreshLabelList();
 			WatchList.UpdateWatch();
@@ -292,6 +298,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowMemoryMappings,
+					IsVisible = () => MemoryMappings != null,
 					IsSelected = () => cfg.ShowMemoryMappings,
 					OnClick = () => cfg.ShowMemoryMappings = !cfg.ShowMemoryMappings
 				},

@@ -618,7 +618,7 @@ namespace Mesen.Interop
 		BootRom = (int)MemoryType.GbBootRom,
 	}
 
-	public enum RegisterAccess
+	public enum GbRegisterAccess
 	{
 		None = 0,
 		Read = 1,
@@ -661,7 +661,7 @@ namespace Mesen.Interop
 		public UInt32[] MemoryOffset;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
-		public RegisterAccess[] MemoryAccessType;
+		public GbRegisterAccess[] MemoryAccessType;
 	}
 
 	public struct GbControlManagerState
