@@ -254,6 +254,10 @@ void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
 {
+	if(!IsShortcutAllowed(shortcut)) {
+		return;
+	}
+
 	EmuSettings* settings = _emu->GetSettings();
 	switch(shortcut) {
 		case EmulatorShortcut::FastForward: settings->ClearFlag(EmulationFlags::Turbo); break;
