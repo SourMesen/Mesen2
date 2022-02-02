@@ -228,13 +228,13 @@ void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseS
 DebugPaletteInfo GbPpuTools::GetPaletteInfo()
 {
 	DebugPaletteInfo info = {};
-	if(_emu->GetConsoleType() == ConsoleType::GameboyColor) {
+	GbPpuState state;
+	_debugger->GetPpuState(state, CpuType::Gameboy);
+
+	if(state.CgbEnabled) {
 		info.BgColorCount = 8 * 4;
 		info.SpriteColorCount = 8 * 4;
 		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
-
-		GbPpuState state;
-		_debugger->GetPpuState(state, CpuType::Gameboy);
 
 		for(int i = 0; i < 8 * 4; i++) {
 			info.RawPalette[i] = state.CgbBgPalettes[i];
@@ -248,9 +248,6 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo()
 		info.BgColorCount = 4;
 		info.SpriteColorCount = 2 * 4;
 		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
-
-		GbPpuState state;
-		_debugger->GetPpuState(state, CpuType::Gameboy);
 
 		for(int i = 0; i < 4; i++) {
 			info.RawPalette[i] = (state.BgPalette >> (i * 2)) & 0x03;
