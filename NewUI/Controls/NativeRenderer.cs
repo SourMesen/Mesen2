@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Platform;
 using Mesen.Interop;
+using Mesen.ViewModels;
 using System;
 
 namespace Mesen
@@ -39,7 +40,11 @@ namespace Mesen
 			}
 
 			EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
-			return new Size(width, height);
+			Size size = new Size(width, height);
+			if(DataContext is MainWindowViewModel model) {
+				model.RendererSize = size;
+			}
+			return size;
 		}
 	}
 }

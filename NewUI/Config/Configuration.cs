@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using Mesen.Utilities;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,27 +13,29 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-	public partial class Configuration
+	public partial class Configuration : ReactiveObject
 	{
 		private string _fileData = "";
 
 		public string Version { get; set; } = "0.4.0";
-		public VideoConfig Video { get; set; } = new();
-		public AudioConfig Audio { get; set; } = new();
-		public InputConfig Input { get; set; } = new();
-		public EmulationConfig Emulation { get; set; } = new();
-		public SnesConfig Snes { get; set; } = new();
-		public NesConfig Nes { get; set; } = new();
-		public GameboyConfig Gameboy { get; set; } = new();
-		public PreferencesConfig Preferences { get; set; } = new();
-		public AudioPlayerConfig AudioPlayer { get; set; } = new();
-		public DebugConfig Debug { get; set; } = new();
-		public RecentItems RecentFiles { get; set; } = new();
-		public VideoRecordConfig VideoRecord { get; set; } = new();
-		public MovieRecordConfig MovieRecord { get; set; } = new();
-		public CheatWindowConfig Cheats { get; set; } = new();
-		public NetplayConfig Netplay { get; set; } = new();
-		public MainWindowConfig MainWindow { get; set; } = new();
+		
+		[Reactive] public VideoConfig Video { get; set; } = new();
+		[Reactive] public AudioConfig Audio { get; set; } = new();
+		[Reactive] public InputConfig Input { get; set; } = new();
+		[Reactive] public EmulationConfig Emulation { get; set; } = new();
+		[Reactive] public SnesConfig Snes { get; set; } = new();
+		[Reactive] public NesConfig Nes { get; set; } = new();
+		[Reactive] public GameboyConfig Gameboy { get; set; } = new();
+		[Reactive] public PreferencesConfig Preferences { get; set; } = new();
+		[Reactive] public AudioPlayerConfig AudioPlayer { get; set; } = new();
+		[Reactive] public DebugConfig Debug { get; set; } = new();
+		[Reactive] public RecentItems RecentFiles { get; set; } = new();
+		[Reactive] public VideoRecordConfig VideoRecord { get; set; } = new();
+		[Reactive] public MovieRecordConfig MovieRecord { get; set; } = new();
+		[Reactive] public CheatWindowConfig Cheats { get; set; } = new();
+		[Reactive] public NetplayConfig Netplay { get; set; } = new();
+		[Reactive] public MainWindowConfig MainWindow { get; set; } = new();
+		
 		public bool FirstRun { get; set; } = true;
 		public DefaultKeyMappingType DefaultKeyMappings { get; set; } = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 

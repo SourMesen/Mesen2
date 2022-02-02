@@ -1,5 +1,7 @@
-﻿using Mesen.Config;
+﻿using Avalonia;
+using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -21,8 +23,14 @@ namespace Mesen.ViewModels
 		[Reactive] public AudioPlayerViewModel? AudioPlayer { get; private set; }
 		[Reactive] public RecentGamesViewModel RecentGames { get; private set; }
 
+		[Reactive] public string WindowTitle { get; private set; } = "Mesen";
+		[Reactive] public Size RendererSize { get; set; }
+
+		private Configuration Config { get; }
+
 		public MainWindowViewModel()
 		{
+			Config = ConfigManager.Config;
 			RomInfo = new RomInfo();
 			RecentGames = new RecentGamesViewModel();
 		}
@@ -41,6 +49,39 @@ namespace Mesen.ViewModels
 					AudioPlayer = null;
 				}
 			});
+
+			this.WhenAnyValue(
+				x => x.RomInfo,
+				x => x.RendererSize,
+				x => x.Config.Preferences.ShowTitleBarInfo,
+				x => x.Config.Video.AspectRatio,
+				x => x.Config.Video.VideoFilter
+			).Subscribe(x => {
+				UpdateWindowTitle();
+			});
+
+			UpdateWindowTitle();
+		}
+
+		private void UpdateWindowTitle()
+		{
+			string title = "Mesen";
+			string romName = RomInfo.GetRomName();
+			if(!string.IsNullOrWhiteSpace(romName)) {
+				title += " - " + romName;
+			}
+
+			if(ConfigManager.Config.Preferences.ShowTitleBarInfo) {
+				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+				double scale = (double)RendererSize.Width / baseSize.Width;
+				title += string.Format(" - {0}x{1} ({2:0.#}x, {3})",
+					Math.Round(RendererSize.Width),
+					Math.Round(RendererSize.Height),
+					scale,
+					ResourceHelper.GetEnumText(ConfigManager.Config.Video.VideoFilter));
+			}
+
+			WindowTitle = title;
 		}
 	}
 }
