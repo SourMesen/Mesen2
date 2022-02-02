@@ -68,6 +68,35 @@
 					Content="{l:Translate chkBreakOnStp}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{CompiledBinding IsGameboy}">
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnInvalidOamAccess}"
+					Content="{l:Translate chkGbBreakOnInvalidOamAccess}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnInvalidVramAccess}"
+					Content="{l:Translate chkGbBreakOnInvalidVramAccess}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnDisableLcdOutsideVblank}"
+					Content="{l:Translate chkGbBreakOnDisableLcdOutsideVblank}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnInvalidOpCode}"
+					Content="{l:Translate chkGbBreakOnInvalidOpCode}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnNopLoad}"
+					Content="{l:Translate chkGbBreakOnNopLoad}"
+				/>
+				
+				<!-- not implemented -->
+				<CheckBox
+					IsVisible="False"
+					IsChecked="{CompiledBinding Config.Gameboy.GbBreakOnOamCorruption}"
+					Content="{l:Translate chkGbBreakOnOamCorruption}"
+				/>
+			</StackPanel>
 			<StackPanel IsVisible="{CompiledBinding IsNes}">
 				<CheckBox
 					IsChecked="{CompiledBinding Config.Nes.BreakOnBrk}"

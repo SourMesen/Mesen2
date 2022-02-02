@@ -915,6 +915,13 @@
 			<Control ID="chkBreakOnDecayedOamRead">Decayed OAM read</Control>
 			<Control ID="chkBreakOnPpu2006ScrollGlitch">PPU $2006 scroll glitch</Control>
 
+			<Control ID="chkGbBreakOnInvalidOamAccess">Break on invalid OAM access</Control>
+			<Control ID="chkGbBreakOnInvalidVramAccess">Break on invalid VRAM access</Control>
+			<Control ID="chkGbBreakOnDisableLcdOutsideVblank">Break on LCD disable outside vblank</Control>
+			<Control ID="chkGbBreakOnInvalidOpCode">Break on invalid instructions</Control>
+			<Control ID="chkGbBreakOnNopLoad">Break on LD B,B (nop)</Control>
+			<Control ID="chkGbBreakOnOamCorruption">Break on OAM corruption</Control>
+
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
 		</Form>
@@ -1847,7 +1854,7 @@ x == [$150] || y == [10]
 			<Value ID="GbInvalidVramAccess">Invalid VRAM access</Value>
 			<Value ID="GbDisableLcdOutsideVblank">Disabled LCD outside vblank</Value>
 			<Value ID="GbInvalidOpCode">Invalid instruction</Value>
-			<Value ID="GbNopLoad">LD <Value ID="B">B</Value>,B (NOP)</Value>
+			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
 			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
