@@ -530,7 +530,7 @@
 
 			<Control ID="chkDisableGameDatabase">Disable built-in game database</Control>
 			<Control ID="chkDisableHighResolutionTimer">Disable high resolution timer</Control>
-			<Control ID="chkDisableOsd">Disable on-screen display (OSD)</Control>
+			<Control ID="chkDisableOsd">Hide on-screen messages</Control>
 
 			<Control ID="chkAlwaysOnTop">Always display on top of other windows</Control>
 			<Control ID="chkShowFps">Show FPS</Control>
