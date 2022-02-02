@@ -35,6 +35,7 @@ namespace Mesen.Windows
 		static MainWindow()
 		{
 			WindowStateProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnWindowStateChanged());
+			IsActiveProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.UpdateBackgroundFlag());
 		}
 
 		public MainWindow()
@@ -259,29 +260,10 @@ namespace Mesen.Windows
 			InputApi.SetKeyState((int)e.Key, false);
 		}
 
-		protected override void OnLostFocus(RoutedEventArgs e)
+		private void UpdateBackgroundFlag()
 		{
-			base.OnLostFocus(e);
+			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
 			InputApi.ResetKeyState();
-			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, true);
-		}
-
-		protected override void HandleWindowStateChanged(WindowState state)
-		{
-			base.HandleWindowStateChanged(state);
-			if(state == WindowState.Minimized) {
-				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, true);
-			} else {
-				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsFocused);
-			}
-		}
-
-		protected override void OnGotFocus(GotFocusEventArgs e)
-		{
-			base.OnGotFocus(e);
-			if(WindowState != WindowState.Minimized) {
-				ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, false);
-			}
 		}
 	}
 }
