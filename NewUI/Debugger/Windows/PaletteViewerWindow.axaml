@@ -63,6 +63,7 @@
 				<dc:PaletteSelector
 					Name="palSelector"
 					PaletteColors="{CompiledBinding PaletteColors}"
+					PaletteIndexValues="{CompiledBinding PaletteValues}"
 					ColumnCount="{CompiledBinding PaletteColumnCount}"
 					SelectedPalette="{CompiledBinding SelectedPalette}"
 					SelectionMode="SingleColor"

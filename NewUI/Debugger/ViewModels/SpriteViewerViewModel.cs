@@ -59,7 +59,7 @@ namespace Mesen.Debugger.ViewModels
 		private BaseState? _ppuState;
 		private byte[] _spriteRam = Array.Empty<byte>();
 		private byte[] _vram = Array.Empty<byte>();
-		private DebugPaletteInfo _palette = new();
+		private RefStruct<DebugPaletteInfo>? _palette = null;
 
 		[Obsolete("For designer only")]
 		public SpriteViewerViewModel() : this(CpuType.Snes, new PictureViewer(), new Grid(), null) { }
@@ -195,17 +195,21 @@ namespace Mesen.Debugger.ViewModels
 			RefreshTab();
 		}
 
-		public DynamicTooltip GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
+		public DynamicTooltip? GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)
 		{
+			if(_palette == null) {
+				return null;
+			}
+
 			TooltipEntries entries = existingTooltip?.Items ?? new();
 			entries.StartUpdate();
 			entries.AddPicture("Sprite", sprite.SpritePreview, 48.0 / sprite.Width);
 
-			DebugPaletteInfo palette = _palette;
+			DebugPaletteInfo palette = _palette.Get();
 			int paletteSize = (int)Math.Pow(2, sprite.Bpp);
 			int paletteIndex = sprite.Palette >= 0 ? sprite.Palette : 0;
 			UInt32[] spritePalette = new UInt32[paletteSize];
-			Array.Copy(palette.RgbPalette, palette.BgColorCount + paletteIndex * paletteSize, spritePalette, 0, paletteSize);
+			Array.Copy(palette.GetRgbPalette(), palette.BgColorCount + paletteIndex * paletteSize, spritePalette, 0, paletteSize);
 
 			entries.AddEntry("Palette", spritePalette);
 
@@ -349,7 +353,7 @@ namespace Mesen.Debugger.ViewModels
 				MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
 			}
 
-			_palette = DebugApi.GetPaletteInfo(CpuType);
+			_palette = new RefStruct<DebugPaletteInfo>(DebugApi.GetPaletteInfo(CpuType));
 
 			RefreshTab();
 		}
@@ -357,7 +361,7 @@ namespace Mesen.Debugger.ViewModels
 		private void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
-				if(_ppuState == null) {
+				if(_ppuState == null || _palette == null) {
 					return;
 				}
 
@@ -371,7 +375,7 @@ namespace Mesen.Debugger.ViewModels
 				BaseState? ppuState = _ppuState;
 				byte[] vram = _vram;
 				byte[] spriteRam = _spriteRam;
-				UInt32[] palette = _palette.RgbPalette;
+				UInt32[] palette = _palette.Get().GetRgbPalette();
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
 					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);

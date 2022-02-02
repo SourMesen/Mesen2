@@ -176,7 +176,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			PaletteColors = DebugApi.GetPaletteInfo(CpuType).RgbPalette;
+			PaletteColors = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
 			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
 			_sourceData = DebugApi.GetMemoryState(Config.Source);
 

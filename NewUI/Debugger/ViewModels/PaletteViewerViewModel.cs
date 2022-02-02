@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		public RefreshTimingViewModel RefreshTiming { get; }
 
 		[Reactive] public UInt32[] PaletteColors { get; set; } = Array.Empty<UInt32>();
+		[Reactive] public UInt32[]? PaletteValues { get; set; } = null;
 		[Reactive] public int PaletteColumnCount { get; private set; } = 16;
 
 		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
@@ -35,7 +36,7 @@ namespace Mesen.Debugger.ViewModels
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
-		private DebugPaletteInfo? _palette;
+		private RefStruct<DebugPaletteInfo>? _palette = null;
 
 		[Obsolete("For designer only")]
 		public PaletteViewerViewModel() : this(CpuType.Snes, null) { }
@@ -88,7 +89,7 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => RefreshData()));
-			AddDisposable(this.WhenAnyValue(x => x.Config.Zoom).Subscribe(x => BlockSize = x * 16));
+			AddDisposable(this.WhenAnyValue(x => x.Config.Zoom).Subscribe(x => BlockSize = Math.Max(16, 16 + (x - 1) * 4)));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedPalette).Subscribe(x => UpdatePreviewPanel()));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
@@ -107,9 +108,16 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			_palette = DebugApi.GetPaletteInfo(CpuType);
-			PaletteColors = _palette.RgbPalette;
-			PaletteColumnCount = PaletteColors.Length > 32 ? 16 : 4;
+			DebugPaletteInfo paletteInfo = DebugApi.GetPaletteInfo(CpuType);
+			PaletteColors = paletteInfo.GetRgbPalette();
+			if(paletteInfo.RawFormat == RawPaletteFormat.Indexed) {
+				PaletteValues = paletteInfo.GetRawPalette();
+			} else {
+				PaletteValues = null;
+			}
+			PaletteColumnCount = (int)paletteInfo.ColorsPerPalette;
+
+			_palette = new(paletteInfo);
 
 			Dispatcher.UIThread.Post(() => {
 				UpdatePreviewPanel();
@@ -127,22 +135,39 @@ namespace Mesen.Debugger.ViewModels
 
 		public DynamicTooltip? GetPreviewPanel(int index, DynamicTooltip? tooltipToUpdate)
 		{
-			if(_palette == null || index >= _palette.ColorCount) {
+			if(_palette == null) {
 				return null;
 			}
 
-			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
+			DebugPaletteInfo palette = _palette.Get();
+			if(index >= palette.ColorCount) {
+				return null;
+			}
 
-			entries.AddEntry("Color", new TooltipColorEntry(_palette.RgbPalette[index]));
+			UInt32[] rgbPalette = palette.GetRgbPalette();
+			UInt32[] rawPalette = palette.GetRawPalette();
+
+			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
+			entries.StartUpdate();
+
+			entries.AddEntry("Color", new TooltipColorEntry(rgbPalette[index]));
 			entries.AddEntry("Index", "$" + index.ToString("X2"));
-			entries.AddEntry("Value", "$" + _palette.RawPalette[index].ToString("X2"));
-			entries.AddEntry("Color Code (Hex)", "#" + _palette.RgbPalette[index].ToString("X8").Substring(2));
+			if(palette.RawFormat == RawPaletteFormat.Rgb555) {
+				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X4"));
+				entries.AddEntry("R", "$" + (rawPalette[index] & 0x1F).ToString("X2"));
+				entries.AddEntry("G", "$" + ((rawPalette[index] >> 5) & 0x1F).ToString("X2"));
+				entries.AddEntry("B", "$" + (rawPalette[index] >> 10).ToString("X2"));
+			} else {
+				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X2"));
+			}
+			entries.AddEntry("Color Code (Hex)", "#" + rgbPalette[index].ToString("X8").Substring(2));
 			entries.AddEntry("Color Code (RGB)",
-				((_palette.RgbPalette[index] >> 16) & 0xFF).ToString() + ", " +
-				((_palette.RgbPalette[index] >> 8) & 0xFF).ToString() + ", " +
-				(_palette.RgbPalette[index] & 0xFF).ToString()
+				((rgbPalette[index] >> 16) & 0xFF).ToString() + ", " +
+				((rgbPalette[index] >> 8) & 0xFF).ToString() + ", " +
+				(rgbPalette[index] & 0xFF).ToString()
 			);
 
+			entries.EndUpdate();
 			if(tooltipToUpdate != null) {
 				return tooltipToUpdate;
 			} else {

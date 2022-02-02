@@ -125,12 +125,20 @@ struct DebugSpritePreviewInfo
 	int32_t CoordOffsetY;
 };
 
+enum class RawPaletteFormat
+{
+	Indexed,
+	Rgb555
+};
+
 struct DebugPaletteInfo
 {
 	uint32_t ColorCount;
 	uint32_t BgColorCount;
 	uint32_t SpriteColorCount;
+	uint32_t ColorsPerPalette;
 
+	RawPaletteFormat RawFormat;
 	uint32_t RawPalette[512];
 	uint32_t RgbPalette[512];
 };

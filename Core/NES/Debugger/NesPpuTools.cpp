@@ -307,6 +307,8 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 DebugPaletteInfo NesPpuTools::GetPaletteInfo()
 {
 	DebugPaletteInfo info = {};
+	info.RawFormat = RawPaletteFormat::Indexed;
+	info.ColorsPerPalette = 4;
 	info.BgColorCount = 4 * 4;
 	info.SpriteColorCount = 4 * 4;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;

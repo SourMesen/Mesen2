@@ -31,11 +31,19 @@
 					<ContentControl Content="{Binding Value}">
 						<ContentControl.DataTemplates>
 							<DataTemplate DataType="x:String">
-								<TextBlock
+								<TextBox
 									Text="{Binding}"
 									FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
 									FontSize="12"
 									Margin="0"
+									MinHeight="0"
+									MinWidth="0"
+									Height="NaN"
+									BorderThickness="0"
+									IsReadOnly="True"
+									Tapped="TextBox_Tapped"
+									ContextRequested="TextBox_ContextRequested"
+									LostFocus="TextBox_LostFocus"
 								/>
 							</DataTemplate>
 							<DataTemplate DataType="x:Boolean">

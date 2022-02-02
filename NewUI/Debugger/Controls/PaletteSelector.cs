@@ -26,6 +26,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> ColumnCountProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(ColumnCount), 16);
 		public static readonly StyledProperty<int> BlockSizeProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(BlockSize), 0);
 		public static readonly StyledProperty<UInt32[]> PaletteColorsProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]>(nameof(PaletteColors));
+		public static readonly StyledProperty<UInt32[]?> PaletteIndexValuesProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]?>(nameof(PaletteIndexValues));
 		public static readonly StyledProperty<bool> ShowIndexesProperty = AvaloniaProperty.Register<PaletteSelector, bool>(nameof(ShowIndexes));
 
 		public static readonly RoutedEvent<ColorClickEventArgs> ColorClickEvent = RoutedEvent.Register<PaletteSelector, ColorClickEventArgs>(nameof(ColorClick), RoutingStrategies.Direct);
@@ -56,7 +57,13 @@ namespace Mesen.Debugger.Controls
 			get { return GetValue(PaletteColorsProperty); }
 			set { SetValue(PaletteColorsProperty, value); }
 		}
-		
+
+		public UInt32[]? PaletteIndexValues
+		{
+			get { return GetValue(PaletteIndexValuesProperty); }
+			set { SetValue(PaletteIndexValuesProperty, value); }
+		}
+
 		public int ColumnCount
 		{
 			get { return GetValue(ColumnCountProperty); }
@@ -77,7 +84,7 @@ namespace Mesen.Debugger.Controls
 
 		static PaletteSelector()
 		{
-			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty);
+			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty, PaletteIndexValuesProperty);
 			AffectsMeasure<PaletteSelector>(ColumnCountProperty, BlockSizeProperty, PaletteColorsProperty);
 		}
 
@@ -195,7 +202,12 @@ namespace Mesen.Debugger.Controls
 
 					if(ShowIndexes) {
 						rect = rect.Translate(new Vector(2, 0));
-						text.Text = index.ToString("X2");
+						if(index < PaletteIndexValues?.Length) {
+							text.Text = PaletteIndexValues[index].ToString("X2");
+						} else {
+							text.Text = index.ToString("X2");
+						}
+
 						context.DrawText(Brushes.Black, rect.Translate(new Vector(-1, 0)).Position, text);
 						context.DrawText(Brushes.Black, rect.Translate(new Vector(1, 0)).Position, text);
 						context.DrawText(Brushes.Black, rect.Translate(new Vector(0, -1)).Position, text);

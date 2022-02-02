@@ -238,11 +238,7 @@ namespace Mesen.Interop
 			return sprites;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetPaletteInfo")] private static extern InteropDebugPaletteInfo GetPaletteInfoWrapper(CpuType cpuType);
-		public static DebugPaletteInfo GetPaletteInfo(CpuType cpuType)
-		{
-			return new(GetPaletteInfoWrapper(cpuType));
-		}
+		[DllImport(DllPath)] public static extern DebugPaletteInfo GetPaletteInfo(CpuType cpuType);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
@@ -773,12 +769,20 @@ namespace Mesen.Interop
 		public fixed UInt32 SpritePreview[64*64];
 	}
 
-	public unsafe struct InteropDebugPaletteInfo
+	public enum RawPaletteFormat
+	{
+		Indexed,
+		Rgb555
+	}
+
+	public unsafe struct DebugPaletteInfo
 	{
 		public UInt32 ColorCount;
 		public UInt32 BgColorCount;
 		public UInt32 SpriteColorCount;
+		public UInt32 ColorsPerPalette;
 
+		public RawPaletteFormat RawFormat;
 		public fixed UInt32 RawPalette[512];
 		public fixed UInt32 RgbPalette[512];
 
@@ -804,27 +808,6 @@ namespace Mesen.Interop
 			return result;
 		}
 	};
-
-	public class DebugPaletteInfo
-	{
-		public UInt32 ColorCount { get; }
-		public UInt32 BgColorCount { get; }
-		public UInt32 SpriteColorCount { get; }
-		public UInt32[] RawPalette { get; } = Array.Empty<UInt32>();
-		public UInt32[] RgbPalette { get; } = Array.Empty<UInt32>();
-
-		public DebugPaletteInfo() { }
-
-		public DebugPaletteInfo(InteropDebugPaletteInfo info)
-		{
-			ColorCount = info.ColorCount;
-			BgColorCount = info.BgColorCount;
-			SpriteColorCount = info.SpriteColorCount;
-			RawPalette = info.GetRawPalette();
-			RgbPalette = info.GetRgbPalette();
-		}
-	}
-
 
 	public enum TileFormat
 	{

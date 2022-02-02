@@ -232,6 +232,8 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo()
 	_debugger->GetPpuState(state, CpuType::Gameboy);
 
 	if(state.CgbEnabled) {
+		info.RawFormat = RawPaletteFormat::Rgb555;
+		info.ColorsPerPalette = 8;
 		info.BgColorCount = 8 * 4;
 		info.SpriteColorCount = 8 * 4;
 		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
@@ -245,6 +247,8 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo()
 			info.RgbPalette[i+32] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[i]);
 		}
 	} else {
+		info.RawFormat = RawPaletteFormat::Indexed;
+		info.ColorsPerPalette = 4;
 		info.BgColorCount = 4;
 		info.SpriteColorCount = 2 * 4;
 		info.ColorCount = info.BgColorCount + info.SpriteColorCount;

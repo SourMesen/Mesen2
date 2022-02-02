@@ -7,7 +7,7 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 		[Reactive] public bool ShowPaletteIndexes { get; set; } = false;
-		[Reactive] public int Zoom { get; set; } = 1;
+		[Reactive] public int Zoom { get; set; } = 3;
 
 		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 

@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Mesen.Utilities;
@@ -55,6 +57,27 @@ namespace Mesen.Debugger.Controls
 				maxWidth = Math.Max(maxWidth, (int)text.Bounds.Width + 5);
 			}
 			FirstColumnWidth = maxWidth;
+		}
+
+		private void TextBox_Tapped(object? sender, TappedEventArgs e)
+		{
+			if(sender is TextBox txt) {
+				txt.SelectAll();
+			}
+		}
+
+		private void TextBox_ContextRequested(object? sender, ContextRequestedEventArgs e)
+		{
+			if(sender is TextBox txt) {
+				txt.SelectAll();
+			}
+		}
+
+		private void TextBox_LostFocus(object? sender, RoutedEventArgs e)
+		{
+			if(sender is TextBox txt) {
+				txt.ClearSelection();
+			}
 		}
 	}
 

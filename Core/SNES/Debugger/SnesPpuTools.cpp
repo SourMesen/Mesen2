@@ -393,6 +393,8 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 DebugPaletteInfo SnesPpuTools::GetPaletteInfo()
 {
 	DebugPaletteInfo info = {};
+	info.RawFormat = RawPaletteFormat::Rgb555;
+	info.ColorsPerPalette = 16;
 	info.BgColorCount = 16 * 8;
 	info.SpriteColorCount = 16 * 8;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
