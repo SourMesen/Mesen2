@@ -12,11 +12,21 @@
 #include "Shared/Interfaces/IControlManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/NotificationManager.h"
+#include "FirmwareHelper.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
 
 void Fds::InitMapper()
 {
+	//Replace PRG ROM data with FDS bios, if available (otherwise set an empty 8kb block)
+	_prgSize = 0x2000;
+	delete[] _prgRom;
+	if(!FirmwareHelper::LoadFdsFirmware(_emu, &_prgRom)) {
+		_prgRom = new uint8_t[_prgSize];
+		memset(_prgRom, 0, _prgSize);
+	}
+	_emu->RegisterMemory(MemoryType::NesPrgRom, _prgRom, _prgSize);
+
 	_settings = &_console->GetNesConfig();
 	_cpu = _console->GetCpu();
 	_memoryManager = _console->GetMemoryManager();

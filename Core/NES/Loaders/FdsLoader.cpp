@@ -45,23 +45,6 @@ void FdsLoader::AddGaps(vector<uint8_t>& diskSide, uint8_t * readBuffer)
 	}
 }
 
-vector<uint8_t> FdsLoader::LoadBios()
-{
-	//For FDS, the PRG ROM is the FDS BIOS (8k)
-	vector<uint8_t> biosData;
-
-	ifstream biosFile(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), "FdsBios.bin"), ios::in | ios::binary);
-	if(biosFile) {
-		return vector<uint8_t>(std::istreambuf_iterator<char>(biosFile), {});
-	} else {
-		biosFile.open(FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), "disksys.rom"), ios::in | ios::binary);
-		if(biosFile) {
-			return vector<uint8_t>(std::istreambuf_iterator<char>(biosFile), {});
-		}
-	}
-	return {};
-}
-
 vector<uint8_t> FdsLoader::RebuildFdsFile(vector<vector<uint8_t>> diskData, bool needHeader)
 {
 	vector<uint8_t> output;
@@ -140,11 +123,5 @@ void FdsLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile)
 	romData.Info.Format = RomFormat::Fds;
 	romData.Info.MapperID = MapperFactory::FdsMapperID;
 	romData.Info.Mirroring = MirroringType::Vertical;
-	romData.PrgRom = LoadBios();
 	romData.Info.System = GameSystem::FDS;
-
-	if(romData.PrgRom.size() != 0x2000) {
-		romData.Error = true;
-		romData.BiosMissing = true;
-	}
 }

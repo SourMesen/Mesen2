@@ -34,10 +34,18 @@ namespace Mesen.Utilities
 					}
 				}
 			}
-			
-			if(EmuApi.LoadRom(romPath, patchPath)) {
-				ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
-			}
+
+			InternalLoadRom(romPath, patchPath);
+		}
+
+		private static void InternalLoadRom(ResourcePath romPath, ResourcePath? patchPath)
+		{
+			//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+			Task.Run(() => {
+				if(EmuApi.LoadRom(romPath, patchPath)) {
+					ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
+				}
+			});
 		}
 
 		public static async void LoadPatchFile(string patchFile)

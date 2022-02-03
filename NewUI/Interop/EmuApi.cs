@@ -313,6 +313,8 @@ namespace Mesen.Interop
 		Sgb2GameboyCpu,
 		SGB1,
 		SGB2,
+		FDS,
+		StudyBox
 	}
 
 	public struct MissingFirmwareMessage
@@ -320,6 +322,21 @@ namespace Mesen.Interop
 		public IntPtr Filename;
 		public FirmwareType Firmware;
 		public UInt32 Size;
+		
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+		public IntPtr[] FileHashes;
+
+		public List<string> GetFileHashes()
+		{
+			List<string> hashes = new List<string>();
+			for(int i = 0; i < FileHashes.Length; i++) {
+				string hash = Marshal.PtrToStringUTF8(FileHashes[i]) ?? "";
+				if(hash.Length > 0) {
+					hashes.Add(hash);
+				}
+			}
+			return hashes;
+		}
 	}
 
 	public struct ExecuteShortcutParams

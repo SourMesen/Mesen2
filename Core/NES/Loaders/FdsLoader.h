@@ -11,7 +11,6 @@ private:
 
 private:
 	void AddGaps(vector<uint8_t>& diskSide, uint8_t* readBuffer);
-	vector<uint8_t> LoadBios();
 
 public:
 	using BaseLoader::BaseLoader;

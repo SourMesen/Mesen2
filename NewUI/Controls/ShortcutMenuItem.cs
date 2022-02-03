@@ -12,6 +12,7 @@ using Mesen.Config.Shortcuts;
 using Avalonia.LogicalTree;
 using Mesen.Interop;
 using Avalonia.Styling;
+using System.Threading.Tasks;
 
 namespace Mesen.Controls
 {
@@ -68,7 +69,12 @@ namespace Mesen.Controls
 				};
 
 				Click += (object? sender, RoutedEventArgs e) => {
-					EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = Shortcut, Param = (uint)ShortcutParam });
+					//Run outside the UI thread to avoid deadlocks, etc.
+					EmulatorShortcut shortcut = Shortcut;
+					uint param = (uint)ShortcutParam;
+					Task.Run(() => {
+						EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = shortcut, Param = param });
+					});
 				};
 			}
 		}

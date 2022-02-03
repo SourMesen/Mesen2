@@ -75,7 +75,11 @@ namespace Mesen.Controls
 				}
 				EmuApi.Resume();
 			} else {
-				EmuApi.LoadRecentGame(Entry.FileName, false);
+				string filename = Entry.FileName;
+				Task.Run(() => {
+					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+					EmuApi.LoadRecentGame(filename, false);
+				});
 			}
 		}
 

@@ -205,6 +205,16 @@ namespace Mesen.Windows
 					ExecuteShortcutParams p = Marshal.PtrToStructure<ExecuteShortcutParams>(e.Parameter);
 					_shortcutHandler.ExecuteShortcut(p.Shortcut);
 					break;
+
+				case ConsoleNotificationType.MissingFirmware:
+					MissingFirmwareMessage msg = Marshal.PtrToStructure<MissingFirmwareMessage>(e.Parameter);
+					TaskCompletionSource tcs = new TaskCompletionSource();
+					Dispatcher.UIThread.Post(async () => {
+						await FirmwareHelper.RequestFirmwareFile(msg);
+						tcs.SetResult();
+					});
+					tcs.Task.Wait();
+					break;
 			}
 		}
 

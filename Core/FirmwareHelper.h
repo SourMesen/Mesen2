@@ -5,11 +5,95 @@
 #include "Utilities/FolderUtilities.h"
 #include "SNES/CartTypes.h"
 
+enum class FirmwareType
+{
+	CX4,
+	DSP1,
+	DSP1B,
+	DSP2,
+	DSP3,
+	DSP4,
+	ST010,
+	ST011,
+	ST018,
+	Satellaview,
+	Gameboy,
+	GameboyColor,
+	Sgb1GameboyCpu,
+	Sgb2GameboyCpu,
+	SGB1,
+	SGB2,
+	FDS,
+	StudyBox,
+};
+
 struct MissingFirmwareMessage
 {
-	const char* Filename;
+	const char* Filename = {};
 	FirmwareType Firmware;
-	uint32_t Size;
+	uint32_t Size = 0;
+	const char* FileHashes[5] = {};
+
+	MissingFirmwareMessage(const char* filename, FirmwareType type, uint32_t size)
+	{
+		Filename = filename;
+		Firmware = type;
+		Size = size;
+
+		switch(type) {
+			case FirmwareType::CX4: FileHashes[0] = "AE8D4D1961B93421FF00B3CAA1D0F0CE7783E749772A3369C36B3DBF0D37EF18"; break;
+			case FirmwareType::DSP1: FileHashes[0] = "91E87D11E1C30D172556BED2211CCE2EFA94BA595F58C5D264809EF4D363A97B"; break;
+			case FirmwareType::DSP1B: FileHashes[0] = "D789CB3C36B05C0B23B6C6F23BE7AA37C6E78B6EE9CEAC8D2D2AA9D8C4D35FA9"; break;
+			case FirmwareType::DSP2: FileHashes[0] = "03EF4EF26C9F701346708CB5D07847B5203CF1B0818BF2930ACD34510FFDD717"; break;
+			case FirmwareType::DSP3: FileHashes[0] = "0971B08F396C32E61989D1067DDDF8E4B14649D548B2188F7C541B03D7C69E4E"; break;
+			case FirmwareType::DSP4: FileHashes[0] = "752D03B2D74441E430B7F713001FA241F8BBCFC1A0D890ED4143F174DBE031DA"; break;
+			case FirmwareType::ST010: FileHashes[0] = "FA9BCED838FEDEA11C6F6ACE33D1878024BDD0D02CC9485899D0BDD4015EC24C"; break;
+			case FirmwareType::ST011: FileHashes[0] = "8B2B3F3F3E6E29F4D21D8BC736B400BC988B7D2214EBEE15643F01C1FEE2F364"; break;
+			case FirmwareType::ST018: FileHashes[0] = "6DF209AB5D2524D1839C038BE400AE5EB20DAFC14A3771A3239CD9E8ACD53806"; break;
+
+			case FirmwareType::Satellaview:
+				FileHashes[0] = "27CFDB99F7E4252BF3740D420147B63C4C88616883BC5E7FE43F2F30BF8C8CBB"; //Japan, no DRM
+				FileHashes[1] = "A49827B45FF9AC9CF5B4658190E1428E59251BC82D8A63D8E9E0F71E439F008F"; //English, no DRM
+				FileHashes[2] = "3CE321496EDC5D77038DE2034EB3FB354D7724AFD0BC7FD0319F3EB5D57B984D"; //Japan, original
+				FileHashes[3] = "77D94D64D745014BF8B51280A4204056CDEB9D41EA30EAE80DBC006675BEBEF8"; //English, DRM
+				break;
+
+			case FirmwareType::Gameboy:
+				FileHashes[0] = "CF053ECCB4CCAFFF9E67339D4E78E98DCE7D1ED59BE819D2A1BA2232C6FCE1C7";
+				FileHashes[1] = "26E71CF01E301E5DC40E987CD2ECBF6D0276245890AC829DB2A25323DA86818E";
+				break;
+
+			case FirmwareType::GameboyColor:
+				FileHashes[0] = "B4F2E416A35EEF52CBA161B159C7C8523A92594FACB924B3EDE0D722867C50C7";
+				FileHashes[1] = "3A307A41689BEE99A9A32EA021BF45136906C86B2E4F06C806738398E4F92E45";
+				break;
+
+			case FirmwareType::Sgb1GameboyCpu: FileHashes[0] = "0E4DDFF32FC9D1EEAAE812A157DD246459B00C9E14F2F61751F661F32361E360"; break;
+			case FirmwareType::Sgb2GameboyCpu: FileHashes[0] = "FD243C4FB27008986316CE3DF29E9CFBCDC0CD52704970555A8BB76EDBEC3988"; break;
+
+			case FirmwareType::SGB1:
+				FileHashes[0] = "BBA9C269273BEDB9B38BD5EB23BFAA6E509B8DECC7CB80BB5513905AF04F4CEB"; //Rev 0 (Japan)
+				FileHashes[1] = "C6C4DAAB5C899B69900C460787DE6089EDABE94B760F96D9F583D30CC0A5BB30"; //Rev 1 (Japan+USA)
+				FileHashes[2] = "A75160F7B89B1F0E20FD2F6441BB86285C7378DB5035EF6885485EAFF6059376"; //Rev 2 (World)
+				break;
+
+			case FirmwareType::SGB2:
+				FileHashes[0] = "C172498A23D1176672931BAB33B629C7D28F914A43DCA9E540B8AF1B37CCF2C6"; //SGB2 (Japan)
+				break;
+
+			case FirmwareType::FDS:
+				FileHashes[0] = "99C18490ED9002D9C6D999B9D8D15BE5C051BDFA7CC7E73318053C9A994B0178";
+				FileHashes[1] = "A0A9D57CBACE21BF9C85C2B85E86656317F0768D7772ACC90C7411AB1DBFF2BF";
+				break;
+
+			case FirmwareType::StudyBox:
+				FileHashes[0] = "365F84C86F7F7C3AAA2042D78494D41448E998EC5A89AC1B5FECB452951D514C";
+				break;
+
+			default:
+				throw std::runtime_error("Unexpected firmware type");
+		}
+	}
 };
 
 class FirmwareHelper
@@ -79,10 +163,8 @@ public:
 			return true;
 		}
 
-		MissingFirmwareMessage msg;
-		msg.Filename = combinedFilename.c_str();
-		msg.Firmware = type;
-		msg.Size = programSize + dataSize;
+		MissingFirmwareMessage msg(combinedFilename.c_str(), type, programSize + dataSize);
+
 		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		//Try again in case the user selected a valid firmware file
@@ -100,10 +182,7 @@ public:
 			return true;
 		}
 
-		MissingFirmwareMessage msg;
-		msg.Filename = "BS-X.bin";
-		msg.Firmware = FirmwareType::Satellaview;
-		msg.Size = 1024*1024;
+		MissingFirmwareMessage msg("BS-X.bin", FirmwareType::Satellaview, 1024*1024);
 		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 		
 		if(AttemptLoadBsxFirmware(prgRom, prgSize)) {
@@ -122,10 +201,7 @@ public:
 			return true;
 		}
 
-		MissingFirmwareMessage msg;
-		msg.Filename = filename.c_str();
-		msg.Firmware = useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1;
-		msg.Size = prgSize;
+		MissingFirmwareMessage msg(filename.c_str(), useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1, prgSize);
 		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
@@ -153,10 +229,7 @@ public:
 			return true;
 		}
 
-		/*MissingFirmwareMessage msg;
-		msg.Filename = filename.c_str();
-		msg.Firmware = type;
-		msg.Size = size;
+		/*MissingFirmwareMessage msg(filename.c_str(), type, size);
 		console->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		if(AttemptLoadFirmware(bootRom, filename, size)) {
@@ -164,6 +237,25 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find boot rom: " + filename);*/
+		return false;
+	}
+
+	static bool LoadFdsFirmware(Emulator* emu, uint8_t** biosRom)
+	{
+		string filename = "disksys.rom";
+		uint32_t size = 0x2000;
+		if(AttemptLoadFirmware(biosRom, filename, size, "FdsBios.bin")) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::FDS, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(biosRom, filename, size, "FdsBios.bin")) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for Famicom Disk System");
 		return false;
 	}
 };
