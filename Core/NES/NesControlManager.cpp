@@ -100,7 +100,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 void NesControlManager::UpdateControlDevices()
 {
 	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
-	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg)) {
+	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
 	}

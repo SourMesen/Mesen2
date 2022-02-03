@@ -43,7 +43,7 @@ shared_ptr<BaseControlDevice> GbControlManager::CreateControllerDevice(Controlle
 void GbControlManager::UpdateControlDevices()
 {
 	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
-	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg)) {
+	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
 	}
