@@ -38,6 +38,10 @@ namespace Mesen.Config
 		[Reactive] public bool AssociateMovieFiles { get; set; } = false;
 		[Reactive] public bool AssociateSaveStateFiles { get; set; } = false;
 
+		[Reactive] public bool EnableAutoSaveState { get; set; } = true;
+		[Reactive] public UInt32 AutoSaveStateDelay { get; set; } = 5;
+
+		[Reactive] public bool EnableRewind { get; set; } = true;
 		[Reactive] public UInt32 RewindBufferSize { get; set; } = 30;
 
 		[Reactive] public bool AlwaysOnTop { get; set; } = false;
@@ -191,7 +195,8 @@ namespace Mesen.Config
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
-				RewindBufferSize = RewindBufferSize
+				RewindBufferSize = EnableRewind ? RewindBufferSize : 0,
+				AutoSaveStateDelay = EnableAutoSaveState ? AutoSaveStateDelay : 0
 			});
 		}
 	}
@@ -213,7 +218,8 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool PauseOnMovieEnd;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowMovieIcons;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameSelectionScreen;
-		
+
+		public UInt32 AutoSaveStateDelay;
 		public UInt32 RewindBufferSize;
 
 		public string SaveFolderOverride;

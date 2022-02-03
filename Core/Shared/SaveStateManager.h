@@ -18,6 +18,7 @@ private:
 public:
 	static constexpr uint32_t FileFormatVersion = 1;
 	static constexpr uint32_t MinimumSupportedVersion = 1;
+	static constexpr uint32_t AutoSaveStateIndex = 11;
 
 	SaveStateManager(Emulator* emu);
 

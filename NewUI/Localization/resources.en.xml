@@ -502,17 +502,12 @@
 			<Control ID="chkShowVsConfigOnLoad">Show game configuration dialog when loading VS System games</Control>
 
 			<Control ID="lblAdvancedMisc">Miscellaneous Settings</Control>
+			<Control ID="chkEnableAutoSaveState">Automatically create a save state every </Control>
+			<Control ID="lblSaveStateMinutes">minutes (game clock)</Control>
 			<Control ID="lblRewind">Keep rewind data for the last</Control>
 			<Control ID="lblRewindMinutes">minutes (Memory Usage ≈5MB/min)</Control>
 
 			<Control ID="tpgShortcuts">Shortcut Keys</Control>
-
-			<Control ID="tpgSaveData">Save Data</Control>
-			<Control ID="grpAutomaticSaves">Save States</Control>
-			<Control ID="chkAutoSave">Automatically create a save state every</Control>
-			<Control ID="lblAutoSave">minutes</Control>
-			<Control ID="chkAutoSaveNotify">Notify when an automatic save state is saved</Control>
-			<Control ID="chkAllowMismatchingSaveStates">Allow save states to be loaded on modified ROMs (e.g IPS patches)</Control>
 
 			<Control ID="lblUiDisplaySettings">UI Display Settings</Control>
 			<Control ID="lblWindowSettings">Window Settings</Control>

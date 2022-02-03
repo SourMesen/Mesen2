@@ -489,6 +489,7 @@ struct PreferencesConfig
 	bool ShowMovieIcons = false;
 	bool DisableGameSelectionScreen = false;
 
+	uint32_t AutoSaveStateDelay = 5;
 	uint32_t RewindBufferSize = 30;
 
 	const char* SaveFolderOverride = nullptr;

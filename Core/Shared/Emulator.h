@@ -101,10 +101,13 @@ private:
 	unique_ptr<FrameLimiter> _frameLimiter;
 	Timer _lastFrameTimer;
 	double _frameDelay = 0;
+	
+	uint32_t _autoSaveStateFrameCounter = 0;
 
 	void WaitForLock();
 	void WaitForPauseEnd();
 
+	void ProcessAutoSaveState();
 	bool ProcessSystemActions();
 	void RunFrameWithRunAhead();
 

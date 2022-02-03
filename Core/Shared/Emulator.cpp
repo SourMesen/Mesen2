@@ -128,6 +128,8 @@ void Emulator::Run()
 			ProcessSystemActions();
 		}
 
+		ProcessAutoSaveState();
+
 		WaitForLock();
 
 		if(_pauseOnNextFrame) {
@@ -156,6 +158,21 @@ void Emulator::Run()
 	}
 
 	PlatformUtilities::RestoreTimerResolution();
+}
+
+void Emulator::ProcessAutoSaveState()
+{
+	if(_autoSaveStateFrameCounter > 0) {
+		_autoSaveStateFrameCounter--;
+		if(_autoSaveStateFrameCounter == 0) {
+			_saveStateManager->SaveState(SaveStateManager::AutoSaveStateIndex, false);
+		}
+	} else {
+		uint32_t saveStateDelay = _settings->GetPreferences().AutoSaveStateDelay;
+		if(saveStateDelay > 0) {
+			_autoSaveStateFrameCounter = (uint32_t)(GetFps() * saveStateDelay * 60);
+		}
+	}
 }
 
 bool Emulator::ProcessSystemActions()
@@ -449,6 +466,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	GetControlManager()->UpdateInputState();
 	//UpdateRegion();
 
+	_autoSaveStateFrameCounter = 0;
 	_allowDebuggerRequest = true;
 	_threadPaused = true; //To avoid deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);

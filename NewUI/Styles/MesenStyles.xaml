@@ -32,7 +32,7 @@
 					<TabItem Header="Test" />
 				</TabControl>
 				<NumericUpDown Value="1" />
-				<NumericUpDown Value="100" />
+				<NumericUpDown Value="100" IsEnabled="False" />
 				<ComboBox SelectedIndex="0">
 					<ComboBoxItem>0Test</ComboBoxItem>
 				</ComboBox>
@@ -47,7 +47,7 @@
 				<DatePicker />
 				<TimePicker />
 				<Slider />
-				<TextBox IsEnabled="False" Text="Test" />
+				<TextBox IsEnabled="False" Text="Test disabled" />
 				<CheckBox IsEnabled="False" Content="Test" />
 				<CheckBox IsChecked="True" IsEnabled="False" Content="Test" />
 			</StackPanel>
@@ -66,7 +66,7 @@
 		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
 
 		<!-- Disabled colors -->
-		<Color x:Key="TextControlBackgroundDisabled">#F0F0F0</Color>
+		<Color x:Key="TextControlBackgroundDisabled">#E0E0E0</Color>
 		<Color x:Key="CheckBoxForegroundCheckedDisabled">#555</Color>
 		<Color x:Key="CheckBoxCheckBackgroundFillCheckedDisabled">#E5E5E5</Color>
 		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#000</Color>
@@ -582,9 +582,7 @@
 	</Style>
 
 	<Style Selector="NumericUpDown TextBox /template/ Border#PART_BorderElement">
-		<Setter Property="IsVisible" Value="false" />
-		<Setter Property="BorderThickness" Value="0" />
-		<Setter Property="BorderBrush" Value="Transparent" />		
+		<Setter Property="IsVisible" Value="True" />
 	</Style>
 
 	<Style Selector="Slider Thumb">

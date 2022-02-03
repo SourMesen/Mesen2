@@ -146,11 +146,16 @@
 				</c:OptionSection>
 
 				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<WrapPanel>
-						<TextBlock Text="{l:Translate lblRewind}" VerticalAlignment="Center" />
-						<NumericUpDown Value="{CompiledBinding Config.RewindBufferSize}" VerticalAlignment="Center" Margin="5 0" />
-						<TextBlock Text="{l:Translate lblRewindMinutes}" VerticalAlignment="Center" />
-					</WrapPanel>
+					<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+						<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{CompiledBinding Config.EnableAutoSaveState}" />
+						<NumericUpDown Value="{CompiledBinding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{CompiledBinding Config.EnableAutoSaveState}" />
+						<TextBlock Text="{l:Translate lblSaveStateMinutes}" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<CheckBox Content="{l:Translate lblRewind}" IsChecked="{CompiledBinding Config.EnableRewind}" />
+						<NumericUpDown Value="{CompiledBinding Config.RewindBufferSize}" Margin="5 0" Minimum="1" Maximum="300" IsEnabled="{CompiledBinding Config.EnableRewind}" />
+						<TextBlock Text="{l:Translate lblRewindMinutes}" />
+					</StackPanel>
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
