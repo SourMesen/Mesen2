@@ -116,7 +116,12 @@ namespace Mesen.Views
 
 		private void OnLogWindowClick(object sender, RoutedEventArgs e)
 		{
-			new LogWindow().ShowCentered(VisualRoot);
+			LogWindow? wnd = ApplicationHelper.GetExistingWindow<LogWindow>();
+			if(wnd != null) {
+				wnd.Activate();
+			} else {
+				new LogWindow().ShowCentered(VisualRoot);
+			}
 		}
 
 		private async void OnStartAudioRecordingClick(object sender, RoutedEventArgs e)
