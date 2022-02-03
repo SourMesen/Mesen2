@@ -22,6 +22,7 @@ namespace Mesen.Windows
 {
 	public class MainWindow : Window
 	{
+		private DispatcherTimer _timerBackgroundFlag = new DispatcherTimer();
 		private MainWindowViewModel _model = null!;
 
 		private NotificationListener? _listener = null;
@@ -35,7 +36,7 @@ namespace Mesen.Windows
 		static MainWindow()
 		{
 			WindowStateProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnWindowStateChanged());
-			IsActiveProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.UpdateBackgroundFlag());
+			IsActiveProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnActiveChanged());
 		}
 
 		public MainWindow()
@@ -68,6 +69,7 @@ namespace Mesen.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
+			_timerBackgroundFlag.Stop();
 			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
 		}
 
@@ -111,6 +113,10 @@ namespace Mesen.Windows
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(200);
+			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
+			_timerBackgroundFlag.Start();
 
 			Task.Run(() => {
 				//Load all styles after 15ms to let the UI refresh once with the startup styles
@@ -260,10 +266,35 @@ namespace Mesen.Windows
 			InputApi.SetKeyState((int)e.Key, false);
 		}
 
-		private void UpdateBackgroundFlag()
+		private void OnActiveChanged()
 		{
 			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
 			InputApi.ResetKeyState();
+		}
+
+		private bool _needResume = false;
+		private void timerUpdateBackgroundFlag(object? sender, EventArgs e)
+		{
+			Window? activeWindow = ApplicationHelper.GetActiveWindow();
+
+			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+
+			bool needPause = activeWindow == null && cfg.PauseWhenInBackground;
+			if(activeWindow != null) {
+				bool isConfigWindow = (activeWindow != this);
+				needPause |= cfg.PauseWhenInMenusAndConfig && !isConfigWindow && _mainMenu.MainMenu.IsOpen; //in main menu
+				needPause |= cfg.PauseWhenInMenusAndConfig && isConfigWindow; //in a window that's neither the main window nor a debug tool
+			}
+
+			if(needPause) {
+				if(!EmuApi.IsPaused()) {
+					_needResume = true;
+					EmuApi.Pause();
+				}
+			} else if(_needResume) {
+				EmuApi.Resume();
+				_needResume = false;
+			}
 		}
 	}
 }

@@ -26,9 +26,13 @@ namespace Mesen.Views
 		private ConfigWindow? _cfgWindow = null;
 		private MainMenuViewModel _model = null!;
 
+		public Menu MainMenu { get; }
+
 		public MainMenuView()
 		{
 			InitializeComponent();
+
+			MainMenu = this.FindControl<Menu>("MainMenu");
 		}
 
 		private void InitializeComponent()

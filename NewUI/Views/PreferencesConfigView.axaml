@@ -29,12 +29,8 @@
 				<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />
 
 				<c:OptionSection Header="{l:Translate lblPauseBackgroundSettings}">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblPauseIn}" VerticalAlignment="Center" />
-						<CheckBox Content="{l:Translate chkPauseWhenInBackground}" IsChecked="{CompiledBinding Config.PauseWhenInBackground}" Margin="5 0" />
-						<CheckBox Content="{l:Translate chkPauseInMenuAndConfig}" IsChecked="{CompiledBinding Config.PauseWhenInMenusAndConfig}" Margin="5 0" />
-						<CheckBox Content="{l:Translate chkPauseInDebugger}" IsChecked="{CompiledBinding Config.PauseWhenInDebuggingTools}" Margin="5 0" />
-					</StackPanel>
+					<CheckBox Content="{l:Translate chkPauseWhenInBackground}" IsChecked="{CompiledBinding Config.PauseWhenInBackground}" />
+					<CheckBox Content="{l:Translate chkPauseInMenuAndConfig}" IsChecked="{CompiledBinding Config.PauseWhenInMenusAndConfig}" />
 					<CheckBox Content="{l:Translate chkAllowBackgroundInput}" IsChecked="{CompiledBinding Config.AllowBackgroundInput}" />
 				</c:OptionSection>
 

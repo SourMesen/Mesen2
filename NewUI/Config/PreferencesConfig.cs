@@ -25,7 +25,6 @@ namespace Mesen.Config
 
 		[Reactive] public bool PauseWhenInBackground { get; set; } = false;
 		[Reactive] public bool PauseWhenInMenusAndConfig { get; set; } = false;
-		[Reactive] public bool PauseWhenInDebuggingTools { get; set; } = false;
 		[Reactive] public bool AllowBackgroundInput { get; set; } = false;
 		[Reactive] public bool PauseOnMovieEnd { get; set; } = true;
 		[Reactive] public bool ShowMovieIcons { get; set; } = true;

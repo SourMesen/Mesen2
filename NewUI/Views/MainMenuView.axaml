@@ -16,7 +16,7 @@
 		<vm:MainMenuViewModel />
 	</Design.DataContext>
 
-	<Menu DockPanel.Dock="Top">
+	<Menu DockPanel.Dock="Top" Name="MainMenu">
 		<MenuItem Header="{l:Translate mnuFile}">
 			<c:ShortcutMenuItem Shortcut="OpenFile" Header="{l:Translate mnuOpen}">
 				<MenuItem.Icon>

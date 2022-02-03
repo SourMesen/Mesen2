@@ -19,5 +19,14 @@ namespace Mesen.Utilities
 
 			return null;
 		}
+
+		public static Window? GetActiveWindow()
+		{
+			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+				return desktop.Windows.Where(w => w.IsActive).FirstOrDefault();
+			}
+
+			return null;
+		}
 	}
 }
