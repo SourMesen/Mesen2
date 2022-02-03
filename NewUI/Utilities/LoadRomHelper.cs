@@ -1,4 +1,5 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Windows;
 using System;
@@ -39,7 +40,7 @@ namespace Mesen.Utilities
 			}
 		}
 
-		public static void LoadPatchFile(string patchFile)
+		public static async void LoadPatchFile(string patchFile)
 		{
 			string? patchFolder = Path.GetDirectoryName(patchFile);
 			if(patchFolder == null) {
@@ -57,25 +58,19 @@ namespace Mesen.Utilities
 				//There is a single rom in the same folder as the IPS/BPS patch, use it automatically
 				LoadRom(romsInFolder[0], patchFile);
 			} else {
-				//TODO
-				/*if(!IsRunning()) {
+				Window? wnd = ApplicationHelper.GetMainWindow();
+				if(!EmuApi.IsRunning()) {
 					//Prompt the user for a rom to load
-					if(MesenMsgBox.Show("SelectRomIps", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
-						using(OpenFileDialog ofd = new OpenFileDialog()) {
-							ofd.SetFilter(ResourceHelper.GetMessage("FilterRom"));
-							if(ConfigManager.Config.RecentFiles.Items.Count > 0) {
-								ofd.InitialDirectory = ConfigManager.Config.RecentFiles.Items[0].RomFile.Folder;
-							}
-
-							if(ofd.ShowDialog(frmMain.Instance) == DialogResult.OK) {
-								LoadRom(ofd.FileName, patchFile);
-							}
+					if(await MesenMsgBox.Show(wnd, "SelectRomIps", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
+						string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.RomExt);
+						if(filename != null) {
+							LoadRom(filename, patchFile);
 						}
 					}
-				} else if(MesenMsgBox.Show("PatchAndReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
+				} else if(await MesenMsgBox.Show(wnd, "PatchAndReset", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 					//Confirm that the user wants to patch the current rom and reset
 					LoadRom(EmuApi.GetRomInfo().RomPath, patchFile);
-				}*/
+				}
 			}
 		}
 

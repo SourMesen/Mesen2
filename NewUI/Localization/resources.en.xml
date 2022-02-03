@@ -1166,7 +1166,7 @@ x == [$150] || y == [10]
 
 		<Message ID="MesenUpToDate">You are running the latest version of Mesen.</Message>
 		<Message ID="PatchAndReset">Patch and reset the current game?</Message>
-		<Message ID="SelectRomIps">Please select a ROM matching the IPS/UPS/BPS patch file.</Message>
+		<Message ID="SelectRomIps">Please select a ROM for this patch file.</Message>
 		<Message ID="UnableToDownload">Unable to download file. Check your internet connection and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
 		<Message ID="UnableToStartMissingDependencies">Mesen could not launch because it was unable to load MesenSCore.dll due to missing dependencies.</Message>
 		<Message ID="UnableToStartMissingFiles">Mesen was unable to start due to missing files.&#xA;&#xA;Error: MesenSCore.dll is missing.</Message>
