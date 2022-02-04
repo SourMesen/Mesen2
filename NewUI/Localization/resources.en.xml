@@ -1964,8 +1964,7 @@ x == [$150] || y == [10]
 			<Value ID="LabelList_AddToWatch">Label List: Add to Watch</Value>
 			<Value ID="LabelList_GoToLocation">Label List: Go to Location</Value>
 			<Value ID="LabelList_FindOccurrences">Label List: Find Occurrences</Value>
-			<Value ID="LabelList_ViewInCpuMemory">Label List: View in CPU Memory</Value>
-			<Value ID="LabelList_ViewInMemoryType">Label List: View in [memory type]</Value>
+			<Value ID="LabelList_ViewInMemoryViewer">Label List: View in Memory Viewer</Value>
 			<Value ID="BreakpointList_Add">Breakpoint List: Add Breakpoint</Value>
 			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
 			<Value ID="BreakpointList_GoToLocation">Breakpoint List: Go to Location</Value>

@@ -45,6 +45,13 @@ namespace Mesen.Debugger.Windows
 			_editor.ByteUpdated += editor_ByteUpdated;
 		}
 
+		public static void ShowInMemoryTools(MemoryType memType, int address)
+		{
+			MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
+			wnd.SetCursorPosition(memType, address);
+			wnd.Activate();
+		}
+
 		public void SetCursorPosition(MemoryType memType, int address)
 		{
 			if(_model.AvailableMemoryTypes.Contains(memType)) {

@@ -163,8 +163,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddBreakpoint, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddToWatch, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_FindOccurrences, KeyBinding = new() });
-			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInCpuMemory, KeyBinding = new() });
-			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInMemoryType, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInMemoryViewer, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_GoToLocation, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) });
@@ -282,8 +281,7 @@ namespace Mesen.Config
 		LabelList_AddBreakpoint,
 		LabelList_AddToWatch,
 		LabelList_FindOccurrences,
-		LabelList_ViewInCpuMemory,
-		LabelList_ViewInMemoryType,
+		LabelList_ViewInMemoryViewer,
 		LabelList_GoToLocation,
 		BreakpointList_Add,
 		BreakpointList_Edit,

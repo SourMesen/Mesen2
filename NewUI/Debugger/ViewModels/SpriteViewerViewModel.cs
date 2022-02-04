@@ -120,9 +120,7 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => SelectedSprite != null,
 					OnClick = () => {
 						if(SelectedSprite != null && SelectedSprite.TileAddress >= 0) {
-							MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
-							wnd.SetCursorPosition(CpuType.GetVramMemoryType(), SelectedSprite.TileAddress);
-							wnd.Activate();
+							MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), SelectedSprite.TileAddress);
 						}
 					}
 				},

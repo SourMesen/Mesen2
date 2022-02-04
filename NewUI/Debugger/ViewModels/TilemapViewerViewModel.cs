@@ -116,9 +116,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileMapAddress >= 0) {
-							MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
-							wnd.SetCursorPosition(CpuType.GetVramMemoryType(), tile.Value.TileMapAddress);
-							wnd.Activate();
+							MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), tile.Value.TileMapAddress);
 						}
 					}
 				},

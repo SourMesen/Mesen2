@@ -78,7 +78,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.AddBreakpoint,
@@ -103,6 +103,8 @@ namespace Mesen.Debugger.ViewModels
 					}
 				},
 
+				new ContextMenuSeparator(),
+
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_GoToLocation),
@@ -113,6 +115,21 @@ namespace Mesen.Debugger.ViewModels
 							if(addr.Address >= 0) {
 								Disassembly.ScrollToAddress((uint)addr.Address);
 							}
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_ViewInMemoryViewer),
+					IsEnabled = () => grid.SelectedItem is LabelViewModel vm,
+					OnClick = () => {
+						if(grid.SelectedItem is LabelViewModel vm) {
+							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
+							if(addr.Address < 0) {
+								addr = vm.Label.GetAbsoluteAddress();
+							}
+							MemoryToolsWindow.ShowInMemoryTools(addr.Type, addr.Address);
 						}
 					}
 				},
