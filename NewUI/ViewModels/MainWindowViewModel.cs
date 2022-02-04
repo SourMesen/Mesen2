@@ -3,6 +3,7 @@ using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
+using Mesen.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -35,10 +36,10 @@ namespace Mesen.ViewModels
 			RecentGames = new RecentGamesViewModel();
 		}
 
-		public void Init()
+		public void Init(MainWindow wnd)
 		{
 			MainMenu = new MainMenuViewModel(this);
-			MainMenu.Initialize();
+			MainMenu.Initialize(wnd);
 			RecentGames.Init(GameScreenMode.RecentGames);
 
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {

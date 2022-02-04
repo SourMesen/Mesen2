@@ -132,7 +132,7 @@ namespace Mesen.Windows
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
 
-				_model.Init();
+				_model.Init(this);
 				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 

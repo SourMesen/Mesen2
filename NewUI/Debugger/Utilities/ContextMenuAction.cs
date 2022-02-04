@@ -2,6 +2,9 @@
 using Avalonia.Input;
 using Avalonia.Threading;
 using Mesen.Config;
+using Mesen.Config.Shortcuts;
+using Mesen.Controls;
+using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -10,10 +13,11 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Utilities
 {
-	public class ContextMenuAction : ViewModelBase, IDisposable
+	public abstract class BaseMenuAction : ViewModelBase, IDisposable
 	{
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
@@ -59,7 +63,7 @@ namespace Mesen.Debugger.Utilities
 				if(_subActions != null) {
 					IsEnabled = () => {
 						foreach(object subAction in _subActions) {
-							if(subAction is ContextMenuAction act) {
+							if(subAction is BaseMenuAction act) {
 								if(act.IsEnabled == null || act.IsEnabled()) {
 									return true;
 								}
@@ -76,8 +80,7 @@ namespace Mesen.Debugger.Utilities
 		public Func<bool>? IsSelected { get; set; }
 		public Func<bool>? IsVisible { get; set; }
 
-		public Func<DbgShortKeys>? Shortcut { get; set; }
-		public string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
+		public abstract string ShortcutText { get; }
 
 		[Reactive] public bool Enabled { get; set; }
 		[Reactive] public bool Visible { get; set; }
@@ -97,7 +100,8 @@ namespace Mesen.Debugger.Utilities
 		public Action OnClick
 		{
 			get => _onClick;
-			set {
+			set
+			{
 				_onClick = () => {
 					if((IsVisible == null || IsVisible()) && (IsEnabled == null || IsEnabled())) {
 						if(ActionType == ActionType.Exit) {
@@ -119,22 +123,65 @@ namespace Mesen.Debugger.Utilities
 			Visible = IsVisible?.Invoke() ?? true;
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			_onClick = () => { };
 			_clickCommand?.Dispose();
 			_clickCommand = null;
-			Shortcut = null;
 			IsSelected = null;
 			IsEnabled = null;
 			IsVisible = null;
 			if(_subActions != null) {
 				foreach(object subAction in _subActions) {
-					if(subAction is ContextMenuAction action) {
+					if(subAction is BaseMenuAction action) {
 						action.Dispose();
 					}
 				}
 			}
+		}
+	}
+
+	public class MainMenuAction : BaseMenuAction
+	{
+		public EmulatorShortcut? Shortcut { get; set; }
+		public uint ShortcutParam { get; set; }
+
+		public MainMenuAction()
+		{
+		}
+
+		public MainMenuAction(EmulatorShortcut shortcut)
+		{
+			Shortcut = shortcut;
+
+			IsEnabled = () => EmuApi.IsShortcutAllowed(shortcut);
+
+			OnClick = () => {
+				//Run outside the UI thread to avoid deadlocks, etc.
+				Task.Run(() => {
+					EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = shortcut, Param = ShortcutParam });
+				});
+			};
+		}
+
+		public override string ShortcutText
+		{
+			get
+			{
+				return Shortcut.HasValue ? ShortcutMenuItem.GetShortcutKeys(Shortcut.Value)?.ToString() ?? "" : "";
+			}
+		}
+	}
+
+	public class ContextMenuAction : BaseMenuAction
+	{
+		public Func<DbgShortKeys>? Shortcut { get; set; }
+		public override string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
+
+		public override void Dispose()
+		{
+			base.Dispose();
+			Shortcut = null;
 		}
 	}
 
@@ -366,5 +413,53 @@ namespace Mesen.Debugger.Utilities
 		OpenSa1Debugger,
 		[IconFile("GameboyDebugger")]
 		OpenGameboyDebugger,
+
+		[IconFile("CheatCode")]
+		Cheats,
+		[IconFile("HistoryViewer")]
+		HistoryViewer,
+		[IconFile("Movie")]
+		Movies,
+		[IconFile("MediaPlay")]
+		Play,
+		[IconFile("Record")]
+		Record,
+		[IconFile("MediaStop")]
+		Stop,
+		
+		[IconFile("Network")]
+		NetPlay,
+		Connect,
+		Disconnect,
+		StartServer,
+		StopServer,
+
+		[IconFile("Microphone")]
+		SoundRecorder,
+		[IconFile("VideoRecorder")]
+		VideoRecorder,
+
+		[IconFile("HdPack")]
+		HdPacks,
+		[IconFile("Import")]
+		InstallHdPack,
+		[IconFile("HdPack")]
+		HdPackBuilder,
+
+		[IconFile("LogWindow")]
+		LogWindow,
+
+		[IconFile("Camera")]
+		TakeScreenshot,
+
+		[IconFile("Help")]
+		OnlineHelp,
+		[IconFile("Update")]
+		CheckForUpdates,
+		[IconFile("Exclamation")]
+		About,
+		[IconFile("Comment")]
+		ReportBug,
+		SelectController,
 	}
 }

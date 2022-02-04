@@ -73,25 +73,6 @@
 			<Control ID="mnuEmulationConfig">Emulation</Control>
 			<Control ID="mnuPreferences">Preferences</Control>
 			<Control ID="mnuTools">Tools</Control>
-			<Control ID="mnuHistoryViewer">History Viewer</Control>
-			<Control ID="mnuNetPlay">Net Play</Control>
-			<Control ID="mnuStartServer">Start server...</Control>
-			<Control ID="mnuStopServer">Stop server</Control>
-			<Control ID="mnuConnect">Connect to server...</Control>
-			<Control ID="mnuDisconnect">Disconnect</Control>
-			<Control ID="mnuNetPlaySelectController">Select Controller</Control>
-			<Control ID="mnuProfile">Configure Profile</Control>
-			<Control ID="mnuMovies">Movies</Control>
-			<Control ID="mnuPlayMovie">Play...</Control>
-			<Control ID="mnuRecordMovie">Record...</Control>
-			<Control ID="mnuStopMovie">Stop</Control>
-			<Control ID="mnuSoundRecorder">Sound Recorder</Control>
-			<Control ID="mnuWaveRecord">Record...</Control>
-			<Control ID="mnuWaveStop">Stop Recording</Control>
-			<Control ID="mnuVideoRecorder">Video Recorder</Control>
-			<Control ID="mnuAviRecord">Record...</Control>
-			<Control ID="mnuAviStop">Stop Recording</Control>
-			<Control ID="mnuCheats">Cheats</Control>
 			<Control ID="mnuTests">Tests</Control>
 			<Control ID="mnuTestRun">Run...</Control>
 			<Control ID="mnuTestRecordFrom">Record from...</Control>
@@ -101,19 +82,7 @@
 			<Control ID="mnuTestRecordTest">Test</Control>
 			<Control ID="mnuTestStopRecording">Stop recording</Control>
 			<Control ID="mnuRunAllTests">Run all tests</Control>
-			<Control ID="mnuDebugger">Debugger</Control>
-			<Control ID="mnuLogWindow">Log Window</Control>
-			<Control ID="mnuHdPacks">HD Packs (NES)</Control>
-			<Control ID="mnuInstallHdPack">Install HD Pack</Control>
-			<Control ID="mnuHdPackEditor">HD Pack Builder</Control>
-			<Control ID="mnuRandomGame">Load Random Game</Control>
-			<Control ID="mnuTakeScreenshot">Take Screenshot</Control>
 			<Control ID="mnuHelp">Help</Control>
-			<Control ID="mnuOnlineHelp">Online Help</Control>
-			<Control ID="mnuCheckForUpdates">Check for updates</Control>
-			<Control ID="mnuReportBug">Report a bug</Control>
-			<Control ID="mnuHelpWindow">Command-line options</Control>
-			<Control ID="mnuAbout">About</Control>			
 		</Form>
 		<Form ID="frmLogWindow" Title="Log Window">
 			<Control ID="btnClose">Close</Control>
@@ -2109,6 +2078,32 @@ x == [$150] || y == [10]
 			<Value ID="OpenSpriteViewer">Sprite Viewer</Value>
 			<Value ID="OpenPaletteViewer">Palette Viewer</Value>
 			<Value ID="OpenDebugSettings">Settings</Value>
+
+			<Value ID="Tools">Tools</Value>
+			<Value ID="HistoryViewer">History Viewer</Value>
+			<Value ID="NetPlay">Net Play</Value>
+			<Value ID="StartServer">Start server...</Value>
+			<Value ID="StopServer">Stop server</Value>
+			<Value ID="Connect">Connect to server...</Value>
+			<Value ID="Disconnect">Disconnect</Value>
+			<Value ID="SelectController">Select Controller</Value>
+			<Value ID="Movies">Movies</Value>
+			<Value ID="Play">Play...</Value>
+			<Value ID="Record">Record...</Value>
+			<Value ID="Stop">Stop</Value>
+			<Value ID="SoundRecorder">Sound Recorder</Value>
+			<Value ID="VideoRecorder">Video Recorder</Value>
+			<Value ID="Cheats">Cheats</Value>
+			<Value ID="LogWindow">Log Window</Value>
+			<Value ID="HdPacks">HD Packs (NES)</Value>
+			<Value ID="InstallHdPack">Install HD Pack</Value>
+			<Value ID="HdPackBuilder">HD Pack Builder</Value>
+			<Value ID="TakeScreenshot">Take Screenshot</Value>
+
+			<Value ID="OnlineHelp">Online Help</Value>
+			<Value ID="CheckForUpdates">Check for updates</Value>
+			<Value ID="ReportBug">Report a bug</Value>
+			<Value ID="About">About</Value>
 		</Enum>
 	</Enums>
 </Resources>
