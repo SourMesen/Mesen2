@@ -14,9 +14,7 @@
 			<Panel>
 				<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 8 0 3" Padding="5 10 5 8">
 					<StackPanel>
-						<StackPanel>
-							<ItemsPresenter Items="{Binding Items, ElementName=root}" />
-						</StackPanel>
+						<ItemsPresenter Items="{Binding Items, ElementName=root}" />
 					</StackPanel>
 				</Border>
 				<ContentControl

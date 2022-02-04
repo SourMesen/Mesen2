@@ -592,25 +592,21 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmAbout" Title="About - Mesen">
-			<Control ID="labelProductName">Mesen</Control>
-			<Control ID="labelCopyright">© 2019 M. Bibaud (aka Sour)</Control>
+		<Form ID="AboutWindow">
+			<Control ID="wndTitle">About - Mesen</Control>
+			<Control ID="lblName">Mesen</Control>
+			<Control ID="lblCopyright">© 2014-2022 Sour</Control>
 			<Control ID="lblWebsite">Website:</Control>
-			<Control ID="lblLink">www.mesen.ca/snes/</Control>
-			<Control ID="labelVersion">Version:</Control>
+			<Control ID="lblLink">www.mesen.ca</Control>
+			<Control ID="lblVersion">Version:</Control>
 			<Control ID="lblBuildDateLabel">Build Date:</Control>
 
 			<Control ID="grpAcknowledgements">Acknowledgements</Control>
-			<Control ID="lblUsedSoftware">This software uses the following libraries:</Control>
-			<Control ID="lblGeneral">General:</Control>
-			<Control ID="lblVideo">Video:</Control>
-			<Control ID="lblAudio">Audio:</Control>
-			<Control ID="lblEmulation">Emulation:</Control>
-			<Control ID="lblCheats">Cheats:</Control>
-			<Control ID="lblSpecialThanks">And thank you to everybody who has contributed in any way! (donations, bug reports, testing, sharing information, etc.)</Control>
+			<Control ID="lblAcknowledgeList">Thank you to the following people/projects for their direct and indirect help in making Mesen possible:</Control>
+			<Control ID="lblUsedSoftware">Mesen uses the following open-source software:</Control>
+			<Control ID="lblSpecialThanks">And thank you to everybody who has contributed in any way! (bug reports, testing, research, etc.)</Control>
 
-			<Control ID="lblDonate">If you want to support Mesen, please consider donating.&#13;Thank you for your support!</Control>
-			<Control ID="okButton">&amp;OK</Control>
+			<Control ID="btnOk">OK</Control>
 		</Form>
 		<Form ID="frmGameConfig" Title="Game Configuration">
 			<Control ID="grpDipSwitches">DIP Switches</Control>

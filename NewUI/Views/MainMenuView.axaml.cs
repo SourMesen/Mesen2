@@ -47,6 +47,11 @@ namespace Mesen.Views
 			}
 		}
 
+		private void OnAboutClick(object sender, RoutedEventArgs e)
+		{
+			new AboutWindow().ShowCenteredDialog(VisualRoot);
+		}
+
 		private void OnSaveStateMenuClick(object sender, RoutedEventArgs e)
 		{
 			_model.MainWindow.RecentGames.Init(GameScreenMode.SaveState);

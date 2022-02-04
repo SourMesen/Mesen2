@@ -336,6 +336,9 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\AboutWindow.axaml.cs">
+      <DependentUpon>AboutWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\SelectRomWindow.axaml.cs">
       <DependentUpon>SelectRomWindow.axaml</DependentUpon>
     </Compile>
