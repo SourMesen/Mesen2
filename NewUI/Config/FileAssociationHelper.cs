@@ -100,7 +100,7 @@ namespace Mesen.Config
 			//TOOD
 			//Mesen.GUI.Properties.Resources.MesenIcon.Save(Path.Combine(iconFolder, "MesenSIcon.png"), ImageFormat.Png);
 
-			CreateShortcutFile(desktopFile, mimeTypes);
+			CreateLinuxShortcutFile(desktopFile, mimeTypes);
 
 			//Update databases
 			try {
@@ -116,7 +116,7 @@ namespace Mesen.Config
 			}
 		}
 
-		static public void CreateShortcutFile(string filename, List<string>? mimeTypes = null)
+		static public void CreateLinuxShortcutFile(string filename, List<string>? mimeTypes = null)
 		{
 			ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
 			if(mainModule == null) {

@@ -602,9 +602,9 @@
 		<Form ID="frmCopyFiles" Title="Please wait...">
 			<Control ID="lblCopying">Copying:</Control>
 		</Form>
-		<Form ID="frmConfigWizard" Title="Mesen - Configuration">
-			<Control ID="lblMesen">Mesen - SNES Emulator</Control>
-			<Control ID="lblConfigWizard">Configuration Wizard</Control>
+		<Form ID="SetupWizardWindow">
+			<Control ID="lblMesen">Mesen - Emulator</Control>
+			<Control ID="lblConfigWizard">Configuration</Control>
 			<Control ID="lblInitialSetup">Please take a moment to perform Mesen's initial setup.</Control>
 			<Control ID="lblStorageLocation">Data Storage Location</Control>
 			<Control ID="lblStorageHint">Select where you want to store Mesen's data:</Control>

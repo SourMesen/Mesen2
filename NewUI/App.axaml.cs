@@ -16,6 +16,8 @@ namespace Mesen
 {
 	public class App : Application
 	{
+		public static bool ShowConfigWindow { get; set; }
+
 		public override void Initialize()
 		{
 			AvaloniaXamlLoader.Load(this);
@@ -28,17 +30,14 @@ namespace Mesen
 
 		public override void OnFrameworkInitializationCompleted()
 		{
-			EmuApi.InitDll();
-
-			Directory.CreateDirectory(ConfigManager.HomeFolder);
-			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
-
 			if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-				desktop.MainWindow = new MainWindow {
-					DataContext = new MainWindowViewModel(),
-				};
+				if(ShowConfigWindow) {
+					StyleHelper.ApplyTheme(MesenTheme.Light);
+					desktop.MainWindow = new SetupWizardWindow();
+				} else {
+					desktop.MainWindow = new MainWindow();
+				}
 			}
-
 			base.OnFrameworkInitializationCompleted();
 		}
 	}

@@ -10,6 +10,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Mesen
 {
@@ -21,16 +22,30 @@ namespace Mesen
 
 		public static string[] CommandLineArgs { get; private set; } = Array.Empty<string>();
 
+		public static string ExePath => Process.GetCurrentProcess().MainModule?.FileName ?? Path.Join(Path.GetDirectoryName(AppContext.BaseDirectory), "Mesen.exe");
+
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			Environment.CurrentDirectory = ConfigManager.HomeFolder;
+
+			if(!File.Exists(ConfigManager.GetConfigFile())) {
+				//Could not find configuration file, show wizard
+				ExtractNativeDependencies();
+				App.ShowConfigWindow = true;
+				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+				if(File.Exists(ConfigManager.GetConfigFile())) {
+					//Configuration done, restart process
+					Process.Start(Program.ExePath);
+				}
+				return;
+			}
+
 			//Start loading config file in a separate thread
 			Task.Run(() => ConfigManager.LoadConfig());
 
 			//Extract core dll & other native dependencies
 			ExtractNativeDependencies();
-
-			Environment.CurrentDirectory = ConfigManager.HomeFolder;
 
 			using SingleInstance instance = SingleInstance.Instance;
 			instance.Init(args);

@@ -41,7 +41,15 @@ namespace Mesen.Windows
 
 		public MainWindow()
 		{
+			DataContext = new MainWindowViewModel();
+
+			EmuApi.InitDll();
+
+			Directory.CreateDirectory(ConfigManager.HomeFolder);
+			Directory.SetCurrentDirectory(ConfigManager.HomeFolder);
+
 			InitializeComponent();
+
 			_shortcutHandler = new ShortcutHandler(this);
 
 			AddHandler(DragDrop.DropEvent, OnDrop);

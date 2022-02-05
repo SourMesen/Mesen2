@@ -1,0 +1,95 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:v="using:Mesen.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.SetupWizardWindow"
+	Width="400" Height="460"
+	Icon="/Assets/Icon.ico"
+	HasSystemDecorations="False"
+	CanResize="False"
+	WindowStartupLocation="CenterScreen"
+	x:DataType="vm:SetupWizardViewModel"
+	Title="Mesen"
+	Name="root"
+>
+	<Design.DataContext>
+		<vm:SetupWizardViewModel />
+	</Design.DataContext>
+
+	<Border 	BorderThickness="3" BorderBrush="Gray">
+		<DockPanel Margin="10">
+			<DockPanel DockPanel.Dock="Top">
+				<Image
+					DockPanel.Dock="Right"
+					Source="/Assets/Icon.ico"
+					Height="32"
+					Width="32"
+				/>
+				<StackPanel>
+					<TextBlock Text="{l:Translate lblMesen}" FontSize="12" />
+					<TextBlock Text="{l:Translate lblConfigWizard}" FontSize="18" />
+				</StackPanel>
+			</DockPanel>
+
+			<DockPanel DockPanel.Dock="Bottom">
+				<TextBlock
+					Foreground="CornflowerBlue"
+					Text="{l:Translate lblCancel}"
+					Cursor="Hand"
+					DockPanel.Dock="Left"
+					VerticalAlignment="Center"
+					Tapped="lblCancel_Tapped"
+				/>
+				<Button
+					Width="70"
+					HorizontalAlignment="Right"
+					HorizontalContentAlignment="Center"
+					IsCancel="True"
+					Click="btnOk_OnClick"
+					Content="{l:Translate btnOk}"
+				/>
+			</DockPanel>
+
+			<StackPanel Margin="0 30 0 0">
+				<TextBlock Text="{l:Translate lblInitialSetup}" />
+
+				<c:OptionSection Header="{l:Translate lblStorageLocation}">
+					<TextBlock Text="{l:Translate lblStorageHint}" />
+					<StackPanel Margin="5 5 0 0">
+						<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{CompiledBinding StoreInUserProfile}" />
+						<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{CompiledBinding !StoreInUserProfile}" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal" Margin="0 10 0 10">
+						<TextBlock Text="{l:Translate lblDataLocation}" />
+						<TextBlock Foreground="CornflowerBlue" Margin="5 0 0 0" Text="{CompiledBinding InstallLocation}" />
+					</StackPanel>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblInputMappings}">
+					<TextBlock Text="{l:Translate lblInputHint}" />
+					<Grid ColumnDefinitions="1*,1*,1*,1*" RowDefinitions="Auto,Auto">
+						<Image Source="/Assets/XbIcon.png" Stretch="None" Tapped="XboxIcon_Tapped" Cursor="Hand" />
+						<Image Source="/Assets/PsIcon.png" Stretch="None" Grid.Column="1" Tapped="PsIcon_Tapped" Cursor="Hand" />
+						<Image Source="/Assets/WasdKeys.png" Stretch="None" Grid.Column="2" Tapped="WasdIcon_Tapped" Cursor="Hand" />
+						<Image Source="/Assets/ArrowKeys.png" Stretch="None" Grid.Column="3" Tapped="ArrowIcon_Tapped" Cursor="Hand" />
+						<CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableXboxMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnablePsMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableWasdMappings}" />
+						<CheckBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" IsChecked="{CompiledBinding EnableArrowMappings}" />
+					</Grid>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblMiscOptions}" Margin="0 25 0 0">
+					<CheckBox Content="{l:Translate chkCreateShortcut}" IsChecked="{CompiledBinding CreateShortcut}" />
+				</c:OptionSection>
+			</StackPanel>
+		</DockPanel>
+	</Border>
+</Window>
