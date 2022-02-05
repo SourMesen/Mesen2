@@ -21,13 +21,18 @@ namespace Mesen.Debugger.Utilities
 	{
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
+		public Func<string>? DynamicText { get; set; }
 
 		public virtual string Name
 		{
 			get
 			{
 				if(ActionType == ActionType.Custom) {
-					return CustomText ?? "";
+					if(DynamicText != null) {
+						return DynamicText();
+					} else {
+						return CustomText ?? "";
+					}
 				}
 
 				string label = ResourceHelper.GetEnumText(ActionType);
@@ -152,6 +157,8 @@ namespace Mesen.Debugger.Utilities
 		public EmulatorShortcut? Shortcut { get; set; }
 		public uint ShortcutParam { get; set; }
 
+		public Func<string>? CustomShortcutText { get; set; }
+
 		public MainMenuAction()
 		{
 		}
@@ -176,9 +183,14 @@ namespace Mesen.Debugger.Utilities
 		{
 			get
 			{
-				return Shortcut.HasValue ? ShortcutMenuItem.GetShortcutKeys(Shortcut.Value)?.ToString() ?? "" : "";
+				if(CustomShortcutText != null) {
+					return CustomShortcutText();
+				} else {
+					return Shortcut.HasValue ? Shortcut.Value.GetShortcutKeys()?.ToString() ?? "" : "";
+				}
 			}
 		}
+
 	}
 
 	public class ContextMenuAction : BaseMenuAction
@@ -523,5 +535,18 @@ namespace Mesen.Debugger.Utilities
 		InsertCoin3,
 		[IconFile("Coins")]
 		InsertCoin4,
+		
+		SaveState,
+		LoadState,
+		[IconFile("SplitView")]
+		SaveStateDialog,
+		[IconFile("SaveFloppy")]
+		SaveStateToFile,
+		[IconFile("SplitView")]
+		LoadStateDialog,
+		[IconFile("Folder")]
+		LoadStateFromFile,
+		
+		RecentFiles,
 	}
 }

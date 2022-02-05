@@ -38,8 +38,8 @@ namespace Mesen.ViewModels
 
 		[Reactive] public ObservableCollection<RecentItem> RecentItems { get; private set; }
 		[Reactive] public bool HasRecentItems { get; private set; }
-		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
+		[Reactive] public List<object> FileMenuItems { get; set; } = new();
 		[Reactive] public List<object> GameMenuItems { get; set; } = new();
 		[Reactive] public List<object> OptionsMenuItems { get; set; } = new();
 		[Reactive] public List<object> ToolsMenuItems { get; set; } = new();
@@ -55,8 +55,6 @@ namespace Mesen.ViewModels
 		{
 			MainWindow = windowModel;
 
-			OpenRecentCommand = ReactiveCommand.Create<RecentItem>(OpenRecent);
-
 			RecentItems = ConfigManager.Config.RecentFiles.Items;
 			this.WhenAnyValue(x => x.RecentItems.Count).Subscribe(count => {
 				HasRecentItems = count > 0;
@@ -64,21 +62,9 @@ namespace Mesen.ViewModels
 
 			this.WhenAnyValue(x => x.MainWindow.RomInfo).Subscribe(x => {
 				IsGameRunning = x.Format != RomFormat.Unknown;
-
 				IsFdsGame = x.Format == RomFormat.Fds;
 				IsVsSystemGame = x.Format == RomFormat.VsSystem || x.Format == RomFormat.VsDualSystem;
 				IsVsDualSystemGame = x.Format == RomFormat.VsDualSystem;
-				IsNesGame = x.ConsoleType == ConsoleType.Nes;
-				IsGbGame = x.ConsoleType == ConsoleType.GameboyColor || x.ConsoleType == ConsoleType.Gameboy;
-			});
-		}
-
-		private void OpenRecent(RecentItem recent)
-		{
-			//Avalonia bug - Run in another thread to allow menu to close properly
-			//See: https://github.com/AvaloniaUI/Avalonia/issues/5376
-			Task.Run(() => {
-				LoadRomHelper.LoadRom(recent.RomFile, recent.PatchFile);
 			});
 		}
 
@@ -106,11 +92,128 @@ namespace Mesen.ViewModels
 
 		public void Initialize(MainWindow wnd)
 		{
+			InitFileMenu(wnd);
 			InitGameMenu(wnd);
 			InitOptionsMenu(wnd);
 			InitToolMenu(wnd);
 			InitDebugMenu(wnd);
 			InitHelpMenu(wnd);
+		}
+
+		private void InitFileMenu(MainWindow wnd)
+		{
+			FileMenuItems = new List<object>() {
+				new MainMenuAction(EmulatorShortcut.OpenFile) { ActionType = ActionType.Open },
+				new ContextMenuSeparator(),
+				new MainMenuAction() {
+					ActionType = ActionType.SaveState,
+					SubActions = new List<object> {
+						GetSaveStateMenuItem(1, true),
+						GetSaveStateMenuItem(2, true),
+						GetSaveStateMenuItem(3, true),
+						GetSaveStateMenuItem(4, true),
+						GetSaveStateMenuItem(5, true),
+						GetSaveStateMenuItem(6, true),
+						GetSaveStateMenuItem(7, true),
+						GetSaveStateMenuItem(8, true),
+						GetSaveStateMenuItem(9, true),
+						GetSaveStateMenuItem(10, true),
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.SaveStateDialog) { ActionType = ActionType.SaveStateDialog },
+						new MainMenuAction(EmulatorShortcut.SaveStateToFile) { ActionType = ActionType.SaveStateToFile },
+					}
+				},
+				new MainMenuAction() {
+					ActionType = ActionType.LoadState,
+					SubActions = new List<object> {
+						GetSaveStateMenuItem(1, false),
+						GetSaveStateMenuItem(2, false),
+						GetSaveStateMenuItem(3, false),
+						GetSaveStateMenuItem(4, false),
+						GetSaveStateMenuItem(5, false),
+						GetSaveStateMenuItem(6, false),
+						GetSaveStateMenuItem(7, false),
+						GetSaveStateMenuItem(8, false),
+						GetSaveStateMenuItem(9, false),
+						GetSaveStateMenuItem(10, false),
+						new ContextMenuSeparator(),
+						GetSaveStateMenuItem(11, false),
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.LoadStateDialog) { ActionType = ActionType.LoadStateDialog },
+						new MainMenuAction(EmulatorShortcut.LoadStateFromFile) { ActionType = ActionType.LoadStateFromFile },
+					}
+				},
+				new ContextMenuSeparator(),
+				new MainMenuAction() {
+					ActionType = ActionType.RecentFiles,
+					IsEnabled = () => HasRecentItems,
+					SubActions = new List<object>() {
+						GetRecentMenuItem(0),
+						GetRecentMenuItem(1),
+						GetRecentMenuItem(2),
+						GetRecentMenuItem(3),
+						GetRecentMenuItem(4),
+						GetRecentMenuItem(5),
+						GetRecentMenuItem(6),
+						GetRecentMenuItem(7),
+						GetRecentMenuItem(8),
+						GetRecentMenuItem(9)
+					}
+				},
+				new ContextMenuSeparator(),
+				new MainMenuAction(EmulatorShortcut.Exit) { ActionType = ActionType.Exit },
+			};
+		}
+
+		private MainMenuAction GetRecentMenuItem(int index)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				DynamicText = () => index < RecentItems.Count ? RecentItems[index].DisplayText : "",
+				CustomShortcutText = () => index < RecentItems.Count ? RecentItems[index].ShortenedFolder : "",
+				IsVisible = () => index < RecentItems.Count,
+				OnClick = () => {
+					if(index < RecentItems.Count) {
+						LoadRomHelper.LoadRom(RecentItems[index].RomFile, RecentItems[index].PatchFile);
+					}
+				}
+			};
+		}
+
+		private MainMenuAction GetSaveStateMenuItem(int slot, bool forSave)
+		{
+			EmulatorShortcut shortcut;
+			if(forSave) {
+				shortcut = (EmulatorShortcut)((int)EmulatorShortcut.SaveStateSlot1 + slot - 1);
+			} else {
+				shortcut = (EmulatorShortcut)((int)EmulatorShortcut.LoadStateSlot1 + slot - 1);
+			}
+			
+			bool isAutoSaveSlot = slot == 11;
+
+			return new MainMenuAction(shortcut) {
+				ActionType = ActionType.Custom,
+				DynamicText = () => {
+					string statePath = Path.Combine(ConfigManager.SaveStateFolder, EmuApi.GetRomInfo().GetRomName() + "_" + slot + ".mss");
+					string slotName = isAutoSaveSlot ? "Auto" : slot.ToString();
+
+					string header;
+					if(!File.Exists(statePath)) {
+						header = slotName + ". " + ResourceHelper.GetMessage("EmptyState");
+					} else {
+						DateTime dateTime = new FileInfo(statePath).LastWriteTime;
+						header = slotName + ". " + dateTime.ToShortDateString() + " " + dateTime.ToShortTimeString();
+					}
+					return header;
+				},
+				OnClick = () => {
+					if(forSave) {
+						EmuApi.SaveState((uint)slot);
+					} else {
+						EmuApi.LoadState((uint)slot);
+					}
+				}
+			};
 		}
 
 		private void InitGameMenu(MainWindow wnd)

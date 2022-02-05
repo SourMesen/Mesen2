@@ -3,21 +3,10 @@
 	<Forms>
 		<Form ID="MainMenuView">
 			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuOpen">Open</Control>
-			<Control ID="mnuReloadRom">Reload ROM</Control>
-			<Control ID="mnuSaveState">Save State</Control>
-			<Control ID="mnuLoadState">Load State</Control>
-			<Control ID="mnuLoadLastSession">Load Last Session</Control>
-			
-			<Control ID="mnuLoadStateMenu">Load State Menu</Control>
-			<Control ID="mnuLoadStateFromFile">Load from file...</Control>
-
-			<Control ID="mnuSaveStateMenu">Save State Menu</Control>
-			<Control ID="mnuSaveStateToFile">Save to file...</Control>
-
-			<Control ID="mnuRecentFiles">Recent Files</Control>
-			<Control ID="mnuExit">Exit</Control>
 			<Control ID="mnuGame">Game</Control>
+			<Control ID="mnuOptions">Options</Control>
+			<Control ID="mnuTools">Tools</Control>
+			<Control ID="mnuHelp">Help</Control>
 
 			<Control ID="mnuGameConfig">Game Configuration</Control>
 			<Control ID="mnuInputBarcode">Input Barcode...</Control>
@@ -26,10 +15,8 @@
 			<Control ID="mnuStartRecordTapeFile">Record to file...</Control>
 			<Control ID="mnuStopRecordTapeFile">Stop recording</Control>
 			
-			<Control ID="mnuOptions">Options</Control>
 			<Control ID="mnuBilinearInterpolation">Use Bilinear Interpolation</Control>
 			<Control ID="mnuBlendHighResolutionModes">Blend High Resolution Modes</Control>
-			<Control ID="mnuTools">Tools</Control>
 			<Control ID="mnuTests">Tests</Control>
 			<Control ID="mnuTestRun">Run...</Control>
 			<Control ID="mnuTestRecordFrom">Record from...</Control>
@@ -39,7 +26,6 @@
 			<Control ID="mnuTestRecordTest">Test</Control>
 			<Control ID="mnuTestStopRecording">Stop recording</Control>
 			<Control ID="mnuRunAllTests">Run all tests</Control>
-			<Control ID="mnuHelp">Help</Control>
 		</Form>
 		<Form ID="frmLogWindow" Title="Log Window">
 			<Control ID="btnClose">Close</Control>
@@ -2095,6 +2081,19 @@ x == [$150] || y == [10]
 			<Value ID="InsertCoin2">Insert Coin (2)</Value>
 			<Value ID="InsertCoin3">Insert Coin (3 - DualSystem)</Value>
 			<Value ID="InsertCoin4">Insert Coin (4 - DualSystem)</Value>
+
+			<Value ID="SaveState">Save State</Value>
+			<Value ID="LoadState">Load State</Value>
+			<Value ID="LoadLastSession">Load Last Session</Value>
+
+			<Value ID="LoadStateDialog">Load State Menu</Value>
+			<Value ID="LoadStateFromFile">Load from file...</Value>
+
+			<Value ID="SaveStateDialog">Save State Menu</Value>
+			<Value ID="SaveStateToFile">Save to file...</Value>
+
+			<Value ID="RecentFiles">Recent Files</Value>
+
 		</Enum>
 	</Enums>
 </Resources>

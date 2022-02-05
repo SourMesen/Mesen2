@@ -65,7 +65,7 @@ namespace Mesen.Config.Shortcuts
 		ToggleOsd,
 		ToggleAlwaysOnTop,
 		ToggleDebugInfo,
-		
+
 		ToggleAudio,
 		IncreaseVolume,
 		DecreaseVolume,
@@ -119,5 +119,22 @@ namespace Mesen.Config.Shortcuts
 		VsInsertCoin3,
 		VsInsertCoin4,
 		NesInputBarcode,
+	}
+
+	public static class EmulatorShortcutExtensions
+	{
+		public static KeyCombination? GetShortcutKeys(this EmulatorShortcut shortcut)
+		{
+			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+			int keyIndex = cfg.ShortcutKeys.FindIndex((ShortcutKeyInfo shortcutInfo) => shortcutInfo.Shortcut == shortcut);
+			if(keyIndex >= 0) {
+				if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
+					return cfg.ShortcutKeys[keyIndex].KeyCombination;
+				} else if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
+					return cfg.ShortcutKeys[keyIndex].KeyCombination2;
+				}
+			}
+			return null;
+		}
 	}
 }
