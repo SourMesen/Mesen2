@@ -39,14 +39,14 @@ private:
 
 	void ProcessRunSingleFrame();
 
-	void ProcessShortcutPressed(EmulatorShortcut shortcut);
-	void ProcessShortcutReleased(EmulatorShortcut shortcut);
+	void ProcessShortcutPressed(EmulatorShortcut shortcut, uint32_t shortcutParam);
+	void ProcessShortcutReleased(EmulatorShortcut shortcut, uint32_t shortcutParam);
 
 public:
 	ShortcutKeyHandler(Emulator* emu);
 	virtual ~ShortcutKeyHandler();
 
-	bool IsShortcutAllowed(EmulatorShortcut shortcut);
+	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam);
 	void ProcessKeys();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;

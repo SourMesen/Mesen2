@@ -40,6 +40,7 @@ namespace Mesen.ViewModels
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
+		[Reactive] public List<object> GameMenuItems { get; set; } = new();
 		[Reactive] public List<object> OptionsMenuItems { get; set; } = new();
 		[Reactive] public List<object> ToolsMenuItems { get; set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; set; } = new();
@@ -105,10 +106,63 @@ namespace Mesen.ViewModels
 
 		public void Initialize(MainWindow wnd)
 		{
+			InitGameMenu(wnd);
 			InitOptionsMenu(wnd);
 			InitToolMenu(wnd);
 			InitDebugMenu(wnd);
 			InitHelpMenu(wnd);
+		}
+
+		private void InitGameMenu(MainWindow wnd)
+		{
+			GameMenuItems = new List<object>() {
+				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Pause, IsVisible = () => !EmuApi.IsPaused() },
+				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Resume, IsVisible = () => EmuApi.IsPaused() },
+				new ContextMenuSeparator(),
+				new MainMenuAction(EmulatorShortcut.Reset) { ActionType = ActionType.Reset },
+				new MainMenuAction(EmulatorShortcut.PowerCycle) { ActionType = ActionType.PowerCycle },
+				new ContextMenuSeparator(),
+				new MainMenuAction(EmulatorShortcut.PowerOff) { ActionType = ActionType.PowerOff },
+
+				new ContextMenuSeparator() { IsVisible = () => IsFdsGame },
+
+				new MainMenuAction() {
+					ActionType = ActionType.SelectDisk,
+					IsVisible = () => IsFdsGame,
+					SubActions = new List<object>() {
+						GetFdsInsertDiskItem(0),
+						GetFdsInsertDiskItem(1),
+						GetFdsInsertDiskItem(2),
+						GetFdsInsertDiskItem(3),
+						GetFdsInsertDiskItem(4),
+						GetFdsInsertDiskItem(5),
+						GetFdsInsertDiskItem(6),
+						GetFdsInsertDiskItem(7),
+					}
+				},
+				
+				new MainMenuAction(EmulatorShortcut.FdsEjectDisk) {
+					ActionType = ActionType.EjectDisk,
+					IsVisible = () => IsFdsGame,
+				},
+
+				new ContextMenuSeparator() { IsVisible = () => IsVsSystemGame },
+
+				new MainMenuAction(EmulatorShortcut.VsInsertCoin1) { ActionType = ActionType.InsertCoin1, IsVisible = () => IsVsSystemGame },
+				new MainMenuAction(EmulatorShortcut.VsInsertCoin2) { ActionType = ActionType.InsertCoin2, IsVisible = () => IsVsSystemGame },
+				new MainMenuAction(EmulatorShortcut.VsInsertCoin3) { ActionType = ActionType.InsertCoin3, IsVisible = () => IsVsDualSystemGame },
+				new MainMenuAction(EmulatorShortcut.VsInsertCoin4) { ActionType = ActionType.InsertCoin4, IsVisible = () => IsVsDualSystemGame }
+			};
+		}
+
+		private MainMenuAction GetFdsInsertDiskItem(int diskSide)
+		{
+			return new MainMenuAction(EmulatorShortcut.FdsInsertDiskNumber) {
+				ActionType = ActionType.Custom,
+				CustomText = "Disk " + ((diskSide / 2) + 1) + " Side " + ((diskSide % 2 == 0) ? "A" : "B"),
+				ShortcutParam = (uint)diskSide,
+				IsVisible = () => EmuApi.IsShortcutAllowed(EmulatorShortcut.FdsInsertDiskNumber, (uint)diskSide)
+			};
 		}
 
 		private void InitOptionsMenu(MainWindow wnd)

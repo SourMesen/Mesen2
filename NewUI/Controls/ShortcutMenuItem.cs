@@ -58,7 +58,7 @@ namespace Mesen.Controls
 			if(Parent is MenuItem parent) {
 				Action updateShortcut = () => {
 					Tag = GetShortcutKeys(Shortcut)?.ToString() ?? "";
-					IsEnabled = EmuApi.IsShortcutAllowed(Shortcut);
+					IsEnabled = EmuApi.IsShortcutAllowed(Shortcut, 0);
 				};
 
 				updateShortcut();

@@ -18,20 +18,8 @@
 			<Control ID="mnuRecentFiles">Recent Files</Control>
 			<Control ID="mnuExit">Exit</Control>
 			<Control ID="mnuGame">Game</Control>
-			<Control ID="mnuResume">Resume</Control>
-			<Control ID="mnuPause">Pause</Control>
-			<Control ID="mnuReset">Reset</Control>
-			<Control ID="mnuPowerCycle">Power Cycle</Control>
-			<Control ID="mnuPowerOff">Power Off</Control>
-			<Control ID="mnuSwitchDiskSide">Switch Disk Side</Control>
-			<Control ID="mnuSelectDisk">Select Disk</Control>
-			<Control ID="mnuEjectDisk">Eject Disk</Control>
 
 			<Control ID="mnuGameConfig">Game Configuration</Control>
-			<Control ID="mnuInsertCoin1">Insert Coin (1)</Control>
-			<Control ID="mnuInsertCoin2">Insert Coin (2)</Control>
-			<Control ID="mnuInsertCoin3">Insert Coin (3 - DualSystem)</Control>
-			<Control ID="mnuInsertCoin4">Insert Coin (4 - DualSystem)</Control>
 			<Control ID="mnuInputBarcode">Input Barcode...</Control>
 			<Control ID="mnuTapeRecorder">Tape Recorder</Control>
 			<Control ID="mnuLoadTapeFile">Load from file...</Control>
@@ -2096,6 +2084,17 @@ x == [$150] || y == [10]
 			<Value ID="Nes">NES</Value>
 			<Value ID="Snes">SNES</Value>
 			<Value ID="Gameboy">Game Boy</Value>
+
+			<Value ID="Resume">Resume</Value>
+			<Value ID="Pause">Pause</Value>
+			<Value ID="PowerOff">Power Off</Value>
+			<Value ID="SelectDisk">Select Disk</Value>
+			<Value ID="EjectDisk">Eject Disk</Value>
+			
+			<Value ID="InsertCoin1">Insert Coin (1)</Value>
+			<Value ID="InsertCoin2">Insert Coin (2)</Value>
+			<Value ID="InsertCoin3">Insert Coin (3 - DualSystem)</Value>
+			<Value ID="InsertCoin4">Insert Coin (4 - DualSystem)</Value>
 		</Enum>
 	</Enums>
 </Resources>

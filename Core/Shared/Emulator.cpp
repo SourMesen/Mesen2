@@ -860,6 +860,14 @@ BaseVideoFilter* Emulator::GetVideoFilter()
 	}
 }
 
+bool Emulator::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
+{
+	if(_console) {
+		return _console->IsShortcutAllowed(shortcut, shortcutParam);
+	}
+	return true;
+}
+
 void Emulator::BlockDebuggerRequests()
 {
 	//Block all new debugger calls

@@ -93,6 +93,8 @@ public:
 	uint32_t GetMasterClockRate() override;
 
 	void SaveBattery() override;
+	
+	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) override;
 
 	BaseVideoFilter* GetVideoFilter() override;
 

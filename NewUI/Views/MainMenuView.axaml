@@ -91,71 +91,7 @@
 			</c:ShortcutMenuItem>
 		</MenuItem>
 		
-		<MenuItem Header="{l:Translate mnuGame}" SubmenuOpened="OnGameMenuOpened">
-			<c:ShortcutMenuItem Header="{l:Translate mnuPause}" Shortcut="Pause" Name="mnuPause">
-				<MenuItem.Icon>
-					<Image Source="/Assets/MediaPause.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuResume}" Shortcut="Pause" Name="mnuResume">
-				<MenuItem.Icon>
-					<Image Source="/Assets/MediaPlay.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<Separator />
-			<c:ShortcutMenuItem Header="{l:Translate mnuReset}" Shortcut="Reset">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Refresh.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuPowerCycle}" Shortcut="PowerCycle">
-				<MenuItem.Icon>
-					<Image Source="/Assets/PowerCycle.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<Separator />
-			<c:ShortcutMenuItem Header="{l:Translate mnuPowerOff}" Shortcut="PowerOff">
-				<MenuItem.Icon>
-					<Image Source="/Assets/MediaStop.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<Separator IsVisible="{CompiledBinding IsFdsGame}" />
-			<MenuItem Header="{l:Translate mnuSelectDisk}" IsVisible="{CompiledBinding IsFdsGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/SaveFloppy.png" />
-				</MenuItem.Icon>
-				<c:ShortcutMenuItem Header="Disk 1 Side A" Shortcut="FdsInsertDiskNumber" ShortcutParam="0" />
-				<c:ShortcutMenuItem Header="Disk 1 Side B" Shortcut="FdsInsertDiskNumber" ShortcutParam="1" />
-				<c:ShortcutMenuItem Header="Disk 2 Side A" Shortcut="FdsInsertDiskNumber" ShortcutParam="2" />
-				<c:ShortcutMenuItem Header="Disk 2 Side B" Shortcut="FdsInsertDiskNumber" ShortcutParam="3" />
-			</MenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuEjectDisk}" Shortcut="FdsEjectDisk" IsVisible="{CompiledBinding IsFdsGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/MediaEject.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<Separator IsVisible="{CompiledBinding IsVsSystemGame}" />
-			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin1}" Shortcut="VsInsertCoin1" IsVisible="{CompiledBinding IsVsSystemGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Coins.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin2}" Shortcut="VsInsertCoin2" IsVisible="{CompiledBinding IsVsSystemGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Coins.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin3}" Shortcut="VsInsertCoin3" IsVisible="{CompiledBinding IsVsDualSystemGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Coins.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-			<c:ShortcutMenuItem Header="{l:Translate mnuInsertCoin4}" Shortcut="VsInsertCoin4" IsVisible="{CompiledBinding IsVsDualSystemGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Coins.png" />
-				</MenuItem.Icon>
-			</c:ShortcutMenuItem>
-		</MenuItem>
+		<MenuItem Header="{l:Translate mnuGame}" Classes="ActionMenu" Items="{CompiledBinding GameMenuItems}" />
 		<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
 		<MenuItem Header="{l:Translate mnuTools}" Classes="ActionMenu" Items="{CompiledBinding ToolsMenuItems}" />
 		<MenuItem Header="_Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />

@@ -28,7 +28,7 @@ namespace Mesen.Utilities
 
 		public void ExecuteShortcut(EmulatorShortcut shortcut)
 		{
-			if(!EmuApi.IsShortcutAllowed(shortcut)) {
+			if(!EmuApi.IsShortcutAllowed(shortcut, 0)) {
 				return;
 			}
 

@@ -57,7 +57,7 @@ namespace Mesen.Controls
 					}
 
 					Tag = ShortcutMenuItem.GetShortcutKeys(shortcut)?.ToString() ?? "";
-					IsEnabled = EmuApi.IsShortcutAllowed(shortcut);
+					IsEnabled = EmuApi.IsShortcutAllowed(shortcut, 0);
 				};
 
 				updateShortcut();

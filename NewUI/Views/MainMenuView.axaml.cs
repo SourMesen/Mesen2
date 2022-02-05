@@ -46,27 +46,5 @@ namespace Mesen.Views
 		{
 			_model.MainWindow.RecentGames.Init(GameScreenMode.LoadState);
 		}
-
-		private void OnResetClick(object sender, RoutedEventArgs e)
-		{
-			EmuApi.Reset();
-		}
-
-		private void OnPowerCycleClick(object sender, RoutedEventArgs e)
-		{
-			EmuApi.PowerCycle();
-		}
-
-		private void OnPowerOffClick(object sender, RoutedEventArgs e)
-		{
-			EmuApi.Stop();
-		}
-
-		private void OnGameMenuOpened(object sender, RoutedEventArgs e)
-		{
-			bool isPaused = EmuApi.IsPaused();
-			this.FindControl<ShortcutMenuItem>("mnuPause").IsVisible = !isPaused;
-			this.FindControl<ShortcutMenuItem>("mnuResume").IsVisible = isPaused;
-		}
 	}
 }

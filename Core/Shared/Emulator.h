@@ -210,6 +210,8 @@ public:
 	
 	BaseVideoFilter* GetVideoFilter();
 
+	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam);
+
 	void InitDebugger();
 	void StopDebugger();
 	DebuggerRequest GetDebugger(bool autoInit = false);

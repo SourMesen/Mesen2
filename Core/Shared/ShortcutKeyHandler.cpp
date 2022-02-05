@@ -105,14 +105,13 @@ void ShortcutKeyHandler::ProcessRunSingleFrame()
 	_emu->PauseOnNextFrame();
 }
 
-bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
+bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
 	bool isRunning = _emu->IsRunning();
 	bool isNetplayClient = _emu->GetGameClient()->Connected();
 	bool isMoviePlaying = _emu->GetMovieManager()->Playing();
 	bool isMovieRecording = _emu->GetMovieManager()->Recording();
 	bool isMovieActive = isMoviePlaying || isMovieRecording;
-	RomFormat romFormat = _emu->GetRomInfo().Format;
 
 	switch(shortcut) {
 		case EmulatorShortcut::ToggleRewind:
@@ -161,28 +160,14 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut)
 		case EmulatorShortcut::LoadStateFromFile:
 		case EmulatorShortcut::LoadState:
 			return isRunning && !isNetplayClient && !isMovieActive;
-
-		case EmulatorShortcut::FdsEjectDisk:
-		case EmulatorShortcut::FdsInsertDiskNumber:
-		case EmulatorShortcut::FdsInsertNextDisk:
-		case EmulatorShortcut::FdsSwitchDiskSide:
-			return isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::Fds;
-
-		case EmulatorShortcut::VsInsertCoin1:
-		case EmulatorShortcut::VsInsertCoin2:
-		case EmulatorShortcut::VsInsertCoin3:
-		case EmulatorShortcut::VsInsertCoin4:
-		case EmulatorShortcut::VsServiceButton:
-		case EmulatorShortcut::VsServiceButton2:
-			return isRunning && !isNetplayClient && !isMoviePlaying && (romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem);
 	}
 
-	return true;
+	return _emu->IsShortcutAllowed(shortcut, shortcutParam);
 }
 
-void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
+void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
-	if(!IsShortcutAllowed(shortcut)) {
+	if(!IsShortcutAllowed(shortcut, shortcutParam)) {
 		return;
 	}
 
@@ -252,9 +237,9 @@ void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut)
 	}
 }
 
-void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
+void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
-	if(!IsShortcutAllowed(shortcut)) {
+	if(!IsShortcutAllowed(shortcut, shortcutParam)) {
 		return;
 	}
 
@@ -272,11 +257,10 @@ void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut)
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	//Let the UI handle these shortcuts
 	for(uint64_t i = 0; i < (uint64_t)EmulatorShortcut::ShortcutCount; i++) {
 		EmulatorShortcut shortcut = (EmulatorShortcut)i;
 		if(DetectKeyPress(shortcut)) {
-			if(!IsShortcutAllowed(shortcut)) {
+			if(!IsShortcutAllowed(shortcut, 0)) {
 				continue;
 			}
 
@@ -342,13 +326,13 @@ void ShortcutKeyHandler::ProcessNotification(ConsoleNotificationType type, void*
 	switch(type) {
 		case ConsoleNotificationType::ExecuteShortcut: {
 			ExecuteShortcutParams p = *(ExecuteShortcutParams*)parameter;
-			ProcessShortcutPressed(p.Shortcut);
+			ProcessShortcutPressed(p.Shortcut, p.Param);
 			break;
 		}
 
 		case ConsoleNotificationType::ReleaseShortcut: {
 			ExecuteShortcutParams p = *(ExecuteShortcutParams*)parameter;
-			ProcessShortcutReleased(p.Shortcut);
+			ProcessShortcutReleased(p.Shortcut, p.Param);
 			break;
 		}
 	}

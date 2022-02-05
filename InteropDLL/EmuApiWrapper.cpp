@@ -269,7 +269,7 @@ extern "C" {
 	DllExport void __stdcall SetCheats(uint32_t codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }
 
 	DllExport void __stdcall ExecuteShortcut(ExecuteShortcutParams params) { _emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ExecuteShortcut, &params); }
-	DllExport bool __stdcall IsShortcutAllowed(EmulatorShortcut shortcut) { return _emu->GetShortcutKeyHandler()->IsShortcutAllowed(shortcut); }
+	DllExport bool __stdcall IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) { return _emu->GetShortcutKeyHandler()->IsShortcutAllowed(shortcut, shortcutParam); }
 
 	DllExport void __stdcall WriteLogEntry(char* message) { MessageManager::Log(message); }
 

@@ -49,6 +49,8 @@ public:
 
 	virtual void SaveBattery() = 0;
 
+	virtual bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) { return true; }
+
 	virtual IControlManager* GetControlManager() = 0;
 
 	virtual ConsoleRegion GetRegion() = 0;

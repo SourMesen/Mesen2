@@ -161,7 +161,7 @@ namespace Mesen.Debugger.Utilities
 			if(shortcut.HasValue) {
 				Shortcut = shortcut.Value;
 
-				IsEnabled = () => EmuApi.IsShortcutAllowed(shortcut.Value);
+				IsEnabled = () => EmuApi.IsShortcutAllowed(shortcut.Value, ShortcutParam);
 
 				OnClick = () => {
 					//Run outside the UI thread to avoid deadlocks, etc.
@@ -503,5 +503,25 @@ namespace Mesen.Debugger.Utilities
 		Snes,
 		[IconFile("GameboyIcon")]
 		Gameboy,
+		[IconFile("MediaPause")]
+		Pause,
+		[IconFile("MediaStop")]
+		PowerOff,
+		[IconFile("MediaPlay")]
+		Resume,
+
+		[IconFile("SaveFloppy")]
+		SelectDisk,
+		[IconFile("MediaEject")]
+		EjectDisk,
+
+		[IconFile("Coins")]
+		InsertCoin1,
+		[IconFile("Coins")]
+		InsertCoin2,
+		[IconFile("Coins")]
+		InsertCoin3,
+		[IconFile("Coins")]
+		InsertCoin4,
 	}
 }
