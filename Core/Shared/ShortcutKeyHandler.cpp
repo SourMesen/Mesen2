@@ -159,6 +159,7 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t s
 		case EmulatorShortcut::LoadStateDialog:
 		case EmulatorShortcut::LoadStateFromFile:
 		case EmulatorShortcut::LoadState:
+		case EmulatorShortcut::LoadLastSession:
 			return isRunning && !isNetplayClient && !isMovieActive;
 	}
 

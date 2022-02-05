@@ -275,7 +275,7 @@ void Emulator::RunSingleFrame()
 	_controlManager->UpdateControlDevices();*/
 }
 
-void Emulator::Stop(bool sendNotification)
+void Emulator::Stop(bool sendNotification, bool preventRecentGameSave)
 {
 	BlockDebuggerRequests();
 
@@ -290,7 +290,7 @@ void Emulator::Stop(bool sendNotification)
 		_emuThread.release();
 	}
 
-	if(_console && !_settings->GetPreferences().DisableGameSelectionScreen && !_audioPlayerHud) {
+	if(!preventRecentGameSave && _console && !_settings->GetPreferences().DisableGameSelectionScreen && !_audioPlayerHud) {
 		RomInfo romInfo = GetRomInfo();
 		_saveStateManager->SaveRecentGame(romInfo.RomFile.GetFileName(), romInfo.RomFile, romInfo.PatchFile);
 	}
@@ -425,7 +425,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	}
 
 	if(stopRom) {
-		Stop(false);
+		//Only update the recent game entry if the game that was loaded is a different game
+		bool gameChanged = (string)_rom.RomFile != (string)romFile || (string)_rom.PatchFile != (string)patchFile;
+		Stop(false, !gameChanged);
 		//TODO PERF
 		//KeyManager::UpdateDevices();
 	}
@@ -435,9 +437,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	//Cast VirtualFiles to string to ensure the original file data isn't kept in memory
 	_rom.RomFile = (string)romFile;
-	if(patchFile.IsValid()) {
-		_rom.PatchFile = (string)patchFile;
-	}
+	_rom.PatchFile = (string)patchFile;
 	_rom.Format = console->GetRomFormat();
 
 	if(_rom.Format == RomFormat::Spc || _rom.Format == RomFormat::Nsf || _rom.Format == RomFormat::Gbs) {

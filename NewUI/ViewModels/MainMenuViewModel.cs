@@ -143,6 +143,12 @@ namespace Mesen.ViewModels
 						new MainMenuAction(EmulatorShortcut.LoadStateFromFile) { ActionType = ActionType.LoadStateFromFile },
 					}
 				},
+
+				new MainMenuAction(EmulatorShortcut.LoadLastSession) {
+					ActionType = ActionType.LoadLastSession,
+					IsEnabled = () => File.Exists(Path.Combine(ConfigManager.RecentGamesFolder, MainWindow.RomInfo.GetRomName() + ".rgd"))
+				},
+
 				new ContextMenuSeparator(),
 				new MainMenuAction() {
 					ActionType = ActionType.RecentFiles,

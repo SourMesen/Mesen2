@@ -155,7 +155,7 @@ public:
 
 	void Run();
 	void RunSingleFrame();
-	void Stop(bool sendNotification);
+	void Stop(bool sendNotification, bool preventRecentGameSave = false);
 
 	void OnBeforeSendFrame();
 	void ProcessEndOfFrame();

@@ -103,6 +103,7 @@ namespace Mesen.Config.Shortcuts
 		LoadStateSlotAuto,
 		LoadStateFromFile,
 		LoadStateDialog,
+		LoadLastSession,
 
 		OpenFile,
 		LoadRandomGame,

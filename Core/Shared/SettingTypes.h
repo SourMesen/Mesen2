@@ -639,6 +639,7 @@ enum class EmulatorShortcut
 	LoadStateSlotAuto,
 	LoadStateFromFile,
 	LoadStateDialog,
+	LoadLastSession,
 
 	OpenFile,
 	LoadRandomGame,

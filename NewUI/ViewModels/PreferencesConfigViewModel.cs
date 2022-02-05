@@ -104,6 +104,7 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.LoadStateSlotAuto,
 				EmulatorShortcut.LoadStateFromFile,
 				EmulatorShortcut.LoadStateDialog,
+				EmulatorShortcut.LoadLastSession,
 
 				EmulatorShortcut.SelectSaveSlot1,
 				EmulatorShortcut.SelectSaveSlot2,

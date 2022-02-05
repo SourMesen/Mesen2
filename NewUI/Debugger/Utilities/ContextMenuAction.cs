@@ -548,5 +548,6 @@ namespace Mesen.Debugger.Utilities
 		LoadStateFromFile,
 		
 		RecentFiles,
+		LoadLastSession,
 	}
 }
