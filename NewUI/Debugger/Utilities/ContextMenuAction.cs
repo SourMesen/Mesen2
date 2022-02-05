@@ -61,7 +61,13 @@ namespace Mesen.Debugger.Utilities
 				_subActions = value;
 
 				if(_subActions != null) {
+					Func<bool>? isEnabled = IsEnabled;
+
 					IsEnabled = () => {
+						if(isEnabled != null && !isEnabled()) {
+							return false;
+						}
+
 						foreach(object subAction in _subActions) {
 							if(subAction is BaseMenuAction act) {
 								if(act.IsEnabled == null || act.IsEnabled()) {
@@ -150,18 +156,20 @@ namespace Mesen.Debugger.Utilities
 		{
 		}
 
-		public MainMenuAction(EmulatorShortcut shortcut)
+		public MainMenuAction(EmulatorShortcut? shortcut)
 		{
-			Shortcut = shortcut;
+			if(shortcut.HasValue) {
+				Shortcut = shortcut.Value;
 
-			IsEnabled = () => EmuApi.IsShortcutAllowed(shortcut);
+				IsEnabled = () => EmuApi.IsShortcutAllowed(shortcut.Value);
 
-			OnClick = () => {
-				//Run outside the UI thread to avoid deadlocks, etc.
-				Task.Run(() => {
-					EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = shortcut, Param = ShortcutParam });
-				});
-			};
+				OnClick = () => {
+					//Run outside the UI thread to avoid deadlocks, etc.
+					Task.Run(() => {
+						EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = shortcut.Value, Param = ShortcutParam });
+					});
+				};
+			}
 		}
 
 		public override string ShortcutText
@@ -433,6 +441,7 @@ namespace Mesen.Debugger.Utilities
 		Disconnect,
 		StartServer,
 		StopServer,
+		SelectController,
 
 		[IconFile("Microphone")]
 		SoundRecorder,
@@ -460,6 +469,39 @@ namespace Mesen.Debugger.Utilities
 		About,
 		[IconFile("Comment")]
 		ReportBug,
-		SelectController,
+
+		[IconFile("Speed")]
+		Speed,
+		NormalSpeed,
+		DoubleSpeed,
+		TripleSpeed,
+		MaximumSpeed,
+		HalfSpeed,
+		QuarterSpeed,
+		IncreaseSpeed,
+		DecreaseSpeed,
+		ShowFps,
+
+		[IconFile("Fullscreen")]
+		VideoScale,
+		Fullscreen,
+		
+		[IconFile("VideoFilter")]
+		VideoFilter,
+		[IconFile("WebBrowser")]
+		Region,
+
+		[IconFile("Audio")]
+		Audio,
+		[IconFile("DipSwitches")]
+		Emulation,
+		[IconFile("VideoOptions")]
+		Video,
+		[IconFile("NesIcon")]
+		Nes,
+		[IconFile("SnesIcon")]
+		Snes,
+		[IconFile("GameboyIcon")]
+		Gameboy,
 	}
 }

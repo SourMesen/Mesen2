@@ -89,8 +89,8 @@
 					<Image Source="/Assets/Exit.png" />
 				</MenuItem.Icon>
 			</c:ShortcutMenuItem>
+		</MenuItem>
 		
-	</MenuItem>
 		<MenuItem Header="{l:Translate mnuGame}" SubmenuOpened="OnGameMenuOpened">
 			<c:ShortcutMenuItem Header="{l:Translate mnuPause}" Shortcut="Pause" Name="mnuPause">
 				<MenuItem.Icon>
@@ -156,115 +156,7 @@
 				</MenuItem.Icon>
 			</c:ShortcutMenuItem>
 		</MenuItem>
-		<MenuItem Header="{l:Translate mnuOptions}">
-			<MenuItem Header="{l:Translate mnuEmulationSpeed}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Speed.png" />
-				</MenuItem.Icon>
-				<MenuItem Header="{l:Translate mnuEmuSpeedNormal}" />
-				<Separator />
-				<c:ShortcutMenuItem Header="{l:Translate mnuIncreaseSpeed}" Shortcut="IncreaseSpeed" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuDecreaseSpeed}" Shortcut="DecreaseSpeed" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuEmuSpeedMaximumSpeed}" Shortcut="MaxSpeed" />
-				<Separator />
-				<MenuItem Header="{l:Translate mnuEmuSpeedTriple}" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedDouble}" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedHalf}" />
-				<MenuItem Header="{l:Translate mnuEmuSpeedQuarter}" />
-				<Separator />
-				<c:ShortcutMenuItem Header="{l:Translate mnuShowFPS}" Shortcut="ToggleFps" />
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuVideoScale}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Fullscreen.png" />
-				</MenuItem.Icon>
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale1x}" Shortcut="SetScale1x" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale2x}" Shortcut="SetScale2x" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale3x}" Shortcut="SetScale3x" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale4x}" Shortcut="SetScale4x" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale5x}" Shortcut="SetScale5x" />
-				<c:ShortcutMenuItem Header="{l:Translate mnuScale6x}" Shortcut="SetScale6x" />
-				<Separator />
-				<c:ShortcutMenuItem Header="{l:Translate mnuFullscreen}" Shortcut="ToggleFullscreen" />
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuVideoFilter}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/VideoFilter.png" />
-				</MenuItem.Icon>
-				<c:VideoFilterMenuItem Filter="None" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="NTSC" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="xBRZ2x" />
-				<c:VideoFilterMenuItem Filter="xBRZ3x" />
-				<c:VideoFilterMenuItem Filter="xBRZ4x" />
-				<c:VideoFilterMenuItem Filter="xBRZ5x" />
-				<c:VideoFilterMenuItem Filter="xBRZ6x" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="HQ2x" />
-				<c:VideoFilterMenuItem Filter="HQ3x" />
-				<c:VideoFilterMenuItem Filter="HQ4x" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="Scale2x" />
-				<c:VideoFilterMenuItem Filter="Scale3x" />
-				<c:VideoFilterMenuItem Filter="Scale4x" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="_2xSai" />
-				<c:VideoFilterMenuItem Filter="Super2xSai" />
-				<c:VideoFilterMenuItem Filter="SuperEagle" />
-				<Separator />
-				<c:VideoFilterMenuItem Filter="Prescale2x" />
-				<c:VideoFilterMenuItem Filter="Prescale3x" />
-				<c:VideoFilterMenuItem Filter="Prescale4x" />
-				<c:VideoFilterMenuItem Filter="Prescale6x" />
-				<c:VideoFilterMenuItem Filter="Prescale8x" />
-				<c:VideoFilterMenuItem Filter="Prescale10x" />
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuRegion}" SubmenuOpened="OnRegionMenuOpened" IsEnabled="{CompiledBinding !IsGbGame}">
-				<MenuItem.Icon>
-					<Image Source="/Assets/WebBrowser.png" />
-				</MenuItem.Icon>
-				<Separator />
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="{l:Translate mnuAudioConfig}" Click="OnAudioConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Audio.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuEmulationConfig}" Click="OnEmulationConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/DipSwitches.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="{l:Translate mnuVideoConfig}" Click="OnVideoConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/VideoOptions.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="_NES" Click="OnNesConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/NesIcon.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_SNES" Click="OnSnesConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/SnesIcon.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<MenuItem Header="_Game Boy" Click="OnGameboyConfigClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/GameboyIcon.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-			<Separator />
-			<MenuItem Header="{l:Translate mnuPreferences}" Click="OnPreferencesClick">
-				<MenuItem.Icon>
-					<Image Source="/Assets/Settings.png" />
-				</MenuItem.Icon>
-			</MenuItem>
-		</MenuItem>
+		<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
 		<MenuItem Header="{l:Translate mnuTools}" Classes="ActionMenu" Items="{CompiledBinding ToolsMenuItems}" />
 		<MenuItem Header="_Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 		<MenuItem Header="{l:Translate mnuHelp}" Classes="ActionMenu" Items="{CompiledBinding HelpMenuItems}" />

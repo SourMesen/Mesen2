@@ -39,39 +39,8 @@
 			<Control ID="mnuStopRecordTapeFile">Stop recording</Control>
 			
 			<Control ID="mnuOptions">Options</Control>
-			<Control ID="mnuEmulationSpeed">Speed</Control>
-			<Control ID="mnuEmuSpeedNormal">Normal (100%)</Control>
-			<Control ID="mnuIncreaseSpeed">Increase Speed</Control>
-			<Control ID="mnuDecreaseSpeed">Decrease Speed</Control>
-			<Control ID="mnuEmuSpeedMaximumSpeed">Maximum Speed</Control>
-			<Control ID="mnuEmuSpeedTriple">Triple (300%)</Control>
-			<Control ID="mnuEmuSpeedDouble">Double (200%)</Control>
-			<Control ID="mnuEmuSpeedHalf">Half (50%)</Control>
-			<Control ID="mnuEmuSpeedQuarter">Quarter (25%)</Control>
-			<Control ID="mnuShowFPS">Show FPS</Control>
-			<Control ID="mnuVideoScale">Video Size</Control>
-			<Control ID="mnuScale1x">1x</Control>
-			<Control ID="mnuScale2x">2x</Control>
-			<Control ID="mnuScale3x">3x</Control>
-			<Control ID="mnuScale4x">4x</Control>
-			<Control ID="mnuScale5x">5x</Control>
-			<Control ID="mnuScale6x">6x</Control>
-			<Control ID="mnuFullscreen">Fullscreen</Control>
-			<Control ID="mnuVideoFilter">Video Filter</Control>
-			<Control ID="mnuNoneFilter">None</Control>
-			<Control ID="mnuNtscFilter">NTSC 2x (blargg)</Control>
 			<Control ID="mnuBilinearInterpolation">Use Bilinear Interpolation</Control>
 			<Control ID="mnuBlendHighResolutionModes">Blend High Resolution Modes</Control>
-			<Control ID="mnuAudioConfig">Audio</Control>
-			<Control ID="mnuInput">Input</Control>
-			<Control ID="mnuRegion">Region</Control>
-			<Control ID="mnuRegionAuto">Auto</Control>
-			<Control ID="mnuRegionNtsc">NTSC</Control>
-			<Control ID="mnuRegionPal">PAL</Control>
-			<Control ID="mnuRegionDendy">Dendy</Control>
-			<Control ID="mnuVideoConfig">Video</Control>
-			<Control ID="mnuEmulationConfig">Emulation</Control>
-			<Control ID="mnuPreferences">Preferences</Control>
 			<Control ID="mnuTools">Tools</Control>
 			<Control ID="mnuTests">Tests</Control>
 			<Control ID="mnuTestRun">Run...</Control>
@@ -2104,6 +2073,29 @@ x == [$150] || y == [10]
 			<Value ID="CheckForUpdates">Check for updates</Value>
 			<Value ID="ReportBug">Report a bug</Value>
 			<Value ID="About">About</Value>
+
+			<Value ID="Speed">Speed</Value>
+			<Value ID="NormalSpeed">Normal (100%)</Value>
+			<Value ID="IncreaseSpeed">Increase Speed</Value>
+			<Value ID="DecreaseSpeed">Decrease Speed</Value>
+			<Value ID="MaximumSpeed">Maximum Speed</Value>
+			<Value ID="TripleSpeed">Triple (300%)</Value>
+			<Value ID="DoubleSpeed">Double (200%)</Value>
+			<Value ID="HalfSpeed">Half (50%)</Value>
+			<Value ID="QuarterSpeed">Quarter (25%)</Value>
+			<Value ID="ShowFps">Show FPS</Value>
+
+			<Value ID="VideoScale">Video Size</Value>
+			<Value ID="Fullscreen">Fullscreen</Value>
+			<Value ID="VideoFilter">Video Filter</Value>
+			<Value ID="Region">Region</Value>
+
+			<Value ID="Audio">Audio</Value>
+			<Value ID="Emulation">Emulation</Value>
+			<Value ID="Video">Video</Value>
+			<Value ID="Nes">NES</Value>
+			<Value ID="Snes">SNES</Value>
+			<Value ID="Gameboy">Game Boy</Value>
 		</Enum>
 	</Enums>
 </Resources>

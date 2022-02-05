@@ -40,9 +40,12 @@ namespace Mesen.ViewModels
 		[Reactive] public bool HasRecentItems { get; private set; }
 		public ReactiveCommand<RecentItem, Unit> OpenRecentCommand { get; }
 
+		[Reactive] public List<object> OptionsMenuItems { get; set; } = new();
 		[Reactive] public List<object> ToolsMenuItems { get; set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; set; } = new();
 		[Reactive] public List<object> HelpMenuItems { get; set; } = new();
+
+		private ConfigWindow? _cfgWindow = null;
 
 		[Obsolete("For designer only")]
 		public MainMenuViewModel() : this(new MainWindowViewModel()) { }
@@ -78,11 +81,275 @@ namespace Mesen.ViewModels
 			});
 		}
 
+		private void OpenConfig(MainWindow wnd, ConfigWindowTab tab)
+		{
+			if(_cfgWindow == null) {
+				_cfgWindow = new ConfigWindow(tab);
+				_cfgWindow.Closed += cfgWindow_Closed;
+				_cfgWindow.ShowCentered((Control)wnd);
+			} else {
+				(_cfgWindow.DataContext as ConfigViewModel)!.SelectTab(tab);
+				_cfgWindow.Activate();
+			}
+		}
+
+		private void cfgWindow_Closed(object? sender, EventArgs e)
+		{
+			_cfgWindow = null;
+			if(ConfigManager.Config.Preferences.DisableGameSelectionScreen && MainWindow.RecentGames.Visible) {
+				MainWindow.RecentGames.Visible = false;
+			} else if(!ConfigManager.Config.Preferences.DisableGameSelectionScreen && !IsGameRunning) {
+				MainWindow.RecentGames.Init(GameScreenMode.RecentGames);
+			}
+		}
+
 		public void Initialize(MainWindow wnd)
 		{
+			InitOptionsMenu(wnd);
 			InitToolMenu(wnd);
 			InitDebugMenu(wnd);
 			InitHelpMenu(wnd);
+		}
+
+		private void InitOptionsMenu(MainWindow wnd)
+		{
+			OptionsMenuItems = new List<object>() {
+				new MainMenuAction() {
+					ActionType = ActionType.Speed,
+					SubActions = new List<object> {
+						GetSpeedMenuItem(ActionType.NormalSpeed, 100),
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.IncreaseSpeed) {
+							ActionType = ActionType.IncreaseSpeed
+						},
+						new MainMenuAction(EmulatorShortcut.DecreaseSpeed) {
+							ActionType = ActionType.DecreaseSpeed
+						},
+						GetSpeedMenuItem(ActionType.MaximumSpeed, 0, EmulatorShortcut.MaxSpeed),
+						new ContextMenuSeparator(),
+						GetSpeedMenuItem(ActionType.TripleSpeed, 300),
+						GetSpeedMenuItem(ActionType.DoubleSpeed, 200),
+						GetSpeedMenuItem(ActionType.HalfSpeed, 50),
+						GetSpeedMenuItem(ActionType.QuarterSpeed, 25),
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.ToggleFps) {
+							ActionType = ActionType.ShowFps,
+							IsSelected = () => ConfigManager.Config.Preferences.ShowFps
+						}
+					}
+				},
+
+				new MainMenuAction() {
+					ActionType = ActionType.VideoScale,
+					SubActions = new List<object>() {
+						GetScaleMenuItem(1, EmulatorShortcut.SetScale1x),
+						GetScaleMenuItem(2, EmulatorShortcut.SetScale2x),
+						GetScaleMenuItem(3, EmulatorShortcut.SetScale3x),
+						GetScaleMenuItem(4, EmulatorShortcut.SetScale4x),
+						GetScaleMenuItem(5, EmulatorShortcut.SetScale5x),
+						GetScaleMenuItem(6, EmulatorShortcut.SetScale6x),
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.ToggleFullscreen) {
+							ActionType = ActionType.Fullscreen
+						},
+					}
+				},
+
+				new MainMenuAction() {
+					ActionType = ActionType.VideoFilter,
+					SubActions = new List<object>() {
+						GetVideoFilterMenuItem(VideoFilterType.None),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.NTSC),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.xBRZ2x),
+						GetVideoFilterMenuItem(VideoFilterType.xBRZ3x),
+						GetVideoFilterMenuItem(VideoFilterType.xBRZ4x),
+						GetVideoFilterMenuItem(VideoFilterType.xBRZ5x),
+						GetVideoFilterMenuItem(VideoFilterType.xBRZ6x),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.HQ2x),
+						GetVideoFilterMenuItem(VideoFilterType.HQ3x),
+						GetVideoFilterMenuItem(VideoFilterType.HQ4x),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.Scale2x),
+						GetVideoFilterMenuItem(VideoFilterType.Scale3x),
+						GetVideoFilterMenuItem(VideoFilterType.Scale4x),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType._2xSai),
+						GetVideoFilterMenuItem(VideoFilterType.Super2xSai),
+						GetVideoFilterMenuItem(VideoFilterType.SuperEagle),
+						new ContextMenuSeparator(),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale2x),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale3x),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale4x),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale6x),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale8x),
+						GetVideoFilterMenuItem(VideoFilterType.Prescale10x)
+					}
+				},
+
+				new MainMenuAction() {
+					ActionType = ActionType.Region,
+					IsEnabled = () => IsGameRunning && MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
+					SubActions = new List<object>() {
+						GetRegionMenuItem(ConsoleRegion.Auto),
+						new ContextMenuSeparator(),
+						GetRegionMenuItem(ConsoleRegion.Ntsc),
+						GetRegionMenuItem(ConsoleRegion.Pal),
+						GetRegionMenuItem(ConsoleRegion.Dendy),
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new MainMenuAction() {
+					ActionType = ActionType.Audio,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Audio)
+				},
+				new MainMenuAction() {
+					ActionType = ActionType.Emulation,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Emulation)
+				},
+				new MainMenuAction() {
+					ActionType = ActionType.Video,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Video)
+				},
+
+				new ContextMenuSeparator(),
+
+				new MainMenuAction() {
+					ActionType = ActionType.Nes,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Nes)
+				},
+				new MainMenuAction() {
+					ActionType = ActionType.Snes,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Snes)
+				},
+				new MainMenuAction() {
+					ActionType = ActionType.Gameboy,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Gameboy)
+				},
+
+				new ContextMenuSeparator(),
+
+				new MainMenuAction() {
+					ActionType = ActionType.Preferences,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Preferences)
+				}
+			};
+		}
+
+		private MainMenuAction GetRegionMenuItem(ConsoleRegion region)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(region),
+				IsVisible = () => region switch {
+					ConsoleRegion.Ntsc => MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
+					ConsoleRegion.Pal => MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
+					ConsoleRegion.Dendy => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes,
+					ConsoleRegion.Auto or _ => true,
+				},
+				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
+					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
+					ConsoleType.Nes => ConfigManager.Config.Nes.Region == region,
+					_ => region == ConsoleRegion.Auto
+				},
+				OnClick = () => {
+					switch(MainWindow.RomInfo.ConsoleType) {
+						case ConsoleType.Snes:
+							ConfigManager.Config.Snes.Region = region;
+							ConfigManager.Config.Snes.ApplyConfig();
+							break;
+
+						case ConsoleType.Nes:
+							ConfigManager.Config.Nes.Region = region;
+							ConfigManager.Config.Nes.ApplyConfig();
+							break;
+
+						default:
+							break;
+					}
+				}
+			};
+		}
+
+		private MainMenuAction GetVideoFilterMenuItem(VideoFilterType filter)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(filter),
+				IsSelected = () => ConfigManager.Config.Video.VideoFilter == filter,
+				OnClick = () => {
+					ConfigManager.Config.Video.VideoFilter = filter;
+					ConfigManager.Config.Video.ApplyConfig();
+				}
+			};
+		}
+
+		private MainMenuAction GetScaleMenuItem(int scale, EmulatorShortcut shortcut)
+		{
+			return new MainMenuAction(shortcut) {
+				ActionType = ActionType.Custom,
+				CustomText = scale + "x",
+				IsSelected = () => (int)((double)MainWindow.RendererSize.Width / EmuApi.GetBaseScreenSize().Width) == scale
+			};
+		}
+
+		private MainMenuAction GetSpeedMenuItem(ActionType action, int speed, EmulatorShortcut? shortcut = null)
+		{
+			MainMenuAction item = new MainMenuAction(shortcut) {
+				ActionType = action,
+				IsSelected = () => ConfigManager.Config.Emulation.EmulationSpeed == speed,
+			};
+
+			if(shortcut == null) {
+				item.OnClick = () => {
+					ConfigManager.Config.Emulation.EmulationSpeed = (uint)speed;
+					ConfigManager.Config.Emulation.ApplyConfig();
+				};
+			}
+
+			return item;
+		}
+
+		private MainMenuAction GetMoviesMenu(MainWindow wnd)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Movies,
+				SubActions = new List<object> {
+					new MainMenuAction() {
+						ActionType = ActionType.Play,
+						IsEnabled = () => IsGameRunning && !RecordApi.MovieRecording() && !RecordApi.MoviePlaying(),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, wnd, FileDialogHelper.MesenMovieExt);
+							if(filename != null) {
+								RecordApi.MoviePlay(filename);
+							}
+						}
+					},
+					new MainMenuAction() {
+						ActionType = ActionType.Record,
+						IsEnabled = () => IsGameRunning && !RecordApi.MovieRecording() && !RecordApi.MoviePlaying(),
+						OnClick = () => {
+							new MovieRecordWindow() {
+								DataContext = new MovieRecordConfigViewModel()
+							}.ShowCenteredDialog((Control)wnd);
+						}
+					},
+					new MainMenuAction() {
+						ActionType = ActionType.Stop,
+						IsEnabled = () => IsGameRunning && (RecordApi.MovieRecording() || RecordApi.MoviePlaying()),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, wnd, FileDialogHelper.MesenMovieExt);
+							if(filename != null) {
+								RecordApi.MovieStop();
+							}
+						}
+					}
+				}
+			};
 		}
 
 		private void InitToolMenu(MainWindow wnd)
@@ -100,144 +367,13 @@ namespace Mesen.ViewModels
 					OnClick = () => { }
 				},
 
-				new MainMenuAction() {
-					ActionType = ActionType.Movies,
-					SubActions = new List<object> {
-						new MainMenuAction() {
-							ActionType = ActionType.Play,
-							IsEnabled = () => IsGameRunning && !RecordApi.MovieRecording() && !RecordApi.MoviePlaying(),
-							OnClick = async () => {
-								string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, wnd, FileDialogHelper.MesenMovieExt);
-								if(filename != null) {
-									RecordApi.MoviePlay(filename);
-								}
-							}
-						},
-						new MainMenuAction() {
-							ActionType = ActionType.Record,
-							IsEnabled = () => IsGameRunning && !RecordApi.MovieRecording() && !RecordApi.MoviePlaying(),
-							OnClick = () => {
-								new MovieRecordWindow() {
-									DataContext = new MovieRecordConfigViewModel()
-								}.ShowCenteredDialog((Control)wnd);
-							}
-						},
-						new MainMenuAction() {
-							ActionType = ActionType.Stop,
-							IsEnabled = () => IsGameRunning && (RecordApi.MovieRecording() || RecordApi.MoviePlaying()),
-							OnClick = async () => {
-								string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, wnd, FileDialogHelper.MesenMovieExt);
-								if(filename != null) {
-									RecordApi.MovieStop();
-								}
-							}
-						}
-					}
-				},
+				GetMoviesMenu(wnd),
+				GetNetPlayMenu(wnd),
 
-				new MainMenuAction() {
-					ActionType = ActionType.NetPlay,
-					SubActions = new List<object> {
-						new MainMenuAction() {
-							ActionType = ActionType.Connect,
-							IsEnabled = () => !NetplayApi.IsConnected() && !NetplayApi.IsServerRunning(),
-							OnClick = () => {
-								new NetplayConnectWindow() {
-									DataContext = ConfigManager.Config.Netplay.Clone()
-								}.ShowCenteredDialog((Control)wnd);
-							}
-						},
-
-						new MainMenuAction() {
-							ActionType = ActionType.Disconnect,
-							IsEnabled = () => NetplayApi.IsConnected(),
-							OnClick = () => {
-								NetplayApi.Disconnect();
-							}
-						},
-
-						new ContextMenuSeparator(),
-
-						new MainMenuAction() {
-							ActionType = ActionType.StartServer,
-							IsEnabled = () => !NetplayApi.IsConnected() && !NetplayApi.IsServerRunning(),
-							OnClick = () => {
-								new NetplayStartServerWindow() {
-									DataContext = ConfigManager.Config.Netplay.Clone()
-								}.ShowCenteredDialog((Control)wnd);
-							}
-						},
-
-						new MainMenuAction() {
-							ActionType = ActionType.StopServer,
-							IsEnabled = () => NetplayApi.IsServerRunning(),
-							OnClick = () => {
-								NetplayApi.StopServer();
-							}
-						},
-
-						new ContextMenuSeparator(),
-
-						new MainMenuAction() {
-							ActionType = ActionType.SelectController,
-							IsEnabled = () => NetplayApi.IsConnected() || NetplayApi.IsServerRunning(),
-							SubActions = new List<object> {
-								GetSelectControllerAction(0),
-								GetSelectControllerAction(1),
-								GetSelectControllerAction(2),
-								GetSelectControllerAction(3),
-								GetSelectControllerAction(4),
-							}
-						}
-					}
-				},
-				
 				new ContextMenuSeparator(),
 
-				new MainMenuAction() {
-					ActionType = ActionType.SoundRecorder,
-					SubActions = new List<object> {
-						new MainMenuAction() {
-							ActionType = ActionType.Record,
-							IsEnabled = () => IsGameRunning && !RecordApi.WaveIsRecording(),
-							OnClick = async () => {
-								string? filename = await FileDialogHelper.SaveFile(ConfigManager.WaveFolder, EmuApi.GetRomInfo().GetRomName() + ".wav", wnd, FileDialogHelper.WaveExt);
-								if(filename != null) {
-									RecordApi.WaveRecord(filename);
-								}
-							}
-						},
-						new MainMenuAction() {
-							ActionType = ActionType.Stop,
-							IsEnabled = () => IsGameRunning && RecordApi.WaveIsRecording(),
-							OnClick = () => {
-								RecordApi.WaveStop();
-							}
-						}
-					}
-				},
-
-				new MainMenuAction() {
-					ActionType = ActionType.VideoRecorder,
-					SubActions = new List<object> {
-						new MainMenuAction() {
-							ActionType = ActionType.Record,
-							IsEnabled = () => IsGameRunning && !RecordApi.AviIsRecording(),
-							OnClick = () => {
-								new VideoRecordWindow() {
-									DataContext = new VideoRecordConfigViewModel()
-								}.ShowCenteredDialog((Control)wnd);
-							}
-						},
-						new MainMenuAction() {
-							ActionType = ActionType.Stop,
-							IsEnabled = () => IsGameRunning && RecordApi.AviIsRecording(),
-							OnClick = () => {
-								RecordApi.AviStop();
-							}
-						}
-					}
-				},
+				GetSoundRecorderMenu(wnd),
+				GetVideoRecorderMenu(wnd),
 
 				new ContextMenuSeparator() {
 					IsVisible = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes
@@ -276,6 +412,117 @@ namespace Mesen.ViewModels
 				new MainMenuAction(EmulatorShortcut.TakeScreenshot) {
 					ActionType = ActionType.TakeScreenshot,
 				},
+			};
+		}
+
+		private MainMenuAction GetVideoRecorderMenu(MainWindow wnd)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.VideoRecorder,
+				SubActions = new List<object> {
+					new MainMenuAction() {
+						ActionType = ActionType.Record,
+						IsEnabled = () => IsGameRunning && !RecordApi.AviIsRecording(),
+						OnClick = () => {
+							new VideoRecordWindow() {
+								DataContext = new VideoRecordConfigViewModel()
+							}.ShowCenteredDialog((Control)wnd);
+						}
+					},
+					new MainMenuAction() {
+						ActionType = ActionType.Stop,
+						IsEnabled = () => IsGameRunning && RecordApi.AviIsRecording(),
+						OnClick = () => {
+							RecordApi.AviStop();
+						}
+					}
+				}
+			};
+		}
+
+		private MainMenuAction GetSoundRecorderMenu(MainWindow wnd)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.SoundRecorder,
+				SubActions = new List<object> {
+					new MainMenuAction() {
+						ActionType = ActionType.Record,
+						IsEnabled = () => IsGameRunning && !RecordApi.WaveIsRecording(),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.SaveFile(ConfigManager.WaveFolder, EmuApi.GetRomInfo().GetRomName() + ".wav", wnd, FileDialogHelper.WaveExt);
+							if(filename != null) {
+								RecordApi.WaveRecord(filename);
+							}
+						}
+					},
+					new MainMenuAction() {
+						ActionType = ActionType.Stop,
+						IsEnabled = () => IsGameRunning && RecordApi.WaveIsRecording(),
+						OnClick = () => {
+							RecordApi.WaveStop();
+						}
+					}
+				}
+			};
+		}
+
+		private MainMenuAction GetNetPlayMenu(MainWindow wnd)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.NetPlay,
+				SubActions = new List<object> {
+					new MainMenuAction() {
+						ActionType = ActionType.Connect,
+						IsEnabled = () => !NetplayApi.IsConnected() && !NetplayApi.IsServerRunning(),
+						OnClick = () => {
+							new NetplayConnectWindow() {
+								DataContext = ConfigManager.Config.Netplay.Clone()
+							}.ShowCenteredDialog((Control)wnd);
+						}
+					},
+
+					new MainMenuAction() {
+						ActionType = ActionType.Disconnect,
+						IsEnabled = () => NetplayApi.IsConnected(),
+						OnClick = () => {
+							NetplayApi.Disconnect();
+						}
+					},
+
+					new ContextMenuSeparator(),
+
+					new MainMenuAction() {
+						ActionType = ActionType.StartServer,
+						IsEnabled = () => !NetplayApi.IsConnected() && !NetplayApi.IsServerRunning(),
+						OnClick = () => {
+							new NetplayStartServerWindow() {
+								DataContext = ConfigManager.Config.Netplay.Clone()
+							}.ShowCenteredDialog((Control)wnd);
+						}
+					},
+
+					new MainMenuAction() {
+						ActionType = ActionType.StopServer,
+						IsEnabled = () => NetplayApi.IsServerRunning(),
+						OnClick = () => {
+							NetplayApi.StopServer();
+						}
+					},
+
+					new ContextMenuSeparator(),
+
+					new MainMenuAction() {
+						ActionType = ActionType.SelectController,
+						IsEnabled = () => NetplayApi.IsConnected() || NetplayApi.IsServerRunning(),
+						SubActions = new List<object> {
+							GetSelectControllerAction(0),
+							GetSelectControllerAction(1),
+							GetSelectControllerAction(2),
+							GetSelectControllerAction(3),
+							GetSelectControllerAction(4),
+						}
+					}
+				}
 			};
 		}
 

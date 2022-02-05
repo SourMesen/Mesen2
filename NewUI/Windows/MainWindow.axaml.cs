@@ -203,7 +203,9 @@ namespace Mesen.Windows
 
 				case ConsoleNotificationType.ExecuteShortcut:
 					ExecuteShortcutParams p = Marshal.PtrToStructure<ExecuteShortcutParams>(e.Parameter);
-					_shortcutHandler.ExecuteShortcut(p.Shortcut);
+					Dispatcher.UIThread.Post(() => {
+						_shortcutHandler.ExecuteShortcut(p.Shortcut);
+					});
 					break;
 
 				case ConsoleNotificationType.MissingFirmware:
