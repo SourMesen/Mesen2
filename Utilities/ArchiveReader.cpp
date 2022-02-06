@@ -30,16 +30,16 @@ vector<string> ArchiveReader::GetFileList(std::initializer_list<string> extensio
 		return InternalGetFileList();
 	}
 
+	std::unordered_set<string> extMap(extensions);
+
 	vector<string> filenames;
 	for(string filename : InternalGetFileList()) {
 		string lcFilename = filename;
 		std::transform(lcFilename.begin(), lcFilename.end(), lcFilename.begin(), ::tolower);
-		for(string ext : extensions) {
-			if(lcFilename.size() >= ext.size()) {
-				if(lcFilename.substr(lcFilename.length() - ext.size(), ext.size()).compare(ext) == 0) {
-					filenames.push_back(filename);
-				}
-			}
+	
+		string ext = FolderUtilities::GetExtension(lcFilename);
+		if(extMap.find(ext) != extMap.end()) {
+			filenames.push_back(filename);
 		}
 	}
 
