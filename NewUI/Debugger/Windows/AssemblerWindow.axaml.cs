@@ -48,7 +48,6 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_textEditor.TextChanged += textEditor_TextChanged;
 			_textEditor.TemplateApplied += textEditor_TemplateApplied;
 			_hexView.TemplateApplied += hexView_TemplateApplied;
 			
@@ -81,11 +80,6 @@ namespace Mesen.Debugger.Windows
 		private void textEditor_ScrollChanged(object? sender, ScrollChangedEventArgs e)
 		{
 			_hexView.VerticalScrollBarValue = _textEditor.VerticalScrollBarValue;
-		}
-
-		private void textEditor_TextChanged(object? sender, System.EventArgs e)
-		{
-			_model.Code = _textEditor.Text;
 		}
 
 		private void OnCellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)

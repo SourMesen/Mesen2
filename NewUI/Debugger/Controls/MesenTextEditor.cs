@@ -77,6 +77,7 @@ namespace Mesen.Debugger.Controls
 			if(TextBinding != Text) {
 				TextBinding = Text;
 			}
+			base.OnTextChanged(e);
 		}
 
 		protected override void OnApplyTemplate(TemplateAppliedEventArgs e)

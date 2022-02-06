@@ -41,6 +41,7 @@
 			<dc:MesenTextEditor
 				Name="Editor"
 				ShowLineNumbers="True"
+				TextBinding="{CompiledBinding Code}"
 				FontFamily="{CompiledBinding Font.FontFamilyObject}"
 				FontSize="{CompiledBinding Font.FontSize}"
 			/>
