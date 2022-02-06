@@ -1007,24 +1007,23 @@ void SnesPpu::RenderTilemap()
 
 		if(applyMosaic) {
 			if(mosaicCounter == 0) {
-				mosaicCounter = 1;
 				if(hiResMode) {
 					color = hiresSubColor;
 				}
 				_mosaicColor[layerIndex] = (paletteIndex << 8) | color;
 				_mosaicPriority[layerIndex] = priority;
 			} else {
-				mosaicCounter++;
-				if(mosaicCounter == _state.MosaicSize) {
-					mosaicCounter = 0;
-				}
 				color = _mosaicColor[layerIndex] & 0xFF;
 				paletteIndex = _mosaicColor[layerIndex] >> 8;
 				priority = _mosaicPriority[layerIndex];
 				if(hiResMode) {
 					hiresSubColor = color;
 				}
-			}			
+			}
+
+			if(++mosaicCounter == _state.MosaicSize) {
+				mosaicCounter = 0;
+			}
 		}
 
 		if(color > 0) {
@@ -1197,16 +1196,15 @@ void SnesPpu::RenderTilemapMode7()
 
 		if(applyMosaic) {
 			if(mosaicCounter == 0) {
-				mosaicCounter = 1;
 				_mosaicColor[layerIndex] = colorIndex;
 				_mosaicPriority[layerIndex] = priority;
 			} else {
-				mosaicCounter++;
-				if(mosaicCounter == _state.MosaicSize) {
-					mosaicCounter = 0;
-				}
 				colorIndex = _mosaicColor[layerIndex];
 				priority = _mosaicPriority[layerIndex];
+			}
+
+			if(++mosaicCounter == _state.MosaicSize) {
+				mosaicCounter = 0;
 			}
 		}
 
@@ -2325,7 +2323,7 @@ void SnesPpu::RenderTilemapMode7()
 		return;
 	}
 
-	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0;
+	bool applyMosaic = ((_state.MosaicEnabled >> layerIndex) & 0x01) != 0 && _state.MosaicSize > 1;
 
 	if(applyMosaic) {
 		RenderTilemapMode7<layerIndex, normalPriority, highPriority, true>();
