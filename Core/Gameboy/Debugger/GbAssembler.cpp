@@ -83,6 +83,7 @@ void GbAssembler::InitParamEntry(ParamEntry& entry, string param)
 
 bool GbAssembler::IsRegisterName(string op)
 {
+	std::transform(op.begin(), op.end(), op.begin(), ::tolower);
 	return op == "hl" || op == "af" || op == "bc" || op == "de" || op == "a" || op == "b" || op == "c" || op == "d" || op == "e" || op == "f" || op == "l" || op == "h";
 }
 
