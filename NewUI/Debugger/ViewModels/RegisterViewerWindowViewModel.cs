@@ -768,6 +768,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "7", "HDMA Bank", ch.HdmaBank, Format.X8));
 				entries.Add(new RegEntry("$43" + i.ToString() + "8/9", "HDMA Address", ch.HdmaTableAddress, Format.X16));
 				entries.Add(new RegEntry("$43" + i.ToString() + "A", "HDMA Line Counter", ch.HdmaLineCounterAndRepeat, Format.X8));
+				entries.Add(new RegEntry("$43" + i.ToString() + "B", "Unused register", ch.UnusedRegister, Format.X8));
 			}
 
 			return new RegisterViewerTab() {
@@ -785,7 +786,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$4200.7", "NMI Enabled", regs.EnableNmi),
 				new RegEntry("$4200.5", "V IRQ Enabled", regs.EnableVerticalIrq),
 				new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableHorizontalIrq),
-				new RegEntry("$4200.1", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
+				new RegEntry("$4200.0", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
 
 				new RegEntry("$4201", "IO Port", regs.IoPortOutput, Format.X8),
 

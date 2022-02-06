@@ -17,7 +17,7 @@ SnesDmaController::SnesDmaController(SnesMemoryManager *memoryManager)
 	Reset();
 
 	for(int j = 0; j < 8; j++) {
-		for(int i = 0; i <= 0x0A; i++) {
+		for(int i = 0; i <= 0x0B; i++) {
 			Write(0x4300 | i | (j << 4), 0xFF);
 		}
 	}
@@ -408,7 +408,7 @@ void SnesDmaController::Write(uint16_t addr, uint8_t value)
 			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
 			channel.InvertDirection = (value & 0x80) != 0;
 			channel.HdmaIndirectAddressing = (value & 0x40) != 0;
-			channel.UnusedFlag = (value & 0x20) != 0;
+			channel.UnusedControlFlag = (value & 0x20) != 0;
 			channel.Decrement = (value & 0x10) != 0;
 			channel.FixedTransfer = (value & 0x08) != 0;
 			channel.TransferMode = value & 0x07;
@@ -491,6 +491,15 @@ void SnesDmaController::Write(uint16_t addr, uint8_t value)
 			channel.HdmaLineCounterAndRepeat = value;
 			break;
 		}
+
+		case 0x430B: case 0x431B: case 0x432B: case 0x433B: case 0x434B: case 0x435B: case 0x436B: case 0x437B:
+		case 0x430F: case 0x431F: case 0x432F: case 0x433F: case 0x434F: case 0x435F: case 0x436F: case 0x437F:
+		{
+			//$43xB (+ mirrors at $43xF) both contain hold a byte that can be read/written to and has no effect
+			DmaChannelConfig& channel = _channel[(addr & 0x70) >> 4];
+			channel.UnusedRegister = value;
+			break;
+		}
 	}
 }
 
@@ -504,7 +513,7 @@ uint8_t SnesDmaController::Read(uint16_t addr)
 			return (
 				(channel.InvertDirection ? 0x80 : 0) |
 				(channel.HdmaIndirectAddressing ? 0x40 : 0) |
-				(channel.UnusedFlag ? 0x20 : 0) |
+				(channel.UnusedControlFlag ? 0x20 : 0) |
 				(channel.Decrement ? 0x10 : 0) |
 				(channel.FixedTransfer ? 0x08 : 0) |
 				(channel.TransferMode & 0x07)
@@ -577,6 +586,14 @@ uint8_t SnesDmaController::Read(uint16_t addr)
 			DmaChannelConfig &channel = _channel[(addr & 0x70) >> 4];
 			return channel.HdmaLineCounterAndRepeat;
 		}
+
+		case 0x430B: case 0x431B: case 0x432B: case 0x433B: case 0x434B: case 0x435B: case 0x436B: case 0x437B:
+		case 0x430F: case 0x431F: case 0x432F: case 0x433F: case 0x434F: case 0x435F: case 0x436F: case 0x437F:
+		{
+			//$43xB (+ mirrors at $43xF) both contain hold a byte that can be read/written to and has no effect
+			DmaChannelConfig& channel = _channel[(addr & 0x70) >> 4];
+			return channel.UnusedRegister;
+		}
 	}
 	return _memoryManager->GetOpenBus();
 }
@@ -600,7 +617,7 @@ void SnesDmaController::Serialize(Serializer &s)
 			_channel[i].HdmaBank, _channel[i].HdmaFinished, _channel[i].HdmaIndirectAddressing,
 			_channel[i].HdmaLineCounterAndRepeat, _channel[i].HdmaTableAddress,
 			_channel[i].InvertDirection, _channel[i].SrcAddress, _channel[i].SrcBank, _channel[i].TransferMode,
-			_channel[i].TransferSize, _channel[i].UnusedFlag, _channel[i].DmaActive
+			_channel[i].TransferSize, _channel[i].UnusedControlFlag, _channel[i].DmaActive, _channel[i].UnusedRegister
 		);
 	}
 }

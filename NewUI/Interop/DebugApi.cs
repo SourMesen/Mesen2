@@ -478,6 +478,10 @@ namespace Mesen.Interop
 
 	public struct DmaChannelConfig
 	{
+		public UInt16 SrcAddress;
+		public UInt16 TransferSize;
+		public UInt16 HdmaTableAddress;
+
 		[MarshalAs(UnmanagedType.I1)] public bool DmaActive;
 
 		[MarshalAs(UnmanagedType.I1)] public bool InvertDirection;
@@ -487,19 +491,17 @@ namespace Mesen.Interop
 
 		public byte TransferMode;
 
-		public UInt16 SrcAddress;
 		public byte SrcBank;
-
-		public UInt16 TransferSize;
 		public byte DestAddress;
 
-		public UInt16 HdmaTableAddress;
 		public byte HdmaBank;
 		public byte HdmaLineCounterAndRepeat;
 
 		[MarshalAs(UnmanagedType.I1)] public bool DoTransfer;
 		[MarshalAs(UnmanagedType.I1)] public bool HdmaFinished;
-		[MarshalAs(UnmanagedType.I1)] public bool UnusedFlag;
+		[MarshalAs(UnmanagedType.I1)] public bool UnusedControlFlag;
+
+		public byte UnusedRegister;
 	}
 
 	public enum EventFlags

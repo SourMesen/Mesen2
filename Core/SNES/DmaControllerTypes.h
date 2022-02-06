@@ -3,6 +3,12 @@
 
 struct DmaChannelConfig
 {
+	uint16_t SrcAddress;
+	uint16_t TransferSize;
+	uint16_t HdmaTableAddress;
+	uint8_t SrcBank;
+	uint8_t DestAddress;
+
 	bool DmaActive;
 
 	bool InvertDirection;
@@ -11,17 +17,12 @@ struct DmaChannelConfig
 	bool HdmaIndirectAddressing;
 	uint8_t TransferMode;
 
-	uint16_t SrcAddress;
-	uint8_t SrcBank;
-
-	uint16_t TransferSize;
-	uint8_t DestAddress;
-
-	uint16_t HdmaTableAddress;
 	uint8_t HdmaBank;
 	uint8_t HdmaLineCounterAndRepeat;
 	bool DoTransfer;
 	bool HdmaFinished;
 
-	bool UnusedFlag;
+	bool UnusedControlFlag;
+
+	uint8_t UnusedRegister;
 };
