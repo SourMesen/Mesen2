@@ -4,7 +4,6 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
-#include "SNES/Coprocessors/SGB/SuperGameboy.h"
 #include "Utilities/Serializer.h"
 
 GbApu::GbApu()
@@ -37,13 +36,8 @@ void GbApu::Init(Emulator* emu, Gameboy* gameboy)
 	blip_clear(_leftChannel);
 	blip_clear(_rightChannel);
 
-	if(_gameboy->IsSgb()) {
-		blip_set_rates(_leftChannel, _gameboy->GetSgb()->GetClockRate(), GbApu::SampleRate);
-		blip_set_rates(_rightChannel, _gameboy->GetSgb()->GetClockRate(), GbApu::SampleRate);
-	} else {
-		blip_set_rates(_leftChannel, GbApu::ApuFrequency, GbApu::SampleRate);
-		blip_set_rates(_rightChannel, GbApu::ApuFrequency, GbApu::SampleRate);
-	}
+	blip_set_rates(_leftChannel, GbApu::ApuFrequency, GbApu::SampleRate);
+	blip_set_rates(_rightChannel, GbApu::ApuFrequency, GbApu::SampleRate);
 }
 
 GbApu::~GbApu()

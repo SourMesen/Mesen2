@@ -26,6 +26,8 @@ private:
 	uint8_t _control = 0;
 	uint64_t _resetClock = 0;
 	double _clockRatio = 0;
+	double _effectiveClockRate = 0;
+	uint64_t _clockOffset = 0;
 	
 	uint8_t _input[4] = {};
 	uint8_t _inputIndex = 0;

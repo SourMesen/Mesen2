@@ -116,6 +116,7 @@ void SuperGameboy::Write(uint32_t addr, uint8_t value)
 
 		case 0x6003: {
 			if(!(_control & 0x80) && (value & 0x80)) {
+				_clockOffset = 0;
 				_resetClock = _memoryManager->GetMasterClock();
 				_gameboy->PowerOn(this);
 				_ppu = _gameboy->GetPpu();
@@ -274,7 +275,7 @@ void SuperGameboy::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleR
 	int16_t* gbSamples = nullptr;
 	uint32_t gbSampleCount = 0;
 	_gameboy->GetSoundSamples(gbSamples, gbSampleCount);
-	_resampler.SetSampleRates(GbApu::SampleRate, sampleRate);
+	_resampler.SetSampleRates(GbApu::SampleRate * _effectiveClockRate / _gameboy->GetMasterClockRate(), sampleRate);
 	
 	int32_t outCount = (int32_t)_resampler.Resample(gbSamples, gbSampleCount, _mixBuffer + _mixSampleCount) * 2;
 	_mixSampleCount += outCount;
@@ -301,7 +302,7 @@ void SuperGameboy::Run()
 		return;
 	}
 
-	_gameboy->Run((uint64_t)((_memoryManager->GetMasterClock() - _resetClock) * _clockRatio));
+	_gameboy->Run(_clockOffset + (uint64_t)((_memoryManager->GetMasterClock() - _resetClock) * _clockRatio));
 }
 
 void SuperGameboy::UpdateClockRatio()
@@ -310,7 +311,6 @@ void SuperGameboy::UpdateClockRatio()
 	uint32_t masterRate = isSgb2 ? 20971520 : _console->GetMasterClockRate();
 	uint8_t divider = 5;
 
-	//TODO: This doesn't actually work properly if the speed is changed while the SGB is running (but this most likely never happens?)
 	switch(_control & 0x03) {
 		case 0: divider = 4; break;
 		case 1: divider = 5; break;
@@ -319,7 +319,15 @@ void SuperGameboy::UpdateClockRatio()
 	}
 
 	double effectiveRate = (double)masterRate / divider;
-	_clockRatio = effectiveRate / _console->GetMasterClockRate();
+	if(effectiveRate != _effectiveClockRate) {
+		_effectiveClockRate = effectiveRate;
+
+		double clockRatio = _effectiveClockRate / _console->GetMasterClockRate();
+		Run();
+		_clockOffset = _gameboy->GetCycleCount();
+		_resetClock = _memoryManager->GetMasterClock();
+		_clockRatio = clockRatio;
+	}
 }
 
 uint32_t SuperGameboy::GetClockRate()
