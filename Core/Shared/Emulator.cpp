@@ -102,7 +102,11 @@ void Emulator::Run()
 		return;
 	}
 
-	_runLock.Acquire();
+	while(!_runLock.TryAcquire(50)) {
+		if(_stopFlag) {
+			return;
+		}
+	}
 
 	_stopFlag = false;
 	_isRunAheadFrame = false;
@@ -478,14 +482,14 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		MessageManager::DisplayMessage(modelName, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
 	}
 
-	if(stopRom) {
-	#ifndef LIBRETRO
-		_emuThread.reset(new thread(&Emulator::Run, this));
-	#endif
-	}
-
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
+
+	if(stopRom) {
+#ifndef LIBRETRO
+		_emuThread.reset(new thread(&Emulator::Run, this));
+#endif
+	}
 
 	return true;
 }

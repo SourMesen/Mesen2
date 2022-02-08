@@ -21,6 +21,8 @@ private:
 	std::thread::id _holderThreadID;
 	uint32_t _lockCount;
 	atomic_flag _lock;
+	
+	bool WaitForAcquire(uint32_t msTimeout);
 
 public:
 	SimpleLock();
@@ -29,6 +31,7 @@ public:
 	LockHandler AcquireSafe();
 
 	void Acquire();
+	bool TryAcquire(uint32_t msTimeout);
 	bool IsFree();
 	bool IsLockedByCurrentThread();
 	void WaitForRelease();
