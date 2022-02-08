@@ -78,10 +78,6 @@ void VideoRenderer::StopThread()
 
 void VideoRenderer::RenderThread()
 {
-	if(_renderer) {
-		_renderer->Reset();
-	}
-
 	while(!_stopFlag.load()) {
 		//Wait until a frame is ready, or until 32ms have passed (to allow HUD to update at ~30fps when paused)
 		_waitForRender.Wait(32);
