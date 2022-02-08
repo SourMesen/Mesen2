@@ -47,6 +47,7 @@
 				<DatePicker />
 				<TimePicker />
 				<Slider />
+				<Slider Orientation="Vertical" Height="50" />
 				<TextBox IsEnabled="False" Text="Test disabled" />
 				<CheckBox IsEnabled="False" Content="Test" />
 				<CheckBox IsChecked="True" IsEnabled="False" Content="Test" />
@@ -446,7 +447,7 @@
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 
-	<Style Selector="Button, RepeatButton">
+	<Style Selector="Button, NumericUpDown RepeatButton">
 		<Setter Property="Height" Value="21" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="Padding" Value="4 3" />
