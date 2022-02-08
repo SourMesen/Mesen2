@@ -37,6 +37,11 @@ bool HdPackLoader::InitializeLoader(VirtualFile &romFile, HdPackData *data)
 		vector<string> more = FolderUtilities::GetFilesInFolder(hdPackFolder, { ".hdn", ".zip" }, false);
 		hdnPackages.insert(hdnPackages.end(), more.begin(), more.end());
 
+		if(hdnPackages.size() == 0) {
+			//Prevent calculating rom SHA-1 when no potential HD pack file exists
+			return false;
+		}
+
 		string sha1Hash = romFile.GetSha1Hash();
 		for(string path : hdnPackages) {
 			_reader.LoadArchive(path);
