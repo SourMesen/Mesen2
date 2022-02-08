@@ -65,7 +65,7 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
 					OnClick = () => RefreshData(true)
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.EnableAutoRefresh,
 					IsSelected = () => Config.AutoRefresh,
@@ -76,7 +76,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => Config.RefreshOnBreakPause,
 					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ZoomIn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomIn),

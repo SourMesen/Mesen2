@@ -72,7 +72,7 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
 					OnClick = () => RefreshData()
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.EnableAutoRefresh,
 					IsSelected = () => Config.RefreshTiming.AutoRefresh,
@@ -83,7 +83,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => Config.RefreshTiming.RefreshOnBreakPause,
 					OnClick = () => Config.RefreshTiming.RefreshOnBreakPause = !Config.RefreshTiming.RefreshOnBreakPause
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ZoomIn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomIn),
@@ -102,7 +102,7 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => false,
 					OnClick = () => { }
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ExportToPng,
 					OnClick = () => picViewer.ExportToPng()

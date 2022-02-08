@@ -80,7 +80,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,

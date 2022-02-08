@@ -94,11 +94,11 @@ namespace Mesen.Debugger.Windows
 
 			DebugShortcutManager.CreateContextMenu(_editor, new object[] {
 				GetMarkSelectionAction(),
-				new Separator(),
+				new ContextMenuSeparator(),
 				GetAddWatchAction(),
 				GetEditBreakpointAction(),
 				GetEditLabelAction(),
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					IsEnabled = () => _editor.SelectionLength > 0,
@@ -110,7 +110,7 @@ namespace Mesen.Debugger.Windows
 					OnClick = () => _editor.PasteSelection(),
 					Shortcut = () => cfg.Shortcuts.Get(DebuggerShortcut.Paste)
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.SelectAll,
 					OnClick = () => _editor.SelectAll(),
@@ -121,7 +121,7 @@ namespace Mesen.Debugger.Windows
 			_model.FileMenuItems = _model.AddDisposables(new List<object>() {
 				GetImportAction(),
 				GetExportAction(),
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.LoadTblFile,
 					OnClick = async () => {
@@ -140,7 +140,7 @@ namespace Mesen.Debugger.Windows
 						DebugWorkspaceManager.Workspace.TblMappings = Array.Empty<string>();
 					}
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => Close()

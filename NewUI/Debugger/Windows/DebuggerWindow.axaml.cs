@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using Mesen.Debugger.Utilities;
 using Mesen.Utilities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Windows
 {
@@ -32,7 +33,10 @@ namespace Mesen.Debugger.Windows
 			_model = new DebuggerWindowViewModel(cpuType);
 			DataContext = _model;
 
-			_model.InitializeMenu(this);
+			Task.Run(() => {
+				//Init menu and toolbar in a separate thread to allow window to open a bit faster
+				_model.InitializeMenu(this);
+			});
 
 			if(Design.IsDesignMode) {
 				return;

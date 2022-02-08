@@ -90,7 +90,7 @@ namespace Mesen.Debugger.Views
 					}
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveUp,
@@ -110,7 +110,7 @@ namespace Mesen.Debugger.Views
 					}
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.RowDisplayFormat,
@@ -119,7 +119,7 @@ namespace Mesen.Debugger.Views
 							ActionType = ActionType.RowFormatBinary,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Binary, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
 						},
-						new Separator(),
+						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatHex8Bits,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Hex, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
@@ -132,7 +132,7 @@ namespace Mesen.Debugger.Views
 							ActionType = ActionType.RowFormatHex24Bits,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Hex, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
 						},
-						new Separator(),
+						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned8Bits,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Signed, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
@@ -145,12 +145,12 @@ namespace Mesen.Debugger.Views
 							ActionType = ActionType.RowFormatSigned24Bits,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Signed, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
 						},
-						new Separator(),
+						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatUnsigned,
 							OnClick = () => _model!.SetSelectionFormat(WatchFormatStyle.Unsigned, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
 						},
-						new Separator(),
+						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.ClearFormat,
 							OnClick = () => _model!.ClearSelectionFormat(grid.SelectedItems.Cast<WatchValueInfo>().ToList())
@@ -159,7 +159,7 @@ namespace Mesen.Debugger.Views
 				},
 
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.WatchDecimalDisplay,
@@ -185,7 +185,7 @@ namespace Mesen.Debugger.Views
 					}
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.Import,

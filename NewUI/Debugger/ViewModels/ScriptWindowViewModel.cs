@@ -80,9 +80,9 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.SaveAs,
 					OnClick = async () => await SaveAs(Path.GetFileName(FilePath))
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				_recentScriptsAction,
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => _wnd?.Close()
@@ -121,7 +121,7 @@ namespace Mesen.Debugger.ViewModels
 						ScriptId = -1;
 					}
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Preferences,
 					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.ScriptWindow, _wnd)

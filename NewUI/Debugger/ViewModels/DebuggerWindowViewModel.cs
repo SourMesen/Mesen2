@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
@@ -49,6 +50,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public string BreakElapsedCycles { get; private set; } = "";
 
 		[Reactive] public List<object> ToolbarItems { get; private set; } = new();
+		
+		[Reactive] public List<object> FileMenuItems { get; private set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
 		[Reactive] public List<object> SearchMenuItems { get; private set; } = new();
 		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
@@ -287,8 +290,8 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			
-			ToolbarItems = GetDebugMenu(wnd);
-			DebugMenuItems = GetDebugMenu(wnd);
+			ToolbarItems = GetDebugMenu(wnd, true);
+			DebugMenuItems = GetDebugMenu(wnd, false);
 
 			OptionMenuItems = new List<object>() {
 				new ContextMenuAction() {
@@ -302,7 +305,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => cfg.ShowMemoryMappings,
 					OnClick = () => cfg.ShowMemoryMappings = !cfg.ShowMemoryMappings
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowWatchList,
 					IsSelected = () => IsToolVisible(DockFactory.WatchListTool),
@@ -328,7 +331,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => IsToolVisible(DockFactory.StatusTool),
 					OnClick = () => ToggleTool(DockFactory.StatusTool)
 				},
-				new Separator(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Preferences,
 					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.Debugger, wnd)
@@ -355,17 +358,20 @@ namespace Mesen.Debugger.ViewModels
 				}
 			};
 
-			DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
-			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
-			DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
+			Dispatcher.UIThread.Post(() => {
+				DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
+				DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+				DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
+				DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
+			});
 		}
 
-		private List<object> GetDebugMenu(Control wnd)
+		private List<object> GetDebugMenu(Control wnd, bool forToolbar)
 		{
 			Func<bool> isPaused = () => EmuApi.IsPaused();
 			Func<bool> isRunning = () => !EmuApi.IsPaused();
 
-			return new List<object>() {
+			List<object> debugMenu = new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Continue,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Continue),
@@ -380,21 +386,27 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = isRunning,
 					OnClick = () => EmuApi.Pause()
 				},
+			};
 
-				new Separator(),
+			if(!forToolbar) {
+				debugMenu.AddRange(new List<object> {
+					new ContextMenuSeparator(),
 
-				new ContextMenuAction() {
-					ActionType = ActionType.Reset,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Reset),
-					OnClick = () => EmuApi.Reset()
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.PowerCycle,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PowerCycle),
-					OnClick = () => EmuApi.PowerCycle()
-				},
+					new ContextMenuAction() {
+						ActionType = ActionType.Reset,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Reset),
+						OnClick = () => EmuApi.Reset()
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.PowerCycle,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PowerCycle),
+						OnClick = () => EmuApi.PowerCycle()
+					}
+				});
+			};
 
-				new Separator(),
+			debugMenu.AddRange(new List<object> {
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.StepInto,
@@ -418,7 +430,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => { } //TODO
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.RunPpuCycle,
@@ -436,7 +448,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => Step(1, StepType.PpuFrame)
 				},
 
-				new Separator(),
+				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.BreakIn,
@@ -448,7 +460,9 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakOn),
 					OnClick = () => new BreakOnWindow(CpuType).ShowCenteredDialog(wnd)
 				},
-			};
+			});
+
+			return debugMenu;
 		}
 
 		private void Step(int instructionCount, StepType type)

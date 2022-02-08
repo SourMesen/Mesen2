@@ -38,6 +38,7 @@
 	
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 			<MenuItem Header="Search" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
 			<MenuItem Header="Options" Classes="ActionMenu" Items="{CompiledBinding OptionMenuItems}" />
