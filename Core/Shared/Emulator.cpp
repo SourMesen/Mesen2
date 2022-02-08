@@ -227,6 +227,12 @@ void Emulator::OnBeforeSendFrame()
 		if(_audioPlayerHud) {
 			_audioPlayerHud->Draw();
 		}
+
+		if(_stats && _settings->GetPreferences().ShowDebugInfo) {
+			double lastFrameTime = _lastFrameTimer.GetElapsedMS();
+			_lastFrameTimer.Reset();
+			_stats->DisplayStats(this, lastFrameTime);
+		}
 	}
 }
 
@@ -246,13 +252,6 @@ void Emulator::ProcessEndOfFrame()
 		if(newFrameDelay != _frameDelay) {
 			_frameDelay = newFrameDelay;
 			_frameLimiter->SetDelay(_frameDelay);
-		}
-
-		PreferencesConfig cfg = _settings->GetPreferences();
-		if(cfg.ShowDebugInfo) {
-			double lastFrameTime = _lastFrameTimer.GetElapsedMS();
-			_lastFrameTimer.Reset();
-			_stats->DisplayStats(this, lastFrameTime);
 		}
 	}
 #endif
