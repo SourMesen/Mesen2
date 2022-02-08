@@ -64,4 +64,25 @@ void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
 	ss = std::stringstream();
 	ss << "Max Delay: " << std::fixed << std::setprecision(2) << _lastFrameMax << " ms";
 	hud->DrawString(134, 48, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
+
+	hud->DrawRectangle(129, 59, 122, 32, 0xFFFFFF, false, 1, startFrame);
+	hud->DrawRectangle(130, 60, 120, 30, 0x000000, true, 1, startFrame);
+
+	double expectedFrameDelay = 1000 / emu->GetFps();
+
+	for(int i = 0; i < 59; i++) {
+		double duration = _frameDurations[(_frameDurationIndex + i) % 60];
+		double nextDuration = _frameDurations[(_frameDurationIndex + i + 1) % 60];
+
+		duration = std::min(25.0, std::max(10.0, duration));
+		nextDuration = std::min(25.0, std::max(10.0, nextDuration));
+
+		int color = 0x00FF00;
+		if(std::abs(duration - expectedFrameDelay) > 2) {
+			color = 0xFF0000;
+		} else if(std::abs(duration - expectedFrameDelay) > 1) {
+			color = 0xFFA500;
+		}
+		hud->DrawLine(130 + i*2, 60 + 50 - duration*2, 130 + i*2 + 2, 60 + 50 - nextDuration*2, color, 1, startFrame);
+	}
 }
