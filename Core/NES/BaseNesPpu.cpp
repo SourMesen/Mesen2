@@ -119,6 +119,7 @@ void BaseNesPpu::UpdateGrayscaleAndIntensifyBits()
 
 	if(_paletteRamMask == 0x3F && _intensifyColorBits == 0) {
 		//Nothing to do (most common case)
+		UpdateColorBitMasks();
 		_lastUpdatedPixel = pixelNumber;
 		return;
 	}
