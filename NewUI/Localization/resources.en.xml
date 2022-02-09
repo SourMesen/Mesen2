@@ -353,6 +353,24 @@
 			<Control ID="colAction">Shortcut</Control>
 			<Control ID="colBinding1">Keys</Control>
 		</Form>
+
+		<Form ID="ConfigWindow">
+			<Control ID="wndTitle">Settings</Control>
+
+			<Control ID="tabAudio">Audio</Control>
+			<Control ID="tabEmulation">Emulation</Control>
+			<Control ID="tabVideo">Video</Control>
+			<Control ID="tabNes">NES</Control>
+			<Control ID="tabSnes">SNES</Control>
+			<Control ID="tabGameboy">Game Boy</Control>
+			<Control ID="tabPreferences">Preferences</Control>
+
+			<Control ID="btnOpenMesenFolder">Open Mesen folder</Control>
+			<Control ID="btnResetSettings">Reset all settings</Control>
+
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
 		
 		<Form ID="PreferencesConfigView" Title="Preferences">
 			<Control ID="tpgGeneral">General</Control>
@@ -379,8 +397,6 @@
 			<Control ID="chkAutoLoadIps">Automatically load IPS/BPS patches</Control>
 			<Control ID="chkHidePauseOverlay">Hide the pause screen</Control>
 			<Control ID="chkDisplayMovieIcons">Display play/record icon when playing or recording a movie</Control>
-			<Control ID="btnOpenMesenFolder">Open Mesen Folder</Control>
-			<Control ID="btnResetSettings">Reset All Settings</Control>
 
 			<Control ID="tpgFiles">Folders/Files</Control>
 			<Control ID="grpFileAssociations">File Associations</Control>
@@ -1051,7 +1067,7 @@ x == [$150] || y == [10]
 
 		<Message ID="RomsFound">{0} roms found</Message>
 
-		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL of settings and cannot be undone!&#xA;&#xA;Continue?</Message>
+		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL settings and cannot be undone!&#xA;&#xA;Continue?</Message>
 
 		<Message ID="RandomGameNoGameFound">Mesen could not find any games to load.</Message>
 

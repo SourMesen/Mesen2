@@ -7,6 +7,8 @@ using Mesen.ViewModels;
 using System;
 using System.ComponentModel;
 using Mesen.Config;
+using Mesen.Utilities;
+using System.IO;
 
 namespace Mesen.Windows
 {
@@ -42,6 +44,23 @@ namespace Mesen.Windows
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
 			Close();
+		}
+
+		private void OpenMesenFolder(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo() {
+				FileName = ConfigManager.HomeFolder + Path.DirectorySeparatorChar,
+				UseShellExecute = true,
+				Verb = "open"
+			});
+		}
+
+		private async void ResetAllSettings(object sender, RoutedEventArgs e)
+		{
+			if(await MesenMsgBox.Show(VisualRoot, "ResetSettingsConfirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK) {
+				ConfigManager.ResetSettings();
+				Close();
+			}
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
