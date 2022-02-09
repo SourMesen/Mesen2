@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
 	xmlns:v="using:Mesen.Views"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -45,18 +46,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Background="#2888">
 			<Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" RowDefinitions="Auto" Margin="5 3">
-				<Button Grid.Column="0" HorizontalAlignment="Stretch" Padding="0" Click="OpenMesenFolder">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Assets/Folder.png" Margin="2 -1 4 0" Stretch="None"/>
-						<TextBlock Text="{l:Translate btnOpenMesenFolder}" Margin="0 0 4 0" />
-					</StackPanel>
-				</Button>
-				<Button Grid.Column="1" HorizontalAlignment="Stretch" Padding="0" Click="ResetAllSettings">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Assets/Refresh.png" Margin="2 -1 4 0" Stretch="None"/>
-						<TextBlock Text="{l:Translate btnResetSettings}" Margin="0 0 4 0" />
-					</StackPanel>
-				</Button>
+				<c:ButtonWithIcon Grid.Column="0" Click="OpenMesenFolder" Icon="Assets/Folder.png" Text="{l:Translate btnOpenMesenFolder}" />
+				<c:ButtonWithIcon Grid.Column="1" Click="ResetAllSettings" Icon="Assets/Refresh.png" Text="{l:Translate btnResetSettings}" />
 
 				<Button Grid.Column="3" Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
 				<Button Grid.Column="4" Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />

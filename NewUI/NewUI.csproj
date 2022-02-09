@@ -171,6 +171,9 @@
     <PackageReference Include="ReactiveUI.Fody" Version="17.1.9" />
    </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\ButtonWithIcon.axaml.cs">
+      <DependentUpon>ButtonWithIcon.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\IconButton.axaml.cs">
       <DependentUpon>IconButton.axaml</DependentUpon>
     </Compile>

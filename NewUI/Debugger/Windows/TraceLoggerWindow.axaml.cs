@@ -12,6 +12,7 @@ using Mesen.Interop;
 using Mesen.Utilities;
 using System;
 using System.ComponentModel;
+using System.IO;
 
 namespace Mesen.Debugger.Windows
 {
@@ -86,6 +87,7 @@ namespace Mesen.Debugger.Windows
 		{
 			string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, EmuApi.GetRomInfo().GetRomName() + ".txt", VisualRoot, FileDialogHelper.TraceExt);
 			if(filename != null) {
+				_model.TraceFile = filename;
 				_model.IsLoggingToFile = true;
 				DebugApi.StartLogTraceToFile(filename);
 			}
@@ -93,8 +95,21 @@ namespace Mesen.Debugger.Windows
 
 		private void OnStopLoggingClick(object sender, RoutedEventArgs e)
 		{
-			_model.IsLoggingToFile = false;
-			DebugApi.StopLogTraceToFile();
+			if(_model.IsLoggingToFile) {
+				_model.IsLoggingToFile = false;
+				DebugApi.StopLogTraceToFile();
+			}
+		}
+
+		private void OnOpenTraceFile(object sender, RoutedEventArgs e)
+		{
+			if(File.Exists(_model.TraceFile)) {
+				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo() {
+					FileName = _model.TraceFile,
+					UseShellExecute = true,
+					Verb = "open"
+				});
+			}
 		}
 
 		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)

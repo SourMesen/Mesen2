@@ -24,21 +24,30 @@
 		<vm:TraceLoggerViewModel />
 	</Design.DataContext>
 
-	<DockPanel>
-		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-			<Button Click="OnStartLoggingClick" IsVisible="{CompiledBinding !IsLoggingToFile}">
-				<WrapPanel>
-					<Image Source="/Assets/Record.png" />
-					<TextBlock Text="{l:Translate btnStart}" VerticalAlignment="Center" Padding="3 1 0 0" />
-				</WrapPanel>
-			</Button>
-			<Button Click="OnStopLoggingClick" IsVisible="{CompiledBinding IsLoggingToFile}">
-				<WrapPanel>
-					<Image Source="/Assets/MediaStop.png" />
-					<TextBlock Text="{l:Translate btnStop}" VerticalAlignment="Center" Padding="3 1 0 0" />
-				</WrapPanel>
-			</Button>
-		</StackPanel>
+	<DockPanel Margin="2">
+		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
+			<c:ButtonWithIcon
+				Grid.Column="0"
+				Click="OnOpenTraceFile"
+				IsEnabled="{CompiledBinding AllowOpenTraceFile}"
+				Icon="Assets/Folder.png"
+				Text="{l:Translate btnOpenTraceFile}"
+			/>
+			<c:ButtonWithIcon
+				Grid.Column="2"
+				Click="OnStartLoggingClick"
+				IsVisible="{CompiledBinding !IsLoggingToFile}"
+				Icon="Assets/Record.png"
+				Text="{l:Translate btnStart}"
+			/>
+			<c:ButtonWithIcon
+				Grid.Column="2"
+				Click="OnStopLoggingClick"
+				IsVisible="{CompiledBinding IsLoggingToFile}"
+				Icon="Assets/MediaStop.png"
+				Text="{l:Translate btnStop}"
+			/>
+		</Grid>
 		
 		<TabControl Items="{CompiledBinding Tabs}" Padding="1" DockPanel.Dock="Bottom">
 			<TabControl.ItemTemplate>
@@ -61,22 +70,26 @@
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
-		
-		<ScrollBar
-			DockPanel.Dock="Right"
-			Orientation="Vertical"
-			VerticalAlignment="Stretch"
-			AllowAutoHide="False"
-			Minimum="0"
-			Maximum="{CompiledBinding MaxScrollPosition}"
-			Value="{CompiledBinding ScrollPosition}"
-		/>
 
-		<dc:DisassemblyViewer
-			Name="disViewer"
-			Lines="{CompiledBinding TraceLogLines}"
-			StyleProvider="{CompiledBinding StyleProvider}"
-			PointerWheelChanged="Disassembly_PointerWheelChanged"
-		/>
+		<Border BorderBrush="Gray" BorderThickness="1">
+			<DockPanel>
+				<ScrollBar
+					DockPanel.Dock="Right"
+					Orientation="Vertical"
+					VerticalAlignment="Stretch"
+					AllowAutoHide="False"
+					Minimum="0"
+					Maximum="{CompiledBinding MaxScrollPosition}"
+					Value="{CompiledBinding ScrollPosition}"
+				/>
+
+				<dc:DisassemblyViewer
+					Name="disViewer"
+					Lines="{CompiledBinding TraceLogLines}"
+					StyleProvider="{CompiledBinding StyleProvider}"
+					PointerWheelChanged="Disassembly_PointerWheelChanged"
+				/>
+			</DockPanel>
+		</Border>
 	</DockPanel>
 </Window>

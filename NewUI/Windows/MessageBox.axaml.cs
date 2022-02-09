@@ -39,6 +39,9 @@ namespace Mesen.Windows
 			void AddButton(string caption, DialogResult r)
 			{
 				Button btn = new Button { Content = caption };
+				if(r == DialogResult.Cancel) {
+					btn.IsCancel = true;
+				}
 				btn.Click += (_, _) => {
 					result = r;
 					msgbox.Close();

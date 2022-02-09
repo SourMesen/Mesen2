@@ -29,6 +29,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool IsLoggingToFile { get; set; } = false;
 
 		[Reactive] public List<TraceLoggerOptionTab> Tabs { get; set; } = new List<TraceLoggerOptionTab>();
+		[Reactive] public string? TraceFile { get; set; } = null;
+		[Reactive] public bool AllowOpenTraceFile {get; private set; } = false;
 
 		public TraceLoggerViewModel()
 		{
@@ -51,6 +53,10 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.MaxScrollPosition).Subscribe(x => {
 				ScrollPosition = Math.Min(ScrollPosition, MaxScrollPosition);
+			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.IsLoggingToFile).Subscribe(x => {
+				AllowOpenTraceFile = !IsLoggingToFile && TraceFile != null;
 			}));
 		}
 
