@@ -768,7 +768,17 @@
 			<Control ID="btnRun">Run</Control>
 			<Control ID="btnStop">Stop</Control>
 		</Form>
-
+		
+		<Form ID="LogWindow">
+			<Control ID="wndTitle">Log Window</Control>
+			<Control ID="btnClose">Close</Control>
+		</Form>
+		
+		<Form ID="DebugLogWindow">
+			<Control ID="wndTitle">Debug Log</Control>
+			<Control ID="btnClose">Close</Control>
+		</Form>
+		
 		<Form ID="TraceLoggerWindow">
 			<Control ID="wndTitle">Trace Logger</Control>
 			<Control ID="lblFormat">Format: </Control>

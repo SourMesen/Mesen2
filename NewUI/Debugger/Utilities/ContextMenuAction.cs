@@ -411,6 +411,9 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Chip")]
 		OpenAssembler,
+		
+		[IconFile("LogWindow")]
+		OpenDebugLog,
 
 		[IconFile("Speed")]
 		OpenProfiler,

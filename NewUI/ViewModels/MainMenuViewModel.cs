@@ -803,6 +803,12 @@ namespace Mesen.ViewModels
 					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(new AssemblerWindowViewModel(MainWindow.RomInfo.ConsoleType.GetMainCpuType())))
 				},
 				new ContextMenuAction() {
+					ActionType = ActionType.OpenDebugLog,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenDebugLog),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new DebugLogWindow())
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.OpenProfiler,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenProfiler),
 					IsEnabled = () => IsGameRunning,
