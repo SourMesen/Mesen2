@@ -32,10 +32,10 @@ namespace Mesen.Debugger.ViewModels
 
 		private ContextMenuAction _recentScriptsAction = new();
 
-		[Reactive] public List<object> FileMenuActions { get; private set; } = new();
-		[Reactive] public List<object> ScriptMenuActions { get; private set; } = new();
-		[Reactive] public List<object> HelpMenuActions { get; private set; } = new();
-		[Reactive] public List<object> ToolbarActions { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> FileMenuActions { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> ScriptMenuActions { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> HelpMenuActions { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 
 		public ScriptWindowViewModel()
 		{
@@ -101,7 +101,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(_wnd, FileMenuActions);
 		}
 
-		private List<object> GetScriptMenuAction()
+		private List<ContextMenuAction> GetScriptMenuAction()
 		{
 			 return new() {
 				new ContextMenuAction() {

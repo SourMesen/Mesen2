@@ -95,8 +95,9 @@ public:
 
 	void Init(MemoryMappings &mm);
 
-	RomInfo GetRomInfo();
-	vector<uint8_t> GetOriginalPrgRom();
+	SnesCartInformation GetHeader();
+	uint32_t GetHeaderOffset();
+
 	ConsoleRegion GetRegion();
 	uint32_t GetCrc32();
 	string GetSha1Hash();

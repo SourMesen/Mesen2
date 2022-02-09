@@ -2093,6 +2093,9 @@ x == [$150] || y == [10]
 			<Value ID="SaveStateToFile">Save to file...</Value>
 
 			<Value ID="RecentFiles">Recent Files</Value>
+			
+			<Value ID="SaveRomAs">Same ROM as...</Value>
+			<Value ID="SaveEditsAsIps">Save edits as IPS patch...</Value>
 
 		</Enum>
 	</Enums>

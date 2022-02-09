@@ -61,6 +61,8 @@ public:
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
+	
+	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	BaseEventManager* GetEventManager() override;
 	IAssembler* GetAssembler() override;

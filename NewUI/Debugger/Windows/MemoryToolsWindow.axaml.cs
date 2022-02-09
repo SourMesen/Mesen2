@@ -92,7 +92,7 @@ namespace Mesen.Debugger.Windows
 		{
 			DebugConfig cfg = ConfigManager.Config.Debug;
 
-			DebugShortcutManager.CreateContextMenu(_editor, new object[] {
+			DebugShortcutManager.CreateContextMenu(_editor, new ContextMenuAction[] {
 				GetMarkSelectionAction(),
 				new ContextMenuSeparator(),
 				GetAddWatchAction(),
@@ -118,9 +118,12 @@ namespace Mesen.Debugger.Windows
 				},
 			});
 
-			_model.FileMenuItems = _model.AddDisposables(new List<object>() {
+			_model.FileMenuItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				GetImportAction(),
 				GetExportAction(),
+				new ContextMenuSeparator(),
+				SaveRomActionHelper.GetSaveRomAction(this),
+				SaveRomActionHelper.GetSaveEditsAsIpsAction(this),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.LoadTblFile,
@@ -147,7 +150,7 @@ namespace Mesen.Debugger.Windows
 				}
 			});
 
-			_model.SearchMenuItems = _model.AddDisposables(new List<object>() {
+			_model.SearchMenuItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAddress,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
@@ -166,7 +169,7 @@ namespace Mesen.Debugger.Windows
 				}
 			});
 
-			_model.ToolbarItems = _model.AddDisposables(new List<object>() { 
+			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() { 
 				GetImportAction(),
 				GetExportAction(),
 			});

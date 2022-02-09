@@ -15,32 +15,21 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/TraceLogFileSaver.h"
-#include "SNES/SnesCpu.h"
-#include "SNES/SnesPpu.h"
-#include "SNES/Spc.h"
-#include "SNES/Coprocessors/SA1/Sa1.h"
-#include "SNES/Coprocessors/GSU/Gsu.h"
-#include "SNES/Coprocessors/CX4/Cx4.h"
-#include "SNES/Coprocessors/DSP/NecDsp.h"
-#include "SNES/BaseCartridge.h"
-#include "SNES/SnesMemoryManager.h"
-#include "SNES/MemoryMappings.h"
+#include "SNES/SnesCpuTypes.h"
+#include "SNES/SpcTypes.h"
+#include "SNES/Coprocessors/SA1/Sa1Types.h"
+#include "SNES/Coprocessors/GSU/GsuTypes.h"
+#include "SNES/Coprocessors/CX4/Cx4Types.h"
+#include "SNES/Coprocessors/DSP/NecDspTypes.h"
 #include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SpcDebugger.h"
 #include "SNES/Debugger/GsuDebugger.h"
 #include "SNES/Debugger/NecDspDebugger.h"
 #include "SNES/Debugger/Cx4Debugger.h"
-#include "SNES/InternalRegisters.h"
-#include "SNES/AluMulDiv.h"
-#include "SNES/SnesDmaController.h"
-#include "SNES/SnesCpuTypes.h"
 #include "NES/Debugger/NesDebugger.h"
 #include "NES/NesTypes.h"
 #include "Gameboy/Debugger/GbDebugger.h"
-#include "Gameboy/Gameboy.h"
-#include "Gameboy/Gameboy.h"
-#include "Gameboy/GbPpu.h"
-#include "Gameboy/GameboyHeader.h"
+#include "Gameboy/GbTypes.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/NotificationManager.h"
@@ -604,42 +593,24 @@ string Debugger::GetLog()
 
 void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
-	//TODO
-	/*vector<uint8_t> output;
-	RomInfo romInfo = _emu->GetRomInfo();
-	Gameboy* gb = _cart->GetGameboy();
-
-	vector<uint8_t> rom;
-	if(gb) {
-		uint8_t* prgRom = _memoryDumper->GetMemoryBuffer(MemoryType::GbPrgRom);
-		uint32_t prgRomSize = _memoryDumper->GetMemorySize(MemoryType::GbPrgRom);
-		rom = vector<uint8_t>(prgRom, prgRom+prgRomSize);
-	} else {
-		rom = vector<uint8_t>(_cart->DebugGetPrgRom(), _cart->DebugGetPrgRom() + _cart->DebugGetPrgRomSize());
-	}
-
-	if(saveAsIps) {
-		output = IpsPatcher::CreatePatch(_cart->GetOriginalPrgRom(), rom);
-	} else {
-		if(stripOption != CdlStripOption::StripNone) {
-			GetCodeDataLogger(gb ? CpuType::Gameboy : CpuType::Cpu)->StripData(rom.data(), stripOption);
-
-			//Preserve rom header regardless of CDL file contents
-			if(gb) {
-				GameboyHeader header = gb->GetHeader();
-				memcpy(rom.data() + romInfo.HeaderOffset, &header, sizeof(GameboyHeader));
+	switch(_mainCpuType) {
+		case CpuType::Snes:
+			if(_debuggers[(int)CpuType::Gameboy].Debugger) {
+				//SGB
+				GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 			} else {
-				memcpy(rom.data() + romInfo.HeaderOffset, &romInfo.Header, sizeof(SnesCartInformation));
+				GetDebugger<CpuType::Snes, SnesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 			}
-		}
-		output = rom;
-	}
+			break;
 
-	ofstream file(filename, ios::out | ios::binary);
-	if(file) {
-		file.write((char*)output.data(), output.size());
-		file.close();
-	}*/
+		case CpuType::Gameboy:
+			GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+			break;
+
+		case CpuType::Nes:
+			GetDebugger<CpuType::Nes, NesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+			break;
+	}
 }
 
 ITraceLogger* Debugger::GetTraceLogger(CpuType cpuType)

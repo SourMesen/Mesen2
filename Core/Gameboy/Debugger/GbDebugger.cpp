@@ -12,8 +12,10 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
+#include "Debugger/MemoryDumper.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/BaseEventManager.h"
+#include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/HexUtilities.h"
 #include "Gameboy/Debugger/GbAssembler.h"
 #include "Gameboy/GbPpu.h"
@@ -324,4 +326,35 @@ ITraceLogger* GbDebugger::GetTraceLogger()
 PpuTools* GbDebugger::GetPpuTools()
 {
 	return _ppuTools.get();
+}
+
+void GbDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+{
+	vector<uint8_t> output;
+
+	uint8_t* prgRom = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::GbPrgRom);
+	uint32_t prgRomSize = _debugger->GetMemoryDumper()->GetMemorySize(MemoryType::GbPrgRom);
+	vector<uint8_t> rom = vector<uint8_t>(prgRom, prgRom + prgRomSize);
+
+	if(saveAsIps) {
+		vector<uint8_t> originalRom;
+		_emu->GetRomInfo().RomFile.ReadFile(originalRom);
+
+		output = IpsPatcher::CreatePatch(originalRom, rom);
+	} else {
+		if(stripOption != CdlStripOption::StripNone) {
+			_codeDataLogger->StripData(rom.data(), stripOption);
+
+			//Preserve rom header regardless of CDL file contents
+			GameboyHeader header = _gameboy->GetHeader();
+			memcpy(rom.data() + Gameboy::HeaderOffset, &header, sizeof(GameboyHeader));
+		}
+		output = rom;
+	}
+
+	ofstream file(filename, ios::out | ios::binary);
+	if(file) {
+		file.write((char*)output.data(), output.size());
+		file.close();
+	}
 }

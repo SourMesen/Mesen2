@@ -17,10 +17,10 @@ namespace Mesen.Debugger.Controls
 {
 	public class ActionToolbar : UserControl
 	{
-		public static readonly StyledProperty<List<object>> ItemsProperty = AvaloniaProperty.Register<ActionToolbar, List<object>>(nameof(Items));
+		public static readonly StyledProperty<List<ContextMenuAction>> ItemsProperty = AvaloniaProperty.Register<ActionToolbar, List<ContextMenuAction>>(nameof(Items));
 		private DispatcherTimer _timer;
 
-		public List<object> Items
+		public List<ContextMenuAction> Items
 		{
 			get { return GetValue(ItemsProperty); }
 			set { SetValue(ItemsProperty, value); }

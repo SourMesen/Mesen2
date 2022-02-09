@@ -6,9 +6,11 @@
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/ScriptManager.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/CodeDataLogger.h"
+#include "NES/NesHeader.h"
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
 #include "NES/NesPpu.h"
@@ -18,13 +20,14 @@
 #include "NES/Debugger/NesEventManager.h"
 #include "NES/Debugger/NesTraceLogger.h"
 #include "NES/Debugger/NesPpuTools.h"
+#include "NES/Debugger/NesDisUtils.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/Patches/IpsPatcher.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
-#include "NES/Debugger/NesDisUtils.h"
 
 NesDebugger::NesDebugger(Debugger* debugger)
 {
@@ -333,4 +336,34 @@ ITraceLogger* NesDebugger::GetTraceLogger()
 PpuTools* NesDebugger::GetPpuTools()
 {
 	return _ppuTools.get();
+}
+
+void NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+{
+	vector<uint8_t> output;
+
+	uint8_t* prgRom = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::NesPrgRom);
+	uint32_t prgRomSize = _debugger->GetMemoryDumper()->GetMemorySize(MemoryType::NesPrgRom);
+	vector<uint8_t> rom = vector<uint8_t>(prgRom, prgRom + prgRomSize);
+	
+	NesHeader header = _mapper->GetRomInfo().NesHeader;
+	rom.insert(rom.begin(), (uint8_t*)&header, (uint8_t*)&header + sizeof(NesHeader));
+	
+	if(saveAsIps) {
+		vector<uint8_t> originalRom;
+		_emu->GetRomInfo().RomFile.ReadFile(originalRom);
+
+		output = IpsPatcher::CreatePatch(originalRom, rom);
+	} else {
+		if(stripOption != CdlStripOption::StripNone) {
+			_codeDataLogger->StripData(rom.data() + sizeof(NesHeader), stripOption);
+		}
+		output = rom;
+	}
+
+	ofstream file(filename, ios::out | ios::binary);
+	if(file) {
+		file.write((char*)output.data(), output.size());
+		file.close();
+	}
 }

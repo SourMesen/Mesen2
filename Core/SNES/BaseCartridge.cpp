@@ -316,29 +316,14 @@ void BaseCartridge::Reset()
 	}
 }
 
-RomInfo BaseCartridge::GetRomInfo()
+SnesCartInformation BaseCartridge::GetHeader()
 {
-	RomInfo info;
-	//TODO
-	//info.Header = _cartInfo;
-	//info.HeaderOffset = _headerOffset;
-	//info.Coprocessor = _coprocessorType;
-	info.RomFile = static_cast<VirtualFile>(_romPath);
-	return info;
+	return _cartInfo;
 }
 
-vector<uint8_t> BaseCartridge::GetOriginalPrgRom()
+uint32_t BaseCartridge::GetHeaderOffset()
 {
-	RomInfo romInfo = GetRomInfo();
-	//TODO
-	unique_ptr<BaseCartridge> originalCart = BaseCartridge::CreateCartridge(_console, romInfo.RomFile);
-	if(originalCart->_gameboy) {
-		uint8_t* orgPrgRom = originalCart->_gameboy->DebugGetMemory(MemoryType::GbPrgRom);
-		uint32_t orgRomSize = originalCart->_gameboy->DebugGetMemorySize(MemoryType::GbPrgRom);
-		return vector<uint8_t>(orgPrgRom, orgPrgRom + orgRomSize);
-	} else {
-		return vector<uint8_t>(originalCart->DebugGetPrgRom(), originalCart->DebugGetPrgRom() + originalCart->DebugGetPrgRomSize());
-	}
+	return _headerOffset;
 }
 
 uint32_t BaseCartridge::GetCrc32()

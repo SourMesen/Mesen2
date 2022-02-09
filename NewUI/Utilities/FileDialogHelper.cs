@@ -24,6 +24,7 @@ namespace Mesen.Utilities
 		public static string LuaExt = "lua";
 		public static string PngExt = "png";
 		public static string DmpExt = "dmp";
+		public static string IpsExt = "ips";
 
 		public static async Task<string?> OpenFile(string? initialFolder, IRenderRoot? parent, params string[] extensions)
 		{

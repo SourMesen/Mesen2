@@ -549,5 +549,10 @@ namespace Mesen.Debugger.Utilities
 		
 		RecentFiles,
 		LoadLastSession,
+
+		[IconFile("SaveFloppy")]
+		SaveRomAs,
+		[IconFile("CheatCode")]
+		SaveEditsAsIps,
 	}
 }

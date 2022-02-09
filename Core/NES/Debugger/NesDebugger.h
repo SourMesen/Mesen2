@@ -71,6 +71,7 @@ public:
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;
+	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;

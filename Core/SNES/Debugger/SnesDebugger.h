@@ -29,6 +29,7 @@ enum class MemoryOperationType;
 
 class SnesDebugger final : public IDebugger
 {
+	Emulator* _emu;
 	Debugger* _debugger;
 	Disassembler* _disassembler;
 	MemoryAccessCounter* _memoryAccessCounter;
@@ -91,4 +92,5 @@ public:
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;
 	void SetPpuState(BaseState& state) override;
+	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 };

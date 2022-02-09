@@ -49,12 +49,12 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public string BreakReason { get; private set; } = "";
 		[Reactive] public string BreakElapsedCycles { get; private set; } = "";
 
-		[Reactive] public List<object> ToolbarItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
 		
-		[Reactive] public List<object> FileMenuItems { get; private set; } = new();
-		[Reactive] public List<object> DebugMenuItems { get; private set; } = new();
-		[Reactive] public List<object> SearchMenuItems { get; private set; } = new();
-		[Reactive] public List<object> OptionMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> FileMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> SearchMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> OptionMenuItems { get; private set; } = new();
 
 		public CpuType CpuType { get; private set; }
 		private UInt64 _masterClock = 0;
@@ -293,7 +293,17 @@ namespace Mesen.Debugger.ViewModels
 			ToolbarItems = GetDebugMenu(wnd, true);
 			DebugMenuItems = GetDebugMenu(wnd, false);
 
-			OptionMenuItems = new List<object>() {
+			FileMenuItems = new List<ContextMenuAction>() {
+				SaveRomActionHelper.GetSaveRomAction(wnd),
+				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd.Close()
+				}
+			};
+
+			OptionMenuItems = new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowSettingsPanel,
 					IsSelected = () => cfg.ShowSettingsPanel,
@@ -338,7 +348,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 			};
 
-			SearchMenuItems = new List<object>() {
+			SearchMenuItems = new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAddress,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
@@ -366,12 +376,12 @@ namespace Mesen.Debugger.ViewModels
 			});
 		}
 
-		private List<object> GetDebugMenu(Control wnd, bool forToolbar)
+		private List<ContextMenuAction> GetDebugMenu(Control wnd, bool forToolbar)
 		{
 			Func<bool> isPaused = () => EmuApi.IsPaused();
 			Func<bool> isRunning = () => !EmuApi.IsPaused();
 
-			List<object> debugMenu = new List<object>() {
+			List<ContextMenuAction> debugMenu = new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Continue,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Continue),
@@ -389,7 +399,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			if(!forToolbar) {
-				debugMenu.AddRange(new List<object> {
+				debugMenu.AddRange(new List<ContextMenuAction> {
 					new ContextMenuSeparator(),
 
 					new ContextMenuAction() {
@@ -405,7 +415,7 @@ namespace Mesen.Debugger.ViewModels
 				});
 			};
 
-			debugMenu.AddRange(new List<object> {
+			debugMenu.AddRange(new List<ContextMenuAction> {
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {

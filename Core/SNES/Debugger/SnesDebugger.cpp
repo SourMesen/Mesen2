@@ -18,6 +18,7 @@
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/CodeDataLogger.h"
+#include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/ScriptManager.h"
@@ -28,6 +29,7 @@
 #include "Shared/Emulator.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/Patches/IpsPatcher.h"
 #include "MemoryOperationType.h"
 
 SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
@@ -35,6 +37,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	_cpuType = cpuType;
 
 	_debugger = debugger;
+	_emu = debugger->GetEmulator();
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 	_console = console;
 	_disassembler = debugger->GetDisassembler();
@@ -369,4 +372,35 @@ void SnesDebugger::SetPpuState(BaseState& srcState)
 {
 	SnesPpuState& dstState = _ppu->GetStateRef();
 	dstState = (SnesPpuState&)srcState;
+}
+
+void SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+{
+	vector<uint8_t> output;
+	
+	uint8_t* prgRom = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::SnesPrgRom);
+	uint32_t prgRomSize = _debugger->GetMemoryDumper()->GetMemorySize(MemoryType::SnesPrgRom);
+	vector<uint8_t> rom = vector<uint8_t>(prgRom, prgRom + prgRomSize);
+
+	if(saveAsIps) {
+		vector<uint8_t> originalRom;
+		_emu->GetRomInfo().RomFile.ReadFile(originalRom);
+
+		output = IpsPatcher::CreatePatch(originalRom, rom);
+	} else {
+		if(stripOption != CdlStripOption::StripNone) {
+			_codeDataLogger->StripData(rom.data(), stripOption);
+
+			//Preserve rom header regardless of CDL file contents
+			SnesCartInformation header = _cart->GetHeader();
+			memcpy(rom.data() + _cart->GetHeaderOffset(), &header, sizeof(SnesCartInformation));
+		}
+		output = rom;
+	}
+
+	ofstream file(filename, ios::out | ios::binary);
+	if(file) {
+		file.write((char*)output.data(), output.size());
+		file.close();
+	}
 }

@@ -77,12 +77,12 @@ void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
 		duration = std::min(25.0, std::max(10.0, duration));
 		nextDuration = std::min(25.0, std::max(10.0, nextDuration));
 
-		int color = 0x00FF00;
+		int lineColor = 0x00FF00;
 		if(std::abs(duration - expectedFrameDelay) > 2) {
-			color = 0xFF0000;
+			lineColor = 0xFF0000;
 		} else if(std::abs(duration - expectedFrameDelay) > 1) {
-			color = 0xFFA500;
+			lineColor = 0xFFA500;
 		}
-		hud->DrawLine(130 + i*2, 60 + 50 - duration*2, 130 + i*2 + 2, 60 + 50 - nextDuration*2, color, 1, startFrame);
+		hud->DrawLine(130 + i*2, 60 + 50 - duration*2, 130 + i*2 + 2, 60 + 50 - nextDuration*2, lineColor, 1, startFrame);
 	}
 }
