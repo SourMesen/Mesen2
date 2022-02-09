@@ -304,7 +304,7 @@ template<class T> uint8_t NesPpu<T>::PeekRam(uint16_t addr)
 			returnValue = _memoryReadBuffer;
 
 			if((_videoRamAddr & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
-				returnValue = ReadPaletteRam(_videoRamAddr) | (_openBus & 0xC0);
+				returnValue = (ReadPaletteRam(_videoRamAddr) & _paletteRamMask) | (_openBus & 0xC0);
 				openBusMask = 0xC0;
 			} else {
 				openBusMask = 0x00;
@@ -366,7 +366,8 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 				_memoryReadBuffer = ReadVram(_ppuBusAddress & 0x3FFF, MemoryOperationType::Read);
 
 				if((_ppuBusAddress & 0x3FFF) >= 0x3F00 && !_console->GetNesConfig().DisablePaletteRead) {
-					returnValue = ReadPaletteRam(_ppuBusAddress) | (_openBus & 0xC0);
+					//Note: When grayscale is turned on, the read values also have the grayscale mask applied to them
+					returnValue = (ReadPaletteRam(_ppuBusAddress) & _paletteRamMask) | (_openBus & 0xC0);
 					_emu->ProcessPpuRead<CpuType::Nes>(_ppuBusAddress, returnValue, MemoryType::NesPpuMemory);
 					openBusMask = 0xC0;
 				} else {
