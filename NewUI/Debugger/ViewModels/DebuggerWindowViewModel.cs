@@ -185,7 +185,7 @@ namespace Mesen.Debugger.ViewModels
 
 			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
-			SourceView?.Refresh(Disassembly.StyleProvider.ActiveAddress);
+			SourceView?.Refresh(Disassembly.ActiveAddress);
 			MemoryMappings?.Refresh();
 			BreakpointList.RefreshBreakpointList();
 			LabelList.RefreshLabelList();
@@ -226,10 +226,10 @@ namespace Mesen.Debugger.ViewModels
 		{
 			if(scrollToActiveAddress) {
 				//Scroll to the active address and highlight it
-				Disassembly.SetActiveAddress(DebugUtilities.GetProgramCounter(CpuType));
+				Disassembly.SetActiveAddress((int)DebugUtilities.GetProgramCounter(CpuType));
 				if(!EmuApi.IsPaused()) {
 					//Clear the highlight if the emulation is still running
-					Disassembly.StyleProvider.ActiveAddress = null;
+					Disassembly.SetActiveAddress(null);
 				}
 			}
 			Disassembly.Refresh();
@@ -240,7 +240,7 @@ namespace Mesen.Debugger.ViewModels
 			if(ConsoleStatus != null) {
 				ConsoleStatus.EditAllowed = false;
 			}
-			Disassembly.StyleProvider.ActiveAddress = null;
+			Disassembly.SetActiveAddress(null);
 			Disassembly.Refresh();
 			SourceView?.Refresh(null);
 		}

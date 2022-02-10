@@ -82,8 +82,8 @@ namespace Mesen.Debugger.Controls
 			PointerPoint p = e.GetCurrentPoint(this);
 			int rowNumber = (int)(p.Position.Y / LetterSize.Height);
 			bool marginClicked = p.Position.X < 20;
-			if(rowNumber < Lines.Length) {
-				RowClicked?.Invoke(this, new RowClickedEventArgs(Lines[rowNumber], rowNumber, marginClicked, e.GetCurrentPoint(this).Properties));
+			if(rowNumber >= 0 && rowNumber < Lines.Length) {
+				RowClicked?.Invoke(this, new RowClickedEventArgs(Lines[rowNumber], rowNumber, marginClicked, e.GetCurrentPoint(this).Properties, e));
 			}
 		}
 
@@ -91,7 +91,8 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerMoved(e);
 
-			Point p = e.GetCurrentPoint(this).Position;
+			PointerPoint point = e.GetCurrentPoint(this);
+			Point p = point.Position;
 
 			if(_previousPointerPos == p) {
 				//Pointer didn't move, don't trigger the pointer event
@@ -99,11 +100,18 @@ namespace Mesen.Debugger.Controls
 			}
 			_previousPointerPos = p;
 
+			int rowNumber = (int)(p.Y / LetterSize.Height);
+			bool marginClicked = p.X < 20;
+			CodeLineData? lineData = null;
+			if(rowNumber >= 0 && rowNumber < Lines.Length) {
+				lineData = Lines[rowNumber];
+			}
+
 			foreach(var codeSegment in _visibleCodeSegments) {
 				if(codeSegment.Bounds.Contains(p)) {
 					//Don't trigger an event if this is the same segment
 					if(_prevPointerOverSegment != codeSegment) {
-						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(codeSegment));
+						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, lineData, codeSegment));
 						_prevPointerOverSegment = codeSegment;
 					}
 					return;
@@ -111,7 +119,7 @@ namespace Mesen.Debugger.Controls
 			}
 
 			_prevPointerOverSegment = null;
-			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(null));
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, lineData, null));
 		}
 
 		protected override void OnPointerLeave(PointerEventArgs e)
@@ -119,7 +127,7 @@ namespace Mesen.Debugger.Controls
 			base.OnPointerLeave(e);
 			_previousPointerPos = new Point(0, 0);
 			_prevPointerOverSegment = null;
-			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(null));
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, null, null));
 		}
 
 		public int GetVisibleRowCount()
@@ -184,7 +192,7 @@ namespace Mesen.Debugger.Controls
 				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
-				text.Text = line.Address >= 0 ? line.Address.ToString(addrFormat) : "..";
+				text.Text = line.Address >= 0 && !line.Flags.HasFlag(LineFlags.Empty) ? line.Address.ToString(addrFormat) : "..";
 				Point marginAddressPos = new Point(symbolMargin, y);
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
 				_visibleCodeSegments.Add(new CodeSegmentInfo(text.Text, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
@@ -202,6 +210,16 @@ namespace Mesen.Debugger.Controls
 					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
 				}
 
+				if(lineStyle.IsSelectedRow) {
+					SolidColorBrush brush = ColorHelper.GetBrush(Color.FromArgb(150, 185, 210, 255));
+					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
+				}
+
+				if(lineStyle.IsActiveRow) {
+					Pen borderPen = ColorHelper.GetPen(Colors.Blue);
+					context.DrawRectangle(borderPen, new Rect(x, Math.Round(y) - 0.5, Math.Floor(Bounds.Width) - x - 0.5, Math.Round(LetterSize.Height)));
+				}
+
 				if(line.Flags.HasFlag(LineFlags.BlockStart) || line.Flags.HasFlag(LineFlags.BlockEnd) || line.Flags.HasFlag(LineFlags.SubStart)) {
 					//Draw line to mark block start/end
 					double lineHeight = Math.Floor(y + LetterSize.Height / 2) + 0.5;
@@ -211,10 +229,10 @@ namespace Mesen.Debugger.Controls
 						//Draw block title (when set)
 						smallText.Text = line.Text;
 						double width = Bounds.Width - x;
-						double textPosX = Math.Floor(x + (width / 2) - (smallText.Bounds.Width / 2)) + 0.5;
-						double textPosY = Math.Floor(y + (LetterSize.Height / 2) - (smallText.Bounds.Height / 2)) + 0.5;
-						double rectHeight = Math.Floor(smallText.Bounds.Height);
-						double rectWidth = Math.Floor(smallText.Bounds.Width + 10);
+						double textPosX = Math.Round(x + (width / 2) - (smallText.Bounds.Width / 2)) + 0.5;
+						double textPosY = Math.Round(y + (LetterSize.Height / 2) - (smallText.Bounds.Height / 2)) - 0.5;
+						double rectHeight = Math.Round(smallText.Bounds.Height);
+						double rectWidth = Math.Round(smallText.Bounds.Width + 10);
 						context.DrawRectangle(ColorHelper.GetBrush(Colors.White), ColorHelper.GetPen(Colors.Gray), new Rect(textPosX - 5, textPosY, rectWidth, rectHeight));
 						context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(textPosX, textPosY), smallText);
 					}
@@ -223,7 +241,12 @@ namespace Mesen.Debugger.Controls
 						text.Text = line.Text.TrimEnd();
 						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
 						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
-						context.DrawRectangle(b, p, new Rect(Math.Round(x + codeIndent) + 0.5, Math.Round(y) + 0.5, Math.Round(text.Bounds.Width), Math.Round(text.Bounds.Height)));
+						if(b != null) {
+							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+						}
+						if(p != null) {
+							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+						}
 					}
 
 					double indent = codeIndent;
@@ -282,11 +305,15 @@ namespace Mesen.Debugger.Controls
 
 	public class CodePointerMovedEventArgs : EventArgs
 	{
-		public CodePointerMovedEventArgs(CodeSegmentInfo? codeSegment)
+		public CodePointerMovedEventArgs(PointerEventArgs pointerEvent, CodeLineData? lineData, CodeSegmentInfo? codeSegment)
 		{
+			this.Data = lineData;
 			this.CodeSegment = codeSegment;
+			this.PointerEvent = pointerEvent;
 		}
 
+		public PointerEventArgs PointerEvent { get; }
+		public CodeLineData? Data { get; }
 		public CodeSegmentInfo? CodeSegment { get; }
 	}
 
@@ -312,13 +339,15 @@ namespace Mesen.Debugger.Controls
 		public int RowNumber { get; private set; }
 		public bool MarginClicked { get; private set; }
 		public PointerPointProperties Properties { get; private set; }
+		public PointerPressedEventArgs PointerEvent { get; private set; }
 
-		public RowClickedEventArgs(CodeLineData codeLineData, int rowNumber, bool marginClicked, PointerPointProperties properties)
+		public RowClickedEventArgs(CodeLineData codeLineData, int rowNumber, bool marginClicked, PointerPointProperties properties, PointerPressedEventArgs pointerEvent)
 		{
 			this.CodeLineData = codeLineData;
 			this.RowNumber = rowNumber;
 			this.MarginClicked = marginClicked;
 			this.Properties = properties;
+			this.PointerEvent = pointerEvent;
 		}
 	}
 
@@ -350,6 +379,9 @@ namespace Mesen.Debugger.Controls
 		public Color? OutlineColor;
 		public Color? AddressColor;
 		public LineSymbol Symbol;
+
+		public bool IsActiveRow;
+		public bool IsSelectedRow;
 
 		public LineProgress? Progress;
 	}

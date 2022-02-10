@@ -169,7 +169,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(inUnmappedBlock) {
 			int32_t prevAddress = results.size() > 0 ? results[results.size() - 1].CpuAddress + 1 : bankStart;
 			results.push_back(DisassemblyResult(prevAddress, LineFlags::BlockStart | LineFlags::UnmappedMemory));
-			results.push_back(DisassemblyResult(-1, LineFlags::UnmappedMemory));
+			results.push_back(DisassemblyResult(prevAddress < i - 1 ? prevAddress + 1 : prevAddress, LineFlags::UnmappedMemory | LineFlags::Empty));
 			results.push_back(DisassemblyResult(i - 1, LineFlags::BlockEnd | LineFlags::UnmappedMemory));
 			inUnmappedBlock = false;
 		}
@@ -192,7 +192,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 			pushEndBlock();
 
 			if(addrInfo.Type == cdlMemType && cdl && cdl->IsSubEntryPoint(addrInfo.Address)) {
-				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode));
+				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode | LineFlags::Empty));
 			}
 
 			if(_labelManager->GetLabelAndComment(addrInfo, labelInfo)) {
@@ -221,6 +221,11 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 				results.push_back(DisassemblyResult(addrInfo, i));
 			}
 
+			if(DisassemblyInfo::IsReturnInstruction(src.Data[addrInfo.Address], cpuType)) {
+				//End of function
+				results.push_back(DisassemblyResult(i, LineFlags::VerifiedCode | LineFlags::BlockEnd | LineFlags::Empty));
+			} 
+
 			//Move to the end of the instruction (but realign disassembly if another valid instruction is found)
 			//This can sometimes happen if the 2nd byte of BRK/COP is reused as the first byte of the next instruction
 			//Also required when disassembling unvalidated data as code (to realign once we find verified code)
@@ -230,11 +235,6 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 				}
 				i++;
 			}
-
-			if(DisassemblyInfo::IsReturnInstruction(src.Data[addrInfo.Address], cpuType)) {
-				//End of function
-				results.push_back(DisassemblyResult(-1, LineFlags::VerifiedCode | LineFlags::BlockEnd));
-			} 
 		} else {
 			if(showData || showUnident) {
 				if((isData && inUnknownBlock) || (!isData && inVerifiedBlock)) {
@@ -267,7 +267,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 					byteCounter = bytesPerRow;
 				} else {
 					//If not showing the data at all, display 1 empty line
-					results.push_back(DisassemblyResult(-1, LineFlags::None | (isData ? LineFlags::VerifiedData : 0)));
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Empty | (isData ? LineFlags::VerifiedData : 0)));
 				}
 			}
 			prevAddrInfo = addrInfo;
@@ -295,23 +295,23 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 		case MemoryType::GbPrgRom:
 		case MemoryType::SnesPrgRom:
 		case MemoryType::NesPrgRom:
-			data.Flags |= (uint8_t)LineFlags::SnesPrgRom;
+			data.Flags |= (uint8_t)LineFlags::PrgRom;
 			break;
 
 		case MemoryType::GbWorkRam:
 		case MemoryType::SnesWorkRam:
 		case MemoryType::NesWorkRam:
-			data.Flags |= (uint8_t)LineFlags::SnesWorkRam;
+			data.Flags |= (uint8_t)LineFlags::WorkRam;
 			break;
 
 		case MemoryType::GbCartRam:
 		case MemoryType::SnesSaveRam:
 		case MemoryType::NesSaveRam:
-			data.Flags |= (uint8_t)LineFlags::SnesSaveRam;
+			data.Flags |= (uint8_t)LineFlags::SaveRam;
 			break;
 	}
 
-	bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) != 0;
+	bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd | LineFlags::Empty)) != 0;
 	if(!isBlockStartEnd && row.Address.Address >= 0) {
 		if((data.Flags & LineFlags::ShowAsData)) {
 			FastString str(".db", 3);
@@ -482,10 +482,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 			memcpy(data.Text, label.c_str(), label.size() + 1);
 		}
 
+		data.Address = row.CpuAddress;
+
 		if(data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) {
 			if(!(data.Flags & (LineFlags::ShowAsData | LineFlags::SubStart))) {
 				//For hidden blocks, give the start/end lines an address
-				data.Address = row.CpuAddress;
 				data.AbsoluteAddress = row.Address.Address;
 			}
 		}
@@ -499,7 +500,11 @@ int32_t Disassembler::GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t a
 	int32_t i;
 	for(i = 0; i < (int32_t)rows.size(); i++) {
 		if(rows[i].CpuAddress == (int32_t)address) {
-			break;
+			if(i + 1 >= rows.size() || rows[i + 1].CpuAddress != (int32_t)address || address == 0) {
+				//Keep going down until the last instance of the matching address is found
+				//Except for address 0, to ensure scrolling to the very top is allowed
+				break;
+			}
 		} else if(rows[i].CpuAddress > (int32_t)address) {
 			while(i > 0 && (rows[i].CpuAddress > (int32_t)address || rows[i].CpuAddress < 0)) {
 				i--;
@@ -540,7 +545,7 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 			}
 		}
 
-		output[row] = GetLineData(rows[row + i], type, memType);;
+		output[row] = GetLineData(rows[row + i], type, memType);
 	}
 
 	return row;
@@ -568,7 +573,7 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	if(rowOffset > 0) {
 		while(len > 0) {
 			for(; i < len; i++) {
-				if(rowOffset <= 0 && rows[i].CpuAddress >= 0) {
+				if(rowOffset <= 0 && rows[i].CpuAddress >= 0 && rows[i].CpuAddress != (int32_t)address) {
 					return rows[i].CpuAddress;
 				}
 				rowOffset--;
@@ -588,7 +593,7 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	} else if(rowOffset < 0) {
 		while(len > 0) {
 			for(; i >= 0; i--) {
-				if(rowOffset >= 0 && rows[i].CpuAddress >= 0) {
+				if(rowOffset >= 0 && rows[i].CpuAddress >= 0 && rows[i].CpuAddress != (int32_t)address) {
 					return rows[i].CpuAddress;
 				}
 				rowOffset++;

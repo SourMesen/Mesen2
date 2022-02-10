@@ -8,14 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Interop;
+using Mesen.Debugger.ViewModels;
 
 namespace Mesen.Debugger.Disassembly
 {
 	public class BaseStyleProvider : ILineStyleProvider
 	{
-		public int? ActiveAddress { get; set; }
+		private DisassemblyViewModel? _model { get; set; }
 
-		public static void ConfigureActiveStatement(LineProperties props)
+		public BaseStyleProvider(DisassemblyViewModel? model = null)
+		{
+			_model = model;
+		}
+
+		private static void ConfigureActiveStatement(LineProperties props)
 		{
 			props.FgColor = Colors.Black;
 			props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
@@ -31,9 +37,16 @@ namespace Mesen.Debugger.Disassembly
 				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType);
 			}
 
-			bool isActiveStatement = ActiveAddress.HasValue && ActiveAddress.Value == lineData.Address;
-			if(isActiveStatement) {
-				ConfigureActiveStatement(props);
+			if(_model != null) {
+				bool isActiveStatement = _model.ActiveAddress.HasValue && _model.ActiveAddress.Value == lineData.Address;
+				if(isActiveStatement) {
+					ConfigureActiveStatement(props);
+				}
+
+				if(!lineData.Flags.HasFlag(LineFlags.Empty)) {
+					props.IsSelectedRow = lineData.Address >= _model.SelectionStart && lineData.Address <= _model.SelectionEnd;
+					props.IsActiveRow = _model.SelectedRowAddress == lineData.Address;
+				}
 			}
 
 			if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {

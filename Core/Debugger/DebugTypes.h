@@ -130,9 +130,9 @@ namespace LineFlags
 	enum LineFlags : uint16_t
 	{
 		None = 0,
-		SnesPrgRom = 0x01,
-		SnesWorkRam = 0x02,
-		SnesSaveRam = 0x04,
+		PrgRom = 0x01,
+		WorkRam = 0x02,
+		SaveRam = 0x04,
 		VerifiedData = 0x08,
 		VerifiedCode = 0x10,
 		BlockStart = 0x20,
@@ -142,7 +142,8 @@ namespace LineFlags
 		Comment = 0x200,
 		ShowAsData = 0x400,
 		UnexecutedCode = 0x800,
-		UnmappedMemory = 0x1000
+		UnmappedMemory = 0x1000,
+		Empty = 0x2000
 	};
 }
 

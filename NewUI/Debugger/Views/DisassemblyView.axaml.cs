@@ -45,15 +45,23 @@ namespace Mesen.Debugger.Views
 
 		public void Diassembly_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
 		{
-			if(e.MarginClicked && e.Properties.IsLeftButtonPressed) {
-				CpuType cpuType = e.CodeLineData.CpuType;
-				AddressInfo relAddress = new AddressInfo() {
-					Address = e.CodeLineData.Address,
-					Type = cpuType.ToMemoryType()
-				};
+			if(e.Properties.IsLeftButtonPressed) {
+				if(e.MarginClicked) {
+					CpuType cpuType = e.CodeLineData.CpuType;
+					AddressInfo relAddress = new AddressInfo() {
+						Address = e.CodeLineData.Address,
+						Type = cpuType.ToMemoryType()
+					};
 
-				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-				BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+				} else {
+					if(e.PointerEvent.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+						Model.ResizeSelectionTo(e.CodeLineData.Address);
+					} else {
+						Model.SetSelectedRow(e.CodeLineData.Address);
+					}
+				}
 			}
 		}
 
@@ -70,6 +78,10 @@ namespace Mesen.Debugger.Views
 				ToolTip.SetIsOpen(this, false);
 				ToolTip.SetTip(this, null);
 			}
+
+			if(e.Data != null && e.PointerEvent.GetCurrentPoint(null).Properties.IsLeftButtonPressed) {
+				Model.ResizeSelectionTo(e.Data.Address);
+			}
 		}
 
 		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -80,10 +92,13 @@ namespace Mesen.Debugger.Views
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			switch(e.Key) {
-				case Key.PageDown: Model.Scroll(Model.VisibleRowCount - 2); e.Handled = true; break;
-				case Key.PageUp: Model.Scroll(-(Model.VisibleRowCount - 2)); e.Handled = true; break;
+				case Key.PageDown: Model.MoveCursor(Model.VisibleRowCount - 2, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
+				case Key.PageUp: Model.MoveCursor(-(Model.VisibleRowCount - 2), e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
 				case Key.Home: Model.ScrollToTop(); e.Handled = true; break;
 				case Key.End: Model.ScrollToBottom(); e.Handled = true; break;
+
+				case Key.Up: Model.MoveCursor(-1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
+				case Key.Down: Model.MoveCursor(1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
 			}
 		}
 	}
