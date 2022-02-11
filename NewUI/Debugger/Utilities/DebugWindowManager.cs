@@ -49,6 +49,16 @@ namespace Mesen.Debugger.Utilities
 			return OpenDebugWindow<T>(createWindow);
 		}
 
+		public static T? GetDebugWindow<T>(Func<T, bool> isMatch) where T : Window
+		{
+			foreach(Window wnd in _openedWindows.Keys) {
+				if(wnd is T tWnd && isMatch(tWnd)) {
+					return (T)wnd;
+				}
+			}
+			return null;
+		}
+
 		private static void CloseDebugWindow(Window wnd)
 		{
 			//Remove window from list first, to ensure no more notifications are sent to it

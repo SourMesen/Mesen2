@@ -7,7 +7,9 @@ using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
+using Mesen.Interop;
 using System;
 using System.ComponentModel;
 using System.Reflection;
@@ -56,6 +58,14 @@ namespace Mesen.Debugger.Windows
 			_model.Config.LoadWindowSettings(this);
 		}
 
+		public static void EditCode(CpuType cpuType, int address, string code, int byteCount)
+		{
+			AssemblerWindowViewModel model = new AssemblerWindowViewModel(cpuType);
+			model.InitEditCode(address, code, byteCount);
+
+			DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(model));
+		}
+
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -92,14 +102,16 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private void Ok_OnClick(object sender, RoutedEventArgs e)
+		private async void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(true);
+			if(await _model.ApplyChanges(this)) {
+				Close();
+			}
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(false);
+			Close();
 		}
 
 		private void InitializeComponent()

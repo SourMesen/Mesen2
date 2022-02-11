@@ -24,10 +24,6 @@
 		<vm:AssemblerWindowViewModel />
 	</Design.DataContext>
 
-	<Window.Resources>
-		<du:HexConverter x:Key="Hex" />
-	</Window.Resources>
-
 	<Window.Styles>
 		<Style Selector="Grid.main > Border">
 			<Setter Property="BorderBrush" Value="Gray" />
@@ -73,18 +69,45 @@
 		<Border Grid.Row="1" Grid.Column="1" Padding="2">
 			<DockPanel>
 				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-					<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
+					<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{CompiledBinding IsIdentical}" />
+					<c:ButtonWithIcon
+						Width="70"
+						HorizontalContentAlignment="Center"
+						Click="Ok_OnClick"
+						Icon="Assets/Warning.png"
+						ShowIcon="{CompiledBinding HasWarning}"
+						Text="{l:Translate btnOk}"
+						IsEnabled="{CompiledBinding OkEnabled}"
+					/>
 					<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 				</StackPanel>
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 					<TextBlock Text="{l:Translate lblStartAddress}" />
-					<TextBox
+					<c:MesenNumericTextBox
 						Grid.Column="1"
 						Width="50"
-						Text="{CompiledBinding StartAddress, Converter={StaticResource Hex}, ConverterParameter='X'}}" 
+						Hex="True"
+						Max="{CompiledBinding MaxAddress}"
+						Value="{CompiledBinding StartAddress}"
 					/>
 					<TextBlock Text="{l:Translate lblBytesUsed}" Grid.Row="1" Margin="0 5 0 0" />
-					<TextBlock Text="{CompiledBinding BytesUsed}" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0" />
+					<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0">
+						<TextBlock Text="{CompiledBinding BytesUsed}" Margin="5 0 0 0" />
+						<TextBlock Text="/" Margin="5 0" IsVisible="{CompiledBinding OriginalByteCount}" />
+						<TextBlock Text="{CompiledBinding OriginalByteCount}" IsVisible="{CompiledBinding OriginalByteCount}" />
+						<Image
+							Margin="5 0"
+							Source="/Assets/Warning.png"
+							IsVisible="{CompiledBinding OriginalSizeExceeded}"
+							ToolTip.Tip="{l:Translate lblByteCountExceeded}"
+						/>
+						<Image
+							Margin="5 0"
+							Source="/Assets/Warning.png"
+							IsVisible="{CompiledBinding MaxSizeExceeded}"
+							ToolTip.Tip="{l:Translate lblMaxSizeExceeded}"
+						/>
+					</StackPanel>
 				</Grid>
 			</DockPanel>
 		</Border>

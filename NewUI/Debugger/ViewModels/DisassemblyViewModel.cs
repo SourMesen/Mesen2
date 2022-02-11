@@ -17,7 +17,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class DisassemblyViewModel : ViewModelBase
 	{
-		[Reactive] public ICodeDataProvider? DataProvider { get; set; } = null;
+		public ICodeDataProvider DataProvider { get; }
+
 		[Reactive] public BaseStyleProvider StyleProvider { get; set; }
 		[Reactive] public int ScrollPosition { get; set; } = 0;
 		[Reactive] public int MaxScrollPosition { get; private set; } = 10000;
@@ -43,14 +44,12 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config = config;
 			StyleProvider = new BaseStyleProvider(this);
+			DataProvider = new CodeDataProvider(cpuType);
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			DataProvider = new CodeDataProvider(cpuType);
-
-			this.WhenAnyValue(x => x.DataProvider).Subscribe(x => Refresh());
 			this.WhenAnyValue(x => x.TopAddress).Subscribe(x => Refresh());
 
 			int lastValue = ScrollPosition;
@@ -70,7 +69,7 @@ namespace Mesen.Debugger.ViewModels
 					if(Math.Abs(gap) <= 10) {
 						Scroll(gap);
 					} else {
-						int lineCount = DataProvider?.GetLineCount() ?? 0;
+						int lineCount = DataProvider.GetLineCount();
 						TopAddress = Math.Max(0, Math.Min(lineCount - 1, (int)((double)lineCount / MaxScrollPosition * ScrollPosition)));
 					}
 				}
@@ -79,12 +78,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void Scroll(int lineNumberOffset)
 		{
-			ICodeDataProvider? dp = DataProvider;
-			if(dp == null) {
-				return;
-			}
-			
-			SetTopAddress(dp.GetRowAddress(TopAddress, lineNumberOffset));
+			SetTopAddress(DataProvider.GetRowAddress(TopAddress, lineNumberOffset));
 		}
 
 		public void ScrollToTop()
@@ -95,7 +89,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void ScrollToBottom()
 		{
-			int address = (DataProvider?.GetLineCount() ?? 0) - 1;
+			int address = DataProvider.GetLineCount() - 1;
 			SetSelectedRow(address);
 			ScrollToAddress((uint)address, ScrollDisplayPosition.Bottom);
 		}
@@ -108,12 +102,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void Refresh()
 		{
-			ICodeDataProvider? dp = DataProvider;
-			if(dp == null) {
-				return;
-			}
-
-			CodeLineData[] lines = dp.GetCodeLines(TopAddress, VisibleRowCount);
+			CodeLineData[] lines = DataProvider.GetCodeLines(TopAddress, VisibleRowCount);
 			Lines = lines;
 
 			if(lines.Length > 0 && lines[0].Address >= 0) {
@@ -123,7 +112,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void SetTopAddress(int address)
 		{
-			int lineCount = DataProvider?.GetLineCount() ?? 0;
+			int lineCount = DataProvider.GetLineCount();
 			address = Math.Max(0, Math.Min(lineCount - 1, address));
 
 			_ignoreScrollUpdates++;
@@ -153,12 +142,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void MoveCursor(int rowOffset, bool extendSelection)
 		{
-			ICodeDataProvider? dp = DataProvider;
-			if(dp == null) {
-				return;
-			}
-
-			int address = dp.GetRowAddress(SelectedRowAddress, rowOffset);
+			int address = DataProvider.GetRowAddress(SelectedRowAddress, rowOffset);
 			if(extendSelection) {
 				ResizeSelectionTo(address);
 			} else {
@@ -215,10 +199,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			ICodeDataProvider? dp = DataProvider;
-			if(dp == null) {
-				return;
-			}
+			ICodeDataProvider dp = DataProvider;
 
 			switch(position) {
 				case ScrollDisplayPosition.Top: TopAddress = dp.GetRowAddress((int)pc, -1); break;
@@ -233,21 +214,22 @@ namespace Mesen.Debugger.ViewModels
 
 		public void CopySelection()
 		{
-			ICodeDataProvider? dp = DataProvider;
-			if(dp == null) {
-				return;
-			}
+			string code = GetSelection(true, true, true, true, out _);
+			Application.Current?.Clipboard?.SetTextAsync(code);
+		}
 
-			bool copyAddresses = true;
-			bool copyByteCode = true;
-			bool copyComments = true;
+		public string GetSelection(bool getAddresses, bool getByteCode, bool getComments, bool getHeaders, out int byteCount)
+		{
+			ICodeDataProvider dp = DataProvider;
+			
 			const int commentSpacingCharCount = 25;
 
 			int addrSize = dp.CpuType.GetAddressSize();
 			string addrFormat = "X" + addrSize;
 			StringBuilder sb = new StringBuilder();
 			int i = SelectionStart;
-			while(i <= SelectionEnd) {
+			int endAddress = 0;
+			while(i < SelectionEnd) {
 				CodeLineData[] data = dp.GetCodeLines(i, 5000);
 
 				for(int j = 0; j < data.Length; j++) {
@@ -261,7 +243,11 @@ namespace Mesen.Debugger.ViewModels
 
 					string codeString = lineData.Text.Trim();
 					if(lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.BlockStart)) {
-						codeString = "--------" + codeString + "--------";
+						if(getHeaders) {
+							codeString = "--------" + codeString + "--------";
+						} else {
+							continue;
+						}
 					}
 
 					int padding = Math.Max(commentSpacingCharCount, codeString.Length);
@@ -272,26 +258,29 @@ namespace Mesen.Debugger.ViewModels
 					codeString = codeString.PadRight(padding);
 
 					string line = indent + codeString;
-					if(copyByteCode) {
+					if(getByteCode) {
 						line = lineData.ByteCode.PadRight(13) + line;
 					}
-					if(copyAddresses) {
+					if(getAddresses) {
 						if(lineData.HasAddress) {
 							line = lineData.Address.ToString(addrFormat) + "  " + line;
 						} else {
 							line = "..".PadRight(addrSize) + "  " + line;
 						}
 					}
-					if(copyComments && !string.IsNullOrWhiteSpace(lineData.Comment)) {
+					if(getComments && !string.IsNullOrWhiteSpace(lineData.Comment)) {
 						line = line + lineData.Comment;
 					}
-					sb.AppendLine(line);
+					sb.AppendLine(line.Trim());
 
 					i = lineData.Address;
+					endAddress = lineData.Address + lineData.OpSize - 1;
 				}
 			}
 
-			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+			byteCount = endAddress - SelectionStart + 1;
+
+			return sb.ToString();
 		}
 	}
 

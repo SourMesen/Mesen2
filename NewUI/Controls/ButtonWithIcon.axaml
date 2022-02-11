@@ -9,7 +9,7 @@
 	Padding="0"
 >
 	<StackPanel Orientation="Horizontal">
-		<Image Name="IconImage" Margin="2 -1 4 0" Stretch="None" />
-		<TextBlock Text="{CompiledBinding Text, ElementName=root}" Margin="0 0 4 0" />
+		<Image Name="IconImage" Margin="2 -1 0 0" Stretch="None" IsVisible="{CompiledBinding ShowIcon, ElementName=root}" />
+		<TextBlock Text="{CompiledBinding Text, ElementName=root}" Margin="4 -1 4 0" />
 	</StackPanel>
 </Button>

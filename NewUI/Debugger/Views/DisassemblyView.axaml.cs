@@ -7,6 +7,7 @@ using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System.Collections.Generic;
 
@@ -34,7 +35,13 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.MarkSelectionAs
 				},
 				new ContextMenuAction() {
-					ActionType = ActionType.EditSelectedCode
+					ActionType = ActionType.EditSelectedCode,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditSelectedCode),
+					IsEnabled = () => Model.DataProvider.CpuType.SupportsAssembler() && EmuApi.IsPaused(),
+					OnClick = () => {
+						string code = Model.GetSelection(false, false, true, false, out int byteCount);
+						AssemblerWindow.EditCode(Model.DataProvider.CpuType, Model.SelectionStart, code, byteCount);
+					}
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,

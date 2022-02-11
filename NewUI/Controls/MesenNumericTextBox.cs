@@ -148,7 +148,7 @@ namespace Mesen.Controls
 					uint _ => uint.MaxValue,
 					long _ => long.MaxValue,
 					ulong _ => ulong.MaxValue,
-					_ => throw new Exception("invalid value type")
+					_ => int.MaxValue
 				};
 			}
 

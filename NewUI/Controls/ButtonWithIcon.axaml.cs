@@ -14,8 +14,9 @@ namespace Mesen.Controls
 	{
 		Type IStyleable.StyleKey => typeof(Button);
 
-		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<KeyBindingButton, string>(nameof(Text), "");
-		public static readonly StyledProperty<string> IconProperty = AvaloniaProperty.Register<KeyBindingButton, string>(nameof(Icon), "");
+		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<ButtonWithIcon, string>(nameof(Text), "");
+		public static readonly StyledProperty<string> IconProperty = AvaloniaProperty.Register<ButtonWithIcon, string>(nameof(Icon), "");
+		public static readonly StyledProperty<bool> ShowIconProperty = AvaloniaProperty.Register<ButtonWithIcon, bool>(nameof(ShowIcon), true);
 
 		public string Text
 		{
@@ -27,6 +28,12 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(IconProperty); }
 			set { SetValue(IconProperty, value); }
+		}
+
+		public bool ShowIcon
+		{
+			get { return GetValue(ShowIconProperty); }
+			set { SetValue(ShowIconProperty, value); }
 		}
 
 		static ButtonWithIcon()

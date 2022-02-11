@@ -19,7 +19,9 @@ namespace Mesen.Debugger.Windows
 	public class DebuggerWindow : Window, INotificationHandler
 	{
 		private DebuggerWindowViewModel _model;
-		
+
+		public CpuType CpuType => _model.CpuType;
+
 		[Obsolete("For designer only")]
 		public DebuggerWindow() : this(null) { }
 
@@ -48,6 +50,11 @@ namespace Mesen.Debugger.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		public void RefreshDisassembly()
+		{
+			_model.Disassembly.Refresh();
 		}
 
 		protected override void OnOpened(EventArgs e)

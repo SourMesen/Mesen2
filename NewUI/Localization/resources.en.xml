@@ -757,6 +757,11 @@
 			<Control ID="wndTitle">Assembler</Control>
 			<Control ID="lblStartAddress">Start address: $</Control>
 			<Control ID="lblBytesUsed">Bytes used: </Control>
+
+			<Control ID="lblByteCountExceeded">Warning: The new code exceeds the original code's length.&#13;Applying this modification will overwrite other portions of the code and potentially cause problems.</Control>
+			<Control ID="lblMaxSizeExceeded">Error: Code is too large to fit.</Control>
+			<Control ID="lblCodeMatchesOriginal">Code matches original code</Control>
+
 			<Control ID="colLine">Line</Control>
 			<Control ID="colError">Error</Control>
 			<Control ID="btnOk">Apply</Control>
@@ -1135,6 +1140,8 @@ x == [$150] || y == [10]
 		<Message ID="btnCancel">Cancel</Message>
 		<Message ID="btnYes">Yes</Message>
 		<Message ID="btnNo">No</Message>
+		
+		<Message ID="AssemblerConfirmation">{0}&#xA;&#xA;OK?</Message>
 	</Messages>
 	<Enums>
 		<Enum ID="EmulatorShortcut">

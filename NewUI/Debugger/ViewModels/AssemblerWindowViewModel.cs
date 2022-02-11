@@ -1,13 +1,20 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
+using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
+using Mesen.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -17,77 +24,185 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public string Code { get; set; } = "";
 		[Reactive] public string ByteCodeView { get; set; } = "";
-		[Reactive] public UInt32 StartAddress { get; set; }
-		[Reactive] public UInt32 BytesUsed { get; set; }
+		[Reactive] public int StartAddress { get; set; }
+		[Reactive] public int BytesUsed { get; set; }
+		
+		[Reactive] public bool HasWarning { get; set; }
+		[Reactive] public bool IsIdentical { get; set; }
+		[Reactive] public bool OriginalSizeExceeded { get; set; }
+		[Reactive] public bool MaxSizeExceeded { get; set; }
+
 		[Reactive] public bool OkEnabled { get; set; } = false;
 		[Reactive] public List<AssemblerError> Errors { get; set; } = new List<AssemblerError>();
 		public FontConfig Font { get; } = ConfigManager.Config.Debug.Font;
 
 		private CpuType _cpuType;
+		private List<byte> _bytes = new();
+
+		public int? MaxAddress { get; }
+
+		private int _originalAddress = -1;
+		private byte[] _originalCode = Array.Empty<byte>();
+		[Reactive] public int OriginalByteCount { get; private set; } = 0;
 
 		[Obsolete("For designer only")]
-		public AssemblerWindowViewModel() : this(CpuType.Snes, "") { }
+		public AssemblerWindowViewModel() : this(CpuType.Snes) { }
 
-		public AssemblerWindowViewModel(CpuType cpuType, string code = "")
+		public AssemblerWindowViewModel(CpuType cpuType)
 		{
 			Config = ConfigManager.Config.Debug.Assembler;
-			Code = code;
 			_cpuType = cpuType;
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			this.WhenAnyValue(x => x.Code).Subscribe(code => {
-				string[] codeLines = code.Replace("\r", "").Split('\n');
-				short[] byteCode = DebugApi.AssembleCode(_cpuType, code, StartAddress);
-				List<AssemblerError> errorList = new List<AssemblerError>();
-				List<byte> convertedByteCode = new List<byte>(byteCode.Length);
-				StringBuilder sb = new StringBuilder();
-				int line = 1;
-				for(int i = 0; i < byteCode.Length; i++) {
-					short s = byteCode[i];
-					if(s >= 0) {
-						convertedByteCode.Add((byte)s);
-						sb.Append(s.ToString("X2") + " ");
-					} else if(s == (int)AssemblerSpecialCodes.EndOfLine) {
-						line++;
-						if(line <= codeLines.Length) {
-							sb.Append(Environment.NewLine);
-						}
-					} else if(s < (int)AssemblerSpecialCodes.EndOfLine) {
-						string message = "unknown error";
-						switch((AssemblerSpecialCodes)s) {
-							case AssemblerSpecialCodes.ParsingError: message = "Invalid syntax"; break;
-							case AssemblerSpecialCodes.OutOfRangeJump: message = "Relative jump is out of range (-128 to 127)"; break;
-							case AssemblerSpecialCodes.LabelRedefinition: message = "Cannot redefine an existing label"; break;
-							case AssemblerSpecialCodes.MissingOperand: message = "Operand is missing"; break;
-							case AssemblerSpecialCodes.OperandOutOfRange: message = "Operand is out of range (invalid value)"; break;
-							case AssemblerSpecialCodes.InvalidHex: message = "Hexadecimal string is invalid"; break;
-							case AssemblerSpecialCodes.InvalidSpaces: message = "Operand cannot contain spaces"; break;
-							case AssemblerSpecialCodes.TrailingText: message = "Invalid text trailing at the end of line"; break;
-							case AssemblerSpecialCodes.UnknownLabel: message = "Unknown label"; break;
-							case AssemblerSpecialCodes.InvalidInstruction: message = "Invalid instruction"; break;
-							case AssemblerSpecialCodes.InvalidBinaryValue: message = "Invalid binary value"; break;
-							case AssemblerSpecialCodes.InvalidOperands: message = "Invalid operands for instruction"; break;
-							case AssemblerSpecialCodes.InvalidLabel: message = "Invalid label name"; break;
-						}
-						errorList.Add(new AssemblerError() { Message = message + " - " + codeLines[line - 1], LineNumber = line });
+			MaxAddress = DebugApi.GetMemorySize(_cpuType.ToMemoryType()) - 1;
 
-						sb.Append("<error: " + message + ">");
-						if(i + 1 < byteCode.Length) {
-							sb.Append(Environment.NewLine);
-						}
+			this.WhenAnyValue(x => x.Code, x => x.StartAddress).Subscribe(_ => {
+				UpdateAssembly(Code);
+			});
+		}
 
-						line++;
+		public void InitEditCode(int address, string code, int byteCount)
+		{
+			OriginalByteCount = byteCount;
+			_originalAddress = address;
+
+			using var delayNotifs = DelayChangeNotifications();
+			StartAddress = address;
+			Code = code;
+
+			_originalCode = DebugApi.GetMemoryValues(_cpuType.ToMemoryType(), (uint)StartAddress, (uint)(StartAddress + OriginalByteCount - 1));
+		}
+
+		private void UpdateAssembly(string code)
+		{
+			string[] codeLines = code.Replace("\r", "").Split('\n').Select(x => x.Trim()).ToArray();
+			short[] byteCode = DebugApi.AssembleCode(_cpuType, string.Join('\n', codeLines), (uint)StartAddress);
+			List<AssemblerError> errorList = new List<AssemblerError>();
+			List<byte> convertedByteCode = new List<byte>(byteCode.Length);
+			StringBuilder sb = new StringBuilder();
+			int line = 1;
+			for(int i = 0; i < byteCode.Length; i++) {
+				short s = byteCode[i];
+				if(s >= 0) {
+					convertedByteCode.Add((byte)s);
+					sb.Append(s.ToString("X2") + " ");
+				} else if(s == (int)AssemblerSpecialCodes.EndOfLine) {
+					line++;
+					if(line <= codeLines.Length) {
+						sb.Append(Environment.NewLine);
+					}
+				} else if(s < (int)AssemblerSpecialCodes.EndOfLine) {
+					string message = "unknown error";
+					switch((AssemblerSpecialCodes)s) {
+						case AssemblerSpecialCodes.ParsingError: message = "Invalid syntax"; break;
+						case AssemblerSpecialCodes.OutOfRangeJump: message = "Relative jump is out of range (-128 to 127)"; break;
+						case AssemblerSpecialCodes.LabelRedefinition: message = "Cannot redefine an existing label"; break;
+						case AssemblerSpecialCodes.MissingOperand: message = "Operand is missing"; break;
+						case AssemblerSpecialCodes.OperandOutOfRange: message = "Operand is out of range (invalid value)"; break;
+						case AssemblerSpecialCodes.InvalidHex: message = "Hexadecimal string is invalid"; break;
+						case AssemblerSpecialCodes.InvalidSpaces: message = "Operand cannot contain spaces"; break;
+						case AssemblerSpecialCodes.TrailingText: message = "Invalid text trailing at the end of line"; break;
+						case AssemblerSpecialCodes.UnknownLabel: message = "Unknown label"; break;
+						case AssemblerSpecialCodes.InvalidInstruction: message = "Invalid instruction"; break;
+						case AssemblerSpecialCodes.InvalidBinaryValue: message = "Invalid binary value"; break;
+						case AssemblerSpecialCodes.InvalidOperands: message = "Invalid operands for instruction"; break;
+						case AssemblerSpecialCodes.InvalidLabel: message = "Invalid label name"; break;
+					}
+					errorList.Add(new AssemblerError() { Message = message + " - " + codeLines[line - 1], LineNumber = line });
+
+					sb.Append("<error: " + message + ">");
+					if(i + 1 < byteCode.Length) {
+						sb.Append(Environment.NewLine);
+					}
+
+					line++;
+				}
+			}
+
+			BytesUsed = convertedByteCode.Count;
+			IsIdentical = MatchesOriginalCode(convertedByteCode);
+			OriginalSizeExceeded = BytesUsed > OriginalByteCount;
+			MaxSizeExceeded = StartAddress + BytesUsed - 1 > MaxAddress;
+			OkEnabled = BytesUsed > 0 && !IsIdentical && !MaxSizeExceeded;
+
+			HasWarning = errorList.Count > 0 || OriginalSizeExceeded || MaxSizeExceeded;
+
+			ByteCodeView = sb.ToString();
+			Errors = errorList;
+			_bytes = convertedByteCode;
+		}
+
+		private bool MatchesOriginalCode(List<byte> convertedByteCode)
+		{
+			bool isIdentical = false;
+			if(_originalCode.Length > 0 && convertedByteCode.Count == _originalCode.Length) {
+				isIdentical = true;
+				for(int i = 0; i < _originalCode.Length; i++) {
+					if(_originalCode[i] != convertedByteCode[i]) {
+						isIdentical = false;
+						break;
 					}
 				}
+			}
 
-				BytesUsed = (uint)convertedByteCode.Count;
-				OkEnabled = BytesUsed > 0;
-				ByteCodeView = sb.ToString();
-				Errors = errorList;
-			});
+			return isIdentical;
+		}
+
+		public async Task<bool> ApplyChanges(Window assemblerWindow)
+		{
+			MemoryType memType = _cpuType.ToMemoryType();
+			
+			string addrFormat = memType.GetFormatString();
+			UInt32 endAddress = (uint)(StartAddress + _bytes.Count - 1);
+
+			List<string> warningMessages = new List<string>();
+			if(Errors.Count > 0) {
+				warningMessages.Add("Warning: The code contains parsing errors - lines with errors will be ignored.");
+			}
+
+			if(_originalAddress >= 0) {
+				if(OriginalSizeExceeded) {
+					warningMessages.Add(ResourceHelper.GetViewLabel(nameof(AssemblerWindow), "lblByteCountExceeded"));
+				}
+			} else {
+				warningMessages.Add($"Warning: The code currently mapped to CPU memory addresses ${StartAddress.ToString(addrFormat)} to ${endAddress.ToString(addrFormat)} will be overridden.");
+			}
+
+			if(warningMessages.Count > 0 && await MesenMsgBox.Show(assemblerWindow, "AssemblerConfirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, string.Join(Environment.NewLine + Environment.NewLine, warningMessages)) != DialogResult.OK) {
+				return false;
+			}
+
+			List<byte> bytes = new List<byte>(_bytes);
+			if(OriginalByteCount > 0) {
+				byte nopOpCode = _cpuType.GetNopOpCode();
+				while(OriginalByteCount < bytes.Count) {
+					//Pad data with NOPs as needed
+					bytes.Add(nopOpCode);
+				}
+			}
+
+			DebugApi.SetMemoryValues(memType, (uint)StartAddress, bytes.ToArray(), bytes.Count);
+			if(OriginalByteCount > 0) {
+				_originalCode = bytes.ToArray();
+				IsIdentical = MatchesOriginalCode(bytes);
+			}
+
+			MemoryType prgType = _cpuType.GetPrgRomMemoryType();
+			AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = StartAddress, Type = memType });
+			AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)endAddress, Type = memType });
+			if(absStart.Type == prgType && absEnd.Type == prgType && (absEnd.Address - absStart.Address + 1) == bytes.Count) {
+				DebugApi.MarkBytesAs(_cpuType, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+			}
+
+			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == _cpuType);
+			if(wnd != null) {
+				wnd.RefreshDisassembly();
+			}
+
+			return true;
 		}
 
 		private enum AssemblerSpecialCodes

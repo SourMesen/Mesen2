@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Controls;
+﻿using Avalonia.Controls;
+using Mesen.Debugger.Controls;
 using Mesen.Interop;
 
 namespace Mesen.Debugger.Disassembly
@@ -11,6 +12,11 @@ namespace Mesen.Debugger.Disassembly
 		public CodeDataProvider(CpuType type)
 		{
 			_type = type;
+
+			if(Design.IsDesignMode) {
+				return;
+			}
+
 			_lineCount = DebugApi.GetMemorySize(type.ToMemoryType());
 		}
 

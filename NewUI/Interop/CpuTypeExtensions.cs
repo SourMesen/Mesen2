@@ -108,5 +108,28 @@ namespace Mesen.Interop
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
+
+		public static bool SupportsAssembler(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Snes:
+				case CpuType.Gameboy:
+				case CpuType.Nes:
+					return true;
+				
+				default:
+					return false;
+			};
+		}
+
+		public static byte GetNopOpCode(this CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Snes => 0xEA,
+				CpuType.Gameboy => 0x00,
+				CpuType.Nes => 0xEA,
+				_ => throw new Exception("Invalid CPU type"),
+			};
+		}
 	}
 }
