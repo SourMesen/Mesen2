@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
@@ -10,6 +11,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -223,6 +225,73 @@ namespace Mesen.Debugger.ViewModels
 				case ScrollDisplayPosition.Center: TopAddress = dp.GetRowAddress((int)pc, -VisibleRowCount / 2 + 1); break;
 				case ScrollDisplayPosition.Bottom: TopAddress = dp.GetRowAddress((int)pc, -VisibleRowCount + 2); break;
 			}
+
+			if(!IsAddressVisible((int)pc)) {
+				TopAddress = dp.GetRowAddress(TopAddress, TopAddress < pc ? 1 : -1);
+			}
+		}
+
+		public void CopySelection()
+		{
+			ICodeDataProvider? dp = DataProvider;
+			if(dp == null) {
+				return;
+			}
+
+			bool copyAddresses = true;
+			bool copyByteCode = true;
+			bool copyComments = true;
+			const int commentSpacingCharCount = 25;
+
+			int addrSize = dp.CpuType.GetAddressSize();
+			string addrFormat = "X" + addrSize;
+			StringBuilder sb = new StringBuilder();
+			int i = SelectionStart;
+			while(i <= SelectionEnd) {
+				CodeLineData[] data = dp.GetCodeLines(i, 5000);
+
+				for(int j = 0; j < data.Length; j++) {
+					CodeLineData lineData = data[j];
+					if(lineData.Address > SelectionEnd) {
+						i = lineData.Address;
+						break;
+					}
+
+					string indent = "".PadLeft(lineData.Indentation / 10);
+
+					string codeString = lineData.Text.Trim();
+					if(lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.BlockStart)) {
+						codeString = "--------" + codeString + "--------";
+					}
+
+					int padding = Math.Max(commentSpacingCharCount, codeString.Length);
+					if(codeString.Length == 0) {
+						padding = 0;
+					}
+
+					codeString = codeString.PadRight(padding);
+
+					string line = indent + codeString;
+					if(copyByteCode) {
+						line = lineData.ByteCode.PadRight(13) + line;
+					}
+					if(copyAddresses) {
+						if(lineData.HasAddress) {
+							line = lineData.Address.ToString(addrFormat) + "  " + line;
+						} else {
+							line = "..".PadRight(addrSize) + "  " + line;
+						}
+					}
+					if(copyComments && !string.IsNullOrWhiteSpace(lineData.Comment)) {
+						line = line + lineData.Comment;
+					}
+					sb.AppendLine(line);
+
+					i = lineData.Address;
+				}
+			}
+
+			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 	}
 

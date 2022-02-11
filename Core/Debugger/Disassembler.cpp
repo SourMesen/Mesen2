@@ -169,7 +169,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(inUnmappedBlock) {
 			int32_t prevAddress = results.size() > 0 ? results[results.size() - 1].CpuAddress + 1 : bankStart;
 			results.push_back(DisassemblyResult(prevAddress, LineFlags::BlockStart | LineFlags::UnmappedMemory));
-			results.push_back(DisassemblyResult(prevAddress < i - 1 ? prevAddress + 1 : prevAddress, LineFlags::UnmappedMemory | LineFlags::Empty));
+			results.push_back(DisassemblyResult(prevAddress, LineFlags::UnmappedMemory | LineFlags::Empty));
 			results.push_back(DisassemblyResult(i - 1, LineFlags::BlockEnd | LineFlags::UnmappedMemory));
 			inUnmappedBlock = false;
 		}
@@ -285,8 +285,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType memType)
 {
 	CodeLineData data = {};
-	data.Address = -1;
-	data.AbsoluteAddress = -1;
+	data.Address = row.CpuAddress;
+	data.AbsoluteAddress = row.Address.Address;
 	data.EffectiveAddress = -1;
 	data.Flags = row.Flags;
 
@@ -319,8 +319,6 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				str.Write(" $", 2);
 				str.Write(HexUtilities::ToHexChar(_memoryDumper->GetMemoryValue(memType, row.CpuAddress + i)), 2);
 			}
-			data.Address = row.CpuAddress;
-			data.AbsoluteAddress = row.Address.Address;
 			memcpy(data.Text, str.ToString(), str.GetSize());
 		} else if((data.Flags & LineFlags::Comment) && row.CommentLine >= 0) {
 			string comment = ";" + StringUtilities::Split(_labelManager->GetComment(row.Address), '\n')[row.CommentLine];
@@ -334,9 +332,6 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 			DisassemblerSource& src = GetSource(row.Address.Type);
 			DisassemblyInfo disInfo = src.Cache[row.Address.Address];
 			CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
-
-			data.Address = row.CpuAddress;
-			data.AbsoluteAddress = row.Address.Address;
 
 			switch(lineCpuType) {
 				case CpuType::Snes:
@@ -481,26 +476,17 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 			}
 			memcpy(data.Text, label.c_str(), label.size() + 1);
 		}
-
-		data.Address = row.CpuAddress;
-
-		if(data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd)) {
-			if(!(data.Flags & (LineFlags::ShowAsData | LineFlags::SubStart))) {
-				//For hidden blocks, give the start/end lines an address
-				data.AbsoluteAddress = row.Address.Address;
-			}
-		}
 	}
 
 	return data;
 }
 
-int32_t Disassembler::GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address)
+int32_t Disassembler::GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address, bool returnFirstRow)
 {
 	int32_t i;
 	for(i = 0; i < (int32_t)rows.size(); i++) {
 		if(rows[i].CpuAddress == (int32_t)address) {
-			if(i + 1 >= rows.size() || rows[i + 1].CpuAddress != (int32_t)address || address == 0) {
+			if(i + 1 >= rows.size() || rows[i + 1].CpuAddress != (int32_t)address || address == 0 || returnFirstRow) {
 				//Keep going down until the last instance of the matching address is found
 				//Except for address 0, to ensure scrolling to the very top is allowed
 				break;
@@ -521,7 +507,7 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 	Timer timer;
 	vector<DisassemblyResult> rows = Disassemble(type, bank);
 
-	int32_t i = GetMatchingRow(rows, address);
+	int32_t i = GetMatchingRow(rows, address, true);
 
 	if(i >= (int32_t)rows.size()) {
 		return 0;
@@ -568,7 +554,7 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	}
 
 	uint16_t maxBank = GetMaxBank(cpuType);
-	int32_t i = GetMatchingRow(rows, address);
+	int32_t i = GetMatchingRow(rows, address, false);
 
 	if(rowOffset > 0) {
 		while(len > 0) {

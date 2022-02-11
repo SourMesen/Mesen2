@@ -80,6 +80,19 @@ namespace Mesen.Debugger
 			}
 		}
 
+		public bool HasAddress
+		{
+			get
+			{
+				return (
+					Address >= 0 && 
+					!Flags.HasFlag(LineFlags.Empty) && 
+					!(Flags.HasFlag(LineFlags.Comment) && Text.Length == 0) && 
+					!Flags.HasFlag(LineFlags.Label)
+				);
+			}
+		}
+
 		public CodeLineData(CpuType cpuType)
 		{
 			CpuType = cpuType;

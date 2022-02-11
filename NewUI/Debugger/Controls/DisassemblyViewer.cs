@@ -192,7 +192,7 @@ namespace Mesen.Debugger.Controls
 				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
-				text.Text = line.Address >= 0 && !line.Flags.HasFlag(LineFlags.Empty) ? line.Address.ToString(addrFormat) : "..";
+				text.Text = line.HasAddress ? line.Address.ToString(addrFormat) : "..";
 				Point marginAddressPos = new Point(symbolMargin, y);
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
 				_visibleCodeSegments.Add(new CodeSegmentInfo(text.Text, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));

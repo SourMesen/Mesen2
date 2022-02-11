@@ -33,20 +33,16 @@ namespace Mesen.Debugger.Disassembly
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			LineProperties props = new LineProperties();
 
-			if(lineData.Address >= 0) {
+			if(_model != null && lineData.HasAddress) {
 				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType);
-			}
 
-			if(_model != null) {
 				bool isActiveStatement = _model.ActiveAddress.HasValue && _model.ActiveAddress.Value == lineData.Address;
 				if(isActiveStatement) {
 					ConfigureActiveStatement(props);
 				}
 
-				if(!lineData.Flags.HasFlag(LineFlags.Empty)) {
-					props.IsSelectedRow = lineData.Address >= _model.SelectionStart && lineData.Address <= _model.SelectionEnd;
-					props.IsActiveRow = _model.SelectedRowAddress == lineData.Address;
-				}
+				props.IsSelectedRow = lineData.Address >= _model.SelectionStart && lineData.Address <= _model.SelectionEnd;
+				props.IsActiveRow = _model.SelectedRowAddress == lineData.Address;
 			}
 
 			if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {

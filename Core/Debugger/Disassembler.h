@@ -36,7 +36,7 @@ private:
 	DisassemblerSource& GetSource(MemoryType type);
 
 	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, MemoryType memType);
-	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address);
+	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address, bool returnFirstRow);
 	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint16_t bank);
 	uint16_t GetMaxBank(CpuType cpuType);
 

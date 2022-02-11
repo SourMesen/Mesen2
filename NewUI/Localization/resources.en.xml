@@ -2124,6 +2124,8 @@ x == [$150] || y == [10]
 			<Value ID="SaveRomAs">Same ROM as...</Value>
 			<Value ID="SaveEditsAsIps">Save edits as IPS patch...</Value>
 
+			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
+			<Value ID="EditSelectedCode">Edit Selected Code</Value>
 		</Enum>
 	</Enums>
 </Resources>

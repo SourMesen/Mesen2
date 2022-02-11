@@ -3,10 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
+using System.Collections.Generic;
 
 namespace Mesen.Debugger.Views
 {
@@ -26,6 +28,37 @@ namespace Mesen.Debugger.Views
 		{
 			InitializeComponent();
 			Focusable = true;
+
+			DebugShortcutManager.CreateContextMenu(this, new List<ContextMenuAction> {
+				new ContextMenuAction() {
+					ActionType = ActionType.MarkSelectionAs
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EditSelectedCode
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Copy,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
+					OnClick = () => Model.CopySelection()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ToggleBreakpoint,
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.AddWatch,
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EditLabel,
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToLocation,
+				},
+			});
 		}
 
 		private void InitializeComponent()

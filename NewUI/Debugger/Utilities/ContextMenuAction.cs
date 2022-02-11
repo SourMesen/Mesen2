@@ -557,5 +557,11 @@ namespace Mesen.Debugger.Utilities
 		SaveRomAs,
 		[IconFile("CheatCode")]
 		SaveEditsAsIps,
+
+		[IconFile("Breakpoint")]
+		ToggleBreakpoint,
+
+		[IconFile("Edit")]
+		EditSelectedCode,
 	}
 }
