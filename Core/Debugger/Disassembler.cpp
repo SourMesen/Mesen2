@@ -58,8 +58,8 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 	do {
 		DisassemblyInfo &disInfo = src.Cache[address];
 		if(!disInfo.IsInitialized() || !disInfo.IsValid(cpuFlags)) {
-			disInfo.Initialize(src.Data+address, cpuFlags, type);
-			for(int i = 1; i < disInfo.GetOpSize(); i++) {
+			disInfo.Initialize(address, cpuFlags, type, addrInfo.Type, _memoryDumper);
+			for(int i = 1; i < disInfo.GetOpSize() && address + i < src.Cache.size() ; i++) {
 				//Clear any instructions that start in the middle of this one
 				//(can happen when resizing an instruction after X/M updates)
 				src.Cache[address + i] = DisassemblyInfo();
@@ -343,7 +343,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 
 					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, state.PS, lineCpuType);
+						disInfo = DisassemblyInfo(row.Address.Address, state.PS, lineCpuType, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= (row.Address.Type != MemoryType::SnesPrgRom || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
@@ -365,7 +365,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					state.PC = (uint16_t)row.CpuAddress;
 
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Spc);
+						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Spc, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= LineFlags::VerifiedCode;
 					}
@@ -385,7 +385,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				{
 					GsuState state = (GsuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Gsu);
+						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Gsu, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= LineFlags::VerifiedCode;
 					}
@@ -404,7 +404,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				case CpuType::NecDsp:
 				case CpuType::Cx4:
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, type);
+						disInfo = DisassemblyInfo(row.Address.Address, 0, type, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= LineFlags::VerifiedCode;
 					}
@@ -418,7 +418,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				{
 					GbCpuState state = (GbCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Gameboy);
+						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Gameboy, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= LineFlags::VerifiedCode;
 					}
@@ -433,7 +433,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				{
 					NesCpuState state = (NesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					if(!disInfo.IsInitialized()) {
-						disInfo = DisassemblyInfo(src.Data + row.Address.Address, 0, CpuType::Nes);
+						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Nes, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= LineFlags::VerifiedCode;
 					}

@@ -51,7 +51,7 @@ public:
 	{
 		DisassemblyInfo disassemblyInfo = GetSource(info.Type).Cache[info.Address];
 		if(!disassemblyInfo.IsInitialized()) {
-			disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, _memoryDumper);
+			disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, DebugUtilities::GetCpuMemoryType(type), _memoryDumper);
 		}
 		return disassemblyInfo;
 	}

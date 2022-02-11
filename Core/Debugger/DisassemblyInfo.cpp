@@ -20,33 +20,22 @@ DisassemblyInfo::DisassemblyInfo()
 {
 }
 
-DisassemblyInfo::DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags, CpuType type)
+DisassemblyInfo::DisassemblyInfo(uint32_t cpuAddress, uint8_t cpuFlags, CpuType cpuType, MemoryType memType, MemoryDumper* memoryDumper)
 {
-	Initialize(opPointer, cpuFlags, type);
+	Initialize(cpuAddress, cpuFlags, cpuType, memType, memoryDumper);
 }
 
-void DisassemblyInfo::Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType type)
+void DisassemblyInfo::Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType cpuType, MemoryType memType, MemoryDumper* memoryDumper)
 {
-	_cpuType = type;
-	_flags = cpuFlags;
-	_opSize = GetOpSize(opPointer[0], _flags, _cpuType);
-	memcpy(_byteCode, opPointer, _opSize);
-
-	_initialized = true;
-}
-
-void DisassemblyInfo::Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType type, MemoryDumper* memoryDumper)
-{
-	_cpuType = type;
+	_cpuType = cpuType;
 	_flags = cpuFlags;
 
-	MemoryType cpuMemType = DebugUtilities::GetCpuMemoryType(type);
-	_byteCode[0] = memoryDumper->GetMemoryValue(cpuMemType, cpuAddress);
+	_byteCode[0] = memoryDumper->GetMemoryValue(memType, cpuAddress);
 
 	_opSize = GetOpSize(_byteCode[0], _flags, _cpuType);
 
 	for(int i = 1; i < _opSize; i++) {
-		_byteCode[i] = memoryDumper->GetMemoryValue(cpuMemType, cpuAddress+i);
+		_byteCode[i] = memoryDumper->GetMemoryValue(memType, cpuAddress+i);
 	}
 
 	_initialized = true;

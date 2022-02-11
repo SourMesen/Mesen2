@@ -21,10 +21,9 @@ private:
 
 public:
 	DisassemblyInfo();
-	DisassemblyInfo(uint8_t *opPointer, uint8_t cpuFlags, CpuType type);
+	DisassemblyInfo(uint32_t cpuAddress, uint8_t cpuFlags, CpuType cpuType, MemoryType memType, MemoryDumper* memoryDumper);
 
-	void Initialize(uint8_t *opPointer, uint8_t cpuFlags, CpuType type);
-	void Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType type, MemoryDumper* memoryDumper);
+	void Initialize(uint32_t cpuAddress, uint8_t cpuFlags, CpuType cpuType, MemoryType memType, MemoryDumper* memoryDumper);
 	bool IsInitialized();
 	bool IsValid(uint8_t cpuFlags);
 	void Reset();
