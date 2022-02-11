@@ -95,6 +95,10 @@ namespace Mesen.Debugger.Views
 						Model.SetSelectedRow(e.CodeLineData.Address);
 					}
 				}
+			} else if(e.Properties.IsRightButtonPressed) {
+				if(e.CodeLineData.Address < Model.SelectionStart || e.CodeLineData.Address > Model.SelectionEnd) {
+					Model.SetSelectedRow(e.CodeLineData.Address);
+				}
 			}
 		}
 
