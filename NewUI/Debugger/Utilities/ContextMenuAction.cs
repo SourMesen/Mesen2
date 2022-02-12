@@ -569,5 +569,20 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Debugger")]
 		ViewInDebugger,
+
+		[IconFile("Breakpoint")]
+		SetBreakpoint,
+		
+		[IconFile("Close")]
+		RemoveBreakpoint,
+		
+		[IconFile("BreakpointEnableDisable")]
+		EnableBreakpoint,
+
+		[IconFile("BreakpointEnableDisable")]
+		DisableBreakpoint,
+
+		[IconFile("Edit")]
+		CodeWindowEditBreakpoint,
 	}
 }

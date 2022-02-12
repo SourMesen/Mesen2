@@ -93,7 +93,22 @@ namespace Mesen.Debugger
 
 		public static Breakpoint? GetMatchingBreakpoint(AddressInfo info, CpuType cpuType)
 		{
-			return Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
+			Breakpoint? bp = Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
+
+			if(bp == null) {
+				AddressInfo altAddr;
+				if(info.Type.IsRelativeMemory()) {
+					altAddr = DebugApi.GetAbsoluteAddress(info);
+				} else {
+					altAddr = DebugApi.GetRelativeAddress(info, cpuType);
+				}
+
+				if(altAddr.Address >= 0) {
+					bp = Breakpoints.Where((bp) => bp.Matches((UInt32)altAddr.Address, altAddr.Type, cpuType)).FirstOrDefault();
+				}
+			}
+
+			return bp;
 		}
 
 		public static Breakpoint? GetMatchingBreakpoint(UInt32 startAddress, UInt32 endAddress, MemoryType memoryType)

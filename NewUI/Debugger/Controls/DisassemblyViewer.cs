@@ -73,6 +73,7 @@ namespace Mesen.Debugger.Controls
 
 		public DisassemblyViewer()
 		{
+			Focusable = true;
 			ClipToBounds = true;
 		}
 

@@ -12,6 +12,7 @@ using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.Views
 {
@@ -20,6 +21,10 @@ namespace Mesen.Debugger.Views
 		private DisassemblyViewModel Model => (DisassemblyViewModel)DataContext!;
 		private LocationInfo? _mouseOverCodeLocation;
 		private LocationInfo? _contextMenuLocation;
+		private ContextMenu _bpMarginContextMenu;
+		private ContextMenu _mainContextMenu;
+		private DisassemblyViewer _viewer;
+		private bool _marginClicked;
 
 		static DisassemblyView()
 		{
@@ -39,9 +44,18 @@ namespace Mesen.Debugger.Views
 		public DisassemblyView()
 		{
 			InitializeComponent();
-			Focusable = true;
 
-			DebugShortcutManager.CreateContextMenu(this, new List<ContextMenuAction> {
+			_viewer = this.FindControl<DisassemblyViewer>("disViewer");
+
+			InitBreakpointContextMenu();
+			InitMainContextMenu();
+		}
+
+
+		[MemberNotNull(nameof(_mainContextMenu))]
+		private void InitMainContextMenu()
+		{
+			_mainContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
 				MarkSelectionHelper.GetAction(
 					() => Model.DataProvider.CpuType.ToMemoryType(),
 					() => Model.SelectionStart,
@@ -131,6 +145,70 @@ namespace Mesen.Debugger.Views
 			});
 		}
 
+		[MemberNotNull(nameof(_bpMarginContextMenu))]
+		private void InitBreakpointContextMenu()
+		{
+			Breakpoint? GetBreakpoint()
+			{
+				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType) : null;
+			}
+
+			_bpMarginContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
+				new ContextMenuAction() {
+					ActionType = ActionType.SetBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => GetBreakpoint() == null,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RemoveBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => GetBreakpoint() != null,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => GetBreakpoint()?.Enabled == false,
+					IsEnabled = () => GetBreakpoint()?.Enabled == false,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.DisableBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => GetBreakpoint()?.Enabled != false,
+					IsEnabled = () => GetBreakpoint()?.Enabled == true,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.CodeWindowEditBreakpoint,
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => GetBreakpoint() != null,
+					OnClick = () => {
+						if(GetBreakpoint() is Breakpoint bp) {
+							BreakpointEditWindow.EditBreakpoint(bp, this);
+						}
+					}
+				}
+			});
+		}
+
 		private string GetFormatString()
 		{
 			return Model.DataProvider.CpuType.ToMemoryType().GetFormatString();
@@ -168,7 +246,9 @@ namespace Mesen.Debugger.Views
 		{
 			get
 			{
-				if(ContextMenu?.IsOpen == true && _contextMenuLocation != null) {
+				if(_viewer.ContextMenu == _bpMarginContextMenu) {
+					return GetSelectedRowLocation();
+				} else if(_viewer.ContextMenu?.IsOpen == true && _contextMenuLocation != null) {
 					return _contextMenuLocation;
 				} else if(_mouseOverCodeLocation != null) {
 					return _mouseOverCodeLocation;
@@ -191,8 +271,11 @@ namespace Mesen.Debugger.Views
 
 		public void Diassembly_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
 		{
+			_marginClicked = e.MarginClicked;
+			_viewer.ContextMenu = _mainContextMenu;
+
 			if(e.Properties.IsLeftButtonPressed) {
-				if(e.MarginClicked) {
+				if(_marginClicked) {
 					CpuType cpuType = e.CodeLineData.CpuType;
 					AddressInfo relAddress = new AddressInfo() {
 						Address = e.CodeLineData.Address,
@@ -208,6 +291,9 @@ namespace Mesen.Debugger.Views
 					}
 				}
 			} else if(e.Properties.IsRightButtonPressed) {
+				if(_marginClicked) {
+					_viewer.ContextMenu = _bpMarginContextMenu;
+				}
 				_contextMenuLocation = _mouseOverCodeLocation;
 
 				if(e.CodeLineData.Address < Model.SelectionStart || e.CodeLineData.Address > Model.SelectionEnd) {
@@ -243,7 +329,7 @@ namespace Mesen.Debugger.Views
 				ToolTip.SetTip(this, null);
 			}
 
-			if(e.Data != null && e.PointerEvent.GetCurrentPoint(null).Properties.IsLeftButtonPressed) {
+			if(!_marginClicked && e.Data != null && e.PointerEvent.GetCurrentPoint(null).Properties.IsLeftButtonPressed) {
 				Model.ResizeSelectionTo(e.Data.Address);
 			}
 		}

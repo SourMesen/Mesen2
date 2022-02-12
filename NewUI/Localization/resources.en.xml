@@ -2141,6 +2141,12 @@ x == [$150] || y == [10]
 			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
 			<Value ID="EditSelectedCode">Edit Selected Code</Value>
 			<Value ID="ViewInDebugger">View in Debugger</Value>
+			
+			<Value ID="EnableBreakpoint">Enable Breakpoint</Value>
+			<Value ID="DisableBreakpoint">Disable Breakpoint</Value>
+			<Value ID="SetBreakpoint">Set Breakpoint</Value>
+			<Value ID="RemoveBreakpoint">Remove Breakpoint</Value>
+			<Value ID="CodeWindowEditBreakpoint">Edit Breakpoint</Value>
 		</Enum>
 	</Enums>
 </Resources>
