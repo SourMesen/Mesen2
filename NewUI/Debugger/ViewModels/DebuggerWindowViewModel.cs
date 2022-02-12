@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 
 namespace Mesen.Debugger.ViewModels
@@ -299,6 +300,8 @@ namespace Mesen.Debugger.ViewModels
 				SaveRomActionHelper.GetSaveRomAction(wnd),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
 				new ContextMenuSeparator(),
+				GetCdlActionMenu(wnd),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd.Close()
@@ -476,6 +479,48 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			return debugMenu;
+		}
+
+		private ContextMenuAction GetCdlActionMenu(Window wnd)
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.CodeDataLogger,
+				IsEnabled = () => CpuType.ToMemoryType().SupportsCdl(),
+				SubActions = new() {
+					new ContextMenuAction() {
+						ActionType = ActionType.ResetCdl,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ResetCdl),
+						OnClick = () => {
+							DebugApi.ResetCdl(CpuType);
+							Disassembly.Refresh();
+						}
+					},
+					new ContextMenuSeparator(),
+					new ContextMenuAction() {
+						ActionType = ActionType.LoadCdl,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LoadCdl),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.OpenFile(ConfigManager.DebuggerFolder, wnd, FileDialogHelper.CdlExt);
+							if(filename != null) {
+								byte[] data = File.ReadAllBytes(filename);
+								DebugApi.SetCdlData(CpuType, data, data.Length);
+								Disassembly.Refresh();
+							}
+						}
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.SaveCdl,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveCdl),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, EmuApi.GetRomInfo().GetRomName() + ".cdl", wnd, FileDialogHelper.CdlExt);
+							if(filename != null) {
+								CdlFlags[] data = DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(CpuType.GetPrgRomMemoryType()), CpuType.GetPrgRomMemoryType());
+								File.WriteAllBytes(filename, data.Cast<byte>().ToArray());
+							}
+						}
+					},
+				}
+			};
 		}
 
 		private void Step(int instructionCount, StepType type)

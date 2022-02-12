@@ -184,6 +184,10 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() });
 			
+			Add(new() { Shortcut = DebuggerShortcut.ResetCdl, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LoadCdl, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.SaveCdl, KeyBinding = new() });
+			
 			//Memory Tools
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Unfreeze, KeyBinding = new(KeyModifiers.Control, Key.W) });
@@ -314,6 +318,9 @@ namespace Mesen.Config
 		ScriptWindow_StopScript,
 		CodeWindow_AddToWatch,
 		CodeWindow_GoToLocation,
+		ResetCdl,
+		LoadCdl,
+		SaveCdl,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

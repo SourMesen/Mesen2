@@ -331,11 +331,23 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, MemoryType memType, [In,Out] CdlFlags[] cdlData);
+
+		public static void ResetCdl(CpuType cpuType)
+		{
+			byte[] data = new byte[DebugApi.GetMemorySize(cpuType.GetPrgRomMemoryType())];
+			DebugApi.SetCdlData(cpuType, data, data.Length);
+		}
+
 		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, MemoryType memType)
 		{
 			CdlFlags[] cdlData = new CdlFlags[length];
 			DebugApi.GetCdlDataWrapper(offset, length, memType, cdlData);
 			return cdlData;
+		}
+
+		public static CdlFlags[] GetCdlData(CpuType cpuType)
+		{
+			return DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(cpuType.GetPrgRomMemoryType()), cpuType.GetPrgRomMemoryType());
 		}
 
 		[DllImport(DllPath)] public static extern void SetCdlData(CpuType cpuType, [In]byte[] cdlData, Int32 length);

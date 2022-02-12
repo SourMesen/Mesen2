@@ -584,5 +584,13 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Edit")]
 		CodeWindowEditBreakpoint,
+		
+		CodeDataLogger,
+		[IconFile("Refresh")]
+		ResetCdl,
+		[IconFile("Folder")]
+		LoadCdl,
+		[IconFile("SaveFloppy")]
+		SaveCdl,
 	}
 }

@@ -1929,8 +1929,11 @@ x == [$150] || y == [10]
 			<Value ID="CallStack_EditLabel">Call Stack: Edit Label</Value>
 			<Value ID="CallStack_GoToLocation">Call Stack: Go to location</Value>
 			<Value ID="SaveRom">Save ROM</Value>
-			<Value ID="SaveRomAs">Save ROM As</Value>
+			<Value ID="SaveRomAs">Save ROM as...</Value>
 			<Value ID="SaveEditAsIps">Save edits as IPS patch...</Value>
+			<Value ID="ResetCdl">Reset CDL data</Value>
+			<Value ID="LoadCdl">Load CDL data from...</Value>
+			<Value ID="SaveCdl">Save CDL data to...</Value>
 			<Value ID="MemoryViewer_Freeze">Freeze</Value>
 			<Value ID="MemoryViewer_Unfreeze">Unfreeze</Value>
 			<Value ID="MemoryViewer_AddToWatch">Add to Watch</Value>
@@ -2135,7 +2138,7 @@ x == [$150] || y == [10]
 
 			<Value ID="RecentFiles">Recent Files</Value>
 			
-			<Value ID="SaveRomAs">Same ROM as...</Value>
+			<Value ID="SaveRomAs">Save ROM as...</Value>
 			<Value ID="SaveEditsAsIps">Save edits as IPS patch...</Value>
 
 			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
@@ -2147,6 +2150,11 @@ x == [$150] || y == [10]
 			<Value ID="SetBreakpoint">Set Breakpoint</Value>
 			<Value ID="RemoveBreakpoint">Remove Breakpoint</Value>
 			<Value ID="CodeWindowEditBreakpoint">Edit Breakpoint</Value>
+			
+			<Value ID="CodeDataLogger">Code/Data Logger</Value>
+			<Value ID="ResetCdl">Reset CDL data</Value>
+			<Value ID="LoadCdl">Load CDL data from...</Value>
+			<Value ID="SaveCdl">Save CDL data as...</Value>
 		</Enum>
 	</Enums>
 </Resources>

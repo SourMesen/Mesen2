@@ -158,6 +158,9 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.SaveRom,
 				DebuggerShortcut.SaveRomAs,
 				DebuggerShortcut.SaveEditAsIps,
+				DebuggerShortcut.ResetCdl,
+				DebuggerShortcut.LoadCdl,
+				DebuggerShortcut.SaveCdl,
 				//DebuggerShortcut.RevertPrgChrChanges
 			});
 		}
