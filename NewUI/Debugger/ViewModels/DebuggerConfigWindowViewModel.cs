@@ -22,6 +22,9 @@ namespace Mesen.Debugger.ViewModels
 		public List<DebuggerShortcutInfo> ScriptShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> DebuggerShortcuts { get; set; } = new();
 
+		[Obsolete("For designer only")]
+		public DebuggerConfigWindowViewModel() : this(DebugConfigWindowTab.Debugger) { }
+
 		public DebuggerConfigWindowViewModel(DebugConfigWindowTab tab)
 		{
 			SelectedIndex = tab;

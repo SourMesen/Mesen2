@@ -38,12 +38,32 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0 5 0 0">
-					<CheckBox
-						IsChecked="{CompiledBinding Debugger.AutoResetCdl}"
-						Content="{l:Translate chkAutoResetCdl}"
-					/>
-				</c:OptionSection>
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0 5 0 0">
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.AutoResetCdl}"
+							Content="{l:Translate chkAutoResetCdl}"
+						/>
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblCopyCodeSettings}">
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.CopyAddresses}"
+							Content="{l:Translate chkCopyAddresses}"
+						/>
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.CopyBlockHeaders}"
+							Content="{l:Translate chkCopyBlockHeaders}"
+						/>
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.CopyByteCode}"
+							Content="{l:Translate chkCopyByteCode}"
+						/>
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.CopyComments}"
+							Content="{l:Translate chkCopyComments}"
+						/>
+					</c:OptionSection>
+				</StackPanel>
 			</TabItem>
 			<TabItem>
 				<TabItem.Header>

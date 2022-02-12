@@ -15,26 +15,27 @@ namespace Mesen.Debugger.Windows
 {
 	public class DebuggerConfigWindow : Window
 	{
-		private DebuggerConfigWindowViewModel? _model;
+		private DebuggerConfigWindowViewModel _model;
 
-		public DebuggerConfigWindow()
+		[Obsolete("For designer only")]
+		public DebuggerConfigWindow() : this(new())
+		{
+		}
+
+		public DebuggerConfigWindow(DebuggerConfigWindowViewModel model)
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
-		}
 
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(DataContext is DebuggerConfigWindowViewModel model) {
-				_model = model;
-			}
+			_model = model;
+			DataContext = model;
 		}
 
 		public static void Open(DebugConfigWindowTab tab, IRenderRoot? parent)
 		{
-			new DebuggerConfigWindow() { DataContext = new DebuggerConfigWindowViewModel(tab) }.ShowCentered(parent);
+			new DebuggerConfigWindow(new DebuggerConfigWindowViewModel(tab)).ShowCenteredDialog(parent);
 		}
 
 		private void InitializeComponent()
@@ -44,7 +45,7 @@ namespace Mesen.Debugger.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			_model?.SaveConfig();
+			_model.SaveConfig();
 			Close();
 		}
 

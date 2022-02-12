@@ -28,6 +28,11 @@ namespace Mesen.Config
 
 		[Reactive] public bool AutoResetCdl { get; set; } = true;
 
+		[Reactive] public bool CopyAddresses { get; set; } = true;
+		[Reactive] public bool CopyByteCode { get; set; } = true;
+		[Reactive] public bool CopyComments { get; set; } = true;
+		[Reactive] public bool CopyBlockHeaders { get; set; } = true;
+
 		[Reactive] public bool ShowMemoryMappings { get; set; } = true;
 
 		[Reactive] public bool BringToFrontOnBreak { get; set; } = true;

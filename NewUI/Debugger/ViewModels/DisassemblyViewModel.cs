@@ -214,7 +214,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void CopySelection()
 		{
-			string code = GetSelection(true, true, true, true, out _);
+			DebuggerConfig cfg = Config.Debugger;
+			string code = GetSelection(cfg.CopyAddresses, cfg.CopyByteCode, cfg.CopyComments, cfg.CopyBlockHeaders, out _);
 			Application.Current?.Clipboard?.SetTextAsync(code);
 		}
 
@@ -271,7 +272,11 @@ namespace Mesen.Debugger.ViewModels
 					if(getComments && !string.IsNullOrWhiteSpace(lineData.Comment)) {
 						line = line + lineData.Comment;
 					}
-					sb.AppendLine(line.Trim());
+
+					string result = line.Trim();
+					if(result.Length > 0) {
+						sb.AppendLine(result);
+					}
 
 					i = lineData.Address;
 					endAddress = lineData.Address + lineData.OpSize - 1;

@@ -887,6 +887,11 @@
 			<Control ID="tabDebugger">Debugger</Control>
 			<Control ID="lblGeneralSettings">General settings</Control>
 			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
+			<Control ID="lblCopyCodeSettings">Copy selected code settings</Control>
+			<Control ID="chkCopyAddresses">Copy addresses</Control>
+			<Control ID="chkCopyByteCode">Copy byte code</Control>
+			<Control ID="chkCopyComments">Copy comments</Control>
+			<Control ID="chkCopyBlockHeaders">Copy block headers</Control>
 
 			<Control ID="tabScriptWindow">Script Window</Control>
 			<Control ID="lblSandboxing">Sandboxing</Control>
