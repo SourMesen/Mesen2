@@ -417,10 +417,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				case CpuType::Gameboy:
 				{
 					GbCpuState state = (GbCpuState&)_debugger->GetCpuStateRef(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Gameboy, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= LineFlags::VerifiedCode;
+						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();
@@ -432,10 +433,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				case CpuType::Nes:
 				{
 					NesCpuState state = (NesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Nes, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= LineFlags::VerifiedCode;
+						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();

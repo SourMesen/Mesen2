@@ -308,59 +308,12 @@ namespace Mesen.Debugger.Windows
 
 		private ContextMenuAction GetMarkSelectionAction()
 		{
-			return new ContextMenuAction() {
-				ActionType = ActionType.MarkSelectionAs,
-				HintText = () => GetAddressRange(),
-				SubActions = new() {
-					new ContextMenuAction() {
-						ActionType = ActionType.MarkAsCode,
-						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsCode),
-						OnClick = () => MarkSelectionAs(CdlFlags.Code)
-					},
-					new ContextMenuAction() {
-						ActionType = ActionType.MarkAsData,
-						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsData),
-						OnClick = () => MarkSelectionAs(CdlFlags.Data)
-					},
-					new ContextMenuAction() {
-						ActionType = ActionType.MarkAsUnidentified,
-						IsEnabled = () => GetMarkStartEnd(out _, out _),
-						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsUnidentified),
-						OnClick = () => MarkSelectionAs(CdlFlags.None)
-					}
-				}
-			};
-		}
-
-		private bool GetMarkStartEnd(out int start, out int end)
-		{
-			MemoryType memType = _model.Config.MemoryType;
-			start = _editor.SelectionStart;
-			end = start + Math.Max(1, _editor.SelectionLength) - 1;
-
-			if(memType.IsRelativeMemory()) {
-				AddressInfo startAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = memType });
-				AddressInfo endAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = memType });
-				if(startAddr.Type == endAddr.Type && startAddr.Type.SupportsCdl()) {
-					start = startAddr.Address;
-					end = endAddr.Address;
-				} else {
-					return false;
-				}
-			} else if(!memType.SupportsCdl()) {
-				return false;
-			}
-
-			return start >= 0 && end >= 0 && start <= end;
-		}
-
-		private void MarkSelectionAs(CdlFlags type)
-		{
-			if(GetMarkStartEnd(out int start, out int end)) {
-				DebugApi.MarkBytesAs(_model.Config.MemoryType.ToCpuType(), (UInt32)start, (UInt32)end, type);
-			}
+			return MarkSelectionHelper.GetAction(
+				() => _model.Config.MemoryType,
+				() => _model.SelectionStart,
+				() => _model.SelectionStart + _model.SelectionLength - 1,
+				() => { }
+			);
 		}
 
 		private string GetAddressRange()

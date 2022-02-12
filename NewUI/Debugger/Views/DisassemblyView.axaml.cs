@@ -31,9 +31,12 @@ namespace Mesen.Debugger.Views
 			Focusable = true;
 
 			DebugShortcutManager.CreateContextMenu(this, new List<ContextMenuAction> {
-				new ContextMenuAction() {
-					ActionType = ActionType.MarkSelectionAs
-				},
+				MarkSelectionHelper.GetAction(
+					() => Model.DataProvider.CpuType.ToMemoryType(),
+					() => Model.SelectionStart,
+					() => Model.SelectionEnd,
+					() => Model.Refresh()
+				),
 				new ContextMenuAction() {
 					ActionType = ActionType.EditSelectedCode,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditSelectedCode),
