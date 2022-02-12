@@ -1861,7 +1861,7 @@ x == [$150] || y == [10]
 			<Value ID="ZoomOut">Zoom Out</Value>
 			<Value ID="SaveAsPng">Save As PNG</Value>
 			<Value ID="CodeWindow_EditInMemoryViewer">Edit in Memory Viewer</Value>
-			<Value ID="MemoryViewer_ViewInDisassembly">View in disassembly</Value>
+			<Value ID="MemoryViewer_ViewInDebugger">View in Debugger</Value>
 			<Value ID="OpenAssembler">Open Assembler</Value>
 			<Value ID="OpenDebugger">Open Debugger</Value>
 			<Value ID="OpenSpcDebugger">Open SPC Debugger</Value>
@@ -2138,6 +2138,7 @@ x == [$150] || y == [10]
 
 			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
 			<Value ID="EditSelectedCode">Edit Selected Code</Value>
+			<Value ID="ViewInDebugger">View in Debugger</Value>
 		</Enum>
 	</Enums>
 </Resources>

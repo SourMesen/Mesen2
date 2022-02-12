@@ -563,5 +563,8 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Edit")]
 		EditSelectedCode,
+
+		[IconFile("Debugger")]
+		ViewInDebugger,
 	}
 }

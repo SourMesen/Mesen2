@@ -99,6 +99,8 @@ namespace Mesen.Debugger.Windows
 				GetEditBreakpointAction(),
 				GetEditLabelAction(),
 				new ContextMenuSeparator(),
+				GetViewInDebuggerAction(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					IsEnabled = () => _editor.SelectionLength > 0,
@@ -176,6 +178,44 @@ namespace Mesen.Debugger.Windows
 
 			DebugShortcutManager.RegisterActions(this, _model.FileMenuItems);
 			DebugShortcutManager.RegisterActions(this, _model.SearchMenuItems);
+		}
+
+		private ContextMenuAction GetViewInDebuggerAction()
+		{
+			AddressInfo? GetAddress()
+			{
+				MemoryType memType = _model.Config.MemoryType;
+				if(_editor.SelectionLength <= 1 && !memType.IsPpuMemory()) {
+					AddressInfo relAddr;
+					if(!memType.IsRelativeMemory()) {
+						relAddr = DebugApi.GetRelativeAddress(new AddressInfo() { Address = _model.SelectionStart, Type = memType }, memType.ToCpuType());
+						return relAddr.Address >= 0 ? relAddr : null;
+					} else {
+						return new AddressInfo() { Address = _model.SelectionStart, Type = memType };
+					}
+				}
+				return null;
+			}
+
+			return new ContextMenuAction() {
+				ActionType = ActionType.ViewInDebugger,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ViewInDebugger),
+				IsEnabled = () => GetAddress() != null,
+				HintText = () => GetAddressRange(),
+				OnClick = () => {
+					AddressInfo? relAddr = GetAddress();
+					if(relAddr?.Address >= 0) {
+						CpuType cpuType = relAddr.Value.Type.ToCpuType();
+						DebuggerWindow? debugger = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == cpuType);
+						if(debugger == null) {
+							debugger = DebugWindowManager.OpenDebugWindow<DebuggerWindow>(() => new DebuggerWindow(cpuType, relAddr.Value.Address));
+						} else {
+							debugger.ScrollToAddress((uint)relAddr.Value.Address);
+						}
+						debugger.Activate();
+					}
+				}
+			};
 		}
 
 		private ContextMenuAction GetImportAction()

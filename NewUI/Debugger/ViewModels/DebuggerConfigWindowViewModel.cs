@@ -59,8 +59,6 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.MarkAsData,
 				DebuggerShortcut.MarkAsUnidentified,
 				DebuggerShortcut.GoToAll,
-				DebuggerShortcut.CodeWindow_EditInMemoryViewer,
-				DebuggerShortcut.MemoryViewer_ViewInDisassembly,
 
 				DebuggerShortcut.OpenAssembler,
 				DebuggerShortcut.OpenDebugger,
@@ -93,6 +91,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.MemoryViewer_EditLabel,
 				DebuggerShortcut.MemoryViewer_Import,
 				DebuggerShortcut.MemoryViewer_Export,
+				DebuggerShortcut.MemoryViewer_ViewInDebugger,
 				//DebuggerShortcut.MemoryViewer_ViewInCpuMemory,
 				//DebuggerShortcut.MemoryViewer_ViewInMemoryType
 			});
@@ -125,6 +124,7 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.CodeWindow_SetNextStatement,
 				DebuggerShortcut.CodeWindow_EditSelectedCode,
 				//DebuggerShortcut.CodeWindow_EditSourceFile,
+				DebuggerShortcut.CodeWindow_EditInMemoryViewer,
 				DebuggerShortcut.CodeWindow_EditLabel,
 				//DebuggerShortcut.CodeWindow_NavigateBack,
 				//DebuggerShortcut.CodeWindow_NavigateForward,

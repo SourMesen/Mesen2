@@ -78,6 +78,8 @@ namespace Mesen.Debugger.ViewModels
 						Title = ResourceHelper.GetEnumText(CpuType) + " Debugger";
 						Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/" + CpuType.ToString() + "Debugger.png"));
 						IsMainCpuDebugger = false;
+					} else {
+						Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/Debugger.png"));
 					}
 				} else {
 					CpuType = romInfo.ConsoleType.GetMainCpuType();

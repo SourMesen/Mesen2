@@ -21,11 +21,12 @@ namespace Mesen.Debugger.Windows
 		private DebuggerWindowViewModel _model;
 
 		public CpuType CpuType => _model.CpuType;
+		private int? _scrollToAddress = null;
 
 		[Obsolete("For designer only")]
-		public DebuggerWindow() : this(null) { }
+		public DebuggerWindow() : this(null, null) { }
 
-		public DebuggerWindow(CpuType? cpuType)
+		public DebuggerWindow(CpuType? cpuType, int? scrollToAddress = null)
 		{
 			InitializeComponent();
 #if DEBUG
@@ -33,6 +34,7 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			_model = new DebuggerWindowViewModel(cpuType);
+			_scrollToAddress = scrollToAddress;
 			DataContext = _model;
 
 			Task.Run(() => {
@@ -57,6 +59,12 @@ namespace Mesen.Debugger.Windows
 			_model.Disassembly.Refresh();
 		}
 
+		public void ScrollToAddress(uint address)
+		{
+			_model.Disassembly.SetSelectedRow((int)address);
+			_model.Disassembly.ScrollToAddress(address);
+		}
+
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
@@ -64,7 +72,9 @@ namespace Mesen.Debugger.Windows
 			//Do this in OnOpened to ensure the window is ready to receive notifications
 			_model.UpdateDebugger(true);
 
-			if(_model.Config.BreakOnOpen) {
+			if(_scrollToAddress.HasValue) {
+				ScrollToAddress((uint)_scrollToAddress);
+			} else if(_model.Config.BreakOnOpen) {
 				EmuApi.Pause();
 			}
 		}

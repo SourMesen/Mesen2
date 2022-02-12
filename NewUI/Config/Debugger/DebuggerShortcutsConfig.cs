@@ -99,7 +99,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.SaveAsPng, KeyBinding = new(KeyModifiers.Control, Key.S) });
 
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditInMemoryViewer, KeyBinding = new(Key.F1) });
-			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDisassembly, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.OpenAssembler, KeyBinding = new(KeyModifiers.Control, Key.U) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenDebugger, KeyBinding = new(KeyModifiers.Control, Key.D) });
@@ -227,7 +227,7 @@ namespace Mesen.Config
 		ZoomOut,
 		SaveAsPng,
 		CodeWindow_EditInMemoryViewer,
-		MemoryViewer_ViewInDisassembly,
+		MemoryViewer_ViewInDebugger,
 		OpenAssembler,
 		OpenDebugger,
 		OpenSpcDebugger,
