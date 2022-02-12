@@ -98,9 +98,6 @@ namespace Mesen.Config
 
 			Add(new() { Shortcut = DebuggerShortcut.SaveAsPng, KeyBinding = new(KeyModifiers.Control, Key.S) });
 
-			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditInMemoryViewer, KeyBinding = new(Key.F1) });
-			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
-
 			Add(new() { Shortcut = DebuggerShortcut.OpenAssembler, KeyBinding = new(KeyModifiers.Control, Key.U) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenDebugger, KeyBinding = new(KeyModifiers.Control, Key.D) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenSpcDebugger, KeyBinding = new(KeyModifiers.Control, Key.F) });
@@ -147,6 +144,9 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.FindOccurrences, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F) });
 			Add(new() { Shortcut = DebuggerShortcut.GoToProgramCounter, KeyBinding = new(KeyModifiers.Alt, Key.Multiply) });
 
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_AddToWatch, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_GoToLocation, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_SetNextStatement, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSelectedCode, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSourceFile, KeyBinding = new(Key.F4) });
@@ -194,6 +194,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Export, KeyBinding = new(KeyModifiers.Control, Key.S) });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInCpuMemory, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
 
 			//Script Window
 			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_NewScript, KeyBinding = new(KeyModifiers.Control, Key.N) });
@@ -226,7 +227,7 @@ namespace Mesen.Config
 		ZoomIn,
 		ZoomOut,
 		SaveAsPng,
-		CodeWindow_EditInMemoryViewer,
+		CodeWindow_ViewInMemoryViewer,
 		MemoryViewer_ViewInDebugger,
 		OpenAssembler,
 		OpenDebugger,
@@ -311,6 +312,8 @@ namespace Mesen.Config
 		ScriptWindow_SaveScript,
 		ScriptWindow_RunScript,
 		ScriptWindow_StopScript,
+		CodeWindow_AddToWatch,
+		CodeWindow_GoToLocation,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

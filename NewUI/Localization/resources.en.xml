@@ -1860,8 +1860,6 @@ x == [$150] || y == [10]
 			<Value ID="ZoomIn">Zoom In</Value>
 			<Value ID="ZoomOut">Zoom Out</Value>
 			<Value ID="SaveAsPng">Save As PNG</Value>
-			<Value ID="CodeWindow_EditInMemoryViewer">Edit in Memory Viewer</Value>
-			<Value ID="MemoryViewer_ViewInDebugger">View in Debugger</Value>
 			<Value ID="OpenAssembler">Open Assembler</Value>
 			<Value ID="OpenDebugger">Open Debugger</Value>
 			<Value ID="OpenSpcDebugger">Open SPC Debugger</Value>
@@ -1899,6 +1897,9 @@ x == [$150] || y == [10]
 			<Value ID="BreakOn">Break On...</Value>
 			<Value ID="FindOccurrences">Find Occurrences</Value>
 			<Value ID="GoToProgramCounter">Go To Program Counter</Value>
+			<Value ID="CodeWindow_ViewInMemoryViewer">Code Window: View in Memory Viewer</Value>
+			<Value ID="CodeWindow_AddToWatch">Code Window: Add to Watch</Value>
+			<Value ID="CodeWindow_GoToLocation">Code Window: Go to Location</Value>
 			<Value ID="CodeWindow_SetNextStatement">Code Window: Set Next Statement</Value>
 			<Value ID="CodeWindow_EditSelectedCode">Code Window: Edit Selected Code</Value>
 			<Value ID="CodeWindow_EditSourceFile">Code Window: Edit Source File (Source View)</Value>
@@ -1939,6 +1940,7 @@ x == [$150] || y == [10]
 			<Value ID="MemoryViewer_Export">Export</Value>
 			<Value ID="MemoryViewer_ViewInCpuMemory">View in CPU/PPU Memory</Value>
 			<Value ID="MemoryViewer_ViewInMemoryType">View in [memory type]</Value>
+			<Value ID="MemoryViewer_ViewInDebugger">View in Debugger</Value>
 			<Value ID="ScriptWindow_OpenScript">Open Script</Value>
 			<Value ID="ScriptWindow_SaveScript">Save Script</Value>
 			<Value ID="ScriptWindow_RunScript">Run Script</Value>

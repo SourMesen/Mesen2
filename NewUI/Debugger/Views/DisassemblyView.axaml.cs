@@ -5,6 +5,8 @@ using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
@@ -16,6 +18,8 @@ namespace Mesen.Debugger.Views
 	public class DisassemblyView : UserControl
 	{
 		private DisassemblyViewModel Model => (DisassemblyViewModel)DataContext!;
+		private LocationInfo? _mouseOverCodeLocation;
+		private LocationInfo? _contextMenuLocation;
 
 		static DisassemblyView()
 		{
@@ -54,21 +58,88 @@ namespace Mesen.Debugger.Views
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ToggleBreakpoint),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
+					OnClick = () => {
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+						} else if(ActionLocation.RelAddress != null) {
+							BreakpointManager.ToggleBreakpoint(ActionLocation.RelAddress.Value, Model.DataProvider.CpuType);
+						}
+					}
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.AddWatch,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_AddToWatch),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
+					OnClick = () => {
+						if(ActionLocation.Label != null) {
+							WatchManager.GetWatchManager(Model.DataProvider.CpuType).AddWatch("[" + ActionLocation.Label.Label + "]");
+						} else if(ActionLocation.RelAddress != null) {
+							WatchManager.GetWatchManager(Model.DataProvider.CpuType).AddWatch("[$" + ActionLocation.RelAddress.Value.Address.ToString(GetFormatString()) + "]");
+						}
+					}
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.EditLabel,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditLabel),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
+					OnClick = () => {
+						CodeLabel? label = ActionLocation.Label ?? (ActionLocation.AbsAddress.HasValue ? LabelManager.GetLabel(ActionLocation.AbsAddress.Value) : null);
+						if(label != null) {
+							LabelEditWindow.EditLabel(this, label);
+						} else if(ActionLocation.AbsAddress != null) {
+							LabelEditWindow.EditLabel(this, new CodeLabel(ActionLocation.AbsAddress.Value));
+						}
+					}
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ViewInMemoryViewer),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
+					OnClick = () => {
+						if(ActionLocation.RelAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.RelAddress.Value.Type, ActionLocation.RelAddress.Value.Address);
+						} else if(ActionLocation.AbsAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.AbsAddress.Value.Type, ActionLocation.AbsAddress.Value.Address);
+						}
+					}
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_GoToLocation),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
+					OnClick = () => {
+						if(ActionLocation.RelAddress != null) {
+							Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true);
+						}
+					}
 				},
 			});
+		}
+
+		private string GetFormatString()
+		{
+			return Model.DataProvider.CpuType.ToMemoryType().GetFormatString();
+		}
+
+		private string GetHint(LocationInfo? codeLoc)
+		{
+			if(codeLoc == null) {
+				return string.Empty;
+			}
+
+			if(codeLoc?.RelAddress != null) {
+				return "$" + codeLoc.RelAddress.Value.Address.ToString(GetFormatString());
+			}
+
+			return string.Empty;
 		}
 
 		private void InitializeComponent()
@@ -86,6 +157,31 @@ namespace Mesen.Debugger.Views
 			Model.ViewerActive = false;
 		}
 
+		private LocationInfo ActionLocation
+		{
+			get
+			{
+				if(ContextMenu?.IsOpen == true && _contextMenuLocation != null) {
+					return _contextMenuLocation;
+				} else if(_mouseOverCodeLocation != null) {
+					return _mouseOverCodeLocation;
+				}
+				return GetSelectedRowLocation();
+			}
+		}
+
+		private LocationInfo GetSelectedRowLocation()
+		{
+			CpuType cpuType = Model.DataProvider.CpuType;
+			AddressInfo relAddress = new AddressInfo() {
+				Address = Model.SelectedRowAddress,
+				Type = cpuType.ToMemoryType()
+			};
+
+			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+			return new LocationInfo() { RelAddress = relAddress, AbsAddress = absAddress };
+		}
+
 		public void Diassembly_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
 		{
 			if(e.Properties.IsLeftButtonPressed) {
@@ -95,7 +191,6 @@ namespace Mesen.Debugger.Views
 						Address = e.CodeLineData.Address,
 						Type = cpuType.ToMemoryType()
 					};
-
 					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
 				} else {
@@ -106,22 +201,37 @@ namespace Mesen.Debugger.Views
 					}
 				}
 			} else if(e.Properties.IsRightButtonPressed) {
+				_contextMenuLocation = _mouseOverCodeLocation;
+
 				if(e.CodeLineData.Address < Model.SelectionStart || e.CodeLineData.Address > Model.SelectionEnd) {
 					Model.SetSelectedRow(e.CodeLineData.Address);
 				}
 			}
 		}
 
+		public void Disassembly_PointerLeave(object? sender, PointerEventArgs e)
+		{
+			_mouseOverCodeLocation = null;
+		}
+
 		public void Disassembly_CodePointerMoved(DisassemblyViewer sender, CodePointerMovedEventArgs e)
 		{
-			DynamicTooltip? tooltip;
-			ICodeDataProvider? dp = Model.DataProvider;
-			if(e.CodeSegment != null && dp != null && (tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment)) != null) {
-				ToolTip.SetTip(this, tooltip);
-				ToolTip.SetHorizontalOffset(this, 14);
-				ToolTip.SetHorizontalOffset(this, 15);
-				ToolTip.SetIsOpen(this, true);
-			} else {
+			DynamicTooltip? tooltip = null;
+			ICodeDataProvider dp = Model.DataProvider;
+
+			if(e.CodeSegment != null) {
+				_mouseOverCodeLocation = CodeTooltipHelper.GetLocation(dp.CpuType, e.CodeSegment);
+
+				tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment);
+				if(tooltip != null) {
+					ToolTip.SetTip(this, tooltip);
+					ToolTip.SetHorizontalOffset(this, 14);
+					ToolTip.SetHorizontalOffset(this, 15);
+					ToolTip.SetIsOpen(this, true);
+				}
+			}
+
+			if(tooltip == null) {
 				ToolTip.SetIsOpen(this, false);
 				ToolTip.SetTip(this, null);
 			}

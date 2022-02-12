@@ -37,7 +37,10 @@ namespace Mesen.Debugger.Utilities
 
 				string label = ResourceHelper.GetEnumText(ActionType);
 				if(HintText != null) {
-					label += " (" + HintText() + ")";
+					string hint = HintText();
+					if(!string.IsNullOrWhiteSpace(hint)) {
+						label += " (" + hint + ")";
+					}
 				}
 				return label;
 			}

@@ -17,6 +17,16 @@ namespace Mesen.Debugger.Labels
 		public CodeLabelFlags Flags { get; set; }
 		public UInt32 Length { get; set; } = 1;
 
+		public CodeLabel()
+		{
+		}
+
+		public CodeLabel(AddressInfo absAddress)
+		{
+			Address = (uint)absAddress.Address;
+			MemoryType = absAddress.Type;
+		}
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();

@@ -38,6 +38,7 @@
 			RowClicked="Diassembly_RowClicked"
 			PointerWheelChanged="Disassembly_PointerWheelChanged"
 			CodePointerMoved="Disassembly_CodePointerMoved"
+			PointerLeave="Disassembly_PointerLeave"
 		/>
 	</DockPanel>
 </UserControl>

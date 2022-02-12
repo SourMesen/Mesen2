@@ -12,29 +12,57 @@ namespace Mesen.Debugger.Utilities
 {
 	public static class CodeTooltipHelper
 	{
-		public static DynamicTooltip? GetTooltip(CpuType cpuType, CodeSegmentInfo codeSegment)
+		public static LocationInfo? GetLocation(CpuType cpuType, CodeSegmentInfo codeSegment)
 		{
 			int address = -1;
-			CodeLabel? label = null;
 			if(codeSegment.Type == CodeSegmentType.Address || codeSegment.Type == CodeSegmentType.EffectiveAddress) {
 				string addressText = codeSegment.Text.Trim(' ', '[', ']', '$');
 				int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address);
 				if(address >= 0) {
-					return GetCodeAddressTooltip(cpuType, address, label);
+					AddressInfo relAddress = new AddressInfo() { Address = address, Type = cpuType.ToMemoryType() };
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					return new LocationInfo { 
+						RelAddress = relAddress,
+						AbsAddress = absAddress.Address >= 0 ? absAddress : null,
+					};
 				}
 			} else if(codeSegment.Type == CodeSegmentType.Label || codeSegment.Type == CodeSegmentType.LabelDefinition) {
 				string labelText = codeSegment.Text.Trim(' ', ',', ':', ']', '[');
-				label = LabelManager.GetLabel(labelText);
+				CodeLabel? label = LabelManager.GetLabel(labelText);
 				if(label != null) {
-					address = label.GetRelativeAddress(cpuType).Address;
-				}
-				if(address >= 0) {
-					return GetCodeAddressTooltip(cpuType, address, label);
+					return new LocationInfo {
+						Label = label,
+						RelAddress = label.GetRelativeAddress(cpuType),
+						AbsAddress = label.GetAbsoluteAddress()
+					};
 				}
 			} else if(codeSegment.Type == CodeSegmentType.MarginAddress) {
 				string addressText = codeSegment.Text.Trim(' ', '[', ']', '$');
 				if(int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address) && address >= 0) {
-					return GetMarginAddressTooltip(cpuType, codeSegment, address);
+					AddressInfo relAddress = new AddressInfo() { Address = address, Type = cpuType.ToMemoryType() };
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+					return new LocationInfo {
+						RelAddress = relAddress,
+						AbsAddress = absAddress.Address >= 0 ? absAddress : null,
+					};
+				}
+			}
+
+			return null;
+		}
+
+		public static DynamicTooltip? GetTooltip(CpuType cpuType, CodeSegmentInfo codeSegment)
+		{
+			LocationInfo? codeLoc = GetLocation(cpuType, codeSegment);
+			if(codeLoc != null) {
+				if(codeSegment.Type == CodeSegmentType.Address || codeSegment.Type == CodeSegmentType.EffectiveAddress || codeSegment.Type == CodeSegmentType.Label || codeSegment.Type == CodeSegmentType.LabelDefinition) {
+					if(codeLoc.RelAddress?.Address >= 0) {
+						return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress.Value.Address, codeLoc.Label);
+					}
+				} else if(codeSegment.Type == CodeSegmentType.MarginAddress) {
+					if(codeLoc.RelAddress?.Address >= 0) {
+						return GetMarginAddressTooltip(cpuType, codeSegment, codeLoc.RelAddress.Value.Address);
+					}
 				}
 			}
 

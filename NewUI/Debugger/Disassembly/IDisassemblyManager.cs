@@ -29,7 +29,8 @@ namespace Mesen.Debugger.Disassembly
 
 	public class LocationInfo
 	{
-		public int Address;
+		public AddressInfo? RelAddress;
+		public AddressInfo? AbsAddress;
 		public CodeLabel? Label;
 		public SourceSymbol? Symbol;
 

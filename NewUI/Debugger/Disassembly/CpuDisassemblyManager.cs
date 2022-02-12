@@ -50,7 +50,8 @@ namespace Mesen.Debugger.Disassembly
 			return address;
 		}
 
-		public LocationInfo GetLocationInfo(string word, int lineIndex)
+		//TODO
+		/*public LocationInfo GetLocationInfo(string word, int lineIndex)
 		{
 			LocationInfo location = new LocationInfo();
 
@@ -64,11 +65,11 @@ namespace Mesen.Debugger.Disassembly
 			}
 
 			//TODO
-			/*if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
+			if(_provider is SymbolCodeDataProvider && _symbolProvider != null) {
 				int rangeStart, rangeEnd;
 				GetSymbolByteRange(lineIndex, out rangeStart, out rangeEnd);
 				location.Symbol = _symbolProvider.GetSymbol(word, rangeStart, rangeEnd);
-			}*/
+			}
 
 			location.Label = LabelManager.GetLabel(word);
 
@@ -110,7 +111,7 @@ namespace Mesen.Debugger.Disassembly
 
 			return location;
 		}
-
+		*/
 		//TODO
 		/*public Dictionary<string, string>? GetTooltipData(string word, int lineIndex)
 		{

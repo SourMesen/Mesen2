@@ -130,7 +130,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void SetSelectedRow(int address)
+		public void SetSelectedRow(int address, bool scrollToRow = false)
 		{
 			SelectionStart = address;
 			SelectionEnd = address;
@@ -138,6 +138,10 @@ namespace Mesen.Debugger.ViewModels
 			SelectionAnchor = address;
 
 			InvalidateVisual();
+
+			if(scrollToRow) {
+				ScrollToAddress((uint)address);
+			}
 		}
 
 		public void MoveCursor(int rowOffset, bool extendSelection)
