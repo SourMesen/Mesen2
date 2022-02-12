@@ -230,7 +230,7 @@ namespace Mesen.Debugger.ViewModels
 			StringBuilder sb = new StringBuilder();
 			int i = SelectionStart;
 			int endAddress = 0;
-			while(i < SelectionEnd) {
+			do {
 				CodeLineData[] data = dp.GetCodeLines(i, 5000);
 
 				for(int j = 0; j < data.Length; j++) {
@@ -281,7 +281,7 @@ namespace Mesen.Debugger.ViewModels
 					i = lineData.Address;
 					endAddress = lineData.Address + lineData.OpSize - 1;
 				}
-			}
+			} while(i < SelectionEnd);
 
 			byteCount = endAddress - SelectionStart + 1;
 
