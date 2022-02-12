@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-	public class DbgIntegrationConfig
+	public class DbgIntegrationConfig : BaseConfig<DbgIntegrationConfig>
 	{
 		public bool AutoImport = true;
 		public bool ResetLabelsOnImport = true;

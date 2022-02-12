@@ -31,85 +31,92 @@
 			<Setter Property="Margin" Value="2" />
 		</Style>
 	</Window.Styles>
-	
-	<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<Border Grid.Column="0">
-			<dc:MesenTextEditor
-				Name="Editor"
-				ShowLineNumbers="True"
-				TextBinding="{CompiledBinding Code}"
-				FontFamily="{CompiledBinding Font.FontFamilyObject}"
-				FontSize="{CompiledBinding Font.FontSize}"
-			/>
-		</Border>
+
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="Options" Items="{CompiledBinding OptionsMenuActions}" />
+		</Menu>
 		
-		<Border Grid.Column="1">
-			<dc:MesenTextEditor
-				Name="HexView"
-				IsReadOnly="True"
-				ShowLineNumbers="True"
-				FontFamily="{CompiledBinding Font.FontFamilyObject}"
-				FontSize="{CompiledBinding Font.FontSize}"
-				TextBinding="{CompiledBinding ByteCodeView}"
-			/>
-		</Border>
+		<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<Border Grid.Column="0">
+				<dc:MesenTextEditor
+					Name="Editor"
+					ShowLineNumbers="True"
+					TextBinding="{CompiledBinding Code}"
+					FontFamily="{CompiledBinding Font.FontFamilyObject}"
+					FontSize="{CompiledBinding Font.FontSize}"
+				/>
+			</Border>
+		
+			<Border Grid.Column="1">
+				<dc:MesenTextEditor
+					Name="HexView"
+					IsReadOnly="True"
+					ShowLineNumbers="True"
+					FontFamily="{CompiledBinding Font.FontFamilyObject}"
+					FontSize="{CompiledBinding Font.FontSize}"
+					TextBinding="{CompiledBinding ByteCodeView}"
+				/>
+			</Border>
 
-		<Border Grid.Row="1">
-			<dc:MesenDataGrid
-				Items="{CompiledBinding Errors}"
-				CellPointerPressed="OnCellPointerPressed"
-			>
-				<DataGrid.Columns>
-					<DataGridTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" Width="50" CanUserResize="True" />
-					<DataGridTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" Width="*" CanUserResize="True" />
-				</DataGrid.Columns>
-			</dc:MesenDataGrid>
-		</Border>
+			<Border Grid.Row="1">
+				<dc:MesenDataGrid
+					Items="{CompiledBinding Errors}"
+					CellPointerPressed="OnCellPointerPressed"
+				>
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" Width="50" CanUserResize="True" />
+						<DataGridTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" Width="*" CanUserResize="True" />
+					</DataGrid.Columns>
+				</dc:MesenDataGrid>
+			</Border>
 
-		<Border Grid.Row="1" Grid.Column="1" Padding="2">
-			<DockPanel>
-				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-					<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{CompiledBinding IsIdentical}" />
-					<c:ButtonWithIcon
-						Width="70"
-						HorizontalContentAlignment="Center"
-						Click="Ok_OnClick"
-						Icon="Assets/Warning.png"
-						ShowIcon="{CompiledBinding HasWarning}"
-						Text="{l:Translate btnOk}"
-						IsEnabled="{CompiledBinding OkEnabled}"
-					/>
-					<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
-				</StackPanel>
-				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-					<TextBlock Text="{l:Translate lblStartAddress}" />
-					<c:MesenNumericTextBox
-						Grid.Column="1"
-						Width="50"
-						Hex="True"
-						Max="{CompiledBinding MaxAddress}"
-						Value="{CompiledBinding StartAddress}"
-					/>
-					<TextBlock Text="{l:Translate lblBytesUsed}" Grid.Row="1" Margin="0 5 0 0" />
-					<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0">
-						<TextBlock Text="{CompiledBinding BytesUsed}" Margin="5 0 0 0" />
-						<TextBlock Text="/" Margin="5 0" IsVisible="{CompiledBinding OriginalByteCount}" />
-						<TextBlock Text="{CompiledBinding OriginalByteCount}" IsVisible="{CompiledBinding OriginalByteCount}" />
-						<Image
-							Margin="5 0"
-							Source="/Assets/Warning.png"
-							IsVisible="{CompiledBinding OriginalSizeExceeded}"
-							ToolTip.Tip="{l:Translate lblByteCountExceeded}"
+			<Border Grid.Row="1" Grid.Column="1" Padding="2">
+				<DockPanel>
+					<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+						<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{CompiledBinding IsIdentical}" />
+						<c:ButtonWithIcon
+							Width="70"
+							HorizontalContentAlignment="Center"
+							Click="Ok_OnClick"
+							Icon="Assets/Warning.png"
+							ShowIcon="{CompiledBinding HasWarning}"
+							Text="{l:Translate btnOk}"
+							IsEnabled="{CompiledBinding OkEnabled}"
 						/>
-						<Image
-							Margin="5 0"
-							Source="/Assets/Warning.png"
-							IsVisible="{CompiledBinding MaxSizeExceeded}"
-							ToolTip.Tip="{l:Translate lblMaxSizeExceeded}"
-						/>
+						<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 					</StackPanel>
-				</Grid>
-			</DockPanel>
-		</Border>
-	</Grid>
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+						<TextBlock Text="{l:Translate lblStartAddress}" />
+						<c:MesenNumericTextBox
+							Grid.Column="1"
+							Width="50"
+							Hex="True"
+							Max="{CompiledBinding MaxAddress}"
+							Value="{CompiledBinding StartAddress}"
+						/>
+						<TextBlock Text="{l:Translate lblBytesUsed}" Grid.Row="1" Margin="0 5 0 0" />
+						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 0">
+							<TextBlock Text="{CompiledBinding BytesUsed}" Margin="5 0 0 0" />
+							<TextBlock Text="/" Margin="5 0" IsVisible="{CompiledBinding OriginalByteCount}" />
+							<TextBlock Text="{CompiledBinding OriginalByteCount}" IsVisible="{CompiledBinding OriginalByteCount}" />
+							<Image
+								Margin="5 0"
+								Source="/Assets/Warning.png"
+								IsVisible="{CompiledBinding OriginalSizeExceeded}"
+								ToolTip.Tip="{l:Translate lblByteCountExceeded}"
+							/>
+							<Image
+								Margin="5 0"
+								Source="/Assets/Warning.png"
+								IsVisible="{CompiledBinding MaxSizeExceeded}"
+								ToolTip.Tip="{l:Translate lblMaxSizeExceeded}"
+							/>
+						</StackPanel>
+					</Grid>
+				</DockPanel>
+			</Border>
+		</Grid>
+	</DockPanel>
 </Window>

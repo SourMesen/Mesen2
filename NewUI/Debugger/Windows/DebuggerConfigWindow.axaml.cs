@@ -45,7 +45,7 @@ namespace Mesen.Debugger.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			_model.SaveConfig();
+			ConfigManager.Config.ApplyConfig();
 			Close();
 		}
 

@@ -56,6 +56,7 @@ namespace Mesen.Debugger.Windows
 			_textEditor.SyntaxHighlighting = _highlighting;
 
 			_model.Config.LoadWindowSettings(this);
+			_model.InitMenu(this);
 		}
 
 		public static void EditCode(CpuType cpuType, int address, string code, int byteCount)

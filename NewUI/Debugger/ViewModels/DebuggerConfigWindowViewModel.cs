@@ -123,7 +123,6 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.FindOccurrences,
 				DebuggerShortcut.GoToProgramCounter,
 				//DebuggerShortcut.CodeWindow_SetNextStatement,
-				//DebuggerShortcut.CodeWindow_EditSubroutine,
 				DebuggerShortcut.CodeWindow_EditSelectedCode,
 				//DebuggerShortcut.CodeWindow_EditSourceFile,
 				DebuggerShortcut.CodeWindow_EditLabel,
@@ -157,9 +156,7 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.SaveRom,
 				DebuggerShortcut.SaveRomAs,
 				DebuggerShortcut.SaveEditAsIps,
-				//DebuggerShortcut.RevertPrgChrChanges,
-				//DebuggerShortcut.ToggleVerifiedData,
-				//DebuggerShortcut.ToggleUnidentifiedCodeData
+				//DebuggerShortcut.RevertPrgChrChanges
 			});
 		}
 
@@ -168,20 +165,16 @@ namespace Mesen.Debugger.ViewModels
 			DebuggerShortcutsConfig shortcuts = ConfigManager.Config.Debug.Shortcuts;
 			return debuggerShortcuts.Select(s => shortcuts.GetBindable(s)).ToList();
 		}
-
-		internal void SaveConfig()
-		{
-			//TODO
-			ConfigManager.Config.ApplyConfig();
-		}
 	}
 
 	public enum DebugConfigWindowTab
 	{
-		Debugger,
-		ScriptWindow,
-		FontAndColors,
-		Integration,
-		Shortcuts
+		Debugger = 0,
+		ScriptWindow = 1,
+		//separator
+		FontAndColors = 3,
+		Integration = 4,
+		//separator
+		Shortcuts = 6
 	}
 }

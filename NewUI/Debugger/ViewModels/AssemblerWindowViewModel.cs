@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class AssemblerWindowViewModel : ViewModelBase
+	public class AssemblerWindowViewModel : DisposableViewModel
 	{
 		public AssemblerConfig Config { get; }
 
@@ -35,6 +35,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool OkEnabled { get; set; } = false;
 		[Reactive] public List<AssemblerError> Errors { get; set; } = new List<AssemblerError>();
 		public FontConfig Font { get; } = ConfigManager.Config.Debug.Font;
+
+		[Reactive] public List<ContextMenuAction> FileMenuActions { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> OptionsMenuActions { get; private set; } = new();
 
 		private CpuType _cpuType;
 		private List<byte> _bytes = new();
@@ -61,6 +64,27 @@ namespace Mesen.Debugger.ViewModels
 
 			this.WhenAnyValue(x => x.Code, x => x.StartAddress).Subscribe(_ => {
 				UpdateAssembly(Code);
+			});
+		}
+
+		public void InitMenu(Window wnd)
+		{
+			FileMenuActions = AddDisposables(new List<ContextMenuAction>() {
+				SaveRomActionHelper.GetSaveRomAction(wnd),
+				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd.Close()
+				}
+			});
+
+			OptionsMenuActions = AddDisposables(new List<ContextMenuAction>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenDebugSettings,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenDebugSettings),
+					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.FontAndColors, wnd)
+				}
 			});
 		}
 

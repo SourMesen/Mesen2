@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 
 namespace Mesen.Config
 {
-	public class FontConfig : ViewModelBase
+	public class FontConfig : BaseConfig<FontConfig>
 	{
 		[Reactive] public string FontFamily { get; set; } = DebuggerConfig.MonospaceFontFamily;
 		[Reactive] public float FontSize { get; set; } = DebuggerConfig.DefaultFontSize;
