@@ -25,7 +25,14 @@ namespace Mesen.Debugger.Views
 		{
 			BoundsProperty.Changed.AddClassHandler<DisassemblyView>((x, e) => {
 				DisassemblyViewer viewer = x.FindControl<DisassemblyViewer>("disViewer");
-				x.Model.VisibleRowCount = viewer.GetVisibleRowCount();
+				int rowCount = viewer.GetVisibleRowCount();
+				int prevCount = x.Model.VisibleRowCount;
+				if(prevCount != rowCount) {
+					x.Model.VisibleRowCount = rowCount;
+					if(prevCount < rowCount) {
+						x.Model.Refresh();
+					}
+				}
 			});
 		}
 
