@@ -40,65 +40,82 @@
 
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
-				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-					<TextBlock Grid.Column="0" Grid.Row="0" Text="Source:" />
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+					<TextBlock Text="Presets: " Margin="0 5 0 0 " VerticalAlignment="Top" />
+					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
+						<ItemsPresenter Items="{CompiledBinding ConfigPresets}">
+							<ItemsPresenter.ItemsPanel>
+								<ItemsPanelTemplate>
+									<WrapPanel />
+								</ItemsPanelTemplate>
+							</ItemsPresenter.ItemsPanel>
+							<ItemsPresenter.ItemTemplate>
+								<DataTemplate>
+									<Button Content="{Binding Name}" MinWidth="25" Command="{Binding ClickCommand}" />
+								</DataTemplate>
+							</ItemsPresenter.ItemTemplate>
+						</ItemsPresenter>
+					</Panel>
+
+					<Rectangle Grid.Row="1" Stroke="LightGray" StrokeThickness="1" Margin="0 5" DockPanel.Dock="Top" Grid.ColumnSpan="2" />
+
+					<TextBlock Grid.Column="0" Grid.Row="2" Text="Source:" />
 					<c:EnumComboBox
-						Grid.Column="1" Grid.Row="0"
+						Grid.Column="1" Grid.Row="2"
 						SelectedItem="{CompiledBinding Config.Source}"
 						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="1" Text="Size:" />
-					<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+					<TextBlock Grid.Column="0" Grid.Row="3" Text="Size:" />
+					<StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
 						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="1" Maximum="256" />
 						<TextBlock Margin="5 0">by</TextBlock>
 						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="1" Maximum="256" />
 					</StackPanel>
 
-					<TextBlock Grid.Column="0" Grid.Row="2" Text="Address:" />
+					<TextBlock Grid.Column="0" Grid.Row="4" Text="Address:" />
 					<dc:HexInput
-						Grid.Column="1" Grid.Row="2"
+						Grid.Column="1" Grid.Row="4"
 						Value="{CompiledBinding Config.StartAddress}"
 						LargeIncrement="{CompiledBinding AddressIncrement}"
 						SmallIncrement="1"
 						Minimum="0"
 						Maximum="{CompiledBinding MaximumAddress}"
+						Margin="1"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="3" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
+					<TextBlock Grid.Column="0" Grid.Row="5" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
 					<c:EnumComboBox
-						Grid.Column="1" Grid.Row="3"
+						Grid.Column="1" Grid.Row="5"
 						SelectedItem="{CompiledBinding Config.Format}"
 						AvailableValues="{CompiledBinding AvailableFormats}"
 						IsVisible="{CompiledBinding ShowFormatDropdown}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="4" Text="Tile Layout:" />
+					<TextBlock Grid.Column="0" Grid.Row="6" Text="Tile Layout:" />
 					<c:EnumComboBox
-						Grid.Column="1" Grid.Row="4"
+						Grid.Column="1" Grid.Row="6"
 						SelectedItem="{CompiledBinding Config.Layout}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="5" Text="Background:" />
+					<TextBlock Grid.Column="0" Grid.Row="7" Text="Background:" />
 					<c:EnumComboBox
-						Grid.Column="1" Grid.Row="5"
+						Grid.Column="1" Grid.Row="7"
 						SelectedItem="{CompiledBinding Config.Background}"
 					/>
 
-					<CheckBox Grid.Row="6" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
+					<CheckBox Grid.Row="8" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
 				</Grid>
 
-				<c:OptionSection Header="Palette Selection">
-					<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
-						<dc:PaletteSelector
-							ColumnCount="{CompiledBinding PaletteColumnCount}"
-							BlockSize="14"
-							SelectionMode="{CompiledBinding PaletteSelectionMode}"
-							SelectedPalette="{CompiledBinding Config.SelectedPalette}"
-							PaletteColors="{CompiledBinding PaletteColors}"
-						/>
-					</Border>
-				</c:OptionSection>
+				<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
+					<dc:PaletteSelector
+						ColumnCount="{CompiledBinding PaletteColumnCount}"
+						BlockSize="12"
+						SelectionMode="{CompiledBinding PaletteSelectionMode}"
+						SelectedPalette="{CompiledBinding Config.SelectedPalette}"
+						PaletteColors="{CompiledBinding PaletteColors}"
+					/>
+				</Border>
 				
 				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 			</StackPanel>

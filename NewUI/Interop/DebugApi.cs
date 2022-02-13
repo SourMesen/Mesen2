@@ -82,6 +82,16 @@ namespace Mesen.Interop
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
+		public static BaseState GetPpuState(CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Snes => GetPpuState<SnesPpuState>(cpuType),
+				CpuType.Nes => GetPpuState<NesPpuState>(cpuType),
+				CpuType.Gameboy => GetPpuState<GbPpuState>(cpuType),
+				_ => throw new Exception("Unsupport cpu type")
+			};
+		}
+
 		[DllImport(DllPath)] private static extern void SetPpuState(IntPtr state, CpuType cpuType);
 		public unsafe static void SetPpuState(BaseState state, CpuType cpuType)
 		{
