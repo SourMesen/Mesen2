@@ -111,7 +111,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 		for(int column = 0; column < options.Width; column++) {
 			uint32_t addr = baseOffset + options.StartAddress + bytesPerTile * column;
 
-			int baseOutputOffset;				
+			int baseOutputOffset;
 			if(options.Layout == TileLayout::SingleLine8x16) {
 				int displayColumn = column / 2 + ((row & 0x01) ? options.Width/2 : 0);
 				int displayRow = (row & ~0x01) + ((column & 0x01) ? 1 : 0);
@@ -132,13 +132,16 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 						uint8_t color = ram[(pixelStart + x * 2 + 1) & ramMask];
 
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							uint32_t rgbColor;
-							if(directColor) {
-								rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
-							} else {
-								rgbColor = GetRgbPixelColor(colors, color, 0, 8, false, 0);
+							int pos = baseOutputOffset + (y * options.Width * 8) + x;
+							if(pos < outputSize) {
+								uint32_t rgbColor;
+								if(directColor) {
+									rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
+								} else {
+									rgbColor = GetRgbPixelColor(colors, color, 0, 8, false, 0);
+								}
+								outBuffer[pos] = rgbColor;
 							}
-							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = rgbColor;
 						}
 					}
 				}
@@ -148,7 +151,10 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x, secondByteOffset);
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							outBuffer[baseOutputOffset + (y*options.Width*8) + x] = GetRgbPixelColor(colors, color, options.Palette, bpp, directColor, 0);
+							int pos = baseOutputOffset + (y * options.Width * 8) + x;
+							if(pos < outputSize) {
+								outBuffer[pos] = GetRgbPixelColor(colors, color, options.Palette, bpp, directColor, 0);
+							}
 						}
 					}
 				}
