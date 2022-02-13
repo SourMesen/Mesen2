@@ -104,19 +104,11 @@
 			</StackPanel>
 		</ScrollViewer>
 			
-		<Border BorderBrush="Gray" BorderThickness="1">
-			<ScrollViewer 
-				VerticalScrollBarVisibility="Auto"
-				HorizontalScrollBarVisibility="Auto" 
-				AllowAutoHide="False"
-			>
-				<dc:PictureViewer
-					x:Name="picViewer"
-					Source="{CompiledBinding ViewerBitmap}"
-					Zoom="{CompiledBinding Config.ImageScale}"
-					ShowGrid="{CompiledBinding Config.ShowTileGrid}"
-				/>
-			</ScrollViewer>
-		</Border>
+		<dc:ScrollPictureViewer
+			x:Name="picViewer"
+			Source="{CompiledBinding ViewerBitmap}"
+			Zoom="{CompiledBinding Config.ImageScale}"
+			ShowGrid="{CompiledBinding Config.ShowTileGrid}"
+		/>
 	</DockPanel>
 </Window>

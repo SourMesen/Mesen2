@@ -61,17 +61,13 @@
 
 		<TabControl SelectedIndex="{CompiledBinding SelectedTab}">
 			<TabItem Header="{l:Translate tabPpuView}">
-				<Border BorderBrush="Gray" BorderThickness="1">
-					<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AllowAutoHide="False">
-						<dc:PictureViewer
-							x:Name="picViewer"
-							Source="{CompiledBinding ViewerBitmap}"
-							Zoom="{CompiledBinding Config.ImageScale}"
-							ShowMousePosition="False"
-							AllowSelection="False"
-						/>
-					</ScrollViewer>
-				</Border>
+				<dc:ScrollPictureViewer
+					x:Name="picViewer"
+					Source="{CompiledBinding ViewerBitmap}"
+					Zoom="{CompiledBinding Config.ImageScale}"
+					ShowMousePosition="False"
+					AllowSelection="False"
+				/>
 			</TabItem>
 			<TabItem Header="{l:Translate tabListView}">
 				<Border BorderBrush="Gray" BorderThickness="1">

@@ -27,7 +27,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			_picViewer = this.FindControl<PictureViewer>("picViewer");
+			_picViewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			_model = new TilemapViewerViewModel(cpuType, _picViewer, this);
 			DataContext = _model;
 

@@ -31,7 +31,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			PictureViewer viewer = this.FindControl<PictureViewer>("picViewer");
+			PictureViewer viewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			_model = new EventViewerViewModel(cpuType, viewer, this);
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;

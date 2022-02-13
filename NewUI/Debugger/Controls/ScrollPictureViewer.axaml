@@ -1,0 +1,41 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:u="using:Mesen.Utilities"
+	mc:Ignorable="d"
+	x:Name="root"
+	x:Class="Mesen.Debugger.Controls.ScrollPictureViewer"
+>
+	<Border BorderBrush="Gray" BorderThickness="1" Background="#202020">
+		<ScrollViewer
+			Name="scrollViewer"
+			VerticalScrollBarVisibility="Auto"
+			HorizontalScrollBarVisibility="Auto"
+			AllowAutoHide="False"
+			Offset="{CompiledBinding ScrollOffset, ElementName=root, Mode=TwoWay}"
+		>
+			<dc:PictureViewer
+				x:Name="picViewer"
+				PointerPressed="Viewer_PointerPressed"
+				PointerMoved="Viewer_PointerMoved"
+				Source="{CompiledBinding Source, ElementName=root}"
+				Zoom="{CompiledBinding Zoom, ElementName=root}"
+				AllowSelection="{CompiledBinding AllowSelection, ElementName=root}"
+				ShowMousePosition="{CompiledBinding ShowMousePosition, ElementName=root}"
+				GridSizeX="{CompiledBinding GridSizeX, ElementName=root}"
+				GridSizeY="{CompiledBinding GridSizeY, ElementName=root}"
+				ShowGrid="{CompiledBinding ShowGrid, ElementName=root}"
+				AltGridSizeX="{CompiledBinding AltGridSizeX, ElementName=root}"
+				AltGridSizeY="{CompiledBinding AltGridSizeY, ElementName=root}"
+				ShowAltGrid="{CompiledBinding ShowAltGrid, ElementName=root}"
+				SelectionRect="{CompiledBinding SelectionRect, ElementName=root}"
+				OverlayRect="{CompiledBinding OverlayRect, ElementName=root}"
+				MouseOverRect="{CompiledBinding MouseOverRect, ElementName=root}"
+				HighlightRects="{CompiledBinding HighlightRects, ElementName=root}"
+			/>
+		</ScrollViewer>
+	</Border>
+</UserControl>

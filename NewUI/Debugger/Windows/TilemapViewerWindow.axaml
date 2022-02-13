@@ -88,26 +88,18 @@
 			</TabControl.ContentTemplate>
 		</TabControl>
 		
-		<Border BorderBrush="Gray" BorderThickness="1">
-			<ScrollViewer 
-				VerticalScrollBarVisibility="Auto"
-				HorizontalScrollBarVisibility="Auto" 
-				AllowAutoHide="False"
-			>
-				<dc:PictureViewer
-					x:Name="picViewer"
-					Source="{CompiledBinding ViewerBitmap}"
-					Zoom="{CompiledBinding Config.ImageScale}"
-					ShowGrid="{CompiledBinding Config.ShowGrid}"
-					SelectionRect="{CompiledBinding SelectionRect}"
-					OverlayRect="{CompiledBinding ScrollOverlayRect}"
-					GridSizeX="{CompiledBinding GridSizeX}"
-					GridSizeY="{CompiledBinding GridSizeY}"
-					AltGridSizeX="16"
-					AltGridSizeY="16"
-					ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
-				/>
-			</ScrollViewer>
-		</Border>
+		<dc:ScrollPictureViewer
+			x:Name="picViewer"
+			Source="{CompiledBinding ViewerBitmap}"
+			Zoom="{CompiledBinding Config.ImageScale}"
+			ShowGrid="{CompiledBinding Config.ShowGrid}"
+			SelectionRect="{CompiledBinding SelectionRect}"
+			OverlayRect="{CompiledBinding ScrollOverlayRect}"
+			GridSizeX="{CompiledBinding GridSizeX}"
+			GridSizeY="{CompiledBinding GridSizeY}"
+			AltGridSizeX="16"
+			AltGridSizeY="16"
+			ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
+		/>
 	</DockPanel>
 </Window>

@@ -106,23 +106,17 @@
 				/>
 			</ScrollViewer>
 			
-			<Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Margin="1">
-				<ScrollViewer
-					VerticalScrollBarVisibility="Auto"
-					HorizontalScrollBarVisibility="Auto"
-					AllowAutoHide="False"
-				>
-					<dc:PictureViewer
-						x:Name="picViewer"
-						Source="{CompiledBinding ViewerBitmap}"
-						Zoom="{CompiledBinding Config.ImageScale}"
-						SelectionRect="{CompiledBinding SelectionRect}"
-						MouseOverRect="{CompiledBinding MouseOverRect}"
-						HighlightRects="{CompiledBinding SpriteRects}"
-						ShowMousePosition="False"
-					/>
-				</ScrollViewer>
-			</Border>
+			<dc:ScrollPictureViewer
+				Grid.Column="1"
+				Margin="1"
+				x:Name="picViewer"
+				Source="{CompiledBinding ViewerBitmap}"
+				Zoom="{CompiledBinding Config.ImageScale}"
+				SelectionRect="{CompiledBinding SelectionRect}"
+				MouseOverRect="{CompiledBinding MouseOverRect}"
+				HighlightRects="{CompiledBinding SpriteRects}"
+				ShowMousePosition="False"
+			/>
 
 			<GridSplitter
 				Grid.Row="1"
