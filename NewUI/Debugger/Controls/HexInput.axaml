@@ -25,7 +25,10 @@
 
 	<UserControl.Styles>
 		<Style Selector="RepeatButton">
-			<Setter Property="MinWidth" Value="19" />
+			<Setter Property="Width" Value="16" />
+			<Setter Property="MinWidth" Value="16" />
+			<Setter Property="Padding" Value="4 0" />
+			<Setter Property="MinHeight" Value="21" />
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
 		</Style>
 		<Style Selector="Path">
@@ -41,13 +44,13 @@
 		<RepeatButton Command="{Binding DecrementLarge}" DockPanel.Dock="Left" ToolTip.Tip="Previous page">
 			<Path Data="{StaticResource PrevLargeButton}" />
 		</RepeatButton>
-		<RepeatButton Command="{Binding DecrementSmall}" DockPanel.Dock="Left" ToolTip.Tip="Previous byte">
+		<RepeatButton Command="{Binding DecrementSmall}" DockPanel.Dock="Left" ToolTip.Tip="Previous byte" Margin="-1 0 0 0">
 			<Path Data="{StaticResource PrevSmallButton}"/>
 		</RepeatButton>
 		<RepeatButton Command="{Binding IncrementLarge}"  DockPanel.Dock="Right" ToolTip.Tip="Next page">
 			<Path Data="{StaticResource NextLargeButton}" />
 		</RepeatButton>
-		<RepeatButton Command="{Binding IncrementSmall}" DockPanel.Dock="Right" ToolTip.Tip="Next byte">
+		<RepeatButton Command="{Binding IncrementSmall}" DockPanel.Dock="Right" ToolTip.Tip="Next byte" Margin="0 0 -1 0">
 			<Path Data="{StaticResource NextSmallButton}" />
 		</RepeatButton>
 
