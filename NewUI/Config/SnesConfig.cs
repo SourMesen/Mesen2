@@ -18,10 +18,10 @@ namespace Mesen.Config
 
 		//Video
 		[Reactive] public bool BlendHighResolutionModes { get; set; } = false;
-		[Reactive] public bool HideBgLayer0 { get; set; } = false;
 		[Reactive] public bool HideBgLayer1 { get; set; } = false;
 		[Reactive] public bool HideBgLayer2 { get; set; } = false;
 		[Reactive] public bool HideBgLayer3 { get; set; } = false;
+		[Reactive] public bool HideBgLayer4 { get; set; } = false;
 		[Reactive] public bool HideSprites { get; set; } = false;
 		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
@@ -71,10 +71,10 @@ namespace Mesen.Config
 				Region = this.Region,
 
 				BlendHighResolutionModes = this.BlendHighResolutionModes,
-				HideBgLayer0 = this.HideBgLayer0,
 				HideBgLayer1 = this.HideBgLayer1,
 				HideBgLayer2 = this.HideBgLayer2,
 				HideBgLayer3 = this.HideBgLayer3,
+				HideBgLayer4 = this.HideBgLayer4,
 				HideSprites = this.HideSprites,
 				DisableFrameSkipping = this.DisableFrameSkipping,
 
@@ -145,10 +145,10 @@ namespace Mesen.Config
 		public ConsoleRegion Region;
 
 		[MarshalAs(UnmanagedType.I1)] public bool BlendHighResolutionModes;
-		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer0;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer1;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer2;
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer3;
+		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer4;
 		[MarshalAs(UnmanagedType.I1)] public bool HideSprites;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
 

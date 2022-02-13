@@ -231,10 +231,10 @@
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="chkBlendHighResolutionModes">Blend high resolution modes</Control>
-			<Control ID="chkHideBgLayer0">Hide background layer 0</Control>
 			<Control ID="chkHideBgLayer1">Hide background layer 1</Control>
 			<Control ID="chkHideBgLayer2">Hide background layer 2</Control>
 			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
+			<Control ID="chkHideBgLayer4">Hide background layer 4</Control>
 			<Control ID="chkHideSprites">Hide sprites</Control>
 			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 			<Control ID="lblOverscan">Overscan</Control>

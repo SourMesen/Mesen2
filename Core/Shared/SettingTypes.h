@@ -352,10 +352,10 @@ struct SnesConfig
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
 	bool BlendHighResolutionModes = false;
-	bool HideBgLayer0 = false;
 	bool HideBgLayer1 = false;
 	bool HideBgLayer2 = false;
 	bool HideBgLayer3 = false;
+	bool HideBgLayer4 = false;
 	bool HideSprites = false;
 	bool DisableFrameSkipping = false;
 

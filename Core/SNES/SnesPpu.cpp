@@ -467,7 +467,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			}
 
 			SnesConfig& cfg = _settings->GetSnesConfig();
-			_configVisibleLayers = (cfg.HideBgLayer0 ? 0 : 1) | (cfg.HideBgLayer1 ? 0 : 2) | (cfg.HideBgLayer2 ? 0 : 4) | (cfg.HideBgLayer3 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
+			_configVisibleLayers = (cfg.HideBgLayer1 ? 0 : 1) | (cfg.HideBgLayer2 ? 0 : 2) | (cfg.HideBgLayer3 ? 0 : 4) | (cfg.HideBgLayer4 ? 0 : 8) | (cfg.HideSprites ? 0 : 16);
 
 			_emu->ProcessEvent(EventType::EndFrame);
 
