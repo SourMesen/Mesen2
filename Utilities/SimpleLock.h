@@ -8,8 +8,10 @@ class LockHandler
 {
 private:
 	SimpleLock *_lock;
+	bool _released = false;
 public:
 	LockHandler(SimpleLock *lock);
+	void Release();
 	~LockHandler();
 };
 

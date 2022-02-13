@@ -470,8 +470,12 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//UpdateRegion();
 
 	_autoSaveStateFrameCounter = 0;
+
+	//Mark the thread as paused, and release the debugger lock to avoid
+	//deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
 	_allowDebuggerRequest = true;
-	_threadPaused = true; //To avoid deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
+	dbgLock.Release();
+	_threadPaused = true;
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 	_threadPaused = false;
 	_paused = false;

@@ -104,7 +104,17 @@ LockHandler::LockHandler(SimpleLock *lock)
 	_lock->Acquire();
 }
 
+void LockHandler::Release()
+{
+	if(!_released) {
+		_released = true;
+		_lock->Release();
+	}
+}
+
 LockHandler::~LockHandler()
 {
-	_lock->Release();
+	if(!_released) {
+		_lock->Release();
+	}
 }
