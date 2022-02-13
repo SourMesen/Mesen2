@@ -237,7 +237,6 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
 	sprite.TileIndex = oamRam[i * 4 + 1];
-	sprite.TileAddress = state.Control.BackgroundPatternAddr | (sprite.TileIndex * 16);
 
 	uint8_t attributes = oamRam[i * 4 + 2];
 	sprite.Palette = (attributes & 0x03);
@@ -262,6 +261,7 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	} else {
 		tileStart = (sprite.TileIndex * 16) | sprAddr;
 	}
+	sprite.TileAddress = tileStart;
 
 	for(int y = 0; y < sprite.Height; y++) {
 		uint8_t lineOffset = sprite.VerticalMirror ? (sprite.Height - 1 - y) : y;
