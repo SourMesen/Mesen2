@@ -22,7 +22,7 @@ constexpr const char* _opTemplate[256] = {
 	"EI",		"TCALL 10",	"SET1 d.5",	"BBS d.5,q",	"SBC A,d",		"SBC A,!a",		"SBC A,(X)",	"SBC A,[d+X]",	"SBC A,#i",	"SBC t,s",		"MOV1 C,m.b",	"INC d",			"INC !a",	"CMP Y,#i",	"POP A",			"MOV (X)+,A",
 	"BCS r",	"TCALL 11",	"CLR1 d.5",	"BBC d.5,q",	"SBC A,d+X",	"SBC A,!a+X",	"SBC A,!a+Y",	"SBC A,[d]+Y",	"SBC e,#i",	"SBC (X),(Y)",	"MOVW YA,d",	"INC d+X",		"INC A",		"MOV SP,X",	"DAS A",			"MOV A,(X)+",
 	"DI",		"TCALL 12",	"SET1 d.6",	"BBS d.6,q",	"MOV d,A",		"MOV !a,A",		"MOV (X),A",	"MOV [d+X],A",	"CMP X,#i",	"MOV !a,X",		"MOV1 m.b,C",	"MOV d,Y",		"MOV !a,Y",	"MOV X,#i",	"POP X",			"MUL YA",
-	"BNE r",	"TCALL 13",	"CLR1 d.6",	"BBC d.6,q",	"MOV d+X,A",	"MOV !a+X,A",	"MOV !a+Y,A",	"MOV [d]+Y,A",	"MOV e,X",	"MOV d+Y,X",	"MOVW d,YA",	"MOV d+X,Y",	"DEC Y",		"MOV A,Y",	"CBNE d+X,q",	"DAA A",
+	"BNE r",	"TCALL 13",	"CLR1 d.6",	"BBC d.6,q",	"MOV d+X,A",	"MOV !a+X,A",	"MOV !a+Y,A",	"MOV [d]+Y,A",	"MOV d,X",	"MOV d+Y,X",	"MOVW d,YA",	"MOV d+X,Y",	"DEC Y",		"MOV A,Y",	"CBNE d+X,q",	"DAA A",
 	"CLRV",	"TCALL 14",	"SET1 d.7",	"BBS d.7,q",	"MOV A,d",		"MOV A,!a",		"MOV A,(X)",	"MOV A,[d+X]",	"MOV A,#i",	"MOV X,!a",		"NOT1 m.b",		"MOV Y,d",		"MOV Y,!a",	"NOTC",		"POP Y",			"SLEEP",
 	"BEQ r",	"TCALL 15",	"CLR1 d.7",	"BBC d.7,q",	"MOV A,d+X",	"MOV A,!a+X",	"MOV A,!a+Y",	"MOV A,[d]+Y",	"MOV X,d",	"MOV X,d+Y",	"MOV t,s",		"MOV Y,d+X",	"INC Y",		"MOV Y,A",	"DBNZ Y,q",		"STOP"
 };
