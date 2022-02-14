@@ -67,6 +67,7 @@
 					Zoom="{CompiledBinding Config.ImageScale}"
 					ShowMousePosition="False"
 					AllowSelection="False"
+					GridHighlight="{CompiledBinding GridHighlightPoint}"
 				/>
 			</TabItem>
 			<TabItem Header="{l:Translate tabListView}">

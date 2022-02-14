@@ -35,6 +35,7 @@
 				OverlayRect="{CompiledBinding OverlayRect, ElementName=root}"
 				MouseOverRect="{CompiledBinding MouseOverRect, ElementName=root}"
 				HighlightRects="{CompiledBinding HighlightRects, ElementName=root}"
+				GridHighlight="{CompiledBinding GridHighlight, ElementName=root}"
 			/>
 		</ScrollViewer>
 	</Border>

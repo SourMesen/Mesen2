@@ -26,6 +26,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
+		
+		public static readonly StyledProperty<GridRowColumn?> GridHighlightProperty = AvaloniaProperty.Register<PictureViewer, GridRowColumn?>(nameof(GridHighlight), null);
 
 		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowMousePosition), true);
 		public static readonly StyledProperty<Rect?> MouseOverRectProperty = AvaloniaProperty.Register<PictureViewer, Rect?>(nameof(MouseOverRect), null, defaultBindingMode: BindingMode.OneWay);
@@ -131,12 +133,18 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(HighlightRectsProperty, value); }
 		}
 
+		public GridRowColumn? GridHighlight
+		{
+			get { return GetValue(GridHighlightProperty); }
+			set { SetValue(GridHighlightProperty, value); }
+		}
+
 		static PictureViewer()
 		{
 			AffectsRender<PictureViewer>(
 				SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty,
 				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
-				HighlightRectsProperty, MouseOverRectProperty
+				HighlightRectsProperty, MouseOverRectProperty, GridHighlightProperty
 			);
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
@@ -393,11 +401,54 @@ namespace Mesen.Debugger.Controls
 				context.DrawRectangle(new Pen(Brushes.Black, 2), rect.Inflate(0.5));
 				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), rect.Inflate(0.5));
 			}
+
+			if(GridHighlight != null) {
+				GridRowColumn point = GridHighlight;
+				PixelPoint p = new PixelPoint((int)(point.X * Zoom), (int)(point.Y * Zoom));
+
+				Pen pen = new Pen(0x80FFFFFF, Math.Max(1, Zoom - 1));
+				DrawHighlightLines(context, point, p, pen);
+
+				FormattedText text = new FormattedText(point.DisplayValue, new Typeface(FontFamily.Default), 14 + Zoom * 2, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+
+				Point textPos = new Point(p.X + point.Width * Zoom + 5, p.Y - 5 - text.Bounds.Height);
+				if(text.Bounds.Width + textPos.X >= width) {
+					textPos = textPos.WithX(p.X - text.Bounds.Width - 5);
+				}
+				if(textPos.Y < 0) {
+					textPos = textPos.WithY(p.Y + point.Height * Zoom + 5);
+				}
+
+				for(int i = -2; i <= 2; i++) {
+					for(int j = -2; j <= 2; j++) {
+						context.DrawText(Brushes.Black, textPos + new Point(i, j), text);
+					}
+				}
+				context.DrawText(Brushes.White, textPos, text);
+			}
+		}
+
+		private void DrawHighlightLines(DrawingContext context, GridRowColumn point, PixelPoint p, Pen pen)
+		{
+			context.DrawLine(pen, new Point(p.X - pen.Thickness / 2, 0), new Point(p.X - pen.Thickness / 2, Bounds.Height));
+			context.DrawLine(pen, new Point(p.X + point.Width * Zoom + pen.Thickness / 2, 0), new Point(p.X + point.Height * Zoom + pen.Thickness / 2, Bounds.Height));
+
+			context.DrawLine(pen, new Point(0, p.Y - pen.Thickness / 2), new Point(Bounds.Width, p.Y - pen.Thickness / 2));
+			context.DrawLine(pen, new Point(0, p.Y + point.Height * Zoom + pen.Thickness / 2), new Point(Bounds.Width, p.Y + point.Height * Zoom + pen.Thickness / 2));
 		}
 	}
 
 	public class PositionClickedEventArgs : RoutedEventArgs
 	{
 		public PixelPoint Position;
+	}
+
+	public class GridRowColumn
+	{
+		public int X;
+		public int Y;
+		public int Width;
+		public int Height;
+		public string DisplayValue = "";
 	}
 }

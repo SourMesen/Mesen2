@@ -67,6 +67,7 @@ namespace Mesen.Debugger.Windows
 				ToolTip.SetIsOpen(viewer, false);
 			}
 			_prevMousePos = null;
+			_model.GridHighlightPoint = null;
 		}
 
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)
@@ -78,17 +79,21 @@ namespace Mesen.Debugger.Windows
 				}
 				_prevMousePos = point;
 
-				DebugEventInfo evt = new DebugEventInfo();
+				DebugEventInfo? evt = null;
 				if(point != null) {
 					evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)point.Value.Y, (ushort)point.Value.X);
+					if(evt.Value.ProgramCounter == UInt32.MaxValue) {
+						evt = null;
+					}
+					_model.UpdateHighlightPoint(point.Value, evt);
 				}
 
-				if(point != null && evt.ProgramCounter != UInt32.MaxValue) {
+				if(point != null && evt != null) {
 					//Force tooltip to update its position
 					ToolTip.SetHorizontalOffset(viewer, 14);
 					ToolTip.SetHorizontalOffset(viewer, 15);
 
-					ToolTip.SetTip(viewer, new DynamicTooltip() { Items = GetTooltipData(evt) });
+					ToolTip.SetTip(viewer, new DynamicTooltip() { Items = GetTooltipData(evt.Value) });
 					ToolTip.SetIsOpen(viewer, true);
 				} else {
 					ToolTip.SetTip(viewer, null);

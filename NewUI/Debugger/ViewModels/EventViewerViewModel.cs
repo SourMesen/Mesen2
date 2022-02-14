@@ -32,6 +32,7 @@ namespace Mesen.Debugger.ViewModels
 		
 		[Reactive] public AvaloniaList<DebugEventViewModel> DebugEvents { get; private set; } = new();
 		[Reactive] public ViewModelBase ConsoleConfig { get; set; }
+		[Reactive] public GridRowColumn? GridHighlightPoint { get; set; }
 		
 		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
 
@@ -174,6 +175,48 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			});
+		}
+
+		public void UpdateHighlightPoint(PixelPoint p, DebugEventInfo? eventInfo)
+		{
+			if(eventInfo != null) {
+				//Snap the row/column highlight to the selected event
+				DebugEventInfo evt = eventInfo.Value;
+				p = CpuType switch {
+					CpuType.Snes => new PixelPoint(evt.Cycle / 2, evt.Scanline * 2),
+					CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
+					CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
+					_ => throw new Exception("Invalid cpu type")
+				};
+			}
+
+			GridRowColumn result = new GridRowColumn() {
+				Y = p.Y / 2 * 2,
+				Width = 2,
+				Height = 2
+			};
+
+			switch(CpuType) {
+				case CpuType.Snes:
+					result.X = p.X;
+					result.DisplayValue = $"{result.X * 2}, {result.Y / 2}";
+					break;
+
+				case CpuType.Nes:
+					result.X = p.X / 2 * 2;
+					result.DisplayValue = $"{result.X / 2}, {result.Y / 2 - 1}";
+					break;
+
+				case CpuType.Gameboy:
+					result.X = p.X / 2 * 2;
+					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
+					break;
+
+				default:
+					throw new Exception("Invalid cpu type");
+			}
+
+			GridHighlightPoint = result;
 		}
 
 		private void UpdateConfig()

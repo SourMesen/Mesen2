@@ -25,6 +25,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(AllowSelection), true);
+		
+		public static readonly StyledProperty<GridRowColumn?> GridHighlightProperty = AvaloniaProperty.Register<ScrollPictureViewer, GridRowColumn?>(nameof(GridHighlight), null);
 
 		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowMousePosition), true);
 		public static readonly StyledProperty<Rect?> MouseOverRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect?>(nameof(MouseOverRect), null, defaultBindingMode: BindingMode.OneWay);
@@ -122,6 +124,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(HighlightRectsProperty); }
 			set { SetValue(HighlightRectsProperty, value); }
+		}
+
+		public GridRowColumn? GridHighlight
+		{
+			get { return GetValue(GridHighlightProperty); }
+			set { SetValue(GridHighlightProperty, value); }
 		}
 
 		private Point _lastPosition;
