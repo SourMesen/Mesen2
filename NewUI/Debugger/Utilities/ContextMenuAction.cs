@@ -326,6 +326,12 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("RunPpuFrame")]
 		RunPpuFrame,
 
+		[IconFile("StepNmi")]
+		RunToNmi,
+
+		[IconFile("StepIrq")]
+		RunToIrq,
+
 		BreakIn,
 		BreakOn,
 

@@ -271,6 +271,8 @@ enum class BreakSource
 	GbOamCorruption = 13,
 
 	BreakOnCpuCrash = 14,
+	Irq = 15,
+	Nmi = 16,
 
 	NesBreakOnDecayedOamRead = 100,
 	NesBreakOnPpu2006ScrollGlitch = 101,
@@ -294,6 +296,8 @@ enum class StepType
 	PpuScanline,
 	PpuFrame,
 	SpecificScanline,
+	RunToNmi,
+	RunToIrq,
 };
 
 struct StepRequest
@@ -302,14 +306,22 @@ struct StepRequest
 	int32_t PpuStepCount = -1;
 	int32_t BreakAddress = -1;
 	int32_t BreakScanline = INT32_MIN;
+	StepType Type = StepType::Step;
+	
 	bool HasRequest = false;
 
 	StepRequest()
 	{
 	}
 
+	StepRequest(StepType type)
+	{
+		Type = type;
+	}
+
 	StepRequest(const StepRequest& obj)
 	{
+		Type = obj.Type;
 		StepCount = obj.StepCount;
 		PpuStepCount = obj.PpuStepCount;
 		BreakAddress = obj.BreakAddress;
@@ -323,6 +335,21 @@ struct StepRequest
 			StepCount--;
 			if(StepCount == 0 && source) {
 				*source = BreakSource::CpuStep;
+			}
+		}
+	}
+
+	__forceinline void ProcessNmiIrq(bool forNmi, BreakSource* source = nullptr)
+	{
+		if(forNmi) {
+			if(Type == StepType::RunToNmi) {
+				StepCount = 0;
+				*source = BreakSource::Nmi;
+			}
+		} else {
+			if(Type == StepType::RunToIrq) {
+				StepCount = 0;
+				*source = BreakSource::Irq;
 			}
 		}
 	}

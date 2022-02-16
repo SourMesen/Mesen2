@@ -1791,6 +1791,14 @@ x == [$150] || y == [10]
 			<Value ID="GbInvalidOpCode">Invalid instruction</Value>
 			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
 			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
+
+			<Value ID="BreakOnCpuCrash">CPU crashed</Value>
+			<Value ID="Irq">IRQ</Value>
+			<Value ID="Nmi">NMI</Value>
+			
+			<Value ID="NesBreakOnDecayedOamRead">Decayed OAM read</Value>
+			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
+			<Value ID="NesBreakOnUnofficialOpCode">Unofficial OP</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>
@@ -1895,6 +1903,8 @@ x == [$150] || y == [10]
 			<Value ID="RunPpuFrame">Run one PPU Frame</Value>
 			<Value ID="BreakIn">Break In...</Value>
 			<Value ID="BreakOn">Break On...</Value>
+			<Value ID="RunToNmi">Run to NMI</Value>
+			<Value ID="RunToIrq">Run to IRQ</Value>
 			<Value ID="FindOccurrences">Find Occurrences</Value>
 			<Value ID="GoToProgramCounter">Go To Program Counter</Value>
 			<Value ID="CodeWindow_ViewInMemoryViewer">Code Window: View in Memory Viewer</Value>
@@ -2012,6 +2022,8 @@ x == [$150] || y == [10]
 			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
 			<Value ID="RunPpuScanline">Run one scanline</Value>
 			<Value ID="RunPpuFrame">Run one frame</Value>
+			<Value ID="RunToIrq">Run to IRQ</Value>
+			<Value ID="RunToNmi">Run to NMI</Value>
 			<Value ID="BreakIn">Break in...</Value>
 			<Value ID="BreakOn">Break on...</Value>
 

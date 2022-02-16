@@ -203,7 +203,7 @@ void NesDebugger::Run()
 
 void NesDebugger::Step(int32_t stepCount, StepType type)
 {
-	StepRequest step;
+	StepRequest step(type);
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
@@ -230,8 +230,11 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	AddressInfo src = _mapper->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _mapper->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _mapper->GetAbsoluteAddress(currentPc);
-	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
-	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+	
+	_debugger->InternalProcessInterrupt(
+		CpuType::Nes, *this, *_step.get(),
+		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+	);
 }
 
 void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)

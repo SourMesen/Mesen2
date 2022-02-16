@@ -913,6 +913,8 @@ namespace Mesen.Interop
 		PpuScanline,
 		PpuFrame,
 		SpecificScanline,
+		RunToNmi,
+		RunToIrq,
 	}
 
 	public enum BreakSource
@@ -935,6 +937,8 @@ namespace Mesen.Interop
 		GbOamCorruption = 13,
 
 		BreakOnCpuCrash = 14,
+		Irq = 15,
+		Nmi = 16,
 
 		NesBreakOnDecayedOamRead = 100,
 		NesBreakOnPpu2006ScrollGlitch = 101,

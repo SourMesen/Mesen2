@@ -228,7 +228,7 @@ void SnesDebugger::Run()
 
 void SnesDebugger::Step(int32_t stepCount, StepType type)
 {
-	StepRequest step;
+	StepRequest step(type);
 	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetCpuState().StopState == SnesCpuStopState::Stopped) {
 		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
 		step.PpuStepCount = 1;
@@ -260,8 +260,11 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 	AddressInfo src = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _memoryMappings->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _memoryMappings->GetAbsoluteAddress(currentPc);
-	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
-	_eventManager->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+
+	_debugger->InternalProcessInterrupt(
+		_cpuType, *this, *_step.get(),
+		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+	);
 }
 
 void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)

@@ -427,17 +427,17 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.StepInto,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepInto),
-					OnClick = () => Step(1, StepType.Step)
+					OnClick = () => Step(StepType.Step, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StepOver,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOver),
-					OnClick = () => Step(1, StepType.StepOver)
+					OnClick = () => Step(StepType.StepOver, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StepOut,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOut),
-					OnClick = () => Step(1, StepType.StepOut)
+					OnClick = () => Step(StepType.StepOut, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StepBack,
@@ -451,19 +451,32 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.RunPpuCycle,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuCycle),
-					OnClick = () => Step(1, StepType.PpuStep)
+					OnClick = () => Step(StepType.PpuStep, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.RunPpuScanline,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuScanline),
-					OnClick = () => Step(1, StepType.PpuScanline)
+					OnClick = () => Step(StepType.PpuScanline, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.RunPpuFrame,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuFrame),
-					OnClick = () => Step(1, StepType.PpuFrame)
+					OnClick = () => Step(StepType.PpuFrame, 1)
 				},
 
+				new ContextMenuSeparator(),
+				
+				new ContextMenuAction() {
+					ActionType = ActionType.RunToNmi,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToNmi),
+					OnClick = () => Step(StepType.RunToNmi)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunToIrq,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToIrq),
+					OnClick = () => Step(StepType.RunToIrq)
+				},
+				
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
@@ -523,7 +536,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		private void Step(int instructionCount, StepType type)
+		private void Step(StepType type, int instructionCount = 1)
 		{
 			switch(type) {
 				case StepType.PpuStep:

@@ -119,6 +119,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.RunPpuFrame,
 				DebuggerShortcut.BreakIn,
 				DebuggerShortcut.BreakOn,
+				DebuggerShortcut.RunToNmi,
+				DebuggerShortcut.RunToIrq,
 				//DebuggerShortcut.FindOccurrences,
 				DebuggerShortcut.GoToProgramCounter,
 				//DebuggerShortcut.CodeWindow_SetNextStatement,

@@ -138,6 +138,9 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.RunPpuScanline, KeyBinding = new(Key.F7) });
 			Add(new() { Shortcut = DebuggerShortcut.RunPpuFrame, KeyBinding = new(Key.F8) });
 
+			Add(new() { Shortcut = DebuggerShortcut.RunToIrq, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.RunToNmi, KeyBinding = new() });
+
 			Add(new() { Shortcut = DebuggerShortcut.BreakIn, KeyBinding = new(KeyModifiers.Control, Key.B) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakOn, KeyBinding = new(KeyModifiers.Alt, Key.B) });
 
@@ -321,6 +324,8 @@ namespace Mesen.Config
 		ResetCdl,
 		LoadCdl,
 		SaveCdl,
+		RunToNmi,
+		RunToIrq,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

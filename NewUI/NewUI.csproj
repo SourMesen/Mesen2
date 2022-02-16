@@ -133,6 +133,8 @@
 	  <None Remove="Assets\SplitView.png" />
 	  <None Remove="Assets\StepBack.png" />
 	  <None Remove="Assets\StepInto.png" />
+	  <None Remove="Assets\StepIrq.png" />
+	  <None Remove="Assets\StepNmi.png" />
 	  <None Remove="Assets\StepOut.png" />
 	  <None Remove="Assets\StepOver.png" />
 	  <None Remove="Assets\SwitchView.png" />
@@ -523,6 +525,8 @@
 	  <AvaloniaResource Include="Assets\SplitView.png" />
 	  <AvaloniaResource Include="Assets\StepBack.png" />
 	  <AvaloniaResource Include="Assets\StepInto.png" />
+	  <AvaloniaResource Include="Assets\StepIrq.png" />
+	  <AvaloniaResource Include="Assets\StepNmi.png" />
 	  <AvaloniaResource Include="Assets\StepOut.png" />
 	  <AvaloniaResource Include="Assets\StepOver.png" />
 	  <AvaloniaResource Include="Assets\SwitchView.png" />

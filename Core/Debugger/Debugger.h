@@ -94,6 +94,8 @@ public:
 	template<CpuType type> void ProcessPpuCycle();
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
+	void InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepRequest& stepRequest, AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t retAddr, bool forNmi);
+
 	void ProcessEvent(EventType type);
 
 	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);

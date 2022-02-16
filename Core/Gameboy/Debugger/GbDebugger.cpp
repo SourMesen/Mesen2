@@ -207,7 +207,7 @@ void GbDebugger::Run()
 
 void GbDebugger::Step(int32_t stepCount, StepType type)
 {
-	StepRequest step;
+	StepRequest step(type);
 
 	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && _cpu->GetState().Halted) {
 		//CPU isn't running - use the PPU to break execution instead
@@ -239,8 +239,11 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _gameboy->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _gameboy->GetAbsoluteAddress(currentPc);
-	_callstackManager->Push(src, _prevProgramCounter, dest, currentPc, ret, originalPc, StackFrameFlags::Irq);
-	_eventManager->AddEvent(DebugEventType::Irq);
+
+	_debugger->InternalProcessInterrupt(
+		CpuType::Gameboy, *this, *_step.get(), 
+		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi
+	);
 }
 
 void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)

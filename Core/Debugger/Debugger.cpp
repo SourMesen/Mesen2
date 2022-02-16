@@ -264,6 +264,18 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq);
 }
 
+void Debugger::InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepRequest& stepRequest, AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t retAddr, bool forNmi)
+{
+	dbg.GetCallstackManager()->Push(src, srcAddr, dest, destAddr, ret, retAddr, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
+	dbg.GetEventManager()->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
+
+	BreakSource source = BreakSource::Unspecified;
+	stepRequest.ProcessNmiIrq(forNmi, &source);
+	if(stepRequest.StepCount == 0) {
+		SleepUntilResume(cpuType, source);
+	}
+}
+
 void Debugger::ProcessEvent(EventType type)
 {
 	_scriptManager->ProcessEvent(type);
