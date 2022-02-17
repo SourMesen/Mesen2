@@ -663,7 +663,8 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	counts.resize(_memoryDumper->GetMemorySize(memoryType), {});
 	_debugger->GetMemoryAccessCounter()->GetAccessCounts(0, size, memoryType, counts.data());
 
-	lua_newtable(lua);
+	//TODO
+	/*lua_newtable(lua);
 	switch(operationType) {
 		default:
 		case MemoryOperationType::Read: 
@@ -686,7 +687,7 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 				lua_rawseti(lua, -2, i);
 			}
 			break;
-	}
+	}*/
 	return 1;
 }
 

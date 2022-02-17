@@ -28,31 +28,26 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo& addressInfo)
 {
 	if(!DebugUtilities::IsRomMemory(addressInfo.Type)) {
-		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteCount == 0;
+		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteStamp == 0;
 	}
 	return false;
 }
 
-uint64_t MemoryAccessCounter::GetReadCount(AddressInfo& addressInfo)
-{
-	return _counters[(int)addressInfo.Type][addressInfo.Address].ReadCount;
-}
-
-bool MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint64_t masterClock)
+ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint64_t masterClock)
 {
 	if(addressInfo.Address < 0) {
-		return false;
+		return ReadResult::Normal;
 	}
 
 	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	counts.ReadCount++;
-	counts.ReadStamp = masterClock;
-	if(counts.WriteCount == 0 && IsAddressUninitialized(addressInfo)) {
-		//Mark address as read before being written to (if trying to read/execute)
-		counts.UninitRead = true;
-		return true;
+	if(counts.WriteStamp == 0 && IsAddressUninitialized(addressInfo)) {
+		ReadResult result = counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead;
+		counts.ReadStamp = masterClock;
+		return result;
 	}
-	return false;
+
+	counts.ReadStamp = masterClock;
+	return ReadResult::Normal;
 }
 
 void MemoryAccessCounter::ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t masterClock)
@@ -61,9 +56,7 @@ void MemoryAccessCounter::ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t 
 		return;
 	}
 
-	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	counts.WriteCount++;
-	counts.WriteStamp = masterClock;
+	_counters[(int)addressInfo.Type][addressInfo.Address].WriteStamp = masterClock;
 }
 
 void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock)
@@ -72,9 +65,7 @@ void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t m
 		return;
 	}
 
-	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	counts.ExecCount++;
-	counts.ExecStamp = masterClock;
+	_counters[(int)addressInfo.Type][addressInfo.Address].ExecStamp = masterClock;
 }
 
 void MemoryAccessCounter::ResetCounts()

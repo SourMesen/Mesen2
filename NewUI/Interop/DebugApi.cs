@@ -448,15 +448,8 @@ namespace Mesen.Interop
 	[StructLayout(LayoutKind.Sequential)]
 	public struct AddressCounters
 	{
-		public UInt32 Address;
-		public UInt32 ReadCount;
 		public UInt64 ReadStamp;
-
-		public byte UninitRead;
-		public UInt32 WriteCount;
 		public UInt64 WriteStamp;
-
-		public UInt32 ExecCount;
 		public UInt64 ExecStamp;
 	}
 

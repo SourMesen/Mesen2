@@ -54,7 +54,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
 
-	if(_gameboy->GetState().MemoryManager.ApuCycleCount == 0) {
+	if(_gameboy->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
@@ -156,17 +156,16 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
-			if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock())) {
+			ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock());
+			if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
 				//Memory access was a read on an uninitialized memory address
-				if(_enableBreakOnUninitRead) {
-					if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
-						//Only warn the first time
-						_debugger->Log("[GB] Uninitialized memory read: $" + HexUtilities::ToHex(addr));
-					}
-					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-						breakSource = BreakSource::BreakOnUninitMemoryRead;
-						_step->StepCount = 0;
-					}
+				if(result == ReadResult::FirstUninitRead) {
+					//Only warn the first time
+					_debugger->Log("[GB] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
+				}
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+					breakSource = BreakSource::BreakOnUninitMemoryRead;
+					_step->StepCount = 0;
 				}
 			}
 		}

@@ -14,16 +14,16 @@ class Gameboy;
 
 struct AddressCounters
 {
-	uint32_t Address;
-	uint32_t ReadCount;
 	uint64_t ReadStamp;
-
-	bool UninitRead;
-	uint32_t WriteCount;
 	uint64_t WriteStamp;
-
-	uint32_t ExecCount;
 	uint64_t ExecStamp;
+};
+
+enum class ReadResult
+{
+	Normal,
+	FirstUninitRead,
+	UninitRead
 };
 
 class MemoryAccessCounter
@@ -38,9 +38,7 @@ private:
 public:
 	MemoryAccessCounter(Debugger *debugger);
 
-	uint64_t GetReadCount(AddressInfo& addressInfo);
-
-	bool ProcessMemoryRead(AddressInfo& addressInfo, uint64_t masterClock);
+	ReadResult ProcessMemoryRead(AddressInfo& addressInfo, uint64_t masterClock);
 	void ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t masterClock);
 	void ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock);
 

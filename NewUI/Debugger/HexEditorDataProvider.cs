@@ -130,9 +130,9 @@ namespace Mesen.Debugger
 			double framesSinceWrite = (double)(_timing.MasterClock - _counters[index].WriteStamp) / cyclesPerFrame;
 			double framesSinceRead = (double)(_timing.MasterClock - _counters[index].ReadStamp) / cyclesPerFrame;
 
-			bool isRead = _counters[index].ReadCount > 0;
-			bool isWritten = _counters[index].WriteCount > 0;
-			bool isExecuted = _counters[index].ExecCount > 0;
+			bool isRead = _counters[index].ReadStamp > 0;
+			bool isWritten = _counters[index].WriteStamp > 0;
+			bool isExecuted = _counters[index].ExecStamp > 0;
 			bool isUnused = !isRead && !isWritten && !isExecuted;
 
 			byte alpha = 0;

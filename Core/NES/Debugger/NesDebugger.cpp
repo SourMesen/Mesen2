@@ -54,7 +54,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_step.reset(new StepRequest());
 	_assembler.reset(new NesAssembler(_debugger->GetLabelManager()));
 
-	if(_cpu->GetState().PC == 0) {
+	if(_console->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
@@ -157,17 +157,16 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 
-		if(_memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount())) {
+		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount());
+		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
 			//Memory access was a read on an uninitialized memory address
-			if(_enableBreakOnUninitRead) {
-				if(_memoryAccessCounter->GetReadCount(addressInfo) == 1) {
-					//Only warn the first time
-					_debugger->Log("[CPU] Uninitialized memory read: $" + HexUtilities::ToHex24(addr));
-				}
-				if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-					breakSource = BreakSource::BreakOnUninitMemoryRead;
-					_step->StepCount = 0;
-				}
+			if(result == ReadResult::FirstUninitRead) {
+				//Only warn the first time
+				_debugger->Log("[CPU] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
+			}
+			if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+				breakSource = BreakSource::BreakOnUninitMemoryRead;
+				_step->StepCount = 0;
 			}
 		}
 	}
