@@ -296,7 +296,7 @@ extern "C" {
 
 			if(enableDebugger) {
 				//turn on debugger to profile the debugger's code too
-				_emu->GetDebugger();
+				_emu->GetDebugger(true);
 			}
 				
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
