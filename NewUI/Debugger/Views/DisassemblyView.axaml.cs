@@ -111,9 +111,9 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						CodeLabel? label = ActionLocation.Label ?? (ActionLocation.AbsAddress.HasValue ? LabelManager.GetLabel(ActionLocation.AbsAddress.Value) : null);
 						if(label != null) {
-							LabelEditWindow.EditLabel(this, label);
+							LabelEditWindow.EditLabel(Model.DataProvider.CpuType, this, label);
 						} else if(ActionLocation.AbsAddress != null) {
-							LabelEditWindow.EditLabel(this, new CodeLabel(ActionLocation.AbsAddress.Value));
+							LabelEditWindow.EditLabel(Model.DataProvider.CpuType, this, new CodeLabel(ActionLocation.AbsAddress.Value));
 						}
 					}
 				},

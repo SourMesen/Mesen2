@@ -51,7 +51,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Add,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Add),
-					OnClick = () => LabelEditWindow.EditLabel(parent, new CodeLabel())
+					OnClick = () => LabelEditWindow.EditLabel(CpuType, parent, new CodeLabel())
 				},
 
 				new ContextMenuAction() {
@@ -60,7 +60,7 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => grid.SelectedItem is LabelViewModel,
 					OnClick = () => {
 						if(grid.SelectedItem is LabelViewModel vm) {
-							LabelEditWindow.EditLabel(parent, vm.Label);
+							LabelEditWindow.EditLabel(CpuType, parent, vm.Label);
 						}
 					}
 				},

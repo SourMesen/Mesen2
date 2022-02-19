@@ -33,8 +33,8 @@ namespace Mesen.Debugger.Views
 		private void OnGridDoubleClick(object sender, TappedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
-			if(grid.SelectedItem is LabelViewModel label) {
-				LabelEditWindow.EditLabel(this, label.Label);
+			if(DataContext is LabelListViewModel listModel && grid.SelectedItem is LabelViewModel label) {
+				LabelEditWindow.EditLabel(listModel.CpuType, this, label.Label);
 			}
 		}
 	}

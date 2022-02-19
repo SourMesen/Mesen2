@@ -293,7 +293,7 @@ namespace Mesen.Debugger.Windows
 						};
 					}
 
-					LabelEditWindow.EditLabel(this, label);
+					LabelEditWindow.EditLabel(label.MemoryType.ToCpuType(), this, label);
 				}
 			};
 		}

@@ -120,7 +120,7 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null,
 					OnClick = () => {
 						if(grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null) {
-							LabelEditWindow.EditLabel(parent, new CodeLabel() {
+							LabelEditWindow.EditLabel(CpuType, parent, new CodeLabel() {
 								Address = (uint)entry.EntryPointAddr.Value.Address,
 								MemoryType = entry.EntryPointAddr.Value.Type
 							});

@@ -19,12 +19,14 @@ namespace Mesen.Debugger.ViewModels
 
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
+		
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
+		public CpuType CpuType { get; }
 
 		[Obsolete("For designer only")]
-		public LabelEditViewModel() : this(new CodeLabel()) { }
+		public LabelEditViewModel() : this(CpuType.Snes, new CodeLabel()) { }
 
-		public LabelEditViewModel(CodeLabel label, CodeLabel? originalLabel = null)
+		public LabelEditViewModel(CpuType cpuType, CodeLabel label, CodeLabel? originalLabel = null)
 		{
 			Label = new ReactiveCodeLabel(label);
 
@@ -32,7 +34,8 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			CpuType = cpuType;
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.ToCpuType() == cpuType && t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 
 			AddDisposable(this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;

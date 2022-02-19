@@ -35,7 +35,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.ToCpuType() == bp.CpuType && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {
 				Breakpoint.MemoryType = (MemoryType)AvailableMemoryTypes[0];
 			}

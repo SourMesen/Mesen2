@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.ViewModels;
+using Mesen.Interop;
 using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
@@ -23,10 +24,10 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public static async void EditLabel(Control parent, CodeLabel label)
+		public static async void EditLabel(CpuType cpuType, Control parent, CodeLabel label)
 		{
 			CodeLabel copy = label.Clone();
-			LabelEditViewModel model = new LabelEditViewModel(copy, label);
+			LabelEditViewModel model = new LabelEditViewModel(cpuType, copy, label);
 			LabelEditWindow wnd = new LabelEditWindow() { DataContext = model };
 
 			bool result = await wnd.ShowCenteredDialog<bool>(parent);
