@@ -5,11 +5,6 @@
 
 bool Breakpoint::Matches(MemoryOperationInfo& operation, AddressInfo &info)
 {
-	if(DebugUtilities::IsPpuMemory(_memoryType) != DebugUtilities::IsPpuMemory(info.Type)) {
-		//Don't break on a PPU breakpoint if the operation is for a CPU, or vice versa
-		return false;
-	}
-
 	if(operation.MemType == _memoryType && DebugUtilities::IsRelativeMemory(_memoryType)) {
 		return (int32_t)operation.Address >= _startAddr && (int32_t)operation.Address <= _endAddr;
 	} else if(_memoryType == info.Type) {

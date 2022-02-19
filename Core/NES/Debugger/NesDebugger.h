@@ -20,8 +20,10 @@ class NesPpuTools;
 
 class Emulator;
 class NesCpu;
+class DummyNesCpu;
 class BaseNesPpu;
 class BaseMapper;
+class NesMemoryManager;
 
 enum class MemoryOperationType;
 
@@ -37,6 +39,7 @@ class NesDebugger final : public IDebugger
 	NesCpu* _cpu;
 	BaseNesPpu* _ppu;
 	BaseMapper* _mapper;
+	NesMemoryManager* _memoryManager;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<BaseEventManager> _eventManager;
@@ -51,6 +54,8 @@ class NesDebugger final : public IDebugger
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 
+	unique_ptr<DummyNesCpu> _dummyCpu;
+
 	bool IsRegister(MemoryOperationInfo& op);
 
 public:
@@ -58,6 +63,7 @@ public:
 
 	void Reset() override;
 
+	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;

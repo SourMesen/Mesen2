@@ -44,6 +44,7 @@ struct CpuInfo
 {
 	unique_ptr<IDebugger> Debugger;
 	unique_ptr<ExpressionEvaluator> Evaluator;
+	bool IgnoreBreakpoints;
 };
 
 class Debugger
@@ -87,6 +88,7 @@ public:
 	~Debugger();
 	void Release();
 
+	template<CpuType type> void ProcessInstruction();
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType);

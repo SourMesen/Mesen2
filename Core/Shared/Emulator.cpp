@@ -1025,6 +1025,14 @@ void Emulator::BreakIfDebugging(CpuType sourceCpu, BreakSource source)
 	}
 }
 
+template void Emulator::ProcessInstruction<CpuType::Snes>();
+template void Emulator::ProcessInstruction<CpuType::Sa1>();
+template void Emulator::ProcessInstruction<CpuType::Spc>();
+template void Emulator::ProcessInstruction<CpuType::Gsu>();
+template void Emulator::ProcessInstruction<CpuType::NecDsp>();
+template void Emulator::ProcessInstruction<CpuType::Cx4>();
+template void Emulator::ProcessInstruction<CpuType::Gameboy>();
+
 template void Emulator::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);

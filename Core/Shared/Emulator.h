@@ -232,6 +232,13 @@ public:
 	TimingInfo GetTimingInfo();
 	uint32_t GetFrameCount();
 	double GetFps();
+	
+	template<CpuType type> __forceinline void ProcessInstruction()
+	{
+		if(_debugger) {
+			_debugger->ProcessInstruction<type>();
+		}
+	}
 
 	template<CpuType type> __forceinline void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
 	{

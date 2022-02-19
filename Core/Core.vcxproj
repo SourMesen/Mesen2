@@ -31,6 +31,7 @@
     <ClInclude Include="Gameboy\GbsHeader.h" />
     <ClInclude Include="Gameboy\Input\GbController.h" />
     <ClInclude Include="NES\BaseNesPpu.h" />
+    <ClInclude Include="NES\Debugger\DummyNesCpu.h" />
     <ClInclude Include="NES\Debugger\NesPpuTools.h" />
     <ClInclude Include="NES\Debugger\NesAssembler.h" />
     <ClInclude Include="NES\Debugger\NesEventManager.h" />
@@ -413,6 +414,7 @@
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
+    <ClCompile Include="SNES\Debugger\DummySnesCpu.cpp" />
     <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
     <ClCompile Include="SNES\Debugger\SnesAssembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />
@@ -683,8 +685,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ShowIncludes>
       </ShowIncludes>
-      <BufferSecurityCheck>
-      </BufferSecurityCheck>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
       <ControlFlowGuard>false</ControlFlowGuard>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
@@ -716,6 +717,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ShowIncludes>
       </ShowIncludes>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -744,6 +747,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ShowIncludes>
       </ShowIncludes>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

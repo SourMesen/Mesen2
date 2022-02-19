@@ -7,6 +7,7 @@
 #include "SNES/Spc.h"
 #include "SNES/SnesPpu.h"
 #include "SNES/MemoryMappings.h"
+#include "SNES/Debugger/DummySnesCpu.h"
 #include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"
@@ -71,6 +72,8 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	_step.reset(new StepRequest());
 	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));
 
+	_dummyCpu.reset(new DummySnesCpu(_console, _cpuType));
+
 	if(_console->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
@@ -92,6 +95,92 @@ void SnesDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
+void SnesDebugger::ProcessInstruction()
+{
+	SnesCpuState& state = GetCpuState();
+	uint32_t addr = (state.K << 16) | state.PC;
+	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
+	uint8_t value = _memoryManager->Peek(addr);
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SnesMemory);
+	BreakSource breakSource = BreakSource::Unspecified;
+
+	if(addressInfo.Address >= 0) {
+		uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
+		if(addressInfo.Type == MemoryType::SnesPrgRom) {
+			uint8_t flags = CdlFlags::Code | cpuFlags;
+			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+				flags |= CdlFlags::SubEntryPoint;
+			}
+			_cdl->SetFlags(addressInfo.Address, flags);
+		}
+		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(_debuggerEnabledFlag)) {
+			_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
+		}
+	}
+
+	if(_traceLogger->IsEnabled()) {
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
+		_traceLogger->Log(state, disInfo, operation);
+	}
+
+	if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+		//JSR, JSL
+		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
+		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
+		AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, addr, retAddress, returnPc, StackFrameFlags::None);
+	} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
+		//RTS, RTL, RTI
+		_callstackManager->Pop(addressInfo, addr);
+	}
+
+	if(_step->BreakAddress == (int32_t)addr && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
+		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+		_step->StepCount = 0;
+		breakSource = BreakSource::CpuStep;
+	}
+
+	_prevOpCode = value;
+	_prevProgramCounter = addr;
+
+	_step->ProcessCpuExec(&breakSource);
+
+	if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled)) {
+		if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
+			//Break on BRK/STP/WDM/COP
+			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+				breakSource = BreakSource::BreakOnBrk;
+				_step->StepCount = 0;
+			} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
+				breakSource = BreakSource::BreakOnCop;
+				_step->StepCount = 0;
+			} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
+				breakSource = BreakSource::BreakOnWdm;
+				_step->StepCount = 0;
+			} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+				breakSource = BreakSource::BreakOnStp;
+				_step->StepCount = 0;
+			}
+		}
+	}
+	
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+		SnesCpuState dummyState = state;
+		_dummyCpu->SetDummyState(dummyState);
+		_dummyCpu->Exec();
+		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
+			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
+			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
+				AddressInfo absAddr = _memoryMappings->GetAbsoluteAddress(memOp.Address);
+				_debugger->ProcessBreakConditions(_cpuType, false, _breakpointManager.get(), memOp, absAddr, breakSource);
+			}
+		}
+	}
+
+	_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+}
+
 void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
@@ -104,67 +193,6 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 	}
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		if(addressInfo.Address >= 0) {
-			uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
-			if(addressInfo.Type == MemoryType::SnesPrgRom) {
-				uint8_t flags = CdlFlags::Code | cpuFlags;
-				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
-					flags |= CdlFlags::SubEntryPoint;
-				}
-				_cdl->SetFlags(addressInfo.Address, flags);
-			}
-			if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(_debuggerEnabledFlag)) {
-				_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
-			}
-		}
-
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-			_traceLogger->Log(state, disInfo, operation);
-		}
-
-		uint32_t pc = (state.K << 16) | state.PC;
-		if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
-			//JSR, JSL
-			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
-			uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
-			AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
-			AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
-			_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-		} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
-			//RTS, RTL, RTI
-			_callstackManager->Pop(addressInfo, pc);
-		}
-
-		if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
-			//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-			_step->StepCount = 0;
-			breakSource = BreakSource::CpuStep;
-		}
-
-		_prevOpCode = value;
-		_prevProgramCounter = pc;
-
-		_step->ProcessCpuExec(&breakSource);
-
-		if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled)) {
-			if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
-				//Break on BRK/STP/WDM/COP
-				if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
-					breakSource = BreakSource::BreakOnBrk;
-					_step->StepCount = 0;
-				} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
-					breakSource = BreakSource::BreakOnCop;
-					_step->StepCount = 0;
-				} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
-					breakSource = BreakSource::BreakOnWdm;
-					_step->StepCount = 0;
-				} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
-					breakSource = BreakSource::BreakOnStp;
-					_step->StepCount = 0;
-				}
-			}
-		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
@@ -174,6 +202,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 			_traceLogger->LogNonExec(operation);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 	} else {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
 			_cdl->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
@@ -194,9 +223,8 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 				_step->StepCount = 0;
 			}
 		}
+		_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 	}
-
-	_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
 }
 
 void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)

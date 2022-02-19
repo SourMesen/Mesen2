@@ -13,7 +13,7 @@ enum class MemoryOperationType;
 class BreakpointManager
 {
 private:
-	static constexpr int BreakpointTypeCount = 3; //Read, Write, Exec
+	static constexpr int BreakpointTypeCount = (int)MemoryOperationType::PpuRenderingRead + 1;
 
 	Debugger *_debugger;
 	CpuType _cpuType;
@@ -33,12 +33,20 @@ public:
 	BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
+	
+	__forceinline bool HasBreakpoints() { return _hasBreakpoint; }
+	__forceinline bool HasBreakpointForType(MemoryOperationType opType);
 	__forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
 };
 
+__forceinline bool BreakpointManager::HasBreakpointForType(MemoryOperationType opType)
+{
+	return _hasBreakpointType[(int)opType];
+}
+
 __forceinline int BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
 {
-	if(!_hasBreakpoint) {
+	if(!_hasBreakpointType[(int)operationInfo.Type]) {
 		return -1;
 	}
 	return InternalCheckBreakpoint(operationInfo, address);

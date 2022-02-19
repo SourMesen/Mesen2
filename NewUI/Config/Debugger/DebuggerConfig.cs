@@ -27,6 +27,9 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnPowerCycleReset { get; set; } = true;
 
 		[Reactive] public bool AutoResetCdl { get; set; } = true;
+		
+		[Reactive] public bool UsePredictiveBreakpoints { get; set; } = true;
+		[Reactive] public bool SingleBreakpointPerInstruction { get; set; } = true;
 
 		[Reactive] public bool CopyAddresses { get; set; } = true;
 		[Reactive] public bool CopyByteCode { get; set; } = true;
@@ -88,6 +91,8 @@ namespace Mesen.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseLowerCaseDisassembly, UseLowerCaseDisassembly);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.AutoResetCdl, AutoResetCdl);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.UsePredictiveBreakpoints, UsePredictiveBreakpoints);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.SingleBreakpointPerInstruction, SingleBreakpointPerInstruction || UsePredictiveBreakpoints);
 		}
 	}
 

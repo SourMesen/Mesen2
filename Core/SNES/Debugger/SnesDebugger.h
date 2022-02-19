@@ -25,6 +25,7 @@ class SnesPpu;
 class SnesAssembler;
 class SnesPpuTools;
 class PpuTools;
+class DummySnesCpu;
 enum class MemoryOperationType;
 
 class SnesDebugger final : public IDebugger
@@ -52,6 +53,7 @@ class SnesDebugger final : public IDebugger
 	unique_ptr<StepRequest> _step;
 	unique_ptr<SnesCpuTraceLogger> _traceLogger;
 	unique_ptr<SnesPpuTools> _ppuTools;
+	unique_ptr<DummySnesCpu> _dummyCpu;
 
 	ITraceLogger* _spcTraceLogger = nullptr;
 	ITraceLogger* _dspTraceLogger = nullptr;
@@ -71,6 +73,7 @@ public:
 	void Init() override;
 	void Reset() override;
 
+	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;

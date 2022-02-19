@@ -31,8 +31,8 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];
 		for(int i = 0; i < BreakpointManager::BreakpointTypeCount; i++) {
-			BreakpointType bpType = (BreakpointType)i;
-			if((bp.IsMarked() || bp.IsEnabled()) && bp.HasBreakpointType(bpType)) {
+			MemoryOperationType opType = (MemoryOperationType)i;
+			if((bp.IsMarked() || bp.IsEnabled()) && bp.HasBreakpointType(GetBreakpointType(opType))) {
 				CpuType cpuType = bp.GetCpuType();
 				if(_cpuType != cpuType) {
 					continue;
@@ -80,18 +80,21 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 
 int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
 {
-	BreakpointType type = GetBreakpointType(operationInfo.Type);
-
-	if(!_hasBreakpointType[(int)type]) {
-		return -1;
-	}
-
-	BaseState& state =_debugger->GetCpuStateRef(_cpuType);
+	BaseState* state = nullptr;
 	EvalResultType resultType;
-	vector<Breakpoint> &breakpoints = _breakpoints[(int)type];
-	for(size_t i = 0; i < breakpoints.size(); i++) {
+	vector<Breakpoint> &breakpoints = _breakpoints[(int)operationInfo.Type];
+	for(size_t i = 0, len = breakpoints.size(); i < len; i++) {
 		if(breakpoints[i].Matches(operationInfo, address)) {
-			if(!breakpoints[i].HasCondition() || _bpExpEval->Evaluate(_rpnList[(int)type][i], state, resultType, operationInfo)) {
+			bool isMatch = !breakpoints[i].HasCondition();
+			if(!isMatch) {
+				if(!state) {
+					//Re-use the same state for all breakpoints (and only get it if a conditional bp exists)
+					state = &_debugger->GetCpuStateRef(_cpuType);
+				}
+				isMatch = _bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], *state, resultType, operationInfo);
+			}
+
+			if(isMatch) {
 				if(breakpoints[i].IsMarked()) {
 					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
 				}

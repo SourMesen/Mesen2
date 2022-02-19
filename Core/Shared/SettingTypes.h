@@ -748,5 +748,8 @@ enum class DebuggerFlags : uint64_t
 	NesBreakOnPpu2006ScrollGlitch = (1LLU << 37),
 
 	ScriptAllowIoOsAccess = (1LLU << 40),
-	ScriptAllowNetworkAccess = (1LLU << 41)
+	ScriptAllowNetworkAccess = (1LLU << 41),
+	
+	UsePredictiveBreakpoints = (1LLU << 42),
+	SingleBreakpointPerInstruction = (1LLU << 43),
 };

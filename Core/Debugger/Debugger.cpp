@@ -80,6 +80,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 		}
 
 		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, type));
+		_debuggers[(int)type].IgnoreBreakpoints = false;
 	}
 
 	for(CpuType type : _cpuTypes) {
@@ -136,6 +137,23 @@ template<CpuType type, typename DebuggerType>
 DebuggerType* Debugger::GetDebugger()
 {
 	return (DebuggerType*)_debuggers[(int)type].Debugger.get();
+}
+
+template<CpuType type>
+void Debugger::ProcessInstruction()
+{
+	_debuggers[(int)type].IgnoreBreakpoints = false;
+
+	switch(type) {
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
+		/*case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessInstruction(); break;
+		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessInstruction(); break;
+		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
+		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessInstruction(); break;
+		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessInstruction(); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessInstruction(); break;*/
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessInstruction(); break;
+	}
 }
 
 template<CpuType type>
@@ -221,6 +239,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
 		_emu->GetSoundMixer()->StopAudio();
 
+		if(_settings->CheckDebuggerFlag(DebuggerFlags::SingleBreakpointPerInstruction)) {
+			_debuggers[(int)sourceCpu].IgnoreBreakpoints = true;
+		}
+
 		//Only trigger code break event if the pause was caused by user action
 		BreakEvent evt = {};
 		evt.SourceCpu = sourceCpu;
@@ -247,6 +269,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
 {
+	if(_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
+		return;
+	}
+
 	if(needBreak || _breakRequestCount || _waitForBreakResume) {
 		SleepUntilResume(sourceCpu, source);
 	} else {
@@ -755,6 +781,15 @@ IAssembler* Debugger::GetAssembler(CpuType cpuType)
 	}
 	return nullptr;
 }
+
+template void Debugger::ProcessInstruction<CpuType::Snes>();
+template void Debugger::ProcessInstruction<CpuType::Sa1>();
+template void Debugger::ProcessInstruction<CpuType::Spc>();
+template void Debugger::ProcessInstruction<CpuType::Gsu>();
+template void Debugger::ProcessInstruction<CpuType::NecDsp>();
+template void Debugger::ProcessInstruction<CpuType::Cx4>();
+template void Debugger::ProcessInstruction<CpuType::Gameboy>();
+template void Debugger::ProcessInstruction<CpuType::Nes>();
 
 template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);

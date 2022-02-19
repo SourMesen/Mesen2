@@ -13,12 +13,12 @@
 enum class ConsoleRegion;
 class NesConsole;
 class NesMemoryManager;
-class DummyCpu;
+class DummyNesCpu;
 
 class NesCpu : public ISerializable
 {
 #ifndef DUMMYCPU
-	friend DummyCpu;
+	friend DummyNesCpu;
 #endif
 
 public:
@@ -64,15 +64,8 @@ private:
 	uint64_t _lastCrashWarning = 0;
 
 #ifdef DUMMYCPU
-	uint32_t _writeCounter = 0;
-	uint16_t _writeAddresses[10];
-	uint8_t _writeValue[10];
-	bool _isDummyWrite[10];
-
-	uint32_t _readCounter = 0;
-	uint16_t _readAddresses[10];
-	uint8_t _readValue[10];
-	bool _isDummyRead[10];
+	uint32_t _memOpCounter = 0;
+	MemoryOperationInfo _memOperations[10] = {};
 #endif
 
 	__forceinline void StartCpuCycle(bool forRead);
@@ -821,9 +814,8 @@ public:
 #undef NesCpu
 	void SetDummyState(NesCpu *c)
 	{
-#define NesCpu DummyCpu
-		_writeCounter = 0;
-		_readCounter = 0;
+#define NesCpu DummyNesCpu
+		_memOpCounter = 0;
 
 		_state = c->_state;
 
@@ -840,28 +832,25 @@ public:
 		_runIrq = c->_runIrq;
 	}
 
-	uint32_t GetWriteCount()
+	uint32_t GetOperationCount()
 	{
-		return _writeCounter;
+		return _memOpCounter;
 	}
 
-	uint32_t GetReadCount()
+	void LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperationType type)
 	{
-		return _readCounter;
+		_memOperations[_memOpCounter] = {
+			addr,
+			(int32_t)value,
+			type,
+			MemoryType::NesMemory
+		};
+		_memOpCounter++;
 	}
 
-	void GetWriteAddrValue(uint32_t index, uint16_t &addr, uint8_t &value, bool &isDummyWrite)
+	MemoryOperationInfo GetOperationInfo(uint32_t index)
 	{
-		addr = _writeAddresses[index];
-		value = _writeValue[index];
-		isDummyWrite = _isDummyWrite[index];
-	}
-
-	void GetReadAddr(uint32_t index, uint16_t &addr, uint8_t &value, bool &isDummyRead)
-	{
-		addr = _readAddresses[index];
-		value = _readValue[index];
-		isDummyRead = _isDummyRead[index];
+		return _memOperations[index];
 	}
 #endif
 };

@@ -162,6 +162,10 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 
 void NesCpu::Exec()
 {
+#ifndef DUMMYCPU
+	_emu->ProcessInstruction<CpuType::Nes>();
+#endif
+
 	uint8_t opCode = GetOPCode();
 	_instAddrMode = _addrMode[opCode];
 	_operand = FetchOperand();
@@ -228,12 +232,7 @@ void NesCpu::BRK() {
 void NesCpu::MemoryWrite(uint16_t addr, uint8_t value, MemoryOperationType operationType)
 {
 #ifdef DUMMYCPU
-	if(operationType == MemoryOperationType::Write || operationType == MemoryOperationType::DummyWrite) {
-		_writeAddresses[_writeCounter] = addr;
-		_isDummyWrite[_writeCounter] = operationType == MemoryOperationType::DummyWrite;
-		_writeValue[_writeCounter] = value;
-		_writeCounter++;
-	}
+	LogMemoryOperation(addr, value, operationType);
 #else
 	_cpuWrite = true;
 	StartCpuCycle(false);
@@ -243,15 +242,11 @@ void NesCpu::MemoryWrite(uint16_t addr, uint8_t value, MemoryOperationType opera
 #endif
 }
 
-uint8_t NesCpu::MemoryRead(uint16_t addr, MemoryOperationType operationType) {
+uint8_t NesCpu::MemoryRead(uint16_t addr, MemoryOperationType operationType)
+{
 #ifdef DUMMYCPU
 	uint8_t value = _memoryManager->DebugRead(addr);
-	if(operationType == MemoryOperationType::Read || operationType == MemoryOperationType::DummyRead) {
-		_readAddresses[_readCounter] = addr;
-		_readValue[_readCounter] = value;
-		_isDummyRead[_readCounter] = operationType == MemoryOperationType::DummyRead;
-		_readCounter++;
-	}
+	LogMemoryOperation(addr, value, operationType);
 	return value;
 #else 
 	ProcessPendingDma(addr);

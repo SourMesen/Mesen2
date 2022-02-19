@@ -144,6 +144,21 @@
 				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
+			<CheckBox
+				IsChecked="{CompiledBinding Config.UsePredictiveBreakpoints}"
+				Content="{l:Translate chkUsePredictiveBreakpoints}"
+			/>
+			<CheckBox
+				IsChecked="{CompiledBinding Config.SingleBreakpointPerInstruction}"
+				IsVisible="{CompiledBinding !Config.UsePredictiveBreakpoints}"
+				Content="{l:Translate chkSingleBreakpointPerInstruction}"
+			/>
+			<CheckBox
+				IsChecked="True"
+				IsEnabled="False"
+				IsVisible="{CompiledBinding Config.UsePredictiveBreakpoints}"
+				Content="{l:Translate chkSingleBreakpointPerInstruction}"
+			/>
 		</c:OptionSection>
 	</StackPanel>
 </UserControl>

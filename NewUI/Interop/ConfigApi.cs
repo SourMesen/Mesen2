@@ -91,7 +91,10 @@ namespace Mesen.Interop
 		NesBreakOnPpu2006ScrollGlitch = (1LU << 37),
 		
 		ScriptAllowIoOsAccess = (1LU << 40),
-		ScriptAllowNetworkAccess = (1LU << 41)
+		ScriptAllowNetworkAccess = (1LU << 41),
+
+		UsePredictiveBreakpoints = (1LU << 42),
+		SingleBreakpointPerInstruction = (1LU << 43),
 	}
 
 	public struct InteropShortcutKeyInfo

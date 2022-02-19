@@ -852,6 +852,8 @@
 
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
+			<Control ID="chkUsePredictiveBreakpoints">Use predictive breakpoints</Control>
+			<Control ID="chkSingleBreakpointPerInstruction">Break once per instruction</Control>
 		</Form>
 
 		<Form ID="MemoryToolsDisplayOptionsView">
@@ -1808,6 +1810,8 @@ x == [$150] || y == [10]
 			<Value ID="DmaRead">DMA Read</Value>
 			<Value ID="DmaWrite">DMA Write</Value>
 			<Value ID="DummyRead">Dummy Read</Value>
+			<Value ID="DummyWrite">Dummy Write</Value>
+			<Value ID="PpuRenderingRead">PPU Rendering Read</Value>
 		</Enum>
 		<Enum ID="HighlightFadeSpeed">
 			<Value ID="NoFade">Do not fade</Value>

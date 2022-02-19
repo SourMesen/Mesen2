@@ -30,7 +30,14 @@ void SnesCpu::Exec()
 	_immediateMode = false;
 
 	switch(_state.StopState) {
-		case SnesCpuStopState::Running: RunOp(); break;
+		case SnesCpuStopState::Running:
+#ifndef DUMMYCPU
+			_emu->ProcessInstruction<CpuType::Snes>();
+#endif
+
+			RunOp();
+			break;
+
 		case SnesCpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
 		#ifndef DUMMYCPU

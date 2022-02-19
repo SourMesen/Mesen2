@@ -351,25 +351,19 @@ public:
 #ifdef DUMMYCPU
 private:
 	MemoryMappings* _memoryMappings = nullptr;
-	uint32_t _writeCounter = 0;
-	uint32_t _writeAddresses[10] = {};
-	uint8_t _writeValue[10] = {};
 
-	uint32_t _readCounter = 0;
-	uint32_t _readAddresses[10] = {};
-	uint8_t _readValue[10] = {};
+	uint32_t _memOpCounter = 0;
+	MemoryOperationInfo _memOperations[10] = {};
 
-	void LogRead(uint32_t addr, uint8_t value);
-	void LogWrite(uint32_t addr, uint8_t value);
+	void LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperationType type);
 
 public:
 	void SetDummyState(SnesCpuState &state);
 	int32_t GetLastOperand();
+	bool CheckAddressAccess(uint32_t addr);
 
-	uint32_t GetWriteCount();
-	uint32_t GetReadCount();
-	void GetWriteInfo(uint32_t index, uint32_t &addr, uint8_t &value);
-	void GetReadInfo(uint32_t index, uint32_t &addr, uint8_t &value);
+	uint32_t GetOperationCount();
+	MemoryOperationInfo GetOperationInfo(uint32_t index);
 #endif
 };
 
