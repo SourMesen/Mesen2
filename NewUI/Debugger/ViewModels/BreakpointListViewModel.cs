@@ -34,7 +34,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateBreakpoints()
 		{
-			Breakpoints = BreakpointManager.Breakpoints.Select(bp => new BreakpointViewModel(bp)).ToList();
+			Breakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
 		}
 
 		public void RefreshBreakpointList()
