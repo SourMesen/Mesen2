@@ -149,12 +149,6 @@ namespace Mesen.Debugger
 					EndAddress = (UInt32)info.Address
 				};
 
-				if(!info.Type.SupportsCdl() || info.Type.IsRelativeMemory()) {
-					//Turn on break on read/write for non-ROM types only
-					breakpoint.BreakOnRead = true;
-					breakpoint.BreakOnWrite = true;
-				}
-
 				breakpoint.MemoryType = info.Type;
 				BreakpointManager.AddBreakpoint(breakpoint);
 			}
