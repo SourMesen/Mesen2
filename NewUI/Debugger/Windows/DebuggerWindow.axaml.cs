@@ -75,7 +75,9 @@ namespace Mesen.Debugger.Windows
 			if(_scrollToAddress.HasValue) {
 				ScrollToAddress((uint)_scrollToAddress);
 			} else if(_model.Config.BreakOnOpen) {
-				EmuApi.Pause();
+				if(!EmuApi.IsPaused()) {
+					EmuApi.Pause();
+				}
 			}
 		}
 

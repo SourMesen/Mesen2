@@ -57,13 +57,11 @@ void SpcDebugger::ProcessInstruction()
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SpcMemory);
 	BreakSource breakSource = BreakSource::Unspecified;
 
-	if(_traceLogger->IsEnabled() || _debuggerEnabled) {
-		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
+	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-			_traceLogger->Log(state, disInfo, operation);
-		}
+	if(_traceLogger->IsEnabled()) {
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
+		_traceLogger->Log(state, disInfo, operation);
 	}
 
 	if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
@@ -100,8 +98,7 @@ void SpcDebugger::ProcessInstruction()
 	}
 
 	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _predictiveBreakpoints) {
-		SpcState dummyState = state;
-		_dummyCpu->SetDummyState(dummyState);
+		_dummyCpu->SetDummyState(state);
 		_dummyCpu->Step();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);

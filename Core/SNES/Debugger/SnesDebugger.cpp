@@ -177,8 +177,7 @@ void SnesDebugger::ProcessInstruction()
 	}
 	
 	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _predictiveBreakpoints) {
-		SnesCpuState dummyState = state;
-		_dummyCpu->SetDummyState(dummyState);
+		_dummyCpu->SetDummyState(state);
 		_dummyCpu->Exec();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
