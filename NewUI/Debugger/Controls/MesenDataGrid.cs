@@ -11,6 +11,8 @@ namespace Mesen.Debugger.Controls
 	{
 		Type IStyleable.StyleKey => typeof(DataGrid);
 
+		private bool _isEditing = false;
+
 		public MesenDataGrid()
 		{
 			CanUserSortColumns = true;
@@ -33,11 +35,23 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
+		protected override void OnBeginningEdit(DataGridBeginningEditEventArgs e)
+		{
+			base.OnBeginningEdit(e);
+			_isEditing = true;
+		}
+
+		protected override void OnCellEditEnded(DataGridCellEditEndedEventArgs e)
+		{
+			base.OnCellEditEnded(e);
+			_isEditing = false;
+		}
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
 
-			if(e.KeyModifiers != KeyModifiers.None) {
+			if(!_isEditing && (e.KeyModifiers == KeyModifiers.Control || e.KeyModifiers == KeyModifiers.Alt)) {
 				//Disable all alt/ctrl DataGrid shortcuts to use our own shortcuts instead
 				e.Handled = true;
 			}
