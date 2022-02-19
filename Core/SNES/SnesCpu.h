@@ -360,7 +360,6 @@ private:
 public:
 	void SetDummyState(SnesCpuState &state);
 	int32_t GetLastOperand();
-	bool CheckAddressAccess(uint32_t addr);
 
 	uint32_t GetOperationCount();
 	MemoryOperationInfo GetOperationInfo(uint32_t index);

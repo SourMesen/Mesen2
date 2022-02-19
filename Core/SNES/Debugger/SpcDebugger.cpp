@@ -3,6 +3,7 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/Debugger/SpcDebugger.h"
+#include "SNES/Debugger/DummySpc.h"
 #include "SNES/Debugger/TraceLogger/SpcTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -26,6 +27,8 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
 
+	_dummyCpu.reset(new DummySpc(_spc->GetSpcRam()));
+
 	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -39,75 +42,100 @@ void SpcDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
-void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+void SpcDebugger::ProcessConfigChange()
 {
-	if(type == MemoryOperationType::DummyRead) {
-		//Ignore all dummy reads for now
-		return;
+	_debuggerEnabled = _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
+	_predictiveBreakpoints = _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints);
+}
+
+void SpcDebugger::ProcessInstruction()
+{
+	SpcState& state = _spc->GetState();
+	uint16_t addr = state.PC;
+	uint8_t value = _spc->DebugRead(addr);
+	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SpcMemory);
+	BreakSource breakSource = BreakSource::Unspecified;
+
+	if(_traceLogger->IsEnabled() || _debuggerEnabled) {
+		_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
+
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
+			_traceLogger->Log(state, disInfo, operation);
+		}
 	}
 
+	if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
+		//JSR, BRK
+		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
+		uint16_t returnPc = _prevProgramCounter + opSize;
+		AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo ret = _spc->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(src, _prevProgramCounter, addressInfo, addr, ret, returnPc, StackFrameFlags::None);
+	} else if(_prevOpCode == 0x6F || _prevOpCode == 0x7F) {
+		//RTS, RTI
+		_callstackManager->Pop(addressInfo, addr);
+	}
+
+	if(_step->BreakAddress == (int32_t)addr && (_prevOpCode == 0x6F || _prevOpCode == 0x7F)) {
+		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+		_step->StepCount = 0;
+	}
+
+	_prevOpCode = value;
+	_prevProgramCounter = addr;
+
+	_step->ProcessCpuExec(&breakSource);
+
+	if(_debuggerEnabled) {
+		//Break on BRK/STP
+		if(value == 0x0F && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+			breakSource = BreakSource::BreakOnBrk;
+			_step->StepCount = 0;
+		} else if(value == 0xFF && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+			breakSource = BreakSource::BreakOnStp;
+			_step->StepCount = 0;
+		}
+	}
+
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _predictiveBreakpoints) {
+		SpcState dummyState = state;
+		_dummyCpu->SetDummyState(dummyState);
+		_dummyCpu->Step();
+		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
+			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
+			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
+				AddressInfo absAddr = _spc->GetAbsoluteAddress(memOp.Address);
+				_debugger->ProcessBreakConditions(CpuType::Spc, false, _breakpointManager.get(), memOp, absAddr, breakSource);
+			}
+		}
+	}
+
+	_debugger->ProcessBreakConditions(CpuType::Spc, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
+}
+
+void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
-		SpcState& spcState = _spc->GetState();
-
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
-			_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
-
-			if(_traceLogger->IsEnabled()) {
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-				_traceLogger->Log(spcState, disInfo, operation);
-			}
-		}
-
-		if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
-			//JSR, BRK
-			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
-			uint16_t returnPc = _prevProgramCounter + opSize;
-			AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
-			AddressInfo ret = _spc->GetAbsoluteAddress(returnPc);
-			_callstackManager->Push(src, _prevProgramCounter, addressInfo, spcState.PC, ret, returnPc, StackFrameFlags::None);
-		} else if(_prevOpCode == 0x6F || _prevOpCode == 0x7F) {
-			//RTS, RTI
-			_callstackManager->Pop(addressInfo, spcState.PC);
-		}
-
-		if(_step->BreakAddress == (int32_t)spcState.PC && (_prevOpCode == 0x6F || _prevOpCode == 0x7F)) {
-			//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-			_step->StepCount = 0;
-		}
-
-		_prevOpCode = value;
-		_prevProgramCounter = spcState.PC;
-
-		_step->ProcessCpuExec(&breakSource);
-
-		if(_settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
-			//Break on BRK/STP
-			if(value == 0x0F && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
-				breakSource = BreakSource::BreakOnBrk;
-				_step->StepCount = 0;
-			} else if(value == 0xFF && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
-				breakSource = BreakSource::BreakOnStp;
-				_step->StepCount = 0;
-			}
-		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
+		_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo, breakSource);
 	} else {
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
+		_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo, breakSource);
 	}
-
-	_debugger->ProcessBreakConditions(CpuType::Spc, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
 }
 
 void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)

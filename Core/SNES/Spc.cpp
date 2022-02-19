@@ -245,7 +245,7 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 #ifndef DUMMYSPC
 	_emu->ProcessMemoryRead<CpuType::Spc>(addr, value, type);
 #else 
-	LogRead(addr, value);
+	LogMemoryOperation(addr, value, type);
 #endif
 
 	return value;
@@ -256,7 +256,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 	IncCycleCount(addr);
 
 #ifdef DUMMYSPC
-	LogWrite(addr, value);
+	LogMemoryOperation(addr, value, type);
 #else
 
 	//Writes always affect the underlying RAM
@@ -368,6 +368,9 @@ void Spc::Run()
 void Spc::ProcessCycle()
 {
 	if(_opStep == SpcOpStep::ReadOpCode) {
+#ifndef DUMMYSPC
+		_emu->ProcessInstruction<CpuType::Spc>();
+#endif 
 		_opCode = GetOpCode();
 		_opStep = SpcOpStep::Addressing;
 		_opSubStep = 0;

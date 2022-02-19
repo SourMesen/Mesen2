@@ -415,6 +415,7 @@
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
     <ClCompile Include="SNES\Debugger\DummySnesCpu.cpp" />
+    <ClCompile Include="SNES\Debugger\DummySpc.cpp" />
     <ClCompile Include="SNES\Debugger\SnesPpuTools.cpp" />
     <ClCompile Include="SNES\Debugger\SnesAssembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />

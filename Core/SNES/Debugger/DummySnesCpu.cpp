@@ -35,15 +35,6 @@ void DummySnesCpu::SetDummyState(SnesCpuState& state)
 	_memOpCounter = 0;
 }
 
-bool DummySnesCpu::CheckAddressAccess(uint32_t addr)
-{
-	for(uint32_t i = 0; i < _memOpCounter; i++) {
-		if(_memOperations[i].Address == addr) {
-			return true;
-		}
-	}
-}
-
 uint32_t DummySnesCpu::GetOperationCount()
 {
 	return _memOpCounter;

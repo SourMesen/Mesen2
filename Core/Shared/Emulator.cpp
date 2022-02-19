@@ -641,20 +641,7 @@ void Emulator::Pause()
 {
 	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
-		switch(GetConsoleType()) {
-			case ConsoleType::Snes:
-				debugger->Step(CpuType::Snes, 1, StepType::Step);
-				break;
-
-			case ConsoleType::Gameboy:
-			case ConsoleType::GameboyColor:
-				debugger->Step(CpuType::Gameboy, 1, StepType::Step);
-				break;
-
-			case ConsoleType::Nes:
-				debugger->Step(CpuType::Nes, 1, StepType::Step);
-				break;
-		}
+		debugger->Step(GetCpuTypes()[0], 1, StepType::Step);
 	} else {
 		_paused = true;
 	}

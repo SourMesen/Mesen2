@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SNES/SnesConsole.h"
+#include "SNES/Spc.h"
 #include "SNES/Debugger/SpcDisUtils.h"
 #include "SNES/Debugger/DummySpc.h"
 #include "Debugger/DisassemblyInfo.h"
@@ -132,18 +133,12 @@ int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *con
 {
 	if(_needAddress[info.GetOpCode()]) {
 		Spc* spc = console->GetSpc();
-		DummySpc dummySpc(spc->GetSpcRam(), state);
+		DummySpc dummySpc(spc->GetSpcRam());
+		dummySpc.SetDummyState(state);
 		dummySpc.Step();
-		uint32_t addr;
-		uint8_t value;
-		uint32_t writeCount = dummySpc.GetWriteCount();
-		if(writeCount > 0) {
-			dummySpc.GetWriteInfo(writeCount - 1, addr, value);
-		} else {
-			uint32_t readCount = dummySpc.GetReadCount();
-			dummySpc.GetReadInfo(readCount - 1, addr, value);
-		}
-		return addr;
+
+		uint32_t count = dummySpc.GetOperationCount();
+		return dummySpc.GetOperationInfo(count - 1).Address;
 	}
 	return -1;
 }

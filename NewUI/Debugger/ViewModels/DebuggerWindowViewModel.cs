@@ -400,7 +400,7 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.Break,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Break),
 					IsEnabled = isRunning,
-					OnClick = () => EmuApi.Pause()
+					OnClick = () => Step(StepType.Step)
 				},
 			};
 
