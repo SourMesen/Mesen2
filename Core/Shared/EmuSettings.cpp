@@ -347,6 +347,10 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 			_debuggerFlags &= ~(uint64_t)flag;
 		}
 	}
+	Debugger* dbg = _emu->GetDebugger(false).GetDebugger();
+	if(dbg) {
+		dbg->ProcessConfigChange();
+	}
 }
 
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)

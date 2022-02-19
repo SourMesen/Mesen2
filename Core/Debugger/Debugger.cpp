@@ -85,7 +85,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	for(CpuType type : _cpuTypes) {
 		_debuggers[(int)type].Debugger->Init();
-		
+		_debuggers[(int)type].Debugger->ProcessConfigChange();
 	}
 
 	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
@@ -339,6 +339,15 @@ void Debugger::ProcessEvent(EventType type)
 		case EventType::StateLoaded:
 			_memoryAccessCounter->ResetCounts();
 			break;
+	}
+}
+
+void Debugger::ProcessConfigChange()
+{
+	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
+		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->ProcessConfigChange();
+		}
 	}
 }
 

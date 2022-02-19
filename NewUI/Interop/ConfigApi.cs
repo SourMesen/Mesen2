@@ -81,7 +81,7 @@ namespace Mesen.Interop
 		GsuDebuggerEnabled = (1 << 28),
 		Sa1DebuggerEnabled = (1 << 29),
 		SpcDebuggerEnabled = (1 << 30),
-		CpuDebuggerEnabled = (1LU << 31),
+		SnesDebuggerEnabled = (1LU << 31),
 
 		NesBreakOnBrk = (1LU << 32),
 		NesBreakOnUnofficialOpCode = (1LU << 33),

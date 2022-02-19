@@ -78,8 +78,6 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
-
-	_debuggerEnabledFlag = _cpuType == CpuType::Snes ? DebuggerFlags::CpuDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled;
 }
 
 void SnesDebugger::Init()
@@ -93,6 +91,19 @@ void SnesDebugger::Reset()
 	_enableBreakOnUninitRead = true;
 	_callstackManager.reset(new CallstackManager(_debugger));
 	_prevOpCode = 0xFF;
+}
+
+void SnesDebugger::ProcessConfigChange()
+{
+	_debuggerEnabled = _settings->CheckDebuggerFlag(_cpuType == CpuType::Snes ? DebuggerFlags::SnesDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled);
+	_predictiveBreakpoints = _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints);
+
+	_runSpc = _spcTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
+	_runCoprocessors = (
+		_dspTraceLogger && _dspTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled) ||
+		_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)
+	);
+	_needCoprocessors = _runSpc || _runCoprocessors;
 }
 
 void SnesDebugger::ProcessInstruction()
@@ -113,7 +124,7 @@ void SnesDebugger::ProcessInstruction()
 			}
 			_cdl->SetFlags(addressInfo.Address, flags);
 		}
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(_debuggerEnabledFlag)) {
+		if(_traceLogger->IsEnabled() || _debuggerEnabled) {
 			_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
 		}
 	}
@@ -146,7 +157,7 @@ void SnesDebugger::ProcessInstruction()
 
 	_step->ProcessCpuExec(&breakSource);
 
-	if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled)) {
+	if(_debuggerEnabled) {
 		if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
 			//Break on BRK/STP/WDM/COP
 			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
@@ -165,7 +176,7 @@ void SnesDebugger::ProcessInstruction()
 		}
 	}
 	
-	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _predictiveBreakpoints) {
 		SnesCpuState dummyState = state;
 		_dummyCpu->SetDummyState(dummyState);
 		_dummyCpu->Exec();
@@ -218,7 +229,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 				//Only warn the first time
 				_debugger->Log(string(_cpuType == CpuType::Sa1 ? "[SA1]" : "[CPU]") + " Uninitialized memory read: $" + HexUtilities::ToHex24(addr));
 			}
-			if(_settings->CheckDebuggerFlag(DebuggerFlags::CpuDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			if(_debuggerEnabled && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
 				breakSource = BreakSource::BreakOnUninitMemoryRead;
 				_step->StepCount = 0;
 			}
@@ -312,17 +323,6 @@ void SnesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memo
 
 void SnesDebugger::ProcessPpuCycle()
 {
-	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
-	if(_spcTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled)) {
-		_spc->Run();
-	}
-	if(_dspTraceLogger && _dspTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
-		_cart->RunCoprocessors();
-	} else if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
-		_cart->RunCoprocessors();
-	}
-
-
 	if(_ppuTools->HasOpenedViewer()) {
 		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetCycle());
 	}
@@ -335,6 +335,16 @@ void SnesDebugger::ProcessPpuCycle()
 			if(_step->PpuStepCount == 0) {
 				_debugger->SleepUntilResume(CpuType::Snes, BreakSource::PpuStep);
 			}
+		}
+	}
+
+	//Catch up SPC/DSP as needed (if we're tracing or debugging those particular CPUs)
+	if(_needCoprocessors) {
+		if(_runSpc) {
+			_spc->Run();
+		}
+		if(_runCoprocessors) {
+			_cart->RunCoprocessors();
 		}
 	}
 }

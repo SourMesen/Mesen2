@@ -82,7 +82,7 @@ namespace Mesen.Interop
 		public static DebuggerFlags GetDebuggerFlag(this CpuType cpuType)
 		{
 			return cpuType switch {
-				CpuType.Snes => DebuggerFlags.CpuDebuggerEnabled,
+				CpuType.Snes => DebuggerFlags.SnesDebuggerEnabled,
 				CpuType.Spc => DebuggerFlags.SpcDebuggerEnabled,
 				CpuType.NecDsp => DebuggerFlags.NecDspDebuggerEnabled,
 				CpuType.Sa1 => DebuggerFlags.Sa1DebuggerEnabled,

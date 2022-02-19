@@ -57,12 +57,17 @@ class SnesDebugger final : public IDebugger
 
 	ITraceLogger* _spcTraceLogger = nullptr;
 	ITraceLogger* _dspTraceLogger = nullptr;
-	DebuggerFlags _debuggerEnabledFlag = DebuggerFlags::CpuDebuggerEnabled;
 
 	CpuType _cpuType;
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
+
+	bool _predictiveBreakpoints = false;
+	bool _debuggerEnabled = false;
+	bool _needCoprocessors = false;
+	bool _runCoprocessors = false;
+	bool _runSpc = false;
 
 	SnesCpuState& GetCpuState();
 	bool IsRegister(uint32_t addr);
@@ -72,6 +77,8 @@ public:
 
 	void Init() override;
 	void Reset() override;
+
+	void ProcessConfigChange() override;
 
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);

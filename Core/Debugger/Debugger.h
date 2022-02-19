@@ -100,6 +100,8 @@ public:
 
 	void ProcessEvent(EventType type);
 
+	void ProcessConfigChange();
+
 	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();
