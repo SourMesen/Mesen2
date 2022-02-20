@@ -40,6 +40,34 @@ void Cx4Debugger::Reset()
 {
 }
 
+void Cx4Debugger::ProcessInstruction()
+{
+	Cx4State& state = _cx4->GetState();
+	uint32_t addr = (state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF;
+	uint16_t value = _cx4->GetMemoryMappings()->PeekWord(addr);
+	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
+
+	if(addressInfo.Type == MemoryType::SnesPrgRom) {
+		_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Cx4);
+		_codeDataLogger->SetFlags(addressInfo.Address + 1, CdlFlags::Code | CdlFlags::Cx4);
+	}
+
+	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
+		_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
+
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
+			_traceLogger->Log(state, disInfo, operation);
+		}
+	}
+
+	_prevProgramCounter = addr;
+
+	_step->ProcessCpuExec();
+	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+}
+
 void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	Cx4State& state = _cx4->GetState();
@@ -50,24 +78,6 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr + 1);
-		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Cx4);
-			_codeDataLogger->SetFlags(addressInfo.Address + 1, CdlFlags::Code | CdlFlags::Cx4);
-		}
-
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
-			_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
-
-			if(_traceLogger->IsEnabled()) {
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
-				_traceLogger->Log(state, disInfo, operation);
-			}
-		}
-
-		_prevProgramCounter = addr;
-
-		_step->ProcessCpuExec();
-		
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 		_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
 	} else {
@@ -78,9 +88,9 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
-	}
 
-	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+		_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+	}
 }
 
 void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)

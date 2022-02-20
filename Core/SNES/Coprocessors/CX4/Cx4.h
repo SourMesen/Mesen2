@@ -128,7 +128,5 @@ public:
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
 
 	MemoryMappings* GetMemoryMappings();
-	uint8_t* DebugGetDataRam();
-	uint32_t DebugGetDataRamSize();
 	Cx4State& GetState();
 };

@@ -86,8 +86,8 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState,
 
 		case CpuType::Spc: return SpcDisUtils::GetEffectiveAddress(*this, (SnesConsole*)debugger->GetConsole(), *(SpcState*)cpuState);
 		case CpuType::Gsu: return GsuDisUtils::GetEffectiveAddress(*this, (SnesConsole*)debugger->GetConsole(), *(GsuState*)cpuState);
-
-		case CpuType::Cx4:
+		case CpuType::Cx4: return Cx4DisUtils::GetEffectiveAddress(*this, *(Cx4State*)cpuState, debugger->GetMemoryDumper());
+		
 		case CpuType::NecDsp:
 			return -1;
 

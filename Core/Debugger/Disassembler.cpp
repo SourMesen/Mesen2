@@ -11,6 +11,7 @@
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
+#include "SNES/Coprocessors/CX4/Cx4Types.h"
 #include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
 #include "Shared/EmuSettings.h"
@@ -402,7 +403,6 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				}
 
 				case CpuType::NecDsp:
-				case CpuType::Cx4:
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, type, row.Address.Type, _memoryDumper);
 					} else {
@@ -413,6 +413,21 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					data.EffectiveAddress = -1;
 					data.ValueSize = 0;
 					break;
+
+				case CpuType::Cx4:
+				{
+					Cx4State state = (Cx4State&)_debugger->GetCpuStateRef(lineCpuType);
+					if(!disInfo.IsInitialized()) {
+						disInfo = DisassemblyInfo(row.Address.Address, 0, type, row.Address.Type, _memoryDumper);
+					} else {
+						data.Flags |= LineFlags::VerifiedCode;
+					}
+
+					data.OpSize = disInfo.GetOpSize();
+					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
+					data.ValueSize = 0;
+					break;
+				}
 
 				case CpuType::Gameboy:
 				{

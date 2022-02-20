@@ -91,8 +91,9 @@ void Cx4::Run()
 				Stop();
 			}
 		} else {
+			_emu->ProcessInstruction<CpuType::Cx4>();
+
 			uint16_t opCode = _prgRam[_state.Cache.Page][_state.PC];
-			_emu->ProcessMemoryRead<CpuType::Cx4>(0, 0, MemoryOperationType::ExecOpCode);
 			_state.PC++;
 			
 			if(_state.PC == 0) {
@@ -467,16 +468,6 @@ AddressInfo Cx4::GetAbsoluteAddress(uint32_t address)
 MemoryMappings* Cx4::GetMemoryMappings()
 {
 	return &_mappings;
-}
-
-uint8_t* Cx4::DebugGetDataRam()
-{
-	return _dataRam;
-}
-
-uint32_t Cx4::DebugGetDataRamSize()
-{
-	return Cx4::DataRamSize;
 }
 
 Cx4State& Cx4::GetState()
