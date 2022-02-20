@@ -99,9 +99,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	RefreshCodeCache();
 
-	if(_emu->IsPaused()) {
-		Step(_mainCpuType, 1, StepType::Step);
-	}
 	_executionStopped = false;
 }
 
@@ -395,6 +392,11 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
 	}
 
 	_waitForBreakResume = false;
+}
+
+bool Debugger::IsPaused()
+{
+	return _waitForBreakResume;
 }
 
 bool Debugger::IsExecutionStopped()

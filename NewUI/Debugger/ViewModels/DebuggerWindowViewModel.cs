@@ -536,7 +536,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		private void Step(StepType type, int instructionCount = 1)
+		public void Step(StepType type, int instructionCount = 1)
 		{
 			switch(type) {
 				case StepType.PpuStep:

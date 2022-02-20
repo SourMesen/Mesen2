@@ -106,6 +106,7 @@ public:
 
 	void Run();
 	void Step(CpuType cpuType, int32_t stepCount, StepType type);
+	bool IsPaused();
 	bool IsExecutionStopped();
 
 	bool HasBreakRequest();

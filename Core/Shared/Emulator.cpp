@@ -661,7 +661,7 @@ bool Emulator::IsPaused()
 {
 	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
-		return debugger->IsExecutionStopped();
+		return debugger->IsPaused();
 	} else {
 		return _paused;
 	}
