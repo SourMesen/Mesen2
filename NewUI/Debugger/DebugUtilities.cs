@@ -36,7 +36,7 @@ namespace Mesen.Debugger
 
 				case CpuType.NecDsp: {
 					NecDspState state = DebugApi.GetCpuState<NecDspState>(cpuType);
-					return state.PC;
+					return (uint)(state.PC * 3);
 				}
 
 				case CpuType.Gsu: {

@@ -148,7 +148,6 @@ void NecDsp::BuildProgramCache()
 void NecDsp::ReadOpCode()
 {
 	_opCode = _prgCache[_state.PC & _progMask];
-	_emu->ProcessMemoryRead<CpuType::NecDsp>((_state.PC & _progMask) * 3, _opCode, MemoryOperationType::ExecOpCode);
 }
 
 void NecDsp::Run()
@@ -161,6 +160,7 @@ void NecDsp::Run()
 	}
 
 	while(_cycleCount < targetCycle) {
+		_emu->ProcessInstruction<CpuType::NecDsp>();
 		ReadOpCode();
 		_state.PC++;
 
@@ -245,6 +245,12 @@ void NecDsp::Write(uint32_t addr, uint8_t value)
 			}
 		}
 	}
+}
+
+uint32_t NecDsp::GetOpCode(uint32_t addr)
+{
+	//Avoid side effects for now
+	return _prgCache[addr & _progMask];
 }
 
 uint8_t NecDsp::Peek(uint32_t addr)

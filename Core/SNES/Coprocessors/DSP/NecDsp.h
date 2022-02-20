@@ -70,6 +70,8 @@ public:
 	
 	uint8_t Read(uint32_t addr) override;
 	void Write(uint32_t addr, uint8_t value) override;
+
+	uint32_t GetOpCode(uint32_t addr);
 	
 	uint8_t Peek(uint32_t addr) override;
 	void PeekBlock(uint32_t addr, uint8_t * output) override;

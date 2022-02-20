@@ -35,37 +35,35 @@ void NecDspDebugger::Reset()
 {
 }
 
-void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+void NecDspDebugger::ProcessInstruction()
 {
-	AddressInfo addressInfo = { (int32_t)addr, type == MemoryOperationType::ExecOpCode ? MemoryType::DspProgramRom : MemoryType::DspDataRom };
-	MemoryOperationInfo operation(addr, value, type, MemoryType::NecDspMemory);
+	uint32_t addr = _dsp->GetState().PC * 3;
+	uint16_t value = _dsp->GetOpCode(_dsp->GetState().PC);
+	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
 
-	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
-			_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
+	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
+		_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
-			if(_traceLogger->IsEnabled()) {
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-				_traceLogger->Log(_dsp->GetState(), disInfo, operation);
-			}
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
+			_traceLogger->Log(_dsp->GetState(), disInfo, operation);
 		}
-
-		_prevProgramCounter = addr;
-		_step->ProcessCpuExec();
 	}
 
+	_prevProgramCounter = addr;
+	_step->ProcessCpuExec();
 	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+}
+
+void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
+	//TODO
 }
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo { (int32_t)addr, MemoryType::DspDataRam }; //Writes never affect the DSP ROM
-	MemoryOperationInfo operation(addr, value, type, MemoryType::NecDspMemory);
-	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
-
-	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
-	}
+	//TODO
 }
 
 void NecDspDebugger::Run()

@@ -144,8 +144,8 @@ void Debugger::ProcessInstruction()
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
 		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessInstruction(); break;
-		/*case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessInstruction(); break;
-		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
+		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessInstruction(); break;
+		/*case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessInstruction(); break;
 		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessInstruction(); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessInstruction(); break;*/
