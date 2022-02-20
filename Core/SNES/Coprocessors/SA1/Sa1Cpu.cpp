@@ -29,7 +29,11 @@ void Sa1Cpu::Exec()
 	_immediateMode = false;
 
 	switch(_state.StopState) {
-		case SnesCpuStopState::Running: RunOp(); break;
+		case SnesCpuStopState::Running:
+			_emu->ProcessInstruction<CpuType::Sa1>();
+			RunOp();
+			break;
+
 		case SnesCpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
 			_state.CycleCount++;
