@@ -115,7 +115,8 @@ public:
 
 	void BreakImmediately(CpuType sourceCpu, BreakSource source);
 
-	void ProcessBreakConditions(CpuType sourceCpu, bool needBreak, BreakpointManager *bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source = BreakSource::Unspecified);
+	void ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
+	void ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
 	void SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOperationInfo* operation = nullptr, int breakpointId = -1);
 
 	void GetCpuState(BaseState& dstState, CpuType cpuType);

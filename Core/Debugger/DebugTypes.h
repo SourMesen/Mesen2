@@ -310,6 +310,9 @@ struct StepRequest
 	
 	bool HasRequest = false;
 
+	bool BreakNeeded = false;
+	BreakSource Source = BreakSource::Unspecified;
+
 	StepRequest()
 	{
 	}
@@ -329,27 +332,34 @@ struct StepRequest
 		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN);
 	}
 
-	__forceinline void ProcessCpuExec(BreakSource* source = nullptr)
+	__forceinline void Break(BreakSource src)
+	{
+		BreakNeeded = true;
+		Source = src;
+	}
+
+	__forceinline void ProcessCpuExec()
 	{
 		if(StepCount > 0) {
 			StepCount--;
-			if(StepCount == 0 && source) {
-				*source = BreakSource::CpuStep;
+			if(StepCount == 0) {
+				BreakNeeded = true;
+				Source = BreakSource::CpuStep;
 			}
 		}
 	}
 
-	__forceinline void ProcessNmiIrq(bool forNmi, BreakSource* source = nullptr)
+	__forceinline void ProcessNmiIrq(bool forNmi)
 	{
 		if(forNmi) {
 			if(Type == StepType::RunToNmi) {
-				StepCount = 0;
-				*source = BreakSource::Nmi;
+				BreakNeeded = true;
+				Source = BreakSource::Nmi;
 			}
 		} else {
 			if(Type == StepType::RunToIrq) {
-				StepCount = 0;
-				*source = BreakSource::Irq;
+				BreakNeeded = true;
+				Source = BreakSource::Irq;
 			}
 		}
 	}

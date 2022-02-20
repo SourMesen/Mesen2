@@ -27,7 +27,7 @@ private:
 	unique_ptr<ExpressionEvaluator> _bpExpEval;
 
 	BreakpointType GetBreakpointType(MemoryOperationType type);
-	int InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
+	int InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints);
 
 public:
 	BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager);
@@ -36,7 +36,7 @@ public:
 	
 	__forceinline bool HasBreakpoints() { return _hasBreakpoint; }
 	__forceinline bool HasBreakpointForType(MemoryOperationType opType);
-	__forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address);
+	__forceinline int CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints);
 };
 
 __forceinline bool BreakpointManager::HasBreakpointForType(MemoryOperationType opType)
@@ -44,10 +44,10 @@ __forceinline bool BreakpointManager::HasBreakpointForType(MemoryOperationType o
 	return _hasBreakpointType[(int)opType];
 }
 
-__forceinline int BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
+__forceinline int BreakpointManager::CheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints)
 {
 	if(!_hasBreakpointType[(int)operationInfo.Type]) {
 		return -1;
 	}
-	return InternalCheckBreakpoint(operationInfo, address);
+	return InternalCheckBreakpoint(operationInfo, address, processMarkedBreakpoints);
 }

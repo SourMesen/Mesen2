@@ -292,6 +292,7 @@ extern "C" {
 			GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 			cfg.Model = GameboyModel::GameboyColor;
 			_emu->GetSettings()->SetGameboyConfig(cfg);
+			_emu->GetSettings()->SetFlag(EmulationFlags::MaximumSpeed);
 			_emu->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 
 			if(enableDebugger) {

@@ -54,14 +54,14 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 		_step->ProcessCpuExec();
 	}
 
-	_debugger->ProcessBreakConditions(CpuType::NecDsp, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo { (int32_t)addr, MemoryType::DspDataRam }; //Writes never affect the DSP ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NecDspMemory);
-	_debugger->ProcessBreakConditions(CpuType::NecDsp, false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {
 		_traceLogger->LogNonExec(operation);

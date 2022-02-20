@@ -79,7 +79,6 @@ void NesDebugger::ProcessInstruction()
 	uint8_t value = _memoryManager->DebugRead(addr);
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NesMemory);
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
@@ -116,23 +115,19 @@ void NesDebugger::ProcessInstruction()
 
 	if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40)) {
 		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-		_step->StepCount = 0;
-		breakSource = BreakSource::CpuStep;
+		_step->Break(BreakSource::CpuStep);
 	}
 
 	_prevOpCode = value;
 	_prevProgramCounter = pc;
 
-	_step->ProcessCpuExec(&breakSource);
+	_step->ProcessCpuExec();
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled)) {
 		if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
-			//Break on BRK
-			breakSource = BreakSource::BreakOnBrk;
-			_step->StepCount = 0;
+			_step->Break(BreakSource::BreakOnBrk);
 		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(value)) {
-			breakSource = BreakSource::NesBreakOnUnofficialOpCode;
-			_step->StepCount = 0;
+			_step->Break(BreakSource::NesBreakOnUnofficialOpCode);
 		}
 	}
 
@@ -143,12 +138,12 @@ void NesDebugger::ProcessInstruction()
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
 			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
 				AddressInfo absAddr = _mapper->GetAbsoluteAddress(memOp.Address);
-				_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), memOp, absAddr, breakSource);
+				_debugger->ProcessPredictiveBreakpoint(CpuType::Nes, _breakpointManager.get(), memOp, absAddr);
 			}
 		}
 	}
 
-	_debugger->ProcessBreakConditions(CpuType::Nes, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -156,7 +151,6 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
 	NesCpuState& state = _cpu->GetState();
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
@@ -174,7 +168,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
-		_debugger->ProcessBreakConditions(CpuType::Nes, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(operation.Type == MemoryOperationType::DmaRead) {
 			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
@@ -196,11 +190,10 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				_debugger->Log("[CPU] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
 			}
 			if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-				breakSource = BreakSource::BreakOnUninitMemoryRead;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}
-		_debugger->ProcessBreakConditions(CpuType::Nes, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
 
@@ -222,7 +215,7 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
 	
-	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void NesDebugger::Run()
@@ -273,7 +266,7 @@ void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memory
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
 	}
-	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
@@ -284,7 +277,7 @@ void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memor
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
 	}
-	_debugger->ProcessBreakConditions(CpuType::Nes, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 

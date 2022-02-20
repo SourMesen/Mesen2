@@ -267,19 +267,29 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	_executionStopped = false;
 }
 
-void Debugger::ProcessBreakConditions(CpuType sourceCpu, bool needBreak, BreakpointManager* bpManager, MemoryOperationInfo &operation, AddressInfo &addressInfo, BreakSource source)
+void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
+{
+	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, true);
+	if(step.BreakNeeded || _breakRequestCount || _waitForBreakResume) {
+		if(!_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
+			SleepUntilResume(sourceCpu, step.Source);
+		}
+	} else {
+		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
+			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
+		}
+	}
+}
+
+void Debugger::ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	if(_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
 		return;
 	}
 
-	if(needBreak || _breakRequestCount || _waitForBreakResume) {
-		SleepUntilResume(sourceCpu, source);
-	} else {
-		int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo);
-		if(breakpointId >= 0) {
-			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
-		}
+	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, false);
+	if(breakpointId >= 0) {
+		SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
 	}
 }
 
@@ -295,11 +305,7 @@ void Debugger::InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepReq
 	dbg.GetCallstackManager()->Push(src, srcAddr, dest, destAddr, ret, retAddr, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
 	dbg.GetEventManager()->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 
-	BreakSource source = BreakSource::Unspecified;
-	stepRequest.ProcessNmiIrq(forNmi, &source);
-	if(stepRequest.StepCount == 0) {
-		SleepUntilResume(cpuType, source);
-	}
+	stepRequest.ProcessNmiIrq(forNmi);
 }
 
 void Debugger::ProcessEvent(EventType type)

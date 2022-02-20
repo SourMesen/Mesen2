@@ -78,7 +78,7 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 	}
 }
 
-int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address)
+int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints)
 {
 	BaseState* state = nullptr;
 	EvalResultType resultType;
@@ -95,7 +95,7 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 			}
 
 			if(isMatch) {
-				if(breakpoints[i].IsMarked()) {
+				if(breakpoints[i].IsMarked() && processMarkedBreakpoints) {
 					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
 				}
 				if(breakpoints[i].IsEnabled()) {

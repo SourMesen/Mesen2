@@ -113,7 +113,6 @@ void SnesDebugger::ProcessInstruction()
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	uint8_t value = _memoryManager->Peek(addr);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SnesMemory);
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(addressInfo.Address >= 0) {
 		uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
@@ -148,30 +147,25 @@ void SnesDebugger::ProcessInstruction()
 
 	if(_step->BreakAddress == (int32_t)addr && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-		_step->StepCount = 0;
-		breakSource = BreakSource::CpuStep;
+		_step->Break(BreakSource::CpuStep);
 	}
 
 	_prevOpCode = value;
 	_prevProgramCounter = addr;
 
-	_step->ProcessCpuExec(&breakSource);
+	_step->ProcessCpuExec();
 
 	if(_debuggerEnabled) {
 		if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
 			//Break on BRK/STP/WDM/COP
 			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
-				breakSource = BreakSource::BreakOnBrk;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnBrk);
 			} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
-				breakSource = BreakSource::BreakOnCop;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnCop);
 			} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
-				breakSource = BreakSource::BreakOnWdm;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnWdm);
 			} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
-				breakSource = BreakSource::BreakOnStp;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnStp);
 			}
 		}
 	}
@@ -183,12 +177,12 @@ void SnesDebugger::ProcessInstruction()
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
 			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
 				AddressInfo absAddr = _memoryMappings->GetAbsoluteAddress(memOp.Address);
-				_debugger->ProcessBreakConditions(_cpuType, false, _breakpointManager.get(), memOp, absAddr, breakSource);
+				_debugger->ProcessPredictiveBreakpoint(_cpuType, _breakpointManager.get(), memOp, absAddr);
 			}
 		}
 	}
 
-	_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -196,7 +190,6 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SnesMemory);
 	SnesCpuState& state = GetCpuState();
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(IsRegister(addr)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
@@ -212,7 +205,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 			_traceLogger->LogNonExec(operation);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
-		_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
 			_cdl->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
@@ -229,11 +222,10 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 				_debugger->Log(string(_cpuType == CpuType::Sa1 ? "[SA1]" : "[CPU]") + " Uninitialized memory read: $" + HexUtilities::ToHex24(addr));
 			}
 			if(_debuggerEnabled && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-				breakSource = BreakSource::BreakOnUninitMemoryRead;
-				_step->StepCount = 0;
+				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}
-		_debugger->ProcessBreakConditions(_cpuType, _step->StepCount == 0, _breakpointManager.get(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
 
@@ -255,7 +247,7 @@ void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationTyp
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 
-	_debugger->ProcessBreakConditions(_cpuType, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void SnesDebugger::Run()
@@ -308,7 +300,7 @@ void SnesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memor
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(CpuType::Snes, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Snes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
@@ -316,7 +308,7 @@ void SnesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memo
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(CpuType::Snes, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Snes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _console->GetMasterClock());
 }
 

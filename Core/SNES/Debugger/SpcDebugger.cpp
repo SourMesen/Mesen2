@@ -55,7 +55,6 @@ void SpcDebugger::ProcessInstruction()
 	uint8_t value = _spc->DebugRead(addr);
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SpcMemory);
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
@@ -74,26 +73,24 @@ void SpcDebugger::ProcessInstruction()
 	} else if(_prevOpCode == 0x6F || _prevOpCode == 0x7F) {
 		//RTS, RTI
 		_callstackManager->Pop(addressInfo, addr);
-	}
 
-	if(_step->BreakAddress == (int32_t)addr && (_prevOpCode == 0x6F || _prevOpCode == 0x7F)) {
-		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-		_step->StepCount = 0;
+		if(_step->BreakAddress == (int32_t)addr) {
+			//RTS/RTI - if we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
 	}
 
 	_prevOpCode = value;
 	_prevProgramCounter = addr;
 
-	_step->ProcessCpuExec(&breakSource);
+	_step->ProcessCpuExec();
 
 	if(_debuggerEnabled) {
 		//Break on BRK/STP
 		if(value == 0x0F && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
-			breakSource = BreakSource::BreakOnBrk;
-			_step->StepCount = 0;
+			_step->Break(BreakSource::BreakOnBrk);
 		} else if(value == 0xFF && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
-			breakSource = BreakSource::BreakOnStp;
-			_step->StepCount = 0;
+			_step->Break(BreakSource::BreakOnStp);
 		}
 	}
 
@@ -104,19 +101,18 @@ void SpcDebugger::ProcessInstruction()
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
 			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
 				AddressInfo absAddr = _spc->GetAbsoluteAddress(memOp.Address);
-				_debugger->ProcessBreakConditions(CpuType::Spc, false, _breakpointManager.get(), memOp, absAddr, breakSource);
+				_debugger->ProcessPredictiveBreakpoint(CpuType::Spc, _breakpointManager.get(), memOp, absAddr);
 			}
 		}
 	}
 
-	_debugger->ProcessBreakConditions(CpuType::Spc, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
@@ -125,13 +121,13 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
-		_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
-		_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo, breakSource);
+		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
 
@@ -139,7 +135,7 @@ void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the SPC ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
-	_debugger->ProcessBreakConditions(CpuType::Spc, false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
 

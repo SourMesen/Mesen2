@@ -74,7 +74,6 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
-	BreakSource breakSource = BreakSource::Unspecified;
 
 	GbCpuState& state = _cpu->GetState();
 	uint16_t pc = state.PC;
@@ -101,39 +100,38 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 			AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 			AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
 			_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
-		} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
-			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-			_callstackManager->Pop(addressInfo, pc);
-		}
+		} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
+			if(pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+				//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
+				_callstackManager->Pop(addressInfo, pc);
+			}
 
-		if(_step->BreakAddress == (int32_t)pc && GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
-			//RET/RETI found, if we're on the expected return address, break immediately (for step over/step out)
-			_step->StepCount = 0;
+			if(_step->BreakAddress == (int32_t)pc) {
+				//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
+				_step->StepCount = 0;
+			}
 		}
 
 		if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
-			bool needBreak = false;
 			switch(value) {
 				case 0x40:
-					needBreak = _settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad);
-					breakSource = BreakSource::GbNopLoad;
+					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad)) {
+						_step->Break(BreakSource::GbNopLoad);
+					}
 					break;
 
 				case 0xD3: case 0xDB: case 0xDD: case 0xE3: case 0xE4: case 0xEB: case 0xEC: case 0xED: case 0xF4: case 0xFC: case 0xFD:
-					needBreak = _settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode);
-					breakSource = BreakSource::GbInvalidOpCode;
+					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode)) {
+						_step->Break(BreakSource::GbInvalidOpCode);
+					}
 					break;
-			}
-
-			if(needBreak) {
-				_step->StepCount = 0;
 			}
 		}
 
 		_prevOpCode = value;
 		_prevProgramCounter = pc;
 
-		_step->ProcessCpuExec(&breakSource);
+		_step->ProcessCpuExec();
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
@@ -164,8 +162,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 					_debugger->Log("[GB] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
 				}
 				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
-					breakSource = BreakSource::BreakOnUninitMemoryRead;
-					_step->StepCount = 0;
+					_step->Break(BreakSource::BreakOnUninitMemoryRead);
 				}
 			}
 		}
@@ -175,14 +172,14 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 	}
 
-	_debugger->ProcessBreakConditions(CpuType::Gameboy, _step->StepCount == 0, GetBreakpointManager(), operation, addressInfo, breakSource);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
-	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, GetBreakpointManager(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
 	if(addressInfo.Type == MemoryType::GbWorkRam || addressInfo.Type == MemoryType::GbCartRam || addressInfo.Type == MemoryType::GbHighRam) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Gameboy);
@@ -249,7 +246,7 @@ void GbDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryT
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
 }
 
@@ -257,7 +254,7 @@ void GbDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memory
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
-	_debugger->ProcessBreakConditions(CpuType::Gameboy, false, _breakpointManager.get(), operation, addressInfo);
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _gameboy->GetMasterClock());
 }
 
