@@ -26,11 +26,11 @@ namespace Mesen.Debugger.Utilities
 			T wnd = createWindow();
 			wnd.Closed += (s, e) => {
 				if(s is Window window) {
-					CloseDebugWindow(window);
 					if(window.DataContext is IDisposable disposable) {
 						disposable.Dispose();
 					}
 					window.DataContext = null;
+					CloseDebugWindow(window);
 					ConfigManager.Config.Save();
 				}
 			};
