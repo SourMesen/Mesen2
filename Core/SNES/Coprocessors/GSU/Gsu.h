@@ -172,6 +172,5 @@ public:
 
 	GsuState& GetState();
 	MemoryMappings* GetMemoryMappings();
-	uint8_t* DebugGetWorkRam();
-	uint32_t DebugGetWorkRamSize();
+	uint32_t DebugGetProgramCounter();
 };

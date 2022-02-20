@@ -41,7 +41,7 @@ namespace Mesen.Debugger
 
 				case CpuType.Gsu: {
 					GsuState state = DebugApi.GetCpuState<GsuState>(cpuType);
-					return state.R[15];
+					return (uint)((state.ProgramBank << 16) | state.R[15]);
 				}
 
 				case CpuType.Cx4: {

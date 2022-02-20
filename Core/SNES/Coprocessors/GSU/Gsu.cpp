@@ -230,7 +230,7 @@ void Gsu::Exec()
 			break;
 	}
 
-	_emu->ProcessMemoryRead<CpuType::Gsu>(_lastOpAddr, _state.ProgramReadBuffer, MemoryOperationType::ExecOpCode);
+	_emu->ProcessInstruction<CpuType::Gsu>();
 
 	if(!_r15Changed) {
 		_state.R[15]++;
@@ -291,14 +291,14 @@ uint8_t Gsu::ReadOperand()
 {
 	uint8_t result = _state.ProgramReadBuffer;
 	_state.R[15]++;
-	_state.ProgramReadBuffer = ReadProgramByte(MemoryOperationType::Read);
+	_state.ProgramReadBuffer = ReadProgramByte(MemoryOperationType::ExecOperand);
 	return result;
 }
 
 uint8_t Gsu::ReadOpCode()
 {
 	uint8_t result = _state.ProgramReadBuffer;
-	_state.ProgramReadBuffer = ReadProgramByte(MemoryOperationType::Read);
+	_state.ProgramReadBuffer = ReadProgramByte(MemoryOperationType::ExecOpCode);
 	return result;
 }
 
@@ -647,12 +647,7 @@ MemoryMappings* Gsu::GetMemoryMappings()
 	return &_mappings;
 }
 
-uint8_t* Gsu::DebugGetWorkRam()
+uint32_t Gsu::DebugGetProgramCounter()
 {
-	return _gsuRam;
-}
-
-uint32_t Gsu::DebugGetWorkRamSize()
-{
-	return _gsuRamSize;
+	return _lastOpAddr;
 }

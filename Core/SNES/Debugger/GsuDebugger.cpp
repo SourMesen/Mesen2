@@ -40,40 +40,49 @@ void GsuDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
-void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+void GsuDebugger::ProcessInstruction()
 {
-	if(type == MemoryOperationType::DummyRead) {
-		//Ignore all dummy reads for now
-		return;
+	GsuState& state = _gsu->GetState();
+	uint32_t addr = _gsu->DebugGetProgramCounter();
+	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation(addr, state.ProgramReadBuffer, MemoryOperationType::ExecOpCode, MemoryType::GsuMemory);
+
+	if(addressInfo.Type == MemoryType::SnesPrgRom) {
+		_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
 	}
 
+	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
+		_disassembler->BuildCache(addressInfo, state.SFR.GetFlagsHigh() & 0x13, CpuType::Gsu);
+
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
+			_traceLogger->Log(state, disInfo, operation);
+		}
+	}
+
+	_prevOpCode = state.ProgramReadBuffer;
+	_prevProgramCounter = addr;
+
+	_step->ProcessCpuExec();
+
+	_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+	_debugger->ProcessBreakConditions(CpuType::Gsu, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+}
+
+void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
+{
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
 		}
-
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
-			GsuState gsuState = _gsu->GetState();
-			_disassembler->BuildCache(addressInfo, gsuState.SFR.GetFlagsHigh() & 0x13, CpuType::Gsu);
-
-			if(_traceLogger->IsEnabled()) {
-				gsuState.R[15] = addr;
-
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
-				_traceLogger->Log(gsuState, disInfo, operation);
-			}
-		}
-
-		_prevOpCode = value;
-		_prevProgramCounter = addr;
-
-		_step->ProcessCpuExec();
-
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
+		MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
+
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
 		}
@@ -81,9 +90,8 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+		_debugger->ProcessBreakConditions(CpuType::Gsu, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
-
-	_debugger->ProcessBreakConditions(CpuType::Gsu, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
