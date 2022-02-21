@@ -148,7 +148,7 @@ void Debugger::ProcessInstruction()
 		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessInstruction(); break;
 		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessInstruction(); break;
-		//case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessInstruction(); break;
+		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessInstruction(); break;
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessInstruction(); break;
 	}
 }
@@ -267,10 +267,8 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, true);
-	if(step.BreakNeeded || _breakRequestCount || _waitForBreakResume) {
-		if(!_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
-			SleepUntilResume(sourceCpu, step.Source);
-		}
+	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && !_debuggers[(int)sourceCpu].IgnoreBreakpoints)) {
+		SleepUntilResume(sourceCpu, step.Source);
 	} else {
 		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
 			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);

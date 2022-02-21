@@ -79,6 +79,7 @@ void GbCpu::Exec()
 		_state.IME = true;
 	}
 
+	_emu->ProcessInstruction<CpuType::Gameboy>();
 	ExecOpCode(ReadOpCode());
 }
 

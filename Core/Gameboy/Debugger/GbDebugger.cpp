@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Gameboy/Gameboy.h"
+#include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/Debugger/GbEventManager.h"
@@ -70,69 +71,76 @@ void GbDebugger::Reset()
 	_prevOpCode = 0;
 }
 
+void GbDebugger::ProcessInstruction()
+{
+	GbCpuState& state = _cpu->GetState();
+	uint16_t pc = state.PC;
+	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(pc);
+	uint8_t value = _gameboy->GetMemoryManager()->DebugRead(pc);	
+	MemoryOperationInfo operation(pc, value, MemoryOperationType::ExecOpCode, MemoryType::GameboyMemory);
+
+	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
+		if(addressInfo.Address >= 0) {
+			if(addressInfo.Type == MemoryType::GbPrgRom) {
+				_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+			}
+			_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
+		}
+
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, pc, 0, CpuType::Gameboy);
+			_traceLogger->Log(state, disInfo, operation);
+		}
+	}
+
+	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
+		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
+		uint16_t returnPc = _prevProgramCounter + opSize;
+		AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
+	} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
+		if(pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
+			_callstackManager->Pop(addressInfo, pc);
+		}
+
+		if(_step->BreakAddress == (int32_t)pc) {
+			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
+			_step->StepCount = 0;
+		}
+	}
+
+	if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
+		switch(value) {
+			case 0x40:
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad)) {
+					_step->Break(BreakSource::GbNopLoad);
+				}
+				break;
+
+			case 0xD3: case 0xDB: case 0xDD: case 0xE3: case 0xE4: case 0xEB: case 0xEC: case 0xED: case 0xF4: case 0xFC: case 0xFD:
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode)) {
+					_step->Break(BreakSource::GbInvalidOpCode);
+				}
+				break;
+		}
+	}
+
+	_prevOpCode = value;
+	_prevProgramCounter = pc;
+
+	_step->ProcessCpuExec();
+	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+}
+
 void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
 
-	GbCpuState& state = _cpu->GetState();
-	uint16_t pc = state.PC;
-
 	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
-			if(addressInfo.Address >= 0) {
-				if(addressInfo.Type == MemoryType::GbPrgRom) {
-					_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
-				}
-				_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
-			}
-
-			if(_traceLogger->IsEnabled()) {
-				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
-				_traceLogger->Log(state, disInfo, operation);
-			}
-		}
-
-		if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
-			//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
-			uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
-			uint16_t returnPc = _prevProgramCounter + opSize;
-			AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
-			AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
-			_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
-		} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
-			if(pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
-				//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-				_callstackManager->Pop(addressInfo, pc);
-			}
-
-			if(_step->BreakAddress == (int32_t)pc) {
-				//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
-				_step->StepCount = 0;
-			}
-		}
-
-		if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
-			switch(value) {
-				case 0x40:
-					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad)) {
-						_step->Break(BreakSource::GbNopLoad);
-					}
-					break;
-
-				case 0xD3: case 0xDB: case 0xDD: case 0xE3: case 0xE4: case 0xEB: case 0xEC: case 0xED: case 0xF4: case 0xFC: case 0xFD:
-					if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode)) {
-						_step->Break(BreakSource::GbInvalidOpCode);
-					}
-					break;
-			}
-		}
-
-		_prevOpCode = value;
-		_prevProgramCounter = pc;
-
-		_step->ProcessCpuExec();
-
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
@@ -144,6 +152,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
+		_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
@@ -170,9 +179,8 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {
 			_eventManager->AddEvent(DebugEventType::Register, operation);
 		}
+		_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
-
-	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -205,28 +213,24 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step(type);
 
-	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && _cpu->GetState().Halted) {
-		//CPU isn't running - use the PPU to break execution instead
-		step.PpuStepCount = 1;
-	} else {
-		switch(type) {
-			case StepType::Step: step.StepCount = stepCount; break;
-			case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
-			case StepType::StepOver:
-				if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
-					step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
-				} else {
-					//For any other instruction, step over is the same as step into
-					step.StepCount = 1;
-				}
-				break;
+	switch(type) {
+		case StepType::Step: step.StepCount = stepCount; break;
+		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOver:
+			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
+				step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
+			} else {
+				//For any other instruction, step over is the same as step into
+				step.StepCount = 1;
+			}
+			break;
 
-			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
-			case StepType::PpuScanline: step.PpuStepCount = 456 * stepCount; break;
-			case StepType::PpuFrame: step.PpuStepCount = 456*154; break;
-			case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
-		}
+		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
+		case StepType::PpuScanline: step.PpuStepCount = 456 * stepCount; break;
+		case StepType::PpuFrame: step.PpuStepCount = 456*154; break;
+		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
+
 	_step.reset(new StepRequest(step));
 }
 
