@@ -14,13 +14,10 @@ enum class ConsoleRegion;
 class NesConsole;
 class NesMemoryManager;
 class DummyNesCpu;
+class Emulator;
 
 class NesCpu : public ISerializable
 {
-#ifndef DUMMYCPU
-	friend DummyNesCpu;
-#endif
-
 public:
 	static constexpr uint16_t NMIVector = 0xFFFA;
 	static constexpr uint16_t ResetVector = 0xFFFC;
@@ -62,11 +59,6 @@ private:
 	bool _needNmi = false;
 
 	uint64_t _lastCrashWarning = 0;
-
-#ifdef DUMMYCPU
-	uint32_t _memOpCounter = 0;
-	MemoryOperationInfo _memOperations[10] = {};
-#endif
 
 	__forceinline void StartCpuCycle(bool forRead);
 	__forceinline void ProcessPendingDma(uint16_t readAddress);
@@ -812,46 +804,17 @@ public:
 
 #ifdef DUMMYCPU
 #undef NesCpu
-	void SetDummyState(NesCpu *c)
-	{
-#define NesCpu DummyNesCpu
-		_memOpCounter = 0;
+private:
+	uint32_t _memOpCounter = 0;
+	MemoryOperationInfo _memOperations[10] = {};
 
-		_state = c->_state;
-
-		_operand = c->_operand;
-		_spriteDmaTransfer = c->_spriteDmaTransfer;
-		_needHalt = c->_needHalt;
-		_dmcDmaRunning = c->_dmcDmaRunning;
-		_cpuWrite = c->_cpuWrite;
-		_needDummyRead = c->_needDummyRead;
-		_needHalt = c->_needHalt;
-		_spriteDmaOffset = c->_spriteDmaOffset;
-		_irqMask = c->_irqMask;
-		_prevRunIrq = c->_prevRunIrq;
-		_runIrq = c->_runIrq;
-	}
-
-	uint32_t GetOperationCount()
-	{
-		return _memOpCounter;
-	}
-
-	void LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperationType type)
-	{
-		_memOperations[_memOpCounter] = {
-			addr,
-			(int32_t)value,
-			type,
-			MemoryType::NesMemory
-		};
-		_memOpCounter++;
-	}
-
-	MemoryOperationInfo GetOperationInfo(uint32_t index)
-	{
-		return _memOperations[index];
-	}
+public:
+	void SetDummyState(NesCpu* c);
+	uint32_t GetOperationCount();
+	void LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperationType type);
+	MemoryOperationInfo GetOperationInfo(uint32_t index);
+#else
+	friend DummyNesCpu;
 #endif
 };
 

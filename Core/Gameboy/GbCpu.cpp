@@ -36,7 +36,9 @@ void GbCpu::Exec()
 	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
 	if(irqVector) {
 		if(_state.IME) {
+#ifndef DUMMYCPU
 			uint16_t oldPc = _state.PC;
+#endif
 			IncCycleCount();
 			IncCycleCount();
 
@@ -60,11 +62,15 @@ void GbCpu::Exec()
 			}
 			if(irqVector) {
 				//Only clear IRQ bit if an IRQ was processed
+#ifndef DUMMYCPU
 				_memoryManager->ClearIrqRequest(irqVector);
+#endif
 			}
 
 			_state.IME = false;
+#ifndef DUMMYCPU
 			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
+#endif
 		}
 		_state.Halted = false;
 	}
@@ -79,7 +85,9 @@ void GbCpu::Exec()
 		_state.IME = true;
 	}
 
+#ifndef DUMMYCPU
 	_emu->ProcessInstruction<CpuType::Gameboy>();
+#endif
 	ExecOpCode(ReadOpCode());
 }
 
@@ -347,19 +355,23 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 
 void GbCpu::IncCycleCount()
 {
+#ifndef DUMMYCPU
 	_memoryManager->Exec();
 	_memoryManager->Exec();
+#endif
 }
 
 void GbCpu::HalfCycle()
 {
+#ifndef DUMMYCPU
 	_memoryManager->Exec();
+#endif
 }
 
 uint8_t GbCpu::ReadOpCode()
 {
 	HalfCycle();
-	uint8_t value = _memoryManager->Read<MemoryOperationType::ExecOpCode>(_state.PC);
+	uint8_t value = ReadMemory<MemoryOperationType::ExecOpCode>(_state.PC);
 	HalfCycle();
 	_state.PC++;
 	return value;
@@ -368,7 +380,7 @@ uint8_t GbCpu::ReadOpCode()
 uint8_t GbCpu::ReadCode()
 {
 	HalfCycle();
-	uint8_t value = _memoryManager->Read<MemoryOperationType::ExecOperand>(_state.PC);
+	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand>(_state.PC);
 	HalfCycle();
 	_state.PC++;
 	return value;
@@ -384,15 +396,31 @@ uint16_t GbCpu::ReadCodeWord()
 uint8_t GbCpu::Read(uint16_t addr)
 {
 	HalfCycle();
-	uint8_t value = _memoryManager->Read<MemoryOperationType::Read>(addr);
+	uint8_t value = ReadMemory<MemoryOperationType::Read>(addr);
 	HalfCycle();
 	return value;
+}
+
+template<MemoryOperationType type>
+uint8_t GbCpu::ReadMemory(uint16_t addr)
+{
+#ifdef DUMMYCPU
+	uint8_t value = _memoryManager->DebugRead(addr);
+	LogMemoryOperation(addr, value, type);
+	return value;
+#else
+	return _memoryManager->Read<type>(addr);
+#endif
 }
 
 void GbCpu::Write(uint16_t addr, uint8_t value)
 {
 	HalfCycle();
+#ifdef DUMMYCPU
+	LogMemoryOperation(addr, value, MemoryOperationType::Write);
+#else
 	_memoryManager->Write(addr, value);
+#endif
 	HalfCycle();
 }
 
@@ -733,7 +761,7 @@ void GbCpu::HALT()
 	} else {
 		//HALT bug, execution continues, but PC isn't incremented for the first byte
 		HalfCycle();
-		uint8_t opCode = _memoryManager->Read<MemoryOperationType::ExecOpCode>(_state.PC);
+		uint8_t opCode = ReadMemory<MemoryOperationType::ExecOpCode>(_state.PC);
 		HalfCycle();
 		ExecOpCode(opCode);
 	}

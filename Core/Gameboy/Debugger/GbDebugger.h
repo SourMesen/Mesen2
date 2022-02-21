@@ -19,6 +19,7 @@ class CodeDataLogger;
 class GbCpu;
 class GbPpu;
 class GbPpuTools;
+class DummyGbCpu;
 
 enum class MemoryOperationType;
 
@@ -41,6 +42,7 @@ class GbDebugger final : public IDebugger
 	unique_ptr<GbAssembler> _assembler;
 	unique_ptr<GbTraceLogger> _traceLogger;
 	unique_ptr<GbPpuTools> _ppuTools;
+	unique_ptr<DummyGbCpu> _dummyCpu;
 
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;

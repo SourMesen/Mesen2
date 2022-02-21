@@ -1,6 +1,14 @@
-#pragma once
+#if (defined(DUMMYCPU) && !defined(__DUMMYGBCPU__H)) || (!defined(DUMMYCPU) && !defined(__GBCPU__H))
+#ifdef DUMMYCPU
+#define __DUMMYGBCPU__H
+#else
+#define __GBCPU__H
+#endif
+
+
 #include "stdafx.h"
 #include "GbTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "Utilities/ISerializable.h"
 
 class GbMemoryManager;
@@ -98,6 +106,9 @@ private:
 	void SWAP(uint8_t& dst);
 	void SWAP_Indirect(uint16_t addr);
 
+	template<MemoryOperationType type>
+	uint8_t ReadMemory(uint16_t addr);
+
 	template<uint8_t bit>
 	void BIT(uint8_t src);
 
@@ -150,4 +161,17 @@ public:
 	void Exec();
 	
 	void Serialize(Serializer& s) override;
+
+#ifdef DUMMYCPU
+private:
+	uint32_t _memOpCounter = 0;
+	MemoryOperationInfo _memOperations[10] = {};
+
+public:
+	void SetDummyState(GbCpuState& state);
+	uint32_t GetOperationCount();
+	void LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperationType type);
+	MemoryOperationInfo GetOperationInfo(uint32_t index);
+#endif
 };
+#endif

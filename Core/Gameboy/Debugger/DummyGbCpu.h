@@ -4,7 +4,7 @@
 #include "Debugger/DebugTypes.h"
 
 #define DUMMYCPU
-#define NesCpu DummyNesCpu
-#include "NES/NesCpu.h"
-#undef NesCpu
+#define GbCpu DummyGbCpu
+#include "Gameboy/GbCpu.h"
+#undef GbCpu
 #undef DUMMYCPU

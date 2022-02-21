@@ -24,6 +24,7 @@
     <ClInclude Include="Debugger\stdafx.h" />
     <ClInclude Include="Debugger\TraceLogFileSaver.h" />
     <ClInclude Include="Gameboy\Carts\GbsCart.h" />
+    <ClInclude Include="Gameboy\Debugger\DummyGbCpu.h" />
     <ClInclude Include="Gameboy\Debugger\GbTraceLogger.h" />
     <ClInclude Include="Gameboy\Debugger\GbPpuTools.h" />
     <ClInclude Include="Gameboy\GbConstants.h" />
@@ -368,11 +369,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
+    <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />
     <ClCompile Include="Gameboy\GbControlManager.cpp" />
     <ClCompile Include="Gameboy\GbDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseNesPpu.cpp" />
+    <ClCompile Include="NES\Debugger\DummyNesCpu.cpp" />
     <ClCompile Include="NES\Debugger\NesPpuTools.cpp" />
     <ClCompile Include="NES\Debugger\NesAssembler.cpp" />
     <ClCompile Include="NES\Debugger\NesEventManager.cpp" />

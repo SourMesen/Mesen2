@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
+#include "Gameboy/Debugger/DummyGbCpu.h"
 #include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/Debugger/GbEventManager.h"
@@ -54,6 +55,9 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
+	
+	_dummyCpu.reset(new DummyGbCpu());
+	_dummyCpu->Init(_emu, _gameboy, _gameboy->GetMemoryManager());
 
 	if(_gameboy->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
@@ -76,7 +80,7 @@ void GbDebugger::ProcessInstruction()
 	GbCpuState& state = _cpu->GetState();
 	uint16_t pc = state.PC;
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(pc);
-	uint8_t value = _gameboy->GetMemoryManager()->DebugRead(pc);	
+	uint8_t value = _gameboy->GetMemoryManager()->DebugRead(pc);
 	MemoryOperationInfo operation(pc, value, MemoryOperationType::ExecOpCode, MemoryType::GameboyMemory);
 
 	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
@@ -108,7 +112,7 @@ void GbDebugger::ProcessInstruction()
 
 		if(_step->BreakAddress == (int32_t)pc) {
 			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
-			_step->StepCount = 0;
+			_step->Break(BreakSource::CpuStep);
 		}
 	}
 
@@ -132,6 +136,19 @@ void GbDebugger::ProcessInstruction()
 	_prevProgramCounter = pc;
 
 	_step->ProcessCpuExec();
+
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+		_dummyCpu->SetDummyState(state);
+		_dummyCpu->Exec();
+		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
+			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
+			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
+				AddressInfo absAddr = _gameboy->GetAbsoluteAddress(memOp.Address);
+				_debugger->ProcessPredictiveBreakpoint(CpuType::Gameboy, _breakpointManager.get(), memOp, absAddr);
+			}
+		}
+	}
+
 	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
