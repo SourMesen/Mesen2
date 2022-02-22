@@ -8,7 +8,7 @@
 	_state.NmiFlag = false;
 	_state.PrevNmiFlag = false;
 	_state.StopState = SnesCpuStopState::Running;
-	_state.SnesIrqSource = (uint8_t)SnesIrqSource::None;
+	_state.IrqSource = (uint8_t)SnesIrqSource::None;
 	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
 	SetFlags(ProcFlags::MemoryMode8);
 	SetFlags(ProcFlags::IndexMode8);
@@ -33,7 +33,7 @@ void SnesCpu::Reset()
 	_state.NmiFlag = false;
 	_state.PrevNmiFlag = false;
 	_state.StopState = SnesCpuStopState::Running;
-	_state.SnesIrqSource = (uint8_t)SnesIrqSource::None;
+	_state.IrqSource = (uint8_t)SnesIrqSource::None;
 	_state.PrevIrqSource = (uint8_t)SnesIrqSource::None;
 }
 
@@ -331,19 +331,19 @@ void SnesCpu::UpdateIrqNmiFlags()
 		//"The internal signal goes high during φ1 of the cycle that follows the one where the edge is detected,
 		//and stays high until the NMI has been handled. "
 		_state.PrevNeedNmi = _state.NeedNmi;
-		_state.PrevIrqSource = _state.SnesIrqSource && !CheckFlag(ProcFlags::IrqDisable);
+		_state.PrevIrqSource = _state.IrqSource && !CheckFlag(ProcFlags::IrqDisable);
 	}
 	_state.IrqLock = false;
 }
 
 void SnesCpu::SetIrqSource(SnesIrqSource source)
 {
-	_state.SnesIrqSource |= (uint8_t)source;
+	_state.IrqSource |= (uint8_t)source;
 }
 
 bool SnesCpu::CheckIrqSource(SnesIrqSource source)
 {
-	if(_state.SnesIrqSource & (uint8_t)source) {
+	if(_state.IrqSource & (uint8_t)source) {
 		return true;
 	} else {
 		return false;
@@ -352,7 +352,7 @@ bool SnesCpu::CheckIrqSource(SnesIrqSource source)
 
 void SnesCpu::ClearIrqSource(SnesIrqSource source)
 {
-	_state.SnesIrqSource &= ~(uint8_t)source;
+	_state.IrqSource &= ~(uint8_t)source;
 }
 
 uint32_t SnesCpu::GetProgramAddress(uint16_t addr)
@@ -583,7 +583,7 @@ bool SnesCpu::CheckFlag(uint8_t flag)
 void SnesCpu::Serialize(Serializer &s)
 {
 	s.Stream(
-		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.SnesIrqSource, _state.K,
+		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.IrqSource, _state.K,
 		_state.NmiFlag, _state.PC, _state.PrevIrqSource, _state.PrevNmiFlag, _state.PS, _state.SP, _state.StopState,
 		_state.X, _state.Y, _state.IrqLock, _state.NeedNmi, _state.PrevNeedNmi
 	);

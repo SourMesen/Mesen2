@@ -60,6 +60,22 @@ EvalOperators ExpressionEvaluator::GetOperator(string token, bool unaryOperator)
 	return EvalOperators::Addition;
 }
 
+unordered_map<string, int64_t>* ExpressionEvaluator::GetAvailableTokens()
+{
+	switch(_cpuType) {
+		case CpuType::Snes: return &GetSnesTokens();
+		case CpuType::Spc: return &GetSpcTokens();
+		//case CpuType::NecDsp: return &GetNecDspTokens();
+		case CpuType::Sa1: return &GetSnesTokens();
+		case CpuType::Gsu: return &GetGsuTokens();
+		//case CpuType::Cx4: return &GetCx4Tokens();
+		case CpuType::Gameboy: return &GetGameboyTokens();
+		case CpuType::Nes: return &GetNesTokens();
+	}
+
+	return nullptr;
+}
+
 bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data)
 {
 	string token;
@@ -77,12 +93,13 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 	} while(pos < len);
 
 	int64_t tokenValue = -1;
-	if(_cpuType == CpuType::Gsu) {
-		tokenValue = ProcessGsuTokens(token);
-	} else if(_cpuType == CpuType::Gameboy) {
-		tokenValue = ProcessGameboyTokens(token);
-	} else {
-		tokenValue = ProcessCpuSpcTokens(token);
+
+	unordered_map<string, int64_t>* availableTokens = GetAvailableTokens();
+	if(availableTokens) {
+		auto result = availableTokens->find(token);
+		if(result != availableTokens->end()) {
+			tokenValue = result->second;
+		}
 	}
 
 	if(tokenValue != -1) {
@@ -113,32 +130,6 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 	}
 }
 
-int64_t ExpressionEvaluator::ProcessCpuSpcTokens(string token)
-{
-	if(token == "a") {
-		return EvalValues::RegA;
-	} else if(token == "x") {
-		return EvalValues::RegX;
-	} else if(token == "y") {
-		return EvalValues::RegY;
-	} else if(token == "ps") {
-		return EvalValues::RegPS;
-	} else if(token == "sp") {
-		return EvalValues::RegSP;
-	} else if(token == "pc") {
-		return EvalValues::RegPC;
-	} else if(token == "oppc") {
-		return EvalValues::RegOpPC;
-	} else if(token == "previousoppc") {
-		return EvalValues::PreviousOpPC;
-	} else if(token == "irq") {
-		return EvalValues::Irq;
-	} else if(token == "nmi") {
-		return EvalValues::Nmi;
-	}
-	return -1;
-}
-
 int64_t ExpressionEvaluator::ProcessSharedTokens(string token) 
 {
 	if(token == "frame") {
@@ -157,91 +148,6 @@ int64_t ExpressionEvaluator::ProcessSharedTokens(string token)
 		return EvalValues::IsWrite;
 	} else if(token == "isread") {
 		return EvalValues::IsRead;
-	}
-	return -1;
-}
-
-int64_t ExpressionEvaluator::ProcessGsuTokens(string token)
-{
-	if(token == "r0") {
-		return EvalValues::R0;
-	} else if(token == "r1") {
-		return EvalValues::R1;
-	} else if(token == "r2") {
-		return EvalValues::R2;
-	} else if(token == "r3") {
-		return EvalValues::R3;
-	} else if(token == "r4") {
-		return EvalValues::R4;
-	} else if(token == "r5") {
-		return EvalValues::R5;
-	} else if(token == "r6") {
-		return EvalValues::R6;
-	} else if(token == "r7") {
-		return EvalValues::R7;
-	} else if(token == "r8") {
-		return EvalValues::R8;
-	} else if(token == "r9") {
-		return EvalValues::R9;
-	} else if(token == "r10") {
-		return EvalValues::R10;
-	} else if(token == "r11") {
-		return EvalValues::R11;
-	} else if(token == "r12") {
-		return EvalValues::R12;
-	} else if(token == "r13") {
-		return EvalValues::R13;
-	} else if(token == "r14") {
-		return EvalValues::R14;
-	} else if(token == "r15") {
-		return EvalValues::R15;
-	} else if(token == "srcreg") {
-		return EvalValues::SrcReg;
-	} else if(token == "dstreg") {
-		return EvalValues::DstReg;
-	} else if(token == "sfr") {
-		return EvalValues::SFR;
-	} else if(token == "pbr") {
-		return EvalValues::PBR;
-	} else if(token == "rombr") {
-		return EvalValues::RomBR;
-	} else if(token == "rambr") {
-		return EvalValues::RamBR;
-	}
-	return -1;
-}
-
-
-int64_t ExpressionEvaluator::ProcessGameboyTokens(string token)
-{
-	if(token == "a") {
-		return EvalValues::RegA;
-	} else if(token == "b") {
-		return EvalValues::RegB;
-	} else if(token == "c") {
-		return EvalValues::RegC;
-	} else if(token == "d") {
-		return EvalValues::RegD;
-	} else if(token == "e") {
-		return EvalValues::RegE;
-	} else if(token == "f") {
-		return EvalValues::RegF;
-	} else if(token == "h") {
-		return EvalValues::RegH;
-	} else if(token == "l") {
-		return EvalValues::RegL;
-	} else if(token == "af") {
-		return EvalValues::RegAF;
-	} else if(token == "bc") {
-		return EvalValues::RegBC;
-	} else if(token == "de") {
-		return EvalValues::RegDE;
-	} else if(token == "hl") {
-		return EvalValues::RegHL;
-	} else if(token == "sp") {
-		return EvalValues::RegSP;
-	} else if(token == "pc") {
-		return EvalValues::RegPC;
 	}
 	return -1;
 }
@@ -488,115 +394,29 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, BaseState &state, Ev
 				}
 			} else {
 				switch(token) {
+					case EvalValues::Value: token = operationInfo.Value; break;
+					case EvalValues::Address: token = operationInfo.Address; break;
+					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
+					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
+
 					//TODO
 					//case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;
 					//case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
 					//case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
 					//case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
-					case EvalValues::Value: token = operationInfo.Value; break;
-					case EvalValues::Address: token = operationInfo.Address; break;
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
-					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
-					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
 					//case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
 
 					default:
 						switch(_cpuType) {
-							case CpuType::Snes:
-							case CpuType::Sa1: {
-								SnesCpuState& s = (SnesCpuState&)state;
-								switch(token) {
-									case EvalValues::RegA: token = s.A; break;
-									case EvalValues::RegX: token = s.X; break;
-									case EvalValues::RegY: token = s.Y; break;
-									case EvalValues::RegSP: token = s.SP; break;
-									case EvalValues::RegPS: token = s.PS; break;
-									case EvalValues::RegPC: token = (s.K << 16) | s.PC; break;
-									case EvalValues::Nmi: token = s.NmiFlag; resultType = EvalResultType::Boolean; break;
-									case EvalValues::Irq: token = s.SnesIrqSource != 0; resultType = EvalResultType::Boolean; break;
-								}
-								break;
-							}
-
-							case CpuType::Spc: {
-								SpcState& s = (SpcState&)state;
-								switch(token) {
-									case EvalValues::RegA: token = s.A; break;
-									case EvalValues::RegX: token = s.X; break;
-									case EvalValues::RegY: token = s.Y; break;
-									case EvalValues::RegSP: token = s.SP; break;
-									case EvalValues::RegPS: token = s.PS; break;
-									case EvalValues::RegPC: token = s.PC; break;
-								}
-								break;
-							}
-
-							case CpuType::Nes: {
-								NesCpuState& s = (NesCpuState&)state;
-								switch(token) {
-									case EvalValues::RegA: token = s.A; break;
-									case EvalValues::RegX: token = s.X; break;
-									case EvalValues::RegY: token = s.Y; break;
-									case EvalValues::RegSP: token = s.SP; break;
-									case EvalValues::RegPS: token = s.PS; break;
-									case EvalValues::RegPC: token = s.PC; break;
-								}
-								break;
-							}
-
-							case CpuType::Gameboy: {
-								GbCpuState& s = (GbCpuState&)state;
-								switch(token) {
-									case EvalValues::RegA: token = s.A; break;
-									case EvalValues::RegB: token = s.B; break;
-									case EvalValues::RegC: token = s.C; break;
-									case EvalValues::RegD: token = s.D; break;
-									case EvalValues::RegE: token = s.E; break;
-									case EvalValues::RegF: token = s.Flags; break;
-									case EvalValues::RegH: token = s.H; break;
-									case EvalValues::RegL: token = s.L; break;
-									case EvalValues::RegAF: token = (s.A << 8) | s.Flags; break;
-									case EvalValues::RegBC: token = (s.B << 8) | s.C; break;
-									case EvalValues::RegDE: token = (s.D << 8) | s.E; break;
-									case EvalValues::RegHL: token = (s.H << 8) | s.L; break;
-									case EvalValues::RegSP: token = s.SP; break;
-									case EvalValues::RegPC: token = s.PC; break;
-								}
-								break;
-							}
-/*
-							case CpuType::Gsu:
-								switch(token) {
-									case EvalValues::R0: token = state.Gsu.R[0]; break;
-									case EvalValues::R1: token = state.Gsu.R[1]; break;
-									case EvalValues::R2: token = state.Gsu.R[2]; break;
-									case EvalValues::R3: token = state.Gsu.R[3]; break;
-									case EvalValues::R4: token = state.Gsu.R[4]; break;
-									case EvalValues::R5: token = state.Gsu.R[5]; break;
-									case EvalValues::R6: token = state.Gsu.R[6]; break;
-									case EvalValues::R7: token = state.Gsu.R[7]; break;
-									case EvalValues::R8: token = state.Gsu.R[8]; break;
-									case EvalValues::R9: token = state.Gsu.R[9]; break;
-									case EvalValues::R10: token = state.Gsu.R[10]; break;
-									case EvalValues::R11: token = state.Gsu.R[11]; break;
-									case EvalValues::R12: token = state.Gsu.R[12]; break;
-									case EvalValues::R13: token = state.Gsu.R[13]; break;
-									case EvalValues::R14: token = state.Gsu.R[14]; break;
-									case EvalValues::R15: token = state.Gsu.R[15]; break;
-
-									case EvalValues::SrcReg: token = state.Gsu.SrcReg; break;
-									case EvalValues::DstReg: token = state.Gsu.DestReg; break;
-									
-									case EvalValues::SFR: token = (state.Gsu.SFR.GetFlagsHigh() << 8) | state.Gsu.SFR.GetFlagsLow(); break;
-									case EvalValues::PBR: token = state.Gsu.ProgramBank; break;
-									case EvalValues::RomBR: token = state.Gsu.RomBank; break;
-									case EvalValues::RamBR: token = state.Gsu.RamBank; break;
-								}
-								break;
-
-							case CpuType::NecDsp:
-							case CpuType::Cx4:
-								throw std::runtime_error("Invalid CPU type");*/
+							case CpuType::Snes: token = GetSnesTokenValue(token, resultType, (SnesCpuState&)state); break;
+							case CpuType::Spc: token = GetSpcTokenValue(token, resultType, (SpcState&)state); break;
+							//case CpuType::NecDsp: token = GetNecDspTokenValue(token, resultType, (NecDspState&)state); break;
+							case CpuType::Sa1: token = GetSnesTokenValue(token, resultType, (SnesCpuState&)state); break;
+							case CpuType::Gsu: token = GetGsuTokenValue(token, resultType, (GsuState&)state); break;
+							//case CpuType::Cx4: token = GetCx4TokenValue(token, resultType, (Cx4State&)state); break;
+							case CpuType::Gameboy: token = GetGameboyTokenValue(token, resultType, (GbCpuState&)state); break;
+							case CpuType::Nes: token = GetNesTokenValue(token, resultType, (NesCpuState&)state); break;
 						}
 						break;
 				}

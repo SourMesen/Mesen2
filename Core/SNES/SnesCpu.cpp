@@ -48,7 +48,7 @@ void SnesCpu::Exec()
 		case SnesCpuStopState::WaitingForIrq:
 			//WAI
 			Idle();
-			if(_state.SnesIrqSource || _state.NeedNmi) {
+			if(_state.IrqSource || _state.NeedNmi) {
 				Idle();
 				Idle();
 				_state.StopState = SnesCpuStopState::Running;

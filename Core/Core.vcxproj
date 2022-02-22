@@ -369,6 +369,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Nes.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
     <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />

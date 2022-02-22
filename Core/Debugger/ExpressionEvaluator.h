@@ -10,6 +10,13 @@
 class Debugger;
 class LabelManager;
 struct BaseState;
+struct SnesCpuState;
+struct NesCpuState;
+struct SpcState;
+struct Cx4State;
+struct GsuState;
+struct NecDspState;
+struct GbCpuState;
 
 enum EvalOperators : int64_t
 {
@@ -150,11 +157,32 @@ private:
 
 	bool IsOperator(string token, int &precedence, bool unaryOperator);
 	EvalOperators GetOperator(string token, bool unaryOperator);
+	unordered_map<string, int64_t>* GetAvailableTokens();
 	bool CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data);
-	int64_t ProcessCpuSpcTokens(string token);
+
+	unordered_map<string, int64_t>& GetSnesTokens();
+	int64_t GetSnesTokenValue(int64_t token, EvalResultType& resultType, SnesCpuState& s);
+
+	unordered_map<string, int64_t>& GetSpcTokens();
+	int64_t GetSpcTokenValue(int64_t token, EvalResultType& resultType, SpcState& state);
+
+	unordered_map<string, int64_t>& GetGsuTokens();
+	int64_t GetGsuTokenValue(int64_t token, EvalResultType& resultType, GsuState& state);
+
+	/*unordered_map<string, int64_t>& GetCx4Tokens();
+	int64_t GetCx4TokenValue(int64_t token, EvalResultType& resultType, Cx4State& state);
+
+	unordered_map<string, int64_t>& GetNecDspTokens();
+	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType, NecDspState& state);*/
+
+	unordered_map<string, int64_t>& GetGameboyTokens();
+	int64_t GetGameboyTokenValue(int64_t token, EvalResultType& resultType, GbCpuState& state);
+
+	unordered_map<string, int64_t>& GetNesTokens();
+	int64_t GetNesTokenValue(int64_t token, EvalResultType& resultType, NesCpuState& state);
+
 	int64_t ProcessSharedTokens(string token);
-	int64_t ProcessGsuTokens(string token);
-	int64_t ProcessGameboyTokens(string token);
+	
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);

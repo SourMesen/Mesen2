@@ -1,0 +1,30 @@
+#include "stdafx.h"
+#include "ExpressionEvaluator.h"
+#include "SNES/SpcTypes.h"
+
+unordered_map<string, int64_t>& ExpressionEvaluator::GetSpcTokens()
+{
+	static unordered_map<string, int64_t> supportedTokens = {
+		{ "a", EvalValues::RegA },
+		{ "x", EvalValues::RegX },
+		{ "y", EvalValues::RegY },
+		{ "ps", EvalValues::RegPS },
+		{ "sp", EvalValues::RegSP },
+		{ "pc", EvalValues::RegPC },
+	};
+
+	return supportedTokens;
+}
+
+int64_t ExpressionEvaluator::GetSpcTokenValue(int64_t token, EvalResultType& resultType, SpcState& s)
+{
+	switch(token) {
+		case EvalValues::RegA: return s.A;
+		case EvalValues::RegX: return s.X;
+		case EvalValues::RegY: return s.Y;
+		case EvalValues::RegSP: return s.SP;
+		case EvalValues::RegPS: return s.PS;
+		case EvalValues::RegPC: return s.PC;
+		default: return 0;
+	}
+}

@@ -1267,6 +1267,11 @@
     <ClCompile Include="SNES\Debugger\DummySpc.cpp" />
     <ClCompile Include="NES\Debugger\DummyNesCpu.cpp" />
     <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Nes.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

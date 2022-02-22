@@ -47,7 +47,7 @@ struct SnesCpuState : BaseState
 	bool PrevNeedNmi;
 	bool NeedNmi;
 
-	uint8_t SnesIrqSource;
+	uint8_t IrqSource;
 	uint8_t PrevIrqSource;
 	SnesCpuStopState StopState;
 };
