@@ -18,7 +18,7 @@ protected:
 	RowDataType GetFormatTagType(string& tag) override;
 
 public:
-	GsuTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
+	GsuTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
 	
 	void GetTraceRow(string& output, GsuState& cpuState, TraceLogPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void LogPpuState();

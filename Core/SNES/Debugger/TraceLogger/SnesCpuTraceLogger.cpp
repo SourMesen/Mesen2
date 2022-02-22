@@ -7,7 +7,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 
-SnesCpuTraceLogger::SnesCpuTraceLogger(Debugger* debugger, CpuType cpuType, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuType)
+SnesCpuTraceLogger::SnesCpuTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, CpuType cpuType, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, cpuType)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

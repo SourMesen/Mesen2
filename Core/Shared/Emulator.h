@@ -112,7 +112,7 @@ private:
 	void RunFrameWithRunAhead();
 
 	void BlockDebuggerRequests();
-	void ResetDebugger(Debugger* dbg = nullptr);
+	void ResetDebugger(bool startDebugger = false);
 
 	double GetFrameDelay();
 

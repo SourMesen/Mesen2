@@ -8,7 +8,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-GsuTraceLogger::GsuTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Gsu)
+GsuTraceLogger::GsuTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gsu)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

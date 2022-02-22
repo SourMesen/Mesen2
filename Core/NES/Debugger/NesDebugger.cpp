@@ -43,7 +43,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_mapper = console->GetMapper();
 	_memoryManager = console->GetMemoryManager();
 
-	_traceLogger.reset(new NesTraceLogger(debugger, _ppu));
+	_traceLogger.reset(new NesTraceLogger(debugger, this, _ppu));
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
@@ -55,7 +55,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Nes, _eventManager.get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Nes, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new NesAssembler(_debugger->GetLabelManager()));
 

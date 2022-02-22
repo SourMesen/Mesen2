@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ExpressionEvaluator.h"
+#include "SNES/Debugger/GsuDebugger.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 
 unordered_map<string, int64_t>& ExpressionEvaluator::GetGsuTokens()
@@ -32,8 +33,9 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetGsuTokens()
 	return supportedTokens;
 }
 
-int64_t ExpressionEvaluator::GetGsuTokenValue(int64_t token, EvalResultType& resultType, GsuState& s)
+int64_t ExpressionEvaluator::GetGsuTokenValue(int64_t token, EvalResultType& resultType)
 {
+	GsuState& s = (GsuState&)((GsuDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::R0: return s.R[0];
 		case EvalValues::R1: return s.R[1];

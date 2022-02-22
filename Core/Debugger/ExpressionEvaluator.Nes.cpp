@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ExpressionEvaluator.h"
 #include "NES/NesTypes.h"
+#include "NES/Debugger/NesDebugger.h"
 
 unordered_map<string, int64_t>& ExpressionEvaluator::GetNesTokens()
 {
@@ -18,8 +19,9 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetNesTokens()
 	return supportedTokens;
 }
 
-int64_t ExpressionEvaluator::GetNesTokenValue(int64_t token, EvalResultType& resultType, NesCpuState& s)
+int64_t ExpressionEvaluator::GetNesTokenValue(int64_t token, EvalResultType& resultType)
 {
+	NesCpuState& s = (NesCpuState&)((NesDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::RegA: return s.A;
 		case EvalValues::RegX: return s.X;

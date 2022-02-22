@@ -887,7 +887,7 @@ Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 	return DebuggerRequest(nullptr);
 }
 
-void Emulator::ResetDebugger(Debugger* dbg)
+void Emulator::ResetDebugger(bool startDebugger)
 {
 	BlockDebuggerRequests();
 
@@ -897,11 +897,11 @@ void Emulator::ResetDebugger(Debugger* dbg)
 	}
 
 	if(_emulationThreadId == std::this_thread::get_id()) {
-		_debugger.reset(dbg);
+		_debugger.reset(startDebugger ? new Debugger(this, _console.get()) : nullptr);
 	} else {
 		//Need to pause emulator to change _debugger (when not called from the emulation thread)
 		auto emuLock = AcquireLock();
-		_debugger.reset(dbg);
+		_debugger.reset(startDebugger ? new Debugger(this, _console.get()) : nullptr);
 	}
 
 	_allowDebuggerRequest = true;
@@ -913,7 +913,7 @@ void Emulator::InitDebugger()
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
 		if(!_debugger) {
-			ResetDebugger(new Debugger(this, _console.get()));
+			ResetDebugger(true);
 		}
 	}
 }

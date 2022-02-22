@@ -50,7 +50,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	_cart = console->GetCartridge();
 	_spc = console->GetSpc();
 	_ppu = console->GetPpu();
-	_traceLogger.reset(new SnesCpuTraceLogger(debugger, cpuType, _ppu, _memoryManager));
+	_traceLogger.reset(new SnesCpuTraceLogger(debugger, this, cpuType, _ppu, _memoryManager));
 	_ppuTools.reset(new SnesPpuTools(debugger, debugger->GetEmulator()));
 	
 	if(_cpuType == CpuType::Snes) {
@@ -68,7 +68,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, cpuType, _eventManager.get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));
 

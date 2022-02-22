@@ -25,9 +25,9 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	_dsp = console->GetCartridge()->GetDsp();
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_traceLogger.reset(new NecDspTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
+	_traceLogger.reset(new NecDspTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::NecDsp, debugger->GetEventManager(CpuType::Snes)));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::NecDsp, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

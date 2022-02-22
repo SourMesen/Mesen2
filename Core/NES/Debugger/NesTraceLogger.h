@@ -16,7 +16,7 @@ protected:
 	RowDataType GetFormatTagType(string& tag) override;
 
 public:
-	NesTraceLogger(Debugger* debugger, BaseNesPpu* ppu);
+	NesTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, BaseNesPpu* ppu);
 	
 	void GetTraceRow(string& output, NesCpuState& cpuState, TraceLogPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void LogPpuState();

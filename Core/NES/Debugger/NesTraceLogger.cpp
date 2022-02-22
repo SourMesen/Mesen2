@@ -7,7 +7,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-NesTraceLogger::NesTraceLogger(Debugger* debugger, BaseNesPpu* ppu) : BaseTraceLogger(debugger, CpuType::Nes)
+NesTraceLogger::NesTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, BaseNesPpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Nes)
 {
 	_ppu = ppu;
 	

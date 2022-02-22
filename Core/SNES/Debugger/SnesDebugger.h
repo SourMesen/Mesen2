@@ -5,6 +5,7 @@
 #include "SNES/SnesCpuTypes.h"
 
 class SnesConsole;
+class Emulator;
 class Disassembler;
 class Debugger;
 class SnesCpuTraceLogger;

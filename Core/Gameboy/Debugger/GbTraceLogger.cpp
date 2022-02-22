@@ -7,7 +7,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-GbTraceLogger::GbTraceLogger(Debugger* debugger, GbPpu* ppu) : BaseTraceLogger(debugger, CpuType::Gameboy)
+GbTraceLogger::GbTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, GbPpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gameboy)
 {
 	_ppu = ppu;
 	

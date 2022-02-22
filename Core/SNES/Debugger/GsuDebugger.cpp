@@ -29,9 +29,9 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	_memoryManager = console->GetMemoryManager();
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_traceLogger.reset(new GsuTraceLogger(debugger, console->GetPpu(), _memoryManager));
+	_traceLogger.reset(new GsuTraceLogger(debugger, this, console->GetPpu(), _memoryManager));
 
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gsu, debugger->GetEventManager(CpuType::Snes)));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gsu, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

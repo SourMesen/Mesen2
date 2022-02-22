@@ -9,14 +9,7 @@
 
 class Debugger;
 class LabelManager;
-struct BaseState;
-struct SnesCpuState;
-struct NesCpuState;
-struct SpcState;
-struct Cx4State;
-struct GsuState;
-struct NecDspState;
-struct GbCpuState;
+class IDebugger;
 
 enum EvalOperators : int64_t
 {
@@ -57,60 +50,61 @@ enum EvalOperators : int64_t
 enum EvalValues : int64_t
 {
 	RegA = 20000000100,
-	RegX = 20000000101,
-	RegY = 20000000102,
-	RegSP = 20000000103,
-	RegPS = 20000000104,
-	RegPC = 20000000105,
-	RegOpPC = 20000000106,
-	PpuFrameCount = 20000000107,
-	PpuCycle = 20000000108,
-	PpuScanline = 20000000109,
-	Nmi = 20000000110,
-	Irq = 20000000111,
-	Value = 20000000112,
-	Address = 20000000113,
-	AbsoluteAddress = 20000000114,
-	IsWrite = 20000000115,
-	IsRead = 20000000116,
-	PreviousOpPC = 20000000117,
+	RegX,
+	RegY,
+	RegSP,
+	RegPS,
+	RegPC,
+	RegOpPC,
+	PpuFrameCount,
+	PpuCycle,
+	PpuHClock,
+	PpuScanline,
+	Nmi,
+	Irq,
+	Value,
+	Address,
+	AbsoluteAddress,
+	IsWrite,
+	IsRead,
+	PreviousOpPC,
 
-	R0 = 20000000120,
-	R1 = 20000000121,
-	R2 = 20000000122,
-	R3 = 20000000123,
-	R4 = 20000000124,
-	R5 = 20000000125,
-	R6 = 20000000126,
-	R7 = 20000000127,
-	R8 = 20000000128,
-	R9 = 20000000129,
-	R10 = 20000000130,
-	R11 = 20000000131,
-	R12 = 20000000132,
-	R13 = 20000000133,
-	R14 = 20000000134,
-	R15 = 20000000135,
-	SrcReg = 20000000137,
-	DstReg = 20000000138,
-	SFR = 20000000139,
-	PBR = 20000000140,
-	RomBR = 20000000141,
-	RamBR = 20000000142,
+	R0,
+	R1,
+	R2,
+	R3,
+	R4,
+	R5,
+	R6,
+	R7,
+	R8,
+	R9,
+	R10,
+	R11,
+	R12,
+	R13,
+	R14,
+	R15,
+	SrcReg,
+	DstReg,
+	SFR,
+	PBR,
+	RomBR,
+	RamBR,
 
-	RegB = 20000000160,
-	RegC = 20000000161,
-	RegD = 20000000162,
-	RegE = 20000000163,
-	RegF = 20000000164,
-	RegH = 20000000165,
-	RegL = 20000000166,
-	RegAF = 20000000167,
-	RegBC = 20000000168,
-	RegDE = 20000000169,
-	RegHL = 20000000170,
+	RegB,
+	RegC,
+	RegD,
+	RegE,
+	RegF,
+	RegH,
+	RegL,
+	RegAF,
+	RegBC,
+	RegDE,
+	RegHL,
 
-	FirstLabelIndex = 20000002000,
+	FirstLabelIndex,
 };
 
 enum class EvalResultType : int32_t
@@ -151,6 +145,7 @@ private:
 	SimpleLock _cacheLock;
 	
 	Debugger* _debugger;
+	IDebugger* _cpuDebugger;
 	LabelManager* _labelManager;
 	CpuType _cpuType;
 	MemoryType _cpuMemory;
@@ -161,41 +156,41 @@ private:
 	bool CheckSpecialTokens(string expression, size_t &pos, string &output, ExpressionData &data);
 
 	unordered_map<string, int64_t>& GetSnesTokens();
-	int64_t GetSnesTokenValue(int64_t token, EvalResultType& resultType, SnesCpuState& s);
+	int64_t GetSnesTokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetSpcTokens();
-	int64_t GetSpcTokenValue(int64_t token, EvalResultType& resultType, SpcState& state);
+	int64_t GetSpcTokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetGsuTokens();
-	int64_t GetGsuTokenValue(int64_t token, EvalResultType& resultType, GsuState& state);
+	int64_t GetGsuTokenValue(int64_t token, EvalResultType& resultType);
 
 	/*unordered_map<string, int64_t>& GetCx4Tokens();
-	int64_t GetCx4TokenValue(int64_t token, EvalResultType& resultType, Cx4State& state);
+	int64_t GetCx4TokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetNecDspTokens();
-	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType, NecDspState& state);*/
+	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType);*/
 
 	unordered_map<string, int64_t>& GetGameboyTokens();
-	int64_t GetGameboyTokenValue(int64_t token, EvalResultType& resultType, GbCpuState& state);
+	int64_t GetGameboyTokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetNesTokens();
-	int64_t GetNesTokenValue(int64_t token, EvalResultType& resultType, NesCpuState& state);
+	int64_t GetNesTokenValue(int64_t token, EvalResultType& resultType);
 
 	int64_t ProcessSharedTokens(string token);
 	
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);
-	int32_t PrivateEvaluate(string expression, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool &success);
+	int32_t PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool &success);
 	ExpressionData* PrivateGetRpnList(string expression, bool& success);
 
 protected:
 
 public:
-	ExpressionEvaluator(Debugger* debugger, CpuType cpuType);
+	ExpressionEvaluator(Debugger* debugger, IDebugger* cpuDebugger, CpuType cpuType);
 
-	int32_t Evaluate(ExpressionData &data, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
-	int32_t Evaluate(string expression, BaseState& state, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
+	int32_t Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
+	int32_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
 	ExpressionData GetRpnList(string expression, bool &success);
 
 	bool Validate(string expression);

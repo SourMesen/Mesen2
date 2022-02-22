@@ -16,7 +16,7 @@ protected:
 	RowDataType GetFormatTagType(string& tag) override;
 
 public:
-	GbTraceLogger(Debugger* debugger, GbPpu* ppu);
+	GbTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, GbPpu* ppu);
 	
 	void GetTraceRow(string& output, GbCpuState& cpuState, TraceLogPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void LogPpuState();

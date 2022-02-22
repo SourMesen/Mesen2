@@ -29,10 +29,10 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 
 	_dummyCpu.reset(new DummySpc(_spc->GetSpcRam()));
 
-	_traceLogger.reset(new SpcTraceLogger(debugger, console->GetPpu(), console->GetMemoryManager()));
+	_traceLogger.reset(new SpcTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
 
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Spc, debugger->GetEventManager(CpuType::Snes)));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Spc, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }
 

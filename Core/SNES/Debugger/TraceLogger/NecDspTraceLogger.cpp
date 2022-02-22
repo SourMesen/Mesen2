@@ -8,7 +8,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-NecDspTraceLogger::NecDspTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, CpuType::Gsu)
+NecDspTraceLogger::NecDspTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gsu)
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;

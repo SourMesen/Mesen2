@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "ExpressionEvaluator.h"
+#include "Debugger/ExpressionEvaluator.h"
+#include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/GbTypes.h"
 
 unordered_map<string, int64_t>& ExpressionEvaluator::GetGameboyTokens()
@@ -24,8 +25,9 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetGameboyTokens()
 	return supportedTokens;
 }
 
-int64_t ExpressionEvaluator::GetGameboyTokenValue(int64_t token, EvalResultType& resultType, GbCpuState& s)
+int64_t ExpressionEvaluator::GetGameboyTokenValue(int64_t token, EvalResultType& resultType)
 {
+	GbCpuState& s = (GbCpuState&)((GbDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::RegA: return s.A;
 		case EvalValues::RegB: return s.B;

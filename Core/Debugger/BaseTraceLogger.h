@@ -4,6 +4,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/IDebugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/LabelManager.h"
 #include "Debugger/DebugTypes.h"
@@ -394,7 +395,7 @@ protected:
 	}
 
 public:
-	BaseTraceLogger(Debugger* debugger, CpuType cpuType)
+	BaseTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, CpuType cpuType)
 	{
 		_debugger = debugger;
 		_console = debugger->GetConsole();
@@ -419,7 +420,7 @@ public:
 		_cpuType = cpuType;
 		_cpuMemoryType = DebugUtilities::GetCpuMemoryType(cpuType);
 
-		_expEvaluator.reset(new ExpressionEvaluator(debugger, cpuType));
+		_expEvaluator.reset(new ExpressionEvaluator(debugger, cpuDebugger, cpuType));
 	}
 
 	virtual ~BaseTraceLogger()
@@ -442,7 +443,7 @@ public:
 				pos = BaseTraceLogger::ExecutionLogSize - 1;
 			}
 
-			if(ConditionMatches(_lastState, _lastDisassemblyInfo, operation)) {
+			if(ConditionMatches(_lastDisassemblyInfo, operation)) {
 				AddRow(_lastState, _lastDisassemblyInfo);
 				_pendingLog = false;
 			}
@@ -453,7 +454,7 @@ public:
 	{
 		if(_enabled) {
 			//For the sake of performance, only log data for the CPUs we're actively displaying/logging
-			if(ConditionMatches(cpuState, disassemblyInfo, operation)) {
+			if(ConditionMatches(disassemblyInfo, operation)) {
 				AddRow(cpuState, disassemblyInfo);
 			} else {
 				_pendingLog = true;
@@ -495,11 +496,11 @@ public:
 		return _rowIds[i];
 	}
 
-	bool ConditionMatches(BaseState &state, DisassemblyInfo &disassemblyInfo, MemoryOperationInfo &operationInfo)
+	bool ConditionMatches(DisassemblyInfo &disassemblyInfo, MemoryOperationInfo &operationInfo)
 	{
 		if(!_conditionData.RpnQueue.empty()) {
 			EvalResultType type;
-			if(!_expEvaluator->Evaluate(_conditionData, state, type, operationInfo)) {
+			if(!_expEvaluator->Evaluate(_conditionData, type, operationInfo)) {
 				return false;
 			}
 		}

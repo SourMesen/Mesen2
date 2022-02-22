@@ -6,6 +6,7 @@
 
 class ExpressionEvaluator;
 class Debugger;
+class IDebugger;
 class BaseEventManager;
 struct ExpressionData;
 enum class MemoryOperationType;
@@ -15,7 +16,8 @@ class BreakpointManager
 private:
 	static constexpr int BreakpointTypeCount = (int)MemoryOperationType::PpuRenderingRead + 1;
 
-	Debugger *_debugger;
+	Debugger* _debugger;
+	IDebugger *_cpuDebugger;
 	CpuType _cpuType;
 	BaseEventManager *_eventManager;
 	
@@ -30,7 +32,7 @@ private:
 	int InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints);
 
 public:
-	BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager);
+	BreakpointManager(Debugger *debugger, IDebugger* cpuDebugger, CpuType cpuType, BaseEventManager* eventManager);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t count);
 	

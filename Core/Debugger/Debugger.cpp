@@ -79,7 +79,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 			default: throw std::runtime_error("Unsupported CPU type");
 		}
 
-		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, type));
+		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, _debuggers[(int)type].Debugger.get(), type));
 		_debuggers[(int)type].IgnoreBreakpoints = false;
 	}
 
@@ -100,6 +100,13 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	RefreshCodeCache();
 
 	_executionStopped = false;
+
+#ifdef _DEBUG
+	if(_mainCpuType == CpuType::Snes) {
+		ExpressionEvaluator eval(this, _debuggers[(int)CpuType::Snes].Debugger.get(), CpuType::Snes);
+		eval.RunTests();
+	}
+#endif
 }
 
 Debugger::~Debugger()
@@ -355,12 +362,11 @@ void Debugger::ProcessConfigChange()
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::Register };
-	BaseState& state = _debuggers[(int)cpuType].Debugger->GetState();
 	if(useCache) {
-		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, state, resultType, operationInfo);
+		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, resultType, operationInfo);
 	} else {
-		ExpressionEvaluator expEval(this, cpuType);
-		return expEval.Evaluate(expression, state, resultType, operationInfo);
+		ExpressionEvaluator expEval(this, _debuggers[(int)cpuType].Debugger.get(), cpuType);
+		return expEval.Evaluate(expression, resultType, operationInfo);
 	}
 }
 

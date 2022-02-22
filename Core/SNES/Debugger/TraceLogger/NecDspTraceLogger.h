@@ -20,7 +20,7 @@ protected:
 	void WriteAccFlagsValue(string& output, NecDspAccFlags flags, RowPart& rowPart);
 
 public:
-	NecDspTraceLogger(Debugger* debugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
+	NecDspTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesPpu* ppu, SnesMemoryManager* memoryManager);
 	
 	void GetTraceRow(string& output, NecDspState& cpuState, TraceLogPpuState& ppuState, DisassemblyInfo& disassemblyInfo);
 	void LogPpuState();

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ExpressionEvaluator.h"
 #include "SNES/SpcTypes.h"
+#include "SNES/Debugger/SpcDebugger.h"
 
 unordered_map<string, int64_t>& ExpressionEvaluator::GetSpcTokens()
 {
@@ -16,8 +17,9 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetSpcTokens()
 	return supportedTokens;
 }
 
-int64_t ExpressionEvaluator::GetSpcTokenValue(int64_t token, EvalResultType& resultType, SpcState& s)
+int64_t ExpressionEvaluator::GetSpcTokenValue(int64_t token, EvalResultType& resultType)
 {
+	SnesCpuState& s = (SnesCpuState&)((SpcDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::RegA: return s.A;
 		case EvalValues::RegX: return s.X;

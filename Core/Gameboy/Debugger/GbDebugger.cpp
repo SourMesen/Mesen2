@@ -47,12 +47,12 @@ GbDebugger::GbDebugger(Debugger* debugger)
 
 	_settings = debugger->GetEmulator()->GetSettings();
 	_codeDataLogger.reset(new CodeDataLogger(MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy));
-	_traceLogger.reset(new GbTraceLogger(debugger, _ppu));
+	_traceLogger.reset(new GbTraceLogger(debugger, this, _ppu));
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, CpuType::Gameboy, _eventManager.get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
 	

@@ -8,9 +8,10 @@
 #include "Debugger/BaseEventManager.h"
 #include "MemoryOperationType.h"
 
-BreakpointManager::BreakpointManager(Debugger *debugger, CpuType cpuType, BaseEventManager* eventManager)
+BreakpointManager::BreakpointManager(Debugger *debugger, IDebugger* cpuDebugger, CpuType cpuType, BaseEventManager* eventManager)
 {
 	_debugger = debugger;
+	_cpuDebugger = cpuDebugger;
 	_cpuType = cpuType;
 	_hasBreakpoint = false;
 	
@@ -26,7 +27,7 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 		_hasBreakpointType[i] = false;
 	}
 
-	_bpExpEval.reset(new ExpressionEvaluator(_debugger, _cpuType));
+	_bpExpEval.reset(new ExpressionEvaluator(_debugger, _cpuDebugger, _cpuType));
 
 	for(uint32_t j = 0; j < count; j++) {
 		Breakpoint &bp = breakpoints[j];
@@ -80,27 +81,19 @@ BreakpointType BreakpointManager::GetBreakpointType(MemoryOperationType type)
 
 int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo, AddressInfo &address, bool processMarkedBreakpoints)
 {
-	BaseState* state = nullptr;
 	EvalResultType resultType;
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)operationInfo.Type];
 	for(size_t i = 0, len = breakpoints.size(); i < len; i++) {
 		if(breakpoints[i].Matches(operationInfo, address)) {
-			bool isMatch = !breakpoints[i].HasCondition();
-			if(!isMatch) {
-				if(!state) {
-					//Re-use the same state for all breakpoints (and only get it if a conditional bp exists)
-					state = &_debugger->GetCpuStateRef(_cpuType);
-				}
-				isMatch = _bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], *state, resultType, operationInfo);
+			if(breakpoints[i].HasCondition() && !_bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], resultType, operationInfo)) {
+				continue;
 			}
 
-			if(isMatch) {
-				if(breakpoints[i].IsMarked() && processMarkedBreakpoints) {
-					_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
-				}
-				if(breakpoints[i].IsEnabled()) {
-					return breakpoints[i].GetId();
-				}
+			if(breakpoints[i].IsMarked() && processMarkedBreakpoints) {
+				_eventManager->AddEvent(DebugEventType::Breakpoint, operationInfo, breakpoints[i].GetId());
+			}
+			if(breakpoints[i].IsEnabled()) {
+				return breakpoints[i].GetId();
 			}
 		}
 	}
