@@ -61,10 +61,10 @@ unordered_map<string, int64_t>* ExpressionEvaluator::GetAvailableTokens()
 	switch(_cpuType) {
 		case CpuType::Snes: return &GetSnesTokens();
 		case CpuType::Spc: return &GetSpcTokens();
-		//case CpuType::NecDsp: return &GetNecDspTokens();
+		case CpuType::NecDsp: return &GetNecDspTokens();
 		case CpuType::Sa1: return &GetSnesTokens();
 		case CpuType::Gsu: return &GetGsuTokens();
-		//case CpuType::Cx4: return &GetCx4Tokens();
+		case CpuType::Cx4: return &GetCx4Tokens();
 		case CpuType::Gameboy: return &GetGameboyTokens();
 		case CpuType::Nes: return &GetNesTokens();
 	}
@@ -391,9 +391,6 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 
 					//TODO
 					//case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;
-					//case EvalValues::PpuFrameCount: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.FrameCount : state.Ppu.FrameCount; break;
-					//case EvalValues::PpuCycle: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Cycle : state.Ppu.Cycle; break;
-					//case EvalValues::PpuScanline: token = _cpuType == CpuType::Gameboy ? state.Gameboy.Ppu.Scanline : state.Ppu.Scanline; break;
 					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
 					//case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
 
@@ -404,10 +401,10 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 							switch(_cpuType) {
 								case CpuType::Snes: token = GetSnesTokenValue(token, resultType); break;
 								case CpuType::Spc: token = GetSpcTokenValue(token, resultType); break;
-									//case CpuType::NecDsp: token = GetNecDspTokenValue(token, resultType); break;
+								case CpuType::NecDsp: token = GetNecDspTokenValue(token, resultType); break;
 								case CpuType::Sa1: token = GetSnesTokenValue(token, resultType); break;
 								case CpuType::Gsu: token = GetGsuTokenValue(token, resultType); break;
-									//case CpuType::Cx4: token = GetCx4TokenValue(token, resultType); break;
+								case CpuType::Cx4: token = GetCx4TokenValue(token, resultType); break;
 								case CpuType::Gameboy: token = GetGameboyTokenValue(token, resultType); break;
 								case CpuType::Nes: token = GetNesTokenValue(token, resultType); break;
 							}
@@ -416,6 +413,11 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 				}
 			}
 		} else if(token >= EvalOperators::Multiplication) {
+			if(pos <= 0) {
+				resultType = EvalResultType::Invalid;
+				return 0;
+			}
+
 			right = operandStack[--pos];
 			if(pos > 0 && token <= EvalOperators::LogicalOr) {
 				//Only do this for binary operators
@@ -466,7 +468,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 		}
 		operandStack[pos++] = token;
 		if(pos >= 100) {
-			throw std::runtime_error("Out of stack space");
+			resultType = EvalResultType::Invalid;
+			return 0;
 		}
 	}
 	return (int32_t)operandStack[0];
@@ -479,6 +482,12 @@ ExpressionEvaluator::ExpressionEvaluator(Debugger* debugger, IDebugger* cpuDebug
 	_labelManager = debugger->GetLabelManager();
 	_cpuType = cpuType;
 	_cpuMemory = DebugUtilities::GetCpuMemoryType(cpuType);
+}
+
+bool ExpressionEvaluator::ReturnBool(int64_t value, EvalResultType& resultType)
+{
+	resultType = EvalResultType::Boolean;
+	return value != 0;
 }
 
 ExpressionData ExpressionEvaluator::GetRpnList(string expression, bool &success)

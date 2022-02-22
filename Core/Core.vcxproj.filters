@@ -1272,6 +1272,8 @@
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.NecDsp.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SNES">

@@ -369,8 +369,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.NecDsp.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Nes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />

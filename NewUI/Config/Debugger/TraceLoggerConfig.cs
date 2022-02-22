@@ -52,7 +52,7 @@ namespace Mesen.Config
 
 			CpuConfig[CpuType.NecDsp] = new TraceLoggerCpuConfig() {
 				Enabled = true,
-				Format = "[Disassembly][Align,38] A:[A,4h] [FlagsA] B:[A,4h] [FlagsB] K:[K,4h] L:[L,4h] M:[M,4h] N:[N,4h] RP:[RP,4h] DP:[DP,4h] DR:[DR,4h] SR:[SR,4h] TR:[TR,4h] TRB:[TRB,4h] H:[Cycle,3] V:[Scanline,3]"
+				Format = "[Disassembly][Align,38] A:[A,4h] [FlagsA] B:[B,4h] [FlagsB] K:[K,4h] L:[L,4h] M:[M,4h] N:[N,4h] RP:[RP,4h] DP:[DP,4h] DR:[DR,4h] SR:[SR,4h] TR:[TR,4h] TRB:[TRB,4h] H:[Cycle,3] V:[Scanline,3]"
 			};
 
 			CpuConfig[CpuType.Nes] = new TraceLoggerCpuConfig() {

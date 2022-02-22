@@ -53,7 +53,17 @@ enum EvalValues : int64_t
 	RegX,
 	RegY,
 	RegSP,
+
 	RegPS,
+	RegPS_Carry,
+	RegPS_Zero,
+	RegPS_Interrupt,
+	RegPS_Memory,
+	RegPS_Index,
+	RegPS_Decimal,
+	RegPS_Overflow,
+	RegPS_Negative,
+
 	RegPC,
 	RegOpPC,
 	PpuFrameCount,
@@ -103,6 +113,28 @@ enum EvalValues : int64_t
 	RegBC,
 	RegDE,
 	RegHL,
+
+	RegTR,
+	RegTRB,
+	RegRP,
+	RegDP,
+	RegDR,
+	RegSR,
+	RegK,
+	RegM,
+	RegN,
+
+	RegPB,
+	RegP,
+	RegMult,
+	
+	RegMDR,
+	RegMAR,
+	RegDPR,
+
+	Sprite0Hit,
+	VerticalBlank,
+	SpriteOverflow,
 
 	FirstLabelIndex,
 };
@@ -164,17 +196,19 @@ private:
 	unordered_map<string, int64_t>& GetGsuTokens();
 	int64_t GetGsuTokenValue(int64_t token, EvalResultType& resultType);
 
-	/*unordered_map<string, int64_t>& GetCx4Tokens();
+	unordered_map<string, int64_t>& GetCx4Tokens();
 	int64_t GetCx4TokenValue(int64_t token, EvalResultType& resultType);
-
+	
 	unordered_map<string, int64_t>& GetNecDspTokens();
-	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType);*/
+	int64_t GetNecDspTokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetGameboyTokens();
 	int64_t GetGameboyTokenValue(int64_t token, EvalResultType& resultType);
 
 	unordered_map<string, int64_t>& GetNesTokens();
 	int64_t GetNesTokenValue(int64_t token, EvalResultType& resultType);
+
+	bool ReturnBool(int64_t value, EvalResultType& resultType);
 
 	int64_t ProcessSharedTokens(string token);
 	

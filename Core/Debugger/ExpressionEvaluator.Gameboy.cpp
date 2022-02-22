@@ -20,6 +20,10 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetGameboyTokens()
 		{ "hl", EvalValues::RegHL },
 		{ "sp", EvalValues::RegSP },
 		{ "pc", EvalValues::RegPC },
+
+		{ "frame", EvalValues::PpuFrameCount },
+		{ "cycle", EvalValues::PpuCycle },
+		{ "scanline", EvalValues::PpuScanline }, 
 	};
 
 	return supportedTokens;
@@ -27,6 +31,12 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetGameboyTokens()
 
 int64_t ExpressionEvaluator::GetGameboyTokenValue(int64_t token, EvalResultType& resultType)
 {
+	auto ppu = [this]() -> GbPpuState {
+		GbPpuState ppu;
+		((GbDebugger*)_cpuDebugger)->GetPpuState(ppu);
+		return ppu;
+	};
+
 	GbCpuState& s = (GbCpuState&)((GbDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::RegA: return s.A;
@@ -43,6 +53,11 @@ int64_t ExpressionEvaluator::GetGameboyTokenValue(int64_t token, EvalResultType&
 		case EvalValues::RegHL: return (s.H << 8) | s.L;
 		case EvalValues::RegSP: return s.SP;
 		case EvalValues::RegPC: return s.PC;
+
+		case EvalValues::PpuFrameCount: return ppu().FrameCount;
+		case EvalValues::PpuCycle: return ppu().Cycle;
+		case EvalValues::PpuScanline: return ppu().Scanline;
+
 		default: return 0;
 	}
 }
