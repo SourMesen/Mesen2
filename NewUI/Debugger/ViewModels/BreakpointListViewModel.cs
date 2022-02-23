@@ -10,15 +10,17 @@ using Mesen.Debugger.Utilities;
 using Mesen.Config;
 using Mesen.Debugger.Windows;
 using Avalonia.Controls;
-using System.Collections;
 using Mesen.ViewModels;
 using System.ComponentModel;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointListViewModel : ViewModelBase
 	{
-		[Reactive] public List<BreakpointViewModel> Breakpoints { get; private set; } = new List<BreakpointViewModel>();
+		[Reactive] public SwappableList<BreakpointViewModel> Breakpoints { get; private set; } = new();
+		[Reactive] public int SelectedIndex { get; set; } = -1;
+
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
@@ -34,7 +36,15 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateBreakpoints()
 		{
-			Breakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
+			int selection = SelectedIndex;
+			Breakpoints.Swap(BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)));
+			if(selection >= 0) {
+				if(selection < Breakpoints.Count) {
+					SelectedIndex = selection;
+				} else {
+					SelectedIndex = Breakpoints.Count - 1;
+				}
+			}
 		}
 
 		public void RefreshBreakpointList()

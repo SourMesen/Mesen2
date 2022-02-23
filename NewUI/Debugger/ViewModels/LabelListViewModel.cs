@@ -7,6 +7,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -18,10 +19,11 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class LabelListViewModel : ViewModelBase
 	{
+		[Reactive] public SwappableList<LabelViewModel> Labels { get; private set; } = new();
+		[Reactive] public int SelectedIndex { get; set; } = -1;
+
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
-
-		[Reactive] public List<LabelViewModel> Labels { get; private set; } = new();
 
 		[Obsolete("For designer only")]
 		public LabelListViewModel() : this(CpuType.Snes, new()) { }
@@ -35,7 +37,15 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateLabelList()
 		{
-  			Labels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
+			int selection = SelectedIndex;
+  			Labels.Swap(LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)));
+			if(selection >= 0) {
+				if(selection < Labels.Count) {
+					SelectedIndex = selection;
+				} else {
+					SelectedIndex = Labels.Count - 1;
+				}
+			}
 		}
 
 		public void RefreshLabelList()

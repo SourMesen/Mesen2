@@ -34,6 +34,7 @@
 		<c:MesenDataGrid
 			Name="DataGrid"
 			Items="{CompiledBinding Labels}"
+			SelectedIndex="{CompiledBinding SelectedIndex}"
 			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataGrid.Columns>

@@ -4,12 +4,13 @@ using System.Reactive.Linq;
 using System.Linq;
 using Mesen.Interop;
 using Mesen.ViewModels;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class WatchListViewModel : ViewModelBase
 	{
-		[Reactive] public List<WatchValueInfo> WatchEntries { get; private set; } = new List<WatchValueInfo>();
+		[Reactive] public SwappableList<WatchValueInfo> WatchEntries { get; private set; } = new();
 		[Reactive] public int SelectedIndex { get; set; } = -1;
 
 		public WatchManager Manager { get; }
@@ -25,7 +26,7 @@ namespace Mesen.Debugger.ViewModels
 		public void UpdateWatch()
 		{
 			int selection = SelectedIndex;
-			WatchEntries = Manager.GetWatchContent(WatchEntries);
+			WatchEntries.Swap(Manager.GetWatchContent(WatchEntries));
 			if(selection >= 0) {
 				if(selection < WatchEntries.Count) {
 					SelectedIndex = selection;
