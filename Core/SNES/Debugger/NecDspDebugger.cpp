@@ -42,14 +42,7 @@ void NecDspDebugger::ProcessInstruction()
 	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
 
-	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled)) {
-		_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
-
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-			_traceLogger->Log(_dsp->GetState(), disInfo, operation);
-		}
-	}
+	_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
 	_prevProgramCounter = addr;
 	_step->ProcessCpuExec();
@@ -58,7 +51,13 @@ void NecDspDebugger::ProcessInstruction()
 
 void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	//TODO
+	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
+	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
+
+	if(_traceLogger->IsEnabled()) {
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
+		_traceLogger->Log(_dsp->GetState(), disInfo, operation);
+	}
 }
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -89,6 +88,24 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+DebuggerFeatures NecDspDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	return features;
+}
+
+void NecDspDebugger::SetProgramCounter(uint32_t addr)
+{
+	_dsp->GetState().PC = addr / 3;
+	_prevProgramCounter = addr;
+}
+
+uint32_t NecDspDebugger::GetProgramCounter(bool getInstPc)
+{
+	return getInstPc ? _prevProgramCounter : (_dsp->GetState().PC * 3);
 }
 
 CallstackManager* NecDspDebugger::GetCallstackManager()

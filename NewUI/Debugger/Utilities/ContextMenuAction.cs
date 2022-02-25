@@ -93,6 +93,8 @@ namespace Mesen.Debugger.Utilities
 		public Func<bool>? IsEnabled { get; set; }
 		public Func<bool>? IsSelected { get; set; }
 		public Func<bool>? IsVisible { get; set; }
+		
+		public bool AllowedWhenHidden { get; set; }
 
 		public abstract string ShortcutText { get; }
 
@@ -117,7 +119,7 @@ namespace Mesen.Debugger.Utilities
 			set
 			{
 				_onClick = () => {
-					if((IsVisible == null || IsVisible()) && (IsEnabled == null || IsEnabled())) {
+					if((IsVisible == null || AllowedWhenHidden || IsVisible()) && (IsEnabled == null || IsEnabled())) {
 						if(ActionType == ActionType.Exit) {
 							//When using exit, the command is disposed while the command is running, which causes a crash
 							//Run the code in a posted action to prevent the crash
@@ -598,5 +600,7 @@ namespace Mesen.Debugger.Utilities
 		LoadCdl,
 		[IconFile("SaveFloppy")]
 		SaveCdl,
+
+		MoveProgramCounter,
 	}
 }

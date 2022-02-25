@@ -58,6 +58,7 @@ class NesDebugger final : public IDebugger
 
 	bool IsRegister(MemoryOperationInfo& op);
 
+
 public:
 	NesDebugger(Debugger* debugger);
 
@@ -73,6 +74,10 @@ public:
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
+
+	DebuggerFeatures GetSupportedFeatures() override;
+	void SetProgramCounter(uint32_t addr) override;
+	uint32_t GetProgramCounter(bool getInstPc) override;
 
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;

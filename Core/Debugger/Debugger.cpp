@@ -80,7 +80,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 		}
 
 		_debuggers[(int)type].Evaluator.reset(new ExpressionEvaluator(this, _debuggers[(int)type].Debugger.get(), type));
-		_debuggers[(int)type].IgnoreBreakpoints = false;
 	}
 
 	for(CpuType type : _cpuTypes) {
@@ -146,7 +145,8 @@ DebuggerType* Debugger::GetDebugger()
 template<CpuType type>
 void Debugger::ProcessInstruction()
 {
-	_debuggers[(int)type].IgnoreBreakpoints = false;
+	_debuggers[(int)type].Debugger->IgnoreBreakpoints = false;
+	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = true;
 
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
@@ -158,6 +158,8 @@ void Debugger::ProcessInstruction()
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessInstruction(); break;
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessInstruction(); break;
 	}
+
+	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = false;
 }
 
 template<CpuType type>
@@ -244,7 +246,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		_emu->GetSoundMixer()->StopAudio();
 
 		if(_settings->CheckDebuggerFlag(DebuggerFlags::SingleBreakpointPerInstruction)) {
-			_debuggers[(int)sourceCpu].IgnoreBreakpoints = true;
+			_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints = true;
 		}
 
 		//Only trigger code break event if the pause was caused by user action
@@ -255,6 +257,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 		if(operation) {
 			evt.Operation = *operation;
 		}
+
 		_waitForBreakResume = true;
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
 		notificationSent = true;
@@ -274,10 +277,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, true);
-	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && !_debuggers[(int)sourceCpu].IgnoreBreakpoints)) {
+	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && !_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints)) {
 		SleepUntilResume(sourceCpu, step.Source);
 	} else {
-		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
+		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints) {
 			SleepUntilResume(sourceCpu, BreakSource::Breakpoint, &operation, breakpointId);
 		}
 	}
@@ -285,7 +288,7 @@ void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, Brea
 
 void Debugger::ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
-	if(_debuggers[(int)sourceCpu].IgnoreBreakpoints) {
+	if(_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints) {
 		return;
 	}
 
@@ -546,6 +549,26 @@ void Debugger::SetPpuState(BaseState& state, CpuType cpuType)
 void Debugger::GetConsoleState(BaseState& state, ConsoleType consoleType)
 {
 	_console->GetConsoleState(state, consoleType);
+}
+
+DebuggerFeatures Debugger::GetDebuggerFeatures(CpuType cpuType)
+{
+	if(_debuggers[(int)cpuType].Debugger) {
+		return _debuggers[(int)cpuType].Debugger->GetSupportedFeatures();
+	}
+	return {};
+}
+
+void Debugger::SetProgramCounter(CpuType cpuType, uint32_t addr)
+{
+	if(_debuggers[(int)cpuType].Debugger->AllowChangeProgramCounter) {
+		_debuggers[(int)cpuType].Debugger->SetProgramCounter(addr);
+	}
+}
+
+uint32_t Debugger::GetProgramCounter(CpuType cpuType, bool getInstPc)
+{
+	return _debuggers[(int)cpuType].Debugger->GetProgramCounter(getInstPc);
 }
 
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)

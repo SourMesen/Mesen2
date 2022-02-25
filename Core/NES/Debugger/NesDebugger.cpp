@@ -95,11 +95,6 @@ void NesDebugger::ProcessInstruction()
 		}
 	}
 
-	if(_traceLogger->IsEnabled()) {
-		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, CpuType::Nes);
-		_traceLogger->Log(state, disInfo, operation);
-	}
-
 	uint32_t pc = state.PC;
 	if(_prevOpCode == 0x20) {
 		//JSR
@@ -156,6 +151,12 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			NesCpuState& state = _cpu->GetState();
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, CpuType::Nes);
+			_traceLogger->Log(state, disInfo, operation);
+		}
+
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
@@ -310,6 +311,30 @@ bool NesDebugger::IsRegister(MemoryOperationInfo& op)
 		return true;
 	}
 	return false;
+}
+
+DebuggerFeatures NesDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.RunToIrq = true;
+	features.RunToNmi = true;
+	features.StepOver = true;
+	features.StepOut = true;
+	features.CallStack = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	return features;
+}
+
+void NesDebugger::SetProgramCounter(uint32_t addr)
+{
+	_cpu->GetState().PC = (uint16_t)addr;
+	_prevOpCode = _memoryManager->DebugRead(addr);
+	_prevProgramCounter = (uint16_t)addr;
+}
+
+uint32_t NesDebugger::GetProgramCounter(bool getInstPc)
+{
+	return getInstPc ? _prevProgramCounter : _cpu->GetState().PC;
 }
 
 CallstackManager* NesDebugger::GetCallstackManager()

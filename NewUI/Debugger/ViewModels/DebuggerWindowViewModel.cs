@@ -97,7 +97,7 @@ namespace Mesen.Debugger.ViewModels
 			Config = ConfigManager.Config.Debug.Debugger;
 
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
-			Disassembly = new DisassemblyViewModel(ConfigManager.Config.Debug, CpuType);
+			Disassembly = new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
 			LabelList = new LabelListViewModel(CpuType, Disassembly);
 			CallStack = new CallStackViewModel(CpuType, Disassembly);
@@ -225,11 +225,11 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private void UpdateDisassembly(bool scrollToActiveAddress)
+		public void UpdateDisassembly(bool scrollToActiveAddress)
 		{
 			if(scrollToActiveAddress) {
 				//Scroll to the active address and highlight it
-				Disassembly.SetActiveAddress((int)DebugUtilities.GetProgramCounter(CpuType));
+				Disassembly.SetActiveAddress((int)DebugApi.GetProgramCounter(CpuType, true));
 				if(!EmuApi.IsPaused()) {
 					//Clear the highlight if the emulation is still running
 					Disassembly.SetActiveAddress(null);
@@ -432,16 +432,21 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.StepOver,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOver),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepOver,
+					AllowedWhenHidden = true,
 					OnClick = () => Step(StepType.StepOver, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StepOut,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOut),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepOut,
+					AllowedWhenHidden = true,
 					OnClick = () => Step(StepType.StepOut, 1)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StepBack,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBack),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepBack,
 					IsEnabled = () => false,
 					OnClick = () => { } //TODO
 				},
@@ -464,16 +469,23 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => Step(StepType.PpuFrame, 1)
 				},
 
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() {
+					IsVisible = () => {
+						DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
+						return features.RunToNmi || features.RunToIrq;
+					}
+				},
 				
 				new ContextMenuAction() {
 					ActionType = ActionType.RunToNmi,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToNmi),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).RunToNmi,
 					OnClick = () => Step(StepType.RunToNmi)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.RunToIrq,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToIrq),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).RunToIrq,
 					OnClick = () => Step(StepType.RunToIrq)
 				},
 				

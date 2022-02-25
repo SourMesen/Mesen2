@@ -51,13 +51,8 @@ void GsuDebugger::ProcessInstruction()
 		_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
 	}
 
-	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
+	if(_settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
 		_disassembler->BuildCache(addressInfo, state.SFR.GetFlagsHigh() & 0x13, CpuType::Gsu);
-
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
-			_traceLogger->Log(state, disInfo, operation);
-		}
 	}
 
 	_prevOpCode = state.ProgramReadBuffer;
@@ -72,8 +67,13 @@ void GsuDebugger::ProcessInstruction()
 void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
+	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gsu);
+			_traceLogger->Log(_gsu->GetState(), disInfo, operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
@@ -81,7 +81,6 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
-		MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
 
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
@@ -128,6 +127,17 @@ void GsuDebugger::Step(int32_t stepCount, StepType type)
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+void GsuDebugger::SetProgramCounter(uint32_t addr)
+{
+	//Not implemented
+}
+
+uint32_t GsuDebugger::GetProgramCounter(bool getInstPc)
+{
+	GsuState& state = _gsu->GetState();
+	return getInstPc ? _prevProgramCounter : ((state.ProgramBank << 16) | state.R[15]);
 }
 
 BreakpointManager* GsuDebugger::GetBreakpointManager()

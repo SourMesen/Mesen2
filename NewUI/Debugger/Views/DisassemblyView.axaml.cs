@@ -11,6 +11,7 @@ using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,6 +20,8 @@ namespace Mesen.Debugger.Views
 	public class DisassemblyView : UserControl
 	{
 		private DisassemblyViewModel Model => (DisassemblyViewModel)DataContext!;
+		private CpuType CpuType => Model.CpuType;
+
 		private LocationInfo? _mouseOverCodeLocation;
 		private LocationInfo? _contextMenuLocation;
 		private ContextMenu _bpMarginContextMenu;
@@ -57,7 +60,7 @@ namespace Mesen.Debugger.Views
 		{
 			_mainContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
 				MarkSelectionHelper.GetAction(
-					() => Model.DataProvider.CpuType.ToMemoryType(),
+					() => CpuType.ToMemoryType(),
 					() => Model.SelectionStart,
 					() => Model.SelectionEnd,
 					() => Model.Refresh()
@@ -65,10 +68,10 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.EditSelectedCode,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditSelectedCode),
-					IsEnabled = () => Model.DataProvider.CpuType.SupportsAssembler() && EmuApi.IsPaused(),
+					IsEnabled = () => CpuType.SupportsAssembler() && EmuApi.IsPaused(),
 					OnClick = () => {
 						string code = Model.GetSelection(false, false, true, false, out int byteCount);
-						AssemblerWindow.EditCode(Model.DataProvider.CpuType, Model.SelectionStart, code, byteCount);
+						AssemblerWindow.EditCode(CpuType, Model.SelectionStart, code, byteCount);
 					}
 				},
 				new ContextMenuAction() {
@@ -84,9 +87,9 @@ namespace Mesen.Debugger.Views
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						} else if(ActionLocation.RelAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.RelAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.ToggleBreakpoint(ActionLocation.RelAddress.Value, CpuType);
 						}
 					}
 				},
@@ -97,9 +100,9 @@ namespace Mesen.Debugger.Views
 					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
 					OnClick = () => {
 						if(ActionLocation.Label != null) {
-							WatchManager.GetWatchManager(Model.DataProvider.CpuType).AddWatch("[" + ActionLocation.Label.Label + "]");
+							WatchManager.GetWatchManager(CpuType).AddWatch("[" + ActionLocation.Label.Label + "]");
 						} else if(ActionLocation.RelAddress != null) {
-							WatchManager.GetWatchManager(Model.DataProvider.CpuType).AddWatch("[$" + ActionLocation.RelAddress.Value.Address.ToString(GetFormatString()) + "]");
+							WatchManager.GetWatchManager(CpuType).AddWatch("[$" + ActionLocation.RelAddress.Value.Address.ToString(GetFormatString()) + "]");
 						}
 					}
 				},
@@ -111,9 +114,9 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						CodeLabel? label = ActionLocation.Label ?? (ActionLocation.AbsAddress.HasValue ? LabelManager.GetLabel(ActionLocation.AbsAddress.Value) : null);
 						if(label != null) {
-							LabelEditWindow.EditLabel(Model.DataProvider.CpuType, this, label);
+							LabelEditWindow.EditLabel(CpuType, this, label);
 						} else if(ActionLocation.AbsAddress != null) {
-							LabelEditWindow.EditLabel(Model.DataProvider.CpuType, this, new CodeLabel(ActionLocation.AbsAddress.Value));
+							LabelEditWindow.EditLabel(CpuType, this, new CodeLabel(ActionLocation.AbsAddress.Value));
 						}
 					}
 				},
@@ -127,6 +130,21 @@ namespace Mesen.Debugger.Views
 							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.RelAddress.Value.Type, ActionLocation.RelAddress.Value.Address);
 						} else if(ActionLocation.AbsAddress != null) {
 							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.AbsAddress.Value.Type, ActionLocation.AbsAddress.Value.Address);
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.MoveProgramCounter,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_MoveProgramCounter),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.RelAddress != null && DebugApi.GetDebuggerFeatures(CpuType).ChangeProgramCounter,
+					OnClick = () => {
+						if(ActionLocation.RelAddress != null) {
+							Model.Debugger.UpdateConsoleState();
+							DebugApi.SetProgramCounter(CpuType, (uint)ActionLocation.RelAddress.Value.Address);
+							Model.Debugger.ConsoleStatus?.UpdateUiState();
+							Model.Debugger.UpdateDisassembly(true);
 						}
 					}
 				},
@@ -150,7 +168,7 @@ namespace Mesen.Debugger.Views
 		{
 			Breakpoint? GetBreakpoint()
 			{
-				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType) : null;
+				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, CpuType) : null;
 			}
 
 			_bpMarginContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
@@ -160,7 +178,7 @@ namespace Mesen.Debugger.Views
 					IsVisible = () => GetBreakpoint() == null,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
 				},
@@ -170,7 +188,7 @@ namespace Mesen.Debugger.Views
 					IsVisible = () => GetBreakpoint() != null,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
 				},
@@ -181,7 +199,7 @@ namespace Mesen.Debugger.Views
 					IsEnabled = () => GetBreakpoint()?.Enabled == false,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
 				},
@@ -192,7 +210,7 @@ namespace Mesen.Debugger.Views
 					IsEnabled = () => GetBreakpoint()?.Enabled == true,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, Model.DataProvider.CpuType);
+							BreakpointManager.EnableDisableBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
 				},
@@ -211,7 +229,7 @@ namespace Mesen.Debugger.Views
 
 		private string GetFormatString()
 		{
-			return Model.DataProvider.CpuType.ToMemoryType().GetFormatString();
+			return CpuType.ToMemoryType().GetFormatString();
 		}
 
 		private string GetHint(LocationInfo? codeLoc)
@@ -259,7 +277,7 @@ namespace Mesen.Debugger.Views
 
 		private LocationInfo GetSelectedRowLocation()
 		{
-			CpuType cpuType = Model.DataProvider.CpuType;
+			CpuType cpuType = CpuType;
 			AddressInfo relAddress = new AddressInfo() {
 				Address = Model.SelectedRowAddress,
 				Type = cpuType.ToMemoryType()
@@ -322,6 +340,8 @@ namespace Mesen.Debugger.Views
 					ToolTip.SetHorizontalOffset(this, 15);
 					ToolTip.SetIsOpen(this, true);
 				}
+			} else {
+				_mouseOverCodeLocation = null;
 			}
 
 			if(tooltip == null) {

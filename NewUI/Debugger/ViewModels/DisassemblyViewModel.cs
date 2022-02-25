@@ -18,6 +18,8 @@ namespace Mesen.Debugger.ViewModels
 	public class DisassemblyViewModel : ViewModelBase
 	{
 		public ICodeDataProvider DataProvider { get; }
+		public CpuType CpuType { get; }
+		public DebuggerWindowViewModel Debugger { get; }
 
 		[Reactive] public BaseStyleProvider StyleProvider { get; set; }
 		[Reactive] public int ScrollPosition { get; set; } = 0;
@@ -38,11 +40,13 @@ namespace Mesen.Debugger.ViewModels
 		private int _ignoreScrollUpdates = 0;
 
 		[Obsolete("For designer only")]
-		public DisassemblyViewModel(): this(new DebugConfig(), CpuType.Snes) { }
+		public DisassemblyViewModel(): this(new DebuggerWindowViewModel(), new DebugConfig(), CpuType.Snes) { }
 
-		public DisassemblyViewModel(DebugConfig config, CpuType cpuType)
+		public DisassemblyViewModel(DebuggerWindowViewModel debugger, DebugConfig config, CpuType cpuType)
 		{
 			Config = config;
+			CpuType = cpuType;
+			Debugger = debugger;
 			StyleProvider = new BaseStyleProvider(this);
 			DataProvider = new CodeDataProvider(cpuType);
 

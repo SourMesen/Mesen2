@@ -818,6 +818,7 @@
     <ClInclude Include="Gameboy\Input\GbController.h" />
     <ClInclude Include="NES\Debugger\DummyNesCpu.h" />
     <ClInclude Include="Gameboy\Debugger\DummyGbCpu.h" />
+    <ClInclude Include="Debugger\DebuggerFeatures.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\SnesCpu.cpp">

@@ -124,7 +124,7 @@ namespace Mesen.Debugger.Utilities
 
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					DebugWorkspaceManager.Load();
+					Dispatcher.UIThread.Post(() => DebugWorkspaceManager.Load());
 					break;
 
 				case ConsoleNotificationType.EmulationStopped:

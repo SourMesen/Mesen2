@@ -83,18 +83,11 @@ void GbDebugger::ProcessInstruction()
 	uint8_t value = _gameboy->GetMemoryManager()->DebugRead(pc);
 	MemoryOperationInfo operation(pc, value, MemoryOperationType::ExecOpCode, MemoryType::GameboyMemory);
 
-	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
-		if(addressInfo.Address >= 0) {
-			if(addressInfo.Type == MemoryType::GbPrgRom) {
-				_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
-			}
-			_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
+	if(addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::GbPrgRom) {
+			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
 		}
-
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, pc, 0, CpuType::Gameboy);
-			_traceLogger->Log(state, disInfo, operation);
-		}
+		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}
 
 	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
@@ -131,7 +124,7 @@ void GbDebugger::ProcessInstruction()
 				break;
 		}
 	}
-
+	
 	_prevOpCode = value;
 	_prevProgramCounter = pc;
 
@@ -158,6 +151,10 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
+			_traceLogger->Log(_cpu->GetState(), disInfo, operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
@@ -295,6 +292,30 @@ void GbDebugger::ProcessPpuCycle()
 			}
 		}
 	}
+}
+
+DebuggerFeatures GbDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.RunToIrq = true;
+	features.RunToNmi = false;
+	features.StepOver = true;
+	features.StepOut = true;
+	features.CallStack = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	return features;
+}
+
+void GbDebugger::SetProgramCounter(uint32_t addr)
+{
+	_cpu->GetState().PC = (uint16_t)addr;
+	_prevOpCode = _gameboy->GetMemoryManager()->DebugRead((uint16_t)addr);
+	_prevProgramCounter = (uint16_t)addr;
+}
+
+uint32_t GbDebugger::GetProgramCounter(bool getInstPc)
+{
+	return getInstPc ? _prevProgramCounter : _cpu->GetState().PC;
 }
 
 BaseEventManager* GbDebugger::GetEventManager()

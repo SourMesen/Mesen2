@@ -44,6 +44,9 @@ public:
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
 
+	void SetProgramCounter(uint32_t addr) override;
+	uint32_t GetProgramCounter(bool getInstPc) override;
+
 	BreakpointManager* GetBreakpointManager() override;
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;

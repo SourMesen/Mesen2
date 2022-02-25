@@ -128,11 +128,6 @@ void SnesDebugger::ProcessInstruction()
 		}
 	}
 
-	if(_traceLogger->IsEnabled()) {
-		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-		_traceLogger->Log(state, disInfo, operation);
-	}
-
 	if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
 		//JSR, JSL
 		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
@@ -196,6 +191,10 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 	}
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
+			_traceLogger->Log(state, disInfo, operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
@@ -352,6 +351,32 @@ SnesCpuState& SnesDebugger::GetCpuState()
 bool SnesDebugger::IsRegister(uint32_t addr)
 {
 	return _cpuType == CpuType::Snes && _memoryManager->IsRegister(addr);
+}
+
+DebuggerFeatures SnesDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.RunToIrq = true;
+	features.RunToNmi = true;
+	features.StepOver = true;
+	features.StepOut = true;
+	features.CallStack = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	return features;
+}
+
+void SnesDebugger::SetProgramCounter(uint32_t addr)
+{
+	GetCpuState().PC = (uint16_t)addr;
+	GetCpuState().K = (uint8_t)(addr >> 16);
+	
+	_prevOpCode = _memoryManager->Peek(addr);
+	_prevProgramCounter = addr;
+}
+
+uint32_t SnesDebugger::GetProgramCounter(bool getInstPc)
+{
+	return getInstPc ? _prevProgramCounter : ((GetCpuState().K << 16) | GetCpuState().PC);
 }
 
 CallstackManager* SnesDebugger::GetCallstackManager()

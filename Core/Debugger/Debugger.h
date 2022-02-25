@@ -3,6 +3,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Debugger/DebugUtilities.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/DebuggerFeatures.h"
 #include "Shared/SettingTypes.h"
 
 class IConsole;
@@ -44,7 +45,6 @@ struct CpuInfo
 {
 	unique_ptr<IDebugger> Debugger;
 	unique_ptr<ExpressionEvaluator> Evaluator;
-	bool IgnoreBreakpoints;
 };
 
 class Debugger
@@ -128,6 +128,10 @@ public:
 	void SetPpuState(BaseState& srcState, CpuType cpuType);
 
 	void GetConsoleState(BaseState& state, ConsoleType consoleType);
+
+	DebuggerFeatures GetDebuggerFeatures(CpuType cpuType);
+	uint32_t GetProgramCounter(CpuType cpuType, bool forInstStart);
+	void SetProgramCounter(CpuType cpuType, uint32_t addr);
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);

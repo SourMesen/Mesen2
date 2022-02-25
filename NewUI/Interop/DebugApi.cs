@@ -74,6 +74,21 @@ namespace Mesen.Interop
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
+		public static BaseState GetCpuState(CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Snes => GetCpuState<SnesCpuState>(cpuType),
+				CpuType.Spc => GetCpuState<SpcState>(cpuType),
+				CpuType.NecDsp => GetCpuState<NecDspState>(cpuType),
+				CpuType.Sa1 => GetCpuState<SnesCpuState>(cpuType),
+				CpuType.Gsu => GetCpuState<GsuState>(cpuType),
+				CpuType.Cx4 => GetCpuState<Cx4State>(cpuType),
+				CpuType.Gameboy => GetCpuState<GbCpuState>(cpuType),
+				CpuType.Nes => GetCpuState<NesCpuState>(cpuType),
+				_ => throw new Exception("Unsupport cpu type")
+			};
+		}
+
 		[DllImport(DllPath)] private static extern void GetPpuState(IntPtr state, CpuType cpuType);
 		public unsafe static T GetPpuState<T>(CpuType cpuType) where T : struct, BaseState
 		{
@@ -122,6 +137,9 @@ namespace Mesen.Interop
 			return Marshal.PtrToStructure<T>((IntPtr)ptr);
 		}
 
+		[DllImport(DllPath)] public static extern void SetProgramCounter(CpuType cpuType, UInt32 address);
+		[DllImport(DllPath)] public static extern UInt32 GetProgramCounter(CpuType cpuType, [MarshalAs(UnmanagedType.I1)] bool getInstPc);
+
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
 		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
@@ -129,6 +147,8 @@ namespace Mesen.Interop
 		public static string GetScriptLog(Int32 scriptId) { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetScriptLogWrapper(scriptId)).Replace("\n", Environment.NewLine); }
 
 		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
+
+		[DllImport(DllPath)] public static extern DebuggerFeatures GetDebuggerFeatures(CpuType type);
 
 		[DllImport(DllPath)] public static extern Int32 GetMemorySize(MemoryType type);
 		[DllImport(DllPath)] public static extern Byte GetMemoryValue(MemoryType type, UInt32 address);
@@ -377,8 +397,13 @@ namespace Mesen.Interop
 		{
 			return cpuType switch {
 				CpuType.Snes => state is SnesCpuState,
-				CpuType.Nes => state is NesCpuState,
+				CpuType.Spc => state is SpcState,
+				CpuType.NecDsp => state is NecDspState,
+				CpuType.Sa1 => state is SnesCpuState,
+				CpuType.Gsu => state is GsuState,
+				CpuType.Cx4 => state is Cx4State,
 				CpuType.Gameboy => state is GbCpuState,
+				CpuType.Nes => state is NesCpuState,
 				_ => false
 			};
 		}
@@ -856,6 +881,17 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1000)]
 		public byte[] Format;
+	}
+
+	public struct DebuggerFeatures
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool RunToIrq;
+		[MarshalAs(UnmanagedType.I1)] public bool RunToNmi;
+		[MarshalAs(UnmanagedType.I1)] public bool StepOver;
+		[MarshalAs(UnmanagedType.I1)] public bool StepOut;
+		[MarshalAs(UnmanagedType.I1)] public bool StepBack;
+		[MarshalAs(UnmanagedType.I1)] public bool ChangeProgramCounter;
+		[MarshalAs(UnmanagedType.I1)] public bool CallStack;
 	}
 
 	public enum EvalResultType

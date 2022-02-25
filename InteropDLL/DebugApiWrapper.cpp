@@ -102,6 +102,10 @@ extern "C"
 	DllExport void __stdcall SetCpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, SetCpuState(state, cpuType)); }
 	DllExport void __stdcall SetPpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, SetPpuState(state, cpuType)); }
 
+	DllExport uint32_t __stdcall GetProgramCounter(CpuType cpuType, bool getInstPc) { return WithDebugger(uint32_t, GetProgramCounter(cpuType, getInstPc)); }
+	DllExport void __stdcall SetProgramCounter(CpuType cpuType, uint32_t addr) { WithDebugger(void, SetProgramCounter(cpuType, addr)); }
+	DllExport DebuggerFeatures __stdcall GetDebuggerFeatures(CpuType cpuType) { return WithDebugger(DebuggerFeatures, GetDebuggerFeatures(cpuType)); }
+
 	DllExport const char* __stdcall GetDebuggerLog()
 	{
 		_logString = WithDebugger(string, GetLog());

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "DebuggerFeatures.h"
 
 enum class StepType;
 class BreakpointManager;
@@ -16,6 +17,9 @@ enum class MemoryOperationType;
 class IDebugger
 {
 public:
+	bool IgnoreBreakpoints = false;
+	bool AllowChangeProgramCounter = false;
+
 	virtual ~IDebugger() = default;
 
 	virtual void Step(int32_t stepCount, StepType type) = 0;
@@ -26,6 +30,11 @@ public:
 	virtual void ProcessConfigChange() {}
 
 	virtual void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) {}
+
+	virtual DebuggerFeatures GetSupportedFeatures() { return {}; }
+	
+	virtual uint32_t GetProgramCounter(bool getInstPc) = 0;
+	virtual void SetProgramCounter(uint32_t addr) = 0;
 
 	virtual BreakpointManager* GetBreakpointManager() = 0;
 	virtual CallstackManager* GetCallstackManager() = 0;

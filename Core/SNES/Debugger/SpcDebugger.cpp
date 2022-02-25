@@ -58,11 +58,6 @@ void SpcDebugger::ProcessInstruction()
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
-	if(_traceLogger->IsEnabled()) {
-		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-		_traceLogger->Log(state, disInfo, operation);
-	}
-
 	if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
 		//JSR, BRK
 		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
@@ -115,6 +110,11 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			SpcState& state = _spc->GetState();
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
+			_traceLogger->Log(state, disInfo, operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
@@ -174,6 +174,30 @@ void SpcDebugger::Step(int32_t stepCount, StepType type)
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+DebuggerFeatures SpcDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.RunToIrq = false;
+	features.RunToNmi = false;
+	features.StepOver = true;
+	features.StepOut = true;
+	features.CallStack = true;
+	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	return features;
+}
+
+void SpcDebugger::SetProgramCounter(uint32_t addr)
+{
+	_spc->GetState().PC = (uint16_t)addr;
+	_prevOpCode = _spc->DebugRead(addr);
+	_prevProgramCounter = (uint16_t)addr;
+}
+
+uint32_t SpcDebugger::GetProgramCounter(bool getInstPc)
+{
+	return getInstPc ? _prevProgramCounter : _spc->GetState().PC;
 }
 
 CallstackManager* SpcDebugger::GetCallstackManager()

@@ -7,6 +7,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -20,7 +21,7 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
-		[Reactive] public List<StackInfo> CallStackContent { get; private set; } = new List<StackInfo>();
+		[Reactive] public SwappableList<StackInfo> CallStackContent { get; private set; } = new();
 
 		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
 
@@ -47,7 +48,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshCallStack()
 		{
-			CallStackContent = GetStackInfo();
+			CallStackContent.Swap(GetStackInfo());
 		}
 
 		private List<StackInfo> GetStackInfo()
@@ -71,8 +72,8 @@ namespace Mesen.Debugger.ViewModels
 			stack.Insert(0, new StackInfo() {
 				EntryPoint = GetEntryPoint(stackFrames.Length > 0 ? stackFrames[^1] : null),
 				EntryPointAddr = stackFrames.Length > 0 ? stackFrames[^1].AbsTarget : null,
-				RelAddress = DebugUtilities.GetProgramCounter(CpuType),
-				Address = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)DebugUtilities.GetProgramCounter(CpuType), Type = CpuType.ToMemoryType() })
+				RelAddress = DebugApi.GetProgramCounter(CpuType, true),
+				Address = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)DebugApi.GetProgramCounter(CpuType, true), Type = CpuType.ToMemoryType() })
 			});
 
 			return stack;

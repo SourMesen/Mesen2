@@ -67,6 +67,11 @@ public:
 	
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
+	void SetProgramCounter(uint32_t addr) override;
+	uint32_t GetProgramCounter(bool getInstPc) override;
+
+	DebuggerFeatures GetSupportedFeatures() override;
+
 	BaseEventManager* GetEventManager() override;
 	IAssembler* GetAssembler() override;
 	CallstackManager* GetCallstackManager() override;

@@ -53,13 +53,8 @@ void Cx4Debugger::ProcessInstruction()
 		_codeDataLogger->SetFlags(addressInfo.Address + 1, CdlFlags::Code | CdlFlags::Cx4);
 	}
 
-	if(_traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
+	if(_settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
-
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
-			_traceLogger->Log(state, disInfo, operation);
-		}
 	}
 
 	_prevProgramCounter = addr;
@@ -77,6 +72,11 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
 
 	if(type == MemoryOperationType::ExecOpCode) {
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
+			_traceLogger->Log(state, disInfo, operation);
+		}
+
 		AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr + 1);
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 		_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
@@ -127,6 +127,17 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+void Cx4Debugger::SetProgramCounter(uint32_t addr)
+{
+	//Not implemented
+}
+
+uint32_t Cx4Debugger::GetProgramCounter(bool getInstPc)
+{
+	Cx4State& state = _cx4->GetState();
+	return getInstPc ? _prevProgramCounter : ((state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF);
 }
 
 BreakpointManager* Cx4Debugger::GetBreakpointManager()
