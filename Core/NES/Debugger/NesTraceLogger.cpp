@@ -10,9 +10,6 @@
 NesTraceLogger::NesTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, BaseNesPpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Nes)
 {
 	_ppu = ppu;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType NesTraceLogger::GetFormatTagType(string& tag)

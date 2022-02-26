@@ -16,9 +16,14 @@ namespace Mesen.Debugger.Disassembly
 	{
 		private DisassemblyViewModel? _model { get; set; }
 
-		public BaseStyleProvider(DisassemblyViewModel? model = null)
+		public int AddressSize { get; }
+		public int ByteCodeSize { get; }
+
+		public BaseStyleProvider(CpuType cpuType, DisassemblyViewModel? model = null)
 		{
 			_model = model;
+			AddressSize = cpuType.GetAddressSize();
+			ByteCodeSize = cpuType.GetByteCodeSize();
 		}
 
 		private static void ConfigureActiveStatement(LineProperties props)

@@ -26,6 +26,7 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void SetTraceOptions(CpuType cpuType, InteropTraceLoggerOptions options);
 
+		public const int TraceLogBufferSize = 30000;
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern UInt32 GetExecutionTraceWrapper(IntPtr output, UInt32 startOffset, UInt32 maxRowCount);
 		public static TraceRow[] GetExecutionTrace(UInt32 startOffset, UInt32 maxRowCount)
 		{
@@ -39,6 +40,11 @@ namespace Mesen.Interop
 			Array.Resize(ref rows, (int)rowCount);
 
 			return rows;
+		}
+
+		public static UInt32 GetExecutionTraceSize()
+		{
+			return DebugApi.GetExecutionTraceWrapper(IntPtr.Zero, 0, DebugApi.TraceLogBufferSize);
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern IntPtr GetDebuggerLogWrapper();

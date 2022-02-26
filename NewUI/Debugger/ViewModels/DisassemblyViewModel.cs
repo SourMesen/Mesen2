@@ -47,7 +47,7 @@ namespace Mesen.Debugger.ViewModels
 			Config = config;
 			CpuType = cpuType;
 			Debugger = debugger;
-			StyleProvider = new BaseStyleProvider(this);
+			StyleProvider = new BaseStyleProvider(cpuType, this);
 			DataProvider = new CodeDataProvider(cpuType);
 
 			if(Design.IsDesignMode) {

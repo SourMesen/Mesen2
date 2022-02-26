@@ -11,9 +11,6 @@ SpcTraceLogger::SpcTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesP
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType SpcTraceLogger::GetFormatTagType(string& tag)

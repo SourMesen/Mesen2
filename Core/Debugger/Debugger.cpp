@@ -730,8 +730,12 @@ uint32_t Debugger::GetExecutionTrace(TraceRow output[], uint32_t startOffset, ui
 					//Skip rows until the part the UI wants to display is reached
 					startOffset--;
 				} else {
-					logger->GetExecutionTrace(output[count], offset);
-					count++;
+					if(logger->IsEnabled()) {
+						if(output) {
+							logger->GetExecutionTrace(output[count], offset);
+						}
+						count++;
+					}
 				}
 				offset++;
 				added = true;

@@ -12,9 +12,6 @@ NecDspTraceLogger::NecDspTraceLogger(Debugger* debugger, IDebugger* cpuDebugger,
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType NecDspTraceLogger::GetFormatTagType(string& tag)

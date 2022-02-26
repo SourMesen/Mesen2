@@ -117,7 +117,7 @@ namespace Mesen.Debugger.Utilities
 						Width = 300,
 						Height = 150,
 						Lines = new CodeDataProvider(cpuType).GetCodeLines(address, 40),
-						StyleProvider = new BaseStyleProvider(),
+						StyleProvider = new BaseStyleProvider(cpuType),
 						FontFamily = ConfigManager.Config.Debug.Font.FontFamily,
 						FontSize = ConfigManager.Config.Debug.Font.FontSize - 1
 					}

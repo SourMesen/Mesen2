@@ -151,8 +151,6 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			CpuType cpuType = lines[0].CpuType;
-			
 			InitFontAndLetterSize();
 
 			double y = 0;
@@ -163,10 +161,9 @@ namespace Mesen.Debugger.Controls
 
 			ILineStyleProvider styleProvider = this.StyleProvider;
 
-			string addrFormat = "X" + cpuType.GetAddressSize();
 			double symbolMargin = 20;
-			double addressMargin = Math.Floor(LetterSize.Width * cpuType.GetAddressSize() + symbolMargin) + 0.5;
-			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * cpuType.GetByteCodeSize()));
+			double addressMargin = Math.Floor(LetterSize.Width * styleProvider.AddressSize + symbolMargin) + 0.5;
+			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * styleProvider.ByteCodeSize));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
 			//Draw margin (address)
@@ -184,6 +181,7 @@ namespace Mesen.Debugger.Controls
 
 			//Draw code
 			foreach(CodeLineData line in lines) {
+				string addrFormat = "X" + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, 0);
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor, true);
 
@@ -193,8 +191,8 @@ namespace Mesen.Debugger.Controls
 				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
-				text.Text = line.HasAddress ? line.Address.ToString(addrFormat) : "..";
-				Point marginAddressPos = new Point(symbolMargin, y);
+				text.Text = line.HasAddress ? line.Address.ToString(addrFormat) : "";
+				Point marginAddressPos = new Point(addressMargin - text.Bounds.Width - 1, y);
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
 				_visibleCodeSegments.Add(new CodeSegmentInfo(text.Text, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
 				x += addressMargin;
@@ -367,6 +365,9 @@ namespace Mesen.Debugger.Controls
 
 	public interface ILineStyleProvider
 	{
+		int AddressSize { get; }
+		int ByteCodeSize { get; }
+
 		LineProperties GetLineStyle(CodeLineData lineData, int lineIndex);
 
 		List<CodeColor> GetCodeColors(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues);

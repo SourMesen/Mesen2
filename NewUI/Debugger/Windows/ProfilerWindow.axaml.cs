@@ -50,7 +50,7 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.PpuFrameDone:
-					if(ToolRefreshHelper.LimitFps(this, 10)) {
+					if(!ToolRefreshHelper.LimitFps(this, 10)) {
 						_model.RefreshData();
 					}
 					break;

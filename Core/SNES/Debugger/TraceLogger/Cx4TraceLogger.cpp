@@ -12,9 +12,6 @@ Cx4TraceLogger::Cx4TraceLogger(Debugger* debugger, IDebugger* cpuDebugger, SnesP
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType Cx4TraceLogger::GetFormatTagType(string& tag)

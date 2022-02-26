@@ -25,7 +25,7 @@ namespace Mesen.Debugger.Windows
 			BoundsProperty.Changed.AddClassHandler<TraceLoggerWindow>((x, e) => {
 				DisassemblyViewer viewer = x.FindControl<DisassemblyViewer>("disViewer");
 				x._model.VisibleRowCount = viewer.GetVisibleRowCount() - 1;
-				x._model.MaxScrollPosition = TraceLoggerViewModel.TraceLogBufferSize - x._model.VisibleRowCount;
+				x._model.MaxScrollPosition = DebugApi.TraceLogBufferSize - x._model.VisibleRowCount;
 			});
 		}
 
@@ -60,21 +60,23 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					_model.UpdateAvailableTabs();
+					Dispatcher.UIThread.Post(() => {
+						_model.UpdateAvailableTabs();
+					});
 					break;
 
 				case ConsoleNotificationType.CodeBreak: {
-					_model.UpdateLog();
 					Dispatcher.UIThread.Post(() => {
+						_model.UpdateLog();
 						_model.ScrollToBottom();
 					});
 					break;
 				}
 
 				case ConsoleNotificationType.PpuFrameDone: {
-					if(ToolRefreshHelper.LimitFps(this, 10)) {
-						_model.UpdateLog();
+					if(!ToolRefreshHelper.LimitFps(this, 10)) {
 						Dispatcher.UIThread.Post(() => {
+							_model.UpdateLog();
 							_model.ScrollToBottom();
 						});
 					}

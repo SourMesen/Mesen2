@@ -11,9 +11,6 @@ SnesCpuTraceLogger::SnesCpuTraceLogger(Debugger* debugger, IDebugger* cpuDebugge
 {
 	_ppu = ppu;
 	_memoryManager = memoryManager;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType SnesCpuTraceLogger::GetFormatTagType(string& tag)

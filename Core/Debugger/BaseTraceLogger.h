@@ -484,6 +484,8 @@ public:
 		}
 
 		ParseFormatString(format);
+		
+		_debugger->ProcessConfigChange();
 	}
 
 	int64_t GetRowId(uint32_t offset) override

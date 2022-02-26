@@ -78,7 +78,7 @@
 					Orientation="Vertical"
 					VerticalAlignment="Stretch"
 					AllowAutoHide="False"
-					Minimum="0"
+					Minimum="{CompiledBinding MinScrollPosition}"
 					Maximum="{CompiledBinding MaxScrollPosition}"
 					Value="{CompiledBinding ScrollPosition}"
 				/>

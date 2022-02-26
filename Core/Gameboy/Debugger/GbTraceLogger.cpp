@@ -10,9 +10,6 @@
 GbTraceLogger::GbTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, GbPpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Gameboy)
 {
 	_ppu = ppu;
-	
-	TraceLoggerOptions options = {};
-	SetOptions(options);
 }
 
 RowDataType GbTraceLogger::GetFormatTagType(string& tag)
