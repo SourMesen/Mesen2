@@ -804,8 +804,9 @@
 			<Control ID="wndTitle">Event Viewer</Control>
 
 			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuClose">Close</Control>
+			<Control ID="mnuDebug">Debug</Control>
 			<Control ID="mnuView">View</Control>
+			
 			<Control ID="mnuRefresh">Refresh</Control>
 			<Control ID="mnuAutoRefresh">Auto-refresh</Control>
 			<Control ID="mnuAutoRefreshOff">Off</Control>

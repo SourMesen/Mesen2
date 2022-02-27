@@ -12,6 +12,8 @@ namespace Mesen.Config
 		[Reactive] public bool AutoRefresh { get; set; } = true;
 		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 
+		[Reactive] public bool ShowToolbar { get; set; } = true;
+
 		public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
 		public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();
 		public GbEventViewerConfig GbConfig { get; set; } = new GbEventViewerConfig();

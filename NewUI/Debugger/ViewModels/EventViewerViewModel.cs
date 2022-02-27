@@ -37,8 +37,12 @@ namespace Mesen.Debugger.ViewModels
 		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
 
 		public EventViewerConfig Config { get; }
-		public List<object> FileMenuActions { get; } = new();
-		public List<object> ViewMenuActions { get; } = new();
+		
+		[Reactive] public List<object> FileMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<object> ViewMenuItems { get; private set; } = new();
+
+		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
 
 		private PictureViewer _picViewer;
 
@@ -53,14 +57,14 @@ namespace Mesen.Debugger.ViewModels
 			InitBitmap(new FrameInfo() { Width = 1, Height = 1 });
 			InitForCpuType();
 
-			FileMenuActions = AddDisposables(new List<object>() {
+			FileMenuItems = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
 			});
 
-			ViewMenuActions = AddDisposables(new List<object>() {
+			ViewMenuItems = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
@@ -76,6 +80,12 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.RefreshOnBreakPause,
 					IsSelected = () => Config.RefreshOnBreakPause,
 					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowToolbar,
+					IsSelected = () => Config.ShowToolbar,
+					OnClick = () => Config.ShowToolbar = !Config.ShowToolbar
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -97,6 +107,9 @@ namespace Mesen.Debugger.ViewModels
 			UpdateConfig();
 			RefreshData(true);
 
+			DebugMenuItems = AddDisposables(DebugSharedActions.GetStepActions(wnd, () => CpuType));
+			ToolbarItems = AddDisposables(DebugSharedActions.GetStepActions(wnd, () => CpuType));
+
 			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
 				InitForCpuType();
 				UpdateConfig();
@@ -110,7 +123,9 @@ namespace Mesen.Debugger.ViewModels
 				RefreshTab(true);
 			}));
 
-			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, ViewMenuItems);
 		}
 
 		[MemberNotNull(nameof(EventViewerViewModel.ConsoleConfig))]
