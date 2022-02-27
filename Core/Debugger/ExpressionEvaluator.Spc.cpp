@@ -19,7 +19,7 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetSpcTokens()
 
 int64_t ExpressionEvaluator::GetSpcTokenValue(int64_t token, EvalResultType& resultType)
 {
-	SnesCpuState& s = (SnesCpuState&)((SpcDebugger*)_cpuDebugger)->GetState();
+	SpcState& s = (SpcState&)((SpcDebugger*)_cpuDebugger)->GetState();
 	switch(token) {
 		case EvalValues::RegA: return s.A;
 		case EvalValues::RegX: return s.X;
