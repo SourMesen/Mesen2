@@ -106,13 +106,15 @@ namespace Mesen.Debugger.Controls
 			CodeLineData? lineData = null;
 			if(rowNumber >= 0 && rowNumber < Lines.Length) {
 				lineData = Lines[rowNumber];
+			} else {
+				rowNumber = -1;
 			}
 
 			foreach(var codeSegment in _visibleCodeSegments) {
 				if(codeSegment.Bounds.Contains(p)) {
 					//Don't trigger an event if this is the same segment
 					if(_prevPointerOverSegment != codeSegment) {
-						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, lineData, codeSegment));
+						CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(rowNumber, e, lineData, codeSegment));
 						_prevPointerOverSegment = codeSegment;
 					}
 					return;
@@ -120,7 +122,7 @@ namespace Mesen.Debugger.Controls
 			}
 
 			_prevPointerOverSegment = null;
-			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, lineData, null));
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(rowNumber, e, lineData, null));
 		}
 
 		protected override void OnPointerLeave(PointerEventArgs e)
@@ -128,7 +130,7 @@ namespace Mesen.Debugger.Controls
 			base.OnPointerLeave(e);
 			_previousPointerPos = new Point(0, 0);
 			_prevPointerOverSegment = null;
-			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(e, null, null));
+			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(-1, e, null, null));
 		}
 
 		public int GetVisibleRowCount()
@@ -180,9 +182,10 @@ namespace Mesen.Debugger.Controls
 			_visibleCodeSegments.Clear();
 
 			//Draw code
-			foreach(CodeLineData line in lines) {
+			for(int i = 0; i < lines.Length; i++) {
+				CodeLineData line = lines[i];
 				string addrFormat = "X" + line.CpuType.GetAddressSize();
-				LineProperties lineStyle = styleProvider.GetLineStyle(line, 0);
+				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor, true);
 
 				double x = 0;
@@ -304,8 +307,9 @@ namespace Mesen.Debugger.Controls
 
 	public class CodePointerMovedEventArgs : EventArgs
 	{
-		public CodePointerMovedEventArgs(PointerEventArgs pointerEvent, CodeLineData? lineData, CodeSegmentInfo? codeSegment)
+		public CodePointerMovedEventArgs(int rowNumber, PointerEventArgs pointerEvent, CodeLineData? lineData, CodeSegmentInfo? codeSegment)
 		{
+			this.RowNumber = rowNumber;
 			this.Data = lineData;
 			this.CodeSegment = codeSegment;
 			this.PointerEvent = pointerEvent;
@@ -314,6 +318,7 @@ namespace Mesen.Debugger.Controls
 		public PointerEventArgs PointerEvent { get; }
 		public CodeLineData? Data { get; }
 		public CodeSegmentInfo? CodeSegment { get; }
+		public int RowNumber { get; }
 	}
 
 	public class CodeSegmentInfo

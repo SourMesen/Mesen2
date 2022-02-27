@@ -94,7 +94,6 @@
 					Name="disViewer"
 					Lines="{CompiledBinding TraceLogLines}"
 					StyleProvider="{CompiledBinding StyleProvider}"
-					PointerWheelChanged="Disassembly_PointerWheelChanged"
 				/>
 			</DockPanel>
 		</Border>

@@ -22,12 +22,11 @@ namespace Mesen.Debugger.Views
 		private DisassemblyViewModel Model => (DisassemblyViewModel)DataContext!;
 		private CpuType CpuType => Model.CpuType;
 
-		private LocationInfo? _mouseOverCodeLocation;
-		private LocationInfo? _contextMenuLocation;
+		private DisassemblyViewModel? _model;
+		private CodeViewerSelectionHandler _selectionHandler;
 		private ContextMenu _bpMarginContextMenu;
 		private ContextMenu _mainContextMenu;
 		private DisassemblyViewer _viewer;
-		private bool _marginClicked;
 
 		static DisassemblyView()
 		{
@@ -49,11 +48,20 @@ namespace Mesen.Debugger.Views
 			InitializeComponent();
 
 			_viewer = this.FindControl<DisassemblyViewer>("disViewer");
-
+			
 			InitBreakpointContextMenu();
 			InitMainContextMenu();
+
 		}
 
+		protected override void OnDataContextChanged(EventArgs e)
+		{
+			if(DataContext is DisassemblyViewModel model && _model != model) {
+				_model = model;
+				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, false, _mainContextMenu, _bpMarginContextMenu);
+			}
+			base.OnDataContextChanged(e);
+		}
 
 		[MemberNotNull(nameof(_mainContextMenu))]
 		private void InitMainContextMenu()
@@ -260,116 +268,6 @@ namespace Mesen.Debugger.Views
 			Model.ViewerActive = false;
 		}
 
-		private LocationInfo ActionLocation
-		{
-			get
-			{
-				if(_viewer.ContextMenu == _bpMarginContextMenu) {
-					return GetSelectedRowLocation();
-				} else if(_viewer.ContextMenu?.IsOpen == true && _contextMenuLocation != null) {
-					return _contextMenuLocation;
-				} else if(_mouseOverCodeLocation != null) {
-					return _mouseOverCodeLocation;
-				}
-				return GetSelectedRowLocation();
-			}
-		}
-
-		private LocationInfo GetSelectedRowLocation()
-		{
-			CpuType cpuType = CpuType;
-			AddressInfo relAddress = new AddressInfo() {
-				Address = Model.SelectedRowAddress,
-				Type = cpuType.ToMemoryType()
-			};
-
-			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-			return new LocationInfo() { RelAddress = relAddress, AbsAddress = absAddress };
-		}
-
-		public void Diassembly_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
-		{
-			_marginClicked = e.MarginClicked;
-			_viewer.ContextMenu = _mainContextMenu;
-
-			if(e.Properties.IsLeftButtonPressed) {
-				if(_marginClicked) {
-					CpuType cpuType = e.CodeLineData.CpuType;
-					AddressInfo relAddress = new AddressInfo() {
-						Address = e.CodeLineData.Address,
-						Type = cpuType.ToMemoryType()
-					};
-					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
-				} else {
-					if(e.PointerEvent.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
-						Model.ResizeSelectionTo(e.CodeLineData.Address);
-					} else {
-						Model.SetSelectedRow(e.CodeLineData.Address);
-					}
-				}
-			} else if(e.Properties.IsRightButtonPressed) {
-				if(_marginClicked) {
-					_viewer.ContextMenu = _bpMarginContextMenu;
-				}
-				_contextMenuLocation = _mouseOverCodeLocation;
-
-				if(e.CodeLineData.Address < Model.SelectionStart || e.CodeLineData.Address > Model.SelectionEnd) {
-					Model.SetSelectedRow(e.CodeLineData.Address);
-				}
-			}
-		}
-
-		public void Disassembly_PointerLeave(object? sender, PointerEventArgs e)
-		{
-			_mouseOverCodeLocation = null;
-		}
-
-		public void Disassembly_CodePointerMoved(DisassemblyViewer sender, CodePointerMovedEventArgs e)
-		{
-			DynamicTooltip? tooltip = null;
-			ICodeDataProvider dp = Model.DataProvider;
-
-			if(e.CodeSegment != null) {
-				_mouseOverCodeLocation = CodeTooltipHelper.GetLocation(dp.CpuType, e.CodeSegment);
-
-				tooltip = CodeTooltipHelper.GetTooltip(dp.CpuType, e.CodeSegment);
-				if(tooltip != null) {
-					ToolTip.SetTip(this, tooltip);
-					ToolTip.SetHorizontalOffset(this, 14);
-					ToolTip.SetHorizontalOffset(this, 15);
-					ToolTip.SetIsOpen(this, true);
-				}
-			} else {
-				_mouseOverCodeLocation = null;
-			}
-
-			if(tooltip == null) {
-				ToolTip.SetIsOpen(this, false);
-				ToolTip.SetTip(this, null);
-			}
-
-			if(!_marginClicked && e.Data != null && e.PointerEvent.GetCurrentPoint(null).Properties.IsLeftButtonPressed) {
-				Model.ResizeSelectionTo(e.Data.Address);
-			}
-		}
-
-		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
-		{
-			Model.Scroll((int)(-e.Delta.Y * 3));
-		}
-
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			switch(e.Key) {
-				case Key.PageDown: Model.MoveCursor(Model.VisibleRowCount - 2, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.PageUp: Model.MoveCursor(-(Model.VisibleRowCount - 2), e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.Home: Model.ScrollToTop(); e.Handled = true; break;
-				case Key.End: Model.ScrollToBottom(); e.Handled = true; break;
-
-				case Key.Up: Model.MoveCursor(-1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-				case Key.Down: Model.MoveCursor(1, e.KeyModifiers.HasFlag(KeyModifiers.Shift)); e.Handled = true; break;
-			}
-		}
+		private LocationInfo ActionLocation => _selectionHandler.ActionLocation;
 	}
 }

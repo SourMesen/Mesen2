@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -19,7 +18,8 @@ namespace Mesen.Debugger.Windows
 	public class TraceLoggerWindow : Window, INotificationHandler
 	{
 		private TraceLoggerViewModel _model;
-		
+		private CodeViewerSelectionHandler _selectionHandler;
+
 		static TraceLoggerWindow()
 		{
 			BoundsProperty.Changed.AddClassHandler<TraceLoggerWindow>((x, e) => {
@@ -40,6 +40,10 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			_model = model;
+			
+			DisassemblyViewer viewer = this.FindControl<DisassemblyViewer>("disViewer");
+			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, true);
+
 			DataContext = model;
 			
 			if(Design.IsDesignMode) {
@@ -118,21 +122,6 @@ namespace Mesen.Debugger.Windows
 		{
 			DebugApi.ClearExecutionTrace();
 			_model.UpdateLog();
-		}
-
-		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
-		{
-			_model.Scroll((int)(-e.Delta.Y * 3));
-		}
-
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			switch(e.Key) {
-				case Key.PageDown: _model.Scroll(_model.VisibleRowCount - 2); e.Handled = true; break;
-				case Key.PageUp: _model.Scroll(-(_model.VisibleRowCount - 2)); e.Handled = true; break;
-				case Key.Home: _model.ScrollToTop(); e.Handled = true; break;
-				case Key.End: _model.ScrollToBottom(); e.Handled = true; break;
-			}
 		}
 
 		private void InitializeComponent()

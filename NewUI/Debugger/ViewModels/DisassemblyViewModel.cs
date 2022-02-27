@@ -5,6 +5,7 @@ using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -15,7 +16,7 @@ using System.Text;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class DisassemblyViewModel : ViewModelBase
+	public class DisassemblyViewModel : ViewModelBase, ISelectableModel
 	{
 		public ICodeDataProvider DataProvider { get; }
 		public CpuType CpuType { get; }
@@ -132,6 +133,24 @@ namespace Mesen.Debugger.ViewModels
 				SetSelectedRow((int)pc);
 				ScrollToAddress((uint)pc, ScrollDisplayPosition.Center);
 			}
+		}
+
+		public bool IsSelected(int address)
+		{
+			return address >= SelectionStart && address <= SelectionEnd;
+		}
+
+		public AddressInfo? GetSelectedRowAddress()
+		{
+			return new AddressInfo() {
+				Address = SelectedRowAddress,
+				Type = CpuType.ToMemoryType()
+			};
+		}
+
+		public void SetSelectedRow(int address)
+		{
+			SetSelectedRow(address, false);
 		}
 
 		public void SetSelectedRow(int address, bool scrollToRow = false)
