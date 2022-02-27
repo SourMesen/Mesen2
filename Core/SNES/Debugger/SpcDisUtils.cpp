@@ -138,7 +138,12 @@ int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *con
 		dummySpc.Step();
 
 		uint32_t count = dummySpc.GetOperationCount();
-		return dummySpc.GetOperationInfo(count - 1).Address;
+		for(int i = count - 1; i > 0; i--) {
+			MemoryOperationInfo opInfo = dummySpc.GetOperationInfo(i);
+			if(opInfo.Type != MemoryOperationType::ExecOperand) {
+				return opInfo.Address;
+			}
+		}
 	}
 	return -1;
 }
