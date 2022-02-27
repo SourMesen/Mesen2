@@ -703,19 +703,26 @@ ITraceLogger* Debugger::GetTraceLogger(CpuType cpuType)
 	return nullptr;
 }
 
+void Debugger::ClearExecutionTrace()
+{
+	DebugBreakHelper helper(this);
+	for(CpuType cpuType : _cpuTypes) {
+		ITraceLogger* logger = GetTraceLogger(cpuType);
+		logger->Clear();
+	}
+}
+
 uint32_t Debugger::GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount)
 {
 	DebugBreakHelper helper(this);
 
 	uint32_t offsetsByCpu[(int)DebugUtilities::GetLastCpuType() + 1] = {};
 
-	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
-
 	uint32_t count = 0;
 	int64_t lastRowId = ITraceLogger::NextRowId;
 	while(count < maxLineCount) {
 		bool added = false;
-		for(CpuType cpuType : cpuTypes) {
+		for(CpuType cpuType : _cpuTypes) {
 			ITraceLogger* logger = GetTraceLogger(cpuType);
 			if(logger) {
 				uint32_t& offset = offsetsByCpu[(int)cpuType];

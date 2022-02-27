@@ -74,6 +74,7 @@ extern "C"
 
 	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { WithDebugger(void, GetTraceLogger(type)->SetOptions(options)); }
 	DllExport uint32_t __stdcall GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t lineCount) { return WithDebugger(uint32_t, GetExecutionTrace(output, startOffset, lineCount)); }
+	DllExport void __stdcall ClearExecutionTrace() { WithDebugger(void, ClearExecutionTrace()); }
 
 	DllExport void __stdcall StartLogTraceToFile(const char* filename) { WithDebugger(void, GetTraceLogFileSaver()->StartLogging(filename)); }
 	DllExport void __stdcall StopLogTraceToFile() { WithDebugger(void, GetTraceLogFileSaver()->StopLogging()); }

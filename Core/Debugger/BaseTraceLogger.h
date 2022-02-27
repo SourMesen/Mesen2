@@ -431,8 +431,10 @@ public:
 		delete[] _cpuState;
 	}
 
-	void Clear()
+	void Clear() override
 	{
+		_currentPos = 0;
+		memset(_rowIds, 0, sizeof(uint64_t) * BaseTraceLogger::ExecutionLogSize);
 	}
 
 	void LogNonExec(MemoryOperationInfo& operation)

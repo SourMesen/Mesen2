@@ -114,6 +114,12 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
+		private void OnClearClick(object sender, RoutedEventArgs e)
+		{
+			DebugApi.ClearExecutionTrace();
+			_model.UpdateLog();
+		}
+
 		public void Disassembly_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
 		{
 			_model.Scroll((int)(-e.Delta.Y * 3));

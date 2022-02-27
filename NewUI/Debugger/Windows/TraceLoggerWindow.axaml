@@ -25,7 +25,7 @@
 	</Design.DataContext>
 
 	<DockPanel Margin="2">
-		<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
+		<Grid ColumnDefinitions="Auto,Auto,*,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
 			<c:ButtonWithIcon
 				Grid.Column="0"
 				Click="OnOpenTraceFile"
@@ -34,14 +34,21 @@
 				Text="{l:Translate btnOpenTraceFile}"
 			/>
 			<c:ButtonWithIcon
-				Grid.Column="2"
+				Grid.Column="1"
+				Click="OnClearClick"
+				Icon="Assets/Close.png"
+				Text="{l:Translate btnClear}"
+			/>
+			
+			<c:ButtonWithIcon
+				Grid.Column="3"
 				Click="OnStartLoggingClick"
 				IsVisible="{CompiledBinding !IsLoggingToFile}"
 				Icon="Assets/Record.png"
 				Text="{l:Translate btnStart}"
 			/>
 			<c:ButtonWithIcon
-				Grid.Column="2"
+				Grid.Column="3"
 				Click="OnStopLoggingClick"
 				IsVisible="{CompiledBinding IsLoggingToFile}"
 				Icon="Assets/MediaStop.png"
