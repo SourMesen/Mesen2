@@ -25,6 +25,16 @@
 	</Design.DataContext>
 
 	<DockPanel Margin="2">
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuItems}" />
+		</Menu>
+
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{CompiledBinding Config.ShowToolbar}">
+			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
+		</StackPanel>
+
 		<Grid ColumnDefinitions="Auto,Auto,*,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
 			<c:ButtonWithIcon
 				Grid.Column="0"

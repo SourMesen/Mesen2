@@ -384,25 +384,8 @@ namespace Mesen.Debugger.ViewModels
 
 		private List<ContextMenuAction> GetDebugMenu(Control wnd, bool forToolbar)
 		{
-			Func<bool> isPaused = () => EmuApi.IsPaused();
-			Func<bool> isRunning = () => !EmuApi.IsPaused();
-
-			List<ContextMenuAction> debugMenu = new List<ContextMenuAction>() {
-				new ContextMenuAction() {
-					ActionType = ActionType.Continue,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Continue),
-					IsEnabled = isPaused,
-					OnClick = () => {
-						DebugApi.ResumeExecution();
-					}
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.Break,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Break),
-					IsEnabled = isRunning,
-					OnClick = () => Step(StepType.Step)
-				},
-			};
+			List<ContextMenuAction> debugMenu = new();
+			debugMenu.AddRange(DebugSharedActions.GetStepActions(wnd, () => CpuType));
 
 			if(!forToolbar) {
 				debugMenu.AddRange(new List<ContextMenuAction> {
@@ -420,88 +403,6 @@ namespace Mesen.Debugger.ViewModels
 					}
 				});
 			};
-
-			debugMenu.AddRange(new List<ContextMenuAction> {
-				new ContextMenuSeparator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.StepInto,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepInto),
-					OnClick = () => Step(StepType.Step, 1)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepOver,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOver),
-					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepOver,
-					AllowedWhenHidden = true,
-					OnClick = () => Step(StepType.StepOver, 1)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepOut,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepOut),
-					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepOut,
-					AllowedWhenHidden = true,
-					OnClick = () => Step(StepType.StepOut, 1)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.StepBack,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBack),
-					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).StepBack,
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
-				},
-
-				new ContextMenuSeparator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuCycle,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuCycle),
-					OnClick = () => Step(StepType.PpuStep, 1)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuScanline,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuScanline),
-					OnClick = () => Step(StepType.PpuScanline, 1)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.RunPpuFrame,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunPpuFrame),
-					OnClick = () => Step(StepType.PpuFrame, 1)
-				},
-
-				new ContextMenuSeparator() {
-					IsVisible = () => {
-						DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
-						return features.RunToNmi || features.RunToIrq;
-					}
-				},
-				
-				new ContextMenuAction() {
-					ActionType = ActionType.RunToNmi,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToNmi),
-					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).RunToNmi,
-					OnClick = () => Step(StepType.RunToNmi)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.RunToIrq,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunToIrq),
-					IsVisible = () => DebugApi.GetDebuggerFeatures(CpuType).RunToIrq,
-					OnClick = () => Step(StepType.RunToIrq)
-				},
-				
-				new ContextMenuSeparator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.BreakIn,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakIn),
-					OnClick = () => new BreakInWindow(CpuType).ShowCenteredDialog(wnd)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.BreakOn,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakOn),
-					OnClick = () => new BreakOnWindow(CpuType).ShowCenteredDialog(wnd)
-				},
-			});
 
 			return debugMenu;
 		}

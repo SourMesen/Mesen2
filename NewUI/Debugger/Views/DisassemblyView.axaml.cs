@@ -23,7 +23,7 @@ namespace Mesen.Debugger.Views
 		private CpuType CpuType => Model.CpuType;
 
 		private DisassemblyViewModel? _model;
-		private CodeViewerSelectionHandler _selectionHandler;
+		private CodeViewerSelectionHandler? _selectionHandler;
 		private ContextMenu _bpMarginContextMenu;
 		private ContextMenu _mainContextMenu;
 		private DisassemblyViewer _viewer;
@@ -51,7 +51,6 @@ namespace Mesen.Debugger.Views
 			
 			InitBreakpointContextMenu();
 			InitMainContextMenu();
-
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
@@ -268,6 +267,6 @@ namespace Mesen.Debugger.Views
 			Model.ViewerActive = false;
 		}
 
-		private LocationInfo ActionLocation => _selectionHandler.ActionLocation;
+		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
 	}
 }

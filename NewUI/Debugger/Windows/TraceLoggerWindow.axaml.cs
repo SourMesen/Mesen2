@@ -40,6 +40,7 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			_model = model;
+			_model.InitializeMenu(this);
 			
 			DisassemblyViewer viewer = this.FindControl<DisassemblyViewer>("disViewer");
 			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, true);
@@ -70,15 +71,17 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.CodeBreak: {
-					Dispatcher.UIThread.Post(() => {
-						_model.UpdateLog();
-						_model.ScrollToBottom();
-					});
+					if(_model.Config.RefreshOnBreakPause) {
+						Dispatcher.UIThread.Post(() => {
+							_model.UpdateLog();
+							_model.ScrollToBottom();
+						});
+					}
 					break;
 				}
 
 				case ConsoleNotificationType.PpuFrameDone: {
-					if(!ToolRefreshHelper.LimitFps(this, 10)) {
+					if(_model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, 10)) {
 						Dispatcher.UIThread.Post(() => {
 							_model.UpdateLog();
 							_model.ScrollToBottom();

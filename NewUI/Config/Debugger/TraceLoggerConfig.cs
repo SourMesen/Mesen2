@@ -17,9 +17,9 @@ namespace Mesen.Config
 {
 	public class TraceLoggerConfig : BaseWindowConfig<TraceLoggerConfig>
 	{
-		//TODO
 		[Reactive] public bool AutoRefresh { get; set; } = true;
-		[Reactive] public int TextZoom { get; set; } = 100;
+		[Reactive] public bool RefreshOnBreakPause { get; set; } = true;
+		[Reactive] public bool ShowToolbar { get; set; } = true;
 
 		[Reactive] public TraceLoggerCpuConfig SnesConfig { get; set; }
 		[Reactive] public TraceLoggerCpuConfig SpcConfig { get; set; }

@@ -125,8 +125,6 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.PowerCycle, KeyBinding = new(KeyModifiers.Control, Key.T) });
 			Add(new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new() });
 
-			Add(new() { Shortcut = DebuggerShortcut.Continue, KeyBinding = new(Key.F5) });
-			Add(new() { Shortcut = DebuggerShortcut.Break, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Alt, Key.Cancel) });
 			Add(new() { Shortcut = DebuggerShortcut.ToggleBreakContinue, KeyBinding = new(Key.Escape) });
 			Add(new() { Shortcut = DebuggerShortcut.StepInto, KeyBinding = new(Key.F11) });
 			Add(new() { Shortcut = DebuggerShortcut.StepOver, KeyBinding = new(Key.F10) });
@@ -259,8 +257,6 @@ namespace Mesen.Config
 		Reset,
 		PowerCycle,
 		ReloadRom,
-		Continue,
-		Break,
 		ToggleBreakContinue,
 		StepInto,
 		StepOver,

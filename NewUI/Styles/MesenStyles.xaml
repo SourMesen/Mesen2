@@ -174,8 +174,8 @@
 	</Style>
 
 	<Style Selector=".ActionMenu MenuItem">
-		<Setter Property="Header" Value="{Binding Name}" />
-		<Setter Property="Icon" Value="{Binding Icon}" />
+		<Setter Property="Header" Value="{Binding ActionName}" />
+		<Setter Property="Icon" Value="{Binding ActionIcon}" />
 		<Setter Property="IsVisible" Value="{Binding Visible}" />
 		<Setter Property="IsEnabled" Value="{Binding Enabled}" />
 		<Setter Property="Tag" Value="{Binding ShortcutText}" />

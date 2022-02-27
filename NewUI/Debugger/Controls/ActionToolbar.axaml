@@ -49,9 +49,9 @@
 			</DataTemplate>
 			
 			<DataTemplate DataType="{x:Type du:ContextMenuAction}">
-				<Button ToolTip.Tip="{Binding Name}" Command="{Binding ClickCommand}" IsEnabled="{Binding Enabled}" IsVisible="{Binding Visible}">
+				<Button ToolTip.Tip="{Binding ActionName}" Command="{Binding ClickCommand}" IsEnabled="{Binding Enabled}" IsVisible="{Binding Visible}">
 					<StackPanel Orientation="Horizontal">
-						<ContentPresenter Content="{Binding Icon}" />
+						<ContentPresenter Content="{Binding ActionIcon}" />
 						<TextBlock
 							Padding="3 0"
 							IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}"

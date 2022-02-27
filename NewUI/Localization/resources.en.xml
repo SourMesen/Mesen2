@@ -790,6 +790,10 @@
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
 
+			<Control ID="mnuFile">File</Control>
+			<Control ID="mnuDebug">Debug</Control>
+			<Control ID="mnuView">View</Control>
+
 			<Control ID="btnOpenTraceFile">Open trace file</Control>
 			<Control ID="btnStart">Log to file...</Control>
 			<Control ID="btnStop">Stop logging</Control>
@@ -1897,7 +1901,6 @@ x == [$150] || y == [10]
 			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="Continue">Continue</Value>
 			<Value ID="Break">Break</Value>
-			<Value ID="ToggleBreakContinue">Toggle Break/Continue</Value>
 			<Value ID="StepInto">Step Into</Value>
 			<Value ID="StepOver">Step Over</Value>
 			<Value ID="StepOut">Step Out</Value>
@@ -2172,8 +2175,10 @@ x == [$150] || y == [10]
 			<Value ID="ResetCdl">Reset CDL data</Value>
 			<Value ID="LoadCdl">Load CDL data from...</Value>
 			<Value ID="SaveCdl">Save CDL data as...</Value>
-		
+
 			<Value ID="MoveProgramCounter">Move Program Counter</Value>
+			
+			<Value ID="ShowToolbar">Show toolbar</Value>
 		</Enum>
 	</Enums>
 </Resources>

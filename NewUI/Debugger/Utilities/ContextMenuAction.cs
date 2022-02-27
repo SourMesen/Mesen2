@@ -22,6 +22,7 @@ namespace Mesen.Debugger.Utilities
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
 		public Func<string>? DynamicText { get; set; }
+		public Func<string>? DynamicIcon { get; set; }
 
 		public virtual string Name
 		{
@@ -53,6 +54,8 @@ namespace Mesen.Debugger.Utilities
 				IconFileAttribute? attr = ActionType.GetAttribute<IconFileAttribute>();
 				if(!string.IsNullOrEmpty(attr?.Icon)) {
 					return ImageUtilities.FromAsset(attr.Icon);
+				} else if(DynamicIcon != null) {
+					return ImageUtilities.FromAsset("Assets/" + DynamicIcon() + ".png");
 				} else if(IsSelected?.Invoke() == true) {
 					return ImageUtilities.FromAsset("Assets/MenuItemChecked.png");
 				}
@@ -98,6 +101,8 @@ namespace Mesen.Debugger.Utilities
 
 		public abstract string ShortcutText { get; }
 
+		[Reactive] public string ActionName { get; set; } = "";
+		[Reactive] public Image? ActionIcon { get; set; }
 		[Reactive] public bool Enabled { get; set; }
 		[Reactive] public bool Visible { get; set; }
 
@@ -106,8 +111,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			get
 			{
-				Visible = IsVisible?.Invoke() ?? true;
-				Enabled = IsEnabled?.Invoke() ?? true;
+				Update();
 				return _clickCommand;
 			}
 		}
@@ -135,6 +139,8 @@ namespace Mesen.Debugger.Utilities
 
 		public void Update()
 		{
+			ActionName = Name;
+			ActionIcon = Icon;
 			Enabled = IsEnabled?.Invoke() ?? true;
 			Visible = IsVisible?.Invoke() ?? true;
 		}
@@ -602,5 +608,6 @@ namespace Mesen.Debugger.Utilities
 		SaveCdl,
 
 		MoveProgramCounter,
+		ShowToolbar,
 	}
 }

@@ -36,6 +36,12 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectionAnchor { get; private set; }
 		[Reactive] public int SelectedRow { get; private set; }
 
+		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
+
+		[Reactive] public List<ContextMenuAction> FileMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> ViewMenuItems { get; private set; } = new();
+
 		public TraceLoggerViewModel()
 		{
 			Config = ConfigManager.Config.Debug.TraceLogger;
@@ -72,6 +78,48 @@ namespace Mesen.Debugger.ViewModels
 				SelectedRow = Math.Max(MinScrollPosition, Math.Min(DebugApi.TraceLogBufferSize - 1, SelectedRow));
 				SelectionAnchor = Math.Max(MinScrollPosition, Math.Min(DebugApi.TraceLogBufferSize - 1, SelectionAnchor));
 			}));
+		}
+
+		public void InitializeMenu(Window wnd)
+		{
+			FileMenuItems = AddDisposables(new List<ContextMenuAction>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd.Close()
+				}
+			});
+
+			DebugMenuItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => EmuApi.GetRomInfo().ConsoleType.GetMainCpuType())));
+			ToolbarItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => EmuApi.GetRomInfo().ConsoleType.GetMainCpuType())));
+
+			ViewMenuItems = AddDisposables(new List<ContextMenuAction>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Refresh,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
+					OnClick = () => UpdateLog()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableAutoRefresh,
+					IsSelected = () => Config.AutoRefresh,
+					OnClick = () => Config.AutoRefresh = !Config.AutoRefresh
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RefreshOnBreakPause,
+					IsSelected = () => Config.RefreshOnBreakPause,
+					OnClick = () => Config.RefreshOnBreakPause = !Config.RefreshOnBreakPause
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowToolbar,
+					IsSelected = () => Config.ShowToolbar,
+					OnClick = () => Config.ShowToolbar = !Config.ShowToolbar
+				}
+			});
+
+			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, ViewMenuItems);
 		}
 
 		public void InvalidateVisual()
