@@ -100,7 +100,7 @@ namespace Mesen.Debugger.ViewModels
 						if(grid.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
 							int addr = vm.Breakpoint.GetRelativeAddress();
 							if(addr >= 0) {
-								Disassembly.ScrollToAddress((uint)addr);
+								Disassembly.SetSelectedRow(addr, true);
 							}
 						}
 					}

@@ -361,7 +361,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = async () => {
 						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
 						if(address != null) {
-							Disassembly.ScrollToAddress((uint)address.Value);
+							Disassembly.SetSelectedRow(address.Value, true);
 							DockFactory.SetActiveDockable(DockFactory.DisassemblyTool);
 						}
 					}

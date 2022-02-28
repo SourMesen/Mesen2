@@ -108,7 +108,7 @@ namespace Mesen.Debugger.ViewModels
 		public void GoToLocation(StackInfo entry)
 		{
 			if(IsMapped(entry)) {
-				Disassembly.ScrollToAddress(entry.RelAddress);
+				Disassembly.SetSelectedRow((int)entry.RelAddress, true);
 			}
 		}
 

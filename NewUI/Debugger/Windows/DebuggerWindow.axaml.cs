@@ -61,8 +61,7 @@ namespace Mesen.Debugger.Windows
 
 		public void ScrollToAddress(uint address)
 		{
-			_model.Disassembly.SetSelectedRow((int)address);
-			_model.Disassembly.ScrollToAddress(address);
+			_model.Disassembly.SetSelectedRow((int)address, true);
 		}
 
 		protected override void OnOpened(EventArgs e)

@@ -123,7 +123,7 @@ namespace Mesen.Debugger.ViewModels
 						if(grid.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address >= 0) {
-								Disassembly.ScrollToAddress((uint)addr.Address);
+								Disassembly.SetSelectedRow(addr.Address, true);
 							}
 						}
 					}

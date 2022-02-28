@@ -219,7 +219,7 @@ namespace Mesen.Debugger.ViewModels
 			return false;
 		}
 
-		public void ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center)
+		private void ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center)
 		{
 			if(IsAddressVisible((int)pc)) {
 				//Row is already visible, don't scroll
