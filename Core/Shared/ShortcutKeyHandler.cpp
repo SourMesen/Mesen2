@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Shared/ShortcutKeyHandler.h"
+#include "Shared/SystemActionManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
 #include "Shared/Video/VideoDecoder.h"
@@ -183,8 +184,8 @@ void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut, uint3
 			}
 			break;
 		
-		case EmulatorShortcut::Reset: _emu->Reset(); break;
-		case EmulatorShortcut::PowerCycle: _emu->PowerCycle(); break;
+		case EmulatorShortcut::Reset: _emu->GetSystemActionManager()->Reset(); break;
+		case EmulatorShortcut::PowerCycle: _emu->GetSystemActionManager()->PowerCycle(); break;
 		case EmulatorShortcut::ReloadRom: _emu->ReloadRom(false); break;
 		case EmulatorShortcut::PowerOff: _emu->Stop(true); break;
 

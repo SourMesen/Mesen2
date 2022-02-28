@@ -552,6 +552,7 @@ int LuaApi::Reset(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
+	//TODO should this use the action manager reset instead?
 	_emu->Reset();
 	return l.ReturnCount();
 }

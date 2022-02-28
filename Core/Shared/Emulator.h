@@ -187,6 +187,8 @@ public:
 	void Unlock();
 	bool IsThreadPaused();
 
+	void SuspendDebugger(bool release);
+
 	void Serialize(ostream& out, int compressionLevel = 1);
 	void Deserialize(istream& in, uint32_t fileFormatVersion, bool compressed = true);
 

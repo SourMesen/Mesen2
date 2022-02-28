@@ -47,6 +47,7 @@ public:
 	{
 		if(!_needReset) {
 			_needReset = true;
+			_emu->SuspendDebugger(false);
 			return true;
 		}
 		return false;
@@ -56,6 +57,7 @@ public:
 	{
 		if(!_needPowerCycle) {
 			_needPowerCycle = true;
+			_emu->SuspendDebugger(false);
 			return true;
 		}
 		return false;

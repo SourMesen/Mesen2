@@ -183,6 +183,12 @@ bool Emulator::ProcessSystemActions()
 {
 	if(_systemActionManager->IsResetPressed()) {
 		Reset();
+		
+		shared_ptr<Debugger> debugger = _debugger.lock();
+		if(debugger) {
+			debugger->ResetSuspendCounter();
+		}
+
 		return true;
 	} else if(_systemActionManager->IsPowerCyclePressed()) {
 		PowerCycle();
@@ -346,11 +352,11 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 {
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
 
-	BlockDebuggerRequests();
-
-	auto dbgLock = _debuggerLock.AcquireSafe();
 	auto emuLock = AcquireLock();
+	auto dbgLock = _debuggerLock.AcquireSafe();
 	auto lock = _loadLock.AcquireSafe();
+
+	BlockDebuggerRequests();
 
 	if(!romFile.IsValid()) {
 		return false;
@@ -698,22 +704,14 @@ EmulatorLock Emulator::AcquireLock()
 
 void Emulator::Lock()
 {
-	shared_ptr<Debugger> debugger = _debugger.lock();
-	if(debugger) {
-		debugger->SuspendDebugger(false);
-	}
-
+	SuspendDebugger(false);
 	_lockCounter++;
 	_runLock.Acquire();
 }
 
 void Emulator::Unlock()
 {
-	shared_ptr<Debugger> debugger = _debugger.lock();
-	if(debugger) {
-		debugger->SuspendDebugger(true);
-	}
-
+	SuspendDebugger(true);
 	_runLock.Release();
 	_lockCounter--;
 }
@@ -721,6 +719,14 @@ void Emulator::Unlock()
 bool Emulator::IsThreadPaused()
 {
 	return !_emuThread || _threadPaused;
+}
+
+void Emulator::SuspendDebugger(bool release)
+{
+	shared_ptr<Debugger> debugger = _debugger.lock();
+	if(debugger) {
+		debugger->SuspendDebugger(release);
+	}
 }
 
 void Emulator::WaitForLock()
