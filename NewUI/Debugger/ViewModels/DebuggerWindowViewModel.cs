@@ -14,6 +14,7 @@ using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
+using Mesen.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -86,10 +87,12 @@ namespace Mesen.Debugger.ViewModels
 					CpuType = romInfo.ConsoleType.GetMainCpuType();
 					Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/Debugger.png"));
 
-					//TODO temporary - try to load DBG file if it exists
-					string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
-					if(File.Exists(dbgPath)) {
-						SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
+					if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
+						//TODO temporary - try to load DBG file if it exists
+						string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
+						if(File.Exists(dbgPath)) {
+							SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
+						}
 					}
 				}
 			}
@@ -301,6 +304,7 @@ namespace Mesen.Debugger.ViewModels
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
 				new ContextMenuSeparator(),
 				GetCdlActionMenu(wnd),
+				GetWorkspaceActionMenu(wnd),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
@@ -442,6 +446,61 @@ namespace Mesen.Debugger.ViewModels
 							if(filename != null) {
 								CdlFlags[] data = DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(CpuType.GetPrgRomMemoryType()), CpuType.GetPrgRomMemoryType());
 								File.WriteAllBytes(filename, data.Cast<byte>().ToArray());
+							}
+						}
+					},
+				}
+			};
+		}
+
+		private ContextMenuAction GetWorkspaceActionMenu(Window wnd)
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.Workspace,
+				SubActions = new() {
+					new ContextMenuAction() {
+						ActionType = ActionType.ImportLabels,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ImportLabels),
+						IsEnabled = () => false,
+						OnClick = () => { }
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.ExportLabels,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ExportLabels),
+						IsEnabled = () => false,
+						OnClick = () => { }
+					},
+
+					new ContextMenuSeparator(),
+
+					new ContextMenuAction() {
+						ActionType = ActionType.ImportWatchEntries,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ImportWatchEntries),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.WatchFileExt);
+							if(filename != null) {
+								WatchManager.GetWatchManager(CpuType).Import(filename);
+							}
+						}
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.ExportWatchEntries,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ExportWatchEntries),
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.SaveFile(null, null, wnd, FileDialogHelper.WatchFileExt);
+							if(filename != null) {
+								WatchManager.GetWatchManager(CpuType).Export(filename);
+							}
+						}
+					},
+
+					new ContextMenuSeparator(),
+					new ContextMenuAction() {
+						ActionType = ActionType.ResetWorkspace,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ResetWorkspace),
+						OnClick = async () => {
+							if(await MesenMsgBox.Show(wnd, "ResetWorkspaceConfirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK) {
+								DebugWorkspaceManager.Workspace.Reset();
 							}
 						}
 					},

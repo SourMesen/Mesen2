@@ -27,6 +27,10 @@ namespace Mesen.Debugger.Labels
 			_labels.Clear();
 			_labelsByKey.Clear();
 			_reverseLookup.Clear();
+
+			DefaultLabelHelper.SetDefaultLabels();
+
+			OnLabelUpdated?.Invoke(null, EventArgs.Empty);
 		}
 
 		public static CodeLabel? GetLabel(UInt32 address, MemoryType type)

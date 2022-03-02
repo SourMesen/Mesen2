@@ -123,7 +123,6 @@ namespace Mesen.Config
 			//Debugger window
 			Add(new() { Shortcut = DebuggerShortcut.Reset, KeyBinding = new(KeyModifiers.Control, Key.R) });
 			Add(new() { Shortcut = DebuggerShortcut.PowerCycle, KeyBinding = new(KeyModifiers.Control, Key.T) });
-			Add(new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.ToggleBreakContinue, KeyBinding = new(Key.Escape) });
 			Add(new() { Shortcut = DebuggerShortcut.StepInto, KeyBinding = new(Key.F11) });
@@ -188,7 +187,13 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ResetCdl, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LoadCdl, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveCdl, KeyBinding = new() });
-			
+		
+			Add(new() { Shortcut = DebuggerShortcut.ImportLabels, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.ExportLabels, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.ImportWatchEntries, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.ExportWatchEntries, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.ResetWorkspace, KeyBinding = new() });
+
 			//Memory Tools
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Unfreeze, KeyBinding = new(KeyModifiers.Control, Key.W) });
@@ -256,7 +261,6 @@ namespace Mesen.Config
 		OpenDebugSettings,
 		Reset,
 		PowerCycle,
-		ReloadRom,
 		ToggleBreakContinue,
 		StepInto,
 		StepOver,
@@ -322,6 +326,11 @@ namespace Mesen.Config
 		SaveCdl,
 		RunToNmi,
 		RunToIrq,
+		ImportLabels,
+		ExportLabels,
+		ImportWatchEntries,
+		ExportWatchEntries,
+		ResetWorkspace,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

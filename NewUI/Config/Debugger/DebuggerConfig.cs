@@ -27,7 +27,8 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnPowerCycleReset { get; set; } = true;
 
 		[Reactive] public bool AutoResetCdl { get; set; } = true;
-		
+		[Reactive] public bool DisableDefaultLabels { get; set; } = false;
+
 		[Reactive] public bool UsePredictiveBreakpoints { get; set; } = true;
 		[Reactive] public bool SingleBreakpointPerInstruction { get; set; } = true;
 

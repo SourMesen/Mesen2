@@ -143,6 +143,7 @@
 	  <None Remove="Assets\StepOut.png" />
 	  <None Remove="Assets\StepOver.png" />
 	  <None Remove="Assets\SwitchView.png" />
+	  <None Remove="Assets\TabContent.png" />
 	  <None Remove="Assets\Tape.png" />
 	  <None Remove="Assets\Undo.png" />
 	  <None Remove="Assets\UnidentifiedData.png" />
@@ -539,6 +540,7 @@
 	  <AvaloniaResource Include="Assets\StepOver.png" />
 	  <AvaloniaResource Include="Assets\SwitchView.png" />
 	  <AvaloniaResource Include="Assets\Tape.png" />
+	  <AvaloniaResource Include="Assets\TabContent.png" />
 	  <AvaloniaResource Include="Assets\Undo.png" />
 	  <AvaloniaResource Include="Assets\UnidentifiedData.png" />
 	  <AvaloniaResource Include="Assets\Update.png" />

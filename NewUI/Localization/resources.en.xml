@@ -895,6 +895,8 @@
 			<Control ID="tabDebugger">Debugger</Control>
 			<Control ID="lblGeneralSettings">General settings</Control>
 			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
+			<Control ID="chkDisableDefaultLabels">Disable default labels</Control>
+			
 			<Control ID="lblCopyCodeSettings">Copy selected code settings</Control>
 			<Control ID="chkCopyAddresses">Copy addresses</Control>
 			<Control ID="chkCopyByteCode">Copy byte code</Control>
@@ -929,6 +931,10 @@
 
 			<Control ID="tabIntegration">Integration</Control>
 			<Control ID="lblIntegrationSettings">Integration settings</Control>
+			<Control ID="lblAutoLoadHint">Automatically load the following file types when a matching file is found in ROM's folder:</Control>
+			<Control ID="chkAutoLoadDbgFiles">.DBG files (CA65 debug symbols)</Control>
+			<Control ID="chkAutoLoadMlbFiles">.MLB files (Mesen label file)</Control>
+			<Control ID="chkAutoLoadCdlFiles">.CDL files (Code/data log)</Control>
 			
 			<Control ID="tabShortcuts">Shortcuts</Control>
 			<Control ID="tabShared">Shared</Control>
@@ -1098,6 +1104,8 @@ x == [$150] || y == [10]
 
 		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL settings and cannot be undone!&#xA;&#xA;Continue?</Message>
 
+		<Message ID="ResetWorkspaceConfirmation">Warning: This operation will empty the watch window, remove all breakpoints and reset labels to their default state.&#xA;&#xA;This resets the workspace of all CPUs for the current ROM.&#xA;&#xA;Are you sure?</Message>
+
 		<Message ID="RandomGameNoGameFound">Mesen could not find any games to load.</Message>
 
 		<Message ID="CannotWriteToFolder">The selected folder cannot be written to - please select another folder and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
@@ -1169,7 +1177,6 @@ x == [$150] || y == [10]
 			<Value ID="Pause">Pause</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
-			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="PowerOff">Power Off</Value>
 			<Value ID="Exit">Exit</Value>
 			<Value ID="TakeScreenshot">Take Screenshot</Value>
@@ -1899,9 +1906,7 @@ x == [$150] || y == [10]
 			<Value ID="OpenPaletteViewer">Open Palette Viewer</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
-			<Value ID="ReloadRom">Reload ROM</Value>
-			<Value ID="Continue">Continue</Value>
-			<Value ID="Break">Break</Value>
+			<Value ID="ToggleBreakContinue">Break/continue</Value>
 			<Value ID="StepInto">Step Into</Value>
 			<Value ID="StepOver">Step Over</Value>
 			<Value ID="StepOut">Step Out</Value>
@@ -1914,6 +1919,11 @@ x == [$150] || y == [10]
 			<Value ID="BreakOn">Break On...</Value>
 			<Value ID="RunToNmi">Run to NMI</Value>
 			<Value ID="RunToIrq">Run to IRQ</Value>
+			<Value ID="ImportLabels">Import labels</Value>
+			<Value ID="ExportLabels">Export labels</Value>
+			<Value ID="ImportWatchEntries">Import watch entries</Value>
+			<Value ID="ExportWatchEntries">Export watch entries</Value>
+			<Value ID="ResetWorkspace">Reset workspace</Value>
 			<Value ID="FindOccurrences">Find Occurrences</Value>
 			<Value ID="GoToProgramCounter">Go To Program Counter</Value>
 			<Value ID="CodeWindow_ViewInMemoryViewer">Code Window: View in Memory Viewer</Value>
@@ -2178,8 +2188,15 @@ x == [$150] || y == [10]
 			<Value ID="SaveCdl">Save CDL data as...</Value>
 
 			<Value ID="MoveProgramCounter">Move Program Counter</Value>
-			
+
 			<Value ID="ShowToolbar">Show toolbar</Value>
+
+			<Value ID="Workspace">Workspace</Value>
+			<Value ID="ResetWorkspace">Reset workspace</Value>
+			<Value ID="ImportLabels">Import labels...</Value>
+			<Value ID="ExportLabels">Export labels...</Value>
+			<Value ID="ImportWatchEntries">Import watch entries...</Value>
+			<Value ID="ExportWatchEntries">Export watch entries...</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -903,7 +903,7 @@ namespace Mesen.Debugger.Integration
 				}
 			}
 
-			if(ConfigManager.Config.Debug.DbgIntegration.ResetLabelsOnImport) {
+			if(ConfigManager.Config.Debug.Integration.ResetLabelsOnImport) {
 				//TODO
 				//DebugWorkspaceManager.ResetLabels();
 				LabelManager.ResetLabels();

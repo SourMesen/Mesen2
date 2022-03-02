@@ -609,5 +609,20 @@ namespace Mesen.Debugger.Utilities
 
 		MoveProgramCounter,
 		ShowToolbar,
+
+		[IconFile("Refresh")]
+		ResetWorkspace,
+		[IconFile("TabContent")]
+		Workspace,
+		
+		[IconFile("Import")]
+		ImportLabels,
+		[IconFile("Export")]
+		ExportLabels,
+		
+		[IconFile("Import")]
+		ImportWatchEntries,
+		[IconFile("Export")]
+		ExportWatchEntries,
 	}
 }

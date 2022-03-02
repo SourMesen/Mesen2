@@ -91,12 +91,12 @@
 			<StackPanel DockPanel.Dock="Bottom" IsVisible="{CompiledBinding Config.ShowMemoryMappings}">
 				<dc:MemoryMappingViewer
 					Margin="2 1"
-					IsVisible="{CompiledBinding MemoryMappings.CpuMappings}"
+					IsVisible="{CompiledBinding MemoryMappings.CpuMappings.Count}"
 					Mappings="{CompiledBinding MemoryMappings.CpuMappings}"
 				/>
 				<dc:MemoryMappingViewer
 					Margin="2 1"
-					IsVisible="{CompiledBinding MemoryMappings.PpuMappings}"
+					IsVisible="{CompiledBinding MemoryMappings.PpuMappings.Count}"
 					Mappings="{CompiledBinding MemoryMappings.PpuMappings}"
 				/>
 			</StackPanel>

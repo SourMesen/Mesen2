@@ -1,4 +1,5 @@
-﻿using Mesen.Interop;
+﻿using Mesen.Config;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,10 @@ namespace Mesen.Debugger.Labels
 	{
 		public static void SetDefaultLabels()
 		{
+			if(ConfigManager.Config.Debug.Debugger.DisableDefaultLabels) {
+				return;
+			}
+
 			HashSet<CpuType> cpuTypes = EmuApi.GetRomInfo().CpuTypes;
 			if(cpuTypes.Contains(CpuType.Gameboy)) {
 				SetGameboyDefaultLabels();

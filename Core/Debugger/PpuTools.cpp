@@ -132,7 +132,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 						uint8_t color = ram[(pixelStart + x * 2 + 1) & ramMask];
 
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							int pos = baseOutputOffset + (y * options.Width * 8) + x;
+							uint32_t pos = baseOutputOffset + (y * options.Width * 8) + x;
 							if(pos < outputSize) {
 								uint32_t rgbColor;
 								if(directColor) {
@@ -151,7 +151,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 					for(int x = 0; x < 8; x++) {
 						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, 7 - x, secondByteOffset);
 						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							int pos = baseOutputOffset + (y * options.Width * 8) + x;
+							uint32_t pos = baseOutputOffset + (y * options.Width * 8) + x;
 							if(pos < outputSize) {
 								outBuffer[pos] = GetRgbPixelColor(colors, color, options.Palette, bpp, directColor, 0);
 							}

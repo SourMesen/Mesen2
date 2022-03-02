@@ -101,5 +101,17 @@ namespace Mesen.Debugger.Utilities
 
 			File.WriteAllText(path, JsonSerializer.Serialize(this, typeof(DebugWorkspace), JsonHelper.Options));
 		}
+
+		public void Reset()
+		{
+			foreach((CpuType cpuType, CpuDebugWorkspace workspace) in WorkspaceByCpu) {
+				WatchManager.GetWatchManager(cpuType).WatchEntries = new();
+				workspace.Breakpoints.Clear();
+				workspace.Labels.Clear();
+				workspace.WatchEntries.Clear();
+			}
+			BreakpointManager.ClearBreakpoints();
+			LabelManager.ResetLabels();
+		}
 	}
 }

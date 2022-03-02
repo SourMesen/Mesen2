@@ -183,29 +183,7 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
 					}
-				},
-
-				new ContextMenuSeparator(),
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Import,
-					OnClick = async () => {
-						string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.WatchFileExt);
-						if(filename !=null) {
-							_model!.Manager.Import(filename);
-						}
-					}
-				},
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Export,
-					OnClick = async () => {
-						string? filename = await FileDialogHelper.SaveFile(null, null, VisualRoot, FileDialogHelper.WatchFileExt);
-						if(filename != null) {
-							_model!.Manager.Export(filename);
-						}
-					}
-				},
+				}
 			});
 		}
 

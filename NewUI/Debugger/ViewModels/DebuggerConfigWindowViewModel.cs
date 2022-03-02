@@ -14,7 +14,7 @@ namespace Mesen.Debugger.ViewModels
 		public FontConfig Font { get; set; }
 		public DebuggerConfig Debugger { get; set; }
 		public ScriptWindowConfig Script { get; set; }
-		public DbgIntegrationConfig Integration { get; set; }
+		public IntegrationConfig Integration { get; set; }
 		[Reactive] public DebugConfigWindowTab SelectedIndex { get; set; }
 
 		public List<DebuggerShortcutInfo> SharedShortcuts { get; set; } = new();
@@ -31,7 +31,7 @@ namespace Mesen.Debugger.ViewModels
 			Debugger = ConfigManager.Config.Debug.Debugger;
 			Font = ConfigManager.Config.Debug.Font;
 			Script = ConfigManager.Config.Debug.ScriptWindow;
-			Integration = ConfigManager.Config.Debug.DbgIntegration;
+			Integration = ConfigManager.Config.Debug.Integration;
 
 			InitShortcutLists();
 		}
@@ -104,7 +104,6 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {
-				DebuggerShortcut.ReloadRom,
 				DebuggerShortcut.Reset,
 				DebuggerShortcut.PowerCycle,
 				DebuggerShortcut.ToggleBreakContinue,
@@ -161,6 +160,11 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.ResetCdl,
 				DebuggerShortcut.LoadCdl,
 				DebuggerShortcut.SaveCdl,
+				DebuggerShortcut.ImportLabels,
+				DebuggerShortcut.ExportLabels,
+				DebuggerShortcut.ImportWatchEntries,
+				DebuggerShortcut.ExportWatchEntries,
+				DebuggerShortcut.ResetWorkspace,
 				//DebuggerShortcut.RevertPrgChrChanges
 			});
 		}

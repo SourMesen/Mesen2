@@ -22,7 +22,7 @@ namespace Mesen.Config
 		public PaletteViewerConfig PaletteViewer { get; set; } = new PaletteViewerConfig();
 		public RegisterViewerConfig RegisterViewer { get; set; } = new RegisterViewerConfig();
 		public SpriteViewerConfig SpriteViewer { get; set; } = new SpriteViewerConfig();
-		public DbgIntegrationConfig DbgIntegration { get; set; } = new DbgIntegrationConfig();
+		public IntegrationConfig Integration { get; set; } = new IntegrationConfig();
 		public ScriptWindowConfig ScriptWindow { get; set; } = new ScriptWindowConfig();
 		public ProfilerConfig Profiler { get; set; } = new ProfilerConfig();
 		public AssemblerConfig Assembler { get; set; } = new AssemblerConfig();
