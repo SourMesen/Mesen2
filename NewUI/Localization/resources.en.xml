@@ -1105,7 +1105,9 @@ x == [$150] || y == [10]
 		<Message ID="ResetSettingsConfirmation">Warning: This will reset ALL settings and cannot be undone!&#xA;&#xA;Continue?</Message>
 
 		<Message ID="ResetWorkspaceConfirmation">Warning: This operation will empty the watch window, remove all breakpoints and reset labels to their default state.&#xA;&#xA;This resets the workspace of all CPUs for the current ROM.&#xA;&#xA;Are you sure?</Message>
-
+		<Message ID="ImportLabels">Import completed: {0} labels imported.</Message>
+		<Message ID="ImportLabelsWithErrors">Import completed: {0} labels imported (and {1} errors.)</Message>
+		
 		<Message ID="RandomGameNoGameFound">Mesen could not find any games to load.</Message>
 
 		<Message ID="CannotWriteToFolder">The selected folder cannot be written to - please select another folder and try again.&#xA;&#xA;Details:&#xA;{0}</Message>

@@ -461,14 +461,23 @@ namespace Mesen.Debugger.ViewModels
 					new ContextMenuAction() {
 						ActionType = ActionType.ImportLabels,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ImportLabels),
-						IsEnabled = () => false,
-						OnClick = () => { }
+						OnClick = async () => {
+							string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.MesenLabelExt);
+							if(filename != null) {
+								MesenLabelFile.Import(filename, false);
+							}
+						}
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.ExportLabels,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ExportLabels),
-						IsEnabled = () => false,
-						OnClick = () => { }
+						OnClick = async () => {
+							string initFilename = EmuApi.GetRomInfo().GetRomName() + "." + FileDialogHelper.MesenLabelExt;
+							string? filename = await FileDialogHelper.SaveFile(null, initFilename, wnd, FileDialogHelper.MesenLabelExt);
+							if(filename != null) {
+								MesenLabelFile.Export(filename);
+							}
+						}
 					},
 
 					new ContextMenuSeparator(),

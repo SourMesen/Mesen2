@@ -907,6 +907,7 @@ namespace Mesen.Debugger.Integration
 				//TODO
 				//DebugWorkspaceManager.ResetLabels();
 				LabelManager.ResetLabels();
+				DefaultLabelHelper.SetDefaultLabels();
 			}
 			LabelManager.SetLabels(labelsToImport, true);
 

@@ -80,11 +80,8 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Delete),
 					IsEnabled = () => grid.SelectedItems.Count > 0,
 					OnClick = () => {
-						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
-							if(item is LabelViewModel vm) {
-								LabelManager.DeleteLabel(vm.Label, true);
-							}
-						}
+						IEnumerable<CodeLabel> labels = grid.SelectedItems.Cast<LabelViewModel>().Select(vm => vm.Label).ToList();
+						LabelManager.DeleteLabels(labels);
 					}
 				},
 

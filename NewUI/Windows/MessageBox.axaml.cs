@@ -39,7 +39,7 @@ namespace Mesen.Windows
 			void AddButton(string caption, DialogResult r)
 			{
 				Button btn = new Button { Content = caption };
-				if(r == DialogResult.Cancel) {
+				if(r == DialogResult.Cancel || (r == DialogResult.OK && buttons == MessageBoxButtons.OK)) {
 					btn.IsCancel = true;
 				}
 				btn.Click += (_, _) => {
@@ -68,12 +68,9 @@ namespace Mesen.Windows
 			TaskCompletionSource<DialogResult> tcs = new TaskCompletionSource<DialogResult>();
 			msgbox.Closed += (_, _) => { tcs.TrySetResult(result); };
 			
-			if(parent != null) {
-				msgbox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-				msgbox.ShowDialog(parent);
-			} else {
-				msgbox.Show();
-			}
+			msgbox.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			msgbox.ShowDialog(parent ?? ApplicationHelper.GetActiveWindow());
+
 			return tcs.Task;
 		}
 	}

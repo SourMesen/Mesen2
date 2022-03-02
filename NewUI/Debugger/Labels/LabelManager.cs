@@ -28,8 +28,6 @@ namespace Mesen.Debugger.Labels
 			_labelsByKey.Clear();
 			_reverseLookup.Clear();
 
-			DefaultLabelHelper.SetDefaultLabels();
-
 			OnLabelUpdated?.Invoke(null, EventArgs.Empty);
 		}
 
@@ -163,6 +161,14 @@ namespace Mesen.Debugger.Labels
 			if(needEvent) {
 				ProcessLabelUpdate();
 			}
+		}
+
+		public static void DeleteLabels(IEnumerable<CodeLabel> labels)
+		{
+			foreach(CodeLabel label in labels) {
+				DeleteLabel(label, false);
+			}
+			ProcessLabelUpdate();
 		}
 
 		/*public static void CreateAutomaticJumpLabels()

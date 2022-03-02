@@ -181,7 +181,7 @@ namespace Mesen.Interop
 				MemoryType.SnesSaveRam => "SRAM",
 				MemoryType.SnesVideoRam => "VRAM",
 				MemoryType.SnesSpriteRam => "OAM",
-				MemoryType.SnesCgRam => "CG",
+				MemoryType.SnesCgRam => "CGRAM",
 
 				MemoryType.SpcRam => "RAM",
 				MemoryType.SpcRom => "ROM",
