@@ -66,19 +66,25 @@ namespace Mesen.Controls
 
 		private void OnImageClick(object sender, RoutedEventArgs e)
 		{
+			if(!IsEffectivelyVisible) {
+				return;
+			}
+
 			RecentGameInfo game = Entry;
 			if(Path.GetExtension(game.FileName) == ".mss") {
-				if(game.SaveMode) {
-					EmuApi.SaveStateFile(game.FileName);
-				} else {
-					EmuApi.LoadStateFile(game.FileName);
-				}
-				EmuApi.Resume();
-			} else {
-				string filename = Entry.FileName;
 				Task.Run(() => {
 					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
-					EmuApi.LoadRecentGame(filename, false);
+					if(game.SaveMode) {
+						EmuApi.SaveStateFile(game.FileName);
+					} else {
+						EmuApi.LoadStateFile(game.FileName);
+					}
+					EmuApi.Resume();
+				});
+			} else {
+				Task.Run(() => {
+					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+					EmuApi.LoadRecentGame(game.FileName, false);
 				});
 			}
 		}
