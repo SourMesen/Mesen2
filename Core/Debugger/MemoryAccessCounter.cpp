@@ -20,7 +20,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
 		_counters[i].reserve(memSize);
 		for(uint32_t j = 0; j < memSize; j++) {
-			_counters[i].push_back({ j });
+			_counters[i].push_back({});
 		}
 	}
 }
