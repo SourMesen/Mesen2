@@ -2,6 +2,7 @@
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -19,6 +20,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[ObservableAsProperty] public bool OkEnabled { get; }
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
+		[Reactive] public string ErrorMessage { get; private set; } = "";
 		
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 		public CpuType CpuType { get; }
@@ -53,26 +55,41 @@ namespace Mesen.Debugger.ViewModels
 				for(UInt32 i = 0; i < length; i++) {
 					CodeLabel? sameAddress = LabelManager.GetLabel(address + i, memoryType);
 					if(sameAddress != null) {
-						if(originalLabel == null) {
-							//A label already exists and we're not editing an existing label, so we can't add it
+						if(originalLabel == null || (sameAddress.Label != originalLabel.Label && !sameAddress.Label.StartsWith(originalLabel.Label + "+"))) {
+							//A label already exists, we're trying to edit an existing label, but the existing label
+							//and the label we're editing aren't the same label.  Can't override an existing label with a different one.
+							ErrorMessage = ResourceHelper.GetMessage("AddressHasOtherLabel", sameAddress.Label.Length > 0 ? sameAddress.Label : sameAddress.Comment);
 							return false;
-						} else {
-							if(sameAddress.Label != originalLabel.Label && !sameAddress.Label.StartsWith(originalLabel.Label + "+")) {
-								//A label already exists, we're trying to edit an existing label, but the existing label
-								//and the label we're editing aren't the same label.  Can't override an existing label with a different one.
-								return false;
-							}
 						}
 					}
 				}
 
-				return
-					length >= 1 && length <= 65536 &&
-					address + (length - 1) <= maxAddress &&
-					(sameLabel == null || sameLabel == originalLabel)
-					&& (label.Length > 0 || comment.Length > 0)
-					&& !comment.Contains('\x1')
-					&& (label.Length == 0 || LabelManager.LabelRegex.IsMatch(label));
+				if(address + (length - 1) > maxAddress) {
+					ErrorMessage = ResourceHelper.GetMessage("AddressOutOfRange");
+					return false;
+				}
+
+				if(label.Length == 0 && comment.Length == 0) {
+					ErrorMessage = ResourceHelper.GetMessage("LabelOrCommentRequired");
+					return false;
+				}
+
+				if(label.Length > 0 && !LabelManager.LabelRegex.IsMatch(label)) {
+					ErrorMessage = ResourceHelper.GetMessage("InvalidLabel");
+					return false;
+				}
+
+				if(sameLabel != null && sameLabel != originalLabel) {
+					ErrorMessage = ResourceHelper.GetMessage("LabelNameInUse");
+					return false;
+				}
+
+				if(length >= 1 && length <= 65536 && !comment.Contains('\x1')) {
+					ErrorMessage = "";
+					return true;
+				}
+
+				return false;
 			}).ToPropertyEx(this, x => x.OkEnabled));
 		}
 

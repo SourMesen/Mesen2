@@ -980,7 +980,19 @@
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-
+		
+		<Form ID="LabelEditWindow">
+			<Control ID="wndTitle">Edit label...</Control>
+			<Control ID="lblMemoryType">Memory type:</Control>
+			<Control ID="lblAddress">Address:</Control>
+			<Control ID="lblLabel">Label:</Control>
+			<Control ID="lblComment">Comment:</Control>
+			<Control ID="lblLength">Length:</Control>
+			<Control ID="lblBytes">bytes</Control>
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		
 		<Form ID="RegisterViewerWindow">
 			<Control ID="wndTitle">Register Viewer</Control>
 
@@ -1165,6 +1177,11 @@ x == [$150] || y == [10]
 		<Message ID="btnNo">No</Message>
 		
 		<Message ID="AssemblerConfirmation">{0}&#xA;&#xA;OK?</Message>
+		<Message ID="LabelNameInUse">A label with this name already exists.</Message>
+		<Message ID="InvalidLabel">Label does not follow naming rules.</Message>
+		<Message ID="LabelOrCommentRequired">A label or a comment must be specified.</Message>
+		<Message ID="AddressOutOfRange">The address is out of range.</Message>
+		<Message ID="AddressHasOtherLabel">Another label exists for this address: {0}</Message>
 	</Messages>
 	<Enums>
 		<Enum ID="EmulatorShortcut">

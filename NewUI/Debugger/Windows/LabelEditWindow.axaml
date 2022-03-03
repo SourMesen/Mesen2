@@ -9,15 +9,16 @@
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
-	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="230"
+	mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
 	x:Class="Mesen.Debugger.Windows.LabelEditWindow"
 	x:DataType="vm:LabelEditViewModel"
 	Icon="/Assets/EditLabel.png"
-	Width="300" Height="230"
-	Title="Edit label..."
+	Width="350" Height="250"
+	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>
 		<vm:LabelEditViewModel />
@@ -25,37 +26,37 @@
 
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="OK" IsEnabled="{CompiledBinding OkEnabled}" />
-			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="Cancel" />
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 
 		<Grid
 			DockPanel.Dock="Right"
 			ColumnDefinitions="Auto,*"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
 			Margin="5 0 5 0"
 		>
-			<TextBlock Grid.Column="0" Grid.Row="0" Text="Memory type:" />
+			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblMemoryType}" />
 			<c:EnumComboBox 
 				Grid.Column="1" Grid.Row="0"
 				SelectedItem="{CompiledBinding Label.MemoryType}"
 				AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="1" Text="Address:" />
+			<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblAddress}" />
 			<StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
 				<TextBlock Margin="0 0 3 0">$</TextBlock>
 				<c:MesenNumericTextBox Value="{CompiledBinding Label.Address}" Hex="True" Trim="True" Width="60" />
 				<TextBlock Margin="3 0 0 0" Text="{CompiledBinding MaxAddress}" Foreground="Gray" />
 			</StackPanel>
 
-			<TextBlock Grid.Column="0" Grid.Row="2" Text="Label:" />
+			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblLabel}" />
 			<TextBox
 				Grid.Column="1" Grid.Row="2"
 				Text="{CompiledBinding Label.Label}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="3" Text="Comment:" />
+			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblComment}" />
 			<TextBox
 				Grid.Column="1" Grid.Row="3"
 				AcceptsReturn="True"
@@ -64,13 +65,20 @@
 				Text="{CompiledBinding Label.Comment}"
 			/>
 
-			<TextBlock Grid.Column="0" Grid.Row="4" Text="Length:" />
-			<NumericUpDown
-				Grid.Column="1" Grid.Row="4"
-				Value="{CompiledBinding Label.Length}"
-				Minimum="1"
-				Maximum="65536"
-			/>
+			<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblLength}" />
+			<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4">
+				<NumericUpDown
+					Value="{CompiledBinding Label.Length}"
+					Minimum="1"
+					Maximum="65536"
+				/>
+				<TextBlock Text="{l:Translate lblBytes}" Margin="3 0" />
+			</StackPanel>
+
+			<Grid Grid.Row="5" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto" IsVisible="{CompiledBinding ErrorMessage.Length}" >
+				<Image Source="/Assets/Warning.png" Stretch="None" />
+				<TextBlock Grid.Column="1" Text="{CompiledBinding ErrorMessage}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="3 0 0 0" />
+			</Grid>
 		</Grid>
 	</DockPanel>
 </Window>
