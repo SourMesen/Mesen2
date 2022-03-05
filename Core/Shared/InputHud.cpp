@@ -94,14 +94,19 @@ void InputHud::DrawOutline(int width, int height)
 	_outlineHeight = height;
 }
 
-void InputHud::DrawController(ControllerType controllerType, int port, ControlDeviceState state)
+void InputHud::DrawController(ControllerData& data)
 {
-	shared_ptr<BaseControlDevice> controller = ((BaseControlManager*)_emu->GetControlManager())->CreateControllerDevice(controllerType, port);
+	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
+	if(!cfg.DisplayInputPort[data.Port]) {
+		return;
+	}
+
+	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->CreateControllerDevice(data.Type, data.Port);
 	if(!controller) {
 		return;
 	}
 
-	controller->SetRawState(state);
+	controller->SetRawState(data.State);
 	controller->DrawController(*this);
 	EndDrawController();
 }
@@ -173,9 +178,7 @@ void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controller
 			break;
 	}
 	
-	for(int i = 0; i < (int)controllerData.size(); i++) {
-		if(controllerData[i].Type != ControllerType::None) {
-			DrawController(controllerData[i].Type, i, controllerData[i].State);
-		}
+	for(ControllerData& portData : controllerData) {
+		DrawController(portData);
 	}
 }

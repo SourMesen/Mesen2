@@ -17,4 +17,5 @@ struct ControllerData
 {
 	ControllerType Type;
 	ControlDeviceState State;
+	uint8_t Port;
 };

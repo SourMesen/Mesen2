@@ -17,7 +17,7 @@ private:
 	int _outlineWidth = 0;
 	int _outlineHeight = 0;
 
-	void DrawController(ControllerType type, int port, ControlDeviceState state);
+	void DrawController(ControllerData& data);
 
 public:
 	InputHud(Emulator *emu, DebugHud* hud);

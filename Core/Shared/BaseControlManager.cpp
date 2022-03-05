@@ -63,16 +63,13 @@ shared_ptr<BaseControlDevice> BaseControlManager::CreateControllerDevice(Control
 
 vector<ControllerData> BaseControlManager::GetPortStates()
 {
-	auto lock = _deviceLock.AcquireSafe();
-
 	vector<ControllerData> states;
-	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-		shared_ptr<BaseControlDevice> device = GetControlDevice(i);
-		if(device) {
-			states.push_back({ device->GetControllerType(), device->GetRawState() });
-		} else {
-			states.push_back({ ControllerType::None, ControlDeviceState() });
-		}
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		states.push_back({
+			device->GetControllerType(),
+			device->GetRawState(),
+			device->GetPort()
+		});
 	}
 	return states;
 }
