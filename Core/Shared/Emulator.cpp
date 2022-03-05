@@ -496,6 +496,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	if(stopRom) {
 #ifndef LIBRETRO
+		_stopFlag = false;
 		_emuThread.reset(new thread(&Emulator::Run, this));
 #endif
 	}
