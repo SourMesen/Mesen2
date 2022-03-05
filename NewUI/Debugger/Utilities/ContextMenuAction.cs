@@ -47,20 +47,19 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
-		public Image? Icon
+		private string? _currentIcon = null;
+
+		private string? GetIconFile()
 		{
-			get
-			{
-				IconFileAttribute? attr = ActionType.GetAttribute<IconFileAttribute>();
-				if(!string.IsNullOrEmpty(attr?.Icon)) {
-					return ImageUtilities.FromAsset(attr.Icon);
-				} else if(DynamicIcon != null) {
-					return ImageUtilities.FromAsset("Assets/" + DynamicIcon() + ".png");
-				} else if(IsSelected?.Invoke() == true) {
-					return ImageUtilities.FromAsset("Assets/MenuItemChecked.png");
-				}
-				return null;
+			IconFileAttribute? attr = ActionType.GetAttribute<IconFileAttribute>();
+			if(!string.IsNullOrEmpty(attr?.Icon)) {
+				return  attr.Icon;
+			} else if(DynamicIcon != null) {
+				return "Assets/" + DynamicIcon() + ".png";
+			} else if(IsSelected?.Invoke() == true) {
+				return "Assets/MenuItemChecked.png";
 			}
+			return null;
 		}
 
 		List<object>? _subActions;
@@ -140,7 +139,17 @@ namespace Mesen.Debugger.Utilities
 		public void Update()
 		{
 			ActionName = Name;
-			ActionIcon = Icon;
+
+			string? iconFile = GetIconFile();
+			if(_currentIcon != iconFile) {
+				if(iconFile != null) {
+					ActionIcon = ImageUtilities.FromAsset(iconFile);
+				} else {
+					ActionIcon = null;
+				}
+				_currentIcon = iconFile;
+			}
+
 			Enabled = IsEnabled?.Invoke() ?? true;
 			Visible = IsVisible?.Invoke() ?? true;
 		}

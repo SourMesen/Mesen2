@@ -54,8 +54,8 @@
 						<ContentPresenter Content="{Binding ActionIcon}" />
 						<TextBlock
 							Padding="3 0"
-							IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}"
-							Text="{Binding Name}"
+							IsVisible="{Binding ActionIcon, Converter={x:Static ObjectConverters.IsNull}}"
+							Text="{Binding ActionName}"
 						/>
 					</StackPanel>
 				</Button>
