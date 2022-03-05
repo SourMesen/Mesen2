@@ -2,8 +2,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Mesen.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Utilities;
+using System;
 
 namespace Mesen.Debugger.Windows
 {
@@ -13,13 +15,19 @@ namespace Mesen.Debugger.Windows
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+			this.FindControl<MesenNumericTextBox>("startAddress").Focus();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

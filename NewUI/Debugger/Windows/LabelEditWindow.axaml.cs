@@ -6,6 +6,7 @@ using Mesen.Debugger.Labels;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using Mesen.Utilities;
+using System;
 
 namespace Mesen.Debugger.Windows
 {
@@ -15,13 +16,19 @@ namespace Mesen.Debugger.Windows
 		{
 			InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+			this.AttachDevTools();
 #endif
 		}
 
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+			this.FindControl<TextBox>("txtLabel").Focus();
 		}
 
 		public static async void EditLabel(CpuType cpuType, Control parent, CodeLabel label)

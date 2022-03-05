@@ -69,7 +69,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Edit),
-					IsEnabled = () => grid.SelectedItem is Breakpoint,
+					IsEnabled = () => grid.SelectedItem is BreakpointViewModel,
 					OnClick = () => {
 						if(grid.SelectedItem is BreakpointViewModel vm) {
 							BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, parent);

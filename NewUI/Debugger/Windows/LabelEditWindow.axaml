@@ -26,7 +26,7 @@
 
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
 			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 
@@ -53,6 +53,7 @@
 			<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblLabel}" />
 			<TextBox
 				Grid.Column="1" Grid.Row="2"
+				Name="txtLabel"
 				Text="{CompiledBinding Label.Label}"
 			/>
 
