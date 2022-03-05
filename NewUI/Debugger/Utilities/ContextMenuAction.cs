@@ -527,6 +527,8 @@ namespace Mesen.Debugger.Utilities
 		Audio,
 		[IconFile("DipSwitches")]
 		Emulation,
+		[IconFile("Controller")]
+		Input,
 		[IconFile("VideoOptions")]
 		Video,
 		[IconFile("NesIcon")]

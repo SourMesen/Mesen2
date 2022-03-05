@@ -11,6 +11,7 @@
 #include "Shared/Video/ScaleFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/InputHud.h"
+#include "Shared/RenderedFrame.h"
 #include "Shared/Video/SystemHud.h"
 #include "SNES/CartTypes.h"
 
@@ -97,7 +98,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 		overscan.Bottom *= _scaleFilter->GetScale();
 	}
 
-	RenderedFrame convertedFrame((void*)outputBuffer, frameSize.Width, frameSize.Height, _frame.Scale, _frame.FrameNumber);
+	RenderedFrame convertedFrame((void*)outputBuffer, frameSize.Width, frameSize.Height, _frame.Scale, _frame.FrameNumber, _frame.InputData);
 
 	_emu->GetDebugHud()->Draw(outputBuffer, frameSize, overscan, _frame.FrameNumber, true);
 

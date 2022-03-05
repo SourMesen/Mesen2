@@ -22,15 +22,15 @@
 			<StackPanel>
 				<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblEmulationSpeed}" />
-					<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.EmulationSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.EmulationSpeed}" Maximum="5000" Minimum="0" />
 					<TextBlock Grid.Column="2" Grid.Row="0" Text="{l:Translate lblEmuSpeedHint}" />
 					
 					<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblTurboSpeed}" />
-					<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.TurboSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.TurboSpeed}" Maximum="5000" Minimum="0" />
 					<TextBlock Grid.Column="2" Grid.Row="1" Text="{l:Translate lblTurboSpeedHint}" />
 					
 					<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblRewindSpeed}" />
-					<NumericUpDown Grid.Column="1" Grid.Row="2" Value="{CompiledBinding Config.RewindSpeed}" Maximum="5000" Minimum="0" Width="80" />
+					<NumericUpDown Grid.Column="1" Grid.Row="2" Value="{CompiledBinding Config.RewindSpeed}" Maximum="5000" Minimum="0" />
 					<TextBlock Grid.Column="2" Grid.Row="2" Text="{l:Translate lblRewindSpeedHint}" />
 					
 					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblRunAhead}" />

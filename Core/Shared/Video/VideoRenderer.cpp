@@ -19,6 +19,7 @@ VideoRenderer::VideoRenderer(Emulator* emu)
 
 	_rendererHud.reset(new DebugHud());
 	_systemHud.reset(new SystemHud(_emu, _rendererHud.get()));
+	_inputHud.reset(new InputHud(emu, _rendererHud.get()));
 
 	_hudSurface = new uint32_t[256*240];
 	_hudSize.Width = 256;
@@ -89,7 +90,14 @@ void VideoRenderer::RenderThread()
 				_hudSize = size;
 			}
 
+			RenderedFrame frame;
+			{
+				_frameLock.AcquireSafe();
+				frame = _lastFrame;
+			}
+
 			memset(_hudSurface, 0, _hudSize.Width * _hudSize.Height * sizeof(uint32_t));
+			_inputHud->DrawControllers(_hudSize, frame.InputData);
 			_systemHud->Draw(_hudSize.Width, _hudSize.Height);
 			_rendererHud->Draw(_hudSurface, _hudSize, {}, 0, false);
 			_renderer->Render(_hudSurface, _hudSize.Width, _hudSize.Height);
@@ -97,11 +105,16 @@ void VideoRenderer::RenderThread()
 	}
 }
 
-void VideoRenderer::UpdateFrame(RenderedFrame frame)
+void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder;
 	if(recorder) {
 		recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps());
+	}
+
+	{
+		_frameLock.AcquireSafe();
+		_lastFrame = frame;
 	}
 
 	if(_renderer) {

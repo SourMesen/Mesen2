@@ -10,6 +10,7 @@ namespace Mesen.ViewModels
 	public class ConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public AudioConfigViewModel? Audio { get; set; }
+		[Reactive] public InputConfigViewModel? Input { get; set; }
 		[Reactive] public VideoConfigViewModel? Video { get; set; }
 		[Reactive] public PreferencesConfigViewModel? Preferences { get; set; }
 		[Reactive] public EmulationConfigViewModel? Emulation { get; set; }
@@ -38,6 +39,7 @@ namespace Mesen.ViewModels
 			switch(tab) {
 				case ConfigWindowTab.Audio: Audio ??= AddDisposable(new AudioConfigViewModel()); break;
 				case ConfigWindowTab.Emulation: Emulation ??= AddDisposable(new EmulationConfigViewModel()); break;
+				case ConfigWindowTab.Input: Input ??= AddDisposable(new InputConfigViewModel()); break;
 				case ConfigWindowTab.Video: Video ??= AddDisposable(new VideoConfigViewModel()); break;
 
 				case ConfigWindowTab.Nes:
@@ -63,6 +65,7 @@ namespace Mesen.ViewModels
 			}
 
 			ConfigManager.Config.Audio = Audio?.Config.Clone() ?? ConfigManager.Config.Audio;
+			ConfigManager.Config.Input = Input?.Config.Clone() ?? ConfigManager.Config.Input;
 			ConfigManager.Config.Video = Video?.Config.Clone() ?? ConfigManager.Config.Video;
 			ConfigManager.Config.Preferences = Preferences?.Config.Clone() ?? ConfigManager.Config.Preferences;
 			ConfigManager.Config.Emulation = Emulation?.Config.Clone() ?? ConfigManager.Config.Emulation;
@@ -80,12 +83,13 @@ namespace Mesen.ViewModels
 	{
 		Audio = 0,
 		Emulation = 1,
-		Video = 2,
-
-		Nes = 4,
-		Snes = 5,
-		Gameboy = 6,
-
-		Preferences = 8
+		Input = 2,
+		Video = 3,
+		//separator
+		Nes = 5,
+		Snes = 6,
+		Gameboy = 7,
+		//separator
+		Preferences = 9
 	}
 }

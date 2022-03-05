@@ -53,7 +53,7 @@ public:
 	AudioConfig GetAudioConfig();
 
 	void SetInputConfig(InputConfig config);
-	InputConfig GetInputConfig();
+	InputConfig& GetInputConfig();
 
 	void SetEmulationConfig(EmulationConfig config);
 	EmulationConfig GetEmulationConfig();

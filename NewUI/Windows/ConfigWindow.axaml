@@ -26,6 +26,9 @@
 		<DataTemplate DataType="{x:Type vm:EmulationConfigViewModel}">
 			<v:EmulationConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:InputConfigViewModel}">
+			<v:InputConfigView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:VideoConfigViewModel}">
 			<v:VideoConfigView />
 		</DataTemplate>
@@ -68,6 +71,14 @@
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/DipSwitches.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabEmulation}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+			<TabItem Content="{CompiledBinding Input}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/Controller.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabInput}" />
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>

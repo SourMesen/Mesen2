@@ -375,6 +375,10 @@ namespace Mesen.ViewModels
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Emulation)
 				},
 				new MainMenuAction() {
+					ActionType = ActionType.Input,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Input)
+				},
+				new MainMenuAction() {
 					ActionType = ActionType.Video,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Video)
 				},

@@ -1,0 +1,89 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:InputConfigViewModel"
+	x:Class="Mesen.Views.InputConfigView"
+>
+	<Design.DataContext>
+		<vm:InputConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<StackPanel>
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Row="0" Text="{l:Translate lblDeadzone}" VerticalAlignment="Top" Margin="0 15 5 0" />
+					<c:MesenSlider
+						Margin="12 15 10 0"
+						HorizontalAlignment="Left"
+						Grid.Row="0"
+						Grid.Column="1"
+						Minimum="0"
+						Maximum="4"
+						TickFrequency="1"
+						Width="100"
+						HideValue="True"
+						Value="{CompiledBinding Config.ControllerDeadzoneSize}"
+					/>
+
+					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 -5 5 0">
+						<TextBlock Text="{l:Translate lblSmall}" />
+						<TextBlock Text="{l:Translate lblLarge}" Grid.Column="2" />
+					</Grid>
+
+					<TextBlock Grid.Row="2" Text="{l:Translate lblSensitivity}" VerticalAlignment="Top" Margin="0 15 5 0" />
+					<c:MesenSlider
+						Margin="12 15 10 0"
+						HorizontalAlignment="Left"
+						Grid.Row="2"
+						Grid.Column="1"
+						Minimum="0"
+						Maximum="3"
+						TickFrequency="1"
+						Width="100"
+						HideValue="True"
+						Value="{CompiledBinding Config.MouseSensitivity}"
+					/>
+
+					<Grid Grid.Row="3" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="107" HorizontalAlignment="Left" Margin="10 -5 5 0">
+						<TextBlock Text="{l:Translate lblLow}" />
+						<TextBlock Text="{l:Translate lblHigh}" Grid.Column="2" />
+					</Grid>
+				</Grid>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgDisplay}">
+			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+				<TextBlock Text="{l:Translate lblDisplayInputPorts}" VerticalAlignment="Top" Margin="0 5 0 0" />
+				<Grid Grid.Column="1" ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+					<Grid.Styles>
+						<Style Selector="CheckBox">
+							<Setter Property="Margin" Value="0 0 5 0" />
+						</Style>
+					</Grid.Styles>
+
+					<CheckBox Content="{l:Translate chkDisplayPort1}" IsChecked="{CompiledBinding Config.DisplayInputPort1}" />
+					<CheckBox Grid.Column="1" Content="{l:Translate chkDisplayPort2}" IsChecked="{CompiledBinding Config.DisplayInputPort2}" />
+					<CheckBox Grid.Row="1" Content="{l:Translate chkDisplayPort3}" IsChecked="{CompiledBinding Config.DisplayInputPort3}" />
+					<CheckBox Grid.Row="1" Grid.Column="1" Content="{l:Translate chkDisplayPort4}" IsChecked="{CompiledBinding Config.DisplayInputPort4}" />
+					<CheckBox Grid.Row="2" Content="{l:Translate chkDisplayPort5}" IsChecked="{CompiledBinding Config.DisplayInputPort5}" />
+				</Grid>
+
+				<TextBlock Grid.Row="1" Text="{l:Translate lblDisplayPosition}" />
+				<c:EnumComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" />
+
+				<CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+			</Grid>
+		</TabItem>
+	
+	</TabControl>
+</UserControl>

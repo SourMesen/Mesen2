@@ -6,6 +6,7 @@
 class InternalRegisters;
 class SnesController;
 class SnesConsole;
+class InputHud;
 
 class Multitap : public BaseControlDevice
 {
@@ -17,6 +18,8 @@ private:
 	uint8_t _turboSpeed[4] = {};
 	uint16_t _stateBuffer[4] = {};
 	InternalRegisters *_internalRegs = nullptr;
+
+	void DrawController(InputHud& hud, int port);
 
 protected:
 	string GetKeyNames() override;
@@ -33,4 +36,6 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
+
+	void DrawController(InputHud& hud) override;
 };

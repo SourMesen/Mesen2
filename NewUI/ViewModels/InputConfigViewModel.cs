@@ -5,13 +5,13 @@ using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.ViewModels
 {
-	public class EmulationConfigViewModel : DisposableViewModel
+	public class InputConfigViewModel : DisposableViewModel
 	{
-		[Reactive] public EmulationConfig Config { get; set; }
+		[Reactive] public InputConfig Config { get; set; }
 
-		public EmulationConfigViewModel()
+		public InputConfigViewModel()
 		{
-			Config = ConfigManager.Config.Emulation.Clone();
+			Config = ConfigManager.Config.Input.Clone();
 
 			if(Design.IsDesignMode) {
 				return;

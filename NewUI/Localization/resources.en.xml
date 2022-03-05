@@ -98,24 +98,29 @@
 			<Control ID="btnSetupMultitap2">Setup</Control>
 			<Control ID="btnSetupMultitap3">Setup</Control>
 			<Control ID="btnSetupMultitap4">Setup</Control>
+			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not intentional, please review and correct your key bindings.</Control>
+		</Form>
+		<Form ID="InputConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblSmall">Small</Control>
+			<Control ID="lblLarge">Large</Control>
+			<Control ID="lblDeadzone">Controller axis deadzone size:</Control>
 
-			<Control ID="tpgAdvanced">Advanced</Control>
-			<Control ID="grpDisplayInput">Display Controller Input</Control>
+			<Control ID="lblSensitivity">Mouse speed:</Control>
+			<Control ID="lblLow">Slow</Control>
+			<Control ID="lblHigh">Fast</Control>
+
+			<Control ID="tpgDisplay">Display</Control>
+			<Control ID="lblDisplayInputPorts">Display ports: </Control>
 			<Control ID="chkDisplayPort1">Port 1</Control>
 			<Control ID="chkDisplayPort2">Port 2</Control>
 			<Control ID="chkDisplayPort3">Port 3</Control>
 			<Control ID="chkDisplayPort4">Port 4</Control>
 			<Control ID="chkDisplayPort5">Port 5</Control>
-			<Control ID="lblDisplayPosition">Display Position:</Control>
-			<Control ID="chkDisplayInputHorizontally">Display horizontally</Control>
-
-			<Control ID="lblSmall">Small</Control>
-			<Control ID="lblLarge">Large</Control>
-			<Control ID="lblDeadzone">Controller axis deadzone size:</Control>
+			<Control ID="lblDisplayPosition">Display position:</Control>
+			<Control ID="chkDisplayInputHorizontally">Horizontal display</Control>
 
 			<Control ID="chkHideMousePointerForZapper">Hide mouse pointer when using zapper</Control>
-
-			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not intentional, please review and correct your key bindings.</Control>
 		</Form>
 		<Form ID="OverscanConfig">
 			<Control ID="lblLeft">Left</Control>
@@ -359,6 +364,7 @@
 
 			<Control ID="tabAudio">Audio</Control>
 			<Control ID="tabEmulation">Emulation</Control>
+			<Control ID="tabInput">Input</Control>
 			<Control ID="tabVideo">Video</Control>
 			<Control ID="tabNes">NES</Control>
 			<Control ID="tabSnes">SNES</Control>
@@ -2160,6 +2166,7 @@ x == [$150] || y == [10]
 
 			<Value ID="Audio">Audio</Value>
 			<Value ID="Emulation">Emulation</Value>
+			<Value ID="Input">Input</Value>
 			<Value ID="Video">Video</Value>
 			<Value ID="Nes">NES</Value>
 			<Value ID="Snes">SNES</Value>

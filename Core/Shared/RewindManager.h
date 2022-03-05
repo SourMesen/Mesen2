@@ -8,6 +8,7 @@
 
 class Emulator;
 class EmuSettings;
+struct RenderedFrame;
 
 enum class RewindState
 {
@@ -55,7 +56,7 @@ private:
 	void Stop();
 	void ForceStop();
 
-	void ProcessFrame(RenderedFrame frame, bool forRewind);
+	void ProcessFrame(RenderedFrame& frame, bool forRewind);
 	bool ProcessAudio(int16_t* soundBuffer, uint32_t sampleCount);
 	
 	void ClearBuffer();
@@ -78,6 +79,6 @@ public:
 
 	bool HasHistory();
 
-	void SendFrame(RenderedFrame frame, bool forRewind);
+	void SendFrame(RenderedFrame& frame, bool forRewind);
 	bool SendAudio(int16_t *soundBuffer, uint32_t sampleCount);
 };

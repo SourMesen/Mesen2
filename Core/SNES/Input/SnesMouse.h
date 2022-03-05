@@ -3,6 +3,7 @@
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/KeyManager.h"
+#include "Shared/InputHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
@@ -84,5 +85,15 @@ public:
 		uint8_t byte4 = dx | leftFlag;
 
 		_stateBuffer = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+	}
+
+	void DrawController(InputHud& hud)
+	{
+		hud.DrawOutline(11, 14);
+
+		hud.DrawButton(1, 1, 4, 5, IsPressed(Buttons::Left));
+		hud.DrawButton(6, 1, 4, 5, IsPressed(Buttons::Right));
+
+		hud.DrawNumber(_port + 1, 4, 7);
 	}
 };

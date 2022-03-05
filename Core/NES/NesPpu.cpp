@@ -20,6 +20,7 @@
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/RewindManager.h"
 #include "Shared/NotificationManager.h"
+#include "Shared/RenderedFrame.h"
 #include "MemoryOperationType.h"
 
 #include "EventType.h"
@@ -1071,7 +1072,7 @@ template<class T> void NesPpu<T>::SendFrame()
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
-	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 	frame.Data = frameData; //HD packs
 
 #ifdef LIBRETRO
@@ -1097,7 +1098,7 @@ template<class T> void NesPpu<T>::SendFrameVsDualSystem()
 	NesConfig& cfg = _settings->GetNesConfig();
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
-	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 
 	if(cfg.VsDualVideoOutput == VsDualOutputOption::MainSystemOnly && _console->IsVsMainConsole()) {
 		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
@@ -1119,7 +1120,7 @@ template<class T> void NesPpu<T>::SendFrameVsDualSystem()
 				in2 += NesConstants::ScreenWidth;
 			}
 
-			RenderedFrame mergedFrame(mergedBuffer, NesConstants::ScreenWidth*2, NesConstants::ScreenHeight, 1.0, _frameCount);
+			RenderedFrame mergedFrame(mergedBuffer, NesConstants::ScreenWidth*2, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 			_emu->GetVideoDecoder()->UpdateFrame(mergedFrame, true, forRewind);
 			delete[] mergedBuffer;
 		}

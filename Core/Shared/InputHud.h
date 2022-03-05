@@ -4,16 +4,28 @@
 #include "ControlDeviceState.h"
 
 class Emulator;
+class DebugHud;
 
 class InputHud
 {
 private:
 	Emulator* _emu;
+	DebugHud* _hud;
 
-	void DrawController(int port, ControlDeviceState state, int x, int y, int frameNumber);
+	int _xOffset = 0;
+	int _yOffset = 0;
+	int _outlineWidth = 0;
+	int _outlineHeight = 0;
+
+	void DrawController(ControllerType type, int port, ControlDeviceState state);
 
 public:
-	InputHud(Emulator *emu);
+	InputHud(Emulator *emu, DebugHud* hud);
 
-	void DrawControllers(OverscanDimensions overscan, int frameNumber);
+	void DrawOutline(int width, int height);
+	void DrawButton(int x, int y, int width, int height, bool pressed);
+	void DrawNumber(int number, int x, int y);
+	void EndDrawController();
+
+	void DrawControllers(FrameInfo size, vector<ControllerData> controllerData);
 };

@@ -25,8 +25,6 @@ private:
 	ID3D11DeviceContext*    _pDeviceContext = nullptr;
 	IDXGISwapChain*         _pSwapChain = nullptr;
 	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
-	ID3D11DepthStencilState* _pDepthDisabledStencilState = nullptr;
-	ID3D11BlendState*			_pAlphaEnableBlendingState = nullptr;
 
 	atomic<bool>				_needFlip = false;
 	uint8_t*						_textureBuffer[2] = { nullptr, nullptr };
@@ -86,5 +84,5 @@ public:
 	void Reset();
 	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight);
 
-	void UpdateFrame(RenderedFrame frame);
+	void UpdateFrame(RenderedFrame& frame);
 };

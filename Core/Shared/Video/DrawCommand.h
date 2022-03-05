@@ -17,6 +17,22 @@ protected:
 	int _yScale = 1;
 
 	virtual void InternalDraw() = 0;
+
+	void InternalDrawPixel(int32_t offset, int color, uint32_t alpha)
+	{
+		if(alpha != 0xFF000000) {
+			if(_argbBuffer[offset] == 0) {
+				//When drawing on an empty background, premultiply channels & preserve alpha value
+				//This is needed for hardware blending between the HUD and the game screen
+				BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color, true);
+			} else {
+				BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
+			}
+		} else {
+			_argbBuffer[offset] = color;
+		}
+	}
+
 	void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
 		uint32_t alpha = (color & 0xFF000000);
@@ -30,11 +46,7 @@ protected:
 					return;
 				}
 
-				if(alpha != 0xFF000000) {
-					BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
-				} else {
-					_argbBuffer[offset] = color;
-				}
+				InternalDrawPixel(offset, color, alpha);
 			} else {
 				int xPixelCount = _useIntegerScaling ? (int)std::floor(_xScale): (int)((x + 1)*_xScale) - (int)(x*_xScale);
 				x = (int)(x * (_useIntegerScaling ? (int)std::floor(_xScale) : _xScale));
@@ -48,25 +60,25 @@ protected:
 							continue;
 						}
 
-						if(alpha != 0xFF000000) {
-							BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
-						} else {
-							_argbBuffer[offset] = color;
-						}
+						InternalDrawPixel(offset, color, alpha);
 					}
 				}
 			}
 		}
 	}
 
-	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4])
+	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4], bool keepAlpha = false)
 	{
 		uint8_t alpha = input[3] + 1;
 		uint8_t invertedAlpha = 256 - input[3];
 		output[0] = (uint8_t)((alpha * input[0] + invertedAlpha * output[0]) >> 8);
 		output[1] = (uint8_t)((alpha * input[1] + invertedAlpha * output[1]) >> 8);
 		output[2] = (uint8_t)((alpha * input[2] + invertedAlpha * output[2]) >> 8);
-		output[3] = 0xFF;
+		if(keepAlpha) {
+			output[3] = input[3];
+		} else {
+			output[3] = 0xFF;
+		}
 	}
 
 public:

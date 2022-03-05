@@ -66,7 +66,7 @@ vector<ControllerData> BaseControlManager::GetPortStates()
 	auto lock = _deviceLock.AcquireSafe();
 
 	vector<ControllerData> states;
-	for(int i = 0; i < 2; i++) {
+	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
 		shared_ptr<BaseControlDevice> device = GetControlDevice(i);
 		if(device) {
 			states.push_back({ device->GetControllerType(), device->GetRawState() });

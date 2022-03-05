@@ -3,6 +3,7 @@
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/InputHud.h"
 #include "Utilities/Serializer.h"
 
 class GbController : public BaseControlDevice
@@ -56,5 +57,24 @@ public:
 
 	void WriteRam(uint16_t addr, uint8_t value) override
 	{
+	}
+
+	void DrawController(InputHud& hud)
+	{
+		hud.DrawOutline(35, 14);
+
+		hud.DrawButton(5, 3, 3, 3, IsPressed(Buttons::Up));
+		hud.DrawButton(5, 9, 3, 3, IsPressed(Buttons::Down));
+		hud.DrawButton(2, 6, 3, 3, IsPressed(Buttons::Left));
+		hud.DrawButton(8, 6, 3, 3, IsPressed(Buttons::Right));
+		hud.DrawButton(5, 6, 3, 3, false);
+
+		hud.DrawButton(30, 7, 3, 3, IsPressed(Buttons::A));
+		hud.DrawButton(25, 7, 3, 3, IsPressed(Buttons::B));
+
+		hud.DrawButton(13, 9, 4, 2, IsPressed(Buttons::Select));
+		hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Start));
+
+		hud.DrawNumber(_port + 1, 16, 2);
 	}
 };

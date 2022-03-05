@@ -4,6 +4,7 @@
 #include "IInputProvider.h"
 
 enum class ControllerType;
+struct ControllerData;
 
 class IControlManager
 {
@@ -20,6 +21,8 @@ public:
 	virtual shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) = 0;
 
 	virtual bool HasControlDevice(ControllerType type) = 0;
+	
+	virtual vector<ControllerData> GetPortStates() = 0;
 
 	virtual void SetPollCounter(uint32_t pollCounter) = 0;
 	virtual uint32_t GetPollCounter() = 0;

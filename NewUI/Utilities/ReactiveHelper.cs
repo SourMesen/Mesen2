@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -12,8 +13,15 @@ namespace Mesen.Utilities
 		{
 			foreach(PropertyInfo prop in target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)) {
 				if(prop.GetCustomAttribute<ReactiveAttribute>() != null) {
-					if(prop.GetValue(target) is ReactiveObject propValue) {
+					object? value = prop.GetValue(target);
+					if(value is ReactiveObject propValue) {
 						ReactiveHelper.RegisterRecursiveObserver(propValue, handler);
+					} else if(value is IList list) {
+						foreach(object listValue in list) {
+							if(listValue is ReactiveObject) {
+								ReactiveHelper.RegisterRecursiveObserver((ReactiveObject)listValue, handler);
+							}
+						}
 					}
 				}
 			}
@@ -27,8 +35,15 @@ namespace Mesen.Utilities
 		{
 			foreach(PropertyInfo prop in target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)) {
 				if(prop.GetCustomAttribute<ReactiveAttribute>() != null) {
-					if(prop.GetValue(target) is ReactiveObject propValue) {
+					object? value = prop.GetValue(target);
+					if(value is ReactiveObject propValue) {
 						ReactiveHelper.UnregisterRecursiveObserver(propValue, handler);
+					} else if(value is IList list) {
+						foreach(object listValue in list) {
+							if(listValue is ReactiveObject) {
+								ReactiveHelper.UnregisterRecursiveObserver((ReactiveObject)listValue, handler);
+							}
+						}
 					}
 				}
 			}

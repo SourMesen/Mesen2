@@ -120,14 +120,6 @@ void Renderer::CleanupDevice()
 {
 	ResetNesBuffers();
 	ReleaseRenderTargetView();
-	if(_pAlphaEnableBlendingState) {
-		_pAlphaEnableBlendingState->Release();
-		_pAlphaEnableBlendingState = nullptr;
-	}
-	if(_pDepthDisabledStencilState) {
-		_pDepthDisabledStencilState->Release();
-		_pDepthDisabledStencilState = nullptr;
-	}
 	if(_pSwapChain) {
 		_pSwapChain->SetFullscreenState(false, nullptr);
 		_pSwapChain->Release();
@@ -318,61 +310,6 @@ HRESULT Renderer::InitDevice()
 	if(FAILED(hr)) {
 		return hr;
 	}
-
-	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
-	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
-	depthDisabledStencilDesc.DepthEnable = false;
-	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	depthDisabledStencilDesc.StencilEnable = true;
-	depthDisabledStencilDesc.StencilReadMask = 0xFF;
-	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
-	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Create the state using the device.
-	hr = _pd3dDevice->CreateDepthStencilState(&depthDisabledStencilDesc, &_pDepthDisabledStencilState);
-	if(FAILED(hr)) {
-		MessageManager::Log("D3DDevice::CreateDepthStencilState() failed - Error:" + std::to_string(hr));
-		return hr;
-	}
-
-	// Clear the blend state description.
-	D3D11_BLEND_DESC blendStateDescription;
-	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
-
-	// Create an alpha enabled blend state description.
-	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
-	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0x0f;
-
-	// Create the blend state using the description.
-	hr = _pd3dDevice->CreateBlendState(&blendStateDescription, &_pAlphaEnableBlendingState);
-	if(FAILED(hr)) {
-		MessageManager::Log("D3DDevice::CreateBlendState() failed - Error:" + std::to_string(hr));
-		return hr;
-	}
-
-	float blendFactor[4];
-	blendFactor[0] = 0.0f;
-	blendFactor[1] = 0.0f;
-	blendFactor[2] = 0.0f;
-	blendFactor[3] = 0.0f;
-	
-	_pDeviceContext->OMSetBlendState(_pAlphaEnableBlendingState, blendFactor, 0xffffffff);
-	_pDeviceContext->OMSetDepthStencilState(_pDepthDisabledStencilState, 1);
-
 	hr = CreateEmuTextureBuffers();
 	if(FAILED(hr)) {
 		return hr;
@@ -420,7 +357,7 @@ ID3D11ShaderResourceView* Renderer::GetShaderResourceView(ID3D11Texture2D* textu
 	return shaderResourceView;
 }
 
-void Renderer::UpdateFrame(RenderedFrame frame)
+void Renderer::UpdateFrame(RenderedFrame& frame)
 {
 	SetScreenSize(frame.Width, frame.Height);
 

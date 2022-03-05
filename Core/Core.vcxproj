@@ -122,6 +122,7 @@
     <ClInclude Include="Shared\Interfaces\stdafx.h" />
     <ClInclude Include="Shared\KeyDefinitions.h" />
     <ClInclude Include="Shared\Movies\stdafx.h" />
+    <ClInclude Include="Shared\RenderedFrame.h" />
     <ClInclude Include="Shared\RomInfo.h" />
     <ClInclude Include="Shared\stdafx.h" />
     <ClInclude Include="NES\NesDefaultVideoFilter.h" />

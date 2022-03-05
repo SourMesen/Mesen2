@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <thread>
 #include "Shared/SettingTypes.h"
+#include "Shared/RenderedFrame.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Utilities/SimpleLock.h"
 
@@ -9,6 +10,7 @@ class IRenderingDevice;
 class Emulator;
 class SystemHud;
 class DebugHud;
+class InputHud;
 
 class IVideoRecorder;
 enum class VideoCodec;
@@ -29,8 +31,12 @@ private:
 
 	unique_ptr<DebugHud> _rendererHud;
 	unique_ptr<SystemHud> _systemHud;
+	unique_ptr<InputHud> _inputHud;
 	uint32_t* _hudSurface = nullptr;
 	FrameInfo _hudSize = {};
+
+	RenderedFrame _lastFrame;
+	SimpleLock _frameLock;
 
 	shared_ptr<IVideoRecorder> _recorder;
 
@@ -46,7 +52,7 @@ public:
 	void StartThread();
 	void StopThread();
 
-	void UpdateFrame(RenderedFrame frame);
+	void UpdateFrame(RenderedFrame& frame);
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 

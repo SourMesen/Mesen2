@@ -12,6 +12,7 @@
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/NotificationManager.h"
+#include "Shared/RenderedFrame.h"
 #include "Shared/MessageManager.h"
 #include "EventType.h"
 #include "Shared/RewindManager.h"
@@ -1476,7 +1477,7 @@ void SnesPpu::SendFrame()
 
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
-	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount);
+	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 #ifdef LIBRETRO
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
 #else

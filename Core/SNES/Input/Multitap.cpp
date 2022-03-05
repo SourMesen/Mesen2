@@ -3,7 +3,9 @@
 #include "SNES/Input/SnesController.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/InternalRegisters.h"
+#include "Shared/InputHud.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 
 string Multitap::GetKeyNames()
 {
@@ -148,4 +150,44 @@ void Multitap::WriteRam(uint16_t addr, uint8_t value)
 	if(addr == 0x4016) {
 		StrobeProcessWrite(value);
 	}
+}
+
+void Multitap::DrawController(InputHud& hud)
+{
+	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
+
+	for(int j = 0; j < 4; j++) {
+		int port = j == 0 ? _port : (j + 1);
+		if(cfg.DisplayInputPort[port]) {
+			DrawController(hud, port);
+		}
+	}
+}
+
+void Multitap::DrawController(InputHud& hud, int port)
+{
+	int offset = port * Multitap::ButtonCount;
+
+	hud.DrawOutline(35, 14);
+
+	hud.DrawButton(5, 3, 3, 3, IsPressed(Buttons::Up + offset));
+	hud.DrawButton(5, 9, 3, 3, IsPressed(Buttons::Down + offset));
+	hud.DrawButton(2, 6, 3, 3, IsPressed(Buttons::Left + offset));
+	hud.DrawButton(8, 6, 3, 3, IsPressed(Buttons::Right + offset));
+	hud.DrawButton(5, 6, 3, 3, false);
+
+	hud.DrawButton(27, 3, 3, 3, IsPressed(Buttons::X + offset));
+	hud.DrawButton(27, 9, 3, 3, IsPressed(Buttons::B + offset));
+	hud.DrawButton(30, 6, 3, 3, IsPressed(Buttons::A + offset));
+	hud.DrawButton(24, 6, 3, 3, IsPressed(Buttons::Y + offset));
+
+	hud.DrawButton(4, 0, 5, 2, IsPressed(Buttons::L + offset));
+	hud.DrawButton(26, 0, 5, 2, IsPressed(Buttons::R + offset));
+
+	hud.DrawButton(13, 9, 4, 2, IsPressed(Buttons::Select + offset));
+	hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Start + offset));
+
+	hud.DrawNumber(port + 1, 16, 2);
+
+	hud.EndDrawController();
 }

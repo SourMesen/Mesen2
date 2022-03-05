@@ -82,7 +82,7 @@ void EmuSettings::SetInputConfig(InputConfig config)
 	}*/
 }
 
-InputConfig EmuSettings::GetInputConfig()
+InputConfig& EmuSettings::GetInputConfig()
 {
 	return _input;
 }

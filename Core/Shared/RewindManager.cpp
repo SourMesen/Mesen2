@@ -6,6 +6,7 @@
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/BaseControlDevice.h"
+#include "Shared/RenderedFrame.h"
 #include "Shared/Interfaces/IControlManager.h"
 
 RewindManager::RewindManager(Emulator* emu)
@@ -220,7 +221,7 @@ void RewindManager::ProcessEndOfFrame()
 	}
 }
 
-void RewindManager::ProcessFrame(RenderedFrame frame, bool forRewind)
+void RewindManager::ProcessFrame(RenderedFrame& frame, bool forRewind)
 {
 	if(_rewindState == RewindState::Starting || _rewindState == RewindState::Started) {
 		if(!forRewind) {
@@ -354,7 +355,7 @@ bool RewindManager::HasHistory()
 	return _hasHistory;
 }
 
-void RewindManager::SendFrame(RenderedFrame frame, bool forRewind)
+void RewindManager::SendFrame(RenderedFrame& frame, bool forRewind)
 {
 	ProcessFrame(frame, forRewind);
 }

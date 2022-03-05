@@ -8,6 +8,8 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/RewindManager.h"
+#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/RenderedFrame.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/MessageManager.h"
@@ -650,7 +652,7 @@ void GbPpu::SendFrame()
 	}
 	_isFirstFrame = false;
 
-	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount);
+	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount, _gameboy->GetControlManager()->GetPortStates());
 #ifdef LIBRETRO
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 #else

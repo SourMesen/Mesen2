@@ -3,6 +3,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Shared/SettingTypes.h"
+#include "Shared/RenderedFrame.h"
 
 class BaseVideoFilter;
 class ScaleFilter;

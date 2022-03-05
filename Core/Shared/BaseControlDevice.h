@@ -7,6 +7,7 @@
 #include "Utilities/ISerializable.h"
 
 class Emulator;
+class InputHud;
 
 class BaseControlDevice : public ISerializable
 {
@@ -80,6 +81,8 @@ public:
 	
 	void SetRawState(ControlDeviceState state);
 	ControlDeviceState GetRawState();
+
+	virtual void DrawController(InputHud& hud) {}
 
 	virtual uint8_t ReadRam(uint16_t addr) = 0;
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;
