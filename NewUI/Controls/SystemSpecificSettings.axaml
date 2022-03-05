@@ -1,0 +1,20 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	mc:Ignorable="d"
+	x:Name="root"
+	x:Class="Mesen.Controls.SystemSpecificSettings"
+	HorizontalAlignment="Left"
+>
+	<c:OptionSection Header="System-specific settings" Margin="0">
+		<StackPanel Orientation="Horizontal">
+			<c:ButtonWithIcon Icon="Assets/NesIcon.png" Text="NES" MinWidth="90" Click="OnClickNes" />
+			<c:ButtonWithIcon Icon="Assets/SnesIcon.png" Text="SNES" MinWidth="90" Click="OnClickSnes" />
+			<c:ButtonWithIcon Icon="Assets/GameboyIcon.png" Text="Game Boy" MinWidth="90" Click="OnClickGameboy" />
+		</StackPanel>
+	</c:OptionSection>
+</UserControl>

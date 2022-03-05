@@ -20,45 +20,49 @@
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
-				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-					<TextBlock Grid.Row="0" Text="{l:Translate lblDeadzone}" VerticalAlignment="Top" Margin="0 15 5 0" />
-					<c:MesenSlider
-						Margin="12 15 10 0"
-						HorizontalAlignment="Left"
-						Grid.Row="0"
-						Grid.Column="1"
-						Minimum="0"
-						Maximum="4"
-						TickFrequency="1"
-						Width="100"
-						HideValue="True"
-						Value="{CompiledBinding Config.ControllerDeadzoneSize}"
-					/>
+				<c:SystemSpecificSettings ConfigType="Input" />
 
-					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 -5 5 0">
-						<TextBlock Text="{l:Translate lblSmall}" />
-						<TextBlock Text="{l:Translate lblLarge}" Grid.Column="2" />
+				<c:OptionSection Header="{l:Translate tpgGeneral}">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+						<TextBlock Grid.Row="0" Text="{l:Translate lblDeadzone}" VerticalAlignment="Top" Margin="0 15 5 0" />
+						<c:MesenSlider
+							Margin="12 15 10 0"
+							HorizontalAlignment="Left"
+							Grid.Row="0"
+							Grid.Column="1"
+							Minimum="0"
+							Maximum="4"
+							TickFrequency="1"
+							Width="100"
+							HideValue="True"
+							Value="{CompiledBinding Config.ControllerDeadzoneSize}"
+						/>
+
+						<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 -5 5 0">
+							<TextBlock Text="{l:Translate lblSmall}" />
+							<TextBlock Text="{l:Translate lblLarge}" Grid.Column="2" />
+						</Grid>
+
+						<TextBlock Grid.Row="2" Text="{l:Translate lblSensitivity}" VerticalAlignment="Top" Margin="0 15 5 0" />
+						<c:MesenSlider
+							Margin="12 15 10 0"
+							HorizontalAlignment="Left"
+							Grid.Row="2"
+							Grid.Column="1"
+							Minimum="0"
+							Maximum="3"
+							TickFrequency="1"
+							Width="100"
+							HideValue="True"
+							Value="{CompiledBinding Config.MouseSensitivity}"
+						/>
+
+						<Grid Grid.Row="3" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="107" HorizontalAlignment="Left" Margin="10 -5 5 0">
+							<TextBlock Text="{l:Translate lblLow}" />
+							<TextBlock Text="{l:Translate lblHigh}" Grid.Column="2" />
+						</Grid>
 					</Grid>
-
-					<TextBlock Grid.Row="2" Text="{l:Translate lblSensitivity}" VerticalAlignment="Top" Margin="0 15 5 0" />
-					<c:MesenSlider
-						Margin="12 15 10 0"
-						HorizontalAlignment="Left"
-						Grid.Row="2"
-						Grid.Column="1"
-						Minimum="0"
-						Maximum="3"
-						TickFrequency="1"
-						Width="100"
-						HideValue="True"
-						Value="{CompiledBinding Config.MouseSensitivity}"
-					/>
-
-					<Grid Grid.Row="3" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="107" HorizontalAlignment="Left" Margin="10 -5 5 0">
-						<TextBlock Text="{l:Translate lblLow}" />
-						<TextBlock Text="{l:Translate lblHigh}" Grid.Column="2" />
-					</Grid>
-				</Grid>
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgDisplay}">

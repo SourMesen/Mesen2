@@ -925,6 +925,15 @@
 								 ItemTemplate="{TemplateBinding ItemTemplate}">
 							</ItemsPresenter>
 						</ScrollViewer>
+
+						<Rectangle
+							DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+							Fill="LightGray"
+							Width="1"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+						/>
+
 						<ContentPresenter
 									Name="PART_SelectedContentHost"
 									Margin="{TemplateBinding Padding}"
@@ -945,19 +954,28 @@
 				<Border Margin="{TemplateBinding Margin}"
 						  BorderBrush="{TemplateBinding BorderBrush}"
 						  BorderThickness="{TemplateBinding BorderThickness}"
-						  Background="{TemplateBinding Background}"
 						  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
 						  VerticalAlignment="{TemplateBinding VerticalAlignment}">
 					<DockPanel>
-						<ItemsPresenter Name="PART_ItemsPresenter"
-											 Items="{TemplateBinding Items}"
-											 ItemsPanel="{TemplateBinding ItemsPanel}"
-											 ItemTemplate="{TemplateBinding ItemTemplate}"
-											 DockPanel.Dock="{TemplateBinding TabStripPlacement}"/>
-
+						<Panel Background="#10888888" DockPanel.Dock="{TemplateBinding TabStripPlacement}">
+							<ItemsPresenter Name="PART_ItemsPresenter"
+												 Items="{TemplateBinding Items}"
+												 ItemsPanel="{TemplateBinding ItemsPanel}"
+												 ItemTemplate="{TemplateBinding ItemTemplate}" />
+						</Panel>
+						
+						<Rectangle
+							DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+							Fill="LightGray"
+							Height="1"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+							Margin="0 0 0 3"
+						/>
+						
 						<!--<ScrollViewer HorizontalScrollBarVisibility="Auto">-->
 						<ContentPresenter Name="PART_SelectedContentHost"
-												Margin="{TemplateBinding Padding}"
+												Margin="3 0 0 0"
 												HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
 												VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
 												Content="{TemplateBinding SelectedContent}"

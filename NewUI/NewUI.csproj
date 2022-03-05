@@ -185,6 +185,9 @@
     <Compile Update="Controls\IconButton.axaml.cs">
       <DependentUpon>IconButton.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\SystemSpecificSettings.axaml.cs">
+      <DependentUpon>SystemSpecificSettings.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\OverscanConfig.axaml.cs">
       <DependentUpon>OverscanConfig.axaml</DependentUpon>
     </Compile>

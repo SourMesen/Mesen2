@@ -20,42 +20,46 @@
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
-				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
-					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
-					<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />
-					</StackPanel>
-					
-					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" IsVisible="{CompiledBinding ShowCustomRatio}">
-						<TextBlock Text="{l:Translate lblCustomRatio}" VerticalAlignment="Center" />
-						<NumericUpDown
-							Value="{CompiledBinding Config.CustomAspectRatio}"
-							Minimum="0.1"
-							Maximum="5"
-							VerticalAlignment="Center"
-						/>
-					</StackPanel>
-				</Grid>
-				
-				<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{CompiledBinding Config.IntegerFpsMode}" />
-				<CheckBox Content="{l:Translate chkVerticalSync}" IsChecked="{CompiledBinding Config.VerticalSync}" />
-				<CheckBox Content="{l:Translate chkUseExclusiveFullscreen}" IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}" />
+				<c:SystemSpecificSettings ConfigType="Video" />
 
-				<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
-					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
-						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
-						<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
-							<ComboBoxItem>Default</ComboBoxItem>
-						</ComboBox>
+				<c:OptionSection Header="{l:Translate tpgGeneral}">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblDisplayRatio}" />
+						<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.AspectRatio}" MinWidth="230" />
+						</StackPanel>
 
-						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRate}" />
-						<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0">
-							<ComboBoxItem>60 Hz</ComboBoxItem>
-						</ComboBox>
+						<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" IsVisible="{CompiledBinding ShowCustomRatio}">
+							<TextBlock Text="{l:Translate lblCustomRatio}" VerticalAlignment="Center" />
+							<NumericUpDown
+								Value="{CompiledBinding Config.CustomAspectRatio}"
+								Minimum="0.1"
+								Maximum="5"
+								VerticalAlignment="Center"
+							/>
+						</StackPanel>
 					</Grid>
-				</StackPanel>
-				
-				<CheckBox Content="{l:Translate chkFullscreenForceIntegerScale}" IsChecked="{CompiledBinding Config.FullscreenForceIntegerScale}" />
+
+					<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{CompiledBinding Config.IntegerFpsMode}" />
+					<CheckBox Content="{l:Translate chkVerticalSync}" IsChecked="{CompiledBinding Config.VerticalSync}" />
+					<CheckBox Content="{l:Translate chkUseExclusiveFullscreen}" IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}" />
+
+					<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
+							<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
+								<ComboBoxItem>Default</ComboBoxItem>
+							</ComboBox>
+
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRate}" />
+							<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0">
+								<ComboBoxItem>60 Hz</ComboBoxItem>
+							</ComboBox>
+						</Grid>
+					</StackPanel>
+
+					<CheckBox Content="{l:Translate chkFullscreenForceIntegerScale}" IsChecked="{CompiledBinding Config.FullscreenForceIntegerScale}" />
+				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgPicture}">

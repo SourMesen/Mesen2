@@ -57,7 +57,7 @@
 			</Grid>
 		</Panel>
 		
-		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}">
+		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}" Padding="0">
 			<TabItem Content="{CompiledBinding Audio}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">

@@ -32,50 +32,54 @@
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
-				<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
+				<c:SystemSpecificSettings ConfigType="Audio" />
+
+				<c:OptionSection Header="{l:Translate tpgGeneral}">
+					<CheckBox Content="{l:Translate chkEnableAudio}" IsChecked="{CompiledBinding Config.EnableAudio}" />
 					
-				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
-					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblAudioDevice}" />
-					<ComboBox
-						Name="AudioDevice"
-						Grid.Row="0"
-						Grid.Column="1"
-						Items="{CompiledBinding AudioDevices}"
-						SelectedItem="{CompiledBinding Config.AudioDevice}"
-						Width="200"
-					/>
-
-					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblSampleRate}" />
-					<c:EnumComboBox
-						Grid.Row="1"
-						Grid.Column="1"
-						SelectedItem="{CompiledBinding Config.SampleRate}"
-						HorizontalAlignment="Left"
-						Width="100"
-					/>
-
-					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblAudioLatency}" />
-					<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-						<NumericUpDown
-							Minimum="15"
-							Maximum="300"
-							Value="{CompiledBinding Config.AudioLatency}"
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+						<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblAudioDevice}" />
+						<ComboBox
+							Name="AudioDevice"
+							Grid.Row="0"
+							Grid.Column="1"
+							Items="{CompiledBinding AudioDevices}"
+							SelectedItem="{CompiledBinding Config.AudioDevice}"
+							Width="200"
 						/>
-						<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
-					</StackPanel>
 
-					<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" />
-					<c:MesenSlider
-						Grid.Row="3"
-						Grid.Column="1"
-						Minimum="0"
-						Maximum="100"
-						Width="150"
-						Value="{CompiledBinding Config.MasterVolume}"
-						HorizontalAlignment="Left"
-					/>
-				</Grid>
+						<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblSampleRate}" />
+						<c:EnumComboBox
+							Grid.Row="1"
+							Grid.Column="1"
+							SelectedItem="{CompiledBinding Config.SampleRate}"
+							HorizontalAlignment="Left"
+							Width="100"
+						/>
 
+						<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblAudioLatency}" />
+						<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+							<NumericUpDown
+								Minimum="15"
+								Maximum="300"
+								Value="{CompiledBinding Config.AudioLatency}"
+							/>
+							<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
+						</StackPanel>
+
+						<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" />
+						<c:MesenSlider
+							Grid.Row="3"
+							Grid.Column="1"
+							Minimum="0"
+							Maximum="100"
+							Width="150"
+							Value="{CompiledBinding Config.MasterVolume}"
+							HorizontalAlignment="Left"
+						/>
+					</Grid>
+				</c:OptionSection>
+				
 				<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}">
 					<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
 					<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{CompiledBinding Config.ReduceSoundInBackground}" />

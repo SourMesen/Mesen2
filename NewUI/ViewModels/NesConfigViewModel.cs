@@ -17,11 +17,12 @@ namespace Mesen.ViewModels
 
 		[Reactive] public bool ShowExpansionVolume { get; set; }
 		[Reactive] public bool ShowColorIndexes { get; set; }
+		[Reactive] public NesConfigTab SelectedTab { get; set; } = 0;
 
 		[ObservableAsProperty] public bool IsDelayStereoEffect { get; }
 		[ObservableAsProperty] public bool IsPanningStereoEffect { get; }
 		[ObservableAsProperty] public bool IsCombStereoEffect { get; }
-		
+
 		public NesInputConfigViewModel Input { get; private set; }
 
 		//For designer
@@ -68,5 +69,15 @@ namespace Mesen.ViewModels
 			}
 			File.WriteAllBytes(filename, bytePalette.ToArray());
 		}
+	}
+
+	public enum NesConfigTab
+	{
+		General,
+		Audio,
+		Emulation,
+		Input,
+		Overclocking,
+		Video
 	}
 }

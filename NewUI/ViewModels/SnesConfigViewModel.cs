@@ -9,6 +9,7 @@ namespace Mesen.ViewModels
 	public class SnesConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public SnesConfig Config { get; set; }
+		[Reactive] public SnesConfigTab SelectedTab { get; set; } = 0;
 
 		public SnesInputConfigViewModel Input { get; private set; }
 
@@ -30,4 +31,15 @@ namespace Mesen.ViewModels
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
 		}
    }
+
+	public enum SnesConfigTab
+	{
+		General,
+		Audio,
+		Emulation,
+		Input,
+		Overclocking,
+		Video,
+		Bsx
+	}
 }

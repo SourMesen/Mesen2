@@ -27,7 +27,7 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<TabControl TabStripPlacement="Top" SelectedIndex="0">
+	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">

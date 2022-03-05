@@ -29,7 +29,7 @@
 			</StackPanel>
 		</Panel>
 		
-		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}">
+		<TabControl TabStripPlacement="Left" Background="#20888888" SelectedIndex="{CompiledBinding SelectedIndex, Mode=TwoWay}" Padding="0">
 			<TabItem>
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
@@ -38,8 +38,8 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0 5 0 0">
+				<StackPanel Margin="5">
+					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0">
 						<CheckBox
 							IsChecked="{CompiledBinding Debugger.AutoResetCdl}"
 							Content="{l:Translate chkAutoResetCdl}"
@@ -77,8 +77,8 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0 5 0 0">
+				<StackPanel Margin="5">
+					<c:OptionSection Header="{l:Translate lblGeneralSettings}" Margin="0">
 						<WrapPanel>
 							<TextBlock Text="{l:Translate lblScriptStartupBehavior}" VerticalAlignment="Center" />
 							<c:EnumComboBox SelectedItem="{CompiledBinding Script.ScriptStartupBehavior}" />
@@ -117,8 +117,8 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblFontSettings}" Margin="0 5 0 0">
+				<StackPanel Margin="5">
+					<c:OptionSection Header="{l:Translate lblFontSettings}" Margin="0">
 						<dv:FontOptionsView DataContext="{CompiledBinding Font}" />
 					</c:OptionSection>
 
@@ -160,23 +160,25 @@
 					</StackPanel>
 				</TabItem.Header>
 
-				<c:OptionSection Header="{l:Translate lblIntegrationSettings}" Margin="0 5 0 0">
-					<TextBlock Text="{l:Translate lblAutoLoadHint}" TextWrapping="Wrap" Margin="0 5 0 0" />
-					<StackPanel Margin="10 5 0 0">
-						<CheckBox
-							IsChecked="{CompiledBinding Integration.AutoLoadDbgFiles}"
-							Content="{l:Translate chkAutoLoadDbgFiles}"
-						/>
-						<CheckBox
-							IsChecked="{CompiledBinding Integration.AutoLoadMlbFiles}"
-							Content="{l:Translate chkAutoLoadMlbFiles}"
-						/>
-						<CheckBox
-							IsChecked="{CompiledBinding Integration.AutoLoadCdlFiles}"
-							Content="{l:Translate chkAutoLoadCdlFiles}"
-						/>
-					</StackPanel>
-				</c:OptionSection>
+				<StackPanel Margin="5">
+					<c:OptionSection Header="{l:Translate lblIntegrationSettings}" Margin="0">
+						<TextBlock Text="{l:Translate lblAutoLoadHint}" TextWrapping="Wrap" Margin="0 5 0 0" />
+						<StackPanel Margin="10 5 0 0">
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadDbgFiles}"
+								Content="{l:Translate chkAutoLoadDbgFiles}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadMlbFiles}"
+								Content="{l:Translate chkAutoLoadMlbFiles}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadCdlFiles}"
+								Content="{l:Translate chkAutoLoadCdlFiles}"
+							/>
+						</StackPanel>
+					</c:OptionSection>
+				</StackPanel>
 			</TabItem>
 
 			<TabItem IsEnabled="False" MinHeight="10">

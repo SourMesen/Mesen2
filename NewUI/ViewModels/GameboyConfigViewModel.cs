@@ -13,6 +13,8 @@ namespace Mesen.ViewModels
 	public class GameboyConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public GameboyConfig Config { get; set; }
+		[Reactive] public GameboyConfigTab SelectedTab { get; set; } = 0;
+
 		public ReactiveCommand<Button, Unit> SetupPlayer { get; }
 
 		public GameboyConfigViewModel()
@@ -43,5 +45,13 @@ namespace Mesen.ViewModels
 				Config.Controller = cfg;
 			}
 		}
+	}
+
+	public enum GameboyConfigTab
+	{
+		General,
+		Audio,
+		Input,
+		Video
 	}
 }
