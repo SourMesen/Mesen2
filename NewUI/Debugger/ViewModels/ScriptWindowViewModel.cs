@@ -123,7 +123,7 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
-					ActionType = ActionType.Preferences,
+					ActionType = ActionType.OpenDebugSettings,
 					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.ScriptWindow, _wnd)
 				}
 			};

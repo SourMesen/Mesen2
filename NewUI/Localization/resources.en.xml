@@ -898,6 +898,10 @@
 		</Form>
 
 		<Form ID="DebuggerConfigWindow">
+			<Control ID="wndTitle">Debugger Settings</Control>
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+			
 			<Control ID="tabDebugger">Debugger</Control>
 			<Control ID="lblGeneralSettings">General settings</Control>
 			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
