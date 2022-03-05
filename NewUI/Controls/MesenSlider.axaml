@@ -24,8 +24,15 @@
 			<Setter Property="MinHeight" Value="17" />
 			<Setter Property="Height" Value="17" />
 		</Style>
+		<Style Selector="c|MesenSlider DockPanel > TextBlock">
+			<Setter Property="DockPanel.Dock" Value="Bottom" />
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock">
-			<Setter Property="IsVisible" Value="False" />
+			<Setter Property="DockPanel.Dock" Value="Top" />
+			<Setter Property="Margin" Value="0 0 0 2" />
+			<Setter Property="HorizontalAlignment" Value="Left" />
 		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal]">
 			<Setter Property="Height" Value="34" />
@@ -37,12 +44,7 @@
 	
 	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch">
 		<DockPanel>
-			<TextBlock
-				DockPanel.Dock="Bottom"
-				Text="{Binding Text}"
-				Margin="0"
-				HorizontalAlignment="Center"
-			/>
+			<TextBlock Text="{Binding Text}" />
 			
 			<TextBox
 				Text="{Binding Value}"
