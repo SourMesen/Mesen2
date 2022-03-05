@@ -206,13 +206,7 @@ namespace Mesen.Debugger.Windows
 					AddressInfo? relAddr = GetAddress();
 					if(relAddr?.Address >= 0) {
 						CpuType cpuType = relAddr.Value.Type.ToCpuType();
-						DebuggerWindow? debugger = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == cpuType);
-						if(debugger == null) {
-							debugger = DebugWindowManager.OpenDebugWindow<DebuggerWindow>(() => new DebuggerWindow(cpuType, relAddr.Value.Address));
-						} else {
-							debugger.ScrollToAddress((uint)relAddr.Value.Address);
-						}
-						debugger.Activate();
+						DebuggerWindow.OpenWindowAtAddress(cpuType, relAddr.Value.Address);
 					}
 				}
 			};

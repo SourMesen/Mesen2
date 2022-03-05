@@ -64,6 +64,20 @@ namespace Mesen.Debugger.Windows
 			_model.Disassembly.SetSelectedRow((int)address, true);
 		}
 
+		public static void OpenWindowAtAddress(CpuType cpuType, int address)
+		{
+			DebuggerWindow? debugger = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == cpuType);
+			if(debugger == null) {
+				debugger = DebugWindowManager.OpenDebugWindow<DebuggerWindow>(() => new DebuggerWindow(cpuType, address));
+			} else {
+				debugger.ScrollToAddress((uint)address);
+			}
+			if(debugger.WindowState == WindowState.Minimized) {
+				debugger.WindowState = WindowState.Normal;
+			}
+			debugger.Activate();
+		}
+
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);

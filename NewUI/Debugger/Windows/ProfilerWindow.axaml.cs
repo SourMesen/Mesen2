@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -61,6 +62,19 @@ namespace Mesen.Debugger.Windows
 		{
 			_model.SelectedTab.Sort(e.Column.DisplayIndex);
 			e.Handled = true;
+		}
+
+		private void OnGridDoubleTapped(object sender, TappedEventArgs e)
+		{
+			if(sender is MesenDataGrid grid && grid.SelectedIndex >= 0) {
+				ProfiledFunction? funcData = _model.SelectedTab.GetRawData(grid.SelectedIndex);
+				if(funcData != null) {
+					AddressInfo relAddr = DebugApi.GetRelativeAddress(funcData.Value.Address, _model.SelectedTab.CpuType);
+					if(relAddr.Address >= 0) {
+						DebuggerWindow.OpenWindowAtAddress(_model.SelectedTab.CpuType, relAddr.Address);
+					}
+				}
+			}
 		}
 
 		private void OnGridRowLoaded(object sender, DataGridRowEventArgs e)

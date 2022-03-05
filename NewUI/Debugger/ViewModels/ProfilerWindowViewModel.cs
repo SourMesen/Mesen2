@@ -71,6 +71,15 @@ namespace Mesen.Debugger.ViewModels
 		{
 		}
 
+		public ProfiledFunction? GetRawData(int index)
+		{
+			ProfiledFunction[] data = _profilerData;
+			if(index < data.Length) {
+				return data[index];
+			}
+			return null;
+		}
+
 		public void ResetData()
 		{
 			DebugApi.ResetProfiler(CpuType);
