@@ -116,11 +116,12 @@
 						PaletteColors="{CompiledBinding PaletteColors}"
 					/>
 				</Border>
-				
-				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
+
 			</StackPanel>
 		</ScrollViewer>
-			
+
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+
 		<dc:ScrollPictureViewer
 			x:Name="picViewer"
 			Source="{CompiledBinding ViewerBitmap}"

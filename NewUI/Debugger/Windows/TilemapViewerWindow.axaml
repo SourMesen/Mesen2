@@ -44,6 +44,7 @@
 				Icon="Assets/Settings.png"
 			/>
 		</Panel>
+
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" IsVisible="{CompiledBinding IsNes}">
@@ -55,8 +56,6 @@
 				<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
 				<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" IsVisible="{CompiledBinding IsNes}" />
 				<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" IsVisible="{CompiledBinding IsNes}" />
-
-				<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
 
 				<c:GroupBox Header="{l:Translate lblTilemap}" Margin="0 5 0 0">
 					<ContentControl Content="{CompiledBinding TilemapInfoPanel}" />
@@ -70,7 +69,9 @@
 				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
-		
+
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+
 		<TabControl
 			Items="{CompiledBinding Tabs}"
 			SelectedItem="{CompiledBinding SelectedTab}"

@@ -892,9 +892,9 @@
 		</Form>
 
 		<Form ID="RefreshTimingView">
-			<Control ID="lblTitle">Auto-refresh timing</Control>
-			<Control ID="lblScanline">Scanline (V): </Control>
-			<Control ID="lblCycle">Cycle (H): </Control>
+			<Control ID="lblScanline">Refresh on scanline (V)</Control>
+			<Control ID="lblCycle">and cycle (H)</Control>
+			<Control ID="lblResetToDefault">Reset to default</Control>
 		</Form>
 
 		<Form ID="DebuggerConfigWindow">

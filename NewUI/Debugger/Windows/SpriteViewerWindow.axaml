@@ -73,8 +73,6 @@
 						</Grid>
 					</c:OptionSection>
 					
-					<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" />
-
 					<c:GroupBox
 						Header="{l:Translate lblSelectedSprite}"
 						Margin="0 5 0 0"
@@ -86,6 +84,8 @@
 				</StackPanel>
 			</ScrollViewer>
 		</Panel>
+
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
 
 		<Grid ColumnDefinitions="Auto,*">
 			<Grid.RowDefinitions>

@@ -18,31 +18,26 @@
 		<dvm:RefreshTimingViewModel />
 	</Design.DataContext>
 
-	<c:OptionSection Header="{l:Translate lblTitle}">
-		<c:OptionSection.Button>
-			<c:IconButton
-				ToolTip.Tip="Reset to default"
-				Icon="Assets/Refresh.png"
-				Margin="5 0 0 2"
-				Command="{CompiledBinding ResetCommand}"
-			/>
-		</c:OptionSection.Button>
-		<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
-			<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScanline}" />
-			<NumericUpDown
-				Grid.Column="1"
-				Value="{CompiledBinding Config.RefreshScanline}"
-				Minimum="{CompiledBinding MinScanline}"
-				Maximum="{CompiledBinding MaxScanline}"
-			/>
-			<TextBlock Grid.Row="2" VerticalAlignment="Center" Text="{l:Translate lblCycle}" />
-			<NumericUpDown
-				Grid.Row="2"
-				Grid.Column="1"
-				Value="{CompiledBinding Config.RefreshCycle}"
-				Minimum="0"
-				Maximum="{CompiledBinding MaxCycle}"
-			/>
-		</Grid>
-	</c:OptionSection>
+	<StackPanel Orientation="Horizontal">
+		<CheckBox IsChecked="{CompiledBinding Config.AutoRefresh}" />
+		<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScanline}" />
+		<NumericUpDown
+			Value="{CompiledBinding Config.RefreshScanline}"
+			Minimum="{CompiledBinding MinScanline}"
+			Maximum="{CompiledBinding MaxScanline}"
+			Margin="3 0"
+		/>
+		<TextBlock VerticalAlignment="Center" Text="{l:Translate lblCycle}" />
+		<NumericUpDown
+			Value="{CompiledBinding Config.RefreshCycle}"
+			Minimum="0"
+			Maximum="{CompiledBinding MaxCycle}"
+			Margin="3 0"
+		/>
+		<c:IconButton
+			ToolTip.Tip="{l:Translate lblResetToDefault}"
+			Icon="Assets/Refresh.png"
+			Command="{CompiledBinding ResetCommand}"
+		/>
+	</StackPanel>
 </UserControl>
