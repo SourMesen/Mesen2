@@ -105,7 +105,11 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => grid.SelectedItem is LabelViewModel vm && vm.RelAddress >= 0,
 					OnClick = () => {
 						if(grid.SelectedItem is LabelViewModel vm) {
-							WatchManager.GetWatchManager(CpuType).AddWatch("[" + vm.RelAddressDisplay + "]");
+							if(vm.Label?.Label.Length > 0) {
+								WatchManager.GetWatchManager(CpuType).AddWatch("[" + vm.Label.Label + "]");
+							} else {
+								WatchManager.GetWatchManager(CpuType).AddWatch("[" + vm.RelAddressDisplay + "]");
+							}
 						}
 					}
 				},

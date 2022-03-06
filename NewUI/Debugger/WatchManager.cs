@@ -70,6 +70,8 @@ namespace Mesen.Debugger
 
 				ProcessFormatSpecifier(ref exprToEvaluate, ref style, ref byteLength);
 
+				int numericValue = -1;
+
 				bool forceHasChanged = false;
 				Match match = _arrayWatchRegex.Match(expression);
 				if(match.Success) {
@@ -78,7 +80,11 @@ namespace Mesen.Debugger
 				} else {
 					Int32 result = DebugApi.EvaluateExpression(exprToEvaluate, _cpuType, out resultType, true);
 					switch(resultType) {
-						case EvalResultType.Numeric: newValue = FormatValue(result, style, byteLength); break;
+						case EvalResultType.Numeric:
+							numericValue = result;
+							newValue = FormatValue(result, style, byteLength);
+							break;
+
 						case EvalResultType.Boolean: newValue = result == 0 ? "false" : "true";	break;
 						case EvalResultType.Invalid: newValue = "<invalid expression>"; forceHasChanged = true; break;
 						case EvalResultType.DivideBy0: newValue = "<division by zero>"; forceHasChanged = true; break;
@@ -87,7 +93,7 @@ namespace Mesen.Debugger
 				}
 
 				IBrush brush = forceHasChanged || (i < previousValues.Count ? (previousValues[i].Value != newValue) : false) ? Brushes.Red : Brushes.Black;
-				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, Brush = brush });
+				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, Brush = brush, NumericValue = numericValue });
 			}
 
 			list.Add(new WatchValueInfo());
@@ -270,6 +276,7 @@ namespace Mesen.Debugger
 	{
 		public string Expression { get; set; } = "";
 		public string Value { get; set; } = "";
+		public int NumericValue { get; set; } = -1;
 		public IBrush Brush { get; set; } = Brushes.Black;
 	}
 

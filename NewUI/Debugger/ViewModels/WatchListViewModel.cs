@@ -5,20 +5,29 @@ using System.Linq;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using Mesen.Utilities;
+using System.Text.RegularExpressions;
+using Mesen.Debugger.Labels;
+using System;
+using System.Globalization;
+using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class WatchListViewModel : ViewModelBase
 	{
+		private static Regex _watchAddressOrLabel = new Regex(@"^(\[|{)(\s*((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+)))\s*[,]{0,1}\d*\s*(\]|})$", RegexOptions.Compiled);
+
 		[Reactive] public SwappableList<WatchValueInfo> WatchEntries { get; private set; } = new();
 		[Reactive] public int SelectedIndex { get; set; } = -1;
 
 		public WatchManager Manager { get; }
+		public CpuType CpuType { get; }
 
 		public WatchListViewModel() : this(CpuType.Snes) { }
 
 		public WatchListViewModel(CpuType cpuType)
 		{
+			CpuType = cpuType;
 			Manager = WatchManager.GetWatchManager(cpuType);
 			UpdateWatch();
 		}
@@ -83,6 +92,40 @@ namespace Mesen.Debugger.ViewModels
 		internal void ClearSelectionFormat(List<WatchValueInfo> items)
 		{
 			Manager.ClearSelectionFormat(GetIndexes(items));
+		}
+
+		public LocationInfo? GetLocation()
+		{
+			if(SelectedIndex < 0 || SelectedIndex >= WatchEntries.Count) {
+				return null;
+			}
+
+			WatchValueInfo entry = WatchEntries[SelectedIndex];
+
+			Match match = _watchAddressOrLabel.Match(entry.Expression);
+			if(match.Success) {
+				string address = match.Groups[3].Value;
+
+				if(address[0] >= '0' && address[0] <= '9' || address[0] == '$') {
+					//CPU Address
+					bool isHex = address[0] == '$';
+					string addrString = isHex ? address.Substring(1) : address;
+					if(Int32.TryParse(addrString, isHex ? NumberStyles.AllowHexSpecifier : NumberStyles.None, null, out int parsedAddress)) {
+						return new LocationInfo() { RelAddress = new() { Address = parsedAddress, Type = CpuType.ToMemoryType() } };
+					}
+				} else {
+					//Label
+					CodeLabel? label = LabelManager.GetLabel(address);
+					if(label != null) {
+						if(label.Matches(CpuType)) {
+							return new LocationInfo() { Label = label, RelAddress = label.GetRelativeAddress(CpuType) };
+						}
+						return null;
+					}
+				}
+			}
+			
+			return new LocationInfo() { RelAddress = new() { Address = entry.NumericValue, Type = CpuType.ToMemoryType() } };
 		}
 	}
 }

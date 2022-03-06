@@ -10,6 +10,9 @@ using Mesen.Config;
 using System;
 using Mesen.Debugger.Controls;
 using Mesen.Utilities;
+using Mesen.Interop;
+using Mesen.Debugger.Windows;
+using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.Views
 {
@@ -158,7 +161,6 @@ namespace Mesen.Debugger.Views
 					}
 				},
 
-
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
@@ -183,8 +185,45 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
 					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					IsEnabled = () => _model!.GetLocation() != null,
+					HintText = GetLocationHint,
+					OnClick = () => {
+						LocationInfo? location = _model!.GetLocation();
+						if(location != null && location.RelAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(_model!.CpuType.ToMemoryType(), location.RelAddress.Value.Address);
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToLocation,
+					IsEnabled = () => _model!.GetLocation() != null,
+					HintText = GetLocationHint,
+					OnClick = () => {
+						LocationInfo? location = _model!.GetLocation();
+						if(location != null && location.RelAddress != null) {
+							DebuggerWindow.OpenWindowAtAddress(_model!.CpuType, location.RelAddress.Value.Address);
+						}
+					}
 				}
 			});
+		}
+
+		private string GetLocationHint()
+		{
+			LocationInfo? location = _model!.GetLocation();
+			if(location?.Label != null) {
+				return location.Label.Label;
+			} else if(location?.RelAddress != null) {
+				return "$" + location.RelAddress.Value.Address.ToString("X" + _model!.CpuType.GetAddressSize());
+			}
+			return "";
 		}
 
 		private void OnCellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
