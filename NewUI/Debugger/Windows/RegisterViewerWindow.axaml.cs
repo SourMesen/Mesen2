@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System;
@@ -30,6 +31,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
+			_model.InitMenu(this);
 			_model.Config.LoadWindowSettings(this);
 		}
 
@@ -41,18 +43,11 @@ namespace Mesen.Debugger.Windows
 
 		public void ProcessNotification(NotificationEventArgs e)
 		{
-			switch(e.NotificationType) {
-				case ConsoleNotificationType.GameLoaded:
-					_model.UpdateAvailableTabs(true);
-					break;
-
-				case ConsoleNotificationType.CodeBreak:
-				case ConsoleNotificationType.PpuFrameDone:
-					Dispatcher.UIThread.Post(() => {
-						_model.UpdateAvailableTabs(false);
-					});
-					break;
+			if(e.NotificationType == ConsoleNotificationType.GameLoaded) {
+				_model.RefreshData();
 			}
+
+			ToolRefreshHelper.ProcessNotification(this, e, _model.RefreshTiming, _model, _model.RefreshData);
 		}
 
 		private void InitializeComponent()

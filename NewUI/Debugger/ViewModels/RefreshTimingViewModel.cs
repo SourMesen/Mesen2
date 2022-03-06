@@ -2,6 +2,7 @@
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Reactive;
 
@@ -10,11 +11,11 @@ namespace Mesen.Debugger.ViewModels
 	public class RefreshTimingViewModel : ViewModelBase
 	{
 		public RefreshTimingConfig Config { get; }
-		
-		public int MinScanline { get; }
-		public int MaxScanline { get; }
-		public int MaxCycle { get; }
-		
+
+		[Reactive] public int MinScanline { get; private set; }
+		[Reactive] public int MaxScanline { get; private set; }
+		[Reactive] public int MaxCycle { get; private set; }
+
 		public ReactiveCommand<Unit, Unit> ResetCommand { get; }
 
 		[Obsolete("For designer only")]
@@ -24,14 +25,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config = config;
 
-			TimingInfo timing = EmuApi.GetTimingInfo();
-			MinScanline = timing.FirstScanline;
-			MaxScanline = (int)timing.ScanlineCount + timing.FirstScanline - 1;
-			MaxCycle = (int)timing.CycleCount - 1;
-
-			config.RefreshScanline = Math.Max(MinScanline, Math.Min(MaxScanline, config.RefreshScanline));
-			config.RefreshCycle = Math.Min(MaxCycle, config.RefreshCycle);
-
+			UpdateMinMaxValues();
 			ResetCommand = ReactiveCommand.Create(Reset);
 		}
 
@@ -46,6 +40,18 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			Config.RefreshCycle = 0;
+		}
+
+		public void UpdateMinMaxValues()
+		{
+			TimingInfo timing = EmuApi.GetTimingInfo();
+			MinScanline = timing.FirstScanline;
+			MaxScanline = (int)timing.ScanlineCount + timing.FirstScanline - 1;
+			MaxCycle = (int)timing.CycleCount - 1;
+
+			if(Config.RefreshScanline < MinScanline || Config.RefreshScanline > MaxScanline || Config.RefreshCycle > MaxCycle) {
+				Reset();
+			}
 		}
 	}
 }

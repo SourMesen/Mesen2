@@ -138,8 +138,9 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					if(!EmuApi.GetRomInfo().CpuTypes.Contains(_model.CpuType)) {
-						_model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					if(!romInfo.CpuTypes.Contains(_model.CpuType)) {
+						_model.CpuType = romInfo.ConsoleType.GetMainCpuType();
 					}
 					break;
 

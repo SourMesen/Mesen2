@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:sys="using:System"
 	xmlns:v="using:Mesen.Views"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:l="using:Mesen.Localization"
@@ -30,32 +31,41 @@
 		</Style>
 	</Window.Styles>
 
-	<TabControl Items="{CompiledBinding Tabs}" Padding="1">
-		<TabControl.ItemTemplate>
-			<DataTemplate>
-				<TextBlock Text="{Binding TabName}" />
-			</DataTemplate>
-		</TabControl.ItemTemplate>
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
+		</Menu>
+
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
 		
-		<TabControl.ContentTemplate>
-			<DataTemplate>
-				<Border BorderBrush="Gray" BorderThickness="1">
-					<dc:MesenDataGrid
-						Items="{Binding Data}"
-						HorizontalScrollBarVisibility="Auto"
-						VerticalScrollBarVisibility="Auto"
-						CanUserReorderColumns="False"
-						CanUserSortColumns="False"
-					>
-						<DataGrid.Columns>
-							<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
-							<DataGridTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
-						</DataGrid.Columns>
-					</dc:MesenDataGrid>
-				</Border>
-			</DataTemplate>
-		</TabControl.ContentTemplate>
-	</TabControl>
+		<TabControl Items="{CompiledBinding Tabs}" Padding="1">
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding TabName}" />
+				</DataTemplate>
+			</TabControl.ItemTemplate>
+		
+			<TabControl.ContentTemplate>
+				<DataTemplate>
+					<Border BorderBrush="Gray" BorderThickness="1">
+						<dc:MesenDataGrid
+							Items="{Binding Data}"
+							HorizontalScrollBarVisibility="Auto"
+							VerticalScrollBarVisibility="Auto"
+							CanUserReorderColumns="False"
+							CanUserSortColumns="False"
+						>
+							<DataGrid.Columns>
+								<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
+								<DataGridTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
+							</DataGrid.Columns>
+						</dc:MesenDataGrid>
+					</Border>
+				</DataTemplate>
+			</TabControl.ContentTemplate>
+		</TabControl>
+	</DockPanel>
 </Window>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Avalonia.Threading;
 using System.Linq;
+using Mesen.Debugger.ViewModels;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -71,30 +72,33 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
-		public static void ProcessNotification(Window wnd, NotificationEventArgs e, RefreshTimingConfig cfg, ICpuTypeModel model, Action refresh)
+		public static void ProcessNotification(Window wnd, NotificationEventArgs e, RefreshTimingViewModel cfg, ICpuTypeModel model, Action refresh)
 		{
-			int viewerId = GetViewerId(wnd, cfg, model.CpuType);
+			int viewerId = GetViewerId(wnd, cfg.Config, model.CpuType);
 
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.ViewerRefresh:
-					if(cfg.AutoRefresh && e.Parameter.ToInt32() == viewerId && !LimitFps(wnd, 80)) {
+					if(cfg.Config.AutoRefresh && e.Parameter.ToInt32() == viewerId && !LimitFps(wnd, 80)) {
 						refresh();
 					}
 					break;
 
 				case ConsoleNotificationType.CodeBreak:
-					if(cfg.RefreshOnBreakPause) {
+					if(cfg.Config.RefreshOnBreakPause) {
 						refresh();
 					}
 					break;
 
 				case ConsoleNotificationType.GameLoaded:
-					if(!EmuApi.GetRomInfo().CpuTypes.Contains(model.CpuType)) {
-						model.CpuType = EmuApi.GetRomInfo().CpuTypes.First();
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					if(!romInfo.CpuTypes.Contains(model.CpuType)) {
+						model.CpuType = romInfo.ConsoleType.GetMainCpuType();
 					}
-					
+
+					cfg.UpdateMinMaxValues();
+
 					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
-						DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.RefreshScanline, cfg.RefreshCycle, model.CpuType);
+						DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.Config.RefreshScanline, cfg.Config.RefreshCycle, model.CpuType);
 					}
 					break;
 			}

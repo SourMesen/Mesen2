@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Mesen.Config;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -11,47 +13,109 @@ using static Mesen.Debugger.ViewModels.RegEntry;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class RegisterViewerWindowViewModel : ViewModelBase
+	public class RegisterViewerWindowViewModel : DisposableViewModel, ICpuTypeModel
 	{
 		[Reactive] public List<RegisterViewerTab> Tabs { get; set; } = new List<RegisterViewerTab>();
+		
 		public RegisterViewerConfig Config { get; }
+		public RefreshTimingViewModel RefreshTiming { get; }
+
+		[Reactive] public List<object> FileMenuActions { get; private set; } = new();
+		[Reactive] public List<object> ViewMenuActions { get; private set; } = new();
+
+		private BaseState? _state = null;
+		
+		public CpuType CpuType
+		{
+			get => _romInfo.ConsoleType.GetMainCpuType();
+			set { }
+		}
 
 		private RomInfo _romInfo = new RomInfo();
 
 		public RegisterViewerWindowViewModel()
 		{
 			Config = ConfigManager.Config.Debug.RegisterViewer;
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			UpdateAvailableTabs(true);
+			RefreshData();
 		}
 
-		public void UpdateAvailableTabs(bool updateRomInfo)
+		public void InitMenu(Window wnd)
 		{
-			if(updateRomInfo) {
-				_romInfo = EmuApi.GetRomInfo();
+			FileMenuActions = AddDisposables(new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Exit,
+					OnClick = () => wnd?.Close()
+				}
+			});
+
+			ViewMenuActions = AddDisposables(new List<object>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Refresh,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
+					OnClick = () => RefreshData()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableAutoRefresh,
+					IsSelected = () => Config.RefreshTiming.AutoRefresh,
+					OnClick = () => Config.RefreshTiming.AutoRefresh = !Config.RefreshTiming.AutoRefresh
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RefreshOnBreakPause,
+					IsSelected = () => Config.RefreshTiming.RefreshOnBreakPause,
+					OnClick = () => Config.RefreshTiming.RefreshOnBreakPause = !Config.RefreshTiming.RefreshOnBreakPause
+				}
+			});
+
+			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
+			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		public void RefreshData()
+		{
+			_romInfo = EmuApi.GetRomInfo();
+
+			if(_romInfo.ConsoleType == ConsoleType.Snes) {
+				_state = DebugApi.GetConsoleState<SnesState>(ConsoleType.Snes);
+			} else if(_romInfo.ConsoleType == ConsoleType.Nes) {
+				_state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes);
+			} else if(_romInfo.ConsoleType == ConsoleType.Gameboy || _romInfo.ConsoleType == ConsoleType.GameboyColor) {
+				_state = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
+			}
+
+			Dispatcher.UIThread.Post(() => {
+				RefreshTabs();
+			});
+		}
+
+		public void RefreshTabs()
+		{
+			if(_state == null) {
+				return;
 			}
 
 			List<RegisterViewerTab> tabs = new List<RegisterViewerTab>();
+			BaseState lastState = _state;
 
-			if(_romInfo.ConsoleType == ConsoleType.Snes) {
+			if(lastState is SnesState snesState) {
 				HashSet<CpuType> cpuTypes = _romInfo.CpuTypes;
 
-				SnesState state = DebugApi.GetConsoleState<SnesState>(ConsoleType.Snes);
-
 				tabs = new List<RegisterViewerTab>() {
-					GetSnesCpuTab(ref state),
-					GetSnesPpuTab(ref state),
-					GetSnesDmaTab(ref state),
-					GetSnesSpcTab(ref state),
-					GetSnesDspTab(ref state)
+					GetSnesCpuTab(ref snesState),
+					GetSnesPpuTab(ref snesState),
+					GetSnesDmaTab(ref snesState),
+					GetSnesSpcTab(ref snesState),
+					GetSnesDspTab(ref snesState)
 				};
 
 				if(cpuTypes.Contains(CpuType.Sa1)) {
-					tabs.Add(GetSnesSa1Tab(ref state));
+					tabs.Add(GetSnesSa1Tab(ref snesState));
 				}
 				if(cpuTypes.Contains(CpuType.Gameboy)) {
 					GbState gbState = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
@@ -60,19 +124,17 @@ namespace Mesen.Debugger.ViewModels
 					tabs.Add(GetGbApuTab(ref gbState, tabPrefix));
 					tabs.Add(GetGbMiscTab(ref gbState, tabPrefix));
 				}
-			} else if(_romInfo.ConsoleType == ConsoleType.Nes) {
-				NesState state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes);
+			} else if(lastState is NesState nesState) {
 				tabs = new List<RegisterViewerTab>() {
-					GetNesPpuTab(ref state),
-					GetNesApuTab(ref state),
-					GetNesCartTab(ref state)
+					GetNesPpuTab(ref nesState),
+					GetNesApuTab(ref nesState),
+					GetNesCartTab(ref nesState)
 				};
-			} else if(_romInfo.ConsoleType == ConsoleType.Gameboy || _romInfo.ConsoleType == ConsoleType.GameboyColor) {
-				GbState state = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
+			} else if(lastState is GbState gbState) {
 				tabs = new List<RegisterViewerTab>() {
-					GetGbLcdTab(ref state),
-					GetGbApuTab(ref state),
-					GetGbMiscTab(ref state)
+					GetGbLcdTab(ref gbState),
+					GetGbApuTab(ref gbState),
+					GetGbMiscTab(ref gbState)
 				};
 			}
 
@@ -81,6 +143,7 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				for(int i = 0; i < Tabs.Count; i++) {
 					Tabs[i].SetData(tabs[i].Data);
+					Tabs[i].TabName = tabs[i].TabName;
 				}
 			}
 		}
@@ -91,6 +154,11 @@ namespace Mesen.Debugger.ViewModels
 
 			GbPpuState ppu = gb.Ppu;
 			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "State", null),
+				new RegEntry("", "Cycle (H)", ppu.Cycle),
+				new RegEntry("", "Scanline (V)", ppu.Scanline),
+				new RegEntry("", "Frame Number", ppu.FrameCount),
+
 				new RegEntry("$FF40", "LCD Control (LCDC)", null),
 				new RegEntry("$FF40.0", "Background Enabled", ppu.BgEnabled),
 				new RegEntry("$FF40.1", "Sprites Enabled", ppu.BgEnabled),
@@ -442,9 +510,15 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("", "State", null),
+				new RegEntry("", "Cycle (H)", ppu.Cycle),
+				new RegEntry("", "HClock", ppu.HClock),
+				new RegEntry("", "Scanline (V)", ppu.Scanline),
+				new RegEntry("", "Frame Number", ppu.FrameCount),
+
 				new RegEntry("$2100", "Brightness", null),
-				new RegEntry("$2100.0", "Forced Blank", ppu.ForcedVblank),
-				new RegEntry("$2100.4-7", "Brightness", ppu.ScreenBrightness),
+				new RegEntry("$2100.0-3", "Brightness", ppu.ScreenBrightness),
+				new RegEntry("$2100.7", "Forced Blank", ppu.ForcedVblank),
 				new RegEntry("$2101", "OAM Settings", null),
 				new RegEntry("$2100.0-2", "OAM Table Address", ppu.OamBaseAddress, Format.X16),
 				new RegEntry("$2100.3-4", "OAM Second Table Address", (ppu.OamBaseAddress + ppu.OamAddressOffset) & 0x7FFF, Format.X16),
@@ -834,8 +908,8 @@ namespace Mesen.Debugger.ViewModels
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "State", null),
-				new RegEntry("", "Cycle", ppu.Cycle),
-				new RegEntry("", "Scanline", ppu.Scanline),
+				new RegEntry("", "Cycle (H)", ppu.Cycle),
+				new RegEntry("", "Scanline (V)", ppu.Scanline),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 				new RegEntry("", "PPU Bus Address", ppu.BusAddress, Format.X16),
 				new RegEntry("", "PPU Register Buffer", ppu.MemoryReadBuffer, Format.X8),
