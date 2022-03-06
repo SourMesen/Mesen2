@@ -10,6 +10,12 @@ using Mesen.Debugger.Labels;
 using System;
 using System.Globalization;
 using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Utilities;
+using Avalonia.Controls;
+using Mesen.Config;
+using Avalonia.Threading;
+using Mesen.Debugger.Controls;
+using Mesen.Debugger.Windows;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -94,7 +100,7 @@ namespace Mesen.Debugger.ViewModels
 			Manager.ClearSelectionFormat(GetIndexes(items));
 		}
 
-		public LocationInfo? GetLocation()
+		private LocationInfo? GetLocation()
 		{
 			if(SelectedIndex < 0 || SelectedIndex >= WatchEntries.Count) {
 				return null;
@@ -124,8 +130,182 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			}
-			
-			return new LocationInfo() { RelAddress = new() { Address = entry.NumericValue, Type = CpuType.ToMemoryType() } };
+
+			if(entry.NumericValue >= 0) {
+				return new LocationInfo() { RelAddress = new() { Address = entry.NumericValue, Type = CpuType.ToMemoryType() } };
+			} else {
+				return null;
+			}
+		}
+
+		public void InitContextMenu(Control ctrl, MesenDataGrid grid)
+		{
+			DebugShortcutManager.CreateContextMenu(ctrl, new object[] {
+				new ContextMenuAction() {
+					ActionType = ActionType.Add,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Add),
+					OnClick = () => {
+						grid.SelectedIndex = WatchEntries.Count - 1;
+						grid.ScrollIntoView(grid.SelectedItem, grid.Columns[0]);
+						Dispatcher.UIThread.Post(() => {
+							//This needs to be done as a post, otherwise the edit operation doesn't
+							//start properly when the user right-clicks outside the grid
+							grid.CurrentColumn = grid.Columns[0];
+							grid.BeginEdit();
+						});
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Edit,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Edit),
+					IsEnabled = () => grid.SelectedItems.Count == 1,
+					OnClick = () => {
+						grid.CurrentColumn = grid.Columns[0];
+						grid.BeginEdit();
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.Delete,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Delete),
+					IsEnabled = () => grid.SelectedItems.Count > 0,
+					OnClick = () => {
+						DeleteWatch(grid.SelectedItems.Cast<WatchValueInfo>().ToList());
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.MoveUp,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveUp),
+					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex > 0,
+					OnClick = () => {
+						MoveUp(grid.SelectedIndex);
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.MoveDown,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveDown),
+					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex < WatchEntries.Count - 2,
+					OnClick = () => {
+						MoveDown(grid.SelectedIndex);
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.RowDisplayFormat,
+					SubActions = new() {
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatBinary,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Binary, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuSeparator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex8Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex16Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatHex24Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuSeparator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned8Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned16Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatSigned24Bits,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuSeparator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.RowFormatUnsigned,
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Unsigned, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						},
+						new ContextMenuSeparator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.ClearFormat,
+							OnClick = () => ClearSelectionFormat(grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+						}
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchDecimalDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Unsigned,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Unsigned;
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchHexDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Hex,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Hex;
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.WatchBinaryDisplay,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Binary,
+					OnClick = () => {
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInMemoryViewer,
+					IsEnabled = () => GetLocation() != null,
+					HintText = GetLocationHint,
+					OnClick = () => {
+						LocationInfo? location = GetLocation();
+						if(location != null && location.RelAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(CpuType.ToMemoryType(), location.RelAddress.Value.Address);
+						}
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToLocation,
+					IsEnabled = () => GetLocation() != null,
+					HintText = GetLocationHint,
+					OnClick = () => {
+						LocationInfo? location = GetLocation();
+						if(location != null && location.RelAddress != null) {
+							DebuggerWindow.OpenWindowAtAddress(CpuType, location.RelAddress.Value.Address);
+						}
+					}
+				}
+			});
+		}
+
+		private string GetLocationHint()
+		{
+			LocationInfo? location = GetLocation();
+			if(location?.Label != null) {
+				return location.Label.Label;
+			} else if(location?.RelAddress != null) {
+				return "$" + location.RelAddress.Value.Address.ToString("X" + CpuType.GetAddressSize());
+			}
+			return "";
 		}
 	}
 }
