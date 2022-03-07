@@ -11,13 +11,14 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class SnesStatusViewModel : BaseConsoleStatusViewModel
 	{
+		[Reactive] public UInt64 CycleCount { get; set; }
+
 		[Reactive] public UInt16 RegA { get; set; }
 		[Reactive] public UInt16 RegX { get; set; }
 		[Reactive] public UInt16 RegY { get; set; }
 		[Reactive] public UInt16 RegSP { get; set; }
 		[Reactive] public UInt16 RegD { get; set; }
-		[Reactive] public UInt16 RegPC { get; set; }
-		[Reactive] public byte RegK { get; set; }
+		[Reactive] public UInt32 RegPC { get; set; }
 		[Reactive] public byte RegDBR { get; set; }
 		[Reactive] public byte RegPS { get; set; }
 
@@ -29,9 +30,12 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool FlagI { get; set; }
 		[Reactive] public bool FlagZ { get; set; }
 		[Reactive] public bool FlagC { get; set; }
+
 		[Reactive] public bool FlagE { get; set; }
+		
 		[Reactive] public bool FlagNmi { get; set; }
-		[Reactive] public bool FlagIrq { get; set; }
+		[Reactive] public bool FlagIrqHvCounters { get; set; }
+		[Reactive] public bool FlagIrqCoprocessor { get; set; }
 
 		[Reactive] public int Cycle { get; private set; }
 		[Reactive] public int Scanline { get; private set; }
@@ -41,6 +45,34 @@ namespace Mesen.Debugger.ViewModels
 
 		public SnesStatusViewModel()
 		{
+			this.WhenAnyValue(x => x.FlagC, x => x.FlagD, x => x.FlagI, x => x.FlagN).Subscribe(x => UpdatePsValue());
+			this.WhenAnyValue(x => x.FlagV, x => x.FlagZ, x => x.FlagM, x => x.FlagX).Subscribe(x => UpdatePsValue());
+
+			this.WhenAnyValue(x => x.RegPS).Subscribe(x => {
+				using var delayNotifs = DelayChangeNotifications(); //don't reupdate PS while updating the flags
+				FlagN = (x & (byte)SnesCpuFlags.Negative) != 0;
+				FlagV = (x & (byte)SnesCpuFlags.Overflow) != 0;
+				FlagD = (x & (byte)SnesCpuFlags.Decimal) != 0;
+				FlagI = (x & (byte)SnesCpuFlags.IrqDisable) != 0;
+				FlagZ = (x & (byte)SnesCpuFlags.Zero) != 0;
+				FlagC = (x & (byte)SnesCpuFlags.Carry) != 0;
+				FlagX = (x & (byte)SnesCpuFlags.IndexMode8) != 0;
+				FlagM = (x & (byte)SnesCpuFlags.MemoryMode8) != 0;
+			});
+		}
+
+		private void UpdatePsValue()
+		{
+			RegPS = (byte)(
+				(FlagN ? (byte)SnesCpuFlags.Negative : 0) |
+				(FlagV ? (byte)SnesCpuFlags.Overflow : 0) |
+				(FlagD ? (byte)SnesCpuFlags.Decimal : 0) |
+				(FlagI ? (byte)SnesCpuFlags.IrqDisable : 0) |
+				(FlagZ ? (byte)SnesCpuFlags.Zero : 0) |
+				(FlagC ? (byte)SnesCpuFlags.Carry : 0) |
+				(FlagX ? (byte)SnesCpuFlags.IndexMode8 : 0) |
+				(FlagM ? (byte)SnesCpuFlags.MemoryMode8 : 0)
+			);
 		}
 
 		public override void UpdateUiState()
@@ -52,39 +84,23 @@ namespace Mesen.Debugger.ViewModels
 			RegX = cpu.X;
 			RegY = cpu.Y;
 			RegSP = cpu.SP;
+			RegPC = (UInt32)((cpu.K << 16) | cpu.PC);
+
 			RegD = cpu.D;
-			RegPC = cpu.PC;
-
-			RegK = cpu.K;
 			RegDBR = cpu.DBR;
-			RegPS = (byte)cpu.PS;
+			CycleCount = cpu.CycleCount;
 
-			//TODO
-			/*
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.Negative)).ToPropertyEx(this, x => x.FlagN);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.Overflow)).ToPropertyEx(this, x => x.FlagV);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.MemoryMode8)).ToPropertyEx(this, x => x.FlagM);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.IndexMode8)).ToPropertyEx(this, x => x.FlagX);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.Decimal)).ToPropertyEx(this, x => x.FlagD);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.IrqDisable)).ToPropertyEx(this, x => x.FlagI);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.Zero)).ToPropertyEx(this, x => x.FlagZ);
-			this.WhenAnyValue(x => x.State).Select(st => st.PS.HasFlag(ProcFlags.Carry)).ToPropertyEx(this, x => x.FlagC);
-			this.WhenAnyValue(x => x.State).Select(st => st.EmulationMode).ToPropertyEx(this, x => x.FlagE);
-			this.WhenAnyValue(x => x.State).Select(st => st.NmiFlag).ToPropertyEx(this, x => x.FlagNmi);
-			this.WhenAnyValue(x => x.State).Select(st => st.IrqSource != 0).ToPropertyEx(this, x => x.FlagIrq);
-			*/
+			RegPS = (byte)cpu.PS;
+			
+			FlagNmi = cpu.NmiFlag;
+			FlagIrqHvCounters = (cpu.IrqSource & (byte)SnesIrqSource.Ppu) != 0;
+			FlagIrqCoprocessor = (cpu.IrqSource & (byte)SnesIrqSource.Coprocessor) != 0;
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (uint)cpu.SP + 1; (i & 0xFF) != 0; i++) {
-				sb.Append("$");
-				sb.Append(DebugApi.GetMemoryValue(MemoryType.SnesMemory, i).ToString("X2"));
-				sb.Append(", ");
+				sb.Append($"${DebugApi.GetMemoryValue(MemoryType.SnesMemory, i):X2} ");
 			}
-			string stack = sb.ToString();
-			if(stack.Length > 2) {
-				stack = stack.Substring(0, stack.Length - 2);
-			}
-			StackPreview = stack;
+			StackPreview = sb.ToString();
 
 			Cycle = ppu.Cycle;
 			HClock = ppu.HClock;
@@ -93,6 +109,27 @@ namespace Mesen.Debugger.ViewModels
 
 		public override void UpdateConsoleState()
 		{
+			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(CpuType.Snes);
+
+			cpu.A = RegA;
+			cpu.X = RegX;
+			cpu.Y = RegY;
+			cpu.SP = RegSP;
+			cpu.K = (byte)((RegPC >> 16) & 0xFF);
+			cpu.PC = (UInt16)(RegPC & 0xFFFF);
+
+			cpu.D = RegD;
+			cpu.DBR = RegDBR;
+
+			cpu.PS = (SnesCpuFlags)RegPS;
+
+			cpu.NmiFlag = FlagNmi;
+			cpu.IrqSource = (byte)(
+				(FlagIrqHvCounters ? (byte)SnesIrqSource.Ppu : 0) | 
+				(FlagIrqCoprocessor ? (byte)SnesIrqSource.Coprocessor : 0)
+			);
+
+			DebugApi.SetCpuState(cpu, CpuType.Snes);
 		}
 	}
 }

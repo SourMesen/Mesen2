@@ -21,7 +21,7 @@ namespace Mesen.Interop
 	}
 
 	[Flags]
-	public enum ProcFlags : byte
+	public enum SnesCpuFlags : byte
 	{
 		Carry = 0x01,
 		Zero = 0x02,
@@ -46,6 +46,13 @@ namespace Mesen.Interop
 		Negative = 0x80
 	}
 
+	public enum SnesIrqSource
+	{
+		None = 0,
+		Ppu = 1,
+		Coprocessor = 2
+	}
+
 	public struct SnesCpuState : BaseState
 	{
 		public UInt64 CycleCount;
@@ -60,7 +67,7 @@ namespace Mesen.Interop
 
 		public byte K;
 		public byte DBR;
-		public ProcFlags PS;
+		public SnesCpuFlags PS;
 		[MarshalAs(UnmanagedType.I1)] public bool EmulationMode;
 
 		[MarshalAs(UnmanagedType.I1)] public bool NmiFlag;

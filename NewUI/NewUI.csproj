@@ -161,6 +161,7 @@
 	  <None Remove="Debugger\Highlight6502.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
 	  <None Remove="Dependencies.zip" />
+	  <None Remove="Styles\DebugStatusStyles.xaml" />
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
@@ -560,6 +561,9 @@
 	  <AvaloniaResource Include="Assets\WebBrowser.png" />
 	  <AvaloniaResource Include="Assets\XbIcon.png" />
 	  <AvaloniaResource Include="Assets\Zoom2x.png" />
+	  <AvaloniaResource Include="Styles\DebugStatusStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\StartupStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>

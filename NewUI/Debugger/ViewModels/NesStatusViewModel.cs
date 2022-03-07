@@ -107,11 +107,9 @@ namespace Mesen.Debugger.ViewModels
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (UInt32)0x100 + cpu.SP + 1; i < 0x200; i++) {
-				sb.Append("$");
-				sb.Append(DebugApi.GetMemoryValue(MemoryType.NesMemory, i).ToString("X2"));
-				sb.Append(" ");
+				sb.Append($"${DebugApi.GetMemoryValue(MemoryType.NesMemory, i):X2} ");
 			}
-			StackPreview = sb.ToString().TrimEnd();
+			StackPreview = sb.ToString();
 
 			Cycle = ppu.Cycle;
 			Scanline = ppu.Scanline;
