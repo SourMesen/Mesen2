@@ -88,7 +88,7 @@ namespace Mesen.Debugger.ViewModels
 			StackFrameInfo entry = stackFrame.Value;
 
 			string format = "X" + CpuType.GetAddressSize();
-			CodeLabel? label = LabelManager.GetLabel(entry.AbsTarget);
+			CodeLabel? label = entry.AbsTarget.Address >= 0 ? LabelManager.GetLabel(entry.AbsTarget) : null;
 			if(label != null) {
 				return label.Label + " ($" + entry.Target.ToString(format) + ")";
 			} else if(entry.Flags == StackFrameFlags.Nmi) {
