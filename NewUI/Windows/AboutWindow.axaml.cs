@@ -60,7 +60,7 @@ namespace Mesen.Windows
 				new("SPC_DSP", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("nes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("snes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
-				new("stb_vorbis", "", "LGPL", "https://github.com/nothings/stb"),
+				new("stb_vorbis", "", "Public domain", "https://github.com/nothings/stb"),
 				new("emu2413.c (Mitsukata Okazaki)", "Mitsukata Okazaki", "?", ""),
 				new("SDD-1 Decomp. (Andreas Naive)", "Andreas Naive", "Public domain", ""),
 			};
