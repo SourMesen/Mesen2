@@ -78,11 +78,16 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		MessageManager::Log("[iNes] Warning: File is larger than excepted (based on the file header).");
 	}
 
+	romData.Info.Hash.PrgCrc32 = CRC32::GetCRC(buffer, prgSize);
+
 	romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + prgSize);
+	while(romData.PrgRom.size() < 256) {
+		//Ensure the PRG is at least 256 bytes in size by mirroring as needed (mapper code requires it to be 256 bytes at least)
+		romData.PrgRom.insert(romData.PrgRom.end(), buffer, buffer + std::min<int>(prgSize, 256 - romData.PrgRom.size()));
+	}
 	buffer += prgSize;
 	romData.ChrRom.insert(romData.ChrRom.end(), buffer, buffer + chrSize);
 
-	romData.Info.Hash.PrgCrc32 = CRC32::GetCRC(romData.PrgRom.data(), romData.PrgRom.size());
 
 	Log("PRG CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgCrc32, true));
 	Log("PRG+CHR CRC32: 0x" + HexUtilities::ToHex(romData.Info.Hash.PrgChrCrc32, true));
