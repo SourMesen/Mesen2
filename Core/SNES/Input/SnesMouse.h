@@ -87,13 +87,13 @@ public:
 		_stateBuffer = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 	}
 
-	void DrawController(InputHud& hud)
+	void InternalDrawController(InputHud& hud) override
 	{
 		hud.DrawOutline(11, 14);
 
 		hud.DrawButton(1, 1, 4, 5, IsPressed(Buttons::Left));
 		hud.DrawButton(6, 1, 4, 5, IsPressed(Buttons::Right));
 
-		hud.DrawNumber(_port + 1, 4, 7);
+		hud.DrawNumber(hud.GetControllerIndex() + 1, 4, 7);
 	}
 };

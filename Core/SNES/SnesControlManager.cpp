@@ -26,23 +26,34 @@ SnesControlManager::~SnesControlManager()
 {
 }
 
-ControllerType SnesControlManager::GetControllerType(uint8_t port)
-{
-	return _emu->GetSettings()->GetSnesConfig().Controllers[port].Type;
-}
-
 shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
 
-	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
+	SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
 
 	switch(type) {
 		case ControllerType::None: break;
-		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, cfg.Controllers[port].Keys)); break;
+		case ControllerType::SnesController:
+			device.reset(new SnesController(_emu, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys));
+			break;
+
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
-		case ControllerType::SuperScope: device.reset(new SuperScope(_console, port, cfg.Controllers[port].Keys)); break;
-		case ControllerType::Multitap: device.reset(new Multitap(_console, port, cfg.Controllers[port].Keys, cfg.Controllers[2].Keys, cfg.Controllers[3].Keys, cfg.Controllers[4].Keys)); break;
+
+		case ControllerType::SuperScope: device.reset(new SuperScope(_console, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys)); break;
+		
+		case ControllerType::Multitap: {
+			ControllerConfig controllers[4];
+			if(port == 0) {
+				std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 4, controllers);
+				controllers[0].Keys = cfg.Port1.Keys;
+			} else {
+				std::copy(cfg.Port2SubPorts, cfg.Port2SubPorts + 4, controllers);
+				controllers[0].Keys = cfg.Port2.Keys;
+			}
+			device.reset(new Multitap(_console, port, controllers));
+			break;
+		}
 
 		default:
 			throw std::runtime_error("Unsupported controller type");
@@ -53,7 +64,7 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 
 void SnesControlManager::UpdateControlDevices()
 {
-	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
+	SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
 	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
@@ -62,7 +73,7 @@ void SnesControlManager::UpdateControlDevices()
 	auto lock = _deviceLock.AcquireSafe();
 	ClearDevices();
 	for(int i = 0; i < 2; i++) {
-		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
+		shared_ptr<BaseControlDevice> device = CreateControllerDevice(i == 0 ? cfg.Port1.Type : cfg.Port2.Type, i);
 		if(device) {
 			RegisterControlDevice(device);
 		}
@@ -88,8 +99,9 @@ void SnesControlManager::Write(uint16_t addr, uint8_t value)
 
 void SnesControlManager::Serialize(Serializer &s)
 {
-	SnesConfig cfg = _emu->GetSettings()->GetSnesConfig();
-	s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);
+	SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
+	//TODO
+	//s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);
 	if(!s.IsSaving()) {
 		_emu->GetSettings()->SetSnesConfig(cfg);
 		UpdateControlDevices();

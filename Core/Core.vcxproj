@@ -68,6 +68,7 @@
     <ClInclude Include="NES\Input\PowerPad.h" />
     <ClInclude Include="NES\Input\SuborKeyboard.h" />
     <ClInclude Include="NES\Input\SuborMouse.h" />
+    <ClInclude Include="NES\Input\TwoPlayerAdapter.h" />
     <ClInclude Include="NES\Input\VirtualBoyController.h" />
     <ClInclude Include="NES\Input\VsZapper.h" />
     <ClInclude Include="NES\Input\Zapper.h" />
@@ -115,6 +116,7 @@
     <ClInclude Include="Shared\BaseState.h" />
     <ClInclude Include="Gameboy\GbControlManager.h" />
     <ClInclude Include="Gameboy\stdafx.h" />
+    <ClInclude Include="Shared\ControllerHub.h" />
     <ClInclude Include="Shared\Interfaces\IAudioProvider.h" />
     <ClInclude Include="Shared\Interfaces\IBattery.h" />
     <ClInclude Include="Shared\Interfaces\IControlManager.h" />

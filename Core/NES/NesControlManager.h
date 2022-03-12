@@ -27,7 +27,6 @@ protected:
 	NesConsole* _console;
 
 	virtual void Serialize(Serializer& s) override;
-	virtual ControllerType GetControllerType(uint8_t port);
 	virtual void RemapControllerButtons();
 	virtual uint8_t GetOpenBusMask(uint8_t port);
 

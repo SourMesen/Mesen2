@@ -1,0 +1,29 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	mc:Ignorable="d"
+	d:DesignHeight="55"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Controls.InputComboBox"
+>
+	<StackPanel Orientation="Horizontal">
+		<c:EnumComboBox
+			Margin="5 0"
+			Width="190"
+			VerticalAlignment="Center"
+			SelectedItem="{CompiledBinding ControllerType, ElementName=root}"
+			AvailableValues="{CompiledBinding AvailableValues, ElementName=root}"
+		/>
+		<Button
+			VerticalAlignment="Center"
+			Content="{l:Translate btnSetup}"
+			Click="btnSetup_Click"
+			IsEnabled="{CompiledBinding SetupEnabled, ElementName=root}"
+		/>
+	</StackPanel>
+</UserControl>

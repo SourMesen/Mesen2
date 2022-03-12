@@ -22,6 +22,9 @@ namespace Mesen.Config
 		[Reactive] public bool DisplayInputPort3 { get; set; } = false;
 		[Reactive] public bool DisplayInputPort4 { get; set; } = false;
 		[Reactive] public bool DisplayInputPort5 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort6 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort7 { get; set; } = false;
+		[Reactive] public bool DisplayInputPort8 { get; set; } = false;
 		[Reactive] public bool DisplayInputHorizontally { get; set; } = true;
 
 		public InputConfig()
@@ -39,6 +42,9 @@ namespace Mesen.Config
 				DisplayInputPort3 = this.DisplayInputPort3,
 				DisplayInputPort4 = this.DisplayInputPort4,
 				DisplayInputPort5 = this.DisplayInputPort5,
+				DisplayInputPort6 = this.DisplayInputPort6,
+				DisplayInputPort7 = this.DisplayInputPort7,
+				DisplayInputPort8 = this.DisplayInputPort8,
 				DisplayInputHorizontally = this.DisplayInputHorizontally
 			});
 		}
@@ -193,6 +199,9 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort3;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort4;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort5;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort6;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort7;
+		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputPort8;
 		[MarshalAs(UnmanagedType.I1)] public bool DisplayInputHorizontally;
 	}
 
@@ -259,12 +268,12 @@ namespace Mesen.Config
 		NesArkanoidController,
 		PowerPad,
 		SuborMouse,
-		VsZapper,
 		VbController,
 
 		//NES/Famicon expansion devices
 		FourScore,
 		FamicomZapper,
+		TwoPlayerAdapter,
 		FourPlayerAdapter,
 		FamicomArkanoidController,
 		OekaKidsTablet,
@@ -288,6 +297,33 @@ namespace Mesen.Config
 
 	public static class ControllerTypeExtensions
 	{
+		public static bool HasPresets(this ControllerType type)
+		{
+			switch(type) {
+				case ControllerType.SnesController:
+				case ControllerType.NesController:
+				case ControllerType.GameboyController:
+					return true;
+			}
+
+			return false;
+		}
+
+		public static bool HasTurbo(this ControllerType type)
+		{
+			switch(type) {
+				case ControllerType.SnesController:
+				case ControllerType.NesController:
+				case ControllerType.GameboyController:
+				case ControllerType.HoriTrack:
+				case ControllerType.Pachinko:
+				case ControllerType.KonamiHyperShot:
+					return true;
+			}
+
+			return false;
+		}
+
 		public static bool CanConfigure(this ControllerType type)
 		{
 			switch(type) {
@@ -303,6 +339,9 @@ namespace Mesen.Config
 				case ControllerType.JissenMahjong:
 				case ControllerType.ExcitingBoxing:
 				case ControllerType.GameboyController:
+				//TODO
+				//case ControllerType.HoriTrack:
+				//case ControllerType.KonamiHyperShot:
 					return true;
 			}
 

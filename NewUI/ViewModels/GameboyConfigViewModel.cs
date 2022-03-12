@@ -39,7 +39,7 @@ namespace Mesen.ViewModels
 			wnd.Position = startPosition;
 
 			ControllerConfig cfg = JsonHelper.Clone(this.Config.Controller);
-			wnd.DataContext = new ControllerConfigViewModel(cfg);
+			wnd.DataContext = new ControllerConfigViewModel(ControllerType.GameboyController, cfg);
 
 			if(await wnd.ShowDialog<bool>(btn.Parent?.VisualRoot as Window)) {
 				Config.Controller = cfg;

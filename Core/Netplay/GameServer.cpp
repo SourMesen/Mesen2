@@ -4,7 +4,6 @@
 #include "Netplay/PlayerListMessage.h"
 #include "Shared/Emulator.h"
 #include "Shared/Interfaces/IControlManager.h"
-#include "SNES/Input/Multitap.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
@@ -61,10 +60,10 @@ bool GameServer::SetInput(BaseControlDevice *device)
 {
 	uint8_t port = device->GetPort();
 
-	//TODO?
 	if(device->GetControllerType() == ControllerType::Multitap) {
+		//TODO
 		//Need special handling for the multitap, merge data from P3/4/5 with P1 (or P2, depending which port the multitap is plugged into)
-		GameServerConnection* connection = GetNetPlayDevice(port);
+		/*GameServerConnection* connection = GetNetPlayDevice(port);
 		if(connection) {
 			((Multitap*)device)->SetControllerState(0, connection->GetState());
 		}
@@ -74,7 +73,7 @@ bool GameServer::SetInput(BaseControlDevice *device)
 			if(connection) {
 				((Multitap*)device)->SetControllerState(i - 1, connection->GetState());
 			}
-		}
+		}*/
 	} else {
 		GameServerConnection* connection = GetNetPlayDevice(port);
 		if(connection) {

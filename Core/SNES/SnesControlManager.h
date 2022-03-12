@@ -25,8 +25,6 @@ private:
 protected:
 	SnesConsole* _console;
 
-	ControllerType GetControllerType(uint8_t port);
-
 public:
 	SnesControlManager(SnesConsole* console);
 	virtual ~SnesControlManager();

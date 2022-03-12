@@ -28,6 +28,7 @@ namespace Mesen.ViewModels
 				return;
 			}
 
+			AddDisposable(Input);
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
 		}
    }

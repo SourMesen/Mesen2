@@ -21,85 +21,130 @@
 	<ScrollViewer AllowAutoHide="False">
 		<StackPanel>
 			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Width="300" HorizontalAlignment="Left">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPlayer1}" />
-					<c:EnumComboBox
+					<c:InputComboBox
 						Grid.Row="0" Grid.Column="1"
-						Margin="5 0"
-						SelectedItem="{CompiledBinding Config.Controllers[0].Type}"
+						Config="{CompiledBinding Config.Port1}"
+						ControllerType="{CompiledBinding Config.Port1.Type}"
 						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
-					/>
-					<Button
-						Grid.Row="0"
-						Grid.Column="2"
-						Command="{CompiledBinding SetupPlayer1}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
 					/>
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPlayer2}" />
-					<c:EnumComboBox
+					<c:InputComboBox
 						Grid.Row="1" Grid.Column="1"
-						Margin="5 0"
-						SelectedItem="{CompiledBinding Config.Controllers[1].Type}"
+						Config="{CompiledBinding Config.Port2}"
+						IsEnabled="{CompiledBinding !HasFourScore}"
+						ControllerType="{CompiledBinding Config.Port2.Type}"
 						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
 					/>
-					<Button
-						Grid.Row="1"
-						Grid.Column="2"
-						Command="{CompiledBinding SetupPlayer2}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
-					/>
 
-					<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblExpansionDevice}" />
-					<c:EnumComboBox
-						Grid.Row="2" Grid.Column="1"
-						Margin="5 0"
-						SelectedItem="{CompiledBinding Config.Controllers[4].Type}"
+					<c:GroupBox
+						Header="{l:Translate lblFourScoreConfig}"
+						IsVisible="{CompiledBinding HasFourScore}"
+						HorizontalAlignment="Right"
+						Margin="0 5 -6 5"
+						Grid.Row="2"
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+					>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPort1A}" />
+							<c:InputComboBox
+								Grid.Row="0" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1}"
+								ControllerType="{CompiledBinding Config.Port1A.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+							/>
+
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPort1B}" />
+							<c:InputComboBox
+								Grid.Row="1" Grid.Column="1"
+								Config="{CompiledBinding Config.Port2}"
+								ControllerType="{CompiledBinding Config.Port1B.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+							/>
+
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblPort1C}" />
+							<c:InputComboBox
+								Grid.Row="2" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1C}"
+								ControllerType="{CompiledBinding Config.Port1C.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+							/>
+
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPort1D}" />
+							<c:InputComboBox
+								Grid.Row="3" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1D}"
+								ControllerType="{CompiledBinding Config.Port1D.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesFourPlayer}"
+							/>
+						</Grid>
+					</c:GroupBox>
+					
+					<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblExpansionDevice}" Margin="0 10 0 0" />
+					<c:InputComboBox
+						Margin="0 10 0 0"
+						Grid.Row="3" Grid.Column="1"
+						Config="{CompiledBinding Config.ExpPort}"
+						ControllerType="{CompiledBinding Config.ExpPort.Type}"
 						AvailableValues="{CompiledBinding AvailableExpansionTypes}"
 					/>
-					<Button
-						Grid.Row="2"
-						Grid.Column="2"
-						Command="{CompiledBinding SetupPlayer5}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
-					/>
 
-					<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPlayer3}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
-					<c:EnumComboBox
-						Grid.Row="3" Grid.Column="1"
-						Margin="5 0"
-						SelectedItem="{CompiledBinding Config.Controllers[2].Type}"
-						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
-					/>
-					<Button
-						Grid.Row="3"
-						Grid.Column="2"
-						Command="{CompiledBinding SetupPlayer3}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
-						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-					/>
-
-					<TextBlock Grid.Row="4" Grid.Column="0" Text="{l:Translate lblPlayer4}" IsVisible="{CompiledBinding HasFourPlayerAdapter}" />
-					<c:EnumComboBox
-						Grid.Row="4" Grid.Column="1"
-						Margin="5 0"
-						SelectedItem="{CompiledBinding Config.Controllers[3].Type}"
-						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP34}"
-					/>
-					<Button
+					<c:GroupBox
+						Header="{CompiledBinding ExpConfigLabel}"
+						IsVisible="{CompiledBinding HasExpansionHub}"
+						HorizontalAlignment="Right"
+						Margin="0 5 -6 5"
 						Grid.Row="4"
-						Grid.Column="2"
-						Command="{CompiledBinding SetupPlayer4}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
-						IsVisible="{CompiledBinding HasFourPlayerAdapter}"
-					/>
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+					>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblExpPortA}" />
+							<c:InputComboBox
+								Grid.Row="0" Grid.Column="1"
+								Config="{CompiledBinding Config.ExpPort}"
+								ControllerType="{CompiledBinding Config.ExpPortA.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+							/>
+
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblExpPortB}" />
+							<c:InputComboBox
+								Grid.Row="1" Grid.Column="1"
+								Config="{CompiledBinding Config.ExpPortB}"
+								ControllerType="{CompiledBinding Config.ExpPortB.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+							/>
+
+							<TextBlock
+								Grid.Row="2" Grid.Column="0"
+								Text="{l:Translate lblExpPortC}"
+								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+							/>
+							<c:InputComboBox
+								Grid.Row="2" Grid.Column="1"
+								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+								Config="{CompiledBinding Config.ExpPortC}"
+								ControllerType="{CompiledBinding Config.ExpPortC.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+							/>
+
+							<TextBlock
+								Grid.Row="3" Grid.Column="0"
+								Text="{l:Translate lblExpPortD}"
+								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+							/>
+							<c:InputComboBox
+								Grid.Row="3" Grid.Column="1"
+								IsVisible="{CompiledBinding HasFourPlayerAdapter}"
+								Config="{CompiledBinding Config.ExpPortD}"
+								ControllerType="{CompiledBinding Config.ExpPortD.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesExpansionHub}"
+							/>
+						</Grid>
+					</c:GroupBox>
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpHardware}">

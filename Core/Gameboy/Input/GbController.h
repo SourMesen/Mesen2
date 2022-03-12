@@ -59,7 +59,7 @@ public:
 	{
 	}
 
-	void DrawController(InputHud& hud)
+	void InternalDrawController(InputHud& hud) override
 	{
 		hud.DrawOutline(35, 14);
 

@@ -41,7 +41,6 @@ private:
 	};
 
 protected:
-	ControllerType GetControllerType(uint8_t port) override;
 	void RemapControllerButtons() override;
 	uint8_t GetOpenBusMask(uint8_t port) override;
 

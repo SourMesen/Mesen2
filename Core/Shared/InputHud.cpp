@@ -59,6 +59,24 @@ void InputHud::DrawNumber(int number, int x, int y)
 			_hud->DrawLine(x + _xOffset, 4 + y + _yOffset, x+2 + _xOffset, 4 + y + _yOffset, color[0], 1);
 			break;
 
+		case 6:
+			_hud->DrawLine(x + _xOffset, y + _yOffset, x + 2 + _xOffset, y + _yOffset, color[0], 1);
+			_hud->DrawLine(x + _xOffset, 1 + y + _yOffset, x + _xOffset, y + _yOffset + 3, color[0], 1);
+			_hud->DrawLine(x + _xOffset, 2 + y + _yOffset, x + 2 + _xOffset, 2 + y + _yOffset, color[0], 1);
+			_hud->DrawPixel(x + 2 + _xOffset, 3 + y + _yOffset, color[0], 1);
+			_hud->DrawLine(x + _xOffset, 4 + y + _yOffset, x + 2 + _xOffset, 4 + y + _yOffset, color[0], 1);
+			break;
+
+		case 7:
+			_hud->DrawLine(x + _xOffset, y + _yOffset, x + 2 + _xOffset, y + _yOffset, color[0], 1);
+			_hud->DrawLine(x + _xOffset + 2, y + _yOffset, x + _xOffset + 2, 4 + y + _yOffset, color[0], 1);
+			break;
+
+		case 8:
+			_hud->DrawRectangle(x + _xOffset, y + _yOffset, 3, 5, color[0], false, 1);
+			_hud->DrawPixel(x + _xOffset + 1, y + _yOffset + 2, color[0], 1);
+			break;
+
 		default:
 			break;
 	}
@@ -108,7 +126,6 @@ void InputHud::DrawController(ControllerData& data)
 
 	controller->SetRawState(data.State);
 	controller->DrawController(*this);
-	EndDrawController();
 }
 
 void InputHud::EndDrawController()
@@ -152,6 +169,8 @@ void InputHud::EndDrawController()
 		_outlineWidth = 0;
 		_outlineHeight = 0;
 	}
+
+	_controllerIndex++;
 }
 
 void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controllerData)
@@ -178,6 +197,7 @@ void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controller
 			break;
 	}
 	
+	_controllerIndex = 0;
 	for(ControllerData& portData : controllerData) {
 		DrawController(portData);
 	}

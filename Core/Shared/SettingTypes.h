@@ -163,12 +163,12 @@ enum class ControllerType
 	NesArkanoidController,
 	PowerPad,
 	SuborMouse,
-	VsZapper,
 	VirtualBoyController,
 
 	//NES/Famicon expansion devices
 	FourScore,
 	FamicomZapper,
+	TwoPlayerAdapter,
 	FourPlayerAdapter,
 	FamicomArkanoidController,
 	OekaKidsTablet,
@@ -279,7 +279,7 @@ struct InputConfig
 	uint32_t MouseSensitivity = 1;
 
 	InputDisplayPosition DisplayInputPosition = InputDisplayPosition::TopLeft;
-	bool DisplayInputPort[5] = { false, false, false, false, false};
+	bool DisplayInputPort[8] = { };
 	bool DisplayInputHorizontally = true;
 };
 
@@ -347,7 +347,11 @@ struct GameboyConfig
 
 struct SnesConfig
 {
-	ControllerConfig Controllers[5];
+	ControllerConfig Port1;
+	ControllerConfig Port2;
+
+	ControllerConfig Port1SubPorts[4];
+	ControllerConfig Port2SubPorts[4];
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 
@@ -402,7 +406,13 @@ enum class NesConsoleType
 
 struct NesConfig
 {
-	ControllerConfig Controllers[5] = {};
+	ControllerConfig Port1;
+	ControllerConfig Port2;
+	ControllerConfig ExpPort;
+
+	ControllerConfig Port1SubPorts[4];
+	ControllerConfig ExpPortSubPorts[4];
+
 	uint32_t ZapperDetectionRadius = 0;
 
 	ConsoleRegion Region = ConsoleRegion::Auto;

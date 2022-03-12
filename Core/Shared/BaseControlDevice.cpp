@@ -3,6 +3,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/KeyManager.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/InputHud.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 
@@ -76,6 +77,15 @@ ControlDeviceState BaseControlDevice::GetRawState()
 {
 	auto lock = _stateLock.AcquireSafe();
 	return _state;
+}
+
+void BaseControlDevice::DrawController(InputHud& hud)
+{
+	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
+	if(hud.GetControllerIndex() < 8 && cfg.DisplayInputPort[hud.GetControllerIndex()]) {
+		InternalDrawController(hud);
+	}
+	hud.EndDrawController();
 }
 
 void BaseControlDevice::SetRawState(ControlDeviceState state)

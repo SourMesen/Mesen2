@@ -17,6 +17,7 @@
 #include "NES/Input/Zapper.h"
 #include "NES/Input/ArkanoidController.h"
 #include "NES/Input/OekaKidsTablet.h"
+#include "NES/Input/TwoPlayerAdapter.h"
 #include "NES/Input/FourScore.h"
 #include "NES/Input/PowerPad.h"
 #include "NES/Input/FamilyMatTrainer.h"
@@ -46,29 +47,42 @@ NesControlManager::~NesControlManager()
 {
 }
 
-ControllerType NesControlManager::GetControllerType(uint8_t port)
-{
-	return _emu->GetSettings()->GetNesConfig().Controllers[port].Type;
-}
-
 shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
 	
-	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
-	KeyMappingSet keys = cfg.Controllers[port].Keys;
+	ControllerConfig controllers[4];
+	NesConfig& cfg = _emu->GetSettings()->GetNesConfig();
+	KeyMappingSet keys;
+	switch(port) {
+		default:
+		case 0: keys = cfg.Port1.Keys; break;
+		case 1: keys = cfg.Port2.Keys; break;
+
+		//Used by VS system
+		case 2: keys = cfg.Port1SubPorts[2].Keys; break;
+		case 3: keys = cfg.Port1SubPorts[3].Keys; break;
+	}
 
 	switch(type) {
 		case ControllerType::None: break;
 		case ControllerType::NesController: device.reset(new NesController(_emu, type, port, keys)); break;
 		case ControllerType::FamicomController: device.reset(new NesController(_emu, type, port, keys)); break;
-		case ControllerType::NesZapper: device.reset(new Zapper(_console, type, port)); break;
+		case ControllerType::NesZapper: {
+			RomFormat romFormat = _console->GetRomFormat();
+			if(romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem) {
+				device.reset(new VsZapper(_console, port));
+			} else {
+				device.reset(new Zapper(_console, type, port));
+			}
+			break;
+		}
+
 		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port)); break;
 		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, keys)); break;
 		case ControllerType::PowerPad: device.reset(new PowerPad(_emu, type, port, keys)); break;
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
 		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port)); break;
-		case ControllerType::VsZapper: device.reset(new VsZapper(_console, port)); break;
 		case ControllerType::VirtualBoyController: device.reset(new VirtualBoyController(_emu, port, keys)); break;
 
 		//Exp port devices
@@ -76,7 +90,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
 		case ControllerType::FamilyTrainerMat: device.reset(new FamilyMatTrainer(_emu, keys)); break;
-		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys, cfg.Controllers[1].Keys)); break;
+		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys, cfg.Port2.Keys)); break;
 		case ControllerType::FamilyBasicKeyboard: device.reset(new FamilyBasicKeyboard(_emu, keys)); break;
 		case ControllerType::PartyTap: device.reset(new PartyTap(_emu, keys)); break;
 		case ControllerType::Pachinko: device.reset(new PachinkoController(_emu, keys)); break;
@@ -88,9 +102,26 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console, keys)); break;
 		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_emu)); break;
 		case ControllerType::BattleBox: device.reset(new BattleBox(_emu)); break;
-		case ControllerType::FourScore: device.reset(new FourScore(_emu)); break;
+		
+		case ControllerType::FourScore: {
+			std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 4, controllers);
+			controllers[0].Keys = cfg.Port1.Keys;
+			device.reset(new FourScore(_emu, type, controllers));
+			break;
+		}
 
-		case ControllerType::FourPlayerAdapter:
+		case ControllerType::TwoPlayerAdapter:
+		case ControllerType::FourPlayerAdapter: {
+			std::copy(cfg.ExpPortSubPorts, cfg.ExpPortSubPorts + 4, controllers);
+			controllers[0].Keys = cfg.ExpPort.Keys;
+			if(type == ControllerType::TwoPlayerAdapter) {
+				device.reset(new TwoPlayerAdapter(_emu, type, controllers));
+			} else {
+				device.reset(new FourScore(_emu, type, controllers));
+			}
+			break;
+		}
+
 		default: break;
 	}
 
@@ -99,7 +130,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 
 void NesControlManager::UpdateControlDevices()
 {
-	NesConfig cfg = _emu->GetSettings()->GetNesConfig();
+	NesConfig& cfg = _emu->GetSettings()->GetNesConfig();
 	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
@@ -110,18 +141,15 @@ void NesControlManager::UpdateControlDevices()
 
 	ClearDevices();
 
-	ControllerType expansionDevice = GetControllerType(BaseControlDevice::ExpDevicePort);
-	bool allowFourPlayers = (expansionDevice == ControllerType::FourPlayerAdapter || expansionDevice == ControllerType::FourScore);
-
-	for(int i = 0; i < (allowFourPlayers ? 4 : 2); i++) {
-		shared_ptr<BaseControlDevice> device = CreateControllerDevice(GetControllerType(i), i);
+	for(int i = 0; i < 2; i++) {
+		shared_ptr<BaseControlDevice> device = CreateControllerDevice(i == 0 ? cfg.Port1.Type : cfg.Port2.Type, i);
 		if(device) {
 			RegisterControlDevice(device);
 		}
 	}
 
-	if(expansionDevice != ControllerType::None) {
-		shared_ptr<BaseControlDevice> expDevice = CreateControllerDevice(expansionDevice, BaseControlDevice::ExpDevicePort);
+	if(cfg.ExpPort.Type != ControllerType::None) {
+		shared_ptr<BaseControlDevice> expDevice = CreateControllerDevice(cfg.ExpPort.Type, BaseControlDevice::ExpDevicePort);
 		if(expDevice) {
 			RegisterControlDevice(expDevice);
 		}
@@ -231,7 +259,7 @@ void NesControlManager::Reset(bool softReset)
 void NesControlManager::Serialize(Serializer& s)
 {
 	//Restore controllers that were being used at the time the snapshot was made
-	//This is particularely important to ensure proper sync during NetPlay
+	//This is particularly important to ensure proper sync during NetPlay
 	ControllerType controllerTypes[4];
 	ExpansionPortDevice expansionDevice;
 	ConsoleType consoleType;

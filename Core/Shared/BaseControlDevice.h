@@ -12,9 +12,10 @@ class InputHud;
 class BaseControlDevice : public ISerializable
 {
 private:
-	ControlDeviceState _state = {};
 
 protected:
+	ControlDeviceState _state = {};
+
 	Emulator* _emu = nullptr;
 	vector<KeyMapping> _keyMappings;
 	bool _strobe = false;
@@ -24,7 +25,7 @@ protected:
 	SimpleLock _stateLock;
 
 	virtual void RefreshStateBuffer() { }
-	
+
 	void EnsureCapacity(int32_t minBitCount);
 	uint32_t GetByteIndex(uint8_t bit);
 	virtual bool HasCoordinates();
@@ -44,9 +45,9 @@ protected:
 
 	void SetMovement(MouseMovement mov);
 	MouseMovement GetMovement();
-	
+
 	virtual void InternalSetStateFromInput();
-	
+
 public:
 	static constexpr uint8_t ExpDevicePort = 4;
 	static constexpr uint8_t ConsoleInputPort = 5;
@@ -73,16 +74,17 @@ public:
 	void InvertBit(uint8_t bit);
 	void SetBitValue(uint8_t bit, bool set);
 	
-	void SetTextState(string state);
-	string GetTextState();
+	virtual void SetTextState(string state);
+	virtual string GetTextState();
 
 	void SetStateFromInput();
 	virtual void OnAfterSetState() { }
 	
-	void SetRawState(ControlDeviceState state);
-	ControlDeviceState GetRawState();
+	virtual void SetRawState(ControlDeviceState state);
+	virtual ControlDeviceState GetRawState();
 
-	virtual void DrawController(InputHud& hud) {}
+	virtual void InternalDrawController(InputHud& hud) {}
+	virtual void DrawController(InputHud& hud);
 
 	virtual uint8_t ReadRam(uint16_t addr) = 0;
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;

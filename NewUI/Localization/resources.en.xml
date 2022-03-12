@@ -68,36 +68,39 @@
 		<Form ID="NesInputConfigView" Title="Input Settings">
 			<Control ID="grpControllers">Controllers</Control>
 			<Control ID="grpHardware">Hardware buttons</Control>
+
+			<Control ID="lblFourScoreConfig">Four Score Configuration</Control>
+			<Control ID="lblFourPlayerAdapterConfig">4-Player Adapter Configuration</Control>
+			<Control ID="lblTwoPlayerAdapterConfig">2-Player Adapter Configuration</Control>
 			
 			<Control ID="btnSetup">Setup</Control>
-			<Control ID="lblPlayer1">Player 1:</Control>
-			<Control ID="lblPlayer2">Player 2:</Control>
-			<Control ID="lblPlayer3">Player 3:</Control>
-			<Control ID="lblPlayer4">Player 4:</Control>
+			<Control ID="lblPlayer1">Port 1:</Control>
+			<Control ID="lblPlayer2">Port 2:</Control>
+			
+			<Control ID="lblPort1A">Port 1:</Control>
+			<Control ID="lblPort1B">Port 2:</Control>
+			<Control ID="lblPort1C">Port 3:</Control>
+			<Control ID="lblPort1D">Port 4:</Control>
 
-			<Control ID="lblNesType">Console Type:</Control>
+			<Control ID="lblExpPortA">Port 1:</Control>
+			<Control ID="lblExpPortB">Port 2:</Control>
+			<Control ID="lblExpPortC">Port 3:</Control>
+			<Control ID="lblExpPortD">Port 4:</Control>
+
 			<Control ID="lblExpansionDevice">Expansion device:</Control>
-			<Control ID="chkFourScore">Use Four Score accessory</Control>
-			<Control ID="chkAutoConfigureInput">Automatically configure controllers when loading a game</Control>
 		</Form>
 		<Form ID="SnesInputConfigView" Title="Input Settings">
-			<Control ID="tpgControllers">Controllers</Control>
-			<Control ID="btnSetupExp">Setup</Control>
-			<Control ID="btnSetupCartridge">Setup</Control>
-			<Control ID="lblCartridge">Cartridge:</Control>
-			<Control ID="lblPlayer1">Player 1:</Control>
-			<Control ID="lblPlayer2">Player 2:</Control>
-			<Control ID="lblMultitap1">Player 2:</Control>
-			<Control ID="lblMultitap2">Player 3:</Control>
-			<Control ID="lblMultitap3">Player 4:</Control>
-			<Control ID="lblMultitap4">Player 5:</Control>
-			<Control ID="btnSetupP1">Setup</Control>
-			<Control ID="btnSetupP2">Setup</Control>
+			<Control ID="lblPort1">Port 1:</Control>
+			<Control ID="lblPort2">Port 2:</Control>
+			<Control ID="lblMultitap1A">Port 1:</Control>
+			<Control ID="lblMultitap1B">Port 2:</Control>
+			<Control ID="lblMultitap1C">Port 3:</Control>
+			<Control ID="lblMultitap1D">Port 4:</Control>
+			<Control ID="lblMultitap2A">Port 1:</Control>
+			<Control ID="lblMultitap2B">Port 2:</Control>
+			<Control ID="lblMultitap2C">Port 3:</Control>
+			<Control ID="lblMultitap2D">Port 4:</Control>
 			<Control ID="grpMultitap">Multitap Configuration</Control>
-			<Control ID="btnSetupMultitap1">Setup</Control>
-			<Control ID="btnSetupMultitap2">Setup</Control>
-			<Control ID="btnSetupMultitap3">Setup</Control>
-			<Control ID="btnSetupMultitap4">Setup</Control>
 			<Control ID="lblKeyBinding">Warning: Your current configuration contains conflicting key bindings - some physical buttons on your keyboard or gamepad are mapped to multiple buttons on the NES controller. If this is not intentional, please review and correct your key bindings.</Control>
 		</Form>
 		<Form ID="InputConfigView">
@@ -112,15 +115,21 @@
 
 			<Control ID="tpgDisplay">Display</Control>
 			<Control ID="lblDisplayInputPorts">Display ports: </Control>
-			<Control ID="chkDisplayPort1">Port 1</Control>
-			<Control ID="chkDisplayPort2">Port 2</Control>
-			<Control ID="chkDisplayPort3">Port 3</Control>
-			<Control ID="chkDisplayPort4">Port 4</Control>
-			<Control ID="chkDisplayPort5">Port 5</Control>
+			<Control ID="chkDisplayPort1">Player 1</Control>
+			<Control ID="chkDisplayPort2">Player 2</Control>
+			<Control ID="chkDisplayPort3">Player 3</Control>
+			<Control ID="chkDisplayPort4">Player 4</Control>
+			<Control ID="chkDisplayPort5">Player 5</Control>
+			<Control ID="chkDisplayPort6">Player 6</Control>
+			<Control ID="chkDisplayPort7">Player 7</Control>
+			<Control ID="chkDisplayPort8">Player 8</Control>
 			<Control ID="lblDisplayPosition">Display position:</Control>
 			<Control ID="chkDisplayInputHorizontally">Horizontal display</Control>
 
 			<Control ID="chkHideMousePointerForZapper">Hide mouse pointer when using zapper</Control>
+		</Form>
+		<Form ID="InputComboBox">
+			<Control ID="btnSetup">Setup</Control>
 		</Form>
 		<Form ID="OverscanConfig">
 			<Control ID="lblLeft">Left</Control>
@@ -1319,7 +1328,8 @@ x == [$150] || y == [10]
 
 			<Value ID="FourScore">Four Score (NES)</Value>
 			<Value ID="FamicomZapper">Zapper (Famicom)</Value>
-			<Value ID="FourPlayerAdapter">Four Player Adapter (Famicom)</Value>
+			<Value ID="TwoPlayerAdapter">2-Player Adapter (Famicom)</Value>
+			<Value ID="FourPlayerAdapter">4-Player Adapter (Famicom)</Value>
 			<Value ID="FamicomArkanoidController">Arkanoid Controller (Famicom)</Value>
 			<Value ID="OekaKidsTablet">Oeka Kids Tablet</Value>
 			<Value ID="FamilyTrainerMat">Family Trainer</Value>

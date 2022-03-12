@@ -16,6 +16,7 @@ private:
 	int _yOffset = 0;
 	int _outlineWidth = 0;
 	int _outlineHeight = 0;
+	int _controllerIndex = 0;
 
 	void DrawController(ControllerData& data);
 
@@ -26,6 +27,8 @@ public:
 	void DrawButton(int x, int y, int width, int height, bool pressed);
 	void DrawNumber(int number, int x, int y);
 	void EndDrawController();
+
+	int GetControllerIndex() { return _controllerIndex; }
 
 	void DrawControllers(FrameInfo size, vector<ControllerData> controllerData);
 };

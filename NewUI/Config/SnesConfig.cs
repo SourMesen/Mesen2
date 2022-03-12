@@ -12,7 +12,18 @@ namespace Mesen.Config
 	public class SnesConfig : BaseConfig<SnesConfig>
 	{
 		//Input
-		[Reactive] public List<ControllerConfig> Controllers { get; set; } = new List<ControllerConfig> { new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig(), new ControllerConfig() };
+		[Reactive] public ControllerConfig Port1 { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port2 { get; set; } = new ControllerConfig();
+		
+		[Reactive] public ControllerConfig Port1A { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port1B { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port1C { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port1D { get; set; } = new ControllerConfig();
+		
+		[Reactive] public ControllerConfig Port2A { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port2B { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port2C { get; set; } = new ControllerConfig();
+		[Reactive] public ControllerConfig Port2D { get; set; } = new ControllerConfig();
 
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
@@ -50,23 +61,18 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
-			while(Controllers.Count < 5) {
-				Controllers.Add(new ControllerConfig());
-			}
-
-			//Force SNES controllers for multitap
-			Controllers[2].Type = ControllerType.SnesController;
-			Controllers[3].Type = ControllerType.SnesController;
-			Controllers[4].Type = ControllerType.SnesController;
-
 			ConfigApi.SetSnesConfig(new InteropSnesConfig() {
-				Controllers = new InteropControllerConfig[5] {
-					this.Controllers[0].ToInterop(),
-					this.Controllers[1].ToInterop(),
-					this.Controllers[2].ToInterop(),
-					this.Controllers[3].ToInterop(),
-					this.Controllers[4].ToInterop()
-				},
+				Port1 = Port1.ToInterop(),
+				Port1A = Port1A.ToInterop(),
+				Port1B = Port1B.ToInterop(),
+				Port1C = Port1C.ToInterop(),
+				Port1D = Port1D.ToInterop(),
+
+				Port2 = Port2.ToInterop(),
+				Port2A = Port2A.ToInterop(),
+				Port2B = Port2B.ToInterop(),
+				Port2C = Port2C.ToInterop(),
+				Port2D = Port2D.ToInterop(),
 
 				Region = this.Region,
 
@@ -119,16 +125,16 @@ namespace Mesen.Config
 				mappings.Add(mapping);
 			}
 
-			Controllers[0].Type = ControllerType.SnesController;
-			Controllers[0].TurboSpeed = 2;
+			Port1.Type = ControllerType.SnesController;
+			Port1.TurboSpeed = 2;
 			if(mappings.Count > 0) {
-				Controllers[0].Mapping1 = mappings[0];
+				Port1.Mapping1 = mappings[0];
 				if(mappings.Count > 1) {
-					Controllers[0].Mapping2 = mappings[1];
+					Port1.Mapping2 = mappings[1];
 					if(mappings.Count > 2) {
-						Controllers[0].Mapping3 = mappings[2];
+						Port1.Mapping3 = mappings[2];
 						if(mappings.Count > 3) {
-							Controllers[0].Mapping4 = mappings[3];
+							Port1.Mapping4 = mappings[3];
 						}
 					}
 				}
@@ -139,8 +145,18 @@ namespace Mesen.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropSnesConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-		public InteropControllerConfig[] Controllers;
+		public InteropControllerConfig Port1;
+		public InteropControllerConfig Port2;
+		
+		public InteropControllerConfig Port1A;
+		public InteropControllerConfig Port1B;
+		public InteropControllerConfig Port1C;
+		public InteropControllerConfig Port1D;
+		
+		public InteropControllerConfig Port2A;
+		public InteropControllerConfig Port2B;
+		public InteropControllerConfig Port2C;
+		public InteropControllerConfig Port2D;
 
 		public ConsoleRegion Region;
 

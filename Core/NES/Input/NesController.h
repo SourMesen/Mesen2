@@ -13,7 +13,7 @@ private:
 	uint32_t _turboSpeed = 0;
 
 protected:
-	uint32_t _stateBuffer = 0;
+	uint8_t _stateBuffer = 0;
 
 	void Serialize(Serializer& s) override
 	{
@@ -69,16 +69,7 @@ protected:
 
 	void RefreshStateBuffer() override
 	{
-		if(_emu->GetControlManager()->HasControlDevice(ControllerType::FourScore)) {
-			if(_port >= 2) {
-				_stateBuffer = ToByte() << 8;
-			} else {
-				//Add some 0 bit padding to allow P3/P4 controller bits + signature bits
-				_stateBuffer = (_port == 0 ? 0xFF000000 : 0xFF000000) | ToByte();
-			}
-		} else {
-			_stateBuffer = 0xFFFFFF00 | ToByte();
-		}
+		_stateBuffer = ToByte();
 	}
 
 public:
@@ -108,21 +99,17 @@ public:
 	{
 		uint8_t output = 0;
 
-		if((addr == 0x4016 && (_port & 0x01) == 0) || (addr == 0x4017 && (_port & 0x01) == 1)) {
+		if(IsCurrentPort(addr)) {
 			StrobeProcessRead();
 			
 			output = _stateBuffer & 0x01;
-			if(_port >= 2 && GetControllerType() == ControllerType::FamicomController) {
-				//Famicom outputs P3 & P4 on bit 1
-				output <<= 1;
-			}
 			_stateBuffer >>= 1;
 
 			//"All subsequent reads will return D=1 on an authentic controller but may return D=0 on third party controllers."
-			_stateBuffer |= 0x80000000;
+			_stateBuffer |= 0x80;
 		}
 
-		if(addr == 0x4016 && IsPressed(NesController::Buttons::Microphone)) {
+		if(addr == 0x4016 && _type == ControllerType::FamicomController && IsPressed(NesController::Buttons::Microphone)) {
 			output |= 0x04;
 		}
 
@@ -134,7 +121,7 @@ public:
 		StrobeProcessWrite(value);
 	}
 
-	void DrawController(InputHud& hud)
+	void InternalDrawController(InputHud& hud) override
 	{
 		hud.DrawOutline(35, 14);
 
@@ -150,6 +137,6 @@ public:
 		hud.DrawButton(13, 9, 4, 2, IsPressed(Buttons::Select));
 		hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Start));
 
-		hud.DrawNumber(_port + 1, 16, 2);
+		hud.DrawNumber(hud.GetControllerIndex() + 1, 16, 2);
 	}
 };

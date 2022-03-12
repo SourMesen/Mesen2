@@ -29,15 +29,6 @@ VsControlManager::~VsControlManager()
 	UnregisterInputProvider(this);
 }
 
-ControllerType VsControlManager::GetControllerType(uint8_t port)
-{
-	ControllerType type = NesControlManager::GetControllerType(port);
-	if(type == ControllerType::NesZapper) {
-		type = ControllerType::VsZapper;
-	}
-	return type;
-}
-
 void VsControlManager::Reset(bool softReset)
 {
 	NesControlManager::Reset(softReset);

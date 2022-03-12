@@ -39,13 +39,11 @@ namespace Mesen.Windows
 		{
 			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
 			ControllerConfig cfg = Model.Config;
-			if(cfg != null) {
-				switch(index) {
-					case 0: cfg.Mapping1.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping1.RefreshCustomKeys(); break;
-					case 1: cfg.Mapping2.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping2.RefreshCustomKeys(); break;
-					case 2: cfg.Mapping3.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping3.RefreshCustomKeys(); break;
-					case 3: cfg.Mapping4.SetDefaultKeys(cfg.Type, preset); Model.KeyMapping4.RefreshCustomKeys(); break;
-				}
+			switch(index) {
+				case 0: cfg.Mapping1.SetDefaultKeys(Model.Type, preset); Model.KeyMapping1.RefreshCustomKeys(); break;
+				case 1: cfg.Mapping2.SetDefaultKeys(Model.Type, preset); Model.KeyMapping2.RefreshCustomKeys(); break;
+				case 2: cfg.Mapping3.SetDefaultKeys(Model.Type, preset); Model.KeyMapping3.RefreshCustomKeys(); break;
+				case 3: cfg.Mapping4.SetDefaultKeys(Model.Type, preset); Model.KeyMapping4.RefreshCustomKeys(); break;
 			}
 		}
 
@@ -53,13 +51,11 @@ namespace Mesen.Windows
 		{
 			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
 			ControllerConfig cfg = Model.Config;
-			if(cfg != null) {
-				switch(index) {
-					case 0: cfg.Mapping1.ClearKeys(cfg.Type); Model.KeyMapping1.RefreshCustomKeys(); break;
-					case 1: cfg.Mapping2.ClearKeys(cfg.Type); Model.KeyMapping2.RefreshCustomKeys(); break;
-					case 2: cfg.Mapping3.ClearKeys(cfg.Type); Model.KeyMapping3.RefreshCustomKeys(); break;
-					case 3: cfg.Mapping4.ClearKeys(cfg.Type); Model.KeyMapping4.RefreshCustomKeys(); break;
-				}
+			switch(index) {
+				case 0: cfg.Mapping1.ClearKeys(Model.Type); Model.KeyMapping1.RefreshCustomKeys(); break;
+				case 1: cfg.Mapping2.ClearKeys(Model.Type); Model.KeyMapping2.RefreshCustomKeys(); break;
+				case 2: cfg.Mapping3.ClearKeys(Model.Type); Model.KeyMapping3.RefreshCustomKeys(); break;
+				case 3: cfg.Mapping4.ClearKeys(Model.Type); Model.KeyMapping4.RefreshCustomKeys(); break;
 			}
 		}
 

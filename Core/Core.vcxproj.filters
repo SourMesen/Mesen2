@@ -820,6 +820,8 @@
     <ClInclude Include="Gameboy\Debugger\DummyGbCpu.h" />
     <ClInclude Include="Debugger\DebuggerFeatures.h" />
     <ClInclude Include="Shared\RenderedFrame.h" />
+    <ClInclude Include="Shared\ControllerHub.h" />
+    <ClInclude Include="NES\Input\TwoPlayerAdapter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\SnesCpu.cpp">

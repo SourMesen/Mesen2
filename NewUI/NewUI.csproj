@@ -183,6 +183,9 @@
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
       <DependentUpon>ButtonWithIcon.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\InputComboBox.axaml.cs">
+      <DependentUpon>InputComboBox.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\IconButton.axaml.cs">
       <DependentUpon>IconButton.axaml</DependentUpon>
     </Compile>

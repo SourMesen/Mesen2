@@ -98,7 +98,7 @@ void SnesController::WriteRam(uint16_t addr, uint8_t value)
 	StrobeProcessWrite(value);
 }
 
-void SnesController::DrawController(InputHud& hud)
+void SnesController::InternalDrawController(InputHud& hud)
 {
 	hud.DrawOutline(35, 14);
 
@@ -119,5 +119,5 @@ void SnesController::DrawController(InputHud& hud)
 	hud.DrawButton(13, 9, 4, 2, IsPressed(Buttons::Select));
 	hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Start));
 
-	hud.DrawNumber(_port + 1, 16, 2);
+	hud.DrawNumber(hud.GetControllerIndex() + 1, 16, 2);
 }

@@ -13,7 +13,20 @@ namespace Mesen.Config
 	public class NesConfig : BaseConfig<NesConfig>
 	{
 		//Input
-		[Reactive] public List<NesControllerConfig> Controllers { get; set; } = new List<NesControllerConfig> { new (), new (), new (), new (), new () };
+		[Reactive] public NesControllerConfig Port1 { get; set; } = new();
+		[Reactive] public NesControllerConfig Port2 { get; set; } = new();
+		[Reactive] public NesControllerConfig ExpPort { get; set; } = new();
+
+		[Reactive] public NesControllerConfig Port1A { get; set; } = new();
+		[Reactive] public NesControllerConfig Port1B { get; set; } = new();
+		[Reactive] public NesControllerConfig Port1C { get; set; } = new();
+		[Reactive] public NesControllerConfig Port1D { get; set; } = new();
+
+		[Reactive] public NesControllerConfig ExpPortA { get; set; } = new();
+		[Reactive] public NesControllerConfig ExpPortB { get; set; } = new();
+		[Reactive] public NesControllerConfig ExpPortC { get; set; } = new();
+		[Reactive] public NesControllerConfig ExpPortD { get; set; } = new();
+
 		[Reactive] public UInt32 ZapperDetectionRadius { get; set; } = 0;
 
 		//General
@@ -111,13 +124,20 @@ namespace Mesen.Config
 			bool isFullPalette = UserPalette.Length == 512;
 
 			ConfigApi.SetNesConfig(new InteropNesConfig() {
-				Controllers = new InteropControllerConfig[5] {
-					this.Controllers[0].ToInterop(),
-					this.Controllers[1].ToInterop(),
-					this.Controllers[2].ToInterop(),
-					this.Controllers[3].ToInterop(),
-					this.Controllers[4].ToInterop()
-				},
+				Port1 = Port1.ToInterop(),
+				Port1A = Port1A.ToInterop(),
+				Port1B = Port1B.ToInterop(),
+				Port1C = Port1C.ToInterop(),
+				Port1D = Port1D.ToInterop(),
+
+				Port2 = Port2.ToInterop(),
+				
+				ExpPort = ExpPort.ToInterop(),
+				ExpPortA = ExpPortA.ToInterop(),
+				ExpPortB = ExpPortB.ToInterop(),
+				ExpPortC = ExpPortC.ToInterop(),
+				ExpPortD = ExpPortD.ToInterop(),
+
 				ZapperDetectionRadius = ZapperDetectionRadius,
 
 				Region = Region,
@@ -230,16 +250,16 @@ namespace Mesen.Config
 				mappings.Add(mapping);
 			}
 
-			Controllers[0].Type = ControllerType.NesController;
-			Controllers[0].TurboSpeed = 2;
+			Port1.Type = ControllerType.NesController;
+			Port1.TurboSpeed = 2;
 			if(mappings.Count > 0) {
-				Controllers[0].Mapping1 = mappings[0];
+				Port1.Mapping1 = mappings[0];
 				if(mappings.Count > 1) {
-					Controllers[0].Mapping2 = mappings[1];
+					Port1.Mapping2 = mappings[1];
 					if(mappings.Count > 2) {
-						Controllers[0].Mapping3 = mappings[2];
+						Port1.Mapping3 = mappings[2];
 						if(mappings.Count > 3) {
-							Controllers[0].Mapping4 = mappings[3];
+							Port1.Mapping4 = mappings[3];
 						}
 					}
 				}
@@ -250,7 +270,20 @@ namespace Mesen.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropNesConfig
 	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)] public InteropControllerConfig[] Controllers;
+		public InteropControllerConfig Port1;
+		public InteropControllerConfig Port2;
+		public InteropControllerConfig ExpPort;
+
+		public InteropControllerConfig Port1A;
+		public InteropControllerConfig Port1B;
+		public InteropControllerConfig Port1C;
+		public InteropControllerConfig Port1D;
+
+		public InteropControllerConfig ExpPortA;
+		public InteropControllerConfig ExpPortB;
+		public InteropControllerConfig ExpPortC;
+		public InteropControllerConfig ExpPortD;
+
 		public UInt32 ZapperDetectionRadius;
 
 		public ConsoleRegion Region;

@@ -12,7 +12,8 @@ namespace Mesen.ViewModels
 {
 	public class ControllerConfigViewModel : ViewModelBase
 	{
-		[Reactive] public ControllerConfig Config { get; set; }
+		public ControllerConfig Config { get; }
+		public ControllerType Type { get; }
 
 		[Reactive] public KeyMappingViewModel KeyMapping1 { get; set; }
 		[Reactive] public KeyMappingViewModel KeyMapping2 { get; set; }
@@ -23,19 +24,20 @@ namespace Mesen.ViewModels
 		[Reactive] public bool ShowTurbo { get; set; } = false;
 
 		[Obsolete("For designer only")]
-		public ControllerConfigViewModel() : this(new ControllerConfig()) { }
+		public ControllerConfigViewModel() : this(ControllerType.SnesController, new ControllerConfig()) { }
 
-		public ControllerConfigViewModel(ControllerConfig config)
+		public ControllerConfigViewModel(ControllerType type, ControllerConfig config)
 		{
 			Config = config;
+			Type = type;
 
-			KeyMapping1 = new KeyMappingViewModel(config.Type, config.Mapping1);
-			KeyMapping2 = new KeyMappingViewModel(config.Type, config.Mapping2);
-			KeyMapping3 = new KeyMappingViewModel(config.Type, config.Mapping3);
-			KeyMapping4 = new KeyMappingViewModel(config.Type, config.Mapping4);
+			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1);
+			KeyMapping2 = new KeyMappingViewModel(type, config.Mapping2);
+			KeyMapping3 = new KeyMappingViewModel(type, config.Mapping3);
+			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4);
 
-			ShowPresets = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController || config.Type == ControllerType.GameboyController;
-			ShowTurbo = config.Type == ControllerType.SnesController || config.Type == ControllerType.NesController || config.Type == ControllerType.GameboyController;
+			ShowPresets = type.HasPresets();
+			ShowTurbo = type.HasTurbo();
 		}
 	}
 
