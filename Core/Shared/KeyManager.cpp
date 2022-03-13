@@ -4,12 +4,14 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
 #include "Shared/Video/VideoDecoder.h"
+#include "Shared/Video/VideoRenderer.h"
 
 IKeyManager* KeyManager::_keyManager = nullptr;
 MousePosition KeyManager::_mousePosition = { 0, 0 };
-atomic<int16_t> KeyManager::_xMouseMovement;
-atomic<int16_t> KeyManager::_yMouseMovement;
+double KeyManager::_xMouseMovement;
+double KeyManager::_yMouseMovement;
 EmuSettings* KeyManager::_settings = nullptr;
+SimpleLock KeyManager::_lock;
 
 void KeyManager::RegisterKeyManager(IKeyManager* keyManager)
 {
@@ -79,18 +81,25 @@ void KeyManager::UpdateDevices()
 
 void KeyManager::SetMouseMovement(int16_t x, int16_t y)
 {
+	auto lock = _lock.AcquireSafe();
 	_xMouseMovement += x;
 	_yMouseMovement += y;
 }
 
-MouseMovement KeyManager::GetMouseMovement(double mouseSensitivity)
+MouseMovement KeyManager::GetMouseMovement(Emulator* emu, double mouseSensitivity)
 {
-	double factor = 1 / mouseSensitivity;
+	FrameInfo rendererSize = emu->GetVideoRenderer()->GetRendererSize();
+	FrameInfo frameSize = emu->GetVideoDecoder()->GetFrameInfo();
+	double scale = (double)rendererSize.Width / frameSize.Width;
+
+	double factor = scale / mouseSensitivity;
 	MouseMovement mov = {};
+
+	auto lock = _lock.AcquireSafe();
 	mov.dx = (int16_t)(_xMouseMovement / factor);
 	mov.dy = (int16_t)(_yMouseMovement / factor);
-	_xMouseMovement -= (int16_t)(mov.dx * factor);
-	_yMouseMovement -= (int16_t)(mov.dy * factor);
+	_xMouseMovement -= (mov.dx * factor);
+	_yMouseMovement -= (mov.dy * factor);
 
 	return mov;
 }
@@ -102,7 +111,7 @@ void KeyManager::SetMousePosition(Emulator* emu, double x, double y)
 		_mousePosition.Y = -1;
 	} else {
 		OverscanDimensions overscan = emu->GetSettings()->GetOverscan();
-		FrameInfo frame = emu->GetVideoDecoder()->GetFrameInfo();
+		FrameInfo frame = emu->GetVideoDecoder()->GetBaseFrameInfo(true);
 		_mousePosition.X = (int32_t)(x*frame.Width + overscan.Left);
 		_mousePosition.Y = (int32_t)(y*frame.Height + overscan.Top);
 	}

@@ -23,7 +23,7 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-		SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
+		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
 	void Serialize(Serializer& s) override

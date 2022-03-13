@@ -82,6 +82,15 @@ void InputHud::DrawNumber(int number, int x, int y)
 	}
 }
 
+void InputHud::DrawMousePosition(MousePosition pos)
+{
+	if(pos.X >= 0 && pos.Y >= 0) {
+		OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
+		_hud->DrawRectangle(pos.X - 1 - overscan.Left, pos.Y - 1 - overscan.Top, 3, 3, 0x00FF0000, true, 1);
+		_hud->DrawRectangle(pos.X - 1 - overscan.Left, pos.Y - 1 - overscan.Top, 3, 3, 0x00808080, false, 1);
+	}
+}
+
 void InputHud::DrawOutline(int width, int height)
 {
 	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
@@ -114,11 +123,6 @@ void InputHud::DrawOutline(int width, int height)
 
 void InputHud::DrawController(ControllerData& data)
 {
-	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
-	if(!cfg.DisplayInputPort[data.Port]) {
-		return;
-	}
-
 	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->CreateControllerDevice(data.Type, data.Port);
 	if(!controller) {
 		return;

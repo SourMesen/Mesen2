@@ -118,4 +118,15 @@ public:
 	{
 		StrobeProcessWrite(value);
 	}
+
+	void InternalDrawController(InputHud& hud) override
+	{
+		hud.DrawOutline(12, 14);
+		hud.DrawButton(1, 1, 3, 5, IsPressed(Buttons::Fire));
+		hud.DrawButton(5, 1, 2, 4, IsPressed(Buttons::Turbo));
+		hud.DrawButton(8, 1, 3, 5, IsPressed(Buttons::Cursor));
+		hud.DrawNumber(hud.GetControllerIndex() + 1, 4, 7);
+
+		hud.DrawMousePosition(GetCoordinates());
+	}
 };

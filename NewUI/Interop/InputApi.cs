@@ -1,4 +1,5 @@
-﻿using Mesen.Utilities;
+﻿using Mesen.Config;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -18,6 +19,8 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void UpdateInputDevices();
 
 		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
+		
+		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key);
 		public static string GetKeyName(UInt32 key) { return Utf8Utilities.PtrToStringUtf8(InputApi.GetKeyNameWrapper(key)); }

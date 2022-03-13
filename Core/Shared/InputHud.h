@@ -1,7 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "SettingTypes.h"
-#include "ControlDeviceState.h"
+#include "Shared/SettingTypes.h"
+#include "Shared/ControlDeviceState.h"
+#include "Shared/Interfaces/IKeyManager.h"
 
 class Emulator;
 class DebugHud;
@@ -23,6 +24,7 @@ private:
 public:
 	InputHud(Emulator *emu, DebugHud* hud);
 
+	void DrawMousePosition(MousePosition pos);
 	void DrawOutline(int width, int height);
 	void DrawButton(int x, int y, int width, int height, bool pressed);
 	void DrawNumber(int number, int x, int y);

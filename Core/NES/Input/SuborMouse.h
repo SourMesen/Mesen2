@@ -29,7 +29,7 @@ protected:
 	{
 		SetPressedState(Buttons::Left, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 		SetPressedState(Buttons::Right, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
-		SetMovement(KeyManager::GetMouseMovement(_emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
+		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
 public:

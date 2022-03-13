@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/Interfaces/IKeyManager.h"
+#include "Utilities/SimpleLock.h"
 
 class Emulator;
 class EmuSettings;
@@ -10,9 +11,10 @@ class KeyManager
 private:
 	static IKeyManager* _keyManager;
 	static MousePosition _mousePosition;
-	static atomic<int16_t> _xMouseMovement;
-	static atomic<int16_t> _yMouseMovement;
+	static double _xMouseMovement;
+	static double _yMouseMovement;
 	static EmuSettings* _settings;
+	static SimpleLock _lock;
 
 public:
 	static void RegisterKeyManager(IKeyManager* keyManager);
@@ -28,7 +30,7 @@ public:
 	static void UpdateDevices();
 	
 	static void SetMouseMovement(int16_t x, int16_t y);
-	static MouseMovement GetMouseMovement(double mouseSensitivity);
+	static MouseMovement GetMouseMovement(Emulator* emu, double mouseSensitivity);
 	
 	static void SetMousePosition(Emulator* emu, double x, double y);
 	static MousePosition GetMousePosition();

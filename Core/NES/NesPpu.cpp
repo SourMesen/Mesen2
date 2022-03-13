@@ -1403,13 +1403,11 @@ template<class T> uint8_t* NesPpu<T>::GetSpriteRam()
 
 template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)
 {
-	return 0;
-
-	//TODO
 	//Used by Zapper, gives a rough approximation of the brightness level of the specific pixel
-	/*uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
-	uint32_t argbColor = _settings->GetRgbPalette()[pixelData & 0x3F];
-	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);*/
+	uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
+	NesConfig& cfg = _settings->GetNesConfig();
+	uint32_t argbColor = cfg.UserPalette[pixelData & 0x3F];
+	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);
 }
 
 template<class T> void NesPpu<T>::Serialize(Serializer& s)

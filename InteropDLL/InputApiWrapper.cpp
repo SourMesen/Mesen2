@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Core/Shared/Emulator.h"
+#include "Core/Shared/BaseControlManager.h"
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
 
@@ -70,5 +71,10 @@ extern "C"
 		} else {
 			return 0;
 		}
+	}
+
+	DllExport bool __stdcall HasControlDevice(ControllerType type)
+	{
+		return _emu->GetControlManager()->HasControlDevice(type);
 	}
 }

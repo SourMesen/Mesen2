@@ -141,8 +141,10 @@ void BaseControlManager::UpdateInputState()
 
 bool BaseControlManager::HasControlDevice(ControllerType type)
 {
+	auto lock = _deviceLock.AcquireSafe();
+
 	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
-		if(device->GetControllerType() == type) {
+		if(device->HasControllerType(type)) {
 			return true;
 		}
 	}

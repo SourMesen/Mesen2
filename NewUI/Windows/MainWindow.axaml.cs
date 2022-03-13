@@ -29,7 +29,7 @@ namespace Mesen.Windows
 		private ShortcutHandler _shortcutHandler;
 
 		private FrameInfo _baseScreenSize;
-
+		private MouseManager _mouseManager;
 		public NativeRenderer _renderer;
 		public MainMenuView _mainMenu;
 
@@ -60,7 +60,7 @@ namespace Mesen.Windows
 
 			_renderer = this.FindControl<NativeRenderer>("Renderer");
 			_mainMenu = this.FindControl<MainMenuView>("MainMenu");
-
+			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
 #if DEBUG

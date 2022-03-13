@@ -135,4 +135,19 @@ public:
 			}
 		}
 	}
+
+	bool HasControllerType(ControllerType type) override
+	{
+		if(_type == type) {
+			return true;
+		}
+
+		for(int i = 0; i < HubPortCount; i++) {
+			if(_ports[i] && _ports[i]->HasControllerType(type)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 };
