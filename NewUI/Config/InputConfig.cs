@@ -75,7 +75,7 @@ namespace Mesen.Config
 		[Reactive] public UInt32 TurboSelect { get; set; }
 		[Reactive] public UInt32 TurboStart { get; set; }
 
-		public virtual InteropKeyMapping ToInterop(ControllerType type)
+		public virtual InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
 		{
 			return new InteropKeyMapping() {
 				A = this.A,
@@ -182,10 +182,10 @@ namespace Mesen.Config
 			return new InteropControllerConfig() {
 				Type = this.Type,
 				Keys = new InteropKeyMappingSet() {
-					Mapping1 = this.Mapping1.ToInterop(Type),
-					Mapping2 = this.Mapping2.ToInterop(Type),
-					Mapping3 = this.Mapping3.ToInterop(Type),
-					Mapping4 = this.Mapping4.ToInterop(Type),
+					Mapping1 = this.Mapping1.ToInterop(Type, 0),
+					Mapping2 = this.Mapping2.ToInterop(Type, 1),
+					Mapping3 = this.Mapping3.ToInterop(Type, 2),
+					Mapping4 = this.Mapping4.ToInterop(Type, 3),
 					TurboSpeed = this.TurboSpeed
 				}
 			};

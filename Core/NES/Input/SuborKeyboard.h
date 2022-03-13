@@ -56,7 +56,7 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		//TODO
-		bool allowInput = false; // _emu->GetSettings()->IsKeyboardMode();
+		bool allowInput = true; // _emu->GetSettings()->IsKeyboardMode();
 		if(allowInput) {
 			for(KeyMapping& keyMapping : _keyMappings) {
 				for(int i = 0; i < 99; i++) {

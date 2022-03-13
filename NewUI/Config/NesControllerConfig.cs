@@ -57,12 +57,15 @@ namespace Mesen.Config
 			};
 		}
 
-		public override InteropKeyMapping ToInterop(ControllerType type)
+		public override InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
 		{
-			InteropKeyMapping mappings = base.ToInterop(type);
+			InteropKeyMapping mappings = base.ToInterop(type, mappingIndex);
 			mappings.Microphone = Microphone;
 
 			UInt32[]? customKeys = GetCustomButtons(type);
+			if(customKeys == null && mappingIndex == 0) {
+				customKeys = GetDefaultCustomKeys(type);
+			}
 
 			if(customKeys != null) {
 				mappings.CustomKeys = new UInt32[100];
@@ -158,11 +161,11 @@ namespace Mesen.Config
 			}
 		}
 
-		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)
+		private UInt32[]? GetDefaultCustomKeys(ControllerType type)
 		{
 			switch(type) {
 				case ControllerType.FamilyBasicKeyboard:
-					FamilyBasicKeyboardButtons = new UInt32[72] {
+					return new UInt32[72] {
 						InputApi.GetKeyCode("A"), InputApi.GetKeyCode("B"), InputApi.GetKeyCode("C"), InputApi.GetKeyCode("D"),
 						InputApi.GetKeyCode("E"), InputApi.GetKeyCode("F"), InputApi.GetKeyCode("G"), InputApi.GetKeyCode("H"),
 						InputApi.GetKeyCode("I"), InputApi.GetKeyCode("J"), InputApi.GetKeyCode("K"), InputApi.GetKeyCode("L"),
@@ -183,13 +186,12 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("\\"), InputApi.GetKeyCode("Delete"), InputApi.GetKeyCode("F9"), InputApi.GetKeyCode("Left Alt"),
 						InputApi.GetKeyCode("Home"), InputApi.GetKeyCode("End")
 					};
-					break;
 
 				case ControllerType.PowerPadSideA:
 				case ControllerType.PowerPadSideB:
 				case ControllerType.FamilyTrainerMatSideA:
 				case ControllerType.FamilyTrainerMatSideB:
-					PowerPadButtons = new UInt32[12] {
+					return new UInt32[12] {
 						InputApi.GetKeyCode("R"),
 						InputApi.GetKeyCode("T"),
 						InputApi.GetKeyCode("Y"),
@@ -203,10 +205,9 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("N"),
 						InputApi.GetKeyCode("M"),
 					};
-					break;
 
 				case ControllerType.PartyTap:
-					PartyTapButtons = new UInt32[6] {
+					return new UInt32[6] {
 						InputApi.GetKeyCode("1"),
 						InputApi.GetKeyCode("2"),
 						InputApi.GetKeyCode("3"),
@@ -214,17 +215,15 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("5"),
 						InputApi.GetKeyCode("6"),
 					};
-					break;
 
 				case ControllerType.Pachinko:
-					PachinkoButtons = new UInt32[2] {
+					return new UInt32[2] {
 						InputApi.GetKeyCode("R"),
 						InputApi.GetKeyCode("F")
 					};
-					break;
 
 				case ControllerType.ExcitingBoxing:
-					ExcitingBoxingButtons = new UInt32[8] {
+					return new UInt32[8] {
 						InputApi.GetKeyCode("Numpad 7"),
 						InputApi.GetKeyCode("Numpad 6"),
 						InputApi.GetKeyCode("Numpad 4"),
@@ -234,10 +233,9 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("Numpad 3"),
 						InputApi.GetKeyCode("Numpad 8"),
 					};
-					break;
 
 				case ControllerType.JissenMahjong:
-					JissenMahjongButtons = new UInt32[21] {
+					return new UInt32[21] {
 						InputApi.GetKeyCode("A"),
 						InputApi.GetKeyCode("B"),
 						InputApi.GetKeyCode("C"),
@@ -260,10 +258,9 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("4"),
 						InputApi.GetKeyCode("5"),
 					};
-					break;
 
 				case ControllerType.SuborKeyboard:
-					SuborKeyboardButtons = new UInt32[99] {
+					return new UInt32[99] {
 						InputApi.GetKeyCode("A"), InputApi.GetKeyCode("B"), InputApi.GetKeyCode("C"), InputApi.GetKeyCode("D"),
 						InputApi.GetKeyCode("E"), InputApi.GetKeyCode("F"), InputApi.GetKeyCode("G"), InputApi.GetKeyCode("H"),
 						InputApi.GetKeyCode("I"), InputApi.GetKeyCode("J"), InputApi.GetKeyCode("K"), InputApi.GetKeyCode("L"),
@@ -308,10 +305,9 @@ namespace Mesen.Config
 
 						0,0,0
 					};
-					break;
 
 				case ControllerType.VbController:
-					VirtualBoyButtons = new UInt32[14] {
+					return new UInt32[14] {
 						InputApi.GetKeyCode("K"),
 						InputApi.GetKeyCode("J"),
 						InputApi.GetKeyCode("E"),
@@ -327,15 +323,60 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("Y"),
 						InputApi.GetKeyCode("U"),
 					};
-					break;
 
 				case ControllerType.KonamiHyperShot:
-					KonamiHyperShotButtons = new UInt32[4] {
+					return new UInt32[4] {
 						InputApi.GetKeyCode("A"),
 						InputApi.GetKeyCode("S"),
 						InputApi.GetKeyCode("K"),
 						InputApi.GetKeyCode("L"),
 					};
+
+				default:
+					return null;
+			}
+		}
+
+		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)
+		{
+			switch(type) {
+				case ControllerType.FamilyBasicKeyboard:
+					FamilyBasicKeyboardButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.PowerPadSideA:
+				case ControllerType.PowerPadSideB:
+				case ControllerType.FamilyTrainerMatSideA:
+				case ControllerType.FamilyTrainerMatSideB:
+					PowerPadButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.PartyTap:
+					PartyTapButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.Pachinko:
+					PachinkoButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.ExcitingBoxing:
+					ExcitingBoxingButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.JissenMahjong:
+					JissenMahjongButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.SuborKeyboard:
+					SuborKeyboardButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.VbController:
+					VirtualBoyButtons = GetDefaultCustomKeys(type);
+					break;
+
+				case ControllerType.KonamiHyperShot:
+					KonamiHyperShotButtons = GetDefaultCustomKeys(type);
 					break;
 
 				default:
