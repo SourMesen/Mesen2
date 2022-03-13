@@ -78,7 +78,7 @@ protected:
 
 	bool IsNes20();
 
-	virtual uint16_t GetChrRamPageSize() { return 0x2000; }
+	virtual uint16_t GetChrRamPageSize() { return GetCHRPageSize(); }
 
 	//Save ram is battery backed and saved to disk
 	virtual uint32_t GetSaveRamSize() { return 0x2000; }

@@ -373,6 +373,9 @@ void BaseMapper::SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memor
 	if(memoryType == ChrMemoryType::NametableRam) {
 		pageSize = BaseMapper::NametableSize;
 	} else {
+		if(memoryType == ChrMemoryType::Default) {
+			memoryType = _chrRomSize > 0 ? ChrMemoryType::ChrRom : ChrMemoryType::ChrRam;
+		}
 		pageSize = memoryType == ChrMemoryType::ChrRam ? InternalGetChrRamPageSize() : InternalGetChrPageSize();
 	}
 
