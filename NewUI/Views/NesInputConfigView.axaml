@@ -27,7 +27,7 @@
 						Grid.Row="0" Grid.Column="1"
 						Config="{CompiledBinding Config.Port1}"
 						ControllerType="{CompiledBinding Config.Port1.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP1}"
 					/>
 
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPlayer2}" />
@@ -36,7 +36,7 @@
 						Config="{CompiledBinding Config.Port2}"
 						IsEnabled="{CompiledBinding !HasFourScore}"
 						ControllerType="{CompiledBinding Config.Port2.Type}"
-						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP2}"
 					/>
 
 					<c:GroupBox

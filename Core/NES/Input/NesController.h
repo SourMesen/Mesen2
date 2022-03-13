@@ -82,7 +82,7 @@ public:
 	NesController(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
-		_microphoneEnabled = port == 1 && type == ControllerType::FamicomController;
+		_microphoneEnabled = port == 1 && type == ControllerType::FamicomControllerP2;
 	}
 	
 	uint8_t ToByte()
@@ -113,7 +113,7 @@ public:
 			_stateBuffer |= 0x80;
 		}
 
-		if(addr == 0x4016 && _type == ControllerType::FamicomController && IsPressed(NesController::Buttons::Microphone)) {
+		if(addr == 0x4016 && IsPressed(NesController::Buttons::Microphone)) {
 			output |= 0x04;
 		}
 

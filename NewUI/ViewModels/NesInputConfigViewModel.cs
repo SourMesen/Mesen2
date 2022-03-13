@@ -32,10 +32,24 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public string ExpConfigLabel { get; } = "";
 		[ObservableAsProperty] public Enum[] AvailableControllerTypesExpansionHub { get; } = Array.Empty<Enum>();
 
-		public Enum[] AvailableControllerTypesP12 => new Enum[] {
+		public Enum[] AvailableControllerTypesP1 => new Enum[] {
 			ControllerType.None,
 			ControllerType.NesController,
 			ControllerType.FamicomController,
+			ControllerType.NesZapper,
+			ControllerType.FourScore,
+			ControllerType.NesArkanoidController,
+			ControllerType.PowerPad,
+			ControllerType.SnesController,
+			ControllerType.SnesMouse,
+			ControllerType.SuborMouse,
+			ControllerType.VbController
+		};
+
+		public Enum[] AvailableControllerTypesP2 => new Enum[] {
+			ControllerType.None,
+			ControllerType.NesController,
+			ControllerType.FamicomControllerP2,
 			ControllerType.NesZapper,
 			ControllerType.FourScore,
 			ControllerType.NesArkanoidController,

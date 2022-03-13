@@ -36,6 +36,8 @@ namespace Mesen.Config
 		public UInt32[]? VirtualBoyButtons = null;
 		public UInt32[]? KonamiHyperShotButtons = null;
 
+		public UInt32 Microphone { get; set; } = 0;
+
 		private UInt32[]? GetCustomButtons(ControllerType type)
 		{
 			return type switch {
@@ -56,6 +58,8 @@ namespace Mesen.Config
 		public override InteropKeyMapping ToInterop(ControllerType type)
 		{
 			InteropKeyMapping mappings = base.ToInterop(type);
+			mappings.Microphone = Microphone;
+
 			UInt32[]? customKeys = GetCustomButtons(type);
 
 			if(customKeys != null) {
@@ -140,6 +144,7 @@ namespace Mesen.Config
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
 					base.ClearKeys(type);
 					break;
 			}

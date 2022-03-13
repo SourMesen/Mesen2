@@ -159,6 +159,7 @@ enum class ControllerType
 	//NES controllers
 	NesController,
 	FamicomController,
+	FamicomControllerP2,
 	NesZapper,
 	NesArkanoidController,
 	PowerPad,

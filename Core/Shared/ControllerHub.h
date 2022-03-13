@@ -48,6 +48,7 @@ public:
 		for(int i = 0; i < HubPortCount; i++) {
 			switch(controllers[i].Type) {
 				case ControllerType::FamicomController:
+				case ControllerType::FamicomControllerP2:
 				case ControllerType::NesController:
 					_ports[i].reset(new NesController(emu, controllers[i].Type, 0, controllers[i].Keys));
 					break;

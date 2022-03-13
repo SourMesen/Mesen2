@@ -10,6 +10,7 @@
 	mc:Ignorable="d" d:DesignWidth="610" d:DesignHeight="230"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+	x:Name="root"
 	x:DataType="vm:KeyMappingViewModel"
 	x:Class="Mesen.Views.NesControllerView"
 >
@@ -27,6 +28,13 @@
 					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
 					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
 				</Grid>
+			</Panel>
+
+			<Panel Canvas.Top="50" Canvas.Left="254" IsVisible="{CompiledBinding ShowMicrophoneButton, ElementName=root}">
+				<StackPanel VerticalAlignment="Center">
+					<c:KeyBindingButton KeyBinding="{Binding Mapping.Microphone}" Width="60" Height="40" HorizontalAlignment="Center" />
+					<TextBlock Text="Microphone" FontSize="14" HorizontalAlignment="Center" Margin="0 0 0 0" />
+				</StackPanel>
 			</Panel>
 
 			<Panel Canvas.Top="20" Canvas.Right="5">

@@ -48,7 +48,7 @@ namespace Mesen.ViewModels
 		[Reactive] public List<CustomKeyMapping> CustomKeys { get; set; } = new();
 
 		[Obsolete("For designer only")]
-		public KeyMappingViewModel() : this(ControllerType.ExcitingBoxing, new()) { }
+		public KeyMappingViewModel() : this(ControllerType.None, new()) { }
 
 		public KeyMappingViewModel(ControllerType type, KeyMapping mapping)
 		{

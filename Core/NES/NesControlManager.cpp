@@ -67,8 +67,13 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 
 	switch(type) {
 		case ControllerType::None: break;
-		case ControllerType::NesController: device.reset(new NesController(_emu, type, port, keys)); break;
-		case ControllerType::FamicomController: device.reset(new NesController(_emu, type, port, keys)); break;
+		
+		case ControllerType::NesController:
+		case ControllerType::FamicomController:
+		case ControllerType::FamicomControllerP2:
+			device.reset(new NesController(_emu, type, port, keys));
+			break;
+
 		case ControllerType::NesZapper: {
 			RomFormat romFormat = _console->GetRomFormat();
 			if(romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem) {

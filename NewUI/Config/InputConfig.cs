@@ -111,6 +111,7 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
 				case ControllerType.SnesController:
@@ -268,6 +269,7 @@ namespace Mesen.Config
 		//NES controllers
 		NesController,
 		FamicomController,
+		FamicomControllerP2,
 		NesZapper,
 		NesArkanoidController,
 		PowerPad,
@@ -307,6 +309,7 @@ namespace Mesen.Config
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
@@ -322,6 +325,7 @@ namespace Mesen.Config
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
 				case ControllerType.Pachinko:
 				case ControllerType.HoriTrack:
@@ -338,6 +342,7 @@ namespace Mesen.Config
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
 				case ControllerType.PowerPad:
 				case ControllerType.FamilyTrainerMat:
 				case ControllerType.SuborKeyboard:

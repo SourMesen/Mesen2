@@ -5,8 +5,16 @@ namespace Mesen.Views
 {
 	public class NesControllerView : UserControl
 	{
-		public NesControllerView()
+		public bool ShowMicrophoneButton { get; }
+
+		public NesControllerView() : this(false)
 		{
+		}
+
+		public NesControllerView(bool showMicrophoneButton)
+		{
+			ShowMicrophoneButton = showMicrophoneButton;
+
 			InitializeComponent();
 		}
 
