@@ -81,6 +81,7 @@ namespace Mesen.Utilities
 			}
 
 			if(_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen) {
+				SetMouseOffScreen();
 				ReleaseMouse();
 				GlobalMouse.SetCursorIcon(CursorIcon.Arrow);
 				return;
@@ -127,13 +128,18 @@ namespace Mesen.Utilities
 					GlobalMouse.SetCursorIcon(MouseIcon);
 				}
 			} else {
-				//Send mouse state to emulation core (mouse is set as off the screen)
-				InputApi.SetMousePosition(-1, -1);
-
-				InputApi.SetKeyState(LeftMouseButtonKeyCode, false);
-				InputApi.SetKeyState(RightMouseButtonKeyCode, false);
-				InputApi.SetKeyState(MiddleMouseButtonKeyCode, false);
+				SetMouseOffScreen();
 			}
+		}
+
+		private static void SetMouseOffScreen()
+		{
+			//Send mouse state to emulation core (mouse is set as off the screen)
+			InputApi.SetMousePosition(-1, -1);
+
+			InputApi.SetKeyState(LeftMouseButtonKeyCode, false);
+			InputApi.SetKeyState(RightMouseButtonKeyCode, false);
+			InputApi.SetKeyState(MiddleMouseButtonKeyCode, false);
 		}
 
 		private bool AllowMouseCapture
@@ -172,11 +178,16 @@ namespace Mesen.Utilities
 					InputApi.HasControlDevice(ControllerType.FamicomZapper) ||
 					InputApi.HasControlDevice(ControllerType.NesZapper) ||
 					InputApi.HasControlDevice(ControllerType.SuperScope) ||
-					InputApi.HasControlDevice(ControllerType.BandaiHyperShot) ||
-					InputApi.HasControlDevice(ControllerType.OekaKidsTablet)
+					InputApi.HasControlDevice(ControllerType.BandaiHyperShot)
 				);
 
 				if(hasLightGun) {
+					if(ConfigManager.Config.Input.HidePointerForLightGuns) {
+						return CursorIcon.Hidden;
+					} else {
+						return CursorIcon.Cross;
+					}
+				} else if(InputApi.HasControlDevice(ControllerType.OekaKidsTablet)) {
 					return CursorIcon.Cross;
 				}
 

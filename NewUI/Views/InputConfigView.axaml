@@ -62,6 +62,8 @@
 							<TextBlock Text="{l:Translate lblHigh}" Grid.Column="2" />
 						</Grid>
 					</Grid>
+					
+					<c:CheckBoxWarning Margin="0 10 0 0" IsChecked="{CompiledBinding Config.HidePointerForLightGuns}" Text="{l:Translate chkHidePointerForLightGuns}" />
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
@@ -88,7 +90,7 @@
 				<TextBlock Grid.Row="1" Text="{l:Translate lblDisplayPosition}" />
 				<c:EnumComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{CompiledBinding Config.DisplayInputPosition}" />
 
-				<CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />
+				<CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{CompiledBinding Config.DisplayInputHorizontally}" Content="{l:Translate chkDisplayInputHorizontally}" />				
 			</Grid>
 		</TabItem>
 	

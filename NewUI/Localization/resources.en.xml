@@ -126,7 +126,7 @@
 			<Control ID="lblDisplayPosition">Display position:</Control>
 			<Control ID="chkDisplayInputHorizontally">Horizontal display</Control>
 
-			<Control ID="chkHideMousePointerForZapper">Hide mouse pointer when using zapper</Control>
+			<Control ID="chkHidePointerForLightGuns">Hide mouse pointer when using light guns</Control>
 		</Form>
 		<Form ID="InputComboBox">
 			<Control ID="btnSetup">Setup</Control>

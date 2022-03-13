@@ -15,6 +15,7 @@ namespace Mesen.Config
 	{
 		[Reactive] [MinMax(0, 4)] public UInt32 ControllerDeadzoneSize { get; set; } = 2;
 		[Reactive] [MinMax(0, 3)] public UInt32 MouseSensitivity { get; set; } = 1;
+		[Reactive] public bool HidePointerForLightGuns { get; set; } = false;
 
 		[Reactive] public InputDisplayPosition DisplayInputPosition { get; set; } = InputDisplayPosition.BottomRight;
 		[Reactive] public bool DisplayInputPort1 { get; set; } = false;
