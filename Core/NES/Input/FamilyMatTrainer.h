@@ -16,7 +16,7 @@ protected:
 	}
 
 public:
-	FamilyMatTrainer(Emulator* emu, KeyMappingSet keyMappings) : PowerPad(emu, ControllerType::FamilyTrainerMat, BaseControlDevice::ExpDevicePort, keyMappings)
+	FamilyMatTrainer(Emulator* emu, ControllerType type, KeyMappingSet keyMappings) : PowerPad(emu, type, BaseControlDevice::ExpDevicePort, keyMappings)
 	{
 	}
 

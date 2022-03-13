@@ -1327,7 +1327,8 @@ x == [$150] || y == [10]
 			<Value ID="FamicomControllerP2">Famicom Controller</Value>
 			<Value ID="NesZapper">Zapper (NES)</Value>
 			<Value ID="NesArkanoidController">Arkanoid Controller (NES)</Value>
-			<Value ID="PowerPad">Power Pad</Value>
+			<Value ID="PowerPadSideA">Power Pad (Side A)</Value>
+			<Value ID="PowerPadSideB">Power Pad (Side B)</Value>
 			<Value ID="SnesMouse">SNES Mouse</Value>
 			<Value ID="SuborMouse">Subor Mouse</Value>
 			<Value ID="VbController">Virtual Boy Controller</Value>
@@ -1338,7 +1339,8 @@ x == [$150] || y == [10]
 			<Value ID="FourPlayerAdapter">4-Player Adapter (Famicom)</Value>
 			<Value ID="FamicomArkanoidController">Arkanoid Controller (Famicom)</Value>
 			<Value ID="OekaKidsTablet">Oeka Kids Tablet</Value>
-			<Value ID="FamilyTrainerMat">Family Trainer</Value>
+			<Value ID="FamilyTrainerMatSideA">Family Trainer (Side A)</Value>
+			<Value ID="FamilyTrainerMatSideB">Family Trainer (Side B)</Value>
 			<Value ID="KonamiHyperShot">Konami Hyper Shot</Value>
 			<Value ID="FamilyBasicKeyboard">Family Basic Keyboard</Value>
 			<Value ID="PartyTap">Partytap</Value>

@@ -10,6 +10,7 @@ class PowerPad : public BaseControlDevice
 private:
 	uint8_t _stateBufferL = 0;
 	uint8_t _stateBufferH = 0;
+	bool _isSideB = false;
 
 protected:
 	string GetKeyNames() override
@@ -22,7 +23,7 @@ protected:
 		for(KeyMapping& keyMapping : _keyMappings) {
 			for(int i = 0; i < 3; i++) {
 				for(int j = 0; j < 4; j++) {
-					if(false) { //TODO
+					if(_isSideB) {
 						//Invert the order of each row
 						SetPressedState(i*4+j, keyMapping.CustomKeys[i*4+(3-j)]);
 					} else {
@@ -56,6 +57,7 @@ protected:
 public:
 	PowerPad(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
+		_isSideB = type == ControllerType::PowerPadSideB || type == ControllerType::FamilyTrainerMatSideB;
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

@@ -41,8 +41,10 @@ namespace Mesen.Config
 		private UInt32[]? GetCustomButtons(ControllerType type)
 		{
 			return type switch {
-				ControllerType.PowerPad => PowerPadButtons,
-				ControllerType.FamilyTrainerMat => PowerPadButtons,
+				ControllerType.PowerPadSideA => PowerPadButtons,
+				ControllerType.PowerPadSideB => PowerPadButtons,
+				ControllerType.FamilyTrainerMatSideA => PowerPadButtons,
+				ControllerType.FamilyTrainerMatSideB => PowerPadButtons,
 				ControllerType.FamilyBasicKeyboard => FamilyBasicKeyboardButtons,
 				ControllerType.PartyTap => PartyTapButtons,
 				ControllerType.Pachinko => PachinkoButtons,
@@ -84,7 +86,11 @@ namespace Mesen.Config
 			}
 
 			List<CustomKeyMapping> keys = type switch {
-				ControllerType.PowerPad or ControllerType.FamilyTrainerMat => Enum.GetValues<NesPowerPadButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.PowerPadSideA or 
+				ControllerType.PowerPadSideB or 
+				ControllerType.FamilyTrainerMatSideA or
+				ControllerType.FamilyTrainerMatSideB => Enum.GetValues<NesPowerPadButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+
 				ControllerType.FamilyBasicKeyboard => Enum.GetValues<NesFamilyBasicKeyboardButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.PartyTap => Enum.GetValues<NesPartyTapButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.Pachinko => Enum.GetValues<NesPachinkoButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
@@ -108,8 +114,10 @@ namespace Mesen.Config
 					FamilyBasicKeyboardButtons = new UInt32[72];
 					break;
 
-				case ControllerType.PowerPad:
-				case ControllerType.FamilyTrainerMat:
+				case ControllerType.PowerPadSideA:
+				case ControllerType.PowerPadSideB:
+				case ControllerType.FamilyTrainerMatSideA:
+				case ControllerType.FamilyTrainerMatSideB:
 					PowerPadButtons = new UInt32[12];
 					break;
 
@@ -177,8 +185,10 @@ namespace Mesen.Config
 					};
 					break;
 
-				case ControllerType.PowerPad:
-				case ControllerType.FamilyTrainerMat:
+				case ControllerType.PowerPadSideA:
+				case ControllerType.PowerPadSideB:
+				case ControllerType.FamilyTrainerMatSideA:
+				case ControllerType.FamilyTrainerMatSideB:
 					PowerPadButtons = new UInt32[12] {
 						InputApi.GetKeyCode("R"),
 						InputApi.GetKeyCode("T"),

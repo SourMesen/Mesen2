@@ -86,7 +86,12 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 
 		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port)); break;
 		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, keys)); break;
-		case ControllerType::PowerPad: device.reset(new PowerPad(_emu, type, port, keys)); break;
+		
+		case ControllerType::PowerPadSideA:
+		case ControllerType::PowerPadSideB:
+			device.reset(new PowerPad(_emu, type, port, keys));
+			break;
+
 		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
 		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port)); break;
 		case ControllerType::VirtualBoyController: device.reset(new VirtualBoyController(_emu, port, keys)); break;
@@ -95,7 +100,12 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::FamicomZapper: device.reset(new Zapper(_console, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
-		case ControllerType::FamilyTrainerMat: device.reset(new FamilyMatTrainer(_emu, keys)); break;
+		
+		case ControllerType::FamilyTrainerMatSideA:
+		case ControllerType::FamilyTrainerMatSideB:
+			device.reset(new FamilyMatTrainer(_emu, type, keys));
+			break;
+
 		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys)); break;
 		case ControllerType::FamilyBasicKeyboard: device.reset(new FamilyBasicKeyboard(_emu, keys)); break;
 		case ControllerType::PartyTap: device.reset(new PartyTap(_emu, keys)); break;

@@ -272,7 +272,8 @@ namespace Mesen.Config
 		FamicomControllerP2,
 		NesZapper,
 		NesArkanoidController,
-		PowerPad,
+		PowerPadSideA,
+		PowerPadSideB,
 		SuborMouse,
 		VbController,
 
@@ -283,7 +284,8 @@ namespace Mesen.Config
 		FourPlayerAdapter,
 		FamicomArkanoidController,
 		OekaKidsTablet,
-		FamilyTrainerMat,
+		FamilyTrainerMatSideA,
+		FamilyTrainerMatSideB,
 		KonamiHyperShot,
 		FamilyBasicKeyboard,
 		PartyTap,
@@ -343,8 +345,10 @@ namespace Mesen.Config
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:
-				case ControllerType.PowerPad:
-				case ControllerType.FamilyTrainerMat:
+				case ControllerType.PowerPadSideA:
+				case ControllerType.PowerPadSideB:
+				case ControllerType.FamilyTrainerMatSideA:
+				case ControllerType.FamilyTrainerMatSideB:
 				case ControllerType.SuborKeyboard:
 				case ControllerType.FamilyBasicKeyboard:
 				case ControllerType.Pachinko:
