@@ -51,14 +51,9 @@ private:
 
 	void InternalSetStateFromInput() override
 	{
-		//TODO
-		bool allowInput = true; // _emu->GetSettings()->IsKeyboardMode();
-
-		if(allowInput) {
-			for(KeyMapping& keyMapping : _keyMappings) {
-				for(int i = 0; i < 72; i++) {
-					SetPressedState(i, keyMapping.CustomKeys[i]);
-				}
+		for(KeyMapping& keyMapping : _keyMappings) {
+			for(int i = 0; i < 72; i++) {
+				SetPressedState(i, keyMapping.CustomKeys[i]);
 			}
 		}
 	}

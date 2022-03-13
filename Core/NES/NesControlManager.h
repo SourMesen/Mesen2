@@ -44,7 +44,7 @@ public:
 
 	void Reset(bool softReset) override;
 
-	bool HasKeyboard();
+	bool IsKeyboardConnected();
 	
 	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 

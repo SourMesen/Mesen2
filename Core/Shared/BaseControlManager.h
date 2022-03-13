@@ -39,6 +39,7 @@ public:
 	void UpdateInputState() override;
 
 	bool HasControlDevice(ControllerType type) override;
+	bool IsKeyboardConnected() override { return false; }
 
 	uint32_t GetPollCounter() override;
 	void SetPollCounter(uint32_t value) override;

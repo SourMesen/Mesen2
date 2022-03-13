@@ -7,6 +7,7 @@
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
+#include "Shared/MessageManager.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/KeyManager.h"
@@ -153,7 +154,8 @@ void NesControlManager::UpdateControlDevices()
 	}
 
 	auto lock = _deviceLock.AcquireSafe();
-	//bool hadKeyboard = HasKeyboard();
+
+	bool hadKeyboard = IsKeyboardConnected();
 
 	ClearDevices();
 
@@ -168,31 +170,22 @@ void NesControlManager::UpdateControlDevices()
 		shared_ptr<BaseControlDevice> expDevice = CreateControllerDevice(cfg.ExpPort.Type, BaseControlDevice::ExpDevicePort);
 		if(expDevice) {
 			RegisterControlDevice(expDevice);
+			
+			if(std::dynamic_pointer_cast<FamilyBasicKeyboard>(expDevice)) {
+				//Automatically connect the data recorder if the family basic keyboard is connected
+				RegisterControlDevice(shared_ptr<FamilyBasicDataRecorder>(new FamilyBasicDataRecorder(_emu)));
+			}
 		}
 	}
 
-	//TODO
-	/*bool hasKeyboard = HasKeyboard();
-	if(!hasKeyboard) {
-		settings->DisableKeyboardMode();
-	} else if(!hadKeyboard && hasKeyboard) {
-		settings->EnableKeyboardMode();
+	if(!hadKeyboard && IsKeyboardConnected()) {
+		MessageManager::DisplayMessage("Input", "KeyboardModeEnabled");
 	}
-	
-	if(std::dynamic_pointer_cast<FamilyBasicKeyboard>(expDevice)) {
-		//Automatically connect the data recorder if the keyboard is connected
-		RegisterControlDevice(shared_ptr<FamilyBasicDataRecorder>(new FamilyBasicDataRecorder(_console)));
-	}*/
 }
 
-bool NesControlManager::HasKeyboard()
+bool NesControlManager::IsKeyboardConnected()
 {
-	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
-		if(device->GetControllerType() == ControllerType::SuborKeyboard || device->GetControllerType() == ControllerType::FamilyBasicKeyboard) {
-			return true;
-		}
-	}
-	return false;
+	return HasControlDevice(ControllerType::FamilyBasicKeyboard) || HasControlDevice(ControllerType::SuborKeyboard);
 }
 
 uint8_t NesControlManager::GetOpenBusMask(uint8_t port)

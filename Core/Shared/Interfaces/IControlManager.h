@@ -21,6 +21,7 @@ public:
 	virtual shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) = 0;
 
 	virtual bool HasControlDevice(ControllerType type) = 0;
+	virtual bool IsKeyboardConnected() = 0;
 	
 	virtual vector<ControllerData> GetPortStates() = 0;
 
