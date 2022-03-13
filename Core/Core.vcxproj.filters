@@ -824,6 +824,7 @@
     <ClInclude Include="NES\Input\TwoPlayerAdapter.h" />
     <ClInclude Include="NES\Mappers\CNROM.h" />
     <ClInclude Include="NES\Mappers\OekaKids.h" />
+    <ClInclude Include="NES\Mappers\TxSRom.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\SnesCpu.cpp">

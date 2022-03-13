@@ -233,6 +233,16 @@ void NesControlManager::ResetLagCounter()
 	_lagCounter = 0;
 }
 
+void NesControlManager::SaveBattery()
+{
+	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
+		shared_ptr<IBattery> batteryDevice = std::dynamic_pointer_cast<IBattery>(device);
+		if(batteryDevice) {
+			batteryDevice->SaveBattery();
+		}
+	}
+}
+
 uint8_t NesControlManager::ReadRam(uint16_t addr)
 {
 	//Used for lag counter - any frame where the input is read does not count as lag

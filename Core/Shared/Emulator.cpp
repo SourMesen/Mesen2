@@ -313,6 +313,7 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave)
 	_rewindManager.reset();
 
 	if(_console) {
+		_console->SaveBattery();
 		_console->Stop();
 		_console.reset();
 	}

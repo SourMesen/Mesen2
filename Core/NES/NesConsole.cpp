@@ -365,11 +365,7 @@ void NesConsole::SaveBattery()
 	}
 	
 	if(_controlManager) {
-		//TODO
-		/*shared_ptr<IBattery> device = std::dynamic_pointer_cast<IBattery>(_controlManager->GetControlDevice(BaseControlDevice::ExpDevicePort));
-		if(device) {
-			device->SaveBattery();
-		}*/
+		_controlManager->SaveBattery();
 	}
 }
 

@@ -104,6 +104,7 @@
     <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h" />
     <ClInclude Include="NES\Mappers\NsfMapper.h" />
     <ClInclude Include="NES\Mappers\OekaKids.h" />
+    <ClInclude Include="NES\Mappers\TxSRom.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />

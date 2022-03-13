@@ -248,9 +248,9 @@
 #include "Txc22000.h"
 #include "Txc22211A.h"
 #include "Txc22211B.h"
-#include "Txc22211C.h"
-#include "TxSRom.h"
-#include "Unl158B.h"
+#include "Txc22211C.h"*/
+#include "NES/Mappers/TxSRom.h"
+/*#include "Unl158B.h"
 #include "Unl255in1.h"
 #include "Unl8237A.h"
 #include "UnlD1038.h"
@@ -424,9 +424,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 114: return new MMC3_114();
 		case 115: return new MMC3_115();
 		case 116: return new Mapper116();
-		case 117: return new Mapper117();
+		case 117: return new Mapper117();*/
 		case 118: return new TxSRom();
-		case 119: return new MMC3_ChrRam(0x40, 0x7F, 8);
+		/*case 119: return new MMC3_ChrRam(0x40, 0x7F, 8);
 		case 120: return new Mapper120();
 		case 121: return new MMC3_121();
 		case 123: return new MMC3_123();

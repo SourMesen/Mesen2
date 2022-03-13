@@ -40,6 +40,8 @@ public:
 	uint32_t GetLagCounter();
 	void ResetLagCounter();
 
+	void SaveBattery();
+
 	void Reset(bool softReset) override;
 
 	bool HasKeyboard();
