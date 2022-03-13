@@ -29,22 +29,19 @@ namespace Mesen.ViewModels
 	{
 		public MainWindowViewModel MainWindow { get; set; }
 
-		[Reactive] public bool IsGameRunning { get; private set; }
-		[Reactive] public bool IsFdsGame { get; private set; }
-		[Reactive] public bool IsVsSystemGame { get; private set; }
-		[Reactive] public bool IsVsDualSystemGame { get; private set; }
-		[Reactive] public bool IsNesGame { get; private set; }
-		[Reactive] public bool IsGbGame { get; private set; }
-
-		[Reactive] public ObservableCollection<RecentItem> RecentItems { get; private set; }
-		[Reactive] public bool HasRecentItems { get; private set; }
-
 		[Reactive] public List<object> FileMenuItems { get; set; } = new();
 		[Reactive] public List<object> GameMenuItems { get; set; } = new();
 		[Reactive] public List<object> OptionsMenuItems { get; set; } = new();
 		[Reactive] public List<object> ToolsMenuItems { get; set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; set; } = new();
 		[Reactive] public List<object> HelpMenuItems { get; set; } = new();
+
+		private RomInfo RomInfo => MainWindow.RomInfo;
+		private bool IsGameRunning => RomInfo.Format != RomFormat.Unknown;
+		private bool IsFdsGame => RomInfo.Format == RomFormat.Fds;
+		private bool IsVsSystemGame => RomInfo.Format == RomFormat.VsSystem || RomInfo.Format == RomFormat.VsDualSystem;
+		private bool IsVsDualSystemGame => RomInfo.Format == RomFormat.VsDualSystem;
+		private List<RecentItem> RecentItems => ConfigManager.Config.RecentFiles.Items;
 
 		private ConfigWindow? _cfgWindow = null;
 
@@ -54,18 +51,6 @@ namespace Mesen.ViewModels
 		public MainMenuViewModel(MainWindowViewModel windowModel)
 		{
 			MainWindow = windowModel;
-
-			RecentItems = ConfigManager.Config.RecentFiles.Items;
-			this.WhenAnyValue(x => x.RecentItems.Count).Subscribe(count => {
-				HasRecentItems = count > 0;
-			});
-
-			this.WhenAnyValue(x => x.MainWindow.RomInfo).Subscribe(x => {
-				IsGameRunning = x.Format != RomFormat.Unknown;
-				IsFdsGame = x.Format == RomFormat.Fds;
-				IsVsSystemGame = x.Format == RomFormat.VsSystem || x.Format == RomFormat.VsDualSystem;
-				IsVsDualSystemGame = x.Format == RomFormat.VsDualSystem;
-			});
 		}
 
 		private void OpenConfig(MainWindow wnd, ConfigWindowTab tab)
@@ -152,7 +137,7 @@ namespace Mesen.ViewModels
 				new ContextMenuSeparator(),
 				new MainMenuAction() {
 					ActionType = ActionType.RecentFiles,
-					IsEnabled = () => HasRecentItems,
+					IsEnabled = () => ConfigManager.Config.RecentFiles.Items.Count > 0,
 					SubActions = new List<object>() {
 						GetRecentMenuItem(0),
 						GetRecentMenuItem(1),
