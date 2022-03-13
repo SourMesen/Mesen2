@@ -11,14 +11,18 @@ class NesController : public BaseControlDevice
 private:
 	bool _microphoneEnabled = false;
 	uint32_t _turboSpeed = 0;
-
-protected:
 	uint8_t _stateBuffer = 0;
 
+protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
 		s.Stream(_stateBuffer, _microphoneEnabled);
+	}
+
+	uint8_t GetControllerStateBuffer()
+	{
+		return _stateBuffer;
 	}
 
 	string GetKeyNames() override

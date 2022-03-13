@@ -5,9 +5,18 @@
 
 class HoriTrack : public NesController
 {
+private:
+	uint32_t _state = 0;
+
 protected:
 	bool HasCoordinates() override { return true; }
 	
+	void Serialize(Serializer& s) override
+	{
+		NesController::Serialize(s);
+		s.Stream(_state);
+	}
+
 	void InternalSetStateFromInput() override
 	{
 		NesController::InternalSetStateFromInput();
@@ -26,8 +35,8 @@ public:
 		uint8_t output = 0;
 		if(addr == 0x4016) {
 			StrobeProcessRead();
-			output = (_stateBuffer & 0x01) << 1;
-			_stateBuffer >>= 1;
+			output = (_state & 0x01) << 1;
+			_state >>= 1;
 		}
 		return output;
 	}
@@ -46,6 +55,6 @@ public:
 		uint8_t byte2 = 0x09;
 
 		NesController::RefreshStateBuffer();
-		_stateBuffer = (_stateBuffer & 0xFF) | (byte1 << 8) | (byte2 << 16);
+		_state = (GetControllerStateBuffer() & 0xFF) | (byte1 << 8) | (byte2 << 16);
 	}
 };

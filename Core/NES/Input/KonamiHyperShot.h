@@ -9,9 +9,6 @@ class KonamiHyperShot : public BaseControlDevice
 private:
 	bool _enableP1 = true;
 	bool _enableP2 = true;
-	uint32_t _p1TurboSpeed;
-	uint32_t _p2TurboSpeed;
-	vector<KeyMapping> _p2KeyMappings;
 
 protected:
 	enum Buttons { Player1Run = 0, Player1Jump, Player2Run, Player2Jump };
@@ -24,27 +21,10 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		for(KeyMapping& keyMapping : _keyMappings) {
-			SetPressedState(Buttons::Player1Jump, keyMapping.A);
-			SetPressedState(Buttons::Player1Run, keyMapping.B);
-
-			uint8_t turboFreq = 1 << (4 - _p1TurboSpeed);
-			bool turboOn = (uint8_t)(_emu->GetFrameCount() % turboFreq) < turboFreq / 2;
-			if(turboOn) {
-				SetPressedState(Buttons::Player1Jump, keyMapping.TurboA);
-				SetPressedState(Buttons::Player1Run, keyMapping.TurboB);
-			}
-		}
-
-		for(KeyMapping& keyMapping : _p2KeyMappings) {
-			SetPressedState(Buttons::Player2Jump, keyMapping.A);
-			SetPressedState(Buttons::Player2Run, keyMapping.B);
-
-			uint8_t turboFreq = 1 << (4 - _p2TurboSpeed);
-			bool turboOn = (uint8_t)(_emu->GetFrameCount() % turboFreq) < turboFreq / 2;
-			if(turboOn) {
-				SetPressedState(Buttons::Player2Jump, keyMapping.TurboA);
-				SetPressedState(Buttons::Player2Run, keyMapping.TurboB);
-			}
+			SetPressedState(Buttons::Player1Jump, keyMapping.CustomKeys[Buttons::Player1Jump]);
+			SetPressedState(Buttons::Player1Run, keyMapping.CustomKeys[Buttons::Player1Run]);
+			SetPressedState(Buttons::Player2Jump, keyMapping.CustomKeys[Buttons::Player2Jump]);
+			SetPressedState(Buttons::Player2Run, keyMapping.CustomKeys[Buttons::Player2Run]);
 		}
 	}
 
@@ -55,11 +35,8 @@ protected:
 	}
 
 public:
-	KonamiHyperShot(Emulator* emu, KeyMappingSet p1, KeyMappingSet p2) : BaseControlDevice(emu, ControllerType::KonamiHyperShot, BaseControlDevice::ExpDevicePort, p1)
+	KonamiHyperShot(Emulator* emu, KeyMappingSet keys) : BaseControlDevice(emu, ControllerType::KonamiHyperShot, BaseControlDevice::ExpDevicePort, keys)
 	{
-		_p1TurboSpeed = p1.TurboSpeed;
-		_p2TurboSpeed = p2.TurboSpeed;
-		_p2KeyMappings = p2.GetKeyMappingArray();
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

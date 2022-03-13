@@ -20,6 +20,9 @@ namespace Mesen.Views
 				return mappings.Type switch {
 					ControllerType.SnesController => new SnesControllerView(),
 					ControllerType.NesController => new NesControllerView(),
+					ControllerType.FamicomController => new NesControllerView(),
+					ControllerType.BandaiHyperShot => new NesControllerView(),
+					ControllerType.HoriTrack => new NesControllerView(),
 					ControllerType.GameboyController => new NesControllerView(),
 					_ => new DefaultControllerView()
 				};

@@ -34,6 +34,7 @@ namespace Mesen.Config
 		public UInt32[]? SuborKeyboardButtons = null;
 		public UInt32[]? BandaiMicrophoneButtons = null;
 		public UInt32[]? VirtualBoyButtons = null;
+		public UInt32[]? KonamiHyperShotButtons = null;
 
 		private UInt32[]? GetCustomButtons(ControllerType type)
 		{
@@ -47,6 +48,7 @@ namespace Mesen.Config
 				ControllerType.JissenMahjong => JissenMahjongButtons,
 				ControllerType.SuborKeyboard => SuborKeyboardButtons,
 				ControllerType.VbController => VirtualBoyButtons,
+				ControllerType.KonamiHyperShot => KonamiHyperShotButtons,
 				_ => null
 			};
 		}
@@ -54,18 +56,7 @@ namespace Mesen.Config
 		public override InteropKeyMapping ToInterop(ControllerType type)
 		{
 			InteropKeyMapping mappings = base.ToInterop(type);
-			UInt32[]? customKeys = type switch {
-				ControllerType.PowerPad => PowerPadButtons,
-				ControllerType.FamilyTrainerMat => PowerPadButtons,
-				ControllerType.FamilyBasicKeyboard => FamilyBasicKeyboardButtons,
-				ControllerType.PartyTap => PartyTapButtons,
-				ControllerType.Pachinko => PachinkoButtons,
-				ControllerType.ExcitingBoxing => ExcitingBoxingButtons,
-				ControllerType.JissenMahjong => JissenMahjongButtons,
-				ControllerType.SuborKeyboard => SuborKeyboardButtons,
-				ControllerType.VbController => VirtualBoyButtons,
-				_ => null
-			};
+			UInt32[]? customKeys = GetCustomButtons(type);
 
 			if(customKeys != null) {
 				mappings.CustomKeys = new UInt32[100];
@@ -97,6 +88,7 @@ namespace Mesen.Config
 				ControllerType.JissenMahjong => Enum.GetValues<NesJissenMahjongButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.SuborKeyboard => Enum.GetValues<NesSuborKeyboardButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.VbController => Enum.GetValues<NesVirtualBoyButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.KonamiHyperShot => Enum.GetValues<NesKonamiHyperShotButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				_ => new()
 			};
 
@@ -141,8 +133,13 @@ namespace Mesen.Config
 					VirtualBoyButtons = new UInt32[14];
 					break;
 
+				case ControllerType.KonamiHyperShot:
+					KonamiHyperShotButtons = new UInt32[4];
+					break;
+
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
+				case ControllerType.FamicomController:
 					base.ClearKeys(type);
 					break;
 			}
@@ -317,6 +314,15 @@ namespace Mesen.Config
 					};
 					break;
 
+				case ControllerType.KonamiHyperShot:
+					KonamiHyperShotButtons = new UInt32[4] {
+						InputApi.GetKeyCode("A"),
+						InputApi.GetKeyCode("S"),
+						InputApi.GetKeyCode("K"),
+						InputApi.GetKeyCode("L"),
+					};
+					break;
+
 				default:
 					base.SetDefaultKeys(type, preset);
 					break;
@@ -330,6 +336,7 @@ namespace Mesen.Config
 	public enum NesPartyTapButtons { B1 = 0, B2, B3, B4, B5, B6 };
 	public enum NesPachinkoButtons { Press, Release };
 	public enum NesJissenMahjongButtons { A = 0, B, C, D, E, F, G, H, I, J, K, L, M, N, Select, Start, Kan, Pon, Chii, Riichi, Ron };
+	public enum NesKonamiHyperShotButtons { Player1Run = 0, Player1Jump, Player2Run, Player2Jump };
 
 	public enum NesFamilyBasicKeyboardButtons
 	{

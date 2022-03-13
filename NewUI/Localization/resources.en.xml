@@ -1383,6 +1383,12 @@ x == [$150] || y == [10]
 			<Value ID="B5">Button 5</Value>
 			<Value ID="B6">Button 6</Value>
 		</Enum>
+		<Enum ID="NesKonamiHyperShotButtons">
+			<Value ID="Player1Jump">Player 1 - Jump</Value>
+			<Value ID="Player1Run">Player 1 - Run</Value>
+			<Value ID="Player2Jump">Player 2 - Jump</Value>
+			<Value ID="Player2Run">Player 2 - Run</Value>
+		</Enum>
 		<Enum ID="NesVirtualBoyButtons">
 			<Value ID="Down1">D-Pad (right) - Down</Value>
 			<Value ID="Left1">D-Pad (right) - Left</Value>

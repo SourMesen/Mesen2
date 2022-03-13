@@ -109,6 +109,9 @@ namespace Mesen.Config
 		{
 			switch(type) {
 				case ControllerType.NesController:
+				case ControllerType.FamicomController:
+				case ControllerType.HoriTrack:
+				case ControllerType.BandaiHyperShot:
 				case ControllerType.SnesController:
 				case ControllerType.GameboyController:
 					switch(preset) {
@@ -302,7 +305,10 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
+				case ControllerType.FamicomController:
 				case ControllerType.GameboyController:
+				case ControllerType.HoriTrack:
+				case ControllerType.BandaiHyperShot:
 					return true;
 			}
 
@@ -314,10 +320,11 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
+				case ControllerType.FamicomController:
 				case ControllerType.GameboyController:
-				case ControllerType.HoriTrack:
 				case ControllerType.Pachinko:
-				case ControllerType.KonamiHyperShot:
+				case ControllerType.HoriTrack:
+				case ControllerType.BandaiHyperShot:
 					return true;
 			}
 
@@ -329,6 +336,7 @@ namespace Mesen.Config
 			switch(type) {
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
+				case ControllerType.FamicomController:
 				case ControllerType.PowerPad:
 				case ControllerType.FamilyTrainerMat:
 				case ControllerType.SuborKeyboard:
@@ -339,9 +347,9 @@ namespace Mesen.Config
 				case ControllerType.JissenMahjong:
 				case ControllerType.ExcitingBoxing:
 				case ControllerType.GameboyController:
-				//TODO
-				//case ControllerType.HoriTrack:
-				//case ControllerType.KonamiHyperShot:
+				case ControllerType.HoriTrack:
+				case ControllerType.KonamiHyperShot:
+				case ControllerType.BandaiHyperShot:
 					return true;
 			}
 

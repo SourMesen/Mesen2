@@ -58,6 +58,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		default:
 		case 0: keys = cfg.Port1.Keys; break;
 		case 1: keys = cfg.Port2.Keys; break;
+		case BaseControlDevice::ExpDevicePort: keys = cfg.ExpPort.Keys; break;
 
 		//Used by VS system
 		case 2: keys = cfg.Port1SubPorts[2].Keys; break;
@@ -90,7 +91,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
 		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
 		case ControllerType::FamilyTrainerMat: device.reset(new FamilyMatTrainer(_emu, keys)); break;
-		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys, cfg.Port2.Keys)); break;
+		case ControllerType::KonamiHyperShot: device.reset(new KonamiHyperShot(_emu, keys)); break;
 		case ControllerType::FamilyBasicKeyboard: device.reset(new FamilyBasicKeyboard(_emu, keys)); break;
 		case ControllerType::PartyTap: device.reset(new PartyTap(_emu, keys)); break;
 		case ControllerType::Pachinko: device.reset(new PachinkoController(_emu, keys)); break;
