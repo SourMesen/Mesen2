@@ -67,6 +67,11 @@
 		</Form>
 		<Form ID="NesInputConfigView" Title="Input Settings">
 			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="grpGeneral">General</Control>
+			<Control ID="lblLightDetectionRadius">Light detection radius for light guns:</Control>
+			<Control ID="lblSmall">Small</Control>
+			<Control ID="lblLarge">Large</Control>
+			
 			<Control ID="grpHardware">Hardware buttons</Control>
 
 			<Control ID="lblFourScoreConfig">Four Score Configuration</Control>

@@ -147,6 +147,28 @@
 					</c:GroupBox>
 				</Grid>
 			</c:OptionSection>
+			<c:OptionSection Header="{l:Translate grpGeneral}">
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+					<TextBlock Grid.Row="0" Text="{l:Translate lblLightDetectionRadius}" VerticalAlignment="Top" Margin="0 15 5 0" />
+					<c:MesenSlider
+						Margin="12 12 10 0"
+						HorizontalAlignment="Left"
+						Grid.Row="0"
+						Grid.Column="1"
+						Minimum="0"
+						Maximum="3"
+						TickFrequency="1"
+						Width="100"
+						HideValue="True"
+						Value="{CompiledBinding Config.LightDetectionRadius}"
+					/>
+
+					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 -5 5 0">
+						<TextBlock Text="{l:Translate lblSmall}" />
+						<TextBlock Text="{l:Translate lblLarge}" Grid.Column="2" />
+					</Grid>
+				</Grid>
+			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpHardware}">
 				<v:ShortcutKeysTabView />
 			</c:OptionSection>

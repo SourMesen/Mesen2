@@ -70,7 +70,7 @@ public:
 
 		int32_t scanline = ppu->GetCurrentScanline();
 		int32_t cycle = ppu->GetCurrentCycle();
-		int radius = (int)console->GetNesConfig().ZapperDetectionRadius;
+		int radius = (int)console->GetNesConfig().LightDetectionRadius;
 
 		if(pos.X >= 0 && pos.Y >= 0) {
 			for(int yOffset = -radius; yOffset <= radius; yOffset++) {

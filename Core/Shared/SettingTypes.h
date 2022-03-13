@@ -413,7 +413,7 @@ struct NesConfig
 	ControllerConfig Port1SubPorts[4];
 	ControllerConfig ExpPortSubPorts[4];
 
-	uint32_t ZapperDetectionRadius = 0;
+	uint32_t LightDetectionRadius = 0;
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 	bool EnableHdPacks = true;

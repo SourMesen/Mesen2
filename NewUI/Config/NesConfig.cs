@@ -27,7 +27,7 @@ namespace Mesen.Config
 		[Reactive] public NesControllerConfig ExpPortC { get; set; } = new();
 		[Reactive] public NesControllerConfig ExpPortD { get; set; } = new();
 
-		[Reactive] public UInt32 ZapperDetectionRadius { get; set; } = 0;
+		[Reactive] public UInt32 LightDetectionRadius { get; set; } = 0;
 
 		//General
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
@@ -138,7 +138,7 @@ namespace Mesen.Config
 				ExpPortC = ExpPortC.ToInterop(),
 				ExpPortD = ExpPortD.ToInterop(),
 
-				ZapperDetectionRadius = ZapperDetectionRadius,
+				LightDetectionRadius = LightDetectionRadius,
 
 				Region = Region,
 				EnableHdPacks = EnableHdPacks,
@@ -284,7 +284,7 @@ namespace Mesen.Config
 		public InteropControllerConfig ExpPortC;
 		public InteropControllerConfig ExpPortD;
 
-		public UInt32 ZapperDetectionRadius;
+		public UInt32 LightDetectionRadius;
 
 		public ConsoleRegion Region;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;
