@@ -92,6 +92,7 @@
     <ClInclude Include="NES\Mappers\Audio\Vrc7Audio.h" />
     <ClInclude Include="NES\Mappers\AXROM.h" />
     <ClInclude Include="NES\Mappers\BF909x.h" />
+    <ClInclude Include="NES\Mappers\CNROM.h" />
     <ClInclude Include="NES\Mappers\FDS\BaseFdsChannel.h" />
     <ClInclude Include="NES\Mappers\FDS\Fds.h" />
     <ClInclude Include="NES\Mappers\FDS\FdsAudio.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="NES\Mappers\MMC5.h" />
     <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h" />
     <ClInclude Include="NES\Mappers\NsfMapper.h" />
+    <ClInclude Include="NES\Mappers\OekaKids.h" />
     <ClInclude Include="NES\Mappers\UNROM.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsControlManager.h" />
     <ClInclude Include="NES\Mappers\VsSystem\VsSystem.h" />

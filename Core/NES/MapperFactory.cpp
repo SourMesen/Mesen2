@@ -46,9 +46,9 @@
 #include "Caltron41.h"
 #include "Cc21.h"
 #include "Cheapocabra.h"
-#include "CityFighter.h"
-#include "CNROM.h"
-#include "CpRom.h"
+#include "CityFighter.h"*/
+#include "NES/Mappers/CNROM.h"
+/*#include "CpRom.h"
 #include "ColorDreams.h"
 #include "ColorDreams46.h"
 #include "Dance2000.h"
@@ -209,9 +209,9 @@
 #include "NES/Mappers/NROM.h"
 /*#include "NsfCart31.h"*/
 #include "NES/Mappers/NsfMapper.h"
-/*#include "NtdecTc112.h"
-#include "OekaKids.h"
-#include "Racermate.h"
+//#include "NtdecTc112.h"
+#include "NES/Mappers/OekaKids.h"
+/*#include "Racermate.h"
 #include "Rambo1.h"
 #include "Rambo1_158.h"
 #include "ResetTxrom.h"
@@ -309,7 +309,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 0: return new NROM();
 		case 1: return new MMC1();
 		case 2: return new UNROM();
-		//case 3: return new CNROM(false);
+		case 3: return new CNROM(false);
 		case 4: 
 			if(romData.Info.SubMapperID == 3) {
 				//return new McAcc();
@@ -407,9 +407,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 92: return new JalecoJf17_19(true);
 		case 93: return new Sunsoft93();
 		case 94: return new UnRom_94();
-		case 95: return new Namco108_95();
+		case 95: return new Namco108_95();*/
 		case 96: return new OekaKids();
-		case 97: return new IremTamS1();*/
+		//case 97: return new IremTamS1();
 		case 99: return new VsSystem();
 		/*case 101: return new JalecoJfxx(true);
 		case 103: return new Mapper103();
@@ -479,9 +479,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 180: return new UnRom_180();
 		case 182: return new MMC3_182();
 		case 183: return new Mapper183();
-		case 184: return new Sunsoft184();
+		case 184: return new Sunsoft184();*/
 		case 185: return new CNROM(true);
-		case 186: break; //The study box is handled as a bios file, not a iNES rom
+		/*case 186: break; //The study box is handled as a bios file, not a iNES rom
 		case 187: return new MMC3_187();
 		case 188: return new BandaiKaraoke();
 		case 189: return new MMC3_189();

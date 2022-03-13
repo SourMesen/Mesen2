@@ -822,6 +822,8 @@
     <ClInclude Include="Shared\RenderedFrame.h" />
     <ClInclude Include="Shared\ControllerHub.h" />
     <ClInclude Include="NES\Input\TwoPlayerAdapter.h" />
+    <ClInclude Include="NES\Mappers\CNROM.h" />
+    <ClInclude Include="NES\Mappers\OekaKids.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SNES\SnesCpu.cpp">
