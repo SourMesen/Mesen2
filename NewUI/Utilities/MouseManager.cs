@@ -46,7 +46,9 @@ namespace Mesen.Utilities
 		{
 			if(item.IsSubMenuOpen) {
 				foreach(var container in item.ItemContainerGenerator.Containers) {
-					if(container.ContainerControl.IsPointerOver) {
+					if(container.ContainerControl is MenuItem subItem && IsPointerInItem(subItem)) {
+						return true;
+					} else if(container.ContainerControl.IsPointerOver) {
 						return true;
 					}
 				}
@@ -146,7 +148,8 @@ namespace Mesen.Utilities
 					InputApi.HasControlDevice(ControllerType.SnesMouse) ||
 					InputApi.HasControlDevice(ControllerType.SuborMouse) ||
 					InputApi.HasControlDevice(ControllerType.FamicomArkanoidController) ||
-					InputApi.HasControlDevice(ControllerType.NesArkanoidController)
+					InputApi.HasControlDevice(ControllerType.NesArkanoidController) ||
+					InputApi.HasControlDevice(ControllerType.HoriTrack)
 				);
 
 				if(hasMouseDevice) {
@@ -170,8 +173,7 @@ namespace Mesen.Utilities
 					InputApi.HasControlDevice(ControllerType.NesZapper) ||
 					InputApi.HasControlDevice(ControllerType.SuperScope) ||
 					InputApi.HasControlDevice(ControllerType.BandaiHyperShot) ||
-					InputApi.HasControlDevice(ControllerType.OekaKidsTablet) ||
-					InputApi.HasControlDevice(ControllerType.HoriTrack)
+					InputApi.HasControlDevice(ControllerType.OekaKidsTablet)
 				);
 
 				if(hasLightGun) {
