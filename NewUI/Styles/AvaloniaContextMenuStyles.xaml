@@ -1,0 +1,54 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys="clr-namespace:System;assembly=netstandard"
+>
+	<Style Selector="ContextMenu">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Background="{TemplateBinding Background}"
+						  BorderBrush="{TemplateBinding BorderBrush}"
+						  BorderThickness="{TemplateBinding BorderThickness}"
+						  Padding="0"
+						  MaxWidth="{TemplateBinding MaxWidth}"
+						  MinHeight="{TemplateBinding MinHeight}"
+						  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+						  CornerRadius="{DynamicResource OverlayCornerRadius}">
+					<Panel>
+						<Rectangle
+							HorizontalAlignment="Left"
+							Width="24">
+							<Rectangle.Fill>
+								<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
+									<GradientStop Color="#fcfcfc" Offset="0.0" />
+									<GradientStop Color="#f1f1f1" Offset="1.0" />
+								</LinearGradientBrush>
+							</Rectangle.Fill>
+						</Rectangle>
+
+						<ScrollViewer Classes="menuscroller">
+							<ItemsPresenter Name="PART_ItemsPresenter"
+												 Items="{TemplateBinding Items}"
+												 ItemsPanel="{TemplateBinding ItemsPanel}"
+												 ItemTemplate="{TemplateBinding ItemTemplate}"
+												 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
+												 KeyboardNavigation.TabNavigation="Continue"
+												 Grid.IsSharedSizeScope="True" />
+						</ScrollViewer>
+					</Panel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="ContextMenu > MenuItem">
+		<Setter Property="Height" Value="20" />
+		<Setter Property="Padding" Value="2 0" />
+	</Style>
+
+	<Style Selector="ContextMenu > MenuItem:selected /template/ Border">
+		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+</Styles>

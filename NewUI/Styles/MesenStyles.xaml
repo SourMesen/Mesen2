@@ -4,6 +4,13 @@
 	xmlns:sys="clr-namespace:System;assembly=netstandard"	
 	xmlns:c="using:Mesen.Controls"
 >
+	<StyleInclude Source="/Styles/AvaloniaComboBoxStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaContextMenuStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaDataGridStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaMenuItemStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaNumericUpDownStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaScrollViewerStyles.xaml" />
+	
 	<Design.PreviewWith>
 		<Window Width="440" Height="620" Padding="5">
 			<StackPanel>
@@ -35,6 +42,10 @@
 				<NumericUpDown Value="100" IsEnabled="False" />
 				<ComboBox SelectedIndex="0">
 					<ComboBoxItem>0Test</ComboBoxItem>
+					<ComboBoxItem>0Test</ComboBoxItem>
+					<ComboBoxItem>0Test</ComboBoxItem>
+					<ComboBoxItem>0Test</ComboBoxItem>
+					<ComboBoxItem>0Test</ComboBoxItem>
 				</ComboBox>
 				<TextBox Text="00bc" />
 				<TextBox Text="test&#13;test&#13;test&#13;test&#13;test" AcceptsReturn="True" />
@@ -65,7 +76,10 @@
 		<!-- Fluent color overrides -->
 		<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
 		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
-
+		
+		<Color x:Key="ComboBoxDropDownBackground">#FFFFFF</Color>
+		<Color x:Key="ComboBoxDropDownBorderBrush">#909090</Color>
+		
 		<!-- Disabled colors -->
 		<Color x:Key="TextControlBackgroundDisabled">#E0E0E0</Color>
 		<Color x:Key="CheckBoxForegroundCheckedDisabled">#555</Color>
@@ -139,6 +153,9 @@
 		<x:Double x:Key="ToolTipContentMaxWidth">800</x:Double>
 		<Thickness x:Key="ToolTipBorderThemePadding">3,3,3,3</Thickness>
 
+		<Thickness x:Key="ComboBoxItemThemePadding">3,3,3,3</Thickness>
+		<Thickness x:Key="ComboBoxDropdownContentMargin">0,0,0,0</Thickness>
+		
 		<!-- Menu items -->
 		<Thickness x:Key="MenuFlyoutPresenterThemePadding">0</Thickness>
 		<Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
@@ -208,174 +225,6 @@
 		<Setter Property="Background" Value="#bdbdbd" />
 	</Style>
 
-	<Style Selector="MenuItem">
-		<Setter Property="Template">
-			<ControlTemplate>
-				<Panel>
-					<Border Name="PART_LayoutRoot"
-							  Padding="{TemplateBinding Padding}"
-							  Background="{TemplateBinding Background}"
-							  BorderBrush="{TemplateBinding BorderBrush}"
-							  BorderThickness="{TemplateBinding BorderThickness}">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="24"
-														SharedSizeGroup="MenuItemIcon" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="Auto"
-														SharedSizeGroup="MenuItemIGT" />
-								<ColumnDefinition Width="Auto"
-														SharedSizeGroup="MenuItemChevron" />
-							</Grid.ColumnDefinitions>
-							<ContentPresenter Name="PART_IconPresenter"
-													Content="{TemplateBinding Icon}"
-													Width="16"
-													Height="16"
-													Margin="{DynamicResource MenuIconPresenterMargin}"
-													HorizontalAlignment="Center"
-													VerticalAlignment="Center" />
-
-							<ContentPresenter Name="PART_HeaderPresenter"
-													Content="{TemplateBinding Header}"
-													VerticalAlignment="Center"
-													Margin="5 0 0 0"
-													HorizontalAlignment="Stretch"
-													Grid.Column="1">
-								<ContentPresenter.DataTemplates>
-									<DataTemplate DataType="sys:String">
-										<AccessText Text="{Binding}" />
-									</DataTemplate>
-								</ContentPresenter.DataTemplates>
-							</ContentPresenter>
-							<TextBlock x:Name="PART_InputGestureText"
-										  Grid.Column="2"
-										  Classes="CaptionTextBlockStyle"
-										  Margin="{DynamicResource MenuInputGestureTextMargin}"
-										  Text="{TemplateBinding InputGesture, Converter={StaticResource KeyGestureConverter}}"
-										  HorizontalAlignment="Right"
-										  VerticalAlignment="Center" />
-							<TextBlock 
-										  Grid.Column="2"
-										  MaxWidth="200"
-										  TextTrimming="CharacterEllipsis"
-										  Classes="CaptionTextBlockStyle"
-										  Margin="{DynamicResource MenuInputGestureTextMargin}"
-										  Text="{TemplateBinding Tag}"
-										  HorizontalAlignment="Right"
-										  VerticalAlignment="Center" />
-							<Path Name="PART_ChevronPath"
-									Stretch="Uniform"
-									Width="8"
-									Height="8"
-									Data="{StaticResource MenuItemChevronPathData}"
-									Margin="{DynamicResource MenuFlyoutItemChevronMargin}"
-									VerticalAlignment="Center"
-									Grid.Column="3" />
-						</Grid>
-					</Border>
-					<Popup Name="PART_Popup"
-							 WindowManagerAddShadowHint="False"
-							 PlacementMode="Right"
-							 HorizontalOffset="{DynamicResource MenuFlyoutSubItemPopupHorizontalOffset}"
-							 IsLightDismissEnabled="False"
-							 IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">
-						<Border Background="{DynamicResource MenuFlyoutPresenterBackground}"
-								  BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
-								  BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
-								  Padding="{DynamicResource MenuFlyoutPresenterThemePadding}"
-								  MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
-								  MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
-								  HorizontalAlignment="Stretch"
-								  CornerRadius="{DynamicResource OverlayCornerRadius}">
-
-							<Panel>
-								<Rectangle
-									HorizontalAlignment="Left"
-									Width="24">
-									<Rectangle.Fill>
-										<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
-											<GradientStop Color="#fcfcfc" Offset="0.0" />
-											<GradientStop Color="#f1f1f1" Offset="1.0" />
-										</LinearGradientBrush>
-									</Rectangle.Fill>
-								</Rectangle>
-								<ScrollViewer Classes="menuscroller">
-									<ItemsPresenter Name="PART_ItemsPresenter"
-														 Items="{TemplateBinding Items}"
-														 ItemsPanel="{TemplateBinding ItemsPanel}"
-														 ItemTemplate="{TemplateBinding ItemTemplate}"
-														 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
-														 Grid.IsSharedSizeScope="True" />
-								</ScrollViewer>
-							</Panel>
-						</Border>
-					</Popup>
-				</Panel>
-			</ControlTemplate>
-		</Setter>
-	</Style>
-
-	<Style Selector="Menu > MenuItem">
-		<Setter Property="Template">
-			<ControlTemplate>
-				<Border Name="PART_LayoutRoot"
-						  Background="{TemplateBinding Background}"
-						  BorderBrush="{TemplateBinding BorderBrush}"
-						  BorderThickness="{TemplateBinding BorderThickness}">
-					<Panel>
-						<ContentPresenter Name="PART_HeaderPresenter"
-												Content="{TemplateBinding Header}"
-												VerticalAlignment="Center"
-												HorizontalAlignment="Stretch"
-												Margin="{TemplateBinding Padding}">
-							<ContentPresenter.DataTemplates>
-								<DataTemplate DataType="sys:String">
-									<AccessText Text="{Binding}" />
-								</DataTemplate>
-							</ContentPresenter.DataTemplates>
-						</ContentPresenter>
-						<Popup Name="PART_Popup"
-								 WindowManagerAddShadowHint="False"
-								 MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
-								 IsLightDismissEnabled="True"
-								 IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}"
-								 OverlayInputPassThroughElement="{Binding $parent[Menu]}">
-							<Border Background="{DynamicResource MenuFlyoutPresenterBackground}"
-									  BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
-									  BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
-									  Padding="{DynamicResource MenuFlyoutPresenterThemePadding}"
-									  MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
-									  MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
-									  HorizontalAlignment="Stretch"
-									  CornerRadius="{DynamicResource OverlayCornerRadius}">
-								<Panel>
-									<Rectangle
-										HorizontalAlignment="Left"
-										Width="24">
-										<Rectangle.Fill>
-											<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
-												<GradientStop Color="#fcfcfc" Offset="0.0" />
-												<GradientStop Color="#f1f1f1" Offset="1.0" />
-											</LinearGradientBrush>
-										</Rectangle.Fill>
-									</Rectangle>
-									<ScrollViewer Classes="menuscroller">
-										<ItemsPresenter Name="PART_ItemsPresenter"
-															 Items="{TemplateBinding Items}"
-															 ItemsPanel="{TemplateBinding ItemsPanel}"
-															 ItemTemplate="{TemplateBinding ItemTemplate}"
-															 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
-															 Grid.IsSharedSizeScope="True" />
-									</ScrollViewer>
-								</Panel>
-							</Border>
-						</Popup>
-					</Panel>
-				</Border>
-			</ControlTemplate>
-		</Setter>
-	</Style>
-
 	<Style Selector="MenuItem > MenuItem">
 		<Setter Property="Height" Value="20" />
 		<Setter Property="Padding" Value="2 0" />
@@ -396,55 +245,6 @@
 
 	<Style Selector="MenuItem /template/ Border">
 		<Setter Property="CornerRadius" Value="0" />
-	</Style>
-
-	<Style Selector="ContextMenu">
-		<Setter Property="Template">
-			<ControlTemplate>
-				<Border Background="{TemplateBinding Background}"
-						  BorderBrush="{TemplateBinding BorderBrush}"
-						  BorderThickness="{TemplateBinding BorderThickness}"
-						  Padding="0"
-						  MaxWidth="{TemplateBinding MaxWidth}"
-						  MinHeight="{TemplateBinding MinHeight}"
-						  HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-						  CornerRadius="{DynamicResource OverlayCornerRadius}">
-					<Panel>
-						<Rectangle
-							HorizontalAlignment="Left"
-							Width="24">
-							<Rectangle.Fill>
-								<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
-									<GradientStop Color="#fcfcfc" Offset="0.0" />
-									<GradientStop Color="#f1f1f1" Offset="1.0" />
-								</LinearGradientBrush>
-							</Rectangle.Fill>
-						</Rectangle>
-						
-						<ScrollViewer Classes="menuscroller">
-							<ItemsPresenter Name="PART_ItemsPresenter"
-												 Items="{TemplateBinding Items}"
-												 ItemsPanel="{TemplateBinding ItemsPanel}"
-												 ItemTemplate="{TemplateBinding ItemTemplate}"
-												 Margin="{DynamicResource MenuFlyoutScrollerMargin}"
-												 KeyboardNavigation.TabNavigation="Continue"
-												 Grid.IsSharedSizeScope="True" />
-						</ScrollViewer>
-					</Panel>
-				</Border>
-			</ControlTemplate>
-		</Setter>
-	</Style>
-
-	<Style Selector="ContextMenu > MenuItem">
-		<Setter Property="Height" Value="20" />
-		<Setter Property="Padding" Value="2 0" />
-	</Style>
-
-	<Style Selector="ContextMenu > MenuItem:selected /template/ Border">
-		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
-		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
-		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 
 	<Style Selector="Button, NumericUpDown RepeatButton">
@@ -538,22 +338,6 @@
 	<Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
 		<Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrushCheckedPointerOver}" />
 	</Style>
-
-	<Style Selector="DataGrid CheckBox:disabled Border">
-		<Setter Property="Background" Value="Transparent" />
-	</Style>
-
-	<Style Selector="DataGrid CheckBox:disabled:checked Path">
-		<Setter Property="Fill" Value="Black" />
-	</Style>
-	<Style Selector="DataGrid CheckBox:disabled">
-		<Setter Property="Background" Value="Transparent" />
-	</Style>
-
-	<Style Selector="DataGrid CheckBox:disabled:checked">
-		<Setter Property="Background" Value="Transparent" />
-	</Style>
-
 
 	<Style Selector="RadioButton /template/ Grid">
 		<Setter Property="Height" Value="20" />
@@ -708,202 +492,6 @@
 			</ControlTemplate>
 		</Setter>
 	</Style>
-	
-	<!-- Data grid -->
-	<Style Selector="DataGrid">
-		<Setter Property="Background" Value="{DynamicResource MesenGridBackground}" />
-
-		<!--
-			Override default DataGrid template to force scrollbar to be always shown,
-			and prevent content from being shown behind it (by changing Grid.ColumnSpan)
-		-->
-		<Setter Property="Template">
-			<ControlTemplate>
-				<Border Background="{TemplateBinding Background}"
-						  BorderThickness="{TemplateBinding BorderThickness}"
-						  BorderBrush="{TemplateBinding BorderBrush}">
-					<Grid RowDefinitions="Auto,*,Auto,Auto"
-							ColumnDefinitions="Auto,*,Auto">
-						<Grid.Resources>
-							<ControlTemplate x:Key="TopLeftHeaderTemplate"
-												  TargetType="DataGridColumnHeader">
-								<Grid x:Name="TopLeftHeaderRoot"
-										RowDefinitions="*,*,Auto">
-									<Border Grid.RowSpan="2"
-											  BorderThickness="0,0,1,0"
-											  BorderBrush="{DynamicResource DataGridGridLinesBrush}" />
-									<Rectangle Grid.RowSpan="2"
-												  VerticalAlignment="Bottom"
-												  StrokeThickness="1"
-												  Height="1"
-												  Fill="{DynamicResource DataGridGridLinesBrush}" />
-								</Grid>
-							</ControlTemplate>
-							<ControlTemplate x:Key="TopRightHeaderTemplate"
-												  TargetType="DataGridColumnHeader">
-								<Grid x:Name="RootElement" />
-							</ControlTemplate>
-						</Grid.Resources>
-
-						<DataGridColumnHeader Name="PART_TopLeftCornerHeader"
-													 Template="{StaticResource TopLeftHeaderTemplate}" />
-						<DataGridColumnHeadersPresenter Name="PART_ColumnHeadersPresenter"
-																  Grid.Column="1"
-																  Grid.ColumnSpan="1" />
-						<!--<DataGridColumnHeader Name="PART_TopRightCornerHeader"
-                                  Grid.Column="2"
-                                  Template="{StaticResource TopRightHeaderTemplate}" />-->
-						<Rectangle Name="PART_ColumnHeadersAndRowsSeparator"
-									  Grid.ColumnSpan="2"
-									  VerticalAlignment="Bottom"
-									  Height="1"
-									  Fill="{DynamicResource DataGridGridLinesBrush}" />
-
-						<DataGridRowsPresenter Name="PART_RowsPresenter"
-													  Grid.Row="1"
-													  Grid.RowSpan="2"
-													  Grid.ColumnSpan="2">
-							<DataGridRowsPresenter.GestureRecognizers>
-								<ScrollGestureRecognizer CanHorizontallyScroll="True" CanVerticallyScroll="True" />
-							</DataGridRowsPresenter.GestureRecognizers>
-						</DataGridRowsPresenter>
-						<Rectangle Name="PART_BottomRightCorner"
-									  Fill="{DynamicResource DataGridScrollBarsSeparatorBackground}"
-									  Grid.Column="2"
-									  Grid.Row="2" />
-						<!--<Rectangle Name="BottomLeftCorner"
-                       Fill="{DynamicResource DataGridScrollBarsSeparatorBackground}"
-                       Grid.Row="2"
-                       Grid.ColumnSpan="2" />-->
-						<ScrollBar Name="PART_VerticalScrollbar"
-									  Orientation="Vertical"
-									  Grid.Column="2"
-									  Grid.Row="1"
-									  Width="{DynamicResource ScrollBarSize}" />
-
-						<Grid Grid.Column="1"
-								Grid.Row="2"
-								ColumnDefinitions="Auto,*">
-							<Rectangle Name="PART_FrozenColumnScrollBarSpacer" />
-							<ScrollBar Name="PART_HorizontalScrollbar"
-										  Grid.Column="1"
-										  Orientation="Horizontal"
-										  Height="{DynamicResource ScrollBarSize}" />
-						</Grid>
-						<Border x:Name="PART_DisabledVisualElement"
-								  Grid.ColumnSpan="3"
-								  Grid.RowSpan="4"
-								  IsHitTestVisible="False"
-								  HorizontalAlignment="Stretch"
-								  VerticalAlignment="Stretch"
-								  CornerRadius="2"
-								  Background="{DynamicResource DataGridDisabledVisualElementBackground}"
-								  IsVisible="{Binding !$parent[DataGrid].IsEnabled}" />
-					</Grid>
-				</Border>
-			</ControlTemplate>
-		</Setter>
-	</Style>
-	<Style Selector="DataGridColumnHeader">
-		<Setter Property="MinHeight" Value="18" />
-	</Style>
-	<Style Selector="DataGridColumnHeader Grid">
-		<Setter Property="Margin" Value="-8 0 0 0" />
-	</Style>
-	<Style Selector="DataGridColumnHeader Grid ContentPresenter">
-		<Setter Property="Margin" Value="0 0 -30 0" />
-	</Style>
-	<Style Selector="DataGridColumnHeader Path">
-		<Setter Property="Width" Value="0" />
-		<Setter Property="MinWidth" Value="0" />
-		<Setter Property="IsVisible" Value="False" />
-	</Style>
-	<Style Selector="DataGridRow">
-		<Setter Property="Height" Value="18" />
-	</Style>
-	<Style Selector="DataGridCell">
-		<Setter Property="FontSize" Value="10.5" />
-		<Setter Property="Height" Value="14" />
-		<Setter Property="MinHeight" Value="14" />
-		<Setter Property="Padding" Value="0" />
-	</Style>
-	<Style Selector="DataGridCell CheckBox">
-		<Setter Property="MinWidth" Value="0" />
-		<Setter Property="Padding" Value="0" />
-	</Style>
-	<Style Selector="DataGridCell TextBlock">
-		<Setter Property="TextTrimming" Value="CharacterEllipsis" />
-	</Style>
-	<Style Selector="DataGridRow:selected TextBlock">
-		<Setter Property="Foreground" Value="White" />
-	</Style>
-		 
-	<Style Selector="DataGridCell Grid#FocusVisual">
-		<Setter Property="Opacity" Value="0" />
-	</Style>
-
-	<Style Selector="DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter">
-		<Setter Property="Grid.ColumnSpan" Value="1" />
-	</Style>
-
-	<Style Selector="DataGridRowsPresenter#PART_RowsPresenter">
-		<Setter Property="Grid.ColumnSpan" Value="2" />
-	</Style>
-
-
-	<!-- Disable overlapped scrollbar in scrollviewer -->
-	<Style Selector="ScrollViewer">
-		<Setter Property="Background"
-				  Value="Transparent" />
-		<Setter Property="Template">
-			<ControlTemplate>
-				<Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
-					<c:MesenScrollContentPresenter Name="PART_ContentPresenter"
-													Grid.Row="0"
-													Grid.Column="0"
-													Grid.RowSpan="1"
-													Grid.ColumnSpan="1"
-													Background="{TemplateBinding Background}"
-													CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
-													CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}"
-													Content="{TemplateBinding Content}"
-													Extent="{TemplateBinding Extent, Mode=TwoWay}"
-													Margin="{TemplateBinding Padding}"
-													Offset="{TemplateBinding Offset, Mode=TwoWay}"
-													Viewport="{TemplateBinding Viewport, Mode=TwoWay}">
-						<ScrollContentPresenter.GestureRecognizers>
-							<ScrollGestureRecognizer
-							  CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
-							  CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}" />
-						</ScrollContentPresenter.GestureRecognizers>
-					</c:MesenScrollContentPresenter>
-					<ScrollBar Name="PART_HorizontalScrollBar"
-								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
-								  Orientation="Horizontal"
-								  LargeChange="{Binding LargeChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
-								  SmallChange="{Binding SmallChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
-								  Maximum="{TemplateBinding HorizontalScrollBarMaximum}"
-								  Value="{TemplateBinding HorizontalScrollBarValue, Mode=TwoWay}"
-								  ViewportSize="{TemplateBinding HorizontalScrollBarViewportSize}"
-								  Visibility="{TemplateBinding HorizontalScrollBarVisibility}"
-								  Grid.Row="1"
-								  Focusable="False" />
-					<ScrollBar Name="PART_VerticalScrollBar"
-								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
-								  Orientation="Vertical"
-								  LargeChange="{Binding LargeChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
-								  SmallChange="{Binding SmallChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
-								  Maximum="{TemplateBinding VerticalScrollBarMaximum}"
-								  Value="{TemplateBinding VerticalScrollBarValue, Mode=TwoWay}"
-								  ViewportSize="{TemplateBinding VerticalScrollBarViewportSize}"
-								  Visibility="{TemplateBinding VerticalScrollBarVisibility}"
-								  Grid.Column="1"
-								  Focusable="False" />
-					<Panel x:Name="PART_ScrollBarsSeparator" Grid.Row="1" Grid.Column="1" Background="{DynamicResource ScrollViewerScrollBarsSeparatorBackground}" />
-				</Grid>
-			</ControlTemplate>
-		</Setter>
-	</Style>
 
 	<!-- Used by configuration dialogs -->
 	<Style Selector="TabControl[TabStripPlacement=Left]">
@@ -990,71 +578,4 @@
 			</ControlTemplate>
 		</Setter>
 	</Style>
-
-	<!-- NumericUpDown -->
-	<Style Selector="NumericUpDown ButtonSpinner">
-		<Setter Property="Template">
-			<ControlTemplate>
-				<DataValidationErrors>
-					<Border Background="{TemplateBinding Background}"
-							  BorderBrush="{TemplateBinding BorderBrush}"
-							  BorderThickness="{TemplateBinding BorderThickness}"
-							  CornerRadius="{TemplateBinding CornerRadius}"
-							  MinHeight="{TemplateBinding MinHeight}">
-						<Grid ColumnDefinitions="Auto,*,Auto">
-							<ContentPresenter Name="PART_ContentPresenter"
-													Grid.Column="1"
-													ContentTemplate="{TemplateBinding ContentTemplate}"
-													Content="{TemplateBinding Content}"
-													HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-													VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-													Padding="{TemplateBinding Padding}" />
-
-							<StackPanel Name="PART_SpinnerPanel"
-											Orientation="Vertical"
-											IsVisible="{TemplateBinding ShowButtonSpinner}">
-								<RepeatButton Name="PART_IncreaseButton"
-												  Classes="ButtonSpinnerRepeatButton"
-												  VerticalContentAlignment="Center"
-												  MaxWidth="15"
-												  MinWidth="15"
-												  Foreground="{TemplateBinding Foreground}"
-												  BorderBrush="{TemplateBinding BorderBrush}"
-												  Background="{TemplateBinding Background}"
-												  FontSize="{TemplateBinding FontSize}">
-									<Path Fill="{TemplateBinding Foreground}"
-											Margin="0"
-											Width="12"
-											Height="8"
-											Stretch="Uniform"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											Data="{StaticResource ButtonSpinnerIncreaseButtonIcon}" />
-								</RepeatButton>
-								<Rectangle Fill="Gray" Height="1" />
-								<RepeatButton Name="PART_DecreaseButton"
-												  Classes="ButtonSpinnerRepeatButton"
-												  MaxWidth="15"
-												  MinWidth="15"
-												  Foreground="{TemplateBinding Foreground}"
-												  BorderBrush="{TemplateBinding BorderBrush}"
-												  Background="{TemplateBinding Background}"
-												  VerticalContentAlignment="Center"
-												  FontSize="{TemplateBinding FontSize}">
-									<Path Fill="{TemplateBinding Foreground}"
-											Margin="0"
-											Width="12"
-											Height="8"
-											Stretch="Uniform"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											Data="{StaticResource ButtonSpinnerDecreaseButtonIcon}" />
-								</RepeatButton>
-							</StackPanel>
-						</Grid>
-					</Border>
-				</DataValidationErrors>
-			</ControlTemplate>
-		</Setter>
-	</Style>	
 </Styles>
