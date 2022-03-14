@@ -213,6 +213,7 @@ public:
 	BaseVideoFilter* GetVideoFilter();
 
 	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam);
+	bool IsKeyboardConnected();
 
 	void InitDebugger();
 	void StopDebugger();

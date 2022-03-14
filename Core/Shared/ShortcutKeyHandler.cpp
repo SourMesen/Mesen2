@@ -2,7 +2,6 @@
 #include "Shared/ShortcutKeyHandler.h"
 #include "Shared/SystemActionManager.h"
 #include "Shared/EmuSettings.h"
-#include "Shared/Interfaces/IControlManager.h"
 #include "Shared/KeyManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Emulator.h"
@@ -258,7 +257,7 @@ void ShortcutKeyHandler::ProcessShortcutReleased(EmulatorShortcut shortcut, uint
 
 void ShortcutKeyHandler::CheckMappedKeys()
 {
-	if(_emu->GetControlManager()->IsKeyboardConnected()) {
+	if(_emu->IsKeyboardConnected()) {
 		//Disable all shortcut keys if a keyboard is connected to the console
 		return;
 	}

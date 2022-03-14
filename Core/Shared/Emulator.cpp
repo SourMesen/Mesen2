@@ -870,6 +870,14 @@ bool Emulator::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutPar
 	return true;
 }
 
+bool Emulator::IsKeyboardConnected()
+{
+	if(_console) {
+		return _console->GetControlManager()->IsKeyboardConnected();
+	}
+	return false;
+}
+
 void Emulator::BlockDebuggerRequests()
 {
 	//Block all new debugger calls
