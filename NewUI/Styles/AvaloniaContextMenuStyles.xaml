@@ -40,15 +40,4 @@
 			</ControlTemplate>
 		</Setter>
 	</Style>
-
-	<Style Selector="ContextMenu > MenuItem">
-		<Setter Property="Height" Value="20" />
-		<Setter Property="Padding" Value="2 0" />
-	</Style>
-
-	<Style Selector="ContextMenu > MenuItem:selected /template/ Border">
-		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
-		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
-		<Setter Property="BorderThickness" Value="1" />
-	</Style>
 </Styles>
