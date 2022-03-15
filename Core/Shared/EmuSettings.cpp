@@ -43,29 +43,29 @@ void EmuSettings::ProcessString(string & str, const char ** strPointer)
 	*strPointer = str.c_str();
 }
 
-void EmuSettings::SetVideoConfig(VideoConfig config)
+void EmuSettings::SetVideoConfig(VideoConfig& config)
 {
 	_video = config;
 }
 
-VideoConfig EmuSettings::GetVideoConfig()
+VideoConfig& EmuSettings::GetVideoConfig()
 {
 	return _video;
 }
 
-void EmuSettings::SetAudioConfig(AudioConfig config)
+void EmuSettings::SetAudioConfig(AudioConfig& config)
 {
 	ProcessString(_audioDevice, &config.AudioDevice);
 
 	_audio = config;
 }
 
-AudioConfig EmuSettings::GetAudioConfig()
+AudioConfig& EmuSettings::GetAudioConfig()
 {
 	return _audio;
 }
 
-void EmuSettings::SetInputConfig(InputConfig config)
+void EmuSettings::SetInputConfig(InputConfig& config)
 {
 	//TODO
 	/*bool controllersChanged = false;
@@ -87,7 +87,7 @@ InputConfig& EmuSettings::GetInputConfig()
 	return _input;
 }
 
-void EmuSettings::SetEmulationConfig(EmulationConfig config)
+void EmuSettings::SetEmulationConfig(EmulationConfig& config)
 {
 	//TODO
 	//bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0 || _emulation.GsuClockSpeed > 100;
@@ -107,12 +107,12 @@ void EmuSettings::SetEmulationConfig(EmulationConfig config)
 	}*/
 }
 
-EmulationConfig EmuSettings::GetEmulationConfig()
+EmulationConfig& EmuSettings::GetEmulationConfig()
 {
 	return _emulation;
 }
 
-void EmuSettings::SetSnesConfig(SnesConfig config)
+void EmuSettings::SetSnesConfig(SnesConfig& config)
 {
 	_snes = config;
 }
@@ -122,7 +122,7 @@ SnesConfig& EmuSettings::GetSnesConfig()
 	return _snes;
 }
 
-void EmuSettings::SetNesConfig(NesConfig config)
+void EmuSettings::SetNesConfig(NesConfig& config)
 {
 	_nes = config;
 }
@@ -132,17 +132,17 @@ NesConfig& EmuSettings::GetNesConfig()
 	return _nes;
 }
 
-void EmuSettings::SetGameboyConfig(GameboyConfig config)
+void EmuSettings::SetGameboyConfig(GameboyConfig& config)
 {
 	_gameboy = config;
 }
 
-GameboyConfig EmuSettings::GetGameboyConfig()
+GameboyConfig& EmuSettings::GetGameboyConfig()
 {
 	return _gameboy;
 }
 
-void EmuSettings::SetPreferences(PreferencesConfig config)
+void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
 	ProcessString(_saveFolder, &config.SaveFolderOverride);
 	ProcessString(_saveStateFolder, &config.SaveStateFolderOverride);
@@ -165,12 +165,12 @@ PreferencesConfig& EmuSettings::GetPreferences()
 	return _preferences;
 }
 
-void EmuSettings::SetAudioPlayerConfig(AudioPlayerConfig config)
+void EmuSettings::SetAudioPlayerConfig(AudioPlayerConfig& config)
 {
 	_audioPlayer = config;
 }
 
-AudioPlayerConfig EmuSettings::GetAudioPlayerConfig()
+AudioPlayerConfig& EmuSettings::GetAudioPlayerConfig()
 {
 	return _audioPlayer;
 }

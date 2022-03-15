@@ -89,5 +89,13 @@
 				</Grid>
 			</StackPanel>
 		</TabItem>
+		<TabItem Header="{l:Translate tpgAdvanced}">
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblScreenRotation}" VerticalAlignment="Center" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.ScreenRotation}" />
+				</StackPanel>
+			</StackPanel>
+		</TabItem>
 	</TabControl>
 </UserControl>

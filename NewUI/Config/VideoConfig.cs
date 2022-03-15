@@ -40,6 +40,8 @@ namespace Mesen.Config
 		[Reactive] public UInt32 FullscreenResWidth { get; set; } = 0;
 		[Reactive] public UInt32 FullscreenResHeight { get; set; } = 0;
 
+		[Reactive] public ScreenRotation ScreenRotation { get; set; } = ScreenRotation.None;
+
 		public VideoConfig()
 		{
 		}
@@ -73,6 +75,8 @@ namespace Mesen.Config
 				ExclusiveFullscreenRefreshRate = this.ExclusiveFullscreenRefreshRate,
 				FullscreenResWidth = this.FullscreenResWidth,
 				FullscreenResHeight = this.FullscreenResHeight,
+
+				ScreenRotation = (uint)ScreenRotation,
 			});
 		}
 	}
@@ -100,13 +104,15 @@ namespace Mesen.Config
 		public double NtscGamma;
 		public double NtscResolution;
 		public double NtscSharpness;
-		public bool NtscMergeFields;
+		[MarshalAs(UnmanagedType.I1)] public bool NtscMergeFields;
 
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen;
 		public UInt32 ExclusiveFullscreenRefreshRate;
 		public UInt32 FullscreenResWidth;
 		public UInt32 FullscreenResHeight;
+
+		public UInt32 ScreenRotation;
 	}
 	
 	public enum VideoFilterType
@@ -144,5 +150,13 @@ namespace Mesen.Config
 		Standard = 4,
 		Widescreen = 5,
 		Custom = 6
+	}
+
+	public enum ScreenRotation
+	{
+		None = 0,
+		_90Degrees = 90,
+		_180Degrees = 180,
+		_270Degrees = 270
 	}
 }

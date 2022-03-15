@@ -9,6 +9,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Video/ScaleFilter.h"
+#include "Shared/Video/RotateFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/InputHud.h"
 #include "Shared/RenderedFrame.h"
@@ -39,9 +40,17 @@ FrameInfo VideoDecoder::GetBaseFrameInfo(bool removeOverscan)
 {
 	if(removeOverscan) {
 		OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
+		uint32_t hOverscan = overscan.Left + overscan.Right;
+		uint32_t vOverscan = overscan.Top + overscan.Bottom;
+
+		bool swapOverscan = (_emu->GetSettings()->GetVideoConfig().ScreenRotation % 180) != 0;
+		if(swapOverscan) {
+			std::swap(hOverscan, vOverscan);
+		}
+
 		return {
-			(uint32_t)(_baseFrameSize.Width * _frame.Scale) - overscan.Left - overscan.Right,
-			(uint32_t)(_baseFrameSize.Height * _frame.Scale) - overscan.Top - overscan.Bottom
+			(uint32_t)(_baseFrameSize.Width * _frame.Scale) - hOverscan,
+			(uint32_t)(_baseFrameSize.Height * _frame.Scale) - vOverscan
 		};
 	} else {
 		return {
@@ -73,6 +82,15 @@ void VideoDecoder::UpdateVideoFilter()
 			_scaleFilter.reset();
 		}
 	}
+
+	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;
+	if(screenRotation != 0) {
+		if(!_rotateFilter || _rotateFilter->GetAngle() != screenRotation) {
+			_rotateFilter.reset(new RotateFilter(screenRotation));
+		}
+	} else {
+		_rotateFilter.reset();
+	}
 }
 
 void VideoDecoder::DecodeFrame(bool forRewind)
@@ -88,6 +106,15 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	
 	OverscanDimensions overscan = _videoFilter->GetOverscan();
+
+	if(_rotateFilter) {
+		outputBuffer = _rotateFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height);
+		if((_rotateFilter->GetAngle() % 180) != 0) {
+			//90 or 270 rotation, swap height & width
+			std::swap(_baseFrameSize.Width, _baseFrameSize.Height);
+			frameSize = _rotateFilter->GetFrameInfo(frameSize);
+		}
+	}
 
 	if(_scaleFilter) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);

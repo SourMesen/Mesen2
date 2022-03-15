@@ -93,6 +93,8 @@ struct VideoConfig
 	uint32_t ExclusiveFullscreenRefreshRate = 60;
 	uint32_t FullscreenResWidth = 0;
 	uint32_t FullscreenResHeight = 0;
+
+	uint32_t ScreenRotation = 0;
 };
 
 struct AudioConfig

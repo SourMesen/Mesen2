@@ -7,7 +7,7 @@
 
 class BaseVideoFilter;
 class ScaleFilter;
-//class RotateFilter;
+class RotateFilter;
 class IRenderingDevice;
 class Emulator;
 
@@ -36,7 +36,7 @@ private:
 	VideoFilterType _videoFilterType = VideoFilterType::None;
 	unique_ptr<BaseVideoFilter> _videoFilter;
 	unique_ptr<ScaleFilter> _scaleFilter;
-	//shared_ptr<RotateFilter> _rotateFilter;
+	unique_ptr<RotateFilter> _rotateFilter;
 
 	void UpdateVideoFilter();
 

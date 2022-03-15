@@ -46,32 +46,32 @@ public:
 	uint32_t GetVersion();
 	string GetVersionString();
 
-	void SetVideoConfig(VideoConfig config);
-	VideoConfig GetVideoConfig();
+	void SetVideoConfig(VideoConfig& config);
+	VideoConfig& GetVideoConfig();
 
-	void SetAudioConfig(AudioConfig config);
-	AudioConfig GetAudioConfig();
+	void SetAudioConfig(AudioConfig& config);
+	AudioConfig& GetAudioConfig();
 
-	void SetInputConfig(InputConfig config);
+	void SetInputConfig(InputConfig& config);
 	InputConfig& GetInputConfig();
 
-	void SetEmulationConfig(EmulationConfig config);
-	EmulationConfig GetEmulationConfig();
+	void SetEmulationConfig(EmulationConfig& config);
+	EmulationConfig& GetEmulationConfig();
 
-	void SetSnesConfig(SnesConfig config);
+	void SetSnesConfig(SnesConfig& config);
 	SnesConfig& GetSnesConfig();
 
-	void SetNesConfig(NesConfig config);
+	void SetNesConfig(NesConfig& config);
 	NesConfig& GetNesConfig();
 
-	void SetGameboyConfig(GameboyConfig config);
-	GameboyConfig GetGameboyConfig();
+	void SetGameboyConfig(GameboyConfig& config);
+	GameboyConfig& GetGameboyConfig();
 
-	void SetPreferences(PreferencesConfig config);
+	void SetPreferences(PreferencesConfig& config);
 	PreferencesConfig& GetPreferences();
 	
-	void SetAudioPlayerConfig(AudioPlayerConfig config);
-	AudioPlayerConfig GetAudioPlayerConfig();
+	void SetAudioPlayerConfig(AudioPlayerConfig& config);
+	AudioPlayerConfig& GetAudioPlayerConfig();
 
 	void SetShortcutKeys(vector<ShortcutKeyInfo> shortcuts);
 	KeyCombination GetShortcutKey(EmulatorShortcut shortcut, int keySetIndex);
