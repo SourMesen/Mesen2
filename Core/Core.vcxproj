@@ -59,6 +59,7 @@
     <ClInclude Include="NES\Input\FamilyMatTrainer.h" />
     <ClInclude Include="NES\Input\FourScore.h" />
     <ClInclude Include="NES\Input\HoriTrack.h" />
+    <ClInclude Include="NES\Mappers\SunsoftFme7.h" />
     <ClInclude Include="Shared\Interfaces\IBarcodeReader.h" />
     <ClInclude Include="NES\Input\JissenMahjongController.h" />
     <ClInclude Include="NES\Input\KonamiHyperShot.h" />

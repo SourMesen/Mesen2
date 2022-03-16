@@ -234,9 +234,9 @@
 #include "Sunsoft4.h"
 #include "Sunsoft89.h"
 #include "Sunsoft93.h"
-#include "Sunsoft184.h"
-#include "SunsoftFme7.h"
-#include "Supervision.h"
+#include "Sunsoft184.h"*/
+#include "NES/Mappers/SunsoftFme7.h"
+/*#include "Supervision.h"
 #include "Super40in1Ws.h"
 #include "T230.h"
 #include "T262.h"
@@ -382,9 +382,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 65: return new IremH3001();
 		case 66: return new GxRom();
 		case 67: return new Sunsoft3();
-		case 68: return new Sunsoft4();
+		case 68: return new Sunsoft4();*/
 		case 69: return new SunsoftFme7();
-		case 70: return new Bandai74161_7432(false);*/
+		//case 70: return new Bandai74161_7432(false);
 		case 71: return new BF909x();
 		/*case 72: return new JalecoJf17_19(false);
 		case 73: return new VRC3();

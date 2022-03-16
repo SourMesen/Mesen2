@@ -1718,6 +1718,9 @@
     <ClInclude Include="Shared\Interfaces\ITapeRecorder.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\SunsoftFme7.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

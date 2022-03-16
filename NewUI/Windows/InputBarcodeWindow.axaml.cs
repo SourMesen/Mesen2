@@ -51,6 +51,7 @@ namespace Mesen.Windows
 		{
 			base.OnOpened(e);
 			this.FindControl<TextBox>("txtBarcode").Focus();
+			this.FindControl<TextBox>("txtBarcode").SelectAll();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
