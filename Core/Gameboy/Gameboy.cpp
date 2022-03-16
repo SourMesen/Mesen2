@@ -17,6 +17,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/VirtualFile.h"
@@ -450,7 +451,7 @@ void Gameboy::ProcessEndOfFrame()
 	_controlManager->UpdateInputState();
 }
 
-IControlManager* Gameboy::GetControlManager()
+BaseControlManager* Gameboy::GetControlManager()
 {
 	return _controlManager.get();
 }

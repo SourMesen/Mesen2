@@ -16,7 +16,7 @@ class BaseCartridge;
 class SnesMemoryManager;
 class InternalRegisters;
 class SnesControlManager;
-class IControlManager;
+class BaseControlManager;
 class SnesDmaController;
 class Debugger;
 class DebugHud;
@@ -99,7 +99,7 @@ public:
 	BaseCartridge* GetCartridge();
 	SnesMemoryManager* GetMemoryManager();
 	InternalRegisters* GetInternalRegisters();
-	IControlManager* GetControlManager() override;
+	BaseControlManager* GetControlManager() override;
 	SnesDmaController* GetDmaController();
 	Msu1* GetMsu1();
 	

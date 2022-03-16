@@ -936,8 +936,8 @@
     <ClInclude Include="NES\Input\HoriTrack.h">
       <Filter>NES\Input</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Input\IBarcodeReader.h">
-      <Filter>NES\Input</Filter>
+    <ClInclude Include="Shared\Interfaces\IBarcodeReader.h">
+      <Filter>Shared\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="NES\Input\JissenMahjongController.h">
       <Filter>NES\Input</Filter>
@@ -1102,9 +1102,6 @@
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Interfaces\IConsole.h">
-      <Filter>Shared\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Interfaces\IControlManager.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Interfaces\IInputProvider.h">
@@ -1717,6 +1714,9 @@
   <ItemGroup>
     <ClInclude Include="Shared\Video\RotateFilter.h">
       <Filter>Shared\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Interfaces\ITapeRecorder.h">
+      <Filter>Shared\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

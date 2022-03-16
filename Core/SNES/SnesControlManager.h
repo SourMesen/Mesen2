@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
-#include "Shared/Interfaces/IControlManager.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/SettingTypes.h"
 

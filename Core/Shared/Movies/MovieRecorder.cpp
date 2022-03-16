@@ -5,7 +5,7 @@
 #include "Utilities/ZipWriter.h"
 #include "Utilities/VirtualFile.h"
 #include "Shared/MessageManager.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

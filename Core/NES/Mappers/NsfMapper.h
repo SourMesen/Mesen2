@@ -94,8 +94,6 @@ public:
 	NsfMapper();
 	~NsfMapper();
 	
-	ConsoleFeatures GetAvailableFeatures() override;
-
 	AudioTrackInfo GetAudioTrackInfo();
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p);
 

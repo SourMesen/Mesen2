@@ -2,7 +2,6 @@
 #include "Shared/InputHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/BaseControlManager.h"
-#include "Shared/Interfaces/IControlManager.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Video/DebugHud.h"

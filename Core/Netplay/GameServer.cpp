@@ -3,7 +3,7 @@
 #include "Netplay/GameServerConnection.h"
 #include "Netplay/PlayerListMessage.h"
 #include "Shared/Emulator.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
@@ -23,7 +23,7 @@ GameServer::~GameServer()
 void GameServer::RegisterServerInput()
 {
 	if(_emu->IsRunning()) {
-		IControlManager* controlManager = _emu->GetControlManager();
+		BaseControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			controlManager->RegisterInputRecorder(this);
 			controlManager->RegisterInputProvider(this);
@@ -155,7 +155,7 @@ void GameServer::StopServer()
 	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
 
 	if(_emu->IsRunning()) {
-		IControlManager* controlManager = _emu->GetControlManager();
+		BaseControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			controlManager->UnregisterInputRecorder(this);
 			controlManager->UnregisterInputProvider(this);

@@ -9,6 +9,9 @@
 #include "Shared/NotificationManager.h"
 #include "Shared/SaveStateManager.h"
 #include "Shared/Movies/MovieManager.h"
+#include "Shared/BaseControlManager.h"
+#include "Shared/Interfaces/IBarcodeReader.h"
+#include "Shared/Interfaces/ITapeRecorder.h"
 #include "Netplay/GameClient.h"
 
 ShortcutKeyHandler::ShortcutKeyHandler(Emulator* emu)
@@ -161,9 +164,35 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t s
 		case EmulatorShortcut::LoadState:
 		case EmulatorShortcut::LoadLastSession:
 			return isRunning && !isNetplayClient && !isMovieActive;
+
+		case EmulatorShortcut::InputBarcode:
+			return isRunning && !isNetplayClient && !isMoviePlaying && _emu->GetControlManager()->GetControlDevice<IBarcodeReader>() != nullptr;
+
+		case EmulatorShortcut::RecordTape:
+		case EmulatorShortcut::StopRecordTape:
+		case EmulatorShortcut::LoadTape: {
+			if(isRunning && !isNetplayClient && !isMoviePlaying) {
+				shared_ptr<ITapeRecorder> recorder = _emu->GetControlManager()->GetControlDevice<ITapeRecorder>();
+				if(recorder) {
+					bool recording = recorder->IsRecording();
+					if(recording) {
+						return shortcut == EmulatorShortcut::StopRecordTape;
+					} else {
+						return shortcut != EmulatorShortcut::StopRecordTape;
+					}
+				}
+			}
+
+			return false;
+		}
 	}
 
-	return _emu->IsShortcutAllowed(shortcut, shortcutParam);
+	ShortcutState state = _emu->IsShortcutAllowed(shortcut, shortcutParam);
+	if(state == ShortcutState::Default) {
+		return shortcut < EmulatorShortcut::InputBarcode;
+	} else {
+		return state == ShortcutState::Enabled ? true : false;
+	}
 }
 
 void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut, uint32_t shortcutParam)

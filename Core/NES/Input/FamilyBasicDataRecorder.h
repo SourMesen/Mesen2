@@ -1,11 +1,12 @@
 #pragma once
 #include "stdafx.h"
-#include "../Utilities/Base64.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
+#include "Shared/Interfaces/ITapeRecorder.h"
+#include "Utilities/Base64.h"
 #include "Utilities/Serializer.h"
 
-class FamilyBasicDataRecorder : public BaseControlDevice
+class FamilyBasicDataRecorder : public BaseControlDevice, public ITapeRecorder
 {
 private:
 	static constexpr int32_t SamplingRate = 88;
@@ -136,6 +137,15 @@ public:
 				_data.push_back(value & 0x01);
 				_cycle += 88;
 			}
+		}
+	}
+
+	void ProcessTapeRecorderAction(TapeRecorderAction action, string filename) override
+	{
+		switch(action) {
+			case TapeRecorderAction::Play: LoadFromFile(filename); break;
+			case TapeRecorderAction::StartRecord: StartRecording(filename); break;
+			case TapeRecorderAction::StopRecord: StopRecording(); break;
 		}
 	}
 };

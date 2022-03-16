@@ -3,7 +3,7 @@
 #include "Shared/Movies/MovieTypes.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/MessageManager.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -127,7 +127,7 @@ bool MesenMovie::Play(VirtualFile &file)
 	//bool autoConfigureInput = _console->GetSettings()->CheckFlag(EmulationFlags::AutoConfigureInput);
 	//_console->GetSettings()->ClearFlags(EmulationFlags::AutoConfigureInput);
 
-	IControlManager *controlManager = _emu->GetControlManager();
+	BaseControlManager *controlManager = _emu->GetControlManager();
 	if(controlManager) {
 		//ControlManager can be empty if no game is loaded
 		controlManager->SetPollCounter(0);

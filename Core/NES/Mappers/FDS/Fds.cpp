@@ -9,7 +9,7 @@
 #include "NES/Mappers/FDS/FdsInputButtons.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BatteryManager.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/NotificationManager.h"
 #include "FirmwareHelper.h"
@@ -543,11 +543,6 @@ Fds::~Fds()
 {
 	//Restore emulation speed to normal when closing
 	_emu->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
-}
-
-ConsoleFeatures Fds::GetAvailableFeatures()
-{
-	return ConsoleFeatures::Fds;
 }
 
 uint32_t Fds::GetSideCount()

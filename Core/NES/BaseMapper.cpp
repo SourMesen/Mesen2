@@ -745,11 +745,6 @@ void BaseMapper::SetMirroringType(MirroringType type)
 	}
 }
 
-ConsoleFeatures BaseMapper::GetAvailableFeatures()
-{
-	return ConsoleFeatures::None;
-}
-
 GameSystem BaseMapper::GetGameSystem()
 {
 	return _romInfo.System;

@@ -7,7 +7,7 @@
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/RenderedFrame.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 
 RewindManager::RewindManager(Emulator* emu)
 {

@@ -245,7 +245,31 @@ namespace Mesen.ViewModels
 				new MainMenuAction(EmulatorShortcut.VsInsertCoin1) { ActionType = ActionType.InsertCoin1, IsVisible = () => IsVsSystemGame },
 				new MainMenuAction(EmulatorShortcut.VsInsertCoin2) { ActionType = ActionType.InsertCoin2, IsVisible = () => IsVsSystemGame },
 				new MainMenuAction(EmulatorShortcut.VsInsertCoin3) { ActionType = ActionType.InsertCoin3, IsVisible = () => IsVsDualSystemGame },
-				new MainMenuAction(EmulatorShortcut.VsInsertCoin4) { ActionType = ActionType.InsertCoin4, IsVisible = () => IsVsDualSystemGame }
+				new MainMenuAction(EmulatorShortcut.VsInsertCoin4) { ActionType = ActionType.InsertCoin4, IsVisible = () => IsVsDualSystemGame },
+
+				new ContextMenuSeparator() { IsVisible = () => EmuApi.IsShortcutAllowed(EmulatorShortcut.InputBarcode) || EmuApi.IsShortcutAllowed(EmulatorShortcut.RecordTape) || EmuApi.IsShortcutAllowed(EmulatorShortcut.StopRecordTape) },
+				
+				new MainMenuAction(EmulatorShortcut.InputBarcode) {
+					ActionType = ActionType.InputBarcode,
+					IsVisible = () => EmuApi.IsShortcutAllowed(EmulatorShortcut.InputBarcode)
+				},
+
+				new MainMenuAction() {
+					ActionType = ActionType.TapeRecorder,
+					IsVisible = () => EmuApi.IsShortcutAllowed(EmulatorShortcut.RecordTape) || EmuApi.IsShortcutAllowed(EmulatorShortcut.StopRecordTape),
+					SubActions = new() {
+						new MainMenuAction(EmulatorShortcut.LoadTape) {
+							ActionType = ActionType.Play,
+						},
+						new ContextMenuSeparator(),
+						new MainMenuAction(EmulatorShortcut.RecordTape) {
+							ActionType = ActionType.Record,
+						},
+						new MainMenuAction(EmulatorShortcut.StopRecordTape) {
+							ActionType = ActionType.Stop,
+						},
+					}
+				},
 			};
 		}
 

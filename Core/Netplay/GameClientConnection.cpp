@@ -10,7 +10,7 @@
 #include "Netplay/PlayerListMessage.h"
 #include "Netplay/ForceDisconnectMessage.h"
 #include "Netplay/ServerInformationMessage.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/NotificationManager.h"
@@ -38,7 +38,7 @@ void GameClientConnection::Shutdown()
 		DisableControllers();
 
 		if(_emu->IsRunning()) {
-			IControlManager* controlManager = _emu->GetControlManager();
+			BaseControlManager* controlManager = _emu->GetControlManager();
 			if(controlManager) {
 				controlManager->UnregisterInputProvider(this);
 			}
@@ -216,7 +216,7 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 void GameClientConnection::InitControlDevice()
 {
 	//Pretend we are using port 0 (to use player 1's keybindings during netplay)
-	IControlManager* controlManager = _emu->GetControlManager();
+	BaseControlManager* controlManager = _emu->GetControlManager();
 	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort);
 	if(device) {
 		ControllerType type = device->GetControllerType();

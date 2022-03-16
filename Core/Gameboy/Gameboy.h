@@ -18,6 +18,7 @@ class GbDmaController;
 class GbControlManager;
 class SuperGameboy;
 class VirtualFile;
+class BaseControlManager;
 
 class Gameboy final : public IConsole
 {
@@ -108,7 +109,7 @@ public:
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 	void RunFrame() override;
-	IControlManager* GetControlManager() override;
+	BaseControlManager* GetControlManager() override;
 	ConsoleRegion GetRegion() override;
 	ConsoleType GetConsoleType() override;
 	double GetFps() override;

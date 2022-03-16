@@ -8,7 +8,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/RewindManager.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/RenderedFrame.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/NotificationManager.h"

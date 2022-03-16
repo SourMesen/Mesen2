@@ -25,7 +25,9 @@
 #include "Netplay/GameServer.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Interfaces/IConsole.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/Interfaces/IBarcodeReader.h"
+#include "Shared/Interfaces/ITapeRecorder.h"
+#include "Shared/BaseControlManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
@@ -244,7 +246,6 @@ void Emulator::OnBeforeSendFrame()
 
 void Emulator::ProcessEndOfFrame()
 {
-#ifndef LIBRETRO
 	if(!_isRunAheadFrame) {
 		_frameLimiter->ProcessFrame();
 		while(_frameLimiter->WaitForNextFrame()) {
@@ -260,28 +261,7 @@ void Emulator::ProcessEndOfFrame()
 			_frameLimiter->SetDelay(_frameDelay);
 		}
 	}
-#endif
 	_frameRunning = false;
-}
-
-void Emulator::RunSingleFrame()
-{
-	//Used by Libretro
-	//TODO
-	/*_emulationThreadId = std::this_thread::get_id();
-	_isRunAheadFrame = false;
-
-	_controlManager->UpdateInputState();
-	_internalRegisters->ProcessAutoJoypadRead();
-
-	_console->RunFrame();
-
-	_cart->RunCoprocessors();
-	if(_cart->GetCoprocessor()) {
-		_cart->GetCoprocessor()->ProcessEndOfFrame();
-	}
-
-	_controlManager->UpdateControlDevices();*/
 }
 
 void Emulator::Stop(bool sendNotification, bool preventRecentGameSave)
@@ -496,10 +476,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_videoRenderer->StartThread();
 
 	if(stopRom) {
-#ifndef LIBRETRO
 		_stopFlag = false;
 		_emuThread.reset(new thread(&Emulator::Run, this));
-#endif
 	}
 
 	return true;
@@ -844,7 +822,7 @@ shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
 	return _systemActionManager;
 }
 
-IControlManager* Emulator::GetControlManager()
+BaseControlManager* Emulator::GetControlManager()
 {
 	if(_console) {
 		return _console->GetControlManager();
@@ -862,12 +840,33 @@ BaseVideoFilter* Emulator::GetVideoFilter()
 	}
 }
 
-bool Emulator::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
+void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)
+{
+	if(_console) {
+		shared_ptr<IBarcodeReader> reader = GetControlManager()->GetControlDevice<IBarcodeReader>();
+		if(reader) {
+			reader->InputBarcode(barcode, digitCount);
+		}
+	}
+}
+
+void Emulator::ProcessTapeRecorderAction(TapeRecorderAction action, string filename)
+{
+	if(_console) {
+		shared_ptr<ITapeRecorder> recorder = GetControlManager()->GetControlDevice<ITapeRecorder>();
+		if(recorder) {
+			recorder->ProcessTapeRecorderAction(action, filename);
+		}
+	}
+}
+
+ShortcutState Emulator::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
 	if(_console) {
 		return _console->IsShortcutAllowed(shortcut, shortcutParam);
 	}
-	return true;
+
+	return ShortcutState::Default;
 }
 
 bool Emulator::IsKeyboardConnected()

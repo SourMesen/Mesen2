@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesConsole.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "Utilities/Serializer.h"
 

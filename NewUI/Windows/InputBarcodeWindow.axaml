@@ -1,0 +1,34 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	Icon="/Assets/Icon.ico"
+	x:Class="Mesen.Windows.InputBarcodeWindow"
+	Width="270" Height="55"
+	Name="root"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<DockPanel>
+			<TextBlock Text="{l:Translate lblBarcode}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 5 0" />
+			<TextBox
+				Name="txtBarcode"
+				HorizontalAlignment="Stretch"
+				Text="{CompiledBinding Barcode, ElementName=root}"
+				MaxLength="13"
+			/>
+		</DockPanel>
+	</DockPanel>
+</Window>

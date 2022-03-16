@@ -56,11 +56,6 @@ void BaseControlManager::UnregisterInputRecorder(IInputRecorder* provider)
 	vec.erase(std::remove(vec.begin(), vec.end(), provider), vec.end());
 }
 
-shared_ptr<BaseControlDevice> BaseControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
-{
-	return nullptr;
-}
-
 vector<ControllerData> BaseControlManager::GetPortStates()
 {
 	vector<ControllerData> states;
@@ -160,4 +155,3 @@ void BaseControlManager::SetPollCounter(uint32_t value)
 {
 	_pollCounter = value;
 }
-

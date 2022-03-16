@@ -10,7 +10,7 @@ namespace Mesen.Debugger.Windows
 {
 	public class GoToWindow : Window
 	{
-		public static int _lastAddress { get; set; } = 0;
+		private static int _lastAddress { get; set; } = 0;
 
 		public int Address { get; set; }
 		public int Maximum { get; set; }

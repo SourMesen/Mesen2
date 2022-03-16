@@ -165,8 +165,6 @@ public:
 	virtual ~BaseMapper();
 	virtual void Reset(bool softReset);
 
-	virtual ConsoleFeatures GetAvailableFeatures();
-
 	GameSystem GetGameSystem();
 	PpuModel GetPpuModel();
 

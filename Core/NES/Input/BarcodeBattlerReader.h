@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
+#include "Shared/Interfaces/IBarcodeReader.h"
 #include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
-#include "NES/Input/IBarcodeReader.h"
 
 class BarcodeBattlerReader : public BaseControlDevice, public IBarcodeReader
 {

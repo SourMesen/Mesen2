@@ -71,6 +71,11 @@ namespace Mesen.ViewModels
 
 				EmulatorShortcut.OpenFile,
 				EmulatorShortcut.LoadRandomGame,
+				
+				EmulatorShortcut.InputBarcode,
+				EmulatorShortcut.LoadTape,
+				EmulatorShortcut.RecordTape,
+				EmulatorShortcut.StopRecordTape,
 
 				EmulatorShortcut.MoveToPreviousStateSlot,
 				EmulatorShortcut.MoveToNextStateSlot,

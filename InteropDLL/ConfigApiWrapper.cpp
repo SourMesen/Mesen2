@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/Interfaces/IAudioDevice.h"
-#include "Core/Shared/Interfaces/IControlManager.h"
+#include "Core/Shared/BaseControlManager.h"
 #include "Core/Shared/BaseControlDevice.h"
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/SettingTypes.h"
@@ -64,7 +64,7 @@ extern "C" {
 
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
-		IControlManager* controlManager = _emu->GetControlManager();
+		BaseControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(player);
 			if(device) {

@@ -84,7 +84,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetRendererSize(UInt32 width, UInt32 height);
 
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
-		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsShortcutAllowed(EmulatorShortcut shortcut, UInt32 shortcutParam);
+		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsShortcutAllowed(EmulatorShortcut shortcut, UInt32 shortcutParam = 0);
 
 		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
 		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
@@ -116,6 +116,9 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();
+
+		[DllImport(DllPath)] public static extern void InputBarcode(UInt64 barcode, UInt32 digitCount);
+		[DllImport(DllPath)] public static extern void ProcessTapeRecorderAction(TapeRecorderAction action, [MarshalAs(UnmanagedType.LPUTF8Str)] string filename = "");
 	}
 
 	public struct TimingInfo
@@ -209,92 +212,6 @@ namespace Mesen.Interop
 		}
 	}
 
-	public struct SnesCartInformation
-	{
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public byte[] MakerCode;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-		public byte[] GameCode;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
-		public byte[] Reserved;
-
-		public byte ExpansionRamSize;
-		public byte SpecialVersion;
-		public byte CartridgeType;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 21)]
-		public byte[] CartName;
-
-		public byte MapMode;
-		public byte RomType;
-		public byte RomSize;
-		public byte SramSize;
-
-		public byte DestinationCode;
-		public byte Reserved2;
-		public byte Version;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public byte[] ChecksumComplement;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		public byte[] Checksum;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
-		public byte[] CpuVectors;
-	}
-
-	public enum CoprocessorType
-	{
-		None,
-		DSP1,
-		DSP1B,
-		DSP2,
-		DSP3,
-		DSP4,
-		GSU,
-		OBC1,
-		SA1,
-		SDD1,
-		RTC,
-		Satellaview,
-		SPC7110,
-		ST010,
-		ST011,
-		ST018,
-		CX4,
-		SGB
-	}
-
-	/*public static class CoprocessorTypeExtensions
-	{
-		public static CpuType? ToCpuType(this CoprocessorType type)
-		{
-			switch(type) {
-				case CoprocessorType.CX4: 
-					return CpuType.Cx4;
-
-				case CoprocessorType.DSP1: case CoprocessorType.DSP1B: case CoprocessorType.DSP2: case CoprocessorType.DSP3: case CoprocessorType.DSP4: 
-					return CpuType.NecDsp;
-
-				case CoprocessorType.SA1:
-					return CpuType.Sa1;
-
-				case CoprocessorType.GSU:
-					return CpuType.Gsu;
-
-				case CoprocessorType.Gameboy: 
-				case CoprocessorType.SGB: 
-					return CpuType.Gameboy;
-
-				default:
-					return null;
-			}
-		}
-	}*/
-
 	public enum FirmwareType
 	{
 		CX4,
@@ -356,5 +273,12 @@ namespace Mesen.Interop
 	{
 		public AudioPlayerAction Action;
 		public UInt32 TrackNumber;
+	}
+
+	public enum TapeRecorderAction
+	{
+		Play,
+		StartRecord,
+		StopRecord
 	}
 }

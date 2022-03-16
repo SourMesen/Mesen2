@@ -78,6 +78,11 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleRecordMovie: ToggleRecordMovie(); break;
 
 				case EmulatorShortcut.TakeScreenshot: EmuApi.TakeScreenshot(); break;
+				
+				case EmulatorShortcut.InputBarcode: InputBarcode(); break;
+				case EmulatorShortcut.LoadTape: LoadTape(); break;
+				case EmulatorShortcut.RecordTape: RecordTape(); break;
+				case EmulatorShortcut.StopRecordTape: EmuApi.ProcessTapeRecorderAction(TapeRecorderAction.StopRecord); break;
 
 				case EmulatorShortcut.LoadStateFromFile: LoadStateFromFile(); break;
 				case EmulatorShortcut.SaveStateToFile: SaveStateToFile(); break;
@@ -116,6 +121,30 @@ namespace Mesen.Utilities
 				//Need to restore fullscreen mode after showing a dialog
 				_displayManager.SetFullscreenState(true);
 			}*/
+		}
+
+		private async void InputBarcode()
+		{
+			string? barcode = await new InputBarcodeWindow().ShowCenteredDialog<string?>(_mainWindow);
+			if(barcode != null && UInt64.TryParse(barcode, out UInt64 value)) {
+				EmuApi.InputBarcode(value, (UInt32)(barcode.Length > 8 ? 13 : 8));
+			}
+		}
+
+		private async void LoadTape()
+		{
+			string? filename = await FileDialogHelper.OpenFile(null, _mainWindow, FileDialogHelper.BinExt);
+			if(filename != null) {
+				EmuApi.ProcessTapeRecorderAction(TapeRecorderAction.Play, filename);
+			}
+		}
+
+		private async void RecordTape()
+		{
+			string? filename = await FileDialogHelper.SaveFile(null, null, _mainWindow, FileDialogHelper.BinExt);
+			if(filename != null && filename.Length > 0) {
+				EmuApi.ProcessTapeRecorderAction(TapeRecorderAction.StartRecord, filename);
+			}
 		}
 
 		private async void LoadStateFromFile()

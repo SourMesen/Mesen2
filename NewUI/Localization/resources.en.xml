@@ -9,14 +9,7 @@
 			<Control ID="mnuHelp">Help</Control>
 
 			<Control ID="mnuGameConfig">Game Configuration</Control>
-			<Control ID="mnuInputBarcode">Input Barcode...</Control>
-			<Control ID="mnuTapeRecorder">Tape Recorder</Control>
-			<Control ID="mnuLoadTapeFile">Load from file...</Control>
-			<Control ID="mnuStartRecordTapeFile">Record to file...</Control>
-			<Control ID="mnuStopRecordTapeFile">Stop recording</Control>
 			
-			<Control ID="mnuBilinearInterpolation">Use Bilinear Interpolation</Control>
-			<Control ID="mnuBlendHighResolutionModes">Blend High Resolution Modes</Control>
 			<Control ID="mnuTests">Tests</Control>
 			<Control ID="mnuTestRun">Run...</Control>
 			<Control ID="mnuTestRecordFrom">Record from...</Control>
@@ -665,11 +658,14 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmInputBarCode" Title="Input Barcode...">
+		
+		<Form ID="InputBarcodeWindow">
+			<Control ID="wndTitle">Input barcode...</Control>
 			<Control ID="lblBarcode">Barcode:</Control>
-			<Control ID="btnOK">OK</Control>
+			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+
 		<Form ID="SelectRomWindow">
 			<Control ID="wndTitle">Select rom...</Control>
 			<Control ID="lblSearch">Search:</Control>
@@ -713,20 +709,7 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmZapperConfig">
-			<Control ID="lblSmall">Small</Control>
-			<Control ID="lblLarge">Large</Control>
-			<Control ID="lblDetectRadius">Light Detection Radius:</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmMouseConfig">
-			<Control ID="lblLow">Low</Control>
-			<Control ID="lblHigh">High</Control>
-			<Control ID="lblSensitivity">Sensitivity:</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
+		
 		<Form ID="CheckBoxWarning">
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
@@ -1313,7 +1296,11 @@ x == [$150] || y == [10]
 			<Value ID="VsInsertCoin4">VS - Insert Coin 4 (DualSystem)</Value>
 			<Value ID="VsServiceButton">VS - Service Button</Value>
 			<Value ID="VsServiceButton2">VS - Service Button 2 (DualSystem)</Value>
-			<Value ID="NesInputBarcode">Input Barcode</Value>
+
+			<Value ID="InputBarcode">Input Barcode</Value>
+			<Value ID="LoadTape">Load Tape From File</Value>
+			<Value ID="RecordTape">Start Recording Tape To File</Value>
+			<Value ID="StopRecordTape">Stop Recording Tape</Value>
 		</Enum>
 		<Enum ID="ControllerType">
 			<Value ID="None">None</Value>
@@ -2251,6 +2238,9 @@ x == [$150] || y == [10]
 			<Value ID="ExportLabels">Export labels...</Value>
 			<Value ID="ImportWatchEntries">Import watch entries...</Value>
 			<Value ID="ExportWatchEntries">Export watch entries...</Value>
+
+			<Value ID="InputBarcode">Input barcode...</Value>
+			<Value ID="TapeRecorder">Tape recorder</Value>
 		</Enum>
 	</Enums>
 </Resources>

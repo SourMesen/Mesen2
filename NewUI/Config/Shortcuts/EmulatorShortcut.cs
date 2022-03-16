@@ -107,6 +107,11 @@ namespace Mesen.Config.Shortcuts
 		OpenFile,
 		LoadRandomGame,
 
+		InputBarcode,
+		LoadTape,
+		RecordTape,
+		StopRecordTape,
+
 		//NES
 		FdsSwitchDiskSide,
 		FdsEjectDisk,
@@ -118,7 +123,6 @@ namespace Mesen.Config.Shortcuts
 		VsInsertCoin2,
 		VsInsertCoin3,
 		VsInsertCoin4,
-		NesInputBarcode,
 	}
 
 	public static class EmulatorShortcutExtensions

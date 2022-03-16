@@ -5,7 +5,7 @@
 #include "Shared/Audio/AudioPlayerTypes.h"
 #include "Shared/RomInfo.h"
 
-class IControlManager;
+class BaseControlManager;
 class VirtualFile;
 class BaseVideoFilter;
 struct BaseState;
@@ -31,6 +31,13 @@ struct PpuFrameInfo
 	uint32_t CycleCount;
 };
 
+enum class ShortcutState
+{
+	Disabled = 0,
+	Enabled = 1,
+	Default = 2
+};
+
 class IConsole : public ISerializable
 {
 public:
@@ -49,9 +56,9 @@ public:
 
 	virtual void SaveBattery() = 0;
 
-	virtual bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) { return true; }
+	virtual ShortcutState IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) { return ShortcutState::Default; }
 
-	virtual IControlManager* GetControlManager() = 0;
+	virtual BaseControlManager* GetControlManager() = 0;
 
 	virtual ConsoleRegion GetRegion() = 0;
 	virtual ConsoleType GetConsoleType() = 0;

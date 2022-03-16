@@ -634,18 +634,22 @@ enum class EmulatorShortcut
 	OpenFile,
 	LoadRandomGame,
 
+	InputBarcode,
+	LoadTape,
+	RecordTape,
+	StopRecordTape,
+
 	//NES
 	FdsSwitchDiskSide,
 	FdsEjectDisk,
 	FdsInsertDiskNumber,
-	FdsInsertNextDisk,	
+	FdsInsertNextDisk,
 	VsServiceButton,
 	VsServiceButton2,
 	VsInsertCoin1,
 	VsInsertCoin2,
 	VsInsertCoin3,
 	VsInsertCoin4,
-	NesInputBarcode,
 
 	ShortcutCount,
 };

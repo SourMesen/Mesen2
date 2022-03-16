@@ -23,7 +23,7 @@
 #include "Shared/Emulator.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Movies/MovieManager.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/Interfaces/IBattery.h"
 #include "Shared/EmuSettings.h"
 #include "Debugger/DebugTypes.h"
@@ -272,7 +272,7 @@ void NesConsole::RunVsSubConsole()
 	}
 }
 
-IControlManager* NesConsole::GetControlManager()
+BaseControlManager* NesConsole::GetControlManager()
 {
 	return _controlManager.get();
 }
@@ -369,38 +369,38 @@ void NesConsole::SaveBattery()
 	}
 }
 
-bool NesConsole::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
+ShortcutState NesConsole::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
 	bool isRunning = _emu->IsRunning();
 	bool isNetplayClient = _emu->GetGameClient()->Connected();
 	bool isMoviePlaying = _emu->GetMovieManager()->Playing();
 	RomFormat romFormat = GetRomFormat();
-
+	
 	switch(shortcut) {
 		case EmulatorShortcut::FdsEjectDisk:
 		case EmulatorShortcut::FdsInsertNextDisk:
 		case EmulatorShortcut::FdsSwitchDiskSide:
-			return isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::Fds;
+			return (ShortcutState)(isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::Fds);
 
 		case EmulatorShortcut::FdsInsertDiskNumber:
 			if(isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::Fds) {
 				Fds* fds = dynamic_cast<Fds*>(_mapper.get());
-				return fds && shortcutParam < fds->GetSideCount();
+				return (ShortcutState)(fds && shortcutParam < fds->GetSideCount());
 			}
-			return false;
+			return ShortcutState::Disabled;
 
 		case EmulatorShortcut::VsInsertCoin1:
 		case EmulatorShortcut::VsInsertCoin2:
 		case EmulatorShortcut::VsServiceButton:
-			return isRunning && !isNetplayClient && !isMoviePlaying && (romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem);
+			return (ShortcutState)(isRunning && !isNetplayClient && !isMoviePlaying && (romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem));
 
 		case EmulatorShortcut::VsInsertCoin3:
 		case EmulatorShortcut::VsInsertCoin4:
 		case EmulatorShortcut::VsServiceButton2:
-			return isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::VsDualSystem;
+			return (ShortcutState)(isRunning && !isNetplayClient && !isMoviePlaying && romFormat == RomFormat::VsDualSystem);
 	}
 
-	return true;
+	return ShortcutState::Default;
 }
 
 BaseVideoFilter* NesConsole::GetVideoFilter()

@@ -116,7 +116,6 @@ public:
 	~Fds();
 
 	void SaveBattery() override;
-	ConsoleFeatures GetAvailableFeatures() override;
 
 	uint32_t GetSideCount();
 

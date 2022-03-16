@@ -146,8 +146,7 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.VsInsertCoin3,
 				EmulatorShortcut.VsInsertCoin4,
 				EmulatorShortcut.VsServiceButton,
-				EmulatorShortcut.VsServiceButton2,
-				EmulatorShortcut.NesInputBarcode
+				EmulatorShortcut.VsServiceButton2
 			};
 
 			Dictionary<EmulatorShortcut, ShortcutKeyInfo> shortcuts = new Dictionary<EmulatorShortcut, ShortcutKeyInfo>();

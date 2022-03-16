@@ -15,6 +15,7 @@ class BaseMapper;
 class EmuSettings;
 class NesSoundMixer;
 class BaseVideoFilter;
+class BaseControlManager;
 class HdAudioDevice;
 struct HdPackData;
 
@@ -77,7 +78,7 @@ public:
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
 	void Init() override;
 	void RunFrame() override;
-	IControlManager* GetControlManager() override;
+	BaseControlManager* GetControlManager() override;
 	double GetFps() override;
 	void RunSingleFrame() override;
 	PpuFrameInfo GetPpuFrame() override;
@@ -94,7 +95,7 @@ public:
 
 	void SaveBattery() override;
 	
-	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) override;
+	ShortcutState IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam) override;
 
 	BaseVideoFilter* GetVideoFilter() override;
 

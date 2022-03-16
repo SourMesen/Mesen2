@@ -358,11 +358,6 @@ NsfHeader NsfMapper::GetNsfHeader()
 	return _nsfHeader;
 }
 
-ConsoleFeatures NsfMapper::GetAvailableFeatures()
-{
-	return ConsoleFeatures::Nsf;
-}
-
 AudioTrackInfo NsfMapper::GetAudioTrackInfo()
 {
 	AudioTrackInfo track = {};

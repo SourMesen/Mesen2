@@ -59,7 +59,7 @@
     <ClInclude Include="NES\Input\FamilyMatTrainer.h" />
     <ClInclude Include="NES\Input\FourScore.h" />
     <ClInclude Include="NES\Input\HoriTrack.h" />
-    <ClInclude Include="NES\Input\IBarcodeReader.h" />
+    <ClInclude Include="Shared\Interfaces\IBarcodeReader.h" />
     <ClInclude Include="NES\Input\JissenMahjongController.h" />
     <ClInclude Include="NES\Input\KonamiHyperShot.h" />
     <ClInclude Include="NES\Input\OekaKidsTablet.h" />
@@ -122,8 +122,8 @@
     <ClInclude Include="Shared\ControllerHub.h" />
     <ClInclude Include="Shared\Interfaces\IAudioProvider.h" />
     <ClInclude Include="Shared\Interfaces\IBattery.h" />
-    <ClInclude Include="Shared\Interfaces\IControlManager.h" />
     <ClInclude Include="MemoryOperationType.h" />
+    <ClInclude Include="Shared\Interfaces\ITapeRecorder.h" />
     <ClInclude Include="Shared\Interfaces\stdafx.h" />
     <ClInclude Include="Shared\KeyDefinitions.h" />
     <ClInclude Include="Shared\Movies\stdafx.h" />

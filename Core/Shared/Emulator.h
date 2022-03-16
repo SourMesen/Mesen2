@@ -24,7 +24,7 @@ class CheatManager;
 class MovieManager;
 class FrameLimiter;
 class DebugStats;
-class IControlManager;
+class BaseControlManager;
 class VirtualFile;
 class BaseVideoFilter;
 class ShortcutKeyHandler;
@@ -42,6 +42,7 @@ enum class EventType;
 enum class ConsoleRegion;
 enum class ConsoleType;
 enum class HashType;
+enum class TapeRecorderAction;
 
 struct ConsoleMemoryInfo
 {
@@ -154,7 +155,6 @@ public:
 	void Release();
 
 	void Run();
-	void RunSingleFrame();
 	void Stop(bool sendNotification, bool preventRecentGameSave = false);
 
 	void OnBeforeSendFrame();
@@ -208,11 +208,14 @@ public:
 	GameClient* GetGameClient();
 	shared_ptr<SystemActionManager> GetSystemActionManager();
 
-	IControlManager* GetControlManager();
+	BaseControlManager* GetControlManager();
 	
 	BaseVideoFilter* GetVideoFilter();
 
-	bool IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam);
+	void InputBarcode(uint64_t barcode, uint32_t digitCount);
+	void ProcessTapeRecorderAction(TapeRecorderAction action, string filename);
+
+	ShortcutState IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam);
 	bool IsKeyboardConnected();
 
 	void InitDebugger();

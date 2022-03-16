@@ -635,5 +635,11 @@ namespace Mesen.Debugger.Utilities
 		ImportWatchEntries,
 		[IconFile("Export")]
 		ExportWatchEntries,
+
+		[IconFile("Barcode")]
+		InputBarcode,
+
+		[IconFile("Tape")]
+		TapeRecorder,
 	}
 }

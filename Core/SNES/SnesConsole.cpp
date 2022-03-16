@@ -25,7 +25,7 @@
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
-#include "Shared/Interfaces/IControlManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
@@ -360,7 +360,7 @@ InternalRegisters* SnesConsole::GetInternalRegisters()
 	return _internalRegisters.get();
 }
 
-IControlManager* SnesConsole::GetControlManager()
+BaseControlManager* SnesConsole::GetControlManager()
 {
 	return _controlManager.get();
 }
