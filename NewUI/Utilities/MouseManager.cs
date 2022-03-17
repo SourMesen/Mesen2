@@ -76,15 +76,9 @@ namespace Mesen.Utilities
 		{
 			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
 			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && EmuApi.IsRunning()) {
+				//Close menu when renderer is clicked
 				_mainMenu.MainMenu.Close();
 				_renderer.Focus();
-			}
-
-			if(_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen) {
-				SetMouseOffScreen();
-				ReleaseMouse();
-				GlobalMouse.SetCursorIcon(CursorIcon.Arrow);
-				return;
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
@@ -99,7 +93,17 @@ namespace Mesen.Utilities
 			}
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 
-			if(((Window)_renderer.Parent!.VisualRoot!).IsActive && rendererScreenRect.Contains(mousePos)) {
+			if(_wnd.IsActive && (_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen)) {
+				//When mouse or keyboard focus is in menu, release mouse and keep arrow cursor
+				SetMouseOffScreen();
+				ReleaseMouse();
+				if(rendererScreenRect.Contains(mousePos)) {
+					GlobalMouse.SetCursorIcon(CursorIcon.Arrow);
+				}
+				return;
+			}
+
+			if(_wnd.IsActive && rendererScreenRect.Contains(mousePos)) {
 				//Send mouse state to emulation core
 				Point rendererPos = _renderer.PointToClient(mousePos);
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
