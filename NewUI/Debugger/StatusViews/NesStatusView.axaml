@@ -4,13 +4,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:du="using:Mesen.Debugger.Utilities"
-	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:vm="using:Mesen.Debugger.StatusViews"
 	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="350"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:NesStatusViewModel"
-	x:Class="Mesen.Debugger.Views.NesStatusView"
+	x:Class="Mesen.Debugger.StatusViews.NesStatusView"
 >
 	<Design.DataContext>
 		<vm:NesStatusViewModel />
@@ -26,7 +26,7 @@
 				<StackPanel DockPanel.Dock="Right">
 					<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
 						<TextBlock Margin="0">SP:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="255" />
+						<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="0xFF" />
 					</StackPanel>
 					<TextBox
 						TextWrapping="Wrap"
@@ -43,19 +43,19 @@
 					<WrapPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>A:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>X:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Y:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="0xFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>PC:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="65535" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="0xFFFF" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock>Cycle:</TextBlock>
@@ -68,7 +68,7 @@
 					<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 						<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
 							<TextBlock>P:</TextBlock>
-							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="255" />
+							<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="0xFF" />
 						</StackPanel>
 
 						<WrapPanel>
@@ -114,11 +114,11 @@
 						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="261" Min="-1" />
 
 						<TextBlock Grid.Row="2">Bus:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Hex="True" Max="16383" IsEnabled="False" />
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding BusAddr}" Hex="True" Max="0x3FFF" IsEnabled="False" />
 						<TextBlock Grid.Row="3">V:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="32767" />
+						<c:MesenNumericTextBox Grid.Row="3" Grid.Column="1" Value="{CompiledBinding VramAddr}" Hex="True" Max="0x7FFF" />
 						<TextBlock Grid.Row="4">T:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="32767" />
+						<c:MesenNumericTextBox Grid.Row="4" Grid.Column="1" Value="{CompiledBinding TmpVramAddr}" Hex="True" Max="0x7FFF" />
 						<TextBlock Grid.Row="5">X:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="5" Grid.Column="1" Value="{CompiledBinding ScrollX}" Hex="True" Max="7" />
 					</Grid>

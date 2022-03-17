@@ -8,6 +8,7 @@ using Mesen.Config;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Integration;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.StatusViews;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;

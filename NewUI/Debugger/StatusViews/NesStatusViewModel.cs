@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Text;
 
-namespace Mesen.Debugger.ViewModels
+namespace Mesen.Debugger.StatusViews
 {
 	public class NesStatusViewModel : BaseConsoleStatusViewModel
 	{

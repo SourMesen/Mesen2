@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Styling;
 using Avalonia.Input;
 using Mesen.Debugger.Utilities;
+using System.Globalization;
 
 namespace Mesen.Controls
 {
@@ -17,8 +18,8 @@ namespace Mesen.Controls
 		public static readonly StyledProperty<bool> TrimProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Trim));
 		public static readonly StyledProperty<bool> HexProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Hex));
 		public static readonly StyledProperty<IComparable> ValueProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
-		public static readonly StyledProperty<int?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, int?>(nameof(Min), null);
-		public static readonly StyledProperty<int?> MaxProperty = AvaloniaProperty.Register<MesenNumericTextBox, int?>(nameof(Max), null);
+		public static readonly StyledProperty<string?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, string?>(nameof(Min), null);
+		public static readonly StyledProperty<string?> MaxProperty = AvaloniaProperty.Register<MesenNumericTextBox, string?>(nameof(Max), null);
 
 		public bool Hex
 		{
@@ -38,13 +39,13 @@ namespace Mesen.Controls
 			set { SetValue(ValueProperty, value); }
 		}
 
-		public int? Min
+		public string? Min
 		{
 			get { return GetValue(MinProperty); }
 			set { SetValue(MinProperty, value); }
 		}
 
-		public int? Max
+		public string? Max
 		{
 			get { return GetValue(MaxProperty); }
 			set { SetValue(MaxProperty, value); }
@@ -72,6 +73,31 @@ namespace Mesen.Controls
 		{
 		}
 
+		int? GetMin()
+		{
+			return GetConvertedMinMaxValue(Min);
+		}
+
+		int? GetMax()
+		{
+			return GetConvertedMinMaxValue(Max);
+		}
+
+		private int? GetConvertedMinMaxValue(string? valStr)
+		{
+			if(valStr != null) {
+				NumberStyles styles = NumberStyles.Integer;
+				if(valStr.StartsWith("0x")) {
+					valStr = valStr.Substring(2);
+					styles = NumberStyles.HexNumber;
+				}
+				if(int.TryParse(valStr, styles, null, out int val)) {
+					return val;
+				}
+			}
+			return null;
+		}
+
 		protected override void OnTextInput(TextInputEventArgs e)
 		{
 			if(e.Text == null) {
@@ -79,7 +105,8 @@ namespace Mesen.Controls
 				return;
 			}
 
-			bool allowNegative = Min != null && Min.Value < 0;
+			int? min = GetMin();
+			bool allowNegative = min != null && min.Value < 0;
 
 			if(Hex) {
 				foreach(char c in e.Text.ToLowerInvariant()) {
@@ -110,8 +137,9 @@ namespace Mesen.Controls
 		private void UpdateValueFromText()
 		{
 			if(string.IsNullOrWhiteSpace(Text)) {
-				if(Min != null) {
-					SetNewValue(Math.Min(0, Min.Value));
+				int? min = GetMin();
+				if(min != null) {
+					SetNewValue(Math.Min(0, min.Value));
 				} else {
 					SetNewValue(0);
 				}
@@ -119,7 +147,7 @@ namespace Mesen.Controls
 
 			IComparable? val;
 			if(Hex) {
-				val = (IComparable?)_hexConverter.ConvertBack(Text, Value.GetType(), null, System.Globalization.CultureInfo.InvariantCulture);
+				val = (IComparable?)_hexConverter.ConvertBack(Text, Value.GetType(), null, CultureInfo.InvariantCulture);
 			} else {
 				if(!long.TryParse(Text, out long parsedValue)) {
 					val = Value;
@@ -136,8 +164,9 @@ namespace Mesen.Controls
 		private int GetMaxLength()
 		{
 			IFormattable max;
-			if(Max != null) {
-				max = Max;
+			int? maxProp = GetMax();
+			if(maxProp != null) {
+				max = maxProp.Value;
 			} else {
 				max = Value switch {
 					byte _ => byte.MaxValue,
@@ -157,11 +186,14 @@ namespace Mesen.Controls
 
 		private void SetNewValue(IComparable val)
 		{
-			if(Max != null && val.CompareTo(Convert.ChangeType(Max, val.GetType())) > 0) {
-				val = (IComparable)Convert.ChangeType(Max, val.GetType());
-			} else if(Min != null && val.CompareTo(Convert.ChangeType(Min, val.GetType())) < 0) {
-				val = (IComparable)Convert.ChangeType(Min, val.GetType());
-			} else if(Min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
+			int? max = GetMax();
+			int? min = GetMin();
+
+			if(max != null && val.CompareTo(Convert.ChangeType(max, val.GetType())) > 0) {
+				val = (IComparable)Convert.ChangeType(max, val.GetType());
+			} else if(min != null && val.CompareTo(Convert.ChangeType(min, val.GetType())) < 0) {
+				val = (IComparable)Convert.ChangeType(min, val.GetType());
+			} else if(min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
 				val = 0;
 			}
 
@@ -177,7 +209,7 @@ namespace Mesen.Controls
 			string? text;
 			if(Hex) {
 				string format = "X" + MaxLength;
-				text = (string?)_hexConverter.Convert(Value, typeof(string), format, System.Globalization.CultureInfo.InvariantCulture);
+				text = (string?)_hexConverter.Convert(Value, typeof(string), format, CultureInfo.InvariantCulture);
 			} else {
 				text = Value.ToString();
 			}

@@ -282,7 +282,7 @@
     <Compile Update="Debugger\Views\DebuggerDock\ToolContainerView.axaml.cs">
       <DependentUpon>ToolContainerView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\NesStatusView.axaml.cs">
+    <Compile Update="Debugger\StatusViews\NesStatusView.axaml.cs">
       <DependentUpon>NesStatusView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\BreakOnWindow.axaml.cs">
@@ -435,7 +435,7 @@
     <Compile Update="Views\AudioConfigView.axaml.cs">
       <DependentUpon>AudioConfigView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\SnesStatusView.axaml.cs">
+    <Compile Update="Debugger\StatusViews\SnesStatusView.axaml.cs">
       <DependentUpon>SnesStatusView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\DisassemblyView.axaml.cs">

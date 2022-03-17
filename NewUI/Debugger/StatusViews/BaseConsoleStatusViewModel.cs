@@ -1,7 +1,7 @@
 ﻿using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
-namespace Mesen.Debugger.ViewModels
+namespace Mesen.Debugger.StatusViews
 {
 	public abstract class BaseConsoleStatusViewModel : ViewModelBase
 	{

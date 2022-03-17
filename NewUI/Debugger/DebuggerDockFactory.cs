@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dock.Model.Controls;
 using Dock.Model.ReactiveUI;
+using Mesen.Debugger.StatusViews;
 
 namespace Mesen.Debugger
 {

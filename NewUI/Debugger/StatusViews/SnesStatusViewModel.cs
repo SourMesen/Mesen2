@@ -7,7 +7,7 @@ using System;
 using System.Reactive.Linq;
 using System.Text;
 
-namespace Mesen.Debugger.ViewModels
+namespace Mesen.Debugger.StatusViews
 {
 	public class SnesStatusViewModel : BaseConsoleStatusViewModel
 	{
