@@ -243,6 +243,9 @@
     <Compile Update="Debugger\Controls\SpritePreviewPanel.axaml.cs">
       <DependentUpon>SpritePreviewPanel.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\StatusViews\SpcStatusView.axaml.cs">
+      <DependentUpon>SpcStatusView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\DebuggerLogView.axaml.cs">
       <DependentUpon>DebuggerLogView.axaml</DependentUpon>
     </Compile>

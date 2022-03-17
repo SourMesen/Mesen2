@@ -108,6 +108,7 @@ namespace Mesen.Debugger.ViewModels
 			WatchList = new WatchListViewModel(CpuType);
 			ConsoleStatus = CpuType switch {
 				CpuType.Snes => new SnesStatusViewModel(),
+				CpuType.Spc => new SpcStatusViewModel(),
 				CpuType.Nes => new NesStatusViewModel(),
 				_ => null
 			};

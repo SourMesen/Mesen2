@@ -1,0 +1,95 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:vm="using:Mesen.Debugger.StatusViews"
+	xmlns:c="using:Mesen.Controls"
+	mc:Ignorable="d" d:DesignWidth="350"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:SpcStatusViewModel"
+	x:Class="Mesen.Debugger.StatusViews.SpcStatusView"
+>
+	<Design.DataContext>
+		<vm:SpcStatusViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/DebugStatusStyles.xaml" />
+	</UserControl.Styles>
+
+	<ScrollViewer>
+		<DockPanel>
+			<StackPanel DockPanel.Dock="Right">
+				<StackPanel Orientation="Horizontal" IsEnabled="{CompiledBinding EditAllowed}">
+					<TextBlock Margin="0">SP:</TextBlock>
+					<c:MesenNumericTextBox Value="{CompiledBinding RegSP}" Hex="True" Max="0xFF" />
+				</StackPanel>
+				<TextBox
+					TextWrapping="Wrap"
+					Width="72"
+					Height="65"
+					AcceptsReturn="True"
+					IsReadOnly="True"
+					ScrollViewer.VerticalScrollBarVisibility="Visible"
+					Text="{CompiledBinding StackPreview}"
+				/>
+			</StackPanel>
+
+			<StackPanel DockPanel.Dock="Top" IsEnabled="{CompiledBinding EditAllowed}">
+				<WrapPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>A:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>X:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegX}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>Y:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegY}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>PC:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegPC}" Hex="True" Max="0xFFFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>Cycle:</TextBlock>
+						<c:MesenNumericTextBox Width="70" Value="{CompiledBinding CycleCount}" IsEnabled="False" />
+					</StackPanel>
+				</WrapPanel>
+
+				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 2" />
+
+				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
+					<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
+						<TextBlock>P:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegPS}" Hex="True" Max="0xFF" />
+					</StackPanel>
+
+					<WrapPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagC}" Content="Carry" />
+							<CheckBox IsChecked="{CompiledBinding FlagZ}" Content="Zero" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagI}" Content="IRQ" />
+							<CheckBox IsChecked="{CompiledBinding FlagH}" Content="Half" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagB}" Content="Break" />
+							<CheckBox IsChecked="{CompiledBinding FlagP}" Content="Dir. Page" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagV}" Content="Overflow" />
+							<CheckBox IsChecked="{CompiledBinding FlagN}" Content="Negative" />
+						</StackPanel>
+					</WrapPanel>
+				</WrapPanel>
+			</StackPanel>
+		</DockPanel>
+	</ScrollViewer>
+</UserControl>
