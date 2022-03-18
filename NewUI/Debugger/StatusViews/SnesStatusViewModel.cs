@@ -45,6 +45,9 @@ namespace Mesen.Debugger.StatusViews
 
 		private CpuType _cpuType;
 
+		[Obsolete("For designer only")]
+		public SnesStatusViewModel() : this(CpuType.Snes) { }
+
 		public SnesStatusViewModel(CpuType cpuType)
 		{
 			_cpuType = cpuType;
