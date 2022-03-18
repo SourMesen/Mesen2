@@ -43,8 +43,12 @@ namespace Mesen.Debugger.StatusViews
 
 		[Reactive] public string StackPreview { get; set; } = "";
 
-		public SnesStatusViewModel()
+		private CpuType _cpuType;
+
+		public SnesStatusViewModel(CpuType cpuType)
 		{
+			_cpuType = cpuType;
+
 			this.WhenAnyValue(x => x.FlagC, x => x.FlagD, x => x.FlagI, x => x.FlagN).Subscribe(x => UpdatePsValue());
 			this.WhenAnyValue(x => x.FlagV, x => x.FlagZ, x => x.FlagM, x => x.FlagX).Subscribe(x => UpdatePsValue());
 
@@ -77,7 +81,7 @@ namespace Mesen.Debugger.StatusViews
 
 		public override void UpdateUiState()
 		{
-			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(CpuType.Snes);
+			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(_cpuType);
 			SnesPpuState ppu = DebugApi.GetPpuState<SnesPpuState>(CpuType.Snes);
 
 			RegA = cpu.A;
@@ -97,8 +101,9 @@ namespace Mesen.Debugger.StatusViews
 			FlagIrqCoprocessor = (cpu.IrqSource & (byte)SnesIrqSource.Coprocessor) != 0;
 
 			StringBuilder sb = new StringBuilder();
+			MemoryType memType = _cpuType.ToMemoryType();
 			for(UInt32 i = (uint)cpu.SP + 1; (i & 0xFF) != 0; i++) {
-				sb.Append($"${DebugApi.GetMemoryValue(MemoryType.SnesMemory, i):X2} ");
+				sb.Append($"${DebugApi.GetMemoryValue(memType, i):X2} ");
 			}
 			StackPreview = sb.ToString();
 
@@ -109,7 +114,7 @@ namespace Mesen.Debugger.StatusViews
 
 		public override void UpdateConsoleState()
 		{
-			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(CpuType.Snes);
+			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(_cpuType);
 
 			cpu.A = RegA;
 			cpu.X = RegX;
@@ -129,7 +134,7 @@ namespace Mesen.Debugger.StatusViews
 				(FlagIrqCoprocessor ? (byte)SnesIrqSource.Coprocessor : 0)
 			);
 
-			DebugApi.SetCpuState(cpu, CpuType.Snes);
+			DebugApi.SetCpuState(cpu, _cpuType);
 		}
 	}
 }
