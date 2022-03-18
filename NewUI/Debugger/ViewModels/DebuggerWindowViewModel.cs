@@ -109,6 +109,7 @@ namespace Mesen.Debugger.ViewModels
 			ConsoleStatus = CpuType switch {
 				CpuType.Snes => new SnesStatusViewModel(),
 				CpuType.Spc => new SpcStatusViewModel(),
+				CpuType.NecDsp => new NecDspStatusViewModel(),
 				CpuType.Nes => new NesStatusViewModel(),
 				_ => null
 			};
