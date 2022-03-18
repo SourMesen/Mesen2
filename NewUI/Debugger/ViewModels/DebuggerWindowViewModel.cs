@@ -112,6 +112,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.NecDsp => new NecDspStatusViewModel(),
 				CpuType.Sa1 => new SnesStatusViewModel(CpuType.Sa1),
 				CpuType.Gsu => new GsuStatusViewModel(),
+				CpuType.Cx4 => new Cx4StatusViewModel(),
 				CpuType.Nes => new NesStatusViewModel(),
 				_ => null
 			};

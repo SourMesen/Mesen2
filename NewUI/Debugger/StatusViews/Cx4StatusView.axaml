@@ -9,11 +9,11 @@
 	mc:Ignorable="d" d:DesignWidth="350"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
-	x:DataType="vm:GsuStatusViewModel"
-	x:Class="Mesen.Debugger.StatusViews.GsuStatusView"
+	x:DataType="vm:Cx4StatusViewModel"
+	x:Class="Mesen.Debugger.StatusViews.Cx4StatusView"
 >
 	<Design.DataContext>
-		<vm:GsuStatusViewModel />
+		<vm:Cx4StatusViewModel />
 	</Design.DataContext>
 
 	<UserControl.Styles>
@@ -23,7 +23,7 @@
 	<ScrollViewer>
 		<DockPanel>
 			<StackPanel DockPanel.Dock="Top" IsEnabled="{CompiledBinding EditAllowed}">
-				<WrapPanel MaxWidth="300" HorizontalAlignment="Left">
+				<WrapPanel MaxWidth="330" HorizontalAlignment="Left">
 					<WrapPanel.Styles>
 						<Style Selector="StackPanel > TextBlock">
 							<Setter Property="MinWidth" Value="25" />
@@ -35,98 +35,117 @@
 					
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R0:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg0}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg0}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R1:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg1}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg1}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R2:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg2}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg2}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R3:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg3}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg3}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R4:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg4}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg4}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R5:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg5}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg5}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R6:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg6}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg6}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R7:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg7}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg7}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R8:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg8}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg8}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R9:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg9}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg9}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R10:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg10}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg10}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R11:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg11}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg11}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R12:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg12}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg12}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R13:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg13}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg13}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R14:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg14}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg14}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>R15:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding Reg15}" Hex="True" Max="0xFFFF" />
+						<c:MesenNumericTextBox Value="{CompiledBinding Reg15}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 				</WrapPanel>
 
 				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 2" />
 
-				<WrapPanel Margin="0 5">
+				<WrapPanel Margin="0 3 0 0">
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>SRC:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSrc}" Hex="True" Max="0xFF" />
+						<TextBlock>MDR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegMdr}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>DST:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegDst}" Hex="True" Max="0xFF" />
+						<TextBlock>MAR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegMar}" Hex="True" Max="0xFFFFFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>DPR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegDpr}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 				</WrapPanel>
-				
+
+				<WrapPanel Margin="0 3">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>ROM:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RomBuffer}" Hex="True" Max="0xFFFFFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>RAM:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RamBuffer}" Hex="True" Max="0xFFFFFF" />
+					</StackPanel>
+				</WrapPanel>
+
 				<WrapPanel>
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>PBR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegPbr}" Hex="True" Max="0xFF" />
+						<TextBlock>PB:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegPb}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>ROMBR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RomBank}" Hex="True" Max="0xFF" />
+						<TextBlock>P:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegP}" Hex="True" Max="0xFFFF" />
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>RAMBR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RamBank}" Hex="True" Max="0xFF" />
+						<TextBlock>PC:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegPc}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>SP:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegSp}" Hex="True" Max="7" />
 					</StackPanel>
 				</WrapPanel>
 				
@@ -134,8 +153,8 @@
 
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 					<StackPanel Orientation="Horizontal">
-						<TextBlock>SFR:</TextBlock>
-						<c:MesenNumericTextBox Value="{CompiledBinding RegSfr}" Hex="True" Max="0xFFFF" IsEnabled="False" />
+						<TextBlock>A:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegA}" Hex="True" Max="0xFFFFFF" />
 					</StackPanel>
 					<WrapPanel>
 						<StackPanel>
@@ -143,23 +162,10 @@
 							<CheckBox IsChecked="{CompiledBinding FlagCarry}" Content="Carry" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagSign}" Content="Sign" />
+							<CheckBox IsChecked="{CompiledBinding FlagNegative}" Content="Negative" />
 							<CheckBox IsChecked="{CompiledBinding FlagOverflow}" Content="Overflow" />
 						</StackPanel>
 						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagRunning}" Content="Running" />
-							<CheckBox IsChecked="{CompiledBinding FlagRomReadPending}" Content="ROM Read" />
-						</StackPanel>
-						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagAlt1}" Content="Alt1" />
-							<CheckBox IsChecked="{CompiledBinding FlagAlt2}" Content="Alt2" />
-						</StackPanel>
-						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagImmLow}" Content="IL" IsVisible="False" />
-							<CheckBox IsChecked="{CompiledBinding FlagImmHigh}" Content="IH" IsVisible="False" />
-						</StackPanel>
-						<StackPanel>
-							<CheckBox IsChecked="{CompiledBinding FlagPrefix}" Content="Prefix" />
 							<CheckBox IsChecked="{CompiledBinding FlagIrq}" Content="IRQ" />
 						</StackPanel>
 					</WrapPanel>
