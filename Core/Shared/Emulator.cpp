@@ -904,8 +904,6 @@ Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 
 void Emulator::ResetDebugger(bool startDebugger)
 {
-	BlockDebuggerRequests();
-
 	shared_ptr<Debugger> currentDbg = _debugger.lock();
 	if(currentDbg) {
 		currentDbg->SuspendDebugger(false);
@@ -918,8 +916,6 @@ void Emulator::ResetDebugger(bool startDebugger)
 		auto emuLock = AcquireLock();
 		_debugger.reset(startDebugger ? new Debugger(this, _console.get()) : nullptr);
 	}
-
-	_allowDebuggerRequest = true;
 }
 
 void Emulator::InitDebugger()
@@ -928,7 +924,9 @@ void Emulator::InitDebugger()
 		//Lock to make sure we don't try to start debuggers in 2 separate threads at once
 		auto lock = _debuggerLock.AcquireSafe();
 		if(!_debugger) {
+			BlockDebuggerRequests();
 			ResetDebugger(true);
+			_allowDebuggerRequest = true;
 		}
 	}
 }
@@ -941,7 +939,9 @@ void Emulator::StopDebugger()
 	if(_debugger) {
 		auto lock = _debuggerLock.AcquireSafe();
 		if(_debugger) {
+			BlockDebuggerRequests();
 			ResetDebugger();
+			_allowDebuggerRequest = true;
 		}
 	}
 }
