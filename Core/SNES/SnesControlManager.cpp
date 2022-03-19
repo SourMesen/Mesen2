@@ -33,7 +33,9 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 	SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
 
 	switch(type) {
+		default:
 		case ControllerType::None: break;
+
 		case ControllerType::SnesController:
 			device.reset(new SnesController(_emu, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys));
 			break;
@@ -54,9 +56,6 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 			device.reset(new Multitap(_console, port, controllers));
 			break;
 		}
-
-		default:
-			throw std::runtime_error("Unsupported controller type");
 	}
 
 	return device;

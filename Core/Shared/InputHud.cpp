@@ -179,6 +179,15 @@ void InputHud::EndDrawController()
 void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controllerData)
 {
 	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
+	
+	bool hasVisiblePort = false;
+	for(int i = 0; i < 8; i++) {
+		hasVisiblePort |= cfg.DisplayInputPort[i];
+	}
+
+	if(!hasVisiblePort) {
+		return;
+	}
 
 	switch(cfg.DisplayInputPosition) {
 		default:

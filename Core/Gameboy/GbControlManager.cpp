@@ -31,10 +31,10 @@ shared_ptr<BaseControlDevice> GbControlManager::CreateControllerDevice(Controlle
 	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 
 	switch(type) {
-		case ControllerType::None: break;
-		case ControllerType::GameboyController: device.reset(new GbController(_emu, port, cfg.Controller.Keys)); break;
 		default:
-			throw std::runtime_error("Unsupported controller type");
+		case ControllerType::None: break;
+
+		case ControllerType::GameboyController: device.reset(new GbController(_emu, port, cfg.Controller.Keys)); break;
 	}
 
 	return device;
