@@ -17,6 +17,8 @@ namespace Mesen.Debugger.Controls
 	{
 		public static readonly StyledProperty<int> ValueProperty = AvaloniaProperty.Register<CodeScrollBar, int>(nameof(Value), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> MaximumProperty = AvaloniaProperty.Register<CodeScrollBar, int>(nameof(Maximum), 0);
+		
+		public static readonly StyledProperty<bool> ShowMarkersProperty = AvaloniaProperty.Register<CodeScrollBar, bool>(nameof(ShowMarkers), true);
 		public static readonly StyledProperty<int[]> MarkerTopProperty = AvaloniaProperty.Register<CodeScrollBar, int[]>(nameof(MarkerTop), new int[7]);
 		
 		public static readonly StyledProperty<Control?> BreakpointBarProperty = AvaloniaProperty.Register<CodeScrollBar, Control?>(nameof(BreakpointBar), null);
@@ -31,6 +33,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(MaximumProperty); }
 			set { SetValue(MaximumProperty, value); }
+		}
+
+		public bool ShowMarkers
+		{
+			get { return GetValue(ShowMarkersProperty); }
+			set { SetValue(ShowMarkersProperty, value); }
 		}
 
 		public int[] MarkerTop
@@ -98,6 +106,12 @@ namespace Mesen.Debugger.Controls
 			if(Maximum > 0) {
 				_thumb.Margin = new Thickness(0, (((double)Value / Maximum) * _panel.Bounds.Height) - 10, 0, 0);
 			}
+		}
+
+		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+		{
+			base.OnPointerWheelChanged(e);
+			Value = Math.Max(0, Math.Min(Maximum, Value - (int)(e.Delta.Y * 3)));
 		}
 
 		private void IncrementClick(object? sender, RoutedEventArgs e)

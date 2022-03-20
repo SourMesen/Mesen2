@@ -34,6 +34,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectionStart { get; set; }
 		[Reactive] public int SelectionEnd { get; set; }
 
+		public bool ShowScrollBarMarkers => CpuType != CpuType.NecDsp;
+
 		public DebugConfig Config { get; private set; }
 		public int VisibleRowCount { get; set; } = 100;
 		public bool ViewerActive { get; set; }

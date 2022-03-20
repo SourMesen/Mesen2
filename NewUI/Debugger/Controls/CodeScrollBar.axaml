@@ -43,7 +43,7 @@
 				
 				<ContentControl Content="{CompiledBinding BreakpointBar, ElementName=root}" />
 
-				<Canvas Classes="hidden">
+				<Canvas Classes="hidden" IsVisible="{CompiledBinding ShowMarkers, ElementName=root}">
 					<Canvas.Transitions>
 						<Transitions>
 							<DoubleTransition Property="Opacity" Duration="0:0:0.1" />

@@ -21,6 +21,7 @@
 			VerticalAlignment="Stretch"
 			Maximum="{CompiledBinding MaxScrollPosition}"
 			Value="{CompiledBinding ScrollPosition}"
+			ShowMarkers="{CompiledBinding ShowScrollBarMarkers}"
 		>
 			<dc:CodeScrollBar.BreakpointBar>
 				<dc:BreakpointBar />
