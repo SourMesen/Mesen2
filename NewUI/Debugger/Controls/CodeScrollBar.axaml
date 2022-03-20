@@ -28,7 +28,7 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<Border x:Name="VerticalRoot">
+	<Border>
 		<Grid RowDefinitions="Auto,*,Auto">
 			<Panel Grid.Row="1" Name="Panel" Background="#F0F0F0">
 				<Rectangle 
@@ -80,7 +80,7 @@
 				Height="{DynamicResource ScrollBarSize}"
 				BorderThickness="0"
 				Click="DecrementClick"
-				Width="16"
+				Width="18"
 			>
 				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
 					<Path
@@ -103,7 +103,7 @@
 				Height="{DynamicResource ScrollBarSize}"
 				BorderThickness="0"
 				Click="IncrementClick"
-				Width="16"
+				Width="18"
 			>
 				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
 					<Path

@@ -1,4 +1,6 @@
-﻿using Mesen.Debugger.Labels;
+﻿using Avalonia.Media;
+using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -141,6 +143,12 @@ namespace Mesen.Debugger
 				type += BreakOnExec ? "X" : "‒";
 			}
 			return type;
+		}
+
+		public Color GetColor()
+		{
+			DebuggerConfig config = ConfigManager.Config.Debug.Debugger;
+			return BreakOnExec? config.CodeExecBreakpointColor: (BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor);
 		}
 
 		public Breakpoint Clone()

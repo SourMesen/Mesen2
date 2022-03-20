@@ -47,7 +47,13 @@ namespace Mesen.Debugger.Controls
 					int address = bp.GetRelativeAddress();
 					if(address >= 0) {
 						int position = (int)(((double)address / maxAddress) * height) - 2;
-						context.FillRectangle(Brushes.DarkRed, new Rect(0, position, 4, 4));
+						if(bp.Enabled) {
+							SolidColorBrush brush = new SolidColorBrush(bp.GetColor());
+							context.FillRectangle(brush, new Rect(0, position, 4, 4));
+						} else {
+							Pen pen = new Pen(bp.GetColor().ToUint32());
+							context.DrawRectangle(pen, new Rect(0.5, position + 0.5, 3, 3));
+						}
 					}
 				}
 			}

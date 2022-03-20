@@ -85,7 +85,7 @@ namespace Mesen.Debugger.Disassembly
 			DebuggerConfig config = ConfigManager.Config.Debug.Debugger;
 			Color fgColor = Colors.White;
 			Color? bgColor = null;
-			Color bpColor = breakpoint.BreakOnExec ? config.CodeExecBreakpointColor : (breakpoint.BreakOnWrite ? config.CodeWriteBreakpointColor : config.CodeReadBreakpointColor);
+			Color bpColor = breakpoint.GetColor();
 			Color outlineColor = bpColor;
 			LineSymbol symbol;
 			if(breakpoint.Enabled) {
