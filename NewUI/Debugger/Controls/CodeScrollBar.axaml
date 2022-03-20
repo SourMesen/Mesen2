@@ -1,0 +1,123 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	d:DesignHeight="400"
+	x:Name="root"
+	x:Class="Mesen.Debugger.Controls.CodeScrollBar"
+>
+	<UserControl.Styles>
+		<Style Selector="Canvas.hidden, TextBlock.hidden">
+			<Setter Property="Opacity" Value="0"/>
+		</Style>
+		<Style Selector="Panel:pointerover Canvas.hidden, Panel:pointerover TextBlock.hidden">
+			<Setter Property="Opacity" Value="1"/>
+		</Style>
+		
+		<Style Selector="Panel TextBlock">
+			<Setter Property="FontFamily" Value="Consolas" />
+			<Setter Property="FontSize" Value="11" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="Foreground" Value="#444" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+	</UserControl.Styles>
+	
+	<Border x:Name="VerticalRoot">
+		<Grid RowDefinitions="Auto,*,Auto">
+			<Panel Grid.Row="1" Name="Panel" Background="#F0F0F0">
+				<Rectangle 
+					Name="Thumb"
+					Fill="#8AF"
+					Stroke="#00F"
+					StrokeThickness="1"
+					Height="20"
+					VerticalAlignment="Top"
+					Opacity="0.4"
+				/>
+				
+				<ContentControl Content="{CompiledBinding BreakpointBar, ElementName=root}" />
+
+				<Canvas Classes="hidden">
+					<Canvas.Transitions>
+						<Transitions>
+							<DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+						</Transitions>
+					</Canvas.Transitions>
+					<Canvas.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="FontFamily" Value="Consolas" />
+							<Setter Property="FontSize" Value="11" />
+							<Setter Property="VerticalAlignment" Value="Center" />
+							<Setter Property="Foreground" Value="#444" />
+							<Setter Property="Opacity" Value="1" />
+							<Setter Property="Canvas.Right" Value="1" />
+						</Style>
+					</Canvas.Styles>
+
+					<TextBlock Text="00" Canvas.Top="0" />
+					<TextBlock Text="20" Canvas.Top="{CompiledBinding MarkerTop[0], ElementName=root}" />
+					<TextBlock Text="40" Canvas.Top="{CompiledBinding MarkerTop[1], ElementName=root}" />
+					<TextBlock Text="60" Canvas.Top="{CompiledBinding MarkerTop[2], ElementName=root}" />
+					<TextBlock Text="80" Canvas.Top="{CompiledBinding MarkerTop[3], ElementName=root}" />
+					<TextBlock Text="A0" Canvas.Top="{CompiledBinding MarkerTop[4], ElementName=root}" />
+					<TextBlock Text="C0" Canvas.Top="{CompiledBinding MarkerTop[5], ElementName=root}" />
+					<TextBlock Text="E0" Canvas.Top="{CompiledBinding MarkerTop[6], ElementName=root}" />
+					<TextBlock Text="FF" Canvas.Bottom="0" />
+				</Canvas>
+			</Panel>
+			
+			<RepeatButton
+				HorizontalAlignment="Center"
+				Grid.Row="0"
+				Focusable="False"
+				MinWidth="{DynamicResource ScrollBarSize}"
+				Height="{DynamicResource ScrollBarSize}"
+				BorderThickness="0"
+				Click="DecrementClick"
+				Width="16"
+			>
+				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
+					<Path
+						Stroke="Black"
+						StrokeThickness="1"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center"
+						Width="20"
+						Height="20"
+						Data="M 19.091797 14.970703 L 10 5.888672 L 0.908203 14.970703 L 0.029297 14.091797 L 10 4.111328 L 19.970703 14.091797 Z"
+					/>
+				</Viewbox>
+			</RepeatButton>
+			
+			<RepeatButton
+				HorizontalAlignment="Center"
+				Grid.Row="2"
+				Focusable="False"
+				MinWidth="{DynamicResource ScrollBarSize}"
+				Height="{DynamicResource ScrollBarSize}"
+				BorderThickness="0"
+				Click="IncrementClick"
+				Width="16"
+			>
+				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
+					<Path
+						Stroke="Black"
+						StrokeThickness="1"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center"
+						Width="20"
+						Height="20"
+						Data="M 18.935547 4.560547 L 19.814453 5.439453 L 10 15.253906 L 0.185547 5.439453 L 1.064453 4.560547 L 10 13.496094 Z"
+					/>
+				</Viewbox>
+			</RepeatButton>
+		</Grid>
+	
+</Border>
+</UserControl>

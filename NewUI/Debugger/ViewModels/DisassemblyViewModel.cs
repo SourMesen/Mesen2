@@ -39,6 +39,7 @@ namespace Mesen.Debugger.ViewModels
 		public bool ViewerActive { get; set; }
 
 		private int _ignoreScrollUpdates = 0;
+		private Action? _refreshScrollbar = null;
 
 		[Obsolete("For designer only")]
 		public DisassemblyViewModel(): this(new DebuggerWindowViewModel(), new DebugConfig(), CpuType.Snes) { }
@@ -113,6 +114,13 @@ namespace Mesen.Debugger.ViewModels
 			if(lines.Length > 0 && lines[0].Address >= 0) {
 				SetTopAddress(lines[0].Address);
 			}
+
+			_refreshScrollbar?.Invoke();
+		}
+
+		public void SetRefreshScrollBar(Action? refreshScrollbar)
+		{
+			_refreshScrollbar = refreshScrollbar;
 		}
 
 		private void SetTopAddress(int address)

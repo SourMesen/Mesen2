@@ -16,18 +16,17 @@
 	</Design.DataContext>
 
 	<DockPanel>
-		<ScrollBar
+		<dc:CodeScrollBar
 			DockPanel.Dock="Right"
-			Orientation="Vertical"
 			VerticalAlignment="Stretch"
-			AllowAutoHide="False"
-			SmallChange="1"
-			LargeChange="10"
-			Minimum="0"
 			Maximum="{CompiledBinding MaxScrollPosition}"
 			Value="{CompiledBinding ScrollPosition}"
-		/>
-		
+		>
+			<dc:CodeScrollBar.BreakpointBar>
+				<dc:BreakpointBar />
+			</dc:CodeScrollBar.BreakpointBar>
+		</dc:CodeScrollBar>
+
 		<dc:DisassemblyViewer
 			Name="disViewer"
 			Lines="{CompiledBinding Lines}"

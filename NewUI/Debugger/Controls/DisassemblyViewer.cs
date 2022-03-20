@@ -396,7 +396,7 @@ namespace Mesen.Debugger.Controls
 	public class LineProgress
 	{
 		public int Current;
-		public int Maxixum;
+		public int Maximum;
 		public string Text = "";
 		public Color Color;
 	}
