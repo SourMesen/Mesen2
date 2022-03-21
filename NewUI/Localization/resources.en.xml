@@ -903,7 +903,10 @@
 			<Control ID="lblGeneralSettings">General settings</Control>
 			<Control ID="chkAutoResetCdl">Reset CDL when ROM changes</Control>
 			<Control ID="chkDisableDefaultLabels">Disable default labels</Control>
-			
+
+			<Control ID="lblDisassemblySettings">Disassembly settings</Control>
+			<Control ID="chkKeepActiveStatementInCenter">Keep active statement in the center</Control>
+
 			<Control ID="lblCopyCodeSettings">Copy selected code settings</Control>
 			<Control ID="chkCopyAddresses">Copy addresses</Control>
 			<Control ID="chkCopyByteCode">Copy byte code</Control>

@@ -141,7 +141,7 @@ namespace Mesen.Debugger.ViewModels
 			ActiveAddress = pc;
 			if(pc != null) {
 				SetSelectedRow((int)pc);
-				ScrollToAddress((uint)pc, ScrollDisplayPosition.Center);
+				ScrollToAddress((uint)pc, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
 			}
 		}
 
@@ -229,9 +229,9 @@ namespace Mesen.Debugger.ViewModels
 			return false;
 		}
 
-		private void ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center)
+		private void ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center, bool forceScroll = false)
 		{
-			if(IsAddressVisible((int)pc)) {
+			if(!forceScroll && IsAddressVisible((int)pc)) {
 				//Row is already visible, don't scroll
 				return;
 			}

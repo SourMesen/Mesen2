@@ -49,6 +49,14 @@
 							Content="{l:Translate chkDisableDefaultLabels}"
 						/>
 					</c:OptionSection>
+					
+					<c:OptionSection Header="{l:Translate lblDisassemblySettings}">
+						<CheckBox
+							IsChecked="{CompiledBinding Debugger.KeepActiveStatementInCenter}"
+							Content="{l:Translate chkKeepActiveStatementInCenter}"
+						/>
+					</c:OptionSection>
+					
 					<c:OptionSection Header="{l:Translate lblCopyCodeSettings}">
 						<CheckBox
 							IsChecked="{CompiledBinding Debugger.CopyAddresses}"
