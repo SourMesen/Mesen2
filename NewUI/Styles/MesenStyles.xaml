@@ -6,7 +6,6 @@
 >
 	<StyleInclude Source="/Styles/AvaloniaComboBoxStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaContextMenuStyles.xaml" />
-	<StyleInclude Source="/Styles/AvaloniaDataGridStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaMenuItemStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaNumericUpDownStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaScrollViewerStyles.xaml" />

@@ -24,6 +24,7 @@ namespace Mesen
 			StyleHelper.LoadStartupStyles();
 			if(Design.IsDesignMode) {
 				StyleHelper.ApplyTheme(MesenTheme.Light);
+				StyleHelper.LoadDebuggerStyles();
 			}
 			ResourceHelper.LoadResources(Language.English);
 		}
