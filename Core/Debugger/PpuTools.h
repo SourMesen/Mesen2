@@ -42,6 +42,8 @@ struct DebugSpriteInfo
 
 	int16_t X;
 	int16_t Y;
+	int16_t RawX;
+	int16_t RawY;
 
 	int16_t Bpp;
 	int16_t Palette;
@@ -64,6 +66,8 @@ public:
 		SpriteIndex = -1;
 		X = -1;
 		Y = -1;
+		RawX = -1;
+		RawY = -1;
 		Bpp = 2;
 		Palette = -1;
 		Priority = DebugSpritePriority::Undefined;

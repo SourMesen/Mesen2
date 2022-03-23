@@ -236,6 +236,8 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
+	sprite.RawY = sprite.Y;
+	sprite.RawX = sprite.X;
 	sprite.TileIndex = oamRam[i * 4 + 1];
 
 	uint8_t attributes = oamRam[i * 4 + 2];

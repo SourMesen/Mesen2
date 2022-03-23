@@ -218,6 +218,8 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = spriteX;
 	sprite.Y = spriteY;
+	sprite.RawX = sign | oamRam[addr];
+	sprite.RawY = spriteY;
 	sprite.Height = height;
 	sprite.Width = width;
 	sprite.TileIndex = oamRam[addr + 2];

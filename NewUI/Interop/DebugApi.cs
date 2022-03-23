@@ -822,6 +822,8 @@ namespace Mesen.Interop
 
 		public Int16 X;
 		public Int16 Y;
+		public Int16 RawX;
+		public Int16 RawY;
 
 		public Int16 Bpp;
 		public Int16 Palette;

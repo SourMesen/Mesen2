@@ -467,6 +467,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SpriteIndex { get; set; }
 		[Reactive] public int X { get; set; }
 		[Reactive] public int Y { get; set; }
+		[Reactive] public int RawX { get; set; }
+		[Reactive] public int RawY { get; set; }
 		[Reactive] public int PreviewX { get; set; }
 		[Reactive] public int PreviewY { get; set; }
 		[Reactive] public int Width { get; set; }
@@ -490,10 +492,14 @@ namespace Mesen.Debugger.ViewModels
 		public unsafe void Init(ref DebugSpriteInfo sprite, DebugSpritePreviewInfo previewInfo)
 		{
 			SpriteIndex = sprite.SpriteIndex;
+			
 			X = sprite.X;
 			Y = sprite.Y;
+			RawX = sprite.RawX;
+			RawY = sprite.RawY;
 			PreviewX = sprite.X + previewInfo.CoordOffsetX;
 			PreviewY = sprite.Y + previewInfo.CoordOffsetY;
+
 			Width = sprite.Width;
 			Height = sprite.Height;
 			TileIndex = sprite.TileIndex;

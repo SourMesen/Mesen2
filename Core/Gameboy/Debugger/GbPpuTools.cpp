@@ -168,9 +168,12 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 {
 	sprite.Bpp = 2;
 	sprite.SpriteIndex = i;
+	
 	sprite.Y = oamRam[i*4];
-
 	sprite.X = oamRam[i * 4 + 1];
+	sprite.RawY = sprite.Y;
+	sprite.RawX = sprite.X;
+
 	sprite.TileIndex = oamRam[i * 4 + 2];
 	uint8_t attributes = oamRam[i * 4 + 3];
 

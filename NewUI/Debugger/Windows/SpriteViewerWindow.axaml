@@ -154,7 +154,7 @@
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock VerticalAlignment="Center" Text="$" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding X, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding RawX, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding X}" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
@@ -165,7 +165,7 @@
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock VerticalAlignment="Center" Text="$" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding Y, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock VerticalAlignment="Center" Text="{Binding RawY, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding Y}" />
 									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
