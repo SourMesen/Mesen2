@@ -18,21 +18,21 @@ namespace Mesen.Debugger.Utilities
 		{
 			return new List<ContextMenuAction>() {
 				new ContextMenuAction() {
+					ActionType = ActionType.Continue,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Continue),
+					IsEnabled = () => EmuApi.IsPaused(),
+					OnClick = () => DebugApi.ResumeExecution()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Break,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Break),
+					IsEnabled = () => !EmuApi.IsPaused(),
+					OnClick = () => Step(getCpuType(), StepType.Step)
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.Custom,
-					DynamicText = () => {
-						if(EmuApi.IsPaused()) {
-							return ResourceHelper.GetEnumText(ActionType.Continue);
-						} else {
-							return ResourceHelper.GetEnumText(ActionType.Break);
-						}
-					},
-					DynamicIcon = () => {
-						if(EmuApi.IsPaused()) {
-							return "MediaPlay";
-						} else {
-							return "MediaPause";
-						}
-					},
+					IsVisible = () => false,
+					AllowedWhenHidden = true,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleBreakContinue),
 					OnClick = () => {
 						if(EmuApi.IsPaused()) {

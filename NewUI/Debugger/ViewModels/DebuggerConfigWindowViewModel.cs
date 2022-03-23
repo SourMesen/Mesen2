@@ -107,6 +107,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.Reset,
 				DebuggerShortcut.PowerCycle,
 				DebuggerShortcut.ToggleBreakContinue,
+				DebuggerShortcut.Continue,
+				DebuggerShortcut.Break,
 				DebuggerShortcut.StepInto,
 				DebuggerShortcut.StepOver,
 				DebuggerShortcut.StepOut,

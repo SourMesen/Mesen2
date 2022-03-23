@@ -1925,7 +1925,9 @@
 			<Value ID="OpenPaletteViewer">Open Palette Viewer</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
-			<Value ID="ToggleBreakContinue">Break/continue</Value>
+			<Value ID="ToggleBreakContinue">Toggle break/continue</Value>
+			<Value ID="Continue">Continue</Value>
+			<Value ID="Break">Break</Value>
 			<Value ID="StepInto">Step Into</Value>
 			<Value ID="StepOver">Step Over</Value>
 			<Value ID="StepOut">Step Out</Value>
