@@ -362,15 +362,24 @@ void Debugger::ProcessConfigChange()
 	}
 }
 
+void Debugger::GetTokenList(CpuType cpuType, char* tokenList)
+{
+	ExpressionEvaluator expEval(this, nullptr, cpuType);
+	expEval.GetTokenList(tokenList);
+}
+
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::Register };
-	if(useCache) {
+	if(useCache && _debuggers[(int)cpuType].Evaluator) {
 		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, resultType, operationInfo);
-	} else {
+	} else if(_debuggers[(int)cpuType].Debugger) {
 		ExpressionEvaluator expEval(this, _debuggers[(int)cpuType].Debugger.get(), cpuType);
 		return expEval.Evaluate(expression, resultType, operationInfo);
 	}
+
+	resultType = EvalResultType::Invalid;
+	return 0;
 }
 
 void Debugger::Run()

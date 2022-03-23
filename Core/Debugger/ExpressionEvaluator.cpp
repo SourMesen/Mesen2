@@ -453,14 +453,14 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 				case EvalOperators::BinaryAnd: token = left & right; break;
 				case EvalOperators::BinaryXor: token = left ^ right; break;
 				case EvalOperators::BinaryOr: token = left | right; break;
-				case EvalOperators::LogicalAnd: token = left && right; resultType = EvalResultType::Boolean; break;
-				case EvalOperators::LogicalOr: token = left || right; resultType = EvalResultType::Boolean; break;
+				case EvalOperators::LogicalAnd: token = (bool)(left && right); resultType = EvalResultType::Boolean; break;
+				case EvalOperators::LogicalOr: token = (bool)(left || right); resultType = EvalResultType::Boolean; break;
 
 				//Unary operators
 				case EvalOperators::Plus: token = right; break;
 				case EvalOperators::Minus: token = -right; break;
 				case EvalOperators::BinaryNot: token = ~right; break;
-				case EvalOperators::LogicalNot: token = !right; break;
+				case EvalOperators::LogicalNot: token = (bool)!right; break;
 				case EvalOperators::Bracket: token = _debugger->GetMemoryDumper()->GetMemoryValue(_cpuMemory, (uint32_t)right); break;
 				case EvalOperators::Braces: token = _debugger->GetMemoryDumper()->GetMemoryValueWord(_cpuMemory, (uint32_t)right); break;
 				default: throw std::runtime_error("Invalid operator");
@@ -497,6 +497,34 @@ ExpressionData ExpressionEvaluator::GetRpnList(string expression, bool &success)
 		return *cachedData;
 	} else {
 		return ExpressionData();
+	}
+}
+
+void ExpressionEvaluator::GetTokenList(char* tokenList)
+{
+	//Returns all CPU-specific tokens, sorted by the their EvalValues order
+	unordered_map<string, int64_t>* availableTokens = GetAvailableTokens();
+	
+	vector<std::pair<string, int64_t>> entries;
+	
+	int pos = 0;
+	for(auto entry : *availableTokens) {
+		entries.push_back(entry);
+	}
+
+	std::sort(entries.begin(), entries.end(), [&](const auto& a, const auto& b) -> bool {
+		return a.second < b.second;
+	});
+
+	for(auto entry : entries) {
+		if(pos + entry.first.size() + 1 >= 1000) {
+			break;
+		}
+
+		memcpy(tokenList + pos, entry.first.c_str(), entry.first.size());
+		pos += (int)entry.first.size();
+		tokenList[pos] = '|';
+		pos++;
 	}
 }
 

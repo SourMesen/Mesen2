@@ -1030,30 +1030,6 @@
 			<Control ID="chkEnable">Break Execution</Control>
 
 			<Control ID="lblConditionError">Condition contains invalid syntax or symbols.</Control>
-			<Control ID="lblConditionHelp">Most expressions/operators are accepted (C++ syntax).
-Note: Use the $ prefix to denote hexadecimal values.
-
-A/X/Y/PS/SP: Value of registers
-PC: Program Counter
-OpPC: Address of the current instruction's first byte
-PreviousOpPC: Address of the previous instruction's first byte
-Irq/Nmi: True if the corresponding flags are set
-Cycle/Scanline: Current cycle (0-340)/scanline(-1 to 260) of the PPU
-Frame: PPU frame number (since power on/reset)
-Value: Current value being read/written from/to memory
-IsRead: True if the CPU is reading from a memory address
-IsWrite: True if the CPU is writing to a memory address
-Address: Current CPU memory address being read/written
-RomAddress: Current ROM address being read/written
-[&lt;address&gt;]: (Byte) Memory value at &lt;address&gt; (CPU)
-{&lt;address&gt;}: (Word) Memory value at &lt;address&gt; (CPU)
-
-Examples:
-a == 10 || x == $23
-scanline == 10 &amp;&amp; (cycle >= 55 &amp;&amp; cycle &lt;= 100)
-x == [$150] || y == [10]
-[[$15] + y]   -&gt; Reads the value at address $15, adds Y to it and reads the value at the resulting address.
-{$FFEA}  -&gt; Returns the NMI handler's address.</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>

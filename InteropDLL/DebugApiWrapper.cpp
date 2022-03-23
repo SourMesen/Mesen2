@@ -80,6 +80,8 @@ extern "C"
 	DllExport void __stdcall StopLogTraceToFile() { WithDebugger(void, GetTraceLogFileSaver()->StopLogging()); }
 
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { WithDebugger(void, SetBreakpoints(breakpoints, length)); }
+
+	DllExport void __stdcall GetTokenList(CpuType cpuType, char* tokenList) { WithDebugger(void, GetTokenList(cpuType, tokenList)); }
 	DllExport int32_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType *resultType, bool useCache) { return WithDebugger(int32_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
 	
 	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo *callstackArray, uint32_t &callstackSize)

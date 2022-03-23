@@ -19,7 +19,7 @@ using Mesen.Debugger.Windows;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class WatchListViewModel : ViewModelBase
+	public class WatchListViewModel : ViewModelBase, IToolHelpTooltip
 	{
 		private static Regex _watchAddressOrLabel = new Regex(@"^(\[|{)(\s*((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+)))\s*[,]{0,1}\d*\s*(\]|})$", RegexOptions.Compiled);
 
@@ -28,6 +28,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public WatchManager Manager { get; }
 		public CpuType CpuType { get; }
+		public object HelpTooltip => ExpressionTooltipHelper.GetHelpTooltip(CpuType, true);
 
 		public WatchListViewModel() : this(CpuType.Snes) { }
 

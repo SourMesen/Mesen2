@@ -168,6 +168,7 @@
 	  <None Remove="Styles\AvaloniaNumericUpDownStyles.xaml" />
 	  <None Remove="Styles\AvaloniaScrollViewerStyles.xaml" />
 	  <None Remove="Styles\DebugStatusStyles.xaml" />
+	  <None Remove="Styles\DockStyles.xaml" />
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
@@ -591,6 +592,9 @@
 	  <AvaloniaResource Include="Assets\WebBrowser.png" />
 	  <AvaloniaResource Include="Assets\XbIcon.png" />
 	  <AvaloniaResource Include="Assets\Zoom2x.png" />
+	  <AvaloniaResource Include="Styles\DockStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\AvaloniaScrollViewerStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>

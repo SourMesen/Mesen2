@@ -133,9 +133,7 @@ namespace Mesen.Debugger.ViewModels
 			RomInfo romInfo = EmuApi.GetRomInfo();
 			StyleProvider.SetConsoleType(romInfo.ConsoleType);
 			foreach(CpuType type in romInfo.CpuTypes) {
-				tabs.Add(new TraceLoggerOptionTab() {
-					TabName = ResourceHelper.GetEnumText(type),
-					CpuType = type,
+				tabs.Add(new TraceLoggerOptionTab(type) {
 					Options = Config.GetCpuConfig(type)
 				});
 			}
@@ -302,10 +300,17 @@ namespace Mesen.Debugger.ViewModels
 
 	public class TraceLoggerOptionTab
 	{
-		[Reactive] public string TabName { get; set; } = "";
-		[Reactive] public CpuType CpuType { get; set; } = CpuType.Snes;
+		public string TabName { get; set; } = "";
+		public Control? HelpTooltip => ExpressionTooltipHelper.GetHelpTooltip(CpuType, false);
+		public CpuType CpuType { get; set; } = CpuType.Snes;
 
 		public TraceLoggerCpuConfig Options { get; set; } = new TraceLoggerCpuConfig();
+
+		public TraceLoggerOptionTab(CpuType cpuType)
+		{
+			CpuType = cpuType;
+			TabName = ResourceHelper.GetEnumText(cpuType);
+		}
 	}
 
 	public class TraceLoggerStyleProvider : ILineStyleProvider

@@ -10,13 +10,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointEditViewModel : DisposableViewModel
 	{
 		[Reactive] public Breakpoint Breakpoint { get; set; }
-		
+
+		public Control? HelpTooltip { get; } = null;
 		[Reactive] public bool IsConditionValid { get; private set; }
 		[Reactive] public bool OkEnabled { get; private set; }
 		[Reactive] public string MaxAddress { get; private set; } = "";
@@ -35,6 +37,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			HelpTooltip = ExpressionTooltipHelper.GetHelpTooltip(bp.CpuType, false);
 			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.ToCpuType() == bp.CpuType && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {
 				Breakpoint.MemoryType = (MemoryType)AvailableMemoryTypes[0];

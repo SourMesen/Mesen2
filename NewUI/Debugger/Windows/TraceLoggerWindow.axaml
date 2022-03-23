@@ -77,11 +77,12 @@
 				<DataTemplate>
 					<StackPanel>
 						<CheckBox Content="{l:Translate chkEnabled}" IsChecked="{Binding Options.Enabled}" />
-						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
 							<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFormat}" />
 							<TextBox Grid.Column="1" Text="{Binding Options.Format}" />
 							<TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{l:Translate lblCondition}" />
 							<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Options.Condition}" />
+							<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 						</Grid>
 					</StackPanel>
 				</DataTemplate>

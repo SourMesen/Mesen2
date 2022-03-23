@@ -102,6 +102,7 @@ public:
 
 	void ProcessConfigChange();
 
+	void GetTokenList(CpuType cpuType, char* tokenList);
 	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();

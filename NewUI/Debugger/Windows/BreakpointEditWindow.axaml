@@ -80,7 +80,7 @@
 				/>
 
 				<Image Grid.Column="1" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{CompiledBinding !IsConditionValid}" />
-				<Image Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblConditionHelp}" ToolTip.Placement="Right" />
+				<Image Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{CompiledBinding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 			</Grid>
 		</Grid>
 	</DockPanel>

@@ -227,6 +227,8 @@ public:
 	int32_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
 	ExpressionData GetRpnList(string expression, bool &success);
 
+	void GetTokenList(char* tokenList);
+
 	bool Validate(string expression);
 
 #if _DEBUG

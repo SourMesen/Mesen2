@@ -1,0 +1,100 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys="clr-namespace:System;assembly=netstandard"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels.DebuggerDock"
+	xmlns:converters="using:Dock.Avalonia.Converters"
+	xmlns:controls="using:Dock.Model.Controls"
+>
+	<!-- Add help icon/tooltip to tool window header -->
+	<Style Selector="ToolChromeControl">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid RowDefinitions="Auto,*" x:DataType="controls:IToolDock" x:CompileBindings="True">
+					<ContentPresenter x:Name="PART_ContentPresenter"
+											Background="{TemplateBinding Background}"
+											BorderBrush="{TemplateBinding BorderBrush}"
+											BorderThickness="{TemplateBinding BorderThickness}"
+											Content="{TemplateBinding Content}"
+											Padding="{TemplateBinding Padding}"
+											Grid.Row="1" />
+					<Border x:Name="PART_Border"
+							  BorderBrush="{TemplateBinding BorderBrush}"
+							  VerticalAlignment="Top"
+							  Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}">
+						<Border.ContextMenu>
+							<ContextMenu IsVisible="{Binding !!ActiveDockable}">
+								<MenuItem Header="_Float"
+											 Command="{Binding Owner.Factory.FloatDockable}"
+											 CommandParameter="{Binding}"
+											 IsVisible="{Binding ActiveDockable.CanFloat, FallbackValue=False}"
+											 x:CompileBindings="False" />
+								<MenuItem Header="_Hide"
+											 Command="{Binding Owner.Factory.PinDockable}"
+											 CommandParameter="{Binding ActiveDockable}"
+											 IsVisible="{Binding ActiveDockable.CanPin, FallbackValue=False}"
+											 x:CompileBindings="False" />
+								<MenuItem Header="_Close"
+											 Command="{Binding Owner.Factory.CloseDockable}"
+											 CommandParameter="{Binding ActiveDockable}"
+											 IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
+											 x:CompileBindings="False" />
+							</ContextMenu>
+						</Border.ContextMenu>
+						<Grid x:Name="PART_Grip">
+							<DockPanel LastChildFill="True" Margin="8 0">
+								<Panel DockPanel.Dock="Left">
+									<WrapPanel>
+										<TextBlock x:Name="PART_Title"
+												  Text="{Binding ActiveDockable.Title, FallbackValue=TITLE}" />
+										<ContentControl Content="{Binding ActiveDockable}">
+											<ContentControl.DataTemplates>
+												<DataTemplate DataType="dvm:BaseToolContainerViewModel">
+													<Image
+														Source="/Assets/Help.png"
+														Stretch="None"
+														Margin="0 0 5 0"
+														ToolTip.Tip="{Binding HelpContent}"
+														ToolTip.ShowDelay="100"
+														ToolTip.HorizontalOffset="10"
+														IsVisible="{Binding HelpContent, Converter={x:Static ObjectConverters.IsNotNull}}"
+													/>
+												</DataTemplate>
+											</ContentControl.DataTemplates>
+										</ContentControl>
+									</WrapPanel>
+								</Panel>
+								<Button x:Name="PART_CloseButton"
+										  Command="{Binding Owner.Factory.CloseDockable}"
+										  CommandParameter="{Binding ActiveDockable}"
+										  IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
+										  DockPanel.Dock="Right"
+										  x:CompileBindings="False">
+									<Viewbox>
+										<Path x:Name="PART_ClosePath" />
+									</Viewbox>
+								</Button>
+								<Button x:Name="PART_PinButton"
+										  Command="{Binding Owner.Factory.PinDockable}"
+										  CommandParameter="{Binding ActiveDockable}"
+										  IsVisible="{Binding ActiveDockable.CanPin, FallbackValue=False}"
+										  DockPanel.Dock="Right"
+										  x:CompileBindings="False">
+									<Viewbox>
+										<Path x:Name="PART_PinPath" />
+									</Viewbox>
+								</Button>
+								<Grid x:Name="PART_Grid" />
+							</DockPanel>
+						</Grid>
+					</Border>
+					<Panel x:Name="PART_Panel"
+							 Background="{TemplateBinding BorderBrush}"
+							 Height="1"
+							 VerticalAlignment="Top"
+							 Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}" />
+				</Grid>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Styles>

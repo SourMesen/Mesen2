@@ -334,6 +334,24 @@ namespace Mesen.Interop
 			return profilerData;
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetTokenList")] private static extern void GetTokenListWrapper(CpuType cpuType, IntPtr tokenListBuffer);
+		public static string[] GetTokenList(CpuType type)
+		{
+			byte[] tokenListBuffer = new byte[1000];
+
+			GCHandle handle = GCHandle.Alloc(tokenListBuffer, GCHandleType.Pinned);
+			IntPtr ptr = handle.AddrOfPinnedObject();
+			DebugApi.GetTokenListWrapper(type, ptr);
+			handle.Free();
+
+			int index = Array.IndexOf<byte>(tokenListBuffer, 0);
+			if(index >= 0) {
+				return UTF8Encoding.UTF8.GetString(tokenListBuffer, 0, index).Split("|", StringSplitOptions.RemoveEmptyEntries);
+			}
+
+			return Array.Empty<string>();
+		}
+
 		[DllImport(DllPath)] public static extern void ResetMemoryAccessCounts();
 		public static void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counts)
 		{
@@ -909,7 +927,7 @@ namespace Mesen.Interop
 		DivideBy0 = 3,
 		OutOfScope = 4
 	}
-	
+
 	public struct StackFrameInfo
 	{
 		public UInt32 Source;
