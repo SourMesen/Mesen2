@@ -303,10 +303,10 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			
-			ToolbarItems = GetDebugMenu(wnd, true);
-			DebugMenuItems = GetDebugMenu(wnd, false);
+			ToolbarItems = AddDisposables(GetDebugMenu(wnd, true));
+			DebugMenuItems = AddDisposables(GetDebugMenu(wnd, false));
 
-			FileMenuItems = new List<ContextMenuAction>() {
+			FileMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				SaveRomActionHelper.GetSaveRomAction(wnd),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
 				new ContextMenuSeparator(),
@@ -317,9 +317,9 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd.Close()
 				}
-			};
+			});
 
-			OptionMenuItems = new List<ContextMenuAction>() {
+			OptionMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowSettingsPanel,
 					IsSelected = () => cfg.ShowSettingsPanel,
@@ -363,9 +363,9 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenDebugSettings),
 					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.Debugger, wnd)
 				},
-			};
+			});
 
-			SearchMenuItems = new List<ContextMenuAction>() {
+			SearchMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAddress,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
@@ -383,7 +383,7 @@ namespace Mesen.Debugger.ViewModels
 					IsEnabled = () => false,
 					OnClick = () => { }
 				}
-			};
+			});
 
 			Dispatcher.UIThread.Post(() => {
 				DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
