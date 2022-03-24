@@ -44,6 +44,7 @@ namespace Mesen.Debugger.Windows
 		public void ProcessNotification(NotificationEventArgs e)
 		{
 			if(e.NotificationType == ConsoleNotificationType.GameLoaded) {
+				_model.UpdateRomInfo();
 				_model.RefreshData();
 			}
 

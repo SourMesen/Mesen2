@@ -77,10 +77,13 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
 
-		public void RefreshData()
+		public void UpdateRomInfo()
 		{
 			_romInfo = EmuApi.GetRomInfo();
+		}
 
+		public void RefreshData()
+		{
 			if(_romInfo.ConsoleType == ConsoleType.Snes) {
 				_state = DebugApi.GetConsoleState<SnesState>(ConsoleType.Snes);
 			} else if(_romInfo.ConsoleType == ConsoleType.Nes) {
