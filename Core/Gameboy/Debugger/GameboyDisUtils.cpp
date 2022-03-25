@@ -161,19 +161,91 @@ uint8_t GameboyDisUtils::GetOpSize(uint8_t opCode)
 
 bool GameboyDisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return (
-		opCode == 0xC4 || opCode == 0xCC || opCode == 0xD4 || opCode == 0xDC || //CALL conditional
-		opCode == 0xCD ||//Unconditional CALL
-		opCode == 0xC7 || opCode == 0xCF || opCode == 0xD7 || opCode == 0xDF || opCode == 0xE7 || opCode == 0xEF || opCode == 0xF7 || opCode == 0xFF //RST unconditional
-	);
+	switch(opCode) {
+		case 0xC4: //CALL NZ,a16
+		case 0xC7: //RST 00H
+		case 0xCD: //CALL a16
+		case 0xCC: //CALL Z,a16
+		case 0xCF: //RST 08H
+		case 0xD4: //CALL NC,a16
+		case 0xD7: //RST 10H
+		case 0xDC: //CALL C,a16
+		case 0xDF: //RST 18H
+		case 0xE7: //RST 20H
+		case 0xEF: //RST 28H
+		case 0xF7: //RST 30H
+		case 0xFF: //RST 38H
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 bool GameboyDisUtils::IsReturnInstruction(uint8_t opCode)
 {
-	return (
-		opCode == 0xC0 || opCode == 0xC8 || opCode == 0xD0 || opCode == 0xD8 || //Conditional RET
-		opCode == 0xC9 || opCode == 0xD9 //Unconditional RET/RETI
-	);
+	switch(opCode) {
+		case 0xC0: //RET NZ
+		case 0xC8: //RET Z
+		case 0xD0: //RET NC
+		case 0xD8: //RET C
+		case 0xC9: //RET
+		case 0xD9: //RETI
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool GameboyDisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x18: //JR r8
+		case 0xC3: //JP a16
+		case 0xC7: //RST 00H
+		case 0xC9: //RET
+		case 0xCD: //CALL a16
+		case 0xCF: //RST 08H
+		case 0xD7: //RST 10H
+		case 0xD9: //RETI
+		case 0xDF: //RST 18H
+		case 0xE7: //RST 20H
+		case 0xE9: //JP (HL)
+		case 0xEF: //RST 28H
+		case 0xF7: //RST 30H
+		case 0xFF: //RST 38H
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool GameboyDisUtils::IsConditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x20: //JR NZ,r8
+		case 0x28: //JR Z,r8
+		case 0x30: //JR NC,r8
+		case 0x38: //JR C,r8
+		case 0xC0: //RET NZ
+		case 0xC2: //JP NZ,a16
+		case 0xC4: //CALL NZ,a16
+		case 0xC8: //RET Z
+		case 0xCA: //JP Z,a16
+		case 0xCC: //CALL Z,a16
+		case 0xD0: //RET NC
+		case 0xD2: //JP NC,a16
+		case 0xD4: //CALL NC,a16
+		case 0xD8: //RET C
+		case 0xDA: //JP C,a16
+		case 0xDC: //CALL C,a16
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 string GameboyDisUtils::GetOpTemplate(uint8_t op, bool prefixed)

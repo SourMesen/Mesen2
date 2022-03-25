@@ -208,12 +208,12 @@ void Cx4::WriteRegister(uint8_t reg, uint32_t value)
 		case 0x67: case 0x77: _state.Regs[7] = value; break;
 		case 0x68: case 0x78: _state.Regs[8] = value; break;
 		case 0x69: case 0x79: _state.Regs[9] = value; break;
-		case 0x6A: case 0x7a: _state.Regs[10] = value; break;
-		case 0x6B: case 0x7b: _state.Regs[11] = value; break;
-		case 0x6C: case 0x7c: _state.Regs[12] = value; break;
-		case 0x6D: case 0x7d: _state.Regs[13] = value; break;
-		case 0x6E: case 0x7e: _state.Regs[14] = value; break;
-		case 0x6F: case 0x7f: _state.Regs[15] = value; break;
+		case 0x6A: case 0x7A: _state.Regs[10] = value; break;
+		case 0x6B: case 0x7B: _state.Regs[11] = value; break;
+		case 0x6C: case 0x7C: _state.Regs[12] = value; break;
+		case 0x6D: case 0x7D: _state.Regs[13] = value; break;
+		case 0x6E: case 0x7E: _state.Regs[14] = value; break;
+		case 0x6F: case 0x7F: _state.Regs[15] = value; break;
 	}
 }
 

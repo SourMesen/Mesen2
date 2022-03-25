@@ -16,7 +16,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 	constexpr const char* dataPointerOp[4] = { "DPL:NOP", "DPL:INC", "DPL:DEC", "DPL:CLR" };
 
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
-	uint32_t opCode = *(uint32_t*)info.GetByteCode();
+	uint32_t opCode = info.GetByteCode()[0] | (info.GetByteCode()[1] << 8) | (info.GetByteCode()[2] << 16);
 	uint8_t operationType = (opCode >> 22) & 0x03;
 
 	if(operationType <= 1) {
@@ -141,4 +141,87 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 	}
 
 	out += str.ToString();
+}
+
+bool NecDspDisUtils::IsUnconditionalJump(uint32_t opCode)
+{
+	switch(opCode & 0xC00000) {
+		case 0x400000: //RET
+			return true;
+
+		case 0x800000: {
+			//JMP
+			uint16_t jmpType = (opCode >> 13) & 0x1FF;
+			switch(jmpType) {
+				case 0x00:
+				case 0x100:
+				case 0x101:
+				case 0x140:
+				case 0x141:
+					return true;
+
+				default:
+					return false;
+			}
+		}
+
+		default:
+			return false;
+	}
+}
+
+bool NecDspDisUtils::IsConditionalJump(uint32_t opCode)
+{
+	switch(opCode & 0xC00000) {
+		case 0x800000: {
+			//JMP
+			uint16_t jmpType = (opCode >> 13) & 0x1FF;
+			switch(jmpType) {
+				case 0x00:
+				case 0x100:
+				case 0x101:
+				case 0x140:
+				case 0x141:
+					return false;
+
+				default:
+					return true;
+			}
+		}
+
+		default:
+			return false;
+	}
+}
+
+bool NecDspDisUtils::IsJumpToSub(uint32_t opCode)
+{
+	switch(opCode & 0xC00000) {
+		case 0x800000: {
+			//JMP
+			uint16_t jmpType = (opCode >> 13) & 0x1FF;
+			switch(jmpType) {
+				case 0x140:
+				case 0x141:
+					return true;
+
+				default:
+					return false;
+			}
+		}
+
+		default:
+			return false;
+	}
+}
+
+bool NecDspDisUtils::IsReturnInstruction(uint32_t opCode)
+{
+	switch(opCode & 0xC00000) {
+		case 0x400000: //RET
+			return true;
+
+		default:
+			return false;
+	}
 }

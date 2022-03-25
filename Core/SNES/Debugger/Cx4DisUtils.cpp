@@ -237,3 +237,48 @@ int32_t Cx4DisUtils::GetEffectiveAddress(DisassemblyInfo& info, Cx4State& state,
 			}
 	}
 }
+
+bool Cx4DisUtils::IsConditionalJump(uint8_t opCode, uint8_t param)
+{
+	switch(opCode) {
+		case 0x0C: //BEQ
+		case 0x10: //BCS
+		case 0x14: //BMI
+		case 0x18: //BVS
+		case 0x24: //SKIP
+		case 0x2C: //JEQ
+		case 0x30: //JCS
+		case 0x34: //JMI
+		case 0x38: //JVS
+			return true;
+
+		case 0xE0:
+			return param == 0x20;
+
+		default:
+			return false;
+	}
+}
+
+bool Cx4DisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x08: //BRA
+		case 0x28: //JSR
+		case 0x3C: //RTS
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool Cx4DisUtils::IsJumpToSub(uint8_t opCode)
+{
+	return 0x28; //JSR
+}
+
+bool Cx4DisUtils::IsReturnInstruction(uint8_t opCode)
+{
+	return 0x3C; //RTS
+}

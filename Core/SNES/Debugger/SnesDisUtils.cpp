@@ -175,6 +175,58 @@ uint8_t SnesDisUtils::GetOpSize(uint8_t opCode, uint8_t flags)
 	return GetOpSize(SnesDisUtils::OpMode[opCode], flags);
 }
 
+bool SnesDisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x00: //BRK
+		case 0x02: //COP
+		case 0x20: //JSR
+		case 0x22: //JSR
+		case 0x40: //RTI
+		case 0x4C: //JMP
+		case 0x5C: //JMP
+		case 0x60: //RTS
+		case 0x6B: //RTL
+		case 0x6C: //JMP
+		case 0x7C: //JMP
+		case 0x80: //BRA
+		case 0xDC: //JMP
+		case 0xFC: //JSR
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool SnesDisUtils::IsConditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x10: //BPL
+		case 0x30: //BMI
+		case 0x50: //BVC
+		case 0x70: //BVS
+		case 0x90: //BCC
+		case 0xB0: //BCS
+		case 0xD0: //BNE
+		case 0xF0: //BEQ
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool SnesDisUtils::IsJumpToSub(uint8_t opCode)
+{
+	return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
+}
+
+bool SnesDisUtils::IsReturnInstruction(uint8_t opCode)
+{
+	return opCode == 0x60 || opCode == 0x6B || opCode == 0x40;
+}
+
 uint8_t SnesDisUtils::OpSize[0x1F] = {
 	2, 2, 3, 0, 0, 3, 3, 3, 3, 3,
 	3, 4, 4, 3, 4, 1, 3, 2, 2, 2,

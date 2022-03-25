@@ -40,8 +40,10 @@ public:
 	void GetByteCode(string &out);
 
 	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);
-	static bool IsJumpToSub(uint8_t opCode, CpuType type);
-	static bool IsReturnInstruction(uint8_t opCode, CpuType type);
+	bool IsJumpToSub();
+	bool IsReturnInstruction();
+	
+	bool CanDisassembleNextOp();
 
 	bool IsUnconditionalJump();
 	bool IsJump();

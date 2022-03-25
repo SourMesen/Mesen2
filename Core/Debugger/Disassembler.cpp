@@ -34,19 +34,12 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 
 void Disassembler::InitSource(MemoryType type)
 {
-	uint8_t* src = _memoryDumper->GetMemoryBuffer(type);
 	uint32_t size = _memoryDumper->GetMemorySize(type);
-	_sources[(int)type] = { src, vector<DisassemblyInfo>(size), size };
+	_sources[(int)type] = { vector<DisassemblyInfo>(size), size };
 }
 
 DisassemblerSource& Disassembler::GetSource(MemoryType type)
 {
-#if _DEBUG
-	if(_sources[(int)type].Data == nullptr) {
-		throw std::runtime_error("Disassembler::GetSource() invalid memory type");
-	}
-#endif
-
 	return _sources[(int)type];
 }
 
@@ -71,7 +64,7 @@ uint32_t Disassembler::BuildCache(AddressInfo &addrInfo, uint8_t cpuFlags, CpuTy
 			break;
 		}
 
-		if(disInfo.IsUnconditionalJump()) {
+		if(!disInfo.CanDisassembleNextOp()) {
 			//Can't assume what follows is code, stop disassembling
 			break;
 		}
@@ -176,7 +169,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		}
 
 		DisassemblerSource& src = GetSource(addrInfo.Type);
-		DisassemblyInfo& disassemblyInfo = src.Cache[addrInfo.Address];
+		DisassemblyInfo disassemblyInfo = src.Cache[addrInfo.Address];
 		
 		uint8_t opSize = 0;
 
@@ -186,7 +179,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
 		} else if((isData && disData) || (!isData && !isCode && disUnident)) {
-			opSize = DisassemblyInfo::GetOpSize(src.Data[addrInfo.Address], 0, cpuType);
+			disassemblyInfo.Initialize(i, 0, cpuType, relAddress.Type, _memoryDumper);
+			opSize = disassemblyInfo.GetOpSize();
 		}
 
 		if(opSize > 0) {
@@ -222,7 +216,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 				results.push_back(DisassemblyResult(addrInfo, i));
 			}
 
-			if(DisassemblyInfo::IsReturnInstruction(src.Data[addrInfo.Address], cpuType)) {
+			if(disassemblyInfo.IsReturnInstruction()) {
 				//End of function
 				results.push_back(DisassemblyResult(i, LineFlags::VerifiedCode | LineFlags::BlockEnd | LineFlags::Empty));
 			} 

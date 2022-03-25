@@ -148,8 +148,89 @@ int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *con
 	return -1;
 }
 
-
 uint8_t SpcDisUtils::GetOpSize(uint8_t opCode)
 {
 	return _opSize[opCode];
+}
+
+bool SpcDisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x01: //TCALL0
+		case 0x0F: //BRK
+		case 0x11: //TCALL1
+		case 0x1F: //JMP
+		case 0x21: //TCALL2
+		case 0x2F: //BRA
+		case 0x31: //TCALL3
+		case 0x3F: //CALL
+		case 0x41: //TCALL4
+		case 0x4F: //PCALL
+		case 0x51: //TCALL5
+		case 0x5F: //JMP
+		case 0x61: //TCALL6
+		case 0x6F: //RET
+		case 0x71: //TCALL7
+		case 0x7F: //RETI
+		case 0x81: //TCALL8
+		case 0x91: //TCALL9
+		case 0xA1: //TCALLA
+		case 0xB1: //TCALLB
+		case 0xC1: //TCALLC
+		case 0xD1: //TCALLD
+		case 0xE1: //TCALLE
+		case 0xF1: //TCALLF
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool SpcDisUtils::IsConditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x03: //BBS0
+		case 0x10: //BPL
+		case 0x13: //BBC0
+		case 0x23: //BBS1
+		case 0x2E: //CBNE
+		case 0x30: //BMI
+		case 0x33: //BBC1
+		case 0x43: //BBS2
+		case 0x50: //BVC
+		case 0x53: //BBC2
+		case 0x63: //BBS3
+		case 0x6E: //DBNZ
+		case 0x70: //BVS
+		case 0x73: //BBC3
+		case 0x83: //BBS4
+		case 0x90: //BCC
+		case 0x93: //BBC4
+		case 0xA3: //BBS5
+		case 0xB0: //BCS
+		case 0xB3: //BBC5
+		case 0xC3: //BBS6
+		case 0xD0: //BNE
+		case 0xD3: //BBC6
+		case 0xDE: //CBNE
+		case 0xE3: //BBS7
+		case 0xF0: //BEQ
+		case 0xF3: //BBC7
+		case 0xFE: //DBNZ
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool SpcDisUtils::IsJumpToSub(uint8_t opCode)
+{
+	return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
+}
+
+bool SpcDisUtils::IsReturnInstruction(uint8_t opCode)
+{
+	return opCode == 0x6F || opCode == 0x7F;
 }

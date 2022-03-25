@@ -84,8 +84,7 @@ void NesDebugger::ProcessInstruction()
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::NesPrgRom) {
 			uint8_t flags = CdlFlags::Code;
-			if(_prevOpCode == 0x20) {
-				//JSR
+			if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
 				flags |= CdlFlags::SubEntryPoint;
 			}
 			_codeDataLogger->SetFlags(addressInfo.Address, flags);
@@ -96,19 +95,19 @@ void NesDebugger::ProcessInstruction()
 	}
 
 	uint32_t pc = state.PC;
-	if(_prevOpCode == 0x20) {
+	if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
 		//JSR
-		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, CpuType::Nes);
-		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
+		uint8_t opSize = NesDisUtils::GetOpSize(_prevOpCode);
+		uint32_t returnPc = (_prevProgramCounter + opSize) & 0xFFFF;
 		AddressInfo srcAddress = _mapper->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo retAddress = _mapper->GetAbsoluteAddress(returnPc);
 		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-	} else if(_prevOpCode == 0x60 || _prevOpCode == 0x40) {
+	} else if(NesDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS, RTI
 		_callstackManager->Pop(addressInfo, pc);
 	}
 
-	if(_step->BreakAddress == (int32_t)pc && (_prevOpCode == 0x60 || _prevOpCode == 0x40)) {
+	if(_step->BreakAddress == (int32_t)pc && NesDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 		_step->Break(BreakSource::CpuStep);
 	}
@@ -232,7 +231,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::StepOver:
 			if(_prevOpCode == 0x20 || _prevOpCode == 0x00) {
 				//JSR, BRK
-				step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Nes)) & 0xFFFF);
+				step.BreakAddress = (_prevProgramCounter + NesDisUtils::GetOpSize(_prevOpCode)) & 0xFFFF;
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;

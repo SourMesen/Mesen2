@@ -92,7 +92,7 @@ void GbDebugger::ProcessInstruction()
 
 	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
 		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
-		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
+		uint8_t opSize = GameboyDisUtils::GetOpSize(_prevOpCode);
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
@@ -232,7 +232,7 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
 		case StepType::StepOver:
 			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
-				step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Gameboy);
+				step.BreakAddress = _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode);
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;

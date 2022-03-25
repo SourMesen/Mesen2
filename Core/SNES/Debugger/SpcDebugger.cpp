@@ -3,6 +3,7 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/Debugger/SpcDebugger.h"
+#include "SNES/Debugger/SpcDisUtils.h"
 #include "SNES/Debugger/DummySpc.h"
 #include "SNES/Debugger/TraceLogger/SpcTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
@@ -58,14 +59,14 @@ void SpcDebugger::ProcessInstruction()
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
-	if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
+	if(SpcDisUtils::IsJumpToSub(_prevOpCode)) {
 		//JSR, BRK
-		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
+		uint8_t opSize = SpcDisUtils::GetOpSize(_prevOpCode);
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo ret = _spc->GetAbsoluteAddress(returnPc);
 		_callstackManager->Push(src, _prevProgramCounter, addressInfo, addr, ret, returnPc, StackFrameFlags::None);
-	} else if(_prevOpCode == 0x6F || _prevOpCode == 0x7F) {
+	} else if(SpcDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS, RTI
 		_callstackManager->Pop(addressInfo, addr);
 
@@ -161,7 +162,7 @@ void SpcDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::StepOver:
 			if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
 				//JSR, BRK
-				step.BreakAddress = _prevProgramCounter + DisassemblyInfo::GetOpSize(_prevOpCode, 0, CpuType::Spc);
+				step.BreakAddress = _prevProgramCounter + SpcDisUtils::GetOpSize(_prevOpCode);
 			} else {
 				//For any other instruction, step over is the same as step into
 				step.StepCount = 1;

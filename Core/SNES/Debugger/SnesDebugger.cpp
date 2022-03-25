@@ -128,20 +128,21 @@ void SnesDebugger::ProcessInstruction()
 		}
 	}
 
-	if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+	if(SnesDisUtils::IsJumpToSub(_prevOpCode)) {
 		//JSR, JSL
-		uint8_t opSize = DisassemblyInfo::GetOpSize(_prevOpCode, state.PS, _cpuType);
+		uint8_t opSize = SnesDisUtils::GetOpSize(_prevOpCode, state.PS);
 		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
 		AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
 		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, addr, retAddress, returnPc, StackFrameFlags::None);
-	} else if(_prevOpCode == 0x60 || _prevOpCode == 0x6B || _prevOpCode == 0x40) {
+	} else if(SnesDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS, RTL, RTI
 		_callstackManager->Pop(addressInfo, addr);
 	}
 
-	if(_step->BreakAddress == (int32_t)addr && (_prevOpCode == 0x60 || _prevOpCode == 0x40 || _prevOpCode == 0x6B || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
+	if(_step->BreakAddress == (int32_t)addr && (SnesDisUtils::IsReturnInstruction(_prevOpCode) || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+		//Also used for MVN/MVP
 		_step->Break(BreakSource::CpuStep);
 	}
 
@@ -151,17 +152,12 @@ void SnesDebugger::ProcessInstruction()
 	_step->ProcessCpuExec();
 
 	if(_debuggerEnabled) {
-		if(value == 0x00 || value == 0x02 || value == 0x42 || value == 0xDB) {
-			//Break on BRK/STP/WDM/COP
-			if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
-				_step->Break(BreakSource::BreakOnBrk);
-			} else if(value == 0x02 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) {
-				_step->Break(BreakSource::BreakOnCop);
-			} else if(value == 0x42 && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) {
-				_step->Break(BreakSource::BreakOnWdm);
-			} else if(value == 0xDB && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
-				_step->Break(BreakSource::BreakOnStp);
-			}
+		//Break on BRK/STP/WDM/COP
+		switch(value) {
+			case 0x00: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) { _step->Break(BreakSource::BreakOnBrk); } break;
+			case 0x02: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) { _step->Break(BreakSource::BreakOnCop); } break;
+			case 0x42: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) { _step->Break(BreakSource::BreakOnWdm); } break;
+			case 0xDB: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) { _step->Break(BreakSource::BreakOnStp); } break;
 		}
 	}
 	
@@ -267,7 +263,7 @@ void SnesDebugger::Step(int32_t stepCount, StepType type)
 			case StepType::StepOver:
 				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
 					//JSR, JSL, BRK, COP, MVP, MVN
-					step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + DisassemblyInfo::GetOpSize(_prevOpCode, 0, _cpuType)) & 0xFFFF);
+					step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + SnesDisUtils::GetOpSize(_prevOpCode, 0)) & 0xFFFF);
 				} else {
 					//For any other instruction, step over is the same as step into
 					step.StepCount = 1;

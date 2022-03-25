@@ -55,16 +55,17 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	_consoleType = _emu->GetConsoleType();
 
+	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
+	_cpuTypes = unordered_set<CpuType>(cpuTypes.begin(), cpuTypes.end());
+	_mainCpuType = cpuTypes[0];
+
 	_labelManager.reset(new LabelManager(this));
-	
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, this));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
 	_scriptManager.reset(new ScriptManager(this));
 	_traceLogSaver.reset(new TraceLogFileSaver());
 
-	_cpuTypes = _emu->GetCpuTypes();
-	_mainCpuType = _cpuTypes[0];
 	for(CpuType type : _cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
 		switch(type) {
@@ -590,6 +591,11 @@ AddressInfo Debugger::GetRelativeAddress(AddressInfo absAddress, CpuType cpuType
 	return _console->GetRelativeAddress(absAddress, cpuType);
 }
 
+bool Debugger::HasCpuType(CpuType cpuType)
+{
+	return _cpuTypes.find(cpuType) != _cpuTypes.end();
+}
+
 void Debugger::SetCdlData(CpuType cpuType, uint8_t *cdlData, uint32_t length)
 {
 	DebugBreakHelper helper(this);
@@ -608,8 +614,7 @@ void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
 	
-	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
-	for(CpuType type : _emu->GetCpuTypes()) {
+	for(CpuType type : _cpuTypes) {
 		RebuildPrgCache(type);
 	}
 }

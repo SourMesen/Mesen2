@@ -16,7 +16,6 @@ enum class CpuType : uint8_t;
 
 struct DisassemblerSource
 {
-	uint8_t *Data = nullptr;
 	vector<DisassemblyInfo> Cache;
 	uint32_t Size = 0;
 };

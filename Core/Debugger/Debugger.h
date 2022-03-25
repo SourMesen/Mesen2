@@ -58,7 +58,7 @@ private:
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	CpuType _mainCpuType = CpuType::Snes;
-	vector<CpuType> _cpuTypes;
+	unordered_set<CpuType> _cpuTypes;
 	ConsoleType _consoleType = ConsoleType::Snes;
 
 	unique_ptr<ScriptManager> _scriptManager;
@@ -136,6 +136,8 @@ public:
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);
 	AddressInfo GetRelativeAddress(AddressInfo absAddress, CpuType cpuType);
+
+	bool HasCpuType(CpuType cpuType);
 
 	void GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData);
 	void SetCdlData(CpuType cpuType, uint8_t * cdlData, uint32_t length);

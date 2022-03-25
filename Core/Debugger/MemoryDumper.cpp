@@ -40,6 +40,10 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 	} else if(Gameboy* gb = dynamic_cast<Gameboy*>(console)) {
 		_gameboy = gb;
 	}
+
+	for(int i = 0; i <= (int)MemoryType::Register; i++) {
+		_memorySize[i] = InternalGetMemorySize((MemoryType)i);
+	}
 }
 
 void MemoryDumper::SetMemoryState(MemoryType type, uint8_t *buffer, uint32_t length)
@@ -61,9 +65,16 @@ uint8_t* MemoryDumper::GetMemoryBuffer(MemoryType type)
 
 uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 {
-	vector<CpuType> cpuTypes = _emu->GetCpuTypes();
-	CpuType cpuType = DebugUtilities::ToCpuType(type);
-	if(std::find(cpuTypes.begin(), cpuTypes.end(), cpuType) == cpuTypes.end()) {
+	if(type <= DebugUtilities::GetLastCpuMemoryType()) {
+		return _memorySize[(int)type];
+	} else {
+		return _emu->GetMemory(type).Size;
+	}
+}
+
+uint32_t MemoryDumper::InternalGetMemorySize(MemoryType type)
+{
+	if(!_debugger->HasCpuType(DebugUtilities::ToCpuType(type))) {
 		return 0;
 	}
 
@@ -220,8 +231,9 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 void MemoryDumper::GetMemoryValues(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t* output)
 {
 	int x = 0;
-	for(uint32_t i = start; i <= end; i++) {
-		output[x++] = GetMemoryValue(memoryType, i);
+	uint32_t size = GetMemorySize(memoryType);
+	for(uint32_t i = start; i <= end && i < size; i++) {
+		output[x++] = InternalGetMemoryValue(memoryType, i);
 	}
 }
 
@@ -231,6 +243,11 @@ uint8_t MemoryDumper::GetMemoryValue(MemoryType memoryType, uint32_t address, bo
 		return 0;
 	}
 
+	return InternalGetMemoryValue(memoryType, address, disableSideEffects);
+}
+
+uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects)
+{
 	switch(memoryType) {
 		//TODO
 		case MemoryType::SnesMemory: return _memoryManager->Peek(address);
@@ -253,7 +270,7 @@ uint16_t MemoryDumper::GetMemoryValueWord(MemoryType memoryType, uint32_t addres
 {
 	uint32_t memorySize = GetMemorySize(memoryType);
 	uint8_t lsb = GetMemoryValue(memoryType, address);
-	uint8_t msb = GetMemoryValue(memoryType, (address + 1) & (memorySize - 1));
+	uint8_t msb = GetMemoryValue(memoryType, address + 1 >= memorySize ? 0 : address + 1);
 	return (msb << 8) | lsb;
 }
 

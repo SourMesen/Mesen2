@@ -236,3 +236,53 @@ int32_t GsuDisUtils::GetEffectiveAddress(DisassemblyInfo& info, SnesConsole* con
 
 	return -1;
 }
+
+bool GsuDisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x05: //BRA
+		case 0x98: //JMP
+		case 0x99: //JMP
+		case 0x9A: //JMP
+		case 0x9B: //JMP
+		case 0x9C: //JMP
+		case 0x9D: //JMP
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool GsuDisUtils::IsConditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x06: //BLT
+		case 0x07: //BGE
+		case 0x08: //BNE
+		case 0x09: //BEQ
+		case 0x0A: //BPL
+		case 0x0B: //BMI
+		case 0x0C: //BCC
+		case 0x0D: //BCS
+		case 0x0E: //BCV
+		case 0x0F: //BVS
+		case 0x3C: //LOOP
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+uint8_t GsuDisUtils::GetOpSize(uint8_t opCode)
+{
+	if(opCode >= 0x05 && opCode <= 0x0F) {
+		return 2;
+	} else if(opCode >= 0xA0 && opCode <= 0xAF) {
+		return 2;
+	} else if(opCode >= 0xF0 && opCode <= 0xFF) {
+		return 3;
+	}
+	return 1;
+}

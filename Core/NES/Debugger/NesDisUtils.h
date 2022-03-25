@@ -22,4 +22,8 @@ public:
 	static char const* const GetOpName(uint8_t opCode);
 	static NesAddrMode GetOpMode(uint8_t opCode);
 	static bool IsOpUnofficial(uint8_t opCode);
+	static bool IsUnconditionalJump(uint8_t opCode);
+	static bool IsConditionalJump(uint8_t opCode);
+	static bool IsJumpToSub(uint8_t opCode);
+	static bool IsReturnInstruction(uint8_t opCode);
 };

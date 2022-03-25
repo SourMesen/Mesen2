@@ -67,19 +67,7 @@ AudioConfig& EmuSettings::GetAudioConfig()
 
 void EmuSettings::SetInputConfig(InputConfig& config)
 {
-	//TODO
-	/*bool controllersChanged = false;
-	for(int i = 0; i < 5; i++) {
-		controllersChanged |= _input.Controllers[i].Type != config.Controllers[i].Type;
-	}
-	*/
 	_input = config;
-	//TODO
-	/*
-	if(controllersChanged) {
-		//Used by net play
-		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
-	}*/
 }
 
 InputConfig& EmuSettings::GetInputConfig()

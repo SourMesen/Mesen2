@@ -144,25 +144,12 @@ void DisassemblyInfo::GetByteCode(string &out)
 uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 {
 	switch(type) {
-		case CpuType::Sa1:
-		case CpuType::Snes: 
-			return SnesDisUtils::GetOpSize(opCode, flags);
-
+		case CpuType::Snes: return SnesDisUtils::GetOpSize(opCode, flags);
 		case CpuType::Spc: return SpcDisUtils::GetOpSize(opCode);
-		
-		case CpuType::Gsu: 
-			if(opCode >= 0x05 && opCode <= 0x0F) {
-				return 2;
-			} else if(opCode >= 0xA0 && opCode <= 0xAF) {
-				return 2;
-			} else if(opCode >= 0xF0 && opCode <= 0xFF) {
-				return 3;
-			}
-			return 1;
-
 		case CpuType::NecDsp: return 3;
+		case CpuType::Sa1:return SnesDisUtils::GetOpSize(opCode, flags);
+		case CpuType::Gsu: return GsuDisUtils::GetOpSize(opCode);
 		case CpuType::Cx4: return 2;
-		
 		case CpuType::Gameboy: return GameboyDisUtils::GetOpSize(opCode);
 		case CpuType::Nes: return NesDisUtils::GetOpSize(opCode);
 	}
@@ -170,91 +157,69 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 	throw std::runtime_error("GetOpSize - Unsupported CPU type");
 }
 
-//TODO: This is never called, removed?
-bool DisassemblyInfo::IsJumpToSub(uint8_t opCode, CpuType type)
+bool DisassemblyInfo::IsJumpToSub()
 {
-	switch(type) {
-		case CpuType::Sa1:
-		case CpuType::Snes:
-			return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
-
-		case CpuType::Spc: return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
-		
-		case CpuType::Gameboy: return GameboyDisUtils::IsJumpToSub(opCode);
-		
-		case CpuType::Gsu:
-		case CpuType::NecDsp:
-		case CpuType::Cx4:
-			return false;
-
-		case CpuType::Nes:
-			return opCode == 0x20;
+	switch(_cpuType) {
+		case CpuType::Snes: return SnesDisUtils::IsJumpToSub(GetOpCode());
+		case CpuType::Spc: return SpcDisUtils::IsJumpToSub(GetOpCode());
+		case CpuType::NecDsp: return NecDspDisUtils::IsJumpToSub(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::Sa1: return SnesDisUtils::IsJumpToSub(GetOpCode());
+		case CpuType::Gsu: return false; //GSU has no JSR op codes
+		case CpuType::Cx4: return Cx4DisUtils::IsJumpToSub(GetByteCode()[1]);
+		case CpuType::Gameboy: return GameboyDisUtils::IsJumpToSub(GetOpCode());
+		case CpuType::Nes: return NesDisUtils::IsJumpToSub(GetOpCode());
 	}
 
 	throw std::runtime_error("IsJumpToSub - Unsupported CPU type");
 }
 
-bool DisassemblyInfo::IsReturnInstruction(uint8_t opCode, CpuType type)
+bool DisassemblyInfo::IsReturnInstruction()
 {
-	//RTS/RTI
-	switch(type) {
-		case CpuType::Sa1:
-		case CpuType::Snes:
-			return opCode == 0x60 || opCode == 0x6B || opCode == 0x40;
-
-		case CpuType::Spc: return opCode == 0x6F || opCode == 0x7F;
-
-		case CpuType::Gameboy: return GameboyDisUtils::IsReturnInstruction(opCode);
-
-		case CpuType::Gsu:
-		case CpuType::NecDsp:
-		case CpuType::Cx4:
-			return false;
-
-		case CpuType::Nes:
-			return opCode == 0x60;
+	switch(_cpuType) {
+		case CpuType::Snes: return SnesDisUtils::IsReturnInstruction(GetOpCode());
+		case CpuType::Spc: return SpcDisUtils::IsReturnInstruction(GetOpCode());
+		case CpuType::NecDsp: return NecDspDisUtils::IsReturnInstruction(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::Sa1: return SnesDisUtils::IsReturnInstruction(GetOpCode());
+		case CpuType::Gsu: return false; //GSU has no RTS/RTI op codes
+		case CpuType::Cx4: return Cx4DisUtils::IsReturnInstruction(GetByteCode()[1]);
+		case CpuType::Gameboy: return GameboyDisUtils::IsReturnInstruction(GetOpCode());
+		case CpuType::Nes: return NesDisUtils::IsReturnInstruction(GetOpCode());
 	}
 	
 	throw std::runtime_error("IsReturnInstruction - Unsupported CPU type");
 }
 
-bool DisassemblyInfo::IsUnconditionalJump()
+bool DisassemblyInfo::CanDisassembleNextOp()
 {
-	uint8_t opCode = GetOpCode();
+	if(IsUnconditionalJump()) {
+		return false;
+	}
+
+	//TODO cleanup
 	switch(_cpuType) {
 		case CpuType::Sa1:
 		case CpuType::Snes:
-			if(opCode == 0x00 || opCode == 0x20 || opCode == 0x40 || opCode == 0x60 || opCode == 0x80 || opCode == 0x22 || opCode == 0xFC || opCode == 0x6B || opCode == 0x4C || opCode == 0x5C || opCode == 0x6C || opCode == 0x7C || opCode == 0x02) {
-				//Jumps, RTI, RTS, BRK, COP, etc., stop disassembling
-				return true;
-			} else if(opCode == 0x28) {
+			if(GetOpCode() == 0x28) {
 				//PLP, stop disassembling because the 8-bit/16-bit flags could change
-				return true;
+				return false;
 			}
-			return false;
+			break;
+	}
 
-		case CpuType::Gameboy:
-			if(opCode == 0x18 || opCode == 0xC3 || opCode == 0xEA || opCode == 0xCD || opCode == 0xC9 || opCode == 0xD9 || opCode == 0xC7 || opCode == 0xCF || opCode == 0xD7 || opCode == 0xDF || opCode == 0xE7 || opCode == 0xEF || opCode == 0xF7 || opCode == 0xFF) {
-				return true;
-			}
-			return false;
+	return true;
+}
 
-		case CpuType::Gsu:
-		case CpuType::Spc:
-		case CpuType::Cx4:
-			return true;
-
-		case CpuType::NecDsp:
-			return false;
-
-		case CpuType::Nes:
-			return (
-				opCode == 0x4C || //JMP (Absolute)
-				opCode == 0x6C || //JMP (Indirect)
-				opCode == 0x20 || //JSR
-				opCode == 0x40 || //RTI
-				opCode == 0x60 //RTS
-			);
+bool DisassemblyInfo::IsUnconditionalJump()
+{
+	switch(_cpuType) {
+		case CpuType::Snes: return SnesDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::Spc: return SpcDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::NecDsp: return NecDspDisUtils::IsUnconditionalJump(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::Sa1: return SnesDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::Gsu: return GsuDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::Cx4: return Cx4DisUtils::IsUnconditionalJump(GetByteCode()[1]);
+		case CpuType::Gameboy: return GameboyDisUtils::IsUnconditionalJump(GetOpCode());
+		case CpuType::Nes: return NesDisUtils::IsUnconditionalJump(GetOpCode());
 	}
 
 	throw std::runtime_error("IsUnconditionalJump - Unsupported CPU type");
@@ -266,45 +231,24 @@ bool DisassemblyInfo::IsJump()
 		return true;
 	}
 
-	uint8_t opCode = GetOpCode();
+	//Check for conditional jumps
 	switch(_cpuType) {
-		case CpuType::Sa1:
-		case CpuType::Snes:
-			//TODO
-			return false;
-
-		case CpuType::Gameboy:
-			//TODO
-			return false;
-
-		case CpuType::Gsu:
-		case CpuType::Spc:
-		case CpuType::Cx4:
-			//TODO
-			return false;
-
-		case CpuType::NecDsp:
-			//TODO
-			return false;
-
-		case CpuType::Nes:
-			return (
-				opCode == 0x10 || //BPL
-				opCode == 0x30 || //BMI
-				opCode == 0x50 || //BVC
-				opCode == 0x70 || //BVS
-				opCode == 0x90 || //BCC
-				opCode == 0xB0 || //BCS
-				opCode == 0xD0 || //BNE
-				opCode == 0xF0 //BEQ
-			);
+		case CpuType::Snes: return SnesDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::Spc: return SpcDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::NecDsp: return NecDspDisUtils::IsConditionalJump(_byteCode[0] | (_byteCode[1] << 8) | (_byteCode[2] << 16));
+		case CpuType::Sa1: return SnesDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::Gsu: return GsuDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::Cx4: return Cx4DisUtils::IsConditionalJump(GetByteCode()[1], GetByteCode()[0]);
+		case CpuType::Gameboy: return GameboyDisUtils::IsConditionalJump(GetOpCode());
+		case CpuType::Nes: return NesDisUtils::IsConditionalJump(GetOpCode());
 	}
 
-	return false;
+	throw std::runtime_error("IsJump - Unsupported CPU type");
 }
 
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 {
+	//TODO cleanup
 	if(_cpuType == CpuType::Snes || _cpuType == CpuType::Sa1) {
 		uint8_t opCode = GetOpCode();
 		if(opCode == 0xC2) {
@@ -321,6 +265,7 @@ void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 
 uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType, uint8_t &valueSize)
 {
+	//TODO cleanup
 	if((_cpuType == CpuType::Spc || _cpuType == CpuType::Gameboy || _cpuType == CpuType::Nes) || (_flags & ProcFlags::MemoryMode8)) {
 		valueSize = 1;
 		return memoryDumper->GetMemoryValue(memType, effectiveAddress);

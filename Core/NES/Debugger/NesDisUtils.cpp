@@ -232,3 +232,46 @@ bool NesDisUtils::IsOpUnofficial(uint8_t opCode)
 {
 	return _isUnofficial[opCode];
 }
+
+bool NesDisUtils::IsUnconditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x20: //JSR
+		case 0x40: //RTI
+		case 0x4C: //JMP (Absolute)
+		case 0x60: //RTS
+		case 0x6C: //JMP (Indirect)
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool NesDisUtils::IsConditionalJump(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x10: //BPL
+		case 0x30: //BMI
+		case 0x50: //BVC
+		case 0x70: //BVS
+		case 0x90: //BCC
+		case 0xB0: //BCS
+		case 0xD0: //BNE
+		case 0xF0: //BEQ
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+bool NesDisUtils::IsJumpToSub(uint8_t opCode)
+{
+	return opCode == 0x20;
+}
+
+bool NesDisUtils::IsReturnInstruction(uint8_t opCode)
+{
+	return opCode == 0x60 || opCode == 0x40;
+}
