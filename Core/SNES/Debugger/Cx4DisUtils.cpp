@@ -275,10 +275,10 @@ bool Cx4DisUtils::IsUnconditionalJump(uint8_t opCode)
 
 bool Cx4DisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return 0x28; //JSR
+	return opCode == 0x28; //JSR
 }
 
 bool Cx4DisUtils::IsReturnInstruction(uint8_t opCode)
 {
-	return 0x3C; //RTS
+	return opCode == 0x3C; //RTS
 }
