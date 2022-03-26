@@ -60,6 +60,7 @@ namespace Mesen.Config
 				Brightness = this.Brightness / 100.0,
 				Contrast = this.Contrast / 100.0,
 				Hue = this.Hue / 100.0,
+				Saturation = this.Saturation / 100.0,
 				ScanlineIntensity = this.ScanlineIntensity / 100.0,
 
 				NtscArtifacts = this.NtscArtifacts / 100.0,
