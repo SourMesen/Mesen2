@@ -332,7 +332,8 @@ namespace Mesen.ViewModels
 					SubActions = new List<object>() {
 						GetVideoFilterMenuItem(VideoFilterType.None),
 						new ContextMenuSeparator(),
-						GetVideoFilterMenuItem(VideoFilterType.NTSC),
+						GetVideoFilterMenuItem(VideoFilterType.NtscBlargg),
+						GetVideoFilterMenuItem(VideoFilterType.NtscBisqwit),
 						new ContextMenuSeparator(),
 						GetVideoFilterMenuItem(VideoFilterType.xBRZ2x),
 						GetVideoFilterMenuItem(VideoFilterType.xBRZ3x),
@@ -451,12 +452,21 @@ namespace Mesen.ViewModels
 			};
 		}
 
+		private bool AllowFilterType(VideoFilterType filter)
+		{
+			switch(filter) {
+				case VideoFilterType.NtscBisqwit: return MainWindow.RomInfo.ConsoleType == ConsoleType.Nes;
+				default: return true;
+			}
+		}
+
 		private MainMenuAction GetVideoFilterMenuItem(VideoFilterType filter)
 		{
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(filter),
 				IsSelected = () => ConfigManager.Config.Video.VideoFilter == filter,
+				IsEnabled = () => AllowFilterType(filter),
 				OnClick = () => {
 					ConfigManager.Config.Video.VideoFilter = filter;
 					ConfigManager.Config.Video.ApplyConfig();

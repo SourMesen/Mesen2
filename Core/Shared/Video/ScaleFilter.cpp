@@ -98,9 +98,7 @@ unique_ptr<ScaleFilter> ScaleFilter::GetScaleFilter(VideoFilterType filter)
 {
 	unique_ptr<ScaleFilter> scaleFilter;
 	switch(filter) {
-		case VideoFilterType::NTSC:
-		case VideoFilterType::None:
-			break;
+		default: break;
 
 		case VideoFilterType::xBRZ2x: scaleFilter.reset(new ScaleFilter(ScaleFilterType::xBRZ, 2)); break;
 		case VideoFilterType::xBRZ3x: scaleFilter.reset(new ScaleFilter(ScaleFilterType::xBRZ, 3)); break;

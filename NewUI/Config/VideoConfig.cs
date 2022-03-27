@@ -34,6 +34,11 @@ namespace Mesen.Config
 		[Reactive] [MinMax(-100, 100)] public int NtscSharpness { get; set; } = 0;
 		[Reactive] public bool NtscMergeFields { get; set; } = false;
 
+		[Reactive] public NtscBisqwitFilterScale NtscScale { get; set; } = NtscBisqwitFilterScale._2x;
+		[Reactive] [MinMax(-50, 400)] public Int32 NtscYFilterLength { get; set; } = 0;
+		[Reactive] [MinMax(0, 400)] public Int32 NtscIFilterLength { get; set; } = 50;
+		[Reactive] [MinMax(0, 400)] public Int32 NtscQFilterLength { get; set; } = 50;
+
 		[Reactive] public bool FullscreenForceIntegerScale { get; set; } = false;
 		[Reactive] public bool UseExclusiveFullscreen { get; set; } = false;
 		[Reactive] public UInt32 ExclusiveFullscreenRefreshRate { get; set; } = 60;
@@ -71,6 +76,11 @@ namespace Mesen.Config
 				NtscSharpness = this.NtscSharpness / 100.0,
 				NtscMergeFields = this.NtscMergeFields,
 
+				NtscScale = this.NtscScale,
+				NtscYFilterLength = this.NtscYFilterLength / 100.0,
+				NtscIFilterLength = this.NtscIFilterLength / 100.0,
+				NtscQFilterLength = this.NtscQFilterLength / 100.0,
+
 				FullscreenForceIntegerScale = this.FullscreenForceIntegerScale,
 				UseExclusiveFullscreen = this.UseExclusiveFullscreen,
 				ExclusiveFullscreenRefreshRate = this.ExclusiveFullscreenRefreshRate,
@@ -107,6 +117,11 @@ namespace Mesen.Config
 		public double NtscSharpness;
 		[MarshalAs(UnmanagedType.I1)] public bool NtscMergeFields;
 
+		public NtscBisqwitFilterScale NtscScale;
+		public double NtscYFilterLength;
+		public double NtscIFilterLength;
+		public double NtscQFilterLength;
+
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen;
 		public UInt32 ExclusiveFullscreenRefreshRate;
@@ -119,7 +134,8 @@ namespace Mesen.Config
 	public enum VideoFilterType
 	{
 		None = 0,
-		NTSC,
+		NtscBlargg,
+		NtscBisqwit,
 		xBRZ2x,
 		xBRZ3x,
 		xBRZ4x,
@@ -159,5 +175,12 @@ namespace Mesen.Config
 		_90Degrees = 90,
 		_180Degrees = 180,
 		_270Degrees = 270
+	}
+
+	public enum NtscBisqwitFilterScale
+	{
+		_2x,
+		_4x,
+		_8x
 	}
 }

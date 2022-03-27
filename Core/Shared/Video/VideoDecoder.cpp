@@ -75,12 +75,7 @@ void VideoDecoder::UpdateVideoFilter()
 		_consoleType = consoleType;
 
 		_videoFilter.reset(_emu->GetVideoFilter());
-
-		if(_videoFilterType != VideoFilterType::None && _videoFilterType != VideoFilterType::NTSC) {
-			_scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType);
-		} else {
-			_scaleFilter.reset();
-		}
+		_scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType);
 	}
 
 	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;

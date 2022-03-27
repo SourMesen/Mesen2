@@ -27,8 +27,8 @@ FrameInfo NesNtscFilter::GetFrameInfo()
 
 void NesNtscFilter::OnBeforeApplyFilter()
 {
-	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
-	NesConfig nesCfg = _emu->GetSettings()->GetNesConfig();
+	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
+	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
 	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
 
 	if(_ntscSetup.hue != cfg.Hue || _ntscSetup.saturation != cfg.Saturation || _ntscSetup.brightness != cfg.Brightness || _ntscSetup.contrast != cfg.Contrast ||

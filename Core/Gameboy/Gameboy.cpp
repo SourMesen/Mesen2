@@ -14,6 +14,7 @@
 #include "Gameboy/Carts/GbsCart.h"
 #include "Gameboy/GbBootRom.h"
 #include "Gameboy/GbDefaultVideoFilter.h"
+#include "SNES/SnesNtscFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
@@ -512,7 +513,20 @@ uint32_t Gameboy::GetMasterClockRate()
 
 BaseVideoFilter* Gameboy::GetVideoFilter()
 {
-	return new GbDefaultVideoFilter(_emu);
+	if(GetRomFormat() == RomFormat::Gbs) {
+		return new GbDefaultVideoFilter(_emu);
+	}
+
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+
+	switch(filterType) {
+		case VideoFilterType::NtscBlargg:
+		case VideoFilterType::NtscBisqwit:
+			return new SnesNtscFilter(_emu);
+
+		default:
+			return new GbDefaultVideoFilter(_emu);
+	}
 }
 
 RomFormat Gameboy::GetRomFormat()

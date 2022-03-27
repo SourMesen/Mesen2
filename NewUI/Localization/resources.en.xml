@@ -137,10 +137,6 @@
 		</Form>
 		<Form ID="VideoConfigView" Title="Video Options">
 			<Control ID="tpgGeneral">General</Control>
-			<Control ID="lblVideoScale">Scale:</Control>
-			<Control ID="lblVideoFilter">Filter:</Control>
-			<Control ID="lblPictureSettings">General settings</Control>
-			<Control ID="lblNtscSettings">NTSC filter settings</Control>			
 			<Control ID="chkIntegerFpsMode">Enable integer FPS mode (e.g: run at 60 fps instead of 60.1)</Control>
 			<Control ID="chkVerticalSync">Enable vertical sync</Control>
 			<Control ID="lblDisplayRatio">Aspect Ratio:</Control>
@@ -154,12 +150,18 @@
 
 			<Control ID="tpgPicture">Picture</Control>
 			<Control ID="btnSelectPreset">Select Preset...</Control>
-			<Control ID="grpCommon">Common Settings</Control>
+			<Control ID="btnReset">Reset</Control>
+			
+			<Control ID="lblPictureSettings">General settings</Control>
 			<Control ID="trkBrightness">Brightness</Control>
 			<Control ID="trkContrast">Contrast</Control>
 			<Control ID="trkHue">Hue</Control>
 			<Control ID="trkSaturation">Saturation</Control>
-			<Control ID="grpNtscFilter">NTSC Filter</Control>
+			
+			<Control ID="lblFilterSettings">Filter settings</Control>
+			<Control ID="lblVideoFilter">Filter:</Control>
+			
+			<Control ID="lblNtscBlarggSettings">NTSC settings (blargg)</Control>
 			<Control ID="trkArtifacts">Artifacts</Control>
 			<Control ID="trkBleed">Bleed</Control>
 			<Control ID="trkFringing">Fringing</Control>
@@ -169,9 +171,11 @@
 			<Control ID="chkMergeFields">Merge Fields</Control>
 			<Control ID="chkVerticalBlend">Apply Vertical Blending</Control>
 
-			<Control ID="trkYFilterLength">Y Filter (Horizontal Blur)</Control>
-			<Control ID="trkIFilterLength">I Filter (Horizontal Bleed)</Control>
-			<Control ID="trkQFilterLength">Q Filter (Horizontal Bleed)</Control>
+			<Control ID="lblNtscBisqwitSettings">NTSC settings (Bisqwit)</Control>
+			<Control ID="lblNtscFilterScale">Scale:</Control>
+			<Control ID="trkNtscYFilterLength">Y Filter (Horizontal Blur)</Control>
+			<Control ID="trkNtscIFilterLength">I Filter (Horizontal Bleed)</Control>
+			<Control ID="trkNtscQFilterLength">Q Filter (Horizontal Bleed)</Control>
 
 			<Control ID="grpScanlines">Scanlines</Control>
 			<Control ID="trkScanlines">Scanlines</Control>
@@ -1625,10 +1629,8 @@
 		</Enum>
 		<Enum ID="VideoFilterType">
 			<Value ID="None">None</Value>
-			<Value ID="NTSC">NTSC 2x (blargg)</Value>
-			<Value ID="BisqwitNtscQuarterRes">NTSC 2x (Bisqwit)</Value>
-			<Value ID="BisqwitNtscHalfRes">NTSC 4x (Bisqwit)</Value>
-			<Value ID="BisqwitNtsc">NTSC 8x (Bisqwit)</Value>
+			<Value ID="NtscBlargg">NTSC (blargg)</Value>
+			<Value ID="NtscBisqwit">NTSC (Bisqwit) (NES-only)</Value>
 			<Value ID="xBRZ2x">xBRZ 2x</Value>
 			<Value ID="xBRZ3x">xBRZ 3x</Value>
 			<Value ID="xBRZ4x">xBRZ 4x</Value>
@@ -1649,6 +1651,11 @@
 			<Value ID="Prescale6x">Prescale 6x</Value>
 			<Value ID="Prescale8x">Prescale 8x</Value>
 			<Value ID="Prescale10x">Prescale 10x</Value>
+		</Enum>
+		<Enum ID="NtscBisqwitFilterScale">
+			<Value ID="_2x">2x</Value>
+			<Value ID="_4x">4x</Value>
+			<Value ID="_8x">8x</Value>
 		</Enum>
 		<Enum ID="InputDisplayPosition">
 			<Value ID="TopLeft">Top Left</Value>

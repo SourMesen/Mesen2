@@ -1721,10 +1721,16 @@
     <ClInclude Include="NES\Mappers\SunsoftFme7.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
+    <ClInclude Include="NES\BisqwitNtscFilter.h">
+      <Filter>NES</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
       <Filter>Shared\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\BisqwitNtscFilter.cpp">
+      <Filter>NES</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@ FrameInfo SnesNtscFilter::GetFrameInfo()
 
 void SnesNtscFilter::OnBeforeApplyFilter()
 {
-	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
+	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
 
 	if(_ntscSetup.hue != cfg.Hue / 100.0 || _ntscSetup.saturation != cfg.Saturation / 100.0 || _ntscSetup.brightness != cfg.Brightness / 100.0 || _ntscSetup.contrast != cfg.Contrast / 100.0 ||
 		_ntscSetup.artifacts != cfg.NtscArtifacts || _ntscSetup.bleed != cfg.NtscBleed || _ntscSetup.fringing != cfg.NtscFringing || _ntscSetup.gamma != cfg.NtscGamma ||
@@ -53,16 +53,16 @@ void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	OverscanDimensions overscan = GetOverscan();
 	
 	bool useHighResOutput = _baseFrameInfo.Width == 512;
-	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(256);
+	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(_baseFrameInfo.Width);
 	uint32_t xOffset = overscan.Left * 2;
 	uint32_t yOffset = overscan.Top * 2 * baseWidth;
 
 	if(useHighResOutput) {
-		snes_ntsc_blit_hires(&_ntscData, ppuOutputBuffer, 512, IsOddFrame() ? 0 : 1, 512, _baseFrameInfo.Height, _ntscBuffer, SNES_NTSC_OUT_WIDTH(256) * 4);
+		snes_ntsc_blit_hires(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, baseWidth * 4);
 	} else {
-		snes_ntsc_blit(&_ntscData, ppuOutputBuffer, 256, IsOddFrame() ? 0 : 1, 256, _baseFrameInfo.Height, _ntscBuffer, SNES_NTSC_OUT_WIDTH(256) * 8);
+		snes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, baseWidth * 8);
 	}
-	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
+	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
 
 	if(cfg.ScanlineIntensity == 0) {
 		for(uint32_t i = 0; i < frameInfo.Height; i+=2) {

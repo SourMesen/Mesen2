@@ -25,7 +25,8 @@ enum class ScaleFilterType
 enum class VideoFilterType
 {
 	None = 0,
-	NTSC,
+	NtscBlargg,
+	NtscBisqwit,
 	xBRZ2x,
 	xBRZ3x,
 	xBRZ4x,
@@ -65,6 +66,13 @@ enum class VideoAspectRatio
 	Custom = 6
 };
 
+enum class NtscBisqwitFilterScale
+{
+	_2x,
+	_4x,
+	_8x,
+};
+
 struct VideoConfig
 {
 	double CustomAspectRatio = 1.0;
@@ -87,6 +95,11 @@ struct VideoConfig
 	double NtscResolution = 0;
 	double NtscSharpness = 0;
 	bool NtscMergeFields = false;
+
+	NtscBisqwitFilterScale NtscScale;
+	double NtscYFilterLength;
+	double NtscIFilterLength;
+	double NtscQFilterLength;
 
 	bool FullscreenForceIntegerScale = false;
 	bool UseExclusiveFullscreen = false;

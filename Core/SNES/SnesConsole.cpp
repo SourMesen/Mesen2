@@ -254,11 +254,19 @@ void SnesConsole::SaveBattery()
 
 BaseVideoFilter* SnesConsole::GetVideoFilter()
 {
-	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-	if(filterType == VideoFilterType::NTSC && GetRomFormat() != RomFormat::Spc) {
-		return new SnesNtscFilter(_emu);
-	} else {
+	if(GetRomFormat() == RomFormat::Spc) {
 		return new SnesDefaultVideoFilter(_emu);
+	}
+
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+	
+	switch(filterType) {
+		case VideoFilterType::NtscBlargg:
+		case VideoFilterType::NtscBisqwit:
+			return new SnesNtscFilter(_emu);
+
+		default:
+			return new SnesDefaultVideoFilter(_emu);
 	}
 }
 

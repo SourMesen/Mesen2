@@ -16,6 +16,7 @@
 #include "NES/HdPacks/HdVideoFilter.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesNtscFilter.h"
+#include "NES/BisqwitNtscFilter.h"
 #include "NES/NesConstants.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "NES/Mappers/NsfMapper.h"
@@ -407,12 +408,15 @@ BaseVideoFilter* NesConsole::GetVideoFilter()
 {
 	if(_hdData) {
 		return new HdVideoFilter(_emu, _hdData.get());
+	} else if(GetRomFormat() == RomFormat::Nsf) {
+		return new NesDefaultVideoFilter(_emu);
 	} else {
 		VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
-		if(filterType == VideoFilterType::NTSC && GetRomFormat() != RomFormat::Nsf) {
-			return new NesNtscFilter(_emu);
-		} else {
-			return new NesDefaultVideoFilter(_emu);
+
+		switch(filterType) {
+			case VideoFilterType::NtscBlargg: return new NesNtscFilter(_emu);
+			case VideoFilterType::NtscBisqwit: return new BisqwitNtscFilter(_emu);
+			default: return new NesDefaultVideoFilter(_emu);
 		}
 	}
 }
