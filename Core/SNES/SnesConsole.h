@@ -79,7 +79,6 @@ public:
 	void Reset() override;
 
 	void RunFrame() override;
-	void RunSingleFrame() override;
 
 	void ProcessEndOfFrame();
 

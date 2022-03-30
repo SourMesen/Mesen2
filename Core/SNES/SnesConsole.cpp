@@ -87,25 +87,6 @@ void SnesConsole::ProcessEndOfFrame()
 	_frameRunning = false;
 }
 
-void SnesConsole::RunSingleFrame()
-{
-	//Used by Libretro
-	/*_emulationThreadId = std::this_thread::get_id();
-	_isRunAheadFrame = false;
-
-	_controlManager->UpdateInputState();
-	_internalRegisters->ProcessAutoJoypadRead();
-
-	RunFrame();
-
-	_cart->RunCoprocessors();
-	if(_cart->GetCoprocessor()) {
-		_cart->GetCoprocessor()->ProcessEndOfFrame();
-	}
-
-	_controlManager->UpdateControlDevices();*/
-}
-
 void SnesConsole::Stop()
 {
 }

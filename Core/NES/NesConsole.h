@@ -80,7 +80,6 @@ public:
 	void RunFrame() override;
 	BaseControlManager* GetControlManager() override;
 	double GetFps() override;
-	void RunSingleFrame() override;
 	PpuFrameInfo GetPpuFrame() override;
 	ConsoleRegion GetRegion() override;
 	ConsoleType GetConsoleType() override;

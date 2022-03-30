@@ -72,8 +72,6 @@ public:
 
 	virtual BaseVideoFilter* GetVideoFilter() = 0;
 
-	virtual void RunSingleFrame() = 0;
-
 	virtual PpuFrameInfo GetPpuFrame() = 0;
 
 	virtual RomFormat GetRomFormat() = 0;

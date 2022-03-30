@@ -289,11 +289,6 @@ double NesConsole::GetFps()
 	}
 }
 
-void NesConsole::RunSingleFrame()
-{
-	//TODO
-}
-
 PpuFrameInfo NesConsole::GetPpuFrame()
 {
 	PpuFrameInfo frame;

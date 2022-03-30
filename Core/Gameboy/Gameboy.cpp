@@ -468,11 +468,6 @@ double Gameboy::GetFps()
 	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 59.72750056960583;
 }
 
-void Gameboy::RunSingleFrame()
-{
-	//TODO
-}
-
 PpuFrameInfo Gameboy::GetPpuFrame()
 {
 	PpuFrameInfo frame;
