@@ -20,9 +20,14 @@ namespace Mesen.Interop
 				case MemoryType.Sa1Memory:
 					return CpuType.Sa1;
 
+				case MemoryType.Cx4DataRam:
+				case MemoryType.Cx4Memory:
+					return CpuType.Cx4;
+
 				case MemoryType.DspDataRam:
 				case MemoryType.DspDataRom:
 				case MemoryType.DspProgramRom:
+				case MemoryType.NecDspMemory:
 					return CpuType.NecDsp;
 
 				case MemoryType.GbPrgRom:
@@ -45,10 +50,24 @@ namespace Mesen.Interop
 				case MemoryType.NesNametableRam:
 				case MemoryType.NesPaletteRam:
 				case MemoryType.NesSpriteRam:
+				case MemoryType.NesPpuMemory:
+				case MemoryType.NesSecondarySpriteRam:
 					return CpuType.Nes;
 
-				default:
+				case MemoryType.SnesMemory:
+				case MemoryType.SnesPrgRom:
+				case MemoryType.SnesWorkRam:
+				case MemoryType.SnesSaveRam:
+				case MemoryType.SnesVideoRam:
+				case MemoryType.SnesSpriteRam:
+				case MemoryType.SnesCgRam:
+				case MemoryType.BsxPsRam:
+				case MemoryType.BsxMemoryPack:
+				case MemoryType.Register:
 					return CpuType.Snes;
+
+				default:
+					throw new NotImplementedException("Unsupported cpu type");
 			}
 		}
 

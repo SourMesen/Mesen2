@@ -131,5 +131,20 @@ namespace Mesen.Interop
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
+
+		public static bool CanAccessMemoryType(this CpuType cpuType, MemoryType memType)
+		{
+			switch(memType) {
+				case MemoryType.SnesPrgRom:
+					return cpuType == CpuType.Snes || cpuType == CpuType.Sa1 || cpuType == CpuType.Gsu || cpuType == CpuType.Cx4;
+				
+				case MemoryType.SnesSaveRam:
+					return cpuType == CpuType.Snes || cpuType == CpuType.Sa1 || cpuType == CpuType.Cx4;
+
+				default:
+					//All other types are specific to a single CPU type
+					return memType.ToCpuType() == cpuType;
+			}
+		}
 	}
 }
