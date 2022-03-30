@@ -66,6 +66,7 @@ namespace Mesen.Config
 		[Reactive] public NesConsoleType ConsoleType { get; set; } = NesConsoleType.Nes001;
 		[Reactive] public bool DisablePpuReset { get; set; } = false;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
+		[Reactive] public bool DisableGameGenieBusConflicts { get; set; } = false;
 
 		[Reactive] public bool RandomizeMapperPowerOnState { get; set; } = false;
 		[Reactive] public bool RandomizeCpuPpuAlignment { get; set; } = false;
@@ -166,6 +167,7 @@ namespace Mesen.Config
 				ConsoleType = ConsoleType,
 				DisablePpuReset = DisablePpuReset,
 				AllowInvalidInput = AllowInvalidInput,
+				DisableGameGenieBusConflicts = DisableGameGenieBusConflicts,
 
 				EnableOamDecay = EnableOamDecay,
 				EnablePpuOamRowCorruption = EnablePpuOamRowCorruption,
@@ -312,7 +314,8 @@ namespace Mesen.Config
 		public NesConsoleType ConsoleType;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
-
+		[MarshalAs(UnmanagedType.I1)] public bool DisableGameGenieBusConflicts;
+		
 		[MarshalAs(UnmanagedType.I1)] public bool EnableOamDecay;
 		[MarshalAs(UnmanagedType.I1)] public bool EnablePpuOamRowCorruption;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableOamAddrBug;

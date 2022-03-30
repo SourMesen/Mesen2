@@ -65,12 +65,14 @@
 		<TabItem Header="{l:Translate tpgPicture}">
 			<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto,*" Margin="0 2 0 0" MinWidth="350">
 				<c:GroupBox Grid.Column="0" Header="{l:Translate lblPictureSettings}" Margin="0 0 1 0">
+					<StackPanel>
 						<c:MesenSlider Value="{CompiledBinding Config.Brightness}" Text="{l:Translate trkBrightness}" Margin="5" Minimum="-100" Maximum="100"  />
 						<c:MesenSlider Value="{CompiledBinding Config.Contrast}" Text="{l:Translate trkContrast}" Margin="5" Minimum="-100" Maximum="100" />
 						<c:MesenSlider Value="{CompiledBinding Config.Hue}" Text="{l:Translate trkHue}" Margin="5" Minimum="-100" Maximum="100" />
 						<c:MesenSlider Value="{CompiledBinding Config.Saturation}" Text="{l:Translate trkSaturation}" Margin="5" Minimum="-100" Maximum="100" />
 						<c:MesenSlider Value="{CompiledBinding Config.ScanlineIntensity}" Text="{l:Translate trkScanlines}" Margin="5" Minimum="0" Maximum="100" />
 						<CheckBox IsChecked="{CompiledBinding Config.UseBilinearInterpolation}" Content="{l:Translate chkBilinearInterpolation}" />
+					</StackPanel>
 				</c:GroupBox>
 
 				<StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1" VerticalAlignment="Top">
@@ -89,31 +91,33 @@
 				</StackPanel>
 				
 				<c:GroupBox Grid.Column="1" Grid.RowSpan="2" Header="{l:Translate lblFilterSettings}" Margin="1 0 0 0">
-					<Grid ColumnDefinitions="Auto,*">
-						<TextBlock Text="{l:Translate lblVideoFilter}" VerticalAlignment="Center" />
-						<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.VideoFilter}" />
-					</Grid>
-
-					<c:OptionSection Header="{l:Translate lblNtscBlarggSettings}" IsVisible="{CompiledBinding ShowNtscBlarggSettings}">
-						<c:MesenSlider Value="{CompiledBinding Config.NtscArtifacts}" Text="{l:Translate trkArtifacts}" Margin="5" Minimum="-100" Maximum="100" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscBleed}" Text="{l:Translate trkBleed}" Margin="5" Minimum="-100" Maximum="100" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscFringing}" Text="{l:Translate trkFringing}" Margin="5" Minimum="-100" Maximum="100" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscGamma}" Text="{l:Translate trkGamma}" Margin="5" Minimum="-100" Maximum="100" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscResolution}" Text="{l:Translate trkResolution}" Margin="5" Minimum="-100" Maximum="100" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscSharpness}" Text="{l:Translate trkSharpness}" Margin="5" Minimum="-100" Maximum="100" />
-						<CheckBox IsChecked="{CompiledBinding Config.NtscMergeFields}" Content="{l:Translate chkMergeFields}" />
-					</c:OptionSection>
-
-					<c:OptionSection Header="{l:Translate lblNtscBisqwitSettings}" IsVisible="{CompiledBinding ShowNtscBisqwitSettings}">
+					<StackPanel>
 						<Grid ColumnDefinitions="Auto,*">
-							<TextBlock Text="{l:Translate lblNtscFilterScale}" VerticalAlignment="Center" />
-							<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.NtscScale}" />
+							<TextBlock Text="{l:Translate lblVideoFilter}" VerticalAlignment="Center" />
+							<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.VideoFilter}" />
 						</Grid>
+
+						<c:OptionSection Header="{l:Translate lblNtscBlarggSettings}" IsVisible="{CompiledBinding ShowNtscBlarggSettings}">
+							<c:MesenSlider Value="{CompiledBinding Config.NtscArtifacts}" Text="{l:Translate trkArtifacts}" Margin="5" Minimum="-100" Maximum="100" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscBleed}" Text="{l:Translate trkBleed}" Margin="5" Minimum="-100" Maximum="100" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscFringing}" Text="{l:Translate trkFringing}" Margin="5" Minimum="-100" Maximum="100" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscGamma}" Text="{l:Translate trkGamma}" Margin="5" Minimum="-100" Maximum="100" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscResolution}" Text="{l:Translate trkResolution}" Margin="5" Minimum="-100" Maximum="100" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscSharpness}" Text="{l:Translate trkSharpness}" Margin="5" Minimum="-100" Maximum="100" />
+							<CheckBox IsChecked="{CompiledBinding Config.NtscMergeFields}" Content="{l:Translate chkMergeFields}" />
+						</c:OptionSection>
+
+						<c:OptionSection Header="{l:Translate lblNtscBisqwitSettings}" IsVisible="{CompiledBinding ShowNtscBisqwitSettings}">
+							<Grid ColumnDefinitions="Auto,*">
+								<TextBlock Text="{l:Translate lblNtscFilterScale}" VerticalAlignment="Center" />
+								<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.NtscScale}" />
+							</Grid>
 							
-						<c:MesenSlider Value="{CompiledBinding Config.NtscYFilterLength}" Text="{l:Translate trkNtscYFilterLength}" Margin="5" Minimum="-50" Maximum="400" TickFrequency="20" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscIFilterLength}" Text="{l:Translate trkNtscIFilterLength}" Margin="5" Minimum="0" Maximum="400" TickFrequency="20" />
-						<c:MesenSlider Value="{CompiledBinding Config.NtscQFilterLength}" Text="{l:Translate trkNtscQFilterLength}" Margin="5" Minimum="0" Maximum="400" TickFrequency="20" />
-					</c:OptionSection>
+							<c:MesenSlider Value="{CompiledBinding Config.NtscYFilterLength}" Text="{l:Translate trkNtscYFilterLength}" Margin="5" Minimum="-50" Maximum="400" TickFrequency="20" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscIFilterLength}" Text="{l:Translate trkNtscIFilterLength}" Margin="5" Minimum="0" Maximum="400" TickFrequency="20" />
+							<c:MesenSlider Value="{CompiledBinding Config.NtscQFilterLength}" Text="{l:Translate trkNtscQFilterLength}" Margin="5" Minimum="0" Maximum="400" TickFrequency="20" />
+						</c:OptionSection>
+					</StackPanel>
 				</c:GroupBox>
 			</Grid>
 		</TabItem>

@@ -19,6 +19,8 @@ namespace Mesen.ViewModels
 {
 	public class MainWindowViewModel : ViewModelBase
 	{
+		public static MainWindowViewModel Instance { get; private set; } = null!;
+
 		[Reactive] public MainMenuViewModel MainMenu { get; set; }
 		[Reactive] public RomInfo RomInfo { get; set; }
 		[Reactive] public AudioPlayerViewModel? AudioPlayer { get; private set; }
@@ -31,6 +33,8 @@ namespace Mesen.ViewModels
 
 		public MainWindowViewModel()
 		{
+			Instance = this;
+
 			Config = ConfigManager.Config;
 			MainMenu = new MainMenuViewModel(this);
 			RomInfo = new RomInfo();

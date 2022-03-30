@@ -324,8 +324,9 @@ bool MesenMovie::LoadCheat(string cheatData, CheatCode &code)
 	vector<string> data = StringUtilities::Split(cheatData, ' ');
 
 	if(data.size() == 2) {
-		code.Address = HexUtilities::FromHex(data[0]);
-		code.Value = HexUtilities::FromHex(data[1]);
+		//TODO
+		//code.Address = HexUtilities::FromHex(data[0]);
+		//code.Value = HexUtilities::FromHex(data[1]);
 		return true;
 	} else {
 		MessageManager::Log("[Movie] Invalid cheat definition: " + cheatData);

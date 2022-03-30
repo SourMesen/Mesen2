@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Core/MemoryOperationType.h"
+#include "Core/Shared/CpuType.h"
 
 enum class MemoryType;
 enum class CpuType : uint8_t;
@@ -368,16 +369,4 @@ struct StepRequest
 	{
 		return BreakScanline != INT32_MIN;
 	}
-};
-
-enum class CpuType : uint8_t
-{
-	Snes,
-	Spc,
-	NecDsp,
-	Sa1,
-	Gsu,
-	Cx4,
-	Gameboy,
-	Nes
 };

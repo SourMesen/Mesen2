@@ -114,7 +114,7 @@ uint8_t NesMemoryManager::DebugRead(uint16_t addr, bool disableSideEffects)
 		}
 	}
 
-	_cheatManager->ApplyCheat(addr, value);
+	_cheatManager->ApplyCheat<CpuType::Nes>(addr, value);
 
 	return value;
 }
@@ -127,7 +127,7 @@ uint16_t NesMemoryManager::DebugReadWord(uint16_t addr)
 uint8_t NesMemoryManager::Read(uint16_t addr, MemoryOperationType operationType)
 {
 	uint8_t value = _ramReadHandlers[addr]->ReadRam(addr);
-	_cheatManager->ApplyCheat(addr, value);
+	_cheatManager->ApplyCheat<CpuType::Nes>(addr, value);
 	_emu->ProcessMemoryRead<CpuType::Nes>(addr, value, operationType);
 
 	_openBusHandler.SetOpenBus(value);

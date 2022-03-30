@@ -22,6 +22,7 @@
 #include "NES/Mappers/NsfMapper.h"
 #include "NES/Mappers/FDS/Fds.h"
 #include "Shared/Emulator.h"
+#include "Shared/CheatManager.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BaseControlManager.h"
@@ -468,5 +469,21 @@ void NesConsole::DebugWriteVram(uint16_t addr, uint8_t value)
 		_ppu->WritePaletteRam(addr, value);
 	} else {
 		_mapper->DebugWriteVram(addr, value);
+	}
+}
+
+void NesConsole::ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value)
+{
+	if(code.Type == CheatType::NesGameGenie && addr >= 0xC020) {
+		if(GetNesConfig().DisableGameGenieBusConflicts) {
+			return;
+		}
+
+		AddressInfo absAddr = _mapper->GetAbsoluteAddress(addr - 0x8000);
+		if(absAddr.Address >= 0) {
+			//Game Genie causes a bus conflict when the cartridge maps anything below $8000
+			//Only processed when addr >= $C020 because the mapper implementation never maps anything below $4020
+			value &= _mapper->DebugReadRAM(addr - 0x8000);
+		}
 	}
 }

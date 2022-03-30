@@ -459,6 +459,7 @@ struct NesConfig
 	NesConsoleType ConsoleType = NesConsoleType::Nes001;
 	bool DisablePpuReset = false;
 	bool AllowInvalidInput = false;
+	bool DisableGameGenieBusConflicts = false;
 
 	bool EnableOamDecay = false;
 	bool EnablePpuOamRowCorruption = false;

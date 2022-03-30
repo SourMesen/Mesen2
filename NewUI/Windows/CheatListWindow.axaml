@@ -1,0 +1,60 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:w="using:Mesen.Windows"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+	x:Class="Mesen.Windows.CheatListWindow"
+	Width="400" Height="400"
+	Icon="/Assets/CheatCode.png"
+	x:DataType="vm:CheatListWindowViewModel"
+	Title="{l:Translate wndTitle}"
+	Name="root"
+>
+	<Design.DataContext>
+		<vm:CheatListWindowViewModel />
+	</Design.DataContext>
+
+	<Window.Resources>
+		<w:CodeStringConverter x:Key="CodeConverter" />
+	</Window.Resources>
+
+	<DockPanel>
+		<DockPanel DockPanel.Dock="Bottom" Margin="0 0 1 1">
+			<Button DockPanel.Dock="Right" Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+			<Button DockPanel.Dock="Right" Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+			<CheckBox Content="{l:Translate chkDisableCheats}" IsChecked="{CompiledBinding DisableAllCheats}" />
+		</DockPanel >
+		
+		<c:ActionToolbar DockPanel.Dock="Top" Items="{CompiledBinding ToolbarActions}" />
+		
+		<Border BorderThickness="1" BorderBrush="LightGray" Margin="2">
+			<c:MesenDataGrid
+				Name="DataGrid"
+				Items="{CompiledBinding Cheats}"
+				SelectedIndex="{CompiledBinding SelectedIndex}"
+				Tapped="OnGridClick"
+				DoubleTapped="OnGridDoubleClick"
+				CanUserReorderColumns="False"
+			>
+				<DataGrid.Columns>
+					<DataGridCheckBoxColumn Header="" Binding="{Binding Enabled}" Width="21" />
+					<DataGridTextColumn Header="{l:Translate colDescription}" Binding="{Binding Description}" Width="1*" CanUserResize="True" />
+					<DataGridTemplateColumn Header="{l:Translate colCodes}" Width="1*" CanUserResize="True">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Codes, Converter={StaticResource CodeConverter}}" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+			</c:MesenDataGrid>
+		</Border>
+	</DockPanel>
+</Window>

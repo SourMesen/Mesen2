@@ -66,6 +66,7 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.SetScale5x: _mainWindow.SetScale(5); break;
 				case EmulatorShortcut.SetScale6x: _mainWindow.SetScale(6); break;
 
+				//TODO
 				/*case EmulatorShortcut.ToggleBgLayer0: ToggleBgLayer0(); break;
 				case EmulatorShortcut.ToggleBgLayer1: ToggleBgLayer1(); break;
 				case EmulatorShortcut.ToggleBgLayer2: ToggleBgLayer2(); break;
@@ -250,12 +251,6 @@ namespace Mesen.Utilities
 			ConfigManager.SaveConfig();
 		}*/
 
-		public void SetVideoFilter(VideoFilterType filter)
-		{
-			ConfigManager.Config.Video.VideoFilter = filter;
-			ConfigManager.Config.Video.ApplyConfig();
-		}
-
 		//TODO
 		/*public void ToggleBilinearInterpolation()
 		{
@@ -363,9 +358,8 @@ namespace Mesen.Utilities
 
 		private void ToggleCheats()
 		{
-			//TODO
-			/*ConfigManager.Config.Cheats.DisableAllCheats = !ConfigManager.Config.Cheats.DisableAllCheats;
-			CheatCodes.ApplyCheats();*/
+			ConfigManager.Config.Cheats.DisableAllCheats = !ConfigManager.Config.Cheats.DisableAllCheats;
+			CheatCodes.ApplyCheats();
 		}
 		
 		private void ToggleOsd()

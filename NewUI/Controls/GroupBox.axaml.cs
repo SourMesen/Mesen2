@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Mesen.Controls
 {
-	public class GroupBox : ItemsControl
+	public class GroupBox : ContentControl
 	{
 		public static readonly StyledProperty<object> HeaderProperty = AvaloniaProperty.Register<GroupBox, object>(nameof(Header));
 

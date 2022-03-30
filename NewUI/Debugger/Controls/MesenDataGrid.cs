@@ -25,6 +25,17 @@ namespace Mesen.Debugger.Controls
 			CellPointerPressed += MesenDataGrid_CellPointerPressed;
 		}
 
+		protected override void OnPointerPressed(PointerPressedEventArgs e)
+		{
+			base.OnPointerPressed(e);
+			
+			//Clear selection when clicking in blank area outside rows
+			SelectedItem = null;
+			
+			//Give focus to ensure any context menu actions work properly
+			Focus();
+		}
+
 		private void MesenDataGrid_CellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)
 		{
 			if(e.PointerPressedEventArgs.GetCurrentPoint(null).Properties.IsRightButtonPressed) {

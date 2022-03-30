@@ -97,6 +97,7 @@ namespace Mesen.Debugger.Utilities
 		public Func<bool>? IsVisible { get; set; }
 		
 		public bool AllowedWhenHidden { get; set; }
+		public bool AlwaysShowLabel { get; set; }
 
 		public abstract string ShortcutText { get; }
 

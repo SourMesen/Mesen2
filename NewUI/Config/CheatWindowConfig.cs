@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-	public class CheatWindowConfig
+	public class CheatWindowConfig : BaseWindowConfig<CheatWindowConfig>
 	{
-		public Size WindowSize = new Size(0, 0);
-		public Point WindowLocation;
-		public bool DisableAllCheats = false;
+		public bool DisableAllCheats { get; set; } = false;
 	}
 }

@@ -10,6 +10,7 @@
 #include "Gameboy/GbControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/CheatManager.h"
 #include "Shared/MessageManager.h"
 #include "SNES/Coprocessors/SGB/SuperGameboy.h"
 #include "SNES/SnesControlManager.h"
@@ -160,6 +161,7 @@ uint8_t GbMemoryManager::Read(uint16_t addr)
 	} else if(_reads[addr >> 8]) {
 		value = _reads[addr >> 8][(uint8_t)addr];
 	}
+	_emu->GetCheatManager()->ApplyCheat<CpuType::Gameboy>(addr, value);
 	_emu->ProcessMemoryRead<CpuType::Gameboy>(addr, value, opType);
 	return value;
 }

@@ -1,4 +1,7 @@
 ﻿using Mesen.Interop;
+using Mesen.Utilities;
+using Mesen.ViewModels;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +27,7 @@ namespace Mesen.Config
 
 			if(File.Exists(path)) {
 				try {
-					cheats = JsonSerializer.Deserialize<CheatCodes>(File.ReadAllText(path), new JsonSerializerOptions() { IncludeFields = true }) ?? new CheatCodes();
+					cheats = JsonSerializer.Deserialize<CheatCodes>(File.ReadAllText(path), JsonHelper.Options) ?? new CheatCodes();
 				} catch { }
 			}
 			
@@ -34,7 +37,13 @@ namespace Mesen.Config
 		public void Save()
 		{
 			try {
-				File.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true }));
+				if(Cheats.Count > 0) {
+					File.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, JsonHelper.Options));
+				} else {
+					if(File.Exists(CheatCodes.FilePath)) {
+						File.Delete(CheatCodes.FilePath);
+					}
+				}
 			} catch {
 			}
 		}
@@ -48,12 +57,12 @@ namespace Mesen.Config
 			}
 		}
 
-		public static void ApplyCheats(List<CheatCode> cheats)
+		public static void ApplyCheats(IEnumerable<CheatCode> cheats)
 		{
-			List<UInt32> encodedCheats = new List<uint>();
+			List<InteropCheatCode> encodedCheats = new List<InteropCheatCode>();
 			foreach(CheatCode cheat in cheats) {
 				if(cheat.Enabled) {
-					encodedCheats.AddRange(cheat.GetEncodedCheats());
+					encodedCheats.AddRange(cheat.ToInteropCheats());
 				}
 			}
 
@@ -61,84 +70,38 @@ namespace Mesen.Config
 		}
 	}
 
-	public class CheatCode
+	public class CheatCode : ViewModelBase
 	{
-		private static string _convertTable = "DF4709156BC8A23E";
+		[Reactive] public string Description { get; set; } = "";
+		[Reactive] public CheatType Type { get; set; }
+		[Reactive] public bool Enabled { get; set; } = true;
+		[Reactive] public string Codes { get; set; } = "";
 
-		public string Description = "";
-		public CheatFormat Format;
-		public bool Enabled;
-		public string Codes = "";
-
-		public List<UInt32> GetEncodedCheats()
+		public List<InteropCheatCode> ToInteropCheats()
 		{
-			List<UInt32> encodedCheats = new List<UInt32>();
-			foreach(string code in this.Codes.Split('\n')) {
-				if(code.Trim().Length > 0) {
-					encodedCheats.Add(GetEncodedCheat(code, this.Format));
-				}
+			List<InteropCheatCode> encodedCheats = new List<InteropCheatCode>();
+			foreach(string code in Codes.Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)) {
+				encodedCheats.Add(new InteropCheatCode(Type, code));
 			}
 			return encodedCheats;
 		}
 
-		public override string ToString()
+		public CheatCode Clone()
 		{
-			StringBuilder sb = new StringBuilder();
-			foreach(string code in this.Codes.Split('\n')) {
-				if(code.Trim().Length > 0) {
-					if(sb.Length != 0) {
-						sb.Append(", ");
-					}
-					sb.Append(code);
-				}
-			}
-			return sb.ToString();
+			return new() {
+				Description = Description,
+				Type = Type,
+				Enabled = Enabled,
+				Codes = Codes,
+			};
 		}
 
-		public static UInt32 GetEncodedCheat(string code, CheatFormat format)
+		public void CopyFrom(CheatCode copy)
 		{
-			code = code.Trim();
-			UInt32 encodedCheat = 0;
-			if(format == CheatFormat.ProActionReplay && UInt32.TryParse(code, System.Globalization.NumberStyles.HexNumber, null, out encodedCheat)) {
-				return encodedCheat;
-			} else if(format == CheatFormat.GameGenie) {
-				return ConvertGameGenie(code);
-			}
-
-			throw new Exception("Invalid cheat code");
+			Description = copy.Description;
+			Type = copy.Type;
+			Enabled = copy.Enabled;
+			Codes = String.Join(Environment.NewLine, copy.Codes.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 		}
-
-		public static uint ConvertGameGenie(string code)
-		{
-			code = code.Trim().ToUpper();
-
-			uint rawValue = 0;
-			for(int i = 0; i < code.Length; i++) {
-				if(code[i] != '-') {
-					rawValue <<= 4;
-					rawValue |= (uint)_convertTable.IndexOf(code[i]);
-				}
-			}
-
-			uint address = (
-				((rawValue & 0x3C00) << 10) |
-				((rawValue & 0x3C) << 14) |
-				((rawValue & 0xF00000) >> 8) |
-				((rawValue & 0x03) << 10) |
-				((rawValue & 0xC000) >> 6) |
-				((rawValue & 0xF0000) >> 12) |
-				((rawValue & 0x3C0) >> 6)
-			);
-
-			uint value = rawValue >> 24;
-
-			return ((address << 8) | value);
-		}
-	}
-
-	public enum CheatFormat
-	{
-		GameGenie = 0,
-		ProActionReplay = 1,
 	}
 }

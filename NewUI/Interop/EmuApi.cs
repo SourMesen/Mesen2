@@ -114,7 +114,8 @@ namespace Mesen.Interop
 			return null;
 		}
 
-		[DllImport(DllPath)] public static extern void SetCheats([In]UInt32[] cheats, UInt32 cheatCount);
+		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool GetConvertedCheat([In]InteropCheatCode input, ref InteropInternalCheatCode output);
+		[DllImport(DllPath)] public static extern void SetCheats([In]InteropCheatCode[] cheats, UInt32 cheatCount);
 		[DllImport(DllPath)] public static extern void ClearCheats();
 
 		[DllImport(DllPath)] public static extern void InputBarcode(UInt64 barcode, UInt32 digitCount);
@@ -280,5 +281,58 @@ namespace Mesen.Interop
 		Play,
 		StartRecord,
 		StopRecord
+	}
+
+	public enum CheatType : byte
+	{
+		NesGameGenie = 0,
+		NesProActionRocky,
+		NesCustom,
+		GbGameGenie,
+		GbGameShark,
+		SnesGameGenie,
+		SnesProActionReplay,
+	}
+
+	public static class CheatTypeExtensions
+	{
+		public static CpuType ToCpuType(this CheatType cheatType)
+		{
+			return cheatType switch {
+				CheatType.NesGameGenie or CheatType.NesProActionRocky or CheatType.NesCustom => CpuType.Nes,
+				CheatType.SnesGameGenie or CheatType.SnesProActionReplay => CpuType.Snes,
+				CheatType.GbGameGenie or CheatType.GbGameShark => CpuType.Gameboy,
+				_ => throw new NotImplementedException("unsupported cheat type")
+			};
+		}
+	}
+
+	public struct InteropCheatCode
+	{
+		public CheatType Type;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+		public byte[] Code;
+
+		public InteropCheatCode(CheatType type, string code)
+		{
+			Type = type;
+
+			Code = new byte[16];
+			byte[] codeBytes = Encoding.UTF8.GetBytes(code);
+			Array.Copy(codeBytes, Code, Math.Min(codeBytes.Length, 15));
+		}
+	}
+
+	public struct InteropInternalCheatCode
+	{
+		public MemoryType MemType;
+		public UInt32 Address;
+		public Int16 Compare;
+		public byte Value;
+		public CheatType Type;
+		public CpuType Cpu;
+		[MarshalAs(UnmanagedType.I1)] public bool IsRamCode;
+		[MarshalAs(UnmanagedType.I1)] public bool IsAbsoluteAddress;
 	}
 }

@@ -325,8 +325,9 @@
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkDisableOamAddrBug">Disable PPU OAMADDR bug emulation</Control>			
 			<Control ID="chkDisablePaletteRead">Disable PPU palette reads</Control>
-			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>			
+			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>
+			<Control ID="chkDisableGameGenieBusConflicts">Disable Game Genie bus conflict emulation</Control>
 			<Control ID="lblConsoleType">Console model:</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 		</Form>
@@ -512,27 +513,30 @@
 			<Control ID="btnOK">Import Cheats</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmCheatList" Title="Cheats">
+		<Form ID="CheatListWindow">
+			<Control ID="wndTitle">Cheats</Control>
 			<Control ID="tabCheats">Cheats</Control>
 			<Control ID="btnAddCheat">Add Cheat</Control>
 			<Control ID="btnDeleteCheat">Delete</Control>
 			<Control ID="mnuAddCheat">Add cheat...</Control>
 			<Control ID="mnuDeleteCheat">Delete</Control>
-			<Control ID="colCheatName">Cheat Name</Control>
-			<Control ID="colCode">Code</Control>
+			<Control ID="colDescription">Description</Control>
+			<Control ID="colCodes">Codes</Control>
 			<Control ID="chkDisableCheats">Disable all cheats</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmCheat" Title="Edit Cheat">
+		<Form ID="CheatEditWindow">
+			<Control ID="wndTitle">Edit Cheat</Control>
 			<Control ID="lblDescription">Description:</Control>
-			<Control ID="grpCode">Codes</Control>
+			<Control ID="grpCodes">Codes</Control>
 			<Control ID="radGameGenie">Game Genie (e.g: A1B2-C3D4)</Control>
 			<Control ID="radProActionReplay">Pro Action Replay (e.g: AAAAAAVV)</Control>
 			<Control ID="chkEnabled">Cheat Enabled</Control>
 			<Control ID="lblHint">To enter multiple codes, enter 1 code per line.</Control>
 			<Control ID="lblInvalidCodes">Some codes do not match the selected format.</Control>
+			<Control ID="lblFormat">Format:</Control>
 			
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -1722,7 +1726,16 @@
 			<Value ID="MainSystemOnly">Main system only</Value>
 			<Value ID="SubSystemOnly">Sub system only</Value>
 		</Enum>
-
+		<Enum ID="CheatType">
+			<Value ID="NesGameGenie">Game Genie (e.g: SXUGTPVG)</Value>
+			<Value ID="NesProActionRocky">Pro Action Rocky (e.g ADEE5710)</Value>
+			<Value ID="NesCustom">Custom (AAAA:VV:CC)</Value>
+			<Value ID="GbGameGenie">Game Boy - Game Genie (e.g A1B-2C3-D4E)</Value>
+			<Value ID="GbGameShark">Game Boy - Game Shark (e.g 01A0A3DF)</Value>
+			<Value ID="SnesGameGenie">SNES - Game Genie (e.g A1B2-C3D4)</Value>
+			<Value ID="SnesProActionReplay">SNES - Pro Action Replay (AAAAAAVV)</Value>
+		</Enum>
+		
 		<Enum ID="CpuType">
 			<Value ID="Snes">SNES (65816)</Value>
 			<Value ID="Spc">SPC</Value>

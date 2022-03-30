@@ -250,7 +250,7 @@ uint8_t SnesMemoryManager::Read(uint32_t addr, MemoryOperationType type)
 		value = _openBus;
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
-	_cheatManager->ApplyCheat(addr, value);
+	_cheatManager->ApplyCheat<CpuType::Snes>(addr, value);
 	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, type);
 
 	IncMasterClock4();
@@ -288,7 +288,7 @@ uint8_t SnesMemoryManager::ReadDma(uint32_t addr, bool forBusA)
 		value = _openBus;
 		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 	}
-	_cheatManager->ApplyCheat(addr, value);
+	_cheatManager->ApplyCheat<CpuType::Snes>(addr, value);
 	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, MemoryOperationType::DmaRead);
 	return value;
 }

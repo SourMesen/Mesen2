@@ -544,7 +544,9 @@ namespace Mesen.ViewModels
 				new MainMenuAction() {
 					ActionType = ActionType.Cheats,
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => { }
+					OnClick = () => {
+						ApplicationHelper.GetOrCreateUniqueWindow(wnd, () => new CheatListWindow());
+					}
 				},
 
 				new MainMenuAction() {
@@ -586,12 +588,7 @@ namespace Mesen.ViewModels
 				new MainMenuAction() {
 					ActionType = ActionType.LogWindow,
 					OnClick = () => {
-						LogWindow? logWindow = ApplicationHelper.GetExistingWindow<LogWindow>();
-						if(logWindow != null) {
-							logWindow.Activate();
-						} else {
-							new LogWindow().ShowCentered((Control)wnd);
-						}
+						ApplicationHelper.GetOrCreateUniqueWindow(wnd, () => new LogWindow());
 					}
 				},
 

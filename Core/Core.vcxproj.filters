@@ -1724,6 +1724,9 @@
     <ClInclude Include="NES\BisqwitNtscFilter.h">
       <Filter>NES</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\CpuType.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

@@ -394,8 +394,14 @@
     <Compile Update="Windows\AboutWindow.axaml.cs">
       <DependentUpon>AboutWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\CheatEditWindow.axaml.cs">
+      <DependentUpon>CheatEditWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\InputBarcodeWindow.axaml.cs">
       <DependentUpon>InputBarcodeWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\CheatListWindow.axaml.cs">
+      <DependentUpon>CheatListWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\SelectRomWindow.axaml.cs">
       <DependentUpon>SelectRomWindow.axaml</DependentUpon>

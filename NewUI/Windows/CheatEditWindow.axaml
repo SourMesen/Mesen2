@@ -1,0 +1,94 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.CheatEditWindow"
+	x:DataType="vm:CheatEditWindowViewModel"
+	Icon="/Assets/CheatCode.png"
+	Padding="2"
+	Width="320" Height="240"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:CheatEditWindowViewModel />
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,*,Auto">
+		<TextBlock Text="{l:Translate lblDescription}" VerticalAlignment="Center" />
+		<TextBox Grid.Column="1" Text="{CompiledBinding Cheat.Description}" />
+	
+		<CheckBox
+			Grid.Row="1"
+			Grid.ColumnSpan="2"
+			Content="{l:Translate chkEnabled}"
+			IsChecked="{CompiledBinding Cheat.Enabled}"
+		/>
+		
+
+		<c:GroupBox Header="{l:Translate grpCodes}" Grid.Row="3" Grid.ColumnSpan="2">
+			<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto,*,Auto,Auto">
+				<DockPanel Grid.ColumnSpan="2">
+					<TextBlock DockPanel.Dock="Left" Text="{l:Translate lblFormat}" VerticalAlignment="Center" />
+					<c:EnumComboBox
+						Grid.Row="2"
+						Grid.ColumnSpan="2"
+						SelectedItem="{CompiledBinding Cheat.Type}"
+						AvailableValues="{CompiledBinding AvailableCheatTypes}"
+					/>
+				</DockPanel>
+
+				<TextBox
+					Grid.Row="1"
+					Name="txtCodes"
+					AcceptsReturn="True"
+					Height="NaN"
+					Text="{CompiledBinding Cheat.Codes}"
+				/>
+
+				<TextBox
+					Grid.Row="1"
+					Grid.Column="1"
+					AcceptsReturn="True"
+					IsReadOnly="True"
+					Background="#EEE"
+					Height="NaN"
+					Text="{CompiledBinding ConvertedCodes}"
+				/>
+
+				<StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" IsVisible="{CompiledBinding ShowInvalidCodeHint}">
+					<Image Source="/Assets/Warning.png" Stretch="None" Margin="3" />
+					<TextBlock Text="{l:Translate lblInvalidCodes}" VerticalAlignment="Center" />
+				</StackPanel>
+			
+				<StackPanel Grid.Row="3" Grid.ColumnSpan="2" Orientation="Horizontal">
+					<Image Source="/Assets/Help.png" Stretch="None" Margin="3" />
+					<TextBlock Text="{l:Translate lblHint}" VerticalAlignment="Center" />
+				</StackPanel>
+			</Grid>
+		</c:GroupBox>
+		
+		<StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button
+				Width="70"
+				HorizontalContentAlignment="Center"
+				IsDefault="True"
+				Click="Ok_OnClick"
+				Content="{l:Translate btnOK}"
+				IsEnabled="{CompiledBinding OkButtonEnabled}"
+			/>
+			
+			<Button
+				Width="70"
+				HorizontalContentAlignment="Center"
+				IsCancel="True"
+				Click="Cancel_OnClick"
+				Content="{l:Translate btnCancel}"
+			/>
+		</StackPanel>
+	</Grid>
+</Window>

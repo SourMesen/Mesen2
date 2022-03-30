@@ -30,8 +30,8 @@ uint8_t RegisterHandlerB::Read(uint32_t addr)
 		return _spc->CpuReadRegister(addr & 0x03);
 	} else if(addr == 0x2180) {
 		uint8_t value = _workRam[_wramPosition];
+		_cheatManager->ApplyCheat<CpuType::Snes>(0x7E0000 | _wramPosition, value);
 		_emu->ProcessMemoryRead<CpuType::Snes>(0x7E0000 | _wramPosition, value, MemoryOperationType::Read);
-		_cheatManager->ApplyCheat(0x7E0000 | _wramPosition, value);
 		_wramPosition = (_wramPosition + 1) & 0x1FFFF;
 		return value;
 	} else if(addr >= 0x2300 && addr <= 0x23FF && _console->GetCartridge()->GetSa1()) {

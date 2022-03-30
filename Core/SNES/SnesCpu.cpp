@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Utilities/Serializer.h"
 #include "Shared/Emulator.h"
+#include "Shared/CheatManager.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesCpu.h"
 #include "SNES/SnesConsole.h"
@@ -61,6 +62,7 @@ void SnesCpu::Exec()
 	if(_state.PrevNeedNmi) {
 		_state.NeedNmi = false;
 		uint32_t originalPc = GetProgramAddress(_state.PC);
+		_emu->GetCheatManager()->RefreshRamCheats(CpuType::Snes);
 		ProcessInterrupt(_state.EmulationMode ? SnesCpu::LegacyNmiVector : SnesCpu::NmiVector, true);
 		_emu->ProcessInterrupt<CpuType::Snes>(originalPc, GetProgramAddress(_state.PC), true);
 	} else if(_state.PrevIrqSource) {

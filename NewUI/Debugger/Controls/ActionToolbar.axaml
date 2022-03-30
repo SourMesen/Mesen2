@@ -16,12 +16,18 @@
 	
 	<UserControl.Styles>
 		<Style Selector="Button">
-			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="BorderBrush" Value="Transparent" />
 			<Setter Property="MinWidth" Value="0" />
 			<Setter Property="Padding" Value="1" />
 		</Style>
+		<Style Selector="Button:pointerover">
+			<Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+		</Style>
 		<Style Selector="Button:disabled">
 			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+		<Style Selector="Button:disabled > ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
 		</Style>
 		<Style Selector="Button Image">
 			<Setter Property="Margin" Value="0" />
@@ -54,9 +60,17 @@
 						<ContentPresenter Content="{Binding ActionIcon}" />
 						<TextBlock
 							Padding="3 0"
-							IsVisible="{Binding ActionIcon, Converter={x:Static ObjectConverters.IsNull}}"
 							Text="{Binding ActionName}"
-						/>
+						>
+							<TextBlock.IsVisible>
+								<MultiBinding Converter="{x:Static BoolConverters.Or}">
+									<MultiBinding.Bindings>
+										<Binding Path="ActionIcon" Converter="{x:Static ObjectConverters.IsNull}" />
+										<Binding Path="AlwaysShowLabel" />
+									</MultiBinding.Bindings>
+								</MultiBinding>
+							</TextBlock.IsVisible>
+						</TextBlock>
 					</StackPanel>
 				</Button>
 			</DataTemplate>

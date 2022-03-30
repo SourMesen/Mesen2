@@ -54,7 +54,11 @@ void GbCpu::Exec()
 					_state.PC = 0;
 					break;
 
-				case GbIrqSource::VerticalBlank: _state.PC = 0x40; break;
+				case GbIrqSource::VerticalBlank:
+					_gameboy->RefreshRamCheats();
+					_state.PC = 0x40;
+					break;
+
 				case GbIrqSource::LcdStat: _state.PC = 0x48; break;
 				case GbIrqSource::Timer: _state.PC = 0x50; break;
 				case GbIrqSource::Serial: _state.PC = 0x58; break;

@@ -16,6 +16,7 @@
 #include "Gameboy/GbDefaultVideoFilter.h"
 #include "SNES/SnesNtscFilter.h"
 #include "Debugger/DebugTypes.h"
+#include "Shared/CheatManager.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
 #include "Shared/BaseControlManager.h"
@@ -554,4 +555,15 @@ void Gameboy::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 ConsoleRegion Gameboy::GetRegion()
 {
 	return ConsoleRegion::Ntsc;
+}
+
+void Gameboy::RefreshRamCheats()
+{
+	//Used to refresh gameshark codes when vertical blank IRQ is triggered
+	_emu->GetCheatManager()->RefreshRamCheats(CpuType::Gameboy);
+	for(InternalCheatCode& code : _emu->GetCheatManager()->GetRamRefreshCheats(CpuType::Gameboy)) {
+		if(!code.IsAbsoluteAddress) {
+			_memoryManager->DebugWrite(code.Address, code.Value);
+		}
+	}
 }

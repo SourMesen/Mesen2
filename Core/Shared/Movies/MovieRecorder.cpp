@@ -126,7 +126,8 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 	}
 
 	for(CheatCode &code : _emu->GetCheatManager()->GetCheats()) {
-		out << "Cheat " << HexUtilities::ToHex24(code.Address) << " " << HexUtilities::ToHex(code.Value) << "\n";
+		//TODO
+		out << "Cheat " << string(code.Code) << "\n";
 	}
 }
 

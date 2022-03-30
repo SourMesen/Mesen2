@@ -41,6 +41,26 @@ namespace Mesen.Utilities
 			return null;
 		}
 
+		public static T GetOrCreateUniqueWindow<T>(Control centerParent, Func<T> createWindow) where T : Window
+		{
+			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+				T? wnd = desktop.Windows.Where(w => w is T).FirstOrDefault() as T;
+				if(wnd == null) {
+					wnd = createWindow();
+					wnd.ShowCentered((Control)centerParent);
+					return wnd;
+				} else {
+					if(wnd.WindowState == WindowState.Minimized) {
+						wnd.WindowState = WindowState.Normal;
+					}
+					wnd.Activate();
+					return wnd;
+				}
+			}
+
+			throw new NotSupportedException();
+		}
+
 		//Taken from Avalonia's code (MIT): https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Dialogs/AboutAvaloniaDialog.xaml.cs
 		public static void OpenBrowser(string url)
 		{

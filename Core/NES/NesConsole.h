@@ -106,4 +106,6 @@ public:
 	void DebugWrite(uint16_t addr, uint8_t value);
 	uint8_t DebugReadVram(uint16_t addr);
 	void DebugWriteVram(uint16_t addr, uint8_t value);
+
+	void ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value) override;
 };
