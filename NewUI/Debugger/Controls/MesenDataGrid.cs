@@ -62,6 +62,12 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnKeyDown(e);
 
+			if(e.KeyModifiers == KeyModifiers.Control && e.Key == Key.A) {
+				SelectAll();
+				e.Handled = true;
+				return;
+			}
+
 			if(!_isEditing && (e.KeyModifiers == KeyModifiers.Control || e.KeyModifiers == KeyModifiers.Alt)) {
 				//Disable all alt/ctrl DataGrid shortcuts to use our own shortcuts instead
 				e.Handled = true;
