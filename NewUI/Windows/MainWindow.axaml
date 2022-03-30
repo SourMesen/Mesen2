@@ -34,7 +34,7 @@
 			<v:MainMenuView Name="MainMenu" />
 		</Panel>
 		
-		<ContentControl DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
+		<ContentControl Name="AudioPlayer" DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
 
 		<Panel>
 			<ContentControl Content="{CompiledBinding RecentGames}" IsVisible="{CompiledBinding RecentGames.Visible}" />

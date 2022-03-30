@@ -125,7 +125,7 @@ void Emulator::Run()
 	_lastFrameTimer.Reset();
 
 	while(!_stopFlag) {
-		bool useRunAhead = _settings->GetEmulationConfig().RunAheadFrames > 0 && !_debugger && !_rewindManager->IsRewinding() && _settings->GetEmulationSpeed() > 0 && _settings->GetEmulationSpeed() <= 100;
+		bool useRunAhead = _settings->GetEmulationConfig().RunAheadFrames > 0 && !_debugger && !_audioPlayerHud && !_rewindManager->IsRewinding() && _settings->GetEmulationSpeed() > 0 && _settings->GetEmulationSpeed() <= 100;
 		if(useRunAhead) {
 			RunFrameWithRunAhead();
 		} else {

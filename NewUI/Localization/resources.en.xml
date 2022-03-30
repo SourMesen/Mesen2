@@ -722,6 +722,14 @@
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
 
+		<Form ID="AudioPlayerView">
+			<Control ID="btnPrevTrack">Previous track</Control>
+			<Control ID="btnNextTrack">Next track</Control>
+			<Control ID="btnPlayPause">Play/pause</Control>
+			<Control ID="btnToggleShuffle">Shuffle on/off</Control>
+			<Control ID="btnToggleRepeat">Repeat on/off</Control>
+		</Form>
+		
 		<Form ID="TilemapViewerWindow">
 			<Control ID="wndTitle">Tilemap Viewer</Control>
 			<Control ID="lblDisplayMode">Display mode: </Control>

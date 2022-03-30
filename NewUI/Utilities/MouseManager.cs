@@ -5,6 +5,7 @@ using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities.GlobalMouseLib;
+using Mesen.ViewModels;
 using Mesen.Views;
 using Mesen.Windows;
 using System;
@@ -78,7 +79,11 @@ namespace Mesen.Utilities
 			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && EmuApi.IsRunning()) {
 				//Close menu when renderer is clicked
 				_mainMenu.MainMenu.Close();
-				_renderer.Focus();
+				if(MainWindowViewModel.Instance.AudioPlayer == null) {
+					//Only give renderer focus when the audio player isn't active
+					//Otherwise clicking on the audio player's buttons does nothing
+					_renderer.Focus();
+				}
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());

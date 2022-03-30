@@ -92,8 +92,15 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 {
 	UpdateVideoFilter();
 
-	_baseFrameSize.Width = _frame.Width;
-	_baseFrameSize.Height = _frame.Height;
+	bool isAudioPlayer = _emu->GetAudioPlayerHud() != nullptr;
+	if(isAudioPlayer) {
+		//When an audio file is loaded, force base resolution to 256x240 for all consoles
+		_baseFrameSize.Width = 256;
+		_baseFrameSize.Height = 240;
+	} else {
+		_baseFrameSize.Width = _frame.Width;
+		_baseFrameSize.Height = _frame.Height;
+	}
 
 	_videoFilter->SetBaseFrameInfo(_baseFrameSize);
 	FrameInfo frameSize = _videoFilter->SendFrame((uint16_t*)_frame.FrameBuffer, _frame.FrameNumber, _frame.Data);
@@ -102,7 +109,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	
 	OverscanDimensions overscan = _videoFilter->GetOverscan();
 
-	if(_rotateFilter) {
+	if(_rotateFilter && !isAudioPlayer) {
 		outputBuffer = _rotateFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height);
 		if((_rotateFilter->GetAngle() % 180) != 0) {
 			//90 or 270 rotation, swap height & width
@@ -111,7 +118,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 		}
 	}
 
-	if(_scaleFilter) {
+	if(_scaleFilter && !isAudioPlayer) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
 		frameSize = _scaleFilter->GetFrameInfo(frameSize);
 		overscan.Left *= _scaleFilter->GetScale();
@@ -164,8 +171,6 @@ void VideoDecoder::UpdateFrame(RenderedFrame frame, bool sync, bool forRewind)
 		return;
 	}
 
-	_emu->OnBeforeSendFrame();
-
 	if(_frameChanged) {
 		//Last frame isn't done decoding yet - sometimes Signal() introduces a 25-30ms delay
 		while(_frameChanged) {
@@ -173,7 +178,9 @@ void VideoDecoder::UpdateFrame(RenderedFrame frame, bool sync, bool forRewind)
 		}
 		//At this point, we are sure that the decode thread is no longer busy
 	}
-	
+
+	_emu->OnBeforeSendFrame();
+
 	_frame = frame;
 	if(sync) {
 		DecodeFrame(forRewind);

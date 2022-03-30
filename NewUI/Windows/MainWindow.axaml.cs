@@ -30,8 +30,9 @@ namespace Mesen.Windows
 
 		private FrameInfo _baseScreenSize;
 		private MouseManager _mouseManager;
-		public NativeRenderer _renderer;
-		public MainMenuView _mainMenu;
+		private NativeRenderer _renderer;
+		private ContentControl _audioPlayer;
+		private MainMenuView _mainMenu;
 
 		static MainWindow()
 		{
@@ -59,6 +60,7 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
 			_renderer = this.FindControl<NativeRenderer>("Renderer");
+			_audioPlayer = this.FindControl<ContentControl>("AudioPlayer");
 			_mainMenu = this.FindControl<MainMenuView>("MainMenu");
 			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
@@ -245,7 +247,7 @@ namespace Mesen.Windows
 				_renderer.Height = double.NaN;
 
 				double aspectRatio = EmuApi.GetAspectRatio();
-				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + _mainMenu.Bounds.Height);
+				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + _mainMenu.Bounds.Height + _audioPlayer.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_renderer.Width = screenSize.Width * scale;
