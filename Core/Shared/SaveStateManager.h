@@ -16,8 +16,8 @@ private:
 	bool GetScreenshotData(vector<uint8_t>& out, uint32_t& width, uint32_t& height, istream& stream);
 
 public:
-	static constexpr uint32_t FileFormatVersion = 1;
-	static constexpr uint32_t MinimumSupportedVersion = 1;
+	static constexpr uint32_t FileFormatVersion = 2;
+	static constexpr uint32_t MinimumSupportedVersion = 2;
 	static constexpr uint32_t AutoSaveStateIndex = 11;
 
 	SaveStateManager(Emulator* emu);

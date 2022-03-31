@@ -277,43 +277,9 @@ void NesControlManager::Reset(bool softReset)
 
 void NesControlManager::Serialize(Serializer& s)
 {
-	//Restore controllers that were being used at the time the snapshot was made
-	//This is particularly important to ensure proper sync during NetPlay
-	ControllerType controllerTypes[4];
-	ExpansionPortDevice expansionDevice;
-	ConsoleType consoleType;
-	bool hasFourScore = false;
-	bool useNes101Hvc101Behavior = false;
-	uint32_t zapperDetectionRadius = 0;
-	if(s.IsSaving()) {
-		//TODO
-		/*
-		expansionDevice = settings->GetExpansionDevice();
-		consoleType = settings->GetConsoleType();
-		hasFourScore = settings->CheckFlag(EmulationFlags::HasFourScore);
-		useNes101Hvc101Behavior = settings->CheckFlag(EmulationFlags::UseNes101Hvc101Behavior);
-		zapperDetectionRadius = settings->GetZapperDetectionRadius();
-		for(int i = 0; i < 4; i++) {
-			controllerTypes[i] = settings->GetControllerType(i);
-		}*/
-	}
-
-	ArrayInfo<ControllerType> types = { controllerTypes, 4 };
-	s.Stream(expansionDevice, consoleType, types, hasFourScore, useNes101Hvc101Behavior, zapperDetectionRadius, _lagCounter, _pollCounter);
+	s.Stream(_lagCounter, _pollCounter);
 
 	if(!s.IsSaving()) {
-		//TODO
-		/*
-		settings->SetExpansionDevice(expansionDevice);
-		settings->SetConsoleType(consoleType);
-		for(int i = 0; i < 4; i++) {
-			settings->SetControllerType(i, controllerTypes[i]);
-		}
-
-		settings->SetZapperDetectionRadius(zapperDetectionRadius);
-		settings->SetFlagState(EmulationFlags::HasFourScore, hasFourScore);
-		settings->SetFlagState(EmulationFlags::UseNes101Hvc101Behavior, useNes101Hvc101Behavior);
-		*/
 		UpdateControlDevices();
 	}
 

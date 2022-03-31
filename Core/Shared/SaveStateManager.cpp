@@ -85,7 +85,7 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 void SaveStateManager::SaveState(ostream &stream)
 {
 	GetSaveStateHeader(stream);
-	_emu->Serialize(stream);
+	_emu->Serialize(stream, false);
 }
 
 bool SaveStateManager::SaveState(string filepath)
@@ -209,7 +209,7 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 		//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
 		_emu->GetMovieManager()->Stop();
 
-		_emu->Deserialize(stream, fileFormatVersion);
+		_emu->Deserialize(stream, fileFormatVersion, false);
 
 		return true;
 	}

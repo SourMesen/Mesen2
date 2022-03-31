@@ -189,8 +189,8 @@ public:
 
 	void SuspendDebugger(bool release);
 
-	void Serialize(ostream& out, int compressionLevel = 1);
-	void Deserialize(istream& in, uint32_t fileFormatVersion, bool compressed = true);
+	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);
+	void Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, bool compressed = true);
 
 	SoundMixer* GetSoundMixer();
 	VideoRenderer* GetVideoRenderer();

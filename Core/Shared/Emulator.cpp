@@ -207,7 +207,7 @@ void Emulator::RunFrameWithRunAhead()
 	//Run a single frame and save the state (no audio/video)
 	_isRunAheadFrame = true;
 	_console->RunFrame();
-	Serialize(runAheadState, 0);
+	Serialize(runAheadState, false, 0);
 
 	while(frameCount > 1) {
 		//Run extra frames if the requested run ahead frame count is higher than 1
@@ -224,7 +224,7 @@ void Emulator::RunFrameWithRunAhead()
 	if(!wasReset) {
 		//Load the state we saved earlier
 		_isRunAheadFrame = true;
-		Deserialize(runAheadState, SaveStateManager::FileFormatVersion, false);
+		Deserialize(runAheadState, SaveStateManager::FileFormatVersion, false, false);
 		_isRunAheadFrame = false;
 	}
 }
@@ -733,16 +733,22 @@ void Emulator::WaitForLock()
 	}
 }
 
-void Emulator::Serialize(ostream& out, int compressionLevel)
+void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLevel)
 {
 	Serializer serializer(SaveStateManager::FileFormatVersion);
+	if(includeSettings) {
+		serializer.Stream(_settings.get());
+	}
 	serializer.Stream(_console.get());
 	serializer.Save(out, compressionLevel);
 }
 
-void Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool compressed)
+void Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, bool compressed)
 {
 	Serializer serializer(in, fileFormatVersion, compressed);
+	if(includeSettings) {
+		serializer.Stream(_settings.get());
+	}
 	serializer.Stream(_console.get());
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }

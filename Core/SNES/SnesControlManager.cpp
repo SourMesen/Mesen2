@@ -98,11 +98,7 @@ void SnesControlManager::Write(uint16_t addr, uint8_t value)
 
 void SnesControlManager::Serialize(Serializer &s)
 {
-	SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
-	//TODO
-	//s.Stream(cfg.Controllers[0].Type, cfg.Controllers[1].Type, cfg.Controllers[2].Type, cfg.Controllers[3].Type, cfg.Controllers[4].Type);
 	if(!s.IsSaving()) {
-		_emu->GetSettings()->SetSnesConfig(cfg);
 		UpdateControlDevices();
 	}
 

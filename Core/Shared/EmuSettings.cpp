@@ -6,6 +6,7 @@
 #include "Emulator.h"
 #include "NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/Serializer.h"
 
 EmuSettings::EmuSettings(Emulator* emu)
 {
@@ -15,6 +16,55 @@ EmuSettings::EmuSettings(Emulator* emu)
 
 	std::random_device rd;
 	_mt = std::mt19937(rd());
+}
+
+void EmuSettings::Serialize(Serializer& s)
+{
+	//Save/load settings that have an impact on emulation (for movies, netplay, etc.)
+	s.Stream(
+		_video.IntegerFpsMode,
+		_emulation.RunAheadFrames
+	);
+
+	switch(_emu->GetConsoleType()) {
+		case ConsoleType::Nes:
+			s.Stream(
+				_nes.ConsoleType, _nes.DipSwitches,
+				_nes.DisableOamAddrBug, _nes.DisablePaletteRead, _nes.DisablePpu2004Reads,
+				_nes.DisableGameGenieBusConflicts, _nes.DisablePpuReset, _nes.EnableOamDecay,
+				_nes.EnablePpu2000ScrollGlitch, _nes.EnablePpu2006ScrollGlitch, _nes.EnablePpuOamRowCorruption,
+				_nes.PpuExtraScanlinesAfterNmi, _nes.PpuExtraScanlinesBeforeNmi,
+				_nes.Region,
+				_nes.LightDetectionRadius,
+				_nes.Port1.Type, _nes.Port1SubPorts[0].Type, _nes.Port1SubPorts[1].Type, _nes.Port1SubPorts[2].Type, _nes.Port1SubPorts[3].Type,
+				_nes.Port2.Type,
+				_nes.ExpPort.Type, _nes.ExpPortSubPorts[0].Type, _nes.ExpPortSubPorts[1].Type, _nes.ExpPortSubPorts[2].Type, _nes.ExpPortSubPorts[3].Type
+			);
+			break;
+
+		case ConsoleType::Snes:
+			s.Stream(
+				_snes.GsuClockSpeed,
+				_snes.PpuExtraScanlinesAfterNmi, _snes.PpuExtraScanlinesBeforeNmi,
+				_snes.Region,
+				_snes.Port1.Type, _snes.Port1SubPorts[0].Type, _snes.Port1SubPorts[1].Type, _snes.Port1SubPorts[2].Type, _snes.Port1SubPorts[3].Type,
+				_snes.Port2.Type, _snes.Port2SubPorts[0].Type, _snes.Port2SubPorts[1].Type, _snes.Port2SubPorts[2].Type, _snes.Port2SubPorts[3].Type,
+				_snes.BsxCustomDate
+			);
+			break;
+
+		case ConsoleType::Gameboy:
+		case ConsoleType::GameboyColor:
+			s.Stream(
+				_gameboy.Controller.Type,
+				_gameboy.Model,
+				_gameboy.UseSgb2
+			);
+			break;
+
+		default:
+			throw std::runtime_error("unsupport console type");
+	}
 }
 
 uint32_t EmuSettings::GetVersion()
@@ -77,22 +127,7 @@ InputConfig& EmuSettings::GetInputConfig()
 
 void EmuSettings::SetEmulationConfig(EmulationConfig& config)
 {
-	//TODO
-	//bool prevOverclockEnabled = _emulation.PpuExtraScanlinesAfterNmi > 0 || _emulation.PpuExtraScanlinesBeforeNmi > 0 || _emulation.GsuClockSpeed > 100;
-	//bool overclockEnabled = config.PpuExtraScanlinesAfterNmi > 0 || config.PpuExtraScanlinesBeforeNmi > 0 || config.GsuClockSpeed > 100;
 	_emulation = config;
-
-	//TODO
-	/*if(prevOverclockEnabled != overclockEnabled) {
-		if(overclockEnabled) {
-			MessageManager::DisplayMessage("Overclock", "OverclockEnabled");
-		} else {
-			MessageManager::DisplayMessage("Overclock", "OverclockDisabled");
-		}
-
-		//Used by net play
-		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::ConfigChanged);
-	}*/
 }
 
 EmulationConfig& EmuSettings::GetEmulationConfig()

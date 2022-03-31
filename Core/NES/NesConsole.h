@@ -46,7 +46,7 @@ private:
 
 	bool _nextFrameOverclockDisabled = false;
 	
-	void UpdateRegion();
+	void UpdateRegion(bool forceUpdate = false);
 	void LoadHdPack(VirtualFile& romFile);
 
 public:

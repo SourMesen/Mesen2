@@ -11,19 +11,11 @@ class SaveStateMessage : public NetMessage
 private:
 	vector<CheatCode> _activeCheats;
 	vector<uint8_t> _stateData;
-	
-	ControllerType _controllerTypes[5] = {};
-	ConsoleRegion _region = {};
-	uint32_t _ppuExtraScanlinesAfterNmi = 0;
-	uint32_t _ppuExtraScanlinesBeforeNmi = 0;
-	uint32_t _gsuClockSpeed = 0;
 
 protected:
 	void Serialize(Serializer &s) override
 	{
 		s.StreamVector(_stateData);
-		s.Stream(_region, _ppuExtraScanlinesAfterNmi, _ppuExtraScanlinesBeforeNmi, _gsuClockSpeed);
-		s.StreamArray(_controllerTypes, 5);
 		s.StreamVector(_activeCheats);
 	}
 
@@ -36,22 +28,8 @@ public:
 		emu->Lock();
 		_activeCheats = emu->GetCheatManager()->GetCheats();
 		stringstream state;
-		emu->Serialize(state);
+		emu->Serialize(state, true);
 
-		//TODO
-		/*
-		EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
-		_region = emuCfg.Region;
-
-		_ppuExtraScanlinesAfterNmi = emuCfg.PpuExtraScanlinesAfterNmi;
-		_ppuExtraScanlinesBeforeNmi = emuCfg.PpuExtraScanlinesBeforeNmi;
-		_gsuClockSpeed = emuCfg.GsuClockSpeed;
-
-		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
-		for(int i = 0; i < 5; i++) {
-			_controllerTypes[i] = inputCfg.Controllers[i].Type;
-		}
-		*/
 		emu->Unlock();
 
 		uint32_t dataSize = (uint32_t)state.tellp();
@@ -63,25 +41,8 @@ public:
 	{
 		std::stringstream ss;
 		ss.write((char*)_stateData.data(), _stateData.size());
-		emu->Deserialize(ss, SaveStateManager::FileFormatVersion);
+		emu->Deserialize(ss, SaveStateManager::FileFormatVersion, true);
 
 		emu->GetCheatManager()->SetCheats(_activeCheats);
-		
-		//TODO
-		/*EmulationConfig emuCfg = emu->GetSettings()->GetEmulationConfig();
-		//emuCfg.Region = _region;
-
-		emuCfg.PpuExtraScanlinesAfterNmi = _ppuExtraScanlinesAfterNmi;
-		emuCfg.PpuExtraScanlinesBeforeNmi = _ppuExtraScanlinesBeforeNmi;
-		emuCfg.GsuClockSpeed = _gsuClockSpeed;
-
-		InputConfig inputCfg = emu->GetSettings()->GetInputConfig();
-		for(int i = 0; i < 5; i++) {
-			inputCfg.Controllers[i].Type = _controllerTypes[i];
-		}
-
-		emu->GetSettings()->SetEmulationConfig(emuCfg);
-		emu->GetSettings()->SetInputConfig(inputCfg);
-		*/
 	}
 };

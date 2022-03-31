@@ -92,6 +92,10 @@ void NesConsole::Serialize(Serializer& s)
 		//For VS Dualsystem, the sub console's savestate is appended to the end of the file
 		s.Stream(_vsSubConsole.get());
 	}
+
+	if(!s.IsSaving()) {
+		UpdateRegion(true);
+	}
 }
 
 void NesConsole::Stop()
@@ -223,7 +227,7 @@ void NesConsole::LoadHdPack(VirtualFile& romFile)
 	}
 }
 
-void NesConsole::UpdateRegion()
+void NesConsole::UpdateRegion(bool forceUpdate)
 {
 	ConsoleRegion region = GetNesConfig().Region;
 	if(region == ConsoleRegion::Auto) {
@@ -233,7 +237,7 @@ void NesConsole::UpdateRegion()
 			default: region = ConsoleRegion::Ntsc; break;
 		}
 	}
-	if(_region != region) {
+	if(_region != region || forceUpdate) {
 		_region = region;
 
 		_cpu->SetMasterClockDivider(_region);

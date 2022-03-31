@@ -2,11 +2,12 @@
 #include "stdafx.h"
 #include "SettingTypes.h"
 #include "Utilities/SimpleLock.h"
+#include "Utilities/ISerializable.h"
 #include <random>
 
 class Emulator;
 
-class EmuSettings
+class EmuSettings : public ISerializable
 {
 private:
 	Emulator* _emu;
@@ -42,6 +43,8 @@ private:
 
 public:
 	EmuSettings(Emulator* emu);
+
+	void Serialize(Serializer& s) override;
 
 	uint32_t GetVersion();
 	string GetVersionString();

@@ -1408,17 +1408,6 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 	ArrayInfo<uint8_t> secondarySpriteRam = { _secondarySpriteRAM, 0x20 };
 	ArrayInfo<int32_t> openBusDecayStamp = { _openBusDecayStamp, 8 };
 
-	bool disablePpu2004Reads = false;
-	bool disablePaletteRead = false;
-	bool disableOamAddrBug = false;
-
-	if(s.IsSaving()) {
-		//TODO
-		/*disablePpu2004Reads = _settings->CheckFlag(EmulationFlags::DisablePpu2004Reads);
-		disablePaletteRead = _settings->CheckFlag(EmulationFlags::DisablePaletteRead);
-		disableOamAddrBug = _settings->CheckFlag(EmulationFlags::DisableOamAddrBug);*/
-	}
-
 	s.Stream(_spriteRamAddr, _videoRamAddr, _xScroll, _tmpVideoRamAddr, _writeToggle,
 		_highBitShift, _lowBitShift, _control.VerticalWrite, _control.SpritePatternAddr, _control.BackgroundPatternAddr, _control.LargeSprites, _control.NmiOnVerticalBlank,
 		_mask.Grayscale, _mask.BackgroundMask, _mask.SpriteMask, _mask.BackgroundEnabled, _mask.SpritesEnabled, _mask.IntensifyRed, _mask.IntensifyGreen,
@@ -1427,7 +1416,7 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 		_tile.PaletteOffset, _tile.TileAddr, _previousTilePalette, _spriteIndex, _spriteCount,
 		_secondaryOAMAddr, _sprite0Visible, _oamCopybuffer, _spriteInRange, _sprite0Added, _spriteAddrH, _spriteAddrL, _oamCopyDone, _region,
 		_prevRenderingEnabled, _renderingEnabled, _openBus, _ignoreVramRead, paletteRam, spriteRam, secondarySpriteRam,
-		openBusDecayStamp, disablePpu2004Reads, disablePaletteRead, disableOamAddrBug, _overflowBugCounter, _updateVramAddr, _updateVramAddrDelay,
+		openBusDecayStamp, _overflowBugCounter, _updateVramAddr, _updateVramAddrDelay,
 		_needStateUpdate, _ppuBusAddress, _preventVblFlag, _masterClock, _needVideoRamIncrement);
 
 	for(int i = 0; i < 64; i++) {
@@ -1435,11 +1424,6 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 	}
 
 	if(!s.IsSaving()) {
-		//TODO
-		/*_settings->SetFlagState(EmulationFlags::DisablePpu2004Reads, disablePpu2004Reads);
-		_settings->SetFlagState(EmulationFlags::DisablePaletteRead, disablePaletteRead);
-		_settings->SetFlagState(EmulationFlags::DisableOamAddrBug, disableOamAddrBug);*/
-
 		UpdateTimings(_region);
 		UpdateMinimumDrawCycles();
 
