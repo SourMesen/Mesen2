@@ -87,16 +87,26 @@ void NesDefaultVideoFilter::GetFullPalette(uint32_t palette[512], NesConfig& nes
 			GenerateFullColorPalette(palette);
 		}
 	} else {
-		//TODO use custom palette option
-		memcpy(palette, _ppuPaletteArgb[(int)model], sizeof(_ppuPaletteArgb[(int)_ppuModel]));
-		GenerateFullColorPalette(palette);
+		if(nesCfg.UseCustomVsPalette) {
+			uint32_t tmpPalette[512];
+			GetFullPalette(tmpPalette, nesCfg, PpuModel::Ppu2C02);
+			
+			for(int i = 0; i < 64; i++) {
+				for(int j = 0; j < 8; j++) {
+					palette[(j << 6) | i] = tmpPalette[(j << 6) | (_paletteLut[(int)model][i])];
+				}
+			}
+		} else {
+			memcpy(palette, _ppuPaletteArgb[(int)model], sizeof(_ppuPaletteArgb[(int)_ppuModel]));
+			GenerateFullColorPalette(palette);
+		}
 	}
 }
 
 void NesDefaultVideoFilter::InitLookupTable()
 {
-	VideoConfig videoCfg = _emu->GetSettings()->GetVideoConfig();
-	NesConfig nesCfg = _emu->GetSettings()->GetNesConfig();
+	VideoConfig& videoCfg = _emu->GetSettings()->GetVideoConfig();
+	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
 
 	InitConversionMatrix(videoCfg.Hue, videoCfg.Saturation);
 
@@ -126,12 +136,23 @@ void NesDefaultVideoFilter::InitLookupTable()
 
 void NesDefaultVideoFilter::OnBeforeApplyFilter()
 {
-	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
-	NesConfig nesConfig = _emu->GetSettings()->GetNesConfig();
+	VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
+	NesConfig& nesConfig = _emu->GetSettings()->GetNesConfig();
 
 	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
 
-	if(_ppuModel != model || _videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || memcmp(_nesConfig.UserPalette, nesConfig.UserPalette, sizeof(nesConfig.UserPalette)) != 0) {
+	bool optionsChanged = (
+		_ppuModel != model ||
+		_videoConfig.Hue != config.Hue ||
+		_videoConfig.Saturation != config.Saturation ||
+		_videoConfig.Contrast != config.Contrast ||
+		_videoConfig.Brightness != config.Brightness ||
+		_nesConfig.IsFullColorPalette != nesConfig.IsFullColorPalette ||
+		_nesConfig.UseCustomVsPalette != nesConfig.UseCustomVsPalette ||
+		memcmp(_nesConfig.UserPalette, nesConfig.UserPalette, sizeof(nesConfig.UserPalette)) != 0
+	);
+
+	if(optionsChanged) {
 		_ppuModel = model;
 		InitLookupTable();
 	}
