@@ -282,6 +282,7 @@ namespace Mesen.Interop
 
 	public struct NecDspState : BaseState
 	{
+		public UInt64 CycleCount;
 		public UInt16 A;
 		public NecDspAccFlags FlagsA;
 		public UInt16 B;

@@ -119,7 +119,6 @@ NecDsp* NecDsp::InitCoprocessor(CoprocessorType type, SnesConsole *console, vect
 
 void NecDsp::Reset()
 {
-	_cycleCount = 0;
 	_state = {};
 }
 
@@ -156,11 +155,11 @@ void NecDsp::Run()
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * (_frequency / _console->GetMasterClockRate()));
 
 	if(_inRqmLoop && !_emu->IsDebugging()) {
-		_cycleCount = targetCycle;
+		_state.CycleCount = targetCycle;
 		return;
 	}
 
-	while(_cycleCount < targetCycle) {
+	while(_state.CycleCount < targetCycle) {
 		_emu->ProcessInstruction<CpuType::NecDsp>();
 		ReadOpCode();
 		_state.PC++;
@@ -177,7 +176,7 @@ void NecDsp::Run()
 		_state.M = multResult >> 15;
 		_state.N = multResult << 1;
 
-		_cycleCount++;
+		_state.CycleCount++;
 	}
 }
 
@@ -592,10 +591,11 @@ void NecDsp::Serialize(Serializer &s)
 		_state.A, _state.B, _state.DP, _state.DR, _state.K, _state.L, _state.M, _state.N, _state.PC,
 		_state.RP, _state.SerialIn, _state.SerialOut, _state.SP, _state.SR, _state.TR, _state.TRB, 
 		_state.FlagsA.Carry, _state.FlagsA.Overflow0, _state.FlagsA.Overflow1, _state.FlagsA.Sign0, _state.FlagsA.Sign1, _state.FlagsA.Zero,
-		_state.FlagsB.Carry, _state.FlagsB.Overflow0, _state.FlagsB.Overflow1, _state.FlagsB.Sign0, _state.FlagsB.Sign1, _state.FlagsB.Zero
+		_state.FlagsB.Carry, _state.FlagsB.Overflow0, _state.FlagsB.Overflow1, _state.FlagsB.Sign0, _state.FlagsB.Sign1, _state.FlagsB.Zero,
+		_state.CycleCount
 	);
 
-	s.Stream(_opCode, _cycleCount, _inRqmLoop);
+	s.Stream(_opCode, _inRqmLoop);
 	s.StreamArray<uint16_t>(_ram, _ramSize);
 	s.StreamArray<uint16_t>(_stack, _stackSize);
 }

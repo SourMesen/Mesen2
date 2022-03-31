@@ -94,6 +94,20 @@ string HexUtilities::ToHex(uint32_t value, bool fullSize)
 	}
 }
 
+string HexUtilities::ToHex(uint64_t value)
+{
+	return (
+		_hexCache[(value >> 56) & 0xFF] +
+		_hexCache[(value >> 48) & 0xFF] +
+		_hexCache[(value >> 40) & 0xFF] +
+		_hexCache[(value >> 32) & 0xFF] +
+		_hexCache[(value >> 24) & 0xFF] +
+		_hexCache[(value >> 16) & 0xFF] +
+		_hexCache[(value >> 8) & 0xFF] +
+		_hexCache[value & 0xFF]
+	);
+}
+
 string HexUtilities::ToHex(vector<uint8_t> &data)
 {
 	string result;

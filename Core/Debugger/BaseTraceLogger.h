@@ -236,8 +236,9 @@ protected:
 			output += std::string(rowPart.MinWidth - (output.size() - originalSize), ' ');
 		}
 	}
-	
-	void WriteIntValue(string& output, uint32_t value, RowPart& rowPart)
+
+	template<typename T>
+	void WriteIntValue(string& output, T value, RowPart& rowPart)
 	{
 		string str = rowPart.DisplayInHex ? HexUtilities::ToHex(value) : std::to_string(value);
 		if(rowPart.MinWidth > (int)str.size()) {
@@ -248,33 +249,6 @@ protected:
 			}
 		}
 		output += str;
-	}
-	
-	void WriteIntValue(string& output, int32_t value, RowPart& rowPart)
-	{
-		string str = rowPart.DisplayInHex ? HexUtilities::ToHex(value) : std::to_string(value);
-		output += str;
-		if(rowPart.MinWidth > (int)str.size()) {
-			output += std::string(rowPart.MinWidth - str.size(), ' ');
-		}
-	}
-
-	void WriteIntValue(string& output, uint16_t value, RowPart& rowPart)
-	{
-		string str = rowPart.DisplayInHex ? HexUtilities::ToHex(value) : std::to_string(value);
-		output += str;
-		if(rowPart.MinWidth > (int)str.size()) {
-			output += std::string(rowPart.MinWidth - str.size(), ' ');
-		}
-	}
-
-	void WriteIntValue(string& output, uint8_t value, RowPart& rowPart)
-	{
-		string str = rowPart.DisplayInHex ? HexUtilities::ToHex(value) : std::to_string(value);
-		output += str;
-		if(rowPart.MinWidth > (int)str.size()) {
-			output += std::string(rowPart.MinWidth - str.size(), ' ');
-		}
 	}
 
 	void WriteStringValue(string& output, string value, RowPart& rowPart)
@@ -396,10 +370,7 @@ protected:
 			case RowDataType::Scanline: WriteIntValue(output, ppuState.Scanline, rowPart); break;
 			case RowDataType::HClock: WriteIntValue(output, ppuState.HClock, rowPart); break;
 			case RowDataType::FrameCount: WriteIntValue(output, ppuState.FrameCount, rowPart); break;
-			case RowDataType::CycleCount:
-				WriteIntValue(output, (uint32_t)(((TraceLoggerType*)this)->GetCycleCount(cpuState) >> 32), rowPart);
-				WriteIntValue(output, (uint32_t)((TraceLoggerType*)this)->GetCycleCount(cpuState), rowPart);
-				break;
+			case RowDataType::CycleCount: WriteIntValue(output, (uint64_t)((TraceLoggerType*)this)->GetCycleCount(cpuState), rowPart); break;
 
 			case RowDataType::PC: WriteStringValue(output, HexUtilities::ToHex(((TraceLoggerType*)this)->GetProgramCounter(cpuState)), rowPart); break;
 		}

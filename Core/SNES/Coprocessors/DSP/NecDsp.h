@@ -37,7 +37,6 @@ private:
 	uint32_t _ramMask = 0;
 	uint32_t _stackMask = 0;
 
-	uint64_t _cycleCount = 0;
 	uint16_t _registerMask = 0;
 	bool _inRqmLoop = false;
 

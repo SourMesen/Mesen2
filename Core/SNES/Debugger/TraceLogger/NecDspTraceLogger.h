@@ -26,6 +26,6 @@ public:
 	void LogPpuState();
 
 	__forceinline uint32_t GetProgramCounter(NecDspState& state) { return state.PC; }
-	__forceinline uint64_t GetCycleCount(NecDspState& state) { return 0; } //TODO
+	__forceinline uint64_t GetCycleCount(NecDspState& state) { return state.CycleCount; }
 	__forceinline uint8_t GetStackPointer(NecDspState& state) { return state.SP; }
 };

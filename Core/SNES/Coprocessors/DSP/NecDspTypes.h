@@ -30,6 +30,8 @@ namespace NecDspStatusFlags
 
 struct NecDspState : BaseState
 {
+	uint64_t CycleCount;
+
 	/* Accumulator A */
 	uint16_t A;
 	NecDspAccFlags FlagsA;
