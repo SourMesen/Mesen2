@@ -253,13 +253,11 @@ void NesConsole::RunFrame()
 {
 	uint32_t frame = _ppu->GetFrameCount();
 
-	bool restoreTimings = false;
 	if(_nextFrameOverclockDisabled) {
 		//Disable overclocking for the next frame
 		//This is used by the DMC when a sample is playing
 		_ppu->UpdateTimings(_region, false);
 		_nextFrameOverclockDisabled = false;
-		restoreTimings = true;
 	}
 
 	while(frame == _ppu->GetFrameCount()) {
@@ -269,8 +267,8 @@ void NesConsole::RunFrame()
 		}
 	}
 
-	if(restoreTimings && !_nextFrameOverclockDisabled) {
-		//Re-enable overclock if needed
+	if(!_nextFrameOverclockDisabled) {
+		//Re-update timings to allow overclocking
 		_ppu->UpdateTimings(_region, true);
 	}
 }
