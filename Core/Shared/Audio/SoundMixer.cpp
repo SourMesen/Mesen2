@@ -68,16 +68,19 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	EmuSettings* settings = _emu->GetSettings();
 	AudioPlayerHud* audioPlayer = _emu->GetAudioPlayerHud();
 	AudioConfig cfg = settings->GetAudioConfig();
+	bool isRecording = _waveRecorder || _emu->GetVideoRenderer()->IsRecording();
 
 	uint32_t masterVolume = audioPlayer ? audioPlayer->GetVolume() : cfg.MasterVolume;
-	if(!audioPlayer && settings->CheckFlag(EmulationFlags::InBackground)) {
-		if(cfg.MuteSoundInBackground) {
-			masterVolume = 0;
-		} else if(cfg.ReduceSoundInBackground) {
+	if(!isRecording) {
+		if(!audioPlayer && settings->CheckFlag(EmulationFlags::InBackground)) {
+			if(cfg.MuteSoundInBackground) {
+				masterVolume = 0;
+			} else if(cfg.ReduceSoundInBackground) {
+				masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
+			}
+		} else if(cfg.ReduceSoundInFastForward && settings->CheckFlag(EmulationFlags::TurboOrRewind)) {
 			masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 		}
-	} else if(cfg.ReduceSoundInFastForward && settings->CheckFlag(EmulationFlags::TurboOrRewind)) {
-		masterVolume = cfg.VolumeReduction == 100 ? 0 : masterVolume * (100 - cfg.VolumeReduction) / 100;
 	}
 
 	_leftSample = samples[0];
@@ -87,7 +90,7 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	uint32_t count = _resampler->Resample(samples, sampleCount, sourceRate, cfg.SampleRate, out);
 
 	uint32_t targetRate = (uint32_t)(cfg.SampleRate * _resampler->GetRateAdjustment());
-	for(IAudioProvider* provider : _audioProviders) 	{
+	for(IAudioProvider* provider : _audioProviders) {
 		provider->MixAudio(out, count, targetRate);
 	}
 
@@ -120,7 +123,6 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 
 	RewindManager* rewindManager = _emu->GetRewindManager();
 	if(!_emu->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
-		bool isRecording = _waveRecorder || _emu->GetVideoRenderer()->IsRecording();
 		if(isRecording) {
 			if(_waveRecorder) {
 				_waveRecorder->WriteSamples(out, count, cfg.SampleRate, true);
