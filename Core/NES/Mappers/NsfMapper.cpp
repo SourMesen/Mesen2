@@ -21,18 +21,11 @@ NsfMapper::NsfMapper()
 
 NsfMapper::~NsfMapper()
 {
-	//TODO
-	/*_console->GetSettings()->DisableOverclocking(false);
-	_console->GetSettings()->ClearFlags(EmulationFlags::NsfPlayerEnabled);*/
 }
 
 void NsfMapper::InitMapper()
 {
 	_settings = _console->GetEmulator()->GetSettings();
-	//TODO
-	/*_console->GetSettings()->DisableOverclocking(true);
-	_console->GetSettings()->ClearFlags(EmulationFlags::Paused);
-	_console->GetSettings()->SetFlags(EmulationFlags::NsfPlayerEnabled);*/
 
 	//Clear all register settings
 	RemoveRegisterRange(0x0000, 0xFFFF, MemoryOperation::Any);

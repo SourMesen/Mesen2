@@ -9,6 +9,11 @@ public:
 	{
 	}
 
+	void UpdateTimings(ConsoleRegion region, bool overclockAllowed)
+	{
+		NesPpu<NsfPpu>::UpdateTimings(region, false);
+	}
+
 	__forceinline void StoreSpriteAbsoluteAddress()
 	{
 	}
