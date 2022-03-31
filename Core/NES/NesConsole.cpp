@@ -238,7 +238,7 @@ void NesConsole::UpdateRegion()
 
 		_cpu->SetMasterClockDivider(_region);
 		_mapper->SetRegion(_region);
-		_ppu->SetRegion(_region);
+		_ppu->UpdateTimings(_region);
 		_apu->SetRegion(_region);
 		_mixer->SetRegion(_region);
 	}
@@ -252,11 +252,26 @@ void NesConsole::Init()
 void NesConsole::RunFrame()
 {
 	uint32_t frame = _ppu->GetFrameCount();
+
+	bool restoreTimings = false;
+	if(_nextFrameOverclockDisabled) {
+		//Disable overclocking for the next frame
+		//This is used by the DMC when a sample is playing
+		_ppu->UpdateTimings(_region, false);
+		_nextFrameOverclockDisabled = false;
+		restoreTimings = true;
+	}
+
 	while(frame == _ppu->GetFrameCount()) {
 		_cpu->Exec();
 		if(_vsSubConsole) {
 			RunVsSubConsole();
 		}
+	}
+
+	if(restoreTimings && !_nextFrameOverclockDisabled) {
+		//Re-enable overclock if needed
+		_ppu->UpdateTimings(_region, true);
 	}
 }
 
@@ -272,6 +287,13 @@ void NesConsole::RunVsSubConsole()
 			break;
 		}
 	}
+}
+
+void NesConsole::SetNextFrameOverclockStatus(bool disabled)
+{
+	//Disable overclocking for the next frame
+	//This is used by the DMC when a sample is playing
+	_nextFrameOverclockDisabled = disabled;
 }
 
 BaseControlManager* NesConsole::GetControlManager()

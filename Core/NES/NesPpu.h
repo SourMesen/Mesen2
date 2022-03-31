@@ -123,8 +123,7 @@ public:
 	uint8_t PeekRam(uint16_t addr) override;
 	void WriteRam(uint16_t addr, uint8_t value) override;
 
-	void SetRegion(ConsoleRegion region) override;
-	double GetOverclockRate();
+	void UpdateTimings(ConsoleRegion region, bool overclockAllowed = true) override;
 
 	__forceinline void Exec();
 	void Run(uint64_t runTo) override;

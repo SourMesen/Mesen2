@@ -55,7 +55,7 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	_settings->InitializeRam(_spriteRAM, 0x100);
 	_settings->InitializeRam(_secondarySpriteRAM, 0x20);
 
-	SetRegion(ConsoleRegion::Ntsc);
+	UpdateTimings(ConsoleRegion::Ntsc);
 
 	Reset();
 }
@@ -138,7 +138,7 @@ template<class T> void NesPpu<T>::Reset()
 	UpdateMinimumDrawCycles();
 }
 
-template<class T> void NesPpu<T>::SetRegion(ConsoleRegion region)
+template<class T> void NesPpu<T>::UpdateTimings(ConsoleRegion region, bool overclockAllowed)
 {
 	_region = region;
 
@@ -170,24 +170,14 @@ template<class T> void NesPpu<T>::SetRegion(ConsoleRegion region)
 			break;
 	}
 
-	NesConfig& cfg = _console->GetNesConfig();
-	_nmiScanline += cfg.PpuExtraScanlinesBeforeNmi;
-	_palSpriteEvalScanline = _nmiScanline + 24;
-	_standardVblankEnd += cfg.PpuExtraScanlinesBeforeNmi;
-	_vblankEnd += cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
-}
-
-template<class T> double NesPpu<T>::GetOverclockRate()
-{
-	uint32_t regularVblankEnd;
-	switch(_region) {
-		default:
-		case ConsoleRegion::Ntsc: regularVblankEnd = 260; break;
-		case ConsoleRegion::Pal: regularVblankEnd = 310; break;
-		case ConsoleRegion::Dendy: regularVblankEnd = 310; break;
+	if(overclockAllowed) {
+		NesConfig& cfg = _console->GetNesConfig();
+		_nmiScanline += cfg.PpuExtraScanlinesBeforeNmi;
+		_standardVblankEnd += cfg.PpuExtraScanlinesBeforeNmi;
+		_vblankEnd += cfg.PpuExtraScanlinesAfterNmi + cfg.PpuExtraScanlinesBeforeNmi;
 	}
 
-	return (double)(_vblankEnd + 2) / (regularVblankEnd + 2);
+	_palSpriteEvalScanline = _nmiScanline + 24;
 }
 
 template<class T> void NesPpu<T>::UpdateVideoRamAddr()
@@ -1047,7 +1037,8 @@ template<class T> void NesPpu<T>::WriteSpriteRam(uint8_t addr, uint8_t value)
 
 template<class T> void NesPpu<T>::DebugSendFrame()
 {
-	_emu->GetVideoDecoder()->UpdateFrame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, _frameCount, false, false);
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 
 template<class T> uint16_t* NesPpu<T>::GetScreenBuffer(bool previousBuffer)
@@ -1449,7 +1440,7 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 		_settings->SetFlagState(EmulationFlags::DisablePaletteRead, disablePaletteRead);
 		_settings->SetFlagState(EmulationFlags::DisableOamAddrBug, disableOamAddrBug);*/
 
-		SetRegion(_region);
+		UpdateTimings(_region);
 		UpdateMinimumDrawCycles();
 
 		for(int i = 0; i < 0x20; i++) {

@@ -43,6 +43,8 @@ private:
 	unique_ptr<HdAudioDevice> _hdAudioDevice;
 
 	ConsoleRegion _region = ConsoleRegion::Auto;
+
+	bool _nextFrameOverclockDisabled = false;
 	
 	void UpdateRegion();
 	void LoadHdPack(VirtualFile& romFile);
@@ -67,8 +69,7 @@ public:
 	bool IsVsMainConsole();
 	void RunVsSubConsole();
 
-	//TODO
-	void SetNextFrameOverclockStatus(bool enabled) {}
+	void SetNextFrameOverclockStatus(bool disabled);
 
 	// Inherited via IConsole
 	void Serialize(Serializer& s) override;
