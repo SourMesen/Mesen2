@@ -92,8 +92,9 @@
 							<c:EnumComboBox SelectedItem="{CompiledBinding Script.ScriptStartupBehavior}" />
 						</WrapPanel>
 						<CheckBox IsChecked="{CompiledBinding Script.SaveScriptBeforeRun}" Content="{l:Translate chkSaveScriptBeforeRun}" />
+						<CheckBox IsChecked="{CompiledBinding Script.AutoStartScriptOnLoad}" Content="{l:Translate chkAutoStartScriptOnLoad}" />
+						<CheckBox IsChecked="{CompiledBinding Script.AutoRestartScriptAfterPowerCycle}" Content="{l:Translate chkAutoRestartScriptAfterPowerCycle}" />
 						<CheckBox IsChecked="{CompiledBinding Script.AutoReloadScriptWhenFileChanges}" Content="{l:Translate chkAutoReloadScriptWhenFileChanges}" />
-						<CheckBox IsChecked="{CompiledBinding Script.AutoRestartScriptAfterReload}" Content="{l:Translate chkAutoRestartScriptAfterReload}" />
 					</c:OptionSection>
 					<c:OptionSection Header="{l:Translate lblSandboxing}">
 						<CheckBox IsChecked="{CompiledBinding Script.AllowIoOsAccess}" Content="{l:Translate chkAllowIoOsAccess}" />

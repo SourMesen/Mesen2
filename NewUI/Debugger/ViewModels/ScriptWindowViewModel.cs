@@ -29,6 +29,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private string _originalText = "";
 		private ScriptWindow? _wnd = null;
+		private FileSystemWatcher _fileWatcher = new();
 
 		private ContextMenuAction _recentScriptsAction = new();
 
@@ -101,6 +102,15 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(_wnd, FileMenuActions);
 		}
 
+		public async void RunScript()
+		{
+			if(Config.SaveScriptBeforeRun && !string.IsNullOrWhiteSpace(FilePath)) {
+				await SaveScript();
+			}
+
+			ScriptId = DebugApi.LoadScript(ScriptName, Code, ScriptId);
+		}
+
 		private List<ContextMenuAction> GetScriptMenuAction()
 		{
 			 return new() {
@@ -108,18 +118,13 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.RunScript,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_RunScript),
 					IsEnabled = () => ScriptId < 0,
-					OnClick = () => {
-						ScriptId = DebugApi.LoadScript(ScriptName, Code, ScriptId);
-					}
+					OnClick = RunScript
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.StopScript,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_StopScript),
 					IsEnabled = () => ScriptId >= 0,
-					OnClick = () => {
-						DebugApi.RemoveScript(ScriptId);
-						ScriptId = -1;
-					}
+					OnClick = StopScript
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -127,6 +132,12 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => DebuggerConfigWindow.Open(DebugConfigWindowTab.ScriptWindow, _wnd)
 				}
 			};
+		}
+
+		public void StopScript()
+		{
+			DebugApi.RemoveScript(ScriptId);
+			ScriptId = -1;
 		}
 
 		private string ScriptName
@@ -182,11 +193,34 @@ namespace Mesen.Debugger.ViewModels
 		private void LoadScript(string filename)
 		{
 			if(File.Exists(filename)) {
-				Code = File.ReadAllText(filename);
-				FilePath = filename;
-				_originalText = Code;
-				AddRecentScript(filename);
+				string? code = FileHelper.ReadAllText(filename);
+				if(code != null) {
+					Code = code;
+					_originalText = Code;
+					AddRecentScript(filename);
+					SetFilePath(filename);
+
+					if(Config.AutoStartScriptOnLoad) {
+						RunScript();
+					}
+				}
 			}
+		}
+
+		private void SetFilePath(string filename)
+		{
+			FilePath = filename;
+
+			_fileWatcher.EnableRaisingEvents = false;
+
+			_fileWatcher = new(Path.GetDirectoryName(FilePath) ?? "", Path.GetFileName(FilePath));
+			_fileWatcher.Changed += (s, e) => {
+				if(Config.AutoReloadScriptWhenFileChanges) {
+					System.Threading.Thread.Sleep(100);
+					LoadScript(FilePath);
+				}
+			};
+			_fileWatcher.EnableRaisingEvents = true;
 		}
 
 		private async Task<bool> SavePrompt()
@@ -205,8 +239,11 @@ namespace Mesen.Debugger.ViewModels
 		private async Task<bool> SaveScript()
 		{
 			if(!string.IsNullOrWhiteSpace(FilePath)) {
-				File.WriteAllText(FilePath, Code, Encoding.UTF8);
-				_originalText = Code;
+				if(_originalText != Code) {
+					if(FileHelper.WriteAllText(FilePath, Code, Encoding.UTF8)) {
+						_originalText = Code;
+					}
+				}
 				return true;
 			} else {
 				return await SaveAs("NewScript.lua");
@@ -217,13 +254,13 @@ namespace Mesen.Debugger.ViewModels
 		{
 			string? filename = await FileDialogHelper.SaveFile(InitialFolder, newName, _wnd, FileDialogHelper.LuaExt);
 			if(filename != null) {
-				FilePath = filename;
-				File.WriteAllText(FilePath, Code, Encoding.UTF8);
-				AddRecentScript(filename);
-				return true;
-			} else {
-				return false;
+				if(FileHelper.WriteAllText(filename, Code, Encoding.UTF8)) {
+					AddRecentScript(filename);
+					SetFilePath(filename);
+					return true;
+				}
 			}
+			return false;
 		}
 	}
 }

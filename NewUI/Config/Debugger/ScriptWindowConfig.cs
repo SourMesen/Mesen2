@@ -22,8 +22,9 @@ namespace Mesen.Config
 
 		[Reactive] public ScriptStartupBehavior ScriptStartupBehavior { get; set; } = ScriptStartupBehavior.ShowTutorial;
 		[Reactive] public bool SaveScriptBeforeRun { get; set; } = true;
+		[Reactive] public bool AutoStartScriptOnLoad { get; set; } = true;
 		[Reactive] public bool AutoReloadScriptWhenFileChanges { get; set; } = true;
-		[Reactive] public bool AutoRestartScriptAfterReload { get; set; } = true;
+		[Reactive] public bool AutoRestartScriptAfterPowerCycle { get; set; } = true;
 		
 		[Reactive] public bool AllowIoOsAccess { get; set; } = false;
 		[Reactive] public bool AllowNetworkAccess { get; set; } = false;

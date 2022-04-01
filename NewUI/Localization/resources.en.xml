@@ -932,9 +932,10 @@
 			<Control ID="tabScriptWindow">Script Window</Control>
 			<Control ID="lblSandboxing">Sandboxing</Control>
 			<Control ID="lblScriptStartupBehavior">When a script window is opened: </Control>
-			<Control ID="chkSaveScriptBeforeRun">Save scripts to disk before run</Control>
-			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload scripts from disk when file changes</Control>
-			<Control ID="chkAutoRestartScriptAfterReload">Auto-restart script when script is reloaded</Control>
+			<Control ID="chkSaveScriptBeforeRun">Auto-save changes before running script</Control>
+			<Control ID="chkAutoStartScriptOnLoad">Auto-start script when loaded (or reloaded)</Control>
+			<Control ID="chkAutoReloadScriptWhenFileChanges">Auto-reload script from disk when file changes</Control>
+			<Control ID="chkAutoRestartScriptAfterPowerCycle">Auto-restart script after power cycling or reloading a game</Control>
 			<Control ID="chkAllowIoOsAccess">Allow access to I/O and OS functions</Control>
 			<Control ID="chkAllowNetworkAccess">Allow network access</Control>
 			

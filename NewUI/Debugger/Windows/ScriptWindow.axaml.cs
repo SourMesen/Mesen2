@@ -18,7 +18,7 @@ using System.Xml;
 
 namespace Mesen.Debugger.Windows
 {
-	public class ScriptWindow : Window
+	public class ScriptWindow : Window, INotificationHandler
 	{
 		private static IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
@@ -45,7 +45,7 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			DataContext = model;
 			_textEditor = this.FindControl<MesenTextEditor>("Editor");
-			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateLog());
+			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
 
 			if(Design.IsDesignMode) {
 				return;
@@ -88,6 +88,19 @@ namespace Mesen.Debugger.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		public void ProcessNotification(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					bool wasRunning = _model.ScriptId >= 0;
+					_model.StopScript();
+					if(wasRunning && _model.Config.AutoRestartScriptAfterPowerCycle) {
+						_model.RunScript();
+					}
+					break;
+			}
 		}
 	}
 }
