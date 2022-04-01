@@ -473,6 +473,9 @@
 		<Setter Property="MinHeight" Value="18" />
 		<Setter Property="Padding" Value="0" />
 	</Style>
+	<Style Selector="DataBoxRow:selected TextBlock">
+		<Setter Property="Foreground" Value="White" />
+	</Style>
 	<Style Selector="DataBoxCell">
 		<Setter Property="MinHeight" Value="18" />
 	</Style>

@@ -45,10 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<SpritePreviewModel> SpritePreviews { get; set; } = new();
 		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
 
-		[Reactive] public bool ShowListView { get; set; }
-		[Reactive] public double MinListViewHeight { get; set; }
-		[Reactive] public double ListViewHeight { get; set; }
-		[Reactive] public List<SpritePreviewModel>? ListViewSpritePreviews { get; set; } = null;
+		public SpriteViewerListViewModel ListView { get; }
 		
 		[Reactive] public int MaxSourceOffset { get; set; } = 0;
 
@@ -68,8 +65,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config = ConfigManager.Config.Debug.SpriteViewer;
 
-			ShowListView = Config.ShowListView;
-			ListViewHeight = Config.ShowListView ? Config.ListViewHeight : 0;
+			ListView = AddDisposable(new SpriteViewerListViewModel(this));
 
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
@@ -144,12 +140,18 @@ namespace Mesen.Debugger.ViewModels
 				RefreshData();
 			}));
 
-			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => UpdateSelectionPreview()));
+			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => {
+				UpdateSelectionPreview();
+				if(x != null) {
+					ListView.SelectSprite(x.SpriteIndex);
+				}
+			}));
+
 			AddDisposable(this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect()));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source, x => x.Config.SourceOffset).Subscribe(x => RefreshData()));
 
-			InitListViewObservers();
+			ListView.InitListViewObservers();
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
@@ -157,36 +159,6 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
 
-		private void InitListViewObservers()
-		{
-			//Update list view height based on show list view flag
-			AddDisposable(this.WhenAnyValue(x => x.ShowListView).Subscribe(showListView => {
-				Config.ShowListView = showListView;
-				ListViewHeight = showListView ? Config.ListViewHeight : 0;
-				MinListViewHeight = showListView ? 100 : 0;
-				if(showListView) {
-					ListViewSpritePreviews = SpritePreviews;
-				} else {
-					ListViewSpritePreviews = null;
-				}
-			}));
-
-			AddDisposable(this.WhenAnyValue(x => x.SpritePreviews).Subscribe(x => {
-				if(ShowListView) {
-					ListViewSpritePreviews = x;
-				} else {
-					ListViewSpritePreviews = null;
-				}
-			}));
-
-			AddDisposable(this.WhenAnyValue(x => x.ListViewHeight).Subscribe(height => {
-				if(ShowListView) {
-					Config.ListViewHeight = height;
-				} else {
-					ListViewHeight = 0;
-				}
-			}));
-		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
@@ -201,7 +173,9 @@ namespace Mesen.Debugger.ViewModels
 
 			TooltipEntries entries = existingTooltip?.Items ?? new();
 			entries.StartUpdate();
-			entries.AddPicture("Sprite", sprite.SpritePreview, 48.0 / sprite.Width);
+			if(sprite.SpritePreview != null) {
+				entries.AddPicture("Sprite", sprite.SpritePreview, 48.0 / sprite.Width);
+			}
 
 			DebugPaletteInfo palette = _palette.Get();
 			int paletteSize = (int)Math.Pow(2, sprite.Bpp);
@@ -307,6 +281,12 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
+		public void SelectSprite(int spriteIndex)
+		{
+			SelectedSprite = SpritePreviews[spriteIndex];
+			UpdateSelection(SelectedSprite);
+		}
+
 		private void InitPreviews(DebugSpriteInfo[] sprites, DebugSpritePreviewInfo previewInfo)
 		{
 			if(SpritePreviews.Count != sprites.Length) {
@@ -400,6 +380,8 @@ namespace Mesen.Debugger.ViewModels
 					SelectedSprite = null;
 				}
 
+				ListView.RefreshList();
+
 				UpdateTooltips();
 				UpdateSelection(SelectedSprite);
 
@@ -459,83 +441,6 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			return null;
-		}
-	}
-
-	public class SpritePreviewModel : ViewModelBase
-	{
-		[Reactive] public int SpriteIndex { get; set; }
-		[Reactive] public int X { get; set; }
-		[Reactive] public int Y { get; set; }
-		[Reactive] public int RawX { get; set; }
-		[Reactive] public int RawY { get; set; }
-		[Reactive] public int PreviewX { get; set; }
-		[Reactive] public int PreviewY { get; set; }
-		[Reactive] public int Width { get; set; }
-		[Reactive] public int Height { get; set; }
-		[Reactive] public int TileIndex { get; set; }
-		[Reactive] public int TileAddress { get; set; }
-		[Reactive] public DebugSpritePriority Priority { get; set; }
-		[Reactive] public int Bpp { get; set; }
-		[Reactive] public int Palette { get; set; }
-		[Reactive] public int PaletteAddress { get; set; }
-		[Reactive] public bool Visible { get; set; }
-		[Reactive] public string Flags { get; set; } = "";
-		
-		[Reactive] public bool HorizontalMirror { get; set; }
-		[Reactive] public bool VerticalMirror { get; set; }
-		[Reactive] public NullableBoolean UseSecondTable { get; set; }
-
-		[Reactive] public DynamicBitmap SpritePreview { get; set; } = new DynamicBitmap(new PixelSize(1, 1), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-		[Reactive] public double SpritePreviewZoom { get; set; }
-
-		public unsafe void Init(ref DebugSpriteInfo sprite, DebugSpritePreviewInfo previewInfo)
-		{
-			SpriteIndex = sprite.SpriteIndex;
-			
-			X = sprite.X;
-			Y = sprite.Y;
-			RawX = sprite.RawX;
-			RawY = sprite.RawY;
-			PreviewX = sprite.X + previewInfo.CoordOffsetX;
-			PreviewY = sprite.Y + previewInfo.CoordOffsetY;
-
-			Width = sprite.Width;
-			Height = sprite.Height;
-			TileIndex = sprite.TileIndex;
-			Priority = sprite.Priority;
-			Bpp = sprite.Bpp;
-			Palette = sprite.Palette;
-			TileAddress = sprite.TileAddress;
-			PaletteAddress = sprite.PaletteAddress;
-			UseSecondTable = sprite.UseSecondTable;
-
-			fixed(UInt32* p = sprite.SpritePreview) {
-				if(SpritePreview.PixelSize.Width != sprite.Width || SpritePreview.PixelSize.Height != sprite.Height) {
-					SpritePreview = new DynamicBitmap(new PixelSize(Width, Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
-				}
-
-				int spriteSize = Width * Height * sizeof(UInt32);
-				using(var bitmapLock = SpritePreview.Lock()) {
-					Buffer.MemoryCopy(p, (void*)bitmapLock.FrameBuffer.Address, spriteSize, spriteSize);
-				}
-			}
-			
-			SpritePreviewZoom = 32 / Math.Max(Width, Height);
-
-			Visible = sprite.Visible;
-
-			HorizontalMirror = sprite.HorizontalMirror;
-			VerticalMirror = sprite.VerticalMirror;
-
-			Flags = sprite.HorizontalMirror ? "H" : "";
-			Flags += sprite.VerticalMirror ? "V" : "";
-			Flags += sprite.UseSecondTable == NullableBoolean.True ? "N" : "";
-		}
-
-		public Rect GetPreviewRect()
-		{
-			return new Rect(PreviewX, PreviewY, Width, Height);
 		}
 	}
 }

@@ -49,10 +49,10 @@
 		</Panel>
 
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
-			<ScrollViewer>
+			<ScrollViewer MinWidth="190">
 				<StackPanel Margin="3">
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
-					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
+					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ListView.ShowListView}" />
 
 					<c:OptionSection Header="{l:Translate lblDataSource}">
 						<Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
@@ -92,8 +92,8 @@
 				<RowDefinition MinHeight="200" Height="*" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition
-					MinHeight="{CompiledBinding MinListViewHeight}"
-					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+					MinHeight="{CompiledBinding ListView.MinListViewHeight}"
+					Height="{CompiledBinding ListView.ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
 				/>
 			</Grid.RowDefinitions>
 			
@@ -125,16 +125,25 @@
 				IsVisible="{CompiledBinding Config.ShowListView}"
 			/>
 
-			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2" IsVisible="{CompiledBinding Config.ShowListView}">
+			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2">
 				<DataBox
-					Items="{CompiledBinding ListViewSpritePreviews}"
+					Items="{CompiledBinding ListView.SpritePreviews}"
+					SelectedItem="{CompiledBinding ListView.SelectedItem}"
 					CanUserResizeColumns="False"
-					CanUserSortColumns="False"
+					CanUserSortColumns="True"
 					GridLinesVisibility="All"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
 							<Setter Property="Margin" Value="3 0 0 0" />
+							<Setter Property="VerticalAlignment" Value="Center" />
+						</Style>
+						<Style Selector="TextBlock.smallValue">
+							<Setter Property="FontSize" Value="10" />
+							<Setter Property="Foreground" Value="Gray" />
+						</Style>
+						<Style Selector="DataBoxRow:selected TextBlock.smallValue">
+							<Setter Property="Foreground" Value="White" />
 						</Style>
 						<Style Selector="StackPanel">
 							<Setter Property="Margin" Value="3 0 0 0" />
@@ -142,66 +151,69 @@
 						<Style Selector="StackPanel > TextBlock">
 							<Setter Property="Margin" Value="0" />
 						</Style>
+						<Style Selector="DataBoxTemplateColumn">
+							<Setter Property="CanUserSort" Value="True" />
+						</Style>
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="#" Width="1*">
+						<DataBoxTemplateColumn Header="#" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortIndex}">
 							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding SpriteIndex}" />
+								<TextBlock Text="{Binding SpriteIndex}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="X" Width="1*">
+						<DataBoxTemplateColumn Header="X" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortX}">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="$" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding RawX, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding X}" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
+									<TextBlock Text="$" />
+									<TextBlock Text="{Binding RawX, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Classes="smallValue" Text=" (" />
+									<TextBlock Classes="smallValue" Text="{Binding X}" />
+									<TextBlock Classes="smallValue" Text=")" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Y" Width="1*">
+						<DataBoxTemplateColumn Header="Y" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortY}">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="$" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding RawY, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=" (" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text="{Binding Y}" />
-									<TextBlock VerticalAlignment="Center" FontSize="10" Foreground="Gray" Text=")" />
+									<TextBlock Text="$" />
+									<TextBlock Text="{Binding RawY, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Classes="smallValue" Text=" (" />
+									<TextBlock Classes="smallValue" Text="{Binding Y}" />
+									<TextBlock Classes="smallValue" Text=")" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Size" Width="1*">
+						<DataBoxTemplateColumn Header="Size" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortSize}">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="{Binding Width}" />
-									<TextBlock VerticalAlignment="Center" Text="x" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding Height}" />
+									<TextBlock Text="{Binding Width}" />
+									<TextBlock Text="x" />
+									<TextBlock Text="{Binding Height}" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Tile" Width="1*">
+						<DataBoxTemplateColumn Header="Tile" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortTileIndex}">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="$" />
-									<TextBlock VerticalAlignment="Center" Text="{Binding TileIndex, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
+									<TextBlock Text="$" />
+									<TextBlock Text="{Binding TileIndex, Converter={StaticResource Hex}, ConverterParameter='X2'}" />
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Palette" Width="1*">
+						<DataBoxTemplateColumn Header="Palette" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortPalette}">
 							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Palette}" />
+								<TextBlock Text="{Binding Palette}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Priority" Width="1*">
+						<DataBoxTemplateColumn Header="Priority" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortPriority}">
 							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Priority, Converter={StaticResource Enum}}" />
+								<TextBlock Text="{Binding Priority, Converter={StaticResource Enum}}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Flags" Width="1*">
+						<DataBoxTemplateColumn Header="Flags" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortFlags}">
 							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Flags}" />
+								<TextBlock Text="{Binding Flags}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
 					</DataBox.Columns>
