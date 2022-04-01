@@ -54,6 +54,12 @@ namespace Mesen.Debugger.ViewModels
 				}
 				return wndTitle;
 			}).ToPropertyEx(this, x => x.WindowTitle);
+
+			switch(Config.ScriptStartupBehavior) {
+				case ScriptStartupBehavior.ShowBlankWindow: break;
+				case ScriptStartupBehavior.ShowTutorial: LoadScriptFromResource("Mesen.Debugger.Utilities.LuaScripts.Example.lua"); break;
+				case ScriptStartupBehavior.LoadLastScript: LoadScript(Config.RecentScripts[0]); break;
+			}
 		}
 
 		public void InitActions(ScriptWindow wnd)
@@ -131,19 +137,24 @@ namespace Mesen.Debugger.ViewModels
 					actions.Add(new ContextMenuAction() {
 						ActionType = ActionType.Custom,
 						CustomText = scriptName,
-						OnClick = () => {
-							using Stream? stream = assembly.GetManifestResourceStream(name);
-							if(stream != null) {
-								using StreamReader sr = new StreamReader(stream);
-								LoadScriptFromString(sr.ReadToEnd());
-								ScriptName = scriptName;
-							}
-						}
+						OnClick = () => LoadScriptFromResource(name)
 					});
 				}
 			}
 			actions.Sort((a, b) => ((ContextMenuAction)a).Name.CompareTo(((ContextMenuAction)b).Name));
 			return actions;
+		}
+
+		private void LoadScriptFromResource(string resName)
+		{
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			string scriptName = resName.Substring(resName.LastIndexOf('.', resName.Length - 5) + 1);
+			using Stream? stream = assembly.GetManifestResourceStream(resName);
+			if(stream != null) {
+				using StreamReader sr = new StreamReader(stream);
+				LoadScriptFromString(sr.ReadToEnd());
+				ScriptName = scriptName;
+			}
 		}
 
 		public async void RunScript()
