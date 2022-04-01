@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -17,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
@@ -30,11 +28,10 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public EventViewerTab SelectedTab { get; set; }
 		
-		[Reactive] public AvaloniaList<DebugEventViewModel> DebugEvents { get; private set; } = new();
 		[Reactive] public ViewModelBase ConsoleConfig { get; set; }
 		[Reactive] public GridRowColumn? GridHighlightPoint { get; set; }
 		
-		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
+		public EventViewerListViewModel ListView { get; }
 
 		public EventViewerConfig Config { get; }
 		
@@ -52,6 +49,8 @@ namespace Mesen.Debugger.ViewModels
 		public EventViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
 			CpuType = cpuType;
+			ListView = new EventViewerListViewModel(this);
+
 			_picViewer = picViewer;
 			Config = ConfigManager.Config.Debug.EventViewer;
 			InitBitmap(new FrameInfo() { Width = 1, Height = 1 });
@@ -171,23 +170,7 @@ namespace Mesen.Debugger.ViewModels
 						return;
 					}
 
-					_debugEvents = DebugApi.GetDebugEvents(CpuType);
-
-					if(DebugEvents.Count < _debugEvents.Length) {
-						for(int i = 0; i < DebugEvents.Count; i++) {
-							DebugEvents[i].Update(_debugEvents, i);
-						}
-						DebugEvents.AddRange(Enumerable.Range(DebugEvents.Count, _debugEvents.Length - DebugEvents.Count).Select(i => new DebugEventViewModel(_debugEvents, i)));
-					} else if(DebugEvents.Count > _debugEvents.Length) {
-						for(int i = 0; i < _debugEvents.Length; i++) {
-							DebugEvents[i].Update(_debugEvents, i);
-						}
-						DebugEvents.RemoveRange(_debugEvents.Length, DebugEvents.Count - _debugEvents.Length);
-					} else {
-						for(int i = 0; i < DebugEvents.Count; i++) {
-							DebugEvents[i].Update(_debugEvents, i);
-						}
-					}
+					ListView.RefreshList();
 				}
 			});
 		}

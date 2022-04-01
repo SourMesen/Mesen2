@@ -28,9 +28,10 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public ListSortDirection? SortFlags { get; set; }
 
 		public ICommand SortCommand { get; }
-
 		public SpriteViewerViewModel SpriteViewer { get; }
 		public SpriteViewerConfig Config { get; }
+		
+		private DateTime _lastRefresh = DateTime.MinValue;
 
 		public SpriteViewerListViewModel(SpriteViewerViewModel viewer)
 		{
@@ -57,12 +58,10 @@ namespace Mesen.Debugger.ViewModels
 			SelectedItem = SpritePreviews?.Find(x => x.SpriteIndex == spriteIndex);
 		}
 
-		private int GetOrder(ListSortDirection? direction)
+		public void ForceRefresh()
 		{
-			return direction == ListSortDirection.Ascending ? 1 : -1;
+			_lastRefresh = DateTime.MinValue;
 		}
-
-		private DateTime _lastRefresh = DateTime.MinValue;
 
 		public void RefreshList(bool force = false)
 		{
@@ -86,68 +85,26 @@ namespace Mesen.Debugger.ViewModels
 			List<SpritePreviewModel> newList = new(SpriteViewer.SpritePreviews.Select(x => x.Clone()).ToList());
 
 			newList.Sort((a, b) => {
-				if(SortIndex.HasValue) {
-					int result = a.SpriteIndex.CompareTo(b.SpriteIndex) * GetOrder(SortIndex);
-					if(result != 0) {
-						return result;
+				int result = 0;
+
+				void Compare(ListSortDirection? order, Func<int> compare)
+				{
+					if(order.HasValue && result == 0) {
+						result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				if(SortX.HasValue) {
-					int result = a.RawX.CompareTo(b.RawX) * GetOrder(SortX);
-					if(result != 0) {
-						return result;
-					}
-				}
+				Compare(SortIndex, () => a.SpriteIndex.CompareTo(b.SpriteIndex));
+				Compare(SortX, () => a.RawX.CompareTo(b.RawX));
+				Compare(SortY, () => a.RawY.CompareTo(b.RawY));
+				Compare(SortIndex, () => a.SpriteIndex.CompareTo(b.SpriteIndex));
+				Compare(SortSize, () => a.Width.CompareTo(b.Width));
+				Compare(SortSize, () => a.Height.CompareTo(b.Height));
+				Compare(SortPalette, () => a.Palette.CompareTo(b.Palette));
+				Compare(SortPriority, () => a.Priority.CompareTo(b.Priority));
+				Compare(SortFlags, () => a.Flags?.CompareTo(b.Flags) ?? 0);
 
-				if(SortY.HasValue) {
-					int result = a.RawY.CompareTo(b.RawY) * GetOrder(SortY);
-					if(result != 0) {
-						return result;
-					}
-				}
-
-				if(SortSize.HasValue) {
-					int result = a.Width.CompareTo(b.Width) * GetOrder(SortSize);
-					if(result != 0) {
-						return result;
-					} else {
-						result = a.Height.CompareTo(b.Height) * GetOrder(SortSize);
-						if(result != 0) {
-							return result;
-						}
-					}
-				}
-
-				if(SortTileIndex.HasValue) {
-					int result = a.TileIndex.CompareTo(b.TileIndex) * GetOrder(SortTileIndex);
-					if(result != 0) {
-						return result;
-					}
-				}
-
-				if(SortPalette.HasValue) {
-					int result = a.Palette.CompareTo(b.Palette) * GetOrder(SortPalette);
-					if(result != 0) {
-						return result;
-					}
-				}
-
-				if(SortPriority.HasValue) {
-					int result = a.Priority.CompareTo(b.Priority) * GetOrder(SortPriority);
-					if(result != 0) {
-						return result;
-					}
-				}
-
-				if(SortFlags.HasValue && a.Flags != null) {
-					int result = a.Flags.CompareTo(b.Flags) * GetOrder(SortFlags);
-					if(result != 0) {
-						return result;
-					}
-				}
-
-				return a.SpriteIndex.CompareTo(b.SpriteIndex);
+				return result != 0 ? result : a.SpriteIndex.CompareTo(b.SpriteIndex);
 			});
 
 			for(int i = 0; i < newList.Count; i++) {

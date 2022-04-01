@@ -78,49 +78,53 @@
 			<TabItem Header="{l:Translate tabListView}">
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<DataBox
-						Items="{CompiledBinding DebugEvents}"
-						CanUserResizeColumns="True"
+						Items="{CompiledBinding ListView.DebugEvents}"
+						CanUserSortColumns="True"
 						GridLinesVisibility="All"
 					>
 						<DataBox.Styles>
 							<Style Selector="TextBlock">
 								<Setter Property="Margin" Value="3 0 0 0" />
 							</Style>
+
+							<Style Selector="DataBoxTemplateColumn">
+								<Setter Property="CanUserSort" Value="True" />
+							</Style>
 						</DataBox.Styles>
 						
 						<DataBox.Columns>
-							<DataBoxTemplateColumn Header="PC" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="PC" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortProgramCounter}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Scanline" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Scanline" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortScanline}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Cycle" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Cycle" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortCycle}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Type" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Type" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortType}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Address" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Address" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortAddress}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Value" Width="1*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Value" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortValue}">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>
-							<DataBoxTemplateColumn Header="Details" Width="4*">
-								<DataTemplate DataType="dvm:DebugEventViewModel">
+							<DataBoxTemplateColumn Header="Details" Width="4*" CanUserSort="False">
+								<DataTemplate>
 									<TextBlock VerticalAlignment="Center" Text="{Binding Details}" />
 								</DataTemplate>
 							</DataBoxTemplateColumn>

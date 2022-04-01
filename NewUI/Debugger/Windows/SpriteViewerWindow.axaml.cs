@@ -119,6 +119,10 @@ namespace Mesen.Debugger.Windows
 
 		public void ProcessNotification(NotificationEventArgs e)
 		{
+			if(e.NotificationType == ConsoleNotificationType.CodeBreak) {
+				_model.ListView.ForceRefresh();
+			}
+
 			ToolRefreshHelper.ProcessNotification(this, e, _model.RefreshTiming, _model, _model.RefreshData);
 		}
 	}

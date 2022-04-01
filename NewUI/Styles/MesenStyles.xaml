@@ -479,6 +479,9 @@
 	<Style Selector="DataBoxCell">
 		<Setter Property="MinHeight" Value="18" />
 	</Style>
+	<Style Selector="DataBoxColumnHeader Path">
+		<Setter Property="Margin" Value="0 0 -10 0" />
+	</Style>
 	<Style Selector="DataBoxRowsPresenter">
 		<Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
 
