@@ -18,7 +18,7 @@
 	x:Class="Mesen.Debugger.Windows.ScriptWindow"
 	Icon="/Assets/Script.png"
 	x:DataType="vm:ScriptWindowViewModel"
-	Title="{l:Translate wndTitle}"
+	Title="{CompiledBinding WindowTitle}"
 >
 	<Design.DataContext>
 		<vm:ScriptWindowViewModel />

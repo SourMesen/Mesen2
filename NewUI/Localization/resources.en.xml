@@ -2099,7 +2099,8 @@
 			<Value ID="RunScript">Run Script</Value>
 			<Value ID="StopScript">Stop Script</Value>
 			<Value ID="NewScript">New Script Window</Value>
-			
+			<Value ID="BuiltInScripts">Built-in Scripts</Value>
+
 			<Value ID="Open">Open</Value>
 			<Value ID="Save">Save</Value>
 			<Value ID="SaveAs">Save as...</Value>

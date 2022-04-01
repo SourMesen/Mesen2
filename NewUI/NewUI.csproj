@@ -160,6 +160,10 @@
 	  <None Remove="Assets\Zoom2x.png" />
 	  <None Remove="Debugger\Highlight6502.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
+	  <None Remove="Debugger\Utilities\LuaScripts\DrawMode.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\Example.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\Grid.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
 	  <None Remove="Dependencies.zip" />
 	  <None Remove="Styles\AvaloniaComboBoxStyles.xaml" />
 	  <None Remove="Styles\AvaloniaContextMenuStyles.xaml" />
@@ -636,6 +640,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
     <EmbeddedResource Include="Debugger\Highlight6502.xshd" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\DrawMode.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Example.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Grid.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>

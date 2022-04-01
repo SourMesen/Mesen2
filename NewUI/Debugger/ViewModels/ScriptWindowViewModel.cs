@@ -6,14 +6,18 @@ using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using Mesen.Windows;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive.Linq;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Mesen.Localization;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -26,6 +30,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public string FilePath { get; set; } = "";
 		[Reactive] public int ScriptId { get; set; } = -1;
 		[Reactive] public string Log { get; set; } = "";
+		[Reactive] public string ScriptName { get; set; } = "";
+
+		[ObservableAsProperty] public string WindowTitle { get; } = "";
 
 		private string _originalText = "";
 		private ScriptWindow? _wnd = null;
@@ -40,6 +47,13 @@ namespace Mesen.Debugger.ViewModels
 
 		public ScriptWindowViewModel()
 		{
+			this.WhenAnyValue(x => x.ScriptName).Select(x => {
+				string wndTitle = ResourceHelper.GetViewLabel(nameof(ScriptWindow), "wndTitle");
+				if(!string.IsNullOrWhiteSpace(x)) {
+					return wndTitle + " - " + x;
+				}
+				return wndTitle;
+			}).ToPropertyEx(this, x => x.WindowTitle);
 		}
 
 		public void InitActions(ScriptWindow wnd)
@@ -82,6 +96,10 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = async () => await SaveAs(Path.GetFileName(FilePath))
 				},
 				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.BuiltInScripts,
+					SubActions = GetBuiltInScriptActions()
+				},
 				_recentScriptsAction,
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -100,6 +118,32 @@ namespace Mesen.Debugger.ViewModels
 			UpdateRecentScriptsMenu();
 			DebugShortcutManager.RegisterActions(_wnd, ScriptMenuActions);
 			DebugShortcutManager.RegisterActions(_wnd, FileMenuActions);
+		}
+
+		private List<object> GetBuiltInScriptActions()
+		{
+			List<object> actions = new();
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			foreach(string name in assembly.GetManifestResourceNames()) {
+				if(Path.GetExtension(name).ToLower() == ".lua") {
+					string scriptName = name.Substring(name.LastIndexOf('.', name.Length - 5) + 1);
+
+					actions.Add(new ContextMenuAction() {
+						ActionType = ActionType.Custom,
+						CustomText = scriptName,
+						OnClick = () => {
+							using Stream? stream = assembly.GetManifestResourceStream(name);
+							if(stream != null) {
+								using StreamReader sr = new StreamReader(stream);
+								LoadScriptFromString(sr.ReadToEnd());
+								ScriptName = scriptName;
+							}
+						}
+					});
+				}
+			}
+			actions.Sort((a, b) => ((ContextMenuAction)a).Name.CompareTo(((ContextMenuAction)b).Name));
+			return actions;
 		}
 
 		public async void RunScript()
@@ -140,18 +184,6 @@ namespace Mesen.Debugger.ViewModels
 			ScriptId = -1;
 		}
 
-		private string ScriptName
-		{
-			get
-			{
-				if(FilePath != null) {
-					return Path.GetFileName(FilePath);
-				} else {
-					return "unnamed.lua";
-				}
-			}
-		}
-
 		private string? InitialFolder
 		{
 			get
@@ -190,19 +222,24 @@ namespace Mesen.Debugger.ViewModels
 			UpdateRecentScriptsMenu();
 		}
 
+		private void LoadScriptFromString(string scriptContent)
+		{
+			Code = scriptContent;
+			_originalText = Code;
+
+			if(Config.AutoStartScriptOnLoad) {
+				RunScript();
+			}
+		}
+
 		private void LoadScript(string filename)
 		{
 			if(File.Exists(filename)) {
 				string? code = FileHelper.ReadAllText(filename);
 				if(code != null) {
-					Code = code;
-					_originalText = Code;
 					AddRecentScript(filename);
 					SetFilePath(filename);
-
-					if(Config.AutoStartScriptOnLoad) {
-						RunScript();
-					}
+					LoadScriptFromString(code);
 				}
 			}
 		}
@@ -210,6 +247,7 @@ namespace Mesen.Debugger.ViewModels
 		private void SetFilePath(string filename)
 		{
 			FilePath = filename;
+			ScriptName = Path.GetFileName(filename);
 
 			_fileWatcher.EnableRaisingEvents = false;
 
