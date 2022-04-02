@@ -133,7 +133,12 @@ namespace Mesen.Debugger.ViewModels
 				};
 			}));
 
+			AddDisposable(this.WhenAnyValue(x => x.Config.Layout).Subscribe(x => {
+				ApplyColumnRowCountRestrictions();
+			}));
+
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
+				ApplyColumnRowCountRestrictions();
 				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * GetBitsPerPixel(Config.Format) / 8;
 			}));
 
@@ -143,6 +148,15 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
+		}
+
+		private void ApplyColumnRowCountRestrictions()
+		{
+			if(Config.Layout != TileLayout.Normal) {
+				//Force multiple of 2 when in 8x16 or 16x16 display modes
+				Config.ColumnCount &= ~0x01;
+				Config.RowCount &= ~0x01;
+			}
 		}
 
 		private void InitForCpuType()

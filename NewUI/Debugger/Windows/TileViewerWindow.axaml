@@ -68,9 +68,9 @@
 
 					<TextBlock Grid.Column="0" Grid.Row="3" Text="Size:" />
 					<StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
-						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="1" Maximum="256" />
+						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
 						<TextBlock Margin="5 0">by</TextBlock>
-						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="1" Maximum="256" />
+						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
 					</StackPanel>
 
 					<TextBlock Grid.Column="0" Grid.Row="4" Text="Address:" />
