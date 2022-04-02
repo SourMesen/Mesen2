@@ -42,6 +42,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			UpdateRomInfo();
 			RefreshData();
 		}
 
