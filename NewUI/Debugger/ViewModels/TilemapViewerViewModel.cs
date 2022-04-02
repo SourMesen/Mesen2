@@ -19,7 +19,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TilemapViewerViewModel : DisposableViewModel, ICpuTypeModel
+	public class TilemapViewerViewModel : DisposableViewModel, ICpuTypeModel, IMouseOverViewerModel
 	{
 		[Reactive] public CpuType CpuType { get; set; }
 		[Reactive] public bool IsNes { get; private set; }

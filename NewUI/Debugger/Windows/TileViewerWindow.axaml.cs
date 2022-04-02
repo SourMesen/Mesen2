@@ -35,9 +35,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			//picViewer.PointerMoved += PicViewer_PointerMoved;
-			//picViewer.PointerLeave += PicViewer_PointerLeave;
-			//picViewer.PositionClicked += PicViewer_PositionClicked;
+			MouseViewerModelEvents.InitEvents(_model, this, picViewer);
 		}
 
 		private void InitializeComponent()

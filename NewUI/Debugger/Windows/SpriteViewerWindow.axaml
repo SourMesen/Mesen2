@@ -77,7 +77,7 @@
 						Header="{l:Translate lblSelectedSprite}"
 						Margin="0 5 0 0"
 						MinWidth="170"
-						IsVisible="{CompiledBinding !!SelectedPreviewPanel}"
+						IsVisible="{CompiledBinding SelectedPreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
 					>
 						<ContentControl Content="{CompiledBinding SelectedPreviewPanel}" />
 					</c:GroupBox>

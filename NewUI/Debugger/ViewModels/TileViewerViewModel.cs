@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -20,7 +21,7 @@ using System.Reactive.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class TileViewerViewModel : DisposableViewModel, ICpuTypeModel
+	public class TileViewerViewModel : DisposableViewModel, ICpuTypeModel, IMouseOverViewerModel
 	{
 		[Reactive] public CpuType CpuType { get; set; }
 
@@ -29,12 +30,17 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
+		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
+
+		[Reactive] public DynamicTooltip? ViewerTooltip { get; set; }
+		[Reactive] public PixelPoint? ViewerMousePos { get; set; }
+
 		[Reactive] public UInt32[] PaletteColors { get; set; } = Array.Empty<UInt32>();
 		[Reactive] public PaletteSelectionMode PaletteSelectionMode { get; private set; }
 		[Reactive] public int PaletteColumnCount { get; private set; } = 16;
 
 		[Reactive] public int AddressIncrement { get; private set; }
-		[Reactive] public int MaximumAddress { get; private set; }
+		[Reactive] public int MaximumAddress { get; private set; } = int.MaxValue;
 
 		[Reactive] public Rect SelectionRect { get; set; }
 
@@ -105,8 +111,14 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
-					IsEnabled = () => false,
-					OnClick = () => { }
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileViewer_ViewInMemoryViewer),
+					IsEnabled = () => GetSelectedTileAddress() >= 0,
+					OnClick = () => {
+						int address = GetSelectedTileAddress();
+						if(address >= 0) {
+							MemoryToolsWindow.ShowInMemoryTools(Config.Source, address);
+						}
+					}
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -146,6 +158,8 @@ namespace Mesen.Debugger.ViewModels
 				MaximumAddress = Math.Max(0, DebugApi.GetMemorySize(memType) - 1);
 				RefreshData();
 			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 		}
@@ -480,7 +494,7 @@ namespace Mesen.Debugger.ViewModels
 					//E0 E1 F0 F1 G0 G1 H0 H1 -> E0 E1 E2 E3 F0 F1 F2 F3
 					//E2 E3 F2 F3 G2 G3 H2 H3    G0 G1 G2 G3 H0 H1 H2 H3
 					int displayColumn = ((column & ~0x01) * 2 + ((row & 0x01) != 0 ? 2 : 0) + (column & 0x01)) % Config.ColumnCount;
-					int displayRow = (row & ~0x01) + ((column > Config.ColumnCount / 2) ? 1 : 0);
+					int displayRow = (row & ~0x01) + ((column >= Config.ColumnCount / 2) ? 1 : 0);
 					return new PixelPoint(displayColumn, displayRow);
 				}
 
@@ -489,6 +503,19 @@ namespace Mesen.Debugger.ViewModels
 
 				default:
 					throw new NotImplementedException("TileLayout not supported");
+			}
+		}
+
+		private void UpdatePreviewPanel()
+		{
+			if(SelectionRect.IsEmpty) {
+				PreviewPanel = null;
+			} else {
+				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
+			}
+
+			if(ViewerTooltip != null && ViewerMousePos != null) {
+				GetPreviewPanel(ViewerMousePos.Value, ViewerTooltip);
 			}
 		}
 
@@ -521,7 +548,54 @@ namespace Mesen.Debugger.ViewModels
 				using(var framebuffer = ViewerBitmap.Lock()) {
 					DebugApi.GetTileView(CpuType, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
 				}
+
+				UpdatePreviewPanel();
 			});
+		}
+
+		private int GetTileAddress(PixelPoint pixelPosition)
+		{
+			int bitsPerPixel = GetBitsPerPixel(Config.Format);
+			int bytesPerTile = 8 * 8 * bitsPerPixel / 8;
+			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / 8, pixelPosition.Y / 8));
+			int offset = (pos.Y * Config.ColumnCount + pos.X) * bytesPerTile;
+			return (Config.StartAddress + offset) % (MaximumAddress + 1);
+		}
+
+		private int GetSelectedTileAddress()
+		{
+			PixelPoint p;
+			if(ViewerMousePos.HasValue) {
+				p = ViewerMousePos.Value;
+			} else {
+				if(SelectionRect.IsEmpty) {
+					return -1;
+				}
+				p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+			}
+
+			return GetTileAddress(p);
+		}
+
+		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
+		{
+			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
+
+			entries.StartUpdate();
+
+			PixelRect cropRect = new PixelRect(p.X / 8 * 8, p.Y / 8 * 8, 8, 8);
+			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
+
+			int address = GetTileAddress(cropRect.TopLeft);
+			entries.AddEntry("Tile address", "$" + address.ToString("X4"));
+
+			entries.EndUpdate();
+
+			if(tooltipToUpdate != null) {
+				return tooltipToUpdate;
+			} else {
+				return new DynamicTooltip() { Items = entries };
+			}
 		}
 
 		private GetTileViewOptions GetOptions()

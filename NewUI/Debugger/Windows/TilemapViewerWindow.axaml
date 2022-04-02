@@ -63,7 +63,7 @@
 				
 				<c:GroupBox
 					Header="{l:Translate lblSelectedTile}"
-					IsVisible="{CompiledBinding !!PreviewPanel}}"
+					IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
 				>
 					<ContentControl Content="{CompiledBinding PreviewPanel}" />
 				</c:GroupBox>

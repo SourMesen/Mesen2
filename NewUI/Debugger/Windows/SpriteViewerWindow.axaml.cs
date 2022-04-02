@@ -38,8 +38,7 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			picViewer.PointerMoved += PicViewer_PointerMoved;
-			picViewer.PointerLeave += PicViewer_PointerLeave;
+			MouseViewerModelEvents.InitEvents(_model, this, picViewer);
 			picViewer.PositionClicked += PicViewer_PositionClicked;
 		}
 
@@ -61,47 +60,6 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
-		}
-
-		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
-		{
-			if(sender is PictureViewer viewer) {
-				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
-				if(point == _model.ViewerMousePos) {
-					return;
-				}
-				_model.ViewerMousePos = point;
-
-				DynamicTooltip? tooltip = null;
-				if(point != null) {
-					SpritePreviewModel? sprite = _model.GetMatchingSprite(point.Value);
-					tooltip = sprite == null ? null : _model.GetPreviewPanel(sprite, _model.ViewerTooltip);
-				}
-
-				if(tooltip != null) {
-					_model.ViewerTooltip = tooltip;
-					ToolTip.SetTip(viewer, tooltip);
-
-					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 14);
-					ToolTip.SetHorizontalOffset(viewer, 15);
-					ToolTip.SetIsOpen(viewer, true);
-				} else {
-					ToolTip.SetTip(viewer, null);
-					ToolTip.SetIsOpen(viewer, false);
-					_model.ViewerTooltip = null;
-				}
-			}
-		}
-		
-		private void PicViewer_PointerLeave(object? sender, PointerEventArgs e)
-		{
-			if(sender is PictureViewer viewer) {
-				ToolTip.SetTip(viewer, null);
-				ToolTip.SetIsOpen(viewer, false);
-			}
-			_model.ViewerTooltip = null;
-			_model.ViewerMousePos = null;
 		}
 
 		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)

@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class SpriteViewerViewModel : DisposableViewModel, ICpuTypeModel
+	public class SpriteViewerViewModel : DisposableViewModel, ICpuTypeModel, IMouseOverViewerModel
 	{
 		public SpriteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -196,6 +196,12 @@ namespace Mesen.Debugger.ViewModels
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			RefreshTab();
+		}
+
+		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
+		{
+			SpritePreviewModel? sprite = GetMatchingSprite(p);
+			return sprite == null ? null : GetPreviewPanel(sprite, tooltipToUpdate);
 		}
 
 		public DynamicTooltip? GetPreviewPanel(SpritePreviewModel sprite, DynamicTooltip? existingTooltip)

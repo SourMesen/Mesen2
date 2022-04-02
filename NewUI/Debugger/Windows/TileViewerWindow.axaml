@@ -8,6 +8,7 @@
 	xmlns:v="using:Mesen.Views"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -16,7 +17,7 @@
 	x:Class="Mesen.Debugger.Windows.TileViewerWindow"
 	x:DataType="dvm:TileViewerViewModel"
 	Width="600" Height="600"
-	Title="Tile Viewer"
+	Title="{l:Translate wndTitle}"
 	Icon="/Assets/VerticalLayout.png"
 >
 	<Design.DataContext>
@@ -26,13 +27,13 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<Menu DockPanel.Dock="Top">
-				<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
-				<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
 			</Menu>
 			<c:IconButton
 				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
-				ToolTip.Tip="Toggle settings panel"
+				ToolTip.Tip="{l:Translate btnToggleSettings}"
 				Click="OnSettingsClick"
 				Icon="Assets/Settings.png"
 			/>
@@ -41,7 +42,7 @@
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-					<TextBlock Text="Presets: " Margin="0 5 0 0 " VerticalAlignment="Top" />
+					<TextBlock Text="{l:Translate lblPresets}" Margin="0 5 0 0 " VerticalAlignment="Top" />
 					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
 						<ItemsPresenter Items="{CompiledBinding ConfigPresets}">
 							<ItemsPresenter.ItemsPanel>
@@ -59,21 +60,21 @@
 
 					<Rectangle Grid.Row="1" Stroke="LightGray" StrokeThickness="1" Margin="0 5" DockPanel.Dock="Top" Grid.ColumnSpan="2" />
 
-					<TextBlock Grid.Column="0" Grid.Row="2" Text="Source:" />
+					<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblSource}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="2"
 						SelectedItem="{CompiledBinding Config.Source}"
 						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="3" Text="Size:" />
+					<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblSize}" />
 					<StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
 						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
 						<TextBlock Margin="5 0">by</TextBlock>
 						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
 					</StackPanel>
 
-					<TextBlock Grid.Column="0" Grid.Row="4" Text="Address:" />
+					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblAddress}" />
 					<dc:HexInput
 						Grid.Column="1" Grid.Row="4"
 						Value="{CompiledBinding Config.StartAddress}"
@@ -92,19 +93,19 @@
 						IsVisible="{CompiledBinding ShowFormatDropdown}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="6" Text="Tile Layout:" />
+					<TextBlock Grid.Column="0" Grid.Row="6" Text="{l:Translate lblTileLayout}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="6"
 						SelectedItem="{CompiledBinding Config.Layout}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="7" Text="Background:" />
+					<TextBlock Grid.Column="0" Grid.Row="7" Text="{l:Translate lblBackground}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="7"
 						SelectedItem="{CompiledBinding Config.Background}"
 					/>
 
-					<CheckBox Grid.Row="8" Grid.ColumnSpan="2" Content="Show tile grid" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
+					<CheckBox Grid.Row="8" Grid.ColumnSpan="2" Content="{l:Translate chkShowTileGrid}" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
 				</Grid>
 
 				<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">
@@ -117,6 +118,13 @@
 					/>
 				</Border>
 
+				<c:GroupBox
+					Header="{l:Translate lblSelectedTile}"
+					Margin="0 5 0 0"
+					IsVisible="{CompiledBinding PreviewPanel, Converter={x:Static ObjectConverters.IsNotNull}}"
+				>
+					<ContentControl Content="{CompiledBinding PreviewPanel}" />
+				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
 

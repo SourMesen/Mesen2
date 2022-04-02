@@ -742,6 +742,21 @@
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
 
+		<Form ID="TileViewerWindow">
+			<Control ID="wndTitle">Tile Viewer</Control>
+			<Control ID="mnuFile">File</Control>
+			<Control ID="mnuView">View</Control>
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
+			<Control ID="lblSelectedTile">Selected Tile</Control>
+			<Control ID="lblPresets">Presets:</Control>
+			<Control ID="lblSource">Source:</Control>
+			<Control ID="lblSize">Size:</Control>
+			<Control ID="lblAddress">Address:</Control>
+			<Control ID="lblTileLayout">Tile Layout:</Control>
+			<Control ID="lblBackground">Background:</Control>
+			<Control ID="chkShowTileGrid">Show tile grid</Control>
+		</Form>
+
 		<Form ID="PaletteViewerWindow">
 			<Control ID="wndTitle">Palette Viewer</Control>
 			<Control ID="mnuFile">File</Control>
@@ -2016,6 +2031,7 @@
 			<Value ID="SaveCdl">Save CDL data to...</Value>
 			<Value ID="TilemapViewer_ViewInMemoryViewer">Tilemap Viewer - View in Memory Viewer</Value>
 			<Value ID="TilemapViewer_ViewInTileViewer">Tilemap Viewer - View in Tile Viewer</Value>
+			<Value ID="TileViewer_ViewInMemoryViewer">Tile Viewer - View in Memory Viewer</Value>
 			<Value ID="SpriteViewer_ViewInMemoryViewer">Sprite Viewer - View in Memory Viewer</Value>
 			<Value ID="SpriteViewer_ViewInTileViewer">Sprite Viewer - View in Tile Viewer</Value>
 			<Value ID="MemoryViewer_Freeze">Freeze</Value>
