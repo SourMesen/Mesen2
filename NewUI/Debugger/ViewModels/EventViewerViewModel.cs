@@ -27,6 +27,11 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public CpuType CpuType { get; set; }
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public EventViewerTab SelectedTab { get; set; }
+
+		//Used to speed up display of the DataBox when clicking on the list tab
+		//Faster to resize the list and always keep it mounted, rather than mounting it when tab is clicked
+		[Reactive] public bool ShowViewer { get; set; } = true;
+		[Reactive] public double ListHeight { get; set; } = 0;
 		
 		[Reactive] public ViewModelBase ConsoleConfig { get; set; }
 		[Reactive] public GridRowColumn? GridHighlightPoint { get; set; }
@@ -161,6 +166,8 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {
+					ListHeight = 0;
+					ShowViewer = true;
 					InitBitmap();
 					using(var bitmapLock = ViewerBitmap.Lock()) {
 						DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
@@ -170,6 +177,8 @@ namespace Mesen.Debugger.ViewModels
 						return;
 					}
 
+					ShowViewer = false;
+					ListHeight = double.NaN;
 					ListView.RefreshList();
 				}
 			});

@@ -416,7 +416,7 @@
 		<Setter Property="Padding" Value="3 0" />
 	</Style>
 
-	<Style Selector="TabItem">
+	<Style Selector="TabItem, TabStripItem">
 		<Setter Property="MinHeight" Value="30" />
 	</Style>
 
