@@ -10,8 +10,8 @@ namespace Mesen.Debugger.Controls
 	public class HexInput : UserControl
 	{
 		public static readonly StyledProperty<int> ValueProperty = AvaloniaProperty.Register<HexInput, int>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
-		public static readonly StyledProperty<int> MaximumProperty = AvaloniaProperty.Register<HexInput, int>(nameof(Maximum));
-		public static readonly StyledProperty<int> MinimumProperty = AvaloniaProperty.Register<HexInput, int>(nameof(Minimum));
+		public static readonly StyledProperty<int?> MaximumProperty = AvaloniaProperty.Register<HexInput, int?>(nameof(Maximum));
+		public static readonly StyledProperty<int?> MinimumProperty = AvaloniaProperty.Register<HexInput, int?>(nameof(Minimum));
 		public static readonly StyledProperty<int> SmallIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(SmallIncrement));
 		public static readonly StyledProperty<int> LargeIncrementProperty = AvaloniaProperty.Register<HexInput, int>(nameof(LargeIncrement));
 
@@ -21,13 +21,13 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ValueProperty, value); }
 		}
 
-		public int Minimum
+		public int? Minimum
 		{
 			get { return GetValue(MinimumProperty); }
 			set { SetValue(MinimumProperty, value); }
 		}
 
-		public int Maximum
+		public int? Maximum
 		{
 			get { return GetValue(MaximumProperty); }
 			set { SetValue(MaximumProperty, value); }
@@ -62,7 +62,7 @@ namespace Mesen.Debugger.Controls
 		private void SetValue(int offset)
 		{
 			int value = Value + offset;
-			Value = Math.Max(Minimum, Math.Min(Maximum - Math.Abs(offset) + 1, value));
+			Value = value;
 		}
 
 		private void OnNextLargeClick(object sender, RoutedEventArgs e)

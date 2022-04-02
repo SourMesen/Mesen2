@@ -54,6 +54,7 @@ namespace Mesen.Controls
 		static MesenNumericTextBox()
 		{
 			ValueProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
+				x.SetNewValue(x.Value);
 				x.UpdateText();
 				x.MaxLength = x.GetMaxLength();
 			});
