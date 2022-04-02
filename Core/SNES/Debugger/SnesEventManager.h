@@ -58,9 +58,9 @@ private:
 	uint32_t _scanlineCount = 262;
 	uint16_t *_ppuBuffer = nullptr;
 
-	void DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer);
-
 protected:
+	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;
+	void DrawScreen(uint32_t* buffer) override;
 	bool ShowPreviousFrameEvents() override;
 
 public:
@@ -73,8 +73,7 @@ public:
 	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
 
 	uint32_t TakeEventSnapshot();
-	FrameInfo GetDisplayBufferSize();
-	void GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize);
+	FrameInfo GetDisplayBufferSize() override;
 	DebugEventInfo GetEvent(uint16_t y, uint16_t x);
 
 	void SetConfiguration(BaseEventViewerConfig& config) override;

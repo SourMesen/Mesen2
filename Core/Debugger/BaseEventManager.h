@@ -46,6 +46,7 @@ protected:
 	vector<DebugEventInfo> _snapshotCurrentFrame;
 	vector<DebugEventInfo> _snapshotPrevFrame;
 	int16_t _snapshotScanline = -1;
+	int16_t _snapshotScanlineOffset = 0;
 	uint16_t _snapshotCycle = 0;
 	SimpleLock _lock;
 
@@ -54,6 +55,13 @@ protected:
 	void FilterEvents();
 	void DrawDot(uint32_t x, uint32_t y, uint32_t color, bool drawBackground, uint32_t* buffer);
 	virtual int GetScanlineOffset() { return 0; }
+
+	void DrawLine(uint32_t* buffer, FrameInfo size, uint32_t color, uint32_t row);
+	void DrawEvents(uint32_t* buffer, FrameInfo size);
+
+	virtual void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) = 0;
+	virtual void DrawScreen(uint32_t* buffer) = 0;
+	void DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer);
 
 public:
 	virtual ~BaseEventManager() {}
@@ -71,6 +79,7 @@ public:
 
 	virtual uint32_t TakeEventSnapshot() = 0;
 	virtual FrameInfo GetDisplayBufferSize() = 0;
-	virtual void GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize) = 0;
 	virtual DebugEventInfo GetEvent(uint16_t scanline, uint16_t cycle) = 0;
+	
+	void GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize);
 };

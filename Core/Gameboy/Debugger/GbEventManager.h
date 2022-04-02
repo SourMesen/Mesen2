@@ -47,10 +47,10 @@ private:
 	uint32_t _scanlineCount = GbEventManager::ScreenHeight;
 	uint16_t* _ppuBuffer = nullptr;
 
-	void DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer);
-
 protected:
 	bool ShowPreviousFrameEvents() override;
+	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;
+	void DrawScreen(uint32_t* buffer) override;
 
 public:
 	GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu);
@@ -62,7 +62,6 @@ public:
 	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
 
 	uint32_t TakeEventSnapshot();
-	void GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize);
 	DebugEventInfo GetEvent(uint16_t y, uint16_t x);
 
 	FrameInfo GetDisplayBufferSize() override;

@@ -18,6 +18,7 @@ NesEventManager::NesEventManager(Debugger *debugger, NesConsole* console)
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 	_mapper = console->GetMapper();
+	_snapshotScanlineOffset = -1;
 
 	NesDefaultVideoFilter::GetFullPalette(_palette, console->GetNesConfig(), _ppu->GetPpuModel());
 
@@ -180,18 +181,10 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 	return {};
 }
 
-void NesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer)
+void NesEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 {
-	EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
-	uint32_t color = eventCfg.Color;
-	
-	if(!eventCfg.Visible) {
-		return;
-	}
-
-	uint32_t y = std::min<uint32_t>((evt.Scanline + 1) * 2, _scanlineCount * 2);
-	uint32_t x = evt.Cycle * 2;
-	DrawDot(x, y, color, drawBackground, buffer);
+	y = (y + 1) * 2;
+	x = x * 2;
 }
 
 uint32_t NesEventManager::TakeEventSnapshot()
@@ -226,19 +219,8 @@ FrameInfo NesEventManager::GetDisplayBufferSize()
 	return size;
 }
 
-void NesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
+void NesEventManager::DrawScreen(uint32_t *buffer)
 {
-	auto lock = _lock.AcquireSafe();
-
-	FrameInfo size = GetDisplayBufferSize();
-	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
-		return;
-	}
-
-	for(uint32_t i = 0; i < size.Width*size.Height; i++) {
-		buffer[i] = 0xFF555555;
-	}
-
 	uint16_t *src = _ppuBuffer;
 	for(uint32_t y = 0, len = NesConstants::ScreenHeight*2; y < len; y++) {
 		int rowOffset = (y + 2) * NesConstants::CyclesPerLine * 2;
@@ -251,29 +233,6 @@ void NesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
 
 	if(_config.ShowNtscBorders) {
 		DrawNtscBorders(buffer);
-	}
-
-	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	uint32_t scanlineOffset = _snapshotScanline * 2 * NesConstants::CyclesPerLine * 2;
-	for(int i = 0; i < NesConstants::CyclesPerLine * 2; i++) {
-		if(_snapshotScanline != 0) {
-			buffer[scanlineOffset + i] = currentScanlineColor;
-			buffer[scanlineOffset + NesConstants::CyclesPerLine * 2 + i] = currentScanlineColor;
-		}
-	}
-
-	FilterEvents();
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, true, buffer);
-	}
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, false, buffer);
-	}
-
-	//Draw dot over current pixel
-	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
-		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFF990099, true, buffer);
-		DrawDot(_snapshotCycle * 2, _snapshotScanline * 2, 0xFFFF00FF, false, buffer);
 	}
 }
 

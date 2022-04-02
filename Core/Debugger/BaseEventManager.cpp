@@ -79,3 +79,69 @@ void BaseEventManager::ClearFrameEvents()
 	_prevDebugEvents = _debugEvents;
 	_debugEvents.clear();
 }
+
+void BaseEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize)
+{
+	auto lock = _lock.AcquireSafe();
+	FrameInfo size = GetDisplayBufferSize();
+	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
+		return;
+	}
+
+	//Clear buffer
+	for(uint32_t i = 0; i < size.Width * size.Height; i++) {
+		buffer[i] = 0xFF555555;
+	}
+
+	//Draw output screen
+	DrawScreen(buffer);
+
+	//Draw events, current scanline/dot, etc.
+	DrawEvents(buffer, size);
+}
+
+void BaseEventManager::DrawLine(uint32_t* buffer, FrameInfo size, uint32_t color, uint32_t row)
+{
+	uint32_t offset = row * 2 * size.Width;
+	for(int i = 0; i < size.Width; i++) {
+		buffer[offset + i] = color;
+		buffer[offset + size.Width + i] = color;
+	}
+}
+
+void BaseEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer)
+{
+	EventViewerCategoryCfg evtCfg = GetEventConfig(evt);
+	uint32_t color = evtCfg.Color;
+	
+	int32_t y = evt.Scanline;
+	int32_t x = evt.Cycle;
+	ConvertScanlineCycleToRowColumn(x, y);
+
+	DrawDot(x, y, color, drawBackground, buffer);
+}
+
+void BaseEventManager::DrawEvents(uint32_t* buffer, FrameInfo size)
+{
+	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
+		DrawLine(buffer, size, 0xFFFFFF55, _snapshotScanline);
+	}
+
+	FilterEvents();
+	for(DebugEventInfo& evt : _sentEvents) {
+		DrawEvent(evt, true, buffer);
+	}
+	for(DebugEventInfo& evt : _sentEvents) {
+		DrawEvent(evt, false, buffer);
+	}
+	
+	//Draw dot over current pixel
+	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
+		int32_t y = _snapshotScanline + _snapshotScanlineOffset;
+		int32_t x = _snapshotCycle;
+		ConvertScanlineCycleToRowColumn(x, y);
+
+		DrawDot(x, y, 0xFF990099, true, buffer);
+		DrawDot(x, y, 0xFFFF00FF, false, buffer);
+	}
+}

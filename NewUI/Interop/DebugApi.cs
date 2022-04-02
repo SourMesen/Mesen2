@@ -584,7 +584,7 @@ namespace Mesen.Interop
 		public Int16 Scanline;
 		public UInt16 Cycle;
 		public Int16 BreakpointId;
-		public byte DmaChannel;
+		public sbyte DmaChannel;
 		public DmaChannelConfig DmaChannelInfo;
 		public EventFlags Flags;
 		public MemoryOperationInfo TargetMemory;

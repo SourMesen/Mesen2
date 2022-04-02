@@ -151,15 +151,10 @@ EventViewerCategoryCfg SnesEventManager::GetEventConfig(DebugEventInfo& evt)
 	}
 }
 
-void SnesEventManager::DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer)
+void SnesEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 {
-	EventViewerCategoryCfg eventCfg = GetEventConfig(evt);
-	uint32_t color = eventCfg.Color;
-
-	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
-	uint32_t x = evt.Cycle / 2;
-
-	DrawDot(x, y, color, drawBackground, buffer);	
+	y *= 2;
+	x /= 2;
 }
 
 uint32_t SnesEventManager::TakeEventSnapshot()
@@ -199,19 +194,8 @@ FrameInfo SnesEventManager::GetDisplayBufferSize()
 	return size;
 }
 
-void SnesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
+void SnesEventManager::DrawScreen(uint32_t *buffer)
 {
-	auto lock = _lock.AcquireSafe();
-
-	FrameInfo size = GetDisplayBufferSize();
-	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
-		return;
-	}
-
-	for(uint32_t i = 0; i < size.Width*size.Height; i++) {
-		buffer[i] = 0xFF555555;
-	}
-
 	//Skip the first 7 blank lines in the buffer when overscan mode is off
 	uint16_t *src = _ppuBuffer + (_overscanMode ? 0 : (_useHighResOutput ? (512 * 14) : (256 * 7)));
 
@@ -220,26 +204,5 @@ void SnesEventManager::GetDisplayBuffer(uint32_t *buffer, uint32_t bufferSize)
 			int srcOffset = _useHighResOutput ? ((y << 9) | x) : (((y >> 1) << 8) | (x >> 1));
 			buffer[(y + 2)*SnesEventManager::ScanlineWidth + x + 22*2] = SnesDefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
-	}
-
-	constexpr uint32_t nmiColor = 0xFF55FFFF;
-	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	int nmiScanline = (_overscanMode ? 240 : 225) * 2 * SnesEventManager::ScanlineWidth;
-	uint32_t scanlineOffset = _snapshotScanline * 2 * SnesEventManager::ScanlineWidth;
-	for(int i = 0; i < SnesEventManager::ScanlineWidth; i++) {
-		buffer[nmiScanline + i] = nmiColor;
-		buffer[nmiScanline + SnesEventManager::ScanlineWidth + i] = nmiColor;
-		if(_snapshotScanline != 0) {
-			buffer[scanlineOffset + i] = currentScanlineColor;
-			buffer[scanlineOffset + SnesEventManager::ScanlineWidth + i] = currentScanlineColor;
-		}
-	}
-
-	FilterEvents();
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, true, buffer);
-	}
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, false, buffer);
 	}
 }

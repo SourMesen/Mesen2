@@ -59,11 +59,13 @@ private:
 	uint32_t _scanlineCount = 262;
 	uint16_t *_ppuBuffer = nullptr;
 
-	void DrawEvent(DebugEventInfo &evt, bool drawBackground, uint32_t *buffer);
 	void DrawNtscBorders(uint32_t *buffer);
 	void DrawPixel(uint32_t *buffer, int32_t x, uint32_t y, uint32_t color);
 
 protected:
+	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;
+	void DrawScreen(uint32_t* buffer) override;
+
 	bool ShowPreviousFrameEvents() override;
 	int GetScanlineOffset() override { return 1; }
 
@@ -81,7 +83,6 @@ public:
 	uint32_t TakeEventSnapshot();
 
 	FrameInfo GetDisplayBufferSize() override;
-	void GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize) override;
 
 	DebugEventInfo GetEvent(uint16_t y, uint16_t x) override;
 

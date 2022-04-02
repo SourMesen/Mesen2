@@ -115,14 +115,10 @@ EventViewerCategoryCfg GbEventManager::GetEventConfig(DebugEventInfo& evt)
 	}
 }
 
-void GbEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint32_t* buffer)
+void GbEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 {
-	EventViewerCategoryCfg evtCfg = GetEventConfig(evt);
-	uint32_t color = evtCfg.Color;
-	uint32_t y = std::min<uint32_t>(evt.Scanline * 2, _scanlineCount * 2);
-	uint32_t x = evt.Cycle * 2;
-
-	DrawDot(x, y, color, drawBackground, buffer);
+	y *= 2;
+	x *= 2;
 }
 
 uint32_t GbEventManager::TakeEventSnapshot()
@@ -158,36 +154,13 @@ FrameInfo GbEventManager::GetDisplayBufferSize()
 	return size;
 }
 
-void GbEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize)
+void GbEventManager::DrawScreen(uint32_t* buffer)
 {
-	auto lock = _lock.AcquireSafe();
-	FrameInfo size = GetDisplayBufferSize();
-	if(_snapshotScanline < 0 || bufferSize < size.Width * size.Height * sizeof(uint32_t)) {
-		return;
-	}
-
 	uint16_t *src = _ppuBuffer;
 	for(uint32_t y = 0, len = GbEventManager::ScreenHeight*2; y < len; y++) {
 		for(uint32_t x = 0; x < GbEventManager::ScanlineWidth; x++) {
 			int srcOffset = (y >> 1) * 456 + (x >> 1);
 			buffer[y*GbEventManager::ScanlineWidth + x] = SnesDefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
-	}
-
-	constexpr uint32_t currentScanlineColor = 0xFFFFFF55;
-	uint32_t scanlineOffset = _snapshotScanline * 2 * GbEventManager::ScanlineWidth;
-	if(_snapshotScanline != 0) {
-		for(int i = 0; i < GbEventManager::ScanlineWidth; i++) {
-			buffer[scanlineOffset + i] = currentScanlineColor;
-			buffer[scanlineOffset + GbEventManager::ScanlineWidth + i] = currentScanlineColor;
-		}
-	}
-
-	FilterEvents();
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, true, buffer);
-	}
-	for(DebugEventInfo &evt : _sentEvents) {
-		DrawEvent(evt, false, buffer);
 	}
 }
