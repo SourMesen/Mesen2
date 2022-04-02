@@ -28,7 +28,8 @@ namespace Mesen.Debugger.Windows
 
 			PictureViewer picViewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			Grid spriteGrid = this.FindControl<Grid>("spriteGrid");
-			_model = new SpriteViewerViewModel(cpuType, picViewer, spriteGrid, this);
+			var listView = this.FindControl<DataBox.DataBox>("ListView");
+			_model = new SpriteViewerViewModel(cpuType, picViewer, spriteGrid, listView, this);
 			DataContext = _model;
 		
 			_model.Config.LoadWindowSettings(this);

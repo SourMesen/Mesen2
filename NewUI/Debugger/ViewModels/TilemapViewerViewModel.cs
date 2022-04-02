@@ -47,8 +47,7 @@ namespace Mesen.Debugger.ViewModels
 		
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
-		public List<object> ContextMenuActions { get; } = new();
-
+		
 		private DebugTilemapInfo _tilemapInfo;
 		private PictureViewer _picViewer;
 		private BaseState? _ppuState;
@@ -113,6 +112,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInMemoryViewer),
 					OnClick = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileMapAddress >= 0) {
@@ -122,8 +122,13 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInTileViewer,
-					IsEnabled = () => false,
-					OnClick = () => { }
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInTileViewer),
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.TileAddress >= 0) {
+							TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(), tile.Value.TileAddress, _tilemapInfo.Format, TileLayout.Normal, tile.Value.PaletteIndex);
+						}
+					}
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -180,10 +185,18 @@ namespace Mesen.Debugger.ViewModels
 
 		private DebugTilemapTileInfo? GetSelectedTileInfo()
 		{
-			if(SelectionRect.IsEmpty || _ppuState == null || _prevVram == null) {
+			if(_ppuState == null || _prevVram == null) {
 				return null;
 			} else {
-				PixelPoint p =PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+				PixelPoint p;
+				if(ViewerMousePos.HasValue) {
+					p = ViewerMousePos.Value;
+				} else {
+					if(SelectionRect.IsEmpty) {
+						return null;
+					}
+					p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+				}
 				return DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _prevVram, _ppuState);
 			}
 		}

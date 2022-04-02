@@ -89,6 +89,7 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 2;
+	result.Format = TileFormat::NesBpp2;
 	result.TileWidth = 8;
 	result.TileHeight = 8;
 	result.ColumnCount = 64;
@@ -233,6 +234,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	sprite.Bpp = 2;
+	sprite.Format = TileFormat::NesBpp2;
 	sprite.SpriteIndex = i;
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];

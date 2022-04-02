@@ -41,12 +41,14 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 	int tileWidth = largeTileWidth ? 16 : 8;
 	int columnCount = layer.DoubleWidth ? 64 : 32;
 	int rowCount = layer.DoubleHeight ? 64 : 32;
+	TileFormat format = TileFormat::Bpp2;
 
 	if(state.BgMode == 7) {
 		tileHeight = 8;
 		tileWidth = 8;
 		columnCount = 128;
 		rowCount = 128;
+		format = directColor ? TileFormat::Mode7DirectColor : TileFormat::Mode7;
 		
 		for(int row = 0; row < 128; row++) {
 			for(int column = 0; column < 128; column++) {
@@ -73,6 +75,17 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 			}
 		}
 	} else {
+		if(directColor) {
+			format = TileFormat::DirectColor;
+		} else {
+			switch(bpp) {
+				default:
+				case 2: format = TileFormat::Bpp2; break;
+				case 4: format = TileFormat::Bpp4; break;
+				case 8: format = TileFormat::Bpp8; break;
+			}
+		}
+
 		for(int row = 0; row < rowCount; row++) {
 			uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 			uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
@@ -117,6 +130,7 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 	
 	DebugTilemapInfo result = {};
 	result.Bpp = bpp;
+	result.Format = format;
 	result.TileWidth = tileWidth;
 	result.TileHeight = tileHeight;
 	result.ColumnCount = columnCount;
@@ -150,7 +164,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 
 	std::fill(outBuffer, outBuffer + size.Width * size.Height, 0xFF333333);
 	for(int i = 0; i < (state.OverscanMode ? 239 : 224); i++) {
-		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF888888);
+		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF666666);
 	}
 	
 	DebugSpriteInfo sprite;
@@ -215,6 +229,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 	bool useSecondTable = (flags & 0x01) != 0;
 
 	sprite.Bpp = 4;
+	sprite.Format = TileFormat::Bpp4;
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = spriteX;
 	sprite.Y = spriteY;
@@ -342,13 +357,13 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 		basePaletteOffset = options.Layer * 64;
 	}
 
-	uint32_t row = y / 8;
-	uint32_t column = x / 8;
-
-	result.Row = row;
-	result.Column = column;
+	uint32_t row;
+	uint32_t column;
 
 	if(state.BgMode == 7) {
+		row = y / 8;
+		column = x / 8;
+
 		result.TileMapAddress = row * 256 + column * 2;
 		result.TileIndex = vram[result.TileMapAddress];
 		result.TileAddress = result.TileIndex * 128;
@@ -357,6 +372,9 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 	} else {
 		bool largeTileWidth = layer.LargeTiles || state.BgMode == 5 || state.BgMode == 6;
 		bool largeTileHeight = layer.LargeTiles;
+
+		row = y / (largeTileHeight ? 16 : 8);
+		column = x / (largeTileWidth ? 16 : 8);
 
 		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
@@ -377,6 +395,9 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 
 		result.PaletteAddress = basePaletteOffset + (result.PaletteIndex * (1 << bpp));
 	}
+
+	result.Row = row;
+	result.Column = column;
 
 	return result;
 }

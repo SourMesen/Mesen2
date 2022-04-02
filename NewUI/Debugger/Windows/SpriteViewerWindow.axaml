@@ -127,6 +127,7 @@
 
 			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2" Margin="1" Grid.ColumnSpan="2">
 				<DataBox
+					Name="ListView"
 					Items="{CompiledBinding ListView.SpritePreviews}"
 					SelectedItem="{CompiledBinding ListView.SelectedItem}"
 					CanUserResizeColumns="False"

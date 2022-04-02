@@ -738,6 +738,7 @@ namespace Mesen.Interop
 	public struct DebugTilemapInfo
 	{
 		public UInt32 Bpp;
+		public TileFormat Format;
 
 		public UInt32 TileWidth;
 		public UInt32 TileHeight;
@@ -817,6 +818,7 @@ namespace Mesen.Interop
 		public Int32 TileIndex;
 		public Int32 TileAddress;
 		public Int32 PaletteAddress;
+		public TileFormat Format;
 
 		public Int16 SpriteIndex;
 

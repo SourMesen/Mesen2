@@ -59,9 +59,9 @@ namespace Mesen.Debugger.ViewModels
 		private RefStruct<DebugPaletteInfo>? _palette = null;
 
 		[Obsolete("For designer only")]
-		public SpriteViewerViewModel() : this(CpuType.Snes, new PictureViewer(), new Grid(), null) { }
+		public SpriteViewerViewModel() : this(CpuType.Snes, new PictureViewer(), new Grid(), new Control(), null) { }
 
-		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Window? wnd)
+		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Control listView, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.SpriteViewer;
 
@@ -111,25 +111,23 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
-				new ContextMenuAction() {
-					ActionType = ActionType.ViewInMemoryViewer,
-					IsEnabled = () => SelectedSprite != null,
-					OnClick = () => {
-						if(SelectedSprite != null && SelectedSprite.TileAddress >= 0) {
-							MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), SelectedSprite.TileAddress);
-						}
-					}
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.ViewInTileViewer,
-					IsEnabled = () => false,
-					OnClick = () => { }
-				},
+				GetViewInMemoryViewerAction(),
+				GetViewInTileViewerAction(),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ExportToPng,
 					OnClick = () => picViewer.ExportToPng()
 				}
+			});
+
+			DebugShortcutManager.CreateContextMenu(_spriteGrid, new List<object> {
+				GetViewInMemoryViewerAction(),
+				GetViewInTileViewerAction()
+			});
+
+			DebugShortcutManager.CreateContextMenu(listView, new List<object> {
+				GetViewInMemoryViewerAction(),
+				GetViewInTileViewerAction()
 			});
 
 			if(Design.IsDesignMode || wnd == null) {
@@ -159,6 +157,41 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 		}
 
+		private ContextMenuAction GetViewInMemoryViewerAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.ViewInMemoryViewer,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInMemoryViewer),
+				IsEnabled = () => GetSelectedSprite() != null,
+				OnClick = () => {
+					SpritePreviewModel? sprite = GetSelectedSprite();
+					if(sprite?.TileAddress >= 0) {
+						MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), sprite.TileAddress);
+					}
+				}
+			};
+		}
+
+		private ContextMenuAction GetViewInTileViewerAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.ViewInTileViewer,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInTileViewer),
+				OnClick = () => {
+					SpritePreviewModel? sprite = GetSelectedSprite();
+					if(sprite?.TileAddress >= 0 && _palette != null) {
+						DebugPaletteInfo pal = _palette.Get();
+						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
+						TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(), sprite.TileAddress, sprite.Format, TileLayout.Normal, sprite.Palette + paletteOffset);
+					}
+				}
+			};
+		}
+
+		private SpritePreviewModel? GetSelectedSprite()
+		{
+			return PreviewPanelSprite ?? SelectedSprite;
+		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{

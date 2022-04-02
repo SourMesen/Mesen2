@@ -54,6 +54,7 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 2;
+	result.Format = TileFormat::Bpp2;
 	result.TileWidth = 8;
 	result.TileHeight = 8;
 	result.ColumnCount = 32;
@@ -71,9 +72,9 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 
-	std::fill(outBuffer, outBuffer + 256 * 256, 0xFF333311);
+	std::fill(outBuffer, outBuffer + 256 * 256, 0xFF333333);
 	for(int i = 16; i < 16 + 144; i++) {
-		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, 0xFF888866);
+		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, 0xFF666666);
 	}
 
 	DebugSpriteInfo sprite;
@@ -167,6 +168,7 @@ DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions 
 void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	sprite.Bpp = 2;
+	sprite.Format = TileFormat::Bpp2;
 	sprite.SpriteIndex = i;
 	
 	sprite.Y = oamRam[i*4];

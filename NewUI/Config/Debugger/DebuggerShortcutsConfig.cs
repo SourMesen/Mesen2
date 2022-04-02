@@ -196,6 +196,12 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ExportWatchEntries, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.ResetWorkspace, KeyBinding = new() });
 
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
+
+			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
+			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
+
 			//Memory Tools
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Unfreeze, KeyBinding = new(KeyModifiers.Control, Key.W) });
@@ -335,6 +341,10 @@ namespace Mesen.Config
 		ImportWatchEntries,
 		ExportWatchEntries,
 		ResetWorkspace,
+		TilemapViewer_ViewInTileViewer,
+		TilemapViewer_ViewInMemoryViewer,
+		SpriteViewer_ViewInMemoryViewer,
+		SpriteViewer_ViewInTileViewer,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

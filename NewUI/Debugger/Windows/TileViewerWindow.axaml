@@ -127,6 +127,7 @@
 			Source="{CompiledBinding ViewerBitmap}"
 			Zoom="{CompiledBinding Config.ImageScale}"
 			ShowGrid="{CompiledBinding Config.ShowTileGrid}"
+			SelectionRect="{CompiledBinding SelectionRect}"
 		/>
 	</DockPanel>
 </Window>

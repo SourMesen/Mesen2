@@ -49,7 +49,6 @@ namespace Mesen.Debugger.Windows
 		{
 			MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
 			wnd.SetCursorPosition(memType, address);
-			wnd.Activate();
 		}
 
 		public void SetCursorPosition(MemoryType memType, int address)

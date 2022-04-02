@@ -19,6 +19,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public List<DebuggerShortcutInfo> SharedShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> MemoryToolsShortcuts { get; set; } = new();
+		public List<DebuggerShortcutInfo> MiscShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> ScriptShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> DebuggerShortcuts { get; set; } = new();
 
@@ -101,6 +102,13 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.ScriptWindow_SaveScript,
 				DebuggerShortcut.ScriptWindow_RunScript,
 				DebuggerShortcut.ScriptWindow_StopScript
+			});
+
+			MiscShortcuts = CreateShortcutList(new DebuggerShortcut[] {
+				DebuggerShortcut.TilemapViewer_ViewInMemoryViewer,
+				DebuggerShortcut.TilemapViewer_ViewInTileViewer,
+				DebuggerShortcut.SpriteViewer_ViewInMemoryViewer,
+				DebuggerShortcut.SpriteViewer_ViewInTileViewer
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {

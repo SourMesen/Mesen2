@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int TileAddress { get; set; }
 		[Reactive] public DebugSpritePriority Priority { get; set; }
 		[Reactive] public int Bpp { get; set; }
+		[Reactive] public TileFormat Format { get; set; }
 		[Reactive] public int Palette { get; set; }
 		[Reactive] public int PaletteAddress { get; set; }
 		[Reactive] public bool Visible { get; set; }
@@ -51,6 +52,7 @@ namespace Mesen.Debugger.ViewModels
 			TileIndex = sprite.TileIndex;
 			Priority = sprite.Priority;
 			Bpp = sprite.Bpp;
+			Format = sprite.Format;
 			Palette = sprite.Palette;
 			TileAddress = sprite.TileAddress;
 			PaletteAddress = sprite.PaletteAddress;
@@ -106,6 +108,7 @@ namespace Mesen.Debugger.ViewModels
 			dst.TileIndex = TileIndex;
 			dst.Priority = Priority;
 			dst.Bpp = Bpp;
+			dst.Format = Format;
 			dst.Palette = Palette;
 			dst.TileAddress = TileAddress;
 			dst.PaletteAddress = PaletteAddress;

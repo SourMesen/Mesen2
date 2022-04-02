@@ -47,10 +47,10 @@
 								/>
 							</DataTemplate>
 							<DataTemplate DataType="x:Boolean">
-								<CheckBox IsChecked="{Binding}" />
+								<CheckBox IsChecked="{Binding}" IsEnabled="False" />
 							</DataTemplate>
 							<DataTemplate DataType="dc:TooltipPictureEntry">
-								<Border BorderBrush="Gray" BorderThickness="1">
+								<Border BorderBrush="Gray" Background="#666" BorderThickness="1">
 									<dc:PictureViewer
 										Source="{Binding Source}"
 										Zoom="{Binding Zoom}"

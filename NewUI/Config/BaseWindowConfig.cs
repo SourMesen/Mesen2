@@ -10,8 +10,10 @@ namespace Mesen.Config
 
 		public void SaveWindowSettings(Window wnd)
 		{
-			WindowLocation = wnd.Position;
-			WindowSize = new PixelSize((int)wnd.ClientSize.Width, (int)wnd.ClientSize.Height);
+			if(wnd.WindowState == WindowState.Normal) {
+				WindowLocation = wnd.Position;
+				WindowSize = new PixelSize((int)wnd.ClientSize.Width, (int)wnd.ClientSize.Height);
+			}
 		}
 
 		public void LoadWindowSettings(Window wnd)

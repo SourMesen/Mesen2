@@ -214,6 +214,9 @@
 					<TabItem Header="{l:Translate tabMemoryTools}">
 						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding MemoryToolsShortcuts}" />
 					</TabItem>
+					<TabItem Header="{l:Translate tabMisc}">
+						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding MiscShortcuts}" />
+					</TabItem>
 					<TabItem Header="{l:Translate tabScriptWindow}">
 						<dc:DebuggerShortcutKeyGrid Shortcuts="{CompiledBinding ScriptShortcuts}" />
 					</TabItem>

@@ -11,7 +11,7 @@
 	x:Class="Mesen.Debugger.Controls.SpritePreviewPanel"
 >
 	<Border
-		Background="#DDD"
+		Background="#666"
 		BorderThickness="1"
 		BorderBrush="Gray"
 		HorizontalAlignment="Stretch"

@@ -37,6 +37,7 @@ struct DebugSpriteInfo
 	int32_t TileIndex;
 	int32_t TileAddress;
 	int32_t PaletteAddress;
+	TileFormat Format;
 
 	int16_t SpriteIndex;
 
@@ -83,6 +84,7 @@ public:
 struct DebugTilemapInfo
 {
 	uint32_t Bpp;
+	TileFormat Format;
 	
 	uint32_t TileWidth;
 	uint32_t TileHeight;

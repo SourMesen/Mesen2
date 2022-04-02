@@ -966,6 +966,7 @@
 			<Control ID="tabShortcuts">Shortcuts</Control>
 			<Control ID="tabShared">Shared</Control>
 			<Control ID="tabMemoryTools">Memory Tools</Control>
+			<Control ID="tabMisc">Misc.</Control>
 		</Form>
 
 		<Form ID="ProfilerWindow">
@@ -2013,6 +2014,10 @@
 			<Value ID="ResetCdl">Reset CDL data</Value>
 			<Value ID="LoadCdl">Load CDL data from...</Value>
 			<Value ID="SaveCdl">Save CDL data to...</Value>
+			<Value ID="TilemapViewer_ViewInMemoryViewer">Tilemap Viewer - View in Memory Viewer</Value>
+			<Value ID="TilemapViewer_ViewInTileViewer">Tilemap Viewer - View in Tile Viewer</Value>
+			<Value ID="SpriteViewer_ViewInMemoryViewer">Sprite Viewer - View in Memory Viewer</Value>
+			<Value ID="SpriteViewer_ViewInTileViewer">Sprite Viewer - View in Tile Viewer</Value>
 			<Value ID="MemoryViewer_Freeze">Freeze</Value>
 			<Value ID="MemoryViewer_Unfreeze">Unfreeze</Value>
 			<Value ID="MemoryViewer_AddToWatch">Add to Watch</Value>

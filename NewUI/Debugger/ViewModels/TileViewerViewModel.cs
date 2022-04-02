@@ -36,6 +36,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int AddressIncrement { get; private set; }
 		[Reactive] public int MaximumAddress { get; private set; }
 
+		[Reactive] public Rect SelectionRect { get; set; }
+
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
 		[Reactive] public Enum[] AvailableFormats { get; set; } = Array.Empty<Enum>();
 		[Reactive] public bool ShowFormatDropdown { get; set; }
@@ -132,17 +134,7 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
-				int bpp = Config.Format switch {
-					TileFormat.Bpp2 => 2,
-					TileFormat.Bpp4 => 4,
-					TileFormat.DirectColor => 8,
-					TileFormat.Mode7 => 16,
-					TileFormat.Mode7DirectColor => 16,
-					TileFormat.NesBpp2 => 2,
-					_ => 8,
-				};
-
-				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * bpp / 8;
+				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * GetBitsPerPixel(Config.Format) / 8;
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
@@ -410,6 +402,82 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
+		public void SelectTile(MemoryType type, int address, TileFormat format, TileLayout layout, int paletteIndex)
+		{
+			Config.Source = type;
+			Config.Format = format;
+			Config.SelectedPalette = paletteIndex;
+			Config.StartAddress = address / AddressIncrement * AddressIncrement;
+			Config.Layout = layout;
+			int bitsPerPixel = GetBitsPerPixel(Config.Format);
+			int bytesPerTile = 8 * 8 * bitsPerPixel / 8;
+
+			int gap = address - Config.StartAddress;
+			int tileNumber = gap / bytesPerTile;
+
+			PixelPoint pos = new PixelPoint(tileNumber % Config.ColumnCount, tileNumber / Config.ColumnCount);
+			pos = ToLayoutCoordinates(Config.Layout, pos);
+			SelectionRect = new Rect(pos.X * 8, pos.Y * 8, 8, 8);
+		}
+
+		private PixelPoint ToLayoutCoordinates(TileLayout layout, PixelPoint pos)
+		{
+			int column = pos.X;
+			int row = pos.Y;
+
+			switch(layout) {
+				case TileLayout.SingleLine8x16: {
+					int displayColumn = column / 2 + ((row & 0x01) != 0 ? Config.ColumnCount / 2 : 0);
+					int displayRow = (row & ~0x01) + ((column & 0x01) != 0 ? 1 : 0);
+					return new PixelPoint(displayColumn, displayRow);
+				}
+
+				case TileLayout.SingleLine16x16: {
+					int displayColumn = (column / 2) + (column & 0x01) + ((row & 0x01) != 0 ? Config.ColumnCount / 2 : 0) + ((column & 0x02) != 0 ? -1 : 0);
+					int displayRow = (row & ~0x01) + ((column & 0x02) != 0 ? 1 : 0);
+					return new PixelPoint(displayColumn, displayRow);
+				}
+
+				case TileLayout.Normal:
+					return pos;
+
+				default:
+					throw new NotImplementedException("TileLayout not supported");
+			}
+		}
+
+		private PixelPoint FromLayoutCoordinates(TileLayout layout, PixelPoint pos)
+		{
+			int column = pos.X;
+			int row = pos.Y;
+
+			switch(layout) {
+				case TileLayout.SingleLine8x16: {
+					//A0 B0 C0 D0 -> A0 A1 B0 B1
+					//A1 B1 C1 D1    C0 C1 D0 D1
+					int displayColumn = (column * 2) % Config.ColumnCount + (row & 0x01);
+					int displayRow = (row & ~0x01) + ((column >= Config.ColumnCount / 2) ? 1 : 0);
+					return new PixelPoint(displayColumn, displayRow);
+				}
+
+				case TileLayout.SingleLine16x16: {
+					//A0 A1 B0 B1 C0 C1 D0 D1 -> A0 A1 A2 A3 B0 B1 B2 B3
+					//A2 A3 B2 B3 C2 C3 D2 D3    C0 C1 C2 C3 D0 D1 D2 D3
+					//E0 E1 F0 F1 G0 G1 H0 H1 -> E0 E1 E2 E3 F0 F1 F2 F3
+					//E2 E3 F2 F3 G2 G3 H2 H3    G0 G1 G2 G3 H0 H1 H2 H3
+					int displayColumn = ((column & ~0x01) * 2 + ((row & 0x01) != 0 ? 2 : 0) + (column & 0x01)) % Config.ColumnCount;
+					int displayRow = (row & ~0x01) + ((column > Config.ColumnCount / 2) ? 1 : 0);
+					return new PixelPoint(displayColumn, displayRow);
+				}
+
+				case TileLayout.Normal:
+					return pos;
+
+				default:
+					throw new NotImplementedException("TileLayout not supported");
+			}
+		}
+
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			RefreshTab();
@@ -463,6 +531,19 @@ namespace Mesen.Debugger.ViewModels
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 			}
+		}
+
+		private int GetBitsPerPixel(TileFormat format)
+		{
+			return format switch {
+				TileFormat.Bpp2 => 2,
+				TileFormat.Bpp4 => 4,
+				TileFormat.DirectColor => 8,
+				TileFormat.Mode7 => 16,
+				TileFormat.Mode7DirectColor => 16,
+				TileFormat.NesBpp2 => 2,
+				_ => 8,
+			};
 		}
 	}
 

@@ -43,6 +43,10 @@ namespace Mesen.Debugger.Utilities
 		{
 			foreach(Window wnd in _openedWindows.Keys) {
 				if(wnd is T) {
+					if(wnd.WindowState == WindowState.Minimized) {
+						wnd.WindowState = WindowState.Normal;
+					}
+					wnd.Activate();
 					return (T)wnd;
 				}
 			}

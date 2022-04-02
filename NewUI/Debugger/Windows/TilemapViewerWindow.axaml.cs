@@ -65,6 +65,8 @@ namespace Mesen.Debugger.Windows
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
+				viewer.Focus();
+
 				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
 				if(point == _model.ViewerMousePos) {
 					return;

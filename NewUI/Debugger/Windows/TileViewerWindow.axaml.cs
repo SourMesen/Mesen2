@@ -45,6 +45,12 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		public static void OpenAtTile(CpuType cpuType, MemoryType type, int address, TileFormat format, TileLayout layout, int paletteIndex)
+		{
+			TileViewerWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new TileViewerWindow(cpuType));
+			wnd._model.SelectTile(type, address, format, layout, paletteIndex);
+		}
+
 		protected override void OnOpened(EventArgs e)
 		{
 			if(Design.IsDesignMode) {
