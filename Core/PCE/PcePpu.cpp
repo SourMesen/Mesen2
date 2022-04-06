@@ -112,30 +112,20 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 
 void PcePpu::DrawScanline()
 {
-	int columnCount;
-	switch((_state.MemAccessWidth >> 4) & 0x03) {
-		case 0: columnCount = 32; break;
-		case 1: columnCount = 64; break;
-		case 2:
-		case 3: columnCount = 128; break;
-	}
-
-	int rowCount = (_state.MemAccessWidth & 0x40) ? 64 : 32;
-
-	uint16_t screenY = (_scanline + _state.BgScrollY) & ((rowCount * 8) - 1);
+	uint16_t screenY = (_scanline + _state.BgScrollY) & ((_state.RowCount * 8) - 1);
 
 	bool hasBg[256] = {};
 
 	for(int column = 0; column < 256; column++) {
-		uint16_t screenX = (column + _state.BgScrollX) & ((columnCount * 8) - 1);
+		uint16_t screenX = (column + _state.BgScrollX) & ((_state.ColumnCount * 8) - 1);
 
-		uint16_t batEntry = _vram[(screenY >> 3) * columnCount + (screenX >> 3)];
+		uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
 		uint8_t palette = batEntry >> 12;
 		uint16_t tileIndex = (batEntry & 0xFFF);
 
 		uint16_t tileAddr = tileIndex * 16;
 		uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
-		if(color) {
+		if(color != 0) {
 			hasBg[column] = true;
 			_outBuffer[_scanline * 256 + column] = _paletteRam[palette * 16 + color];
 		} else {
@@ -351,7 +341,17 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 				case 0x09:
 					if(!msb) {
-						_state.MemAccessWidth = value;
+						switch((value >> 4) & 0x03) {
+							case 0: _state.ColumnCount = 32; break;
+							case 1: _state.ColumnCount = 64; break;
+							case 2: case 3: _state.ColumnCount = 128; break;
+						}
+
+						_state.RowCount = (value & 0x40) ? 64 : 32;
+
+						_state.VramAccessMode = value & 0x03;
+						_state.SpriteAccessMode = (value >> 2) & 0x03;
+						_state.CgMode = (value & 0x80) != 0;
 					}
 					break;
 

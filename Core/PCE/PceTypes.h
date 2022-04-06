@@ -65,17 +65,14 @@ struct PcePpuState
 	uint16_t MemAddrRead;   //R01 - MARR
 	uint16_t VramData;      //R02 - VWR
 
-	//uint16_t Control;       //R05 - CR
+	//R05 - CR - Control
 	bool EnableCollisionIrq;
 	bool EnableOverflowIrq;
 	bool EnableScanlineIrq;
 	bool EnableVerticalBlankIrq;
-
 	uint8_t ExternalSync;
-
 	bool SpritesEnabled;
 	bool BackgroundEnabled;
-	
 	uint8_t VramAddrIncrement;
 
 	uint16_t ScanlineIrqValue;           //R06 - RCR
@@ -83,7 +80,12 @@ struct PcePpuState
 	uint16_t BgScrollX;     //R07 - BXR
 	uint16_t BgScrollY;     //R08 - BYR
 
-	uint8_t MemAccessWidth; //R09 - MWR
+	//R09 - MWR - Memory Width
+	uint8_t ColumnCount;
+	uint8_t RowCount;
+	uint8_t SpriteAccessMode;
+	uint8_t VramAccessMode;
+	bool CgMode;
 
 	uint16_t HorizSync;     //R0A - HSR
 	uint16_t HorizDisplay;  //R0B - HDR

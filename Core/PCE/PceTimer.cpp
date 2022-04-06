@@ -14,7 +14,7 @@ void PceTimer::Exec(int8_t clocksToRun)
 	}
 
 	while(clocksToRun) {
-		_scaler--;
+		_scaler -= 3;
 		if(_scaler == 0) {
 			_scaler = 1024 * 3;
 			if(_counter == 0) {
@@ -24,7 +24,7 @@ void PceTimer::Exec(int8_t clocksToRun)
 				_counter--;
 			}
 		}
-		clocksToRun--;
+		clocksToRun -= 3;
 	}
 }
 
