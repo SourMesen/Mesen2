@@ -32,6 +32,7 @@
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
+#include "PCE/PceConsole.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/DebugTypes.h"
@@ -371,6 +372,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	static const vector<string> _nesExtensions = { { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" } };
 	static const vector<string> _snesExtensions = { { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" } };
 	static const vector<string> _gbExtensions = { { ".gb", ".gbc", ".gbs" } };
+	static const vector<string> _pceExtensions = { { ".pce" } };
 	
 	unique_ptr<IConsole> console;
 	string romExt = romFile.GetFileExtension();
@@ -392,6 +394,12 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	if(result == LoadRomResult::UnknownType && std::find(_gbExtensions.begin(), _gbExtensions.end(), romExt) != _gbExtensions.end()) {
 		memset(_consoleMemory, 0, sizeof(_consoleMemory));
 		console.reset(new Gameboy(this, false));
+		result = console->LoadRom(romFile);
+	}
+
+	if(std::find(_pceExtensions.begin(), _pceExtensions.end(), romExt) != _pceExtensions.end()) {
+		memset(_consoleMemory, 0, sizeof(_consoleMemory));
+		console.reset(new PceConsole(this));
 		result = console->LoadRom(romFile);
 	}
 
@@ -1040,6 +1048,7 @@ template void Emulator::ProcessInstruction<CpuType::Gsu>();
 template void Emulator::ProcessInstruction<CpuType::NecDsp>();
 template void Emulator::ProcessInstruction<CpuType::Cx4>();
 template void Emulator::ProcessInstruction<CpuType::Gameboy>();
+template void Emulator::ProcessInstruction<CpuType::Pce>();
 
 template void Emulator::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -1048,6 +1057,7 @@ template void Emulator::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t v
 template void Emulator::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Emulator::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Emulator::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
@@ -1056,12 +1066,15 @@ template void Emulator::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t 
 template void Emulator::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Emulator::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Emulator::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 
 template void Emulator::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
+template void Emulator::ProcessInterrupt<CpuType::Pce>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
 template void Emulator::AddDebugEvent<CpuType::Snes>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Gameboy>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Nes>(DebugEventType evtType);
+template void Emulator::AddDebugEvent<CpuType::Pce>(DebugEventType evtType);

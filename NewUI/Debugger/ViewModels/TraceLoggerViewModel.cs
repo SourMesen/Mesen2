@@ -89,8 +89,8 @@ namespace Mesen.Debugger.ViewModels
 				}
 			});
 
-			DebugMenuItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => EmuApi.GetRomInfo().ConsoleType.GetMainCpuType())));
-			ToolbarItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => EmuApi.GetRomInfo().ConsoleType.GetMainCpuType())));
+			DebugMenuItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => MainWindowViewModel.Instance.RomInfo.ConsoleType.GetMainCpuType())));
+			ToolbarItems.AddRange(AddDisposables(DebugSharedActions.GetStepActions(wnd, () => MainWindowViewModel.Instance.RomInfo.ConsoleType.GetMainCpuType())));
 
 			ViewMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {

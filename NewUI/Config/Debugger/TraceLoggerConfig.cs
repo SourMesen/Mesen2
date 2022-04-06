@@ -29,6 +29,7 @@ namespace Mesen.Config
 		[Reactive] public TraceLoggerCpuConfig Cx4Config { get; set; }
 		[Reactive] public TraceLoggerCpuConfig GbConfig { get; set; }
 		[Reactive] public TraceLoggerCpuConfig NesConfig { get; set; }
+		[Reactive] public TraceLoggerCpuConfig PceConfig { get; set; }
 
 		public TraceLoggerConfig()
 		{
@@ -71,6 +72,11 @@ namespace Mesen.Config
 				Enabled = true,
 				Format = "[Disassembly][EffectiveAddress] [MemoryValue,h][Align,38] A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] F:[PS,4] HL:[H,2h][L,2h] V:[Scanline,3] H:[Cycle,3]"
 			};
+
+			PceConfig = new TraceLoggerCpuConfig() {
+				Enabled = true,
+				Format = "[Disassembly][EffectiveAddress] [MemoryValue,h][Align,38] A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] P:[P,8] V:[Scanline,3] H:[Cycle,3]"
+			};
 		}
 
 		public TraceLoggerCpuConfig GetCpuConfig(CpuType type)
@@ -84,6 +90,7 @@ namespace Mesen.Config
 				CpuType.Cx4 => Cx4Config,
 				CpuType.Gameboy => GbConfig,
 				CpuType.Nes => NesConfig,
+				CpuType.Pce => PceConfig,
 				_ => throw new NotImplementedException("Unsupport cpu type")
 			};
 		}

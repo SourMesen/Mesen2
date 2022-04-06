@@ -58,7 +58,7 @@ namespace Mesen.Interop
 			for(int i = 0; i < rowCount; i++) {
 				rows[i].Comment = new byte[1000];
 				rows[i].Text = new byte[1000];
-				rows[i].ByteCode = new byte[4];
+				rows[i].ByteCode = new byte[8];
 			}
 
 			UInt32 resultCount = DebugApi.GetDisassemblyOutputWrapper(type, address, rows, rowCount);
@@ -110,6 +110,7 @@ namespace Mesen.Interop
 				CpuType.Snes => GetPpuState<SnesPpuState>(cpuType),
 				CpuType.Nes => GetPpuState<NesPpuState>(cpuType),
 				CpuType.Gameboy => GetPpuState<GbPpuState>(cpuType),
+				CpuType.Pce => GetPpuState<PcePpuState>(cpuType),
 				_ => throw new Exception("Unsupport cpu type")
 			};
 		}
@@ -429,6 +430,7 @@ namespace Mesen.Interop
 				CpuType.Cx4 => state is Cx4State,
 				CpuType.Gameboy => state is GbCpuState,
 				CpuType.Nes => state is NesCpuState,
+				CpuType.Pce => state is PceCpuState,
 				_ => false
 			};
 		}
@@ -439,6 +441,7 @@ namespace Mesen.Interop
 				ConsoleType.Snes => state is SnesPpuState,
 				ConsoleType.Nes => state is NesPpuState,
 				ConsoleType.Gameboy => state is GbPpuState,
+				ConsoleType.PcEngine => state is PcePpuState,
 				_ => false
 			};
 		}
@@ -455,6 +458,7 @@ namespace Mesen.Interop
 		GameboyMemory,
 		NesMemory,
 		NesPpuMemory,
+		PceMemory,
 
 		SnesPrgRom,
 		SnesWorkRam,
@@ -491,6 +495,12 @@ namespace Mesen.Interop
 		NesPaletteRam,
 		NesChrRam,
 		NesChrRom,
+
+		PcePrgRom,
+		PceWorkRam,
+		PceVideoRam,
+		PcePaletteRam,
+		PceSpriteRam,
 
 		Register
 	}
@@ -843,7 +853,8 @@ namespace Mesen.Interop
 	public enum RawPaletteFormat
 	{
 		Indexed,
-		Rgb555
+		Rgb555,
+		Rgb333
 	}
 
 	public unsafe struct DebugPaletteInfo
@@ -889,6 +900,7 @@ namespace Mesen.Interop
 		Mode7,
 		Mode7DirectColor,
 		NesBpp2,
+		PceSpriteBpp4
 	}
 
 	public enum TileLayout
@@ -959,7 +971,8 @@ namespace Mesen.Interop
 		Gsu,
 		Cx4,
 		Gameboy,
-		Nes
+		Nes,
+		Pce,
 	}
 
 	public enum StepType
@@ -1045,7 +1058,7 @@ namespace Mesen.Interop
 		public UInt32 ProgramCounter;
 		public CpuType Type;
 
-		public fixed byte ByteCode[4];
+		public fixed byte ByteCode[8];
 		public byte ByteCodeSize;
 
 		public fixed byte LogOutput[500];
@@ -1069,7 +1082,7 @@ namespace Mesen.Interop
 			fixed(byte* output = ByteCode) {
 				StringBuilder sb = new StringBuilder();
 				int i;
-				for(i = 0; i < ByteCodeSize && i < 4; i++) {
+				for(i = 0; i < ByteCodeSize && i < 8; i++) {
 					sb.Append(ByteCode[i].ToString("X2") + " ");
 				}
 				return sb.ToString().Trim();

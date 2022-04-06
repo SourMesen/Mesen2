@@ -6,7 +6,7 @@ struct TraceRow
 {
 	uint32_t ProgramCounter;
 	CpuType Type;
-	uint8_t ByteCode[4];
+	uint8_t ByteCode[8];
 	uint8_t ByteCodeSize;
 	char LogOutput[500];
 };

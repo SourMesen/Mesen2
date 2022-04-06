@@ -13,7 +13,7 @@ enum class CpuType : uint8_t;
 class DisassemblyInfo
 {
 private:
-	uint8_t _byteCode[4];
+	uint8_t _byteCode[8];
 	uint8_t _opSize;
 	uint8_t _flags;
 	CpuType _cpuType;
@@ -36,7 +36,7 @@ public:
 	uint8_t GetFlags();
 	uint8_t* GetByteCode();
 
-	void GetByteCode(uint8_t copyBuffer[4]);
+	void GetByteCode(uint8_t copyBuffer[8]);
 	void GetByteCode(string &out);
 
 	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);

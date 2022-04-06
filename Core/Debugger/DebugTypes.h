@@ -159,7 +159,7 @@ struct CodeLineData
 	uint16_t Value;
 	uint8_t ValueSize;
 
-	uint8_t ByteCode[4];
+	uint8_t ByteCode[8];
 	char Text[1000];
 	char Comment[1000];
 };
@@ -188,7 +188,8 @@ enum class TileFormat
 	DirectColor,
 	Mode7,
 	Mode7DirectColor,
-	NesBpp2
+	NesBpp2,
+	PceSpriteBpp4,
 };
 
 enum class TileLayout

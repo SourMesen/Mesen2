@@ -44,7 +44,7 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 				uint16_t pixelStart = tileStart + (vMirror ? (7 - y) : y) * 2;
 				for(int x = 0; x < 8; x++) {
 					uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
-					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift, 1);
+					uint8_t color = GetTilePixelColor(vram, vramMask, 2, pixelStart, shift, 1, TileFormat::Bpp2);
 
 					outBuffer[((row * 8) + y) * 256 + column * 8 + x] = palette[bgPalette + color];
 				}
@@ -82,7 +82,7 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
-			if(sprite.Y + y > 256) {
+			if(sprite.Y + y >= 256) {
 				break;
 			}
 
@@ -205,7 +205,7 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 		bool isCgb = state.CgbEnabled;
 		for(int x = 0; x < sprite.Width; x++) {
 			uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
-			uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 1);
+			uint8_t color = GetTilePixelColor(vram, 0x3FFF, 2, pixelStart, shift, 1, TileFormat::Bpp2);
 
 			uint32_t outOffset = (y * sprite.Width) + x;
 			if(color > 0) {

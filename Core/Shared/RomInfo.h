@@ -19,7 +19,9 @@ enum class RomFormat
 	VsSystem,
 	VsDualSystem,
 	Nsf,
-	StudyBox
+	StudyBox,
+
+	Pce
 };
 
 struct RomInfo

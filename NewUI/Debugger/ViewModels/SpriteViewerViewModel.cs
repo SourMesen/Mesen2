@@ -347,16 +347,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			switch(CpuType) {
-				case CpuType.Snes: RefreshData<SnesPpuState>(); break;
-				case CpuType.Nes: RefreshData<NesPpuState>(); break;
-				case CpuType.Gameboy: RefreshData<GbPpuState>(); break;
-			}
-		}
-
-		private void RefreshData<T>() where T : struct, BaseState
-		{
-			_ppuState = DebugApi.GetPpuState<T>(CpuType);
+			_ppuState = DebugApi.GetPpuState(CpuType);
 			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
 
 			MemoryType spriteMemType = CpuType.GetSpriteRamMemoryType();

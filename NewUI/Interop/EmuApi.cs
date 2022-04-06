@@ -165,7 +165,8 @@ namespace Mesen.Interop
 		Snes = 0,
 		Gameboy = 1,
 		GameboyColor = 2,
-		Nes = 3
+		Nes = 3,
+		PcEngine = 4
 	}
 
 	public struct InteropRomInfo

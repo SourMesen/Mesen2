@@ -1727,6 +1727,45 @@
     <ClInclude Include="Shared\CpuType.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceConsole.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceCpu.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceControlManager.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceDefaultVideoFilter.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Debugger\PceDebugger.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Debugger\PceDisUtils.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Debugger\PceTraceLogger.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Debugger\PcePpuTools.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceTypes.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceMemoryManager.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PcePpu.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Input\PceController.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceTimer.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1735,5 +1774,46 @@
     <ClCompile Include="NES\BisqwitNtscFilter.cpp">
       <Filter>NES</Filter>
     </ClCompile>
+    <ClCompile Include="PCE\PceConsole.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceCpu.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceCpu.Instructions.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceControlManager.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\PceDebugger.cpp">
+      <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\PceDisUtils.cpp">
+      <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp">
+      <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\PcePpuTools.cpp">
+      <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\ExpressionEvaluator.Pce.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PcePpu.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceTimer.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="PCE">
+      <UniqueIdentifier>{f0c9479c-8c8b-4cf2-8810-2db6ec545b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PCE\Debugger">
+      <UniqueIdentifier>{71cd23d2-e1b9-4a25-a92a-34b2f64f8086}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

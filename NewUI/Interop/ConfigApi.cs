@@ -74,6 +74,7 @@ namespace Mesen.Interop
 		GbBreakOnNopLoad = (1 << 20),
 		GbBreakOnOamCorruption = (1 << 21),
 
+		PceDebuggerEnabled = (1 << 23),
 		NesDebuggerEnabled = (1 << 24),
 		GbDebuggerEnabled = (1 << 25),
 		Cx4DebuggerEnabled = (1 << 26),

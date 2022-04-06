@@ -10,6 +10,7 @@ class BaseCartridge;
 class SnesPpu;
 class Spc;
 class Gameboy;
+class PceConsole;
 class Emulator;
 class Debugger;
 class Disassembler;
@@ -23,6 +24,7 @@ private:
 	Gameboy* _gameboy = nullptr;
 	SnesMemoryManager* _memoryManager = nullptr;
 	NesConsole* _nesConsole = nullptr;
+	PceConsole* _pceConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
 	Disassembler* _disassembler = nullptr;

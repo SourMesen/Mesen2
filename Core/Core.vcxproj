@@ -19,6 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PCE\Input\PceController.h" />
+    <ClInclude Include="PCE\PcePpu.h" />
+    <ClInclude Include="PCE\Debugger\PceDebugger.h" />
+    <ClInclude Include="PCE\Debugger\PceDisUtils.h" />
+    <ClInclude Include="PCE\Debugger\PcePpuTools.h" />
+    <ClInclude Include="PCE\Debugger\PceTraceLogger.h" />
+    <ClInclude Include="PCE\PceConsole.h" />
+    <ClInclude Include="PCE\PceControlManager.h" />
+    <ClInclude Include="PCE\PceCpu.h" />
+    <ClInclude Include="PCE\PceDefaultVideoFilter.h" />
+    <ClInclude Include="PCE\PceMemoryManager.h" />
+    <ClInclude Include="PCE\PceTimer.h" />
+    <ClInclude Include="PCE\PceTypes.h" />
     <ClInclude Include="Shared\CpuType.h" />
     <ClInclude Include="Debugger\BaseTraceLogger.h" />
     <ClInclude Include="Debugger\DebuggerFeatures.h" />
@@ -385,6 +398,7 @@
     <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.NecDsp.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Nes.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Pce.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
     <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
@@ -417,6 +431,16 @@
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="NES\NesNtscFilter.cpp" />
+    <ClCompile Include="PCE\Debugger\PceDebugger.cpp" />
+    <ClCompile Include="PCE\Debugger\PceDisUtils.cpp" />
+    <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />
+    <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
+    <ClCompile Include="PCE\PceConsole.cpp" />
+    <ClCompile Include="PCE\PceControlManager.cpp" />
+    <ClCompile Include="PCE\PceCpu.cpp" />
+    <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
+    <ClCompile Include="PCE\PcePpu.cpp" />
+    <ClCompile Include="PCE\PceTimer.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="NES\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />

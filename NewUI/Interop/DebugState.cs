@@ -1270,5 +1270,14 @@ namespace Mesen.Interop
 		public NesApuDmcState Dmc;
 		public NesApuFrameCounterState FrameCounter;
 	}
+	
+	public struct PceCpuState : BaseState
+	{
 
+	}
+
+	public struct PcePpuState : BaseState
+	{
+
+	}
 }

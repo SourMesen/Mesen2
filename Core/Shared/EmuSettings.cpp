@@ -62,6 +62,10 @@ void EmuSettings::Serialize(Serializer& s)
 			);
 			break;
 
+
+		case ConsoleType::PcEngine:
+			break;
+
 		default:
 			throw std::runtime_error("unsupport console type");
 	}

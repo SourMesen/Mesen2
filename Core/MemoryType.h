@@ -11,6 +11,7 @@ enum class MemoryType
 	GameboyMemory,
 	NesMemory,
 	NesPpuMemory,
+	PceMemory,
 
 	SnesPrgRom,
 	SnesWorkRam,
@@ -47,6 +48,12 @@ enum class MemoryType
 	NesPaletteRam,
 	NesChrRam,
 	NesChrRom,
+
+	PcePrgRom,
+	PceWorkRam,
+	PceVideoRam,
+	PcePaletteRam,
+	PceSpriteRam,
 
 	Register
 };

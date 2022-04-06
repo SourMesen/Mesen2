@@ -66,6 +66,14 @@ namespace Mesen.Interop
 				case MemoryType.Register:
 					return CpuType.Snes;
 
+				case MemoryType.PceMemory:
+				case MemoryType.PcePrgRom:
+				case MemoryType.PceWorkRam:
+				case MemoryType.PceVideoRam:
+				case MemoryType.PcePaletteRam:
+				case MemoryType.PceSpriteRam:
+					return CpuType.Pce;
+
 				default:
 					throw new NotImplementedException("Unsupported cpu type");
 			}
@@ -88,6 +96,10 @@ namespace Mesen.Interop
 				case MemoryType.NesChrRam:
 				case MemoryType.NesChrRom:
 				case MemoryType.NesPaletteRam:
+
+				case MemoryType.PceVideoRam:
+				case MemoryType.PcePaletteRam:
+				case MemoryType.PceSpriteRam:
 					return true;
 
 				default:
@@ -107,6 +119,7 @@ namespace Mesen.Interop
 				case MemoryType.GameboyMemory:
 				case MemoryType.NesMemory:
 				case MemoryType.NesPpuMemory:
+				case MemoryType.PceMemory:
 					return true;
 			}
 			return false;
@@ -139,6 +152,12 @@ namespace Mesen.Interop
 				case MemoryType.NesInternalRam:
 				case MemoryType.NesMemory:
 					return true;
+
+				//PC Engine
+				case MemoryType.PceMemory:
+				case MemoryType.PcePrgRom:
+				case MemoryType.PceWorkRam:
+					return true;
 			}
 
 			return false;
@@ -155,6 +174,7 @@ namespace Mesen.Interop
 				case MemoryType.Cx4Memory:
 				case MemoryType.GameboyMemory:
 				case MemoryType.NesMemory:
+				case MemoryType.PceMemory:
 					return true;
 			}
 
@@ -170,6 +190,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesPrgRom:
 				case MemoryType.GbPrgRom:
 				case MemoryType.NesPrgRom:
+				case MemoryType.PcePrgRom:
 					return true;
 			}
 
@@ -234,6 +255,13 @@ namespace Mesen.Interop
 				MemoryType.NesNametableRam => "NTRAM",
 				MemoryType.NesChrRom => "CHR",
 				MemoryType.NesChrRam => "CHR",
+
+				MemoryType.PceMemory => "CPU",
+				MemoryType.PcePrgRom => "PRG",
+				MemoryType.PceWorkRam => "WRAM",
+				MemoryType.PceVideoRam => "VRAM",
+				MemoryType.PcePaletteRam => "PAL",
+				MemoryType.PceSpriteRam=> "SPR",
 
 				MemoryType.Register => "REG",
 

@@ -36,6 +36,7 @@ namespace Mesen.Debugger.ViewModels
 				ConsoleType.Nes => 241,
 				ConsoleType.Gameboy => 144,
 				ConsoleType.GameboyColor => 144,
+				ConsoleType.PcEngine => 240, //TODO
 				_ => throw new Exception("Invalid console type")
 			};
 

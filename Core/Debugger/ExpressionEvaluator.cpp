@@ -67,6 +67,7 @@ unordered_map<string, int64_t>* ExpressionEvaluator::GetAvailableTokens()
 		case CpuType::Cx4: return &GetCx4Tokens();
 		case CpuType::Gameboy: return &GetGameboyTokens();
 		case CpuType::Nes: return &GetNesTokens();
+		case CpuType::Pce: return &GetPceTokens();
 	}
 
 	return nullptr;
@@ -407,6 +408,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 								case CpuType::Cx4: token = GetCx4TokenValue(token, resultType); break;
 								case CpuType::Gameboy: token = GetGameboyTokenValue(token, resultType); break;
 								case CpuType::Nes: token = GetNesTokenValue(token, resultType); break;
+								case CpuType::Pce: token = GetPceTokenValue(token, resultType); break;
 							}
 						}
 						break;
@@ -508,8 +510,10 @@ void ExpressionEvaluator::GetTokenList(char* tokenList)
 	vector<std::pair<string, int64_t>> entries;
 	
 	int pos = 0;
-	for(auto entry : *availableTokens) {
-		entries.push_back(entry);
+	if(availableTokens) {
+		for(auto entry : *availableTokens) {
+			entries.push_back(entry);
+		}
 	}
 
 	std::sort(entries.begin(), entries.end(), [&](const auto& a, const auto& b) -> bool {

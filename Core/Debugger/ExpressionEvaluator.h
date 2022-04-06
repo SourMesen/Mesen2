@@ -208,6 +208,9 @@ private:
 	unordered_map<string, int64_t>& GetNesTokens();
 	int64_t GetNesTokenValue(int64_t token, EvalResultType& resultType);
 
+	unordered_map<string, int64_t>& GetPceTokens();
+	int64_t GetPceTokenValue(int64_t token, EvalResultType& resultType);
+
 	bool ReturnBool(int64_t value, EvalResultType& resultType);
 
 	int64_t ProcessSharedTokens(string token);

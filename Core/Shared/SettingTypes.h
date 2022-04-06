@@ -321,7 +321,8 @@ enum class ConsoleType
 	Snes = 0,
 	Gameboy = 1,
 	GameboyColor = 2,
-	Nes = 3
+	Nes = 3,
+	PcEngine
 };
 
 enum class GameboyModel
@@ -739,6 +740,7 @@ enum class DebuggerFlags : uint64_t
 	GbBreakOnNopLoad = (1 << 20),
 	GbBreakOnOamCorruption = (1 << 21),
 
+	PceDebuggerEnabled = (1 << 23),
 	NesDebuggerEnabled = (1 << 24),
 	GbDebuggerEnabled = (1 << 25),
 	Cx4DebuggerEnabled = (1 << 26),

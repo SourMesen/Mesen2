@@ -14,6 +14,7 @@
 #include "SNES/Coprocessors/CX4/Cx4Types.h"
 #include "Gameboy/GbTypes.h"
 #include "NES/NesTypes.h"
+#include "PCE/PceTypes.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/FastString.h"
 #include "Utilities/HexUtilities.h"
@@ -81,6 +82,7 @@ void Disassembler::ResetPrgCache()
 	InitSource(MemoryType::SnesPrgRom);
 	InitSource(MemoryType::GbPrgRom);
 	InitSource(MemoryType::NesPrgRom);
+	InitSource(MemoryType::PcePrgRom);
 }
 
 void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
@@ -290,12 +292,14 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 		case MemoryType::GbPrgRom:
 		case MemoryType::SnesPrgRom:
 		case MemoryType::NesPrgRom:
+		case MemoryType::PcePrgRom:
 			data.Flags |= (uint8_t)LineFlags::PrgRom;
 			break;
 
 		case MemoryType::GbWorkRam:
 		case MemoryType::SnesWorkRam:
 		case MemoryType::NesWorkRam:
+		case MemoryType::PceWorkRam:
 			data.Flags |= (uint8_t)LineFlags::WorkRam;
 			break;
 
@@ -445,6 +449,26 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Nes, row.Address.Type, _memoryDumper);
+					} else {
+						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+					}
+
+					data.OpSize = disInfo.GetOpSize();
+					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
+					if(data.EffectiveAddress >= 0) {
+						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType, data.ValueSize);
+					} else {
+						data.ValueSize = 0;
+					}
+					break;
+				}
+
+				case CpuType::Pce:
+				{
+					PceCpuState state = (PceCpuState&)_debugger->GetCpuStateRef(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
+					if(!disInfo.IsInitialized()) {
+						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Pce, row.Address.Type, _memoryDumper);
 					} else {
 						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}

@@ -17,6 +17,7 @@ public:
 			case CpuType::Cx4: return MemoryType::Cx4Memory;
 			case CpuType::Gameboy: return MemoryType::GameboyMemory;
 			case CpuType::Nes: return MemoryType::NesMemory;
+			case CpuType::Pce: return MemoryType::PceMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -33,6 +34,7 @@ public:
 			case CpuType::Cx4: return 6;
 			case CpuType::Gameboy: return 4;
 			case CpuType::Nes: return 4;
+			case CpuType::Pce: return 4;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -100,6 +102,14 @@ public:
 			case MemoryType::NesWorkRam:
 				return CpuType::Nes;
 
+			case MemoryType::PceMemory:
+			case MemoryType::PcePrgRom:
+			case MemoryType::PceWorkRam:
+			case MemoryType::PceVideoRam:
+			case MemoryType::PcePaletteRam:
+			case MemoryType::PceSpriteRam:
+				return CpuType::Pce;
+
 			default:
 				throw std::runtime_error("Invalid CPU type");
 		}
@@ -113,7 +123,7 @@ public:
 	static constexpr MemoryType GetLastCpuMemoryType()
 	{
 		//TODO refactor to "IsRelativeMemory"?
-		return MemoryType::NesPpuMemory;
+		return MemoryType::PceMemory;
 	}
 
 	static constexpr bool IsPpuMemory(MemoryType memType)
@@ -134,6 +144,11 @@ public:
 			case MemoryType::NesPpuMemory:
 				return true;
 
+			case MemoryType::PceVideoRam:
+			case MemoryType::PcePaletteRam:
+			case MemoryType::PceSpriteRam:
+				return true;
+
 			default: 
 				return false;
 		}
@@ -147,7 +162,8 @@ public:
 			case MemoryType::GbBootRom:
 			case MemoryType::NesPrgRom:
 			case MemoryType::NesChrRom:
-			case MemoryType::SnesSaveRam: //Include save ram here to avoid uninit memory read warnings on save ram
+			case MemoryType::PcePrgRom:
+			case MemoryType::SnesSaveRam: //TODO Include save ram here to avoid uninit memory read warnings on save ram
 				return true;
 
 			default:
@@ -157,6 +173,6 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Nes;
+		return CpuType::Pce;
 	}
 };

@@ -110,7 +110,7 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 						uint16_t pixelStart = tileStart + yOffset * 2;
 
 						uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
-						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, bpp, pixelStart, shift, 1);
+						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, bpp, pixelStart, shift, 1, format);
 						if(color != 0) {
 							uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
 							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(palette, color, paletteIndex, bpp, directColor, basePaletteOffset);
@@ -280,7 +280,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 			uint8_t tileIndex = (row << 4) | column;
 			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 
-			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1);
+			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1, TileFormat::Bpp4);
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = GetRgbPixelColor(palette, color, sprite.Palette + 8, 4, false, 0);
 			} else {

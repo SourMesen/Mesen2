@@ -202,7 +202,7 @@ namespace Mesen.Debugger.Controls
 
 				if(showByteCode) {
 					//Draw byte code
-					text.Text = line.ByteCode;
+					text.Text = line.GetByteCode(styleProvider.ByteCodeSize);
 					context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
 					x += byteCodeMargin;
 				}

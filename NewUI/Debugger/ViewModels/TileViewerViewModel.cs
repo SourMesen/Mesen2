@@ -138,9 +138,9 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
-				PaletteSelectionMode = x switch {
-					TileFormat.Bpp2 or TileFormat.NesBpp2 => PaletteSelectionMode.FourColors,
-					TileFormat.Bpp4 => PaletteSelectionMode.SixteenColors,
+				PaletteSelectionMode = GetBitsPerPixel(x) switch {
+					2 => PaletteSelectionMode.FourColors,
+					4 => PaletteSelectionMode.SixteenColors,
 					_ => PaletteSelectionMode.None
 				};
 			}));
@@ -185,6 +185,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Snes => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
+				CpuType.Pce => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.PceSpriteBpp4 }, //TODO
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -238,6 +239,9 @@ namespace Mesen.Debugger.ViewModels
 							new("ROM", () => ApplyPrgPreset()),
 						};
 					}
+
+				case CpuType.Pce:
+					return new() { }; //TODO
 
 				default:
 					throw new Exception("Unsupported CPU type");
@@ -526,7 +530,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			_ppuState = DebugApi.GetPpuState(CpuType);
+			//_ppuState = DebugApi.GetPpuState(CpuType);
 
 			List<ConfigPreset> presets = GetConfigPresets();
 			if(presets.Count != ConfigPresets.Count) {
@@ -630,6 +634,7 @@ namespace Mesen.Debugger.ViewModels
 				TileFormat.Mode7 => 16,
 				TileFormat.Mode7DirectColor => 16,
 				TileFormat.NesBpp2 => 2,
+				TileFormat.PceSpriteBpp4 => 4,
 				_ => 8,
 			};
 		}

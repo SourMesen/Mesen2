@@ -200,7 +200,8 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
-	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SnesWorkRam || addressInfo.Type == MemoryType::SnesSaveRam)) {
+	
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::NesWorkRam || addressInfo.Type == MemoryType::NesSaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Nes);
 	}
 

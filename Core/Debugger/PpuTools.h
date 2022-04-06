@@ -134,7 +134,8 @@ struct DebugSpritePreviewInfo
 enum class RawPaletteFormat
 {
 	Indexed,
-	Rgb555
+	Rgb555,
+	Rgb333
 };
 
 struct DebugPaletteInfo
@@ -156,7 +157,7 @@ protected:
 	Debugger* _debugger;
 	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;
 
-	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift, const int secondByteOffset);
+	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift, const int secondByteOffset, const TileFormat format);
 
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 

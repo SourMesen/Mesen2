@@ -16,6 +16,8 @@
 #include "Debugger/MemoryDumper.h"
 #include "SNES/BaseCartridge.h"
 #include "NES/NesConsole.h"
+#include "PCE/PceConsole.h"
+#include "PCE/PceMemoryManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
@@ -28,7 +30,7 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler();
 
 	IConsole* console = _debugger->GetConsole();
-	//TODO
+	//TODO - generic code? (or at least rename SNES-specific members)
 	if(SnesConsole* snes = dynamic_cast<SnesConsole*>(console)) {
 		_ppu = snes->GetPpu();
 		_spc = snes->GetSpc();
@@ -39,6 +41,8 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 		_nesConsole = nes;
 	} else if(Gameboy* gb = dynamic_cast<Gameboy*>(console)) {
 		_gameboy = gb;
+	} else if(PceConsole* pce = dynamic_cast<PceConsole*>(console)) {
+		_pceConsole = pce;
 	}
 
 	for(int i = 0; i <= (int)MemoryType::Register; i++) {
@@ -88,6 +92,7 @@ uint32_t MemoryDumper::InternalGetMemorySize(MemoryType type)
 		case MemoryType::GameboyMemory: return 0x10000;
 		case MemoryType::NesMemory: return 0x10000;
 		case MemoryType::NesPpuMemory: return 0x4000;
+		case MemoryType::PceMemory: return 0x10000;
 		case MemoryType::Register: return 0x10000;
 		default: return _emu->GetMemory(type).Size;
 	}
@@ -164,6 +169,15 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 			break;
 		}
 
+		case MemoryType::PceMemory: {
+			if(_pceConsole) {
+				for(int i = 0; i <= 0xFFFF; i++) {
+					buffer[i] = _pceConsole->GetMemoryManager()->DebugRead(i);
+				}
+			}
+			break;
+		}
+
 		case MemoryType::NecDspMemory:
 			GetMemoryState(MemoryType::DspProgramRom, buffer);
 			break;
@@ -209,14 +223,13 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::SnesMemory: _memoryManager->GetMemoryMappings()->DebugWrite(address, value); break;
 		case MemoryType::SpcMemory: _spc->DebugWrite(address, value); break;
 		case MemoryType::Sa1Memory: _cartridge->GetSa1()->GetMemoryMappings()->DebugWrite(address, value); break;
+		case MemoryType::NecDspMemory: SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects); return;
 		case MemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case MemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
 		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
-		case MemoryType::NecDspMemory: 
-			SetMemoryValue(MemoryType::DspProgramRom, address, value, disableSideEffects);
-			return;
+		//case MemoryType::PceMemory: _pceConsole->DebugWrite(address, value); break;
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);
@@ -253,12 +266,13 @@ uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t add
 		case MemoryType::SnesMemory: return _memoryManager->Peek(address);
 		case MemoryType::SpcMemory: return _spc->DebugRead(address);
 		case MemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);
+		case MemoryType::NecDspMemory: return GetMemoryValue(MemoryType::DspProgramRom, address);
 		case MemoryType::GsuMemory: return _cartridge->GetGsu()->GetMemoryMappings()->Peek(address);
 		case MemoryType::Cx4Memory: return _cartridge->GetCx4()->GetMemoryMappings()->Peek(address);
 		case MemoryType::GameboyMemory: return _gameboy->GetMemoryManager()->DebugRead(address);
 		case MemoryType::NesMemory: return _nesConsole->DebugRead(address);
 		case MemoryType::NesPpuMemory: return _nesConsole->DebugReadVram(address);
-		case MemoryType::NecDspMemory: return GetMemoryValue(MemoryType::DspProgramRom, address);
+		case MemoryType::PceMemory: return _pceConsole->GetMemoryManager()->DebugRead(address);
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

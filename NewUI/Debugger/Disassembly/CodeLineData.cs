@@ -134,6 +134,14 @@ namespace Mesen.Debugger
 		{
 			return "$" + this.Address.ToString("X6") + "  " + this.ByteCode?.PadRight(12) + "  " + this.Text;
 		}
+
+		public string GetByteCode(int byteCodeSize)
+		{
+			if(ByteCode.Length > byteCodeSize * 3) {
+				return ByteCode.Substring(0, (byteCodeSize - 1) * 3) + "..";
+			}
+			return ByteCode;
+		}
 	}
 	
 	public struct InteropCodeLineData
@@ -147,7 +155,7 @@ namespace Mesen.Debugger
 		public UInt16 Value;
 		public byte ValueSize;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
 		public byte[] ByteCode;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1000)]
