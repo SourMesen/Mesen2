@@ -93,24 +93,26 @@ public:
 				value = _ppu->ReadVce(addr);
 			} else if(addr <= 0xBFF) {
 				//PSG
+				value = _state.IoBuffer;
 			} else if(addr <= 0xFFF) {
 				//Timer
-				value = _timer->Read(addr);
+				_state.IoBuffer = (_state.IoBuffer & 0x80) | (_timer->Read(addr) & 0x7F);
+				value = _state.IoBuffer;
 			} else if(addr <= 0x13FF) {
 				//IO
-				value = 0xB0 | _controlManager->ReadInputPort();
+				_state.IoBuffer = value = 0xB0 | _controlManager->ReadInputPort();
+				value = _state.IoBuffer;
 			} else if(addr <= 0x17FF) {
 				//IRQ
 				switch(addr & 0x03) {
 					case 0:
 					case 1:
-						value = 0xFF; //todo
-						LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 						break;
 
-					case 2: value = _state.DisabledIrqs; break;
-					case 3: value = _state.ActiveIrqs; break;
+					case 2: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.DisabledIrqs & 0x07); break;
+					case 3: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.ActiveIrqs & 0x07); break;
 				}
+				value = _state.IoBuffer;
 			} else {
 				value = 0xFF;
 				LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
@@ -146,7 +148,6 @@ public:
 			} else if(addr <= 0x17FF) {
 				//IRQ
 				switch(addr & 0x03) {
-
 					case 2: return _state.DisabledIrqs;
 					case 3: return _state.ActiveIrqs;
 				}
@@ -175,13 +176,15 @@ public:
 			} else if(addr <= 0xBFF) {
 				//PSG
 				//LogDebug("[Debug] Write PSG - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+				_state.IoBuffer = value;
 			} else if(addr <= 0xFFF) {
 				//Timer
 				_timer->Write(addr, value);
+				_state.IoBuffer = value;
 			} else if(addr <= 0x13FF) {
 				//IO
 				_controlManager->WriteInputPort(value);
-				//LogDebug("[Debug] Write IO - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+				_state.IoBuffer = value;
 			} else if(addr <= 0x17FF) {
 				//IRQ
 				switch(addr & 0x03) {
@@ -193,6 +196,7 @@ public:
 					case 2: _state.DisabledIrqs = value & 0x07; break;
 					case 3: ClearIrqSource(PceIrqSource::TimerIrq); break;
 				}
+				_state.IoBuffer = value;
 			} else {
 				LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			}
