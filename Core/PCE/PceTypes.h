@@ -58,6 +58,8 @@ enum class PceAddrMode
 struct PcePpuState
 {
 	uint32_t FrameCount;
+	uint16_t Cycle;
+	uint16_t Scanline;
 
 	uint8_t CurrentReg;
 
@@ -111,9 +113,6 @@ struct PcePpuState
 	uint16_t SatbBlockSrc;  //R13 - DVSSR
 	bool SatbTransferPending;
 
-	uint16_t PalAddr;
-	uint16_t PalData;
-
 	//Status flags
 	bool VerticalBlank;
 	bool VramTransferDone;
@@ -121,6 +120,14 @@ struct PcePpuState
 	bool ScanlineDetected;
 	bool SpriteOverflow;
 	bool Sprite0Hit;
+
+	bool BurstModeEnabled;
+	bool NextSpritesEnabled;
+	bool NextBackgroundEnabled;
+	
+	//VCE
+	uint16_t PalAddr;
+	uint16_t PalData;
 };
 
 struct PceMemoryManagerState

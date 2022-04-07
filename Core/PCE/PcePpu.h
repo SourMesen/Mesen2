@@ -15,9 +15,6 @@ private:
 	uint16_t* _paletteRam;
 	uint16_t* _spriteRam;
 
-	uint16_t _cycle = 0;
-	uint16_t _scanline = 0;
-
 	uint16_t* _outBuffer;
 
 	template<uint16_t bitMask = 0xFFFF>
@@ -39,8 +36,8 @@ public:
 	~PcePpu();
 
 	PcePpuState& GetState();
-	uint16_t GetCycle() { return _cycle; }
-	uint16_t GetScanline() { return _scanline; }
+	uint16_t GetCycle() { return _state.Cycle; }
+	uint16_t GetScanline() { return _state.Scanline; }
 
 	void Exec();
 

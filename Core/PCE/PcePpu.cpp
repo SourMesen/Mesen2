@@ -39,22 +39,26 @@ PcePpuState& PcePpu::GetState()
 
 void PcePpu::Exec()
 {
-	_cycle++;
-	if(_cycle == 341) {
-		_cycle = 0;
+	_state.Cycle++;
+	if(_state.Cycle == 341) {
+		_state.Cycle = 0;
 
-		if(_scanline < 240) {
+		if(_state.Scanline < 240) {
 			DrawScanline();
 		}
 
-		_scanline++;
+		_state.Scanline++;
 
-		if(_state.EnableScanlineIrq && _scanline + 64 == _state.ScanlineIrqValue) {
+		if(_state.EnableScanlineIrq && _state.Scanline + 64 == _state.ScanlineIrqValue) {
 			_state.ScanlineDetected = true;
 			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 		}
 
-		if(_scanline == 240) {
+		if(_state.Scanline == 240) {
+			//Update flags that were locked during burst mode
+			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+			_state.SpritesEnabled = _state.NextSpritesEnabled;
+
 			if(_state.EnableVerticalBlankIrq) {
 				_state.VerticalBlank = true;
 				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
@@ -77,8 +81,9 @@ void PcePpu::Exec()
 
 			_state.FrameCount++;
 			SendFrame();
-		} else if(_scanline == 263) {
-			_scanline = 0;
+		} else if(_state.Scanline == 263) {
+			_state.Scanline = 0;
+			bool burstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
 		}
 	}
 
@@ -110,110 +115,139 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 
 void PcePpu::DrawScanline()
 {
-	uint16_t screenY = (_scanline + _state.BgScrollY) & ((_state.RowCount * 8) - 1);
+	if(_state.BurstModeEnabled) {
+		//Draw sprite color 0 as background when display is disabled
+		for(int column = 0; column < 256; column++) {
+			_outBuffer[_state.Scanline * 256 + column] = _paletteRam[16*16];
+		}
+		return;
+	}
 
 	bool hasBg[256] = {};
 
-	for(int column = 0; column < 256; column++) {
-		uint16_t screenX = (column + _state.BgScrollX) & ((_state.ColumnCount * 8) - 1);
+	if(_state.BackgroundEnabled) {
+		uint16_t screenY = (_state.Scanline + _state.BgScrollY) & ((_state.RowCount * 8) - 1);
+		for(int column = 0; column < 256; column++) {
+			uint16_t screenX = (column + _state.BgScrollX) & ((_state.ColumnCount * 8) - 1);
 
-		uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
-		uint8_t palette = batEntry >> 12;
-		uint16_t tileIndex = (batEntry & 0xFFF);
+			uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
+			uint8_t palette = batEntry >> 12;
+			uint16_t tileIndex = (batEntry & 0xFFF);
 
-		uint16_t tileAddr = tileIndex * 16;
-		uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
-		if(color != 0) {
-			hasBg[column] = true;
-			_outBuffer[_scanline * 256 + column] = _paletteRam[palette * 16 + color];
-		} else {
-			_outBuffer[_scanline * 256 + column] = _paletteRam[0];
+			uint16_t tileAddr = tileIndex * 16;
+			uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
+			if(color != 0) {
+				hasBg[column] = true;
+				_outBuffer[_state.Scanline * 256 + column] = _paletteRam[palette * 16 + color];
+			} else {
+				_outBuffer[_state.Scanline * 256 + column] = _paletteRam[0];
+			}
+		}
+	} else {
+		//Draw background color
+		for(int column = 0; column < 256; column++) {
+			_outBuffer[_state.Scanline * 256 + column] = _paletteRam[0];
 		}
 	}
 
-	for(int i = 0; i < 64; i++) {
-		int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
-		if(_scanline < y) {
-			//Sprite not visible on this line
-			continue;
-		}
+	if(_state.SpritesEnabled) {
+		bool hasSprite[256] = {};
+		bool hasSprite0[256] = {};
 
-		uint8_t height;
-		uint16_t flags = _spriteRam[i * 4 + 3];
-		switch((flags >> 12) & 0x03) {
-			case 0: height = 16; break;
-			case 1: height = 32; break;
-			case 2: case 3: height = 64; break;
-		}
-
-		if(_scanline >= y + height) {
-			//Sprite not visible on this line
-			continue;
-		}
-
-		uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
-		uint8_t width = (flags & 0x100) ? 32 : 16;
-		int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
-
-		if(spriteX + width <= 0 || spriteX >= 256) {
-			//Sprite off-screen
-			continue;
-		}
-
-		uint16_t spriteRow = _scanline - y;
-		if(width == 32) {
-			tileIndex &= ~0x01;
-		}
-		if(height == 32) {
-			tileIndex &= ~0x02;
-		} else if(height == 64) {
-			tileIndex &= ~0x06;
-		}
-
-		bool verticalMirror = (flags & 0x8000) != 0;
-		bool horizontalMirror = (flags & 0x800) != 0;
-		bool priority = (flags & 0x80) != 0;
-		int yOffset = 0;
-		int rowOffset = 0;
-		if(verticalMirror) {
-			yOffset = (height - spriteRow - 1) & 0x0F;
-			rowOffset = (height - spriteRow - 1) >> 4;
-		} else {
-			yOffset = spriteRow & 0x0F;
-			rowOffset = spriteRow >> 4;
-		}
-
-		uint16_t spriteTileY = tileIndex | (rowOffset << 1);
-
-		for(int x = 0; x < width; x++) {
-			if(spriteX + x < 0) {
+		for(int i = 0; i < 64; i++) {
+			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
+			if(_state.Scanline < y) {
+				//Sprite not visible on this line
 				continue;
-			} else if(spriteX + x >= 256) {
-				//Offscreen
-				break;
 			}
 
-			uint8_t xOffset;
-			int columnOffset;
-			if(horizontalMirror) {
-				xOffset = (width - x - 1) & 0x0F;
-				columnOffset = (width - x - 1) >> 4;
+			uint8_t height;
+			uint16_t flags = _spriteRam[i * 4 + 3];
+			switch((flags >> 12) & 0x03) {
+				case 0: height = 16; break;
+				case 1: height = 32; break;
+				case 2: case 3: height = 64; break;
+			}
+
+			if(_state.Scanline >= y + height) {
+				//Sprite not visible on this line
+				continue;
+			}
+
+			uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
+			uint8_t width = (flags & 0x100) ? 32 : 16;
+			int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
+
+			if(spriteX + width <= 0 || spriteX >= 256) {
+				//Sprite off-screen
+				continue;
+			}
+
+			uint16_t spriteRow = _state.Scanline - y;
+			if(width == 32) {
+				tileIndex &= ~0x01;
+			}
+			if(height == 32) {
+				tileIndex &= ~0x02;
+			} else if(height == 64) {
+				tileIndex &= ~0x06;
+			}
+
+			bool verticalMirror = (flags & 0x8000) != 0;
+			bool horizontalMirror = (flags & 0x800) != 0;
+			bool priority = (flags & 0x80) != 0;
+			int yOffset = 0;
+			int rowOffset = 0;
+			if(verticalMirror) {
+				yOffset = (height - spriteRow - 1) & 0x0F;
+				rowOffset = (height - spriteRow - 1) >> 4;
 			} else {
-				xOffset = x & 0x0F;
-				columnOffset = x >> 4;
+				yOffset = spriteRow & 0x0F;
+				rowOffset = spriteRow >> 4;
 			}
 
-			uint16_t spriteTile = spriteTileY | columnOffset;
-			uint16_t tileStart = spriteTile * 64;
+			uint16_t spriteTileY = tileIndex | (rowOffset << 1);
 
-			uint16_t pixelStart = tileStart + yOffset;
-			uint8_t shift = 15 - xOffset;
+			for(int x = 0; x < width; x++) {
+				if(spriteX + x < 0) {
+					continue;
+				} else if(spriteX + x >= 256) {
+					//Offscreen
+					break;
+				}
 
-			uint8_t color = GetTilePixelColor<5>(_vram + (pixelStart & 0x7FFF), shift);
+				uint8_t xOffset;
+				int columnOffset;
+				if(horizontalMirror) {
+					xOffset = (width - x - 1) & 0x0F;
+					columnOffset = (width - x - 1) >> 4;
+				} else {
+					xOffset = x & 0x0F;
+					columnOffset = x >> 4;
+				}
 
-			if(color != 0) {
-				if(priority || hasBg[spriteX + x] == 0) {
-					_outBuffer[_scanline * 256 + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
+				uint16_t spriteTile = spriteTileY | columnOffset;
+				uint16_t tileStart = spriteTile * 64;
+
+				uint16_t pixelStart = tileStart + yOffset;
+				uint8_t shift = 15 - xOffset;
+
+				uint8_t color = GetTilePixelColor<5>(_vram + (pixelStart & 0x7FFF), shift);
+
+				if(color != 0) {
+					if(hasSprite[spriteX + x]) {
+						if(hasSprite0[spriteX + x] && _state.EnableCollisionIrq) {
+							_state.Sprite0Hit = true;
+							_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+						}
+					} else if(priority || hasBg[spriteX + x] == 0) {
+						_outBuffer[_state.Scanline * 256 + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
+						
+						hasSprite[spriteX + x] = true;
+						if(i == 0) {
+							hasSprite0[spriteX + x] = true;
+						}
+					}
 				}
 			}
 		}
@@ -225,9 +259,7 @@ void PcePpu::SendFrame()
 	_emu->ProcessEvent(EventType::EndFrame);
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _outBuffer);
 
-	static int _frameCount = 0;
-	_frameCount++;
-	RenderedFrame frame(_outBuffer, 256, 240, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_outBuffer, 256, 240, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 
 	_emu->ProcessEndOfFrame();
@@ -334,9 +366,16 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 						_state.EnableOverflowIrq = (value & 0x02) != 0;
 						_state.EnableScanlineIrq = (value & 0x04) != 0;
 						_state.EnableVerticalBlankIrq = (value & 0x08) != 0;
+						
 						//TODO external sync bits
-						_state.SpritesEnabled = (value & 0x40) != 0;
-						_state.BackgroundEnabled = (value & 0x80) != 0;
+
+						_state.NextSpritesEnabled = (value & 0x40) != 0;
+						_state.NextBackgroundEnabled = (value & 0x80) != 0;
+
+						if(!_state.BurstModeEnabled) {
+							_state.SpritesEnabled = _state.NextSpritesEnabled;
+							_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+						}
 					}
 					break;
 
