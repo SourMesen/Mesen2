@@ -62,7 +62,10 @@ struct PcePpuState
 	uint8_t CurrentReg;
 
 	uint16_t MemAddrWrite;  //R00 - MAWR
+
 	uint16_t MemAddrRead;   //R01 - MARR
+	uint16_t ReadBuffer;
+
 	uint16_t VramData;      //R02 - VWR
 
 	//R05 - CR - Control

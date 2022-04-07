@@ -49,16 +49,14 @@ void PcePpu::Exec()
 
 		_scanline++;
 
-		if(_scanline + 64 == _state.ScanlineIrqValue) {
+		if(_state.EnableScanlineIrq && _scanline + 64 == _state.ScanlineIrqValue) {
 			_state.ScanlineDetected = true;
-			if(_state.EnableScanlineIrq) {
-				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-			}
+			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 		}
 
 		if(_scanline == 240) {
-			_state.VerticalBlank = true;
 			if(_state.EnableVerticalBlankIrq) {
+				_state.VerticalBlank = true;
 				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 			}
 
@@ -70,9 +68,9 @@ void PcePpu::Exec()
 					_spriteRam[i] = value;
 				}
 				_state.SatbTransferPending = false;
-				_state.SatbTransferDone = true;
 
 				if(_state.VramSatbIrqEnabled) {
+					_state.SatbTransferDone = true;
 					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 				}
 			}
@@ -237,6 +235,14 @@ void PcePpu::SendFrame()
 	_console->GetControlManager()->UpdateInputState();
 }
 
+void PcePpu::LoadReadBuffer()
+{
+	//TODO timing - this needs to be done in-between rendering reads (based on mode, etc.)
+	_state.ReadBuffer = _vram[_state.MemAddrRead];
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
+}
+
 uint8_t PcePpu::ReadVdc(uint16_t addr)
 {
 	switch(addr & 0x03) {
@@ -260,28 +266,20 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 			_console->GetMemoryManager()->ClearIrqSource(PceIrqSource::Irq1);
 			return result;
 		}
-			
-		case 2:
-		case 3:
-			if(_state.CurrentReg == 0x02) {
-				if(addr & 0x01) {
-					uint8_t value = _vram[_state.MemAddrRead] >> 8;
-					_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, value, MemoryType::PceVideoRam);
-					_state.MemAddrRead += _state.VramAddrIncrement;
-					return value;
-				} else {
-					uint8_t value = (uint8_t)_vram[_state.MemAddrRead];
-					_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), value, MemoryType::PceVideoRam);
-					return value;
-				}
-			} else {
-				MessageManager::Log("read vdc reg 2/3, invalid reg selected");
-				return 0;
-			}
 
-		default:
-			MessageManager::Log("read vdc unknown reg: " + HexUtilities::ToHex(addr));
-			return 0;
+		case 1: return 0; //Unused, reads return 0
+
+		//Reads to 2/3 will always return the read buffer, but the
+		//read address will only increment when register 2 is selected
+		case 2: return (uint8_t)_state.ReadBuffer;
+
+		case 3:
+			uint8_t value = _state.ReadBuffer >> 8;
+			if(_state.CurrentReg == 0x02) {
+				_state.MemAddrRead += _state.VramAddrIncrement;
+				LoadReadBuffer();
+			}
+			return value;
 	}
 }
 
@@ -290,7 +288,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 	switch(addr & 0x03) {
 		case 0: _state.CurrentReg = value & 0x1F; break;
 
-		case 1: break; //NOP
+		case 1: break; //Unused, writes do nothing
 
 		case 2:
 		case 3:
@@ -298,13 +296,20 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 			switch(_state.CurrentReg) {
 				case 0x00: UpdateReg(_state.MemAddrWrite, value, msb); break;
-				case 0x01: UpdateReg(_state.MemAddrRead, value, msb); break;
+
+				case 0x01:
+					UpdateReg(_state.MemAddrRead, value, msb);
+					if(msb) {
+						LoadReadBuffer();
+					}
+					break;
 
 				case 0x02:
 					UpdateReg(_state.VramData, value, msb);
 					if(msb) {
 						if(_state.MemAddrWrite < 0x8000) {
 							//Ignore writes to mirror at $8000+
+							//TODO timing
 							_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, MemoryType::PceVideoRam);
 							_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, value, MemoryType::PceVideoRam);
 							_vram[_state.MemAddrWrite] = _state.VramData;

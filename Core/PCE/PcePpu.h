@@ -30,9 +30,12 @@ private:
 		}
 	}
 
+	void LoadReadBuffer();
+	void DrawScanline();
+	void SendFrame();
+
 public:
 	PcePpu(Emulator* emu, PceConsole* console);
-
 	~PcePpu();
 
 	PcePpuState& GetState();
@@ -40,10 +43,6 @@ public:
 	uint16_t GetScanline() { return _scanline; }
 
 	void Exec();
-
-	void DrawScanline();
-
-	void SendFrame();
 
 	uint8_t ReadVdc(uint16_t addr);
 	void WriteVdc(uint16_t addr, uint8_t value);
