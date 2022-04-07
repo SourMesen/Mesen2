@@ -212,6 +212,12 @@ public:
 
 	void SetMprValue(uint8_t regSelect, uint8_t value)
 	{
+		if(regSelect == 0) {
+			return;
+		}
+
+		_state.MprReadBuffer = value;
+
 		for(int i = 0; i < 8; i++) {
 			if(regSelect & (1 << i)) {
 				_mpr[i] = value;
@@ -238,12 +244,20 @@ public:
 
 	uint8_t GetMprValue(uint8_t regSelect)
 	{
+		if(regSelect == 0) {
+			//"If an operand of $00 is used, the accumulator is loaded with the last value that was written with TAM"
+			return _state.MprReadBuffer;
+		}
+
 		uint8_t value = 0;
 		for(int i = 0; i < 8; i++) {
+			//"If multiple bits are set in the operand to TMA, the values from several MPRs are combined togetherand returned."
 			if(regSelect & (1 << i)) {
 				value |= _mpr[i];
 			}
 		}
+
+		_state.MprReadBuffer = value;
 		return value;
 	}
 

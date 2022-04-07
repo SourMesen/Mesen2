@@ -144,6 +144,7 @@ struct PceMemoryManagerState
 	uint8_t DisabledIrqs;
 	uint64_t CycleCount;
 	uint8_t CpuClockSpeed;
+	uint8_t MprReadBuffer;
 
 	uint8_t IoBuffer;
 };
