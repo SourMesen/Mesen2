@@ -8,6 +8,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/RandomHelper.h"
 
 class Emulator;
 
@@ -24,7 +25,6 @@ private:
 	uint32_t _prgRomSize;
 	
 	uint8_t _maxBank;
-	uint8_t _mpr[8] = {};
 	uint8_t _mappedBank[8] = {};
 
 	uint8_t* _workRam;
@@ -50,6 +50,20 @@ public:
 		_emu->RegisterMemory(MemoryType::PceWorkRam, _workRam, _workRamSize);
 
 		_timer.reset(new PceTimer(this));
+
+		//CPU boots up in slow speed
+		_state.CpuClockSpeed = 12;
+
+		//Set to 0 on power on
+		_state.DisabledIrqs = 0;
+
+		//MPR 7 is set to 0 on power on
+		_state.Mpr[7] = 0;
+
+		//Other MPR registers are random
+		for(int i = 0; i < 7; i++) {
+			_state.Mpr[i] = RandomHelper::GetValue(0, 255);
+		}
 	}
 
 	~PceMemoryManager()
@@ -162,7 +176,7 @@ public:
 	{
 		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);
 		
-		uint8_t bank = _mpr[(addr & 0xE000) >> 13];
+		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		addr &= 0x1FFF;
 		if(bank <= 0x7F) {
 			//ROM
@@ -220,9 +234,9 @@ public:
 
 		for(int i = 0; i < 8; i++) {
 			if(regSelect & (1 << i)) {
-				_mpr[i] = value;
+				_state.Mpr[i] = value;
 
-				if(_mpr[i] <= 0x7F) {
+				if(_state.Mpr[i] <= 0x7F) {
 					_mappedBank[i] = value % _maxBank;
 					if(value >= _maxBank) {
 						uint32_t power = (uint32_t)std::log2(_maxBank);
@@ -253,7 +267,7 @@ public:
 		for(int i = 0; i < 8; i++) {
 			//"If multiple bits are set in the operand to TMA, the values from several MPRs are combined togetherand returned."
 			if(regSelect & (1 << i)) {
-				value |= _mpr[i];
+				value |= _state.Mpr[i];
 			}
 		}
 
@@ -263,7 +277,7 @@ public:
 
 	AddressInfo GetAbsoluteAddress(uint32_t relAddr)
 	{
-		uint8_t bank = _mpr[(relAddr & 0xE000) >> 13];
+		uint8_t bank = _state.Mpr[(relAddr & 0xE000) >> 13];
 		if(bank >= 0xF8 && bank <= 0xFB) {
 			return { (int32_t)(relAddr & 0x1FFF), MemoryType::PceWorkRam };
 		} else {
@@ -276,11 +290,11 @@ public:
 	{
 		for(int i = 0; i < 8; i++) {
 			if(absAddr.Type == MemoryType::PcePrgRom) {
-				if((_mpr[i] << 13) == (absAddr.Address & ~0x1FFF)) {
+				if((_state.Mpr[i] << 13) == (absAddr.Address & ~0x1FFF)) {
 					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 				}
 			} else if(absAddr.Type == MemoryType::PceWorkRam) {
-				if(_mpr[i] >= 0xF8 && _mpr[i] <= 0xFB) {
+				if(_state.Mpr[i] >= 0xF8 && _state.Mpr[i] <= 0xFB) {
 					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 				}
 			}

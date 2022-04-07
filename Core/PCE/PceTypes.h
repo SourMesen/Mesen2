@@ -18,7 +18,7 @@ namespace PceCpuFlags
 		Interrupt = 0x04,
 		Decimal = 0x08,
 		Break = 0x10,
-		Reserved = 0x20,
+		Memory = 0x20,
 		Overflow = 0x40,
 		Negative = 0x80
 	};
@@ -140,12 +140,12 @@ struct PcePpuState
 
 struct PceMemoryManagerState
 {
+	uint64_t CycleCount;
+	uint8_t Mpr[8];
 	uint8_t ActiveIrqs;
 	uint8_t DisabledIrqs;
-	uint64_t CycleCount;
 	uint8_t CpuClockSpeed;
 	uint8_t MprReadBuffer;
-
 	uint8_t IoBuffer;
 };
 

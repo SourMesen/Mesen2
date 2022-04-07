@@ -5,6 +5,9 @@
 PceTimer::PceTimer(PceMemoryManager* memoryManager)
 {
 	_memoryManager = memoryManager;
+
+	//Counter is 0 on power on
+	_counter = 0;
 }
 
 void PceTimer::Exec(int8_t clocksToRun)

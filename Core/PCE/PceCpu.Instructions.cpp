@@ -274,7 +274,7 @@ void PceCpu::PHY() { Push(Y()); }
 
 void PceCpu::PHP()
 {
-	uint8_t flags = PS() | PceCpuFlags::Break | PceCpuFlags::Reserved;
+	uint8_t flags = PS() | PceCpuFlags::Break;
 	Push((uint8_t)flags);
 }
 
@@ -326,7 +326,11 @@ void PceCpu::JMP_Abs()
 {
 	JMP(GetOperand());
 }
-void PceCpu::JMP_Ind() { JMP(GetInd()); }
+void PceCpu::JMP_Ind()
+{
+	//Unlike the 6502 CPU, this CPU works normally when crossing a page during indirect jumps
+	JMP(MemoryReadWord(_operand));
+}
 void PceCpu::JSR()
 {
 	uint16_t addr = GetOperand();
@@ -395,25 +399,7 @@ void PceCpu::SEI() { SetFlags(PceCpuFlags::Interrupt); }
 
 void PceCpu::BRK()
 {
-	MessageManager::Log("BRK");
-	/*Push((uint16_t)(PC() + 1));
-
-	uint8_t flags = PS() | PceCpuFlags::Break | PceCpuFlags::Reserved;
-	if(_needNmi) {
-		_needNmi = false;
-		Push((uint8_t)flags);
-		SetFlags(PceCpuFlags::Interrupt);
-
-		SetPC(MemoryReadWord(PceCpu::NMIVector));
-	} else {
-		Push((uint8_t)flags);
-		SetFlags(PceCpuFlags::Interrupt);
-
-		SetPC(MemoryReadWord(PceCpu::IRQVector));
-	}
-
-	//Ensure we don't start an NMI right after running a BRK instruction (first instruction in IRQ handler must run first - needed for nmi_and_brk test)
-	_prevNeedNmi = false;*/
+	ProcessIrq(true);
 }
 
 void PceCpu::RTI()

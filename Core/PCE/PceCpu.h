@@ -4,6 +4,7 @@
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConsole.h"
 #include "Shared/Emulator.h"
+#include "Utilities/RandomHelper.h"
 #include "MemoryOperationType.h"
 
 class PceCpu
@@ -28,6 +29,7 @@ private:
 	uint16_t _operand;
 	uint16_t _operand2;
 	uint16_t _operand3;
+	bool _memoryFlag = false;
 
 	bool _needIrq = false;
 
@@ -140,8 +142,6 @@ private:
 	void RTI();
 	void NOP();
 
-	void HLT() {}
-	
 	void BSR();
 	void BRA();
 
@@ -321,12 +321,24 @@ private:
 	void TRB();
 	void TST();
 
-	void CSL() { _memoryManager->SetSpeed(true); }
-	void CSH() { _memoryManager->SetSpeed(false); }
+	void CSL()
+	{
+		//CSH/CSL take 3 cycles
+		DummyRead();
+		_memoryManager->SetSpeed(true);
+	}
+	
+	void CSH()
+	{
+		//CSH/CSL take 3 cycles
+		DummyRead();
+		_memoryManager->SetSpeed(false);
+	}
 	
 	void SET()
 	{
-		MessageManager::Log("SET - implemented");
+		MessageManager::Log("SET - unimplemented");
+		SetFlags(PceCpuFlags::Memory);
 	}
 	
 	void RMB0() { RMB<0>(); }
@@ -425,43 +437,43 @@ public:
 		typedef PceCpu C;
 		Func opTable[] = {
 			//	0		1			2			3			4			5			6						7				8			9			A					B			C					D			E						F
-			&C::BRK,	&C::ORA,	&C::SXY,	&C::ST0,	&C::TSB,	&C::ORA,	&C::ASL_Memory,	&C::RMB0,	&C::PHP,	&C::ORA,	&C::ASL_Acc,	&C::HLT,	&C::TSB,			&C::ORA,	&C::ASL_Memory,	&C::BBR0, //0
-			&C::BPL,	&C::ORA,	&C::ORA,	&C::ST1,	&C::TRB,	&C::ORA,	&C::ASL_Memory,	&C::RMB1,	&C::CLC,	&C::ORA,	&C::INC_Acc,	&C::HLT,	&C::TRB,			&C::ORA,	&C::ASL_Memory,	&C::BBR1, //1
-			&C::JSR,	&C::AND,	&C::SAX,	&C::ST2,	&C::BIT,	&C::AND,	&C::ROL_Memory,	&C::RMB2,	&C::PLP,	&C::AND,	&C::ROL_Acc,	&C::HLT,	&C::BIT,			&C::AND,	&C::ROL_Memory,	&C::BBR2, //2
-			&C::BMI,	&C::AND,	&C::AND,	&C::HLT,	&C::BIT,	&C::AND,	&C::ROL_Memory,	&C::RMB3,	&C::SEC,	&C::AND,	&C::DEC_Acc,	&C::HLT,	&C::BIT,			&C::AND,	&C::ROL_Memory,	&C::BBR3, //3
-			&C::RTI,	&C::EOR,	&C::SAY,	&C::TMA,	&C::BSR,	&C::EOR,	&C::LSR_Memory,	&C::RMB4,	&C::PHA,	&C::EOR,	&C::LSR_Acc,	&C::HLT,	&C::JMP_Abs,	&C::EOR,	&C::LSR_Memory,	&C::BBR4, //4
-			&C::BVC,	&C::EOR,	&C::EOR,	&C::TAM,	&C::CSL,	&C::EOR,	&C::LSR_Memory,	&C::RMB5,	&C::CLI,	&C::EOR,	&C::PHY,			&C::HLT,	&C::HLT,			&C::EOR,	&C::LSR_Memory,	&C::BBR5, //5
-			&C::RTS,	&C::ADC,	&C::CLA,	&C::HLT,	&C::STZ,	&C::ADC,	&C::ROR_Memory,	&C::RMB6,	&C::PLA,	&C::ADC,	&C::ROR_Acc,	&C::HLT,	&C::JMP_Ind,	&C::ADC,	&C::ROR_Memory,	&C::BBR6, //6
-			&C::BVS,	&C::ADC,	&C::ADC,	&C::TII,	&C::STZ,	&C::ADC,	&C::ROR_Memory,	&C::RMB7,	&C::SEI,	&C::ADC,	&C::PLY,			&C::HLT,	&C::JMP_AbsX,	&C::ADC,	&C::ROR_Memory,	&C::BBR7, //7
-			&C::BRA,	&C::STA,	&C::CLX,	&C::TST,	&C::STY,	&C::STA,	&C::STX,				&C::SMB0,	&C::DEY,	&C::BIT,	&C::TXA,			&C::HLT,	&C::STY,			&C::STA,	&C::STX,				&C::BBS0, //8
-			&C::BCC,	&C::STA,	&C::STA,	&C::TST,	&C::STY,	&C::STA,	&C::STX,				&C::SMB1,	&C::TYA,	&C::STA,	&C::TXS,			&C::HLT,	&C::STZ,			&C::STA,	&C::STZ,				&C::BBS1, //9
-			&C::LDY,	&C::LDA,	&C::LDX,	&C::TST,	&C::LDY,	&C::LDA,	&C::LDX,				&C::SMB2,	&C::TAY,	&C::LDA,	&C::TAX,			&C::HLT,	&C::LDY,			&C::LDA,	&C::LDX,				&C::BBS2, //A
-			&C::BCS,	&C::LDA,	&C::LDA,	&C::TST,	&C::LDY,	&C::LDA,	&C::LDX,				&C::SMB3,	&C::CLV,	&C::LDA,	&C::TSX,			&C::HLT,	&C::LDY,			&C::LDA,	&C::LDX,				&C::BBS3, //B
-			&C::CPY,	&C::CPA,	&C::CLY,	&C::TDD,	&C::CPY,	&C::CPA,	&C::DEC,				&C::SMB4,	&C::INY,	&C::CPA,	&C::DEX,			&C::HLT,	&C::CPY,			&C::CPA,	&C::DEC,				&C::BBS4, //C
-			&C::BNE,	&C::CPA,	&C::CPA,	&C::TIN,	&C::CSH,	&C::CPA,	&C::DEC,				&C::SMB5,	&C::CLD,	&C::CPA,	&C::PHX,			&C::HLT,	&C::HLT,			&C::CPA,	&C::DEC,				&C::BBS5, //D
-			&C::CPX,	&C::SBC,	&C::HLT,	&C::TIA,	&C::CPX,	&C::SBC,	&C::INC,				&C::SMB6,	&C::INX,	&C::SBC,	&C::NOP,			&C::HLT,	&C::CPX,			&C::SBC,	&C::INC,				&C::BBS6, //E
-			&C::BEQ,	&C::SBC,	&C::SBC,	&C::TAI,	&C::SET,	&C::SBC,	&C::INC,				&C::SMB7,	&C::SED,	&C::SBC,	&C::PLX,			&C::HLT,	&C::HLT,			&C::SBC,	&C::INC,				&C::BBS7  //F
+			&C::BRK,	&C::ORA,	&C::SXY,	&C::ST0,	&C::TSB,	&C::ORA,	&C::ASL_Memory,	&C::RMB0,	&C::PHP,	&C::ORA,	&C::ASL_Acc,	&C::NOP,	&C::TSB,			&C::ORA,	&C::ASL_Memory,	&C::BBR0, //0
+			&C::BPL,	&C::ORA,	&C::ORA,	&C::ST1,	&C::TRB,	&C::ORA,	&C::ASL_Memory,	&C::RMB1,	&C::CLC,	&C::ORA,	&C::INC_Acc,	&C::NOP,	&C::TRB,			&C::ORA,	&C::ASL_Memory,	&C::BBR1, //1
+			&C::JSR,	&C::AND,	&C::SAX,	&C::ST2,	&C::BIT,	&C::AND,	&C::ROL_Memory,	&C::RMB2,	&C::PLP,	&C::AND,	&C::ROL_Acc,	&C::NOP,	&C::BIT,			&C::AND,	&C::ROL_Memory,	&C::BBR2, //2
+			&C::BMI,	&C::AND,	&C::AND,	&C::NOP,	&C::BIT,	&C::AND,	&C::ROL_Memory,	&C::RMB3,	&C::SEC,	&C::AND,	&C::DEC_Acc,	&C::NOP,	&C::BIT,			&C::AND,	&C::ROL_Memory,	&C::BBR3, //3
+			&C::RTI,	&C::EOR,	&C::SAY,	&C::TMA,	&C::BSR,	&C::EOR,	&C::LSR_Memory,	&C::RMB4,	&C::PHA,	&C::EOR,	&C::LSR_Acc,	&C::NOP,	&C::JMP_Abs,	&C::EOR,	&C::LSR_Memory,	&C::BBR4, //4
+			&C::BVC,	&C::EOR,	&C::EOR,	&C::TAM,	&C::CSL,	&C::EOR,	&C::LSR_Memory,	&C::RMB5,	&C::CLI,	&C::EOR,	&C::PHY,			&C::NOP,	&C::NOP,			&C::EOR,	&C::LSR_Memory,	&C::BBR5, //5
+			&C::RTS,	&C::ADC,	&C::CLA,	&C::NOP,	&C::STZ,	&C::ADC,	&C::ROR_Memory,	&C::RMB6,	&C::PLA,	&C::ADC,	&C::ROR_Acc,	&C::NOP,	&C::JMP_Ind,	&C::ADC,	&C::ROR_Memory,	&C::BBR6, //6
+			&C::BVS,	&C::ADC,	&C::ADC,	&C::TII,	&C::STZ,	&C::ADC,	&C::ROR_Memory,	&C::RMB7,	&C::SEI,	&C::ADC,	&C::PLY,			&C::NOP,	&C::JMP_AbsX,	&C::ADC,	&C::ROR_Memory,	&C::BBR7, //7
+			&C::BRA,	&C::STA,	&C::CLX,	&C::TST,	&C::STY,	&C::STA,	&C::STX,				&C::SMB0,	&C::DEY,	&C::BIT,	&C::TXA,			&C::NOP,	&C::STY,			&C::STA,	&C::STX,				&C::BBS0, //8
+			&C::BCC,	&C::STA,	&C::STA,	&C::TST,	&C::STY,	&C::STA,	&C::STX,				&C::SMB1,	&C::TYA,	&C::STA,	&C::TXS,			&C::NOP,	&C::STZ,			&C::STA,	&C::STZ,				&C::BBS1, //9
+			&C::LDY,	&C::LDA,	&C::LDX,	&C::TST,	&C::LDY,	&C::LDA,	&C::LDX,				&C::SMB2,	&C::TAY,	&C::LDA,	&C::TAX,			&C::NOP,	&C::LDY,			&C::LDA,	&C::LDX,				&C::BBS2, //A
+			&C::BCS,	&C::LDA,	&C::LDA,	&C::TST,	&C::LDY,	&C::LDA,	&C::LDX,				&C::SMB3,	&C::CLV,	&C::LDA,	&C::TSX,			&C::NOP,	&C::LDY,			&C::LDA,	&C::LDX,				&C::BBS3, //B
+			&C::CPY,	&C::CPA,	&C::CLY,	&C::TDD,	&C::CPY,	&C::CPA,	&C::DEC,				&C::SMB4,	&C::INY,	&C::CPA,	&C::DEX,			&C::NOP,	&C::CPY,			&C::CPA,	&C::DEC,				&C::BBS4, //C
+			&C::BNE,	&C::CPA,	&C::CPA,	&C::TIN,	&C::CSH,	&C::CPA,	&C::DEC,				&C::SMB5,	&C::CLD,	&C::CPA,	&C::PHX,			&C::NOP,	&C::NOP,			&C::CPA,	&C::DEC,				&C::BBS5, //D
+			&C::CPX,	&C::SBC,	&C::NOP,	&C::TIA,	&C::CPX,	&C::SBC,	&C::INC,				&C::SMB6,	&C::INX,	&C::SBC,	&C::NOP,			&C::NOP,	&C::CPX,			&C::SBC,	&C::INC,				&C::BBS6, //E
+			&C::BEQ,	&C::SBC,	&C::SBC,	&C::TAI,	&C::SET,	&C::SBC,	&C::INC,				&C::SMB7,	&C::SED,	&C::SBC,	&C::PLX,			&C::NOP,	&C::NOP,			&C::SBC,	&C::INC,				&C::BBS7  //F
 		};
 
 		typedef PceAddrMode M;
 		PceAddrMode addrMode[] = {
 		//	0			1				2			3				4				5				6				7				8			9			A			B			C			D			E			F
-			M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//0
-			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::Abs,	M::AbsX,	M::AbsXW,M::ZeroRel,//1
-			M::Abs,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//2
-			M::Rel,	M::IndY,		M::ZInd,	M::None,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//3
-			M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Rel,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//4
-			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//5
-			M::Imp,	M::IndX,		M::Imp,	M::None,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imm,	M::Ind,	M::Abs,	M::Abs,	M::ZeroRel,	//6
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//7
-			M::Rel,	M::IndX,		M::Imp,	M::ImZero,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//8
-			M::Rel,	M::IndYW,	M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsYW,M::Imp,	M::AbsYW,M::Abs,	M::AbsXW,M::AbsXW,M::ZeroRel,//9
-			M::Imm,	M::IndX,		M::Imm,	M::ImZeroX,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//A
-			M::Rel,	M::IndY,		M::ZInd,	M::ImAbsX,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsY,	M::AbsX,	M::AbsX,	M::AbsY,	M::ZeroRel,	//B
-			M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//C
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//D
-			M::Imm,	M::IndX,		M::None,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imm,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//E
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::AbsYW,M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//F
+			M::Imm,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//0
+			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsXW,M::ZeroRel,//1
+			M::Abs,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//2
+			M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//3
+			M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Rel,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//4
+			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//5
+			M::Imp,	M::IndX,		M::Imp,	M::Imp,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Ind,	M::Abs,	M::Abs,	M::ZeroRel,	//6
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//7
+			M::Rel,	M::IndX,		M::Imp,	M::ImZero,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//8
+			M::Rel,	M::IndYW,	M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsYW,M::Imp,	M::Imp,	M::Abs,	M::AbsXW,M::AbsXW,M::ZeroRel,//9
+			M::Imm,	M::IndX,		M::Imm,	M::ImZeroX,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//A
+			M::Rel,	M::IndY,		M::ZInd,	M::ImAbsX,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsY,	M::ZeroRel,	//B
+			M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//C
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//D
+			M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//E
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//F
 		};
 
 		memcpy(_opTable, opTable, sizeof(opTable));
@@ -472,6 +484,32 @@ public:
 		_operand = 0;
 
 		_state.PC = _memoryManager->Read(PceCpu::ResetVector) | _memoryManager->Read(PceCpu::ResetVector + 1) << 8;
+
+		//A, X, Y, S are random on power on
+		_state.A = RandomHelper::GetValue(0, 255);
+		_state.X = RandomHelper::GetValue(0, 255);
+		_state.Y = RandomHelper::GetValue(0, 255);
+		_state.SP = RandomHelper::GetValue(0, 255);
+
+		//I is set on power on
+		SetFlags(PceCpuFlags::Interrupt);
+
+		//T & M are always cleared on power on
+		ClearFlags(PceCpuFlags::Decimal | PceCpuFlags::Memory);
+
+		//Other flags are random
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Zero);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Negative);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Overflow);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Carry);
+		}
 	}
 
 	PceCpuState& GetState()
@@ -483,13 +521,19 @@ public:
 	{
 		_emu->ProcessInstruction<CpuType::Pce>();
 
+		//T flag is reset at the start of each instruction
+		_memoryFlag = CheckFlag(PceCpuFlags::Memory);
+		if(_memoryFlag) {
+			ClearFlags(PceCpuFlags::Memory);
+		}
+
 		uint8_t opCode = GetOPCode();
 		_instAddrMode = _addrMode[opCode];
 		_operand = FetchOperand();
 		(this->*_opTable[opCode])();
 
 		if(_needIrq && _memoryManager->HasIrqSource((PceIrqSource)0xFF)) {
-			ProcessIrq();
+			ProcessIrq(false);
 		}
 	}
 
@@ -758,18 +802,6 @@ public:
 		return baseAddr + Y();
 	}
 
-	uint16_t GetInd()
-	{
-		uint16_t addr = _operand;
-		if((addr & 0xFF) == 0xFF) {
-			auto lo = MemoryRead(addr);
-			auto hi = MemoryRead(addr - 0xFF);
-			return (lo | hi << 8);
-		} else {
-			return MemoryReadWord(addr);
-		}
-	}
-
 	uint16_t GetIndZeroAddr()
 	{
 		uint8_t zero = ReadByte();
@@ -814,15 +846,28 @@ public:
 		return addr + Y();
 	}
 
-	void ProcessIrq()
+	void ProcessIrq(bool forBrk)
 	{
 		uint16_t originalPc = PC();
 
-		//DummyRead();  //fetch opcode (and discard it - $00 (BRK) is forced into the opcode register instead)
-		//DummyRead();  //read next instruction byte (actually the same as above, since PC increment is suppressed. Also discarded.)
+		if(!forBrk) {
+			DummyRead();  //fetch opcode (and discard it - $00 (BRK) is forced into the opcode register instead)
+			DummyRead();  //read next instruction byte (actually the same as above, since PC increment is suppressed. Also discarded.)
+		}
+
 		Push((uint16_t)(PC()));
 
-		Push((uint8_t)(PS() | PceCpuFlags::Reserved));
+		if(forBrk) {
+			//B flag is set on the stack for BRK
+			Push((uint8_t)(PS() | PceCpuFlags::Break));
+		} else {
+			//"When an interrupt occurs P is pushed with the current state of D and T"
+			//"when an interrupt occurs, [..] the value pushed to the stack has B cleared"
+			Push((uint8_t)(PS() & ~PceCpuFlags::Break));
+		}
+
+		//"Within the interrupt subroutine, the CPU clears D, T and sets I,"
+		ClearFlags(PceCpuFlags::Decimal | PceCpuFlags::Memory);
 		SetFlags(PceCpuFlags::Interrupt);
 
 		if(_memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {

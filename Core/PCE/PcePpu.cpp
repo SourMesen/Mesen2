@@ -328,7 +328,7 @@ void PcePpu::SendFrame()
 void PcePpu::LoadReadBuffer()
 {
 	//TODO timing - this needs to be done in-between rendering reads (based on mode, etc.)
-	_state.ReadBuffer = _vram[_state.MemAddrRead];
+	_state.ReadBuffer = _vram[_state.MemAddrRead & 0x7FFF];
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
 }
