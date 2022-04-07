@@ -28,7 +28,7 @@ private:
 	}
 
 	void LoadReadBuffer();
-	void DrawScanline();
+	void DrawScanline(bool drawOverscan);
 	void SendFrame();
 
 public:

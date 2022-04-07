@@ -60,6 +60,7 @@ struct PcePpuState
 	uint32_t FrameCount;
 	uint16_t Cycle;
 	uint16_t Scanline;
+	uint16_t DisplayCounter;
 
 	uint8_t CurrentReg;
 
@@ -80,10 +81,12 @@ struct PcePpuState
 	bool BackgroundEnabled;
 	uint8_t VramAddrIncrement;
 
-	uint16_t ScanlineIrqValue;           //R06 - RCR
+	uint16_t RasterCompareRegister;           //R06 - RCR
 
 	uint16_t BgScrollX;     //R07 - BXR
 	uint16_t BgScrollY;     //R08 - BYR
+	
+	uint16_t BgScrollYLatch;
 
 	//R09 - MWR - Memory Width
 	uint8_t ColumnCount;
@@ -95,9 +98,12 @@ struct PcePpuState
 	uint16_t HorizSync;     //R0A - HSR
 	uint16_t HorizDisplay;  //R0B - HDR
 
-	uint16_t VertSync;      //R0C - VPR
-	uint16_t VertDisplay;   //R0D - VDW
-	uint8_t VertEndPos;     //R0E - VCR
+	//uint16_t VertSync;      //R0C - VPR
+	uint8_t VertDisplayStart;
+	uint8_t VertSyncWidth;
+
+	uint16_t VertDisplayWidth;   //R0D - VDW
+	uint8_t VertEndPosVcr;     //R0E - VCR
 
 	//uint8_t BlockTransCtrl; //R0F - DCR
 	bool VramSatbIrqEnabled;
@@ -112,6 +118,8 @@ struct PcePpuState
 
 	uint16_t SatbBlockSrc;  //R13 - DVSSR
 	bool SatbTransferPending;
+	bool SatbTransferRunning;
+	uint16_t SatbTransferCycleCounter;
 
 	//Status flags
 	bool VerticalBlank;

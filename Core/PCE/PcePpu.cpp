@@ -14,7 +14,7 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
 	_paletteRam = new uint16_t[0x200];
-	_outBuffer = new uint16_t[256 * 240];
+	_outBuffer = new uint16_t[256 * 242];
 
 	memset(_vram, 0, 0x10000);
 	memset(_paletteRam, 0, 0x400);
@@ -43,47 +43,91 @@ void PcePpu::Exec()
 	if(_state.Cycle == 341) {
 		_state.Cycle = 0;
 
-		if(_state.Scanline < 240) {
-			DrawScanline();
-		}
+		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
+		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
+		bool drawOverscan = true;
+		if(_state.DisplayCounter >= topBorder) {
+			if(_state.DisplayCounter < screenEnd) {
+				if(_state.Scanline >= 14) {
+					drawOverscan = false;
+				}
+			} else {
+				if(_state.DisplayCounter == screenEnd) {
+					//End of display, trigger irq?
+					//Update flags that were locked during burst mode
+					_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+					_state.SpritesEnabled = _state.NextSpritesEnabled;
 
-		_state.Scanline++;
+					if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
+						_state.SatbTransferPending = false;
+						_state.SatbTransferRunning = true;
 
-		if(_state.EnableScanlineIrq && _state.Scanline + 64 == _state.ScanlineIrqValue) {
-			_state.ScanlineDetected = true;
-			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-		}
+						//Sprite transfer ends 4 lines after vertical blank start?
+						_state.SatbTransferCycleCounter = 341*4;
+					}
 
-		if(_state.Scanline == 240) {
-			//Update flags that were locked during burst mode
-			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-			_state.SpritesEnabled = _state.NextSpritesEnabled;
-
-			if(_state.EnableVerticalBlankIrq) {
-				_state.VerticalBlank = true;
-				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+					if(_state.EnableVerticalBlankIrq) {
+						_state.VerticalBlank = true;
+						_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+					}
+				}
 			}
+		}
 
-			if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
+		if(_state.SatbTransferRunning) {
+			_state.SatbTransferCycleCounter--;
+			if(_state.SatbTransferCycleCounter) {
 				for(int i = 0; i < 256; i++) {
 					uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
 					_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
 					_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
 					_spriteRam[i] = value;
 				}
-				_state.SatbTransferPending = false;
+
+				_state.SatbTransferRunning = false;
 
 				if(_state.VramSatbIrqEnabled) {
 					_state.SatbTransferDone = true;
 					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 				}
 			}
+		}
 
+		DrawScanline(drawOverscan);
+
+		_state.Scanline++;
+		_state.DisplayCounter++;
+
+		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+242) {
+			//re-start displaying picture
+			_state.DisplayCounter = 0;
+		}
+
+		if(_state.EnableScanlineIrq) {
+			if(_state.Scanline < topBorder) {
+				int scanlineValue = (int)_state.Scanline - topBorder + 263;
+				if(scanlineValue == _state.RasterCompareRegister) {
+					_state.ScanlineDetected = true;
+				}
+			} else {
+				if(_state.Scanline - topBorder == _state.RasterCompareRegister - 0x40) {
+					_state.ScanlineDetected = true;
+				}
+			}
+
+			if(_state.ScanlineDetected) {
+				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+			}
+		}
+
+		if(_state.Scanline == 256) {
 			_state.FrameCount++;
 			SendFrame();
 		} else if(_state.Scanline == 263) {
 			_state.Scanline = 0;
-			bool burstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
+			_state.DisplayCounter = 0;
+			_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
+			_state.BgScrollYLatch = _state.BgScrollY;
 		}
 	}
 
@@ -95,6 +139,7 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 {
 	uint8_t color;
 	if(bpp == 2) {
+		//TODO unused
 		color = (chrData[0] >> shift) & 0x01;
 		color |= (chrData[0] >> (7 + shift)) & 0x02;
 	} else if(bpp == 4) {
@@ -103,6 +148,7 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 		color |= ((chrData[8] >> shift) & 0x01) << 2;
 		color |= ((chrData[8] >> (7 + shift)) & 0x02) << 2;
 	} else if(bpp == 5) {
+		//TODO hack, fix
 		color = (chrData[0] >> shift) & 0x01;
 		color |= ((chrData[16] >> shift) & 0x01) << 1;
 		color |= ((chrData[32] >> shift) & 0x01) << 2;
@@ -113,20 +159,28 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 	return color;
 }
 
-void PcePpu::DrawScanline()
+void PcePpu::DrawScanline(bool drawOverscan)
 {
-	if(_state.BurstModeEnabled) {
+	if(_state.Scanline < 14 || _state.Scanline >= 256) {
+		//Only 242 rows can be shown
+		return;
+	}
+
+	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
+	uint16_t row = _state.DisplayCounter - topBorder;
+	uint16_t outputOffset = ((int)_state.Scanline - 14) * 256;
+
+	if(_state.BurstModeEnabled || drawOverscan) {
 		//Draw sprite color 0 as background when display is disabled
 		for(int column = 0; column < 256; column++) {
-			_outBuffer[_state.Scanline * 256 + column] = _paletteRam[16*16];
+			_outBuffer[outputOffset + column] = _paletteRam[16 * 16];
 		}
 		return;
 	}
 
 	bool hasBg[256] = {};
-
 	if(_state.BackgroundEnabled) {
-		uint16_t screenY = (_state.Scanline + _state.BgScrollY) & ((_state.RowCount * 8) - 1);
+		uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
 		for(int column = 0; column < 256; column++) {
 			uint16_t screenX = (column + _state.BgScrollX) & ((_state.ColumnCount * 8) - 1);
 
@@ -138,17 +192,19 @@ void PcePpu::DrawScanline()
 			uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
 			if(color != 0) {
 				hasBg[column] = true;
-				_outBuffer[_state.Scanline * 256 + column] = _paletteRam[palette * 16 + color];
+				_outBuffer[outputOffset + column] = _paletteRam[palette * 16 + color];
 			} else {
-				_outBuffer[_state.Scanline * 256 + column] = _paletteRam[0];
+				_outBuffer[outputOffset + column] = _paletteRam[0];
 			}
 		}
 	} else {
 		//Draw background color
 		for(int column = 0; column < 256; column++) {
-			_outBuffer[_state.Scanline * 256 + column] = _paletteRam[0];
+			_outBuffer[outputOffset + column] = _paletteRam[0];
 		}
 	}
+
+	_state.BgScrollYLatch++;
 
 	if(_state.SpritesEnabled) {
 		bool hasSprite[256] = {};
@@ -156,7 +212,7 @@ void PcePpu::DrawScanline()
 
 		for(int i = 0; i < 64; i++) {
 			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
-			if(_state.Scanline < y) {
+			if(row < y) {
 				//Sprite not visible on this line
 				continue;
 			}
@@ -169,7 +225,7 @@ void PcePpu::DrawScanline()
 				case 2: case 3: height = 64; break;
 			}
 
-			if(_state.Scanline >= y + height) {
+			if(row >= y + height) {
 				//Sprite not visible on this line
 				continue;
 			}
@@ -183,7 +239,7 @@ void PcePpu::DrawScanline()
 				continue;
 			}
 
-			uint16_t spriteRow = _state.Scanline - y;
+			uint16_t spriteRow = row - y;
 			if(width == 32) {
 				tileIndex &= ~0x01;
 			}
@@ -240,8 +296,10 @@ void PcePpu::DrawScanline()
 							_state.Sprite0Hit = true;
 							_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 						}
-					} else if(priority || hasBg[spriteX + x] == 0) {
-						_outBuffer[_state.Scanline * 256 + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
+					} else {
+						if(priority || hasBg[spriteX + x] == 0) {
+							_outBuffer[outputOffset + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
+						}
 						
 						hasSprite[spriteX + x] = true;
 						if(i == 0) {
@@ -259,7 +317,7 @@ void PcePpu::SendFrame()
 	_emu->ProcessEvent(EventType::EndFrame);
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _outBuffer);
 
-	RenderedFrame frame(_outBuffer, 256, 240, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_outBuffer, 256, 242, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 
 	_emu->ProcessEndOfFrame();
@@ -278,6 +336,7 @@ void PcePpu::LoadReadBuffer()
 uint8_t PcePpu::ReadVdc(uint16_t addr)
 {
 	switch(addr & 0x03) {
+		default:
 		case 0: {
 			//TODO BSY
 			uint8_t result = 0;
@@ -379,9 +438,12 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					}
 					break;
 
-				case 0x06: UpdateReg<0x3FF>(_state.ScanlineIrqValue, value, msb); break;
+				case 0x06: UpdateReg<0x3FF>(_state.RasterCompareRegister, value, msb); break;
 				case 0x07: UpdateReg<0x3FF>(_state.BgScrollX, value, msb); break;
-				case 0x08: UpdateReg<0x1FF>(_state.BgScrollY, value, msb); break;
+				case 0x08:
+					UpdateReg<0x1FF>(_state.BgScrollY, value, msb);
+					UpdateReg<0x1FF>(_state.BgScrollYLatch, value, msb);
+					break;
 
 				case 0x09:
 					if(!msb) {
@@ -401,9 +463,17 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 				case 0x0A: UpdateReg<0x7F1F>(_state.HorizSync, value, msb); break;
 				case 0x0B: UpdateReg<0x7F7F>(_state.HorizDisplay, value, msb); break;
-				case 0x0C: UpdateReg<0xFF1F>(_state.VertSync, value, msb); break;
-				case 0x0D: UpdateReg<0x1FF>(_state.VertDisplay, value, msb); break;
-				case 0x0E: _state.VertEndPos = value; break;
+				case 0x0C: 
+					if(msb) {
+						_state.VertDisplayStart = value;
+					} else {
+						_state.VertSyncWidth = value & 0x1F;
+					}
+					break;
+
+				case 0x0D: UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb); break;
+
+				case 0x0E: _state.VertEndPosVcr = value; break;
 
 				case 0x0F:
 					if(!msb) {

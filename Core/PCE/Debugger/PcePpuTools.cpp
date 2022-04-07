@@ -157,10 +157,10 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 			//TODO FIX
 			uint16_t* ram = (uint16_t*)vram;
 
-			uint8_t color = (((ram[(pixelStart + 0) & 0xFFFF] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 16) & 0xFFFF] >> shift) & 0x01) << 1);
-			color |= (((ram[(pixelStart + 32) & 0xFFFF] >> shift) & 0x01) << 2);
-			color |= (((ram[(pixelStart + 48) & 0xFFFF] >> shift) & 0x01) << 3);
+			uint8_t color = (((ram[(pixelStart + 0) & 0x7FFF] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 16) & 0x7FFF] >> shift) & 0x01) << 1);
+			color |= (((ram[(pixelStart + 32) & 0x7FFF] >> shift) & 0x01) << 2);
+			color |= (((ram[(pixelStart + 48) & 0x7FFF] >> shift) & 0x01) << 3);
 
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
