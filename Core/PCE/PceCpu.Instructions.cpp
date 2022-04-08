@@ -152,11 +152,6 @@ void PceCpu::RORAddr()
 	MemoryWrite(addr, ROR(value));
 }
 
-void PceCpu::JMP(uint16_t addr)
-{
-	SetPC(addr);
-}
-
 void PceCpu::BranchRelative(bool branch)
 {
 	int8_t offset = (int8_t)GetOperand();
@@ -167,6 +162,7 @@ void PceCpu::BranchRelative(bool branch)
 		/*if(_runIrq && !_prevRunIrq) {
 			_runIrq = false;
 		}*/
+		DummyRead();
 		DummyRead();
 
 		SetPC(PC() + offset);
@@ -205,6 +201,7 @@ void PceCpu::TSB()
 		SetFlags(PceCpuFlags::Zero);
 	}
 
+	DummyRead();
 	MemoryWrite(_operand, value);
 }
 
@@ -225,11 +222,15 @@ void PceCpu::TRB()
 		SetFlags(PceCpuFlags::Zero);
 	}
 
+	DummyRead();
 	MemoryWrite(_operand, value);
 }
 
 void PceCpu::TST()
 {
+	DummyRead();
+	DummyRead();
+
 	uint8_t value = MemoryRead(_operand2);
 
 	ClearFlags(PceCpuFlags::Zero | PceCpuFlags::Overflow | PceCpuFlags::Negative);
@@ -320,22 +321,34 @@ void PceCpu::ROR_Memory() { RORAddr(); }
 
 void PceCpu::JMP_Abs()
 {
-	JMP(GetOperand());
+	SetPC(GetOperand());
 }
+
 void PceCpu::JMP_Ind()
 {
 	//Unlike the 6502 CPU, this CPU works normally when crossing a page during indirect jumps
-	JMP(MemoryReadWord(_operand));
+	DummyRead();
+	DummyRead();
+	SetPC(MemoryReadWord(_operand));
 }
+
+void PceCpu::JMP_AbsX()
+{
+	DummyRead();
+	SetPC(MemoryReadWord(_operand));
+}
+
 void PceCpu::JSR()
 {
 	uint16_t addr = GetOperand();
 	DummyRead();
 	Push((uint16_t)(PC() - 1));
-	JMP(addr);
+	SetPC(addr);
 }
+
 void PceCpu::RTS()
 {
+	DummyRead();
 	uint16_t addr = PopWord();
 	DummyRead();
 	DummyRead();
@@ -402,6 +415,7 @@ void PceCpu::RTI()
 {
 	DummyRead();
 	SetPS(Pop());
+	DummyRead();
 	SetPC(PopWord());
 }
 
@@ -415,7 +429,11 @@ void PceCpu::BSR()
 {
 	//TODO
 	int8_t relAddr = (int8_t)GetOperand();
+	DummyRead();
+	DummyRead();
 	Push((uint16_t)(PC() - 1));
+	DummyRead();
+	DummyRead();
 	SetPC(PC() + relAddr);
 }
 
@@ -427,20 +445,17 @@ void PceCpu::BRA()
 void PceCpu::SXY()
 {
 	DummyRead();
-	DummyRead();
 	std::swap(_state.X, _state.Y);
 }
 
 void PceCpu::SAX()
 {
 	DummyRead();
-	DummyRead();
 	std::swap(_state.A, _state.X);
 }
 
 void PceCpu::SAY()
 {
-	DummyRead();
 	DummyRead();
 	std::swap(_state.A, _state.Y);
 }
@@ -462,10 +477,15 @@ void PceCpu::CLY()
 
 void PceCpu::TMA()
 {
+	DummyRead();
+	DummyRead();
 	SetA(_memoryManager->GetMprValue(GetOperand()));
 }
 
 void PceCpu::TAM()
 {
+	DummyRead();
+	DummyRead();
+	DummyRead();
 	_memoryManager->SetMprValue(GetOperand(), A());
 }

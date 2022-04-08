@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <random>
 
-static class RandomHelper
+class RandomHelper
 {
 public:
 	template<typename T>

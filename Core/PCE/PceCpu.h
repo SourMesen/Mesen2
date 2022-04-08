@@ -66,8 +66,6 @@ private:
 	void ROLAddr();
 	void RORAddr();
 
-	void JMP(uint16_t addr);
-
 	void BranchRelative(bool branch);
 
 	void BIT();
@@ -118,6 +116,8 @@ private:
 
 	void JMP_Abs();
 	void JMP_Ind();
+	void JMP_AbsX();
+
 	void JSR();
 	void RTS();
 
@@ -153,18 +153,39 @@ private:
 	void CLX();
 	void CLY();
 
-	void ST0() { _memoryManager->WriteVdc(0, _operand); }
-	void ST1() { _memoryManager->WriteVdc(2, _operand); }
-	void ST2() { _memoryManager->WriteVdc(3, _operand); }
+	void ST0()
+	{
+		DummyRead();
+		DummyRead();
+		_memoryManager->WriteVdc(0, _operand);
+	}
+	
+	void ST1()
+	{
+		DummyRead();
+		DummyRead();
+		_memoryManager->WriteVdc(2, _operand);
+	}
+
+	void ST2()
+	{
+		DummyRead();
+		DummyRead();
+		_memoryManager->WriteVdc(3, _operand);
+	}
 
 	void TMA();
 	void TAM();
 	
 	void StartBlockTransfer()
 	{
+		DummyRead();
 		Push(Y());
+		DummyRead();
 		Push(X());
+		DummyRead();
 		Push(A());
+		DummyRead();
 
 		_state.SH = (_operand & 0xFF00) >> 8;
 		_state.DH = (_operand2 & 0xFF00) >> 8;
@@ -188,12 +209,12 @@ private:
 
 		uint32_t count = 0;
 		do {
+			DummyRead();
 			uint8_t value = MemoryRead(src);
+			DummyRead();
+			
+			DummyRead();
 			MemoryWrite(dst, value);
-
-			DummyRead();
-			DummyRead();
-			DummyRead();
 			DummyRead();
 
 			src += (count & 0x01) ? -1 : 1;
@@ -216,12 +237,12 @@ private:
 
 		uint32_t count = 0;
 		do {
+			DummyRead();
 			uint8_t value = MemoryRead(src);
-			MemoryWrite(dst, value);
+			DummyRead();
 
 			DummyRead();
-			DummyRead();
-			DummyRead();
+			MemoryWrite(dst, value);
 			DummyRead();
 
 			src--;
@@ -244,12 +265,12 @@ private:
 
 		uint32_t count = 0;
 		do {
+			DummyRead();
 			uint8_t value = MemoryRead(src);
+			DummyRead();
+			
+			DummyRead();
 			MemoryWrite(dst, value);
-
-			DummyRead();
-			DummyRead();
-			DummyRead();
 			DummyRead();
 
 			src++;
@@ -272,12 +293,12 @@ private:
 
 		uint32_t count = 0;
 		do {
+			DummyRead();
 			uint8_t value = MemoryRead(src);
+			DummyRead();
+			
+			DummyRead();
 			MemoryWrite(dst, value);
-
-			DummyRead();
-			DummyRead();
-			DummyRead();
 			DummyRead();
 
 			src++;
@@ -300,12 +321,12 @@ private:
 
 		uint32_t count = 0;
 		do {
+			DummyRead();
 			uint8_t value = MemoryRead(src);
+			DummyRead();
+			
+			DummyRead();
 			MemoryWrite(dst, value);
-
-			DummyRead();
-			DummyRead();
-			DummyRead();
 			DummyRead();
 
 			src++;
@@ -362,11 +383,6 @@ private:
 	void INC_Acc();
 	void DEC_Acc();
 	
-	void JMP_AbsX() 
-	{
-		SetPC(MemoryReadWord(_operand));
-	}
-
 	void BBR0() { BBR<0>(); }
 	void BBR1() { BBR<1>(); }
 	void BBR2() { BBR<2>(); }
@@ -388,6 +404,9 @@ private:
 	template<uint8_t bit>
 	void BBR()
 	{
+		DummyRead();
+		DummyRead();
+
 		uint8_t value = MemoryRead(PceCpu::ZeroPage + (_operand & 0xFF));
 		if((value & (1 << bit)) == 0) {
 			DummyRead();
@@ -399,6 +418,9 @@ private:
 	template<uint8_t bit>
 	void BBS()
 	{
+		DummyRead();
+		DummyRead();
+
 		uint8_t value = MemoryRead(PceCpu::ZeroPage + (_operand & 0xFF));
 		if((value & (1 << bit)) != 0) {
 			DummyRead();
@@ -519,6 +541,17 @@ public:
 
 	void Exec()
 	{
+		uint32_t cycleCounts[256] = {};
+		for(int i = 0; i < 256; i++) {
+			uint64_t count = _state.CycleCount;
+
+			_instAddrMode = _addrMode[i];
+			_operand = FetchOperand();
+			(this->*_opTable[i])();
+
+			cycleCounts[i] = _state.CycleCount - count + 1;
+		}
+
 		_emu->ProcessInstruction<CpuType::Pce>();
 
 		//T flag is reset at the start of each instruction
@@ -544,18 +577,18 @@ public:
 			case PceAddrMode::Imp: DummyRead(); return 0;
 			case PceAddrMode::Imm:
 			case PceAddrMode::Rel: return GetImmediate();
-			case PceAddrMode::Zero: return PceCpu::ZeroPage + GetZeroAddr();
-			case PceAddrMode::ZeroX: return PceCpu::ZeroPage + GetZeroXAddr();
-			case PceAddrMode::ZeroY: return PceCpu::ZeroPage + GetZeroYAddr();
+			case PceAddrMode::Zero: _operand = PceCpu::ZeroPage + GetZeroAddr(); DummyRead(); return _operand;
+			case PceAddrMode::ZeroX: _operand = PceCpu::ZeroPage + GetZeroXAddr(); DummyRead(); return _operand;
+			case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); DummyRead(); return _operand;
 			case PceAddrMode::Ind: return GetIndAddr();
 			case PceAddrMode::IndX: return GetIndXAddr();
 			case PceAddrMode::IndY: return GetIndYAddr(false);
 			case PceAddrMode::IndYW: return GetIndYAddr(true);
-			case PceAddrMode::Abs: return GetAbsAddr();
-			case PceAddrMode::AbsX: return GetAbsXAddr(false);
-			case PceAddrMode::AbsXW: return GetAbsXAddr(true);
-			case PceAddrMode::AbsY: return GetAbsYAddr(false);
-			case PceAddrMode::AbsYW: return GetAbsYAddr(true);
+			case PceAddrMode::Abs: _operand = GetAbsAddr(); DummyRead(); return _operand;
+			case PceAddrMode::AbsX: _operand = GetAbsXAddr(false); DummyRead(); return _operand;
+			case PceAddrMode::AbsXW:_operand = GetAbsXAddr(true); DummyRead(); return _operand;
+			case PceAddrMode::AbsY: _operand = GetAbsYAddr(false); DummyRead(); return _operand;
+			case PceAddrMode::AbsYW: _operand = GetAbsYAddr(true); DummyRead(); return _operand;
 
 			case PceAddrMode::ZeroRel: return ReadWord();
 
@@ -570,30 +603,33 @@ public:
 			case PceAddrMode::ImZero:
 				_operand = ReadByte();
 				_operand2 = PceCpu::ZeroPage + GetZeroAddr();
+				DummyRead();
 				return _operand;
 
 			case PceAddrMode::ImZeroX:
 				_operand = ReadByte();
 				_operand2 = PceCpu::ZeroPage + GetZeroXAddr();
+				DummyRead();
 				return _operand;
 
 			case PceAddrMode::ImAbs:
 				_operand = ReadByte();
 				_operand2 = GetAbsAddr();
+				DummyRead();
 				return _operand;
 
 			case PceAddrMode::ImAbsX:
 				_operand = ReadByte();
 				_operand2 = GetAbsXAddr();
+				DummyRead();
 				return _operand;
 
 			default:
-				//TODO
-				MessageManager::Log("unsupported addr mode");
 				break;
 		}
 
-		MessageManager::Log("invalid instruction");
+		LogDebug("invalid instruction");
+		return 0;
 	}
 
 	void SetRegister(uint8_t& reg, uint8_t value)
@@ -805,30 +841,38 @@ public:
 	uint16_t GetIndZeroAddr()
 	{
 		uint8_t zero = ReadByte();
-		return MemoryReadWord(PceCpu::ZeroPage + zero);
+		DummyRead();
+		uint16_t value = MemoryReadWord(PceCpu::ZeroPage + zero);
+		DummyRead();
+		return value;
 	}
 
 	uint16_t GetIndXAddr()
 	{
 		uint8_t zero = ReadByte();
 
-		//Dummy read
-		//MemoryRead(zero, MemoryOperationType::DummyRead);
+		DummyRead();
 
 		zero += X();
 
 		uint16_t addr;
 		if(zero == 0xFF) {
+			//TODO ??
 			addr = MemoryRead(PceCpu::ZeroPage + 0xFF) | MemoryRead(PceCpu::ZeroPage + 0x00) << 8;
 		} else {
 			addr = MemoryReadWord(PceCpu::ZeroPage + zero);
 		}
+
+		DummyRead();
+
 		return addr;
 	}
 
 	uint16_t GetIndYAddr(bool dummyRead = true)
 	{
 		uint8_t zero = ReadByte();
+
+		DummyRead();
 
 		uint16_t addr;
 		if(zero == 0xFF) {
@@ -843,6 +887,9 @@ public:
 			//MemoryRead(addr + Y() - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);
 			//??
 		}
+		
+		DummyRead();
+
 		return addr + Y();
 	}
 
@@ -855,7 +902,10 @@ public:
 			DummyRead();  //read next instruction byte (actually the same as above, since PC increment is suppressed. Also discarded.)
 		}
 
+		DummyRead();
 		Push((uint16_t)(PC()));
+		DummyRead();
+		DummyRead();
 
 		if(forBrk) {
 			//B flag is set on the stack for BRK
