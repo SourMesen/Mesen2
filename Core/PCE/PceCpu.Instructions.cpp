@@ -1,27 +1,84 @@
 #include "stdafx.h"
 #include "PceCpu.h"
 
-void PceCpu::AND() { SetA(A() & GetOperandValue()); }
-void PceCpu::EOR() { SetA(A() ^ GetOperandValue()); }
-void PceCpu::ORA() { SetA(A() | GetOperandValue()); }
+void PceCpu::WriteMemoryModeValue(uint8_t value)
+{
+	ClearFlags(PceCpuFlags::Zero | PceCpuFlags::Negative);
+	SetZeroNegativeFlags(value);
+	MemoryWrite(PceCpu::ZeroPage + X(), value);
+}
+
+void PceCpu::AND()
+{
+	if(_memoryFlag) {
+		DummyRead();
+		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
+		WriteMemoryModeValue(value & GetOperandValue());
+	} else {
+		SetA(A() & GetOperandValue());
+	}
+}
+
+void PceCpu::EOR()
+{
+	if(_memoryFlag) {
+		DummyRead();
+		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
+		WriteMemoryModeValue(value ^ GetOperandValue());
+	} else {
+		SetA(A() ^ GetOperandValue());
+	}
+}
+
+void PceCpu::ORA()
+{
+	if(_memoryFlag) {
+		DummyRead();
+		uint8_t value = MemoryRead(PceCpu::ZeroPage + X());
+		WriteMemoryModeValue(value | GetOperandValue());
+	} else {
+		SetA(A() | GetOperandValue());
+	}
+}
 
 void PceCpu::ADD(uint8_t value)
 {
-	uint16_t result = (uint16_t)A() + (uint16_t)value + (CheckFlag(PceCpuFlags::Carry) ? PceCpuFlags::Carry : 0x00);
+	uint8_t source;
+	if(_memoryFlag) {
+		DummyRead();
+		source = MemoryRead(PceCpu::ZeroPage + X());
+	} else {
+		source = A();
+	}
+
+	uint16_t result = (uint16_t)source + (uint16_t)value + (CheckFlag(PceCpuFlags::Carry) ? PceCpuFlags::Carry : 0x00);
 
 	ClearFlags(PceCpuFlags::Carry | PceCpuFlags::Negative | PceCpuFlags::Overflow | PceCpuFlags::Zero);
 	SetZeroNegativeFlags((uint8_t)result);
-	if(~(A() ^ value) & (A() ^ result) & 0x80) {
+	if(~(source ^ value) & (source ^ result) & 0x80) {
 		SetFlags(PceCpuFlags::Overflow);
 	}
 	if(result > 0xFF) {
 		SetFlags(PceCpuFlags::Carry);
 	}
-	SetA((uint8_t)result);
+
+	if(_memoryFlag) {
+		WriteMemoryModeValue((uint8_t)result);
+	} else {
+		SetA((uint8_t)result);
+	}
 }
 
-void PceCpu::ADC() { ADD(GetOperandValue()); }
-void PceCpu::SBC() { ADD(GetOperandValue() ^ 0xFF); }
+void PceCpu::ADC()
+{
+	ADD(GetOperandValue());
+}
+
+void PceCpu::SBC()
+{
+	_memoryFlag = false;
+	ADD(GetOperandValue() ^ 0xFF);
+}
 
 void PceCpu::CMP(uint8_t reg, uint8_t value)
 {

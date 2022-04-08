@@ -38,6 +38,7 @@ private:
 	PceAddrMode _instAddrMode;
 
 private:
+	void WriteMemoryModeValue(uint8_t value);
 	void AND();
 	void EOR();
 	void ORA();
@@ -358,7 +359,6 @@ private:
 	
 	void SET()
 	{
-		MessageManager::Log("SET - unimplemented");
 		SetFlags(PceCpuFlags::Memory);
 	}
 	
@@ -557,9 +557,7 @@ public:
 
 		//T flag is reset at the start of each instruction
 		_memoryFlag = CheckFlag(PceCpuFlags::Memory);
-		if(_memoryFlag) {
-			ClearFlags(PceCpuFlags::Memory);
-		}
+		ClearFlags(PceCpuFlags::Memory);
 
 		uint8_t opCode = GetOPCode();
 		_instAddrMode = _addrMode[opCode];
