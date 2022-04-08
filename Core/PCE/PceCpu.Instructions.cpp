@@ -169,10 +169,6 @@ void PceCpu::BranchRelative(bool branch)
 		}*/
 		DummyRead();
 
-		if(CheckPageCrossed(PC(), offset)) {
-			DummyRead();
-		}
-
 		SetPC(PC() + offset);
 	}
 }
