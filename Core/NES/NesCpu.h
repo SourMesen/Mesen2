@@ -231,8 +231,8 @@ private:
 	uint16_t GetInd() { 
 		uint16_t addr = GetOperand();
 		if((addr & 0xFF) == 0xFF) {
-			auto lo = MemoryRead(addr);
-			auto hi = MemoryRead(addr - 0xFF);
+			uint8_t lo = MemoryRead(addr);
+			uint8_t hi = MemoryRead(addr - 0xFF);
 			return (lo | hi << 8);
 		} else {
 			return MemoryReadWord(addr);
@@ -249,7 +249,9 @@ private:
 		
 		uint16_t addr;
 		if(zero == 0xFF) {
-			addr = MemoryRead(0xFF) | MemoryRead(0x00) << 8;
+			uint8_t lo = MemoryRead(0xFF);
+			uint8_t hi = MemoryRead(0x00);
+			addr = lo | hi << 8;
 		} else {
 			addr = MemoryReadWord(zero);
 		}
@@ -261,12 +263,14 @@ private:
 		
 		uint16_t addr;
 		if(zero == 0xFF) {
-			addr = MemoryRead(0xFF) | MemoryRead(0x00) << 8;
+			uint8_t lo = MemoryRead(0xFF);
+			uint8_t hi = MemoryRead(0x00);
+			addr = lo | hi << 8;
 		} else {
 			addr = MemoryReadWord(zero);
 		}
 
-		bool pageCrossed = CheckPageCrossed(addr, Y());			
+		bool pageCrossed = CheckPageCrossed(addr, Y());
 		if(pageCrossed || dummyRead) {
 			//Dummy read done by the processor (only when page is crossed for READ instructions)
 			MemoryRead(addr + Y() - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);

@@ -50,7 +50,7 @@ void PceCpu::INC()
 	ClearFlags(PceCpuFlags::Negative | PceCpuFlags::Zero);
 	uint8_t value = MemoryRead(addr);
 
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+	DummyRead();
 
 	value++;
 	SetZeroNegativeFlags(value);
@@ -62,7 +62,8 @@ void PceCpu::DEC()
 	uint16_t addr = GetOperand();
 	ClearFlags(PceCpuFlags::Negative | PceCpuFlags::Zero);
 	uint8_t value = MemoryRead(addr);
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+
+	DummyRead();
 
 	value--;
 	SetZeroNegativeFlags(value);
@@ -124,7 +125,7 @@ void PceCpu::ASLAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+	DummyRead();
 	MemoryWrite(addr, ASL(value));
 }
 
@@ -132,7 +133,7 @@ void PceCpu::LSRAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+	DummyRead();
 	MemoryWrite(addr, LSR(value));
 }
 
@@ -140,7 +141,7 @@ void PceCpu::ROLAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+	DummyRead();
 	MemoryWrite(addr, ROL(value));
 }
 
@@ -148,7 +149,7 @@ void PceCpu::RORAddr()
 {
 	uint16_t addr = GetOperand();
 	uint8_t value = MemoryRead(addr);
-	MemoryWrite(addr, value, MemoryOperationType::DummyWrite); //Dummy write
+	DummyRead();
 	MemoryWrite(addr, ROR(value));
 }
 
@@ -421,13 +422,11 @@ void PceCpu::RTI()
 
 void PceCpu::NOP()
 {
-	//Make sure the nop operation takes as many cycles as meant to
-	GetOperandValue();
+	//NOP
 }
 
 void PceCpu::BSR()
 {
-	//TODO
 	int8_t relAddr = (int8_t)GetOperand();
 	DummyRead();
 	DummyRead();

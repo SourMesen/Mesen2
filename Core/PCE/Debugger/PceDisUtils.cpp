@@ -12,8 +12,8 @@
 static constexpr uint8_t _opSize[24] = {
 	1, 1, 1, 2, 2,
 	2, 3, 2, 2,
-	3, 2, 2, 2,
-	3, 3, 3, 3,
+	3, 2, 2,
+	3, 3,
 	2, 3,
 	7,
 	3, 3, 4, 4
@@ -43,21 +43,22 @@ typedef PceAddrMode M;
 static constexpr PceAddrMode _opMode[] = {
 //	0			1				2			3				4				5				6				7				8			9			A			B			C			D			E			F
 	M::Imm,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//0
-	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsXW,M::ZeroRel,//1
+	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsX,	M::ZeroRel,	//1
 	M::Abs,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//2
-	M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//3
+	M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsX,	M::ZeroRel,	//3
 	M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Rel,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//4
-	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//5
+	M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,	//5
 	M::Imp,	M::IndX,		M::Imp,	M::Imp,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Ind,	M::Abs,	M::Abs,	M::ZeroRel,	//6
-	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//7
+	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsX,	M::ZeroRel,	//7
 	M::Rel,	M::IndX,		M::Imp,	M::ImZero,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//8
-	M::Rel,	M::IndYW,	M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsYW,M::Imp,	M::Imp,	M::Abs,	M::AbsXW,M::AbsXW,M::ZeroRel,//9
+	M::Rel,	M::IndY,		M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsX,	M::ZeroRel,	//9
 	M::Imm,	M::IndX,		M::Imm,	M::ImZeroX,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//A
 	M::Rel,	M::IndY,		M::ZInd,	M::ImAbsX,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsY,	M::ZeroRel,	//B
 	M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//C
-	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//D
+	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,	//D
 	M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//E
-	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//F
+	M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,	//F
+
 };
 
 void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
@@ -102,7 +103,6 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 
 		case PceAddrMode::IndY:
-		case PceAddrMode::IndYW:
 			str.WriteAll("(", operand, "),Y");
 			break;
 
@@ -114,13 +114,11 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 			break;
 
 		case PceAddrMode::AbsX:
-		case PceAddrMode::AbsXW:
 		case PceAddrMode::ZeroX:
 			str.WriteAll(operand, ",X");
 			break;
 
 		case PceAddrMode::AbsY:
-		case PceAddrMode::AbsYW:
 		case PceAddrMode::ZeroY:
 			str.WriteAll(operand, ",Y");
 			break;
@@ -178,8 +176,7 @@ int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& sta
 			return memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
 		}
 
-		case PceAddrMode::IndY:
-		case PceAddrMode::IndYW: {
+		case PceAddrMode::IndY: {
 			uint8_t zeroAddr = byteCode[1];
 			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
 			return (uint16_t)(addr + state.Y);
@@ -198,11 +195,9 @@ int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& sta
 		}
 	
 		case PceAddrMode::AbsX:
-		case PceAddrMode::AbsXW:
 			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.X) & 0xFFFF;
 
 		case PceAddrMode::AbsY:
-		case PceAddrMode::AbsYW:
 			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.Y) & 0xFFFF;
 	}
 

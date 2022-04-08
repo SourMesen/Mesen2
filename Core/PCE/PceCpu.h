@@ -481,21 +481,21 @@ public:
 		PceAddrMode addrMode[] = {
 		//	0			1				2			3				4				5				6				7				8			9			A			B			C			D			E			F
 			M::Imm,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//0
-			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsXW,M::ZeroRel,//1
+			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Zero,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsX,	M::ZeroRel,//1
 			M::Abs,	M::IndX,		M::Imp,	M::Imm,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//2
-			M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//3
+			M::Rel,	M::IndY,		M::ZInd,	M::Imp,		M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsX,	M::ZeroRel,//3
 			M::Imp,	M::IndX,		M::Imp,	M::Imm,		M::Rel,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//4
-			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//5
+			M::Rel,	M::IndY,		M::ZInd,	M::Imm,		M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,//5
 			M::Imp,	M::IndX,		M::Imp,	M::Imp,		M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Acc,	M::Imp,	M::Ind,	M::Abs,	M::Abs,	M::ZeroRel,	//6
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsXW,M::ZeroRel,//7
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::ZeroX,	M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsX,	M::ZeroRel,//7
 			M::Rel,	M::IndX,		M::Imp,	M::ImZero,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//8
-			M::Rel,	M::IndYW,	M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsYW,M::Imp,	M::Imp,	M::Abs,	M::AbsXW,M::AbsXW,M::ZeroRel,//9
+			M::Rel,	M::IndY,		M::ZInd,	M::ImAbs,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Abs,	M::AbsX,	M::AbsX,	M::ZeroRel,//9
 			M::Imm,	M::IndX,		M::Imm,	M::ImZeroX,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//A
 			M::Rel,	M::IndY,		M::ZInd,	M::ImAbsX,	M::ZeroX,	M::ZeroX,	M::ZeroY,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::AbsY,	M::ZeroRel,	//B
 			M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//C
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//D
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,//D
 			M::Imm,	M::IndX,		M::Imp,	M::Block,	M::Zero,		M::Zero,		M::Zero,		M::Zero,		M::Imp,	M::Imm,	M::Imp,	M::Imp,	M::Abs,	M::Abs,	M::Abs,	M::ZeroRel,	//E
-			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsXW,M::ZeroRel,//F
+			M::Rel,	M::IndY,		M::ZInd,	M::Block,	M::Imp,		M::ZeroX,	M::ZeroX,	M::Zero,		M::Imp,	M::AbsY,	M::Imp,	M::Imp,	M::Imp,	M::AbsX,	M::AbsX,	M::ZeroRel,//F
 		};
 
 		memcpy(_opTable, opTable, sizeof(opTable));
@@ -541,7 +541,8 @@ public:
 
 	void Exec()
 	{
-		uint32_t cycleCounts[256] = {};
+		//TODO delete
+		/*uint32_t cycleCounts[256] = {};
 		for(int i = 0; i < 256; i++) {
 			uint64_t count = _state.CycleCount;
 
@@ -552,7 +553,7 @@ public:
 			cycleCounts[i] = _state.CycleCount - count + 1;
 		}
 
-		_emu->ProcessInstruction<CpuType::Pce>();
+		_emu->ProcessInstruction<CpuType::Pce>();*/
 
 		//T flag is reset at the start of each instruction
 		_memoryFlag = CheckFlag(PceCpuFlags::Memory);
@@ -582,13 +583,10 @@ public:
 			case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); DummyRead(); return _operand;
 			case PceAddrMode::Ind: return GetIndAddr();
 			case PceAddrMode::IndX: return GetIndXAddr();
-			case PceAddrMode::IndY: return GetIndYAddr(false);
-			case PceAddrMode::IndYW: return GetIndYAddr(true);
+			case PceAddrMode::IndY: return GetIndYAddr();
 			case PceAddrMode::Abs: _operand = GetAbsAddr(); DummyRead(); return _operand;
-			case PceAddrMode::AbsX: _operand = GetAbsXAddr(false); DummyRead(); return _operand;
-			case PceAddrMode::AbsXW:_operand = GetAbsXAddr(true); DummyRead(); return _operand;
-			case PceAddrMode::AbsY: _operand = GetAbsYAddr(false); DummyRead(); return _operand;
-			case PceAddrMode::AbsYW: _operand = GetAbsYAddr(true); DummyRead(); return _operand;
+			case PceAddrMode::AbsX: _operand = GetAbsXAddr(); DummyRead(); return _operand;
+			case PceAddrMode::AbsY: _operand = GetAbsYAddr(); DummyRead(); return _operand;
 
 			case PceAddrMode::ZeroRel: return ReadWord();
 
@@ -701,6 +699,7 @@ public:
 
 	void DummyRead()
 	{
+		//TODO - is this supposed to be an idle cycle, or a dummy read?
 		MemoryRead(_state.PC, MemoryOperationType::DummyRead);
 	}
 
@@ -765,10 +764,8 @@ public:
 #ifdef DUMMYCPU
 		LogMemoryOperation(addr, value, operationType);
 #else
-		//_cpuWrite = true;
 		ProcessCpuCycle();
 		_memoryManager->Write(addr, value, operationType);
-		//_cpuWrite = false;
 #endif
 	}
 
@@ -800,96 +797,65 @@ public:
 	uint8_t GetZeroXAddr()
 	{
 		uint8_t value = ReadByte();
-		//MemoryRead(PceCpu::ZeroPage + value, MemoryOperationType::DummyRead); //Dummy read
 		return value + X();
 	}
 
 	uint8_t GetZeroYAddr()
 	{
 		uint8_t value = ReadByte();
-		//MemoryRead(PceCpu::ZeroPage + value, MemoryOperationType::DummyRead); //Dummy read
 		return value + Y();
 	}
 
 	uint16_t GetAbsAddr() { return ReadWord(); }
 
-	uint16_t GetAbsXAddr(bool dummyRead = true)
+	uint16_t GetAbsXAddr()
 	{
 		uint16_t baseAddr = ReadWord();
-		bool pageCrossed = CheckPageCrossed(baseAddr, X());
-
-		if(pageCrossed || dummyRead) {
-			//Dummy read done by the processor (only when page is crossed for READ instructions)
-			//MemoryRead(baseAddr + X() - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);
-		}
 		return baseAddr + X();
 	}
 
-	uint16_t GetAbsYAddr(bool dummyRead = true)
+	uint16_t GetAbsYAddr()
 	{
 		uint16_t baseAddr = ReadWord();
-		bool pageCrossed = CheckPageCrossed(baseAddr, Y());
-
-		if(pageCrossed || dummyRead) {
-			//Dummy read done by the processor (only when page is crossed for READ instructions)
-			//MemoryRead(baseAddr + Y() - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);
-		}
-
 		return baseAddr + Y();
+	}
+
+	uint16_t ReadZeroPageWrap(uint8_t zero)
+	{
+		if(zero == 0xFF) {
+			uint8_t lo = MemoryRead(PceCpu::ZeroPage + 0xFF);
+			uint8_t hi = (MemoryRead(PceCpu::ZeroPage + 0x00) << 8);
+			return lo | (hi << 8);
+		} else {
+			return MemoryReadWord(PceCpu::ZeroPage + zero);
+		}
 	}
 
 	uint16_t GetIndZeroAddr()
 	{
 		uint8_t zero = ReadByte();
 		DummyRead();
-		uint16_t value = MemoryReadWord(PceCpu::ZeroPage + zero);
+		uint16_t addr = ReadZeroPageWrap(zero);
 		DummyRead();
-		return value;
+		return addr;
 	}
 
 	uint16_t GetIndXAddr()
 	{
 		uint8_t zero = ReadByte();
-
 		DummyRead();
-
 		zero += X();
-
-		uint16_t addr;
-		if(zero == 0xFF) {
-			//TODO ??
-			addr = MemoryRead(PceCpu::ZeroPage + 0xFF) | MemoryRead(PceCpu::ZeroPage + 0x00) << 8;
-		} else {
-			addr = MemoryReadWord(PceCpu::ZeroPage + zero);
-		}
-
+		uint16_t addr = ReadZeroPageWrap(zero);
 		DummyRead();
-
 		return addr;
 	}
 
-	uint16_t GetIndYAddr(bool dummyRead = true)
+	uint16_t GetIndYAddr()
 	{
 		uint8_t zero = ReadByte();
-
 		DummyRead();
-
-		uint16_t addr;
-		if(zero == 0xFF) {
-			addr = MemoryRead(PceCpu::ZeroPage + 0xFF) | MemoryRead(PceCpu::ZeroPage + 0x00) << 8;
-		} else {
-			addr = MemoryReadWord(PceCpu::ZeroPage + zero);
-		}
-
-		bool pageCrossed = CheckPageCrossed(addr, Y());
-		if(pageCrossed || dummyRead) {
-			//Dummy read done by the processor (only when page is crossed for READ instructions)
-			//MemoryRead(addr + Y() - (pageCrossed ? 0x100 : 0), MemoryOperationType::DummyRead);
-			//??
-		}
-		
+		uint16_t addr = ReadZeroPageWrap(zero);
 		DummyRead();
-
 		return addr + Y();
 	}
 

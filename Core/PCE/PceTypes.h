@@ -48,8 +48,8 @@ enum class PceAddrMode
 {
 	None, Acc, Imp, Imm, Rel,
 	Zero, Abs, ZeroX, ZeroY,
-	Ind, IndX, IndY, IndYW,
-	AbsX, AbsXW, AbsY, AbsYW,
+	Ind, IndX, IndY,
+	AbsX, AbsY,
 	ZInd, ZeroRel,
 	Block,
 	ImZero, ImZeroX, ImAbs, ImAbsX

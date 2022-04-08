@@ -506,6 +506,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 uint8_t PcePpu::ReadVce(uint16_t addr)
 {
 	switch(addr & 0x07) {
+		default:
 		case 0: return 0xFF; //write-only, reads return $FF
 		case 1: return 0xFF; //unused, reads return $FF
 		case 2: return 0xFF; //write-only, reads return $FF
