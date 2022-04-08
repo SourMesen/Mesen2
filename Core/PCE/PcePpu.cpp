@@ -506,17 +506,23 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 uint8_t PcePpu::ReadVce(uint16_t addr)
 {
 	switch(addr & 0x07) {
+		case 0: return 0xFF; //write-only, reads return $FF
+		case 1: return 0xFF; //unused, reads return $FF
+		case 2: return 0xFF; //write-only, reads return $FF
+		case 3: return 0xFF; //write-only, reads return $FF
+
 		case 4: return _paletteRam[_state.PalAddr] & 0xFF;
 		
 		case 5: {
-			uint8_t val = (_paletteRam[_state.PalAddr] >> 8) & 0xFF;
+			uint8_t val = (_paletteRam[_state.PalAddr] >> 8) & 0x01;
 			_state.PalAddr = (_state.PalAddr + 1) & 0x1FF;
-			return val;
+
+			//Bits 1 to 7 are set to 1 when reading MSB
+			return 0xFE | val;
 		}
 
-		default:
-			MessageManager::Log("read vce unknown reg: " + HexUtilities::ToHex(addr));
-			return 0;
+		case 6: return 0xFF; //unused, reads return $FF
+		case 7: return 0xFF; //unused, reads return $FF
 	}
 }
 
@@ -524,26 +530,27 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 {
 	switch(addr & 0x07) {
 		case 0x00:
-		case 0x01:
 			//TODO
 			LogDebug("[Debug] Write - VCE missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
+
+		case 0x01: break; //Unused, writes do nothing
 
 		case 0x02: _state.PalAddr = (_state.PalAddr & 0x100) | value; break;
 		case 0x03: _state.PalAddr = (_state.PalAddr & 0xFF) | ((value & 0x01) << 8); break;
 
 		case 0x04:
-			_state.PalData = (_state.PalData & 0x100) | value;
+			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1), value, MemoryType::PceVideoRam);
+			_paletteRam[_state.PalAddr] = (_paletteRam[_state.PalAddr] & 0x100) | value;
 			break;
 
 		case 0x05:
-			_state.PalData = (_state.PalData & 0xFF) | ((value & 0x01) << 8);
-			
-			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1), _state.PalData & 0xFF, MemoryType::PceVideoRam);
-			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1) + 1, value & 0x01, MemoryType::PceVideoRam);
-
-			_paletteRam[_state.PalAddr] = _state.PalData;
+			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1) + 1, value, MemoryType::PceVideoRam);
+			_paletteRam[_state.PalAddr] = (_paletteRam[_state.PalAddr] & 0xFF) | ((value & 0x01) << 8);
 			_state.PalAddr = (_state.PalAddr + 1) & 0x1FF;
 			break;
+
+		case 0x06: break; //Unused, writes do nothing
+		case 0x07: break; //Unused, writes do nothing
 	}
 }

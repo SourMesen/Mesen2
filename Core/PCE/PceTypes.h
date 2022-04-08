@@ -135,7 +135,6 @@ struct PcePpuState
 	
 	//VCE
 	uint16_t PalAddr;
-	uint16_t PalData;
 };
 
 struct PceMemoryManagerState
