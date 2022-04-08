@@ -40,9 +40,9 @@ PcePpuState& PcePpu::GetState()
 void PcePpu::Exec()
 {
 	_state.Cycle++;
-	if(_state.Cycle == 341) {
-		_state.Cycle = 0;
-
+	if(_state.Cycle == 270) {
+		//TODO timing, approx end of scanline display
+		//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
 		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
 		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
 		bool drawOverscan = true;
@@ -95,14 +95,6 @@ void PcePpu::Exec()
 
 		DrawScanline(drawOverscan);
 
-		_state.Scanline++;
-		_state.DisplayCounter++;
-
-		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+242) {
-			//re-start displaying picture
-			_state.DisplayCounter = 0;
-		}
-
 		if(_state.EnableScanlineIrq) {
 			if(_state.Scanline < topBorder) {
 				int scanlineValue = (int)_state.Scanline - topBorder + 263;
@@ -119,6 +111,30 @@ void PcePpu::Exec()
 				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 			}
 		}
+	} else if(_state.Cycle == 341) {
+		_state.Cycle = 0;
+
+		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
+		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
+
+		if(_state.DisplayCounter >= topBorder) {
+			if(_state.BgScrollYUpdatePending) {
+				_state.BgScrollYLatch = _state.BgScrollY + 1;
+				_state.BgScrollYUpdatePending = false;
+			} else {
+				_state.BgScrollYLatch++;
+			}
+
+			_state.BgScrollXLatch = _state.BgScrollX;
+		}
+
+		_state.Scanline++;
+		_state.DisplayCounter++;
+
+		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+242) {
+			//re-start displaying picture
+			_state.DisplayCounter = 0;
+		}
 
 		if(_state.Scanline == 256) {
 			_state.FrameCount++;
@@ -128,6 +144,7 @@ void PcePpu::Exec()
 			_state.DisplayCounter = 0;
 			_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
 			_state.BgScrollYLatch = _state.BgScrollY;
+			_state.BgScrollYUpdatePending = false;
 		}
 	}
 
@@ -182,7 +199,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 	if(_state.BackgroundEnabled) {
 		uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
 		for(int column = 0; column < 256; column++) {
-			uint16_t screenX = (column + _state.BgScrollX) & ((_state.ColumnCount * 8) - 1);
+			uint16_t screenX = (column + _state.BgScrollXLatch) & ((_state.ColumnCount * 8) - 1);
 
 			uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
 			uint8_t palette = batEntry >> 12;
@@ -203,8 +220,6 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			_outBuffer[outputOffset + column] = _paletteRam[0];
 		}
 	}
-
-	_state.BgScrollYLatch++;
 
 	if(_state.SpritesEnabled) {
 		bool hasSprite[256] = {};
@@ -442,7 +457,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 				case 0x07: UpdateReg<0x3FF>(_state.BgScrollX, value, msb); break;
 				case 0x08:
 					UpdateReg<0x1FF>(_state.BgScrollY, value, msb);
-					UpdateReg<0x1FF>(_state.BgScrollYLatch, value, msb);
+					_state.BgScrollYUpdatePending = true;
 					break;
 
 				case 0x09:

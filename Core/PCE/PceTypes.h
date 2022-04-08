@@ -86,7 +86,9 @@ struct PcePpuState
 	uint16_t BgScrollX;     //R07 - BXR
 	uint16_t BgScrollY;     //R08 - BYR
 	
+	uint16_t BgScrollXLatch;
 	uint16_t BgScrollYLatch;
+	bool BgScrollYUpdatePending;
 
 	//R09 - MWR - Memory Width
 	uint8_t ColumnCount;

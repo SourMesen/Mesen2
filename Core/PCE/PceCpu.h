@@ -551,9 +551,9 @@ public:
 			(this->*_opTable[i])();
 
 			cycleCounts[i] = _state.CycleCount - count + 1;
-		}
+		}*/
 
-		_emu->ProcessInstruction<CpuType::Pce>();*/
+		_emu->ProcessInstruction<CpuType::Pce>();
 
 		//T flag is reset at the start of each instruction
 		_memoryFlag = CheckFlag(PceCpuFlags::Memory);
