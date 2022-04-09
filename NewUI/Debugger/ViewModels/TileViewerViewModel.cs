@@ -530,7 +530,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			//_ppuState = DebugApi.GetPpuState(CpuType);
+			_ppuState = DebugApi.GetPpuState(CpuType);
 
 			List<ConfigPreset> presets = GetConfigPresets();
 			if(presets.Count != ConfigPresets.Count) {

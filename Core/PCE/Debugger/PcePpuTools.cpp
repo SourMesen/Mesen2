@@ -11,19 +11,80 @@ PcePpuTools::PcePpuTools(Debugger* debugger, Emulator *emu, PceConsole* console)
 {
 }
 
+FrameInfo PcePpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
+{
+	PcePpuState& state = (PcePpuState&)baseState;
+	return { (uint32_t)state.ColumnCount * 8, (uint32_t)state.RowCount * 8 };
+}
+
+DebugTilemapTileInfo PcePpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+{
+	DebugTilemapTileInfo result;
+
+	FrameInfo size = GetTilemapSize(options, baseState);
+	if(x >= size.Width || y >= size.Height) {
+		return result;
+	}
+
+	PcePpuState& state = (PcePpuState&)baseState;
+
+	uint32_t row = y / 8;
+	uint32_t column = x / 8;
+
+	uint16_t entryAddr = (row * state.ColumnCount + column) * 2;
+	uint16_t batEntry = vram[entryAddr] | (vram[entryAddr + 1] << 8);
+
+	result.Height = 8;
+	result.Width = 8;
+	result.PaletteIndex = batEntry >> 12;
+	result.TileIndex = (batEntry & 0xFFF);
+	result.TileMapAddress = entryAddr;
+
+	result.TileAddress = result.TileIndex * 32;
+	result.PaletteAddress = result.PaletteIndex * 16;
+
+	result.Row = row;
+	result.Column = column;
+
+	return result;
+}
+
 DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
+	PcePpuState& state = (PcePpuState&)baseState;
+
 	DebugTilemapInfo result = {};
-	result.Bpp = 2;
+	result.Bpp = 4;
 	result.Format = TileFormat::Bpp4;
 	result.TileWidth = 8;
 	result.TileHeight = 8;
-	result.ColumnCount = 64;
-	result.RowCount = 60;
-	result.TilemapAddress = 0x2000;
+	result.ColumnCount = state.ColumnCount;
+	result.RowCount = state.RowCount;
+	result.TilemapAddress = 0;
 	result.TilesetAddress = 0;
-	result.ScrollWidth = 256;
-	result.ScrollHeight = 240;
+	result.ScrollX = state.BgScrollX;
+	result.ScrollY = state.BgScrollY;
+	result.ScrollWidth = (state.HorizDisplayWidth + 1) * 8;
+	result.ScrollHeight = std::min<uint32_t>(242, state.VertDisplayWidth);
+
+	for(uint8_t row = 0; row < state.RowCount; row++) {
+		for(uint8_t column = 0; column < state.ColumnCount; column++) {
+			uint16_t entryAddr = (row * state.ColumnCount + column) * 2;
+			uint16_t batEntry = vram[entryAddr] | (vram[entryAddr + 1] << 8);
+			uint8_t palIndex = batEntry >> 12;
+			uint16_t tileIndex = (batEntry & 0xFFF);
+
+			for(int y = 0; y < 8; y++) {
+				uint16_t tileAddr = tileIndex * 32 + y * 2;
+				for(int x = 0; x < 8; x++) {
+					uint8_t color = GetTilePixelColor(vram, 0xFFFF, 4, tileAddr, 7 - x, 0, TileFormat::Bpp4);
+					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
+					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
+					outBuffer[outPos] = palette[palAddr];
+				}
+			}
+		}
+	}
 
 	return result;
 }
@@ -58,16 +119,6 @@ void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 			}
 		}
 	}
-}
-
-FrameInfo PcePpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& state)
-{
-	return { 512, 480 };
-}
-
-DebugTilemapTileInfo PcePpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
-{
-	return DebugTilemapTileInfo();
 }
 
 void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PcePpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)

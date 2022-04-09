@@ -64,12 +64,15 @@ struct PcePpuState
 
 	uint8_t CurrentReg;
 
-	uint16_t MemAddrWrite;  //R00 - MAWR
+	//R00 - MAWR
+	uint16_t MemAddrWrite;
 
-	uint16_t MemAddrRead;   //R01 - MARR
+	//R01 - MARR
+	uint16_t MemAddrRead;
 	uint16_t ReadBuffer;
 
-	uint16_t VramData;      //R02 - VWR
+	//R02 - VWR
+	uint16_t VramData;
 
 	//R05 - CR - Control
 	bool EnableCollisionIrq;
@@ -81,15 +84,18 @@ struct PcePpuState
 	bool BackgroundEnabled;
 	uint8_t VramAddrIncrement;
 
-	uint16_t RasterCompareRegister;           //R06 - RCR
+	//R06 - RCR
+	uint16_t RasterCompareRegister;
 
-	uint16_t BgScrollX;     //R07 - BXR
-	uint16_t BgScrollY;     //R08 - BYR
-	
+	//R07 - BXR
+	uint16_t BgScrollX;
 	uint16_t BgScrollXLatch;
+	
+	//R08 - BYR
+	uint16_t BgScrollY;
 	uint16_t BgScrollYLatch;
 	bool BgScrollYUpdatePending;
-
+	
 	//R09 - MWR - Memory Width
 	uint8_t ColumnCount;
 	uint8_t RowCount;
@@ -109,8 +115,11 @@ struct PcePpuState
 	uint8_t VertDisplayStart;
 	uint8_t VertSyncWidth;
 
-	uint16_t VertDisplayWidth;   //R0D - VDW
-	uint8_t VertEndPosVcr;     //R0E - VCR
+	//R0D - VDW
+	uint16_t VertDisplayWidth;
+	
+	//R0E - VCR
+	uint8_t VertEndPosVcr;
 
 	//R0F - DCR
 	bool VramSatbIrqEnabled;
@@ -119,11 +128,17 @@ struct PcePpuState
 	bool DecrementDst;
 	bool RepeatSatbTransfer;
 
-	uint16_t BlockSrc;      //R10 - SOUR
-	uint16_t BlockDst;      //R11 - DESR
-	uint16_t BlockLen;      //R12 - LENR
+	//R10 - SOUR
+	uint16_t BlockSrc;
+	
+	//R11 - DESR
+	uint16_t BlockDst;
+	
+	//R12 - LENR
+	uint16_t BlockLen;
 
-	uint16_t SatbBlockSrc;  //R13 - DVSSR
+	//R13 - DVSSR
+	uint16_t SatbBlockSrc;
 	bool SatbTransferPending;
 	bool SatbTransferRunning;
 	uint16_t SatbTransferCycleCounter;
@@ -135,7 +150,7 @@ struct PcePpuState
 	bool ScanlineDetected;
 	bool SpriteOverflow;
 	bool Sprite0Hit;
-
+	
 	bool BurstModeEnabled;
 	bool NextSpritesEnabled;
 	bool NextBackgroundEnabled;

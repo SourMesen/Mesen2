@@ -201,7 +201,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 
 	if(_state.BurstModeEnabled || drawOverscan) {
 		//Draw sprite color 0 as background when display is disabled
-		for(int column = 0; column < _rowWidth; column++) {
+		for(uint32_t column = 0; column < _rowWidth; column++) {
 			_outBuffer[outputOffset + column] = _paletteRam[16 * 16];
 		}
 		return;
@@ -210,7 +210,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 	bool hasBg[512] = {};
 	if(_state.BackgroundEnabled) {
 		uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
-		for(int column = 0; column < _rowWidth; column++) {
+		for(uint32_t column = 0; column < _rowWidth; column++) {
 			uint16_t screenX = (column + _state.BgScrollXLatch) & ((_state.ColumnCount * 8) - 1);
 
 			uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
@@ -228,7 +228,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 		}
 	} else {
 		//Draw background color
-		for(int column = 0; column < _rowWidth; column++) {
+		for(uint32_t column = 0; column < _rowWidth; column++) {
 			_outBuffer[outputOffset + column] = _paletteRam[0];
 		}
 	}
@@ -261,7 +261,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			uint8_t width = (flags & 0x100) ? 32 : 16;
 			int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
 
-			if(spriteX + width <= 0 || spriteX >= _rowWidth) {
+			if(spriteX + width <= 0 || (uint16_t)spriteX >= _rowWidth) {
 				//Sprite off-screen
 				continue;
 			}
@@ -291,7 +291,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 
 			uint16_t spriteTileY = tileIndex | (rowOffset << 1);
 
-			for(int x = 0; x < width; x++) {
+			for(uint32_t x = 0; x < width; x++) {
 				if(spriteX + x < 0) {
 					continue;
 				} else if(spriteX + x >= _rowWidth) {

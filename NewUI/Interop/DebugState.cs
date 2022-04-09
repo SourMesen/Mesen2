@@ -1278,6 +1278,105 @@ namespace Mesen.Interop
 
 	public struct PcePpuState : BaseState
 	{
+		public UInt32 FrameCount;
+		public UInt16 Cycle;
+		public UInt16 Scanline;
+		public UInt16 DisplayCounter;
 
+		public byte CurrentReg;
+
+		//R00 - MAWR
+		public UInt16 MemAddrWrite;
+
+		//R01 - MARR
+		public UInt16 MemAddrRead;
+		public UInt16 ReadBuffer;
+
+		//R02 - VWR
+		public UInt16 VramData;
+
+		//R05 - CR - Control
+		[MarshalAs(UnmanagedType.I1)] public bool EnableCollisionIrq;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableOverflowIrq;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableScanlineIrq;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableVerticalBlankIrq;
+		public byte ExternalSync;
+		[MarshalAs(UnmanagedType.I1)] public bool SpritesEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool BackgroundEnabled;
+		public byte VramAddrIncrement;
+
+		//R06 - RCR
+		public UInt16 RasterCompareRegister;
+
+		//R07 - BXR
+		public UInt16 BgScrollX;
+		public UInt16 BgScrollXLatch;
+
+		//R08 - BYR
+		public UInt16 BgScrollY;
+		public UInt16 BgScrollYLatch;
+		[MarshalAs(UnmanagedType.I1)] public bool BgScrollYUpdatePending;
+
+		//R09 - MWR - Memory Width
+		public byte ColumnCount;
+		public byte RowCount;
+		public byte SpriteAccessMode;
+		public byte VramAccessMode;
+		[MarshalAs(UnmanagedType.I1)] public bool CgMode;
+
+		//R0A - HSR
+		public byte HorizDisplayStart;
+		public byte HorizSyncWidth; //no effect
+
+		//R0B - HDR
+		public byte HorizDisplayWidth;
+		public byte HorizDisplayEnd; //no effect
+
+		//R0C - VPR
+		public byte VertDisplayStart;
+		public byte VertSyncWidth;
+
+		//R0D - VDW
+		public UInt16 VertDisplayWidth;
+
+		//R0E - VCR
+		public byte VertEndPosVcr;
+
+		//R0F - DCR
+		[MarshalAs(UnmanagedType.I1)] public bool VramSatbIrqEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool VramVramIrqEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool DecrementSrc;
+		[MarshalAs(UnmanagedType.I1)] public bool DecrementDst;
+		[MarshalAs(UnmanagedType.I1)] public bool RepeatSatbTransfer;
+
+		//R10 - SOUR
+		public UInt16 BlockSrc;
+
+		//R11 - DESR
+		public UInt16 BlockDst;
+
+		//R12 - LENR
+		public UInt16 BlockLen;
+
+		//R13 - DVSSR
+		public UInt16 SatbBlockSrc;
+		[MarshalAs(UnmanagedType.I1)] public bool SatbTransferPending;
+		[MarshalAs(UnmanagedType.I1)] public bool SatbTransferRunning;
+		public UInt16 SatbTransferCycleCounter;
+
+		//Status flags
+		[MarshalAs(UnmanagedType.I1)] public bool VerticalBlank;
+		[MarshalAs(UnmanagedType.I1)] public bool VramTransferDone;
+		[MarshalAs(UnmanagedType.I1)] public bool SatbTransferDone;
+		[MarshalAs(UnmanagedType.I1)] public bool ScanlineDetected;
+		[MarshalAs(UnmanagedType.I1)] public bool SpriteOverflow;
+		[MarshalAs(UnmanagedType.I1)] public bool Sprite0Hit;
+
+		[MarshalAs(UnmanagedType.I1)] public bool BurstModeEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool NextSpritesEnabled;
+		[MarshalAs(UnmanagedType.I1)] public bool NextBackgroundEnabled;
+
+		//VCE
+		public UInt16 PalAddr;
 	}
 }

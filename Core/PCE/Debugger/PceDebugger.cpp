@@ -342,7 +342,7 @@ BaseState& PceDebugger::GetState()
 
 void PceDebugger::GetPpuState(BaseState& state)
 {
-	//_ppu->GetState((PcePpuState&)state);
+	(PcePpuState&)state = _ppu->GetState();
 }
 
 void PceDebugger::SetPpuState(BaseState& state)

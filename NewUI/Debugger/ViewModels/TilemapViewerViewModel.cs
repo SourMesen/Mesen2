@@ -169,6 +169,7 @@ namespace Mesen.Debugger.ViewModels
 					break;
 
 				case CpuType.Nes:
+				case CpuType.Pce:
 					Tabs = new List<TilemapViewerTab>() {
 						new() { Title = "", Layer = 0 }
 					};
@@ -238,9 +239,9 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		private void RefreshData<T>() where T : struct, BaseState
+		public void RefreshData()
 		{
-			T ppuState = DebugApi.GetPpuState<T>(CpuType);
+			BaseState ppuState = DebugApi.GetPpuState(CpuType);
 			_ppuState = ppuState;
 			_prevVram = _vram;
 			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
@@ -315,15 +316,6 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddEntry("Tileset Address", "$" + info.TilesetAddress.ToString("X4"));
 			entries.AddEntry("BPP", info.Bpp);
 			TilemapInfoPanel.Items = entries;
-		}
-
-		public void RefreshData()
-		{
-			switch(CpuType) {
-				case CpuType.Snes: RefreshData<SnesPpuState>(); break;
-				case CpuType.Nes: RefreshData<NesPpuState>(); break;
-				case CpuType.Gameboy: RefreshData<GbPpuState>(); break;
-			}
 		}
 
 		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
