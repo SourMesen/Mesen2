@@ -5,6 +5,7 @@
 #include "PCE/PceDefaultVideoFilter.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PcePpu.h"
+#include "PCE/PceConstants.h"
 #include "MemoryType.h"
 
 PceConsole::PceConsole(Emulator* emu)
@@ -103,7 +104,7 @@ uint64_t PceConsole::GetMasterClock()
 
 uint32_t PceConsole::GetMasterClockRate()
 {
-	return 21477270;
+	return PceConstants::MasterClockRate;
 }
 
 double PceConsole::GetFps()

@@ -69,7 +69,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 			
-			SpritePreviewZoom = 32 / Math.Max(Width, Height);
+			SpritePreviewZoom = 32.0 / Math.Max(Width, Height);
 
 			Visible = sprite.Visible;
 

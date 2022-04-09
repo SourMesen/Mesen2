@@ -2,6 +2,7 @@
 #include "PCE/PcePpu.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceControlManager.h"
+#include "PCE/PceConstants.h"
 #include "PCE/PceConsole.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/NotificationManager.h"
@@ -14,7 +15,7 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
 	_paletteRam = new uint16_t[0x200];
-	_outBuffer = new uint16_t[512 * 242];
+	_outBuffer = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
 
 	memset(_vram, 0, 0x10000);
 	memset(_paletteRam, 0, 0x400);
@@ -123,7 +124,7 @@ void PcePpu::Exec()
 		_state.Scanline++;
 		_state.DisplayCounter++;
 
-		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+242) {
+		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+PceConstants::ScreenHeight) {
 			//re-start displaying picture
 			_state.DisplayCounter = 0;
 		}
@@ -222,7 +223,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 		outputOffset += gap;
 	}
 
-	bool hasBg[512] = {};
+	bool hasBg[PceConstants::MaxScreenWidth] = {};
 	if(_state.BackgroundEnabled) {
 		uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
 		for(uint32_t column = 0; column < rowWidth; column++) {
@@ -249,8 +250,8 @@ void PcePpu::DrawScanline(bool drawOverscan)
 	}
 
 	if(_state.SpritesEnabled) {
-		bool hasSprite[512] = {};
-		bool hasSprite0[512] = {};
+		bool hasSprite[PceConstants::MaxScreenWidth] = {};
+		bool hasSprite0[PceConstants::MaxScreenWidth] = {};
 
 		for(int i = 0; i < 64; i++) {
 			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
@@ -356,7 +357,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 
 uint32_t PcePpu::GetCurrentScreenWidth()
 {
-	return std::min(512, (_state.HorizDisplayWidth + 1) * 8);
+	return std::min<uint32_t>(PceConstants::MaxScreenWidth, (_state.HorizDisplayWidth + 1) * 8);
 }
 
 void PcePpu::ChangeResolution()
@@ -383,7 +384,7 @@ void PcePpu::SendFrame()
 	_emu->ProcessEvent(EventType::EndFrame);
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _outBuffer);
 
-	RenderedFrame frame(_outBuffer, _screenWidth, 242, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_outBuffer, _screenWidth, PceConstants::ScreenHeight, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 
 	_emu->ProcessEndOfFrame();

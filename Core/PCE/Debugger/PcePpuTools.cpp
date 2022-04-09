@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PCE/Debugger/PcePpuTools.h"
 #include "PCE/PceConsole.h"
+#include "PCE/PceConstants.h"
 #include "PCE/PceDefaultVideoFilter.h"
 #include "PCE/PceTypes.h"
 #include "Debugger/DebugTypes.h"
@@ -93,9 +94,10 @@ void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 {
 	PcePpuState& state = (PcePpuState&)baseState;
 
-	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF666666);
-	for(int i = 64; i < 240 + 64; i++) {
-		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + 256, 0xFF666666);
+	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HorizDisplayWidth + 1) * 8);
+	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF333333);
+	for(int i = 64; i < state.VertDisplayWidth + 64; i++) {
+		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, 0xFF666666);
 	}
 
 	DebugSpriteInfo sprite;

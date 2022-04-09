@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCE\Input\PceController.h" />
+    <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PcePpu.h" />
     <ClInclude Include="PCE\Debugger\PceDebugger.h" />
     <ClInclude Include="PCE\Debugger\PceDisUtils.h" />
