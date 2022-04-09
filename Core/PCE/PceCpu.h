@@ -44,6 +44,7 @@ private:
 	void ORA();
 
 	void ADD(uint8_t value);
+	void SUB(uint8_t value);
 
 	void ADC();
 	void SBC();

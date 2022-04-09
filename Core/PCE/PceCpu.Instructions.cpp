@@ -51,13 +51,25 @@ void PceCpu::ADD(uint8_t value)
 		source = A();
 	}
 
-	uint16_t result = (uint16_t)source + (uint16_t)value + (CheckFlag(PceCpuFlags::Carry) ? PceCpuFlags::Carry : 0x00);
-
-	ClearFlags(PceCpuFlags::Carry | PceCpuFlags::Negative | PceCpuFlags::Overflow | PceCpuFlags::Zero);
-	SetZeroNegativeFlags((uint8_t)result);
-	if(~(source ^ value) & (source ^ result) & 0x80) {
-		SetFlags(PceCpuFlags::Overflow);
+	uint16_t result;
+	if(CheckFlag(PceCpuFlags::Decimal)) {
+		result = (uint16_t)(source & 0x0F) + (uint16_t)(value & 0x0F) + (_state.PS & PceCpuFlags::Carry);
+		if(result > 0x09) result += 0x06;
+		result = (uint16_t)(source & 0xF0) + (uint16_t)(value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
+		if(result > 0x9F) result += 0x60;
+	} else {
+		result = (uint16_t)source + (uint16_t)value + (CheckFlag(PceCpuFlags::Carry) ? PceCpuFlags::Carry : 0x00);
+		
+		if(~(source ^ value) & (source ^ result) & 0x80) {
+			SetFlags(PceCpuFlags::Overflow);
+		} else {
+			ClearFlags(PceCpuFlags::Overflow);
+		}
 	}
+
+	ClearFlags(PceCpuFlags::Carry | PceCpuFlags::Negative | PceCpuFlags::Zero);
+	SetZeroNegativeFlags((uint8_t)result);
+
 	if(result > 0xFF) {
 		SetFlags(PceCpuFlags::Carry);
 	}
@@ -69,6 +81,34 @@ void PceCpu::ADD(uint8_t value)
 	}
 }
 
+void PceCpu::SUB(uint8_t value)
+{
+	int32_t result;
+	if(CheckFlag(PceCpuFlags::Decimal)) {
+		result = (A() & 0x0F) + (value & 0x0F) + (_state.PS & PceCpuFlags::Carry);
+		if(result <= 0x0F) result -= 0x06;
+		result = (A() & 0xF0) + (value & 0xF0) + (result > 0x0F ? 0x10 : 0) + (result & 0x0F);
+		if(result <= 0xFF) result -= 0x60;
+	} else {
+		result = (uint16_t)A() + (uint16_t)value + (_state.PS & PceCpuFlags::Carry);
+
+		if(~(A() ^ value) & (A() ^ result) & 0x80) {
+			SetFlags(PceCpuFlags::Overflow);
+		} else {
+			ClearFlags(PceCpuFlags::Overflow);
+		}
+	}
+
+	ClearFlags(PceCpuFlags::Carry | PceCpuFlags::Negative | PceCpuFlags::Zero);
+	SetZeroNegativeFlags((uint8_t)result);
+
+	if(result > 0xFF) {
+		SetFlags(PceCpuFlags::Carry);
+	}
+
+	SetA((uint8_t)result);
+}
+
 void PceCpu::ADC()
 {
 	ADD(GetOperandValue());
@@ -76,8 +116,7 @@ void PceCpu::ADC()
 
 void PceCpu::SBC()
 {
-	_memoryFlag = false;
-	ADD(GetOperandValue() ^ 0xFF);
+	SUB(~GetOperandValue());
 }
 
 void PceCpu::CMP(uint8_t reg, uint8_t value)
