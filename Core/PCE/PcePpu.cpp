@@ -92,18 +92,13 @@ void PcePpu::Exec()
 		DrawScanline(drawOverscan);
 
 		if(_state.EnableScanlineIrq) {
+			int scanlineValue = (int)_state.Scanline - topBorder;
 			if(_state.Scanline < topBorder) {
-				int scanlineValue = (int)_state.Scanline - topBorder + 263;
-				if(scanlineValue == _state.RasterCompareRegister) {
-					_state.ScanlineDetected = true;
-				}
-			} else {
-				if(_state.Scanline - topBorder == _state.RasterCompareRegister - 0x40) {
-					_state.ScanlineDetected = true;
-				}
+				scanlineValue += 263;
 			}
 
-			if(_state.ScanlineDetected) {
+			if(scanlineValue == (int)_state.RasterCompareRegister - 0x40) {
+				_state.ScanlineDetected = true;
 				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 			}
 		}
@@ -579,8 +574,27 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 				case 0x11: UpdateReg(_state.BlockDst, value, msb); break;
 				case 0x12:
 					UpdateReg(_state.BlockLen, value, msb);
-					//todo trigger dma
-					MessageManager::Log("vram-vram dma");
+
+					if(msb) {
+						//TODO DMA TIMING
+						do {
+							_state.BlockLen--;
+
+							if(_state.BlockDst < 0x8000) {
+								//Ignore writes over $8000
+								_vram[_state.BlockDst] = _vram[_state.BlockSrc];
+							}
+
+							_state.BlockSrc += (_state.DecrementSrc ? -1 : 1);
+							_state.BlockDst += (_state.DecrementDst ? -1 : 1);
+
+						} while(_state.BlockLen != 0xFFFF);
+
+						if(_state.VramVramIrqEnabled) {
+							_state.VramTransferDone = true;
+							_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+						}
+					}
 					break;
 
 				case 0x13:
