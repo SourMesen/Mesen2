@@ -103,7 +103,7 @@ void BaseEventManager::GetDisplayBuffer(uint32_t* buffer, uint32_t bufferSize)
 void BaseEventManager::DrawLine(uint32_t* buffer, FrameInfo size, uint32_t color, uint32_t row)
 {
 	uint32_t offset = row * 2 * size.Width;
-	for(int i = 0; i < size.Width; i++) {
+	for(int i = 0; i < (int)size.Width; i++) {
 		buffer[offset + i] = color;
 		buffer[offset + size.Width + i] = color;
 	}
