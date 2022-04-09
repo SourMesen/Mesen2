@@ -55,7 +55,7 @@ enum class PceAddrMode
 	ImZero, ImZeroX, ImAbs, ImAbsX
 };
 
-struct PcePpuState
+struct PcePpuState : public BaseState
 {
 	uint32_t FrameCount;
 	uint16_t Cycle;
