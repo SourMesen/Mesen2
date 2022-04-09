@@ -290,7 +290,7 @@ DebuggerFeatures PceDebugger::GetSupportedFeatures()
 {
 	DebuggerFeatures features = {};
 	features.RunToIrq = true;
-	features.RunToNmi = true;
+	features.RunToNmi = false;
 	features.StepOver = true;
 	features.StepOut = true;
 	features.CallStack = true;

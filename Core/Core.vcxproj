@@ -31,6 +31,7 @@
     <ClInclude Include="PCE\PceCpu.h" />
     <ClInclude Include="PCE\PceDefaultVideoFilter.h" />
     <ClInclude Include="PCE\PceMemoryManager.h" />
+    <ClInclude Include="PCE\PceSf2RomMapper.h" />
     <ClInclude Include="PCE\PceTimer.h" />
     <ClInclude Include="PCE\PceTypes.h" />
     <ClInclude Include="Shared\CpuType.h" />
@@ -441,6 +442,7 @@
     <ClCompile Include="PCE\PceCpu.cpp" />
     <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
     <ClCompile Include="PCE\PcePpu.cpp" />
+    <ClCompile Include="PCE\PceSf2RomMapper.cpp" />
     <ClCompile Include="PCE\PceTimer.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="NES\NesDefaultVideoFilter.cpp" />

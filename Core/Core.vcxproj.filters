@@ -1769,6 +1769,9 @@
     <ClInclude Include="PCE\PceConstants.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceSf2RomMapper.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1808,6 +1811,9 @@
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceTimer.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceSf2RomMapper.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
