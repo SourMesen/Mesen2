@@ -35,6 +35,14 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 		_cycleCountStack.push_back(_currentCycleCount);
 		_functionStack.push_back(_currentFunction);
 
+		if(_functionStack.size() > 100) {
+			//Keep stack to 100 functions at most (to prevent performance issues, esp. in debug builds)
+			//Only happens when software doesn't use JSR/RTS normally to enter/leave functions
+			_functionStack.pop_front();
+			_cycleCountStack.pop_front();
+			_stackFlags.pop_front();
+		}
+
 		ProfiledFunction& func = _functions[key];
 		func.CallCount++;
 

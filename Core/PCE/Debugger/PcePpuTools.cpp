@@ -99,7 +99,7 @@ void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 
 	DebugSpriteInfo sprite;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 63; i >= 0; i--) {
 		GetSpriteInfo(sprite, i, options, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
