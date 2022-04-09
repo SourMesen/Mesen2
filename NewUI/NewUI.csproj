@@ -263,6 +263,9 @@
     <Compile Update="Debugger\StatusViews\GbStatusView.axaml.cs">
       <DependentUpon>GbStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\StatusViews\PceStatusView.axaml.cs">
+      <DependentUpon>PceStatusView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\StatusViews\SpcStatusView.axaml.cs">
       <DependentUpon>SpcStatusView.axaml</DependentUpon>
     </Compile>

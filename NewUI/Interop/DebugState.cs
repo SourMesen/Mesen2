@@ -1273,7 +1273,33 @@ namespace Mesen.Interop
 	
 	public struct PceCpuState : BaseState
 	{
+		public UInt64 CycleCount;
+		public UInt16 PC;
+		public byte SP;
+		public byte A;
+		public byte X;
+		public byte Y;
+		public byte PS;
 
+		/* Source High */
+		public byte SH;
+
+		/* Dest High */
+		public byte DH;
+
+		/* Length High */
+		public byte LH;
+	}
+
+	public enum PceCpuFlags
+	{
+		Carry = 0x01,
+		Zero = 0x02,
+		IrqDisable = 0x04,
+		Decimal = 0x08,
+		Memory = 0x20,
+		Overflow = 0x40,
+		Negative = 0x80
 	}
 
 	public struct PcePpuState : BaseState

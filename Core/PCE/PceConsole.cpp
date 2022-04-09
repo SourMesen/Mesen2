@@ -120,7 +120,17 @@ BaseVideoFilter* PceConsole::GetVideoFilter()
 PpuFrameInfo PceConsole::GetPpuFrame()
 {
 	PpuFrameInfo frame = {};
-	frame.FrameCount = _ppu->GetState().FrameCount;
+	PcePpuState& state = _ppu->GetState();
+	frame.FrameCount = state.FrameCount;
+	frame.CycleCount = 341;
+
+	frame.FirstScanline = 0;
+	frame.ScanlineCount = 263;
+
+	//TODO
+	//frame.FrameBuffer = ...
+	//frame.Height
+	//frame.Width
 	return frame;
 }
 
