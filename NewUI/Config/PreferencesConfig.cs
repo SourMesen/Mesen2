@@ -35,6 +35,7 @@ namespace Mesen.Config
 		[Reactive] public bool AssociateNesMusicFiles { get; set; } = false;
 		[Reactive] public bool AssociateGbRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateGbMusicFiles { get; set; } = false;
+		[Reactive] public bool AssociatePceRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateMovieFiles { get; set; } = false;
 		[Reactive] public bool AssociateSaveStateFiles { get; set; } = false;
 
@@ -161,6 +162,8 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("gb", AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbc", AssociateGbRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("gbs", AssociateGbMusicFiles);
+			
+			FileAssociationHelper.UpdateFileAssociation("pce", AssociatePceRomFiles);
 
 			FileAssociationHelper.UpdateFileAssociation("msm", AssociateMovieFiles);
 			FileAssociationHelper.UpdateFileAssociation("mss", AssociateSaveStateFiles);

@@ -96,6 +96,8 @@ namespace Mesen.Config
 			CreateMimeType("x-mesen-gbc", "gbc", "Game Boy Color ROM", mimeTypes, cfg.AssociateGbRomFiles);
 			CreateMimeType("x-mesen-gbs", "gbs", "Game Boy Sound File", mimeTypes, cfg.AssociateGbMusicFiles);
 
+			CreateMimeType("x-mesen-pce", "pce", "PC Engine ROM", mimeTypes, cfg.AssociatePceRomFiles);
+
 			//Icon used for shortcuts
 			//TOOD
 			//Mesen.GUI.Properties.Resources.MesenIcon.Save(Path.Combine(iconFolder, "MesenSIcon.png"), ImageFormat.Png);
@@ -152,12 +154,12 @@ namespace Mesen.Config
 			if(associate) {
 				ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
 				if(mainModule != null) {
-					Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\Mesen-S\shell\open\command", null, mainModule.FileName + " \"%1\"");
-					Registry.SetValue(key, null, "Mesen-S");
+					Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\Mesen\shell\open\command", null, mainModule.FileName + " \"%1\"");
+					Registry.SetValue(key, null, "Mesen");
 				}
 			} else {
 				object? regKey = Registry.GetValue(key, null, "");
-				if(regKey != null && regKey.Equals("Mesen-S")) {
+				if(regKey != null && regKey.Equals("Mesen")) {
 					Registry.SetValue(key, null, "");
 				}
 			}
