@@ -8,7 +8,7 @@
 class PceDefaultVideoFilter : public BaseVideoFilter
 {
 private:
-	uint32_t _calculatedPalette[0x8000] = {};
+	uint32_t _calculatedPalette[0x200] = {};
 	VideoConfig _videoConfig = {};
 
 protected:
@@ -24,16 +24,6 @@ protected:
 
 	FrameInfo GetFrameInfo() override
 	{
-		//TODO
-		/*if(_emu->GetRomInfo().Format == RomFormat::Spc) {
-			//Give a fixed 256x240 of space to SPC player to match NES/GB players
-			FrameInfo frame;
-			frame.Width = 256;
-			frame.Height = 240;
-			return frame;
-		} else {
-			return BaseVideoFilter::GetFrameInfo();
-		}*/
 		return BaseVideoFilter::GetFrameInfo();
 	}
 
@@ -90,19 +80,13 @@ public:
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
 	{
-		//TODO
-		/*if(_emu->GetRomInfo().Format == RomFormat::Spc) {
-			return;
-		}*/
-
 		uint32_t* out = GetOutputBuffer();
 		FrameInfo frameInfo = _frameInfo;
 		OverscanDimensions overscan = GetOverscan();
 
-		int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
 		uint32_t width = _baseFrameInfo.Width;
-		uint32_t xOffset = overscan.Left * overscanMultiplier;
-		uint32_t yOffset = overscan.Top * overscanMultiplier * width;
+		uint32_t xOffset = overscan.Left;
+		uint32_t yOffset = overscan.Top * width;
 
 		uint8_t scanlineIntensity = (uint8_t)((1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
 		if(scanlineIntensity < 255) {

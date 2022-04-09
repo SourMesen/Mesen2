@@ -14,7 +14,7 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
 	_paletteRam = new uint16_t[0x200];
-	_outBuffer = new uint16_t[256 * 242];
+	_outBuffer = new uint16_t[512 * 242];
 
 	memset(_vram, 0, 0x10000);
 	memset(_paletteRam, 0, 0x400);
@@ -40,6 +40,26 @@ PcePpuState& PcePpu::GetState()
 void PcePpu::Exec()
 {
 	_state.Cycle++;
+
+	if(_state.SatbTransferRunning) {
+		_state.SatbTransferCycleCounter--;
+		if(_state.SatbTransferCycleCounter) {
+			for(int i = 0; i < 256; i++) {
+				uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
+				_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
+				_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
+				_spriteRam[i] = value;
+			}
+
+			_state.SatbTransferRunning = false;
+
+			if(_state.VramSatbIrqEnabled) {
+				_state.SatbTransferDone = true;
+				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+			}
+		}
+	}
+
 	if(_state.Cycle == 270) {
 		//TODO timing, approx end of scanline display
 		//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
@@ -47,48 +67,19 @@ void PcePpu::Exec()
 		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
 		bool drawOverscan = true;
 		if(_state.DisplayCounter >= topBorder) {
-			if(_state.DisplayCounter < screenEnd) {
-				if(_state.Scanline >= 14) {
-					drawOverscan = false;
+			if(_state.Scanline < 261) {
+				if(_state.DisplayCounter < screenEnd) {
+					if(_state.Scanline >= 14) {
+						drawOverscan = false;
+					}
+				} else {
+					if(_state.DisplayCounter == screenEnd) {
+						ProcessEndOfVisibleFrame();
+					}
 				}
 			} else {
-				if(_state.DisplayCounter == screenEnd) {
-					//End of display, trigger irq?
-					//Update flags that were locked during burst mode
-					_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-					_state.SpritesEnabled = _state.NextSpritesEnabled;
-
-					if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
-						_state.SatbTransferPending = false;
-						_state.SatbTransferRunning = true;
-
-						//Sprite transfer ends 4 lines after vertical blank start?
-						_state.SatbTransferCycleCounter = 341*4;
-					}
-
-					if(_state.EnableVerticalBlankIrq) {
-						_state.VerticalBlank = true;
-						_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-					}
-				}
-			}
-		}
-
-		if(_state.SatbTransferRunning) {
-			_state.SatbTransferCycleCounter--;
-			if(_state.SatbTransferCycleCounter) {
-				for(int i = 0; i < 256; i++) {
-					uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
-					_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
-					_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
-					_spriteRam[i] = value;
-				}
-
-				_state.SatbTransferRunning = false;
-
-				if(_state.VramSatbIrqEnabled) {
-					_state.SatbTransferDone = true;
-					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+				if(_state.Scanline == 261 && screenEnd >= 261) {
+					ProcessEndOfVisibleFrame();
 				}
 			}
 		}
@@ -140,6 +131,10 @@ void PcePpu::Exec()
 			_state.FrameCount++;
 			SendFrame();
 		} else if(_state.Scanline == 263) {
+			//Update flags that were locked during burst mode
+			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+			_state.SpritesEnabled = _state.NextSpritesEnabled;
+
 			_state.Scanline = 0;
 			_state.DisplayCounter = 0;
 			_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
@@ -149,6 +144,23 @@ void PcePpu::Exec()
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
+}
+
+void PcePpu::ProcessEndOfVisibleFrame()
+{
+	//End of display, trigger irq?
+	if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
+		_state.SatbTransferPending = false;
+		_state.SatbTransferRunning = true;
+
+		//Sprite transfer ends 4 lines after vertical blank start?
+		_state.SatbTransferCycleCounter = 341 * 4;
+	}
+
+	if(_state.EnableVerticalBlankIrq) {
+		_state.VerticalBlank = true;
+		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+	}
 }
 
 template<uint8_t bpp>
@@ -185,20 +197,20 @@ void PcePpu::DrawScanline(bool drawOverscan)
 
 	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
 	uint16_t row = _state.DisplayCounter - topBorder;
-	uint16_t outputOffset = ((int)_state.Scanline - 14) * 256;
+	uint32_t outputOffset = ((int)_state.Scanline - 14) * _rowWidth;
 
 	if(_state.BurstModeEnabled || drawOverscan) {
 		//Draw sprite color 0 as background when display is disabled
-		for(int column = 0; column < 256; column++) {
+		for(int column = 0; column < _rowWidth; column++) {
 			_outBuffer[outputOffset + column] = _paletteRam[16 * 16];
 		}
 		return;
 	}
 
-	bool hasBg[256] = {};
+	bool hasBg[512] = {};
 	if(_state.BackgroundEnabled) {
 		uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
-		for(int column = 0; column < 256; column++) {
+		for(int column = 0; column < _rowWidth; column++) {
 			uint16_t screenX = (column + _state.BgScrollXLatch) & ((_state.ColumnCount * 8) - 1);
 
 			uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
@@ -216,14 +228,14 @@ void PcePpu::DrawScanline(bool drawOverscan)
 		}
 	} else {
 		//Draw background color
-		for(int column = 0; column < 256; column++) {
+		for(int column = 0; column < _rowWidth; column++) {
 			_outBuffer[outputOffset + column] = _paletteRam[0];
 		}
 	}
 
 	if(_state.SpritesEnabled) {
-		bool hasSprite[256] = {};
-		bool hasSprite0[256] = {};
+		bool hasSprite[512] = {};
+		bool hasSprite0[512] = {};
 
 		for(int i = 0; i < 64; i++) {
 			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
@@ -249,7 +261,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			uint8_t width = (flags & 0x100) ? 32 : 16;
 			int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
 
-			if(spriteX + width <= 0 || spriteX >= 256) {
+			if(spriteX + width <= 0 || spriteX >= _rowWidth) {
 				//Sprite off-screen
 				continue;
 			}
@@ -282,7 +294,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			for(int x = 0; x < width; x++) {
 				if(spriteX + x < 0) {
 					continue;
-				} else if(spriteX + x >= 256) {
+				} else if(spriteX + x >= _rowWidth) {
 					//Offscreen
 					break;
 				}
@@ -332,7 +344,7 @@ void PcePpu::SendFrame()
 	_emu->ProcessEvent(EventType::EndFrame);
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _outBuffer);
 
-	RenderedFrame frame(_outBuffer, 256, 242, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_outBuffer, _rowWidth, 242, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 
 	_emu->ProcessEndOfFrame();
@@ -476,8 +488,24 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					}
 					break;
 
-				case 0x0A: UpdateReg<0x7F1F>(_state.HorizSync, value, msb); break;
-				case 0x0B: UpdateReg<0x7F7F>(_state.HorizDisplay, value, msb); break;
+				case 0x0A:
+					if(msb) {
+						//TODO - this probably has an impact on timing within the scanline?
+						_state.HorizDisplayStart = value & 0x7F;
+					} else {
+						_state.HorizSyncWidth = value & 0x1F;
+					}
+					break;
+
+				case 0x0B:
+					if(msb) {
+						_state.HorizDisplayEnd = value & 0x7F;
+					} else {
+						_state.HorizDisplayWidth = value & 0x7F;
+						_rowWidth = std::min(512, (_state.HorizDisplayWidth + 1) * 8);
+					}
+					break;
+
 				case 0x0C: 
 					if(msb) {
 						_state.VertDisplayStart = value;
@@ -488,7 +516,11 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 				case 0x0D: UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb); break;
 
-				case 0x0E: _state.VertEndPosVcr = value; break;
+				case 0x0E: 
+					if(!msb) {
+						_state.VertEndPosVcr = value;
+					}
+					break;
 
 				case 0x0F:
 					if(!msb) {

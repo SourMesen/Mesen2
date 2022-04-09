@@ -16,6 +16,7 @@ private:
 	uint16_t* _spriteRam;
 
 	uint16_t* _outBuffer;
+	uint32_t _rowWidth = 256;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -40,6 +41,8 @@ public:
 	uint16_t GetScanline() { return _state.Scanline; }
 
 	void Exec();
+
+	void ProcessEndOfVisibleFrame();
 
 	uint8_t ReadVdc(uint16_t addr);
 	void WriteVdc(uint16_t addr, uint8_t value);

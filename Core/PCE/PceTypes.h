@@ -97,17 +97,22 @@ struct PcePpuState
 	uint8_t VramAccessMode;
 	bool CgMode;
 
-	uint16_t HorizSync;     //R0A - HSR
-	uint16_t HorizDisplay;  //R0B - HDR
+	//R0A - HSR
+	uint8_t HorizDisplayStart;
+	uint8_t HorizSyncWidth; //no effect
 
-	//uint16_t VertSync;      //R0C - VPR
+	//R0B - HDR
+	uint8_t HorizDisplayWidth;
+	uint8_t HorizDisplayEnd; //no effect
+
+	//R0C - VPR
 	uint8_t VertDisplayStart;
 	uint8_t VertSyncWidth;
 
 	uint16_t VertDisplayWidth;   //R0D - VDW
 	uint8_t VertEndPosVcr;     //R0E - VCR
 
-	//uint8_t BlockTransCtrl; //R0F - DCR
+	//R0F - DCR
 	bool VramSatbIrqEnabled;
 	bool VramVramIrqEnabled;
 	bool DecrementSrc;
