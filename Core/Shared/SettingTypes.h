@@ -716,6 +716,7 @@ struct ShortcutKeyInfo
 
 enum class DebuggerFlags : uint64_t
 {
+	//TODO rename for snes
 	BreakOnBrk = (1 << 0),
 	BreakOnCop = (1 << 1),
 	BreakOnWdm = (1 << 2),
@@ -759,7 +760,10 @@ enum class DebuggerFlags : uint64_t
 
 	ScriptAllowIoOsAccess = (1LLU << 40),
 	ScriptAllowNetworkAccess = (1LLU << 41),
-	
+
 	UsePredictiveBreakpoints = (1LLU << 42),
 	SingleBreakpointPerInstruction = (1LLU << 43),
+
+	PceBreakOnBrk = (1LLU << 44),
+	PceBreakOnUnofficialOpCode = (1LLU << 45),
 };

@@ -1772,6 +1772,9 @@
     <ClInclude Include="PCE\PceSf2RomMapper.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\Debugger\DummyPceCpu.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1815,6 +1818,9 @@
     </ClCompile>
     <ClCompile Include="PCE\PceSf2RomMapper.cpp">
       <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\DummyPceCpu.cpp">
+      <Filter>PCE\Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

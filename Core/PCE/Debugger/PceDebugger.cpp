@@ -17,6 +17,7 @@
 #include "Pce/Debugger/PceTraceLogger.h"
 #include "Pce/Debugger/PcePpuTools.h"
 #include "Pce/Debugger/PceDisUtils.h"
+#include "Pce/Debugger/DummyPceCpu.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
@@ -41,6 +42,8 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
+
+	_dummyCpu.reset(new DummyPceCpu(_emu, _console, _memoryManager));
 
 	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce));
 
@@ -106,25 +109,25 @@ void PceDebugger::ProcessInstruction()
 
 	_step->ProcessCpuExec();
 
-	/*if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled)) {
+	if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled)) {
 		if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnBrk)) {
 			_step->Break(BreakSource::BreakOnBrk);
 		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnUnofficialOpCode) && PceDisUtils::IsOpUnofficial(value)) {
-			_step->Break(BreakSource::PceBreakOnUnofficialOpCode);
+			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
 	
 	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
-		_dummyCpu->SetDummyState(_cpu);
+		_dummyCpu->SetDummyState(_cpu->GetState());
 		_dummyCpu->Exec();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
 			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
-				AddressInfo absAddr = _mapper->GetAbsoluteAddress(memOp.Address);
+				AddressInfo absAddr = _memoryManager->GetAbsoluteAddress(memOp.Address);
 				_debugger->ProcessPredictiveBreakpoint(CpuType::Pce, _breakpointManager.get(), memOp, absAddr);
 			}
 		}
-	}*/
+	}
 
 	_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
@@ -135,6 +138,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
 
 	if(IsRegister(operation)) {
+		//todo
 		//_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
@@ -158,6 +162,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
+		//todo
 		/*if(operation.Type == MemoryOperationType::DmaRead) {
 			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
 		}*/
@@ -170,7 +175,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 
-		/*ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount());
+		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetState().CycleCount);
 		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
@@ -180,7 +185,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
-		}*/
+		}
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
@@ -189,11 +194,12 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
-	/*if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SPceWorkRam || addressInfo.Type == MemoryType::SPceSaveRam)) {
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::PceWorkRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Pce);
 	}
 
-	if(IsRegister(operation)) {
+	//todo
+	/*if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}*/
 
@@ -218,8 +224,7 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
 		case StepType::StepOver:
-			if(_prevOpCode == 0x20 || _prevOpCode == 0x00) {
-				//JSR, BRK
+			if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
 				step.BreakAddress = (_prevProgramCounter + PceDisUtils::GetOpSize(_prevOpCode)) & 0xFFFF;
 			} else {
 				//For any other instruction, step over is the same as step into
@@ -283,6 +288,7 @@ void PceDebugger::ProcessPpuCycle()
 
 bool PceDebugger::IsRegister(MemoryOperationInfo& op)
 {
+	//todo
 	return false;
 }
 
@@ -322,11 +328,13 @@ BreakpointManager* PceDebugger::GetBreakpointManager()
 
 IAssembler* PceDebugger::GetAssembler()
 {
+	//todo
 	return nullptr;// _assembler.get();
 }
 
 BaseEventManager* PceDebugger::GetEventManager()
 {
+	//todo
 	return nullptr;// _eventManager.get();
 }
 
@@ -347,6 +355,7 @@ void PceDebugger::GetPpuState(BaseState& state)
 
 void PceDebugger::SetPpuState(BaseState& state)
 {
+	//todo
 	//_ppu->SetState((PcePpuState&)state);
 }
 

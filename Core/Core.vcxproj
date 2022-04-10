@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PCE\Debugger\DummyPceCpu.h" />
     <ClInclude Include="PCE\Input\PceController.h" />
     <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PcePpu.h" />
@@ -433,6 +434,7 @@
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="NES\NesNtscFilter.cpp" />
+    <ClCompile Include="PCE\Debugger\DummyPceCpu.cpp" />
     <ClCompile Include="PCE\Debugger\PceDebugger.cpp" />
     <ClCompile Include="PCE\Debugger\PceDisUtils.cpp" />
     <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />

@@ -124,6 +124,16 @@
 					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{CompiledBinding IsPce}">
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Pce.BreakOnBrk}"
+					Content="{l:Translate chkBreakOnBrk}"
+				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Pce.BreakOnUnofficialOpCode}"
+					Content="{l:Translate chkBreakOnUnofficialOpCode}"
+				/>
+			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
 				IsChecked="{CompiledBinding Config.BreakOnUninitRead}"

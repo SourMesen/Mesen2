@@ -2,6 +2,7 @@
 #include "Shared/SettingTypes.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceControlManager.h"
+#include "PCE/PceMemoryManager.h"
 #include "PCE/PceDefaultVideoFilter.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PcePpu.h"
@@ -161,6 +162,10 @@ AddressInfo PceConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuT
 	return _memoryManager->GetRelativeAddress(absAddress);
 }
 
-void PceConsole::GetConsoleState(BaseState& state, ConsoleType consoleType)
+void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 {
+	PceState& state = (PceState&)baseState;
+	state.Cpu = _cpu->GetState();
+	state.Ppu = _ppu->GetState();
+	state.MemoryManager = _memoryManager->GetState();
 }

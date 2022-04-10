@@ -1270,7 +1270,7 @@ namespace Mesen.Interop
 		public NesApuDmcState Dmc;
 		public NesApuFrameCounterState FrameCounter;
 	}
-	
+
 	public struct PceCpuState : BaseState
 	{
 		public UInt64 CycleCount;
@@ -1404,5 +1404,26 @@ namespace Mesen.Interop
 
 		//VCE
 		public UInt16 PalAddr;
+	}
+
+	public struct PceMemoryManager : BaseState
+	{
+		public UInt64 CycleCount;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public byte[] Mpr;
+
+		public byte ActiveIrqs;
+		public byte DisabledIrqs;
+		public byte CpuClockSpeed;
+		public byte MprReadBuffer;
+		public byte IoBuffer;
+	}
+
+	public struct PceState : BaseState
+	{
+		public PceCpuState Cpu;
+		public PcePpuState Ppu;
+		public PceMemoryManager MemoryManager;
 	}
 }

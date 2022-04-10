@@ -304,7 +304,9 @@ public:
 		} else if(bank <= 0x7F) {
 			uint32_t absAddr = (uint32_t)(_romBanks[bank] - _prgRom) + (relAddr & 0x1FFF);
 			return { (int32_t)absAddr, MemoryType::PcePrgRom };
-		} else {
+		}/* else if(bank == 0xFF) { //TODO
+			return { (int32_t)relAddr & 0x1FFF, MemoryType::Register };
+		}*/ else {
 			return { -1, MemoryType::Register };
 		}
 	}
@@ -321,7 +323,11 @@ public:
 				if(_state.Mpr[i] >= 0xF8 && _state.Mpr[i] <= 0xFB) {
 					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 				}
-			}
+			}/* else if(absAddr.Type == MemoryType::Register) { //TODO
+				if(_state.Mpr[i] == 0xFF) {
+					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
+				}
+			}*/
 		}
 
 		return { -1, MemoryType::Register };

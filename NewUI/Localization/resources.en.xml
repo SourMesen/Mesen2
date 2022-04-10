@@ -1771,6 +1771,7 @@
 			<Value ID="Cx4">CX4</Value>
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="Nes">NES</Value>
+			<Value ID="Pce">PC Engine</Value>
 		</Enum>
 		
 		<Enum ID="MemoryType">
@@ -1796,6 +1797,7 @@
 			<Value ID="Cx4DataRam">CX4 Data RAM</Value>
 			<Value ID="BsxPsRam">BS-X - PSRAM</Value>
 			<Value ID="BsxMemoryPack">BS-X - Memory Pack</Value>
+			
 			<Value ID="GameboyMemory">GB - CPU Memory</Value>
 			<Value ID="GbPrgRom">GB - PRG ROM</Value>
 			<Value ID="GbWorkRam">GB - Work RAM</Value>
@@ -1818,6 +1820,13 @@
 			<Value ID="NesChrRam">CHR RAM</Value>
 			<Value ID="NesPaletteRam">Palette RAM</Value>
 			
+			<Value ID="PceMemory">CPU Memory</Value>
+			<Value ID="PcePrgRom">HuCard ROM</Value>
+			<Value ID="PceWorkRam">Work RAM</Value>
+			<Value ID="PceVideoRam">Video RAM</Value>
+			<Value ID="PcePaletteRam">Palette RAM</Value>
+			<Value ID="PceSpriteRam">Sprite RAM</Value>
+			
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
@@ -1833,6 +1842,7 @@
 			<Value ID="DirectColor">Direct Color</Value>
 			<Value ID="Mode7">Mode 7</Value>
 			<Value ID="Mode7DirectColor">Mode 7 + Direct Color</Value>
+			<Valid ID="PceSpriteBpp4">4 bpp - 16x16 sprites</Valid>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>
@@ -1878,7 +1888,7 @@
 			
 			<Value ID="NesBreakOnDecayedOamRead">Decayed OAM read</Value>
 			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
-			<Value ID="NesBreakOnUnofficialOpCode">Unofficial OP</Value>
+			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>

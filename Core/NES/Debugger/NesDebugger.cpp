@@ -121,7 +121,7 @@ void NesDebugger::ProcessInstruction()
 		if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
 			_step->Break(BreakSource::BreakOnBrk);
 		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(value)) {
-			_step->Break(BreakSource::NesBreakOnUnofficialOpCode);
+			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
 
@@ -230,7 +230,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
 		case StepType::StepOver:
-			if(_prevOpCode == 0x20 || _prevOpCode == 0x00) {
+			if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
 				//JSR, BRK
 				step.BreakAddress = (_prevProgramCounter + NesDisUtils::GetOpSize(_prevOpCode)) & 0xFFFF;
 			} else {

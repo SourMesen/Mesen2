@@ -115,7 +115,7 @@ namespace Mesen.Debugger.Controls
 				if(!string.IsNullOrEmpty(block.Note)) {
 					noteText.Text = block.Note;
 					if(noteText.Bounds.Width < blockWidth - 15) {
-						context.DrawText(Brushes.Black, new Point(x + blockWidth - noteText.Bounds.Width - 3, BlockHeight - addressText.Bounds.Height + 4), noteText);
+						context.DrawText(Brushes.Black, new Point(x + blockWidth - noteText.Bounds.Width - 3, BlockHeight - noteText.Bounds.Height), noteText);
 					}
 				}
 

@@ -130,6 +130,19 @@ namespace Mesen.Interop
 			};
 		}
 
+		public static bool SupportsMemoryMappings(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Gameboy:
+				case CpuType.Nes:
+				case CpuType.Pce:
+					return true;
+
+				default:
+					return false;
+			};
+		}
+
 		public static byte GetNopOpCode(this CpuType cpuType)
 		{
 			return cpuType switch {

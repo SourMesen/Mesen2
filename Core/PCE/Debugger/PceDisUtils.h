@@ -11,7 +11,6 @@ enum class PceAddrMode;
 class PceDisUtils
 {
 private:
-	static uint32_t GetOperandAddress(DisassemblyInfo& info, uint32_t memoryAddr);
 	static uint8_t GetOpSize(PceAddrMode addrMode);
 
 public:
@@ -25,4 +24,5 @@ public:
 	static bool IsConditionalJump(uint8_t opCode);
 	static bool IsJumpToSub(uint8_t opCode);
 	static bool IsReturnInstruction(uint8_t opCode);
+	static bool IsOpUnofficial(uint8_t opCode);
 };

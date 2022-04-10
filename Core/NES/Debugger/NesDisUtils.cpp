@@ -268,10 +268,10 @@ bool NesDisUtils::IsConditionalJump(uint8_t opCode)
 
 bool NesDisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return opCode == 0x20;
+	return opCode == 0x20 || opCode == 0x00; //JSR, BRK
 }
 
 bool NesDisUtils::IsReturnInstruction(uint8_t opCode)
 {
-	return opCode == 0x60 || opCode == 0x40;
+	return opCode == 0x60 || opCode == 0x40; //RTS, RTI
 }

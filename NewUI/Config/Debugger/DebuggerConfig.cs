@@ -21,6 +21,7 @@ namespace Mesen.Config
 		[Reactive] public SnesDebuggerConfig Snes { get; set; } = new();
 		[Reactive] public NesDebuggerConfig Nes { get; set; } = new();
 		[Reactive] public GbDebuggerConfig Gameboy { get; set; } = new();
+		[Reactive] public PceDebuggerConfig Pce { get; set; } = new();
 
 		[Reactive] public bool BreakOnUninitRead { get; set; } = false;
 		[Reactive] public bool BreakOnOpen { get; set; } = true;

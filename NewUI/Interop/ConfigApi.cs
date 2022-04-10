@@ -96,6 +96,9 @@ namespace Mesen.Interop
 
 		UsePredictiveBreakpoints = (1LU << 42),
 		SingleBreakpointPerInstruction = (1LU << 43),
+
+		PceBreakOnBrk = (1LU << 44),
+		PceBreakOnUnofficialOpCode = (1LU << 45),
 	}
 
 	public struct InteropShortcutKeyInfo

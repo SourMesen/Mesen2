@@ -138,7 +138,7 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
-			if(CpuType == CpuType.Nes || CpuType == CpuType.Gameboy) {
+			if(CpuType.SupportsMemoryMappings()) {
 				MemoryMappings = new MemoryMappingViewModel(CpuType);
 			}
 

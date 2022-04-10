@@ -174,3 +174,10 @@ struct PceControlManagerState
 {
 
 };
+
+struct PceState : public BaseState
+{
+	PceCpuState Cpu;
+	PcePpuState Ppu;
+	PceMemoryManagerState MemoryManager;
+};

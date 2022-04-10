@@ -187,9 +187,13 @@ namespace Mesen.Controls
 
 		private void SetNewValue(IComparable val)
 		{
+			if(val == null) {
+				return;
+			}
+
 			int? max = GetMax();
 			int? min = GetMin();
-
+			
 			if(max != null && val.CompareTo(Convert.ChangeType(max, val.GetType())) > 0) {
 				val = (IComparable)Convert.ChangeType(max, val.GetType());
 			} else if(min != null && val.CompareTo(Convert.ChangeType(min, val.GetType())) < 0) {
@@ -197,7 +201,6 @@ namespace Mesen.Controls
 			} else if(min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
 				val = 0;
 			}
-
 			Value = val;
 		}
 

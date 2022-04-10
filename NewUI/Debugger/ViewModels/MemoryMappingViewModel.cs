@@ -38,6 +38,8 @@ namespace Mesen.Debugger.ViewModels
 				PpuMappings = GetNesPpuMappings(state);
 			} else if(_cpuType == CpuType.Gameboy) {
 				CpuMappings = GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy));
+			} else if(_cpuType == CpuType.Pce) {
+				CpuMappings = GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager);
 			}
 		}
 
@@ -320,6 +322,67 @@ namespace Mesen.Debugger.ViewModels
 			addBlock(0xFE);
 
 			mappings.Add(new MemoryMappingBlock() { Name = "", Length = 0x200, Color = Color.FromRgb(222, 222, 222) });
+
+			return mappings;
+		}
+
+		private List<MemoryMappingBlock> GetPceCpuMappings(PceMemoryManager state)
+		{
+			//TODO improve/complete logic for save ram, etc.
+			List<MemoryMappingBlock> mappings = new();
+
+			Dictionary<MemoryType, Color> mainColors = new() {
+				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.PceWorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
+				//{ MemoryType.CartRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
+				{ MemoryType.PcePrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) }
+			};
+
+			Dictionary<MemoryType, Color> altColors = new() {
+				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.PceWorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
+				//{ MemoryType.CartRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
+				{ MemoryType.PcePrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) }
+			};
+
+			Dictionary<MemoryType, string> blockNames = new() {
+				{ MemoryType.Register, "REG" },
+				{ MemoryType.PceWorkRam, "WRAM" },
+				//{ MemoryType.CartRam, gbState.HasBattery ? "SRAM" : "Cart RAM" },
+				{ MemoryType.PcePrgRom, "ROM" }
+			};
+
+			Dictionary<MemoryType, string> accessNotes = new() {
+				{ MemoryType.Register, "RW" },
+				{ MemoryType.PceWorkRam, "W" },
+				//{ MemoryType.CartRam, gbState.HasBattery ? "SRAM" : "Cart RAM" },
+				{ MemoryType.PcePrgRom, "R" },
+			};
+
+			for(int i = 0; i < 8; i++) {
+				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = i * 0x2000, Type = MemoryType.PceMemory });
+				if(absAddr.Address >= 0) {
+					MemoryType memType = absAddr.Type;
+					string note = "";
+					if(memType == MemoryType.PcePrgRom && state.Mpr[i] != absAddr.Address / 0x2000) {
+						note = " ($" + (absAddr.Address / 0x2000).ToString("X2") + ")";
+					}
+					mappings.Add(new MemoryMappingBlock() {
+						Length = 0x2000,
+						Name = blockNames[memType],
+						Page = state.Mpr[i],
+						Note = accessNotes[memType] + note,
+						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
+					});
+				} else {
+					mappings.Add(new MemoryMappingBlock() {
+						Length = 0x2000,
+						Name = "N/A",
+						Note = "OB",
+						Color = Color.FromRgb(222, 222, 222)
+					});
+				}
+			}
 
 			return mappings;
 		}

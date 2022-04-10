@@ -21,6 +21,7 @@ class Emulator;
 class PceCpu;
 class PcePpu;
 class PceMemoryManager;
+class DummyPceCpu;
 
 enum class MemoryOperationType;
 
@@ -49,6 +50,8 @@ class PceDebugger final : public IDebugger
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
+
+	unique_ptr<DummyPceCpu> _dummyCpu;
 
 	bool IsRegister(MemoryOperationInfo& op);
 

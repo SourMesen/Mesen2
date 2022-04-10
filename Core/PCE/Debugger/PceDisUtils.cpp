@@ -66,100 +66,104 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
 	uint8_t opCode = info.GetOpCode();
+	uint8_t* byteCode = info.GetByteCode();
 	PceAddrMode addrMode = _opMode[opCode];
 	str.Write(_opName[opCode]);
 	str.Write(' ');
 
-	uint32_t opAddr = PceDisUtils::GetOperandAddress(info, memoryAddr);
-	uint32_t opSize = info.GetOpSize();
-
-	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
-	if(opSize > 1) {
-		if(addrMode != PceAddrMode::Imm) {
-			AddressInfo address { (int32_t)opAddr, MemoryType::NesMemory };
-			string label = labelManager ? labelManager->GetLabel(address, !info.IsJump()) : "";
-			if(label.size()) {
-				operand.Write(label, true);
-			}
-		} 
-		
-		if(operand.GetSize() == 0) {
-			if(opSize == 3 || addrMode == PceAddrMode::Rel) {
-				operand.WriteAll('$', HexUtilities::ToHex((uint16_t)opAddr));
-			} else if(opSize == 2) {
-				operand.WriteAll('$', HexUtilities::ToHex((uint8_t)opAddr));
-			}
+	auto writeLabelOrAddr = [&str, &info, labelManager](uint16_t addr) {
+		AddressInfo address { addr, MemoryType::PceMemory };
+		string label = labelManager ? labelManager->GetLabel(address, !info.IsJump()) : "";
+		if(label.empty()) {
+			str.WriteAll('$', HexUtilities::ToHex(addr));
+		} else {
+			str.Write(label, true);
 		}
-	}
+	};
+
+	auto writeZeroAddr = [&str, &info, &writeLabelOrAddr, labelManager](uint8_t zero) {
+		uint16_t addr = 0x2000 + zero;
+		writeLabelOrAddr(addr);
+	};
 
 	switch(addrMode) {
 		case PceAddrMode::Acc: str.Write('A'); break;
-		case PceAddrMode::Imm: str.WriteAll("#", operand); break;
-		case PceAddrMode::IndX: str.WriteAll("(", operand, ",X)"); break;
-
+		case PceAddrMode::Imm: str.WriteAll("#", HexUtilities::ToHex(byteCode[1])); break;
+		
 		case PceAddrMode::Ind:
+			str.Write('(');
+			writeLabelOrAddr(byteCode[1] | (byteCode[2] << 8));
+			str.Write(')');
+			break;
+
 		case PceAddrMode::ZInd:
-			str.WriteAll("(", operand, ")");
+			str.Write('(');
+			writeZeroAddr(byteCode[1]);
+			str.Write(')');
 			break;
 
 		case PceAddrMode::IndY:
-			str.WriteAll("(", operand, "),Y");
+			str.Write('(');
+			writeZeroAddr(byteCode[1]);
+			str.Write("),Y");
 			break;
 
-		case PceAddrMode::Abs:
-		case PceAddrMode::Rel:
+		case PceAddrMode::IndX:
+			str.WriteAll('(');
+			writeZeroAddr(byteCode[1]);
+			str.Write(",X)");
+			break;
+
+		case PceAddrMode::Abs: writeLabelOrAddr(byteCode[1] | (byteCode[2] << 8)); break;
+		case PceAddrMode::Zero: writeZeroAddr(byteCode[1]); break;
+
+		case PceAddrMode::Rel: writeLabelOrAddr(((int8_t)byteCode[1] + memoryAddr + 2) & 0xFFFF); break;
+
+		case PceAddrMode::AbsX: writeLabelOrAddr(byteCode[1] | (byteCode[2] << 8)); str.Write(",X"); break;
+		case PceAddrMode::AbsY: writeLabelOrAddr(byteCode[1] | (byteCode[2] << 8)); str.Write(",Y"); break;
+
+		case PceAddrMode::ZeroX: writeZeroAddr(byteCode[1]); str.Write(",X"); break;
+		case PceAddrMode::ZeroY: writeZeroAddr(byteCode[1]); str.Write(",Y"); break;
+
 		case PceAddrMode::ZeroRel:
-		case PceAddrMode::Zero:
-			str.Write(operand);
-			break;
-
-		case PceAddrMode::AbsX:
-		case PceAddrMode::ZeroX:
-			str.WriteAll(operand, ",X");
-			break;
-
-		case PceAddrMode::AbsY:
-		case PceAddrMode::ZeroY:
-			str.WriteAll(operand, ",Y");
+			writeZeroAddr(byteCode[1]);
+			str.Write(',');
+			writeLabelOrAddr(((int8_t)byteCode[2] + memoryAddr + 3) & 0xFFFF);
 			break;
 
 		case PceAddrMode::Block:
-			str.WriteAll("block");
+			writeLabelOrAddr((uint16_t)(byteCode[1] | (byteCode[2] << 8)));
+			str.Write(",");
+			writeLabelOrAddr((uint16_t)(byteCode[3] | (byteCode[4] << 8)));
+			str.WriteAll(",#$", HexUtilities::ToHex((uint16_t)(byteCode[5] | (byteCode[6] << 8))));
 			break;
 
 		case PceAddrMode::ImZero:
+			str.WriteAll("#$", HexUtilities::ToHex(byteCode[1]), ",");
+			writeZeroAddr(byteCode[2]);
+			break;
+		
 		case PceAddrMode::ImAbs:
-			str.WriteAll(operand);
+			str.WriteAll("#$", HexUtilities::ToHex(byteCode[1]), ",");
+			writeLabelOrAddr((uint16_t)(byteCode[2] | (byteCode[3] << 8)));
 			break;
 		
 		case PceAddrMode::ImZeroX:
+			str.WriteAll("#$", HexUtilities::ToHex(byteCode[1]), ",");
+			writeZeroAddr(byteCode[2]);
+			str.WriteAll(",X");
+			break;
+
 		case PceAddrMode::ImAbsX:
-			str.WriteAll(operand, ",X");
+			str.WriteAll("#$", HexUtilities::ToHex(byteCode[1]), ",");
+			writeLabelOrAddr((uint16_t)(byteCode[2] | (byteCode[3] << 8)));
+			str.WriteAll(",X");
 			break;
 
 		default: break;
 	}
 
 	out += str.ToString();
-}
-
-uint32_t PceDisUtils::GetOperandAddress(DisassemblyInfo& info, uint32_t memoryAddr)
-{
-	uint32_t opSize = info.GetOpSize();
-	uint32_t opAddr = 0;
-	uint8_t* byteCode = info.GetByteCode();
-	if(opSize == 2) {
-		opAddr = byteCode[1];
-	} else if(opSize == 3) {
-		opAddr = byteCode[1] | (byteCode[2] << 8);
-	}
-
-	PceAddrMode addrMode = _opMode[byteCode[0]];
-	if(addrMode == PceAddrMode::Rel) {
-		opAddr = (((int8_t)opAddr + memoryAddr + 2) & 0xFFFF);
-	}
-
-	return opAddr;
 }
 
 int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& state, MemoryDumper* memoryDumper)
@@ -173,12 +177,12 @@ int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& sta
 
 		case PceAddrMode::IndX: {
 			uint8_t zeroAddr = byteCode[1] + state.X;
-			return memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
+			return memoryDumper->GetMemoryValue(MemoryType::PceMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::PceMemory, (uint8_t)(zeroAddr + 1)) << 8;
 		}
 
 		case PceAddrMode::IndY: {
 			uint8_t zeroAddr = byteCode[1];
-			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
+			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::PceMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::PceMemory, (uint8_t)(zeroAddr + 1)) << 8;
 			return (uint16_t)(addr + state.Y);
 		}
 
@@ -186,11 +190,11 @@ int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& sta
 			uint16_t addr = byteCode[1] | (byteCode[2] << 8);
 			if((addr & 0xFF) == 0xFF) {
 				//CPU bug when indirect address starts at the end of a page
-				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
-				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr & 0xFF00);
+				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr);
+				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr & 0xFF00);
 				return lo | (hi << 8);
 			} else {
-				return memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
+				return memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr);
 			}
 		}
 	
@@ -229,9 +233,12 @@ bool PceDisUtils::IsUnconditionalJump(uint8_t opCode)
 	switch(opCode) {
 		case 0x20: //JSR
 		case 0x40: //RTI
+		case 0x44: //BSR
 		case 0x4C: //JMP (Absolute)
 		case 0x60: //RTS
 		case 0x6C: //JMP (Indirect)
+		case 0x7C: //JMP (Absolute,X)
+		case 0x80: //BRA
 			return true;
 
 		default:
@@ -250,6 +257,14 @@ bool PceDisUtils::IsConditionalJump(uint8_t opCode)
 		case 0xB0: //BCS
 		case 0xD0: //BNE
 		case 0xF0: //BEQ
+
+		//BBR
+		case 0x0F: case 0x1F: case 0x2F: case 0x3F:
+		case 0x4F: case 0x5F: case 0x6F: case 0x7F:
+
+		//BBS
+		case 0x8F: case 0x9F: case 0xAF: case 0xBF:
+		case 0xCF: case 0xDF: case 0xEF: case 0xFF:
 			return true;
 
 		default:
@@ -259,10 +274,26 @@ bool PceDisUtils::IsConditionalJump(uint8_t opCode)
 
 bool PceDisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return opCode == 0x20;
+	return opCode == 0x20 || opCode == 0x44 || opCode == 0x00; //JSR, BSR, BRK
 }
 
 bool PceDisUtils::IsReturnInstruction(uint8_t opCode)
 {
-	return opCode == 0x60 || opCode == 0x40;
+	return opCode == 0x60 || opCode == 0x40; //RTS & RTI
+}
+
+bool PceDisUtils::IsOpUnofficial(uint8_t opCode)
+{
+	switch(opCode) {
+		case 0x33:
+		case 0x5C:
+		case 0x63:
+		case 0xDC:
+		case 0xE2:
+		case 0xFC:
+			return true;
+
+		default:
+			return (opCode & 0x0F) == 0x0B;
+	}
 }
