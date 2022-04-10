@@ -497,10 +497,7 @@ void PceCpu::CLD() { ClearFlags(PceCpuFlags::Decimal); }
 void PceCpu::CLI() { ClearFlags(PceCpuFlags::Interrupt); }
 void PceCpu::CLV() { ClearFlags(PceCpuFlags::Overflow); }
 void PceCpu::SEC() { SetFlags(PceCpuFlags::Carry); }
-void PceCpu::SED() {
-	MessageManager::Log("decimal mode enabled");
-	SetFlags(PceCpuFlags::Decimal);
-}
+void PceCpu::SED() { SetFlags(PceCpuFlags::Decimal); }
 void PceCpu::SEI() { SetFlags(PceCpuFlags::Interrupt); }
 
 void PceCpu::BRK()

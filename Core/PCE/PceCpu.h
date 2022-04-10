@@ -196,9 +196,9 @@ private:
 
 	void EndBlockTransfer()
 	{
-		SetA(Pop());
-		SetX(Pop());
-		SetY(Pop());
+		_state.A = Pop();
+		_state.X = Pop();
+		_state.Y = Pop();
 	}
 
 	void TAI() 
