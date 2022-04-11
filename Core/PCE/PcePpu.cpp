@@ -23,9 +23,10 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	memset(_vram, 0, 0x10000);
 	memset(_paletteRam, 0, 0x400);
 
-	//Column/Row count can't ever be 0, init them
+	//These values can't ever be 0, init them to a possible value
 	_state.ColumnCount = 32;
 	_state.RowCount = 32;
+	_state.VramAddrIncrement = 1;
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
