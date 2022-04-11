@@ -17,5 +17,6 @@ namespace Mesen.Config
 		public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
 		public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();
 		public GbEventViewerConfig GbConfig { get; set; } = new GbEventViewerConfig();
+		public PceEventViewerConfig PceConfig { get; set; } = new PceEventViewerConfig();
 	}
 }

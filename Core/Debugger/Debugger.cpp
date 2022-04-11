@@ -318,11 +318,7 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 void Debugger::InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepRequest& stepRequest, AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t retAddr, bool forNmi)
 {
 	dbg.GetCallstackManager()->Push(src, srcAddr, dest, destAddr, ret, retAddr, forNmi ? StackFrameFlags::Nmi : StackFrameFlags::Irq);
-	if(dbg.GetEventManager()) {
-		//TODO
-		dbg.GetEventManager()->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
-	}
-
+	dbg.GetEventManager()->AddEvent(forNmi ? DebugEventType::Nmi : DebugEventType::Irq);
 	stepRequest.ProcessNmiIrq(forNmi);
 }
 
@@ -342,6 +338,7 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 		}
 
+		//TODO (need a better solution)
 		case EventType::GbStartFrame:
 			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::StartFrame);
@@ -350,6 +347,7 @@ void Debugger::ProcessEvent(EventType type)
 			GetEventManager(CpuType::Gameboy)->ClearFrameEvents();
 			break;
 		
+		//TODO (need a better solution)
 		case EventType::GbEndFrame:
 			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::EndFrame);

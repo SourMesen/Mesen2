@@ -9,13 +9,14 @@ class PcePpu
 {
 private:
 	PcePpuState _state = {};
-	Emulator* _emu;
-	PceConsole* _console;
-	uint16_t* _vram;
-	uint16_t* _paletteRam;
-	uint16_t* _spriteRam;
+	Emulator* _emu = nullptr;
+	PceConsole* _console = nullptr;
+	uint16_t* _vram = nullptr;
+	uint16_t* _paletteRam = nullptr;
+	uint16_t* _spriteRam = nullptr;
 
-	uint16_t* _outBuffer;
+	uint16_t* _outBuffer[2] = {};
+	uint16_t* _currentOutBuffer = nullptr;
 	uint32_t _screenWidth = 256;
 
 	template<uint16_t bitMask = 0xFFFF>
@@ -39,8 +40,13 @@ public:
 	~PcePpu();
 
 	PcePpuState& GetState();
+	uint16_t* GetScreenBuffer();
+	uint16_t* GetPreviousScreenBuffer();
+	uint16_t GetScreenWidth();
+
 	uint16_t GetCycle() { return _state.Cycle; }
 	uint16_t GetScanline() { return _state.Scanline; }
+	uint16_t GetFrameCount() { return _state.FrameCount; }
 
 	void Exec();
 

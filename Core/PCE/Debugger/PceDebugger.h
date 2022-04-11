@@ -39,7 +39,7 @@ class PceDebugger final : public IDebugger
 	PceMemoryManager* _memoryManager;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
-	//unique_ptr<BaseEventManager> _eventManager;
+	unique_ptr<BaseEventManager> _eventManager;
 	//unique_ptr<IAssembler> _assembler;
 	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;

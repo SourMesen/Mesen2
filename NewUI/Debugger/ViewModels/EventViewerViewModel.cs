@@ -139,6 +139,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Snes => Config.SnesConfig,
 				CpuType.Nes => Config.NesConfig,
 				CpuType.Gameboy => Config.GbConfig,
+				CpuType.Pce => Config.PceConfig,
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -193,6 +194,7 @@ namespace Mesen.Debugger.ViewModels
 					CpuType.Snes => new PixelPoint(evt.Cycle / 2, evt.Scanline * 2),
 					CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
 					CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
+					CpuType.Pce => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 					_ => throw new Exception("Invalid cpu type")
 				};
 			}
@@ -215,6 +217,7 @@ namespace Mesen.Debugger.ViewModels
 					break;
 
 				case CpuType.Gameboy:
+				case CpuType.Pce:
 					result.X = p.X / 2 * 2;
 					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
 					break;
@@ -226,7 +229,7 @@ namespace Mesen.Debugger.ViewModels
 			GridHighlightPoint = result;
 		}
 
-		private void UpdateConfig()
+		public void UpdateConfig()
 		{
 			if(ConsoleConfig is SnesEventViewerConfig snesCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, snesCfg.ToInterop());
@@ -234,6 +237,8 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetEventViewerConfig(CpuType, nesCfg.ToInterop());
 			} else if(ConsoleConfig is GbEventViewerConfig gbCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, gbCfg.ToInterop());
+			} else if(ConsoleConfig is PceEventViewerConfig pceCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, pceCfg.ToInterop());
 			}
 		}
 

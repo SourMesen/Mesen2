@@ -34,6 +34,9 @@
 		<DataTemplate DataType="{x:Type cfg:GbEventViewerConfig}">
 			<v:GbEventViewerConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type cfg:PceEventViewerConfig}">
+			<v:PceEventViewerConfigView />
+		</DataTemplate>
 	</Window.DataTemplates>
 	
 	<DockPanel>

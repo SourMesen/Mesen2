@@ -272,6 +272,9 @@
     <Compile Update="Debugger\Views\DebuggerLogView.axaml.cs">
       <DependentUpon>DebuggerLogView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\PceEventViewerConfigView.axaml.cs">
+      <DependentUpon>PceEventViewerConfigView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\SourceViewView.axaml.cs">
       <DependentUpon>SourceViewView.axaml</DependentUpon>
     </Compile>

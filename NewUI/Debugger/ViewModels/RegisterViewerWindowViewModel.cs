@@ -91,6 +91,8 @@ namespace Mesen.Debugger.ViewModels
 				_state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes);
 			} else if(_romInfo.ConsoleType == ConsoleType.Gameboy || _romInfo.ConsoleType == ConsoleType.GameboyColor) {
 				_state = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
+			} else if(_romInfo.ConsoleType == ConsoleType.PcEngine) {
+				_state = DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine);
 			}
 
 			Dispatcher.UIThread.Post(() => {
@@ -139,6 +141,11 @@ namespace Mesen.Debugger.ViewModels
 					GetGbLcdTab(ref gbState),
 					GetGbApuTab(ref gbState),
 					GetGbMiscTab(ref gbState)
+				};
+			} else if(lastState is PceState pceState) {
+				tabs = new List<RegisterViewerTab>() {
+					GetPceCpuTab(ref pceState),
+					GetPcePpuTab(ref pceState)
 				};
 			}
 
@@ -1121,6 +1128,109 @@ namespace Mesen.Debugger.ViewModels
 
 			return new RegisterViewerTab() {
 				TabName = "Cart",
+				Data = entries
+			};
+		}
+
+		private RegisterViewerTab GetPcePpuTab(ref PceState state)
+		{
+			PcePpuState ppu = state.Ppu;
+
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("", "State", null),
+				new RegEntry("", "Cycle (H)", ppu.Cycle, Format.X16),
+				new RegEntry("", "Scanline (V)", ppu.Scanline, Format.X16),
+				new RegEntry("", "Frame Number", ppu.FrameCount),
+
+				new RegEntry("$00", "MAWR - Memory Write Address", ppu.MemAddrWrite, Format.X16),
+				new RegEntry("$01", "MARR - Memory Read Address", ppu.MemAddrRead, Format.X16),
+				new RegEntry("$02", "VWR - VRAM Write Data", ppu.VramData, Format.X16),
+
+				new RegEntry("$05", "CR - Control", null),
+				new RegEntry("$05.0", "Sprite 0 Hit IRQ Enabled", ppu.EnableCollisionIrq),
+				new RegEntry("$05.1", "Overflow IRQ Enabled", ppu.EnableOverflowIrq),
+				new RegEntry("$05.2", "Scanline Detect (RCR) IRQ Enabled", ppu.EnableScanlineIrq),
+				new RegEntry("$05.3", "Vertical Blank IRQ Enabled", ppu.EnableVerticalBlankIrq),
+				new RegEntry("$05.6", "Sprites Enabled", ppu.NextSpritesEnabled),
+				new RegEntry("$05.7", "Background Enabled", ppu.NextBackgroundEnabled),
+				new RegEntry("$05.11-12", "VRAM Address Increment", ppu.VramAddrIncrement),
+
+				new RegEntry("$06", "RCR - Raster Compare Register", ppu.RasterCompareRegister, Format.X16),
+				new RegEntry("$07", "BXR - BG Scroll X", ppu.BgScrollX, Format.X16),
+				new RegEntry("$08", "BYR - BG Scroll Y", ppu.BgScrollY, Format.X16),
+				
+				new RegEntry("$09", "MWR - Memory Width", null),
+				new RegEntry("$09.0-1", "VRAM Access Mode", ppu.VramAccessMode),
+				new RegEntry("$09.2-3", "Sprite Access Mode", ppu.SpriteAccessMode),
+				new RegEntry("$09.4-5", "Column Count", ppu.ColumnCount),
+				new RegEntry("$09.6", "Row Count", ppu.RowCount),
+				new RegEntry("$09.7", "CG Mode", ppu.CgMode),
+
+				new RegEntry("$0A", "HSR - Horizontal Sync", null),
+				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", ppu.HorizSyncWidth, Format.X8),
+				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", ppu.HorizDisplayStart, Format.X8),
+				
+				new RegEntry("$0B", "HDR - Horizontal Display", null),
+				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", ppu.HorizDisplayWidth, Format.X8),
+				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", ppu.HorizDisplayEnd, Format.X8),
+
+				new RegEntry("$0C", "VPR - Vertical Sync", null),
+				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", ppu.VertSyncWidth, Format.X8),
+				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", ppu.VertDisplayStart, Format.X8),
+
+				new RegEntry("$0D", "VDR - Vertical Display", null),
+				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", ppu.VertDisplayWidth, Format.X16),
+
+				new RegEntry("$0E", "VCR - Vertical Display End", null),
+				new RegEntry("$0E.0-7", "HDE - Vertical Display End Position", ppu.HorizDisplayEnd, Format.X8),
+
+				new RegEntry("$0F", "DCR - Block Transfer Control", null),
+				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", ppu.VramSatbIrqEnabled),
+				new RegEntry("$0F.1", "VRAM-VRAM Transfer Complete IRQ Enabled", ppu.VramVramIrqEnabled),
+				new RegEntry("$0F.2", "Decrement Source Address", ppu.DecrementSrc),
+				new RegEntry("$0F.3", "Decrement Destination Address", ppu.DecrementDst),
+				new RegEntry("$0F.4", "VRAM-SATB Transfer Auto-Repeat", ppu.RepeatSatbTransfer),
+				
+				new RegEntry("$10", "SOUR - Block Transfer Source Address", ppu.BlockSrc, Format.X16),
+				new RegEntry("$11", "DESR - Block Transfer Source Address", ppu.BlockDst, Format.X16),
+				new RegEntry("$12", "LENR - Block Transfer Source Address", ppu.BlockLen, Format.X16),
+				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", ppu.BgScrollX, Format.X16)
+			};
+
+			return new RegisterViewerTab() {
+				TabName = "VDC",
+				Data = entries
+			};
+		}
+
+		private RegisterViewerTab GetPceCpuTab(ref PceState state)
+		{
+			PceMemoryManager mem = state.MemoryManager;
+
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("", "IRQ", null),
+				new RegEntry("$1402", "Disabled IRQs", null),
+				new RegEntry("$1402.0", "IRQ2 Disabled", (mem.DisabledIrqs & 0x01) != 0),
+				new RegEntry("$1402.1", "IRQ1 (VDC) Disabled", (mem.DisabledIrqs & 0x02) != 0),
+				new RegEntry("$1402.2", "Timer IRQ Disabled", (mem.DisabledIrqs & 0x04) != 0),
+				new RegEntry("$1403", "Active IRQs", null),
+				new RegEntry("$1403.0", "IRQ2", (mem.ActiveIrqs & 0x01) != 0),
+				new RegEntry("$1403.1", "IRQ1 (VDC)", (mem.ActiveIrqs & 0x02) != 0),
+				new RegEntry("$1403.2", "Timer IRQ", (mem.ActiveIrqs & 0x04) != 0),
+
+				new RegEntry("", "MPR", null),
+				new RegEntry("", "MPR #0", mem.Mpr[0], Format.X8),
+				new RegEntry("", "MPR #1", mem.Mpr[1], Format.X8),
+				new RegEntry("", "MPR #2", mem.Mpr[2], Format.X8),
+				new RegEntry("", "MPR #3", mem.Mpr[3], Format.X8),
+				new RegEntry("", "MPR #4", mem.Mpr[4], Format.X8),
+				new RegEntry("", "MPR #5", mem.Mpr[5], Format.X8),
+				new RegEntry("", "MPR #6", mem.Mpr[6], Format.X8),
+				new RegEntry("", "MPR #7", mem.Mpr[7], Format.X8),
+			};
+
+			return new RegisterViewerTab() {
+				TabName = "CPU",
 				Data = entries
 			};
 		}

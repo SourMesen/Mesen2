@@ -15,7 +15,10 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
 	_paletteRam = new uint16_t[0x200];
-	_outBuffer = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
+	
+	_outBuffer[0] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
+	_outBuffer[1] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
+	_currentOutBuffer = _outBuffer[0];
 
 	memset(_vram, 0, 0x10000);
 	memset(_paletteRam, 0, 0x400);
@@ -34,12 +37,28 @@ PcePpu::~PcePpu()
 	delete[] _vram;
 	delete[] _paletteRam;
 	delete[] _spriteRam;
-	delete[] _outBuffer;
+	delete[] _outBuffer[0];
+	delete[] _outBuffer[1];
 }
 
 PcePpuState& PcePpu::GetState()
 {
 	return _state;
+}
+
+uint16_t* PcePpu::GetScreenBuffer()
+{
+	return _currentOutBuffer;
+}
+
+uint16_t* PcePpu::GetPreviousScreenBuffer()
+{
+	return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
+}
+
+uint16_t PcePpu::GetScreenWidth()
+{
+	return _screenWidth;
 }
 
 void PcePpu::Exec()
@@ -136,16 +155,18 @@ void PcePpu::Exec()
 			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
 			_state.SpritesEnabled = _state.NextSpritesEnabled;
 
-			if(_state.SpritesEnabled || _state.BackgroundEnabled) {
-				//Reset current width to current frame data only if rendering is enabled
-				_screenWidth = GetCurrentScreenWidth();
-			}
-
 			_state.Scanline = 0;
 			_state.DisplayCounter = 0;
 			_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
 			_state.BgScrollYLatch = _state.BgScrollY;
 			_state.BgScrollYUpdatePending = false;
+
+			_emu->ProcessEvent(EventType::StartFrame);
+
+			if(_state.SpritesEnabled || _state.BackgroundEnabled) {
+				//Reset current width to current frame data only if rendering is enabled
+				_screenWidth = GetCurrentScreenWidth();
+			}
 		}
 	}
 
@@ -199,16 +220,19 @@ void PcePpu::DrawScanline(bool drawOverscan)
 	if(_state.Scanline < 14 || _state.Scanline >= 256) {
 		//Only 242 rows can be shown
 		return;
+	} else if(_state.Scanline == 14) {
+		_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 	}
 
 	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
 	uint16_t row = _state.DisplayCounter - topBorder;
 	uint32_t outputOffset = ((int)_state.Scanline - 14) * _screenWidth;
+	uint16_t* out = _currentOutBuffer;
 
 	if(_state.BurstModeEnabled || drawOverscan) {
 		//Draw sprite color 0 as background when display is disabled
 		for(uint32_t column = 0; column < _screenWidth; column++) {
-			_outBuffer[outputOffset + column] = _paletteRam[16 * 16];
+			out[outputOffset + column] = _paletteRam[16 * 16];
 		}
 		return;
 	}
@@ -217,8 +241,8 @@ void PcePpu::DrawScanline(bool drawOverscan)
 	if(rowWidth < _screenWidth) {
 		//Scanline is less wide than previous scanlines, center it (and clear both sides)
 		int gap = (_screenWidth - rowWidth) / 2;
-		memset(_outBuffer + outputOffset, 0, gap * sizeof(uint16_t));
-		memset(_outBuffer + outputOffset + rowWidth + gap, 0, gap * sizeof(uint16_t));
+		memset(out + outputOffset, 0, gap * sizeof(uint16_t));
+		memset(out + outputOffset + rowWidth + gap, 0, gap * sizeof(uint16_t));
 		outputOffset += gap;
 	}
 
@@ -236,15 +260,15 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
 			if(color != 0) {
 				hasBg[column] = true;
-				_outBuffer[outputOffset + column] = _paletteRam[palette * 16 + color];
+				out[outputOffset + column] = _paletteRam[palette * 16 + color];
 			} else {
-				_outBuffer[outputOffset + column] = _paletteRam[0];
+				out[outputOffset + column] = _paletteRam[0];
 			}
 		}
 	} else {
 		//Draw background color
 		for(uint32_t column = 0; column < rowWidth; column++) {
-			_outBuffer[outputOffset + column] = _paletteRam[0];
+			out[outputOffset + column] = _paletteRam[0];
 		}
 	}
 
@@ -340,7 +364,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 						}
 					} else {
 						if(priority || hasBg[spriteX + x] == 0) {
-							_outBuffer[outputOffset + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
+							out[outputOffset + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
 						}
 						
 						hasSprite[spriteX + x] = true;
@@ -370,9 +394,9 @@ void PcePpu::ChangeResolution()
 		for(int i = lastDrawnRow; i >= 0; i--) {
 			uint32_t src = i * _screenWidth;
 			uint32_t dst = i * newWidth;
-			memmove(_outBuffer + dst + gap, _outBuffer + src, _screenWidth * sizeof(uint16_t));
-			memset(_outBuffer + dst, 0, gap * sizeof(uint16_t));
-			memset(_outBuffer + dst + _screenWidth + gap, 0, gap * sizeof(uint16_t));
+			memmove(_currentOutBuffer + dst + gap, _currentOutBuffer + src, _screenWidth * sizeof(uint16_t));
+			memset(_currentOutBuffer + dst, 0, gap * sizeof(uint16_t));
+			memset(_currentOutBuffer + dst + _screenWidth + gap, 0, gap * sizeof(uint16_t));
 		}
 		_screenWidth = newWidth;
 	}
@@ -381,9 +405,9 @@ void PcePpu::ChangeResolution()
 void PcePpu::SendFrame()
 {
 	_emu->ProcessEvent(EventType::EndFrame);
-	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _outBuffer);
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutBuffer);
 
-	RenderedFrame frame(_outBuffer, _screenWidth, PceConstants::ScreenHeight, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_currentOutBuffer, _screenWidth, PceConstants::ScreenHeight, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
 
 	_emu->ProcessEndOfFrame();

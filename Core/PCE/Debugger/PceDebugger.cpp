@@ -18,6 +18,7 @@
 #include "Pce/Debugger/PcePpuTools.h"
 #include "Pce/Debugger/PceDisUtils.h"
 #include "Pce/Debugger/DummyPceCpu.h"
+#include "Pce/Debugger/PceEventManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
@@ -47,8 +48,9 @@ PceDebugger::PceDebugger(Debugger* debugger)
 
 	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce));
 
+	_eventManager.reset(new PceEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
-	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, nullptr));// _eventManager.get()));
+	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
 	_step.reset(new StepRequest());
 	
 	if(_console->GetMasterClock() < 1000) {
@@ -138,8 +140,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
 
 	if(IsRegister(operation)) {
-		//todo
-		//_eventManager->AddEvent(DebugEventType::Register, operation);
+		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
 	if(type == MemoryOperationType::ExecOpCode) {
@@ -198,10 +199,9 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 		_disassembler->InvalidateCache(addressInfo, CpuType::Pce);
 	}
 
-	//todo
-	/*if(IsRegister(operation)) {
+	if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
-	}*/
+	}
 
 	if(_traceLogger->IsEnabled()) {
 		_traceLogger->LogNonExec(operation);
@@ -288,8 +288,8 @@ void PceDebugger::ProcessPpuCycle()
 
 bool PceDebugger::IsRegister(MemoryOperationInfo& op)
 {
-	//todo
-	return false;
+	uint8_t bank = _memoryManager->GetState().Mpr[op.Address >> 13];
+	return bank == 0xFF;
 }
 
 DebuggerFeatures PceDebugger::GetSupportedFeatures()
@@ -334,8 +334,7 @@ IAssembler* PceDebugger::GetAssembler()
 
 BaseEventManager* PceDebugger::GetEventManager()
 {
-	//todo
-	return nullptr;// _eventManager.get();
+	return _eventManager.get();
 }
 
 CodeDataLogger* PceDebugger::GetCodeDataLogger()

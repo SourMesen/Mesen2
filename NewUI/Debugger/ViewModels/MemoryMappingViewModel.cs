@@ -374,6 +374,15 @@ namespace Mesen.Debugger.ViewModels
 						Note = accessNotes[memType] + note,
 						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
 					});
+				} else if(state.Mpr[i] == 0xFF) {
+					MemoryType memType = MemoryType.Register;
+					mappings.Add(new MemoryMappingBlock() {
+						Length = 0x2000,
+						Name = blockNames[memType],
+						Page = state.Mpr[i],
+						Note = accessNotes[memType],
+						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
+					});
 				} else {
 					mappings.Add(new MemoryMappingBlock() {
 						Length = 0x2000,

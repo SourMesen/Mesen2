@@ -126,12 +126,11 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 	frame.CycleCount = 341;
 
 	frame.FirstScanline = 0;
-	frame.ScanlineCount = 263;
+	frame.ScanlineCount = PceConstants::ScanlineCount;
 
-	//TODO
-	//frame.FrameBuffer = ...
-	//frame.Height
-	//frame.Width
+	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
+	frame.Height = PceConstants::ScreenHeight;
+	frame.Width = _ppu->GetScreenWidth();
 	return frame;
 }
 

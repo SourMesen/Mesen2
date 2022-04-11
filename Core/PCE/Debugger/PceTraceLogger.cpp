@@ -2,6 +2,7 @@
 #include "PCE/Debugger/PceTraceLogger.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceTypes.h"
+#include "PCE/PcePpu.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
@@ -31,8 +32,8 @@ RowDataType PceTraceLogger::GetFormatTagType(string& tag)
 
 void PceTraceLogger::GetTraceRow(string &output, PceCpuState &cpuState, TraceLogPpuState &ppuState, DisassemblyInfo &disassemblyInfo)
 {
-	constexpr char activeStatusLetters[8] = { 'N', 'V', '-', '-', 'D', 'I', 'Z', 'C' };
-	constexpr char inactiveStatusLetters[8] = { 'n', 'v', '-', '-', 'd', 'i', 'z', 'c' };
+	constexpr char activeStatusLetters[8] = { 'N', 'V', '-', 'T', 'D', 'I', 'Z', 'C' };
+	constexpr char inactiveStatusLetters[8] = { 'n', 'v', '-', 't', 'd', 'i', 'z', 'c' };
 
 	for(RowPart& rowPart : _rowParts) {
 		switch(rowPart.DataType) {
@@ -50,10 +51,10 @@ void PceTraceLogger::LogPpuState()
 {
 	_ppuState[_currentPos] = {};
 	
-	/*_ppuState[_currentPos] = {
-		_ppu->GetCurrentCycle(),
-		_ppu->GetCurrentCycle(),
-		_ppu->GetCurrentScanline(),
+	_ppuState[_currentPos] = {
+		_ppu->GetCycle(),
+		_ppu->GetCycle(),
+		_ppu->GetScanline(),
 		_ppu->GetFrameCount()
-	};*/
+	};
 }

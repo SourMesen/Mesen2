@@ -13,6 +13,7 @@ using Mesen.Debugger.Labels;
 using Avalonia.Interactivity;
 using Mesen.Utilities;
 using System.Linq;
+using Avalonia.Threading;
 
 namespace Mesen.Debugger.Windows
 {
@@ -142,6 +143,10 @@ namespace Mesen.Debugger.Windows
 					if(!romInfo.CpuTypes.Contains(_model.CpuType)) {
 						_model.CpuType = romInfo.ConsoleType.GetMainCpuType();
 					}
+
+					Dispatcher.UIThread.Post(() => {
+						_model.UpdateConfig();
+					});
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:

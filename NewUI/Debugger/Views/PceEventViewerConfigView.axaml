@@ -1,0 +1,49 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="cfg:PceEventViewerConfig"
+	x:Class="Mesen.Debugger.Views.PceEventViewerConfigView"
+>
+	<Design.DataContext>
+		<cfg:PceEventViewerConfig />
+	</Design.DataContext>
+
+	<StackPanel>
+		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+			<c:OptionSection Header="Register writes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
+			<c:OptionSection Header="Register reads" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"  Margin="10 0 0 0" />
+			<StackPanel Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="VDC" Config="{CompiledBinding VdcWrites}" />
+				<dc:EventViewerCategoryControl Text="VCE" Config="{CompiledBinding VceWrites}" />
+				<dc:EventViewerCategoryControl Text="PSG" Config="{CompiledBinding PsgWrites}" />
+				<dc:EventViewerCategoryControl Text="Timer" Config="{CompiledBinding TimerWrites}" />
+				<dc:EventViewerCategoryControl Text="I/O" Config="{CompiledBinding IoWrites}" />
+			</StackPanel>
+			<StackPanel Grid.Column="3"  Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="VDC" Config="{CompiledBinding VdcReads}" />
+				<dc:EventViewerCategoryControl Text="VCE" Config="{CompiledBinding VceReads}" />
+				<dc:EventViewerCategoryControl Text="PSG" Config="{CompiledBinding PsgReads}" />
+				<dc:EventViewerCategoryControl Text="Timer" Config="{CompiledBinding TimerReads}" />
+				<dc:EventViewerCategoryControl Text="I/O" Config="{CompiledBinding IoReads}" />
+			</StackPanel>
+		</Grid>
+
+		<c:OptionSection Header="Other events" />
+		<StackPanel>
+			<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />
+			<dc:EventViewerCategoryControl Text="Marked Breakpoints" Config="{CompiledBinding MarkedBreakpoints}" />
+		</StackPanel>
+
+		<c:OptionSection Header="Misc. Settings">
+			<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
+		</c:OptionSection>
+	</StackPanel>
+</UserControl>

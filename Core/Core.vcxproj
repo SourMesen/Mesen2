@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCE\Debugger\DummyPceCpu.h" />
+    <ClInclude Include="PCE\Debugger\PceEventManager.h" />
     <ClInclude Include="PCE\Input\PceController.h" />
     <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PcePpu.h" />
@@ -437,6 +438,7 @@
     <ClCompile Include="PCE\Debugger\DummyPceCpu.cpp" />
     <ClCompile Include="PCE\Debugger\PceDebugger.cpp" />
     <ClCompile Include="PCE\Debugger\PceDisUtils.cpp" />
+    <ClCompile Include="PCE\Debugger\PceEventManager.cpp" />
     <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
     <ClCompile Include="PCE\PceConsole.cpp" />

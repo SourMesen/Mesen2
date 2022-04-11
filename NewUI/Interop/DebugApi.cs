@@ -299,6 +299,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropSnesEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropNesEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbEventViewerConfig config);
+		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropPceEventViewerConfig config);
 		
 		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle);
 		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType);
@@ -690,6 +691,26 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg ApuRegisterWrites;
 		public InteropEventViewerCategoryCfg CpuRegisterReads;
 		public InteropEventViewerCategoryCfg CpuRegisterWrites;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class InteropPceEventViewerConfig
+	{
+		public InteropEventViewerCategoryCfg Irq;
+		public InteropEventViewerCategoryCfg MarkedBreakpoints;
+
+		public InteropEventViewerCategoryCfg VdcWrites;
+		public InteropEventViewerCategoryCfg VdcReads;
+		public InteropEventViewerCategoryCfg VceWrites;
+		public InteropEventViewerCategoryCfg VceReads;
+		public InteropEventViewerCategoryCfg PsgWrites;
+		public InteropEventViewerCategoryCfg PsgReads;
+		public InteropEventViewerCategoryCfg TimerWrites;
+		public InteropEventViewerCategoryCfg TimerReads;
+		public InteropEventViewerCategoryCfg IoWrites;
+		public InteropEventViewerCategoryCfg IoReads;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}
