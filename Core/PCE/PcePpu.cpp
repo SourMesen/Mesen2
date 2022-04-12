@@ -4,6 +4,7 @@
 #include "PCE/PceControlManager.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceConsole.h"
+#include "Shared/RewindManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/NotificationManager.h"
 #include "EventType.h"
@@ -27,6 +28,9 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.ColumnCount = 32;
 	_state.RowCount = 32;
 	_state.VramAddrIncrement = 1;
+	_state.VceClockDivider = 4;
+	_state.HorizDisplayWidth = 0x1F;
+	_screenWidth = 256;
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
@@ -64,10 +68,10 @@ uint16_t PcePpu::GetScreenWidth()
 
 void PcePpu::Exec()
 {
-	_state.Cycle++;
-
+	_state.HClock += 3;
+	
 	if(_state.SatbTransferRunning) {
-		_state.SatbTransferCycleCounter--;
+		_state.SatbTransferCycleCounter -= 3;
 		if(_state.SatbTransferCycleCounter) {
 			for(int i = 0; i < 256; i++) {
 				uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
@@ -85,7 +89,7 @@ void PcePpu::Exec()
 		}
 	}
 
-	if(_state.Cycle == 270) {
+	if(_state.HClock == 999) {
 		//TODO timing, approx end of scanline display
 		//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
 		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
@@ -122,9 +126,9 @@ void PcePpu::Exec()
 				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 			}
 		}
-	} else if(_state.Cycle == 341) {
+	} else if(_state.HClock == PceConstants::ClockPerScanline) {
 		ChangeResolution();
-		_state.Cycle = 0;
+		_state.HClock = 0;
 
 		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
 		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
@@ -182,7 +186,7 @@ void PcePpu::ProcessEndOfVisibleFrame()
 		_state.SatbTransferRunning = true;
 
 		//Sprite transfer ends 4 lines after vertical blank start?
-		_state.SatbTransferCycleCounter = 341 * 4;
+		_state.SatbTransferCycleCounter = PceConstants::ClockPerScanline * 4;
 	}
 
 	if(_state.EnableVerticalBlankIrq) {
@@ -287,6 +291,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			uint8_t height;
 			uint16_t flags = _spriteRam[i * 4 + 3];
 			switch((flags >> 12) & 0x03) {
+				default:
 				case 0: height = 16; break;
 				case 1: height = 32; break;
 				case 2: case 3: height = 64; break;
@@ -389,7 +394,7 @@ void PcePpu::ChangeResolution()
 	uint32_t newWidth = GetCurrentScreenWidth();
 	int lastDrawnRow = (int)_state.Scanline - 14;
 
-	if(newWidth > _screenWidth && lastDrawnRow >= 0) {
+	if(newWidth > _screenWidth && lastDrawnRow >= 0 && lastDrawnRow < PceConstants::ScreenHeight) {
 		int gap = (newWidth - _screenWidth) / 2;
 		//Move pixels in buffer to match new resolution, draw old lines in the center
 		for(int i = lastDrawnRow; i >= 0; i--) {
@@ -408,8 +413,10 @@ void PcePpu::SendFrame()
 	_emu->ProcessEvent(EventType::EndFrame);
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutBuffer);
 
+	bool forRewind = _emu->GetRewindManager()->IsRewinding();
+
 	RenderedFrame frame(_currentOutBuffer, _screenWidth, PceConstants::ScreenHeight, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
-	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 
 	_emu->ProcessEndOfFrame();
 
@@ -662,6 +669,12 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 		case 0x00:
 			//TODO
 			LogDebug("[Debug] Write - VCE missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			switch(value & 0x03) {
+				case 0: _state.VceClockDivider = 4; break;
+				case 1: _state.VceClockDivider = 3; break;
+				case 2: case 3: _state.VceClockDivider = 2; break;
+			}
+			LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
 			break;
 
 		case 0x01: break; //Unused, writes do nothing

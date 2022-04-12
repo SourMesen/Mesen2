@@ -1778,6 +1778,12 @@
     <ClInclude Include="PCE\Debugger\PceEventManager.h">
       <Filter>PCE\Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PcePsg.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PcePsgChannel.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1827,6 +1833,12 @@
     </ClCompile>
     <ClCompile Include="PCE\Debugger\PceEventManager.cpp">
       <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PcePsg.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PcePsgChannel.cpp">
+      <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

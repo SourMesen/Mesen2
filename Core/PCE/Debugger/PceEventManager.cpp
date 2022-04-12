@@ -33,7 +33,7 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 	evt.Type = type;
 	evt.Operation = operation;
 	evt.Scanline = (int16_t)_ppu->GetScanline();
-	evt.Cycle = _ppu->GetCycle();
+	evt.Cycle = _ppu->GetHClock();
 	evt.BreakpointId = breakpointId;
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _cpu->GetState().PC;
@@ -45,7 +45,7 @@ void PceEventManager::AddEvent(DebugEventType type)
 	DebugEventInfo evt = {};
 	evt.Type = type;
 	evt.Scanline = _ppu->GetScanline();
-	evt.Cycle = _ppu->GetCycle();
+	evt.Cycle = _ppu->GetHClock();
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _cpu->GetState().PC;
@@ -56,7 +56,7 @@ DebugEventInfo PceEventManager::GetEvent(uint16_t y, uint16_t x)
 {
 	auto lock = _lock.AcquireSafe();
 
-	uint16_t cycle = x / 2; //convert to cycle value
+	uint16_t cycle = x; //convert to hclock value
 	uint16_t scanline = y / 2; //convert to scanline value
 
 	//Search without including larger background color first
@@ -121,7 +121,6 @@ EventViewerCategoryCfg PceEventManager::GetEventConfig(DebugEventInfo& evt)
 void PceEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 {
 	y *= 2;
-	x *= 2;
 }
 
 uint32_t PceEventManager::TakeEventSnapshot()
@@ -129,10 +128,11 @@ uint32_t PceEventManager::TakeEventSnapshot()
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
 
-	uint16_t cycle = _ppu->GetCycle();
+	uint16_t cycle = _ppu->GetHClock();
 	uint16_t scanline = _ppu->GetScanline();
 
 	_screenWidth = _ppu->GetScreenWidth();
+	_dotWidth = _ppu->GetState().VceClockDivider;
 
 	if(scanline < 14 || scanline >= 256) {
 		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
@@ -153,7 +153,7 @@ uint32_t PceEventManager::TakeEventSnapshot()
 FrameInfo PceEventManager::GetDisplayBufferSize()
 {
 	FrameInfo size;
-	size.Width = 341 * 2; //TODO
+	size.Width = PceConstants::ClockPerScanline;
 	size.Height = PceConstants::ScanlineCount * 2;
 	return size;
 }
@@ -162,10 +162,12 @@ void PceEventManager::DrawScreen(uint32_t *buffer)
 {
 	uint16_t *src = _ppuBuffer;
 
+	uint32_t width = _screenWidth * _dotWidth;
+
 	for(uint32_t y = 0, len = PceConstants::ScreenHeight * 2; y < len; y++) {
-		for(uint32_t x = 0; x < _screenWidth * 2u; x++) {
-			int srcOffset = ((y >> 1) * _screenWidth) + (x >> 1);
-			buffer[(y + 14*2) * _scanlineWidth * 2 + x + _rowStartOffset * 2] = PceDefaultVideoFilter::ToArgb(src[srcOffset]);
+		for(uint32_t x = 0; x < width; x++) {
+			int srcOffset = ((y >> 1) * _screenWidth) + (x / _dotWidth);
+			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x + _rowStartOffset * 2] = PceDefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
 	}
 }

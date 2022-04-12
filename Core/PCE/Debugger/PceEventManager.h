@@ -44,7 +44,7 @@ private:
 	uint16_t *_ppuBuffer = nullptr;
 
 	uint16_t _screenWidth = 256;
-	uint16_t _scanlineWidth = 341;
+	uint16_t _dotWidth = 3;
 	uint16_t _rowStartOffset = 16;
 
 protected:

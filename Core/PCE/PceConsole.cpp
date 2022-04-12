@@ -6,6 +6,7 @@
 #include "PCE/PceDefaultVideoFilter.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PcePpu.h"
+#include "PCE/PcePsg.h"
 #include "PCE/PceConstants.h"
 #include "MemoryType.h"
 
@@ -37,7 +38,8 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 	_controlManager.reset(new PceControlManager(_emu));
 	_ppu.reset(new PcePpu(_emu, this));
-	_memoryManager.reset(new PceMemoryManager(_emu, _ppu.get(), _controlManager.get(), data));
+	_psg.reset(new PcePsg(_emu));
+	_memoryManager.reset(new PceMemoryManager(_emu, _ppu.get(), _controlManager.get(), _psg.get(), data));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -53,10 +55,12 @@ void PceConsole::Init()
 
 void PceConsole::RunFrame()
 {
-	uint32_t frameCount = _ppu->GetState().FrameCount;
-	while(frameCount == _ppu->GetState().FrameCount) {
+	uint32_t frameCount = _ppu->GetFrameCount();
+	while(frameCount == _ppu->GetFrameCount()) {
 		_cpu->Exec();
 	}
+
+	_psg->Run();
 }
 
 void PceConsole::SaveBattery()
@@ -110,7 +114,8 @@ uint32_t PceConsole::GetMasterClockRate()
 
 double PceConsole::GetFps()
 {
-	return 60.0;
+	//59.82609786
+	return (double)PceConstants::MasterClockRate / PceConstants::ClockPerScanline / PceConstants::ScanlineCount;
 }
 
 BaseVideoFilter* PceConsole::GetVideoFilter()
@@ -167,4 +172,8 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
 	state.MemoryManager = _memoryManager->GetState();
+	state.Psg = _psg->GetState();
+	for(int i = 0; i < 6; i++) {
+		state.PsgChannels[i] = _psg->GetChannelState(i);
+	}
 }

@@ -99,9 +99,9 @@
 				<WrapPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 						<TextBlock>Cycle:</TextBlock>
-						<c:MesenNumericTextBox Grid.Column="1" Value="{CompiledBinding Cycle}" IsEnabled="False" Max="340" />
+						<c:MesenNumericTextBox Grid.Column="1" Value="{CompiledBinding Cycle}" IsEnabled="False" />
 						<TextBlock Grid.Row="1">Scanline:</TextBlock>
-						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="263" Min="0" />
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" />
 					</Grid>
 				</WrapPanel>
 			</StackPanel>

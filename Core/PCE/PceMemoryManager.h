@@ -3,6 +3,7 @@
 #include "MemoryOperationType.h"
 #include "PCE/PcePpu.h"
 #include "PCE/PceTimer.h"
+#include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/PceSf2RomMapper.h"
 #include "Debugger/DebugTypes.h"
@@ -18,6 +19,7 @@ class PceMemoryManager
 private:
 	Emulator* _emu;
 	PcePpu* _ppu;
+	PcePsg* _psg;
 	PceControlManager* _controlManager;
 	unique_ptr<PceSf2RomMapper> _mapper;
 	unique_ptr<PceTimer> _timer;
@@ -32,10 +34,11 @@ private:
 	uint32_t _workRamSize = 0x2000;
 
 public:
-	PceMemoryManager(Emulator* emu, PcePpu* ppu, PceControlManager* controlManager, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, vector<uint8_t> romData)
 	{
 		_emu = emu;
 		_ppu = ppu;
+		_psg = psg;
 		_controlManager = controlManager;
 		_prgRomSize = (uint32_t)romData.size();
 		_prgRom = new uint8_t[_prgRomSize];
@@ -227,7 +230,7 @@ public:
 				_ppu->WriteVce(addr, value);
 			} else if(addr <= 0xBFF) {
 				//PSG
-				//LogDebug("[Debug] Write PSG - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+				_psg->Write(addr, value);
 				_state.IoBuffer = value;
 			} else if(addr <= 0xFFF) {
 				//Timer
@@ -316,7 +319,7 @@ public:
 		for(int i = 0; i < 8; i++) {
 			if(absAddr.Type == MemoryType::PcePrgRom) {
 				uint32_t bank = (uint32_t)(_romBanks[i] - _prgRom) / 0x2000;
-				if(bank == (absAddr.Address >> 13)) {
+				if(bank == ((uint32_t)absAddr.Address >> 13)) {
 					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 				}
 			} else if(absAddr.Type == MemoryType::PceWorkRam) {

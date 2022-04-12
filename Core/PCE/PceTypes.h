@@ -58,7 +58,8 @@ enum class PceAddrMode
 struct PcePpuState : public BaseState
 {
 	uint32_t FrameCount;
-	uint16_t Cycle;
+	
+	uint16_t HClock;
 	uint16_t Scanline;
 	uint16_t DisplayCounter;
 
@@ -156,6 +157,7 @@ struct PcePpuState : public BaseState
 	bool NextBackgroundEnabled;
 	
 	//VCE
+	uint8_t VceClockDivider;
 	uint16_t PalAddr;
 };
 
@@ -175,9 +177,42 @@ struct PceControlManagerState
 
 };
 
+struct PcePsgState
+{
+	uint8_t ChannelSelect;
+	uint8_t LeftVolume;
+	uint8_t RightVolume;
+	uint8_t LfoFrequency;
+	uint8_t LfoControl;
+};
+
+struct PcePsgChannelState
+{
+	uint16_t Frequency;
+	uint8_t Amplitude;
+	bool Enabled;
+	uint8_t LeftVolume;
+	uint8_t RightVolume;
+	uint8_t WaveData[0x20];
+
+	bool DdaEnabled;
+	uint8_t DdaOutputValue;
+
+	uint8_t WriteAddr;
+	uint8_t ReadAddr;
+	uint16_t Timer;
+	int16_t CurrentOutput;
+
+	//Channel 5 & 6 only
+	bool NoiseEnabled;
+	uint8_t NoiseFrequency;
+};
+
 struct PceState : public BaseState
 {
 	PceCpuState Cpu;
 	PcePpuState Ppu;
 	PceMemoryManagerState MemoryManager;
+	PcePsgState Psg;
+	PcePsgChannelState PsgChannels[6];
 };

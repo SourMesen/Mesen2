@@ -51,7 +51,7 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::Irq:  return ReturnBool(s.IRQFlag, resultType);*/
 
 		case EvalValues::PpuFrameCount: return ppu().FrameCount;
-		case EvalValues::PpuCycle: return ppu().Cycle;
+		case EvalValues::PpuCycle: return ppu().HClock;
 		case EvalValues::PpuScanline: return ppu().Scanline;
 
 		/*case EvalValues::Sprite0Hit: return ReturnBool(ppu().StatusFlags.Sprite0Hit, resultType);

@@ -271,11 +271,12 @@ void PceDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memor
 void PceDebugger::ProcessPpuCycle()
 {
 	if(_ppuTools->HasOpenedViewer()) {
-		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetCycle());
+		//TODO
+		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetHClock() / 3);
 	}
 
 	if(_step->HasRequest) {
-		if(_step->HasScanlineBreakRequest() && _ppu->GetCycle() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
+		if(_step->HasScanlineBreakRequest() && _ppu->GetHClock() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
 			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;

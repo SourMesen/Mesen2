@@ -52,8 +52,8 @@ void PceTraceLogger::LogPpuState()
 	_ppuState[_currentPos] = {};
 	
 	_ppuState[_currentPos] = {
-		_ppu->GetCycle(),
-		_ppu->GetCycle(),
+		_ppu->GetHClock(),
+		_ppu->GetHClock(),
 		_ppu->GetScanline(),
 		_ppu->GetFrameCount()
 	};

@@ -33,6 +33,8 @@
     <ClInclude Include="PCE\PceCpu.h" />
     <ClInclude Include="PCE\PceDefaultVideoFilter.h" />
     <ClInclude Include="PCE\PceMemoryManager.h" />
+    <ClInclude Include="PCE\PcePsg.h" />
+    <ClInclude Include="PCE\PcePsgChannel.h" />
     <ClInclude Include="PCE\PceSf2RomMapper.h" />
     <ClInclude Include="PCE\PceTimer.h" />
     <ClInclude Include="PCE\PceTypes.h" />
@@ -446,6 +448,8 @@
     <ClCompile Include="PCE\PceCpu.cpp" />
     <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
     <ClCompile Include="PCE\PcePpu.cpp" />
+    <ClCompile Include="PCE\PcePsg.cpp" />
+    <ClCompile Include="PCE\PcePsgChannel.cpp" />
     <ClCompile Include="PCE\PceSf2RomMapper.cpp" />
     <ClCompile Include="PCE\PceTimer.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />

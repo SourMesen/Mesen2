@@ -194,7 +194,7 @@ namespace Mesen.Debugger.ViewModels
 					CpuType.Snes => new PixelPoint(evt.Cycle / 2, evt.Scanline * 2),
 					CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
 					CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
-					CpuType.Pce => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
+					CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
 					_ => throw new Exception("Invalid cpu type")
 				};
 			}
@@ -217,9 +217,13 @@ namespace Mesen.Debugger.ViewModels
 					break;
 
 				case CpuType.Gameboy:
-				case CpuType.Pce:
 					result.X = p.X / 2 * 2;
 					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
+					break;
+
+				case CpuType.Pce:
+					result.X = p.X;
+					result.DisplayValue = $"{result.X}, {result.Y / 2}";
 					break;
 
 				default:

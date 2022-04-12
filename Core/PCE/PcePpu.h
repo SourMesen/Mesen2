@@ -44,7 +44,7 @@ public:
 	uint16_t* GetPreviousScreenBuffer();
 	uint16_t GetScreenWidth();
 
-	uint16_t GetCycle() { return _state.Cycle; }
+	uint16_t GetHClock() { return _state.HClock; }
 	uint16_t GetScanline() { return _state.Scanline; }
 	uint16_t GetFrameCount() { return _state.FrameCount; }
 

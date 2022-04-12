@@ -145,7 +145,8 @@ namespace Mesen.Debugger.ViewModels
 			} else if(lastState is PceState pceState) {
 				tabs = new List<RegisterViewerTab>() {
 					GetPceCpuTab(ref pceState),
-					GetPcePpuTab(ref pceState)
+					GetPcePpuTab(ref pceState),
+					GetPcePsgTab(ref pceState)
 				};
 			}
 
@@ -1231,6 +1232,41 @@ namespace Mesen.Debugger.ViewModels
 
 			return new RegisterViewerTab() {
 				TabName = "CPU",
+				Data = entries
+			};
+		}
+
+		private RegisterViewerTab GetPcePsgTab(ref PceState pceState)
+		{
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$800.0-2", "Channel Select", pceState.Psg.ChannelSelect, Format.X8),
+				new RegEntry("$801.0-3", "Right Amplitude", pceState.Psg.RightVolume, Format.X8),
+				new RegEntry("$801.4-7", "Left Amplitude", pceState.Psg.LeftVolume, Format.X8),
+				new RegEntry("$807.4-7", "LFO Frequency", pceState.Psg.LfoFrequency, Format.X8),
+				new RegEntry("$808", "LFO Control", pceState.Psg.LfoControl, Format.X8),
+			};
+
+			for(int i = 0; i < 6; i++) {
+				ref PcePsgChannelState ch = ref pceState.PsgChannels[i];
+
+				entries.AddRange(new List<RegEntry>() {
+					new RegEntry("", "Channel " + (i + 1), null),
+					new RegEntry("$802-$803", "Frequency", ch.Frequency, Format.X16),
+					new RegEntry("$804.0-4", "Amplitude", ch.Amplitude, Format.X8),
+					new RegEntry("$804.6", "DDA Enabled", ch.DdaEnabled),
+					new RegEntry("$804.7", "Channel Enabled", ch.Enabled),
+					new RegEntry("$805.0-3", "Right Amplitude", ch.RightVolume, Format.X8),
+					new RegEntry("$805.4-7", "Left Amplitude", ch.LeftVolume, Format.X8),
+				});
+
+				if(i >= 4) {
+					entries.Add(new RegEntry("$806.7", "Noise Enabled", ch.NoiseEnabled));
+					entries.Add(new RegEntry("$806.0-4", "Noise Frequency", ch.NoiseFrequency, Format.X8));
+				}
+			}
+
+			return new RegisterViewerTab() {
+				TabName = "PSG",
 				Data = entries
 			};
 		}

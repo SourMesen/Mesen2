@@ -4,6 +4,7 @@
 
 class PceCpu;
 class PcePpu;
+class PcePsg;
 class PceMemoryManager;
 class PceControlManager;
 class Emulator;
@@ -15,6 +16,7 @@ private:
 
 	unique_ptr<PceCpu> _cpu;
 	unique_ptr<PcePpu> _ppu;
+	unique_ptr<PcePsg> _psg;
 	unique_ptr<PceMemoryManager> _memoryManager;
 	unique_ptr<PceControlManager> _controlManager;
 

@@ -1420,10 +1420,47 @@ namespace Mesen.Interop
 		public byte IoBuffer;
 	}
 
+	public struct PcePsgState
+	{
+		public byte ChannelSelect;
+		public byte LeftVolume;
+		public byte RightVolume;
+		public byte LfoFrequency;
+		public byte LfoControl;
+	};
+
+	public struct PcePsgChannelState
+	{
+		public UInt16 Frequency;
+		public byte Amplitude;
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
+		public byte LeftVolume;
+		public byte RightVolume;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
+		public byte[] WaveData;
+
+		[MarshalAs(UnmanagedType.I1)] public bool DdaEnabled;
+		public byte DdaOutputValue;
+
+		public byte WriteAddr;
+		public byte ReadAddr;
+		public UInt16 Timer;
+		public Int16 CurrentOutput;
+
+		//Channel 5 & 6 only
+		[MarshalAs(UnmanagedType.I1)] public bool NoiseEnabled;
+		public byte NoiseFrequency;
+	}
+
 	public struct PceState : BaseState
 	{
 		public PceCpuState Cpu;
 		public PcePpuState Ppu;
 		public PceMemoryManager MemoryManager;
+		public PcePsgState Psg;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+		public PcePsgChannelState[] PsgChannels;
 	}
 }
