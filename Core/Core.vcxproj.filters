@@ -1784,6 +1784,18 @@
     <ClInclude Include="PCE\PcePsgChannel.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceCdRom.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceScsiBus.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceAdpcm.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\CdReader.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1838,6 +1850,15 @@
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PcePsgChannel.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceCdRom.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceScsiBus.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceAdpcm.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>

@@ -38,5 +38,7 @@ public:
 	bool ReadFile(std::stringstream &out);
 	bool ReadFile(uint8_t* out, uint32_t expectedSize);
 
+	uint8_t ReadByte(uint32_t offset);
+
 	bool ApplyPatch(VirtualFile &patch);
 };

@@ -13,6 +13,7 @@ struct InternalCheatCode;
 enum class ConsoleType;
 enum class ConsoleRegion;
 enum class CpuType : uint8_t;
+enum class EmulatorShortcut;
 
 enum class LoadRomResult
 {

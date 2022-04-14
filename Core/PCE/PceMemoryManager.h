@@ -1,11 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "MemoryOperationType.h"
+#include "PCE/PceConsole.h"
 #include "PCE/PcePpu.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/PceSf2RomMapper.h"
+#include "PCE/PceCdRom.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/MessageManager.h"
@@ -18,11 +20,13 @@ class PceMemoryManager
 {
 private:
 	Emulator* _emu;
+	PceConsole* _console;
 	PcePpu* _ppu;
 	PcePsg* _psg;
 	PceControlManager* _controlManager;
 	unique_ptr<PceSf2RomMapper> _mapper;
 	unique_ptr<PceTimer> _timer;
+	unique_ptr<PceCdRom> _cdrom;
 
 	PceMemoryManagerState _state = {};
 	uint8_t* _prgRom;
@@ -33,10 +37,17 @@ private:
 	uint8_t* _workRam;
 	uint32_t _workRamSize = 0x2000;
 
+	uint8_t* _cdromRam;
+	uint32_t _cdromRamSize = 0x10000;
+
+	uint8_t* _superCardRam;
+	uint32_t _superCardRamSize = 0x30000;
+
 public:
-	PceMemoryManager(Emulator* emu, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, vector<uint8_t> romData)
 	{
 		_emu = emu;
+		_console = console;
 		_ppu = ppu;
 		_psg = psg;
 		_controlManager = controlManager;
@@ -44,15 +55,21 @@ public:
 		_prgRom = new uint8_t[_prgRomSize];
 
 		_workRam = new uint8_t[_workRamSize];
+		_cdromRam = new uint8_t[_cdromRamSize];
+		_superCardRam = new uint8_t[_superCardRamSize];
 
 		memcpy(_prgRom, romData.data(), _prgRomSize);
-
+		
+		//TODO
 		memset(_workRam, 0, _workRamSize);
+		memset(_cdromRam, 0, _cdromRamSize);
+		memset(_superCardRam, 0, _superCardRamSize);
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
 		_emu->RegisterMemory(MemoryType::PceWorkRam, _workRam, _workRamSize);
 
 		_timer.reset(new PceTimer(this));
+		_cdrom.reset(new PceCdRom(console, this));
 
 		//CPU boots up in slow speed
 		_state.CpuClockSpeed = 12;
@@ -100,6 +117,8 @@ public:
 	{
 		delete[] _prgRom;
 		delete[] _workRam;
+		delete[] _cdromRam;
+		delete[] _superCardRam;
 	}
 
 	PceMemoryManagerState& GetState()
@@ -126,14 +145,19 @@ public:
 		_state.CycleCount += _state.CpuClockSpeed;
 		_timer->Exec(_state.CpuClockSpeed);
 		_ppu->Exec();
+		_cdrom->Exec();
 	}
 
 	uint8_t Read(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read)
 	{
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		uint8_t value;
-		if(bank <= 0x7F) {
+		if(bank <= 0x67) {
 			value = _romBanks[bank][addr & 0x1FFF];
+		} else if(bank >= 0x80 && bank <= 0x87) {
+			value = _cdromRam[((bank - 0x80) << 13) | (addr & 0x1FFF)];
+		} else if(bank >= 0x68 && bank <= 0x7F) {
+			value = _superCardRam[((bank - 0x68) << 13) | (addr & 0x1FFF)];
 		} else if(bank >= 0xF8 && bank <= 0xFB) {
 			value = _workRam[addr & 0x1FFF];
 		} else if(bank == 0xFF) {
@@ -165,6 +189,8 @@ public:
 					case 3: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.ActiveIrqs & 0x07); break;
 				}
 				value = _state.IoBuffer;
+			} else if(addr <= 0x1BFF) {
+				value = _cdrom->Read(addr);
 			} else {
 				value = 0xFF;
 				LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
@@ -219,8 +245,12 @@ public:
 
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		addr &= 0x1FFF;
-		if(bank <= 0x7F) {
+		if(bank <= 0x67) {
 			//ROM
+		} else if(bank >= 0x80 && bank <= 0x87) {
+			_cdromRam[((bank - 0x80) << 13) | (addr & 0x1FFF)] = value;
+		} else if(bank >= 0x68 && bank <= 0x7F) {
+			_superCardRam[((bank - 0x68) << 13) | (addr & 0x1FFF)] = value;
 		} else if(bank >= 0xF8 && bank <= 0xFB) {
 			_workRam[addr] = value;
 		} else if(bank == 0xFF) {
@@ -252,6 +282,8 @@ public:
 					case 3: ClearIrqSource(PceIrqSource::TimerIrq); break;
 				}
 				_state.IoBuffer = value;
+			} else if(addr <= 0x1BFF) {
+				_cdrom->Write(addr, value);
 			} else {
 				LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			}

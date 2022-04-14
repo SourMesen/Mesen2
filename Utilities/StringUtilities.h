@@ -17,4 +17,22 @@ public:
 		result.push_back(input.substr(lastIndex));
 		return result;
 	}
+
+	static string TrimLeft(string str)
+	{
+		size_t startIndex = str.find_first_not_of("\t ");
+		if(startIndex > 0 && startIndex != string::npos) {
+			return str.substr(startIndex);
+		}
+		return str;
+	}
+
+	static string TrimRight(string str)
+	{
+		size_t endIndex = str.find_last_not_of("\t\r\n ");
+		if(endIndex > 0 && endIndex != string::npos) {
+			return str.substr(0, endIndex + 1);
+		}
+		return str;
+	}
 };

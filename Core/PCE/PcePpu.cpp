@@ -73,6 +73,7 @@ void PcePpu::Exec()
 	if(_state.SatbTransferRunning) {
 		_state.SatbTransferCycleCounter -= 3;
 		if(_state.SatbTransferCycleCounter) {
+			//TODO: timing - this supposedly takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed?)
 			for(int i = 0; i < 256; i++) {
 				uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
 				_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);

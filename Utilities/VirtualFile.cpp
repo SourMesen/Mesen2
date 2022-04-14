@@ -194,6 +194,12 @@ bool VirtualFile::ReadFile(uint8_t* out, uint32_t expectedSize)
 	return false;
 }
 
+uint8_t VirtualFile::ReadByte(uint32_t offset)
+{
+	LoadFile();
+	return _data[offset];
+}
+
 bool VirtualFile::ApplyPatch(VirtualFile& patch)
 {
 	//Apply patch file

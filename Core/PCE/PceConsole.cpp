@@ -39,7 +39,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	_controlManager.reset(new PceControlManager(_emu));
 	_ppu.reset(new PcePpu(_emu, this));
 	_psg.reset(new PcePsg(_emu));
-	_memoryManager.reset(new PceMemoryManager(_emu, _ppu.get(), _controlManager.get(), _psg.get(), data));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _ppu.get(), _controlManager.get(), _psg.get(), data));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");

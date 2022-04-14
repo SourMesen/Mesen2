@@ -108,12 +108,15 @@ string HexUtilities::ToHex(uint64_t value)
 	);
 }
 
-string HexUtilities::ToHex(vector<uint8_t> &data)
+string HexUtilities::ToHex(vector<uint8_t> &data, char delimiter)
 {
 	string result;
 	result.reserve(data.size() * 2);
 	for(uint8_t value : data) {
 		result += HexUtilities::ToHex(value);
+		if(delimiter) {
+			result += delimiter;
+		}
 	}
 	return result;
 }

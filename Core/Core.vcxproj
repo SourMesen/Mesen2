@@ -22,6 +22,8 @@
     <ClInclude Include="PCE\Debugger\DummyPceCpu.h" />
     <ClInclude Include="PCE\Debugger\PceEventManager.h" />
     <ClInclude Include="PCE\Input\PceController.h" />
+    <ClInclude Include="PCE\PceAdpcm.h" />
+    <ClInclude Include="PCE\PceCdRom.h" />
     <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PcePpu.h" />
     <ClInclude Include="PCE\Debugger\PceDebugger.h" />
@@ -35,9 +37,11 @@
     <ClInclude Include="PCE\PceMemoryManager.h" />
     <ClInclude Include="PCE\PcePsg.h" />
     <ClInclude Include="PCE\PcePsgChannel.h" />
+    <ClInclude Include="PCE\PceScsiBus.h" />
     <ClInclude Include="PCE\PceSf2RomMapper.h" />
     <ClInclude Include="PCE\PceTimer.h" />
     <ClInclude Include="PCE\PceTypes.h" />
+    <ClInclude Include="Shared\CdReader.h" />
     <ClInclude Include="Shared\CpuType.h" />
     <ClInclude Include="Debugger\BaseTraceLogger.h" />
     <ClInclude Include="Debugger\DebuggerFeatures.h" />
@@ -443,6 +447,8 @@
     <ClCompile Include="PCE\Debugger\PceEventManager.cpp" />
     <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
+    <ClCompile Include="PCE\PceAdpcm.cpp" />
+    <ClCompile Include="PCE\PceCdRom.cpp" />
     <ClCompile Include="PCE\PceConsole.cpp" />
     <ClCompile Include="PCE\PceControlManager.cpp" />
     <ClCompile Include="PCE\PceCpu.cpp" />
@@ -450,6 +456,7 @@
     <ClCompile Include="PCE\PcePpu.cpp" />
     <ClCompile Include="PCE\PcePsg.cpp" />
     <ClCompile Include="PCE\PcePsgChannel.cpp" />
+    <ClCompile Include="PCE\PceScsiBus.cpp" />
     <ClCompile Include="PCE\PceSf2RomMapper.cpp" />
     <ClCompile Include="PCE\PceTimer.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />

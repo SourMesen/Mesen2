@@ -1,0 +1,382 @@
+#include "stdafx.h"
+#include "PCE/PceScsiBus.h"
+#include "PCE/PceConsole.h"
+#include "PCE/PceCdRom.h"
+#include "Shared/CdReader.h"
+#include "Shared/MessageManager.h"
+#include "Utilities/HexUtilities.h"
+#include <Utilities/StringUtilities.h>
+
+using namespace ScsiSignal;
+
+void PceScsiBus::SetPhase(ScsiPhase phase)
+{
+	if(_phase == phase) {
+		return;
+	}
+
+	_stateChanged = true;
+	_phase = phase;
+	ClearSignals(Bsy, Cd, Io, Msg, Req);
+	
+	LogDebug("[SCSI] Phase changed: " + HexUtilities::ToHex((int)phase));
+
+	switch(_phase) {
+		case ScsiPhase::BusFree: _cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferDone); break;
+		case ScsiPhase::Command: SetSignals(Bsy, Cd, Req); break;
+		case ScsiPhase::DataIn: SetSignals(Bsy, Io); break;
+		case ScsiPhase::DataOut: SetSignals(Bsy, Req); break;
+		case ScsiPhase::MessageIn: SetSignals(Bsy, Cd, Io, Msg, Req); break;
+		case ScsiPhase::MessageOut: SetSignals(Bsy, Cd, Msg, Req); break;
+		case ScsiPhase::Status: SetSignals(Bsy, Cd, Io, Req); break;
+	}
+}
+
+void PceScsiBus::Reset()
+{
+	ClearSignals(Ack, Atn, Cd, Io, Msg, Req);
+	_phase = ScsiPhase::BusFree;
+	_dataPort = 0;
+	_discReading = false;
+	_dataTransfer = false;
+	_dataTransferDone = false;
+	_cmdBuffer.clear();
+	_dataBuffer.clear();
+
+	//LogDebug("[SCSI] Reset");
+}
+
+void PceScsiBus::SetStatusMessage(ScsiStatus status, uint8_t data)
+{
+	_messageData = data;
+	_statusDone = false;
+	_messageDone = false;
+	_dataPort = (uint8_t)status;
+	SetPhase(ScsiPhase::Status);
+}
+
+void PceScsiBus::ProcessStatusPhase()
+{
+	if(_signals[Req] && _signals[Ack]) {
+		ClearSignals(Req);
+		_statusDone = true;
+	} else if(!_signals[Req] && !_signals[Ack] && _statusDone) {
+		_statusDone = false;
+		_dataPort = _messageData;
+		SetPhase(ScsiPhase::MessageIn);
+	}
+}
+
+void PceScsiBus::ProcessMessageInPhase()
+{
+	if(_signals[Req] && _signals[Ack]) {
+		ClearSignals(Req);
+		_messageDone = true;
+	} else if(!_signals[Req] && !_signals[Ack] && _messageDone) {
+		_messageDone = false;
+		SetPhase(ScsiPhase::BusFree);
+	}
+}
+
+void PceScsiBus::ProcessDataInPhase()
+{
+	if(_signals[Req] && _signals[Ack]) {
+		ClearSignals(Req);
+	} else if(!_signals[Req] && !_signals[Ack]) {
+		if(_dataBuffer.size() > 0) {
+			_dataPort = _dataBuffer.front();
+			_dataBuffer.pop_front();
+			SetSignals(Req);
+		} else {
+			_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
+			if(_dataTransferDone) {
+				_dataTransfer = false;
+				_dataTransferDone = false;
+				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+			}
+			SetStatusMessage(ScsiStatus::Good, 0);
+		}
+	}
+}
+
+uint8_t PceScsiBus::GetCommandSize(ScsiCommand cmd)
+{
+	switch(cmd) {
+		case ScsiCommand::TestUnitReady:
+		case ScsiCommand::Read:
+			return 6;
+
+		case ScsiCommand::AudioStartPos:
+		case ScsiCommand::AudioEndPos:
+		case ScsiCommand::Pause:
+		case ScsiCommand::ReadSubCodeQ:
+		case ScsiCommand::ReadToc:
+			return 10;
+
+		default:
+			return 0;
+	}
+}
+
+void PceScsiBus::ExecCommand(ScsiCommand cmd)
+{
+	switch(cmd) {
+		case ScsiCommand::TestUnitReady: SetStatusMessage(ScsiStatus::Good, 0); break;
+		case ScsiCommand::Read: CmdRead(); break;
+		case ScsiCommand::AudioStartPos: CmdAudioStartPos(); break;
+		case ScsiCommand::AudioEndPos: CmdAudioEndPos(); break;
+		case ScsiCommand::Pause: CmdPause(); break;
+		case ScsiCommand::ReadSubCodeQ: CmdReadSubCodeQ(); break;
+		case ScsiCommand::ReadToc: CmdReadToc(); break;
+	}
+}
+
+void PceScsiBus::ProcessCommandPhase()
+{
+	if(_signals[Req] && _signals[Ack]) {
+		ClearSignals(Req);
+		_cmdBuffer.push_back(_dataPort);
+	} else if(!_signals[Req] && !_signals[Ack] && _cmdBuffer.size() > 0) {
+		ScsiCommand cmd = (ScsiCommand)_cmdBuffer[0];
+		uint8_t cmdSize = GetCommandSize(cmd);
+		if(cmdSize == 0) {
+			//Unknown/unsupported command
+			LogDebug("[SCSI] Unknown command: " + HexUtilities::ToHex(_cmdBuffer[0]));
+			SetStatusMessage(ScsiStatus::Good, 0);
+		} else if(cmdSize <= _cmdBuffer.size()) {
+			//All bytes received - command has been processed
+			LogDebug("[SCSI] Command recv: " + HexUtilities::ToHex(_cmdBuffer, ' '));
+			ExecCommand(cmd);
+			_cmdBuffer.clear();
+		} else {
+			//Command still requires more byte to be executed
+			SetSignals(Req);
+		}
+	}
+}
+
+void PceScsiBus::CmdRead()
+{
+	uint32_t sector = _cmdBuffer[3] | (_cmdBuffer[2] << 8) | ((_cmdBuffer[1] & 0x1F) << 16);
+	uint8_t sectorsToRead = _cmdBuffer[4];
+
+	_discReading = true;
+	_dataTransfer = true;
+	_sector = sector;
+	_sectorsToRead = sectorsToRead;
+	_readStartClock = _console->GetMasterClock();
+	LogDebug("[SCSI] Read sector: " + std::to_string(_sector));
+}
+
+void PceScsiBus::CmdAudioStartPos()
+{
+	//TODO
+	LogDebug("[SCSI] CMD: Audio start pos");
+	SetStatusMessage(ScsiStatus::Good, 0);
+	_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+}
+
+void PceScsiBus::CmdAudioEndPos()
+{
+	//TODO
+	LogDebug("[SCSI] CMD: Audio end pos");
+	SetStatusMessage(ScsiStatus::Good, 0);
+}
+
+void PceScsiBus::CmdPause()
+{
+	//TODO
+	LogDebug("[SCSI] CMD: Audio pause");
+	SetStatusMessage(ScsiStatus::Good, 0);
+}
+
+void PceScsiBus::CmdReadSubCodeQ()
+{
+	LogDebug("[SCSI] CMD: Read Sub Code Q");
+	//TODO
+}
+
+uint8_t ToBcd(uint8_t value)
+{
+	uint8_t div = value / 10;
+	uint8_t rem = value % 10;
+	return (div << 4) | rem;
+}
+
+uint8_t FromBcd(uint8_t value)
+{
+	return ((value >> 4) & 0x0F) * 10 + (value & 0x0F);
+}
+
+void PceScsiBus::CmdReadToc()
+{
+	LogDebug("[SCSI] CMD: Read ToC");
+	switch(_cmdBuffer[1]) {
+		case 0:
+			//Number of tracks
+			_dataBuffer.clear();
+			_dataBuffer.push_back(1);
+			_dataBuffer.push_back(ToBcd((uint8_t)_disc.Tracks.size()));
+			SetPhase(ScsiPhase::DataIn);
+			break;
+
+		case 1: {
+			//Total disc length
+			_dataBuffer.clear();
+			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Minutes));
+			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Seconds));
+			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Frames));
+			SetPhase(ScsiPhase::DataIn);
+			break;
+		}
+
+		case 2: {
+			uint8_t track = FromBcd(_cmdBuffer[2]);
+			if(track == 0) {
+				track = 1;
+			}
+
+			DiscPosition pos;
+			if(track > _disc.Tracks.size()) {
+				pos = _disc.EndPosition;
+			} else {
+				pos = DiscPosition::FromLba(_disc.Tracks[track - 1].StartPosition.ToLba() + 150);
+			}
+
+			_dataBuffer.clear();
+			_dataBuffer.push_back(ToBcd(pos.Minutes));
+			_dataBuffer.push_back(ToBcd(pos.Seconds));
+			_dataBuffer.push_back(ToBcd(pos.Frames));
+			if(track > _disc.Tracks.size() || _disc.Tracks[track - 1].Format == TrackFormat::Audio) {
+				_dataBuffer.push_back(0);
+			} else {
+				_dataBuffer.push_back(4);
+			}
+
+			SetPhase(ScsiPhase::DataIn);
+			break;
+		}
+
+		default:
+			LogDebug("[SCSI] CMD Read ToC: Unsupported parameters");
+			break;
+	}
+}
+
+void PceScsiBus::ProcessDiscRead()
+{
+	if(_discReading && _dataBuffer.empty() && _console->GetMasterClock() - _readStartClock > 175000) {
+		//read disc data
+		//_dataBuffer.push_back(...);
+
+		uint32_t seekPos = 0;
+		_dataBuffer.clear();
+		for(size_t i = 0; i < _disc.Tracks.size(); i++) {
+			if(_sector >= _disc.Tracks[i].FirstSector && _sector < _disc.Tracks[i].FirstSector + _disc.Tracks[i].SectorCount) {
+				uint32_t byteOffset = _disc.Tracks[i].FileOffset + (_sector - _disc.Tracks[i].FirstSector) * 2352;
+
+				for(int j = 0; j < 2048; j++) {
+					_dataBuffer.push_back(_disc.Files[_disc.Tracks[i].FileIndex].ReadByte(byteOffset + 16 + j));
+				}
+				break;
+			}
+			seekPos += _disc.Tracks[i].SectorCount;
+		}
+
+		if(_dataBuffer.empty()) {
+			//sector out of range, return empty data?
+			for(int j = 0; j < 2048; j++) {
+				_dataBuffer.push_back(0);
+			}
+		}
+
+		_sector = (_sector + 1) & 0x1FFFFF;
+		_sectorsToRead--;
+
+		_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
+
+		if(_sectorsToRead == 0) {
+			_discReading = false;
+			_dataTransferDone = true;
+		}
+
+		SetPhase(ScsiPhase::DataIn);
+	}
+}
+
+PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom)
+{
+	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Prince of Persia (USA)\\Prince of Persia (USA).cue", _disc);
+	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Gensou Tairiku Auleria (Japan)\\Gensou Tairiku Auleria (Japan).cue", _disc);
+	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Lodoss Tou Senki (JP)\\Lodoss Tou Senki (JP).cue", _disc);
+	CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Ys III - Wanderers from Ys (JP)\\Ys III - Wanderers from Ys (JP).cue", _disc);
+	
+	_console = console;
+	_cdrom = cdrom;
+}
+
+uint8_t PceScsiBus::GetStatus()
+{
+	return (
+		(_signals[Io] ? 0x08 : 0) |
+		(_signals[Cd] ? 0x10 : 0) |
+		(_signals[Msg] ? 0x20 : 0) |
+		(_signals[Req] ? 0x40 : 0) |
+		(_signals[Bsy] ? 0x80 : 0)
+	);
+}
+
+void PceScsiBus::SetDataPort(uint8_t data)
+{
+	LogDebug("[SCSI] CPU data port write: " + HexUtilities::ToHex(data));
+	_dataPort = data;
+}
+
+uint8_t PceScsiBus::GetDataPort()
+{
+	//LogDebug("[SCSI] CPU data port read: " + HexUtilities::ToHex(_dataPort));
+	return _dataPort;
+}
+
+bool PceScsiBus::CheckSignal(::ScsiSignal::ScsiSignal signal)
+{
+	return _signals[signal];
+}
+
+void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
+{
+	if(_signals[signal] != val) {
+		_signals[signal] = val;
+		_stateChanged = true;
+	}
+}
+
+void PceScsiBus::Exec()
+{
+	if(_signals[Rst]) {
+		Reset();
+		return;
+	}
+
+	ProcessDiscRead();
+
+	do {
+		_stateChanged = false;
+
+		if(!_signals[Bsy] && _signals[Sel]) {
+			SetPhase(ScsiPhase::Command);
+		} else if(!_signals[Ack] && _signals[Atn] && !_signals[Req]) {
+			SetPhase(ScsiPhase::MessageOut);
+		} else {
+			switch(_phase) {
+				case ScsiPhase::Command: ProcessCommandPhase(); break;
+				case ScsiPhase::DataIn: ProcessDataInPhase(); break;
+				//case ScsiPhase::DataOut: ProcessDataOutPhase(); break;
+				case ScsiPhase::MessageIn: ProcessMessageInPhase(); break;
+				//case ScsiPhase::MessageOut: ProcessMessageOutPhase(); break;
+				case ScsiPhase::Status: ProcessStatusPhase(); break;
+			}
+		}
+
+	} while(_stateChanged);
+}
