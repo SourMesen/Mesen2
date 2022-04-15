@@ -419,7 +419,9 @@ void PceCpu::ProcessIrq(bool forBrk)
 	ClearFlags(PceCpuFlags::Decimal | PceCpuFlags::Memory);
 	SetFlags(PceCpuFlags::Interrupt);
 
-	if(_memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
+	if(forBrk) {
+		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
+	} else if(_memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
 		SetPC(MemoryReadWord(PceCpu::TimerIrqVector));
 	} else if(_memoryManager->HasIrqSource(PceIrqSource::Irq1)) {
 		SetPC(MemoryReadWord(PceCpu::Irq1Vector));
@@ -427,7 +429,9 @@ void PceCpu::ProcessIrq(bool forBrk)
 		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
 	}
 
+	if(!forBrk) {
 #ifndef DUMMYCPU
-	_emu->ProcessInterrupt<CpuType::Pce>(originalPc, _state.PC, false);
+		_emu->ProcessInterrupt<CpuType::Pce>(originalPc, _state.PC, false);
 #endif
+	}
 }
