@@ -228,15 +228,6 @@ namespace Mesen.Utilities
 
 		private async void OpenFile()
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Filters = new List<FileDialogFilter>() {
-				new FileDialogFilter() { Name = "All ROM Files", Extensions = { "sfc" , "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs" } },
-				new FileDialogFilter() { Name = "SNES ROM Files", Extensions = { "sfc" , "fig", "smc", "spc" } },
-				new FileDialogFilter() { Name = "NES ROM Files", Extensions = { "nes" , "fds", "unif", "nsf", "nsfe" } },
-				new FileDialogFilter() { Name = "GB ROM Files", Extensions = { "gb" , "gbc", "gbs" } },
-				new FileDialogFilter() { Name = "All files", Extensions = { "*" } }
-			};
-
 			string? filename = await FileDialogHelper.OpenFile(null, _mainWindow, FileDialogHelper.RomExt);
 			if(filename != null) {
 				LoadRomHelper.LoadFile(filename);

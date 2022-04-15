@@ -51,6 +51,10 @@ enum class MemoryType
 
 	PcePrgRom,
 	PceWorkRam,
+	PceSaveRam,
+	PceCdromRam,
+	PceCardRam,
+	PceAdpcmRam,
 	PceVideoRam,
 	PcePaletteRam,
 	PceSpriteRam,

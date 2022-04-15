@@ -233,7 +233,8 @@ namespace Mesen.Interop
 		SGB1,
 		SGB2,
 		FDS,
-		StudyBox
+		StudyBox,
+		PceSuperCd
 	}
 
 	public struct MissingFirmwareMessage

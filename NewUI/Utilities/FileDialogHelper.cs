@@ -40,10 +40,11 @@ namespace Mesen.Utilities
 			ofd.Filters = new List<FileDialogFilter>();
 			foreach(string ext in extensions) {
 				if(ext == FileDialogHelper.RomExt) {
-					ofd.Filters.Add(new() { Name = "All ROM Files", Extensions = { "sfc", "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs", "zip", "7z" } });
+					ofd.Filters.Add(new() { Name = "All ROM Files", Extensions = { "sfc", "fig", "smc", "spc", "nes", "fds", "unif", "nsf", "nsfe", "gb", "gbc", "gbs", "pce", "cue", "zip", "7z" } });
 					ofd.Filters.Add(new() { Name = "SNES ROM Files", Extensions = { "sfc", "fig", "smc", "spc" } });
 					ofd.Filters.Add(new() { Name = "NES ROM Files", Extensions = { "nes", "fds", "unif", "nsf", "nsfe" } });
 					ofd.Filters.Add(new() { Name = "GB ROM Files", Extensions = { "gb", "gbc", "gbs" } });
+					ofd.Filters.Add(new() { Name = "PC Engine ROM Files", Extensions = { "pce", "cue" } });
 				} else {
 					ofd.Filters.Add(new FileDialogFilter() { Name = ext.ToUpper() + " files", Extensions = { ext } });
 				}

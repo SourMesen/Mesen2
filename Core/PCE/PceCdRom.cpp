@@ -7,9 +7,9 @@
 
 using namespace ScsiSignal;
 
-PceCdRom::PceCdRom(PceConsole* console, PceMemoryManager* memoryManager) : _scsi(console, this), _adpcm(this, &_scsi)
+PceCdRom::PceCdRom(PceConsole* console, DiscInfo& disc) : _scsi(console, this, disc), _adpcm(this, &_scsi)
 {
-	_memoryManager = memoryManager;
+	_console = console;
 }
 
 void PceCdRom::Exec()
@@ -21,23 +21,27 @@ void PceCdRom::Exec()
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
 {
 	//LogDebug("Set IRQ source: " + HexUtilities::ToHex((uint8_t)src));
-	_state.ActiveIrqs |= (uint8_t)src;
-	UpdateIrqState();
+	if((_state.ActiveIrqs & (uint8_t)src) == 0) {
+		_state.ActiveIrqs |= (uint8_t)src;
+		UpdateIrqState();
+	}
 }
 
 void PceCdRom::ClearIrqSource(PceCdRomIrqSource src)
 {
 	//LogDebug("Clear IRQ source: " + HexUtilities::ToHex((uint8_t)src));
-	_state.ActiveIrqs &= ~(uint8_t)src;
-	UpdateIrqState();
+	if(_state.ActiveIrqs & (uint8_t)src) {
+		_state.ActiveIrqs &= ~(uint8_t)src;
+		UpdateIrqState();
+	}
 }
 
 void PceCdRom::UpdateIrqState()
 {
 	if((_state.EnabledIrqs & _state.ActiveIrqs) != 0) {
-		_memoryManager->SetIrqSource(PceIrqSource::Irq2);
+		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq2);
 	} else {
-		_memoryManager->ClearIrqSource(PceIrqSource::Irq2);
+		_console->GetMemoryManager()->ClearIrqSource(PceIrqSource::Irq2);
 	}
 }
 

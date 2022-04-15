@@ -1861,6 +1861,9 @@
     <ClCompile Include="PCE\PceAdpcm.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
+    <ClCompile Include="Shared\CdReader.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">

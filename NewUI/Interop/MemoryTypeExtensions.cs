@@ -69,6 +69,10 @@ namespace Mesen.Interop
 				case MemoryType.PceMemory:
 				case MemoryType.PcePrgRom:
 				case MemoryType.PceWorkRam:
+				case MemoryType.PceSaveRam:
+				case MemoryType.PceCdromRam:
+				case MemoryType.PceCardRam:
+				case MemoryType.PceAdpcmRam:
 				case MemoryType.PceVideoRam:
 				case MemoryType.PcePaletteRam:
 				case MemoryType.PceSpriteRam:
@@ -157,6 +161,9 @@ namespace Mesen.Interop
 				case MemoryType.PceMemory:
 				case MemoryType.PcePrgRom:
 				case MemoryType.PceWorkRam:
+				case MemoryType.PceSaveRam:
+				case MemoryType.PceCdromRam:
+				case MemoryType.PceCardRam:
 					return true;
 			}
 
@@ -259,6 +266,10 @@ namespace Mesen.Interop
 				MemoryType.PceMemory => "CPU",
 				MemoryType.PcePrgRom => "PRG",
 				MemoryType.PceWorkRam => "WRAM",
+				MemoryType.PceSaveRam => "SRAM",
+				MemoryType.PceCdromRam => "CDRAM",
+				MemoryType.PceCardRam => "Card RAM",
+				MemoryType.PceAdpcmRam => "ADPCM",
 				MemoryType.PceVideoRam => "VRAM",
 				MemoryType.PcePaletteRam => "PAL",
 				MemoryType.PceSpriteRam=> "SPR",

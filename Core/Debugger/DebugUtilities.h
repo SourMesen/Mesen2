@@ -105,6 +105,10 @@ public:
 			case MemoryType::PceMemory:
 			case MemoryType::PcePrgRom:
 			case MemoryType::PceWorkRam:
+			case MemoryType::PceSaveRam:
+			case MemoryType::PceCdromRam:
+			case MemoryType::PceCardRam:
+			case MemoryType::PceAdpcmRam:
 			case MemoryType::PceVideoRam:
 			case MemoryType::PcePaletteRam:
 			case MemoryType::PceSpriteRam:

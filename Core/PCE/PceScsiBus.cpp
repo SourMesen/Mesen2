@@ -5,9 +5,16 @@
 #include "Shared/CdReader.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
-#include <Utilities/StringUtilities.h>
+#include "Utilities/StringUtilities.h"
 
 using namespace ScsiSignal;
+
+PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom, DiscInfo& disc)
+{
+	_disc = disc;
+	_console = console;
+	_cdrom = cdrom;
+}
 
 void PceScsiBus::SetPhase(ScsiPhase phase)
 {
@@ -193,7 +200,22 @@ void PceScsiBus::CmdPause()
 void PceScsiBus::CmdReadSubCodeQ()
 {
 	LogDebug("[SCSI] CMD: Read Sub Code Q");
-	//TODO
+	
+	//STUB
+	_dataBuffer.clear();
+	_dataBuffer.push_back(3);
+	
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+	_dataBuffer.push_back(0);
+
+	SetPhase(ScsiPhase::DataIn);
 }
 
 uint8_t ToBcd(uint8_t value)
@@ -302,17 +324,6 @@ void PceScsiBus::ProcessDiscRead()
 
 		SetPhase(ScsiPhase::DataIn);
 	}
-}
-
-PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom)
-{
-	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Prince of Persia (USA)\\Prince of Persia (USA).cue", _disc);
-	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Gensou Tairiku Auleria (Japan)\\Gensou Tairiku Auleria (Japan).cue", _disc);
-	//CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Lodoss Tou Senki (JP)\\Lodoss Tou Senki (JP).cue", _disc);
-	CdReader::LoadCue("E:\\Users\\Saitoh\\Desktop\\Emu\\PCE CD\\Ys III - Wanderers from Ys (JP)\\Ys III - Wanderers from Ys (JP).cue", _disc);
-	
-	_console = console;
-	_cdrom = cdrom;
 }
 
 uint8_t PceScsiBus::GetStatus()

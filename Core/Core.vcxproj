@@ -475,6 +475,7 @@
     <ClCompile Include="NES\NesMemoryManager.cpp" />
     <ClCompile Include="NES\NesPpu.cpp" />
     <ClCompile Include="NES\NesSoundMixer.cpp" />
+    <ClCompile Include="Shared\CdReader.cpp" />
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\RotateFilter.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />

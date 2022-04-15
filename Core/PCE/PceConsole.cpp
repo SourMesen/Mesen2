@@ -9,6 +9,7 @@
 #include "PCE/PcePsg.h"
 #include "PCE/PceConstants.h"
 #include "MemoryType.h"
+#include "FirmwareHelper.h"
 
 PceConsole::PceConsole(Emulator* emu)
 {
@@ -33,13 +34,26 @@ void PceConsole::OnBeforeRun()
 
 LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 {
-	vector<uint8_t> data;
-	romFile.ReadFile(data);
+	vector<uint8_t> romData;
+	if(romFile.GetFileExtension() == ".cue") {
+		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
+			return LoadRomResult::Failure;
+		}
+
+		DiscInfo disc = {};
+		if(!CdReader::LoadCue(romFile, disc)) {
+			return LoadRomResult::Failure;
+		}
+
+		_cdrom.reset(new PceCdRom(this, disc));
+	} else {
+		romFile.ReadFile(romData);
+	}
 
 	_controlManager.reset(new PceControlManager(_emu));
 	_ppu.reset(new PcePpu(_emu, this));
 	_psg.reset(new PcePsg(_emu));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _ppu.get(), _controlManager.get(), _psg.get(), data));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _ppu.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");

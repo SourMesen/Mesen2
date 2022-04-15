@@ -19,57 +19,75 @@ class Emulator;
 class PceMemoryManager
 {
 private:
-	Emulator* _emu;
-	PceConsole* _console;
-	PcePpu* _ppu;
-	PcePsg* _psg;
-	PceControlManager* _controlManager;
+	Emulator* _emu = nullptr;
+	PceConsole* _console = nullptr;
+	PcePpu* _ppu = nullptr;
+	PcePsg* _psg = nullptr;
+	PceControlManager* _controlManager = nullptr;
+	PceCdRom* _cdrom = nullptr;
 	unique_ptr<PceSf2RomMapper> _mapper;
 	unique_ptr<PceTimer> _timer;
-	unique_ptr<PceCdRom> _cdrom;
 
 	PceMemoryManagerState _state = {};
-	uint8_t* _prgRom;
-	uint32_t _prgRomSize;
+	uint8_t* _prgRom = nullptr;
+	uint32_t _prgRomSize = 0;
 	
-	uint8_t* _romBanks[0x80] = {};
+	uint8_t* _readBanks[0x100] = {};
+	uint8_t* _writeBanks[0x100] = {};
+	MemoryType _bankMemType[0x100] = {};
 
-	uint8_t* _workRam;
+	uint8_t* _workRam = nullptr;
 	uint32_t _workRamSize = 0x2000;
 
-	uint8_t* _cdromRam;
+	uint8_t* _cdromRam = nullptr;
 	uint32_t _cdromRamSize = 0x10000;
 
-	uint8_t* _superCardRam;
-	uint32_t _superCardRamSize = 0x30000;
+	uint8_t* _cardRam = nullptr;
+	uint32_t _cardRamSize = 0x30000;
+	
+	uint8_t* _saveRam = nullptr;
+	uint32_t _saveRamSize = 0x2000;
+
+	uint8_t* _unmappedBank = nullptr;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
 	{
 		_emu = emu;
 		_console = console;
 		_ppu = ppu;
 		_psg = psg;
+		_cdrom = cdrom;
 		_controlManager = controlManager;
 		_prgRomSize = (uint32_t)romData.size();
 		_prgRom = new uint8_t[_prgRomSize];
-
 		_workRam = new uint8_t[_workRamSize];
-		_cdromRam = new uint8_t[_cdromRamSize];
-		_superCardRam = new uint8_t[_superCardRamSize];
+		
+		_unmappedBank = new uint8_t[0x2000];
+		memset(_unmappedBank, 0xFF, 0x2000);
 
 		memcpy(_prgRom, romData.data(), _prgRomSize);
 		
-		//TODO
+		//TODO random
 		memset(_workRam, 0, _workRamSize);
-		memset(_cdromRam, 0, _cdromRamSize);
-		memset(_superCardRam, 0, _superCardRamSize);
+
+		if(_cdrom) {
+			_saveRam = new uint8_t[_saveRamSize];
+			_cdromRam = new uint8_t[_cdromRamSize];
+			_cardRam = new uint8_t[_cardRamSize];
+			//TODO random
+			memset(_saveRam, 0, _saveRamSize);
+			memset(_cdromRam, 0, _cdromRamSize);
+			memset(_cardRam, 0, _cardRamSize);
+			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
+			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
+			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
+		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
 		_emu->RegisterMemory(MemoryType::PceWorkRam, _workRam, _workRamSize);
 
 		_timer.reset(new PceTimer(this));
-		_cdrom.reset(new PceCdRom(console, this));
 
 		//CPU boots up in slow speed
 		_state.CpuClockSpeed = 12;
@@ -117,8 +135,10 @@ public:
 	{
 		delete[] _prgRom;
 		delete[] _workRam;
+		delete[] _saveRam;
 		delete[] _cdromRam;
-		delete[] _superCardRam;
+		delete[] _cardRam;
+		delete[] _unmappedBank;
 	}
 
 	PceMemoryManagerState& GetState()
@@ -135,8 +155,43 @@ public:
 	{
 		int bankCount = _prgRomSize / 0x2000;
 		for(int i = 0; i <= 0x7F; i++) {
+			//00 - 7F
 			int bank = (bankOffsets[i >> 4] + (i & 0x0F)) % bankCount;
-			_romBanks[i] = _prgRom + (bank * 0x2000);
+			_readBanks[i] = _prgRom + (bank * 0x2000);
+			_bankMemType[i] = MemoryType::PcePrgRom;
+		}
+
+		for(int i = 0x80; i <= 0xFF; i++) {
+			//80 - FF
+			_readBanks[i] = _unmappedBank;
+			_bankMemType[i] = MemoryType::Register;
+		}
+
+		for(int i = 0; i < 4; i++) {
+			//F8 - FB
+			_readBanks[0xF8 + i] = _workRam;
+			_writeBanks[0xF8 + i] = _workRam;
+			_bankMemType[0xF8 + i] = MemoryType::PceWorkRam;
+		}
+
+		if(_cdrom) {
+			for(int i = 0; i < 8; i++) {
+				//80 - 87
+				_readBanks[0x80 + i] = _cdromRam + (i * 0x2000);
+				_writeBanks[0x80 + i] = _cdromRam + (i * 0x2000);
+				_bankMemType[0x80 + i] = MemoryType::PceCdromRam;
+			}
+			for(int i = 0; i < 0x18; i++) {
+				//68 - 7F
+				_readBanks[0x68 + i] = _cardRam + (i * 0x2000);
+				_writeBanks[0x68 + i] = _cardRam + (i * 0x2000);
+				_bankMemType[0x68 + i] = MemoryType::PceCardRam;
+			}
+
+			//F7 - BRAM
+			_readBanks[0xF7] = _saveRam;
+			_writeBanks[0xF7] = _saveRam;
+			_bankMemType[0xF7] = MemoryType::PceSaveRam;
 		}
 	}
 
@@ -145,22 +200,20 @@ public:
 		_state.CycleCount += _state.CpuClockSpeed;
 		_timer->Exec(_state.CpuClockSpeed);
 		_ppu->Exec();
-		_cdrom->Exec();
+		if(_cdrom) {
+			_cdrom->Exec();
+		}
 	}
 
 	uint8_t Read(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read)
 	{
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		uint8_t value;
-		if(bank <= 0x67) {
-			value = _romBanks[bank][addr & 0x1FFF];
-		} else if(bank >= 0x80 && bank <= 0x87) {
-			value = _cdromRam[((bank - 0x80) << 13) | (addr & 0x1FFF)];
-		} else if(bank >= 0x68 && bank <= 0x7F) {
-			value = _superCardRam[((bank - 0x68) << 13) | (addr & 0x1FFF)];
-		} else if(bank >= 0xF8 && bank <= 0xFB) {
-			value = _workRam[addr & 0x1FFF];
-		} else if(bank == 0xFF) {
+		uint16_t orgAddr = addr;
+		addr &= 0x1FFF;
+		if(bank != 0xFF) {
+			value = _readBanks[bank][addr];
+		} else {
 			if(addr <= 0x3FF) {
 				//VDC
 				value = _ppu->ReadVdc(addr);
@@ -190,28 +243,23 @@ public:
 				}
 				value = _state.IoBuffer;
 			} else if(addr <= 0x1BFF) {
-				value = _cdrom->Read(addr);
+				value = _cdrom ? _cdrom->Read(addr) : 0xFF;
 			} else {
 				value = 0xFF;
 				LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
 			}
-		} else {
-			value = 0xFF;
-			LogDebug("[Debug] Read unmapped memory: $" + HexUtilities::ToHex(addr));
 		}
-		_emu->ProcessMemoryRead<CpuType::Pce>(addr, value, type);
+		_emu->ProcessMemoryRead<CpuType::Pce>(orgAddr, value, type);
 		return value;
 	}
 
 	uint8_t DebugRead(uint16_t addr)
 	{
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
-		uint8_t value = 0;
-		if(bank <= 0x7F) {
-			value = _romBanks[bank][addr & 0x1FFF];
-		} else if(bank >= 0xF8 && bank <= 0xFB) {
-			value = _workRam[addr & 0x1FFF];
-		} else if(bank == 0xFF) {
+		addr &= 0x1FFF;
+		if(bank != 0xFF) {
+			return _readBanks[bank][addr];
+		} else {
 			if(addr <= 0x3FF) {
 				//VDC
 			} else if(addr <= 0x7FF) {
@@ -229,10 +277,8 @@ public:
 					case 3: return _state.ActiveIrqs;
 				}
 			}
-		} else {
-			value = 0xFF;
 		}
-		return value;
+		return 0xFF;
 	}
 
 	void Write(uint16_t addr, uint8_t value, MemoryOperationType type)
@@ -245,15 +291,11 @@ public:
 
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		addr &= 0x1FFF;
-		if(bank <= 0x67) {
-			//ROM
-		} else if(bank >= 0x80 && bank <= 0x87) {
-			_cdromRam[((bank - 0x80) << 13) | (addr & 0x1FFF)] = value;
-		} else if(bank >= 0x68 && bank <= 0x7F) {
-			_superCardRam[((bank - 0x68) << 13) | (addr & 0x1FFF)] = value;
-		} else if(bank >= 0xF8 && bank <= 0xFB) {
-			_workRam[addr] = value;
-		} else if(bank == 0xFF) {
+		if(bank != 0xFF) {
+			if(_writeBanks[bank]) {
+				_writeBanks[bank][addr] = value;
+			}
+		} else {
 			if(addr <= 0x3FF) {
 				_ppu->WriteVdc(addr, value);
 			} else if(addr <= 0x7FF) {
@@ -283,12 +325,12 @@ public:
 				}
 				_state.IoBuffer = value;
 			} else if(addr <= 0x1BFF) {
-				_cdrom->Write(addr, value);
+				if(_cdrom) {
+					_cdrom->Write(addr, value);
+				}
 			} else {
 				LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			}
-		} else {
-			//Open bus?
 		}
 	}
 
@@ -334,11 +376,17 @@ public:
 	AddressInfo GetAbsoluteAddress(uint32_t relAddr)
 	{
 		uint8_t bank = _state.Mpr[(relAddr & 0xE000) >> 13];
-		if(bank >= 0xF8 && bank <= 0xFB) {
-			return { (int32_t)(relAddr & 0x1FFF), MemoryType::PceWorkRam };
-		} else if(bank <= 0x7F) {
-			uint32_t absAddr = (uint32_t)(_romBanks[bank] - _prgRom) + (relAddr & 0x1FFF);
-			return { (int32_t)absAddr, MemoryType::PcePrgRom };
+		if(bank != 0xFF) {
+			uint32_t absAddr;
+			switch(_bankMemType[bank]) {
+				case MemoryType::PcePrgRom: absAddr = (uint32_t)(_readBanks[bank] - _prgRom) + (relAddr & 0x1FFF); break;
+				case MemoryType::PceWorkRam: absAddr = (uint32_t)(_readBanks[bank] - _workRam) + (relAddr & 0x1FFF); break;
+				case MemoryType::PceSaveRam: absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & 0x1FFF); break;
+				case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & 0x1FFF); break;
+				case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & 0x1FFF); break;
+				default: return { -1, MemoryType::Register };
+			}
+			return { (int32_t)absAddr, _bankMemType[bank] };
 		}/* else if(bank == 0xFF) { //TODO
 			return { (int32_t)relAddr & 0x1FFF, MemoryType::Register };
 		}*/ else {
@@ -349,15 +397,9 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo absAddr)
 	{
 		for(int i = 0; i < 8; i++) {
-			if(absAddr.Type == MemoryType::PcePrgRom) {
-				uint32_t bank = (uint32_t)(_romBanks[i] - _prgRom) / 0x2000;
-				if(bank == ((uint32_t)absAddr.Address >> 13)) {
-					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
-				}
-			} else if(absAddr.Type == MemoryType::PceWorkRam) {
-				if(_state.Mpr[i] >= 0xF8 && _state.Mpr[i] <= 0xFB) {
-					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
-				}
+			AddressInfo bankStart = GetAbsoluteAddress(i * 0x2000);
+			if(bankStart.Type == absAddr.Type && bankStart.Address == (absAddr.Address & ~0x1FFF)) {
+				return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
 			}/* else if(absAddr.Type == MemoryType::Register) { //TODO
 				if(_state.Mpr[i] == 0xFF) {
 					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };

@@ -14,7 +14,7 @@ const std::initializer_list<string> VirtualFile::RomExtensions = {
 	".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox",
 	".sfc", ".swc", ".fig", ".smc", ".bs", ".spc",
 	".gb", ".gbc", ".gbs",
-	".pce"
+	".pce", "cue"
 };
 
 VirtualFile::VirtualFile()
@@ -159,8 +159,16 @@ string VirtualFile::GetSha1Hash()
 
 size_t VirtualFile::GetSize()
 {
-	LoadFile();
-	return _data.size();
+	if(_data.size() > 0) {
+		return _data.size();
+	} else {
+		ifstream input(_path, std::ios::in | std::ios::binary);
+		if(input) {
+			input.seekg(0, std::ios::end);
+			return (uint32_t)input.tellg();
+		}
+		return 0;
+	}
 }
 
 bool VirtualFile::ReadFile(vector<uint8_t>& out)

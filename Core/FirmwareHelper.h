@@ -25,6 +25,7 @@ enum class FirmwareType
 	SGB2,
 	FDS,
 	StudyBox,
+	PceSuperCd
 };
 
 struct MissingFirmwareMessage
@@ -90,6 +91,10 @@ struct MissingFirmwareMessage
 				FileHashes[0] = "365F84C86F7F7C3AAA2042D78494D41448E998EC5A89AC1B5FECB452951D514C";
 				break;
 
+			case FirmwareType::PceSuperCd:
+				FileHashes[0] = "E11527B3B96CE112A037138988CA72FD117A6B0779C2480D9E03EAEBECE3D9CE";
+				break;
+
 			default:
 				throw std::runtime_error("Unexpected firmware type");
 		}
@@ -146,6 +151,23 @@ private:
 		if(firmware.IsValid() && firmware.GetSize() == size) {
 			*out = new uint8_t[firmware.GetSize()];
 			firmware.ReadFile(*out, (uint32_t)firmware.GetSize());
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool AttemptLoadFirmware(vector<uint8_t>& out, string filename, uint32_t size, string altFilename = "")
+	{
+		string path = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename);
+		VirtualFile firmware(path);
+		if((!firmware.IsValid() || firmware.GetSize() != size) && !altFilename.empty()) {
+			string altPath = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), altFilename);
+			firmware = VirtualFile(altPath);
+		}
+
+		if(firmware.IsValid() && firmware.GetSize() == size) {
+			firmware.ReadFile(out);
 			return true;
 		}
 
@@ -252,6 +274,26 @@ public:
 		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
 		if(AttemptLoadFirmware(biosRom, filename, size, "FdsBios.bin")) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for Famicom Disk System");
+		return false;
+	}
+
+	static bool LoadPceSuperCdFirmware(Emulator* emu, vector<uint8_t>& biosRom)
+	{
+		string filename = "[BIOS] Super CD-ROM System (Japan) (v3.0).pce";
+		string altName = "syscard3.pce";
+		uint32_t size = 0x40000;
+		if(AttemptLoadFirmware(biosRom, filename, size, altName)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::PceSuperCd, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(biosRom, filename, size, altName)) {
 			return true;
 		}
 

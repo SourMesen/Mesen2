@@ -499,6 +499,10 @@ namespace Mesen.Interop
 
 		PcePrgRom,
 		PceWorkRam,
+		PceSaveRam,
+		PceCdromRam,
+		PceCardRam,
+		PceAdpcmRam,
 		PceVideoRam,
 		PcePaletteRam,
 		PceSpriteRam,

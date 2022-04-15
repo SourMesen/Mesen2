@@ -5,6 +5,7 @@
 class PceCpu;
 class PcePpu;
 class PcePsg;
+class PceCdRom;
 class PceMemoryManager;
 class PceControlManager;
 class Emulator;
@@ -19,6 +20,7 @@ private:
 	unique_ptr<PcePsg> _psg;
 	unique_ptr<PceMemoryManager> _memoryManager;
 	unique_ptr<PceControlManager> _controlManager;
+	unique_ptr<PceCdRom> _cdrom;
 
 public:
 	PceConsole(Emulator* emu);

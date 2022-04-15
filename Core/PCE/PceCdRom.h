@@ -26,15 +26,15 @@ struct PceCdRomState
 class PceCdRom
 {
 private:
+	PceConsole* _console = nullptr;
 	PceScsiBus _scsi;
 	PceAdpcm _adpcm;
 	PceCdRomState _state = {};
-	PceMemoryManager* _memoryManager = nullptr;
 	
 	void UpdateIrqState();
 
 public:
-	PceCdRom(PceConsole* console, PceMemoryManager* memoryManager);
+	PceCdRom(PceConsole* console, DiscInfo& disc);
 
 	void Exec();
 

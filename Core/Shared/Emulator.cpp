@@ -369,10 +369,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//backup emulation config (can be temporarily overriden to control the power on RAM state)
 	EmulationConfig orgConfig = _settings->GetEmulationConfig();
 
-	static const vector<string> _nesExtensions = { { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" } };
-	static const vector<string> _snesExtensions = { { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" } };
-	static const vector<string> _gbExtensions = { { ".gb", ".gbc", ".gbs" } };
-	static const vector<string> _pceExtensions = { { ".pce" } };
+	static const vector<string> _nesExtensions = { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" };
+	static const vector<string> _snesExtensions = { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" };
+	static const vector<string> _gbExtensions = { ".gb", ".gbc", ".gbs" };
+	static const vector<string> _pceExtensions = { ".pce", ".cue" };
 	
 	unique_ptr<IConsole> console;
 	string romExt = romFile.GetFileExtension();

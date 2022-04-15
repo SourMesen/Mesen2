@@ -117,7 +117,7 @@ private:
 	void ProcessDiscRead();
 
 public:
-	PceScsiBus(PceConsole* console, PceCdRom* cdRom);
+	PceScsiBus(PceConsole* console, PceCdRom* cdRom, DiscInfo& disc);
 
 	uint8_t GetStatus();
 	bool IsDataTransferInProgress() { return _dataTransfer; }

@@ -334,28 +334,27 @@ namespace Mesen.Debugger.ViewModels
 			Dictionary<MemoryType, Color> mainColors = new() {
 				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
 				{ MemoryType.PceWorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
-				//{ MemoryType.CartRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
+				{ MemoryType.PceSaveRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
+				{ MemoryType.PceCdromRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
+				{ MemoryType.PceCardRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
 				{ MemoryType.PcePrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) }
 			};
 
 			Dictionary<MemoryType, Color> altColors = new() {
 				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
 				{ MemoryType.PceWorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
-				//{ MemoryType.CartRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
+				{ MemoryType.PceSaveRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
+				{ MemoryType.PceCdromRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
+				{ MemoryType.PceCardRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
 				{ MemoryType.PcePrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) }
-			};
-
-			Dictionary<MemoryType, string> blockNames = new() {
-				{ MemoryType.Register, "REG" },
-				{ MemoryType.PceWorkRam, "WRAM" },
-				//{ MemoryType.CartRam, gbState.HasBattery ? "SRAM" : "Cart RAM" },
-				{ MemoryType.PcePrgRom, "ROM" }
 			};
 
 			Dictionary<MemoryType, string> accessNotes = new() {
 				{ MemoryType.Register, "RW" },
 				{ MemoryType.PceWorkRam, "W" },
-				//{ MemoryType.CartRam, gbState.HasBattery ? "SRAM" : "Cart RAM" },
+				{ MemoryType.PceSaveRam, "W" },
+				{ MemoryType.PceCdromRam, "RW" },
+				{ MemoryType.PceCardRam, "RW" },
 				{ MemoryType.PcePrgRom, "R" },
 			};
 
@@ -369,7 +368,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 					mappings.Add(new MemoryMappingBlock() {
 						Length = 0x2000,
-						Name = blockNames[memType],
+						Name = memType.GetShortName(),
 						Page = state.Mpr[i],
 						Note = accessNotes[memType] + note,
 						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
@@ -378,7 +377,7 @@ namespace Mesen.Debugger.ViewModels
 					MemoryType memType = MemoryType.Register;
 					mappings.Add(new MemoryMappingBlock() {
 						Length = 0x2000,
-						Name = blockNames[memType],
+						Name = memType.GetShortName(),
 						Page = state.Mpr[i],
 						Note = accessNotes[memType],
 						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
