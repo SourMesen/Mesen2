@@ -48,7 +48,11 @@ public:
 
 	__forceinline DisassemblyInfo GetDisassemblyInfo(AddressInfo& info, uint32_t cpuAddress, uint8_t cpuFlags, CpuType type)
 	{
-		DisassemblyInfo disassemblyInfo = GetSource(info.Type).Cache[info.Address];
+		DisassemblyInfo disassemblyInfo;
+		if(info.Address >= 0) {
+			disassemblyInfo = GetSource(info.Type).Cache[info.Address];
+		}
+
 		if(!disassemblyInfo.IsInitialized()) {
 			disassemblyInfo.Initialize(cpuAddress, cpuFlags, type, DebugUtilities::GetCpuMemoryType(type), _memoryDumper);
 		}
