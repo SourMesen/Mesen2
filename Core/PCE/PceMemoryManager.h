@@ -415,7 +415,12 @@ public:
 		_state.ActiveIrqs |= (int)source;
 	}
 
-	bool HasIrqSource(PceIrqSource source)
+	__forceinline bool HasPendingIrq()
+	{
+		return (_state.ActiveIrqs & ~_state.DisabledIrqs) != 0;
+	}
+
+	__forceinline bool HasIrqSource(PceIrqSource source)
 	{
 		return (_state.ActiveIrqs & ~_state.DisabledIrqs & (int)source) != 0;
 	}

@@ -229,15 +229,8 @@ private:
 	void BBS(uint8_t bit);
 	void RMB(uint8_t bit);
 	void SMB(uint8_t bit);
-
-public:
-	PceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManager);
-
-	PceCpuState& GetState() { return _state; }
-
-	void Exec();
-
-	uint16_t FetchOperand();
+	
+	__forceinline void FetchOperand();
 
 	void SetRegister(uint8_t& reg, uint8_t value);
 
@@ -284,7 +277,7 @@ public:
 	uint16_t GetIndAddr();
 	uint8_t GetImmediate();
 	uint8_t GetZeroAddr();
-	
+
 	uint8_t GetZeroXAddr();
 	uint8_t GetZeroYAddr();
 
@@ -299,6 +292,15 @@ public:
 	uint16_t GetIndYAddr();
 
 	void ProcessIrq(bool forBrk);
+
+public:
+	PceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManager);
+
+	PceCpuState& GetState() { return _state; }
+
+	void Exec();
+
+	
 
 #ifdef DUMMYCPU
 private:

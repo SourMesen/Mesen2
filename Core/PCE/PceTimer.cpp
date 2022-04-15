@@ -10,13 +10,13 @@ PceTimer::PceTimer(PceMemoryManager* memoryManager)
 	_counter = 0;
 }
 
-void PceTimer::Exec(int8_t clocksToRun)
+void PceTimer::Exec(uint8_t clocksToRun)
 {
 	if(!_enabled) {
 		return;
 	}
 
-	while(clocksToRun) {
+	do {
 		_scaler -= 3;
 		if(_scaler == 0) {
 			_scaler = 1024 * 3;
@@ -28,7 +28,7 @@ void PceTimer::Exec(int8_t clocksToRun)
 			}
 		}
 		clocksToRun -= 3;
-	}
+	} while(clocksToRun > 0);
 }
 
 void PceTimer::Write(uint16_t addr, uint8_t value)

@@ -35,6 +35,10 @@ private:
 	void ChangeResolution();
 	void SendFrame();
 
+	void ProcessEndOfScanline();
+	void ProcessEndOfVisibleFrame();
+	void ProcessSatbTransfer();
+
 public:
 	PcePpu(Emulator* emu, PceConsole* console);
 	~PcePpu();
@@ -49,8 +53,6 @@ public:
 	uint16_t GetFrameCount() { return _state.FrameCount; }
 
 	void Exec();
-
-	void ProcessEndOfVisibleFrame();
 
 	uint8_t ReadVdc(uint16_t addr);
 	void WriteVdc(uint16_t addr, uint8_t value);

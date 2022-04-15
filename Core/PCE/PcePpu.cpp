@@ -71,23 +71,7 @@ void PcePpu::Exec()
 	_state.HClock += 3;
 	
 	if(_state.SatbTransferRunning) {
-		_state.SatbTransferCycleCounter -= 3;
-		if(_state.SatbTransferCycleCounter) {
-			//TODO: timing - this supposedly takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed?)
-			for(int i = 0; i < 256; i++) {
-				uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
-				_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
-				_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
-				_spriteRam[i] = value;
-			}
-
-			_state.SatbTransferRunning = false;
-
-			if(_state.VramSatbIrqEnabled) {
-				_state.SatbTransferDone = true;
-				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-			}
-		}
+		ProcessSatbTransfer();
 	}
 
 	if(_state.HClock == 999) {
@@ -128,55 +112,81 @@ void PcePpu::Exec()
 			}
 		}
 	} else if(_state.HClock == PceConstants::ClockPerScanline) {
-		ChangeResolution();
-		_state.HClock = 0;
-
-		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
-		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
-
-		if(_state.DisplayCounter >= topBorder) {
-			if(_state.BgScrollYUpdatePending) {
-				_state.BgScrollYLatch = _state.BgScrollY + 1;
-				_state.BgScrollYUpdatePending = false;
-			} else {
-				_state.BgScrollYLatch++;
-			}
-
-			_state.BgScrollXLatch = _state.BgScrollX;
-		}
-
-		_state.Scanline++;
-		_state.DisplayCounter++;
-
-		if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14+PceConstants::ScreenHeight) {
-			//re-start displaying picture
-			_state.DisplayCounter = 0;
-		}
-
-		if(_state.Scanline == 256) {
-			_state.FrameCount++;
-			SendFrame();
-		} else if(_state.Scanline == 263) {
-			//Update flags that were locked during burst mode
-			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-			_state.SpritesEnabled = _state.NextSpritesEnabled;
-
-			_state.Scanline = 0;
-			_state.DisplayCounter = 0;
-			_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
-			_state.BgScrollYLatch = _state.BgScrollY;
-			_state.BgScrollYUpdatePending = false;
-
-			_emu->ProcessEvent(EventType::StartFrame);
-
-			if(_state.SpritesEnabled || _state.BackgroundEnabled) {
-				//Reset current width to current frame data only if rendering is enabled
-				_screenWidth = GetCurrentScreenWidth();
-			}
-		}
+		ProcessEndOfScanline();
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
+}
+
+void PcePpu::ProcessSatbTransfer()
+{
+	_state.SatbTransferCycleCounter -= 3;
+	if(_state.SatbTransferCycleCounter) {
+		//TODO: timing - this supposedly takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed?)
+		for(int i = 0; i < 256; i++) {
+			uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
+			_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
+			_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
+			_spriteRam[i] = value;
+		}
+
+		_state.SatbTransferRunning = false;
+
+		if(_state.VramSatbIrqEnabled) {
+			_state.SatbTransferDone = true;
+			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		}
+	}
+}
+
+void PcePpu::ProcessEndOfScanline()
+{
+	ChangeResolution();
+	_state.HClock = 0;
+
+	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
+	uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
+
+	if(_state.DisplayCounter >= topBorder) {
+		if(_state.BgScrollYUpdatePending) {
+			_state.BgScrollYLatch = _state.BgScrollY + 1;
+			_state.BgScrollYUpdatePending = false;
+		} else {
+			_state.BgScrollYLatch++;
+		}
+
+		_state.BgScrollXLatch = _state.BgScrollX;
+	}
+
+	_state.Scanline++;
+	_state.DisplayCounter++;
+
+	if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14 + PceConstants::ScreenHeight) {
+		//re-start displaying picture
+		_state.DisplayCounter = 0;
+	}
+
+	if(_state.Scanline == 256) {
+		_state.FrameCount++;
+		SendFrame();
+	} else if(_state.Scanline == 263) {
+		//Update flags that were locked during burst mode
+		_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+		_state.SpritesEnabled = _state.NextSpritesEnabled;
+
+		_state.Scanline = 0;
+		_state.DisplayCounter = 0;
+		_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
+		_state.BgScrollYLatch = _state.BgScrollY;
+		_state.BgScrollYUpdatePending = false;
+
+		_emu->ProcessEvent(EventType::StartFrame);
+
+		if(_state.SpritesEnabled || _state.BackgroundEnabled) {
+			//Reset current width to current frame data only if rendering is enabled
+			_screenWidth = GetCurrentScreenWidth();
+		}
+	}
 }
 
 void PcePpu::ProcessEndOfVisibleFrame()

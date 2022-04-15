@@ -112,71 +112,68 @@ void PceCpu::Exec()
 
 	uint8_t opCode = GetOPCode();
 	_instAddrMode = _addrMode[opCode];
-	_operand = FetchOperand();
+	FetchOperand();
 	(this->*_opTable[opCode])();
 
-	if(_needIrq && _memoryManager->HasIrqSource((PceIrqSource)0xFF)) {
+	if(_needIrq && _memoryManager->HasPendingIrq()) {
 		ProcessIrq(false);
 	}
 }
 
-uint16_t PceCpu::FetchOperand()
+void PceCpu::FetchOperand()
 {
 	switch(_instAddrMode) {
 		case PceAddrMode::Acc:
-		case PceAddrMode::Imp: DummyRead(); return 0;
+		case PceAddrMode::Imp: DummyRead(); _operand = 0; break;
 		case PceAddrMode::Imm:
-		case PceAddrMode::Rel: return GetImmediate();
-		case PceAddrMode::Zero: _operand = PceCpu::ZeroPage + GetZeroAddr(); DummyRead(); return _operand;
-		case PceAddrMode::ZeroX: _operand = PceCpu::ZeroPage + GetZeroXAddr(); DummyRead(); return _operand;
-		case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); DummyRead(); return _operand;
-		case PceAddrMode::Ind: return GetIndAddr();
-		case PceAddrMode::IndX: return GetIndXAddr();
-		case PceAddrMode::IndY: return GetIndYAddr();
-		case PceAddrMode::Abs: _operand = GetAbsAddr(); DummyRead(); return _operand;
-		case PceAddrMode::AbsX: _operand = GetAbsXAddr(); DummyRead(); return _operand;
-		case PceAddrMode::AbsY: _operand = GetAbsYAddr(); DummyRead(); return _operand;
+		case PceAddrMode::Rel: _operand = GetImmediate(); break;
+		case PceAddrMode::Zero: _operand = PceCpu::ZeroPage + GetZeroAddr(); DummyRead(); break;
+		case PceAddrMode::ZeroX: _operand = PceCpu::ZeroPage + GetZeroXAddr(); DummyRead(); break;
+		case PceAddrMode::ZeroY: _operand = PceCpu::ZeroPage + GetZeroYAddr(); DummyRead(); break;
+		case PceAddrMode::Ind: _operand = GetIndAddr(); break;
+		case PceAddrMode::IndX: _operand = GetIndXAddr(); break;
+		case PceAddrMode::IndY: _operand = GetIndYAddr(); break;
+		case PceAddrMode::Abs: _operand = GetAbsAddr(); DummyRead(); break;
+		case PceAddrMode::AbsX: _operand = GetAbsXAddr(); DummyRead(); break;
+		case PceAddrMode::AbsY: _operand = GetAbsYAddr(); DummyRead(); break;
 
-		case PceAddrMode::ZeroRel: return ReadWord();
+		case PceAddrMode::ZeroRel: _operand = ReadWord(); break;
 
 		case PceAddrMode::Block:
 			_operand = ReadWord();
 			_operand2 = ReadWord();
 			_operand3 = ReadWord();
-			return _operand;
+			break;
 
-		case PceAddrMode::ZInd: return GetIndZeroAddr();
+		case PceAddrMode::ZInd: _operand = GetIndZeroAddr(); break;
 
 		case PceAddrMode::ImZero:
 			_operand = ReadByte();
 			_operand2 = PceCpu::ZeroPage + GetZeroAddr();
 			DummyRead();
-			return _operand;
+			break;
 
 		case PceAddrMode::ImZeroX:
 			_operand = ReadByte();
 			_operand2 = PceCpu::ZeroPage + GetZeroXAddr();
 			DummyRead();
-			return _operand;
+			break;
 
 		case PceAddrMode::ImAbs:
 			_operand = ReadByte();
 			_operand2 = GetAbsAddr();
 			DummyRead();
-			return _operand;
+			break;
 
 		case PceAddrMode::ImAbsX:
 			_operand = ReadByte();
 			_operand2 = GetAbsXAddr();
 			DummyRead();
-			return _operand;
+			break;
 
 		default:
 			break;
 	}
-
-	LogDebug("invalid instruction");
-	return 0;
 }
 
 void PceCpu::SetRegister(uint8_t& reg, uint8_t value)
@@ -282,7 +279,7 @@ void PceCpu::ProcessCpuCycle()
 	_state.CycleCount++;
 	_memoryManager->Exec();
 
-	_needIrq = _memoryManager->HasIrqSource((PceIrqSource)0xFF) && !CheckFlag(PceCpuFlags::Interrupt);
+	_needIrq = _memoryManager->HasPendingIrq() && !CheckFlag(PceCpuFlags::Interrupt);
 }
 
 #ifndef DUMMYCPU
