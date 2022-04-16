@@ -68,54 +68,57 @@ uint16_t PcePpu::GetScreenWidth()
 
 void PcePpu::Exec()
 {
-	_state.HClock += 3;
-	
 	if(_state.SatbTransferRunning) {
 		ProcessSatbTransfer();
 	}
 
-	if(_state.HClock == 999) {
-		//TODO timing, approx end of scanline display
-		//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
-		uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
-		uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
-		bool drawOverscan = true;
-		if(_state.DisplayCounter >= topBorder) {
-			if(_state.Scanline < 261) {
-				if(_state.DisplayCounter < screenEnd) {
-					if(_state.Scanline >= 14) {
-						drawOverscan = false;
-					}
-				} else {
-					if(_state.DisplayCounter == screenEnd) {
-						ProcessEndOfVisibleFrame();
-					}
-				}
-			} else {
-				if(_state.Scanline == 261 && screenEnd >= 261) {
-					ProcessEndOfVisibleFrame();
-				}
-			}
-		}
-
-		DrawScanline(drawOverscan);
-
-		if(_state.EnableScanlineIrq) {
-			int scanlineValue = (int)_state.Scanline - topBorder;
-			if(_state.Scanline < topBorder) {
-				scanlineValue += 263;
-			}
-
-			if(scanlineValue == (int)_state.RasterCompareRegister - 0x40) {
-				_state.ScanlineDetected = true;
-				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-			}
-		}
-	} else if(_state.HClock == PceConstants::ClockPerScanline) {
-		ProcessEndOfScanline();
+	_state.HClock += 3;
+	switch(_state.HClock) {
+		case 999: ProcessHBlankStart(); break;
+		case PceConstants::ClockPerScanline: ProcessEndOfScanline(); break;
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
+}
+
+void PcePpu::ProcessHBlankStart()
+{
+	//TODO timing, approx end of scanline display
+	//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
+	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
+	uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
+	bool drawOverscan = true;
+	if(_state.DisplayCounter >= topBorder) {
+		if(_state.Scanline < 261) {
+			if(_state.DisplayCounter < screenEnd) {
+				if(_state.Scanline >= 14) {
+					drawOverscan = false;
+				}
+			} else {
+				if(_state.DisplayCounter == screenEnd) {
+					ProcessEndOfVisibleFrame();
+				}
+			}
+		} else {
+			if(_state.Scanline == 261 && screenEnd >= 261) {
+				ProcessEndOfVisibleFrame();
+			}
+		}
+	}
+
+	DrawScanline(drawOverscan);
+
+	if(_state.EnableScanlineIrq) {
+		int scanlineValue = (int)_state.Scanline - topBorder;
+		if(_state.Scanline < topBorder) {
+			scanlineValue += 263;
+		}
+
+		if(scanlineValue == (int)_state.RasterCompareRegister - 0x40) {
+			_state.ScanlineDetected = true;
+			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		}
+	}
 }
 
 void PcePpu::ProcessSatbTransfer()

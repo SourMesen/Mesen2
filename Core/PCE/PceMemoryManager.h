@@ -82,6 +82,15 @@ public:
 			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
 			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
+
+			_saveRam[0] = 0x48;
+			_saveRam[1] = 0x55;
+			_saveRam[2] = 0x42;
+			_saveRam[3] = 0x4D;
+			_saveRam[4] = 0x00;
+			_saveRam[5] = 0xA0;
+			_saveRam[6] = 0x10;
+			_saveRam[7] = 0x80;
 		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
@@ -181,6 +190,7 @@ public:
 				_writeBanks[0x80 + i] = _cdromRam + (i * 0x2000);
 				_bankMemType[0x80 + i] = MemoryType::PceCdromRam;
 			}
+
 			for(int i = 0; i < 0x18; i++) {
 				//68 - 7F
 				_readBanks[0x68 + i] = _cardRam + (i * 0x2000);
@@ -205,51 +215,54 @@ public:
 		}
 	}
 
-	uint8_t Read(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read)
+	uint8_t ReadRegister(uint16_t addr)
+	{
+		if(addr <= 0x3FF) {
+			//VDC
+			return _ppu->ReadVdc(addr);
+		} else if(addr <= 0x7FF) {
+			//VCE
+			return _ppu->ReadVce(addr);
+		} else if(addr <= 0xBFF) {
+			//PSG
+			return _state.IoBuffer;
+		} else if(addr <= 0xFFF) {
+			//Timer
+			_state.IoBuffer = (_state.IoBuffer & 0x80) | (_timer->Read(addr) & 0x7F);
+			return _state.IoBuffer;
+		} else if(addr <= 0x13FF) {
+			//IO
+			_state.IoBuffer = 0xB0 | _controlManager->ReadInputPort();
+			return _state.IoBuffer;
+		} else if(addr <= 0x17FF) {
+			//IRQ
+			switch(addr & 0x03) {
+				case 0:
+				case 1:
+					break;
+
+				case 2: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.DisabledIrqs & 0x07); break;
+				case 3: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.ActiveIrqs & 0x07); break;
+			}
+			return _state.IoBuffer;
+		} else if(addr <= 0x1BFF) {
+			return _cdrom ? _cdrom->Read(addr) : 0xFF;
+		}
+
+		LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
+		return 0xFF;
+	}
+
+	__forceinline uint8_t Read(uint16_t addr, MemoryOperationType type = MemoryOperationType::Read)
 	{
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		uint8_t value;
-		uint16_t orgAddr = addr;
-		addr &= 0x1FFF;
 		if(bank != 0xFF) {
-			value = _readBanks[bank][addr];
+			value = _readBanks[bank][addr & 0x1FFF];
 		} else {
-			if(addr <= 0x3FF) {
-				//VDC
-				value = _ppu->ReadVdc(addr);
-			} else if(addr <= 0x7FF) {
-				//VCE
-				value = _ppu->ReadVce(addr);
-			} else if(addr <= 0xBFF) {
-				//PSG
-				value = _state.IoBuffer;
-			} else if(addr <= 0xFFF) {
-				//Timer
-				_state.IoBuffer = (_state.IoBuffer & 0x80) | (_timer->Read(addr) & 0x7F);
-				value = _state.IoBuffer;
-			} else if(addr <= 0x13FF) {
-				//IO
-				_state.IoBuffer = value = 0xB0 | _controlManager->ReadInputPort();
-				value = _state.IoBuffer;
-			} else if(addr <= 0x17FF) {
-				//IRQ
-				switch(addr & 0x03) {
-					case 0:
-					case 1:
-						break;
-
-					case 2: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.DisabledIrqs & 0x07); break;
-					case 3: _state.IoBuffer = (_state.IoBuffer & 0xF8) | (_state.ActiveIrqs & 0x07); break;
-				}
-				value = _state.IoBuffer;
-			} else if(addr <= 0x1BFF) {
-				value = _cdrom ? _cdrom->Read(addr) : 0xFF;
-			} else {
-				value = 0xFF;
-				LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));
-			}
+			value = ReadRegister(addr & 0x1FFF);
 		}
-		_emu->ProcessMemoryRead<CpuType::Pce>(orgAddr, value, type);
+		_emu->ProcessMemoryRead<CpuType::Pce>(addr, value, type);
 		return value;
 	}
 
@@ -281,7 +294,7 @@ public:
 		return 0xFF;
 	}
 
-	void Write(uint16_t addr, uint8_t value, MemoryOperationType type)
+	__forceinline void Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 	{
 		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);
 		

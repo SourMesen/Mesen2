@@ -253,43 +253,43 @@ private:
 	uint16_t PC() { return _state.PC; }
 	void SetPC(uint16_t value) { _state.PC = value; }
 
-	uint8_t GetOPCode();
+	__forceinline uint8_t GetOPCode();
 	uint16_t GetOperand();
 	uint8_t GetOperandValue();
 
-	void DummyRead();
+	__forceinline void DummyRead();
 
-	uint8_t ReadByte();
-	uint16_t ReadWord();
+	__forceinline uint8_t ReadByte();
+	__forceinline uint16_t ReadWord();
 
 	void ClearFlags(uint8_t flags);
 	void SetFlags(uint8_t flags);
 	bool CheckFlag(uint8_t flag);
 	void SetZeroNegativeFlags(uint8_t value);
 
-	void ProcessCpuCycle();
+	__forceinline void ProcessCpuCycle();
 
 	void MemoryWrite(uint16_t addr, uint8_t value, MemoryOperationType operationType = MemoryOperationType::Write);
 
-	uint8_t MemoryRead(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
-	uint16_t MemoryReadWord(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
+	__forceinline uint8_t MemoryRead(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
+	__forceinline uint16_t MemoryReadWord(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 
-	uint16_t GetIndAddr();
-	uint8_t GetImmediate();
-	uint8_t GetZeroAddr();
+	__forceinline uint16_t GetIndAddr();
+	__forceinline uint8_t GetImmediate();
+	__forceinline uint8_t GetZeroAddr();
 
-	uint8_t GetZeroXAddr();
-	uint8_t GetZeroYAddr();
+	__forceinline uint8_t GetZeroXAddr();
+	__forceinline uint8_t GetZeroYAddr();
 
-	uint16_t GetAbsAddr();
-	uint16_t GetAbsXAddr();
-	uint16_t GetAbsYAddr();
+	__forceinline uint16_t GetAbsAddr();
+	__forceinline uint16_t GetAbsXAddr();
+	__forceinline uint16_t GetAbsYAddr();
 
-	uint16_t ReadZeroPageWrap(uint8_t zero);
+	__forceinline uint16_t ReadZeroPageWrap(uint8_t zero);
 
-	uint16_t GetIndZeroAddr();
-	uint16_t GetIndXAddr();
-	uint16_t GetIndYAddr();
+	__forceinline uint16_t GetIndZeroAddr();
+	__forceinline uint16_t GetIndXAddr();
+	__forceinline uint16_t GetIndYAddr();
 
 	void ProcessIrq(bool forBrk);
 

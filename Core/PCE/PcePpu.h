@@ -35,6 +35,7 @@ private:
 	void ChangeResolution();
 	void SendFrame();
 
+	__declspec(noinline) void ProcessHBlankStart();
 	void ProcessEndOfScanline();
 	void ProcessEndOfVisibleFrame();
 	void ProcessSatbTransfer();
