@@ -16,8 +16,6 @@
 
 SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoprocessor(MemoryType::Register)
 {
-	_mixBuffer = new int16_t[0x10000];
-
 	_console = console;
 	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager();
@@ -41,8 +39,6 @@ SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoproce
 
 SuperGameboy::~SuperGameboy()
 {
-	delete[] _mixBuffer;
-
 	_emu->GetSoundMixer()->UnregisterAudioProvider(this);
 }
 
@@ -275,24 +271,10 @@ void SuperGameboy::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleR
 	int16_t* gbSamples = nullptr;
 	uint32_t gbSampleCount = 0;
 	_gameboy->GetSoundSamples(gbSamples, gbSampleCount);
-	_resampler.SetSampleRates(GbApu::SampleRate * _effectiveClockRate / _gameboy->GetMasterClockRate(), sampleRate);
 	
-	int32_t outCount = (int32_t)_resampler.Resample(gbSamples, gbSampleCount, _mixBuffer + _mixSampleCount) * 2;
-	_mixSampleCount += outCount;
-
-	int32_t copyCount = (int32_t)std::min(_mixSampleCount, sampleCount*2);
 	if(!_spc->IsMuted()) {
-		for(int32_t i = 0; i < copyCount; i++) {
-			out[i] += _mixBuffer[i];
-		}
-	}
-
-	int32_t remainingSamples = (int32_t)_mixSampleCount - copyCount;
-	if(remainingSamples > 0) {
-		memmove(_mixBuffer, _mixBuffer + copyCount, remainingSamples*sizeof(int16_t));
-		_mixSampleCount = remainingSamples;
-	} else {
-		_mixSampleCount = 0;
+		_resampler.SetSampleRates(GbApu::SampleRate * _effectiveClockRate / _gameboy->GetMasterClockRate(), sampleRate);
+		_resampler.Resample<true>(gbSamples, gbSampleCount, out, sampleCount);
 	}
 }
 

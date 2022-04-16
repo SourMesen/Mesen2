@@ -1796,6 +1796,9 @@
     <ClInclude Include="Shared\CdReader.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceCdAudioPlayer.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1863,6 +1866,9 @@
     </ClCompile>
     <ClCompile Include="Shared\CdReader.cpp">
       <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceCdAudioPlayer.cpp">
+      <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

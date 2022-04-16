@@ -83,6 +83,7 @@ namespace Mesen.Config
 			Snes.ApplyConfig();
 			Nes.ApplyConfig();
 			Gameboy.ApplyConfig();
+			Pce.ApplyConfig();
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
 

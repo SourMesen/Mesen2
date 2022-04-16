@@ -54,7 +54,7 @@ enum class ScsiCommand
 class PceScsiBus
 {
 private:
-	DiscInfo _disc;
+	DiscInfo* _disc;
 	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
 
@@ -108,9 +108,12 @@ private:
 	void ExecCommand(ScsiCommand cmd);
 	void ProcessCommandPhase();
 	void CmdRead();
+	
+	uint32_t GetAudioLbaPos();
 	void CmdAudioStartPos();
 	void CmdAudioEndPos();
 	void CmdPause();
+
 	void CmdReadSubCodeQ();
 	void CmdReadToc();
 

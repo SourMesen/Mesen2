@@ -23,6 +23,7 @@
     <ClInclude Include="PCE\Debugger\PceEventManager.h" />
     <ClInclude Include="PCE\Input\PceController.h" />
     <ClInclude Include="PCE\PceAdpcm.h" />
+    <ClInclude Include="PCE\PceCdAudioPlayer.h" />
     <ClInclude Include="PCE\PceCdRom.h" />
     <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PcePpu.h" />
@@ -448,6 +449,7 @@
     <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
     <ClCompile Include="PCE\PceAdpcm.cpp" />
+    <ClCompile Include="PCE\PceCdAudioPlayer.cpp" />
     <ClCompile Include="PCE\PceCdRom.cpp" />
     <ClCompile Include="PCE\PceConsole.cpp" />
     <ClCompile Include="PCE\PceControlManager.cpp" />

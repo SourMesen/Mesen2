@@ -8,8 +8,10 @@
 
 #ifdef _DEBUG
 	#define LogDebug(msg) MessageManager::Log(msg);
+	#define LogDebugIf(cond, msg) if(cond) { MessageManager::Log(msg); }
 #else
 	#define LogDebug(msg) 
+	#define LogDebugIf(cond, msg)
 #endif
 
 class MessageManager

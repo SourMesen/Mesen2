@@ -2,6 +2,7 @@
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceCdRom.h"
+#include "PCE/PceCdAudioPlayer.h"
 #include "Shared/CdReader.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
@@ -11,7 +12,7 @@ using namespace ScsiSignal;
 
 PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom, DiscInfo& disc)
 {
-	_disc = disc;
+	_disc = &disc;
 	_console = console;
 	_cdrom = cdrom;
 }
@@ -26,7 +27,7 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 	_phase = phase;
 	ClearSignals(Bsy, Cd, Io, Msg, Req);
 	
-	LogDebug("[SCSI] Phase changed: " + HexUtilities::ToHex((int)phase));
+	//LogDebug("[SCSI] Phase changed: " + HexUtilities::ToHex((int)phase));
 
 	switch(_phase) {
 		case ScsiPhase::BusFree: _cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferDone); break;
@@ -49,7 +50,7 @@ void PceScsiBus::Reset()
 	_dataTransferDone = false;
 	_cmdBuffer.clear();
 	_dataBuffer.clear();
-
+	_cdrom->GetAudioPlayer().Stop();
 	//LogDebug("[SCSI] Reset");
 }
 
@@ -152,7 +153,7 @@ void PceScsiBus::ProcessCommandPhase()
 			SetStatusMessage(ScsiStatus::Good, 0);
 		} else if(cmdSize <= _cmdBuffer.size()) {
 			//All bytes received - command has been processed
-			LogDebug("[SCSI] Command recv: " + HexUtilities::ToHex(_cmdBuffer, ' '));
+			//LogDebug("[SCSI] Command recv: " + HexUtilities::ToHex(_cmdBuffer, ' '));
 			ExecCommand(cmd);
 			_cmdBuffer.clear();
 		} else {
@@ -172,28 +173,74 @@ void PceScsiBus::CmdRead()
 	_sector = sector;
 	_sectorsToRead = sectorsToRead;
 	_readStartClock = _console->GetMasterClock();
-	LogDebug("[SCSI] Read sector: " + std::to_string(_sector));
+	_cdrom->GetAudioPlayer().Stop();
+	LogDebug("[SCSI] Read sector: " + std::to_string(_sector) + " to " + std::to_string(_sector + _sectorsToRead));
+}
+
+uint32_t PceScsiBus::GetAudioLbaPos()
+{
+	switch(_cmdBuffer[9] & 0xC0) {
+		case 0x00:
+			return (_cmdBuffer[3] << 16) | (_cmdBuffer[4] << 8) | _cmdBuffer[5];
+
+		case 0x40: {
+			DiscPosition pos;
+			pos.Minutes = CdReader::FromBcd(_cmdBuffer[2]);
+			pos.Seconds = CdReader::FromBcd(_cmdBuffer[3]);
+			pos.Frames = CdReader::FromBcd(_cmdBuffer[4]);
+			return pos.ToLba() - 150;
+		}
+
+		case 0x80: {
+			uint8_t track = CdReader::FromBcd(_cmdBuffer[2]);
+			int32_t sector = _disc->GetTrackFirstSector(track - 1);
+			return sector >= 0 ? sector : 0;
+		}
+	}
+	
+	LogDebug("[SCSI] CMD: Audio pos - invalid param");
+	return 0;
 }
 
 void PceScsiBus::CmdAudioStartPos()
 {
-	//TODO
 	LogDebug("[SCSI] CMD: Audio start pos");
+
+	uint32_t startSector = GetAudioLbaPos();
+
+	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
+	if(_cmdBuffer[1] == 0) {
+		player.Play(startSector);
+		player.Stop();
+	} else {
+		player.Play(startSector);
+	}
+
 	SetStatusMessage(ScsiStatus::Good, 0);
 	_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
 }
 
 void PceScsiBus::CmdAudioEndPos()
 {
-	//TODO
 	LogDebug("[SCSI] CMD: Audio end pos");
+
+	uint32_t endSector = GetAudioLbaPos();
+	
+	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
+	switch(_cmdBuffer[1]) {
+		case 0: player.Stop(); break;
+		case 1: player.SetEndPosition(endSector, CdPlayEndBehavior::Loop); break;
+		case 2: player.SetEndPosition(endSector, CdPlayEndBehavior::Irq); break;
+		case 3: player.SetEndPosition(endSector, CdPlayEndBehavior::Stop); break;
+	}
+	
 	SetStatusMessage(ScsiStatus::Good, 0);
 }
 
 void PceScsiBus::CmdPause()
 {
-	//TODO
 	LogDebug("[SCSI] CMD: Audio pause");
+	_cdrom->GetAudioPlayer().Stop();
 	SetStatusMessage(ScsiStatus::Good, 0);
 }
 
@@ -218,18 +265,6 @@ void PceScsiBus::CmdReadSubCodeQ()
 	SetPhase(ScsiPhase::DataIn);
 }
 
-uint8_t ToBcd(uint8_t value)
-{
-	uint8_t div = value / 10;
-	uint8_t rem = value % 10;
-	return (div << 4) | rem;
-}
-
-uint8_t FromBcd(uint8_t value)
-{
-	return ((value >> 4) & 0x0F) * 10 + (value & 0x0F);
-}
-
 void PceScsiBus::CmdReadToc()
 {
 	LogDebug("[SCSI] CMD: Read ToC");
@@ -238,38 +273,38 @@ void PceScsiBus::CmdReadToc()
 			//Number of tracks
 			_dataBuffer.clear();
 			_dataBuffer.push_back(1);
-			_dataBuffer.push_back(ToBcd((uint8_t)_disc.Tracks.size()));
+			_dataBuffer.push_back(CdReader::ToBcd((uint8_t)_disc->Tracks.size()));
 			SetPhase(ScsiPhase::DataIn);
 			break;
 
 		case 1: {
 			//Total disc length
 			_dataBuffer.clear();
-			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Minutes));
-			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Seconds));
-			_dataBuffer.push_back(ToBcd(_disc.EndPosition.Frames));
+			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Minutes));
+			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Seconds));
+			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Frames));
 			SetPhase(ScsiPhase::DataIn);
 			break;
 		}
 
 		case 2: {
-			uint8_t track = FromBcd(_cmdBuffer[2]);
+			uint8_t track = CdReader::FromBcd(_cmdBuffer[2]);
 			if(track == 0) {
 				track = 1;
 			}
 
 			DiscPosition pos;
-			if(track > _disc.Tracks.size()) {
-				pos = _disc.EndPosition;
+			if(track > _disc->Tracks.size()) {
+				pos = _disc->EndPosition;
 			} else {
-				pos = DiscPosition::FromLba(_disc.Tracks[track - 1].StartPosition.ToLba() + 150);
+				pos = DiscPosition::FromLba(_disc->Tracks[track - 1].StartPosition.ToLba() + 150);
 			}
 
 			_dataBuffer.clear();
-			_dataBuffer.push_back(ToBcd(pos.Minutes));
-			_dataBuffer.push_back(ToBcd(pos.Seconds));
-			_dataBuffer.push_back(ToBcd(pos.Frames));
-			if(track > _disc.Tracks.size() || _disc.Tracks[track - 1].Format == TrackFormat::Audio) {
+			_dataBuffer.push_back(CdReader::ToBcd(pos.Minutes));
+			_dataBuffer.push_back(CdReader::ToBcd(pos.Seconds));
+			_dataBuffer.push_back(CdReader::ToBcd(pos.Frames));
+			if(track > _disc->Tracks.size() || _disc->Tracks[track - 1].Format == TrackFormat::Audio) {
 				_dataBuffer.push_back(0);
 			} else {
 				_dataBuffer.push_back(4);
@@ -289,28 +324,8 @@ void PceScsiBus::ProcessDiscRead()
 {
 	if(_discReading && _dataBuffer.empty() && _console->GetMasterClock() - _readStartClock > 175000) {
 		//read disc data
-		//_dataBuffer.push_back(...);
-
-		uint32_t seekPos = 0;
 		_dataBuffer.clear();
-		for(size_t i = 0; i < _disc.Tracks.size(); i++) {
-			if(_sector >= _disc.Tracks[i].FirstSector && _sector < _disc.Tracks[i].FirstSector + _disc.Tracks[i].SectorCount) {
-				uint32_t byteOffset = _disc.Tracks[i].FileOffset + (_sector - _disc.Tracks[i].FirstSector) * 2352;
-
-				for(int j = 0; j < 2048; j++) {
-					_dataBuffer.push_back(_disc.Files[_disc.Tracks[i].FileIndex].ReadByte(byteOffset + 16 + j));
-				}
-				break;
-			}
-			seekPos += _disc.Tracks[i].SectorCount;
-		}
-
-		if(_dataBuffer.empty()) {
-			//sector out of range, return empty data?
-			for(int j = 0; j < 2048; j++) {
-				_dataBuffer.push_back(0);
-			}
-		}
+		_disc->ReadDataSector(_sector, _dataBuffer);
 
 		_sector = (_sector + 1) & 0x1FFFFF;
 		_sectorsToRead--;
@@ -339,7 +354,7 @@ uint8_t PceScsiBus::GetStatus()
 
 void PceScsiBus::SetDataPort(uint8_t data)
 {
-	LogDebug("[SCSI] CPU data port write: " + HexUtilities::ToHex(data));
+	//LogDebug("[SCSI] CPU data port write: " + HexUtilities::ToHex(data));
 	_dataPort = data;
 }
 
@@ -364,12 +379,16 @@ void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 
 void PceScsiBus::Exec()
 {
+	ProcessDiscRead();
+
+	if(!_stateChanged) {
+		return;
+	}
+
 	if(_signals[Rst]) {
 		Reset();
 		return;
 	}
-
-	ProcessDiscRead();
 
 	do {
 		_stateChanged = false;

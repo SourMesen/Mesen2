@@ -14,7 +14,7 @@ const std::initializer_list<string> VirtualFile::RomExtensions = {
 	".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox",
 	".sfc", ".swc", ".fig", ".smc", ".bs", ".spc",
 	".gb", ".gbc", ".gbs",
-	".pce", "cue"
+	".pce", ".cue"
 };
 
 VirtualFile::VirtualFile()
@@ -131,6 +131,11 @@ bool VirtualFile::IsValid()
 	return false;
 }
 
+bool VirtualFile::IsArchive()
+{
+	return !_innerFile.empty();
+}
+
 string VirtualFile::GetFilePath()
 {
 	return _path;
@@ -162,10 +167,15 @@ size_t VirtualFile::GetSize()
 	if(_data.size() > 0) {
 		return _data.size();
 	} else {
-		ifstream input(_path, std::ios::in | std::ios::binary);
-		if(input) {
-			input.seekg(0, std::ios::end);
-			return (uint32_t)input.tellg();
+		if(IsArchive()) {
+			LoadFile();
+			return _data.size();
+		} else {
+			ifstream input(_path, std::ios::in | std::ios::binary);
+			if(input) {
+				input.seekg(0, std::ios::end);
+				return (uint32_t)input.tellg();
+			}
 		}
 		return 0;
 	}

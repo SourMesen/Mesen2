@@ -13,7 +13,6 @@ private:
 	int16_t* _oggBuffer = nullptr;
 
 	HermiteResampler _resampler;
-	uint32_t _leftoverSampleCount = 0;
 
 	bool _loop = false;
 	bool _done = false;

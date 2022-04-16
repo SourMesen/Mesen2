@@ -46,8 +46,6 @@ private:
 	uint8_t _lcdBuffer[4][1280] = {};
 	
 	HermiteResampler _resampler;
-	int16_t* _mixBuffer = nullptr;
-	uint32_t _mixSampleCount = 0;
 
 	uint8_t GetLcdRow();
 	uint8_t GetLcdBufferRow();

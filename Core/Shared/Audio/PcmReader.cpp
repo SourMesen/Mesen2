@@ -122,25 +122,18 @@ void PcmReader::ApplySamples(int16_t *buffer, size_t sampleCount, uint8_t volume
 		return;
 	}
 
-	int32_t samplesNeeded = (int32_t)sampleCount - _leftoverSampleCount;
+	int32_t samplesNeeded = (int32_t)sampleCount - _resampler.GetPendingCount();
 	if(samplesNeeded > 0) {
 		uint32_t samplesToLoad = samplesNeeded * PcmReader::PcmSampleRate / _sampleRate + 2;
 		LoadSamples(samplesToLoad);
 	}
 
-	uint32_t samplesRead = _resampler.Resample(_pcmBuffer.data(), (uint32_t)_pcmBuffer.size() / 2, _outputBuffer + _leftoverSampleCount*2);
+	uint32_t samplesRead = _resampler.Resample<false>(_pcmBuffer.data(), (uint32_t)_pcmBuffer.size() / 2, _outputBuffer, sampleCount);
 	_pcmBuffer.clear();
 
-	uint32_t samplesToProcess = std::min<uint32_t>((uint32_t)sampleCount * 2, (samplesRead + _leftoverSampleCount) * 2);
+	uint32_t samplesToProcess = (uint32_t)samplesRead * 2;
 	for(uint32_t i = 0; i < samplesToProcess; i++) {
 		buffer[i] += (int16_t)((int32_t)_outputBuffer[i] * volume / 255);
-	}
-
-	//Calculate count of extra samples that couldn't be mixed with the rest of the audio and copy them to the beginning of the buffer
-	//These will be mixed on the next call to ApplySamples
-	_leftoverSampleCount = std::max(0, (int32_t)(samplesRead + _leftoverSampleCount) - (int32_t)sampleCount);
-	for(uint32_t i = 0; i < _leftoverSampleCount*2; i++) {
-		_outputBuffer[i] = _outputBuffer[samplesToProcess + i];
 	}
 }
 

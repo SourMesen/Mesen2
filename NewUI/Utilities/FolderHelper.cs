@@ -13,7 +13,8 @@ namespace Mesen.Utilities
 		private static HashSet<string> _romExtensions = new HashSet<string>() {
 			".sfc", ".smc", ".fig", ".swc", ".bs",
 			".gb", ".gbc",
-			".nes", ".unif", ".fds", ".studybox"
+			".nes", ".unif", ".fds", ".studybox",
+			".pce", ".cue"
 		};
 
 		public static bool IsRomFile(string path)

@@ -26,6 +26,7 @@ public:
 	operator std::string() const;
 	
 	bool IsValid();
+	bool IsArchive();
 	string GetFilePath();
 	string GetFolderPath();
 	string GetFileName();

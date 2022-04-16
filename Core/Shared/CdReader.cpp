@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "CdReader.h"
+#include "Shared/MessageManager.h"
+#include "Utilities/StringUtilities.h"
+#include "Utilities/FolderUtilities.h"
 
 struct CueIndexEntry
 {
@@ -20,13 +23,12 @@ struct CueFileEntry
 	vector<CueTrackEntry> Tracks;
 };
 
-bool CdReader::LoadCue(string path, DiscInfo& disc)
+bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 {
 	vector<CueFileEntry> files;
 
-	VirtualFile file = path;
 	stringstream ss;
-	file.ReadFile(ss);
+	cueFile.ReadFile(ss);
 
 	string line;
 	while(std::getline(ss, line)) {
@@ -37,8 +39,12 @@ bool CdReader::LoadCue(string path, DiscInfo& disc)
 			size_t end = line.find_last_of('"');
 			if(start != end && start != string::npos && end != string::npos) {
 				string filename = line.substr(start + 1, end - start - 1);
-				string filepath = file.GetFolderPath() + filename;
-				files.push_back({ filepath });
+
+				VirtualFile dataFile = cueFile.GetFolderPath() + filename;
+				if(cueFile.IsArchive()) {
+					dataFile = VirtualFile(cueFile.GetFilePath(), filename);
+				}
+				files.push_back({ dataFile });
 			}
 		} else if(line.substr(0, 5) == string("TRACK")) {
 			if(files.size() == 0) {

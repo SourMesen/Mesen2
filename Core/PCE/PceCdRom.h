@@ -2,7 +2,9 @@
 #include "stdafx.h"
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceAdpcm.h"
+#include "PCE/PceCdAudioPlayer.h"
 
+class Emulator;
 class PceConsole;
 class PceMemoryManager;
 
@@ -26,17 +28,24 @@ struct PceCdRomState
 class PceCdRom
 {
 private:
+	Emulator* _emu = nullptr;
 	PceConsole* _console = nullptr;
+
+	DiscInfo _disc;
 	PceScsiBus _scsi;
 	PceAdpcm _adpcm;
+	PceCdAudioPlayer _audioPlayer;
 	PceCdRomState _state = {};
 	
 	void UpdateIrqState();
 
 public:
-	PceCdRom(PceConsole* console, DiscInfo& disc);
+	PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc);
+	~PceCdRom();
 
 	void Exec();
+
+	PceCdAudioPlayer& GetAudioPlayer() { return _audioPlayer; }
 
 	void SetIrqSource(PceCdRomIrqSource src);
 	void ClearIrqSource(PceCdRomIrqSource src);

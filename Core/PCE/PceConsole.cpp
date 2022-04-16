@@ -45,7 +45,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			return LoadRomResult::Failure;
 		}
 
-		_cdrom.reset(new PceCdRom(this, disc));
+		_cdrom.reset(new PceCdRom(_emu, this, disc));
 	} else {
 		romFile.ReadFile(romData);
 	}

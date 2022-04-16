@@ -195,7 +195,7 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
-	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::PceWorkRam)) {
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::PceWorkRam || addressInfo.Type == MemoryType::PceCardRam || addressInfo.Type == MemoryType::PceCdromRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Pce);
 	}
 
