@@ -37,10 +37,10 @@ struct PceAdpcmState
 class PceAdpcm : public IAudioProvider
 {
 private:
-	PceCdRom* _cdrom;
-	PceScsiBus* _scsi;
-	PceAdpcmState _state;
-	uint8_t* _ram;
+	PceCdRom* _cdrom = nullptr;
+	PceScsiBus* _scsi = nullptr;
+	uint8_t* _ram = nullptr;
+	PceAdpcmState _state = {};
 	HermiteResampler _resampler;
 
 	vector<int16_t> _samplesToPlay;

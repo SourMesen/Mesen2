@@ -43,6 +43,9 @@ public:
 	void Play(uint32_t startSector);
 	void SetEndPosition(uint32_t endSector, CdPlayEndBehavior endBehavior);
 	void Stop();
+	
+	bool IsPlaying() { return _playing; }
+	uint32_t GetCurrentSector() { return _currentSector; }
 
 	void Exec();
 

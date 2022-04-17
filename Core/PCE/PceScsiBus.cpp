@@ -248,19 +248,29 @@ void PceScsiBus::CmdReadSubCodeQ()
 {
 	LogDebug("[SCSI] CMD: Read Sub Code Q");
 	
-	//STUB
+	//TODO, improve
 	_dataBuffer.clear();
-	_dataBuffer.push_back(3);
+
+	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
-	_dataBuffer.push_back(0);
+	uint32_t sector = player.IsPlaying() ? player.GetCurrentSector() : _sector;
+	uint32_t track = _disc->GetTrack(sector);
+
+	uint32_t sectorGap = _disc->Tracks[track].FirstSector - sector;
+	DiscPosition relPos = DiscPosition::FromLba(sectorGap);
+	DiscPosition absPos = DiscPosition::FromLba(sector);
+
+	_dataBuffer.push_back(_cdrom->GetAudioPlayer().IsPlaying() ? 0 : 3);
+
+	_dataBuffer.push_back(0); //??
+	_dataBuffer.push_back(CdReader::ToBcd(track + 1)); //track number
+	_dataBuffer.push_back(1); //index number
+	_dataBuffer.push_back(CdReader::ToBcd(relPos.Minutes));
+	_dataBuffer.push_back(CdReader::ToBcd(relPos.Seconds));
+	_dataBuffer.push_back(CdReader::ToBcd(relPos.Frames));
+	_dataBuffer.push_back(CdReader::ToBcd(absPos.Minutes));
+	_dataBuffer.push_back(CdReader::ToBcd(absPos.Seconds));
+	_dataBuffer.push_back(CdReader::ToBcd(absPos.Frames));
 
 	SetPhase(ScsiPhase::DataIn);
 }

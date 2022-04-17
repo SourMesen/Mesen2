@@ -54,7 +54,7 @@ enum class ScsiCommand
 class PceScsiBus
 {
 private:
-	DiscInfo* _disc;
+	DiscInfo* _disc = nullptr;
 	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
 
