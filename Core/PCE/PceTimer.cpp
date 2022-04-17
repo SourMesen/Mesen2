@@ -47,5 +47,13 @@ void PceTimer::Write(uint16_t addr, uint8_t value)
 
 uint8_t PceTimer::Read(uint16_t addr)
 {
-	return _counter;
+	if(_counter == 0 && _scaler <= 5 * 3) {
+		//When the timer is about to expire and rolls back to $7F,
+		//there is a slight delay where the register returns $7F instead
+		//of the reload value. Some games depend on this (e.g Battle Royale)
+		//TODO what's the correct timing for this?
+		return 0x7F;
+	} else {
+		return _counter;
+	}
 }
