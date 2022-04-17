@@ -30,7 +30,10 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.VramAddrIncrement = 1;
 	_state.VceClockDivider = 4;
 	_state.HorizDisplayWidth = 0x1F;
+	_state.VertDisplayWidth = 239;
+	_state.VceScanlineCount = 262;
 	_screenWidth = 256;
+	UpdateFrameTimings();
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
@@ -74,51 +77,11 @@ void PcePpu::Exec()
 
 	_state.HClock += 3;
 	switch(_state.HClock) {
-		case 999: ProcessHBlankStart(); break;
+		case 237: ProcessHBlankEnd(); break;
 		case PceConstants::ClockPerScanline: ProcessEndOfScanline(); break;
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
-}
-
-void PcePpu::ProcessHBlankStart()
-{
-	//TODO timing, approx end of scanline display
-	//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
-	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
-	uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
-	bool drawOverscan = true;
-	if(_state.DisplayCounter >= topBorder) {
-		if(_state.Scanline < 261) {
-			if(_state.DisplayCounter < screenEnd) {
-				if(_state.Scanline >= 14) {
-					drawOverscan = false;
-				}
-			} else {
-				if(_state.DisplayCounter == screenEnd) {
-					ProcessEndOfVisibleFrame();
-				}
-			}
-		} else {
-			if(_state.Scanline == 261 && screenEnd >= 261) {
-				ProcessEndOfVisibleFrame();
-			}
-		}
-	}
-
-	DrawScanline(drawOverscan);
-
-	if(_state.EnableScanlineIrq) {
-		int scanlineValue = (int)_state.Scanline - topBorder;
-		if(_state.Scanline < topBorder) {
-			scanlineValue += 263;
-		}
-
-		if(scanlineValue == (int)_state.RasterCompareRegister - 0x40) {
-			_state.ScanlineDetected = true;
-			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-		}
-	}
 }
 
 void PcePpu::ProcessSatbTransfer()
@@ -142,29 +105,40 @@ void PcePpu::ProcessSatbTransfer()
 	}
 }
 
-void PcePpu::ProcessEndOfScanline()
+void PcePpu::ProcessHBlankEnd()
 {
-	ChangeResolution();
-	_state.HClock = 0;
-
-	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
-	uint16_t screenEnd = topBorder + _state.VertDisplayWidth;
-
-	if(_state.DisplayCounter >= topBorder) {
+	if(_state.DisplayCounter >= _state.DisplayStart && _state.Scanline < _state.VerticalBlankScanline) {
 		if(_state.BgScrollYUpdatePending) {
 			_state.BgScrollYLatch = _state.BgScrollY + 1;
 			_state.BgScrollYUpdatePending = false;
 		} else {
 			_state.BgScrollYLatch++;
 		}
-
 		_state.BgScrollXLatch = _state.BgScrollX;
 	}
+
+	if(_state.Scanline == _state.VerticalBlankScanline) {
+		ProcessEndOfVisibleFrame();
+	}
+}
+
+void PcePpu::ProcessEndOfScanline()
+{
+	//TODO timing, approx end of scanline display
+	//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
+	bool drawOverscan = true;
+	if(_state.DisplayCounter >= _state.DisplayStart && _state.DisplayCounter < _state.VerticalBlankScanline) {
+		drawOverscan = _state.Scanline < 14;
+	}
+	DrawScanline(drawOverscan);
+
+	ChangeResolution();
+	_state.HClock = 0;
 
 	_state.Scanline++;
 	_state.DisplayCounter++;
 
-	if(_state.DisplayCounter >= screenEnd + _state.VertEndPosVcr + 3 && _state.Scanline < 14 + PceConstants::ScreenHeight) {
+	if(_state.DisplayCounter >= _state.VerticalBlankScanline + _state.VertEndPosVcr + 3 && _state.Scanline < 14 + PceConstants::ScreenHeight) {
 		//re-start displaying picture
 		_state.DisplayCounter = 0;
 	}
@@ -172,7 +146,7 @@ void PcePpu::ProcessEndOfScanline()
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
 		SendFrame();
-	} else if(_state.Scanline == 263) {
+	} else if(_state.Scanline >= _state.VceScanlineCount) {
 		//Update flags that were locked during burst mode
 		_state.BackgroundEnabled = _state.NextBackgroundEnabled;
 		_state.SpritesEnabled = _state.NextSpritesEnabled;
@@ -189,6 +163,16 @@ void PcePpu::ProcessEndOfScanline()
 			//Reset current width to current frame data only if rendering is enabled
 			_screenWidth = GetCurrentScreenWidth();
 		}
+	}
+	
+	_state.RcrCounter++;
+	if(_state.Scanline == _state.DisplayStart) {
+		_state.RcrCounter = 0x40;
+	}
+
+	if(_state.EnableScanlineIrq && _state.RcrCounter == _state.RasterCompareRegister) {
+		_state.ScanlineDetected = true;
+		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	}
 }
 
@@ -243,8 +227,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 		_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 	}
 
-	uint16_t topBorder = _state.VertDisplayStart + _state.VertSyncWidth;
-	uint16_t row = _state.DisplayCounter - topBorder;
+	uint16_t row = _state.DisplayCounter - _state.DisplayStart;
 	uint32_t outputOffset = ((int)_state.Scanline - 14) * _screenWidth;
 	uint16_t* out = _currentOutBuffer;
 
@@ -437,6 +420,15 @@ void PcePpu::SendFrame()
 	_console->GetControlManager()->UpdateInputState();
 }
 
+void PcePpu::UpdateFrameTimings()
+{
+	_state.DisplayStart = _state.VertDisplayStart + _state.VertSyncWidth;
+	_state.VerticalBlankScanline = _state.DisplayStart + _state.VertDisplayWidth;
+	if(_state.VerticalBlankScanline > 261) {
+		_state.VerticalBlankScanline = 261;
+	}
+}
+
 void PcePpu::LoadReadBuffer()
 {
 	//TODO timing - this needs to be done in-between rendering reads (based on mode, etc.)
@@ -596,9 +588,13 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					} else {
 						_state.VertSyncWidth = value & 0x1F;
 					}
+					UpdateFrameTimings();
 					break;
 
-				case 0x0D: UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb); break;
+				case 0x0D:
+					UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb);
+					UpdateFrameTimings();
+					break;
 
 				case 0x0E: 
 					if(!msb) {
@@ -681,14 +677,13 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 {
 	switch(addr & 0x07) {
 		case 0x00:
-			//TODO
-			LogDebug("[Debug] Write - VCE missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			_state.VceScanlineCount = (value & 0x04) ? 263 : 262;
 			switch(value & 0x03) {
 				case 0: _state.VceClockDivider = 4; break;
 				case 1: _state.VceClockDivider = 3; break;
 				case 2: case 3: _state.VceClockDivider = 2; break;
 			}
-			LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
+			//LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
 			break;
 
 		case 0x01: break; //Unused, writes do nothing

@@ -35,10 +35,12 @@ private:
 	void ChangeResolution();
 	void SendFrame();
 
-	__declspec(noinline) void ProcessHBlankStart();
-	void ProcessEndOfScanline();
-	void ProcessEndOfVisibleFrame();
-	void ProcessSatbTransfer();
+	void UpdateFrameTimings();
+
+	__declspec(noinline) void ProcessHBlankEnd();
+	__declspec(noinline) void ProcessEndOfScanline();
+	__declspec(noinline) void ProcessEndOfVisibleFrame();
+	__declspec(noinline) void ProcessSatbTransfer();
 
 public:
 	PcePpu(Emulator* emu, PceConsole* console);

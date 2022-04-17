@@ -1308,6 +1308,10 @@ namespace Mesen.Interop
 		public UInt16 Cycle;
 		public UInt16 Scanline;
 		public UInt16 DisplayCounter;
+		public UInt16 VceScanlineCount;
+		public UInt16 DisplayStart;
+		public UInt16 VerticalBlankScanline;
+		public UInt16 RcrCounter;
 
 		public byte CurrentReg;
 

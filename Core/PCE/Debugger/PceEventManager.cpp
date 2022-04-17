@@ -167,7 +167,7 @@ void PceEventManager::DrawScreen(uint32_t *buffer)
 	for(uint32_t y = 0, len = PceConstants::ScreenHeight * 2; y < len; y++) {
 		for(uint32_t x = 0; x < width; x++) {
 			int srcOffset = ((y >> 1) * _screenWidth) + (x / _dotWidth);
-			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x + _rowStartOffset * 2] = PceDefaultVideoFilter::ToArgb(src[srcOffset]);
+			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x + _rowStartOffset] = PceDefaultVideoFilter::ToArgb(src[srcOffset]);
 		}
 	}
 }
