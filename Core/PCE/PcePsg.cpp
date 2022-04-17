@@ -35,30 +35,30 @@ void PcePsg::Write(uint16_t addr, uint8_t value)
 	Run();
 
 	switch(addr & 0x0F) {
-	case 0: _state.ChannelSelect = value & 0x07; break;
-	case 1:
-		_state.RightVolume = value & 0x0F;
-		_state.LeftVolume = (value >> 4) & 0x0F;
-		break;
+		case 0: _state.ChannelSelect = value & 0x07; break;
+		case 1:
+			_state.RightVolume = value & 0x0F;
+			_state.LeftVolume = (value >> 4) & 0x0F;
+			break;
 
-	case 2: case 3: case 4: case 5: case 6:
-	{
-		if(_state.ChannelSelect < 6) {
-			_channels[_state.ChannelSelect].Write(addr, value);
+		case 2: case 3: case 4: case 5: case 6:
+		{
+			if(_state.ChannelSelect < 6) {
+				_channels[_state.ChannelSelect].Write(addr, value);
+			}
+			break;
 		}
-		break;
-	}
 
-	case 7:
-		//Only channels 5/6 have noise
-		if(_state.ChannelSelect == 4 || _state.ChannelSelect == 5) {
-			_channels[_state.ChannelSelect].Write(addr, value);
-		}
-		break;
+		case 7:
+			//Only channels 5/6 have noise
+			if(_state.ChannelSelect == 4 || _state.ChannelSelect == 5) {
+				_channels[_state.ChannelSelect].Write(addr, value);
+			}
+			break;
 
 		//TODO, LFO is not implemented
-	case 8: _state.LfoFrequency = value; break;
-	case 9: _state.LfoControl = value; break;
+		case 8: _state.LfoFrequency = value; break;
+		case 9: _state.LfoControl = value; break;
 	}
 }
 

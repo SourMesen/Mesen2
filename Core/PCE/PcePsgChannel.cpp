@@ -59,7 +59,7 @@ int16_t PcePsgChannel::GetOutput(bool forLeftChannel, uint8_t masterVolume)
 	//Sound reduction constants (in -1.5dB steps)
 	constexpr uint8_t volumeReduction[30] = { 255,214,180,151,127,107,90,76,64,53,45,38,32,27,22,19,16,13,11,9,8,6,5,4,4,3,2,2,2,1 };
 
-	uint8_t reductionFactor = (0xF - masterVolume) * 2 + (0x1E - _state.Amplitude) + (0xF - (forLeftChannel ? _state.LeftVolume : _state.RightVolume)) * 2;
+	uint8_t reductionFactor = (0xF - masterVolume) * 2 + (0x1F - _state.Amplitude) + (0xF - (forLeftChannel ? _state.LeftVolume : _state.RightVolume)) * 2;
 	if(reductionFactor >= 30) {
 		//45+dB of reduction, channel is muted
 		return 0;
