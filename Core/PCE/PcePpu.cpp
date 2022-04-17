@@ -283,6 +283,7 @@ void PcePpu::DrawScanline(bool drawOverscan)
 		bool hasSprite[PceConstants::MaxScreenWidth] = {};
 		bool hasSprite0[PceConstants::MaxScreenWidth] = {};
 
+		uint32_t rowSpriteCount = 0;
 		for(int i = 0; i < 64; i++) {
 			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
 			if(row < y) {
@@ -307,6 +308,21 @@ void PcePpu::DrawScanline(bool drawOverscan)
 			uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
 			uint8_t width = (flags & 0x100) ? 32 : 16;
 			int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
+			
+			if(rowSpriteCount >= 16) {
+				//Sprite limit reached, stop displaying sprites, trigger overflow irq
+				if(_state.EnableOverflowIrq) {
+					_state.SpriteOverflow = true;
+					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+				}
+				break;
+			} else {
+				if(rowSpriteCount == 15 && width == 32) {
+					//Hide second half of sprite due to sprite limit
+					width = 16;
+				}
+				rowSpriteCount += (flags & 0x100) ? 2 : 1;
+			}
 
 			if(spriteX + width <= 0 || spriteX >= (int32_t)rowWidth) {
 				//Sprite off-screen
