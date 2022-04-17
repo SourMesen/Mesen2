@@ -146,7 +146,9 @@ struct PcePpuState : public BaseState
 	uint16_t SatbBlockSrc;
 	bool SatbTransferPending;
 	bool SatbTransferRunning;
-	uint16_t SatbTransferCycleCounter;
+	
+	uint16_t SatbTransferNextWordCounter;
+	uint8_t SatbTransferOffset;
 
 	//Status flags
 	bool VerticalBlank;

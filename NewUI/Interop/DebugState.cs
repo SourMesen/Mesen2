@@ -1392,7 +1392,8 @@ namespace Mesen.Interop
 		public UInt16 SatbBlockSrc;
 		[MarshalAs(UnmanagedType.I1)] public bool SatbTransferPending;
 		[MarshalAs(UnmanagedType.I1)] public bool SatbTransferRunning;
-		public UInt16 SatbTransferCycleCounter;
+		public UInt16 SatbTransferNextWordCounter;
+		public byte SatbTransferOffset;
 
 		//Status flags
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalBlank;

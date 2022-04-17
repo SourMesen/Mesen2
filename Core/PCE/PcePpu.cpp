@@ -86,21 +86,27 @@ void PcePpu::Exec()
 
 void PcePpu::ProcessSatbTransfer()
 {
-	_state.SatbTransferCycleCounter -= 3;
-	if(_state.SatbTransferCycleCounter == 0) {
-		//TODO: timing - this supposedly takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed?)
-		for(int i = 0; i < 256; i++) {
-			uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
-			_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
-			_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
-			_spriteRam[i] = value;
-		}
+	//This takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed)
+	//1 word transfered every 4 dots (8 to 16 master clocks, depending on VCE clock divider)
+	_state.SatbTransferNextWordCounter += 3;
+	if(_state.SatbTransferNextWordCounter / _state.VceClockDivider == 4) {
+		_state.SatbTransferNextWordCounter -= _state.SatbTransferNextWordCounter / _state.VceClockDivider;
 
-		_state.SatbTransferRunning = false;
+		int i = _state.SatbTransferOffset;
+		uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
+		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
+		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
+		_spriteRam[i] = value;
 
-		if(_state.VramSatbIrqEnabled) {
-			_state.SatbTransferDone = true;
-			_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		_state.SatbTransferOffset++;
+
+		if(_state.SatbTransferOffset == 0) {
+			_state.SatbTransferRunning = false;
+
+			if(_state.VramSatbIrqEnabled) {
+				_state.SatbTransferDone = true;
+				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+			}
 		}
 	}
 }
@@ -182,9 +188,8 @@ void PcePpu::ProcessEndOfVisibleFrame()
 	if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
 		_state.SatbTransferPending = false;
 		_state.SatbTransferRunning = true;
-
-		//Sprite transfer ends 4 lines after vertical blank start?
-		_state.SatbTransferCycleCounter = PceConstants::ClockPerScanline * 4;
+		_state.SatbTransferNextWordCounter = 0;
+		_state.SatbTransferOffset = 0;
 	}
 
 	if(_state.EnableVerticalBlankIrq) {
