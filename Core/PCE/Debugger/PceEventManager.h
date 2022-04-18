@@ -45,7 +45,6 @@ private:
 
 	uint16_t _screenWidth = 256;
 	uint16_t _dotWidth = 3;
-	uint16_t _rowStartOffset = 237;
 
 protected:
 	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;

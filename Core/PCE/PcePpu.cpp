@@ -34,6 +34,7 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.VceScanlineCount = 262;
 	_screenWidth = 256;
 	UpdateFrameTimings();
+	_nextEvent = _state.LatchScrollCycle;
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
@@ -75,13 +76,36 @@ void PcePpu::Exec()
 		ProcessSatbTransfer();
 	}
 
-	_state.HClock += 3;
-	switch(_state.HClock) {
-		case 237: ProcessHBlankEnd(); break;
-		case PceConstants::ClockPerScanline: ProcessEndOfScanline(); break;
+	if(_state.HClock + 3 >= _nextEvent) {
+		ProcessEvent();
+	} else {
+		_state.HClock += 3;
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
+}
+
+void PcePpu::ProcessEvent()
+{
+	for(int i = 0; i < 3; i++) {
+		_state.HClock++;
+		if(_state.HClock == _state.LatchScrollCycle) {
+			LatchScrollValues();
+			_nextEvent = PceConstants::DisplayStartHClock - 110;
+		} else if(_state.HClock == PceConstants::DisplayStartHClock - 110) {
+			if(_state.Scanline == _state.VerticalBlankScanline) {
+				//TODO TIMING when is the vertical blank interrupt triggered (in terms of horizontal cycles)
+				ProcessEndOfVisibleFrame();
+			}
+			_nextEvent = _state.RcrTriggerCycle;
+		} else if(_state.HClock == _state.RcrTriggerCycle) {
+			CheckRcrScanlineValue();
+			_nextEvent = PceConstants::ClockPerScanline;
+		} else if(_state.HClock == PceConstants::ClockPerScanline) {
+			ProcessEndOfScanline();
+			_nextEvent = _state.LatchScrollCycle;
+		}
+	}
 }
 
 void PcePpu::ProcessSatbTransfer()
@@ -111,27 +135,51 @@ void PcePpu::ProcessSatbTransfer()
 	}
 }
 
-void PcePpu::ProcessHBlankEnd()
+void PcePpu::CheckRcrScanlineValue()
 {
-	if(_state.DisplayCounter >= _state.DisplayStart && _state.Scanline < _state.VerticalBlankScanline) {
-		if(_state.BgScrollYUpdatePending) {
-			_state.BgScrollYLatch = _state.BgScrollY + 1;
-			_state.BgScrollYUpdatePending = false;
-		} else {
-			_state.BgScrollYLatch++;
-		}
-		_state.BgScrollXLatch = _state.BgScrollX;
+	_state.RcrCounter++;
+	if(_state.Scanline + 1 == _state.DisplayStart) {
+		_state.RcrCounter = 0x40;
 	}
 
-	if(_state.Scanline == _state.VerticalBlankScanline) {
-		ProcessEndOfVisibleFrame();
+	//This triggers ~12 VDC cycles before the end of the visible part of the scanline
+	if(_state.EnableScanlineIrq && _state.RcrCounter == _state.RasterCompareRegister) {
+		_state.ScanlineDetected = true;
+		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+	}
+}
+
+void PcePpu::LatchScrollValues()
+{
+	//This is done a certain amount of VDC cycles before the start of the visible part of the scanline
+	if(_state.DisplayCounter >= _state.DisplayStart && _state.Scanline < _state.VerticalBlankScanline) {
+		if(_state.DisplayCounter == _state.DisplayStart) {
+			_state.BgScrollYLatch = _state.BgScrollY;
+		} else {
+			if(_state.BgScrollYUpdatePending) {
+				_state.BgScrollYLatch = _state.BgScrollY + 1;
+				_state.BgScrollYUpdatePending = false;
+			} else {
+				_state.BgScrollYLatch++;
+			}
+		}
+
+		//TODO TIMING this is meant to be latched a cycle or 2 after the Y value?
+		_state.BgScrollXLatch = _state.BgScrollX;
+
+		//TODO TIMING
+		//BG/Sprite enable flags are latched each scanline too
+		if(!_state.BurstModeEnabled) {
+			_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+			_state.SpritesEnabled = _state.NextSpritesEnabled;
+		}
 	}
 }
 
 void PcePpu::ProcessEndOfScanline()
 {
 	//TODO timing, approx end of scanline display
-	//TODO timing, scanline counter IRQ (RCR) triggers after the end of the HDW display period?
+	//Draw entire scanline at the end of the scanline
 	bool drawOverscan = true;
 	if(_state.DisplayCounter >= _state.DisplayStart && _state.DisplayCounter < _state.VerticalBlankScanline) {
 		drawOverscan = _state.Scanline < 14;
@@ -140,7 +188,6 @@ void PcePpu::ProcessEndOfScanline()
 
 	ChangeResolution();
 	_state.HClock = 0;
-
 	_state.Scanline++;
 	_state.DisplayCounter++;
 
@@ -154,31 +201,16 @@ void PcePpu::ProcessEndOfScanline()
 		SendFrame();
 	} else if(_state.Scanline >= _state.VceScanlineCount) {
 		//Update flags that were locked during burst mode
-		_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-		_state.SpritesEnabled = _state.NextSpritesEnabled;
-
 		_state.Scanline = 0;
 		_state.DisplayCounter = 0;
-		_state.BurstModeEnabled = !_state.BackgroundEnabled && !_state.SpritesEnabled;
-		_state.BgScrollYLatch = _state.BgScrollY;
-		_state.BgScrollYUpdatePending = false;
+		_state.BurstModeEnabled = !_state.NextBackgroundEnabled && !_state.NextSpritesEnabled;
 
 		_emu->ProcessEvent(EventType::StartFrame);
 
-		if(_state.SpritesEnabled || _state.BackgroundEnabled) {
+		if(_state.NextBackgroundEnabled || _state.NextSpritesEnabled) {
 			//Reset current width to current frame data only if rendering is enabled
 			_screenWidth = GetCurrentScreenWidth();
 		}
-	}
-	
-	_state.RcrCounter++;
-	if(_state.Scanline == _state.DisplayStart) {
-		_state.RcrCounter = 0x40;
-	}
-
-	if(_state.EnableScanlineIrq && _state.RcrCounter == _state.RasterCompareRegister) {
-		_state.ScanlineDetected = true;
-		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	}
 }
 
@@ -444,10 +476,22 @@ void PcePpu::SendFrame()
 void PcePpu::UpdateFrameTimings()
 {
 	_state.DisplayStart = _state.VertDisplayStart + _state.VertSyncWidth;
-	_state.VerticalBlankScanline = _state.DisplayStart + _state.VertDisplayWidth;
+	_state.VerticalBlankScanline = _state.DisplayStart + _state.VertDisplayWidth + 1;
 	if(_state.VerticalBlankScanline > 261) {
 		_state.VerticalBlankScanline = 261;
 	}
+
+	uint16_t latchScrollCycle = PceConstants::DisplayStartHClock - (30 * _state.VceClockDivider);
+	if(_nextEvent == _state.LatchScrollCycle) {
+		_nextEvent = latchScrollCycle;
+	}
+	_state.LatchScrollCycle = latchScrollCycle;
+
+	uint16_t rcrTriggerCycle = PceConstants::DisplayStartHClock + ((GetCurrentScreenWidth() - 12) * _state.VceClockDivider);
+	if(_nextEvent == _state.RcrTriggerCycle) {
+		_nextEvent = rcrTriggerCycle;
+	}
+	_state.RcrTriggerCycle = rcrTriggerCycle;
 }
 
 void PcePpu::LoadReadBuffer()
@@ -551,15 +595,11 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 						_state.EnableScanlineIrq = (value & 0x04) != 0;
 						_state.EnableVerticalBlankIrq = (value & 0x08) != 0;
 						
-						//TODO external sync bits
+						_state.OutputVerticalSync = ((value & 0x30) >> 4) >= 2;
+						_state.OutputHorizontalSync = ((value & 0x30) >> 4) >= 1;
 
 						_state.NextSpritesEnabled = (value & 0x40) != 0;
 						_state.NextBackgroundEnabled = (value & 0x80) != 0;
-
-						if(!_state.BurstModeEnabled) {
-							_state.SpritesEnabled = _state.NextSpritesEnabled;
-							_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-						}
 					}
 					break;
 
@@ -600,6 +640,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 						_state.HorizDisplayEnd = value & 0x7F;
 					} else {
 						_state.HorizDisplayWidth = value & 0x7F;
+						UpdateFrameTimings();
 					}
 					break;
 
@@ -704,6 +745,7 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 				case 1: _state.VceClockDivider = 3; break;
 				case 2: case 3: _state.VceClockDivider = 2; break;
 			}
+			UpdateFrameTimings();
 			//LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
 			break;
 

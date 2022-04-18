@@ -235,9 +235,11 @@ public:
 	{
 		if(addr <= 0x3FF) {
 			//VDC
+			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			return _ppu->ReadVdc(addr);
 		} else if(addr <= 0x7FF) {
 			//VCE
+			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			return _ppu->ReadVce(addr);
 		} else if(addr <= 0xBFF) {
 			//PSG
@@ -327,8 +329,10 @@ public:
 		} else {
 			if(addr <= 0x3FF) {
 				_ppu->WriteVdc(addr, value);
+				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0x7FF) {
 				_ppu->WriteVce(addr, value);
+				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0xBFF) {
 				//PSG
 				_psg->Write(addr, value);
@@ -366,6 +370,7 @@ public:
 	void WriteVdc(uint16_t addr, uint8_t value)
 	{
 		_ppu->WriteVdc(addr, value);
+		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}
 
 	void SetMprValue(uint8_t regSelect, uint8_t value)

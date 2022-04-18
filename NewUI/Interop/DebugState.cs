@@ -1311,6 +1311,8 @@ namespace Mesen.Interop
 		public UInt16 VceScanlineCount;
 		public UInt16 DisplayStart;
 		public UInt16 VerticalBlankScanline;
+		public UInt16 LatchScrollCycle;
+		public UInt16 RcrTriggerCycle;
 		public UInt16 RcrCounter;
 
 		public byte CurrentReg;
@@ -1330,7 +1332,8 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool EnableOverflowIrq;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableScanlineIrq;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableVerticalBlankIrq;
-		public byte ExternalSync;
+		[MarshalAs(UnmanagedType.I1)] public bool OutputVerticalSync;
+		[MarshalAs(UnmanagedType.I1)] public bool OutputHorizontalSync;
 		[MarshalAs(UnmanagedType.I1)] public bool SpritesEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool BackgroundEnabled;
 		public byte VramAddrIncrement;

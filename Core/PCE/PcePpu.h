@@ -18,6 +18,7 @@ private:
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;
 	uint32_t _screenWidth = 256;
+	uint16_t _nextEvent = 0;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -37,10 +38,12 @@ private:
 
 	void UpdateFrameTimings();
 
-	__declspec(noinline) void ProcessHBlankEnd();
+	__declspec(noinline) void CheckRcrScanlineValue();
+	__declspec(noinline) void LatchScrollValues();
 	__declspec(noinline) void ProcessEndOfScanline();
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
+	__declspec(noinline) void ProcessEvent();
 
 public:
 	PcePpu(Emulator* emu, PceConsole* console);

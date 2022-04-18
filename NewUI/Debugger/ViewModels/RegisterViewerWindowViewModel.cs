@@ -1161,6 +1161,10 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$05.1", "Overflow IRQ Enabled", ppu.EnableOverflowIrq),
 				new RegEntry("$05.2", "Scanline Detect (RCR) IRQ Enabled", ppu.EnableScanlineIrq),
 				new RegEntry("$05.3", "Vertical Blank IRQ Enabled", ppu.EnableVerticalBlankIrq),
+				new RegEntry("$05.4-5", "External Sync", 
+					(ppu.OutputHorizontalSync ? "HSYNC Out" : "HSYNC In") + ", " + 
+					(ppu.OutputVerticalSync ? "VSYNC Out" : "VSYNC In")
+				),
 				new RegEntry("$05.6", "Sprites Enabled", ppu.NextSpritesEnabled),
 				new RegEntry("$05.7", "Background Enabled", ppu.NextBackgroundEnabled),
 				new RegEntry("$05.11-12", "VRAM Address Increment", ppu.VramAddrIncrement),

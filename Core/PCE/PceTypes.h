@@ -65,6 +65,8 @@ struct PcePpuState : public BaseState
 	uint16_t VceScanlineCount;
 	uint16_t DisplayStart;
 	uint16_t VerticalBlankScanline;
+	uint16_t LatchScrollCycle;
+	uint16_t RcrTriggerCycle;
 	uint16_t RcrCounter;
 
 	uint8_t CurrentReg;
@@ -84,7 +86,8 @@ struct PcePpuState : public BaseState
 	bool EnableOverflowIrq;
 	bool EnableScanlineIrq;
 	bool EnableVerticalBlankIrq;
-	uint8_t ExternalSync;
+	bool OutputVerticalSync;
+	bool OutputHorizontalSync;
 	bool SpritesEnabled;
 	bool BackgroundEnabled;
 	uint8_t VramAddrIncrement;
