@@ -59,7 +59,7 @@ struct DiscInfo
 	int32_t GetTrack(uint32_t sector)
 	{
 		for(size_t i = 0; i < Tracks.size(); i++) {
-			if(Tracks[i].LastSector > sector) {
+			if(Tracks[i].LastSector >= sector) {
 				return (int32_t)i;
 			}
 		}
