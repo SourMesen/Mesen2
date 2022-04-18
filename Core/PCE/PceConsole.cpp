@@ -48,6 +48,10 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 		_cdrom.reset(new PceCdRom(_emu, this, disc));
 	} else {
 		romFile.ReadFile(romData);
+		if((romData.size() % 0x2000) == 512) {
+			//File properly has header discard it
+			romData.erase(romData.begin(), romData.begin() + 512);
+		}
 	}
 
 	_controlManager.reset(new PceControlManager(_emu));
