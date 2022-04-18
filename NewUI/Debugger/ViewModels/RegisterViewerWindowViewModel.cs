@@ -1143,6 +1143,15 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Scanline (V)", ppu.Scanline, Format.X16),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 
+				new RegEntry("", "VCE - Video Color Encoder", null),
+				new RegEntry("$00.0-1", "VCE - CR - Clock Speed", ppu.VceClockDivider == 4 ? "5.37 MHz" : ppu.VceClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
+				new RegEntry("$00.2", "VCE - CR - Number of Scanlines", ppu.VceScanlineCount),
+				new RegEntry("$01.0-8", "VCE - CTA - Color Table Address", ppu.PalAddr, Format.X16),
+
+				new RegEntry("", "Selected Register", ppu.CurrentReg, Format.X8),
+
+				new RegEntry("", "VDC Registers", null),
+
 				new RegEntry("$00", "MAWR - Memory Write Address", ppu.MemAddrWrite, Format.X16),
 				new RegEntry("$01", "MARR - Memory Read Address", ppu.MemAddrRead, Format.X16),
 				new RegEntry("$02", "VWR - VRAM Write Data", ppu.VramData, Format.X16),
@@ -1209,6 +1218,7 @@ namespace Mesen.Debugger.ViewModels
 			PceMemoryManager mem = state.MemoryManager;
 
 			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz"),
 				new RegEntry("", "IRQ", null),
 				new RegEntry("$1402", "Disabled IRQs", null),
 				new RegEntry("$1402.0", "IRQ2 Disabled", (mem.DisabledIrqs & 0x01) != 0),
