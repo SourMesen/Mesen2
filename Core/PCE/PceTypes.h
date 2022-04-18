@@ -173,7 +173,7 @@ struct PceMemoryManagerState
 	uint8_t Mpr[8];
 	uint8_t ActiveIrqs;
 	uint8_t DisabledIrqs;
-	uint8_t CpuClockSpeed;
+	bool FastCpuSpeed;
 	uint8_t MprReadBuffer;
 	uint8_t IoBuffer;
 };

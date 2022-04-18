@@ -10,25 +10,22 @@ PceTimer::PceTimer(PceMemoryManager* memoryManager)
 	_counter = 0;
 }
 
-void PceTimer::Exec(uint8_t clocksToRun)
+void PceTimer::Exec()
 {
 	if(!_enabled) {
 		return;
 	}
 
-	do {
-		_scaler -= 3;
-		if(_scaler == 0) {
-			_scaler = 1024 * 3;
-			if(_counter == 0) {
-				_counter = _reloadValue;
-				_memoryManager->SetIrqSource(PceIrqSource::TimerIrq);
-			} else {
-				_counter--;
-			}
+	_scaler -= 3;
+	if(_scaler == 0) {
+		_scaler = 1024 * 3;
+		if(_counter == 0) {
+			_counter = _reloadValue;
+			_memoryManager->SetIrqSource(PceIrqSource::TimerIrq);
+		} else {
+			_counter--;
 		}
-		clocksToRun -= 3;
-	} while(clocksToRun > 0);
+	}
 }
 
 void PceTimer::Write(uint16_t addr, uint8_t value)

@@ -99,7 +99,7 @@ public:
 		_timer.reset(new PceTimer(this));
 
 		//CPU boots up in slow speed
-		_state.CpuClockSpeed = 12;
+		_state.FastCpuSpeed = false;
 
 		//Set to 0 on power on
 		_state.DisabledIrqs = 0;
@@ -157,7 +157,7 @@ public:
 
 	void SetSpeed(bool slow)
 	{
-		_state.CpuClockSpeed = slow ? 12 : 3;
+		_state.FastCpuSpeed = !slow;
 	}
 
 	void UpdateMappings(uint32_t bankOffsets[8])
@@ -207,11 +207,27 @@ public:
 
 	void Exec()
 	{
-		_state.CycleCount += _state.CpuClockSpeed;
-		_timer->Exec(_state.CpuClockSpeed);
-		_ppu->Exec();
-		if(_cdrom) {
-			_cdrom->Exec();
+		if(_state.FastCpuSpeed) {
+			_state.CycleCount += 3;
+			_timer->Exec();
+			_ppu->Exec();
+			if(_cdrom) {
+				_cdrom->Exec();
+			}
+		} else {
+			ExecSlow();
+		}
+	}
+
+	void ExecSlow()
+	{
+		for(int i = 0; i < 4; i++) {
+			_state.CycleCount += 3;
+			_timer->Exec();
+			_ppu->Exec();
+			if(_cdrom) {
+				_cdrom->Exec();
+			}
 		}
 	}
 

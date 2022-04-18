@@ -1408,6 +1408,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool NextBackgroundEnabled;
 
 		//VCE
+		public byte VceClockDivider;
 		public UInt16 PalAddr;
 	}
 
@@ -1420,7 +1421,7 @@ namespace Mesen.Interop
 
 		public byte ActiveIrqs;
 		public byte DisabledIrqs;
-		public byte CpuClockSpeed;
+		[MarshalAs(UnmanagedType.I1)] public bool FastCpuSpeed;
 		public byte MprReadBuffer;
 		public byte IoBuffer;
 	}
