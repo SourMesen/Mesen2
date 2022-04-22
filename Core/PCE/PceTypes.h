@@ -52,7 +52,8 @@ enum class PceAddrMode
 	AbsX, AbsY,
 	ZInd, ZeroRel,
 	Block,
-	ImZero, ImZeroX, ImAbs, ImAbsX
+	ImZero, ImZeroX, ImAbs, ImAbsX,
+	AbsXInd,
 };
 
 struct PcePpuState : public BaseState
