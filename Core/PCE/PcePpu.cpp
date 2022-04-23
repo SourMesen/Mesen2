@@ -112,6 +112,15 @@ void PcePpu::Exec()
 		}
 
 		_xStart = 0;
+
+		if(_state.Scanline == _state.VceScanlineCount - 3) {
+			//VCE sets VBLANK for 3 scanlines at the end of every frame
+			if(_vMode == PcePpuModeV::Vdw) {
+				_needVertBlankIrq = true;
+			}
+			_vMode = PcePpuModeV::Vsw;
+			_vModeCounter = _state.VertSyncWidth + 1;
+		}
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
@@ -119,7 +128,7 @@ void PcePpu::Exec()
 
 void PcePpu::TriggerHdsIrqs()
 {
-	if(_state.Scanline == _state.VerticalBlankScanline) {
+	if(_needVertBlankIrq) {
 		ProcessEndOfVisibleFrame();
 	}
 	if(_hasSpriteOverflow && _state.EnableOverflowIrq) {
@@ -234,8 +243,39 @@ void PcePpu::ProcessSatbTransfer()
 void PcePpu::IncrementRcrCounter()
 {
 	_state.RcrCounter++;
-	if(_state.Scanline + 1 == _state.DisplayStart) {
-		_state.RcrCounter = 0;
+
+	if(_needBgScrollYInc) {
+		IncScrollY();
+	}
+	_needBgScrollYInc = true;
+	_needRcrIncrement = false;
+
+	_vModeCounter--;
+	if(_vModeCounter == 0) {
+		_vMode = (PcePpuModeV)(((int)_vMode + 1) % 4);
+		switch(_vMode) {
+			default:
+			case PcePpuModeV::Vds:
+				_vModeCounter = _state.VertDisplayStart + 2;
+				break;
+
+			case PcePpuModeV::Vdw:
+				_vModeCounter = _state.VertDisplayWidth + 1;
+				_state.RcrCounter = 0;
+				break;
+
+			case PcePpuModeV::Vde:
+				_vModeCounter = _state.VertEndPosVcr;
+				break;
+
+			case PcePpuModeV::Vsw:
+				_vModeCounter = _state.VertSyncWidth + 1;
+				break;
+		}
+	}
+
+	if(_state.RcrCounter == _state.VertDisplayWidth + 1) {
+		_needVertBlankIrq = true;
 	}
 
 	//This triggers ~12 VDC cycles before the end of the visible part of the scanline
@@ -243,12 +283,6 @@ void PcePpu::IncrementRcrCounter()
 		_state.ScanlineDetected = true;
 		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	}
-
-	if(_needBgScrollYInc) {
-		IncScrollY();
-	}
-	_needBgScrollYInc = true;
-	_needRcrIncrement = false;
 }
 
 void PcePpu::IncScrollY()
@@ -270,12 +304,6 @@ void PcePpu::ProcessEndOfScanline()
 	ChangeResolution();
 	_state.HClock = 0;
 	_state.Scanline++;
-	_state.DisplayCounter++;
-
-	if(_state.DisplayCounter >= _state.VerticalBlankScanline + _state.VertEndPosVcr + 3 && _state.Scanline < 14 + PceConstants::ScreenHeight) {
-		//re-start displaying picture
-		_state.DisplayCounter = 0;
-	}
 
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
@@ -283,7 +311,6 @@ void PcePpu::ProcessEndOfScanline()
 	} else if(_state.Scanline >= _state.VceScanlineCount) {
 		//Update flags that were locked during burst mode
 		_state.Scanline = 0;
-		_state.DisplayCounter = 0;
 		_state.BurstModeEnabled = !_state.NextBackgroundEnabled && !_state.NextSpritesEnabled;
 
 		_emu->ProcessEvent(EventType::StartFrame);
@@ -309,6 +336,8 @@ void PcePpu::ProcessEndOfVisibleFrame()
 		_state.VerticalBlank = true;
 		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	}
+
+	_needVertBlankIrq = false;
 }
 
 template<uint8_t bpp>
@@ -349,7 +378,7 @@ void PcePpu::DrawScanline()
 	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
 	bool hasBg[PceConstants::MaxScreenWidth] = {};
 	uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
-	bool inPicture = (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled && _state.DisplayCounter >= _state.DisplayStart && _state.DisplayCounter < _state.VerticalBlankScanline;
+	bool inPicture = _vMode == PcePpuModeV::Vdw && (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled;
 
 	if(inPicture && _state.BackgroundEnabled) {
 		for(uint16_t x = _xStart; x < xMax; x++) {

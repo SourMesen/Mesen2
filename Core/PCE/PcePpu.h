@@ -24,6 +24,14 @@ enum class PcePpuModeH
 	Hsw,
 };
 
+enum class PcePpuModeV
+{
+	Vds,
+	Vdw,
+	Vde,
+	Vsw,
+};
+
 class PcePpu
 {
 private:
@@ -44,9 +52,14 @@ private:
 
 	PcePpuModeH _hMode = PcePpuModeH::Hds;
 	int16_t _hModeCounter = 0;
+	
+	PcePpuModeV _vMode = PcePpuModeV::Vds;
+	int16_t _vModeCounter = 0;
+
 	bool _needRcrIncrement = false;
 	bool _needBgScrollYInc = false;
 	bool _hasSpriteOverflow = false;
+	bool _needVertBlankIrq = false;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -65,10 +78,12 @@ private:
 	void SendFrame();
 
 	void UpdateFrameTimings();
+	
+	uint16_t DotsToClocks(int dots);
+	void TriggerHdsIrqs();
 
 	__declspec(noinline) void IncrementRcrCounter();
 	void IncScrollY();
-	__declspec(noinline) void LatchScrollY();
 	__declspec(noinline) void ProcessEndOfScanline();
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
@@ -83,16 +98,12 @@ public:
 	uint16_t* GetPreviousScreenBuffer();
 	uint16_t GetScreenWidth();
 
-	uint16_t DotsToClocks(int dots);
-
 	uint16_t GetHClock() { return _state.HClock; }
 	uint16_t GetScanline() { return _state.Scanline; }
 	uint16_t* GetRowBuffer() { return _rowBuffer; }
 	uint16_t GetFrameCount() { return _state.FrameCount; }
 
 	void Exec();
-
-	void TriggerHdsIrqs();
 
 	uint8_t ReadVdc(uint16_t addr);
 	void WriteVdc(uint16_t addr, uint8_t value);
