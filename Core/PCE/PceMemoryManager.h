@@ -10,6 +10,7 @@
 #include "PCE/PceCdRom.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/RandomHelper.h"
@@ -70,6 +71,7 @@ public:
 		
 		//TODO random
 		memset(_workRam, 0, _workRamSize);
+		_emu->GetSettings()->InitializeRam(_workRam, _workRamSize);
 
 		if(_cdrom) {
 			_saveRam = new uint8_t[_saveRamSize];

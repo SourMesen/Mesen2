@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/BaseEventManager.h"
+#include "PCE/PceConstants.h"
 
 enum class DebugEventType;
 struct DebugEventInfo;
@@ -41,10 +42,11 @@ private:
 	PceMemoryManager* _memoryManager;
 	Debugger *_debugger;
 
-	uint16_t *_ppuBuffer = nullptr;
+	uint16_t* _ppuBuffer = nullptr;
+	uint16_t _rowWidth[PceConstants::ScanlineCount] = {};
 
-	uint16_t _screenWidth = 256;
-	uint16_t _dotWidth = 3;
+	uint16_t *_ppuBufferSnapshot = nullptr;
+	uint16_t _rowWidthSnapshot[PceConstants::ScanlineCount] = {};
 
 protected:
 	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;
