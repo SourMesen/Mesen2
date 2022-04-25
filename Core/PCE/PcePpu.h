@@ -56,10 +56,34 @@ private:
 	PcePpuModeV _vMode = PcePpuModeV::Vds;
 	int16_t _vModeCounter = 0;
 
+	uint16_t _screenOffsetX = 0;
 	bool _needRcrIncrement = false;
 	bool _needBgScrollYInc = false;
-	bool _hasSpriteOverflow = false;
 	bool _needVertBlankIrq = false;
+	bool _verticalBlankDone = false;
+
+	struct PceSpriteInfo
+	{
+		uint16_t TileData[4];
+		int16_t X;
+		uint16_t TileAddress;
+		uint8_t Index;
+		uint8_t Palette;
+		bool HorizontalMirroring;
+		bool ForegroundPriority;
+	};
+
+	bool _inSpriteEval = false;
+	uint8_t _spriteCount = 0;
+	PceSpriteInfo _sprites[16] = {};
+	uint16_t _evalStartCycle = 0;
+	uint16_t _evalLastCycle = 0;
+	bool _hasSpriteOverflow = false;
+
+	PceSpriteInfo _drawSprites[16] = {};
+	uint8_t _drawSpriteCount = 0;
+	bool _rowHasSprite0 = false;
+	uint16_t _loadSpriteStart = 0;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -88,6 +112,9 @@ private:
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
 	__declspec(noinline) void ProcessEvent();
+
+	void ProcessSpriteEvaluation();
+	void LoadSpriteTiles();
 
 public:
 	PcePpu(Emulator* emu, PceConsole* console);

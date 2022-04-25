@@ -88,6 +88,10 @@ void PcePpu::Exec()
 		ProcessSatbTransfer();
 	}
 
+	if(_rowHasSprite0) {
+		DrawScanline();
+	}
+
 	if(_hModeCounter <= 3) {
 		ProcessEvent();
 	} else {
@@ -96,6 +100,9 @@ void PcePpu::Exec()
 	}
 
 	if(_state.HClock == 1365) {
+		ProcessSpriteEvaluation();
+		_inSpriteEval = false;
+
 		ProcessEndOfScanline();
 
 		if(_needRcrIncrement) {
@@ -104,10 +111,14 @@ void PcePpu::Exec()
 
 		//VCE sets HBLANK to low every 1365 clocks, interrupting what 
 		//the VDC was doing and starting a 8-pixel HSW phase
+		if(_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) {
+			//Start loading sprites in 16 dots
+			_loadSpriteStart = DotsToClocks(16);
+		}
 		_hModeCounter = DotsToClocks(16);
 		_hMode = PcePpuModeH::Hsw;
-		
-		if(_state.HorizDisplayStart < 2) {
+
+		if(_state.HorizDisplayStart < 1) {
 			TriggerHdsIrqs();
 		}
 
@@ -115,11 +126,12 @@ void PcePpu::Exec()
 
 		if(_state.Scanline == _state.VceScanlineCount - 3) {
 			//VCE sets VBLANK for 3 scanlines at the end of every frame
-			if(_vMode == PcePpuModeV::Vdw) {
-				_needVertBlankIrq = true;
-			}
 			_vMode = PcePpuModeV::Vsw;
 			_vModeCounter = _state.VertSyncWidth + 1;
+		} else if(_state.Scanline == _state.VceScanlineCount - 2) {
+			if(!_verticalBlankDone) {
+				_needVertBlankIrq = true;
+			}
 		}
 	}
 
@@ -135,6 +147,7 @@ void PcePpu::TriggerHdsIrqs()
 		_state.SpriteOverflow = true;
 		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	}
+	_hasSpriteOverflow = false;
 }
 
 void PcePpu::ProcessEvent()
@@ -145,6 +158,8 @@ void PcePpu::ProcessEvent()
 
 		if(_hModeCounter == 0) {
 			DrawScanline();
+			ProcessSpriteEvaluation();
+
 			_hMode = (PcePpuModeH)(((int)_hMode + 1) % 8);
 			switch(_hMode) {
 				case PcePpuModeH::Hds:
@@ -157,7 +172,7 @@ void PcePpu::ProcessEvent()
 						_hMode = PcePpuModeH::Hds_VerticalBlankIrq;
 						_hModeCounter = DotsToClocks(2);
 					}
-					LogDebug("H: " + std::to_string(_state.HClock) + " - HDS");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - HDS");
 					break;
 				
 				case PcePpuModeH::Hds_VerticalBlankIrq:
@@ -170,7 +185,7 @@ void PcePpu::ProcessEvent()
 						IncScrollY();
 					}
 					_hModeCounter = DotsToClocks(2);
-					LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll Y Latch");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll Y Latch");
 					break;
 
 				case PcePpuModeH::Hds_ScrollXLatch:
@@ -184,31 +199,155 @@ void PcePpu::ProcessEvent()
 					} else {
 						_hModeCounter = DotsToClocks((_state.HorizDisplayStart + 1) * 8 - 4);
 					}
-					LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll X Latch");
+
+					LoadSpriteTiles();
+
+					_inSpriteEval = true;
+					_evalStartCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
+					_evalLastCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
+
+					_spriteCount = 0;
+					_screenOffsetX = 0;
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll X Latch");
 					break;
 
 				case PcePpuModeH::Hdw:
 					_needRcrIncrement = true;
 					_hModeCounter = DotsToClocks((_state.HorizDisplayWidth - 1) * 8 + 2);
-					LogDebug("H: " + std::to_string(_state.HClock) + " - HDW start");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - HDW start");
 					break;
 				
 				case PcePpuModeH::Hdw_RcrIrq:
 					IncrementRcrCounter();
 					_hModeCounter = DotsToClocks(2 * 8 - 2);
-					LogDebug("H: " + std::to_string(_state.HClock) + " - RCR inc");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - RCR inc");
 					break;
 
 				case PcePpuModeH::Hde:
+					_inSpriteEval = false;
+					_loadSpriteStart = _state.HClock;
 					_hModeCounter = DotsToClocks((_state.HorizDisplayEnd + 1) * 8);
-					LogDebug("H: " + std::to_string(_state.HClock) + " - HDE");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - HDE");
 					break;
 
 				case PcePpuModeH::Hsw:
 					_hModeCounter = DotsToClocks((_state.HorizSyncWidth + 1) * 8);
-					LogDebug("H: " + std::to_string(_state.HClock) + " - HSW");
+					//LogDebug("H: " + std::to_string(_state.HClock) + " - HSW");
 					break;
 			}
+		}
+	}
+}
+
+void PcePpu::ProcessSpriteEvaluation()
+{
+	if(_state.HClock < _evalStartCycle) {
+		return;
+	}
+
+	if(_inSpriteEval && _spriteCount <= 16 && _vMode == PcePpuModeV::Vdw) {
+		uint16_t start = (_evalLastCycle - _evalStartCycle) / _state.VceClockDivider;
+		uint16_t end = (_state.HClock - _evalStartCycle) / _state.VceClockDivider;
+		uint16_t nextRow = _state.RcrCounter + 1;
+
+		for(uint16_t cycle = start; cycle <= end; cycle+=4) {
+			//4 VDC clocks is taken for each sprite
+			uint8_t i = cycle >> 2;
+			if(i >= 64) {
+				break;
+			}
+
+			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
+			if(nextRow < y) {
+				//Sprite not visible on this line
+				continue;
+			}
+
+			uint8_t height;
+			uint16_t flags = _spriteRam[i * 4 + 3];
+			switch((flags >> 12) & 0x03) {
+				default:
+				case 0: height = 16; break;
+				case 1: height = 32; break;
+				case 2: case 3: height = 64; break;
+			}
+
+			if(nextRow >= y + height) {
+				//Sprite not visible on this line
+				continue;
+			}
+
+			uint16_t spriteRow = nextRow - y;
+
+			bool verticalMirror = (flags & 0x8000) != 0;
+			bool horizontalMirror = (flags & 0x800) != 0;
+
+			int yOffset = 0;
+			int rowOffset = 0;
+			if(verticalMirror) {
+				yOffset = (height - spriteRow - 1) & 0x0F;
+				rowOffset = (height - spriteRow - 1) >> 4;
+			} else {
+				yOffset = spriteRow & 0x0F;
+				rowOffset = spriteRow >> 4;
+			}
+
+			uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
+			uint8_t width = (flags & 0x100) ? 32 : 16;
+			if(width == 32) {
+				tileIndex &= ~0x01;
+			}
+			if(height == 32) {
+				tileIndex &= ~0x02;
+			} else if(height == 64) {
+				tileIndex &= ~0x06;
+			}
+			uint16_t spriteTileY = tileIndex | (rowOffset << 1);
+
+			for(int x = 0; x < width; x+=16) {
+				if(_spriteCount >= 16) {
+					_hasSpriteOverflow = true;
+					break;
+				} else {
+					int columnOffset;
+					if(horizontalMirror) {
+						columnOffset = (width - x - 1) >> 4;
+					} else {
+						columnOffset = x >> 4;
+					}
+
+					uint16_t spriteTile = spriteTileY | columnOffset;
+					_sprites[_spriteCount].Index = i;
+					_sprites[_spriteCount].X = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32 + x;
+					_sprites[_spriteCount].TileAddress = spriteTile * 64 + yOffset;
+					_sprites[_spriteCount].HorizontalMirroring = horizontalMirror;
+					_sprites[_spriteCount].ForegroundPriority = (flags & 0x80) != 0;
+					_sprites[_spriteCount].Palette = (flags & 0x0F);
+					_spriteCount++;
+				}
+			}
+		}
+	}
+	_evalLastCycle = _state.HClock;
+}
+
+void PcePpu::LoadSpriteTiles()
+{
+	_drawSpriteCount = 0;
+	_rowHasSprite0 = false;
+
+	uint16_t clockCount = _loadSpriteStart > _state.HClock ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _state.HClock : (_state.HClock - _loadSpriteStart);
+	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 8);
+
+	for(int i = 0; i < _spriteCount && i < maxCount; i++) {
+		_drawSprites[i] = _sprites[i];
+		_drawSprites[i].TileData[0] = _vram[_sprites[i].TileAddress & 0x7FFF];
+		_drawSprites[i].TileData[1] = _vram[(_sprites[i].TileAddress + 16) & 0x7FFF];
+		_drawSprites[i].TileData[2] = _vram[(_sprites[i].TileAddress + 32) & 0x7FFF];
+		_drawSprites[i].TileData[3] = _vram[(_sprites[i].TileAddress + 48) & 0x7FFF];
+		_drawSpriteCount++;
+		if(_sprites[i].Index == 0) {
+			_rowHasSprite0 = true;
 		}
 	}
 }
@@ -274,8 +413,9 @@ void PcePpu::IncrementRcrCounter()
 		}
 	}
 
-	if(_state.RcrCounter == _state.VertDisplayWidth + 1) {
+	if(_vMode == PcePpuModeV::Vde && _state.RcrCounter == _state.VertDisplayWidth + 1) {
 		_needVertBlankIrq = true;
+		_verticalBlankDone = true;
 	}
 
 	//This triggers ~12 VDC cycles before the end of the visible part of the scanline
@@ -290,7 +430,12 @@ void PcePpu::IncScrollY()
 	if(_state.RcrCounter == 0) {
 		_state.BgScrollYLatch = _state.BgScrollY;
 	} else {
-		_state.BgScrollYLatch++;
+		if(_state.BgScrollYUpdatePending) {
+			_state.BgScrollYLatch = _state.BgScrollY + 1;
+			_state.BgScrollYUpdatePending = false;
+		} else {
+			_state.BgScrollYLatch++;
+		}
 	}
 	_needBgScrollYInc = false;
 }
@@ -311,6 +456,7 @@ void PcePpu::ProcessEndOfScanline()
 	} else if(_state.Scanline >= _state.VceScanlineCount) {
 		//Update flags that were locked during burst mode
 		_state.Scanline = 0;
+		_verticalBlankDone = false;
 		_state.BurstModeEnabled = !_state.NextBackgroundEnabled && !_state.NextSpritesEnabled;
 
 		_emu->ProcessEvent(EventType::StartFrame);
@@ -356,9 +502,9 @@ uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
 	} else if(bpp == 5) {
 		//TODO hack, fix
 		color = (chrData[0] >> shift) & 0x01;
-		color |= ((chrData[16] >> shift) & 0x01) << 1;
-		color |= ((chrData[32] >> shift) & 0x01) << 2;
-		color |= ((chrData[48] >> shift) & 0x01) << 3;
+		color |= ((chrData[1] >> shift) & 0x01) << 1;
+		color |= ((chrData[2] >> shift) & 0x01) << 2;
+		color |= ((chrData[3] >> shift) & 0x01) << 3;
 	} else {
 		throw std::runtime_error("unsupported bpp");
 	}
@@ -376,28 +522,63 @@ void PcePpu::DrawScanline()
 	uint16_t* out = _rowBuffer;
 
 	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
-	bool hasBg[PceConstants::MaxScreenWidth] = {};
 	uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
 	bool inPicture = _vMode == PcePpuModeV::Vdw && (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled;
 
-	if(inPicture && _state.BackgroundEnabled) {
+	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		for(uint16_t x = _xStart; x < xMax; x++) {
-			uint16_t screenX = _state.BgScrollXLatch & ((_state.ColumnCount * 8) - 1);
+			uint8_t color = 0;
+			if(_state.BackgroundEnabled) {
+				uint16_t screenX = (_state.BgScrollXLatch + _screenOffsetX) & ((_state.ColumnCount * 8) - 1);
 
-			uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
-			uint8_t palette = batEntry >> 12;
-			uint16_t tileIndex = (batEntry & 0xFFF);
+				uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
+				uint8_t palette = batEntry >> 12;
+				uint16_t tileIndex = (batEntry & 0xFFF);
 
-			uint16_t tileAddr = tileIndex * 16;
-			uint8_t color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
-			if(color != 0) {
-				hasBg[x] = true;
-				out[x] = _paletteRam[palette * 16 + color];
-			} else {
-				out[x] = _paletteRam[0];
+				uint16_t tileAddr = tileIndex * 16;
+				color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
+				if(color != 0) {
+					out[x] = _paletteRam[palette * 16 + color];
+				} else {
+					out[x] = _paletteRam[0];
+				}
 			}
 
-			_state.BgScrollXLatch++;
+			if(_state.SpritesEnabled) {
+				uint8_t sprColor;
+				bool checkSprite0Hit = false;
+				for(uint16_t i = 0; i < _drawSpriteCount; i++) {
+					int16_t xOffset = _screenOffsetX - _drawSprites[i].X;
+					if(xOffset >= 0 && xOffset < 16) {
+						if(!_drawSprites[i].HorizontalMirroring) {
+							xOffset = 15 - xOffset;
+						}
+
+						sprColor = GetTilePixelColor<5>(_drawSprites[i].TileData, xOffset);
+
+						if(sprColor != 0) {
+							if(checkSprite0Hit) {
+								if(_state.EnableCollisionIrq) {
+									_state.Sprite0Hit = true;
+									_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+								}
+							} else {
+								if(color == 0 || _drawSprites[i].ForegroundPriority) {
+									out[x] = _paletteRam[256 + _drawSprites[i].Palette * 16 + sprColor];
+								}
+							}
+
+							if(_drawSprites[i].Index == 0) {
+								checkSprite0Hit = true;
+							} else {
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			_screenOffsetX++;
 		}
 	} else if(inPicture) {
 		uint16_t color = _paletteRam[0];
@@ -412,132 +593,6 @@ void PcePpu::DrawScanline()
 			out[x] = color;
 		}
 	}
-/*
-	if(_xStart == 0) {
-		_hasSpriteOverflow = false;
-	}
-
-	if(_state.SpritesEnabled) {
-		bool hasSprite[PceConstants::MaxScreenWidth] = {};
-		bool hasSprite0[PceConstants::MaxScreenWidth] = {};
-
-		uint32_t rowSpriteCount = 0;
-		for(int i = 0; i < 64; i++) {
-			int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
-			if(row < y) {
-				//Sprite not visible on this line
-				continue;
-			}
-
-			uint8_t height;
-			uint16_t flags = _spriteRam[i * 4 + 3];
-			switch((flags >> 12) & 0x03) {
-				default:
-				case 0: height = 16; break;
-				case 1: height = 32; break;
-				case 2: case 3: height = 64; break;
-			}
-
-			if(row >= y + height) {
-				//Sprite not visible on this line
-				continue;
-			}
-
-			uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
-			uint8_t width = (flags & 0x100) ? 32 : 16;
-			int16_t spriteX = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32;
-			
-			if(_xStart == 0) {
-				if(rowSpriteCount >= 16) {
-					//Sprite limit reached, stop displaying sprites, trigger overflow irq
-					_hasSpriteOverflow = true;
-					break;
-				} else {
-					if(rowSpriteCount == 15 && width == 32) {
-						//Hide second half of sprite due to sprite limit
-						width = 16;
-					}
-					rowSpriteCount += (flags & 0x100) ? 2 : 1;
-				}
-			}
-
-			if(spriteX + width <= 0 || spriteX >= (int32_t)xMax) {
-				//Sprite off-screen
-				continue;
-			}
-
-			uint16_t spriteRow = row - y;
-			if(width == 32) {
-				tileIndex &= ~0x01;
-			}
-			if(height == 32) {
-				tileIndex &= ~0x02;
-			} else if(height == 64) {
-				tileIndex &= ~0x06;
-			}
-
-			bool verticalMirror = (flags & 0x8000) != 0;
-			bool horizontalMirror = (flags & 0x800) != 0;
-			bool priority = (flags & 0x80) != 0;
-			int yOffset = 0;
-			int rowOffset = 0;
-			if(verticalMirror) {
-				yOffset = (height - spriteRow - 1) & 0x0F;
-				rowOffset = (height - spriteRow - 1) >> 4;
-			} else {
-				yOffset = spriteRow & 0x0F;
-				rowOffset = spriteRow >> 4;
-			}
-
-			uint16_t spriteTileY = tileIndex | (rowOffset << 1);
-
-			for(int x = 0; x < width; x++) {
-				if(spriteX + x < _xStart) {
-					continue;
-				} else if(spriteX + x >= (int32_t)xMax) {
-					//Offscreen
-					break;
-				}
-
-				uint8_t xOffset;
-				int columnOffset;
-				if(horizontalMirror) {
-					xOffset = (width - x - 1) & 0x0F;
-					columnOffset = (width - x - 1) >> 4;
-				} else {
-					xOffset = x & 0x0F;
-					columnOffset = x >> 4;
-				}
-
-				uint16_t spriteTile = spriteTileY | columnOffset;
-				uint16_t tileStart = spriteTile * 64;
-
-				uint16_t pixelStart = tileStart + yOffset;
-				uint8_t shift = 15 - xOffset;
-
-				uint8_t color = GetTilePixelColor<5>(_vram + (pixelStart & 0x7FFF), shift);
-
-				if(color != 0) {
-					if(hasSprite[spriteX + x]) {
-						if(hasSprite0[spriteX + x] && _state.EnableCollisionIrq) {
-							_state.Sprite0Hit = true;
-							_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-						}
-					} else {
-						if(priority || hasBg[spriteX + x] == 0) {
-							out[outputOffset + spriteX + x] = _paletteRam[color + (flags & 0x0F) * 16 + 16 * 16];
-						}
-						
-						hasSprite[spriteX + x] = true;
-						if(i == 0) {
-							hasSprite0[spriteX + x] = true;
-						}
-					}
-				}
-			}
-		}
-	}
-	*/
 
 	if(_state.HClock == 1365) {
 		if(_state.Scanline == 14) {
