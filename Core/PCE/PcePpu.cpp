@@ -337,9 +337,9 @@ void PcePpu::LoadSpriteTiles()
 	_rowHasSprite0 = false;
 
 	uint16_t clockCount = _loadSpriteStart > _state.HClock ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _state.HClock : (_state.HClock - _loadSpriteStart);
-	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 8);
+	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
 
-	for(int i = 0; i < _spriteCount && i < maxCount; i++) {
+	for(int i = 0; i < maxCount; i++) {
 		_drawSprites[i] = _sprites[i];
 		_drawSprites[i].TileData[0] = _vram[_sprites[i].TileAddress & 0x7FFF];
 		_drawSprites[i].TileData[1] = _vram[(_sprites[i].TileAddress + 16) & 0x7FFF];
