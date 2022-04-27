@@ -72,11 +72,6 @@ uint16_t* PcePpu::GetPreviousScreenBuffer()
 	return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 }
 
-uint16_t PcePpu::GetScreenWidth()
-{
-	return _screenWidth;
-}
-
 uint16_t PcePpu::DotsToClocks(int dots)
 {
 	return dots * _state.VceClockDivider;
@@ -100,39 +95,7 @@ void PcePpu::Exec()
 	}
 
 	if(_state.HClock == 1365) {
-		ProcessSpriteEvaluation();
-		_inSpriteEval = false;
-
 		ProcessEndOfScanline();
-
-		if(_needRcrIncrement) {
-			IncrementRcrCounter();
-		}
-
-		//VCE sets HBLANK to low every 1365 clocks, interrupting what 
-		//the VDC was doing and starting a 8-pixel HSW phase
-		if(_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) {
-			//Start loading sprites in 16 dots
-			_loadSpriteStart = DotsToClocks(16);
-		}
-		_hModeCounter = DotsToClocks(16);
-		_hMode = PcePpuModeH::Hsw;
-
-		if(_state.HorizDisplayStart < 1) {
-			TriggerHdsIrqs();
-		}
-
-		_xStart = 0;
-
-		if(_state.Scanline == _state.VceScanlineCount - 3) {
-			//VCE sets VBLANK for 3 scanlines at the end of every frame
-			_vMode = PcePpuModeV::Vsw;
-			_vModeCounter = _state.VertSyncWidth + 1;
-		} else if(_state.Scanline == _state.VceScanlineCount - 2) {
-			if(!_verticalBlankDone) {
-				_needVertBlankIrq = true;
-			}
-		}
 	}
 
 	_emu->ProcessPpuCycle<CpuType::Pce>();
@@ -442,11 +405,11 @@ void PcePpu::IncScrollY()
 
 void PcePpu::ProcessEndOfScanline()
 {
-	//TODO timing, approx end of scanline display
-	//Draw entire scanline at the end of the scanline
+	ProcessSpriteEvaluation();
+	_inSpriteEval = false;
+
 	DrawScanline();
 
-	ChangeResolution();
 	_state.HClock = 0;
 	_state.Scanline++;
 
@@ -463,7 +426,36 @@ void PcePpu::ProcessEndOfScanline()
 
 		if(_state.NextBackgroundEnabled || _state.NextSpritesEnabled) {
 			//Reset current width to current frame data only if rendering is enabled
-			_screenWidth = GetCurrentScreenWidth();
+			_screenWidth = 0;
+		}
+	}
+
+	if(_needRcrIncrement) {
+		IncrementRcrCounter();
+	}
+
+	//VCE sets HBLANK to low every 1365 clocks, interrupting what 
+	//the VDC was doing and starting a 8-pixel HSW phase
+	if(_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) {
+		//Start loading sprites in 16 dots
+		_loadSpriteStart = DotsToClocks(16);
+	}
+	_hModeCounter = DotsToClocks(16);
+	_hMode = PcePpuModeH::Hsw;
+
+	if(_state.HorizDisplayStart < 1) {
+		TriggerHdsIrqs();
+	}
+
+	_xStart = 0;
+
+	if(_state.Scanline == _state.VceScanlineCount - 3) {
+		//VCE sets VBLANK for 3 scanlines at the end of every frame
+		_vMode = PcePpuModeV::Vsw;
+		_vModeCounter = _state.VertSyncWidth + 1;
+	} else if(_state.Scanline == _state.VceScanlineCount - 2) {
+		if(!_verticalBlankDone) {
+			_needVertBlankIrq = true;
 		}
 	}
 }
@@ -527,7 +519,8 @@ void PcePpu::DrawScanline()
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		for(uint16_t x = _xStart; x < xMax; x++) {
-			uint8_t color = 0;
+			uint8_t bgColor = 0;
+			uint16_t outColor = _paletteRam[0];
 			if(_state.BackgroundEnabled) {
 				uint16_t screenX = (_state.BgScrollXLatch + _screenOffsetX) & ((_state.ColumnCount * 8) - 1);
 
@@ -536,11 +529,9 @@ void PcePpu::DrawScanline()
 				uint16_t tileIndex = (batEntry & 0xFFF);
 
 				uint16_t tileAddr = tileIndex * 16;
-				color = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
-				if(color != 0) {
-					out[x] = _paletteRam[palette * 16 + color];
-				} else {
-					out[x] = _paletteRam[0];
+				bgColor = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
+				if(bgColor != 0) {
+					outColor = _paletteRam[palette * 16 + bgColor];
 				}
 			}
 
@@ -563,8 +554,8 @@ void PcePpu::DrawScanline()
 									_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 								}
 							} else {
-								if(color == 0 || _drawSprites[i].ForegroundPriority) {
-									out[x] = _paletteRam[256 + _drawSprites[i].Palette * 16 + sprColor];
+								if(bgColor == 0 || _drawSprites[i].ForegroundPriority) {
+									outColor = _paletteRam[256 + _drawSprites[i].Palette * 16 + sprColor];
 								}
 							}
 
@@ -578,6 +569,7 @@ void PcePpu::DrawScanline()
 				}
 			}
 
+			out[x] = outColor;
 			_screenOffsetX++;
 		}
 	} else if(inPicture) {
@@ -595,54 +587,22 @@ void PcePpu::DrawScanline()
 	}
 
 	if(_state.HClock == 1365) {
-		if(_state.Scanline == 14) {
+		uint16_t row = _state.Scanline - 14;
+		uint32_t width = PceConstants::GetRowWidth(_state.VceClockDivider);
+		
+		_screenWidth = std::max(_screenWidth, width);
+
+		if(row == 0) {
 			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
+			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
 		}
 		
-		uint32_t offset = ((int)_state.Scanline - 14) * _screenWidth;
-		int leftOverscan = 5 * 8 * 4 / _state.VceClockDivider;
-
-		//Scanline is less wide than previous scanlines, center it (and clear both sides)
-		uint16_t pictureWidth = GetCurrentScreenWidth();
-		int gap = 0;// (_screenWidth - pictureWidth) / 2;
-		memset(_currentOutBuffer + offset, 0, gap * sizeof(uint16_t));
-		memset(_currentOutBuffer + offset + pictureWidth + gap, 0, gap * sizeof(uint16_t));
-		memcpy(_currentOutBuffer + offset + gap, _rowBuffer + leftOverscan, pictureWidth * sizeof(uint16_t));
-
-		_emu->AddDebugEvent<CpuType::Pce>(DebugEventType::ScanlineEnd);
+		uint32_t offset = row * PceConstants::MaxScreenWidth;
+		memcpy(_currentOutBuffer + offset, _rowBuffer, PceConstants::ClockPerScanline / _state.VceClockDivider * sizeof(uint16_t));
+		_currentClockDividers[row] = _state.VceClockDivider;
 	}
 
 	_xStart = xMax;
-}
-
-uint32_t PcePpu::GetCurrentScreenWidth()
-{
-	switch(_state.VceClockDivider) {
-		case 2: return 64 * 8;
-		case 3: return 44*8;
-
-		default:
-		case 4: return 32*8;
-	}
-}
-
-void PcePpu::ChangeResolution()
-{
-	uint32_t newWidth = GetCurrentScreenWidth();
-	int lastDrawnRow = (int)_state.Scanline - 14;
-
-	if(newWidth > _screenWidth && lastDrawnRow >= 0 && lastDrawnRow < PceConstants::ScreenHeight) {
-		int gap = (newWidth - _screenWidth) / 2;
-		//Move pixels in buffer to match new resolution, draw old lines in the center
-		for(int i = lastDrawnRow; i >= 0; i--) {
-			uint32_t src = i * _screenWidth;
-			uint32_t dst = i * newWidth;
-			memmove(_currentOutBuffer + dst + gap, _currentOutBuffer + src, _screenWidth * sizeof(uint16_t));
-			memset(_currentOutBuffer + dst, 0, gap * sizeof(uint16_t));
-			memset(_currentOutBuffer + dst + _screenWidth + gap, 0, gap * sizeof(uint16_t));
-		}
-		_screenWidth = newWidth;
-	}
 }
 
 void PcePpu::SendFrame()
@@ -652,7 +612,8 @@ void PcePpu::SendFrame()
 
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
-	RenderedFrame frame(_currentOutBuffer, _screenWidth, PceConstants::ScreenHeight, 1.0, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	RenderedFrame frame(_currentOutBuffer, 512, PceConstants::ScreenHeight * 2, 0.5, _state.FrameCount, _console->GetControlManager()->GetPortStates());
+	frame.Data = _currentClockDividers;
 	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 
 	_emu->ProcessEndOfFrame();

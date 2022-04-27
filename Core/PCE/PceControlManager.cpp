@@ -16,6 +16,7 @@ PceControlManagerState& PceControlManager::GetState()
 
 shared_ptr<BaseControlDevice> PceControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
+	//TODO
 	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
 	shared_ptr<BaseControlDevice> device(new PceController(_emu, port, cfg.Controller.Keys));
 

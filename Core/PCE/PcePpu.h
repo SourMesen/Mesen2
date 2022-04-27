@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Shared/Emulator.h"
 #include "PCE/PceTypes.h"
+#include "PCE/PceConstants.h"
 
 class PceConsole;
 
@@ -44,8 +45,11 @@ private:
 
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;
+	
+	uint8_t _rowVceClockDivider[2][PceConstants::ScreenHeight] = {};
+	uint8_t* _currentClockDividers = nullptr;
 
-	uint16_t _rowBuffer[1365 / 2] = {};
+	uint16_t _rowBuffer[PceConstants::MaxScreenWidth] = {};
 
 	uint32_t _screenWidth = 256;
 	uint16_t _xStart = 0;
@@ -97,8 +101,6 @@ private:
 
 	void LoadReadBuffer();
 	void DrawScanline();
-	uint32_t GetCurrentScreenWidth();
-	void ChangeResolution();
 	void SendFrame();
 
 	void UpdateFrameTimings();
@@ -123,7 +125,8 @@ public:
 	PcePpuState& GetState();
 	uint16_t* GetScreenBuffer();
 	uint16_t* GetPreviousScreenBuffer();
-	uint16_t GetScreenWidth();
+	uint8_t* GetRowClockDividers() { return _currentClockDividers; }
+	uint8_t* GetPreviousRowClockDividers() { return _currentClockDividers == _rowVceClockDivider[0] ? _rowVceClockDivider[1] : _rowVceClockDivider[0]; }
 
 	uint16_t GetHClock() { return _state.HClock; }
 	uint16_t GetScanline() { return _state.Scanline; }

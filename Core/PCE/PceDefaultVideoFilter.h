@@ -80,17 +80,17 @@ public:
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
 	{
+		uint8_t* rowVceClockDivider = (uint8_t*)_frameData;
 		uint32_t* out = GetOutputBuffer();
 		FrameInfo frameInfo = _frameInfo;
 		OverscanDimensions overscan = GetOverscan();
 
-		uint32_t width = _baseFrameInfo.Width;
-		uint32_t xOffset = overscan.Left;
-		uint32_t yOffset = overscan.Top * width;
+		uint32_t yOffset = overscan.Top * PceConstants::MaxScreenWidth;
 
 		uint8_t scanlineIntensity = (uint8_t)((1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
 		if(scanlineIntensity < 255) {
-			for(uint32_t i = 0; i < frameInfo.Height; i++) {
+			//TODO
+			/*for(uint32_t i = 0; i < frameInfo.Height; i++) {
 				if(i & 0x01) {
 					for(uint32_t j = 0; j < frameInfo.Width; j++) {
 						*out = ApplyScanlineEffect(GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset), scanlineIntensity);
@@ -102,11 +102,46 @@ public:
 						out++;
 					}
 				}
-			}
+			}*/
 		} else {
-			for(uint32_t i = 0; i < frameInfo.Height; i++) {
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					out[i * frameInfo.Width + j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
+			for(uint32_t i = 0; i < frameInfo.Height / 2; i++) {
+				uint32_t xOffset = PceConstants::GetLeftOverscan(rowVceClockDivider[i]);
+				uint32_t rowWidth = PceConstants::GetRowWidth(rowVceClockDivider[i]);
+				if(rowWidth == frameInfo.Width) {
+					//512px output
+					for(uint32_t j = 0; j < frameInfo.Width; j++) {
+						uint32_t color = GetPixel(ppuOutputBuffer, i * PceConstants::MaxScreenWidth + j + yOffset + xOffset);
+						out[i*2 * frameInfo.Width + j] = color;
+						out[(i*2 + 1) * frameInfo.Width + j] = color;
+					}
+				} else {
+					//Interpolate row data across the whole screen (or center, based on option?)
+					double ratio = (double)rowWidth / frameInfo.Width;
+					for(uint32_t j = 0; j < frameInfo.Width; j++) {
+						double pos = (j * ratio);
+						uint32_t color = GetPixel(ppuOutputBuffer, i * PceConstants::MaxScreenWidth + (int)pos + yOffset + xOffset);
+						out[i * 2 * frameInfo.Width + j] = color;
+						out[(i * 2 + 1) * frameInfo.Width + j] = color;
+					}
+
+					//TODO interpolation test
+					/*
+					for(uint32_t j = 0; j < frameInfo.Width; j++) {
+						double pos = (j * ratio);
+						double ratio = pos - (int)pos;
+
+						uint32_t aColor = GetPixel(ppuOutputBuffer, i * PceConstants::MaxScreenWidth + (int)pos + yOffset + xOffset);
+						uint32_t bColor = GetPixel(ppuOutputBuffer, i * PceConstants::MaxScreenWidth + (int)pos + 1 + yOffset + xOffset);
+
+						uint8_t r = std::min<uint8_t>(255, (((aColor >> 16) & 0xFF) * (1.0 - ratio)) + (((bColor >> 16) & 0xFF) * ratio));
+						uint8_t g = std::min<uint8_t>(255, (((aColor >> 8) & 0xFF) * (1.0 - ratio)) + (((bColor >> 8) & 0xFF) * ratio));
+						uint8_t b = std::min<uint8_t>(255, ((aColor & 0xFF) * (1.0 - ratio)) + ((bColor & 0xFF) * ratio));
+
+						uint32_t color = 0xFF000000 | (r << 16) | (g << 8) | b;
+						out[i * 2 * frameInfo.Width + j] = color;
+						out[(i * 2 + 1) * frameInfo.Width + j] = color;
+					}
+					*/
 				}
 			}
 		}

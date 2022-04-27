@@ -43,10 +43,7 @@ private:
 	Debugger *_debugger;
 
 	uint16_t* _ppuBuffer = nullptr;
-	uint16_t _rowWidth[PceConstants::ScanlineCount] = {};
-
-	uint16_t *_ppuBufferSnapshot = nullptr;
-	uint16_t _rowWidthSnapshot[PceConstants::ScanlineCount] = {};
+	uint8_t _rowClockDividers[PceConstants::ScreenHeight] = {};
 
 protected:
 	void ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y) override;

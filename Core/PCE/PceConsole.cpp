@@ -153,7 +153,7 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
 	frame.Height = PceConstants::ScreenHeight;
-	frame.Width = _ppu->GetScreenWidth();
+	frame.Width = PceConstants::MaxScreenWidth;
 	return frame;
 }
 
