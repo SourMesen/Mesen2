@@ -96,6 +96,7 @@ private:
 	bool _rowHasSprite0 = false;
 	uint16_t _loadSpriteStart = 0;
 
+	bool _loadingTiles = false;
 	uint16_t _loadTileStart = 0;
 	uint16_t _loadTileLastCycle = 0;
 	uint8_t _tileCount = 0;

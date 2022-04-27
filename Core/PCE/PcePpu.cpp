@@ -165,16 +165,22 @@ void PcePpu::ProcessEvent()
 
 					LoadSpriteTiles();
 
-					_inSpriteEval = true;
-					_evalStartCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
-					_evalLastCycle = _evalStartCycle;
+					if(_vMode == PcePpuModeV::Vdw || _state.RcrCounter == _state.VceScanlineCount - 1) {
+						//Turn on sprite evaluation on the line before rendering begins
+						_inSpriteEval = true;
+						_evalStartCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
+						_evalLastCycle = _evalStartCycle;
+						_spriteCount = 0;
 
-					_loadTileStart = _state.HClock + _hModeCounter - DotsToClocks(16);
-					_loadTileLastCycle = _loadTileStart;
-					_tileCount = 0;
-
-					_spriteCount = 0;
-					_screenOffsetX = 0;
+						if(_vMode == PcePpuModeV::Vdw) {
+							//Turn on BG tile fetching
+							_loadingTiles = true;
+							_loadTileStart = _state.HClock + _hModeCounter - DotsToClocks(16);
+							_loadTileLastCycle = _loadTileStart;
+							_tileCount = 0;
+							_screenOffsetX = 0;
+						}
+					}
 					//LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll X Latch");
 					break;
 
@@ -191,6 +197,7 @@ void PcePpu::ProcessEvent()
 					break;
 
 				case PcePpuModeH::Hde:
+					_loadingTiles = false;
 					_tileCount = 0;
 					_inSpriteEval = false;
 					_loadSpriteStart = _state.HClock;
@@ -209,16 +216,16 @@ void PcePpu::ProcessEvent()
 
 void PcePpu::ProcessSpriteEvaluation()
 {
-	if(_state.HClock < _evalStartCycle) {
+	if(_state.HClock < _evalStartCycle || _evalLastCycle == _state.HClock) {
 		return;
 	}
 
-	if(_inSpriteEval && _spriteCount <= 16 && _vMode == PcePpuModeV::Vdw) {
+	if(_inSpriteEval && _spriteCount <= 16) {
 		uint16_t start = (_evalLastCycle - _evalStartCycle) / _state.VceClockDivider;
 		uint16_t end = (_state.HClock - _evalStartCycle) / _state.VceClockDivider;
-		uint16_t nextRow = _state.RcrCounter + 1;
+		uint16_t nextRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
 
-		for(uint16_t cycle = start; cycle <= end; cycle+=4) {
+		for(uint16_t cycle = start; cycle < end; cycle+=4) {
 			//4 VDC clocks is taken for each sprite
 			uint8_t i = cycle >> 2;
 			if(i >= 64) {
@@ -301,7 +308,7 @@ void PcePpu::ProcessSpriteEvaluation()
 
 void PcePpu::LoadBackgroundTiles()
 {
-	if(_state.HClock < _loadTileStart || _hMode == PcePpuModeH::Hsw || _hMode == PcePpuModeH::Hde || _hMode == PcePpuModeH::Hdw_RcrIrq || _vMode != PcePpuModeV::Vdw) {
+	if(!_loadingTiles || _state.HClock < _loadTileStart) {
 		return;
 	}
 
@@ -565,7 +572,7 @@ void PcePpu::DrawScanline()
 	uint16_t* out = _rowBuffer;
 
 	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
-	bool inPicture = _vMode == PcePpuModeV::Vdw && (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled && _tileCount > 0;
+	bool inPicture = (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && _tileCount > 0;
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		for(uint16_t x = _xStart; x < xMax; x++) {
