@@ -121,7 +121,6 @@ void PcePpu::ProcessEvent()
 
 		if(_hModeCounter == 0) {
 			DrawScanline();
-			ProcessSpriteEvaluation();
 
 			_hMode = (PcePpuModeH)(((int)_hMode + 1) % 8);
 			switch(_hMode) {
@@ -224,6 +223,10 @@ void PcePpu::ProcessSpriteEvaluation()
 		uint16_t start = (_evalLastCycle - _evalStartCycle) / _state.VceClockDivider;
 		uint16_t end = (_state.HClock - _evalStartCycle) / _state.VceClockDivider;
 		uint16_t nextRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
+
+		if(end - start < 4) {
+			return;
+		}
 
 		for(uint16_t cycle = start; cycle < end; cycle+=4) {
 			//4 VDC clocks is taken for each sprite
@@ -466,10 +469,10 @@ void PcePpu::IncScrollY()
 
 void PcePpu::ProcessEndOfScanline()
 {
-	ProcessSpriteEvaluation();
-	_inSpriteEval = false;
-
 	DrawScanline();
+
+	_inSpriteEval = false;
+	_loadingTiles = false;
 
 	_state.HClock = 0;
 	_state.Scanline++;
@@ -566,6 +569,7 @@ void PcePpu::DrawScanline()
 		return;
 	}
 
+	ProcessSpriteEvaluation();
 	LoadBackgroundTiles();
 
 	uint16_t rowWidth = 1365 / _state.VceClockDivider;
