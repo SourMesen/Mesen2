@@ -33,6 +33,24 @@ enum class PcePpuModeV
 	Vsw,
 };
 
+struct PceTileInfo
+{
+	uint16_t TileData[2];
+	uint16_t TileAddr;
+	uint8_t Palette;
+};
+
+struct PceSpriteInfo
+{
+	uint16_t TileData[4];
+	int16_t X;
+	uint16_t TileAddress;
+	uint8_t Index;
+	uint8_t Palette;
+	bool HorizontalMirroring;
+	bool ForegroundPriority;
+};
+
 class PcePpu
 {
 private:
@@ -66,17 +84,6 @@ private:
 	bool _needVertBlankIrq = false;
 	bool _verticalBlankDone = false;
 
-	struct PceSpriteInfo
-	{
-		uint16_t TileData[4];
-		int16_t X;
-		uint16_t TileAddress;
-		uint8_t Index;
-		uint8_t Palette;
-		bool HorizontalMirroring;
-		bool ForegroundPriority;
-	};
-
 	bool _inSpriteEval = false;
 	uint8_t _spriteCount = 0;
 	PceSpriteInfo _sprites[16] = {};
@@ -88,6 +95,11 @@ private:
 	uint8_t _drawSpriteCount = 0;
 	bool _rowHasSprite0 = false;
 	uint16_t _loadSpriteStart = 0;
+
+	uint16_t _loadTileStart = 0;
+	uint16_t _loadTileLastCycle = 0;
+	uint8_t _tileCount = 0;
+	PceTileInfo _tiles[100] = {};
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -115,7 +127,11 @@ private:
 	__declspec(noinline) void ProcessSatbTransfer();
 	__declspec(noinline) void ProcessEvent();
 
+	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift);
+	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);
+
 	void ProcessSpriteEvaluation();
+	void LoadBackgroundTiles();
 	void LoadSpriteTiles();
 
 public:

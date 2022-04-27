@@ -167,7 +167,11 @@ void PcePpu::ProcessEvent()
 
 					_inSpriteEval = true;
 					_evalStartCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
-					_evalLastCycle = _state.HClock + _hModeCounter - DotsToClocks(8);
+					_evalLastCycle = _evalStartCycle;
+
+					_loadTileStart = _state.HClock + _hModeCounter - DotsToClocks(16);
+					_loadTileLastCycle = _loadTileStart;
+					_tileCount = 0;
 
 					_spriteCount = 0;
 					_screenOffsetX = 0;
@@ -187,6 +191,7 @@ void PcePpu::ProcessEvent()
 					break;
 
 				case PcePpuModeH::Hde:
+					_tileCount = 0;
 					_inSpriteEval = false;
 					_loadSpriteStart = _state.HClock;
 					_hModeCounter = DotsToClocks((_state.HorizDisplayEnd + 1) * 8);
@@ -292,6 +297,55 @@ void PcePpu::ProcessSpriteEvaluation()
 		}
 	}
 	_evalLastCycle = _state.HClock;
+}
+
+void PcePpu::LoadBackgroundTiles()
+{
+	if(_state.HClock < _loadTileStart || _hMode == PcePpuModeH::Hsw || _hMode == PcePpuModeH::Hde || _hMode == PcePpuModeH::Hdw_RcrIrq || _vMode != PcePpuModeV::Vdw) {
+		return;
+	}
+
+	uint16_t start = (_loadTileLastCycle - _loadTileStart) / _state.VceClockDivider;
+	uint16_t end = (_state.HClock - _loadTileStart) / _state.VceClockDivider;
+
+	uint32_t columnMask = _state.ColumnCount - 1;
+	uint32_t scrollOffset = _state.BgScrollXLatch >> 3;
+	uint16_t row = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
+
+	for(uint16_t i = start; i < end; i++) {
+		switch(i & 0x07) {
+			case 0: break; //CPU
+
+			case 1:
+			{
+				//BAT
+				uint16_t tileColumn = (scrollOffset + _tileCount) & columnMask;
+				uint16_t batEntry = _vram[(row >> 3) * _state.ColumnCount + tileColumn];
+				_tiles[_tileCount].Palette = batEntry >> 12;
+				_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16) & 0x7FFF;
+				break;
+			}
+
+			case 2: break; //CPU
+			case 3: break; //---
+			case 4: break; //CPU
+			
+			case 5: 
+				//Tile data
+				_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07)];
+				break;
+
+			case 6: break; //CPU
+			
+			case 7:
+				//Tile data
+				_tiles[_tileCount].TileData[1] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + 8];
+				_tileCount++;
+				break;
+		}
+	}
+
+	_loadTileLastCycle = _state.HClock;
 }
 
 void PcePpu::LoadSpriteTiles()
@@ -435,7 +489,7 @@ void PcePpu::ProcessEndOfScanline()
 	}
 
 	//VCE sets HBLANK to low every 1365 clocks, interrupting what 
-	//the VDC was doing and starting a 8-pixel HSW phase
+	//the VDC was doing and starting a 16-pixel HSW phase
 	if(_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) {
 		//Start loading sprites in 16 dots
 		_loadSpriteStart = DotsToClocks(16);
@@ -478,29 +532,24 @@ void PcePpu::ProcessEndOfVisibleFrame()
 	_needVertBlankIrq = false;
 }
 
-template<uint8_t bpp>
-uint8_t GetTilePixelColor(const uint16_t* chrData, const uint8_t shift)
+uint8_t PcePpu::GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift)
 {
-	uint8_t color;
-	if(bpp == 2) {
-		//TODO unused
-		color = (chrData[0] >> shift) & 0x01;
-		color |= (chrData[0] >> (7 + shift)) & 0x02;
-	} else if(bpp == 4) {
-		color = (chrData[0] >> shift) & 0x01;
-		color |= (chrData[0] >> (7 + shift)) & 0x02;
-		color |= ((chrData[8] >> shift) & 0x01) << 2;
-		color |= ((chrData[8] >> (7 + shift)) & 0x02) << 2;
-	} else if(bpp == 5) {
-		//TODO hack, fix
-		color = (chrData[0] >> shift) & 0x01;
-		color |= ((chrData[1] >> shift) & 0x01) << 1;
-		color |= ((chrData[2] >> shift) & 0x01) << 2;
-		color |= ((chrData[3] >> shift) & 0x01) << 3;
-	} else {
-		throw std::runtime_error("unsupported bpp");
-	}
-	return color;
+	return (
+		((chrData[0] >> shift) & 0x01) |
+		((chrData[0] >> (7 + shift)) & 0x02) |
+		(((chrData[1] >> shift) & 0x01) << 2) |
+		(((chrData[1] >> (7 + shift)) & 0x02) << 2)
+	);
+}
+
+uint8_t PcePpu::GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift)
+{
+	return (
+		((chrData[0] >> shift) & 0x01) |
+		(((chrData[1] >> shift) & 0x01) << 1) |
+		(((chrData[2] >> shift) & 0x01) << 2) |
+		(((chrData[3] >> shift) & 0x01) << 3)
+	);
 }
 
 void PcePpu::DrawScanline()
@@ -510,28 +559,24 @@ void PcePpu::DrawScanline()
 		return;
 	}
 
+	LoadBackgroundTiles();
+
 	uint16_t rowWidth = 1365 / _state.VceClockDivider;
 	uint16_t* out = _rowBuffer;
 
 	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
-	uint16_t screenY = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
-	bool inPicture = _vMode == PcePpuModeV::Vdw && (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled;
+	bool inPicture = _vMode == PcePpuModeV::Vdw && (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && !_state.BurstModeEnabled && _tileCount > 0;
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		for(uint16_t x = _xStart; x < xMax; x++) {
 			uint8_t bgColor = 0;
 			uint16_t outColor = _paletteRam[0];
 			if(_state.BackgroundEnabled) {
-				uint16_t screenX = (_state.BgScrollXLatch + _screenOffsetX) & ((_state.ColumnCount * 8) - 1);
-
-				uint16_t batEntry = _vram[(screenY >> 3) * _state.ColumnCount + (screenX >> 3)];
-				uint8_t palette = batEntry >> 12;
-				uint16_t tileIndex = (batEntry & 0xFFF);
-
-				uint16_t tileAddr = tileIndex * 16;
-				bgColor = GetTilePixelColor<4>(_vram + ((tileAddr + (screenY & 0x07)) & 0x7FFF), 7 - (screenX & 0x07));
+				uint16_t screenX = (_state.BgScrollXLatch & 0x07) + _screenOffsetX;
+				uint16_t column = screenX >> 3;
+				bgColor = GetTilePixelColor(_tiles[column].TileData, 7 - (screenX & 0x07));
 				if(bgColor != 0) {
-					outColor = _paletteRam[palette * 16 + bgColor];
+					outColor = _paletteRam[_tiles[column].Palette * 16 + bgColor];
 				}
 			}
 
@@ -545,7 +590,7 @@ void PcePpu::DrawScanline()
 							xOffset = 15 - xOffset;
 						}
 
-						sprColor = GetTilePixelColor<5>(_drawSprites[i].TileData, xOffset);
+						sprColor = GetSpritePixelColor(_drawSprites[i].TileData, xOffset);
 
 						if(sprColor != 0) {
 							if(checkSprite0Hit) {
