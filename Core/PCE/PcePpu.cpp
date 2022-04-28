@@ -87,10 +87,13 @@ void PcePpu::Exec()
 		DrawScanline();
 	}
 
-	if(_hModeCounter <= 3) {
+	if(_hModeCounter <= 3 || _nextEventCounter >= 0 && _nextEventCounter <= 2) {
 		ProcessEvent();
 	} else {
 		_hModeCounter -= 3;
+		if(_nextEventCounter > 0) {
+			_nextEventCounter -= 3;
+		}
 		_state.HClock += 3;
 	}
 
@@ -121,7 +124,34 @@ void PcePpu::ProcessEvent()
 
 		if(_hModeCounter == 0) {
 			DrawScanline();
-			SetHorizontalMode((PcePpuModeH)(((int)_hMode + 1) % 8));
+			SetHorizontalMode((PcePpuModeH)(((int)_hMode + 1) % 5));
+		}
+
+		if(_nextEventCounter == 0) {
+			_nextEventCounter = -1;
+			DrawScanline();
+
+			if(_latchScrollYCycle >= 0 && _latchScrollYCycle <= (int16_t)_state.HClock) {
+				IncScrollY();
+				_nextEventCounter = DotsToClocks(2);
+				_latchScrollYCycle = -1;
+			}
+				
+			if(_latchScrollXCycle >= 0 && _latchScrollXCycle <= (int16_t)_state.HClock) {
+				_state.BgScrollXLatch = _state.BgScrollX;
+				if(!_state.BurstModeEnabled) {
+					_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+					_state.SpritesEnabled = _state.NextSpritesEnabled;
+				}
+				_latchScrollXCycle = -1;
+			}
+
+			if(_verticalBlankIrqCycle >= 0 && _verticalBlankIrqCycle <= (int16_t)_state.HClock) {
+				TriggerHdsIrqs();
+				_verticalBlankIrqCycle = -1;
+			}
+		} else if(_nextEventCounter > 0) {
+			_nextEventCounter--;
 		}
 	}
 }
@@ -131,44 +161,8 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 	_hMode = hMode;
 	switch(_hMode) {
 		case PcePpuModeH::Hds:
-			if(_state.HorizDisplayStart > 2) {
-				_hModeCounter = DotsToClocks((_state.HorizDisplayStart - 2) * 8);
-			} else {
-				if(_state.HorizDisplayStart == 2) {
-					TriggerHdsIrqs();
-				}
-				_hMode = PcePpuModeH::Hds_VerticalBlankIrq;
-				_hModeCounter = DotsToClocks(2);
-			}
+			_hModeCounter = DotsToClocks((_state.HorizDisplayStart + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDS");
-			break;
-
-		case PcePpuModeH::Hds_VerticalBlankIrq:
-			TriggerHdsIrqs();
-			_hModeCounter = DotsToClocks(2);
-			break;
-
-		case PcePpuModeH::Hds_ScrollYLatch:
-			if(_state.Scanline < _state.VerticalBlankScanline) {
-				IncScrollY();
-			}
-			_hModeCounter = DotsToClocks(2);
-			//LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll Y Latch");
-			break;
-
-		case PcePpuModeH::Hds_ScrollXLatch:
-			_state.BgScrollXLatch = _state.BgScrollX;
-			if(!_state.BurstModeEnabled) {
-				_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-				_state.SpritesEnabled = _state.NextSpritesEnabled;
-			}
-			if(_state.HorizDisplayStart > 2) {
-				_hModeCounter = DotsToClocks(20);
-			} else {
-				_hModeCounter = DotsToClocks((_state.HorizDisplayStart + 1) * 8 - 4);
-			}
-
-			//LogDebug("H: " + std::to_string(_state.HClock) + " - Scroll X Latch");
 			break;
 
 		case PcePpuModeH::Hdw:
@@ -204,28 +198,47 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 
 void PcePpu::ProcessHorizontalSyncStart()
 {
+	_latchScrollYCycle = -1;
+	_latchScrollXCycle = -1;
+	_verticalBlankIrqCycle = -1;
+	_nextEventCounter = -1;
+	_tileCount = 0;
+	_screenOffsetX = 0;
+
+	uint16_t displayStart = _state.HClock + _hModeCounter + DotsToClocks((_state.HorizDisplayStart + 1) * 8);
+
+	if(displayStart - DotsToClocks(24) >= PceConstants::ClockPerScanline) {
+		return;
+	}
+
+	if(displayStart - DotsToClocks(24) < _state.HClock) {
+		return;
+	}
+
 	//Calculate when sprite evaluation, sprite fetching and bg fetching will occur on the scanline
 	if(_vMode == PcePpuModeV::Vdw || _state.RcrCounter == _state.VceScanlineCount - 1) {
-		uint16_t displayStart = _state.HClock + _hModeCounter + DotsToClocks((_state.HorizDisplayStart + 1) * 8);
 		uint16_t displayWidth = DotsToClocks((_state.HorizDisplayWidth + 1) * 8);
 
 		//Sprite evaluation runs on all visible scanlines + the scanline before the picture starts
-		uint16_t spriteEvalStart = std::min<uint16_t>(PceConstants::ClockPerScanline - 1, displayStart - DotsToClocks(8));
+		uint16_t spriteEvalStart = displayStart - DotsToClocks(8);
 		_evalStartCycle = spriteEvalStart;
 		_evalLastCycle = 0;
 		_evalEndCycle = std::min<uint16_t>(PceConstants::ClockPerScanline, spriteEvalStart + displayWidth + DotsToClocks(8));
 
 		if(_vMode == PcePpuModeV::Vdw) {
+			_latchScrollYCycle = displayStart - DotsToClocks(24);
+			_latchScrollXCycle = displayStart - DotsToClocks(22);
+
 			//Turn on BG tile fetching
-			uint16_t bgFetchStart = std::min<uint16_t>(PceConstants::ClockPerScanline - 1, displayStart - DotsToClocks(16));
+			uint16_t bgFetchStart = displayStart - DotsToClocks(16);
 			_loadBgStart = bgFetchStart;
 			_loadBgLastCycle = 0;
 			_loadBgEnd = std::min<uint16_t>(PceConstants::ClockPerScanline, bgFetchStart + displayWidth + DotsToClocks(16));
 		}
 	}
 
-	_tileCount = 0;
-	_screenOffsetX = 0;
+	_verticalBlankIrqCycle = displayStart - DotsToClocks(24);
+	_nextEventCounter = _verticalBlankIrqCycle - _state.HClock;
 }
 
 void PcePpu::ProcessSpriteEvaluation()
@@ -384,6 +397,10 @@ void PcePpu::LoadBackgroundTiles()
 				_allowVramAccess = false;
 				break;
 		}
+	}
+
+	if(_allowVramAccess && _pendingMemoryRead) {
+		LoadReadBuffer();
 	}
 
 	_loadBgLastCycle = end;
@@ -720,10 +737,12 @@ void PcePpu::UpdateFrameTimings()
 
 void PcePpu::LoadReadBuffer()
 {
-	//TODO timing - this needs to be done in-between rendering reads (based on mode, etc.)
+	WaitForVramAccess();
+
 	_state.ReadBuffer = _vram[_state.MemAddrRead & 0x7FFF];
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
+	_pendingMemoryRead = false;
 }
 
 uint8_t PcePpu::ReadVdc(uint16_t addr)
@@ -757,17 +776,34 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 
 		//Reads to 2/3 will always return the read buffer, but the
 		//read address will only increment when register 2 is selected
-		case 2: return (uint8_t)_state.ReadBuffer;
+		case 2: 
+			if(_pendingMemoryRead) {
+				LoadReadBuffer();
+			}
+			return (uint8_t)_state.ReadBuffer;
 
 		case 3:
+			if(_pendingMemoryRead) {
+				LoadReadBuffer();
+			}
+
 			uint8_t value = _state.ReadBuffer >> 8;
 			if(_state.CurrentReg == 0x02) {
 				_state.MemAddrRead += _state.VramAddrIncrement;
-				WaitForVramAccess();
-				LoadReadBuffer();
+				_pendingMemoryRead = true;
 			}
 			return value;
 	}
+}
+
+bool PcePpu::IsVramAccessBlocked()
+{
+	bool inBgFetch = _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
+	return (
+		_state.SatbTransferRunning || 
+		(inBgFetch && !_allowVramAccess) || 
+		(_state.SpritesEnabled && !inBgFetch && _vMode == PcePpuModeV::Vdw)
+	);
 }
 
 void PcePpu::WaitForVramAccess()
@@ -776,12 +812,7 @@ void PcePpu::WaitForVramAccess()
 		return;
 	}
 
-	auto canAccessVram = [&] {
-		bool inBgFetch = _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
-		return _state.SatbTransferRunning || inBgFetch && !_allowVramAccess || !inBgFetch && _vMode == PcePpuModeV::Vdw;
-	};
-
-	while(canAccessVram()) {
+	while(IsVramAccessBlocked()) {
 		_console->GetMemoryManager()->Exec();
 		DrawScanline();
 	}
@@ -806,8 +837,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 				case 0x01:
 					UpdateReg(_state.MemAddrRead, value, msb);
 					if(msb) {
-						WaitForVramAccess();
-						LoadReadBuffer();
+						_pendingMemoryRead = true;
 					}
 					break;
 

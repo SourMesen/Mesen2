@@ -16,9 +16,6 @@ enum class PpuFetchMode
 enum class PcePpuModeH
 {
 	Hds,
-	Hds_VerticalBlankIrq,
-	Hds_ScrollYLatch,
-	Hds_ScrollXLatch,
 	Hdw,
 	Hdw_RcrIrq,
 	Hde,
@@ -103,6 +100,12 @@ private:
 	PceTileInfo _tiles[100] = {};
 	bool _allowVramAccess = false;
 
+	bool _pendingMemoryRead = false;
+	int16_t _latchScrollYCycle = -1;
+	int16_t _latchScrollXCycle = -1;
+	int16_t _verticalBlankIrqCycle = -1;
+	int16_t _nextEventCounter = -1;
+
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
 	{
@@ -140,6 +143,7 @@ private:
 	void LoadSpriteTiles();
 	
 	void WaitForVramAccess();
+	bool IsVramAccessBlocked();
 
 public:
 	PcePpu(Emulator* emu, PceConsole* console);
