@@ -87,8 +87,8 @@ void PcePpu::Exec()
 		DrawScanline();
 	}
 
-	if(_hModeCounter <= 3 || _nextEventCounter >= 0 && _nextEventCounter <= 2) {
-		ProcessEvent();
+	if(_hModeCounter <= 3 || _nextEventCounter <= 3) {
+		ProcessVdcEvents();
 	} else {
 		_hModeCounter -= 3;
 		if(_nextEventCounter > 0) {
@@ -116,43 +116,49 @@ void PcePpu::TriggerHdsIrqs()
 	_hasSpriteOverflow = false;
 }
 
-void PcePpu::ProcessEvent()
+void PcePpu::ProcessVdcEvents()
 {
 	for(int i = 0; i < 3; i++) {
 		_state.HClock++;
-		_hModeCounter--;
 
-		if(_hModeCounter == 0) {
+		if(--_hModeCounter == 0) {
 			DrawScanline();
 			SetHorizontalMode((PcePpuModeH)(((int)_hMode + 1) % 5));
 		}
 
-		if(_nextEventCounter == 0) {
-			_nextEventCounter = -1;
-			DrawScanline();
+		if(_nextEventCounter && --_nextEventCounter == 0) {
+			ProcessEvent();
+		}
+	}
+}
 
-			if(_latchScrollYCycle >= 0 && _latchScrollYCycle <= (int16_t)_state.HClock) {
+void PcePpu::ProcessEvent()
+{
+	DrawScanline();
+
+	switch(_nextEvent) {
+		case PceVdcEvent::HdsIrqTrigger:
+			TriggerHdsIrqs();
+
+			if(_vMode == PcePpuModeV::Vdw) {
 				IncScrollY();
 				_nextEventCounter = DotsToClocks(2);
-				_latchScrollYCycle = -1;
+				_nextEvent = PceVdcEvent::LatchScrollX;
+			} else {
+				_nextEvent = PceVdcEvent::None;
+				_nextEventCounter = UINT16_MAX;
 			}
-				
-			if(_latchScrollXCycle >= 0 && _latchScrollXCycle <= (int16_t)_state.HClock) {
-				_state.BgScrollXLatch = _state.BgScrollX;
-				if(!_state.BurstModeEnabled) {
-					_state.BackgroundEnabled = _state.NextBackgroundEnabled;
-					_state.SpritesEnabled = _state.NextSpritesEnabled;
-				}
-				_latchScrollXCycle = -1;
-			}
+			break;
 
-			if(_verticalBlankIrqCycle >= 0 && _verticalBlankIrqCycle <= (int16_t)_state.HClock) {
-				TriggerHdsIrqs();
-				_verticalBlankIrqCycle = -1;
+		case PceVdcEvent::LatchScrollX:
+			_state.BgScrollXLatch = _state.BgScrollX;
+			if(!_state.BurstModeEnabled) {
+				_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+				_state.SpritesEnabled = _state.NextSpritesEnabled;
 			}
-		} else if(_nextEventCounter > 0) {
-			_nextEventCounter--;
-		}
+			_nextEvent = PceVdcEvent::None;
+			_nextEventCounter = UINT16_MAX;
+			break;
 	}
 }
 
@@ -198,20 +204,14 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 
 void PcePpu::ProcessHorizontalSyncStart()
 {
-	_latchScrollYCycle = -1;
-	_latchScrollXCycle = -1;
-	_verticalBlankIrqCycle = -1;
-	_nextEventCounter = -1;
+	_nextEvent = PceVdcEvent::None;
+	_nextEventCounter = UINT16_MAX;
 	_tileCount = 0;
 	_screenOffsetX = 0;
 
 	uint16_t displayStart = _state.HClock + _hModeCounter + DotsToClocks((_state.HorizDisplayStart + 1) * 8);
 
 	if(displayStart - DotsToClocks(24) >= PceConstants::ClockPerScanline) {
-		return;
-	}
-
-	if(displayStart - DotsToClocks(24) < _state.HClock) {
 		return;
 	}
 
@@ -226,9 +226,6 @@ void PcePpu::ProcessHorizontalSyncStart()
 		_evalEndCycle = std::min<uint16_t>(PceConstants::ClockPerScanline, spriteEvalStart + displayWidth + DotsToClocks(8));
 
 		if(_vMode == PcePpuModeV::Vdw) {
-			_latchScrollYCycle = displayStart - DotsToClocks(24);
-			_latchScrollXCycle = displayStart - DotsToClocks(22);
-
 			//Turn on BG tile fetching
 			uint16_t bgFetchStart = displayStart - DotsToClocks(16);
 			_loadBgStart = bgFetchStart;
@@ -237,8 +234,13 @@ void PcePpu::ProcessHorizontalSyncStart()
 		}
 	}
 
-	_verticalBlankIrqCycle = displayStart - DotsToClocks(24);
-	_nextEventCounter = _verticalBlankIrqCycle - _state.HClock;
+	_nextEvent = PceVdcEvent::HdsIrqTrigger;
+
+	if(displayStart - DotsToClocks(24) <= _state.HClock) {
+		ProcessEvent();
+	} else {
+		_nextEventCounter = displayStart - DotsToClocks(24) - _state.HClock;
+	}
 }
 
 void PcePpu::ProcessSpriteEvaluation()

@@ -30,6 +30,15 @@ enum class PcePpuModeV
 	Vsw,
 };
 
+enum class PceVdcEvent
+{
+	None,
+	LatchScrollY,
+	LatchScrollX,
+	HdsIrqTrigger,
+	IncRcrCounter,
+};
+
 struct PceTileInfo
 {
 	uint16_t TileData[2];
@@ -101,10 +110,9 @@ private:
 	bool _allowVramAccess = false;
 
 	bool _pendingMemoryRead = false;
-	int16_t _latchScrollYCycle = -1;
-	int16_t _latchScrollXCycle = -1;
-	int16_t _verticalBlankIrqCycle = -1;
-	int16_t _nextEventCounter = -1;
+
+	PceVdcEvent _nextEvent = PceVdcEvent::None;
+	uint16_t _nextEventCounter = 0;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -130,8 +138,10 @@ private:
 	__declspec(noinline) void ProcessEndOfScanline();
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
-	__declspec(noinline) void ProcessEvent();
 	__declspec(noinline) void SetHorizontalMode(PcePpuModeH hMode);
+
+	__declspec(noinline) void ProcessVdcEvents();
+	__declspec(noinline) void ProcessEvent();
 
 	void ProcessHorizontalSyncStart();
 
