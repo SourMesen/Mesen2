@@ -84,11 +84,11 @@ private:
 	bool _needVertBlankIrq = false;
 	bool _verticalBlankDone = false;
 
-	bool _inSpriteEval = false;
 	uint8_t _spriteCount = 0;
 	PceSpriteInfo _sprites[16] = {};
 	uint16_t _evalStartCycle = 0;
-	uint16_t _evalLastCycle = 0;
+	uint16_t _evalEndCycle = 0;
+	int16_t _evalLastCycle = 0;
 	bool _hasSpriteOverflow = false;
 
 	PceSpriteInfo _drawSprites[16] = {};
@@ -96,11 +96,12 @@ private:
 	bool _rowHasSprite0 = false;
 	uint16_t _loadSpriteStart = 0;
 
-	bool _loadingTiles = false;
-	uint16_t _loadTileStart = 0;
-	uint16_t _loadTileLastCycle = 0;
+	uint16_t _loadBgStart = 0;
+	uint16_t _loadBgEnd = 0;
+	int16_t _loadBgLastCycle = 0;
 	uint8_t _tileCount = 0;
 	PceTileInfo _tiles[100] = {};
+	bool _allowVramAccess = false;
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)
@@ -127,6 +128,9 @@ private:
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
 	__declspec(noinline) void ProcessEvent();
+	__declspec(noinline) void SetHorizontalMode(PcePpuModeH hMode);
+
+	void ProcessHorizontalSyncStart();
 
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift);
 	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);
@@ -134,6 +138,8 @@ private:
 	void ProcessSpriteEvaluation();
 	void LoadBackgroundTiles();
 	void LoadSpriteTiles();
+	
+	void WaitForVramAccess();
 
 public:
 	PcePpu(Emulator* emu, PceConsole* console);
