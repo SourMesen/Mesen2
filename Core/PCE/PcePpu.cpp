@@ -264,11 +264,10 @@ void PcePpu::ProcessSpriteEvaluation()
 
 	//LogDebug("SPR EVAL: " + std::to_string(_evalLastCycle) + " -> " + std::to_string(end - 1));
 
-	uint16_t nextRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
-
 	if(_evalLastCycle == 0) {
 		LoadSpriteTiles();
 		_spriteCount = 0;
+		_spriteRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
 	}
 
 	for(uint16_t i = _evalLastCycle; i < end; i++) {
@@ -278,7 +277,7 @@ void PcePpu::ProcessSpriteEvaluation()
 		}
 
 		int16_t y = (int16_t)(_spriteRam[i * 4] & 0x3FF) - 64;
-		if(nextRow < y) {
+		if(_spriteRow < y) {
 			//Sprite not visible on this line
 			continue;
 		}
@@ -292,12 +291,12 @@ void PcePpu::ProcessSpriteEvaluation()
 			case 2: case 3: height = 64; break;
 		}
 
-		if(nextRow >= y + height) {
+		if(_spriteRow >= y + height) {
 			//Sprite not visible on this line
 			continue;
 		}
 
-		uint16_t spriteRow = nextRow - y;
+		uint16_t spriteRow = _spriteRow - y;
 
 		bool verticalMirror = (flags & 0x8000) != 0;
 		bool horizontalMirror = (flags & 0x800) != 0;

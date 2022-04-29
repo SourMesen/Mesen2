@@ -82,6 +82,7 @@ private:
 	bool _verticalBlankDone = false;
 
 	uint8_t _spriteCount = 0;
+	uint16_t _spriteRow = 0;
 	PceSpriteInfo _sprites[16] = {};
 	uint16_t _evalStartCycle = 0;
 	uint16_t _evalEndCycle = 0;
