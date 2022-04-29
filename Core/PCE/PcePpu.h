@@ -6,18 +6,10 @@
 
 class PceConsole;
 
-enum class PpuFetchMode
-{
-	None,
-	BgFetch,
-	SpriteFetch
-};
-
 enum class PcePpuModeH
 {
 	Hds,
 	Hdw,
-	Hdw_RcrIrq,
 	Hde,
 	Hsw,
 };
@@ -75,7 +67,6 @@ private:
 
 	uint16_t _rowBuffer[PceConstants::MaxScreenWidth] = {};
 
-	uint32_t _screenWidth = 256;
 	uint16_t _xStart = 0;
 
 	PcePpuModeH _hMode = PcePpuModeH::Hds;

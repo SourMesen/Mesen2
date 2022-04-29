@@ -40,7 +40,6 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.HorizDisplayWidth = 0x1F;
 	_state.VertDisplayWidth = 239;
 	_state.VceScanlineCount = 262;
-	_screenWidth = 256;
 	UpdateFrameTimings();
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
@@ -123,7 +122,7 @@ void PcePpu::ProcessVdcEvents()
 
 		if(--_hModeCounter == 0) {
 			DrawScanline();
-			SetHorizontalMode((PcePpuModeH)(((int)_hMode + 1) % 5));
+			SetHorizontalMode((PcePpuModeH)(((int)_hMode + 1) % 4));
 		}
 
 		if(_nextEventCounter && --_nextEventCounter == 0) {
@@ -137,25 +136,31 @@ void PcePpu::ProcessEvent()
 	DrawScanline();
 
 	switch(_nextEvent) {
-		case PceVdcEvent::HdsIrqTrigger:
-			TriggerHdsIrqs();
+		case PceVdcEvent::LatchScrollY:
+			IncScrollY();
+			_nextEvent = PceVdcEvent::LatchScrollX;
+			_nextEventCounter = DotsToClocks(1);
 
-			if(_vMode == PcePpuModeV::Vdw) {
-				IncScrollY();
-				_nextEventCounter = DotsToClocks(2);
-				_nextEvent = PceVdcEvent::LatchScrollX;
-			} else {
-				_nextEvent = PceVdcEvent::None;
-				_nextEventCounter = UINT16_MAX;
-			}
 			break;
 
 		case PceVdcEvent::LatchScrollX:
 			_state.BgScrollXLatch = _state.BgScrollX;
+			_nextEvent = PceVdcEvent::HdsIrqTrigger;
+			_nextEventCounter = DotsToClocks(7);
 			if(!_state.BurstModeEnabled) {
 				_state.BackgroundEnabled = _state.NextBackgroundEnabled;
 				_state.SpritesEnabled = _state.NextSpritesEnabled;
 			}
+			break;
+
+		case PceVdcEvent::HdsIrqTrigger:
+			TriggerHdsIrqs();
+			_nextEvent = PceVdcEvent::None;
+			_nextEventCounter = UINT16_MAX;
+			break;
+
+		case PceVdcEvent::IncRcrCounter:
+			IncrementRcrCounter();
 			_nextEvent = PceVdcEvent::None;
 			_nextEventCounter = UINT16_MAX;
 			break;
@@ -173,14 +178,10 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 
 		case PcePpuModeH::Hdw:
 			_needRcrIncrement = true;
-			_hModeCounter = DotsToClocks((_state.HorizDisplayWidth - 1) * 8 + 2);
+			_nextEvent = PceVdcEvent::IncRcrCounter;
+			_nextEventCounter = DotsToClocks((_state.HorizDisplayWidth - 1) * 8) + 2;
+			_hModeCounter = DotsToClocks((_state.HorizDisplayWidth + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDW start");
-			break;
-
-		case PcePpuModeH::Hdw_RcrIrq:
-			IncrementRcrCounter();
-			_hModeCounter = DotsToClocks(2 * 8 - 2);
-			//LogDebug("H: " + std::to_string(_state.HClock) + " - RCR inc");
 			break;
 
 		case PcePpuModeH::Hde:
@@ -234,18 +235,25 @@ void PcePpu::ProcessHorizontalSyncStart()
 		}
 	}
 
-	_nextEvent = PceVdcEvent::HdsIrqTrigger;
+	uint16_t eventClocks;
+	if(_vMode == PcePpuModeV::Vdw) {
+		_nextEvent = PceVdcEvent::LatchScrollY;
+		eventClocks = DotsToClocks(32);
+	} else {
+		_nextEvent = PceVdcEvent::HdsIrqTrigger;
+		eventClocks = DotsToClocks(24);
+	}
 
-	if(displayStart - DotsToClocks(24) <= _state.HClock) {
+	if(displayStart - eventClocks <= _state.HClock) {
 		ProcessEvent();
 	} else {
-		_nextEventCounter = displayStart - DotsToClocks(24) - _state.HClock;
+		_nextEventCounter = displayStart - eventClocks - _state.HClock;
 	}
 }
 
 void PcePpu::ProcessSpriteEvaluation()
 {
-	if(_state.HClock < _evalStartCycle || _hasSpriteOverflow || _evalLastCycle >= 64) {
+	if(_state.HClock < _evalStartCycle || _hasSpriteOverflow || _evalLastCycle >= 64 || _state.BurstModeEnabled) {
 		return;
 	}
 
@@ -345,7 +353,7 @@ void PcePpu::ProcessSpriteEvaluation()
 
 void PcePpu::LoadBackgroundTiles()
 {
-	if(_state.HClock < _loadBgStart) {
+	if(_state.HClock < _loadBgStart || _state.BurstModeEnabled) {
 		return;
 	}
 
@@ -412,6 +420,10 @@ void PcePpu::LoadSpriteTiles()
 {
 	_drawSpriteCount = 0;
 	_rowHasSprite0 = false;
+
+	if(_state.BurstModeEnabled) {
+		return;
+	}
 
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
 	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
@@ -532,20 +544,17 @@ void PcePpu::ProcessEndOfScanline()
 		_state.Scanline = 0;
 		_verticalBlankDone = false;
 		_state.BurstModeEnabled = !_state.NextBackgroundEnabled && !_state.NextSpritesEnabled;
+		_state.BackgroundEnabled = _state.NextBackgroundEnabled;
+		_state.SpritesEnabled = _state.NextSpritesEnabled;
 
 		_emu->ProcessEvent(EventType::StartFrame);
-
-		if(_state.NextBackgroundEnabled || _state.NextSpritesEnabled) {
-			//Reset current width to current frame data only if rendering is enabled
-			_screenWidth = 0;
-		}
 	}
 
 	if(_needRcrIncrement) {
 		IncrementRcrCounter();
 	}
 
-	if(_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) {
+	if(_hMode == PcePpuModeH::Hdw) {
 		//Display output was interrupted by hblank, start loading sprites in ~20 dots. (approximate, based on timing test)
 		_loadSpriteStart = DotsToClocks(20);
 	}
@@ -627,7 +636,7 @@ void PcePpu::DrawScanline()
 	uint16_t* out = _rowBuffer;
 
 	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
-	bool inPicture = (_hMode == PcePpuModeH::Hdw || _hMode == PcePpuModeH::Hdw_RcrIrq) && _tileCount > 0;
+	bool inPicture = _hMode == PcePpuModeH::Hdw && _tileCount > 0;
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		for(uint16_t x = _xStart; x < xMax; x++) {
@@ -697,8 +706,6 @@ void PcePpu::DrawScanline()
 		uint16_t row = _state.Scanline - 14;
 		uint32_t width = PceConstants::GetRowWidth(_state.VceClockDivider);
 		
-		_screenWidth = std::max(_screenWidth, width);
-
 		if(row == 0) {
 			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
@@ -800,6 +807,10 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 
 bool PcePpu::IsVramAccessBlocked()
 {
+	if(_state.BurstModeEnabled) {
+		return false;
+	}
+
 	bool inBgFetch = _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
 	return (
 		_state.SatbTransferRunning || 
@@ -810,10 +821,6 @@ bool PcePpu::IsVramAccessBlocked()
 
 void PcePpu::WaitForVramAccess()
 {
-	if(_state.BurstModeEnabled) {
-		return;
-	}
-
 	while(IsVramAccessBlocked()) {
 		_console->GetMemoryManager()->Exec();
 		DrawScanline();
@@ -967,7 +974,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 							if(_state.BlockDst < 0x8000) {
 								//Ignore writes over $8000
-								_vram[_state.BlockDst] = _vram[_state.BlockSrc];
+								_vram[_state.BlockDst] = _vram[_state.BlockSrc & 0x7FFF];
 							}
 
 							_state.BlockSrc += (_state.DecrementSrc ? -1 : 1);
