@@ -41,10 +41,19 @@
 			<StackPanel>
 				<c:GroupBox Header="Volume" HorizontalAlignment="Left">
 					<StackPanel Orientation="Horizontal" Height="150">
-						<c:MesenSlider Text="Square 1" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.Square1Vol}" />
-						<c:MesenSlider Text="Square 2" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.Square2Vol}" />
-						<c:MesenSlider Text="Wave" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.WaveVol}" />
-						<c:MesenSlider Text="Noise" Minimum="0" Maximum="100" Orientation="Vertical" Value="{CompiledBinding Config.NoiseVol}" />
+						<StackPanel.Styles>
+							<Style Selector="c|MesenSlider">
+								<Setter Property="Minimum" Value="0" />
+								<Setter Property="Maximum" Value="100" />
+								<Setter Property="Orientation" Value="Vertical" />
+								<Setter Property="Margin" Value="5 0" />
+							</Style>
+						</StackPanel.Styles>
+						
+						<c:MesenSlider Text="Square 1" Value="{CompiledBinding Config.Square1Vol}" />
+						<c:MesenSlider Text="Square 2" Value="{CompiledBinding Config.Square2Vol}" />
+						<c:MesenSlider Text="Wave" Value="{CompiledBinding Config.WaveVol}" />
+						<c:MesenSlider Text="Noise" Value="{CompiledBinding Config.NoiseVol}" />
 					</StackPanel>
 				</c:GroupBox>
 			</StackPanel>

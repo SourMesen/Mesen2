@@ -1,0 +1,23 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Controls.ControllerButton"
+>
+	<DockPanel VerticalAlignment="Stretch" DataContext="{Binding ElementName=root}">
+		<TextBlock DockPanel.Dock="Top" Text="{Binding Label}" FontSize="18" HorizontalAlignment="Center" Margin="0 0 0 0" />
+		<c:KeyBindingButton DockPanel.Dock="Top" KeyBinding="{Binding KeyBinding}" Height="40" />
+		
+		<c:KeyBindingButton DockPanel.Dock="Top" KeyBinding="{Binding TurboKeyBinding}" Height="20" IsVisible="{Binding HasTurbo}" />
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="{Binding HasTurbo}" VerticalAlignment="Top">
+			<TextBlock Text="Turbo" FontSize="14" HorizontalAlignment="Center" Margin="0 0 3 0" />
+			<TextBlock Text="{Binding Label}" FontSize="14" HorizontalAlignment="Center" />
+		</StackPanel>
+	</DockPanel>
+</UserControl>

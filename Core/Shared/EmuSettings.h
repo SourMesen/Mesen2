@@ -22,6 +22,7 @@ private:
 	AudioPlayerConfig _audioPlayer;
 	SnesConfig _snes;
 	NesConfig _nes;
+	PcEngineConfig _pce;
 
 	atomic<uint32_t> _flags;
 	atomic<uint64_t> _debuggerFlags;
@@ -69,6 +70,9 @@ public:
 
 	void SetGameboyConfig(GameboyConfig& config);
 	GameboyConfig& GetGameboyConfig();
+
+	void SetPcEngineConfig(PcEngineConfig& config);
+	PcEngineConfig& GetPcEngineConfig();
 
 	void SetPreferences(PreferencesConfig& config);
 	PreferencesConfig& GetPreferences();

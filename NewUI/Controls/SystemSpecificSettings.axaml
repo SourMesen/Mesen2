@@ -15,6 +15,7 @@
 			<c:ButtonWithIcon Icon="Assets/NesIcon.png" Text="NES" MinWidth="90" Click="OnClickNes" />
 			<c:ButtonWithIcon Icon="Assets/SnesIcon.png" Text="SNES" MinWidth="90" Click="OnClickSnes" />
 			<c:ButtonWithIcon Icon="Assets/GameboyIcon.png" Text="Game Boy" MinWidth="90" Click="OnClickGameboy" />
+			<c:ButtonWithIcon Icon="Assets/PceIcon.png" Text="PC Engine" MinWidth="90" Click="OnClickPcEngine" />
 		</StackPanel>
 	</c:OptionSection>
 </UserControl>

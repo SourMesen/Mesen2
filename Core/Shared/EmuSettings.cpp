@@ -169,6 +169,16 @@ GameboyConfig& EmuSettings::GetGameboyConfig()
 	return _gameboy;
 }
 
+void EmuSettings::SetPcEngineConfig(PcEngineConfig& config)
+{
+	_pce = config;
+}
+
+PcEngineConfig& EmuSettings::GetPcEngineConfig()
+{
+	return _pce;
+}
+
 void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
 	ProcessString(_saveFolder, &config.SaveFolderOverride);
@@ -397,6 +407,8 @@ void EmuSettings::InitializeRam(void* data, uint32_t length)
 		case ConsoleType::GameboyColor:
 			state = _gameboy.RamPowerOnState;
 			break;
+
+		case ConsoleType::PcEngine: state = _pce.RamPowerOnState; break;
 	}
 
 	switch(state) {

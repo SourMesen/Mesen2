@@ -36,6 +36,11 @@ extern "C" {
 		_emu->GetSettings()->SetGameboyConfig(config);
 	}
 
+	DllExport void __stdcall SetPcEngineConfig(PcEngineConfig config)
+	{
+		_emu->GetSettings()->SetPcEngineConfig(config);
+	}
+
 	DllExport void __stdcall SetNesConfig(NesConfig config)
 	{
 		_emu->GetSettings()->SetNesConfig(config);

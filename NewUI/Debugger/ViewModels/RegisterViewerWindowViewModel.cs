@@ -1139,7 +1139,7 @@ namespace Mesen.Debugger.ViewModels
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "State", null),
-				new RegEntry("", "Cycle (H)", ppu.Cycle, Format.X16),
+				new RegEntry("", "HClock (H)", ppu.HClock, Format.X16),
 				new RegEntry("", "Scanline (V)", ppu.Scanline, Format.X16),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 

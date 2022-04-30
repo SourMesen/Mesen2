@@ -23,7 +23,7 @@
 		<Form ID="frmLogWindow" Title="Log Window">
 			<Control ID="btnClose">Close</Control>
 		</Form>
-		<Form ID="AudioConfigView" Title="Audio Options">
+		<Form ID="AudioConfigView">
 			<Control ID="tpgGeneral">General</Control>
 					
 			<Control ID="chkMuteSoundInBackground">Mute sound when in background</Control>
@@ -58,7 +58,7 @@
 			<Control ID="tpgEqualizer">Equalizer</Control>
 			<Control ID="chkEnableEqualizer">Enable Equalizer</Control>
 		</Form>
-		<Form ID="NesInputConfigView" Title="Input Settings">
+		<Form ID="NesInputConfigView">
 			<Control ID="grpControllers">Controllers</Control>
 			<Control ID="grpGeneral">General</Control>
 			<Control ID="lblLightDetectionRadius">Light detection radius for light guns:</Control>
@@ -87,7 +87,7 @@
 
 			<Control ID="lblExpansionDevice">Expansion device:</Control>
 		</Form>
-		<Form ID="SnesInputConfigView" Title="Input Settings">
+		<Form ID="SnesInputConfigView">
 			<Control ID="lblPort1">Port 1:</Control>
 			<Control ID="lblPort2">Port 2:</Control>
 			<Control ID="lblMultitap1A">Port 1:</Control>
@@ -135,7 +135,7 @@
 			<Control ID="lblBottom">Bottom</Control>
 			<Control ID="lblRight">Right</Control>
 		</Form>
-		<Form ID="VideoConfigView" Title="Video Options">
+		<Form ID="VideoConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="chkIntegerFpsMode">Enable integer FPS mode (e.g: run at 60 fps instead of 60.1)</Control>
 			<Control ID="chkVerticalSync">Enable vertical sync</Control>
@@ -188,7 +188,7 @@
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
 		</Form>
-		<Form ID="EmulationConfigView" Title="Emulation Settings">
+		<Form ID="EmulationConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblEmuSpeedHint">%  (0 = Maximum speed)</Control>
 			<Control ID="lblEmulationSpeed">Emulation Speed:</Control>
@@ -331,7 +331,7 @@
 			<Control ID="lblConsoleType">Console model:</Control>
 			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 		</Form>
-		<Form ID="GameboyConfigView" Title="Game Boy Config">
+		<Form ID="GameboyConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>
 			<Control ID="chkUseSgb2">Use Super Game Boy 2 timings and behavior</Control>
@@ -360,6 +360,34 @@
 			<Control ID="lblPlayer1">Player 1</Control>
 			<Control ID="btnSetup">Setup</Control>
 		</Form>
+
+		<Form ID="PceConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="tpgVideo">Video</Control>
+			
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			
+			<Control ID="tpgInput">Input</Control>
+			
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
+		</Form>
+
+		<Form ID="PceInputConfigView">
+			<Control ID="grpControllers">Controllers</Control>
+			<Control ID="lblTurboTapConfig">Turbo Tap Configuration</Control>
+
+			<Control ID="btnSetup">Setup</Control>
+			<Control ID="lblController">Controller:</Control>
+			<Control ID="lblPort1A">Port 1:</Control>
+			<Control ID="lblPort1B">Port 2:</Control>
+			<Control ID="lblPort1C">Port 3:</Control>
+			<Control ID="lblPort1D">Port 4:</Control>
+			<Control ID="lblPort1E">Port 5:</Control>
+		</Form>
+
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
 			<Control ID="colAction">Action</Control>
@@ -381,6 +409,7 @@
 			<Control ID="tabNes">NES</Control>
 			<Control ID="tabSnes">SNES</Control>
 			<Control ID="tabGameboy">Game Boy</Control>
+			<Control ID="tabPcEngine">PC Engine</Control>
 			<Control ID="tabPreferences">Preferences</Control>
 
 			<Control ID="btnOpenMesenFolder">Open Mesen folder</Control>
@@ -390,7 +419,7 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		
-		<Form ID="PreferencesConfigView" Title="Preferences">
+		<Form ID="PreferencesConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
 			<Control ID="chkSingleInstance">Only allow one instance of Mesen at a time</Control>
@@ -1355,6 +1384,9 @@
 			<Value ID="BattleBox">Battle Box</Value>
 
 			<Value ID="GameboyController">Gameboy Controller</Value>
+			<Value ID="PceController">2-button Controller</Value>
+			<Value ID="PceAvenuePad6">6-button Controller</Value>
+			<Value ID="PceTurboTap">Turbo Tap</Value>
 		</Enum>
 		<Enum ID="NesJissenMahjongButtons">
 			<Value ID="A">A</Value>
@@ -2232,6 +2264,7 @@
 			<Value ID="Nes">NES</Value>
 			<Value ID="Snes">SNES</Value>
 			<Value ID="Gameboy">Game Boy</Value>
+			<Value ID="PcEngine">PC Engine</Value>
 
 			<Value ID="Resume">Resume</Value>
 			<Value ID="Pause">Pause</Value>

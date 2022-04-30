@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/Input/PceController.h"
+#include "PCE/Input/PceTurboTap.h"
+#include "PCE/Input/PceAvenuePad6.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
@@ -16,9 +18,24 @@ PceControlManagerState& PceControlManager::GetState()
 
 shared_ptr<BaseControlDevice> PceControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
-	//TODO
-	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
-	shared_ptr<BaseControlDevice> device(new PceController(_emu, port, cfg.Controller.Keys));
+	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+	shared_ptr<BaseControlDevice> device;
+	
+	switch(type) {
+		default:
+		case ControllerType::None: break;
+
+		case ControllerType::PceController: device.reset(new PceController(_emu, port, cfg.Port1.Keys)); break;
+		case ControllerType::PceAvenuePad6: device.reset(new PceAvenuePad6(_emu, port, cfg.Port1.Keys)); break;
+
+		case ControllerType::PceTurboTap: {
+			ControllerConfig controllers[5];
+			std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 5, controllers);
+			controllers[0].Keys = cfg.Port1.Keys;
+			device.reset(new PceTurboTap(_emu, port, controllers));
+			break;
+		}
+	}
 
 	return device;
 }
@@ -45,7 +62,7 @@ void PceControlManager::WriteInputPort(uint8_t value)
 
 void PceControlManager::UpdateControlDevices()
 {
-	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
+	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 	if(_emu->GetSettings()->IsEqual(_prevConfig, cfg) && _controlDevices.size() > 0) {
 		//Do nothing if configuration is unchanged
 		return;
@@ -55,7 +72,7 @@ void PceControlManager::UpdateControlDevices()
 
 	ClearDevices();
 
-	shared_ptr<BaseControlDevice> device(CreateControllerDevice(ControllerType::GameboyController, 0));
+	shared_ptr<BaseControlDevice> device(CreateControllerDevice(cfg.Port1.Type, 0));
 	if(device) {
 		RegisterControlDevice(device);
 	}

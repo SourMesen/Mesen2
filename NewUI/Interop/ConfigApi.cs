@@ -21,6 +21,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetInputConfig(InteropInputConfig config);
 		[DllImport(DllPath)] public static extern void SetEmulationConfig(InteropEmulationConfig config);
 		[DllImport(DllPath)] public static extern void SetGameboyConfig(InteropGameboyConfig config);
+		[DllImport(DllPath)] public static extern void SetPcEngineConfig(InteropPcEngineConfig config);
 		[DllImport(DllPath)] public static extern void SetNesConfig(InteropNesConfig config);
 		[DllImport(DllPath)] public static extern void SetSnesConfig(InteropSnesConfig config);
 

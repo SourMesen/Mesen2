@@ -26,6 +26,7 @@ namespace Mesen.Config
 		[Reactive] public SnesConfig Snes { get; set; } = new();
 		[Reactive] public NesConfig Nes { get; set; } = new();
 		[Reactive] public GameboyConfig Gameboy { get; set; } = new();
+		[Reactive] public PcEngineConfig PcEngine { get; set; } = new();
 		[Reactive] public PreferencesConfig Preferences { get; set; } = new();
 		[Reactive] public AudioPlayerConfig AudioPlayer { get; set; } = new();
 		[Reactive] public DebugConfig Debug { get; set; } = new();
@@ -61,6 +62,7 @@ namespace Mesen.Config
 			Input.ApplyConfig();
 			Emulation.ApplyConfig();
 			Gameboy.ApplyConfig();
+			PcEngine.ApplyConfig();
 			Nes.ApplyConfig();
 			Snes.ApplyConfig();
 			Preferences.ApplyConfig();

@@ -550,6 +550,8 @@ namespace Mesen.Debugger.Utilities
 		Snes,
 		[IconFile("GameboyIcon")]
 		Gameboy,
+		[IconFile("PceIcon")]
+		PcEngine,
 		[IconFile("MediaPause")]
 		Pause,
 		[IconFile("MediaStop")]

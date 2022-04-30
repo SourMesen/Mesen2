@@ -1305,14 +1305,10 @@ namespace Mesen.Interop
 	public struct PcePpuState : BaseState
 	{
 		public UInt32 FrameCount;
-		public UInt16 Cycle;
+		
+		public UInt16 HClock;
 		public UInt16 Scanline;
-		public UInt16 DisplayCounter;
 		public UInt16 VceScanlineCount;
-		public UInt16 DisplayStart;
-		public UInt16 VerticalBlankScanline;
-		public UInt16 LatchScrollCycle;
-		public UInt16 RcrTriggerCycle;
 		public UInt16 RcrCounter;
 
 		public byte CurrentReg;

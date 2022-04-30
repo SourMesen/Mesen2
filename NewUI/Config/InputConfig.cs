@@ -108,23 +108,15 @@ namespace Mesen.Config
 
 		public virtual void SetDefaultKeys(ControllerType type, KeyPresetType? preset = null)
 		{
-			switch(type) {
-				case ControllerType.NesController:
-				case ControllerType.FamicomController:
-				case ControllerType.FamicomControllerP2:
-				case ControllerType.HoriTrack:
-				case ControllerType.BandaiHyperShot:
-				case ControllerType.SnesController:
-				case ControllerType.GameboyController:
-					switch(preset) {
-						case KeyPresetType.WasdKeys: KeyPresets.ApplyWasdLayout(this, type); break;
-						case KeyPresetType.ArrowKeys: KeyPresets.ApplyArrowLayout(this, type); break;
-						case KeyPresetType.XboxP1: KeyPresets.ApplyXboxLayout(this, 0, type); break;
-						case KeyPresetType.XboxP2: KeyPresets.ApplyXboxLayout(this, 1, type); break;
-						case KeyPresetType.Ps4P1: KeyPresets.ApplyPs4Layout(this, 0, type); break;
-						case KeyPresetType.Ps4P2: KeyPresets.ApplyPs4Layout(this, 1, type); break;
-					}
-					break;
+			if(type.HasPresets()) {
+				switch(preset) {
+					case KeyPresetType.WasdKeys: KeyPresets.ApplyWasdLayout(this, type); break;
+					case KeyPresetType.ArrowKeys: KeyPresets.ApplyArrowLayout(this, type); break;
+					case KeyPresetType.XboxP1: KeyPresets.ApplyXboxLayout(this, 0, type); break;
+					case KeyPresetType.XboxP2: KeyPresets.ApplyXboxLayout(this, 1, type); break;
+					case KeyPresetType.Ps4P1: KeyPresets.ApplyPs4Layout(this, 0, type); break;
+					case KeyPresetType.Ps4P2: KeyPresets.ApplyPs4Layout(this, 1, type); break;
+				}
 			}
 		}
 
@@ -301,6 +293,11 @@ namespace Mesen.Config
 
 		//Game Boy
 		GameboyController,
+
+		//PC Engine
+		PceController,
+		PceTurboTap,
+		PceAvenuePad6
 	}
 
 	public static class ControllerTypeExtensions
@@ -313,6 +310,8 @@ namespace Mesen.Config
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
+				case ControllerType.PceController:
+				case ControllerType.PceAvenuePad6:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
 					return true;
@@ -329,6 +328,8 @@ namespace Mesen.Config
 				case ControllerType.FamicomController:
 				case ControllerType.FamicomControllerP2:
 				case ControllerType.GameboyController:
+				case ControllerType.PceController:
+				case ControllerType.PceAvenuePad6:
 				case ControllerType.Pachinko:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
@@ -357,6 +358,8 @@ namespace Mesen.Config
 				case ControllerType.JissenMahjong:
 				case ControllerType.ExcitingBoxing:
 				case ControllerType.GameboyController:
+				case ControllerType.PceController:
+				case ControllerType.PceAvenuePad6:
 				case ControllerType.HoriTrack:
 				case ControllerType.KonamiHyperShot:
 				case ControllerType.BandaiHyperShot:

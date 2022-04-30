@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PCE/PcePsg.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Audio/blip_buf.h"
@@ -66,6 +67,7 @@ void PcePsg::Run()
 {
 	uint64_t clock = _emu->GetMasterClock();
 	uint32_t clocksToRun = clock - _lastClock;
+	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 	while(clocksToRun >= 6) {
 		uint32_t minTimer = clocksToRun / 6;
 		for(int i = 0; i < 6; i++) {
@@ -80,8 +82,8 @@ void PcePsg::Run()
 		for(int i = 0; i < 6; i++) {
 			PcePsgChannel& ch = _channels[i];
 			ch.Run(minTimer);
-			leftOutput += ch.GetOutput(true, _state.LeftVolume);
-			rightOutput += ch.GetOutput(false, _state.RightVolume);
+			leftOutput += (int32_t)ch.GetOutput(true, _state.LeftVolume) * (int32_t)cfg.ChannelVol[i] / 100;
+			rightOutput += (int32_t)ch.GetOutput(false, _state.RightVolume) * (int32_t)cfg.ChannelVol[i] / 100;
 		}
 
 		if(_prevLeftOutput != leftOutput) {

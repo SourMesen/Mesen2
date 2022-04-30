@@ -1760,9 +1760,6 @@
     <ClInclude Include="PCE\PcePpu.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\Input\PceController.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
     <ClInclude Include="PCE\PceTimer.h">
       <Filter>PCE</Filter>
     </ClInclude>
@@ -1798,6 +1795,15 @@
     </ClInclude>
     <ClInclude Include="PCE\PceCdAudioPlayer.h">
       <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Input\PceController.h">
+      <Filter>PCE\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Input\PceTurboTap.h">
+      <Filter>PCE\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\Input\PceAvenuePad6.h">
+      <Filter>PCE\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1870,6 +1876,9 @@
     <ClCompile Include="PCE\PceCdAudioPlayer.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
+    <ClCompile Include="PCE\Input\PceTurboTap.cpp">
+      <Filter>PCE\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
@@ -1877,6 +1886,9 @@
     </Filter>
     <Filter Include="PCE\Debugger">
       <UniqueIdentifier>{71cd23d2-e1b9-4a25-a92a-34b2f64f8086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PCE\Input">
+      <UniqueIdentifier>{a2cd79a6-585b-408d-b6af-c273b94092a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

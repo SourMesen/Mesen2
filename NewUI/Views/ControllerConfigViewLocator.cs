@@ -25,6 +25,8 @@ namespace Mesen.Views
 					ControllerType.BandaiHyperShot => new NesControllerView(),
 					ControllerType.HoriTrack => new NesControllerView(),
 					ControllerType.GameboyController => new NesControllerView(),
+					ControllerType.PceController => new PceControllerView(),
+					ControllerType.PceAvenuePad6 => new PceAvenuePad6View(),
 					_ => new DefaultControllerView()
 				};
 			}

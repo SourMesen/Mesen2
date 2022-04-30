@@ -109,6 +109,7 @@
 	  <None Remove="Assets\NudUpArrow.png" />
 	  <None Remove="Assets\NudUpArrowDarkTheme.png" />
 	  <None Remove="Assets\Paste.png" />
+	  <None Remove="Assets\PceIcon.png" />
 	  <None Remove="Assets\Pencil.png" />
 	  <None Remove="Assets\PerfTracker.png" />
 	  <None Remove="Assets\Pipette.png" />
@@ -193,6 +194,9 @@
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
       <DependentUpon>ButtonWithIcon.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\ControllerButton.axaml.cs">
+      <DependentUpon>ControllerButton.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Controls\CodeScrollBar.axaml.cs">
       <DependentUpon>CodeScrollBar.axaml</DependentUpon>
@@ -364,6 +368,18 @@
     </Compile>
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\PceAvenuePad6View.axaml.cs">
+      <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\PceControllerView.axaml.cs">
+      <DependentUpon>PceControllerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\PceInputConfigView.axaml.cs">
+      <DependentUpon>PceInputConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\PceConfigView.axaml.cs">
+      <DependentUpon>PceConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\InputConfigView.axaml.cs">
       <DependentUpon>InputConfigView.axaml</DependentUpon>
@@ -559,6 +575,7 @@
 	  <AvaloniaResource Include="Assets\NudUpArrow.png" />
 	  <AvaloniaResource Include="Assets\NudUpArrowDarkTheme.png" />
 	  <AvaloniaResource Include="Assets\Paste.png" />
+	  <AvaloniaResource Include="Assets\PceIcon.png" />
 	  <AvaloniaResource Include="Assets\Pencil.png" />
 	  <AvaloniaResource Include="Assets\PerfTracker.png" />
 	  <AvaloniaResource Include="Assets\Pipette.png" />

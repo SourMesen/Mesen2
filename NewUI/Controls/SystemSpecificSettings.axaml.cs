@@ -49,6 +49,11 @@ namespace Mesen.Controls
 			NavigateTo(ConfigWindowTab.Gameboy);
 		}
 
+		private void OnClickPcEngine(object sender, RoutedEventArgs e)
+		{
+			NavigateTo(ConfigWindowTab.PcEngine);
+		}
+
 		private void NavigateTo(ConfigWindowTab console)
 		{
 			if(VisualRoot is ConfigWindow wnd && wnd.DataContext is ConfigViewModel cfg) {
@@ -84,6 +89,17 @@ namespace Mesen.Controls
 								ConfigType.Emulation => GameboyConfigTab.General,
 								ConfigType.Input => GameboyConfigTab.Input,
 								_ or ConfigType.Video => GameboyConfigTab.Video,
+							};
+						}
+						break;
+
+					case ConfigWindowTab.PcEngine:
+						if(cfg.PcEngine != null) {
+							cfg.PcEngine.SelectedTab = ConfigType switch {
+								ConfigType.Audio => PceConfigTab.Audio,
+								ConfigType.Emulation => PceConfigTab.Emulation,
+								ConfigType.Input => PceConfigTab.Input,
+								_ or ConfigType.Video => PceConfigTab.Video,
 							};
 						}
 						break;

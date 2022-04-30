@@ -40,7 +40,6 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.HorizDisplayWidth = 0x1F;
 	_state.VertDisplayWidth = 239;
 	_state.VceScanlineCount = 262;
-	UpdateFrameTimings();
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
@@ -703,7 +702,6 @@ void PcePpu::DrawScanline()
 
 	if(_state.HClock == 1365) {
 		uint16_t row = _state.Scanline - 14;
-		uint32_t width = PceConstants::GetRowWidth(_state.VceClockDivider);
 		
 		if(row == 0) {
 			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
@@ -732,15 +730,7 @@ void PcePpu::SendFrame()
 	_emu->ProcessEndOfFrame();
 
 	_console->GetControlManager()->UpdateInputState();
-}
-
-void PcePpu::UpdateFrameTimings()
-{
-	_state.DisplayStart = _state.VertDisplayStart + _state.VertSyncWidth;
-	_state.VerticalBlankScanline = _state.DisplayStart + _state.VertDisplayWidth + 1;
-	if(_state.VerticalBlankScanline > 261) {
-		_state.VerticalBlankScanline = 261;
-	}
+	_console->GetControlManager()->UpdateControlDevices();
 }
 
 void PcePpu::LoadReadBuffer()
@@ -927,7 +917,6 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 						_state.HorizDisplayEnd = value & 0x7F;
 					} else {
 						_state.HorizDisplayWidth = value & 0x7F;
-						UpdateFrameTimings();
 					}
 					break;
 
@@ -937,12 +926,10 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					} else {
 						_state.VertSyncWidth = value & 0x1F;
 					}
-					UpdateFrameTimings();
 					break;
 
 				case 0x0D:
 					UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb);
-					UpdateFrameTimings();
 					break;
 
 				case 0x0E: 
@@ -1036,7 +1023,6 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 				case 1: _state.VceClockDivider = 3; break;
 				case 2: case 3: _state.VceClockDivider = 2; break;
 			}
-			UpdateFrameTimings();
 			//LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
 			break;
 

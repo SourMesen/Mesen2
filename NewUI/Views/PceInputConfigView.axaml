@@ -1,0 +1,88 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:PceInputConfigViewModel"
+	x:Class="Mesen.Views.PceInputConfigView"
+>
+	<Design.DataContext>
+		<vm:PceInputConfigViewModel />
+	</Design.DataContext>
+
+	<ScrollViewer AllowAutoHide="False">
+		<StackPanel>
+			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblController}" />
+					<c:InputComboBox
+						Grid.Row="0" Grid.Column="1"
+						Config="{CompiledBinding Config.Port1}"
+						ControllerType="{CompiledBinding Config.Port1.Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP1}"
+					/>
+					
+					<c:GroupBox
+						Header="{l:Translate lblTurboTapConfig}"
+						IsVisible="{CompiledBinding HasTurboTap}"
+						HorizontalAlignment="Right"
+						Margin="0 5 -6 5"
+						Grid.Row="2"
+						Grid.Column="0"
+						Grid.ColumnSpan="3"
+					>
+						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPort1A}" />
+							<c:InputComboBox
+								Grid.Row="0" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1}"
+								ControllerType="{CompiledBinding Config.Port1A.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesTurboTap}"
+							/>
+
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblPort1B}" />
+							<c:InputComboBox
+								Grid.Row="1" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1B}"
+								ControllerType="{CompiledBinding Config.Port1B.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesTurboTap}"
+							/>
+
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblPort1C}" />
+							<c:InputComboBox
+								Grid.Row="2" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1C}"
+								ControllerType="{CompiledBinding Config.Port1C.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesTurboTap}"
+							/>
+
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblPort1D}" />
+							<c:InputComboBox
+								Grid.Row="3" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1D}"
+								ControllerType="{CompiledBinding Config.Port1D.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesTurboTap}"
+							/>
+
+							<TextBlock Grid.Row="4" Grid.Column="0" Text="{l:Translate lblPort1E}" />
+							<c:InputComboBox
+								Grid.Row="4" Grid.Column="1"
+								Config="{CompiledBinding Config.Port1E}"
+								ControllerType="{CompiledBinding Config.Port1E.Type}"
+								AvailableValues="{CompiledBinding AvailableControllerTypesTurboTap}"
+							/>
+						</Grid>
+					</c:GroupBox>
+				</Grid>
+			</c:OptionSection>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

@@ -16,15 +16,15 @@ private:
 protected:
 	string GetKeyNames() override
 	{
-		return "UDLRSsBA";
+		return "UDLRSr12";
 	}
 
 	void InternalSetStateFromInput() override
 	{
 		for(KeyMapping& keyMapping : _keyMappings) {
-			SetPressedState(Buttons::A, keyMapping.A);
-			SetPressedState(Buttons::B, keyMapping.B);
-			SetPressedState(Buttons::Start, keyMapping.Start);
+			SetPressedState(Buttons::I, keyMapping.A);
+			SetPressedState(Buttons::II, keyMapping.B);
+			SetPressedState(Buttons::Run, keyMapping.Start);
 			SetPressedState(Buttons::Select, keyMapping.Select);
 			SetPressedState(Buttons::Up, keyMapping.Up);
 			SetPressedState(Buttons::Down, keyMapping.Down);
@@ -34,8 +34,8 @@ protected:
 			uint8_t turboFreq = 1 << (4 - _turboSpeed);
 			bool turboOn = (uint8_t)(_emu->GetFrameCount() % turboFreq) < turboFreq / 2;
 			if(turboOn) {
-				SetPressedState(Buttons::A, keyMapping.TurboA);
-				SetPressedState(Buttons::B, keyMapping.TurboB);
+				SetPressedState(Buttons::I, keyMapping.TurboA);
+				SetPressedState(Buttons::II, keyMapping.TurboB);
 			}
 		}
 	}
@@ -45,9 +45,9 @@ protected:
 	}
 
 public:
-	enum Buttons { Up = 0, Down, Left, Right, Start, Select, B, A };
+	enum Buttons { Up = 0, Down, Left, Right, Select, Run, I, II };
 
-	PceController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, ControllerType::GameboyController, port, keyMappings)
+	PceController(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, ControllerType::PceController, port, keyMappings)
 	{
 		_turboSpeed = keyMappings.TurboSpeed;
 	}
@@ -65,10 +65,10 @@ public:
 			result &= ~(IsPressed(PceController::Down) ? 0x04 : 0);
 			result &= ~(IsPressed(PceController::Left) ? 0x08 : 0);
 		} else {
-			result &= ~(IsPressed(PceController::A) ? 0x01 : 0);
-			result &= ~(IsPressed(PceController::B) ? 0x02 : 0);
+			result &= ~(IsPressed(PceController::I) ? 0x01 : 0);
+			result &= ~(IsPressed(PceController::II) ? 0x02 : 0);
 			result &= ~(IsPressed(PceController::Select) ? 0x04 : 0);
-			result &= ~(IsPressed(PceController::Start) ? 0x08 : 0);
+			result &= ~(IsPressed(PceController::Run) ? 0x08 : 0);
 		}
 
 		return result;
@@ -90,12 +90,12 @@ public:
 		hud.DrawButton(8, 6, 3, 3, IsPressed(Buttons::Right));
 		hud.DrawButton(5, 6, 3, 3, false);
 
-		hud.DrawButton(30, 7, 3, 3, IsPressed(Buttons::A));
-		hud.DrawButton(25, 7, 3, 3, IsPressed(Buttons::B));
+		hud.DrawButton(30, 7, 3, 3, IsPressed(Buttons::I));
+		hud.DrawButton(25, 7, 3, 3, IsPressed(Buttons::II));
 
 		hud.DrawButton(13, 9, 4, 2, IsPressed(Buttons::Select));
-		hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Start));
+		hud.DrawButton(18, 9, 4, 2, IsPressed(Buttons::Run));
 
-		hud.DrawNumber(_port + 1, 16, 2);
+		hud.DrawNumber(hud.GetControllerIndex() + 1, 16, 2);
 	}
 };

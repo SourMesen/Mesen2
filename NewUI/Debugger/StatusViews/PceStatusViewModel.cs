@@ -76,7 +76,7 @@ namespace Mesen.Debugger.StatusViews
 			}
 			StackPreview = sb.ToString();
 
-			Cycle = ppu.Cycle;
+			Cycle = ppu.HClock;
 			Scanline = ppu.Scanline;
 			FrameCount = ppu.FrameCount;
 		}
@@ -93,7 +93,7 @@ namespace Mesen.Debugger.StatusViews
 			cpu.PC = RegPC;
 			cpu.PS = RegPS;
 
-			ppu.Cycle = Cycle;
+			ppu.HClock = Cycle;
 			ppu.Scanline = Scanline;
 
 			DebugApi.SetCpuState(cpu, CpuType.Pce);

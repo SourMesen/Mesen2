@@ -6,6 +6,7 @@
 #include "SNES/Input/SnesController.h"
 #include "SNES/Input/SnesMouse.h"
 #include "NES/Input/NesController.h"
+#include "PCE/Input/PceController.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/StringUtilities.h"
 
@@ -59,6 +60,10 @@ public:
 
 				case ControllerType::SnesMouse:
 					_ports[i].reset(new SnesMouse(emu, 0));
+					break;
+
+				case ControllerType::PceController:
+					_ports[i].reset(new PceController(emu, 0, controllers[i].Keys));
 					break;
 			}
 		}
@@ -126,8 +131,12 @@ public:
 		int pos = 0;
 
 		for(int i = 0; i < HubPortCount; i++) {
-			if(_ports[i]) {
+			if(_ports[i] && pos < data.size()) {
 				int length = data[pos++];
+
+				if(pos + length > data.size()) {
+					break;
+				}
 
 				ControlDeviceState portState;
 				portState.State.insert(portState.State.begin(), data.begin() + pos, data.begin() + pos + length);

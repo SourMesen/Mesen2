@@ -206,6 +206,11 @@ enum class ControllerType
 
 	//Game Boy
 	GameboyController,
+
+	//PC Engine
+	PceController,
+	PceTurboTap,
+	PceAvenuePad6,
 };
 
 struct KeyMapping
@@ -362,6 +367,16 @@ struct GameboyConfig
 	uint32_t Square2Vol = 100;
 	uint32_t NoiseVol = 100;
 	uint32_t WaveVol = 100;
+};
+
+struct PcEngineConfig
+{
+	ControllerConfig Port1;
+	ControllerConfig Port1SubPorts[5];
+
+	RamState RamPowerOnState = RamState::Random;
+
+	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
 };
 
 struct SnesConfig

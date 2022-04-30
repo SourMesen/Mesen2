@@ -1,0 +1,86 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d" d:DesignWidth="610" d:DesignHeight="230"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:Name="root"
+	x:DataType="vm:KeyMappingViewModel"
+	x:Class="Mesen.Views.PceAvenuePad6View"
+>
+	<Design.DataContext>
+		<vm:KeyMappingViewModel />
+	</Design.DataContext>
+
+	<Border BorderBrush="LightGray" BorderThickness="2" Padding="3" Width="610" Height="230" HorizontalAlignment="Left" VerticalAlignment="Top">
+		<Canvas>
+			<Panel Canvas.Top="10" >
+				<Ellipse Width="200" Height="200" Stroke="LightGray" StrokeThickness="2" />
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Right}" Grid.Row="1" Grid.Column="1" Width="80" Height="40" HorizontalAlignment="Center" />
+					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Down}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
+				</Grid>
+			</Panel>
+
+			<Panel Canvas.Top="0" Canvas.Right="5" Width="205" Height="220">
+				<Rectangle Fill="#F2F2F2" />
+				<StackPanel Orientation="Horizontal">
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="IV"
+						KeyBinding="{CompiledBinding Mapping.Y}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboY}"
+					/>
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="V"
+						KeyBinding="{CompiledBinding Mapping.L}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboL}"
+					/>
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="VI"
+						KeyBinding="{CompiledBinding Mapping.R}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboR}"
+					/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Margin="0 110 0 0">
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="III"
+						KeyBinding="{CompiledBinding Mapping.X}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboX}"
+					/>
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="II"
+						KeyBinding="{CompiledBinding Mapping.B}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboB}"
+					/>
+					<c:ControllerButton
+						Margin="5 0 0 0"
+						Label="I"
+						KeyBinding="{CompiledBinding Mapping.A}"
+						TurboKeyBinding="{CompiledBinding Mapping.TurboA}"
+					/>
+				</StackPanel>
+			</Panel>
+
+			<Grid ColumnDefinitions="*,Auto,Auto,*" RowDefinitions="Auto,Auto" Width="580" Canvas.Bottom="30">
+				<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Select}" Grid.Column="1" Width="80" />
+				<TextBlock Grid.Column="1" Grid.Row="1" Text="Select" FontSize="14" HorizontalAlignment="Center" />
+
+				<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Start}" Grid.Column="2" Width="80" />
+				<TextBlock Grid.Column="2" Grid.Row="1" Text="Run" FontSize="14" HorizontalAlignment="Center" />
+			</Grid>
+		</Canvas>
+	</Border>
+</UserControl>

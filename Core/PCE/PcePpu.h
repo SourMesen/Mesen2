@@ -120,13 +120,11 @@ private:
 	void DrawScanline();
 	void SendFrame();
 
-	void UpdateFrameTimings();
-	
 	uint16_t DotsToClocks(int dots);
 	void TriggerHdsIrqs();
 
 	__declspec(noinline) void IncrementRcrCounter();
-	void IncScrollY();
+	__declspec(noinline) void IncScrollY();
 	__declspec(noinline) void ProcessEndOfScanline();
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
@@ -135,14 +133,14 @@ private:
 	__declspec(noinline) void ProcessVdcEvents();
 	__declspec(noinline) void ProcessEvent();
 
-	void ProcessHorizontalSyncStart();
+	__declspec(noinline) void ProcessHorizontalSyncStart();
 
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift);
 	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
-	void ProcessSpriteEvaluation();
-	void LoadBackgroundTiles();
-	void LoadSpriteTiles();
+	__declspec(noinline) void ProcessSpriteEvaluation();
+	__declspec(noinline) void LoadBackgroundTiles();
+	__declspec(noinline) void LoadSpriteTiles();
 	
 	void WaitForVramAccess();
 	bool IsVramAccessBlocked();

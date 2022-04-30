@@ -62,12 +62,7 @@ struct PcePpuState : public BaseState
 	
 	uint16_t HClock;
 	uint16_t Scanline;
-	uint16_t DisplayCounter;
 	uint16_t VceScanlineCount;
-	uint16_t DisplayStart;
-	uint16_t VerticalBlankScanline;
-	uint16_t LatchScrollCycle;
-	uint16_t RcrTriggerCycle;
 	uint16_t RcrCounter;
 
 	uint8_t CurrentReg;

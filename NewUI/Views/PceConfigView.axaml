@@ -1,0 +1,76 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:PceConfigViewModel"
+	x:Class="Mesen.Views.PceConfigView"
+>
+	<Design.DataContext>
+		<vm:PceConfigViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="dc|PaletteSelector">
+			<Setter Property="SelectionMode" Value="None" />
+			<Setter Property="ColumnCount" Value="4" />
+			<Setter Property="Width" Value="80" />
+			<Setter Property="Height" Value="20" />
+		</Style>
+	</UserControl.Styles>
+	
+	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<StackPanel>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgAudio}">
+			<StackPanel>
+				<c:GroupBox Header="Volume" HorizontalAlignment="Left">
+					<StackPanel Orientation="Horizontal" Height="150">
+						<StackPanel.Styles>
+							<Style Selector="c|MesenSlider">
+								<Setter Property="Minimum" Value="0" />
+								<Setter Property="Maximum" Value="100" />
+								<Setter Property="Orientation" Value="Vertical" />
+								<Setter Property="Margin" Value="5 0" />
+							</Style>
+						</StackPanel.Styles>
+						
+						<c:MesenSlider Text="Channel 1" Value="{CompiledBinding Config.Channel1Vol}" />
+						<c:MesenSlider Text="Channel 2" Value="{CompiledBinding Config.Channel2Vol}" />
+						<c:MesenSlider Text="Channel 3" Value="{CompiledBinding Config.Channel3Vol}" />
+						<c:MesenSlider Text="Channel 4" Value="{CompiledBinding Config.Channel4Vol}" />
+						<c:MesenSlider Text="Channel 5" Value="{CompiledBinding Config.Channel5Vol}" />
+						<c:MesenSlider Text="Channel 6" Value="{CompiledBinding Config.Channel6Vol}" />
+					</StackPanel>
+				</c:GroupBox>
+			</StackPanel>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+				</StackPanel>
+			</c:OptionSection>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgInput}">
+			<v:PceInputConfigView DataContext="{CompiledBinding Input}" />
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgVideo}">
+		</TabItem>
+	</TabControl>
+</UserControl>

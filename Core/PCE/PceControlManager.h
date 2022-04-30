@@ -10,7 +10,7 @@ class PceControlManager : public BaseControlManager
 {
 private:
 	PceControlManagerState _state = {};
-	GameboyConfig _prevConfig = {};
+	PcEngineConfig _prevConfig = {};
 
 public:
 	PceControlManager(Emulator* emu);

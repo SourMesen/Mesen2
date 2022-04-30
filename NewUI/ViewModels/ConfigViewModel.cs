@@ -18,6 +18,7 @@ namespace Mesen.ViewModels
 		[Reactive] public SnesConfigViewModel? Snes { get; set; }
 		[Reactive] public NesConfigViewModel? Nes { get; set; }
 		[Reactive] public GameboyConfigViewModel? Gameboy { get; set; }
+		[Reactive] public PceConfigViewModel? PcEngine { get; set; }
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
 
@@ -50,6 +51,7 @@ namespace Mesen.ViewModels
 
 				case ConfigWindowTab.Snes: Snes ??= AddDisposable(new SnesConfigViewModel()); break;
 				case ConfigWindowTab.Gameboy: Gameboy ??= AddDisposable(new GameboyConfigViewModel()); break;
+				case ConfigWindowTab.PcEngine: PcEngine ??= AddDisposable(new PceConfigViewModel()); break;
 
 				case ConfigWindowTab.Preferences: Preferences ??= AddDisposable(new PreferencesConfigViewModel()); break;
 			}
@@ -72,6 +74,7 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Nes = Nes?.Config.Clone() ?? ConfigManager.Config.Nes;
 			ConfigManager.Config.Snes = Snes?.Config.Clone() ?? ConfigManager.Config.Snes;
 			ConfigManager.Config.Gameboy = Gameboy?.Config.Clone() ?? ConfigManager.Config.Gameboy;
+			ConfigManager.Config.PcEngine = PcEngine?.Config.Clone() ?? ConfigManager.Config.PcEngine;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.Config.Save();
 
@@ -89,7 +92,8 @@ namespace Mesen.ViewModels
 		Nes = 5,
 		Snes = 6,
 		Gameboy = 7,
+		PcEngine = 8,
 		//separator
-		Preferences = 9
+		Preferences = 10
 	}
 }

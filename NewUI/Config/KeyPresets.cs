@@ -18,6 +18,13 @@ namespace Mesen.Config
 				m.R = InputApi.GetKeyCode("I");
 				m.Select = InputApi.GetKeyCode("O");
 				m.Start = InputApi.GetKeyCode("L");
+			} else if(type == ControllerType.PceAvenuePad6) {
+				m.X = InputApi.GetKeyCode("H");
+				m.Y = InputApi.GetKeyCode("Y");
+				m.L = InputApi.GetKeyCode("U");
+				m.R = InputApi.GetKeyCode("I");
+				m.Select = InputApi.GetKeyCode("N");
+				m.Start = InputApi.GetKeyCode("M");
 			} else {
 				m.TurboA = InputApi.GetKeyCode(";");
 				m.TurboB = InputApi.GetKeyCode("M");
@@ -42,6 +49,15 @@ namespace Mesen.Config
 				m.R = InputApi.GetKeyCode("W");
 				m.Select = InputApi.GetKeyCode("E");
 				m.Start = InputApi.GetKeyCode("D");
+			} else if(type == ControllerType.PceAvenuePad6) {
+				m.Y = InputApi.GetKeyCode("A");
+				m.L = InputApi.GetKeyCode("S");
+				m.R = InputApi.GetKeyCode("D");
+				m.A = InputApi.GetKeyCode("Z");
+				m.B = InputApi.GetKeyCode("X");
+				m.X = InputApi.GetKeyCode("C");
+				m.Select = InputApi.GetKeyCode("Q");
+				m.Start = InputApi.GetKeyCode("W");
 			} else {
 				m.TurboA = InputApi.GetKeyCode("X");
 				m.TurboB = InputApi.GetKeyCode("Z");
@@ -59,7 +75,7 @@ namespace Mesen.Config
 			string prefix = "Pad" + (player + 1).ToString() + " ";
 			m.A = InputApi.GetKeyCode(prefix + "B");
 			m.B = InputApi.GetKeyCode(prefix + "A");
-			if(type == ControllerType.SnesController) {
+			if(type == ControllerType.SnesController || type == ControllerType.PceAvenuePad6) {
 				m.X = InputApi.GetKeyCode(prefix + "Y");
 				m.Y = InputApi.GetKeyCode(prefix + "X");
 				m.L = InputApi.GetKeyCode(prefix + "L1");
@@ -81,7 +97,7 @@ namespace Mesen.Config
 			string prefix = "Joy" + (player + 1).ToString() + " ";
 			m.A = InputApi.GetKeyCode(prefix + "But3");
 			m.B = InputApi.GetKeyCode(prefix + "But2");
-			if(type == ControllerType.SnesController) {
+			if(type == ControllerType.SnesController || type == ControllerType.PceAvenuePad6) {
 				m.X = InputApi.GetKeyCode(prefix + "But4");
 				m.Y = InputApi.GetKeyCode(prefix + "But1");
 				m.L = InputApi.GetKeyCode(prefix + "But5");

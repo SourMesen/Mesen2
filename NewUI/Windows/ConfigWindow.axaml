@@ -41,6 +41,9 @@
 		<DataTemplate DataType="{x:Type vm:GameboyConfigViewModel}">
 			<v:GameboyConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:PceConfigViewModel}">
+			<v:PceConfigView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:PreferencesConfigViewModel}">
 			<v:PreferencesConfigView />
 		</DataTemplate>
@@ -124,6 +127,15 @@
 				</TabItem.Header>
 			</TabItem>
 
+			<TabItem Content="{CompiledBinding PcEngine}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/PceIcon.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabPcEngine}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+			
 			<TabItem IsEnabled="False" MinHeight="10">
 				<TabItem.Header>
 					<Rectangle Fill="LightGray" Height="1" />

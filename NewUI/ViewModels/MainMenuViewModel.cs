@@ -407,6 +407,10 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.Gameboy,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Gameboy)
 				},
+				new MainMenuAction() {
+					ActionType = ActionType.PcEngine,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.PcEngine)
+				},
 
 				new ContextMenuSeparator(),
 

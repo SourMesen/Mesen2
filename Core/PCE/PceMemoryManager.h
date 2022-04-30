@@ -69,22 +69,20 @@ public:
 
 		memcpy(_prgRom, romData.data(), _prgRomSize);
 		
-		//TODO random
-		memset(_workRam, 0, _workRamSize);
 		_emu->GetSettings()->InitializeRam(_workRam, _workRamSize);
 
 		if(_cdrom) {
 			_saveRam = new uint8_t[_saveRamSize];
 			_cdromRam = new uint8_t[_cdromRamSize];
 			_cardRam = new uint8_t[_cardRamSize];
-			//TODO random
-			memset(_saveRam, 0, _saveRamSize);
-			memset(_cdromRam, 0, _cdromRamSize);
-			memset(_cardRam, 0, _cardRamSize);
+			_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
+			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
+			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
 			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
 			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 
+			//TODO improve this
 			_saveRam[0] = 0x48;
 			_saveRam[1] = 0x55;
 			_saveRam[2] = 0x42;
