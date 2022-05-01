@@ -31,7 +31,6 @@ protected:
 	virtual void OnBeforeApplyFilter();
 	bool IsOddFrame();
 	uint32_t GetBufferSize();
-	uint32_t ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity);
 	virtual FrameInfo GetFrameInfo();
 
 public:

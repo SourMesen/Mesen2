@@ -160,29 +160,21 @@ void NesDefaultVideoFilter::OnBeforeApplyFilter()
 	_nesConfig = nesConfig;
 }
 
-void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines)
+void NesDefaultVideoFilter::DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer)
 {
 	uint32_t* out = outputBuffer;
 	OverscanDimensions overscan = GetOverscan();
 	FrameInfo frame = _frameInfo;
 	
-	uint8_t scanlineIntensity = (uint8_t)((1.0 - _videoConfig.ScanlineIntensity) * 255);
 	for(uint32_t i = 0; i < frame.Height; i++) {
-		if(displayScanlines && (i + overscan.Top) % 2 == 0) {
-			for(uint32_t j = 0; j < frame.Width; j++) {
-				*out = ApplyScanlineEffect(ppuOutputBuffer[(i + overscan.Top) * _baseFrameInfo.Width + j + overscan.Left], scanlineIntensity);
-				out++;
-			}
-		} else {
-			for(uint32_t j = 0; j < frame.Width; j++) {
-				*out = _calculatedPalette[ppuOutputBuffer[(i + overscan.Top) * _baseFrameInfo.Width + j + overscan.Left]];
-				out++;
-			}
+		for(uint32_t j = 0; j < frame.Width; j++) {
+			*out = _calculatedPalette[ppuOutputBuffer[(i + overscan.Top) * _baseFrameInfo.Width + j + overscan.Left]];
+			out++;
 		}
 	}
 }
 
 void NesDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)
 {
-	DecodePpuBuffer(ppuOutputBuffer, GetOutputBuffer(), false /* TODO _videoConfig.VideoFilter <= VideoFilterType::BisqwitNtsc */);
+	DecodePpuBuffer(ppuOutputBuffer, GetOutputBuffer());
 }

@@ -17,7 +17,7 @@ private:
 	void InitLookupTable();
 
 protected:
-	void DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer, bool displayScanlines);
+	void DecodePpuBuffer(uint16_t* ppuOutputBuffer, uint32_t* outputBuffer);
 	void OnBeforeApplyFilter() override;
 
 public:

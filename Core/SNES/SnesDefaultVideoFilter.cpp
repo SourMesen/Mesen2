@@ -61,8 +61,8 @@ void SnesDefaultVideoFilter::InitLookupTable()
 
 void SnesDefaultVideoFilter::OnBeforeApplyFilter()
 {
-	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
-	SnesConfig snesConfig = _emu->GetSettings()->GetSnesConfig();
+	VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
+	SnesConfig& snesConfig = _emu->GetSettings()->GetSnesConfig();
 	
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
 		InitLookupTable();
@@ -100,26 +100,9 @@ void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t xOffset = overscan.Left * overscanMultiplier;
 	uint32_t yOffset = overscan.Top * overscanMultiplier * width;
 
-	uint8_t scanlineIntensity = (uint8_t)((1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
-	if(scanlineIntensity < 255) {
-		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			if(i & 0x01) {
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = ApplyScanlineEffect(GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset), scanlineIntensity);
-					out++;
-				}
-			} else {
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
-					out++;
-				}
-			}
-		}
-	} else {
-		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				out[i*frameInfo.Width+j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
-			}
+	for(uint32_t i = 0; i < frameInfo.Height; i++) {
+		for(uint32_t j = 0; j < frameInfo.Width; j++) {
+			out[i*frameInfo.Width+j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
 		}
 	}
 

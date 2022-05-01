@@ -10,6 +10,7 @@
 #include "Shared/SettingTypes.h"
 #include "Shared/Video/ScaleFilter.h"
 #include "Shared/Video/RotateFilter.h"
+#include "Shared/Video/ScanlineFilter.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/InputHud.h"
 #include "Shared/RenderedFrame.h"
@@ -119,12 +120,17 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	}
 
 	if(_scaleFilter && !isAudioPlayer) {
-		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
+		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height);
 		frameSize = _scaleFilter->GetFrameInfo(frameSize);
 		overscan.Left *= _scaleFilter->GetScale();
 		overscan.Right *= _scaleFilter->GetScale();
 		overscan.Top *= _scaleFilter->GetScale();
 		overscan.Bottom *= _scaleFilter->GetScale();
+	}
+
+	if(!isAudioPlayer) {
+		uint8_t scale = (uint8_t)((double)frameSize.Height / _frame.Height);
+		ScanlineFilter::ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity, scale);
 	}
 
 	RenderedFrame convertedFrame((void*)outputBuffer, frameSize.Width, frameSize.Height, _frame.Scale, _frame.FrameNumber, _frame.InputData);

@@ -1805,6 +1805,9 @@
     <ClInclude Include="PCE\Input\PceAvenuePad6.h">
       <Filter>PCE\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\Video\ScanlineFilter.h">
+      <Filter>Shared\Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

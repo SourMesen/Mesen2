@@ -56,7 +56,7 @@ void ScaleFilter::UpdateOutputBuffer(uint32_t width, uint32_t height)
 	}
 }
 
-uint32_t* ScaleFilter::ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, uint32_t height, double scanlineIntensity)
+uint32_t* ScaleFilter::ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, uint32_t height)
 {
 	UpdateOutputBuffer(width, height);
 
@@ -74,21 +74,6 @@ uint32_t* ScaleFilter::ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, ui
 		supereagle_generic_xrgb8888(width, height, inputArgbBuffer, width, _outputBuffer, width * _filterScale);
 	} else if(_scaleFilterType == ScaleFilterType::Prescale) {
 		ApplyPrescaleFilter(inputArgbBuffer);
-	}
-
-	scanlineIntensity = 1.0 - scanlineIntensity;
-
-	if(scanlineIntensity < 1.0) {
-		for(int y = 1, yMax = height * _filterScale; y < yMax; y += 2) {
-			for(int x = 0, xMax = width * _filterScale; x < xMax; x++) {
-				uint32_t &color = _outputBuffer[y*xMax + x];
-				uint8_t r = (color >> 16) & 0xFF, g = (color >> 8) & 0xFF, b = color & 0xFF;
-				r = (uint8_t)(r * scanlineIntensity);
-				g = (uint8_t)(g * scanlineIntensity);
-				b = (uint8_t)(b * scanlineIntensity);
-				color = 0xFF000000 | (r << 16) | (g << 8) | b;
-			}
-		}
 	}
 
 	return _outputBuffer;

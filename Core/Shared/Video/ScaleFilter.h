@@ -21,7 +21,7 @@ public:
 	~ScaleFilter();
 
 	uint32_t GetScale();
-	uint32_t* ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, uint32_t height, double scanlineIntensity);
+	uint32_t* ApplyFilter(uint32_t *inputArgbBuffer, uint32_t width, uint32_t height);
 	FrameInfo GetFrameInfo(FrameInfo baseFrameInfo);
 
 	static unique_ptr<ScaleFilter> GetScaleFilter(VideoFilterType filter);

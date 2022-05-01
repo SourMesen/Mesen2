@@ -62,26 +62,10 @@ void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	} else {
 		snes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, baseWidth * 8);
 	}
-	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
 
-	if(cfg.ScanlineIntensity == 0) {
-		for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
-			memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
-			memcpy(GetOutputBuffer()+(i+1)*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
-		}
-	} else {
-		uint8_t intensity = (uint8_t)((1.0 - cfg.ScanlineIntensity) * 255);
-		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			if(i & 0x01) {
-				uint32_t *in = _ntscBuffer + yOffset + xOffset + (i - 1) * baseWidth;
-				uint32_t *out = GetOutputBuffer() + i * frameInfo.Width;
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					out[j] = ApplyScanlineEffect(in[j], intensity);
-				}
-			} else {
-				memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
-			}
-		}
+	for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
+		memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
+		memcpy(GetOutputBuffer()+(i+1)*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i*baseWidth, frameInfo.Width * sizeof(uint32_t));
 	}
 }
 

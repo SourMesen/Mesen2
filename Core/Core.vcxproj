@@ -191,6 +191,7 @@
     <ClInclude Include="NES\APU\TriangleChannel.h" />
     <ClInclude Include="Shared\TimingInfo.h" />
     <ClInclude Include="Shared\Video\RotateFilter.h" />
+    <ClInclude Include="Shared\Video\ScanlineFilter.h" />
     <ClInclude Include="Shared\Video\stdafx.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
     <ClInclude Include="SNES\AluMulDiv.h" />

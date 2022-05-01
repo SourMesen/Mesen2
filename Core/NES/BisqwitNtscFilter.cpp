@@ -122,36 +122,12 @@ void BisqwitNtscFilter::RecursiveBlend(int iterationCount, uint64_t *output, uin
 	//Blend 2 pixels at once
 	uint32_t width = _frameInfo.Width / 2;
 
-	double scanlineIntensity = 1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity;
-	if(scanlineIntensity < 1.0 && (iterationCount == 2 || _resDivider == 4)) {
-		//Most likely extremely inefficient scanlines, but works
+	if(verticalBlend) {
 		for(uint32_t x = 0; x < width; x++) {
-			uint64_t mixed;
-			if(verticalBlend) {
-				mixed = ((((currentLine[x] ^ nextLine[x]) & 0xfefefefefefefefeL) >> 1) + (currentLine[x] & nextLine[x]));
-			} else {
-				mixed = currentLine[x];
-			}
-			
-			uint8_t r = (mixed >> 16) & 0xFF, g = (mixed >> 8) & 0xFF, b = mixed & 0xFF;
-			uint8_t r2 = (mixed >> 48) & 0xFF, g2 = (mixed >> 40) & 0xFF, b2 = (mixed >> 32) & 0xFF;
-			r = (uint8_t)(r * scanlineIntensity);
-			g = (uint8_t)(g * scanlineIntensity);
-			b = (uint8_t)(b * scanlineIntensity);
-			r2 = (uint8_t)(r2 * scanlineIntensity);
-			g2 = (uint8_t)(g2 * scanlineIntensity);
-			b2 = (uint8_t)(b2 * scanlineIntensity);
-
-			output[x] = ((uint64_t)r2 << 48) | ((uint64_t)g2 << 40) | ((uint64_t)b2 << 32) | (r << 16) | (g << 8) | b;
+			output[x] = ((((currentLine[x] ^ nextLine[x]) & 0xfefefefefefefefeL) >> 1) + (currentLine[x] & nextLine[x]));
 		}
 	} else {
-		if(verticalBlend) {
-			for(uint32_t x = 0; x < width; x++) {
-				output[x] = ((((currentLine[x] ^ nextLine[x]) & 0xfefefefefefefefeL) >> 1) + (currentLine[x] & nextLine[x]));
-			}
-		} else {
-			memcpy(output, currentLine, width * sizeof(uint64_t));
-		}
+		memcpy(output, currentLine, width * sizeof(uint64_t));
 	}
 
 	iterationCount /= 2;

@@ -3,7 +3,9 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Video/BaseVideoFilter.h"
+#include "Shared/Video/RotateFilter.h"
 #include "Shared/Video/ScaleFilter.h"
+#include "Shared/Video/ScanlineFilter.h"
 #include "Utilities/PNGHelper.h"
 #include "Utilities/FolderUtilities.h"
 
@@ -86,15 +88,6 @@ uint32_t* BaseVideoFilter::GetOutputBuffer()
 	return _outputBuffer;
 }
 
-uint32_t BaseVideoFilter::ApplyScanlineEffect(uint32_t argb, uint8_t scanlineIntensity)
-{
-	uint8_t r = ((argb & 0xFF0000) >> 16) * scanlineIntensity / 255;
-	uint8_t g = ((argb & 0xFF00) >> 8) * scanlineIntensity / 255;
-	uint8_t b = (argb & 0xFF) * scanlineIntensity / 255;
-
-	return 0xFF000000 | (r << 16) | (g << 8) | b;
-}
-
 void BaseVideoFilter::InitConversionMatrix(double hueShift, double saturationShift)
 {
 	double hue = hueShift * PI;
@@ -146,12 +139,24 @@ void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename
 	}
 
 	pngBuffer = frameBuffer;
+	
+	uint8_t scale = 1;
+
+	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;
+	unique_ptr<RotateFilter> rotateFilter(new RotateFilter(screenRotation));
+	if(screenRotation != 0) {
+		pngBuffer = rotateFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height);
+		frameInfo = rotateFilter->GetFrameInfo(frameInfo);
+	}
 
 	unique_ptr<ScaleFilter> scaleFilter = ScaleFilter::GetScaleFilter(filterType);
 	if(scaleFilter) {
-		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity);
+		pngBuffer = scaleFilter->ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height);
 		frameInfo = scaleFilter->GetFrameInfo(frameInfo);
+		scale = scaleFilter->GetScale();
 	}
+
+	ScanlineFilter::ApplyFilter(pngBuffer, frameInfo.Width, frameInfo.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity, scale);
 	
 	if(!filename.empty()) {
 		PNGHelper::WritePNG(filename, pngBuffer, frameInfo.Width, frameInfo.Height);

@@ -111,26 +111,9 @@ void GbDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)
 	uint32_t xOffset = overscan.Left;
 	uint32_t yOffset = overscan.Top;
 
-	uint8_t scanlineIntensity = (uint8_t)((1.0 - _emu->GetSettings()->GetVideoConfig().ScanlineIntensity) * 255);
-	if(scanlineIntensity < 255) {
-		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			if(i & 0x01) {
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = ApplyScanlineEffect(GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset), scanlineIntensity);
-					out++;
-				}
-			} else {
-				for(uint32_t j = 0; j < frameInfo.Width; j++) {
-					*out = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
-					out++;
-				}
-			}
-		}
-	} else {
-		for(uint32_t i = 0; i < frameInfo.Height; i++) {
-			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				out[i * frameInfo.Width + j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
-			}
+	for(uint32_t i = 0; i < frameInfo.Height; i++) {
+		for(uint32_t j = 0; j < frameInfo.Width; j++) {
+			out[i * frameInfo.Width + j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
 		}
 	}
 
