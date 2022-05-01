@@ -205,29 +205,29 @@ public:
 		}
 	}
 
-	void Exec()
+	__forceinline void Exec()
 	{
 		if(_state.FastCpuSpeed) {
-			_state.CycleCount += 3;
-			_timer->Exec();
-			_ppu->Exec();
-			if(_cdrom) {
-				_cdrom->Exec();
-			}
+			ExecFast();
 		} else {
 			ExecSlow();
 		}
 	}
 
-	void ExecSlow()
+	__forceinline void ExecFast()
+	{
+		_state.CycleCount += 3;
+		_timer->Exec();
+		_ppu->Exec();
+		if(_cdrom) {
+			_cdrom->Exec();
+		}
+	}
+
+	__declspec(noinline) void ExecSlow()
 	{
 		for(int i = 0; i < 4; i++) {
-			_state.CycleCount += 3;
-			_timer->Exec();
-			_ppu->Exec();
-			if(_cdrom) {
-				_cdrom->Exec();
-			}
+			ExecFast();
 		}
 	}
 
@@ -287,27 +287,10 @@ public:
 	uint8_t DebugRead(uint16_t addr)
 	{
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
-		addr &= 0x1FFF;
 		if(bank != 0xFF) {
-			return _readBanks[bank][addr];
+			return _readBanks[bank][addr & 0x1FFF];
 		} else {
-			if(addr <= 0x3FF) {
-				//VDC
-			} else if(addr <= 0x7FF) {
-				//VCE
-			} else if(addr <= 0xBFF) {
-				//PSG
-			} else if(addr <= 0xFFF) {
-				//Timer
-			} else if(addr <= 0x13FF) {
-				//IO
-			} else if(addr <= 0x17FF) {
-				//IRQ
-				switch(addr & 0x03) {
-					case 2: return _state.DisabledIrqs;
-					case 3: return _state.ActiveIrqs;
-				}
-			}
+			//TODO read registers without side effects
 		}
 		return 0xFF;
 	}

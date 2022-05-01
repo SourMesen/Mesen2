@@ -811,7 +811,7 @@ bool PcePpu::IsVramAccessBlocked()
 void PcePpu::WaitForVramAccess()
 {
 	while(IsVramAccessBlocked()) {
-		_console->GetMemoryManager()->Exec();
+		_console->GetMemoryManager()->ExecFast();
 		DrawScanline();
 	}
 }
