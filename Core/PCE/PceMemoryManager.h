@@ -369,6 +369,9 @@ public:
 
 	void WriteVdc(uint16_t addr, uint8_t value)
 	{
+		if(_state.Mpr[0] == 0xFF) {
+			_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
+		}
 		_ppu->WriteVdc(addr, value);
 		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}
@@ -410,22 +413,16 @@ public:
 	AddressInfo GetAbsoluteAddress(uint32_t relAddr)
 	{
 		uint8_t bank = _state.Mpr[(relAddr & 0xE000) >> 13];
-		if(bank != 0xFF) {
-			uint32_t absAddr;
-			switch(_bankMemType[bank]) {
-				case MemoryType::PcePrgRom: absAddr = (uint32_t)(_readBanks[bank] - _prgRom) + (relAddr & 0x1FFF); break;
-				case MemoryType::PceWorkRam: absAddr = (uint32_t)(_readBanks[bank] - _workRam) + (relAddr & 0x1FFF); break;
-				case MemoryType::PceSaveRam: absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & 0x1FFF); break;
-				case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & 0x1FFF); break;
-				case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & 0x1FFF); break;
-				default: return { -1, MemoryType::Register };
-			}
-			return { (int32_t)absAddr, _bankMemType[bank] };
-		}/* else if(bank == 0xFF) { //TODO
-			return { (int32_t)relAddr & 0x1FFF, MemoryType::Register };
-		}*/ else {
-			return { -1, MemoryType::Register };
+		uint32_t absAddr;
+		switch(_bankMemType[bank]) {
+			case MemoryType::PcePrgRom: absAddr = (uint32_t)(_readBanks[bank] - _prgRom) + (relAddr & 0x1FFF); break;
+			case MemoryType::PceWorkRam: absAddr = (uint32_t)(_readBanks[bank] - _workRam) + (relAddr & 0x1FFF); break;
+			case MemoryType::PceSaveRam: absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & 0x1FFF); break;
+			case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & 0x1FFF); break;
+			case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & 0x1FFF); break;
+			default: return { -1, MemoryType::Register };
 		}
+		return { (int32_t)absAddr, _bankMemType[bank] };
 	}
 
 	AddressInfo GetRelativeAddress(AddressInfo absAddr)
@@ -434,11 +431,7 @@ public:
 			AddressInfo bankStart = GetAbsoluteAddress(i * 0x2000);
 			if(bankStart.Type == absAddr.Type && bankStart.Address == (absAddr.Address & ~0x1FFF)) {
 				return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
-			}/* else if(absAddr.Type == MemoryType::Register) { //TODO
-				if(_state.Mpr[i] == 0xFF) {
-					return { (i << 13) | (absAddr.Address & 0x1FFF), MemoryType::PceMemory };
-				}
-			}*/
+			}
 		}
 
 		return { -1, MemoryType::Register };

@@ -146,7 +146,10 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 			break;
 	}
 
-	bool visible = true;//TODO
+	bool visible = (
+		((spriteX + width) > 32 && (spriteX < 256 + 32)) ||
+		((spriteY + height) > 64 && (spriteY < 242 + 64))
+	);
 
 	sprite.Bpp = 4;
 	sprite.Format = TileFormat::Bpp4;
