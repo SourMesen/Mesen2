@@ -78,7 +78,7 @@ DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 			for(int y = 0; y < 8; y++) {
 				uint16_t tileAddr = tileIndex * 32 + y * 2;
 				for(int x = 0; x < 8; x++) {
-					uint8_t color = GetTilePixelColor(vram, 0xFFFF, 4, tileAddr, 7 - x, 0, TileFormat::Bpp4);
+					uint8_t color = GetTilePixelColor(vram, 0xFFFF, tileAddr, 7 - x, TileFormat::Bpp4);
 					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
 					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
 					outBuffer[outPos] = palette[palAddr];
@@ -136,6 +136,7 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	uint8_t width = (flags & 0x100) ? 32 : 16;
 	uint8_t height;
 	switch((flags >> 12) & 0x03) {
+		default:
 		case 0: height = 16; break;
 		case 1: height = 32; break;
 		
@@ -207,14 +208,7 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 			uint16_t pixelStart = tileStart + yOffset;
 			uint8_t shift = 15 - xOffset;
 
-			//TODO FIX
-			uint16_t* ram = (uint16_t*)vram;
-
-			uint8_t color = (((ram[(pixelStart + 0) & 0x7FFF] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 16) & 0x7FFF] >> shift) & 0x01) << 1);
-			color |= (((ram[(pixelStart + 32) & 0x7FFF] >> shift) & 0x01) << 2);
-			color |= (((ram[(pixelStart + 48) & 0x7FFF] >> shift) & 0x01) << 3);
-
+			uint8_t color = GetTilePixelColor(vram, 0xFFFF, pixelStart * 2, shift, TileFormat::PceSpriteBpp4);
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
 			} else {

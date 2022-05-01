@@ -62,12 +62,7 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 						uint8_t color = vram[pixelStart + x * 2 + 1];
 
 						if(color != 0) {
-							uint32_t rgbColor;
-							if(directColor) {
-								rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
-							} else {
-								rgbColor = GetRgbPixelColor(palette, color, 0, 8, false, 0);
-							}
+							uint32_t rgbColor = GetRgbPixelColor(format, palette, color, 0);
 							outBuffer[((row * 8) + y) * outputSize.Width + column * 8 + x] = rgbColor;
 						}
 					}
@@ -110,10 +105,10 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 						uint16_t pixelStart = tileStart + yOffset * 2;
 
 						uint8_t shift = hMirror ? (x & 0x07) : (7 - (x & 0x07));
-						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, bpp, pixelStart, shift, 1, format);
+						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, pixelStart, shift, format);
 						if(color != 0) {
 							uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(palette, color, paletteIndex, bpp, directColor, basePaletteOffset);
+							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(format, palette + basePaletteOffset, color, paletteIndex);
 						}
 					}
 				}
@@ -280,9 +275,9 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 			uint8_t tileIndex = (row << 4) | column;
 			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 
-			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, 4, tileStart + yOffset * 2, 7 - xOffset, 1, TileFormat::Bpp4);
+			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, tileStart + yOffset * 2, 7 - xOffset, TileFormat::Bpp4);
 			if(color != 0) {
-				sprite.SpritePreview[outOffset] = GetRgbPixelColor(palette, color, sprite.Palette + 8, 4, false, 0);
+				sprite.SpritePreview[outOffset] = GetRgbPixelColor(TileFormat::Bpp4, palette, color, sprite.Palette + 8);
 			} else {
 				sprite.SpritePreview[outOffset] = 0;
 			}

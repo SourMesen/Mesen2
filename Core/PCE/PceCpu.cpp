@@ -90,18 +90,6 @@ PceCpu::PceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManag
 
 void PceCpu::Exec()
 {
-	//TODO delete
-	/*uint32_t cycleCounts[256] = {};
-	for(int i = 0; i < 256; i++) {
-	uint64_t count = _state.CycleCount;
-
-	_instAddrMode = _addrMode[i];
-	_operand = FetchOperand();
-	(this->*_opTable[i])();
-
-	cycleCounts[i] = _state.CycleCount - count + 1;
-	}*/
-
 #ifndef DUMMYCPU
 	_emu->ProcessInstruction<CpuType::Pce>();
 #endif
@@ -236,7 +224,6 @@ uint8_t PceCpu::GetOperandValue()
 
 void PceCpu::DummyRead()
 {
-	//TODO - is this supposed to be an idle cycle, or a dummy read?
 	MemoryRead(_state.PC, MemoryOperationType::DummyRead);
 }
 

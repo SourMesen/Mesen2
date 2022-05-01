@@ -157,11 +157,11 @@ protected:
 	Debugger* _debugger;
 	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;
 
-	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift, const int secondByteOffset, const TileFormat format);
+	uint8_t GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t pixelStart, uint8_t shift, const TileFormat format);
 
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
-	uint32_t GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset);
+	uint32_t GetRgbPixelColor(TileFormat format, uint32_t* colors, uint8_t colorIndex, uint8_t palette);
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);

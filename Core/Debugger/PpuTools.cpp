@@ -13,37 +13,58 @@ PpuTools::PpuTools(Debugger* debugger, Emulator *emu)
 	_debugger = debugger;
 }
 
-uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, const uint8_t bpp, const uint32_t pixelStart, const uint8_t shift, const int secondByteOffset, const TileFormat format)
+uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t pixelStart, uint8_t shift, const TileFormat format)
 {
 	uint8_t color;
-	if(format == TileFormat::PceSpriteBpp4) {
-		//TODO FIX
-		uint16_t* ram2 = (uint16_t*)ram;
-		color = (((ram2[((pixelStart >> 1) + 0) & (ramMask >> 1)] >> shift) & 0x01) << 0);
-		color |= (((ram2[((pixelStart >> 1) + 16) & (ramMask >> 1)] >> shift) & 0x01) << 1);
-		color |= (((ram2[((pixelStart >> 1) + 32) & (ramMask >> 1)] >> shift) & 0x01) << 2);
-		color |= (((ram2[((pixelStart >> 1) + 48) & (ramMask >> 1)] >> shift) & 0x01) << 3);
-	} else if(bpp == 2) {
-		color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-		color |= (((ram[(pixelStart + secondByteOffset) & ramMask] >> shift) & 0x01) << 1);
-	} else if(bpp == 4) {
-		color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-		color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
-		color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
-		color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
-	} else if(bpp == 8) {
-		color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-		color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
-		color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
-		color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
-		color |= (((ram[(pixelStart + 32) & ramMask] >> shift) & 0x01) << 4);
-		color |= (((ram[(pixelStart + 33) & ramMask] >> shift) & 0x01) << 5);
-		color |= (((ram[(pixelStart + 48) & ramMask] >> shift) & 0x01) << 6);
-		color |= (((ram[(pixelStart + 49) & ramMask] >> shift) & 0x01) << 7);
-	} else {
-		throw std::runtime_error("unsupported bpp");
+	switch(format) {
+		case TileFormat::PceSpriteBpp4: {
+			if(shift >= 8) {
+				shift -= 8;
+				pixelStart++;
+			}
+			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 32) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(pixelStart + 64) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(pixelStart + 96) & ramMask] >> shift) & 0x01) << 3);
+			return color;
+		}
+
+		case TileFormat::Bpp2:
+			color = (((ram[pixelStart & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			return color;
+		
+		case TileFormat::NesBpp2:
+			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 8) & ramMask] >> shift) & 0x01) << 1);
+			return color;
+
+		case TileFormat::Bpp4:
+			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
+			return color;
+
+		case TileFormat::Bpp8:
+		case TileFormat::DirectColor:
+			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
+			color |= (((ram[(pixelStart + 32) & ramMask] >> shift) & 0x01) << 4);
+			color |= (((ram[(pixelStart + 33) & ramMask] >> shift) & 0x01) << 5);
+			color |= (((ram[(pixelStart + 48) & ramMask] >> shift) & 0x01) << 6);
+			color |= (((ram[(pixelStart + 49) & ramMask] >> shift) & 0x01) << 7);
+			return color;
+
+		case TileFormat::Mode7:
+		case TileFormat::Mode7DirectColor:
+			return ram[(pixelStart + (7 - shift) * 2 + 1) & ramMask];
+
+		default:
+			throw std::runtime_error("unsupported format");
 	}
-	return color;
 }
 
 void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
@@ -56,17 +77,33 @@ void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 	output[3] = 0xFF;
 }
 
-uint32_t PpuTools::GetRgbPixelColor(uint32_t* colors, uint8_t colorIndex, uint8_t palette, uint8_t bpp, bool directColorMode, uint16_t basePaletteOffset)
+uint32_t PpuTools::GetRgbPixelColor(TileFormat format, uint32_t* colors, uint8_t colorIndex, uint8_t palette)
 {
-	if(bpp == 8 && directColorMode) {
-		uint32_t paletteColor = (
-			((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
-			(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
-			(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
-		);
-		return SnesDefaultVideoFilter::ToArgb(paletteColor);
-	} else {
-		return colors[basePaletteOffset + (palette * (1 << bpp) + colorIndex)];
+	switch(format) {
+		case TileFormat::DirectColor:
+			return SnesDefaultVideoFilter::ToArgb(
+				((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
+				(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
+				(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
+			);
+		
+		case TileFormat::NesBpp2:
+		case TileFormat::Bpp2:
+			return colors[palette * 4 + colorIndex];
+
+		case TileFormat::Bpp4:
+		case TileFormat::PceSpriteBpp4:
+			return colors[palette * 16 + colorIndex];
+
+		case TileFormat::Bpp8:
+		case TileFormat::Mode7:
+			return colors[colorIndex];
+
+		case TileFormat::Mode7DirectColor:
+			return SnesDefaultVideoFilter::ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
+
+		default:
+			throw std::runtime_error("unsupported format");
 	}
 }
 
@@ -78,18 +115,16 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	uint8_t bpp;
 
 	int rowOffset = 2;
-	int secondByteOffset = 1;
-	bool directColor = false;
 	
 	int tileWidth = 8;
 	int tileHeight = 8;
 	switch(options.Format) {
 		case TileFormat::Bpp2: bpp = 2; break;
 		case TileFormat::Bpp4: bpp = 4; break;
-		case TileFormat::DirectColor: directColor = true; bpp = 8; break;
-		case TileFormat::Mode7: bpp = 16; break;
-		case TileFormat::Mode7DirectColor: directColor = true; bpp = 16; break;
-		case TileFormat::NesBpp2: bpp = 2; rowOffset = 1; secondByteOffset = 8; break;
+		case TileFormat::DirectColor: bpp = 8; break;
+		case TileFormat::Mode7: bpp = 16; rowOffset = 16; break;
+		case TileFormat::Mode7DirectColor: bpp = 16; rowOffset = 16; break;
+		case TileFormat::NesBpp2: bpp = 2; rowOffset = 1; break;
 		case TileFormat::PceSpriteBpp4: bpp = 4; rowOffset = 2; tileWidth = 16; tileHeight = 16; options.Width /= 2; options.Height /= 2; break;
 		default: bpp = 8; break;
 	}
@@ -135,37 +170,14 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 				baseOutputOffset = row * options.Width * tileWidth * tileHeight + column * tileWidth;
 			}
 
-			if(options.Format == TileFormat::Mode7 || options.Format == TileFormat::Mode7DirectColor) {
-				for(int y = 0; y < 8; y++) {
-					uint32_t pixelStart = addr + y * 16;
-
-					for(int x = 0; x < 8; x++) {
-						uint8_t color = ram[(pixelStart + x * 2 + 1) & ramMask];
-
-						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							uint32_t pos = baseOutputOffset + (y * options.Width * 8) + x;
-							if(pos < outputSize) {
-								uint32_t rgbColor;
-								if(directColor) {
-									rgbColor = SnesDefaultVideoFilter::ToArgb(((color & 0x07) << 2) | ((color & 0x38) << 4) | ((color & 0xC0) << 7));
-								} else {
-									rgbColor = GetRgbPixelColor(colors, color, 0, 8, false, 0);
-								}
-								outBuffer[pos] = rgbColor;
-							}
-						}
-					}
-				}
-			} else {
-				for(int y = 0; y < tileHeight; y++) {
-					uint32_t pixelStart = addr + y * rowOffset;
-					for(int x = 0; x < tileWidth; x++) {
-						uint8_t color = GetTilePixelColor(ram, ramMask, bpp, pixelStart, tileWidth - 1 - x, secondByteOffset, options.Format);
-						if(color != 0 || options.Background == TileBackground::PaletteColor) {
-							uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
-							if(pos < outputSize) {
-								outBuffer[pos] = GetRgbPixelColor(colors, color, options.Palette, bpp, directColor, 0);
-							}
+			for(int y = 0; y < tileHeight; y++) {
+				uint32_t pixelStart = addr + y * rowOffset;
+				for(int x = 0; x < tileWidth; x++) {
+					uint8_t color = GetTilePixelColor(ram, ramMask, pixelStart, tileWidth - 1 - x, options.Format);
+					if(color != 0 || options.Background == TileBackground::PaletteColor) {
+						uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
+						if(pos < outputSize) {
+							outBuffer[pos] = GetRgbPixelColor(options.Format, colors, color, options.Palette);
 						}
 					}
 				}

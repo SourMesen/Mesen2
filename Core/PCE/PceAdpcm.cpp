@@ -4,6 +4,7 @@
 #include "PCE/PceCdRom.h"
 #include "PCE/PceConstants.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 
@@ -16,8 +17,7 @@ PceAdpcm::PceAdpcm(Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
 	_scsi = scsi;
 
 	_ram = new uint8_t[0x10000];
-	//todo random
-	memset(_ram, 0, 0x10000);
+	emu->GetSettings()->InitializeRam(_ram, 0x10000);
 	emu->RegisterMemory(MemoryType::PceAdpcmRam, _ram, 0x10000);
 }
 

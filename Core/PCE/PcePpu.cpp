@@ -905,7 +905,6 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 				case 0x0A:
 					if(msb) {
-						//TODO - this probably has an impact on timing within the scanline?
 						_state.HorizDisplayStart = value & 0x7F;
 					} else {
 						_state.HorizSyncWidth = value & 0x1F;
