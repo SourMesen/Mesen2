@@ -32,6 +32,9 @@ protected:
 	bool IsOddFrame();
 	uint32_t GetBufferSize();
 	virtual FrameInfo GetFrameInfo();
+	
+	template<typename T> bool NtscFilterOptionsChanged(T& ntscSetup);
+	template<typename T> void InitNtscFilter(T& ntscSetup);
 
 public:
 	BaseVideoFilter(Emulator* emu);

@@ -4,6 +4,7 @@
 #include "PCE/PceControlManager.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceDefaultVideoFilter.h"
+#include "PCE/PceNtscFilter.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PcePpu.h"
 #include "PCE/PcePsg.h"
@@ -138,7 +139,16 @@ double PceConsole::GetFps()
 
 BaseVideoFilter* PceConsole::GetVideoFilter()
 {
-	return new PceDefaultVideoFilter(_emu);
+	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
+
+	switch(filterType) {
+		case VideoFilterType::NtscBlargg:
+		case VideoFilterType::NtscBisqwit:
+			return new PceNtscFilter(_emu);
+
+		default:
+			return new PceDefaultVideoFilter(_emu);
+	}
 }
 
 PpuFrameInfo PceConsole::GetPpuFrame()

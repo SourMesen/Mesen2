@@ -27,27 +27,11 @@ FrameInfo NesNtscFilter::GetFrameInfo()
 
 void NesNtscFilter::OnBeforeApplyFilter()
 {
-	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
 	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
 	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
 
-	if(_ntscSetup.hue != cfg.Hue || _ntscSetup.saturation != cfg.Saturation || _ntscSetup.brightness != cfg.Brightness || _ntscSetup.contrast != cfg.Contrast ||
-		_ntscSetup.artifacts != cfg.NtscArtifacts || _ntscSetup.bleed != cfg.NtscBleed || _ntscSetup.fringing != cfg.NtscFringing || _ntscSetup.gamma != cfg.NtscGamma ||
-		(_ntscSetup.merge_fields == 1) != cfg.NtscMergeFields || _ntscSetup.resolution != cfg.NtscResolution || _ntscSetup.sharpness != cfg.NtscSharpness || model != _ppuModel ||
-		memcmp(_nesConfig.UserPalette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette)) != 0) {
-
-		_ntscSetup.hue = cfg.Hue;
-		_ntscSetup.saturation = cfg.Saturation;
-		_ntscSetup.brightness = cfg.Brightness;
-		_ntscSetup.contrast = cfg.Contrast;
-
-		_ntscSetup.artifacts = cfg.NtscArtifacts;
-		_ntscSetup.bleed = cfg.NtscBleed;
-		_ntscSetup.fringing = cfg.NtscFringing;
-		_ntscSetup.gamma = cfg.NtscGamma;
-		_ntscSetup.merge_fields = (int)cfg.NtscMergeFields;
-		_ntscSetup.resolution = cfg.NtscResolution;
-		_ntscSetup.sharpness = cfg.NtscSharpness;
+	if(NtscFilterOptionsChanged(_ntscSetup) || model != _ppuModel || memcmp(_nesConfig.UserPalette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette)) != 0) {
+		InitNtscFilter(_ntscSetup);
 
 		uint32_t palette[512];
 		NesDefaultVideoFilter::GetFullPalette(palette, nesCfg, model);

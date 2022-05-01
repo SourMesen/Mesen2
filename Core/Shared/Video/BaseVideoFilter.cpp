@@ -8,6 +8,8 @@
 #include "Shared/Video/ScanlineFilter.h"
 #include "Utilities/PNGHelper.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/NTSC/nes_ntsc.h"
+#include "Utilities/NTSC/snes_ntsc.h"
 
 const static double PI = 3.14159265358979323846;
 
@@ -122,6 +124,44 @@ void BaseVideoFilter::YiqToRgb(double y, double i, double q, double& r, double& 
 	b = std::max(0.0, std::min(1.0, (y + _yiqToRgbMatrix[4] * i + _yiqToRgbMatrix[5] * q)));
 }
 
+template<typename T>
+bool BaseVideoFilter::NtscFilterOptionsChanged(T& ntscSetup)
+{
+	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
+
+	return (
+		ntscSetup.hue != cfg.Hue ||
+		ntscSetup.saturation != cfg.Saturation ||
+		ntscSetup.brightness != cfg.Brightness ||
+		ntscSetup.contrast != cfg.Contrast ||
+		ntscSetup.artifacts != cfg.NtscArtifacts ||
+		ntscSetup.bleed != cfg.NtscBleed ||
+		ntscSetup.fringing != cfg.NtscFringing ||
+		ntscSetup.gamma != cfg.NtscGamma ||
+		(ntscSetup.merge_fields == 1) != cfg.NtscMergeFields ||
+		ntscSetup.resolution != cfg.NtscResolution ||
+		ntscSetup.sharpness != cfg.NtscSharpness
+	);
+}
+
+template<typename T>
+void BaseVideoFilter::InitNtscFilter(T& ntscSetup)
+{
+	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();
+	ntscSetup.hue = cfg.Hue;
+	ntscSetup.saturation = cfg.Saturation;
+	ntscSetup.brightness = cfg.Brightness;
+	ntscSetup.contrast = cfg.Contrast;
+
+	ntscSetup.artifacts = cfg.NtscArtifacts;
+	ntscSetup.bleed = cfg.NtscBleed;
+	ntscSetup.fringing = cfg.NtscFringing;
+	ntscSetup.gamma = cfg.NtscGamma;
+	ntscSetup.merge_fields = (int)cfg.NtscMergeFields;
+	ntscSetup.resolution = cfg.NtscResolution;
+	ntscSetup.sharpness = cfg.NtscSharpness;
+}
+
 void BaseVideoFilter::TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream)
 {
 	uint32_t* pngBuffer;
@@ -194,3 +234,7 @@ void BaseVideoFilter::TakeScreenshot(string romName, VideoFilterType filterType)
 	MessageManager::DisplayMessage("ScreenshotSaved", FolderUtilities::GetFilename(ssFilename, true));
 }
 
+template bool BaseVideoFilter::NtscFilterOptionsChanged<nes_ntsc_setup_t>(nes_ntsc_setup_t& ntscSetup);
+template bool BaseVideoFilter::NtscFilterOptionsChanged<snes_ntsc_setup_t>(snes_ntsc_setup_t& ntscSetup);
+template void BaseVideoFilter::InitNtscFilter<nes_ntsc_setup_t>(nes_ntsc_setup_t& ntscSetup);
+template void BaseVideoFilter::InitNtscFilter<snes_ntsc_setup_t>(snes_ntsc_setup_t& ntscSetup);

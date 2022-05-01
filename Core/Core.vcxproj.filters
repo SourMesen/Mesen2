@@ -1808,6 +1808,9 @@
     <ClInclude Include="Shared\Video\ScanlineFilter.h">
       <Filter>Shared\Video</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceNtscFilter.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1881,6 +1884,9 @@
     </ClCompile>
     <ClCompile Include="PCE\Input\PceTurboTap.cpp">
       <Filter>PCE\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceNtscFilter.cpp">
+      <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

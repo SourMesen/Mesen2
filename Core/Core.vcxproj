@@ -28,6 +28,7 @@
     <ClInclude Include="PCE\PceCdAudioPlayer.h" />
     <ClInclude Include="PCE\PceCdRom.h" />
     <ClInclude Include="PCE\PceConstants.h" />
+    <ClInclude Include="PCE\PceNtscFilter.h" />
     <ClInclude Include="PCE\PcePpu.h" />
     <ClInclude Include="PCE\Debugger\PceDebugger.h" />
     <ClInclude Include="PCE\Debugger\PceDisUtils.h" />
@@ -459,6 +460,7 @@
     <ClCompile Include="PCE\PceControlManager.cpp" />
     <ClCompile Include="PCE\PceCpu.cpp" />
     <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
+    <ClCompile Include="PCE\PceNtscFilter.cpp" />
     <ClCompile Include="PCE\PcePpu.cpp" />
     <ClCompile Include="PCE\PcePsg.cpp" />
     <ClCompile Include="PCE\PcePsgChannel.cpp" />
