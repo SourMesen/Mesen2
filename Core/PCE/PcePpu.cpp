@@ -380,51 +380,28 @@ void PcePpu::LoadBackgroundTiles()
 
 	//LogDebug("BG: " + std::to_string(_loadBgLastCycle) + " -> " + std::to_string(end - 1));
 
-	uint32_t columnMask = _state.ColumnCount - 1;
-	uint32_t scrollOffset = _state.HvLatch.BgScrollX >> 3;
+	uint16_t columnMask = _state.ColumnCount - 1;
+	uint16_t scrollOffset = _state.HvLatch.BgScrollX >> 3;
 	uint16_t row = (_state.HvLatch.BgScrollY) & ((_state.RowCount * 8) - 1);
 
-	//TODO load patterns (vram access mode)
-	//TODO CG flag
-	for(uint16_t i = _loadBgLastCycle; i < end; i++) {
-		_allowVramAccess = true;
-		switch(i & 0x07) {
-			case 0: break; //CPU
+	if(_state.VramAccessMode == 0) {
+		for(uint16_t i = _loadBgLastCycle; i < end; i++) {
+			switch(i & 0x07) {
+				//CPU can access VRAM
+				case 0: case 2: case 4: case 6: _allowVramAccess = true; break;
 
-			case 1:
-			{
-				//BAT
-				uint16_t tileColumn = (scrollOffset + _tileCount) & columnMask;
-				uint16_t batEntry = _vram[(row >> 3) * _state.ColumnCount + tileColumn];
-				_tiles[_tileCount].Palette = batEntry >> 12;
-				_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16) & 0x7FFF;
-				_allowVramAccess = false;
-				break;
+				case 1: LoadBatEntry(scrollOffset, columnMask, row); break;
+				case 3: _allowVramAccess = false; break; //Unused BAT read?
+				case 5: LoadTileDataCg0(row); break;
+				case 7: LoadTileDataCg1(row); break;
 			}
-
-			case 2: break; //CPU
-			
-			case 3: //---
-				_allowVramAccess = false;
-				break;
-
-			case 4: break; //CPU
-			
-			case 5: 
-				//Tile data
-				_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07)];
-				_allowVramAccess = false;
-				break;
-
-			case 6: break; //CPU
-			
-			case 7:
-				//Tile data
-				_tiles[_tileCount].TileData[1] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + 8];
-				_tileCount++;
-				_allowVramAccess = false;
-				break;
 		}
+	} else if(_state.VramAccessMode == 3) {
+		//Mode 3 is 4 cycles per read, CPU has no VRAM access, only 2BPP
+		LoadBackgroundTilesWidth4(end, scrollOffset, columnMask, row);
+	} else {
+		//Mode 1/2 are 2 cycles per read
+		LoadBackgroundTilesWidth2(end, scrollOffset, columnMask, row);
 	}
 
 	if(_allowVramAccess && _pendingMemoryRead) {
@@ -432,6 +409,62 @@ void PcePpu::LoadBackgroundTiles()
 	}
 
 	_loadBgLastCycle = end;
+}
+
+void PcePpu::LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
+{
+	for(uint16_t i = _loadBgLastCycle; i < end; i++) {
+		switch(i & 0x07) {
+			case 1: LoadBatEntry(scrollOffset, columnMask, row); break;
+			case 2: _allowVramAccess = true; break; //CPU
+			case 5: LoadTileDataCg0(row); break;
+			case 7: LoadTileDataCg1(row); break;
+		}
+	}
+}
+
+void PcePpu::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
+{
+	_allowVramAccess = false;
+	for(uint16_t i = _loadBgLastCycle; i < end; i++) {
+		switch(i & 0x07) {
+			case 3: LoadBatEntry(scrollOffset, columnMask, row); break;
+
+			case 7:
+				//Tile data
+				if(_state.CgMode) {
+					_tiles[_tileCount].TileData[0] = 0;
+					LoadTileDataCg1(row);
+				} else {
+					LoadTileDataCg0(row);
+					_tiles[_tileCount].TileData[1] = 0;
+					_tileCount++;
+				}
+				break;
+		}
+	}
+}
+
+void PcePpu::LoadBatEntry(uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
+{
+	uint16_t tileColumn = (scrollOffset + _tileCount) & columnMask;
+	uint16_t batEntry = _vram[(row >> 3) * _state.ColumnCount + tileColumn];
+	_tiles[_tileCount].Palette = batEntry >> 12;
+	_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16) & 0x7FFF;
+	_allowVramAccess = false;
+}
+
+void PcePpu::LoadTileDataCg0(uint16_t row)
+{
+	_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07)];
+	_allowVramAccess = false;
+}
+
+void PcePpu::LoadTileDataCg1(uint16_t row)
+{
+	_tiles[_tileCount].TileData[1] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + 8];
+	_allowVramAccess = false;
+	_tileCount++;
 }
 
 void PcePpu::LoadSpriteTiles()
