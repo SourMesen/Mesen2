@@ -63,10 +63,10 @@ DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	result.RowCount = state.RowCount;
 	result.TilemapAddress = 0;
 	result.TilesetAddress = 0;
-	result.ScrollX = state.BgScrollX;
-	result.ScrollY = state.BgScrollY;
-	result.ScrollWidth = (state.HorizDisplayWidth + 1) * 8;
-	result.ScrollHeight = std::min<uint32_t>(242, state.VertDisplayWidth);
+	result.ScrollX = state.HvLatch.BgScrollX;
+	result.ScrollY = state.HvLatch.BgScrollY;
+	result.ScrollWidth = (state.HvLatch.HorizDisplayWidth + 1) * 8;
+	result.ScrollHeight = std::min<uint32_t>(242, state.HvLatch.VertDisplayWidth);
 
 	for(uint8_t row = 0; row < state.RowCount; row++) {
 		for(uint8_t column = 0; column < state.ColumnCount; column++) {
@@ -94,9 +94,9 @@ void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 {
 	PcePpuState& state = (PcePpuState&)baseState;
 
-	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HorizDisplayWidth + 1) * 8);
+	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HvLatch.HorizDisplayWidth + 1) * 8);
 	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF333333);
-	for(int i = 64; i < state.VertDisplayWidth + 64; i++) {
+	for(int i = 64; i < state.HvLatch.VertDisplayWidth + 64; i++) {
 		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, 0xFF666666);
 	}
 

@@ -134,6 +134,7 @@ private:
 	__declspec(noinline) void ProcessEvent();
 
 	__declspec(noinline) void ProcessHorizontalSyncStart();
+	__declspec(noinline) void ProcessVerticalSyncStart();
 
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift);
 	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);

@@ -1170,8 +1170,8 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$05.11-12", "VRAM Address Increment", ppu.VramAddrIncrement),
 
 				new RegEntry("$06", "RCR - Raster Compare Register", ppu.RasterCompareRegister, Format.X16),
-				new RegEntry("$07", "BXR - BG Scroll X", ppu.BgScrollX, Format.X16),
-				new RegEntry("$08", "BYR - BG Scroll Y", ppu.BgScrollY, Format.X16),
+				new RegEntry("$07", "BXR - BG Scroll X", ppu.HvReg.BgScrollX, Format.X16),
+				new RegEntry("$08", "BYR - BG Scroll Y", ppu.HvReg.BgScrollY, Format.X16),
 				
 				new RegEntry("$09", "MWR - Memory Width", null),
 				new RegEntry("$09.0-1", "VRAM Access Mode", ppu.VramAccessMode),
@@ -1181,22 +1181,22 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$09.7", "CG Mode", ppu.CgMode),
 
 				new RegEntry("$0A", "HSR - Horizontal Sync", null),
-				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", ppu.HorizSyncWidth, Format.X8),
-				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", ppu.HorizDisplayStart, Format.X8),
+				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", ppu.HvReg.HorizSyncWidth, Format.X8),
+				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", ppu.HvReg.HorizDisplayStart, Format.X8),
 				
 				new RegEntry("$0B", "HDR - Horizontal Display", null),
-				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", ppu.HorizDisplayWidth, Format.X8),
-				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", ppu.HorizDisplayEnd, Format.X8),
+				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", ppu.HvReg.HorizDisplayWidth, Format.X8),
+				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", ppu.HvReg.HorizDisplayEnd, Format.X8),
 
 				new RegEntry("$0C", "VPR - Vertical Sync", null),
-				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", ppu.VertSyncWidth, Format.X8),
-				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", ppu.VertDisplayStart, Format.X8),
+				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", ppu.HvReg.VertSyncWidth, Format.X8),
+				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", ppu.HvReg.VertDisplayStart, Format.X8),
 
 				new RegEntry("$0D", "VDR - Vertical Display", null),
-				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", ppu.VertDisplayWidth, Format.X16),
+				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", ppu.HvReg.VertDisplayWidth, Format.X16),
 
 				new RegEntry("$0E", "VCR - Vertical Display End", null),
-				new RegEntry("$0E.0-7", "HDE - Vertical Display End Position", ppu.HorizDisplayEnd, Format.X8),
+				new RegEntry("$0E.0-7", "HDE - Vertical Display End Position", ppu.HvReg.HorizDisplayEnd, Format.X8),
 
 				new RegEntry("$0F", "DCR - Block Transfer Control", null),
 				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", ppu.VramSatbIrqEnabled),
@@ -1208,7 +1208,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$10", "SOUR - Block Transfer Source Address", ppu.BlockSrc, Format.X16),
 				new RegEntry("$11", "DESR - Block Transfer Source Address", ppu.BlockDst, Format.X16),
 				new RegEntry("$12", "LENR - Block Transfer Source Address", ppu.BlockLen, Format.X16),
-				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", ppu.BgScrollX, Format.X16)
+				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", ppu.SatbBlockSrc, Format.X16)
 			};
 
 			return new RegisterViewerTab() {

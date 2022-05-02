@@ -1337,15 +1337,6 @@ namespace Mesen.Interop
 		//R06 - RCR
 		public UInt16 RasterCompareRegister;
 
-		//R07 - BXR
-		public UInt16 BgScrollX;
-		public UInt16 BgScrollXLatch;
-
-		//R08 - BYR
-		public UInt16 BgScrollY;
-		public UInt16 BgScrollYLatch;
-		[MarshalAs(UnmanagedType.I1)] public bool BgScrollYUpdatePending;
-
 		//R09 - MWR - Memory Width
 		public byte ColumnCount;
 		public byte RowCount;
@@ -1353,23 +1344,10 @@ namespace Mesen.Interop
 		public byte VramAccessMode;
 		[MarshalAs(UnmanagedType.I1)] public bool CgMode;
 
-		//R0A - HSR
-		public byte HorizDisplayStart;
-		public byte HorizSyncWidth; //no effect
+		[MarshalAs(UnmanagedType.I1)] public bool BgScrollYUpdatePending;
 
-		//R0B - HDR
-		public byte HorizDisplayWidth;
-		public byte HorizDisplayEnd; //no effect
-
-		//R0C - VPR
-		public byte VertDisplayStart;
-		public byte VertSyncWidth;
-
-		//R0D - VDW
-		public UInt16 VertDisplayWidth;
-
-		//R0E - VCR
-		public byte VertEndPosVcr;
+		public PcePpuHvLatches HvLatch;
+		public PcePpuHvLatches HvReg;
 
 		//R0F - DCR
 		[MarshalAs(UnmanagedType.I1)] public bool VramSatbIrqEnabled;
@@ -1409,6 +1387,33 @@ namespace Mesen.Interop
 		//VCE
 		public byte VceClockDivider;
 		public UInt16 PalAddr;
+	}
+
+	public struct PcePpuHvLatches
+	{
+		//R07 - BXR
+		public UInt16 BgScrollX;
+
+		//R08 - BYR
+		public UInt16 BgScrollY;
+
+		//R0A - HSR
+		public byte HorizDisplayStart;
+		public byte HorizSyncWidth;
+
+		//R0B - HDR
+		public byte HorizDisplayWidth;
+		public byte HorizDisplayEnd;
+
+		//R0C - VPR
+		public byte VertDisplayStart;
+		public byte VertSyncWidth;
+
+		//R0D - VDW
+		public UInt16 VertDisplayWidth;
+
+		//R0E - VCR
+		public byte VertEndPosVcr;
 	}
 
 	public struct PceMemoryManager : BaseState

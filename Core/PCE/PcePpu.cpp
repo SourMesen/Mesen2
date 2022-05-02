@@ -37,8 +37,11 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 	_state.RowCount = 32;
 	_state.VramAddrIncrement = 1;
 	_state.VceClockDivider = 4;
-	_state.HorizDisplayWidth = 0x1F;
-	_state.VertDisplayWidth = 239;
+
+	_state.HvReg.HorizDisplayWidth = 0x1F;
+	_state.HvLatch.HorizDisplayWidth = 0x1F;
+	_state.HvReg.VertDisplayWidth = 239;
+	_state.HvLatch.VertDisplayWidth = 239;
 	_state.VceScanlineCount = 262;
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
@@ -139,11 +142,10 @@ void PcePpu::ProcessEvent()
 			IncScrollY();
 			_nextEvent = PceVdcEvent::LatchScrollX;
 			_nextEventCounter = DotsToClocks(1);
-
 			break;
 
 		case PceVdcEvent::LatchScrollX:
-			_state.BgScrollXLatch = _state.BgScrollX;
+			_state.HvLatch.BgScrollX = _state.HvReg.BgScrollX;
 			_nextEvent = PceVdcEvent::HdsIrqTrigger;
 			_nextEventCounter = DotsToClocks(7);
 			if(!_state.BurstModeEnabled) {
@@ -171,15 +173,15 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 	_hMode = hMode;
 	switch(_hMode) {
 		case PcePpuModeH::Hds:
-			_hModeCounter = DotsToClocks((_state.HorizDisplayStart + 1) * 8);
+			_hModeCounter = DotsToClocks((_state.HvLatch.HorizDisplayStart + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDS");
 			break;
 
 		case PcePpuModeH::Hdw:
 			_needRcrIncrement = true;
 			_nextEvent = PceVdcEvent::IncRcrCounter;
-			_nextEventCounter = DotsToClocks((_state.HorizDisplayWidth - 1) * 8) + 2;
-			_hModeCounter = DotsToClocks((_state.HorizDisplayWidth + 1) * 8);
+			_nextEventCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth - 1) * 8) + 2;
+			_hModeCounter = DotsToClocks((_state.HvLatch.HorizDisplayWidth + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDW start");
 			break;
 
@@ -188,28 +190,43 @@ void PcePpu::SetHorizontalMode(PcePpuModeH hMode)
 			_evalStartCycle = UINT16_MAX;
 			_loadSpriteStart = _state.HClock;
 
-			_hModeCounter = DotsToClocks((_state.HorizDisplayEnd + 1) * 8);
+			_hModeCounter = DotsToClocks((_state.HvLatch.HorizDisplayEnd + 1) * 8);
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HDE");
 			break;
 
 		case PcePpuModeH::Hsw:
 			_loadBgStart = UINT16_MAX;
 			_evalStartCycle = UINT16_MAX;
-			_hModeCounter = DotsToClocks((_state.HorizSyncWidth + 1) * 8);
+			_hModeCounter = DotsToClocks((_state.HvLatch.HorizSyncWidth + 1) * 8);
 			ProcessHorizontalSyncStart();
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HSW");
 			break;
 	}
 }
 
+void PcePpu::ProcessVerticalSyncStart()
+{
+	//Latch VSW/VDS/VDW/VCR at the start of each vertical sync?
+	_state.HvLatch.VertSyncWidth = _state.HvReg.VertSyncWidth;
+	_state.HvLatch.VertDisplayStart = _state.HvReg.VertDisplayStart;
+	_state.HvLatch.VertDisplayWidth = _state.HvReg.VertDisplayWidth;
+	_state.HvLatch.VertEndPosVcr = _state.HvReg.VertEndPosVcr;
+}
+
 void PcePpu::ProcessHorizontalSyncStart()
 {
+	//Latch HSW/HDS/HDW/HDE at the start of each horizontal sync?
+	_state.HvLatch.HorizSyncWidth = _state.HvReg.HorizSyncWidth;
+	_state.HvLatch.HorizDisplayStart = _state.HvReg.HorizDisplayStart;
+	_state.HvLatch.HorizDisplayWidth = _state.HvReg.HorizDisplayWidth;
+	_state.HvLatch.HorizDisplayEnd = _state.HvReg.HorizDisplayEnd;
+
 	_nextEvent = PceVdcEvent::None;
 	_nextEventCounter = UINT16_MAX;
 	_tileCount = 0;
 	_screenOffsetX = 0;
 
-	uint16_t displayStart = _state.HClock + _hModeCounter + DotsToClocks((_state.HorizDisplayStart + 1) * 8);
+	uint16_t displayStart = _state.HClock + _hModeCounter + DotsToClocks((_state.HvLatch.HorizDisplayStart + 1) * 8);
 
 	if(displayStart - DotsToClocks(24) >= PceConstants::ClockPerScanline) {
 		return;
@@ -217,7 +234,7 @@ void PcePpu::ProcessHorizontalSyncStart()
 
 	//Calculate when sprite evaluation, sprite fetching and bg fetching will occur on the scanline
 	if(_vMode == PcePpuModeV::Vdw || _state.RcrCounter == _state.VceScanlineCount - 1) {
-		uint16_t displayWidth = DotsToClocks((_state.HorizDisplayWidth + 1) * 8);
+		uint16_t displayWidth = DotsToClocks((_state.HvLatch.HorizDisplayWidth + 1) * 8);
 
 		//Sprite evaluation runs on all visible scanlines + the scanline before the picture starts
 		uint16_t spriteEvalStart = displayStart - DotsToClocks(8);
@@ -364,8 +381,11 @@ void PcePpu::LoadBackgroundTiles()
 	//LogDebug("BG: " + std::to_string(_loadBgLastCycle) + " -> " + std::to_string(end - 1));
 
 	uint32_t columnMask = _state.ColumnCount - 1;
-	uint32_t scrollOffset = _state.BgScrollXLatch >> 3;
-	uint16_t row = (_state.BgScrollYLatch) & ((_state.RowCount * 8) - 1);
+	uint32_t scrollOffset = _state.HvLatch.BgScrollX >> 3;
+	uint16_t row = (_state.HvLatch.BgScrollY) & ((_state.RowCount * 8) - 1);
+
+	//TODO load patterns (vram access mode)
+	//TODO CG flag
 	for(uint16_t i = _loadBgLastCycle; i < end; i++) {
 		_allowVramAccess = true;
 		switch(i & 0x07) {
@@ -426,6 +446,7 @@ void PcePpu::LoadSpriteTiles()
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
 	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
 
+	//TODO CG flag
 	for(int i = 0; i < maxCount; i++) {
 		_drawSprites[i] = _sprites[i];
 		_drawSprites[i].TileData[0] = _vram[_sprites[i].TileAddress & 0x7FFF];
@@ -482,25 +503,26 @@ void PcePpu::IncrementRcrCounter()
 		switch(_vMode) {
 			default:
 			case PcePpuModeV::Vds:
-				_vModeCounter = _state.VertDisplayStart + 2;
+				_vModeCounter = _state.HvLatch.VertDisplayStart + 2;
 				break;
 
 			case PcePpuModeV::Vdw:
-				_vModeCounter = _state.VertDisplayWidth + 1;
+				_vModeCounter = _state.HvLatch.VertDisplayWidth + 1;
 				_state.RcrCounter = 0;
 				break;
 
 			case PcePpuModeV::Vde:
-				_vModeCounter = _state.VertEndPosVcr;
+				_vModeCounter = _state.HvLatch.VertEndPosVcr;
 				break;
 
 			case PcePpuModeV::Vsw:
-				_vModeCounter = _state.VertSyncWidth + 1;
+				ProcessVerticalSyncStart();
+				_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
 				break;
 		}
 	}
 
-	if(_vMode == PcePpuModeV::Vde && _state.RcrCounter == _state.VertDisplayWidth + 1) {
+	if(_vMode == PcePpuModeV::Vde && _state.RcrCounter == _state.HvLatch.VertDisplayWidth + 1) {
 		_needVertBlankIrq = true;
 		_verticalBlankDone = true;
 	}
@@ -515,14 +537,14 @@ void PcePpu::IncrementRcrCounter()
 void PcePpu::IncScrollY()
 {
 	if(_state.RcrCounter == 0) {
-		_state.BgScrollYLatch = _state.BgScrollY;
+		_state.HvLatch.BgScrollY = _state.HvReg.BgScrollY;
 	} else {
 		if(_state.BgScrollYUpdatePending) {
-			_state.BgScrollYLatch = _state.BgScrollY + 1;
+			_state.HvLatch.BgScrollY = _state.HvReg.BgScrollY;
 			_state.BgScrollYUpdatePending = false;
-		} else {
-			_state.BgScrollYLatch++;
 		}
+
+		_state.HvLatch.BgScrollY++;
 	}
 	_needBgScrollYInc = false;
 }
@@ -565,7 +587,7 @@ void PcePpu::ProcessEndOfScanline()
 	_hModeCounter = DotsToClocks(16);
 	ProcessHorizontalSyncStart();
 
-	if(_state.HorizDisplayStart < 1) {
+	if(_state.HvLatch.HorizDisplayStart < 1) {
 		TriggerHdsIrqs();
 	}
 
@@ -574,7 +596,8 @@ void PcePpu::ProcessEndOfScanline()
 	if(_state.Scanline == _state.VceScanlineCount - 3) {
 		//VCE sets VBLANK for 3 scanlines at the end of every frame
 		_vMode = PcePpuModeV::Vsw;
-		_vModeCounter = _state.VertSyncWidth + 1;
+		ProcessVerticalSyncStart();
+		_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
 	} else if(_state.Scanline == _state.VceScanlineCount - 2) {
 		if(!_verticalBlankDone) {
 			_needVertBlankIrq = true;
@@ -641,7 +664,7 @@ void PcePpu::DrawScanline()
 			uint8_t bgColor = 0;
 			uint16_t outColor = _paletteRam[0];
 			if(_state.BackgroundEnabled) {
-				uint16_t screenX = (_state.BgScrollXLatch & 0x07) + _screenOffsetX;
+				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
 				uint16_t column = screenX >> 3;
 				bgColor = GetTilePixelColor(_tiles[column].TileData, 7 - (screenX & 0x07));
 				if(bgColor != 0) {
@@ -881,9 +904,9 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					break;
 
 				case 0x06: UpdateReg<0x3FF>(_state.RasterCompareRegister, value, msb); break;
-				case 0x07: UpdateReg<0x3FF>(_state.BgScrollX, value, msb); break;
+				case 0x07: UpdateReg<0x3FF>(_state.HvReg.BgScrollX, value, msb); break;
 				case 0x08:
-					UpdateReg<0x1FF>(_state.BgScrollY, value, msb);
+					UpdateReg<0x1FF>(_state.HvReg.BgScrollY, value, msb);
 					_state.BgScrollYUpdatePending = true;
 					break;
 
@@ -905,35 +928,35 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 				case 0x0A:
 					if(msb) {
-						_state.HorizDisplayStart = value & 0x7F;
+						_state.HvReg.HorizDisplayStart = value & 0x7F;
 					} else {
-						_state.HorizSyncWidth = value & 0x1F;
+						_state.HvReg.HorizSyncWidth = value & 0x1F;
 					}
 					break;
 
 				case 0x0B:
 					if(msb) {
-						_state.HorizDisplayEnd = value & 0x7F;
+						_state.HvReg.HorizDisplayEnd = value & 0x7F;
 					} else {
-						_state.HorizDisplayWidth = value & 0x7F;
+						_state.HvReg.HorizDisplayWidth = value & 0x7F;
 					}
 					break;
 
 				case 0x0C: 
 					if(msb) {
-						_state.VertDisplayStart = value;
+						_state.HvReg.VertDisplayStart = value;
 					} else {
-						_state.VertSyncWidth = value & 0x1F;
+						_state.HvReg.VertSyncWidth = value & 0x1F;
 					}
 					break;
 
 				case 0x0D:
-					UpdateReg<0x1FF>(_state.VertDisplayWidth, value, msb);
+					UpdateReg<0x1FF>(_state.HvReg.VertDisplayWidth, value, msb);
 					break;
 
 				case 0x0E: 
 					if(!msb) {
-						_state.VertEndPosVcr = value;
+						_state.HvReg.VertEndPosVcr = value;
 					}
 					break;
 

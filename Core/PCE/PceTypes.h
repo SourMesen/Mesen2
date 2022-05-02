@@ -56,6 +56,33 @@ enum class PceAddrMode
 	AbsXInd,
 };
 
+struct PcePpuHvLatches
+{
+	//R07 - BXR
+	uint16_t BgScrollX;
+
+	//R08 - BYR
+	uint16_t BgScrollY;
+
+	//R0A - HSR
+	uint8_t HorizDisplayStart;
+	uint8_t HorizSyncWidth;
+
+	//R0B - HDR
+	uint8_t HorizDisplayWidth;
+	uint8_t HorizDisplayEnd;
+
+	//R0C - VPR
+	uint8_t VertDisplayStart;
+	uint8_t VertSyncWidth;
+
+	//R0D - VDW
+	uint16_t VertDisplayWidth;
+
+	//R0E - VCR
+	uint8_t VertEndPosVcr;
+};
+
 struct PcePpuState : public BaseState
 {
 	uint32_t FrameCount;
@@ -91,15 +118,6 @@ struct PcePpuState : public BaseState
 	//R06 - RCR
 	uint16_t RasterCompareRegister;
 
-	//R07 - BXR
-	uint16_t BgScrollX;
-	uint16_t BgScrollXLatch;
-	
-	//R08 - BYR
-	uint16_t BgScrollY;
-	uint16_t BgScrollYLatch;
-	bool BgScrollYUpdatePending;
-	
 	//R09 - MWR - Memory Width
 	uint8_t ColumnCount;
 	uint8_t RowCount;
@@ -107,23 +125,10 @@ struct PcePpuState : public BaseState
 	uint8_t VramAccessMode;
 	bool CgMode;
 
-	//R0A - HSR
-	uint8_t HorizDisplayStart;
-	uint8_t HorizSyncWidth; //no effect
+	bool BgScrollYUpdatePending;
 
-	//R0B - HDR
-	uint8_t HorizDisplayWidth;
-	uint8_t HorizDisplayEnd; //no effect
-
-	//R0C - VPR
-	uint8_t VertDisplayStart;
-	uint8_t VertSyncWidth;
-
-	//R0D - VDW
-	uint16_t VertDisplayWidth;
-	
-	//R0E - VCR
-	uint8_t VertEndPosVcr;
+	PcePpuHvLatches HvLatch;
+	PcePpuHvLatches HvReg;
 
 	//R0F - DCR
 	bool VramSatbIrqEnabled;
