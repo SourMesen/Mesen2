@@ -9,6 +9,7 @@
 #include "PCE/PceSf2RomMapper.h"
 #include "PCE/PceCdRom.h"
 #include "Debugger/DebugTypes.h"
+#include "Shared/BatteryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
@@ -41,13 +42,13 @@ private:
 	uint32_t _workRamSize = 0x2000;
 
 	uint8_t* _cdromRam = nullptr;
-	uint32_t _cdromRamSize = 0x10000;
+	uint32_t _cdromRamSize = 0;
 
 	uint8_t* _cardRam = nullptr;
-	uint32_t _cardRamSize = 0x30000;
+	uint32_t _cardRamSize = 0;
 	
 	uint8_t* _saveRam = nullptr;
-	uint32_t _saveRamSize = 0x2000;
+	uint32_t _saveRamSize = 0;
 
 	uint8_t* _unmappedBank = nullptr;
 
@@ -72,9 +73,15 @@ public:
 		_emu->GetSettings()->InitializeRam(_workRam, _workRamSize);
 
 		if(_cdrom) {
+			_saveRamSize = 0x2000;
 			_saveRam = new uint8_t[_saveRamSize];
+
+			_cdromRamSize = 0x10000;
 			_cdromRam = new uint8_t[_cdromRamSize];
+
+			_cardRamSize = 0x30000;
 			_cardRam = new uint8_t[_cardRamSize];
+
 			_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
 			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
 			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
@@ -82,7 +89,6 @@ public:
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
 			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 
-			//TODO improve this
 			_saveRam[0] = 0x48;
 			_saveRam[1] = 0x55;
 			_saveRam[2] = 0x42;
@@ -91,6 +97,8 @@ public:
 			_saveRam[5] = 0xA0;
 			_saveRam[6] = 0x10;
 			_saveRam[7] = 0x80;
+
+			_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
 		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
@@ -153,6 +161,13 @@ public:
 	PceMemoryManagerState& GetState()
 	{
 		return _state;
+	}
+
+	void SaveBattery()
+	{
+		if(_saveRamSize > 0) {
+			_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+		}
 	}
 
 	void SetSpeed(bool slow)

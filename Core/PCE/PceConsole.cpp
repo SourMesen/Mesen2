@@ -84,6 +84,7 @@ void PceConsole::RunFrame()
 
 void PceConsole::SaveBattery()
 {
+	_memoryManager->SaveBattery();
 }
 
 BaseControlManager* PceConsole::GetControlManager()
