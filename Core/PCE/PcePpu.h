@@ -47,6 +47,7 @@ struct PceSpriteInfo
 	uint8_t Palette;
 	bool HorizontalMirroring;
 	bool ForegroundPriority;
+	bool LoadSp23;
 };
 
 class PcePpu

@@ -328,6 +328,7 @@ void PcePpu::ProcessSpriteEvaluation()
 		}
 
 		uint16_t tileIndex = (_spriteRam[i * 4 + 2] & 0x7FF) >> 1;
+		bool loadSp23 = (_spriteRam[i * 4 + 2] & 0x01) != 0;
 		uint8_t width = (flags & 0x100) ? 32 : 16;
 		if(width == 32) {
 			tileIndex &= ~0x01;
@@ -358,6 +359,7 @@ void PcePpu::ProcessSpriteEvaluation()
 				_sprites[_spriteCount].HorizontalMirroring = horizontalMirror;
 				_sprites[_spriteCount].ForegroundPriority = (flags & 0x80) != 0;
 				_sprites[_spriteCount].Palette = (flags & 0x0F);
+				_sprites[_spriteCount].LoadSp23 = loadSp23;
 				_spriteCount++;
 			}
 		}
@@ -431,15 +433,11 @@ void PcePpu::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 			case 3: LoadBatEntry(scrollOffset, columnMask, row); break;
 
 			case 7:
-				//Tile data
-				if(_state.CgMode) {
-					_tiles[_tileCount].TileData[0] = 0;
-					LoadTileDataCg1(row);
-				} else {
-					LoadTileDataCg0(row);
-					_tiles[_tileCount].TileData[1] = 0;
-					_tileCount++;
-				}
+				//Load CG0 or CG1 based on CG mode flag
+				_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.CgMode ? 8 : 0)];
+				_tiles[_tileCount].TileData[1] = 0;
+				_allowVramAccess = false;
+				_tileCount++;
 				break;
 		}
 	}
@@ -477,19 +475,47 @@ void PcePpu::LoadSpriteTiles()
 	}
 
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
-	uint16_t maxCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
-
-	//TODO CG flag
-	for(int i = 0; i < maxCount; i++) {
-		_drawSprites[i] = _sprites[i];
-		_drawSprites[i].TileData[0] = _vram[_sprites[i].TileAddress & 0x7FFF];
-		_drawSprites[i].TileData[1] = _vram[(_sprites[i].TileAddress + 16) & 0x7FFF];
-		_drawSprites[i].TileData[2] = _vram[(_sprites[i].TileAddress + 32) & 0x7FFF];
-		_drawSprites[i].TileData[3] = _vram[(_sprites[i].TileAddress + 48) & 0x7FFF];
-		_drawSpriteCount++;
-		if(_sprites[i].Index == 0) {
-			_rowHasSprite0 = true;
+	bool hasSprite0 = false;
+	if(_state.SpriteAccessMode != 1) {
+		//Modes 0/2/3 load 4 words over 4, 8 or 16 VDC clocks
+		uint16_t clocksPerSprite;
+		switch(_state.SpriteAccessMode) {
+			default: case 0: clocksPerSprite = 4; break;
+			case 2: clocksPerSprite = 8; break;
+			case 3: clocksPerSprite = 16; break;
 		}
+
+		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / clocksPerSprite);
+		for(int i = 0; i < _drawSpriteCount; i++) {
+			PceSpriteInfo& spr = _drawSprites[i];
+			spr = _sprites[i];
+			uint16_t addr = spr.TileAddress;
+			spr.TileData[0] = _vram[addr & 0x7FFF];
+			spr.TileData[1] = _vram[(addr + 16) & 0x7FFF];
+			spr.TileData[2] = _vram[(addr + 32) & 0x7FFF];
+			spr.TileData[3] = _vram[(addr + 48) & 0x7FFF];
+			hasSprite0 |= spr.Index == 0;
+		}
+	} else {
+		//Mode 1 uses 2BPP sprites, 4 clocks per sprite
+		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
+		for(int i = 0; i < _drawSpriteCount; i++) {
+			PceSpriteInfo& spr = _drawSprites[i];
+			spr = _sprites[i];
+			
+			//Load SP0/SP1 or SP2/SP3 based on flag
+			uint16_t addr = spr.TileAddress + (spr.LoadSp23 ? 32 : 0);
+			spr.TileData[0] = _vram[addr & 0x7FFF];
+			spr.TileData[1] = _vram[(addr + 16) & 0x7FFF];
+			spr.TileData[2] = 0;
+			spr.TileData[3] = 0;
+			hasSprite0 |= spr.Index == 0;
+		}
+	}
+
+	if(hasSprite0 && _drawSpriteCount > 1) {
+		//Force VDC emulation to run on each CPU cycle, to ensure any sprite 0 hit IRQ is triggerd at the correct time
+		_rowHasSprite0 = true;
 	}
 }
 
