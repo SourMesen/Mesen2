@@ -68,6 +68,7 @@ private:
 
 	uint16_t _rowBuffer[PceConstants::MaxScreenWidth] = {};
 
+	uint16_t _lastDrawHClock = 0;
 	uint16_t _xStart = 0;
 
 	PcePpuModeH _hMode = PcePpuModeH::Hds;

@@ -254,7 +254,10 @@ void PcePpu::ProcessHorizontalSyncStart()
 	uint16_t eventClocks;
 	if(_vMode == PcePpuModeV::Vdw) {
 		_nextEvent = PceVdcEvent::LatchScrollY;
-		eventClocks = DotsToClocks(32);
+
+		//Less than 33 causes Asuka 120% to have a flickering line
+		//Either the RCR interrupt is too early, or the latching was too late
+		eventClocks = DotsToClocks(33);
 	} else {
 		_nextEvent = PceVdcEvent::HdsIrqTrigger;
 		eventClocks = DotsToClocks(24);
@@ -615,6 +618,15 @@ void PcePpu::ProcessEndOfScanline()
 	_state.HClock = 0;
 	_state.Scanline++;
 
+	if(_state.Scanline >= 14 && _state.Scanline < 256) {
+		uint16_t row = _state.Scanline - 14;
+		if(row == 0) {
+			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
+			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
+		}
+		_currentClockDividers[row] = _state.VceClockDivider;
+	}
+
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
 		SendFrame();
@@ -646,11 +658,8 @@ void PcePpu::ProcessEndOfScanline()
 	_hModeCounter = DotsToClocks(16);
 	ProcessHorizontalSyncStart();
 
-	if(_state.HvLatch.HorizDisplayStart < 1) {
-		TriggerHdsIrqs();
-	}
-
 	_xStart = 0;
+	_lastDrawHClock = 0;
 
 	if(_state.Scanline == _state.VceScanlineCount - 3) {
 		//VCE sets VBLANK for 3 scanlines at the end of every frame
@@ -712,14 +721,16 @@ void PcePpu::DrawScanline()
 	ProcessSpriteEvaluation();
 	LoadBackgroundTiles();
 
-	uint16_t rowWidth = 1365 / _state.VceClockDivider;
 	uint16_t* out = _rowBuffer;
 
-	uint16_t xMax = std::min<uint16_t>(rowWidth, _state.HClock / _state.VceClockDivider);
+	uint16_t pixelsToDraw = (_state.HClock - _lastDrawHClock) / _state.VceClockDivider;
+	uint16_t xStart = _xStart;
+	uint16_t xMax = _xStart + pixelsToDraw;
+
 	bool inPicture = _hMode == PcePpuModeH::Hdw && _tileCount > 0;
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
-		for(uint16_t x = _xStart; x < xMax; x++) {
+		for(; xStart < xMax; xStart++) {
 			uint8_t bgColor = 0;
 			uint16_t outColor = _paletteRam[0];
 			if(_state.BackgroundEnabled) {
@@ -765,37 +776,30 @@ void PcePpu::DrawScanline()
 				}
 			}
 
-			out[x] = outColor;
+			out[xStart] = outColor;
 			_screenOffsetX++;
 		}
 	} else if(inPicture) {
 		uint16_t color = _paletteRam[0];
-		for(uint16_t x = _xStart; x < xMax; x++) {
+		for(; xStart < xMax; xStart++) {
 			//In picture, but BG is not enabled, draw bg color
-			out[x] = color;
+			out[xStart] = color;
 		}
 	} else {
 		uint16_t color = _paletteRam[16 * 16];
-		for(uint16_t x = _xStart; x < xMax; x++) {
+		for(; xStart < xMax; xStart++) {
 			//Output hasn't started yet, display overscan color
-			out[x] = color;
+			out[xStart] = color;
 		}
 	}
 
 	if(_state.HClock == 1365) {
-		uint16_t row = _state.Scanline - 14;
-		
-		if(row == 0) {
-			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
-			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
-		}
-		
-		uint32_t offset = row * PceConstants::MaxScreenWidth;
+		uint32_t offset = (_state.Scanline - 14) * PceConstants::MaxScreenWidth;
 		memcpy(_currentOutBuffer + offset, _rowBuffer, PceConstants::ClockPerScanline / _state.VceClockDivider * sizeof(uint16_t));
-		_currentClockDividers[row] = _state.VceClockDivider;
 	}
 
-	_xStart = xMax;
+	_xStart = xStart;
+	_lastDrawHClock = _state.HClock / _state.VceClockDivider * _state.VceClockDivider;
 }
 
 void PcePpu::SendFrame()
