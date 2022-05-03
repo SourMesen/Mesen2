@@ -63,8 +63,8 @@ DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	result.RowCount = state.RowCount;
 	result.TilemapAddress = 0;
 	result.TilesetAddress = 0;
-	result.ScrollX = state.HvLatch.BgScrollX;
-	result.ScrollY = state.HvLatch.BgScrollY;
+	result.ScrollX = state.HvReg.BgScrollX;
+	result.ScrollY = state.HvReg.BgScrollY;
 	result.ScrollWidth = (state.HvLatch.HorizDisplayWidth + 1) * 8;
 	result.ScrollHeight = std::min<uint32_t>(242, state.HvLatch.VertDisplayWidth);
 
