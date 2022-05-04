@@ -263,7 +263,7 @@ void PcePpu::ProcessHorizontalSyncStart()
 		eventClocks = DotsToClocks(24);
 	}
 
-	if(displayStart - eventClocks <= _state.HClock) {
+	if((int16_t)displayStart - (int16_t)eventClocks <= (int16_t)_state.HClock) {
 		ProcessEvent();
 	} else {
 		_nextEventCounter = displayStart - eventClocks - _state.HClock;
@@ -409,10 +409,6 @@ void PcePpu::LoadBackgroundTiles()
 		LoadBackgroundTilesWidth2(end, scrollOffset, columnMask, row);
 	}
 
-	if(_allowVramAccess && _pendingMemoryRead) {
-		LoadReadBuffer();
-	}
-
 	_loadBgLastCycle = end;
 }
 
@@ -437,7 +433,7 @@ void PcePpu::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 
 			case 7:
 				//Load CG0 or CG1 based on CG mode flag
-				_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.CgMode ? 8 : 0)];
+				_tiles[_tileCount].TileData[0] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.CgMode ? 8 : 0));
 				_tiles[_tileCount].TileData[1] = 0;
 				_allowVramAccess = false;
 				_tileCount++;
@@ -449,23 +445,29 @@ void PcePpu::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 void PcePpu::LoadBatEntry(uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
 {
 	uint16_t tileColumn = (scrollOffset + _tileCount) & columnMask;
-	uint16_t batEntry = _vram[(row >> 3) * _state.ColumnCount + tileColumn];
+	uint16_t batEntry = ReadVram((row >> 3) * _state.ColumnCount + tileColumn);
 	_tiles[_tileCount].Palette = batEntry >> 12;
-	_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16) & 0x7FFF;
+	_tiles[_tileCount].TileAddr = ((batEntry & 0xFFF) * 16);
 	_allowVramAccess = false;
 }
 
 void PcePpu::LoadTileDataCg0(uint16_t row)
 {
-	_tiles[_tileCount].TileData[0] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07)];
+	_tiles[_tileCount].TileData[0] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07));
 	_allowVramAccess = false;
 }
 
 void PcePpu::LoadTileDataCg1(uint16_t row)
 {
-	_tiles[_tileCount].TileData[1] = _vram[_tiles[_tileCount].TileAddr + (row & 0x07) + 8];
+	_tiles[_tileCount].TileData[1] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07) + 8);
 	_allowVramAccess = false;
 	_tileCount++;
+}
+
+uint16_t PcePpu::ReadVram(uint16_t addr)
+{
+	//TODO validate - Camp California seems to expect empty sprites if tile index is out of bounds (>= $200)
+	return addr >= 0x8000 ? 0 : _vram[addr];
 }
 
 void PcePpu::LoadSpriteTiles()
@@ -493,10 +495,10 @@ void PcePpu::LoadSpriteTiles()
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
 			uint16_t addr = spr.TileAddress;
-			spr.TileData[0] = _vram[addr & 0x7FFF];
-			spr.TileData[1] = _vram[(addr + 16) & 0x7FFF];
-			spr.TileData[2] = _vram[(addr + 32) & 0x7FFF];
-			spr.TileData[3] = _vram[(addr + 48) & 0x7FFF];
+			spr.TileData[0] = ReadVram(addr);
+			spr.TileData[1] = ReadVram(addr + 16);
+			spr.TileData[2] = ReadVram(addr + 32);
+			spr.TileData[3] = ReadVram(addr + 48);
 			hasSprite0 |= spr.Index == 0;
 		}
 	} else {
@@ -508,8 +510,8 @@ void PcePpu::LoadSpriteTiles()
 			
 			//Load SP0/SP1 or SP2/SP3 based on flag
 			uint16_t addr = spr.TileAddress + (spr.LoadSp23 ? 32 : 0);
-			spr.TileData[0] = _vram[addr & 0x7FFF];
-			spr.TileData[1] = _vram[(addr + 16) & 0x7FFF];
+			spr.TileData[0] = ReadVram(addr);
+			spr.TileData[1] = ReadVram(addr + 16);
 			spr.TileData[2] = 0;
 			spr.TileData[3] = 0;
 			hasSprite0 |= spr.Index == 0;
@@ -531,7 +533,7 @@ void PcePpu::ProcessSatbTransfer()
 		_state.SatbTransferNextWordCounter -= 4 * _state.VceClockDivider;
 
 		int i = _state.SatbTransferOffset;
-		uint16_t value = _vram[(_state.SatbBlockSrc + i) & 0x7FFF];
+		uint16_t value = ReadVram(_state.SatbBlockSrc + i);
 		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
 		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
 		_spriteRam[i] = value;
@@ -821,9 +823,7 @@ void PcePpu::SendFrame()
 
 void PcePpu::LoadReadBuffer()
 {
-	WaitForVramAccess();
-
-	_state.ReadBuffer = _vram[_state.MemAddrRead & 0x7FFF];
+	_state.ReadBuffer = ReadVram(_state.MemAddrRead);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
 	_pendingMemoryRead = false;
@@ -862,12 +862,14 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 		//read address will only increment when register 2 is selected
 		case 2: 
 			if(_pendingMemoryRead) {
+				WaitForVramAccess();
 				LoadReadBuffer();
 			}
 			return (uint8_t)_state.ReadBuffer;
 
 		case 3:
 			if(_pendingMemoryRead) {
+				WaitForVramAccess();
 				LoadReadBuffer();
 			}
 
@@ -887,6 +889,9 @@ bool PcePpu::IsVramAccessBlocked()
 	}
 
 	bool inBgFetch = _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
+	//TODO timing:
+	//does disabling sprites allow vram access during hblank?
+	//can you access vram after the VDC is done loading sprites for that scanline?
 	return (
 		_state.SatbTransferRunning || 
 		(inBgFetch && !_allowVramAccess) || 
@@ -1045,7 +1050,7 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 
 							if(_state.BlockDst < 0x8000) {
 								//Ignore writes over $8000
-								_vram[_state.BlockDst] = _vram[_state.BlockSrc & 0x7FFF];
+								_vram[_state.BlockDst] = ReadVram(_state.BlockSrc);
 							}
 
 							_state.BlockSrc += (_state.DecrementSrc ? -1 : 1);

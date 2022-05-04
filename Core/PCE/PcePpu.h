@@ -152,6 +152,8 @@ private:
 	__forceinline void LoadTileDataCg0(uint16_t row);
 	__forceinline void LoadTileDataCg1(uint16_t row);
 
+	__forceinline uint16_t ReadVram(uint16_t addr);
+
 	void WaitForVramAccess();
 	bool IsVramAccessBlocked();
 
