@@ -104,6 +104,7 @@ private:
 	bool _allowVramAccess = false;
 
 	bool _pendingMemoryRead = false;
+	bool _pendingMemoryWrite = false;
 	
 	bool _vramDmaRunning = false;
 	bool _vramDmaReadCycle = false;
@@ -123,7 +124,10 @@ private:
 		}
 	}
 
-	void LoadReadBuffer();
+	void ProcessVramRead();
+	void ProcessVramWrite();
+	__declspec(noinline) void ProcessVramAccesses();
+
 	void DrawScanline();
 	void SendFrame();
 

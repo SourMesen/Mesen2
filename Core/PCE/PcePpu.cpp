@@ -86,8 +86,13 @@ void PcePpu::Exec()
 		ProcessVramDmaTransfer();
 	}
 
-	if(_rowHasSprite0) {
+	if(_rowHasSprite0 || _pendingMemoryWrite || _pendingMemoryRead) {
 		DrawScanline();
+
+		if(_pendingMemoryRead || _pendingMemoryWrite) {
+			//TODO timing, this isn't quite right - should probably be aligned with VDC clocks?
+			ProcessVramAccesses();
+		}
 	}
 
 	if(_hModeCounter <= 3 || _nextEventCounter <= 3) {
@@ -868,12 +873,43 @@ void PcePpu::SendFrame()
 	_console->GetControlManager()->UpdateControlDevices();
 }
 
-void PcePpu::LoadReadBuffer()
+void PcePpu::ProcessVramRead()
 {
 	_state.ReadBuffer = ReadVram(_state.MemAddrRead);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
 	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
 	_pendingMemoryRead = false;
+}
+
+void PcePpu::ProcessVramWrite()
+{
+	if(_state.MemAddrWrite < 0x8000) {
+		//Ignore writes to mirror at $8000+
+		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, MemoryType::PceVideoRam);
+		_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, _state.VramData, MemoryType::PceVideoRam);
+		_vram[_state.MemAddrWrite] = _state.VramData;
+		_state.MemAddrWrite += _state.VramAddrIncrement;
+	}
+	_pendingMemoryWrite = false;
+}
+
+void PcePpu::ProcessVramAccesses()
+{
+	bool inBgFetch = !_state.BurstModeEnabled && _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
+	bool accessBlocked = (
+		_state.SatbTransferRunning ||
+		(_vramDmaRunning && _vMode != PcePpuModeV::Vdw) ||
+		(inBgFetch && !_allowVramAccess) ||
+		(_state.SpritesEnabled && !inBgFetch && _vMode == PcePpuModeV::Vdw)
+	);
+
+	if(!accessBlocked) {
+		if(_pendingMemoryRead) {
+			ProcessVramRead();
+		} else if(_pendingMemoryWrite) {
+			ProcessVramWrite();
+		}
+	}
 }
 
 uint8_t PcePpu::ReadVdc(uint16_t addr)
@@ -883,8 +919,8 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 	switch(addr & 0x03) {
 		default:
 		case 0: {
-			//TODO BSY
 			uint8_t result = 0;
+			result |= (_pendingMemoryRead || _pendingMemoryWrite) ? 0x40 : 0x00;
 			result |= _state.VerticalBlank ? 0x20 : 0x00;
 			result |= _state.VramTransferDone ? 0x10 : 0x00;
 			result |= _state.SatbTransferDone ? 0x08 : 0x00;
@@ -908,17 +944,11 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 		//Reads to 2/3 will always return the read buffer, but the
 		//read address will only increment when register 2 is selected
 		case 2: 
-			if(_pendingMemoryRead) {
-				WaitForVramAccess();
-				LoadReadBuffer();
-			}
+			WaitForVramAccess();
 			return (uint8_t)_state.ReadBuffer;
 
 		case 3:
-			if(_pendingMemoryRead) {
-				WaitForVramAccess();
-				LoadReadBuffer();
-			}
+			WaitForVramAccess();
 
 			uint8_t value = _state.ReadBuffer >> 8;
 			if(_state.CurrentReg == 0x02) {
@@ -931,15 +961,13 @@ uint8_t PcePpu::ReadVdc(uint16_t addr)
 
 bool PcePpu::IsVramAccessBlocked()
 {
-	if(_state.BurstModeEnabled) {
-		return false;
-	}
-
-	bool inBgFetch = _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
+	bool inBgFetch = !_state.BurstModeEnabled && _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
 	//TODO timing:
 	//does disabling sprites allow vram access during hblank?
 	//can you access vram after the VDC is done loading sprites for that scanline?
 	return (
+		_pendingMemoryRead ||
+		_pendingMemoryWrite ||
 		_state.SatbTransferRunning ||
 		(_vramDmaRunning && _vMode != PcePpuModeV::Vdw) ||
 		(inBgFetch && !_allowVramAccess) || 
@@ -950,6 +978,9 @@ bool PcePpu::IsVramAccessBlocked()
 void PcePpu::WaitForVramAccess()
 {
 	while(IsVramAccessBlocked()) {
+		//TODO timing, this is probably not quite right. CPU will be stalled until
+		//a VDC cycle that allows VRAM access is reached. This isn't always going to
+		//be a multiple of 3 master clocks like this currently assumes
 		_console->GetMemoryManager()->ExecFast();
 		DrawScanline();
 	}
@@ -979,19 +1010,12 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					break;
 
 				case 0x02:
-					UpdateReg(_state.VramData, value, msb);
 					if(msb) {
 						WaitForVramAccess();
-
-						if(_state.MemAddrWrite < 0x8000) {
-							//Ignore writes to mirror at $8000+
-							//TODO timing
-							_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, MemoryType::PceVideoRam);
-							_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, value, MemoryType::PceVideoRam);
-							_vram[_state.MemAddrWrite] = _state.VramData;
-						}
-
-						_state.MemAddrWrite += _state.VramAddrIncrement;
+						UpdateReg(_state.VramData, value, true);
+						_pendingMemoryWrite = true;
+					} else {
+						UpdateReg(_state.VramData, value, false);
 					}
 					break;
 
