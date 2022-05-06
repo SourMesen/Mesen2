@@ -146,6 +146,7 @@ void PcePpu::ProcessEvent()
 
 	switch(_nextEvent) {
 		case PceVdcEvent::LatchScrollY:
+			_needRcrIncrement = true;
 			IncScrollY();
 			_nextEvent = PceVdcEvent::LatchScrollX;
 			_nextEventCounter = DotsToClocks(1);
@@ -162,6 +163,11 @@ void PcePpu::ProcessEvent()
 			break;
 
 		case PceVdcEvent::HdsIrqTrigger:
+			_needRcrIncrement = true;
+			if(_evalStartCycle >= 1365) {
+				//New row was about to start, but no time to start sprite eval, next row will have no sprites
+				_spriteCount = 0;
+			}
 			TriggerHdsIrqs();
 			_nextEvent = PceVdcEvent::None;
 			_nextEventCounter = UINT16_MAX;
@@ -607,10 +613,6 @@ void PcePpu::IncrementRcrCounter()
 {
 	_state.RcrCounter++;
 
-	if(_needBgScrollYInc) {
-		IncScrollY();
-	}
-	_needBgScrollYInc = true;
 	_needRcrIncrement = false;
 
 	_vModeCounter--;
@@ -662,7 +664,6 @@ void PcePpu::IncScrollY()
 
 		_state.HvLatch.BgScrollY++;
 	}
-	_needBgScrollYInc = false;
 }
 
 void PcePpu::ProcessEndOfScanline()

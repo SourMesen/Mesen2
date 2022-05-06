@@ -197,6 +197,7 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 			break;
 		}
 
+		//TODO: Fade is not implemented
 		case 0x0F: _state.FadeTimer = value; break;
 
 		default:

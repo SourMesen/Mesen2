@@ -79,7 +79,6 @@ private:
 
 	uint16_t _screenOffsetX = 0;
 	bool _needRcrIncrement = false;
-	bool _needBgScrollYInc = false;
 	bool _needVertBlankIrq = false;
 	bool _verticalBlankDone = false;
 
