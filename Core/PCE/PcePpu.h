@@ -104,6 +104,11 @@ private:
 	bool _allowVramAccess = false;
 
 	bool _pendingMemoryRead = false;
+	
+	bool _vramDmaRunning = false;
+	bool _vramDmaReadCycle = false;
+	uint16_t _vramDmaBuffer = 0;
+	uint16_t _vramDmaPendingCycles = 0;
 
 	PceVdcEvent _nextEvent = PceVdcEvent::None;
 	uint16_t _nextEventCounter = 0;
@@ -130,6 +135,7 @@ private:
 	__declspec(noinline) void ProcessEndOfScanline();
 	__declspec(noinline) void ProcessEndOfVisibleFrame();
 	__declspec(noinline) void ProcessSatbTransfer();
+	__declspec(noinline) void ProcessVramDmaTransfer();
 	__declspec(noinline) void SetHorizontalMode(PcePpuModeH hMode);
 
 	__declspec(noinline) void ProcessVdcEvents();

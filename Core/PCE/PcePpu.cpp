@@ -82,6 +82,8 @@ void PcePpu::Exec()
 {
 	if(_state.SatbTransferRunning) {
 		ProcessSatbTransfer();
+	} else if(_vramDmaRunning) {
+		ProcessVramDmaTransfer();
 	}
 
 	if(_rowHasSprite0) {
@@ -551,6 +553,51 @@ void PcePpu::ProcessSatbTransfer()
 	}
 }
 
+void PcePpu::ProcessVramDmaTransfer()
+{
+	if(_vMode == PcePpuModeV::Vdw) {
+		return;
+	}
+
+	_vramDmaPendingCycles += 3;
+
+	uint8_t hClocksPerDmaCycle;
+	switch(_state.VramAccessMode) {
+		default:
+		case 0: hClocksPerDmaCycle = _state.VceClockDivider; break;
+		case 1: case 2: hClocksPerDmaCycle = _state.VceClockDivider * 2; break;
+		case 3: hClocksPerDmaCycle = _state.VceClockDivider * 4; break;
+	}
+
+	while(_vramDmaPendingCycles >= hClocksPerDmaCycle) {
+		if(_vramDmaReadCycle) {
+			_vramDmaBuffer = ReadVram(_state.BlockSrc);
+			_vramDmaReadCycle = false;
+		} else {
+			_state.BlockLen--;
+
+			if(_state.BlockDst < 0x8000) {
+				//Ignore writes over $8000
+				_vram[_state.BlockDst] = _vramDmaBuffer;
+			}
+
+			_state.BlockSrc += (_state.DecrementSrc ? -1 : 1);
+			_state.BlockDst += (_state.DecrementDst ? -1 : 1);
+			_vramDmaReadCycle = true;
+
+			if(_state.BlockLen == 0xFFFF) {
+				_vramDmaRunning = false;
+				if(_state.VramVramIrqEnabled) {
+					_state.VramTransferDone = true;
+					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+				}
+			}
+		}
+
+		_vramDmaPendingCycles -= hClocksPerDmaCycle;
+	}
+}
+
 void PcePpu::IncrementRcrCounter()
 {
 	_state.RcrCounter++;
@@ -893,7 +940,8 @@ bool PcePpu::IsVramAccessBlocked()
 	//does disabling sprites allow vram access during hblank?
 	//can you access vram after the VDC is done loading sprites for that scanline?
 	return (
-		_state.SatbTransferRunning || 
+		_state.SatbTransferRunning ||
+		(_vramDmaRunning && _vMode != PcePpuModeV::Vdw) ||
 		(inBgFetch && !_allowVramAccess) || 
 		(_state.SpritesEnabled && !inBgFetch && _vMode == PcePpuModeV::Vdw)
 	);
@@ -1042,26 +1090,9 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 				case 0x11: UpdateReg(_state.BlockDst, value, msb); break;
 				case 0x12:
 					UpdateReg(_state.BlockLen, value, msb);
-
 					if(msb) {
-						//TODO DMA TIMING
-						do {
-							_state.BlockLen--;
-
-							if(_state.BlockDst < 0x8000) {
-								//Ignore writes over $8000
-								_vram[_state.BlockDst] = ReadVram(_state.BlockSrc);
-							}
-
-							_state.BlockSrc += (_state.DecrementSrc ? -1 : 1);
-							_state.BlockDst += (_state.DecrementDst ? -1 : 1);
-
-						} while(_state.BlockLen != 0xFFFF);
-
-						if(_state.VramVramIrqEnabled) {
-							_state.VramTransferDone = true;
-							_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
-						}
+						_vramDmaRunning = true;
+						_vramDmaReadCycle = true;
 					}
 					break;
 
