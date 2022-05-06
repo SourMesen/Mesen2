@@ -16,12 +16,14 @@ public:
 	{
 		switch(vceClockDivider) {
 			case 2:
-				return 112;
+				return 240 / 2;
+
+			case 3:
+				return 192 / 3;
 
 			default:
-			case 3:
 			case 4:
-				return 5 * 8 * 4 / vceClockDivider;
+				return 192 / 4;
 		}
 	}
 

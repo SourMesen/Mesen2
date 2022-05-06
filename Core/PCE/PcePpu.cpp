@@ -244,7 +244,7 @@ void PcePpu::ProcessHorizontalSyncStart()
 		uint16_t displayWidth = DotsToClocks((_state.HvLatch.HorizDisplayWidth + 1) * 8);
 
 		//Sprite evaluation runs on all visible scanlines + the scanline before the picture starts
-		uint16_t spriteEvalStart = displayStart - DotsToClocks(8);
+		uint16_t spriteEvalStart = displayStart - DotsToClocks(16);
 		_evalStartCycle = spriteEvalStart;
 		_evalLastCycle = 0;
 		_evalEndCycle = std::min<uint16_t>(PceConstants::ClockPerScanline, spriteEvalStart + displayWidth + DotsToClocks(8));
@@ -700,16 +700,20 @@ void PcePpu::ProcessEndOfScanline()
 	}
 
 	if(_hMode == PcePpuModeH::Hdw) {
-		//Display output was interrupted by hblank, start loading sprites in ~20 dots. (approximate, based on timing test)
-		_loadSpriteStart = DotsToClocks(20);
+		//Display output was interrupted by hblank, start loading sprites in ~36 dots. (approximate, based on timing test)
+		//Could be incorrect in some scenarios, needs more testing
+		_loadSpriteStart = DotsToClocks(36);
 	}
 	
 	//VCE sets HBLANK to low every 1365 clocks, interrupting what 
-	//the VDC was doing and starting a 16-pixel HSW phase
+	//the VDC was doing and starting a HSW phase
 	_hMode = PcePpuModeH::Hsw;
 	_loadBgStart = UINT16_MAX;
 	_evalStartCycle = UINT16_MAX;
-	_hModeCounter = DotsToClocks(16);
+
+	//The HSW phase appears to be longer in 7mhz mode compared to 5/10mhz modes
+	//Less than 32 here breaks Camp California and Shapeshifter
+	_hModeCounter = DotsToClocks(_state.VceClockDivider == 3 ? 32 : 24);
 	ProcessHorizontalSyncStart();
 
 	_xStart = 0;
