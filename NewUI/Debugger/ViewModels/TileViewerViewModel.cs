@@ -185,7 +185,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Snes => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7DirectColor },
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
-				CpuType.Pce => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.PceSpriteBpp4 }, //TODO
+				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4 }, //TODO
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -241,7 +241,10 @@ namespace Mesen.Debugger.ViewModels
 					}
 
 				case CpuType.Pce:
-					return new() { }; //TODO
+					return new() {
+						new("BG", () => ApplyBgPreset(0)),
+						new("Sprites", () => ApplySpritePreset(0)),
+					};
 
 				default:
 					throw new Exception("Unsupported CPU type");
@@ -370,6 +373,20 @@ namespace Mesen.Debugger.ViewModels
 					}
 					break;
 				}
+
+				case CpuType.Pce: {
+					Config.Source = MemoryType.PceVideoRam;
+					Config.StartAddress = 0;
+					Config.ColumnCount = 32;
+					Config.RowCount = 64;
+					Config.Layout = TileLayout.Normal;
+					Config.Format = TileFormat.Bpp4;
+					Config.Background = TileBackground.Default;
+					if(Config.SelectedPalette >= 16) {
+						Config.SelectedPalette = 0;
+					}
+					break;
+				}
 			}
 		}
 
@@ -428,6 +445,20 @@ namespace Mesen.Debugger.ViewModels
 						Config.SelectedPalette = 8;
 					} else if(!ppu.CgbEnabled && Config.SelectedPalette == 0) {
 						Config.SelectedPalette = 1;
+					}
+					break;
+				}
+
+				case CpuType.Pce: {
+					Config.Source = MemoryType.PceVideoRam;
+					Config.StartAddress = 0;
+					Config.ColumnCount = 32;
+					Config.RowCount = 64;
+					Config.Layout = TileLayout.Normal;
+					Config.Format = TileFormat.PceSpriteBpp4;
+					Config.Background = TileBackground.Default;
+					if(Config.SelectedPalette < 16) {
+						Config.SelectedPalette = 16;
 					}
 					break;
 				}
