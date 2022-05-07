@@ -386,6 +386,9 @@
 			<Control ID="lblPort1C">Port 3:</Control>
 			<Control ID="lblPort1D">Port 4:</Control>
 			<Control ID="lblPort1E">Port 5:</Control>
+
+			<Control ID="grpInputSettings">Input settings</Control>
+			<Control ID="chkPreventSelectRunReset">Disable Run+Select combination (to avoid resets in games)</Control>
 		</Form>
 
 		<Form ID="ShortcutKeysTabView">

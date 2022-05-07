@@ -83,6 +83,12 @@
 					</c:GroupBox>
 				</Grid>
 			</c:OptionSection>
+
+			<c:OptionSection Header="{l:Translate grpInputSettings}">
+				<StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.PreventSelectRunReset}" Content="{l:Translate chkPreventSelectRunReset}" />
+				</StackPanel>
+			</c:OptionSection>
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

@@ -20,6 +20,7 @@ namespace Mesen.Config
 		[Reactive] public ControllerConfig Port1E { get; set; } = new();
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
+		[Reactive] public bool PreventSelectRunReset { get; set; } = true;
 
 		[Reactive] public UInt32 Channel1Vol { get; set; } = 100;
 		[Reactive] public UInt32 Channel2Vol { get; set; } = 100;
@@ -39,6 +40,7 @@ namespace Mesen.Config
 				Port1E = Port1E.ToInterop(),
 
 				RamPowerOnState = RamPowerOnState,
+				PreventSelectRunReset = PreventSelectRunReset,
 
 				Channel1Vol = Channel1Vol,
 				Channel2Vol = Channel2Vol,
@@ -102,6 +104,7 @@ namespace Mesen.Config
 		public InteropControllerConfig Port1E;
 
 		public RamState RamPowerOnState;
+		[MarshalAs(UnmanagedType.I1)] public bool PreventSelectRunReset;
 
 		public UInt32 Channel1Vol;
 		public UInt32 Channel2Vol;

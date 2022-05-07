@@ -375,6 +375,7 @@ struct PcEngineConfig
 	ControllerConfig Port1SubPorts[5];
 
 	RamState RamPowerOnState = RamState::Random;
+	bool PreventSelectRunReset = false;
 
 	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
 };

@@ -47,6 +47,12 @@ protected:
 				SetPressedState(Buttons::VI, keyMapping.TurboR);
 			}
 		}
+
+		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+		if(cfg.PreventSelectRunReset && IsPressed(Buttons::Run) && IsPressed(Buttons::Select)) {
+			ClearBit(Buttons::Run);
+			ClearBit(Buttons::Select);
+		}
 	}
 
 	void RefreshStateBuffer() override
