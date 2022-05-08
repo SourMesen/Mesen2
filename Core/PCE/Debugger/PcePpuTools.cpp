@@ -152,7 +152,7 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	);
 
 	sprite.Bpp = 4;
-	sprite.Format = TileFormat::Bpp4;
+	sprite.Format = TileFormat::PceSpriteBpp4;
 	sprite.SpriteIndex = spriteIndex;
 	sprite.X = spriteX;
 	sprite.Y = spriteY;
@@ -161,7 +161,6 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	sprite.Height = height;
 	sprite.Width = width;
 	sprite.TileIndex = tileIndex;
-	sprite.TileAddress = tileIndex * 64;
 	sprite.Palette = (flags & 0x0F);
 	sprite.PaletteAddress = (sprite.Palette + 16) * 16;
 	sprite.Priority = (flags & 0x80) ? DebugSpritePriority::Foreground : DebugSpritePriority::Background;
@@ -177,6 +176,8 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	} else if(height == 64) {
 		tileIndex &= ~0x06;
 	}
+	
+	sprite.TileAddress = tileIndex * 64 * 2;
 
 	uint8_t yOffset;
 	int rowOffset;

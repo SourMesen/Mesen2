@@ -42,6 +42,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int AddressIncrement { get; private set; }
 		[Reactive] public int MaximumAddress { get; private set; } = int.MaxValue;
 
+		[Reactive] public int GridSizeX { get; set; } = 8;
+		[Reactive] public int GridSizeY { get; set; } = 8;
+
 		[Reactive] public Rect SelectionRect { get; set; }
 
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
@@ -143,6 +146,14 @@ namespace Mesen.Debugger.ViewModels
 					4 => PaletteSelectionMode.SixteenColors,
 					_ => PaletteSelectionMode.None
 				};
+
+				PixelSize tileSize = GetTileSize(x);
+				if(GridSizeX != tileSize.Width || GridSizeY != tileSize.Height) {
+					GridSizeX = tileSize.Width;
+					GridSizeY = tileSize.Height;
+					SelectionRect = Rect.Empty;
+					PreviewPanel = null;
+				}
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Layout).Subscribe(x => {
@@ -166,7 +177,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void ApplyColumnRowCountRestrictions()
 		{
-			if(Config.Layout != TileLayout.Normal) {
+			if(Config.Layout != TileLayout.Normal || Config.Format == TileFormat.PceSpriteBpp4) {
 				//Force multiple of 2 when in 8x16 or 16x16 display modes
 				Config.ColumnCount &= ~0x01;
 				Config.RowCount &= ~0x01;
@@ -473,14 +484,16 @@ namespace Mesen.Debugger.ViewModels
 			Config.StartAddress = address / AddressIncrement * AddressIncrement;
 			Config.Layout = layout;
 			int bitsPerPixel = GetBitsPerPixel(Config.Format);
-			int bytesPerTile = 8 * 8 * bitsPerPixel / 8;
+			PixelSize tileSize = GetTileSize(Config.Format);
+			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
 
 			int gap = address - Config.StartAddress;
 			int tileNumber = gap / bytesPerTile;
+			int tilesPerRow = Config.ColumnCount * 8 / tileSize.Width;
 
-			PixelPoint pos = new PixelPoint(tileNumber % Config.ColumnCount, tileNumber / Config.ColumnCount);
+			PixelPoint pos = new PixelPoint(tileNumber % tilesPerRow, tileNumber / tilesPerRow);
 			pos = ToLayoutCoordinates(Config.Layout, pos);
-			SelectionRect = new Rect(pos.X * 8, pos.Y * 8, 8, 8);
+			SelectionRect = new Rect(pos.X * tileSize.Width, pos.Y * tileSize.Height, tileSize.Width, tileSize.Height);
 		}
 
 		private PixelPoint ToLayoutCoordinates(TileLayout layout, PixelPoint pos)
@@ -591,9 +604,10 @@ namespace Mesen.Debugger.ViewModels
 		private int GetTileAddress(PixelPoint pixelPosition)
 		{
 			int bitsPerPixel = GetBitsPerPixel(Config.Format);
-			int bytesPerTile = 8 * 8 * bitsPerPixel / 8;
-			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / 8, pixelPosition.Y / 8));
-			int offset = (pos.Y * Config.ColumnCount + pos.X) * bytesPerTile;
+			PixelSize tileSize = GetTileSize(Config.Format);
+			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
+			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / tileSize.Width, pixelPosition.Y / tileSize.Height));
+			int offset = (pos.Y * Config.ColumnCount * 8 / tileSize.Width + pos.X) * bytesPerTile;
 			return (Config.StartAddress + offset) % (MaximumAddress + 1);
 		}
 
@@ -618,7 +632,8 @@ namespace Mesen.Debugger.ViewModels
 
 			entries.StartUpdate();
 
-			PixelRect cropRect = new PixelRect(p.X / 8 * 8, p.Y / 8 * 8, 8, 8);
+			PixelSize tileSize = GetTileSize(Config.Format);
+			PixelRect cropRect = new PixelRect(p.X / tileSize.Width * tileSize.Width, p.Y / tileSize.Height * tileSize.Height, tileSize.Width, tileSize.Height);
 			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
 
 			int address = GetTileAddress(cropRect.TopLeft);
@@ -667,6 +682,14 @@ namespace Mesen.Debugger.ViewModels
 				TileFormat.NesBpp2 => 2,
 				TileFormat.PceSpriteBpp4 => 4,
 				_ => 8,
+			};
+		}
+
+		private PixelSize GetTileSize(TileFormat format)
+		{
+			return format switch {
+				TileFormat.PceSpriteBpp4 => new PixelSize(16, 16),
+				_ => new PixelSize(8,8),
 			};
 		}
 	}
