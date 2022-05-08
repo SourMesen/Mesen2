@@ -212,7 +212,14 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 			uint16_t pixelStart = tileStart + yOffset;
 			uint8_t shift = 15 - xOffset;
 
-			uint8_t color = GetTilePixelColor(vram, 0xFFFF, pixelStart * 2, shift, TileFormat::PceSpriteBpp4);
+			uint8_t color;
+			if(pixelStart >= 0x8000) {
+				//Display specific pattern when open bus, to make problem obvious in sprite viewer
+				color = xOffset;
+			} else {
+				color = GetTilePixelColor(vram, 0xFFFF, pixelStart * 2, shift, TileFormat::PceSpriteBpp4);
+			}			
+
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
 			} else {
