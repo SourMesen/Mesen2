@@ -28,6 +28,8 @@ namespace Mesen.Config
 		[Reactive] public UInt32 Channel4Vol { get; set; } = 100;
 		[Reactive] public UInt32 Channel5Vol { get; set; } = 100;
 		[Reactive] public UInt32 Channel6Vol { get; set; } = 100;
+		[Reactive] public UInt32 CdAudioVolume { get; set; } = 100;
+		[Reactive] public UInt32 AdpcmVolume { get; set; } = 100;
 
 		public void ApplyConfig()
 		{
@@ -48,6 +50,8 @@ namespace Mesen.Config
 				Channel4Vol = Channel4Vol,
 				Channel5Vol = Channel5Vol,
 				Channel6Vol = Channel6Vol,
+				CdAudioVolume = CdAudioVolume,
+				AdpcmVolume = AdpcmVolume,
 			});
 		}
 
@@ -112,5 +116,7 @@ namespace Mesen.Config
 		public UInt32 Channel4Vol;
 		public UInt32 Channel5Vol;
 		public UInt32 Channel6Vol;
+		public UInt32 CdAudioVolume;
+		public UInt32 AdpcmVolume;
 	}
 }

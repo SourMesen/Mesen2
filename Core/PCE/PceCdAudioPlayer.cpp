@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceCdRom.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/CdReader.h"
 
-PceCdAudioPlayer::PceCdAudioPlayer(PceCdRom* cdrom, DiscInfo& disc)
+PceCdAudioPlayer::PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& disc)
 {
+	_emu = emu;
 	_cdrom = cdrom;
 	_disc = &disc;
 }
@@ -42,8 +45,8 @@ void PceCdAudioPlayer::PlaySample()
 	if(_playing) {
 		_leftSample = _disc->ReadLeftSample(_currentSector, _currentSample);
 		_rightSample = _disc->ReadRightSample(_currentSector, _currentSample);
-		_samplesToPlay.push_back(_leftSample / 2);
-		_samplesToPlay.push_back(_rightSample / 2);
+		_samplesToPlay.push_back(_leftSample);
+		_samplesToPlay.push_back(_rightSample);
 		_currentSample++;
 		if(_currentSample == 588) {
 			//588 samples per 2352-byte sector
@@ -75,7 +78,7 @@ void PceCdAudioPlayer::Exec()
 {
 	_clockCounter += 3;
 	if(_clockCounter > 487) {
-		//Output one sample every 487 master clocks (~41101.1hz)
+		//Output one sample every 487 master clocks (~44101.1hz)
 		PlaySample();
 		_clockCounter -= 487;
 	}
@@ -83,6 +86,7 @@ void PceCdAudioPlayer::Exec()
 
 void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
+	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().CdAudioVolume / 100.0);
 	_resampler.SetSampleRates(44100, sampleRate);
 	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
 	_samplesToPlay.clear();

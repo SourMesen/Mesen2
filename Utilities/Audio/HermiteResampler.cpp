@@ -38,6 +38,11 @@ void HermiteResampler::Reset()
 	_fraction = 0.0;
 }
 
+void HermiteResampler::SetVolume(double volume)
+{
+	_volume = (int32_t)(volume * 256);
+}
+
 void HermiteResampler::SetSampleRates(double srcRate, double dstRate)
 {
 	_rateRatio = srcRate / dstRate;
@@ -46,6 +51,18 @@ void HermiteResampler::SetSampleRates(double srcRate, double dstRate)
 uint32_t HermiteResampler::GetPendingCount()
 {
 	return (uint32_t)_pendingSamples.size() / 2;
+}
+
+template<bool addMode>
+void HermiteResampler::WriteSample(int16_t* out, uint32_t pos, int16_t left, int16_t right)
+{
+	if(addMode) {
+		out[pos] = (int16_t)std::clamp<int32_t>(out[pos] + ((left * _volume) >> 8), INT16_MIN, INT16_MAX);
+		out[pos + 1] = (int16_t)std::clamp<int32_t>(out[pos + 1] + ((right * _volume) >> 8), INT16_MIN, INT16_MAX);
+	} else {
+		out[pos] = (int16_t)std::clamp<int32_t>((left * _volume) >> 8, INT16_MIN, INT16_MAX);
+		out[pos + 1] = (int16_t)std::clamp<int32_t>((right * _volume) >> 8, INT16_MIN, INT16_MAX);
+	}
 }
 
 template<bool addMode>
@@ -59,12 +76,8 @@ uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t
 	maxOutSampleCount *= 2;
 
 	uint32_t outPos = (uint32_t)_pendingSamples.size();
-	for(uint32_t i = 0; i < outPos; i++) {
-		if(addMode) {
-			out[i] += _pendingSamples[i];
-		} else {
-			out[i] = _pendingSamples[i];
-		}
+	for(uint32_t i = 0; i < outPos; i += 2) {
+		WriteSample<addMode>(out, i, _pendingSamples[i], _pendingSamples[i + 1]);
 	}
 	_pendingSamples.clear();
 
@@ -72,14 +85,7 @@ uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t
 		while(_fraction <= 1.0) {
 			//Generate interpolated samples until we have enough samples for the current source sample
 			if(maxOutSampleCount == 0 || outPos <= maxOutSampleCount - 2) {
-				if(addMode) {
-					out[outPos] += HermiteInterpolate(_prevLeft, _fraction);
-					out[outPos + 1] += HermiteInterpolate(_prevRight, _fraction);
-				} else {
-					out[outPos] = HermiteInterpolate(_prevLeft, _fraction);
-					out[outPos + 1] = HermiteInterpolate(_prevRight, _fraction);
-				}
-
+				WriteSample<addMode>(out, outPos, HermiteInterpolate(_prevLeft, _fraction), HermiteInterpolate(_prevRight, _fraction));
 				outPos += 2;
 			} else {
 				_pendingSamples.push_back(HermiteInterpolate(_prevLeft, _fraction));

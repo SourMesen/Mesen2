@@ -52,6 +52,8 @@
 						<c:MesenSlider Text="Channel 4" Value="{CompiledBinding Config.Channel4Vol}" />
 						<c:MesenSlider Text="Channel 5" Value="{CompiledBinding Config.Channel5Vol}" />
 						<c:MesenSlider Text="Channel 6" Value="{CompiledBinding Config.Channel6Vol}" />
+						<c:MesenSlider Text="CD Audio" Value="{CompiledBinding Config.CdAudioVolume}" />
+						<c:MesenSlider Text="ADPCM" Value="{CompiledBinding Config.AdpcmVolume}" />
 					</StackPanel>
 				</c:GroupBox>
 			</StackPanel>

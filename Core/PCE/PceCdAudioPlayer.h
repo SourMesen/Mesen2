@@ -3,6 +3,7 @@
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"
 
+class Emulator;
 class PceCdRom;
 struct DiscInfo;
 
@@ -15,6 +16,7 @@ enum class CdPlayEndBehavior
 
 class PceCdAudioPlayer : public IAudioProvider
 {
+	Emulator* _emu = nullptr;
 	DiscInfo* _disc = nullptr;
 	PceCdRom* _cdrom = nullptr;
 
@@ -38,7 +40,7 @@ class PceCdAudioPlayer : public IAudioProvider
 	void PlaySample();
 
 public:
-	PceCdAudioPlayer(PceCdRom* cdrom, DiscInfo& disc);
+	PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& disc);
 
 	void Play(uint32_t startSector);
 	void SetEndPosition(uint32_t endSector, CdPlayEndBehavior endBehavior);

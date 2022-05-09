@@ -37,6 +37,7 @@ struct PceAdpcmState
 class PceAdpcm : public IAudioProvider
 {
 private:
+	Emulator* _emu = nullptr;
 	PceCdRom* _cdrom = nullptr;
 	PceScsiBus* _scsi = nullptr;
 	uint8_t* _ram = nullptr;

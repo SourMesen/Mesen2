@@ -15,6 +15,7 @@ PceAdpcm::PceAdpcm(Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
 	_state = {};
 	_cdrom = cdrom;
 	_scsi = scsi;
+	_emu = emu;
 
 	_ram = new uint8_t[0x10000];
 	emu->GetSettings()->InitializeRam(_ram, 0x10000);
@@ -270,6 +271,7 @@ void PceAdpcm::PlaySample()
 void PceAdpcm::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	double freq = 32000.0 / (16 - _state.PlaybackRate);
+	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().AdpcmVolume / 100.0);
 	_resampler.SetSampleRates(freq, sampleRate);
 	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
 	_samplesToPlay.clear();
