@@ -143,7 +143,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 
 			if(disc.Tracks.size() > 0) {
 				TrackInfo& prvTrk = disc.Tracks[disc.Tracks.size() - 1];
-				prvTrk.EndPosition = DiscPosition::FromLba(trk.FirstSector - 1);
+				prvTrk.EndPosition = DiscPosition::FromLba((trk.HasLeadIn ? trk.LeadInPosition.ToLba() : trk.FirstSector) - 1);
 				prvTrk.LastSector = prvTrk.EndPosition.ToLba();
 				prvTrk.SectorCount = prvTrk.LastSector - prvTrk.FirstSector + 1;
 				prvTrk.Size = prvTrk.SectorCount * 2352;
