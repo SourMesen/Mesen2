@@ -23,7 +23,8 @@ optional<InternalCheatCode> CheatManager::TryConvertCode(CheatCode code)
 		case CheatType::SnesProActionReplay: return ConvertFromSnesProActionReplay(code.Code);
 		case CheatType::SnesGameGenie: return ConvertFromSnesGameGenie(code.Code);
 		case CheatType::GbGameGenie: return ConvertFromGbGameGenie(code.Code);
-		case CheatType::GbGameShark: return ConvertFromGbGameShark(code.Code);
+		case CheatType::PceRaw: return ConvertFromPceRaw(code.Code);
+		case CheatType::PceAddress: return ConvertFromPceAddress(code.Code);
 
 		default: throw std::runtime_error("unsupported cheat type");
 	}
@@ -335,6 +336,37 @@ optional<InternalCheatCode> CheatManager::ConvertFromSnesGameGenie(string code)
 
 	cheat.Value = rawValue >> 24;
 
+	return cheat;
+}
+
+optional<InternalCheatCode> CheatManager::ConvertFromPceRaw(string code)
+{
+	static regex _validator = regex("^[a-f0-9]{6}:[a-f0-9]{2}$", std::regex_constants::icase);
+	if(!std::regex_match(code, _validator)) {
+		return std::nullopt;
+	}
+
+	InternalCheatCode cheat = {};
+	cheat.Type = CheatType::PceRaw;
+	cheat.Cpu = CpuType::Pce;
+	cheat.Value = (uint8_t)HexUtilities::FromHex(code.substr(7, 2));
+	cheat.Address = HexUtilities::FromHex(code.substr(0, 6));
+	return cheat;
+}
+
+optional<InternalCheatCode> CheatManager::ConvertFromPceAddress(string code)
+{
+	static regex _validator = regex("^[a-f0-9]{6}:[a-f0-9]{2}$", std::regex_constants::icase);
+	if(!std::regex_match(code, _validator)) {
+		return std::nullopt;
+	}
+
+	InternalCheatCode cheat = {};
+	cheat.Type = CheatType::PceAddress;
+	cheat.Cpu = CpuType::Pce;
+	cheat.Value = (uint8_t)HexUtilities::FromHex(code.substr(7, 2));
+	uint32_t address = HexUtilities::FromHex(code.substr(0, 6));
+	cheat.Address = ((address & 0xFF0000) >> 3) | (address & 0x1FFF);
 	return cheat;
 }
 

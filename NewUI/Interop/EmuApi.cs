@@ -294,6 +294,8 @@ namespace Mesen.Interop
 		GbGameShark,
 		SnesGameGenie,
 		SnesProActionReplay,
+		PceRaw,
+		PceAddress,
 	}
 
 	public static class CheatTypeExtensions
@@ -304,6 +306,7 @@ namespace Mesen.Interop
 				CheatType.NesGameGenie or CheatType.NesProActionRocky or CheatType.NesCustom => CpuType.Nes,
 				CheatType.SnesGameGenie or CheatType.SnesProActionReplay => CpuType.Snes,
 				CheatType.GbGameGenie or CheatType.GbGameShark => CpuType.Gameboy,
+				CheatType.PceRaw or CheatType.PceAddress => CpuType.Pce,
 				_ => throw new NotImplementedException("unsupported cheat type")
 			};
 		}

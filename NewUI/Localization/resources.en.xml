@@ -1795,6 +1795,8 @@
 			<Value ID="GbGameShark">Game Boy - Game Shark (e.g 01A0A3DF)</Value>
 			<Value ID="SnesGameGenie">SNES - Game Genie (e.g A1B2-C3D4)</Value>
 			<Value ID="SnesProActionReplay">SNES - Pro Action Replay (AAAAAAVV)</Value>
+			<Value ID="PceRaw">Raw (AAAAAA:VV)</Value>
+			<Value ID="PceAddress">Physical Address (AAAAAA:VV)</Value>
 		</Enum>
 		
 		<Enum ID="CpuType">

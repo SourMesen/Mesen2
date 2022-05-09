@@ -17,6 +17,8 @@ enum class CheatType : uint8_t
 	GbGameShark,
 	SnesGameGenie,
 	SnesProActionReplay,
+	PceRaw,
+	PceAddress,
 };
 
 struct InternalCheatCode
@@ -58,6 +60,9 @@ private:
 	
 	optional<InternalCheatCode> ConvertFromGbGameGenie(string code);
 	optional<InternalCheatCode> ConvertFromGbGameShark(string code);
+
+	optional<InternalCheatCode> ConvertFromPceRaw(string code);
+	optional<InternalCheatCode> ConvertFromPceAddress(string code);
 	
 	optional<InternalCheatCode> ConvertFromNesGameGenie(string code);
 	optional<InternalCheatCode> ConvertFromNesProActionRocky(string code);
@@ -69,6 +74,7 @@ private:
 			case CpuType::Snes: return 16;
 			case CpuType::Gameboy: return 8;
 			case CpuType::Nes: return 8;
+			case CpuType::Pce: return 13;
 			default: throw std::runtime_error("unsupported cpu type");
 		}
 	}
@@ -88,9 +94,15 @@ public:
 	void RefreshRamCheats(CpuType cpuType);
 
 	template<CpuType cpuType>
-	__forceinline void ApplyCheat(uint32_t addr, uint8_t &value)
+	__forceinline bool HasCheats()
 	{
-		if(_hasCheats[(int)cpuType] && _bankHasCheats[(int)cpuType][addr >> GetBankShift(cpuType)]) {
+		return _hasCheats[(int)cpuType];
+	}
+
+	template<CpuType cpuType>
+	__declspec(noinline) void ApplyCheat(uint32_t addr, uint8_t &value)
+	{
+		if(_bankHasCheats[(int)cpuType][addr >> GetBankShift(cpuType)]) {
 			auto result = _cheatsByAddress[(int)cpuType].find(addr);
 			if(result != _cheatsByAddress[(int)cpuType].end()) {
 				if(result->second.Compare == -1 || result->second.Compare == value) {

@@ -12,6 +12,7 @@
 #include "Shared/BatteryManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/CheatManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/RandomHelper.h"
@@ -22,6 +23,7 @@ class PceMemoryManager
 {
 private:
 	Emulator* _emu = nullptr;
+	CheatManager* _cheatManager = nullptr;
 	PceConsole* _console = nullptr;
 	PcePpu* _ppu = nullptr;
 	PcePsg* _psg = nullptr;
@@ -56,6 +58,7 @@ public:
 	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
 	{
 		_emu = emu;
+		_cheatManager = _emu->GetCheatManager();
 		_console = console;
 		_ppu = ppu;
 		_psg = psg;
@@ -294,6 +297,9 @@ public:
 			value = _readBanks[bank][addr & 0x1FFF];
 		} else {
 			value = ReadRegister(addr & 0x1FFF);
+		}
+		if(_cheatManager->HasCheats<CpuType::Pce>()) {
+			_cheatManager->ApplyCheat<CpuType::Pce>((bank << 13) | (addr & 0x1FFF), value);
 		}
 		_emu->ProcessMemoryRead<CpuType::Pce>(addr, value, type);
 		return value;
