@@ -29,7 +29,9 @@ namespace Mesen
 		public static void Main(string[] args)
 		{
 			NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
-			
+			NativeLibrary.SetDllImportResolver(typeof(SkiaSharp.SKGraphics).Assembly, DllImportResolver);
+			NativeLibrary.SetDllImportResolver(typeof(HarfBuzzSharp.Blob).Assembly, DllImportResolver);
+
 			Environment.CurrentDirectory = ConfigManager.HomeFolder;
 
 			if(!File.Exists(ConfigManager.GetConfigFile())) {
@@ -87,8 +89,19 @@ namespace Mesen
 
 		private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 		{
-			if(libraryName.Contains("Mesen")) {
-				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "lib" : "") + libraryName));
+			if(libraryName.Contains("Mesen") || libraryName.Contains("SkiaSharp") || libraryName.Contains("HarfBuzz")) {
+				if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+					if(!libraryName.StartsWith("lib")) {
+						libraryName = "lib" + libraryName;
+					}
+					if(!libraryName.EndsWith(".so") && !libraryName.EndsWith(".dll")) {
+						libraryName = libraryName + ".so";
+					}
+				}
+				if(!libraryName.EndsWith("dll") && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+					libraryName = libraryName + ".dll";
+				}
+				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, libraryName));
 			}
 			return IntPtr.Zero;
 		}
