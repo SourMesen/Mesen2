@@ -33,15 +33,6 @@ struct PceCpuState : public BaseState
 	uint8_t X = 0;
 	uint8_t Y = 0;
 	uint8_t PS = 0;
-
-	/* Source High */
-	uint8_t SH = 0;
-
-	/* Dest High */
-	uint8_t DH = 0;
-
-	/* Length High */
-	uint8_t LH = 0;
 };
 
 enum class PceAddrMode

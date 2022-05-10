@@ -17,13 +17,14 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 		{ "frame", EvalValues::PpuFrameCount },
 		{ "cycle", EvalValues::PpuCycle },
 		{ "scanline", EvalValues::PpuScanline },
-		/*{ "sprite0hit", EvalValues::Sprite0Hit },
+		{ "sprite0hit", EvalValues::Sprite0Hit },
 		{ "verticalblank", EvalValues::VerticalBlank },
-		{ "spriteoverflow", EvalValues::SpriteOverflow },*/
+		{ "spriteoverflow", EvalValues::SpriteOverflow },
 		{ "pscarry", EvalValues::RegPS_Carry },
 		{ "pszero", EvalValues::RegPS_Zero },
 		{ "psinterrupt", EvalValues::RegPS_Interrupt },
 		{ "psdecimal", EvalValues::RegPS_Decimal },
+		{ "psmemory", EvalValues::RegPS_Memory },
 		{ "psoverflow", EvalValues::RegPS_Overflow },
 		{ "psnegative", EvalValues::RegPS_Negative },
 	};
@@ -47,6 +48,7 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::RegSP: return s.SP;
 		case EvalValues::RegPS: return s.PS;
 		case EvalValues::RegPC: return s.PC;
+		//TODO
 		/*case EvalValues::Nmi: return ReturnBool(s.NMIFlag, resultType);
 		case EvalValues::Irq:  return ReturnBool(s.IRQFlag, resultType);*/
 
@@ -54,14 +56,15 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::PpuCycle: return ppu().HClock;
 		case EvalValues::PpuScanline: return ppu().Scanline;
 
-		/*case EvalValues::Sprite0Hit: return ReturnBool(ppu().StatusFlags.Sprite0Hit, resultType);
-		case EvalValues::SpriteOverflow: return ReturnBool(ppu().StatusFlags.SpriteOverflow, resultType);
-		case EvalValues::VerticalBlank: return ReturnBool(ppu().StatusFlags.VerticalBlank, resultType);*/
+		case EvalValues::Sprite0Hit: return ReturnBool(ppu().Sprite0Hit, resultType);
+		case EvalValues::SpriteOverflow: return ReturnBool(ppu().SpriteOverflow, resultType);
+		case EvalValues::VerticalBlank: return ReturnBool(ppu().VerticalBlank, resultType);
 
 		case EvalValues::RegPS_Carry: return ReturnBool(s.PS & PceCpuFlags::Carry, resultType);
 		case EvalValues::RegPS_Zero: return ReturnBool(s.PS & PceCpuFlags::Zero, resultType);
 		case EvalValues::RegPS_Interrupt: return ReturnBool(s.PS & PceCpuFlags::Interrupt, resultType);
 		case EvalValues::RegPS_Decimal: return ReturnBool(s.PS & PceCpuFlags::Decimal, resultType);
+		case EvalValues::RegPS_Memory: return ReturnBool(s.PS & PceCpuFlags::Memory, resultType);
 		case EvalValues::RegPS_Overflow: return ReturnBool(s.PS & PceCpuFlags::Overflow, resultType);
 		case EvalValues::RegPS_Negative: return ReturnBool(s.PS & PceCpuFlags::Negative, resultType);
 

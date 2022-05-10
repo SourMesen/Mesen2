@@ -1280,15 +1280,6 @@ namespace Mesen.Interop
 		public byte X;
 		public byte Y;
 		public byte PS;
-
-		/* Source High */
-		public byte SH;
-
-		/* Dest High */
-		public byte DH;
-
-		/* Length High */
-		public byte LH;
 	}
 
 	public enum PceCpuFlags

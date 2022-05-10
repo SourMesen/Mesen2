@@ -642,10 +642,6 @@ void PceCpu::StartBlockTransfer()
 	DummyRead();
 	Push(A());
 	DummyRead();
-
-	_state.SH = (_operand & 0xFF00) >> 8;
-	_state.DH = (_operand2 & 0xFF00) >> 8;
-	_state.LH = (_operand3 & 0xFF00) >> 8;
 }
 
 void PceCpu::EndBlockTransfer()
