@@ -242,7 +242,7 @@ public:
 		}
 	}
 
-	__declspec(noinline) void ExecSlow()
+	__noinline void ExecSlow()
 	{
 		for(int i = 0; i < 4; i++) {
 			ExecFast();

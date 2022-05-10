@@ -10,7 +10,7 @@
 
 class MessageInfo;
 
-class SystemHud : public IMessageManager
+class SystemHud final : public IMessageManager
 {
 private:
 	Emulator* _emu = nullptr;

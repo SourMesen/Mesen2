@@ -26,7 +26,9 @@
 #include "Utilities/FolderUtilities.h"
 #include "MemoryOperationType.h"
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4702 ) //unreachable code
+#endif
 
 #define lua_pushintvalue(name, value) lua_pushliteral(lua, #name); lua_pushinteger(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);

@@ -11,7 +11,7 @@ class Emulator;
 class LinuxKeyManager : public IKeyManager
 {
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	std::vector<shared_ptr<LinuxGameController>> _controllers;
 	bool _keyState[0x200];
 	bool _mouseState[0x03];
@@ -27,7 +27,7 @@ private:
 	void CheckForGamepads(bool logInformation);
 
 public:
-	LinuxKeyManager(shared_ptr<Emulator> emu);
+	LinuxKeyManager(Emulator* emu);
 	virtual ~LinuxKeyManager();
 
 	void RefreshState();

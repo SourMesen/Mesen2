@@ -257,22 +257,22 @@ private:
 	uint16_t GetOperand();
 	uint8_t GetOperandValue();
 
-	__forceinline void DummyRead();
+	void DummyRead();
 
-	__forceinline uint8_t ReadByte();
-	__forceinline uint16_t ReadWord();
+	uint8_t ReadByte();
+	uint16_t ReadWord();
 
 	void ClearFlags(uint8_t flags);
 	void SetFlags(uint8_t flags);
 	bool CheckFlag(uint8_t flag);
 	void SetZeroNegativeFlags(uint8_t value);
 
-	__forceinline void ProcessCpuCycle();
+	void ProcessCpuCycle();
 
 	void MemoryWrite(uint16_t addr, uint8_t value, MemoryOperationType operationType = MemoryOperationType::Write);
 
-	__forceinline uint8_t MemoryRead(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
-	__forceinline uint16_t MemoryReadWord(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
+	uint8_t MemoryRead(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
+	uint16_t MemoryReadWord(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 
 	__forceinline uint16_t GetIndAddr();
 	__forceinline uint8_t GetImmediate();

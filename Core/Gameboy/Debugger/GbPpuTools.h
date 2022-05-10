@@ -5,7 +5,7 @@
 class Debugger;
 class Emulator;
 
-class GbPpuTools : public PpuTools
+class GbPpuTools final : public PpuTools
 {
 private:
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, GbPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);

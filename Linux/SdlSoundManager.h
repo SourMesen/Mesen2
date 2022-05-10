@@ -7,7 +7,7 @@ class Emulator;
 class SdlSoundManager : public BaseSoundManager
 {
 public:
-	SdlSoundManager(shared_ptr<Emulator> emu);
+	SdlSoundManager(Emulator* emu);
 	~SdlSoundManager();
 
 	void PlayBuffer(int16_t *soundBuffer, uint32_t bufferSize, uint32_t sampleRate, bool isStereo);
@@ -30,7 +30,7 @@ private:
 	void WriteToBuffer(uint8_t* output, uint32_t len);
 
 private:
-	shared_ptr<Emulator> _emu;
+	Emulator* _emu;
 	SDL_AudioDeviceID _audioDeviceID;
 	string _deviceName;
 	bool _needReset = false;

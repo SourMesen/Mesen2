@@ -107,8 +107,8 @@ all: ui
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
+	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/x64/Release/$(SHAREDLIB)
 	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" --self-contained true -p:PublishSingleFile=true
-	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) NewUI/bin/x64/Release/linux-x64/publish/$(SHAREDLIB)
 
 libretro: Libretro/$(OBJFOLDER)/$(LIBRETROLIB)
 	mkdir -p bin

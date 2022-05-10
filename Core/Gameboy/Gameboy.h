@@ -82,7 +82,7 @@ public:
 	GbCpu* GetCpu();
 	void GetSoundSamples(int16_t* &samples, uint32_t& sampleCount);
 	GbState GetState();
-	void GetConsoleState(BaseState& state, ConsoleType consoleType);
+	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;
 	GameboyHeader GetHeader();
 
 	uint32_t DebugGetMemorySize(MemoryType type);

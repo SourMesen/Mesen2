@@ -7,7 +7,7 @@ class Emulator;
 class PceConsole;
 struct PcePpuState;
 
-class PcePpuTools : public PpuTools
+class PcePpuTools final : public PpuTools
 {
 private:
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PcePpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);

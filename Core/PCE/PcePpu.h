@@ -127,7 +127,7 @@ private:
 
 	void ProcessVramRead();
 	void ProcessVramWrite();
-	__declspec(noinline) void ProcessVramAccesses();
+	__noinline void ProcessVramAccesses();
 
 	void DrawScanline();
 	void SendFrame();
@@ -135,29 +135,29 @@ private:
 	uint16_t DotsToClocks(int dots);
 	void TriggerHdsIrqs();
 
-	__declspec(noinline) void IncrementRcrCounter();
-	__declspec(noinline) void IncScrollY();
-	__declspec(noinline) void ProcessEndOfScanline();
-	__declspec(noinline) void ProcessEndOfVisibleFrame();
-	__declspec(noinline) void ProcessSatbTransfer();
-	__declspec(noinline) void ProcessVramDmaTransfer();
-	__declspec(noinline) void SetHorizontalMode(PcePpuModeH hMode);
+	__noinline void IncrementRcrCounter();
+	__noinline void IncScrollY();
+	__noinline void ProcessEndOfScanline();
+	__noinline void ProcessEndOfVisibleFrame();
+	__noinline void ProcessSatbTransfer();
+	__noinline void ProcessVramDmaTransfer();
+	__noinline void SetHorizontalMode(PcePpuModeH hMode);
 
-	__declspec(noinline) void ProcessVdcEvents();
-	__declspec(noinline) void ProcessEvent();
+	__noinline void ProcessVdcEvents();
+	__noinline void ProcessEvent();
 
-	__declspec(noinline) void ProcessHorizontalSyncStart();
-	__declspec(noinline) void ProcessVerticalSyncStart();
+	__noinline void ProcessHorizontalSyncStart();
+	__noinline void ProcessVerticalSyncStart();
 
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift);
 	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
-	__declspec(noinline) void ProcessSpriteEvaluation();
-	__declspec(noinline) void LoadSpriteTiles();
+	__noinline void ProcessSpriteEvaluation();
+	__noinline void LoadSpriteTiles();
 	
-	__declspec(noinline) void LoadBackgroundTiles();
-	__declspec(noinline) void LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
-	__declspec(noinline) void LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
+	__noinline void LoadBackgroundTiles();
+	__noinline void LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
+	__noinline void LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	
 	__forceinline void LoadBatEntry(uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	__forceinline void LoadTileDataCg0(uint16_t row);

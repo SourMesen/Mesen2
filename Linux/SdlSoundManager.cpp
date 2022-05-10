@@ -4,7 +4,7 @@
 #include "Core/Shared/Audio/SoundMixer.h"
 #include "Core/Shared/Emulator.h"
 
-SdlSoundManager::SdlSoundManager(shared_ptr<Emulator> emu)
+SdlSoundManager::SdlSoundManager(Emulator* emu)
 {
 	_emu = emu;
 

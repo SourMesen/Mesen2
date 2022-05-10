@@ -9,7 +9,7 @@ public:
 	{
 	}
 
-	void UpdateTimings(ConsoleRegion region, bool overclockAllowed)
+	void UpdateTimings(ConsoleRegion region, bool overclockAllowed) override
 	{
 		NesPpu<NsfPpu>::UpdateTimings(region, false);
 	}

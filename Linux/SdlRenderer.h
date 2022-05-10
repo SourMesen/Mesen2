@@ -4,6 +4,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Core/Shared/Video/VideoRenderer.h"
 #include "Core/Shared/Video/BaseRenderer.h"
+#include "Core/Shared/RenderedFrame.h"
 
 class Emulator;
 
@@ -40,11 +41,11 @@ private:
 	void SetScreenSize(uint32_t width, uint32_t height);
 
 public:
-	SdlRenderer(shared_ptr<Emulator> emu, void* windowHandle, bool registerAsMessageManager);
+	SdlRenderer(Emulator* emu, void* windowHandle, bool registerAsMessageManager);
 	virtual ~SdlRenderer();
 
-	void UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height) override;
-	void Render() override;
+	void UpdateFrame(RenderedFrame& frame) override;
+	void Render(uint32_t* hudBuffer, uint32_t width, uint32_t height) override;
 	void Reset() override;
 
 	void SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight) override;

@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#ifdef _MSC_VER
 #pragma warning ( disable : 4127 ) //conditional expression is constant
+#endif
 
 // snes_spc 0.9.0. http://www.slack.net/~ant/
 

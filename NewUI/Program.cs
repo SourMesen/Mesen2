@@ -11,6 +11,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Mesen
 {
@@ -27,6 +28,8 @@ namespace Mesen
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
+			
 			Environment.CurrentDirectory = ConfigManager.HomeFolder;
 
 			if(!File.Exists(ConfigManager.GetConfigFile())) {
@@ -80,6 +83,14 @@ namespace Mesen
 					}
 				}
 			}
+		}
+
+		private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+		{
+			if(libraryName.Contains("Mesen")) {
+				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, "lib" + libraryName));
+			}
+			return IntPtr.Zero;
 		}
 
 		// Avalonia configuration, don't remove; also used by visual designer.

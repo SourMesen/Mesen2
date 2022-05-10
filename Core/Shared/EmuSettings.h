@@ -7,7 +7,7 @@
 
 class Emulator;
 
-class EmuSettings : public ISerializable
+class EmuSettings final : public ISerializable
 {
 private:
 	Emulator* _emu;

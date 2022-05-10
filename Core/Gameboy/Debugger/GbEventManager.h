@@ -56,13 +56,13 @@ public:
 	GbEventManager(Debugger* debugger, GbCpu* cpu, GbPpu* ppu);
 	~GbEventManager();
 
-	void AddEvent(DebugEventType type, MemoryOperationInfo& operation, int32_t breakpointId = -1);
-	void AddEvent(DebugEventType type);
+	void AddEvent(DebugEventType type, MemoryOperationInfo& operation, int32_t breakpointId = -1) override;
+	void AddEvent(DebugEventType type) override;
 
-	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
+	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt) override;
 
-	uint32_t TakeEventSnapshot();
-	DebugEventInfo GetEvent(uint16_t y, uint16_t x);
+	uint32_t TakeEventSnapshot() override;
+	DebugEventInfo GetEvent(uint16_t y, uint16_t x) override;
 
 	FrameInfo GetDisplayBufferSize() override;
 	void SetConfiguration(BaseEventViewerConfig& config) override;

@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <iostream>
 
-std::shared_ptr<LinuxGameController> LinuxGameController::GetController(shared_ptr<Emulator> emu, int deviceID, bool logInformation)
+std::shared_ptr<LinuxGameController> LinuxGameController::GetController(Emulator* emu, int deviceID, bool logInformation)
 {
 	std::string deviceName = "/dev/input/event" + std::to_string(deviceID);
 	struct stat buffer;   
@@ -47,7 +47,7 @@ std::shared_ptr<LinuxGameController> LinuxGameController::GetController(shared_p
 	return nullptr;
 }
 
-LinuxGameController::LinuxGameController(shared_ptr<Emulator> emu, int deviceID, int fileDescriptor, libevdev* device)
+LinuxGameController::LinuxGameController(Emulator* emu, int deviceID, int fileDescriptor, libevdev* device)
 {
 	_emu = emu;
 	_deviceID = deviceID;

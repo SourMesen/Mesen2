@@ -75,7 +75,7 @@ public:
 		}
 	}
 
-	bool IsRecording()
+	bool IsRecording() override
 	{
 		return _isRecording;
 	}

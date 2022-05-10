@@ -10,7 +10,7 @@ public:
 	TwoPlayerAdapter(Emulator* emu, ControllerType type, ControllerConfig controllers[]) : ControllerHub(emu, type, 0, controllers)
 	{}
 
-	void WriteRam(uint16_t addr, uint8_t value)
+	void WriteRam(uint16_t addr, uint8_t value) override
 	{
 		value &= 0x01;
 		ControllerHub::WriteRam(addr, value);

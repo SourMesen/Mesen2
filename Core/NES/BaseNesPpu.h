@@ -114,7 +114,7 @@ protected:
 	uint64_t _oamDecayCycles[0x40] = {};
 	bool _corruptOamRow[32] = {};
 	
-	__forceinline bool IsRenderingEnabled();
+	bool IsRenderingEnabled();
 	void UpdateGrayscaleAndIntensifyBits();
 	void UpdateColorBitMasks();
 	void UpdateMinimumDrawCycles();

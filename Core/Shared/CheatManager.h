@@ -100,16 +100,5 @@ public:
 	}
 
 	template<CpuType cpuType>
-	__declspec(noinline) void ApplyCheat(uint32_t addr, uint8_t &value)
-	{
-		if(_bankHasCheats[(int)cpuType][addr >> GetBankShift(cpuType)]) {
-			auto result = _cheatsByAddress[(int)cpuType].find(addr);
-			if(result != _cheatsByAddress[(int)cpuType].end()) {
-				if(result->second.Compare == -1 || result->second.Compare == value) {
-					value = result->second.Value;
-					_emu->GetConsole()->ProcessCheatCode(result->second, addr, value);
-				}
-			}
-		}
-	}
+	__noinline void ApplyCheat(uint32_t addr, uint8_t& value);
 };

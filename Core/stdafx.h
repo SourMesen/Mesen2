@@ -1,8 +1,10 @@
 #pragma once
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4100 ) //unreferenced formal parameter
 #pragma warning( disable : 4244 ) //conversion from 'x' to 'y', possible loss of data
 #pragma warning( disable : 4245 ) //conversion from 'x' to 'y', signed/unsigned mismatch
+#endif 
 
 #include <stdio.h>
 #include <string.h>
@@ -28,12 +30,18 @@
 
 #include "../Utilities/UTF8Util.h"
 
+#ifdef _MSC_VER
+	#define __noinline __declspec(noinline)
+#endif
+
 #ifndef __MINGW32__
 	#ifdef __clang__
 		#define __forceinline __attribute__((always_inline)) inline
+		#define __noinline __attribute__((noinline))
 	#else
 		#ifdef __GNUC__
 			#define __forceinline __attribute__((always_inline)) inline
+			#define __noinline __attribute__((noinline))
 		#endif
 	#endif
 #endif

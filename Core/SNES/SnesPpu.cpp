@@ -19,7 +19,9 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
+#ifdef _MSC_VER
 #pragma warning ( disable : 4127 ) //conditional expression is constant
+#endif
 
 static constexpr uint8_t _oamSizes[8][2][2] = {
 	{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16

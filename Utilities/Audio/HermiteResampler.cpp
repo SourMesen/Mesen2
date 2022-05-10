@@ -103,3 +103,6 @@ uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t
 
 	return outPos / 2;
 }
+
+template uint32_t HermiteResampler::Resample<true>(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount);
+template uint32_t HermiteResampler::Resample<false>(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount);

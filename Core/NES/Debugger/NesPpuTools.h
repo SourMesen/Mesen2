@@ -8,7 +8,7 @@ class BaseMapper;
 class NesConsole;
 struct NesPpuState;
 
-class NesPpuTools : public PpuTools
+class NesPpuTools final : public PpuTools
 {
 private:
 	BaseMapper* _mapper = nullptr;

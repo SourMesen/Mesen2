@@ -5,27 +5,23 @@
 #include "Core/Shared/Video/VideoDecoder.h"
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/MessageManager.h"
+#include "Core/Shared/RenderedFrame.h"
 
 SimpleLock SdlRenderer::_frameLock;
 
-SdlRenderer::SdlRenderer(shared_ptr<Emulator> emu, void* windowHandle, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager), _windowHandle(windowHandle)
+SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager), _windowHandle(windowHandle)
 {
 	_frameBuffer = nullptr;
 	_requiredWidth = 256;
 	_requiredHeight = 240;
 	
-	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
-	if(videoRenderer) {
-		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
-	}
+	_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 }
 
 SdlRenderer::~SdlRenderer()
 {
-	shared_ptr<VideoRenderer> videoRenderer = _emu->GetVideoRenderer();
-	if(videoRenderer) {
-		videoRenderer->UnregisterRenderingDevice(this);
-	}
+	_emu->GetVideoRenderer()->UnregisterRenderingDevice(this);
+
 	Cleanup();
 	Cleanup();
 	delete[] _frameBuffer;	
@@ -130,24 +126,24 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 	}	
 }
 
-void SdlRenderer::UpdateFrame(void *frameBuffer, uint32_t width, uint32_t height)
+void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 {
 	_frameLock.Acquire();
-	if(_frameBuffer == nullptr || _requiredWidth != width || _requiredHeight != height) {
-		_requiredWidth = width;
-		_requiredHeight = height;
+	if(_frameBuffer == nullptr || _requiredWidth != frame.Width || _requiredHeight != frame.Height) {
+		_requiredWidth = frame.Width;
+		_requiredHeight = frame.Height;
 		
 		delete[] _frameBuffer;
-		_frameBuffer = new uint32_t[width*height];
-		memset(_frameBuffer, 0, width*height*4);	
+		_frameBuffer = new uint32_t[frame.Width*frame.Height];
+		memset(_frameBuffer, 0, frame.Width * frame.Height *4);
 	}
 	
-	memcpy(_frameBuffer, frameBuffer, width*height*_bytesPerPixel);
+	memcpy(_frameBuffer, frame.FrameBuffer, frame.Width * frame.Height *_bytesPerPixel);
 	_frameChanged = true;	
 	_frameLock.Release();
 }
 
-void SdlRenderer::Render()
+void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 {
 	SetScreenSize(_requiredWidth, _requiredHeight);
 	

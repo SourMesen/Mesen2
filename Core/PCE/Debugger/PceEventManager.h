@@ -54,14 +54,14 @@ public:
 	PceEventManager(Debugger *debugger, PceConsole *console);
 	~PceEventManager();
 
-	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1);
-	void AddEvent(DebugEventType type);
+	void AddEvent(DebugEventType type, MemoryOperationInfo &operation, int32_t breakpointId = -1) override;
+	void AddEvent(DebugEventType type) override;
 	
-	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
+	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt) override;
 
-	uint32_t TakeEventSnapshot();
+	uint32_t TakeEventSnapshot() override;
 	FrameInfo GetDisplayBufferSize() override;
-	DebugEventInfo GetEvent(uint16_t y, uint16_t x);
+	DebugEventInfo GetEvent(uint16_t y, uint16_t x) override;
 
 	void SetConfiguration(BaseEventViewerConfig& config) override;
 };

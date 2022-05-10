@@ -5,7 +5,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/KeyDefinitions.h"
 
-LinuxKeyManager::LinuxKeyManager(shared_ptr<Emulator> emu)
+LinuxKeyManager::LinuxKeyManager(Emulator* emu)
 {
 	_emu = emu;
 
