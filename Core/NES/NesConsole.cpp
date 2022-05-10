@@ -363,7 +363,7 @@ void NesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	NesState& state = (NesState&)baseState;
 
 	state.ClockRate = GetMasterClockRate();
-	state.Snes = _cpu->GetState();
+	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu);
 	state.Cartridge = _mapper->GetState();
 	state.Apu = _apu->GetState();

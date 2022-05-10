@@ -11,10 +11,10 @@
 #include "SNES/InternalRegisterTypes.h"
 #include "SNES/AluMulDiv.h"
 
-struct SnesState : public BaseState
+struct SnesState
 {
 	uint64_t MasterClock;
-	SnesCpuState Snes;
+	SnesCpuState Cpu;
 	SnesPpuState Ppu;
 	SpcState Spc;
 	DspState Dsp;

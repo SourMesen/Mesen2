@@ -218,7 +218,7 @@ struct PcePsgChannelState
 	uint8_t NoiseFrequency;
 };
 
-struct PceState : public BaseState
+struct PceState
 {
 	PceCpuState Cpu;
 	PcePpuState Ppu;

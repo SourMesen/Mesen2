@@ -110,6 +110,6 @@ struct Sa1State
 
 struct DebugSa1State
 {
-	SnesCpuState Snes;
+	SnesCpuState Cpu;
 	Sa1State Sa1;
 };

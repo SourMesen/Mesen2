@@ -140,7 +140,7 @@ struct CartridgeState
 	uint32_t PrgRomSize = 0;
 	uint32_t ChrRomSize = 0;
 	uint32_t ChrRamSize = 0;
-	
+
 	uint32_t PrgPageCount = 0;
 	uint32_t PrgPageSize = 0;
 	int32_t PrgMemoryOffset[0x100] = {};
@@ -452,9 +452,9 @@ enum class AudioChannel
 	Sunsoft5B = 10
 };
 
-struct NesState : public BaseState
+struct NesState
 {
-	NesCpuState Snes;
+	NesCpuState Cpu;
 	NesPpuState Ppu;
 	CartridgeState Cartridge;
 	ApuState Apu;

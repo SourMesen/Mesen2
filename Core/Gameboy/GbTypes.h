@@ -386,10 +386,10 @@ enum class GbType
 	Cgb = 1,
 };
 
-struct GbState : public BaseState
+struct GbState
 {
 	GbType Type;
-	GbCpuState Snes;
+	GbCpuState Cpu;
 	GbPpuState Ppu;	
 	GbApuDebugState Apu;
 	GbMemoryManagerState MemoryManager;

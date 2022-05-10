@@ -191,7 +191,7 @@ GbState Gameboy::GetState()
 {
 	GbState state;
 	state.Type = IsCgb() ? GbType::Cgb : GbType::Gb;
-	state.Snes = _cpu->GetState();
+	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
 	state.Apu = _apu->GetState();
 	state.MemoryManager = _memoryManager->GetState();
