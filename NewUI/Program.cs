@@ -88,7 +88,7 @@ namespace Mesen
 		private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 		{
 			if(libraryName.Contains("Mesen")) {
-				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, "lib" + libraryName));
+				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "lib" : "") + libraryName));
 			}
 			return IntPtr.Zero;
 		}

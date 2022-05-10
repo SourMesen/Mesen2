@@ -23,7 +23,6 @@ SdlRenderer::~SdlRenderer()
 	_emu->GetVideoRenderer()->UnregisterRenderingDevice(this);
 
 	Cleanup();
-	Cleanup();
 	delete[] _frameBuffer;	
 }
 
@@ -70,9 +69,9 @@ bool SdlRenderer::Init()
 		}		
 	}
 
-	_sdlTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, _nesFrameWidth, _nesFrameHeight);
+	_sdlTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, _frameWidth, _frameHeight);
 	if(!_sdlTexture) {
-		string msg = "[SDL] Failed to create texture: " + std::to_string(_nesFrameWidth) + "x" + std::to_string(_nesFrameHeight);
+		string msg = "[SDL] Failed to create texture: " + std::to_string(_frameWidth) + "x" + std::to_string(_frameHeight);
 		LogSdlError(msg.c_str());
 		return false;
 	}
@@ -87,6 +86,10 @@ void SdlRenderer::Cleanup()
 	if(_sdlTexture) {
 		SDL_DestroyTexture(_sdlTexture);
 		_sdlTexture = nullptr;		
+	}
+	if(_sdlHudTexture) {
+		SDL_DestroyTexture(_sdlHudTexture);
+		_sdlHudTexture = nullptr;
 	}
 	if(_sdlRenderer) {
 		SDL_DestroyRenderer(_sdlRenderer);
@@ -108,12 +111,12 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	FrameInfo size = _emu->GetVideoRenderer()->GetRendererSize();
-	if(_screenHeight != size.Height || _screenWidth != size.Width || _nesFrameHeight != height || _nesFrameWidth != width || _useBilinearInterpolation != cfg.UseBilinearInterpolation || _vsyncEnabled != cfg.VerticalSync) {
+	if(_screenHeight != size.Height || _screenWidth != size.Width || _frameHeight != height || _frameWidth != width || _useBilinearInterpolation != cfg.UseBilinearInterpolation || _vsyncEnabled != cfg.VerticalSync) {
 		_vsyncEnabled = cfg.VerticalSync;
 		_useBilinearInterpolation = cfg.UseBilinearInterpolation;
 
-		_nesFrameHeight = height;
-		_nesFrameWidth = width;
+		_frameHeight = height;
+		_frameWidth = width;
 		_newFrameBufferSize = width*height;
 
 		_screenHeight = size.Height;
@@ -146,9 +149,18 @@ void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 {
 	SetScreenSize(_requiredWidth, _requiredHeight);
-	
 	if(!_sdlRenderer || !_sdlTexture) {
 		return;
+	}
+
+	if(!_sdlHudTexture || _hudWidth != width || _hudHeight != height) {
+		if(_sdlHudTexture) {
+			SDL_DestroyTexture(_sdlHudTexture);
+		}
+		_hudWidth = width;
+		_hudHeight = height;
+		_sdlHudTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+		SDL_SetTextureBlendMode(_sdlHudTexture, SDL_BLENDMODE_BLEND);
 	}
 
 	if(SDL_RenderClear(_sdlRenderer) != 0) {
@@ -159,11 +171,11 @@ void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 	int rowPitch;
 	if(SDL_LockTexture(_sdlTexture, nullptr, (void**)&textureBuffer, &rowPitch) == 0) {
 		auto frameLock = _frameLock.AcquireSafe();
-		if(_frameBuffer && _nesFrameWidth == _requiredWidth && _nesFrameHeight == _requiredHeight) {
+		if(_frameBuffer && _frameWidth == _requiredWidth && _frameHeight == _requiredHeight) {
 			uint32_t* ppuFrameBuffer = _frameBuffer;
-			for(uint32_t i = 0, iMax = _nesFrameHeight; i < iMax; i++) {
-				memcpy(textureBuffer, ppuFrameBuffer, _nesFrameWidth*_bytesPerPixel);
-				ppuFrameBuffer += _nesFrameWidth;
+			for(uint32_t i = 0, iMax = _frameHeight; i < iMax; i++) {
+				memcpy(textureBuffer, ppuFrameBuffer, _frameWidth*_bytesPerPixel);
+				ppuFrameBuffer += _frameWidth;
 				textureBuffer += rowPitch;
 			}
 		}
@@ -173,11 +185,28 @@ void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 	
 	SDL_UnlockTexture(_sdlTexture);
 
-	SDL_Rect source = {0, 0, (int)_nesFrameWidth, (int)_nesFrameHeight };
+	if(SDL_LockTexture(_sdlHudTexture, nullptr, (void**)&textureBuffer, &rowPitch) == 0) {
+		for(uint32_t i = 0, iMax = height; i < iMax; i++) {
+			memcpy(textureBuffer, hudBuffer, width * _bytesPerPixel);
+			hudBuffer += width;
+			textureBuffer += rowPitch;
+		}
+	} else {
+		LogSdlError("SDL_LockTexture failed (HUD)");
+	}
+
+	SDL_UnlockTexture(_sdlHudTexture);
+
+	SDL_Rect source = {0, 0, (int)_frameWidth, (int)_frameHeight };
 	SDL_Rect dest = {0, 0, (int)_screenWidth, (int)_screenHeight };
 	
 	if(SDL_RenderCopy(_sdlRenderer, _sdlTexture, &source, &dest) != 0) {
 			LogSdlError("SDL_RenderCopy failed");	
+	}
+
+	SDL_Rect hudSource = { 0, 0, (int)width, (int)height };
+	if(SDL_RenderCopy(_sdlRenderer, _sdlHudTexture, &hudSource, &dest) != 0) {
+		LogSdlError("SDL_RenderCopy failed (HUD)");
 	}
 
 	SDL_RenderPresent(_sdlRenderer);

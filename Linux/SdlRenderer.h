@@ -14,7 +14,8 @@ private:
 	void* _windowHandle;
 	SDL_Window* _sdlWindow = nullptr;
 	SDL_Renderer *_sdlRenderer = nullptr;
-	SDL_Texture *_sdlTexture = nullptr;
+	SDL_Texture* _sdlTexture = nullptr;
+	SDL_Texture *_sdlHudTexture = nullptr;
 	
 	bool _useBilinearInterpolation = false;
 
@@ -29,9 +30,12 @@ private:
 	uint32_t _requiredHeight = 0;
 	uint32_t _requiredWidth = 0;
 
-	uint32_t _nesFrameHeight = 0;
-	uint32_t _nesFrameWidth = 0;
+	uint32_t _frameHeight = 0;
+	uint32_t _frameWidth = 0;
 	uint32_t _newFrameBufferSize = 0;
+
+	uint32_t _hudWidth = 0;
+	uint32_t _hudHeight = 0;
 
 	bool _vsyncEnabled = false;
 
