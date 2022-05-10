@@ -18,7 +18,6 @@
 #Usage: LTO=true make
 
 MESENFLAGS=
-libretro : MESENFLAGS=-D LIBRETRO
 
 ifeq ($(USE_GCC),true)
 	CXX=g++
@@ -68,7 +67,6 @@ endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
 SHAREDLIB=libMesenSCore.dll
-LIBRETROLIB=mesen-s_libretro.$(MESENPLATFORM).so
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
 CORESRC := $(shell find Core -name '*.cpp')
@@ -108,11 +106,8 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/x64/Release/$(SHAREDLIB)
-	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" --self-contained true -p:PublishSingleFile=true
-
-libretro: Libretro/$(OBJFOLDER)/$(LIBRETROLIB)
-	mkdir -p bin
-	cp ./Libretro/$(OBJFOLDER)/$(LIBRETROLIB) ./bin/
+	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" --no-self-contained true -p:PublishSingleFile=true
+	rm $(RELEASEFOLDER)/linux-x64/publish/lib*
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
@@ -139,13 +134,6 @@ InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(CORE
 	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
-	
-Libretro/$(OBJFOLDER)/$(LIBRETROLIB): $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) Libretro/libretro.cpp
-	mkdir -p bin
-	mkdir -p Libretro/$(OBJFOLDER)
-	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(LIBRETROLIB) Libretro/*.cpp $(SEVENZIPOBJ) $(UTILOBJ) $(COREOBJ) -pthread
-	cp $(LIBRETROLIB) bin/pgohelperlib.so
-	mv $(LIBRETROLIB) Libretro/$(OBJFOLDER) 
 
 pgo:
 	./buildPGO.sh
