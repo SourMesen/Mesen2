@@ -1377,6 +1377,7 @@ namespace Mesen.Interop
 
 		//VCE
 		public byte VceClockDivider;
+		[MarshalAs(UnmanagedType.I1)] public bool VceGrayscale;
 		public UInt16 PalAddr;
 	}
 

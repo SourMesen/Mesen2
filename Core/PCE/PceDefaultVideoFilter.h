@@ -8,7 +8,7 @@
 class PceDefaultVideoFilter : public BaseVideoFilter
 {
 private:
-	uint32_t _calculatedPalette[0x200] = {};
+	uint32_t _calculatedPalette[0x400] = {};
 	VideoConfig _videoConfig = {};
 
 protected:
@@ -53,10 +53,14 @@ protected:
 				r = (uint8_t)std::min(255, (int)(redChannel * 255));
 				g = (uint8_t)std::min(255, (int)(greenChannel * 255));
 				b = (uint8_t)std::min(255, (int)(blueChannel * 255));
-				_calculatedPalette[rgb333] = 0xFF000000 | (r << 16) | (g << 8) | b;
-			} else {
-				_calculatedPalette[rgb333] = 0xFF000000 | (r << 16) | (g << 8) | b;
 			}
+
+			//Convert RGB to grayscale color
+			uint8_t y = (uint8_t)std::clamp(0.299 * r + 0.587 * g + 0.114 * b, 0.0, 255.0);
+			_calculatedPalette[rgb333 | 0x200] = 0xFF000000 | (y << 16) | (y << 8) | y;
+
+			//Regular RGB color
+			_calculatedPalette[rgb333] = 0xFF000000 | (r << 16) | (g << 8) | b;
 		}
 
 		_videoConfig = config;

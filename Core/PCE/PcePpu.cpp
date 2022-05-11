@@ -836,7 +836,7 @@ void PcePpu::DrawScanline()
 				}
 			}
 
-			out[xStart] = outColor;
+			out[xStart] = outColor | (_state.VceGrayscale << 9);
 			_screenOffsetX++;
 		}
 	} else if(inPicture) {
@@ -1169,6 +1169,7 @@ void PcePpu::WriteVce(uint16_t addr, uint8_t value)
 	switch(addr & 0x07) {
 		case 0x00:
 			_state.VceScanlineCount = (value & 0x04) ? 263 : 262;
+			_state.VceGrayscale = (value & 0x80) != 0;
 			switch(value & 0x03) {
 				case 0: _state.VceClockDivider = 4; break;
 				case 1: _state.VceClockDivider = 3; break;

@@ -1146,6 +1146,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "VCE - Video Color Encoder", null),
 				new RegEntry("$00.0-1", "VCE - CR - Clock Speed", ppu.VceClockDivider == 4 ? "5.37 MHz" : ppu.VceClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
 				new RegEntry("$00.2", "VCE - CR - Number of Scanlines", ppu.VceScanlineCount),
+				new RegEntry("$00.7", "VCE - CR - Grayscale", ppu.VceGrayscale),
 				new RegEntry("$01.0-8", "VCE - CTA - Color Table Address", ppu.PalAddr, Format.X16),
 
 				new RegEntry("", "Selected Register", ppu.CurrentReg, Format.X8),
@@ -1196,7 +1197,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", ppu.HvReg.VertDisplayWidth, Format.X16),
 
 				new RegEntry("$0E", "VCR - Vertical Display End", null),
-				new RegEntry("$0E.0-7", "HDE - Vertical Display End Position", ppu.HvReg.HorizDisplayEnd, Format.X8),
+				new RegEntry("$0E.0-7", "VCR - Vertical Display End Position", ppu.HvReg.VertEndPosVcr, Format.X8),
 
 				new RegEntry("$0F", "DCR - Block Transfer Control", null),
 				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", ppu.VramSatbIrqEnabled),
@@ -1225,11 +1226,11 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz"),
 				new RegEntry("", "IRQ", null),
 				new RegEntry("$1402", "Disabled IRQs", null),
-				new RegEntry("$1402.0", "IRQ2 Disabled", (mem.DisabledIrqs & 0x01) != 0),
+				new RegEntry("$1402.0", "IRQ2 (CDROM) Disabled", (mem.DisabledIrqs & 0x01) != 0),
 				new RegEntry("$1402.1", "IRQ1 (VDC) Disabled", (mem.DisabledIrqs & 0x02) != 0),
 				new RegEntry("$1402.2", "Timer IRQ Disabled", (mem.DisabledIrqs & 0x04) != 0),
 				new RegEntry("$1403", "Active IRQs", null),
-				new RegEntry("$1403.0", "IRQ2", (mem.ActiveIrqs & 0x01) != 0),
+				new RegEntry("$1403.0", "IRQ2 (CDROM)", (mem.ActiveIrqs & 0x01) != 0),
 				new RegEntry("$1403.1", "IRQ1 (VDC)", (mem.ActiveIrqs & 0x02) != 0),
 				new RegEntry("$1403.2", "Timer IRQ", (mem.ActiveIrqs & 0x04) != 0),
 

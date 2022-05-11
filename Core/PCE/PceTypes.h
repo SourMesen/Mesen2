@@ -159,6 +159,7 @@ struct PcePpuState : public BaseState
 	
 	//VCE
 	uint8_t VceClockDivider;
+	bool VceGrayscale;
 	uint16_t PalAddr;
 };
 
