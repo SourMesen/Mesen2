@@ -12,32 +12,24 @@ private:
 	VideoConfig _videoConfig = {};
 
 protected:
-	static uint8_t To8Bit(uint8_t color)
-	{
-		return (color << 5) | (color << 2) | (color >> 1);
-	}
-	
 	uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset)
 	{
 		return _calculatedPalette[ppuFrame[offset]];
 	}
 
-	FrameInfo GetFrameInfo() override
-	{
-		return BaseVideoFilter::GetFrameInfo();
-	}
-
 	void InitLookupTable()
 	{
-		VideoConfig config = _emu->GetSettings()->GetVideoConfig();
+		VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
+		PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
 
 		InitConversionMatrix(config.Hue, config.Saturation);
 
 		double y, i, q;
 		for(int rgb333 = 0; rgb333 < 0x0200; rgb333++) {
-			uint8_t g = To8Bit(rgb333 >> 6);
-			uint8_t r = To8Bit((rgb333 >> 3) & 0x07);
-			uint8_t b = To8Bit(rgb333 & 0x07);
+			uint32_t color = pceCfg.Palette[rgb333];
+			uint8_t r = color & 0xFF;
+			uint8_t g = (color >> 8) & 0xFF;
+			uint8_t b = (color >> 16) & 0xFF;
 
 			if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
 				double redChannel = r / 255.0;
@@ -56,8 +48,8 @@ protected:
 			}
 
 			//Convert RGB to grayscale color
-			uint8_t y = (uint8_t)std::clamp(0.299 * r + 0.587 * g + 0.114 * b, 0.0, 255.0);
-			_calculatedPalette[rgb333 | 0x200] = 0xFF000000 | (y << 16) | (y << 8) | y;
+			uint8_t grayscaleY = (uint8_t)std::clamp(0.299 * r + 0.587 * g + 0.114 * b, 0.0, 255.0);
+			_calculatedPalette[rgb333 | 0x200] = 0xFF000000 | (grayscaleY << 16) | (grayscaleY << 8) | grayscaleY;
 
 			//Regular RGB color
 			_calculatedPalette[rgb333] = 0xFF000000 | (r << 16) | (g << 8) | b;
@@ -131,14 +123,5 @@ public:
 				*/
 			}
 		}
-	}
-
-	static uint32_t ToArgb(uint16_t rgb333)
-	{
-		uint8_t g = To8Bit(rgb333 >> 6);
-		uint8_t r = To8Bit((rgb333 >> 3) & 0x07);
-		uint8_t b = To8Bit(rgb333 & 0x07);
-
-		return 0xFF000000 | (r << 16) | (g << 8) | b;
 	}
 };

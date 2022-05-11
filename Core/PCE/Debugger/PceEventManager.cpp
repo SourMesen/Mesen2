@@ -10,10 +10,13 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 
 PceEventManager::PceEventManager(Debugger *debugger, PceConsole *console)
 {
 	_debugger = debugger;
+	_emu = debugger->GetEmulator();
 	_cpu = console->GetCpu();
 	_ppu = console->GetPpu();
 	_memoryManager = console->GetMemoryManager();
@@ -163,6 +166,7 @@ FrameInfo PceEventManager::GetDisplayBufferSize()
 void PceEventManager::DrawScreen(uint32_t *buffer)
 {
 	uint16_t *src = _ppuBuffer;
+	uint32_t* palette = _emu->GetSettings()->GetPcEngineConfig().Palette;
 
 	for(uint32_t y = 0, len = PceConstants::ScreenHeight * 2; y < len; y++) {
 		uint16_t scanline = y >> 1;
@@ -173,7 +177,7 @@ void PceEventManager::DrawScreen(uint32_t *buffer)
 
 		for(uint32_t x = 0; x < PceConstants::ClockPerScanline; x++) {
 			int srcOffset = (scanline * PceConstants::MaxScreenWidth) + (x / divider);
-			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x] = PceDefaultVideoFilter::ToArgb(src[srcOffset]);
+			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x] = palette[src[srcOffset]];
 		}
 	}
 }

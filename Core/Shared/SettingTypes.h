@@ -380,6 +380,8 @@ struct PcEngineConfig
 	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
 	uint32_t CdAudioVolume;
 	uint32_t AdpcmVolume;
+
+	uint32_t Palette[512] = { };
 };
 
 struct SnesConfig

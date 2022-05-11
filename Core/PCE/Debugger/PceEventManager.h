@@ -7,6 +7,7 @@
 enum class DebugEventType;
 struct DebugEventInfo;
 struct EventViewerDisplayOptions;
+class Emulator;
 class PceConsole;
 class PceCpu;
 class PcePpu;
@@ -36,7 +37,7 @@ class PceEventManager final : public BaseEventManager
 {
 private:
 	PceEventViewerConfig _config;
-
+	Emulator* _emu;
 	PceCpu * _cpu;
 	PcePpu *_ppu;
 	PceMemoryManager* _memoryManager;

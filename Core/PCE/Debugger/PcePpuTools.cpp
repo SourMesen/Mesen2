@@ -258,10 +258,12 @@ DebugPaletteInfo PcePpuTools::GetPaletteInfo()
 	info.SpriteColorCount = 16 * 16;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
+	uint32_t* palette = _emu->GetSettings()->GetPcEngineConfig().Palette;
+
 	uint8_t* pal = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::PcePaletteRam);
 	for(int i = 0; i < 512; i++) {
 		info.RawPalette[i] = pal[i * 2] | (pal[i * 2 + 1] << 8);
-		info.RgbPalette[i] = PceDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+		info.RgbPalette[i] = palette[info.RawPalette[i]];
 	}
 
 	return info;
