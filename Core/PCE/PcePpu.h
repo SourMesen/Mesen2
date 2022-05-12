@@ -86,22 +86,15 @@ private:
 
 	uint8_t _spriteCount = 0;
 	uint16_t _spriteRow = 0;
-	PceSpriteInfo _sprites[16] = {};
 	uint16_t _evalStartCycle = 0;
 	uint16_t _evalEndCycle = 0;
 	int16_t _evalLastCycle = 0;
 	bool _hasSpriteOverflow = false;
 
-	PceSpriteInfo _drawSprites[16] = {};
-	uint8_t _drawSpriteCount = 0;
-	bool _rowHasSprite0 = false;
-	uint16_t _loadSpriteStart = 0;
-
 	uint16_t _loadBgStart = 0;
 	uint16_t _loadBgEnd = 0;
 	int16_t _loadBgLastCycle = 0;
 	uint8_t _tileCount = 0;
-	PceTileInfo _tiles[100] = {};
 	bool _allowVramAccess = false;
 
 	bool _pendingMemoryRead = false;
@@ -114,6 +107,14 @@ private:
 
 	PceVdcEvent _nextEvent = PceVdcEvent::None;
 	uint16_t _nextEventCounter = 0;
+
+	uint8_t _drawSpriteCount = 0;
+	uint8_t _totalSpriteCount = 0;
+	bool _rowHasSprite0 = false;
+	uint16_t _loadSpriteStart = 0;
+	PceSpriteInfo _sprites[64] = {};
+	PceSpriteInfo _drawSprites[64] = {};
+	PceTileInfo _tiles[100] = {};
 
 	template<uint16_t bitMask = 0xFFFF>
 	void UpdateReg(uint16_t& reg, uint8_t value, bool msb)

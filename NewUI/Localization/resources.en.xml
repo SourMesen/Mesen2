@@ -370,6 +370,11 @@
 			<Control ID="tpgInput">Input</Control>
 			
 			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
+			<Control ID="chkDisableBackground">Disable background</Control>
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+
 			<Control ID="lblPalette">Palette</Control>
 		</Form>
 

@@ -34,6 +34,10 @@ namespace Mesen.Config
 		[Reactive] public UInt32 CdAudioVolume { get; set; } = 100;
 		[Reactive] public UInt32 AdpcmVolume { get; set; } = 100;
 
+		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
+		[Reactive] public bool DisableSprites { get; set; } = false;
+		[Reactive] public bool DisableBackground { get; set; } = false;
+
 		[Reactive] public UInt32[] Palette { get; set; } = PcEngineConfig.DefaultPalette.ToArray();
 
 		public void ApplyConfig()
@@ -57,6 +61,10 @@ namespace Mesen.Config
 				Channel6Vol = Channel6Vol,
 				CdAudioVolume = CdAudioVolume,
 				AdpcmVolume = AdpcmVolume,
+
+				RemoveSpriteLimit = RemoveSpriteLimit,
+				DisableBackground = DisableBackground,
+				DisableSprites = DisableSprites,
 
 				Palette = Palette,
 			});
@@ -125,6 +133,10 @@ namespace Mesen.Config
 		public UInt32 Channel6Vol;
 		public UInt32 CdAudioVolume;
 		public UInt32 AdpcmVolume;
+
+		[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableSprites;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 512)]
 		public UInt32[] Palette;

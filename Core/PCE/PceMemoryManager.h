@@ -268,6 +268,7 @@ public:
 			return _state.IoBuffer;
 		} else if(addr <= 0x13FF) {
 			//IO
+			//TODO CDROM & region bits
 			_state.IoBuffer = 0xB0 | _controlManager->ReadInputPort();
 			return _state.IoBuffer;
 		} else if(addr <= 0x17FF) {

@@ -302,6 +302,8 @@ void PcePpu::ProcessSpriteEvaluation()
 		_spriteRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
 	}
 
+	bool removeSpriteLimit = _emu->GetSettings()->GetPcEngineConfig().RemoveSpriteLimit;
+
 	for(uint16_t i = _evalLastCycle; i < end; i++) {
 		//4 VDC clocks is taken for each sprite
 		if(i >= 64) {
@@ -359,25 +361,27 @@ void PcePpu::ProcessSpriteEvaluation()
 		for(int x = 0; x < width; x+=16) {
 			if(_spriteCount >= 16) {
 				_hasSpriteOverflow = true;
-				break;
-			} else {
-				int columnOffset;
-				if(horizontalMirror) {
-					columnOffset = (width - x - 1) >> 4;
-				} else {
-					columnOffset = x >> 4;
+				if(!removeSpriteLimit) {
+					break;
 				}
-
-				uint16_t spriteTile = spriteTileY | columnOffset;
-				_sprites[_spriteCount].Index = i;
-				_sprites[_spriteCount].X = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32 + x;
-				_sprites[_spriteCount].TileAddress = spriteTile * 64 + yOffset;
-				_sprites[_spriteCount].HorizontalMirroring = horizontalMirror;
-				_sprites[_spriteCount].ForegroundPriority = (flags & 0x80) != 0;
-				_sprites[_spriteCount].Palette = (flags & 0x0F);
-				_sprites[_spriteCount].LoadSp23 = loadSp23;
-				_spriteCount++;
 			}
+
+			int columnOffset;
+			if(horizontalMirror) {
+				columnOffset = (width - x - 1) >> 4;
+			} else {
+				columnOffset = x >> 4;
+			}
+
+			uint16_t spriteTile = spriteTileY | columnOffset;
+			_sprites[_spriteCount].Index = i;
+			_sprites[_spriteCount].X = (int16_t)(_spriteRam[i * 4 + 1] & 0x3FF) - 32 + x;
+			_sprites[_spriteCount].TileAddress = spriteTile * 64 + yOffset;
+			_sprites[_spriteCount].HorizontalMirroring = horizontalMirror;
+			_sprites[_spriteCount].ForegroundPriority = (flags & 0x80) != 0;
+			_sprites[_spriteCount].Palette = (flags & 0x0F);
+			_sprites[_spriteCount].LoadSp23 = loadSp23;
+			_spriteCount++;
 		}
 	}
 
@@ -493,6 +497,7 @@ void PcePpu::LoadSpriteTiles()
 		return;
 	}
 
+	bool removeSpriteLimit = _emu->GetSettings()->GetPcEngineConfig().RemoveSpriteLimit;
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
 	bool hasSprite0 = false;
 	if(_state.SpriteAccessMode != 1) {
@@ -505,7 +510,8 @@ void PcePpu::LoadSpriteTiles()
 		}
 
 		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / clocksPerSprite);
-		for(int i = 0; i < _drawSpriteCount; i++) {
+		_totalSpriteCount = removeSpriteLimit ? _spriteCount : _drawSpriteCount;
+		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
 			uint16_t addr = spr.TileAddress;
@@ -518,7 +524,8 @@ void PcePpu::LoadSpriteTiles()
 	} else {
 		//Mode 1 uses 2BPP sprites, 4 clocks per sprite
 		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
-		for(int i = 0; i < _drawSpriteCount; i++) {
+		_totalSpriteCount = removeSpriteLimit ? _spriteCount : _drawSpriteCount;
+		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
 			
@@ -790,10 +797,14 @@ void PcePpu::DrawScanline()
 	bool inPicture = _hMode == PcePpuModeH::Hdw && _tileCount > 0;
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
+		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+		bool bgEnabled = _state.BackgroundEnabled && !cfg.DisableBackground;
+		bool sprEnabled = _state.SpritesEnabled && !cfg.DisableSprites;
+
 		for(; xStart < xMax; xStart++) {
 			uint8_t bgColor = 0;
 			uint16_t outColor = _paletteRam[0];
-			if(_state.BackgroundEnabled) {
+			if(bgEnabled) {
 				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
 				uint16_t column = screenX >> 3;
 				bgColor = GetTilePixelColor(_tiles[column].TileData, 7 - (screenX & 0x07));
@@ -805,7 +816,7 @@ void PcePpu::DrawScanline()
 			if(_state.SpritesEnabled) {
 				uint8_t sprColor;
 				bool checkSprite0Hit = false;
-				for(uint16_t i = 0; i < _drawSpriteCount; i++) {
+				for(uint16_t i = 0; i < _totalSpriteCount; i++) {
 					int16_t xOffset = _screenOffsetX - _drawSprites[i].X;
 					if(xOffset >= 0 && xOffset < 16) {
 						if(!_drawSprites[i].HorizontalMirroring) {
@@ -816,12 +827,13 @@ void PcePpu::DrawScanline()
 
 						if(sprColor != 0) {
 							if(checkSprite0Hit) {
-								if(_state.EnableCollisionIrq) {
+								//Note: don't trigger sprite 0 hit for sprites that are drawn because of the "remove sprite limit" option
+								if(_state.EnableCollisionIrq && i < _drawSpriteCount) {
 									_state.Sprite0Hit = true;
 									_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 								}
 							} else {
-								if(bgColor == 0 || _drawSprites[i].ForegroundPriority) {
+								if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
 									outColor = _paletteRam[256 + _drawSprites[i].Palette * 16 + sprColor];
 								}
 							}

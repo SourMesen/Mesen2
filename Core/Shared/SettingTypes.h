@@ -381,6 +381,10 @@ struct PcEngineConfig
 	uint32_t CdAudioVolume;
 	uint32_t AdpcmVolume;
 
+	bool RemoveSpriteLimit = false;
+	bool DisableSprites = false;
+	bool DisableBackground = false;
+
 	uint32_t Palette[512] = { };
 };
 
