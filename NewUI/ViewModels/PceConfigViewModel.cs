@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
+using Mesen.Controls;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +18,10 @@ namespace Mesen.ViewModels
 		[Reactive] public PceConfigTab SelectedTab { get; set; } = 0;
 
 		public PceInputConfigViewModel Input { get; private set; }
+
+		public List<PalettePreset> PalettePresets { get; } = new List<PalettePreset>() {
+			new() { Name = "Default Palette", Palette = PcEngineConfig.DefaultPalette.ToArray() },
+		};
 
 		public PceConfigViewModel()
 		{

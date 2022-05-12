@@ -9,7 +9,7 @@
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:v="using:Mesen.Views"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="350"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="vm:PceConfigViewModel"
@@ -19,15 +19,6 @@
 		<vm:PceConfigViewModel />
 	</Design.DataContext>
 
-	<UserControl.Styles>
-		<Style Selector="dc|PaletteSelector">
-			<Setter Property="SelectionMode" Value="None" />
-			<Setter Property="ColumnCount" Value="4" />
-			<Setter Property="Width" Value="80" />
-			<Setter Property="Height" Value="20" />
-		</Style>
-	</UserControl.Styles>
-	
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
@@ -73,6 +64,18 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgVideo}">
+			<StackPanel>
+				<c:OptionSection Header="{l:Translate lblPalette}">
+					<c:PaletteConfig
+						Palette="{CompiledBinding Config.Palette}"
+						PalettePresets="{CompiledBinding PalettePresets}"
+						ColumnCount="32"
+						BlockSize="12"
+						SmallPaletteSize="512"
+						LargePaletteSize="512"
+					/>
+				</c:OptionSection>
+			</StackPanel>
 		</TabItem>
 	</TabControl>
 </UserControl>

@@ -358,55 +358,15 @@
 					</c:OptionSection>
 					
 					<c:OptionSection Header="{l:Translate lblPalette}">
-						<StackPanel Orientation="Horizontal">
-							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0">
-								<dc:PaletteSelector
-									SelectionMode="None"
-									ColumnCount="16"
-									BlockSize="24"
-									Height="96"
-									PaletteColors="{CompiledBinding Config.UserPalette}"
-									VerticalAlignment="Top"
-									ShowIndexes="{CompiledBinding ShowColorIndexes}"
-									ColorClick="PaletteColor_OnClick"
-								/>
-							</Border>
-						</StackPanel>
-						<StackPanel Orientation="Horizontal">
-							<Button
-								MinWidth="127"
-								HorizontalContentAlignment="Center"
-								Content="{l:Translate btnSelectPalette}"
-								Click="btnSelectPalette_OnClick"
-							>
-								<Button.ContextMenu>
-									<ContextMenu Name="Preset" PlacementMode="Bottom">
-										<MenuItem Header="{l:Translate mnuDefaultPalette}" Click="mnuDefaultPalette_Click" />
-										<Separator />
-										<MenuItem Header="Composite Direct (by FirebrandX)" Click="mnuPaletteCompositeDirect_Click" />
-										<MenuItem Header="NES Classic (by FirebrandX)" Click="mnuPaletteNesClassic_Click" />
-										<MenuItem Header="Nestopia (RGB)" Click="mnuPaletteNestopiaRgb_Click" />
-										<MenuItem Header="Original Hardware (by FirebrandX)" Click="mnuPaletteOriginalHardware_Click" />
-										<MenuItem Header="PVM Style (by FirebrandX)" Click="mnuPalettePvmStyle_Click" />
-										<MenuItem Header="Sony CXA2025AS" Click="mnuPaletteSonyCxa2025As_Click" />
-										<MenuItem Header="Unsaturated v6 (by FirebrandX)" Click="mnuPaletteUnsaturated_Click" />
-										<MenuItem Header="YUV v3 (by FirebrandX)" Click="mnuPaletteYuv_Click" />
-									</ContextMenu>
-								</Button.ContextMenu>
-							</Button>
-							<Button
-								MinWidth="126"
-								HorizontalContentAlignment="Center"
-								Content="{l:Translate btnLoadPalFile}"
-								Click="btnLoadPalFile_OnClick"
-							/>
-							<Button
-								MinWidth="127"
-								HorizontalContentAlignment="Center"
-								Content="{l:Translate btnExportPalette}"
-								Click="btnExportPalette_OnClick"
-							/>
-						</StackPanel>
+						<c:PaletteConfig
+							ColumnCount="16"
+							BlockSize="24"
+							SmallPaletteSize="64"
+							LargePaletteSize="512"
+							Palette="{CompiledBinding Config.UserPalette}"
+							PalettePresets="{CompiledBinding PalettePresets}"
+							ShowIndexes="{CompiledBinding ShowColorIndexes}"
+						/>
 						<CheckBox IsChecked="{CompiledBinding ShowColorIndexes}" Content="{l:Translate chkShowColorIndexes}" />
 						<CheckBox IsChecked="{CompiledBinding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
 					</c:OptionSection>

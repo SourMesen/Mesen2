@@ -275,10 +275,6 @@
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblPalette">Palette</Control>
 			<Control ID="chkShowColorIndexes">Show color indexes</Control>
-			<Control ID="mnuDefaultPalette">Default (NTSC)</Control>
-			<Control ID="btnSelectPalette">Load preset palette...</Control>
-			<Control ID="btnExportPalette">Export palette</Control>
-			<Control ID="btnLoadPalFile">Load palette file</Control>
 			<Control ID="chkUseCustomVsPalette">Use this palette for VS System games</Control>
 
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
@@ -363,7 +359,9 @@
 
 		<Form ID="PceConfigView">
 			<Control ID="tpgGeneral">General</Control>
-			<Control ID="tpgVideo">Video</Control>
+			
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
 			
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
@@ -371,8 +369,14 @@
 			
 			<Control ID="tpgInput">Input</Control>
 			
-			<Control ID="tpgAudio">Audio</Control>
-			<Control ID="grpVolume">Volume</Control>
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblPalette">Palette</Control>
+		</Form>
+
+		<Form ID="PaletteConfig">
+			<Control ID="btnSelectPalette">Load preset palette...</Control>
+			<Control ID="btnExportPalette">Export palette</Control>
+			<Control ID="btnLoadPalFile">Load palette file</Control>
 		</Form>
 
 		<Form ID="PceInputConfigView">
@@ -1173,6 +1177,8 @@
 		<Message ID="ImportLabelsWithErrors">Import completed: {0} labels imported (and {1} errors.)</Message>
 		
 		<Message ID="RandomGameNoGameFound">Mesen could not find any games to load.</Message>
+
+		<Message ID="InvalidPaletteFile">Invalid palette file (too small or too large.)</Message>
 
 		<Message ID="CannotWriteToFolder">The selected folder cannot be written to - please select another folder and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
 		<Message ID="InvalidPaths">The following path overrides are invalid:&#xA;&#xA;{0}&#xA;&#xA;Please use valid and writable folders and try again.</Message>

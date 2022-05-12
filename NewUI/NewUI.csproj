@@ -203,6 +203,9 @@
     <Compile Update="Controls\ControllerButton.axaml.cs">
       <DependentUpon>ControllerButton.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\PaletteConfig.axaml.cs">
+      <DependentUpon>PaletteConfig.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\CodeScrollBar.axaml.cs">
       <DependentUpon>CodeScrollBar.axaml</DependentUpon>
     </Compile>

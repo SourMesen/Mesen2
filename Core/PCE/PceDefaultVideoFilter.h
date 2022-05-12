@@ -10,6 +10,7 @@ class PceDefaultVideoFilter : public BaseVideoFilter
 private:
 	uint32_t _calculatedPalette[0x400] = {};
 	VideoConfig _videoConfig = {};
+	PcEngineConfig _pceConfig = {};
 
 protected:
 	uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset)
@@ -27,9 +28,9 @@ protected:
 		double y, i, q;
 		for(int rgb333 = 0; rgb333 < 0x0200; rgb333++) {
 			uint32_t color = pceCfg.Palette[rgb333];
-			uint8_t r = color & 0xFF;
+			uint8_t r = (color >> 16) & 0xFF;
 			uint8_t g = (color >> 8) & 0xFF;
-			uint8_t b = (color >> 16) & 0xFF;
+			uint8_t b = color & 0xFF;
 
 			if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
 				double redChannel = r / 255.0;
@@ -60,12 +61,23 @@ protected:
 
 	void OnBeforeApplyFilter() override
 	{
-		VideoConfig config = _emu->GetSettings()->GetVideoConfig();
+		VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
+		PcEngineConfig& pceConfig = _emu->GetSettings()->GetPcEngineConfig();
 
-		if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
+		bool optionsChanged = (
+			_videoConfig.Hue != config.Hue ||
+			_videoConfig.Saturation != config.Saturation ||
+			_videoConfig.Contrast != config.Contrast ||
+			_videoConfig.Brightness != config.Brightness ||
+			memcmp(_pceConfig.Palette, pceConfig.Palette, sizeof(pceConfig.Palette)) != 0
+		);
+
+		if(optionsChanged) {
 			InitLookupTable();
 		}
+
 		_videoConfig = config;
+		_pceConfig = pceConfig;
 	}
 
 public:
