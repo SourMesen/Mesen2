@@ -47,7 +47,7 @@ enum class PceAddrMode
 	AbsXInd,
 };
 
-struct PcePpuHvLatches
+struct PceVdcHvLatches
 {
 	//R07 - BXR
 	uint16_t BgScrollX;
@@ -74,7 +74,7 @@ struct PcePpuHvLatches
 	uint8_t VertEndPosVcr;
 };
 
-struct PcePpuState : public BaseState
+struct PceVdcState : public BaseState
 {
 	uint32_t FrameCount;
 	
@@ -117,8 +117,8 @@ struct PcePpuState : public BaseState
 
 	bool BgScrollYUpdatePending;
 
-	PcePpuHvLatches HvLatch;
-	PcePpuHvLatches HvReg;
+	PceVdcHvLatches HvLatch;
+	PceVdcHvLatches HvReg;
 
 	//R0F - DCR
 	bool VramSatbIrqEnabled;
@@ -215,7 +215,7 @@ struct PcePsgChannelState
 struct PceState
 {
 	PceCpuState Cpu;
-	PcePpuState Ppu;
+	PceVdcState Vdc;
 	PceVceState Vce;
 	PceMemoryManagerState MemoryManager;
 	PcePsgState Psg;

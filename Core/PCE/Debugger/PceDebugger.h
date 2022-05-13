@@ -15,11 +15,11 @@ class BreakpointManager;
 class IAssembler;
 class BaseEventManager;
 class PceTraceLogger;
-class PcePpuTools;
+class PceVdcTools;
 
 class Emulator;
 class PceCpu;
-class PcePpu;
+class PceVdc;
 class PceMemoryManager;
 class DummyPceCpu;
 
@@ -35,7 +35,7 @@ class PceDebugger final : public IDebugger
 
 	PceConsole* _console;
 	PceCpu* _cpu;
-	PcePpu* _ppu;
+	PceVdc* _vdc;
 	PceMemoryManager* _memoryManager;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
@@ -45,7 +45,7 @@ class PceDebugger final : public IDebugger
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<PceTraceLogger> _traceLogger;
 	unique_ptr<StepRequest> _step;
-	unique_ptr<PcePpuTools> _ppuTools;
+	unique_ptr<PceVdcTools> _ppuTools;
 
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;

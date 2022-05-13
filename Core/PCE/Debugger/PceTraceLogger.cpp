@@ -2,15 +2,15 @@
 #include "PCE/Debugger/PceTraceLogger.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceTypes.h"
-#include "PCE/PcePpu.h"
+#include "PCE/PceVdc.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-PceTraceLogger::PceTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, PcePpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Pce)
+PceTraceLogger::PceTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, PceVdc* vdc) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Pce)
 {
-	_ppu = ppu;
+	_vdc = vdc;
 }
 
 RowDataType PceTraceLogger::GetFormatTagType(string& tag)
@@ -52,9 +52,9 @@ void PceTraceLogger::LogPpuState()
 	_ppuState[_currentPos] = {};
 	
 	_ppuState[_currentPos] = {
-		_ppu->GetHClock(),
-		_ppu->GetHClock(),
-		_ppu->GetScanline(),
-		_ppu->GetFrameCount()
+		_vdc->GetHClock(),
+		_vdc->GetHClock(),
+		_vdc->GetScanline(),
+		_vdc->GetFrameCount()
 	};
 }

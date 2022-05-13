@@ -1293,7 +1293,7 @@ namespace Mesen.Interop
 		Negative = 0x80
 	}
 
-	public struct PcePpuState : BaseState
+	public struct PceVdcState : BaseState
 	{
 		public UInt32 FrameCount;
 		
@@ -1336,8 +1336,8 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)] public bool BgScrollYUpdatePending;
 
-		public PcePpuHvLatches HvLatch;
-		public PcePpuHvLatches HvReg;
+		public PceVdcHvLatches HvLatch;
+		public PceVdcHvLatches HvReg;
 
 		//R0F - DCR
 		[MarshalAs(UnmanagedType.I1)] public bool VramSatbIrqEnabled;
@@ -1383,7 +1383,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool Grayscale;
 	}
 
-	public struct PcePpuHvLatches
+	public struct PceVdcHvLatches
 	{
 		//R07 - BXR
 		public UInt16 BgScrollX;
@@ -1460,7 +1460,7 @@ namespace Mesen.Interop
 	public struct PceState : BaseState
 	{
 		public PceCpuState Cpu;
-		public PcePpuState Ppu;
+		public PceVdcState Vdc;
 		public PceVceState Vce;
 		public PceMemoryManager MemoryManager;
 		public PcePsgState Psg;

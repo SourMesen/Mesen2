@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "PCE/Debugger/PcePpuTools.h"
+#include "PCE/Debugger/PceVdcTools.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceDefaultVideoFilter.h"
@@ -8,17 +8,17 @@
 #include "Debugger/MemoryDumper.h"
 #include "Shared/SettingTypes.h"
 
-PcePpuTools::PcePpuTools(Debugger* debugger, Emulator *emu, PceConsole* console) : PpuTools(debugger, emu)
+PceVdcTools::PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console) : PpuTools(debugger, emu)
 {
 }
 
-FrameInfo PcePpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
+FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
 {
-	PcePpuState& state = (PcePpuState&)baseState;
+	PceVdcState& state = (PceVdcState&)baseState;
 	return { (uint32_t)state.ColumnCount * 8, (uint32_t)state.RowCount * 8 };
 }
 
-DebugTilemapTileInfo PcePpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
+DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
 {
 	DebugTilemapTileInfo result;
 
@@ -27,7 +27,7 @@ DebugTilemapTileInfo PcePpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 		return result;
 	}
 
-	PcePpuState& state = (PcePpuState&)baseState;
+	PceVdcState& state = (PceVdcState&)baseState;
 
 	uint32_t row = y / 8;
 	uint32_t column = x / 8;
@@ -50,9 +50,9 @@ DebugTilemapTileInfo PcePpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	return result;
 }
 
-DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
-	PcePpuState& state = (PcePpuState&)baseState;
+	PceVdcState& state = (PceVdcState&)baseState;
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 4;
@@ -90,9 +90,9 @@ DebugTilemapInfo PcePpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	return result;
 }
 
-void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
+void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
 {
-	PcePpuState& state = (PcePpuState&)baseState;
+	PceVdcState& state = (PceVdcState&)baseState;
 
 	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HvLatch.HorizDisplayWidth + 1) * 8);
 	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF333333);
@@ -123,7 +123,7 @@ void PcePpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 }
 
-void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PcePpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PceVdcState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 8);
 
@@ -229,16 +229,16 @@ void PcePpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	}
 }
 
-void PcePpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
+void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
-	PcePpuState& state = (PcePpuState&)baseState;
+	PceVdcState& state = (PceVdcState&)baseState;
 	for(int i = 0; i < 64; i++) {
 		outBuffer[i].Init();
 		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
 	}
 }
 
-DebugSpritePreviewInfo PcePpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
 {
 	DebugSpritePreviewInfo info = {};
 	info.Height = 1024;
@@ -249,7 +249,7 @@ DebugSpritePreviewInfo PcePpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	return info;
 }
 
-DebugPaletteInfo PcePpuTools::GetPaletteInfo()
+DebugPaletteInfo PceVdcTools::GetPaletteInfo()
 {
 	DebugPaletteInfo info = {};
 	info.RawFormat = RawPaletteFormat::Rgb333;

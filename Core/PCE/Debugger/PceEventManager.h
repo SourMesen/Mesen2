@@ -10,7 +10,7 @@ struct EventViewerDisplayOptions;
 class Emulator;
 class PceConsole;
 class PceCpu;
-class PcePpu;
+class PceVdc;
 class Debugger;
 class PceMemoryManager;
 
@@ -39,7 +39,7 @@ private:
 	PceEventViewerConfig _config;
 	Emulator* _emu;
 	PceCpu * _cpu;
-	PcePpu *_ppu;
+	PceVdc *_vdc;
 	PceMemoryManager* _memoryManager;
 	Debugger *_debugger;
 

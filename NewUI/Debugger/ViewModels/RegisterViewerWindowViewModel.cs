@@ -145,7 +145,7 @@ namespace Mesen.Debugger.ViewModels
 			} else if(lastState is PceState pceState) {
 				tabs = new List<RegisterViewerTab>() {
 					GetPceCpuTab(ref pceState),
-					GetPcePpuTab(ref pceState),
+					GetPceVdcTab(ref pceState),
 					GetPceVceTab(ref pceState),
 					GetPcePsgTab(ref pceState)
 				};
@@ -1151,77 +1151,77 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		private RegisterViewerTab GetPcePpuTab(ref PceState state)
+		private RegisterViewerTab GetPceVdcTab(ref PceState state)
 		{
-			PcePpuState ppu = state.Ppu;
+			PceVdcState vdc = state.Vdc;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "State", null),
-				new RegEntry("", "HClock (H)", ppu.HClock, Format.X16),
-				new RegEntry("", "Scanline (V)", ppu.Scanline, Format.X16),
-				new RegEntry("", "Frame Number", ppu.FrameCount),
+				new RegEntry("", "HClock (H)", vdc.HClock, Format.X16),
+				new RegEntry("", "Scanline (V)", vdc.Scanline, Format.X16),
+				new RegEntry("", "Frame Number", vdc.FrameCount),
 
-				new RegEntry("", "Selected Register", ppu.CurrentReg, Format.X8),
+				new RegEntry("", "Selected Register", vdc.CurrentReg, Format.X8),
 
 				new RegEntry("", "VDC Registers", null),
 
-				new RegEntry("$00", "MAWR - Memory Write Address", ppu.MemAddrWrite, Format.X16),
-				new RegEntry("$01", "MARR - Memory Read Address", ppu.MemAddrRead, Format.X16),
-				new RegEntry("$02", "VWR - VRAM Write Data", ppu.VramData, Format.X16),
+				new RegEntry("$00", "MAWR - Memory Write Address", vdc.MemAddrWrite, Format.X16),
+				new RegEntry("$01", "MARR - Memory Read Address", vdc.MemAddrRead, Format.X16),
+				new RegEntry("$02", "VWR - VRAM Write Data", vdc.VramData, Format.X16),
 
 				new RegEntry("$05", "CR - Control", null),
-				new RegEntry("$05.0", "Sprite 0 Hit IRQ Enabled", ppu.EnableCollisionIrq),
-				new RegEntry("$05.1", "Overflow IRQ Enabled", ppu.EnableOverflowIrq),
-				new RegEntry("$05.2", "Scanline Detect (RCR) IRQ Enabled", ppu.EnableScanlineIrq),
-				new RegEntry("$05.3", "Vertical Blank IRQ Enabled", ppu.EnableVerticalBlankIrq),
+				new RegEntry("$05.0", "Sprite 0 Hit IRQ Enabled", vdc.EnableCollisionIrq),
+				new RegEntry("$05.1", "Overflow IRQ Enabled", vdc.EnableOverflowIrq),
+				new RegEntry("$05.2", "Scanline Detect (RCR) IRQ Enabled", vdc.EnableScanlineIrq),
+				new RegEntry("$05.3", "Vertical Blank IRQ Enabled", vdc.EnableVerticalBlankIrq),
 				new RegEntry("$05.4-5", "External Sync", 
-					(ppu.OutputHorizontalSync ? "HSYNC Out" : "HSYNC In") + ", " + 
-					(ppu.OutputVerticalSync ? "VSYNC Out" : "VSYNC In")
+					(vdc.OutputHorizontalSync ? "HSYNC Out" : "HSYNC In") + ", " + 
+					(vdc.OutputVerticalSync ? "VSYNC Out" : "VSYNC In")
 				),
-				new RegEntry("$05.6", "Sprites Enabled", ppu.NextSpritesEnabled),
-				new RegEntry("$05.7", "Background Enabled", ppu.NextBackgroundEnabled),
-				new RegEntry("$05.11-12", "VRAM Address Increment", ppu.VramAddrIncrement),
+				new RegEntry("$05.6", "Sprites Enabled", vdc.NextSpritesEnabled),
+				new RegEntry("$05.7", "Background Enabled", vdc.NextBackgroundEnabled),
+				new RegEntry("$05.11-12", "VRAM Address Increment", vdc.VramAddrIncrement),
 
-				new RegEntry("$06", "RCR - Raster Compare Register", ppu.RasterCompareRegister, Format.X16),
-				new RegEntry("$07", "BXR - BG Scroll X", ppu.HvReg.BgScrollX, Format.X16),
-				new RegEntry("$08", "BYR - BG Scroll Y", ppu.HvReg.BgScrollY, Format.X16),
+				new RegEntry("$06", "RCR - Raster Compare Register", vdc.RasterCompareRegister, Format.X16),
+				new RegEntry("$07", "BXR - BG Scroll X", vdc.HvReg.BgScrollX, Format.X16),
+				new RegEntry("$08", "BYR - BG Scroll Y", vdc.HvReg.BgScrollY, Format.X16),
 				
 				new RegEntry("$09", "MWR - Memory Width", null),
-				new RegEntry("$09.0-1", "VRAM Access Mode", ppu.VramAccessMode),
-				new RegEntry("$09.2-3", "Sprite Access Mode", ppu.SpriteAccessMode),
-				new RegEntry("$09.4-5", "Column Count", ppu.ColumnCount),
-				new RegEntry("$09.6", "Row Count", ppu.RowCount),
-				new RegEntry("$09.7", "CG Mode", ppu.CgMode),
+				new RegEntry("$09.0-1", "VRAM Access Mode", vdc.VramAccessMode),
+				new RegEntry("$09.2-3", "Sprite Access Mode", vdc.SpriteAccessMode),
+				new RegEntry("$09.4-5", "Column Count", vdc.ColumnCount),
+				new RegEntry("$09.6", "Row Count", vdc.RowCount),
+				new RegEntry("$09.7", "CG Mode", vdc.CgMode),
 
 				new RegEntry("$0A", "HSR - Horizontal Sync", null),
-				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", ppu.HvReg.HorizSyncWidth, Format.X8),
-				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", ppu.HvReg.HorizDisplayStart, Format.X8),
+				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", vdc.HvReg.HorizSyncWidth, Format.X8),
+				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", vdc.HvReg.HorizDisplayStart, Format.X8),
 				
 				new RegEntry("$0B", "HDR - Horizontal Display", null),
-				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", ppu.HvReg.HorizDisplayWidth, Format.X8),
-				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", ppu.HvReg.HorizDisplayEnd, Format.X8),
+				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", vdc.HvReg.HorizDisplayWidth, Format.X8),
+				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", vdc.HvReg.HorizDisplayEnd, Format.X8),
 
 				new RegEntry("$0C", "VPR - Vertical Sync", null),
-				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", ppu.HvReg.VertSyncWidth, Format.X8),
-				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", ppu.HvReg.VertDisplayStart, Format.X8),
+				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", vdc.HvReg.VertSyncWidth, Format.X8),
+				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", vdc.HvReg.VertDisplayStart, Format.X8),
 
 				new RegEntry("$0D", "VDR - Vertical Display", null),
-				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", ppu.HvReg.VertDisplayWidth, Format.X16),
+				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", vdc.HvReg.VertDisplayWidth, Format.X16),
 
 				new RegEntry("$0E", "VCR - Vertical Display End", null),
-				new RegEntry("$0E.0-7", "VCR - Vertical Display End Position", ppu.HvReg.VertEndPosVcr, Format.X8),
+				new RegEntry("$0E.0-7", "VCR - Vertical Display End Position", vdc.HvReg.VertEndPosVcr, Format.X8),
 
 				new RegEntry("$0F", "DCR - Block Transfer Control", null),
-				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", ppu.VramSatbIrqEnabled),
-				new RegEntry("$0F.1", "VRAM-VRAM Transfer Complete IRQ Enabled", ppu.VramVramIrqEnabled),
-				new RegEntry("$0F.2", "Decrement Source Address", ppu.DecrementSrc),
-				new RegEntry("$0F.3", "Decrement Destination Address", ppu.DecrementDst),
-				new RegEntry("$0F.4", "VRAM-SATB Transfer Auto-Repeat", ppu.RepeatSatbTransfer),
+				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", vdc.VramSatbIrqEnabled),
+				new RegEntry("$0F.1", "VRAM-VRAM Transfer Complete IRQ Enabled", vdc.VramVramIrqEnabled),
+				new RegEntry("$0F.2", "Decrement Source Address", vdc.DecrementSrc),
+				new RegEntry("$0F.3", "Decrement Destination Address", vdc.DecrementDst),
+				new RegEntry("$0F.4", "VRAM-SATB Transfer Auto-Repeat", vdc.RepeatSatbTransfer),
 				
-				new RegEntry("$10", "SOUR - Block Transfer Source Address", ppu.BlockSrc, Format.X16),
-				new RegEntry("$11", "DESR - Block Transfer Source Address", ppu.BlockDst, Format.X16),
-				new RegEntry("$12", "LENR - Block Transfer Source Address", ppu.BlockLen, Format.X16),
-				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", ppu.SatbBlockSrc, Format.X16)
+				new RegEntry("$10", "SOUR - Block Transfer Source Address", vdc.BlockSrc, Format.X16),
+				new RegEntry("$11", "DESR - Block Transfer Source Address", vdc.BlockDst, Format.X16),
+				new RegEntry("$12", "LENR - Block Transfer Source Address", vdc.BlockLen, Format.X16),
+				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", vdc.SatbBlockSrc, Format.X16)
 			};
 
 			return new RegisterViewerTab() {

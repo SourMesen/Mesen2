@@ -3,7 +3,7 @@
 #include "Shared/Interfaces/IConsole.h"
 
 class PceCpu;
-class PcePpu;
+class PceVdc;
 class PceVce;
 class PcePsg;
 class PceCdRom;
@@ -17,7 +17,7 @@ private:
 	Emulator* _emu;
 
 	unique_ptr<PceCpu> _cpu;
-	unique_ptr<PcePpu> _ppu;
+	unique_ptr<PceVdc> _vdc;
 	unique_ptr<PceVce> _vce;
 	unique_ptr<PcePsg> _psg;
 	unique_ptr<PceMemoryManager> _memoryManager;
@@ -46,7 +46,7 @@ public:
 	vector<CpuType> GetCpuTypes() override;
 
 	PceCpu* GetCpu();
-	PcePpu* GetPpu();
+	PceVdc* GetVdc();
 	PceMemoryManager* GetMemoryManager();
 	
 	uint64_t GetMasterClock() override;

@@ -12,10 +12,11 @@
 #include "Debugger/CodeDataLogger.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
+#include "PCE/PceVdc.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/Debugger/PceDebugger.h"
 #include "PCE/Debugger/PceTraceLogger.h"
-#include "PCE/Debugger/PcePpuTools.h"
+#include "PCE/Debugger/PceVdcTools.h"
 #include "PCE/Debugger/PceDisUtils.h"
 #include "PCE/Debugger/DummyPceCpu.h"
 #include "PCE/Debugger/PceEventManager.h"
@@ -35,11 +36,11 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	
 	_console = console;
 	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
+	_vdc = console->GetVdc();
 	_memoryManager = console->GetMemoryManager();
 
-	_traceLogger.reset(new PceTraceLogger(debugger, this, _ppu));
-	_ppuTools.reset(new PcePpuTools(debugger, debugger->GetEmulator(), console));
+	_traceLogger.reset(new PceTraceLogger(debugger, this, _vdc));
+	_ppuTools.reset(new PceVdcTools(debugger, debugger->GetEmulator(), console));
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -272,11 +273,11 @@ void PceDebugger::ProcessPpuCycle()
 {
 	if(_ppuTools->HasOpenedViewer()) {
 		//TODO
-		_ppuTools->UpdateViewers(_ppu->GetScanline(), _ppu->GetHClock() / 3);
+		_ppuTools->UpdateViewers(_vdc->GetScanline(), _vdc->GetHClock() / 3);
 	}
 
 	if(_step->HasRequest) {
-		if(_step->HasScanlineBreakRequest() && _ppu->GetHClock() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
+		if(_step->HasScanlineBreakRequest() && _vdc->GetHClock() == 0 && _vdc->GetScanline() == _step->BreakScanline) {
 			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
@@ -350,13 +351,13 @@ BaseState& PceDebugger::GetState()
 
 void PceDebugger::GetPpuState(BaseState& state)
 {
-	(PcePpuState&)state = _ppu->GetState();
+	(PceVdcState&)state = _vdc->GetState();
 }
 
 void PceDebugger::SetPpuState(BaseState& state)
 {
 	//todo
-	//_ppu->SetState((PcePpuState&)state);
+	//_ppu->SetState((PceVdcState&)state);
 }
 
 ITraceLogger* PceDebugger::GetTraceLogger()

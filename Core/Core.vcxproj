@@ -29,10 +29,10 @@
     <ClInclude Include="PCE\PceCdRom.h" />
     <ClInclude Include="PCE\PceConstants.h" />
     <ClInclude Include="PCE\PceNtscFilter.h" />
-    <ClInclude Include="PCE\PcePpu.h" />
+    <ClInclude Include="PCE\PceVdc.h" />
     <ClInclude Include="PCE\Debugger\PceDebugger.h" />
     <ClInclude Include="PCE\Debugger\PceDisUtils.h" />
-    <ClInclude Include="PCE\Debugger\PcePpuTools.h" />
+    <ClInclude Include="PCE\Debugger\PceVdcTools.h" />
     <ClInclude Include="PCE\Debugger\PceTraceLogger.h" />
     <ClInclude Include="PCE\PceConsole.h" />
     <ClInclude Include="PCE\PceControlManager.h" />
@@ -452,7 +452,7 @@
     <ClCompile Include="PCE\Debugger\PceDebugger.cpp" />
     <ClCompile Include="PCE\Debugger\PceDisUtils.cpp" />
     <ClCompile Include="PCE\Debugger\PceEventManager.cpp" />
-    <ClCompile Include="PCE\Debugger\PcePpuTools.cpp" />
+    <ClCompile Include="PCE\Debugger\PceVdcTools.cpp" />
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
     <ClCompile Include="PCE\PceAdpcm.cpp" />
     <ClCompile Include="PCE\PceCdAudioPlayer.cpp" />
@@ -462,7 +462,7 @@
     <ClCompile Include="PCE\PceCpu.cpp" />
     <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
     <ClCompile Include="PCE\PceNtscFilter.cpp" />
-    <ClCompile Include="PCE\PcePpu.cpp" />
+    <ClCompile Include="PCE\PceVdc.cpp" />
     <ClCompile Include="PCE\PcePsg.cpp" />
     <ClCompile Include="PCE\PcePsgChannel.cpp" />
     <ClCompile Include="PCE\PceScsiBus.cpp" />

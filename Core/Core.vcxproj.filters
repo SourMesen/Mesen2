@@ -1748,7 +1748,7 @@
     <ClInclude Include="PCE\Debugger\PceTraceLogger.h">
       <Filter>PCE\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\Debugger\PcePpuTools.h">
+    <ClInclude Include="PCE\Debugger\PceVdcTools.h">
       <Filter>PCE\Debugger</Filter>
     </ClInclude>
     <ClInclude Include="PCE\PceTypes.h">
@@ -1757,7 +1757,7 @@
     <ClInclude Include="PCE\PceMemoryManager.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PcePpu.h">
+    <ClInclude Include="PCE\PceVdc.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\PceTimer.h">
@@ -1843,13 +1843,13 @@
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp">
       <Filter>PCE\Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\Debugger\PcePpuTools.cpp">
+    <ClCompile Include="PCE\Debugger\PceVdcTools.cpp">
       <Filter>PCE\Debugger</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\ExpressionEvaluator.Pce.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PcePpu.cpp">
+    <ClCompile Include="PCE\PceVdc.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceTimer.cpp">

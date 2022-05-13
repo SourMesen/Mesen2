@@ -2,7 +2,7 @@
 #include "PCE/Debugger/PceEventManager.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
-#include "PCE/PcePpu.h"
+#include "PCE/PceVdc.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceDefaultVideoFilter.h"
@@ -18,7 +18,7 @@ PceEventManager::PceEventManager(Debugger *debugger, PceConsole *console)
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
 	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
+	_vdc = console->GetVdc();
 	_memoryManager = console->GetMemoryManager();
 
 	_ppuBuffer = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
@@ -35,8 +35,8 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 	DebugEventInfo evt = {};
 	evt.Type = type;
 	evt.Operation = operation;
-	evt.Scanline = (int16_t)_ppu->GetScanline();
-	evt.Cycle = _ppu->GetHClock();
+	evt.Scanline = (int16_t)_vdc->GetScanline();
+	evt.Cycle = _vdc->GetHClock();
 	evt.BreakpointId = breakpointId;
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _cpu->GetState().PC;
@@ -47,8 +47,8 @@ void PceEventManager::AddEvent(DebugEventType type)
 {
 	DebugEventInfo evt = {};
 	evt.Type = type;
-	evt.Scanline = _ppu->GetScanline();
-	evt.Cycle = _ppu->GetHClock();
+	evt.Scanline = _vdc->GetScanline();
+	evt.Cycle = _vdc->GetHClock();
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _cpu->GetState().PC;
@@ -131,21 +131,21 @@ uint32_t PceEventManager::TakeEventSnapshot()
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
 
-	uint16_t cycle = _ppu->GetHClock();
-	uint16_t scanline = _ppu->GetScanline();
+	uint16_t cycle = _vdc->GetHClock();
+	uint16_t scanline = _vdc->GetScanline();
 
 	constexpr uint32_t size = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 	if(scanline < 14 || scanline >= 256) {
-		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), size * sizeof(uint16_t));
-		memcpy(_rowClockDividers, _ppu->GetRowClockDividers(), PceConstants::ScreenHeight);
+		memcpy(_ppuBuffer, _vdc->GetScreenBuffer(), size * sizeof(uint16_t));
+		memcpy(_rowClockDividers, _vdc->GetRowClockDividers(), PceConstants::ScreenHeight);
 	} else {
 		uint32_t scanlineOffset = (scanline - 14);
 		uint32_t offset = PceConstants::MaxScreenWidth * scanlineOffset;
-		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(), offset * sizeof(uint16_t));
-		memcpy(_ppuBuffer + offset, _ppu->GetPreviousScreenBuffer() + offset, (size - offset) * sizeof(uint16_t));
+		memcpy(_ppuBuffer, _vdc->GetScreenBuffer(), offset * sizeof(uint16_t));
+		memcpy(_ppuBuffer + offset, _vdc->GetPreviousScreenBuffer() + offset, (size - offset) * sizeof(uint16_t));
 		
-		memcpy(_rowClockDividers, _ppu->GetRowClockDividers(), scanlineOffset);
-		memcpy(_rowClockDividers + scanlineOffset, _ppu->GetPreviousRowClockDividers() + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset));
+		memcpy(_rowClockDividers, _vdc->GetRowClockDividers(), scanlineOffset);
+		memcpy(_rowClockDividers + scanlineOffset, _vdc->GetPreviousRowClockDividers() + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset));
 	}
 
 	_snapshotCurrentFrame = _debugEvents;

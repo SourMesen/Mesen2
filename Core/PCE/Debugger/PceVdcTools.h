@@ -5,15 +5,15 @@
 class Debugger;
 class Emulator;
 class PceConsole;
-struct PcePpuState;
+struct PceVdcState;
 
-class PcePpuTools final : public PpuTools
+class PceVdcTools final : public PpuTools
 {
 private:
-	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PcePpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PceVdcState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
-	PcePpuTools(Debugger* debugger, Emulator *emu, PceConsole* console);
+	PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console);
 
 	DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t *outBuffer) override;
 	FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) override;

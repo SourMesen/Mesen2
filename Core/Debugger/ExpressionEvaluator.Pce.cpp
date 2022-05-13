@@ -34,8 +34,8 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 
 int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& resultType)
 {
-	auto ppu = [this]() -> PcePpuState {
-		PcePpuState ppu;
+	auto ppu = [this]() -> PceVdcState {
+		PceVdcState ppu;
 		((PceDebugger*)_cpuDebugger)->GetPpuState(ppu);
 		return ppu;
 	};

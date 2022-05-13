@@ -7,7 +7,7 @@
 class PceConsole;
 class PceVce;
 
-enum class PcePpuModeH
+enum class PceVdcModeH
 {
 	Hds,
 	Hdw,
@@ -15,7 +15,7 @@ enum class PcePpuModeH
 	Hsw,
 };
 
-enum class PcePpuModeV
+enum class PceVdcModeV
 {
 	Vds,
 	Vdw,
@@ -51,10 +51,10 @@ struct PceSpriteInfo
 	bool LoadSp23;
 };
 
-class PcePpu
+class PceVdc
 {
 private:
-	PcePpuState _state = {};
+	PceVdcState _state = {};
 	Emulator* _emu = nullptr;
 	PceConsole* _console = nullptr;
 	PceVce* _vce = nullptr;
@@ -74,10 +74,10 @@ private:
 	uint16_t _lastDrawHClock = 0;
 	uint16_t _xStart = 0;
 
-	PcePpuModeH _hMode = PcePpuModeH::Hds;
+	PceVdcModeH _hMode = PceVdcModeH::Hds;
 	int16_t _hModeCounter = 0;
 	
-	PcePpuModeV _vMode = PcePpuModeV::Vds;
+	PceVdcModeV _vMode = PceVdcModeV::Vds;
 	int16_t _vModeCounter = 0;
 
 	uint16_t _screenOffsetX = 0;
@@ -144,7 +144,7 @@ private:
 	__noinline void ProcessEndOfVisibleFrame();
 	__noinline void ProcessSatbTransfer();
 	__noinline void ProcessVramDmaTransfer();
-	__noinline void SetHorizontalMode(PcePpuModeH hMode);
+	__noinline void SetHorizontalMode(PceVdcModeH hMode);
 
 	__noinline void ProcessVdcEvents();
 	__noinline void ProcessEvent();
@@ -172,10 +172,10 @@ private:
 	bool IsVramAccessBlocked();
 
 public:
-	PcePpu(Emulator* emu, PceConsole* console, PceVce* vce);
-	~PcePpu();
+	PceVdc(Emulator* emu, PceConsole* console, PceVce* vce);
+	~PceVdc();
 
-	PcePpuState& GetState();
+	PceVdcState& GetState();
 	uint16_t* GetScreenBuffer();
 	uint16_t* GetPreviousScreenBuffer();
 	uint8_t* GetRowClockDividers() { return _currentClockDividers; }
@@ -189,6 +189,6 @@ public:
 	void Exec();
 	void DrawScanline();
 
-	uint8_t ReadVdc(uint16_t addr);
-	void WriteVdc(uint16_t addr, uint8_t value);
+	uint8_t ReadRegister(uint16_t addr);
+	void WriteRegister(uint16_t addr, uint8_t value);
 };

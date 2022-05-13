@@ -110,7 +110,7 @@ namespace Mesen.Interop
 				CpuType.Snes => GetPpuState<SnesPpuState>(cpuType),
 				CpuType.Nes => GetPpuState<NesPpuState>(cpuType),
 				CpuType.Gameboy => GetPpuState<GbPpuState>(cpuType),
-				CpuType.Pce => GetPpuState<PcePpuState>(cpuType),
+				CpuType.Pce => GetPpuState<PceVdcState>(cpuType),
 				_ => throw new Exception("Unsupport cpu type")
 			};
 		}
@@ -442,7 +442,7 @@ namespace Mesen.Interop
 				ConsoleType.Snes => state is SnesPpuState,
 				ConsoleType.Nes => state is NesPpuState,
 				ConsoleType.Gameboy => state is GbPpuState,
-				ConsoleType.PcEngine => state is PcePpuState,
+				ConsoleType.PcEngine => state is PceVdcState,
 				_ => false
 			};
 		}

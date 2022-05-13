@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MemoryOperationType.h"
 #include "PCE/PceConsole.h"
-#include "PCE/PcePpu.h"
+#include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
@@ -26,7 +26,7 @@ private:
 	Emulator* _emu = nullptr;
 	CheatManager* _cheatManager = nullptr;
 	PceConsole* _console = nullptr;
-	PcePpu* _ppu = nullptr;
+	PceVdc* _vdc = nullptr;
 	PceVce* _vce = nullptr;
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
@@ -57,12 +57,12 @@ private:
 	uint8_t* _unmappedBank = nullptr;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PceVdc* vdc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
 		_console = console;
-		_ppu = ppu;
+		_vdc = vdc;
 		_vce = vce;
 		_psg = psg;
 		_cdrom = cdrom;
@@ -246,7 +246,7 @@ public:
 	{
 		_state.CycleCount += 3;
 		_timer->Exec();
-		_ppu->Exec();
+		_vdc->Exec();
 		if(_cdrom) {
 			_cdrom->Exec();
 		}
@@ -264,11 +264,11 @@ public:
 		if(addr <= 0x3FF) {
 			//VDC
 			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
-			return _ppu->ReadVdc(addr);
+			return _vdc->ReadRegister(addr);
 		} else if(addr <= 0x7FF) {
 			//VCE
 			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
-			_ppu->DrawScanline();
+			_vdc->DrawScanline();
 			return _vce->Read(addr);
 		} else if(addr <= 0xBFF) {
 			//PSG
@@ -360,10 +360,10 @@ public:
 			}
 		} else {
 			if(addr <= 0x3FF) {
-				_ppu->WriteVdc(addr, value);
+				_vdc->WriteRegister(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0x7FF) {
-				_ppu->DrawScanline();
+				_vdc->DrawScanline();
 				_vce->Write(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0xBFF) {
@@ -405,7 +405,7 @@ public:
 		if(_state.Mpr[0] == 0xFF) {
 			_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
 		}
-		_ppu->WriteVdc(addr, value);
+		_vdc->WriteRegister(addr, value);
 		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}
 
