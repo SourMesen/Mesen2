@@ -75,22 +75,14 @@ public:
 		
 		_emu->GetSettings()->InitializeRam(_workRam, _workRamSize);
 
-		if(_cdrom) {
+		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+
+		if(_cdrom || !cfg.DisableCdRomSaveRamForHuCardGames) {
+			//Save RAM is enabled, initialize it
 			_saveRamSize = 0x2000;
 			_saveRam = new uint8_t[_saveRamSize];
-
-			_cdromRamSize = 0x10000;
-			_cdromRam = new uint8_t[_cdromRamSize];
-
-			_cardRamSize = 0x30000;
-			_cardRam = new uint8_t[_cardRamSize];
-
 			_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
-			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
-			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
 			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
-			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
-			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 
 			_saveRam[0] = 0x48;
 			_saveRam[1] = 0x55;
@@ -102,6 +94,19 @@ public:
 			_saveRam[7] = 0x80;
 
 			_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+		}
+
+		if(_cdrom) {
+			_cdromRamSize = 0x10000;
+			_cdromRam = new uint8_t[_cdromRamSize];
+
+			_cardRamSize = 0x30000;
+			_cardRam = new uint8_t[_cardRamSize];
+
+			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
+			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
+			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
+			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
@@ -215,7 +220,9 @@ public:
 				_writeBanks[0x68 + i] = _cardRam + (i * 0x2000);
 				_bankMemType[0x68 + i] = MemoryType::PceCardRam;
 			}
+		}
 
+		if(_saveRamSize > 0) {
 			//F7 - BRAM
 			_readBanks[0xF7] = _saveRam;
 			_writeBanks[0xF7] = _saveRam;
@@ -267,9 +274,25 @@ public:
 			_state.IoBuffer = (_state.IoBuffer & 0x80) | (_timer->Read(addr) & 0x7F);
 			return _state.IoBuffer;
 		} else if(addr <= 0x13FF) {
-			//IO
-			//TODO CDROM & region bits
-			_state.IoBuffer = 0xB0 | _controlManager->ReadInputPort();
+			//IO			
+
+			//Some NA games crash is bit 6 is not set (region locking) - e.g Order of the Griffon
+			//When in Auto mode, pretend this is a turbografx console for compatibilty
+			PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+			PceConsoleType consoleType = cfg.ConsoleType;
+			bool isTurboGrafx = consoleType == PceConsoleType::Auto || consoleType == PceConsoleType::TurboGrafx;
+
+			//Some games use the CDROM addon's save ram to save data and will check bit 7 for presence of the CDROM
+			//Unless the UI option to disable the save ram for hucard games is enabled, always report that the CDROM is connected
+			bool cdromConnected = _saveRamSize > 0;
+
+			_state.IoBuffer = (
+				(cdromConnected ? 0 : 0x80) |
+				(isTurboGrafx ? 0 : 0x40) |
+				0x30 |
+				_controlManager->ReadInputPort()
+			);
+
 			return _state.IoBuffer;
 		} else if(addr <= 0x17FF) {
 			//IRQ

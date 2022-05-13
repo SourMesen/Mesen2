@@ -364,7 +364,13 @@ namespace Mesen.ViewModels
 
 				new MainMenuAction() {
 					ActionType = ActionType.Region,
-					IsEnabled = () => IsGameRunning && MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
+					IsEnabled = () => {
+						return (
+							IsGameRunning &&
+							MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy &&
+							MainWindow.RomInfo.ConsoleType != ConsoleType.PcEngine
+						);
+					},
 					SubActions = new List<object>() {
 						GetRegionMenuItem(ConsoleRegion.Auto),
 						new ContextMenuSeparator(),

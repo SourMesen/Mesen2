@@ -35,6 +35,8 @@ void PceConsole::OnBeforeRun()
 
 LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 {
+	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+
 	vector<uint8_t> romData;
 	if(romFile.GetFileExtension() == ".cue") {
 		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
@@ -50,8 +52,13 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	} else {
 		romFile.ReadFile(romData);
 		if((romData.size() % 0x2000) == 512) {
-			//File properly has header discard it
+			//File probably has header, discard it
 			romData.erase(romData.begin(), romData.begin() + 512);
+		}
+
+		if(cfg.EnableCdRomForHuCardGames) {
+			DiscInfo emptyDisc = {};
+			_cdrom.reset(new PceCdRom(_emu, this, emptyDisc));
 		}
 	}
 

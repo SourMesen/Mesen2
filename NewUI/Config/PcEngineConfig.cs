@@ -22,6 +22,11 @@ namespace Mesen.Config
 		[Reactive] public ControllerConfig Port1D { get; set; } = new();
 		[Reactive] public ControllerConfig Port1E { get; set; } = new();
 
+		[Reactive] public PceConsoleType ConsoleType { get; set; } = PceConsoleType.Auto;
+		[Reactive] public PceCdRomType CdRomType { get; set; } = PceCdRomType.Arcade;
+		[Reactive] public bool EnableCdRomForHuCardGames { get; set; } = false;
+		[Reactive] public bool DisableCdRomSaveRamForHuCardGames { get; set; } = false;
+
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 		[Reactive] public bool PreventSelectRunReset { get; set; } = true;
 
@@ -49,6 +54,10 @@ namespace Mesen.Config
 				Port1C = Port1C.ToInterop(),
 				Port1D = Port1D.ToInterop(),
 				Port1E = Port1E.ToInterop(),
+
+				ConsoleType = ConsoleType,
+				CdRomType = CdRomType,
+				EnableCdRomForHuCardGames = EnableCdRomForHuCardGames,
 
 				RamPowerOnState = RamPowerOnState,
 				PreventSelectRunReset = PreventSelectRunReset,
@@ -122,6 +131,11 @@ namespace Mesen.Config
 		public InteropControllerConfig Port1D;
 		public InteropControllerConfig Port1E;
 
+		public PceConsoleType ConsoleType;
+		public PceCdRomType CdRomType;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableCdRomForHuCardGames;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableCdRomSaveRamForHuCardGames;
+
 		public RamState RamPowerOnState;
 		[MarshalAs(UnmanagedType.I1)] public bool PreventSelectRunReset;
 
@@ -140,5 +154,20 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 512)]
 		public UInt32[] Palette;
+	}
+
+	public enum PceConsoleType
+	{
+		Auto,
+		PcEngine,
+		SuperGrafx,
+		TurboGrafx
+	}
+
+	public enum PceCdRomType
+	{
+		CdRom,
+		SuperCdRom,
+		Arcade
 	}
 }

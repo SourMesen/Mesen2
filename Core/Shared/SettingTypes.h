@@ -369,10 +369,30 @@ struct GameboyConfig
 	uint32_t WaveVol = 100;
 };
 
+enum class PceConsoleType
+{
+	Auto,
+	PcEngine,
+	SuperGrafx,
+	TurboGrafx
+};
+
+enum class PceCdRomType
+{
+	CdRom,
+	SuperCdRom,
+	Arcade
+};
+
 struct PcEngineConfig
 {
 	ControllerConfig Port1;
 	ControllerConfig Port1SubPorts[5];
+
+	PceConsoleType ConsoleType = PceConsoleType::Auto;
+	PceCdRomType CdRomType = PceCdRomType::Arcade;
+	bool EnableCdRomForHuCardGames = false;
+	bool DisableCdRomSaveRamForHuCardGames = false;
 
 	RamState RamPowerOnState = RamState::Random;
 	bool PreventSelectRunReset = false;

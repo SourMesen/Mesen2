@@ -22,6 +22,13 @@
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+					<TextBlock Text="{l:Translate lblConsoleType}"/>
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" Grid.Column="1" MinWidth="200" />
+					
+					<TextBlock Text="{l:Translate lblCdRomType}" Grid.Row="1" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.CdRomType}" Grid.Row="1" Grid.Column="1" />
+				</Grid>
 			</StackPanel>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgAudio}">
@@ -51,12 +58,19 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgEmulation}">
-			<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
-				</StackPanel>
-			</c:OptionSection>
+			<StackPanel>
+				<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					</StackPanel>
+				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate lblMiscSettings}">
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableCdRomForHuCardGames}" Text="{l:Translate chkEnableCdRomForHuCardGames}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableCdRomSaveRamForHuCardGames}" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsEnabled="{CompiledBinding !Config.EnableCdRomForHuCardGames}" />
+				</c:OptionSection>
+			</StackPanel>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">

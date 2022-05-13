@@ -359,13 +359,17 @@
 
 		<Form ID="PceConfigView">
 			<Control ID="tpgGeneral">General</Control>
-			
+			<Control ID="lblConsoleType">Console Type:</Control>
+			<Control ID="lblCdRomType">CD-ROM System:</Control>
+
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
 			
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			<Control ID="chkEnableCdRomForHuCardGames">Enable CD-ROM emulation when running HuCard games</Control>
+			<Control ID="chkDisableCdRomSaveRamForHuCardGames">Disable CD-ROM save RAM when running HuCard games</Control>
 			
 			<Control ID="tpgInput">Input</Control>
 			
@@ -1750,6 +1754,17 @@
 			<Value ID="Ukrainian">Українська</Value>
 			<Value ID="Catalan">Català</Value>
 			<Value ID="Chinese">中文</Value>
+		</Enum>
+		<Enum ID="PceConsoleType">
+			<Value ID="Auto">Auto (recommended)</Value>
+			<Value ID="PcEngine">PC Engine (JP)</Value>
+			<Value ID="SuperGrafx">PC Engine SuperGrafx (JP)</Value>
+			<Value ID="TurboGrafx">TurboGrafx-16 (NA)</Value>
+		</Enum>
+		<Enum ID="PceCdRomType">
+			<Value ID="CdRom">CD-ROM²</Value>
+			<Value ID="SuperCdRom">Super CD-ROM²</Value>
+			<Value ID="Arcade">Arcade CD-ROM²</Value>
 		</Enum>
 		<Enum ID="RamState">
 			<Value ID="Random">Random Values (Default)</Value>
