@@ -723,10 +723,10 @@ void PcePpu::ProcessEndOfScanline()
 	//The HSW phase appears to be longer in 7mhz mode compared to 5/10mhz modes
 	//Less than 32 here breaks Camp California and Shapeshifter
 	_hModeCounter = DotsToClocks(_state.VceClockDivider == 3 ? 32 : 24);
-	ProcessHorizontalSyncStart();
-
 	_xStart = 0;
 	_lastDrawHClock = 0;
+
+	ProcessHorizontalSyncStart();
 
 	if(_state.Scanline == _state.VceScanlineCount - 3) {
 		//VCE sets VBLANK for 3 scanlines at the end of every frame
