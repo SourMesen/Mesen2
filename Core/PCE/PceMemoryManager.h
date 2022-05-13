@@ -3,6 +3,7 @@
 #include "MemoryOperationType.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PcePpu.h"
+#include "PCE/PceVce.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
@@ -26,6 +27,7 @@ private:
 	CheatManager* _cheatManager = nullptr;
 	PceConsole* _console = nullptr;
 	PcePpu* _ppu = nullptr;
+	PceVce* _vce = nullptr;
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
 	PceCdRom* _cdrom = nullptr;
@@ -55,12 +57,13 @@ private:
 	uint8_t* _unmappedBank = nullptr;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PcePpu* ppu, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
 		_console = console;
 		_ppu = ppu;
+		_vce = vce;
 		_psg = psg;
 		_cdrom = cdrom;
 		_controlManager = controlManager;
@@ -265,7 +268,8 @@ public:
 		} else if(addr <= 0x7FF) {
 			//VCE
 			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
-			return _ppu->ReadVce(addr);
+			_ppu->DrawScanline();
+			return _vce->Read(addr);
 		} else if(addr <= 0xBFF) {
 			//PSG
 			return _state.IoBuffer;
@@ -359,7 +363,8 @@ public:
 				_ppu->WriteVdc(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0x7FF) {
-				_ppu->WriteVce(addr, value);
+				_ppu->DrawScanline();
+				_vce->Write(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0xBFF) {
 				//PSG

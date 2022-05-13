@@ -146,6 +146,7 @@ namespace Mesen.Debugger.ViewModels
 				tabs = new List<RegisterViewerTab>() {
 					GetPceCpuTab(ref pceState),
 					GetPcePpuTab(ref pceState),
+					GetPceVceTab(ref pceState),
 					GetPcePsgTab(ref pceState)
 				};
 			}
@@ -1133,6 +1134,23 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
+		private RegisterViewerTab GetPceVceTab(ref PceState state)
+		{
+			PceVceState vce = state.Vce;
+
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$00.0-1", "CR - Clock Speed", vce.ClockDivider == 4 ? "5.37 MHz" : vce.ClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
+				new RegEntry("$00.2", "CR - Number of Scanlines", vce.ScanlineCount),
+				new RegEntry("$00.7", "CR - Grayscale", vce.Grayscale),
+				new RegEntry("$01.0-8", "CTA - Color Table Address", vce.PalAddr, Format.X16),
+			};
+
+			return new RegisterViewerTab() {
+				TabName = "VCE",
+				Data = entries
+			};
+		}
+
 		private RegisterViewerTab GetPcePpuTab(ref PceState state)
 		{
 			PcePpuState ppu = state.Ppu;
@@ -1142,12 +1160,6 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "HClock (H)", ppu.HClock, Format.X16),
 				new RegEntry("", "Scanline (V)", ppu.Scanline, Format.X16),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
-
-				new RegEntry("", "VCE - Video Color Encoder", null),
-				new RegEntry("$00.0-1", "VCE - CR - Clock Speed", ppu.VceClockDivider == 4 ? "5.37 MHz" : ppu.VceClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
-				new RegEntry("$00.2", "VCE - CR - Number of Scanlines", ppu.VceScanlineCount),
-				new RegEntry("$00.7", "VCE - CR - Grayscale", ppu.VceGrayscale),
-				new RegEntry("$01.0-8", "VCE - CTA - Color Table Address", ppu.PalAddr, Format.X16),
 
 				new RegEntry("", "Selected Register", ppu.CurrentReg, Format.X8),
 

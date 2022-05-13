@@ -7,6 +7,7 @@
 #include "PCE/PceNtscFilter.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PcePpu.h"
+#include "PCE/PceVce.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceConstants.h"
 #include "MemoryType.h"
@@ -63,9 +64,10 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	}
 
 	_controlManager.reset(new PceControlManager(_emu));
-	_ppu.reset(new PcePpu(_emu, this));
+	_vce.reset(new PceVce(_emu, this));
+	_ppu.reset(new PcePpu(_emu, this, _vce.get()));
 	_psg.reset(new PcePsg(_emu));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _ppu.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _ppu.get(), _vce.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -207,6 +209,7 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	PceState& state = (PceState&)baseState;
 	state.Cpu = _cpu->GetState();
 	state.Ppu = _ppu->GetState();
+	state.Vce = _vce->GetState();
 	state.MemoryManager = _memoryManager->GetState();
 	state.Psg = _psg->GetState();
 	for(int i = 0; i < 6; i++) {

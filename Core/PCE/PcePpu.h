@@ -5,6 +5,7 @@
 #include "PCE/PceConstants.h"
 
 class PceConsole;
+class PceVce;
 
 enum class PcePpuModeH
 {
@@ -56,8 +57,8 @@ private:
 	PcePpuState _state = {};
 	Emulator* _emu = nullptr;
 	PceConsole* _console = nullptr;
+	PceVce* _vce = nullptr;
 	uint16_t* _vram = nullptr;
-	uint16_t* _paletteRam = nullptr;
 	uint16_t* _spriteRam = nullptr;
 
 	uint16_t* _outBuffer[2] = {};
@@ -130,9 +131,10 @@ private:
 	void ProcessVramWrite();
 	__noinline void ProcessVramAccesses();
 
-	void DrawScanline();
 	void SendFrame();
 
+	uint8_t GetClockDivider();
+	uint16_t GetScanlineCount();
 	uint16_t DotsToClocks(int dots);
 	void TriggerHdsIrqs();
 
@@ -170,7 +172,7 @@ private:
 	bool IsVramAccessBlocked();
 
 public:
-	PcePpu(Emulator* emu, PceConsole* console);
+	PcePpu(Emulator* emu, PceConsole* console, PceVce* vce);
 	~PcePpu();
 
 	PcePpuState& GetState();
@@ -185,10 +187,8 @@ public:
 	uint16_t GetFrameCount() { return _state.FrameCount; }
 
 	void Exec();
+	void DrawScanline();
 
 	uint8_t ReadVdc(uint16_t addr);
 	void WriteVdc(uint16_t addr, uint8_t value);
-
-	uint8_t ReadVce(uint16_t addr);
-	void WriteVce(uint16_t addr, uint8_t value);
 };

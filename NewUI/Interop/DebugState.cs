@@ -1299,7 +1299,6 @@ namespace Mesen.Interop
 		
 		public UInt16 HClock;
 		public UInt16 Scanline;
-		public UInt16 VceScanlineCount;
 		public UInt16 RcrCounter;
 
 		public byte CurrentReg;
@@ -1374,11 +1373,14 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool BurstModeEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool NextSpritesEnabled;
 		[MarshalAs(UnmanagedType.I1)] public bool NextBackgroundEnabled;
+	}
 
-		//VCE
-		public byte VceClockDivider;
-		[MarshalAs(UnmanagedType.I1)] public bool VceGrayscale;
+	public struct PceVceState : BaseState
+	{
+		public UInt16 ScanlineCount;
 		public UInt16 PalAddr;
+		public byte ClockDivider;
+		[MarshalAs(UnmanagedType.I1)] public bool Grayscale;
 	}
 
 	public struct PcePpuHvLatches
@@ -1459,6 +1461,7 @@ namespace Mesen.Interop
 	{
 		public PceCpuState Cpu;
 		public PcePpuState Ppu;
+		public PceVceState Vce;
 		public PceMemoryManager MemoryManager;
 		public PcePsgState Psg;
 

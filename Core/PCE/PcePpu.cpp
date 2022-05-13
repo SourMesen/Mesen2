@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PCE/PcePpu.h"
+#include "PCE/PceVce.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/PceConstants.h"
@@ -10,13 +11,14 @@
 #include "Shared/NotificationManager.h"
 #include "EventType.h"
 
-PcePpu::PcePpu(Emulator* emu, PceConsole* console)
+PcePpu::PcePpu(Emulator* emu, PceConsole* console, PceVce* vce)
 {
 	_emu = emu;
 	_console = console;
+	_vce = vce;
+
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
-	_paletteRam = new uint16_t[0x200];
 	
 	_outBuffer[0] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
 	_outBuffer[1] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
@@ -27,32 +29,24 @@ PcePpu::PcePpu(Emulator* emu, PceConsole* console)
 
 	_emu->GetSettings()->InitializeRam(_vram, 0x10000);
 	_emu->GetSettings()->InitializeRam(_spriteRam, 0x200);
-	_emu->GetSettings()->InitializeRam(_paletteRam, 0x400);
-	for(int i = 0; i < 0x200; i++) {
-		_paletteRam[i] &= 0x1FF;
-	}
 
 	//These values can't ever be 0, init them to a possible value
 	_state.ColumnCount = 32;
 	_state.RowCount = 32;
 	_state.VramAddrIncrement = 1;
-	_state.VceClockDivider = 4;
 
 	_state.HvReg.HorizDisplayWidth = 0x1F;
 	_state.HvLatch.HorizDisplayWidth = 0x1F;
 	_state.HvReg.VertDisplayWidth = 239;
 	_state.HvLatch.VertDisplayWidth = 239;
-	_state.VceScanlineCount = 262;
 
 	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
-	_emu->RegisterMemory(MemoryType::PcePaletteRam, _paletteRam, 0x200 * sizeof(uint16_t));
 	_emu->RegisterMemory(MemoryType::PceSpriteRam, _spriteRam, 0x100 * sizeof(uint16_t));
 }
 
 PcePpu::~PcePpu()
 {
 	delete[] _vram;
-	delete[] _paletteRam;
 	delete[] _spriteRam;
 	delete[] _outBuffer[0];
 	delete[] _outBuffer[1];
@@ -73,9 +67,19 @@ uint16_t* PcePpu::GetPreviousScreenBuffer()
 	return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 }
 
+uint8_t PcePpu::GetClockDivider()
+{
+	return _vce->GetClockDivider();
+}
+
+uint16_t PcePpu::GetScanlineCount()
+{
+	return _vce->GetScanlineCount();
+}
+
 uint16_t PcePpu::DotsToClocks(int dots)
 {
-	return dots * _state.VceClockDivider;
+	return dots * GetClockDivider();
 }
 
 void PcePpu::Exec()
@@ -246,7 +250,7 @@ void PcePpu::ProcessHorizontalSyncStart()
 	}
 
 	//Calculate when sprite evaluation, sprite fetching and bg fetching will occur on the scanline
-	if(_vMode == PcePpuModeV::Vdw || _state.RcrCounter == _state.VceScanlineCount - 1) {
+	if(_vMode == PcePpuModeV::Vdw || _state.RcrCounter == GetScanlineCount() - 1) {
 		uint16_t displayWidth = DotsToClocks((_state.HvLatch.HorizDisplayWidth + 1) * 8);
 
 		//Sprite evaluation runs on all visible scanlines + the scanline before the picture starts
@@ -289,7 +293,7 @@ void PcePpu::ProcessSpriteEvaluation()
 		return;
 	}
 
-	uint16_t end = (std::min(_evalEndCycle, _state.HClock) - _evalStartCycle) / _state.VceClockDivider / 4;
+	uint16_t end = (std::min(_evalEndCycle, _state.HClock) - _evalStartCycle) / GetClockDivider() / 4;
 	if(_evalLastCycle >= end) {
 		return;
 	}
@@ -299,7 +303,7 @@ void PcePpu::ProcessSpriteEvaluation()
 	if(_evalLastCycle == 0) {
 		LoadSpriteTiles();
 		_spriteCount = 0;
-		_spriteRow = (_state.RcrCounter + 1) % _state.VceScanlineCount;
+		_spriteRow = (_state.RcrCounter + 1) % GetScanlineCount();
 	}
 
 	bool removeSpriteLimit = _emu->GetSettings()->GetPcEngineConfig().RemoveSpriteLimit;
@@ -394,7 +398,7 @@ void PcePpu::LoadBackgroundTiles()
 		return;
 	}
 
-	uint16_t end = (std::min(_loadBgEnd, _state.HClock) - _loadBgStart) / _state.VceClockDivider;
+	uint16_t end = (std::min(_loadBgEnd, _state.HClock) - _loadBgStart) / GetClockDivider();
 
 	if(_loadBgLastCycle >= end) {
 		return;
@@ -509,7 +513,7 @@ void PcePpu::LoadSpriteTiles()
 			case 3: clocksPerSprite = 16; break;
 		}
 
-		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / clocksPerSprite);
+		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / GetClockDivider() / clocksPerSprite);
 		_totalSpriteCount = removeSpriteLimit ? _spriteCount : _drawSpriteCount;
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
@@ -523,7 +527,7 @@ void PcePpu::LoadSpriteTiles()
 		}
 	} else {
 		//Mode 1 uses 2BPP sprites, 4 clocks per sprite
-		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / _state.VceClockDivider / 4);
+		_drawSpriteCount = std::min<uint16_t>(_spriteCount, clockCount / GetClockDivider() / 4);
 		_totalSpriteCount = removeSpriteLimit ? _spriteCount : _drawSpriteCount;
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
@@ -550,8 +554,8 @@ void PcePpu::ProcessSatbTransfer()
 	//This takes 1024 VDC cycles (so 2048/3072/4096 master clocks depending on VCE/VDC speed)
 	//1 word transfered every 4 dots (8 to 16 master clocks, depending on VCE clock divider)
 	_state.SatbTransferNextWordCounter += 3;
-	if(_state.SatbTransferNextWordCounter / _state.VceClockDivider >= 4) {
-		_state.SatbTransferNextWordCounter -= 4 * _state.VceClockDivider;
+	if(_state.SatbTransferNextWordCounter / GetClockDivider() >= 4) {
+		_state.SatbTransferNextWordCounter -= 4 * GetClockDivider();
 
 		int i = _state.SatbTransferOffset;
 		uint16_t value = ReadVram(_state.SatbBlockSrc + i);
@@ -583,9 +587,9 @@ void PcePpu::ProcessVramDmaTransfer()
 	uint8_t hClocksPerDmaCycle;
 	switch(_state.VramAccessMode) {
 		default:
-		case 0: hClocksPerDmaCycle = _state.VceClockDivider; break;
-		case 1: case 2: hClocksPerDmaCycle = _state.VceClockDivider * 2; break;
-		case 3: hClocksPerDmaCycle = _state.VceClockDivider * 4; break;
+		case 0: hClocksPerDmaCycle = GetClockDivider(); break;
+		case 1: case 2: hClocksPerDmaCycle = GetClockDivider() * 2; break;
+		case 3: hClocksPerDmaCycle = GetClockDivider() * 4; break;
 	}
 
 	while(_vramDmaPendingCycles >= hClocksPerDmaCycle) {
@@ -687,13 +691,13 @@ void PcePpu::ProcessEndOfScanline()
 			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
 		}
-		_currentClockDividers[row] = _state.VceClockDivider;
+		_currentClockDividers[row] = GetClockDivider();
 	}
 
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
 		SendFrame();
-	} else if(_state.Scanline >= _state.VceScanlineCount) {
+	} else if(_state.Scanline >= GetScanlineCount()) {
 		//Update flags that were locked during burst mode
 		_state.Scanline = 0;
 		_verticalBlankDone = false;
@@ -722,18 +726,18 @@ void PcePpu::ProcessEndOfScanline()
 
 	//The HSW phase appears to be longer in 7mhz mode compared to 5/10mhz modes
 	//Less than 32 here breaks Camp California and Shapeshifter
-	_hModeCounter = DotsToClocks(_state.VceClockDivider == 3 ? 32 : 24);
+	_hModeCounter = DotsToClocks(GetClockDivider() == 3 ? 32 : 24);
 	_xStart = 0;
 	_lastDrawHClock = 0;
 
 	ProcessHorizontalSyncStart();
 
-	if(_state.Scanline == _state.VceScanlineCount - 3) {
+	if(_state.Scanline == GetScanlineCount() - 3) {
 		//VCE sets VBLANK for 3 scanlines at the end of every frame
 		_vMode = PcePpuModeV::Vsw;
 		ProcessVerticalSyncStart();
 		_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
-	} else if(_state.Scanline == _state.VceScanlineCount - 2) {
+	} else if(_state.Scanline == GetScanlineCount() - 2) {
 		if(!_verticalBlankDone) {
 			_needVertBlankIrq = true;
 		}
@@ -790,7 +794,7 @@ void PcePpu::DrawScanline()
 
 	uint16_t* out = _rowBuffer;
 
-	uint16_t pixelsToDraw = (_state.HClock - _lastDrawHClock) / _state.VceClockDivider;
+	uint16_t pixelsToDraw = (_state.HClock - _lastDrawHClock) / GetClockDivider();
 	uint16_t xStart = _xStart;
 	uint16_t xMax = _xStart + pixelsToDraw;
 
@@ -800,16 +804,17 @@ void PcePpu::DrawScanline()
 		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 		bool bgEnabled = _state.BackgroundEnabled && !cfg.DisableBackground;
 		bool sprEnabled = _state.SpritesEnabled && !cfg.DisableSprites;
+		uint16_t grayscaleBit = _vce->IsGrayscale() ? 0x200 : 0;
 
 		for(; xStart < xMax; xStart++) {
 			uint8_t bgColor = 0;
-			uint16_t outColor = _paletteRam[0];
+			uint16_t outColor = _vce->GetPalette(0);
 			if(bgEnabled) {
 				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
 				uint16_t column = screenX >> 3;
 				bgColor = GetTilePixelColor(_tiles[column].TileData, 7 - (screenX & 0x07));
 				if(bgColor != 0) {
-					outColor = _paletteRam[_tiles[column].Palette * 16 + bgColor];
+					outColor = _vce->GetPalette(_tiles[column].Palette * 16 + bgColor);
 				}
 			}
 
@@ -834,7 +839,7 @@ void PcePpu::DrawScanline()
 								}
 							} else {
 								if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
-									outColor = _paletteRam[256 + _drawSprites[i].Palette * 16 + sprColor];
+									outColor = _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
 								}
 							}
 
@@ -848,17 +853,17 @@ void PcePpu::DrawScanline()
 				}
 			}
 
-			out[xStart] = outColor | (_state.VceGrayscale << 9);
+			out[xStart] = outColor | grayscaleBit;
 			_screenOffsetX++;
 		}
 	} else if(inPicture) {
-		uint16_t color = _paletteRam[0];
+		uint16_t color = _vce->GetPalette(0);
 		for(; xStart < xMax; xStart++) {
 			//In picture, but BG is not enabled, draw bg color
 			out[xStart] = color;
 		}
 	} else {
-		uint16_t color = _paletteRam[16 * 16];
+		uint16_t color = _vce->GetPalette(16 * 16);
 		for(; xStart < xMax; xStart++) {
 			//Output hasn't started yet, display overscan color
 			out[xStart] = color;
@@ -867,11 +872,11 @@ void PcePpu::DrawScanline()
 
 	if(_state.HClock == 1365) {
 		uint32_t offset = (_state.Scanline - 14) * PceConstants::MaxScreenWidth;
-		memcpy(_currentOutBuffer + offset, _rowBuffer, PceConstants::ClockPerScanline / _state.VceClockDivider * sizeof(uint16_t));
+		memcpy(_currentOutBuffer + offset, _rowBuffer, PceConstants::ClockPerScanline / GetClockDivider() * sizeof(uint16_t));
 	}
 
 	_xStart = xStart;
-	_lastDrawHClock = _state.HClock / _state.VceClockDivider * _state.VceClockDivider;
+	_lastDrawHClock = _state.HClock / GetClockDivider() * GetClockDivider();
 }
 
 void PcePpu::SendFrame()
@@ -1145,68 +1150,5 @@ void PcePpu::WriteVdc(uint16_t addr, uint8_t value)
 					}
 					break;
 			}
-	}
-}
-
-uint8_t PcePpu::ReadVce(uint16_t addr)
-{
-	DrawScanline();
-
-	switch(addr & 0x07) {
-		default:
-		case 0: return 0xFF; //write-only, reads return $FF
-		case 1: return 0xFF; //unused, reads return $FF
-		case 2: return 0xFF; //write-only, reads return $FF
-		case 3: return 0xFF; //write-only, reads return $FF
-
-		case 4: return _paletteRam[_state.PalAddr] & 0xFF;
-		
-		case 5: {
-			uint8_t val = (_paletteRam[_state.PalAddr] >> 8) & 0x01;
-			_state.PalAddr = (_state.PalAddr + 1) & 0x1FF;
-
-			//Bits 1 to 7 are set to 1 when reading MSB
-			return 0xFE | val;
-		}
-
-		case 6: return 0xFF; //unused, reads return $FF
-		case 7: return 0xFF; //unused, reads return $FF
-	}
-}
-
-void PcePpu::WriteVce(uint16_t addr, uint8_t value)
-{
-	DrawScanline();
-
-	switch(addr & 0x07) {
-		case 0x00:
-			_state.VceScanlineCount = (value & 0x04) ? 263 : 262;
-			_state.VceGrayscale = (value & 0x80) != 0;
-			switch(value & 0x03) {
-				case 0: _state.VceClockDivider = 4; break;
-				case 1: _state.VceClockDivider = 3; break;
-				case 2: case 3: _state.VceClockDivider = 2; break;
-			}
-			//LogDebug("[Debug] VCE Clock divider: " + HexUtilities::ToHex(_state.VceClockDivider) + "  SL: " + std::to_string(_state.Scanline));
-			break;
-
-		case 0x01: break; //Unused, writes do nothing
-
-		case 0x02: _state.PalAddr = (_state.PalAddr & 0x100) | value; break;
-		case 0x03: _state.PalAddr = (_state.PalAddr & 0xFF) | ((value & 0x01) << 8); break;
-
-		case 0x04:
-			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1), value, MemoryType::PceVideoRam);
-			_paletteRam[_state.PalAddr] = (_paletteRam[_state.PalAddr] & 0x100) | value;
-			break;
-
-		case 0x05:
-			_emu->ProcessPpuWrite<CpuType::Pce>((_state.PalAddr << 1) + 1, value, MemoryType::PceVideoRam);
-			_paletteRam[_state.PalAddr] = (_paletteRam[_state.PalAddr] & 0xFF) | ((value & 0x01) << 8);
-			_state.PalAddr = (_state.PalAddr + 1) & 0x1FF;
-			break;
-
-		case 0x06: break; //Unused, writes do nothing
-		case 0x07: break; //Unused, writes do nothing
 	}
 }

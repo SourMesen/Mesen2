@@ -1811,6 +1811,9 @@
     <ClInclude Include="PCE\PceNtscFilter.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceVce.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1886,6 +1889,9 @@
       <Filter>PCE\Input</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceNtscFilter.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceVce.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>

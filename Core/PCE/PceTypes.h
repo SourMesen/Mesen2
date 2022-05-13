@@ -80,7 +80,6 @@ struct PcePpuState : public BaseState
 	
 	uint16_t HClock;
 	uint16_t Scanline;
-	uint16_t VceScanlineCount;
 	uint16_t RcrCounter;
 
 	uint8_t CurrentReg;
@@ -156,11 +155,14 @@ struct PcePpuState : public BaseState
 	bool BurstModeEnabled;
 	bool NextSpritesEnabled;
 	bool NextBackgroundEnabled;
-	
-	//VCE
-	uint8_t VceClockDivider;
-	bool VceGrayscale;
+};
+
+struct PceVceState
+{
+	uint16_t ScanlineCount;
 	uint16_t PalAddr;
+	uint8_t ClockDivider;
+	bool Grayscale;
 };
 
 struct PceMemoryManagerState
@@ -214,6 +216,7 @@ struct PceState
 {
 	PceCpuState Cpu;
 	PcePpuState Ppu;
+	PceVceState Vce;
 	PceMemoryManagerState MemoryManager;
 	PcePsgState Psg;
 	PcePsgChannelState PsgChannels[6];
