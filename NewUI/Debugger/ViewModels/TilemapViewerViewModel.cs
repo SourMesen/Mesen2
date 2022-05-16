@@ -54,6 +54,7 @@ namespace Mesen.Debugger.ViewModels
 		private byte[]? _prevVram;
 		private byte[] _vram = Array.Empty<byte>();
 		private UInt32[] _palette = Array.Empty<UInt32>();
+		private bool _refreshDataOnTabChange;
 
 		[Obsolete("For designer only")]
 		public TilemapViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
@@ -116,7 +117,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileMapAddress >= 0) {
-							MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), tile.Value.TileMapAddress);
+							MemoryToolsWindow.ShowInMemoryTools(GetVramMemoryType(), tile.Value.TileMapAddress);
 						}
 					}
 				},
@@ -126,7 +127,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileAddress >= 0) {
-							TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(), tile.Value.TileAddress, _tilemapInfo.Format, TileLayout.Normal, tile.Value.PaletteIndex);
+							TileViewerWindow.OpenAtTile(CpuType, GetVramMemoryType(), tile.Value.TileAddress, _tilemapInfo.Format, TileLayout.Normal, tile.Value.PaletteIndex);
 						}
 					}
 				},
@@ -141,14 +142,14 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
-				InitForCpuType();
-				IsNes = CpuType == CpuType.Nes;
-				RefreshData();
-			}));
-
 			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
-			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
+			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
+				if(_refreshDataOnTabChange) {
+					RefreshData();
+				} else {
+					RefreshTab();
+				}
+			}));
 			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
@@ -158,6 +159,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void InitForCpuType()
 		{
+			_refreshDataOnTabChange = false;
 			switch(CpuType) {
 				case CpuType.Snes:
 					Tabs = new List<TilemapViewerTab>() {
@@ -169,10 +171,23 @@ namespace Mesen.Debugger.ViewModels
 					break;
 
 				case CpuType.Nes:
-				case CpuType.Pce:
 					Tabs = new List<TilemapViewerTab>() {
 						new() { Title = "", Layer = 0 }
 					};
+					break;
+
+				case CpuType.Pce:
+					if(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).IsSuperGrafx) {
+						_refreshDataOnTabChange = true;
+						Tabs = new List<TilemapViewerTab>() {
+							new() { Title = "VDC1", Layer = 0 },
+							new() { Title = "VDC2", Layer = 1, VramMemoryType = MemoryType.PceVideoRamVdc2 }
+						};
+					} else {
+						Tabs = new List<TilemapViewerTab>() {
+							new() { Title = "", Layer = 0 }
+						};
+					}
 					break;
 
 				case CpuType.Gameboy:
@@ -239,12 +254,17 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
+		private MemoryType GetVramMemoryType()
+		{
+			return SelectedTab?.VramMemoryType ?? CpuType.GetVramMemoryType();
+		}
+
 		public void RefreshData()
 		{
 			BaseState ppuState = DebugApi.GetPpuState(CpuType);
 			_ppuState = ppuState;
 			_prevVram = _vram;
-			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
+			_vram = DebugApi.GetMemoryState(GetVramMemoryType());
 			_palette = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
 
 			RefreshTab();
@@ -386,12 +406,20 @@ namespace Mesen.Debugger.ViewModels
 				return new DynamicTooltip() { Items = entries };
 			}
 		}
+
+		public void OnGameLoaded()
+		{
+			InitForCpuType();
+			IsNes = CpuType == CpuType.Nes;
+			RefreshData();
+		}
 	}
 
 	public class TilemapViewerTab : ViewModelBase
 	{
 		[Reactive] public string Title { get; set; } = "";
 		[Reactive] public int Layer { get; set; }  = 0;
+		[Reactive] public MemoryType? VramMemoryType { get; set; }
 		[Reactive] public bool Enabled { get; set; } = true;
 	}
 }

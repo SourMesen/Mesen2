@@ -10,7 +10,9 @@ struct PceVdcState;
 class PceVdcTools final : public PpuTools
 {
 private:
-	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PceVdcState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	PceConsole* _console = nullptr;
+
+	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
 	PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console);

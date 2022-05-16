@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MemoryOperationType.h"
 #include "PCE/PceConsole.h"
-#include "PCE/PceVdc.h"
+#include "PCE/PceVpc.h"
 #include "PCE/PceVce.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
@@ -26,7 +26,7 @@ private:
 	Emulator* _emu = nullptr;
 	CheatManager* _cheatManager = nullptr;
 	PceConsole* _console = nullptr;
-	PceVdc* _vdc = nullptr;
+	PceVpc* _vpc = nullptr;
 	PceVce* _vce = nullptr;
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
@@ -43,7 +43,7 @@ private:
 	MemoryType _bankMemType[0x100] = {};
 
 	uint8_t* _workRam = nullptr;
-	uint32_t _workRamSize = 0x2000;
+	uint32_t _workRamSize = 0;
 
 	uint8_t* _cdromRam = nullptr;
 	uint32_t _cdromRamSize = 0;
@@ -57,18 +57,19 @@ private:
 	uint8_t* _unmappedBank = nullptr;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PceVdc* vdc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
 		_console = console;
-		_vdc = vdc;
+		_vpc = vpc;
 		_vce = vce;
 		_psg = psg;
 		_cdrom = cdrom;
 		_controlManager = controlManager;
 		_prgRomSize = (uint32_t)romData.size();
 		_prgRom = new uint8_t[_prgRomSize];
+		_workRamSize = console->IsSuperGrafx() ? 0x8000 : 0x2000;
 		_workRam = new uint8_t[_workRamSize];
 		
 		_unmappedBank = new uint8_t[0x2000];
@@ -204,8 +205,8 @@ public:
 
 		for(int i = 0; i < 4; i++) {
 			//F8 - FB
-			_readBanks[0xF8 + i] = _workRam;
-			_writeBanks[0xF8 + i] = _workRam;
+			_readBanks[0xF8 + i] = _workRam + ((i * 0x2000) % _workRamSize);
+			_writeBanks[0xF8 + i] = _workRam + ((i * 0x2000) % _workRamSize);
 			_bankMemType[0xF8 + i] = MemoryType::PceWorkRam;
 		}
 
@@ -246,7 +247,7 @@ public:
 	{
 		_state.CycleCount += 3;
 		_timer->Exec();
-		_vdc->Exec();
+		_vpc->Exec();
 		if(_cdrom) {
 			_cdrom->Exec();
 		}
@@ -264,11 +265,11 @@ public:
 		if(addr <= 0x3FF) {
 			//VDC
 			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
-			return _vdc->ReadRegister(addr);
+			return _vpc->Read(addr);
 		} else if(addr <= 0x7FF) {
 			//VCE
 			Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
-			_vdc->DrawScanline();
+			_vpc->DrawScanline();
 			return _vce->Read(addr);
 		} else if(addr <= 0xBFF) {
 			//PSG
@@ -360,10 +361,10 @@ public:
 			}
 		} else {
 			if(addr <= 0x3FF) {
-				_vdc->WriteRegister(addr, value);
+				_vpc->Write(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0x7FF) {
-				_vdc->DrawScanline();
+				_vpc->DrawScanline();
 				_vce->Write(addr, value);
 				Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 			} else if(addr <= 0xBFF) {
@@ -405,7 +406,7 @@ public:
 		if(_state.Mpr[0] == 0xFF) {
 			_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
 		}
-		_vdc->WriteRegister(addr, value);
+		_vpc->StVdcWrite(addr, value);
 		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}
 

@@ -110,7 +110,7 @@ namespace Mesen.Interop
 				CpuType.Snes => GetPpuState<SnesPpuState>(cpuType),
 				CpuType.Nes => GetPpuState<NesPpuState>(cpuType),
 				CpuType.Gameboy => GetPpuState<GbPpuState>(cpuType),
-				CpuType.Pce => GetPpuState<PceVdcState>(cpuType),
+				CpuType.Pce => GetPpuState<PceVideoState>(cpuType),
 				_ => throw new Exception("Unsupport cpu type")
 			};
 		}
@@ -442,7 +442,7 @@ namespace Mesen.Interop
 				ConsoleType.Snes => state is SnesPpuState,
 				ConsoleType.Nes => state is NesPpuState,
 				ConsoleType.Gameboy => state is GbPpuState,
-				ConsoleType.PcEngine => state is PceVdcState,
+				ConsoleType.PcEngine => state is PceVideoState,
 				_ => false
 			};
 		}
@@ -504,8 +504,10 @@ namespace Mesen.Interop
 		PceCardRam,
 		PceAdpcmRam,
 		PceVideoRam,
-		PcePaletteRam,
+		PceVideoRamVdc2,
 		PceSpriteRam,
+		PceSpriteRamVdc2,
+		PcePaletteRam,
 
 		Register
 	}
@@ -870,6 +872,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool HorizontalMirror;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalMirror;
 		[MarshalAs(UnmanagedType.I1)] public bool Visible;
+		[MarshalAs(UnmanagedType.I1)] public bool UseExtendedVram;
 		public NullableBoolean UseSecondTable;
 
 		public fixed UInt32 SpritePreview[64*64];

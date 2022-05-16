@@ -20,24 +20,24 @@ namespace Mesen.Interop
 			};
 		}
 
-		public static MemoryType GetVramMemoryType(this CpuType cpuType)
+		public static MemoryType GetVramMemoryType(this CpuType cpuType, bool getExtendedRam = false)
 		{
 			return cpuType switch {
 				CpuType.Snes => MemoryType.SnesVideoRam,
 				CpuType.Gameboy => MemoryType.GbVideoRam,
 				CpuType.Nes => MemoryType.NesPpuMemory,
-				CpuType.Pce => MemoryType.PceVideoRam,
+				CpuType.Pce => getExtendedRam ? MemoryType.PceVideoRamVdc2 : MemoryType.PceVideoRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}
 
-		public static MemoryType GetSpriteRamMemoryType(this CpuType cpuType)
+		public static MemoryType GetSpriteRamMemoryType(this CpuType cpuType, bool getExtendedRam = false)
 		{
 			return cpuType switch {
 				CpuType.Snes => MemoryType.SnesSpriteRam,
 				CpuType.Gameboy => MemoryType.GbSpriteRam,
 				CpuType.Nes => MemoryType.NesSpriteRam,
-				CpuType.Pce => MemoryType.PceSpriteRam,
+				CpuType.Pce => getExtendedRam ? MemoryType.PceSpriteRamVdc2 : MemoryType.PceSpriteRam,
 				_ => throw new Exception("Invalid CPU type"),
 			};
 		}

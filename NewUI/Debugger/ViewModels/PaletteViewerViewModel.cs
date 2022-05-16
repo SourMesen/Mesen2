@@ -88,7 +88,6 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
-			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => RefreshData()));
 			AddDisposable(this.WhenAnyValue(x => x.Config.Zoom).Subscribe(x => BlockSize = Math.Max(16, 16 + (x - 1) * 4)));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedPalette).Subscribe(x => UpdatePreviewPanel()));
 
@@ -178,6 +177,11 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				return new DynamicTooltip() { Items = entries };
 			}
+		}
+
+		public void OnGameLoaded()
+		{
+			RefreshData();
 		}
 	}
 }

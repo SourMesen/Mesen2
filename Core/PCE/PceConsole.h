@@ -4,12 +4,15 @@
 
 class PceCpu;
 class PceVdc;
+class PceVpc;
 class PceVce;
 class PcePsg;
 class PceCdRom;
 class PceMemoryManager;
 class PceControlManager;
 class Emulator;
+struct PceVideoState;
+enum class PceConsoleType;
 
 class PceConsole final: public IConsole
 {
@@ -18,11 +21,15 @@ private:
 
 	unique_ptr<PceCpu> _cpu;
 	unique_ptr<PceVdc> _vdc;
+	unique_ptr<PceVdc> _vdc2;
+	unique_ptr<PceVpc> _vpc;
 	unique_ptr<PceVce> _vce;
 	unique_ptr<PcePsg> _psg;
 	unique_ptr<PceMemoryManager> _memoryManager;
 	unique_ptr<PceControlManager> _controlManager;
 	unique_ptr<PceCdRom> _cdrom;
+	
+	PceConsoleType GetRomConsoleType(vector<uint8_t>& romData);
 
 public:
 	PceConsole(Emulator* emu);
@@ -47,7 +54,10 @@ public:
 
 	PceCpu* GetCpu();
 	PceVdc* GetVdc();
+	PceVpc* GetVpc();
 	PceMemoryManager* GetMemoryManager();
+
+	bool IsSuperGrafx() { return _vdc2 != nullptr; }
 	
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;
@@ -65,5 +75,6 @@ public:
 	AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) override;
 	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 
+	PceVideoState GetVideoState();
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;
 };

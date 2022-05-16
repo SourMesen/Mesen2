@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PCE\PceVpc.h" />
     <ClInclude Include="PCE\Input\PceAvenuePad6.h" />
     <ClInclude Include="PCE\Input\PceTurboTap.h" />
     <ClInclude Include="PCE\Debugger\DummyPceCpu.h" />
@@ -469,6 +470,7 @@
     <ClCompile Include="PCE\PceSf2RomMapper.cpp" />
     <ClCompile Include="PCE\PceTimer.cpp" />
     <ClCompile Include="PCE\PceVce.cpp" />
+    <ClCompile Include="PCE\PceVpc.cpp" />
     <ClCompile Include="Shared\BaseControlManager.cpp" />
     <ClCompile Include="NES\NesDefaultVideoFilter.cpp" />
     <ClCompile Include="NES\BaseMapper.cpp" />

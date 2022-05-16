@@ -134,10 +134,6 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
-				RefreshData();
-			}));
-
 			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => {
 				UpdateSelectionPreview();
 				if(x != null) {
@@ -166,7 +162,7 @@ namespace Mesen.Debugger.ViewModels
 				OnClick = () => {
 					SpritePreviewModel? sprite = GetSelectedSprite();
 					if(sprite?.TileAddress >= 0) {
-						MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(), sprite.TileAddress);
+						MemoryToolsWindow.ShowInMemoryTools(CpuType.GetVramMemoryType(sprite.UseExtendedVram), sprite.TileAddress);
 					}
 				}
 			};
@@ -182,7 +178,7 @@ namespace Mesen.Debugger.ViewModels
 					if(sprite?.TileAddress >= 0 && _palette != null) {
 						DebugPaletteInfo pal = _palette.Get();
 						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
-						TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(), sprite.TileAddress, sprite.Format, TileLayout.Normal, sprite.Palette + paletteOffset);
+						TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(sprite.UseExtendedVram), sprite.TileAddress, sprite.Format, TileLayout.Normal, sprite.Palette + paletteOffset);
 					}
 				}
 			};
@@ -345,16 +341,39 @@ namespace Mesen.Debugger.ViewModels
 			InitGrid(sprites.Length);
 		}
 
+		private byte[] GetExtendedRam(MemoryType baseType, MemoryType extType)
+		{
+			byte[] extRam = DebugApi.GetMemoryState(extType);
+			if(extRam.Length > 0) {
+				byte[] ram = DebugApi.GetMemoryState(baseType);
+				int length = ram.Length;
+				Array.Resize(ref ram, extRam.Length + length);
+				Array.Copy(extRam, 0, ram, length, extRam.Length);
+				return ram;
+			} else {
+				return DebugApi.GetMemoryState(baseType);
+			}
+		}
+
+		private byte[] GetVram()
+		{
+			return GetExtendedRam(CpuType.GetVramMemoryType(), CpuType.GetVramMemoryType(getExtendedRam: true));
+		}
+
+		private byte[] GetSpriteRam()
+		{
+			return GetExtendedRam(CpuType.GetSpriteRamMemoryType(), CpuType.GetSpriteRamMemoryType(getExtendedRam: true));
+		}
+
 		public void RefreshData()
 		{
 			_ppuState = DebugApi.GetPpuState(CpuType);
-			_vram = DebugApi.GetMemoryState(CpuType.GetVramMemoryType());
 
-			MemoryType spriteMemType = CpuType.GetSpriteRamMemoryType();
-			int spriteRamSize = DebugApi.GetMemorySize(spriteMemType);
+			_vram = GetVram();
 
+			int spriteRamSize = DebugApi.GetMemorySize(CpuType.GetSpriteRamMemoryType()) + DebugApi.GetMemorySize(CpuType.GetSpriteRamMemoryType(getExtendedRam: true));
 			if(Config.Source == SpriteViewerSource.SpriteRam) {
-				_spriteRam = DebugApi.GetMemoryState(spriteMemType);
+				_spriteRam = GetSpriteRam();
 			} else {
 				MemoryType cpuMemory = CpuType.ToMemoryType();
 				_spriteRam = DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1));
@@ -471,6 +490,11 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			return null;
+		}
+
+		public void OnGameLoaded()
+		{
+			RefreshData();
 		}
 	}
 }

@@ -11,6 +11,7 @@ class Emulator;
 class PceConsole;
 class PceCpu;
 class PceVdc;
+class PceVpc;
 class Debugger;
 class PceMemoryManager;
 
@@ -38,10 +39,11 @@ class PceEventManager final : public BaseEventManager
 private:
 	PceEventViewerConfig _config;
 	Emulator* _emu;
-	PceCpu * _cpu;
-	PceVdc *_vdc;
+	PceCpu* _cpu;
+	PceVdc* _vdc;
+	PceVpc* _vpc;
 	PceMemoryManager* _memoryManager;
-	Debugger *_debugger;
+	Debugger* _debugger;
 
 	uint16_t* _ppuBuffer = nullptr;
 	uint8_t _rowClockDividers[PceConstants::ScreenHeight] = {};

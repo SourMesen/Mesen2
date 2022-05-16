@@ -8,8 +8,10 @@
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
+#include "PCE/PceVpc.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceConstants.h"
+#include "Utilities/CRC32.h"
 #include "MemoryType.h"
 #include "FirmwareHelper.h"
 
@@ -37,6 +39,7 @@ void PceConsole::OnBeforeRun()
 LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 {
 	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
+	PceConsoleType consoleType = cfg.ConsoleType;
 
 	vector<uint8_t> romData;
 	if(romFile.GetFileExtension() == ".cue") {
@@ -57,6 +60,10 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			romData.erase(romData.begin(), romData.begin() + 512);
 		}
 
+		if(consoleType == PceConsoleType::Auto) {
+			consoleType = GetRomConsoleType(romData);
+		}
+
 		if(cfg.EnableCdRomForHuCardGames) {
 			DiscInfo emptyDisc = {};
 			_cdrom.reset(new PceCdRom(_emu, this, emptyDisc));
@@ -65,9 +72,17 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 	_controlManager.reset(new PceControlManager(_emu));
 	_vce.reset(new PceVce(_emu, this));
-	_vdc.reset(new PceVdc(_emu, this, _vce.get()));
+	_vpc.reset(new PceVpc(_emu, this, _vce.get()));
+	
+	_vdc.reset(new PceVdc(_emu, this, _vpc.get(), _vce.get(), false));
+	if(consoleType == PceConsoleType::SuperGrafx) {
+		_vdc2.reset(new PceVdc(_emu, this, _vpc.get(), _vce.get(), true));
+	}
+
+	_vpc->ConnectVdc(_vdc.get(), _vdc2.get());
+
 	_psg.reset(new PcePsg(_emu));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _vdc.get(), _vce.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -75,6 +90,17 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	MessageManager::Log("-----------------");
 
 	return LoadRomResult::Success;
+}
+
+PceConsoleType PceConsole::GetRomConsoleType(vector<uint8_t>& romData)
+{
+	uint32_t crc32 = CRC32::GetCRC(romData);
+	if(crc32 == 0xB486A8ED || crc32 == 0x1F041166 || crc32 == 0x3B13AF61 || crc32 == 0x4C2126B0 || crc32 == 0x8C4588E2) {
+		//These are the 5 SuperGrafx-exclusive games
+		return PceConsoleType::SuperGrafx;
+	}
+
+	return PceConsoleType::TurboGrafx;
 }
 
 void PceConsole::Init()
@@ -126,6 +152,11 @@ PceVdc* PceConsole::GetVdc()
 	return _vdc.get();
 }
 
+PceVpc* PceConsole::GetVpc()
+{
+	return _vpc.get();
+}
+
 PceMemoryManager* PceConsole::GetMemoryManager()
 {
 	return _memoryManager.get();
@@ -143,8 +174,8 @@ uint32_t PceConsole::GetMasterClockRate()
 
 double PceConsole::GetFps()
 {
-	//59.82609786
-	return (double)PceConstants::MasterClockRate / PceConstants::ClockPerScanline / PceConstants::ScanlineCount;
+	//Varies depending on VCE setting (263 or 262 scanlines)
+	return (double)PceConstants::MasterClockRate / PceConstants::ClockPerScanline / _vce->GetState().ScanlineCount;
 }
 
 BaseVideoFilter* PceConsole::GetVideoFilter()
@@ -171,7 +202,7 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 	frame.FirstScanline = 0;
 	frame.ScanlineCount = PceConstants::ScanlineCount;
 
-	frame.FrameBuffer = (uint8_t*)_vdc->GetScreenBuffer();
+	frame.FrameBuffer = (uint8_t*)_vpc->GetScreenBuffer();
 	frame.Height = PceConstants::ScreenHeight;
 	frame.Width = PceConstants::MaxScreenWidth;
 	return frame;
@@ -184,6 +215,7 @@ RomFormat PceConsole::GetRomFormat()
 
 AudioTrackInfo PceConsole::GetAudioTrackInfo()
 {
+	//TODO HES file support
 	return {};
 }
 
@@ -204,15 +236,30 @@ AddressInfo PceConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuT
 	return _memoryManager->GetRelativeAddress(absAddress);
 }
 
+PceVideoState PceConsole::GetVideoState()
+{
+	PceVideoState state;
+	state.Vdc = _vdc->GetState();
+	state.Vce = _vce->GetState();
+	state.Vpc = _vpc->GetState();
+
+	if(_vdc2) {
+		state.Vdc2 = _vdc2->GetState();
+	} else {
+		state.Vdc2 = {};
+	}
+	return state;
+}
+
 void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 {
 	PceState& state = (PceState&)baseState;
 	state.Cpu = _cpu->GetState();
-	state.Vdc = _vdc->GetState();
-	state.Vce = _vce->GetState();
+	state.Video = GetVideoState();
 	state.MemoryManager = _memoryManager->GetState();
 	state.Psg = _psg->GetState();
 	for(int i = 0; i < 6; i++) {
 		state.PsgChannels[i] = _psg->GetChannelState(i);
 	}
+	state.IsSuperGrafx = _vdc2 != nullptr;
 }

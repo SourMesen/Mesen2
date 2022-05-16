@@ -1457,15 +1457,58 @@ namespace Mesen.Interop
 		public byte NoiseFrequency;
 	}
 
+	public enum PceVpcPriorityMode
+	{
+		Default = 0,
+		Vdc1SpritesBelowVdc2Bg = 1,
+		Vdc2SpritesAboveVdc1Bg = 2,
+	}
+
+	public enum PceVpcPixelWindow
+	{
+		NoWindow,
+		Window1,
+		Window2,
+		Both
+	}
+
+	public struct PceVpcPriorityConfig
+	{
+		public PceVpcPriorityMode PriorityMode;
+		[MarshalAs(UnmanagedType.I1)] public bool Vdc1Enabled;
+		[MarshalAs(UnmanagedType.I1)] public bool Vdc2Enabled;
+	}
+
+	public struct PceVpcState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public PceVpcPriorityConfig[] WindowCfg;
+		public byte Priority1;
+		public byte Priority2;
+		public UInt16 Window1;
+		public UInt16 Window2;
+		[MarshalAs(UnmanagedType.I1)] public bool StToVdc2Mode;
+	}
+
+	public struct PceVideoState : BaseState
+	{
+		public PceVdcState Vdc;
+		public PceVceState Vce;
+		public PceVpcState Vpc;
+		public PceVdcState Vdc2;
+	}
+
 	public struct PceState : BaseState
 	{
 		public PceCpuState Cpu;
-		public PceVdcState Vdc;
-		public PceVceState Vce;
+		public PceVideoState Video;
+
 		public PceMemoryManager MemoryManager;
 		public PcePsgState Psg;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
 		public PcePsgChannelState[] PsgChannels;
+	
+		[MarshalAs(UnmanagedType.I1)] public bool IsSuperGrafx;
 	}
 }

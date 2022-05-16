@@ -110,8 +110,10 @@ public:
 			case MemoryType::PceCardRam:
 			case MemoryType::PceAdpcmRam:
 			case MemoryType::PceVideoRam:
+			case MemoryType::PceVideoRamVdc2:
 			case MemoryType::PcePaletteRam:
 			case MemoryType::PceSpriteRam:
+			case MemoryType::PceSpriteRamVdc2:
 				return CpuType::Pce;
 
 			default:
@@ -149,8 +151,10 @@ public:
 				return true;
 
 			case MemoryType::PceVideoRam:
+			case MemoryType::PceVideoRamVdc2:
 			case MemoryType::PcePaletteRam:
 			case MemoryType::PceSpriteRam:
+			case MemoryType::PceSpriteRamVdc2:
 				return true;
 
 			default: 

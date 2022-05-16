@@ -403,7 +403,9 @@ struct PcEngineConfig
 
 	bool RemoveSpriteLimit = false;
 	bool DisableSprites = false;
+	bool DisableSpritesVdc2 = false;
 	bool DisableBackground = false;
+	bool DisableBackgroundVdc2 = false;
 
 	uint32_t Palette[512] = { };
 };

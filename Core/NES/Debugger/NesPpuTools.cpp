@@ -236,11 +236,13 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 	sprite.Bpp = 2;
 	sprite.Format = TileFormat::NesBpp2;
 	sprite.SpriteIndex = i;
+	sprite.UseExtendedVram = false;
 	sprite.Y = oamRam[i * 4];
 	sprite.X = oamRam[i * 4 + 3];
 	sprite.RawY = sprite.Y;
 	sprite.RawX = sprite.X;
 	sprite.TileIndex = oamRam[i * 4 + 1];
+	sprite.UseSecondTable = NullableBoolean::Undefined;
 
 	uint8_t attributes = oamRam[i * 4 + 2];
 	sprite.Palette = (attributes & 0x03);

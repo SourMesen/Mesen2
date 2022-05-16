@@ -170,6 +170,7 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	sprite.Bpp = 2;
 	sprite.Format = TileFormat::Bpp2;
 	sprite.SpriteIndex = i;
+	sprite.UseExtendedVram = false;
 	
 	sprite.Y = oamRam[i*4];
 	sprite.X = oamRam[i * 4 + 1];

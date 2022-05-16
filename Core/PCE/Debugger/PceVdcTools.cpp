@@ -10,12 +10,17 @@
 
 PceVdcTools::PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console) : PpuTools(debugger, emu)
 {
+	_console = console;
 }
 
 FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
 {
-	PceVdcState& state = (PceVdcState&)baseState;
-	return { (uint32_t)state.ColumnCount * 8, (uint32_t)state.RowCount * 8 };
+	PceVideoState& state = (PceVideoState&)baseState;
+	if(options.Layer == 0) {
+		return { (uint32_t)state.Vdc.ColumnCount * 8, (uint32_t)state.Vdc.RowCount * 8 };
+	} else {
+		return { (uint32_t)state.Vdc2.ColumnCount * 8, (uint32_t)state.Vdc2.RowCount * 8 };
+	}
 }
 
 DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
@@ -27,7 +32,7 @@ DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 		return result;
 	}
 
-	PceVdcState& state = (PceVdcState&)baseState;
+	PceVdcState& state = options.Layer == 0 ? ((PceVideoState&)baseState).Vdc : ((PceVideoState&)baseState).Vdc2;
 
 	uint32_t row = y / 8;
 	uint32_t column = x / 8;
@@ -52,7 +57,7 @@ DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 
 DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
-	PceVdcState& state = (PceVdcState&)baseState;
+	PceVdcState& state = options.Layer == 0 ? ((PceVideoState&)baseState).Vdc : ((PceVideoState&)baseState).Vdc2;
 
 	DebugTilemapInfo result = {};
 	result.Bpp = 4;
@@ -92,7 +97,7 @@ DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& b
 
 void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer)
 {
-	PceVdcState& state = (PceVdcState&)baseState;
+	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 
 	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HvLatch.HorizDisplayWidth + 1) * 8);
 	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF333333);
@@ -100,9 +105,11 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, 0xFF666666);
 	}
 
+	int spriteCount = _console->IsSuperGrafx() ? 128 : 64;
+
 	DebugSpriteInfo sprite;
-	for(int i = 63; i >= 0; i--) {
-		GetSpriteInfo(sprite, i, options, state, vram, oamRam, palette);
+	for(int i = spriteCount - 1; i >= 0; i--) {
+		GetSpriteInfo(sprite, i, options, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			if(sprite.Y + y >= 1024) {
@@ -123,7 +130,7 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 }
 
-void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, PceVdcState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 8);
 
@@ -154,6 +161,7 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	sprite.Bpp = 4;
 	sprite.Format = TileFormat::PceSpriteBpp4;
 	sprite.SpriteIndex = spriteIndex;
+	sprite.UseExtendedVram = spriteIndex >= 64;
 	sprite.X = spriteX;
 	sprite.Y = spriteY;
 	sprite.RawX = spriteX;
@@ -167,6 +175,12 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	sprite.HorizontalMirror = (flags & 0x800) != 0;
 	sprite.VerticalMirror = (flags & 0x8000) != 0;
 	sprite.Visible = visible;
+	sprite.UseSecondTable = NullableBoolean::Undefined;
+
+	if(sprite.UseExtendedVram) {
+		//Sprite for VDC2, use VRAM from VDC2
+		vram += 0x10000;
+	}
 
 	if(width == 32) {
 		tileIndex &= ~0x01;
@@ -231,10 +245,9 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 
 void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
-	PceVdcState& state = (PceVdcState&)baseState;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0, len = _console->IsSuperGrafx() ? 128 : 64; i < len; i++) {
 		outBuffer[i].Init();
-		GetSpriteInfo(outBuffer[i], i, options, state, vram, oamRam, palette);
+		GetSpriteInfo(outBuffer[i], i, options, vram, oamRam, palette);
 	}
 }
 
@@ -242,8 +255,8 @@ DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 {
 	DebugSpritePreviewInfo info = {};
 	info.Height = 1024;
-	info.Width = 1024;
-	info.SpriteCount = 64;
+	info.Width = 1024; 
+	info.SpriteCount = _console->IsSuperGrafx() ? 128 : 64;
 	info.CoordOffsetX = 0;
 	info.CoordOffsetY = 0;
 	return info;

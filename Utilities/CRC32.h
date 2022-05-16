@@ -8,5 +8,6 @@ private:
 
 public:
 	static uint32_t GetCRC(uint8_t* buffer, std::streamoff length);
+	static uint32_t GetCRC(vector<uint8_t> data);
 	static uint32_t GetCRC(string filename);
 };

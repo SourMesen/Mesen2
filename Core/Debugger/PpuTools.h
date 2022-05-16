@@ -54,6 +54,7 @@ struct DebugSpriteInfo
 	bool HorizontalMirror;
 	bool VerticalMirror;
 	bool Visible;
+	bool UseExtendedVram;
 	NullableBoolean UseSecondTable;
 
 	uint32_t SpritePreview[64 * 64];

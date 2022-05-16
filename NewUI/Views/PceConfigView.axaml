@@ -82,7 +82,9 @@
 				<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
 					<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />					
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackgroundVdc2}" Text="{l:Translate chkDisableBackgroundVdc2}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSpritesVdc2}" Text="{l:Translate chkDisableSpritesVdc2}" />
 				</c:OptionSection>
 				<c:OptionSection Header="{l:Translate lblPalette}">
 					<c:PaletteConfig

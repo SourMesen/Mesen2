@@ -19,6 +19,7 @@ PceEventManager::PceEventManager(Debugger *debugger, PceConsole *console)
 	_emu = debugger->GetEmulator();
 	_cpu = console->GetCpu();
 	_vdc = console->GetVdc();
+	_vpc = console->GetVpc();
 	_memoryManager = console->GetMemoryManager();
 
 	_ppuBuffer = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
@@ -136,16 +137,16 @@ uint32_t PceEventManager::TakeEventSnapshot()
 
 	constexpr uint32_t size = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 	if(scanline < 14 || scanline >= 256) {
-		memcpy(_ppuBuffer, _vdc->GetScreenBuffer(), size * sizeof(uint16_t));
-		memcpy(_rowClockDividers, _vdc->GetRowClockDividers(), PceConstants::ScreenHeight);
+		memcpy(_ppuBuffer, _vpc->GetScreenBuffer(), size * sizeof(uint16_t));
+		memcpy(_rowClockDividers, _vpc->GetRowClockDividers(), PceConstants::ScreenHeight);
 	} else {
 		uint32_t scanlineOffset = (scanline - 14);
 		uint32_t offset = PceConstants::MaxScreenWidth * scanlineOffset;
-		memcpy(_ppuBuffer, _vdc->GetScreenBuffer(), offset * sizeof(uint16_t));
-		memcpy(_ppuBuffer + offset, _vdc->GetPreviousScreenBuffer() + offset, (size - offset) * sizeof(uint16_t));
+		memcpy(_ppuBuffer, _vpc->GetScreenBuffer(), offset * sizeof(uint16_t));
+		memcpy(_ppuBuffer + offset, _vpc->GetPreviousScreenBuffer() + offset, (size - offset) * sizeof(uint16_t));
 		
-		memcpy(_rowClockDividers, _vdc->GetRowClockDividers(), scanlineOffset);
-		memcpy(_rowClockDividers + scanlineOffset, _vdc->GetPreviousRowClockDividers() + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset));
+		memcpy(_rowClockDividers, _vpc->GetRowClockDividers(), scanlineOffset);
+		memcpy(_rowClockDividers + scanlineOffset, _vpc->GetPreviousRowClockDividers() + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset));
 	}
 
 	_snapshotCurrentFrame = _debugEvents;
@@ -177,7 +178,7 @@ void PceEventManager::DrawScreen(uint32_t *buffer)
 
 		for(uint32_t x = 0; x < PceConstants::ClockPerScanline; x++) {
 			int srcOffset = (scanline * PceConstants::MaxScreenWidth) + (x / divider);
-			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x] = palette[src[srcOffset]];
+			buffer[(y + 14*2) * PceConstants::ClockPerScanline + x] = palette[src[srcOffset] & 0x3FF];
 		}
 	}
 }

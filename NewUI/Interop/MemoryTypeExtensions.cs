@@ -74,8 +74,10 @@ namespace Mesen.Interop
 				case MemoryType.PceCardRam:
 				case MemoryType.PceAdpcmRam:
 				case MemoryType.PceVideoRam:
+				case MemoryType.PceVideoRamVdc2:
 				case MemoryType.PcePaletteRam:
 				case MemoryType.PceSpriteRam:
+				case MemoryType.PceSpriteRamVdc2:
 					return CpuType.Pce;
 
 				default:
@@ -102,8 +104,10 @@ namespace Mesen.Interop
 				case MemoryType.NesPaletteRam:
 
 				case MemoryType.PceVideoRam:
+				case MemoryType.PceVideoRamVdc2:
 				case MemoryType.PcePaletteRam:
 				case MemoryType.PceSpriteRam:
+				case MemoryType.PceSpriteRamVdc2:
 					return true;
 
 				default:
@@ -271,8 +275,10 @@ namespace Mesen.Interop
 				MemoryType.PceCardRam => "Card RAM",
 				MemoryType.PceAdpcmRam => "ADPCM",
 				MemoryType.PceVideoRam => "VRAM",
+				MemoryType.PceVideoRamVdc2 => "VRAM2",
 				MemoryType.PcePaletteRam => "PAL",
-				MemoryType.PceSpriteRam=> "SPR",
+				MemoryType.PceSpriteRam => "SPR",
+				MemoryType.PceSpriteRamVdc2 => "SPR2",
 
 				MemoryType.Register => "REG",
 

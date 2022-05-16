@@ -1814,6 +1814,9 @@
     <ClInclude Include="PCE\PceVce.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceVpc.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1894,6 +1897,7 @@
     <ClCompile Include="PCE\PceVce.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
+    <ClCompile Include="PCE\PceVpc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">

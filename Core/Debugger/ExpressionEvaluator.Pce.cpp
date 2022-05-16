@@ -34,8 +34,8 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 
 int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& resultType)
 {
-	auto ppu = [this]() -> PceVdcState {
-		PceVdcState ppu;
+	auto ppu = [this]() -> PceVideoState {
+		PceVideoState ppu;
 		((PceDebugger*)_cpuDebugger)->GetPpuState(ppu);
 		return ppu;
 	};
@@ -52,13 +52,13 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		/*case EvalValues::Nmi: return ReturnBool(s.NMIFlag, resultType);
 		case EvalValues::Irq:  return ReturnBool(s.IRQFlag, resultType);*/
 
-		case EvalValues::PpuFrameCount: return ppu().FrameCount;
-		case EvalValues::PpuCycle: return ppu().HClock;
-		case EvalValues::PpuScanline: return ppu().Scanline;
+		case EvalValues::PpuFrameCount: return ppu().Vdc.FrameCount;
+		case EvalValues::PpuCycle: return ppu().Vdc.HClock;
+		case EvalValues::PpuScanline: return ppu().Vdc.Scanline;
 
-		case EvalValues::Sprite0Hit: return ReturnBool(ppu().Sprite0Hit, resultType);
-		case EvalValues::SpriteOverflow: return ReturnBool(ppu().SpriteOverflow, resultType);
-		case EvalValues::VerticalBlank: return ReturnBool(ppu().VerticalBlank, resultType);
+		case EvalValues::Sprite0Hit: return ReturnBool(ppu().Vdc.Sprite0Hit, resultType);
+		case EvalValues::SpriteOverflow: return ReturnBool(ppu().Vdc.SpriteOverflow, resultType);
+		case EvalValues::VerticalBlank: return ReturnBool(ppu().Vdc.VerticalBlank, resultType);
 
 		case EvalValues::RegPS_Carry: return ReturnBool(s.PS & PceCpuFlags::Carry, resultType);
 		case EvalValues::RegPS_Zero: return ReturnBool(s.PS & PceCpuFlags::Zero, resultType);

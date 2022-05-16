@@ -144,11 +144,18 @@ namespace Mesen.Debugger.ViewModels
 				};
 			} else if(lastState is PceState pceState) {
 				tabs = new List<RegisterViewerTab>() {
-					GetPceCpuTab(ref pceState),
-					GetPceVdcTab(ref pceState),
-					GetPceVceTab(ref pceState),
-					GetPcePsgTab(ref pceState)
+					GetPceCpuTab(ref pceState)
 				};
+
+				if(pceState.IsSuperGrafx) {
+					tabs.Add(GetPceVdcTab(ref pceState.Video.Vdc, "1"));
+					tabs.Add(GetPceVdcTab(ref pceState.Video.Vdc2, "2"));
+					tabs.Add(GetPceVpcTab(ref pceState));
+				} else {
+					tabs.Add(GetPceVdcTab(ref pceState.Video.Vdc));
+				}
+				tabs.Add(GetPceVceTab(ref pceState));
+				tabs.Add(GetPcePsgTab(ref pceState));
 			}
 
 			if(Tabs.Count != tabs.Count) {
@@ -1136,7 +1143,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetPceVceTab(ref PceState state)
 		{
-			PceVceState vce = state.Vce;
+			PceVceState vce = state.Video.Vce;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("$00.0-1", "CR - Clock Speed", vce.ClockDivider == 4 ? "5.37 MHz" : vce.ClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
@@ -1151,10 +1158,47 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
-		private RegisterViewerTab GetPceVdcTab(ref PceState state)
+		private RegisterViewerTab GetPceVpcTab(ref PceState state)
 		{
-			PceVdcState vdc = state.Vdc;
+			PceVpcState vpc = state.Video.Vpc;
 
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$08.0-3", "Priority Config (Both windows)", null),
+				new RegEntry("$08.0", "VDC1 Enabled", vpc.WindowCfg[3].Vdc1Enabled),
+				new RegEntry("$08.1", "VDC2 Enabled", vpc.WindowCfg[3].Vdc2Enabled),
+				new RegEntry("$08.2-3", "Priority Mode", (vpc.Priority1 >> 2) & 0x03),
+
+				new RegEntry("$08.4-7", "Priority Config (Window 2 only)", null),
+				new RegEntry("$08.4", "VDC1 Enabled", vpc.WindowCfg[2].Vdc1Enabled),
+				new RegEntry("$08.5", "VDC2 Enabled", vpc.WindowCfg[2].Vdc2Enabled),
+				new RegEntry("$08.6-7", "Priority Mode", (vpc.Priority1 >> 6) & 0x03),
+
+				new RegEntry("$09.0-3", "Priority Config (Window 1 only)", null),
+				new RegEntry("$09.0", "VDC1 Enabled", vpc.WindowCfg[1].Vdc1Enabled),
+				new RegEntry("$09.1", "VDC2 Enabled", vpc.WindowCfg[1].Vdc2Enabled),
+				new RegEntry("$09.2-3", "Priority Mode", (vpc.Priority2 >> 2) & 0x03),
+
+				new RegEntry("$09.4-7", "Priority Config (No window)", null),
+				new RegEntry("$09.4", "VDC1 Enabled", vpc.WindowCfg[0].Vdc1Enabled),
+				new RegEntry("$09.5", "VDC2 Enabled", vpc.WindowCfg[0].Vdc2Enabled),
+				new RegEntry("$09.6-7", "Priority Mode", (vpc.Priority2 >> 6) & 0x03),
+
+				new RegEntry("$0A-0D", "Windows", null),
+				new RegEntry("$0A-0B", "Window 1", vpc.Window1, Format.X16),
+				new RegEntry("$0C-0D", "Window 2", vpc.Window2, Format.X16),
+
+				new RegEntry("$0E", "", null),
+				new RegEntry("$0E", "STn writes to VDC2", vpc.StToVdc2Mode),
+			};
+
+			return new RegisterViewerTab() {
+				TabName = "VPC",
+				Data = entries
+			};
+		}
+
+		private RegisterViewerTab GetPceVdcTab(ref PceVdcState vdc, string suffix = "")
+		{
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "State", null),
 				new RegEntry("", "HClock (H)", vdc.HClock, Format.X16),
@@ -1225,7 +1269,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			return new RegisterViewerTab() {
-				TabName = "VDC",
+				TabName = "VDC" + suffix,
 				Data = entries
 			};
 		}
@@ -1296,6 +1340,12 @@ namespace Mesen.Debugger.ViewModels
 				TabName = "PSG",
 				Data = entries
 			};
+		}
+
+		public void OnGameLoaded()
+		{
+			UpdateRomInfo();
+			RefreshData();
 		}
 	}
 

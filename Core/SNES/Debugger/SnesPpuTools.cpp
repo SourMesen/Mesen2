@@ -226,6 +226,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 	sprite.Bpp = 4;
 	sprite.Format = TileFormat::Bpp4;
 	sprite.SpriteIndex = spriteIndex;
+	sprite.UseExtendedVram = false;
 	sprite.X = spriteX;
 	sprite.Y = spriteY;
 	sprite.RawX = sign | oamRam[addr];

@@ -1,31 +1,22 @@
 #include "stdafx.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
+#include "PCE/PceVpc.h"
 #include "PCE/PceMemoryManager.h"
-#include "PCE/PceControlManager.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
-#include "Shared/RewindManager.h"
-#include "Shared/Video/VideoDecoder.h"
-#include "Shared/NotificationManager.h"
 #include "EventType.h"
 
-PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVce* vce)
+PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2)
 {
 	_emu = emu;
 	_console = console;
+	_vpc = vpc;
 	_vce = vce;
 
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
-	
-	_outBuffer[0] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
-	_outBuffer[1] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
-	_currentOutBuffer = _outBuffer[0];
-
-	memset(_outBuffer[0], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
-	memset(_outBuffer[1], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
 
 	_emu->GetSettings()->InitializeRam(_vram, 0x10000);
 	_emu->GetSettings()->InitializeRam(_spriteRam, 0x200);
@@ -40,31 +31,22 @@ PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVce* vce)
 	_state.HvReg.VertDisplayWidth = 239;
 	_state.HvLatch.VertDisplayWidth = 239;
 
-	_emu->RegisterMemory(MemoryType::PceVideoRam, _vram, 0x8000 * sizeof(uint16_t));
-	_emu->RegisterMemory(MemoryType::PceSpriteRam, _spriteRam, 0x100 * sizeof(uint16_t));
+	_isVdc2 = isVdc2;
+	_vramType = isVdc2 ? MemoryType::PceVideoRamVdc2 : MemoryType::PceVideoRam;
+	_spriteRamType = isVdc2 ? MemoryType::PceSpriteRamVdc2 : MemoryType::PceSpriteRam;
+	_emu->RegisterMemory(_vramType, _vram, 0x8000 * sizeof(uint16_t));
+	_emu->RegisterMemory(_spriteRamType, _spriteRam, 0x100 * sizeof(uint16_t));
 }
 
 PceVdc::~PceVdc()
 {
 	delete[] _vram;
 	delete[] _spriteRam;
-	delete[] _outBuffer[0];
-	delete[] _outBuffer[1];
 }
 
 PceVdcState& PceVdc::GetState()
 {
 	return _state;
-}
-
-uint16_t* PceVdc::GetScreenBuffer()
-{
-	return _currentOutBuffer;
-}
-
-uint16_t* PceVdc::GetPreviousScreenBuffer()
-{
-	return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
 }
 
 uint8_t PceVdc::GetClockDivider()
@@ -113,7 +95,9 @@ void PceVdc::Exec()
 		ProcessEndOfScanline();
 	}
 
-	_emu->ProcessPpuCycle<CpuType::Pce>();
+	if(!_isVdc2) {
+		_emu->ProcessPpuCycle<CpuType::Pce>();
+	}
 }
 
 void PceVdc::TriggerHdsIrqs()
@@ -123,7 +107,7 @@ void PceVdc::TriggerHdsIrqs()
 	}
 	if(_hasSpriteOverflow && _state.EnableOverflowIrq) {
 		_state.SpriteOverflow = true;
-		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		_vpc->SetIrq(this);
 	}
 	_hasSpriteOverflow = false;
 }
@@ -559,8 +543,8 @@ void PceVdc::ProcessSatbTransfer()
 
 		int i = _state.SatbTransferOffset;
 		uint16_t value = ReadVram(_state.SatbBlockSrc + i);
-		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, MemoryType::PceSpriteRam);
-		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, MemoryType::PceSpriteRam);
+		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, _spriteRamType);
+		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, _spriteRamType);
 		_spriteRam[i] = value;
 
 		_state.SatbTransferOffset++;
@@ -570,7 +554,7 @@ void PceVdc::ProcessSatbTransfer()
 
 			if(_state.VramSatbIrqEnabled) {
 				_state.SatbTransferDone = true;
-				_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+				_vpc->SetIrq(this);
 			}
 		}
 	}
@@ -612,7 +596,7 @@ void PceVdc::ProcessVramDmaTransfer()
 				_vramDmaRunning = false;
 				if(_state.VramVramIrqEnabled) {
 					_state.VramTransferDone = true;
-					_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+					_vpc->SetIrq(this);
 				}
 			}
 		}
@@ -660,7 +644,7 @@ void PceVdc::IncrementRcrCounter()
 	//This triggers ~12 VDC cycles before the end of the visible part of the scanline
 	if(_state.EnableScanlineIrq && _state.RcrCounter == (int)_state.RasterCompareRegister - 0x40) {
 		_state.ScanlineDetected = true;
-		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		_vpc->SetIrq(this);
 	}
 }
 
@@ -685,18 +669,9 @@ void PceVdc::ProcessEndOfScanline()
 	_state.HClock = 0;
 	_state.Scanline++;
 
-	if(_state.Scanline >= 14 && _state.Scanline < 256) {
-		uint16_t row = _state.Scanline - 14;
-		if(row == 0) {
-			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
-			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
-		}
-		_currentClockDividers[row] = GetClockDivider();
-	}
-
 	if(_state.Scanline == 256) {
 		_state.FrameCount++;
-		SendFrame();
+		_vpc->SendFrame(this);
 	} else if(_state.Scanline >= GetScanlineCount()) {
 		//Update flags that were locked during burst mode
 		_state.Scanline = 0;
@@ -705,8 +680,12 @@ void PceVdc::ProcessEndOfScanline()
 		_state.BackgroundEnabled = _state.NextBackgroundEnabled;
 		_state.SpritesEnabled = _state.NextSpritesEnabled;
 
-		_emu->ProcessEvent(EventType::StartFrame);
+		if(!_isVdc2) {
+			_emu->ProcessEvent(EventType::StartFrame);
+		}
 	}
+
+	_vpc->ProcessScanlineStart(this, _state.Scanline);
 
 	if(_needRcrIncrement) {
 		IncrementRcrCounter();
@@ -756,7 +735,7 @@ void PceVdc::ProcessEndOfVisibleFrame()
 
 	if(_state.EnableVerticalBlankIrq) {
 		_state.VerticalBlank = true;
-		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+		_vpc->SetIrq(this);
 	}
 
 	_needVertBlankIrq = false;
@@ -802,13 +781,13 @@ void PceVdc::DrawScanline()
 
 	if(inPicture && (_state.BackgroundEnabled || _state.SpritesEnabled)) {
 		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
-		bool bgEnabled = _state.BackgroundEnabled && !cfg.DisableBackground;
-		bool sprEnabled = _state.SpritesEnabled && !cfg.DisableSprites;
+		bool bgEnabled = _state.BackgroundEnabled && !(_isVdc2 ? cfg.DisableBackgroundVdc2 : cfg.DisableBackground);
+		bool sprEnabled = _state.SpritesEnabled && !(_isVdc2 ? cfg.DisableSpritesVdc2 : cfg.DisableSprites);
 		uint16_t grayscaleBit = _vce->IsGrayscale() ? 0x200 : 0;
 
 		for(; xStart < xMax; xStart++) {
 			uint8_t bgColor = 0;
-			uint16_t outColor = _vce->GetPalette(0);
+			uint16_t outColor = PceVpc::TransparentPixelFlag | _vce->GetPalette(0);
 			if(bgEnabled) {
 				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
 				uint16_t column = screenX >> 3;
@@ -835,11 +814,11 @@ void PceVdc::DrawScanline()
 								//Note: don't trigger sprite 0 hit for sprites that are drawn because of the "remove sprite limit" option
 								if(_state.EnableCollisionIrq && i < _drawSpriteCount) {
 									_state.Sprite0Hit = true;
-									_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
+									_vpc->SetIrq(this);
 								}
 							} else {
 								if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
-									outColor = _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
+									outColor = PceVpc::SpritePixelFlag | _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
 								}
 							}
 
@@ -871,36 +850,18 @@ void PceVdc::DrawScanline()
 	}
 
 	if(_state.HClock == 1365) {
-		uint32_t offset = (_state.Scanline - 14) * PceConstants::MaxScreenWidth;
-		memcpy(_currentOutBuffer + offset, _rowBuffer, PceConstants::ClockPerScanline / GetClockDivider() * sizeof(uint16_t));
+		_vpc->ProcessScanlineEnd(this, _state.Scanline, _rowBuffer);
 	}
 
 	_xStart = xStart;
 	_lastDrawHClock = _state.HClock / GetClockDivider() * GetClockDivider();
 }
 
-void PceVdc::SendFrame()
-{
-	_emu->ProcessEvent(EventType::EndFrame);
-	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutBuffer);
-
-	bool forRewind = _emu->GetRewindManager()->IsRewinding();
-
-	RenderedFrame frame(_currentOutBuffer, 512, PceConstants::ScreenHeight * 2, 0.5, _state.FrameCount, _console->GetControlManager()->GetPortStates());
-	frame.Data = _currentClockDividers;
-	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
-
-	_emu->ProcessEndOfFrame();
-
-	_console->GetControlManager()->UpdateInputState();
-	_console->GetControlManager()->UpdateControlDevices();
-}
-
 void PceVdc::ProcessVramRead()
 {
 	_state.ReadBuffer = ReadVram(_state.MemAddrRead);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, MemoryType::PceVideoRam);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), MemoryType::PceVideoRam);
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, _vramType);
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), _vramType);
 	_pendingMemoryRead = false;
 }
 
@@ -908,8 +869,8 @@ void PceVdc::ProcessVramWrite()
 {
 	if(_state.MemAddrWrite < 0x8000) {
 		//Ignore writes to mirror at $8000+
-		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, MemoryType::PceVideoRam);
-		_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, _state.VramData, MemoryType::PceVideoRam);
+		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, _vramType);
+		_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, _state.VramData, _vramType);
 		_vram[_state.MemAddrWrite] = _state.VramData;
 		_state.MemAddrWrite += _state.VramAddrIncrement;
 	}
@@ -958,7 +919,7 @@ uint8_t PceVdc::ReadRegister(uint16_t addr)
 			_state.SpriteOverflow = false;
 			_state.Sprite0Hit = false;
 
-			_console->GetMemoryManager()->ClearIrqSource(PceIrqSource::Irq1);
+			_vpc->ClearIrq(this);
 			return result;
 		}
 

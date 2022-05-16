@@ -135,11 +135,6 @@ namespace Mesen.Debugger.ViewModels
 
 			InitForCpuType();
 
-			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
-				InitForCpuType();
-				RefreshData();
-			}));
-
 			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
 				PaletteSelectionMode = GetBitsPerPixel(x) switch {
 					2 => PaletteSelectionMode.FourColors,
@@ -252,10 +247,19 @@ namespace Mesen.Debugger.ViewModels
 					}
 
 				case CpuType.Pce:
-					return new() {
-						new("BG", () => ApplyBgPreset(0)),
-						new("Sprites", () => ApplySpritePreset(0)),
-					};
+					if(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).IsSuperGrafx) {
+						return new() {
+							new("BG1", () => ApplyBgPreset(0)),
+							new("SPR1", () => ApplySpritePreset(0)),
+							new("BG2", () => ApplyBgPreset(1)),
+							new("SPR2", () => ApplySpritePreset(1)),
+						};
+					} else {
+						return new() {
+							new("BG", () => ApplyBgPreset(0)),
+							new("Sprites", () => ApplySpritePreset(0)),
+						};
+					}
 
 				default:
 					throw new Exception("Unsupported CPU type");
@@ -386,7 +390,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				case CpuType.Pce: {
-					Config.Source = MemoryType.PceVideoRam;
+					Config.Source = layer == 0 ?MemoryType.PceVideoRam : MemoryType.PceVideoRamVdc2;
 					Config.StartAddress = 0;
 					Config.ColumnCount = 32;
 					Config.RowCount = 64;
@@ -461,7 +465,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				case CpuType.Pce: {
-					Config.Source = MemoryType.PceVideoRam;
+					Config.Source = layer == 0 ? MemoryType.PceVideoRam : MemoryType.PceVideoRamVdc2;
 					Config.StartAddress = 0;
 					Config.ColumnCount = 32;
 					Config.RowCount = 64;
@@ -576,11 +580,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			_ppuState = DebugApi.GetPpuState(CpuType);
 
-			List<ConfigPreset> presets = GetConfigPresets();
-			if(presets.Count != ConfigPresets.Count) {
-				ConfigPresets = presets;
-			}
-
 			PaletteColors = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
 			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
 			_sourceData = DebugApi.GetMemoryState(Config.Source);
@@ -691,6 +690,12 @@ namespace Mesen.Debugger.ViewModels
 				TileFormat.PceSpriteBpp4 => new PixelSize(16, 16),
 				_ => new PixelSize(8,8),
 			};
+		}
+
+		public void OnGameLoaded()
+		{
+			InitForCpuType();
+			RefreshData();
 		}
 	}
 

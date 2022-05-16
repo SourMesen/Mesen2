@@ -1,11 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/Emulator.h"
+#include "MemoryType.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
 
 class PceConsole;
 class PceVce;
+class PceVpc;
 
 enum class PceVdcModeH
 {
@@ -58,15 +60,10 @@ private:
 	Emulator* _emu = nullptr;
 	PceConsole* _console = nullptr;
 	PceVce* _vce = nullptr;
+	PceVpc* _vpc = nullptr;
 	uint16_t* _vram = nullptr;
 	uint16_t* _spriteRam = nullptr;
-
-	uint16_t* _outBuffer[2] = {};
-	uint16_t* _currentOutBuffer = nullptr;
 	
-	uint8_t _rowVceClockDivider[2][PceConstants::ScreenHeight] = {};
-	uint8_t* _currentClockDividers = nullptr;
-
 	uint16_t _rowBuffer[PceConstants::MaxScreenWidth] = {};
 
 	uint16_t _vramOpenBus = 0;
@@ -109,6 +106,10 @@ private:
 	PceVdcEvent _nextEvent = PceVdcEvent::None;
 	uint16_t _nextEventCounter = 0;
 
+	bool _isVdc2 = false;
+	MemoryType _vramType = MemoryType::PceVideoRam;
+	MemoryType _spriteRamType = MemoryType::PceSpriteRam;
+
 	uint8_t _drawSpriteCount = 0;
 	uint8_t _totalSpriteCount = 0;
 	bool _rowHasSprite0 = false;
@@ -130,8 +131,6 @@ private:
 	void ProcessVramRead();
 	void ProcessVramWrite();
 	__noinline void ProcessVramAccesses();
-
-	void SendFrame();
 
 	uint8_t GetClockDivider();
 	uint16_t GetScanlineCount();
@@ -172,14 +171,10 @@ private:
 	bool IsVramAccessBlocked();
 
 public:
-	PceVdc(Emulator* emu, PceConsole* console, PceVce* vce);
+	PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2);
 	~PceVdc();
 
 	PceVdcState& GetState();
-	uint16_t* GetScreenBuffer();
-	uint16_t* GetPreviousScreenBuffer();
-	uint8_t* GetRowClockDividers() { return _currentClockDividers; }
-	uint8_t* GetPreviousRowClockDividers() { return _currentClockDividers == _rowVceClockDivider[0] ? _rowVceClockDivider[1] : _rowVceClockDivider[0]; }
 
 	uint16_t GetHClock() { return _state.HClock; }
 	uint16_t GetScanline() { return _state.Scanline; }

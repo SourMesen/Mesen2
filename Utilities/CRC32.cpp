@@ -40,6 +40,11 @@ uint32_t CRC32::GetCRC(uint8_t* buffer, std::streamoff length)
 	return crc32_16bytes(buffer, length, 0);
 }
 
+uint32_t CRC32::GetCRC(vector<uint8_t> data)
+{
+	return crc32_16bytes(data.data(), (std::streamoff)data.size(), 0);
+}
+
 uint32_t CRC32::GetCRC(string filename)
 {
 	uint32_t crc = 0;

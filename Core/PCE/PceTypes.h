@@ -212,12 +212,53 @@ struct PcePsgChannelState
 	uint8_t NoiseFrequency;
 };
 
+enum class PceVpcPriorityMode
+{
+	Default = 0,
+	Vdc2SpritesAboveVdc1Bg = 1,
+	Vdc1SpritesBelowVdc2Bg = 2,
+};
+
+enum class PceVpcPixelWindow
+{
+	NoWindow,
+	Window1,
+	Window2,
+	Both
+};
+
+struct PceVpcPriorityConfig
+{
+	PceVpcPriorityMode PriorityMode;
+	bool Vdc1Enabled;
+	bool Vdc2Enabled;
+};
+
+struct PceVpcState
+{
+	PceVpcPriorityConfig WindowCfg[(int)PceVpcPixelWindow::Both + 1];
+	uint8_t Priority1;
+	uint8_t Priority2;
+	uint16_t Window1;
+	uint16_t Window2;
+	bool StToVdc2Mode;
+};
+
+struct PceVideoState : BaseState
+{
+	PceVdcState Vdc;
+	PceVceState Vce;
+	PceVpcState Vpc;
+	PceVdcState Vdc2;
+};
+
 struct PceState
 {
 	PceCpuState Cpu;
-	PceVdcState Vdc;
-	PceVceState Vce;
+	PceVideoState Video;
 	PceMemoryManagerState MemoryManager;
 	PcePsgState Psg;
 	PcePsgChannelState PsgChannels[6];
+
+	bool IsSuperGrafx;
 };

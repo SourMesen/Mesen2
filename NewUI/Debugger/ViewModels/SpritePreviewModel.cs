@@ -31,6 +31,7 @@ namespace Mesen.Debugger.ViewModels
 		
 		[Reactive] public bool HorizontalMirror { get; set; }
 		[Reactive] public bool VerticalMirror { get; set; }
+		[Reactive] public bool UseExtendedVram { get; set; }
 		[Reactive] public NullableBoolean UseSecondTable { get; set; }
 
 		[Reactive] public DynamicBitmap? SpritePreview { get; set; }
@@ -57,6 +58,7 @@ namespace Mesen.Debugger.ViewModels
 			TileAddress = sprite.TileAddress;
 			PaletteAddress = sprite.PaletteAddress;
 			UseSecondTable = sprite.UseSecondTable;
+			UseExtendedVram = sprite.UseExtendedVram;
 
 			fixed(UInt32* p = sprite.SpritePreview) {
 				if(SpritePreview == null || SpritePreview.PixelSize.Width != sprite.Width || SpritePreview.PixelSize.Height != sprite.Height) {

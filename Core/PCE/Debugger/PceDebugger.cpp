@@ -351,7 +351,7 @@ BaseState& PceDebugger::GetState()
 
 void PceDebugger::GetPpuState(BaseState& state)
 {
-	(PceVdcState&)state = _vdc->GetState();
+	(PceVideoState&)state = _console->GetVideoState();
 }
 
 void PceDebugger::SetPpuState(BaseState& state)

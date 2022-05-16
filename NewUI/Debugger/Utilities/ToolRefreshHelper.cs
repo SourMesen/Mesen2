@@ -94,6 +94,7 @@ namespace Mesen.Debugger.Utilities
 					if(!romInfo.CpuTypes.Contains(model.CpuType)) {
 						model.CpuType = romInfo.ConsoleType.GetMainCpuType();
 					}
+					model.OnGameLoaded();
 
 					cfg.UpdateMinMaxValues();
 

@@ -15,7 +15,7 @@ private:
 protected:
 	uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset)
 	{
-		return _calculatedPalette[ppuFrame[offset]];
+		return _calculatedPalette[ppuFrame[offset] & 0x3FF];
 	}
 
 	void InitLookupTable()

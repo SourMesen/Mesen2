@@ -59,7 +59,7 @@ namespace Mesen.Debugger.StatusViews
 		public override void UpdateUiState()
 		{
 			PceCpuState cpu = DebugApi.GetCpuState<PceCpuState>(CpuType.Pce);
-			PceVdcState vdc = DebugApi.GetPpuState<PceVdcState>(CpuType.Pce);
+			PceVideoState video = DebugApi.GetPpuState<PceVideoState>(CpuType.Pce);
 
 			RegA = cpu.A;
 			RegX = cpu.X;
@@ -76,15 +76,14 @@ namespace Mesen.Debugger.StatusViews
 			}
 			StackPreview = sb.ToString();
 
-			Cycle = vdc.HClock;
-			Scanline = vdc.Scanline;
-			FrameCount = vdc.FrameCount;
+			Cycle = video.Vdc.HClock;
+			Scanline = video.Vdc.Scanline;
+			FrameCount = video.Vdc.FrameCount;
 		}
 
 		public override void UpdateConsoleState()
 		{
 			PceCpuState cpu = DebugApi.GetCpuState<PceCpuState>(CpuType.Pce);
-			PceVdcState ppu = DebugApi.GetPpuState<PceVdcState>(CpuType.Pce);
 
 			cpu.A = RegA;
 			cpu.X = RegX;
@@ -93,11 +92,7 @@ namespace Mesen.Debugger.StatusViews
 			cpu.PC = RegPC;
 			cpu.PS = RegPS;
 
-			ppu.HClock = Cycle;
-			ppu.Scanline = Scanline;
-
 			DebugApi.SetCpuState(cpu, CpuType.Pce);
-			DebugApi.SetPpuState(ppu, CpuType.Pce);
 		}
 	}
 }

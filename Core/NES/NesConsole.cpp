@@ -106,6 +106,7 @@ void NesConsole::Stop()
 void NesConsole::Reset()
 {
 	_memoryManager->Reset(true);
+	//TODO option to not reset ppu on reset
 	_ppu->Reset();
 	_apu->Reset(true);
 	_cpu->Reset(true, ConsoleRegion::Ntsc);
