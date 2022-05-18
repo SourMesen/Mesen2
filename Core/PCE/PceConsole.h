@@ -10,6 +10,7 @@ class PcePsg;
 class PceCdRom;
 class PceMemoryManager;
 class PceControlManager;
+class IPceMapper;
 class Emulator;
 struct PceVideoState;
 enum class PceConsoleType;
@@ -28,8 +29,10 @@ private:
 	unique_ptr<PceMemoryManager> _memoryManager;
 	unique_ptr<PceControlManager> _controlManager;
 	unique_ptr<PceCdRom> _cdrom;
+	unique_ptr<IPceMapper> _mapper;
 	
-	PceConsoleType GetRomConsoleType(vector<uint8_t>& romData);
+	static bool IsPopulousCard(uint32_t crc32);
+	static bool IsSuperGrafxCard(uint32_t crc32);
 
 public:
 	PceConsole(Emulator* emu);

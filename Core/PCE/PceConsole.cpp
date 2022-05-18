@@ -11,6 +11,9 @@
 #include "PCE/PceVpc.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceConstants.h"
+#include "PCE/IPceMapper.h"
+#include "PCE/PceArcadeCard.h"
+#include "PCE/PceSf2RomMapper.h"
 #include "Utilities/CRC32.h"
 #include "MemoryType.h"
 #include "FirmwareHelper.h"
@@ -42,6 +45,8 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	PceConsoleType consoleType = cfg.ConsoleType;
 
 	vector<uint8_t> romData;
+	uint32_t crc32 = 0;
+
 	if(romFile.GetFileExtension() == ".cue") {
 		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
 			return LoadRomResult::Failure;
@@ -55,19 +60,35 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 		_cdrom.reset(new PceCdRom(_emu, this, disc));
 	} else {
 		romFile.ReadFile(romData);
+		crc32 = CRC32::GetCRC(romData);
 		if((romData.size() % 0x2000) == 512) {
 			//File probably has header, discard it
 			romData.erase(romData.begin(), romData.begin() + 512);
 		}
 
-		if(consoleType == PceConsoleType::Auto) {
-			consoleType = GetRomConsoleType(romData);
+		if(consoleType == PceConsoleType::Auto && IsSuperGrafxCard(crc32)) {
+			consoleType = PceConsoleType::SuperGrafx;
 		}
 
 		if(cfg.EnableCdRomForHuCardGames) {
 			DiscInfo emptyDisc = {};
 			_cdrom.reset(new PceCdRom(_emu, this, emptyDisc));
 		}
+	}
+
+	uint32_t cardRamSize = 0;
+	if(_cdrom) {
+		if(cfg.CdRomType == PceCdRomType::Arcade) {
+			_mapper.reset(new PceArcadeCard(_emu));
+		}
+		if(cfg.CdRomType == PceCdRomType::SuperCdRom || cfg.CdRomType == PceCdRomType::Arcade) {
+			cardRamSize = 0x30000;
+		}
+	} else if(romData.size() > 0x80 * 0x2000) {
+		//For ROMs over 1MB, assume this is the SF2 board
+		_mapper.reset(new PceSf2RomMapper(this));
+	} else if(IsPopulousCard(crc32)) {
+		cardRamSize = 0x8000;
 	}
 
 	_controlManager.reset(new PceControlManager(_emu));
@@ -82,7 +103,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	_vpc->ConnectVdc(_vdc.get(), _vdc2.get());
 
 	_psg.reset(new PcePsg(_emu));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _cdrom.get(), romData));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize));
 	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -92,15 +113,15 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	return LoadRomResult::Success;
 }
 
-PceConsoleType PceConsole::GetRomConsoleType(vector<uint8_t>& romData)
+bool PceConsole::IsPopulousCard(uint32_t crc32)
 {
-	uint32_t crc32 = CRC32::GetCRC(romData);
-	if(crc32 == 0xB486A8ED || crc32 == 0x1F041166 || crc32 == 0x3B13AF61 || crc32 == 0x4C2126B0 || crc32 == 0x8C4588E2) {
-		//These are the 5 SuperGrafx-exclusive games
-		return PceConsoleType::SuperGrafx;
-	}
+	return crc32 == 0x083C956A;
+}
 
-	return PceConsoleType::TurboGrafx;
+bool PceConsole::IsSuperGrafxCard(uint32_t crc32)
+{
+	//These are the 5 SuperGrafx-exclusive games
+	return crc32 == 0xB486A8ED || crc32 == 0x1F041166 || crc32 == 0x3B13AF61 || crc32 == 0x4C2126B0 || crc32 == 0x8C4588E2;
 }
 
 void PceConsole::Init()

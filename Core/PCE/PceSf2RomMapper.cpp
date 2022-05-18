@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "PCE/PceSf2RomMapper.h"
+#include "PCE/PceConsole.h"
 #include "PCE/PceMemoryManager.h"
 
-PceSf2RomMapper::PceSf2RomMapper(PceMemoryManager* memoryManager)
+PceSf2RomMapper::PceSf2RomMapper(PceConsole* console)
 {
-	_memoryManager = memoryManager;
+	_console = console;
 }
 
 void PceSf2RomMapper::Write(uint8_t bank, uint16_t addr, uint8_t value)
@@ -20,6 +21,6 @@ void PceSf2RomMapper::Write(uint8_t bank, uint16_t addr, uint8_t value)
 			0x70u + (_selectedBank * 0x40)
 		};
 
-		_memoryManager->UpdateMappings(bankOffsets);
+		_console->GetMemoryManager()->UpdateMappings(bankOffsets);
 	}
 }

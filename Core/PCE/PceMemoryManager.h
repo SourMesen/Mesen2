@@ -8,8 +8,6 @@
 #include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/IPceMapper.h"
-#include "PCE/PceArcadeCard.h"
-#include "PCE/PceSf2RomMapper.h"
 #include "PCE/PceCdRom.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/BatteryManager.h"
@@ -33,7 +31,7 @@ private:
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
 	PceCdRom* _cdrom = nullptr;
-	unique_ptr<IPceMapper> _mapper;
+	IPceMapper* _mapper;
 	unique_ptr<PceTimer> _timer;
 
 	PceMemoryManagerState _state = {};
@@ -52,6 +50,8 @@ private:
 
 	uint8_t* _cardRam = nullptr;
 	uint32_t _cardRamSize = 0;
+	uint32_t _cardRamStartBank = 0;
+	uint32_t _cardRamEndBank = 0;
 	
 	uint8_t* _saveRam = nullptr;
 	uint32_t _saveRamSize = 0;
@@ -59,7 +59,7 @@ private:
 	uint8_t* _unmappedBank = nullptr;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceCdRom* cdrom, vector<uint8_t> romData)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, IPceMapper* mapper, PceCdRom* cdrom, vector<uint8_t>& romData, uint32_t cardRamSize)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
@@ -67,6 +67,7 @@ public:
 		_vpc = vpc;
 		_vce = vce;
 		_psg = psg;
+		_mapper = mapper;
 		_cdrom = cdrom;
 		_controlManager = controlManager;
 		_prgRomSize = (uint32_t)romData.size();
@@ -107,13 +108,23 @@ public:
 			_cdromRam = new uint8_t[_cdromRamSize];
 			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
+		}
 
-			if(cfg.CdRomType == PceCdRomType::SuperCdRom || cfg.CdRomType == PceCdRomType::Arcade) {
-				_cardRamSize = 0x30000;
-				_cardRam = new uint8_t[_cardRamSize];
-				_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
-				_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
+		if(cardRamSize > 0) {
+			if(cardRamSize == 0x30000) {
+				//Super/Arcade CD-ROM
+				_cardRamStartBank = 0x68;
+				_cardRamEndBank = 0x7F;
+			} else if(cardRamSize == 0x8000) {
+				//Populous
+				_cardRamStartBank = 0x40;
+				_cardRamEndBank = 0x5F;
 			}
+
+			_cardRamSize = cardRamSize;
+			_cardRam = new uint8_t[cardRamSize];
+			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
+			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
@@ -155,13 +166,6 @@ public:
 			//Use default mirroring for anything else
 			uint32_t bankOffsets[8] = { 0, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70 };
 			UpdateMappings(bankOffsets);
-		}
-
-		if(_cdrom && cfg.CdRomType == PceCdRomType::Arcade) {
-			_mapper.reset(new PceArcadeCard(emu));
-		} else if(_prgRomSize > 0x80 * 0x2000) {
-			//For ROMs over 1MB, assume this is the SF2 board
-			_mapper.reset(new PceSf2RomMapper(this));
 		}
 	}
 
@@ -215,19 +219,21 @@ public:
 			_bankMemType[0xF8 + i] = MemoryType::PceWorkRam;
 		}
 
-		if(_cdrom) {
+		if(_cdromRam) {
 			for(int i = 0; i < 8; i++) {
 				//80 - 87
-				_readBanks[0x80 + i] = _cdromRam + (i * 0x2000);
-				_writeBanks[0x80 + i] = _cdromRam + (i * 0x2000);
+				_readBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
+				_writeBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
 				_bankMemType[0x80 + i] = MemoryType::PceCdromRam;
 			}
+		}
 
-			for(int i = 0; i < 0x18; i++) {
-				//68 - 7F
-				_readBanks[0x68 + i] = _cardRam + (i * 0x2000);
-				_writeBanks[0x68 + i] = _cardRam + (i * 0x2000);
-				_bankMemType[0x68 + i] = MemoryType::PceCardRam;
+		if(_cardRam) {
+			for(uint32_t i = _cardRamStartBank; i < _cardRamEndBank; i++) {
+				//68-7F (cdrom) or 40-5F (populous)
+				_readBanks[i] = _cardRam + (((i - _cardRamStartBank) * 0x2000) % _cardRamSize);
+				_writeBanks[i] = _cardRam + (((i - _cardRamStartBank) * 0x2000) % _cardRamSize);
+				_bankMemType[i] = MemoryType::PceCardRam;
 			}
 		}
 
