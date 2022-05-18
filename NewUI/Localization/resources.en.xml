@@ -1766,7 +1766,7 @@
 		<Enum ID="PceCdRomType">
 			<Value ID="CdRom">CD-ROM²</Value>
 			<Value ID="SuperCdRom">Super CD-ROM²</Value>
-			<Value ID="Arcade">Arcade CD-ROM²</Value>
+			<Value ID="Arcade">Arcade CD-ROM² (recommended)</Value>
 		</Enum>
 		<Enum ID="RamState">
 			<Value ID="Random">Random Values (Default)</Value>
@@ -1892,6 +1892,7 @@
 			<Value ID="PceCdromRam">CD-ROM RAM</Value>
 			<Value ID="PceCardRam">Card RAM</Value>
 			<Value ID="PceAdpcmRam">ADPCM RAM</Value>
+			<Value ID="PceArcadeCardRam">Arcade Card RAM</Value>
 			<Value ID="PceVideoRam">Video RAM</Value>
 			<Value ID="PceVideoRamVdc2">Video RAM (VDC2)</Value>
 			<Value ID="PcePaletteRam">Palette RAM</Value>

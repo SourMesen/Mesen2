@@ -503,6 +503,7 @@ namespace Mesen.Interop
 		PceCdromRam,
 		PceCardRam,
 		PceAdpcmRam,
+		PceArcadeCardRam,
 		PceVideoRam,
 		PceVideoRamVdc2,
 		PceSpriteRam,

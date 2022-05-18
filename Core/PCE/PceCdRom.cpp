@@ -152,10 +152,13 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x0C: case 0x0D: case 0x0E: case 0x0F:
 			return _adpcm.Read(addr);
 
-		case 0xC0: return 0x00;
-		case 0xC1: return 0xAA;
-		case 0xC2: return 0x55;
-		case 0xC3: return 0x03;
+		case 0xC0: case 0xC1: case 0xC2: case 0xC3: 
+			if(_emu->GetSettings()->GetPcEngineConfig().CdRomType == PceCdRomType::CdRom) {
+				return 0xFF;
+			} else {
+				constexpr uint8_t superCdRomSignature[4] = { 0x00, 0xAA, 0x55, 0x03 };
+				return superCdRomSignature[addr & 0x03];
+			}
 
 		default:
 			LogDebug("Read unknown CDROM register: " + HexUtilities::ToHex(addr));

@@ -7,6 +7,8 @@
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
+#include "PCE/IPceMapper.h"
+#include "PCE/PceArcadeCard.h"
 #include "PCE/PceSf2RomMapper.h"
 #include "PCE/PceCdRom.h"
 #include "Debugger/DebugTypes.h"
@@ -31,7 +33,7 @@ private:
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
 	PceCdRom* _cdrom = nullptr;
-	unique_ptr<PceSf2RomMapper> _mapper;
+	unique_ptr<IPceMapper> _mapper;
 	unique_ptr<PceTimer> _timer;
 
 	PceMemoryManagerState _state = {};
@@ -103,14 +105,15 @@ public:
 		if(_cdrom) {
 			_cdromRamSize = 0x10000;
 			_cdromRam = new uint8_t[_cdromRamSize];
-
-			_cardRamSize = 0x30000;
-			_cardRam = new uint8_t[_cardRamSize];
-
 			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
-			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
-			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
+
+			if(cfg.CdRomType == PceCdRomType::SuperCdRom || cfg.CdRomType == PceCdRomType::Arcade) {
+				_cardRamSize = 0x30000;
+				_cardRam = new uint8_t[_cardRamSize];
+				_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
+				_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
+			}
 		}
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
@@ -154,7 +157,9 @@ public:
 			UpdateMappings(bankOffsets);
 		}
 
-		if(_prgRomSize > 0x80 * 0x2000) {
+		if(_cdrom && cfg.CdRomType == PceCdRomType::Arcade) {
+			_mapper.reset(new PceArcadeCard(emu));
+		} else if(_prgRomSize > 0x80 * 0x2000) {
 			//For ROMs over 1MB, assume this is the SF2 board
 			_mapper.reset(new PceSf2RomMapper(this));
 		}
@@ -327,6 +332,11 @@ public:
 		} else {
 			value = ReadRegister(addr & 0x1FFF);
 		}
+
+		if(_mapper) {
+			value = _mapper->Read(bank, addr, value);
+		}
+
 		if(_cheatManager->HasCheats<CpuType::Pce>()) {
 			_cheatManager->ApplyCheat<CpuType::Pce>((bank << 13) | (addr & 0x1FFF), value);
 		}
@@ -349,11 +359,11 @@ public:
 	{
 		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);
 		
+		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		if(_mapper) {
-			_mapper->Write(addr, value);
+			_mapper->Write(bank, addr, value);
 		}
 
-		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
 		addr &= 0x1FFF;
 		if(bank != 0xFF) {
 			if(_writeBanks[bank]) {

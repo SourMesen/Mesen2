@@ -1,9 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include "PCE/IPceMapper.h"
 
 class PceMemoryManager;
 
-class PceSf2RomMapper
+class PceSf2RomMapper : public IPceMapper
 {
 private:
 	uint8_t _selectedBank = 0;
@@ -11,5 +12,5 @@ private:
 
 public:
 	PceSf2RomMapper(PceMemoryManager* memoryManager);
-	void Write(uint16_t addr, uint8_t value);
+	void Write(uint8_t bank, uint16_t addr, uint8_t value) override;
 };

@@ -252,6 +252,37 @@ struct PceVideoState : BaseState
 	PceVdcState Vdc2;
 };
 
+enum class PceArcadePortOffsetTrigger
+{
+	None = 0,
+	AddOnLowWrite = 1,
+	AddOnHighWrite = 2,
+	AddOnReg0AWrite = 3,
+};
+
+struct PceArcadeCardPortConfig
+{
+	uint32_t BaseAddress;
+	uint16_t Offset;
+	uint16_t IncValue;
+
+	uint8_t Control;
+	bool AutoIncrement;
+	bool AddOffset;
+	bool SignedIncrement; //unused?
+	bool SignedOffset;
+	bool AddIncrementToBase;
+	PceArcadePortOffsetTrigger AddOffsetTrigger;
+};
+
+struct PceArcadeCardState
+{
+	PceArcadeCardPortConfig Port[4];
+	uint32_t ValueReg;
+	uint8_t ShiftReg;
+	uint8_t RotateReg;
+};
+
 struct PceState
 {
 	PceCpuState Cpu;

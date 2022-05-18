@@ -73,6 +73,7 @@ namespace Mesen.Interop
 				case MemoryType.PceCdromRam:
 				case MemoryType.PceCardRam:
 				case MemoryType.PceAdpcmRam:
+				case MemoryType.PceArcadeCardRam:
 				case MemoryType.PceVideoRam:
 				case MemoryType.PceVideoRamVdc2:
 				case MemoryType.PcePaletteRam:
@@ -274,6 +275,7 @@ namespace Mesen.Interop
 				MemoryType.PceCdromRam => "CDRAM",
 				MemoryType.PceCardRam => "Card RAM",
 				MemoryType.PceAdpcmRam => "ADPCM",
+				MemoryType.PceArcadeCardRam => "ARC",
 				MemoryType.PceVideoRam => "VRAM",
 				MemoryType.PceVideoRamVdc2 => "VRAM2",
 				MemoryType.PcePaletteRam => "PAL",

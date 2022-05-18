@@ -109,6 +109,7 @@ public:
 			case MemoryType::PceCdromRam:
 			case MemoryType::PceCardRam:
 			case MemoryType::PceAdpcmRam:
+			case MemoryType::PceArcadeCardRam:
 			case MemoryType::PceVideoRam:
 			case MemoryType::PceVideoRamVdc2:
 			case MemoryType::PcePaletteRam:

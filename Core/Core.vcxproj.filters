@@ -1817,6 +1817,12 @@
     <ClInclude Include="PCE\PceVpc.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\IPceMapper.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\PceArcadeCard.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1898,6 +1904,9 @@
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceVpc.cpp" />
+    <ClCompile Include="PCE\PceArcadeCard.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">

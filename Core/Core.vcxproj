@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PCE\IPceMapper.h" />
+    <ClInclude Include="PCE\PceArcadeCard.h" />
     <ClInclude Include="PCE\PceVpc.h" />
     <ClInclude Include="PCE\Input\PceAvenuePad6.h" />
     <ClInclude Include="PCE\Input\PceTurboTap.h" />
@@ -456,6 +458,7 @@
     <ClCompile Include="PCE\Debugger\PceVdcTools.cpp" />
     <ClCompile Include="PCE\Debugger\PceTraceLogger.cpp" />
     <ClCompile Include="PCE\PceAdpcm.cpp" />
+    <ClCompile Include="PCE\PceArcadeCard.cpp" />
     <ClCompile Include="PCE\PceCdAudioPlayer.cpp" />
     <ClCompile Include="PCE\PceCdRom.cpp" />
     <ClCompile Include="PCE\PceConsole.cpp" />

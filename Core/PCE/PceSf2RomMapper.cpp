@@ -7,7 +7,7 @@ PceSf2RomMapper::PceSf2RomMapper(PceMemoryManager* memoryManager)
 	_memoryManager = memoryManager;
 }
 
-void PceSf2RomMapper::Write(uint16_t addr, uint8_t value)
+void PceSf2RomMapper::Write(uint8_t bank, uint16_t addr, uint8_t value)
 {
 	if((addr & 0x1FFC) == 0x1FF0) {
 		_selectedBank = addr & 0x03;
