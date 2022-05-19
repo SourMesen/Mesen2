@@ -96,7 +96,7 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState,
 		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, *(GbCpuState*)cpuState);
 
 		case CpuType::Nes: return NesDisUtils::GetEffectiveAddress(*this, *(NesCpuState*)cpuState, debugger->GetMemoryDumper());
-		case CpuType::Pce: return PceDisUtils::GetEffectiveAddress(*this, *(PceCpuState*)cpuState, debugger->GetMemoryDumper());
+		case CpuType::Pce: return PceDisUtils::GetEffectiveAddress(*this, (PceConsole*)debugger->GetConsole(), *(PceCpuState*)cpuState);
 	}
 
 	throw std::runtime_error("GetEffectiveAddress - Unsupported CPU type");

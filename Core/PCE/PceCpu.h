@@ -10,7 +10,6 @@
 #include "MemoryOperationType.h"
 
 class Emulator;
-class PceConsole;
 class PceMemoryManager;
 
 class PceCpu
@@ -31,7 +30,6 @@ private:
 	static PceAddrMode const _addrMode[256];
 
 	Emulator* _emu;
-	PceConsole* _console;
 	PceMemoryManager* _memoryManager;
 
 	PceCpuState _state;
@@ -294,13 +292,11 @@ private:
 	void ProcessIrq(bool forBrk);
 
 public:
-	PceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManager);
+	PceCpu(Emulator* emu, PceMemoryManager* memoryManager);
 
 	PceCpuState& GetState() { return _state; }
 
 	void Exec();
-
-	
 
 #ifdef DUMMYCPU
 private:

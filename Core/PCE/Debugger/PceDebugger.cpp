@@ -45,7 +45,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
 
-	_dummyCpu.reset(new DummyPceCpu(_emu, _console, _memoryManager));
+	_dummyCpu.reset(new DummyPceCpu(_emu, _memoryManager));
 
 	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce));
 

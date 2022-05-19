@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "PCE/Debugger/PceDisUtils.h"
+#include "PCE/Debugger/DummyPceCpu.h"
+#include "PCE/PceConsole.h"
 #include "PCE/PceTypes.h"
 #include "Shared/EmuSettings.h"
 #include "Debugger/DisassemblyInfo.h"
@@ -83,8 +85,7 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	};
 
 	auto writeZeroAddr = [&str, &info, &writeLabelOrAddr, labelManager](uint8_t zero) {
-		uint16_t addr = 0x2000 + zero;
-		writeLabelOrAddr(addr);
+		str.WriteAll('$', HexUtilities::ToHex(zero));
 	};
 
 	switch(addrMode) {
@@ -173,44 +174,38 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& state, MemoryDumper* memoryDumper)
+int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state)
 {
-	uint8_t* byteCode = info.GetByteCode();
 	switch(_opMode[info.GetOpCode()]) {
 		default: break;
 
-		case PceAddrMode::ZeroX: return (uint8_t)(byteCode[1] + state.X); break;
-		case PceAddrMode::ZeroY: return (uint8_t)(byteCode[1] + state.Y); break;
-
-		case PceAddrMode::IndX: {
-			uint8_t zeroAddr = byteCode[1] + state.X;
-			return memoryDumper->GetMemoryValue(MemoryType::PceMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::PceMemory, (uint8_t)(zeroAddr + 1)) << 8;
-		}
-
-		case PceAddrMode::IndY: {
-			uint8_t zeroAddr = byteCode[1];
-			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::PceMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::PceMemory, (uint8_t)(zeroAddr + 1)) << 8;
-			return (uint16_t)(addr + state.Y);
-		}
-
-		case PceAddrMode::Ind: {
-			uint16_t addr = byteCode[1] | (byteCode[2] << 8);
-			if((addr & 0xFF) == 0xFF) {
-				//CPU bug when indirect address starts at the end of a page
-				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr);
-				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr & 0xFF00);
-				return lo | (hi << 8);
-			} else {
-				return memoryDumper->GetMemoryValue(MemoryType::PceMemory, addr);
-			}
-		}
-	
+		case PceAddrMode::Zero:
+		case PceAddrMode::ZeroX:
+		case PceAddrMode::ZeroY:
+		case PceAddrMode::IndX:
+		case PceAddrMode::IndY:
+		case PceAddrMode::Ind:	
 		case PceAddrMode::AbsX:
 		case PceAddrMode::AbsXInd:
-			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.X) & 0xFFFF;
-
 		case PceAddrMode::AbsY:
-			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.Y) & 0xFFFF;
+		case PceAddrMode::ZInd:
+		case PceAddrMode::ZeroRel:
+		case PceAddrMode::ImZero:
+		case PceAddrMode::ImZeroX:
+		case PceAddrMode::ImAbs:
+		case PceAddrMode::ImAbsX:
+			DummyPceCpu pceCpu(nullptr, console->GetMemoryManager());
+			pceCpu.SetDummyState(state);
+			pceCpu.Exec();
+
+			uint32_t count = pceCpu.GetOperationCount();
+			for(int i = count - 1; i > 0; i--) {
+				MemoryOperationInfo opInfo = pceCpu.GetOperationInfo(i);
+				if(opInfo.Type != MemoryOperationType::ExecOperand) {
+					return opInfo.Address;
+				}
+			}
+			break;
 	}
 
 	return -1;

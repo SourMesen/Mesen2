@@ -8,10 +8,9 @@
 #undef PceCpu
 #undef DUMMYCPU
 
-DummyPceCpu::DummyPceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManager)
+DummyPceCpu::DummyPceCpu(Emulator* emu, PceMemoryManager* memoryManager)
 {
 	_emu = emu;
-	_console = console;
 	_memoryManager = memoryManager;
 }
 

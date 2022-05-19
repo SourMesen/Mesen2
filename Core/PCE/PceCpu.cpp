@@ -48,10 +48,9 @@ PceAddrMode const PceCpu::_addrMode[] = {
 };
 
 #ifndef DUMMYCPU
-PceCpu::PceCpu(Emulator* emu, PceConsole* console, PceMemoryManager* memoryManager)
+PceCpu::PceCpu(Emulator* emu, PceMemoryManager* memoryManager)
 {
 	_emu = emu;
-	_console = console;
 	_memoryManager = memoryManager;
 
 	_instAddrMode = PceAddrMode::None;

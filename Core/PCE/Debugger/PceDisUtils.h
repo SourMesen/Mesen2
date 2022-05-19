@@ -5,6 +5,7 @@ class DisassemblyInfo;
 class LabelManager;
 class MemoryDumper;
 class EmuSettings;
+class PceConsole;
 struct PceCpuState;
 enum class PceAddrMode;
 
@@ -15,7 +16,7 @@ private:
 
 public:
 	static void GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings);
-	static int32_t GetEffectiveAddress(DisassemblyInfo& info, PceCpuState& state, MemoryDumper* memoryDumper);
+	static int32_t GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state);
 
 	static uint8_t GetOpSize(uint8_t opCode);
 	static char const* const GetOpName(uint8_t opCode);

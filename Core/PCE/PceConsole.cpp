@@ -104,7 +104,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 	_psg.reset(new PcePsg(_emu));
 	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize));
-	_cpu.reset(new PceCpu(_emu, this, _memoryManager.get()));
+	_cpu.reset(new PceCpu(_emu, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
 	MessageManager::Log("Loaded: " + romFile.GetFileName());
