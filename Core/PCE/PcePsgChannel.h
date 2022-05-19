@@ -3,17 +3,23 @@
 #include "PCE/PceTypes.h"
 #include "Utilities/RandomHelper.h"
 
+class PcePsg;
+
 class PcePsgChannel
 {
 private:
 	PcePsgChannelState _state = {};
+	PcePsg* _psg = nullptr;
+	uint8_t _chIndex = 0;
 	uint8_t _noiseData[0x1000];
 	uint16_t _noiseAddr = 0;
 
-	uint16_t GetPeriod();
+	uint32_t GetPeriod();
 
 public:
 	PcePsgChannel();
+
+	void Init(uint8_t index, PcePsg* psg);
 
 	PcePsgChannelState& GetState() { return _state; }
 

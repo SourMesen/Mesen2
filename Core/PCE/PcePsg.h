@@ -33,6 +33,10 @@ public:
 	PcePsg(Emulator* emu);
 	~PcePsg();
 
+	bool IsLfoEnabled();
+	uint16_t GetLfoFrequency();
+	uint32_t GetLfoCh1PeriodOffset();
+
 	PcePsgState& GetState() { return _state; }
 	PcePsgChannelState& GetChannelState(uint8_t ch) { return _channels[ch].GetState(); }
 

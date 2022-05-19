@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "PcePsgChannel.h"
+#include "PCE/PcePsgChannel.h"
+#include "PCE/PcePsg.h"
 
 PcePsgChannel::PcePsgChannel()
 {
@@ -8,7 +9,13 @@ PcePsgChannel::PcePsgChannel()
 	}
 }
 
-uint16_t PcePsgChannel::GetPeriod()
+void PcePsgChannel::Init(uint8_t index, PcePsg* psg)
+{
+	_chIndex = index;
+	_psg = psg;
+}
+
+uint32_t PcePsgChannel::GetPeriod()
 {
 	if(_state.DdaEnabled) {
 		return 0;
@@ -19,10 +26,22 @@ uint16_t PcePsgChannel::GetPeriod()
 			return ((~_state.NoiseFrequency) & 0x1F) * 128;
 		}
 	} else {
-		if(_state.Frequency == 0) {
-			return 0xFFF + 1;
+		uint32_t period = _state.Frequency;
+
+		if(_chIndex == 0 && _psg->IsLfoEnabled()) {
+			//When enabled, LFO alters channel 1's frequency/period
+			period = (period + _psg->GetLfoCh1PeriodOffset()) & 0xFFF;
 		}
-		return _state.Frequency;
+
+		period = period ? period : 0x1000;
+
+		if(_chIndex == 1 && _psg->IsLfoEnabled()) {
+			//When enabled, LFO acts as a clock divider for channel 2
+			//which reduces its frequency (increases its period)
+			period *= _psg->GetLfoFrequency();
+		}
+
+		return period;
 	}
 }
 
@@ -30,7 +49,7 @@ void PcePsgChannel::Run(uint32_t clocks)
 {
 	if(_state.Enabled) {
 		if(_state.DdaEnabled) {
-			_state.CurrentOutput = (int16_t)_state.DdaOutputValue - 0x10;
+			_state.CurrentOutput = (int8_t)_state.DdaOutputValue - 0x10;
 		} else {
 			_state.Timer -= clocks;
 
@@ -44,9 +63,9 @@ void PcePsgChannel::Run(uint32_t clocks)
 			}
 
 			if(_state.NoiseEnabled) {
-				_state.CurrentOutput = (int16_t)_noiseData[_noiseAddr] - 0x10;
+				_state.CurrentOutput = (int8_t)_noiseData[_noiseAddr] - 0x10;
 			} else {
-				_state.CurrentOutput = (int16_t)_state.WaveData[_state.ReadAddr] - 0x10;
+				_state.CurrentOutput = (int8_t)_state.WaveData[_state.ReadAddr] - 0x10;
 			}
 		}
 	} else {
@@ -65,7 +84,7 @@ int16_t PcePsgChannel::GetOutput(bool forLeftChannel, uint8_t masterVolume)
 		return 0;
 	}
 
-	return _state.CurrentOutput * volumeReduction[reductionFactor];
+	return (int16_t)_state.CurrentOutput * volumeReduction[reductionFactor];
 }
 
 uint16_t PcePsgChannel::GetTimer()

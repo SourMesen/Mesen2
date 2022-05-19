@@ -1449,8 +1449,8 @@ namespace Mesen.Interop
 
 		public byte WriteAddr;
 		public byte ReadAddr;
-		public UInt16 Timer;
-		public Int16 CurrentOutput;
+		public UInt32 Timer;
+		public byte CurrentOutput;
 
 		//Channel 5 & 6 only
 		[MarshalAs(UnmanagedType.I1)] public bool NoiseEnabled;

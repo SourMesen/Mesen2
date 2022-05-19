@@ -204,8 +204,8 @@ struct PcePsgChannelState
 
 	uint8_t WriteAddr;
 	uint8_t ReadAddr;
-	uint16_t Timer;
-	int16_t CurrentOutput;
+	uint32_t Timer;
+	int8_t CurrentOutput;
 
 	//Channel 5 & 6 only
 	bool NoiseEnabled;

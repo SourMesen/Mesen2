@@ -14,6 +14,10 @@ PcePsg::PcePsg(Emulator* emu)
 	_soundBuffer = new int16_t[PcePsg::MaxSamples * 2];
 	memset(_soundBuffer, 0, PcePsg::MaxSamples * 2 * sizeof(int16_t));
 
+	for(int i = 0; i < 6; i++) {
+		_channels[i].Init(i, this);
+	}
+
 	_leftChannel = blip_new(PcePsg::MaxSamples);
 	_rightChannel = blip_new(PcePsg::MaxSamples);
 
@@ -29,6 +33,26 @@ PcePsg::~PcePsg()
 	blip_delete(_leftChannel);
 	blip_delete(_rightChannel);
 	delete[] _soundBuffer;
+}
+
+bool PcePsg::IsLfoEnabled()
+{
+	return (_state.LfoControl & 0x80) == 0 && (_state.LfoControl & 0x03);
+}
+
+uint16_t PcePsg::GetLfoFrequency()
+{
+	return _state.LfoFrequency ? _state.LfoFrequency : 0x100;
+}
+
+uint32_t PcePsg::GetLfoCh1PeriodOffset()
+{
+	//When LFO is enabled, the period of channel 1 is altered
+	//based on channel's 2 current output, multiplied by either 1, 4 or 16
+	//depending on the value in the lower 2 bits of the LFO's control register
+	int shift = ((_state.LfoControl & 0x03) - 1) * 2;
+	int8_t ch2Out = _channels[1].GetState().CurrentOutput;
+	return (uint32_t)(ch2Out << shift);
 }
 
 void PcePsg::Write(uint16_t addr, uint8_t value)
@@ -57,7 +81,6 @@ void PcePsg::Write(uint16_t addr, uint8_t value)
 			}
 			break;
 
-		//TODO, LFO is not implemented
 		case 8: _state.LfoFrequency = value; break;
 		case 9: _state.LfoControl = value; break;
 	}
