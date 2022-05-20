@@ -10,7 +10,7 @@
 static const std::regex instRegex = std::regex("^\\s*([a-zA-Z]{3})[*]{0,1}[\\s]*(#%|#){0,1}([(]{0,1})[\\s]*([$]{0,1})([^,)(;:]*)[\\s]*((,x\\)|\\),y|,x|,y|\\)){0,1})\\s*(;*)(.*)", std::regex_constants::icase);
 static const std::regex isCommentOrBlank = std::regex("^\\s*([;]+.*$|\\s*$)", std::regex_constants::icase);
 static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*):(.*)", std::regex_constants::icase);
-static const std::regex byteRegex = std::regex("^\\s*[.]byte\\s+((\\$[a-fA-F0-9]{1,2},)*)(\\$[a-fA-F0-9]{1,2})+\\s*(;*)(.*)$", std::regex_constants::icase);
+static const std::regex byteRegex = std::regex("^\\s*[.]db\\s+((\\$[a-fA-F0-9]{1,2}[ ])*)(\\$[a-fA-F0-9]{1,2})+\\s*(;*)(.*)$", std::regex_constants::icase);
 
 void NesAssembler::ProcessLine(string code, uint32_t &instructionAddress, vector<int16_t>& output, std::unordered_map<string, uint16_t> &labels, bool firstPass, std::unordered_map<string, uint16_t> &currentPassLabels)
 {
@@ -27,7 +27,7 @@ void NesAssembler::ProcessLine(string code, uint32_t &instructionAddress, vector
 	//Determine if the line is blank, a comment, a label or code
 	std::smatch match;
 	if(std::regex_search(code, match, byteRegex)) {
-		vector<string> bytes = StringUtilities::Split(match.str(1) + match.str(3), ',');
+		vector<string> bytes = StringUtilities::Split(match.str(1) + match.str(3), ' ');
 		for(string &byte : bytes) {
 			output.push_back((uint8_t)(HexUtilities::FromHex(byte.substr(1))));
 			instructionAddress++;
@@ -423,6 +423,6 @@ uint32_t NesAssembler::AssembleCode(string code, uint32_t startAddress, int16_t*
 		}
 	}
 
-	memcpy(assembledCode, output.data(), output.size() * sizeof(uint16_t));
+	memcpy(assembledCode, output.data(), std::min<int>(100000, (int)output.size()) * sizeof(uint16_t));
 	return (uint32_t)output.size();
 }

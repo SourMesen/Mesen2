@@ -318,6 +318,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				str.Write(" $", 2);
 				str.Write(HexUtilities::ToHexChar(_memoryDumper->GetMemoryValue(memType, row.CpuAddress + i)), 2);
 			}
+			data.OpSize = row.GetByteCount();
 			memcpy(data.Text, str.ToString(), str.GetSize());
 		} else if((data.Flags & LineFlags::Comment) && row.CommentLine >= 0) {
 			string comment = ";" + StringUtilities::Split(_labelManager->GetComment(row.Address), '\n')[row.CommentLine];
