@@ -35,4 +35,21 @@ public:
 		}
 		return str;
 	}
+
+	static string Trim(string str)
+	{
+		return TrimLeft(TrimRight(str));
+	}
+
+	static string ToUpper(string str)
+	{
+		std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+		return str;
+	}
+
+	static string ToLower(string str)
+	{
+		std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+		return str;
+	}
 };

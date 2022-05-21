@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger\Base6502Assembler.h" />
+    <ClInclude Include="PCE\Debugger\PceAssembler.h" />
     <ClInclude Include="PCE\IPceMapper.h" />
     <ClInclude Include="PCE\PceArcadeCard.h" />
     <ClInclude Include="PCE\PceVpc.h" />
@@ -411,6 +413,7 @@
     <ClInclude Include="Shared\Audio\WaveRecorder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debugger\Base6502Assembler.cpp" />
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
@@ -450,6 +453,7 @@
     <ClCompile Include="NES\Mappers\NsfMapper.cpp" />
     <ClCompile Include="NES\Mappers\VsSystem\VsControlManager.cpp" />
     <ClCompile Include="NES\NesNtscFilter.cpp" />
+    <ClCompile Include="PCE\Debugger\PceAssembler.cpp" />
     <ClCompile Include="PCE\Input\PceTurboTap.cpp" />
     <ClCompile Include="PCE\Debugger\DummyPceCpu.cpp" />
     <ClCompile Include="PCE\Debugger\PceDebugger.cpp" />

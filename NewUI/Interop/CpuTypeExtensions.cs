@@ -123,6 +123,7 @@ namespace Mesen.Interop
 				case CpuType.Snes:
 				case CpuType.Gameboy:
 				case CpuType.Nes:
+				case CpuType.Pce:
 					return true;
 				
 				default:

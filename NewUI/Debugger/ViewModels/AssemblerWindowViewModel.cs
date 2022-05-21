@@ -178,13 +178,22 @@ namespace Mesen.Debugger.ViewModels
 		public async Task<bool> ApplyChanges(Window assemblerWindow)
 		{
 			MemoryType memType = _cpuType.ToMemoryType();
-			
+
+			List<byte> bytes = new List<byte>(_bytes);
+			if(OriginalByteCount > 0) {
+				byte nopOpCode = _cpuType.GetNopOpCode();
+				while(OriginalByteCount > bytes.Count) {
+					//Pad data with NOPs as needed
+					bytes.Add(nopOpCode);
+				}
+			}
+
 			string addrFormat = memType.GetFormatString();
-			UInt32 endAddress = (uint)(StartAddress + _bytes.Count - 1);
+			UInt32 endAddress = (uint)(StartAddress + bytes.Count - 1);
 
 			List<string> warningMessages = new List<string>();
 			if(Errors.Count > 0) {
-				warningMessages.Add("Warning: The code contains parsing errors - lines with errors will be ignored.");
+				warningMessages.Add("Warning: The code contains errors - lines with errors will be ignored.");
 			}
 
 			if(_originalAddress >= 0) {
@@ -199,14 +208,6 @@ namespace Mesen.Debugger.ViewModels
 				return false;
 			}
 
-			List<byte> bytes = new List<byte>(_bytes);
-			if(OriginalByteCount > 0) {
-				byte nopOpCode = _cpuType.GetNopOpCode();
-				while(OriginalByteCount < bytes.Count) {
-					//Pad data with NOPs as needed
-					bytes.Add(nopOpCode);
-				}
-			}
 
 			DebugApi.SetMemoryValues(memType, (uint)StartAddress, bytes.ToArray(), bytes.Count);
 			if(OriginalByteCount > 0) {

@@ -2,18 +2,19 @@
 #include "stdafx.h"
 #include <regex>
 #include "Debugger/Base6502Assembler.h"
+#include "PCE/PceTypes.h"
 
-enum class SnesAddrMode : uint8_t;
+class LabelManager;
 
-class SnesAssembler : public Base6502Assembler<SnesAddrMode>
+class PceAssembler final : public Base6502Assembler<PceAddrMode>
 {
-protected:
+private:
 	string GetOpName(uint8_t opcode) override;
-	SnesAddrMode GetOpMode(uint8_t opcode) override;
+	PceAddrMode GetOpMode(uint8_t opcode) override;
 	bool IsOfficialOp(uint8_t opcode) override;
 	AssemblerSpecialCodes ResolveOpMode(AssemblerLineData& op, uint32_t instructionAddress, bool firstPass) override;
 
 public:
-	SnesAssembler(LabelManager* labelManager);
-	virtual ~SnesAssembler() {}
+	PceAssembler(LabelManager* labelManager);
+	virtual ~PceAssembler() = default;
 };

@@ -8,6 +8,7 @@
 #include "SNES/SnesPpu.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/Debugger/DummySnesCpu.h"
+#include "SNES/Debugger/SnesDisUtils.h"
 #include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"

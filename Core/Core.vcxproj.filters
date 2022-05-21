@@ -1823,6 +1823,12 @@
     <ClInclude Include="PCE\PceArcadeCard.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\Debugger\PceAssembler.h">
+      <Filter>PCE\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger\Base6502Assembler.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1906,6 +1912,12 @@
     <ClCompile Include="PCE\PceVpc.cpp" />
     <ClCompile Include="PCE\PceArcadeCard.cpp">
       <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\Debugger\PceAssembler.cpp">
+      <Filter>PCE\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\Base6502Assembler.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

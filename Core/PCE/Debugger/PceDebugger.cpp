@@ -20,6 +20,7 @@
 #include "PCE/Debugger/PceDisUtils.h"
 #include "PCE/Debugger/DummyPceCpu.h"
 #include "PCE/Debugger/PceEventManager.h"
+#include "PCE/Debugger/PceAssembler.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
@@ -53,7 +54,8 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_callstackManager.reset(new CallstackManager(debugger));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
 	_step.reset(new StepRequest());
-	
+	_assembler.reset(new PceAssembler(_debugger->GetLabelManager()));
+
 	if(_console->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
@@ -330,8 +332,7 @@ BreakpointManager* PceDebugger::GetBreakpointManager()
 
 IAssembler* PceDebugger::GetAssembler()
 {
-	//todo
-	return nullptr;// _assembler.get();
+	return _assembler.get();
 }
 
 BaseEventManager* PceDebugger::GetEventManager()

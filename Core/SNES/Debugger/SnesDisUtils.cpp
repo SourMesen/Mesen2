@@ -15,7 +15,7 @@ void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t m
 	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 
 	uint8_t opCode = info.GetOpCode();
-	AddrMode addrMode = SnesDisUtils::OpMode[opCode];
+	SnesAddrMode addrMode = SnesDisUtils::OpMode[opCode];
 	str.Write(SnesDisUtils::OpName[opCode]);
 	str.Write(' ');
 
@@ -24,7 +24,7 @@ void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t m
 
 	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
 	if(opSize > 1) {
-		if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng || opSize == 4) {
+		if(addrMode == SnesAddrMode::Rel || addrMode == SnesAddrMode::RelLng || opSize == 4) {
 			AddressInfo address { (int32_t)opAddr, MemoryType::SnesMemory };
 			string label = labelManager ? labelManager->GetLabel(address) : "";
 			if(label.size()) {
@@ -40,38 +40,37 @@ void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t m
 	}
 
 	switch(addrMode) {
-		case AddrMode::Abs: str.Write(operand); break;
-		case AddrMode::AbsJmp: str.Write(operand); break;
-		case AddrMode::AbsIdxXInd: str.WriteAll('(', operand, ",X)"); break;
-		case AddrMode::AbsIdxX: str.WriteAll(operand, ",X"); break;
-		case AddrMode::AbsIdxY: str.WriteAll(operand, ",Y"); break;
-		case AddrMode::AbsInd:  str.WriteAll('(', operand, ')'); break;
-		case AddrMode::AbsIndLng:  str.WriteAll('[', operand, ']'); break;
-		case AddrMode::AbsLngIdxX: str.WriteAll(operand, ",X"); break;
-		case AddrMode::AbsLng: str.Write(operand); break;
-		case AddrMode::AbsLngJmp: str.Write(operand); break;
-		case AddrMode::Acc: break;
-		case AddrMode::BlkMov: str.WriteAll('$', operand[1], operand[2], ','); str.WriteAll('$', operand[3], operand[4]); break;
-		case AddrMode::DirIdxIndX: str.WriteAll('(', operand, ",X)"); break;
-		case AddrMode::DirIdxX: str.WriteAll(operand, ",X"); break;
-		case AddrMode::DirIdxY: str.WriteAll(operand, ",Y"); break;
-		case AddrMode::DirIndIdxY: str.WriteAll("(", operand, "),Y"); break;
-		case AddrMode::DirIndLngIdxY: str.WriteAll("[", operand, "],Y"); break;
-		case AddrMode::DirIndLng: str.WriteAll("[", operand, "]"); break;
-		case AddrMode::DirInd: str.WriteAll("(", operand, ")"); break;
-		case AddrMode::Dir: str.Write(operand); break;
+		case SnesAddrMode::Abs: str.Write(operand); break;
+		case SnesAddrMode::AbsJmp: str.Write(operand); break;
+		case SnesAddrMode::AbsIdxXInd: str.WriteAll('(', operand, ",X)"); break;
+		case SnesAddrMode::AbsIdxX: str.WriteAll(operand, ",X"); break;
+		case SnesAddrMode::AbsIdxY: str.WriteAll(operand, ",Y"); break;
+		case SnesAddrMode::AbsInd:  str.WriteAll('(', operand, ')'); break;
+		case SnesAddrMode::AbsIndLng:  str.WriteAll('[', operand, ']'); break;
+		case SnesAddrMode::AbsLngIdxX: str.WriteAll(operand, ",X"); break;
+		case SnesAddrMode::AbsLng: str.Write(operand); break;
+		case SnesAddrMode::AbsLngJmp: str.Write(operand); break;
+		case SnesAddrMode::Acc: break;
+		case SnesAddrMode::BlkMov: str.WriteAll('$', operand[1], operand[2], ','); str.WriteAll('$', operand[3], operand[4]); break;
+		case SnesAddrMode::DirIdxIndX: str.WriteAll('(', operand, ",X)"); break;
+		case SnesAddrMode::DirIdxX: str.WriteAll(operand, ",X"); break;
+		case SnesAddrMode::DirIdxY: str.WriteAll(operand, ",Y"); break;
+		case SnesAddrMode::DirIndIdxY: str.WriteAll("(", operand, "),Y"); break;
+		case SnesAddrMode::DirIndLngIdxY: str.WriteAll("[", operand, "],Y"); break;
+		case SnesAddrMode::DirIndLng: str.WriteAll("[", operand, "]"); break;
+		case SnesAddrMode::DirInd: str.WriteAll("(", operand, ")"); break;
+		case SnesAddrMode::Dir: str.Write(operand); break;
 
-		case AddrMode::Imm8: case AddrMode::Imm16: case AddrMode::ImmX: case AddrMode::ImmM:
+		case SnesAddrMode::Imm8: case SnesAddrMode::Imm16: case SnesAddrMode::ImmX: case SnesAddrMode::ImmM:
 			str.WriteAll('#', operand);
 			break;
 
-		case AddrMode::Sig8: str.WriteAll('#', operand); break; //BRK/COP signature
-		case AddrMode::Imp: break;
-		case AddrMode::RelLng: str.Write(operand); break;
-		case AddrMode::Rel: str.Write(operand); break;
-		case AddrMode::Stk: break;
-		case AddrMode::StkRel: str.WriteAll(operand, ",S"); break;
-		case AddrMode::StkRelIndIdxY: str.WriteAll('(', operand, ",S),Y"); break;
+		case SnesAddrMode::Imp: break;
+		case SnesAddrMode::RelLng: str.Write(operand); break;
+		case SnesAddrMode::Rel: str.Write(operand); break;
+		case SnesAddrMode::Stk: break;
+		case SnesAddrMode::StkRel: str.WriteAll(operand, ",S"); break;
+		case SnesAddrMode::StkRelIndIdxY: str.WriteAll('(', operand, ",S),Y"); break;
 
 		default: throw std::runtime_error("invalid address mode");
 	}
@@ -92,8 +91,8 @@ uint32_t SnesDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryA
 		opAddr = byteCode[1] | (byteCode[2] << 8) | (byteCode[3] << 16);
 	}
 
-	AddrMode addrMode = SnesDisUtils::OpMode[byteCode[0]];
-	if(addrMode == AddrMode::Rel || addrMode == AddrMode::RelLng) {
+	SnesAddrMode addrMode = SnesDisUtils::OpMode[byteCode[0]];
+	if(addrMode == SnesAddrMode::Rel || addrMode == SnesAddrMode::RelLng) {
 		if(opSize == 2) {
 			opAddr = (memoryAddr & 0xFF0000) | (((int8_t)opAddr + memoryAddr + 2) & 0xFFFF);
 		} else {
@@ -117,53 +116,53 @@ int32_t SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *co
 	return -1;
 }
 
-bool SnesDisUtils::HasEffectiveAddress(AddrMode addrMode)
+bool SnesDisUtils::HasEffectiveAddress(SnesAddrMode addrMode)
 {
 	switch(addrMode) {
-		case AddrMode::Acc:
-		case AddrMode::Imp:
-		case AddrMode::Stk:
-		case AddrMode::Sig8:
-		case AddrMode::Imm8:
-		case AddrMode::Rel:
-		case AddrMode::RelLng:
-		case AddrMode::Imm16:
-		case AddrMode::BlkMov:
-		case AddrMode::AbsLngJmp:
-		case AddrMode::AbsLng:
-		case AddrMode::ImmX:
-		case AddrMode::ImmM:
-		case AddrMode::AbsJmp:
+		case SnesAddrMode::Acc:
+		case SnesAddrMode::Imp:
+		case SnesAddrMode::Stk:
+		case SnesAddrMode::Sig8:
+		case SnesAddrMode::Imm8:
+		case SnesAddrMode::Rel:
+		case SnesAddrMode::RelLng:
+		case SnesAddrMode::Imm16:
+		case SnesAddrMode::BlkMov:
+		case SnesAddrMode::AbsLngJmp:
+		case SnesAddrMode::AbsLng:
+		case SnesAddrMode::ImmX:
+		case SnesAddrMode::ImmM:
+		case SnesAddrMode::AbsJmp:
 			return false;
 
-		case AddrMode::DirIdxIndX:
-		case AddrMode::DirIdxX:
-		case AddrMode::DirIdxY:
-		case AddrMode::DirIndIdxY:
-		case AddrMode::DirIndLngIdxY:
-		case AddrMode::DirIndLng:
-		case AddrMode::DirInd:
-		case AddrMode::Dir:
-		case AddrMode::StkRel:
-		case AddrMode::StkRelIndIdxY:
-		case AddrMode::Abs:
-		case AddrMode::AbsIdxXInd:
-		case AddrMode::AbsIdxX:
-		case AddrMode::AbsIdxY:
-		case AddrMode::AbsLngIdxX:
-		case AddrMode::AbsInd:
-		case AddrMode::AbsIndLng:
+		case SnesAddrMode::DirIdxIndX:
+		case SnesAddrMode::DirIdxX:
+		case SnesAddrMode::DirIdxY:
+		case SnesAddrMode::DirIndIdxY:
+		case SnesAddrMode::DirIndLngIdxY:
+		case SnesAddrMode::DirIndLng:
+		case SnesAddrMode::DirInd:
+		case SnesAddrMode::Dir:
+		case SnesAddrMode::StkRel:
+		case SnesAddrMode::StkRelIndIdxY:
+		case SnesAddrMode::Abs:
+		case SnesAddrMode::AbsIdxXInd:
+		case SnesAddrMode::AbsIdxX:
+		case SnesAddrMode::AbsIdxY:
+		case SnesAddrMode::AbsLngIdxX:
+		case SnesAddrMode::AbsInd:
+		case SnesAddrMode::AbsIndLng:
 			return true;
 	}
 
 	throw std::runtime_error("Invalid mode");
 }
 
-uint8_t SnesDisUtils::GetOpSize(AddrMode addrMode, uint8_t flags)
+uint8_t SnesDisUtils::GetOpSize(SnesAddrMode addrMode, uint8_t flags)
 {
-	if(addrMode == AddrMode::ImmX) {
+	if(addrMode == SnesAddrMode::ImmX) {
 		return (flags & ProcFlags::IndexMode8) ? 2 : 3;
-	} else if(addrMode == AddrMode::ImmM) {
+	} else if(addrMode == SnesAddrMode::ImmM) {
 		return (flags & ProcFlags::MemoryMode8) ? 2 : 3;
 	}
 
@@ -254,10 +253,10 @@ string SnesDisUtils::OpName[256] = {
 	"BEQ", "SBC", "SBC", "SBC", "PEA", "SBC", "INC", "SBC", "SED", "SBC", "PLX", "XCE", "JSR", "SBC", "INC", "SBC"  // F
 };
 
-typedef AddrMode M;
-AddrMode SnesDisUtils::OpMode[256] = {
+typedef SnesAddrMode M;
+SnesAddrMode SnesDisUtils::OpMode[256] = {
 	//0       1              2            3                 4           5           6           7                 8       9           A       B       C              D           E           F           
-	M::Sig8,  M::DirIdxIndX, M::Sig8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
+	M::Imm8,  M::DirIdxIndX, M::Imm8,     M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 0
 	M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::Dir,     M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::Abs,        M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 1
 	M::Abs,   M::DirIdxIndX, M::AbsLng,   M::StkRel,        M::Dir,     M::Dir,     M::Dir,     M::DirIndLng,     M::Stk, M::ImmM,    M::Acc, M::Stk, M::Abs,        M::Abs,     M::Abs,     M::AbsLng,     // 2
 	M::Rel,   M::DirIndIdxY, M::DirInd,   M::StkRelIndIdxY, M::DirIdxX, M::DirIdxX, M::DirIdxX, M::DirIndLngIdxY, M::Imp, M::AbsIdxY, M::Acc, M::Imp, M::AbsIdxX,    M::AbsIdxX, M::AbsIdxX, M::AbsLngIdxX, // 3

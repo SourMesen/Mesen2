@@ -40,7 +40,7 @@ public:
 	void SetLabel(uint32_t address, MemoryType memType, string label, string comment);
 	void ClearLabels();
 
-	int32_t GetLabelRelativeAddress(string &label, CpuType cpuType = CpuType::Snes);
+	int32_t GetLabelRelativeAddress(string &label, CpuType cpuType);
 
 	string GetLabel(AddressInfo address, bool checkRegisterLabels = true);
 	string GetComment(AddressInfo absAddress);

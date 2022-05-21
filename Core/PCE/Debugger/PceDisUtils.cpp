@@ -24,22 +24,22 @@ static constexpr uint8_t _opSize[24] = {
 
 static constexpr const char* _opName[256] = {
 //	0			1			2			3			4			5			6			7			8			9			A			B			C			D			E			F
-	"BRK",	"ORA",	"SXY",	"ST0",	"TSB",	"ORA",	"ASL",	"RMB0",	"PHP",	"ORA",	"ASL",	"NOP*",	"TSB",	"ORA",	"ASL",	"BBR0", //0
-	"BPL",	"ORA",	"ORA",	"ST1",	"TRB",	"ORA",	"ASL",	"RMB1",	"CLC",	"ORA",	"INC",	"NOP*",	"TRB",	"ORA",	"ASL",	"BBR1", //1
-	"JSR",	"AND",	"SAX",	"ST2",	"BIT",	"AND",	"ROL",	"RMB2",	"PLP",	"AND",	"ROL",	"NOP*",	"BIT",	"AND",	"ROL",	"BBR2", //2
-	"BMI",	"AND",	"AND",	"NOP*",	"BIT",	"AND",	"ROL",	"RMB3",	"SEC",	"AND",	"DEC",	"NOP*",	"BIT",	"AND",	"ROL",	"BBR3", //3
-	"RTI",	"EOR",	"SAY",	"TMA",	"BSR",	"EOR",	"LSR",	"RMB4",	"PHA",	"EOR",	"LSR",	"NOP*",	"JMP",	"EOR",	"LSR",	"BBR4", //4
-	"BVC",	"EOR",	"EOR",	"TAM",	"CSL",	"EOR",	"LSR",	"RMB5",	"CLI",	"EOR",	"PHY",	"NOP*",	"NOP*",	"EOR",	"LSR",	"BBR5", //5
-	"RTS",	"ADC",	"CLA",	"NOP*",	"STZ",	"ADC",	"ROR",	"RMB6",	"PLA",	"ADC",	"ROR",	"NOP*",	"JMP",	"ADC",	"ROR",	"BBR6", //6
-	"BVS",	"ADC",	"ADC",	"TII",	"STZ",	"ADC",	"ROR",	"RMB7",	"SEI",	"ADC",	"PLY",	"NOP*",	"JMP",	"ADC",	"ROR",	"BBR7", //7
-	"BRA",	"STA",	"CLX",	"TST",	"STY",	"STA",	"STX",	"SMB0",	"DEY",	"BIT",	"TXA",	"NOP*",	"STY",	"STA",	"STX",	"BBS0", //8
-	"BCC",	"STA",	"STA",	"TST",	"STY",	"STA",	"STX",	"SMB1",	"TYA",	"STA",	"TXS",	"NOP*",	"STZ",	"STA",	"STZ",	"BBS1", //9
-	"LDY",	"LDA",	"LDX",	"TST",	"LDY",	"LDA",	"LDX",	"SMB2",	"TAY",	"LDA",	"TAX",	"NOP*",	"LDY",	"LDA",	"LDX",	"BBS2", //A
-	"BCS",	"LDA",	"LDA",	"TST",	"LDY",	"LDA",	"LDX",	"SMB3",	"CLV",	"LDA",	"TSX",	"NOP*",	"LDY",	"LDA",	"LDX",	"BBS3", //B
-	"CPY",	"CMP",	"CLY",	"TDD",	"CPY",	"CMP",	"DEC",	"SMB4",	"INY",	"CMP",	"DEX",	"NOP*",	"CPY",	"CMP",	"DEC",	"BBS4", //C
-	"BNE",	"CMP",	"CMP",	"TIN",	"CSH",	"CMP",	"DEC",	"SMB5",	"CLD",	"CMP",	"PHX",	"NOP*",	"NOP*",	"CMP",	"DEC",	"BBS5", //D
-	"CPX",	"SBC",	"NOP*",	"TIA",	"CPX",	"SBC",	"INC",	"SMB6",	"INX",	"SBC",	"NOP",	"NOP*",	"CPX",	"SBC",	"INC",	"BBS6", //E
-	"BEQ",	"SBC",	"SBC",	"TAI",	"SET",	"SBC",	"INC",	"SMB7",	"SED",	"SBC",	"PLX",	"NOP*",	"NOP*",	"SBC",	"INC",	"BBS7"  //F
+	"BRK",	"ORA",	"SXY",	"ST0",	"TSB",	"ORA",	"ASL",	"RMB0",	"PHP",	"ORA",	"ASL",	"NOP_0B","TSB",	"ORA",	"ASL",	"BBR0", //0
+	"BPL",	"ORA",	"ORA",	"ST1",	"TRB",	"ORA",	"ASL",	"RMB1",	"CLC",	"ORA",	"INC",	"NOP_1B","TRB",	"ORA",	"ASL",	"BBR1", //1
+	"JSR",	"AND",	"SAX",	"ST2",	"BIT",	"AND",	"ROL",	"RMB2",	"PLP",	"AND",	"ROL",	"NOP_2B","BIT",	"AND",	"ROL",	"BBR2", //2
+	"BMI",	"AND",	"AND",	"NOP_33","BIT",	"AND",	"ROL",	"RMB3",	"SEC",	"AND",	"DEC",	"NOP_3B","BIT",	"AND",	"ROL",	"BBR3", //3
+	"RTI",	"EOR",	"SAY",	"TMA",	"BSR",	"EOR",	"LSR",	"RMB4",	"PHA",	"EOR",	"LSR",	"NOP_4B","JMP",	"EOR",	"LSR",	"BBR4", //4
+	"BVC",	"EOR",	"EOR",	"TAM",	"CSL",	"EOR",	"LSR",	"RMB5",	"CLI",	"EOR",	"PHY",	"NOP_5B","NOP_5C","EOR",	"LSR",	"BBR5", //5
+	"RTS",	"ADC",	"CLA",	"NOP_63","STZ",	"ADC",	"ROR",	"RMB6",	"PLA",	"ADC",	"ROR",	"NOP_6B","JMP",	"ADC",	"ROR",	"BBR6", //6
+	"BVS",	"ADC",	"ADC",	"TII",	"STZ",	"ADC",	"ROR",	"RMB7",	"SEI",	"ADC",	"PLY",	"NOP_7B","JMP",	"ADC",	"ROR",	"BBR7", //7
+	"BRA",	"STA",	"CLX",	"TST",	"STY",	"STA",	"STX",	"SMB0",	"DEY",	"BIT",	"TXA",	"NOP_8B","STY",	"STA",	"STX",	"BBS0", //8
+	"BCC",	"STA",	"STA",	"TST",	"STY",	"STA",	"STX",	"SMB1",	"TYA",	"STA",	"TXS",	"NOP_9B","STZ",	"STA",	"STZ",	"BBS1", //9
+	"LDY",	"LDA",	"LDX",	"TST",	"LDY",	"LDA",	"LDX",	"SMB2",	"TAY",	"LDA",	"TAX",	"NOP_AB","LDY",	"LDA",	"LDX",	"BBS2", //A
+	"BCS",	"LDA",	"LDA",	"TST",	"LDY",	"LDA",	"LDX",	"SMB3",	"CLV",	"LDA",	"TSX",	"NOP_BB","LDY",	"LDA",	"LDX",	"BBS3", //B
+	"CPY",	"CMP",	"CLY",	"TDD",	"CPY",	"CMP",	"DEC",	"SMB4",	"INY",	"CMP",	"DEX",	"NOP_CB","CPY",	"CMP",	"DEC",	"BBS4", //C
+	"BNE",	"CMP",	"CMP",	"TIN",	"CSH",	"CMP",	"DEC",	"SMB5",	"CLD",	"CMP",	"PHX",	"NOP_DB","NOP_DC","CMP",	"DEC",	"BBS5", //D
+	"CPX",	"SBC",	"NOP_E2","TIA",	"CPX",	"SBC",	"INC",	"SMB6",	"INX",	"SBC",	"NOP",	"NOP_EB","CPX",	"SBC",	"INC",	"BBS6", //E
+	"BEQ",	"SBC",	"SBC",	"TAI",	"SET",	"SBC",	"INC",	"SMB7",	"SED",	"SBC",	"PLX",	"NOP_FB","NOP_FC","SBC",	"INC",	"BBS7"  //F
 };
 
 typedef PceAddrMode M;

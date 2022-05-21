@@ -32,7 +32,9 @@ void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
 
 FrameInfo BaseVideoFilter::GetFrameInfo()
 {
+	//TODO this is originally snes-specific code
 	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
+
 	FrameInfo frameInfo = _baseFrameInfo;
 	OverscanDimensions overscan = GetOverscan();
 	frameInfo.Width -= overscan.Left * overscanMultiplier + overscan.Right * overscanMultiplier;

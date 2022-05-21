@@ -220,11 +220,13 @@ int LuaApi::GetLabelAddress(lua_State *lua)
 	errorCond(label.length() == 0, "label cannot be empty");
 
 	LabelManager* lblMan = _debugger->GetLabelManager();
-	int32_t value = lblMan->GetLabelRelativeAddress(label);
+	//TODO hardcoded cpu type
+	int32_t value = lblMan->GetLabelRelativeAddress(label, CpuType::Snes);
 	if(value == -2) {
 		//Check to see if the label is a multi-byte label instead
 		string mbLabel = label + "+0";
-		value = lblMan->GetLabelRelativeAddress(mbLabel);
+		//TODO hardcoded cpu type
+		value = lblMan->GetLabelRelativeAddress(mbLabel, CpuType::Snes);
 	}
 	errorCond(value == -1, "label out of scope (not mapped to CPU memory)");
 	errorCond(value <= -2, "label not found");

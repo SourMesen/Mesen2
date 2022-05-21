@@ -267,11 +267,15 @@ namespace Mesen.Debugger.ViewModels
 			StringBuilder sb = new StringBuilder();
 			int i = SelectionStart;
 			int endAddress = 0;
+			CodeLineData? prevLine = null;
 			do {
 				CodeLineData[] data = dp.GetCodeLines(i, 5000);
-
 				for(int j = 0; j < data.Length; j++) {
 					CodeLineData lineData = data[j];
+					if(prevLine?.Address == lineData.Address && prevLine?.Text == lineData.Text) {
+						continue;
+					}
+
 					if(lineData.Address > SelectionEnd) {
 						i = lineData.Address;
 						break;
@@ -284,9 +288,14 @@ namespace Mesen.Debugger.ViewModels
 						if(getHeaders) {
 							codeString = "--------" + codeString + "--------";
 						} else {
+							if(j == data.Length - 1) {
+								i = lineData.Address;
+							}
 							continue;
 						}
 					}
+
+					prevLine = lineData;
 
 					int padding = Math.Max(commentSpacingCharCount, codeString.Length);
 					if(codeString.Length == 0) {
