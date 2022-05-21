@@ -271,10 +271,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		}
 	}
 
-	if(inUnknownBlock || inVerifiedBlock) {
-		int flags = LineFlags::BlockEnd | (inVerifiedBlock ? LineFlags::VerifiedData : 0) | (((inVerifiedBlock && showData) || (inUnknownBlock && showUnident)) ? LineFlags::ShowAsData : 0);
-		results.push_back(DisassemblyResult(addrInfo, bankEnd - 1, flags));
-	}
+	relAddress.Address = bankEnd;
+	pushEndBlock();
 
 	return results;
 }
