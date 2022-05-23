@@ -44,6 +44,7 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(256);
 	uint32_t xOffset = overscan.Left * 2;
 	uint32_t yOffset = overscan.Top * 2 * baseWidth;
+	PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
 
 	uint8_t* rowVceClockDivider = (uint8_t*)_frameData;
 
@@ -55,11 +56,11 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		double ratio = (double)rowWidth / 512;
 		for(uint32_t j = 0; j < 512; j++) {
 			int pos = (int)(j * ratio);
-			uint32_t color = ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + leftOverscan];
+			uint32_t color = pceCfg.Palette[ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + leftOverscan] & 0x3FF];
 
-			uint8_t b = ((color & 0x07) << 2) | ((color & 0x07) >> 1);
-			uint8_t r = (((color >> 3) & 0x07) << 2) | (((color >> 3) & 0x07) >> 1);
-			uint8_t g = (((color >> 6) & 0x07) << 2) | (((color >> 6) & 0x07) >> 1);
+			uint8_t r = (color >> 19) & 0x1F;
+			uint8_t g = (color >> 11) & 0x1F;
+			uint8_t b = (color >> 3) & 0x1F;
 
 			_rgb555Buffer[i * 512 + j] = (b << 10) | (g << 5) | r;
 		}
