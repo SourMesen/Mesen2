@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "PCE/PceTypes.h"
 #include "Utilities/VirtualFile.h"
 #include "Shared/MessageManager.h"
 #include "Shared/CdReader.h"
@@ -22,17 +23,6 @@ namespace ScsiSignal
 		Sel,
 	};
 }
-
-enum class ScsiPhase
-{
-	BusFree,
-	Command,
-	DataIn,
-	DataOut,
-	MessageIn,
-	MessageOut,
-	Status
-};
 
 enum class ScsiStatus
 {
@@ -58,20 +48,8 @@ private:
 	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
 
-	bool _signals[9] = {};
+	PceScsiBusState _state = {};
 	bool _stateChanged = false;
-	ScsiPhase _phase = ScsiPhase::BusFree;
-
-	bool _statusDone = false;
-	bool _messageDone = false;
-	uint8_t _messageData = 0;
-	uint8_t _dataPort = 0;
-
-	bool _discReading = false;
-	bool _dataTransfer = false;
-	bool _dataTransferDone = false;
-	uint32_t _sector = 0;
-	uint8_t _sectorsToRead = 0;
 	uint64_t _readStartClock = 0;
 
 	vector<uint8_t> _cmdBuffer;
@@ -122,8 +100,10 @@ private:
 public:
 	PceScsiBus(PceConsole* console, PceCdRom* cdRom, DiscInfo& disc);
 
+	PceScsiBusState& GetState() { return _state; }
+
 	uint8_t GetStatus();
-	bool IsDataTransferInProgress() { return _dataTransfer; }
+	bool IsDataTransferInProgress() { return _state.DataTransfer; }
 	
 	void SetDataPort(uint8_t data);
 	uint8_t GetDataPort();

@@ -10,7 +10,7 @@ class PceArcadeCard final : public IPceMapper
 private:
 	static constexpr int ArcadeRamMemSize = 0x200000;
 
-	PceArcadeCardState _state;
+	PceArcadeCardState _state = {};
 	uint8_t* _ram = nullptr;
 
 	uint32_t GetAddress(PceArcadeCardPortConfig& port);
@@ -26,6 +26,8 @@ private:
 public:
 	PceArcadeCard(Emulator* emu);
 	virtual ~PceArcadeCard();
+
+	PceArcadeCardState& GetState() { return _state; }
 
 	uint8_t Read(uint8_t bank, uint16_t addr, uint8_t value) override;
 	void Write(uint8_t bank, uint16_t addr, uint8_t value) override;

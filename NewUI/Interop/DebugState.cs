@@ -1498,6 +1498,134 @@ namespace Mesen.Interop
 		public PceVdcState Vdc2;
 	}
 
+	public enum PceArcadePortOffsetTrigger
+	{
+		None = 0,
+		AddOnLowWrite = 1,
+		AddOnHighWrite = 2,
+		AddOnReg0AWrite = 3,
+	}
+
+	public struct PceArcadeCardPortConfig
+	{
+		public UInt32 BaseAddress;
+		public UInt16 Offset;
+		public UInt16 IncValue;
+
+		public byte Control;
+		[MarshalAs(UnmanagedType.I1)] public bool AutoIncrement;
+		[MarshalAs(UnmanagedType.I1)] public bool AddOffset;
+		[MarshalAs(UnmanagedType.I1)] public bool SignedIncrement; //unused?
+		[MarshalAs(UnmanagedType.I1)] public bool SignedOffset;
+		[MarshalAs(UnmanagedType.I1)] public bool AddIncrementToBase;
+		public PceArcadePortOffsetTrigger AddOffsetTrigger;
+	}
+
+	public struct PceArcadeCardState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+		public PceArcadeCardPortConfig[] Port;
+		public UInt32 ValueReg;
+		public byte ShiftReg;
+		public byte RotateReg;
+	}
+
+	public enum PceCdRomIrqSource
+	{
+		Adpcm = 0x04,
+		Stop = 0x08,
+		SubChannel = 0x10,
+		DataTransferDone = 0x20,
+		DataTransferReady = 0x40
+	}
+
+	public struct PceCdRomState
+	{
+		public byte ActiveIrqs;
+		public byte EnabledIrqs;
+		[MarshalAs(UnmanagedType.I1)] public bool ReadRightChannel;
+		[MarshalAs(UnmanagedType.I1)] public bool BramLocked;
+	}
+
+	public struct PceAdpcmState
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Nibble;
+		public UInt16 ReadAddress;
+		public UInt16 WriteAddress;
+
+		public UInt16 AddressPort;
+
+		public byte DmaControl;
+		public byte Control;
+		public byte PlaybackRate;
+		public byte FadeTimer;
+
+		public UInt16 AdpcmLength;
+		[MarshalAs(UnmanagedType.I1)] public bool EndReached;
+		[MarshalAs(UnmanagedType.I1)] public bool HalfReached;
+
+		[MarshalAs(UnmanagedType.I1)] public bool Playing;
+
+		public byte ReadBuffer;
+		public byte ReadClockCounter;
+
+		public byte WriteBuffer;
+		public byte WriteClockCounter;
+	}
+
+	public enum CdPlayEndBehavior
+	{
+		Stop,
+		Loop,
+		Irq
+	}
+
+	public struct PceCdAudioPlayerState
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool Playing;
+
+		public UInt32 StartSector;
+		public UInt32 EndSector;
+		public CdPlayEndBehavior EndBehavior;
+
+		public UInt32 CurrentSector;
+		public UInt32 CurrentSample;
+
+		public Int16 LeftSample;
+		public Int16 RightSample;
+	}
+
+	public enum ScsiPhase
+	{
+		BusFree,
+		Command,
+		DataIn,
+		DataOut,
+		MessageIn,
+		MessageOut,
+		Status
+	}
+
+	public struct PceScsiBusState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
+		public byte[] Signals;
+
+		public ScsiPhase Phase;
+
+		[MarshalAs(UnmanagedType.I1)] public bool StatusDone;
+		[MarshalAs(UnmanagedType.I1)] public bool MessageDone;
+		public byte MessageData;
+		public byte DataPort;
+
+		[MarshalAs(UnmanagedType.I1)] public bool DiscReading;
+		[MarshalAs(UnmanagedType.I1)] public bool DataTransfer;
+		[MarshalAs(UnmanagedType.I1)] public bool DataTransferDone;
+
+		public UInt32 Sector;
+		public byte SectorsToRead;
+	}
+
 	public struct PceState : BaseState
 	{
 		public PceCpuState Cpu;
@@ -1508,7 +1636,15 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
 		public PcePsgChannelState[] PsgChannels;
-	
+
+		public PceCdRomState CdRom;
+		public PceCdAudioPlayerState CdPlayer;
+		public PceAdpcmState Adpcm;
+		public PceScsiBusState ScsiDrive;
+		public PceArcadeCardState ArcadeCard;
+
 		[MarshalAs(UnmanagedType.I1)] public bool IsSuperGrafx;
+		[MarshalAs(UnmanagedType.I1)] public bool HasArcadeCard;
+		[MarshalAs(UnmanagedType.I1)] public bool HasCdRom;
 	}
 }

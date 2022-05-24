@@ -283,6 +283,99 @@ struct PceArcadeCardState
 	uint8_t RotateReg;
 };
 
+enum class PceCdRomIrqSource
+{
+	Adpcm = 0x04,
+	Stop = 0x08,
+	SubChannel = 0x10,
+	DataTransferDone = 0x20,
+	DataTransferReady = 0x40
+};
+
+struct PceCdRomState
+{
+	uint8_t ActiveIrqs = 0;
+	uint8_t EnabledIrqs = 0;
+	bool ReadRightChannel = false;
+	bool BramLocked = false;
+};
+
+struct PceAdpcmState
+{
+	bool Nibble;
+	uint16_t ReadAddress;
+	uint16_t WriteAddress;
+
+	uint16_t AddressPort;
+
+	uint8_t DmaControl;
+	uint8_t Control;
+	uint8_t PlaybackRate;
+	uint8_t FadeTimer;
+
+	uint16_t AdpcmLength;
+	bool EndReached;
+	bool HalfReached;
+
+	bool Playing;
+
+	uint8_t ReadBuffer;
+	uint8_t ReadClockCounter;
+
+	uint8_t WriteBuffer;
+	uint8_t WriteClockCounter;
+};
+
+enum class CdPlayEndBehavior
+{
+	Stop,
+	Loop,
+	Irq
+};
+
+struct PceCdAudioPlayerState
+{
+	bool Playing;
+
+	uint32_t StartSector;
+	uint32_t EndSector;
+	CdPlayEndBehavior EndBehavior;
+
+	uint32_t CurrentSector;
+	uint32_t CurrentSample;
+
+	int16_t LeftSample;
+	int16_t RightSample;
+};
+
+enum class ScsiPhase
+{
+	BusFree,
+	Command,
+	DataIn,
+	DataOut,
+	MessageIn,
+	MessageOut,
+	Status
+};
+
+struct PceScsiBusState
+{
+	bool Signals[9];
+	ScsiPhase Phase;
+
+	bool StatusDone;
+	bool MessageDone;
+	uint8_t MessageData;
+	uint8_t DataPort;
+
+	bool DiscReading;
+	bool DataTransfer;
+	bool DataTransferDone;
+	uint32_t Sector;
+	uint8_t SectorsToRead;
+};
+
 struct PceState
 {
 	PceCpuState Cpu;
@@ -291,5 +384,13 @@ struct PceState
 	PcePsgState Psg;
 	PcePsgChannelState PsgChannels[6];
 
+	PceCdRomState CdRom;
+	PceCdAudioPlayerState CdPlayer;
+	PceAdpcmState Adpcm;
+	PceScsiBusState ScsiDrive;
+	PceArcadeCardState ArcadeCard;
+
 	bool IsSuperGrafx;
+	bool HasArcadeCard;
+	bool HasCdRom;
 };

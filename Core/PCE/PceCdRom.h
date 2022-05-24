@@ -3,27 +3,11 @@
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceCdAudioPlayer.h"
+#include "PCE/PceTypes.h"
 
 class Emulator;
 class PceConsole;
 class PceMemoryManager;
-
-enum class PceCdRomIrqSource
-{
-	Adpcm = 0x04,
-	Stop = 0x08,
-	SubChannel = 0x10,
-	DataTransferDone = 0x20,
-	DataTransferReady = 0x40
-};
-
-struct PceCdRomState
-{
-	uint8_t ActiveIrqs = 0;
-	uint8_t EnabledIrqs = 0;
-	bool ReadRightChannel = false;
-	bool BramLocked = false;
-};
 
 class PceCdRom
 {
@@ -42,6 +26,11 @@ private:
 public:
 	PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc);
 	~PceCdRom();
+
+	PceCdRomState& GetState() { return _state; }
+	PceScsiBusState& GetScsiState() { return _scsi.GetState(); }
+	PceAdpcmState& GetAdpcmState() { return _adpcm.GetState(); }
+	PceCdAudioPlayerState& GetCdPlayerState() { return _audioPlayer.GetState(); }
 
 	void Exec();
 

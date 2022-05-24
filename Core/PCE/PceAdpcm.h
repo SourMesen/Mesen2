@@ -3,36 +3,11 @@
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"
 #include "PCE/PceConstants.h"
+#include "PCE/PceTypes.h"
 
 class Emulator;
 class PceCdRom;
 class PceScsiBus;
-
-struct PceAdpcmState
-{
-	bool Nibble;
-	uint16_t ReadAddress;
-	uint16_t WriteAddress;
-
-	uint16_t AddressPort;
-
-	uint8_t DmaControl;
-	uint8_t Control;
-	uint8_t PlaybackRate;
-	uint8_t FadeTimer;
-
-	uint16_t AdpcmLength;
-	bool EndReached;
-	bool HalfReached;
-
-	bool Playing;
-
-	uint8_t ReadBuffer;
-	uint8_t ReadClockCounter;
-	
-	uint8_t WriteBuffer;
-	uint8_t WriteClockCounter;
-};
 
 class PceAdpcm : public IAudioProvider
 {
@@ -120,6 +95,8 @@ public:
 	~PceAdpcm();
 
 	void Exec();
+
+	PceAdpcmState& GetState() { return _state; }
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);

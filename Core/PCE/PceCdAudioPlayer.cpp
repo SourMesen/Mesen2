@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceCdRom.h"
+#include "PCE/PceTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/CdReader.h"
@@ -16,50 +17,51 @@ void PceCdAudioPlayer::Play(uint32_t startSector)
 {
 	int32_t track = _disc->GetTrack(startSector);
 	if(track >= 0) {
-		_startSector = startSector;
-		_playing = true;
+		_state.StartSector = startSector;
+		_state.Playing = true;
+
+		_state.EndSector = _disc->GetTrackLastSector(track);
+		_state.EndBehavior = CdPlayEndBehavior::Stop;
+
+		_state.CurrentSample = 0;
+		_state.CurrentSector = startSector;
+
 		_clockCounter = 0;
-
-		_endSector = _disc->GetTrackLastSector(track);
-		_endBehavior = CdPlayEndBehavior::Stop;
-
-		_currentSample = 0;
-		_currentSector = startSector;
 	}
 }
 
 void PceCdAudioPlayer::SetEndPosition(uint32_t endSector, CdPlayEndBehavior endBehavior)
 {
-	_endSector = endSector;
-	_endBehavior = endBehavior;
-	_playing = true;
+	_state.EndSector = endSector;
+	_state.EndBehavior = endBehavior;
+	_state.Playing = true;
 }
 
 void PceCdAudioPlayer::Stop()
 {
-	_playing = false;
+	_state.Playing = false;
 }
 
 void PceCdAudioPlayer::PlaySample()
 {
-	if(_playing) {
-		_leftSample = _disc->ReadLeftSample(_currentSector, _currentSample);
-		_rightSample = _disc->ReadRightSample(_currentSector, _currentSample);
-		_samplesToPlay.push_back(_leftSample);
-		_samplesToPlay.push_back(_rightSample);
-		_currentSample++;
-		if(_currentSample == 588) {
+	if(_state.Playing) {
+		_state.LeftSample = _disc->ReadLeftSample(_state.CurrentSector, _state.CurrentSample);
+		_state.RightSample = _disc->ReadRightSample(_state.CurrentSector, _state.CurrentSample);
+		_samplesToPlay.push_back(_state.LeftSample);
+		_samplesToPlay.push_back(_state.RightSample);
+		_state.CurrentSample++;
+		if(_state.CurrentSample == 588) {
 			//588 samples per 2352-byte sector
-			_currentSample = 0;
-			_currentSector++;
+			_state.CurrentSample = 0;
+			_state.CurrentSector++;
 
-			if(_currentSector > _endSector) {
-				switch(_endBehavior) {
-					case CdPlayEndBehavior::Stop: _playing = false; break;
-					case CdPlayEndBehavior::Loop: _currentSector = _startSector; break;
+			if(_state.CurrentSector > _state.EndSector) {
+				switch(_state.EndBehavior) {
+					case CdPlayEndBehavior::Stop: _state.Playing = false; break;
+					case CdPlayEndBehavior::Loop: _state.CurrentSector = _state.StartSector; break;
 
 					case CdPlayEndBehavior::Irq:
-						_playing = false;
+						_state.Playing = false;
 						_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
 						_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
 						break;
@@ -69,8 +71,8 @@ void PceCdAudioPlayer::PlaySample()
 			}
 		}
 	} else {
-		_leftSample = 0;
-		_rightSample = 0;
+		_state.LeftSample = 0;
+		_state.RightSample = 0;
 	}
 }
 

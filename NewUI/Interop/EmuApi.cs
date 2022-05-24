@@ -157,7 +157,10 @@ namespace Mesen.Interop
 		VsSystem,
 		VsDualSystem,
 		Nsf,
-		StudyBox
+		StudyBox,
+
+		Pce,
+		PceCdRom
 	}
 
 	public enum ConsoleType

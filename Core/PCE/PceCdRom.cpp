@@ -3,6 +3,7 @@
 #include "PCE/PceConsole.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceCdAudioPlayer.h"
+#include "PCE/PceTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"

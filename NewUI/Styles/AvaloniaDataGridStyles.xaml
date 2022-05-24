@@ -118,8 +118,8 @@
 	</Style>
 	<Style Selector="DataGridCell">
 		<Setter Property="FontSize" Value="10.5" />
-		<Setter Property="Height" Value="14" />
-		<Setter Property="MinHeight" Value="14" />
+		<Setter Property="Height" Value="18" />
+		<Setter Property="MinHeight" Value="18" />
 		<Setter Property="Padding" Value="0" />
 	</Style>
 	<Style Selector="DataGridCell CheckBox">

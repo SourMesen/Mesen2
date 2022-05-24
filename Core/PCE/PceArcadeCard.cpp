@@ -5,7 +5,6 @@
 
 PceArcadeCard::PceArcadeCard(Emulator* emu)
 {
-	_state = {};
 	_ram = new uint8_t[PceArcadeCard::ArcadeRamMemSize];
 	emu->GetSettings()->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
 	emu->RegisterMemory(MemoryType::PceArcadeCardRam, _ram, PceArcadeCard::ArcadeRamMemSize);

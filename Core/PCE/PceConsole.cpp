@@ -58,6 +58,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 		}
 
 		_cdrom.reset(new PceCdRom(_emu, this, disc));
+		_romFormat = RomFormat::PceCdRom;
 	} else {
 		romFile.ReadFile(romData);
 		crc32 = CRC32::GetCRC(romData);
@@ -74,6 +75,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			DiscInfo emptyDisc = {};
 			_cdrom.reset(new PceCdRom(_emu, this, emptyDisc));
 		}
+		_romFormat = RomFormat::Pce;
 	}
 
 	uint32_t cardRamSize = 0;
@@ -231,7 +233,7 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 
 RomFormat PceConsole::GetRomFormat()
 {
-	return RomFormat::Pce;
+	return _romFormat;
 }
 
 AudioTrackInfo PceConsole::GetAudioTrackInfo()
@@ -282,5 +284,20 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	for(int i = 0; i < 6; i++) {
 		state.PsgChannels[i] = _psg->GetChannelState(i);
 	}
+
+	state.HasArcadeCard = false;
+	if(_mapper && dynamic_cast<PceArcadeCard*>(_mapper.get())) {
+		state.ArcadeCard = ((PceArcadeCard*)_mapper.get())->GetState();
+		state.HasArcadeCard = true;
+	}
+
+	if(_cdrom) {
+		state.CdRom = _cdrom->GetState();
+		state.Adpcm = _cdrom->GetAdpcmState();
+		state.CdPlayer = _cdrom->GetCdPlayerState();
+		state.ScsiDrive = _cdrom->GetScsiState();
+	}
+
 	state.IsSuperGrafx = _vdc2 != nullptr;
+	state.HasCdRom = _cdrom != nullptr;
 }

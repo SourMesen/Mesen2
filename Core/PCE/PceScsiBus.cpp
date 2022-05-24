@@ -3,6 +3,7 @@
 #include "PCE/PceConsole.h"
 #include "PCE/PceCdRom.h"
 #include "PCE/PceCdAudioPlayer.h"
+#include "PCE/PceTypes.h"
 #include "Shared/CdReader.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
@@ -19,17 +20,17 @@ PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom, DiscInfo& disc)
 
 void PceScsiBus::SetPhase(ScsiPhase phase)
 {
-	if(_phase == phase) {
+	if(_state.Phase == phase) {
 		return;
 	}
 
 	_stateChanged = true;
-	_phase = phase;
+	_state.Phase = phase;
 	ClearSignals(Bsy, Cd, Io, Msg, Req);
 	
 	//LogDebug("[SCSI] Phase changed: " + HexUtilities::ToHex((int)phase));
 
-	switch(_phase) {
+	switch(_state.Phase) {
 		case ScsiPhase::BusFree: _cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferDone); break;
 		case ScsiPhase::Command: SetSignals(Bsy, Cd, Req); break;
 		case ScsiPhase::DataIn: SetSignals(Bsy, Io); break;
@@ -43,11 +44,11 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 void PceScsiBus::Reset()
 {
 	ClearSignals(Ack, Atn, Cd, Io, Msg, Req);
-	_phase = ScsiPhase::BusFree;
-	_dataPort = 0;
-	_discReading = false;
-	_dataTransfer = false;
-	_dataTransferDone = false;
+	_state.Phase = ScsiPhase::BusFree;
+	_state.DataPort = 0;
+	_state.DiscReading = false;
+	_state.DataTransfer = false;
+	_state.DataTransferDone = false;
 	_cmdBuffer.clear();
 	_dataBuffer.clear();
 	_cdrom->GetAudioPlayer().Stop();
@@ -56,50 +57,50 @@ void PceScsiBus::Reset()
 
 void PceScsiBus::SetStatusMessage(ScsiStatus status, uint8_t data)
 {
-	_messageData = data;
-	_statusDone = false;
-	_messageDone = false;
-	_dataPort = (uint8_t)status;
+	_state.MessageData = data;
+	_state.StatusDone = false;
+	_state.MessageDone = false;
+	_state.DataPort = (uint8_t)status;
 	SetPhase(ScsiPhase::Status);
 }
 
 void PceScsiBus::ProcessStatusPhase()
 {
-	if(_signals[Req] && _signals[Ack]) {
+	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
-		_statusDone = true;
-	} else if(!_signals[Req] && !_signals[Ack] && _statusDone) {
-		_statusDone = false;
-		_dataPort = _messageData;
+		_state.StatusDone = true;
+	} else if(!_state.Signals[Req] && !_state.Signals[Ack] && _state.StatusDone) {
+		_state.StatusDone = false;
+		_state.DataPort = _state.MessageData;
 		SetPhase(ScsiPhase::MessageIn);
 	}
 }
 
 void PceScsiBus::ProcessMessageInPhase()
 {
-	if(_signals[Req] && _signals[Ack]) {
+	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
-		_messageDone = true;
-	} else if(!_signals[Req] && !_signals[Ack] && _messageDone) {
-		_messageDone = false;
+		_state.MessageDone = true;
+	} else if(!_state.Signals[Req] && !_state.Signals[Ack] && _state.MessageDone) {
+		_state.MessageDone = false;
 		SetPhase(ScsiPhase::BusFree);
 	}
 }
 
 void PceScsiBus::ProcessDataInPhase()
 {
-	if(_signals[Req] && _signals[Ack]) {
+	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
-	} else if(!_signals[Req] && !_signals[Ack]) {
+	} else if(!_state.Signals[Req] && !_state.Signals[Ack]) {
 		if(_dataBuffer.size() > 0) {
-			_dataPort = _dataBuffer.front();
+			_state.DataPort = _dataBuffer.front();
 			_dataBuffer.pop_front();
 			SetSignals(Req);
 		} else {
 			_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
-			if(_dataTransferDone) {
-				_dataTransfer = false;
-				_dataTransferDone = false;
+			if(_state.DataTransferDone) {
+				_state.DataTransfer = false;
+				_state.DataTransferDone = false;
 				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
 			}
 			SetStatusMessage(ScsiStatus::Good, 0);
@@ -141,10 +142,10 @@ void PceScsiBus::ExecCommand(ScsiCommand cmd)
 
 void PceScsiBus::ProcessCommandPhase()
 {
-	if(_signals[Req] && _signals[Ack]) {
+	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
-		_cmdBuffer.push_back(_dataPort);
-	} else if(!_signals[Req] && !_signals[Ack] && _cmdBuffer.size() > 0) {
+		_cmdBuffer.push_back(_state.DataPort);
+	} else if(!_state.Signals[Req] && !_state.Signals[Ack] && _cmdBuffer.size() > 0) {
 		ScsiCommand cmd = (ScsiCommand)_cmdBuffer[0];
 		uint8_t cmdSize = GetCommandSize(cmd);
 		if(cmdSize == 0) {
@@ -168,13 +169,13 @@ void PceScsiBus::CmdRead()
 	uint32_t sector = _cmdBuffer[3] | (_cmdBuffer[2] << 8) | ((_cmdBuffer[1] & 0x1F) << 16);
 	uint8_t sectorsToRead = _cmdBuffer[4];
 
-	_discReading = true;
-	_dataTransfer = true;
-	_sector = sector;
-	_sectorsToRead = sectorsToRead;
+	_state.DiscReading = true;
+	_state.DataTransfer = true;
+	_state.Sector = sector;
+	_state.SectorsToRead = sectorsToRead;
 	_readStartClock = _console->GetMasterClock();
 	_cdrom->GetAudioPlayer().Stop();
-	LogDebug("[SCSI] Read sector: " + std::to_string(_sector) + " to " + std::to_string(_sector + _sectorsToRead));
+	LogDebug("[SCSI] Read sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead));
 }
 
 uint32_t PceScsiBus::GetAudioLbaPos()
@@ -253,7 +254,7 @@ void PceScsiBus::CmdReadSubCodeQ()
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	
-	uint32_t sector = player.IsPlaying() ? player.GetCurrentSector() : _sector;
+	uint32_t sector = player.IsPlaying() ? player.GetCurrentSector() : _state.Sector;
 	uint32_t track = _disc->GetTrack(sector);
 
 	uint32_t sectorGap = _disc->Tracks[track].FirstSector - sector;
@@ -332,19 +333,19 @@ void PceScsiBus::CmdReadToc()
 
 void PceScsiBus::ProcessDiscRead()
 {
-	if(_discReading && _dataBuffer.empty() && _console->GetMasterClock() - _readStartClock > 175000) {
+	if(_state.DiscReading && _dataBuffer.empty() && _console->GetMasterClock() - _readStartClock > 175000) {
 		//read disc data
 		_dataBuffer.clear();
-		_disc->ReadDataSector(_sector, _dataBuffer);
+		_disc->ReadDataSector(_state.Sector, _dataBuffer);
 
-		_sector = (_sector + 1) & 0x1FFFFF;
-		_sectorsToRead--;
+		_state.Sector = (_state.Sector + 1) & 0x1FFFFF;
+		_state.SectorsToRead--;
 
 		_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
 
-		if(_sectorsToRead == 0) {
-			_discReading = false;
-			_dataTransferDone = true;
+		if(_state.SectorsToRead == 0) {
+			_state.DiscReading = false;
+			_state.DataTransferDone = true;
 		}
 
 		SetPhase(ScsiPhase::DataIn);
@@ -354,35 +355,35 @@ void PceScsiBus::ProcessDiscRead()
 uint8_t PceScsiBus::GetStatus()
 {
 	return (
-		(_signals[Io] ? 0x08 : 0) |
-		(_signals[Cd] ? 0x10 : 0) |
-		(_signals[Msg] ? 0x20 : 0) |
-		(_signals[Req] ? 0x40 : 0) |
-		(_signals[Bsy] ? 0x80 : 0)
+		(_state.Signals[Io] ? 0x08 : 0) |
+		(_state.Signals[Cd] ? 0x10 : 0) |
+		(_state.Signals[Msg] ? 0x20 : 0) |
+		(_state.Signals[Req] ? 0x40 : 0) |
+		(_state.Signals[Bsy] ? 0x80 : 0)
 	);
 }
 
 void PceScsiBus::SetDataPort(uint8_t data)
 {
 	//LogDebug("[SCSI] CPU data port write: " + HexUtilities::ToHex(data));
-	_dataPort = data;
+	_state.DataPort = data;
 }
 
 uint8_t PceScsiBus::GetDataPort()
 {
-	//LogDebug("[SCSI] CPU data port read: " + HexUtilities::ToHex(_dataPort));
-	return _dataPort;
+	//LogDebug("[SCSI] CPU data port read: " + HexUtilities::ToHex(_state.DataPort));
+	return _state.DataPort;
 }
 
 bool PceScsiBus::CheckSignal(::ScsiSignal::ScsiSignal signal)
 {
-	return _signals[signal];
+	return _state.Signals[signal];
 }
 
 void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 {
-	if(_signals[signal] != val) {
-		_signals[signal] = val;
+	if(_state.Signals[signal] != val) {
+		_state.Signals[signal] = val;
 		_stateChanged = true;
 	}
 }
@@ -395,7 +396,7 @@ void PceScsiBus::Exec()
 		return;
 	}
 
-	if(_signals[Rst]) {
+	if(_state.Signals[Rst]) {
 		Reset();
 		return;
 	}
@@ -403,12 +404,12 @@ void PceScsiBus::Exec()
 	do {
 		_stateChanged = false;
 
-		if(!_signals[Bsy] && _signals[Sel]) {
+		if(!_state.Signals[Bsy] && _state.Signals[Sel]) {
 			SetPhase(ScsiPhase::Command);
-		} else if(!_signals[Ack] && _signals[Atn] && !_signals[Req]) {
+		} else if(!_state.Signals[Ack] && _state.Signals[Atn] && !_state.Signals[Req]) {
 			SetPhase(ScsiPhase::MessageOut);
 		} else {
-			switch(_phase) {
+			switch(_state.Phase) {
 				case ScsiPhase::Command: ProcessCommandPhase(); break;
 				case ScsiPhase::DataIn: ProcessDataInPhase(); break;
 				//case ScsiPhase::DataOut: ProcessDataOutPhase(); break;

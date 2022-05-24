@@ -21,7 +21,8 @@ enum class RomFormat
 	Nsf,
 	StudyBox,
 
-	Pce
+	Pce,
+	PceCdRom,
 };
 
 struct RomInfo

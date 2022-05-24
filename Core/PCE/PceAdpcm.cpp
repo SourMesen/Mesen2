@@ -2,6 +2,7 @@
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceCdRom.h"
+#include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

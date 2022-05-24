@@ -156,6 +156,14 @@ namespace Mesen.Debugger.ViewModels
 				}
 				tabs.Add(GetPceVceTab(ref pceState));
 				tabs.Add(GetPcePsgTab(ref pceState));
+
+				if(pceState.HasCdRom) {
+					tabs.Add(GetPceCdRomTab(ref pceState));
+				}
+
+				if(pceState.HasArcadeCard) {
+					tabs.Add(GetPceArcadeCardTab(ref pceState));
+				}
 			}
 
 			if(Tabs.Count != tabs.Count) {
@@ -1143,7 +1151,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetPceVceTab(ref PceState state)
 		{
-			PceVceState vce = state.Video.Vce;
+			ref PceVceState vce = ref state.Video.Vce;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("$00.0-1", "CR - Clock Speed", vce.ClockDivider == 4 ? "5.37 MHz" : vce.ClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
@@ -1160,7 +1168,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetPceVpcTab(ref PceState state)
 		{
-			PceVpcState vpc = state.Video.Vpc;
+			ref PceVpcState vpc = ref state.Video.Vpc;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("$08.0-3", "Priority Config (Both windows)", null),
@@ -1276,7 +1284,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)
 		{
-			PceMemoryManager mem = state.MemoryManager;
+			ref PceMemoryManager mem = ref state.MemoryManager;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz"),
@@ -1342,6 +1350,113 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
+		private RegisterViewerTab GetPceCdRomTab(ref PceState pceState)
+		{
+			ref PceCdRomState cdrom = ref pceState.CdRom;
+			ref PceCdAudioPlayerState player = ref pceState.CdPlayer;
+			ref PceAdpcmState adpcm = ref pceState.Adpcm;
+			ref PceScsiBusState scsi = ref pceState.ScsiDrive;
+
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$1807.7", "BRAM Enabled", !cdrom.BramLocked),
+
+				new RegEntry("", "ADPCM", null),
+				new RegEntry("$1808-$1809", "Address", adpcm.AddressPort, Format.X16),
+				new RegEntry("$180A", "Write Buffer", adpcm.WriteBuffer, Format.X8),
+				new RegEntry("$180B", "Read Buffer", adpcm.ReadBuffer, Format.X8),
+				new RegEntry("$180C.0", "End Reached", adpcm.EndReached),
+				new RegEntry("$180C.2", "Write Pending", adpcm.WriteClockCounter > 0),
+				new RegEntry("$180C.3", "ADPCM Playing", adpcm.Playing),
+				new RegEntry("$180C.7", "Read Pending", adpcm.ReadClockCounter > 0),
+				new RegEntry("$180D", "DMA Control", adpcm.DmaControl, Format.X8),
+				new RegEntry("$180D", "DMA Requested", (adpcm.DmaControl & 0x03) > 0),
+				new RegEntry("$180E", "Playback Rate", Math.Round(32000.0 / (16 - adpcm.PlaybackRate)) + " Hz"),
+				new RegEntry("$180F", "Fade Timer", adpcm.FadeTimer, Format.X8),
+				new RegEntry("", "Half Reached", adpcm.HalfReached),
+				new RegEntry("", "ADPCM Length", adpcm.AdpcmLength, Format.X16),
+				new RegEntry("", "Write Address", adpcm.WriteAddress, Format.X16),
+
+				new RegEntry("$1802.2-6", "Enabled IRQs", null),
+				new RegEntry("$1802.2", "ADPCM - Half Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
+				new RegEntry("$1802.3", "ADPCM - End Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Stop) != 0),
+				new RegEntry("$1802.4", "Sub-channel IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.SubChannel) != 0),
+				new RegEntry("$1802.5", "Transfer Done IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
+				new RegEntry("$1802.6", "Transfer Ready IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
+
+				new RegEntry("", "Active IRQs", null),
+				new RegEntry("", "ADPCM - Half Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
+				new RegEntry("", "ADPCM - End Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Stop) != 0),
+				new RegEntry("", "Subchannel IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.SubChannel) != 0),
+				new RegEntry("", "Transfer Done IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
+				new RegEntry("", "Transfer Ready IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
+
+				new RegEntry("", "SCSI Drive", null),
+				new RegEntry("", "Transfering Data", scsi.DataTransfer),
+				new RegEntry("", "Data Transfer Completed", scsi.DataTransferDone),
+				new RegEntry("", "Disc Reading", scsi.DiscReading),
+				new RegEntry("", "Current Sector", scsi.Sector),
+				new RegEntry("", "Read Until Sector", scsi.Sector + scsi.SectorsToRead),
+				new RegEntry("$1801", "Data Port", scsi.DataPort),
+				new RegEntry("", "SCSI Phase", scsi.Phase),
+				new RegEntry("", "SCSI Signals", null),
+				new RegEntry("", "ACK", scsi.Signals[0] != 0),
+				new RegEntry("", "ATN", scsi.Signals[1] != 0),
+				new RegEntry("$1800.7", "BSY", scsi.Signals[2] != 0),
+				new RegEntry("$1800.4", "CD", scsi.Signals[3] != 0),
+				new RegEntry("$1800.3", "IO", scsi.Signals[4] != 0),
+				new RegEntry("$1800.5", "MSG", scsi.Signals[5] != 0),
+				new RegEntry("$1800.6", "REQ", scsi.Signals[6] != 0),
+				new RegEntry("$1804.1", "RST", scsi.Signals[7] != 0),
+				new RegEntry("", "SEL", scsi.Signals[8] != 0),
+
+				new RegEntry("", "CD Audio Player", null),
+				new RegEntry("", "CD Audio Playing", player.Playing),
+				new RegEntry("", "Current Sector", player.CurrentSector, Format.X16),
+				new RegEntry("", "Current Sample", player.CurrentSample, Format.X16),
+				new RegEntry("", "Start Sector", player.StartSector, Format.X16),
+				new RegEntry("", "End Sector", player.EndSector, Format.X16),
+				new RegEntry("", "End Behavior", player.EndBehavior),
+			};
+
+			return new RegisterViewerTab() {
+				TabName = "CD-ROM",
+				Data = entries
+			};
+		}
+
+		private RegisterViewerTab GetPceArcadeCardTab(ref PceState pceState)
+		{
+			ref PceArcadeCardState state = ref pceState.ArcadeCard;
+
+			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$1AE0-3", "Shift Register", state.ValueReg, Format.X32),
+				new RegEntry("$1AE4", "Shift Value", state.ShiftReg, Format.X8),
+				new RegEntry("$1AE5", "Rotate Value", state.RotateReg, Format.X8),
+			};
+
+			for(int i = 0; i < 4; i++) {
+				ref PceArcadeCardPortConfig port = ref state.Port[i];
+
+				entries.AddRange(new List<RegEntry>() {
+					new RegEntry("", "Port " + (i + 1), null),
+					new RegEntry("$1A" + i + "2-4", "Base Address", port.BaseAddress, Format.X24),
+					new RegEntry("$1A" + i + "5-6", "Offset", port.Offset, Format.X16),
+					new RegEntry("$1A" + i + "7-8", "Increment Value", port.Offset, Format.X16),
+					new RegEntry("$1A" + i + "9", "Control", port.Control, Format.X8),
+					new RegEntry("$1A" + i + "9.0", "Auto-increment", port.AutoIncrement),
+					new RegEntry("$1A" + i + "9.1", "Add offset", port.AddOffset),
+					new RegEntry("$1A" + i + "9.3", "Negative offset", port.SignedOffset),
+					new RegEntry("$1A" + i + "9.4", "Add increment to base", port.AddIncrementToBase),
+					new RegEntry("$1A" + i + "9.5-6", "Add offset trigger", port.AddOffsetTrigger)
+				});
+			}
+
+			return new RegisterViewerTab() {
+				TabName = "Arcade Card",
+				Data = entries
+			};
+		}
+
 		public void OnGameLoaded()
 		{
 			UpdateRomInfo();
@@ -1373,7 +1488,7 @@ namespace Mesen.Debugger.ViewModels
 
 	public class RegEntry : ReactiveObject
 	{
-		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0xFFF0F0F0);
+		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0xFFE8E8E8);
 
 		public string Address { get; set; } = "";
 		public string Name { get; set; } = "";
