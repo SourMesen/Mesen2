@@ -229,7 +229,7 @@ public:
 		}
 
 		if(_cardRam) {
-			for(uint32_t i = _cardRamStartBank; i < _cardRamEndBank; i++) {
+			for(uint32_t i = _cardRamStartBank; i <= _cardRamEndBank; i++) {
 				//68-7F (cdrom) or 40-5F (populous)
 				_readBanks[i] = _cardRam + (((i - _cardRamStartBank) * 0x2000) % _cardRamSize);
 				_writeBanks[i] = _cardRam + (((i - _cardRamStartBank) * 0x2000) % _cardRamSize);
