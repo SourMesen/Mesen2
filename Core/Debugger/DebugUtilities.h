@@ -163,7 +163,7 @@ public:
 		}
 	}
 
-	static constexpr bool IsRomMemory(MemoryType memType)
+	static constexpr bool IsVolatileRam(MemoryType memType)
 	{
 		switch(memType) {
 			case MemoryType::SnesPrgRom:
@@ -172,11 +172,15 @@ public:
 			case MemoryType::NesPrgRom:
 			case MemoryType::NesChrRom:
 			case MemoryType::PcePrgRom:
-			case MemoryType::SnesSaveRam: //TODO Include save ram here to avoid uninit memory read warnings on save ram
-				return true;
+
+			case MemoryType::NesSaveRam:
+			case MemoryType::GbCartRam:
+			case MemoryType::SnesSaveRam:
+			case MemoryType::PceSaveRam:
+				return false;
 
 			default:
-				return false;
+				return true;
 		}
 	}
 

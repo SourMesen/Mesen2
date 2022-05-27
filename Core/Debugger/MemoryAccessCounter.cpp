@@ -27,7 +27,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 
 bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo& addressInfo)
 {
-	if(!DebugUtilities::IsRomMemory(addressInfo.Type)) {
+	if(DebugUtilities::IsVolatileRam(addressInfo.Type)) {
 		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteStamp == 0;
 	}
 	return false;
