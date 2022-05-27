@@ -13,6 +13,7 @@
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
+#include "PCE/PceVce.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/Debugger/PceDebugger.h"
 #include "PCE/Debugger/PceTraceLogger.h"
@@ -38,6 +39,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_console = console;
 	_cpu = console->GetCpu();
 	_vdc = console->GetVdc();
+	_vce = console->GetVce();
 	_memoryManager = console->GetMemoryManager();
 
 	_traceLogger.reset(new PceTraceLogger(debugger, this, _vdc));
@@ -166,11 +168,6 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
-		//todo
-		/*if(operation.Type == MemoryOperationType::DmaRead) {
-			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
-		}*/
-
 		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
 		}
@@ -236,8 +233,8 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 			break;
 
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
-		case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
-		case StepType::PpuFrame: step.PpuStepCount = 341 * 261; break; //todo
+		case StepType::PpuScanline: step.PpuStepCount = PceConstants::ClockPerScanline * stepCount; break;
+		case StepType::PpuFrame: step.PpuStepCount = PceConstants::ClockPerScanline * _vce->GetScanlineCount(); break;
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));
@@ -274,16 +271,16 @@ void PceDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memor
 void PceDebugger::ProcessPpuCycle()
 {
 	if(_ppuTools->HasOpenedViewer()) {
-		//TODO
-		_ppuTools->UpdateViewers(_vdc->GetScanline(), _vdc->GetHClock() / 3);
+		_ppuTools->UpdateViewers(_vdc->GetScanline(), _vdc->GetHClock());
 	}
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _vdc->GetHClock() == 0 && _vdc->GetScanline() == _step->BreakScanline) {
 			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
 		} else if(_step->PpuStepCount > 0) {
-			_step->PpuStepCount--;
-			if(_step->PpuStepCount == 0) {
+			_step->PpuStepCount -= 3;
+			if(_step->PpuStepCount <= 0) {
+				_step->PpuStepCount = 0;
 				_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
 			}
 		}

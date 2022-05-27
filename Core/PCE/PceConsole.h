@@ -58,6 +58,7 @@ public:
 
 	PceCpu* GetCpu();
 	PceVdc* GetVdc();
+	PceVce* GetVce();
 	PceVpc* GetVpc();
 	PceMemoryManager* GetMemoryManager();
 

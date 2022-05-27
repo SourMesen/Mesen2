@@ -683,6 +683,7 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryTyp
 
 void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 {
+	DebugBreakHelper helper(this);
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
 		if(_debuggers[i].Debugger) {
 			_debuggers[i].Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);

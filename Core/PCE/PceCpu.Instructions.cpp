@@ -254,12 +254,6 @@ void PceCpu::BranchRelative(bool branch)
 {
 	int8_t offset = (int8_t)GetOperand();
 	if(branch) {
-		//"a taken non-page-crossing branch ignores IRQ/NMI during its last clock, so that next instruction executes before the IRQ"
-		//Fixes "branch_delays_irq" test
-		//TODO
-		/*if(_runIrq && !_prevRunIrq) {
-			_runIrq = false;
-		}*/
 		DummyRead();
 		DummyRead();
 

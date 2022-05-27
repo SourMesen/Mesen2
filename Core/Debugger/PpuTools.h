@@ -179,7 +179,7 @@ public:
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
 	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
 
-	void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
+	virtual void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);
 
 	void UpdateViewers(uint16_t scanline, uint16_t cycle);

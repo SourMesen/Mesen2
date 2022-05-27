@@ -115,7 +115,7 @@ EventViewerCategoryCfg PceEventManager::GetEventConfig(DebugEventInfo& evt)
 			} else if(reg <= 0x13FF) {
 				return isWrite ? _config.IoWrites : _config.IoReads;
 			} else if(reg <= 0x17FF) {
-				//TODO
+				//TODO, cdrom, etc.
 			}
 
 			return {};
@@ -160,6 +160,7 @@ FrameInfo PceEventManager::GetDisplayBufferSize()
 {
 	FrameInfo size;
 	size.Width = PceConstants::ClockPerScanline;
+	//todo, this should change based on VCE setting
 	size.Height = PceConstants::ScanlineCount * 2;
 	return size;
 }

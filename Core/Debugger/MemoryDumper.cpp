@@ -171,8 +171,9 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 
 		case MemoryType::PceMemory: {
 			if(_pceConsole) {
+				PceMemoryManager* memManager = _pceConsole->GetMemoryManager();
 				for(int i = 0; i <= 0xFFFF; i++) {
-					buffer[i] = _pceConsole->GetMemoryManager()->DebugRead(i);
+					buffer[i] = memManager->DebugRead(i);
 				}
 			}
 			break;
@@ -229,7 +230,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
 		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
-		//case MemoryType::PceMemory: _pceConsole->DebugWrite(address, value); break;
+		case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

@@ -13,6 +13,12 @@ PceVdcTools::PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console)
 	_console = console;
 }
 
+void PceVdcTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle)
+{
+	//Round hclock value down to previous multiple of 3
+	PpuTools::SetViewerUpdateTiming(viewerId, scanline, cycle / 3 * 3);
+}
+
 FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& baseState)
 {
 	PceVideoState& state = (PceVideoState&)baseState;

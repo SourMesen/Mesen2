@@ -175,6 +175,11 @@ PceVdc* PceConsole::GetVdc()
 	return _vdc.get();
 }
 
+PceVce* PceConsole::GetVce()
+{
+	return _vce.get();
+}
+
 PceVpc* PceConsole::GetVpc()
 {
 	return _vpc.get();
@@ -220,7 +225,7 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 	PpuFrameInfo frame = {};
 	PceVdcState& state = _vdc->GetState();
 	frame.FrameCount = state.FrameCount;
-	frame.CycleCount = 341;
+	frame.CycleCount = PceConstants::ClockPerScanline;
 
 	frame.FirstScanline = 0;
 	frame.ScanlineCount = PceConstants::ScanlineCount;

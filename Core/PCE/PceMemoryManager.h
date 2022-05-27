@@ -361,6 +361,19 @@ public:
 		return 0xFF;
 	}
 
+	void DebugWrite(uint16_t addr, uint8_t value)
+	{
+		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
+		if(bank != 0xFF) {
+			uint8_t* data = _writeBanks[bank];
+			if(data) {
+				data[addr & 0x1FFF] = value;
+			}
+		} else {
+			//TODO write registers
+		}
+	}
+
 	__forceinline void Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 	{
 		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);

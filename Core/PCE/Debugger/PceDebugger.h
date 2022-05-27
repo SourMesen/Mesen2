@@ -20,6 +20,7 @@ class PceVdcTools;
 class Emulator;
 class PceCpu;
 class PceVdc;
+class PceVce;
 class PceMemoryManager;
 class DummyPceCpu;
 
@@ -36,6 +37,7 @@ class PceDebugger final : public IDebugger
 	PceConsole* _console;
 	PceCpu* _cpu;
 	PceVdc* _vdc;
+	PceVce* _vce;
 	PceMemoryManager* _memoryManager;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
