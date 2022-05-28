@@ -79,7 +79,9 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(this.WhenAnyValue(
-				x => x.Breakpoint.Type,
+				x => x.Breakpoint.BreakOnExec,
+				x => x.Breakpoint.BreakOnRead,
+				x => x.Breakpoint.BreakOnWrite,
 				x => x.Breakpoint.MemoryType,
 				x => x.Breakpoint.StartAddress,
 				x => x.Breakpoint.EndAddress,
