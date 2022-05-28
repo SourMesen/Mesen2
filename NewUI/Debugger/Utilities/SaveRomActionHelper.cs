@@ -39,6 +39,7 @@ namespace Mesen.Debugger.Utilities
 				RomFormat.iNes => true,
 				RomFormat.VsDualSystem => true,
 				RomFormat.VsSystem => true,
+				RomFormat.Pce => true,
 				_ => false
 			};
 		}
