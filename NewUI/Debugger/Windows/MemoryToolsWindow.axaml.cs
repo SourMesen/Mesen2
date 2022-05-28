@@ -159,6 +159,7 @@ namespace Mesen.Debugger.Windows
 						int? address = await new GoToWindow(DebugApi.GetMemorySize(_model.Config.MemoryType) - 1).ShowCenteredDialog<int?>(this);
 						if(address != null) {
 							_editor.SetCursorPosition(address.Value, scrollToTop: true);
+							_editor.Focus();
 						}
 					}
 				},
