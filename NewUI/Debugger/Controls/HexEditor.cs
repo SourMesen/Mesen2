@@ -32,6 +32,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<SolidColorBrush> HeaderBackgroundProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(HeaderBackground), new SolidColorBrush(Color.FromRgb(235, 235, 235)));
 		public static readonly StyledProperty<SolidColorBrush> HeaderForegroundProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(HeaderForeground), new SolidColorBrush(Colors.Gray));
 		public static readonly StyledProperty<SolidColorBrush> HeaderHighlightProperty = AvaloniaProperty.Register<HexEditor, SolidColorBrush>(nameof(HeaderHighlight), new SolidColorBrush(Colors.White));
+		
+		public static readonly StyledProperty<int> NewByteValueProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(NewByteValue), -1);
 
 		public IHexEditorDataProvider DataProvider
 		{
@@ -113,6 +115,12 @@ namespace Mesen.Debugger.Controls
 			get { return GetValue(HeaderHighlightProperty); }
 			set { SetValue(HeaderHighlightProperty, value); }
 		}
+		
+		public int NewByteValue
+		{
+			get { return GetValue(NewByteValueProperty); }
+			set { SetValue(NewByteValueProperty, value); }
+		}
 
 		public event EventHandler<ByteUpdatedEventArgs>? ByteUpdated;
 
@@ -130,7 +138,6 @@ namespace Mesen.Debugger.Controls
 
 		private int _cursorPosition = 0;
 		private int _lastClickedPosition = -1;
-		private int _newByteValue = -1;
 		private bool _lastNibble = false;
 		private bool _inStringView = false;
 		private float[] _startPositionByByte = Array.Empty<float>();
@@ -141,7 +148,7 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<HexEditor>(
 				DataProviderProperty, TopRowProperty, BytesPerRowProperty, SelectionStartProperty, SelectionLengthProperty,
 				SelectedRowColumnColorProperty, HeaderBackgroundProperty, HeaderForegroundProperty, HeaderHighlightProperty,
-				IsFocusedProperty, HighDensityModeProperty
+				IsFocusedProperty, HighDensityModeProperty, NewByteValueProperty
 			);
 
 			FontFamilyProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
@@ -315,7 +322,7 @@ namespace Mesen.Debugger.Controls
 
 				if(_inStringView) {
 					SelectionLength = 0;
-					_newByteValue = DataProvider.ConvertCharToByte(c);
+					NewByteValue = DataProvider.ConvertCharToByte(c);
 					CommitByteChanges();
 					MoveCursor(1);
 				} else {
@@ -324,19 +331,19 @@ namespace Mesen.Debugger.Controls
 
 						SelectionLength = 0;
 
-						if(_newByteValue < 0) {
-							_newByteValue = DataProvider.GetByte(SelectionStart).Value;
+						if(NewByteValue < 0) {
+							NewByteValue = DataProvider.GetByte(SelectionStart).Value;
 						}
 
 						if(_lastNibble) {
 							//Commit byte
-							_newByteValue &= 0xF0;
-							_newByteValue |= keyValue;
+							NewByteValue &= 0xF0;
+							NewByteValue |= keyValue;
 							CommitByteChanges();
 							MoveCursor(1);
 						} else {
-							_newByteValue &= 0x0F;
-							_newByteValue |= (keyValue << 4);
+							NewByteValue &= 0x0F;
+							NewByteValue |= (keyValue << 4);
 							_lastNibble = true;
 						}
 					}
@@ -388,10 +395,10 @@ namespace Mesen.Debugger.Controls
 
 		private void CommitByteChanges()
 		{
-			if(_newByteValue >= 0) {
-				this.ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = _cursorPosition, Value = (byte)_newByteValue });
+			if(NewByteValue >= 0) {
+				this.ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = _cursorPosition, Value = (byte)NewByteValue });
 				_lastNibble = false;
-				_newByteValue = -1;
+				NewByteValue = -1;
 			}
 		}
 
@@ -613,10 +620,10 @@ namespace Mesen.Debugger.Controls
 				ByteInfo byteInfo = dataProvider.GetByte(position);
 				byteInfo.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
-				if(position == SelectionStart && _newByteValue >= 0) {
+				if(position == SelectionStart && NewByteValue >= 0) {
 					//About to draw the selected byte, draw anything that's pending, and then the current byte
 					byteInfo.ForeColor = Colors.DarkOrange;
-					byteInfo.Value = (byte)_newByteValue;
+					byteInfo.Value = (byte)NewByteValue;
 					dataToDraw.Add(byteInfo);
 				} else {
 					dataToDraw.Add(byteInfo);
