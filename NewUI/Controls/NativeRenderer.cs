@@ -42,7 +42,7 @@ namespace Mesen
 			EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
 			Size size = new Size(width, height);
 			if(DataContext is MainWindowViewModel model) {
-				model.RendererSize = size;
+				model.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
 			}
 			return size;
 		}

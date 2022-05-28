@@ -238,6 +238,15 @@ namespace Mesen.Windows
 
 		public void SetScale(double scale)
 		{
+			//TODO - Calling this twice seems to fix what might be an issue in Avalonia?
+			//On the first call, when DPI > 100%, sometimes the "finalSize" received by
+			//ArrangeOverride in NativeRenderer does not match what was given here
+			InternalSetScale(scale);
+			InternalSetScale(scale);
+		}
+
+		private void InternalSetScale(double scale)
+		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
 			scale /= dpiScale;
 
