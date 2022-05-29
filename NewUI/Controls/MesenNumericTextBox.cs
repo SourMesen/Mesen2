@@ -153,7 +153,12 @@ namespace Mesen.Controls
 				if(!long.TryParse(Text, out long parsedValue)) {
 					val = Value;
 				} else {
-					val = parsedValue;
+					if(parsedValue == 0 && Text.StartsWith("-")) {
+						//Allow typing minus before a 0, turn value into -1
+						val = -1;
+					} else {
+						val = parsedValue;
+					}
 				}
 			}
 
@@ -182,7 +187,10 @@ namespace Mesen.Controls
 				};
 			}
 
-			return max.ToString(Hex ? "X" : null, null).Length;
+			//Increase max length by 1 if minus signs are allowed
+			int? min = GetMin();
+			bool allowNegative = !Hex && min != null && min.Value < 0;
+			return max.ToString(Hex ? "X" : null, null).Length + (allowNegative ? 1 : 0);
 		}
 
 		private void SetNewValue(IComparable val)

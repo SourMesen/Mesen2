@@ -45,9 +45,11 @@
 	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch">
 		<DockPanel>
 			<TextBlock Text="{Binding Text}" />
-			
-			<TextBox
-				Text="{Binding Value}"
+
+			<c:MesenNumericTextBox
+				Min="{Binding Minimum}"
+				Max="{Binding Maximum}"
+				Value="{Binding Value}"
 				VerticalAlignment="Center"
 				HorizontalContentAlignment="Center"
 				IsVisible="{Binding !HideValue}"
