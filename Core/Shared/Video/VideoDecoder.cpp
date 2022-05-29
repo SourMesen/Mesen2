@@ -210,6 +210,8 @@ void VideoDecoder::StartThread()
 		_frameCount = 0;
 		_waitForFrame.Reset();
 		
+		_emu->GetVideoRenderer()->ClearFrame();
+
 		_decodeThread.reset(new thread(&VideoDecoder::DecodeThread, this));
 	}
 #endif
@@ -227,13 +229,7 @@ void VideoDecoder::StopThread()
 		_decodeThread.reset();
 
 		//Clear whole screen
-		if(_frameCount > 0) {
-			vector<uint16_t> outputBuffer(512 * 478, 0);
-			_frame.FrameBuffer = outputBuffer.data();
-			memset(_frame.FrameBuffer, 0, 512 * 478 * 2);
-			DecodeFrame();
-			_frame.FrameBuffer = nullptr;
-		}
+		_emu->GetVideoRenderer()->ClearFrame();
 	}
 #endif
 }

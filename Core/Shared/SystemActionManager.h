@@ -63,6 +63,11 @@ public:
 		return false;
 	}
 
+	bool IsResetPending()
+	{
+		return _needReset || _needPowerCycle;
+	}
+
 	bool IsResetPressed()
 	{
 		return IsPressed(SystemActionManager::Buttons::ResetButton);

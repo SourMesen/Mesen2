@@ -33,6 +33,8 @@ void PceConsole::Stop()
 
 void PceConsole::Reset()
 {
+	//The PC Engine has no reset button, behave like power cycle
+	_emu->ReloadRom(true);
 }
 
 void PceConsole::OnBeforeRun()

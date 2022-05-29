@@ -357,6 +357,18 @@ ID3D11ShaderResourceView* Renderer::GetShaderResourceView(ID3D11Texture2D* textu
 	return shaderResourceView;
 }
 
+void Renderer::ClearFrame()
+{
+	//Clear current output and display black frame
+	auto lock = _textureLock.AcquireSafe();
+	if(_textureBuffer[0]) {
+		//_textureBuffer[0] may be null if directx failed to initialize properly
+		memset(_textureBuffer[0], 0, _emuFrameWidth * _emuFrameHeight * sizeof(uint32_t));
+		_needFlip = true;
+		_frameChanged = true;
+	}
+}
+
 void Renderer::UpdateFrame(RenderedFrame& frame)
 {
 	SetScreenSize(frame.Width, frame.Height);

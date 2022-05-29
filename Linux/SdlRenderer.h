@@ -48,6 +48,7 @@ public:
 	SdlRenderer(Emulator* emu, void* windowHandle, bool registerAsMessageManager);
 	virtual ~SdlRenderer();
 
+	void ClearFrame() override;
 	void UpdateFrame(RenderedFrame& frame) override;
 	void Render(uint32_t* hudBuffer, uint32_t width, uint32_t height) override;
 	void Reset() override;

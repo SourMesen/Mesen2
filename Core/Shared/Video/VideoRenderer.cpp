@@ -123,6 +123,13 @@ void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 	}
 }
 
+void VideoRenderer::ClearFrame()
+{
+	if(_renderer) {
+		_renderer->ClearFrame();
+	}
+}
+
 void VideoRenderer::RegisterRenderingDevice(IRenderingDevice *renderer)
 {
 	_renderer = renderer;

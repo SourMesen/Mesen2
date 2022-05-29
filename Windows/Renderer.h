@@ -83,6 +83,7 @@ public:
 
 	void Reset();
 	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight);
+	void ClearFrame();
 
 	void UpdateFrame(RenderedFrame& frame);
 };

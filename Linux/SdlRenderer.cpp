@@ -129,9 +129,20 @@ void SdlRenderer::SetScreenSize(uint32_t width, uint32_t height)
 	}	
 }
 
+void SdlRenderer::ClearFrame()
+{
+	auto lock = _frameLock.AcquireSafe();
+	if(_frameBuffer == nullptr) { 
+		return;
+	}
+
+	memset(_frameBuffer, 0, _requiredWidth * _requiredHeight * _bytesPerPixel);
+	_frameChanged = true;
+}
+
 void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 {
-	_frameLock.Acquire();
+	auto lock = _frameLock.AcquireSafe();
 	if(_frameBuffer == nullptr || _requiredWidth != frame.Width || _requiredHeight != frame.Height) {
 		_requiredWidth = frame.Width;
 		_requiredHeight = frame.Height;
@@ -143,7 +154,6 @@ void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 	
 	memcpy(_frameBuffer, frame.FrameBuffer, frame.Width * frame.Height *_bytesPerPixel);
 	_frameChanged = true;	
-	_frameLock.Release();
 }
 
 void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)

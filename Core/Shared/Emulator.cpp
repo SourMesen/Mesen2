@@ -313,6 +313,8 @@ void Emulator::Reset()
 	_console->Reset();
 	GetControlManager()->UpdateInputState();
 
+	_videoRenderer->ClearFrame();
+
 	_notificationManager->SendNotification(ConsoleNotificationType::GameReset);
 	ProcessEvent(EventType::Reset);
 
@@ -473,7 +475,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_threadPaused = true;
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 	_threadPaused = false;
-	_paused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {
 		string modelName = _console->GetRegion() == ConsoleRegion::Pal ? "PAL" : "NTSC";
@@ -671,9 +672,15 @@ void Emulator::WaitForPauseEnd()
 
 	PlatformUtilities::EnableScreensaver();
 	PlatformUtilities::RestoreTimerResolution();
+
 	while(_paused && !_stopFlag && !_debugger) {
 		//Sleep until emulation is resumed
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(30));
+
+		if(_systemActionManager->IsResetPending()) {
+			//Reset/power cycle was pressed, stop waiting and process it now
+			break;
+		}
 	}
 
 	PlatformUtilities::DisableScreensaver();

@@ -53,6 +53,7 @@ public:
 	void StopThread();
 
 	void UpdateFrame(RenderedFrame& frame);
+	void ClearFrame();
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 
