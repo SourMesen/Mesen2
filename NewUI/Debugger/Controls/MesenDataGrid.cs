@@ -77,6 +77,7 @@ namespace Mesen.Debugger.Controls
 				if(Items is IList list) {
 					if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 						int selectedIndex = SelectedIndex;
+						//TODO performance - this is very slow on large grids, DataGrid doesn't seem to offer a faster way
 						SelectedItems.Clear();
 						for(int i = selectedIndex; i < list.Count; i++) {
 							SelectedItems.Add(list[i]);
@@ -90,6 +91,7 @@ namespace Mesen.Debugger.Controls
 				if(Items is IList list) {
 					if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 						int selectedIndex = SelectedIndex;
+						//TODO performance - this is very slow on large grids, DataGrid doesn't seem to offer a faster way
 						SelectedItems.Clear();
 						for(int i = selectedIndex; i >= 0; i--) {
 							SelectedItems.Add(list[i]);

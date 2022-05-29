@@ -822,12 +822,12 @@ namespace Mesen.Debugger.Integration
 		protected abstract bool IsJumpToSubroutine(byte opCode);
 		protected abstract CdlFlags GetOpFlags(byte opCode, int opSize);
 
-		public static DbgImporter Import(CpuType cpu, RomFormat romFormat, string path, bool importComments, bool silent)
+		public static DbgImporter Import(RomFormat romFormat, string path, bool importComments, bool silent)
 		{
-			DbgImporter? importer = cpu switch {
-				CpuType.Snes => new SnesDbgImporter(romFormat),
-				CpuType.Nes => new NesDbgImporter(romFormat),
-				CpuType.Pce => new PceDbgImporter(romFormat),
+			DbgImporter? importer = romFormat switch {
+				RomFormat.Sfc or RomFormat.SfcWithCopierHeader => new SnesDbgImporter(romFormat),
+				RomFormat.iNes or RomFormat.Nsf => new NesDbgImporter(romFormat),
+				RomFormat.Pce or RomFormat.PceCdRom => new PceDbgImporter(romFormat),
 				_ => throw new NotImplementedException()
 			};
 

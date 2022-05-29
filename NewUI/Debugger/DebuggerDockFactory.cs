@@ -42,9 +42,6 @@ namespace Mesen.Debugger
 
 		public override IRootDock CreateLayout()
 		{
-			var codeDockables = CreateList<IDockable>(DisassemblyTool);
-			codeDockables.Add(SourceViewTool);
-
 			var mainLayout = new ProportionalDock {
 				Orientation = Orientation.Vertical,
 				VisibleDockables = CreateList<IDockable>(
@@ -55,7 +52,7 @@ namespace Mesen.Debugger
 						VisibleDockables = CreateList<IDockable>(
 							new ToolDock {
 								Proportion = 0.60,
-								VisibleDockables = codeDockables
+								VisibleDockables = CreateList<IDockable>(DisassemblyTool)
 							},
 							new ProportionalDockSplitter(),
 							new ProportionalDock {

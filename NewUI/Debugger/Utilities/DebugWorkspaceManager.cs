@@ -1,4 +1,5 @@
 ﻿using Mesen.Config;
+using Mesen.Debugger.Integration;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
@@ -18,6 +19,9 @@ namespace Mesen.Debugger.Utilities
 		private static DebugWorkspace? _workspace = null;
 		private static RomInfo _romInfo = new();
 		private static string _path = "";
+		public static ISymbolProvider? SymbolProvider { get; private set; }
+
+		public static event EventHandler? SymbolProviderChanged;
 
 		public static DebugWorkspace Workspace 
 		{
@@ -40,6 +44,22 @@ namespace Mesen.Debugger.Utilities
 			_romInfo = EmuApi.GetRomInfo();
 			_path = Path.Combine(ConfigManager.DebuggerFolder, Path.ChangeExtension(_romInfo.GetRomName(), ".json"));
 			_workspace = DebugWorkspace.Load(_path);
+
+			SymbolProvider = null;
+			if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
+				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, ".dbg");
+				LoadSymbolFile(dbgPath);
+			}
+			SymbolProviderChanged?.Invoke(null, EventArgs.Empty);
+		}
+
+		public static void LoadSymbolFile(string path)
+		{
+			if(File.Exists(path)) {
+				if(Path.GetExtension(path).ToLower() == ".dbg") {
+					SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, true);
+				}
+			}
 		}
 
 		public static void Save(bool releaseWorkspace = false)
@@ -84,7 +104,7 @@ namespace Mesen.Debugger.Utilities
 					BreakpointManager.AddBreakpoints(workspace.Breakpoints);
 				}
 			}
-			
+
 			return dbgWorkspace;
 		}
 

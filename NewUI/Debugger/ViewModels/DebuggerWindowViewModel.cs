@@ -87,14 +87,6 @@ namespace Mesen.Debugger.ViewModels
 				} else {
 					CpuType = romInfo.ConsoleType.GetMainCpuType();
 					Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/Debugger.png"));
-
-					if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
-						//TODO temporary - try to load DBG file if it exists
-						string dbgPath = Path.ChangeExtension(romInfo.RomPath, ".dbg");
-						if(File.Exists(dbgPath)) {
-							SourceView = new(DbgImporter.Import(CpuType, romInfo.Format, dbgPath, true, true), CpuType);
-						}
-					}
 				}
 			}
 
@@ -126,7 +118,7 @@ namespace Mesen.Debugger.ViewModels
 			DockFactory.CallStackTool.Model = CallStack;
 			DockFactory.WatchListTool.Model = WatchList;
 			DockFactory.DisassemblyTool.Model = Disassembly;
-			DockFactory.SourceViewTool.Model = SourceView;
+			DockFactory.SourceViewTool.Model = null;
 			DockFactory.StatusTool.Model = ConsoleStatus;
 			
 			DockLayout = DockFactory.CreateLayout();
@@ -136,6 +128,8 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			UpdateSourceViewState();
+
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
 
 			if(CpuType.SupportsMemoryMappings()) {
@@ -143,15 +137,22 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			WatchList.Manager.WatchChanged += Manager_WatchChanged;
+			DebugWorkspaceManager.SymbolProviderChanged += DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
 			BreakpointManager.AddCpuType(CpuType);
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
 		}
 
+		private void DebugWorkspaceManager_SymbolProviderChanged(object? sender, EventArgs e)
+		{
+			UpdateSourceViewState();
+		}
+
 		protected override void DisposeView()
 		{
 			WatchList.Manager.WatchChanged -= Manager_WatchChanged;
+			DebugWorkspaceManager.SymbolProviderChanged -= DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;
 			BreakpointManager.RemoveCpuType(CpuType);
@@ -162,6 +163,24 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config.ApplyConfig();
 			UpdateDebugger();
+		}
+
+		private void UpdateSourceViewState()
+		{
+			ISymbolProvider? provider = DebugWorkspaceManager.SymbolProvider;
+			if(provider != null) {
+				SourceView = new SourceViewViewModel(provider, CpuType);
+				DockFactory.SourceViewTool.Model = SourceView;
+				if(DockFactory.DisassemblyTool.Owner is IDock dock) {
+					DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
+				}
+			} else {
+				SourceView = null;
+				DockFactory.SourceViewTool.Model = null;
+				if(IsToolVisible(DockFactory.SourceViewTool)) {
+					DockFactory.CloseDockable(DockFactory.SourceViewTool);
+				}
+			}
 		}
 
 		public void UpdateConsoleState()
