@@ -102,11 +102,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	RefreshCodeCache();
 
-	if(_emu->IsPaused()) {
-		//Break on the current instruction if emulation was already paused
-		Step(_mainCpuType, 1, StepType::Step);
-	}
-
 	_executionStopped = false;
 
 #ifdef _DEBUG

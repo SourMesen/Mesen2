@@ -334,17 +334,23 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	if(GetEmulationThreadId() == std::this_thread::get_id()) {
+		_threadPaused = true;
+	}
+
+	BlockDebuggerRequests();
+
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
 
 	auto emuLock = AcquireLock();
 	auto dbgLock = _debuggerLock.AcquireSafe();
 	auto lock = _loadLock.AcquireSafe();
-
-	BlockDebuggerRequests();
-
+	
 	if(!romFile.IsValid()) {
 		return false;
 	}
+
+	bool wasPaused = IsPaused();
 
 	//Keep a reference to the original debugger
 	shared_ptr<Debugger> debugger = _debugger.lock();
@@ -472,7 +478,13 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
 	_allowDebuggerRequest = true;
 	dbgLock.Release();
+	
 	_threadPaused = true;
+	if(wasPaused && _debugger) {
+		//Break on the current instruction if emulation was already paused
+		//(must be done after setting _threadPaused to true)
+		_debugger->Step(GetCpuTypes()[0], 1, StepType::Step);
+	}
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 	_threadPaused = false;
 
