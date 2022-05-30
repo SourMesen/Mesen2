@@ -6,23 +6,14 @@ namespace Mesen.Utilities
 {
 	public class Utf8Utilities
 	{
-		public static string GetStringFromIntPtr(IntPtr pNativeData)
+		public static string GetStringFromArray(byte[] strArray)
 		{
-			int offset = 0;
-			byte b = 0;
-			do {
-				b = Marshal.ReadByte(pNativeData, offset);
-				offset++;
-			} while(b != 0);
-
-			int length = offset - 1;
-
-			// should not be null terminated
-			byte[] strbuf = new byte[length];
-			// skip the trailing null
-			Marshal.Copy((IntPtr)pNativeData, strbuf, 0, length);
-			string data = Encoding.UTF8.GetString(strbuf);
-			return data;
+			for(int i = 0; i < strArray.Length; i++) {
+				if(strArray[i] == 0) {
+					return Encoding.UTF8.GetString(strArray, 0, i);
+				}
+			}
+			return Encoding.UTF8.GetString(strArray);
 		}
 
 		public static string PtrToStringUtf8(IntPtr ptr)

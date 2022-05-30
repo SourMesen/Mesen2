@@ -7,6 +7,7 @@
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<Emulator> _emu;
 
+//TODO, replace not thread-safe
 static string _returnString;
 
 extern "C" 

@@ -8,6 +8,8 @@
 
 extern unique_ptr<Emulator> _emu;
 extern unique_ptr<IAudioDevice> _soundManager;
+
+//TODO, replace, not thread-safe
 static string _returnString;
 
 extern "C" {

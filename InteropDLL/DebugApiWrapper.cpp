@@ -20,6 +20,8 @@
 #include "Core/Gameboy/GbTypes.h"
 
 extern unique_ptr<Emulator> _emu;
+
+//TODO, replace, not thread-safe
 static string _logString;
 
 template<typename T>

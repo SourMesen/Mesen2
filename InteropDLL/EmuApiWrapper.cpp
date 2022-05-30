@@ -34,14 +34,17 @@ unique_ptr<Emulator> _emu(new Emulator());
 
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
+
+//TODO, replace, not thread-safe
 static string _returnString;
 static string _logString;
+
 static InteropNotificationListeners _listeners;
 
 struct InteropRomInfo
 {
-	const char* RomPath;
-	const char* PatchPath;
+	char RomPath[2000];
+	char PatchPath[2000];
 	RomFormat Format;
 	ConsoleType Console;
 	CpuType CpuTypes[5];
@@ -50,9 +53,6 @@ struct InteropRomInfo
 	//SnesCartInformation Header;
 	char Sha1[40];
 };
-
-static string _romPath;
-static string _patchPath;
 
 extern "C" {
 	DllExport bool __stdcall TestDll()
@@ -124,11 +124,14 @@ extern "C" {
 		RomInfo romInfo = _emu->GetRomInfo();
 		string sha1 = _emu->GetHash(HashType::Sha1);
 
-		_romPath = romInfo.RomFile;
-		_patchPath = romInfo.PatchFile;
+		string romPath = romInfo.RomFile;
+		string patchPath = romInfo.PatchFile;
 
-		info.RomPath = _romPath.c_str();
-		info.PatchPath = _patchPath.c_str();
+		memset(info.RomPath, 0, sizeof(info.RomPath));
+		memset(info.PatchPath, 0, sizeof(info.PatchPath));
+
+		memcpy(info.RomPath, romPath.c_str(), romPath.size());
+		memcpy(info.PatchPath, patchPath.c_str(), patchPath.size());
 		info.Format = romInfo.Format;
 		info.Console = _emu->GetConsoleType();
 

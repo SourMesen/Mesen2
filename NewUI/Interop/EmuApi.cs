@@ -174,8 +174,11 @@ namespace Mesen.Interop
 
 	public struct InteropRomInfo
 	{
-		public IntPtr RomPath;
-		public IntPtr PatchPath;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2000)]
+		public byte[] RomPath;
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2000)]
+		public byte[] PatchPath;
+
 		public RomFormat Format;
 		public ConsoleType ConsoleType;
 
@@ -200,8 +203,8 @@ namespace Mesen.Interop
 
 		public RomInfo(InteropRomInfo romInfo)
 		{
-			RomPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.RomPath);
-			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromIntPtr(romInfo.PatchPath);
+			RomPath = (ResourcePath)Utf8Utilities.GetStringFromArray(romInfo.RomPath);
+			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromArray(romInfo.PatchPath);
 			Format = romInfo.Format;
 			ConsoleType = romInfo.ConsoleType;
 			Sha1 = Encoding.UTF8.GetString(romInfo.Sha1);
