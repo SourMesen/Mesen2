@@ -64,7 +64,7 @@ namespace Mesen.Debugger.Windows
 			e.Handled = true;
 		}
 
-		private void OnGridDoubleTapped(object sender, TappedEventArgs e)
+		private void OnGridDoubleTapped(object sender, RoutedEventArgs e)
 		{
 			if(sender is MesenDataGrid grid && grid.SelectedIndex >= 0) {
 				ProfiledFunction? funcData = _model.SelectedTab.GetRawData(grid.SelectedIndex);

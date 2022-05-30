@@ -24,8 +24,6 @@
 			Height="NaN"
 			IsReadOnly="True"
 			AcceptsReturn="True"
-			ScrollViewer.AllowAutoHide="False"
-			ScrollViewer.HorizontalScrollBarVisibility="Auto"
 			ScrollViewer.VerticalScrollBarVisibility="Auto"
 			Text="{CompiledBinding LogContent, ElementName=root}"
 		/>

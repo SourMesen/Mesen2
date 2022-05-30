@@ -36,7 +36,7 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridClick(object sender, TappedEventArgs e)
+		private void OnGridClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid? grid = (sender as DataGrid);
 			if(grid?.SelectedItem is BreakpointViewModel vm) {
@@ -52,7 +52,7 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
-		private void OnGridDoubleClick(object sender, TappedEventArgs e)
+		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid?.SelectedItem is BreakpointViewModel vm) {

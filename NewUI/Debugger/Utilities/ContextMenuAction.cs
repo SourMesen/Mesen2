@@ -133,7 +133,7 @@ namespace Mesen.Debugger.Utilities
 						}
 					}
 				};
-				_clickCommand = ReactiveCommand.Create(_onClick, this.WhenAnyValue(x => x.Enabled));
+				_clickCommand = ReactiveCommand.Create(_onClick);
 			}
 		}
 

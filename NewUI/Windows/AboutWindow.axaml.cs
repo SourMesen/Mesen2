@@ -63,7 +63,8 @@ namespace Mesen.Windows
 				new("stb_vorbis", "", "Public domain", "https://github.com/nothings/stb"),
 				new("emu2413.c (Mitsukata Okazaki)", "Mitsukata Okazaki", "?", ""),
 				new("SDD-1 Decomp. (Andreas Naive)", "Andreas Naive", "Public domain", ""),
-				new("LED Icons", "", "CC BY 4.0", "http://led24.de")
+				new("LED Icons", "", "CC BY 4.0", "http://led24.de"),
+				new("SDL2", "", "zlib", "https://www.libsdl.org/")
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));

@@ -61,7 +61,7 @@ namespace Mesen.Windows
 			Close();
 		}
 
-		private void OnGridClick(object sender, TappedEventArgs e)
+		private void OnGridClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid? grid = (sender as DataGrid);
 			if(grid?.SelectedItem is CheatCode cheat && grid.CurrentColumn.DisplayIndex == 0) {
@@ -70,7 +70,7 @@ namespace Mesen.Windows
 			}
 		}
 
-		private async void OnGridDoubleClick(object sender, TappedEventArgs e)
+		private async void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid?.SelectedItem is CheatCode cheat) {

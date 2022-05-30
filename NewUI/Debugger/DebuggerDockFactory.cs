@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Dock.Model.Controls;
 using Dock.Model.ReactiveUI;
 using Mesen.Debugger.StatusViews;
+using Mesen.Debugger.Controls;
 
 namespace Mesen.Debugger
 {
@@ -54,7 +55,7 @@ namespace Mesen.Debugger
 								Proportion = 0.60,
 								VisibleDockables = CreateList<IDockable>(DisassemblyTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ProportionalDock {
 								Proportion = 0.40,
 								Orientation = Orientation.Vertical,
@@ -63,7 +64,7 @@ namespace Mesen.Debugger
 										Proportion = 0.5,
 										VisibleDockables = CreateList<IDockable>(StatusTool)
 									},
-									new ProportionalDockSplitter(),
+									new MesenProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = 0.5,
 										VisibleDockables = CreateList<IDockable>(LabelListTool)
@@ -72,7 +73,7 @@ namespace Mesen.Debugger
 							}
 						)
 					},
-					new ProportionalDockSplitter(),
+					new MesenProportionalDockSplitter(),
 					new ProportionalDock {
 						Proportion = 0.25,
 						Orientation = Orientation.Horizontal,
@@ -81,12 +82,12 @@ namespace Mesen.Debugger
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(WatchListTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(BreakpointListTool)
 							},
-							new ProportionalDockSplitter(),
+							new MesenProportionalDockSplitter(),
 							new ToolDock {
 								Proportion = 0.33,
 								VisibleDockables = CreateList<IDockable>(CallStackTool)

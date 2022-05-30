@@ -28,7 +28,7 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridDoubleClick(object sender, TappedEventArgs e)
+		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
 			DataGrid grid = (DataGrid)sender;
 			if(grid.SelectedItem is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {

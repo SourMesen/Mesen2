@@ -79,12 +79,11 @@
 			/>
 		</StackPanel>
 
-		<c:GroupBox Header="{l:Translate grpAcknowledgements}" Margin="5">
+		<c:GroupBox Header="{l:Translate grpAcknowledgements}" Margin="5 5 5 0">
 			<StackPanel>
 				<TextBlock Text="{l:Translate lblAcknowledgeList}" Margin="0 5 0 5" TextWrapping="Wrap" />
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ListBox
-						ScrollViewer.AllowAutoHide="False"
 						Items="{CompiledBinding AcknowledgeList, ElementName=root}"
 						Background="Transparent"
 					/>
@@ -95,7 +94,6 @@
 				<TextBlock Text="{l:Translate lblUsedSoftware}" Margin="0 15 0 5" />
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<ListBox
-						ScrollViewer.AllowAutoHide="False"
 						Items="{CompiledBinding LibraryList, ElementName=root}"
 						Height="130"
 						Background="Transparent"

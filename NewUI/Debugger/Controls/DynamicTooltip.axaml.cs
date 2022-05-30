@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Controls
 			FirstColumnWidth = maxWidth;
 		}
 
-		private void TextBox_Tapped(object? sender, TappedEventArgs e)
+		private void TextBox_Tapped(object? sender, RoutedEventArgs e)
 		{
 			if(sender is TextBox txt) {
 				txt.SelectAll();
