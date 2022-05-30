@@ -35,5 +35,15 @@ namespace Mesen.Utilities
 			Marshal.Copy(ptr, array, 0, len);
 			return Encoding.UTF8.GetString(array);
 		}
+
+		public delegate void StringApiDelegate(IntPtr ptr, Int32 size);
+		public unsafe static string CallStringApi(StringApiDelegate callback, int maxLength = 100000)
+		{
+			byte[] outBuffer = new byte[maxLength];
+			fixed(byte* ptr = outBuffer) {
+				callback((IntPtr)ptr, maxLength);
+				return Utf8Utilities.PtrToStringUtf8((IntPtr)ptr);
+			}
+		}
 	}	
 }

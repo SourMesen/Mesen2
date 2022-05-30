@@ -5,12 +5,10 @@
 #include "Core/Shared/BaseControlDevice.h"
 #include "Core/Shared/EmuSettings.h"
 #include "Core/Shared/SettingTypes.h"
+#include "Utilities/StringUtilities.h"
 
 extern unique_ptr<Emulator> _emu;
 extern unique_ptr<IAudioDevice> _soundManager;
-
-//TODO, replace, not thread-safe
-static string _returnString;
 
 extern "C" {
 	DllExport void __stdcall SetVideoConfig(VideoConfig config)
@@ -81,10 +79,9 @@ extern "C" {
 		return ControllerType::None;
 	}
 
-	DllExport const char* __stdcall GetAudioDevices()
+	DllExport void __stdcall GetAudioDevices(char* outDeviceList, uint32_t maxLength)
 	{
-		_returnString = _soundManager ? _soundManager->GetAvailableDevices() : "";
-		return _returnString.c_str();
+		StringUtilities::CopyToBuffer(_soundManager ? _soundManager->GetAvailableDevices() : "", outDeviceList, maxLength);
 	}
 
 	DllExport void __stdcall SetEmulationFlag(EmulationFlags flag, bool enabled)

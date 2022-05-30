@@ -3,6 +3,7 @@
 #include "DebugTypes.h"
 #include "EventType.h"
 #include "MemoryOperationType.h"
+#include "Utilities/safe_ptr.h"
 
 class ScriptingContext;
 class Debugger;
@@ -10,14 +11,14 @@ class Debugger;
 class ScriptHost
 {
 private:
-	shared_ptr<ScriptingContext> _context;
+	safe_ptr<ScriptingContext> _context;
 	int _scriptId;
 
 public:
 	ScriptHost(int scriptId);
 
 	int GetScriptId();
-	const char* GetLog();
+	string GetLog();
 
 	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger);
 

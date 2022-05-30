@@ -57,7 +57,7 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 	_hasScript = _scripts.size() > 0;
 }
 
-const char* ScriptManager::GetScriptLog(int32_t scriptId)
+string ScriptManager::GetScriptLog(int32_t scriptId)
 {
 	auto lock = _scriptLock.AcquireSafe();
 	for(shared_ptr<ScriptHost> &script : _scripts) {

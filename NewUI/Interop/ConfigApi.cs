@@ -34,10 +34,10 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern ControllerType GetControllerType(int player);
 
-		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern IntPtr GetAudioDevicesWrapper();
-		public static List<string> GetAudioDevices()
+		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern void GetAudioDevicesWrapper(IntPtr outDeviceList, Int32 maxSize);
+		public unsafe static List<string> GetAudioDevices()
 		{
-			return new List<string>(Utf8Utilities.PtrToStringUtf8(ConfigApi.GetAudioDevicesWrapper()).Split(new string[1] { "||" }, StringSplitOptions.RemoveEmptyEntries));
+			return Utf8Utilities.CallStringApi(GetAudioDevicesWrapper).Split(new String[1] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 		}
 	}
 

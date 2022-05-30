@@ -52,4 +52,9 @@ public:
 		std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 		return str;
 	}
+
+	static void CopyToBuffer(string str, char* outBuffer, uint32_t maxSize)
+	{
+		memcpy(outBuffer, str.c_str(), std::min<uint32_t>((uint32_t)str.size(), maxSize));
+	}
 };

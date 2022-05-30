@@ -3,9 +3,7 @@
 #include "ScriptingContext.h"
 #include "EventType.h"
 #include "MemoryOperationType.h"
-#ifndef LIBRETRO
 #include "LuaScriptingContext.h"
-#endif
 
 ScriptHost::ScriptHost(int scriptId)
 {
@@ -17,23 +15,19 @@ int ScriptHost::GetScriptId()
 	return _scriptId;
 }
 
-const char* ScriptHost::GetLog()
+string ScriptHost::GetLog()
 {
-	shared_ptr<ScriptingContext> context = _context;
+	shared_ptr<ScriptingContext> context = _context.lock();
 	return context ? context->GetLog() : "";
 }
 
 bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
 {
-#ifndef LIBRETRO
 	_context.reset(new LuaScriptingContext(debugger));
 	if(!_context->LoadScript(scriptName, scriptContent, debugger)) {
 		return false;
 	}
 	return true;
-#else
-	return false;
-#endif
 }
 
 void ScriptHost::ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type, CpuType cpuType)

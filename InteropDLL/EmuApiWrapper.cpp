@@ -15,6 +15,7 @@
 #include "Core/Netplay/GameServer.h"
 #include "Utilities/ArchiveReader.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/StringUtilities.h"
 #include "InteropNotificationListeners.h"
 
 #ifdef _WIN32
@@ -34,10 +35,6 @@ unique_ptr<Emulator> _emu(new Emulator());
 
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
-
-//TODO, replace, not thread-safe
-static string _returnString;
-static string _logString;
 
 static InteropNotificationListeners _listeners;
 
@@ -156,7 +153,7 @@ extern "C" {
 
 	DllExport void __stdcall ProcessAudioPlayerAction(AudioPlayerActionParams p) { _emu->ProcessAudioPlayerAction(p); }
 
-	DllExport const char* __stdcall GetArchiveRomList(char* filename) { 
+	DllExport void __stdcall GetArchiveRomList(char* filename, char* outBuffer, uint32_t maxLength) { 
 		std::ostringstream out;
 		unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filename);
 		if(reader) {
@@ -164,8 +161,8 @@ extern "C" {
 				out << romName << "[!|!]";
 			}
 		}
-		_returnString = out.str();
-		return _returnString.c_str();
+
+		StringUtilities::CopyToBuffer(out.str(), outBuffer, maxLength);
 	}
 
 	DllExport bool __stdcall IsRunning()
@@ -241,10 +238,10 @@ extern "C" {
 	}
 
 	DllExport void __stdcall DisplayMessage(char* title, char* message, char* param1) { MessageManager::DisplayMessage(title, message, param1 ? param1 : ""); }
-	DllExport const char* __stdcall GetLog()
+	
+	DllExport void __stdcall GetLog(char* outBuffer, uint32_t maxLength)
 	{
-		_logString = MessageManager::GetLog();
-		return _logString.c_str();
+		StringUtilities::CopyToBuffer(MessageManager::GetLog(), outBuffer, maxLength);
 	}
 
 	DllExport void __stdcall SetRendererSize(uint32_t width, uint32_t height)

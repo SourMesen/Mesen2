@@ -86,12 +86,13 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsShortcutAllowed(EmulatorShortcut shortcut, UInt32 shortcutParam = 0);
 
-		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern IntPtr GetLogWrapper();
-		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(EmuApi.GetLogWrapper()).Replace("\n", Environment.NewLine); }
+		[DllImport(DllPath, EntryPoint = "GetLog")] private static extern void GetLogWrapper(IntPtr outLog, Int32 maxLength);
+		public static string GetLog() { return Utf8Utilities.CallStringApi(GetLogWrapper, 1000000); }
+
 		[DllImport(DllPath)] public static extern void WriteLogEntry([MarshalAs(UnmanagedType.LPUTF8Str)]string message);
 		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.LPUTF8Str)]string title, [MarshalAs(UnmanagedType.LPUTF8Str)]string message, [MarshalAs(UnmanagedType.LPUTF8Str)]string? param1 = null);
 
-		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
+		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, IntPtr outFileList, Int32 maxLength);
 
 		[DllImport(DllPath)] public static extern void SaveState(UInt32 stateIndex);
 		[DllImport(DllPath)] public static extern void LoadState(UInt32 stateIndex);

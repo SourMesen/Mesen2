@@ -48,8 +48,8 @@ namespace Mesen.Interop
 			return DebugApi.GetExecutionTraceWrapper(IntPtr.Zero, 0, DebugApi.TraceLogBufferSize);
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern IntPtr GetDebuggerLogWrapper();
-		public static string GetLog() { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetDebuggerLogWrapper()).Replace("\n", Environment.NewLine); }
+		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern void GetDebuggerLogWrapper(IntPtr outLog, Int32 maxLength);
+		public static string GetLog() { return Utf8Utilities.CallStringApi(GetDebuggerLogWrapper, 100000); }
 
 		[DllImport(DllPath, EntryPoint = "GetDisassemblyOutput")] private static extern UInt32 GetDisassemblyOutputWrapper(CpuType type, UInt32 address, [In,Out]InteropCodeLineData[] lineData, UInt32 rowCount);
 		public static CodeLineData[] GetDisassemblyOutput(CpuType type, UInt32 address, UInt32 rowCount)
@@ -151,8 +151,16 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
 		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
-		[DllImport(DllPath, EntryPoint = "GetScriptLog")] private static extern IntPtr GetScriptLogWrapper(Int32 scriptId);
-		public static string GetScriptLog(Int32 scriptId) { return Utf8Utilities.PtrToStringUtf8(DebugApi.GetScriptLogWrapper(scriptId)).Replace("\n", Environment.NewLine); }
+
+		[DllImport(DllPath, EntryPoint = "GetScriptLog")] private static extern void GetScriptLogWrapper(Int32 scriptId, IntPtr outScriptLog, Int32 maxLength);
+		public unsafe static string GetScriptLog(Int32 scriptId)
+		{
+			byte[] outScriptLog = new byte[100000];
+			fixed(byte* ptr = outScriptLog) {
+				DebugApi.GetScriptLogWrapper(scriptId, (IntPtr)ptr, outScriptLog.Length);
+				return Utf8Utilities.PtrToStringUtf8((IntPtr)ptr);
+			}
+		}
 
 		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
 

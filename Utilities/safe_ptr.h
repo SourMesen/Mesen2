@@ -1,4 +1,6 @@
+#pragma once
 #include "stdafx.h"
+#include "Utilities/SimpleLock.h"
 
 template<typename T>
 class safe_ptr

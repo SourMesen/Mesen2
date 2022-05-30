@@ -22,8 +22,15 @@ namespace Mesen.Interop
 		
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
-		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key);
-		public static string GetKeyName(UInt32 key) { return Utf8Utilities.PtrToStringUtf8(InputApi.GetKeyNameWrapper(key)); }
+		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key, IntPtr outKeyName, Int32 maxLength);
+		public unsafe static string GetKeyName(UInt32 key)
+		{
+			byte[] outKeyName = new byte[1000];
+			fixed(byte* ptr = outKeyName) {
+				InputApi.GetKeyNameWrapper(key, (IntPtr)ptr, outKeyName.Length);
+				return Utf8Utilities.PtrToStringUtf8((IntPtr)ptr);
+			}
+		}
 
 		[DllImport(DllPath, EntryPoint = "GetPressedKeys")] private static extern void GetPressedKeysWrapper(IntPtr keyBuffer);
 		public static List<UInt32> GetPressedKeys()

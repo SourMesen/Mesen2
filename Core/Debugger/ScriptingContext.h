@@ -25,10 +25,6 @@ struct MemoryCallback
 class ScriptingContext
 {
 private:
-	//Must be static to be thread-safe when switching game
-	//UI updates all script windows in a single thread, so this is safe
-	static string _log;
-
 	std::deque<string> _logRows;
 	SimpleLock _logLock;
 	bool _inStartFrameEvent = false;
@@ -57,7 +53,7 @@ public:
 	virtual bool LoadScript(string scriptName, string scriptContent, Debugger* debugger) = 0;
 
 	void Log(string message);
-	const char* GetLog();
+	string GetLog();
 
 	Debugger* GetDebugger();
 	string GetScriptName();

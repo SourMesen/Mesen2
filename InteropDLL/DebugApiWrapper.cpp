@@ -18,11 +18,9 @@
 #include "Core/Debugger/ITraceLogger.h"
 #include "Core/Debugger/TraceLogFileSaver.h"
 #include "Core/Gameboy/GbTypes.h"
+#include "Utilities/StringUtilities.h"
 
 extern unique_ptr<Emulator> _emu;
-
-//TODO, replace, not thread-safe
-static string _logString;
 
 template<typename T>
 T WrapDebuggerCall(std::function<T(Debugger* debugger)> func)
@@ -84,18 +82,18 @@ extern "C"
 	DllExport void __stdcall SetBreakpoints(Breakpoint breakpoints[], uint32_t length) { WithDebugger(void, SetBreakpoints(breakpoints, length)); }
 
 	DllExport void __stdcall GetTokenList(CpuType cpuType, char* tokenList) { WithDebugger(void, GetTokenList(cpuType, tokenList)); }
-	DllExport int32_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType *resultType, bool useCache) { return WithDebugger(int32_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
-	
-	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo *callstackArray, uint32_t &callstackSize)
+	DllExport int32_t __stdcall EvaluateExpression(const char* expression, CpuType cpuType, EvalResultType* resultType, bool useCache) { return WithDebugger(int32_t, EvaluateExpression(expression, cpuType, *resultType, useCache)); }
+
+	DllExport void __stdcall GetCallstack(CpuType cpuType, StackFrameInfo* callstackArray, uint32_t& callstackSize)
 	{
 		callstackSize = 0;
 		WithToolVoid(GetCallstackManager(cpuType), GetCallstack(callstackArray, callstackSize));
 	}
 
 	DllExport void __stdcall GetProfilerData(CpuType cpuType, ProfiledFunction* profilerData, uint32_t& functionCount)
-	{ 
+	{
 		functionCount = 0;
-		WithToolVoid(GetCallstackManager(cpuType), GetProfiler()->GetProfilerData(profilerData, functionCount)); 
+		WithToolVoid(GetCallstackManager(cpuType), GetProfiler()->GetProfilerData(profilerData, functionCount));
 	}
 
 	DllExport void __stdcall ResetProfiler(CpuType cpuType) { WithToolVoid(GetCallstackManager(cpuType), GetProfiler()->Reset()); }
@@ -103,7 +101,7 @@ extern "C"
 	DllExport void __stdcall GetConsoleState(BaseState& state, ConsoleType consoleType) { WithDebugger(void, GetConsoleState(state, consoleType)); }
 	DllExport void __stdcall GetCpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, GetCpuState(state, cpuType)); }
 	DllExport void __stdcall GetPpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, GetPpuState(state, cpuType)); }
-	
+
 	DllExport void __stdcall SetCpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, SetCpuState(state, cpuType)); }
 	DllExport void __stdcall SetPpuState(BaseState& state, CpuType cpuType) { WithDebugger(void, SetPpuState(state, cpuType)); }
 
@@ -111,15 +109,15 @@ extern "C"
 	DllExport void __stdcall SetProgramCounter(CpuType cpuType, uint32_t addr) { WithDebugger(void, SetProgramCounter(cpuType, addr)); }
 	DllExport DebuggerFeatures __stdcall GetDebuggerFeatures(CpuType cpuType) { return WithDebugger(DebuggerFeatures, GetDebuggerFeatures(cpuType)); }
 
-	DllExport const char* __stdcall GetDebuggerLog()
+	DllExport void __stdcall GetDebuggerLog(char* outBuffer, uint32_t maxLength)
 	{
-		_logString = WithDebugger(string, GetLog());
-		return _logString.c_str();
+		string logString = WithDebugger(string, GetLog());
+		StringUtilities::CopyToBuffer(logString, outBuffer, maxLength);
 	}
 
-	DllExport void __stdcall SetMemoryState(MemoryType type, uint8_t *buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
+	DllExport void __stdcall SetMemoryState(MemoryType type, uint8_t* buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
 	DllExport uint32_t __stdcall GetMemorySize(MemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }
-	DllExport void __stdcall GetMemoryState(MemoryType type, uint8_t *buffer) { WithDebugger(void, GetMemoryDumper()->GetMemoryState(type, buffer)); }
+	DllExport void __stdcall GetMemoryState(MemoryType type, uint8_t* buffer) { WithDebugger(void, GetMemoryDumper()->GetMemoryState(type, buffer)); }
 	DllExport uint8_t __stdcall GetMemoryValue(MemoryType type, uint32_t address) { return WithDebugger(uint8_t, GetMemoryDumper()->GetMemoryValue(type, address)); }
 	DllExport void __stdcall GetMemoryValues(MemoryType type, uint32_t start, uint32_t end, uint8_t* output) { return WithDebugger(void, GetMemoryDumper()->GetMemoryValues(type, start, end, output)); }
 	DllExport void __stdcall SetMemoryValue(MemoryType type, uint32_t address, uint8_t value) { return WithDebugger(void, GetMemoryDumper()->SetMemoryValue(type, address, value)); }
@@ -133,19 +131,19 @@ extern "C"
 
 	DllExport void __stdcall ResetMemoryAccessCounts() { WithDebugger(void, GetMemoryAccessCounter()->ResetCounts()); }
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
-	
+
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
 	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(cpuType, cdlData, length)); }
 	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(cpuType, start, end, flags)); }
-	
-	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *buffer) { WithToolVoid(GetPpuTools(cpuType), GetTileView(options, source, srcSize, colors, buffer)); }
-	
-	DllExport DebugTilemapInfo __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t *vram, uint32_t* palette, uint32_t *outputBuffer) { return WithTool(DebugTilemapInfo, GetPpuTools(cpuType), GetTilemap(options, state, vram, palette, outputBuffer)); }
+
+	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t* source, uint32_t srcSize, uint32_t* colors, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetTileView(options, source, srcSize, colors, buffer)); }
+
+	DllExport DebugTilemapInfo __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outputBuffer) { return WithTool(DebugTilemapInfo, GetPpuTools(cpuType), GetTilemap(options, state, vram, palette, outputBuffer)); }
 	DllExport FrameInfo __stdcall GetTilemapSize(CpuType cpuType, GetTilemapOptions options, BaseState& state) { return WithTool(FrameInfo, GetPpuTools(cpuType), GetTilemapSize(options, state)); }
 	DllExport DebugTilemapTileInfo __stdcall GetTilemapTileInfo(uint32_t x, uint32_t y, CpuType cpuType, GetTilemapOptions options, uint8_t* vram, BaseState& state) { return WithTool(DebugTilemapTileInfo, GetPpuTools(cpuType), GetTilemapTileInfo(x, y, vram, options, state)); }
-		
+
 	DllExport DebugSpritePreviewInfo __stdcall GetSpritePreviewInfo(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state) { return WithTool(DebugSpritePreviewInfo, GetPpuTools(cpuType), GetSpritePreviewInfo(options, state)); }
-	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t *oamRam, uint32_t* palette, uint32_t *buffer) { WithToolVoid(GetPpuTools(cpuType), GetSpritePreview(options, state, vram, oamRam, palette, buffer)); }
+	DllExport void __stdcall GetSpritePreview(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetSpritePreview(options, state, vram, oamRam, palette, buffer)); }
 	DllExport void __stdcall GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo sprites[]) { WithToolVoid(GetPpuTools(cpuType), GetSpriteList(options, state, vram, oamRam, palette, sprites)); }
 
 	DllExport DebugPaletteInfo __stdcall GetPaletteInfo(CpuType cpuType) { return WithTool(DebugPaletteInfo, GetPpuTools(cpuType), GetPaletteInfo()); }
@@ -153,16 +151,21 @@ extern "C"
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { WithToolVoid(GetPpuTools(cpuType), SetViewerUpdateTiming(viewerId, scanline, cycle)); }
 
 	DllExport void __stdcall SetEventViewerConfig(CpuType cpuType, BaseEventViewerConfig& config) { WithToolVoid(GetEventManager(cpuType), SetConfiguration(config)); }
-	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo *infoArray, uint32_t &maxEventCount) { WithToolVoid(GetEventManager(cpuType), GetEvents(infoArray, maxEventCount)); }
+	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo* infoArray, uint32_t& maxEventCount) { WithToolVoid(GetEventManager(cpuType), GetEvents(infoArray, maxEventCount)); }
 	DllExport uint32_t __stdcall GetDebugEventCount(CpuType cpuType) { return WithTool(uint32_t, GetEventManager(cpuType), GetEventCount()); }
 	DllExport FrameInfo __stdcall GetEventViewerDisplaySize(CpuType cpuType) { return WithTool(FrameInfo, GetEventManager(cpuType), GetDisplayBufferSize()); }
-	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t *buffer, uint32_t bufferSize) { WithToolVoid(GetEventManager(cpuType), GetDisplayBuffer(buffer, bufferSize)); }
+	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t* buffer, uint32_t bufferSize) { WithToolVoid(GetEventManager(cpuType), GetDisplayBuffer(buffer, bufferSize)); }
 	DllExport DebugEventInfo __stdcall GetEventViewerEvent(CpuType cpuType, uint16_t scanline, uint16_t cycle) { return WithTool(DebugEventInfo, GetEventManager(cpuType), GetEvent(scanline, cycle)); }
 	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType) { return WithTool(uint32_t, GetEventManager(cpuType), TakeEventSnapshot()); }
 
 	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return WithTool(int32_t, GetScriptManager(), LoadScript(name, content, scriptId)); }
-	DllExport void __stdcall RemoveScript(int32_t scriptId) { WithToolVoid(GetScriptManager(),RemoveScript(scriptId)); }
-	DllExport const char* __stdcall GetScriptLog(int32_t scriptId) { return WithTool(const char*, GetScriptManager(), GetScriptLog(scriptId)); }
+	DllExport void __stdcall RemoveScript(int32_t scriptId) { WithToolVoid(GetScriptManager(), RemoveScript(scriptId)); }
+
+	DllExport void __stdcall GetScriptLog(int32_t scriptId, char* outScriptLog, uint32_t maxLength)
+	{
+		string log = WithTool(string, GetScriptManager(), GetScriptLog(scriptId));
+		StringUtilities::CopyToBuffer(log, outScriptLog, maxLength);
+	}
 	//DllExport void __stdcall DebugSetScriptTimeout(uint32_t timeout) { LuaScriptingContext::SetScriptTimeout(timeout); }
 
 	DllExport uint32_t __stdcall AssembleCode(CpuType cpuType, char* code, uint32_t startAddress, int16_t* assembledOutput) { return WithTool(uint32_t, GetAssembler(cpuType), AssembleCode(code, startAddress, assembledOutput)); }

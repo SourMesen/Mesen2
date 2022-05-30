@@ -3,12 +3,10 @@
 #include "Core/Shared/BaseControlManager.h"
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
+#include "Utilities/StringUtilities.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<Emulator> _emu;
-
-//TODO, replace not thread-safe
-static string _returnString;
 
 extern "C" 
 {
@@ -59,10 +57,9 @@ extern "C"
 		}
 	}
 
-	DllExport const char* __stdcall GetKeyName(uint32_t keyCode)
+	DllExport void __stdcall GetKeyName(uint32_t keyCode, char* outKeyName, uint32_t maxLength)
 	{
-		_returnString = KeyManager::GetKeyName(keyCode);
-		return _returnString.c_str();
+		StringUtilities::CopyToBuffer(KeyManager::GetKeyName(keyCode), outKeyName, maxLength);
 	}
 
 	DllExport uint32_t __stdcall GetKeyCode(char* keyName)

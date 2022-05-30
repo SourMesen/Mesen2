@@ -23,7 +23,7 @@ public:
 	__forceinline bool HasScript() { return _hasScript; }
 	int32_t LoadScript(string name, string content, int32_t scriptId);
 	void RemoveScript(int32_t scriptId);
-	const char* GetScriptLog(int32_t scriptId);
+	string GetScriptLog(int32_t scriptId);
 	void ProcessEvent(EventType type);
 	void ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type, CpuType cpuType);
 };

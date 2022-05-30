@@ -27,7 +27,7 @@
 					<Setter Property="HorizontalContentAlignment" Value="Center"/>
 				</Style>
 			</StackPanel.Styles>
-			<Button Content="{l:Translate btnOK}" Click="OnOkClick" IsEnabled="{CompiledBinding !!SelectedEntry}" />
+			<Button Content="{l:Translate btnOK}" Click="OnOkClick" IsEnabled="{CompiledBinding SelectedEntry, Converter={x:Static ObjectConverters.IsNotNull}}" />
 			<Button Content="{l:Translate btnCancel}" Click="OnCancelClick" />
 		</StackPanel>
 

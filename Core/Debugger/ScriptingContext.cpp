@@ -6,8 +6,6 @@
 #include "Shared/Emulator.h"
 #include "Shared/SaveStateManager.h"
 
-string ScriptingContext::_log = "";
-
 ScriptingContext::ScriptingContext(Debugger *debugger)
 {
 	_debugger = debugger;
@@ -22,15 +20,14 @@ void ScriptingContext::Log(string message)
 	}
 }
 
-const char* ScriptingContext::GetLog()
+string ScriptingContext::GetLog()
 {
 	auto lock = _logLock.AcquireSafe();
 	stringstream ss;
 	for(string &msg : _logRows) {
 		ss << msg << "\n";
 	}
-	_log = ss.str();
-	return _log.c_str();
+	return ss.str();
 }
 
 Debugger* ScriptingContext::GetDebugger()

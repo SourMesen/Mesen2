@@ -10,13 +10,21 @@ namespace Mesen.GUI.Utilities
 {
 	public class ArchiveHelper
 	{
-		public static List<ArchiveRomEntry> GetArchiveRomList(string archivePath)
+		public unsafe static List<ArchiveRomEntry> GetArchiveRomList(string archivePath)
 		{
 			//Split the array on the [!|!] delimiter
-			byte[] buffer = PtrToByteArray(EmuApi.GetArchiveRomList(archivePath));
+			byte[] buffer = new byte[100000];
+			fixed(byte* ptr = buffer) {
+				EmuApi.GetArchiveRomList(archivePath, (IntPtr)ptr, 100000);
+			}
+
 			List<List<byte>> filenames = new List<List<byte>>();
 			List<byte> filenameBytes = new List<byte>();
 			for(int i = 0; i < buffer.Length - 5; i++) {
+				if(buffer[i] == 0) {
+					break;
+				}
+
 				if(buffer[i] == '[' && buffer[i + 1] == '!' && buffer[i + 2] == '|' && buffer[i + 3] == '!' && buffer[i + 4] == ']') {
 					if(filenameBytes.Count > 0) {
 						filenames.Add(filenameBytes);
@@ -60,23 +68,6 @@ namespace Mesen.GUI.Utilities
 			}
 
 			return entries;
-		}
-
-		private static byte[] PtrToByteArray(IntPtr ptr)
-		{
-			if(ptr == IntPtr.Zero) {
-				return new byte[0];
-			}
-
-			int len = 0;
-			while(Marshal.ReadByte(ptr, len) != 0) {
-				len++;
-			}
-
-			byte[] array = new byte[len];
-			Marshal.Copy(ptr, array, 0, len);
-
-			return array;
 		}
 	}
 
