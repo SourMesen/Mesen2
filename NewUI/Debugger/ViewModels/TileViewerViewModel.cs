@@ -338,7 +338,7 @@ namespace Mesen.Debugger.ViewModels
 					int[,] layerBpp = new int[8, 4] { { 2, 2, 2, 2 }, { 4, 4, 2, 0 }, { 4, 4, 0, 0 }, { 8, 4, 0, 0 }, { 8, 2, 0, 0 }, { 4, 2, 0, 0 }, { 4, 0, 0, 0 }, { 8, 0, 0, 0 } };
 					SnesPpuState ppu = (SnesPpuState)state;
 					Config.Source = MemoryType.SnesVideoRam;
-					Config.StartAddress = ppu.Layers[layer].ChrAddress;
+					Config.StartAddress = ppu.Layers[layer].ChrAddress * 2;
 					Config.ColumnCount = 16;
 					Config.RowCount = 16;
 					Config.Layout = TileLayout.Normal;
