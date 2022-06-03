@@ -129,7 +129,7 @@
 				<DataBox
 					Name="ListView"
 					Items="{CompiledBinding ListView.SpritePreviews}"
-					SelectedItem="{CompiledBinding ListView.SelectedItem}"
+					Selection="{CompiledBinding ListView.Selection}"
 					CanUserResizeColumns="False"
 					CanUserSortColumns="True"
 					GridLinesVisibility="All"

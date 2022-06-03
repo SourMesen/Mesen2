@@ -81,7 +81,7 @@ internal static class DataBoxRowsLayout
                 case GridUnitType.Star:
                 {
                     var actualWidth = 0.0;
-  
+						/*
                     foreach (var row in rows)
                     {
                         var cellPresenter = GetCellsPresenter(row);
@@ -94,7 +94,7 @@ internal static class DataBoxRowsLayout
                                 actualWidth = Math.Max(actualWidth, width);
                             }
                         }
-                    }
+                    }*/
 
                     actualWidths[c] = actualWidth;
 
@@ -207,7 +207,21 @@ internal static class DataBoxRowsLayout
 
     public static Size Measure(Size availableSize, DataBox dataBox, Func<Size, Size> measureOverride, Action invalidateMeasure, AvaloniaList<IControl> rows)
     {
-        var availableSizeWidth = availableSize.Width;
+		invalidateMeasure();
+		Size size = new Size(
+			double.IsPositiveInfinity(availableSize.Width) ? 0 : availableSize.Width,
+			double.IsPositiveInfinity(availableSize.Height) ? 0 : availableSize.Height
+			);
+
+        dataBox.AvailableWidth = availableSize.Width;
+        dataBox.AvailableHeight = availableSize.Height;
+		
+		size = measureOverride(size);
+
+		return size;
+
+		//Original code
+		/*var availableSizeWidth = availableSize.Width;
         var measureStarAsAuto = double.IsPositiveInfinity(availableSize.Width);
 
         dataBox.AvailableWidth = availableSize.Width;
@@ -224,7 +238,7 @@ internal static class DataBoxRowsLayout
         panelSize = measureOverride(panelSize);
         panelSize = panelSize.WithWidth(AdjustAccumulatedWidth(accumulatedWidth, availableSizeWidth));
 
-        return panelSize;
+        return panelSize;*/
     }
 
     public static Size Arrange(Size finalSize, DataBox dataBox, Func<Size, Size> arrangeOverride, AvaloniaList<IControl> rows)

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DataBoxControl;
 using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
@@ -1490,12 +1491,13 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0xFFE8E8E8);
 
-		public string Address { get; set; } = "";
-		public string Name { get; set; } = "";
-		public ISolidColorBrush Background { get; set; }
+		public string Address { get; }
+		public string Name { get; }
+		public bool IsEnabled { get; }
+		public IBrush Background { get; }
 
-		[Reactive] public string Value { get; set; } = "";
-		[Reactive] public string ValueHex { get; set; } = "";
+		[Reactive] public string Value { get; set; }
+		[Reactive] public string ValueHex { get; set; }
 
 		public RegEntry(string reg, string name, object? value, Format format = Format.None)
 		{
@@ -1504,7 +1506,9 @@ namespace Mesen.Debugger.ViewModels
 
 			Value = GetValue(value);
 			ValueHex = GetHexValue(value, format);
-			Background = value == null ? RegEntry.HeaderBgBrush: Brushes.Transparent;
+
+			Background = value == null ? RegEntry.HeaderBgBrush : Brushes.Transparent;
+			IsEnabled = value != null;
 		}
 
 		public string GetValue(object? value)

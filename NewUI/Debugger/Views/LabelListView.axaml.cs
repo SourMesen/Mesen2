@@ -7,6 +7,7 @@ using Mesen.Debugger.Windows;
 using System;
 using static Mesen.Debugger.ViewModels.LabelListViewModel;
 using Avalonia.Input;
+using DataBoxControl;
 
 namespace Mesen.Debugger.Views
 {
@@ -25,15 +26,15 @@ namespace Mesen.Debugger.Views
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is LabelListViewModel model) {
-				model.InitContextMenu(this, this.FindControl<DataGrid>("DataGrid"));
+				model.InitContextMenu(this);
 			}
 			base.OnDataContextChanged(e);
 		}
 
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
-			DataGrid grid = (DataGrid)sender;
-			if(DataContext is LabelListViewModel listModel && grid.SelectedItem is LabelViewModel label) {
+			DataBox grid = (DataBox)sender;
+			if(DataContext is LabelListViewModel listModel && grid.Selection.SelectedItem is LabelViewModel label) {
 				LabelEditWindow.EditLabel(listModel.CpuType, this, label.Label);
 			}
 		}

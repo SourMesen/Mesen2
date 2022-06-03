@@ -1,5 +1,7 @@
 ﻿using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
@@ -11,6 +13,7 @@ using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -19,8 +22,8 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class LabelListViewModel : ViewModelBase
 	{
-		[Reactive] public SwappableList<LabelViewModel> Labels { get; private set; } = new();
-		[Reactive] public int SelectedIndex { get; set; } = -1;
+		[Reactive] public AvaloniaList<LabelViewModel> Labels { get; private set; } = new();
+		[Reactive] public SelectionModel<LabelViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -37,13 +40,16 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateLabelList()
 		{
-			int selection = SelectedIndex;
-  			Labels.Swap(LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)));
+			int selection = Selection.SelectedIndex;
+
+			Labels.Clear();
+			Labels.AddRange(LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)));
+
 			if(selection >= 0) {
 				if(selection < Labels.Count) {
-					SelectedIndex = selection;
+					Selection.SelectedIndex = selection;
 				} else {
-					SelectedIndex = Labels.Count - 1;
+					Selection.SelectedIndex = Labels.Count - 1;
 				}
 			}
 		}
@@ -55,7 +61,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void InitContextMenu(Control parent, DataGrid grid)
+		public void InitContextMenu(Control parent)
 		{
 			DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
@@ -67,9 +73,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Edit),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel,
+					IsEnabled = () => Selection.SelectedItems.Count == 1,
 					OnClick = () => {
-						if(grid.SelectedItem is LabelViewModel vm) {
+						if(Selection.SelectedItem is LabelViewModel vm) {
 							LabelEditWindow.EditLabel(CpuType, parent, vm.Label);
 						}
 					}
@@ -78,9 +84,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_Delete),
-					IsEnabled = () => grid.SelectedItems.Count > 0,
+					IsEnabled = () => Selection.SelectedItems.Count > 0,
 					OnClick = () => {
-						IEnumerable<CodeLabel> labels = grid.SelectedItems.Cast<LabelViewModel>().Select(vm => vm.Label).ToList();
+						IEnumerable<CodeLabel> labels = Selection.SelectedItems.Cast<LabelViewModel>().Select(vm => vm.Label).ToList();
 						LabelManager.DeleteLabels(labels);
 					}
 				},
@@ -90,9 +96,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.AddBreakpoint,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddBreakpoint),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel,
+					IsEnabled = () => Selection.SelectedItems.Count == 1,
 					OnClick = () => {
-						if(grid.SelectedItem is LabelViewModel vm) {
+						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetAbsoluteAddress();
 							BreakpointManager.AddBreakpoint(addr, CpuType);
 						}
@@ -102,9 +108,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.AddWatch,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddToWatch),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel vm && vm.RelAddress >= 0,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is LabelViewModel vm && vm.RelAddress >= 0,
 					OnClick = () => {
-						if(grid.SelectedItem is LabelViewModel vm) {
+						if(Selection.SelectedItem is LabelViewModel vm) {
 							if(vm.Label?.Label.Length > 0) {
 								WatchManager.GetWatchManager(CpuType).AddWatch("[" + vm.Label.Label + "]");
 							} else {
@@ -119,9 +125,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_GoToLocation),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel vm && vm.Label.GetRelativeAddress(CpuType).Address >= 0,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is LabelViewModel vm && vm.Label.GetRelativeAddress(CpuType).Address >= 0,
 					OnClick = () => {
-						if(grid.SelectedItem is LabelViewModel vm) {
+						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address >= 0) {
 								Disassembly.SetSelectedRow(addr.Address, true);
@@ -133,9 +139,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_ViewInMemoryViewer),
-					IsEnabled = () => grid.SelectedItem is LabelViewModel vm,
+					IsEnabled = () => Selection.SelectedItems.Count == 1,
 					OnClick = () => {
-						if(grid.SelectedItem is LabelViewModel vm) {
+						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address < 0) {
 								addr = vm.Label.GetAbsoluteAddress();

@@ -68,7 +68,7 @@
           </ScrollViewer>
           <Rectangle Name="PART_ColumnHeadersAndRowsSeparator" DockPanel.Dock="Top" />
           <Panel>
-            <DataBoxRowsPresenter Name="PART_RowsPresenter" />
+            <DataBoxRowsPresenter Name="PART_RowsPresenter" SelectionMode="{Binding SelectionMode, RelativeSource={RelativeSource TemplatedParent}}" />
           </Panel>
         </DockPanel>
       </ControlTemplate>
@@ -90,8 +90,8 @@
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />        
-    <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />   
-    <Setter Property="VirtualizationMode" Value="Simple" />
+    <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
+	  <Setter Property="VirtualizationMode" Value="Simple" />
     <Setter Property="HorizontalAlignment" Value="Stretch" /> 
     <Setter Property="Template">
       <ControlTemplate>
@@ -126,13 +126,15 @@
   <Style Selector="DataBoxPanel">
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="VerticalAlignment" Value="Top" />
-    <Setter Property="Orientation" Value="Vertical" />
+	  <Setter Property="Orientation" Value="Vertical" />
+	  <Setter Property="Margin" Value="-1 0 0 0" />
   </Style>
 
   <Style Selector="DataBoxColumnHeadersPresenter">
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="VerticalAlignment" Value="Top" />
     <Setter Property="Background" Value="Transparent" />
+	  <Setter Property="Margin" Value="-1 0 0 0" />
   </Style>
 
   <Style Selector="DataBoxColumnHeader">
@@ -150,7 +152,7 @@
         <DockPanel Name="PART_ColumnHeaderRoot" 
                    Background="{TemplateBinding Background}">
           <Rectangle Name="VerticalSeparator"
-                     DockPanel.Dock="Right"
+                     DockPanel.Dock="Left"
                      Width="1"
                      VerticalAlignment="Stretch"
                      Fill="{TemplateBinding SeparatorBrush}"
@@ -253,16 +255,17 @@
     <Setter Property="Template">
       <ControlTemplate>
         <Grid x:Name="PART_CellRoot"
-              ColumnDefinitions="*,Auto"
+              ColumnDefinitions="Auto,*"
               Background="{TemplateBinding Background}">
           <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
+														Grid.Column="1"
                             Content="{TemplateBinding Content}"
                             Margin="{TemplateBinding Padding}"
                             TextBlock.Foreground="{TemplateBinding Foreground}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
           <Rectangle Name="PART_RightGridLine"
-                     Grid.Column="1"
+                     Grid.Column="0"
                      VerticalAlignment="Stretch"
                      Width="1"
                      Fill="{DynamicResource DataGridFillerColumnGridLinesBrush}" />

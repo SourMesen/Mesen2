@@ -26,8 +26,11 @@
 	</Design.DataContext>
 
 	<Window.Styles>
-		<Style Selector="DataGridCell">
-			<Setter Property="Background" Value="{Binding Path=Background}"/>
+		<Style Selector="DataBoxRow > Grid Rectangle#BackgroundRectangle">
+			<Setter Property="Fill" Value="{Binding Path=Background}"/>
+		</Style>
+		<Style Selector="DataBoxRow">
+			<Setter Property="IsEnabled" Value="{Binding Path=IsEnabled}"/>
 		</Style>
 	</Window.Styles>
 
@@ -49,20 +52,18 @@
 			<TabControl.ContentTemplate>
 				<DataTemplate>
 					<Border BorderBrush="Gray" BorderThickness="1">
-						<dc:MesenDataGrid
+						<DataBox
 							Items="{Binding Data}"
-							HorizontalScrollBarVisibility="Auto"
-							VerticalScrollBarVisibility="Auto"
-							CanUserReorderColumns="False"
+							GridLinesVisibility="All"
 							CanUserSortColumns="False"
 						>
-							<DataGrid.Columns>
-								<DataGridTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
-								<DataGridTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
-								<DataGridTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
-								<DataGridTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
-							</DataGrid.Columns>
-						</dc:MesenDataGrid>
+							<DataBox.Columns>
+								<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
+							</DataBox.Columns>
+						</DataBox>
 					</Border>
 				</DataTemplate>
 			</TabControl.ContentTemplate>

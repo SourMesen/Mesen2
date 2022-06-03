@@ -13,6 +13,7 @@ using Mesen.Config;
 using System;
 using static Mesen.Debugger.ViewModels.BreakpointListViewModel;
 using Avalonia.Input;
+using DataBoxControl;
 
 namespace Mesen.Debugger.Views
 {
@@ -31,22 +32,17 @@ namespace Mesen.Debugger.Views
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is BreakpointListViewModel vm) {
-				vm.InitContextMenu(this, this.FindControl<DataGrid>("DataGrid"));
+				vm.InitContextMenu(this);
 			}
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridClick(object sender, RoutedEventArgs e)
+		private void OnCellClick(DataBoxCell cell)
 		{
-			DataGrid? grid = (sender as DataGrid);
-			if(grid?.SelectedItem is BreakpointViewModel vm) {
+			if(cell.DataContext is BreakpointViewModel vm) {
 				Breakpoint bp = vm.Breakpoint;
-				string? header = grid.CurrentColumn.Header.ToString();
-				if(header == "E") {
-					bp.Enabled = !bp.Enabled;
-					BreakpointManager.RefreshBreakpoints(bp);
-				} else if(header == "M") {
-					bp.MarkEvent = !bp.MarkEvent;
+				string? header = cell.Column?.Header?.ToString() ?? "";
+				if(header == "E" || header == "M") {
 					BreakpointManager.RefreshBreakpoints(bp);
 				}
 			}
@@ -54,8 +50,8 @@ namespace Mesen.Debugger.Views
 
 		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
-			DataGrid grid = (DataGrid)sender;
-			if(grid?.SelectedItem is BreakpointViewModel vm) {
+			DataBox grid = (DataBox)sender;
+			if(grid?.Selection.SelectedItem is BreakpointViewModel vm) {
 				BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, this);
 			}
 		}

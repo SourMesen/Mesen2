@@ -28,8 +28,11 @@ public class DataBoxCellsPresenter : Panel, IStyleable
                 [!ContentControl.ContentTemplateProperty] = column[!DataBoxColumn.CellTemplateProperty],
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                DataBox = DataBox
+                DataBox = DataBox,
+					 Column = column
             };
+			
+				cell.Tapped += DataBox.OnCellTapped;
 
             Children.Add(cell);
         }

@@ -1,4 +1,5 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Controls.Selection;
+using Mesen.Config;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,7 +17,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public double MinListViewHeight { get; set; }
 		[Reactive] public double ListViewHeight { get; set; }
 		[Reactive] public List<SpritePreviewModel>? SpritePreviews { get; set; } = null;
-		[Reactive] public SpritePreviewModel? SelectedItem { get; set; } = null;
+		[Reactive] public SelectionModel<SpritePreviewModel?> Selection { get; set; } = new();
 
 		[Reactive] public ListSortDirection? SortIndex { get; set; }
 		[Reactive] public ListSortDirection? SortX { get; set; }
@@ -46,7 +47,7 @@ namespace Mesen.Debugger.ViewModels
 				RefreshList(true);
 			});
 
-			AddDisposable(this.WhenAnyValue(x => x.SelectedItem).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.Selection.SelectedItem).Subscribe(x => {
 				if(x != null) {
 					SpriteViewer.SelectSprite(x.SpriteIndex);
 				}
@@ -55,7 +56,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void SelectSprite(int spriteIndex)
 		{
-			SelectedItem = SpritePreviews?.Find(x => x.SpriteIndex == spriteIndex);
+			Selection.SelectedItem = SpritePreviews?.Find(x => x.SpriteIndex == spriteIndex);
 		}
 
 		public void ForceRefresh()
@@ -80,7 +81,7 @@ namespace Mesen.Debugger.ViewModels
 				SpritePreviews = SpriteViewer.SpritePreviews.Select(x => x.Clone()).ToList();
 			}
 
-			int? selectedIndex = SelectedItem?.SpriteIndex;
+			int? selectedIndex = Selection.SelectedItem?.SpriteIndex;
 
 			List<SpritePreviewModel> newList = new(SpriteViewer.SpritePreviews.Select(x => x.Clone()).ToList());
 
@@ -111,8 +112,8 @@ namespace Mesen.Debugger.ViewModels
 				newList[i].CopyTo(SpritePreviews[i]);
 			}
 
-			if(selectedIndex != null && SelectedItem?.SpriteIndex != selectedIndex) {
-				SelectedItem = null;
+			if(selectedIndex != null && Selection.SelectedItem?.SpriteIndex != selectedIndex) {
+				Selection.SelectedItem = null;
 			}
 		}
 

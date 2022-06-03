@@ -8,25 +8,34 @@ namespace DataBoxControl;
 
 public class DataBoxTextColumn : DataBoxBoundColumn
 {
-    public DataBoxTextColumn()
-    {
-        CellTemplate = new FuncDataTemplate(
-            _ => true,
-            (_, _) =>
-            {
-                var textBlock = new TextBlock            
-                {
-                    [!Layoutable.MarginProperty] = new DynamicResourceExtension("DataGridTextColumnCellTextBlockMargin"),
-                    VerticalAlignment = VerticalAlignment.Center
-                };
+	public static readonly StyledProperty<bool> ShowToolTipProperty =
+	  AvaloniaProperty.Register<DataBoxBoundColumn, bool>(nameof(ShowToolTip), false);
 
-                if (Binding is { })
-                {
-                    textBlock.Bind(TextBlock.TextProperty, Binding);
-                }
+	public bool ShowToolTip
+	{
+		get => GetValue(ShowToolTipProperty);
+		set => SetValue(ShowToolTipProperty, value);
+	}
 
-                return textBlock;
-            },
-            supportsRecycling: true);
-    }
+	public DataBoxTextColumn()
+	{
+		CellTemplate = new FuncDataTemplate(
+			 _ => true,
+			 (_, _) => {
+				 var textBlock = new TextBlock {
+					 [!Layoutable.MarginProperty] = new DynamicResourceExtension("DataGridTextColumnCellTextBlockMargin"),
+					 VerticalAlignment = VerticalAlignment.Center
+				 };
+
+				 if(Binding is { }) {
+					 textBlock.Bind(TextBlock.TextProperty, Binding);
+					 if(ShowToolTip) {
+						 textBlock.Bind(ToolTip.TipProperty, Binding);
+					 }
+				 }
+
+				 return textBlock;
+			 },
+			 supportsRecycling: true);
+	}
 }

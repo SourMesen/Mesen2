@@ -6,6 +6,16 @@
 	xmlns:converters="using:Dock.Avalonia.Converters"
 	xmlns:controls="using:Dock.Model.Controls"
 >
+	<Style Selector="ToolControl /template/ Separator#PART_Separator">
+		<Setter Property="IsVisible" Value="False" />
+	</Style>
+	<Style Selector="ToolControl /template/ Border#PART_Border">
+		<Setter Property="BorderThickness" Value="1 0 1 1" />
+	</Style>
+	<Style Selector="ToolControl /template/ DockPanel#PART_DockPanel">
+		<Setter Property="Margin" Value="0 0 0 1" />
+	</Style>
+	
 	<!-- Add help icon/tooltip to tool window header -->
 	<Style Selector="ToolChromeControl">
 		<Setter Property="Template">

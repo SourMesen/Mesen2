@@ -18,31 +18,29 @@
 	</Design.DataContext>
 
 	<UserControl.Styles>
-		<Style Selector="DataGridCell">
-			<Setter Property="Foreground" Value="{Binding RowBrush}" />
-			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
-		</Style>
-		<Style Selector="DataGridCell.comment">
-			<Setter Property="ToolTip.Tip" Value="{Binding Label.Comment}" />
-		</Style>
-		<Style Selector="ToolTip TextBlock">
+		<Style Selector="DataBoxRow ToolTip TextBlock">
 			<Setter Property="FontFamily" Value="Consolas" />
 		</Style>
+		<Style Selector="DataBoxRow:selected DataBoxCell TextBlock ToolTip TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />
+		</Style>
 	</UserControl.Styles>
-	
-	<Border BorderThickness="1" BorderBrush="LightGray">
-		<c:MesenDataGrid
+
+	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+		<DataBox
 			Name="DataGrid"
 			Items="{CompiledBinding Labels}"
-			SelectedIndex="{CompiledBinding SelectedIndex}"
+			Selection="{CompiledBinding Selection}"
+			GridLinesVisibility="All"
+			SelectionMode="Multiple"
 			DoubleTapped="OnGridDoubleClick"
 		>
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
-				<DataGridTextColumn Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataGridTextColumn Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataGridTextColumn CellStyleClasses="comment" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
-			</DataGrid.Columns>
-		</c:MesenDataGrid>
+			<DataBox.Columns>
+				<DataBoxTextColumn Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ShowToolTip="True" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
+			</DataBox.Columns>
+		</DataBox>
 	</Border>
 </UserControl>

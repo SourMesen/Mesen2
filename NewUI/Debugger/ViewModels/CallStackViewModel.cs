@@ -1,5 +1,7 @@
 ﻿using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Media;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
@@ -21,7 +23,8 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
-		[Reactive] public SwappableList<StackInfo> CallStackContent { get; private set; } = new();
+		[Reactive] public AvaloniaList<StackInfo> CallStackContent { get; private set; } = new();
+		[Reactive] public SelectionModel<StackInfo?> Selection { get; set; } = new();
 
 		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
 
@@ -48,7 +51,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshCallStack()
 		{
-			CallStackContent.Swap(GetStackInfo());
+			CallStackContent.Clear();
+			CallStackContent.AddRange(GetStackInfo());
 		}
 
 		private List<StackInfo> GetStackInfo()
@@ -112,15 +116,15 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void InitContextMenu(Control parent, DataGrid grid)
+		public void InitContextMenu(Control parent)
 		{
 			DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
 					ActionType = ActionType.EditLabel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CallStack_EditLabel),
-					IsEnabled = () => grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null,
+					IsEnabled = () => Selection.SelectedItem is StackInfo entry && entry.EntryPointAddr != null,
 					OnClick = () => {
-						if(grid.SelectedItem is StackInfo entry && entry.EntryPointAddr != null) {
+						if(Selection.SelectedItem is StackInfo entry && entry.EntryPointAddr != null) {
 							LabelEditWindow.EditLabel(CpuType, parent, new CodeLabel() {
 								Address = (uint)entry.EntryPointAddr.Value.Address,
 								MemoryType = entry.EntryPointAddr.Value.Type
@@ -132,9 +136,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CallStack_GoToLocation),
-					IsEnabled = () => grid.SelectedItem is StackInfo entry && IsMapped(entry),
+					IsEnabled = () => Selection.SelectedItem is StackInfo entry && IsMapped(entry),
 					OnClick = () => {
-						if(grid.SelectedItem is StackInfo entry) {
+						if(Selection.SelectedItem is StackInfo entry) {
 							GoToLocation(entry);
 						}
 					}

@@ -13,13 +13,17 @@ using Avalonia.Controls;
 using Mesen.ViewModels;
 using System.ComponentModel;
 using Mesen.Utilities;
+using System.Collections;
+using DataBoxControl;
+using Avalonia.Collections;
+using Avalonia.Controls.Selection;
 
 namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointListViewModel : ViewModelBase
 	{
-		[Reactive] public SwappableList<BreakpointViewModel> Breakpoints { get; private set; } = new();
-		[Reactive] public int SelectedIndex { get; set; } = -1;
+		[Reactive] public AvaloniaList<BreakpointViewModel> Breakpoints { get; private set; } = new();
+		[Reactive] public SelectionModel<BreakpointViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -36,13 +40,14 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateBreakpoints()
 		{
-			int selection = SelectedIndex;
-			Breakpoints.Swap(BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)));
+			int selection = Selection.SelectedIndex;
+			Breakpoints.Clear();
+			Breakpoints.AddRange(BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)));
 			if(selection >= 0) {
 				if(selection < Breakpoints.Count) {
-					SelectedIndex = selection;
+					Selection.SelectedIndex = selection;
 				} else {
-					SelectedIndex = Breakpoints.Count - 1;
+					Selection.SelectedIndex = Breakpoints.Count - 1;
 				}
 			}
 		}
@@ -54,7 +59,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void InitContextMenu(Control parent, DataGrid grid)
+		public void InitContextMenu(Control parent)
 		{
 			DebugShortcutManager.CreateContextMenu(parent, new object[] {
 				new ContextMenuAction() {
@@ -69,9 +74,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Edit,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Edit),
-					IsEnabled = () => grid.SelectedItem is BreakpointViewModel,
+					IsEnabled = () => Selection.SelectedItems.Count == 1,
 					OnClick = () => {
-						if(grid.SelectedItem is BreakpointViewModel vm) {
+						if(Selection.SelectedItem is BreakpointViewModel vm) {
 							BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, parent);
 						}
 					}
@@ -80,9 +85,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Delete),
-					IsEnabled = () => grid.SelectedItems.Count > 0,
+					IsEnabled = () => Selection.SelectedItems.Count > 0,
 					OnClick = () => {
-						foreach(object item in grid.SelectedItems.Cast<object>().ToList()) {
+						foreach(object item in Selection.SelectedItems.Cast<object>().ToList()) {
 							if(item is BreakpointViewModel vm) {
 								BreakpointManager.RemoveBreakpoint(vm.Breakpoint);
 							}
@@ -95,9 +100,9 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_GoToLocation),
-					IsEnabled = () => grid.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint && vm.Breakpoint.GetRelativeAddress() >= 0,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint && vm.Breakpoint.GetRelativeAddress() >= 0,
 					OnClick = () => {
-						if(grid.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
+						if(Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
 							int addr = vm.Breakpoint.GetRelativeAddress();
 							if(addr >= 0) {
 								Disassembly.SetSelectedRow(addr, true);

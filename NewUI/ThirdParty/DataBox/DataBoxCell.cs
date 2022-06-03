@@ -12,8 +12,9 @@ public class DataBoxCell : ContentControl, IStyleable
     private Rectangle? _rightGridLine;
 
     internal DataBox? DataBox { get; set; }
+    internal DataBoxColumn? Column { get; set; }
 
-    internal double MeasuredWidth { get; set; }
+	internal double MeasuredWidth { get; set; }
 
     Type IStyleable.StyleKey => typeof(DataBoxCell);
 

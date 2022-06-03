@@ -16,21 +16,23 @@
 		<vm:BreakpointListViewModel />
 	</Design.DataContext>
 
-	<Border BorderThickness="1" BorderBrush="LightGray">
-		<c:MesenDataGrid
+	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+		<DataBox
 			Name="DataGrid"
 			Items="{CompiledBinding Breakpoints}"
-			SelectedIndex="{CompiledBinding SelectedIndex}"
-			Tapped="OnGridClick"
+			Selection="{CompiledBinding Selection}"
+			CellClick="OnCellClick"
 			DoubleTapped="OnGridDoubleClick"
+			SelectionMode="Multiple"
+			GridLinesVisibility="All"
 		>
-			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
-				<DataGridCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
-				<DataGridTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
-				<DataGridTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataGridTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
-			</DataGrid.Columns>
-		</c:MesenDataGrid>
+			<DataBox.Columns>
+				<DataBoxCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
+				<DataBoxCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
+				<DataBoxTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
+				<DataBoxTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
+				<DataBoxTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+			</DataBox.Columns>
+		</DataBox>
 	</Border>
 </UserControl>

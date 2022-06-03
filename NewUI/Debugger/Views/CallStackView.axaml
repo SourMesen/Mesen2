@@ -21,34 +21,33 @@
 	</UserControl.Resources>
 
 	<UserControl.Styles>
-		<Style Selector="DataGridCell.gridCell">
+		<Style Selector="DataBoxCell">
 			<Setter Property="Foreground" Value="{Binding Path=RowBrush}"/>
 			<Setter Property="FontStyle" Value="{Binding Path=RowStyle}"/>
 		</Style>
 	</UserControl.Styles>
 
 	<Border BorderThickness="1" BorderBrush="LightGray">
-		<c:MesenDataGrid
+		<DataBox
 			Name="DataGrid"
 			Items="{CompiledBinding CallStackContent}"
+			GridLinesVisibility="All"
 			DoubleTapped="OnGridDoubleClick"
 		>
-			<DataGrid.Columns>
-				<DataGridTextColumn
-					CellStyleClasses="gridCell"
+			<DataBox.Columns>
+				<DataBoxTextColumn
 					Header="Function (Entry Address)"
 					Binding="{Binding EntryPoint}"
 					Width="1*" 
 					CanUserResize="True"
 				/>
-				<DataGridTextColumn
-					CellStyleClasses="gridCell"
+				<DataBoxTextColumn
 					Header="PC Address"
 					Binding="{Binding RelAddress, Converter={StaticResource Hex}, ConverterParameter='$X4'}}"
 					Width="1*"
 					CanUserResize="True"
 				/>
-			</DataGrid.Columns>
-		</c:MesenDataGrid>
+			</DataBox.Columns>
+		</DataBox>
 	</Border>
 </UserControl>
