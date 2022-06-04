@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls.Selection;
+using DataBoxControl;
 using Mesen.Config;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -18,15 +19,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public double ListViewHeight { get; set; }
 		[Reactive] public List<SpritePreviewModel>? SpritePreviews { get; set; } = null;
 		[Reactive] public SelectionModel<SpritePreviewModel?> Selection { get; set; } = new();
-
-		[Reactive] public ListSortDirection? SortIndex { get; set; }
-		[Reactive] public ListSortDirection? SortX { get; set; }
-		[Reactive] public ListSortDirection? SortY { get; set; }
-		[Reactive] public ListSortDirection? SortSize { get; set; }
-		[Reactive] public ListSortDirection? SortTileIndex { get; set; }
-		[Reactive] public ListSortDirection? SortPalette { get; set; }
-		[Reactive] public ListSortDirection? SortPriority { get; set; }
-		[Reactive] public ListSortDirection? SortFlags { get; set; }
+		[Reactive] public SortState SortState { get; set; } = new();
 
 		public ICommand SortCommand { get; }
 		public SpriteViewerViewModel SpriteViewer { get; }
@@ -41,7 +34,7 @@ namespace Mesen.Debugger.ViewModels
 			ShowListView = Config.ShowListView;
 			ListViewHeight = Config.ShowListView ? Config.ListViewHeight : 0;
 
-			SortIndex = ListSortDirection.Ascending;
+			SortState.SetColumnSort("SpriteIndex", ListSortDirection.Ascending, false);
 
 			SortCommand = ReactiveCommand.Create<string?>(sortMemberPath => {
 				RefreshList(true);
@@ -88,22 +81,28 @@ namespace Mesen.Debugger.ViewModels
 			newList.Sort((a, b) => {
 				int result = 0;
 
-				void Compare(ListSortDirection? order, Func<int> compare)
-				{
-					if(order.HasValue && result == 0) {
-						result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					void Compare(string name, Func<int> compare)
+					{
+						if(result == 0 && column == name) {
+							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+						}
+					}
+
+					Compare("SpriteIndex", () => a.SpriteIndex.CompareTo(b.SpriteIndex));
+					Compare("X", () => a.X.CompareTo(b.X));
+					Compare("Y", () => a.Y.CompareTo(b.Y));
+					Compare("TileIndex", () => a.TileIndex.CompareTo(b.TileIndex));
+					Compare("Size", () => a.Width.CompareTo(b.Width));
+					Compare("Size", () => a.Height.CompareTo(b.Height));
+					Compare("Palette", () => a.Palette.CompareTo(b.Palette));
+					Compare("Priority", () => a.Priority.CompareTo(b.Priority));
+					Compare("Flags", () => a.Flags?.CompareTo(b.Flags) ?? 0);
+
+					if(result != 0) {
+						return result;
 					}
 				}
-
-				Compare(SortIndex, () => a.SpriteIndex.CompareTo(b.SpriteIndex));
-				Compare(SortX, () => a.RawX.CompareTo(b.RawX));
-				Compare(SortY, () => a.RawY.CompareTo(b.RawY));
-				Compare(SortIndex, () => a.SpriteIndex.CompareTo(b.SpriteIndex));
-				Compare(SortSize, () => a.Width.CompareTo(b.Width));
-				Compare(SortSize, () => a.Height.CompareTo(b.Height));
-				Compare(SortPalette, () => a.Palette.CompareTo(b.Palette));
-				Compare(SortPriority, () => a.Priority.CompareTo(b.Priority));
-				Compare(SortFlags, () => a.Flags?.CompareTo(b.Flags) ?? 0);
 
 				return result != 0 ? result : a.SpriteIndex.CompareTo(b.SpriteIndex);
 			});

@@ -131,7 +131,9 @@
 					Items="{CompiledBinding ListView.SpritePreviews}"
 					Selection="{CompiledBinding ListView.Selection}"
 					CanUserResizeColumns="False"
-					CanUserSortColumns="True"
+					SortMode="Multiple"
+					SortState="{CompiledBinding ListView.SortState}"
+					SortCommand="{CompiledBinding ListView.SortCommand}"
 					GridLinesVisibility="All"
 				>
 					<DataBox.Styles>
@@ -152,18 +154,15 @@
 						<Style Selector="StackPanel > TextBlock">
 							<Setter Property="Margin" Value="0" />
 						</Style>
-						<Style Selector="DataBoxTemplateColumn">
-							<Setter Property="CanUserSort" Value="True" />
-						</Style>
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="#" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortIndex}">
+						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="#" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding SpriteIndex}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="X" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortX}">
+						<DataBoxTemplateColumn ColumnName="X" Header="X" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -174,7 +173,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Y" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortY}">
+						<DataBoxTemplateColumn ColumnName="Y" Header="Y" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -185,7 +184,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Size" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortSize}">
+						<DataBoxTemplateColumn ColumnName="Size" Header="Size" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="{Binding Width}" />
@@ -194,7 +193,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Tile" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortTileIndex}">
+						<DataBoxTemplateColumn ColumnName="TileIndex" Header="Tile" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -202,17 +201,17 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Palette" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortPalette}">
+						<DataBoxTemplateColumn ColumnName="Palette" Header="Palette" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Palette}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Priority" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortPriority}">
+						<DataBoxTemplateColumn ColumnName="Priority" Header="Priority" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Priority, Converter={StaticResource Enum}}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Flags" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortFlags}">
+						<DataBoxTemplateColumn ColumnName="Flags" Header="Flags" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Flags}" />
 							</DataTemplate>

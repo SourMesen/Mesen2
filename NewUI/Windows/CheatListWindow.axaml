@@ -35,26 +35,26 @@
 		<c:ActionToolbar DockPanel.Dock="Top" Items="{CompiledBinding ToolbarActions}" />
 		
 		<Border BorderThickness="1" BorderBrush="LightGray" Margin="2">
-			<c:MesenDataGrid
-				Name="DataGrid"
+			<DataBox
 				Items="{CompiledBinding Cheats}"
-				SelectedIndex="{CompiledBinding SelectedIndex}"
-				Tapped="OnGridClick"
+				Selection="{CompiledBinding Selection}"
+				CellClick="OnCellClick"
 				DoubleTapped="OnGridDoubleClick"
-				CanUserReorderColumns="False"
+				SortMode="Multiple"
+				SortCommand="{Binding Sort}"
+				SortState="{CompiledBinding SortState}"
+				GridLinesVisibility="All"		  
 			>
-				<DataGrid.Columns>
-					<DataGridCheckBoxColumn Header="" Binding="{Binding Enabled}" Width="21" />
-					<DataGridTextColumn Header="{l:Translate colDescription}" Binding="{Binding Description}" Width="1*" CanUserResize="True" />
-					<DataGridTemplateColumn Header="{l:Translate colCodes}" Width="1*" CanUserResize="True">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Codes, Converter={StaticResource CodeConverter}}" />
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
-				</DataGrid.Columns>
-			</c:MesenDataGrid>
+				<DataBox.Columns>
+					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled}" Width="21" />
+					<DataBoxTextColumn ColumnName="Description" Header="{l:Translate colDescription}" Binding="{Binding Description}" Width="1*" CanUserResize="True" />
+					<DataBoxTemplateColumn ColumnName="Codes" Header="{l:Translate colCodes}" Width="1*" CanUserResize="True">
+						<DataTemplate>
+							<TextBlock Text="{Binding Codes, Converter={StaticResource CodeConverter}}" />
+						</DataTemplate>
+					</DataBoxTemplateColumn>
+				</DataBox.Columns>
+			</DataBox>
 		</Border>
 	</DockPanel>
 </Window>

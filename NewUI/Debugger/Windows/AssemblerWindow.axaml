@@ -61,15 +61,16 @@
 			</Border>
 
 			<Border Grid.Row="1">
-				<dc:MesenDataGrid
+				<DataBox
 					Items="{CompiledBinding Errors}"
-					CellPointerPressed="OnCellPointerPressed"
+					GridLinesVisibility="All"
+					CellClick="OnCellClick"
 				>
-					<DataGrid.Columns>
-						<DataGridTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" Width="50" CanUserResize="True" />
-						<DataGridTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" Width="*" CanUserResize="True" />
-					</DataGrid.Columns>
-				</dc:MesenDataGrid>
+					<DataBox.Columns>
+						<DataBoxTextColumn Header="{l:Translate colLine}" Binding="{Binding LineNumber}" Width="50" CanUserResize="True" />
+						<DataBoxTextColumn Header="{l:Translate colError}" Binding="{Binding Message}" Width="*" CanUserResize="True" />
+					</DataBox.Columns>
+				</DataBox>
 			</Border>
 
 			<Border Grid.Row="1" Grid.Column="1" Padding="2">

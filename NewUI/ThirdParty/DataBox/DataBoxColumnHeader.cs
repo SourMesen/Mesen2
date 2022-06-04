@@ -27,7 +27,10 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
     internal static readonly StyledProperty<bool> IsPressedProperty =
         AvaloniaProperty.Register<DataBoxColumnHeader, bool>(nameof(IsPressed));
 
-    public DataBoxColumnHeader()
+	internal static readonly StyledProperty<string> SortNumberProperty =
+		 AvaloniaProperty.Register<DataBoxColumnHeader, string>(nameof(SortNumber));
+
+	public DataBoxColumnHeader()
     {
         UpdatePseudoClassesIsPressed(IsPressed);
     }
@@ -54,15 +57,19 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
         private set => SetValue(IsPressedProperty, value);
     }
 
-    internal DataBoxColumn? Column { get; set; }
+	public string SortNumber
+	{
+		get => GetValue(SortNumberProperty);
+		set => SetValue(SortNumberProperty, value);
+	}
+
+	internal DataBoxColumn? Column { get; set; }
 
     internal IReadOnlyList<DataBoxColumnHeader>? ColumnHeaders { get; set; }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-
-        UpdatePseudoClassesSortingState(Column?.SortingState);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -107,65 +114,42 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
         }
     }
 
-    private void OnClick(KeyModifiers keyModifiers)
-    {
-        if (DataBox is null)
-        {
-            return;
-        }
-            
-        if (Column is null || Column.SortCommand is null || ColumnHeaders is null)
-        {
-            return;
-        }
+	private void OnClick(KeyModifiers keyModifiers)
+	{
+		if(DataBox is null || DataBox.SortMode == SortMode.None || DataBox.SortCommand is null) {
+			return;
+		}
 
-        if (!Column.CanUserSort || !DataBox.CanUserSortColumns)
-        {
-            return;
-        }
+		if(Column is null || ColumnHeaders is null || !Column.CanUserSort || string.IsNullOrEmpty(Column.ColumnName)) {
+			return;
+		}
 
-        var ctrl = (keyModifiers & KeyModifiers.Control) == KeyModifiers.Control;
-        var shift = (keyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift;
+		var ctrl = (keyModifiers & KeyModifiers.Control) == KeyModifiers.Control;
+		var shift = (keyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift;
 
-        if (!shift)
-        {
-            foreach (var columnHeader in ColumnHeaders)
-            {
-                if (!Equals(columnHeader, this))
-                {
-                    if (columnHeader.Column is { } column)
-                    {
-                        column.SortingState = null;
-                        columnHeader.UpdatePseudoClassesSortingState(column.SortingState);
-                    }
-                }
-            }
-        }
+		SortState sortState = DataBox.SortState;
 
-        string? sortMemberPath = ctrl ? null : Column.SortMemberPath;
-        ListSortDirection? sortingState =  ctrl ? null : (Column.SortingState == ListSortDirection.Ascending
-            ? ListSortDirection.Descending
-            : ListSortDirection.Ascending);
+		if(ctrl) {
+			sortState.Remove(Column.ColumnName);
+		} else if(shift && DataBox.SortMode == SortMode.Multiple) {
+			sortState.ToggleSortOrder(Column.ColumnName, false);
+		} else {
+			sortState.ToggleSortOrder(Column.ColumnName, true);
+		}
 
-        Column.SortingState = sortingState;
+		sortState.UpdateColumnHeaders(ColumnHeaders);
 
-        UpdatePseudoClassesSortingState(sortingState);
-
-        if (Column.SortCommand is { } command)
-        {
-            if (command.CanExecute(sortMemberPath))
-            {
-                command.Execute(sortMemberPath);
-            }
-        }
-    }
+		if(DataBox.SortCommand.CanExecute(null)) {
+			DataBox.SortCommand.Execute(null);
+		}
+	}
 
     private void UpdatePseudoClassesIsPressed(bool isPressed)
     {
         PseudoClasses.Set(":pressed", isPressed);
     }
 
-    private void UpdatePseudoClassesSortingState(ListSortDirection? sortingState)
+    public void UpdatePseudoClassesSortingState(ListSortDirection? sortingState)
     {
         PseudoClasses.Set(":sortascending", sortingState == ListSortDirection.Ascending);
         PseudoClasses.Set(":sortdescending", sortingState == ListSortDirection.Descending);

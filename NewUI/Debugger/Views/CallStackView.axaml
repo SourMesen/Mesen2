@@ -29,8 +29,8 @@
 
 	<Border BorderThickness="1" BorderBrush="LightGray">
 		<DataBox
-			Name="DataGrid"
 			Items="{CompiledBinding CallStackContent}"
+			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			DoubleTapped="OnGridDoubleClick"
 		>

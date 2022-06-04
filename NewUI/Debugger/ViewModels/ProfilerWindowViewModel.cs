@@ -1,5 +1,8 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia.Collections;
+using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Threading;
+using DataBoxControl;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
@@ -10,6 +13,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -59,16 +63,16 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public string TabName { get; set; } = "";
 		[Reactive] public CpuType CpuType { get; set; } = CpuType.Snes;
-		[Reactive] public ObservableCollection<ProfiledFunctionViewModel> GridData { get; private set; } = new ObservableCollection<ProfiledFunctionViewModel>();
+		[Reactive] public AvaloniaList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
+		[Reactive] public SelectionModel<ProfiledFunctionViewModel> Selection { get; set; } = new();
+		[Reactive] public SortState SortState { get; set; } = new();
 		
-		private ProfiledFunction[] _profilerData = new ProfiledFunction[0];
+		private ProfiledFunction[] _profilerData = Array.Empty<ProfiledFunction>();
 		private UInt64 _totalCycles;
-		public HashSet<int> LoadedRows { get; } = new HashSet<int>();
-		private int _sortColumn = 5;
-		private bool _sortOrder = true;
 
 		public ProfilerTab()
 		{
+			SortState.SetColumnSort("InclusiveTime", ListSortDirection.Descending, false);
 		}
 
 		public ProfiledFunction? GetRawData(int index)
@@ -84,7 +88,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebugApi.ResetProfiler(CpuType);
 			GridData.Clear();
-			LoadedRows.Clear();
 			RefreshData();
 			RefreshGrid();
 		}
@@ -99,55 +102,65 @@ namespace Mesen.Debugger.ViewModels
 			Sort();
 
 			UInt64 totalCycles = 0;
-			foreach(ProfiledFunction f in _profilerData) {
+			ProfiledFunction[] profilerData = _profilerData;
+			foreach(ProfiledFunction f in profilerData) {
 				totalCycles += f.ExclusiveCycles;
 			}
 			_totalCycles = totalCycles;
 
-			while(GridData.Count < _profilerData.Length) {
+			while(GridData.Count < profilerData.Length) {
 				GridData.Add(new ProfiledFunctionViewModel());
 			}
 
-			UpdateLoadedRows();
-		}
-
-		public void UpdateRow(int index, ProfiledFunctionViewModel row)
-		{
-			if(index >= _profilerData.Length) {
-				return;
-			}
-
-			ProfiledFunction func = _profilerData[index];
-
-			row.FunctionName = GetFunctionName(func);
-			row.ExclusiveCycles = func.ExclusiveCycles.ToString();
-			row.InclusiveCycles = func.InclusiveCycles.ToString();
-			row.CallCount = func.CallCount.ToString();
-			row.MinCycles = func.MinCycles == UInt64.MaxValue ? "n/a" : func.MinCycles.ToString();
-			row.MaxCycles = func.MaxCycles == 0 ? "n/a" : func.MaxCycles.ToString();
-
-			row.AvgCycles = (func.CallCount == 0 ? 0 : (func.InclusiveCycles / func.CallCount)).ToString();
-			row.ExclusivePercent = ((double)func.ExclusiveCycles / _totalCycles * 100).ToString("0.00");
-			row.InclusivePercent = ((double)func.InclusiveCycles / _totalCycles * 100).ToString("0.00");
-
-			LoadedRows.Add(index);
-		}
-
-		public void UnloadRow(int index)
-		{
-			LoadedRows.Remove(index);
-		}
-
-		public void UpdateLoadedRows()
-		{
-			foreach(int i in LoadedRows) {
-				UpdateRow(i, GridData[i]);
+			for(int i = 0; i < GridData.Count; i++) {
+				GridData[i].Update(profilerData[i], CpuType, _totalCycles);
 			}
 		}
 
-		private string GetFunctionName(ProfiledFunction func)
+		public void SortCommand(object? param)
 		{
-			int hexCount = this.CpuType == CpuType.Spc ? 4 : 6;
+			RefreshGrid();
+		}
+
+		public void Sort()
+		{
+			CpuType cpuType = CpuType;
+
+			Array.Sort(_profilerData, (a, b) => {
+				int result = 0;
+
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					void Compare(string name, Func<int> compare)
+					{
+						if(result == 0 && column == name) {
+							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+						}
+					}
+
+					Compare("FunctionName", () => a.GetFunctionName(cpuType).CompareTo(b.GetFunctionName(cpuType)));
+					Compare("CallCount", () => a.CallCount.CompareTo(b.CallCount));
+					Compare("InclusiveTime", () => a.InclusiveCycles.CompareTo(b.InclusiveCycles));
+					Compare("InclusiveTimePercent", () => a.InclusiveCycles.CompareTo(b.InclusiveCycles));
+					Compare("ExclusiveTime", () => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles));
+					Compare("ExclusiveTimePercent", () => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles));
+					Compare("AvgCycles", () => a.GetAvgCycles().CompareTo(b.GetAvgCycles()));
+					Compare("MinCycles", () => a.MinCycles.CompareTo(b.MinCycles));
+					Compare("MaxCycles", () => a.MaxCycles.CompareTo(b.MaxCycles));
+
+					if(result != 0) {
+						return result;
+					}
+				}
+
+				return result != 0 ? result : a.InclusiveCycles.CompareTo(b.InclusiveCycles);
+			});
+		}
+	}
+
+	public static class ProfiledFunctionExtensions
+	{
+		public static string GetFunctionName(this ProfiledFunction func, CpuType cpuType)
+		{
 			string functionName;
 
 			if(func.Address.Address == -1) {
@@ -155,6 +168,7 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				CodeLabel? label = LabelManager.GetLabel((UInt32)func.Address.Address, func.Address.Type);
 
+				int hexCount = cpuType.GetAddressSize();
 				functionName = func.Address.Type.GetShortName() + ": $" + func.Address.Address.ToString("X" + hexCount.ToString());
 				if(label != null) {
 					functionName = label.Label + " (" + functionName + ")";
@@ -163,87 +177,65 @@ namespace Mesen.Debugger.ViewModels
 
 			return functionName;
 		}
-
-		private object GetColumnContent(ProfiledFunction func, int columnIndex)
-		{
-			switch(columnIndex) {
-				case 0: return GetFunctionName(func);
-				case 1: return func.CallCount;
-				case 2: return func.InclusiveCycles;
-				case 3: return (double)func.InclusiveCycles / _totalCycles * 100;
-				case 4: return func.ExclusiveCycles;
-				case 5: return (double)func.ExclusiveCycles / _totalCycles * 100;
-				case 6: return func.CallCount == 0 ? 0 : (func.InclusiveCycles / func.CallCount);
-				case 7: return func.MinCycles;
-				case 8: return func.MaxCycles;
-			}
-			throw new Exception("Invalid column index");
-		}
-
-		public void Sort()
-		{
-			Array.Sort(_profilerData, new ListComparer(this, _sortColumn, _sortOrder));
-		}
-
-		public void Sort(int column)
-		{
-			if(_sortColumn == column) {
-				_sortOrder = !_sortOrder;
-			} else {
-				_sortColumn = column;
-				_sortOrder = column == 0 ? false : true;
-			}
-
-			Array.Sort(_profilerData, new ListComparer(this, _sortColumn, _sortOrder));
-
-			UpdateLoadedRows();
-		}
-
-		private class ListComparer : IComparer<ProfiledFunction>
-		{
-			private ProfilerTab _profiler;
-			private int _columnIndex;
-			private bool _sortOrder;
-
-			public ListComparer(ProfilerTab profiler, int columnIndex, bool sortOrder)
-			{
-				_profiler = profiler;
-				_columnIndex = columnIndex;
-				_sortOrder = sortOrder;
-			}
-
-			public int Compare(ProfiledFunction x, ProfiledFunction y)
-			{
-				if(_columnIndex == 0) {
-					if(_sortOrder) {
-						return String.Compare(_profiler.GetFunctionName(y), _profiler.GetFunctionName(x));
-					} else {
-						return String.Compare(_profiler.GetFunctionName(x), _profiler.GetFunctionName(y));
-					}
-				} else {
-					IComparable columnValueY = (IComparable)_profiler.GetColumnContent(x, _columnIndex);
-					IComparable columnValueX = (IComparable)_profiler.GetColumnContent(y, _columnIndex);
-					if(_sortOrder) {
-						return columnValueX.CompareTo(columnValueY);
-					} else {
-						return columnValueY.CompareTo(columnValueX);
-					}
-				}
-			}
-		}
 	}
 
-	public class ProfiledFunctionViewModel : ReactiveObject
+	public class ProfiledFunctionViewModel : INotifyPropertyChanged
 	{
-		[Reactive] public string ExclusiveCycles { get; set; } = "";
-		[Reactive] public string InclusiveCycles { get; set; } = "";
-		[Reactive] public string CallCount { get; set; } = "";
-		[Reactive] public string MinCycles { get; set; } = "";
-		[Reactive] public string MaxCycles { get; set; } = "";
+		public event PropertyChangedEventHandler? PropertyChanged;
 
-		[Reactive] public string FunctionName { get; set; } = "";
-		[Reactive] public string ExclusivePercent { get; set; } = "";
-		[Reactive] public string InclusivePercent { get; set; } = "";
-		[Reactive] public string AvgCycles { get; set; } = "";
+		private string _functionName = "";
+		public string FunctionName
+		{
+			get
+			{
+				UpdateFields();
+				return _functionName;
+			}
+		}
+
+		public string ExclusiveCycles { get; set; } = "";
+		public string InclusiveCycles { get; set; } = "";
+		public string CallCount { get; set; } = "";
+		public string MinCycles { get; set; } = "";
+		public string MaxCycles { get; set; } = "";
+
+		public string ExclusivePercent { get; set; } = "";
+		public string InclusivePercent { get; set; } = "";
+		public string AvgCycles { get; set; } = "";
+
+		private ProfiledFunction _funcData;
+		private CpuType _cpuType;
+		private UInt64 _totalCycles;
+
+		public void Update(ProfiledFunction func, CpuType cpuType, UInt64 totalCycles)
+		{
+			_funcData = func;
+			_cpuType = cpuType;
+			_totalCycles = totalCycles;
+
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.FunctionName)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.ExclusiveCycles)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.InclusiveCycles)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.CallCount)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.MinCycles)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.MaxCycles)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.ExclusivePercent)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.InclusivePercent)));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfiledFunctionViewModel.AvgCycles)));
+		}
+
+		private void UpdateFields()
+		{
+			_functionName = _funcData.GetFunctionName(_cpuType);
+			ExclusiveCycles = _funcData.ExclusiveCycles.ToString();
+			InclusiveCycles = _funcData.InclusiveCycles.ToString();
+			CallCount = _funcData.CallCount.ToString();
+			MinCycles = _funcData.MinCycles == UInt64.MaxValue ? "n/a" : _funcData.MinCycles.ToString();
+			MaxCycles = _funcData.MaxCycles == 0 ? "n/a" : _funcData.MaxCycles.ToString();
+
+			AvgCycles = (_funcData.CallCount == 0 ? 0 : (_funcData.InclusiveCycles / _funcData.CallCount)).ToString();
+			ExclusivePercent = ((double)_funcData.ExclusiveCycles / _totalCycles * 100).ToString("0.00");
+			InclusivePercent = ((double)_funcData.InclusiveCycles / _totalCycles * 100).ToString("0.00");
+		}
 	}
 }

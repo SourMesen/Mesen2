@@ -108,16 +108,18 @@ namespace Mesen.Debugger.ViewModels
 			dst.Width = Width;
 			dst.Height = Height;
 			dst.TileIndex = TileIndex;
+			dst.TileAddress = TileAddress;
 			dst.Priority = Priority;
 			dst.Bpp = Bpp;
 			dst.Format = Format;
 			dst.Palette = Palette;
-			dst.TileAddress = TileAddress;
 			dst.PaletteAddress = PaletteAddress;
-			dst.UseSecondTable = UseSecondTable;
+			dst.Visible = Visible;
+			dst.Flags = Flags;
 			dst.HorizontalMirror = HorizontalMirror;
 			dst.VerticalMirror = VerticalMirror;
-			dst.Flags = Flags;
+			dst.UseExtendedVram = UseExtendedVram;
+			dst.UseSecondTable = UseSecondTable;
 		}
 	}
 }

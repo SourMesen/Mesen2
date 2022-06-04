@@ -3,6 +3,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Media;
+using DataBoxControl;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
@@ -24,6 +25,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public AvaloniaList<LabelViewModel> Labels { get; private set; } = new();
 		[Reactive] public SelectionModel<LabelViewModel?> Selection { get; set; } = new() { SingleSelect = false };
+		[Reactive] public SortState SortState { get; set; } = new();
 
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -35,6 +37,13 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType = cpuType;
 			Disassembly = disassembly;
+
+			SortState.SetColumnSort("Label", ListSortDirection.Ascending, true);
+			UpdateLabelList();
+		}
+
+		public void Sort(object? param)
+		{
 			UpdateLabelList();
 		}
 
@@ -42,8 +51,33 @@ namespace Mesen.Debugger.ViewModels
 		{
 			int selection = Selection.SelectedIndex;
 
+			List<LabelViewModel> sortedLabels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
+			sortedLabels.Sort((a, b) => {
+				int result = 0;
+
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					void Compare(string name, Func<int> compare)
+					{
+						if(result == 0 && column == name) {
+							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+						}
+					}
+
+					Compare("Label", () => a.Label.Label.CompareTo(b.Label.Label));
+					Compare("RelAddr", () => a.RelAddressDisplay.CompareTo(b.RelAddressDisplay));
+					Compare("AbsAddr", () => a.AbsAddressDisplay.CompareTo(b.AbsAddressDisplay));
+					Compare("Comment", () => a.Label.Comment.CompareTo(b.Label.Comment));
+
+					if(result != 0) {
+						return result;
+					}
+				}
+
+				return result;
+			});
+
 			Labels.Clear();
-			Labels.AddRange(LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)));
+			Labels.AddRange(sortedLabels);
 
 			if(selection >= 0) {
 				if(selection < Labels.Count) {

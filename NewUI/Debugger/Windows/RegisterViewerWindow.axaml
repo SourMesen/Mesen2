@@ -55,7 +55,6 @@
 						<DataBox
 							Items="{Binding Data}"
 							GridLinesVisibility="All"
-							CanUserSortColumns="False"
 						>
 							<DataBox.Columns>
 								<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />

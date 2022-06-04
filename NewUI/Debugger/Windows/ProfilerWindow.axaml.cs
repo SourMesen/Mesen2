@@ -58,16 +58,11 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private void OnGridSort(object sender, DataGridColumnEventArgs e)
-		{
-			_model.SelectedTab.Sort(e.Column.DisplayIndex);
-			e.Handled = true;
-		}
-
 		private void OnGridDoubleTapped(object sender, RoutedEventArgs e)
 		{
-			if(sender is MesenDataGrid grid && grid.SelectedIndex >= 0) {
-				ProfiledFunction? funcData = _model.SelectedTab.GetRawData(grid.SelectedIndex);
+			int index = _model.SelectedTab.Selection.SelectedIndex;
+			if(index >= 0) {
+				ProfiledFunction? funcData = _model.SelectedTab.GetRawData(index);
 				if(funcData != null) {
 					AddressInfo relAddr = DebugApi.GetRelativeAddress(funcData.Value.Address, _model.SelectedTab.CpuType);
 					if(relAddr.Address >= 0) {
@@ -75,18 +70,6 @@ namespace Mesen.Debugger.Windows
 					}
 				}
 			}
-		}
-
-		private void OnGridRowLoaded(object sender, DataGridRowEventArgs e)
-		{
-			if(e.Row.DataContext is ProfiledFunctionViewModel row) {
-				_model.SelectedTab.UpdateRow(e.Row.GetIndex(), row);
-			}
-		}
-
-		private void OnGridRowUnloaded(object sender, DataGridRowEventArgs e)
-		{
-			_model.SelectedTab.UnloadRow(e.Row.GetIndex());
 		}
 
 		private void OnResetClick(object sender, RoutedEventArgs e)

@@ -86,46 +86,44 @@
 			<Border BorderBrush="Gray" BorderThickness="1" Height="{CompiledBinding ListHeight}">
 				<DataBox
 					Items="{CompiledBinding ListView.DebugEvents}"
-					CanUserSortColumns="True"
+					SortMode="Multiple"
+					SortCommand="{CompiledBinding ListView.SortCommand}"
+					SortState="{CompiledBinding ListView.SortState}"
 					GridLinesVisibility="All"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
 							<Setter Property="Margin" Value="3 0 0 0" />
 						</Style>
-
-						<Style Selector="DataBoxTemplateColumn">
-							<Setter Property="CanUserSort" Value="True" />
-						</Style>
 					</DataBox.Styles>
 
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="PC" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortProgramCounter}">
+						<DataBoxTemplateColumn Header="PC" Width="1*" ColumnName="ProgramCounter">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Scanline" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortScanline}">
+						<DataBoxTemplateColumn Header="Scanline" Width="1*" ColumnName="Scanline">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Cycle" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortCycle}">
+						<DataBoxTemplateColumn Header="Cycle" Width="1*" ColumnName="Cycle">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Type" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortType}">
+						<DataBoxTemplateColumn Header="Type" Width="1*" ColumnName="Type">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Address" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortAddress}">
+						<DataBoxTemplateColumn Header="Address" Width="1*" ColumnName="Address">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Value" Width="1*" SortCommand="{CompiledBinding ListView.SortCommand}" SortingState="{CompiledBinding ListView.SortValue}">
+						<DataBoxTemplateColumn Header="Value" Width="1*" ColumnName="SortValue">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
 							</DataTemplate>

@@ -11,6 +11,7 @@ using Mesen.Config;
 using Avalonia.Input;
 using Mesen.ViewModels;
 using Avalonia.Data.Converters;
+using DataBoxControl;
 
 namespace Mesen.Windows
 {
@@ -27,7 +28,7 @@ namespace Mesen.Windows
 			_listener.OnNotification += OnNotification;
 
 			_model = new CheatListWindowViewModel();
-			_model.InitActions(this.FindControl<DataGrid>("DataGrid"));
+			_model.InitActions(this);
 			DataContext = _model;
 		}
 
@@ -61,20 +62,19 @@ namespace Mesen.Windows
 			Close();
 		}
 
-		private void OnGridClick(object sender, RoutedEventArgs e)
+		private void OnCellClick(DataBoxCell cell)
 		{
-			DataGrid? grid = (sender as DataGrid);
-			if(grid?.SelectedItem is CheatCode cheat && grid.CurrentColumn.DisplayIndex == 0) {
-				cheat.Enabled = !cheat.Enabled;
+			if(cell.Column?.ColumnName == "Enabled") {
+				_model.Sort();
 				_model.ApplyCheats();
 			}
 		}
 
 		private async void OnGridDoubleClick(object sender, RoutedEventArgs e)
 		{
-			DataGrid grid = (DataGrid)sender;
-			if(grid?.SelectedItem is CheatCode cheat) {
+			if(_model.Selection.SelectedItem is CheatCode cheat) {
 				await CheatEditWindow.EditCheat(cheat, this);
+				_model.Sort();
 				_model.ApplyCheats();
 			}
 		}

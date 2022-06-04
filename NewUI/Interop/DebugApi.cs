@@ -1088,6 +1088,11 @@ namespace Mesen.Interop
 		public UInt64 MinCycles;
 		public UInt64 MaxCycles;
 		public AddressInfo Address;
+
+		public UInt64 GetAvgCycles()
+		{
+			return CallCount == 0 ? 0 : (ExclusiveCycles / CallCount);
+		}
 	}
 
 	public unsafe struct TraceRow

@@ -58,7 +58,9 @@ public class DataBoxColumnHeadersPresenter : Panel, IStyleable
             });
             _columnActualWidthDisposables.Add(disposable);
         }
-    }
+
+			DataBox.SortState.UpdateColumnHeaders(_columnHeaders);
+		}
 
     internal void Detach()
     {

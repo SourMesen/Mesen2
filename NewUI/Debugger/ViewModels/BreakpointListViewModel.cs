@@ -24,6 +24,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public AvaloniaList<BreakpointViewModel> Breakpoints { get; private set; } = new();
 		[Reactive] public SelectionModel<BreakpointViewModel?> Selection { get; set; } = new() { SingleSelect = false };
+		[Reactive] public SortState SortState { get; set; } = new();
 
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
@@ -38,11 +39,43 @@ namespace Mesen.Debugger.ViewModels
 			UpdateBreakpoints();
 		}
 
+		public void Sort(object? param)
+		{
+			UpdateBreakpoints();
+		}
+
 		public void UpdateBreakpoints()
 		{
 			int selection = Selection.SelectedIndex;
+
+			List<BreakpointViewModel> sortedBreakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
+			sortedBreakpoints.Sort((a, b) => {
+				int result = 0;
+
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					void Compare(string name, Func<int> compare)
+					{
+						if(result == 0 && column == name) {
+							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+						}
+					}
+
+					Compare("Enabled", () => a.Breakpoint.Enabled.CompareTo(b.Breakpoint.Enabled));
+					Compare("Marked", () => a.Breakpoint.MarkEvent.CompareTo(b.Breakpoint.MarkEvent));
+					Compare("Type", () => a.Breakpoint.ToReadableType().CompareTo(b.Breakpoint.ToReadableType()));
+					Compare("Address", () => a.Breakpoint.GetAddressString(true).CompareTo(b.Breakpoint.GetAddressString(true)));
+					Compare("Condition", () => a.Breakpoint.Condition.CompareTo(b.Breakpoint.Condition));
+
+					if(result != 0) {
+						return result;
+					}
+				}
+
+				return result;
+			});
+
 			Breakpoints.Clear();
-			Breakpoints.AddRange(BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)));
+			Breakpoints.AddRange(sortedBreakpoints);
 			if(selection >= 0) {
 				if(selection < Breakpoints.Count) {
 					Selection.SelectedIndex = selection;

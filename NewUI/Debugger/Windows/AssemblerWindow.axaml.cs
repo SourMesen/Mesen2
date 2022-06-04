@@ -6,6 +6,7 @@ using Avalonia.Media;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
+using DataBoxControl;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
@@ -93,9 +94,9 @@ namespace Mesen.Debugger.Windows
 			_hexView.VerticalScrollBarValue = _textEditor.VerticalScrollBarValue;
 		}
 
-		private void OnCellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)
+		private void OnCellClick(DataBoxCell cell)
 		{
-			int lineNumber = (((AssemblerError?)e.Row.DataContext)?.LineNumber ?? 0)- 1;
+			int lineNumber = (((AssemblerError?)cell.DataContext)?.LineNumber ?? 0)- 1;
 			if(lineNumber >= 0) {
 				_textEditor.TextArea.Caret.Line = lineNumber;
 				_textEditor.TextArea.Caret.Column = 0;

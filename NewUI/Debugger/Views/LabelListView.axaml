@@ -28,18 +28,20 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
 		<DataBox
-			Name="DataGrid"
 			Items="{CompiledBinding Labels}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"
+			SortMode="Multiple"
+			SortCommand="{Binding Sort}"
+			SortState="{CompiledBinding SortState}"		
 			DoubleTapped="OnGridDoubleClick"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ShowToolTip="True" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Label" Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

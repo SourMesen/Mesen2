@@ -1,4 +1,5 @@
 ﻿using Avalonia.Collections;
+using DataBoxControl;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -18,13 +19,8 @@ namespace Mesen.Debugger.ViewModels
 		public AvaloniaList<DebugEventViewModel> DebugEvents { get; }
 		public EventViewerViewModel EventViewer { get; }
 
-		[Reactive] public ListSortDirection? SortProgramCounter { get; set; }
-		[Reactive] public ListSortDirection? SortScanline { get; set; }
-		[Reactive] public ListSortDirection? SortCycle { get; set; }
-		[Reactive] public ListSortDirection? SortType { get; set; }
-		[Reactive] public ListSortDirection? SortAddress { get; set; }
-		[Reactive] public ListSortDirection? SortValue { get; set; }
-		
+		[Reactive] public SortState SortState { get; set; } = new();
+
 		public ICommand SortCommand { get; }
 
 		public EventViewerListViewModel(EventViewerViewModel eventViewer)
@@ -32,9 +28,9 @@ namespace Mesen.Debugger.ViewModels
 			EventViewer = eventViewer;
 			DebugEvents = new();
 
-			SortScanline = ListSortDirection.Ascending;
-			SortCycle = ListSortDirection.Ascending;
-			
+			SortState.SetColumnSort("Scanline", ListSortDirection.Ascending, false);
+			SortState.SetColumnSort("Cycle", ListSortDirection.Ascending, false);
+
 			SortCommand = ReactiveCommand.Create<string?>(sortMemberPath => {
 				RefreshList();
 			});
@@ -47,19 +43,25 @@ namespace Mesen.Debugger.ViewModels
 			Array.Sort(_debugEvents, (a, b) => {
 				int result = 0;
 
-				void Compare(ListSortDirection? order, Func<int> compare)
-				{
-					if(order.HasValue && result == 0) {
-						result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					void Compare(string name, Func<int> compare)
+					{
+						if(result == 0 && column == name) {
+							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
+						}
+					}
+
+					Compare("ProgramCounter", () => a.ProgramCounter.CompareTo(b.ProgramCounter));
+					Compare("Scanline", () => a.Scanline.CompareTo(b.Scanline));
+					Compare("Cycle", () => a.Cycle.CompareTo(b.Cycle));
+					Compare("Type", () => a.Type.CompareTo(b.Type));
+					Compare("Address", () => a.Operation.Address.CompareTo(b.Operation.Address));
+					Compare("Value", () => a.Operation.Value.CompareTo(b.Operation.Value));
+
+					if(result != 0) {
+						return result;
 					}
 				}
-
-				Compare(SortProgramCounter, () => a.ProgramCounter.CompareTo(b.ProgramCounter));
-				Compare(SortScanline, () => a.Scanline.CompareTo(b.Scanline));
-				Compare(SortCycle, () => a.Cycle.CompareTo(b.Cycle));
-				Compare(SortType, () => a.Type.CompareTo(b.Type));
-				Compare(SortAddress, () => a.Operation.Address.CompareTo(b.Operation.Address));
-				Compare(SortValue, () => a.Operation.Value.CompareTo(b.Operation.Value));
 
 				if(result == 0) {
 					result = a.Scanline.CompareTo(b.Scanline);
@@ -67,7 +69,7 @@ namespace Mesen.Debugger.ViewModels
 						result = a.Cycle.CompareTo(b.Cycle);
 					}
 				}
-				
+
 				return result;
 			});
 

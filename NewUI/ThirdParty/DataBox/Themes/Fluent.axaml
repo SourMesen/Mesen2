@@ -165,7 +165,15 @@
                 Stretch="Uniform"
                 Height="12"
                 MinWidth="24"/>
-          <ContentPresenter Content="{TemplateBinding Content}"
+
+			  <TextBlock
+					Text="{TemplateBinding SortNumber}"
+					DockPanel.Dock="Right"
+					Padding="0 0 3 0"
+					VerticalAlignment="Center"
+				/>
+			  
+			  <ContentPresenter Content="{TemplateBinding Content}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Margin="{TemplateBinding Padding}"/>

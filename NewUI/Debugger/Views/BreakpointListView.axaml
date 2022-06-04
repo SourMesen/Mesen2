@@ -18,20 +18,22 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
 		<DataBox
-			Name="DataGrid"
 			Items="{CompiledBinding Breakpoints}"
 			Selection="{CompiledBinding Selection}"
 			CellClick="OnCellClick"
 			DoubleTapped="OnGridDoubleClick"
 			SelectionMode="Multiple"
+			SortMode="Multiple"
+			SortCommand="{Binding Sort}"
+			SortState="{CompiledBinding SortState}"
 			GridLinesVisibility="All"
 		>
 			<DataBox.Columns>
-				<DataBoxCheckBoxColumn Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
-				<DataBoxCheckBoxColumn Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
-				<DataBoxTextColumn Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
-				<DataBoxTextColumn Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataBoxTextColumn Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
+				<DataBoxCheckBoxColumn ColumnName="Marked" Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
+				<DataBoxTextColumn ColumnName="Type" Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
+				<DataBoxTextColumn ColumnName="Address" Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Condition" Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>
