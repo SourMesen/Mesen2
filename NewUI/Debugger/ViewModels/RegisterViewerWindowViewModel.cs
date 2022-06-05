@@ -134,9 +134,13 @@ namespace Mesen.Debugger.ViewModels
 			} else if(lastState is NesState nesState) {
 				tabs = new List<RegisterViewerTab>() {
 					GetNesPpuTab(ref nesState),
-					GetNesApuTab(ref nesState),
-					GetNesCartTab(ref nesState)
+					GetNesApuTab(ref nesState)
 				};
+
+				RegisterViewerTab cartTab = GetNesCartTab(ref nesState);
+				if(cartTab.Data.Count > 0) {
+					tabs.Add(cartTab);
+				}
 			} else if(lastState is GbState gbState) {
 				tabs = new List<RegisterViewerTab>() {
 					GetGbLcdTab(ref gbState),
