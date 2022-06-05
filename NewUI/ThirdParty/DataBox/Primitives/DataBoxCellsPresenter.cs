@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.LogicalTree;
 using Avalonia.Styling;
 using DataBoxControl.Primitives.Layout;
 
@@ -47,4 +49,9 @@ public class DataBoxCellsPresenter : Panel, IStyleable
     {
         return DataBoxCellsLayout.Arrange(arrangeSize, DataBox, Children);
     }
+
+	public T? GetControl<T>(int index) where T : class
+	{
+		return ((Control)VisualChildren[0].VisualChildren[0]).GetLogicalDescendants().Where(x => x is T).ElementAtOrDefault(index) as T;
+	}
 }

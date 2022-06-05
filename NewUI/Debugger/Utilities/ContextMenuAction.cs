@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Config.Shortcuts;
@@ -98,6 +99,7 @@ namespace Mesen.Debugger.Utilities
 		
 		public bool AllowedWhenHidden { get; set; }
 		public bool AlwaysShowLabel { get; set; }
+		public RoutingStrategies RoutingStrategy { get; set; } = RoutingStrategies.Bubble;
 
 		public abstract string ShortcutText { get; }
 

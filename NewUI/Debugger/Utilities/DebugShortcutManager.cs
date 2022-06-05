@@ -60,6 +60,10 @@ namespace Mesen.Debugger.Utilities
 						if(act.Shortcut != null) {
 							DbgShortKeys keys = act.Shortcut();
 							if(e.Key == keys.ShortcutKey && e.KeyModifiers == keys.Modifiers) {
+								if(action.RoutingStrategy == RoutingStrategies.Bubble && e.Source is Control ctrl && ctrl.Classes.Contains("PreventShortcuts")) {
+									return;
+								}
+
 								if(act.IsEnabled == null || act.IsEnabled()) {
 									act.OnClick();
 								}
@@ -71,7 +75,7 @@ namespace Mesen.Debugger.Utilities
 				}
 			};
 
-			focusParent.AddHandler<KeyEventArgs>(InputElement.KeyDownEvent, handler, RoutingStrategies.Bubble, handledEventsToo: true);
+			focusParent.AddHandler<KeyEventArgs>(InputElement.KeyDownEvent, handler, action.RoutingStrategy, handledEventsToo: true);
 		}
 	}
 }

@@ -9,9 +9,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
 using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Metadata;
+using DataBoxControl.Controls;
 using DataBoxControl.Primitives;
 
 namespace DataBoxControl;
@@ -151,7 +153,7 @@ public class DataBox : TemplatedControl
 
     internal double AvailableHeight { get; set; }
 
-    public DataBox()
+	public DataBox()
     {
         _columns = new AvaloniaList<DataBoxColumn>();
     }
@@ -163,11 +165,33 @@ public class DataBox : TemplatedControl
         _headersPresenterScrollViewer = e.NameScope.Find<ScrollViewer>("PART_HeadersPresenterScrollViewer");
         _headersPresenter = e.NameScope.Find<DataBoxColumnHeadersPresenter>("PART_HeadersPresenter");
         _rowsPresenter = e.NameScope.Find<DataBoxRowsPresenter>("PART_RowsPresenter");
+        _rowsPresenter.AutoScrollToSelectedItem = true;
 
-        Attach();
+		  Attach();
     }
 
-    internal void Attach()
+	protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+	{
+		if(change.Property == SelectionProperty) {
+			if(change.OldValue.HasValue && change.OldValue.Value is ISelectionModel oldModel) {
+				oldModel.SelectionChanged -= Selection_SelectionChanged;
+			}
+			if(change.NewValue.HasValue && change.NewValue.Value is ISelectionModel newModel) {
+				newModel.SelectionChanged += Selection_SelectionChanged;
+			}
+		}
+		base.OnPropertyChanged(change);
+	}
+
+	private void Selection_SelectionChanged(object? sender, SelectionModelSelectionChangedEventArgs e)
+	{
+		if(Selection.SelectedIndex >= 0 && Selection.SelectedItems.Count == 1) {
+			//When selection is changed and only 1 row is selected, move keyboard focus to that row
+			_rowsPresenter?.ItemContainerGenerator.ContainerFromIndex(Selection.SelectedIndex).Focus();
+		}
+	}
+
+	internal void Attach()
     {
         if (_headersPresenter is { })
         {

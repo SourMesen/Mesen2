@@ -3,21 +3,19 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using System.Linq;
 using Mesen.Debugger.ViewModels;
-using Avalonia.Threading;
 using Avalonia.Input;
-using Mesen.Debugger.Utilities;
-using Mesen.Config;
 using System;
-using Mesen.Debugger.Controls;
-using Mesen.Utilities;
-using Mesen.Interop;
-using Mesen.Debugger.Windows;
-using Mesen.Debugger.Disassembly;
+using Avalonia.Interactivity;
+using DataBoxControl;
+using Avalonia.Styling;
+using Avalonia.LogicalTree;
 
 namespace Mesen.Debugger.Views
 {
 	public class WatchListView : UserControl
 	{
+		public WatchListViewModel Model => (WatchListViewModel)DataContext!;
+
 		public WatchListView()
 		{
 			InitializeComponent();
@@ -26,41 +24,56 @@ namespace Mesen.Debugger.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+
+			DataBox grid = this.FindControl<DataBox>("WatchList");
+			grid.AddHandler(WatchListView.KeyDownEvent, OnGridKeyDown, RoutingStrategies.Tunnel, true);
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is WatchListViewModel model) {
-				MesenDataGrid grid = this.FindControl<MesenDataGrid>("DataGrid");
-				model.InitContextMenu(this, grid);
+				model.InitContextMenu(this);
 			}
 			base.OnDataContextChanged(e);
 		}
 
-		protected override void OnInitialized()
+		private void OnEntryContextRequested(object? sender, ContextRequestedEventArgs e)
 		{
-			base.OnInitialized();
-			
-			MesenDataGrid grid = this.FindControl<MesenDataGrid>("DataGrid");
-			grid.PreparingCellForEdit += Grid_PreparingCellForEdit;
+			//Select row when the textbox is right-clicked
+			if(sender is TextBox txt && txt.DataContext is WatchValueInfo entry) {
+				int index = Model.WatchEntries.IndexOf(entry);
+				if(index >= 0) {
+					if(!Model.Selection.IsSelected(index)) {
+						Model.Selection.Clear();
+						Model.Selection.Select(index);
+					}
+					txt.FindLogicalAncestorOfType<DataBoxRow>()?.Focus();
+				}
+			}
 		}
 
-		private void Grid_PreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
+		private void OnEntryLostFocus(object? sender, RoutedEventArgs e)
 		{
-			Dispatcher.UIThread.Post(() => {
-				//This needs to be done as a post, otherwise the focus doesn't work properly
-				//and the user can't type when using BeginEdit(). DataGrid bug?
-				e.EditingElement?.Focus();
-			});
+			//Update watch entry/list when textbox loses focus
+			if(sender is TextBox txt && txt.DataContext is WatchValueInfo entry) {
+				Model.EditWatch(Model.WatchEntries.IndexOf(entry), entry.Expression);
+			}
 		}
 
-		private void OnCellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
+		private void OnEntryKeyDown(object? sender, KeyEventArgs e)
 		{
-			if(e.EditAction == DataGridEditAction.Commit) {
-				Dispatcher.UIThread.Post(() => {
-					int index = e.Row.GetIndex();
-					((WatchListViewModel)DataContext!).EditWatch(index, ((WatchValueInfo)e.Row.DataContext!).Expression);
-				});
+			//Commit/undo modifications on enter/esc
+			if(sender is TextBox txt && txt.DataContext is WatchValueInfo entry) {
+				if(e.Key == Key.Enter) {
+					e.Handled = true;
+					Model.EditWatch(Model.WatchEntries.IndexOf(entry), entry.Expression);
+					txt.FindLogicalAncestorOfType<DataBoxRow>()?.Focus();
+				} else if(e.Key == Key.Escape) {
+					//Undo
+					e.Handled = true;
+					Model.UpdateWatch();
+					txt.FindLogicalAncestorOfType<DataBoxRow>()?.Focus();
+				}
 			}
 		}
 
@@ -69,13 +82,44 @@ namespace Mesen.Debugger.Views
 			return key >= Key.A && key <= Key.Z || key >= Key.D0 && key <= Key.D9 || key >= Key.NumPad0 && key <= Key.Divide || key >= Key.OemSemicolon && key <= Key.Oem102;
 		}
 
-		private void OnGridKeyDown(object sender, KeyEventArgs e)
+		private void OnGridKeyDown(object? sender, KeyEventArgs e)
 		{
-			if(e.Key == Key.Escape) {
-				((DataGrid)sender).CancelEdit();
-			} else if(IsTextKey(e.Key)) {
-				((DataGrid)sender).CurrentColumn = ((DataGrid)sender).Columns[0];
-				((DataGrid)sender).BeginEdit();
+			//Start editing textbox if a text key is pressed while not focused on the textbox
+			//(except when control is held, to allow Ctrl+A select all to work properly)
+			if(e.Source is DataBoxRow row && e.KeyModifiers != KeyModifiers.Control && IsTextKey(e.Key)) {
+				WatchListTextBox? txt = row.CellsPresenter?.GetControl<WatchListTextBox>(0);
+				txt?.SelectAll();
+				txt?.Focus();
+			}
+		}
+	}
+
+	public class WatchListTextBox : TextBox, IStyleable
+	{
+		Type IStyleable.StyleKey => typeof(TextBox);
+
+		private WatchListView? _listView;
+
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnAttachedToVisualTree(e);
+			_listView = this.FindLogicalAncestorOfType<WatchListView>();
+		}
+
+		protected override void OnGotFocus(GotFocusEventArgs e)
+		{
+			base.OnGotFocus(e);
+			DataBox? grid = this.FindLogicalAncestorOfType<DataBox>();
+			if(grid != null && DataContext is WatchValueInfo watch && _listView != null) {
+				//When clicking the textbox, select the row, too
+				if(!grid.Selection.SelectedItems.Contains(watch) || grid.Selection.SelectedItems.Count > 1) {
+					if(e.KeyModifiers != KeyModifiers.Shift && e.KeyModifiers != KeyModifiers.Control) {
+						grid.Selection.Clear();
+					}
+
+					grid.Selection.Select(_listView.Model.WatchEntries.IndexOf(watch));
+					Focus();
+				}
 			}
 		}
 	}

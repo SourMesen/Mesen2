@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using System.Linq;
 using Mesen.Interop;
 using Mesen.ViewModels;
-using Mesen.Utilities;
 using System.Text.RegularExpressions;
 using Mesen.Debugger.Labels;
 using System;
@@ -13,9 +12,10 @@ using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
 using Avalonia.Controls;
 using Mesen.Config;
-using Avalonia.Threading;
-using Mesen.Debugger.Controls;
 using Mesen.Debugger.Windows;
+using Avalonia.Collections;
+using Avalonia.Controls.Selection;
+using Avalonia.Interactivity;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -23,8 +23,8 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private static Regex _watchAddressOrLabel = new Regex(@"^(\[|{)(\s*((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+)))\s*[,]{0,1}\d*\s*(\]|})$", RegexOptions.Compiled);
 
-		[Reactive] public SwappableList<WatchValueInfo> WatchEntries { get; private set; } = new();
-		[Reactive] public int SelectedIndex { get; set; } = -1;
+		[Reactive] public AvaloniaList<WatchValueInfo> WatchEntries { get; private set; } = new();
+		[Reactive] public SelectionModel<WatchValueInfo> Selection { get; set; } = new() { SingleSelect = false };
 
 		public WatchManager Manager { get; }
 		public CpuType CpuType { get; }
@@ -41,19 +41,24 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateWatch()
 		{
-			int selection = SelectedIndex;
-			WatchEntries.Swap(Manager.GetWatchContent(WatchEntries));
+			int selection = Selection.SelectedIndex;
+			WatchEntries.Clear();
+			WatchEntries.AddRange(Manager.GetWatchContent(WatchEntries));
 			if(selection >= 0) {
 				if(selection < WatchEntries.Count) {
-					SelectedIndex = selection;
+					Selection.SelectedIndex = selection;
 				} else {
-					SelectedIndex = WatchEntries.Count - 1;
+					Selection.SelectedIndex = WatchEntries.Count - 1;
 				}
 			}
 		}
 
 		public void EditWatch(int index, string expression)
 		{
+			if(index < 0) {
+				return;
+			}
+
 			Manager.UpdateWatch(index, expression);
 		}
 		
@@ -65,7 +70,6 @@ namespace Mesen.Debugger.ViewModels
 				string entryAbove = entries[index - 1];
 				Manager.UpdateWatch(index - 1, currentEntry);
 				Manager.UpdateWatch(index, entryAbove);
-				SelectedIndex = index - 1;
 			}
 		}
 
@@ -77,11 +81,10 @@ namespace Mesen.Debugger.ViewModels
 				string entryBelow = entries[index + 1];
 				Manager.UpdateWatch(index + 1, currentEntry);
 				Manager.UpdateWatch(index, entryBelow);
-				SelectedIndex = index + 1;
 			}
 		}
 
-		private int[] GetIndexes(List<WatchValueInfo> items)
+		private int[] GetIndexes(IEnumerable<WatchValueInfo> items)
 		{
 			return items.Select(x => WatchEntries.IndexOf(x)).ToArray();
 		}
@@ -91,23 +94,23 @@ namespace Mesen.Debugger.ViewModels
 			Manager.RemoveWatch(GetIndexes(items));
 		}
 
-		internal void SetSelectionFormat(WatchFormatStyle format, int byteLength, List<WatchValueInfo> items)
+		internal void SetSelectionFormat(WatchFormatStyle format, int byteLength, IEnumerable<WatchValueInfo> items)
 		{
 			Manager.SetSelectionFormat(format, byteLength, GetIndexes(items));
 		}
 
-		internal void ClearSelectionFormat(List<WatchValueInfo> items)
+		internal void ClearSelectionFormat(IEnumerable<WatchValueInfo> items)
 		{
 			Manager.ClearSelectionFormat(GetIndexes(items));
 		}
 
 		private LocationInfo? GetLocation()
 		{
-			if(SelectedIndex < 0 || SelectedIndex >= WatchEntries.Count) {
+			if(Selection.SelectedIndex < 0 || Selection.SelectedIndex >= WatchEntries.Count) {
 				return null;
 			}
 
-			WatchValueInfo entry = WatchEntries[SelectedIndex];
+			WatchValueInfo entry = WatchEntries[Selection.SelectedIndex];
 
 			Match match = _watchAddressOrLabel.Match(entry.Expression);
 			if(match.Success) {
@@ -139,40 +142,15 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void InitContextMenu(Control ctrl, MesenDataGrid grid)
+		public void InitContextMenu(Control ctrl)
 		{
 			DebugShortcutManager.CreateContextMenu(ctrl, new object[] {
 				new ContextMenuAction() {
-					ActionType = ActionType.Add,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Add),
-					OnClick = () => {
-						grid.SelectedIndex = WatchEntries.Count - 1;
-						grid.ScrollIntoView(grid.SelectedItem, grid.Columns[0]);
-						Dispatcher.UIThread.Post(() => {
-							//This needs to be done as a post, otherwise the edit operation doesn't
-							//start properly when the user right-clicks outside the grid
-							grid.CurrentColumn = grid.Columns[0];
-							grid.BeginEdit();
-						});
-					}
-				},
-
-				new ContextMenuAction() {
-					ActionType = ActionType.Edit,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Edit),
-					IsEnabled = () => grid.SelectedItems.Count == 1,
-					OnClick = () => {
-						grid.CurrentColumn = grid.Columns[0];
-						grid.BeginEdit();
-					}
-				},
-
-				new ContextMenuAction() {
 					ActionType = ActionType.Delete,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_Delete),
-					IsEnabled = () => grid.SelectedItems.Count > 0,
+					IsEnabled = () => Selection.SelectedItems.Count > 0,
 					OnClick = () => {
-						DeleteWatch(grid.SelectedItems.Cast<WatchValueInfo>().ToList());
+						DeleteWatch(Selection.SelectedItems.ToList());
 					}
 				},
 
@@ -180,19 +158,21 @@ namespace Mesen.Debugger.ViewModels
 
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveUp,
+					RoutingStrategy = RoutingStrategies.Tunnel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveUp),
-					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex > 0,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedIndex > 0,
 					OnClick = () => {
-						MoveUp(grid.SelectedIndex);
+						MoveUp(Selection.SelectedIndex);
 					}
 				},
 
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveDown,
+					RoutingStrategy = RoutingStrategies.Tunnel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.WatchList_MoveDown),
-					IsEnabled = () => grid.SelectedItems.Count == 1 && grid.SelectedIndex < WatchEntries.Count - 2,
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedIndex < WatchEntries.Count - 2,
 					OnClick = () => {
-						MoveDown(grid.SelectedIndex);
+						MoveDown(Selection.SelectedIndex);
 					}
 				},
 
@@ -203,43 +183,43 @@ namespace Mesen.Debugger.ViewModels
 					SubActions = new() {
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatBinary,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Binary, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Binary, 1, Selection.SelectedItems)
 						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatHex8Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 1, Selection.SelectedItems)
 						},
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatHex16Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 2, Selection.SelectedItems)
 						},
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatHex24Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Hex, 3, Selection.SelectedItems)
 						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned8Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 1, Selection.SelectedItems)
 						},
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned16Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 2, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 2, Selection.SelectedItems)
 						},
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatSigned24Bits,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 3, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Signed, 3, Selection.SelectedItems)
 						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.RowFormatUnsigned,
-							OnClick = () => SetSelectionFormat(WatchFormatStyle.Unsigned, 1, grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => SetSelectionFormat(WatchFormatStyle.Unsigned, 1, Selection.SelectedItems)
 						},
 						new ContextMenuSeparator(),
 						new ContextMenuAction() {
 							ActionType = ActionType.ClearFormat,
-							OnClick = () => ClearSelectionFormat(grid.SelectedItems.Cast<WatchValueInfo>().ToList())
+							OnClick = () => ClearSelectionFormat(Selection.SelectedItems)
 						}
 					}
 				},

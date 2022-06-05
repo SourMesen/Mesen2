@@ -46,7 +46,7 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public List<WatchValueInfo> GetWatchContent(List<WatchValueInfo> previousValues)
+		public List<WatchValueInfo> GetWatchContent(IList<WatchValueInfo> previousValues)
 		{
 			WatchFormatStyle defaultStyle = ConfigManager.Config.Debug.Debugger.WatchFormat;
 			int defaultByteLength = 1;
@@ -200,11 +200,16 @@ namespace Mesen.Debugger
 		public void UpdateWatch(int index, string expression)
 		{
 			if(string.IsNullOrWhiteSpace(expression)) {
-				RemoveWatch(index);
+				if(index < _watchEntries.Count) {
+					RemoveWatch(index);
+				}
 			} else {
 				if(index >= _watchEntries.Count) {
 					_watchEntries.Add(expression);
 				} else {
+					if(_watchEntries[index] == expression) {
+						return;
+					}
 					_watchEntries[index] = expression;
 				}
 				WatchChanged?.Invoke(null, EventArgs.Empty);
