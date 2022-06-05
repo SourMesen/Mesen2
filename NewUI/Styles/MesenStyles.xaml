@@ -122,15 +122,6 @@
 		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedPressed">#CCE4F7</Color>
 		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">Black</Color>
 
-		<Color x:Key="DataGridRowSelectedUnfocusedBackgroundColor">#0078D7</Color>
-		<Color x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundColor">#0078D7</Color>
-		<Color x:Key="DataGridRowSelectedBackgroundColor">#0078D7</Color>
-
-		<x:Double x:Key="DataGridRowSelectedUnfocusedBackgroundOpacity">1.0</x:Double>
-		<x:Double x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundOpacity">1.0</x:Double>
-		<x:Double x:Key="DataGridRowSelectedBackgroundOpacity">1.0</x:Double>
-		<x:Double x:Key="DataGridRowSelectedHoveredBackgroundOpacity">1.0</x:Double>
-
 		<!-- light yellow tooltips -->
 		<Color x:Key="ToolTipBackground">#ffffed</Color>
 
@@ -145,7 +136,6 @@
 
 		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
 
-		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
 		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
 

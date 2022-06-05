@@ -92,7 +92,6 @@
 
 		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
 
-		<Thickness x:Key="DataGridTextColumnCellTextBlockMargin">4,0,4,0</Thickness>
 		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
 	</Styles.Resources>

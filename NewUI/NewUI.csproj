@@ -173,7 +173,6 @@
 	  <None Remove="Dependencies.zip" />
 	  <None Remove="Styles\AvaloniaComboBoxStyles.xaml" />
 	  <None Remove="Styles\AvaloniaContextMenuStyles.xaml" />
-	  <None Remove="Styles\AvaloniaDataGridStyles.xaml" />
 	  <None Remove="Styles\AvaloniaMenuItemStyles.xaml" />
 	  <None Remove="Styles\AvaloniaNumericUpDownStyles.xaml" />
 	  <None Remove="Styles\AvaloniaScrollViewerStyles.xaml" />
@@ -185,7 +184,6 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.14" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.9" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.14" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.14" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14" />
@@ -646,9 +644,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\AvaloniaContextMenuStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </AvaloniaResource>
-	  <AvaloniaResource Include="Styles\AvaloniaDataGridStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\DebugStatusStyles.xaml">
