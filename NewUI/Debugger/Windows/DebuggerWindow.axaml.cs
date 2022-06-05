@@ -83,15 +83,18 @@ namespace Mesen.Debugger.Windows
 			base.OnOpened(e);
 
 			//Do this in OnOpened to ensure the window is ready to receive notifications
-			_model.UpdateDebugger(true);
+			Dispatcher.UIThread.Post(() => {
+				_model.Init();
+				_model.UpdateDebugger(true);
 
-			if(_scrollToAddress.HasValue) {
-				ScrollToAddress((uint)_scrollToAddress);
-			} else if(_model.Config.BreakOnOpen) {
-				if(!EmuApi.IsPaused()) {
-					_model.Step(StepType.Step);
+				if(_scrollToAddress.HasValue) {
+					ScrollToAddress((uint)_scrollToAddress);
+				} else if(_model.Config.BreakOnOpen) {
+					if(!EmuApi.IsPaused()) {
+						_model.Step(StepType.Step);
+					}
 				}
-			}
+			});
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

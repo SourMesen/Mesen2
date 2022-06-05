@@ -1,6 +1,7 @@
 ﻿using Avalonia.Collections;
 using DataBoxControl;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,7 +17,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
 
-		public AvaloniaList<DebugEventViewModel> DebugEvents { get; }
+		public MesenList<DebugEventViewModel> DebugEvents { get; }
 		public EventViewerViewModel EventViewer { get; }
 
 		[Reactive] public SortState SortState { get; set; } = new();

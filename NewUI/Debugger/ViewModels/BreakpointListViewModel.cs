@@ -22,7 +22,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class BreakpointListViewModel : ViewModelBase
 	{
-		[Reactive] public AvaloniaList<BreakpointViewModel> Breakpoints { get; private set; } = new();
+		[Reactive] public MesenList<BreakpointViewModel> Breakpoints { get; private set; } = new();
 		[Reactive] public SelectionModel<BreakpointViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 		[Reactive] public SortState SortState { get; set; } = new();
 
@@ -36,7 +36,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType = cpuType;
 			Disassembly = disassembly;
-			UpdateBreakpoints();
 		}
 
 		public void Sort(object? param)
@@ -74,8 +73,8 @@ namespace Mesen.Debugger.ViewModels
 				return result;
 			});
 
-			Breakpoints.Clear();
-			Breakpoints.AddRange(sortedBreakpoints);
+			Breakpoints.Replace(sortedBreakpoints);
+
 			if(selection >= 0) {
 				if(selection < Breakpoints.Count) {
 					Selection.SelectedIndex = selection;

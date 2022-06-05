@@ -7,6 +7,7 @@ using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -63,7 +64,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		[Reactive] public string TabName { get; set; } = "";
 		[Reactive] public CpuType CpuType { get; set; } = CpuType.Snes;
-		[Reactive] public AvaloniaList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
+		[Reactive] public MesenList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
 		[Reactive] public SelectionModel<ProfiledFunctionViewModel> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
 		

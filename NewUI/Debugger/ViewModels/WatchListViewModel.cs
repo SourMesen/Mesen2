@@ -16,6 +16,7 @@ using Mesen.Debugger.Windows;
 using Avalonia.Collections;
 using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -23,7 +24,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private static Regex _watchAddressOrLabel = new Regex(@"^(\[|{)(\s*((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+)))\s*[,]{0,1}\d*\s*(\]|})$", RegexOptions.Compiled);
 
-		[Reactive] public AvaloniaList<WatchValueInfo> WatchEntries { get; private set; } = new();
+		[Reactive] public MesenList<WatchValueInfo> WatchEntries { get; private set; } = new();
 		[Reactive] public SelectionModel<WatchValueInfo> Selection { get; set; } = new() { SingleSelect = false };
 
 		public WatchManager Manager { get; }
@@ -36,14 +37,12 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType = cpuType;
 			Manager = WatchManager.GetWatchManager(cpuType);
-			UpdateWatch();
 		}
 
 		public void UpdateWatch()
 		{
 			int selection = Selection.SelectedIndex;
-			WatchEntries.Clear();
-			WatchEntries.AddRange(Manager.GetWatchContent(WatchEntries));
+			WatchEntries.Replace(Manager.GetWatchContent(WatchEntries));
 			if(selection >= 0) {
 				if(selection < WatchEntries.Count) {
 					Selection.SelectedIndex = selection;

@@ -23,7 +23,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class LabelListViewModel : ViewModelBase
 	{
-		[Reactive] public AvaloniaList<LabelViewModel> Labels { get; private set; } = new();
+		[Reactive] public MesenList<LabelViewModel> Labels { get; private set; } = new();
 		[Reactive] public SelectionModel<LabelViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 		[Reactive] public SortState SortState { get; set; } = new();
 
@@ -39,7 +39,6 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly = disassembly;
 
 			SortState.SetColumnSort("Label", ListSortDirection.Ascending, true);
-			UpdateLabelList();
 		}
 
 		public void Sort(object? param)
@@ -76,8 +75,7 @@ namespace Mesen.Debugger.ViewModels
 				return result;
 			});
 
-			Labels.Clear();
-			Labels.AddRange(sortedLabels);
+			Labels.Replace(sortedLabels);
 
 			if(selection >= 0) {
 				if(selection < Labels.Count) {

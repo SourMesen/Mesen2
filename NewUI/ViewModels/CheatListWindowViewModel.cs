@@ -13,12 +13,13 @@ using Mesen.Interop;
 using Avalonia.Controls.Selection;
 using DataBoxControl;
 using System.ComponentModel;
+using Mesen.Utilities;
 
 namespace Mesen.ViewModels
 {
 	public class CheatListWindowViewModel : ViewModelBase
 	{
-		[Reactive] public AvaloniaList<CheatCode> Cheats { get; private set; } = new();
+		[Reactive] public MesenList<CheatCode> Cheats { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 		[Reactive] public bool DisableAllCheats { get; set; } = false;
 		
@@ -62,14 +63,13 @@ namespace Mesen.ViewModels
 				return result;
 			});
 
-			Cheats.Clear();
-			Cheats.AddRange(sortedCheats);
+			Cheats.Replace(sortedCheats);
 		}
 
 		public void LoadCheats()
 		{
 			_cheatCodes = CheatCodes.LoadCheatCodes();
-			Cheats = new AvaloniaList<CheatCode>(_cheatCodes.Cheats);
+			Cheats = new MesenList<CheatCode>(_cheatCodes.Cheats);
 		}
 
 		public void SaveCheats()

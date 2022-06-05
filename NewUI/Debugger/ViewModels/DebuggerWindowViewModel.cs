@@ -149,6 +149,14 @@ namespace Mesen.Debugger.ViewModels
 			UpdateSourceViewState();
 		}
 
+		public void Init()
+		{
+			WatchList.UpdateWatch();
+			CallStack.UpdateCallStack();
+			LabelList.UpdateLabelList();
+			BreakpointList.UpdateBreakpoints();
+		}
+
 		protected override void DisposeView()
 		{
 			WatchList.Manager.WatchChanged -= Manager_WatchChanged;

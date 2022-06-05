@@ -23,7 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; }
 		public DisassemblyViewModel Disassembly { get; }
 
-		[Reactive] public AvaloniaList<StackInfo> CallStackContent { get; private set; } = new();
+		[Reactive] public MesenList<StackInfo> CallStackContent { get; private set; } = new();
 		[Reactive] public SelectionModel<StackInfo?> Selection { get; set; } = new();
 
 		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
@@ -35,12 +35,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Disassembly = disassembly;
 			CpuType = cpuType;
-			
-			if(Design.IsDesignMode) {
-				return;
-			}
-
-			UpdateCallStack();
 		}
 
 		public void UpdateCallStack()
@@ -51,8 +45,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshCallStack()
 		{
-			CallStackContent.Clear();
-			CallStackContent.AddRange(GetStackInfo());
+			CallStackContent.Replace(GetStackInfo());
 		}
 
 		private List<StackInfo> GetStackInfo()
