@@ -96,7 +96,7 @@ private:
 
 	RomInfo _rom;
 
-	ConsoleMemoryInfo _consoleMemory[(int)MemoryType::Register] = {};
+	ConsoleMemoryInfo _consoleMemory[(int)MemoryType::Register + 1] = {};
 
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;

@@ -116,6 +116,39 @@ namespace Mesen.Interop
 			}
 		}
 
+		public static bool SupportsMemoryViewer(this MemoryType memType)
+		{
+			switch(memType) {
+				case MemoryType.Register:
+					return false;
+			}
+			return true;
+		}
+
+		public static bool SupportsTileViewer(this MemoryType memType)
+		{
+			//Hide sprite/palette ram/etc. from tile viewer dropdown, these will never contain tiles
+			switch(memType) {
+				case MemoryType.SnesCgRam:
+				case MemoryType.SnesSpriteRam:
+				case MemoryType.SpcRom:
+				case MemoryType.Register:
+
+				case MemoryType.GbSpriteRam:
+
+				case MemoryType.NesSecondarySpriteRam:
+				case MemoryType.NesSpriteRam:
+				case MemoryType.NesPaletteRam:
+
+				case MemoryType.PceSpriteRam:
+				case MemoryType.PceSpriteRamVdc2:
+				case MemoryType.PcePaletteRam:
+					return false;
+			}
+
+			return true;
+		}
+
 		public static bool IsRelativeMemory(this MemoryType memType)
 		{
 			switch(memType) {

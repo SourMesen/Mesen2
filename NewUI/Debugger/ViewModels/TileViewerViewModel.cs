@@ -181,7 +181,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void InitForCpuType()
 		{
-			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsTileViewer() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Config.Source)) {
 				Config.Source = CpuType.GetVramMemoryType();
 				Config.StartAddress = 0;

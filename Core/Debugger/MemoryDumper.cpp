@@ -69,7 +69,7 @@ uint8_t* MemoryDumper::GetMemoryBuffer(MemoryType type)
 
 uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 {
-	if(type <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(type <= DebugUtilities::GetLastCpuMemoryType() || type >= MemoryType::Register) {
 		return _memorySize[(int)type];
 	} else {
 		return _emu->GetMemory(type).Size;
