@@ -154,17 +154,21 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
 	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
-	//TODO
-	//uint16_t baseAddr = state.EnableOamPriority ? (_internalOamAddress & 0x1FC) : 0;
-
+	
 	std::fill(outBuffer, outBuffer + size.Width * size.Height, 0xFF333333);
 	for(int i = 0; i < (state.OverscanMode ? 239 : 224); i++) {
 		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF666666);
 	}
-	
+
+	int startIndex = state.EnableOamPriority ? (state.OamRamAddress >> 1) : 0;
 	DebugSpriteInfo sprite;
-	for(int i = 508; i >= 0; i -= 4) {
-		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
+	for(int i = 0; i < 128; i++) {
+		int spriteIndex = startIndex - i - 1;
+		if(spriteIndex < 0) {
+			spriteIndex += 128;
+		}
+
+		GetSpriteInfo(sprite, spriteIndex, options, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			int yPos = sprite.Y + y;
