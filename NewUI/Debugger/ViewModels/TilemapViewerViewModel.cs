@@ -55,6 +55,7 @@ namespace Mesen.Debugger.ViewModels
 		private byte[] _vram = Array.Empty<byte>();
 		private UInt32[] _palette = Array.Empty<UInt32>();
 		private bool _refreshDataOnTabChange;
+		private bool _inGameLoaded;
 
 		[Obsolete("For designer only")]
 		public TilemapViewerViewModel() : this(CpuType.Snes, new PictureViewer(), null) { }
@@ -144,6 +145,12 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
+				if(_inGameLoaded) {
+					//Skip refresh data/tab if this is triggered while processing a gameloaded event
+					//Otherwise RefreshTab will be called on the old game's data, causing a crash.
+					return;
+				}
+
 				if(_refreshDataOnTabChange) {
 					RefreshData();
 				} else {
@@ -159,6 +166,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void InitForCpuType()
 		{
+			IsNes = CpuType == CpuType.Nes;
 			_refreshDataOnTabChange = false;
 			switch(CpuType) {
 				case CpuType.Snes:
@@ -409,9 +417,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public void OnGameLoaded()
 		{
+			_inGameLoaded = true;
 			InitForCpuType();
-			IsNes = CpuType == CpuType.Nes;
 			RefreshData();
+			_inGameLoaded = false;
 		}
 	}
 

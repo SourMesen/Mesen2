@@ -340,11 +340,13 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	BlockDebuggerRequests();
 
-	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
-
 	auto emuLock = AcquireLock();
 	auto dbgLock = _debuggerLock.AcquireSafe();
 	auto lock = _loadLock.AcquireSafe();
+
+	//Once emulation is stopped, warn the UI that a game is about to be loaded
+	//This allows the UI to finish processing pending calls to the debug tools, etc.
+	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
 	
 	if(!romFile.IsValid()) {
 		return false;
