@@ -656,7 +656,8 @@ namespace Mesen.Debugger.ViewModels
 				Palette = Config.SelectedPalette,
 				Layout = Config.Layout,
 				StartAddress = Config.StartAddress,
-				Background = Config.Background
+				Background = Config.Background,
+				UseGrayscalePalette = Config.UseGrayscalePalette
 			};
 		}
 

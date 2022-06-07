@@ -162,14 +162,14 @@ protected:
 
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
-	uint32_t GetRgbPixelColor(TileFormat format, uint32_t* colors, uint8_t colorIndex, uint8_t palette);
+	uint32_t GetRgbPixelColor(TileFormat format, const uint32_t* colors, uint8_t colorIndex, uint8_t palette);
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
 
 	virtual DebugPaletteInfo GetPaletteInfo() = 0;
 
-	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t* palette, uint32_t *outBuffer);
+	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t* palette, uint32_t *outBuffer);
 	
 	virtual DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) = 0;
 	virtual FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) = 0;

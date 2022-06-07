@@ -832,6 +832,7 @@ namespace Mesen.Interop
 		public Int32 Height;
 		public Int32 StartAddress;
 		public Int32 Palette;
+		[MarshalAs(UnmanagedType.I1)] public bool UseGrayscalePalette;
 	}
 
 	public struct GetSpritePreviewOptions

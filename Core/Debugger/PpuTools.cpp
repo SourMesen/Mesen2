@@ -77,7 +77,7 @@ void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 	output[3] = 0xFF;
 }
 
-uint32_t PpuTools::GetRgbPixelColor(TileFormat format, uint32_t* colors, uint8_t colorIndex, uint8_t palette)
+uint32_t PpuTools::GetRgbPixelColor(TileFormat format, const uint32_t* colors, uint8_t colorIndex, uint8_t palette)
 {
 	switch(format) {
 		case TileFormat::DirectColor:
@@ -107,10 +107,15 @@ uint32_t PpuTools::GetRgbPixelColor(TileFormat format, uint32_t* colors, uint8_t
 	}
 }
 
-void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, uint32_t *colors, uint32_t *outBuffer)
+void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t *colors, uint32_t *outBuffer)
 {
-	uint32_t ramMask = srcSize - 1;
+	constexpr uint32_t grayscaleColorsBpp2[4] = { 0xFF000000, 0xFF666666, 0xFFBBBBBB, 0xFFFFFFFF };
+	constexpr uint32_t grayscaleColorsBpp4[16] = {
+		0xFF000000, 0xFF111111, 0xFF222222, 0xFF333333, 0xFF444444, 0xFF555555, 0xFF666666, 0xFF777777,
+		0xFF888888, 0xFF999999, 0xFFAAAAAA, 0xFFBBBBBB, 0xFFCCCCCC, 0xFFDDDDDD, 0xFFEEEEEE, 0xFFFFFFFF
+	};
 
+	uint32_t ramMask = srcSize - 1;
 	uint8_t* ram = source;
 	uint8_t bpp;
 
@@ -132,10 +137,17 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 	int bytesPerTile = tileHeight*tileWidth * bpp / 8;
 	int tileCount = options.Width * options.Height;
 
+	uint8_t colorMask = 0xFF;
+	if(options.UseGrayscalePalette) {
+		options.Palette = 0;
+		colors = bpp == 2 ? grayscaleColorsBpp2 : grayscaleColorsBpp4;
+		colorMask = bpp == 2 ? 0x03 : 0x0F;
+	}
+
 	uint32_t bgColor = 0;
 	switch(options.Background) {
 		case TileBackground::Default: bgColor = colors[0]; break;
-		case TileBackground::PaletteColor: bgColor = SnesDefaultVideoFilter::ToArgb(0); break;
+		case TileBackground::PaletteColor: bgColor = colors[options.Palette * (1 << bpp)]; break;
 		case TileBackground::Black: bgColor = 0xFF000000; break;
 		case TileBackground::White: bgColor = 0xFFFFFFFF; break;
 		case TileBackground::Magenta: bgColor = 0xFFFF00FF; break;
@@ -177,7 +189,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 					if(color != 0 || options.Background == TileBackground::PaletteColor) {
 						uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
 						if(pos < outputSize) {
-							outBuffer[pos] = GetRgbPixelColor(options.Format, colors, color, options.Palette);
+							outBuffer[pos] = GetRgbPixelColor(options.Format, colors, color & colorMask, options.Palette);
 						}
 					}
 				}

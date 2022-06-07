@@ -217,6 +217,7 @@ struct GetTileViewOptions
 	int32_t Height;
 	int32_t StartAddress;
 	int32_t Palette;
+	bool UseGrayscalePalette;
 };
 
 struct GetSpritePreviewOptions

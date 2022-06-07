@@ -84,7 +84,7 @@ namespace Mesen.Debugger.Controls
 
 		static PaletteSelector()
 		{
-			AffectsRender<PaletteSelector>(SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty, PaletteIndexValuesProperty);
+			AffectsRender<PaletteSelector>(IsEnabledProperty, SelectionModeProperty, SelectedPaletteProperty, PaletteColorsProperty, ColumnCountProperty, ShowIndexesProperty, PaletteIndexValuesProperty);
 			AffectsMeasure<PaletteSelector>(ColumnCountProperty, BlockSizeProperty, PaletteColorsProperty);
 		}
 
@@ -217,22 +217,24 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
-			Rect selectionRect = Rect.Empty;
-			if(SelectionMode == PaletteSelectionMode.SingleColor) {
-				int selectedRow = SelectedPalette / columnCount;
-				selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
-			} else if(SelectionMode == PaletteSelectionMode.FourColors) {
-				int selectedRow = (SelectedPalette * 4) / columnCount;
-				selectionRect = new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height);
-			} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
-				int selectedRow = (SelectedPalette * 16) / columnCount;
-				selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
-			}
+			if(IsEnabled) {
+				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
+				Rect selectionRect = Rect.Empty;
+				if(SelectionMode == PaletteSelectionMode.SingleColor) {
+					int selectedRow = SelectedPalette / columnCount;
+					selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
+				} else if(SelectionMode == PaletteSelectionMode.FourColors) {
+					int selectedRow = (SelectedPalette * 4) / columnCount;
+					selectionRect = new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height);
+				} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
+					int selectedRow = (SelectedPalette * 16) / columnCount;
+					selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
+				}
 
-			if(!selectionRect.IsEmpty) {
-				context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
-				context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
+				if(!selectionRect.IsEmpty) {
+					context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
+					context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
+				}
 			}
 		}
 

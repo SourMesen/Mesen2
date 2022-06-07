@@ -803,6 +803,7 @@
 			<Control ID="lblTileLayout">Tile Layout:</Control>
 			<Control ID="lblBackground">Background:</Control>
 			<Control ID="chkShowTileGrid">Show tile grid</Control>
+			<Control ID="chkUseGrayscalePalette">Use grayscale palette</Control>
 		</Form>
 
 		<Form ID="PaletteViewerWindow">

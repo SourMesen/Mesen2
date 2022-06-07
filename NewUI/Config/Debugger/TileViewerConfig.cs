@@ -18,6 +18,7 @@ namespace Mesen.Config
 		[Reactive] public int ColumnCount { get; set; } = 32;
 		[Reactive] public int StartAddress { get; set; } = 0;
 		[Reactive] public int SelectedPalette { get; set; } = 0;
+		[Reactive] public bool UseGrayscalePalette { get; set; } = false;
 
 		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();
 
