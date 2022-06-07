@@ -1909,6 +1909,7 @@
 			<Value ID="SuperGameboy">Super Game Boy</Value>
 		</Enum>
 		<Enum ID="TileFormat">
+			<Value ID="NesBpp2">2 bpp</Value>
 			<Value ID="Bpp2">2 bpp</Value>
 			<Value ID="Bpp4">4 bpp</Value>
 			<Value ID="Bpp8">8 bpp</Value>
@@ -1916,7 +1917,7 @@
 			<Value ID="Mode7">Mode 7</Value>
 			<Value ID="Mode7DirectColor">Mode 7 - Direct Color</Value>
 			<Value ID="Mode7ExtBg">Mode 7 - ExtBG</Value>
-			<Valid ID="PceSpriteBpp4">4 bpp - 16x16 sprites</Valid>
+			<Valid ID="PceSpriteBpp4">4 bpp (sprites)</Valid>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>

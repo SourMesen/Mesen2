@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Mesen.Localization;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -138,6 +139,10 @@ namespace Mesen.Debugger.Controls
 		public void AddEntry(string name, object value, FontFamily? font = null)
 		{
 			_updatedKeys.Add(name);
+
+			if(value is Enum) {
+				value = ResourceHelper.GetEnumText((Enum)value);
+			}
 
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				entry.Value = value;

@@ -342,7 +342,7 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddEntry("Size (px)", info.ColumnCount* info.TileWidth + "x" + info.RowCount* info.TileHeight);
 			entries.AddEntry("Tilemap Address", "$" + info.TilemapAddress.ToString("X4"));
 			entries.AddEntry("Tileset Address", "$" + info.TilesetAddress.ToString("X4"));
-			entries.AddEntry("BPP", info.Bpp);
+			entries.AddEntry("Format", info.Format);
 			TilemapInfoPanel.Items = entries;
 		}
 
