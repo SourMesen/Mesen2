@@ -188,6 +188,7 @@ enum class TileFormat
 	DirectColor,
 	Mode7,
 	Mode7DirectColor,
+	Mode7ExtBg,
 	NesBpp2,
 	PceSpriteBpp4,
 };

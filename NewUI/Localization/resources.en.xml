@@ -1914,7 +1914,8 @@
 			<Value ID="Bpp8">8 bpp</Value>
 			<Value ID="DirectColor">Direct Color</Value>
 			<Value ID="Mode7">Mode 7</Value>
-			<Value ID="Mode7DirectColor">Mode 7 + Direct Color</Value>
+			<Value ID="Mode7DirectColor">Mode 7 - Direct Color</Value>
+			<Value ID="Mode7ExtBg">Mode 7 - ExtBG</Value>
 			<Valid ID="PceSpriteBpp4">4 bpp - 16x16 sprites</Valid>
 		</Enum>
 		<Enum ID="TileLayout">

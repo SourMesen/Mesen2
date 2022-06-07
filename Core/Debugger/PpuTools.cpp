@@ -13,54 +13,59 @@ PpuTools::PpuTools(Debugger* debugger, Emulator *emu)
 	_debugger = debugger;
 }
 
-uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t pixelStart, uint8_t shift, const TileFormat format)
+uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t rowStart, uint8_t pixelIndex, const TileFormat format)
 {
+	uint8_t shift = (7 - pixelIndex);
 	uint8_t color;
 	switch(format) {
 		case TileFormat::PceSpriteBpp4: {
+			shift = 15 - pixelIndex;
 			if(shift >= 8) {
 				shift -= 8;
-				pixelStart++;
+				rowStart++;
 			}
-			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 32) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(pixelStart + 64) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(pixelStart + 96) & ramMask] >> shift) & 0x01) << 3);
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(rowStart + 64) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(rowStart + 96) & ramMask] >> shift) & 0x01) << 3);
 			return color;
 		}
 
 		case TileFormat::Bpp2:
-			color = (((ram[pixelStart & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color = (((ram[rowStart & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
 			return color;
 		
 		case TileFormat::NesBpp2:
-			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 8) & ramMask] >> shift) & 0x01) << 1);
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 8) & ramMask] >> shift) & 0x01) << 1);
 			return color;
 
 		case TileFormat::Bpp4:
-			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(rowStart + 16) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(rowStart + 17) & ramMask] >> shift) & 0x01) << 3);
 			return color;
 
 		case TileFormat::Bpp8:
 		case TileFormat::DirectColor:
-			color = (((ram[(pixelStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(pixelStart + 1) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(pixelStart + 16) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(pixelStart + 17) & ramMask] >> shift) & 0x01) << 3);
-			color |= (((ram[(pixelStart + 32) & ramMask] >> shift) & 0x01) << 4);
-			color |= (((ram[(pixelStart + 33) & ramMask] >> shift) & 0x01) << 5);
-			color |= (((ram[(pixelStart + 48) & ramMask] >> shift) & 0x01) << 6);
-			color |= (((ram[(pixelStart + 49) & ramMask] >> shift) & 0x01) << 7);
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(rowStart + 16) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(rowStart + 17) & ramMask] >> shift) & 0x01) << 3);
+			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 4);
+			color |= (((ram[(rowStart + 33) & ramMask] >> shift) & 0x01) << 5);
+			color |= (((ram[(rowStart + 48) & ramMask] >> shift) & 0x01) << 6);
+			color |= (((ram[(rowStart + 49) & ramMask] >> shift) & 0x01) << 7);
 			return color;
 
 		case TileFormat::Mode7:
 		case TileFormat::Mode7DirectColor:
-			return ram[(pixelStart + (7 - shift) * 2 + 1) & ramMask];
+			return ram[(rowStart + pixelIndex * 2 + 1) & ramMask];
+		
+		case TileFormat::Mode7ExtBg:
+			return ram[(rowStart + pixelIndex * 2 + 1) & ramMask] & 0x7F;
 
 		default:
 			throw std::runtime_error("unsupported format");
@@ -97,6 +102,7 @@ uint32_t PpuTools::GetRgbPixelColor(TileFormat format, const uint32_t* colors, u
 
 		case TileFormat::Bpp8:
 		case TileFormat::Mode7:
+		case TileFormat::Mode7ExtBg:
 			return colors[colorIndex];
 
 		case TileFormat::Mode7DirectColor:
@@ -127,8 +133,14 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 		case TileFormat::Bpp2: bpp = 2; break;
 		case TileFormat::Bpp4: bpp = 4; break;
 		case TileFormat::DirectColor: bpp = 8; break;
-		case TileFormat::Mode7: bpp = 16; rowOffset = 16; break;
-		case TileFormat::Mode7DirectColor: bpp = 16; rowOffset = 16; break;
+		
+		case TileFormat::Mode7:
+		case TileFormat::Mode7DirectColor:
+		case TileFormat::Mode7ExtBg:
+			bpp = 16;
+			rowOffset = 16;
+			break;
+
 		case TileFormat::NesBpp2: bpp = 2; rowOffset = 1; break;
 		case TileFormat::PceSpriteBpp4: bpp = 4; rowOffset = 2; tileWidth = 16; tileHeight = 16; options.Width /= 2; options.Height /= 2; break;
 		default: bpp = 8; break;
@@ -185,7 +197,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 			for(int y = 0; y < tileHeight; y++) {
 				uint32_t pixelStart = addr + y * rowOffset;
 				for(int x = 0; x < tileWidth; x++) {
-					uint8_t color = GetTilePixelColor(ram, ramMask, pixelStart, tileWidth - 1 - x, options.Format);
+					uint8_t color = GetTilePixelColor(ram, ramMask, pixelStart, x, options.Format);
 					if(color != 0 || options.Background == TileBackground::PaletteColor) {
 						uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
 						if(pos < outputSize) {

@@ -276,11 +276,11 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 			pixelStart += 8;
 		}
 
-		for(int x = 0; x < sprite.Width; x++) {
-			uint8_t shift = sprite.HorizontalMirror ? (x & 0x07) : (7 - (x & 0x07));
+		for(int x = 0; x < 8; x++) {
+			uint8_t shift = sprite.HorizontalMirror ? (7 - x) : x;
 			uint8_t color = GetTilePixelColor(vram, 0x3FFF, pixelStart, shift, TileFormat::NesBpp2);
 
-			uint32_t outOffset = (y * sprite.Width) + x;
+			uint32_t outOffset = (y * 8) + x;
 			if(color > 0) {
 				sprite.SpritePreview[outOffset] = palette[16 + (sprite.Palette * 4) + color];
 			} else {
