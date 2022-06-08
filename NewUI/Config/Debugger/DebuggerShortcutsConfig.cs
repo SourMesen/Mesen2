@@ -198,6 +198,8 @@ namespace Mesen.Config
 
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint, KeyBinding = new(Key.F4) });
 
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
@@ -343,6 +345,8 @@ namespace Mesen.Config
 		ImportWatchEntries,
 		ExportWatchEntries,
 		ResetWorkspace,
+		TilemapViewer_EditTilemapBreakpoint,
+		TilemapViewer_EditAttributeBreakpoint,
 		TilemapViewer_ViewInTileViewer,
 		TilemapViewer_ViewInMemoryViewer,
 		SpriteViewer_ViewInMemoryViewer,

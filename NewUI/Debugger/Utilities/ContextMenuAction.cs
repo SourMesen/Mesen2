@@ -277,6 +277,10 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Breakpoint")]
 		AddBreakpoint,
+		[IconFile("Breakpoint")]
+		EditTilemapBreakpoint,
+		[IconFile("Breakpoint")]
+		EditAttributeBreakpoint,
 
 		[IconFile("MoveUp")]
 		MoveUp,

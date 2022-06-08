@@ -157,7 +157,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			return new ContextMenuAction() {
 				ActionType = ActionType.ViewInMemoryViewer,
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInMemoryViewer),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SpriteViewer_ViewInMemoryViewer),
 				IsEnabled = () => GetSelectedSprite() != null,
 				OnClick = () => {
 					SpritePreviewModel? sprite = GetSelectedSprite();
@@ -172,7 +172,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			return new ContextMenuAction() {
 				ActionType = ActionType.ViewInTileViewer,
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInTileViewer),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SpriteViewer_ViewInTileViewer),
 				OnClick = () => {
 					SpritePreviewModel? sprite = GetSelectedSprite();
 					if(sprite?.TileAddress >= 0 && _palette != null) {

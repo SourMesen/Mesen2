@@ -107,6 +107,8 @@ namespace Mesen.Debugger.ViewModels
 			MiscShortcuts = CreateShortcutList(new DebuggerShortcut[] {
 				DebuggerShortcut.TilemapViewer_ViewInMemoryViewer,
 				DebuggerShortcut.TilemapViewer_ViewInTileViewer,
+				DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint,
+				DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint,
 				DebuggerShortcut.TileViewer_ViewInMemoryViewer,
 				DebuggerShortcut.SpriteViewer_ViewInMemoryViewer,
 				DebuggerShortcut.SpriteViewer_ViewInTileViewer

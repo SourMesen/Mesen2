@@ -6,6 +6,7 @@ using Mesen.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Utilities;
 using System;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Windows
 {
@@ -42,6 +43,11 @@ namespace Mesen.Debugger.Windows
 
 		public static async void EditBreakpoint(Breakpoint bp, Control parent)
 		{
+			await EditBreakpointAsync(bp, parent);
+		}
+
+		public static async Task<bool> EditBreakpointAsync(Breakpoint bp, Control parent)
+		{
 			Breakpoint copy = bp.Clone();
 			BreakpointEditViewModel model = new BreakpointEditViewModel(copy);
 			BreakpointEditWindow wnd = new BreakpointEditWindow() { DataContext = model };
@@ -53,6 +59,8 @@ namespace Mesen.Debugger.Windows
 			}
 
 			model.Dispose();
+
+			return result;
 		}
 	}
 }

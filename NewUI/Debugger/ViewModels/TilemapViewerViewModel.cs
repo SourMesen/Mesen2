@@ -112,9 +112,17 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
+			if(Design.IsDesignMode || wnd == null) {
+				return;
+			}
+
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
+					HintText = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						return tile?.TileMapAddress > 0 ? $"${tile?.TileMapAddress:X4}" : "";
+					},
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_ViewInMemoryViewer),
 					OnClick = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
@@ -135,14 +143,40 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
+					ActionType = ActionType.EditTilemapBreakpoint,
+					HintText = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						return tile?.TileMapAddress > 0 ? $"${tile?.TileMapAddress:X4}" : "";
+					},
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint),
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.TileMapAddress >= 0) {
+							EditBreakpoint(wnd, tile.Value.TileMapAddress);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EditAttributeBreakpoint,
+					HintText = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						return tile?.AttributeAddress > 0 ? $"${tile?.AttributeAddress:X4}"  : "";
+					},
+					IsVisible = () => IsNes,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint),
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.AttributeAddress >= 0) {
+							EditBreakpoint(wnd, tile.Value.AttributeAddress);
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.ExportToPng,
 					OnClick = () => _picViewer.ExportToPng()
 				}
 			});
-
-			if(Design.IsDesignMode || wnd == null) {
-				return;
-			}
 
 			AddDisposable(this.WhenAnyValue(x => x.Tabs).Subscribe(x => ShowTabs = x.Count > 1));
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
@@ -163,6 +197,37 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private async void EditBreakpoint(Window wnd, int address)
+		{
+			MemoryType memType = GetVramMemoryType();
+			AddressInfo addr = new AddressInfo() { Address = address, Type = memType };
+			if(memType.IsRelativeMemory()) {
+				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(addr);
+				if(absAddr.Address >= 0) {
+					addr = absAddr;
+				}
+			}
+
+			if(addr.Address >= 0) {
+				Breakpoint? bp = BreakpointManager.GetMatchingBreakpoint(addr, CpuType);
+				if(bp == null) {
+					bp = new Breakpoint() {
+						BreakOnWrite = true,
+						BreakOnRead = true,
+						CpuType = CpuType,
+						StartAddress = (uint)addr.Address,
+						EndAddress = (uint)addr.Address,
+						MemoryType = addr.Type
+					};
+				}
+
+				bool result = await BreakpointEditWindow.EditBreakpointAsync(bp, wnd);
+				if(result && DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => true) == null) {
+					DebugWindowManager.OpenDebugWindow<DebuggerWindow>(() => new DebuggerWindow(CpuType));
+				}
+			}
 		}
 
 		private void InitForCpuType()
@@ -342,6 +407,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			TooltipEntries entries = TilemapInfoPanel.Items ?? new TooltipEntries();
 			DebugTilemapInfo info = _tilemapInfo;
+			entries.StartUpdate();
 			entries.AddEntry("Size", info.ColumnCount + "x" + info.RowCount);
 			entries.AddEntry("Size (px)", info.ColumnCount* info.TileWidth + "x" + info.RowCount* info.TileHeight);
 			entries.AddEntry("Tilemap Address", "$" + info.TilemapAddress.ToString("X4"));
@@ -350,6 +416,7 @@ namespace Mesen.Debugger.ViewModels
 			if(info.Mirroring != TilemapMirroring.None) {
 				entries.AddEntry("Mirroring", info.Mirroring);
 			}
+			entries.EndUpdate();
 			TilemapInfoPanel.Items = entries;
 		}
 
