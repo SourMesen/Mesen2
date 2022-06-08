@@ -171,12 +171,22 @@ enum class TilemapDisplayMode
 	AttributeView
 };
 
+struct AddressCounters;
+
+enum class TilemapHighlightMode
+{
+	None,
+	Changes,
+	Writes
+};
+
 struct GetTilemapOptions
 {
 	uint8_t Layer;
 	uint8_t* CompareVram;
-	bool HighlightTileChanges;
-	bool HighlightAttributeChanges;
+	AddressCounters* AccessCounters;
+	TilemapHighlightMode TileHighlightMode;
+	TilemapHighlightMode AttributeHighlightMode;
 	TilemapDisplayMode DisplayMode;
 };
 

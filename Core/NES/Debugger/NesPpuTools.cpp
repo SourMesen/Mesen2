@@ -6,6 +6,7 @@
 #include "NES/NesDefaultVideoFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/MemoryDumper.h"
+#include "Debugger/MemoryAccessCounter.h"
 #include "Shared/SettingTypes.h"
 
 NesPpuTools::NesPpuTools(Debugger* debugger, Emulator *emu, NesConsole* console) : PpuTools(debugger, emu)
@@ -23,7 +24,25 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 		palette[i] = palette[0];
 	}
 
+	AddressCounters* accessCounters = options.AccessCounters;
 	uint8_t* prevVram = options.CompareVram != nullptr ? options.CompareVram : vram;
+
+	uint64_t masterClock = _emu->GetMasterClock();
+	uint32_t clockRate = _emu->GetMasterClockRate() / _emu->GetFps();
+
+	auto isHighlighted = [&](uint16_t addr, TilemapHighlightMode mode) -> bool {
+		switch(mode) {
+			default:
+			case TilemapHighlightMode::None: return false;
+
+			//Highlight if modified since the last update
+			case TilemapHighlightMode::Changes: return prevVram[addr] != vram[addr];
+
+			//Highlight if modified in the last frame
+			case TilemapHighlightMode::Writes: return accessCounters && masterClock - accessCounters[addr].WriteStamp < clockRate;
+		}
+	};
+
 	constexpr uint32_t grayscalePalette[4] = { 0xFF000000, 0xFF808080, 0xFFC0C0C0, 0xFFFFFFFF };
 	for(int nametableIndex = 0; nametableIndex < 4; nametableIndex++) {
 		uint16_t baseAddr = 0x2000 + nametableIndex * 0x400;
@@ -35,8 +54,8 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 				uint16_t attributeAddress = baseAttributeAddr + ((row & 0xFC) << 1) + (column >> 2);
 				uint8_t tileIndex = vram[baseAddr + ntIndex];
 				uint8_t attribute = vram[attributeAddress];
-				bool tileChanged = options.HighlightTileChanges && prevVram[baseAddr + ntIndex] != tileIndex;
-				bool attrChanged = options.HighlightAttributeChanges && prevVram[attributeAddress] != attribute;
+				bool tileHighlighted = isHighlighted(baseAddr + ntIndex, options.TileHighlightMode);
+				bool attrHighlighted = isHighlighted(attributeAddress, options.AttributeHighlightMode);
 				uint8_t shift = (column & 0x02) | ((row & 0x02) << 1);
 
 				uint8_t paletteBaseAddr;
@@ -72,12 +91,29 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 								outBuffer[offset+x] = grayscalePalette[color];
 							} else {
 								outBuffer[offset+x] = palette[paletteBaseAddr + color];
-								if(tileChanged) {
-									uint32_t tileChangedColor = 0x80FF0000;
-									BlendColors((uint8_t*)&outBuffer[offset+x], (uint8_t*)&tileChangedColor);
-								} else if(attrChanged) {
-									uint32_t attrChangedColor = 0x80FFFF00;
-									BlendColors((uint8_t*)&outBuffer[offset+x], (uint8_t*)&attrChangedColor);
+							}
+
+							if(tileHighlighted) {
+								static constexpr uint32_t tileChangedColor = 0x80FF0000;
+								if(x == 0 || y == 0 || x == 7 || y == 7) {
+									outBuffer[offset + x] = 0xFF000000 | tileChangedColor;
+								} else {
+									BlendColors((uint8_t*)&outBuffer[offset + x], (uint8_t*)&tileChangedColor);
+								}
+							}
+
+							if(attrHighlighted) {
+								static constexpr uint32_t attrChangedColor = 0x80FFFF00;
+								bool isEdge = (
+									((column & 3) == 0 && x == 0) ||
+									((row & 3) == 0 && y == 0) ||
+									((column & 3) == 3 && x == 7) ||
+									((row & 3) == 3 && y == 7)
+								);
+								if(isEdge) {
+									outBuffer[offset + x] = 0xFF000000 | attrChangedColor;
+								} else {
+									BlendColors((uint8_t*)&outBuffer[offset + x], (uint8_t*)&attrChangedColor);
 								}
 							}
 						}

@@ -54,6 +54,7 @@ namespace Mesen.Debugger.ViewModels
 		private byte[]? _prevVram;
 		private byte[] _vram = Array.Empty<byte>();
 		private UInt32[] _palette = Array.Empty<UInt32>();
+		private AddressCounters[] _accessCounters = Array.Empty<AddressCounters>();
 		private bool _refreshDataOnTabChange;
 		private bool _inGameLoaded;
 
@@ -251,13 +252,14 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private GetTilemapOptions GetOptions(TilemapViewerTab tab, byte[]? prevVram = null)
+		private GetTilemapOptions GetOptions(TilemapViewerTab tab, byte[]? prevVram = null, AddressCounters[]? accessCounters = null)
 		{
 			return new GetTilemapOptions() {
 				Layer = (byte)tab.Layer,
 				CompareVram = prevVram,
-				HighlightTileChanges = Config.HighlightTileChanges,
-				HighlightAttributeChanges = Config.HighlightAttributeChanges,
+				AccessCounters = accessCounters,
+				TileHighlightMode = Config.TileHighlightMode,
+				AttributeHighlightMode = Config.AttributeHighlightMode,
 				DisplayMode = Config.DisplayMode
 			};
 		}
@@ -273,6 +275,7 @@ namespace Mesen.Debugger.ViewModels
 			_ppuState = ppuState;
 			_prevVram = _vram;
 			_vram = DebugApi.GetMemoryState(GetVramMemoryType());
+			_accessCounters = DebugApi.GetMemoryAccessCounts(GetVramMemoryType());
 			_palette = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
 
 			RefreshTab();
@@ -289,6 +292,7 @@ namespace Mesen.Debugger.ViewModels
 				byte[]? prevVram = _prevVram;
 				byte[] vram = _vram;
 				uint[] palette = _palette;
+				AddressCounters[] accessCounters = _accessCounters;
 
 				GetTilemapOptions options;
 				FrameInfo size;
@@ -303,7 +307,7 @@ namespace Mesen.Debugger.ViewModels
 					SelectedTab = Tabs[0];
 				}
 
-				options = GetOptions(SelectedTab, prevVram);
+				options = GetOptions(SelectedTab, prevVram, accessCounters);
 				size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
 				InitBitmap((int)size.Width, (int)size.Height);
 

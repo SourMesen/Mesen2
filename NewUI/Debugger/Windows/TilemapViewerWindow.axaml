@@ -54,8 +54,15 @@
 				<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
 				<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" IsVisible="{CompiledBinding IsNes}" />
 				<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
-				<CheckBox Content="{l:Translate chkHighlightTileChanges}" IsChecked="{CompiledBinding Config.HighlightTileChanges}" IsVisible="{CompiledBinding IsNes}" />
-				<CheckBox Content="{l:Translate chkHighlightAttributeChanges}" IsChecked="{CompiledBinding Config.HighlightAttributeChanges}" IsVisible="{CompiledBinding IsNes}" />
+
+				<c:GroupBox Header="{l:Translate lblHighlightOptions}" Margin="0" IsVisible="{CompiledBinding IsNes}">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+						<TextBlock Text="{l:Translate lblTileHighlightMode}" />
+						<c:EnumComboBox Grid.Column="1" SelectedItem="{CompiledBinding Config.TileHighlightMode}" />
+						<TextBlock Grid.Row="1" Text="{l:Translate lblAttributeHighlightMode}" />
+						<c:EnumComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{CompiledBinding Config.AttributeHighlightMode}" />
+					</Grid>
+				</c:GroupBox>
 
 				<c:GroupBox Header="{l:Translate lblTilemap}" Margin="0 5 0 0">
 					<ContentControl Content="{CompiledBinding TilemapInfoPanel}" />

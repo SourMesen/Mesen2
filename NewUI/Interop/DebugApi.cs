@@ -204,21 +204,16 @@ namespace Mesen.Interop
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
 
-			GCHandle? handle = null;
-			IntPtr compareVramPtr = IntPtr.Zero;
-
-			if(options.CompareVram != null) {
-				handle = GCHandle.Alloc(options.CompareVram, GCHandleType.Pinned);
-				compareVramPtr = handle.Value.AddrOfPinnedObject();
+			fixed(byte* compareVramPtr = options.CompareVram) {
+				fixed(AddressCounters* accessCounters = options.AccessCounters) {
+					byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
+					Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
+					InteropGetTilemapOptions interopOptions = options.ToInterop();
+					interopOptions.CompareVram = (IntPtr)compareVramPtr;
+					interopOptions.AccessCounters = (IntPtr)accessCounters;
+					return DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
+				}
 			}
-
-			byte* stateBuffer = stackalloc byte[Marshal.SizeOf(state.GetType())];
-			Marshal.StructureToPtr(state, (IntPtr)stateBuffer, false);
-			InteropGetTilemapOptions interopOptions = options.ToInterop();
-			interopOptions.CompareVram = compareVramPtr;
-			DebugTilemapInfo result = DebugApi.GetTilemap(cpuType, interopOptions, (IntPtr)stateBuffer, vram, palette, outputBuffer);
-			handle?.Free();
-			return result;
 		}
 
 		[DllImport(DllPath)] private static extern FrameInfo GetTilemapSize(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state);
@@ -737,20 +732,28 @@ namespace Mesen.Interop
 		AttributeView
 	}
 
+	public enum TilemapHighlightMode
+	{
+		None,
+		Changes,
+		Writes
+	}
+
 	public class GetTilemapOptions
 	{
 		public byte Layer;
 		public byte[]? CompareVram;
-		public bool HighlightTileChanges;
-		public bool HighlightAttributeChanges;
+		public AddressCounters[]? AccessCounters;
+		public TilemapHighlightMode TileHighlightMode;
+		public TilemapHighlightMode AttributeHighlightMode;
 		public TilemapDisplayMode DisplayMode;
 
 		public InteropGetTilemapOptions ToInterop()
 		{
 			return new InteropGetTilemapOptions() {
 				Layer = Layer,
-				HighlightTileChanges = HighlightTileChanges,
-				HighlightAttributeChanges = HighlightAttributeChanges,
+				TileHighlightMode = TileHighlightMode,
+				AttributeHighlightMode = AttributeHighlightMode,
 				DisplayMode = DisplayMode
 			};
 		}
@@ -760,8 +763,9 @@ namespace Mesen.Interop
 	{
 		public byte Layer;
 		public IntPtr CompareVram;
-		[MarshalAs(UnmanagedType.I1)] public bool HighlightTileChanges;
-		[MarshalAs(UnmanagedType.I1)] public bool HighlightAttributeChanges;
+		public IntPtr AccessCounters;
+		public TilemapHighlightMode TileHighlightMode;
+		public TilemapHighlightMode AttributeHighlightMode;
 		public TilemapDisplayMode DisplayMode;
 	}
 

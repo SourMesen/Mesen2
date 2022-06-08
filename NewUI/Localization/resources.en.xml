@@ -785,8 +785,9 @@
 			<Control ID="lblTilemap">Tilemap</Control>
 			<Control ID="chkShowGrid">Show tile grid</Control>
 			<Control ID="chkShowAltGrid">Show attribute grid</Control>
-			<Control ID="chkHighlightTileChanges">Highlight tile changes</Control>
-			<Control ID="chkHighlightAttributeChanges">Highlight attribute changes</Control>
+			<Control ID="lblHighlightOptions">Highlight options</Control>
+			<Control ID="lblTileHighlightMode">Tiles:</Control>
+			<Control ID="lblAttributeHighlightMode">Attributes:</Control>
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
 
@@ -1935,6 +1936,11 @@
 			<Value ID="Default">Tilemap</Value>
 			<Value ID="Grayscale">Tilemap (grayscale)</Value>
 			<Value ID="AttributeView">Attribute view</Value>
+		</Enum>
+		<Enum ID="TilemapHighlightMode">
+			<Value ID="None">No highlight</Value>
+			<Value ID="Changes">Changes</Value>
+			<Value ID="Writes">Writes</Value>
 		</Enum>
 		<Enum ID="StatusFlagFormat">
 			<Value ID="Hexadecimal">Hexadecimal</Value>
