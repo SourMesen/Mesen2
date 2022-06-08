@@ -785,10 +785,21 @@ namespace Mesen.Interop
 		True = 1
 	}
 
+	public enum TilemapMirroring
+	{
+		None,
+		Horizontal,
+		Vertical,
+		SingleScreenA,
+		SingleScreenB,
+		FourScreens,
+	}
+
 	public struct DebugTilemapInfo
 	{
 		public UInt32 Bpp;
 		public TileFormat Format;
+		public TilemapMirroring Mirroring;
 
 		public UInt32 TileWidth;
 		public UInt32 TileHeight;

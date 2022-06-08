@@ -82,10 +82,21 @@ public:
 	}
 };
 
+enum class TilemapMirroring
+{
+	None,
+	Horizontal,
+	Vertical,
+	SingleScreenA,
+	SingleScreenB,
+	FourScreens,
+};
+
 struct DebugTilemapInfo
 {
 	uint32_t Bpp;
 	TileFormat Format;
+	TilemapMirroring Mirroring;
 	
 	uint32_t TileWidth;
 	uint32_t TileHeight;

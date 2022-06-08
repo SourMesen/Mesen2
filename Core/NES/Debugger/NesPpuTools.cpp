@@ -135,6 +135,14 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	result.ScrollWidth = NesConstants::ScreenWidth;
 	result.ScrollHeight = NesConstants::ScreenHeight;
 
+	switch(_mapper->GetState().Mirroring) {
+		case MirroringType::Horizontal: result.Mirroring = TilemapMirroring::Horizontal; break;
+		case MirroringType::Vertical: result.Mirroring = TilemapMirroring::Vertical; break;
+		case MirroringType::ScreenAOnly: result.Mirroring = TilemapMirroring::SingleScreenA; break;
+		case MirroringType::ScreenBOnly: result.Mirroring = TilemapMirroring::SingleScreenB; break;
+		case MirroringType::FourScreens: result.Mirroring = TilemapMirroring::FourScreens; break;
+	}
+
 	if(state.Scanline >= 240 || (state.Scanline == 239 && state.Cycle >= 256) || (state.Scanline == -1 && state.Cycle < 328)) {
 		//During vblank, use T instead of V
 		uint16_t t = state.TmpVideoRamAddr;

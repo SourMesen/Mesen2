@@ -346,7 +346,10 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddEntry("Size (px)", info.ColumnCount* info.TileWidth + "x" + info.RowCount* info.TileHeight);
 			entries.AddEntry("Tilemap Address", "$" + info.TilemapAddress.ToString("X4"));
 			entries.AddEntry("Tileset Address", "$" + info.TilesetAddress.ToString("X4"));
-			entries.AddEntry("Format", info.Format);
+			entries.AddEntry("Tile Format", info.Format);
+			if(info.Mirroring != TilemapMirroring.None) {
+				entries.AddEntry("Mirroring", info.Mirroring);
+			}
 			TilemapInfoPanel.Items = entries;
 		}
 
