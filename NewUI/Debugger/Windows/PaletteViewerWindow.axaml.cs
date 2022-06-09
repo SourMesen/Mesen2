@@ -67,6 +67,10 @@ namespace Mesen.Debugger.Windows
 		{
 			if(sender is PaletteSelector viewer) {
 				int index = viewer.GetPaletteIndexFromPoint(e.GetCurrentPoint(viewer).Position);
+				if(_model.ViewerMouseOverPalette == index) {
+					return;
+				}
+
 				_model.ViewerTooltip = _model.GetPreviewPanel(index, _model.ViewerTooltip);
 				_model.ViewerMouseOverPalette = index;
 

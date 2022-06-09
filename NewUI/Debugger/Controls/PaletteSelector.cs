@@ -5,6 +5,8 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Debugger.Utilities;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,6 +28,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> ColumnCountProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(ColumnCount), 16);
 		public static readonly StyledProperty<int> BlockSizeProperty = AvaloniaProperty.Register<PaletteSelector, int>(nameof(BlockSize), 0);
 		public static readonly StyledProperty<UInt32[]> PaletteColorsProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]>(nameof(PaletteColors));
+
+		public static readonly StyledProperty<UInt32[]?> RawPaletteProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]?>(nameof(RawPalette), null);
+		public static readonly StyledProperty<RawPaletteFormat> RawFormatProperty = AvaloniaProperty.Register<PaletteSelector, RawPaletteFormat>(nameof(RawFormat), RawPaletteFormat.Indexed);
+
 		public static readonly StyledProperty<UInt32[]?> PaletteIndexValuesProperty = AvaloniaProperty.Register<PaletteSelector, UInt32[]?>(nameof(PaletteIndexValues));
 		public static readonly StyledProperty<bool> ShowIndexesProperty = AvaloniaProperty.Register<PaletteSelector, bool>(nameof(ShowIndexes));
 
@@ -64,6 +70,18 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(PaletteIndexValuesProperty, value); }
 		}
 
+		public UInt32[]? RawPalette
+		{
+			get { return GetValue(RawPaletteProperty); }
+			set { SetValue(RawPaletteProperty, value); }
+		}
+
+		public RawPaletteFormat RawFormat
+		{
+			get { return GetValue(RawFormatProperty); }
+			set { SetValue(RawFormatProperty, value); }
+		}
+
 		public int ColumnCount
 		{
 			get { return GetValue(ColumnCountProperty); }
@@ -81,6 +99,9 @@ namespace Mesen.Debugger.Controls
 			get { return GetValue(ShowIndexesProperty); }
 			set { SetValue(ShowIndexesProperty, value); }
 		}
+
+		private DynamicTooltip? _tooltip = null;
+		private Point _tooltipPos = new Point();
 
 		static PaletteSelector()
 		{
@@ -223,10 +244,10 @@ namespace Mesen.Debugger.Controls
 				if(SelectionMode == PaletteSelectionMode.SingleColor) {
 					int selectedRow = SelectedPalette / columnCount;
 					selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
-				} else if(SelectionMode == PaletteSelectionMode.FourColors) {
+				} else if(SelectionMode == PaletteSelectionMode.FourColors && columnCount >= 4) {
 					int selectedRow = (SelectedPalette * 4) / columnCount;
 					selectionRect = new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height);
-				} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
+				} else if(SelectionMode == PaletteSelectionMode.SixteenColors && columnCount >= 16) {
 					int selectedRow = (SelectedPalette * 16) / columnCount;
 					selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
 				}
@@ -256,6 +277,43 @@ namespace Mesen.Debugger.Controls
 			int clickedColumn = Math.Min(columnCount - 1, p.X / cellWidth);
 
 			return clickedRow * columnCount + clickedColumn;
+		}
+
+		protected override void OnPointerMoved(PointerEventArgs e)
+		{
+			base.OnPointerMoved(e);
+			
+			if(RawPalette == null) {
+				return;
+			}
+
+			Point pos = e.GetCurrentPoint(this).Position;
+			if(pos == _tooltipPos) {
+				return;
+			}
+
+			int paletteIndex = GetPaletteIndexFromPoint(pos);
+			_tooltip = PaletteHelper.GetPreviewPanel(PaletteColors, RawPalette, RawFormat, paletteIndex, _tooltip);
+			_tooltipPos = pos;
+
+			if(_tooltip != null) {
+				ToolTip.SetTip(this, _tooltip);
+
+				//Force tooltip to update its position
+				ToolTip.SetHorizontalOffset(this, 14);
+				ToolTip.SetHorizontalOffset(this, 15);
+				ToolTip.SetIsOpen(this, true);
+			} else {
+				ToolTip.SetTip(this, null);
+				ToolTip.SetIsOpen(this, false);
+			}
+		}
+
+		protected override void OnPointerLeave(PointerEventArgs e)
+		{
+			base.OnPointerLeave(e);
+			ToolTip.SetTip(this, null);
+			ToolTip.SetIsOpen(this, false);
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -204,6 +205,31 @@ namespace Mesen.Debugger.Controls
 		{
 			Color = new UInt32[1];
 			Color[0] = color;
+		}
+	}
+
+	public class TooltipPaletteEntry : ReactiveObject
+	{
+		[Reactive] public UInt32[] RgbPalette { get; set; }
+		[Reactive] public UInt32[] RawPalette { get; set; }
+		[Reactive] public RawPaletteFormat RawFormat { get; set; }
+
+		public TooltipPaletteEntry(UInt32[] rgbPalette, UInt32[] rawPalette, RawPaletteFormat rawFormat)
+		{
+			RgbPalette = rgbPalette;
+			RawPalette = rawPalette;
+			RawFormat = rawFormat;
+		}
+
+		public TooltipPaletteEntry(int paletteIndex, int paletteSize, UInt32[] rgbPalette, UInt32[] rawPalette, RawPaletteFormat rawFormat)
+		{
+			RgbPalette = new UInt32[paletteSize];
+			Array.Copy(rgbPalette, paletteIndex * paletteSize, RgbPalette, 0, paletteSize);
+
+			RawPalette = new UInt32[paletteSize];
+			Array.Copy(rawPalette, paletteIndex * paletteSize, RawPalette, 0, paletteSize);
+
+			RawFormat = rawFormat;
 		}
 	}
 }

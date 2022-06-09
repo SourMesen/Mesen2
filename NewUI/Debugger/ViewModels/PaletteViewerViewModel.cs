@@ -126,7 +126,7 @@ namespace Mesen.Debugger.ViewModels
 		private void UpdatePreviewPanel()
 		{
 			PreviewPanel = GetPreviewPanel(SelectedPalette, PreviewPanel);
-
+			
 			if(ViewerTooltip != null && ViewerMouseOverPalette >= 0) {
 				GetPreviewPanel(ViewerMouseOverPalette, ViewerTooltip);
 			}
@@ -146,38 +146,9 @@ namespace Mesen.Debugger.ViewModels
 			UInt32[] rgbPalette = palette.GetRgbPalette();
 			UInt32[] rawPalette = palette.GetRawPalette();
 
-			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
-			entries.StartUpdate();
-
-			entries.AddEntry("Color", new TooltipColorEntry(rgbPalette[index]));
-			entries.AddEntry("Index", "$" + index.ToString("X2"));
-			if(palette.RawFormat == RawPaletteFormat.Rgb555) {
-				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X4"));
-				entries.AddEntry("R", "$" + (rawPalette[index] & 0x1F).ToString("X2"));
-				entries.AddEntry("G", "$" + ((rawPalette[index] >> 5) & 0x1F).ToString("X2"));
-				entries.AddEntry("B", "$" + (rawPalette[index] >> 10).ToString("X2"));
-			} else if(palette.RawFormat == RawPaletteFormat.Rgb333) {
-				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X3"));
-				entries.AddEntry("R", "$" + (rawPalette[index] & 0x07).ToString("X2"));
-				entries.AddEntry("G", "$" + ((rawPalette[index] >> 3) & 0x07).ToString("X2"));
-				entries.AddEntry("B", "$" + (rawPalette[index] >> 6).ToString("X2"));
-			} else {
-				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X2"));
-			}
-			entries.AddEntry("Color Code (Hex)", "#" + rgbPalette[index].ToString("X8").Substring(2));
-			entries.AddEntry("Color Code (RGB)",
-				((rgbPalette[index] >> 16) & 0xFF).ToString() + ", " +
-				((rgbPalette[index] >> 8) & 0xFF).ToString() + ", " +
-				(rgbPalette[index] & 0xFF).ToString()
-			);
-
-			entries.EndUpdate();
-			if(tooltipToUpdate != null) {
-				return tooltipToUpdate;
-			} else {
-				return new DynamicTooltip() { Items = entries };
-			}
+			return PaletteHelper.GetPreviewPanel(rgbPalette, rawPalette, palette.RawFormat, index, tooltipToUpdate);
 		}
+
 
 		public void OnGameLoaded()
 		{

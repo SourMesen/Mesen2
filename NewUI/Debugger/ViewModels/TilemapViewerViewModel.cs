@@ -53,7 +53,9 @@ namespace Mesen.Debugger.ViewModels
 		private BaseState? _ppuState;
 		private byte[]? _prevVram;
 		private byte[] _vram = Array.Empty<byte>();
-		private UInt32[] _palette = Array.Empty<UInt32>();
+		private UInt32[] _rgbPalette = Array.Empty<UInt32>();
+		private UInt32[] _rawPalette = Array.Empty<UInt32>();
+		private RawPaletteFormat _rawFormat;
 		private AddressCounters[] _accessCounters = Array.Empty<AddressCounters>();
 		private bool _refreshDataOnTabChange;
 		private bool _inGameLoaded;
@@ -341,7 +343,11 @@ namespace Mesen.Debugger.ViewModels
 			_prevVram = _vram;
 			_vram = DebugApi.GetMemoryState(GetVramMemoryType());
 			_accessCounters = DebugApi.GetMemoryAccessCounts(GetVramMemoryType());
-			_palette = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
+
+			DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType);
+			_rgbPalette = palette.GetRgbPalette();
+			_rawPalette = palette.GetRawPalette();
+			_rawFormat = palette.RawFormat;
 
 			RefreshTab();
 		}
@@ -356,7 +362,7 @@ namespace Mesen.Debugger.ViewModels
 				BaseState ppuState = _ppuState;
 				byte[]? prevVram = _prevVram;
 				byte[] vram = _vram;
-				uint[] palette = _palette;
+				uint[] palette = _rgbPalette;
 				AddressCounters[] accessCounters = _accessCounters;
 
 				GetTilemapOptions options;
@@ -443,10 +449,7 @@ namespace Mesen.Debugger.ViewModels
 			if(_tilemapInfo.Bpp <= 4) {
 				int paletteSize = (int)Math.Pow(2, _tilemapInfo.Bpp);
 				int paletteIndex = tileInfo.PaletteIndex >= 0 ? tileInfo.PaletteIndex : 0;
-				UInt32[] tilePalette = new UInt32[paletteSize];
-				Array.Copy(_palette, paletteIndex * paletteSize, tilePalette, 0, paletteSize);
-
-				entries.AddEntry("Palette", tilePalette);
+				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, _rgbPalette, _rawPalette, _rawFormat));
 			}
 
 			entries.AddEntry("Column, Row", tileInfo.Column + ", " + tileInfo.Row);

@@ -69,6 +69,18 @@
 									/>
 								</Border>
 							</DataTemplate>
+							<DataTemplate DataType="dc:TooltipPaletteEntry">
+								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
+									<dc:PaletteSelector
+										PaletteColors="{Binding RgbPalette}"
+										RawPalette="{Binding RawPalette}"
+										RawFormat="{Binding RawFormat}"
+										BlockSize="12"
+										ColumnCount="4"
+										SelectionMode="None"
+									/>
+								</Border>
+							</DataTemplate>
 							<DataTemplate DataType="x:Array">
 								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
 									<dc:PaletteSelector

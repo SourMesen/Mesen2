@@ -215,10 +215,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugPaletteInfo palette = _palette.Get();
 			int paletteSize = (int)Math.Pow(2, sprite.Bpp);
 			int paletteIndex = sprite.Palette >= 0 ? sprite.Palette : 0;
-			UInt32[] spritePalette = new UInt32[paletteSize];
-			Array.Copy(palette.GetRgbPalette(), palette.BgColorCount + paletteIndex * paletteSize, spritePalette, 0, paletteSize);
-
-			entries.AddEntry("Palette", spritePalette);
+			entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, palette.GetRgbPalette(), palette.GetRawPalette(), palette.RawFormat));
 
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
 			entries.AddEntry("X, Y", 

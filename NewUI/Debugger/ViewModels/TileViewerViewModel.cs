@@ -36,6 +36,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public PixelPoint? ViewerMousePos { get; set; }
 
 		[Reactive] public UInt32[] PaletteColors { get; set; } = Array.Empty<UInt32>();
+		[Reactive] public UInt32[] RawPalette { get; set; } = Array.Empty<UInt32>();
+		[Reactive] public RawPaletteFormat RawFormat { get; set; }
 		[Reactive] public PaletteSelectionMode PaletteSelectionMode { get; private set; }
 		[Reactive] public int PaletteColumnCount { get; private set; } = 16;
 
@@ -580,8 +582,12 @@ namespace Mesen.Debugger.ViewModels
 		{
 			_ppuState = DebugApi.GetPpuState(CpuType);
 
-			PaletteColors = DebugApi.GetPaletteInfo(CpuType).GetRgbPalette();
+			DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType);
+			PaletteColors = palette.GetRgbPalette();
+			RawPalette = palette.GetRawPalette();
+			RawFormat = palette.RawFormat;
 			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
+
 			_sourceData = DebugApi.GetMemoryState(Config.Source);
 
 			RefreshTab();
