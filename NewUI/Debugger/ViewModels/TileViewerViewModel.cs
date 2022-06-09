@@ -255,11 +255,13 @@ namespace Mesen.Debugger.ViewModels
 							new("SPR1", () => ApplySpritePreset(0)),
 							new("BG2", () => ApplyBgPreset(1)),
 							new("SPR2", () => ApplySpritePreset(1)),
+							new("ROM", () => ApplyPrgPreset()),
 						};
 					} else {
 						return new() {
 							new("BG", () => ApplyBgPreset(0)),
 							new("Sprites", () => ApplySpritePreset(0)),
+							new("ROM", () => ApplyPrgPreset()),
 						};
 					}
 
