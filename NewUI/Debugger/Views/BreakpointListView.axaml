@@ -21,7 +21,7 @@
 			Items="{CompiledBinding Breakpoints}"
 			Selection="{CompiledBinding Selection}"
 			CellClick="OnCellClick"
-			DoubleTapped="OnGridDoubleClick"
+			CellDoubleClick="OnCellDoubleClick"
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"

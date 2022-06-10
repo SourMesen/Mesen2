@@ -31,10 +31,9 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnCellDoubleClick(DataBoxCell cell)
 		{
-			DataBox grid = (DataBox)sender;
-			if(DataContext is LabelListViewModel listModel && grid.Selection.SelectedItem is LabelViewModel label) {
+			if(DataContext is LabelListViewModel listModel && cell.DataContext is LabelViewModel label) {
 				LabelEditWindow.EditLabel(listModel.CpuType, this, label.Label);
 			}
 		}

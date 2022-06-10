@@ -52,7 +52,7 @@
 							Items="{Binding GridData}"
 							Selection="{Binding Selection}"
 							SortState="{Binding SortState}"
-							DoubleTapped="OnGridDoubleTapped"
+							CellDoubleClick="OnCellDoubleClick"
 							SortMode="Multiple"
 							SortCommand="{Binding SortCommand}"
 							GridLinesVisibility="All"

@@ -29,10 +29,9 @@ namespace Mesen.Debugger.Views
 			base.OnDataContextChanged(e);
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnCellDoubleClick(DataBoxCell cell)
 		{
-			DataBox grid = (DataBox)sender;
-			if(grid.Selection.SelectedItem is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {
+			if(cell.DataContext is CallStackViewModel.StackInfo stack && DataContext is CallStackViewModel model) {
 				model.GoToLocation(stack);
 			}
 		}

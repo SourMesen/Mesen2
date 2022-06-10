@@ -48,10 +48,9 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
-		private void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private void OnCellDoubleClick(DataBoxCell cell)
 		{
-			DataBox grid = (DataBox)sender;
-			if(grid?.Selection.SelectedItem is BreakpointViewModel vm) {
+			if(cell.DataContext is BreakpointViewModel vm) {
 				BreakpointEditWindow.EditBreakpoint(vm.Breakpoint, this);
 			}
 		}

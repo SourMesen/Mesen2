@@ -39,7 +39,7 @@
 				Items="{CompiledBinding Cheats}"
 				Selection="{CompiledBinding Selection}"
 				CellClick="OnCellClick"
-				DoubleTapped="OnGridDoubleClick"
+				CellDoubleClick="OnCellDoubleClick"
 				SortMode="Multiple"
 				SortCommand="{Binding Sort}"
 				SortState="{CompiledBinding SortState}"

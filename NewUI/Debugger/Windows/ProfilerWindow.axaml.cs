@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using DataBoxControl;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
@@ -58,7 +59,7 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private void OnGridDoubleTapped(object sender, RoutedEventArgs e)
+		private void OnCellDoubleClick(DataBoxCell cell)
 		{
 			int index = _model.SelectedTab.Selection.SelectedIndex;
 			if(index >= 0) {

@@ -147,7 +147,10 @@ public class DataBox : TemplatedControl
 	public delegate void CellClickHandler(DataBoxCell cell);
 	public event CellClickHandler? CellClick;
 
-    internal double AccumulatedWidth { get; set; }
+	public delegate void CellDoubleClickHandler(DataBoxCell cell);
+	public event CellDoubleClickHandler? CellDoubleClick;
+
+	internal double AccumulatedWidth { get; set; }
         
     internal double AvailableWidth { get; set; }
 
@@ -228,6 +231,13 @@ public class DataBox : TemplatedControl
 	{
 		if(sender is DataBoxCell cell) {
 			CellClick?.Invoke(cell);
+		}
+	}
+
+	internal void OnCellDoubleTapped(object? sender, RoutedEventArgs e)
+	{
+		if(sender is DataBoxCell cell) {
+			CellDoubleClick?.Invoke(cell);
 		}
 	}
 }

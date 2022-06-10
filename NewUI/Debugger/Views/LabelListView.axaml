@@ -35,7 +35,7 @@
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
 			SortState="{CompiledBinding SortState}"		
-			DoubleTapped="OnGridDoubleClick"
+			CellDoubleClick="OnCellDoubleClick"
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn ColumnName="Label" Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />

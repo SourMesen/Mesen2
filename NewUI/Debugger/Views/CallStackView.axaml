@@ -32,7 +32,7 @@
 			Items="{CompiledBinding CallStackContent}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
-			DoubleTapped="OnGridDoubleClick"
+			CellDoubleClick="OnCellDoubleClick"
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn

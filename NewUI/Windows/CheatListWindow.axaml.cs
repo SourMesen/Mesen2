@@ -70,9 +70,9 @@ namespace Mesen.Windows
 			}
 		}
 
-		private async void OnGridDoubleClick(object sender, RoutedEventArgs e)
+		private async void OnCellDoubleClick(DataBoxCell cell)
 		{
-			if(_model.Selection.SelectedItem is CheatCode cheat) {
+			if(cell.DataContext is CheatCode cheat) {
 				await CheatEditWindow.EditCheat(cheat, this);
 				_model.Sort();
 				_model.ApplyCheats();

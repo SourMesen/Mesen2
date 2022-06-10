@@ -35,6 +35,7 @@ public class DataBoxCellsPresenter : Panel, IStyleable
             };
 			
 				cell.Tapped += DataBox.OnCellTapped;
+				cell.DoubleTapped += DataBox.OnCellDoubleTapped;
 
             Children.Add(cell);
         }
