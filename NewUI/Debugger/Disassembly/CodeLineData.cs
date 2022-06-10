@@ -24,7 +24,8 @@ namespace Mesen.Debugger
 		public int? CustomIndent = null;
 
 		public byte OpSize = 0;
-		public string ByteCode = "";
+		public byte[] ByteCode = Array.Empty<byte>();
+		public string ByteCodeStr = "";
 		public string Comment = "";
 
 		public Int32 EffectiveAddress = -1;
@@ -105,10 +106,11 @@ namespace Mesen.Debugger
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);
 			this.OpSize = data.OpSize;
-			this.ByteCode = "";
+			this.ByteCodeStr = "";
 			for(int i = 0; i < this.OpSize; i++) {
-				this.ByteCode += data.ByteCode[i].ToString("X2") + " ";
+				this.ByteCodeStr += data.ByteCode[i].ToString("X2") + " ";
 			}
+			this.ByteCode = data.ByteCode;
 
 			this.Address = data.Address;
 			this.AbsoluteAddress = data.AbsoluteAddress;
@@ -132,15 +134,15 @@ namespace Mesen.Debugger
 
 		public override string ToString()
 		{
-			return "$" + this.Address.ToString("X6") + "  " + this.ByteCode?.PadRight(12) + "  " + this.Text;
+			return "$" + this.Address.ToString("X6") + "  " + this.ByteCodeStr?.PadRight(12) + "  " + this.Text;
 		}
 
 		public string GetByteCode(int byteCodeSize)
 		{
-			if(ByteCode.Length > byteCodeSize * 3) {
-				return ByteCode.Substring(0, (byteCodeSize - 1) * 3) + "..";
+			if(ByteCodeStr.Length > byteCodeSize * 3) {
+				return ByteCodeStr.Substring(0, (byteCodeSize - 1) * 3) + "..";
 			}
-			return ByteCode;
+			return ByteCodeStr;
 		}
 	}
 	

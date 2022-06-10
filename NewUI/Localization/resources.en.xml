@@ -2028,6 +2028,56 @@
 			<Value ID="SpriteZeroHit">Sprite 0 Hit</Value>
 			<Value ID="DmcDmaRead">DMC Read</Value>
 		</Enum>
+		<Enum ID="AddrMode">
+			<Value ID="None">None</Value>
+			<Value ID="Acc">A - Accumulator</Value>
+			<Value ID="Imp">Implied</Value>
+			<Value ID="Imm">#i - Immediate</Value>
+			<Value ID="Rel">r - Relative</Value>
+			<Value ID="Zero">z - Zero Page</Value>
+			<Value ID="Abs">a - Absolute</Value>
+			<Value ID="ZeroX">z,x - Zero Page, X</Value>
+			<Value ID="ZeroY">z,y - Zero Page, Y</Value>
+			<Value ID="Ind">(a) - Absolute Indirect</Value>
+			<Value ID="IndX">(z,x) - Zero Page Indexed Indirect</Value>
+			<Value ID="IndY">(z),y - Zero Page Indirect Indexed</Value>
+			<Value ID="AbsX">a,x - Absolute, X</Value>
+			<Value ID="AbsY">a,y - Absolute, Y</Value>
+
+			<Value ID="AbsIdxXInd">(a,x) - Absolute Indexed Indirect</Value>
+			<Value ID="AbsIdxX">a,x - Absolute Indexed with X</Value>
+			<Value ID="AbsIdxY">a,y - Absolute Indexed with Y</Value>
+			<Value ID="AbsLng">al - Absolute Long</Value>
+			<Value ID="AbsLngIdxX">al,x - Absolute Long, X</Value>
+			<Value ID="AbsIndLng">(al) - Absolute Indirect Long</Value>
+			<Value ID="AbsInd">(a) - Absolute Indirect</Value>
+			<Value ID="BlkMov">Block Move</Value>
+			<Value ID="Dir">d - Direct</Value>
+			<Value ID="DirIdxX">d,x - Direct Indexed with X</Value>
+			<Value ID="DirInd">(d) - Direct Indirect</Value>
+			<Value ID="DirIndLng">[d] - Direct Indirect Long</Value>
+			<Value ID="DirIndIdxY">(d),y - Direct Indirect Indexed</Value>
+			<Value ID="DirIdxIndX">(d,x) - Direct Indexed Indirect</Value>
+			<Value ID="DirIdxY">d,y - Direct Indexed with Y</Value>
+			<Value ID="DirIndLngIdxY">[d],y - Direct Indirect Long Indexed</Value>
+			<Value ID="Imm8">#i8 - Immediate (8-bits)</Value>
+			<Value ID="Imm16">#i16 - Immediate (16-bits)</Value>
+			<Value ID="ImmX">#ix - Immediate X (variable size)</Value>
+			<Value ID="ImmM">#im -Immediate M (variable size)</Value>
+			<Value ID="RelLng">rl - Relative Long</Value>
+			<Value ID="Stk">s - Stack</Value>
+			<Value ID="StkRel">d,s - Stack Relative</Value>
+			<Value ID="StkRelIndIdxY">(d,s),y - Stack Relative Indirect Indexed</Value>
+
+			<Value ID="AbxXInd">(a,x) - Absolute Indexed Indirect</Value>
+			<Value ID="Block">s,d,l - Block Transfer</Value>
+			<Value ID="ImZero">#i,z - Immediate Zero Page</Value>
+			<Value ID="ImZeroX">#i,z,x - Immediate Zero Page Indexed</Value>
+			<Value ID="ImAbs">#i,a - Immediate Absolute</Value>
+			<Value ID="ImAbsX">#i,a,x - Immediate Absolute Indexed</Value>
+			<Value ID="ZInd">(z) - Zero Page Indirect</Value>
+			<Value ID="ZeroRel">z,r - Zero Page Relative</Value>
+		</Enum>
 		<Enum ID="DebuggerShortcut">
 			<Value ID="IncreaseFontSize">Increase Font Size</Value>
 			<Value ID="DecreaseFontSize">Decrease Font Size</Value>

@@ -272,7 +272,7 @@ namespace Mesen.Debugger.ViewModels
 				lines.Insert(0, new CodeLineData(rows[i].Type) {
 					Address = (int)rows[i].ProgramCounter,
 					Text = rows[i].GetOutput(),
-					ByteCode = rows[i].GetByteCode(),
+					ByteCodeStr = rows[i].GetByteCode(),
 					EffectiveAddress = -1
 				});
 			}

@@ -97,6 +97,13 @@ namespace Mesen.Debugger.Controls
 		}
 	}
 
+	public class CustomTooltipEntry : TooltipEntry
+	{
+		public CustomTooltipEntry(string name, object value, FontFamily? font = null) : base(name, value, font)
+		{
+		}
+	}
+
 	public class TooltipEntries : List<TooltipEntry>, INotifyCollectionChanged
 	{
 		private Dictionary<string, TooltipEntry> _entries = new();
@@ -131,6 +138,19 @@ namespace Mesen.Debugger.Controls
 				}
 			} else {
 				entry = new TooltipEntry(name, new TooltipPictureEntry(source, zoom, cropRect));
+				_entries[entry.Name] = entry;
+				base.Insert(_updatedKeys.Count - 1, entry);
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+
+		public void AddCustomEntry(string name, Control value)
+		{
+			_updatedKeys.Add(name);
+			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
+				entry.Value = value;
+			} else {
+				entry = new CustomTooltipEntry(name, value);
 				_entries[entry.Name] = entry;
 				base.Insert(_updatedKeys.Count - 1, entry);
 				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));

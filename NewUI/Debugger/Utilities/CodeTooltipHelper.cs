@@ -53,15 +53,19 @@ namespace Mesen.Debugger.Utilities
 
 		public static DynamicTooltip? GetTooltip(CpuType cpuType, CodeSegmentInfo codeSegment)
 		{
-			LocationInfo? codeLoc = GetLocation(cpuType, codeSegment);
-			if(codeLoc != null) {
-				if(codeSegment.Type == CodeSegmentType.Address || codeSegment.Type == CodeSegmentType.EffectiveAddress || codeSegment.Type == CodeSegmentType.Label || codeSegment.Type == CodeSegmentType.LabelDefinition) {
-					if(codeLoc.RelAddress?.Address >= 0) {
-						return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress.Value.Address, codeLoc.Label);
-					}
-				} else if(codeSegment.Type == CodeSegmentType.MarginAddress) {
-					if(codeLoc.RelAddress?.Address >= 0) {
-						return GetMarginAddressTooltip(cpuType, codeSegment, codeLoc.RelAddress.Value.Address);
+			if(codeSegment.Type == CodeSegmentType.OpCode) {
+				return OpCodeHelper.GetTooltip(codeSegment);
+			} else {
+				LocationInfo? codeLoc = GetLocation(cpuType, codeSegment);
+				if(codeLoc != null) {
+					if(codeSegment.Type == CodeSegmentType.Address || codeSegment.Type == CodeSegmentType.EffectiveAddress || codeSegment.Type == CodeSegmentType.Label || codeSegment.Type == CodeSegmentType.LabelDefinition) {
+						if(codeLoc.RelAddress?.Address >= 0) {
+							return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress.Value.Address, codeLoc.Label);
+						}
+					} else if(codeSegment.Type == CodeSegmentType.MarginAddress) {
+						if(codeLoc.RelAddress?.Address >= 0) {
+							return GetMarginAddressTooltip(cpuType, codeSegment, codeLoc.RelAddress.Value.Address);
+						}
 					}
 				}
 			}
@@ -78,7 +82,7 @@ namespace Mesen.Debugger.Utilities
 			TooltipEntries items = new();
 			items.AddEntry("Address", GetAddressField(cpuType, address, memType), monoFont);
 			if(isCode) {
-				items.AddEntry("Byte code", codeSegment.Data.ByteCode, monoFont);
+				items.AddEntry("Byte code", codeSegment.Data.ByteCodeStr, monoFont);
 			}
 
 			return new DynamicTooltip() { Items = items };

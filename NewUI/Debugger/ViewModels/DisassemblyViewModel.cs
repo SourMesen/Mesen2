@@ -306,7 +306,7 @@ namespace Mesen.Debugger.ViewModels
 
 					string line = indent + codeString;
 					if(getByteCode) {
-						line = lineData.ByteCode.PadRight(13) + line;
+						line = lineData.ByteCodeStr.PadRight(13) + line;
 					}
 					if(getAddresses) {
 						if(lineData.HasAddress) {

@@ -15,86 +15,90 @@
 			<Setter Property="VerticalAlignment" Value="Top" />
 		</Style>
 	</UserControl.Styles>
-	
-	<ItemsPresenter DataContext="{Binding, ElementName=root}" Items="{Binding Items}">
-		<ItemsPresenter.ItemTemplate>
-			<DataTemplate DataType="dc:TooltipEntry">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock
-						Name="Header"
-						Text="{Binding Name}"
-						FontWeight="Bold"
-						MinWidth="{Binding FirstColumnWidth, ElementName=root}"
-						IsVisible="{Binding Name.Length}"
-						Margin="0 3 10 2"
+
+	<UserControl.DataTemplates>
+		<DataTemplate DataType="dc:CustomTooltipEntry">
+			<ContentControl Content="{Binding Value}" />
+		</DataTemplate>
+		
+		<DataTemplate DataType="dc:TooltipEntry">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock
+					Name="Header"
+					Text="{Binding Name}"
+					FontWeight="Bold"
+					MinWidth="{Binding FirstColumnWidth, ElementName=root}"
+					IsVisible="{Binding Name.Length}"
+					Margin="0 3 10 2"
 					/>
-					<ContentControl Content="{Binding Value}">
-						<ContentControl.DataTemplates>
-							<DataTemplate DataType="x:String">
-								<TextBox
-									Text="{Binding}"
-									FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
-									FontSize="12"
-									Margin="0"
-									MinHeight="0"
-									MinWidth="0"
-									Height="NaN"
-									BorderThickness="0"
-									IsReadOnly="True"
-									Tapped="TextBox_Tapped"
-									ContextRequested="TextBox_ContextRequested"
-									LostFocus="TextBox_LostFocus"
+				<ContentControl Content="{Binding Value}">
+					<ContentControl.DataTemplates>
+						<DataTemplate DataType="x:String">
+							<TextBox
+								Text="{Binding}"
+								FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
+								FontSize="12"
+								Margin="0"
+								MinHeight="0"
+								MinWidth="0"
+								Height="NaN"
+								BorderThickness="0"
+								IsReadOnly="True"
+								Tapped="TextBox_Tapped"
+								ContextRequested="TextBox_ContextRequested"
+								LostFocus="TextBox_LostFocus"
+							/>
+						</DataTemplate>
+						<DataTemplate DataType="x:Boolean">
+							<CheckBox IsChecked="{Binding}" IsEnabled="False" />
+						</DataTemplate>
+						<DataTemplate DataType="dc:TooltipPictureEntry">
+							<Border BorderBrush="Gray" Background="#666" BorderThickness="1">
+								<dc:PictureViewer
+									Source="{Binding Source}"
+									Zoom="{Binding Zoom}"
+									AllowSelection="False"
+									ShowMousePosition="False"
 								/>
-							</DataTemplate>
-							<DataTemplate DataType="x:Boolean">
-								<CheckBox IsChecked="{Binding}" IsEnabled="False" />
-							</DataTemplate>
-							<DataTemplate DataType="dc:TooltipPictureEntry">
-								<Border BorderBrush="Gray" Background="#666" BorderThickness="1">
-									<dc:PictureViewer
-										Source="{Binding Source}"
-										Zoom="{Binding Zoom}"
-										AllowSelection="False"
-										ShowMousePosition="False"
-									/>
-								</Border>
-							</DataTemplate>
-							<DataTemplate DataType="dc:TooltipColorEntry">
-								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
-									<dc:PaletteSelector
-										PaletteColors="{Binding Color}"
-										BlockSize="32"
-										ColumnCount="1"
-										SelectionMode="None"
-									/>
-								</Border>
-							</DataTemplate>
-							<DataTemplate DataType="dc:TooltipPaletteEntry">
-								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
-									<dc:PaletteSelector
-										PaletteColors="{Binding RgbPalette}"
-										RawPalette="{Binding RawPalette}"
-										RawFormat="{Binding RawFormat}"
-										BlockSize="12"
-										ColumnCount="4"
-										SelectionMode="None"
-									/>
-								</Border>
-							</DataTemplate>
-							<DataTemplate DataType="x:Array">
-								<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
-									<dc:PaletteSelector
-										PaletteColors="{Binding}"
-										BlockSize="12"
-										ColumnCount="4"
-										SelectionMode="None"
-									/>
-								</Border>
-							</DataTemplate>
-						</ContentControl.DataTemplates>
-					</ContentControl>
-				</StackPanel>
-			</DataTemplate>
-		</ItemsPresenter.ItemTemplate>
-	</ItemsPresenter>
+							</Border>
+						</DataTemplate>
+						<DataTemplate DataType="dc:TooltipColorEntry">
+							<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
+								<dc:PaletteSelector
+									PaletteColors="{Binding Color}"
+									BlockSize="32"
+									ColumnCount="1"
+									SelectionMode="None"
+								/>
+							</Border>
+						</DataTemplate>
+						<DataTemplate DataType="dc:TooltipPaletteEntry">
+							<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
+								<dc:PaletteSelector
+									PaletteColors="{Binding RgbPalette}"
+									RawPalette="{Binding RawPalette}"
+									RawFormat="{Binding RawFormat}"
+									BlockSize="12"
+									ColumnCount="4"
+									SelectionMode="None"
+								/>
+							</Border>
+						</DataTemplate>
+						<DataTemplate DataType="x:Array">
+							<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
+								<dc:PaletteSelector
+									PaletteColors="{Binding}"
+									BlockSize="12"
+									ColumnCount="4"
+									SelectionMode="None"
+								/>
+							</Border>
+						</DataTemplate>
+					</ContentControl.DataTemplates>
+				</ContentControl>
+			</StackPanel>
+		</DataTemplate>
+	</UserControl.DataTemplates>
+	
+	<ItemsPresenter DataContext="{Binding, ElementName=root}" Items="{Binding Items}" />
 </UserControl>
