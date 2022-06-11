@@ -1,13 +1,18 @@
 #include "stdafx.h"
-#include "CodeDataLogger.h"
+#include "Debugger/CodeDataLogger.h"
+#include "Debugger/Disassembler.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Utilities/VirtualFile.h"
+#include "Utilities/FolderUtilities.h"
 
-CodeDataLogger::CodeDataLogger(MemoryType prgMemType, uint32_t prgSize, CpuType cpuType)
+CodeDataLogger::CodeDataLogger(MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32)
 {
-	_prgMemType = prgMemType;
+	_memType = memType;
 	_cpuType = cpuType;
-	_prgSize = prgSize;
-	_cdlData = new uint8_t[prgSize];
+	_memSize = memSize;
+	_romCrc32 = romCrc32;
+	_cdlData = new uint8_t[memSize];
 	Reset();
 }
 
@@ -18,22 +23,20 @@ CodeDataLogger::~CodeDataLogger()
 
 void CodeDataLogger::Reset()
 {
-	_codeSize = 0;
-	_dataSize = 0;
-	memset(_cdlData, 0, _prgSize);
+	memset(_cdlData, 0, _memSize);
 }
 
-uint32_t CodeDataLogger::GetPrgSize()
+uint32_t CodeDataLogger::GetSize()
 {
-	return _prgSize;
+	return _memSize;
 }
 
-MemoryType CodeDataLogger::GetPrgMemoryType()
+MemoryType CodeDataLogger::GetMemoryType()
 {
-	return _prgMemType;
+	return _memType;
 }
 
-bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc)
+bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 {
 	VirtualFile cdlFile = cdlFilepath;
 	if(cdlFile.IsValid()) {
@@ -41,23 +44,21 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t
 		vector<uint8_t> cdlData;
 		cdlFile.ReadFile(cdlData);
 
-		if(fileSize >= _prgSize) {
+		if(fileSize >= _memSize) {
 			Reset();
 
 			constexpr int headerSize = 9; //"CDLv2" + 4-byte CRC32 value
 			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {
 				uint32_t savedCrc = cdlData[5] | (cdlData[6] << 8) | (cdlData[7] << 16) | (cdlData[8] << 24);
-				if((autoResetCdl && savedCrc != romCrc) || fileSize < _prgSize + headerSize) {
-					memset(_cdlData, 0, _prgSize);
+				if((autoResetCdl && savedCrc != _romCrc32) || fileSize < _memSize + headerSize) {
+					memset(_cdlData, 0, _memSize);
 				} else {
-					memcpy(_cdlData, cdlData.data() + headerSize, _prgSize);
+					memcpy(_cdlData, cdlData.data() + headerSize, _memSize);
 				}
 			} else {
 				//Older CRC-less CDL file, use as-is without checking CRC to avoid data loss
-				memcpy(_cdlData, cdlData.data(), _prgSize);
+				memcpy(_cdlData, cdlData.data(), _memSize);
 			}
-
-			CalculateStats();
 			
 			return true;
 		}
@@ -65,28 +66,33 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t
 	return false;
 }
 
-bool CodeDataLogger::SaveCdlFile(string cdlFilepath, uint32_t romCrc)
+bool CodeDataLogger::SaveCdlFile(string cdlFilepath)
 {
 	ofstream cdlFile(cdlFilepath, ios::out | ios::binary);
 	if(cdlFile) {
 		cdlFile.write("CDLv2", 5);
-		cdlFile.put(romCrc & 0xFF);
-		cdlFile.put((romCrc >> 8) & 0xFF);
-		cdlFile.put((romCrc >> 16) & 0xFF);
-		cdlFile.put((romCrc >> 24) & 0xFF);
-		cdlFile.write((char*)_cdlData, _prgSize);
+		cdlFile.put(_romCrc32 & 0xFF);
+		cdlFile.put((_romCrc32 >> 8) & 0xFF);
+		cdlFile.put((_romCrc32 >> 16) & 0xFF);
+		cdlFile.put((_romCrc32 >> 24) & 0xFF);
+		cdlFile.write((char*)_cdlData, _memSize);
 		cdlFile.close();
 		return true;
 	}
 	return false;
 }
 
-void CodeDataLogger::CalculateStats()
+string CodeDataLogger::GetCdlFilePath(string romName)
+{
+	return FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(romName, false) + ".cdl");
+}
+
+CdlRatios CodeDataLogger::GetRatios()
 {
 	uint32_t codeSize = 0;
 	uint32_t dataSize = 0;
 
-	for(int i = 0, len = _prgSize; i < len; i++) {
+	for(int i = 0, len = _memSize; i < len; i++) {
 		if(IsCode(i)) {
 			codeSize++;
 		} else if(IsData(i)) {
@@ -94,33 +100,10 @@ void CodeDataLogger::CalculateStats()
 		}
 	}
 
-	_codeSize = codeSize;
-	_dataSize = dataSize;
-}
-
-void CodeDataLogger::SetFlags(int32_t absoluteAddr, uint8_t flags)
-{
-	if((_cdlData[absoluteAddr] & flags) != flags) {
-		if(flags & CdlFlags::Code) {
-			_cdlData[absoluteAddr] = flags | (_cdlData[absoluteAddr] & ~(CdlFlags::Data | CdlFlags::IndexMode8 | CdlFlags::MemoryMode8));
-		} else if(flags & CdlFlags::Data) {
-			if(!IsCode(absoluteAddr)) {
-				_cdlData[absoluteAddr] |= flags;
-			}
-		} else {
-			_cdlData[absoluteAddr] |= flags;
-		}
-	}
-}
-
-CdlRatios CodeDataLogger::GetRatios()
-{
-	CalculateStats();
-
 	CdlRatios ratios;
-	ratios.CodeRatio = (float)_codeSize / (float)_prgSize;
-	ratios.DataRatio = (float)_dataSize / (float)_prgSize;
-	ratios.PrgRatio = (float)(_codeSize + _dataSize) / (float)_prgSize;
+	ratios.CodeRatio = (float)codeSize / (float)_memSize;
+	ratios.DataRatio = (float)dataSize / (float)_memSize;
+	ratios.PrgRatio = (float)(codeSize + dataSize) / (float)_memSize;
 	return ratios;
 }
 
@@ -144,27 +127,9 @@ bool CodeDataLogger::IsData(uint32_t absoluteAddr)
 	return (_cdlData[absoluteAddr] & CdlFlags::Data) != 0;
 }
 
-uint8_t CodeDataLogger::GetCpuFlags(uint32_t absoluteAddr)
-{
-	return _cdlData[absoluteAddr] & (CdlFlags::MemoryMode8 | CdlFlags::IndexMode8);
-}
-
-CpuType CodeDataLogger::GetCpuType(uint32_t absoluteAddr)
-{
-	//TODO?
-	if(_cpuType == CpuType::Snes) {
-		if(_cdlData[absoluteAddr] & CdlFlags::Gsu) {
-			return CpuType::Gsu;
-		} else if(_cdlData[absoluteAddr] & CdlFlags::Cx4) {
-			return CpuType::Cx4;
-		}
-	}
-	return _cpuType;
-}
-
 void CodeDataLogger::SetCdlData(uint8_t *cdlData, uint32_t length)
 {
-	if(length <= _prgSize) {
+	if(length <= _memSize) {
 		memcpy(_cdlData, cdlData, length);
 	}
 }
@@ -189,16 +154,28 @@ void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
 void CodeDataLogger::StripData(uint8_t* romBuffer, CdlStripOption flag)
 {
 	if(flag == CdlStripOption::StripUnused) {
-		for(uint32_t i = 0; i < _prgSize; i++) {
+		for(uint32_t i = 0; i < _memSize; i++) {
 			if(_cdlData[i] == 0) {
 				romBuffer[i] = 0;
 			}
 		}
 	} else if(flag == CdlStripOption::StripUsed) {
-		for(uint32_t i = 0; i < _prgSize; i++) {
+		for(uint32_t i = 0; i < _memSize; i++) {
 			if(_cdlData[i] != 0) {
 				romBuffer[i] = 0;
 			}
+		}
+	}
+}
+
+void CodeDataLogger::RebuildPrgCache(Disassembler* dis)
+{
+	AddressInfo addrInfo;
+	addrInfo.Type = _memType;
+	for(uint32_t i = 0; i < _memSize; i++) {
+		if(IsCode(i)) {
+			addrInfo.Address = (int32_t)i;
+			i += dis->BuildCache(addrInfo, 0, _cpuType) - 1;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 class Disassembler;
 class Debugger;
 class Cx4TraceLogger;
-class CodeDataLogger;
+class SnesCodeDataLogger;
 class Cx4;
 class CallstackManager;
 class MemoryAccessCounter;
@@ -20,7 +20,7 @@ class Cx4Debugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;
-	CodeDataLogger* _codeDataLogger;
+	SnesCodeDataLogger* _codeDataLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
 	SnesMemoryManager* _memoryManager;
 	Cx4* _cx4;

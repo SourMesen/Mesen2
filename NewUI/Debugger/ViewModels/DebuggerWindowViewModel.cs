@@ -238,8 +238,10 @@ namespace Mesen.Debugger.ViewModels
 		{
 			UInt64 prevMasterClock = _masterClock;
 			_masterClock = EmuApi.GetTimingInfo().MasterClock;
-			if(prevMasterClock > 0) {
+			if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
 				BreakElapsedCycles = $"{_masterClock - prevMasterClock} cycles elapsed";
+			} else {
+				BreakElapsedCycles = "";
 			}
 
 			if(evt != null) {

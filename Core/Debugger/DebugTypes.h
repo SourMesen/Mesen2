@@ -69,12 +69,6 @@ namespace CdlFlags
 		Data = 0x02,
 		JumpTarget = 0x04,
 		SubEntryPoint = 0x08,
-
-		IndexMode8 = 0x10,
-		MemoryMode8 = 0x20,
-
-		Gsu = 0x40,
-		Cx4 = 0x80
 	};
 }
 

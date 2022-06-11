@@ -48,6 +48,8 @@ class GbDebugger final : public IDebugger
 	uint32_t _prevProgramCounter = 0;
 	bool _enableBreakOnUninitRead = false;
 
+	string _cdlFile;
+
 public:
 	GbDebugger(Debugger* debugger);
 	~GbDebugger();

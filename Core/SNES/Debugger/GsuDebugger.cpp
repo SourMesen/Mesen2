@@ -4,6 +4,7 @@
 #include "SNES/SnesConsole.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
+#include "SNES/Debugger/SnesCodeDataLogger.h"
 #include "SNES/Debugger/TraceLogger/GsuTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -22,7 +23,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Snes);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(CpuType::Snes);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_gsu = console->GetCartridge()->GetGsu();
@@ -48,7 +49,7 @@ void GsuDebugger::ProcessInstruction()
 	MemoryOperationInfo operation(addr, state.ProgramReadBuffer, MemoryOperationType::ExecOpCode, MemoryType::GsuMemory);
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
-		_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Gsu);
+		_codeDataLogger->SetSnesCode<SnesCdlFlags::Gsu>(addressInfo.Address);
 	}
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {
@@ -77,13 +78,12 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
+			_codeDataLogger->SetData<SnesCdlFlags::Gsu>(addressInfo.Address);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else {
-
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Gsu);
+			_codeDataLogger->SetData<SnesCdlFlags::Gsu>(addressInfo.Address);
 		}
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);

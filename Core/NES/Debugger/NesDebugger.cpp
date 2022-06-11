@@ -26,6 +26,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
+#include "Utilities/CRC32.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
@@ -51,7 +52,17 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_dummyCpu.reset(new DummyNesCpu(_console));
 
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes));
+	uint32_t crc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::NesPrgRom).Memory, _emu->GetMemory(MemoryType::NesPrgRom).Size);
+	_codeDataLogger.reset(new CodeDataLogger(MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes, crc32));
+
+	string cdlFile;
+	switch(_console->GetRomFormat()) {
+		case RomFormat::Fds: cdlFile = "FdsFirmware.cdl"; break;
+		case RomFormat::StudyBox: cdlFile = "StudyBoxFirmware.cdl"; break;
+		default: cdlFile = _emu->GetRomInfo().RomFile.GetFileName(); break;
+	}
+	_cdlFile = _codeDataLogger->GetCdlFilePath(cdlFile);
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 
 	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -63,6 +74,11 @@ NesDebugger::NesDebugger(Debugger* debugger)
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
+}
+
+NesDebugger::~NesDebugger()
+{
+	_codeDataLogger->SaveCdlFile(_cdlFile);
 }
 
 void NesDebugger::Reset()
@@ -83,11 +99,11 @@ void NesDebugger::ProcessInstruction()
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::NesPrgRom) {
-			uint8_t flags = CdlFlags::Code;
 			if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
-				flags |= CdlFlags::SubEntryPoint;
+				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
+			} else {
+				_codeDataLogger->SetCode(addressInfo.Address);
 			}
-			_codeDataLogger->SetFlags(addressInfo.Address, flags);
 		}
 		if(needDisassemble) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Nes);
@@ -159,7 +175,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+			_codeDataLogger->SetCode(addressInfo.Address);
 		}
 
 		if(_traceLogger->IsEnabled()) {
@@ -174,7 +190,11 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+			if(operation.Type == MemoryOperationType::DmaRead) {
+				_codeDataLogger->SetData<NesCdlFlags::PcmData>(addressInfo.Address);
+			} else {
+				_codeDataLogger->SetData(addressInfo.Address);
+			}
 		}
 		
 		if(_traceLogger->IsEnabled()) {

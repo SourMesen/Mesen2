@@ -91,12 +91,6 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 		_debuggers[(int)type].Debugger->ProcessConfigChange();
 	}
 
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	CodeDataLogger* cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
-	if(cdl) {
-		cdl->LoadCdlFile(cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl), _emu->GetCrc32());
-	}
-
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
@@ -124,12 +118,6 @@ Debugger::~Debugger()
 
 void Debugger::Release()
 {
-	string cdlFile = FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".cdl");
-	CodeDataLogger* cdl = _debuggers[(int)_mainCpuType].Debugger->GetCodeDataLogger();
-	if(cdl) {
-		cdl->SaveCdlFile(cdlFile, _emu->GetCrc32());
-	}
-
 	while(_executionStopped) {
 		Run();
 	}
@@ -649,18 +637,8 @@ void Debugger::RefreshCodeCache()
 void Debugger::RebuildPrgCache(CpuType cpuType)
 {
 	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
-	if(!cdl) {
-		return;
-	}
-
-	uint32_t prgRomSize = cdl->GetPrgSize();
-	AddressInfo addrInfo;
-	addrInfo.Type = cdl->GetPrgMemoryType();
-	for(uint32_t i = 0; i < prgRomSize; i++) {
-		if(cdl->IsCode(i)) {
-			addrInfo.Address = (int32_t)i;
-			i += _disassembler->BuildCache(addrInfo, cdl->GetCpuFlags(i), cdl->GetCpuType(i)) - 1;
-		}
+	if(cdl) {
+		cdl->RebuildPrgCache(_disassembler.get());
 	}
 }
 
@@ -672,8 +650,8 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryTyp
 		return;
 	}
 
-	MemoryType prgType = cdl->GetPrgMemoryType();
-	if(memoryType == prgType) {
+	MemoryType memType = cdl->GetMemoryType();
+	if(memoryType == memType) {
 		cdl->GetCdlData(offset, length, cdlData);
 	} else {
 		AddressInfo relAddress;
@@ -681,7 +659,7 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryTyp
 		for(uint32_t i = 0; i < length; i++) {
 			relAddress.Address = offset + i;
 			AddressInfo info = GetAbsoluteAddress(relAddress);
-			cdlData[i] = info.Type == prgType ? cdl->GetFlags(info.Address) : 0;
+			cdlData[i] = info.Type == memType ? cdl->GetFlags(info.Address) : 0;
 		}
 	}
 }

@@ -46,7 +46,11 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_ppu = _gameboy->GetPpu();
 
 	_settings = debugger->GetEmulator()->GetSettings();
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy));
+	
+	_codeDataLogger.reset(new CodeDataLogger(MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy, _emu->GetCrc32()));
+	_cdlFile = _codeDataLogger->GetCdlFilePath(_emu->GetRomInfo().RomFile.GetFileName());
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+
 	_traceLogger.reset(new GbTraceLogger(debugger, this, _ppu));
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
@@ -67,6 +71,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 
 GbDebugger::~GbDebugger()
 {
+	_codeDataLogger->SaveCdlFile(_cdlFile);
 }
 
 void GbDebugger::Reset()
@@ -85,7 +90,7 @@ void GbDebugger::ProcessInstruction()
 
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::GbPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+			_codeDataLogger->SetCode(addressInfo.Address);
 		}
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}
@@ -158,7 +163,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+			_codeDataLogger->SetCode(addressInfo.Address);
 		}
 
 		if(_traceLogger->IsEnabled()) {
@@ -169,7 +174,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+			_codeDataLogger->SetData(addressInfo.Address);
 		}
 
 		if(_traceLogger->IsEnabled()) {

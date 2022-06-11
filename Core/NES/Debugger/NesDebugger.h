@@ -55,11 +55,13 @@ class NesDebugger final : public IDebugger
 
 	unique_ptr<DummyNesCpu> _dummyCpu;
 
-	bool IsRegister(MemoryOperationInfo& op);
+	string _cdlFile;
 
+	bool IsRegister(MemoryOperationInfo& op);
 
 public:
 	NesDebugger(Debugger* debugger);
+	~NesDebugger();
 
 	void Reset() override;
 
@@ -91,3 +93,11 @@ public:
 	void GetPpuState(BaseState& state) override;
 	void SetPpuState(BaseState& state) override;
 };
+
+namespace NesCdlFlags
+{
+	enum NesCdlFlags : uint8_t
+	{
+		PcmData = 0x80
+	};
+}

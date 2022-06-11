@@ -50,7 +50,10 @@ PceDebugger::PceDebugger(Debugger* debugger)
 
 	_dummyCpu.reset(new DummyPceCpu(_emu, _memoryManager));
 
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce));
+	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce, _emu->GetCrc32()));
+
+	_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetRomFormat() == RomFormat::PceCdRom ? "PceCdromBios.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 
 	_eventManager.reset(new PceEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -62,6 +65,11 @@ PceDebugger::PceDebugger(Debugger* debugger)
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
 	}
+}
+
+PceDebugger::~PceDebugger()
+{
+	_codeDataLogger->SaveCdlFile(_cdlFile);
 }
 
 void PceDebugger::Reset()
@@ -82,11 +90,11 @@ void PceDebugger::ProcessInstruction()
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::PcePrgRom) {
-			uint8_t flags = CdlFlags::Code;
 			if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
-				flags |= CdlFlags::SubEntryPoint;
+				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
+			} else {
+				_codeDataLogger->SetCode(addressInfo.Address);
 			}
-			_codeDataLogger->SetFlags(addressInfo.Address, flags);
 		}
 		if(needDisassemble) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Pce);
@@ -158,7 +166,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code);
+			_codeDataLogger->SetCode(addressInfo.Address);
 		}
 
 		if(_traceLogger->IsEnabled()) {
@@ -169,7 +177,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data);
+			_codeDataLogger->SetData(addressInfo.Address);
 		}
 		
 		if(_traceLogger->IsEnabled()) {

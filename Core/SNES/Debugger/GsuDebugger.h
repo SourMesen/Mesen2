@@ -5,7 +5,7 @@
 
 class Disassembler;
 class Debugger;
-class CodeDataLogger;
+class SnesCodeDataLogger;
 class Gsu;
 class MemoryAccessCounter;
 class SnesMemoryManager;
@@ -19,7 +19,7 @@ class GsuDebugger final : public IDebugger
 {
 	Debugger* _debugger;
 	Disassembler* _disassembler;
-	CodeDataLogger* _codeDataLogger;
+	SnesCodeDataLogger* _codeDataLogger;
 	MemoryAccessCounter* _memoryAccessCounter;
 	SnesMemoryManager* _memoryManager;
 	Gsu* _gsu;

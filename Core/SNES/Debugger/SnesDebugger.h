@@ -13,7 +13,7 @@ class SnesCpu;
 class CallstackManager;
 class MemoryAccessCounter;
 class SnesMemoryManager;
-class CodeDataLogger;
+class SnesCodeDataLogger;
 class EmuSettings;
 class ScriptManager;
 class BaseEventManager;
@@ -44,9 +44,9 @@ class SnesDebugger final : public IDebugger
 	Spc* _spc;
 	SnesPpu* _ppu;
 	MemoryMappings* _memoryMappings;
-	CodeDataLogger* _cdl;
+	SnesCodeDataLogger* _cdl;
 
-	unique_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<SnesCodeDataLogger> _codeDataLogger;
 	unique_ptr<BaseEventManager> _eventManager;
 	unique_ptr<SnesAssembler> _assembler;
 	unique_ptr<CallstackManager> _callstackManager;
@@ -70,11 +70,14 @@ class SnesDebugger final : public IDebugger
 	bool _runCoprocessors = false;
 	bool _runSpc = false;
 
+	string _cdlFile;
+
 	SnesCpuState& GetCpuState();
 	bool IsRegister(uint32_t addr);
 
 public:
 	SnesDebugger(Debugger* debugger, CpuType cpuType);
+	~SnesDebugger();
 
 	void Init() override;
 	void Reset() override;

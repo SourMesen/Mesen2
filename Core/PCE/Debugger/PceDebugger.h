@@ -55,10 +55,13 @@ class PceDebugger final : public IDebugger
 
 	unique_ptr<DummyPceCpu> _dummyCpu;
 
+	string _cdlFile;
+
 	bool IsRegister(MemoryOperationInfo& op);
 
 public:
 	PceDebugger(Debugger* debugger);
+	~PceDebugger();
 
 	void Reset() override;
 

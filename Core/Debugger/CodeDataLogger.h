@@ -2,30 +2,40 @@
 #include "stdafx.h"
 #include "DebugTypes.h"
 
+class Disassembler;
+
 class CodeDataLogger
 {
-private:
+protected:
 	uint8_t* _cdlData = nullptr;
 	CpuType _cpuType = CpuType::Snes;
-	MemoryType _prgMemType;
-	uint32_t _prgSize = 0;
-	uint32_t _codeSize = 0;
-	uint32_t _dataSize = 0;
+	MemoryType _memType = {};
+	uint32_t _memSize = 0;
+	uint32_t _romCrc32 = 0;
 	
-	void CalculateStats();
-
 public:
-	CodeDataLogger(MemoryType prgMemType, uint32_t prgSize, CpuType cpuType);
-	~CodeDataLogger();
+	CodeDataLogger(MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32);
+	virtual ~CodeDataLogger();
 
 	void Reset();
-	uint32_t GetPrgSize();
-	MemoryType GetPrgMemoryType();
+	uint32_t GetSize();
+	MemoryType GetMemoryType();
 
-	bool LoadCdlFile(string cdlFilepath, bool autoResetCdl, uint32_t romCrc);
-	bool SaveCdlFile(string cdlFilepath, uint32_t romCrc);
+	bool LoadCdlFile(string cdlFilepath, bool autoResetCdl);
+	bool SaveCdlFile(string cdlFilepath);
+	string GetCdlFilePath(string romName);
 
-	void SetFlags(int32_t absoluteAddr, uint8_t flags);
+	template<uint8_t flags = 0>
+	void SetCode(int32_t absoluteAddr)
+	{
+		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
+	}
+
+	template<uint8_t flags = 0>
+	void SetData(int32_t absoluteAddr)
+	{
+		_cdlData[absoluteAddr] |= CdlFlags::Data | flags;
+	}
 
 	CdlRatios GetRatios();
 
@@ -33,8 +43,6 @@ public:
 	bool IsJumpTarget(uint32_t absoluteAddr);
 	bool IsSubEntryPoint(uint32_t absoluteAddr);
 	bool IsData(uint32_t absoluteAddr);
-	uint8_t GetCpuFlags(uint32_t absoluteAddr);
-	CpuType GetCpuType(uint32_t absoluteAddr);
 
 	void SetCdlData(uint8_t *cdlData, uint32_t length);
 	void GetCdlData(uint32_t offset, uint32_t length, uint8_t *cdlData);
@@ -42,4 +50,6 @@ public:
 
 	void MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags);
 	void StripData(uint8_t* romBuffer, CdlStripOption flag);
+
+	virtual void RebuildPrgCache(Disassembler* dis);
 };

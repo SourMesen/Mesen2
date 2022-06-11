@@ -119,7 +119,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	int byteCounter = 0;
 	
 	CodeDataLogger* cdl = _debugger->GetCodeDataLogger(cpuType);
-	MemoryType cdlMemType = cdl ? cdl->GetPrgMemoryType() : MemoryType::Register;
+	MemoryType cdlMemType = cdl ? cdl->GetMemoryType() : MemoryType::Register;
 
 	AddressInfo relAddress = {};
 	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);

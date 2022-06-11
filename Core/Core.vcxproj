@@ -201,6 +201,7 @@
     <ClInclude Include="Shared\Video\ScanlineFilter.h" />
     <ClInclude Include="Shared\Video\stdafx.h" />
     <ClInclude Include="Shared\Video\SystemHud.h" />
+    <ClInclude Include="SNES\Debugger\SnesCodeDataLogger.h" />
     <ClInclude Include="SNES\AluMulDiv.h" />
     <ClInclude Include="SNES\Debugger\SnesPpuTools.h" />
     <ClInclude Include="SNES\Debugger\SnesAssembler.h" />

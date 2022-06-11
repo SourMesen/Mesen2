@@ -7,10 +7,10 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
-#include "Debugger/CodeDataLogger.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"
+#include "SNES/Debugger/SnesCodeDataLogger.h"
 #include "SNES/Debugger/TraceLogger/Cx4TraceLogger.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "Shared/Emulator.h"
@@ -23,7 +23,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = debugger->GetCodeDataLogger(CpuType::Snes);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(CpuType::Snes);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_cx4 = console->GetCartridge()->GetCx4();
@@ -49,8 +49,8 @@ void Cx4Debugger::ProcessInstruction()
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
-		_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Code | CdlFlags::Cx4);
-		_codeDataLogger->SetFlags(addressInfo.Address + 1, CdlFlags::Code | CdlFlags::Cx4);
+		_codeDataLogger->SetSnesCode<SnesCdlFlags::Cx4>(addressInfo.Address);
+		_codeDataLogger->SetSnesCode<SnesCdlFlags::Cx4>(addressInfo.Address + 1);
 	}
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
@@ -82,7 +82,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
 	} else {
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetFlags(addressInfo.Address, CdlFlags::Data | CdlFlags::Cx4);
+			_codeDataLogger->SetData<SnesCdlFlags::Cx4>(addressInfo.Address);
 		}
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);

@@ -1829,6 +1829,9 @@
     <ClInclude Include="Debugger\Base6502Assembler.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="SNES\Debugger\SnesCodeDataLogger.h">
+      <Filter>SNES\Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1909,7 +1912,6 @@
     <ClCompile Include="PCE\PceVce.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceVpc.cpp" />
     <ClCompile Include="PCE\PceArcadeCard.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
@@ -1918,6 +1920,9 @@
     </ClCompile>
     <ClCompile Include="Debugger\Base6502Assembler.cpp">
       <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceVpc.cpp">
+      <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

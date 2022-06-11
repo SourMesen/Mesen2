@@ -9,6 +9,7 @@
 #include "SNES/MemoryMappings.h"
 #include "SNES/Debugger/DummySnesCpu.h"
 #include "SNES/Debugger/SnesDisUtils.h"
+#include "SNES/Debugger/SnesCodeDataLogger.h"
 #include "SNES/Debugger/SnesAssembler.h"
 #include "SNES/Debugger/SnesDebugger.h"
 #include "SNES/Debugger/SnesEventManager.h"
@@ -19,7 +20,6 @@
 #include "Debugger/Disassembler.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/BreakpointManager.h"
-#include "Debugger/CodeDataLogger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
@@ -32,6 +32,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
+#include "Utilities/CRC32.h"
 #include "MemoryOperationType.h"
 
 SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
@@ -61,10 +62,14 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	}
 
 	if(cpuType == CpuType::Snes) {
-		_codeDataLogger.reset(new CodeDataLogger(MemoryType::SnesPrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes));
+		uint32_t crc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::SnesPrgRom).Memory, _emu->GetMemory(MemoryType::SnesPrgRom).Size);
+		_codeDataLogger.reset(new SnesCodeDataLogger(MemoryType::SnesPrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes, crc32));
 		_cdl = _codeDataLogger.get();
+
+		_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetCartridge()->GetGameboy() ? "SgbFirmware.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
+		_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 	} else {
-		_cdl = _debugger->GetCodeDataLogger(CpuType::Snes);
+		_cdl = (SnesCodeDataLogger*)_debugger->GetCodeDataLogger(CpuType::Snes);
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
@@ -78,6 +83,13 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	if(_console->GetMasterClock() < 1000) {
 		//Enable breaking on uninit reads when debugger is opened at power on
 		_enableBreakOnUninitRead = true;
+	}
+}
+
+SnesDebugger::~SnesDebugger()
+{
+	if(_codeDataLogger) {
+		_codeDataLogger->SaveCdlFile(_cdlFile);
 	}
 }
 
@@ -119,10 +131,10 @@ void SnesDebugger::ProcessInstruction()
 		uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
 			uint8_t flags = CdlFlags::Code | cpuFlags;
-			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC) {
+			if(SnesDisUtils::IsJumpToSub(_prevOpCode)) {
 				flags |= CdlFlags::SubEntryPoint;
 			}
-			_cdl->SetFlags(addressInfo.Address, flags);
+			_cdl->SetSnesCode(addressInfo.Address, flags);
 		}
 		if(_traceLogger->IsEnabled() || _debuggerEnabled) {
 			_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
@@ -195,7 +207,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
-			_cdl->SetFlags(addressInfo.Address, CdlFlags::Code | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+			_cdl->SetSnesCode(addressInfo.Address, (state.PS & (SnesCdlFlags::IndexMode8 | SnesCdlFlags::MemoryMode8)));
 		}
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
@@ -204,7 +216,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
-			_cdl->SetFlags(addressInfo.Address, CdlFlags::Data | (state.PS & (CdlFlags::IndexMode8 | CdlFlags::MemoryMode8)));
+			_cdl->SetData(addressInfo.Address);
 		}
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
