@@ -260,10 +260,10 @@ public:
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, MemoryType memoryType)
+	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType = MemoryOperationType::Read)
 	{
 		if(_debugger) {
-			_debugger->ProcessPpuRead<type>(addr, value, memoryType);
+			_debugger->ProcessPpuRead<type>(addr, value, memoryType, opType);
 		}
 	}
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Debugger/Debugger.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/Disassembler.h"
 #include "Shared/Emulator.h"
@@ -6,7 +7,7 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
 
-CodeDataLogger::CodeDataLogger(MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32)
+CodeDataLogger::CodeDataLogger(Debugger* debugger, MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32)
 {
 	_memType = memType;
 	_cpuType = cpuType;
@@ -14,6 +15,8 @@ CodeDataLogger::CodeDataLogger(MemoryType memType, uint32_t memSize, CpuType cpu
 	_romCrc32 = romCrc32;
 	_cdlData = new uint8_t[memSize];
 	Reset();
+
+	debugger->RegisterCdl(memType, this);
 }
 
 CodeDataLogger::~CodeDataLogger()

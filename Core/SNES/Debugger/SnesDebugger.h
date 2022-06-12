@@ -104,7 +104,6 @@ public:
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;
-	CodeDataLogger* GetCodeDataLogger() override;
 	PpuTools* GetPpuTools() override;
 
 	BaseState& GetState() override;

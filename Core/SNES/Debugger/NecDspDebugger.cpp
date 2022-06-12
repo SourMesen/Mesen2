@@ -128,11 +128,6 @@ BaseEventManager* NecDspDebugger::GetEventManager()
 	throw std::runtime_error("Event manager not supported for NEC DSP");
 }
 
-CodeDataLogger* NecDspDebugger::GetCodeDataLogger()
-{
-	return nullptr;
-}
-
 BaseState& NecDspDebugger::GetState()
 {
 	return _dsp->GetState();

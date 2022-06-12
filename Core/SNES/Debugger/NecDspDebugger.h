@@ -48,7 +48,6 @@ public:
 	BreakpointManager* GetBreakpointManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;
-	CodeDataLogger* GetCodeDataLogger() override;
 	ITraceLogger* GetTraceLogger() override;
 
 	BaseState& GetState() override;

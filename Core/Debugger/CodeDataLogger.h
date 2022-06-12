@@ -3,6 +3,7 @@
 #include "DebugTypes.h"
 
 class Disassembler;
+class Debugger;
 
 class CodeDataLogger
 {
@@ -14,7 +15,7 @@ protected:
 	uint32_t _romCrc32 = 0;
 	
 public:
-	CodeDataLogger(MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32);
+	CodeDataLogger(Debugger* debugger, MemoryType memType, uint32_t memSize, CpuType cpuType, uint32_t romCrc32);
 	virtual ~CodeDataLogger();
 
 	void Reset();

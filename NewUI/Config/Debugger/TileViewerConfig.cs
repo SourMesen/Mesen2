@@ -13,6 +13,7 @@ namespace Mesen.Config
 		[Reactive] public MemoryType Source { get; set; }
 		[Reactive] public TileFormat Format { get; set; } = TileFormat.Bpp4;
 		[Reactive] public TileLayout Layout { get; set; } = TileLayout.Normal;
+		[Reactive] public TileFilter Filter { get; set; } = TileFilter.None;
 		[Reactive] public TileBackground Background { get; set; } = TileBackground.Default;
 		[Reactive] public int RowCount { get; set; } = 64;
 		[Reactive] public int ColumnCount { get; set; } = 32;

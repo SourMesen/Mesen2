@@ -52,7 +52,7 @@
 
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
-				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Text="{l:Translate lblPresets}" Margin="0 5 0 0 " VerticalAlignment="Top" />
 					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
 						<ItemsPresenter Items="{CompiledBinding ConfigPresets}">
@@ -116,8 +116,15 @@
 						SelectedItem="{CompiledBinding Config.Background}"
 					/>
 
-					<CheckBox Grid.Row="8" Grid.ColumnSpan="2" Content="{l:Translate chkShowTileGrid}" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
-					<CheckBox Grid.Row="9" Grid.ColumnSpan="2" Content="{l:Translate chkUseGrayscalePalette}" IsChecked="{CompiledBinding Config.UseGrayscalePalette}" />
+					<TextBlock Grid.Column="0" Grid.Row="8" Text="{l:Translate lblFilter}" IsVisible="{CompiledBinding ShowFilterDropdown}" />
+					<c:EnumComboBox
+						Grid.Column="1" Grid.Row="8"
+						IsVisible="{CompiledBinding ShowFilterDropdown}"
+						SelectedItem="{CompiledBinding Config.Filter}"
+					/>
+					
+					<CheckBox Grid.Row="9" Grid.ColumnSpan="2" Content="{l:Translate chkShowTileGrid}" IsChecked="{CompiledBinding Config.ShowTileGrid}" />
+					<CheckBox Grid.Row="10" Grid.ColumnSpan="2" Content="{l:Translate chkUseGrayscalePalette}" IsChecked="{CompiledBinding Config.UseGrayscalePalette}" />
 				</Grid>
 
 				<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0" Margin="0">

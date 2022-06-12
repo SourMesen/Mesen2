@@ -53,9 +53,10 @@ private:
 	Emulator* _emu = nullptr;
 	IConsole* _console = nullptr;
 
-	EmuSettings* _settings;
+	EmuSettings* _settings = nullptr;
 
-	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
+	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1] = {};
+	CodeDataLogger* _codeDataLoggers[(int)MemoryType::Register + 1] = {};
 
 	CpuType _mainCpuType = CpuType::Snes;
 	unordered_set<CpuType> _cpuTypes;
@@ -91,7 +92,7 @@ public:
 	template<CpuType type> void ProcessInstruction();
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
-	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType);
+	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
 	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	template<CpuType type> void ProcessPpuCycle();
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
@@ -140,11 +141,12 @@ public:
 	bool HasCpuType(CpuType cpuType);
 
 	void GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData);
-	void SetCdlData(CpuType cpuType, uint8_t * cdlData, uint32_t length);
-	void MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags);
-	
+	int16_t GetCdlFlags(MemoryType memType, uint32_t addr);
+	void SetCdlData(MemoryType memType, uint8_t * cdlData, uint32_t length);
+	void MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uint8_t flags);
+	void RegisterCdl(MemoryType memType, CodeDataLogger* cdl);
+
 	void RefreshCodeCache();
-	void RebuildPrgCache(CpuType cpuType);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
 	
@@ -160,7 +162,7 @@ public:
 	ITraceLogger* GetTraceLogger(CpuType cpuType);
 	MemoryDumper* GetMemoryDumper();
 	MemoryAccessCounter* GetMemoryAccessCounter();
-	CodeDataLogger* GetCodeDataLogger(CpuType cpuType);
+	CodeDataLogger* GetCodeDataLogger(MemoryType memType);
 	Disassembler* GetDisassembler();
 	PpuTools* GetPpuTools(CpuType cpuType);
 	BaseEventManager* GetEventManager(CpuType cpuType);

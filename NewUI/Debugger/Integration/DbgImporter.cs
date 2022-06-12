@@ -815,7 +815,7 @@ namespace Mesen.Debugger.Integration
 				}
 			}
 
-			DebugApi.SetCdlData(_cpuType, cdlFile, cdlFile.Length);
+			DebugApi.SetCdlData(_prgMemType, cdlFile, cdlFile.Length);
 		}
 
 		protected abstract bool IsBranchInstruction(byte opCode);

@@ -51,13 +51,13 @@ namespace Mesen.Debugger.Utilities
 			if(memType.IsRelativeMemory()) {
 				AddressInfo startAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = memType });
 				AddressInfo endAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = memType });
-				if(startAddr.Type == endAddr.Type && startAddr.Type.SupportsCdl() && endAddr.Address - startAddr.Address == end - start) {
+				if(startAddr.Type == endAddr.Type && startAddr.Type.SupportsCdl() && !startAddr.Type.IsPpuMemory() && endAddr.Address - startAddr.Address == end - start) {
 					start = startAddr.Address;
 					end = endAddr.Address;
 				} else {
 					return false;
 				}
-			} else if(!memType.SupportsCdl()) {
+			} else if(!memType.SupportsCdl() || memType.IsPpuMemory()) {
 				return false;
 			}
 
@@ -67,7 +67,7 @@ namespace Mesen.Debugger.Utilities
 		private static void MarkSelectionAs(MemoryType memType, int selStart, int selEnd, Action refreshView, CdlFlags type)
 		{
 			if(GetMarkStartEnd(memType, selStart, selEnd, out int start, out int end)) {
-				DebugApi.MarkBytesAs(memType.ToCpuType(), (UInt32)start, (UInt32)end, type);
+				DebugApi.MarkBytesAs(memType, (UInt32)start, (UInt32)end, type);
 				refreshView();
 			}
 		}

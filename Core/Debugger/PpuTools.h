@@ -174,6 +174,8 @@ protected:
 	void BlendColors(uint8_t output[4], uint8_t input[4]);
 
 	uint32_t GetRgbPixelColor(TileFormat format, const uint32_t* colors, uint8_t colorIndex, uint8_t palette);
+	
+	bool IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOptions& options);
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);

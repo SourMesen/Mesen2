@@ -133,8 +133,8 @@ extern "C"
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
 
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
-	DllExport void __stdcall SetCdlData(CpuType cpuType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(cpuType, cdlData, length)); }
-	DllExport void __stdcall MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(cpuType, start, end, flags)); }
+	DllExport void __stdcall SetCdlData(MemoryType memoryType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(memoryType, cdlData, length)); }
+	DllExport void __stdcall MarkBytesAs(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(memoryType, start, end, flags)); }
 
 	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t* source, uint32_t srcSize, uint32_t* colors, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetTileView(options, source, srcSize, colors, buffer)); }
 

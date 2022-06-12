@@ -802,6 +802,7 @@
 			<Control ID="lblSize">Size:</Control>
 			<Control ID="lblAddress">Address:</Control>
 			<Control ID="lblTileLayout">Tile Layout:</Control>
+			<Control ID="lblFilter">Filter:</Control>
 			<Control ID="lblBackground">Background:</Control>
 			<Control ID="chkShowTileGrid">Show tile grid</Control>
 			<Control ID="chkUseGrayscalePalette">Use grayscale palette</Control>
@@ -1924,6 +1925,11 @@
 			<Value ID="Normal">Normal</Value>
 			<Value ID="SingleLine8x16">8x16 (same line)</Value>
 			<Value ID="SingleLine16x16">16x16 (same line)</Value>
+		</Enum>
+		<Enum ID="TileFilter">
+			<Value ID="None">None</Value>
+			<Value ID="HideUsed">Hide used tiles</Value>
+			<Value ID="HideUnused">Hide unused tiles</Value>
 		</Enum>
 		<Enum ID="TileBackground">
 			<Value ID="Default">Default (Color 0)</Value>

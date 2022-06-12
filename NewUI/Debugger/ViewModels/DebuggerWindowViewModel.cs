@@ -458,7 +458,7 @@ namespace Mesen.Debugger.ViewModels
 						ActionType = ActionType.ResetCdl,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ResetCdl),
 						OnClick = () => {
-							DebugApi.ResetCdl(CpuType);
+							DebugApi.ResetCdl(CpuType.ToMemoryType());
 							Disassembly.Refresh();
 						}
 					},
@@ -470,7 +470,7 @@ namespace Mesen.Debugger.ViewModels
 							string? filename = await FileDialogHelper.OpenFile(ConfigManager.DebuggerFolder, wnd, FileDialogHelper.CdlExt);
 							if(filename != null) {
 								byte[] data = File.ReadAllBytes(filename);
-								DebugApi.SetCdlData(CpuType, data, data.Length);
+								DebugApi.SetCdlData(CpuType.GetPrgRomMemoryType(), data, data.Length);
 								Disassembly.Refresh();
 							}
 						}

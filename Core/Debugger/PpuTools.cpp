@@ -194,6 +194,10 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 				baseOutputOffset = row * options.Width * tileWidth * tileHeight + column * tileWidth;
 			}
 
+			if(IsTileHidden(options.MemType, addr, options)) {
+				continue;
+			}
+
 			for(int y = 0; y < tileHeight; y++) {
 				uint32_t pixelStart = addr + y * rowOffset;
 				for(int x = 0; x < tileWidth; x++) {
@@ -208,6 +212,19 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 			}
 		}
 	}
+}
+
+bool PpuTools::IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOptions& options)
+{
+	if(options.Filter == TileFilter::None) {
+		return false;
+	}
+
+	int16_t cdlFlags = _debugger->GetCdlFlags(memType, addr);
+	return (
+		(cdlFlags == 0 && options.Filter == TileFilter::HideUnused) ||
+		(cdlFlags > 0 && options.Filter == TileFilter::HideUsed)
+	);
 }
 
 void PpuTools::SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle)

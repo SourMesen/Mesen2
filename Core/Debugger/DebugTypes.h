@@ -213,10 +213,19 @@ enum class TileBackground
 	Magenta = 4
 };
 
+enum class TileFilter
+{
+	None,
+	HideUnused,
+	HideUsed
+};
+
 struct GetTileViewOptions
 {
+	MemoryType MemType;
 	TileFormat Format;
 	TileLayout Layout;
+	TileFilter Filter;
 	TileBackground Background;
 	int32_t Width;
 	int32_t Height;

@@ -23,7 +23,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(CpuType::Snes);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_cx4 = console->GetCartridge()->GetCx4();
@@ -158,11 +158,6 @@ IAssembler* Cx4Debugger::GetAssembler()
 BaseEventManager* Cx4Debugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for CX4");
-}
-
-CodeDataLogger* Cx4Debugger::GetCodeDataLogger()
-{
-	return nullptr;
 }
 
 BaseState& Cx4Debugger::GetState()

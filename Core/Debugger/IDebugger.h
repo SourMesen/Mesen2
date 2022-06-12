@@ -40,7 +40,6 @@ public:
 	virtual CallstackManager* GetCallstackManager() = 0;
 	virtual IAssembler* GetAssembler() = 0;
 	virtual BaseEventManager* GetEventManager() = 0;
-	virtual CodeDataLogger* GetCodeDataLogger() = 0;
 	virtual ITraceLogger* GetTraceLogger() = 0;
 	virtual PpuTools* GetPpuTools() { return nullptr; }
 

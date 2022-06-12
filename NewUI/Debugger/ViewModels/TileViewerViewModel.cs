@@ -52,6 +52,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public Enum[] AvailableMemoryTypes { get; set; } = Array.Empty<Enum>();
 		[Reactive] public Enum[] AvailableFormats { get; set; } = Array.Empty<Enum>();
 		[Reactive] public bool ShowFormatDropdown { get; set; }
+		[Reactive] public bool ShowFilterDropdown { get; set; }
 
 		[Reactive] public List<ConfigPreset> ConfigPresets { get; set; } = new List<ConfigPreset>();
 
@@ -164,6 +165,10 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
 				MaximumAddress = Math.Max(0, DebugApi.GetMemorySize(memType) - 1);
+				if(Config.StartAddress > MaximumAddress) {
+					Config.StartAddress = 0;
+				}
+				ShowFilterDropdown = memType.SupportsCdl();
 				RefreshData();
 			}));
 
@@ -658,11 +663,13 @@ namespace Mesen.Debugger.ViewModels
 		private GetTileViewOptions GetOptions()
 		{
 			return new GetTileViewOptions() {
+				MemType = Config.Source,
 				Format = Config.Format,
 				Width = Config.ColumnCount,
 				Height = Config.RowCount,
 				Palette = Config.SelectedPalette,
 				Layout = Config.Layout,
+				Filter = ShowFilterDropdown ? Config.Filter : TileFilter.None,
 				StartAddress = Config.StartAddress,
 				Background = Config.Background,
 				UseGrayscalePalette = Config.UseGrayscalePalette

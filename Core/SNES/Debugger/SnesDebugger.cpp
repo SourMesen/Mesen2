@@ -63,13 +63,13 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 
 	if(cpuType == CpuType::Snes) {
 		uint32_t crc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::SnesPrgRom).Memory, _emu->GetMemory(MemoryType::SnesPrgRom).Size);
-		_codeDataLogger.reset(new SnesCodeDataLogger(MemoryType::SnesPrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes, crc32));
+		_codeDataLogger.reset(new SnesCodeDataLogger(debugger, MemoryType::SnesPrgRom, console->GetCartridge()->DebugGetPrgRomSize(), CpuType::Snes, crc32));
 		_cdl = _codeDataLogger.get();
 
 		_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetCartridge()->GetGameboy() ? "SgbFirmware.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
 		_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 	} else {
-		_cdl = (SnesCodeDataLogger*)_debugger->GetCodeDataLogger(CpuType::Snes);
+		_cdl = (SnesCodeDataLogger*)_debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
@@ -411,11 +411,6 @@ IAssembler* SnesDebugger::GetAssembler()
 BaseEventManager* SnesDebugger::GetEventManager()
 {
 	return _eventManager.get();
-}
-
-CodeDataLogger* SnesDebugger::GetCodeDataLogger()
-{
-	return _cdl;
 }
 
 PpuTools* SnesDebugger::GetPpuTools()

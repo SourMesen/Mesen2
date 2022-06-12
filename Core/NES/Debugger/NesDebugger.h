@@ -41,6 +41,7 @@ class NesDebugger final : public IDebugger
 	NesMemoryManager* _memoryManager;
 
 	unique_ptr<CodeDataLogger> _codeDataLogger;
+	unique_ptr<CodeDataLogger> _chrRomCdl;
 	unique_ptr<BaseEventManager> _eventManager;
 	unique_ptr<IAssembler> _assembler;
 	unique_ptr<CallstackManager> _callstackManager;
@@ -56,6 +57,7 @@ class NesDebugger final : public IDebugger
 	unique_ptr<DummyNesCpu> _dummyCpu;
 
 	string _cdlFile;
+	string _chrCdlFile;
 
 	bool IsRegister(MemoryOperationInfo& op);
 
@@ -69,7 +71,7 @@ public:
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
-	void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType);
+	void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	void ProcessPpuCycle();
 
@@ -87,7 +89,6 @@ public:
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;
-	CodeDataLogger* GetCodeDataLogger() override;
 
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;

@@ -219,7 +219,7 @@ namespace Mesen.Debugger.ViewModels
 			AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = StartAddress, Type = memType });
 			AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)endAddress, Type = memType });
 			if(absStart.Type == prgType && absEnd.Type == prgType && (absEnd.Address - absStart.Address + 1) == bytes.Count) {
-				DebugApi.MarkBytesAs(_cpuType, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+				DebugApi.MarkBytesAs(prgType, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
 			}
 
 			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == _cpuType);

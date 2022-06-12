@@ -45,7 +45,6 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_memoryManager = console->GetMemoryManager();
 
 	_traceLogger.reset(new NesTraceLogger(debugger, this, _ppu));
-	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -53,7 +52,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_dummyCpu.reset(new DummyNesCpu(_console));
 
 	uint32_t crc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::NesPrgRom).Memory, _emu->GetMemory(MemoryType::NesPrgRom).Size);
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes, crc32));
+	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes, crc32));
 
 	string cdlFile;
 	switch(_console->GetRomFormat()) {
@@ -63,6 +62,15 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	}
 	_cdlFile = _codeDataLogger->GetCdlFilePath(cdlFile);
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+
+	if(_emu->GetMemory(MemoryType::NesChrRom).Size > 0) {
+		uint32_t chrCrc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::NesChrRom).Memory, _emu->GetMemory(MemoryType::NesChrRom).Size);
+		_chrCdlFile = _codeDataLogger->GetCdlFilePath(FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".chr.cdl");
+		_chrRomCdl.reset(new CodeDataLogger(debugger, MemoryType::NesChrRom, _emu->GetMemory(MemoryType::NesChrRom).Size, CpuType::Nes, chrCrc32));
+		_chrRomCdl->LoadCdlFile(_chrCdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+	}
+
+	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 
 	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -79,6 +87,9 @@ NesDebugger::NesDebugger(Debugger* debugger)
 NesDebugger::~NesDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
+	if(_chrRomCdl) {
+		_chrRomCdl->SaveCdlFile(_chrCdlFile);
+	}
 }
 
 void NesDebugger::Reset()
@@ -279,12 +290,15 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	);
 }
 
-void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
+void NesDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
 	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		_mapper->GetPpuAbsoluteAddress(addr, addressInfo);
+	}
+	if(addressInfo.Type == MemoryType::NesChrRom && opType == MemoryOperationType::PpuRenderingRead) {
+		_chrRomCdl->SetCode(addressInfo.Address);
 	}
 	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
@@ -375,11 +389,6 @@ IAssembler* NesDebugger::GetAssembler()
 BaseEventManager* NesDebugger::GetEventManager()
 {
 	return _eventManager.get();
-}
-
-CodeDataLogger* NesDebugger::GetCodeDataLogger()
-{
-	return _codeDataLogger.get();
 }
 
 BaseState& NesDebugger::GetState()

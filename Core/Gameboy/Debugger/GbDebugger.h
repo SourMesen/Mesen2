@@ -77,7 +77,6 @@ public:
 	BaseEventManager* GetEventManager() override;
 	IAssembler* GetAssembler() override;
 	CallstackManager* GetCallstackManager() override;
-	CodeDataLogger* GetCodeDataLogger() override;
 	BreakpointManager* GetBreakpointManager() override;
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;

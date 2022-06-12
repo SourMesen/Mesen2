@@ -23,7 +23,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(CpuType::Snes);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_gsu = console->GetCartridge()->GetGsu();
@@ -158,11 +158,6 @@ IAssembler* GsuDebugger::GetAssembler()
 BaseEventManager* GsuDebugger::GetEventManager()
 {
 	throw std::runtime_error("Event manager not supported for GSU");
-}
-
-CodeDataLogger* GsuDebugger::GetCodeDataLogger()
-{
-	return nullptr;
 }
 
 BaseState& GsuDebugger::GetState()

@@ -201,12 +201,12 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 }
 
 template<CpuType type>
-void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
+void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
-		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
+		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuRead(addr, value, memoryType, opType); break;
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		default: throw std::runtime_error("Invalid cpu type");
 	}
@@ -611,47 +611,46 @@ bool Debugger::HasCpuType(CpuType cpuType)
 	return _cpuTypes.find(cpuType) != _cpuTypes.end();
 }
 
-void Debugger::SetCdlData(CpuType cpuType, uint8_t *cdlData, uint32_t length)
+void Debugger::SetCdlData(MemoryType memType, uint8_t *cdlData, uint32_t length)
 {
 	DebugBreakHelper helper(this);
-	GetCodeDataLogger(cpuType)->SetCdlData(cdlData, length);
-	RefreshCodeCache();
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		cdl->SetCdlData(cdlData, length);
+		RefreshCodeCache();
+	}
 }
 
-void Debugger::MarkBytesAs(CpuType cpuType, uint32_t start, uint32_t end, uint8_t flags)
+void Debugger::MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uint8_t flags)
 {
 	DebugBreakHelper helper(this);
-	GetCodeDataLogger(cpuType)->MarkBytesAs(start, end, flags);
-	RefreshCodeCache();
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		cdl->MarkBytesAs(start, end, flags);
+		RefreshCodeCache();
+	}
+}
+
+void Debugger::RegisterCdl(MemoryType memType, CodeDataLogger* cdl)
+{
+	_codeDataLoggers[(int)memType] = cdl;
 }
 
 void Debugger::RefreshCodeCache()
 {
 	_disassembler->ResetPrgCache();
 	
-	for(CpuType type : _cpuTypes) {
-		RebuildPrgCache(type);
-	}
-}
-
-void Debugger::RebuildPrgCache(CpuType cpuType)
-{
-	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
-	if(cdl) {
-		cdl->RebuildPrgCache(_disassembler.get());
+	for(CodeDataLogger* cdl : _codeDataLoggers) {
+		if(cdl) {
+			cdl->RebuildPrgCache(_disassembler.get());
+		}
 	}
 }
 
 void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData)
 {
-	CpuType cpuType = DebugUtilities::ToCpuType(memoryType);
-	CodeDataLogger* cdl = GetCodeDataLogger(cpuType);
-	if(!cdl) {
-		return;
-	}
-
-	MemoryType memType = cdl->GetMemoryType();
-	if(memoryType == memType) {
+	CodeDataLogger* cdl = GetCodeDataLogger(memoryType);
+	if(cdl) {
 		cdl->GetCdlData(offset, length, cdlData);
 	} else {
 		AddressInfo relAddress;
@@ -659,9 +658,31 @@ void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryTyp
 		for(uint32_t i = 0; i < length; i++) {
 			relAddress.Address = offset + i;
 			AddressInfo info = GetAbsoluteAddress(relAddress);
-			cdlData[i] = info.Type == memType ? cdl->GetFlags(info.Address) : 0;
+			if(info.Address >= 0) {
+				cdl = GetCodeDataLogger(info.Type);
+				cdlData[i] = cdl ? cdl->GetFlags(info.Address) : 0;
+			} else {
+				cdlData[i] = 0;
+			}
 		}
 	}
+}
+
+int16_t Debugger::GetCdlFlags(MemoryType memType, uint32_t addr)
+{
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		return cdl->GetFlags(addr);
+	} else {
+		if(DebugUtilities::IsRelativeMemory(memType)) {
+			AddressInfo info = GetAbsoluteAddress({ (int32_t)addr, memType });
+			if(info.Address >= 0) {
+				cdl = GetCodeDataLogger(info.Type);
+				return cdl ? cdl->GetFlags(info.Address) : -1;
+			}
+		}
+	}
+	return -1;
 }
 
 void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
@@ -796,12 +817,9 @@ MemoryAccessCounter* Debugger::GetMemoryAccessCounter()
 	return _memoryAccessCounter.get();
 }
 
-CodeDataLogger* Debugger::GetCodeDataLogger(CpuType cpuType)
+CodeDataLogger* Debugger::GetCodeDataLogger(MemoryType memType)
 {
-	if(_debuggers[(int)cpuType].Debugger) {
-		return _debuggers[(int)cpuType].Debugger->GetCodeDataLogger();
-	}
-	return nullptr;
+	return _codeDataLoggers[(int)memType];
 }
 
 Disassembler* Debugger::GetDisassembler()
@@ -897,10 +915,10 @@ template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, 
 template void Debugger::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Pce>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
-template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuRead<CpuType::Pce>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Pce>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
 
 template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType);
 template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType);

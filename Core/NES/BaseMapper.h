@@ -192,7 +192,7 @@ public:
 	__forceinline uint8_t ReadVram(uint16_t addr, MemoryOperationType type = MemoryOperationType::PpuRenderingRead)
 	{
 		uint8_t value = MapperReadVram(addr, type);
-		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, MemoryType::NesPpuMemory);
+		_emu->ProcessPpuRead<CpuType::Nes>(addr, value, MemoryType::NesPpuMemory, type);
 		return value;
 	}
 

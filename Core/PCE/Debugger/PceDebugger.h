@@ -87,7 +87,6 @@ public:
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;
-	CodeDataLogger* GetCodeDataLogger() override;
 
 	BaseState& GetState() override;
 	void GetPpuState(BaseState& state) override;

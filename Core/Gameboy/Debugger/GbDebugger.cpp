@@ -47,7 +47,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 
 	_settings = debugger->GetEmulator()->GetSettings();
 	
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy, _emu->GetCrc32()));
+	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy, _emu->GetCrc32()));
 	_cdlFile = _codeDataLogger->GetCdlFilePath(_emu->GetRomInfo().RomFile.GetFileName());
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 
@@ -336,11 +336,6 @@ IAssembler* GbDebugger::GetAssembler()
 CallstackManager* GbDebugger::GetCallstackManager()
 {
 	return _callstackManager.get();
-}
-
-CodeDataLogger* GbDebugger::GetCodeDataLogger()
-{
-	return _codeDataLogger.get();
 }
 
 BreakpointManager* GbDebugger::GetBreakpointManager()

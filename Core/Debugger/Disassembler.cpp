@@ -118,9 +118,6 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	AddressInfo prevAddrInfo = {};
 	int byteCounter = 0;
 	
-	CodeDataLogger* cdl = _debugger->GetCodeDataLogger(cpuType);
-	MemoryType cdlMemType = cdl ? cdl->GetMemoryType() : MemoryType::Register;
-
 	AddressInfo relAddress = {};
 	relAddress.Type = DebugUtilities::GetCpuMemoryType(cpuType);
 
@@ -152,6 +149,14 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		}
 	};
 
+	auto pushUnmappedBlock = [&]() {
+		int32_t prevAddress = results.size() > 0 ? results[results.size() - 1].CpuAddress + 1 : bankStart;
+		results.push_back(DisassemblyResult(prevAddress, LineFlags::BlockStart | LineFlags::UnmappedMemory));
+		results.push_back(DisassemblyResult(prevAddress, LineFlags::UnmappedMemory | LineFlags::Empty));
+		results.push_back(DisassemblyResult(relAddress.Address - 1, LineFlags::BlockEnd | LineFlags::UnmappedMemory));
+		inUnmappedBlock = false;
+	};
+
 	for(int32_t i = bankStart; i < bankEnd; i++) {
 		relAddress.Address = i;
 		addrInfo = _console->GetAbsoluteAddress(relAddress);
@@ -163,20 +168,16 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		}
 
 		if(inUnmappedBlock) {
-			int32_t prevAddress = results.size() > 0 ? results[results.size() - 1].CpuAddress + 1 : bankStart;
-			results.push_back(DisassemblyResult(prevAddress, LineFlags::BlockStart | LineFlags::UnmappedMemory));
-			results.push_back(DisassemblyResult(prevAddress, LineFlags::UnmappedMemory | LineFlags::Empty));
-			results.push_back(DisassemblyResult(i - 1, LineFlags::BlockEnd | LineFlags::UnmappedMemory));
-			inUnmappedBlock = false;
+			pushUnmappedBlock();
 		}
 
 		DisassemblerSource& src = GetSource(addrInfo.Type);
 		DisassemblyInfo disassemblyInfo = src.Cache[addrInfo.Address];
-		
+		CodeDataLogger* cdl = _debugger->GetCodeDataLogger(addrInfo.Type);
 		uint8_t opSize = 0;
 
-		bool isCode = addrInfo.Type == cdlMemType && cdl ? cdl->IsCode(addrInfo.Address) : false;
-		bool isData = addrInfo.Type == cdlMemType && cdl ? cdl->IsData(addrInfo.Address) : false;
+		bool isCode = cdl ? cdl->IsCode(addrInfo.Address) : false;
+		bool isData = cdl ? cdl->IsData(addrInfo.Address) : false;
 
 		if(disassemblyInfo.IsInitialized()) {
 			opSize = disassemblyInfo.GetOpSize();
@@ -188,7 +189,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		if(opSize > 0) {
 			pushEndBlock();
 
-			if(addrInfo.Type == cdlMemType && cdl && cdl->IsSubEntryPoint(addrInfo.Address)) {
+			if(cdl && cdl->IsSubEntryPoint(addrInfo.Address)) {
 				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::SubStart | LineFlags::BlockStart | LineFlags::VerifiedCode | LineFlags::Empty));
 			}
 
@@ -273,6 +274,9 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 	relAddress.Address = bankEnd;
 	pushEndBlock();
+	if(inUnmappedBlock) {
+		pushUnmappedBlock();
+	}
 
 	return results;
 }
@@ -339,11 +343,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					state.PC = (uint16_t)row.CpuAddress;
 					state.K = (row.CpuAddress >> 16);
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, state.PS, lineCpuType, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= (row.Address.Type != MemoryType::SnesPrgRom || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();
@@ -434,11 +438,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					GbCpuState state = (GbCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Gameboy, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();
@@ -452,11 +456,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					NesCpuState state = (NesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Nes, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();
@@ -474,11 +478,11 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					PceCpuState state = (PceCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(lineCpuType);
+					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Pce, row.Address.Type, _memoryDumper);
 					} else {
-						data.Flags |= cdl->IsCode(data.AbsoluteAddress) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
+						data.Flags |= (!cdl || cdl->IsCode(data.AbsoluteAddress)) ? LineFlags::VerifiedCode : LineFlags::UnexecutedCode;
 					}
 
 					data.OpSize = disInfo.GetOpSize();

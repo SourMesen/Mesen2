@@ -50,7 +50,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 
 	_dummyCpu.reset(new DummyPceCpu(_emu, _memoryManager));
 
-	_codeDataLogger.reset(new CodeDataLogger(MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce, _emu->GetCrc32()));
+	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce, _emu->GetCrc32()));
 
 	_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetRomFormat() == RomFormat::PceCdRom ? "PceCdromBios.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
@@ -343,11 +343,6 @@ IAssembler* PceDebugger::GetAssembler()
 BaseEventManager* PceDebugger::GetEventManager()
 {
 	return _eventManager.get();
-}
-
-CodeDataLogger* PceDebugger::GetCodeDataLogger()
-{
-	return _codeDataLogger.get();
 }
 
 BaseState& PceDebugger::GetState()

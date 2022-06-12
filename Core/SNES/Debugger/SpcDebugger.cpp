@@ -221,11 +221,6 @@ BaseEventManager* SpcDebugger::GetEventManager()
 	throw std::runtime_error("Event manager not supported for SPC");
 }
 
-CodeDataLogger* SpcDebugger::GetCodeDataLogger()
-{
-	return nullptr;
-}
-
 BaseState& SpcDebugger::GetState()
 {
 	return _spc->GetState();

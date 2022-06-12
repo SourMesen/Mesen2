@@ -21,7 +21,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ResumeExecution();
 		[DllImport(DllPath)] public static extern void Step(CpuType cpuType, Int32 instructionCount, StepType type = StepType.Step);
 
-		[DllImport(DllPath)] public static extern void StartLogTraceToFile([MarshalAs(UnmanagedType.LPUTF8Str)]string filename);
+		[DllImport(DllPath)] public static extern void StartLogTraceToFile([MarshalAs(UnmanagedType.LPUTF8Str)] string filename);
 		[DllImport(DllPath)] public static extern void StopLogTraceToFile();
 
 		[DllImport(DllPath)] public static extern void SetTraceOptions(CpuType cpuType, InteropTraceLoggerOptions options);
@@ -51,7 +51,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern void GetDebuggerLogWrapper(IntPtr outLog, Int32 maxLength);
 		public static string GetLog() { return Utf8Utilities.CallStringApi(GetDebuggerLogWrapper, 100000); }
 
-		[DllImport(DllPath, EntryPoint = "GetDisassemblyOutput")] private static extern UInt32 GetDisassemblyOutputWrapper(CpuType type, UInt32 address, [In,Out]InteropCodeLineData[] lineData, UInt32 rowCount);
+		[DllImport(DllPath, EntryPoint = "GetDisassemblyOutput")] private static extern UInt32 GetDisassemblyOutputWrapper(CpuType type, UInt32 address, [In, Out] InteropCodeLineData[] lineData, UInt32 rowCount);
 		public static CodeLineData[] GetDisassemblyOutput(CpuType type, UInt32 address, UInt32 rowCount)
 		{
 			InteropCodeLineData[] rows = new InteropCodeLineData[rowCount];
@@ -71,7 +71,7 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern int GetDisassemblyRowAddress(CpuType type, UInt32 address, int rowOffset);
-		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)]string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)]bool searchBackwards);
+		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)] bool searchBackwards);
 
 		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
 		public unsafe static T GetCpuState<T>(CpuType cpuType) where T : struct, BaseState
@@ -149,7 +149,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern UInt32 GetProgramCounter(CpuType cpuType, [MarshalAs(UnmanagedType.I1)] bool getInstPc);
 
 		[DllImport(DllPath)] public static extern void SetScriptTimeout(UInt32 timeout);
-		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)]string content, Int32 scriptId = -1);
+		[DllImport(DllPath)] public static extern Int32 LoadScript(string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string content, Int32 scriptId = -1);
 		[DllImport(DllPath)] public static extern void RemoveScript(Int32 scriptId);
 
 		[DllImport(DllPath, EntryPoint = "GetScriptLog")] private static extern void GetScriptLogWrapper(Int32 scriptId, IntPtr outScriptLog, Int32 maxLength);
@@ -162,7 +162,7 @@ namespace Mesen.Interop
 			}
 		}
 
-		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)]string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)]bool useCache);
+		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)] string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)] bool useCache);
 
 		[DllImport(DllPath)] public static extern DebuggerFeatures GetDebuggerFeatures(CpuType type);
 
@@ -178,9 +178,9 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetLabel(uint address, MemoryType memType, string label, string comment);
 		[DllImport(DllPath)] public static extern void ClearLabels();
 
-		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropBreakpoint[] breakpoints, UInt32 length);
+		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] InteropBreakpoint[] breakpoints, UInt32 length);
 
-		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, [MarshalAs(UnmanagedType.I1)]bool saveAsIps, CdlStripOption cdlStripOption);
+		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, [MarshalAs(UnmanagedType.I1)] bool saveAsIps, CdlStripOption cdlStripOption);
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(MemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryValues(MemoryType type, UInt32 start, UInt32 end)
@@ -284,7 +284,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
 		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType);
-		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper(CpuType cpuType, [In, Out]DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
+		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper(CpuType cpuType, [In, Out] DebugEventInfo[] eventArray, ref UInt32 maxEventCount);
 		public static DebugEventInfo[] GetDebugEvents(CpuType cpuType)
 		{
 			UInt32 maxEventCount = GetDebugEventCount(cpuType);
@@ -303,14 +303,14 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropNesEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropPceEventViewerConfig config);
-		
+
 		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle);
 		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType);
 
 		[DllImport(DllPath)] public static extern FrameInfo GetEventViewerDisplaySize(CpuType cpuType);
 		[DllImport(DllPath)] public static extern void GetEventViewerOutput(CpuType cpuType, IntPtr buffer, UInt32 bufferSize);
-		
-		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void GetCallstackWrapper(CpuType type, [In, Out]StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
+
+		[DllImport(DllPath, EntryPoint = "GetCallstack")] private static extern void GetCallstackWrapper(CpuType type, [In, Out] StackFrameInfo[] callstackArray, ref UInt32 callstackSize);
 		public static StackFrameInfo[] GetCallstack(CpuType type)
 		{
 			StackFrameInfo[] callstack = new StackFrameInfo[512];
@@ -390,12 +390,12 @@ namespace Mesen.Interop
 			return counts;
 		}
 
-		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, MemoryType memType, [In,Out] CdlFlags[] cdlData);
+		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, MemoryType memType, [In, Out] CdlFlags[] cdlData);
 
-		public static void ResetCdl(CpuType cpuType)
+		public static void ResetCdl(MemoryType memType)
 		{
-			byte[] data = new byte[DebugApi.GetMemorySize(cpuType.GetPrgRomMemoryType())];
-			DebugApi.SetCdlData(cpuType, data, data.Length);
+			byte[] data = new byte[DebugApi.GetMemorySize(memType)];
+			DebugApi.SetCdlData(memType, data, data.Length);
 		}
 
 		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, MemoryType memType)
@@ -410,10 +410,10 @@ namespace Mesen.Interop
 			return DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(cpuType.GetPrgRomMemoryType()), cpuType.GetPrgRomMemoryType());
 		}
 
-		[DllImport(DllPath)] public static extern void SetCdlData(CpuType cpuType, [In]byte[] cdlData, Int32 length);
-		[DllImport(DllPath)] public static extern void MarkBytesAs(CpuType cpuType, UInt32 start, UInt32 end, CdlFlags type);
+		[DllImport(DllPath)] public static extern void SetCdlData(MemoryType memType, [In] byte[] cdlData, Int32 length);
+		[DllImport(DllPath)] public static extern void MarkBytesAs(MemoryType memType, UInt32 start, UInt32 end, CdlFlags type);
 
-		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.LPUTF8Str)]string code, UInt32 startAddress, [In, Out]Int16[] assembledCodeBuffer);
+		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.LPUTF8Str)] string code, UInt32 startAddress, [In, Out] Int16[] assembledCodeBuffer);
 		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)
 		{
 			code = code.Replace(Environment.NewLine, "\n");
@@ -663,7 +663,7 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg ApuRegisterReads;
 		public InteropEventViewerCategoryCfg ControlRegisterWrites;
 		public InteropEventViewerCategoryCfg ControlRegisterReads;
-		
+
 		public InteropEventViewerCategoryCfg Ppu2000Write;
 		public InteropEventViewerCategoryCfg Ppu2001Write;
 		public InteropEventViewerCategoryCfg Ppu2003Write;
@@ -830,7 +830,7 @@ namespace Mesen.Interop
 
 		public Int32 PaletteIndex;
 		public Int32 PaletteAddress;
-		
+
 		public Int32 AttributeAddress;
 
 		public NullableBoolean HorizontalMirroring;
@@ -838,10 +838,19 @@ namespace Mesen.Interop
 		public NullableBoolean HighPriority;
 	};
 
+	public enum TileFilter
+	{
+		None,
+		HideUnused,
+		HideUsed
+	}
+
 	public struct GetTileViewOptions
 	{
+		public MemoryType MemType;
 		public TileFormat Format;
 		public TileLayout Layout;
+		public TileFilter Filter;
 		public TileBackground Background;
 		public Int32 Width;
 		public Int32 Height;
