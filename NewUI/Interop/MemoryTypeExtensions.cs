@@ -230,6 +230,9 @@ namespace Mesen.Interop
 		{
 			switch(memType) {
 				case MemoryType.SnesMemory:
+				case MemoryType.Sa1Memory:
+				case MemoryType.Cx4Memory:
+				case MemoryType.GsuMemory:
 				case MemoryType.SnesPrgRom:
 
 				case MemoryType.GameboyMemory:

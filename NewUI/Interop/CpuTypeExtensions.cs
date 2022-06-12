@@ -46,6 +46,11 @@ namespace Mesen.Interop
 		{
 			return cpuType switch {
 				CpuType.Snes => MemoryType.SnesPrgRom,
+				CpuType.NecDsp => MemoryType.DspProgramRom,
+				CpuType.Sa1 => MemoryType.SnesPrgRom,
+				CpuType.Gsu => MemoryType.SnesPrgRom,
+				CpuType.Cx4 => MemoryType.SnesPrgRom,
+				
 				CpuType.Gameboy => MemoryType.GbPrgRom,
 				CpuType.Nes => MemoryType.NesPrgRom,
 				CpuType.Pce => MemoryType.PcePrgRom,

@@ -44,7 +44,7 @@ namespace Mesen.Debugger.Utilities
 			};
 		}
 
-		private static async void SaveRom(Window wnd, bool saveAsIps, CdlStripOption cdlOption = CdlStripOption.StripNone)
+		public static async void SaveRom(Window wnd, bool saveAsIps, CdlStripOption cdlOption = CdlStripOption.StripNone)
 		{
 			string romName = Path.GetFileName(EmuApi.GetRomInfo().RomPath);
 			string ext = saveAsIps ? FileDialogHelper.IpsExt : Path.GetExtension(romName).Substring(1);

@@ -653,5 +653,9 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Tape")]
 		TapeRecorder,
+
+		GenerateRom,
+		CdlRomStripUnused,
+		CdlRomStripUsed,
 	}
 }

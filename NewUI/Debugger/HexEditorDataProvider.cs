@@ -77,21 +77,7 @@ namespace Mesen.Debugger
 			_cdlData = null;
 			if(_memoryType.SupportsCdl()) {
 				if(_cfg.DataHighlight.Highlight || _cfg.CodeHighlight.Highlight || (_cpuType == CpuType.Nes && (_cfg.NesDrawnChrRomHighlight.Highlight || _cfg.NesPcmDataHighlight.Highlight))) {
-					switch(_memoryType) {
-						case MemoryType.SnesMemory:
-						case MemoryType.Sa1Memory:
-						case MemoryType.Cx4Memory:
-						case MemoryType.GsuMemory:
-						case MemoryType.GameboyMemory:
-						case MemoryType.NesMemory:
-						case MemoryType.NesPpuMemory:
-						case MemoryType.SnesPrgRom:
-						case MemoryType.GbPrgRom:
-						case MemoryType.NesPrgRom:
-						case MemoryType.NesChrRom:
-							_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
-							break;
-					}
+					_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 				}
 			}
 

@@ -2436,6 +2436,10 @@
 
 			<Value ID="InputBarcode">Input barcode...</Value>
 			<Value ID="TapeRecorder">Tape recorder</Value>
+
+			<Value ID="GenerateRom">Generate ROM...</Value>
+			<Value ID="CdlRomStripUnused">Strip unused data</Value>
+			<Value ID="CdlRomStripUsed">Strip used data</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -270,12 +270,14 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdateCdlStats()
 		{
-			CdlStatistics stats = DebugApi.GetCdlStatistics(CpuType.GetPrgRomMemoryType());
 			string statsString = "";
-			if(stats.TotalBytes > 0) {
-				statsString = $"Code: {(double)stats.CodeBytes / stats.TotalBytes * 100:0.00}% Data: {(double)stats.DataBytes / stats.TotalBytes * 100:0.00}%";
-				if(stats.TotalChrBytes > 0) {
-					statsString += $" Drawn (CHR ROM): {(double)stats.DrawnChrBytes / stats.TotalChrBytes * 100:0.00}%";
+			if(CpuType.ToMemoryType().SupportsCdl()) {
+				CdlStatistics stats = DebugApi.GetCdlStatistics(CpuType.GetPrgRomMemoryType());
+				if(stats.TotalBytes > 0) {
+					statsString = $"Code: {(double)stats.CodeBytes / stats.TotalBytes * 100:0.00}% Data: {(double)stats.DataBytes / stats.TotalBytes * 100:0.00}%";
+					if(stats.TotalChrBytes > 0) {
+						statsString += $" Drawn (CHR ROM): {(double)stats.DrawnChrBytes / stats.TotalChrBytes * 100:0.00}%";
+					}
 				}
 			}
 			CdlStats = statsString;
@@ -499,6 +501,20 @@ namespace Mesen.Debugger.ViewModels
 							string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, EmuApi.GetRomInfo().GetRomName() + ".cdl", wnd, FileDialogHelper.CdlExt);
 							if(filename != null) {
 								DebugApi.SaveCdlFile(CpuType.GetPrgRomMemoryType(), filename);
+							}
+						}
+					},
+					new ContextMenuSeparator(),
+					new ContextMenuAction() {
+						ActionType = ActionType.GenerateRom,
+						SubActions = new() {
+							new ContextMenuAction() {
+								ActionType = ActionType.CdlRomStripUnused,
+								OnClick = () => SaveRomActionHelper.SaveRom(wnd, false, CdlStripOption.StripUnused)
+							},
+							new ContextMenuAction() {
+								ActionType = ActionType.CdlRomStripUsed,
+								OnClick = () => SaveRomActionHelper.SaveRom(wnd, false, CdlStripOption.StripUsed)
 							}
 						}
 					},

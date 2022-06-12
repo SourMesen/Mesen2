@@ -215,11 +215,10 @@ namespace Mesen.Debugger.ViewModels
 				IsIdentical = MatchesOriginalCode(bytes);
 			}
 
-			MemoryType prgType = _cpuType.GetPrgRomMemoryType();
 			AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = StartAddress, Type = memType });
 			AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = (int)endAddress, Type = memType });
-			if(absStart.Type == prgType && absEnd.Type == prgType && (absEnd.Address - absStart.Address + 1) == bytes.Count) {
-				DebugApi.MarkBytesAs(prgType, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
+			if(absStart.Type == absEnd.Type && (absEnd.Address - absStart.Address + 1) == bytes.Count) {
+				DebugApi.MarkBytesAs(absStart.Type, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
 			}
 
 			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == _cpuType);
