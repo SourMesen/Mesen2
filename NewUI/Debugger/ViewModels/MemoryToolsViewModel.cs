@@ -3,6 +3,7 @@ using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -36,8 +37,11 @@ namespace Mesen.Debugger.ViewModels
 
 		[ObservableAsProperty] public int MaxScrollValue { get; }
 
+		public MemoryToolsDisplayOptionsViewModel Options { get; }
+
 		public MemoryToolsViewModel()
 		{
+			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel());
 			Config = ConfigManager.Config.Debug.HexEditor;
 			FontConfig = ConfigManager.Config.Debug.Font;
 			ScrollPosition = 0;
@@ -60,14 +64,22 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}));
 
-			AddDisposable(this.WhenAnyValue(x => x.Config.MemoryType, x => x.TblConverter).Subscribe(((MemoryType memType, TblByteCharConverter? conv) o) => DataProvider = new HexEditorDataProvider(
-				o.memType, Config, o.conv
-			)));
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => UpdateDataProvider()));
+			AddDisposable(this.WhenAnyValue(x => x.TblConverter).Subscribe(x => UpdateDataProvider()));
 
 			AddDisposable(this.WhenAnyValue(
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
 			).Select(((MemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
+		}
+
+		private void UpdateDataProvider()
+		{
+			DataProvider = new HexEditorDataProvider(
+				Config.MemoryType,
+				Config,
+				TblConverter
+			);
 		}
 
 		public void UpdateAvailableMemoryTypes()
@@ -76,6 +88,8 @@ namespace Mesen.Debugger.ViewModels
 			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
 				Config.MemoryType = (MemoryType)AvailableMemoryTypes.First();
 			}
+
+			Options.UpdateAvailableOptions();
 		}
 	}
 }

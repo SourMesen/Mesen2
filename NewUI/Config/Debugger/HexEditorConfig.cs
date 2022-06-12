@@ -9,6 +9,8 @@ using System.Xml.Serialization;
 using Avalonia;
 using Avalonia.Media;
 using Mesen.Interop;
+using Mesen.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace Mesen.Config
@@ -38,6 +40,10 @@ namespace Mesen.Config
 		[Reactive] public HighlightConfig LabelHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.LightPink.ToUint32() };
 		[Reactive] public HighlightConfig CodeHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.DarkSeaGreen.ToUint32() };
 		[Reactive] public HighlightConfig DataHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.LightSteelBlue.ToUint32() };
+		
+		[Reactive] public HighlightConfig NesPcmDataHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.Khaki.ToUint32() };
+		[Reactive] public HighlightConfig NesDrawnChrRomHighlight { get; set; } = new() { Highlight = false, ColorCode = Colors.Thistle.ToUint32() };
+
 		[Reactive] public bool HighlightBreakpoints { get; set; } = false;
 
 		[Reactive] public MemoryType MemoryType { get; set; } = MemoryType.SnesMemory;
@@ -69,7 +75,7 @@ namespace Mesen.Config
 		}
 	}
 
-	public class HighlightConfig
+	public class HighlightConfig : ReactiveObject
 	{
 		[Reactive] public bool Highlight { get; set; }
 		[Reactive] public UInt32 ColorCode { get; set; }

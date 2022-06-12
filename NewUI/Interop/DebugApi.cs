@@ -1104,6 +1104,9 @@ namespace Mesen.Interop
 
 		IndexMode8 = 0x10,
 		MemoryMode8 = 0x20,
+
+		NesChrDrawn = 0x01,
+		NesPcmData = 0x80
 	}
 
 	public struct ProfiledFunction

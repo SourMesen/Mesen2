@@ -52,7 +52,7 @@
 			/>
 		</DockPanel>
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowOptionPanel}" Margin="3 0">
-			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Config}" />
+			<dv:MemoryToolsDisplayOptionsView DataContext="{CompiledBinding Options}" />
 		</Panel>
 		<Panel DockPanel.Dock="Bottom" Margin="3 2">
 			<TextBlock Text="{CompiledBinding StatusBarText}" />

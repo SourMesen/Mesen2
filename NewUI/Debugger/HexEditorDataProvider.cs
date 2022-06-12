@@ -15,6 +15,7 @@ namespace Mesen.Debugger
 		public int Length { get; private set; }
 
 		private MemoryType _memoryType;
+		private CpuType _cpuType;
 		private HexEditorConfig _cfg;
 		private AddressCounters[] _counters = Array.Empty<AddressCounters>();
 		private CdlFlags[]? _cdlData;
@@ -29,6 +30,7 @@ namespace Mesen.Debugger
 		public HexEditorDataProvider(MemoryType memoryType, HexEditorConfig cfg, TblByteCharConverter? tblConverter)
 		{
 			_memoryType = memoryType;
+			_cpuType = memoryType.ToCpuType();
 			_cfg = cfg;
 			_tblConverter = tblConverter;
 			Length = DebugApi.GetMemorySize(memoryType);
@@ -73,20 +75,23 @@ namespace Mesen.Debugger
 			_counters = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
 
 			_cdlData = null;
-			if(_cfg.DataHighlight.Highlight || _cfg.CodeHighlight.Highlight) {
-				switch(_memoryType) {
-					case MemoryType.SnesMemory:
-					case MemoryType.Sa1Memory:
-					case MemoryType.Cx4Memory:
-					case MemoryType.GsuMemory:
-					case MemoryType.GameboyMemory:
-					case MemoryType.NesMemory:
-					case MemoryType.SnesPrgRom:
-					case MemoryType.GbPrgRom:
-					case MemoryType.NesPrgRom:
-					case MemoryType.NesChrRom:
-						_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
-						break;
+			if(_memoryType.SupportsCdl()) {
+				if(_cfg.DataHighlight.Highlight || _cfg.CodeHighlight.Highlight || (_cpuType == CpuType.Nes && (_cfg.NesDrawnChrRomHighlight.Highlight || _cfg.NesPcmDataHighlight.Highlight))) {
+					switch(_memoryType) {
+						case MemoryType.SnesMemory:
+						case MemoryType.Sa1Memory:
+						case MemoryType.Cx4Memory:
+						case MemoryType.GsuMemory:
+						case MemoryType.GameboyMemory:
+						case MemoryType.NesMemory:
+						case MemoryType.NesPpuMemory:
+						case MemoryType.SnesPrgRom:
+						case MemoryType.GbPrgRom:
+						case MemoryType.NesPrgRom:
+						case MemoryType.NesChrRom:
+							_cdlData = DebugApi.GetCdlData((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
+							break;
+					}
 				}
 			}
 
@@ -145,12 +150,21 @@ namespace Mesen.Debugger
 
 			_byteInfo.BackColor = Colors.Transparent;
 			if(_cdlData != null) {
-				if(_cdlData[index].HasFlag(CdlFlags.Code) && _cfg.CodeHighlight.Highlight) {
-					//Code
-					_byteInfo.BackColor = _cfg.CodeHighlight.Color;
-				} else if(_cdlData[index].HasFlag(CdlFlags.Data) && _cfg.DataHighlight.Highlight) {
-					//Data
-					_byteInfo.BackColor = _cfg.DataHighlight.Color;
+				if(_memoryType.IsPpuMemory()) {
+					if(_cpuType == CpuType.Nes && _cdlData[index].HasFlag(CdlFlags.NesChrDrawn) && _cfg.NesDrawnChrRomHighlight.Highlight) {
+						_byteInfo.BackColor = _cfg.NesDrawnChrRomHighlight.Color;
+					}
+				} else {
+					if(_cpuType == CpuType.Nes && _cdlData[index].HasFlag(CdlFlags.NesPcmData) && _cfg.NesPcmDataHighlight.Highlight) {
+						//NES PCM data
+						_byteInfo.BackColor = _cfg.NesPcmDataHighlight.Color;
+					} else if(_cdlData[index].HasFlag(CdlFlags.Code) && _cfg.CodeHighlight.Highlight) {
+						//Code
+						_byteInfo.BackColor = _cfg.CodeHighlight.Color;
+					} else if(_cdlData[index].HasFlag(CdlFlags.Data) && _cfg.DataHighlight.Highlight) {
+						//Data
+						_byteInfo.BackColor = _cfg.DataHighlight.Color;
+					} 
 				}
 			}
 

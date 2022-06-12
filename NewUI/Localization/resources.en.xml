@@ -960,6 +960,8 @@
 			<Control ID="chkHighlightCode">Code</Control>
 			<Control ID="chkHighlightData">Data</Control>
 			<Control ID="chkHighlightLabel">Labels</Control>
+			<Control ID="chkHighlightNesPcmData">DPCM Data</Control>
+			<Control ID="chkHighlightNesDrawnChrRom">Drawn tiles (PPU)</Control>
 			<Control ID="chkHighlightBreakpoints">Breakpoints</Control>
 			<Control ID="chkHighDensityTextMode">Use high-density text</Control>
 			<Control ID="chkShowCharacters">Show characters</Control>

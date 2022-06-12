@@ -7,39 +7,40 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:dv="using:Mesen.Debugger.Views"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="410"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	Name="root"
-	x:DataType="cfg:HexEditorConfig"
+	x:DataType="dvm:MemoryToolsDisplayOptionsViewModel"
 	x:Class="Mesen.Debugger.Views.MemoryToolsDisplayOptionsView"
 >
 	<Design.DataContext>
-		<cfg:HexEditorConfig />
+		<dvm:MemoryToolsDisplayOptionsViewModel />
 	</Design.DataContext>
 
 	<StackPanel>
 		<c:OptionSection Header="{l:Translate lblAccessHighlight}" Margin="0">
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightRead}"
-				Checked="{CompiledBinding ReadHighlight.Highlight}"
-				Color="{CompiledBinding ReadHighlight.Color}"
+				Checked="{CompiledBinding Config.ReadHighlight.Highlight}"
+				Color="{CompiledBinding Config.ReadHighlight.Color}"
 			/>
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightWrite}"
-				Checked="{CompiledBinding WriteHighlight.Highlight}"
-				Color="{CompiledBinding WriteHighlight.Color}"
+				Checked="{CompiledBinding Config.WriteHighlight.Highlight}"
+				Color="{CompiledBinding Config.WriteHighlight.Color}"
 			/>
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightExec}"
-				Checked="{CompiledBinding ExecHighlight.Highlight}"
-				Color="{CompiledBinding ExecHighlight.Color}"
+				Checked="{CompiledBinding Config.ExecHighlight.Highlight}"
+				Color="{CompiledBinding Config.ExecHighlight.Color}"
 			/>
 			<WrapPanel>
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFadeSpeed}" />
 				<c:EnumComboBox
-					SelectedItem="{CompiledBinding FadeSpeed}"
+					SelectedItem="{CompiledBinding Config.FadeSpeed}"
 				/>
 			</WrapPanel>
 		</c:OptionSection>
@@ -47,22 +48,34 @@
 		<c:OptionSection Header="{l:Translate lblDataTypeHighlight}">
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightCode}"
-				Checked="{CompiledBinding CodeHighlight.Highlight}"
-				Color="{CompiledBinding CodeHighlight.Color}"
+				Checked="{CompiledBinding Config.CodeHighlight.Highlight}"
+				Color="{CompiledBinding Config.CodeHighlight.Color}"
 			/>
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightData}"
-				Checked="{CompiledBinding DataHighlight.Highlight}"
-				Color="{CompiledBinding DataHighlight.Color}"
+				Checked="{CompiledBinding Config.DataHighlight.Highlight}"
+				Color="{CompiledBinding Config.DataHighlight.Color}"
 			/>
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightLabel}"
-				Checked="{CompiledBinding LabelHighlight.Highlight}"
-				Color="{CompiledBinding LabelHighlight.Color}"
+				Checked="{CompiledBinding Config.LabelHighlight.Highlight}"
+				Color="{CompiledBinding Config.LabelHighlight.Color}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightNesPcmData}"
+				Checked="{CompiledBinding Config.NesPcmDataHighlight.Highlight}"
+				Color="{CompiledBinding Config.NesPcmDataHighlight.Color}"
+				IsVisible="{CompiledBinding ShowNesPcmDataOption}"
+			/>
+			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightNesDrawnChrRom}"
+				Checked="{CompiledBinding Config.NesDrawnChrRomHighlight.Highlight}"
+				Color="{CompiledBinding Config.NesDrawnChrRomHighlight.Color}"
+				IsVisible="{CompiledBinding ShowNesDrawnChrRomOption}"
 			/>
 			<CheckBox
 				Margin="16 0"
-				IsChecked="{CompiledBinding HighlightBreakpoints}"
+				IsChecked="{CompiledBinding Config.HighlightBreakpoints}"
 				Content="{l:Translate chkHighlightBreakpoints}"
 			/>
 		</c:OptionSection>
@@ -71,16 +84,16 @@
 			<StackPanel Orientation="Horizontal">
 				<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Columns: </TextBlock>
 				<ComboBox
-					SelectedItem="{CompiledBinding BytesPerRow}"
-					Items="{Binding AvailableWidths, ElementName=root}"
+					SelectedItem="{CompiledBinding Config.BytesPerRow}"
+					Items="{CompiledBinding AvailableWidths}"
 				/>
 			</StackPanel>
 			<CheckBox
-				IsChecked="{CompiledBinding HighDensityTextMode}"
+				IsChecked="{CompiledBinding Config.HighDensityTextMode}"
 				Content="{l:Translate chkHighDensityTextMode}"
 			/>
 			<CheckBox
-				IsChecked="{CompiledBinding ShowCharacters}"
+				IsChecked="{CompiledBinding Config.ShowCharacters}"
 				Content="{l:Translate chkShowCharacters}"
 			/>
 		</c:OptionSection>
