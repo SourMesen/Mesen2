@@ -29,6 +29,11 @@ void CodeDataLogger::Reset()
 	memset(_cdlData, 0, _memSize);
 }
 
+uint8_t* CodeDataLogger::GetRawData()
+{
+	return _cdlData;
+}
+
 uint32_t CodeDataLogger::GetSize()
 {
 	return _memSize;
@@ -50,17 +55,16 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 		if(fileSize >= _memSize) {
 			Reset();
 
-			constexpr int headerSize = 9; //"CDLv2" + 4-byte CRC32 value
 			if(memcmp(cdlData.data(), "CDLv2", 5) == 0) {
 				uint32_t savedCrc = cdlData[5] | (cdlData[6] << 8) | (cdlData[7] << 16) | (cdlData[8] << 24);
-				if((autoResetCdl && savedCrc != _romCrc32) || fileSize < _memSize + headerSize) {
-					memset(_cdlData, 0, _memSize);
-				} else {
-					memcpy(_cdlData, cdlData.data() + headerSize, _memSize);
+				if((!autoResetCdl || savedCrc == _romCrc32) && fileSize >= _memSize + CodeDataLogger::HeaderSize) {
+					memcpy(_cdlData, cdlData.data() + CodeDataLogger::HeaderSize, _memSize);
+					InternalLoadCdlFile(cdlData.data() + CodeDataLogger::HeaderSize, (uint32_t)cdlData.size() - CodeDataLogger::HeaderSize);
 				}
 			} else {
 				//Older CRC-less CDL file, use as-is without checking CRC to avoid data loss
 				memcpy(_cdlData, cdlData.data(), _memSize);
+				InternalLoadCdlFile(cdlData.data(), (uint32_t)cdlData.size());
 			}
 			
 			return true;
@@ -79,6 +83,7 @@ bool CodeDataLogger::SaveCdlFile(string cdlFilepath)
 		cdlFile.put((_romCrc32 >> 16) & 0xFF);
 		cdlFile.put((_romCrc32 >> 24) & 0xFF);
 		cdlFile.write((char*)_cdlData, _memSize);
+		InternalSaveCdlFile(cdlFile);
 		cdlFile.close();
 		return true;
 	}
@@ -90,7 +95,7 @@ string CodeDataLogger::GetCdlFilePath(string romName)
 	return FolderUtilities::CombinePath(FolderUtilities::GetDebuggerFolder(), FolderUtilities::GetFilename(romName, false) + ".cdl");
 }
 
-CdlRatios CodeDataLogger::GetRatios()
+CdlStatistics CodeDataLogger::GetStatistics()
 {
 	uint32_t codeSize = 0;
 	uint32_t dataSize = 0;
@@ -103,11 +108,11 @@ CdlRatios CodeDataLogger::GetRatios()
 		}
 	}
 
-	CdlRatios ratios;
-	ratios.CodeRatio = (float)codeSize / (float)_memSize;
-	ratios.DataRatio = (float)dataSize / (float)_memSize;
-	ratios.PrgRatio = (float)(codeSize + dataSize) / (float)_memSize;
-	return ratios;
+	CdlStatistics stats = {};
+	stats.CodeBytes = codeSize;
+	stats.DataBytes = dataSize;
+	stats.TotalBytes = _memSize;
+	return stats;
 }
 
 bool CodeDataLogger::IsCode(uint32_t absoluteAddr)

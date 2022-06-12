@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debugger\Base6502Assembler.h" />
+    <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
     <ClInclude Include="PCE\Debugger\PceAssembler.h" />
     <ClInclude Include="PCE\IPceMapper.h" />
     <ClInclude Include="PCE\PceArcadeCard.h" />

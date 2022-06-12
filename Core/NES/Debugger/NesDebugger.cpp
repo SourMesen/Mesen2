@@ -17,6 +17,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/Debugger/DummyNesCpu.h"
+#include "NES/Debugger/NesCodeDataLogger.h"
 #include "NES/Debugger/NesDebugger.h"
 #include "NES/Debugger/NesAssembler.h"
 #include "NES/Debugger/NesEventManager.h"
@@ -51,8 +52,12 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_dummyCpu.reset(new DummyNesCpu(_console));
 
+	if(_emu->GetMemory(MemoryType::NesChrRom).Size > 0) {
+		_chrRomCdl.reset(new CodeDataLogger(debugger, MemoryType::NesChrRom, _emu->GetMemory(MemoryType::NesChrRom).Size, CpuType::Nes, 0));
+	}
+
 	uint32_t crc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::NesPrgRom).Memory, _emu->GetMemory(MemoryType::NesPrgRom).Size);
-	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes, crc32));
+	_codeDataLogger.reset(new NesCodeDataLogger(debugger, MemoryType::NesPrgRom, _emu->GetMemory(MemoryType::NesPrgRom).Size, CpuType::Nes, crc32, _chrRomCdl.get()));
 
 	string cdlFile;
 	switch(_console->GetRomFormat()) {
@@ -62,13 +67,6 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	}
 	_cdlFile = _codeDataLogger->GetCdlFilePath(cdlFile);
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
-
-	if(_emu->GetMemory(MemoryType::NesChrRom).Size > 0) {
-		uint32_t chrCrc32 = CRC32::GetCRC((uint8_t*)_emu->GetMemory(MemoryType::NesChrRom).Memory, _emu->GetMemory(MemoryType::NesChrRom).Size);
-		_chrCdlFile = _codeDataLogger->GetCdlFilePath(FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".chr.cdl");
-		_chrRomCdl.reset(new CodeDataLogger(debugger, MemoryType::NesChrRom, _emu->GetMemory(MemoryType::NesChrRom).Size, CpuType::Nes, chrCrc32));
-		_chrRomCdl->LoadCdlFile(_chrCdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
-	}
 
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 
@@ -87,9 +85,6 @@ NesDebugger::NesDebugger(Debugger* debugger)
 NesDebugger::~NesDebugger()
 {
 	_codeDataLogger->SaveCdlFile(_cdlFile);
-	if(_chrRomCdl) {
-		_chrRomCdl->SaveCdlFile(_chrCdlFile);
-	}
 }
 
 void NesDebugger::Reset()

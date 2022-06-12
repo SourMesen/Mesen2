@@ -79,11 +79,18 @@ enum class CdlStripOption
 	StripUsed,
 };
 
-struct CdlRatios
+struct CdlStatistics
 {
-	float CodeRatio;
-	float DataRatio;
-	float PrgRatio;
+	uint32_t CodeBytes;
+	uint32_t DataBytes;
+	uint32_t TotalBytes;
+	
+	uint32_t JumpTargetCount;
+	uint32_t FunctionCount;
+
+	//CHR ROM (NES-specific)
+	uint32_t DrawnChrBytes;
+	uint32_t TotalChrBytes;
 };
 
 struct DisassemblyResult

@@ -61,32 +61,37 @@
 					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
 				</ScrollViewer>
 			</Panel>
-			<DockPanel DockPanel.Dock="Bottom" Height="20">
-				<Image
-					DockPanel.Dock="Left"
-					Source="/Assets/Breakpoint.png"
-					Stretch="None"
-					IsVisible="{CompiledBinding BreakReason.Length}"
-				/>
-				<TextBlock
-					DockPanel.Dock="Left"
-					Text="{CompiledBinding BreakReason}"
-					VerticalAlignment="Center"
-				/>
-				<TextBlock
-					DockPanel.Dock="Right"
-					Text="{CompiledBinding BreakElapsedCycles}"
-					VerticalAlignment="Center"
-					Margin="3 0"
-				/>
-				<Image
-					DockPanel.Dock="Right"
-					Source="/Assets/Speed.png"
-					Stretch="None"
-					IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
-				/>
-				<TextBlock />
-			</DockPanel>
+			<Grid DockPanel.Dock="Bottom" Height="20" RowDefinitions="20" ColumnDefinitions="1*,1*,1*">
+				<StackPanel Orientation="Horizontal" Grid.Column="0">
+					<Image
+						Source="/Assets/Breakpoint.png"
+						Stretch="None"
+						IsVisible="{CompiledBinding BreakReason.Length}"
+					/>
+					<TextBlock
+						Text="{CompiledBinding BreakReason}"
+						VerticalAlignment="Center"
+					/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+					<TextBlock
+						Text="{CompiledBinding CdlStats}"
+						VerticalAlignment="Center"
+					/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+					<Image
+						Source="/Assets/Speed.png"
+						Stretch="None"
+						IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
+					/>
+					<TextBlock
+						Text="{CompiledBinding BreakElapsedCycles}"
+						VerticalAlignment="Center"
+						Margin="3 0"
+					/>
+				</StackPanel>
+			</Grid>
 
 			<StackPanel DockPanel.Dock="Bottom" IsVisible="{CompiledBinding Config.ShowMemoryMappings}">
 				<dc:MemoryMappingViewer

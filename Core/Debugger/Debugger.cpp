@@ -631,6 +631,41 @@ void Debugger::MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uin
 	}
 }
 
+CdlStatistics Debugger::GetCdlStatistics(MemoryType memType)
+{
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	return cdl ? cdl->GetStatistics() : CdlStatistics{};
+}
+
+void Debugger::ResetCdl(MemoryType memType)
+{
+	DebugBreakHelper helper(this);
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		cdl->Reset();
+		RefreshCodeCache();
+	}
+}
+
+void Debugger::LoadCdlFile(MemoryType memType, char* cdlFile)
+{
+	DebugBreakHelper helper(this);
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		cdl->LoadCdlFile(cdlFile, false);
+		RefreshCodeCache();
+	}
+}
+
+void Debugger::SaveCdlFile(MemoryType memType, char* cdlFile)
+{
+	DebugBreakHelper helper(this);
+	CodeDataLogger* cdl = GetCodeDataLogger(memType);
+	if(cdl) {
+		cdl->SaveCdlFile(cdlFile);
+	}
+}
+
 void Debugger::RegisterCdl(MemoryType memType, CodeDataLogger* cdl)
 {
 	_codeDataLoggers[(int)memType] = cdl;

@@ -144,6 +144,10 @@ public:
 	int16_t GetCdlFlags(MemoryType memType, uint32_t addr);
 	void SetCdlData(MemoryType memType, uint8_t * cdlData, uint32_t length);
 	void MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uint8_t flags);
+	CdlStatistics GetCdlStatistics(MemoryType memType);
+	void ResetCdl(MemoryType memType);
+	void LoadCdlFile(MemoryType memType, char* cdlFile);
+	void SaveCdlFile(MemoryType memType, char* cdlFile);
 	void RegisterCdl(MemoryType memType, CodeDataLogger* cdl);
 
 	void RefreshCodeCache();

@@ -51,6 +51,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public string BreakReason { get; private set; } = "";
 		[Reactive] public string BreakElapsedCycles { get; private set; } = "";
+		[Reactive] public string CdlStats { get; private set; } = "";
 
 		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
 		
@@ -244,6 +245,8 @@ namespace Mesen.Debugger.ViewModels
 				BreakElapsedCycles = "";
 			}
 
+			UpdateCdlStats();
+
 			if(evt != null) {
 				string breakReason = "";
 				BreakEvent brkEvent = evt.Value;
@@ -263,6 +266,19 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				BreakReason = "";
 			}
+		}
+
+		private void UpdateCdlStats()
+		{
+			CdlStatistics stats = DebugApi.GetCdlStatistics(CpuType.GetPrgRomMemoryType());
+			string statsString = "";
+			if(stats.TotalBytes > 0) {
+				statsString = $"Code: {(double)stats.CodeBytes / stats.TotalBytes * 100:0.00}% Data: {(double)stats.DataBytes / stats.TotalBytes * 100:0.00}%";
+				if(stats.TotalChrBytes > 0) {
+					statsString += $" Drawn (CHR ROM): {(double)stats.DrawnChrBytes / stats.TotalChrBytes * 100:0.00}%";
+				}
+			}
+			CdlStats = statsString;
 		}
 
 		public void UpdateDisassembly(bool scrollToActiveAddress)
@@ -458,8 +474,9 @@ namespace Mesen.Debugger.ViewModels
 						ActionType = ActionType.ResetCdl,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ResetCdl),
 						OnClick = () => {
-							DebugApi.ResetCdl(CpuType.ToMemoryType());
+							DebugApi.ResetCdl(CpuType.GetPrgRomMemoryType());
 							Disassembly.Refresh();
+							UpdateCdlStats();
 						}
 					},
 					new ContextMenuSeparator(),
@@ -469,9 +486,9 @@ namespace Mesen.Debugger.ViewModels
 						OnClick = async () => {
 							string? filename = await FileDialogHelper.OpenFile(ConfigManager.DebuggerFolder, wnd, FileDialogHelper.CdlExt);
 							if(filename != null) {
-								byte[] data = File.ReadAllBytes(filename);
-								DebugApi.SetCdlData(CpuType.GetPrgRomMemoryType(), data, data.Length);
+								DebugApi.LoadCdlFile(CpuType.GetPrgRomMemoryType(), filename);
 								Disassembly.Refresh();
+								UpdateCdlStats();
 							}
 						}
 					},
@@ -481,8 +498,7 @@ namespace Mesen.Debugger.ViewModels
 						OnClick = async () => {
 							string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, EmuApi.GetRomInfo().GetRomName() + ".cdl", wnd, FileDialogHelper.CdlExt);
 							if(filename != null) {
-								CdlFlags[] data = DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(CpuType.GetPrgRomMemoryType()), CpuType.GetPrgRomMemoryType());
-								File.WriteAllBytes(filename, data.Cast<byte>().ToArray());
+								DebugApi.SaveCdlFile(CpuType.GetPrgRomMemoryType(), filename);
 							}
 						}
 					},

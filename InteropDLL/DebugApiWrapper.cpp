@@ -132,6 +132,10 @@ extern "C"
 	DllExport void __stdcall ResetMemoryAccessCounts() { WithDebugger(void, GetMemoryAccessCounter()->ResetCounts()); }
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
 
+	DllExport CdlStatistics __stdcall GetCdlStatistics(MemoryType memoryType) { return WithDebugger(CdlStatistics, GetCdlStatistics(memoryType)); }
+	DllExport void __stdcall ResetCdl(MemoryType memoryType) { WithDebugger(void, ResetCdl(memoryType)); }
+	DllExport void __stdcall SaveCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, SaveCdlFile(memoryType, cdlFile)); }
+	DllExport void __stdcall LoadCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, LoadCdlFile(memoryType, cdlFile)); }
 	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
 	DllExport void __stdcall SetCdlData(MemoryType memoryType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(memoryType, cdlData, length)); }
 	DllExport void __stdcall MarkBytesAs(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(memoryType, start, end, flags)); }

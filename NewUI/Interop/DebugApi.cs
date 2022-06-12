@@ -392,12 +392,6 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath, EntryPoint = "GetCdlData")] private static extern void GetCdlDataWrapper(UInt32 offset, UInt32 length, MemoryType memType, [In, Out] CdlFlags[] cdlData);
 
-		public static void ResetCdl(MemoryType memType)
-		{
-			byte[] data = new byte[DebugApi.GetMemorySize(memType)];
-			DebugApi.SetCdlData(memType, data, data.Length);
-		}
-
 		public static CdlFlags[] GetCdlData(UInt32 offset, UInt32 length, MemoryType memType)
 		{
 			CdlFlags[] cdlData = new CdlFlags[length];
@@ -410,8 +404,12 @@ namespace Mesen.Interop
 			return DebugApi.GetCdlData(0, (uint)DebugApi.GetMemorySize(cpuType.GetPrgRomMemoryType()), cpuType.GetPrgRomMemoryType());
 		}
 
+		[DllImport(DllPath)] public static extern void ResetCdl(MemoryType memType);
+		[DllImport(DllPath)] public static extern void SaveCdlFile(MemoryType memType, [MarshalAs(UnmanagedType.LPUTF8Str)] string cdlFile);
+		[DllImport(DllPath)] public static extern void LoadCdlFile(MemoryType memType, [MarshalAs(UnmanagedType.LPUTF8Str)] string cdlFile);
 		[DllImport(DllPath)] public static extern void SetCdlData(MemoryType memType, [In] byte[] cdlData, Int32 length);
 		[DllImport(DllPath)] public static extern void MarkBytesAs(MemoryType memType, UInt32 start, UInt32 end, CdlFlags type);
+		[DllImport(DllPath)] public static extern CdlStatistics GetCdlStatistics(MemoryType memType);
 
 		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.LPUTF8Str)] string code, UInt32 startAddress, [In, Out] Int16[] assembledCodeBuffer);
 		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)
@@ -1107,6 +1105,20 @@ namespace Mesen.Interop
 
 		NesChrDrawn = 0x01,
 		NesPcmData = 0x80
+	}
+
+	public struct CdlStatistics
+	{
+		public UInt32 CodeBytes;
+		public UInt32 DataBytes;
+		public UInt32 TotalBytes;
+
+		public UInt32 JumpTargetCount;
+		public UInt32 FunctionCount;
+
+		//CHR ROM (NES-specific)
+		public UInt32 DrawnChrBytes;
+		public UInt32 TotalChrBytes;
 	}
 
 	public struct ProfiledFunction

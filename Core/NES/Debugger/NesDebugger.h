@@ -57,7 +57,6 @@ class NesDebugger final : public IDebugger
 	unique_ptr<DummyNesCpu> _dummyCpu;
 
 	string _cdlFile;
-	string _chrCdlFile;
 
 	bool IsRegister(MemoryOperationInfo& op);
 

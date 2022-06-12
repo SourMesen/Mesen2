@@ -1832,6 +1832,9 @@
     <ClInclude Include="SNES\Debugger\SnesCodeDataLogger.h">
       <Filter>SNES\Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Debugger\NesCodeDataLogger.h">
+      <Filter>NES\Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
