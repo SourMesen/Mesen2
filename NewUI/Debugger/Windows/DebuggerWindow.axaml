@@ -61,10 +61,11 @@
 					<v:DebuggerOptionsView DataContext="{CompiledBinding Options}" />
 				</ScrollViewer>
 			</Panel>
-			<Grid DockPanel.Dock="Bottom" Height="20" RowDefinitions="20" ColumnDefinitions="1*,1*,1*">
+			<Grid DockPanel.Dock="Bottom" MinHeight="18" RowDefinitions="1*" ColumnDefinitions="1*,1*,1*">
 				<StackPanel Orientation="Horizontal" Grid.Column="0">
 					<Image
 						Source="/Assets/Breakpoint.png"
+						VerticalAlignment="Center"
 						Stretch="None"
 						IsVisible="{CompiledBinding BreakReason.Length}"
 					/>
@@ -82,6 +83,7 @@
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
 					<Image
 						Source="/Assets/Speed.png"
+						VerticalAlignment="Center"
 						Stretch="None"
 						IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
 					/>

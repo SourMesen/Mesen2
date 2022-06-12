@@ -27,7 +27,7 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Border BorderThickness="1" BorderBrush="LightGray">
+	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
 		<DataBox
 			Items="{CompiledBinding CallStackContent}"
 			Selection="{CompiledBinding Selection}"
