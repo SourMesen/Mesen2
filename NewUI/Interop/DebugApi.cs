@@ -411,6 +411,18 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void MarkBytesAs(MemoryType memType, UInt32 start, UInt32 end, CdlFlags type);
 		[DllImport(DllPath)] public static extern CdlStatistics GetCdlStatistics(MemoryType memType);
 
+		[DllImport(DllPath)] private static extern UInt32 GetCdlFunctions(MemoryType memType, IntPtr functions, UInt32 maxSize);
+		public unsafe static UInt32[] GetCdlFunctions(MemoryType memType)
+		{
+			UInt32[] functions = new UInt32[0x40000];
+			UInt32 count;
+			fixed(UInt32* functionPtr = functions) {
+				count = DebugApi.GetCdlFunctions(memType, (IntPtr)functionPtr, (UInt32)functions.Length);
+			}
+			Array.Resize(ref functions, (int)count);
+			return functions;
+		}
+
 		[DllImport(DllPath, EntryPoint = "AssembleCode")] private static extern UInt32 AssembleCodeWrapper(CpuType cpuType, [MarshalAs(UnmanagedType.LPUTF8Str)] string code, UInt32 startAddress, [In, Out] Int16[] assembledCodeBuffer);
 		public static Int16[] AssembleCode(CpuType cpuType, string code, UInt32 startAddress)
 		{

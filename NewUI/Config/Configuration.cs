@@ -77,6 +77,7 @@ namespace Mesen.Config
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
 				Gameboy.InitializeDefaults(DefaultKeyMappings);
+				PcEngine.InitializeDefaults(DefaultKeyMappings);
 				FirstRun = false;
 			}
 			Preferences.InitializeDefaultShortcuts();

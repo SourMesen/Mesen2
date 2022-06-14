@@ -314,6 +314,7 @@ namespace Mesen.Debugger.Utilities
 		ShowConsoleStatus,
 		ShowBreakpointList,
 		ShowWatchList,
+		ShowFunctionList,
 		ShowLabelList,
 		ShowCallStack,
 

@@ -10,20 +10,14 @@
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	Focusable="True"
-	x:DataType="vm:LabelListViewModel"
-	x:Class="Mesen.Debugger.Views.LabelListView"
+	x:DataType="vm:FunctionListViewModel"
+	x:Class="Mesen.Debugger.Views.FunctionListView"
 >
 	<Design.DataContext>
-		<vm:LabelListViewModel />
+		<vm:FunctionListViewModel />
 	</Design.DataContext>
 
 	<UserControl.Styles>
-		<Style Selector="DataBoxRow ToolTip TextBlock">
-			<Setter Property="FontFamily" Value="Consolas" />
-		</Style>
-		<Style Selector="DataBoxRow:selected DataBoxCell TextBlock ToolTip TextBlock">
-			<Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />
-		</Style>
 		<Style Selector="DataBoxRow TextBlock">
 			<Setter Property="Foreground" Value="{Binding RowBrush}" />
 			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
@@ -32,7 +26,7 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
 		<DataBox
-			Items="{CompiledBinding Labels}"
+			Items="{CompiledBinding Functions}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"
@@ -42,10 +36,9 @@
 			CellDoubleClick="OnCellDoubleClick"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Label" Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Function" Header="Function" Binding="{Binding LabelName}" Width="1*" CanUserResize="True" />
 				<DataBoxTextColumn ColumnName="RelAddr" Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
 				<DataBoxTextColumn ColumnName="AbsAddr" Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

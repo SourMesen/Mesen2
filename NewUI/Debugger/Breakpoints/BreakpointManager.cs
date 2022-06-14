@@ -82,6 +82,7 @@ namespace Mesen.Debugger
 					StartAddress = (uint)addr.Address,
 					EndAddress = (uint)addr.Address,
 					MemoryType = addr.Type,
+					CpuType = cpuType,
 					BreakOnExec = true,
 					BreakOnWrite = true,
 					BreakOnRead = true

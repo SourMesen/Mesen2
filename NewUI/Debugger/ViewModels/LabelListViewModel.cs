@@ -62,10 +62,10 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 
-					Compare("Label", () => a.Label.Label.CompareTo(b.Label.Label));
-					Compare("RelAddr", () => a.RelAddressDisplay.CompareTo(b.RelAddressDisplay));
-					Compare("AbsAddr", () => a.AbsAddressDisplay.CompareTo(b.AbsAddressDisplay));
-					Compare("Comment", () => a.Label.Comment.CompareTo(b.Label.Comment));
+					Compare("Label", () => string.Compare(a.Label.Label, b.Label.Label));
+					Compare("RelAddr", () => a.RelAddress.CompareTo(b.RelAddress));
+					Compare("AbsAddr", () => a.Label.Address.CompareTo(b.Label.Address));
+					Compare("Comment", () => string.CompareOrdinal(a.Label.Comment, b.Label.Comment));
 
 					if(result != 0) {
 						return result;
@@ -126,13 +126,13 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
-					ActionType = ActionType.AddBreakpoint,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_AddBreakpoint),
+					ActionType = ActionType.ToggleBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_ToggleBreakpoint),
 					IsEnabled = () => Selection.SelectedItems.Count == 1,
 					OnClick = () => {
 						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetAbsoluteAddress();
-							BreakpointManager.AddBreakpoint(addr, CpuType);
+							BreakpointManager.ToggleBreakpoint(addr, CpuType);
 						}
 					}
 				},

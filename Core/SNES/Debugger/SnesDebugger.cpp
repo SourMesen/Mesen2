@@ -15,6 +15,7 @@
 #include "SNES/Debugger/SnesEventManager.h"
 #include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
 #include "SNES/Debugger/SnesPpuTools.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -69,7 +70,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 		_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetCartridge()->GetGameboy() ? "SgbFirmware.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
 		_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
 	} else {
-		_cdl = (SnesCodeDataLogger*)_debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
+		_cdl = (SnesCodeDataLogger*)_debugger->GetCdlManager()->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));

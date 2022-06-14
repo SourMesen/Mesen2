@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "Debugger/Disassembler.h"
 #include "Debugger/DisassemblyInfo.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/LabelManager.h"
 #include "Debugger/MemoryDumper.h"
@@ -173,7 +174,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 		DisassemblerSource& src = GetSource(addrInfo.Type);
 		DisassemblyInfo disassemblyInfo = src.Cache[addrInfo.Address];
-		CodeDataLogger* cdl = _debugger->GetCodeDataLogger(addrInfo.Type);
+		CodeDataLogger* cdl = _debugger->GetCdlManager()->GetCodeDataLogger(addrInfo.Type);
 		uint8_t opSize = 0;
 
 		bool isCode = cdl ? cdl->IsCode(addrInfo.Address) : false;
@@ -334,7 +335,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 			DisassemblerSource& src = GetSource(row.Address.Type);
 			DisassemblyInfo disInfo = src.Cache[row.Address.Address];
 			CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
-
+			CdlManager* cdlManager = _debugger->GetCdlManager();
 			switch(lineCpuType) {
 				case CpuType::Snes:
 				case CpuType::Sa1:
@@ -343,7 +344,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					state.PC = (uint16_t)row.CpuAddress;
 					state.K = (row.CpuAddress >> 16);
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
+					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, state.PS, lineCpuType, row.Address.Type, _memoryDumper);
 					} else {
@@ -438,7 +439,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					GbCpuState state = (GbCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
+					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Gameboy, row.Address.Type, _memoryDumper);
 					} else {
@@ -456,7 +457,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					NesCpuState state = (NesCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
+					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Nes, row.Address.Type, _memoryDumper);
 					} else {
@@ -478,7 +479,7 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 					PceCpuState state = (PceCpuState&)_debugger->GetCpuStateRef(lineCpuType);
 					state.PC = (uint16_t)row.CpuAddress;
 
-					CodeDataLogger* cdl = _debugger->GetCodeDataLogger(row.Address.Type);
+					CodeDataLogger* cdl = cdlManager->GetCodeDataLogger(row.Address.Type);
 					if(!disInfo.IsInitialized()) {
 						disInfo = DisassemblyInfo(row.Address.Address, 0, CpuType::Pce, row.Address.Type, _memoryDumper);
 					} else {

@@ -90,7 +90,11 @@ void GbDebugger::ProcessInstruction()
 
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::GbPrgRom) {
-			_codeDataLogger->SetCode(addressInfo.Address);
+			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
+				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
+			} else {
+				_codeDataLogger->SetCode(addressInfo.Address);
+			}
 		}
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}

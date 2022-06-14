@@ -54,6 +54,8 @@ public:
 	void SetCdlData(uint8_t *cdlData, uint32_t length);
 	void GetCdlData(uint32_t offset, uint32_t length, uint8_t *cdlData);
 	uint8_t GetFlags(uint32_t addr);
+	
+	uint32_t GetFunctions(uint32_t functions[], uint32_t maxSize);
 
 	void MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags);
 	virtual void StripData(uint8_t* romBuffer, CdlStripOption flag);

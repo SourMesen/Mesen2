@@ -26,6 +26,7 @@ class PpuTools;
 class CodeDataLogger;
 class CallstackManager;
 class LabelManager;
+class CdlManager;
 class ScriptManager;
 class Breakpoint;
 class BaseEventManager;
@@ -56,7 +57,6 @@ private:
 	EmuSettings* _settings = nullptr;
 
 	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1] = {};
-	CodeDataLogger* _codeDataLoggers[(int)MemoryType::Register + 1] = {};
 
 	CpuType _mainCpuType = CpuType::Snes;
 	unordered_set<CpuType> _cpuTypes;
@@ -68,6 +68,7 @@ private:
 	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<Disassembler> _disassembler;
 	unique_ptr<LabelManager> _labelManager;
+	unique_ptr<CdlManager> _cdlManager;
 
 	unique_ptr<TraceLogFileSaver> _traceLogSaver;
 
@@ -140,18 +141,6 @@ public:
 
 	bool HasCpuType(CpuType cpuType);
 
-	void GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData);
-	int16_t GetCdlFlags(MemoryType memType, uint32_t addr);
-	void SetCdlData(MemoryType memType, uint8_t * cdlData, uint32_t length);
-	void MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uint8_t flags);
-	CdlStatistics GetCdlStatistics(MemoryType memType);
-	void ResetCdl(MemoryType memType);
-	void LoadCdlFile(MemoryType memType, char* cdlFile);
-	void SaveCdlFile(MemoryType memType, char* cdlFile);
-	void RegisterCdl(MemoryType memType, CodeDataLogger* cdl);
-
-	void RefreshCodeCache();
-
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
 	
 	void Log(string message);
@@ -162,18 +151,19 @@ public:
 	void ClearExecutionTrace();
 	uint32_t GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount);
 
-	TraceLogFileSaver* GetTraceLogFileSaver();
+	TraceLogFileSaver* GetTraceLogFileSaver() { return _traceLogSaver.get(); }
+	MemoryDumper* GetMemoryDumper() { return _memoryDumper.get(); }
+	MemoryAccessCounter* GetMemoryAccessCounter() { return _memoryAccessCounter.get(); }
+	Disassembler* GetDisassembler() { return _disassembler.get(); }
+	LabelManager* GetLabelManager() { return _labelManager.get(); }
+	CdlManager* GetCdlManager() { return _cdlManager.get(); }
+	ScriptManager* GetScriptManager() { return _scriptManager.get(); }
+	IConsole* GetConsole() { return _console; }
+	Emulator* GetEmulator() { return _emu; }
+
 	ITraceLogger* GetTraceLogger(CpuType cpuType);
-	MemoryDumper* GetMemoryDumper();
-	MemoryAccessCounter* GetMemoryAccessCounter();
-	CodeDataLogger* GetCodeDataLogger(MemoryType memType);
-	Disassembler* GetDisassembler();
 	PpuTools* GetPpuTools(CpuType cpuType);
 	BaseEventManager* GetEventManager(CpuType cpuType);
-	LabelManager* GetLabelManager();
-	ScriptManager* GetScriptManager();
 	CallstackManager* GetCallstackManager(CpuType cpuType);
-	IConsole* GetConsole();
-	Emulator* GetEmulator();
 	IAssembler* GetAssembler(CpuType cpuType);
 };

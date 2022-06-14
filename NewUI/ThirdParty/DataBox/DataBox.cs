@@ -190,7 +190,7 @@ public class DataBox : TemplatedControl
 	{
 		if(Selection.SelectedIndex >= 0 && Selection.SelectedItems.Count == 1) {
 			//When selection is changed and only 1 row is selected, move keyboard focus to that row
-			_rowsPresenter?.ItemContainerGenerator.ContainerFromIndex(Selection.SelectedIndex).Focus();
+			_rowsPresenter?.ItemContainerGenerator.ContainerFromIndex(Selection.SelectedIndex)?.Focus();
 		}
 	}
 

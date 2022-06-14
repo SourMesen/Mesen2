@@ -15,6 +15,8 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/TraceLogFileSaver.h"
+#include "Debugger/CdlManager.h"
+#include "Debugger/ITraceLogger.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
@@ -37,7 +39,6 @@
 #include "Shared/NotificationManager.h"
 #include "Shared/BaseState.h"
 #include "Shared/Emulator.h"
-#include "Debugger/ITraceLogger.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
@@ -67,6 +68,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
 	_scriptManager.reset(new ScriptManager(this));
 	_traceLogSaver.reset(new TraceLogFileSaver());
+	_cdlManager.reset(new CdlManager(this, _disassembler.get()));
 
 	for(CpuType type : _cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
@@ -94,7 +96,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_breakRequestCount = 0;
 	_suspendRequestCount = 0;
 
-	RefreshCodeCache();
+	_cdlManager->RefreshCodeCache();
 
 	if(_emu->IsPaused()) {
 		//Break on the current instruction if emulation was already paused
@@ -611,115 +613,6 @@ bool Debugger::HasCpuType(CpuType cpuType)
 	return _cpuTypes.find(cpuType) != _cpuTypes.end();
 }
 
-void Debugger::SetCdlData(MemoryType memType, uint8_t *cdlData, uint32_t length)
-{
-	DebugBreakHelper helper(this);
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		cdl->SetCdlData(cdlData, length);
-		RefreshCodeCache();
-	}
-}
-
-void Debugger::MarkBytesAs(MemoryType memType, uint32_t start, uint32_t end, uint8_t flags)
-{
-	DebugBreakHelper helper(this);
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		cdl->MarkBytesAs(start, end, flags);
-		RefreshCodeCache();
-	}
-}
-
-CdlStatistics Debugger::GetCdlStatistics(MemoryType memType)
-{
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	return cdl ? cdl->GetStatistics() : CdlStatistics{};
-}
-
-void Debugger::ResetCdl(MemoryType memType)
-{
-	DebugBreakHelper helper(this);
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		cdl->Reset();
-		RefreshCodeCache();
-	}
-}
-
-void Debugger::LoadCdlFile(MemoryType memType, char* cdlFile)
-{
-	DebugBreakHelper helper(this);
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		cdl->LoadCdlFile(cdlFile, false);
-		RefreshCodeCache();
-	}
-}
-
-void Debugger::SaveCdlFile(MemoryType memType, char* cdlFile)
-{
-	DebugBreakHelper helper(this);
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		cdl->SaveCdlFile(cdlFile);
-	}
-}
-
-void Debugger::RegisterCdl(MemoryType memType, CodeDataLogger* cdl)
-{
-	_codeDataLoggers[(int)memType] = cdl;
-}
-
-void Debugger::RefreshCodeCache()
-{
-	_disassembler->ResetPrgCache();
-	
-	for(CodeDataLogger* cdl : _codeDataLoggers) {
-		if(cdl) {
-			cdl->RebuildPrgCache(_disassembler.get());
-		}
-	}
-}
-
-void Debugger::GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData)
-{
-	CodeDataLogger* cdl = GetCodeDataLogger(memoryType);
-	if(cdl) {
-		cdl->GetCdlData(offset, length, cdlData);
-	} else {
-		AddressInfo relAddress;
-		relAddress.Type = memoryType;
-		for(uint32_t i = 0; i < length; i++) {
-			relAddress.Address = offset + i;
-			AddressInfo info = GetAbsoluteAddress(relAddress);
-			if(info.Address >= 0) {
-				cdl = GetCodeDataLogger(info.Type);
-				cdlData[i] = cdl ? cdl->GetFlags(info.Address) : 0;
-			} else {
-				cdlData[i] = 0;
-			}
-		}
-	}
-}
-
-int16_t Debugger::GetCdlFlags(MemoryType memType, uint32_t addr)
-{
-	CodeDataLogger* cdl = GetCodeDataLogger(memType);
-	if(cdl) {
-		return cdl->GetFlags(addr);
-	} else {
-		if(DebugUtilities::IsRelativeMemory(memType)) {
-			AddressInfo info = GetAbsoluteAddress({ (int32_t)addr, memType });
-			if(info.Address >= 0) {
-				cdl = GetCodeDataLogger(info.Type);
-				return cdl ? cdl->GetFlags(info.Address) : -1;
-			}
-		}
-	}
-	return -1;
-}
-
 void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 {
 	DebugBreakHelper helper(this);
@@ -837,31 +730,6 @@ uint32_t Debugger::GetExecutionTrace(TraceRow output[], uint32_t startOffset, ui
 	return count;
 }
 
-TraceLogFileSaver* Debugger::GetTraceLogFileSaver()
-{
-	return _traceLogSaver.get();
-}
-
-MemoryDumper* Debugger::GetMemoryDumper()
-{
-	return _memoryDumper.get();
-}
-
-MemoryAccessCounter* Debugger::GetMemoryAccessCounter()
-{
-	return _memoryAccessCounter.get();
-}
-
-CodeDataLogger* Debugger::GetCodeDataLogger(MemoryType memType)
-{
-	return _codeDataLoggers[(int)memType];
-}
-
-Disassembler* Debugger::GetDisassembler()
-{
-	return _disassembler.get();
-}
-
 PpuTools* Debugger::GetPpuTools(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
@@ -878,32 +746,12 @@ BaseEventManager* Debugger::GetEventManager(CpuType cpuType)
 	return nullptr;
 }
 
-LabelManager* Debugger::GetLabelManager()
-{
-	return _labelManager.get();
-}
-
-ScriptManager* Debugger::GetScriptManager()
-{
-	return _scriptManager.get();
-}
-
 CallstackManager* Debugger::GetCallstackManager(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
 		return _debuggers[(int)cpuType].Debugger->GetCallstackManager();
 	}
 	return nullptr;
-}
-
-IConsole* Debugger::GetConsole()
-{
-	return _console;
-}
-
-Emulator* Debugger::GetEmulator()
-{
-	return _emu;
 }
 
 IAssembler* Debugger::GetAssembler(CpuType cpuType)

@@ -3,6 +3,7 @@
 #include "Core/Debugger/Debugger.h"
 #include "Core/Debugger/MemoryDumper.h"
 #include "Core/Debugger/MemoryAccessCounter.h"
+#include "Core/Debugger/CdlManager.h"
 #include "Core/Debugger/Disassembler.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Core/Debugger/Breakpoint.h"
@@ -132,13 +133,14 @@ extern "C"
 	DllExport void __stdcall ResetMemoryAccessCounts() { WithDebugger(void, GetMemoryAccessCounter()->ResetCounts()); }
 	DllExport void __stdcall GetMemoryAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters* counts) { WithDebugger(void, GetMemoryAccessCounter()->GetAccessCounts(offset, length, memoryType, counts)); }
 
-	DllExport CdlStatistics __stdcall GetCdlStatistics(MemoryType memoryType) { return WithDebugger(CdlStatistics, GetCdlStatistics(memoryType)); }
-	DllExport void __stdcall ResetCdl(MemoryType memoryType) { WithDebugger(void, ResetCdl(memoryType)); }
-	DllExport void __stdcall SaveCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, SaveCdlFile(memoryType, cdlFile)); }
-	DllExport void __stdcall LoadCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, LoadCdlFile(memoryType, cdlFile)); }
-	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlData(offset, length, memoryType, cdlData)); }
-	DllExport void __stdcall SetCdlData(MemoryType memoryType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, SetCdlData(memoryType, cdlData, length)); }
-	DllExport void __stdcall MarkBytesAs(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, MarkBytesAs(memoryType, start, end, flags)); }
+	DllExport CdlStatistics __stdcall GetCdlStatistics(MemoryType memoryType) { return WithDebugger(CdlStatistics, GetCdlManager()->GetCdlStatistics(memoryType)); }
+	DllExport uint32_t __stdcall GetCdlFunctions(MemoryType memoryType, uint32_t functions[], uint32_t maxSize) { return WithDebugger(uint32_t, GetCdlManager()->GetCdlFunctions(memoryType, functions, maxSize)); }
+	DllExport void __stdcall ResetCdl(MemoryType memoryType) { WithDebugger(void, GetCdlManager()->ResetCdl(memoryType)); }
+	DllExport void __stdcall SaveCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, GetCdlManager()->SaveCdlFile(memoryType, cdlFile)); }
+	DllExport void __stdcall LoadCdlFile(MemoryType memoryType, char* cdlFile) { WithDebugger(void, GetCdlManager()->LoadCdlFile(memoryType, cdlFile)); }
+	DllExport void __stdcall GetCdlData(uint32_t offset, uint32_t length, MemoryType memoryType, uint8_t* cdlData) { WithDebugger(void, GetCdlManager()->GetCdlData(offset, length, memoryType, cdlData)); }
+	DllExport void __stdcall SetCdlData(MemoryType memoryType, uint8_t* cdlData, uint32_t length) { WithDebugger(void, GetCdlManager()->SetCdlData(memoryType, cdlData, length)); }
+	DllExport void __stdcall MarkBytesAs(MemoryType memoryType, uint32_t start, uint32_t end, uint8_t flags) { WithDebugger(void, GetCdlManager()->MarkBytesAs(memoryType, start, end, flags)); }
 
 	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t* source, uint32_t srcSize, uint32_t* colors, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetTileView(options, source, srcSize, colors, buffer)); }
 

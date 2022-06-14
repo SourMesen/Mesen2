@@ -136,6 +136,20 @@ namespace Mesen.Interop
 			};
 		}
 
+		public static bool SupportsFunctionList(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Snes:
+				case CpuType.Sa1:
+				case CpuType.Gameboy:
+				case CpuType.Nes:
+				case CpuType.Pce:
+					return true;
+
+				default:
+					return false;
+			};
+		}
 		public static bool SupportsMemoryMappings(this CpuType cpuType)
 		{
 			switch(cpuType) {

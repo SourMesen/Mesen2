@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "Cx4Debugger.h"
+#include "SNES/Debugger/Cx4Debugger.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
 #include "Debugger/CallstackManager.h"
@@ -23,7 +24,7 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCdlManager()->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_cx4 = console->GetCartridge()->GetCx4();

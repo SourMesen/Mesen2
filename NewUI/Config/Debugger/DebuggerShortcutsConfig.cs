@@ -162,11 +162,16 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Add, KeyBinding = new(Key.Insert) });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Edit, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Delete, KeyBinding = new(Key.Delete) });
-			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddBreakpoint, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.LabelList_ToggleBreakpoint, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_AddToWatch, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_FindOccurrences, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_ViewInMemoryViewer, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_GoToLocation, KeyBinding = new() });
+
+			Add(new() { Shortcut = DebuggerShortcut.FunctionList_EditLabel, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.FunctionList_ToggleBreakpoint, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.FunctionList_ViewInMemoryViewer, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.FunctionList_GoToLocation, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Edit, KeyBinding = new(Key.F2) });
@@ -300,11 +305,15 @@ namespace Mesen.Config
 		LabelList_Add,
 		LabelList_Edit,
 		LabelList_Delete,
-		LabelList_AddBreakpoint,
+		LabelList_ToggleBreakpoint,
 		LabelList_AddToWatch,
 		LabelList_FindOccurrences,
 		LabelList_ViewInMemoryViewer,
 		LabelList_GoToLocation,
+		FunctionList_EditLabel,
+		FunctionList_ToggleBreakpoint,
+		FunctionList_GoToLocation,
+		FunctionList_ViewInMemoryViewer,
 		BreakpointList_Add,
 		BreakpointList_Edit,
 		BreakpointList_GoToLocation,

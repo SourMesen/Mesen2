@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Debugger/PpuTools.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Shared/SettingTypes.h"
@@ -220,7 +221,7 @@ bool PpuTools::IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOption
 		return false;
 	}
 
-	int16_t cdlFlags = _debugger->GetCdlFlags(memType, addr);
+	int16_t cdlFlags = _debugger->GetCdlManager()->GetCdlFlags(memType, addr);
 	return (
 		(cdlFlags == 0 && options.Filter == TileFilter::HideUnused) ||
 		(cdlFlags > 0 && options.Filter == TileFilter::HideUsed)

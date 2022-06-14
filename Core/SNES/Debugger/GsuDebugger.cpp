@@ -6,6 +6,7 @@
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Debugger/SnesCodeDataLogger.h"
 #include "SNES/Debugger/TraceLogger/GsuTraceLogger.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
 #include "Debugger/CallstackManager.h"
@@ -23,7 +24,7 @@ GsuDebugger::GsuDebugger(Debugger* debugger)
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 
 	_debugger = debugger;
-	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCodeDataLogger(MemoryType::SnesPrgRom);
+	_codeDataLogger = (SnesCodeDataLogger*)debugger->GetCdlManager()->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_gsu = console->GetCartridge()->GetGsu();

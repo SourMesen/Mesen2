@@ -42,6 +42,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public WatchListViewModel WatchList { get; private set; }
 		[Reactive] public BaseConsoleStatusViewModel? ConsoleStatus { get; private set; }
 		[Reactive] public LabelListViewModel LabelList { get; private set; }
+		[Reactive] public FunctionListViewModel? FunctionList { get; private set; }
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
 		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
 		[Reactive] public MemoryMappingViewModel? MemoryMappings { get; private set; }
@@ -97,6 +98,9 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly = new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
 			LabelList = new LabelListViewModel(CpuType, Disassembly);
+			if(CpuType.SupportsFunctionList()) {
+				FunctionList = new FunctionListViewModel(CpuType, Disassembly);
+			}
 			CallStack = new CallStackViewModel(CpuType, Disassembly);
 			WatchList = new WatchListViewModel(CpuType);
 			ConsoleStatus = CpuType switch {
@@ -116,14 +120,19 @@ namespace Mesen.Debugger.ViewModels
 
 			DockFactory.BreakpointListTool.Model = BreakpointList;
 			DockFactory.LabelListTool.Model = LabelList;
+			DockFactory.FunctionListTool.Model = FunctionList;
 			DockFactory.CallStackTool.Model = CallStack;
 			DockFactory.WatchListTool.Model = WatchList;
 			DockFactory.DisassemblyTool.Model = Disassembly;
 			DockFactory.SourceViewTool.Model = null;
 			DockFactory.StatusTool.Model = ConsoleStatus;
-			
+
 			DockLayout = DockFactory.CreateLayout();
 			DockFactory.InitLayout(DockLayout);
+
+			if(FunctionList == null) {
+				DockFactory.CloseDockable(DockFactory.FunctionListTool);
+			}
 
 			if(Design.IsDesignMode) {
 				return;
@@ -155,6 +164,7 @@ namespace Mesen.Debugger.ViewModels
 			WatchList.UpdateWatch();
 			CallStack.UpdateCallStack();
 			LabelList.UpdateLabelList();
+			FunctionList?.UpdateFunctionList();
 			BreakpointList.UpdateBreakpoints();
 		}
 
@@ -207,6 +217,7 @@ namespace Mesen.Debugger.ViewModels
 			LabelList.UpdateLabelList();
 			BreakpointList.RefreshBreakpointList();
 			CallStack.RefreshCallStack();
+			FunctionList?.UpdateFunctionList();
 			Disassembly.Refresh();
 		}
 
@@ -231,6 +242,7 @@ namespace Mesen.Debugger.ViewModels
 			MemoryMappings?.Refresh();
 			BreakpointList.RefreshBreakpointList();
 			LabelList.RefreshLabelList();
+			FunctionList?.UpdateFunctionList();
 			WatchList.UpdateWatch();
 			CallStack.UpdateCallStack();
 		}
@@ -394,6 +406,12 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.ShowCallStack,
 					IsSelected = () => IsToolVisible(DockFactory.CallStackTool),
 					OnClick = () => ToggleTool(DockFactory.CallStackTool)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowFunctionList,
+					IsVisible = () => FunctionList != null,
+					IsSelected = () => IsToolVisible(DockFactory.FunctionListTool),
+					OnClick = () => ToggleTool(DockFactory.FunctionListTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowLabelList,

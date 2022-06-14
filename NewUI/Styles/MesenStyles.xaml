@@ -507,6 +507,23 @@
 
 	<StyleInclude Source="/Styles/DataBoxStyles.xaml" />
 
+	<!-- Make dock title and tabs smaller -->
+	<Style Selector="DockControl TabStripItem">
+		<Setter Property="MinHeight" Value="0" />
+	</Style>
+	<Style Selector="DockControl TabStripItem ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Padding" Value="4 0 4 0" />
+	</Style>
+	<Style Selector="DockControl TabStripItem StackPanel#DragTool">
+		<Setter Property="Margin" Value="-2 -2 -2 -2" />
+	</Style>
+	<Style Selector="ToolChromeControl Grid#PART_Grip TextBlock">
+		<Setter Property="Margin" Value="0 2 8 2" />
+	</Style>
+	<Style Selector="ToolChromeControl Button">
+		<Setter Property="Height" Value="16" />
+	</Style>
+	
 	<Style Selector="TabControl[TabStripPlacement=Left] TabControl[TabStripPlacement=Top]">
 		<Setter Property="Template">
 			<ControlTemplate>

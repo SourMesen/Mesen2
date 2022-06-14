@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/CodeDataLogger.h"
+#include "Debugger/CdlManager.h"
 #include "Debugger/Disassembler.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -16,7 +17,7 @@ CodeDataLogger::CodeDataLogger(Debugger* debugger, MemoryType memType, uint32_t 
 	_cdlData = new uint8_t[memSize];
 	Reset();
 
-	debugger->RegisterCdl(memType, this);
+	debugger->GetCdlManager()->RegisterCdl(memType, this);
 }
 
 CodeDataLogger::~CodeDataLogger()
@@ -150,6 +151,22 @@ void CodeDataLogger::GetCdlData(uint32_t offset, uint32_t length, uint8_t *cdlDa
 uint8_t CodeDataLogger::GetFlags(uint32_t addr)
 {
 	return _cdlData[addr];
+}
+
+uint32_t CodeDataLogger::GetFunctions(uint32_t functions[], uint32_t maxSize)
+{
+	uint32_t count = 0;
+	for(int i = 0, len = _memSize; i < len; i++) {
+		if(IsSubEntryPoint(i)) {
+			functions[count] = i;
+			count++;
+
+			if(count == maxSize) {
+				break;
+			}
+		}
+	}
+	return count;
 }
 
 void CodeDataLogger::MarkBytesAs(uint32_t start, uint32_t end, uint8_t flags)
