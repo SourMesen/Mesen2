@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Controls
 {
-	public class MemoryMappingBlock
+	public record class MemoryMappingBlock
 	{
 		public string Name = "";
 		public int Length;

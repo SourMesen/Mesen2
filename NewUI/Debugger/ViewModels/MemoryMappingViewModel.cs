@@ -34,13 +34,29 @@ namespace Mesen.Debugger.ViewModels
 		{
 			if(_cpuType == CpuType.Nes) {
 				NesCartridgeState state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes).Cartridge;
-				CpuMappings = GetNesCpuMappings(state);
-				PpuMappings = GetNesPpuMappings(state);
+				CpuMappings = UpdateMappings(CpuMappings, GetNesCpuMappings(state));
+				PpuMappings = UpdateMappings(PpuMappings, GetNesPpuMappings(state));
 			} else if(_cpuType == CpuType.Gameboy) {
-				CpuMappings = GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy));
+				CpuMappings = UpdateMappings(CpuMappings, GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy)));
 			} else if(_cpuType == CpuType.Pce) {
-				CpuMappings = GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager);
+				CpuMappings = UpdateMappings(CpuMappings, GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager));
 			}
+		}
+
+		private List<MemoryMappingBlock> UpdateMappings(List<MemoryMappingBlock>? oldMappings, List<MemoryMappingBlock> newMappings)
+		{
+			//Only update the mappings if the new mappings are not the same as the old ones (for performance)
+			if(oldMappings?.Count != newMappings.Count) {
+				return newMappings;
+			}
+
+			for(int i = 0; i < oldMappings.Count; i++) {
+				if(oldMappings[i] != newMappings[i]) {
+					return newMappings;
+				}
+			}
+
+			return oldMappings;
 		}
 
 		private List<MemoryMappingBlock> GetNesCpuMappings(NesCartridgeState state)
