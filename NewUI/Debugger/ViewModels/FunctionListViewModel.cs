@@ -55,7 +55,7 @@ namespace Mesen.Debugger.ViewModels
 			List<FunctionViewModel> sortedFunctions = DebugApi.GetCdlFunctions(CpuType.GetPrgRomMemoryType()).Select(f => new FunctionViewModel(new AddressInfo() { Address = (int)f, Type = prgMemType }, CpuType)).ToList();
 
 			Dictionary<string, Func<FunctionViewModel, FunctionViewModel, int>> comparers = new() {
-				{ "Label", (a, b) => string.Compare(a.LabelName, b.LabelName, StringComparison.OrdinalIgnoreCase) },
+				{ "Function", (a, b) => string.Compare(a.LabelName, b.LabelName, StringComparison.OrdinalIgnoreCase) },
 				{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
 				{ "AbsAddr", (a, b) => a.AbsAddress.CompareTo(b.AbsAddress) },
 			};
