@@ -23,7 +23,7 @@
 				Name="TextEditor"
 				IsReadOnly="True"
 				TextBinding="{CompiledBinding SelectedFile.FileData}"
-				FontFamily="{CompiledBinding Font.FontFamilyObject}"
+				FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
 				FontSize="{CompiledBinding Font.FontSize}"
 			/>
 		</Border>

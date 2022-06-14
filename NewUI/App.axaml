@@ -3,10 +3,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
 	x:Class="Mesen.App"
 >
 	<Application.Resources>
 		<l:EnumConverter x:Key="Enum" />
+		<u:FontNameConverter x:Key="FontNameConverter" />
 	</Application.Resources>
 	
 	<Application.DataTemplates>

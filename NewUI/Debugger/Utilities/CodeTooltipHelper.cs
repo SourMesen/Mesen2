@@ -75,7 +75,7 @@ namespace Mesen.Debugger.Utilities
 
 		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo codeSegment, int address)
 		{
-			FontFamily monoFont = ConfigManager.Config.Debug.Font.FontFamilyObject;
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 			bool isCode = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
 
@@ -90,7 +90,7 @@ namespace Mesen.Debugger.Utilities
 
 		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, int address, CodeLabel? label)
 		{
-			FontFamily monoFont = ConfigManager.Config.Debug.Font.FontFamilyObject;
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 			int byteValue = DebugApi.GetMemoryValue(memType, (uint)address);
 			int wordValue = (DebugApi.GetMemoryValue(memType, (uint)address + 1) << 8) | byteValue;

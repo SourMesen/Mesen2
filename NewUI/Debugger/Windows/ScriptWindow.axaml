@@ -51,7 +51,7 @@
 					Name="Editor"
 					ShowLineNumbers="True"
 					TextBinding="{CompiledBinding Code}"
-					FontFamily="{CompiledBinding Font.FontFamilyObject}"
+					FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
 					FontSize="{CompiledBinding Font.FontSize}"
 				/>
 			</Border>
