@@ -35,6 +35,23 @@
 			<Setter Property="MinHeight" Value="0" />
 		</Style>
 	</Window.Styles>
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="{x:Type vm:MemoryMappingViewModel}">
+			<StackPanel>
+				<dc:MemoryMappingViewer
+					Margin="2 1"
+					IsVisible="{CompiledBinding CpuMappings.Count}"
+					Mappings="{CompiledBinding CpuMappings}"
+				/>
+				<dc:MemoryMappingViewer
+					Margin="2 1"
+					IsVisible="{CompiledBinding PpuMappings.Count}"
+					Mappings="{CompiledBinding PpuMappings}"
+				/>
+			</StackPanel>
+		</DataTemplate>
+	</Window.DataTemplates>
 	
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
@@ -95,18 +112,11 @@
 				</StackPanel>
 			</Grid>
 
-			<StackPanel DockPanel.Dock="Bottom" IsVisible="{CompiledBinding Config.ShowMemoryMappings}">
-				<dc:MemoryMappingViewer
-					Margin="2 1"
-					IsVisible="{CompiledBinding MemoryMappings.CpuMappings.Count}"
-					Mappings="{CompiledBinding MemoryMappings.CpuMappings}"
-				/>
-				<dc:MemoryMappingViewer
-					Margin="2 1"
-					IsVisible="{CompiledBinding MemoryMappings.PpuMappings.Count}"
-					Mappings="{CompiledBinding MemoryMappings.PpuMappings}"
-				/>
-			</StackPanel>
+			<ContentControl
+				Content="{CompiledBinding MemoryMappings}"
+				IsVisible="{CompiledBinding Config.ShowMemoryMappings}"
+				DockPanel.Dock="Bottom"
+		  />
 			
 			<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
 		</DockPanel>
