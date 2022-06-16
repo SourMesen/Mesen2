@@ -27,6 +27,8 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			_viewerModel = viewerModel;
 
+			Activated += MemorySearchWindow_Activated;
+
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
@@ -56,6 +58,12 @@ namespace Mesen.Debugger.Windows
 					OnClick = () => _viewerModel.Find(SearchDirection.Forward)
 				},
 			});
+		}
+
+		private void MemorySearchWindow_Activated(object? sender, EventArgs e)
+		{
+			this.FindControl<TextBox>("txtValue").Focus();
+			this.FindControl<TextBox>("txtValue").SelectAll();
 		}
 
 		private void FindPrev_OnClick(object sender, RoutedEventArgs e)
