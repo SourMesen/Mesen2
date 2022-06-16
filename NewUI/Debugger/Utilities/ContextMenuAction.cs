@@ -658,5 +658,12 @@ namespace Mesen.Debugger.Utilities
 		GenerateRom,
 		CdlRomStripUnused,
 		CdlRomStripUsed,
+
+		[IconFile("Find")]
+		Find,
+		[IconFile("NextArrow")]
+		FindNext,
+		[IconFile("PreviousArrow")]
+		FindPrev,
 	}
 }

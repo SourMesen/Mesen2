@@ -35,6 +35,12 @@ namespace Mesen.Utilities
 			child.Show();
 		}
 
+		public static void ShowCenteredWithParent(this Window child, Window parent)
+		{
+			CenterWindow(child, parent);
+			child.Show(parent);
+		}
+
 		public static Task ShowCenteredDialog(this Window child, IRenderRoot? parent)
 		{
 			if(parent is Control c) {

@@ -966,7 +966,30 @@
 			<Control ID="chkHighDensityTextMode">Use high-density text</Control>
 			<Control ID="chkShowCharacters">Show characters</Control>
 		</Form>
-		
+		<Form ID="MemorySearchWindow">
+			<Control ID="wndTitle">Find...</Control>
+			<Control ID="lblSearch">Search:</Control>
+			<Control ID="lblDataType">Data Type:</Control>
+			<Control ID="lblIntType">Format:</Control>
+			<Control ID="chkCaseSensitive">Case sensitive</Control>
+			<Control ID="chkUseTblMappings">Use TBL mappings</Control>
+			<Control ID="lblDataTypeFilters">Data Type Filters</Control>
+			<Control ID="chkFilterCode">Code</Control>
+			<Control ID="chkFilterData">Data</Control>
+			<Control ID="chkFilterUnidentified">Unidentified</Control>
+			<Control ID="lblAccessFilters">Access Filters</Control>
+			<Control ID="chkFilterNotAccessed">Not accessed</Control>
+			<Control ID="chkFilterRead">Read</Control>
+			<Control ID="chkFilterWrite">Written</Control>
+			<Control ID="chkFilterExec">Executed</Control>
+			<Control ID="chkFilterTimeSpan">In the last</Control>
+			<Control ID="lblFrames">frames</Control>
+
+			<Control ID="lblNoMatchFound">No match found!</Control>
+			<Control ID="btnFindPrev">Previous</Control>
+			<Control ID="btnFindNext">Next</Control>
+			<Control ID="btnClose">Close</Control>
+		</Form>
 		<Form ID="FontOptionsView">
 			<Control ID="lblFamily">Family: </Control>
 			<Control ID="lblSize">Size: </Control>
@@ -2004,6 +2027,17 @@
 			<Value ID="Normal">Normal</Value>
 			<Value ID="Fast">Fast</Value>
 		</Enum>
+		<Enum ID="SearchDataType">
+			<Value ID="Hex">Hexadecimal</Value>
+			<Value ID="String">String</Value>
+			<Value ID="Integer">Integer</Value>
+		</Enum>
+		<Enum ID="SearchIntType">
+			<Value ID="IntAuto">Any size</Value>
+			<Value ID="Int8">8-bit integer</Value>
+			<Value ID="Int16">16-bit integer</Value>
+			<Value ID="Int32">32-bit integer</Value>
+		</Enum>
 		<Enum ID="CodeDisplayMode">
 			<Value ID="Hide">Hide</Value>
 			<Value ID="Show">Show</Value>
@@ -2445,6 +2479,10 @@
 			<Value ID="GenerateRom">Generate ROM...</Value>
 			<Value ID="CdlRomStripUnused">Strip unused data</Value>
 			<Value ID="CdlRomStripUsed">Strip used data</Value>
+
+			<Value ID="Find">Find...</Value>
+			<Value ID="FindNext">Find next</Value>
+			<Value ID="FindPrev">Find previous</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -786,7 +786,7 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.OpenMemoryTools,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenMemoryTools),
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()))
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new MemoryToolsWindow())
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenRegisterViewer,

@@ -17,7 +17,7 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
 	x:Class="Mesen.Debugger.Windows.RegisterViewerWindow"
 	Icon="/Assets/RegisterIcon.png"
-	Width="700" Height="500"
+	Width="400" Height="500"
 	x:DataType="vm:RegisterViewerWindowViewModel"
 	Title="{l:Translate wndTitle}"
 >
@@ -57,10 +57,10 @@
 							GridLinesVisibility="All"
 						>
 							<DataBox.Columns>
-								<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="1*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="2*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="1*" CanUserResize="True" />
+								<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="1*" CanUserResize="True" />
 							</DataBox.Columns>
 						</DataBox>
 					</Border>

@@ -327,6 +327,9 @@
     <Compile Update="Debugger\StatusViews\NesStatusView.axaml.cs">
       <DependentUpon>NesStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\MemorySearchWindow.axaml.cs">
+      <DependentUpon>MemorySearchWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\BreakOnWindow.axaml.cs">
       <DependentUpon>BreakOnWindow.axaml</DependentUpon>
     </Compile>

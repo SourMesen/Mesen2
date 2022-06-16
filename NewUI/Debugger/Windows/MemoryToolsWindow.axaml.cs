@@ -23,19 +23,16 @@ namespace Mesen.Debugger.Windows
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;
 
-		[Obsolete("For designer only")]
-		public MemoryToolsWindow() : this(new MemoryToolsViewModel()) { }
-
-		public MemoryToolsWindow(MemoryToolsViewModel model)
+		public MemoryToolsWindow()
 		{
 			InitializeComponent();
 #if DEBUG
 			this.AttachDevTools();
 #endif
 
-			_model = model;
-			DataContext = model;
 			_editor = this.FindControl<HexEditor>("Hex");
+			_model = new MemoryToolsViewModel(_editor);
+			DataContext = _model;
 
 			if(Design.IsDesignMode) {
 				return;
@@ -47,7 +44,7 @@ namespace Mesen.Debugger.Windows
 
 		public static void ShowInMemoryTools(MemoryType memType, int address)
 		{
-			MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow(new MemoryToolsViewModel()));
+			MemoryToolsWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new MemoryToolsWindow());
 			wnd.SetCursorPosition(memType, address);
 		}
 
@@ -168,7 +165,23 @@ namespace Mesen.Debugger.Windows
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
 					IsEnabled = () => false,
 					OnClick = () => { }
-				}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Find,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Find),
+					OnClick = () => OpenSearchWindow()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindPrev,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindPrev),
+					OnClick = () => Find(SearchDirection.Backward)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindNext,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
+					OnClick = () => Find(SearchDirection.Forward)
+				},
 			});
 
 			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() { 
@@ -178,6 +191,21 @@ namespace Mesen.Debugger.Windows
 
 			DebugShortcutManager.RegisterActions(this, _model.FileMenuItems);
 			DebugShortcutManager.RegisterActions(this, _model.SearchMenuItems);
+		}
+
+		private void OpenSearchWindow()
+		{
+			MemorySearchWindow wnd = new MemorySearchWindow(_model.Search, _model);
+			wnd.ShowCenteredWithParent(this);
+		}
+
+		private void Find(SearchDirection direction)
+		{
+			if(!_model.Search.IsValid) {
+				OpenSearchWindow();
+			} else {
+				_model.Find(direction);
+			}
 		}
 
 		private ContextMenuAction GetViewInDebuggerAction()
