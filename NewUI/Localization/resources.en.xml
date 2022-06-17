@@ -1000,7 +1000,15 @@
 			<Control ID="lblCycle">and cycle (H)</Control>
 			<Control ID="lblResetToDefault">Reset to default</Control>
 		</Form>
-
+		
+		<Form ID="GoToAllWindow">
+			<Control ID="wndTitle">Go to All</Control>
+			<Control ID="lblSearch">Search:</Control>
+			<Control ID="lblResults">results</Control>
+			<Control ID="btnSelect">Select</Control>
+			<Control ID="btnClose">Close</Control>
+		</Form>
+		
 		<Form ID="DebuggerConfigWindow">
 			<Control ID="wndTitle">Debugger Settings</Control>
 			<Control ID="btnOK">OK</Control>

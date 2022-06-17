@@ -446,8 +446,15 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAll,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
-					IsEnabled = () => false,
-					OnClick = () => { }
+					OnClick = async () => {
+						GoToDestination? dest = await GoToAllWindow.Open(wnd, CpuType, GoToAllOptions.ShowFilesAndConstants, DebugWorkspaceManager.SymbolProvider);
+						//TODO source view
+						//TODO focus
+						if(dest != null && dest.RelativeAddress?.Type == CpuType.ToMemoryType()) {
+							DockFactory.SetActiveDockable(DockFactory.DisassemblyTool);
+							Disassembly.SetSelectedRow(dest.RelativeAddress.Value.Address, true);
+						}
+					}
 				}
 			});
 

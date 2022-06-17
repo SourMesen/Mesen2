@@ -1,0 +1,111 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	Icon="/Assets/Find.png"
+	x:Class="Mesen.Debugger.Windows.GoToAllWindow"
+  x:DataType="vm:GoToAllViewModel"
+	Width="360"
+	Height="400"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:GoToAllViewModel />
+	</Design.DataContext>
+	
+	<DockPanel Margin="1">
+		<DockPanel DockPanel.Dock="Bottom">
+			<StackPanel
+				Orientation="Horizontal"
+				DockPanel.Dock="Left"
+				VerticalAlignment="Center"
+				IsVisible="{CompiledBinding SearchString, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+			>
+				<TextBlock Margin="2 0" Text="{CompiledBinding SearchResults.Count}" />
+				<TextBlock Text="{l:Translate lblResults}" />
+			</StackPanel>
+			
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button
+					Width="70"
+					HorizontalContentAlignment="Center"
+					IsDefault="True"
+					IsEnabled="{CompiledBinding CanSelect}"
+					Click="Select_OnClick"
+					Content="{l:Translate btnSelect}"
+				/>				
+				<Button
+					Width="70"
+					HorizontalContentAlignment="Center"
+					IsCancel="True"
+					Click="Close_OnClick"
+					Content="{l:Translate btnClose}"
+				/>
+			</StackPanel>
+		</DockPanel>
+		
+		<Grid DockPanel.Dock="Top" VerticalAlignment="Top" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+			<TextBlock
+				Text="{l:Translate lblSearch}"
+				VerticalAlignment="Center"
+				Margin="0 0 5 0"
+			/>
+			<TextBox
+				Grid.Column="1"
+				Name="txtSearch"
+				HorizontalAlignment="Stretch"
+				Text="{CompiledBinding SearchString}"
+				MaxLength="300"
+			/>
+		</Grid>
+
+		<Border BorderBrush="Gray" BorderThickness="1">
+			<ListBox
+				Name="lstResults"
+				Background="Transparent"
+				Items="{CompiledBinding SearchResults}"
+				Selection="{CompiledBinding SelectionModel}"
+			>
+				<ListBox.Styles>
+					<Style Selector="ListBoxItem">
+						<Setter Property="Padding" Value="0" />
+					</Style>
+				</ListBox.Styles>
+
+				<ListBox.DataTemplates>
+					<DataTemplate DataType="{x:Type du:SearchResultInfo}">
+						<Border BorderBrush="Gray" BorderThickness="0 0 0 1" Padding="5 2">
+							<Grid ColumnDefinitions="1*,1*" RowDefinitions="1*,1*" IsEnabled="{Binding !Disabled}">
+								<StackPanel Orientation="Horizontal">
+									<Image Stretch="None" Source="/Assets/Warning.png" IsVisible="{Binding Disabled}" />
+									<Image Stretch="None" Source="{Binding UiIcon}" />
+									<TextBlock Text="{Binding UiLabelName}" Margin="5 0 0 0" VerticalAlignment="Center" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" Grid.Row="1">
+									<TextBlock Text="{Binding UiLocation}" Margin="5 0 0 0" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+									<TextBlock Text="{Binding UiMemType}" Margin="0 0 5 0" Foreground="Gray" FontSize="9" VerticalAlignment="Center" />
+									<TextBlock Text="{Binding UiAbsAddress}" />
+								</StackPanel>
+								<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1">
+									<TextBlock Text="{Binding UiCpuMemType}" Margin="0 0 5 0" Foreground="Gray" FontSize="9" VerticalAlignment="Center" />
+									<TextBlock Text="{Binding UiRelAddress}" />
+								</StackPanel>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ListBox.DataTemplates>
+			</ListBox>
+		</Border>
+	</DockPanel>
+</Window>

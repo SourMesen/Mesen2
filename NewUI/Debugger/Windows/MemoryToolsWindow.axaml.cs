@@ -54,6 +54,7 @@ namespace Mesen.Debugger.Windows
 			if(_model.AvailableMemoryTypes.Contains(memType)) {
 				_model.Config.MemoryType = memType;
 				_editor.SetCursorPosition(address, scrollToTop: true);
+				_editor.Focus();
 			}
 		}
 
@@ -164,8 +165,14 @@ namespace Mesen.Debugger.Windows
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAll,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
-					IsEnabled = () => false,
-					OnClick = () => { }
+					OnClick = async () => {
+						GoToDestination? dest = await GoToAllWindow.Open(this, _model.Config.MemoryType.ToCpuType(), GoToAllOptions.ShowOutOfScope, DebugWorkspaceManager.SymbolProvider);
+						if(dest?.RelativeAddress?.Type == _model.Config.MemoryType) {
+							SetCursorPosition(dest.RelativeAddress.Value.Type, dest.RelativeAddress.Value.Address);
+						} else if(dest?.AbsoluteAddress != null) {
+							SetCursorPosition(dest.AbsoluteAddress.Value.Type, dest.AbsoluteAddress.Value.Address);
+						}
+					}
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
