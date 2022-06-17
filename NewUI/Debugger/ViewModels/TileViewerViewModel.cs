@@ -188,12 +188,6 @@ namespace Mesen.Debugger.ViewModels
 
 		private void InitForCpuType()
 		{
-			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsTileViewer() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
-			if(!AvailableMemoryTypes.Contains(Config.Source)) {
-				Config.Source = CpuType.GetVramMemoryType();
-				Config.StartAddress = 0;
-			}
-
 			AvailableFormats = CpuType switch {
 				CpuType.Snes => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7ExtBg, TileFormat.Mode7DirectColor },
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
@@ -208,6 +202,30 @@ namespace Mesen.Debugger.ViewModels
 				Config.Format = (TileFormat)AvailableFormats[0];
 			}
 			ShowFormatDropdown = AvailableFormats.Length > 1;
+
+			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsTileViewer() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Config.Source)) {
+				//Switched to another console, or game doesn't support the same memory type, etc.
+				ResetToDefaultView();
+			}
+		}
+
+		private void ResetToDefaultView()
+		{
+			//Reset to the default view for each console (show all of VRAM)
+			Config.Source = CpuType.GetVramMemoryType();
+			Config.StartAddress = 0;
+			switch(CpuType) {
+				case CpuType.Snes:
+				case CpuType.Nes:
+				case CpuType.Gameboy:
+					ApplyPpuPreset();
+					break;
+
+				case CpuType.Pce:
+					ApplyBgPreset(0);
+					break;
+			}
 		}
 
 		private List<ConfigPreset> GetConfigPresets()
@@ -306,8 +324,8 @@ namespace Mesen.Debugger.ViewModels
 				case CpuType.Snes: {
 					Config.Source = MemoryType.SnesVideoRam;
 					Config.StartAddress = 0;
-					Config.ColumnCount = 16;
-					Config.RowCount = 32;
+					Config.ColumnCount = 32;
+					Config.RowCount = 64;
 					Config.Layout = TileLayout.Normal;
 					Config.Format = TileFormat.Bpp4;
 					break;
