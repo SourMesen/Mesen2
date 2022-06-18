@@ -36,8 +36,8 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
-			<MenuItem Classes="ActionMenu" Header="View" Items="{CompiledBinding ViewMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
 		</Menu>
 
 		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />

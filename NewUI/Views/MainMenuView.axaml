@@ -21,7 +21,7 @@
 		<MenuItem Header="{l:Translate mnuGame}" Classes="ActionMenu" Items="{CompiledBinding GameMenuItems}" />
 		<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
 		<MenuItem Header="{l:Translate mnuTools}" Classes="ActionMenu" Items="{CompiledBinding ToolsMenuItems}" />
-		<MenuItem Header="_Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
+		<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 		<MenuItem Header="{l:Translate mnuHelp}" Classes="ActionMenu" Items="{CompiledBinding HelpMenuItems}" />
 	</Menu>
 </UserControl>

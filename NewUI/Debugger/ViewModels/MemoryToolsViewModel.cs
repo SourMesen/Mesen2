@@ -42,6 +42,9 @@ namespace Mesen.Debugger.ViewModels
 		public MemoryToolsDisplayOptionsViewModel Options { get; }
 		public MemorySearchViewModel Search { get; }
 
+		[Obsolete("For designer only")]
+		public MemoryToolsViewModel() : this(null!) { }
+
 		public MemoryToolsViewModel(HexEditor editor)
 		{
 			Search = new(this);

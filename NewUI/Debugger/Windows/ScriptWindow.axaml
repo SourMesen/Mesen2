@@ -30,9 +30,9 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File"  Classes="ActionMenu" Items="{CompiledBinding FileMenuActions}" />
-			<MenuItem Header="Script" Classes="ActionMenu" Items="{CompiledBinding ScriptMenuActions}" />
-			<MenuItem Header="Help"  Classes="ActionMenu" Items="{CompiledBinding HelpMenuActions}" />
+			<MenuItem Header="{l:Translate mnuFile}"  Classes="ActionMenu" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Header="{l:Translate mnuScript}" Classes="ActionMenu" Items="{CompiledBinding ScriptMenuActions}" />
+			<MenuItem Header="{l:Translate mnuHelp}"  Classes="ActionMenu" Items="{CompiledBinding HelpMenuActions}" />
 		</Menu>
 
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">

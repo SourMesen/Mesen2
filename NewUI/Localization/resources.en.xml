@@ -2,11 +2,12 @@
 <Resources>
 	<Forms>
 		<Form ID="MainMenuView">
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuGame">Game</Control>
-			<Control ID="mnuOptions">Options</Control>
-			<Control ID="mnuTools">Tools</Control>
-			<Control ID="mnuHelp">Help</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuGame">_Game</Control>
+			<Control ID="mnuOptions">_Options</Control>
+			<Control ID="mnuTools">_Tools</Control>
+			<Control ID="mnuDebug">_Debug</Control>
+			<Control ID="mnuHelp">_Help</Control>
 
 			<Control ID="mnuGameConfig">Game Configuration</Control>
 			
@@ -780,6 +781,10 @@
 		
 		<Form ID="TilemapViewerWindow">
 			<Control ID="wndTitle">Tilemap Viewer</Control>
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
+
 			<Control ID="lblDisplayMode">Display mode: </Control>
 			<Control ID="lblSelectedTile">Selected Tile</Control>
 			<Control ID="lblTilemap">Tilemap</Control>
@@ -793,8 +798,8 @@
 
 		<Form ID="TileViewerWindow">
 			<Control ID="wndTitle">Tile Viewer</Control>
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuView">View</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 			<Control ID="lblSelectedTile">Selected Tile</Control>
 			<Control ID="lblPresets">Presets:</Control>
@@ -810,8 +815,8 @@
 
 		<Form ID="PaletteViewerWindow">
 			<Control ID="wndTitle">Palette Viewer</Control>
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuView">View</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 			<Control ID="chkShowPaletteIndexes">Show palette indexes</Control>
 			<Control ID="lblSelectedColor">Selected Color</Control>
@@ -821,7 +826,10 @@
 			<Control ID="wndTitle">Sprite Viewer</Control>
 
 			<Control ID="lblSelectedSprite">Selected Sprite</Control>
-			
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
+
 			<Control ID="colSpriteIndex">#</Control>
 			<Control ID="colX">X</Control>
 			<Control ID="colY">Y</Control>
@@ -840,6 +848,10 @@
 
 		<Form ID="AssemblerWindow">
 			<Control ID="wndTitle">Assembler</Control>
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuOptions">_Options</Control>
+			
 			<Control ID="lblStartAddress">Start address: $</Control>
 			<Control ID="lblBytesUsed">Bytes used: </Control>
 
@@ -855,6 +867,11 @@
 		
 		<Form ID="ScriptWindow">
 			<Control ID="wndTitle">Script Window</Control>
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuScript">_Script</Control>
+			<Control ID="mnuHelp">_Help</Control>
+			
 			<Control ID="btnRun">Run</Control>
 			<Control ID="btnStop">Stop</Control>
 		</Form>
@@ -875,9 +892,9 @@
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
 
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuDebug">Debug</Control>
-			<Control ID="mnuView">View</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuDebug">_Debug</Control>
+			<Control ID="mnuView">_View</Control>
 
 			<Control ID="btnOpenTraceFile">Open trace file</Control>
 			<Control ID="btnStart">Log to file...</Control>
@@ -888,9 +905,9 @@
 		<Form ID="EventViewerWindow">
 			<Control ID="wndTitle">Event Viewer</Control>
 
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuDebug">Debug</Control>
-			<Control ID="mnuView">View</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuDebug">_Debug</Control>
+			<Control ID="mnuView">_View</Control>
 			
 			<Control ID="mnuRefresh">Refresh</Control>
 			<Control ID="mnuAutoRefresh">Auto-refresh</Control>
@@ -912,6 +929,14 @@
 			<Control ID="colDetails">Details</Control>
 		</Form>
 
+		<Form ID="DebuggerWindow">
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuDebug">_Debug</Control>
+			<Control ID="mnuSearch">_Search</Control>
+			<Control ID="mnuOptions">_Options</Control>
+			<Control ID="btnToggleSettingsPanel">Toggle settings panel</Control>
+		</Form>
+		
 		<Form ID="DebuggerOptionsView">
 			<Control ID="lblDisassemblyOptions">Disassembly options</Control>
 			<Control ID="lblVerifiedData">Data blocks:</Control>
@@ -947,6 +972,11 @@
 			<Control ID="chkSingleBreakpointPerInstruction">Break once per instruction</Control>
 		</Form>
 
+		<Form ID="MemoryToolsWindow">
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuSearch">_Search</Control>
+		</Form>
+		
 		<Form ID="MemoryToolsDisplayOptionsView">
 			<Control ID="lblAccessHighlight">Access highlighting</Control>
 			<Control ID="lblFadeSpeed">Fade speed: </Control>
@@ -1122,6 +1152,9 @@
 		
 		<Form ID="RegisterViewerWindow">
 			<Control ID="wndTitle">Register Viewer</Control>
+
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
 
 			<Control ID="colAddress">Address</Control>
 			<Control ID="colName">Name</Control>

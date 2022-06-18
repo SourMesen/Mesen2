@@ -34,8 +34,8 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Classes="ActionMenu" Header="File" Items="{CompiledBinding FileMenuActions}" />
-			<MenuItem Classes="ActionMenu" Header="Options" Items="{CompiledBinding OptionsMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
+			<MenuItem Classes="ActionMenu" Header="{l:Translate mnuOptions}" Items="{CompiledBinding OptionsMenuActions}" />
 		</Menu>
 		
 		<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

@@ -7,6 +7,7 @@
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:v="using:Mesen.Debugger.Views"
 	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -55,16 +56,16 @@
 	
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="Debug" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
-			<MenuItem Header="Search" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
-			<MenuItem Header="Options" Classes="ActionMenu" Items="{CompiledBinding OptionMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionMenuItems}" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top">
 			<c:IconButton
 				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
-				ToolTip.Tip="Toggle settings panel"
+				ToolTip.Tip="{l:Translate btnToggleSettingsPanel}"
 				Click="OnSettingsClick"
 				Icon="Assets/Settings.png"
 			/>

@@ -8,6 +8,7 @@
 	xmlns:v="using:Mesen.Views"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
@@ -31,8 +32,8 @@
 
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
-			<MenuItem Header="File" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="Search" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
