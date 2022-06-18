@@ -7,12 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Mesen.Config;
+using System.Text.RegularExpressions;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Controls
 {
 	public partial class HexEditor : Control
 	{
-		//TODO Paste
 		public static readonly StyledProperty<IHexEditorDataProvider> DataProviderProperty = AvaloniaProperty.Register<HexEditor, IHexEditorDataProvider>(nameof(DataProvider));
 		public static readonly StyledProperty<int> TopRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(TopRow), 0, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> BytesPerRowProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(BytesPerRow), 16);
@@ -380,10 +381,20 @@ namespace Mesen.Debugger.Controls
 			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 
-		public void PasteSelection()
+		public async void PasteSelection()
 		{
-			//TODO PASTE
-			//string? text = Application.Current.Clipboard?.GetTextAsync().Result;
+			var clipboard = Application.Current?.Clipboard;
+			if(clipboard != null) {
+				string text = await clipboard.GetTextAsync();
+				text = text.Replace("\n", "").Replace("\r", "");
+				if(Regex.IsMatch(text, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
+					byte[] pastedData = HexUtilities.HexToArray(text);
+					for(int i = 0; i < pastedData.Length; i++) {
+						RequestByteUpdate(_cursorPosition + i, pastedData[i]);
+					}
+					InvalidateVisual();
+				}
+			}
 		}
 
 		public void SelectAll()
@@ -395,9 +406,16 @@ namespace Mesen.Debugger.Controls
 		private void CommitByteChanges()
 		{
 			if(NewByteValue >= 0) {
-				this.ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = _cursorPosition, Value = (byte)NewByteValue });
+				RequestByteUpdate(_cursorPosition, (byte)NewByteValue);
 				_lastNibble = false;
 				NewByteValue = -1;
+			}
+		}
+
+		private void RequestByteUpdate(int position, byte value)
+		{
+			if(position < DataProvider.Length) {
+				ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = position, Value = value });
 			}
 		}
 
