@@ -241,11 +241,13 @@ namespace Mesen.Debugger.Controls
 							if(byteInfo.BackColor != Colors.Transparent) {
 								canvas.DrawRect(rect, _skFillPaints[byteInfo.BackColor]);
 							}
-							if(byteInfo.BorderColor != Colors.Transparent) {
-								canvas.DrawRect(rect, _skBorderPaints[byteInfo.BorderColor]);
-							}
 							if(byteInfo.Selected) {
 								canvas.DrawRect(rect, selectedPaint);
+							}
+							if(byteInfo.BorderColor != Colors.Transparent) {
+								rect.Inflate(0, -1);
+								rect.Offset(0, -0.5f);
+								canvas.DrawRect(rect, _skBorderPaints[byteInfo.BorderColor]);
 							}
 
 							int count = currentFont.CountGlyphs(byteInfo.StringValue);
@@ -287,6 +289,7 @@ namespace Mesen.Debugger.Controls
 					Color bgColor = Colors.Transparent;
 					Color borderColor = Colors.Transparent;
 					bool selected = false;
+
 					for(int i = 0; i < _bytesPerRow; i++) {
 						if(pos + i >= _dataToDraw.Count) {
 							break;
@@ -304,17 +307,18 @@ namespace Mesen.Debugger.Controls
 							}
 							bgColor = byteInfo.BackColor;
 						}
+					}
 
-						if(byteInfo.BorderColor != borderColor) {
-							if(borderColor != Colors.Transparent && borderStartPos >= 0) {
-								canvas.DrawRect(GetRect(borderStartPos, i), _skBorderPaints[borderColor]);
-								borderStartPos = -1;
-							}
-							if(byteInfo.BorderColor != Colors.Transparent) {
-								borderStartPos = i;
-							}
-							borderColor = byteInfo.BorderColor;
+					if(bgStartPos >= 0) {
+						canvas.DrawRect(GetRect(bgStartPos, _bytesPerRow), _skFillPaints[bgColor]);
+					}
+
+					for(int i = 0; i < _bytesPerRow; i++) {
+						if(pos + i >= _dataToDraw.Count) {
+							break;
 						}
+
+						ByteInfo byteInfo = _dataToDraw[pos + i];
 
 						if(selected != byteInfo.Selected) {
 							if(selectedStartPos >= 0 && selected) {
@@ -327,17 +331,42 @@ namespace Mesen.Debugger.Controls
 							selected = byteInfo.Selected;
 						}
 					}
-					pos += _bytesPerRow;
 
-					if(bgStartPos >= 0) {
-						canvas.DrawRect(GetRect(bgStartPos, _bytesPerRow), _skFillPaints[bgColor]);
-					}
-					if(borderStartPos >= 0) {
-						canvas.DrawRect(GetRect(borderStartPos, _bytesPerRow), _skBorderPaints[borderColor]);
-					}
 					if(selectedStartPos >= 0) {
 						canvas.DrawRect(GetRect(selectedStartPos, _bytesPerRow), selectedPaint);
 					}
+
+					for(int i = 0; i < _bytesPerRow; i++) {
+						if(pos + i >= _dataToDraw.Count) {
+							break;
+						}
+
+						ByteInfo byteInfo = _dataToDraw[pos + i];
+
+						if(byteInfo.BorderColor != borderColor) {
+							if(borderColor != Colors.Transparent && borderStartPos >= 0) {
+								SKRect rect = GetRect(borderStartPos, i);
+								rect.Inflate(0, -1);
+								rect.Offset(0, -0.5f);
+								canvas.DrawRect(rect, _skBorderPaints[borderColor]);
+								borderStartPos = -1;
+							}
+							if(byteInfo.BorderColor != Colors.Transparent) {
+								borderStartPos = i;
+							}
+							borderColor = byteInfo.BorderColor;
+						}
+
+					}
+
+					if(borderStartPos >= 0) {
+						SKRect rect = GetRect(borderStartPos, _bytesPerRow);
+						rect.Inflate(0, -1);
+						rect.Offset(0, -0.5f);
+						canvas.DrawRect(rect, _skBorderPaints[borderColor]);
+					}
+
+					pos += _bytesPerRow;
 					row++;
 				}
 			}
