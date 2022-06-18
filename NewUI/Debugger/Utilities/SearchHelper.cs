@@ -232,7 +232,7 @@ namespace Mesen.Debugger.Utilities
 			{
 				if(AbsoluteAddress?.Address >= 0) {
 					if(RelativeAddress?.Address >= 0) {
-						return "$" + RelativeAddress?.Address.ToString("X4") + ":$" + Value.ToString("X2");
+						return "$" + RelativeAddress?.Address.ToString("X" + RelativeAddress?.Type.ToCpuType().GetAddressSize()) + ":$" + Value.ToString("X2");
 					} else {
 						return "<out of scope>";
 					}
