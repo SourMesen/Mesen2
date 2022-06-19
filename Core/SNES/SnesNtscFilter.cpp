@@ -40,7 +40,7 @@ void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	bool useHighResOutput = _baseFrameInfo.Width == 512;
 	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(256);
 	uint32_t xOffset = overscan.Left * 2;
-	uint32_t yOffset = overscan.Top * 2 * baseWidth;
+	uint32_t yOffset = overscan.Top * baseWidth;
 
 	if(useHighResOutput) {
 		snes_ntsc_blit_hires(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, baseWidth * 4);

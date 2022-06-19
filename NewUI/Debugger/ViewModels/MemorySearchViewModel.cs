@@ -66,7 +66,6 @@ public class MemorySearchViewModel : ViewModelBase
 				break;
 
 			case SearchDataType.String:
-				//TODO TBL
 				if(UseTblMappings && _memToolsModel.TblConverter != null) {
 					if(CaseSensitive) {
 						return new SearchData(_memToolsModel.TblConverter.GetBytes(SearchString));

@@ -56,7 +56,7 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		double ratio = (double)rowWidth / 512;
 		for(uint32_t j = 0; j < 512; j++) {
 			int pos = (int)(j * ratio);
-			uint32_t color = pceCfg.Palette[ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + leftOverscan] & 0x3FF];
+			uint32_t color = pceCfg.Palette[ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + leftOverscan] & 0x1FF];
 
 			uint8_t r = (color >> 19) & 0x1F;
 			uint8_t g = (color >> 11) & 0x1F;
