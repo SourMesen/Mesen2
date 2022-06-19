@@ -795,7 +795,20 @@
 			<Control ID="lblAttributeHighlightMode">Attributes:</Control>
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
 		</Form>
+		
+		<Form ID="TileEditorWindow">
+			<Control ID="wndTitle">Tile Editor</Control>
+			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
 
+			<Control ID="lblBackground">Background:</Control>
+			<Control ID="lblPreview">Preview</Control>
+			
+			<Control ID="lblHint1">Select color by clicking above.</Control>
+			<Control ID="lblHint2">Left-click: Draw selected color</Control>
+			<Control ID="lblHint3">Right-click: Make pixel transparent</Control>
+		</Form>
+		
 		<Form ID="TileViewerWindow">
 			<Control ID="wndTitle">Tile Viewer</Control>
 			<Control ID="mnuFile">_File</Control>
@@ -2003,6 +2016,7 @@
 			<Value ID="Black">Black</Value>
 			<Value ID="White">White</Value>
 			<Value ID="Magenta">Magenta</Value>
+			<Value ID="Transparent">Transparent</Value>
 		</Enum>
 		<Enum ID="TilemapDisplayMode">
 			<Value ID="Default">Tilemap</Value>
@@ -2270,9 +2284,12 @@
 			<Value ID="TilemapViewer_EditAttributeBreakpoint">Tilemap Viewer - Edit Breakpoint (Attribute)</Value>
 			<Value ID="TilemapViewer_ViewInMemoryViewer">Tilemap Viewer - View in Memory Viewer</Value>
 			<Value ID="TilemapViewer_ViewInTileViewer">Tilemap Viewer - View in Tile Viewer</Value>
+			<Value ID="TilemapViewer_EditTile">Tilemap Viewer - Edit Tile</Value>
 			<Value ID="TileViewer_ViewInMemoryViewer">Tile Viewer - View in Memory Viewer</Value>
+			<Value ID="TileViewer_EditTile">Tile Viewer - Edit Tile</Value>
 			<Value ID="SpriteViewer_ViewInMemoryViewer">Sprite Viewer - View in Memory Viewer</Value>
 			<Value ID="SpriteViewer_ViewInTileViewer">Sprite Viewer - View in Tile Viewer</Value>
+			<Value ID="SpriteViewer_EditSprite">Sprite Viewer - Edit Sprite</Value>
 			<Value ID="MemoryViewer_Freeze">Freeze</Value>
 			<Value ID="MemoryViewer_Unfreeze">Unfreeze</Value>
 			<Value ID="MemoryViewer_AddToWatch">Add to Watch</Value>
@@ -2524,6 +2541,10 @@
 			<Value ID="Find">Find...</Value>
 			<Value ID="FindNext">Find next</Value>
 			<Value ID="FindPrev">Find previous</Value>
+
+			<Value ID="EditTile">Edit tile</Value>
+			<Value ID="EditTiles">Edit tiles</Value>
+			<Value ID="EditSprite">Edit sprite</Value>
 		</Enum>
 	</Enums>
 </Resources>

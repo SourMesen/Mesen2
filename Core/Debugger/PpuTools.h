@@ -57,6 +57,8 @@ struct DebugSpriteInfo
 	bool UseExtendedVram;
 	NullableBoolean UseSecondTable;
 
+	uint32_t TileCount;
+	uint32_t TileAddresses[8 * 8];
 	uint32_t SpritePreview[64 * 64];
 
 public:
@@ -65,6 +67,7 @@ public:
 		TileIndex = -1;
 		TileAddress = -1;
 		PaletteAddress = -1;
+		Format = {};
 		SpriteIndex = -1;
 		X = -1;
 		Y = -1;
@@ -78,7 +81,9 @@ public:
 		HorizontalMirror = false;
 		VerticalMirror = false;
 		Visible = false;
+		UseExtendedVram = false;
 		UseSecondTable = NullableBoolean::Undefined;
+		TileCount = 0;
 	}
 };
 
@@ -180,7 +185,7 @@ protected:
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
 
-	virtual DebugPaletteInfo GetPaletteInfo() = 0;
+	virtual DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) = 0;
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t* palette, uint32_t *outBuffer);
 	
@@ -191,6 +196,8 @@ public:
 	virtual DebugSpritePreviewInfo GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state) = 0;
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
 	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
+
+	void SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color);
 
 	virtual void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);

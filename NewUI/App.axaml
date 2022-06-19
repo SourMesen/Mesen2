@@ -9,6 +9,14 @@
 	<Application.Resources>
 		<l:EnumConverter x:Key="Enum" />
 		<u:FontNameConverter x:Key="FontNameConverter" />
+		<VisualBrush x:Key="ViewerBgBrush" TileMode="Tile" Stretch="None" AlignmentX="Left" AlignmentY="Top" SourceRect="0,0,5,5" DestinationRect="0,0,5,5">
+			<VisualBrush.Visual>
+				<Panel Background="#202020">
+					<Line StartPoint="0, 0" EndPoint="5, 5" Stroke="Gray" StrokeThickness="1" Opacity="0.5" />
+					<Line StartPoint="5, 0" EndPoint="0, 5" Stroke="LightGray" StrokeThickness="1" Opacity="0.5" />
+				</Panel>
+			</VisualBrush.Visual>
+		</VisualBrush>
 	</Application.Resources>
 	
 	<Application.DataTemplates>

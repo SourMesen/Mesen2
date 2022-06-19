@@ -213,11 +213,12 @@ enum class TileLayout
 
 enum class TileBackground
 {
-	Default = 0,
-	PaletteColor = 1,
-	Black = 2,
-	White = 3,
-	Magenta = 4
+	Default,
+	Transparent,
+	PaletteColor,
+	Black,
+	White,
+	Magenta,
 };
 
 enum class TileFilter
@@ -244,6 +245,11 @@ struct GetTileViewOptions
 struct GetSpritePreviewOptions
 {
 	int32_t SelectedSprite;
+};
+
+struct GetPaletteInfoOptions
+{
+	TileFormat Format;
 };
 
 enum class StackFrameFlags

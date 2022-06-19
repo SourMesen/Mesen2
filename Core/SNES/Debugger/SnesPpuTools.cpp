@@ -253,6 +253,17 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 	int tileRow = (sprite.TileIndex & 0xF0) >> 4;
 	int tileColumn = sprite.TileIndex & 0x0F;
+	
+	sprite.TileCount = 0;
+	for(int i = 0, rowCount = height / 8; i < rowCount; i++) {
+		int row = (i + tileRow) & 0x0F;
+		for(int j = 0, columnCount = width / 8; j < columnCount; j++) {
+			int col = (j + tileColumn) & 0x0F;
+			sprite.TileAddresses[sprite.TileCount] = ((state.OamBaseAddress + (row * 16 + col) * 16 + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
+			sprite.TileCount++;
+		}
+	}
+
 	uint8_t yOffset;
 	int rowOffset;
 
@@ -341,7 +352,7 @@ FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& bas
 
 DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
 {
-	DebugTilemapTileInfo result;
+	DebugTilemapTileInfo result = {};
 
 	FrameInfo size = GetTilemapSize(options, baseState);
 	if(x >= size.Width || y >= size.Height) {
@@ -417,7 +428,7 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 	return info;
 }
 
-DebugPaletteInfo SnesPpuTools::GetPaletteInfo()
+DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
 	info.RawFormat = RawPaletteFormat::Rgb555;
@@ -426,11 +437,23 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo()
 	info.SpriteColorCount = 16 * 8;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
-	uint8_t* cgram= _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::SnesCgRam);
-	for(int i = 0; i < 256; i++) {
-		info.RawPalette[i] = cgram[i*2] | (cgram[i*2+1] << 8);
-		info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
-	}
+	switch(options.Format) {
+		case TileFormat::DirectColor:
+		case TileFormat::Mode7DirectColor:
+			for(int i = 0; i < 256; i++) {
+				info.RawPalette[i] = ((i & 0x07) << 2) | ((i & 0x38) << 4) | ((i & 0xC0) << 7);
+				info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+			}
+			break;
 
+		default:
+			uint8_t mask = options.Format == TileFormat::Mode7ExtBg ? 0x7F : 0xFF;
+			uint8_t* cgram = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::SnesCgRam);
+			for(int i = 0; i < 256; i++) {
+				info.RawPalette[i] = cgram[(i & mask) * 2] | (cgram[(i & mask) * 2 + 1] << 8);
+				info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+			}
+			break;
+	}
 	return info;
 }

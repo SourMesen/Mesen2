@@ -227,7 +227,7 @@ FrameInfo NesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& stat
 
 DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
 {
-	DebugTilemapTileInfo result;
+	DebugTilemapTileInfo result = {};
 
 	FrameInfo size = GetTilemapSize(options, baseState);
 	if(x >= size.Width || y >= size.Height) {
@@ -308,8 +308,12 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 		} else {
 			tileStart = 0x0000 | (sprite.TileIndex * 16);
 		}
+		sprite.TileAddresses[0] = tileStart;
+		sprite.TileAddresses[1] = tileStart + 16;
+		sprite.TileCount = 2;
 	} else {
 		tileStart = (sprite.TileIndex * 16) | sprAddr;
+		sprite.TileCount = 1;
 	}
 	sprite.TileAddress = tileStart;
 
@@ -354,7 +358,7 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	return info;
 }
 
-DebugPaletteInfo NesPpuTools::GetPaletteInfo()
+DebugPaletteInfo NesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
 	info.RawFormat = RawPaletteFormat::Indexed;

@@ -40,6 +40,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public RawPaletteFormat RawFormat { get; set; }
 		[Reactive] public PaletteSelectionMode PaletteSelectionMode { get; private set; }
 		[Reactive] public int PaletteColumnCount { get; private set; } = 16;
+		[Reactive] public int SelectedPalette { get; set; } = 0;
 
 		[Reactive] public int AddressIncrement { get; private set; }
 		[Reactive] public int MaximumAddress { get; private set; } = int.MaxValue;
@@ -116,6 +117,43 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
 				new ContextMenuAction() {
+					ActionType = ActionType.EditTile,
+					HintText = () => $"{GridSizeX}px x {GridSizeY}px",
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileViewer_EditTile),
+					IsEnabled = () => GetSelectedTileAddress() >= 0,
+					OnClick = () => EditTileGrid(1, 1, wnd)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EditTiles,
+					SubActions = new() {
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"1x2 ({GridSizeX}px x {GridSizeY*2}px)",
+							IsEnabled = () => GetSelectedTileAddress() >= 0,
+							OnClick = () => EditTileGrid(1, 2, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"2x1 ({GridSizeX*2}px x {GridSizeY}px)",
+							IsEnabled = () => GetSelectedTileAddress() >= 0,
+							OnClick = () => EditTileGrid(2, 1, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"2x2 ({GridSizeX*2}px x {GridSizeY*2}px)",
+							IsEnabled = () => GetSelectedTileAddress() >= 0,
+							OnClick = () => EditTileGrid(2, 2, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"4x4 ({GridSizeX*4}px x {GridSizeY*4}px)",
+							IsEnabled = () => GetSelectedTileAddress() >= 0,
+							OnClick = () => EditTileGrid(4, 4, wnd)
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileViewer_ViewInMemoryViewer),
 					IsEnabled = () => GetSelectedTileAddress() >= 0,
@@ -139,19 +177,21 @@ namespace Mesen.Debugger.ViewModels
 			InitForCpuType();
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
-				PaletteSelectionMode = GetBitsPerPixel(x) switch {
+				PaletteSelectionMode = x.GetBitsPerPixel() switch {
 					2 => PaletteSelectionMode.FourColors,
 					4 => PaletteSelectionMode.SixteenColors,
 					_ => PaletteSelectionMode.None
 				};
 
-				PixelSize tileSize = GetTileSize(x);
+				PixelSize tileSize = x.GetTileSize();
 				if(GridSizeX != tileSize.Width || GridSizeY != tileSize.Height) {
 					GridSizeX = tileSize.Width;
 					GridSizeY = tileSize.Height;
 					SelectionRect = Rect.Empty;
 					PreviewPanel = null;
 				}
+
+				RefreshPalette();
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Layout).Subscribe(x => {
@@ -160,7 +200,7 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
 				ApplyColumnRowCountRestrictions();
-				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * GetBitsPerPixel(Config.Format) / 8;
+				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * Config.Format.GetBitsPerPixel() / 8;
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
@@ -172,6 +212,7 @@ namespace Mesen.Debugger.ViewModels
 				RefreshData();
 			}));
 
+			AddDisposable(this.WhenAnyValue(x => x.SelectedPalette).Subscribe(x => RefreshTab()));
 			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
@@ -365,14 +406,15 @@ namespace Mesen.Debugger.ViewModels
 					int[,] layerBpp = new int[8, 4] { { 2, 2, 2, 2 }, { 4, 4, 2, 0 }, { 4, 4, 0, 0 }, { 8, 4, 0, 0 }, { 8, 2, 0, 0 }, { 4, 2, 0, 0 }, { 4, 0, 0, 0 }, { 8, 0, 0, 0 } };
 					SnesPpuState ppu = (SnesPpuState)state;
 					Config.Source = MemoryType.SnesVideoRam;
-					Config.StartAddress = ppu.Layers[layer].ChrAddress * 2;
 					Config.ColumnCount = 16;
 					Config.RowCount = 16;
 					Config.Layout = TileLayout.Normal;
 					if(ppu.BgMode == 7) {
-						Config.Format = ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7;
-						Config.SelectedPalette = 0;
+						Config.Format = ppu.ExtBgEnabled ? TileFormat.Mode7ExtBg : (ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7);
+						Config.StartAddress = 0;
+						SelectedPalette = 0;
 					} else {
+						Config.StartAddress = ppu.Layers[layer].ChrAddress * 2;
 						Config.Format = layerBpp[ppu.BgMode, layer] switch {
 							2 => TileFormat.Bpp2,
 							4 => TileFormat.Bpp4,
@@ -380,8 +422,8 @@ namespace Mesen.Debugger.ViewModels
 							_ => TileFormat.Bpp2
 						};
 
-						if(layerBpp[ppu.BgMode, layer] == 8 || Config.SelectedPalette >= (layerBpp[ppu.BgMode, layer] == 2 ? 32 : 8)) {
-							Config.SelectedPalette = 0;
+						if(layerBpp[ppu.BgMode, layer] == 8 || SelectedPalette >= (layerBpp[ppu.BgMode, layer] == 2 ? 32 : 8)) {
+							SelectedPalette = 0;
 						}
 					}
 					break;
@@ -395,8 +437,8 @@ namespace Mesen.Debugger.ViewModels
 					Config.RowCount = 16;
 					Config.Layout = TileLayout.Normal;
 					Config.Format = TileFormat.NesBpp2;
-					if(Config.SelectedPalette >= 4) {
-						Config.SelectedPalette = 0;
+					if(SelectedPalette >= 4) {
+						SelectedPalette = 0;
 					}
 					break;
 				}
@@ -410,8 +452,8 @@ namespace Mesen.Debugger.ViewModels
 					Config.Layout = TileLayout.Normal;
 					Config.Format = TileFormat.Bpp2;
 					Config.Background = ppu.CgbEnabled ? TileBackground.PaletteColor : TileBackground.Default;
-					if(!ppu.CgbEnabled || Config.SelectedPalette > 8) {
-						Config.SelectedPalette = 0;
+					if(!ppu.CgbEnabled || SelectedPalette > 8) {
+						SelectedPalette = 0;
 					}
 					break;
 				}
@@ -424,8 +466,8 @@ namespace Mesen.Debugger.ViewModels
 					Config.Layout = TileLayout.Normal;
 					Config.Format = TileFormat.Bpp4;
 					Config.Background = TileBackground.Default;
-					if(Config.SelectedPalette >= 16) {
-						Config.SelectedPalette = 0;
+					if(SelectedPalette >= 16) {
+						SelectedPalette = 0;
 					}
 					break;
 				}
@@ -447,8 +489,8 @@ namespace Mesen.Debugger.ViewModels
 					Config.ColumnCount = 16;
 					Config.RowCount = 16;
 					Config.StartAddress = (ppu.OamBaseAddress + (layer == 1 ? ppu.OamAddressOffset : 0)) * 2;
-					if(Config.SelectedPalette < 8 || Config.SelectedPalette >= 16) {
-						Config.SelectedPalette = 8;
+					if(SelectedPalette < 8 || SelectedPalette >= 16) {
+						SelectedPalette = 8;
 					}
 					break;
 				}
@@ -467,8 +509,8 @@ namespace Mesen.Debugger.ViewModels
 						Config.Layout = TileLayout.Normal;
 					}
 					Config.Source = MemoryType.NesPpuMemory;
-					if(Config.SelectedPalette < 4 || Config.SelectedPalette >= 8) {
-						Config.SelectedPalette = 4;
+					if(SelectedPalette < 4 || SelectedPalette >= 8) {
+						SelectedPalette = 4;
 					}
 					Config.Format = TileFormat.NesBpp2;
 					break;
@@ -483,10 +525,10 @@ namespace Mesen.Debugger.ViewModels
 					Config.Layout = TileLayout.Normal;
 					Config.Background = TileBackground.Black;
 					Config.Format = TileFormat.Bpp2;
-					if(ppu.CgbEnabled && Config.SelectedPalette < 8) {
-						Config.SelectedPalette = 8;
-					} else if(!ppu.CgbEnabled && Config.SelectedPalette == 0) {
-						Config.SelectedPalette = 1;
+					if(ppu.CgbEnabled && SelectedPalette < 8) {
+						SelectedPalette = 8;
+					} else if(!ppu.CgbEnabled && SelectedPalette == 0) {
+						SelectedPalette = 1;
 					}
 					break;
 				}
@@ -499,8 +541,8 @@ namespace Mesen.Debugger.ViewModels
 					Config.Layout = TileLayout.Normal;
 					Config.Format = TileFormat.PceSpriteBpp4;
 					Config.Background = TileBackground.Default;
-					if(Config.SelectedPalette < 16) {
-						Config.SelectedPalette = 16;
+					if(SelectedPalette < 16) {
+						SelectedPalette = 16;
 					}
 					break;
 				}
@@ -511,11 +553,11 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config.Source = type;
 			Config.Format = format;
-			Config.SelectedPalette = paletteIndex;
+			SelectedPalette = paletteIndex;
 			Config.StartAddress = address / AddressIncrement * AddressIncrement;
 			Config.Layout = layout;
-			int bitsPerPixel = GetBitsPerPixel(Config.Format);
-			PixelSize tileSize = GetTileSize(Config.Format);
+			int bitsPerPixel = Config.Format.GetBitsPerPixel();
+			PixelSize tileSize = Config.Format.GetTileSize();
 			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
 
 			int gap = address - Config.StartAddress;
@@ -606,16 +648,20 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			_ppuState = DebugApi.GetPpuState(CpuType);
+			
+			RefreshPalette();
+			_sourceData = DebugApi.GetMemoryState(Config.Source);
 
-			DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType);
+			RefreshTab();
+		}
+
+		private void RefreshPalette()
+		{
+			DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType, new GetPaletteInfoOptions() { Format = Config.Format });
 			PaletteColors = palette.GetRgbPalette();
 			RawPalette = palette.GetRawPalette();
 			RawFormat = palette.RawFormat;
 			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
-
-			_sourceData = DebugApi.GetMemoryState(Config.Source);
-
-			RefreshTab();
 		}
 
 		private void RefreshTab()
@@ -633,8 +679,8 @@ namespace Mesen.Debugger.ViewModels
 
 		private int GetTileAddress(PixelPoint pixelPosition)
 		{
-			int bitsPerPixel = GetBitsPerPixel(Config.Format);
-			PixelSize tileSize = GetTileSize(Config.Format);
+			int bitsPerPixel = Config.Format.GetBitsPerPixel();
+			PixelSize tileSize = Config.Format.GetTileSize();
 			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
 			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / tileSize.Width, pixelPosition.Y / tileSize.Height));
 			int offset = (pos.Y * Config.ColumnCount * 8 / tileSize.Width + pos.X) * bytesPerTile;
@@ -662,7 +708,7 @@ namespace Mesen.Debugger.ViewModels
 
 			entries.StartUpdate();
 
-			PixelSize tileSize = GetTileSize(Config.Format);
+			PixelSize tileSize = Config.Format.GetTileSize();
 			PixelRect cropRect = new PixelRect(p.X / tileSize.Width * tileSize.Width, p.Y / tileSize.Height * tileSize.Height, tileSize.Width, tileSize.Height);
 			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
 
@@ -678,6 +724,18 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
+		private void EditTileGrid(int columnCount, int rowCount, Window wnd)
+		{
+			PixelPoint p = ViewerMousePos ?? PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+			List<AddressInfo> addresses = new();
+			for(int row = 0; row < rowCount; row++) {
+				for(int col = 0; col < columnCount; col++) {
+					addresses.Add(new AddressInfo() { Address = GetTileAddress(new PixelPoint(p.X + col*GridSizeX, p.Y + row*GridSizeY)), Type = Config.Source });
+				}
+			}
+			TileEditorWindow.OpenAtTile(addresses, columnCount, Config.Format, SelectedPalette, wnd);
+		}
+
 		private GetTileViewOptions GetOptions()
 		{
 			return new GetTileViewOptions() {
@@ -685,7 +743,7 @@ namespace Mesen.Debugger.ViewModels
 				Format = Config.Format,
 				Width = Config.ColumnCount,
 				Height = Config.RowCount,
-				Palette = Config.SelectedPalette,
+				Palette = SelectedPalette,
 				Layout = Config.Layout,
 				Filter = ShowFilterDropdown ? Config.Filter : TileFilter.None,
 				StartAddress = Config.StartAddress,
@@ -702,28 +760,6 @@ namespace Mesen.Debugger.ViewModels
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 			}
-		}
-
-		private int GetBitsPerPixel(TileFormat format)
-		{
-			return format switch {
-				TileFormat.Bpp2 => 2,
-				TileFormat.Bpp4 => 4,
-				TileFormat.DirectColor => 8,
-				TileFormat.Mode7 => 16,
-				TileFormat.Mode7DirectColor => 16,
-				TileFormat.NesBpp2 => 2,
-				TileFormat.PceSpriteBpp4 => 4,
-				_ => 8,
-			};
-		}
-
-		private PixelSize GetTileSize(TileFormat format)
-		{
-			return format switch {
-				TileFormat.PceSpriteBpp4 => new PixelSize(16, 16),
-				_ => new PixelSize(8,8),
-			};
 		}
 
 		public void OnGameLoaded()

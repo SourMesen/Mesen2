@@ -25,5 +25,5 @@ public:
 	void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t *outBuffer) override;
 	void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) override;
 
-	DebugPaletteInfo GetPaletteInfo() override;
+	DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) override;
 };

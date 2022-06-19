@@ -31,7 +31,7 @@ FrameInfo PceVdcTools::GetTilemapSize(GetTilemapOptions options, BaseState& base
 
 DebugTilemapTileInfo PceVdcTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
 {
-	DebugTilemapTileInfo result;
+	DebugTilemapTileInfo result = {};
 
 	FrameInfo size = GetTilemapSize(options, baseState);
 	if(x >= size.Width || y >= size.Height) {
@@ -196,8 +196,15 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 	} else if(height == 64) {
 		tileIndex &= ~0x06;
 	}
-	
+
 	sprite.TileAddress = tileIndex * 64 * 2;
+	sprite.TileCount = 0;
+	for(int i = 0, rowCount = height / 16; i < rowCount; i++) {
+		for(int j = 0, columnCount = width / 16; j < columnCount; j++) {
+			sprite.TileAddresses[sprite.TileCount] = sprite.TileAddress + (i * columnCount + j) * 128;
+			sprite.TileCount++;
+		}
+	}
 
 	uint8_t yOffset;
 	int rowOffset;
@@ -267,7 +274,7 @@ DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	return info;
 }
 
-DebugPaletteInfo PceVdcTools::GetPaletteInfo()
+DebugPaletteInfo PceVdcTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
 	info.RawFormat = RawPaletteFormat::Rgb333;

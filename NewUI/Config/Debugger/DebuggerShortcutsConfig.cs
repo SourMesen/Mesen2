@@ -202,14 +202,17 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ResetWorkspace, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
-			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
-			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint, KeyBinding = new(Key.F3) });
-			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint, KeyBinding = new(Key.F4) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTile, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInTileViewer, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint, KeyBinding = new(Key.F4) });
+			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
-			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInTileViewer, KeyBinding = new(Key.F2) });
-			
+			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInTileViewer, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_EditSprite, KeyBinding = new(Key.F2) });
+
 			Add(new() { Shortcut = DebuggerShortcut.TileViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
+			Add(new() { Shortcut = DebuggerShortcut.TileViewer_EditTile, KeyBinding = new(Key.F2) });
 
 			//Memory Tools
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
@@ -358,9 +361,12 @@ namespace Mesen.Config
 		TilemapViewer_EditAttributeBreakpoint,
 		TilemapViewer_ViewInTileViewer,
 		TilemapViewer_ViewInMemoryViewer,
+		TilemapViewer_EditTile,
 		SpriteViewer_ViewInMemoryViewer,
 		SpriteViewer_ViewInTileViewer,
+		SpriteViewer_EditSprite,
 		TileViewer_ViewInMemoryViewer,
+		TileViewer_EditTile,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

@@ -16,7 +16,7 @@ namespace Mesen.Debugger.Utilities
 		private static object _windowNotifLock = new();
 		private static bool _loadingGame = false;
 
-		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		public static T CreateDebugWindow<T>(Func<T> createWindow) where T : Window
 		{
 			if(Interlocked.Increment(ref _debugWindowCounter) == 1) {
 				//Opened a debug window and nothing else was opened, load the saved workspace
@@ -35,6 +35,12 @@ namespace Mesen.Debugger.Utilities
 				}
 			};
 			_openedWindows.TryAdd(wnd, true);
+			return wnd;
+		}
+
+		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		{
+			T wnd = CreateDebugWindow<T>(createWindow);
 			wnd.Show();
 			return wnd;
 		}

@@ -324,6 +324,9 @@ namespace Mesen.Debugger.Controls
 
 			RaiseEvent(new ColorClickEventArgs() { ColorIndex = paletteIndex, Color = Color.FromUInt32(PaletteColors[paletteIndex]) });
 
+			if(SelectionMode == PaletteSelectionMode.None) {
+				return;
+			}
 			if(SelectionMode == PaletteSelectionMode.SingleColor) {
 				paletteIndex /= 1;
 			} else if(SelectionMode == PaletteSelectionMode.FourColors) {

@@ -51,7 +51,7 @@ namespace Mesen.Debugger.ViewModels
 		private DebugTilemapInfo _tilemapInfo;
 		private PictureViewer _picViewer;
 		private BaseState? _ppuState;
-		private byte[]? _prevVram;
+		private byte[] _prevVram = Array.Empty<byte>();
 		private byte[] _vram = Array.Empty<byte>();
 		private UInt32[] _rgbPalette = Array.Empty<UInt32>();
 		private UInt32[] _rawPalette = Array.Empty<UInt32>();
@@ -140,6 +140,37 @@ namespace Mesen.Debugger.ViewModels
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileAddress >= 0) {
 							TileViewerWindow.OpenAtTile(CpuType, GetVramMemoryType(), tile.Value.TileAddress, _tilemapInfo.Format, TileLayout.Normal, tile.Value.PaletteIndex);
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.EditTile,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TilemapViewer_EditTile),
+					OnClick = () => EditTileGrid(1, 1, wnd)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.EditTiles,
+					SubActions = new() {
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"1x2 ({GridSizeX}px x {GridSizeY*2}px)",
+							OnClick = () => EditTileGrid(1, 2, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"2x1 ({GridSizeX*2}px x {GridSizeY}px)",
+							OnClick = () => EditTileGrid(2, 1, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"2x2 ({GridSizeX*2}px x {GridSizeY*2}px)",
+							OnClick = () => EditTileGrid(2, 2, wnd)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.Custom,
+							CustomText = $"4x4 ({GridSizeX*4}px x {GridSizeY*4}px)",
+							OnClick = () => EditTileGrid(4, 4, wnd)
 						}
 					}
 				},
@@ -277,7 +308,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private DebugTilemapTileInfo? GetSelectedTileInfo()
 		{
-			if(_ppuState == null || _prevVram == null) {
+			if(_ppuState == null || _vram == null) {
 				return null;
 			} else {
 				PixelPoint p;
@@ -289,7 +320,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 					p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
 				}
-				return DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _prevVram, _ppuState);
+				return DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _vram, _ppuState);
 			}
 		}
 
@@ -323,7 +354,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			return new GetTilemapOptions() {
 				Layer = (byte)tab.Layer,
-				CompareVram = prevVram,
+				CompareVram = prevVram?.Length > 0 ? prevVram : null,
 				AccessCounters = accessCounters,
 				TileHighlightMode = Config.TileHighlightMode,
 				AttributeHighlightMode = Config.AttributeHighlightMode,
@@ -360,7 +391,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				BaseState ppuState = _ppuState;
-				byte[]? prevVram = _prevVram;
+				byte[] prevVram = _prevVram;
 				byte[] vram = _vram;
 				uint[] palette = _rgbPalette;
 				AddressCounters[] accessCounters = _accessCounters;
@@ -428,11 +459,11 @@ namespace Mesen.Debugger.ViewModels
 
 		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
 		{
-			if(_ppuState == null || _prevVram == null) {
+			if(_ppuState == null) {
 				return null;
 			}
 
-			DebugTilemapTileInfo? result = DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _prevVram, _ppuState);
+			DebugTilemapTileInfo? result = DebugApi.GetTilemapTileInfo((uint)p.X, (uint)p.Y, CpuType, GetOptions(SelectedTab), _vram, _ppuState);
 			if(result == null) {
 				return null;
 			}
@@ -489,6 +520,31 @@ namespace Mesen.Debugger.ViewModels
 				return tooltipToUpdate;
 			} else {
 				return new DynamicTooltip() { Items = entries };
+			}
+		}
+
+		private void EditTileGrid(int columnCount, int rowCount, Window wnd)
+		{
+			if(_ppuState != null) {
+				PixelPoint p = ViewerMousePos ?? PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
+				List<AddressInfo> addresses = new();
+				MemoryType memType = GetVramMemoryType();
+				int palette = -1;
+				for(int row = 0; row < rowCount; row++) {
+					for(int col = 0; col < columnCount; col++) {
+						DebugTilemapTileInfo? tile = DebugApi.GetTilemapTileInfo((uint)(p.X + GridSizeX*col), (uint)(p.Y + GridSizeY*row), CpuType, GetOptions(SelectedTab), _vram, _ppuState);
+						if(tile == null) {
+							return;
+						}
+
+						if(palette == -1) {
+							palette = tile.Value.PaletteIndex;
+						}
+						addresses.Add(new AddressInfo() { Address = tile.Value.TileAddress, Type = memType });
+					}
+				}
+				palette = Math.Max(0, palette);
+				TileEditorWindow.OpenAtTile(addresses, columnCount, _tilemapInfo.Format, palette, wnd);
 			}
 		}
 

@@ -107,7 +107,7 @@ FrameInfo GbPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& state
 
 DebugTilemapTileInfo GbPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState)
 {
-	DebugTilemapTileInfo result;
+	DebugTilemapTileInfo result = {};
 
 	FrameInfo size = GetTilemapSize(options, baseState);
 
@@ -192,11 +192,18 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 	
 	uint8_t tileIndex = (uint8_t)sprite.TileIndex;
 	uint16_t tileBank = useSecondTable ? 0x2000 : 0x0000;
+	uint16_t tileStart;
 	if(state.LargeSprites) {
-		tileIndex &= 0xFE;
+		tileStart = (tileIndex & 0xFE) * 16;
+		sprite.TileAddresses[0] = tileStart;
+		sprite.TileAddresses[1] = tileStart + 16;
+		sprite.TileCount = 2;
+	} else {
+		tileStart = tileIndex * 16;
+		sprite.TileAddresses[0] = tileStart;
+		sprite.TileCount = 1;
 	}
 
-	uint16_t tileStart = tileIndex * 16;
 	tileStart |= tileBank;
 
 	sprite.TileAddress = tileStart;
@@ -231,7 +238,7 @@ void GbPpuTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseS
 	}
 }
 
-DebugPaletteInfo GbPpuTools::GetPaletteInfo()
+DebugPaletteInfo GbPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
 	GbPpuState state;

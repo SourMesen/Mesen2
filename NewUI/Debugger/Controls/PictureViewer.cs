@@ -214,12 +214,12 @@ namespace Mesen.Debugger.Controls
 
 		public void ZoomIn()
 		{
-			Zoom = Math.Min(20, Math.Max(1, Zoom + 1));
+			Zoom = Math.Min(40, Math.Max(1, Zoom + 1));
 		}
 
 		public void ZoomOut()
 		{
-			Zoom = Math.Min(20, Math.Max(1, Zoom - 1));
+			Zoom = Math.Min(40, Math.Max(1, Zoom - 1));
 		}
 
 		public async void ExportToPng()
@@ -247,12 +247,24 @@ namespace Mesen.Debugger.Controls
 		protected override void OnPointerMoved(PointerEventArgs e)
 		{
 			base.OnPointerMoved(e);
+			PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
+			if(p == null) {
+				e.Handled = true;
+				MouseOverRect = null;
+				return;
+			}
+
 			if(ShowMousePosition) {
-				PixelPoint? p = GetGridPointFromMousePoint(e.GetCurrentPoint(this).Position);
-				if(p != null) {
-					MouseOverRect = GetTileRect(p.Value);
-				} else {
-					MouseOverRect = null;
+				MouseOverRect = GetTileRect(p.Value);
+			}
+
+			PointerPointProperties props = e.GetCurrentPoint(this).Properties;
+			if(props.IsLeftButtonPressed || props.IsRightButtonPressed) {
+				PositionClickedEventArgs args = new(p.Value, props, PositionClickedEvent);
+				RaiseEvent(args);
+
+				if(!args.Handled && AllowSelection) {
+					SelectionRect = GetTileRect(p.Value);
 				}
 			}
 		}
@@ -271,7 +283,7 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			PositionClickedEventArgs args = new() { RoutedEvent = PositionClickedEvent, Position = p.Value };
+			PositionClickedEventArgs args = new(p.Value, e.GetCurrentPoint(this).Properties, PositionClickedEvent);
 			RaiseEvent(args);
 
 			if(!args.Handled && AllowSelection) {
@@ -441,6 +453,14 @@ namespace Mesen.Debugger.Controls
 	public class PositionClickedEventArgs : RoutedEventArgs
 	{
 		public PixelPoint Position;
+		public PointerPointProperties Properties;
+
+		public PositionClickedEventArgs(PixelPoint position, PointerPointProperties properties, RoutedEvent evt)
+		{
+			Position = position;
+			Properties = properties;
+			RoutedEvent = evt;
+		}
 	}
 
 	public class GridRowColumn

@@ -25,6 +25,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(AllowSelection), true);
+		public static readonly StyledProperty<bool> AllowClickDragProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(AllowClickDrag), true);
 		
 		public static readonly StyledProperty<GridRowColumn?> GridHighlightProperty = AvaloniaProperty.Register<ScrollPictureViewer, GridRowColumn?>(nameof(GridHighlight), null);
 
@@ -102,6 +103,12 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowAltGridProperty, value); }
 		}
 
+		public bool AllowClickDrag
+		{
+			get { return GetValue(AllowClickDragProperty); }
+			set { SetValue(AllowClickDragProperty, value); }
+		}
+
 		public Rect SelectionRect
 		{
 			get { return GetValue(SelectionRectProperty); }
@@ -141,6 +148,7 @@ namespace Mesen.Debugger.Controls
 		public ScrollPictureViewer()
 		{
 			InitializeComponent();
+			Background = new SolidColorBrush(0xFF202020);
 		}
 
 		private void InitializeComponent()
@@ -157,7 +165,7 @@ namespace Mesen.Debugger.Controls
 
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
-			if(e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) {
+			if(AllowClickDrag && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) {
 				Vector offset = ScrollOffset;
 				offset -= e.GetPosition(this) - _lastPosition;
 				if(offset.X < 0) {

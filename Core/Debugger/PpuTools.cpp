@@ -164,6 +164,7 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 		case TileBackground::Black: bgColor = 0xFF000000; break;
 		case TileBackground::White: bgColor = 0xFFFFFFFF; break;
 		case TileBackground::Magenta: bgColor = 0xFFFF00FF; break;
+		case TileBackground::Transparent: bgColor = 0; break;
 	}
 
 	uint32_t outputSize = tileCount * tileWidth * tileHeight;
@@ -242,6 +243,96 @@ void PpuTools::RemoveViewer(uint32_t viewerId)
 {
 	DebugBreakHelper helper(_debugger);
 	_updateTimings.erase(viewerId);
+}
+
+void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color)
+{
+	ConsoleMemoryInfo memInfo = _emu->GetMemory(tileAddress.Type);
+	if(!memInfo.Memory || memInfo.Size == 0) {
+		return;
+	}
+
+	int rowOffset;
+	switch(format) {
+		default: rowOffset = 2; break;
+		case TileFormat::Mode7:
+		case TileFormat::Mode7DirectColor:
+		case TileFormat::Mode7ExtBg:
+			rowOffset = 16;
+			break;
+
+		case TileFormat::NesBpp2: rowOffset = 1; break;
+		case TileFormat::PceSpriteBpp4: rowOffset = 2; break;
+	}
+
+	uint8_t* ram = (uint8_t*)memInfo.Memory;
+	int rowStart = tileAddress.Address + (y * rowOffset);
+	int ramMask = (memInfo.Size - 1);
+
+	uint8_t shift = (7 - x);
+
+	auto setBit = [&](uint32_t addr, uint8_t bitNumber, uint8_t bitValue) {
+		ram[addr & ramMask] &= ~(1 << bitNumber);
+		ram[addr & ramMask] |= (bitValue & 0x01) << bitNumber;
+	};
+
+	switch(format) {
+		case TileFormat::PceSpriteBpp4:
+		{
+			shift = 15 - x;
+			if(shift >= 8) {
+				shift -= 8;
+				rowStart++;
+			}
+			
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 32, shift, (color & 0x02) >> 1);
+			setBit(rowStart + 64, shift, (color & 0x04) >> 2);
+			setBit(rowStart + 96, shift, (color & 0x08) >> 3);
+			break;
+		}
+
+		case TileFormat::Bpp2:
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			break;
+
+		case TileFormat::NesBpp2:
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 8, shift, (color & 0x02) >> 1);
+			break;
+
+		case TileFormat::Bpp4:
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
+			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
+			break;
+
+		case TileFormat::Bpp8:
+		case TileFormat::DirectColor:
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
+			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
+			setBit(rowStart + 32, shift, (color & 0x10) >> 4);
+			setBit(rowStart + 33, shift, (color & 0x20) >> 5);
+			setBit(rowStart + 48, shift, (color & 0x40) >> 6);
+			setBit(rowStart + 49, shift, (color & 0x80) >> 7);
+			break;
+
+		case TileFormat::Mode7:
+		case TileFormat::Mode7DirectColor:
+			ram[(rowStart + x * 2 + 1) & ramMask] = color;
+			break;
+
+		case TileFormat::Mode7ExtBg:
+			ram[(rowStart + x * 2 + 1) & ramMask] = color;
+			break;
+
+		default:
+			throw std::runtime_error("unsupported format");
+	}
 }
 
 void PpuTools::UpdateViewers(uint16_t scanline, uint16_t cycle)

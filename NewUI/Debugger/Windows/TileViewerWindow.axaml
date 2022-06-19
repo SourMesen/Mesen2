@@ -134,10 +134,10 @@
 							IsEnabled="{CompiledBinding !Config.UseGrayscalePalette}"
 							BlockSize="12"
 							SelectionMode="{CompiledBinding PaletteSelectionMode}"
-							SelectedPalette="{CompiledBinding Config.SelectedPalette}"
 							PaletteColors="{CompiledBinding PaletteColors}"
 							RawPalette="{CompiledBinding RawPalette}"
 							RawFormat="{CompiledBinding RawFormat}"
+							SelectedPalette="{CompiledBinding SelectedPalette}"
 						/>
 						<Rectangle
 							Fill="{StaticResource DisabledOverlayBrush}"

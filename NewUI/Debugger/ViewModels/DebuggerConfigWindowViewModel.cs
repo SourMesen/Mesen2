@@ -109,9 +109,12 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.TilemapViewer_ViewInTileViewer,
 				DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint,
 				DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint,
+				DebuggerShortcut.TilemapViewer_EditTile,
 				DebuggerShortcut.TileViewer_ViewInMemoryViewer,
+				DebuggerShortcut.TileViewer_EditTile,
 				DebuggerShortcut.SpriteViewer_ViewInMemoryViewer,
-				DebuggerShortcut.SpriteViewer_ViewInTileViewer
+				DebuggerShortcut.SpriteViewer_ViewInTileViewer,
+				DebuggerShortcut.SpriteViewer_EditSprite
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {

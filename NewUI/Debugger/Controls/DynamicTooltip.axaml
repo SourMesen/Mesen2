@@ -30,7 +30,7 @@
 					MinWidth="{Binding FirstColumnWidth, ElementName=root}"
 					IsVisible="{Binding Name.Length}"
 					Margin="0 3 10 2"
-					/>
+				/>
 				<ContentControl Content="{Binding Value}">
 					<ContentControl.DataTemplates>
 						<DataTemplate DataType="x:String">

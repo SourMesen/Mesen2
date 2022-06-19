@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia;
 using Mesen.Debugger;
 using Mesen.Utilities;
 
@@ -279,7 +280,8 @@ namespace Mesen.Interop
 			return sprites;
 		}
 
-		[DllImport(DllPath)] public static extern DebugPaletteInfo GetPaletteInfo(CpuType cpuType);
+		[DllImport(DllPath)] public static extern DebugPaletteInfo GetPaletteInfo(CpuType cpuType, GetPaletteInfoOptions options = new());
+		[DllImport(DllPath)] public static extern void SetTilePixel(AddressInfo tileAddress, TileFormat format, int x, int y, int color);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
 
@@ -781,11 +783,12 @@ namespace Mesen.Interop
 
 	public enum TileBackground
 	{
-		Default = 0,
-		PaletteColor = 1,
-		Black = 2,
-		White = 3,
-		Magenta = 4
+		Default,
+		Transparent,
+		PaletteColor,
+		Black,
+		White,
+		Magenta,
 	}
 
 	public enum NullableBoolean
@@ -874,6 +877,11 @@ namespace Mesen.Interop
 		public Int32 SelectedSprite;
 	}
 
+	public struct GetPaletteInfoOptions
+	{
+		public TileFormat Format;
+	}
+
 	public struct DebugSpritePreviewInfo
 	{
 		public UInt32 Width;
@@ -918,6 +926,9 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool Visible;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExtendedVram;
 		public NullableBoolean UseSecondTable;
+
+		public UInt32 TileCount;
+		public fixed UInt32 TileAddresses[8*8];
 
 		public fixed UInt32 SpritePreview[64*64];
 	}
@@ -974,6 +985,31 @@ namespace Mesen.Interop
 		Mode7ExtBg,
 		NesBpp2,
 		PceSpriteBpp4
+	}
+
+	public static class TileFormatExtensions
+	{
+		public static PixelSize GetTileSize(this TileFormat format)
+		{
+			return format switch {
+				TileFormat.PceSpriteBpp4 => new PixelSize(16, 16),
+				_ => new PixelSize(8, 8),
+			};
+		}
+
+		public static int GetBitsPerPixel(this TileFormat format)
+		{
+			return format switch {
+				TileFormat.Bpp2 => 2,
+				TileFormat.Bpp4 => 4,
+				TileFormat.DirectColor => 8,
+				TileFormat.Mode7 => 16,
+				TileFormat.Mode7DirectColor => 16,
+				TileFormat.NesBpp2 => 2,
+				TileFormat.PceSpriteBpp4 => 4,
+				_ => 8,
+			};
+		}
 	}
 
 	public enum TileLayout

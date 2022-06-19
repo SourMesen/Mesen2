@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -110,7 +111,12 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
+			if(Design.IsDesignMode || wnd == null) {
+				return;
+			}
+
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
+				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction(),
 				new ContextMenuSeparator(),
@@ -121,18 +127,16 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			DebugShortcutManager.CreateContextMenu(_spriteGrid, new List<object> {
+				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction()
 			});
 
 			DebugShortcutManager.CreateContextMenu(listView, new List<object> {
+				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
 				GetViewInTileViewerAction()
 			});
-
-			if(Design.IsDesignMode || wnd == null) {
-				return;
-			}
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => {
 				UpdateSelectionPreview();
@@ -151,6 +155,29 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private ContextMenuAction GetEditTileAction(Window wnd)
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.EditSprite,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SpriteViewer_EditSprite),
+				IsEnabled = () => GetSelectedSprite() != null,
+				OnClick = () => {
+					SpritePreviewModel? sprite = GetSelectedSprite();
+					if(sprite?.TileAddress >= 0 && _palette != null) {
+						PixelSize size = sprite.Format.GetTileSize();
+						DebugPaletteInfo pal = _palette.Get();
+						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
+						TileEditorWindow.OpenAtTile(
+							sprite.TileAddresses.Select(x => new AddressInfo() { Address = (int)x, Type = CpuType.GetVramMemoryType(sprite.UseExtendedVram) }).ToList(),
+							sprite.Width / size.Width,
+							sprite.Format,
+							sprite.Palette + paletteOffset,
+							wnd);
+					}
+				}
+			};
 		}
 
 		private ContextMenuAction GetViewInMemoryViewerAction()
