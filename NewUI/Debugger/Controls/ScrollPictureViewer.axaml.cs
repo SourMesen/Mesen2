@@ -163,6 +163,19 @@ namespace Mesen.Debugger.Controls
 			_lastPosition = e.GetCurrentPoint(this).Position;
 		}
 
+		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+		{
+			base.OnPointerWheelChanged(e);
+			if(e.KeyModifiers == KeyModifiers.Control) {
+				if(e.Delta.Y > 0) {
+					InnerViewer.ZoomIn();
+				} else {
+					InnerViewer.ZoomOut();
+				}
+				e.Handled = true;
+			}
+		}
+
 		private void Viewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(AllowClickDrag && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) {
