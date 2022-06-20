@@ -51,28 +51,23 @@ namespace Mesen.Debugger.ViewModels
 			int selection = Selection.SelectedIndex;
 
 			List<LabelViewModel> sortedLabels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
+
+			Dictionary<string, Func<LabelViewModel, LabelViewModel, int>> comparers = new() {
+				{ "Label", (a, b) => string.Compare(a.Label.Label, b.Label.Label, StringComparison.OrdinalIgnoreCase) },
+				{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
+				{ "AbsAddr", (a, b) => a.Label.Address.CompareTo(b.Label.Address) },
+				{ "Comment", (a, b) => string.Compare(a.Label.Comment, b.Label.Comment, StringComparison.OrdinalIgnoreCase) },
+			};
+
 			sortedLabels.Sort((a, b) => {
-				int result = 0;
-
 				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
-					}
-
-					Compare("Label", () => string.Compare(a.Label.Label, b.Label.Label));
-					Compare("RelAddr", () => a.RelAddress.CompareTo(b.RelAddress));
-					Compare("AbsAddr", () => a.Label.Address.CompareTo(b.Label.Address));
-					Compare("Comment", () => string.CompareOrdinal(a.Label.Comment, b.Label.Comment));
-
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				return result;
+				return comparers["Label"](a, b);
 			});
 
 			Labels.Replace(sortedLabels);

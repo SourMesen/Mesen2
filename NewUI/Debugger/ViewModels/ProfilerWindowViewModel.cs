@@ -67,7 +67,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public MesenList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
 		[Reactive] public SelectionModel<ProfiledFunctionViewModel> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
-		
+
 		private ProfiledFunction[] _profilerData = Array.Empty<ProfiledFunction>();
 		private UInt64 _totalCycles;
 
@@ -127,33 +127,27 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType cpuType = CpuType;
 
+			Dictionary<string, Func<ProfiledFunction, ProfiledFunction, int>> comparers = new() {
+				{ "FunctionName", (a, b) => string.Compare(a.GetFunctionName(cpuType), b.GetFunctionName(cpuType), StringComparison.OrdinalIgnoreCase) },
+				{ "CallCount", (a, b) => a.CallCount.CompareTo(b.CallCount) },
+				{ "InclusiveTime", (a, b) => a.InclusiveCycles.CompareTo(b.InclusiveCycles) },
+				{ "InclusiveTimePercent", (a, b) => a.InclusiveCycles.CompareTo(b.InclusiveCycles) },
+				{ "ExclusiveTime", (a, b) => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles) },
+				{ "ExclusiveTimePercent", (a, b) => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles) },
+				{ "AvgCycles", (a, b) => a.GetAvgCycles().CompareTo(b.GetAvgCycles()) },
+				{ "MinCycles", (a, b) => a.MinCycles.CompareTo(b.MinCycles) },
+				{ "MaxCycles", (a, b) => a.MaxCycles.CompareTo(b.MaxCycles) },
+			};
+
 			Array.Sort(_profilerData, (a, b) => {
-				int result = 0;
-
 				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
-					}
-
-					Compare("FunctionName", () => a.GetFunctionName(cpuType).CompareTo(b.GetFunctionName(cpuType)));
-					Compare("CallCount", () => a.CallCount.CompareTo(b.CallCount));
-					Compare("InclusiveTime", () => a.InclusiveCycles.CompareTo(b.InclusiveCycles));
-					Compare("InclusiveTimePercent", () => a.InclusiveCycles.CompareTo(b.InclusiveCycles));
-					Compare("ExclusiveTime", () => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles));
-					Compare("ExclusiveTimePercent", () => a.ExclusiveCycles.CompareTo(b.ExclusiveCycles));
-					Compare("AvgCycles", () => a.GetAvgCycles().CompareTo(b.GetAvgCycles()));
-					Compare("MinCycles", () => a.MinCycles.CompareTo(b.MinCycles));
-					Compare("MaxCycles", () => a.MaxCycles.CompareTo(b.MaxCycles));
-
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				return result != 0 ? result : a.InclusiveCycles.CompareTo(b.InclusiveCycles);
+				return a.InclusiveCycles.CompareTo(b.InclusiveCycles);
 			});
 		}
 	}

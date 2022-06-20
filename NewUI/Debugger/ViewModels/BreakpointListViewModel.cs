@@ -48,29 +48,23 @@ namespace Mesen.Debugger.ViewModels
 			int selection = Selection.SelectedIndex;
 
 			List<BreakpointViewModel> sortedBreakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
+
+			Dictionary<string, Func<BreakpointViewModel, BreakpointViewModel, int>> comparers = new() {
+				{ "Enabled", (a, b) => a.Breakpoint.Enabled.CompareTo(b.Breakpoint.Enabled) },
+				{ "Marked", (a, b) => a.Breakpoint.MarkEvent.CompareTo(b.Breakpoint.MarkEvent) },
+				{ "Type", (a, b) => string.Compare(a.Breakpoint.ToReadableType(), b.Breakpoint.ToReadableType(), StringComparison.OrdinalIgnoreCase) },
+				{ "Address", (a, b) => string.Compare(a.Breakpoint.GetAddressString(true), b.Breakpoint.GetAddressString(true), StringComparison.OrdinalIgnoreCase) },
+				{ "Condition", (a, b) => string.Compare(a.Breakpoint.Condition, b.Breakpoint.Condition, StringComparison.OrdinalIgnoreCase) },
+			};
+
 			sortedBreakpoints.Sort((a, b) => {
-				int result = 0;
-
 				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
-					}
-
-					Compare("Enabled", () => a.Breakpoint.Enabled.CompareTo(b.Breakpoint.Enabled));
-					Compare("Marked", () => a.Breakpoint.MarkEvent.CompareTo(b.Breakpoint.MarkEvent));
-					Compare("Type", () => a.Breakpoint.ToReadableType().CompareTo(b.Breakpoint.ToReadableType()));
-					Compare("Address", () => a.Breakpoint.GetAddressString(true).CompareTo(b.Breakpoint.GetAddressString(true)));
-					Compare("Condition", () => a.Breakpoint.Condition.CompareTo(b.Breakpoint.Condition));
-
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
-
-				return result;
+				return comparers["Address"](a, b);
 			});
 
 			Breakpoints.Replace(sortedBreakpoints);

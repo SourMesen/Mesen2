@@ -40,27 +40,22 @@ namespace Mesen.ViewModels
 		public void Sort(object? param = null)
 		{
 			List<CheatCode> sortedCheats = new List<CheatCode>(Cheats);
+
+			Dictionary<string, Func<CheatCode, CheatCode, int>> comparers = new() {
+				{ "Enabled", (a, b) => a.Enabled.CompareTo(b.Enabled) },
+				{ "Description", (a, b) => string.Compare(a.Description, b.Description, StringComparison.OrdinalIgnoreCase) },
+				{ "Codes", (a, b) => string.Compare(a.Codes, b.Codes, StringComparison.OrdinalIgnoreCase) }
+			};
+
 			sortedCheats.Sort((a, b) => {
-				int result = 0;
-
 				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
-					}
-
-					Compare("Enabled", () => a.Enabled.CompareTo(b.Enabled));
-					Compare("Description", () => a.Description.CompareTo(b.Description));
-					Compare("Codes", () => a.Codes.CompareTo(b.Codes));
-
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				return result;
+				return comparers["Codes"](a, b);
 			});
 
 			Cheats.Replace(sortedCheats);

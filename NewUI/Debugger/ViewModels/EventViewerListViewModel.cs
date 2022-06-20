@@ -6,6 +6,7 @@ using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -41,37 +42,28 @@ namespace Mesen.Debugger.ViewModels
 		{
 			_debugEvents = DebugApi.GetDebugEvents(EventViewer.CpuType);
 
+			Dictionary<string, Func<DebugEventInfo, DebugEventInfo, int>> comparers = new() {
+				{ "ProgramCounter", (a, b) => a.ProgramCounter.CompareTo(b.ProgramCounter) },
+				{ "Scanline", (a, b) => a.Scanline.CompareTo(b.Scanline) },
+				{ "Cycle", (a, b) => a.Cycle.CompareTo(b.Cycle) },
+				{ "Type", (a, b) => a.Type.CompareTo(b.Type) },
+				{ "Address", (a, b) => a.Operation.Address.CompareTo(b.Operation.Address) },
+				{ "Value", (a, b) => a.Operation.Value.CompareTo(b.Operation.Value)},
+			};
+
 			Array.Sort(_debugEvents, (a, b) => {
-				int result = 0;
-
 				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
-					}
-
-					Compare("ProgramCounter", () => a.ProgramCounter.CompareTo(b.ProgramCounter));
-					Compare("Scanline", () => a.Scanline.CompareTo(b.Scanline));
-					Compare("Cycle", () => a.Cycle.CompareTo(b.Cycle));
-					Compare("Type", () => a.Type.CompareTo(b.Type));
-					Compare("Address", () => a.Operation.Address.CompareTo(b.Operation.Address));
-					Compare("Value", () => a.Operation.Value.CompareTo(b.Operation.Value));
-
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				if(result == 0) {
-					result = a.Scanline.CompareTo(b.Scanline);
-					if(result == 0) {
-						result = a.Cycle.CompareTo(b.Cycle);
-					}
-				}
-
-				return result;
+				int compResult = a.Scanline.CompareTo(b.Scanline);
+				if(compResult == 0) {
+					compResult = a.Cycle.CompareTo(b.Cycle);
+				}				
+				return compResult;
 			});
 
 			if(DebugEvents.Count < _debugEvents.Length) {

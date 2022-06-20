@@ -78,33 +78,32 @@ namespace Mesen.Debugger.ViewModels
 
 			List<SpritePreviewModel> newList = new(SpriteViewer.SpritePreviews.Select(x => x.Clone()).ToList());
 
-			newList.Sort((a, b) => {
-				int result = 0;
-
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					void Compare(string name, Func<int> compare)
-					{
-						if(result == 0 && column == name) {
-							result = compare() * (order == ListSortDirection.Ascending ? 1 : -1);
-						}
+			Dictionary<string, Func<SpritePreviewModel, SpritePreviewModel, int>> comparers = new() {
+				{ "SpriteIndex", (a, b) => a.SpriteIndex.CompareTo(b.SpriteIndex) },
+				{ "X", (a, b) => a.X.CompareTo(b.X) },
+				{ "Y", (a, b) => a.Y.CompareTo(b.Y) },
+				{ "TileIndex", (a, b) => a.TileIndex.CompareTo(b.TileIndex) },
+				{ "Size", (a, b) => {
+					int result = a.Width.CompareTo(b.Width);
+					if(result == 0) {
+						return a.Height.CompareTo(b.Height);
 					}
+					return result;
+				} },
+				{ "Palette", (a, b) => a.Palette.CompareTo(b.Palette) },
+				{ "Priority", (a, b) => a.Priority.CompareTo(b.Priority) },
+				{ "Flags", (a, b) => string.Compare(a.Flags, b.Flags, StringComparison.OrdinalIgnoreCase) }
+			};
 
-					Compare("SpriteIndex", () => a.SpriteIndex.CompareTo(b.SpriteIndex));
-					Compare("X", () => a.X.CompareTo(b.X));
-					Compare("Y", () => a.Y.CompareTo(b.Y));
-					Compare("TileIndex", () => a.TileIndex.CompareTo(b.TileIndex));
-					Compare("Size", () => a.Width.CompareTo(b.Width));
-					Compare("Size", () => a.Height.CompareTo(b.Height));
-					Compare("Palette", () => a.Palette.CompareTo(b.Palette));
-					Compare("Priority", () => a.Priority.CompareTo(b.Priority));
-					Compare("Flags", () => a.Flags?.CompareTo(b.Flags) ?? 0);
-
+			newList.Sort((a, b) => {
+				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
+					int result = comparers[column](a, b);
 					if(result != 0) {
-						return result;
+						return result * (order == ListSortDirection.Ascending ? 1 : -1);
 					}
 				}
 
-				return result != 0 ? result : a.SpriteIndex.CompareTo(b.SpriteIndex);
+				return a.SpriteIndex.CompareTo(b.SpriteIndex);
 			});
 
 			for(int i = 0; i < newList.Count; i++) {
