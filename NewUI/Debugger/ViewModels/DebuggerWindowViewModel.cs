@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -230,7 +231,7 @@ namespace Mesen.Debugger.ViewModels
 		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)
 		{
 			if(forBreak) {
-				if(ConsoleStatus != null) {
+				if(ConsoleStatus?.EditAllowed == false) {
 					ConsoleStatus.EditAllowed = true;
 				}
 				UpdateStatusBar(evt);
@@ -311,8 +312,19 @@ namespace Mesen.Debugger.ViewModels
 		public void ProcessResumeEvent()
 		{
 			if(ConsoleStatus != null) {
-				ConsoleStatus.EditAllowed = false;
+				//Disable status fields in 50ms (if the debugger isn't paused by then)
+				//This improves performance when stepping through code, etc.
+				Task.Run(() => {
+					System.Threading.Thread.Sleep(50);
+					Dispatcher.UIThread.Post(() => {
+						BaseConsoleStatusViewModel status = ConsoleStatus;
+						if(status != null && status.EditAllowed && !EmuApi.IsPaused()) {
+							status.EditAllowed = false;
+						}
+					});
+				});
 			}
+
 			Disassembly.SetActiveAddress(null);
 			Disassembly.Refresh();
 			SourceView?.Refresh(null);
