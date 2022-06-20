@@ -16,10 +16,6 @@
 		<vm:CallStackViewModel />
 	</Design.DataContext>
 
-	<UserControl.Resources>
-		<du:HexConverter x:Key="Hex" />
-	</UserControl.Resources>
-
 	<UserControl.Styles>
 		<Style Selector="DataBoxCell">
 			<Setter Property="Foreground" Value="{Binding Path=RowBrush}"/>
@@ -36,16 +32,19 @@
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn
-					Header="Function (Entry Address)"
+					Header="Function"
 					Binding="{Binding EntryPoint}"
 					Width="1*" 
-					CanUserResize="True"
 				/>
 				<DataBoxTextColumn
 					Header="PC Address"
-					Binding="{Binding RelAddress, Converter={StaticResource Hex}, ConverterParameter='$X4'}}"
+					Binding="{Binding PcAddress}"
 					Width="1*"
-					CanUserResize="True"
+				/>
+				<DataBoxTextColumn
+					Header="ROM Address"
+					Binding="{Binding AbsAddress}"
+					Width="1*"
 				/>
 			</DataBox.Columns>
 		</DataBox>

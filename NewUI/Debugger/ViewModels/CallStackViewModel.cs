@@ -147,6 +147,21 @@ namespace Mesen.Debugger.ViewModels
 		public class StackInfo
 		{
 			public string EntryPoint { get; set; } = "";
+
+			public string PcAddress => $"${RelAddress:X4}";
+
+			public string AbsAddress
+			{
+				get
+				{
+					if(Address.Address >= 0) {
+						return $"${Address.Address:X4} [{Address.Type.GetShortName()}]";
+					} else {
+						return "";
+					}
+				}
+			}
+
 			public AddressInfo? EntryPointAddr { get; set; }
 
 			public UInt32 RelAddress { get; set; }
