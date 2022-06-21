@@ -157,6 +157,9 @@ enum class RawPaletteFormat
 
 struct DebugPaletteInfo
 {
+	MemoryType PaletteMemType;
+	bool HasMemType;
+
 	uint32_t ColorCount;
 	uint32_t BgColorCount;
 	uint32_t SpriteColorCount;
@@ -198,6 +201,7 @@ public:
 	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
 
 	void SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color);
+	virtual void SetPaletteColor(int32_t colorIndex, uint32_t color) = 0;
 
 	virtual void SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle);
 	void RemoveViewer(uint32_t viewerId);

@@ -146,10 +146,10 @@ namespace Mesen.Debugger.Controls
 
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			if(PaletteColors != null) {
+			if(PaletteColors != null && ColumnCount > 0) {
 				return new Size(ColumnCount * BlockSize, (PaletteColors.Length / ColumnCount) * BlockSize);
 			} else {
-				return availableSize;
+				return new Size(0,0);
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace Mesen.Debugger.Controls
 		{
 			UInt32[] paletteColors = PaletteColors;
 			
-			if(paletteColors == null) {
+			if(paletteColors == null || ColumnCount == 0) {
 				return;
 			}
 
@@ -207,7 +207,7 @@ namespace Mesen.Debugger.Controls
 			int columnCount = ColumnCount;
 			int rowCount = paletteColors.Length / columnCount;
 			double width = size.Width / columnCount;
-			double height = size.Height / rowCount;
+			double height = rowCount == 0 ? size.Height : (size.Height / rowCount);
 			if(BlockSize > 0) {
 				width = BlockSize;
 				height = BlockSize;

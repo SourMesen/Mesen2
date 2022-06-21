@@ -22,4 +22,5 @@ public:
 	void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) override;
 
 	DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) override;
+	void SetPaletteColor(int32_t colorIndex, uint32_t color) override;
 };

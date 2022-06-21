@@ -11,7 +11,7 @@ namespace Mesen.Utilities
 {
 	static class WindowExtensions
 	{
-		private static void CenterWindow(Window child, Control parent)
+		public static void CenterWindow(Window child, Control parent)
 		{
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
 			Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);

@@ -26,7 +26,9 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			_model = new PaletteViewerViewModel(cpuType, this);
+			PaletteSelector palSelector = this.FindControl<PaletteSelector>("palSelector");
+			_model = new PaletteViewerViewModel(cpuType);
+			_model.InitActions(this, palSelector);
 			DataContext = _model;
 
 			_model.Config.LoadWindowSettings(this);
@@ -35,7 +37,6 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			PaletteSelector palSelector = this.FindControl<PaletteSelector>("palSelector");
 			palSelector.PointerMoved += PalSelector_PointerMoved;
 			palSelector.PointerLeave += PalSelector_PointerLeave;
 			PointerWheelChanged += Window_PointerWheelChanged;

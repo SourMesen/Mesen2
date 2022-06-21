@@ -281,6 +281,7 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern DebugPaletteInfo GetPaletteInfo(CpuType cpuType, GetPaletteInfoOptions options = new());
+		[DllImport(DllPath)] public static extern void SetPaletteColor(CpuType cpuType, int colorIndex, UInt32 color);
 		[DllImport(DllPath)] public static extern void SetTilePixel(AddressInfo tileAddress, TileFormat format, int x, int y, int color);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
@@ -942,6 +943,9 @@ namespace Mesen.Interop
 
 	public unsafe struct DebugPaletteInfo
 	{
+		public MemoryType PaletteMemType;
+		[MarshalAs(UnmanagedType.I1)] public bool HasMemType;
+
 		public UInt32 ColorCount;
 		public UInt32 BgColorCount;
 		public UInt32 SpriteColorCount;

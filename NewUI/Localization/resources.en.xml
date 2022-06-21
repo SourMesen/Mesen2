@@ -834,7 +834,12 @@
 			<Control ID="chkShowPaletteIndexes">Show palette indexes</Control>
 			<Control ID="lblSelectedColor">Selected Color</Control>
 		</Form>
-		
+
+		<Form ID="ColorIndexPickerWindow">
+			<Control ID="wndTitle">Select color...</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="SpriteViewerWindow">
 			<Control ID="wndTitle">Sprite Viewer</Control>
 
@@ -2290,6 +2295,8 @@
 			<Value ID="SpriteViewer_ViewInMemoryViewer">Sprite Viewer - View in Memory Viewer</Value>
 			<Value ID="SpriteViewer_ViewInTileViewer">Sprite Viewer - View in Tile Viewer</Value>
 			<Value ID="SpriteViewer_EditSprite">Sprite Viewer - Edit Sprite</Value>
+			<Value ID="PaletteViewer_EditColor">Palette Viewer - Edit Color</Value>
+			<Value ID="PaletteViewer_ViewInMemoryViewer">Palette Viewer - View in Memory Viewer</Value>
 			<Value ID="MemoryViewer_Freeze">Freeze</Value>
 			<Value ID="MemoryViewer_Unfreeze">Unfreeze</Value>
 			<Value ID="MemoryViewer_AddToWatch">Add to Watch</Value>
@@ -2545,6 +2552,7 @@
 			<Value ID="EditTile">Edit tile</Value>
 			<Value ID="EditTiles">Edit tiles</Value>
 			<Value ID="EditSprite">Edit sprite</Value>
+			<Value ID="EditColor">Edit color</Value>
 		</Enum>
 	</Enums>
 </Resources>

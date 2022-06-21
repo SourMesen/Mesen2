@@ -54,7 +54,7 @@
 			</StackPanel>
 		</ScrollViewer>
 			
-		<Border BorderBrush="Gray" BorderThickness="1">
+		<Border Background="#202020" BorderBrush="Gray" BorderThickness="1">
 			<ScrollViewer
 				VerticalScrollBarVisibility="Auto"
 				HorizontalScrollBarVisibility="Auto"

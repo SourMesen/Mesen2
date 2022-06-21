@@ -330,6 +330,9 @@
     <Compile Update="Debugger\Windows\GoToAllWindow.axaml.cs">
       <DependentUpon>GoToAllWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\ColorIndexPickerWindow.axaml.cs">
+      <DependentUpon>ColorIndexPickerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\MemorySearchWindow.axaml.cs">
       <DependentUpon>MemorySearchWindow.axaml</DependentUpon>
     </Compile>

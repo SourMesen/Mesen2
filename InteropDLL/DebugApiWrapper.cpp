@@ -153,6 +153,7 @@ extern "C"
 	DllExport void __stdcall GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo sprites[]) { WithToolVoid(GetPpuTools(cpuType), GetSpriteList(options, state, vram, oamRam, palette, sprites)); }
 
 	DllExport DebugPaletteInfo __stdcall GetPaletteInfo(CpuType cpuType, GetPaletteInfoOptions options) { return WithTool(DebugPaletteInfo, GetPpuTools(cpuType), GetPaletteInfo(options)); }
+	DllExport void __stdcall SetPaletteColor(CpuType cpuType, int32_t colorIndex, uint32_t color) { WithToolVoid(GetPpuTools(cpuType), SetPaletteColor(colorIndex, color)); }
 	DllExport void __stdcall SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color) { WithToolVoid(GetPpuTools(DebugUtilities::ToCpuType(tileAddress.Type)), SetTilePixel(tileAddress, format, x, y, color)); }
 
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { WithToolVoid(GetPpuTools(cpuType), SetViewerUpdateTiming(viewerId, scanline, cycle)); }

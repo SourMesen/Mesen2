@@ -114,7 +114,9 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.TileViewer_EditTile,
 				DebuggerShortcut.SpriteViewer_ViewInMemoryViewer,
 				DebuggerShortcut.SpriteViewer_ViewInTileViewer,
-				DebuggerShortcut.SpriteViewer_EditSprite
+				DebuggerShortcut.SpriteViewer_EditSprite,
+				DebuggerShortcut.PaletteViewer_EditColor,
+				DebuggerShortcut.PaletteViewer_ViewInMemoryViewer,
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {

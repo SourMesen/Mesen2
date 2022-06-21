@@ -361,6 +361,9 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 DebugPaletteInfo NesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
+	info.PaletteMemType = MemoryType::NesPaletteRam;
+	info.HasMemType = true;
+
 	info.RawFormat = RawPaletteFormat::Indexed;
 	info.ColorsPerPalette = 4;
 	info.BgColorCount = 4 * 4;
@@ -378,4 +381,11 @@ DebugPaletteInfo NesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	}
 
 	return info;
+}
+
+void NesPpuTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
+{
+	if(color < 0x3F) {
+		_debugger->GetMemoryDumper()->SetMemoryValue(MemoryType::NesPaletteRam, colorIndex, (uint8_t)color);
+	}
 }

@@ -277,6 +277,9 @@ DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 DebugPaletteInfo PceVdcTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
+	info.PaletteMemType = MemoryType::PcePaletteRam;
+	info.HasMemType = true;
+
 	info.RawFormat = RawPaletteFormat::Rgb333;
 	info.ColorsPerPalette = 16;
 	info.BgColorCount = 16 * 16;
@@ -292,4 +295,10 @@ DebugPaletteInfo PceVdcTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	}
 
 	return info;
+}
+
+void PceVdcTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
+{
+	_debugger->GetMemoryDumper()->SetMemoryValue(MemoryType::PcePaletteRam, colorIndex * 2, color & 0xFF);
+	_debugger->GetMemoryDumper()->SetMemoryValue(MemoryType::PcePaletteRam, colorIndex * 2 + 1, (color >> 8) & 0x01);
 }

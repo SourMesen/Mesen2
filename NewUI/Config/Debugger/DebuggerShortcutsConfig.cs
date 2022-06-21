@@ -213,6 +213,9 @@ namespace Mesen.Config
 
 			Add(new() { Shortcut = DebuggerShortcut.TileViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.TileViewer_EditTile, KeyBinding = new(Key.F2) });
+			
+			Add(new() { Shortcut = DebuggerShortcut.PaletteViewer_EditColor, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.PaletteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 
 			//Memory Tools
 			//Add(new() { Shortcut = eDebuggerShortcut.MemoryViewer_Freeze, KeyBinding = new(KeyModifiers.Control, Key.Q) });
@@ -367,6 +370,8 @@ namespace Mesen.Config
 		SpriteViewer_EditSprite,
 		TileViewer_ViewInMemoryViewer,
 		TileViewer_EditTile,
+		PaletteViewer_EditColor,
+		PaletteViewer_ViewInMemoryViewer,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

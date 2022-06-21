@@ -431,6 +431,9 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 {
 	DebugPaletteInfo info = {};
+	info.PaletteMemType = MemoryType::SnesCgRam;
+	info.HasMemType = true;
+
 	info.RawFormat = RawPaletteFormat::Rgb555;
 	info.ColorsPerPalette = 16;
 	info.BgColorCount = 16 * 8;
@@ -456,4 +459,15 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 			break;
 	}
 	return info;
+}
+
+void SnesPpuTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
+{
+	uint8_t r = (color >> 19) & 0x1F;
+	uint8_t g = (color >> 11) & 0x1F;
+	uint8_t b = (color >> 3) & 0x1F;
+
+	uint16_t rgb555 = (b << 10) | (g << 5) | r;
+	_debugger->GetMemoryDumper()->SetMemoryValue(MemoryType::SnesCgRam, colorIndex * 2, rgb555 & 0xFF);
+	_debugger->GetMemoryDumper()->SetMemoryValue(MemoryType::SnesCgRam, colorIndex * 2 + 1, (rgb555 >> 8));
 }

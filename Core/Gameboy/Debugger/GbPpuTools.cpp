@@ -267,8 +267,9 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 		info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
 		for(int i = 0; i < 4; i++) {
-			info.RawPalette[i] = (state.BgPalette >> (i * 2)) & 0x03;
-			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[i]);
+			int bgColor = (state.BgPalette >> (i * 2)) & 0x03;
+			info.RawPalette[i] = bgColor;
+			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[bgColor]);
 
 			int objPal0Color = (state.ObjPalette0 >> (i * 2)) & 0x03;
 			info.RawPalette[i + 4] = objPal0Color;
@@ -281,4 +282,37 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	}
 
 	return info;
+}
+
+void GbPpuTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
+{
+	GbPpuState state;
+	_debugger->GetPpuState(state, CpuType::Gameboy);
+
+	if(state.CgbEnabled) {
+		uint8_t r = (color >> 19) & 0x1F;
+		uint8_t g = (color >> 11) & 0x1F;
+		uint8_t b = (color >> 3) & 0x1F;
+
+		uint16_t rgb555 = (b << 10) | (g << 5) | r;
+
+		if(colorIndex < 4 * 8) {
+			state.CgbBgPalettes[colorIndex] = rgb555;
+		} else if(colorIndex < 12*8) {
+			state.CgbObjPalettes[colorIndex - 4*8] = rgb555;
+		}
+	} else {
+		color & 0x03;
+		if(colorIndex < 4) {
+			state.BgPalette &= ~(3 << (colorIndex * 2));
+			state.BgPalette |= (color << (colorIndex * 2));
+		} else if(colorIndex < 8) {
+			state.ObjPalette0 &= ~(3 << (colorIndex * 2));
+			state.ObjPalette0 |= (color << (colorIndex * 2));
+		} else if(colorIndex < 12) {
+			state.ObjPalette1 &= ~(3 << (colorIndex * 2));
+			state.ObjPalette1 |= (color << (colorIndex * 2));
+		}
+	}
+	_debugger->SetPpuState(state, CpuType::Gameboy);
 }

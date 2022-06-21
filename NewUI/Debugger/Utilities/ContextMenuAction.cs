@@ -672,5 +672,7 @@ namespace Mesen.Debugger.Utilities
 		EditTiles,
 		[IconFile("Edit")]
 		EditSprite,
+		[IconFile("Edit")]
+		EditColor,
 	}
 }
