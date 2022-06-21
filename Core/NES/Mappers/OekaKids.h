@@ -5,9 +5,9 @@
 
 class OekaKids : public BaseMapper
 {
-	uint8_t _outerChrBank;
-	uint8_t _innerChrBank;
-	uint16_t _lastAddress;
+	uint8_t _outerChrBank = 0;
+	uint8_t _innerChrBank = 0;
+	uint16_t _lastAddress = 0;
 
 protected:
 	virtual uint16_t GetPRGPageSize() override { return 0x8000; }

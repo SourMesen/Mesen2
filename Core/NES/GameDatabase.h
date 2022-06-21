@@ -23,9 +23,6 @@ private:
 
 public:
 	static void LoadGameDb(std::istream & db);
-	
-	static void SetGameDatabaseState(bool enabled);
-	static bool IsEnabled();
 
 	static void SetGameInfo(uint32_t romCrc, RomData &romData, bool updateRomData, bool forHeaderlessRom);
 	static bool GetiNesHeader(uint32_t romCrc, NesHeader &nesHeader);

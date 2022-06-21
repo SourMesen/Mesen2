@@ -1838,6 +1838,12 @@
     <ClInclude Include="Debugger\CdlManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Loaders\UnifBoards.h">
+      <Filter>NES\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Loaders\UnifLoader.h">
+      <Filter>NES\Loaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1932,6 +1938,9 @@
     </ClCompile>
     <ClCompile Include="Debugger\CdlManager.cpp">
       <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\Loaders\UnifLoader.cpp">
+      <Filter>NES\Loaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

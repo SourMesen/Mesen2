@@ -668,11 +668,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 
 unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, VirtualFile &romFile, RomData &romData, LoadRomResult& result)
 {
-	RomLoader loader;
-
-	if(loader.LoadFile(romFile)) {
-		romData = loader.GetRomData();
-
+	romData = {};
+	bool databaseEnabled = !console->GetNesConfig().DisableGameDatabase;
+	if(RomLoader::LoadFile(romFile, romData, databaseEnabled)) {
 		if((romData.Info.IsInDatabase || romData.Info.IsNes20Header) && romData.Info.InputType != GameInputType::Unspecified) {
 			//If in DB or a NES 2.0 file, auto-configure the inputs
 			//TODO NES

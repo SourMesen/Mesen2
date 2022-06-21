@@ -10,5 +10,5 @@ class iNesLoader : public BaseLoader
 public:
 	using BaseLoader::BaseLoader;
 
-	void LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader);
+	void LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader, bool databaseEnabled);
 };

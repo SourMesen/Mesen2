@@ -8,11 +8,11 @@ class SunsoftFme7 : public BaseMapper
 {
 private:
 	unique_ptr<Sunsoft5bAudio> _audio;
-	uint8_t _command;
-	uint8_t _workRamValue;
-	bool _irqEnabled;
-	bool _irqCounterEnabled;
-	uint16_t _irqCounter;
+	uint8_t _command = 0;
+	uint8_t _workRamValue = 0;
+	bool _irqEnabled = false;
+	bool _irqCounterEnabled = false;
+	uint16_t _irqCounter = 0;
 
 protected:
 	virtual uint16_t GetPRGPageSize() override { return 0x2000; }

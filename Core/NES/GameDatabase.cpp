@@ -1,15 +1,13 @@
 #include "stdafx.h"
 #include "NES/RomData.h"
 #include "NES/GameDatabase.h"
+#include "NES/Loaders/UnifLoader.h"
+#include "NES/Loaders/UnifBoards.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/CRC32.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/HexUtilities.h"
-
-//TODO NES
-//#include "EmulationSettings.h"
-//#include "UnifLoader.h"
 
 std::unordered_map<uint32_t, GameInfo> GameDatabase::_gameDatabase;
 bool GameDatabase::_enabled = true;
@@ -49,8 +47,7 @@ void GameDatabase::LoadGameDb(vector<string> data)
 			gameInfo.VsPpuModel = (PpuModel)ToInt<uint32_t>(values[17]);
 
 			if(gameInfo.MapperID == 65000) {
-				//TODO NES
-				//gameInfo.MapperID = UnifLoader::GetMapperID(gameInfo.Board);
+				gameInfo.MapperID = UnifLoader::GetMapperID(gameInfo.Board);
 			}
 
 			_gameDatabase[gameInfo.Crc] = gameInfo;
@@ -114,16 +111,6 @@ GameSystem GameDatabase::GetGameSystem(string system)
 	}
 	
 	return GameSystem::NesNtsc;
-}
-
-void GameDatabase::SetGameDatabaseState(bool enabled)
-{
-	_enabled = enabled;
-}
-
-bool GameDatabase::IsEnabled()
-{
-	return _enabled;
 }
 
 uint8_t GameDatabase::GetSubMapper(GameInfo &info)
@@ -232,13 +219,12 @@ void GameDatabase::SetGameInfo(uint32_t romCrc, RomData &romData, bool updateRom
 
 		MessageManager::Log("[DB] Game found in database");
 
-		//TODO NES
 		MessageManager::Log("[DB] Mapper: " + std::to_string(info.MapperID) + "  Sub: " + std::to_string(GetSubMapper(info)));
-		/*if(info.MapperID < UnifBoards::UnknownBoard) {
+		if(info.MapperID < UnifBoards::UnknownBoard) {
 			MessageManager::Log("[DB] Mapper: " + std::to_string(info.MapperID) + "  Sub: " + std::to_string(GetSubMapper(info)));
 		} else if(info.MapperID == UnifBoards::UnknownBoard) {
 			MessageManager::DisplayMessage("Error", "UnsupportedMapper", "UNIF: " + info.Board);
-		}*/
+		}
 
 		MessageManager::Log("[DB] System : " + info.System);
 

@@ -7,7 +7,7 @@
 #include "NES/GameDatabase.h"
 #include "Shared/RomInfo.h"
 
-void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader)
+void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *preloadedHeader, bool databaseEnabled)
 {
 	NesHeader header;
 	uint8_t* buffer = romFile.data();
@@ -63,7 +63,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	uint32_t prgSize = 0;
 	uint32_t chrSize = 0;
 
-	if(!GameDatabase::IsEnabled() || !GameDatabase::GetDbRomSize(romData.Info.Hash.PrgChrCrc32, prgSize, chrSize)) {
+	if(!databaseEnabled || !GameDatabase::GetDbRomSize(romData.Info.Hash.PrgChrCrc32, prgSize, chrSize)) {
 		//Fallback on header sizes when game is not in DB (or DB is disabled)
 		prgSize = header.GetPrgSize();
 		chrSize = header.GetChrSize();
@@ -132,7 +132,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	}
 
 	if(!_checkOnly) {
-		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, GameDatabase::IsEnabled(), preloadedHeader != nullptr);
+		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, databaseEnabled, preloadedHeader != nullptr);
 	}
 
 	if(romData.Info.System == GameSystem::VsSystem) {

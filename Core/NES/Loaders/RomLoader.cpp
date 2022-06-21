@@ -11,54 +11,52 @@
 #include "NES/Loaders/FdsLoader.h"
 #include "NES/Loaders/NsfLoader.h"
 #include "NES/Loaders/NsfeLoader.h"
+#include "NES/Loaders/UnifLoader.h"
 #include "NES/NesHeader.h"
 #include "NES/GameDatabase.h"
+//#include "StudyBoxLoader.h"
 
-/*
-//TODO NES
-#include "UnifLoader.h"
-#include "StudyBoxLoader.h"*/
-
-bool RomLoader::LoadFile(VirtualFile &romFile)
+bool RomLoader::LoadFile(VirtualFile &romFile, RomData& romData, bool databaseEnabled)
 {
 	if(!romFile.IsValid()) {
 		return false;
 	}
 
-	vector<uint8_t>& fileData = _romData.RawData;
+	romData = {};
+
+	vector<uint8_t>& fileData = romData.RawData;
 	romFile.ReadFile(fileData);
 	if(fileData.size() < 15) {
 		return false;
 	}
-
-	_filename = romFile.GetFileName();
-	string romName = FolderUtilities::GetFilename(_filename, true);
+	
+	string filename = romFile.GetFileName();
+	string romName = FolderUtilities::GetFilename(filename, true);
 
 	uint32_t crc = CRC32::GetCRC(fileData.data(), fileData.size());
-	_romData.Info.Hash.Crc32 = crc;
+	romData.Info.Hash.Crc32 = crc;
 
-	Log("");
-	Log("Loading rom: " + romName);
+	MessageManager::Log("");
+	MessageManager::Log("Loading rom: " + romName);
 	stringstream crcHex;
 	crcHex << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << crc;
-	Log("File CRC32: 0x" + crcHex.str());
+	MessageManager::Log("File CRC32: 0x" + crcHex.str());
 
 	if(memcmp(fileData.data(), "NES\x1a", 4) == 0) {
-		iNesLoader loader(_checkOnly);
-		loader.LoadRom(_romData, fileData, nullptr);
+		iNesLoader loader;
+		loader.LoadRom(romData, fileData, nullptr, databaseEnabled);
 	} else if(memcmp(fileData.data(), "FDS\x1a", 4) == 0 || memcmp(fileData.data(), "\x1*NINTENDO-HVC*", 15) == 0) {
-		FdsLoader loader(_checkOnly);
-		loader.LoadRom(_romData, fileData);
+		FdsLoader loader;
+		loader.LoadRom(romData, fileData);
 	} else if(memcmp(fileData.data(), "NESM\x1a", 5) == 0) {
-		NsfLoader loader(_checkOnly);
-		loader.LoadRom(_romData, fileData);
+		NsfLoader loader;
+		loader.LoadRom(romData, fileData);
 	} else if(memcmp(fileData.data(), "NSFE", 4) == 0) {
-		NsfeLoader loader(_checkOnly);
-		loader.LoadRom(_romData, fileData);
+		NsfeLoader loader;
+		loader.LoadRom(romData, fileData);
 	} else if(memcmp(fileData.data(), "UNIF", 4) == 0) {
-		//TODO NES
-		//UnifLoader loader(_checkOnly);
-		//loader.LoadRom(_romData, fileData);
+		UnifLoader loader;
+		loader.LoadRom(romData, fileData, databaseEnabled);
 	} else if(memcmp(fileData.data(), "STBX", 4) == 0) {
 		//TODO NES
 		//StudyBoxLoader loader(_checkOnly);
@@ -67,107 +65,33 @@ bool RomLoader::LoadFile(VirtualFile &romFile)
 	} else {
 		NesHeader header = {};
 		if(GameDatabase::GetiNesHeader(crc, header)) {
-			Log("[DB] Headerless ROM file found - using game database data.");
+			MessageManager::Log("[DB] Headerless ROM file found - using game database data.");
 			iNesLoader loader;
-			loader.LoadRom(_romData, fileData, &header);
-			_romData.Info.IsHeaderlessRom = true;
+			loader.LoadRom(romData, fileData, &header, true);
+			romData.Info.IsHeaderlessRom = true;
 		} else {
-			Log("Invalid rom file.");
-			_romData.Error = true;
+			MessageManager::Log("Invalid rom file.");
+			romData.Error = true;
 		}
 	}
 
-	_romData.Info.RomName = romName;
-	_romData.Info.Filename = _filename;
+	romData.Info.RomName = romName;
+	romData.Info.Filename = filename;
 
-	if(_romData.Info.System == GameSystem::Unknown) {
+	if(romData.Info.System == GameSystem::Unknown) {
 		//Use filename to detect PAL/VS system games
-		string name = _romData.Info.Filename;
+		string name = romData.Info.Filename;
 		std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
 		if(name.find("(e)") != string::npos || name.find("(australia)") != string::npos || name.find("(europe)") != string::npos ||
 			name.find("(germany)") != string::npos || name.find("(spain)") != string::npos) {
-			_romData.Info.System = GameSystem::NesPal;
+			romData.Info.System = GameSystem::NesPal;
 		} else if(name.find("(vs)") != string::npos) {
-			_romData.Info.System = GameSystem::VsSystem;
+			romData.Info.System = GameSystem::VsSystem;
 		} else {
-			_romData.Info.System = GameSystem::NesNtsc;
+			romData.Info.System = GameSystem::NesNtsc;
 		}
 	}
 
-	return !_romData.Error;
-}
-
-RomData RomLoader::GetRomData()
-{
-	return _romData;
-}
-
-string RomLoader::FindMatchingRomInFile(string filePath, HashInfo hashInfo, int &iterationCount)
-{
-	unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(filePath);
-	if(reader) {
-		for(string file : reader->GetFileList(VirtualFile::RomExtensions)) {
-			RomLoader loader(true);
-			vector<uint8_t> fileData;
-			VirtualFile innerFile(filePath, file);
-			if(loader.LoadFile(innerFile)) {
-				if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32) {
-					return innerFile;
-				}
-				
-				iterationCount++;
-				if(iterationCount > RomLoader::MaxFilesToCheck) {
-					break;
-				}
-			}
-		}
-	} else {
-		RomLoader loader(true);
-		VirtualFile file = filePath;
-		if(loader.LoadFile(file)) {
-			if(hashInfo.Crc32 == loader._romData.Info.Hash.Crc32) {
-				return filePath;
-			}
-		}
-		iterationCount++;
-	}
-	return "";
-}
-
-string RomLoader::FindMatchingRom(vector<string> romFiles, string romFilename, HashInfo hashInfo, bool useFastSearch)
-{
-	int iterationCount = 0;
-	if(useFastSearch) {
-		string lcRomFile = romFilename;
-		std::transform(lcRomFile.begin(), lcRomFile.end(), lcRomFile.begin(), ::tolower);
-
-		for(string currentFile : romFiles) {
-			//Quick search by filename
-			string lcCurrentFile = currentFile;
-			std::transform(lcCurrentFile.begin(), lcCurrentFile.end(), lcCurrentFile.begin(), ::tolower);
-			if(lcCurrentFile.find(lcRomFile) != string::npos && FolderUtilities::GetFilename(lcRomFile, true) == FolderUtilities::GetFilename(lcCurrentFile, true)) {
-				string match = RomLoader::FindMatchingRomInFile(currentFile, hashInfo, iterationCount);
-				if(!match.empty()) {
-					return match;
-				}
-			}
-		}
-	} else {
-		for(string romFile : romFiles) {
-			//Slower search by CRC value
-			string match = RomLoader::FindMatchingRomInFile(romFile, hashInfo, iterationCount);
-			if(!match.empty()) {
-				return match;
-			}
-			iterationCount++;
-
-			if(iterationCount > RomLoader::MaxFilesToCheck) {
-				MessageManager::Log("[RomLoader] Could not find a file matching the specified name/hash after 100 tries, giving up...");
-				break;
-			}
-		}
-	}
-
-	return "";
+	return !romData.Error;
 }

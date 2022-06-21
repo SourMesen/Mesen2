@@ -1,26 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Loaders/BaseLoader.h"
-#include "NES/RomData.h"
 
-class ArchiveReader;
 class VirtualFile;
+struct RomData;
 
-class RomLoader : public BaseLoader
+class RomLoader
 {
-private:
-	static constexpr int MaxFilesToCheck = 100;
-
-	RomData _romData;
-	string _filename;
-
-	static string FindMatchingRomInFile(string filePath, HashInfo hashInfo, int &iterationCount);
-	
 public:
-	using BaseLoader::BaseLoader;
-	
-	bool LoadFile(VirtualFile &romFile);
-
-	RomData GetRomData();
-	static string FindMatchingRom(vector<string> romFiles, string romFilename, HashInfo hashInfo, bool useFastSearch);
+	static bool LoadFile(VirtualFile &romFile, RomData& romData, bool databaseEnabled);
 };
