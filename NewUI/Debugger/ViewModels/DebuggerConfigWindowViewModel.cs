@@ -117,6 +117,11 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.SpriteViewer_EditSprite,
 				DebuggerShortcut.PaletteViewer_EditColor,
 				DebuggerShortcut.PaletteViewer_ViewInMemoryViewer,
+
+				DebuggerShortcut.TraceLogger_EditBreakpoint,
+				DebuggerShortcut.TraceLogger_EditLabel,
+				DebuggerShortcut.TraceLogger_ViewInDebugger,
+				DebuggerShortcut.TraceLogger_ViewInMemoryViewer,
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {

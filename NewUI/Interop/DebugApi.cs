@@ -1212,7 +1212,18 @@ namespace Mesen.Interop
 			}
 		}
 
-		public unsafe string GetByteCode()
+		public byte[] GetByteCode()
+		{
+			byte[] result = new byte[ByteCodeSize];
+			fixed(byte* ptr = ByteCode) {
+				for(int i = 0; i < ByteCodeSize; i++) {
+					result[i] = ptr[i];
+				}
+			}
+			return result;
+		}
+
+		public unsafe string GetByteCodeStr()
 		{
 			fixed(byte* output = ByteCode) {
 				StringBuilder sb = new StringBuilder();

@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
@@ -28,6 +29,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool IsLoggingToFile { get; set; } = false;
 
 		[Reactive] public List<TraceLoggerOptionTab> Tabs { get; set; } = new List<TraceLoggerOptionTab>();
+		[Reactive] public TraceLoggerOptionTab SelectedTab { get; set; } = null!;
+
 		[Reactive] public string? TraceFile { get; set; } = null;
 		[Reactive] public bool AllowOpenTraceFile {get; private set; } = false;
 		
@@ -139,6 +142,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Tabs = tabs;
+			SelectedTab = tabs[0];
 
 			UpdateCoreOptions();
 		}
@@ -244,6 +248,26 @@ namespace Mesen.Debugger.ViewModels
 			SetSelectedRow(DebugApi.TraceLogBufferSize - 1);
 		}
 
+		public void SelectAll()
+		{
+			SelectionStart = 0;
+			SelectionEnd = DebugApi.TraceLogBufferSize - 1;
+			InvalidateVisual();
+		}
+
+		public void CopySelection()
+		{
+			StringBuilder sb = new();
+
+			int len = SelectionEnd - SelectionStart + 1;
+			CodeLineData[] lines = GetCodeLines(SelectionStart, len);
+
+			for(int i = 0; i < len; i++) {
+				sb.AppendLine(lines[i].Text);
+			}
+			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+		}
+
 		private bool IsRowVisible(int rowNumber)
 		{
 			return rowNumber > ScrollPosition && rowNumber < ScrollPosition + VisibleRowCount;
@@ -272,7 +296,8 @@ namespace Mesen.Debugger.ViewModels
 				lines.Insert(0, new CodeLineData(rows[i].Type) {
 					Address = (int)rows[i].ProgramCounter,
 					Text = rows[i].GetOutput(),
-					ByteCodeStr = rows[i].GetByteCode(),
+					ByteCode = rows[i].GetByteCode(),
+					ByteCodeStr = rows[i].GetByteCodeStr(),
 					EffectiveAddress = -1
 				});
 			}
@@ -286,7 +311,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public AddressInfo? GetSelectedRowAddress()
 		{
-			TraceRow[] rows = DebugApi.GetExecutionTrace(DebugApi.TraceLogBufferSize - (uint)SelectedRow, 1);
+			TraceRow[] rows = DebugApi.GetExecutionTrace(DebugApi.TraceLogBufferSize - (uint)SelectedRow - 1, 1);
 			if(rows.Length > 0) {
 				return new AddressInfo() {
 					Address = (int)rows[0].ProgramCounter,

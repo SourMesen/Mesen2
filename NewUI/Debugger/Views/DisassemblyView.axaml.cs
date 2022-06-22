@@ -131,7 +131,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ViewInMemoryViewer),
 					HintText = () => GetHint(ActionLocation),
-					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
+					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						if(ActionLocation.RelAddress != null) {
 							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.RelAddress.Value.Type, ActionLocation.RelAddress.Value.Address);

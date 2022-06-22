@@ -201,19 +201,23 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ExportWatchEntries, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.ResetWorkspace, KeyBinding = new() });
 
+			//Tilemap viewer
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTile, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_ViewInTileViewer, KeyBinding = new(Key.F3) });
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditTilemapBreakpoint, KeyBinding = new(Key.F4) });
 			Add(new() { Shortcut = DebuggerShortcut.TilemapViewer_EditAttributeBreakpoint, KeyBinding = new() });
 
+			//Sprite viewer
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_ViewInTileViewer, KeyBinding = new(Key.F3) });
 			Add(new() { Shortcut = DebuggerShortcut.SpriteViewer_EditSprite, KeyBinding = new(Key.F2) });
 
+			//Tile viewer
 			Add(new() { Shortcut = DebuggerShortcut.TileViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.TileViewer_EditTile, KeyBinding = new(Key.F2) });
 			
+			//Palette viewer
 			Add(new() { Shortcut = DebuggerShortcut.PaletteViewer_EditColor, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.PaletteViewer_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 
@@ -228,6 +232,12 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInCpuMemory, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
+
+			//Trace Logger
+			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_EditBreakpoint, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_EditLabel, KeyBinding = new(Key.F2) });
+			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_ViewInDebugger, KeyBinding = new(Key.F3) });
+			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 
 			//Script Window
 			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_NewScript, KeyBinding = new(KeyModifiers.Control, Key.N) });
@@ -372,6 +382,10 @@ namespace Mesen.Config
 		TileViewer_EditTile,
 		PaletteViewer_EditColor,
 		PaletteViewer_ViewInMemoryViewer,
+		TraceLogger_EditBreakpoint,
+		TraceLogger_EditLabel,
+		TraceLogger_ViewInDebugger,
+		TraceLogger_ViewInMemoryViewer,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase
