@@ -65,7 +65,9 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	stream.write((char*)&emuVersion, sizeof(emuVersion));
 	stream.write((char*)&formatVersion, sizeof(uint32_t));
 
-	string sha1Hash = _emu->GetHash(HashType::Sha1);
+	//TODO, performance
+	//string sha1Hash = _emu->GetHash(HashType::Sha1);
+	string sha1Hash = "0000000000000000000000000000000000000000";
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
 	ConsoleType consoleType = _emu->GetConsoleType();

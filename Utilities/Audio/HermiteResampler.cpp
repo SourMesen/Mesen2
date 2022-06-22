@@ -68,11 +68,6 @@ void HermiteResampler::WriteSample(int16_t* out, uint32_t pos, int16_t left, int
 template<bool addMode>
 uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount)
 {
-	if(_rateRatio == 1.0) {
-		memcpy(out, in, inSampleCount * 2 * sizeof(int16_t));
-		return inSampleCount;
-	}
-
 	maxOutSampleCount *= 2;
 
 	uint32_t outPos = (uint32_t)_pendingSamples.size();
@@ -80,6 +75,16 @@ uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t
 		WriteSample<addMode>(out, i, _pendingSamples[i], _pendingSamples[i + 1]);
 	}
 	_pendingSamples.clear();
+
+	if(_rateRatio == 1.0) {
+		uint32_t count = std::min((uint32_t)maxOutSampleCount, inSampleCount * 2);
+		memcpy(out, in, count * sizeof(int16_t));
+		for(uint32_t i = count; count < inSampleCount * 2; i += 2) {
+			_pendingSamples.push_back(in[i]);
+			_pendingSamples.push_back(in[i + 1]);
+		}
+		return count / 2;
+	}
 
 	for(uint32_t i = 0; i < inSampleCount * 2; i += 2) {
 		while(_fraction <= 1.0) {

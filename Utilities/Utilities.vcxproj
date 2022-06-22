@@ -191,6 +191,7 @@
     <ClInclude Include="Audio\StereoCombFilter.h" />
     <ClInclude Include="Audio\StereoDelayFilter.h" />
     <ClInclude Include="Audio\StereoPanningFilter.h" />
+    <ClInclude Include="Audio\WavReader.h" />
     <ClInclude Include="Base64.h" />
     <ClInclude Include="CRC32.h" />
     <ClInclude Include="FastString.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="Audio\StereoCombFilter.cpp" />
     <ClCompile Include="Audio\StereoDelayFilter.cpp" />
     <ClCompile Include="Audio\StereoPanningFilter.cpp" />
+    <ClCompile Include="Audio\WavReader.cpp" />
     <ClCompile Include="CRC32.cpp" />
     <ClCompile Include="FolderUtilities.cpp" />
     <ClCompile Include="HexUtilities.cpp" />

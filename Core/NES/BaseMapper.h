@@ -178,8 +178,6 @@ public:
 	NesRomInfo GetRomInfo();
 	uint32_t GetMapperDipSwitchCount();
 
-	virtual void ApplySamples(int16_t* buffer, size_t sampleCount, double volume) {}
-
 	uint8_t ReadRam(uint16_t addr) override;
 	uint8_t PeekRam(uint16_t addr) override;
 	uint8_t DebugReadRAM(uint16_t addr);

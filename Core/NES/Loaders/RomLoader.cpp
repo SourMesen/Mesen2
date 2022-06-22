@@ -12,9 +12,9 @@
 #include "NES/Loaders/NsfLoader.h"
 #include "NES/Loaders/NsfeLoader.h"
 #include "NES/Loaders/UnifLoader.h"
+#include "NES/Loaders/StudyBoxLoader.h"
 #include "NES/NesHeader.h"
 #include "NES/GameDatabase.h"
-//#include "StudyBoxLoader.h"
 
 bool RomLoader::LoadFile(VirtualFile &romFile, RomData& romData, bool databaseEnabled)
 {
@@ -58,10 +58,8 @@ bool RomLoader::LoadFile(VirtualFile &romFile, RomData& romData, bool databaseEn
 		UnifLoader loader;
 		loader.LoadRom(romData, fileData, databaseEnabled);
 	} else if(memcmp(fileData.data(), "STBX", 4) == 0) {
-		//TODO NES
-		//StudyBoxLoader loader(_checkOnly);
-		//loader.LoadRom(_romData, fileData, romFile.GetFilePath());
-		//skipSha1Hash = true;
+		StudyBoxLoader loader;
+		loader.LoadRom(romData, fileData, romFile.GetFilePath());
 	} else {
 		NesHeader header = {};
 		if(GameDatabase::GetiNesHeader(crc, header)) {

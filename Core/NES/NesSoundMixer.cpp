@@ -17,7 +17,7 @@ NesSoundMixer::NesSoundMixer(NesConsole* console)
 	_outputBuffer = new int16_t[NesSoundMixer::MaxSamplesPerFrame];
 	_blipBufLeft = blip_new(NesSoundMixer::MaxSamplesPerFrame);
 	_blipBufRight = blip_new(NesSoundMixer::MaxSamplesPerFrame);
-	_sampleRate = 96000; //_settings->GetSampleRate();
+	_sampleRate = 96000;
 }
 
 NesSoundMixer::~NesSoundMixer()
@@ -85,9 +85,6 @@ void NesSoundMixer::PlayAudioBuffer(uint32_t time)
 		//Keep samples in buffer if this is the VS dualsystem sub console - the main console will read them and play them
 		return;
 	}
-
-	//TODO
-	//_console->GetMapper()->ApplySamples(_outputBuffer, sampleCount, _settings->GetMasterVolume());
 
 	NesConfig& cfg = _console->GetNesConfig();
 	if(_console->GetVsSubConsole()) {

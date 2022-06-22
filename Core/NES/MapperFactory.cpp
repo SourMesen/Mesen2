@@ -227,9 +227,9 @@
 #include "Sachen8259.h"
 #include "Sachen9602.h"
 #include "SealieComputing.h"
-#include "Smb2j.h"
-#include "StudyBox.h"
-#include "Subor166.h"
+#include "Smb2j.h"*/
+#include "NES/Mappers/StudyBox.h"
+/*#include "Subor166.h"
 #include "Sunsoft3.h"
 #include "Sunsoft4.h"
 #include "Sunsoft89.h"
@@ -653,9 +653,9 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case UnifBoards::SssNrom256: return new FamicomBox();
 		case UnifBoards::Unl255in1: return new Unl255in1();
 		case UnifBoards::Unl8237A: return new Unl8237A(); //mapper 215.1
-		case UnifBoards::UnlPuzzle: return new UnlPuzzle();
+		case UnifBoards::UnlPuzzle: return new UnlPuzzle();*/
 
-		case MapperFactory::StudyBoxMapperID: return new StudyBox();*/
+		case MapperFactory::StudyBoxMapperID: return new StudyBox();
 		case MapperFactory::NsfMapperID: return new NsfMapper();
 		case MapperFactory::FdsMapperID: return new Fds();
 	}

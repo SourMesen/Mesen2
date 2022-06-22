@@ -46,9 +46,6 @@ struct InteropRomInfo
 	ConsoleType Console;
 	CpuType CpuTypes[5];
 	uint32_t CpuTypeCount;
-	//CoprocessorType Coprocessor;
-	//SnesCartInformation Header;
-	char Sha1[40];
 };
 
 extern "C" {
@@ -119,7 +116,6 @@ extern "C" {
 	DllExport void __stdcall GetRomInfo(InteropRomInfo &info)
 	{
 		RomInfo romInfo = _emu->GetRomInfo();
-		string sha1 = _emu->GetHash(HashType::Sha1);
 
 		string romPath = romInfo.RomFile;
 		string patchPath = romInfo.PatchFile;
@@ -137,11 +133,6 @@ extern "C" {
 		for(size_t i = 0; i < 5 && i < cpuTypes.size(); i++) {
 			info.CpuTypes[i] = cpuTypes[i];
 		}
-		//TODO
-		//info.Header = romInfo.Header;
-		//info.Coprocessor = romInfo.Coprocessor;
-
-		memcpy(info.Sha1, sha1.c_str(), sha1.size());
 	}
 
 	DllExport TimingInfo __stdcall GetTimingInfo()

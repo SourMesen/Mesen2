@@ -920,10 +920,11 @@ namespace Mesen.ViewModels
 					Regex supportedRomRegex = new Regex("<supportedRom>([^\\n]*)");
 					Match match = supportedRomRegex.Match(hiresData);
 					if(match.Success) {
-						if(!match.Groups[1].Value.ToUpper().Contains(romInfo.Sha1.ToUpper())) {
+						//TODO
+						/*if(!match.Groups[1].Value.ToUpper().Contains(romInfo.Sha1.ToUpper())) {
 							await MesenMsgBox.Show(wnd, "InstallHdPackWrongRom", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							return;
-						}
+						}*/
 					}
 
 					//Extract HD pack

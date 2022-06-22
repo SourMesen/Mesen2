@@ -281,6 +281,25 @@ public:
 		return false;
 	}
 
+	static bool LoadStudyBoxFirmware(Emulator* emu, uint8_t** biosRom)
+	{
+		string filename = "StudyBox.bin";
+		uint32_t size = 0x40000;
+		if(AttemptLoadFirmware(biosRom, filename, size, "StudyBox.bin")) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::StudyBox, size);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(biosRom, filename, size, "StudyBox.bin")) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for Study Box");
+		return false;
+	}
+
 	static bool LoadPceSuperCdFirmware(Emulator* emu, vector<uint8_t>& biosRom)
 	{
 		string filename = "[BIOS] Super CD-ROM System (Japan) (v3.0).pce";
