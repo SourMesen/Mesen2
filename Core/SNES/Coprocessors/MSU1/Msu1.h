@@ -6,11 +6,13 @@
 #include "Utilities/VirtualFile.h"
 
 class Spc;
+class Emulator;
 
 class Msu1 final : public ISerializable, public IAudioProvider
 {
 private:
-	Spc * _spc;
+	Spc* _spc = nullptr;
+	Emulator* _emu = nullptr;
 	PcmReader _pcmReader;
 	uint8_t _volume = 100;
 	uint16_t _trackSelect = 0;
@@ -32,9 +34,10 @@ private:
 	void LoadTrack(uint32_t startOffset = 8);
 
 public:
-	Msu1(VirtualFile romFile, Spc* spc);
-	
-	static Msu1* Init(VirtualFile romFile, Spc* spc);
+	Msu1(Emulator* emu, VirtualFile& romFile, Spc* spc);
+	~Msu1();
+
+	static Msu1* Init(Emulator* emu, VirtualFile& romFile, Spc* spc);
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);

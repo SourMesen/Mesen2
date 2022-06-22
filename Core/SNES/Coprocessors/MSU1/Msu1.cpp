@@ -1,24 +1,27 @@
 #include "stdafx.h"
-#include "Msu1.h"
+#include "SNES/Coprocessors/MSU1/Msu1.h"
 #include "SNES/Spc.h"
+#include "Shared/Emulator.h"
+#include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/FolderUtilities.h"
 
-Msu1* Msu1::Init(VirtualFile romFile, Spc* spc)
+Msu1* Msu1::Init(Emulator* emu, VirtualFile& romFile, Spc* spc)
 {
 	string romFolder = romFile.GetFolderPath();
 	string romName = FolderUtilities::GetFilename(romFile.GetFileName(), false);
 	if(ifstream(FolderUtilities::CombinePath(romFolder, romName + ".msu"))) {
-		return new Msu1(romFile, spc);
+		return new Msu1(emu, romFile, spc);
 	} else if(ifstream(FolderUtilities::CombinePath(romFolder, "msu1.rom"))) {
-		return new Msu1(romFile, spc);
+		return new Msu1(emu, romFile, spc);
 	} else {
 		return nullptr;
 	}
 }
 
-Msu1::Msu1(VirtualFile romFile, Spc* spc)
+Msu1::Msu1(Emulator* emu, VirtualFile& romFile, Spc* spc)
 {
+	_emu = emu;
 	_spc = spc;
 	_romFolder = romFile.GetFolderPath();
 	_romName = FolderUtilities::GetFilename(romFile.GetFileName(), false);
@@ -36,6 +39,13 @@ Msu1::Msu1(VirtualFile romFile, Spc* spc)
 	} else {
 		_dataSize = 0;
 	}
+
+	_emu->GetSoundMixer()->RegisterAudioProvider(this);
+}
+
+Msu1::~Msu1()
+{
+	_emu->GetSoundMixer()->UnregisterAudioProvider(this);
 }
 
 void Msu1::Write(uint16_t addr, uint8_t value)

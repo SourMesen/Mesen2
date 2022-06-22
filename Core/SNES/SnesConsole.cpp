@@ -120,7 +120,7 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 		_dmaController.reset(new SnesDmaController(_memoryManager.get()));
 		_spc.reset(new Spc(this));
 
-		_msu1.reset(Msu1::Init(romFile, _spc.get()));
+		_msu1.reset(Msu1::Init(_emu, romFile, _spc.get()));
 
 		if(_cart->GetSpcData()) {
 			//TODO
