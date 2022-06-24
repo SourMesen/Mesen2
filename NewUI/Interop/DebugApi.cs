@@ -1196,19 +1196,13 @@ namespace Mesen.Interop
 		public fixed byte ByteCode[8];
 		public byte ByteCodeSize;
 
+		public UInt32 LogSize;
 		public fixed byte LogOutput[500];
 
 		public unsafe string GetOutput()
 		{
 			fixed(byte* output = LogOutput) {
-				int i;
-				for(i = 0; i < 500; i++) {
-					if(output[i] == 0) {
-						break;
-					}
-				}
-
-				return UTF8Encoding.UTF8.GetString(output, i);
+				return UTF8Encoding.UTF8.GetString(output, (int)LogSize);
 			}
 		}
 

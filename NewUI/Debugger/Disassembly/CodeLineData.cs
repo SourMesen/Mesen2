@@ -25,7 +25,24 @@ namespace Mesen.Debugger
 
 		public byte OpSize = 0;
 		public byte[] ByteCode = Array.Empty<byte>();
-		public string ByteCodeStr = "";
+
+		private string _byteCodeString = "";
+		public string ByteCodeStr 
+		{
+			get
+			{
+				if(OpSize > 0 && _byteCodeString == "") {
+					string output = "";
+					for(int i = 0; i < OpSize; i++) {
+						output += ByteCode[i].ToString("X2") + " ";
+					}
+					_byteCodeString = output;
+				}
+
+				return _byteCodeString;
+			}
+		}
+
 		public string Comment = "";
 
 		public Int32 EffectiveAddress = -1;
@@ -106,10 +123,6 @@ namespace Mesen.Debugger
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);
 			this.OpSize = data.OpSize;
-			this.ByteCodeStr = "";
-			for(int i = 0; i < this.OpSize; i++) {
-				this.ByteCodeStr += data.ByteCode[i].ToString("X2") + " ";
-			}
 			this.ByteCode = data.ByteCode;
 
 			this.Address = data.Address;

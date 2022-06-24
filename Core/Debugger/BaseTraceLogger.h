@@ -154,16 +154,19 @@ protected:
 	void WriteDisassembly(DisassemblyInfo& info, RowPart& rowPart, uint8_t sp, uint32_t pc, string& output)
 	{
 		int indentLevel = 0;
-		string code;
+		size_t startPos = output.size();
 
 		if(_options.IndentCode) {
 			indentLevel = 0xFF - (sp & 0xFF);
-			code = std::string(indentLevel, ' ');
+			output += std::string(indentLevel, ' ');
 		}
 
 		LabelManager* labelManager = _options.UseLabels ? _labelManager : nullptr;
-		info.GetDisassembly(code, pc, labelManager, _settings);
-		WriteStringValue(output, code, rowPart);
+		info.GetDisassembly(output, pc, labelManager, _settings);
+
+		if(rowPart.MinWidth > (int)(output.size() - startPos)) {
+			output += std::string(rowPart.MinWidth - (output.size() - startPos), ' ');
+		}
 	}
 	
 	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
@@ -223,7 +226,7 @@ protected:
 	void WriteAlign(int originalSize, RowPart& rowPart, string& output)
 	{
 		if((int)output.size() - originalSize < rowPart.MinWidth) {
-			output += std::string(rowPart.MinWidth - (output.size() - originalSize), ' ');
+			output.append(rowPart.MinWidth - (output.size() - originalSize), ' ');
 		}
 	}
 
@@ -262,6 +265,7 @@ protected:
 
 		if(_debugger->GetTraceLogFileSaver()->IsEnabled()) {
 			string row;
+			row.reserve(300);
 			
 			//Display PC
 			RowPart rowPart = {};
@@ -490,12 +494,15 @@ public:
 
 		CpuStateType& state = _cpuState[index];
 		string logOutput;
+		logOutput.reserve(300);
 		((TraceLoggerType*)this)->GetTraceRow(logOutput, state, _ppuState[index], _disassemblyCache[index]);
 
 		row.Type = _cpuType;
 		_disassemblyCache[index].GetByteCode(row.ByteCode);
 		row.ByteCodeSize = _disassemblyCache[index].GetOpSize();
 		row.ProgramCounter = ((TraceLoggerType*)this)->GetProgramCounter(state);
-		memcpy(row.LogOutput, logOutput.c_str(), logOutput.size());
+		row.LogSize = std::min<uint32_t>(499, (uint32_t)logOutput.size());
+		memcpy(row.LogOutput, logOutput.c_str(), row.LogSize);
+		row.LogOutput[row.LogSize] = 0;
 	}
 };

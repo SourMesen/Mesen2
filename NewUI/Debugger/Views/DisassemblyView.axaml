@@ -42,7 +42,6 @@
 			/>
 			
 			<dv:QuickSearchView
-				Name="searchView"
 				DataContext="{CompiledBinding QuickSearch}"
 				VerticalAlignment="Top"
 				HorizontalAlignment="Right"

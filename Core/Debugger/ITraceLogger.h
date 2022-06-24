@@ -8,6 +8,7 @@ struct TraceRow
 	CpuType Type;
 	uint8_t ByteCode[8];
 	uint8_t ByteCodeSize;
+	uint32_t LogSize;
 	char LogOutput[500];
 };
 

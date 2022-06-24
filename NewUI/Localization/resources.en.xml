@@ -913,6 +913,7 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuDebug">_Debug</Control>
 			<Control ID="mnuView">_View</Control>
+			<Control ID="mnuSearch">_Search</Control>
 
 			<Control ID="btnOpenTraceFile">Open trace file</Control>
 			<Control ID="btnStart">Log to file...</Control>

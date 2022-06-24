@@ -13,6 +13,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
 	x:Class="Mesen.Debugger.Windows.TraceLoggerWindow"
 	Icon="/Assets/LogWindow.png"
@@ -28,6 +29,7 @@
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
 			<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuItems}" />
 		</Menu>
 
@@ -101,11 +103,20 @@
 					Value="{CompiledBinding ScrollPosition}"
 				/>
 
-				<dc:DisassemblyViewer
-					Name="disViewer"
-					Lines="{CompiledBinding TraceLogLines}"
-					StyleProvider="{CompiledBinding StyleProvider}"
-				/>
+				<Panel>
+					<dc:DisassemblyViewer
+						Name="disViewer"
+						Lines="{CompiledBinding TraceLogLines}"
+						StyleProvider="{CompiledBinding StyleProvider}"
+						SearchString="{CompiledBinding QuickSearch.SearchString}"
+					/>
+
+					<dv:QuickSearchView
+						DataContext="{CompiledBinding QuickSearch}"
+						VerticalAlignment="Top"
+						HorizontalAlignment="Right"
+					/>
+				</Panel>
 			</DockPanel>
 		</Border>
 	</DockPanel>

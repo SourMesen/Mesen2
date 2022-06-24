@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
@@ -33,7 +34,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public string? TraceFile { get; set; } = null;
 		[Reactive] public bool AllowOpenTraceFile {get; private set; } = false;
-		
+
 		[Reactive] public int SelectionStart { get; private set; }
 		[Reactive] public int SelectionEnd { get; private set; }
 		[Reactive] public int SelectionAnchor { get; private set; }
@@ -43,7 +44,12 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public List<ContextMenuAction> FileMenuItems { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> DebugMenuItems { get; private set; } = new();
+		[Reactive] public List<ContextMenuAction> SearchMenuItems { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ViewMenuItems { get; private set; } = new();
+
+		public QuickSearchViewModel QuickSearch { get; } = new();
+		
+		private DisassemblyViewer? _viewer = null;
 
 		public TraceLoggerViewModel()
 		{
@@ -53,6 +59,14 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode) {
 				return;
 			}
+
+			QuickSearch.OnFind += QuickSearch_OnFind;
+			
+			this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
+				if(!QuickSearch.IsSearchBoxVisible) {
+					_viewer?.Focus();
+				}
+			});
 
 			UpdateAvailableTabs();
 
@@ -81,6 +95,44 @@ namespace Mesen.Debugger.ViewModels
 				SelectedRow = Math.Max(MinScrollPosition, Math.Min(DebugApi.TraceLogBufferSize - 1, SelectedRow));
 				SelectionAnchor = Math.Max(MinScrollPosition, Math.Min(DebugApi.TraceLogBufferSize - 1, SelectionAnchor));
 			}));
+		}
+
+		public void SetViewer(DisassemblyViewer viewer)
+		{
+			_viewer = viewer;
+		}
+
+		private void QuickSearch_OnFind(OnFindEventArgs e)
+		{
+			CodeLineData[] lines = GetCodeLines(0, DebugApi.TraceLogBufferSize);
+			string needle = e.SearchString.ToLowerInvariant().Trim();
+			
+			int startRow = SelectedRow;
+			if(e.Direction == SearchDirection.Backward) {
+				startRow--;
+			} else if(e.SkipCurrent) {
+				startRow++;
+			}
+			int sign = e.Direction == SearchDirection.Backward ? -1 : 1;
+
+			for(int i = 0; i < lines.Length; i++) {
+				int lineIndex = (i * sign + startRow) % lines.Length;
+				if(lineIndex < 0) {
+					lineIndex += lines.Length;
+				}
+				if(lines[lineIndex].Text.Contains(needle, StringComparison.OrdinalIgnoreCase)) {
+					Dispatcher.UIThread.Post(() => {
+						ScrollToRowNumber(lineIndex);
+						SelectedRow = lineIndex;
+						SelectionStart = lineIndex;
+						SelectionEnd = lineIndex;
+						InvalidateVisual();
+					});
+					e.Success = true;
+					return;
+				}
+			}
+			e.Success = false;
 		}
 
 		public void InitializeMenu(Window wnd)
@@ -120,9 +172,28 @@ namespace Mesen.Debugger.ViewModels
 				}
 			});
 
+			SearchMenuItems = AddDisposables(new List<ContextMenuAction>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.Find,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Find),
+					OnClick = () => QuickSearch.Open()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindPrev,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindPrev),
+					OnClick = () => QuickSearch.FindPrev()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindNext,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
+					OnClick = () => QuickSearch.FindNext()
+				},
+			});
+
 			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
 		}
 
 		public void InvalidateVisual()
@@ -292,18 +363,20 @@ namespace Mesen.Debugger.ViewModels
 			TraceRow[] rows = DebugApi.GetExecutionTrace((uint)(DebugApi.TraceLogBufferSize - startIndex - rowCount), (uint)rowCount);
 
 			List<CodeLineData> lines = new(rowCount);
-			for(int i = 0; i < rows.Length; i++) {
-				lines.Insert(0, new CodeLineData(rows[i].Type) {
+
+			CodeLineData emptyLine = new CodeLineData(CpuType.Snes);
+			int emptyLineCount = rowCount - rows.Length;
+			for(int i = 0; i < emptyLineCount; i++) {
+				lines.Add(emptyLine);
+			}
+
+			for(int i = rows.Length - 1; i >= 0; i--) {
+				lines.Add(new CodeLineData(rows[i].Type) {
 					Address = (int)rows[i].ProgramCounter,
 					Text = rows[i].GetOutput(),
 					ByteCode = rows[i].GetByteCode(),
-					ByteCodeStr = rows[i].GetByteCodeStr(),
 					EffectiveAddress = -1
 				});
-			}
-
-			while(lines.Count < rowCount) {
-				lines.Insert(0, new CodeLineData(CpuType.Snes));
 			}
 
 			return lines.ToArray();
