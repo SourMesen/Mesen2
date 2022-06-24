@@ -15,6 +15,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<CodeLineData[]> LinesProperty = AvaloniaProperty.Register<DisassemblyViewer, CodeLineData[]>(nameof(Lines));
 		public static readonly StyledProperty<ILineStyleProvider> StyleProviderProperty = AvaloniaProperty.Register<DisassemblyViewer, ILineStyleProvider>(nameof(StyleProviderProperty));
 
+		public static readonly StyledProperty<string> SearchStringProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(SearchString), string.Empty);
+
 		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
 		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
@@ -27,6 +29,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(LinesProperty); }
 			set { SetValue(LinesProperty, value); }
+		}
+
+		public string SearchString
+		{
+			get { return GetValue(SearchStringProperty); }
+			set { SetValue(SearchStringProperty, value); }
 		}
 
 		public ILineStyleProvider StyleProvider
@@ -68,7 +76,7 @@ namespace Mesen.Debugger.Controls
 
 		static DisassemblyViewer()
 		{
-			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty);
+			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty);
 		}
 
 		public DisassemblyViewer()
@@ -162,6 +170,8 @@ namespace Mesen.Debugger.Controls
 			context.FillRectangle(ColorHelper.GetBrush(Colors.White), Bounds);
 
 			ILineStyleProvider styleProvider = this.StyleProvider;
+
+			string searchString = this.SearchString;
 
 			double symbolMargin = 20;
 			double addressMargin = Math.Floor(LetterSize.Width * styleProvider.AddressSize + symbolMargin) + 0.5;
@@ -257,15 +267,53 @@ namespace Mesen.Debugger.Controls
 						indent = 0.5;
 					}
 
+					double xStart = x + indent;
 					foreach(CodeColor part in lineParts) {
 						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
 						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
-						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(new Vector(pos.X, pos.Y)), line));
+						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(pos), line));
 						x += text.Bounds.Width;
+					}
+
+					if(!string.IsNullOrWhiteSpace(searchString)) {
+						DrawSearchHighlight(context, y, text, searchString, line, lineParts, xStart);
 					}
 				}
 				y += LetterSize.Height;
+			}
+		}
+
+		private void DrawSearchHighlight(DrawingContext context, double y, FormattedText text, string searchString, CodeLineData line, List<CodeColor> lineParts, double xStart)
+		{
+			DrawHighlightedText(context, line.Text, searchString, y, text, xStart);
+			for(int j = 0; j < lineParts.Count; j++) {
+				CodeColor part = lineParts[j];
+				switch(part.Type) {
+					case CodeSegmentType.EffectiveAddress:
+					case CodeSegmentType.MemoryValue:
+					case CodeSegmentType.Comment:
+					case CodeSegmentType.Label:
+						DrawHighlightedText(context, part.Text, searchString, y, text, _visibleCodeSegments[^(lineParts.Count - j)].Bounds.Left);
+						break;
+				}
+			}
+		}
+
+		private void DrawHighlightedText(DrawingContext context, string hay, string needle, double y, FormattedText formattedText, double startX)
+		{
+			int result = hay.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
+			if(result >= 0) {
+				double highlightPos = startX;
+				if(result > 0) {
+					formattedText.Text = hay.Substring(0, result);
+					highlightPos += formattedText.Bounds.Width;
+				}
+				formattedText.Text = hay.Substring(result, needle.Length);
+				Point p = new Point(highlightPos, y);
+				SolidColorBrush selectBgBrush = new(Colors.CornflowerBlue);
+				context.FillRectangle(selectBgBrush, formattedText.Bounds.Translate(p));
+				context.DrawText(ColorHelper.GetBrush(Colors.White), p, formattedText);
 			}
 		}
 
@@ -364,8 +412,6 @@ namespace Mesen.Debugger.Controls
 		int GetRowAddress(int address, int rowOffset);
 
 		int GetLineCount();
-		int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards);
-		bool UseOptimizedSearch { get; }
 	}
 
 	public interface ILineStyleProvider

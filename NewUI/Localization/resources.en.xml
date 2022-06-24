@@ -2311,7 +2311,11 @@
 			<Value ID="ScriptWindow_SaveScript">Save Script</Value>
 			<Value ID="ScriptWindow_RunScript">Run Script</Value>
 			<Value ID="ScriptWindow_StopScript">Stop Script</Value>
-			
+
+			<Value ID="TraceLogger_EditBreakpoint">Trace Logger - Edit Breakpoint</Value>
+			<Value ID="TraceLogger_EditLabel">Trace Logger - Edit Label</Value>
+			<Value ID="TraceLogger_ViewInDebugger">Trace Logger - View in Debugger</Value>
+			<Value ID="TraceLogger_ViewInMemoryViewer">Trace Logger - View in Memory Viewer</Value>			
 		</Enum>
 		<Enum ID="ActionType">
 			<Value ID="Copy">Copy</Value>

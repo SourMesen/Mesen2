@@ -5,6 +5,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -28,13 +30,23 @@
 			</dc:CodeScrollBar.BreakpointBar>
 		</dc:CodeScrollBar>
 
-		<dc:DisassemblyViewer
-			Name="disViewer"
-			Lines="{CompiledBinding Lines}"
-			StyleProvider="{CompiledBinding StyleProvider}"
-			FontFamily="{CompiledBinding Config.Font.FontFamily}"
-			FontSize="{CompiledBinding Config.Font.FontSize}"
-			ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
-		/>
+		<Panel>
+			<dc:DisassemblyViewer
+				Name="disViewer"
+				Lines="{CompiledBinding Lines}"
+				SearchString="{CompiledBinding QuickSearch.SearchString}"
+				StyleProvider="{CompiledBinding StyleProvider}"
+				FontFamily="{CompiledBinding Config.Font.FontFamily}"
+				FontSize="{CompiledBinding Config.Font.FontSize}"
+				ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
+			/>
+			
+			<dv:QuickSearchView
+				Name="searchView"
+				DataContext="{CompiledBinding QuickSearch}"
+				VerticalAlignment="Top"
+				HorizontalAlignment="Right"
+			/>
+		</Panel>
 	</DockPanel>
 </UserControl>

@@ -59,7 +59,7 @@ namespace Mesen.Debugger.Utilities
 					if(weakAction.TryGetTarget(out ContextMenuAction? act)) {
 						if(act.Shortcut != null) {
 							DbgShortKeys keys = act.Shortcut();
-							if(e.Key == keys.ShortcutKey && e.KeyModifiers == keys.Modifiers) {
+							if(e.Key != Key.None && e.Key == keys.ShortcutKey && e.KeyModifiers == keys.Modifiers) {
 								if(action.RoutingStrategy == RoutingStrategies.Bubble && e.Source is Control ctrl && ctrl.Classes.Contains("PreventShortcuts")) {
 									return;
 								}

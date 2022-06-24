@@ -1,11 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Dock.Model.Core;
 using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Views;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;
@@ -34,11 +36,14 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectionStart { get; set; }
 		[Reactive] public int SelectionEnd { get; set; }
 
+		public QuickSearchViewModel QuickSearch { get; } = new QuickSearchViewModel();
+
 		public bool ShowScrollBarMarkers => CpuType != CpuType.NecDsp;
 
 		public DebugConfig Config { get; private set; }
 		public int VisibleRowCount { get; set; } = 100;
-		public bool ViewerActive { get; set; }
+
+		private DisassemblyViewer? _viewer = null;
 
 		private int _ignoreScrollUpdates = 0;
 		private Action? _refreshScrollbar = null;
@@ -58,11 +63,19 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			QuickSearch.OnFind += QuickSearch_OnFind;
+
 			this.WhenAnyValue(x => x.TopAddress).Subscribe(x => Refresh());
+
+			this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
+				if(!QuickSearch.IsSearchBoxVisible) {
+					_viewer?.Focus();
+				}
+			});
 
 			int lastValue = ScrollPosition;
 			this.WhenAnyValue(x => x.ScrollPosition).Subscribe(scrollPos => {
-				if(!ViewerActive) {
+				if(_viewer == null) {
 					ScrollPosition = lastValue;
 					return;
 				}
@@ -82,6 +95,24 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			});
+		}
+
+		private void QuickSearch_OnFind(OnFindEventArgs e)
+		{
+			int findAddress = DebugApi.SearchDisassembly(CpuType, e.SearchString.ToLowerInvariant().Trim(), SelectedRowAddress, e.Direction == SearchDirection.Backward, e.SkipCurrent);
+			if(findAddress >= 0) {
+				Dispatcher.UIThread.Post(() => {
+					SetSelectedRow(findAddress, true);
+				});
+				e.Success = true;
+			} else {
+				e.Success = false;
+			}
+		}
+
+		public void SetViewer(DisassemblyViewer? viewer)
+		{
+			_viewer = viewer;
 		}
 
 		public void Scroll(int lineNumberOffset)

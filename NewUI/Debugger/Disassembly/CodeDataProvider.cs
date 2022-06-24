@@ -33,12 +33,5 @@ namespace Mesen.Debugger.Disassembly
 		{
 			return DebugApi.GetDisassemblyRowAddress(_type, (uint)address, rowOffset);
 		}
-
-		public bool UseOptimizedSearch { get { return true; } }
-
-		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
-		{
-			return DebugApi.SearchDisassembly(_type, searchString, startPosition, endPosition, searchBackwards);
-		}
 	}
 }

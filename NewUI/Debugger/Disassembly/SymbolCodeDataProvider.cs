@@ -102,14 +102,7 @@ namespace Mesen.Debugger.Disassembly
 			return 0;
 		}
 
-		public bool UseOptimizedSearch { get { return false; } }
-
 		public CpuType CpuType => _cpuType;
-
-		public int GetNextResult(string searchString, int startPosition, int endPosition, bool searchBackwards)
-		{
-			throw new NotImplementedException();
-		}
 
 		public int GetRowAddress(int address, int rowOffset)
 		{

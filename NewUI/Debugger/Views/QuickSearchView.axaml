@@ -1,0 +1,47 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="50"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="dvm:QuickSearchViewModel"
+	x:Class="Mesen.Debugger.Views.QuickSearchView"
+>
+	<Design.DataContext>
+		<dvm:QuickSearchViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="TextBox.highlight Border#PART_BorderElement">
+			<Setter Property="BorderBrush" Value="Red" />
+		</Style>
+	</UserControl.Styles>
+
+	<Border 
+		IsVisible="{CompiledBinding IsSearchBoxVisible}"
+		BorderBrush="Gray"
+		BorderThickness="1"
+		Background="White"
+		Padding="2 1"
+	>
+		<DockPanel>
+			<TextBlock Text="Search:" VerticalAlignment="Center" />
+			<TextBox
+				Name="txtSearch"
+				Width="120"
+				Text="{CompiledBinding SearchString}"
+				Classes.highlight="{CompiledBinding IsErrorVisible}"
+		  />
+			<c:IconButton Icon="Assets/PreviousArrow.png" Command="{Binding FindPrev}" />
+			<c:IconButton Icon="Assets/NextArrow.png" Command="{Binding FindNext}" />
+			<c:IconButton Icon="Assets/Close.png" Command="{Binding Close}" />
+		</DockPanel>
+	</Border>
+</UserControl>

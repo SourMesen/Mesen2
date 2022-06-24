@@ -282,12 +282,12 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	return results;
 }
 
-CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType memType)
+void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType memType, CodeLineData& data)
 {
-	CodeLineData data = {};
 	data.Address = row.CpuAddress;
 	data.AbsoluteAddress = row.Address.Address;
 	data.EffectiveAddress = -1;
+	data.ValueSize = 0;
 	data.Flags = row.Flags;
 
 	switch(row.Address.Type) {
@@ -322,19 +322,20 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 				str.Write(HexUtilities::ToHexChar(_memoryDumper->GetMemoryValue(memType, row.CpuAddress + i)), 2);
 			}
 			data.OpSize = row.GetByteCount();
-			memcpy(data.Text, str.ToString(), str.GetSize());
+			memcpy(data.Text, str.ToString(), str.GetSize() + 1);
 		} else if((data.Flags & LineFlags::Comment) && row.CommentLine >= 0) {
 			string comment = ";" + StringUtilities::Split(_labelManager->GetComment(row.Address), '\n')[row.CommentLine];
 			data.Flags |= LineFlags::VerifiedCode;
-			memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size(), 1000));
+			memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size() + 1, 1000));
 		} else if(data.Flags & LineFlags::Label) {
 			string label = _labelManager->GetLabel(row.Address) + ":";
 			data.Flags |= LineFlags::VerifiedCode;
-			memcpy(data.Text, label.c_str(), std::min<int>((int)label.size(), 1000));
+			memcpy(data.Text, label.c_str(), std::min<int>((int)label.size() + 1, 1000));
 		} else {
 			DisassemblerSource& src = GetSource(row.Address.Type);
 			DisassemblyInfo disInfo = src.Cache[row.Address.Address];
 			CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
+			data.LineCpuType = lineCpuType;
 			CdlManager* cdlManager = _debugger->GetCdlManager();
 			switch(lineCpuType) {
 				case CpuType::Snes:
@@ -499,13 +500,13 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 
 			string text;
 			disInfo.GetDisassembly(text, row.CpuAddress, _labelManager, _settings);
-			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size(), 1000));
+			memcpy(data.Text, text.c_str(), std::min<int>((int)text.size() + 1, 1000));
 
 			disInfo.GetByteCode(data.ByteCode);
 
 			if(data.Flags & LineFlags::Comment) {
 				string comment = ";" + _labelManager->GetComment(row.Address);
-				memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size(), 1000));
+				memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size() + 1, 1000));
 			} else {
 				data.Comment[0] = 0;
 			}
@@ -525,8 +526,6 @@ CodeLineData Disassembler::GetLineData(DisassemblyResult& row, CpuType type, Mem
 			memcpy(data.Text, label.c_str(), label.size() + 1);
 		}
 	}
-
-	return data;
 }
 
 int32_t Disassembler::GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address, bool returnFirstRow)
@@ -579,7 +578,7 @@ uint32_t Disassembler::GetDisassemblyOutput(CpuType type, uint32_t address, Code
 			}
 		}
 
-		output[row] = GetLineData(rows[row + i], type, memType);
+		GetLineData(rows[row + i], type, memType, output[row]);
 	}
 
 	return row;
@@ -649,30 +648,104 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	return address;
 }
 
-int32_t Disassembler::SearchDisassembly(CpuType type, const char *searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards)
+int32_t Disassembler::SearchDisassembly(CpuType cpuType, const char *searchString, int32_t startAddress, bool searchBackwards, bool skipCurrent)
 {
-	//TODO
-	/*DebugBreakHelper helper(_debugger);
+	MemoryType memType = DebugUtilities::GetCpuMemoryType(cpuType);
+	uint16_t bank = startAddress >> 16;
+	uint16_t maxBank = GetMaxBank(cpuType);
 	
-	vector<DisassemblyResult>& source = _disassemblyResult[(int)type];
-	int step = searchBackwards ? -1 : 1;
-	CodeLineData lineData = {};
-	for(int i = startPosition; i != endPosition; i += step) {
-		GetLineData(type, i, lineData);
-		string line = lineData.Text;
-		std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-
-		if(line.find(searchString) != string::npos) {
-			return i;
-		}
-
-		//Continue search from start/end of document
-		if(!searchBackwards && i == (int)(source.size() - 1)) {
-			i = 0;
-		} else if(searchBackwards && i == 0) {
-			i = (int32_t)(source.size() - 1);
-		}
+	vector<DisassemblyResult> rows = Disassemble(cpuType, bank);
+	if(rows.empty()) {
+		return -1;
 	}
-	*/
+	int step = searchBackwards ? -1 : 1;
+
+	string searchStr = searchString;
+
+	int32_t startRow = GetMatchingRow(rows, startAddress, searchBackwards);
+	if(searchBackwards) {
+		startRow--;
+	} else if(skipCurrent) {
+		startRow++;
+	}
+
+	if(startRow >= 0 && startRow < rows.size()) {
+		startAddress = rows[startRow].CpuAddress;
+	}
+
+	int32_t prevAddress = -1;
+
+	CodeLineData lineData = {};
+	int rowCounter = 0;
+	
+	string txt;
+
+	do {
+		for(int i = startRow; i >= 0 && i < rows.size(); i += step) {
+			if(rows[i].CpuAddress < 0) {
+				continue;
+			}
+
+			if(
+				(!searchBackwards && prevAddress < startAddress && rows[i].CpuAddress >= startAddress) ||
+				(searchBackwards && prevAddress > startAddress && rows[i].CpuAddress <= startAddress) ||
+				rowCounter > 500000
+			) {
+				if(rowCounter > 0) {
+					//Checked entire memory space without finding a match (or checked over 500k rows), give up
+					return -1;
+				}
+			}
+
+			rowCounter++;
+
+			prevAddress = rows[i].CpuAddress;
+
+			GetLineData(rows[i], cpuType, memType, lineData);
+
+			if(StringUtilities::Contains(searchStr, lineData.Text, 1000)) {
+				return rows[i].CpuAddress;
+			}
+
+			if(StringUtilities::Contains(searchStr, lineData.Comment, 1000)) {
+				return rows[i].CpuAddress;
+			}
+
+			if(lineData.EffectiveAddress >= 0) {
+				txt = _labelManager->GetLabel({ lineData.EffectiveAddress, memType });
+				if(txt.empty()) {
+					txt = "[$" + DebugUtilities::AddressToHex(lineData.LineCpuType, lineData.EffectiveAddress) + "]";
+				} else {
+					txt = "[" + txt + "]";
+				}
+
+				if(StringUtilities::Contains(searchStr, txt.c_str(), (int)txt.size())) {
+					return rows[i].CpuAddress;
+				}
+			}
+
+			if(lineData.ValueSize > 0) {
+				txt = "$" + (lineData.ValueSize == 2 ? HexUtilities::ToHex((uint16_t)lineData.Value) : HexUtilities::ToHex((uint8_t)lineData.Value));
+				if(StringUtilities::Contains(searchStr, txt.c_str(), (int)txt.size())) {
+					return rows[i].CpuAddress;
+				}
+			}
+		}
+
+		//No match found, go to next/previous bank
+		int nextBank = (int)bank + step;
+		if(nextBank < 0) {
+			nextBank = maxBank;
+		} else if(nextBank > maxBank) {
+			nextBank = 0;
+		}
+		bank = (uint16_t)nextBank;
+		rows = Disassemble(cpuType, bank);
+		if(rows.empty()) {
+			return -1;
+		}
+		startRow = searchBackwards ? (int32_t)rows.size() - 1 : 0;
+	} while(true);
+
 	return -1;
 }

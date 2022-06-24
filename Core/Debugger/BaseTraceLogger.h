@@ -179,19 +179,7 @@ protected:
 				}
 			}
 
-			//TODO fix with generic logic
-			switch(cpuType) {
-				case CpuType::Spc:
-				case CpuType::Gameboy:
-				case CpuType::Nes:
-				case CpuType::Pce:
-					WriteStringValue(output, " [$" + HexUtilities::ToHex((uint16_t)effectiveAddress) + "]", rowPart);
-					break;
-
-				default:
-					WriteStringValue(output, " [$" + HexUtilities::ToHex24(effectiveAddress) + "]", rowPart);
-					break;
-			}
+			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress) + "]", rowPart);
 		}
 	}
 

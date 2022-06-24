@@ -57,4 +57,25 @@ public:
 	{
 		memcpy(outBuffer, str.c_str(), std::min<uint32_t>((uint32_t)str.size(), maxSize));
 	}
+
+	static bool Contains(string& needle, const char* hay, int size)
+	{
+		int pos = 0;
+		for(int j = 0; j < size; j++) {
+			char c = hay[j];
+			if(c <= 0) {
+				break;
+			}
+
+			if(needle[pos] == tolower(c)) {
+				pos++;
+				if(pos == needle.size()) {
+					return true;
+				}
+			} else {
+				pos = 0;
+			}
+		}
+		return false;
+	}
 };

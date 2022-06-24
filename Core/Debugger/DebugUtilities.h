@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Core/MemoryType.h"
+#include "Utilities/HexUtilities.h"
 
 class DebugUtilities
 {
@@ -187,5 +188,17 @@ public:
 	static constexpr CpuType GetLastCpuType()
 	{
 		return CpuType::Pce;
+	}
+
+	static string AddressToHex(CpuType cpuType, int32_t address)
+	{
+		int size = GetProgramCounterSize(cpuType);
+		if(size == 4) {
+			return HexUtilities::ToHex((uint16_t)address);
+		} else if(size == 6) {
+			return HexUtilities::ToHex24(address);
+		} else {
+			return HexUtilities::ToHex(address);
+		}
 	}
 };

@@ -66,13 +66,13 @@ namespace Mesen.Interop
 
 			CodeLineData[] result = new CodeLineData[resultCount];
 			for(int i = 0; i < resultCount; i++) {
-				result[i] = new CodeLineData(rows[i], type);
+				result[i] = new CodeLineData(rows[i]);
 			}
 			return result;
 		}
 
 		[DllImport(DllPath)] public static extern int GetDisassemblyRowAddress(CpuType type, UInt32 address, int rowOffset);
-		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, int startPosition, int endPosition, [MarshalAs(UnmanagedType.I1)] bool searchBackwards);
+		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, int startAddress, [MarshalAs(UnmanagedType.I1)] bool searchBackwards, [MarshalAs(UnmanagedType.I1)] bool skipCurrent);
 
 		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
 		public unsafe static T GetCpuState<T>(CpuType cpuType) where T : struct, BaseState

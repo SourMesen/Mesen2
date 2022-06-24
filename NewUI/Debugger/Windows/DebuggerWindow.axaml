@@ -31,10 +31,6 @@
 		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
-		<Style Selector="Button">
-			<Setter Property="MinWidth" Value="0" />
-			<Setter Property="MinHeight" Value="0" />
-		</Style>
 	</Window.Styles>
 
 	<Window.DataTemplates>

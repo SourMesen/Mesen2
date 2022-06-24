@@ -467,7 +467,23 @@ namespace Mesen.Debugger.ViewModels
 							Disassembly.SetSelectedRow(dest.RelativeAddress.Value.Address, true);
 						}
 					}
-				}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.Find,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Find),
+					OnClick = () => Disassembly.QuickSearch.Open()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindPrev,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindPrev),
+					OnClick = () => Disassembly.QuickSearch.FindPrev()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.FindNext,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
+					OnClick = () => Disassembly.QuickSearch.FindNext()
+				},
 			});
 
 			Dispatcher.UIThread.Post(() => {

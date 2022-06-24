@@ -48,7 +48,7 @@ namespace Mesen.Debugger.Views
 			InitializeComponent();
 
 			_viewer = this.FindControl<DisassemblyViewer>("disViewer");
-			
+
 			InitBreakpointContextMenu();
 			InitMainContextMenu();
 		}
@@ -259,12 +259,13 @@ namespace Mesen.Debugger.Views
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
-			Model.ViewerActive = true;
+			_model?.SetViewer(_viewer);
+			_viewer.Focus();
 		}
 
 		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 		{
-			Model.ViewerActive = false;
+			_model?.SetViewer(null);
 		}
 
 		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();

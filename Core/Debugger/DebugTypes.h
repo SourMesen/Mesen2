@@ -159,6 +159,7 @@ struct CodeLineData
 	int32_t EffectiveAddress;
 	uint16_t Value;
 	uint8_t ValueSize;
+	CpuType LineCpuType;
 
 	uint8_t ByteCode[8];
 	char Text[1000];

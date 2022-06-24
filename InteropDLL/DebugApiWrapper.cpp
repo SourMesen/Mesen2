@@ -71,7 +71,7 @@ extern "C"
 
 	DllExport uint32_t __stdcall GetDisassemblyOutput(CpuType type, uint32_t lineIndex, CodeLineData output[], uint32_t rowCount) { return WithDebugger(uint32_t, GetDisassembler()->GetDisassemblyOutput(type, lineIndex, output, rowCount)); }
 	DllExport uint32_t __stdcall GetDisassemblyRowAddress(CpuType type, uint32_t address, int32_t rowOffset) { return WithDebugger(uint32_t, GetDisassembler()->GetDisassemblyRowAddress(type, address, rowOffset)); }
-	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards) { return WithDebugger(int32_t, GetDisassembler()->SearchDisassembly(type, searchString, startPosition, endPosition, searchBackwards)); }
+	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, bool searchBackwards, bool skipCurrent) { return WithDebugger(int32_t, GetDisassembler()->SearchDisassembly(type, searchString, startPosition, searchBackwards, skipCurrent)); }
 
 	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { WithDebugger(void, GetTraceLogger(type)->SetOptions(options)); }
 	DllExport uint32_t __stdcall GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t lineCount) { return WithDebugger(uint32_t, GetExecutionTrace(output, startOffset, lineCount)); }

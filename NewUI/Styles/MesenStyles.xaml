@@ -520,8 +520,11 @@
 	<Style Selector="ToolChromeControl Grid#PART_Grip TextBlock">
 		<Setter Property="Margin" Value="0 2 8 2" />
 	</Style>
-	<Style Selector="ToolChromeControl Button">
+	<Style Selector="ToolChromeControl > Grid > Border Button">
 		<Setter Property="Height" Value="16" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="Margin" Value="0 0 -5 0" />
 	</Style>
 	
 	<Style Selector="TabControl[TabStripPlacement=Left] TabControl[TabStripPlacement=Top]">

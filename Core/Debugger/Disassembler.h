@@ -34,7 +34,7 @@ private:
 	void InitSource(MemoryType type);
 	DisassemblerSource& GetSource(MemoryType type);
 
-	CodeLineData GetLineData(DisassemblyResult& result, CpuType type, MemoryType memType);
+	void GetLineData(DisassemblyResult& result, CpuType type, MemoryType memType, CodeLineData& data);
 	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address, bool returnFirstRow);
 	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint16_t bank);
 	uint16_t GetMaxBank(CpuType cpuType);
@@ -61,5 +61,5 @@ public:
 
 	uint32_t GetDisassemblyOutput(CpuType type, uint32_t address, CodeLineData output[], uint32_t rowCount);
 	int32_t GetDisassemblyRowAddress(CpuType type, uint32_t address, int32_t rowOffset);
-	int32_t SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, int32_t endPosition, bool searchBackwards);
+	int32_t SearchDisassembly(CpuType cpuType, const char* searchString, int32_t startAddress, bool searchBackwards, bool skipCurrent);
 };

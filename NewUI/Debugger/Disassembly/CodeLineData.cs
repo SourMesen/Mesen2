@@ -99,9 +99,9 @@ namespace Mesen.Debugger
 			CpuType = cpuType;
 		}
 
-		public CodeLineData(InteropCodeLineData data, CpuType cpuType)
+		public CodeLineData(InteropCodeLineData data)
 		{
-			CpuType = cpuType;
+			this.CpuType = data.LineCpuType;
 
 			this.Text = ConvertString(data.Text);
 			this.Comment = ConvertString(data.Comment);
@@ -156,6 +156,7 @@ namespace Mesen.Debugger
 		public Int32 EffectiveAddress;
 		public UInt16 Value;
 		public byte ValueSize;
+		public CpuType LineCpuType;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
 		public byte[] ByteCode;
