@@ -10,6 +10,7 @@ using Mesen.Debugger.Integration;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.StatusViews;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.ViewModels.DebuggerDock;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -47,6 +48,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public CallStackViewModel CallStack { get; private set; }
 		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
 		[Reactive] public MemoryMappingViewModel? MemoryMappings { get; private set; }
+		[Reactive] public FindResultListViewModel FindResultList { get; private set; }
 
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
@@ -99,6 +101,7 @@ namespace Mesen.Debugger.ViewModels
 			Disassembly = new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType);
 			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
 			LabelList = new LabelListViewModel(CpuType, Disassembly);
+			FindResultList = new FindResultListViewModel(this);
 			if(CpuType.SupportsFunctionList()) {
 				FunctionList = new FunctionListViewModel(CpuType, Disassembly);
 			}
@@ -124,6 +127,7 @@ namespace Mesen.Debugger.ViewModels
 			DockFactory.FunctionListTool.Model = FunctionList;
 			DockFactory.CallStackTool.Model = CallStack;
 			DockFactory.WatchListTool.Model = WatchList;
+			DockFactory.FindResultListTool.Model = FindResultList;
 			DockFactory.DisassemblyTool.Model = Disassembly;
 			DockFactory.SourceViewTool.Model = null;
 			DockFactory.StatusTool.Model = ConsoleStatus;
@@ -362,13 +366,29 @@ namespace Mesen.Debugger.ViewModels
 			if(IsToolVisible(tool)) {
 				DockFactory.CloseDockable(tool);
 			} else {
-				if(DockLayout.VisibleDockables?.Count > 0 && DockLayout.VisibleDockables[0] is IDock dock) {
-					DockFactory.SplitToDock(dock, new ToolDock {
-						Proportion = 0.33,
-						VisibleDockables = DockFactory.CreateList<IDockable>(tool)
-					}, DockOperation.Bottom);
+				OpenTool(tool);
+			}
+		}
+
+		public void OpenTool(Tool tool)
+		{
+			if(!IsToolVisible(tool)) {
+				IDockable? visibleTool = DockFactory.FindDockable(DockLayout, x => x is BaseToolContainerViewModel && x != DockFactory.DisassemblyTool && x.Owner is IDock owner && owner.VisibleDockables?.Contains(x) == true);
+				if(visibleTool?.Owner is IDock dock) {
+					DockFactory.AddDockable(dock, tool);
+				} else {
+					//Couldn't find any where else to open tool, create a new section
+					if(DockLayout.VisibleDockables?.Count > 0 && DockLayout.VisibleDockables[0] is IDock mainDock) {
+						DockFactory.SplitToDock(mainDock, new ToolDock {
+							Proportion = 0.33,
+							VisibleDockables = DockFactory.CreateList<IDockable>(tool)
+						}, DockOperation.Bottom);
+					}
 				}
 			}
+
+			DockFactory.SetActiveDockable(tool);
+			DockFactory.SetFocusedDockable(DockLayout, tool);
 		}
 
 		public void InitializeMenu(Window wnd)
@@ -483,6 +503,19 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.FindNext,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
 					OnClick = () => Disassembly.QuickSearch.FindNext()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.FindOccurrences,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindOccurrences),
+					OnClick = async () => {
+						FindAllOccurrencesWindow searchWnd = new();
+						string? search = await searchWnd.ShowCenteredDialog<string?>(wnd);
+						if(search!= null) {
+							DisassemblySearchOptions options = new() { MatchWholeWord = searchWnd.MatchWholeWord, MatchCase = searchWnd.MatchCase };
+							FindAllOccurrences(search, options);
+						}
+					}
 				},
 			});
 
@@ -652,6 +685,15 @@ namespace Mesen.Debugger.ViewModels
 					DebugApi.Step(CpuType, instructionCount, type);
 					break;
 			}
+		}
+
+		public void FindAllOccurrences(string search, DisassemblySearchOptions options)
+		{
+			if(!options.MatchCase) {
+				search = search.ToLower();
+			}
+			CodeLineData[] results = DebugApi.FindOccurrences(CpuType, search.Trim(), options);
+			FindResultList.SetResults(results);
 		}
 	}
 }

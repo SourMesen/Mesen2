@@ -6,6 +6,7 @@
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/Disassembler.h"
+#include "Debugger/DisassemblySearch.h"
 #include "Debugger/BreakpointManager.h"
 #include "Debugger/PpuTools.h"
 #include "Debugger/DebugBreakHelper.h"
@@ -65,6 +66,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_labelManager.reset(new LabelManager(this));
 	_memoryDumper.reset(new MemoryDumper(this));
 	_disassembler.reset(new Disassembler(console, this));
+	_disassemblySearch.reset(new DisassemblySearch(_disassembler.get(), _labelManager.get()));
 	_memoryAccessCounter.reset(new MemoryAccessCounter(this));
 	_scriptManager.reset(new ScriptManager(this));
 	_traceLogSaver.reset(new TraceLogFileSaver());

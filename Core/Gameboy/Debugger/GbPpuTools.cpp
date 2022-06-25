@@ -302,7 +302,7 @@ void GbPpuTools::SetPaletteColor(int32_t colorIndex, uint32_t color)
 			state.CgbObjPalettes[colorIndex - 4*8] = rgb555;
 		}
 	} else {
-		color & 0x03;
+		color &= 0x03;
 		if(colorIndex < 4) {
 			state.BgPalette &= ~(3 << (colorIndex * 2));
 			state.BgPalette |= (color << (colorIndex * 2));

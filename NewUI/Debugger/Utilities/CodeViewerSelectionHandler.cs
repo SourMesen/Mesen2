@@ -20,6 +20,8 @@ namespace Mesen.Debugger.Utilities
 
 		private ContextMenu? _mainContextMenu;
 		private ContextMenu? _marginContextMenu;
+		
+		public CodeSegmentInfo? MouseOverSegment { get; private set; }
 
 		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, bool useRowIndex, ContextMenu? mainContextMenu = null, ContextMenu? marginContextMenu = null)
 		{
@@ -90,9 +92,12 @@ namespace Mesen.Debugger.Utilities
 		{
 			DynamicTooltip? tooltip = null;
 
+			if(_viewer.ContextMenu?.IsOpen != true) {
+				MouseOverSegment = e.CodeSegment;
+			}
+
 			if(e.CodeSegment != null && e.Data != null) {
 				_mouseOverCodeLocation = CodeTooltipHelper.GetLocation(e.Data.CpuType, e.CodeSegment);
-
 				tooltip = CodeTooltipHelper.GetTooltip(e.Data.CpuType, e.CodeSegment);
 				if(tooltip != null) {
 					ToolTip.SetTip(_viewer, tooltip);

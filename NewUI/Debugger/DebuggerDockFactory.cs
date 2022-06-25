@@ -27,6 +27,7 @@ namespace Mesen.Debugger
 		public ToolContainerViewModel<CallStackViewModel> CallStackTool { get; private set; }
 		public ToolContainerViewModel<LabelListViewModel> LabelListTool { get; private set; }
 		public ToolContainerViewModel<FunctionListViewModel> FunctionListTool { get; private set; }
+		public ToolContainerViewModel<FindResultListViewModel> FindResultListTool { get; private set; }
 
 		public DebuggerDockFactory()
 		{
@@ -41,6 +42,7 @@ namespace Mesen.Debugger
 			CallStackTool = new("Call Stack");
 			LabelListTool = new("Labels");
 			FunctionListTool = new("Functions");
+			FindResultListTool = new("Find Results");
 		}
 
 		public override IRootDock CreateLayout()
@@ -69,7 +71,7 @@ namespace Mesen.Debugger
 									new MesenProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = 0.5,
-										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool)
+										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool)
 									}
 								)
 							}

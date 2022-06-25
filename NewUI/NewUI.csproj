@@ -279,6 +279,9 @@
     <Compile Update="Debugger\StatusViews\SpcStatusView.axaml.cs">
       <DependentUpon>SpcStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\FindResultListView.axaml.cs">
+      <DependentUpon>FindResultListView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\DebuggerLogView.axaml.cs">
       <DependentUpon>DebuggerLogView.axaml</DependentUpon>
     </Compile>
@@ -335,6 +338,9 @@
     </Compile>
     <Compile Update="Debugger\Windows\ColorIndexPickerWindow.axaml.cs">
       <DependentUpon>ColorIndexPickerWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\FindAllOccurrencesWindow.axaml.cs">
+      <DependentUpon>FindAllOccurrencesWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\MemorySearchWindow.axaml.cs">
       <DependentUpon>MemorySearchWindow.axaml</DependentUpon>

@@ -109,6 +109,18 @@ namespace Mesen.Debugger.ViewModels
 				},
 
 				new ContextMenuSeparator(),
+		
+				new ContextMenuAction() {
+					ActionType = ActionType.FindOccurrences,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FunctionList_FindOccurrences),
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FunctionViewModel vm && vm.RelAddress >= 0,
+					OnClick = () => {
+						if(Selection.SelectedItem is FunctionViewModel vm && vm.RelAddress >= 0) {
+							DisassemblySearchOptions options = new() { MatchCase = true, MatchWholeWord = true };
+							Disassembly.Debugger.FindAllOccurrences(vm.Label?.Label ?? vm.RelAddressDisplay, options);
+						}
+					}
+				},
 
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,

@@ -172,6 +172,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.FunctionList_ToggleBreakpoint, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.FunctionList_ViewInMemoryViewer, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.FunctionList_GoToLocation, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.FunctionList_FindOccurrences, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Edit, KeyBinding = new(Key.F2) });
@@ -186,6 +187,10 @@ namespace Mesen.Config
 
 			Add(new() { Shortcut = DebuggerShortcut.CallStack_EditLabel, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.CallStack_GoToLocation, KeyBinding = new() });
+			
+			Add(new() { Shortcut = DebuggerShortcut.FindResultList_AddWatch, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.FindResultList_GoToLocation, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.FindResultList_ToggleBreakpoint, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new(KeyModifiers.Control, Key.S) });
 			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
@@ -329,6 +334,7 @@ namespace Mesen.Config
 		FunctionList_EditLabel,
 		FunctionList_ToggleBreakpoint,
 		FunctionList_GoToLocation,
+		FunctionList_FindOccurrences,
 		FunctionList_ViewInMemoryViewer,
 		BreakpointList_Add,
 		BreakpointList_Edit,
@@ -341,6 +347,9 @@ namespace Mesen.Config
 		WatchList_MoveDown,
 		CallStack_EditLabel,
 		CallStack_GoToLocation,
+		FindResultList_GoToLocation,
+		FindResultList_AddWatch,
+		FindResultList_ToggleBreakpoint,
 		SaveRom,
 		SaveRomAs,
 		SaveEditAsIps,

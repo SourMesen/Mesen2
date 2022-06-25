@@ -1850,6 +1850,9 @@
     <ClInclude Include="NES\Loaders\StudyBoxLoader.h">
       <Filter>NES\Loaders</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger\DisassemblySearch.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -1950,6 +1953,9 @@
     </ClCompile>
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp">
       <Filter>NES\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\DisassemblySearch.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

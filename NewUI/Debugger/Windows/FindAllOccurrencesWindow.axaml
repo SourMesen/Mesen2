@@ -1,0 +1,42 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	Icon="/Assets/Icon.ico"
+	x:Class="Mesen.Debugger.Windows.FindAllOccurrencesWindow"
+	Width="300" Height="100"
+	Name="root"
+	Title="{l:Translate wndTitle}"
+>
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnFind}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<StackPanel>
+			<DockPanel>
+				<TextBlock Text="{l:Translate lblSearch}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0 0 5 0" />
+				<TextBox
+					Name="txtSearch"
+					HorizontalAlignment="Stretch"
+					Text="{Binding SearchString, ElementName=root}"
+				/>
+			</DockPanel>
+			<CheckBox IsChecked="{Binding MatchCase, ElementName=root}" Content="{l:Translate chkMatchCase}" />
+			<CheckBox IsChecked="{Binding MatchWholeWord, ElementName=root}" Content="{l:Translate chkMatchWholeWord}" />
+		</StackPanel>
+	</DockPanel>
+</Window>

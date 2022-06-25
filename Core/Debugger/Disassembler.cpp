@@ -289,6 +289,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 	data.EffectiveAddress = -1;
 	data.ValueSize = 0;
 	data.Flags = row.Flags;
+	data.LineCpuType = type;
 
 	switch(row.Address.Type) {
 		default: break;
@@ -646,106 +647,4 @@ int32_t Disassembler::GetDisassemblyRowAddress(CpuType cpuType, uint32_t address
 	}
 
 	return address;
-}
-
-int32_t Disassembler::SearchDisassembly(CpuType cpuType, const char *searchString, int32_t startAddress, bool searchBackwards, bool skipCurrent)
-{
-	MemoryType memType = DebugUtilities::GetCpuMemoryType(cpuType);
-	uint16_t bank = startAddress >> 16;
-	uint16_t maxBank = GetMaxBank(cpuType);
-	
-	vector<DisassemblyResult> rows = Disassemble(cpuType, bank);
-	if(rows.empty()) {
-		return -1;
-	}
-	int step = searchBackwards ? -1 : 1;
-
-	string searchStr = searchString;
-
-	int32_t startRow = GetMatchingRow(rows, startAddress, searchBackwards);
-	if(searchBackwards) {
-		startRow--;
-	} else if(skipCurrent) {
-		startRow++;
-	}
-
-	if(startRow >= 0 && startRow < rows.size()) {
-		startAddress = rows[startRow].CpuAddress;
-	}
-
-	int32_t prevAddress = -1;
-
-	CodeLineData lineData = {};
-	int rowCounter = 0;
-	
-	string txt;
-
-	do {
-		for(int i = startRow; i >= 0 && i < rows.size(); i += step) {
-			if(rows[i].CpuAddress < 0) {
-				continue;
-			}
-
-			if(
-				(!searchBackwards && prevAddress < startAddress && rows[i].CpuAddress >= startAddress) ||
-				(searchBackwards && prevAddress > startAddress && rows[i].CpuAddress <= startAddress) ||
-				rowCounter > 500000
-			) {
-				if(rowCounter > 0) {
-					//Checked entire memory space without finding a match (or checked over 500k rows), give up
-					return -1;
-				}
-			}
-
-			rowCounter++;
-
-			prevAddress = rows[i].CpuAddress;
-
-			GetLineData(rows[i], cpuType, memType, lineData);
-
-			if(StringUtilities::Contains(searchStr, lineData.Text, 1000)) {
-				return rows[i].CpuAddress;
-			}
-
-			if(StringUtilities::Contains(searchStr, lineData.Comment, 1000)) {
-				return rows[i].CpuAddress;
-			}
-
-			if(lineData.EffectiveAddress >= 0) {
-				txt = _labelManager->GetLabel({ lineData.EffectiveAddress, memType });
-				if(txt.empty()) {
-					txt = "[$" + DebugUtilities::AddressToHex(lineData.LineCpuType, lineData.EffectiveAddress) + "]";
-				} else {
-					txt = "[" + txt + "]";
-				}
-
-				if(StringUtilities::Contains(searchStr, txt.c_str(), (int)txt.size())) {
-					return rows[i].CpuAddress;
-				}
-			}
-
-			if(lineData.ValueSize > 0) {
-				txt = "$" + (lineData.ValueSize == 2 ? HexUtilities::ToHex((uint16_t)lineData.Value) : HexUtilities::ToHex((uint8_t)lineData.Value));
-				if(StringUtilities::Contains(searchStr, txt.c_str(), (int)txt.size())) {
-					return rows[i].CpuAddress;
-				}
-			}
-		}
-
-		//No match found, go to next/previous bank
-		int nextBank = (int)bank + step;
-		if(nextBank < 0) {
-			nextBank = maxBank;
-		} else if(nextBank > maxBank) {
-			nextBank = 0;
-		}
-		bank = (uint16_t)nextBank;
-		rows = Disassemble(cpuType, bank);
-		if(rows.empty()) {
-			return -1;
-		}
-		startRow = searchBackwards ? (int32_t)rows.size() - 1 : 0;
-	} while(true);
-
-	return -1;
 }

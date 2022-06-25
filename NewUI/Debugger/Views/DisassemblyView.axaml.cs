@@ -142,6 +142,22 @@ namespace Mesen.Debugger.Views
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
+					ActionType = ActionType.FindOccurrences,
+					HintText = () => GetSearchString(_selectionHandler?.MouseOverSegment) ?? "",
+					IsEnabled = () => GetSearchString(_selectionHandler?.MouseOverSegment) != null,
+					OnClick = () => {
+						if(_model != null) {
+							string? searchString = GetSearchString(_selectionHandler?.MouseOverSegment);
+							if(searchString != null) {
+								DisassemblySearchOptions options = new() { MatchWholeWord = true, MatchCase = true };
+								CodeLineData[] results = DebugApi.FindOccurrences(CpuType, searchString, options);
+								_model?.Debugger.FindResultList.SetResults(results);
+							}
+						}
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.MoveProgramCounter,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_MoveProgramCounter),
 					HintText = () => GetHint(ActionLocation),
@@ -168,6 +184,34 @@ namespace Mesen.Debugger.Views
 					}
 				},
 			});
+		}
+
+		private string? GetSearchString(CodeSegmentInfo? segment)
+		{
+			if(segment == null || !AllowSearch(segment.Type)) {
+				return null;
+			}
+			return segment.Text.Trim(' ', '[', ']', '=', ':', '.', '+');
+		}
+
+		private bool AllowSearch(CodeSegmentType? type)
+		{
+			if(type == null) {
+				return false;
+			}
+
+			switch(type) {
+				case CodeSegmentType.OpCode:
+				case CodeSegmentType.Address:
+				case CodeSegmentType.Label:
+				case CodeSegmentType.ImmediateValue:
+				case CodeSegmentType.LabelDefinition:
+				case CodeSegmentType.EffectiveAddress:
+					return true;
+
+				default:
+					return false;
+			}
 		}
 
 		[MemberNotNull(nameof(_bpMarginContextMenu))]

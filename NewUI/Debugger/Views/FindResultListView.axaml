@@ -1,0 +1,36 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	Focusable="True"
+	x:DataType="vm:FindResultListViewModel"
+	x:Class="Mesen.Debugger.Views.FindResultListView"
+>
+	<Design.DataContext>
+		<vm:FindResultListViewModel />
+	</Design.DataContext>
+
+	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+		<DataBox
+			Items="{CompiledBinding FindResults}"
+			Selection="{CompiledBinding Selection}"
+			CellDoubleClick="OnCellDoubleClick"
+			SelectionMode="Single"
+			SortMode="Multiple"
+			SortCommand="{Binding Sort}"
+			SortState="{CompiledBinding SortState}"
+			GridLinesVisibility="All"
+		>
+			<DataBox.Columns>
+				<DataBoxTextColumn ColumnName="Address" Header="Address" Binding="{Binding Address}" Width="1*" />
+				<DataBoxTextColumn ColumnName="Result" Header="Result" Binding="{Binding Text}" Width="2*" />
+			</DataBox.Columns>
+		</DataBox>
+	</Border>
+</UserControl>

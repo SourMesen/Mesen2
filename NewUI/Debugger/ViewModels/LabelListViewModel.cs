@@ -150,6 +150,18 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
+					ActionType = ActionType.FindOccurrences,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_FindOccurrences),
+					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is LabelViewModel vm && vm.Label.GetRelativeAddress(CpuType).Address >= 0,
+					OnClick = () => {
+						if(Selection.SelectedItem is LabelViewModel vm) {
+							DisassemblySearchOptions options = new() { MatchCase = true, MatchWholeWord = true };
+							Disassembly.Debugger.FindAllOccurrences(vm.Label.Label, options);
+						}
+					}
+				},
+
+				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.LabelList_GoToLocation),
 					IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is LabelViewModel vm && vm.Label.GetRelativeAddress(CpuType).Address >= 0,

@@ -21,6 +21,7 @@ class ExpressionEvaluator;
 class MemoryDumper;
 class MemoryAccessCounter;
 class Disassembler;
+class DisassemblySearch;
 class BreakpointManager;
 class PpuTools;
 class CodeDataLogger;
@@ -67,6 +68,7 @@ private:
 	unique_ptr<MemoryAccessCounter> _memoryAccessCounter;
 	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<Disassembler> _disassembler;
+	unique_ptr<DisassemblySearch> _disassemblySearch;
 	unique_ptr<LabelManager> _labelManager;
 	unique_ptr<CdlManager> _cdlManager;
 
@@ -155,6 +157,7 @@ public:
 	MemoryDumper* GetMemoryDumper() { return _memoryDumper.get(); }
 	MemoryAccessCounter* GetMemoryAccessCounter() { return _memoryAccessCounter.get(); }
 	Disassembler* GetDisassembler() { return _disassembler.get(); }
+	DisassemblySearch* GetDisassemblySearch() { return _disassemblySearch.get(); }
 	LabelManager* GetLabelManager() { return _labelManager.get(); }
 	CdlManager* GetCdlManager() { return _cdlManager.get(); }
 	ScriptManager* GetScriptManager() { return _scriptManager.get(); }

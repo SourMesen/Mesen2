@@ -52,7 +52,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath, EntryPoint = "GetDebuggerLog")] private static extern void GetDebuggerLogWrapper(IntPtr outLog, Int32 maxLength);
 		public static string GetLog() { return Utf8Utilities.CallStringApi(GetDebuggerLogWrapper, 100000); }
 
-		[DllImport(DllPath, EntryPoint = "GetDisassemblyOutput")] private static extern UInt32 GetDisassemblyOutputWrapper(CpuType type, UInt32 address, [In, Out] InteropCodeLineData[] lineData, UInt32 rowCount);
+		[DllImport(DllPath)] private static extern UInt32 GetDisassemblyOutput(CpuType type, UInt32 address, [In, Out] InteropCodeLineData[] lineData, UInt32 rowCount);
 		public static CodeLineData[] GetDisassemblyOutput(CpuType type, UInt32 address, UInt32 rowCount)
 		{
 			InteropCodeLineData[] rows = new InteropCodeLineData[rowCount];
@@ -62,7 +62,7 @@ namespace Mesen.Interop
 				rows[i].ByteCode = new byte[8];
 			}
 
-			UInt32 resultCount = DebugApi.GetDisassemblyOutputWrapper(type, address, rows, rowCount);
+			UInt32 resultCount = DebugApi.GetDisassemblyOutput(type, address, rows, rowCount);
 
 			CodeLineData[] result = new CodeLineData[resultCount];
 			for(int i = 0; i < resultCount; i++) {
@@ -72,7 +72,27 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern int GetDisassemblyRowAddress(CpuType type, UInt32 address, int rowOffset);
-		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, int startAddress, [MarshalAs(UnmanagedType.I1)] bool searchBackwards, [MarshalAs(UnmanagedType.I1)] bool skipCurrent);
+		[DllImport(DllPath)] public static extern int SearchDisassembly(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, int startAddress, DisassemblySearchOptions options);
+		
+		[DllImport(DllPath)] private static extern UInt32 FindOccurrences(CpuType type, [MarshalAs(UnmanagedType.LPUTF8Str)] string searchString, DisassemblySearchOptions options, [In, Out] InteropCodeLineData[] lineData, UInt32 maxResultCount);
+		public static CodeLineData[] FindOccurrences(CpuType type, string searchString, DisassemblySearchOptions options)
+		{
+			UInt32 maxResultCount = 500;
+			InteropCodeLineData[] rows = new InteropCodeLineData[maxResultCount];
+			for(int i = 0; i < maxResultCount; i++) {
+				rows[i].Comment = new byte[1000];
+				rows[i].Text = new byte[1000];
+				rows[i].ByteCode = new byte[8];
+			}
+
+			UInt32 resultCount = DebugApi.FindOccurrences(type, searchString, options, rows, maxResultCount);
+
+			CodeLineData[] result = new CodeLineData[resultCount];
+			for(int i = 0; i < resultCount; i++) {
+				result[i] = new CodeLineData(rows[i]);
+			}
+			return result;
+		}
 
 		[DllImport(DllPath)] private static extern void GetCpuState(IntPtr state, CpuType cpuType);
 		public unsafe static T GetCpuState<T>(CpuType cpuType) where T : struct, BaseState
@@ -1228,5 +1248,13 @@ namespace Mesen.Interop
 				return sb.ToString().Trim();
 			}
 		}
+	}
+
+	public struct DisassemblySearchOptions
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool MatchCase;
+		[MarshalAs(UnmanagedType.I1)] public bool MatchWholeWord;
+		[MarshalAs(UnmanagedType.I1)] public bool SearchBackwards;
+		[MarshalAs(UnmanagedType.I1)] public bool SkipFirstLine;
 	}
 }

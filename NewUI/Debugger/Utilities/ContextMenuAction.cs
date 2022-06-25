@@ -665,6 +665,8 @@ namespace Mesen.Debugger.Utilities
 		FindNext,
 		[IconFile("PreviousArrow")]
 		FindPrev,
+		[IconFile("Find")]
+		FindOccurrences,
 
 		[IconFile("Edit")]
 		EditTile,

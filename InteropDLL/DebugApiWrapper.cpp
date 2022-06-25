@@ -5,6 +5,7 @@
 #include "Core/Debugger/MemoryAccessCounter.h"
 #include "Core/Debugger/CdlManager.h"
 #include "Core/Debugger/Disassembler.h"
+#include "Core/Debugger/DisassemblySearch.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Core/Debugger/Breakpoint.h"
 #include "Core/Debugger/BreakpointManager.h"
@@ -71,7 +72,8 @@ extern "C"
 
 	DllExport uint32_t __stdcall GetDisassemblyOutput(CpuType type, uint32_t lineIndex, CodeLineData output[], uint32_t rowCount) { return WithDebugger(uint32_t, GetDisassembler()->GetDisassemblyOutput(type, lineIndex, output, rowCount)); }
 	DllExport uint32_t __stdcall GetDisassemblyRowAddress(CpuType type, uint32_t address, int32_t rowOffset) { return WithDebugger(uint32_t, GetDisassembler()->GetDisassemblyRowAddress(type, address, rowOffset)); }
-	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, bool searchBackwards, bool skipCurrent) { return WithDebugger(int32_t, GetDisassembler()->SearchDisassembly(type, searchString, startPosition, searchBackwards, skipCurrent)); }
+	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, DisassemblySearchOptions options) { return WithDebugger(int32_t, GetDisassemblySearch()->SearchDisassembly(type, searchString, startPosition, options)); }
+	DllExport uint32_t __stdcall FindOccurrences(CpuType type, const char* searchString, DisassemblySearchOptions options, CodeLineData results[], uint32_t maxResultCount) { return WithDebugger(uint32_t, GetDisassemblySearch()->FindOccurrences(type, searchString, options, results, maxResultCount)); }
 
 	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { WithDebugger(void, GetTraceLogger(type)->SetOptions(options)); }
 	DllExport uint32_t __stdcall GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t lineCount) { return WithDebugger(uint32_t, GetExecutionTrace(output, startOffset, lineCount)); }

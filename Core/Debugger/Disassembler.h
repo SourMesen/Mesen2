@@ -3,13 +3,13 @@
 #include "DisassemblyInfo.h"
 #include "DebugTypes.h"
 #include "DebugUtilities.h"
-#include "Utilities/SimpleLock.h"
 
 class IConsole;
 class Debugger;
 class LabelManager;
 class CodeDataLogger;
 class MemoryDumper;
+class DisassemblySearch;
 class EmuSettings;
 struct SnesCpuState;
 enum class CpuType : uint8_t;
@@ -23,6 +23,8 @@ struct DisassemblerSource
 class Disassembler
 {
 private:
+	friend class DisassemblySearch;
+
 	IConsole *_console;
 	EmuSettings* _settings;
 	Debugger *_debugger;
@@ -38,7 +40,7 @@ private:
 	int32_t GetMatchingRow(vector<DisassemblyResult>& rows, uint32_t address, bool returnFirstRow);
 	vector<DisassemblyResult> Disassemble(CpuType cpuType, uint16_t bank);
 	uint16_t GetMaxBank(CpuType cpuType);
-
+	
 public:
 	Disassembler(IConsole* console, Debugger* debugger);
 
@@ -61,5 +63,4 @@ public:
 
 	uint32_t GetDisassemblyOutput(CpuType type, uint32_t address, CodeLineData output[], uint32_t rowCount);
 	int32_t GetDisassemblyRowAddress(CpuType type, uint32_t address, int32_t rowOffset);
-	int32_t SearchDisassembly(CpuType cpuType, const char* searchString, int32_t startAddress, bool searchBackwards, bool skipCurrent);
 };

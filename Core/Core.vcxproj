@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Debugger\Base6502Assembler.h" />
     <ClInclude Include="Debugger\CdlManager.h" />
+    <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
     <ClInclude Include="NES\Loaders\StudyBoxLoader.h" />
     <ClInclude Include="NES\Loaders\UnifBoards.h" />
@@ -423,6 +424,7 @@
     <ClCompile Include="Debugger\Base6502Assembler.cpp" />
     <ClCompile Include="Debugger\BaseEventManager.cpp" />
     <ClCompile Include="Debugger\CdlManager.cpp" />
+    <ClCompile Include="Debugger\DisassemblySearch.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Cx4.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gameboy.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Gsu.cpp" />

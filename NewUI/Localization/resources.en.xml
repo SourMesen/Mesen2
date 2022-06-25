@@ -1138,7 +1138,16 @@
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
+		<Form ID="FindAllOccurrencesWindow">
+			<Control ID="wndTitle">Find All Occurrences...</Control>
+			<Control ID="lblSearch">Search:</Control>
+			<Control ID="chkMatchCase">Match case</Control>
+			<Control ID="chkMatchWholeWord">Match whole word</Control>
+			<Control ID="btnFind">Find</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="BreakInWindow">
 			<Control ID="wndTitle">Break In...</Control>
 			<Control ID="lblBreakIn">Break in:</Control>
@@ -2268,6 +2277,7 @@
 			<Value ID="FunctionList_EditLabel">Function List: Edit Label</Value>
 			<Value ID="FunctionList_ToggleBreakpoint">Function List: Toggle Breakpoint</Value>
 			<Value ID="FunctionList_GoToLocation">Function List: Go to Location</Value>
+			<Value ID="FunctionList_FindOccurrences">Label List: Find Occurrences</Value>
 			<Value ID="FunctionList_ViewInMemoryViewer">Function List: View in Memory Viewer</Value>
 			<Value ID="BreakpointList_Add">Breakpoint List: Add Breakpoint</Value>
 			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
@@ -2279,7 +2289,10 @@
 			<Value ID="WatchList_MoveUp">Watch List: Move Up</Value>
 			<Value ID="WatchList_MoveDown">Watch List: Move Down</Value>
 			<Value ID="CallStack_EditLabel">Call Stack: Edit Label</Value>
-			<Value ID="CallStack_GoToLocation">Call Stack: Go to location</Value>
+			<Value ID="CallStack_GoToLocation">Call Stack: Go to Location</Value>
+			<Value ID="FindResultList_AddWatch">Find Results: Add to Watch</Value>
+			<Value ID="FindResultList_GoToLocation">Find Results: Go to Location</Value>
+			<Value ID="FindResultList_ToggleBreakpoint">Find Results: Toggle Breakpoint</Value>
 			<Value ID="SaveRom">Save ROM</Value>
 			<Value ID="SaveRomAs">Save ROM as...</Value>
 			<Value ID="SaveEditAsIps">Save edits as IPS patch...</Value>
@@ -2553,6 +2566,7 @@
 			<Value ID="Find">Find...</Value>
 			<Value ID="FindNext">Find next</Value>
 			<Value ID="FindPrev">Find previous</Value>
+			<Value ID="FindOccurrences">Find all occurrences</Value>
 
 			<Value ID="EditTile">Edit tile</Value>
 			<Value ID="EditTiles">Edit tiles</Value>
