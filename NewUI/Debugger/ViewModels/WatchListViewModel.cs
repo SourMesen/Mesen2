@@ -227,9 +227,9 @@ namespace Mesen.Debugger.ViewModels
 
 				new ContextMenuAction() {
 					ActionType = ActionType.WatchDecimalDisplay,
-					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Unsigned,
+					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Signed,
 					OnClick = () => {
-						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Unsigned;
+						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Signed;
 					}
 				},
 

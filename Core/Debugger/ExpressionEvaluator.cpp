@@ -14,9 +14,9 @@
 
 const vector<string> ExpressionEvaluator::_binaryOperators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||" } };
 const vector<int> ExpressionEvaluator::_binaryPrecedence = { { 10,  10,  10,   9,   9,    8,    8,   7,   7,    7,    7,    6,    6,   5,   4,   3,    2,    1 } };
-const vector<string> ExpressionEvaluator::_unaryOperators = { { "+", "-", "~", "!" } };
-const vector<int> ExpressionEvaluator::_unaryPrecedence = { { 11,  11,  11,  11 } };
-const std::unordered_set<string> ExpressionEvaluator::_operators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||", "~", "!", "(", ")", "{", "}", "[", "]" } };
+const vector<string> ExpressionEvaluator::_unaryOperators = { { "+", "-", "~", "!", ":" } };
+const vector<int> ExpressionEvaluator::_unaryPrecedence = { { 11,  11,  11,  11, 11 } };
+const std::unordered_set<string> ExpressionEvaluator::_operators = { { "*", "/", "%", "+", "-", "<<", ">>", "<", "<=", ">", ">=", "==", "!=", "&", "^", "|", "&&", "||", "~", "!", "(", ")", "{", "}", "[", "]", ":" } };
 
 bool ExpressionEvaluator::IsOperator(string token, int &precedence, bool unaryOperator)
 {
@@ -133,12 +133,12 @@ int64_t ExpressionEvaluator::ProcessSharedTokens(string token)
 		return EvalValues::Value;
 	} else if(token == "address") {
 		return EvalValues::Address;
-	} else if(token == "romaddress") {
-		return EvalValues::AbsoluteAddress;
 	} else if(token == "iswrite") {
 		return EvalValues::IsWrite;
 	} else if(token == "isread") {
 		return EvalValues::IsRead;
+	} else if(token == "oppc") {
+		return EvalValues::OpProgramCounter;
 	}
 	return -1;
 }
@@ -387,13 +387,9 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 				switch(token) {
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
-					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite; break;
-					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite; break;
-
-					//TODO
-					//case EvalValues::RegOpPC: token = state.Cpu.DebugPC; break;
-					//case EvalValues::AbsoluteAddress: token = _debugger->GetAbsoluteAddress(operationInfo.Address); break;
-					//case EvalValues::PreviousOpPC: token = state.CPU.PreviousDebugPC; break;
+					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite || operationInfo.Type == MemoryOperationType::DummyWrite; break;
+					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite && operationInfo.Type != MemoryOperationType::DummyWrite; break;
+					case EvalValues::OpProgramCounter: token = _cpuDebugger->GetProgramCounter(true); break;
 
 					default:
 						if(!_cpuDebugger) {
@@ -463,6 +459,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 				case EvalOperators::Minus: token = -right; break;
 				case EvalOperators::BinaryNot: token = ~right; break;
 				case EvalOperators::LogicalNot: token = (bool)!right; break;
+				case EvalOperators::AbsoluteAddress: token = right >= 0 ? _debugger->GetAbsoluteAddress({ (int32_t)right, _cpuMemory }).Address : -1; break;
+
 				case EvalOperators::Bracket: token = _debugger->GetMemoryDumper()->GetMemoryValue(_cpuMemory, (uint32_t)right); break;
 				case EvalOperators::Braces: token = _debugger->GetMemoryDumper()->GetMemoryValueWord(_cpuMemory, (uint32_t)right); break;
 				default: throw std::runtime_error("Invalid operator");
