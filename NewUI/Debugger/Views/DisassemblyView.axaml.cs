@@ -143,11 +143,11 @@ namespace Mesen.Debugger.Views
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.FindOccurrences,
-					HintText = () => GetSearchString(_selectionHandler?.MouseOverSegment) ?? "",
-					IsEnabled = () => GetSearchString(_selectionHandler?.MouseOverSegment) != null,
+					HintText = () => GetSearchString() ?? "",
+					IsEnabled = () => GetSearchString() != null,
 					OnClick = () => {
 						if(_model != null) {
-							string? searchString = GetSearchString(_selectionHandler?.MouseOverSegment);
+							string? searchString = GetSearchString();
 							if(searchString != null) {
 								DisassemblySearchOptions options = new() { MatchWholeWord = true, MatchCase = true };
 								CodeLineData[] results = DebugApi.FindOccurrences(CpuType, searchString, options);
@@ -186,9 +186,14 @@ namespace Mesen.Debugger.Views
 			});
 		}
 
-		private string? GetSearchString(CodeSegmentInfo? segment)
+		private string? GetSearchString()
 		{
+			CodeSegmentInfo? segment = _selectionHandler?.MouseOverSegment;
 			if(segment == null || !AllowSearch(segment.Type)) {
+				if(ActionLocation.RelAddress?.Address >= 0) {
+					CodeLabel? label = LabelManager.GetLabel(ActionLocation.RelAddress.Value);
+					return label?.Label ?? ("$" + ActionLocation.RelAddress.Value.Address.ToString("X" + CpuType.GetAddressSize()));
+				}
 				return null;
 			}
 			return segment.Text.Trim(' ', '[', ']', '=', ':', '.', '+');
