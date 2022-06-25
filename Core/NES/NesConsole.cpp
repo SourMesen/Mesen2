@@ -353,10 +353,7 @@ AddressInfo NesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 
 AddressInfo NesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
-	AddressInfo addr;
-	addr.Address = _mapper->GetRelativeAddress(absAddress);
-	addr.Type = MemoryType::NesMemory;
-	return addr;
+	return _mapper->GetRelativeAddress(absAddress);
 }
 
 void NesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)

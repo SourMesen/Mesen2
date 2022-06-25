@@ -29,15 +29,15 @@ namespace Mesen.Debugger.Utilities
 		{
 			get
 			{
-				if(ActionType == ActionType.Custom) {
-					if(DynamicText != null) {
-						return DynamicText();
-					} else {
-						return CustomText ?? "";
-					}
+				string label;
+				if(DynamicText != null) {
+					label = DynamicText();
+				} else if(ActionType == ActionType.Custom) {
+					label = CustomText ?? "";
+				} else {
+					label = ResourceHelper.GetEnumText(ActionType);
 				}
-
-				string label = ResourceHelper.GetEnumText(ActionType);
+				
 				if(HintText != null) {
 					string hint = HintText();
 					if(!string.IsNullOrWhiteSpace(hint)) {

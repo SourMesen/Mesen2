@@ -961,7 +961,7 @@ AddressInfo BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr)
 	return info;
 }
 
-int32_t BaseMapper::GetRelativeAddress(AddressInfo& addr)
+AddressInfo BaseMapper::GetRelativeAddress(AddressInfo& addr)
 {
 	uint8_t* ptrAddress;
 
@@ -969,21 +969,21 @@ int32_t BaseMapper::GetRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesPrgRom: ptrAddress = _prgRom; break;
 		case MemoryType::NesWorkRam: ptrAddress = _workRam; break;
 		case MemoryType::NesSaveRam: ptrAddress = _saveRam; break;
-		case MemoryType::Register: return (addr.Address) & 0xFFFF; break;
-		case MemoryType::NesInternalRam: return (addr.Address) & 0x1FFF; break;
-		default: return GetPpuRelativeAddress(addr);
+		case MemoryType::Register: return { (addr.Address) & 0xFFFF, MemoryType::NesMemory };
+		case MemoryType::NesInternalRam: return { (addr.Address) & 0x1FFF, MemoryType::NesMemory };
+		default: return { GetPpuRelativeAddress(addr), MemoryType::NesPpuMemory };
 	}
 	ptrAddress += addr.Address;
 
 	for(int i = 0; i < 256; i++) {
 		uint8_t* pageAddress = _prgPages[i];
 		if(pageAddress != nullptr && ptrAddress >= pageAddress && ptrAddress <= pageAddress + 0xFF) {
-			return (i << 8) + (uint32_t)(ptrAddress - pageAddress);
+			return { (int)((i << 8) + (uint32_t)(ptrAddress - pageAddress)), MemoryType::NesMemory };
 		}
 	}
 
 	//Address is currently not mapped
-	return -1;
+	return { -1, MemoryType::Register };
 }
 
 int32_t BaseMapper::GetPpuRelativeAddress(AddressInfo& addr)

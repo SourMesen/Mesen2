@@ -210,7 +210,7 @@ public:
 	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
 	void GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info);
 	AddressInfo GetPpuAbsoluteAddress(uint32_t relativeAddr);
-	int32_t GetRelativeAddress(AddressInfo& addr);
+	AddressInfo GetRelativeAddress(AddressInfo& addr);
 	int32_t GetPpuRelativeAddress(AddressInfo& addr);
 
 	bool IsWriteRegister(uint16_t addr);

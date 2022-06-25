@@ -1337,6 +1337,8 @@
 		<Message ID="HexEditor_Location">Location: ${0}</Message>
 		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}, {2} bytes</Message>
 
+		<Message ID="ViewInAction">View in {0}</Message>
+
 		<Message ID="btnOK">OK</Message>
 		<Message ID="btnCancel">Cancel</Message>
 		<Message ID="btnYes">Yes</Message>

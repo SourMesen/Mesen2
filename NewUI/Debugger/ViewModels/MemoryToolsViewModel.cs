@@ -36,7 +36,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<ContextMenuAction> SearchMenuItems { get; set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarItems { get; set; } = new();
 
-		[ObservableAsProperty] public int MaxScrollValue { get; }
+		[Reactive] public int MaxScrollValue { get; private set; }
 
 		private HexEditor _editor;
 		public MemoryToolsDisplayOptionsViewModel Options { get; }
@@ -79,7 +79,10 @@ namespace Mesen.Debugger.ViewModels
 			AddDisposable(this.WhenAnyValue(
 				x => x.Config.MemoryType,
 				x => x.Config.BytesPerRow
-			).Select(((MemoryType memType, int bytesPerRow) o) => (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1).ToPropertyEx(this, x => x.MaxScrollValue));
+			).Subscribe(((MemoryType memType, int bytesPerRow) o) => {
+				MaxScrollValue = (DebugApi.GetMemorySize(o.memType) / o.bytesPerRow) - 1;
+				_editor.SetCursorPosition(0, false, true);
+			}));
 		}
 
 		private void UpdateDataProvider()

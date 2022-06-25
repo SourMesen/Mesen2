@@ -15,6 +15,7 @@ using Mesen.Config;
 using Mesen.Debugger.Labels;
 using System.Linq;
 using System.Collections.Generic;
+using Mesen.Localization;
 
 namespace Mesen.Debugger.Windows
 {
@@ -98,6 +99,7 @@ namespace Mesen.Debugger.Windows
 				GetEditLabelAction(),
 				new ContextMenuSeparator(),
 				GetViewInDebuggerAction(),
+				GetViewInMemoryAction(),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
@@ -224,6 +226,37 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
+		private ContextMenuAction GetViewInMemoryAction()
+		{
+			AddressInfo? GetAddress()
+			{
+				MemoryType memType = _model.Config.MemoryType;
+				if(_editor.SelectionLength <= 1) {
+					if(memType.IsRelativeMemory()) {
+						AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = _model.SelectionStart, Type = memType });
+						return absAddr.Address >= 0 ? absAddr : null;
+					} else {
+						AddressInfo relAddr = DebugApi.GetRelativeAddress(new AddressInfo() { Address = _model.SelectionStart, Type = memType }, memType.ToCpuType());
+						return relAddr.Address >= 0 ? relAddr : null;
+					}
+				}
+				return null;
+			}
+
+			return new ContextMenuAction() {
+				ActionType = ActionType.ViewInMemoryViewer,
+				DynamicText = () => ResourceHelper.GetMessage("ViewInAction", (GetAddress() is AddressInfo addr) ? ResourceHelper.GetEnumText(addr.Type) : "[n/a]"),
+				IsVisible = () => GetAddress() != null,
+				HintText = () => "$" + _editor.SelectionStart.ToString("X2"),
+				OnClick = () => {
+					if(GetAddress() is AddressInfo addr) {
+						SetCursorPosition(addr.Type, addr.Address);
+					}
+				},
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ViewInDebugger)
+			};
+		}
+
 		private ContextMenuAction GetViewInDebuggerAction()
 		{
 			AddressInfo? GetAddress()
@@ -245,7 +278,7 @@ namespace Mesen.Debugger.Windows
 				ActionType = ActionType.ViewInDebugger,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ViewInDebugger),
 				IsEnabled = () => GetAddress() != null,
-				HintText = () => GetAddressRange(),
+				HintText = () => "$" + _editor.SelectionStart.ToString("X2"),
 				OnClick = () => {
 					AddressInfo? relAddr = GetAddress();
 					if(relAddr?.Address >= 0) {

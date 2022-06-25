@@ -203,7 +203,11 @@ namespace Mesen.Debugger.Controls
 
 		public void SetCursorPosition(int pos, bool keepNibble = false, bool scrollToTop = false)
 		{
-			this.SelectionStart = Math.Min(Math.Max(0, pos), this.DataProvider.Length - 1);
+			if(this.DataProvider == null) {
+				return;
+			}
+
+			this.SelectionStart = Math.Max(0, Math.Min(pos, this.DataProvider.Length - 1));
 			this.SelectionLength = 0;
 			_cursorPosition = this.SelectionStart;
 			_lastClickedPosition = _cursorPosition;
@@ -524,7 +528,7 @@ namespace Mesen.Debugger.Controls
 
 		private int GetByteOffset(GridPoint gridPos)
 		{
-			return Math.Min((TopRow + gridPos.Y) * BytesPerRow + gridPos.X, DataProvider.Length - 1);
+			return Math.Max(0, Math.Min((TopRow + gridPos.Y) * BytesPerRow + gridPos.X, DataProvider.Length - 1));
 		}
 
 		private void MoveSelectionWithMouse(GridPoint gridPos)
