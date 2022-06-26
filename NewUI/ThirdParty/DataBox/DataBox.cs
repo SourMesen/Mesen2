@@ -23,12 +23,22 @@ public class DataBox : TemplatedControl
     public static readonly DirectProperty<DataBox, IEnumerable> ItemsProperty =
         ItemsControl.ItemsProperty.AddOwner<DataBox>( 
             o => o.Items, 
-            (o, v) => o.Items = v);
+            (o, v) => {
+					o.Items = v;
+					if(o.Selection != null) {
+						o.Selection.Source = v;
+					}
+				});
 
-	public static readonly DirectProperty<DataBox, ISelectionModel> SelectionProperty =
+	public static readonly DirectProperty<DataBox, ISelectionModel?> SelectionProperty =
 		DataBoxRowsPresenter.SelectionProperty.AddOwner<DataBox>(
 		  o => o.Selection,
-		  (o, v) => o.Selection = v,
+		  (o, v) => {
+			  if(v != null) {
+				  v.Source = o.Items;
+			  }
+			  o.Selection = v;
+		  },
 		  defaultBindingMode: BindingMode.TwoWay);
 		
 	public static readonly DirectProperty<DataBox, AvaloniaList<DataBoxColumn>> ColumnsProperty =
@@ -84,7 +94,7 @@ public class DataBox : TemplatedControl
         set { SetAndRaise(ItemsProperty, ref _items, value); }
     }
 
-	public ISelectionModel Selection
+	public ISelectionModel? Selection
 	{
 		get => _selection;
 		set => SetAndRaise(SelectionProperty, ref _selection, value);
@@ -188,7 +198,7 @@ public class DataBox : TemplatedControl
 
 	private void Selection_SelectionChanged(object? sender, SelectionModelSelectionChangedEventArgs e)
 	{
-		if(Selection.SelectedIndex >= 0 && Selection.SelectedItems.Count == 1) {
+		if(Selection?.SelectedIndex >= 0 && Selection.SelectedItems.Count == 1) {
 			//When selection is changed and only 1 row is selected, move keyboard focus to that row
 			_rowsPresenter?.ItemContainerGenerator.ContainerFromIndex(Selection.SelectedIndex)?.Focus();
 		}

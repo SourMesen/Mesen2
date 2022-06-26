@@ -458,6 +458,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("Script")]
 		OpenScriptWindow,
 
+		[IconFile("Find")]
+		OpenWatchWindow,
+
 		[IconFile("Settings")]
 		OpenDebugSettings,
 

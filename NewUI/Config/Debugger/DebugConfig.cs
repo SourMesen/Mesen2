@@ -26,6 +26,7 @@ namespace Mesen.Config
 		public IntegrationConfig Integration { get; set; } = new IntegrationConfig();
 		public ScriptWindowConfig ScriptWindow { get; set; } = new ScriptWindowConfig();
 		public ProfilerConfig Profiler { get; set; } = new ProfilerConfig();
+		public WatchWindowConfig WatchWindow { get; set; } = new WatchWindowConfig();
 		public AssemblerConfig Assembler { get; set; } = new AssemblerConfig();
 		public DebugLogConfig DebugLog { get; set; } = new DebugLogConfig();
 		public FontConfig Font { get; set; } = new FontConfig();

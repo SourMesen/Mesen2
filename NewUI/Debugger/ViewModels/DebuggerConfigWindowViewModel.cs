@@ -69,6 +69,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.OpenProfiler,
 				DebuggerShortcut.OpenScriptWindow,
 				DebuggerShortcut.OpenTraceLogger,
+				DebuggerShortcut.OpenWatchWindow,
 				DebuggerShortcut.OpenDebugLog,
 
 				DebuggerShortcut.OpenTilemapViewer,

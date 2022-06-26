@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using DataBoxControl;
 using Avalonia.Styling;
 using Avalonia.LogicalTree;
+using Avalonia.Controls.Selection;
 
 namespace Mesen.Debugger.Views
 {
@@ -99,6 +100,7 @@ namespace Mesen.Debugger.Views
 		Type IStyleable.StyleKey => typeof(TextBox);
 
 		private WatchListView? _listView;
+		private bool _inOnGotFocus = false;
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
@@ -109,18 +111,26 @@ namespace Mesen.Debugger.Views
 		protected override void OnGotFocus(GotFocusEventArgs e)
 		{
 			base.OnGotFocus(e);
+
+			if(_inOnGotFocus) {
+				return;
+			}
+
+			_inOnGotFocus = true;
 			DataBox? grid = this.FindLogicalAncestorOfType<DataBox>();
 			if(grid != null && DataContext is WatchValueInfo watch && _listView != null) {
 				//When clicking the textbox, select the row, too
-				if(!grid.Selection.SelectedItems.Contains(watch) || grid.Selection.SelectedItems.Count > 1) {
+				ISelectionModel selection = _listView.Model.Selection;
+				if(!selection.SelectedItems.Contains(watch) || selection.SelectedItems.Count > 1) {
 					if(e.KeyModifiers != KeyModifiers.Shift && e.KeyModifiers != KeyModifiers.Control) {
-						grid.Selection.Clear();
+						selection.Clear();
 					}
 
-					grid.Selection.Select(_listView.Model.WatchEntries.IndexOf(watch));
+					selection.Select(_listView.Model.WatchEntries.IndexOf(watch));
 					Focus();
 				}
 			}
+			_inOnGotFocus = false;
 		}
 	}
 }

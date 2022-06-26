@@ -1117,6 +1117,10 @@
 			<Control ID="tabMisc">Misc.</Control>
 		</Form>
 
+		<Form ID="WatchWindow">
+			<Control ID="wndTitle">Watch Window</Control>
+		</Form>
+		
 		<Form ID="ProfilerWindow">
 			<Control ID="wndTitle">Profiler</Control>
 			<Control ID="btnReset">Reset</Control>
@@ -2225,6 +2229,7 @@
 			<Value ID="OpenMemoryTools">Open Memory Tools</Value>
 			<Value ID="OpenProfiler">Open Profiler</Value>
 			<Value ID="OpenScriptWindow">Open Script Window</Value>
+			<Value ID="OpenWatchWindow">Open Watch Window</Value>
 			<Value ID="OpenTraceLogger">Open Trace Logger</Value>
 			<Value ID="OpenRegisterViewer">Open Register Viewer</Value>
 			<Value ID="OpenDebugLog">Open Debug Log</Value>
@@ -2446,6 +2451,7 @@
 			<Value ID="OpenMemoryTools">Memory Tools</Value>
 			<Value ID="OpenProfiler">Profiler</Value>
 			<Value ID="OpenScriptWindow">Script Window</Value>
+			<Value ID="OpenWatchWindow">Watch Window</Value>
 			<Value ID="OpenTraceLogger">Trace Logger</Value>
 			<Value ID="OpenRegisterViewer">Register Viewer</Value>
 			<Value ID="OpenDebugLog">Debug Log</Value>

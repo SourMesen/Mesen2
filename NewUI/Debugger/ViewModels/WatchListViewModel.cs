@@ -20,7 +20,7 @@ using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class WatchListViewModel : ViewModelBase, IToolHelpTooltip
+	public class WatchListViewModel : DisposableViewModel, IToolHelpTooltip
 	{
 		private static Regex _watchAddressOrLabel = new Regex(@"^(\[|{)(\s*((\$[0-9A-Fa-f]+)|(\d+)|([@_a-zA-Z0-9]+)))\s*[,]{0,1}\d*\s*(\]|})$", RegexOptions.Compiled);
 
@@ -37,6 +37,19 @@ namespace Mesen.Debugger.ViewModels
 		{
 			CpuType = cpuType;
 			Manager = WatchManager.GetWatchManager(cpuType);
+
+			Manager.WatchChanged += Manager_WatchChanged;
+		}
+
+		protected override void DisposeView()
+		{
+			base.DisposeView();
+			Manager.WatchChanged -= Manager_WatchChanged;
+		}
+
+		private void Manager_WatchChanged(object? sender, EventArgs e)
+		{
+			UpdateWatch();
 		}
 
 		public void UpdateWatch()

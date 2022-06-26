@@ -106,7 +106,7 @@ namespace Mesen.Debugger.ViewModels
 				FunctionList = new FunctionListViewModel(CpuType, Disassembly);
 			}
 			CallStack = new CallStackViewModel(CpuType, Disassembly);
-			WatchList = new WatchListViewModel(CpuType);
+			WatchList = AddDisposable(new WatchListViewModel(CpuType));
 			ConsoleStatus = CpuType switch {
 				CpuType.Snes => new SnesStatusViewModel(CpuType.Snes),
 				CpuType.Spc => new SpcStatusViewModel(),
@@ -151,7 +151,6 @@ namespace Mesen.Debugger.ViewModels
 				MemoryMappings = new MemoryMappingViewModel(CpuType);
 			}
 
-			WatchList.Manager.WatchChanged += Manager_WatchChanged;
 			DebugWorkspaceManager.SymbolProviderChanged += DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged += BreakpointManager_BreakpointsChanged;
@@ -175,7 +174,6 @@ namespace Mesen.Debugger.ViewModels
 
 		protected override void DisposeView()
 		{
-			WatchList.Manager.WatchChanged -= Manager_WatchChanged;
 			DebugWorkspaceManager.SymbolProviderChanged -= DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;

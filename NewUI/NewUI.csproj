@@ -357,6 +357,9 @@
     <Compile Update="Debugger\Windows\DebugLogWindow.axaml.cs">
       <DependentUpon>DebugLogWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\WatchWindow.axaml.cs">
+      <DependentUpon>WatchWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\RegisterViewerWindow.axaml.cs">
       <DependentUpon>RegisterViewerWindow.axaml</DependentUpon>
     </Compile>

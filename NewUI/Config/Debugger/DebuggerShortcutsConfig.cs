@@ -110,6 +110,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.OpenMemoryTools, KeyBinding = new(KeyModifiers.Control, Key.M) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenProfiler, KeyBinding = new(KeyModifiers.Control, Key.Y) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenScriptWindow, KeyBinding = new(KeyModifiers.Control, Key.N) });
+			Add(new() { Shortcut = DebuggerShortcut.OpenWatchWindow, KeyBinding = new(KeyModifiers.Control, Key.W) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenTraceLogger, KeyBinding = new(KeyModifiers.Control, Key.J) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenRegisterViewer, KeyBinding = new(KeyModifiers.Control, Key.K) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenDebugLog, KeyBinding = new(KeyModifiers.Control, Key.B) });
@@ -289,6 +290,7 @@ namespace Mesen.Config
 		OpenMemoryTools,
 		OpenProfiler,
 		OpenScriptWindow,
+		OpenWatchWindow,
 		OpenTraceLogger,
 		OpenRegisterViewer,
 		OpenDebugLog,

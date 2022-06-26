@@ -850,6 +850,12 @@ namespace Mesen.ViewModels
 					IsEnabled = () => IsGameRunning,
 					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new ScriptWindow(new ScriptWindowViewModel()))
 				},
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenWatchWindow,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenWatchWindow),
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new WatchWindow(new WatchWindowViewModel()))
+				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenDebugSettings,
