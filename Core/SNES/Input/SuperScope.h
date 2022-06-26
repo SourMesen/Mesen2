@@ -42,7 +42,7 @@ protected:
 		MousePosition pos = GetCoordinates();
 
 		//Make the PPU latch the H/V counters at the mouse's position (offset slightly to make target in the center of the mouse cursor)
-		if(pos.X >= 0 && pos.Y >= 0) {
+		if(pos.X >= 0 && pos.Y >= 0 && (IsPressed(Buttons::Fire) || IsPressed(Buttons::Cursor))) {
 			_ppu->SetLocationLatchRequest(pos.X + 10, std::max(0, pos.Y - 3));
 		}
 	}
