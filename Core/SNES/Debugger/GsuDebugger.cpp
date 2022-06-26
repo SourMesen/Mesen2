@@ -50,7 +50,7 @@ void GsuDebugger::ProcessInstruction()
 	MemoryOperationInfo operation(addr, state.ProgramReadBuffer, MemoryOperationType::ExecOpCode, MemoryType::GsuMemory);
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
-		_codeDataLogger->SetSnesCode<SnesCdlFlags::Gsu>(addressInfo.Address);
+		_codeDataLogger->SetCode<SnesCdlFlags::Gsu>(addressInfo.Address);
 	}
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled)) {

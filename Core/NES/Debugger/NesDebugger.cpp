@@ -97,26 +97,21 @@ void NesDebugger::Reset()
 void NesDebugger::ProcessInstruction()
 {
 	NesCpuState& state = _cpu->GetState();
-	uint16_t addr = state.PC;
-	uint8_t value = _memoryManager->DebugRead(addr);
-	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NesMemory);
+	uint16_t pc = state.PC;
+	uint8_t opCode = _memoryManager->DebugRead(pc);
+	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(pc);
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::NesMemory);
 
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::NesPrgRom) {
-			if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
-				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
-			} else {
-				_codeDataLogger->SetCode(addressInfo.Address);
-			}
+			_codeDataLogger->SetCode(addressInfo.Address, NesDisUtils::GetOpFlags(_prevOpCode, pc, _prevProgramCounter));
 		}
 		if(needDisassemble) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Nes);
 		}
 	}
 
-	uint32_t pc = state.PC;
 	if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
 		//JSR
 		uint8_t opSize = NesDisUtils::GetOpSize(_prevOpCode);
@@ -134,15 +129,15 @@ void NesDebugger::ProcessInstruction()
 		_step->Break(BreakSource::CpuStep);
 	}
 
-	_prevOpCode = value;
+	_prevOpCode = opCode;
 	_prevProgramCounter = pc;
 
 	_step->ProcessCpuExec();
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled)) {
-		if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
+		if(opCode == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(value)) {
+		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(opCode)) {
 			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
@@ -278,7 +273,11 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	AddressInfo src = _mapper->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _mapper->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _mapper->GetAbsoluteAddress(currentPc);
-	
+
+	if(dest.Type == MemoryType::NesPrgRom && dest.Address >= 0) {
+		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
+	}
+
 	_debugger->InternalProcessInterrupt(
 		CpuType::Nes, *this, *_step.get(),
 		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi

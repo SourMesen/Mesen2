@@ -236,6 +236,7 @@ bool NesDisUtils::IsOpUnofficial(uint8_t opCode)
 bool NesDisUtils::IsUnconditionalJump(uint8_t opCode)
 {
 	switch(opCode) {
+		case 0x00: //BRK
 		case 0x20: //JSR
 		case 0x40: //RTI
 		case 0x4C: //JMP (Absolute)
@@ -263,6 +264,30 @@ bool NesDisUtils::IsConditionalJump(uint8_t opCode)
 
 		default:
 			return false;
+	}
+}
+
+CdlFlags::CdlFlags NesDisUtils::GetOpFlags(uint8_t opCode, uint16_t pc, uint16_t prevPc)
+{
+	switch(opCode) {
+		case 0x00: //BRK
+		case 0x20: //JSR
+			return CdlFlags::SubEntryPoint;
+		
+		case 0x10: //BPL
+		case 0x30: //BMI
+		case 0x4C: //JMP (Absolute)
+		case 0x50: //BVC
+		case 0x6C: //JMP (Indirect)
+		case 0x70: //BVS
+		case 0x90: //BCC
+		case 0xB0: //BCS
+		case 0xD0: //BNE
+		case 0xF0: //BEQ
+			return pc != prevPc + NesDisUtils::GetOpSize(opCode) ? CdlFlags::JumpTarget : CdlFlags::None;
+
+		default:
+			return CdlFlags::None;
 	}
 }
 

@@ -105,6 +105,7 @@ struct DisassemblyResult
 		Flags = flags;
 		CpuAddress = cpuAddress;
 		Address.Address = -1;
+		Address.Type = {};
 		CommentLine = commentLine;
 	}
 

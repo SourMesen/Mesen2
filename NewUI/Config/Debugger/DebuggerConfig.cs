@@ -17,6 +17,8 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowByteCode { get; set; } = false;
 		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;
+		
+		[Reactive] public bool ShowJumpLabels { get; set; } = false;
 
 		[Reactive] public SnesDebuggerConfig Snes { get; set; } = new();
 		[Reactive] public NesDebuggerConfig Nes { get; set; } = new();
@@ -47,6 +49,7 @@ namespace Mesen.Config
 		[Reactive] public CodeDisplayMode UnidentifiedBlockDisplay { get; set; } = CodeDisplayMode.Hide;
 		[Reactive] public CodeDisplayMode VerifiedDataDisplay { get; set; } = CodeDisplayMode.Hide;
 
+		//TODO remove?
 		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 
 		[Reactive] public int BreakOnValue { get; set; } = 0;
@@ -55,8 +58,6 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowSelectionLength { get; set; } = false;
 		[Reactive] public WatchFormatStyle WatchFormat { get; set; } = WatchFormatStyle.Hex;
-
-		[Reactive] public bool ShowCommentsInLabelList { get; set; } = true;
 
 		[Reactive] public Color CodeOpcodeColor  { get; set; } = Color.FromRgb(22, 37, 37);
 		[Reactive] public Color CodeLabelDefinitionColor { get; set; } = Colors.Blue;
@@ -86,6 +87,8 @@ namespace Mesen.Config
 			Pce.ApplyConfig();
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
+			
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowJumpLabels, ShowJumpLabels);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);

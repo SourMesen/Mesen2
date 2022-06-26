@@ -38,6 +38,11 @@ public:
 		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
 	}
 
+	void SetCode(int32_t absoluteAddr, uint8_t flags)
+	{
+		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
+	}
+
 	template<uint8_t flags = 0>
 	void SetData(int32_t absoluteAddr)
 	{

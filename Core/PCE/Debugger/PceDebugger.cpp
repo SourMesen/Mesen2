@@ -76,32 +76,27 @@ void PceDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
 	_callstackManager.reset(new CallstackManager(_debugger));
-	_prevOpCode = 0xFF;
+	_prevOpCode = 0x01;
 }
 
 void PceDebugger::ProcessInstruction()
 {
 	PceCpuState& state = _cpu->GetState();
-	uint16_t addr = state.PC;
-	uint8_t value = _memoryManager->DebugRead(addr);
-	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::PceMemory);
+	uint16_t pc = state.PC;
+	uint8_t opCode = _memoryManager->DebugRead(pc);
+	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(pc);
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::PceMemory);
 
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::PcePrgRom) {
-			if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
-				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
-			} else {
-				_codeDataLogger->SetCode(addressInfo.Address);
-			}
+			_codeDataLogger->SetCode(addressInfo.Address, PceDisUtils::GetOpFlags(_prevOpCode, pc, _prevProgramCounter));
 		}
 		if(needDisassemble) {
 			_disassembler->BuildCache(addressInfo, 0, CpuType::Pce);
 		}
 	}
 
-	uint32_t pc = state.PC;
 	if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
 		//JSR
 		uint8_t opSize = PceDisUtils::GetOpSize(_prevOpCode);
@@ -119,15 +114,15 @@ void PceDebugger::ProcessInstruction()
 		_step->Break(BreakSource::CpuStep);
 	}
 
-	_prevOpCode = value;
+	_prevOpCode = opCode;
 	_prevProgramCounter = pc;
 
 	_step->ProcessCpuExec();
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled)) {
-		if(value == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnBrk)) {
+		if(opCode == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnBrk)) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnUnofficialOpCode) && PceDisUtils::IsOpUnofficial(value)) {
+		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnUnofficialOpCode) && PceDisUtils::IsOpUnofficial(opCode)) {
 			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
@@ -254,6 +249,10 @@ void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	AddressInfo ret = _memoryManager->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _memoryManager->GetAbsoluteAddress(currentPc);
 	
+	if(dest.Type == MemoryType::PcePrgRom && dest.Address >= 0) {
+		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
+	}
+
 	_debugger->InternalProcessInterrupt(
 		CpuType::Pce, *this, *_step.get(),
 		src, _prevProgramCounter, dest, currentPc, ret, originalPc, forNmi

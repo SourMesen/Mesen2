@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "Debugger/DebugTypes.h"
 
 class DisassemblyInfo;
 class LabelManager;
@@ -25,5 +26,6 @@ public:
 	static bool IsConditionalJump(uint8_t opCode);
 	static bool IsJumpToSub(uint8_t opCode);
 	static bool IsReturnInstruction(uint8_t opCode);
+	static CdlFlags::CdlFlags GetOpFlags(uint8_t opCode, uint16_t pc, uint16_t prevPc);
 	static bool IsOpUnofficial(uint8_t opCode);
 };

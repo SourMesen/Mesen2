@@ -49,14 +49,11 @@ class NesMemoryManager : public ISerializable
 		void RegisterWriteHandler(INesMemoryHandler* handler, uint32_t start, uint32_t end);
 		void UnregisterIODevice(INesMemoryHandler* handler);
 
-		uint8_t DebugRead(uint16_t addr, bool disableSideEffects = true);
+		uint8_t DebugRead(uint16_t addr);
 		uint16_t DebugReadWord(uint16_t addr);
 		void DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects = true);
 
 		uint8_t* GetInternalRAM();
-
-		uint8_t DebugReadVram(uint16_t addr);
-		void DebugWriteVram(uint16_t addr, uint8_t value);
 
 		uint8_t Read(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 		void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);

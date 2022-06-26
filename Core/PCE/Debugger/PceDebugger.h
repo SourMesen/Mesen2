@@ -50,7 +50,7 @@ class PceDebugger final : public IDebugger
 	unique_ptr<PceVdcTools> _ppuTools;
 
 	bool _enableBreakOnUninitRead = false;
-	uint8_t _prevOpCode = 0xFF;
+	uint8_t _prevOpCode = 0x01;
 	uint32_t _prevProgramCounter = 0;
 
 	unique_ptr<DummyPceCpu> _dummyCpu;

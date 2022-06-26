@@ -123,19 +123,15 @@ void SnesDebugger::ProcessConfigChange()
 void SnesDebugger::ProcessInstruction()
 {
 	SnesCpuState& state = GetCpuState();
-	uint32_t addr = (state.K << 16) | state.PC;
-	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	uint8_t value = _memoryManager->Peek(addr);
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SnesMemory);
+	uint32_t pc = (state.K << 16) | state.PC;
+	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(pc);
+	uint8_t opCode = _memoryManager->Peek(pc);
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::SnesMemory);
 
 	if(addressInfo.Address >= 0) {
 		uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			uint8_t flags = CdlFlags::Code | cpuFlags;
-			if(SnesDisUtils::IsJumpToSub(_prevOpCode)) {
-				flags |= CdlFlags::SubEntryPoint;
-			}
-			_cdl->SetSnesCode(addressInfo.Address, flags);
+			_cdl->SetCode(addressInfo.Address, SnesDisUtils::GetOpFlags(_prevOpCode, pc, _prevProgramCounter) | cpuFlags);
 		}
 		if(_traceLogger->IsEnabled() || _debuggerEnabled) {
 			_disassembler->BuildCache(addressInfo, cpuFlags, _cpuType);
@@ -148,26 +144,26 @@ void SnesDebugger::ProcessInstruction()
 		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
 		AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
 		AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, addr, retAddress, returnPc, StackFrameFlags::None);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
 	} else if(SnesDisUtils::IsReturnInstruction(_prevOpCode)) {
 		//RTS, RTL, RTI
-		_callstackManager->Pop(addressInfo, addr);
+		_callstackManager->Pop(addressInfo, pc);
 	}
 
-	if(_step->BreakAddress == (int32_t)addr && (SnesDisUtils::IsReturnInstruction(_prevOpCode) || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
+	if(_step->BreakAddress == (int32_t)pc && (SnesDisUtils::IsReturnInstruction(_prevOpCode) || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
 		//Also used for MVN/MVP
 		_step->Break(BreakSource::CpuStep);
 	}
 
-	_prevOpCode = value;
-	_prevProgramCounter = addr;
+	_prevOpCode = opCode;
+	_prevProgramCounter = pc;
 
 	_step->ProcessCpuExec();
 
 	if(_debuggerEnabled) {
 		//Break on BRK/STP/WDM/COP
-		switch(value) {
+		switch(opCode) {
 			case 0x00: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) { _step->Break(BreakSource::BreakOnBrk); } break;
 			case 0x02: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) { _step->Break(BreakSource::BreakOnCop); } break;
 			case 0x42: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) { _step->Break(BreakSource::BreakOnWdm); } break;
@@ -208,7 +204,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
-			_cdl->SetSnesCode(addressInfo.Address, (state.PS & (SnesCdlFlags::IndexMode8 | SnesCdlFlags::MemoryMode8)));
+			_cdl->SetCode(addressInfo.Address, (state.PS & (SnesCdlFlags::IndexMode8 | SnesCdlFlags::MemoryMode8)));
 		}
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
@@ -298,6 +294,10 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 	AddressInfo src = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _memoryMappings->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _memoryMappings->GetAbsoluteAddress(currentPc);
+
+	if(dest.Type == MemoryType::SnesPrgRom && dest.Address >= 0) {
+		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
+	}
 
 	_debugger->InternalProcessInterrupt(
 		_cpuType, *this, *_step.get(),

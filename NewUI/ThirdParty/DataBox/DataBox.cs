@@ -74,7 +74,7 @@ public class DataBox : TemplatedControl
         AvaloniaProperty.Register<DataBox, IBrush>(nameof(VerticalGridLinesBrush));
 
 	private IEnumerable _items = Array.Empty<object?>();
-	private ISelectionModel _selection = new SelectionModel<object?>();
+	private ISelectionModel? _selection = new SelectionModel<object?>();
 
 	private AvaloniaList<DataBoxColumn> _columns;
     private ScrollViewer? _headersPresenterScrollViewer;

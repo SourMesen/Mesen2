@@ -44,6 +44,10 @@
 				Content="{l:Translate chkShowByteCode}"
 			/>
 			<CheckBox
+				IsChecked="{CompiledBinding Config.ShowJumpLabels}"
+				Content="{l:Translate chkShowJumpLabels}"
+			/>
+			<CheckBox
 				IsChecked="{CompiledBinding Config.UseLowerCaseDisassembly}"
 				Content="{l:Translate chkUseLowerCaseDisassembly}"
 			/>

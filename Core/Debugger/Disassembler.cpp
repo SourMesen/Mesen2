@@ -111,6 +111,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	bool disData = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
 	bool showUnident = _settings->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
 	bool showData = _settings->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
+	bool showJumpLabels = _settings->CheckDebuggerFlag(DebuggerFlags::ShowJumpLabels);
 
 	bool inUnknownBlock = false;
 	bool inVerifiedBlock = false;
@@ -216,6 +217,9 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 				} else {
 					results.push_back(DisassemblyResult(addrInfo, i));
 				}
+			} else if(showJumpLabels && cdl && (cdl->IsJumpTarget(addrInfo.Address) || cdl->IsSubEntryPoint(addrInfo.Address))) {
+				results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Label));
+				results.push_back(DisassemblyResult(addrInfo, i));
 			} else {
 				results.push_back(DisassemblyResult(addrInfo, i));
 			}
@@ -310,6 +314,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 		case MemoryType::GbCartRam:
 		case MemoryType::SnesSaveRam:
 		case MemoryType::NesSaveRam:
+		case MemoryType::PceSaveRam:
 			data.Flags |= (uint8_t)LineFlags::SaveRam;
 			break;
 	}
@@ -329,7 +334,15 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 			data.Flags |= LineFlags::VerifiedCode;
 			memcpy(data.Comment, comment.c_str(), std::min<int>((int)comment.size() + 1, 1000));
 		} else if(data.Flags & LineFlags::Label) {
-			string label = _labelManager->GetLabel(row.Address) + ":";
+			string label = _labelManager->GetLabel(row.Address);
+			if(label.empty()) {
+				//Use address as the label
+				label = "$" + DebugUtilities::AddressToHex(type, row.CpuAddress);
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly)) {
+					std::transform(label.begin(), label.end(), label.begin(), ::tolower);
+				}
+			}
+			label += ":";
 			data.Flags |= LineFlags::VerifiedCode;
 			memcpy(data.Text, label.c_str(), std::min<int>((int)label.size() + 1, 1000));
 		} else {

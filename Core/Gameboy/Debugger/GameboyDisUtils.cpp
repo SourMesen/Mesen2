@@ -248,6 +248,43 @@ bool GameboyDisUtils::IsConditionalJump(uint8_t opCode)
 	}
 }
 
+
+CdlFlags::CdlFlags GameboyDisUtils::GetOpFlags(uint8_t opCode, uint16_t pc, uint16_t prevPc)
+{
+	switch(opCode) {
+		case 0xC4: //CALL NZ,a16
+		case 0xC7: //RST 00H
+		case 0xCD: //CALL a16
+		case 0xCC: //CALL Z,a16
+		case 0xCF: //RST 08H
+		case 0xD4: //CALL NC,a16
+		case 0xD7: //RST 10H
+		case 0xDC: //CALL C,a16
+		case 0xDF: //RST 18H
+		case 0xE7: //RST 20H
+		case 0xEF: //RST 28H
+		case 0xF7: //RST 30H
+		case 0xFF: //RST 38H
+			return CdlFlags::SubEntryPoint;
+
+		case 0x18: //JR r8
+		case 0xC3: //JP a16
+		case 0xE9: //JP (HL)
+		case 0x20: //JR NZ,r8
+		case 0x28: //JR Z,r8
+		case 0x30: //JR NC,r8
+		case 0x38: //JR C,r8
+		case 0xC2: //JP NZ,a16
+		case 0xCA: //JP Z,a16
+		case 0xD2: //JP NC,a16
+		case 0xDA: //JP C,a16
+			return pc != prevPc + GameboyDisUtils::GetOpSize(opCode) ? CdlFlags::JumpTarget : CdlFlags::None;
+
+		default:
+			return CdlFlags::None;
+	}
+}
+
 string GameboyDisUtils::GetOpTemplate(uint8_t op, bool prefixed)
 {
 	return prefixed ? _cbTemplate[op] : _opTemplate[op];

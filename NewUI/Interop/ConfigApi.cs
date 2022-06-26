@@ -57,6 +57,8 @@ namespace Mesen.Interop
 		BreakOnStp = (1 << 3),
 		BreakOnUninitRead = (1 << 4),
 
+		ShowJumpLabels = (1 << 5),
+
 		ShowVerifiedData = (1 << 8),
 		DisassembleVerifiedData = (1 << 9),
 

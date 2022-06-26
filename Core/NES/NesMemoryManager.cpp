@@ -95,25 +95,9 @@ uint8_t* NesMemoryManager::GetInternalRAM()
 	return _internalRAM;
 }
 
-uint8_t NesMemoryManager::DebugRead(uint16_t addr, bool disableSideEffects)
+uint8_t NesMemoryManager::DebugRead(uint16_t addr)
 {
-	uint8_t value = 0x00;
-	if(addr <= 0x1FFF) {
-		value = _ramReadHandlers[addr]->ReadRam(addr);
-	} else {
-		INesMemoryHandler* handler = _ramReadHandlers[addr];
-		if(handler) {
-			if(disableSideEffects) {
-				value = handler->PeekRam(addr);
-			} else {
-				value = handler->ReadRam(addr);
-			}
-		} else {
-			//Fake open bus
-			value = addr >> 8;
-		}
-	}
-
+	uint8_t value = _ramReadHandlers[addr]->PeekRam(addr);
 	if(_cheatManager->HasCheats<CpuType::Nes>()) {
 		_cheatManager->ApplyCheat<CpuType::Nes>(addr, value);
 	}

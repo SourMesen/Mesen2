@@ -50,8 +50,8 @@ void Cx4Debugger::ProcessInstruction()
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
-		_codeDataLogger->SetSnesCode<SnesCdlFlags::Cx4>(addressInfo.Address);
-		_codeDataLogger->SetSnesCode<SnesCdlFlags::Cx4>(addressInfo.Address + 1);
+		_codeDataLogger->SetCode<SnesCdlFlags::Cx4>(addressInfo.Address);
+		_codeDataLogger->SetCode<SnesCdlFlags::Cx4>(addressInfo.Address + 1);
 	}
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {

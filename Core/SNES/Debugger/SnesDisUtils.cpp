@@ -216,6 +216,37 @@ bool SnesDisUtils::IsConditionalJump(uint8_t opCode)
 	}
 }
 
+CdlFlags::CdlFlags SnesDisUtils::GetOpFlags(uint8_t opCode, uint32_t pc, uint32_t prevPc)
+{
+	switch(opCode) {
+		case 0x00: //BRK
+		case 0x02: //COP
+		case 0x20: //JSR
+		case 0x22: //JSR
+		case 0xFC: //JSR
+			return CdlFlags::SubEntryPoint;
+
+		case 0x10: //BPL
+		case 0x30: //BMI
+		case 0x50: //BVC
+		case 0x70: //BVS
+		case 0x90: //BCC
+		case 0xB0: //BCS
+		case 0xD0: //BNE
+		case 0xF0: //BEQ
+		case 0x4C: //JMP
+		case 0x5C: //JMP
+		case 0x6C: //JMP
+		case 0x7C: //JMP
+		case 0x80: //BRA
+		case 0xDC: //JMP
+			return pc != prevPc + SnesDisUtils::GetOpSize(opCode, 0) ? CdlFlags::JumpTarget : CdlFlags::None;
+
+		default:
+			return CdlFlags::None;
+	}
+}
+
 bool SnesDisUtils::IsJumpToSub(uint8_t opCode)
 {
 	return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL

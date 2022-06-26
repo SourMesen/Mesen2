@@ -962,6 +962,7 @@
 			<Control ID="lblUnidentifiedBlock">Unidentified blocks:</Control>
 			<Control ID="chkShowByteCode">Show byte code</Control>
 			<Control ID="chkUseLowerCaseDisassembly">Use lower case</Control>
+			<Control ID="chkShowJumpLabels">Show jump/sub labels</Control>
 			
 			<Control ID="lblBreakOptions">Break on...</Control>
 			<Control ID="chkBreakOnBrk">BRK</Control>

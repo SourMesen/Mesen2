@@ -275,6 +275,37 @@ bool PceDisUtils::IsConditionalJump(uint8_t opCode)
 	}
 }
 
+CdlFlags::CdlFlags PceDisUtils::GetOpFlags(uint8_t opCode, uint16_t pc, uint16_t prevPc)
+{
+	switch(opCode) {
+		case 0x00: //BRK
+		case 0x20: //JSR
+		case 0x44: //BSR
+			return CdlFlags::SubEntryPoint;
+
+		case 0x10: //BPL
+		case 0x30: //BMI
+		case 0x4C: //JMP (Absolute)
+		case 0x50: //BVC
+		case 0x6C: //JMP (Indirect)
+		case 0x70: //BVS
+		case 0x7C: //JMP (Absolute,X)
+		case 0x80: //BRA
+		case 0x90: //BCC
+		case 0xB0: //BCS
+		case 0xD0: //BNE
+		case 0xF0: //BEQ
+		case 0x0F: case 0x1F: case 0x2F: case 0x3F: //BBR
+		case 0x4F: case 0x5F: case 0x6F: case 0x7F: //BBR
+		case 0x8F: case 0x9F: case 0xAF: case 0xBF: //BBS
+		case 0xCF: case 0xDF: case 0xEF: case 0xFF: //BBS
+			return pc != prevPc + PceDisUtils::GetOpSize(opCode) ? CdlFlags::JumpTarget : CdlFlags::None;
+
+		default:
+			return CdlFlags::None;
+	}
+}
+
 bool PceDisUtils::IsJumpToSub(uint8_t opCode)
 {
 	return opCode == 0x20 || opCode == 0x44 || opCode == 0x00; //JSR, BSR, BRK

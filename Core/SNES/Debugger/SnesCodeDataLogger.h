@@ -34,17 +34,6 @@ private:
 public:
 	using CodeDataLogger::CodeDataLogger;
 
-	void SetSnesCode(int32_t absoluteAddr, uint8_t flags)
-	{
-		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
-	}
-
-	template<uint8_t flags>
-	void SetSnesCode(int32_t absoluteAddr)
-	{
-		_cdlData[absoluteAddr] |= CdlFlags::Code | flags;
-	}
-
 	void RebuildPrgCache(Disassembler* dis) override
 	{
 		//TODO GSU flags

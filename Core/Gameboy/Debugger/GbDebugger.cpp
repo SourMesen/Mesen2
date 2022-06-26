@@ -90,11 +90,7 @@ void GbDebugger::ProcessInstruction()
 
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::GbPrgRom) {
-			if(GameboyDisUtils::IsJumpToSub(_prevOpCode)) {
-				_codeDataLogger->SetCode<CdlFlags::SubEntryPoint>(addressInfo.Address);
-			} else {
-				_codeDataLogger->SetCode(addressInfo.Address);
-			}
+			_codeDataLogger->SetCode(addressInfo.Address, GameboyDisUtils::GetOpFlags(_prevOpCode, pc, _prevProgramCounter));
 		}
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}
@@ -262,6 +258,10 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
 	AddressInfo ret = _gameboy->GetAbsoluteAddress(originalPc);
 	AddressInfo dest = _gameboy->GetAbsoluteAddress(currentPc);
+
+	if(dest.Type == MemoryType::GbPrgRom && dest.Address >= 0) {
+		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
+	}
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Gameboy, *this, *_step.get(), 
