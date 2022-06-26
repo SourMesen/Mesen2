@@ -54,7 +54,6 @@ namespace Mesen.Debugger.Utilities
 				addBoldRow("Other values");
 				addRow("  OpPc: Program counter of the first byte of the current instruction");
 				addRow("  Address: CPU memory address being read/written");
-				addRow("  RomAddress: ROM address being read/written");
 				addRow("  Value: Value being read/written");
 				addRow("  IsRead: True if the CPU is reading data");
 				addRow("  IsWrite: True if the CPU is writing data");
@@ -62,8 +61,9 @@ namespace Mesen.Debugger.Utilities
 
 			addRow(" ");
 			addBoldRow("Accessing memory");
-			addRow("  [<address>]: (Byte) Memory value at <address>");
-			addRow("  {<address>}: (Word) Memory value at <address>");
+			addRow("  [<address>] - (Byte) Memory value at <address>");
+			addRow("  {<address>} - (Word) Memory value at <address>");
+			addRow("  :<address> - Returns the ROM/RAM address for the specified CPU address");
 
 			addRow(" ");
 			addBoldRow("Examples");

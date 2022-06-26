@@ -57,8 +57,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			WatchTab tab = (SelectedTab ?? WatchTabs[0]);
 			Dispatcher.UIThread.Post(() => {
+				WatchTab tab = (SelectedTab ?? WatchTabs[0]);
 				tab.WatchList.UpdateWatch();
 			});
 		}

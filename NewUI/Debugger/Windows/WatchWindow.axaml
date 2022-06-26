@@ -25,25 +25,31 @@
 		<vm:WatchWindowViewModel />
 	</Design.DataContext>
 
-	<Window.Styles>
-		<Style Selector="TabControl:singleitem > TabItem">
-			<Setter Property="IsVisible" Value="False" />
-		</Style>
-	</Window.Styles>
+	<Panel>
+		<TabControl Items="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
+			<TabControl.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding TabName}" />
+				</DataTemplate>
+			</TabControl.ItemTemplate>
 
-	<TabControl Items="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
-		<TabControl.ItemTemplate>
-			<DataTemplate>
-				<TextBlock Text="{Binding TabName}" />
-			</DataTemplate>
-		</TabControl.ItemTemplate>
-		
-		<TabControl.ContentTemplate>
-			<DataTemplate>
-				<Border BorderBrush="LightGray" BorderThickness="1 0 1 1">
-					<dv:WatchListView DataContext="{Binding WatchList}" />
-				</Border>
-			</DataTemplate>
-		</TabControl.ContentTemplate>
-	</TabControl>
+			<TabControl.ContentTemplate>
+				<DataTemplate>
+					<Border BorderBrush="LightGray" BorderThickness="1 0 1 1">
+						<dv:WatchListView DataContext="{Binding WatchList}" />
+					</Border>
+				</DataTemplate>
+			</TabControl.ContentTemplate>
+		</TabControl>
+		<Image
+			Source="/Assets/Help.png"
+			Stretch="None"
+			Margin="5 7"
+			VerticalAlignment="Top"
+			HorizontalAlignment="Right"
+			ToolTip.Tip="{CompiledBinding SelectedTab.WatchList.HelpTooltip}"
+			ToolTip.ShowDelay="0"
+			ToolTip.HorizontalOffset="10"
+		/>
+	</Panel>
 </Window>

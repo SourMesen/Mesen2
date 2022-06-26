@@ -48,7 +48,9 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					_model.UpdateAvailableTabs();
+					Dispatcher.UIThread.Post(() => {
+						_model.UpdateAvailableTabs();
+					});
 					break;
 
 				case ConsoleNotificationType.PpuFrameDone:

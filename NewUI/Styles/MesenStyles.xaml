@@ -517,7 +517,7 @@
 	<Style Selector="DockControl TabStripItem StackPanel#DragTool">
 		<Setter Property="Margin" Value="-2 -2 -2 -2" />
 	</Style>
-	<Style Selector="ToolChromeControl Grid#PART_Grip TextBlock">
+	<Style Selector="ToolChromeControl Grid#PART_Grip TextBlock#PART_Title">
 		<Setter Property="Margin" Value="0 2 8 2" />
 	</Style>
 	<Style Selector="ToolChromeControl > Grid > Border Button">
