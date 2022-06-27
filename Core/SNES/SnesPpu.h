@@ -237,6 +237,8 @@ public:
 	uint8_t* GetCgRam();
 	uint8_t* GetSpriteRam();
 
+	void DebugSendFrame();
+
 	void SetLocationLatchRequest(uint16_t x, uint16_t y);
 	void ProcessLocationLatchRequest();
 	void LatchLocationValues();

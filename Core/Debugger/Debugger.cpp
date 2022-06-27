@@ -256,6 +256,10 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 			_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints = true;
 		}
 
+		if(_settings->CheckDebuggerFlag(DebuggerFlags::DrawPartialFrame)) {
+			_debuggers[(int)sourceCpu].Debugger->DrawPartialFrame();
+		}
+
 		//Only trigger code break event if the pause was caused by user action
 		BreakEvent evt = {};
 		evt.SourceCpu = sourceCpu;

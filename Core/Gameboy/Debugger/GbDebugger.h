@@ -66,7 +66,9 @@ public:
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
-	
+
+	void DrawPartialFrame() override;
+
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	void SetProgramCounter(uint32_t addr) override;

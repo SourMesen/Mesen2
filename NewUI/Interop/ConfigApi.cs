@@ -58,6 +58,7 @@ namespace Mesen.Interop
 		BreakOnUninitRead = (1 << 4),
 
 		ShowJumpLabels = (1 << 5),
+		DrawPartialFrame = (1 << 6),
 
 		ShowVerifiedData = (1 << 8),
 		DisassembleVerifiedData = (1 << 9),

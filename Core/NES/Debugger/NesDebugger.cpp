@@ -268,6 +268,11 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+void NesDebugger::DrawPartialFrame()
+{
+	_ppu->DebugSendFrame();
+}
+
 void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _mapper->GetAbsoluteAddress(_prevProgramCounter);

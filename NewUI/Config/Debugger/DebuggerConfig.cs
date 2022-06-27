@@ -19,6 +19,7 @@ namespace Mesen.Config
 		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;
 		
 		[Reactive] public bool ShowJumpLabels { get; set; } = false;
+		[Reactive] public bool DrawPartialFrame { get; set; } = false;
 
 		[Reactive] public SnesDebuggerConfig Snes { get; set; } = new();
 		[Reactive] public NesDebuggerConfig Nes { get; set; } = new();
@@ -89,6 +90,7 @@ namespace Mesen.Config
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
 			
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowJumpLabels, ShowJumpLabels);
+			ConfigApi.SetDebuggerFlag(DebuggerFlags.DrawPartialFrame, DrawPartialFrame);
 
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
 			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);

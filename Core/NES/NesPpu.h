@@ -105,7 +105,6 @@ public:
 
 	void Reset() override;
 
-	void DebugSendFrame();
 	uint16_t* GetScreenBuffer(bool previousBuffer) override;
 	void DebugCopyOutputBuffer(uint16_t* target);
 	void DebugUpdateFrameBuffer(bool toGrayscale);

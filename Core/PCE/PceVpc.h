@@ -50,6 +50,8 @@ public:
 	void ProcessScanlineStart(PceVdc* vdc, uint16_t scanline);
 	void ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer);
 	void SendFrame(PceVdc* vdc);
+	
+	void DebugSendFrame();
 
 	void SetIrq(PceVdc* vdc);
 	void ClearIrq(PceVdc* vdc);

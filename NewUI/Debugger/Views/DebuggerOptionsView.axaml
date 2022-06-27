@@ -158,6 +158,12 @@
 				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
+
+			<CheckBox
+				IsChecked="{CompiledBinding Config.DrawPartialFrame}"
+				Content="{l:Translate chkDrawPartialFrame}"
+			/>
+			
 			<CheckBox
 				IsChecked="{CompiledBinding Config.UsePredictiveBreakpoints}"
 				Content="{l:Translate chkUsePredictiveBreakpoints}"

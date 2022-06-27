@@ -110,6 +110,8 @@ public:
 
 	uint8_t ReadCgbRegister(uint16_t addr);
 	void WriteCgbRegister(uint16_t addr, uint8_t value);
-	
+
+	void DebugSendFrame();
+
 	void Serialize(Serializer& s) override;
 };

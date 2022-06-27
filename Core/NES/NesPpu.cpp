@@ -1035,12 +1035,6 @@ template<class T> void NesPpu<T>::WriteSpriteRam(uint8_t addr, uint8_t value)
 	}
 }
 
-template<class T> void NesPpu<T>::DebugSendFrame()
-{
-	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
-	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
-}
-
 template<class T> uint16_t* NesPpu<T>::GetScreenBuffer(bool previousBuffer)
 {
 	return previousBuffer ? ((_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0]) : _currentOutputBuffer;
@@ -1066,9 +1060,6 @@ template<class T> void NesPpu<T>::SendFrame()
 	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 	frame.Data = frameData; //HD packs
 
-#ifdef LIBRETRO
-	_console->GetVideoDecoder()->UpdateFrame(frame, true, false);
-#else 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
 		SendFrameVsDualSystem();
 		if(_console->IsVsMainConsole()) {
@@ -1081,7 +1072,6 @@ template<class T> void NesPpu<T>::SendFrame()
 	}
 
 	_enableOamDecay = _settings->GetNesConfig().EnableOamDecay;
-#endif
 }
 
 template<class T> void NesPpu<T>::SendFrameVsDualSystem()

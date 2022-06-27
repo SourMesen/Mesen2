@@ -31,6 +31,8 @@ public:
 
 	virtual void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) {}
 
+	virtual void DrawPartialFrame() { }
+
 	virtual DebuggerFeatures GetSupportedFeatures() { return {}; }
 	
 	virtual uint32_t GetProgramCounter(bool getInstPc) = 0;

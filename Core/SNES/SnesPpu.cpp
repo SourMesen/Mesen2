@@ -1480,21 +1480,41 @@ void SnesPpu::SendFrame()
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
 	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
-#ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
-#else
 	if(isRewinding || _interlacedFrame) {
 		_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
 	} else {
 		_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 	}
-#endif
 
 	if(!_skipRender) {
 		_frameSkipTimer.Reset();
 	}
 }
 
+void SnesPpu::DebugSendFrame()
+{
+	if(_interlacedFrame) {
+		//Not supported
+		return;
+	}
+	
+	RenderScanline();
+
+	uint16_t width = _useHighResOutput ? 512 : 256;
+	uint16_t height = _useHighResOutput ? 478 : 239;
+
+	int lastDrawnPixel = _drawEndX * (_useHighResOutput ? 2 : 1);
+	int scanline = _overscanFrame ? ((int)_scanline - 1) : ((int)_scanline + 6);
+
+	int offset = std::max(0, lastDrawnPixel + 1 + scanline * width);
+	int pixelsToClear = width * height - offset;
+	if(pixelsToClear > 0) {
+		memset(_currentBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
+	}
+
+	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
+}
 
 bool SnesPpu::IsHighResOutput()
 {

@@ -653,17 +653,33 @@ void GbPpu::SendFrame()
 	_isFirstFrame = false;
 
 	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount, _gameboy->GetControlManager()->GetPortStates());
-#ifdef LIBRETRO
-	_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
-#else
 	bool rewinding = _emu->GetRewindManager()->IsRewinding();
 	_emu->GetVideoDecoder()->UpdateFrame(frame, rewinding, rewinding);
-#endif
 
 	_emu->ProcessEndOfFrame();
 	_gameboy->ProcessEndOfFrame();
 
 	_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+}
+
+void GbPpu::DebugSendFrame()
+{
+	if(_gameboy->IsSgb()) {
+		return;
+	}
+
+	int lastPixel = std::max(0, _state.IrqMode == PpuMode::HBlank ? 160 : _drawnPixels);
+	int offset = std::max(0, (int)(lastPixel + 1 + _state.Scanline * GbConstants::ScreenWidth));
+	int pixelsToClear = GbConstants::PixelCount - offset;
+	if(pixelsToClear > 0) {
+		memset(_currentBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
+	}
+
+	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount);
+	
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
+	//Send twice to prevent LCD blending behavior
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 
 void GbPpu::UpdatePalette()

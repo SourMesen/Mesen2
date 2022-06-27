@@ -1,7 +1,10 @@
 #include "stdafx.h"
-#include "BaseNesPpu.h"
+#include "NES/BaseNesPpu.h"
 #include "NES/NesTypes.h"
+#include "NES/NesConstants.h"
 #include "NES/NesConsole.h"
+#include "Shared/Emulator.h"
+#include "Shared/Video/VideoDecoder.h"
 #include "Shared/SettingTypes.h"
 
 void BaseNesPpu::GetState(NesPpuState& state)
@@ -96,6 +99,18 @@ void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
 	} else {
 		_paletteRAM[addr] = value;
 	}
+}
+
+void BaseNesPpu::DebugSendFrame()
+{
+	int offset = std::max(0, (int)(_cycle + _scanline * NesConstants::ScreenWidth));
+	int pixelsToClear = NesConstants::ScreenPixelCount - offset;
+	if(pixelsToClear > 0) {
+		memset(_currentOutputBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
+	}
+
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount);
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 
 /* Applies the effect of grayscale/intensify bits to the output buffer (batched) */

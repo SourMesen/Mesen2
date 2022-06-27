@@ -94,6 +94,8 @@ public:
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
+
+	void DrawPartialFrame() override;
 	
 	DebuggerFeatures GetSupportedFeatures() override;
 	void SetProgramCounter(uint32_t addr) override;

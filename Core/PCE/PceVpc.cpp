@@ -19,6 +19,7 @@ PceVpc::PceVpc(Emulator* emu, PceConsole* console, PceVce* vce)
 	_outBuffer[0] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
 	_outBuffer[1] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
 	_currentOutBuffer = _outBuffer[0];
+	_currentClockDividers = _rowVceClockDivider[0];
 
 	memset(_outBuffer[0], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
 	memset(_outBuffer[1], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
@@ -247,6 +248,26 @@ void PceVpc::SendFrame(PceVdc* vdc)
 
 	_console->GetControlManager()->UpdateInputState();
 	_console->GetControlManager()->UpdateControlDevices();
+}
+
+void PceVpc::DebugSendFrame()
+{
+	uint16_t scanline = _vdc1->GetScanline();
+	if(scanline >= 14 && scanline < 256) {
+		DrawScanline();
+		ProcessScanlineEnd(_vdc1, scanline, _vdc1->GetRowBuffer());
+	
+		uint32_t lastPixel = _vdc1->GetHClock() / _vce->GetClockDivider();
+		int offset = std::max(0, (int)(lastPixel + (scanline - 14) * PceConstants::MaxScreenWidth));
+		int pixelsToClear = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight - offset;
+		if(pixelsToClear > 0) {
+			memset(_currentOutBuffer + offset, 0, pixelsToClear * sizeof(uint16_t));
+		}
+	}
+
+	RenderedFrame frame(_currentOutBuffer, 512, PceConstants::ScreenHeight * 2, 0.5, _vdc1->GetState().FrameCount);
+	frame.Data = _currentClockDividers;
+	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 
 void PceVpc::UpdateIrqState()

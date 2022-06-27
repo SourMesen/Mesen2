@@ -253,6 +253,11 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+void GbDebugger::DrawPartialFrame()
+{
+	_ppu->DebugSendFrame();
+}
+
 void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);

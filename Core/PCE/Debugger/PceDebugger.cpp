@@ -14,6 +14,7 @@
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
+#include "PCE/PceVpc.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/Debugger/PceDebugger.h"
 #include "PCE/Debugger/PceTraceLogger.h"
@@ -40,6 +41,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_cpu = console->GetCpu();
 	_vdc = console->GetVdc();
 	_vce = console->GetVce();
+	_vpc = console->GetVpc();
 	_memoryManager = console->GetMemoryManager();
 
 	_traceLogger.reset(new PceTraceLogger(debugger, this, _vdc));
@@ -241,6 +243,11 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));
+}
+
+void PceDebugger::DrawPartialFrame()
+{
+	_vpc->DebugSendFrame();
 }
 
 void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
