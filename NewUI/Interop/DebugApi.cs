@@ -777,14 +777,18 @@ namespace Mesen.Interop
 		public byte Layer;
 		public byte[]? CompareVram;
 		public AddressCounters[]? AccessCounters;
+
+		public UInt64 MasterClock;
 		public TilemapHighlightMode TileHighlightMode;
 		public TilemapHighlightMode AttributeHighlightMode;
+
 		public TilemapDisplayMode DisplayMode;
 
 		public InteropGetTilemapOptions ToInterop()
 		{
 			return new InteropGetTilemapOptions() {
 				Layer = Layer,
+				MasterClock = MasterClock,
 				TileHighlightMode = TileHighlightMode,
 				AttributeHighlightMode = AttributeHighlightMode,
 				DisplayMode = DisplayMode
@@ -797,8 +801,11 @@ namespace Mesen.Interop
 		public byte Layer;
 		public IntPtr CompareVram;
 		public IntPtr AccessCounters;
+		
+		public UInt64 MasterClock;
 		public TilemapHighlightMode TileHighlightMode;
 		public TilemapHighlightMode AttributeHighlightMode;
+
 		public TilemapDisplayMode DisplayMode;
 	}
 

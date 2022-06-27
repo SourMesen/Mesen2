@@ -16,6 +16,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -50,6 +51,7 @@ namespace Mesen.Debugger.ViewModels
 		
 		private DebugTilemapInfo _tilemapInfo;
 		private PictureViewer _picViewer;
+		private UInt64 _masterClock;
 		private BaseState? _ppuState;
 		private byte[] _prevVram = Array.Empty<byte>();
 		private byte[] _vram = Array.Empty<byte>();
@@ -369,6 +371,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
+			Interlocked.Exchange(ref _masterClock, EmuApi.GetTimingInfo().MasterClock);
+
 			BaseState ppuState = DebugApi.GetPpuState(CpuType);
 			_ppuState = ppuState;
 			_prevVram = _vram;
@@ -410,6 +414,8 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				options = GetOptions(SelectedTab, prevVram, accessCounters);
+				options.MasterClock = Interlocked.Read(ref _masterClock);
+
 				size = DebugApi.GetTilemapSize(CpuType, options, ppuState);
 				InitBitmap((int)size.Width, (int)size.Height);
 

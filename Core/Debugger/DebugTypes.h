@@ -188,8 +188,11 @@ struct GetTilemapOptions
 	uint8_t Layer;
 	uint8_t* CompareVram;
 	AddressCounters* AccessCounters;
+
+	uint64_t MasterClock;
 	TilemapHighlightMode TileHighlightMode;
 	TilemapHighlightMode AttributeHighlightMode;
+
 	TilemapDisplayMode DisplayMode;
 };
 

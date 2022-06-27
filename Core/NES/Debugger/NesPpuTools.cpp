@@ -27,7 +27,7 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 	AddressCounters* accessCounters = options.AccessCounters;
 	uint8_t* prevVram = options.CompareVram != nullptr ? options.CompareVram : vram;
 
-	uint64_t masterClock = _emu->GetMasterClock();
+	uint64_t masterClock = options.MasterClock;
 	uint32_t clockRate = _emu->GetMasterClockRate() / _emu->GetFps();
 
 	auto isHighlighted = [&](uint16_t addr, TilemapHighlightMode mode) -> bool {
