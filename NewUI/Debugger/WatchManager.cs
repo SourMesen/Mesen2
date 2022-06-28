@@ -1,6 +1,8 @@
 ﻿using Avalonia.Media;
 using Mesen.Config;
 using Mesen.Interop;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -277,12 +279,12 @@ namespace Mesen.Debugger
 		}
 	}
 
-	public class WatchValueInfo
+	public class WatchValueInfo : ReactiveObject
 	{
-		public string Expression { get; set; } = "";
-		public string Value { get; set; } = "";
+		[Reactive] public string Value { get; set; } = "";
+		[Reactive] public string Expression { get; set; } = "";
+		[Reactive] public IBrush Brush { get; set; } = Brushes.Black;
 		public int NumericValue { get; set; } = -1;
-		public IBrush Brush { get; set; } = Brushes.Black;
 	}
 
 	public enum WatchFormatStyle

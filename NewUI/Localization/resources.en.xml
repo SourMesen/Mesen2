@@ -988,6 +988,7 @@
 
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
+			<Control ID="chkRefreshWhileRunning">Refresh while running</Control>
 			<Control ID="chkDrawPartialFrame">Draw partial frame</Control>
 			<Control ID="chkUsePredictiveBreakpoints">Use predictive breakpoints</Control>
 			<Control ID="chkSingleBreakpointPerInstruction">Break once per instruction</Control>

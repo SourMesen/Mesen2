@@ -54,13 +54,25 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateWatch()
 		{
-			int selection = Selection.SelectedIndex;
-			WatchEntries.Replace(Manager.GetWatchContent(WatchEntries));
-			if(selection >= 0) {
-				if(selection < WatchEntries.Count) {
-					Selection.SelectedIndex = selection;
-				} else {
-					Selection.SelectedIndex = WatchEntries.Count - 1;
+			List<WatchValueInfo> newEntries = Manager.GetWatchContent(WatchEntries);
+
+			if(newEntries.Count != WatchEntries.Count) {
+				int selection = Selection.SelectedIndex;
+
+				WatchEntries.Replace(newEntries);
+				if(selection >= 0) {
+					if(selection < WatchEntries.Count) {
+						Selection.SelectedIndex = selection;
+					} else {
+						Selection.SelectedIndex = WatchEntries.Count - 1;
+					}
+				}
+			} else {
+				for(int i = 0; i < newEntries.Count; i++) {
+					WatchEntries[i].Expression = newEntries[i].Expression;
+					WatchEntries[i].Value = newEntries[i].Value;
+					WatchEntries[i].NumericValue = newEntries[i].NumericValue;
+					WatchEntries[i].Brush = newEntries[i].Brush;
 				}
 			}
 		}

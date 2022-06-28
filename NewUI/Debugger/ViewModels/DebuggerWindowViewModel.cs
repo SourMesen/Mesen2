@@ -250,6 +250,15 @@ namespace Mesen.Debugger.ViewModels
 			CallStack.UpdateCallStack();
 		}
 
+		public void PartialRefresh(bool refreshWatch)
+		{
+			ConsoleStatus?.UpdateUiState();
+			MemoryMappings?.Refresh();
+			if(refreshWatch) {
+				WatchList.UpdateWatch();
+			}
+		}
+
 		private void UpdateStatusBar(BreakEvent? evt)
 		{
 			UInt64 prevMasterClock = _masterClock;
@@ -328,7 +337,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Disassembly.SetActiveAddress(null);
-			Disassembly.Refresh();
+			Disassembly.InvalidateVisual();
 			SourceView?.Refresh(null);
 		}
 

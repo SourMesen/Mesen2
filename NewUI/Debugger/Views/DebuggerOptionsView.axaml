@@ -160,6 +160,11 @@
 			/>
 
 			<CheckBox
+				IsChecked="{CompiledBinding Config.RefreshWhileRunning}"
+				Content="{l:Translate chkRefreshWhileRunning}"
+			/>
+			
+			<CheckBox
 				IsChecked="{CompiledBinding Config.DrawPartialFrame}"
 				Content="{l:Translate chkDrawPartialFrame}"
 			/>

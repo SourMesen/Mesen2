@@ -13,6 +13,9 @@ using Mesen.Debugger.Utilities;
 using Mesen.Utilities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia.VisualTree;
+using Avalonia.Input;
+using Mesen.Debugger.Views;
 
 namespace Mesen.Debugger.Windows
 {
@@ -163,6 +166,19 @@ namespace Mesen.Debugger.Windows
 
 					if(_model.Config.BreakOnPowerCycleReset) {
 						EmuApi.Pause();
+					}
+					break;
+
+
+				case ConsoleNotificationType.PpuFrameDone:
+					if(_model.Config.RefreshWhileRunning) {
+						Dispatcher.UIThread.Post(() => {
+							if(!ToolRefreshHelper.LimitFps(this, 20)) {
+								//Prevent watch update when user is typing a new watch entry
+								bool updatingWatchEntry = FocusManager.Instance?.Current is TextBox txt && txt.FindAncestorOfType<WatchListView>() != null;
+								_model.PartialRefresh(!updatingWatchEntry);
+							}
+						});
 					}
 					break;
 			}
