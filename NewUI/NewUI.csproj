@@ -108,7 +108,13 @@
 	  <None Remove="Assets\NesIcon.png" />
 	  <None Remove="Assets\Network.png" />
 	  <None Remove="Assets\NextArrow.png" />
+	  <None Remove="Assets\NextCode.png" />
+	  <None Remove="Assets\NextData.png" />
+	  <None Remove="Assets\NextExec.png" />
+	  <None Remove="Assets\NextRead.png" />
 	  <None Remove="Assets\NextTrack.png" />
+	  <None Remove="Assets\NextUnknown.png" />
+	  <None Remove="Assets\NextWrite.png" />
 	  <None Remove="Assets\NudDownArrow.png" />
 	  <None Remove="Assets\NudDownArrowDarkTheme.png" />
 	  <None Remove="Assets\NudUpArrow.png" />
@@ -120,8 +126,14 @@
 	  <None Remove="Assets\Pipette.png" />
 	  <None Remove="Assets\PipetteSmall.png" />
 	  <None Remove="Assets\PowerCycle.png" />
+	  <None Remove="Assets\PrevCode.png" />
+	  <None Remove="Assets\PrevData.png" />
+	  <None Remove="Assets\PrevExec.png" />
 	  <None Remove="Assets\PreviousArrow.png" />
+	  <None Remove="Assets\PrevRead.png" />
 	  <None Remove="Assets\PrevTrack.png" />
+	  <None Remove="Assets\PrevUnknown.png" />
+	  <None Remove="Assets\PrevWrite.png" />
 	  <None Remove="Assets\PsIcon.png" />
 	  <None Remove="Assets\Record.png" />
 	  <None Remove="Assets\Refresh.png" />
@@ -230,6 +242,9 @@
     </Compile>
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Controls\NavButton.axaml.cs">
+      <DependentUpon>NavButton.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Controls\ScrollPictureViewer.axaml.cs">
       <DependentUpon>ScrollPictureViewer.axaml</DependentUpon>
@@ -602,7 +617,13 @@
 	  <AvaloniaResource Include="Assets\NecDspDebugger.png" />
 	  <AvaloniaResource Include="Assets\Network.png" />
 	  <AvaloniaResource Include="Assets\NextArrow.png" />
+	  <AvaloniaResource Include="Assets\NextCode.png" />
+	  <AvaloniaResource Include="Assets\NextData.png" />
+	  <AvaloniaResource Include="Assets\NextExec.png" />
+	  <AvaloniaResource Include="Assets\NextRead.png" />
 	  <AvaloniaResource Include="Assets\NextTrack.png" />
+	  <AvaloniaResource Include="Assets\NextUnknown.png" />
+	  <AvaloniaResource Include="Assets\NextWrite.png" />
 	  <AvaloniaResource Include="Assets\NudDownArrow.png" />
 	  <AvaloniaResource Include="Assets\NudDownArrowDarkTheme.png" />
 	  <AvaloniaResource Include="Assets\NudUpArrow.png" />
@@ -614,8 +635,14 @@
 	  <AvaloniaResource Include="Assets\Pipette.png" />
 	  <AvaloniaResource Include="Assets\PipetteSmall.png" />
 	  <AvaloniaResource Include="Assets\PowerCycle.png" />
+	  <AvaloniaResource Include="Assets\PrevCode.png" />
+	  <AvaloniaResource Include="Assets\PrevData.png" />
+	  <AvaloniaResource Include="Assets\PrevExec.png" />
 	  <AvaloniaResource Include="Assets\PreviousArrow.png" />
+	  <AvaloniaResource Include="Assets\PrevRead.png" />
 	  <AvaloniaResource Include="Assets\PrevTrack.png" />
+	  <AvaloniaResource Include="Assets\PrevUnknown.png" />
+	  <AvaloniaResource Include="Assets\PrevWrite.png" />
 	  <AvaloniaResource Include="Assets\PsIcon.png" />
 	  <AvaloniaResource Include="Assets\Record.png" />
 	  <AvaloniaResource Include="Assets\Refresh.png" />

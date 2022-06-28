@@ -235,9 +235,21 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_EditLabel, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Import, KeyBinding = new(KeyModifiers.Control, Key.O) });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Export, KeyBinding = new(KeyModifiers.Control, Key.S) });
-			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInCpuMemory, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
+
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevCode, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextCode, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevData, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextData, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevUnknown, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextUnknown, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevRead, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextRead, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevWrite, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextWrite, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToPrevExec, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_GoToNextExec, KeyBinding = new() });
 
 			//Trace Logger
 			Add(new() { Shortcut = DebuggerShortcut.TraceLogger_EditBreakpoint, KeyBinding = new() });
@@ -362,8 +374,21 @@ namespace Mesen.Config
 		MemoryViewer_EditLabel,
 		MemoryViewer_Import,
 		MemoryViewer_Export,
-		MemoryViewer_ViewInCpuMemory,
 		MemoryViewer_ViewInMemoryType,
+
+		MemoryViewer_GoToPrevCode,
+		MemoryViewer_GoToNextCode,
+		MemoryViewer_GoToPrevData,
+		MemoryViewer_GoToNextData,
+		MemoryViewer_GoToPrevUnknown,
+		MemoryViewer_GoToNextUnknown,
+		MemoryViewer_GoToPrevRead,
+		MemoryViewer_GoToNextRead,
+		MemoryViewer_GoToPrevWrite,
+		MemoryViewer_GoToNextWrite,
+		MemoryViewer_GoToPrevExec,
+		MemoryViewer_GoToNextExec,
+
 		ScriptWindow_NewScript,
 		ScriptWindow_OpenScript,
 		ScriptWindow_SaveScript,

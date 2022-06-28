@@ -50,7 +50,7 @@ namespace Mesen.Debugger.ViewModels
 			Search = new(this);
 			_editor = editor;
 
-			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel());
+			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel(this));
 			Config = ConfigManager.Config.Debug.HexEditor;
 			FontConfig = ConfigManager.Config.Debug.Font;
 			ScrollPosition = 0;
@@ -102,6 +102,91 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Options.UpdateAvailableOptions();
+		}
+
+		public void NavigateTo(NavType nav)
+		{
+			switch(nav) {
+				case NavType.PrevCode:
+				case NavType.NextCode:
+				case NavType.PrevData:
+				case NavType.NextData:
+				case NavType.PrevUnknown:
+				case NavType.NextUnknown:
+					SearchNextCdlMatch(nav);
+					break;
+
+				case NavType.PrevRead:
+				case NavType.NextRead:
+				case NavType.PrevWrite:
+				case NavType.NextWrite:
+				case NavType.PrevExec:
+				case NavType.NextExec:
+					SearchNextAccessMatch(nav);
+					break;
+			}
+		}
+
+		private void SearchNextCdlMatch(NavType nav)
+		{
+			if(!Config.MemoryType.SupportsCdl()) {
+				return;
+			}
+
+			int memSize = DebugApi.GetMemorySize(Config.MemoryType);
+			//TODO performance (snes), load in batches instead?
+			CdlFlags[] cdlData = DebugApi.GetCdlData(0, (uint)memSize, Config.MemoryType);
+
+			Func<int, bool> predicate = nav switch {
+				NavType.PrevCode or NavType.NextCode => (x) => cdlData[x].HasFlag(CdlFlags.Code),
+				NavType.PrevData or NavType.NextData => (x) => cdlData[x].HasFlag(CdlFlags.Data),
+				NavType.PrevUnknown or NavType.NextUnknown => (x) => !cdlData[x].HasFlag(CdlFlags.Code) && !cdlData[x].HasFlag(CdlFlags.Data),
+				_ => (x) => false
+			};
+
+			SearchNextMatch(nav, predicate, memSize);
+		}
+
+		private void SearchNextAccessMatch(NavType nav)
+		{
+			int memSize = DebugApi.GetMemorySize(Config.MemoryType);
+			//TODO performance (snes), load in batches instead?
+			AddressCounters[] counters = DebugApi.GetMemoryAccessCounts(Config.MemoryType);
+
+			TimingInfo timing = EmuApi.GetTimingInfo();
+			double cyclesPerFrame = timing.MasterClockRate / timing.Fps;
+			int framesToFade = Config.FadeSpeed.ToFrameCount();
+			double targetClock = framesToFade == 0 ? 0 : timing.MasterClock - cyclesPerFrame * framesToFade;
+
+			Func<int, bool> predicate = nav switch {
+				NavType.PrevRead or NavType.NextRead => (x) => counters[x].ReadStamp > targetClock,
+				NavType.PrevWrite or NavType.NextWrite => (x) => counters[x].WriteStamp > targetClock,
+				NavType.PrevExec or NavType.NextExec => (x) => counters[x].ExecStamp > targetClock,
+				_ => (x) => false
+			};
+
+			SearchNextMatch(nav, predicate, memSize);
+		}
+
+		private void SearchNextMatch(NavType nav, Func<int, bool> predicate, int memSize)
+		{
+			int direction = nav.ToString().Contains("Prev") ? -1 : 1;
+			bool skipCurrent = predicate(_editor.SelectionStart);
+			for(int i = 0; i < memSize; i++) {
+				int index = (i * direction + _editor.SelectionStart) % memSize;
+				if(index < 0) {
+					index += memSize;
+				}
+
+				if(predicate(index)) {
+					if(!skipCurrent) {
+						_editor.SetCursorPosition(index);
+						break;
+					}
+				} else {
+					skipCurrent = false;
+				}
+			}
 		}
 
 		public bool Find(SearchDirection direction)

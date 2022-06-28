@@ -192,6 +192,79 @@ namespace Mesen.Debugger.Windows
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
 					OnClick = () => Find(SearchDirection.Forward)
 				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
+					ActionType = ActionType.NavigateTo,
+					SubActions = new List<object> {
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevRead,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevRead),
+							OnClick = () => _model.NavigateTo(NavType.PrevRead)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextRead,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextRead),
+							OnClick = () => _model.NavigateTo(NavType.NextRead)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevWrite,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevWrite),
+							OnClick = () => _model.NavigateTo(NavType.PrevWrite)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextWrite,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextWrite),
+							OnClick = () => _model.NavigateTo(NavType.NextWrite)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevExec,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevExec),
+							OnClick = () => _model.NavigateTo(NavType.PrevExec)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextExec,
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextExec),
+							OnClick = () => _model.NavigateTo(NavType.NextExec)
+						},
+						new ContextMenuSeparator(),
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevCode,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevCode),
+							OnClick = () => _model.NavigateTo(NavType.PrevCode)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextCode,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextCode),
+							OnClick = () => _model.NavigateTo(NavType.NextCode)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevData,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevData),
+							OnClick = () => _model.NavigateTo(NavType.PrevData)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextData,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextData),
+							OnClick = () => _model.NavigateTo(NavType.NextData)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToPrevUnknown,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToPrevUnknown),
+							OnClick = () => _model.NavigateTo(NavType.PrevUnknown)
+						},
+						new ContextMenuAction() {
+							ActionType = ActionType.GoToNextUnknown,
+							IsEnabled = () => _model.Config.MemoryType.SupportsCdl(),
+							Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_GoToNextUnknown),
+							OnClick = () => _model.NavigateTo(NavType.NextUnknown)
+						},
+					}
+				}
 			});
 
 			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() { 

@@ -1,0 +1,40 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:Class="Mesen.Debugger.Controls.NavButton"
+>
+	<UserControl.Styles>
+		<Style Selector="Button">
+			<Setter Property="DockPanel.Dock" Value="Right" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button:pointerover">
+			<Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+		</Style>
+		<Style Selector="Button:disabled">
+			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+		<Style Selector="Button:disabled > ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button Image">
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Stretch" Value="None" />
+		</Style>
+	</UserControl.Styles>
+
+	<Button Click="OnClick" ToolTip.Tip="{Binding TooltipText, ElementName=root}" ToolTip.ShowDelay="0">
+		<Image Source="{Binding Icon, ElementName=root}" />
+	</Button>
+</UserControl>

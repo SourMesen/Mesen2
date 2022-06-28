@@ -193,7 +193,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			if(operation.Type == MemoryOperationType::DmaRead) {
 				_codeDataLogger->SetData<NesCdlFlags::PcmData>(addressInfo.Address);
-			} else {
+			} else if(operation.Type != MemoryOperationType::DummyRead) {
 				_codeDataLogger->SetData(addressInfo.Address);
 			}
 		}

@@ -94,8 +94,21 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.MemoryViewer_Import,
 				DebuggerShortcut.MemoryViewer_Export,
 				DebuggerShortcut.MemoryViewer_ViewInDebugger,
-				//DebuggerShortcut.MemoryViewer_ViewInCpuMemory,
-				//DebuggerShortcut.MemoryViewer_ViewInMemoryType
+				DebuggerShortcut.MemoryViewer_ViewInMemoryType,
+
+				DebuggerShortcut.MemoryViewer_GoToPrevRead,
+				DebuggerShortcut.MemoryViewer_GoToNextRead,
+				DebuggerShortcut.MemoryViewer_GoToPrevWrite,
+				DebuggerShortcut.MemoryViewer_GoToNextWrite,
+				DebuggerShortcut.MemoryViewer_GoToPrevExec,
+				DebuggerShortcut.MemoryViewer_GoToNextExec,
+
+				DebuggerShortcut.MemoryViewer_GoToPrevCode,
+				DebuggerShortcut.MemoryViewer_GoToNextCode,
+				DebuggerShortcut.MemoryViewer_GoToPrevData,
+				DebuggerShortcut.MemoryViewer_GoToNextData,
+				DebuggerShortcut.MemoryViewer_GoToPrevUnknown,
+				DebuggerShortcut.MemoryViewer_GoToNextUnknown,
 			});
 
 			ScriptShortcuts = CreateShortcutList(new DebuggerShortcut[] {

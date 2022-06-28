@@ -679,5 +679,37 @@ namespace Mesen.Debugger.Utilities
 		EditSprite,
 		[IconFile("Edit")]
 		EditColor,
+
+		NavigateTo,
+
+		[IconFile("PrevCode")]
+		GoToPrevCode,
+		[IconFile("NextCode")]
+		GoToNextCode,
+
+		[IconFile("PrevData")]
+		GoToPrevData,
+		[IconFile("NextData")]
+		GoToNextData,
+
+		[IconFile("PrevUnknown")]
+		GoToPrevUnknown,
+		[IconFile("NextUnknown")]
+		GoToNextUnknown,
+
+		[IconFile("PrevRead")]
+		GoToPrevRead,
+		[IconFile("NextRead")]
+		GoToNextRead,
+
+		[IconFile("PrevWrite")]
+		GoToPrevWrite,
+		[IconFile("NextWrite")]
+		GoToNextWrite,
+
+		[IconFile("PrevExec")]
+		GoToPrevExec,
+		[IconFile("NextExec")]
+		GoToNextExec,
 	}
 }

@@ -2105,6 +2105,21 @@
 			<Value ID="Normal">Normal</Value>
 			<Value ID="Fast">Fast</Value>
 		</Enum>
+		<Enum ID="NavType">
+			<Value ID="PrevCode">Navigate to: Previous code block</Value>
+			<Value ID="NextCode">Navigate to: Next code block</Value>
+			<Value ID="PrevData">Navigate to: Previous data block</Value>
+			<Value ID="NextData">Navigate to: Next data block</Value>
+			<Value ID="PrevUnknown">Navigate to: Previous unidentified block</Value>
+			<Value ID="NextUnknown">Navigate to: Next unidentified block</Value>
+
+			<Value ID="PrevRead">Navigate to: Previous read block</Value>
+			<Value ID="NextRead">Navigate to: Next read block</Value>
+			<Value ID="PrevWrite">Navigate to: Previous write block</Value>
+			<Value ID="NextWrite">Navigate to: Next write block</Value>
+			<Value ID="PrevExec">Navigate to: Previous exec block</Value>
+			<Value ID="NextExec">Navigate to: Next exec block</Value>
+		</Enum>
 		<Enum ID="SearchDataType">
 			<Value ID="Hex">Hexadecimal</Value>
 			<Value ID="String">String</Value>
@@ -2327,9 +2342,23 @@
 			<Value ID="MemoryViewer_EditLabel">Edit Label</Value>
 			<Value ID="MemoryViewer_Import">Import</Value>
 			<Value ID="MemoryViewer_Export">Export</Value>
-			<Value ID="MemoryViewer_ViewInCpuMemory">View in CPU/PPU Memory</Value>
 			<Value ID="MemoryViewer_ViewInMemoryType">View in [memory type]</Value>
 			<Value ID="MemoryViewer_ViewInDebugger">View in Debugger</Value>
+
+			<Value ID="MemoryViewer_GoToPrevCode">Navigate to: Previous code block</Value>
+			<Value ID="MemoryViewer_GoToNextCode">Navigate to: Next code block</Value>
+			<Value ID="MemoryViewer_GoToPrevData">Navigate to: Previous data block</Value>
+			<Value ID="MemoryViewer_GoToNextData">Navigate to: Next data block</Value>
+			<Value ID="MemoryViewer_GoToPrevUnknown">Navigate to: Previous unidentified block</Value>
+			<Value ID="MemoryViewer_GoToNextUnknown">Navigate to: Next unidentified block</Value>
+
+			<Value ID="MemoryViewer_GoToPrevRead">Navigate to: Previous read block</Value>
+			<Value ID="MemoryViewer_GoToNextRead">Navigate to: Next read block</Value>
+			<Value ID="MemoryViewer_GoToPrevWrite">Navigate to: Previous write block</Value>
+			<Value ID="MemoryViewer_GoToNextWrite">Navigate to: Next write block</Value>
+			<Value ID="MemoryViewer_GoToPrevExec">Navigate to: Previous exec block</Value>
+			<Value ID="MemoryViewer_GoToNextExec">Navigate to: Next exec block</Value>
+
 			<Value ID="ScriptWindow_OpenScript">Open Script</Value>
 			<Value ID="ScriptWindow_SaveScript">Save Script</Value>
 			<Value ID="ScriptWindow_RunScript">Run Script</Value>
@@ -2582,6 +2611,21 @@
 			<Value ID="EditTiles">Edit tiles</Value>
 			<Value ID="EditSprite">Edit sprite</Value>
 			<Value ID="EditColor">Edit color</Value>
+
+			<Value ID="NavigateTo">Navigate to...</Value>
+			<Value ID="GoToPrevCode">Previous code block</Value>
+			<Value ID="GoToNextCode">Next code block</Value>
+			<Value ID="GoToPrevData">Previous data block</Value>
+			<Value ID="GoToNextData">Next data block</Value>
+			<Value ID="GoToPrevUnknown">Previous unidentified block</Value>
+			<Value ID="GoToNextUnknown">Next unidentified block</Value>
+
+			<Value ID="GoToPrevRead">Previous read block</Value>
+			<Value ID="GoToNextRead">Next read block</Value>
+			<Value ID="GoToPrevWrite">Previous write block</Value>
+			<Value ID="GoToNextWrite">Next write block</Value>
+			<Value ID="GoToPrevExec">Previous exec block</Value>
+			<Value ID="GoToNextExec">Next exec block</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -9,7 +9,7 @@
 	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="410"
+	mc:Ignorable="d" d:DesignHeight="410"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	Name="root"
@@ -20,42 +20,77 @@
 		<dvm:MemoryToolsDisplayOptionsViewModel />
 	</Design.DataContext>
 
+	<UserControl.Styles>
+		<Style Selector="dc|NavButton">
+			<Setter Property="DockPanel.Dock" Value="Right" />
+		</Style>
+	</UserControl.Styles>
+	
 	<StackPanel>
 		<c:OptionSection Header="{l:Translate lblAccessHighlight}" Margin="0">
-			<dc:ColorCheckbox
-				Text="{l:Translate chkHighlightRead}"
-				Checked="{CompiledBinding Config.ReadHighlight.Highlight}"
-				Color="{CompiledBinding Config.ReadHighlight.Color}"
-			/>
-			<dc:ColorCheckbox
-				Text="{l:Translate chkHighlightWrite}"
-				Checked="{CompiledBinding Config.WriteHighlight.Highlight}"
-				Color="{CompiledBinding Config.WriteHighlight.Color}"
-			/>
-			<dc:ColorCheckbox
-				Text="{l:Translate chkHighlightExec}"
-				Checked="{CompiledBinding Config.ExecHighlight.Highlight}"
-				Color="{CompiledBinding Config.ExecHighlight.Color}"
-			/>
+			<DockPanel>
+				<dc:NavButton Nav="NextRead" />
+				<dc:NavButton Nav="PrevRead" />
+				<dc:ColorCheckbox
+					Text="{l:Translate chkHighlightRead}"
+					Checked="{CompiledBinding Config.ReadHighlight.Highlight}"
+					Color="{CompiledBinding Config.ReadHighlight.Color}"
+				/>
+			</DockPanel>
+			<DockPanel>
+				<dc:NavButton Nav="NextWrite" />
+				<dc:NavButton Nav="PrevWrite" />
+				<dc:ColorCheckbox
+					Text="{l:Translate chkHighlightWrite}"
+					Checked="{CompiledBinding Config.WriteHighlight.Highlight}"
+					Color="{CompiledBinding Config.WriteHighlight.Color}"
+				/>
+			</DockPanel>			
+			<DockPanel>
+				<dc:NavButton Nav="NextExec" />
+				<dc:NavButton Nav="PrevExec" />
+				<dc:ColorCheckbox
+					Text="{l:Translate chkHighlightExec}"
+					Checked="{CompiledBinding Config.ExecHighlight.Highlight}"
+					Color="{CompiledBinding Config.ExecHighlight.Color}"
+				/>
+			</DockPanel>			
+			
 			<WrapPanel>
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFadeSpeed}" />
 				<c:EnumComboBox
+					Width="100"
 					SelectedItem="{CompiledBinding Config.FadeSpeed}"
 				/>
 			</WrapPanel>
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblDataTypeHighlight}">
-			<dc:ColorCheckbox
-				Text="{l:Translate chkHighlightCode}"
-				Checked="{CompiledBinding Config.CodeHighlight.Highlight}"
-				Color="{CompiledBinding Config.CodeHighlight.Color}"
-			/>
-			<dc:ColorCheckbox
-				Text="{l:Translate chkHighlightData}"
-				Checked="{CompiledBinding Config.DataHighlight.Highlight}"
-				Color="{CompiledBinding Config.DataHighlight.Color}"
-			/>
+			<DockPanel>
+				<dc:NavButton Nav="NextCode" />
+				<dc:NavButton Nav="PrevCode" />
+				<dc:ColorCheckbox
+					Text="{l:Translate chkHighlightCode}"
+					Checked="{CompiledBinding Config.CodeHighlight.Highlight}"
+					Color="{CompiledBinding Config.CodeHighlight.Color}"
+				/>
+			</DockPanel>
+
+			<DockPanel>
+				<dc:NavButton Nav="NextData" />
+				<dc:NavButton Nav="PrevData" />
+				<dc:ColorCheckbox
+					Text="{l:Translate chkHighlightData}"
+					Checked="{CompiledBinding Config.DataHighlight.Highlight}"
+					Color="{CompiledBinding Config.DataHighlight.Color}"
+				/>
+			</DockPanel>
+			<DockPanel>
+				<dc:NavButton Nav="NextUnknown" />
+				<dc:NavButton Nav="PrevUnknown" />
+				<TextBlock Text="Unidentified" Margin="38 0 0 0"  VerticalAlignment="Center" />
+			</DockPanel>
+
 			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightLabel}"
 				Checked="{CompiledBinding Config.LabelHighlight.Highlight}"
