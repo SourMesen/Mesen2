@@ -15,8 +15,8 @@ namespace Mesen.Debugger.Disassembly
 		private static Regex _labelDef = new Regex("^([a-z0-9_@]+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _comment = new Regex("^;.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex _directive = new Regex("^([.][a-z0-9]+)\\s+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex _opCode = new Regex("^([a-z0-9]{2,5})\\s+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _directive = new Regex("^([.][a-z0-9]+)([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _opCode = new Regex("^([a-z0-9]{2,5})([\\s]+|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _syntax = new Regex("^[]([)!+,.|:<>]{1}", RegexOptions.Compiled);
 		private static Regex _operand = new Regex("^(([$][0-9a-f]*([.]\\d){0,1})|(#[$0-9][0-9a-f]*)|#|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
