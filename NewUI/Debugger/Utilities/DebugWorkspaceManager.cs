@@ -47,18 +47,51 @@ namespace Mesen.Debugger.Utilities
 
 			SymbolProvider = null;
 			if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
-				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, ".dbg");
-				LoadSymbolFile(dbgPath);
+				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.DbgFileExt);
+				LoadDbgSymbolFile(dbgPath);
+			} 
+			
+			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadMlbFiles) {
+				string mlbPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.MesenLabelExt);
+				LoadMesenLabelFile(mlbPath, false);
 			}
+
+			if(ConfigManager.Config.Debug.Integration.AutoLoadCdlFiles) {
+				string cdlPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.CdlExt);
+				LoadCdlFile(cdlPath);
+			}
+
 			SymbolProviderChanged?.Invoke(null, EventArgs.Empty);
 		}
 
-		public static void LoadSymbolFile(string path)
+		private static void ResetLabels()
 		{
-			if(File.Exists(path)) {
-				if(Path.GetExtension(path).ToLower() == ".dbg") {
-					SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, true);
-				}
+			if(ConfigManager.Config.Debug.Integration.ResetLabelsOnImport) {
+				LabelManager.ResetLabels();
+				DefaultLabelHelper.SetDefaultLabels();
+			}
+		}
+
+		public static void LoadDbgSymbolFile(string path)
+		{
+			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.DbgFileExt) {
+				ResetLabels();
+				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, true);
+			}
+		}
+
+		public static void LoadMesenLabelFile(string path, bool showResult)
+		{
+			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.MesenLabelExt) {
+				ResetLabels();
+				MesenLabelFile.Import(path, showResult);
+			}
+		}
+
+		private static void LoadCdlFile(string path)
+		{
+			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.CdlExt) {
+				DebugApi.LoadCdlFile(_romInfo.ConsoleType.GetMainCpuType().GetPrgRomMemoryType(), path);
 			}
 		}
 

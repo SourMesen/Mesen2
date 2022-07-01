@@ -26,6 +26,7 @@ namespace Mesen.Utilities
 		public static string DmpExt = "dmp";
 		public static string IpsExt = "ips";
 		public static string CdlExt = "cdl";
+		public static string DbgFileExt = "dbg";
 		public static string MesenLabelExt = "mlb";
 		public static string BinExt = "bin";
 

@@ -658,7 +658,7 @@ namespace Mesen.Debugger.ViewModels
 						OnClick = async () => {
 							string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.MesenLabelExt);
 							if(filename != null) {
-								MesenLabelFile.Import(filename, false);
+								DebugWorkspaceManager.LoadMesenLabelFile(filename, true);
 							}
 						}
 					},

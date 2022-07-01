@@ -13,7 +13,7 @@ namespace Mesen.Debugger.Labels
 {
 	public class MesenLabelFile
 	{
-		public static void Import(string path, bool silent)
+		public static void Import(string path, bool showResult)
 		{
 			List<CodeLabel> labels = new List<CodeLabel>(1000);
 
@@ -29,7 +29,7 @@ namespace Mesen.Debugger.Labels
 
 			LabelManager.SetLabels(labels);
 
-			if(!silent) {
+			if(showResult) {
 				MesenMsgBox.Show(null, errorCount == 0 ? "ImportLabels" : "ImportLabelsWithErrors", MessageBoxButtons.OK, MessageBoxIcon.Question, labels.Count.ToString(), errorCount.ToString());
 			}
 		}

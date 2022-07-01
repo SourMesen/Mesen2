@@ -923,12 +923,6 @@ namespace Mesen.Debugger.Integration
 				}
 			}
 
-			if(ConfigManager.Config.Debug.Integration.ResetLabelsOnImport) {
-				//TODO
-				//DebugWorkspaceManager.ResetLabels();
-				LabelManager.ResetLabels();
-				DefaultLabelHelper.SetDefaultLabels();
-			}
 			LabelManager.SetLabels(labelsToImport, true);
 
 			if(!silent) {
