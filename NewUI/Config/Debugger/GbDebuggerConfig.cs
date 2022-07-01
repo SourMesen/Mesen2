@@ -17,15 +17,5 @@ namespace Mesen.Config
 		[Reactive] public bool GbBreakOnInvalidOpCode { get; set; } = false;
 		[Reactive] public bool GbBreakOnNopLoad { get; set; } = false;
 		[Reactive] public bool GbBreakOnOamCorruption { get; set; } = false;
-
-		public void ApplyConfig()
-		{
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOamAccess, GbBreakOnInvalidOamAccess);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidVramAccess, GbBreakOnInvalidVramAccess);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnDisableLcdOutsideVblank, GbBreakOnDisableLcdOutsideVblank);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnInvalidOpCode, GbBreakOnInvalidOpCode);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnNopLoad, GbBreakOnNopLoad);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.GbBreakOnOamCorruption, GbBreakOnOamCorruption);
-		}
 	}
 }

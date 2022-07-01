@@ -107,11 +107,12 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 	vector<DisassemblyResult> results;
 	results.reserve(20000);
 
-	bool disUnident = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleUnidentifiedData);
-	bool disData = _settings->CheckDebuggerFlag(DebuggerFlags::DisassembleVerifiedData);
-	bool showUnident = _settings->CheckDebuggerFlag(DebuggerFlags::ShowUnidentifiedData);
-	bool showData = _settings->CheckDebuggerFlag(DebuggerFlags::ShowVerifiedData);
-	bool showJumpLabels = _settings->CheckDebuggerFlag(DebuggerFlags::ShowJumpLabels);
+	DebugConfig& cfg = _settings->GetDebugConfig();
+	bool disUnident = cfg.DisassembleUnidentifiedData;
+	bool disData = cfg.DisassembleVerifiedData;
+	bool showUnident = cfg.ShowUnidentifiedData;
+	bool showData = cfg.ShowVerifiedData;
+	bool showJumpLabels = cfg.ShowJumpLabels;
 
 	bool inUnknownBlock = false;
 	bool inVerifiedBlock = false;
@@ -338,7 +339,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 			if(label.empty()) {
 				//Use address as the label
 				label = "$" + DebugUtilities::AddressToHex(type, row.CpuAddress);
-				if(_settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly)) {
+				if(_settings->GetDebugConfig().UseLowerCaseDisassembly) {
 					std::transform(label.begin(), label.end(), label.begin(), ::tolower);
 				}
 			}

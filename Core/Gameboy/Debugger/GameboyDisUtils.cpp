@@ -95,7 +95,7 @@ static constexpr const AddrType _gbEffAddrType[256] = {
 
 void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	AddressInfo addrInfo { 0, MemoryType::GameboyMemory };
 	auto getOperand = [&str, &addrInfo, labelManager](uint16_t addr) {

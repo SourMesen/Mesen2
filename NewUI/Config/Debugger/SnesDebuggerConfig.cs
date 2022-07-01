@@ -16,12 +16,7 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnWdm { get; set; } = false;
 		[Reactive] public bool BreakOnStp { get; set; } = false;
 
-		public void ApplyConfig()
-		{
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnBrk, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnCop, BreakOnCop);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnWdm, BreakOnWdm);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnStp, BreakOnStp);
-		}
+		//TODO remove?
+		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 	}
 }

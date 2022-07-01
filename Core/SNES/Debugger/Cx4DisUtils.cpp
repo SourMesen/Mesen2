@@ -8,7 +8,7 @@
 
 void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings *settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	uint8_t op = info.GetByteCode()[1] & 0xFC;
 	uint8_t param1 = info.GetByteCode()[1] & 0x03;

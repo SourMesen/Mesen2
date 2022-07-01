@@ -12,7 +12,7 @@
 
 void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	uint8_t opCode = info.GetOpCode();
 	SnesAddrMode addrMode = SnesDisUtils::OpMode[opCode];
@@ -22,7 +22,7 @@ void SnesDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t m
 	uint32_t opAddr = SnesDisUtils::GetOperandAddress(info, memoryAddr);
 	uint32_t opSize = info.GetOpSize();
 
-	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString operand(settings->GetDebugConfig().UseLowerCaseDisassembly);
 	if(opSize > 1) {
 		if(addrMode == SnesAddrMode::Rel || addrMode == SnesAddrMode::RelLng || opSize == 4) {
 			AddressInfo address { (int32_t)opAddr, MemoryType::SnesMemory };

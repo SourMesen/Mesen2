@@ -67,8 +67,7 @@ namespace Mesen.Config
 			Snes.ApplyConfig();
 			Preferences.ApplyConfig();
 			AudioPlayer.ApplyConfig();
-			Debug.Debugger.ApplyConfig();
-			Debug.ScriptWindow.ApplyConfig();
+			Debug.ApplyConfig();
 		}
 
 		public void InitializeDefaults()

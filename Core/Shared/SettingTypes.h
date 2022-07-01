@@ -553,6 +553,53 @@ struct AudioPlayerConfig
 	bool Shuffle = false;
 };
 
+struct DebugConfig
+{
+	bool BreakOnUninitRead;
+
+	bool ShowJumpLabels;
+	bool DrawPartialFrame;
+
+	bool ShowVerifiedData;
+	bool DisassembleVerifiedData;
+
+	bool ShowUnidentifiedData;
+	bool DisassembleUnidentifiedData;
+
+	bool UseLowerCaseDisassembly;
+
+	bool AutoResetCdl;
+
+	bool ScriptAllowIoOsAccess;
+	bool ScriptAllowNetworkAccess;
+
+	bool UsePredictiveBreakpoints;
+	bool SingleBreakpointPerInstruction;
+
+	bool SnesBreakOnBrk;
+	bool SnesBreakOnCop;
+	bool SnesBreakOnWdm;
+	bool SnesBreakOnStp;
+	bool UseAltSpcOpNames;
+
+	bool GbBreakOnInvalidOamAccess;
+	bool GbBreakOnInvalidVramAccess;
+	bool GbBreakOnDisableLcdOutsideVblank;
+	bool GbBreakOnInvalidOpCode;
+	bool GbBreakOnNopLoad;
+	bool GbBreakOnOamCorruption;
+
+	bool NesBreakOnBrk;
+	bool NesBreakOnUnofficialOpCode;
+	bool NesBreakOnCpuCrash;
+	bool NesBreakOnBusConflict;
+	bool NesBreakOnDecayedOamRead;
+	bool NesBreakOnPpu2006ScrollGlitch;
+
+	bool PceBreakOnBrk;
+	bool PceBreakOnUnofficialOpCode;
+};
+
 struct PreferencesConfig
 {
 	bool ShowFps = false;
@@ -760,59 +807,15 @@ struct ShortcutKeyInfo
 	KeyCombination Keys;
 };
 
-enum class DebuggerFlags : uint64_t
+enum class DebuggerFlags
 {
-	//TODO rename for snes
-	BreakOnBrk = (1 << 0),
-	BreakOnCop = (1 << 1),
-	BreakOnWdm = (1 << 2),
-	BreakOnStp = (1 << 3),
-	BreakOnUninitRead = (1 << 4),
-
-	ShowJumpLabels = (1 << 5),
-	DrawPartialFrame = (1 << 6),
-
-	ShowVerifiedData = (1 << 8),
-	DisassembleVerifiedData = (1 << 9),
-
-	ShowUnidentifiedData = (1 << 10),
-	DisassembleUnidentifiedData = (1 << 11),
-
-	UseAltSpcOpNames = (1 << 12),
-	UseLowerCaseDisassembly = (1 << 13),
-
-	AutoResetCdl = (1 << 14),
-
-	GbBreakOnInvalidOamAccess = (1 << 16),
-	GbBreakOnInvalidVramAccess = (1 << 17),
-	GbBreakOnDisableLcdOutsideVblank = (1 << 18),
-	GbBreakOnInvalidOpCode = (1 << 19),
-	GbBreakOnNopLoad = (1 << 20),
-	GbBreakOnOamCorruption = (1 << 21),
-
-	PceDebuggerEnabled = (1 << 23),
-	NesDebuggerEnabled = (1 << 24),
-	GbDebuggerEnabled = (1 << 25),
-	Cx4DebuggerEnabled = (1 << 26),
-	NecDspDebuggerEnabled = (1 << 27),
-	GsuDebuggerEnabled = (1 << 28),
-	Sa1DebuggerEnabled = (1 << 29),
-	SpcDebuggerEnabled = (1 << 30),
-	SnesDebuggerEnabled = (1LLU << 31),
-
-	NesBreakOnBrk = (1LLU << 32),
-	NesBreakOnUnofficialOpCode = (1LLU << 33),
-	NesBreakOnCpuCrash = (1LLU << 34),
-	NesBreakOnBusConflict = (1LLU << 35),
-	NesBreakOnDecayedOamRead = (1LLU << 36),
-	NesBreakOnPpu2006ScrollGlitch = (1LLU << 37),
-
-	ScriptAllowIoOsAccess = (1LLU << 40),
-	ScriptAllowNetworkAccess = (1LLU << 41),
-
-	UsePredictiveBreakpoints = (1LLU << 42),
-	SingleBreakpointPerInstruction = (1LLU << 43),
-
-	PceBreakOnBrk = (1LLU << 44),
-	PceBreakOnUnofficialOpCode = (1LLU << 45),
+	SnesDebuggerEnabled = (1 << 0),
+	SpcDebuggerEnabled = (1 << 1),
+	Sa1DebuggerEnabled = (1 << 2),
+	GsuDebuggerEnabled = (1 << 3),
+	NecDspDebuggerEnabled = (1 << 4),
+	Cx4DebuggerEnabled = (1 << 5),
+	GbDebuggerEnabled = (1 << 6),
+	NesDebuggerEnabled = (1 << 7),
+	PceDebuggerEnabled = (1 << 8),
 };

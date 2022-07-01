@@ -13,11 +13,5 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool BreakOnBrk { get; set; } = false;
 		[Reactive] public bool BreakOnUnofficialOpCode { get; set; } = false;
-
-		public void ApplyConfig()
-		{
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.PceBreakOnBrk, BreakOnBrk);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.PceBreakOnUnofficialOpCode, BreakOnUnofficialOpCode);
-		}
 	}
 }

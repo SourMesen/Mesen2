@@ -52,9 +52,6 @@ namespace Mesen.Config
 		[Reactive] public CodeDisplayMode UnidentifiedBlockDisplay { get; set; } = CodeDisplayMode.Hide;
 		[Reactive] public CodeDisplayMode VerifiedDataDisplay { get; set; } = CodeDisplayMode.Hide;
 
-		//TODO remove?
-		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
-
 		[Reactive] public int BreakOnValue { get; set; } = 0;
 		[Reactive] public int BreakInCount { get; set; } = 1;
 		[Reactive] public BreakInMetric BreakInMetric { get; set; } = BreakInMetric.CpuInstructions;
@@ -80,31 +77,6 @@ namespace Mesen.Config
 
 		public DebuggerConfig()
 		{
-		}
-
-		public void ApplyConfig()
-		{
-			Snes.ApplyConfig();
-			Nes.ApplyConfig();
-			Gameboy.ApplyConfig();
-			Pce.ApplyConfig();
-
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.BreakOnUninitRead, BreakOnUninitRead);
-			
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowJumpLabels, ShowJumpLabels);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.DrawPartialFrame, DrawPartialFrame);
-
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Show);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleUnidentifiedData, UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.ShowVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Show);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.DisassembleVerifiedData, VerifiedDataDisplay == CodeDisplayMode.Disassemble);
-
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseAltSpcOpNames, UseAltSpcOpNames);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.UseLowerCaseDisassembly, UseLowerCaseDisassembly);
-
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.AutoResetCdl, AutoResetCdl);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.UsePredictiveBreakpoints, UsePredictiveBreakpoints);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.SingleBreakpointPerInstruction, SingleBreakpointPerInstruction || UsePredictiveBreakpoints);
 		}
 	}
 

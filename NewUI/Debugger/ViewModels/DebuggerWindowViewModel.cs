@@ -192,8 +192,8 @@ namespace Mesen.Debugger.ViewModels
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-			Config.ApplyConfig();
-			UpdateDebugger();
+			ConfigManager.Config.Debug.ApplyConfig();
+			UpdateDisassembly(false);
 		}
 
 		private void UpdateSourceViewState()

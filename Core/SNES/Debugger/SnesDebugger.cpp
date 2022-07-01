@@ -68,7 +68,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 		_cdl = _codeDataLogger.get();
 
 		_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetCartridge()->GetGameboy() ? "SgbFirmware.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
-		_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+		_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 	} else {
 		_cdl = (SnesCodeDataLogger*)_debugger->GetCdlManager()->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	}
@@ -110,11 +110,12 @@ void SnesDebugger::Reset()
 void SnesDebugger::ProcessConfigChange()
 {
 	_debuggerEnabled = _settings->CheckDebuggerFlag(_cpuType == CpuType::Snes ? DebuggerFlags::SnesDebuggerEnabled : DebuggerFlags::Sa1DebuggerEnabled);
-	_predictiveBreakpoints = _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints);
+	_predictiveBreakpoints = _settings->GetDebugConfig().UsePredictiveBreakpoints;
 
 	_runSpc = _spcTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
 	_runCoprocessors = (
-		_dspTraceLogger && _dspTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled) ||
+		_dspTraceLogger && _dspTraceLogger->IsEnabled() || 
+		_settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled) ||
 		_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)
 	);
 	_needCoprocessors = _runSpc || _runCoprocessors;
@@ -164,10 +165,10 @@ void SnesDebugger::ProcessInstruction()
 	if(_debuggerEnabled) {
 		//Break on BRK/STP/WDM/COP
 		switch(opCode) {
-			case 0x00: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) { _step->Break(BreakSource::BreakOnBrk); } break;
-			case 0x02: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnCop)) { _step->Break(BreakSource::BreakOnCop); } break;
-			case 0x42: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnWdm)) { _step->Break(BreakSource::BreakOnWdm); } break;
-			case 0xDB: if(_settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) { _step->Break(BreakSource::BreakOnStp); } break;
+			case 0x00: if(_settings->GetDebugConfig().SnesBreakOnBrk) { _step->Break(BreakSource::BreakOnBrk); } break;
+			case 0x02: if(_settings->GetDebugConfig().SnesBreakOnCop) { _step->Break(BreakSource::BreakOnCop); } break;
+			case 0x42: if(_settings->GetDebugConfig().SnesBreakOnWdm) { _step->Break(BreakSource::BreakOnWdm); } break;
+			case 0xDB: if(_settings->GetDebugConfig().SnesBreakOnStp) { _step->Break(BreakSource::BreakOnStp); } break;
 		}
 	}
 	
@@ -226,7 +227,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 				//Only warn the first time
 				_debugger->Log(string(_cpuType == CpuType::Sa1 ? "[SA1]" : "[CPU]") + " Uninitialized memory read: $" + HexUtilities::ToHex24(addr));
 			}
-			if(_debuggerEnabled && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			if(_debuggerEnabled && _settings->GetDebugConfig().BreakOnUninitRead) {
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}

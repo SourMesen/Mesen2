@@ -61,6 +61,11 @@ extern "C" {
 		_emu->GetSettings()->SetAudioPlayerConfig(config);
 	}
 
+	DllExport void __stdcall SetDebugConfig(DebugConfig config)
+	{
+		_emu->GetSettings()->SetDebugConfig(config);
+	}
+
 	DllExport void __stdcall SetShortcutKeys(ShortcutKeyInfo shortcuts[], uint32_t count)
 	{
 		vector<ShortcutKeyInfo> shortcutList(shortcuts, shortcuts + count);

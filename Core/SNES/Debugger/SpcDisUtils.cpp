@@ -87,7 +87,7 @@ constexpr bool _needAddress[256] = {
 
 void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	AddressInfo addrInfo { 0, MemoryType::SpcMemory };
 	auto getOperand = [&str, &addrInfo, labelManager](uint16_t addr) {
@@ -101,7 +101,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	};
 
 	uint8_t* byteCode = info.GetByteCode();
-	const char* op = settings->CheckDebuggerFlag(DebuggerFlags::UseAltSpcOpNames) ? _altOpTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
+	const char* op = settings->GetDebugConfig().UseAltSpcOpNames ? _altOpTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {

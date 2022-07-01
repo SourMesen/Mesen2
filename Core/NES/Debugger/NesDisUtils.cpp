@@ -80,7 +80,7 @@ static constexpr bool _isUnofficial[256] = {
 
 void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	uint8_t opCode = info.GetOpCode();
 	NesAddrMode addrMode = _opMode[opCode];
@@ -90,7 +90,7 @@ void NesDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	uint32_t opAddr = NesDisUtils::GetOperandAddress(info, memoryAddr);
 	uint32_t opSize = info.GetOpSize();
 
-	FastString operand(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString operand(settings->GetDebugConfig().UseLowerCaseDisassembly);
 	if(opSize > 1) {
 		if(addrMode != NesAddrMode::Imm) {
 			AddressInfo address { (int32_t)opAddr, MemoryType::NesMemory };

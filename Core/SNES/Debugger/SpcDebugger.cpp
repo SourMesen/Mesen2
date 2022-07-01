@@ -46,7 +46,7 @@ void SpcDebugger::Reset()
 void SpcDebugger::ProcessConfigChange()
 {
 	_debuggerEnabled = _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
-	_predictiveBreakpoints = _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints);
+	_predictiveBreakpoints = _settings->GetDebugConfig().UsePredictiveBreakpoints;
 }
 
 void SpcDebugger::ProcessInstruction()
@@ -83,9 +83,9 @@ void SpcDebugger::ProcessInstruction()
 
 	if(_debuggerEnabled) {
 		//Break on BRK/STP
-		if(value == 0x0F && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnBrk)) {
+		if(value == 0x0F && _settings->GetDebugConfig().SnesBreakOnBrk) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(value == 0xFF && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnStp)) {
+		} else if(value == 0xFF && _settings->GetDebugConfig().SnesBreakOnStp) {
 			_step->Break(BreakSource::BreakOnStp);
 		}
 	}

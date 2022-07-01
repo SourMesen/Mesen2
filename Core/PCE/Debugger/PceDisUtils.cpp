@@ -66,7 +66,7 @@ static constexpr PceAddrMode _opMode[] = {
 
 void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	uint8_t opCode = info.GetOpCode();
 	uint8_t* byteCode = info.GetByteCode();

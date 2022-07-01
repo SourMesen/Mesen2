@@ -98,14 +98,14 @@ bool LuaScriptingContext::LoadScript(string scriptName, string scriptContent, De
 	LuaApi::SetContext(this);
 
 	EmuSettings* settings = debugger->GetEmulator()->GetSettings();
-	bool allowIoOsAccess = settings->CheckDebuggerFlag(DebuggerFlags::ScriptAllowIoOsAccess);
+	bool allowIoOsAccess = settings->GetDebugConfig().ScriptAllowIoOsAccess;
 	LuaOpenLibs(_lua, allowIoOsAccess);
 	
 	//Prevent lua code from loading any files
 	SANDBOX_ALLOW_LOADFILE = allowIoOsAccess ? 1 : 0;
 
 	//Load LuaSocket into Lua core
-	if(allowIoOsAccess && settings->CheckDebuggerFlag(DebuggerFlags::ScriptAllowNetworkAccess)) {
+	if(allowIoOsAccess && settings->GetDebugConfig().ScriptAllowNetworkAccess) {
 		lua_getglobal(_lua, "package");
 		lua_getfield(_lua, -1, "preload");
 		lua_pushcfunction(_lua, luaopen_socket_core);

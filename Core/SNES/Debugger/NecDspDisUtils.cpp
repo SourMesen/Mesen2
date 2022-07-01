@@ -15,7 +15,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 	constexpr const char* destNames[16] = { "NON", "A", "B", "TR", "DP", "RP", "DR", "SR", "SOL", "SOM", "K", "KLR", "KLM", "L", "TRB", "MEM" };
 	constexpr const char* dataPointerOp[4] = { "DPL:NOP", "DPL:INC", "DPL:DEC", "DPL:CLR" };
 
-	FastString str(settings->CheckDebuggerFlag(DebuggerFlags::UseLowerCaseDisassembly));
+	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 	uint32_t opCode = info.GetByteCode()[0] | (info.GetByteCode()[1] << 8) | (info.GetByteCode()[2] << 16);
 	uint8_t operationType = (opCode >> 22) & 0x03;
 

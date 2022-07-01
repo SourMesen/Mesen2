@@ -252,11 +252,11 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 	if(source != BreakSource::Unspecified || _breakRequestCount == 0) {
 		_emu->GetSoundMixer()->StopAudio();
 
-		if(_settings->CheckDebuggerFlag(DebuggerFlags::SingleBreakpointPerInstruction)) {
+		if(_settings->GetDebugConfig().SingleBreakpointPerInstruction) {
 			_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints = true;
 		}
 
-		if(_settings->CheckDebuggerFlag(DebuggerFlags::DrawPartialFrame)) {
+		if(_settings->GetDebugConfig().DrawPartialFrame) {
 			_debuggers[(int)sourceCpu].Debugger->DrawPartialFrame();
 		}
 
@@ -470,11 +470,11 @@ void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 {
 	//TODO
 	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
-	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnDisableLcdOutsideVblank))) {
+	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnDisableLcdOutsideVblank)) {
 		return;
-	} else if(source == BreakSource::GbInvalidVramAccess && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidVramAccess))) {
+	} else if(source == BreakSource::GbInvalidVramAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidVramAccess)) {
 		return;
-	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOamAccess))) {
+	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidOamAccess)) {
 		return;
 	}
 	SleepUntilResume(sourceCpu, source);

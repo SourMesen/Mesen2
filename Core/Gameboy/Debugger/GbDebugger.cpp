@@ -49,7 +49,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	
 	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::GbPrgRom, _gameboy->DebugGetMemorySize(MemoryType::GbPrgRom), CpuType::Gameboy, _emu->GetCrc32()));
 	_cdlFile = _codeDataLogger->GetCdlFilePath(_emu->GetRomInfo().RomFile.GetFileName());
-	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 
 	_traceLogger.reset(new GbTraceLogger(debugger, this, _ppu));
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
@@ -117,13 +117,13 @@ void GbDebugger::ProcessInstruction()
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 		switch(value) {
 			case 0x40:
-				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnNopLoad)) {
+				if(_settings->GetDebugConfig().GbBreakOnNopLoad) {
 					_step->Break(BreakSource::GbNopLoad);
 				}
 				break;
 
 			case 0xD3: case 0xDB: case 0xDD: case 0xE3: case 0xE4: case 0xEB: case 0xEC: case 0xED: case 0xF4: case 0xFC: case 0xFD:
-				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbBreakOnInvalidOpCode)) {
+				if(_settings->GetDebugConfig().GbBreakOnInvalidOpCode) {
 					_step->Break(BreakSource::GbInvalidOpCode);
 				}
 				break;
@@ -135,7 +135,7 @@ void GbDebugger::ProcessInstruction()
 
 	_step->ProcessCpuExec();
 
-	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->GetDebugConfig().UsePredictiveBreakpoints) {
 		_dummyCpu->SetDummyState(state);
 		_dummyCpu->Exec();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
@@ -189,7 +189,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 					//Only warn the first time
 					_debugger->Log("[GB] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
 				}
-				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+				if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled) && _settings->GetDebugConfig().BreakOnUninitRead) {
 					_step->Break(BreakSource::BreakOnUninitMemoryRead);
 				}
 			}

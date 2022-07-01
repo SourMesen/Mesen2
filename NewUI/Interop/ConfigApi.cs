@@ -29,6 +29,8 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetAudioPlayerConfig(InteropAudioPlayerConfig config);
 		[DllImport(DllPath)] public static extern void SetShortcutKeys([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)]InteropShortcutKeyInfo[] shortcuts, UInt32 count);
 
+		[DllImport(DllPath)] public static extern void SetDebugConfig(InteropDebugConfig config);
+
 		[DllImport(DllPath)] public static extern void SetEmulationFlag(EmulationFlags flag, bool enabled);
 		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 
@@ -49,60 +51,17 @@ namespace Mesen.Interop
 		InBackground = 8,
 	}
 
-	public enum DebuggerFlags : UInt64
+	public enum DebuggerFlags : UInt32
 	{
-		BreakOnBrk = (1 << 0),
-		BreakOnCop = (1 << 1),
-		BreakOnWdm = (1 << 2),
-		BreakOnStp = (1 << 3),
-		BreakOnUninitRead = (1 << 4),
-
-		ShowJumpLabels = (1 << 5),
-		DrawPartialFrame = (1 << 6),
-
-		ShowVerifiedData = (1 << 8),
-		DisassembleVerifiedData = (1 << 9),
-
-		ShowUnidentifiedData = (1 << 10),
-		DisassembleUnidentifiedData = (1 << 11),
-
-		UseAltSpcOpNames = (1 << 12),
-		UseLowerCaseDisassembly = (1 << 13),
-		
-		AutoResetCdl = (1 << 14),
-
-		GbBreakOnInvalidOamAccess = (1 << 16),
-		GbBreakOnInvalidVramAccess = (1 << 17),
-		GbBreakOnDisableLcdOutsideVblank = (1 << 18),
-		GbBreakOnInvalidOpCode = (1 << 19),
-		GbBreakOnNopLoad = (1 << 20),
-		GbBreakOnOamCorruption = (1 << 21),
-
-		PceDebuggerEnabled = (1 << 23),
-		NesDebuggerEnabled = (1 << 24),
-		GbDebuggerEnabled = (1 << 25),
-		Cx4DebuggerEnabled = (1 << 26),
-		NecDspDebuggerEnabled = (1 << 27),
-		GsuDebuggerEnabled = (1 << 28),
-		Sa1DebuggerEnabled = (1 << 29),
-		SpcDebuggerEnabled = (1 << 30),
-		SnesDebuggerEnabled = (1LU << 31),
-
-		NesBreakOnBrk = (1LU << 32),
-		NesBreakOnUnofficialOpCode = (1LU << 33),
-		NesBreakOnCpuCrash = (1LU << 34),
-		NesBreakOnBusConflict = (1LU << 35),
-		NesBreakOnDecayedOamRead = (1LU << 36),
-		NesBreakOnPpu2006ScrollGlitch = (1LU << 37),
-		
-		ScriptAllowIoOsAccess = (1LU << 40),
-		ScriptAllowNetworkAccess = (1LU << 41),
-
-		UsePredictiveBreakpoints = (1LU << 42),
-		SingleBreakpointPerInstruction = (1LU << 43),
-
-		PceBreakOnBrk = (1LU << 44),
-		PceBreakOnUnofficialOpCode = (1LU << 45),
+		SnesDebuggerEnabled = (1 << 0),
+		SpcDebuggerEnabled = (1 << 1),
+		Sa1DebuggerEnabled = (1 << 2),
+		GsuDebuggerEnabled = (1 << 3),
+		NecDspDebuggerEnabled = (1 << 4),
+		Cx4DebuggerEnabled = (1 << 5),
+		GbDebuggerEnabled = (1 << 6),
+		NesDebuggerEnabled = (1 << 7),
+		PceDebuggerEnabled = (1 << 8),
 	}
 
 	public struct InteropShortcutKeyInfo

@@ -212,6 +212,22 @@ AudioPlayerConfig& EmuSettings::GetAudioPlayerConfig()
 	return _audioPlayer;
 }
 
+void EmuSettings::SetDebugConfig(DebugConfig& config)
+{
+	_debug = config;
+	
+	Emulator::DebuggerRequest req = _emu->GetDebugger(false);
+	Debugger* dbg = req.GetDebugger();
+	if(dbg) {
+		dbg->ProcessConfigChange();
+	}
+}
+
+DebugConfig& EmuSettings::GetDebugConfig()
+{
+	return _debug;
+}
+
 void EmuSettings::ClearShortcutKeys()
 {
 	_emulatorKeys[0].clear();
@@ -384,7 +400,9 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 			_debuggerFlags &= ~(uint64_t)flag;
 		}
 	}
-	Debugger* dbg = _emu->GetDebugger(false).GetDebugger();
+
+	Emulator::DebuggerRequest req = _emu->GetDebugger(false);
+	Debugger* dbg = req.GetDebugger();
 	if(dbg) {
 		dbg->ProcessConfigChange();
 	}

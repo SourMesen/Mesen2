@@ -55,7 +55,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_codeDataLogger.reset(new CodeDataLogger(debugger, MemoryType::PcePrgRom, _emu->GetMemory(MemoryType::PcePrgRom).Size, CpuType::Pce, _emu->GetCrc32()));
 
 	_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetRomFormat() == RomFormat::PceCdRom ? "PceCdromBios.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
-	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 
 	_eventManager.reset(new PceEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger));
@@ -122,14 +122,14 @@ void PceDebugger::ProcessInstruction()
 	_step->ProcessCpuExec();
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled)) {
-		if(opCode == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnBrk)) {
+		if(opCode == 0x00 && _settings->GetDebugConfig().PceBreakOnBrk) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::PceBreakOnUnofficialOpCode) && PceDisUtils::IsOpUnofficial(opCode)) {
+		} else if(_settings->GetDebugConfig().PceBreakOnUnofficialOpCode && PceDisUtils::IsOpUnofficial(opCode)) {
 			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
 	
-	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->GetDebugConfig().UsePredictiveBreakpoints) {
 		_dummyCpu->SetDummyState(_cpu->GetState());
 		_dummyCpu->Exec();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
@@ -188,7 +188,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				//Only warn the first time
 				_debugger->Log("[CPU] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
 			}
-			if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			if(_settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled) && _settings->GetDebugConfig().BreakOnUninitRead) {
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}

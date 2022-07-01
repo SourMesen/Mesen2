@@ -66,7 +66,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 		default: cdlFile = _emu->GetRomInfo().RomFile.GetFileName(); break;
 	}
 	_cdlFile = _codeDataLogger->GetCdlFilePath(cdlFile);
-	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->CheckDebuggerFlag(DebuggerFlags::AutoResetCdl));
+	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 
@@ -135,14 +135,14 @@ void NesDebugger::ProcessInstruction()
 	_step->ProcessCpuExec();
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled)) {
-		if(opCode == 0x00 && _settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnBrk)) {
+		if(opCode == 0x00 && _settings->GetDebugConfig().NesBreakOnBrk) {
 			_step->Break(BreakSource::BreakOnBrk);
-		} else if(_settings->CheckDebuggerFlag(DebuggerFlags::NesBreakOnUnofficialOpCode) && NesDisUtils::IsOpUnofficial(opCode)) {
+		} else if(_settings->GetDebugConfig().NesBreakOnUnofficialOpCode && NesDisUtils::IsOpUnofficial(opCode)) {
 			_step->Break(BreakSource::BreakOnUnofficialOpCode);
 		}
 	}
 
-	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->CheckDebuggerFlag(DebuggerFlags::UsePredictiveBreakpoints)) {
+	if(_step->StepCount != 0 && _breakpointManager->HasBreakpoints() && _settings->GetDebugConfig().UsePredictiveBreakpoints) {
 		_dummyCpu->SetDummyState(_cpu);
 		_dummyCpu->Exec();
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
@@ -209,7 +209,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				//Only warn the first time
 				_debugger->Log("[CPU] Uninitialized memory read: $" + HexUtilities::ToHex((uint16_t)addr));
 			}
-			if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->CheckDebuggerFlag(DebuggerFlags::BreakOnUninitRead)) {
+			if(_settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled) && _settings->GetDebugConfig().BreakOnUninitRead) {
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}

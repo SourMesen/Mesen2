@@ -31,12 +31,6 @@ namespace Mesen.Config
 
 		[Reactive] public UInt32 ScriptTimeout { get; set; } = 1000;
 
-		public void ApplyConfig()
-		{
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.ScriptAllowIoOsAccess, AllowIoOsAccess);
-			ConfigApi.SetDebuggerFlag(DebuggerFlags.ScriptAllowNetworkAccess, AllowIoOsAccess && AllowNetworkAccess);
-		}
-
 		public void AddRecentScript(string scriptFile)
 		{
 			string? existingItem = RecentScripts.Where((file) => file == scriptFile).FirstOrDefault();
