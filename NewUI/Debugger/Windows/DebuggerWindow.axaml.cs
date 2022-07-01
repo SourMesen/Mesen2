@@ -131,7 +131,7 @@ namespace Mesen.Debugger.Windows
 				case ConsoleNotificationType.DebuggerResumed:
 					_model.UpdateConsoleState();
 					Dispatcher.UIThread.Post(() => {
-						_model.ProcessResumeEvent();
+						_model.ProcessResumeEvent(this);
 					});
 					break;
 

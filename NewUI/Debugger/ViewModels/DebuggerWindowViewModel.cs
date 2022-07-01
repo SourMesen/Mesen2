@@ -338,7 +338,7 @@ namespace Mesen.Debugger.ViewModels
 			SourceView?.InvalidateVisual();
 		}
 
-		public void ProcessResumeEvent()
+		public void ProcessResumeEvent(Window wnd)
 		{
 			if(ConsoleStatus != null) {
 				//Disable status fields in 50ms (if the debugger isn't paused by then)
@@ -349,6 +349,13 @@ namespace Mesen.Debugger.ViewModels
 						BaseConsoleStatusViewModel status = ConsoleStatus;
 						if(status != null && status.EditAllowed && !EmuApi.IsPaused()) {
 							status.EditAllowed = false;
+
+							if(DockFactory.StatusTool.Owner is IDock parent && parent.IsActive && parent.ActiveDockable == DockFactory.StatusTool) {
+								//If status tool is active when it gets disabled, give window focus to avoid focus issues in Avalonia
+								//Disabling focused controls by setting IsEnabled=false on a parent does not appear to behave properly
+								//The controls keep their focus and can be modified
+								wnd.Focus();
+							}
 						}
 					});
 				});
