@@ -55,6 +55,8 @@ namespace Mesen.Debugger.StatusViews
 		{
 			Cx4State cpu = DebugApi.GetCpuState<Cx4State>(CpuType.Cx4);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			Reg0 = cpu.Regs[0];
 			Reg1 = cpu.Regs[1];
 			Reg2 = cpu.Regs[2];

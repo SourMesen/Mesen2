@@ -24,7 +24,6 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool FlagZ { get; set; }
 		[Reactive] public bool FlagC { get; set; }
 
-		[Reactive] public UInt64 CycleCount { get; set; }
 		[Reactive] public string StackPreview { get; private set; } = "";
 
 		public SpcStatusViewModel()
@@ -63,14 +62,14 @@ namespace Mesen.Debugger.StatusViews
 		{
 			SpcState cpu = DebugApi.GetCpuState<SpcState>(CpuType.Spc);
 
+			UpdateCycleCount(cpu.Cycle);
+			
 			RegA = cpu.A;
 			RegX = cpu.X;
 			RegY = cpu.Y;
 			RegSP = cpu.SP;
 			RegPC = cpu.PC;
 			RegPS = (byte)cpu.PS;
-
-			CycleCount = cpu.Cycle;
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (UInt32)0x100 + cpu.SP + 1; i < 0x200; i++) {

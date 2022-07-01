@@ -79,6 +79,8 @@ namespace Mesen.Debugger.StatusViews
 		{
 			GsuState cpu = DebugApi.GetCpuState<GsuState>(CpuType.Gsu);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			Reg0 = cpu.R[0];
 			Reg1 = cpu.R[1];
 			Reg2 = cpu.R[2];

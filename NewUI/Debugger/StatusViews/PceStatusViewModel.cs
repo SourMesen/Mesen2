@@ -27,7 +27,6 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public UInt16 Scanline { get; private set; }
 		[Reactive] public UInt32 FrameCount { get; private set; }
 
-		[Reactive] public UInt64 CycleCount { get; set; }
 		[Reactive] public string StackPreview { get; private set; } = "";
 
 		public PceStatusViewModel()
@@ -61,14 +60,14 @@ namespace Mesen.Debugger.StatusViews
 			PceCpuState cpu = DebugApi.GetCpuState<PceCpuState>(CpuType.Pce);
 			PceVideoState video = DebugApi.GetPpuState<PceVideoState>(CpuType.Pce);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			RegA = cpu.A;
 			RegX = cpu.X;
 			RegY = cpu.Y;
 			RegSP = cpu.SP;
 			RegPC = cpu.PC;
 			RegPS = cpu.PS;
-
-			CycleCount = cpu.CycleCount;
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (UInt32)0x2100 + cpu.SP + 1; i < 0x2200; i++) {

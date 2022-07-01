@@ -46,6 +46,8 @@ namespace Mesen.Debugger.StatusViews
 		{
 			NecDspState cpu = DebugApi.GetCpuState<NecDspState>(CpuType.NecDsp);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			RegTR = cpu.TR;
 			RegTRB = cpu.TRB;
 			RegPC = cpu.PC;

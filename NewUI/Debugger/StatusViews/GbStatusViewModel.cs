@@ -33,7 +33,6 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool FlagEiPending { get; set; }
 		[Reactive] public bool FlagIme { get; set; }
 
-		[Reactive] public UInt64 CycleCount { get; set; }
 		[Reactive] public string StackPreview { get; private set; } = "";
 
 		public GbStatusViewModel()
@@ -66,6 +65,8 @@ namespace Mesen.Debugger.StatusViews
 			GbCpuState cpu = state.Cpu;
 			GbPpuState ppu = DebugApi.GetPpuState<GbPpuState>(CpuType.Gameboy);
 
+			UpdateCycleCount(state.MemoryManager.CycleCount);
+
 			RegA = cpu.A;
 			RegB = cpu.B;
 			RegC = cpu.C;
@@ -85,8 +86,6 @@ namespace Mesen.Debugger.StatusViews
 
 			Scanline = ppu.Scanline;
 			Cycle = ppu.Cycle;
-
-			CycleCount = state.MemoryManager.CycleCount;
 
 			StringBuilder sb = new StringBuilder();
 			for(UInt32 i = (UInt32)cpu.SP; (i & 0x100) != 0; i++) {

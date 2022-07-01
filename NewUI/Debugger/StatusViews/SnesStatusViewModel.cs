@@ -11,8 +11,6 @@ namespace Mesen.Debugger.StatusViews
 {
 	public class SnesStatusViewModel : BaseConsoleStatusViewModel
 	{
-		[Reactive] public UInt64 CycleCount { get; set; }
-
 		[Reactive] public UInt16 RegA { get; set; }
 		[Reactive] public UInt16 RegX { get; set; }
 		[Reactive] public UInt16 RegY { get; set; }
@@ -87,6 +85,8 @@ namespace Mesen.Debugger.StatusViews
 			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(_cpuType);
 			SnesPpuState ppu = DebugApi.GetPpuState<SnesPpuState>(CpuType.Snes);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			RegA = cpu.A;
 			RegX = cpu.X;
 			RegY = cpu.Y;
@@ -95,7 +95,6 @@ namespace Mesen.Debugger.StatusViews
 
 			RegD = cpu.D;
 			RegDBR = cpu.DBR;
-			CycleCount = cpu.CycleCount;
 
 			RegPS = (byte)cpu.PS;
 

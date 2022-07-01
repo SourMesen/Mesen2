@@ -58,7 +58,6 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool BgAt1000 { get; set; }
 		[Reactive] public bool SpritesAt1000 { get; set; }
 
-		[Reactive] public UInt64 CycleCount { get; set; }
 		[Reactive] public string StackPreview { get; private set; } = "";
 
 		public NesStatusViewModel()
@@ -90,14 +89,14 @@ namespace Mesen.Debugger.StatusViews
 			NesCpuState cpu = DebugApi.GetCpuState<NesCpuState>(CpuType.Nes);
 			NesPpuState ppu = DebugApi.GetPpuState<NesPpuState>(CpuType.Nes);
 
+			UpdateCycleCount(cpu.CycleCount);
+
 			RegA = cpu.A;
 			RegX = cpu.X;
 			RegY = cpu.Y;
 			RegSP = cpu.SP;
 			RegPC = cpu.PC;
 			RegPS = cpu.PS;
-
-			CycleCount = cpu.CycleCount;
 
 			FlagNmi = cpu.NMIFlag;
 			FlagIrqExternal = (cpu.IRQFlag & (byte)NesIrqSources.External) != 0;

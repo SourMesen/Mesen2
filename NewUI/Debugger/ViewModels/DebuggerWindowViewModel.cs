@@ -242,6 +242,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateDebugger(bool forBreak = false, BreakEvent? evt = null)
 		{
+			ConsoleStatus?.UpdateUiState();
+
 			if(forBreak) {
 				if(ConsoleStatus?.EditAllowed == false) {
 					ConsoleStatus.EditAllowed = true;
@@ -249,7 +251,6 @@ namespace Mesen.Debugger.ViewModels
 				UpdateStatusBar(evt);
 			}
 
-			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
 			MemoryMappings?.Refresh();
 			BreakpointList.RefreshBreakpointList();
@@ -270,10 +271,17 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdateStatusBar(BreakEvent? evt)
 		{
-			UInt64 prevMasterClock = _masterClock;
-			_masterClock = EmuApi.GetTimingInfo().MasterClock;
-			if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
-				BreakElapsedCycles = $"{_masterClock - prevMasterClock} cycles elapsed";
+			if(ConsoleStatus?.ElapsedCycles > 0) {
+				string elapsedCycles = $"{ConsoleStatus?.ElapsedCycles} cycles elapsed";
+
+				if(CpuType == CpuType.Snes) {
+					UInt64 prevMasterClock = _masterClock;
+					_masterClock = EmuApi.GetTimingInfo().MasterClock;
+					if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
+						elapsedCycles += $" ({_masterClock - prevMasterClock} master clocks)";
+					}
+				}
+				BreakElapsedCycles = elapsedCycles;
 			} else {
 				BreakElapsedCycles = "";
 			}
