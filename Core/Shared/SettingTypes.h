@@ -555,49 +555,50 @@ struct AudioPlayerConfig
 
 struct DebugConfig
 {
-	bool BreakOnUninitRead;
+	bool BreakOnUninitRead = false;
 
-	bool ShowJumpLabels;
-	bool DrawPartialFrame;
+	bool ShowJumpLabels = false;
+	bool DrawPartialFrame = false;
 
-	bool ShowVerifiedData;
-	bool DisassembleVerifiedData;
+	bool ShowVerifiedData = false;
+	bool DisassembleVerifiedData = false;
 
-	bool ShowUnidentifiedData;
-	bool DisassembleUnidentifiedData;
+	bool ShowUnidentifiedData = false;
+	bool DisassembleUnidentifiedData = false;
 
-	bool UseLowerCaseDisassembly;
+	bool UseLowerCaseDisassembly = false;
 
-	bool AutoResetCdl;
+	bool AutoResetCdl = false;
 
-	bool ScriptAllowIoOsAccess;
-	bool ScriptAllowNetworkAccess;
+	bool UsePredictiveBreakpoints = false;
+	bool SingleBreakpointPerInstruction = false;
 
-	bool UsePredictiveBreakpoints;
-	bool SingleBreakpointPerInstruction;
+	bool SnesBreakOnBrk = false;
+	bool SnesBreakOnCop = false;
+	bool SnesBreakOnWdm = false;
+	bool SnesBreakOnStp = false;
+	bool UseAltSpcOpNames = false;
 
-	bool SnesBreakOnBrk;
-	bool SnesBreakOnCop;
-	bool SnesBreakOnWdm;
-	bool SnesBreakOnStp;
-	bool UseAltSpcOpNames;
+	bool GbBreakOnInvalidOamAccess = false;
+	bool GbBreakOnInvalidVramAccess = false;
+	bool GbBreakOnDisableLcdOutsideVblank = false;
+	bool GbBreakOnInvalidOpCode = false;
+	bool GbBreakOnNopLoad = false;
+	bool GbBreakOnOamCorruption = false;
 
-	bool GbBreakOnInvalidOamAccess;
-	bool GbBreakOnInvalidVramAccess;
-	bool GbBreakOnDisableLcdOutsideVblank;
-	bool GbBreakOnInvalidOpCode;
-	bool GbBreakOnNopLoad;
-	bool GbBreakOnOamCorruption;
+	bool NesBreakOnBrk = false;
+	bool NesBreakOnUnofficialOpCode = false;
+	bool NesBreakOnCpuCrash = false;
+	bool NesBreakOnBusConflict = false;
+	bool NesBreakOnDecayedOamRead = false;
+	bool NesBreakOnPpu2006ScrollGlitch = false;
 
-	bool NesBreakOnBrk;
-	bool NesBreakOnUnofficialOpCode;
-	bool NesBreakOnCpuCrash;
-	bool NesBreakOnBusConflict;
-	bool NesBreakOnDecayedOamRead;
-	bool NesBreakOnPpu2006ScrollGlitch;
+	bool PceBreakOnBrk = false;
+	bool PceBreakOnUnofficialOpCode = false;
 
-	bool PceBreakOnBrk;
-	bool PceBreakOnUnofficialOpCode;
+	bool ScriptAllowIoOsAccess = false;
+	bool ScriptAllowNetworkAccess = false;
+	uint32_t ScriptTimeout = 1;
 };
 
 struct PreferencesConfig

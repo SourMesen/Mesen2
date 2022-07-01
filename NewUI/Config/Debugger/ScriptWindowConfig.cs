@@ -29,7 +29,7 @@ namespace Mesen.Config
 		[Reactive] public bool AllowIoOsAccess { get; set; } = false;
 		[Reactive] public bool AllowNetworkAccess { get; set; } = false;
 
-		[Reactive] public UInt32 ScriptTimeout { get; set; } = 1000;
+		[Reactive] public UInt32 ScriptTimeout { get; set; } = 1;
 
 		public void AddRecentScript(string scriptFile)
 		{

@@ -1,22 +1,22 @@
 #include "stdafx.h"
 
 #ifndef LIBRETRO
-#include "../Lua/lua.hpp"
-#include "../Lua/luasocket.hpp"
-#include "LuaScriptingContext.h"
-#include "LuaApi.h"
-#include "LuaCallHelper.h"
-#include "DebugTypes.h"
-#include "Debugger.h"
+#include "Lua/lua.hpp"
+#include "Lua/luasocket.hpp"
+#include "Debugger/LuaScriptingContext.h"
+#include "Debugger/LuaApi.h"
+#include "Debugger/LuaCallHelper.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "EventType.h"
 
 LuaScriptingContext* LuaScriptingContext::_context = nullptr;
-uint32_t LuaScriptingContext::_timeout = 1000;
 
 LuaScriptingContext::LuaScriptingContext(Debugger* debugger) : ScriptingContext(debugger)
 {
+	_settings = debugger->GetEmulator()->GetSettings();
 }
 
 LuaScriptingContext::~LuaScriptingContext()
@@ -25,18 +25,18 @@ LuaScriptingContext::~LuaScriptingContext()
 		//Cleanup all references, this is required to prevent crashes that can occur when calling lua_close
 		std::unordered_set<int> references;
 		for(int i = (int)CallbackType::CpuRead; i <= (int)CallbackType::CpuExec; i++) {
-			for(MemoryCallback &callback : _callbacks[i]) {
+			for(MemoryCallback& callback : _callbacks[i]) {
 				references.emplace(callback.Reference);
 			}
 		}
 
 		for(int i = (int)EventType::Reset; i < (int)EventType::EventTypeSize; i++) {
-			for(int &ref : _eventCallbacks[i]) {
+			for(int& ref : _eventCallbacks[i]) {
 				references.emplace(ref);
 			}
 		}
 
-		for(const int &ref : references) {
+		for(const int& ref : references) {
 			luaL_unref(_lua, LUA_REGISTRYINDEX, ref);
 		}
 
@@ -45,15 +45,11 @@ LuaScriptingContext::~LuaScriptingContext()
 	}
 }
 
-void LuaScriptingContext::SetScriptTimeout(uint32_t timeout)
-{
-	_timeout = timeout;
-}
-
 void LuaScriptingContext::ExecutionCountHook(lua_State *lua, lua_Debug *ar)
 {
-	if(_context->_timer.GetElapsedMS() > _timeout) {
-		luaL_error(lua, (std::string("Maximum execution time (") + std::to_string(_timeout) + " ms) exceeded.").c_str());
+	uint32_t timeout = _context->_settings->GetDebugConfig().ScriptTimeout;
+	if(_context->_timer.GetElapsedMS() > timeout * 1000) {
+		luaL_error(lua, (std::string("Maximum execution time (") + std::to_string(timeout) + " seconds) exceeded.").c_str());
 	}
 }
 

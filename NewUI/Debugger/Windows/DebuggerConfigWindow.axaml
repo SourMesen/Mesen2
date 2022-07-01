@@ -96,7 +96,12 @@
 						<CheckBox IsChecked="{CompiledBinding Script.AutoRestartScriptAfterPowerCycle}" Content="{l:Translate chkAutoRestartScriptAfterPowerCycle}" />
 						<CheckBox IsChecked="{CompiledBinding Script.AutoReloadScriptWhenFileChanges}" Content="{l:Translate chkAutoReloadScriptWhenFileChanges}" />
 					</c:OptionSection>
-					<c:OptionSection Header="{l:Translate lblSandboxing}">
+					<c:OptionSection Header="{l:Translate lblRestrictions}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblMaxExecutionTime}" />
+							<NumericUpDown Margin="3 0" Minimum="1" Maximum="100" Value="{CompiledBinding Script.ScriptTimeout}" />
+							<TextBlock Text="{l:Translate lblSeconds}" />
+						</StackPanel>
 						<CheckBox IsChecked="{CompiledBinding Script.AllowIoOsAccess}" Content="{l:Translate chkAllowIoOsAccess}" />
 						<CheckBox
 							IsChecked="{CompiledBinding Script.AllowNetworkAccess}"

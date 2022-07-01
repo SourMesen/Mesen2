@@ -176,7 +176,6 @@ extern "C"
 		string log = WithTool(string, GetScriptManager(), GetScriptLog(scriptId));
 		StringUtilities::CopyToBuffer(log, outScriptLog, maxLength);
 	}
-	//DllExport void __stdcall DebugSetScriptTimeout(uint32_t timeout) { LuaScriptingContext::SetScriptTimeout(timeout); }
 
 	DllExport uint32_t __stdcall AssembleCode(CpuType cpuType, char* code, uint32_t startAddress, int16_t* assembledOutput) { return WithTool(uint32_t, GetAssembler(cpuType), AssembleCode(code, startAddress, assembledOutput)); }
 	

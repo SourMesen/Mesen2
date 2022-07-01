@@ -52,9 +52,6 @@ namespace Mesen.Config
 
 				AutoResetCdl = Debugger.AutoResetCdl,
 
-				ScriptAllowIoOsAccess = ScriptWindow.AllowIoOsAccess,
-				ScriptAllowNetworkAccess = ScriptWindow.AllowNetworkAccess,
-
 				UsePredictiveBreakpoints = Debugger.UsePredictiveBreakpoints,
 				SingleBreakpointPerInstruction = Debugger.SingleBreakpointPerInstruction,
 
@@ -79,7 +76,11 @@ namespace Mesen.Config
 				NesBreakOnPpu2006ScrollGlitch = Debugger.Nes.BreakOnPpu2006ScrollGlitch,
 
 				PceBreakOnBrk = Debugger.Pce.BreakOnBrk,
-				PceBreakOnUnofficialOpCode = Debugger.Pce.BreakOnUnofficialOpCode
+				PceBreakOnUnofficialOpCode = Debugger.Pce.BreakOnUnofficialOpCode,
+
+				ScriptAllowIoOsAccess = ScriptWindow.AllowIoOsAccess,
+				ScriptAllowNetworkAccess = ScriptWindow.AllowNetworkAccess,
+				ScriptTimeout = ScriptWindow.ScriptTimeout
 			});
 		}
 	}
@@ -100,9 +101,6 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool UseLowerCaseDisassembly;
 
 		[MarshalAs(UnmanagedType.I1)] public bool AutoResetCdl;
-
-		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowIoOsAccess;
-		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowNetworkAccess;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UsePredictiveBreakpoints;
 		[MarshalAs(UnmanagedType.I1)] public bool SingleBreakpointPerInstruction;
@@ -129,6 +127,10 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnBrk;
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnUnofficialOpCode;
+
+		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowIoOsAccess;
+		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowNetworkAccess;
+		public UInt32 ScriptTimeout;
 	}
 
 	public enum RefreshSpeed
