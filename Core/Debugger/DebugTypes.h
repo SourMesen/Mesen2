@@ -153,7 +153,7 @@ namespace LineFlags
 struct CodeLineData
 {
 	int32_t Address;
-	int32_t AbsoluteAddress;
+	AddressInfo AbsoluteAddress;
 	uint8_t OpSize;
 	uint16_t Flags;
 

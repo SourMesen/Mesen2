@@ -28,15 +28,15 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SortState SortState { get; set; } = new();
 
 		public CpuType CpuType { get; }
-		public DisassemblyViewModel Disassembly { get; }
+		public DebuggerWindowViewModel Debugger { get; }
 
 		[Obsolete("For designer only")]
 		public LabelListViewModel() : this(CpuType.Snes, new()) { }
 
-		public LabelListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
+		public LabelListViewModel(CpuType cpuType, DebuggerWindowViewModel debugger)
 		{
 			CpuType = cpuType;
-			Disassembly = disassembly;
+			Debugger = debugger;
 
 			SortState.SetColumnSort("Label", ListSortDirection.Ascending, true);
 		}
@@ -156,7 +156,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						if(Selection.SelectedItem is LabelViewModel vm) {
 							DisassemblySearchOptions options = new() { MatchCase = true, MatchWholeWord = true };
-							Disassembly.Debugger.FindAllOccurrences(vm.Label.Label, options);
+							Debugger.FindAllOccurrences(vm.Label.Label, options);
 						}
 					}
 				},
@@ -169,7 +169,7 @@ namespace Mesen.Debugger.ViewModels
 						if(Selection.SelectedItem is LabelViewModel vm) {
 							AddressInfo addr = vm.Label.GetRelativeAddress(CpuType);
 							if(addr.Address >= 0) {
-								Disassembly.SetSelectedRow(addr.Address, true);
+								Debugger.ScrollToAddress(addr.Address);
 							}
 						}
 					}

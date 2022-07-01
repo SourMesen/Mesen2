@@ -192,7 +192,8 @@ namespace Mesen.Debugger.Controls
 			_visibleCodeSegments.Clear();
 
 			//Draw code
-			for(int i = 0; i < lines.Length; i++) {
+			int lineCount = Math.Min(GetVisibleRowCount(), lines.Length);
+			for(int i = 0; i < lineCount; i++) {
 				CodeLineData line = lines[i];
 				string addrFormat = "X" + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
@@ -250,14 +251,15 @@ namespace Mesen.Debugger.Controls
 					}
 				} else {
 					if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
-						text.Text = line.Text.TrimEnd();
+						text.Text = GetHighlightedText(text, line, lineParts, out double leftMargin);
+
 						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
 						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
 						if(b != null) {
-							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
 						}
 						if(p != null) {
-							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
 						}
 					}
 
@@ -272,7 +274,7 @@ namespace Mesen.Debugger.Controls
 						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
 						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
-						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(pos), line));
+						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(pos), line, part.OriginalIndex));
 						x += text.Bounds.Width;
 					}
 
@@ -282,6 +284,29 @@ namespace Mesen.Debugger.Controls
 				}
 				y += LetterSize.Height;
 			}
+		}
+
+		private static string GetHighlightedText(FormattedText text, CodeLineData line, List<CodeColor> lineParts, out double leftMargin)
+		{
+			leftMargin = 0;
+			int skipCharCount = 0;
+			int highlightCharCount = 0;
+			bool foundOpCode = false;
+			foreach(CodeColor part in lineParts) {
+				if(!foundOpCode && part.Type != CodeSegmentType.OpCode) {
+					text.Text = part.Text;
+					leftMargin += text.Bounds.Width;
+					skipCharCount += part.Text.Length;
+				} else {
+					foundOpCode = true;
+					if(part.OriginalIndex < 0 || part.Type == CodeSegmentType.Comment) {
+						break;
+					}
+					highlightCharCount += part.Text.Length;
+				}
+			}
+
+			return line.Text.Substring(skipCharCount, highlightCharCount).Trim();
 		}
 
 		private void DrawSearchHighlight(DrawingContext context, double y, FormattedText text, string searchString, CodeLineData line, List<CodeColor> lineParts, double xStart)
@@ -371,18 +396,20 @@ namespace Mesen.Debugger.Controls
 
 	public class CodeSegmentInfo
 	{
-		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds, CodeLineData data)
+		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds, CodeLineData data, int originalTextIndex = -1)
 		{
 			Text = text;
 			Type = type;
 			Bounds = bounds;
 			Data = data;
+			OriginalTextIndex = originalTextIndex;
 		}
 
 		public string Text { get; }
 		public CodeSegmentType Type { get; }
 		public Rect Bounds { get; }
 		public CodeLineData Data { get; }
+		public int OriginalTextIndex { get; }
 	}
 
 	public class RowClickedEventArgs
@@ -471,19 +498,22 @@ namespace Mesen.Debugger.Controls
 		LabelDefinition,
 		MarginAddress,
 		Comment,
+		Directive,
 	}
 
 	public class CodeColor
 	{
-		public string Text;
-		public Color Color;
-		public CodeSegmentType Type;
+		public string Text { get; }
+		public int OriginalIndex { get; }
+		public Color Color { get; }
+		public CodeSegmentType Type { get; }
 
-		public CodeColor(string text, Color color, CodeSegmentType type)
+		public CodeColor(string text, Color color, CodeSegmentType type, int originalIndex = -1)
 		{
 			Text = text;
 			Color = color;
 			Type = type;
+			OriginalIndex = originalIndex;
 		}
 	}
 }

@@ -46,6 +46,7 @@ namespace Mesen.Debugger.Integration
 		private Dictionary<int, SourceCodeLocation> _linesByPrgAddress = new Dictionary<int, SourceCodeLocation>();
 		private Dictionary<int, LineInfo?[]> _linesByFile = new Dictionary<int, LineInfo?[]>();
 		private Dictionary<string, int> _prgAddressByLine = new Dictionary<string, int>();
+		private Dictionary<string, int> _prgAddressEndByLine = new Dictionary<string, int>();
 		protected HashSet<int> _scopeSpans = new HashSet<int>();
 
 		private Dictionary<int, ScopeInfo> _scopesBySymbol = new Dictionary<int, ScopeInfo>();
@@ -78,10 +79,27 @@ namespace Mesen.Debugger.Integration
 			return null;
 		}
 
+		public AddressInfo? GetLineEndAddress(SourceFileInfo file, int lineIndex)
+		{
+			if(file.InternalFile is FileInfo dbgFile) {
+				return GetPrgEndAddress(dbgFile.ID, lineIndex);
+			}
+			return null;
+		}
+
 		private AddressInfo? GetPrgAddress(int fileID, int lineIndex)
 		{
 			int prgAddress;
 			if(_prgAddressByLine.TryGetValue(fileID.ToString() + "_" + lineIndex.ToString(), out prgAddress)) {
+				return new AddressInfo() { Address = prgAddress, Type = _prgMemType };
+			}
+			return null;
+		}
+
+		private AddressInfo? GetPrgEndAddress(int fileID, int lineIndex)
+		{
+			int prgAddress;
+			if(_prgAddressEndByLine.TryGetValue(fileID.ToString() + "_" + lineIndex.ToString(), out prgAddress)) {
 				return new AddressInfo() { Address = prgAddress, Type = _prgMemType };
 			}
 			return null;
@@ -224,12 +242,12 @@ namespace Mesen.Debugger.Integration
 			return _symbols.Values.Select(s => s.SourceSymbol).ToList();
 		}
 
-		public SourceSymbol? GetSymbol(string word, int prgStartAddress, int prgEndAddress)
+		public SourceSymbol? GetSymbol(string word, int scopeStart, int scopeEnd)
 		{
 			try {
 				foreach(CSymbolInfo symbol in _cSymbols.Values) {
 					if(symbol.Name == word && symbol.SymbolID.HasValue) {
-						SymbolInfo? matchingSymbol = GetMatchingSymbol(_symbols[symbol.SymbolID.Value], prgStartAddress, prgEndAddress);
+						SymbolInfo? matchingSymbol = GetMatchingSymbol(_symbols[symbol.SymbolID.Value], scopeStart, scopeEnd);
 						if(matchingSymbol != null) {
 							return matchingSymbol.Value.SourceSymbol;
 						}
@@ -238,7 +256,7 @@ namespace Mesen.Debugger.Integration
 
 				foreach(SymbolInfo symbol in _symbols.Values) {
 					if(symbol.Name == word) {
-						SymbolInfo? matchingSymbol = GetMatchingSymbol(symbol, prgStartAddress, prgEndAddress);
+						SymbolInfo? matchingSymbol = GetMatchingSymbol(symbol, scopeStart, scopeEnd);
 						if(matchingSymbol != null) {
 							return matchingSymbol.Value.SourceSymbol;
 						}
@@ -884,6 +902,7 @@ namespace Mesen.Debugger.Integration
 									//Mark the first byte of the first span representing this line as the PRG address for this line of code
 									FileInfo file = _files[line.FileID];
 									_prgAddressByLine[file.ID.ToString() + "_" + line.LineNumber.ToString()] = prgAddress;
+									_prgAddressEndByLine[file.ID.ToString() + "_" + line.LineNumber.ToString()] = prgAddress + span.Size - 1;
 								}
 							}
 						}

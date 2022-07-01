@@ -20,6 +20,7 @@ using Avalonia.Controls.Selection;
 using Mesen.Debugger.Views.DebuggerDock;
 using Mesen.Debugger.ViewModels.DebuggerDock;
 using Dock.Model.Core;
+using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.ViewModels;
 
@@ -47,23 +48,22 @@ public class FindResultListViewModel : ViewModelBase
 
 	public void Sort(object? param)
 	{
-		UpdateResults();
+		UpdateResults(FindResults);
 	}
 
-	public void SetResults(CodeLineData[] results)
+	public void SetResults(IEnumerable<FindResultViewModel> results)
 	{
-		_results = results;
 		Selection.Clear();
-		UpdateResults();
+		UpdateResults(results);
 		Selection.SelectedIndex = 0;
 		Debugger.OpenTool(Debugger.DockFactory.FindResultListTool);
 	}
 
-	private void UpdateResults()
+	private void UpdateResults(IEnumerable<FindResultViewModel> results)
 	{
 		int selection = Selection.SelectedIndex;
 
-		List<FindResultViewModel> sortedResults = _results.Select(result => new FindResultViewModel(result, _format)).ToList();
+		List<FindResultViewModel> sortedResults = results.ToList();
 
 		Dictionary<string, Func<FindResultViewModel, FindResultViewModel, int>> comparers = new() {
 			{ "Address", (a, b) => string.Compare(a.Address, b.Address, StringComparison.OrdinalIgnoreCase) },
@@ -93,9 +93,10 @@ public class FindResultListViewModel : ViewModelBase
 
 	public void GoToResult(FindResultViewModel result)
 	{
-		int addr = result.Result.Address;
-		if(addr >= 0) {
-			Debugger.Disassembly.SetSelectedRow(addr, true);
+		if(result.Location.RelAddress?.Address >= 0) {
+			Debugger.ScrollToAddress(result.Location.RelAddress.Value.Address);
+		} else if(result.Location.SourceLocation != null) {
+			Debugger.SourceView?.ScrollToLocation(result.Location.SourceLocation.Value);
 		}
 	}
 
@@ -105,23 +106,23 @@ public class FindResultListViewModel : ViewModelBase
 			new ContextMenuAction() {
 				ActionType = ActionType.AddWatch,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindResultList_AddWatch),
-				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm && vm.Result.Address >= 0,
+				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm && vm.Location.RelAddress?.Address >= 0,
 				OnClick = () => {
-					if(Selection.SelectedItem is FindResultViewModel vm) {
-						if(vm.Result.Address > 0) {
-							WatchManager.GetWatchManager(Debugger.CpuType).AddWatch("[$" + vm.Result.Address.ToString(_format) + "]");
-						}
+					if(Selection.SelectedItem is FindResultViewModel vm && vm.Location.RelAddress?.Address > 0) {
+						WatchManager.GetWatchManager(Debugger.CpuType).AddWatch("[$" + vm.Location.RelAddress?.Address.ToString(_format) + "]");
 					}
 				}
 			},
 			new ContextMenuAction() {
 				ActionType = ActionType.ToggleBreakpoint,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindResultList_ToggleBreakpoint),
-				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm && vm.Result.Address >= 0,
+				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm && (vm.Location.RelAddress?.Address >= 0 || vm.Location.AbsAddress?.Address >= 0),
 				OnClick = () => {
 					if(Selection.SelectedItem is FindResultViewModel vm) {
-						if(vm.Result.Address > 0) {
-							AddressInfo relAddress = new AddressInfo() { Address = vm.Result.Address, Type = Debugger.CpuType.ToMemoryType() };
+						if(vm.Location.AbsAddress?.Address > 0) {
+							BreakpointManager.ToggleBreakpoint(vm.Location.AbsAddress.Value, Debugger.CpuType);
+						} else if(vm.Location.RelAddress?.Address > 0) {
+							AddressInfo relAddress = vm.Location.RelAddress.Value;
 							AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 							if(absAddress.Address >= 0) {
 								BreakpointManager.ToggleBreakpoint(absAddress, Debugger.CpuType);
@@ -136,7 +137,7 @@ public class FindResultListViewModel : ViewModelBase
 			new ContextMenuAction() {
 				ActionType = ActionType.GoToLocation,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindResultList_GoToLocation),
-				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm && vm.Result.Address >= 0,
+				IsEnabled = () => Selection.SelectedItems.Count == 1 && Selection.SelectedItem is FindResultViewModel vm,
 				OnClick = () => {
 					if(Selection.SelectedItem is FindResultViewModel vm) {
 						GoToResult(vm);
@@ -149,18 +150,29 @@ public class FindResultListViewModel : ViewModelBase
 
 public class FindResultViewModel
 {
-	public CodeLineData Result { get; init; }
-	public string Address { get; init; }
-	public string Text { get; init; }
+	public LocationInfo Location { get; }
+	public string Address { get; }
+	public string Text { get; }
 
-	public FindResultViewModel(CodeLineData result, string format)
+	public FindResultViewModel(LocationInfo location, string loc, string text)
 	{
-		Result = result;
-		string text = result.Text;
-		if(result.EffectiveAddress >= 0) {
-			text += " " + result.GetEffectiveAddressString(format, out _);
-		}
+		Location = location;
+		Address = loc;
 		Text = text;
-		Address = "$" + result.Address.ToString(format);
+	}
+
+	public FindResultViewModel(CodeLineData line)
+	{
+		Location = new LocationInfo() {
+			RelAddress = new AddressInfo() { Address = line.Address, Type = line.CpuType.ToMemoryType() },
+			AbsAddress = line.AbsoluteAddress
+		};
+
+		string format = "X" + line.CpuType.GetAddressSize();
+		Address = "$" + line.Address.ToString(format);
+		Text = line.Text;
+		if(line.EffectiveAddress >= 0) {
+			Text += " " + line.GetEffectiveAddressString(format, out _);
+		}
 	}
 }

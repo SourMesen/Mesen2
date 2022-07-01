@@ -3,8 +3,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -17,15 +19,42 @@
 	</Design.DataContext>
 
 	<DockPanel>
-		<ComboBox Items="{CompiledBinding SourceFiles}" SelectedItem="{CompiledBinding SelectedFile}" DockPanel.Dock="Top" HorizontalAlignment="Stretch" />
-		<Border BorderThickness="1" BorderBrush="LightGray">
-			<c:MesenTextEditor
-				Name="TextEditor"
-				IsReadOnly="True"
-				TextBinding="{CompiledBinding SelectedFile.FileData}"
-				FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
-				FontSize="{CompiledBinding Font.FontSize}"
-			/>
+		<DockPanel DockPanel.Dock="Top" Margin="2">
+			<TextBlock Text="{l:Translate lblFile}" VerticalAlignment="Center" DockPanel.Dock="Left" Margin="3 0" />
+			<ComboBox Items="{CompiledBinding SourceFiles}" SelectedItem="{CompiledBinding SelectedFile}" HorizontalAlignment="Stretch" />
+		</DockPanel>
+
+		<Border BorderBrush="LightGray" BorderThickness="0 1 0 0">
+			<DockPanel>
+				<dc:CodeScrollBar
+					DockPanel.Dock="Right"
+					VerticalAlignment="Stretch"
+					Maximum="{CompiledBinding MaxScrollPosition}"
+					Value="{CompiledBinding ScrollPosition}"
+					ShowMarkers="False"
+				>
+					<dc:CodeScrollBar.BreakpointBar>
+						<dc:BreakpointBar />
+					</dc:CodeScrollBar.BreakpointBar>
+				</dc:CodeScrollBar>				
+				<Panel>
+					<dc:DisassemblyViewer
+						Name="disViewer"
+						Lines="{CompiledBinding Lines}"
+						SearchString="{CompiledBinding QuickSearch.SearchString}"
+						StyleProvider="{CompiledBinding StyleProvider}"
+						FontFamily="{CompiledBinding Config.Font.FontFamily}"
+						FontSize="{CompiledBinding Config.Font.FontSize}"
+						ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
+					/>
+
+					<dv:QuickSearchView
+						DataContext="{CompiledBinding QuickSearch}"
+						VerticalAlignment="Top"
+						HorizontalAlignment="Right"
+					/>
+				</Panel>
+			</DockPanel>
 		</Border>
 	</DockPanel>
 </UserControl>

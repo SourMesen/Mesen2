@@ -99,13 +99,13 @@ namespace Mesen.Debugger.ViewModels
 
 			Options = new DebuggerOptionsViewModel(Config, CpuType);
 			Disassembly = new DisassemblyViewModel(this, ConfigManager.Config.Debug, CpuType);
-			BreakpointList = new BreakpointListViewModel(CpuType, Disassembly);
-			LabelList = new LabelListViewModel(CpuType, Disassembly);
+			BreakpointList = new BreakpointListViewModel(CpuType, this);
+			LabelList = new LabelListViewModel(CpuType, this);
 			FindResultList = new FindResultListViewModel(this);
 			if(CpuType.SupportsFunctionList()) {
-				FunctionList = new FunctionListViewModel(CpuType, Disassembly);
+				FunctionList = new FunctionListViewModel(CpuType, this);
 			}
-			CallStack = new CallStackViewModel(CpuType, Disassembly);
+			CallStack = new CallStackViewModel(CpuType, this);
 			WatchList = AddDisposable(new WatchListViewModel(CpuType));
 			ConsoleStatus = CpuType switch {
 				CpuType.Snes => new SnesStatusViewModel(CpuType.Snes),
@@ -158,6 +158,15 @@ namespace Mesen.Debugger.ViewModels
 			ConfigApi.SetDebuggerFlag(CpuType.GetDebuggerFlag(), true);
 		}
 
+		public void ScrollToAddress(int address)
+		{
+			Disassembly.SetSelectedRow(address, true);
+			SourceView?.GoToRelativeAddress(address);
+
+			IDockable codeTool = GetActiveCodeTool();
+			DockFactory.SetFocusedDockable(DockLayout, codeTool);
+		}
+
 		private void DebugWorkspaceManager_SymbolProviderChanged(object? sender, EventArgs e)
 		{
 			UpdateSourceViewState();
@@ -191,9 +200,9 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ISymbolProvider? provider = DebugWorkspaceManager.SymbolProvider;
 			if(provider != null) {
-				SourceView = new SourceViewViewModel(provider, CpuType);
+				SourceView = new SourceViewViewModel(this, provider, CpuType);
 				DockFactory.SourceViewTool.Model = SourceView;
-				if(DockFactory.DisassemblyTool.Owner is IDock dock) {
+				if(!IsToolVisible(DockFactory.SourceViewTool) && DockFactory.DisassemblyTool.Owner is IDock dock) {
 					DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
 				}
 			} else {
@@ -227,6 +236,7 @@ namespace Mesen.Debugger.ViewModels
 		private void BreakpointManager_BreakpointsChanged(object? sender, EventArgs e)
 		{
 			Disassembly.InvalidateVisual();
+			SourceView?.InvalidateVisual();
 			BreakpointList.UpdateBreakpoints();
 		}
 
@@ -241,7 +251,6 @@ namespace Mesen.Debugger.ViewModels
 
 			ConsoleStatus?.UpdateUiState();
 			UpdateDisassembly(forBreak);
-			SourceView?.Refresh(Disassembly.ActiveAddress);
 			MemoryMappings?.Refresh();
 			BreakpointList.RefreshBreakpointList();
 			LabelList.RefreshLabelList();
@@ -307,17 +316,26 @@ namespace Mesen.Debugger.ViewModels
 			CdlStats = statsString;
 		}
 
-		public void UpdateDisassembly(bool scrollToActiveAddress)
+		public void UpdateActiveAddress(bool scrollToAddress)
 		{
-			if(scrollToActiveAddress) {
+			if(scrollToAddress) {
 				//Scroll to the active address and highlight it
-				Disassembly.SetActiveAddress((int)DebugApi.GetProgramCounter(CpuType, true));
+				int activeAddress = (int)DebugApi.GetProgramCounter(CpuType, true);
+				Disassembly.SetActiveAddress(activeAddress);
+				SourceView?.SetActiveAddress(activeAddress);
 				if(!EmuApi.IsPaused()) {
 					//Clear the highlight if the emulation is still running
 					Disassembly.SetActiveAddress(null);
+					SourceView?.SetActiveAddress(null);
 				}
 			}
+		}
+
+		public void UpdateDisassembly(bool scrollToActiveAddress)
+		{
+			UpdateActiveAddress(scrollToActiveAddress);
 			Disassembly.Refresh();
+			SourceView?.InvalidateVisual();
 		}
 
 		public void ProcessResumeEvent()
@@ -338,7 +356,8 @@ namespace Mesen.Debugger.ViewModels
 
 			Disassembly.SetActiveAddress(null);
 			Disassembly.InvalidateVisual();
-			SourceView?.Refresh(null);
+			SourceView?.SetActiveAddress(null);
+			SourceView?.InvalidateVisual();
 		}
 
 		private ToolDock? FindToolDock(IDock dock)
@@ -361,6 +380,11 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			return null;
+		}
+
+		private bool IsToolActive(Tool tool)
+		{
+			return (tool.Owner as IDock)?.ActiveDockable == tool;
 		}
 
 		private bool IsToolVisible(Tool tool)
@@ -477,8 +501,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = async () => {
 						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
 						if(address != null) {
-							Disassembly.SetSelectedRow(address.Value, true);
-							DockFactory.SetActiveDockable(DockFactory.DisassemblyTool);
+							ScrollToAddress(address.Value);
 						}
 					}
 				},
@@ -487,11 +510,13 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAll),
 					OnClick = async () => {
 						GoToDestination? dest = await GoToAllWindow.Open(wnd, CpuType, GoToAllOptions.ShowFilesAndConstants, DebugWorkspaceManager.SymbolProvider);
-						//TODO source view
-						//TODO focus
-						if(dest != null && dest.RelativeAddress?.Type == CpuType.ToMemoryType()) {
-							DockFactory.SetActiveDockable(DockFactory.DisassemblyTool);
-							Disassembly.SetSelectedRow(dest.RelativeAddress.Value.Address, true);
+						if(dest != null) {
+							if(dest.SourceLocation != null) {
+								OpenTool(DockFactory.SourceViewTool);
+								SourceView?.ScrollToLocation(dest.SourceLocation.Value);
+							} else if(dest.RelativeAddress?.Type == CpuType.ToMemoryType()) {
+								ScrollToAddress(dest.RelativeAddress.Value.Address);
+							}
 						}
 					}
 				},
@@ -499,17 +524,17 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Find,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Find),
-					OnClick = () => Disassembly.QuickSearch.Open()
+					OnClick = () => GetActiveQuickSearch().Open()
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.FindPrev,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindPrev),
-					OnClick = () => Disassembly.QuickSearch.FindPrev()
+					OnClick = () => GetActiveQuickSearch().FindPrev()
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.FindNext,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.FindNext),
-					OnClick = () => Disassembly.QuickSearch.FindNext()
+					OnClick = () => GetActiveQuickSearch().FindNext()
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -679,6 +704,34 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
+		private BaseToolContainerViewModel GetActiveCodeTool()
+		{
+			if(DockLayout.ActiveDockable == DockFactory.SourceViewTool) {
+				return DockFactory.SourceViewTool;
+			} else if(DockLayout.ActiveDockable == DockFactory.DisassemblyTool) {
+				return DockFactory.DisassemblyTool;
+			} else if(IsToolActive(DockFactory.DisassemblyTool)) {
+				return DockFactory.DisassemblyTool;
+			} else if(IsToolActive(DockFactory.SourceViewTool)) {
+				return DockFactory.SourceViewTool;
+			}
+			return DockFactory.DisassemblyTool;
+		}
+
+		private QuickSearchViewModel GetActiveQuickSearch()
+		{
+			if(DockLayout.ActiveDockable == DockFactory.SourceViewTool) {
+				return SourceView?.QuickSearch ?? Disassembly.QuickSearch;
+			} else if(DockLayout.ActiveDockable == DockFactory.DisassemblyTool) {
+				return Disassembly.QuickSearch;
+			} else if(IsToolActive(DockFactory.DisassemblyTool)) {
+				return Disassembly.QuickSearch;
+			} else if(IsToolActive(DockFactory.SourceViewTool)) {
+				return SourceView?.QuickSearch ?? Disassembly.QuickSearch;
+			}
+			return Disassembly.QuickSearch;
+		}
+
 		public void Step(StepType type, int instructionCount = 1)
 		{
 			switch(type) {
@@ -699,8 +752,13 @@ namespace Mesen.Debugger.ViewModels
 			if(!options.MatchCase) {
 				search = search.ToLower();
 			}
-			CodeLineData[] results = DebugApi.FindOccurrences(CpuType, search.Trim(), options);
-			FindResultList.SetResults(results);
+
+			if(SourceView != null && GetActiveCodeTool() == DockFactory.SourceViewTool) {
+				FindResultList.SetResults(SourceView.FindAllOccurrences(search, options));
+			} else {
+				CodeLineData[] results = DebugApi.FindOccurrences(CpuType, search.Trim(), options);
+				FindResultList.SetResults(results.Select(x => new FindResultViewModel(x)));
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using System;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -16,18 +17,18 @@ namespace Mesen.Debugger.Utilities
 		
 		private bool _allowMarginClick = false;
 		private bool _marginClicked = false;
-		private bool _useRowIndex = false;
+		private Func<int, int, int> _getRowAddress;
 
 		private ContextMenu? _mainContextMenu;
 		private ContextMenu? _marginContextMenu;
 		
 		public CodeSegmentInfo? MouseOverSegment { get; private set; }
 
-		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, bool useRowIndex, ContextMenu? mainContextMenu = null, ContextMenu? marginContextMenu = null)
+		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, Func<int, int, int> getRowAddress, ContextMenu? mainContextMenu = null, ContextMenu? marginContextMenu = null)
 		{
 			_viewer = viewer;
 			_model = model;
-			_useRowIndex = useRowIndex;
+			_getRowAddress = getRowAddress;
 
 			_mainContextMenu = mainContextMenu;
 			_marginContextMenu = marginContextMenu;
@@ -47,12 +48,12 @@ namespace Mesen.Debugger.Utilities
 
 		public int GetAddress(RowClickedEventArgs e)
 		{
-			return _useRowIndex ? e.RowNumber : e.CodeLineData.Address;
+			return _getRowAddress(e.RowNumber, e.CodeLineData.Address);
 		}
 
 		public int GetAddress(CodePointerMovedEventArgs e)
 		{
-			return _useRowIndex ? e.RowNumber : (e.Data?.Address ?? -1);
+			return _getRowAddress(e.RowNumber, (e.Data?.Address ?? -1));
 		}
 
 		public void Viewer_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
@@ -63,12 +64,16 @@ namespace Mesen.Debugger.Utilities
 			if(e.Properties.IsLeftButtonPressed) {
 				if(_marginClicked) {
 					CpuType cpuType = e.CodeLineData.CpuType;
-					AddressInfo relAddress = new AddressInfo() {
-						Address = GetAddress(e),
-						Type = cpuType.ToMemoryType()
-					};
-					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+					if(e.CodeLineData.AbsoluteAddress.Address >= 0) {
+						BreakpointManager.ToggleBreakpoint(e.CodeLineData.AbsoluteAddress, cpuType);
+					} else if(e.CodeLineData.Address >= 0) {
+						AddressInfo relAddress = new AddressInfo() {
+							Address = e.CodeLineData.Address,
+							Type = cpuType.ToMemoryType()
+						};
+						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+						BreakpointManager.ToggleBreakpoint(absAddress.Address < 0 ? relAddress : absAddress, cpuType);
+					}
 				} else {
 					if(e.PointerEvent.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 						_model.ResizeSelectionTo(GetAddress(e));
@@ -154,14 +159,25 @@ namespace Mesen.Debugger.Utilities
 
 		private LocationInfo GetSelectedRowLocation()
 		{
-			AddressInfo? relAddress = _model.GetSelectedRowAddress();
+			AddressInfo? rowAddress = _model.GetSelectedRowAddress();
+			
+			AddressInfo? relAddress = null;
 			AddressInfo? absAddress = null;
 			
-			if(relAddress != null) {
-				absAddress = DebugApi.GetAbsoluteAddress(relAddress.Value);
+			if(rowAddress != null && rowAddress?.Address >= 0) {
+				if(rowAddress.Value.Type.IsRelativeMemory()) {
+					relAddress = rowAddress;
+					absAddress = DebugApi.GetAbsoluteAddress(relAddress.Value);
+				} else {
+					absAddress = rowAddress;
+					relAddress = DebugApi.GetRelativeAddress(absAddress.Value, absAddress.Value.Type.ToCpuType());
+				}
 			}
 			
-			return new LocationInfo() { RelAddress = relAddress, AbsAddress = absAddress };
+			return new LocationInfo() {
+				RelAddress = relAddress?.Address >= 0 ? relAddress : null,
+				AbsAddress = absAddress?.Address >= 0 ? absAddress : null
+			};
 		}
 	}
 }

@@ -13,11 +13,12 @@ namespace Mesen.Debugger.Integration
 		List<SourceFileInfo> SourceFiles { get; }
 
 		AddressInfo? GetLineAddress(SourceFileInfo file, int lineIndex);
+		AddressInfo? GetLineEndAddress(SourceFileInfo file, int lineIndex);
 		string? GetSourceCodeLine(int prgRomAddress);
 		SourceCodeLocation? GetSourceCodeLineInfo(AddressInfo address);
 		AddressInfo? GetSymbolAddressInfo(SourceSymbol symbol);
 		SourceCodeLocation? GetSymbolDefinition(SourceSymbol symbol);
-		SourceSymbol? GetSymbol(string word, int prgStartAddress, int prgEndAddress);
+		SourceSymbol? GetSymbol(string word, int scopeStart, int scopeEnd);
 		List<SourceSymbol> GetSymbols();
 		int GetSymbolSize(SourceSymbol srcSymbol);
 		//List<DbgImporter.ReferenceInfo> GetSymbolReferences(SourceSymbol symbol);
@@ -74,9 +75,9 @@ namespace Mesen.Debugger.Integration
 	{
 		public SourceFileInfo File { get; }
 		public int LineNumber { get; }
-		public object InternalLine { get; }
+		public object? InternalLine { get; }
 
-		public SourceCodeLocation(SourceFileInfo file, int lineNumber, object internalLine)
+		public SourceCodeLocation(SourceFileInfo file, int lineNumber, object? internalLine = null)
 		{
 			File = file;
 			LineNumber = lineNumber;

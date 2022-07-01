@@ -23,8 +23,8 @@ namespace Mesen.Debugger.ViewModels
 		public ICodeDataProvider DataProvider { get; }
 		public CpuType CpuType { get; }
 		public DebuggerWindowViewModel Debugger { get; }
+		public DisassemblyViewStyleProvider StyleProvider { get; }
 
-		[Reactive] public BaseStyleProvider StyleProvider { get; set; }
 		[Reactive] public int ScrollPosition { get; set; } = 0;
 		[Reactive] public int MaxScrollPosition { get; private set; } = 10000;
 		[Reactive] public int TopAddress { get; private set; } = 0;
@@ -56,7 +56,7 @@ namespace Mesen.Debugger.ViewModels
 			Config = config;
 			CpuType = cpuType;
 			Debugger = debugger;
-			StyleProvider = new BaseStyleProvider(cpuType, this);
+			StyleProvider = new DisassemblyViewStyleProvider(cpuType, this);
 			DataProvider = new CodeDataProvider(cpuType);
 
 			if(Design.IsDesignMode) {

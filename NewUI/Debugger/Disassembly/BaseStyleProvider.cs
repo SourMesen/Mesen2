@@ -8,20 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Interop;
-using Mesen.Debugger.ViewModels;
 
 namespace Mesen.Debugger.Disassembly
 {
 	public class BaseStyleProvider : ILineStyleProvider
 	{
-		private DisassemblyViewModel? _model { get; set; }
-
 		public int AddressSize { get; }
 		public int ByteCodeSize { get; }
 
-		public BaseStyleProvider(CpuType cpuType, DisassemblyViewModel? model = null)
+		public BaseStyleProvider(CpuType cpuType)
 		{
-			_model = model;
 			AddressSize = cpuType.GetAddressSize();
 			ByteCodeSize = cpuType.GetByteCodeSize();
 		}
@@ -33,23 +29,37 @@ namespace Mesen.Debugger.Disassembly
 			props.Symbol |= LineSymbol.Arrow;
 		}
 
+		public virtual bool IsLineActive(CodeLineData line, int lineIndex)
+		{
+			return false;
+		}
+
+		public virtual bool IsLineSelected(CodeLineData line, int lineIndex)
+		{
+			return false;
+		}
+
+		public virtual bool IsLineFocused(CodeLineData line, int lineIndex)
+		{
+			return false;
+		}
+
 		public LineProperties GetLineStyle(CodeLineData lineData, int lineIndex)
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			LineProperties props = new LineProperties();
 
-			if(_model != null && lineData.HasAddress) {
-				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType);
-
-				bool isActiveStatement = _model.ActiveAddress.HasValue && _model.ActiveAddress.Value == lineData.Address;
-				if(isActiveStatement) {
-					ConfigureActiveStatement(props);
-				}
-
-				props.IsSelectedRow = lineData.Address >= _model.SelectionStart && lineData.Address <= _model.SelectionEnd;
-				props.IsActiveRow = _model.SelectedRowAddress == lineData.Address;
+			if((lineData.HasAddress || lineData.AbsoluteAddress.Address >= 0) && !lineData.Flags.HasFlag(LineFlags.Empty) && !lineData.Flags.HasFlag(LineFlags.Label)) {
+				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType, lineData.AbsoluteAddress);
 			}
 
+			if(IsLineActive(lineData, lineIndex)) {
+				ConfigureActiveStatement(props);
+			}
+
+			props.IsSelectedRow = IsLineSelected(lineData, lineIndex);
+			props.IsActiveRow = IsLineFocused(lineData, lineIndex);
+			
 			if(lineData.Flags.HasFlag(LineFlags.PrgRom)) {
 				props.AddressColor = Colors.Gray;
 			} else if(lineData.Flags.HasFlag(LineFlags.WorkRam)) {
@@ -69,10 +79,12 @@ namespace Mesen.Debugger.Disassembly
 			return props;
 		}
 
-		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress, CpuType cpuType)
+		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress, CpuType cpuType, AddressInfo absAddress)
 		{
 			MemoryType relMemoryType = cpuType.ToMemoryType();
-			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = cpuAddress, Type = relMemoryType });
+			if(absAddress.Address < 0) {
+				absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = cpuAddress, Type = relMemoryType });
+			}
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
 				if(breakpoint.Matches((uint)cpuAddress, relMemoryType, cpuType) || (absAddress.Address >= 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type, cpuType))) {
 					SetBreakpointLineProperties(props, breakpoint);
@@ -82,7 +94,6 @@ namespace Mesen.Debugger.Disassembly
 
 		protected void SetBreakpointLineProperties(LineProperties props, Breakpoint breakpoint)
 		{
-			DebuggerConfig config = ConfigManager.Config.Debug.Debugger;
 			Color fgColor = Colors.White;
 			Color? bgColor = null;
 			Color bpColor = breakpoint.GetColor();

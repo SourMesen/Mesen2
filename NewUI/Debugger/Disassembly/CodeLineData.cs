@@ -17,7 +17,7 @@ namespace Mesen.Debugger
 		public string Text = "";
 
 		public Int32 Address = -1;
-		public Int32 AbsoluteAddress = -1;
+		public AddressInfo AbsoluteAddress;
 
 		public LineFlags Flags;
 
@@ -33,7 +33,7 @@ namespace Mesen.Debugger
 			{
 				if(OpSize > 0 && _byteCodeString == "") {
 					string output = "";
-					for(int i = 0; i < OpSize; i++) {
+					for(int i = 0; i < OpSize && i < ByteCode.Length; i++) {
 						output += ByteCode[i].ToString("X2") + " ";
 					}
 					_byteCodeString = output;
@@ -162,7 +162,7 @@ namespace Mesen.Debugger
 	public struct InteropCodeLineData
 	{
 		public Int32 Address;
-		public Int32 AbsoluteAddress;
+		public AddressInfo AbsoluteAddress;
 		public byte OpSize;
 		public UInt16 Flags;
 

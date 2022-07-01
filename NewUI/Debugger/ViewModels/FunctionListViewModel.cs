@@ -29,15 +29,15 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SortState SortState { get; set; } = new();
 
 		public CpuType CpuType { get; }
-		public DisassemblyViewModel Disassembly { get; }
+		public DebuggerWindowViewModel Debugger { get; }
 
 		[Obsolete("For designer only")]
 		public FunctionListViewModel() : this(CpuType.Snes, new()) { }
 
-		public FunctionListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
+		public FunctionListViewModel(CpuType cpuType, DebuggerWindowViewModel debugger)
 		{
 			CpuType = cpuType;
-			Disassembly = disassembly;
+			Debugger = debugger;
 
 			SortState.SetColumnSort("AbsAddr", ListSortDirection.Ascending, true);
 		}
@@ -117,7 +117,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						if(Selection.SelectedItem is FunctionViewModel vm && vm.RelAddress >= 0) {
 							DisassemblySearchOptions options = new() { MatchCase = true, MatchWholeWord = true };
-							Disassembly.Debugger.FindAllOccurrences(vm.Label?.Label ?? vm.RelAddressDisplay, options);
+							Debugger.FindAllOccurrences(vm.Label?.Label ?? vm.RelAddressDisplay, options);
 						}
 					}
 				},
@@ -129,7 +129,7 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						if(Selection.SelectedItem is FunctionViewModel vm) {
 							if(vm.RelAddress >= 0) {
-								Disassembly.SetSelectedRow(vm.RelAddress, true);
+								Debugger.ScrollToAddress(vm.RelAddress);
 							}
 						}
 					}

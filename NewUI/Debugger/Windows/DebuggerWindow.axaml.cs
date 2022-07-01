@@ -64,7 +64,7 @@ namespace Mesen.Debugger.Windows
 
 		public void ScrollToAddress(uint address)
 		{
-			_model.Disassembly.SetSelectedRow((int)address, true);
+			_model.ScrollToAddress((int)address);
 		}
 
 		public static void OpenWindowAtAddress(CpuType cpuType, int address)

@@ -21,7 +21,7 @@ namespace Mesen.Debugger.ViewModels
 	public class CallStackViewModel : ViewModelBase
 	{
 		public CpuType CpuType { get; }
-		public DisassemblyViewModel Disassembly { get; }
+		public DebuggerWindowViewModel Debugger { get; }
 
 		[Reactive] public MesenList<StackInfo> CallStackContent { get; private set; } = new();
 		[Reactive] public SelectionModel<StackInfo?> Selection { get; set; } = new();
@@ -31,9 +31,9 @@ namespace Mesen.Debugger.ViewModels
 		[Obsolete("For designer only")]
 		public CallStackViewModel() : this(CpuType.Snes, new()) { }
 
-		public CallStackViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
+		public CallStackViewModel(CpuType cpuType, DebuggerWindowViewModel debugger)
 		{
-			Disassembly = disassembly;
+			Debugger = debugger;
 			CpuType = cpuType;
 		}
 
@@ -105,7 +105,7 @@ namespace Mesen.Debugger.ViewModels
 		public void GoToLocation(StackInfo entry)
 		{
 			if(IsMapped(entry)) {
-				Disassembly.SetSelectedRow((int)entry.RelAddress, true);
+				Debugger.ScrollToAddress((int)entry.RelAddress);
 			}
 		}
 

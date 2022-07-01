@@ -3,12 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using Dock.Avalonia.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
+using Mesen.Debugger.ViewModels.DebuggerDock;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using System;
@@ -19,14 +22,16 @@ namespace Mesen.Debugger.Views
 {
 	public class DisassemblyView : UserControl
 	{
-		private DisassemblyViewModel Model => (DisassemblyViewModel)DataContext!;
+		private DisassemblyViewModel Model => _model!;
 		private CpuType CpuType => Model.CpuType;
+		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
 
 		private DisassemblyViewModel? _model;
 		private CodeViewerSelectionHandler? _selectionHandler;
 		private ContextMenu _bpMarginContextMenu;
 		private ContextMenu _mainContextMenu;
 		private DisassemblyViewer _viewer;
+		private BaseToolContainerViewModel? _parentModel;
 
 		static DisassemblyView()
 		{
@@ -57,7 +62,7 @@ namespace Mesen.Debugger.Views
 		{
 			if(DataContext is DisassemblyViewModel model && _model != model) {
 				_model = model;
-				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, false, _mainContextMenu, _bpMarginContextMenu);
+				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowAddress, _mainContextMenu, _bpMarginContextMenu);
 			}
 			base.OnDataContextChanged(e);
 		}
@@ -150,8 +155,7 @@ namespace Mesen.Debugger.Views
 							string? searchString = GetSearchString();
 							if(searchString != null) {
 								DisassemblySearchOptions options = new() { MatchWholeWord = true, MatchCase = true };
-								CodeLineData[] results = DebugApi.FindOccurrences(CpuType, searchString, options);
-								_model?.Debugger.FindResultList.SetResults(results);
+								_model.Debugger.FindAllOccurrences(searchString, options);
 							}
 						}
 					}
@@ -176,7 +180,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_GoToLocation),
 					HintText = () => GetHint(ActionLocation),
-					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
+					IsEnabled = () => ActionLocation.RelAddress != null,
 					OnClick = () => {
 						if(ActionLocation.RelAddress != null) {
 							Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true);
@@ -308,15 +312,31 @@ namespace Mesen.Debugger.Views
 
 		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
 		{
+			if(this.FindLogicalAncestorOfType<DockableControl>()?.DataContext is BaseToolContainerViewModel parentModel) {
+				_parentModel = parentModel;
+				_parentModel.Selected += Parent_Selected;
+			}
+			
 			_model?.SetViewer(_viewer);
 			_viewer.Focus();
 		}
 
 		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 		{
+			if(_parentModel != null) {
+				_parentModel.Selected -= Parent_Selected;
+				_parentModel = null;
+			}
+
 			_model?.SetViewer(null);
 		}
 
-		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
+		private void Parent_Selected(object? sender, EventArgs e)
+		{
+			Dispatcher.UIThread.Post(() => {
+				//Focus disassembly view when selected by code
+				_viewer.Focus();
+			});
+		}
 	}
 }

@@ -27,15 +27,15 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SortState SortState { get; set; } = new();
 
 		public CpuType CpuType { get; }
-		public DisassemblyViewModel Disassembly { get; }
+		public DebuggerWindowViewModel Debugger { get; }
 
 		[Obsolete("For designer only")]
 		public BreakpointListViewModel() : this(CpuType.Snes, new()) { }
 
-		public BreakpointListViewModel(CpuType cpuType, DisassemblyViewModel disassembly)
+		public BreakpointListViewModel(CpuType cpuType, DebuggerWindowViewModel debugger)
 		{
 			CpuType = cpuType;
-			Disassembly = disassembly;
+			Debugger = debugger;
 		}
 
 		public void Sort(object? param)
@@ -131,7 +131,7 @@ namespace Mesen.Debugger.ViewModels
 						if(Selection.SelectedItem is BreakpointViewModel vm && vm.Breakpoint.IsCpuBreakpoint) {
 							int addr = vm.Breakpoint.GetRelativeAddress();
 							if(addr >= 0) {
-								Disassembly.SetSelectedRow(addr, true);
+								Debugger.ScrollToAddress(addr);
 							}
 						}
 					}

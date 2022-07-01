@@ -32,6 +32,10 @@ public static class OpCodeHelper
 			return null;
 		}
 
+		if(seg.Data.ByteCode.Length <= 0) {
+			return null;
+		}
+
 		byte opcode = seg.Data.ByteCode[0];
 
 		StackPanel panel = new StackPanel() { MaxWidth = 250 };
@@ -40,7 +44,9 @@ public static class OpCodeHelper
 
 		TooltipEntries items = new();
 		items.AddCustomEntry("OP", panel);
-		items.AddEntry("Byte Code", seg.Data.ByteCodeStr);
+		if(!string.IsNullOrEmpty(seg.Data.ByteCodeStr)) {
+			items.AddEntry("Byte Code", seg.Data.ByteCodeStr);
+		}
 		items.AddEntry("Mode", doc.OpMode[opcode]);
 		if(doc.OpCycleCount != null) {
 			items.AddEntry("Cycle Count", doc.OpCycleCount[opcode]);

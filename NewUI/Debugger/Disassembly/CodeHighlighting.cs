@@ -12,10 +12,13 @@ namespace Mesen.Debugger.Disassembly
 {
 	class CodeHighlighting
 	{
+		private static Regex _labelDef = new Regex("^([a-z0-9_@]+)\\s*[:=]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _space = new Regex("^[ \t]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex _opCode = new Regex("^[a-z0-9]{2,5}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _comment = new Regex("^;.*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _directive = new Regex("^([.][a-z0-9]+)\\s+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _opCode = new Regex("^([a-z0-9]{2,5})\\s+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static Regex _syntax = new Regex("^[]([)!+,.|:<>]{1}", RegexOptions.Compiled);
-		private static Regex _operand = new Regex("^(([$][0-9a-f]*([.]\\d){0,1})|(#[@$:_0-9a-z]*)|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex _operand = new Regex("^(([$][0-9a-f]*([.]\\d){0,1})|(#[$0-9][0-9a-f]*)|#|([@_a-z]([@_a-z0-9])*))", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		public static List<CodeColor> GetCpuHighlights(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)
 		{
@@ -25,10 +28,22 @@ namespace Mesen.Debugger.Disassembly
 
 			List<CodeColor> colors = new List<CodeColor>();
 			if(codeString.Length > 0 && highlightCode && !lineData.Flags.HasFlag(LineFlags.Label)) {
+				int pos = 0;
 				bool foundOpCode = false;
+				bool foundDirective = false;
 				while(codeString.Length > 0) {
 					Match m;
-					if(foundOpCode && (m = _operand.Match(codeString)).Success) {
+					if((m = _comment.Match(codeString)).Success) {
+						colors.Add(new CodeColor(m.Value, cfg.CodeCommentColor, CodeSegmentType.Comment, pos));
+					} else if(colors.Count == 0 && (m = _labelDef.Match(codeString)).Success) {
+						colors.Add(new CodeColor(m.Groups[1].Value, cfg.CodeLabelDefinitionColor, CodeSegmentType.LabelDefinition, pos));
+					} else if(!foundOpCode && (m = _directive.Match(codeString)).Success) {
+						foundDirective = true;
+						colors.Add(new CodeColor(m.Groups[1].Value, cfg.CodeOpcodeColor, CodeSegmentType.Directive, pos));
+					} else if(!foundOpCode && (m = _opCode.Match(codeString)).Success) {
+						foundOpCode = true;
+						colors.Add(new CodeColor(m.Groups[1].Value, textColor ?? cfg.CodeOpcodeColor, CodeSegmentType.OpCode, pos));
+					} else if((foundOpCode || foundDirective) && (m = _operand.Match(codeString)).Success) {
 						string operand = m.Value;
 						Color operandColor = Colors.Black;
 						CodeSegmentType type = CodeSegmentType.None;
@@ -48,25 +63,30 @@ namespace Mesen.Debugger.Disassembly
 									break;
 							}
 						}
-						colors.Add(new CodeColor(m.Value, textColor ?? operandColor, type));
-					} else if(!foundOpCode && (m = _opCode.Match(codeString)).Success) {
-						foundOpCode = true;
-						colors.Add(new CodeColor(m.Value, textColor ?? cfg.CodeOpcodeColor, CodeSegmentType.OpCode));
+						colors.Add(new CodeColor(m.Value, textColor ?? operandColor, type, pos));
 					} else if((m = _syntax.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.Syntax));
+						colors.Add(new CodeColor(m.Value, !foundOpCode ? defaultColor : (textColor ?? defaultColor), CodeSegmentType.Syntax, pos));
 					} else if((m = _space.Match(codeString)).Success) {
-						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.None));
+						colors.Add(new CodeColor(m.Value, textColor ?? defaultColor, CodeSegmentType.None, pos));
 					}
 
 					if(m.Success) {
-						codeString = codeString.Substring(m.Value.Length);
+						if(m.Groups.Count > 1) {
+							pos += m.Groups[1].Value.Length;
+							codeString = codeString.Substring(m.Groups[1].Value.Length);
+						} else {
+							pos += m.Value.Length;
+							codeString = codeString.Substring(m.Value.Length);
+						}
 					} else {
 						break;
 					}
 				}
 
 				//Display the rest of the line (used by trace logger)
-				colors.Add(new CodeColor(codeString, defaultColor, CodeSegmentType.None));
+				if(codeString.Length > 0) {
+					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None, pos));
+				}
 
 				if(lineData.EffectiveAddress >= 0) {
 					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);

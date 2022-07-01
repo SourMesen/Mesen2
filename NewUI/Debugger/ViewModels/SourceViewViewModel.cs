@@ -1,10 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Threading;
-using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
-using Mesen.Debugger.Controls;
 using Mesen.Debugger.Integration;
-using Mesen.Debugger.Views;
 using Mesen.Interop;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,29 +10,51 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mesen.ViewModels;
+using Mesen.Debugger.Disassembly;
+using Mesen.Debugger.Utilities;
+using System.Text;
+using Mesen.Debugger.Controls;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class SourceViewViewModel : ViewModelBase
+public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 {
 	public ISymbolProvider SymbolProvider { get; set; }
-	
-	public List<SourceFileInfo> SourceFiles { get; }
-	[Reactive] public SourceFileInfo? SelectedFile { get; set; }
-	public FontConfig Font { get; }
-
+	public DebugConfig Config { get; }
 	public CpuType CpuType { get; }
+	public List<SourceFileInfo> SourceFiles { get; }
 
-	private double _scrollPosition = 0;
-	private int? _activeAddress = null;
-	private MesenTextEditor? _editor = null;
-	private ActiveLineBackgroundRenderer _activeLineRenderer;
+	public BaseStyleProvider StyleProvider { get; }
 
-	public SourceViewViewModel(ISymbolProvider symbolProvider, CpuType cpuType)
+	public QuickSearchViewModel QuickSearch { get; } = new();
+
+	[Reactive] public SourceFileInfo? SelectedFile { get; set; }
+	[Reactive] public int MaxScrollPosition { get; private set; }
+	[Reactive] public int ScrollPosition { get; set; }
+	[Reactive] public CodeLineData[] Lines { get; private set; } = Array.Empty<CodeLineData>();
+
+	[Reactive] public int? ActiveAddress { get; set; }
+	[Reactive] public int SelectedRow { get; set; }
+	[Reactive] public int SelectionAnchor { get; set; }
+	[Reactive] public int SelectionStart { get; set; }
+	[Reactive] public int SelectionEnd { get; set; }
+
+	[Reactive] public int VisibleRowCount { get; set; } = 100;
+	public DebuggerWindowViewModel Debugger { get; }
+
+	private DisassemblyViewer? _viewer = null;
+	private Action? _refreshScrollbar = null;
+
+	[Obsolete("For designer only")]
+	public SourceViewViewModel() : this(new(), new SnesDbgImporter(RomFormat.Sfc), CpuType.Snes) { }
+
+	public SourceViewViewModel(DebuggerWindowViewModel debugger, ISymbolProvider symbolProvider, CpuType cpuType)
 	{
+		Debugger = debugger;
+		Config = ConfigManager.Config.Debug;
 		CpuType = cpuType;
 		SymbolProvider = symbolProvider;
-		Font = ConfigManager.Config.Debug.Font;
+		StyleProvider = new SourceViewStyleProvider(cpuType, this);
 
 		SourceFiles = SymbolProvider.SourceFiles.Where(f => f.Data.Length > 0 && !f.Name.EndsWith(".chr", StringComparison.OrdinalIgnoreCase)).ToList();
 		SourceFiles.Sort((a, b) => a.ToString().CompareTo(b.ToString()));
@@ -43,76 +62,321 @@ public class SourceViewViewModel : ViewModelBase
 			SelectedFile = SourceFiles[0];
 		}
 
-		_activeLineRenderer = new ActiveLineBackgroundRenderer(this);
+		QuickSearch.OnFind += QuickSearch_OnFind;
 
-		this.WhenAnyValue(x => x.SelectedFile).Subscribe(x => {
-			_scrollPosition = 0;
-			UpdateEditor();
-		});
+		AddDisposable(this.WhenAnyValue(x => x.QuickSearch.IsSearchBoxVisible).Subscribe(x => {
+			if(!QuickSearch.IsSearchBoxVisible) {
+				_viewer?.Focus();
+			}
+		}));
+
+		AddDisposable(this.WhenAnyValue(x => x.SelectedFile).Subscribe(x => {
+			MaxScrollPosition = (x?.Data.Length ?? 1) - 1;
+			ScrollPosition = 0;
+			UpdateCodeLines();
+		}));
+
+		int lastValue = ScrollPosition;
+		AddDisposable(this.WhenAnyValue(x => x.ScrollPosition).Subscribe(x => {
+			if(_viewer == null && x == 0) {
+				ScrollPosition = lastValue;
+				return;
+			}
+			UpdateCodeLines();
+		}));
 	}
 
-	public void Refresh(int? activeAddress)
+	private void UpdateCodeLines()
 	{
-		_activeAddress = activeAddress;
+		if(SelectedFile is SourceFileInfo file) {
+			List<CodeLineData> lines = new();
 
-		if(activeAddress != null) {
-			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = activeAddress.Value, Type = CpuType.ToMemoryType() });
-			SourceCodeLocation? location = SymbolProvider.GetSourceCodeLineInfo(absAddress);
-			if(location != null) {
-				SelectedFile = location.Value.File;
-				ScrollToLocation(location.Value);
+			int end = Math.Min(ScrollPosition + VisibleRowCount, file.Data.Length);
+			for(int i = ScrollPosition; i < end; i++) {
+				lines.Add(GetCodeLineData(file, i));
+			}
+			Lines = lines.ToArray();
+			_refreshScrollbar?.Invoke();
+		}
+	}
+
+	private CodeLineData GetCodeLineData(SourceFileInfo file, int lineNumber)
+	{
+		int lineAddr = -1;
+		bool showLineAddress = true;
+		AddressInfo? address = SymbolProvider.GetLineAddress(file, lineNumber);
+		if(address == null) {
+			showLineAddress = false;
+			int prevLine = lineNumber - 1;
+			while(address == null && prevLine >= 0) {
+				address = SymbolProvider.GetLineAddress(file, prevLine);
+				prevLine--;
 			}
 		}
-		_activeLineRenderer.SetActiveAddress(activeAddress);
 
-		_editor?.TextArea.LeftMargins[0].InvalidateVisual();
-		_editor?.TextArea.TextView.InvalidateVisual();
-	}
-
-	private void ScrollToLocation(SourceCodeLocation location)
-	{
-		Task.Run(() => {
-			System.Threading.Thread.Sleep(30);
-			Dispatcher.UIThread.Post(() => {
-				_editor?.ScrollLineToMiddle(location.LineNumber);
-			});
-		});
-	}
-
-	public void SetEditor(MesenTextEditor? editor)
-	{
-		_editor = editor;
-		if(_editor != null) {
-			_editor.TextEditorReady += _editor_TextEditorReady;
-			UpdateEditor();
+		AddressInfo? endAddress = SymbolProvider.GetLineEndAddress(file, lineNumber);
+		int opSize = 0;
+		if(endAddress == null) {
+			int nextLine = lineNumber + 1;
+			while(endAddress == null && nextLine < file.Data.Length) {
+				endAddress = SymbolProvider.GetLineAddress(file, nextLine);
+				nextLine++;
+			}
 		}
-	}
 
-	private void _editor_TextEditorReady(object? sender, EventArgs e)
-	{
-		if(_editor != null) {
-			_editor.VerticalScrollBarValue = _scrollPosition;
-			Refresh(_activeAddress);
+		if(endAddress?.Type == address?.Type && endAddress?.Address >= address?.Address) {
+			opSize = Math.Min(endAddress!.Value.Address - address!.Value.Address + 1, 16);
 		}
+
+		byte[]? byteCode = null;
+		if(showLineAddress && address != null) {
+			if(endAddress != null && endAddress.Value.Type == address.Value.Type && endAddress.Value.Address >= address.Value.Address) {
+				byteCode = DebugApi.GetMemoryValues(address.Value.Type, (uint)address.Value.Address, (uint)endAddress.Value.Address);
+			} else {
+				byteCode = new byte[1] { DebugApi.GetMemoryValue(address.Value.Type, (uint)address.Value.Address) };
+			}
+			lineAddr = DebugApi.GetRelativeAddress(address.Value, CpuType).Address;
+		}
+
+		return new CodeLineData(CpuType) {
+			Address = lineAddr,
+			AbsoluteAddress = address ?? new AddressInfo() { Address = -1 },
+			Flags = LineFlags.VerifiedCode | (!showLineAddress ? LineFlags.Empty : LineFlags.None),
+			Text = file.Data[lineNumber],
+			ByteCode = byteCode ?? Array.Empty<byte>(),
+			OpSize = (byte)opSize,
+			EffectiveAddress = -1
+		};
 	}
 
-	public void UpdateEditor()
+	private void QuickSearch_OnFind(OnFindEventArgs e)
 	{
-		if(_editor == null) {
+		SourceFileInfo? file = SelectedFile;
+		if(file == null) {
 			return;
 		}
 
-		_editor.SyntaxHighlighting = SelectedFile?.IsAssembly == true ? MesenTextEditor.Asm6502Highlighting : null;
-		_editor.TextArea.TextView.BackgroundRenderers.Clear();
-		_editor.TextArea.TextView.BackgroundRenderers.Add(_activeLineRenderer);
-		_editor.TextArea.LeftMargins.Clear();
-		_editor.TextArea.LeftMargins.Add(new LineNumberMargin(this));
-		_editor.HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Visible;
-		_editor.VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Visible;
+		int findAddress = -1;
+
+		int startRow = SelectedRow;
+		if(e.Direction == SearchDirection.Backward) {
+			startRow--;
+		} else if(e.SkipCurrent) {
+			startRow++;
+		}
+		
+		int direction = e.Direction == SearchDirection.Backward ? -1 : 1;
+		for(int i = 0; i < file.Data.Length; i++) {
+			int index = ((i * direction) + startRow) % file.Data.Length;
+			if(index < 0) {
+				index += file.Data.Length;
+			}
+
+			if(file.Data[index].Contains(e.SearchString, StringComparison.OrdinalIgnoreCase)) {
+				findAddress = index;
+				break;
+			}
+		}
+
+		if(findAddress >= 0) {
+			Dispatcher.UIThread.Post(() => {
+				SetSelectedRow(findAddress, true);
+			});
+		}
 	}
 
-	public void SaveScrollPosition()
+	public void CopySelection()
 	{
-		_scrollPosition = _editor?.VerticalScrollBarValue ?? 0;
+		if(SelectedFile != null) {
+			StringBuilder sb = new();
+			for(int i = SelectionStart; i <= SelectionEnd; i++) {
+				sb.AppendLine(SelectedFile.Data[i]);
+			}
+			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+		}
+	}
+
+	public void Refresh()
+	{
+		UpdateCodeLines();
+	}
+
+	public void InvalidateVisual()
+	{
+		Lines = Lines.ToArray();
+	}
+
+	public void SetActiveAddress(int? activeAddress)
+	{
+		ActiveAddress = activeAddress;
+
+		if(activeAddress >= 0) {
+			GoToRelativeAddress(activeAddress.Value);
+		}
+	}
+
+	public void GoToRelativeAddress(int address)
+	{
+		AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = CpuType.ToMemoryType() });
+		SourceCodeLocation? location = SymbolProvider.GetSourceCodeLineInfo(absAddress);
+		if(location != null) {
+			SelectedFile = location.Value.File;
+			SetSelectedRow(location.Value.LineNumber);
+			ScrollToRowNumber(location.Value.LineNumber, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+		}
+	}
+
+	public void ScrollToLocation(SourceCodeLocation loc)
+	{
+		SelectedFile = loc.File;
+		SetSelectedRow(loc.LineNumber);
+		ScrollToRowNumber(loc.LineNumber, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+	}
+
+	public void ResizeSelectionTo(int rowNumber)
+	{
+		if(SelectedRow == rowNumber) {
+			return;
+		}
+
+		bool anchorTop = SelectionAnchor == SelectionStart;
+		if(anchorTop) {
+			if(rowNumber < SelectionStart) {
+				SelectionEnd = SelectionStart;
+				SelectionStart = rowNumber;
+			} else {
+				SelectionEnd = rowNumber;
+			}
+		} else {
+			if(rowNumber < SelectionEnd) {
+				SelectionStart = rowNumber;
+			} else {
+				SelectionStart = SelectionEnd;
+				SelectionEnd = rowNumber;
+			}
+		}
+
+		ScrollDisplayPosition displayPos = SelectedRow < rowNumber ? ScrollDisplayPosition.Bottom : ScrollDisplayPosition.Top;
+		SelectedRow = rowNumber;
+		ScrollToRowNumber(rowNumber, displayPos);
+
+		InvalidateVisual();
+	}
+
+	public void MoveCursor(int rowOffset, bool extendSelection)
+	{
+		int rowNumber = Math.Max(0, Math.Min(SelectedRow + rowOffset, MaxScrollPosition));
+		if(extendSelection) {
+			ResizeSelectionTo(rowNumber - ScrollPosition);
+		} else {
+			SetSelectedRow(rowNumber);
+			ScrollToRowNumber(rowNumber, rowOffset < 0 ? ScrollDisplayPosition.Top : ScrollDisplayPosition.Bottom);
+		}
+	}
+
+	private bool IsRowVisible(int rowNumber)
+	{
+		return rowNumber > ScrollPosition && rowNumber < ScrollPosition + VisibleRowCount - 1;
+	}
+
+	public void ScrollToRowNumber(int rowNumber, ScrollDisplayPosition position = ScrollDisplayPosition.Center, bool forceScroll = false)
+	{
+		if(!forceScroll && IsRowVisible(rowNumber)) {
+			//Row is already visible, don't scroll
+			return;
+		}
+
+		int newPos = position switch {
+			ScrollDisplayPosition.Top => rowNumber - 1,
+			ScrollDisplayPosition.Center => rowNumber - (VisibleRowCount / 2) + 1,
+			ScrollDisplayPosition.Bottom => rowNumber - VisibleRowCount + 2,
+			_ => rowNumber
+		};
+
+		ScrollPosition = Math.Max(0, Math.Min(newPos, MaxScrollPosition));
+	}
+
+	public void ScrollToTop()
+	{
+		SetSelectedRow(0);
+	}
+
+	public void ScrollToBottom()
+	{
+		SetSelectedRow((SelectedFile?.Data.Length ?? 1) - 1);
+	}
+
+	public void SetSelectedRow(int rowNumber)
+	{
+		SelectionStart = rowNumber;
+		SelectionEnd = rowNumber;
+		SelectedRow = rowNumber;
+		SelectionAnchor = rowNumber;
+		InvalidateVisual();
+	}
+
+	public void SetSelectedRow(int rowNumber, bool scrollToRow)
+	{
+		SetSelectedRow(rowNumber);
+		if(scrollToRow) {
+			ScrollToRowNumber(rowNumber);
+		}
+	}
+
+	public bool IsSelected(int rowNumber)
+	{
+		return rowNumber >= SelectionStart && rowNumber <= SelectionEnd;
+	}
+
+	public void Scroll(int offset)
+	{
+		ScrollPosition = Math.Max(0, Math.Min(ScrollPosition + offset, MaxScrollPosition));
+	}
+
+	public AddressInfo? GetSelectedRowAddress()
+	{
+		if(SelectedFile == null) {
+			return null;
+		}
+
+		return SymbolProvider.GetLineAddress(SelectedFile, SelectedRow);
+	}
+
+	public void SetViewer(DisassemblyViewer? viewer)
+	{
+		_viewer = viewer;
+	}
+
+	public Breakpoint? GetBreakpoint(int lineNumber)
+	{
+		if(SelectedFile == null) {
+			return null;
+		}
+
+		AddressInfo? address = SymbolProvider.GetLineAddress(SelectedFile, lineNumber);
+		if(address?.Address >= 0) {
+			return BreakpointManager.GetMatchingBreakpoint(address.Value, CpuType);
+		}
+		return null;
+	}
+
+	public void SetRefreshScrollBar(Action? refreshScrollbar)
+	{
+		_refreshScrollbar = refreshScrollbar;
+	}
+
+	public List<FindResultViewModel> FindAllOccurrences(string search, DisassemblySearchOptions options)
+	{
+		List<FindResultViewModel> results = new();
+		foreach(SourceFileInfo file in SourceFiles) {
+			for(int i = 0; i < file.Data.Length; i++) {
+				if(file.Data[i].Contains(search, StringComparison.OrdinalIgnoreCase)) {
+					AddressInfo? absAddress = SymbolProvider.GetLineAddress(file, i);
+					LocationInfo loc = new() { AbsAddress = absAddress, SourceLocation = new SourceCodeLocation(file, i) };
+					results.Add(new FindResultViewModel(loc, $"{file.Name}:{i}", file.Data[i]));
+				}
+			}
+		}
+		return results;
 	}
 }

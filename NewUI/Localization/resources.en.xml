@@ -955,7 +955,11 @@
 			<Control ID="mnuOptions">_Options</Control>
 			<Control ID="btnToggleSettingsPanel">Toggle settings panel</Control>
 		</Form>
-		
+	
+		<Form ID="SourceViewView">
+			<Control ID="lblFile">File:</Control>
+		</Form>
+
 		<Form ID="DebuggerOptionsView">
 			<Control ID="lblDisassemblyOptions">Disassembly options</Control>
 			<Control ID="lblVerifiedData">Data blocks:</Control>

@@ -34,7 +34,7 @@ namespace Mesen.Debugger.Views
 		private void OnCellDoubleClick(DataBoxCell cell)
 		{
 			if(DataContext is FunctionListViewModel listModel && cell.DataContext is FunctionViewModel vm && vm.RelAddress >= 0) {
-				listModel.Disassembly.SetSelectedRow(vm.RelAddress, true);
+				listModel.Debugger.ScrollToAddress(vm.RelAddress);
 			}
 		}
 	}

@@ -47,7 +47,7 @@ namespace Mesen.Debugger.Windows
 			
 			DisassemblyViewer viewer = this.FindControl<DisassemblyViewer>("disViewer");
 			_model.SetViewer(viewer);
-			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, true, InitContextMenu(viewer));
+			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, (rowIndex, rowAddress) => rowIndex, InitContextMenu(viewer));
 
 			DataContext = model;
 

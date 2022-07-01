@@ -1,12 +1,20 @@
 ﻿using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Utilities;
 using ReactiveUI.Fody.Helpers;
+using System;
 
 namespace Mesen.Debugger.ViewModels.DebuggerDock
 {
 	public class BaseToolContainerViewModel : Tool
 	{
 		public virtual object? HelpContent { get; } = null;
+
+		public event EventHandler? Selected;
+
+		public override void OnSelected()
+		{
+			Selected?.Invoke(this, EventArgs.Empty);
+		}
 	}
 
 	public class ToolContainerViewModel<T> : BaseToolContainerViewModel

@@ -10,6 +10,7 @@ namespace Mesen.Debugger.Disassembly
 		public AddressInfo? AbsAddress;
 		public CodeLabel? Label;
 		public SourceSymbol? Symbol;
+		public SourceCodeLocation? SourceLocation;
 
 		public int? ArrayIndex = null;
 	}
