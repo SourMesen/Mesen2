@@ -79,14 +79,11 @@ void SoundResampler::UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sample
 {
 	double inputRate = sourceRate;
 	
-	//TODO this seems wrong since GetFps will return 60.0 or 50.0
 	if(_emu->GetSettings()->GetVideoConfig().IntegerFpsMode) {
-		//Adjust sample rate when running at 60.0 fps instead of 60.1
-		switch(_emu->GetRegion()) {
-			default:
-			case ConsoleRegion::Ntsc: inputRate = sourceRate * (60.0 / _emu->GetFps()); break;
-			case ConsoleRegion::Pal: inputRate = sourceRate * (50.0 / _emu->GetFps()); break;
-		}
+		//Adjust input sample rate when using integer fps values
+		double baseFps = _emu->GetFps();
+		double roundedFps = std::round(baseFps);
+		inputRate = sourceRate * (roundedFps / baseFps);
 	}
 
 	double targetRate = sampleRate * GetTargetRateAdjustment();

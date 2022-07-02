@@ -617,7 +617,11 @@ double Emulator::GetFrameDelay()
 	if(emulationSpeed == 0) {
 		frameDelay = 0;
 	} else {
-		frameDelay = 1000 / _console->GetFps();
+		double fps = GetFps();
+		if(_settings->GetVideoConfig().IntegerFpsMode) {
+			fps = std::round(fps);
+		}
+		frameDelay = 1000 / fps;
 		frameDelay /= (emulationSpeed / 100.0);
 	}
 	return frameDelay;

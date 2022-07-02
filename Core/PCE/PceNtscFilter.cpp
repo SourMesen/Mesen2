@@ -66,7 +66,7 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		}
 	}
 
-	snes_ntsc_blit_hires(&_ntscData, _rgb555Buffer, 512, 0, 512, 242, _ntscBuffer, baseWidth * 4);
+	snes_ntsc_blit_hires(&_ntscData, _rgb555Buffer, 512, IsOddFrame() ? 0 : 1, 512, 242, _ntscBuffer, baseWidth * 4);
 
 	for(uint32_t i = 0; i < frameInfo.Height; i+=2) {
 		memcpy(GetOutputBuffer()+i*frameInfo.Width, _ntscBuffer + yOffset + xOffset + i/2*baseWidth, frameInfo.Width * sizeof(uint32_t));

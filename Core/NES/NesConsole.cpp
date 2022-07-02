@@ -308,9 +308,9 @@ double NesConsole::GetFps()
 {
 	UpdateRegion();
 	if(_region == ConsoleRegion::Ntsc) {
-		return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 60.0988118623484;
+		return 60.0988118623484;
 	} else {
-		return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 50.0 : 50.0069789081886;
+		return 50.0069789081886;
 	}
 }
 

@@ -465,7 +465,7 @@ ConsoleType Gameboy::GetConsoleType()
 
 double Gameboy::GetFps()
 {
-	return _emu->GetSettings()->GetVideoConfig().IntegerFpsMode ? 60.0 : 59.72750056960583;
+	return 59.72750056960583;
 }
 
 PpuFrameInfo Gameboy::GetPpuFrame()
