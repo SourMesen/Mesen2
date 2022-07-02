@@ -159,6 +159,7 @@
 								</StackPanel>
 								<StackPanel>
 									<dc:ColorPickerField Color="{CompiledBinding Debugger.CodeActiveStatementColor}" Text="{l:Translate lblCodeActiveStatementColor}" />
+									<dc:ColorPickerField Color="{CompiledBinding Debugger.CodeActiveMidInstructionColor}" Text="{l:Translate lblCodeActiveMidInstructionColor}" />
 								</StackPanel>
 							</StackPanel>
 						</StackPanel>

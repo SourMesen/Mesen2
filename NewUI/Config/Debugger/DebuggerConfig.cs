@@ -73,7 +73,9 @@ namespace Mesen.Config
 		[Reactive] public Color CodeExecBreakpointColor { get; set; } = Color.FromRgb(140, 40, 40);
 		[Reactive] public Color CodeWriteBreakpointColor { get; set; } = Color.FromRgb(40, 120, 80);
 		[Reactive] public Color CodeReadBreakpointColor { get; set; } = Color.FromRgb(40, 40, 200);
+		
 		[Reactive] public Color CodeActiveStatementColor { get; set; } = Colors.Yellow;
+		[Reactive] public Color CodeActiveMidInstructionColor { get; set; } = Color.FromRgb(255, 220, 40);
 
 		public DebuggerConfig()
 		{

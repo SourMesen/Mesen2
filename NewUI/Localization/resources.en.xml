@@ -1107,6 +1107,8 @@
 			<Control ID="lblCodeCommentColor">Comment</Control>
 			<Control ID="lblCodeEffectiveAddressColor">Effective Address</Control>
 			<Control ID="lblCodeActiveStatementColor">Active Statement</Control>
+			<Control ID="lblCodeActiveMidInstructionColor">Active Statement (mid-instruction)</Control>
+			
 			<Control ID="lblCodeVerifiedDataColor">Verified Data</Control>
 			<Control ID="lblCodeUnidentifiedDataColor">Unidentified Block</Control>
 			<Control ID="lblCodeUnexecutedCodeColor">Unexecuted Code</Control>

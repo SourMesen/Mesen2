@@ -15,17 +15,23 @@ namespace Mesen.Debugger.Disassembly
 	{
 		public int AddressSize { get; }
 		public int ByteCodeSize { get; }
+		public CpuType CpuType { get; }
 
 		public BaseStyleProvider(CpuType cpuType)
 		{
+			CpuType = cpuType;
 			AddressSize = cpuType.GetAddressSize();
 			ByteCodeSize = cpuType.GetByteCodeSize();
 		}
 
-		private static void ConfigureActiveStatement(LineProperties props)
+		private void ConfigureActiveStatement(LineProperties props)
 		{
 			props.FgColor = Colors.Black;
-			props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
+			if(DebugApi.GetDebuggerFeatures(CpuType).ChangeProgramCounter) {
+				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
+			} else {
+				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor;
+			}
 			props.Symbol |= LineSymbol.Arrow;
 		}
 
