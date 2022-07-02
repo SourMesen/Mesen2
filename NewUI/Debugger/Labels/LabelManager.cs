@@ -71,8 +71,9 @@ namespace Mesen.Debugger.Labels
 
 		public static List<CodeLabel> GetLabels(CpuType cpu)
 		{
-			if(cpu == CpuType.Sa1 || cpu == CpuType.Gsu) {
-				//Share label list between SNES CPU, SA1 and GSU (since the share the same PRG ROM)
+			//TODO
+			if(cpu == CpuType.Sa1 || cpu == CpuType.Gsu || cpu == CpuType.Cx4) {
+				//Share label list between SNES CPU and SA1/GSU/CX4 (since they share the same PRG ROM)
 				cpu = CpuType.Snes;
 			}
 
@@ -171,20 +172,6 @@ namespace Mesen.Debugger.Labels
 			ProcessLabelUpdate();
 		}
 
-		/*public static void CreateAutomaticJumpLabels()
-		{
-			byte[] cdlData = InteropEmu.DebugGetPrgCdlData();
-			List<CodeLabel> labelsToAdd = new List<CodeLabel>();
-			for(int i = 0; i < cdlData.Length; i++) {
-				if((cdlData[i] & (byte)CdlPrgFlags.JumpTarget) != 0 && LabelManager.GetLabel((uint)i, SnesMemoryType.PrgRom) == null) {
-					labelsToAdd.Add(new CodeLabel() { Flags = CodeLabelFlags.AutoJumpLabel, Address = (uint)i, SnesMemoryType = SnesMemoryType.PrgRom, Label = "L" + i.ToString("X4"), Comment = "" });
-				}
-			}
-			if(labelsToAdd.Count > 0) {
-				LabelManager.SetLabels(labelsToAdd, true);
-			}
-		}*/
-
 		public static void RefreshLabels()
 		{
 			DebugApi.ClearLabels();
@@ -206,9 +193,10 @@ namespace Mesen.Debugger.Labels
 					BreakOnExec = true,
 					MemoryType = label.MemoryType,
 					CpuType = cpuType,
-					//TODO Address = label.Address,
+					StartAddress = label.Address,
+					EndAddress = label.Address,
 					Condition = "!(" + condition + ")",
-					//TODO IsAssert = true
+					IsAssert = true
 				});
 			};
 
@@ -219,15 +207,15 @@ namespace Mesen.Debugger.Labels
 						CpuType cpuType = label.MemoryType.ToCpuType();
 						addAssert(label, m.Groups[1].Value, cpuType);
 						if(cpuType == CpuType.Snes) {
+							//TODO
 							addAssert(label, m.Groups[1].Value, CpuType.Sa1);
 						}
 					}
 				}
 			}
 
-			//TODO
-			/*BreakpointManager.Asserts = asserts;
-			BreakpointManager.SetBreakpoints();*/
+			BreakpointManager.Asserts = asserts;
+			BreakpointManager.SetBreakpoints();
 		}
 	}
 

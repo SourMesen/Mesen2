@@ -24,6 +24,7 @@ namespace Mesen.Debugger
 		[Reactive] public UInt32 EndAddress { get; set; }
 		[Reactive] public CpuType CpuType { get; set; }
 		[Reactive] public bool AnyAddress { get; set; } = false;
+		[Reactive] public bool IsAssert { get; set; } = false;
 		[Reactive] public string Condition { get; set; } = "";
 
 		public Breakpoint()
