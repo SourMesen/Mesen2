@@ -1,20 +1,25 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class DebuggerConfigWindowViewModel : ViewModelBase
+	public class DebuggerConfigWindowViewModel : DisposableViewModel
 	{
 		public FontConfig Font { get; set; }
 		public DebuggerConfig Debugger { get; set; }
 		public ScriptWindowConfig Script { get; set; }
 		public IntegrationConfig Integration { get; set; }
+
 		[Reactive] public DebugConfigWindowTab SelectedIndex { get; set; }
 
 		public List<DebuggerShortcutInfo> SharedShortcuts { get; set; } = new();
@@ -22,6 +27,13 @@ namespace Mesen.Debugger.ViewModels
 		public List<DebuggerShortcutInfo> MiscShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> ScriptShortcuts { get; set; } = new();
 		public List<DebuggerShortcutInfo> DebuggerShortcuts { get; set; } = new();
+
+		private DebuggerConfig _backupDebugger;
+		private FontConfig _backupFont;
+		private ScriptWindowConfig _backupScript;
+		private IntegrationConfig _backupIntegration;
+		private DebuggerShortcutsConfig _backupShortcuts;
+		private Dictionary<object, HashSet<string>> _changes = new();
 
 		[Obsolete("For designer only")]
 		public DebuggerConfigWindowViewModel() : this(DebugConfigWindowTab.Debugger) { }
@@ -34,7 +46,60 @@ namespace Mesen.Debugger.ViewModels
 			Script = ConfigManager.Config.Debug.ScriptWindow;
 			Integration = ConfigManager.Config.Debug.Integration;
 
+			_backupDebugger = Debugger.Clone();
+			_backupFont = Font.Clone();
+			_backupScript = Script.Clone();
+			_backupIntegration = Integration.Clone();
+			_backupShortcuts = ConfigManager.Config.Debug.Shortcuts.Clone();
+
 			InitShortcutLists();
+
+			ReactiveHelper.RegisterRecursiveObserver(Debugger, Config_PropertyChanged);
+			ReactiveHelper.RegisterRecursiveObserver(Font, Config_PropertyChanged);
+			ReactiveHelper.RegisterRecursiveObserver(Script, Config_PropertyChanged);
+			ReactiveHelper.RegisterRecursiveObserver(Integration, Config_PropertyChanged);
+		}
+
+		protected override void DisposeView()
+		{
+			ReactiveHelper.UnregisterRecursiveObserver(Debugger, Config_PropertyChanged);
+			ReactiveHelper.UnregisterRecursiveObserver(Font, Config_PropertyChanged);
+			ReactiveHelper.UnregisterRecursiveObserver(Script, Config_PropertyChanged);
+			ReactiveHelper.UnregisterRecursiveObserver(Integration, Config_PropertyChanged);
+		}
+
+		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+		{
+			if(sender == null || e.PropertyName == null) {
+				return;
+			}
+
+			if(!_changes.TryGetValue(sender, out HashSet<string>? changes)) {
+				_changes[sender] = new HashSet<string>() { e.PropertyName };
+			} else {
+				changes.Add(e.PropertyName);
+			}
+		}
+
+		public void RevertChanges()
+		{
+			RevertChanges(Debugger, _backupDebugger);
+			RevertChanges(Font, _backupFont);
+			RevertChanges(Script, _backupScript);
+			RevertChanges(Integration, _backupIntegration);
+			ConfigManager.Config.Debug.Shortcuts = _backupShortcuts;
+		}
+
+		private void RevertChanges<T>(T current, T original) where T : ReactiveObject
+		{
+			if(_changes.TryGetValue(current, out HashSet<string>? changes)) {
+				foreach(string propertyName in changes) {
+					PropertyInfo? prop = typeof(T).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+					if(prop != null) {
+						prop.SetValue(current, prop.GetValue(original));
+					}
+				}
+			}
 		}
 
 		private void InitShortcutLists()

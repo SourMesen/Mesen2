@@ -43,6 +43,12 @@ namespace Mesen.Debugger.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			_model.Dispose();
+		}
+
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
 			ConfigManager.Config.ApplyConfig();
@@ -51,6 +57,8 @@ namespace Mesen.Debugger.Windows
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
+			_model.RevertChanges();
+			ConfigManager.Config.ApplyConfig();
 			Close();
 		}
 	}

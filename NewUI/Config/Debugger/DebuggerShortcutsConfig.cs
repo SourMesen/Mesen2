@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Mesen.Config
 {
-	public class DebuggerShortcutsConfig : IJsonOnDeserialized
+	public class DebuggerShortcutsConfig : BaseConfig<DebuggerShortcutsConfig>, IJsonOnDeserialized
 	{
 		private List<DebuggerShortcutInfo> _shortcuts = new();
 		private Dictionary<DebuggerShortcut, DebuggerShortcutInfo> _lookup = new();
