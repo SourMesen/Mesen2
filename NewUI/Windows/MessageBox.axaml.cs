@@ -39,7 +39,7 @@ namespace Mesen.Windows
 			void AddButton(string caption, DialogResult r)
 			{
 				Button btn = new Button { Content = caption };
-				if(r == DialogResult.Cancel || (r == DialogResult.OK && buttons == MessageBoxButtons.OK)) {
+				if(r == DialogResult.Cancel || (r == DialogResult.No && buttons != MessageBoxButtons.YesNoCancel) || (r == DialogResult.OK && buttons == MessageBoxButtons.OK)) {
 					btn.IsCancel = true;
 				}
 				btn.Click += (_, _) => {
