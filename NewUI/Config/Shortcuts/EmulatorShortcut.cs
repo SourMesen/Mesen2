@@ -34,7 +34,6 @@ namespace Mesen.Config.Shortcuts
 
 		RunSingleFrame,
 
-		// Everything below this is handled UI-side
 		TakeScreenshot,
 
 		ToggleRecordVideo,
@@ -50,6 +49,10 @@ namespace Mesen.Config.Shortcuts
 		PowerCycle,
 		PowerOff,
 		Exit,
+
+		ExecReset,
+		ExecPowerCycle,
+		ExecPowerOff,
 
 		SetScale1x,
 		SetScale2x,

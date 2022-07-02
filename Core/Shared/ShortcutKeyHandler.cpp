@@ -133,10 +133,13 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t s
 			return isRunning && !isNetplayClient;
 
 		case EmulatorShortcut::Reset:
+		case EmulatorShortcut::ExecReset:
 		case EmulatorShortcut::PowerCycle:
+		case EmulatorShortcut::ExecPowerCycle:
 			return isRunning && !isNetplayClient && !isMoviePlaying;
 
 		case EmulatorShortcut::PowerOff:
+		case EmulatorShortcut::ExecPowerOff:
 			return isRunning && !isNetplayClient;
 
 		case EmulatorShortcut::TakeScreenshot:
@@ -212,9 +215,9 @@ void ShortcutKeyHandler::ProcessShortcutPressed(EmulatorShortcut shortcut, uint3
 			}
 			break;
 		
-		case EmulatorShortcut::Reset: _emu->GetSystemActionManager()->Reset(); break;
-		case EmulatorShortcut::PowerCycle: _emu->GetSystemActionManager()->PowerCycle(); break;
-		case EmulatorShortcut::PowerOff: _emu->Stop(true); break;
+		case EmulatorShortcut::ExecReset: _emu->GetSystemActionManager()->Reset(); break;
+		case EmulatorShortcut::ExecPowerCycle: _emu->GetSystemActionManager()->PowerCycle(); break;
+		case EmulatorShortcut::ExecPowerOff: _emu->Stop(true); break;
 
 		case EmulatorShortcut::FastForward: settings->SetFlag(EmulationFlags::Turbo); break;
 		case EmulatorShortcut::ToggleFastForward:

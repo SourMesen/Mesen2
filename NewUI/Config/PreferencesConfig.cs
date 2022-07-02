@@ -28,6 +28,7 @@ namespace Mesen.Config
 		[Reactive] public bool AllowBackgroundInput { get; set; } = false;
 		[Reactive] public bool PauseOnMovieEnd { get; set; } = true;
 		[Reactive] public bool ShowMovieIcons { get; set; } = true;
+		[Reactive] public bool ConfirmExitResetPower { get; set; } = false;
 
 		[Reactive] public bool AssociateSnesRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateSnesMusicFiles { get; set; } = false;
@@ -45,7 +46,9 @@ namespace Mesen.Config
 		[Reactive] public bool EnableRewind { get; set; } = true;
 		[Reactive] public UInt32 RewindBufferSize { get; set; } = 30;
 
+		//TODO remove?
 		[Reactive] public bool AlwaysOnTop { get; set; } = false;
+
 		[Reactive] public bool AutoHideMenu { get; set; } = false;
 
 		[Reactive] public bool ShowFps { get; set; } = false;

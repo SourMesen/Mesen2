@@ -586,12 +586,12 @@ namespace Mesen.Debugger.ViewModels
 					new ContextMenuAction() {
 						ActionType = ActionType.Reset,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Reset),
-						OnClick = () => EmuApi.Reset()
+						OnClick = () => ShortcutHandler.Reset()
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.PowerCycle,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PowerCycle),
-						OnClick = () => EmuApi.PowerCycle()
+						OnClick = () => ShortcutHandler.PowerCycle()
 					}
 				});
 			};

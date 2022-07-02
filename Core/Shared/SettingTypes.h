@@ -96,10 +96,10 @@ struct VideoConfig
 	double NtscSharpness = 0;
 	bool NtscMergeFields = false;
 
-	NtscBisqwitFilterScale NtscScale;
-	double NtscYFilterLength;
-	double NtscIFilterLength;
-	double NtscQFilterLength;
+	NtscBisqwitFilterScale NtscScale = NtscBisqwitFilterScale::_2x;
+	double NtscYFilterLength = 1.0;
+	double NtscIFilterLength = 1.0;
+	double NtscQFilterLength = 1.0;
 
 	bool FullscreenForceIntegerScale = false;
 	bool UseExclusiveFullscreen = false;
@@ -398,8 +398,8 @@ struct PcEngineConfig
 	bool PreventSelectRunReset = false;
 
 	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
-	uint32_t CdAudioVolume;
-	uint32_t AdpcmVolume;
+	uint32_t CdAudioVolume = 100;
+	uint32_t AdpcmVolume = 100;
 
 	bool RemoveSpriteLimit = false;
 	bool DisableSprites = false;
@@ -670,7 +670,6 @@ enum class EmulatorShortcut
 
 	RunSingleFrame,
 
-	// Everything below this is handled UI-side
 	TakeScreenshot,
 
 	ToggleRecordVideo,
@@ -686,6 +685,10 @@ enum class EmulatorShortcut
 	PowerCycle,
 	PowerOff,
 	Exit,
+
+	ExecReset,
+	ExecPowerCycle,
+	ExecPowerOff,
 
 	SetScale1x,
 	SetScale2x,

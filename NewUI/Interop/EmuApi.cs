@@ -39,9 +39,9 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsRunning();
 		[DllImport(DllPath)] public static extern void Stop();
 
-		[DllImport(DllPath)] public static extern void Reset();
-		[DllImport(DllPath)] public static extern void PowerCycle();
-		[DllImport(DllPath)] public static extern void ReloadRom();
+		public static void Reset() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecReset })); }
+		public static void PowerCycle() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecPowerCycle })); }
+		public static void PowerOff() { Task.Run(() => EmuApi.ExecuteShortcut(new ExecuteShortcutParams() { Shortcut = EmulatorShortcut.ExecPowerOff })); }
 
 		[DllImport(DllPath)] public static extern void Pause();
 		[DllImport(DllPath)] public static extern void Resume();
@@ -67,12 +67,6 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void LoadRecentGame([MarshalAs(UnmanagedType.LPUTF8Str)]string filepath, [MarshalAs(UnmanagedType.I1)]bool resetGame);
 
 		[DllImport(DllPath)] public static extern void AddKnownGameFolder([MarshalAs(UnmanagedType.LPUTF8Str)]string folder);
-
-		[DllImport(DllPath)] public static extern void SetFolderOverrides(
-			[MarshalAs(UnmanagedType.LPUTF8Str)]string saveDataFolder,
-			[MarshalAs(UnmanagedType.LPUTF8Str)]string saveStateFolder,
-			[MarshalAs(UnmanagedType.LPUTF8Str)]string screenshotFolder
-		);
 
 		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
 		[DllImport(DllPath)] public static extern void SetFullscreenMode([MarshalAs(UnmanagedType.I1)]bool fullscreen, IntPtr windowHandle, UInt32 monitorWidth, UInt32 monitorHeight);

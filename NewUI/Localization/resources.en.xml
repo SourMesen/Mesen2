@@ -451,7 +451,7 @@
 			<Control ID="chkAutoHideMenu">Automatically hide menu bar</Control>
 			<Control ID="chkDisplayTitleBarInfo">Display additional information in title bar</Control>
 
-			<Control ID="chkConfirmExitResetPower">Display confirmation dialog before reset/power cycle/exit</Control>
+			<Control ID="chkConfirmExitResetPower">Display confirmation dialog before reset / power cycle / power off / exit</Control>
 			<Control ID="chkPauseOnMovieEnd">Pause when a movie finishes playing</Control>
 			<Control ID="chkShowMovieIcons">Display play/pause icon when playing/recording a movie</Control>
 			<Control ID="chkAllowBackgroundInput">Allow input when in background (controllers only)</Control>
@@ -1341,6 +1341,7 @@
 
 		<Message ID="ConfirmReset">Are you sure you want to reset?</Message>
 		<Message ID="ConfirmPowerCycle">Are you sure you want to power cycle?</Message>
+		<Message ID="ConfirmPowerOff">Are you sure you want to power off?</Message>
 		<Message ID="ConfirmExit">Are you sure you want to exit?</Message>
 
 		<Message ID="InstallHdPackWrongRom">The selected HD Pack is not compatible with the currently running game and cannot be installed.</Message>

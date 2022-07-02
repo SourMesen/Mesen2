@@ -35,6 +35,9 @@ namespace Mesen.Utilities
 			//bool restoreFullscreen = _displayManager.ExclusiveFullscreen;
 
 			switch(shortcut) {
+				case EmulatorShortcut.Reset: Reset(); break;
+				case EmulatorShortcut.PowerCycle: PowerCycle(); break;
+				case EmulatorShortcut.PowerOff: PowerOff(); break;
 				case EmulatorShortcut.Exit: _mainWindow.Close(); break;
 
 				case EmulatorShortcut.ToggleAudio: ToggleAudio(); break;
@@ -405,6 +408,27 @@ namespace Mesen.Utilities
 		{
 			ConfigManager.Config.Preferences.ShowDebugInfo = !ConfigManager.Config.Preferences.ShowDebugInfo;
 			ConfigManager.Config.Preferences.ApplyConfig();
+		}
+
+		public static async void Reset()
+		{
+			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmReset", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				EmuApi.Reset();
+			}
+		}
+
+		public static async void PowerCycle()
+		{
+			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmPowerCycle", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				EmuApi.PowerCycle();
+			}
+		}
+
+		public static async void PowerOff()
+		{
+			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmPowerOff", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				EmuApi.PowerOff();
+			}
 		}
 	}
 }

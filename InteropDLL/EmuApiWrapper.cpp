@@ -186,27 +186,6 @@ extern "C" {
 		return _emu->IsPaused();
 	}
 
-	DllExport void __stdcall Reset()
-	{
-		if(!_emu->GetGameClient()->Connected()) {
-			_emu->GetSystemActionManager()->Reset();
-		}
-	}
-
-	DllExport void __stdcall PowerCycle()
-	{
-		if(!_emu->GetGameClient()->Connected()) {
-			_emu->GetSystemActionManager()->PowerCycle();
-		}
-	}
-
-	DllExport void __stdcall ReloadRom()
-	{
-		if(!_emu->GetGameClient()->Connected()) {
-			_emu->ReloadRom(false);
-		}
-	}
-
 	DllExport void __stdcall Release()
 	{
 		_emu->Stop(true);

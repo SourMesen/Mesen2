@@ -76,11 +76,25 @@ namespace Mesen.Windows
 			base.ArrangeCore(new Rect(ClientSize));
 		}
 
+		private bool _needCloseValidation = true;
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
-			_timerBackgroundFlag.Stop();
-			ConfigManager.Config.MainWindow.SaveWindowSettings(this);
+			if(_needCloseValidation) {
+				e.Cancel = true;
+				ValidateExit();
+			} else {
+				_timerBackgroundFlag.Stop();
+				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
+			}
+		}
+
+		private async void ValidateExit()
+		{
+			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmExit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				_needCloseValidation = false;
+				Close();
+			}
 		}
 
 		protected override void OnClosed(EventArgs e)
