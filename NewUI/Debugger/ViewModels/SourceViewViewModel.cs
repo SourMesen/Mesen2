@@ -347,6 +347,26 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		_viewer = viewer;
 	}
 
+	public int? GetActiveLineIndex()
+	{
+		if(SelectedFile == null || ActiveAddress == null) {
+			return null;
+		}
+
+		AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = ActiveAddress.Value, Type = CpuType.ToMemoryType() });
+		if(absAddr.Address < 0) {
+			return null;
+		}
+
+		for(int i = 0, len = SelectedFile.Data.Length; i < len; i++) {
+			AddressInfo? address = SymbolProvider.GetLineAddress(SelectedFile, i);
+			if(address?.Address == absAddr.Address) {
+				return i;
+			}
+		}
+		return null;
+	}
+
 	public Breakpoint? GetBreakpoint(int lineNumber)
 	{
 		if(SelectedFile == null) {

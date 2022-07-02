@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Mesen.Config;
+using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using System;
@@ -45,22 +47,44 @@ namespace Mesen.Debugger.Controls
 			base.Render(context);
 
 			double height = Bounds.Height;
+			double width = Bounds.Width - 1.0;
 			if(DataContext is DisassemblyViewModel disModel) {
 				int maxAddress = DebugApi.GetMemorySize(disModel.CpuType.ToMemoryType()) - 1;
+
+				int? activeAddress = disModel.ActiveAddress;
+				if(activeAddress >= 0) {
+					int position = (int)(((double)activeAddress.Value / maxAddress) * height) - 2;
+					SolidColorBrush brush = new(ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor);
+					Pen pen = new Pen(Colors.Black.ToUint32());
+					context.FillRectangle(brush, new Rect(0.5, position - 0.5, width, 3));
+					context.DrawRectangle(pen, new Rect(0.5, position - 0.5, width, 3));
+				}
+
 				foreach(Breakpoint bp in BreakpointManager.GetBreakpoints(disModel.CpuType)) {
 					int address = bp.GetRelativeAddress();
 					if(address >= 0) {
 						int position = (int)(((double)address / maxAddress) * height) - 2;
 						if(bp.Enabled) {
-							SolidColorBrush brush = new SolidColorBrush(bp.GetColor());
+							SolidColorBrush brush = new(bp.GetColor());
 							context.FillRectangle(brush, new Rect(0, position, 4, 4));
 						} else {
 							Pen pen = new Pen(bp.GetColor().ToUint32());
+							SolidColorBrush brush = new(Colors.White);
+							context.FillRectangle(brush, new Rect(0, position, 4, 4));
 							context.DrawRectangle(pen, new Rect(0.5, position + 0.5, 3, 3));
 						}
 					}
 				}
 			} else if(DataContext is SourceViewViewModel srcModel && srcModel.SelectedFile != null) {
+				int? activeLine = srcModel.GetActiveLineIndex();
+				if(activeLine >= 0) {
+					int position = (int)(((double)activeLine.Value / srcModel.SelectedFile.Data.Length) * height) - 2;
+					SolidColorBrush brush = new(ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor);
+					Pen pen = new Pen(Colors.Black.ToUint32());
+					context.FillRectangle(brush, new Rect(0.5, position - 0.5, width, 3));
+					context.DrawRectangle(pen, new Rect(0.5, position - 0.5, width, 3));
+				}
+
 				for(int i = 0, len = srcModel.SelectedFile.Data.Length; i < len; i++) {
 					Breakpoint? bp = srcModel.GetBreakpoint(i);
 					if(bp != null) {
