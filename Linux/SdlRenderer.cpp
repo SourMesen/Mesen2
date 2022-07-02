@@ -32,7 +32,7 @@ void SdlRenderer::LogSdlError(const char* msg)
 	MessageManager::Log(SDL_GetError());
 }
 
-void SdlRenderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight)
+void SdlRenderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle)
 {
 	//TODO: Implement exclusive fullscreen for Linux
 }

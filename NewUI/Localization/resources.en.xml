@@ -1813,13 +1813,29 @@
 			<Value ID="Widescreen">Widescreen (16:9)</Value>
 			<Value ID="Custom">Custom</Value>
 		</Enum>
-		<Enum ID="VideoRefreshRates">
-			<Value ID="_50">50 Hz</Value>
-			<Value ID="_60">60 Hz</Value>
-			<Value ID="_100">100 Hz</Value>
-			<Value ID="_120">120 Hz</Value>
-			<Value ID="_200">200 Hz</Value>
-			<Value ID="_240">240 Hz</Value>
+		<Enum ID="FullscreenResolution">
+			<Value ID="Default">Default</Value>
+			<Value ID="_3840x2160">3840x2160</Value>
+			<Value ID="_2560x1440">2560x1440</Value>
+			<Value ID="_2160x1200">2160x1200</Value>
+			<Value ID="_1920x1440">1920x1440</Value>
+			<Value ID="_1920x1200">1920x1200</Value>
+			<Value ID="_1920x1080">1920x1080</Value>
+			<Value ID="_1680x1050">1680x1050</Value>
+			<Value ID="_1600x1200">1600x1200</Value>
+			<Value ID="_1600x1024">1600x1024</Value>
+			<Value ID="_1600x900">1600x900</Value>
+			<Value ID="_1366x768">1366x768</Value>
+			<Value ID="_1360x768">1360x768</Value>
+			<Value ID="_1280x1024">1280x1024</Value>
+			<Value ID="_1280x960">1280x960</Value>
+			<Value ID="_1280x800">1280x800</Value>
+			<Value ID="_1280x768">1280x768</Value>
+			<Value ID="_1280x720">1280x720</Value>
+			<Value ID="_1152x864">1152x864</Value>
+			<Value ID="_1024x768">1024x768</Value>
+			<Value ID="_800x600">800x600</Value>
+			<Value ID="_640x480">640x480</Value>
 		</Enum>
 		<Enum ID="ScreenRotation">
 			<Value ID="None">None</Value>

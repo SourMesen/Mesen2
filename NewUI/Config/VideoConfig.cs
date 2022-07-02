@@ -1,4 +1,5 @@
 ﻿using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -42,8 +43,7 @@ namespace Mesen.Config
 		[Reactive] public bool FullscreenForceIntegerScale { get; set; } = false;
 		[Reactive] public bool UseExclusiveFullscreen { get; set; } = false;
 		[Reactive] public UInt32 ExclusiveFullscreenRefreshRate { get; set; } = 60;
-		[Reactive] public UInt32 FullscreenResWidth { get; set; } = 0;
-		[Reactive] public UInt32 FullscreenResHeight { get; set; } = 0;
+		[Reactive] public FullscreenResolution ExclusiveFullscreenResolution { get; set; } = 0;
 
 		[Reactive] public ScreenRotation ScreenRotation { get; set; } = ScreenRotation.None;
 
@@ -84,8 +84,8 @@ namespace Mesen.Config
 				FullscreenForceIntegerScale = this.FullscreenForceIntegerScale,
 				UseExclusiveFullscreen = this.UseExclusiveFullscreen,
 				ExclusiveFullscreenRefreshRate = this.ExclusiveFullscreenRefreshRate,
-				FullscreenResWidth = this.FullscreenResWidth,
-				FullscreenResHeight = this.FullscreenResHeight,
+				FullscreenResWidth = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary.Bounds.Width ?? 1920) : ExclusiveFullscreenResolution.GetWidth()),
+				FullscreenResHeight = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary.Bounds.Height ?? 1080) : ExclusiveFullscreenResolution.GetHeight()),
 
 				ScreenRotation = (uint)ScreenRotation,
 			});
@@ -182,5 +182,44 @@ namespace Mesen.Config
 		_2x,
 		_4x,
 		_8x
+	}
+
+	public enum FullscreenResolution
+	{
+		Default,
+		_3840x2160,
+		_2560x1440,
+		_2160x1200,
+		_1920x1440,
+		_1920x1200,
+		_1920x1080,
+		_1680x1050,
+		_1600x1200,
+		_1600x1024,
+		_1600x900,
+		_1366x768,
+		_1360x768,
+		_1280x1024,
+		_1280x960,
+		_1280x800,
+		_1280x768,
+		_1280x720,
+		_1152x864,
+		_1024x768,
+		_800x600,
+		_640x480
+	}
+
+	public static class FullscreenResolutionExtensions
+	{
+		public static int GetWidth(this FullscreenResolution res)
+		{
+			return Int32.Parse(res.ToString().Substring(1, res.ToString().IndexOf("x") - 1));
+		}
+
+		public static int GetHeight(this FullscreenResolution res)
+		{
+			return Int32.Parse(res.ToString().Substring(res.ToString().IndexOf("x") + 1));
+		}
 	}
 }

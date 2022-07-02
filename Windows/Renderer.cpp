@@ -27,12 +27,12 @@ Renderer::~Renderer()
 	CleanupDevice();
 }
 
-void Renderer::SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight)
+void Renderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle)
 {
 	if(fullscreen != _fullscreen || _hWnd != (HWND)windowHandle) {
 		_hWnd = (HWND)windowHandle;
-		_monitorWidth = monitorWidth;
-		_monitorHeight = monitorHeight;
+		_monitorWidth = _emu->GetSettings()->GetVideoConfig().FullscreenResWidth;
+		_monitorHeight = _emu->GetSettings()->GetVideoConfig().FullscreenResHeight;
 		_newFullscreen = fullscreen;
 	}
 }

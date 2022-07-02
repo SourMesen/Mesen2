@@ -16,7 +16,7 @@ namespace DirectX {
 	class SpriteBatch;
 }
 
-class Renderer : public BaseRenderer, public IRenderingDevice
+class Renderer final : public BaseRenderer, public IRenderingDevice
 {
 private:
 	HWND                    _hWnd = nullptr;
@@ -79,11 +79,11 @@ public:
 	Renderer(Emulator* emu, HWND hWnd, bool registerAsMessageManager);
 	~Renderer();
 
-	void SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight);
+	void SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle) override;
 
-	void Reset();
-	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight);
-	void ClearFrame();
+	void Reset() override;
+	void Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight) override;
+	void ClearFrame() override;
 
-	void UpdateFrame(RenderedFrame& frame);
+	void UpdateFrame(RenderedFrame& frame) override;
 };

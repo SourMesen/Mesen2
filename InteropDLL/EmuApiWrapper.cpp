@@ -98,10 +98,10 @@ extern "C" {
 		}
 	}
 
-	DllExport void __stdcall SetFullscreenMode(bool fullscreen, void *windowHandle, uint32_t monitorWidth, uint32_t monitorHeight)
+	DllExport void __stdcall SetExclusiveFullscreenMode(bool fullscreen, void *windowHandle)
 	{
 		if(_renderer) {
-			_renderer->SetFullscreenMode(fullscreen, windowHandle, monitorWidth, monitorHeight);
+			_renderer->SetExclusiveFullscreenMode(fullscreen, windowHandle);
 		}
 	}
 

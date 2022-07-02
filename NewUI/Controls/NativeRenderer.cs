@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Platform;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using System;
@@ -37,6 +38,15 @@ namespace Mesen
 			if(height > finalSize.Height) {
 				height = finalSize.Height;
 				width = height * aspectRatio;
+			}
+
+			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && wnd.WindowState == WindowState.FullScreen) {
+				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+				double scale = (height * LayoutHelper.GetLayoutScale(this)) / baseSize.Height;
+				if(scale != Math.Floor(scale)) {
+					height = baseSize.Height * Math.Max(1, Math.Floor(scale));
+					width = height * aspectRatio;
+				}
 			}
 
 			EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));

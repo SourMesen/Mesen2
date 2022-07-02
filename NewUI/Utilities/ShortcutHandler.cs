@@ -32,7 +32,7 @@ namespace Mesen.Utilities
 				return;
 			}
 
-			//bool restoreFullscreen = _displayManager.ExclusiveFullscreen;
+			bool isFullscreen = _mainWindow.WindowState == WindowState.FullScreen && ConfigManager.Config.Video.UseExclusiveFullscreen;
 
 			switch(shortcut) {
 				case EmulatorShortcut.Reset: Reset(); break;
@@ -48,7 +48,10 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleGameTimer: ToggleGameTimer(); break;
 				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
 				case EmulatorShortcut.ToggleOsd: ToggleOsd(); break;
+				
+				//TODO
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
+
 				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;
 				case EmulatorShortcut.ToggleCheats: ToggleCheats(); break;
 				case EmulatorShortcut.MaxSpeed: ToggleMaxSpeed(); break;
@@ -102,29 +105,19 @@ namespace Mesen.Utilities
 					break;
 
 				case EmulatorShortcut.LoadStateDialog:
-					//TODO
-					/*if(_displayManager.ExclusiveFullscreen) {
-						_displayManager.SetFullscreenState(false);
-						restoreFullscreen = false;
-					}*/
+					if(isFullscreen) {
+						_mainWindow.ToggleFullscreen();
+					}
 					MainWindowModel.RecentGames.Init(GameScreenMode.LoadState);
 					break;
 
 				case EmulatorShortcut.SaveStateDialog:
-					//TODO
-					/*if(_displayManager.ExclusiveFullscreen) {
-						_displayManager.SetFullscreenState(false);
-						restoreFullscreen = false;
-					}*/
+					if(isFullscreen) {
+						_mainWindow.ToggleFullscreen();
+					}
 					MainWindowModel.RecentGames.Init(GameScreenMode.SaveState);
 					break;
 			}
-
-			//TODO
-			/*if(restoreFullscreen && !_displayManager.ExclusiveFullscreen) {
-				//Need to restore fullscreen mode after showing a dialog
-				_displayManager.SetFullscreenState(true);
-			}*/
 		}
 
 		private async void InputBarcode()

@@ -17,6 +17,7 @@ using Mesen.Views;
 using Avalonia.Layout;
 using Mesen.Debugger.Utilities;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Mesen.Windows
 {
@@ -85,7 +86,9 @@ namespace Mesen.Windows
 				ValidateExit();
 			} else {
 				_timerBackgroundFlag.Stop();
+				EmuApi.Stop();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
+				ConfigManager.Config.Save();
 			}
 		}
 
@@ -100,7 +103,6 @@ namespace Mesen.Windows
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			ConfigManager.Config.Save();
 			EmuApi.Release();
 		}
 
@@ -293,8 +295,45 @@ namespace Mesen.Windows
 		{
 			if(WindowState == WindowState.FullScreen) {
 				WindowState = WindowState.Normal;
+				if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
+					EmuApi.SetExclusiveFullscreenMode(false, _renderer.Handle);
+				}
+				RestoreOriginalWindowSize();
 			} else {
+				_originalSize = ClientSize;
+				_originalPos = Position;
+				if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
+					if(!EmuApi.IsRunning()) {
+						//Prevent entering fullscreen mode until a game is loaded
+						return;
+					}
+					EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl.Handle.Handle);
+				}
 				WindowState = WindowState.FullScreen;
+			}
+		}
+
+		private void RestoreOriginalWindowSize()
+		{
+			Task.Run(() => {
+				Thread.Sleep(30);
+				Dispatcher.UIThread.Post(() => {
+					ClientSize = _originalSize;
+					Position = _originalPos;
+				});
+				Thread.Sleep(100);
+				Dispatcher.UIThread.Post(() => {
+					ClientSize = _originalSize;
+					Position = _originalPos;
+				});
+			});
+		}
+
+		protected override void OnLostFocus(RoutedEventArgs e)
+		{
+			base.OnLostFocus(e);
+			if(WindowState == WindowState.FullScreen && ConfigManager.Config.Video.UseExclusiveFullscreen) {
+				ToggleFullscreen();
 			}
 		}
 
@@ -319,6 +358,9 @@ namespace Mesen.Windows
 		}
 
 		private bool _needResume = false;
+		private Size _originalSize;
+		private PixelPoint _originalPos;
+
 		private void timerUpdateBackgroundFlag(object? sender, EventArgs e)
 		{
 			Window? activeWindow = ApplicationHelper.GetActiveWindow();

@@ -47,13 +47,22 @@
 					<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
 						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 							<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
-							<ComboBox Grid.Row="0" Grid.Column="1" SelectedIndex="0">
-								<ComboBoxItem>Default</ComboBoxItem>
-							</ComboBox>
+							<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.ExclusiveFullscreenResolution}" />
 
 							<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRate}" />
-							<ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="0">
-								<ComboBoxItem>60 Hz</ComboBoxItem>
+							<ComboBox
+								Grid.Row="1" Grid.Column="1"
+								SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRate}"
+								Items="{CompiledBinding AvailableRefreshRates}"
+							>
+								<ComboBox.DataTemplates>
+									<DataTemplate DataType="{x:Type x:UInt32}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Text="{Binding}" />
+											<TextBlock Text=" Hz" />
+										</StackPanel>
+									</DataTemplate>
+								</ComboBox.DataTemplates>
 							</ComboBox>
 						</Grid>
 					</StackPanel>

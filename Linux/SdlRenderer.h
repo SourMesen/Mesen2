@@ -53,5 +53,5 @@ public:
 	void Render(uint32_t* hudBuffer, uint32_t width, uint32_t height) override;
 	void Reset() override;
 
-	void SetFullscreenMode(bool fullscreen, void* windowHandle, uint32_t monitorWidth, uint32_t monitorHeight) override;
+	void SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle) override;
 };
