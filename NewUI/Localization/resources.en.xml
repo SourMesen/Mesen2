@@ -1863,6 +1863,10 @@
 			<Value ID="BottomLeft">Bottom Left</Value>
 			<Value ID="BottomRight">Bottom Right</Value>
 		</Enum>
+		<Enum ID="MesenTheme">
+			<Value ID="Light">Light</Value>
+			<Value ID="Dark">Dark</Value>
+		</Enum>
 		<Enum ID="Language">
 			<Value ID="SystemDefault">User Account Default</Value>
 			<Value ID="English">English</Value>

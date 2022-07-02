@@ -54,6 +54,10 @@ namespace Mesen.Controls
 		static MesenNumericTextBox()
 		{
 			ValueProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
+				if(!x.IsInitialized) {
+					return;
+				}
+
 				x.SetNewValue(x.Value);
 				x.UpdateText();
 				x.MaxLength = x.GetMaxLength();
@@ -65,6 +69,10 @@ namespace Mesen.Controls
 			});
 
 			TextProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
+				if(!x.IsInitialized) {
+					return;
+				}
+
 				x.UpdateValueFromText();
 				x.UpdateText();
 			});
@@ -209,7 +217,9 @@ namespace Mesen.Controls
 			} else if(min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
 				val = 0;
 			}
-			Value = val;
+			if(Value != val) {
+				Value = val;
+			}
 		}
 
 		private void UpdateText(bool force = false)
