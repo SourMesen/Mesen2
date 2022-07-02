@@ -331,6 +331,16 @@ namespace Mesen.Debugger.Views
 			_model?.SetViewer(null);
 		}
 
+		protected override void OnPointerPressed(PointerPressedEventArgs e)
+		{
+			base.OnPointerPressed(e);
+
+			//Navigate on double-click left click
+			if(ActionLocation.RelAddress != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
+				Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true);
+			}
+		}
+
 		private void Parent_Selected(object? sender, EventArgs e)
 		{
 			Dispatcher.UIThread.Post(() => {
