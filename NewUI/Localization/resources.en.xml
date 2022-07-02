@@ -1192,6 +1192,7 @@
 			<Control ID="lblComment">Comment:</Control>
 			<Control ID="lblLength">Length:</Control>
 			<Control ID="lblBytes">bytes</Control>
+			<Control ID="btnDelete">Delete Label</Control>
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

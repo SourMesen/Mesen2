@@ -22,15 +22,22 @@ namespace Mesen.Debugger.ViewModels
 		[ObservableAsProperty] public string MaxAddress { get; } = "";
 		[Reactive] public string ErrorMessage { get; private set; } = "";
 		
+		public bool AllowDelete { get; } = false;
+		
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 		public CpuType CpuType { get; }
+
+		private CodeLabel? _originalLabel;
 
 		[Obsolete("For designer only")]
 		public LabelEditViewModel() : this(CpuType.Snes, new CodeLabel()) { }
 
 		public LabelEditViewModel(CpuType cpuType, CodeLabel label, CodeLabel? originalLabel = null)
 		{
+			_originalLabel = originalLabel;
+
 			Label = new ReactiveCodeLabel(label);
+			AllowDelete = originalLabel != null;
 
 			if(Design.IsDesignMode) {
 				return;
@@ -91,6 +98,13 @@ namespace Mesen.Debugger.ViewModels
 
 				return false;
 			}).ToPropertyEx(this, x => x.OkEnabled));
+		}
+
+		public void DeleteLabel()
+		{
+			if(_originalLabel != null) {
+				LabelManager.DeleteLabel(_originalLabel, true);
+			}
 		}
 
 		public void Commit()

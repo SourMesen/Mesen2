@@ -59,6 +59,11 @@ namespace Mesen.Debugger.Labels
 			return _reverseLookup.ContainsKey(label) ? _reverseLookup[label] : null;
 		}
 
+		public static bool ContainsLabel(CodeLabel label)
+		{
+			return _labels.Contains(label);
+		}
+
 		public static void SetLabels(IEnumerable<CodeLabel> labels, bool raiseEvents = true)
 		{
 			foreach(CodeLabel label in labels) {

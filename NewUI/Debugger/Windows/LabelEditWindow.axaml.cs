@@ -12,9 +12,18 @@ namespace Mesen.Debugger.Windows
 {
 	public class LabelEditWindow : Window
 	{
-		public LabelEditWindow()
+		private LabelEditViewModel _model;
+		
+		[Obsolete("For designer only")]
+		public LabelEditWindow() : this(new()) { }
+
+		public LabelEditWindow(LabelEditViewModel model)
 		{
 			InitializeComponent();
+
+			DataContext = model;
+			_model = model;
+
 #if DEBUG
 			this.AttachDevTools();
 #endif
@@ -33,14 +42,23 @@ namespace Mesen.Debugger.Windows
 
 		public static async void EditLabel(CpuType cpuType, Control parent, CodeLabel label)
 		{
-			CodeLabel copy = label.Clone();
-			LabelEditViewModel model = new LabelEditViewModel(cpuType, copy, label);
-			LabelEditWindow wnd = new LabelEditWindow() { DataContext = model };
+			LabelEditViewModel model;
+			CodeLabel? copy = null;
+			if(LabelManager.ContainsLabel(label)) {
+				copy = label.Clone();
+				model = new LabelEditViewModel(cpuType, copy, label);
+			} else {
+				model = new LabelEditViewModel(cpuType, label, null);
+			}
+
+			LabelEditWindow wnd = new LabelEditWindow(model);
 
 			bool result = await wnd.ShowCenteredDialog<bool>(parent);
 			if(result) {
 				model.Commit();
-				label.CopyFrom(copy);
+				if(copy != null) {
+					label.CopyFrom(copy);
+				}
 				LabelManager.SetLabel(label, true);
 			}
 
@@ -54,6 +72,12 @@ namespace Mesen.Debugger.Windows
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
+			Close(false);
+		}
+
+		private void Delete_OnClick(object sender, RoutedEventArgs e)
+		{
+			_model.DeleteLabel();
 			Close(false);
 		}
 	}
