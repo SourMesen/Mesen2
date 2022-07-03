@@ -81,6 +81,12 @@ namespace Mesen.Controls
 		public MesenNumericTextBox()
 		{
 		}
+		
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
+			UpdateText(true);
+		}
 
 		int? GetMin()
 		{
