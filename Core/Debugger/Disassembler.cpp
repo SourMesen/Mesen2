@@ -233,8 +233,11 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 			//Move to the end of the instruction (but realign disassembly if another valid instruction is found)
 			//This can sometimes happen if the 2nd byte of BRK/COP is reused as the first byte of the next instruction
 			//Also required when disassembling unvalidated data as code (to realign once we find verified code)
-			for(int j = 1, max = (int)src.Cache.size(); j < opSize && addrInfo.Address + j < max; j++) {
-				if(src.Cache[addrInfo.Address + j].IsInitialized()) {
+			MemoryType prevMemType = addrInfo.Type;
+			for(int j = 1; j < opSize && i + j < bankEnd; j++) {
+				relAddress.Address = i + j;
+				addrInfo = _console->GetAbsoluteAddress(relAddress);
+				if(addrInfo.Type != prevMemType || src.Cache[addrInfo.Address].IsInitialized()) {
 					break;
 				}
 				i++;
