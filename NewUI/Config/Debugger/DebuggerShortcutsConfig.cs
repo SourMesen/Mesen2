@@ -73,7 +73,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.DecreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
 			Add(new() { Shortcut = DebuggerShortcut.ResetFontSize, KeyBinding = new(KeyModifiers.Control, Key.D0) });
 
-			Add(new() { Shortcut = DebuggerShortcut.GoTo, KeyBinding = new(KeyModifiers.Control, Key.G) });
+			Add(new() { Shortcut = DebuggerShortcut.GoToAddress, KeyBinding = new(KeyModifiers.Control, Key.G) });
 
 			Add(new() { Shortcut = DebuggerShortcut.Find, KeyBinding = new(KeyModifiers.Control, Key.F) });
 			Add(new() { Shortcut = DebuggerShortcut.FindNext, KeyBinding = new(Key.F3) });
@@ -145,7 +145,13 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.BreakOn, KeyBinding = new(KeyModifiers.Alt, Key.B) });
 
 			Add(new() { Shortcut = DebuggerShortcut.FindOccurrences, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F) });
+			
 			Add(new() { Shortcut = DebuggerShortcut.GoToProgramCounter, KeyBinding = new(KeyModifiers.Alt, Key.Multiply) });
+			Add(new() { Shortcut = DebuggerShortcut.GoToCpuVector1, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.GoToCpuVector2, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.GoToCpuVector3, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.GoToCpuVector4, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.GoToCpuVector5, KeyBinding = new() });
 
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_ViewInMemoryViewer, KeyBinding = new(Key.F1) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_AddToWatch, KeyBinding = new() });
@@ -193,7 +199,6 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.FindResultList_GoToLocation, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.FindResultList_ToggleBreakpoint, KeyBinding = new() });
 
-			Add(new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new(KeyModifiers.Control, Key.S) });
 			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() });
 			
@@ -271,7 +276,7 @@ namespace Mesen.Config
 		IncreaseFontSize,
 		DecreaseFontSize,
 		ResetFontSize,
-		GoTo,
+		GoToAddress,
 		Find,
 		FindNext,
 		FindPrev,
@@ -328,6 +333,11 @@ namespace Mesen.Config
 		BreakOn,
 		FindOccurrences,
 		GoToProgramCounter,
+		GoToCpuVector1,
+		GoToCpuVector2,
+		GoToCpuVector3,
+		GoToCpuVector4,
+		GoToCpuVector5,
 		CodeWindow_MoveProgramCounter,
 		CodeWindow_EditSelectedCode,
 		CodeWindow_EditSourceFile,
@@ -364,7 +374,6 @@ namespace Mesen.Config
 		FindResultList_GoToLocation,
 		FindResultList_AddWatch,
 		FindResultList_ToggleBreakpoint,
-		SaveRom,
 		SaveRomAs,
 		SaveEditAsIps,
 		MemoryViewer_Freeze,

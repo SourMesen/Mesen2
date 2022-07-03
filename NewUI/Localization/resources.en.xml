@@ -1151,7 +1151,7 @@
 		</Form>
 		
 		<Form ID="GoToWindow">
-			<Control ID="wndTitle">Go To...</Control>
+			<Control ID="wndTitle">Go to Address...</Control>
 			<Control ID="lblAddress">Address:</Control>
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -2251,7 +2251,7 @@
 			<Value ID="IncreaseFontSize">Increase Font Size</Value>
 			<Value ID="DecreaseFontSize">Decrease Font Size</Value>
 			<Value ID="ResetFontSize">Reset Font Size</Value>
-			<Value ID="GoTo">Go To...</Value>
+			<Value ID="GoTo">Go to...</Value>
 			<Value ID="Find">Find</Value>
 			<Value ID="FindNext">Find Next</Value>
 			<Value ID="FindPrev">Find Previous</Value>
@@ -2311,7 +2311,13 @@
 			<Value ID="ExportWatchEntries">Export watch entries</Value>
 			<Value ID="ResetWorkspace">Reset workspace</Value>
 			<Value ID="FindOccurrences">Find Occurrences</Value>
-			<Value ID="GoToProgramCounter">Go To Program Counter</Value>
+			<Value ID="GoToProgramCounter">Go to Program Counter</Value>
+			<Value ID="GoToAddress">Go to Address...</Value>
+			<Value ID="GoToCpuVector1">Go to [CPU vector 1]</Value>
+			<Value ID="GoToCpuVector2">Go to [CPU vector 2]</Value>
+			<Value ID="GoToCpuVector3">Go to [CPU vector 3]</Value>
+			<Value ID="GoToCpuVector4">Go to [CPU vector 4]</Value>
+			<Value ID="GoToCpuVector5">Go to [CPU vector 5]</Value>
 			<Value ID="CodeWindow_ViewInMemoryViewer">Code Window: View in Memory Viewer</Value>
 			<Value ID="CodeWindow_AddToWatch">Code Window: Add to Watch</Value>
 			<Value ID="CodeWindow_GoToLocation">Code Window: Go to Location</Value>
@@ -2501,7 +2507,9 @@
 			<Value ID="LoadTblFile">Load TBL file...</Value>
 			<Value ID="ResetTblMappings">Reset TBL mappings</Value>
 
+			<Value ID="GoTo">Go to...</Value>
 			<Value ID="GoToAddress">Go to address...</Value>
+			<Value ID="GoToProgramCounter">Program Counter</Value>
 			<Value ID="GoToAll">Go to all...</Value>
 
 			<Value ID="OpenAssembler">Assembler</Value>

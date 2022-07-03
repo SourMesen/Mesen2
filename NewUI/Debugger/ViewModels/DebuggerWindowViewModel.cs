@@ -67,6 +67,8 @@ namespace Mesen.Debugger.ViewModels
 		public CpuType CpuType { get; private set; }
 		private UInt64 _masterClock = 0;
 
+		private List<object> _gotoSubActions = new();
+
 		[Obsolete("For designer only")]
 		public DebuggerWindowViewModel() : this(null) { }
 
@@ -445,9 +447,38 @@ namespace Mesen.Debugger.ViewModels
 		public void InitializeMenu(Window wnd)
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
-			
+
+			_gotoSubActions = new() {
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToAddress,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToAddress),
+					OnClick = async () => {
+						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
+						if(address != null) {
+							ScrollToAddress(address.Value);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.GoToProgramCounter,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToProgramCounter),
+					OnClick = () => {
+						if(Disassembly.ActiveAddress != null) {
+							ScrollToAddress(Disassembly.ActiveAddress.Value);
+						}
+					}
+				}
+			};
+
+			InitGoToCpuVectorActions();
+
 			ToolbarItems = AddDisposables(GetDebugMenu(wnd, true));
 			DebugMenuItems = AddDisposables(GetDebugMenu(wnd, false));
+
+			ToolbarItems.Add(new ContextMenuAction() {
+				ActionType = ActionType.GoTo,
+				SubActions = _gotoSubActions
+			});
 
 			FileMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				SaveRomActionHelper.GetSaveRomAction(wnd),
@@ -516,14 +547,8 @@ namespace Mesen.Debugger.ViewModels
 
 			SearchMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
-					ActionType = ActionType.GoToAddress,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoTo),
-					OnClick = async () => {
-						int? address = await new GoToWindow(DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1).ShowCenteredDialog<int?>(wnd);
-						if(address != null) {
-							ScrollToAddress(address.Value);
-						}
-					}
+					ActionType = ActionType.GoTo,
+					SubActions = _gotoSubActions
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAll,
@@ -577,6 +602,51 @@ namespace Mesen.Debugger.ViewModels
 				DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
 				DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
 			});
+		}
+
+		private void InitGoToCpuVectorActions()
+		{
+			DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
+
+			if(features.CpuVectorCount == 0) {
+				return;
+			}
+
+			int getAddress(CpuVectorDefinition def)
+			{
+				if(def.Type == VectorType.Indirect) {
+					byte[] vector = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), def.Address, def.Address + 1);
+					return vector[0] | (vector[1] << 8);
+				} else {
+					return (int)def.Address;
+				}
+			}
+
+			Func<DbgShortKeys>? getShortcut(int index)
+			{
+				switch(index) {
+					case 0: return () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToCpuVector1);
+					case 1: return () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToCpuVector2);
+					case 2: return () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToCpuVector3);
+					case 3: return () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToCpuVector4);
+					case 4: return () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.GoToCpuVector5);
+				}
+				return null;
+			}
+
+			_gotoSubActions.Add(new ContextMenuSeparator());
+
+			for(int i = 0; i < features.CpuVectorCount; i++) {
+				CpuVectorDefinition def = features.CpuVectors[i];
+				string name = Utf8Utilities.GetStringFromArray(features.CpuVectors[i].Name);
+				_gotoSubActions.Add(new ContextMenuAction() {
+					ActionType = ActionType.Custom,
+					Shortcut = getShortcut(i),
+					HintText = () => $"${getAddress(def):X4}",
+					OnClick = () => ScrollToAddress(getAddress(def)),
+					CustomText = name
+				});
+			}
 		}
 
 		private List<ContextMenuAction> GetDebugMenu(Control wnd, bool forToolbar)

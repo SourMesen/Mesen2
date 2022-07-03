@@ -316,6 +316,14 @@ DebuggerFeatures PceDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+
+	features.CpuVectors[0] = { "NMI", 0xFFFC };
+	features.CpuVectors[1] = { "IRQ1", 0xFFF8 };
+	features.CpuVectors[2] = { "IRQ2", 0xFFF6 };
+	features.CpuVectors[3] = { "Timer", 0xFFFA };
+	features.CpuVectors[4] = { "Reset", 0xFFFE };
+	features.CpuVectorCount = 5;
+
 	return features;
 }
 

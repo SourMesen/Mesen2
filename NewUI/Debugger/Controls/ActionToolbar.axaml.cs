@@ -51,6 +51,18 @@ namespace Mesen.Debugger.Controls
 			_timer.Stop();
 		}
 
+		private void Button_OnClick(object sender, RoutedEventArgs e)
+		{
+			if(sender is Button btn && btn.DataContext is ContextMenuAction action && action.SubActions?.Count > 0) {
+				((Button)sender).ContextMenu?.Open();
+			}
+		}
+
+		private void Button_ContextRequested(object? sender, ContextRequestedEventArgs e)
+		{
+			e.Handled = true;
+		}
+
 		private void UpdateToolbar()
 		{
 			foreach(object item in Items) {

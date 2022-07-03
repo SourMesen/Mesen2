@@ -111,7 +111,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.ZoomIn,
 				DebuggerShortcut.ZoomOut,
 				DebuggerShortcut.SaveAsPng,
-				DebuggerShortcut.GoTo,
+				DebuggerShortcut.GoToAddress,
 				DebuggerShortcut.Find,
 				DebuggerShortcut.FindNext,
 				DebuggerShortcut.FindPrev,
@@ -222,6 +222,11 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.RunToIrq,
 				DebuggerShortcut.FindOccurrences,
 				DebuggerShortcut.GoToProgramCounter,
+				DebuggerShortcut.GoToCpuVector1,
+				DebuggerShortcut.GoToCpuVector2,
+				DebuggerShortcut.GoToCpuVector3,
+				DebuggerShortcut.GoToCpuVector4,
+				DebuggerShortcut.GoToCpuVector5,
 				DebuggerShortcut.CodeWindow_EditSelectedCode,
 				//DebuggerShortcut.CodeWindow_EditSourceFile,
 				DebuggerShortcut.CodeWindow_AddToWatch,
@@ -233,7 +238,6 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.CodeWindow_DisableEnableBreakpoint,
 				DebuggerShortcut.CodeWindow_MoveProgramCounter,
 				DebuggerShortcut.CodeWindow_GoToLocation,
-				//DebuggerShortcut.CodeWindow_SwitchView,
 				DebuggerShortcut.LabelList_Add,
 				DebuggerShortcut.LabelList_Edit,
 				DebuggerShortcut.LabelList_Delete,
@@ -261,7 +265,6 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.FindResultList_AddWatch,
 				DebuggerShortcut.FindResultList_GoToLocation,
 				DebuggerShortcut.FindResultList_ToggleBreakpoint,
-				//DebuggerShortcut.SaveRom,
 				DebuggerShortcut.SaveRomAs,
 				DebuggerShortcut.SaveEditAsIps,
 				DebuggerShortcut.ResetCdl,
@@ -271,8 +274,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.ExportLabels,
 				DebuggerShortcut.ImportWatchEntries,
 				DebuggerShortcut.ExportWatchEntries,
-				DebuggerShortcut.ResetWorkspace,
-				//DebuggerShortcut.RevertPrgChrChanges
+				DebuggerShortcut.ResetWorkspace
 			});
 		}
 

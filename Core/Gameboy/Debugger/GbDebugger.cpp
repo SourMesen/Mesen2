@@ -317,6 +317,14 @@ DebuggerFeatures GbDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+
+	features.CpuVectors[0] = { "V. Blank IRQ", 0x40, VectorType::Direct };
+	features.CpuVectors[1] = { "LCD Stat IRQ", 0x48, VectorType::Direct };
+	features.CpuVectors[2] = { "Timer IRQ", 0x50, VectorType::Direct };
+	features.CpuVectors[3] = { "Serial IRQ", 0x58, VectorType::Direct };
+	features.CpuVectors[4] = { "Joypad IRQ", 0x60, VectorType::Direct };
+	features.CpuVectorCount = 5;
+
 	return features;
 }
 

@@ -378,6 +378,17 @@ DebuggerFeatures SnesDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+
+	features.CpuVectors[0] = { "NMI", 0xFFEA };
+	features.CpuVectors[1] = { "IRQ", 0xFFEE };
+	features.CpuVectors[2] = { "Reset", 0xFFFC };
+	features.CpuVectors[3] = { "BRK", 0xFFE6 };
+	features.CpuVectors[4] = { "COP", 0xFFE4 };
+	features.CpuVectors[5] = { "NMI (6502)", 0xFFFA };
+	features.CpuVectors[6] = { "IRQ (6502)", 0xFFFE };
+	features.CpuVectors[7] = { "COP (6502)", 0xFFF4 };
+	features.CpuVectorCount = 8;
+
 	return features;
 }
 

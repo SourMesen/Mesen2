@@ -54,7 +54,14 @@
 			</DataTemplate>
 			
 			<DataTemplate DataType="{x:Type du:ContextMenuAction}">
-				<Button ToolTip.Tip="{Binding ActionName}" Command="{Binding ClickCommand}" IsEnabled="{Binding Enabled}" IsVisible="{Binding Visible}">
+				<Button
+					ToolTip.Tip="{Binding ActionName}"
+					Command="{Binding ClickCommand}"
+					Click="Button_OnClick"
+					IsEnabled="{Binding Enabled}"
+					IsVisible="{Binding Visible}"
+					ContextRequested="Button_ContextRequested"
+				>
 					<StackPanel Orientation="Horizontal">
 						<ContentPresenter Content="{Binding ActionIcon}" />
 						<TextBlock
@@ -71,6 +78,13 @@
 							</TextBlock.IsVisible>
 						</TextBlock>
 					</StackPanel>
+					<Button.ContextMenu>
+						<ContextMenu
+							IsEnabled="{Binding SubActions, Converter={x:Static ObjectConverters.IsNotNull}}"
+							Classes="ActionMenu"
+						  Items="{Binding SubActions}"
+						/>
+					</Button.ContextMenu>
 				</Button>
 			</DataTemplate>
 		</ItemsPresenter.DataTemplates>

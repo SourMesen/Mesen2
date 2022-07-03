@@ -16,6 +16,7 @@
 #include "NES/NesPpu.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesMemoryManager.h"
+#include "NES/Mappers/NsfMapper.h"
 #include "NES/Debugger/DummyNesCpu.h"
 #include "NES/Debugger/NesCodeDataLogger.h"
 #include "NES/Debugger/NesDebugger.h"
@@ -355,6 +356,19 @@ DebuggerFeatures NesDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+
+	if(_console->GetRomFormat() == RomFormat::Nsf) {
+		NsfHeader header = ((NsfMapper*)_mapper)->GetNsfHeader();
+		features.CpuVectors[0] = { "Init", header.InitAddress, VectorType::Direct };
+		features.CpuVectors[1] = { "Play", header.PlayAddress, VectorType::Direct };
+		features.CpuVectorCount = 2;
+	} else {
+		features.CpuVectors[0] = { "NMI", 0xFFFA };
+		features.CpuVectors[1] = { "IRQ", 0xFFFE };
+		features.CpuVectors[2] = { "Reset", 0xFFFC };
+		features.CpuVectorCount = 3;
+	}
+
 	return features;
 }
 

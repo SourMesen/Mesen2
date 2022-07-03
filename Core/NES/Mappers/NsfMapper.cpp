@@ -206,26 +206,6 @@ void NsfMapper::SelectNextTrack()
 
 void NsfMapper::ProcessCpuClock()
 {
-	//TODO DEBUGGER
-	/*if(_console->IsDebuggerAttached()) {
-		shared_ptr<Debugger> debugger = _console->GetDebugger(false);
-		if(debugger) {
-			uint16_t programCounter = _console->GetCpu()->GetPC();
-			if(_debugIrqStatus == NsfIrqType::Init && programCounter == _nsfHeader.InitAddress) {
-				_debugIrqStatus = NsfIrqType::None;
-				if(debugger->CheckFlag(DebuggerFlags::BreakOnInit)) {
-					debugger->Step(1);
-				}
-			} else if(_debugIrqStatus == NsfIrqType::Play && programCounter == _nsfHeader.PlayAddress) {
-				_debugIrqStatus = NsfIrqType::None;
-				if(debugger->CheckFlag(DebuggerFlags::BreakOnPlay)) {
-					debugger->Step(1);
-				}
-			}
-		}
-	}
-	*/
-
 	if(_irqCounter > 0) {
 		_irqCounter--;
 		if(_irqCounter == 0) {

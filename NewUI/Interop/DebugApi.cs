@@ -1063,6 +1063,20 @@ namespace Mesen.Interop
 		public byte[] Format;
 	}
 
+	public enum VectorType
+	{
+		Indirect,
+		Direct,
+	}
+
+	public struct CpuVectorDefinition
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
+		public byte[] Name;
+		public UInt32 Address;
+		public VectorType Type;
+	}
+
 	public struct DebuggerFeatures
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool RunToIrq;
@@ -1072,6 +1086,10 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool StepBack;
 		[MarshalAs(UnmanagedType.I1)] public bool ChangeProgramCounter;
 		[MarshalAs(UnmanagedType.I1)] public bool CallStack;
+
+		public byte CpuVectorCount;		
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
+		public CpuVectorDefinition[] CpuVectors;
 	}
 
 	public enum EvalResultType

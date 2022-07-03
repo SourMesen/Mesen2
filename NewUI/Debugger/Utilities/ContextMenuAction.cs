@@ -108,13 +108,15 @@ namespace Mesen.Debugger.Utilities
 		[Reactive] public bool Enabled { get; set; }
 		[Reactive] public bool Visible { get; set; }
 
+		private static ReactiveCommand<Unit, Unit> _emptyCommand = ReactiveCommand.Create(() => { });
+
 		private ReactiveCommand<Unit, Unit>? _clickCommand;
 		public ReactiveCommand<Unit, Unit>? ClickCommand
 		{
 			get
 			{
 				Update();
-				return _clickCommand;
+				return _clickCommand ?? ContextMenuAction._emptyCommand;
 			}
 		}
 
@@ -416,7 +418,10 @@ namespace Mesen.Debugger.Utilities
 		
 		LoadTblFile,
 		ResetTblMappings,
+
+		GoTo,
 		GoToAddress,
+		GoToProgramCounter,
 		GoToAll,
 
 		[IconFile("Debugger")]
