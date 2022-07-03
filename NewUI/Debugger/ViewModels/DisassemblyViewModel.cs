@@ -313,8 +313,6 @@ namespace Mesen.Debugger.ViewModels
 						break;
 					}
 
-					string indent = "".PadLeft(lineData.Indentation / 10);
-
 					string codeString = lineData.Text.Trim();
 					if(lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.BlockStart)) {
 						if(getHeaders) {
@@ -336,7 +334,8 @@ namespace Mesen.Debugger.ViewModels
 
 					codeString = codeString.PadRight(padding);
 
-					string line = indent + codeString;
+					bool indentText = !(lineData.Flags.HasFlag(LineFlags.ShowAsData) || lineData.Flags.HasFlag(LineFlags.BlockStart) || lineData.Flags.HasFlag(LineFlags.BlockEnd) || lineData.Flags.HasFlag(LineFlags.Label) || (lineData.Flags.HasFlag(LineFlags.Comment) && lineData.Text.Length == 0));
+					string line = (indentText ? "  " : "") + codeString;
 					if(getByteCode) {
 						line = lineData.ByteCodeStr.PadRight(13) + line;
 					}
@@ -351,7 +350,7 @@ namespace Mesen.Debugger.ViewModels
 						line = line + lineData.Comment;
 					}
 
-					string result = line.Trim();
+					string result = line.TrimEnd();
 					if(result.Length > 0) {
 						sb.AppendLine(result);
 					}

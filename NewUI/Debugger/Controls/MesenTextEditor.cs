@@ -16,8 +16,6 @@ namespace Mesen.Debugger.Controls
 {
 	public class MesenTextEditor : TextEditor, IStyleable
 	{
-		public static IHighlightingDefinition Asm6502Highlighting { get; }
-
 		Type IStyleable.StyleKey => typeof(TextEditor);
 
 		public static readonly StyledProperty<string> TextBindingProperty = AvaloniaProperty.Register<MesenTextEditor, string>(nameof(TextBinding), "", defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
@@ -52,10 +50,6 @@ namespace Mesen.Debugger.Controls
 
 		static MesenTextEditor()
 		{
-			using XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Highlight6502.xshd")!);
-			XshdSyntaxDefinition xshd = HighlightingLoader.LoadXshd(reader);
-			Asm6502Highlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
-
 			TextBindingProperty.Changed.AddClassHandler<MesenTextEditor>((x, e) => {
 				if(x.Text != (string?)e.NewValue) {
 					x.Text = (string)e.NewValue!;

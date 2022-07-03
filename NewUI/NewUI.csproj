@@ -176,7 +176,7 @@
 	  <None Remove="Assets\WebBrowser.png" />
 	  <None Remove="Assets\XbIcon.png" />
 	  <None Remove="Assets\Zoom2x.png" />
-	  <None Remove="Debugger\Highlight6502.xshd" />
+	  <None Remove="Debugger\HighlightAssembly.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
 	  <None Remove="Debugger\Utilities\LuaScripts\DrawMode.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Example.lua" />
@@ -723,7 +723,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
-    <EmbeddedResource Include="Debugger\Highlight6502.xshd" />
+    <EmbeddedResource Include="Debugger\HighlightAssembly.xshd" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\DrawMode.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Example.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Grid.lua" />

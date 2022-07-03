@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="Assembly" extensions=".s" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="NumberLiteral" foreground="DarkRed" />
+	<Color name="Keywords" foreground="Blue" />
+	<Color name="Addresses" foreground="DarkGreen" />
+	<Color name="Label" foreground="Pink" />
+
+	<RuleSet>
+		<Span color="Comment">
+			<Begin>;</Begin>
+		</Span>
+
+		<Rule color="Keywords">
+			\b[A-Za-z0-9]{2,5}\b
+		</Rule>
+
+		<Rule color="Label">
+			\b[@_a-zA-Z]+[@_a-zA-Z0-9]*\b
+		</Rule>
+		
+		<Rule color="NumberLiteral">
+			(\#\$[0-9a-fA-F]+)|
+			(\#\-{0,1}[0-9]+)|
+			(-{0,1}[0-9]+)
+		</Rule>
+
+		<Rule color="Addresses">
+			(\$[0-9a-fA-F]+)
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>

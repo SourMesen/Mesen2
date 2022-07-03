@@ -7,6 +7,7 @@ using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using DataBoxControl;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
@@ -20,16 +21,25 @@ namespace Mesen.Debugger.Windows
 {
 	public class AssemblerWindow : Window
 	{
-		private static IHighlightingDefinition _highlighting;
+		private static XshdSyntaxDefinition _syntaxDef;
+		private IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
 		private MesenTextEditor _hexView;
 		private AssemblerWindowViewModel _model;
 
 		static AssemblerWindow()
 		{
-			using XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Highlight6502.xshd")!);
-			XshdSyntaxDefinition xshd = HighlightingLoader.LoadXshd(reader);
-			_highlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
+			using XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.HighlightAssembly.xshd")!);
+			_syntaxDef = HighlightingLoader.LoadXshd(reader);
+		}
+
+		private void UpdateSyntaxDef()
+		{
+			((XshdColor)_syntaxDef.Elements[0]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeCommentColor);
+			((XshdColor)_syntaxDef.Elements[1]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeImmediateColor);
+			((XshdColor)_syntaxDef.Elements[2]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeOpcodeColor);
+			((XshdColor)_syntaxDef.Elements[3]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeAddressColor);
+			((XshdColor)_syntaxDef.Elements[4]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeLabelDefinitionColor);
 		}
 
 		[Obsolete("For designer only")]
@@ -41,6 +51,9 @@ namespace Mesen.Debugger.Windows
 #if DEBUG
 			this.AttachDevTools();
 #endif
+
+			UpdateSyntaxDef();
+			_highlighting = HighlightingLoader.Load(_syntaxDef, HighlightingManager.Instance);
 
 			_model = model;
 			DataContext = model;

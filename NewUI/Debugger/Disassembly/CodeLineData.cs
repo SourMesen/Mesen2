@@ -21,8 +21,6 @@ namespace Mesen.Debugger
 
 		public LineFlags Flags;
 
-		public int? CustomIndent = null;
-
 		public byte OpSize = 0;
 		public byte[] ByteCode = Array.Empty<byte>();
 
@@ -81,20 +79,6 @@ namespace Mesen.Debugger
 				return " = $" + Value.ToString("X4");
 			} else {
 				return "";
-			}
-		}
-
-		public int Indentation
-		{
-			get
-			{
-				if(CustomIndent.HasValue) {
-					return CustomIndent.Value;
-				} else if(Flags.HasFlag(LineFlags.ShowAsData) || Flags.HasFlag(LineFlags.BlockStart) || Flags.HasFlag(LineFlags.BlockEnd) || Flags.HasFlag(LineFlags.Label) || (Flags.HasFlag(LineFlags.Comment) && Text.Length == 0)) {
-					return 0;
-				} else {
-					return 15;
-				}
 			}
 		}
 
