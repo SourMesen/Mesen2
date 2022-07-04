@@ -235,7 +235,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 			//Also required when disassembling unvalidated data as code (to realign once we find verified code)
 			MemoryType prevMemType = addrInfo.Type;
 			for(int j = 1; j < opSize && i + j < bankEnd; j++) {
-				relAddress.Address = i + j;
+				relAddress.Address = i + 1;
 				addrInfo = _console->GetAbsoluteAddress(relAddress);
 				if(addrInfo.Type != prevMemType || src.Cache[addrInfo.Address].IsInitialized()) {
 					break;
