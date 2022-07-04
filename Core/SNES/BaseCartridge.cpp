@@ -609,18 +609,17 @@ bool BaseCartridge::LoadGameboy(VirtualFile& romFile)
 	_headerOffset = Gameboy::HeaderOffset;
 
 	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
-	bool useSgb = cfg.Model == GameboyModel::Auto || cfg.Model == GameboyModel::SuperGameboy;
-	if(useSgb && FirmwareHelper::LoadSgbFirmware(_emu, &_prgRom, _prgRomSize, cfg.UseSgb2)) {
-		LoadRom();
-		if(_coprocessorType == CoprocessorType::SGB) {
-			_gameboy.reset(new Gameboy(_emu, true));
-			if(_gameboy->LoadRom(romFile) == LoadRomResult::Success) {
+	_gameboy.reset(new Gameboy(_emu, true));
+	bool promptForFirmware = cfg.Model == GameboyModel::AutoFavorSgb || cfg.Model == GameboyModel::SuperGameboy;
+	if(_gameboy->LoadRom(romFile) == LoadRomResult::Success && _gameboy->IsSgb()) {
+		if(FirmwareHelper::LoadSgbFirmware(_emu, &_prgRom, _prgRomSize, cfg.UseSgb2, promptForFirmware)) {
+			LoadRom();
+			if(_coprocessorType == CoprocessorType::SGB) {
 				_emu->RegisterMemory(MemoryType::SnesPrgRom, _prgRom, _prgRomSize);
-				return _gameboy->IsSgb();
+				return true;
 			}
 		}
 	}
-
 	return false;
 }
 

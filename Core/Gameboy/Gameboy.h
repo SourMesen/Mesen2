@@ -39,7 +39,7 @@ private:
 	unique_ptr<GbDmaController> _dmaController;
 	unique_ptr<GbControlManager> _controlManager;
 
-	GameboyModel _model = GameboyModel::Auto;
+	GameboyModel _model = GameboyModel::AutoFavorGbc;
 
 	bool _hasBattery = false;
 
@@ -61,7 +61,8 @@ private:
 	uint8_t* _bootRom = nullptr;
 	uint32_t _bootRomSize = 0;
 
-	void Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery, bool supportsCgb);
+	void Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery);
+	GameboyModel GetEffectiveModel(GameboyHeader& header);
 
 public:
 	static constexpr int HeaderOffset = 0x134;

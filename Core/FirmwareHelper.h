@@ -215,7 +215,7 @@ public:
 		return false;
 	}
 
-	static bool LoadSgbFirmware(Emulator* emu, uint8_t** prgRom, uint32_t& prgSize, bool useSgb2)
+	static bool LoadSgbFirmware(Emulator* emu, uint8_t** prgRom, uint32_t& prgSize, bool useSgb2, bool promptForFirmware)
 	{
 		string filename = useSgb2 ? "SGB2.sfc" : "SGB1.sfc";
 		prgSize = useSgb2 ? 0x80000 : 0x40000;
@@ -223,14 +223,16 @@ public:
 			return true;
 		}
 
-		MissingFirmwareMessage msg(filename.c_str(), useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1, prgSize);
-		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+		if(promptForFirmware) {
+			MissingFirmwareMessage msg(filename.c_str(), useSgb2 ? FirmwareType::SGB2 : FirmwareType::SGB1, prgSize);
+			emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
 
-		if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
-			return true;
+			if(AttemptLoadFirmware(prgRom, filename, prgSize)) {
+				return true;
+			}
+
+			MessageManager::DisplayMessage("Error", "Could not find firmware file for Super Game Boy");
 		}
-
-		MessageManager::DisplayMessage("Error", "Could not find firmware file for Super Game Boy");
 		return false;
 	}
 

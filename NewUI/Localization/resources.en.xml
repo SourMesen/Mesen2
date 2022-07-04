@@ -331,7 +331,7 @@
 		<Form ID="GameboyConfigView">
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>
-			<Control ID="chkUseSgb2">Use Super Game Boy 2 timings and behavior</Control>
+			<Control ID="chkUseSgb2">In Super Game Boy mode, use SGB2 timings and behavior</Control>
 
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblGameboyPalette">Game Boy (DMG) Palette</Control>
@@ -2041,7 +2041,9 @@
 			<Value ID="Register">Register</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
-			<Value ID="Auto">Auto</Value>
+			<Value ID="AutoFavorGbc">Auto (prefer Game Boy Color)</Value>
+			<Value ID="AutoFavorSgb">Auto (prefer Super Game Boy)</Value>
+			<Value ID="AutoFavorGb">Auto (prefer Game Boy)</Value>
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="GameboyColor">Game Boy Color</Value>
 			<Value ID="SuperGameboy">Super Game Boy</Value>

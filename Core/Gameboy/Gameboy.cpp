@@ -48,7 +48,7 @@ Gameboy::~Gameboy()
 	delete[] _bootRom;
 }
 
-void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery, bool supportsCgb)
+void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRamSize, bool hasBattery)
 {
 	_cart.reset(cart);
 
@@ -71,24 +71,6 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRam
 
 	_hasBattery = hasBattery;
 
-	EmuSettings* settings = _emu->GetSettings();
-	GameboyConfig cfg = settings->GetGameboyConfig();
-	GameboyModel model = cfg.Model;
-	if(model == GameboyModel::Auto) {
-		if(supportsCgb) {
-			model = GameboyModel::GameboyColor;
-		} else {
-			model = GameboyModel::SuperGameboy;
-		}
-	}
-
-	if(!_allowSgb && model == GameboyModel::SuperGameboy) {
-		//SGB isn't available, use gameboy color mode instead
-		model = GameboyModel::GameboyColor;
-	}
-
-	_model = model;
-
 	bool cgbMode = _model == GameboyModel::GameboyColor;
 	_workRamSize = cgbMode ? 0x8000 : 0x2000;
 	_videoRamSize = cgbMode ? 0x4000 : 0x2000;
@@ -106,6 +88,9 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRam
 	_emu->RegisterMemory(MemoryType::GbHighRam, _highRam, Gameboy::HighRamSize);
 
 	_bootRomSize = 0;
+
+	EmuSettings* settings = _emu->GetSettings();
+	GameboyConfig cfg = settings->GetGameboyConfig();
 
 	FirmwareType type = FirmwareType::Gameboy;
 	if(_model == GameboyModel::SuperGameboy) {
@@ -399,7 +384,8 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		}
 		
 		GbsCart* cart = new GbsCart(gbsHeader);
-		Init(cart, gbsRomData, 0x5000, false, false);
+		_model = GameboyModel::GameboyColor;
+		Init(cart, gbsRomData, 0x5000, false);
 		cart->InitPlayback(gbsHeader.FirstTrack - 1);
 
 		return LoadRomResult::Success;
@@ -407,14 +393,22 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		GameboyHeader header;
 		memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
 
+		_model = GetEffectiveModel(header);
+		if(_allowSgb && _model != GameboyModel::SuperGameboy) {
+			return LoadRomResult::UnknownType;
+		}
+
 		MessageManager::Log("-----------------------------");
 		MessageManager::Log("File: " + romFile.GetFileName());
 		MessageManager::Log("Game: " + header.GetCartName());
 		MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
-		switch(header.CgbFlag & 0xC0) {
-			case 0x00: MessageManager::Log("Supports: Game Boy"); break;
-			case 0x80: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
-			case 0xC0: MessageManager::Log("Supports: Game Boy Color only"); break;
+		switch((CgbFlag)((int)header.CgbFlag & 0xC0)) {
+			case CgbFlag::Gameboy: MessageManager::Log("Supports: Game Boy"); break;
+			case CgbFlag::GameboyColorSupport: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
+			case CgbFlag::GameboyColorExclusive: MessageManager::Log("Supports: Game Boy Color only"); break;
+		}
+		if(header.SgbFlag == 0x03) {
+			MessageManager::Log("Supports: Super Game Boy");
 		}
 		MessageManager::Log("File size: " + std::to_string(romData.size() / 1024) + " KB");
 
@@ -427,12 +421,53 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		GbCart* cart = GbCartFactory::CreateCart(header.CartType);
 
 		if(cart) {
-			Init(cart, romData, header.GetCartRamSize(), header.HasBattery(), (header.CgbFlag & 0x80) != 0);
+			Init(cart, romData, header.GetCartRamSize(), header.HasBattery());
 			return LoadRomResult::Success;
 		}
 	}
 
 	return LoadRomResult::UnknownType;
+}
+
+GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	GameboyConfig cfg = settings->GetGameboyConfig();
+	GameboyModel model = cfg.Model;
+	CgbFlag cgbFlag = (CgbFlag)((int)header.CgbFlag & 0xC0);
+	bool supportsSgb = header.SgbFlag == 0x03;
+	switch(model) {
+		case GameboyModel::AutoFavorGb:
+			if(cgbFlag == CgbFlag::GameboyColorExclusive) {
+				model = GameboyModel::GameboyColor;
+			} else {
+				model = GameboyModel::Gameboy;
+			}
+			break;
+
+		case GameboyModel::AutoFavorSgb:
+			if(cgbFlag == CgbFlag::GameboyColorExclusive) {
+				model = GameboyModel::GameboyColor;
+			} else {
+				model = GameboyModel::SuperGameboy;
+			}
+			break;
+
+		case GameboyModel::AutoFavorGbc:
+			if(supportsSgb && cgbFlag == CgbFlag::Gameboy) {
+				model = GameboyModel::SuperGameboy;
+			} else {
+				model = GameboyModel::GameboyColor;
+			}
+			break;
+	}
+
+	if(!_allowSgb && model == GameboyModel::SuperGameboy) {
+		//SGB isn't available, use gameboy color mode instead
+		model = GameboyModel::GameboyColor;
+	}
+
+	return model;
 }
 
 void Gameboy::Init()

@@ -30,8 +30,8 @@
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblModel}" Margin="5" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Model}" Width="150" />
+					<TextBlock Text="{l:Translate lblModel}" Margin="3 0 5 0" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Model}" MinWidth="200" />
 				</StackPanel>
 				<CheckBox IsChecked="{CompiledBinding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
 			</StackPanel>

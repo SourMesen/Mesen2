@@ -1,12 +1,19 @@
 #pragma once
 #include "stdafx.h"
 
+enum class CgbFlag : uint8_t
+{
+	Gameboy = 0x00,
+	GameboyColorSupport = 0x80,
+	GameboyColorExclusive = 0xC0,
+};
+
 struct GameboyHeader
 {
 	//Starts at 0x134
 	char Title[11];
 	char ManufacturerCode[4];
-	uint8_t CgbFlag;
+	CgbFlag CgbFlag;
 	char LicenseeCode[2];
 	uint8_t SgbFlag;
 	uint8_t CartType;

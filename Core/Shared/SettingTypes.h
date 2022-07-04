@@ -332,10 +332,12 @@ enum class ConsoleType
 
 enum class GameboyModel
 {
-	Auto = 0,
-	Gameboy = 1,
-	GameboyColor = 2,
-	SuperGameboy = 3
+	AutoFavorGbc,
+	AutoFavorSgb,
+	AutoFavorGb,
+	Gameboy,
+	GameboyColor,
+	SuperGameboy
 };
 
 struct EmulationConfig
@@ -351,7 +353,7 @@ struct GameboyConfig
 {
 	ControllerConfig Controller;
 
-	GameboyModel Model = GameboyModel::Auto;
+	GameboyModel Model = GameboyModel::AutoFavorGbc;
 	bool UseSgb2 = true;
 
 	bool BlendFrames = true;
