@@ -651,3 +651,13 @@ uint32_t Gsu::DebugGetProgramCounter()
 {
 	return _lastOpAddr;
 }
+
+void Gsu::DebugSetProgramCounter(uint32_t addr)
+{
+	_state.ProgramBank = (addr >> 16) & 0xFF;
+	_state.R[15] = addr & 0xFFFF;
+	
+	_lastOpAddr = addr & 0xFFFFFF;
+	IMemoryHandler* handler = _mappings.GetHandler(_lastOpAddr);
+	_state.ProgramReadBuffer = handler ? handler->Read(_lastOpAddr) : 0;
+}

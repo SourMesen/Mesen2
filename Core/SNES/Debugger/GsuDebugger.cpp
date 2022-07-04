@@ -132,13 +132,24 @@ void GsuDebugger::Step(int32_t stepCount, StepType type)
 
 void GsuDebugger::SetProgramCounter(uint32_t addr)
 {
-	//Not implemented
+	_gsu->DebugSetProgramCounter(addr);
+
+	GsuState& state = _gsu->GetState();
+	_prevOpCode = state.ProgramReadBuffer;
+	_prevProgramCounter = addr;
 }
 
 uint32_t GsuDebugger::GetProgramCounter(bool getInstPc)
 {
 	GsuState& state = _gsu->GetState();
 	return getInstPc ? _prevProgramCounter : ((state.ProgramBank << 16) | state.R[15]);
+}
+
+DebuggerFeatures GsuDebugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.ChangeProgramCounter = true;
+	return features;
 }
 
 BreakpointManager* GsuDebugger::GetBreakpointManager()

@@ -46,6 +46,8 @@ public:
 
 	void SetProgramCounter(uint32_t addr) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
+	
+	DebuggerFeatures GetSupportedFeatures() override;
 
 	BreakpointManager* GetBreakpointManager() override;
 	CallstackManager* GetCallstackManager() override;

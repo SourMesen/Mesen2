@@ -217,6 +217,13 @@ bool DisassemblyInfo::CanDisassembleNextOp()
 				return false;
 			}
 			break;
+
+		case CpuType::Gsu:
+			if(GetOpCode() == 0) {
+				//STOP instruction
+				return false;
+			}
+			break;
 	}
 
 	return true;
@@ -264,17 +271,53 @@ bool DisassemblyInfo::IsJump()
 void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 {
 	//TODO cleanup
-	if(_cpuType == CpuType::Snes || _cpuType == CpuType::Sa1) {
-		uint8_t opCode = GetOpCode();
-		if(opCode == 0xC2) {
-			//REP, update the flags and keep disassembling
-			uint8_t flags = GetByteCode()[1];
-			cpuFlags &= ~flags;
-		} else if(opCode == 0xE2) {
-			//SEP, update the flags and keep disassembling
-			uint8_t flags = GetByteCode()[1];
-			cpuFlags |= flags;
+	switch(_cpuType) {
+		case CpuType::Snes:
+		case CpuType::Sa1: {
+			uint8_t opCode = GetOpCode();
+			if(opCode == 0xC2) {
+				//REP, update the flags and keep disassembling
+				uint8_t flags = GetByteCode()[1];
+				cpuFlags &= ~flags;
+			} else if(opCode == 0xE2) {
+				//SEP, update the flags and keep disassembling
+				uint8_t flags = GetByteCode()[1];
+				cpuFlags |= flags;
+			}
+			break;
 		}
+
+		case CpuType::Gsu:
+			switch(GetOpCode()) {
+				case 0x20: case 0x21: case 0x22: case 0x23: case 0x24: case 0x25: case 0x26: case 0x27:
+				case 0x28: case 0x29: case 0x2A: case 0x2B: case 0x2C: case 0x2D: case 0x2E: case 0x2F:
+					//WITH - Prefix
+					cpuFlags |= 0x10;
+					break;
+
+				case 0x3D: 
+					//ALT1
+					cpuFlags &= 0x03;
+					cpuFlags |= 0x01;
+					break;
+				
+				case 0x3E:
+					//ALT2
+					cpuFlags &= 0x03;
+					cpuFlags |= 0x02;
+					break;
+
+				case 0x3F:
+					//ALT3
+					cpuFlags &= 0x03;
+					cpuFlags |= 0x03;
+					break;
+
+				default:
+					cpuFlags = 0;
+					break;
+			}
+			break;
 	}
 }
 

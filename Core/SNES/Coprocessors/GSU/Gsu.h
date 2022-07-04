@@ -173,4 +173,5 @@ public:
 	GsuState& GetState();
 	MemoryMappings* GetMemoryMappings();
 	uint32_t DebugGetProgramCounter();
+	void DebugSetProgramCounter(uint32_t addr);
 };
