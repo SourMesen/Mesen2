@@ -152,7 +152,7 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 		case CpuType::NecDsp: return 3;
 		case CpuType::Sa1:return SnesDisUtils::GetOpSize(opCode, flags);
 		case CpuType::Gsu: return GsuDisUtils::GetOpSize(opCode);
-		case CpuType::Cx4: return 2;
+		case CpuType::Cx4: return Cx4DisUtils::GetOpSize();
 		case CpuType::Gameboy: return GameboyDisUtils::GetOpSize(opCode);
 		case CpuType::Nes: return NesDisUtils::GetOpSize(opCode);
 		case CpuType::Pce: return PceDisUtils::GetOpSize(opCode);
@@ -207,6 +207,13 @@ bool DisassemblyInfo::CanDisassembleNextOp()
 		case CpuType::Snes:
 			if(GetOpCode() == 0x28) {
 				//PLP, stop disassembling because the 8-bit/16-bit flags could change
+				return false;
+			}
+			break;
+
+		case CpuType::Cx4:
+			if((GetByteCode()[1] & 0xFC) == 0xFC) {
+				//STOP instruction
 				return false;
 			}
 			break;

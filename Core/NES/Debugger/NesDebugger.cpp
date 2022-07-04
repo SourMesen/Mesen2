@@ -91,7 +91,7 @@ NesDebugger::~NesDebugger()
 void NesDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
-	_callstackManager.reset(new CallstackManager(_debugger));
+	_callstackManager->Clear();
 	_prevOpCode = 0xFF;
 }
 

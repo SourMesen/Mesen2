@@ -76,7 +76,7 @@ GbDebugger::~GbDebugger()
 
 void GbDebugger::Reset()
 {
-	_callstackManager.reset(new CallstackManager(_debugger));
+	_callstackManager->Clear();
 	_prevOpCode = 0;
 }
 

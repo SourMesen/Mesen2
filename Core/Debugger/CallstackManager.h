@@ -22,4 +22,6 @@ public:
 	void GetCallstack(StackFrameInfo* callstackArray, uint32_t &callstackSize);
 	int32_t GetReturnAddress();
 	Profiler* GetProfiler();
+
+	void Clear();
 };

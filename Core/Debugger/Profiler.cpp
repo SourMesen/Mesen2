@@ -99,14 +99,19 @@ void Profiler::Reset()
 	InternalReset();
 }
 
-void Profiler::InternalReset()
+void Profiler::ResetState()
 {
 	_prevMasterClock = _emu->GetMasterClock();
 	_currentCycleCount = 0;
-	_currentFunction = ResetFunctionIndex;
 	_functionStack.clear();
 	_stackFlags.clear();
 	_cycleCountStack.clear();
+	_currentFunction = ResetFunctionIndex;
+}
+
+void Profiler::InternalReset()
+{
+	ResetState();
 	
 	_functions.clear();
 	_functions[ResetFunctionIndex] = ProfiledFunction();

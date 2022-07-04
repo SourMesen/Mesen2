@@ -12,6 +12,7 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/Debugger/SnesCodeDataLogger.h"
+#include "SNES/Debugger/Cx4DisUtils.h"
 #include "SNES/Debugger/TraceLogger/Cx4TraceLogger.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "Shared/Emulator.h"
@@ -34,31 +35,54 @@ Cx4Debugger::Cx4Debugger(Debugger* debugger)
 	_traceLogger.reset(new Cx4TraceLogger(debugger, this, console->GetPpu(), _memoryManager));
 
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Cx4, debugger->GetEventManager(CpuType::Snes)));
+	_callstackManager.reset(new CallstackManager(debugger));
 	_step.reset(new StepRequest());
 }
 
 void Cx4Debugger::Reset()
 {
+	_callstackManager->Clear();
+	_prevOpCode = 0;
 }
 
 void Cx4Debugger::ProcessInstruction()
 {
 	Cx4State& state = _cx4->GetState();
-	uint32_t addr = (state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF;
-	uint16_t value = _cx4->GetMemoryMappings()->PeekWord(addr);
-	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
+	uint32_t pc = (state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF;
+	MemoryMappings* mappings = _cx4->GetMemoryMappings();
+	uint16_t opCode = mappings->PeekWord(pc);
+	AddressInfo addressInfo = mappings->GetAbsoluteAddress(pc);
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
 		_codeDataLogger->SetCode<SnesCdlFlags::Cx4>(addressInfo.Address);
 		_codeDataLogger->SetCode<SnesCdlFlags::Cx4>(addressInfo.Address + 1);
 	}
 
+	if(Cx4DisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + Cx4DisUtils::GetOpSize()) {
+		uint32_t returnPc = (_prevProgramCounter + Cx4DisUtils::GetOpSize()) & 0xFFFFFF;
+		AddressInfo srcAddress = mappings->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo retAddress = mappings->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
+	} else if(Cx4DisUtils::IsReturnInstruction(_prevOpCode)) {
+		_callstackManager->Pop(addressInfo, pc);
+		if(_step->BreakAddress == (int32_t)pc) {
+			//RTS - if we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
+	}
+
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled)) {
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Cx4);
 	}
 
-	_prevProgramCounter = addr;
+	_prevProgramCounter = pc;
+	_prevOpCode = (opCode >> 8) & 0xFC;
+
+	if(_prevOpCode == 0xFC) {
+		//STOP instruction
+		_callstackManager->Clear();
+	}
 
 	_step->ProcessCpuExec();
 	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
@@ -117,9 +141,15 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 
-		case StepType::StepOut:
+		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+
 		case StepType::StepOver:
-			step.StepCount = 1;
+			if(Cx4DisUtils::IsJumpToSub(_prevOpCode)) {
+				step.BreakAddress = _prevProgramCounter + Cx4DisUtils::GetOpSize();
+			} else {
+				//For any other instruction, step over is the same as step into
+				step.StepCount = 1;
+			}
 			break;
 
 		case StepType::SpecificScanline:
@@ -132,13 +162,33 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 
 void Cx4Debugger::SetProgramCounter(uint32_t addr)
 {
-	//Not implemented
+	Cx4State& state = _cx4->GetState();
+	if(addr >= state.Cache.Base) {
+		MemoryMappings* mappings = _cx4->GetMemoryMappings();
+		uint16_t opCode = mappings->PeekWord(addr);
+		_prevProgramCounter = addr;
+		_prevOpCode = (opCode >> 8) & 0xFC;
+
+		addr -= state.Cache.Base;
+		state.PB = (addr & 0xFFFE00) >> 9;
+		state.PC = (addr & 0x1FF) >> 1;
+	}
 }
 
 uint32_t Cx4Debugger::GetProgramCounter(bool getInstPc)
 {
 	Cx4State& state = _cx4->GetState();
 	return getInstPc ? _prevProgramCounter : ((state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF);
+}
+
+DebuggerFeatures Cx4Debugger::GetSupportedFeatures()
+{
+	DebuggerFeatures features = {};
+	features.ChangeProgramCounter = true;
+	features.CallStack = true;
+	features.StepOut = true;
+	features.StepOver = true;
+	return features;
 }
 
 BreakpointManager* Cx4Debugger::GetBreakpointManager()
@@ -148,7 +198,7 @@ BreakpointManager* Cx4Debugger::GetBreakpointManager()
 
 CallstackManager* Cx4Debugger::GetCallstackManager()
 {
-	return nullptr;
+	return _callstackManager.get();
 }
 
 IAssembler* Cx4Debugger::GetAssembler()

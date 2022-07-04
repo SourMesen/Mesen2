@@ -93,3 +93,9 @@ Profiler* CallstackManager::GetProfiler()
 {
 	return _profiler.get();
 }
+
+void CallstackManager::Clear()
+{
+	_callstack.clear();
+	_profiler->ResetState();
+}

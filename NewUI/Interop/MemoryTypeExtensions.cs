@@ -269,6 +269,7 @@ namespace Mesen.Interop
 				MemoryType.Sa1Memory => "SA1",
 				MemoryType.GsuMemory => "GSU",
 				MemoryType.NecDspMemory => "DSP",
+				MemoryType.Cx4Memory => "CX4",
 
 				MemoryType.SnesPrgRom => "PRG",
 				MemoryType.SnesWorkRam => "WRAM",
@@ -282,6 +283,7 @@ namespace Mesen.Interop
 
 				MemoryType.DspProgramRom => "DSP",
 				MemoryType.Sa1InternalRam => "IRAM",
+				MemoryType.Cx4DataRam => "DATA",
 				MemoryType.GsuWorkRam => "GWRAM",
 
 				MemoryType.BsxPsRam => "PSRAM",

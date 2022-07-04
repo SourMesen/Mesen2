@@ -275,7 +275,16 @@ bool Cx4DisUtils::IsUnconditionalJump(uint8_t opCode)
 
 bool Cx4DisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return opCode == 0x28; //JSR
+	switch(opCode) {
+		case 0x28: //JSR
+		case 0x2C: //JEQ
+		case 0x30: //JCS
+		case 0x34: //JMI
+		case 0x38: //JVS
+			return true;
+	}
+
+	return false;
 }
 
 bool Cx4DisUtils::IsReturnInstruction(uint8_t opCode)

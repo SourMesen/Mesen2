@@ -27,10 +27,12 @@ class Cx4Debugger final : public IDebugger
 	EmuSettings* _settings;
 
 	unique_ptr<BreakpointManager> _breakpointManager;
+	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<StepRequest> _step;
 	unique_ptr<Cx4TraceLogger> _traceLogger;
 
 	uint32_t _prevProgramCounter = 0;
+	uint8_t _prevOpCode = 0;
 
 public:
 	Cx4Debugger(Debugger* debugger);
@@ -46,6 +48,8 @@ public:
 
 	void SetProgramCounter(uint32_t addr) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
+	
+	DebuggerFeatures GetSupportedFeatures() override;
 
 	BreakpointManager* GetBreakpointManager() override;
 	CallstackManager* GetCallstackManager() override;
