@@ -332,7 +332,10 @@
 			<Control ID="tpgGeneral">General</Control>
 			<Control ID="lblModel">Model</Control>
 			<Control ID="chkUseSgb2">In Super Game Boy mode, use SGB2 timings and behavior</Control>
-
+			
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblGameboyPalette">Game Boy (DMG) Palette</Control>
 			<Control ID="lblGbBackground">Background:</Control>

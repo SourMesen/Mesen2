@@ -57,6 +57,14 @@
 				</c:GroupBox>
 			</StackPanel>
 		</TabItem>
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+				</StackPanel>
+			</StackPanel>
+		</TabItem>
 		<TabItem Header="{l:Translate tpgInput}">
 			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
 				<StackPanel Orientation="Horizontal">
