@@ -291,3 +291,9 @@ bool Cx4DisUtils::IsReturnInstruction(uint8_t opCode)
 {
 	return opCode == 0x3C; //RTS
 }
+
+bool Cx4DisUtils::CanDisassembleNextOp(uint8_t opCode)
+{
+	//STOP instruction (op code $FC)
+	return (opCode & 0xFC) != 0xFC;
+}

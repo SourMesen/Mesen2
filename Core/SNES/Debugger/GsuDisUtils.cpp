@@ -286,3 +286,42 @@ uint8_t GsuDisUtils::GetOpSize(uint8_t opCode)
 	}
 	return 1;
 }
+
+bool GsuDisUtils::CanDisassembleNextOp(uint8_t opCode)
+{
+	//STOP instruction (Op code $00)
+	return opCode != 0;
+}
+
+void GsuDisUtils::UpdateCpuFlags(uint8_t opCode, uint8_t& cpuFlags)
+{
+	switch(opCode) {
+		case 0x20: case 0x21: case 0x22: case 0x23: case 0x24: case 0x25: case 0x26: case 0x27:
+		case 0x28: case 0x29: case 0x2A: case 0x2B: case 0x2C: case 0x2D: case 0x2E: case 0x2F:
+			//WITH - Prefix
+			cpuFlags |= 0x10;
+			break;
+
+		case 0x3D:
+			//ALT1
+			cpuFlags &= 0x03;
+			cpuFlags |= 0x01;
+			break;
+
+		case 0x3E:
+			//ALT2
+			cpuFlags &= 0x03;
+			cpuFlags |= 0x02;
+			break;
+
+		case 0x3F:
+			//ALT3
+			cpuFlags &= 0x03;
+			cpuFlags |= 0x03;
+			break;
+
+		default:
+			cpuFlags = 0;
+			break;
+	}
+}

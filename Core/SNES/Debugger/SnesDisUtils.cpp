@@ -116,6 +116,25 @@ int32_t SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *co
 	return -1;
 }
 
+bool SnesDisUtils::CanDisassembleNextOp(uint8_t opCode)
+{
+	//Stop disassembling on PLP (because it can alter X/M flags)
+	return opCode != 0x28;
+}
+
+void SnesDisUtils::UpdateCpuFlags(uint8_t opCode, uint8_t* byteCode, uint8_t& cpuFlags)
+{
+	if(opCode == 0xC2) {
+		//REP, update the flags and keep disassembling
+		uint8_t flags = byteCode[1];
+		cpuFlags &= ~flags;
+	} else if(opCode == 0xE2) {
+		//SEP, update the flags and keep disassembling
+		uint8_t flags = byteCode[1];
+		cpuFlags |= flags;
+	}
+}
+
 bool SnesDisUtils::HasEffectiveAddress(SnesAddrMode addrMode)
 {
 	switch(addrMode) {

@@ -31,6 +31,9 @@ public:
 	static bool IsJumpToSub(uint8_t opCode);
 	static bool IsReturnInstruction(uint8_t opCode);
 	static int32_t GetEffectiveAddress(DisassemblyInfo &info, SnesConsole* console, SnesCpuState &state, CpuType type);
+
+	static bool CanDisassembleNextOp(uint8_t opCode);
+	static void UpdateCpuFlags(uint8_t opCode, uint8_t* byteCode, uint8_t& cpuFlags);
 };
 
 enum class SnesAddrMode : uint8_t
