@@ -150,6 +150,18 @@ namespace Mesen.Interop
 					return false;
 			};
 		}
+
+		public static bool SupportsCallStack(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Gsu:
+					return false;
+
+				default:
+					return true;
+			};
+		}
+
 		public static bool SupportsMemoryMappings(this CpuType cpuType)
 		{
 			switch(cpuType) {
