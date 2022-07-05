@@ -15,6 +15,8 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public List<MemoryMappingBlock> CpuMappings { get; private set; } = new();
 		[Reactive] public List<MemoryMappingBlock>? PpuMappings { get; private set; } = null;
+		public MemoryType CpuMemType { get; }
+		public MemoryType PpuMemType { get; }
 
 		[Obsolete("For designer only")]
 		public MemoryMappingViewModel() : this(CpuType.Nes) { }
@@ -22,6 +24,8 @@ namespace Mesen.Debugger.ViewModels
 		public MemoryMappingViewModel(CpuType cpuType)
 		{
 			_cpuType = cpuType;
+			CpuMemType = cpuType.ToMemoryType();
+			PpuMemType = cpuType.GetVramMemoryType();
 
 			if(Design.IsDesignMode) {
 				return;
@@ -337,7 +341,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 			addBlock(0xFE);
 
-			mappings.Add(new MemoryMappingBlock() { Name = "", Length = 0x200, Color = Color.FromRgb(222, 222, 222) });
+			mappings.Add(new MemoryMappingBlock() { Name = "OAM/Registers/High RAM", Length = 0x200, Color = Color.FromRgb(222, 222, 222) });
 
 			return mappings;
 		}
@@ -367,8 +371,8 @@ namespace Mesen.Debugger.ViewModels
 
 			Dictionary<MemoryType, string> accessNotes = new() {
 				{ MemoryType.Register, "RW" },
-				{ MemoryType.PceWorkRam, "W" },
-				{ MemoryType.PceSaveRam, "W" },
+				{ MemoryType.PceWorkRam, "RW" },
+				{ MemoryType.PceSaveRam, "RW" },
 				{ MemoryType.PceCdromRam, "RW" },
 				{ MemoryType.PceCardRam, "RW" },
 				{ MemoryType.PcePrgRom, "R" },

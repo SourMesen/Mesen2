@@ -40,11 +40,13 @@
 					Margin="2 1"
 					IsVisible="{CompiledBinding CpuMappings.Count}"
 					Mappings="{CompiledBinding CpuMappings}"
+					MemType="{CompiledBinding CpuMemType}"
 				/>
 				<dc:MemoryMappingViewer
 					Margin="2 1"
 					IsVisible="{CompiledBinding PpuMappings.Count}"
 					Mappings="{CompiledBinding PpuMappings}"
+					MemType="{CompiledBinding PpuMemType}"
 				/>
 			</StackPanel>
 		</DataTemplate>

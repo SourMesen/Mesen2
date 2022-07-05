@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,12 +27,20 @@ namespace Mesen.Debugger.Controls
 	public partial class MemoryMappingViewer : Control
 	{
 		public static readonly StyledProperty<List<MemoryMappingBlock>> MappingsProperty = AvaloniaProperty.Register<MemoryMappingViewer, List<MemoryMappingBlock>>(nameof(Mappings));
+		public static readonly StyledProperty<MemoryType> MemTypeProperty = AvaloniaProperty.Register<MemoryMappingViewer, MemoryType>(nameof(MemType));
+		private MemoryMappingBlock? _prevTooltipMapping;
 		private const int BlockHeight = 32;
 
 		public List<MemoryMappingBlock> Mappings
 		{
 			get { return GetValue(MappingsProperty); }
 			set { SetValue(MappingsProperty, value); }
+		}
+
+		public MemoryType MemType
+		{
+			get { return GetValue(MemTypeProperty); }
+			set { SetValue(MemTypeProperty, value); }
 		}
 
 		static MemoryMappingViewer()
@@ -50,6 +59,78 @@ namespace Mesen.Debugger.Controls
 				return Size.Empty;
 			}
 			return new Size(availableSize.Width, BlockHeight);
+		}
+
+		protected override void OnPointerMoved(PointerEventArgs e)
+		{
+			base.OnPointerMoved(e);
+
+			List<MemoryMappingBlock> mappings = new(Mappings);
+
+			int totalSize = mappings.Sum(m => m.Length);
+			Size size = Bounds.Size;
+			double pixelsPerByte = size.Width / totalSize;
+			double x = e.GetCurrentPoint(this).Position.X;
+			double pos = 0;
+			MemoryMappingBlock? hoveredMapping = null;
+			int start = 0;
+			foreach(MemoryMappingBlock mapping in mappings) {
+				pos += mapping.Length * pixelsPerByte;
+				if(pos >= x) {
+					hoveredMapping = mapping;
+					break;
+				}
+				start += mapping.Length;
+			}
+
+			if(_prevTooltipMapping == hoveredMapping) {
+				return;
+			}
+
+			_prevTooltipMapping = hoveredMapping;
+
+			if(hoveredMapping != null) {
+				TooltipEntries entries = new TooltipEntries();
+				DynamicTooltip dynTooltip = new DynamicTooltip();
+				entries.AddEntry("Entry", GetBlockText(hoveredMapping));
+				int end = start + hoveredMapping.Length - 1;
+				entries.AddEntry($"Range ({MemType.GetShortName()})", "$" + start.ToString("X4") + " - $" + end.ToString("X4"));
+
+				AddressInfo absStart = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = MemType });
+				AddressInfo absEnd = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = MemType });
+				if(absStart.Address >= 0 && absEnd.Address >= 0 && absStart.Type == absEnd.Type) {
+					entries.AddEntry($"Range ({absStart.Type.GetShortName()})", "$" + absStart.Address.ToString("X4") + " - $" + absEnd.Address.ToString("X4"));
+				}
+
+				if(hoveredMapping.Note.StartsWith("RW")) {
+					entries.AddEntry("Access", "Read/Write");
+				} else if(hoveredMapping.Note.StartsWith("R")) {
+					entries.AddEntry("Access", "Read-only");
+				} else if(hoveredMapping.Note.StartsWith("W")) {
+					entries.AddEntry("Access", "Write-only");
+				} else if(hoveredMapping.Note.StartsWith("OB")) {
+					entries.AddEntry("Access", "Open bus (unmapped)");
+				}
+				dynTooltip.Items = entries;
+				ToolTip.SetTip(this, dynTooltip);
+
+				//Force tooltip to update its position
+				ToolTip.SetPlacement(this, PlacementMode.Pointer);
+				ToolTip.SetHorizontalOffset(this, 0);
+				ToolTip.SetHorizontalOffset(this, 1);
+				ToolTip.SetIsOpen(this, true);
+			} else {
+				ToolTip.SetTip(this, null);
+				ToolTip.SetIsOpen(this, false);
+			}
+		}
+
+		protected override void OnPointerLeave(PointerEventArgs e)
+		{
+			base.OnPointerLeave(e);
+			_prevTooltipMapping = null;
+			ToolTip.SetTip(this, null);
+			ToolTip.SetIsOpen(this, false);
 		}
 
 		public override void Render(DrawingContext context)
@@ -81,14 +162,7 @@ namespace Mesen.Debugger.Controls
 				}
 
 				context.DrawRectangle(new SolidColorBrush(block.Color), borderPen, new Rect(x - 0.5, 0.5, blockWidth + 1, BlockHeight));
-
-				if(string.IsNullOrEmpty(block.Name)) {
-					text.Text = block.Page >= 0 ? $"${block.Page:X2}" : "";
-				} else if(block.Page >= 0) {
-					text.Text = $"{block.Name} (${block.Page:X2})";
-				} else {
-					text.Text = block.Name;
-				}
+				text.Text = GetBlockText(block);
 				addressText.Text = start.ToString("X4");
 				double margin = addressText.Bounds.Height;
 
@@ -121,6 +195,17 @@ namespace Mesen.Debugger.Controls
 
 				start += block.Length;
 				x += blockWidth;
+			}
+		}
+
+		private static string GetBlockText(MemoryMappingBlock block)
+		{
+			if(string.IsNullOrEmpty(block.Name)) {
+				return block.Page >= 0 ? $"${block.Page:X2}" : "";
+			} else if(block.Page >= 0) {
+				return $"{block.Name} (${block.Page:X2})";
+			} else {
+				return block.Name;
 			}
 		}
 	}
