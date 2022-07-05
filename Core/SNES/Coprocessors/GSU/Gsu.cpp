@@ -230,7 +230,9 @@ void Gsu::Exec()
 			break;
 	}
 
-	_emu->ProcessInstruction<CpuType::Gsu>();
+	if(_state.SFR.Running) {
+		_emu->ProcessInstruction<CpuType::Gsu>();
+	}
 
 	if(!_r15Changed) {
 		_state.R[15]++;
