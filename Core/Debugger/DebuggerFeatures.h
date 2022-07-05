@@ -9,8 +9,8 @@ enum class VectorType
 
 struct CpuVectorDefinition
 {
-	char Name[15];
-	uint32_t Address;
+	char Name[15] = {};
+	uint32_t Address = 0;
 	VectorType Type = VectorType::Indirect;
 };
 

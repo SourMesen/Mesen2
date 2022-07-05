@@ -14,4 +14,6 @@ public:
 	static bool IsConditionalJump(uint32_t opCode);
 	static bool IsJumpToSub(uint32_t opCode);
 	static bool IsReturnInstruction(uint32_t opCode);
+
+	static uint8_t GetOpSize() { return 3; }
 };

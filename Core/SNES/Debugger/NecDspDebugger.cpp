@@ -4,6 +4,7 @@
 #include "SNES/SnesConsole.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Debugger/NecDspDebugger.h"
+#include "SNES/Debugger/NecDspDisUtils.h"
 #include "SNES/Debugger/TraceLogger/NecDspTraceLogger.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Disassembler.h"
@@ -26,6 +27,7 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	
 	_traceLogger.reset(new NecDspTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
+	_callstackManager.reset(new CallstackManager(debugger));
 
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::NecDsp, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
@@ -33,18 +35,37 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger)
 
 void NecDspDebugger::Reset()
 {
+	_callstackManager->Clear();
+	_prevOpCode = 0;
 }
 
 void NecDspDebugger::ProcessInstruction()
 {
-	uint32_t addr = _dsp->GetState().PC * 3;
-	uint16_t value = _dsp->GetOpCode(_dsp->GetState().PC);
-	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
+	uint32_t pc = _dsp->GetState().PC * 3;
+	uint32_t opCode = _dsp->GetOpCode(_dsp->GetState().PC);
+	AddressInfo addressInfo = { (int32_t)pc, MemoryType::DspProgramRom };
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
-	_prevProgramCounter = addr;
+	if(NecDspDisUtils::IsJumpToSub(_prevOpCode)) {
+		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
+		uint32_t returnPc = _prevProgramCounter + NecDspDisUtils::GetOpSize();
+		AddressInfo src = { (int32_t)_prevProgramCounter, MemoryType::DspProgramRom };
+		AddressInfo ret = { (int32_t)returnPc, MemoryType::DspProgramRom };
+		_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
+	} else if(NecDspDisUtils::IsReturnInstruction(_prevOpCode)) {
+		_callstackManager->Pop(addressInfo, pc);
+
+		if(_step->BreakAddress == (int32_t)pc) {
+			//If we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
+	}
+
+	_prevProgramCounter = pc;
+	_prevOpCode = opCode;
+
 	_step->ProcessCpuExec();
 	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
@@ -77,9 +98,15 @@ void NecDspDebugger::Step(int32_t stepCount, StepType type)
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 		
-		case StepType::StepOut:
+		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+
 		case StepType::StepOver:
-			step.StepCount = 1;
+			if(NecDspDisUtils::IsJumpToSub(_prevOpCode)) {
+				step.BreakAddress = _prevProgramCounter + NecDspDisUtils::GetOpSize();
+			} else {
+				//For any other instruction, step over is the same as step into
+				step.StepCount = 1;
+			}
 			break;
 
 		case StepType::SpecificScanline:
@@ -94,6 +121,8 @@ DebuggerFeatures NecDspDebugger::GetSupportedFeatures()
 {
 	DebuggerFeatures features = {};
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	features.StepOut = true;
+	features.StepOver = true;
 	return features;
 }
 
@@ -110,7 +139,7 @@ uint32_t NecDspDebugger::GetProgramCounter(bool getInstPc)
 
 CallstackManager* NecDspDebugger::GetCallstackManager()
 {
-	return nullptr;
+	return _callstackManager.get();
 }
 
 BreakpointManager* NecDspDebugger::GetBreakpointManager()

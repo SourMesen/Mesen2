@@ -149,7 +149,7 @@ uint8_t DisassemblyInfo::GetOpSize(uint8_t opCode, uint8_t flags, CpuType type)
 	switch(type) {
 		case CpuType::Snes: return SnesDisUtils::GetOpSize(opCode, flags);
 		case CpuType::Spc: return SpcDisUtils::GetOpSize(opCode);
-		case CpuType::NecDsp: return 3;
+		case CpuType::NecDsp: return NecDspDisUtils::GetOpSize();
 		case CpuType::Sa1:return SnesDisUtils::GetOpSize(opCode, flags);
 		case CpuType::Gsu: return GsuDisUtils::GetOpSize(opCode);
 		case CpuType::Cx4: return Cx4DisUtils::GetOpSize();

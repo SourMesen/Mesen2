@@ -25,8 +25,10 @@ class NecDspDebugger final : public IDebugger
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<StepRequest> _step;
 	unique_ptr<NecDspTraceLogger> _traceLogger;
+	unique_ptr<CallstackManager> _callstackManager;
 
 	uint32_t _prevProgramCounter = 0;
+	uint32_t _prevOpCode = 0;
 
 public:
 	NecDspDebugger(Debugger* debugger);
