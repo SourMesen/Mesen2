@@ -499,7 +499,17 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Tile index", "$" + tileInfo.TileIndex.ToString("X2"));
 			}
 			if(tileInfo.TileAddress >= 0) {
-				entries.AddEntry("Tile address", "$" + tileInfo.TileAddress.ToString("X4"));
+				MemoryType memType = GetVramMemoryType();
+				if(memType.IsRelativeMemory()) {
+					entries.AddEntry("Tile address (" + memType.GetShortName() + ")", "$" + tileInfo.TileAddress.ToString("X4"));
+
+					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = tileInfo.TileAddress, Type = memType });
+					if(absAddress.Address >= 0) {
+						entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
+					}
+				} else {
+					entries.AddEntry("Tile address", "$" + tileInfo.TileAddress.ToString("X4"));
+				}
 			}
 			if(tileInfo.PaletteIndex >= 0) {
 				entries.AddEntry("Palette index", tileInfo.PaletteIndex.ToString());

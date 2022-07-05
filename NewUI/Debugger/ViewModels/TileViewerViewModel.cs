@@ -713,7 +713,16 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
 
 			int address = GetTileAddress(cropRect.TopLeft);
-			entries.AddEntry("Tile address", "$" + address.ToString("X4"));
+			if(Config.Source.IsRelativeMemory()) {
+				entries.AddEntry("Tile address (" + Config.Source.GetShortName() + ")", "$" + address.ToString("X4"));
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = Config.Source });
+				if(absAddress.Address >= 0) {
+					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
+				}
+			} else {
+				entries.AddEntry("Tile address", "$" + address.ToString("X4"));
+			}
 
 			entries.EndUpdate();
 

@@ -252,7 +252,18 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
 
 			entries.AddEntry("Tile index", "$" + sprite.TileIndex.ToString("X2"));
-			entries.AddEntry("Tile address", "$" + sprite.TileAddress.ToString("X4"));
+
+			MemoryType memType = CpuType.GetVramMemoryType(sprite.UseExtendedVram);
+			if(memType.IsRelativeMemory()) {
+				entries.AddEntry("Tile address (" + memType.GetShortName() + ")", "$" + sprite.TileAddress.ToString("X4"));
+
+				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = sprite.TileAddress, Type = memType });
+				if(absAddress.Address >= 0) {
+					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
+				}
+			} else {
+				entries.AddEntry("Tile address", "$" + sprite.TileAddress.ToString("X4"));
+			}
 			entries.AddEntry("Palette index", sprite.Palette.ToString());
 			entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
 			entries.AddEntry("Visible", sprite.Visible);
