@@ -66,5 +66,13 @@ namespace Mesen.Utilities
 
 			return child.ShowDialog<TResult>(parentWnd as Window);
 		}
+
+		public static void BringToFront(this Window wnd)
+		{
+			if(wnd.WindowState == WindowState.Minimized) {
+				wnd.WindowState = WindowState.Normal;
+			}
+			wnd.Activate();
+		}
 	}
 }

@@ -67,6 +67,17 @@ namespace Mesen.Debugger.Windows
 			_model.ScrollToAddress((int)address);
 		}
 
+		public static DebuggerWindow GetOrOpenDebuggerWindow(CpuType cpuType)
+		{
+			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == cpuType);
+			if(wnd == null) {
+				return DebugWindowManager.OpenDebugWindow<DebuggerWindow>(() => new DebuggerWindow(cpuType));
+			} else {
+				wnd.BringToFront();
+			}
+			return wnd;
+		}
+
 		public static void OpenWindowAtAddress(CpuType cpuType, int address)
 		{
 			DebuggerWindow? debugger = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == cpuType);
@@ -75,10 +86,7 @@ namespace Mesen.Debugger.Windows
 			} else {
 				debugger.ScrollToAddress((uint)address);
 			}
-			if(debugger.WindowState == WindowState.Minimized) {
-				debugger.WindowState = WindowState.Normal;
-			}
-			debugger.Activate();
+			debugger.BringToFront();
 		}
 
 		protected override void OnOpened(EventArgs e)

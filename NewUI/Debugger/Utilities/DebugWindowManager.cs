@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -49,10 +50,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			foreach(Window wnd in _openedWindows.Keys) {
 				if(wnd is T) {
-					if(wnd.WindowState == WindowState.Minimized) {
-						wnd.WindowState = WindowState.Normal;
-					}
-					wnd.Activate();
+					wnd.BringToFront();
 					return (T)wnd;
 				}
 			}

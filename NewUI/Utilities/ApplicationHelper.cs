@@ -50,10 +50,7 @@ namespace Mesen.Utilities
 					wnd.ShowCentered((Control)centerParent);
 					return wnd;
 				} else {
-					if(wnd.WindowState == WindowState.Minimized) {
-						wnd.WindowState = WindowState.Normal;
-					}
-					wnd.Activate();
+					wnd.BringToFront();
 					return wnd;
 				}
 			}

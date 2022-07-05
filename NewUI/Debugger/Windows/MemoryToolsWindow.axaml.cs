@@ -283,10 +283,7 @@ namespace Mesen.Debugger.Windows
 				_searchWnd.Closed += (s, e) => _searchWnd = null;
 				_searchWnd.ShowCenteredWithParent(this);
 			} else {
-				if(_searchWnd.WindowState == WindowState.Minimized) {
-					_searchWnd.WindowState = WindowState.Normal;
-				}
-				_searchWnd.Activate();
+				_searchWnd.BringToFront();
 			}
 		}
 
@@ -465,16 +462,17 @@ namespace Mesen.Debugger.Windows
 				HintText = () => GetAddressRange(),
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_EditBreakpoint),
 
-				OnClick = () => {
+				OnClick = async () => {
 					uint startAddress = (uint)_editor.SelectionStart;
 					uint endAddress = (uint)(_editor.SelectionStart + Math.Max(1, _editor.SelectionLength) - 1);
 
 					MemoryType memType = _model.Config.MemoryType;
 					Breakpoint? bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, memType);
+					CpuType cpuType = memType.ToCpuType();
 					if(bp == null) {
 						bp = new Breakpoint() { 
 							MemoryType = memType, 
-							CpuType = memType.ToCpuType(), 
+							CpuType = cpuType, 
 							StartAddress = startAddress,
 							EndAddress = endAddress,
 							BreakOnWrite = true,
@@ -485,7 +483,10 @@ namespace Mesen.Debugger.Windows
 						}
 					}
 
-					BreakpointEditWindow.EditBreakpoint(bp, this);
+					bool result = await BreakpointEditWindow.EditBreakpointAsync(bp, this);
+					if(result && DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == cpuType) == null) {
+						DebuggerWindow.GetOrOpenDebuggerWindow(cpuType);
+					}
 				}
 			};
 		}
