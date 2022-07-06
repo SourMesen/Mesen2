@@ -43,8 +43,11 @@ struct SpriteInfo
 			return false;
 		}
 
-		uint8_t endY = (Y + (interlace ? (Height >> 1) : Height)) & 0xFF;
-		return (scanline >= Y && scanline < endY) || (endY < Y && scanline < endY);
+		uint16_t endY = Y + (interlace ? (Height >> 1) : Height);
+		return (
+			(scanline >= Y && scanline < endY) ||
+			((uint8_t)endY < Y && scanline < (uint8_t)endY) //wrap-around occurs after 256 scanlines
+		);
 	}
 };
 
