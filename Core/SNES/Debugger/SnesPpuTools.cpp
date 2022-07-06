@@ -23,7 +23,7 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 
 	uint16_t basePaletteOffset = 0;
 	if(state.BgMode == 0) {
-		basePaletteOffset = options.Layer * 64;
+		basePaletteOffset = options.Layer * 32;
 	}
 
 	LayerConfig layer = state.Layers[options.Layer];
@@ -369,7 +369,7 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 
 	uint16_t basePaletteOffset = 0;
 	if(state.BgMode == 0) {
-		basePaletteOffset = options.Layer * 64;
+		basePaletteOffset = options.Layer * 32;
 	}
 
 	uint32_t row;
