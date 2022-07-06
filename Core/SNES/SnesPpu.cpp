@@ -23,17 +23,6 @@
 #pragma warning ( disable : 4127 ) //conditional expression is constant
 #endif
 
-static constexpr uint8_t _oamSizes[8][2][2] = {
-	{ { 1, 1 }, { 2, 2 } }, //8x8 + 16x16
-	{ { 1, 1 }, { 4, 4 } }, //8x8 + 32x32
-	{ { 1, 1 }, { 8, 8 } }, //8x8 + 64x64
-	{ { 2, 2 }, { 4, 4 } }, //16x16 + 32x32
-	{ { 2, 2 }, { 8, 8 } }, //16x16 + 64x64
-	{ { 4, 4 }, { 8, 8 } }, //32x32 + 64x64
-	{ { 2, 4 }, { 4, 8 } }, //16x32 + 32x64
-	{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
-};
-
 SnesPpu::SnesPpu(Emulator* emu, SnesConsole* console)
 {
 	_emu = emu;
@@ -596,10 +585,7 @@ void SnesPpu::EvaluateNextLineSprites()
 	}
 
 	for(int i = _spriteEvalStart; i <= _spriteEvalEnd; i++) {
-		if(!(i & 0x01)) {
-			//First cycle, read X & Y and high oam byte
-			FetchSpritePosition(_oamEvaluationIndex << 2);
-		} else {
+		if(i & 0x01) {
 			//Second cycle: Check if sprite is in range, if so, keep its index
 			if(_currentSprite.IsVisible(_scanline, _state.ObjInterlace)) {
 				if(_spriteCount < 32) {
@@ -610,6 +596,9 @@ void SnesPpu::EvaluateNextLineSprites()
 				}
 			}
 			_oamEvaluationIndex = (_oamEvaluationIndex + 1) & 0x7F;
+		} else {
+			//First cycle, read X & Y and high oam byte
+			FetchSpritePosition(_oamEvaluationIndex);
 		}
 	}
 }
@@ -652,38 +641,34 @@ void SnesPpu::FetchSpriteData()
 					_oamTimeIndex = _spriteIndexes[_spriteCount - 1];
 				}
 			} else {
-				FetchSpritePosition(_oamTimeIndex << 2);
+				FetchSpritePosition(_oamTimeIndex);
 			}
 		}
 	}
 }
 
-void SnesPpu::FetchSpritePosition(uint16_t oamAddress)
+void SnesPpu::FetchSpritePosition(uint8_t spriteIndex)
 {
-	uint8_t highTableOffset = oamAddress >> 4;
-	uint8_t shift = ((oamAddress >> 1) & 0x06);
-	uint8_t highTableValue = _oamRam[0x200 | highTableOffset] >> shift;
-	uint8_t largeSprite = (highTableValue & 0x02) >> 1;
+	static constexpr uint8_t oamWidth[16] = { 8,8,8,16,16,32,16,16, 16,32,64,32,64,64,32,32 };
+	static constexpr uint8_t oamHeight[16] = { 8,8,8,16,16,32,32,32, 16,32,64,32,64,64,64,32 };
+	static constexpr uint16_t sign[2] = { 0x0000, 0xFF00 };
 
-	uint16_t oamValue = _oamRam[oamAddress] | (_oamRam[oamAddress + 1] << 8);
-	uint16_t sign = (highTableValue & 0x01) << 8;
+	uint8_t highTableValue = _oamRam[0x200 | (spriteIndex >> 2)] >> ((spriteIndex << 1) & 0x06);
+	_currentSprite.X = (int16_t)(sign[highTableValue & 0x01] | _oamRam[(spriteIndex << 2)]);
+	_currentSprite.Y = _oamRam[(spriteIndex << 2) + 1];
 
-	uint8_t spriteIndex = oamAddress >> 2;
-	_currentSprite.X = (int16_t)((sign | (oamValue & 0xFF)) << 7) >> 7;
-	_currentSprite.Y = (oamValue >> 8);
-	_currentSprite.Width = _oamSizes[_state.OamMode][largeSprite][0] << 3;
-	
+	uint8_t mode = _state.OamMode | ((highTableValue & 0x02) << 2);
+	_currentSprite.Width = oamWidth[mode];
+	_currentSprite.Height = oamHeight[mode];
+
 	if(spriteIndex != _currentSprite.Index) {
-		_currentSprite.Index = oamAddress >> 2;
+		_currentSprite.Index = spriteIndex;
 		_currentSprite.ColumnOffset = (_currentSprite.Width / 8);
 		if(_currentSprite.X <= -8 && _currentSprite.X != -256) {
 			//Skip the first tiles of the sprite (because the tiles are hidden to the left of the screen)
 			_currentSprite.ColumnOffset += _currentSprite.X / 8;
 		}
 	}
-
-	uint8_t height = _oamSizes[_state.OamMode][largeSprite][1] << 3;
-	_currentSprite.Height = height;
 }
 
 void SnesPpu::FetchSpriteAttributes(uint16_t oamAddress)
