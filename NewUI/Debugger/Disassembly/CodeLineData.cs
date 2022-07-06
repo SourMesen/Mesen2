@@ -82,18 +82,19 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public bool HasAddress
+		public bool IsAddressHidden
 		{
 			get
 			{
 				return (
-					Address >= 0 && 
-					!Flags.HasFlag(LineFlags.Empty) && 
-					!(Flags.HasFlag(LineFlags.Comment) && Text.Length == 0) && 
-					!Flags.HasFlag(LineFlags.Label)
+					Flags.HasFlag(LineFlags.Empty) ||
+					(Flags.HasFlag(LineFlags.Comment) && Text.Length == 0) ||
+					Flags.HasFlag(LineFlags.Label)
 				);
 			}
 		}
+
+		public bool HasAddress => Address >= 0 && !IsAddressHidden;
 
 		public CodeLineData(CpuType cpuType)
 		{

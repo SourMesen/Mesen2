@@ -39,6 +39,7 @@
 				FontFamily="{CompiledBinding Config.Font.FontFamily}"
 				FontSize="{CompiledBinding Config.Font.FontSize}"
 				ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
+				AddressDisplayType="{CompiledBinding Config.Debugger.AddressDisplayType}"
 			/>
 			
 			<dv:QuickSearchView

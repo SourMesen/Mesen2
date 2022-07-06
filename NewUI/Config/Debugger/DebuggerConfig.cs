@@ -19,6 +19,8 @@ namespace Mesen.Config
 		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;
 		
 		[Reactive] public bool ShowJumpLabels { get; set; } = false;
+		[Reactive] public AddressDisplayType AddressDisplayType { get; set; } = AddressDisplayType.CpuAddress;
+
 		[Reactive] public bool DrawPartialFrame { get; set; } = false;
 
 		[Reactive] public SnesDebuggerConfig Snes { get; set; } = new();
@@ -95,5 +97,13 @@ namespace Mesen.Config
 		Hide,
 		Show,
 		Disassemble
+	}
+
+	public enum AddressDisplayType
+	{
+		CpuAddress,
+		AbsAddress,
+		Both,
+		BothCompact
 	}
 }

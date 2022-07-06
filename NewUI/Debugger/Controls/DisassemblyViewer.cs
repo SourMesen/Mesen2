@@ -20,6 +20,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
 		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
+		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
 
 		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
@@ -61,6 +62,12 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowByteCodeProperty, value); }
 		}
 
+		public AddressDisplayType AddressDisplayType
+		{
+			get { return GetValue(AddressDisplayTypeProperty); }
+			set { SetValue(AddressDisplayTypeProperty, value); }
+		}
+
 		public delegate void RowClickedEventHandler(DisassemblyViewer sender, RowClickedEventArgs args);
 		public event RowClickedEventHandler? RowClicked;
 
@@ -76,7 +83,7 @@ namespace Mesen.Debugger.Controls
 
 		static DisassemblyViewer()
 		{
-			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty);
+			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty, AddressDisplayTypeProperty);
 		}
 
 		public DisassemblyViewer()
@@ -172,9 +179,18 @@ namespace Mesen.Debugger.Controls
 			ILineStyleProvider styleProvider = this.StyleProvider;
 
 			string searchString = this.SearchString;
+			AddressDisplayType addressDisplayType = AddressDisplayType;
+
+			int addressMaxCharCount = addressDisplayType switch {
+				AddressDisplayType.CpuAddress => StyleProvider.AddressSize,
+				AddressDisplayType.AbsAddress => 6,
+				AddressDisplayType.Both => StyleProvider.AddressSize + 6 + 3,
+				AddressDisplayType.BothCompact => StyleProvider.AddressSize + 3 + 3,
+				_ => throw new NotImplementedException()
+			};
 
 			double symbolMargin = 20;
-			double addressMargin = Math.Floor(LetterSize.Width * styleProvider.AddressSize + symbolMargin) + 0.5;
+			double addressMargin = Math.Floor(LetterSize.Width * addressMaxCharCount + symbolMargin) + 0.5;
 			double byteCodeMargin = Math.Floor(LetterSize.Width * (3 * styleProvider.ByteCodeSize));
 			double codeIndent = Math.Floor(LetterSize.Width * 2) + 0.5;
 
@@ -205,10 +221,20 @@ namespace Mesen.Debugger.Controls
 				DrawLineSymbol(context, y, lineStyle);
 
 				//Draw address in margin
-				text.Text = line.HasAddress ? line.Address.ToString(addrFormat) : "";
+				string addressText = line.HasAddress ? line.Address.ToString(addrFormat) : "";
+				string absAddress = line.AbsoluteAddress.Address >= 0 && !line.IsAddressHidden ? line.AbsoluteAddress.Address.ToString(addrFormat) : "";
+				string compactAbsAddress = line.AbsoluteAddress.Address >= 0 && !line.IsAddressHidden ? (line.AbsoluteAddress.Address >> 12).ToString("X") : "";
+				text.Text = addressDisplayType switch {
+					AddressDisplayType.CpuAddress => addressText,
+					AddressDisplayType.AbsAddress => absAddress,
+					AddressDisplayType.Both => (addressText + (string.IsNullOrEmpty(absAddress) ? "" : " [" + absAddress + "]")).Trim(),
+					AddressDisplayType.BothCompact => (addressText + (string.IsNullOrEmpty(compactAbsAddress) ? "" : " [" + compactAbsAddress + "]")).Trim(),
+					_ => throw new NotImplementedException()
+				};
+
 				Point marginAddressPos = new Point(addressMargin - text.Bounds.Width - 1, y);
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
-				_visibleCodeSegments.Add(new CodeSegmentInfo(text.Text, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
+				_visibleCodeSegments.Add(new CodeSegmentInfo(addressText, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
 				x += addressMargin;
 
 				if(showByteCode) {

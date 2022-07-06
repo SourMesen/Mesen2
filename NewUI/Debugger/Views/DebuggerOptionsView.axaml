@@ -27,18 +27,27 @@
 
 	<StackPanel>
 		<c:OptionSection Header="{l:Translate lblDisassemblyOptions}" Margin="0">
-			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
+			<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblVerifiedData}" />
 				<c:EnumComboBox
 					Grid.Column="1"
+					MinWidth="105"
 					SelectedItem="{CompiledBinding Config.VerifiedDataDisplay}"
 				/>
+				
 				<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblUnidentifiedBlock}" />
 				<c:EnumComboBox
 					Grid.Row="1" Grid.Column="1"
+					MinWidth="105"
 					SelectedItem="{CompiledBinding Config.UnidentifiedBlockDisplay}"
 				/>
+				
+				<DockPanel Grid.Row="2" Grid.ColumnSpan="2">
+					<TextBlock VerticalAlignment="Center" Text="{l:Translate lblAddressDisplay}" />
+					<c:EnumComboBox SelectedItem="{CompiledBinding Config.AddressDisplayType}" />
+				</DockPanel>
 			</Grid>
+			
 			<CheckBox
 				IsChecked="{CompiledBinding Config.ShowByteCode}"
 				Content="{l:Translate chkShowByteCode}"

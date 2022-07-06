@@ -73,17 +73,13 @@ namespace Mesen.Debugger.Utilities
 		{
 			if(seg.Type == CodeSegmentType.OpCode) {
 				return OpCodeHelper.GetTooltip(seg);
+			} else if(seg.Type == CodeSegmentType.MarginAddress) {
+				return GetMarginAddressTooltip(cpuType, seg);
 			} else {
-				LocationInfo? codeLoc = GetLocation(cpuType, seg);
-				if(codeLoc != null) {
-					if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
-						if(codeLoc.RelAddress?.Address >= 0 || codeLoc.Symbol != null) {
-							return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress?.Address ?? -1, codeLoc.Label, codeLoc.Symbol);
-						}
-					} else if(seg.Type == CodeSegmentType.MarginAddress) {
-						if(codeLoc.RelAddress?.Address >= 0) {
-							return GetMarginAddressTooltip(cpuType, seg, codeLoc.RelAddress.Value.Address);
-						}
+				if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
+					LocationInfo? codeLoc = GetLocation(cpuType, seg);
+					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.Symbol != null)) {
+						return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress?.Address ?? -1, codeLoc.Label, codeLoc.Symbol);
 					}
 				}
 			}
@@ -91,16 +87,42 @@ namespace Mesen.Debugger.Utilities
 			return null;
 		}
 
-		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo codeSegment, int address)
+		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo seg)
 		{
 			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
-			bool isCode = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
 
 			TooltipEntries items = new();
-			items.AddEntry("Address", GetAddressField(cpuType, address, memType), monoFont);
+			int address = seg.Data.HasAddress ? seg.Data.Address : -1;
+
+			string addressField = "";
+			if(seg.Data.HasAddress) {
+				addressField += "$" + address.ToString("X" + cpuType.GetAddressSize()) + " (" + memType.GetShortName() + ")";
+			}
+
+			AddressInfo absAddr = seg.Data.AbsoluteAddress;
+			if(absAddr.Address < 0) {
+				absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = memType });
+			}
+
+			if(absAddr.Address >= 0) {
+				if(!string.IsNullOrEmpty(addressField)) {
+					addressField += Environment.NewLine;
+				}
+				addressField += "$" + absAddr.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + absAddr.Type.GetShortName() + ")";
+			}
+
+			items.AddEntry("Address", addressField, monoFont);
+
+			bool isCode = false;
+			if(address >= 0) {
+				isCode = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
+			} else if(seg.Data.AbsoluteAddress.Address >= 0) {
+				isCode = DebugApi.GetCdlData((uint)seg.Data.AbsoluteAddress.Address, 1, seg.Data.AbsoluteAddress.Type)[0].HasFlag(CdlFlags.Code);
+			}
+
 			if(isCode) {
-				items.AddEntry("Byte code", codeSegment.Data.ByteCodeStr, monoFont);
+				items.AddEntry("Byte code", seg.Data.ByteCodeStr, monoFont);
 			}
 
 			return new DynamicTooltip() { Items = items };

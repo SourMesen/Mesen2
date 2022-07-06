@@ -965,8 +965,9 @@
 
 		<Form ID="DebuggerOptionsView">
 			<Control ID="lblDisassemblyOptions">Disassembly options</Control>
-			<Control ID="lblVerifiedData">Data blocks:</Control>
-			<Control ID="lblUnidentifiedBlock">Unidentified blocks:</Control>
+			<Control ID="lblVerifiedData">Data:</Control>
+			<Control ID="lblUnidentifiedBlock">Unidentified:</Control>
+			<Control ID="lblAddressDisplay">Margin:</Control>
 			<Control ID="chkShowByteCode">Show byte code</Control>
 			<Control ID="chkUseLowerCaseDisassembly">Use lower case</Control>
 			<Control ID="chkShowJumpLabels">Show jump/sub labels</Control>
@@ -2174,6 +2175,12 @@
 			<Value ID="Hide">Hide</Value>
 			<Value ID="Show">Show</Value>
 			<Value ID="Disassemble">Disassemble</Value>
+		</Enum>
+		<Enum ID="AddressDisplayType">
+			<Value ID="CpuAddress">CPU address</Value>
+			<Value ID="AbsAddress">ROM address</Value>
+			<Value ID="Both">Both</Value>
+			<Value ID="BothCompact">Both (compact)</Value>
 		</Enum>
 		<Enum ID="ScriptStartupBehavior">
 			<Value ID="ShowTutorial">Display the tutorial script</Value>
