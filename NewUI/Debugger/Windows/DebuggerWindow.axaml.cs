@@ -67,7 +67,7 @@ namespace Mesen.Debugger.Windows
 			_model.ScrollToAddress((int)address);
 		}
 
-		public static DebuggerWindow GetOrOpenDebuggerWindow(CpuType cpuType)
+		public static DebuggerWindow GetOrOpenWindow(CpuType cpuType)
 		{
 			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == cpuType);
 			if(wnd == null) {

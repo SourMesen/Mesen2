@@ -253,7 +253,12 @@ BaseVideoFilter* SnesConsole::GetVideoFilter()
 
 RomFormat SnesConsole::GetRomFormat()
 {
-	return _cart->GetSpcData() ? RomFormat::Spc : RomFormat::Sfc;
+	if(_cart->GetGameboy()) {
+		return RomFormat::Gb;
+	} else if(_cart->GetSpcData()) {
+		return RomFormat::Spc;
+	}
+	return RomFormat::Sfc;
 }
 
 AudioTrackInfo SnesConsole::GetAudioTrackInfo()

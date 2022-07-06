@@ -39,7 +39,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<ContextMenuAction> FileMenuActions { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> OptionsMenuActions { get; private set; } = new();
 
-		private CpuType _cpuType;
+		public CpuType CpuType { get; }
 		private List<byte> _bytes = new();
 
 		public int? MaxAddress { get; }
@@ -54,13 +54,13 @@ namespace Mesen.Debugger.ViewModels
 		public AssemblerWindowViewModel(CpuType cpuType)
 		{
 			Config = ConfigManager.Config.Debug.Assembler;
-			_cpuType = cpuType;
+			CpuType = cpuType;
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
-			MaxAddress = DebugApi.GetMemorySize(_cpuType.ToMemoryType()) - 1;
+			MaxAddress = DebugApi.GetMemorySize(CpuType.ToMemoryType()) - 1;
 
 			this.WhenAnyValue(x => x.Code, x => x.StartAddress).Subscribe(_ => {
 				UpdateAssembly(Code);
@@ -97,13 +97,13 @@ namespace Mesen.Debugger.ViewModels
 			StartAddress = address;
 			Code = code;
 
-			_originalCode = DebugApi.GetMemoryValues(_cpuType.ToMemoryType(), (uint)StartAddress, (uint)(StartAddress + OriginalByteCount - 1));
+			_originalCode = DebugApi.GetMemoryValues(CpuType.ToMemoryType(), (uint)StartAddress, (uint)(StartAddress + OriginalByteCount - 1));
 		}
 
 		private void UpdateAssembly(string code)
 		{
 			string[] codeLines = code.Replace("\r", "").Split('\n').Select(x => x.Trim()).ToArray();
-			short[] byteCode = DebugApi.AssembleCode(_cpuType, string.Join('\n', codeLines), (uint)StartAddress);
+			short[] byteCode = DebugApi.AssembleCode(CpuType, string.Join('\n', codeLines), (uint)StartAddress);
 			List<AssemblerError> errorList = new List<AssemblerError>();
 			List<byte> convertedByteCode = new List<byte>(byteCode.Length);
 			StringBuilder sb = new StringBuilder();
@@ -177,11 +177,11 @@ namespace Mesen.Debugger.ViewModels
 
 		public async Task<bool> ApplyChanges(Window assemblerWindow)
 		{
-			MemoryType memType = _cpuType.ToMemoryType();
+			MemoryType memType = CpuType.ToMemoryType();
 
 			List<byte> bytes = new List<byte>(_bytes);
 			if(OriginalByteCount > 0) {
-				byte nopOpCode = _cpuType.GetNopOpCode();
+				byte nopOpCode = CpuType.GetNopOpCode();
 				while(OriginalByteCount > bytes.Count) {
 					//Pad data with NOPs as needed
 					bytes.Add(nopOpCode);
@@ -221,7 +221,7 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.MarkBytesAs(absStart.Type, (uint)absStart.Address, (uint)absEnd.Address, CdlFlags.Code);
 			}
 
-			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == _cpuType);
+			DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(wnd => wnd.CpuType == CpuType);
 			if(wnd != null) {
 				wnd.RefreshDisassembly();
 			}

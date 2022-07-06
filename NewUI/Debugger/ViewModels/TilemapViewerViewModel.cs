@@ -260,7 +260,7 @@ namespace Mesen.Debugger.ViewModels
 
 				bool result = await BreakpointEditWindow.EditBreakpointAsync(bp, wnd);
 				if(result && DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == CpuType) == null) {
-					DebuggerWindow.GetOrOpenDebuggerWindow(CpuType);
+					DebuggerWindow.GetOrOpenWindow(CpuType);
 				}
 			}
 		}

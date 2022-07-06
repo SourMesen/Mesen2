@@ -388,8 +388,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	string romExt = romFile.GetFileExtension();
 	LoadRomResult result = LoadRomResult::UnknownType;
 
+	//TODO: Rework 
+	// -doesn't work correctly when loading fails while another rom is already loaded
+	// -doesn't work correctly with vs dual system
 	if(std::find(_nesExtensions.begin(), _nesExtensions.end(), romExt) != _nesExtensions.end()) {
-		//TODO consolememory rework
 		memset(_consoleMemory, 0, sizeof(_consoleMemory));
 		console.reset(new NesConsole(this));
 		result = console->LoadRom(romFile);
@@ -568,6 +570,7 @@ vector<CpuType> Emulator::GetCpuTypes()
 	}
 }
 
+//TODO: add cputype param to allow getting GB timing info from UI in SGB mode
 TimingInfo Emulator::GetTimingInfo()
 {
 	TimingInfo info = {};

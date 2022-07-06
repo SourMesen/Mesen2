@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
@@ -19,7 +20,7 @@ using System.Xml;
 
 namespace Mesen.Debugger.Windows
 {
-	public class AssemblerWindow : Window
+	public class AssemblerWindow : Window, INotificationHandler
 	{
 		private static XshdSyntaxDefinition _syntaxDef;
 		private IHighlightingDefinition _highlighting;
@@ -132,6 +133,20 @@ namespace Mesen.Debugger.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		public void ProcessNotification(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.GameLoaded:
+					RomInfo romInfo = EmuApi.GetRomInfo();
+					if(!romInfo.CpuTypes.Contains(_model.CpuType)) {
+						Dispatcher.UIThread.Post(() => {
+							Close();
+						});
+					}
+					break;
+			}
 		}
 	}
 }

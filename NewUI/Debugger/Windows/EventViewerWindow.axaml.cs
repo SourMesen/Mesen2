@@ -14,6 +14,7 @@ using Avalonia.Interactivity;
 using Mesen.Utilities;
 using System.Linq;
 using Avalonia.Threading;
+using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -142,15 +143,24 @@ namespace Mesen.Debugger.Windows
 					RomInfo romInfo = EmuApi.GetRomInfo();
 					if(!romInfo.CpuTypes.Contains(_model.CpuType)) {
 						_model.CpuType = romInfo.ConsoleType.GetMainCpuType();
+						Dispatcher.UIThread.Post(() => {
+							if(DebugWindowManager.GetDebugWindow<EventViewerWindow>(x => x._model.CpuType == _model.CpuType) != this) {
+								//Found another window for the same CPU type, close this one (can happen when opening event viewers with SGB on both SNES & GB)
+								Close();
+							} else {
+								_model.UpdateConfig();
+							}
+						});
+					} else {
+						Dispatcher.UIThread.Post(() => {
+							_model.UpdateConfig();
+						});
 					}
-
-					Dispatcher.UIThread.Post(() => {
-						_model.UpdateConfig();
-					});
 					break;
 
 				case ConsoleNotificationType.EventViewerRefresh:
-					if(_model.Config.AutoRefresh) {
+					CpuType cpuType = (CpuType)e.Parameter;
+					if(_model.CpuType == cpuType && _model.Config.AutoRefresh) {
 						_model.RefreshData(false);
 					}
 					break;
@@ -161,6 +171,17 @@ namespace Mesen.Debugger.Windows
 					}
 					break;
 			}
+		}
+
+		public static EventViewerWindow GetOrOpenWindow(CpuType cpuType)
+		{
+			EventViewerWindow? wnd = DebugWindowManager.GetDebugWindow<EventViewerWindow>(x => x._model.CpuType == cpuType);
+			if(wnd == null) {
+				return DebugWindowManager.OpenDebugWindow<EventViewerWindow>(() => new EventViewerWindow(cpuType));
+			} else {
+				wnd.BringToFront();
+			}
+			return wnd;
 		}
 	}
 }
