@@ -29,6 +29,8 @@ namespace Mesen.Debugger.Windows
 			set { SetValue(StepTypeProperty, value); }
 		}
 
+		public bool ShowCpuCycles { get; } = false;
+
 		private CpuType _cpuType;
 
 		[Obsolete("For designer only")]
@@ -39,6 +41,13 @@ namespace Mesen.Debugger.Windows
 			_cpuType = cpuType;
 			StepType = _lastStepType;
 			Value = _lastValue;
+
+			if(!Design.IsDesignMode) {
+				ShowCpuCycles = DebugApi.GetDebuggerFeatures(cpuType).CpuCycleStep;
+				if(!ShowCpuCycles && StepType == StepType.CpuCycleStep) {
+					StepType = StepType.Step;
+				}
+			}
 
 			InitializeComponent();
 #if DEBUG

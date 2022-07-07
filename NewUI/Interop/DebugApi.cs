@@ -1086,6 +1086,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool StepBack;
 		[MarshalAs(UnmanagedType.I1)] public bool ChangeProgramCounter;
 		[MarshalAs(UnmanagedType.I1)] public bool CallStack;
+		[MarshalAs(UnmanagedType.I1)] public bool CpuCycleStep;
 
 		public byte CpuVectorCount;		
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
@@ -1137,6 +1138,7 @@ namespace Mesen.Interop
 		Step,
 		StepOut,
 		StepOver,
+		CpuCycleStep,
 		PpuStep,
 		PpuScanline,
 		PpuFrame,

@@ -1174,6 +1174,7 @@
 			<Control ID="wndTitle">Break In...</Control>
 			<Control ID="lblBreakIn">Break in:</Control>
 			<Control ID="lblCpuInst">CPU instructions</Control>
+			<Control ID="lblCpuCycles">CPU cycles</Control>
 			<Control ID="lblPpuCycles">PPU cycles</Control>
 			<Control ID="lblPpuScanlines">Scanlines</Control>
 			<Control ID="lblPpuFrames">Frames</Control>
@@ -2483,6 +2484,7 @@
 			<Value ID="StepOut">Step Out</Value>
 			<Value ID="StepOver">Step Over</Value>
 			<Value ID="StepBack">Step Back</Value>
+			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
 			<Value ID="RunPpuScanline">Run one scanline</Value>
 			<Value ID="RunPpuFrame">Run one frame</Value>

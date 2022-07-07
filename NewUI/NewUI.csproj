@@ -140,6 +140,7 @@
 	  <None Remove="Assets\RegisterIcon.png" />
 	  <None Remove="Assets\Repeat.png" />
 	  <None Remove="Assets\RepeatEnabled.png" />
+	  <None Remove="Assets\RunCpuCycle.png" />
 	  <None Remove="Assets\RunPpuCycle.png" />
 	  <None Remove="Assets\RunPpuFrame.png" />
 	  <None Remove="Assets\RunPpuScanline.png" />
@@ -649,6 +650,7 @@
 	  <AvaloniaResource Include="Assets\RegisterIcon.png" />
 	  <AvaloniaResource Include="Assets\Repeat.png" />
 	  <AvaloniaResource Include="Assets\RepeatEnabled.png" />
+	  <AvaloniaResource Include="Assets\RunCpuCycle.png" />
 	  <AvaloniaResource Include="Assets\RunPpuCycle.png" />
 	  <AvaloniaResource Include="Assets\RunPpuFrame.png" />
 	  <AvaloniaResource Include="Assets\RunPpuScanline.png" />

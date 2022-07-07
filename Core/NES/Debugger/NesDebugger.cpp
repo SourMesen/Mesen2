@@ -174,6 +174,9 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->Log(state, disInfo, operation);
 		}
 
+		if(_step->ProcessCpuCycle()) {
+			_debugger->SleepUntilResume(CpuType::Nes, BreakSource::CpuStep, &operation);
+		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
@@ -183,7 +186,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
-
+		_step->ProcessCpuCycle();
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
@@ -214,6 +217,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}
+		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
@@ -236,7 +240,7 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());
-	
+	_step->ProcessCpuCycle();
 	_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
@@ -261,6 +265,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 			}
 			break;
 
+		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
 		case StepType::PpuFrame: step.PpuStepCount = 341 * _ppu->GetScanlineCount(); break;
@@ -355,6 +360,7 @@ DebuggerFeatures NesDebugger::GetSupportedFeatures()
 	features.StepOver = true;
 	features.StepOut = true;
 	features.CallStack = true;
+	features.CpuCycleStep = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
 
 	if(_console->GetRomFormat() == RomFormat::Nsf) {

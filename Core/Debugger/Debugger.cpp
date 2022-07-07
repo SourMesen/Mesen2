@@ -288,7 +288,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 void Debugger::ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 {
 	int breakpointId = bpManager->CheckBreakpoint(operation, addressInfo, true);
-	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && !_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints)) {
+	if(_breakRequestCount || _waitForBreakResume || (step.BreakNeeded && (!_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints || step.Type == StepType::CpuCycleStep))) {
 		SleepUntilResume(sourceCpu, step.Source);
 	} else {
 		if(breakpointId >= 0 && !_debuggers[(int)sourceCpu].Debugger->IgnoreBreakpoints) {

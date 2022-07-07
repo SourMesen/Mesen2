@@ -344,6 +344,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("StepBack")]
 		StepBack,
 
+		[IconFile("RunCpuCycle")]
+		RunCpuCycle,
+
 		[IconFile("RunPpuCycle")]
 		RunPpuCycle,
 

@@ -327,6 +327,7 @@ enum class StepType
 	Step,
 	StepOut,
 	StepOver,
+	CpuCycleStep,
 	PpuStep,
 	PpuScanline,
 	PpuFrame,
@@ -339,6 +340,7 @@ struct StepRequest
 {
 	int32_t StepCount = -1;
 	int32_t PpuStepCount = -1;
+	int32_t CpuCycleStepCount = -1;
 	int32_t BreakAddress = -1;
 	int32_t BreakScanline = INT32_MIN;
 	StepType Type = StepType::Step;
@@ -362,9 +364,10 @@ struct StepRequest
 		Type = obj.Type;
 		StepCount = obj.StepCount;
 		PpuStepCount = obj.PpuStepCount;
+		CpuCycleStepCount = obj.CpuCycleStepCount;
 		BreakAddress = obj.BreakAddress;
 		BreakScanline = obj.BreakScanline;
-		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN);
+		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN || CpuCycleStepCount != -1);
 	}
 
 	__forceinline void Break(BreakSource src)
@@ -382,6 +385,19 @@ struct StepRequest
 				Source = BreakSource::CpuStep;
 			}
 		}
+	}
+
+	__forceinline bool ProcessCpuCycle()
+	{
+		if(CpuCycleStepCount > 0) {
+			CpuCycleStepCount--;
+			if(CpuCycleStepCount == 0) {
+				BreakNeeded = true;
+				Source = BreakSource::CpuStep;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	__forceinline void ProcessNmiIrq(bool forNmi)

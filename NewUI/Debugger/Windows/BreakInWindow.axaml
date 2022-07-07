@@ -53,6 +53,15 @@
 				CheckedWhen="{x:Static i:StepType.Step}"
 			/>
 			<c:EnumRadioButton
+				Margin="10 0"
+				Grid.Row="1"
+				Grid.Column="2"
+				IsVisible="{Binding ShowCpuCycles, ElementName=root}"
+				Content="{l:Translate lblCpuCycles}"
+				Value="{Binding StepType, ElementName=root}"
+				CheckedWhen="{x:Static i:StepType.CpuCycleStep}"
+			/>
+			<c:EnumRadioButton
 				Grid.Column="3"
 				Grid.Row="0"
 				Content="{l:Translate lblPpuCycles}"

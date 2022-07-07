@@ -23,6 +23,7 @@ struct DebuggerFeatures
 	bool StepBack;
 	bool ChangeProgramCounter;
 	bool CallStack;
+	bool CpuCycleStep;
 	
 	uint8_t CpuVectorCount;
 	CpuVectorDefinition CpuVectors[10];

@@ -70,6 +70,13 @@ namespace Mesen.Debugger.Utilities
 					OnClick = () => { } //TODO
 				},
 
+				new ContextMenuSeparator() { IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).CpuCycleStep },
+				new ContextMenuAction() {
+					ActionType = ActionType.RunCpuCycle,
+					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).CpuCycleStep,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RunCpuCycle),
+					OnClick = () => Step(getCpuType(), StepType.CpuCycleStep, 1)
+				},
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
