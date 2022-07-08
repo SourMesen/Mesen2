@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Controls;
+﻿using Mesen.Config;
+using Mesen.Debugger.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using System;
@@ -141,6 +142,20 @@ namespace Mesen.Debugger
 				return ByteCodeStr.Substring(0, (byteCodeSize - 1) * 3) + "..";
 			}
 			return ByteCodeStr;
+		}
+
+		public string GetAddressText(AddressDisplayType addressDisplayType, string addrFormat)
+		{
+			string addressText = HasAddress ? Address.ToString(addrFormat) : "";
+			string absAddress = AbsoluteAddress.Address >= 0 && !IsAddressHidden ? AbsoluteAddress.Address.ToString(addrFormat) : "";
+			string compactAbsAddress = AbsoluteAddress.Address >= 0 && !IsAddressHidden ? (AbsoluteAddress.Address >> 12).ToString("X") : "";
+			return addressDisplayType switch {
+				AddressDisplayType.CpuAddress => addressText,
+				AddressDisplayType.AbsAddress => absAddress,
+				AddressDisplayType.Both => (addressText + (string.IsNullOrEmpty(absAddress) ? "" : " [" + absAddress + "]")).Trim(),
+				AddressDisplayType.BothCompact => (addressText + (string.IsNullOrEmpty(compactAbsAddress) ? "" : " [" + compactAbsAddress + "]")).Trim(),
+				_ => throw new NotImplementedException()
+			};
 		}
 	}
 	

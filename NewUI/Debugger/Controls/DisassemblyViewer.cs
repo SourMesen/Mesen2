@@ -222,15 +222,7 @@ namespace Mesen.Debugger.Controls
 
 				//Draw address in margin
 				string addressText = line.HasAddress ? line.Address.ToString(addrFormat) : "";
-				string absAddress = line.AbsoluteAddress.Address >= 0 && !line.IsAddressHidden ? line.AbsoluteAddress.Address.ToString(addrFormat) : "";
-				string compactAbsAddress = line.AbsoluteAddress.Address >= 0 && !line.IsAddressHidden ? (line.AbsoluteAddress.Address >> 12).ToString("X") : "";
-				text.Text = addressDisplayType switch {
-					AddressDisplayType.CpuAddress => addressText,
-					AddressDisplayType.AbsAddress => absAddress,
-					AddressDisplayType.Both => (addressText + (string.IsNullOrEmpty(absAddress) ? "" : " [" + absAddress + "]")).Trim(),
-					AddressDisplayType.BothCompact => (addressText + (string.IsNullOrEmpty(compactAbsAddress) ? "" : " [" + compactAbsAddress + "]")).Trim(),
-					_ => throw new NotImplementedException()
-				};
+				text.Text = line.GetAddressText(addressDisplayType, addrFormat);
 
 				Point marginAddressPos = new Point(addressMargin - text.Bounds.Width - 1, y);
 				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);

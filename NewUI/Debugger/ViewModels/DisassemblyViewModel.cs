@@ -300,6 +300,7 @@ namespace Mesen.Debugger.ViewModels
 			int i = SelectionStart;
 			int endAddress = 0;
 			CodeLineData? prevLine = null;
+			AddressDisplayType addressDisplayType = Config.Debugger.AddressDisplayType;
 			do {
 				CodeLineData[] data = dp.GetCodeLines(i, 5000);
 				for(int j = 0; j < data.Length; j++) {
@@ -340,11 +341,8 @@ namespace Mesen.Debugger.ViewModels
 						line = lineData.ByteCodeStr.PadRight(13) + line;
 					}
 					if(getAddresses) {
-						if(lineData.HasAddress) {
-							line = lineData.Address.ToString(addrFormat) + "  " + line;
-						} else {
-							line = "..".PadRight(addrSize) + "  " + line;
-						}
+						string addressText = lineData.GetAddressText(addressDisplayType, addrFormat);
+						line = addressText.PadRight(addrSize) + "  " + line;
 					}
 					if(getComments && !string.IsNullOrWhiteSpace(lineData.Comment)) {
 						line = line + lineData.Comment;
