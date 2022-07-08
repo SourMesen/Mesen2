@@ -101,22 +101,19 @@ namespace Mesen.Debugger
 				)
 			};
 
-			var mainView = new DebuggerDockViewModel {
-				Id = "Main",
-				Title = "Main",
-				ActiveDockable = mainLayout,
-				VisibleDockables = CreateList<IDockable>(mainLayout)
-			};
-
 			var root = CreateRootDock();
-
 			root.Id = "Root";
 			root.Title = "Root";
-			root.ActiveDockable = mainView;
-			root.DefaultDockable = mainView;
-			root.VisibleDockables = CreateList<IDockable>(mainView);
+			root.ActiveDockable = mainLayout;
+			root.DefaultDockable = mainLayout;
+			root.VisibleDockables = CreateList<IDockable>(mainLayout);
 
 			return root;
+		}
+
+		public override IProportionalDockSplitter CreateProportionalDockSplitter()
+		{
+			return new MesenProportionalDockSplitter();
 		}
 
 		public override void InitLayout(IDockable layout)
