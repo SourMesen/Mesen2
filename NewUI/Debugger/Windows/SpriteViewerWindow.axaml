@@ -48,6 +48,8 @@
 			/>
 		</Panel>
 
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+
 		<Panel DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<ScrollViewer MinWidth="190">
 				<StackPanel Margin="3">
@@ -84,8 +86,6 @@
 				</StackPanel>
 			</ScrollViewer>
 		</Panel>
-
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
 
 		<Grid ColumnDefinitions="Auto,*">
 			<Grid.RowDefinitions>

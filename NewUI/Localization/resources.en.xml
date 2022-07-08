@@ -1059,6 +1059,7 @@
 			<Control ID="lblScanline">Refresh on scanline (V)</Control>
 			<Control ID="lblCycle">and cycle (H)</Control>
 			<Control ID="lblResetToDefault">Reset to default</Control>
+			<Control ID="chkRefreshOnBreakPause">Refresh on break</Control>
 		</Form>
 		
 		<Form ID="GoToAllWindow">

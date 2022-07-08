@@ -45,6 +45,8 @@
 			/>
 		</Panel>
 
+		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
+
 		<ScrollViewer DockPanel.Dock="Right" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel Margin="3">
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" IsVisible="{CompiledBinding IsNes}">
@@ -76,8 +78,6 @@
 				</c:GroupBox>
 			</StackPanel>
 		</ScrollViewer>
-
-		<dv:RefreshTimingView DataContext="{CompiledBinding RefreshTiming}" DockPanel.Dock="Bottom" />
 
 		<TabControl
 			Items="{CompiledBinding Tabs}"

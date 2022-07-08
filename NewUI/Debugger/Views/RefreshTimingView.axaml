@@ -18,9 +18,8 @@
 		<dvm:RefreshTimingViewModel />
 	</Design.DataContext>
 
-	<StackPanel Orientation="Horizontal">
-		<CheckBox IsChecked="{CompiledBinding Config.AutoRefresh}" />
-		<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScanline}" />
+	<StackPanel Orientation="Horizontal" Background="#15808080">
+		<CheckBox IsChecked="{CompiledBinding Config.AutoRefresh}" Content="{l:Translate lblScanline}" />
 		<NumericUpDown
 			Value="{CompiledBinding Config.RefreshScanline}"
 			Minimum="{CompiledBinding MinScanline}"
@@ -38,6 +37,20 @@
 			ToolTip.Tip="{l:Translate lblResetToDefault}"
 			Icon="Assets/Refresh.png"
 			Command="{CompiledBinding ResetCommand}"
+		/>
+		
+		<Line
+			StartPoint="0.5,0"
+			EndPoint="0.5,20"
+			Stroke="LightGray"
+			StrokeThickness="1"
+			Margin="5 0"
+			VerticalAlignment="Center"
+		/>
+
+		<CheckBox
+			IsChecked="{CompiledBinding Config.RefreshOnBreakPause}"
+			Content="{l:Translate chkRefreshOnBreakPause}"
 		/>
 	</StackPanel>
 </UserControl>
