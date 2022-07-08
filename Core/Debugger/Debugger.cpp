@@ -144,6 +144,23 @@ DebuggerType* Debugger::GetDebugger()
 }
 
 template<CpuType type>
+uint64_t Debugger::GetCpuCycleCount()
+{
+	switch(type) {
+		case CpuType::Snes: return GetDebugger<type, SnesDebugger>()->GetCpuCycleCount();
+		case CpuType::Spc: return GetDebugger<type, SpcDebugger>()->GetCpuCycleCount();
+		case CpuType::NecDsp: return GetDebugger<type, NecDspDebugger>()->GetCpuCycleCount();
+		case CpuType::Sa1: return GetDebugger<type, SnesDebugger>()->GetCpuCycleCount();
+		case CpuType::Gsu: return GetDebugger<type, GsuDebugger>()->GetCpuCycleCount();
+		case CpuType::Cx4: return GetDebugger<type, Cx4Debugger>()->GetCpuCycleCount();
+		case CpuType::Gameboy: return GetDebugger<type, GbDebugger>()->GetCpuCycleCount();
+		case CpuType::Nes: return GetDebugger<type, NesDebugger>()->GetCpuCycleCount();
+		case CpuType::Pce: return GetDebugger<type, PceDebugger>()->GetCpuCycleCount();
+		default: return 0; break;
+	}
+}
+
+template<CpuType type>
 void Debugger::ProcessInstruction()
 {
 	_debuggers[(int)type].Debugger->IgnoreBreakpoints = false;
@@ -201,6 +218,17 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 	
 	if(_scriptManager->HasScript()) {
 		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
+	}
+}
+
+template<CpuType type>
+void Debugger::ProcessIdleCycle()
+{
+	_debuggers[(int)type].Debugger->InstructionProgress.LastMemOperation.Type = MemoryOperationType::Idle;
+
+	switch(type) {
+		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessIdleCycle(); break;
+		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessIdleCycle(); break;
 	}
 }
 
@@ -604,6 +632,13 @@ uint32_t Debugger::GetProgramCounter(CpuType cpuType, bool getInstPc)
 	return _debuggers[(int)cpuType].Debugger->GetProgramCounter(getInstPc);
 }
 
+CpuInstructionProgress Debugger::GetInstructionProgress(CpuType cpuType)
+{
+	CpuInstructionProgress progress = _debuggers[(int)cpuType].Debugger->InstructionProgress;
+	progress.CurrentCycle = _debuggers[(int)cpuType].Debugger->GetCpuCycleCount();
+	return progress;
+}
+
 AddressInfo Debugger::GetAbsoluteAddress(AddressInfo relAddress)
 {
 	return _console->GetAbsoluteAddress(relAddress);
@@ -797,6 +832,9 @@ template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t 
 template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+
+template void Debugger::ProcessIdleCycle<CpuType::Snes>();
+template void Debugger::ProcessIdleCycle<CpuType::Sa1>();
 
 template void Debugger::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

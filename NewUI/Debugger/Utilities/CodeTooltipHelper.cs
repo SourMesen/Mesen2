@@ -75,6 +75,8 @@ namespace Mesen.Debugger.Utilities
 				return OpCodeHelper.GetTooltip(seg);
 			} else if(seg.Type == CodeSegmentType.MarginAddress) {
 				return GetMarginAddressTooltip(cpuType, seg);
+			} else if(seg.Type == CodeSegmentType.InstructionProgress) {
+				return GetInstructionProgressTooltip(cpuType, seg);
 			} else {
 				if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 					LocationInfo? codeLoc = GetLocation(cpuType, seg);
@@ -186,6 +188,28 @@ namespace Mesen.Debugger.Utilities
 						}
 					});
 				}
+			}
+
+			return new DynamicTooltip() { Items = items };
+		}
+
+		private static DynamicTooltip? GetInstructionProgressTooltip(CpuType cpuType, CodeSegmentInfo seg)
+		{
+			if(seg.Progress == null) {
+				return null;
+			}
+
+			CpuInstructionProgress progress = seg.Progress.CpuProgress;
+			MemoryOperationInfo operation = progress.LastMemOperation;
+
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
+
+			TooltipEntries items = new();
+			items.AddEntry("Type", ResourceHelper.GetEnumText(operation.Type), monoFont);
+			items.AddEntry("Cycle", seg.Progress.Current.ToString(), monoFont);
+			if(operation.Type != MemoryOperationType.Idle) {
+				items.AddEntry("Address", "$" + operation.Address.ToString("X" + cpuType.GetAddressSize()), monoFont);
+				items.AddEntry("Value", "$" + operation.Value.ToString("X2"), monoFont);
 			}
 
 			return new DynamicTooltip() { Items = items };

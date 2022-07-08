@@ -87,6 +87,9 @@ private:
 
 	template<CpuType type, typename DebuggerType> DebuggerType* GetDebugger();
 
+	template<CpuType type>
+	uint64_t GetCpuCycleCount();
+
 public:
 	Debugger(Emulator* emu, IConsole* console);
 	~Debugger();
@@ -95,6 +98,7 @@ public:
 	template<CpuType type> void ProcessInstruction();
 	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
 	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	template<CpuType type> void ProcessIdleCycle();
 	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
 	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	template<CpuType type> void ProcessPpuCycle();
@@ -136,6 +140,7 @@ public:
 
 	DebuggerFeatures GetDebuggerFeatures(CpuType cpuType);
 	uint32_t GetProgramCounter(CpuType cpuType, bool forInstStart);
+	CpuInstructionProgress GetInstructionProgress(CpuType cpuType);
 	void SetProgramCounter(CpuType cpuType, uint32_t addr);
 
 	AddressInfo GetAbsoluteAddress(AddressInfo relAddress);

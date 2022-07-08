@@ -81,6 +81,11 @@ void PceDebugger::Reset()
 	_prevOpCode = 0x01;
 }
 
+uint64_t PceDebugger::GetCpuCycleCount()
+{
+	return _cpu->GetState().CycleCount;
+}
+
 void PceDebugger::ProcessInstruction()
 {
 	PceCpuState& state = _cpu->GetState();
@@ -88,6 +93,8 @@ void PceDebugger::ProcessInstruction()
 	uint8_t opCode = _memoryManager->DebugRead(pc);
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(pc);
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::PceMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
@@ -148,6 +155,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
+	InstructionProgress.LastMemOperation = operation;
 
 	if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
@@ -161,6 +169,9 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
+		if(_step->ProcessCpuCycle()) {
+			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::CpuStep, &operation);
+		}
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetCode(addressInfo.Address);
@@ -171,6 +182,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
+		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
@@ -192,6 +204,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}
+		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
@@ -200,6 +213,8 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _memoryManager->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::PceMemory);
+	InstructionProgress.LastMemOperation = operation;
+
 	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::PceWorkRam || addressInfo.Type == MemoryType::PceCardRam || addressInfo.Type == MemoryType::PceCdromRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Pce);
 	}
@@ -213,7 +228,7 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetState().CycleCount);
-	
+	_step->ProcessCpuCycle();
 	_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
@@ -237,6 +252,7 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 			}
 			break;
 
+		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = PceConstants::ClockPerScanline * stepCount; break;
 		case StepType::PpuFrame: step.PpuStepCount = PceConstants::ClockPerScanline * _vce->GetScanlineCount(); break;
@@ -316,6 +332,7 @@ DebuggerFeatures PceDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	features.CpuCycleStep = true;
 
 	features.CpuVectors[0] = { "NMI", 0xFFFC };
 	features.CpuVectors[1] = { "IRQ1", 0xFFF8 };

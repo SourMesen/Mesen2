@@ -352,7 +352,10 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 		} else {
 			DisassemblerSource& src = GetSource(row.Address.Type);
 			DisassemblyInfo disInfo = src.Cache[row.Address.Address];
-			CpuType lineCpuType = disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
+
+			//Always use Sa1 as the cpu type when disassembling Sa1 address space
+			CpuType lineCpuType = type != CpuType::Sa1 && disInfo.IsInitialized() ? disInfo.GetCpuType() : type;
+
 			data.LineCpuType = lineCpuType;
 			CdlManager* cdlManager = _debugger->GetCdlManager();
 			switch(lineCpuType) {

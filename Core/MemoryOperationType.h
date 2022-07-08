@@ -10,5 +10,6 @@ enum class MemoryOperationType
 	DmaWrite = 5,
 	DummyRead = 6,
 	DummyWrite = 7,
-	PpuRenderingRead = 8
+	PpuRenderingRead = 8,
+	Idle = 9
 };

@@ -307,6 +307,21 @@ namespace Mesen.Debugger.Controls
 					if(!string.IsNullOrWhiteSpace(searchString)) {
 						DrawSearchHighlight(context, y, text, searchString, line, lineParts, xStart);
 					}
+
+					if(lineStyle.Progress != null) {
+						smallText.Text = lineStyle.Progress.Current + " " + lineStyle.Progress.Text;
+						Point textPos = new Point(
+							Math.Round(Bounds.Width - smallText.Bounds.Width - 8) - 0.5,
+							Math.Round(Math.Round(y) + (RowHeight - smallText.Bounds.Height) / 2)
+						);
+
+						Rect rect = new(Math.Round(textPos.X - 4) + 0.5, Math.Round(y) + 1.5, Math.Round(smallText.Bounds.Width + 8), Math.Round(LetterSize.Height) - 4);
+						context.FillRectangle(ColorHelper.GetBrush(lineStyle.Progress.Color), rect);
+						context.DrawRectangle(ColorHelper.GetPen(Colors.Black), rect);
+						context.DrawText(ColorHelper.GetBrush(Colors.Black), textPos, smallText);
+
+						_visibleCodeSegments.Add(new CodeSegmentInfo(smallText.Text, CodeSegmentType.InstructionProgress, rect, line, -1, lineStyle.Progress));
+					}
 				}
 				y += LetterSize.Height;
 			}
@@ -422,19 +437,21 @@ namespace Mesen.Debugger.Controls
 
 	public class CodeSegmentInfo
 	{
-		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds, CodeLineData data, int originalTextIndex = -1)
+		public CodeSegmentInfo(string text, CodeSegmentType type, Rect bounds, CodeLineData data, int originalTextIndex = -1, LineProgress? progress = null)
 		{
 			Text = text;
 			Type = type;
 			Bounds = bounds;
 			Data = data;
 			OriginalTextIndex = originalTextIndex;
+			Progress = progress;
 		}
 
 		public string Text { get; }
 		public CodeSegmentType Type { get; }
 		public Rect Bounds { get; }
 		public CodeLineData Data { get; }
+		public LineProgress? Progress { get; }
 		public int OriginalTextIndex { get; }
 	}
 
@@ -498,6 +515,7 @@ namespace Mesen.Debugger.Controls
 		public int Maximum;
 		public string Text = "";
 		public Color Color;
+		public CpuInstructionProgress CpuProgress;
 	}
 
 	[Flags]
@@ -525,6 +543,7 @@ namespace Mesen.Debugger.Controls
 		MarginAddress,
 		Comment,
 		Directive,
+		InstructionProgress,
 	}
 
 	public class CodeColor

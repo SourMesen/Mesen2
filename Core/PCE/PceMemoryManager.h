@@ -432,9 +432,7 @@ public:
 
 	void WriteVdc(uint16_t addr, uint8_t value)
 	{
-		if(_state.Mpr[0] == 0xFF) {
-			_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
-		}
+		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
 		_vpc->StVdcWrite(addr, value);
 		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}

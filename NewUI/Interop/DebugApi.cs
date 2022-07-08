@@ -185,6 +185,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern Int32 EvaluateExpression([MarshalAs(UnmanagedType.LPUTF8Str)] string expression, CpuType cpuType, out EvalResultType resultType, [MarshalAs(UnmanagedType.I1)] bool useCache);
 
 		[DllImport(DllPath)] public static extern DebuggerFeatures GetDebuggerFeatures(CpuType type);
+		[DllImport(DllPath)] public static extern CpuInstructionProgress GetInstructionProgress(CpuType type);
 
 		[DllImport(DllPath)] public static extern Int32 GetMemorySize(MemoryType type);
 		[DllImport(DllPath)] public static extern Byte GetMemoryValue(MemoryType type, UInt32 address);
@@ -572,7 +573,8 @@ namespace Mesen.Interop
 		DmaWrite = 5,
 		DummyRead = 6,
 		DummyWrite = 7,
-		PpuRenderingRead = 8
+		PpuRenderingRead = 8,
+		Idle = 9
 	}
 
 	public struct MemoryOperationInfo
@@ -1091,6 +1093,14 @@ namespace Mesen.Interop
 		public byte CpuVectorCount;		
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
 		public CpuVectorDefinition[] CpuVectors;
+	}
+
+	public struct CpuInstructionProgress
+	{
+		public UInt64 StartCycle;
+		public UInt64 CurrentCycle;
+		public UInt32 LastOpCode;
+		public MemoryOperationInfo LastMemOperation;
 	}
 
 	public enum EvalResultType

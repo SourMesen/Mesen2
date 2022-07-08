@@ -1070,33 +1070,6 @@ void Emulator::BreakIfDebugging(CpuType sourceCpu, BreakSource source)
 	}
 }
 
-template void Emulator::ProcessInstruction<CpuType::Snes>();
-template void Emulator::ProcessInstruction<CpuType::Sa1>();
-template void Emulator::ProcessInstruction<CpuType::Spc>();
-template void Emulator::ProcessInstruction<CpuType::Gsu>();
-template void Emulator::ProcessInstruction<CpuType::NecDsp>();
-template void Emulator::ProcessInstruction<CpuType::Cx4>();
-template void Emulator::ProcessInstruction<CpuType::Gameboy>();
-template void Emulator::ProcessInstruction<CpuType::Pce>();
-
-template void Emulator::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-
-template void Emulator::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Emulator::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-
 template void Emulator::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Emulator::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);

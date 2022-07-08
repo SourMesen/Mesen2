@@ -420,3 +420,11 @@ struct StepRequest
 		return BreakScanline != INT32_MIN;
 	}
 };
+
+struct CpuInstructionProgress
+{
+	uint64_t StartCycle = 0;
+	uint64_t CurrentCycle = 0;
+	uint32_t LastOpCode = 0;
+	MemoryOperationInfo LastMemOperation = {};
+};

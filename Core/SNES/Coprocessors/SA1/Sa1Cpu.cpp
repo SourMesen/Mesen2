@@ -68,6 +68,7 @@ void Sa1Cpu::Idle()
 	_state.CycleCount++;
 	DetectNmiSignalEdge();
 	UpdateIrqNmiFlags();
+	_emu->ProcessIdleCycle<CpuType::Sa1>();
 }
 
 void Sa1Cpu::IdleEndJump()
@@ -76,9 +77,11 @@ void Sa1Cpu::IdleEndJump()
 	if(handler && handler->GetMemoryType() == MemoryType::SnesPrgRom) {
 		//Jumps/returns in PRG ROM take an extra cycle
 		_state.CycleCount++;
+		_emu->ProcessIdleCycle<CpuType::Sa1>();
 		if(_sa1->GetSnesCpuMemoryType() == MemoryType::SnesPrgRom) {
 			//Add an extra wait cycle if a conflict occurs at the same time
 			_state.CycleCount++;
+			_emu->ProcessIdleCycle<CpuType::Sa1>();
 		}
 	}
 }
@@ -90,6 +93,7 @@ void Sa1Cpu::IdleTakeBranch()
 		if(handler && handler->GetMemoryType() == MemoryType::SnesPrgRom) {
 			//Branches to an odd address take an extra cycle
 			_state.CycleCount++;
+			_emu->ProcessIdleCycle<CpuType::Sa1>();
 		}
 	}
 }
@@ -105,15 +109,21 @@ void Sa1Cpu::ProcessCpuCycle(uint32_t addr)
 
 	if(_sa1->GetSa1MemoryType() == MemoryType::SnesSaveRam) {
 		//BWRAM (save ram) access takes 2 cycles
+		_emu->ProcessIdleCycle<CpuType::Sa1>();
 		_state.CycleCount++;
 		if(IsAccessConflict()) {
-			_state.CycleCount += 2;
+			_emu->ProcessIdleCycle<CpuType::Sa1>();
+			_state.CycleCount++;
+			_emu->ProcessIdleCycle<CpuType::Sa1>();
+			_state.CycleCount++;
 		}
 	} else if(IsAccessConflict()) {
 		//Add a wait cycle when a conflict occurs between both CPUs
+		_emu->ProcessIdleCycle<CpuType::Sa1>();
 		_state.CycleCount++;
 		if(_sa1->GetSa1MemoryType() == MemoryType::Sa1InternalRam && _sa1->IsSnesCpuFastRomSpeed()) {
 			//If it's an IRAM access during FastROM access (speed = 6), add another wait cycle
+			_emu->ProcessIdleCycle<CpuType::Sa1>();
 			_state.CycleCount++;
 		}
 	}

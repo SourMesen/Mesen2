@@ -95,6 +95,11 @@ void NesDebugger::Reset()
 	_prevOpCode = 0xFF;
 }
 
+uint64_t NesDebugger::GetCpuCycleCount()
+{
+	return _cpu->GetState().CycleCount;
+}
+
 void NesDebugger::ProcessInstruction()
 {
 	NesCpuState& state = _cpu->GetState();
@@ -102,6 +107,8 @@ void NesDebugger::ProcessInstruction()
 	uint8_t opCode = _memoryManager->DebugRead(pc);
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(pc);
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::NesMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	bool needDisassemble = _traceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 	if(addressInfo.Address >= 0) {
@@ -162,6 +169,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
+	InstructionProgress.LastMemOperation = operation;
 
 	if(IsRegister(operation)) {
 		_eventManager->AddEvent(DebugEventType::Register, operation);
@@ -174,10 +182,10 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->Log(state, disInfo, operation);
 		}
 
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 		if(_step->ProcessCpuCycle()) {
 			_debugger->SleepUntilResume(CpuType::Nes, BreakSource::CpuStep, &operation);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 			_codeDataLogger->SetCode(addressInfo.Address);
@@ -186,8 +194,8 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
-		_step->ProcessCpuCycle();
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
+		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(operation.Type == MemoryOperationType::DmaRead) {
@@ -226,8 +234,9 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _mapper->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::NesMemory);
-	
-	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::NesWorkRam || addressInfo.Type == MemoryType::NesSaveRam)) {
+	InstructionProgress.LastMemOperation = operation;
+
+	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::NesInternalRam || addressInfo.Type == MemoryType::NesWorkRam || addressInfo.Type == MemoryType::NesSaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, CpuType::Nes);
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebuggerFeatures.h"
+#include "Debugger/DebuggerFeatures.h"
+#include "Debugger/DebugTypes.h"
 
 enum class StepType;
 class BreakpointManager;
@@ -19,6 +20,7 @@ class IDebugger
 public:
 	bool IgnoreBreakpoints = false;
 	bool AllowChangeProgramCounter = false;
+	CpuInstructionProgress InstructionProgress = {};
 
 	virtual ~IDebugger() = default;
 
@@ -34,7 +36,7 @@ public:
 	virtual void DrawPartialFrame() { }
 
 	virtual DebuggerFeatures GetSupportedFeatures() { return {}; }
-	
+	virtual uint64_t GetCpuCycleCount() { return 0; }
 	virtual uint32_t GetProgramCounter(bool getInstPc) = 0;
 	virtual void SetProgramCounter(uint32_t addr) = 0;
 

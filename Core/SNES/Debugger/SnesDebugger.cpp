@@ -39,6 +39,7 @@
 SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 {
 	_cpuType = cpuType;
+	_cpuMemType = _cpuType == CpuType::Snes ? MemoryType::SnesMemory : MemoryType::Sa1Memory;
 
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
@@ -121,13 +122,20 @@ void SnesDebugger::ProcessConfigChange()
 	_needCoprocessors = _runSpc || _runCoprocessors;
 }
 
+uint64_t SnesDebugger::GetCpuCycleCount()
+{
+	return GetCpuState().CycleCount;
+}
+
 void SnesDebugger::ProcessInstruction()
 {
 	SnesCpuState& state = GetCpuState();
 	uint32_t pc = (state.K << 16) | state.PC;
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(pc);
 	uint8_t opCode = _memoryManager->Peek(pc);
-	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::SnesMemory);
+	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, _cpuMemType);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	if(addressInfo.Address >= 0) {
 		uint8_t cpuFlags = state.PS & (ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
@@ -190,7 +198,8 @@ void SnesDebugger::ProcessInstruction()
 void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, MemoryType::SnesMemory);
+	MemoryOperationInfo operation(addr, value, type, _cpuMemType);
+	InstructionProgress.LastMemOperation = operation;
 	SnesCpuState& state = GetCpuState();
 
 	if(IsRegister(addr)) {
@@ -202,7 +211,11 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
 			_traceLogger->Log(state, disInfo, operation);
 		}
+		
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		if(_step->ProcessCpuCycle()) {
+			_debugger->SleepUntilResume(_cpuType, BreakSource::CpuStep, &operation);
+		}
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
 			_cdl->SetCode(addressInfo.Address, (state.PS & (SnesCdlFlags::IndexMode8 | SnesCdlFlags::MemoryMode8)));
@@ -210,7 +223,9 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		if(_traceLogger->IsEnabled()) {
 			_traceLogger->LogNonExec(operation);
 		}
+
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Type == MemoryType::SnesPrgRom && addressInfo.Address >= 0) {
@@ -231,6 +246,10 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 				_step->Break(BreakSource::BreakOnUninitMemoryRead);
 			}
 		}
+		
+		if(type != MemoryOperationType::DmaRead) {
+			_step->ProcessCpuCycle();
+		}
 		_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
@@ -238,7 +257,8 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, MemoryType::SnesMemory);
+	MemoryOperationInfo operation(addr, value, type, _cpuMemType);
+	InstructionProgress.LastMemOperation = operation;
 	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SnesWorkRam || addressInfo.Type == MemoryType::SnesSaveRam)) {
 		_disassembler->InvalidateCache(addressInfo, _cpuType);
 	}
@@ -253,7 +273,17 @@ void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationTyp
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 
+	if(type != MemoryOperationType::DmaWrite) {
+		_step->ProcessCpuCycle();
+	}
 	_debugger->ProcessBreakConditions(_cpuType, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+}
+
+void SnesDebugger::ProcessIdleCycle()
+{
+	if(_step->ProcessCpuCycle()) {
+		_debugger->SleepUntilResume(_cpuType, BreakSource::CpuStep);
+	}
 }
 
 void SnesDebugger::Run()
@@ -281,6 +311,7 @@ void SnesDebugger::Step(int32_t stepCount, StepType type)
 				}
 				break;
 
+			case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 			case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
 			case StepType::PpuFrame: step.PpuStepCount = 341 * (_ppu->GetVblankEndScanline() + 1); break;
@@ -378,6 +409,7 @@ DebuggerFeatures SnesDebugger::GetSupportedFeatures()
 	features.StepOut = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
+	features.CpuCycleStep = true;
 
 	features.CpuVectors[0] = { "NMI", 0xFFEA };
 	features.CpuVectors[1] = { "IRQ", 0xFFEE };

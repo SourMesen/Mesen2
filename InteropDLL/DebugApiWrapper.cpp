@@ -111,6 +111,7 @@ extern "C"
 	DllExport uint32_t __stdcall GetProgramCounter(CpuType cpuType, bool getInstPc) { return WithDebugger(uint32_t, GetProgramCounter(cpuType, getInstPc)); }
 	DllExport void __stdcall SetProgramCounter(CpuType cpuType, uint32_t addr) { WithDebugger(void, SetProgramCounter(cpuType, addr)); }
 	DllExport DebuggerFeatures __stdcall GetDebuggerFeatures(CpuType cpuType) { return WithDebugger(DebuggerFeatures, GetDebuggerFeatures(cpuType)); }
+	DllExport CpuInstructionProgress __stdcall GetInstructionProgress(CpuType cpuType) { return WithDebugger(CpuInstructionProgress, GetInstructionProgress(cpuType)); }
 
 	DllExport void __stdcall GetDebuggerLog(char* outBuffer, uint32_t maxLength)
 	{

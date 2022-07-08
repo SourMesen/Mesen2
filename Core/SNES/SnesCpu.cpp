@@ -79,6 +79,7 @@ void SnesCpu::Idle()
 	_memoryManager->SetCpuSpeed(6);
 	ProcessCpuCycle();
 	_memoryManager->IncMasterClock6();
+	_emu->ProcessIdleCycle<CpuType::Snes>();
 	UpdateIrqNmiFlags();
 #endif
 }

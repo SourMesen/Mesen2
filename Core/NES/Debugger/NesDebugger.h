@@ -66,6 +66,8 @@ public:
 
 	void Reset() override;
 
+	uint64_t GetCpuCycleCount();
+
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);

@@ -60,6 +60,7 @@ class SnesDebugger final : public IDebugger
 	ITraceLogger* _dspTraceLogger = nullptr;
 
 	CpuType _cpuType;
+	MemoryType _cpuMemType;
 	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
@@ -84,9 +85,12 @@ public:
 
 	void ProcessConfigChange() override;
 
+	uint64_t GetCpuCycleCount();
+
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
+	void ProcessIdleCycle();
 	void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) override;
 	void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType);
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);

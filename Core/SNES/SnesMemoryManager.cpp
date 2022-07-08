@@ -201,7 +201,8 @@ void SnesMemoryManager::ProcessEvent()
 
 		case SnesEventType::DramRefresh:
 			IncMasterClock40();
-			_cpu->IncreaseCycleCount<5>();
+			//TODO?
+			//_cpu->IncreaseCycleCount<5>();
 
 			if(_ppu->GetScanline() < _ppu->GetVblankStart()) {
 				_nextEvent = SnesEventType::HdmaStart;
@@ -253,9 +254,8 @@ uint8_t SnesMemoryManager::Read(uint32_t addr, MemoryOperationType type)
 	if(_cheatManager->HasCheats<CpuType::Snes>()) {
 		_cheatManager->ApplyCheat<CpuType::Snes>(addr, value);
 	}
-	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, type);
-
 	IncMasterClock4();
+	_emu->ProcessMemoryRead<CpuType::Snes>(addr, value, type);
 	return value;
 }
 
@@ -315,8 +315,8 @@ void SnesMemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
 void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncrementMasterClockValue(_cpuSpeed);
-
 	_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, type);
+
 	IMemoryHandler* handler = _mappings.GetHandler(addr);
 	if(handler) {
 		handler->Write(addr, value);

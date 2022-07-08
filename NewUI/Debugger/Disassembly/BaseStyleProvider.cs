@@ -27,12 +27,36 @@ namespace Mesen.Debugger.Disassembly
 		private void ConfigureActiveStatement(LineProperties props)
 		{
 			props.FgColor = Colors.Black;
-			if(DebugApi.GetDebuggerFeatures(CpuType).ChangeProgramCounter) {
+
+			DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
+
+			if(features.ChangeProgramCounter) {
 				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor;
 			} else {
 				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor;
 			}
 			props.Symbol |= LineSymbol.Arrow;
+
+			if(!features.ChangeProgramCounter && features.CpuCycleStep) {
+				CpuInstructionProgress instProgress = DebugApi.GetInstructionProgress(CpuType);
+				LineProgress progress = new() {
+					Current = (int)Math.Max(1, instProgress.CurrentCycle - instProgress.StartCycle),
+					CpuProgress = instProgress
+				};
+
+				switch(instProgress.LastMemOperation.Type) {
+					case MemoryOperationType.Read: progress.Color = Color.FromRgb(150, 176, 255); progress.Text = "R"; break;
+					case MemoryOperationType.Write: progress.Color = Color.FromRgb(255, 171, 150); progress.Text = "W"; break;
+					case MemoryOperationType.DummyRead: progress.Color = Color.FromRgb(184, 160, 255); progress.Text = "DR"; break;
+					case MemoryOperationType.DummyWrite: progress.Color = Color.FromRgb(255, 245, 137); progress.Text = "DW"; break;
+					case MemoryOperationType.DmaRead: progress.Color = Color.FromRgb(255, 160, 221); progress.Text = "DMAR"; break;
+					case MemoryOperationType.DmaWrite: progress.Color = Color.FromRgb(255, 160, 221); progress.Text = "DMAR"; break;
+					case MemoryOperationType.Idle: progress.Color = Color.FromRgb(240, 240, 240); progress.Text = "I"; break;
+					default: progress.Color = Color.FromRgb(143, 255, 173); progress.Text = "X"; break;
+				}
+
+				props.Progress = progress;
+			}
 		}
 
 		public virtual bool IsLineActive(CodeLineData line, int lineIndex)

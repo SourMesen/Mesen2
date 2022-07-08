@@ -2139,6 +2139,7 @@
 			<Value ID="DummyRead">Dummy Read</Value>
 			<Value ID="DummyWrite">Dummy Write</Value>
 			<Value ID="PpuRenderingRead">PPU Rendering Read</Value>
+			<Value ID="Idle">Idle</Value>
 		</Enum>
 		<Enum ID="HighlightFadeSpeed">
 			<Value ID="NoFade">Do not fade</Value>
