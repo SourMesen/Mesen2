@@ -1,0 +1,71 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="60"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:DataType="dvm:ControllerInputViewModel"
+	x:Class="Mesen.Debugger.Views.ControllerInputView"
+>
+	<Design.DataContext>
+		<dvm:ControllerInputViewModel />
+	</Design.DataContext>
+
+	<UserControl.Styles>
+		<Style Selector="Button">
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="MinHeight" Value="0" />
+			<Setter Property="Width" Value="8" />
+			<Setter Property="Height" Value="8" />
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="#303030" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Command" Value="{Binding OnButtonClick}" />
+		</Style>
+		<Style Selector="Button.selected">
+			<Setter Property="Background" Value="#FFFFFF" />
+		</Style>
+	</UserControl.Styles>
+	<Border BorderBrush="Gray" BorderThickness="1" Width="88" Height="32">
+		<Panel Background="#B0B0B0">
+			<Canvas>
+				<TextBlock
+					Text="{CompiledBinding ControllerIndex}"
+					Canvas.Top="4"
+					Canvas.Left="0"
+					Width="88"
+					TextAlignment="Center"
+			  />
+			
+				<Button CommandParameter="Up" Canvas.Top="4" Canvas.Left="10" Classes.selected="{CompiledBinding ButtonUp}" />
+				<Button CommandParameter="Left" Canvas.Top="12" Canvas.Left="2" Classes.selected="{CompiledBinding ButtonLeft}" />
+				<Rectangle Fill="Black" Canvas.Top="12" Canvas.Left="10" Width="8" Height="8" />
+				<Button CommandParameter="Down" Canvas.Top="20" Canvas.Left="10" Classes.selected="{CompiledBinding ButtonDown}"  />
+				<Button CommandParameter="Right" Canvas.Top="12" Canvas.Left="18" Classes.selected="{CompiledBinding ButtonRight}" />
+
+				<Button CommandParameter="Select" Canvas.Top="20" Canvas.Left="32" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonSelect}" CornerRadius="3"  />
+				<Button CommandParameter="Start" Canvas.Top="20" Canvas.Left="45" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonStart}" CornerRadius="3" />
+			</Canvas>
+			<Canvas IsVisible="{CompiledBinding !IsSnes}" Width="25" Height="15" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+				<Button CommandParameter="B" Canvas.Top="0" Canvas.Left="0" Classes.selected="{CompiledBinding ButtonB}" CornerRadius="6" Width="10" Height="10" />
+				<Button CommandParameter="A" Canvas.Top="0" Canvas.Left="12" Classes.selected="{CompiledBinding ButtonA}" CornerRadius="6" Width="10" Height="10" />
+			</Canvas>
+			<Canvas IsVisible="{CompiledBinding IsSnes}" Width="26" Height="26" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+				<Button CommandParameter="X" Canvas.Top="0" Canvas.Left="8" Classes.selected="{CompiledBinding ButtonX}" CornerRadius="6" Width="9" Height="9"/>
+				<Button CommandParameter="Y" Canvas.Top="8" Canvas.Left="0" Classes.selected="{CompiledBinding ButtonY}" CornerRadius="6" Width="9" Height="9" />
+				<Button CommandParameter="B" Canvas.Top="16" Canvas.Left="8" Classes.selected="{CompiledBinding ButtonB}" CornerRadius="6" Width="9" Height="9" />
+				<Button CommandParameter="A" Canvas.Top="8" Canvas.Left="16" Classes.selected="{CompiledBinding ButtonA}" CornerRadius="6" Width="9" Height="9" />
+			</Canvas>
+			<Canvas IsVisible="{CompiledBinding IsSnes}" Width="86" Height="4" Margin="0 -1 0 0" VerticalAlignment="Top">
+				<Button CommandParameter="L" Canvas.Top="-1" Canvas.Left="6" Height="4" Width="16" Classes.selected="{CompiledBinding ButtonL}" />
+				<Button CommandParameter="R" Canvas.Top="-1" Canvas.Left="64" Height="4" Width="16" Classes.selected="{CompiledBinding ButtonR}" />
+			</Canvas>
+		</Panel>
+	</Border>
+</UserControl>

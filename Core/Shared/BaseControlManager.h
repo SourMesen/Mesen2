@@ -56,6 +56,8 @@ public:
 	vector<ControllerData> GetPortStates();
 
 	shared_ptr<BaseControlDevice> GetControlDevice(uint8_t port);
+	shared_ptr<BaseControlDevice> GetControlDeviceByIndex(uint8_t index);
+	void RefreshHubState();
 	vector<shared_ptr<BaseControlDevice>> GetControlDevices();
 	
 	template<typename T>

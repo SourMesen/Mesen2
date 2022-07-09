@@ -2472,6 +2472,7 @@
 			<Value ID="ShowWatchList">Show Watch List</Value>
 			<Value ID="ShowCallStack">Show Call Stack</Value>
 			<Value ID="ShowConsoleStatus">Show Console Status</Value>
+			<Value ID="ShowControllers">Show Controllers</Value>
 			
 			<Value ID="ShowSettingsPanel">Show Settings Panel</Value>
 			<Value ID="ShowMemoryMappings">Show Memory Mappings</Value>

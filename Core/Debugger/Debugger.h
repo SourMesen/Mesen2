@@ -81,6 +81,8 @@ private:
 	atomic<uint32_t> _breakRequestCount;
 	atomic<uint32_t> _suspendRequestCount;
 
+	DebugControllerState _inputOverrides[8] = {};
+
 	bool _waitForBreakResume = false;
 	
 	void Reset();
@@ -149,6 +151,9 @@ public:
 	bool HasCpuType(CpuType cpuType);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
+	
+	void SetInputOverrides(uint32_t index, DebugControllerState state);
+	void GetAvailableInputOverrides(uint8_t* availableIndexes);
 	
 	void Log(string message);
 	string GetLog();

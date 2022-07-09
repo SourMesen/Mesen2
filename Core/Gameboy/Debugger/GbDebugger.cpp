@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
+#include "Gameboy/Input/GbController.h"
 #include "Gameboy/Debugger/DummyGbCpu.h"
 #include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
@@ -26,6 +27,7 @@
 #include "SNES/BaseCartridge.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
+#include "Shared/BaseControlManager.h"
 #include "MemoryOperationType.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
@@ -415,4 +417,23 @@ void GbDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption s
 		file.write((char*)output.data(), output.size());
 		file.close();
 	}
+}
+
+void GbDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])
+{
+	BaseControlManager* controlManager = _gameboy->GetControlManager();
+	for(int i = 0; i < 8; i++) {
+		shared_ptr<GbController> controller = std::dynamic_pointer_cast<GbController>(controlManager->GetControlDeviceByIndex(i));
+		if(controller && inputOverrides[i].HasPressedButton()) {
+			controller->SetBitValue(GbController::Buttons::A, inputOverrides[i].A);
+			controller->SetBitValue(GbController::Buttons::B, inputOverrides[i].B);
+			controller->SetBitValue(GbController::Buttons::Select, inputOverrides[i].Select);
+			controller->SetBitValue(GbController::Buttons::Start, inputOverrides[i].Start);
+			controller->SetBitValue(GbController::Buttons::Up, inputOverrides[i].Up);
+			controller->SetBitValue(GbController::Buttons::Down, inputOverrides[i].Down);
+			controller->SetBitValue(GbController::Buttons::Left, inputOverrides[i].Left);
+			controller->SetBitValue(GbController::Buttons::Right, inputOverrides[i].Right);
+		}
+	}
+	controlManager->RefreshHubState();
 }

@@ -32,6 +32,7 @@ public:
 	virtual void ProcessConfigChange() {}
 
 	virtual void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi) {}
+	virtual void ProcessInputOverrides(DebugControllerState inputOverrides[8]) {}
 
 	virtual void DrawPartialFrame() { }
 

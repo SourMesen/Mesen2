@@ -319,6 +319,7 @@ namespace Mesen.Debugger.Utilities
 		ShowFunctionList,
 		ShowLabelList,
 		ShowCallStack,
+		ShowControllers,
 
 		ShowSettingsPanel,
 		ShowMemoryMappings,

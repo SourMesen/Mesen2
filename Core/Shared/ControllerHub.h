@@ -10,8 +10,16 @@
 #include "Utilities/Serializer.h"
 #include "Utilities/StringUtilities.h"
 
+class IControllerHub
+{
+public:
+	virtual void RefreshHubState() = 0;
+	virtual int GetHubPortCount() = 0;
+	virtual shared_ptr<BaseControlDevice> GetController(int index) = 0;
+};
+
 template<int HubPortCount>
-class ControllerHub : public BaseControlDevice
+class ControllerHub : public BaseControlDevice, public IControllerHub
 {
 protected:
 	shared_ptr<BaseControlDevice> _ports[HubPortCount];
@@ -40,7 +48,11 @@ protected:
 
 	uint8_t ReadPort(int i)
 	{
-		return _ports[i]->ReadRam(0x4016);
+		if(_ports[i]) {
+			return _ports[i]->ReadRam(0x4016);
+		} else {
+			return 0;
+		}
 	}
 
 public:
@@ -67,7 +79,6 @@ public:
 					break;
 			}
 		}
-
 	}
 
 	void WriteRam(uint16_t addr, uint8_t value) override
@@ -159,5 +170,26 @@ public:
 		}
 
 		return false;
+	}
+
+	void RefreshHubState() override
+	{
+		//Used when the connected devices are updated by code (e.g by the debugger)
+		_state.State.clear();
+		UpdateStateFromPorts();
+	}
+
+	int GetHubPortCount() override
+	{
+		return HubPortCount;
+	}
+
+	shared_ptr<BaseControlDevice> GetController(int index) override
+	{
+		if(index >= HubPortCount) {
+			return nullptr;
+		}
+
+		return _ports[index];
 	}
 };

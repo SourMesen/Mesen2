@@ -1,0 +1,34 @@
+<UserControl 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:u="using:Mesen.Utilities"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dv="using:Mesen.Debugger.Views"
+	mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
+	x:Name="root"
+	HorizontalAlignment="Stretch"
+	x:DataType="dvm:ControllerListViewModel"
+	x:Class="Mesen.Debugger.Views.ControllerListView"
+>
+	<Design.DataContext>
+		<dvm:ControllerListViewModel />
+	</Design.DataContext>
+
+	<ScrollViewer AllowAutoHide="False">
+		<ItemsPresenter Items="{CompiledBinding Controllers}" VerticalAlignment="Center">
+			<ItemsPresenter.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</ItemsPresenter.ItemsPanel>
+			<ItemsPresenter.ItemTemplate>
+				<DataTemplate>
+					<dv:ControllerInputView DataContext="{Binding}" Margin="1 1" />
+				</DataTemplate>
+			</ItemsPresenter.ItemTemplate>
+		</ItemsPresenter>
+	</ScrollViewer>
+</UserControl>

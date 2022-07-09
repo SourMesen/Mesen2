@@ -116,4 +116,5 @@ public:
 	void GetPpuState(BaseState& state) override;
 	void SetPpuState(BaseState& state) override;
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
 };

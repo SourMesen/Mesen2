@@ -71,6 +71,8 @@ public:
 
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
+
 	void SetProgramCounter(uint32_t addr) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
 

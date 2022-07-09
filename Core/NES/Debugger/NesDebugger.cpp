@@ -16,6 +16,7 @@
 #include "NES/NesPpu.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesMemoryManager.h"
+#include "NES/Input/NesController.h"
 #include "NES/Mappers/NsfMapper.h"
 #include "NES/Debugger/DummyNesCpu.h"
 #include "NES/Debugger/NesCodeDataLogger.h"
@@ -31,6 +32,7 @@
 #include "Utilities/CRC32.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/Emulator.h"
 #include "MemoryOperationType.h"
 
@@ -472,4 +474,23 @@ void NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 		file.write((char*)output.data(), output.size());
 		file.close();
 	}
+}
+
+void NesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])
+{
+	BaseControlManager* controlManager = _console->GetControlManager();
+	for(int i = 0; i < 8; i++) {
+		shared_ptr<NesController> controller = std::dynamic_pointer_cast<NesController>(controlManager->GetControlDeviceByIndex(i));
+		if(controller && inputOverrides[i].HasPressedButton()) {
+			controller->SetBitValue(NesController::Buttons::A, inputOverrides[i].A);
+			controller->SetBitValue(NesController::Buttons::B, inputOverrides[i].B);
+			controller->SetBitValue(NesController::Buttons::Select, inputOverrides[i].Select);
+			controller->SetBitValue(NesController::Buttons::Start, inputOverrides[i].Start);
+			controller->SetBitValue(NesController::Buttons::Up, inputOverrides[i].Up);
+			controller->SetBitValue(NesController::Buttons::Down, inputOverrides[i].Down);
+			controller->SetBitValue(NesController::Buttons::Left, inputOverrides[i].Left);
+			controller->SetBitValue(NesController::Buttons::Right, inputOverrides[i].Right);
+		}
+	}
+	controlManager->RefreshHubState();
 }

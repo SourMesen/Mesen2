@@ -28,6 +28,7 @@ namespace Mesen.Debugger
 		public ToolContainerViewModel<LabelListViewModel> LabelListTool { get; private set; }
 		public ToolContainerViewModel<FunctionListViewModel> FunctionListTool { get; private set; }
 		public ToolContainerViewModel<FindResultListViewModel> FindResultListTool { get; private set; }
+		public ToolContainerViewModel<ControllerListViewModel> ControllerListTool { get; private set; }
 
 		private DockEntryDefinition? _savedRootDef;
 
@@ -45,6 +46,7 @@ namespace Mesen.Debugger
 			LabelListTool = new("Labels");
 			FunctionListTool = new("Functions");
 			FindResultListTool = new("Find Results");
+			ControllerListTool = new("Controllers");
 
 			_savedRootDef = savedRootDef;
 		}
@@ -82,7 +84,7 @@ namespace Mesen.Debugger
 									new MesenProportionalDockSplitter(),
 									new ToolDock {
 										Proportion = 0.5,
-										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool)
+										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool, ControllerListTool)
 									}
 								)
 							}
@@ -200,6 +202,7 @@ namespace Mesen.Debugger
 						case nameof(LabelListViewModel): return LabelListTool;
 						case nameof(FunctionListViewModel): return FunctionListTool;
 						case nameof(FindResultListViewModel): return FindResultListTool;
+						case nameof(ControllerListViewModel): return ControllerListTool;
 					}
 					break;
 			}

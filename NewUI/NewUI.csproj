@@ -244,6 +244,12 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Views\ControllerListView.axaml.cs">
+      <DependentUpon>ControllerListView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\ControllerInputView.axaml.cs">
+      <DependentUpon>ControllerInputView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Controls\NavButton.axaml.cs">
       <DependentUpon>NavButton.axaml</DependentUpon>
     </Compile>

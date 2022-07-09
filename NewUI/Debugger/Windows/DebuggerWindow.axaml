@@ -31,6 +31,9 @@
 		<Style Selector="TabStrip:singleitem">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
+		<Style Selector="idc|ToolControl,idc|DockControl,idc|ToolChromeControl">
+			<Setter Property="(ProportionalStackPanelSplitter.MinimumProportionSize)" Value="60" />
+		</Style>
 	</Window.Styles>
 
 	<Window.DataTemplates>

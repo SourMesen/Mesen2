@@ -200,6 +200,23 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ClearLabels();
 
 		[DllImport(DllPath)] public static extern void SetBreakpoints([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] InteropBreakpoint[] breakpoints, UInt32 length);
+		
+		[DllImport(DllPath)] public static extern void SetInputOverrides(UInt32 index, DebugControllerState state);
+		[DllImport(DllPath)] private static extern void GetAvailableInputOverrides([In, Out] byte[] availableIndexes);
+		
+		public static List<int> GetAvailableInputOverrides()
+		{
+			byte[] availableIndexes = new byte[8];
+			GetAvailableInputOverrides(availableIndexes);
+			
+			List<int> indexes = new List<int>();
+			for(int i = 0; i < 8; i++) {
+				if(availableIndexes[i] != 0) {
+					indexes.Add(i);
+				}
+			}
+			return indexes;
+		}
 
 		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, [MarshalAs(UnmanagedType.I1)] bool saveAsIps, CdlStripOption cdlStripOption);
 
@@ -1292,5 +1309,21 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool MatchWholeWord;
 		[MarshalAs(UnmanagedType.I1)] public bool SearchBackwards;
 		[MarshalAs(UnmanagedType.I1)] public bool SkipFirstLine;
+	}
+
+	public struct DebugControllerState
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool A;
+		[MarshalAs(UnmanagedType.I1)] public bool B;
+		[MarshalAs(UnmanagedType.I1)] public bool X;
+		[MarshalAs(UnmanagedType.I1)] public bool Y;
+		[MarshalAs(UnmanagedType.I1)] public bool L;
+		[MarshalAs(UnmanagedType.I1)] public bool R;
+		[MarshalAs(UnmanagedType.I1)] public bool Up;
+		[MarshalAs(UnmanagedType.I1)] public bool Down;
+		[MarshalAs(UnmanagedType.I1)] public bool Left;
+		[MarshalAs(UnmanagedType.I1)] public bool Right;
+		[MarshalAs(UnmanagedType.I1)] public bool Select;
+		[MarshalAs(UnmanagedType.I1)] public bool Start;
 	}
 }

@@ -35,6 +35,7 @@
 #include "Gameboy/GbTypes.h"
 #include "PCE/Debugger/PceDebugger.h"
 #include "PCE/PceTypes.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/NotificationManager.h"
@@ -358,6 +359,10 @@ void Debugger::ProcessEvent(EventType type)
 	switch(type) {
 		default: break;
 
+		case EventType::InputPolled:
+			_debuggers[(int)_mainCpuType].Debugger->ProcessInputOverrides(_inputOverrides);
+			break;
+
 		case EventType::StartFrame: {
 			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)_mainCpuType);
 			BaseEventManager* evtMgr = GetEventManager(_mainCpuType);
@@ -661,6 +666,19 @@ void Debugger::SetBreakpoints(Breakpoint breakpoints[], uint32_t length)
 		if(_debuggers[i].Debugger) {
 			_debuggers[i].Debugger->GetBreakpointManager()->SetBreakpoints(breakpoints, length);
 		}
+	}
+}
+
+void Debugger::SetInputOverrides(uint32_t index, DebugControllerState state)
+{
+	_inputOverrides[index] = state;
+}
+
+void Debugger::GetAvailableInputOverrides(uint8_t* availableIndexes)
+{
+	BaseControlManager* controlManager = _console->GetControlManager();
+	for(int i = 0; i < 8; i++) {
+		availableIndexes[i] = controlManager->GetControlDeviceByIndex(i) != nullptr;
 	}
 }
 

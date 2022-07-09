@@ -3,6 +3,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
+#include "Shared/ControllerHub.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
@@ -78,6 +79,48 @@ shared_ptr<BaseControlDevice> BaseControlManager::GetControlDevice(uint8_t port)
 		return *result;
 	}
 	return nullptr;
+}
+
+shared_ptr<BaseControlDevice> BaseControlManager::GetControlDeviceByIndex(uint8_t index)
+{
+	auto lock = _deviceLock.AcquireSafe();
+
+	int counter = 0;
+	for(size_t i = 0; i < _controlDevices.size(); i++) {
+		if(_controlDevices[i] && _controlDevices[i]->GetPort() <= 2) {
+			shared_ptr<IControllerHub> hub = std::dynamic_pointer_cast<IControllerHub>(_controlDevices[i]);
+			if(hub) {
+				int portCount = hub->GetHubPortCount();
+				for(int i = 0; i < portCount; i++) {
+					shared_ptr<BaseControlDevice> device = hub->GetController(i);
+					if(counter == index) {
+						return device;
+					}
+					counter++;
+				}
+			} else {
+				if(counter == index) {
+					return _controlDevices[i];
+				}
+				counter++;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void BaseControlManager::RefreshHubState()
+{
+	auto lock = _deviceLock.AcquireSafe();
+
+	for(size_t i = 0; i < _controlDevices.size(); i++) {
+		if(_controlDevices[i] && _controlDevices[i]->GetPort() <= 2) {
+			shared_ptr<IControllerHub> hub = std::dynamic_pointer_cast<IControllerHub>(_controlDevices[i]);
+			if(hub) {
+				hub->RefreshHubState();
+			}
+		}
+	}
 }
 
 vector<shared_ptr<BaseControlDevice>> BaseControlManager::GetControlDevices()

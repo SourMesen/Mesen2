@@ -428,3 +428,24 @@ struct CpuInstructionProgress
 	uint32_t LastOpCode = 0;
 	MemoryOperationInfo LastMemOperation = {};
 };
+
+struct DebugControllerState
+{
+	bool A;
+	bool B;
+	bool X;
+	bool Y;
+	bool L;
+	bool R;
+	bool Up;
+	bool Down;
+	bool Left;
+	bool Right;
+	bool Select;
+	bool Start;
+
+	bool HasPressedButton()
+	{
+		return A || B || X || Y || L || R || Up || Down || Left || Right || Select || Start;
+	}
+};

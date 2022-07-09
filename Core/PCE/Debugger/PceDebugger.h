@@ -90,6 +90,7 @@ public:
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;

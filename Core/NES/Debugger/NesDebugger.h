@@ -76,6 +76,8 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	void ProcessPpuCycle();
 
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
+
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
 

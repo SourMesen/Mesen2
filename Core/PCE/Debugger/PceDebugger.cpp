@@ -16,6 +16,7 @@
 #include "PCE/PceVce.h"
 #include "PCE/PceVpc.h"
 #include "PCE/PceMemoryManager.h"
+#include "PCE/Input/PceController.h"
 #include "PCE/Debugger/PceDebugger.h"
 #include "PCE/Debugger/PceTraceLogger.h"
 #include "PCE/Debugger/PceVdcTools.h"
@@ -26,6 +27,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
@@ -427,4 +429,23 @@ void PceDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 		file.write((char*)output.data(), output.size());
 		file.close();
 	}
+}
+
+void PceDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])
+{
+	BaseControlManager* controlManager = _console->GetControlManager();
+	for(int i = 0; i < 8; i++) {
+		shared_ptr<PceController> controller = std::dynamic_pointer_cast<PceController>(controlManager->GetControlDeviceByIndex(i));
+		if(controller && inputOverrides[i].HasPressedButton()) {
+			controller->SetBitValue(PceController::Buttons::I, inputOverrides[i].A);
+			controller->SetBitValue(PceController::Buttons::II, inputOverrides[i].B);
+			controller->SetBitValue(PceController::Buttons::Select, inputOverrides[i].Select);
+			controller->SetBitValue(PceController::Buttons::Run, inputOverrides[i].Start);
+			controller->SetBitValue(PceController::Buttons::Up, inputOverrides[i].Up);
+			controller->SetBitValue(PceController::Buttons::Down, inputOverrides[i].Down);
+			controller->SetBitValue(PceController::Buttons::Left, inputOverrides[i].Left);
+			controller->SetBitValue(PceController::Buttons::Right, inputOverrides[i].Right);
+		}
+	}
+	controlManager->RefreshHubState();
 }

@@ -7,6 +7,7 @@
 #include "SNES/Spc.h"
 #include "SNES/SnesPpu.h"
 #include "SNES/MemoryMappings.h"
+#include "SNES/Input/SnesController.h"
 #include "SNES/Debugger/DummySnesCpu.h"
 #include "SNES/Debugger/SnesDisUtils.h"
 #include "SNES/Debugger/SnesCodeDataLogger.h"
@@ -28,6 +29,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Shared/SettingTypes.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
 #include "Utilities/HexUtilities.h"
@@ -513,4 +515,27 @@ void SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption
 		file.write((char*)output.data(), output.size());
 		file.close();
 	}
+}
+
+void SnesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])
+{
+	BaseControlManager* controlManager = _console->GetControlManager();
+	for(int i = 0; i < 8; i++) {
+		shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(controlManager->GetControlDeviceByIndex(i));
+		if(controller && inputOverrides[i].HasPressedButton()) {
+			controller->SetBitValue(SnesController::Buttons::A, inputOverrides[i].A);
+			controller->SetBitValue(SnesController::Buttons::B, inputOverrides[i].B);
+			controller->SetBitValue(SnesController::Buttons::X, inputOverrides[i].X);
+			controller->SetBitValue(SnesController::Buttons::Y, inputOverrides[i].Y);
+			controller->SetBitValue(SnesController::Buttons::L, inputOverrides[i].L);
+			controller->SetBitValue(SnesController::Buttons::R, inputOverrides[i].R);
+			controller->SetBitValue(SnesController::Buttons::Select, inputOverrides[i].Select);
+			controller->SetBitValue(SnesController::Buttons::Start, inputOverrides[i].Start);
+			controller->SetBitValue(SnesController::Buttons::Up, inputOverrides[i].Up);
+			controller->SetBitValue(SnesController::Buttons::Down, inputOverrides[i].Down);
+			controller->SetBitValue(SnesController::Buttons::Left, inputOverrides[i].Left);
+			controller->SetBitValue(SnesController::Buttons::Right, inputOverrides[i].Right);
+		}
+	}
+	controlManager->RefreshHubState();
 }

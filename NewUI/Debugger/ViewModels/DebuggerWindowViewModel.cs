@@ -49,6 +49,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SourceViewViewModel? SourceView { get; private set; }
 		[Reactive] public MemoryMappingViewModel? MemoryMappings { get; private set; }
 		[Reactive] public FindResultListViewModel FindResultList { get; private set; }
+		[Reactive] public ControllerListViewModel ControllerList { get; private set; }
 
 		[Reactive] public DebuggerDockFactory DockFactory { get; private set; }
 		[Reactive] public IRootDock DockLayout { get; private set; }
@@ -78,13 +79,16 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.InitializeDebugger();
 			}
 
+			ConsoleType consoleType;
 			if(Design.IsDesignMode) {
 				CpuType = CpuType.Snes;
+				consoleType = ConsoleType.Snes;
 			} else {
 				RomInfo romInfo = EmuApi.GetRomInfo();
+				consoleType = romInfo.ConsoleType;
 				if(cpuType != null) {
 					CpuType = cpuType.Value;
-					if(romInfo.ConsoleType.GetMainCpuType() != CpuType) {
+					if(consoleType.GetMainCpuType() != CpuType) {
 						Title = ResourceHelper.GetEnumText(CpuType) + " Debugger";
 						Icon = new WindowIcon(ImageUtilities.BitmapFromAsset("Assets/" + CpuType.ToString() + "Debugger.png"));
 						IsMainCpuDebugger = false;
@@ -104,6 +108,7 @@ namespace Mesen.Debugger.ViewModels
 			BreakpointList = new BreakpointListViewModel(CpuType, this);
 			LabelList = new LabelListViewModel(CpuType, this);
 			FindResultList = new FindResultListViewModel(this);
+			ControllerList = new ControllerListViewModel(consoleType);
 			if(CpuType.SupportsFunctionList()) {
 				FunctionList = new FunctionListViewModel(CpuType, this);
 			}
@@ -130,6 +135,7 @@ namespace Mesen.Debugger.ViewModels
 			DockFactory.CallStackTool.Model = CallStack;
 			DockFactory.WatchListTool.Model = WatchList;
 			DockFactory.FindResultListTool.Model = FindResultList;
+			DockFactory.ControllerListTool.Model = ControllerList;
 			DockFactory.DisassemblyTool.Model = Disassembly;
 			DockFactory.SourceViewTool.Model = null;
 			DockFactory.StatusTool.Model = ConsoleStatus;
@@ -509,11 +515,6 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
-					ActionType = ActionType.ShowWatchList,
-					IsSelected = () => IsToolVisible(DockFactory.WatchListTool),
-					OnClick = () => ToggleTool(DockFactory.WatchListTool)
-				},
-				new ContextMenuAction() {
 					ActionType = ActionType.ShowBreakpointList,
 					IsSelected = () => IsToolVisible(DockFactory.BreakpointListTool),
 					OnClick = () => ToggleTool(DockFactory.BreakpointListTool)
@@ -522,6 +523,17 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.ShowCallStack,
 					IsSelected = () => IsToolVisible(DockFactory.CallStackTool),
 					OnClick = () => ToggleTool(DockFactory.CallStackTool)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowConsoleStatus,
+					IsSelected = () => IsToolVisible(DockFactory.StatusTool),
+					OnClick = () => ToggleTool(DockFactory.StatusTool)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowControllers,
+					IsVisible = () => FunctionList != null,
+					IsSelected = () => IsToolVisible(DockFactory.ControllerListTool),
+					OnClick = () => ToggleTool(DockFactory.ControllerListTool)
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowFunctionList,
@@ -535,9 +547,9 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => ToggleTool(DockFactory.LabelListTool)
 				},
 				new ContextMenuAction() {
-					ActionType = ActionType.ShowConsoleStatus,
-					IsSelected = () => IsToolVisible(DockFactory.StatusTool),
-					OnClick = () => ToggleTool(DockFactory.StatusTool)
+					ActionType = ActionType.ShowWatchList,
+					IsSelected = () => IsToolVisible(DockFactory.WatchListTool),
+					OnClick = () => ToggleTool(DockFactory.WatchListTool)
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
