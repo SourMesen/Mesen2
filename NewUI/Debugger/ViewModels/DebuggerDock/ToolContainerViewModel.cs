@@ -37,6 +37,7 @@ namespace Mesen.Debugger.ViewModels.DebuggerDock
 			Id = name;
 			Title = name;
 			CanPin = false;
+			CanFloat = false;
 		}
 	}
 }

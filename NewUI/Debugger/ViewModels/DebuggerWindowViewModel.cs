@@ -122,7 +122,7 @@ namespace Mesen.Debugger.ViewModels
 				_ => null
 			};
 
-			DockFactory = new DebuggerDockFactory();
+			DockFactory = new DebuggerDockFactory(Config.SavedDockLayout);
 
 			DockFactory.BreakpointListTool.Model = BreakpointList;
 			DockFactory.LabelListTool.Model = LabelList;
@@ -185,6 +185,8 @@ namespace Mesen.Debugger.ViewModels
 
 		protected override void DisposeView()
 		{
+			Config.SavedDockLayout = DockFactory.ToDockDefinition(DockLayout);
+
 			DebugWorkspaceManager.SymbolProviderChanged -= DebugWorkspaceManager_SymbolProviderChanged;
 			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
 			BreakpointManager.BreakpointsChanged -= BreakpointManager_BreakpointsChanged;

@@ -29,7 +29,9 @@ namespace Mesen.Debugger
 		public ToolContainerViewModel<FunctionListViewModel> FunctionListTool { get; private set; }
 		public ToolContainerViewModel<FindResultListViewModel> FindResultListTool { get; private set; }
 
-		public DebuggerDockFactory()
+		private DockEntryDefinition? _savedRootDef;
+
+		public DebuggerDockFactory(DockEntryDefinition? savedRootDef)
 		{
 			DisassemblyTool = new("Disassembly");
 			DisassemblyTool.CanClose = false;
@@ -43,10 +45,19 @@ namespace Mesen.Debugger
 			LabelListTool = new("Labels");
 			FunctionListTool = new("Functions");
 			FindResultListTool = new("Find Results");
+
+			_savedRootDef = savedRootDef;
 		}
 
 		public override IRootDock CreateLayout()
 		{
+			if(_savedRootDef != null) {
+				//Restore previous layout
+				if(FromDockDefinition(_savedRootDef) is IRootDock savedRootLayout) {
+					return savedRootLayout;
+				}
+			}
+
 			var mainLayout = new ProportionalDock {
 				Orientation = Orientation.Vertical,
 				VisibleDockables = CreateList<IDockable>(
@@ -102,12 +113,9 @@ namespace Mesen.Debugger
 			};
 
 			var root = CreateRootDock();
-			root.Id = "Root";
-			root.Title = "Root";
 			root.ActiveDockable = mainLayout;
 			root.DefaultDockable = mainLayout;
 			root.VisibleDockables = CreateList<IDockable>(mainLayout);
-
 			return root;
 		}
 
@@ -129,5 +137,110 @@ namespace Mesen.Debugger
 
 			base.InitLayout(layout);
 		}
+
+		public DockEntryDefinition ToDockDefinition(IDockable dockable)
+		{
+			DockEntryDefinition entry = new();
+			if(dockable is ProportionalDockSplitter) {
+				entry.Type = DockEntryType.Splitter;
+			} else if(dockable is IDock dock) {
+				if(dock is IRootDock) {
+					entry.Type = DockEntryType.Root;
+				} else if(dock is IProportionalDock propDock) {
+					entry.Type = DockEntryType.ProportionalDock;
+					entry.Orientation = propDock.Orientation;
+				} else {
+					entry.Type = DockEntryType.ToolDock;
+				}
+				entry.Name = dock.Title;
+				entry.Proportion = double.IsNaN(dock.Proportion) ? 0 : dock.Proportion;
+				entry.Children = new();
+				if(dock.VisibleDockables != null) {
+					if(dock is IProportionalDock propDock && dock.VisibleDockables.Count == 1) {
+						//Remove empty proportional docks (these seem to get created when moving things around)
+						return ToDockDefinition(dock.VisibleDockables[0]);
+					}
+
+					foreach(IDockable child in dock.VisibleDockables) {
+						entry.Children.Add(ToDockDefinition(child));
+					}
+				}
+			} else if(dockable is ITool tool) {
+				entry.Type = DockEntryType.Tool;
+				entry.Name = tool.Title;
+				entry.ToolTypeName = tool.GetType().GetGenericArguments()[0].Name;
+			}
+
+			return entry;
+		}
+
+		public IDockable? FromDockDefinition(DockEntryDefinition def)
+		{
+			IDockable? dockable = null;
+			switch(def.Type) {
+				case DockEntryType.Splitter: return CreateProportionalDockSplitter();
+				case DockEntryType.Root: dockable = CreateRootDock(); break;
+				case DockEntryType.ToolDock: dockable = CreateToolDock(); break;
+				
+				case DockEntryType.ProportionalDock: {
+					IProportionalDock propDock = CreateProportionalDock();
+					propDock.Orientation = def.Orientation;
+					dockable = propDock;
+					break;
+				}
+
+				case DockEntryType.Tool:
+					switch(def.ToolTypeName) {
+						case nameof(DisassemblyViewModel): return DisassemblyTool;
+						case nameof(SourceViewViewModel): return SourceViewTool;
+						case nameof(BaseConsoleStatusViewModel): return StatusTool;
+						case nameof(BreakpointListViewModel): return BreakpointListTool;
+						case nameof(WatchListViewModel): return WatchListTool;
+						case nameof(CallStackViewModel): return CallStackTool;
+						case nameof(LabelListViewModel): return LabelListTool;
+						case nameof(FunctionListViewModel): return FunctionListTool;
+						case nameof(FindResultListViewModel): return FindResultListTool;
+					}
+					break;
+			}
+
+			IDock? dock = dockable as IDock;
+			if(dock != null && def.Proportion != 0) {
+				dock.Proportion = def.Proportion;
+			}
+
+			if(dock != null && def.Children != null) {
+				dock.VisibleDockables = CreateList<IDockable>();
+				foreach(DockEntryDefinition childDef in def.Children) {
+					IDockable? child = FromDockDefinition(childDef);
+					if(child != null) {
+						dock.VisibleDockables.Add(child);
+					}
+				}
+				dock.ActiveDockable = dock.VisibleDockables[0];
+				dock.DefaultDockable = dock.VisibleDockables[0];
+			}
+
+			return dockable;
+		}
+	}
+
+	public enum DockEntryType
+	{
+		Root,
+		ProportionalDock,
+		ToolDock,
+		Splitter,
+		Tool
+	}
+
+	public class DockEntryDefinition
+	{
+		public DockEntryType Type;
+		public double Proportion = 0;
+		public Orientation Orientation = Orientation.Horizontal;
+		public string Name = "";
+		public string ToolTypeName = "";
+		public List<DockEntryDefinition>? Children;
 	}
 }

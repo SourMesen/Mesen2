@@ -12,7 +12,9 @@ namespace Mesen.Config
 	{
 		public static string MonospaceFontFamily = "Consolas";
 		public static int DefaultFontSize = 14;
-		
+
+		public DockEntryDefinition? SavedDockLayout { get; set; } = null;
+
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
 		[Reactive] public bool ShowByteCode { get; set; } = false;

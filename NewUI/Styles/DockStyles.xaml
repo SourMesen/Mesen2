@@ -32,25 +32,6 @@
 							  BorderBrush="{TemplateBinding BorderBrush}"
 							  VerticalAlignment="Top"
 							  Grid.Row="{Binding GripMode, Converter={x:Static converters:GripModeConverters.GridRowAutoHideConverter}}">
-						<Border.ContextMenu>
-							<ContextMenu IsVisible="{Binding !!ActiveDockable}">
-								<MenuItem Header="_Float"
-											 Command="{Binding Owner.Factory.FloatDockable}"
-											 CommandParameter="{Binding}"
-											 IsVisible="{Binding ActiveDockable.CanFloat, FallbackValue=False}"
-											 x:CompileBindings="False" />
-								<MenuItem Header="_Hide"
-											 Command="{Binding Owner.Factory.PinDockable}"
-											 CommandParameter="{Binding ActiveDockable}"
-											 IsVisible="{Binding ActiveDockable.CanPin, FallbackValue=False}"
-											 x:CompileBindings="False" />
-								<MenuItem Header="_Close"
-											 Command="{Binding Owner.Factory.CloseDockable}"
-											 CommandParameter="{Binding ActiveDockable}"
-											 IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
-											 x:CompileBindings="False" />
-							</ContextMenu>
-						</Border.ContextMenu>
 						<Grid x:Name="PART_Grip">
 							<DockPanel LastChildFill="True" Margin="8 0">
 								<Panel DockPanel.Dock="Left">
