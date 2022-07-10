@@ -163,6 +163,12 @@ namespace Mesen.Debugger
 						return ToDockDefinition(dock.VisibleDockables[0]);
 					}
 
+					if(dock.ActiveDockable != null) {
+						int index = dock.VisibleDockables.IndexOf(dock.ActiveDockable);
+						if(index >= 0) {
+							entry.SelectedIndex = index;
+						}
+					}
 					foreach(IDockable child in dock.VisibleDockables) {
 						entry.Children.Add(ToDockDefinition(child));
 					}
@@ -220,7 +226,7 @@ namespace Mesen.Debugger
 						dock.VisibleDockables.Add(child);
 					}
 				}
-				dock.ActiveDockable = dock.VisibleDockables[0];
+				dock.ActiveDockable = def.SelectedIndex < dock.VisibleDockables.Count ? dock.VisibleDockables[def.SelectedIndex] : dock.VisibleDockables[0];
 				dock.DefaultDockable = dock.VisibleDockables[0];
 			}
 
@@ -244,6 +250,7 @@ namespace Mesen.Debugger
 		public Orientation Orientation = Orientation.Horizontal;
 		public string Name = "";
 		public string ToolTypeName = "";
+		public int SelectedIndex = 0;
 		public List<DockEntryDefinition>? Children;
 	}
 }
