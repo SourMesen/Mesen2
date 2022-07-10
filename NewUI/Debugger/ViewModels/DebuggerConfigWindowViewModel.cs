@@ -136,6 +136,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.OpenTraceLogger,
 				DebuggerShortcut.OpenWatchWindow,
 				DebuggerShortcut.OpenDebugLog,
+				DebuggerShortcut.OpenNesHeaderEditor,
 
 				DebuggerShortcut.OpenTilemapViewer,
 				DebuggerShortcut.OpenTileViewer,

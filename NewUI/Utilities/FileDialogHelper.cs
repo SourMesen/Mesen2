@@ -29,6 +29,7 @@ namespace Mesen.Utilities
 		public static string DbgFileExt = "dbg";
 		public static string MesenLabelExt = "mlb";
 		public static string BinExt = "bin";
+		public static string NesExt = "nes";
 
 		public static async Task<string?> OpenFile(string? initialFolder, IRenderRoot? parent, params string[] extensions)
 		{

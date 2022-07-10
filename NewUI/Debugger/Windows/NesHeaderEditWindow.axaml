@@ -1,0 +1,122 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d"
+	Icon="/Assets/Edit.png"
+	x:Class="Mesen.Debugger.Windows.NesHeaderEditWindow"
+	x:DataType="vm:NesHeaderEditViewModel"
+	ShowInTaskbar="False"
+	CanResize="False"
+	Name="root"
+  Width="480"
+  Height="270"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:NesHeaderEditViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="RadioButton">
+			<Setter Property="Margin" Value="0" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="Width" Value="50" />
+		</Style>
+	</Window.Styles>
+
+	<DockPanel Margin="3">
+		<DockPanel DockPanel.Dock="Bottom">
+			<Button DockPanel.Dock="Right" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+			<c:ButtonWithIcon DockPanel.Dock="Right" Icon="Assets/SaveFloppy.png" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Text="{l:Translate btnSaveAs}" />
+			<TextBlock VerticalAlignment="Center" Text="{CompiledBinding ErrorMessage}" Foreground="{DynamicResource SystemErrorTextColor}" />
+		</DockPanel>
+
+		<TextBox
+			DockPanel.Dock="Bottom"
+			Margin="0 5"
+			HorizontalAlignment="Stretch"
+			IsReadOnly="True"
+			Text="{CompiledBinding HeaderBytes}"
+			Width="NaN"
+			FontFamily="Consolas"
+			FontSize="13"
+		/>
+		
+		<Grid ColumnDefinitions="Auto,1.5*,10,Auto,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+			<TextBlock Text="{l:Translate lblFileType}" Grid.Row="0" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.FileType}" Grid.Row="0" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblMapper}" Grid.Row="1" />
+			<c:MesenNumericTextBox Value="{CompiledBinding Header.MapperId}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" />
+			
+			<TextBlock Text="{l:Translate lblSubmapper}" Grid.Row="2" />
+			<c:MesenNumericTextBox Value="{CompiledBinding Header.SubmapperId}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" />
+			
+			<TextBlock Text="{l:Translate lblMirroringType}" Grid.Row="3" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.Mirroring}" Grid.Row="3" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblFrameTiming}" Grid.Row="4" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.Timing}" AvailableValues="{CompiledBinding AvailableTimings}" Grid.Row="4" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblSystem}" Grid.Row="5" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.System}" AvailableValues="{CompiledBinding AvailableSystemTypes}" Grid.Row="5" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblInputType}" Grid.Row="6" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.InputType}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="6" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblVsSystemType}" Grid.Row="7" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.VsSystem}" IsEnabled="{CompiledBinding IsVsSystemVisible}" Grid.Row="7" Grid.Column="1" />
+			
+			<TextBlock Text="{l:Translate lblVsPpuType}" Grid.Row="8" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.VsPpu}" IsEnabled="{CompiledBinding IsVsSystemVisible}" Grid.Row="8" Grid.Column="1" />
+
+			<TextBlock Text="{l:Translate lblPrgRom}" Grid.Row="0" Grid.Column="3" />
+			<StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="4">
+				<c:MesenNumericTextBox Value="{CompiledBinding Header.PrgRom}"  />
+				<TextBlock Text=" KB" />
+			</StackPanel>
+
+			<TextBlock Text="{l:Translate lblChrRom}" Grid.Row="1" Grid.Column="3" />
+			<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="4">
+				<c:MesenNumericTextBox Value="{CompiledBinding Header.ChrRom}"  />
+				<TextBlock Text=" KB" />
+			</StackPanel>
+
+			<TextBlock Text="{l:Translate lblWorkRam}" Grid.Row="2" Grid.Column="3" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.WorkRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="2" Grid.Column="4" />
+
+			<TextBlock Text="{l:Translate lblSaveRam}" Grid.Row="3" Grid.Column="3" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.SaveRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="3" Grid.Column="4" />
+
+			<TextBlock Text="{l:Translate lblChrRam}" Grid.Row="4" Grid.Column="3" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.ChrRam}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="4" Grid.Column="4" />
+
+			<TextBlock Text="{l:Translate lblChrSaveRam}" Grid.Row="5" Grid.Column="3" />
+			<c:EnumComboBox SelectedItem="{CompiledBinding Header.ChrRamBattery}" IsEnabled="{CompiledBinding IsNes20}" Grid.Row="5" Grid.Column="4" />
+
+			<CheckBox
+				IsChecked="{CompiledBinding Header.HasBattery}"
+				IsEnabled="{CompiledBinding IsBatteryCheckboxEnabled}"
+				Content="{l:Translate chkBattery}"
+				Grid.Row="6"
+				Grid.Column="3"
+				Grid.ColumnSpan="2"
+			/>
+			<CheckBox IsChecked="{CompiledBinding Header.HasTrainer}" Content="{l:Translate chkTrainer}" Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2" />
+		</Grid>
+	</DockPanel>
+</Window>

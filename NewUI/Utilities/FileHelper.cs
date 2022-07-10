@@ -11,24 +11,7 @@ namespace Mesen.Utilities
 	{
 		public static string? ReadAllText(string filepath)
 		{
-			if(File.Exists(filepath)) {
-				int retry = 2;
-				while(retry > 0) {
-					try {
-						return File.ReadAllText(filepath);
-					} catch(Exception e) {
-						if(retry == 0) {
-							//TODO
-							//MesenMsgBox.ShowException(e);
-							return null;
-						} else {
-							System.Threading.Thread.Sleep(50);
-							retry--;
-						}
-					}
-				}
-			}
-			return null;
+			return AttemptOperation(() => File.ReadAllText(filepath));
 		}
 
 		public static bool WriteAllText(string filepath, string content)
@@ -38,23 +21,43 @@ namespace Mesen.Utilities
 
 		public static bool WriteAllText(string filepath, string content, Encoding encoding)
 		{
+			return AttemptOperation(() => {
+				File.WriteAllText(filepath, content, encoding);
+				return true;
+			});
+		}
+
+		public static byte[]? ReadAllBytes(string filepath)
+		{
+			return AttemptOperation(() => File.ReadAllBytes(filepath));
+		}
+
+		public static bool WriteAllBytes(string filepath, byte[] data)
+		{
+			return AttemptOperation(() => {
+				File.WriteAllBytes(filepath, data);
+				return true;
+			});
+		}
+
+		private static T? AttemptOperation<T>(Func<T> action)
+		{
 			int retry = 2;
 			while(retry > 0) {
 				try {
-					File.WriteAllText(filepath, content, encoding);
-					return true;
+					return action();
 				} catch(Exception e) {
 					if(retry == 0) {
 						//TODO
 						//MesenMsgBox.ShowException(e);
-						return false;
+						return default;
 					} else {
 						System.Threading.Thread.Sleep(50);
 						retry--;
 					}
 				}
 			}
-			return false;
+			return default;
 		}
 	}
 }

@@ -470,6 +470,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("Find")]
 		OpenWatchWindow,
 
+		[IconFile("Edit")]
+		OpenNesHeaderEditor,
+
 		[IconFile("Settings")]
 		OpenDebugSettings,
 

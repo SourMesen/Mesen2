@@ -733,6 +733,7 @@ namespace Mesen.ViewModels
 		private void InitDebugMenu(Window wnd)
 		{
 			Func<bool> isSuperGameBoy = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Snes && MainWindow.RomInfo.Format == RomFormat.Gb;
+			Func<bool> isNesFormat = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes && MainWindow.RomInfo.Format == RomFormat.iNes;
 
 			DebugMenuItems = new List<object>() {
 				new ContextMenuAction() {
@@ -902,6 +903,14 @@ namespace Mesen.ViewModels
 					IsVisible = isSuperGameBoy,
 					IsEnabled = () => IsGameRunning,
 					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(new AssemblerWindowViewModel(CpuType.Gameboy)))
+				},
+
+				new ContextMenuSeparator() { IsVisible = isNesFormat },
+				new ContextMenuAction() {
+					ActionType = ActionType.OpenNesHeaderEditor,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenNesHeaderEditor),
+					IsVisible = isNesFormat,
+					OnClick = () => new NesHeaderEditWindow().ShowCenteredDialog((Control)wnd)
 				},
 
 				new ContextMenuSeparator(),

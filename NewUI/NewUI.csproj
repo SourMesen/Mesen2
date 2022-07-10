@@ -355,6 +355,9 @@
     <Compile Update="Debugger\StatusViews\NesStatusView.axaml.cs">
       <DependentUpon>NesStatusView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\NesHeaderEditWindow.axaml.cs">
+      <DependentUpon>NesHeaderEditWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Windows\GoToAllWindow.axaml.cs">
       <DependentUpon>GoToAllWindow.axaml</DependentUpon>
     </Compile>

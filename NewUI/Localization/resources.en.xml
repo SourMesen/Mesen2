@@ -906,6 +906,33 @@
 			<Control ID="wndTitle">Debug Log</Control>
 			<Control ID="btnClose">Close</Control>
 		</Form>
+
+		<Form ID="NesHeaderEditWindow">
+			<Control ID="wndTitle">NES Header Editor</Control>
+
+			<Control ID="lblFileType">File Type:</Control>
+			<Control ID="lblMapper">Mapper:</Control>
+			<Control ID="lblSubmapper">Submapper:</Control>
+			<Control ID="lblMirroringType">Mirroring Type:</Control>
+			<Control ID="lblFrameTiming">Frame Timing:</Control>
+			<Control ID="lblSystem">System:</Control>
+			<Control ID="lblInputType">Input Type:</Control>
+			<Control ID="lblVsSystemType">VS System Type:</Control>
+			<Control ID="lblVsPpuType">VS PPU Type:</Control>
+
+			<Control ID="lblPrgRom">PRG ROM:</Control>
+			<Control ID="lblChrRom">CHR ROM:</Control>
+			<Control ID="lblWorkRam">Work RAM:</Control>
+			<Control ID="lblSaveRam">Save RAM:</Control>
+			<Control ID="lblChrRam">CHR RAM:</Control>
+			<Control ID="lblChrSaveRam">CHR Save RAM:</Control>
+			
+			<Control ID="chkBattery">Battery</Control>
+			<Control ID="chkTrainer">Trainer</Control>
+
+			<Control ID="btnSaveAs">Save as...</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
 		
 		<Form ID="TraceLoggerWindow">
 			<Control ID="wndTitle">Trace Logger</Control>
@@ -1972,6 +1999,140 @@
 			<Value ID="PceAddress">Physical Address (AAAAAA:VV)</Value>
 		</Enum>
 		
+		<Enum ID="MemorySizes">
+			<Value ID="None">None</Value>
+			<Value ID="_128Bytes">128 bytes</Value>
+			<Value ID="_256Bytes">256 bytes</Value>
+			<Value ID="_512Bytes">512 bytes</Value>
+			<Value ID="_1KB">1 KB</Value>
+			<Value ID="_2KB">2 KB</Value>
+			<Value ID="_4KB">4 KB</Value>
+			<Value ID="_8KB">8 KB</Value>
+			<Value ID="_16KB">16 KB</Value>
+			<Value ID="_32KB">32 KB</Value>
+			<Value ID="_64KB">64 KB</Value>
+			<Value ID="_128KB">128 KB</Value>
+			<Value ID="_256KB">256 KB</Value>
+			<Value ID="_512KB">512 KB</Value>
+			<Value ID="_1024KB">1024 KB</Value>
+			<Value ID="Reserved">Reserved ($F)</Value>
+		</Enum>
+		<Enum ID="FrameTiming">
+			<Value ID="Ntsc">NTSC</Value>
+			<Value ID="Pal">PAL</Value>
+			<Value ID="NtscAndPal">NTSC and PAL</Value>
+			<Value ID="Dendy">Dendy</Value>
+		</Enum>
+		<Enum ID="TvSystem">
+			<Value ID="NesFamicomDendy">NES / Famicom / Dendy</Value>
+			<Value ID="VsSystem">VS System</Value>
+			<Value ID="Playchoice">Playchoice-10</Value>
+			<Value ID="CloneWithDecimal">Famicom clone with Decimal Mode</Value>
+			<Value ID="EpsmModule">NES/Famicom with EPSM module</Value>
+			<Value ID="Vt01RedCyan">VT01 Red/Cyan</Value>
+			<Value ID="Vt02">VT02</Value>
+			<Value ID="Vt03">VT03</Value>
+			<Value ID="Vt09">VT09</Value>
+			<Value ID="Vt32">VT32</Value>
+			<Value ID="Vt369">VT369</Value>
+			<Value ID="UmcUm6578">UMC UM6578</Value>
+			<Value ID="FamicomNetworkSystem">Famicom Network System</Value>
+			<Value ID="ReservedD">Reserved ($D)</Value>
+			<Value ID="ReservedE">Reserved ($E)</Value>
+			<Value ID="ReservedF">Reserved ($F)</Value>
+		</Enum>
+		<Enum ID="NesFileType">
+			<Value ID="iNes">iNes</Value>
+			<Value ID="Nes2_0">NES 2.0</Value>
+		</Enum>
+		<Enum ID="iNesMirroringType">
+			<Value ID="Horizontal">Horizontal</Value>
+			<Value ID="Vertical">Vertical</Value>
+			<Value ID="FourScreens">Four Screens</Value>
+		</Enum>
+		<Enum ID="VsPpuType">
+			<Value ID="RP2C03B">RP2C03B</Value>
+			<Value ID="RP2C03G">RP2C03G</Value>
+			<Value ID="RP2C040001">RP2C04-0001</Value>
+			<Value ID="RP2C040002">RP2C04-0002</Value>
+			<Value ID="RP2C040003">RP2C04-0003</Value>
+			<Value ID="RP2C040004">RP2C04-0004</Value>
+			<Value ID="RC2C03B">RC2C03B</Value>
+			<Value ID="RC2C03C">RC2C03C</Value>
+			<Value ID="RC2C0501">RC2C05-01</Value>
+			<Value ID="RC2C0502">RC2C05-02</Value>
+			<Value ID="RC2C0503">RC2C05-03</Value>
+			<Value ID="RC2C0504">RC2C05-04</Value>
+			<Value ID="RC2C0505">RC2C05-05</Value>
+			<Value ID="Undefined">Reserved ($D)</Value>
+			<Value ID="Undefined2">Reserved ($E)</Value>
+			<Value ID="Undefined3">Reserved ($F)</Value>
+		</Enum>
+		<Enum ID="VsSystemType">
+			<Value ID="Default">Default</Value>
+			<Value ID="RbiBaseballProtection">RBI Baseball</Value>
+			<Value ID="TkoBoxingProtection">TKO Boxing</Value>
+			<Value ID="SuperXeviousProtection">Super Xevious</Value>
+			<Value ID="IceClimberProtection">Ice Climber</Value>
+			<Value ID="VsDualSystem">VS. Dual System</Value>
+			<Value ID="RaidOnBungelingBayProtection">Raid on Bungeling Bay</Value>
+		</Enum>
+		<Enum ID="GameInputType">
+			<Value ID="Unspecified">Unspecified</Value>
+			<Value ID="StandardControllers">Standard Controllers</Value>
+			<Value ID="FourScore">Four Score (NES)</Value>
+			<Value ID="FourPlayerAdapter">Four Player Adapter (Famicom)</Value>
+			<Value ID="VsSystem">VS System</Value>
+			<Value ID="VsSystemSwapped">VS System - Swap P1/P2</Value>
+			<Value ID="VsSystemSwapAB">VS System - Swap A/B buttons</Value>
+			<Value ID="VsZapper">VS Zapper</Value>
+			<Value ID="Zapper">Zapper</Value>
+			<Value ID="TwoZappers">2 zappers</Value>
+			<Value ID="BandaiHypershot">Bandai Hypershot</Value>
+			<Value ID="PowerPadSideA">Power Pad Side A</Value>
+			<Value ID="PowerPadSideB">Power Pad Side B</Value>
+			<Value ID="FamilyTrainerSideA">Family Trainer Side A</Value>
+			<Value ID="FamilyTrainerSideB">Family Trainer Side B</Value>
+			<Value ID="ArkanoidControllerNes">Arkanoid Controller (NES)</Value>
+			<Value ID="ArkanoidControllerFamicom">Arkanoid Controller (Famicom)</Value>
+			<Value ID="DoubleArkanoidController">2x Arkanoid Controllers (NES)</Value>
+			<Value ID="KonamiHyperShot">Konami Hyper Shot</Value>
+			<Value ID="PachinkoController">Pachinko Controller</Value>
+			<Value ID="ExcitingBoxing">Exciting Boxing</Value>
+			<Value ID="JissenMahjong">Jissen Mahjong</Value>
+			<Value ID="PartyTap">Party Tap</Value>
+			<Value ID="OekaKidsTablet">Oeka Kids Tablet</Value>
+			<Value ID="BarcodeBattler">Barcode Battler</Value>
+			<Value ID="MiraclePiano">Miracle Piano</Value>
+			<Value ID="PokkunMoguraa">Pokkun Moguraa</Value>
+			<Value ID="TopRider">Top Rider</Value>
+			<Value ID="DoubleFisted">Double Fisted</Value>
+			<Value ID="Famicom3dSystem">Famicom 3D System</Value>
+			<Value ID="DoremikkoKeyboard">Doremikko Keyboard</Value>
+			<Value ID="ROB">ROB</Value>
+			<Value ID="FamicomDataRecorder">Family Data Recorder</Value>
+			<Value ID="TurboFile">Turbo File</Value>
+			<Value ID="BattleBox">Battle Box</Value>
+			<Value ID="FamilyBasicKeyboard">Family Basic Keyboard</Value>
+			<Value ID="Pec586Keyboard">PEC-586 Keyboard</Value>
+			<Value ID="Bit79Keyboard">Bit-79 Keyboard</Value>
+			<Value ID="SuborKeyboard">Subor Keyboard</Value>
+			<Value ID="SuborKeyboardMouse1">Subor Keyboard+Mouse (Type A)</Value>
+			<Value ID="SuborKeyboardMouse2">Subor Keyboard+Mouse (Type B)</Value>
+			<Value ID="SnesMouse">SNES Mouse</Value>
+			<Value ID="GenericMulticart">Generic Multicart</Value>
+			<Value ID="SnesControllers">SNES Controllers</Value>
+			<Value ID="RacerMateBicycle">RacerMate Bicycle</Value>
+			<Value ID="UForce">U-Force</Value>
+			<Value ID="RobStackUp">R.O.B. Stack-Up</Value>
+			<Value ID="CityPatrolmanLightgun">City Patrolman Lightgun</Value>
+			<Value ID="SharpC1CassetteInterface">Sharp C1 Cassette Interface</Value>
+			<Value ID="StandardControllerWithSwappedButtons">Standard Controller with swapped Left-Right/Up-Down/B-A</Value>
+			<Value ID="ExcaliborSudokuPad">Excalibor Sudoku Pad</Value>
+			<Value ID="AblPinball">ABL Pinball</Value>
+			<Value ID="GoldenNuggetCasino"> Golden Nugget Casino</Value>
+		</Enum>
+		
 		<Enum ID="CpuType">
 			<Value ID="Snes">SNES (65816)</Value>
 			<Value ID="Spc">SPC</Value>
@@ -2299,6 +2460,7 @@
 			<Value ID="OpenTraceLogger">Open Trace Logger</Value>
 			<Value ID="OpenRegisterViewer">Open Register Viewer</Value>
 			<Value ID="OpenDebugLog">Open Debug Log</Value>
+			<Value ID="OpenNesHeaderEditor">Open NES Header Editor</Value>
 			<Value ID="OpenTilemapViewer">Open Tilemap Viewer</Value>
 			<Value ID="OpenTileViewer">Open Tile Viewer</Value>
 			<Value ID="OpenSpriteViewer">Open Sprite Viewer</Value>
@@ -2545,6 +2707,7 @@
 			<Value ID="OpenTraceLogger">Trace Logger</Value>
 			<Value ID="OpenRegisterViewer">Register Viewer</Value>
 			<Value ID="OpenDebugLog">Debug Log</Value>
+			<Value ID="OpenNesHeaderEditor">NES Header Editor</Value>
 			<Value ID="OpenTilemapViewer">Tilemap Viewer</Value>
 			<Value ID="OpenTileViewer">Tile Viewer</Value>
 			<Value ID="OpenSpriteViewer">Sprite Viewer</Value>
