@@ -16,7 +16,7 @@
 		<vm:BreakpointListViewModel />
 	</Design.DataContext>
 
-	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
 			Items="{CompiledBinding Breakpoints}"
 			Selection="{CompiledBinding Selection}"

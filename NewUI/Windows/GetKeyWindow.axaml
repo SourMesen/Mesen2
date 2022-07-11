@@ -17,7 +17,7 @@
 	Height="100"
 	Title="{l:Translate Title}"
 >
-	<Border BorderBrush="LightGray" BorderThickness="1" Margin="3">
+	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="3">
 		<StackPanel VerticalAlignment="Center">
 			<Panel VerticalAlignment="Center" Height="40">
 				<TextBlock

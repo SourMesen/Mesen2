@@ -96,7 +96,7 @@
 			
 			<TabItem IsEnabled="False" MinHeight="10">
 				<TabItem.Header>
-					<Rectangle Fill="LightGray" Height="1" />
+					<Rectangle Fill="{StaticResource MesenGrayBorderColor}" Height="1" />
 				</TabItem.Header>
 			</TabItem>
 			
@@ -138,7 +138,7 @@
 			
 			<TabItem IsEnabled="False" MinHeight="10">
 				<TabItem.Header>
-					<Rectangle Fill="LightGray" Height="1" />
+					<Rectangle Fill="{StaticResource MesenGrayBorderColor}" Height="1" />
 				</TabItem.Header>
 			</TabItem>
 			

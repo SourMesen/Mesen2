@@ -17,12 +17,15 @@ namespace Mesen.Utilities
 
 			var styles = new List<IStyle> {
 				new FluentTheme(new Uri("avares://Mesen/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
-				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/MesenStyles.xaml", UriKind.Relative) },
 			};
 
 			if(theme == MesenTheme.Dark) {
 				styles.Add(new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/MesenStyles.Dark.xaml", UriKind.Relative) });
+			} else {
+				styles.Add(new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/MesenStyles.Light.xaml", UriKind.Relative) });
 			}
+
+			styles.Add(new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/MesenStyles.xaml", UriKind.Relative) });
 
 			Application.Current?.Styles.AddRange(styles);
 		}

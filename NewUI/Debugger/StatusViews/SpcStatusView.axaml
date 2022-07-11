@@ -62,7 +62,7 @@
 					</StackPanel>
 				</WrapPanel>
 
-				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 2" />
+				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
 
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 					<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">

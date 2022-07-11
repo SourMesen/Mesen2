@@ -20,8 +20,8 @@
 							Width="24">
 							<Rectangle.Fill>
 								<LinearGradientBrush StartPoint="0,0" EndPoint="24,0">
-									<GradientStop Color="#fcfcfc" Offset="0.0" />
-									<GradientStop Color="#f1f1f1" Offset="1.0" />
+									<GradientStop Color="{DynamicResource MesenMenuMarginStartColor}" Offset="0.0" />
+									<GradientStop Color="{DynamicResource MesenMenuMarginEndColor}" Offset="1.0" />
 								</LinearGradientBrush>
 							</Rectangle.Fill>
 						</Rectangle>

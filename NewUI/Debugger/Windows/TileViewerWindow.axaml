@@ -71,7 +71,7 @@
 						</ItemsPresenter>
 					</Panel>
 
-					<Rectangle Grid.Row="1" Stroke="LightGray" StrokeThickness="1" Margin="0 5" DockPanel.Dock="Top" Grid.ColumnSpan="2" />
+					<Rectangle Grid.Row="1" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="0 5" DockPanel.Dock="Top" Grid.ColumnSpan="2" />
 
 					<TextBlock Grid.Column="0" Grid.Row="2" Text="{l:Translate lblSource}" />
 					<c:EnumComboBox

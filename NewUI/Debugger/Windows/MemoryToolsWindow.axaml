@@ -59,7 +59,7 @@
 		<Panel DockPanel.Dock="Bottom" Margin="3 2">
 			<TextBlock Text="{CompiledBinding StatusBarText}" />
 		</Panel>
-		<Border BorderBrush="LightGray" BorderThickness="1">
+		<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 			<DockPanel>
 				<ScrollBar
 					DockPanel.Dock="Right"

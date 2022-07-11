@@ -66,64 +66,7 @@
 	</Design.PreviewWith>
 
 	<Styles.Resources>
-		<!-- Custom colors -->
-		<Color x:Key="MesenGridBackground">#FFF</Color>
-		<Color x:Key="MesenMenuBackground">#F1F1F1</Color>
-		<Color x:Key="MesenMenuBackgroundHighlight">#B5D7F3</Color>
-		<Color x:Key="MesenMenuBorderHighlight">#0078D7</Color>
-
-		<!-- Fluent color overrides -->
-		<Color x:Key="MenuFlyoutPresenterBackground">#FDFDFD</Color>
-		<Color x:Key="MenuFlyoutPresenterBorderBrush">#808080</Color>
-		
-		<Color x:Key="ComboBoxDropDownBackground">#FFFFFF</Color>
-		<Color x:Key="ComboBoxDropDownBorderBrush">#909090</Color>
-		
-		<!-- Disabled colors -->
-		<Color x:Key="TextControlBackgroundDisabled">#E0E0E0</Color>
-		<Color x:Key="CheckBoxForegroundCheckedDisabled">#555</Color>
-		<Color x:Key="CheckBoxCheckBackgroundFillCheckedDisabled">#E5E5E5</Color>
-		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled">#000</Color>
-		<Color x:Key="CheckBoxForegroundUncheckedDisabled">#555</Color>
-		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled">#E5E5E5</Color>
-		<Color x:Key="CheckBoxCheckGlyphForegroundUncheckedDisabled">#000</Color>
-
-		<Color x:Key="ButtonBackground">#E1E1E1</Color>
-		<Color x:Key="ButtonBorderBrush">#ADADAD</Color>
-		<Color x:Key="ButtonBackgroundPointerOver">#E5F1FB</Color>
-		<Color x:Key="ButtonBorderBrushPointerOver">#0078D7</Color>
-		<Color x:Key="ButtonBackgroundPressed">#CCE4F7</Color>
-		<Color x:Key="ButtonBorderBrushPressed">#005499</Color>
-
-		<Color x:Key="ComboBoxBackground">#E1E1E1</Color>
-		<Color x:Key="ComboBoxBorderBrush">#ADADAD</Color>
-		<Color x:Key="ComboBoxBackgroundPointerOver">#E5F1FB</Color>
-		<Color x:Key="ComboBoxBorderBrushPointerOver">#0078D7</Color>
-
-		<Color x:Key="RepeatButtonBackground">#E1E1E1</Color>
-		<Color x:Key="RepeatButtonBorderBrush">#ADADAD</Color>
-		<Color x:Key="RepeatButtonBackgroundPointerOver">#E5F1FB</Color>
-		<Color x:Key="RepeatButtonBorderBrushPointerOver">#0078D7</Color>
-		<Color x:Key="RepeatButtonBackgroundPressed">#CCE4F7</Color>
-		<Color x:Key="RepeatButtonBorderBrushPressed">#005499</Color>
-
-		<Color x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver">#0078D7</Color>
-		<Color x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver">#0078D7</Color>
-		<Color x:Key="CheckBoxBorderBrushCheckedPointerOver">#0078D7</Color>
-		
-		<Color x:Key="CheckBoxCheckBackgroundFillChecked">Transparent</Color>
-		<Color x:Key="CheckBoxCheckGlyphForegroundChecked">Black</Color>
-
-		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver">Transparent</Color>
-		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver">Black</Color>
-		<Color x:Key="CheckBoxBackgroundCheckedPressed">Transparent</Color>
-
-		<Color x:Key="CheckBoxCheckBackgroundFillCheckedPressed">#CCE4F7</Color>
-		<Color x:Key="CheckBoxCheckBackgroundFillUncheckedPressed">#CCE4F7</Color>
-		<Color x:Key="CheckBoxCheckGlyphForegroundCheckedPressed">Black</Color>
-
-		<!-- light yellow tooltips -->
-		<Color x:Key="ToolTipBackground">#ffffed</Color>
+		<Color x:Key="MesenGrayBorderColor">#80808080</Color>
 
 		<!-- Misc fluent overrides -->
 		<x:Double x:Key="DatePickerThemeMinWidth">150</x:Double>
@@ -174,7 +117,12 @@
 			<x:Double x:Key="NavigationViewItemOnLeftMinHeight">32</x:Double>
 		</Style.Resources>
 	</Style>
-
+	
+	<Style Selector="Window">
+		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+	</Style>
+	
 	<Style Selector="ItemsRepeater,ItemsPresenter">
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
 	</Style>
@@ -211,7 +159,7 @@
 	</Style>
 	
 	<Style Selector="MenuItem > Separator, ContextMenu > Separator">
-		<Setter Property="Background" Value="#bdbdbd" />
+		<Setter Property="Background" Value="{DynamicResource MesenMenuSeparatorBackground}" />
 	</Style>
 
 	<Style Selector="MenuItem > MenuItem">

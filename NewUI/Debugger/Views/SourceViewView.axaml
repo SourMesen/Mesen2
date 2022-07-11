@@ -24,7 +24,7 @@
 			<ComboBox Items="{CompiledBinding SourceFiles}" SelectedItem="{CompiledBinding SelectedFile}" HorizontalAlignment="Stretch" />
 		</DockPanel>
 
-		<Border BorderBrush="LightGray" BorderThickness="0 1 0 0">
+		<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="0 1 0 0">
 			<DockPanel>
 				<dc:CodeScrollBar
 					DockPanel.Dock="Right"

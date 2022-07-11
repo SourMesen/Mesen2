@@ -45,7 +45,7 @@
 			<DataTemplate DataType="{x:Type du:ContextMenuSeparator}">
 				<StackPanel Width="2" Height="16" Margin="2 0" IsVisible="{Binding Visible}">
 					<Rectangle
-						Stroke="LightGray"
+						Stroke="{StaticResource MesenGrayBorderColor}"
 						StrokeThickness="1"
 						Height="16"
 						Width="1"

@@ -35,7 +35,7 @@
 
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<Border BorderBrush="LightGray" BorderThickness="1 0 1 1">
+					<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1 0 1 1">
 						<dv:WatchListView DataContext="{Binding WatchList}" />
 					</Border>
 				</DataTemplate>

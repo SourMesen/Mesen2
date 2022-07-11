@@ -12,12 +12,12 @@
 	<ContentControl.Template>
 		<ControlTemplate>
 			<Panel>
-				<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 8 0 3" Padding="5 10 5 8">
+				<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 8 0 3" Padding="5 10 5 8">
 					<ContentControl Content="{Binding Content, ElementName=root}" />
 				</Border>
 				<ContentControl
 					Content="{Binding Header, ElementName=root}"
-					Background="White"
+					Background="{StaticResource ThemeBackgroundBrush}"
 					Margin="8 2 0 0"
 					Padding="3 0"
 					HorizontalAlignment="Left"

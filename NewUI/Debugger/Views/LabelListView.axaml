@@ -30,7 +30,7 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+	<Border BorderThickness="0 1 0 0" BorderBrush="#80808080">
 		<DataBox
 			Items="{CompiledBinding Labels}"
 			Selection="{CompiledBinding Selection}"

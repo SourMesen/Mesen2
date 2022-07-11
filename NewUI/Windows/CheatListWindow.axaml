@@ -34,7 +34,7 @@
 		
 		<c:ActionToolbar DockPanel.Dock="Top" Items="{CompiledBinding ToolbarActions}" />
 		
-		<Border BorderThickness="1" BorderBrush="LightGray" Margin="2">
+		<Border BorderThickness="1" BorderBrush="{StaticResource MesenGrayBorderColor}" Margin="2">
 			<DataBox
 				Items="{CompiledBinding Cheats}"
 				Selection="{CompiledBinding Selection}"

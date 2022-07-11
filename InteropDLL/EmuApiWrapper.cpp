@@ -183,6 +183,7 @@ extern "C" {
 
 	DllExport bool __stdcall IsPaused()
 	{
+		//TODO sometimes crashes when called after refresh (e.g by timer, etc.)
 		return _emu->IsPaused();
 	}
 

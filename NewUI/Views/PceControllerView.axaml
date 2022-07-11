@@ -18,10 +18,10 @@
 		<vm:KeyMappingViewModel />
 	</Design.DataContext>
 
-	<Border BorderBrush="LightGray" BorderThickness="2" Padding="3" Width="610" Height="230" HorizontalAlignment="Left" VerticalAlignment="Top">
+	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="2" Padding="3" Width="610" Height="230" HorizontalAlignment="Left" VerticalAlignment="Top">
 		<Canvas>
 			<Panel Canvas.Top="10" >
-				<Ellipse Width="200" Height="200" Stroke="LightGray" StrokeThickness="2" />
+				<Ellipse Width="200" Height="200" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" />
 				<Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*" Width="200" Height="200">
 					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Up}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Width="80" Height="40" HorizontalAlignment="Center" />
 					<c:KeyBindingButton KeyBinding="{CompiledBinding Mapping.Left}" Grid.Row="1" Grid.Column="0" Width="80" Height="40" HorizontalAlignment="Center" />

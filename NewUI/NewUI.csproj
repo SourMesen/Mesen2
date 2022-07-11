@@ -192,6 +192,7 @@
 	  <None Remove="Styles\DataBoxStyles.xaml" />
 	  <None Remove="Styles\DebugStatusStyles.xaml" />
 	  <None Remove="Styles\DockStyles.xaml" />
+	  <None Remove="Styles\MesenStyles.Light.xaml" />
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
@@ -718,6 +719,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\DataBoxStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
+	  <AvaloniaResource Include="Styles\MesenStyles.Light.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\StartupStyles.xaml">

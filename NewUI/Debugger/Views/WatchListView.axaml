@@ -45,7 +45,7 @@
 		</Style>
 	</UserControl.Styles>
 
-	<Border BorderThickness="0 1 0 0" BorderBrush="LightGray">
+	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
 			Name="WatchList"
 			Items="{CompiledBinding WatchEntries}"

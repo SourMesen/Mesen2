@@ -63,7 +63,7 @@
 						</StackPanel>
 					</WrapPanel>
 
-					<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 2" />
+					<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
 
 					<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
 						<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Top">
@@ -94,7 +94,7 @@
 			</DockPanel>
 
 			<StackPanel IsEnabled="{CompiledBinding EditAllowed}">
-				<Rectangle Stroke="LightGray" StrokeThickness="1" Margin="5 5 5 4" />
+				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 4" />
 
 				<WrapPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">

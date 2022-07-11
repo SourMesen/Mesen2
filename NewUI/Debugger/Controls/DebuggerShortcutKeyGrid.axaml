@@ -24,14 +24,14 @@
 			<TextBlock Grid.Column="1" Text="{l:Translate colBinding1}" HorizontalAlignment="Center" />
 		</Grid>
 		
-		<Rectangle Stroke="LightGray" StrokeThickness="2" Margin="-1 0 -1 0" DockPanel.Dock="Top"/>
+		<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" Margin="-1 0 -1 0" DockPanel.Dock="Top"/>
 
 		<ScrollViewer AllowAutoHide="False">
 			<ItemsRepeater Items="{Binding Shortcuts}">
 				<ItemsRepeater.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>
-							<Border BorderBrush="LightGray" BorderThickness="1" Margin="0 -1 0 0">
+							<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 -1 0 0">
 								<Grid ColumnDefinitions="3*, 1*" Margin="5 0 20 0">
 									<TextBlock Grid.Column="0" Text="{Binding Shortcut, Converter={StaticResource EnumConverter}}" />
 									<dc:DebuggerKeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyBinding}" HorizontalAlignment="Stretch"  />
