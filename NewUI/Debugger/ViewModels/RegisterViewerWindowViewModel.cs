@@ -1493,7 +1493,7 @@ namespace Mesen.Debugger.ViewModels
 
 	public class RegEntry : ReactiveObject
 	{
-		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0xFFE8E8E8);
+		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0x40B0B0B0);
 
 		public string Address { get; }
 		public string Name { get; }

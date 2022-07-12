@@ -14,6 +14,9 @@
 		<Style Selector="TextBlock">
 			<Setter Property="VerticalAlignment" Value="Top" />
 		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
 	</UserControl.Styles>
 
 	<UserControl.DataTemplates>
@@ -26,7 +29,6 @@
 				<TextBlock
 					Name="Header"
 					Text="{Binding Name}"
-					FontWeight="Bold"
 					MinWidth="{Binding FirstColumnWidth, ElementName=root}"
 					IsVisible="{Binding Name.Length}"
 					Margin="0 3 10 2"

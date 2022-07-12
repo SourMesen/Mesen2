@@ -63,10 +63,17 @@
 		<Color x:Key="MesenMenuMarginStartColor">#FF202020</Color>
 		<Color x:Key="MesenMenuMarginEndColor">#FF202020</Color>
 		<Color x:Key="MesenMenuSeparatorBackground">#40FFFFFF</Color>
-
+		<SolidColorBrush x:Key="MesenNotRecommendedInactiveBrush">DarkGray</SolidColorBrush>
+		
+		<!-- tooltips -->
+		<Color x:Key="ToolTipBackground">#181818</Color>
+		
 		<!-- Dock colors -->
 		<SolidColorBrush x:Key="DockThemeBackgroundBrush" Color="{DynamicResource ThemeBackgroundColor}" />
 		<SolidColorBrush x:Key="DockThemeForegroundBrush" Color="{DynamicResource ThemeForegroundColor}" />
+		<SolidColorBrush x:Key="DockThemeAccentBrush" Color="Black" />
+		<SolidColorBrush x:Key="DockApplicationAccentBrushMed" Color="White" />
+		<SolidColorBrush x:Key="MesenDockTabPointerOverBrush" Color="#40808080" />
 		
 		<!-- DataBox colors -->
 		<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="#FF303030" />
@@ -78,8 +85,10 @@
 		<!-- Checkboxes -->
 		<Color x:Key="CheckBoxCheckGlyphForegroundChecked">#C0FFFFFF</Color>
 		<Color x:Key="CheckBoxBorderBrushCheckedPointerOver">#C0FFFFFF</Color>
-		
+
 		<!-- base -->
+		<Color x:Key="ErrorColor">#FFFF8080</Color>
+				
 		<Color x:Key="ThemeAccentColor">#CC119EDA</Color>
 		<Color x:Key="ThemeAccentColor2">#99119EDA</Color>
 		<Color x:Key="ThemeAccentColor3">#66119EDA</Color>
@@ -99,7 +108,6 @@
 		<Color x:Key="ThemeForegroundLowColor">#FF808080</Color>
 
 		<Color x:Key="HighlightColor">#FF119EDA</Color>
-		<Color x:Key="ErrorColor">#FFFF0000</Color>
 		<Color x:Key="ErrorLowColor">#10FF0000</Color>
 
 		<SolidColorBrush x:Key="ThemeBackgroundBrush" Color="{DynamicResource ThemeBackgroundColor}"></SolidColorBrush>

@@ -67,6 +67,7 @@
 
 	<Styles.Resources>
 		<Color x:Key="MesenGrayBorderColor">#80808080</Color>
+		<Color x:Key="MesenGrayBackgroundColor">#40A0A0A0</Color>
 
 		<!-- Misc fluent overrides -->
 		<x:Double x:Key="DatePickerThemeMinWidth">150</x:Double>
@@ -433,7 +434,7 @@
 
 						<Rectangle
 							DockPanel.Dock="{TemplateBinding TabStripPlacement}"
-							Fill="LightGray"
+							Fill="{DynamicResource MesenGrayBorderColor}"
 							Width="1"
 							HorizontalAlignment="Stretch"
 							VerticalAlignment="Stretch"

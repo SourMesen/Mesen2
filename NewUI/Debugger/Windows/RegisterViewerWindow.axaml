@@ -51,7 +51,7 @@
 		
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<Border BorderBrush="Gray" BorderThickness="1">
+					<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 						<DataBox
 							Items="{Binding Data}"
 							GridLinesVisibility="All"

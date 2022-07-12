@@ -15,6 +15,13 @@
 	<Style Selector="ToolControl /template/ DockPanel#PART_DockPanel">
 		<Setter Property="Margin" Value="0 0 0 1" />
 	</Style>
+	<Style Selector="ToolControl /template/ TabStrip#PART_TabStrip TabStripItem:pointerover">
+		<Setter Property="Background" Value="{DynamicResource MesenDockTabPointerOverBrush}" />
+	</Style>
+	<Style Selector="ToolControl /template/ TabStrip#PART_TabStrip TabStripItem:selected:pointerover">
+		<Setter Property="Background" Value="{DynamicResource DockThemeBackgroundBrush}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource DockThemeBorderLowBrush}" />
+	</Style>
 	
 	<!-- Add help icon/tooltip to tool window header -->
 	<Style Selector="ToolChromeControl">

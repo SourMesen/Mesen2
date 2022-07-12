@@ -72,7 +72,7 @@
 			<TabItem Content="{CompiledBinding Emulation}">
 				<TabItem.Header>
 					<StackPanel Orientation="Horizontal">
-						<Image Source="/Assets/DipSwitches.png" Margin="0 0 10 0" />
+						<Image Source="/Assets/HammerScrewdriver.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabEmulation}" />
 					</StackPanel>
 				</TabItem.Header>

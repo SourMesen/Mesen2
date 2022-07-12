@@ -9,7 +9,6 @@ namespace Mesen.Controls
 	{
 		public static readonly StyledProperty<bool> IsCheckedProperty = AvaloniaProperty.Register<CheckBoxWarning, bool>(nameof(IsChecked), false, false, Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<CheckBoxWarning, string>(nameof(Text));
-		public static readonly StyledProperty<IBrush> HintColorProperty = AvaloniaProperty.Register<CheckBoxWarning, IBrush>(nameof(HintColor), Brushes.DarkGray);
 
 		public bool IsChecked
 		{
@@ -23,12 +22,6 @@ namespace Mesen.Controls
 			set { SetValue(TextProperty, value); }
 		}
 
-		public IBrush HintColor
-		{
-			get { return GetValue(HintColorProperty); }
-			set { SetValue(HintColorProperty, value); }
-		}
-
 		public CheckBoxWarning()
 		{
 			InitializeComponent();
@@ -37,15 +30,6 @@ namespace Mesen.Controls
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
-		}
-
-		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
-		{
-			base.OnPropertyChanged(change);
-
-			if(change.Property == IsCheckedProperty) {
-				this.HintColor = this.IsChecked ? Brushes.Red : Brushes.DarkGray;
-			}
 		}
 	}
 }

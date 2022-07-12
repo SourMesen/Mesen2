@@ -79,6 +79,7 @@
 	  <None Remove="Assets\GameboyDebugger.png" />
 	  <None Remove="Assets\GameboyIcon.png" />
 	  <None Remove="Assets\GsuDebugger.png" />
+	  <None Remove="Assets\HammerScrewdriver.png" />
 	  <None Remove="Assets\HdPack.png" />
 	  <None Remove="Assets\Help.png" />
 	  <None Remove="Assets\HistoryViewer.png" />
@@ -92,6 +93,7 @@
 	  <None Remove="Assets\MediaPlay.png" />
 	  <None Remove="Assets\MediaStop.png" />
 	  <None Remove="Assets\MenuItemChecked.png" />
+	  <None Remove="Assets\MenuItemCheckedDark.png" />
 	  <None Remove="Assets\MesenIcon.png" />
 	  <None Remove="Assets\MesenSIcon.png" />
 	  <None Remove="Assets\MesenSIconSmall.png" />
@@ -600,6 +602,7 @@
 	  <AvaloniaResource Include="Assets\GameboyIcon.png" />
 	  <AvaloniaResource Include="Assets\GameboyDebugger.png" />
 	  <AvaloniaResource Include="Assets\GsuDebugger.png" />
+	  <AvaloniaResource Include="Assets\HammerScrewdriver.png" />
 	  <AvaloniaResource Include="Assets\HdPack.png" />
 	  <AvaloniaResource Include="Assets\Help.png" />
 	  <AvaloniaResource Include="Assets\HistoryViewer.png" />
@@ -613,6 +616,7 @@
 	  <AvaloniaResource Include="Assets\MediaPlay.png" />
 	  <AvaloniaResource Include="Assets\MediaStop.png" />
 	  <AvaloniaResource Include="Assets\MenuItemChecked.png" />
+	  <AvaloniaResource Include="Assets\MenuItemCheckedDark.png" />
 	  <AvaloniaResource Include="Assets\MesenIcon.png" />
 	  <AvaloniaResource Include="Assets\MesenSIcon.png" />
 	  <AvaloniaResource Include="Assets\MesenSIconSmall.png" />

@@ -40,8 +40,8 @@
 			<Setter Property="Background" Value="White" />
 			<Setter Property="Foreground" Value="Black" />
 		</Style>
-		<Style Selector="TextBlock">
-			<Setter Property="Foreground" Value="{Binding Brush}" />
+		<Style Selector="TextBlock.changed">
+			<Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
 		</Style>
 	</UserControl.Styles>
 
@@ -74,6 +74,7 @@
 							Padding="3 0 0 0"
 							VerticalAlignment="Center"
 							Text="{Binding Value}"
+							Classes.changed="{Binding IsChanged}"
 						/>
 					</DataTemplate>
 				</DataBoxTemplateColumn>

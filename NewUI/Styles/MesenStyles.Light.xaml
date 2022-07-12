@@ -61,6 +61,15 @@
 	</Design.PreviewWith>
 
 	<Styles.Resources>
+		<Color x:Key="ErrorColor">#FFFF0000</Color>
+		<SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource ErrorColor}"></SolidColorBrush>
+		<SolidColorBrush x:Key="ThemeControlHighlightLowBrush" Color="Gray" />
+
+		<SolidColorBrush x:Key="MesenNotRecommendedInactiveBrush">DarkGray</SolidColorBrush>
+		<SolidColorBrush x:Key="ThemeBackgroundBrush" Color="#FFF"></SolidColorBrush>
+		
+		<SolidColorBrush x:Key="MesenDockTabPointerOverBrush" Color="#40808080" />
+		
 		<!-- Custom colors -->
 		<Color x:Key="MesenGridBackground">#FFF</Color>
 		<Color x:Key="MesenMenuBackground">#F1F1F1</Color>

@@ -58,7 +58,7 @@ namespace Mesen.Debugger.Utilities
 			} else if(DynamicIcon != null) {
 				return "Assets/" + DynamicIcon() + ".png";
 			} else if(IsSelected?.Invoke() == true) {
-				return "Assets/MenuItemChecked.png";
+				return ConfigManager.Config.Preferences.Theme == MesenTheme.Light ? "Assets/MenuItemChecked.png" : "Assets/MenuItemCheckedDark.png";
 			}
 			return null;
 		}
@@ -560,7 +560,7 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Audio")]
 		Audio,
-		[IconFile("DipSwitches")]
+		[IconFile("HammerScrewdriver")]
 		Emulation,
 		[IconFile("Controller")]
 		Input,

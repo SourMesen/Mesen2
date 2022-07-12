@@ -31,7 +31,7 @@
 			</Panel>
 
 			<Panel Canvas.Top="0" Canvas.Right="5" Width="205" Height="220">
-				<Rectangle Fill="#F2F2F2" />
+				<Rectangle Fill="{StaticResource MesenGrayBackgroundColor}" />
 				<StackPanel Orientation="Horizontal">
 					<c:ControllerButton
 						Margin="5 0 0 0"

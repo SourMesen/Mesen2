@@ -19,10 +19,10 @@
 				<NumericUpDown Value="{Binding OverscanLeft}" Minimum="0" Maximum="100" />
 			</StackPanel>
 
-			<Border Width="130" Height="122" BorderBrush="Gray" BorderThickness="1">
+			<Border Width="130" Height="122" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 				<Viewbox Width="128" Height="120">
 					<Canvas Width="256" Height="240">
-						<Rectangle Width="256" Height="240" Fill="LightCyan" />
+						<Rectangle Width="256" Height="240" Fill="{StaticResource MesenGrayBackgroundColor}" />
 						<Rectangle Width="{Binding OverscanLeft}" Height="240" Fill="DarkGray" Canvas.Left="0" />
 						<Rectangle Width="{Binding OverscanRight}" Height="240" Fill="DarkGray" Canvas.Right="0" />
 						<Rectangle Width="256" Height="{Binding OverscanTop}" Fill="DarkGray" Canvas.Top="0" />

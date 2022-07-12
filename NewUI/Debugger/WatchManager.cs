@@ -94,8 +94,8 @@ namespace Mesen.Debugger
 					}
 				}
 
-				IBrush brush = forceHasChanged || (i < previousValues.Count ? (previousValues[i].Value != newValue) : false) ? Brushes.Red : Brushes.Black;
-				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, Brush = brush, NumericValue = numericValue });
+				bool isChanged = forceHasChanged || (i < previousValues.Count ? (previousValues[i].Value != newValue) : false);
+				list.Add(new WatchValueInfo() { Expression = expression, Value = newValue, IsChanged = isChanged, NumericValue = numericValue });
 			}
 
 			list.Add(new WatchValueInfo());
@@ -283,7 +283,7 @@ namespace Mesen.Debugger
 	{
 		[Reactive] public string Value { get; set; } = "";
 		[Reactive] public string Expression { get; set; } = "";
-		[Reactive] public IBrush Brush { get; set; } = Brushes.Black;
+		[Reactive] public bool IsChanged { get; set; } = false;
 		public int NumericValue { get; set; } = -1;
 	}
 

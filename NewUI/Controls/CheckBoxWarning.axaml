@@ -9,16 +9,25 @@
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Controls.CheckBoxWarning"
 >
-	<StackPanel Orientation="Horizontal" DataContext="{Binding ElementName=root}">
+	<UserControl.Styles>
+		<Style Selector="TextBlock.red">
+			<Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+		</Style>
+		<Style Selector="TextBlock.gray">
+			<Setter Property="Foreground" Value="{DynamicResource MesenNotRecommendedInactiveBrush}" />
+		</Style>
+	</UserControl.Styles>
+	<StackPanel Orientation="Horizontal">
 		<CheckBox
-			Content="{Binding Text}"
-			IsChecked="{Binding IsChecked}"
+			Content="{Binding Text, ElementName=root}"
+			IsChecked="{Binding IsChecked, ElementName=root}"
 			MinWidth="0"
 		/>
 		<TextBlock
 			VerticalAlignment="Center"
 			Margin="5 0 0 0"
-			Foreground="{Binding HintColor}"
+			Classes.red="{Binding IsChecked, ElementName=root}"
+			Classes.gray="{Binding !IsChecked, ElementName=root}"
 			Text="{l:Translate Hint}"
 		/>
 	</StackPanel>

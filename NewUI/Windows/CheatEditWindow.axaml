@@ -28,7 +28,6 @@
 			Content="{l:Translate chkEnabled}"
 			IsChecked="{CompiledBinding Cheat.Enabled}"
 		/>
-		
 
 		<c:GroupBox Header="{l:Translate grpCodes}" Grid.Row="3" Grid.ColumnSpan="2">
 			<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto,*,Auto,Auto">
@@ -55,7 +54,7 @@
 					Grid.Column="1"
 					AcceptsReturn="True"
 					IsReadOnly="True"
-					Background="#EEE"
+					Background="{StaticResource MesenGrayBackgroundColor}"
 					Height="NaN"
 					Text="{CompiledBinding ConvertedCodes}"
 				/>

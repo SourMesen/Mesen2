@@ -72,7 +72,7 @@ namespace Mesen.Debugger.ViewModels
 					WatchEntries[i].Expression = newEntries[i].Expression;
 					WatchEntries[i].Value = newEntries[i].Value;
 					WatchEntries[i].NumericValue = newEntries[i].NumericValue;
-					WatchEntries[i].Brush = newEntries[i].Brush;
+					WatchEntries[i].IsChanged = newEntries[i].IsChanged;
 				}
 			}
 		}

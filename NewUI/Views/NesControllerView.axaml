@@ -38,7 +38,7 @@
 			</Panel>
 
 			<Panel Canvas.Top="20" Canvas.Right="5">
-				<Rectangle Width="200" Height="110" Fill="#F2F2F2" />
+				<Rectangle Width="200" Height="110" Fill="{StaticResource MesenGrayBackgroundColor}" />
 				<StackPanel Orientation="Horizontal" Width="195" Height="220">
 					<StackPanel VerticalAlignment="Center" Margin="10 0 0 0">
 						<TextBlock Text="B" FontSize="18" HorizontalAlignment="Center" Margin="0 0 0 0" />

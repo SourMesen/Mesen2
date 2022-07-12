@@ -44,7 +44,7 @@
 			</Panel>
 
 			<Panel Canvas.Top="50" Canvas.Right="0">
-				<Ellipse Width="220" Height="220" Fill="#F2F2F2" />
+				<Ellipse Width="220" Height="220" Fill="{StaticResource MesenGrayBackgroundColor}" />
 				<StackPanel Orientation="Horizontal" Width="195" Height="220">
 					<StackPanel VerticalAlignment="Center" Margin="0 -30 5 0">
 						<TextBlock Text="Y" FontSize="18" HorizontalAlignment="Center" Margin="0 15 0 0" />
