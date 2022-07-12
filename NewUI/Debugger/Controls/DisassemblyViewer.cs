@@ -213,7 +213,7 @@ namespace Mesen.Debugger.Controls
 				CodeLineData line = lines[i];
 				string addrFormat = "X" + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
-				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor, true);
+				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor != null ? ColorHelper.InvertBrightness(lineStyle.FgColor.Value) : null, true);
 
 				double x = 0;
 
@@ -237,7 +237,7 @@ namespace Mesen.Debugger.Controls
 				}
 
 				if(lineStyle.LineBgColor.HasValue) {
-					SolidColorBrush brush = new(lineStyle.LineBgColor.Value.ToUint32());
+					SolidColorBrush brush = ColorHelper.GetBrush(lineStyle.LineBgColor.Value);
 					context.DrawRectangle(brush, null, new Rect(x, y, Bounds.Width - x, LetterSize.Height));
 				}
 

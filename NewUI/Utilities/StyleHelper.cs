@@ -12,7 +12,6 @@ namespace Mesen.Utilities
 	{
 		public static void ApplyTheme(MesenTheme theme)
 		{
-			theme = MesenTheme.Dark;
 			//Reset styles & load everything needed to display all non-debugger windows
 			Application.Current?.Styles.Clear();
 

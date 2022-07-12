@@ -13,6 +13,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.ComponentModel;
 using System.Reflection;
@@ -36,11 +37,11 @@ namespace Mesen.Debugger.Windows
 
 		private void UpdateSyntaxDef()
 		{
-			((XshdColor)_syntaxDef.Elements[0]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeCommentColor);
-			((XshdColor)_syntaxDef.Elements[1]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeImmediateColor);
-			((XshdColor)_syntaxDef.Elements[2]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeOpcodeColor);
-			((XshdColor)_syntaxDef.Elements[3]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeAddressColor);
-			((XshdColor)_syntaxDef.Elements[4]).Foreground = new SimpleHighlightingBrush(ConfigManager.Config.Debug.Debugger.CodeLabelDefinitionColor);
+			((XshdColor)_syntaxDef.Elements[0]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeCommentColor));
+			((XshdColor)_syntaxDef.Elements[1]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeImmediateColor));
+			((XshdColor)_syntaxDef.Elements[2]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeOpcodeColor));
+			((XshdColor)_syntaxDef.Elements[3]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeAddressColor));
+			((XshdColor)_syntaxDef.Elements[4]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeLabelDefinitionColor));
 		}
 
 		[Obsolete("For designer only")]

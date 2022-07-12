@@ -6,6 +6,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -152,7 +153,7 @@ namespace Mesen.Debugger.Controls
 			FormattedText noteText = new FormattedText("", new Typeface("Arial"), 9, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			FormattedText addressText = new FormattedText("", new Typeface("Arial"), 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			FormattedText text = new FormattedText("", new Typeface("Arial"), 12, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			Pen borderPen = new Pen(Brushes.Black);
+			Pen borderPen = ColorHelper.GetPen(Color.FromRgb(0x60, 0x60, 0x60));
 			for(int i = 0; i < mappings.Count; i++) {
 				MemoryMappingBlock block = mappings[i];
 
@@ -161,7 +162,7 @@ namespace Mesen.Debugger.Controls
 					blockWidth = Bounds.Width - x - 1;
 				}
 
-				context.DrawRectangle(new SolidColorBrush(block.Color), borderPen, new Rect(x - 0.5, 0.5, blockWidth + 1, BlockHeight));
+				context.DrawRectangle(ColorHelper.GetBrush(block.Color), borderPen, new Rect(x - 0.5, 0.5, blockWidth + 1, BlockHeight));
 				text.Text = GetBlockText(block);
 				addressText.Text = start.ToString("X4");
 				double margin = addressText.Bounds.Height;
@@ -178,18 +179,18 @@ namespace Mesen.Debugger.Controls
 				}
 
 				if(text.Bounds.Width < blockWidth - margin) {
-					context.DrawText(Brushes.Black, new Point(x + (blockWidth + margin - text.Bounds.Width) / 2, (BlockHeight - text.Bounds.Height) / 2), text);
+					context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(x + (blockWidth + margin - text.Bounds.Width) / 2, (BlockHeight - text.Bounds.Height) / 2), text);
 				}
 
 				if(addressText.Bounds.Height < blockWidth - 4) {
 					using var rotate = context.PushPostTransform(Matrix.CreateRotation(-Math.PI / 2));
-					context.DrawText(Brushes.Black, new Point(-BlockHeight + (BlockHeight - addressText.Bounds.Width) / 2, x), addressText);
+					context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(-BlockHeight + (BlockHeight - addressText.Bounds.Width) / 2, x), addressText);
 				}
 
 				if(!string.IsNullOrEmpty(block.Note)) {
 					noteText.Text = block.Note;
 					if(noteText.Bounds.Width < blockWidth - 15) {
-						context.DrawText(Brushes.Black, new Point(x + blockWidth - noteText.Bounds.Width - 3, BlockHeight - noteText.Bounds.Height), noteText);
+						context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(x + blockWidth - noteText.Bounds.Width - 3, BlockHeight - noteText.Bounds.Height), noteText);
 					}
 				}
 

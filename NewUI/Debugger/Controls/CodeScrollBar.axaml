@@ -23,14 +23,60 @@
 			<Setter Property="FontSize" Value="11" />
 			<Setter Property="HorizontalAlignment" Value="Center" />
 			<Setter Property="VerticalAlignment" Value="Top" />
-			<Setter Property="Foreground" Value="#444" />
+			<Setter Property="Foreground" Value="#80808080" />
 			<Setter Property="Opacity" Value="1" />
+		</Style>
+
+		<Style Selector="RepeatButton" >
+			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackground}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrush}" />
+		</Style>
+
+		<Style Selector="RepeatButton:pointerover" >
+			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPointerOver}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushPointerOver}" />
+		</Style>
+
+		<Style Selector="RepeatButton:pressed" >
+			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPressed}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushPressed}" />
+		</Style>
+
+		<Style Selector="RepeatButton:disabled" >
+			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPressed}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushDisabled}" />
+		</Style>
+
+		<Style Selector="RepeatButton Path" >
+			<Setter Property="Fill" Value="{DynamicResource ScrollBarButtonArrowForeground}" />
+		</Style>
+
+		<Style Selector="RepeatButton:pointerover Path" >
+			<Setter Property="Fill" Value="{DynamicResource ScrollBarButtonArrowForegroundPointerOver}" />
+		</Style>
+
+		<Style Selector="RepeatButton:pressed Path" >
+			<Setter Property="Fill" Value="{DynamicResource ScrollBarButtonArrowForegroundPressed}" />
+		</Style>
+
+		<Style Selector="RepeatButton:disabled Path" >
+			<Setter Property="Fill" Value="{DynamicResource ScrollBarButtonArrowForegroundDisabled}" />
+		</Style>
+
+		<Style Selector="RepeatButton.up Path">
+			<Setter Property="Data"
+					  Value="M 19.091797 14.970703 L 10 5.888672 L 0.908203 14.970703 L 0.029297 14.091797 L 10 4.111328 L 19.970703 14.091797 Z" />
+		</Style>
+
+		<Style Selector="RepeatButton.down Path">
+			<Setter Property="Data"
+					  Value="M 18.935547 4.560547 L 19.814453 5.439453 L 10 15.253906 L 0.185547 5.439453 L 1.064453 4.560547 L 10 13.496094 Z" />
 		</Style>
 	</UserControl.Styles>
 	
 	<Border>
 		<Grid RowDefinitions="Auto,*,Auto">
-			<Panel Grid.Row="1" Name="Panel" Background="#F0F0F0">
+			<Panel Grid.Row="1" Name="Panel" Background="{DynamicResource ScrollBarBackground}">
 				<Rectangle 
 					Name="Thumb"
 					Fill="#8AF"
@@ -54,7 +100,7 @@
 							<Setter Property="FontFamily" Value="Consolas" />
 							<Setter Property="FontSize" Value="11" />
 							<Setter Property="VerticalAlignment" Value="Center" />
-							<Setter Property="Foreground" Value="#444" />
+							<Setter Property="Foreground" Value="#808080" />
 							<Setter Property="Opacity" Value="1" />
 							<Setter Property="Canvas.Right" Value="1" />
 						</Style>
@@ -74,6 +120,7 @@
 			
 			<RepeatButton
 				HorizontalAlignment="Center"
+				Classes="up"
 				Grid.Row="0"
 				Focusable="False"
 				MinWidth="{DynamicResource ScrollBarSize}"
@@ -84,19 +131,17 @@
 			>
 				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
 					<Path
-						Stroke="Black"
-						StrokeThickness="1"
 						VerticalAlignment="Center"
 						HorizontalAlignment="Center"
 						Width="20"
 						Height="20"
-						Data="M 19.091797 14.970703 L 10 5.888672 L 0.908203 14.970703 L 0.029297 14.091797 L 10 4.111328 L 19.970703 14.091797 Z"
 					/>
 				</Viewbox>
 			</RepeatButton>
 			
 			<RepeatButton
 				HorizontalAlignment="Center"
+				Classes="down"
 				Grid.Row="2"
 				Focusable="False"
 				MinWidth="{DynamicResource ScrollBarSize}"
@@ -107,13 +152,10 @@
 			>
 				<Viewbox Width="8" Height="8" Margin="0 3 0 0">
 					<Path
-						Stroke="Black"
-						StrokeThickness="1"
 						VerticalAlignment="Center"
 						HorizontalAlignment="Center"
 						Width="20"
 						Height="20"
-						Data="M 18.935547 4.560547 L 19.814453 5.439453 L 10 15.253906 L 0.185547 5.439453 L 1.064453 4.560547 L 10 13.496094 Z"
 					/>
 				</Viewbox>
 			</RepeatButton>
