@@ -35,15 +35,6 @@ namespace Mesen.Debugger.Windows
 			_syntaxDef = HighlightingLoader.LoadXshd(reader);
 		}
 
-		private void UpdateSyntaxDef()
-		{
-			((XshdColor)_syntaxDef.Elements[0]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeCommentColor));
-			((XshdColor)_syntaxDef.Elements[1]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeImmediateColor));
-			((XshdColor)_syntaxDef.Elements[2]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeOpcodeColor));
-			((XshdColor)_syntaxDef.Elements[3]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeAddressColor));
-			((XshdColor)_syntaxDef.Elements[4]).Foreground = new SimpleHighlightingBrush(ColorHelper.InvertBrightness(ConfigManager.Config.Debug.Debugger.CodeLabelDefinitionColor));
-		}
-
 		[Obsolete("For designer only")]
 		public AssemblerWindow() : this(new()) { }
 
@@ -73,6 +64,15 @@ namespace Mesen.Debugger.Windows
 
 			_model.Config.LoadWindowSettings(this);
 			_model.InitMenu(this);
+		}
+		
+		private void UpdateSyntaxDef()
+		{
+			((XshdColor)_syntaxDef.Elements[0]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(ConfigManager.Config.Debug.Debugger.CodeCommentColor));
+			((XshdColor)_syntaxDef.Elements[1]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(ConfigManager.Config.Debug.Debugger.CodeImmediateColor));
+			((XshdColor)_syntaxDef.Elements[2]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(ConfigManager.Config.Debug.Debugger.CodeOpcodeColor));
+			((XshdColor)_syntaxDef.Elements[3]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(ConfigManager.Config.Debug.Debugger.CodeAddressColor));
+			((XshdColor)_syntaxDef.Elements[4]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(ConfigManager.Config.Debug.Debugger.CodeLabelDefinitionColor));
 		}
 
 		public static void EditCode(CpuType cpuType, int address, string code, int byteCount)

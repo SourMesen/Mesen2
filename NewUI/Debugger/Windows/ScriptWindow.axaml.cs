@@ -11,6 +11,7 @@ using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.ComponentModel;
 using System.Reflection;
@@ -20,7 +21,8 @@ namespace Mesen.Debugger.Windows
 {
 	public class ScriptWindow : Window, INotificationHandler
 	{
-		private static IHighlightingDefinition _highlighting;
+		private static XshdSyntaxDefinition _syntaxDef;
+		private IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
 		private DispatcherTimer _timer;
 		private ScriptWindowViewModel _model;
@@ -28,8 +30,7 @@ namespace Mesen.Debugger.Windows
 		static ScriptWindow()
 		{
 			using XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.HighlightLua.xshd")!);
-			XshdSyntaxDefinition xshd = HighlightingLoader.LoadXshd(reader);
-			_highlighting = HighlightingLoader.Load(xshd, HighlightingManager.Instance);
+			_syntaxDef = HighlightingLoader.LoadXshd(reader);
 		}
 
 		[Obsolete("For designer only")]
@@ -41,6 +42,9 @@ namespace Mesen.Debugger.Windows
 #if DEBUG
 			this.AttachDevTools();
 #endif
+
+			UpdateSyntaxDef();
+			_highlighting = HighlightingLoader.Load(_syntaxDef, HighlightingManager.Instance);
 
 			_model = model;
 			DataContext = model;
@@ -76,6 +80,14 @@ namespace Mesen.Debugger.Windows
 
 			_timer.Stop();
 			_model.Config.SaveWindowSettings(this);
+		}
+		
+		private void UpdateSyntaxDef()
+		{
+			Color[] colors = new Color[] { Colors.Green, Colors.SteelBlue, Colors.Blue, Colors.DarkMagenta, Colors.DarkRed, Colors.Black, Colors.Indigo };
+			for(int i = 0; i < 7; i++) {
+				((XshdColor)_syntaxDef.Elements[i]).Foreground = new SimpleHighlightingBrush(ColorHelper.GetColor(colors[i]));
+			}
 		}
 
 		private void UpdateLog()
