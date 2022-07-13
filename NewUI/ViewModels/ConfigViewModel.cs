@@ -61,11 +61,6 @@ namespace Mesen.ViewModels
 
 		public void SaveConfig()
 		{
-			if(Preferences != null && ConfigManager.Config.Preferences.Theme != Preferences.Config.Theme) {
-				StyleHelper.ApplyTheme(Preferences.Config.Theme);
-				StyleHelper.LoadDebuggerStyles();
-			}
-
 			ConfigManager.Config.Audio = Audio?.Config.Clone() ?? ConfigManager.Config.Audio;
 			ConfigManager.Config.Input = Input?.Config.Clone() ?? ConfigManager.Config.Input;
 			ConfigManager.Config.Video = Video?.Config.Clone() ?? ConfigManager.Config.Video;

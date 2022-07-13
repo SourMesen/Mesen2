@@ -68,10 +68,13 @@ namespace Mesen.Config
 							_config = new Configuration();
 							_config.Save();
 						}
+						ConfigManager.ActiveTheme = _config.Preferences.Theme;
 					}
 				}
 			}
 		}
+
+		public static MesenTheme ActiveTheme { get; private set; }
 
 		private static void ApplySetting(Type type, object instance, string name, string value)
 		{

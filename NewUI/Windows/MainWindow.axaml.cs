@@ -148,7 +148,7 @@ namespace Mesen.Windows
 				//Load all styles after 15ms to let the UI refresh once with the startup styles
 				System.Threading.Thread.Sleep(15);
 				Dispatcher.UIThread.Post(() => {
-					StyleHelper.ApplyTheme(ConfigManager.Config.Preferences.Theme);
+					StyleHelper.ApplyTheme(ConfigManager.ActiveTheme);
 				});
 			});
 			

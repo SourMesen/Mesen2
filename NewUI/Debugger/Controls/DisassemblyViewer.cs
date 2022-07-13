@@ -213,7 +213,7 @@ namespace Mesen.Debugger.Controls
 				CodeLineData line = lines[i];
 				string addrFormat = "X" + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
-				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor != null ? ColorHelper.InvertBrightness(lineStyle.FgColor.Value) : null, true);
+				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor != null ? lineStyle.FgColor.Value : null, true);
 
 				double x = 0;
 
@@ -291,7 +291,11 @@ namespace Mesen.Debugger.Controls
 					foreach(CodeColor part in lineParts) {
 						Point pos = new Point(x + indent, y);
 						text.Text = part.Text;
-						context.DrawText(ColorHelper.GetBrush(part.Color), pos, text);
+						SolidColorBrush brush = part.Type switch {
+							CodeSegmentType.Comment or CodeSegmentType.EffectiveAddress or CodeSegmentType.MemoryValue => ColorHelper.GetBrush(part.Color),
+							_ => lineStyle.TextBgColor.HasValue ? new SolidColorBrush(part.Color) : ColorHelper.GetBrush(part.Color)
+						};
+						context.DrawText(brush, pos, text);
 						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(pos), line, part.OriginalIndex));
 						x += text.Bounds.Width;
 					}

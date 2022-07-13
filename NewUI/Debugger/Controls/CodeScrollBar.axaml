@@ -27,22 +27,38 @@
 			<Setter Property="Opacity" Value="1" />
 		</Style>
 
-		<Style Selector="RepeatButton" >
+		<Style Selector="RepeatButton">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border x:Name="Root">
+						<Viewbox Width="{DynamicResource ScrollBarButtonArrowIconFontSize}"
+									Height="{DynamicResource ScrollBarButtonArrowIconFontSize}">
+							<Path x:Name="Arrow"
+							  VerticalAlignment="Center"
+							  HorizontalAlignment="Center"
+							  Width="20" Height="20" />
+						</Viewbox>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		
+		<Style Selector="RepeatButton Border" >
 			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackground}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrush}" />
 		</Style>
 
-		<Style Selector="RepeatButton:pointerover" >
+		<Style Selector="RepeatButton:pointerover Border" >
 			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPointerOver}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushPointerOver}" />
 		</Style>
 
-		<Style Selector="RepeatButton:pressed" >
+		<Style Selector="RepeatButton:pressed Border" >
 			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPressed}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushPressed}" />
 		</Style>
 
-		<Style Selector="RepeatButton:disabled" >
+		<Style Selector="RepeatButton:disabled Border" >
 			<Setter Property="Background" Value="{DynamicResource ScrollBarButtonBackgroundPressed}" />
 			<Setter Property="BorderBrush" Value="{DynamicResource ScrollBarButtonBorderBrushDisabled}" />
 		</Style>
@@ -73,18 +89,17 @@
 					  Value="M 18.935547 4.560547 L 19.814453 5.439453 L 10 15.253906 L 0.185547 5.439453 L 1.064453 4.560547 L 10 13.496094 Z" />
 		</Style>
 	</UserControl.Styles>
-	
-	<Border>
+
+	<Border Background="{DynamicResource ScrollBarTrackFillPointerOver}">
 		<Grid RowDefinitions="Auto,*,Auto">
-			<Panel Grid.Row="1" Name="Panel" Background="{DynamicResource ScrollBarBackground}">
+			<Panel Grid.Row="1" Name="Panel" Background="Transparent">
 				<Rectangle 
 					Name="Thumb"
-					Fill="#8AF"
-					Stroke="#00F"
+					Fill="#404040FF"
+					Stroke="#77F"
 					StrokeThickness="1"
 					Height="20"
 					VerticalAlignment="Top"
-					Opacity="0.4"
 				/>
 				
 				<ContentControl Content="{CompiledBinding BreakpointBar, ElementName=root}" />

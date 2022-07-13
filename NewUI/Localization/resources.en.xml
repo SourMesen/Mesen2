@@ -443,6 +443,9 @@
 		
 		<Form ID="PreferencesConfigView">
 			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblTheme">Theme:</Control>
+			<Control ID="lblRequiresRestart">(requires restart)</Control>
+			
 			<Control ID="lblDisplayLanguage">Display Language:</Control>
 			<Control ID="chkSingleInstance">Only allow one instance of Mesen at a time</Control>
 			<Control ID="chkAutomaticallyCheckForUpdates">Automatically check for updates</Control>

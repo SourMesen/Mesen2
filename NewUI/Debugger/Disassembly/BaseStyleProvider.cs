@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Interop;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Disassembly
 {
@@ -26,8 +27,6 @@ namespace Mesen.Debugger.Disassembly
 
 		private void ConfigureActiveStatement(LineProperties props)
 		{
-			props.FgColor = Colors.Black;
-
 			DebuggerFeatures features = DebugApi.GetDebuggerFeatures(CpuType);
 
 			if(features.ChangeProgramCounter) {
@@ -35,6 +34,7 @@ namespace Mesen.Debugger.Disassembly
 			} else {
 				props.TextBgColor = ConfigManager.Config.Debug.Debugger.CodeActiveMidInstructionColor;
 			}
+			props.FgColor = ColorHelper.GetContrastTextColor(props.TextBgColor.Value);
 			props.Symbol |= LineSymbol.Arrow;
 
 			if(!features.ChangeProgramCounter && features.CpuCycleStep) {
@@ -124,7 +124,6 @@ namespace Mesen.Debugger.Disassembly
 
 		protected void SetBreakpointLineProperties(LineProperties props, Breakpoint breakpoint)
 		{
-			Color fgColor = Colors.White;
 			Color? bgColor = null;
 			Color bpColor = breakpoint.GetColor();
 			Color outlineColor = bpColor;
@@ -133,7 +132,6 @@ namespace Mesen.Debugger.Disassembly
 				bgColor = bpColor;
 				symbol = LineSymbol.Circle;
 			} else {
-				fgColor = Colors.Black;
 				symbol = LineSymbol.CircleOutline;
 			}
 
@@ -145,8 +143,8 @@ namespace Mesen.Debugger.Disassembly
 				symbol |= LineSymbol.Plus;
 			}
 
-			props.FgColor = fgColor;
 			props.TextBgColor = bgColor;
+			props.FgColor = bgColor != null ? ColorHelper.GetContrastTextColor(bgColor.Value) : null;
 			props.OutlineColor = outlineColor;
 			props.Symbol = symbol;
 		}

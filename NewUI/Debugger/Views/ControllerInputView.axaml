@@ -28,6 +28,9 @@
 			<Setter Property="Cursor" Value="Hand" />
 			<Setter Property="Command" Value="{Binding OnButtonClick}" />
 		</Style>
+		<Style Selector="Button:pointerover ContentPresenter">
+			<Setter Property="Background" Value="#FFFFFF" />
+		</Style>
 		<Style Selector="Button.selected">
 			<Setter Property="Background" Value="#FFFFFF" />
 		</Style>
@@ -39,6 +42,7 @@
 					Text="{CompiledBinding ControllerIndex}"
 					Canvas.Top="4"
 					Canvas.Left="0"
+					Foreground="Black"
 					Width="88"
 					TextAlignment="Center"
 			  />

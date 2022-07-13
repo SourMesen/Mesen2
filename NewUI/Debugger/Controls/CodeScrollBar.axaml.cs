@@ -104,7 +104,16 @@ namespace Mesen.Debugger.Controls
 		private void UpdatePosition()
 		{
 			if(Maximum > 0) {
-				_thumb.Margin = new Thickness(0, (((double)Value / Maximum) * _panel.Bounds.Height) - 10, 0, 0);
+				double margin = (((double)Value / Maximum) * _panel.Bounds.Height) - 10;
+				if(margin < 0) {
+					_thumb.Height = 20 + margin;
+					margin = 0;
+				} else if(margin + 20 > _panel.Bounds.Height) {
+					_thumb.Height = _panel.Bounds.Height - margin;
+				} else {
+					_thumb.Height = 20;
+				}
+				_thumb.Margin = new Thickness(0, margin, 0, 0);
 			}
 		}
 

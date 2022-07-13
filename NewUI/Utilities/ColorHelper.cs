@@ -104,7 +104,7 @@ namespace Mesen.Utilities
 
 		public static SolidColorBrush GetBrush(Color color)
 		{
-			if(ConfigManager.Config.Preferences.Theme == MesenTheme.Dark) {
+			if(ConfigManager.ActiveTheme == MesenTheme.Dark) {
 				return new SolidColorBrush(InvertBrightness(color));
 			} else {
 				return new SolidColorBrush(color);
@@ -113,7 +113,7 @@ namespace Mesen.Utilities
 
 		public static SolidColorBrush GetBrush(SolidColorBrush b)
 		{
-			if(ConfigManager.Config.Preferences.Theme == MesenTheme.Dark) {
+			if(ConfigManager.ActiveTheme == MesenTheme.Dark) {
 				return new SolidColorBrush(InvertBrightness(b.Color));
 			} else {
 				return new SolidColorBrush(b.Color);
@@ -127,11 +127,54 @@ namespace Mesen.Utilities
 
 		public static Color GetColor(Color color)
 		{
-			if(ConfigManager.Config.Preferences.Theme == MesenTheme.Dark) {
+			if(ConfigManager.ActiveTheme == MesenTheme.Dark) {
 				return InvertBrightness(color);
 			} else {
 				return color;
 			}
+		}
+
+		private static double GetColorLuminance(Color color)
+		{
+			double r = color.R / 255.0;
+			double g = color.G / 255.0;
+			double b = color.B / 255.0;
+
+			double convertColor(double c)
+			{
+				if(c <= 0.03928) {
+					return c / 12.92;
+				} else {
+					return Math.Pow((c + 0.055) / 1.055, 2.4);
+				}
+			};
+			
+			r = convertColor(r);
+			g = convertColor(g);
+			b = convertColor(b);
+
+			return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+		}
+
+		private static double _lumBlack = GetColorLuminance(Colors.Black);
+		private static double _lumWhite = GetColorLuminance(Colors.White);
+
+		public static Color GetContrastTextColor(Color color)
+		{
+			double lumColor = GetColorLuminance(color);
+
+			double contrastBlack = (lumColor + 0.05) / (_lumBlack + 0.05);
+			double contrastWhite;
+			if(lumColor > _lumWhite) {
+				contrastWhite = (lumColor + 0.05) / (_lumWhite + 0.05);
+			} else {
+				contrastWhite = (_lumWhite + 0.05) / (lumColor + 0.05);
+			}
+
+			if(contrastBlack > contrastWhite) {
+				return Colors.Black;
+			}
+			return Colors.White;
 		}
 	}
 
