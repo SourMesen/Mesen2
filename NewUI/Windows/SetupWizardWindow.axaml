@@ -16,7 +16,7 @@
 	CanResize="False"
 	WindowStartupLocation="CenterScreen"
 	x:DataType="vm:SetupWizardViewModel"
-	Title="Mesen"
+	Title="{l:Translate wndTitle}"
 	Name="root"
 >
 	<Design.DataContext>

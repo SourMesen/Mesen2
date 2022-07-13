@@ -21,9 +21,6 @@
 			<Control ID="mnuTestStopRecording">Stop recording</Control>
 			<Control ID="mnuRunAllTests">Run all tests</Control>
 		</Form>
-		<Form ID="frmLogWindow" Title="Log Window">
-			<Control ID="btnClose">Close</Control>
-		</Form>
 		<Form ID="AudioConfigView">
 			<Control ID="tpgGeneral">General</Control>
 					
@@ -388,6 +385,12 @@
 			<Control ID="lblPalette">Palette</Control>
 		</Form>
 
+		<Form ID="ColorPickerWindow">
+			<Control ID="wndTitle">Color picker</Control>
+			<Control ID="btkOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		
 		<Form ID="PaletteConfig">
 			<Control ID="btnSelectPalette">Load preset palette...</Control>
 			<Control ID="btnExportPalette">Export palette</Control>
@@ -545,29 +548,6 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmCheatImport" Title="Import Cheats">
-			<Control ID="grpImportOptions">Import Options</Control>
-			<Control ID="lblCheatFile">Cheat File:</Control>
-			<Control ID="lblGame">Game:</Control>
-			<Control ID="btnBrowseCheat">Browse...</Control>
-			<Control ID="btnBrowseGame">Browse...</Control>
-			<Control ID="btnImport">Import</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmCheatImport" Title="Import Cheats">
-			<Control ID="grpImportOptions">Import Options</Control>
-			<Control ID="lblCheatFile">Cheat File:</Control>
-			<Control ID="lblGame">Game:</Control>
-			<Control ID="btnBrowseCheat">Browse...</Control>
-			<Control ID="btnBrowseGame">Browse...</Control>
-			<Control ID="btnImport">Import</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmCheatDbList" Title="Select Game...">
-			<Control ID="lblSearch">Search:</Control>
-			<Control ID="btnOK">Import Cheats</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
 		<Form ID="CheatListWindow">
 			<Control ID="wndTitle">Cheats</Control>
 			<Control ID="tabCheats">Cheats</Control>
@@ -611,22 +591,6 @@
 			<Control ID="lblSpecialThanks">And thank you to everybody who has contributed in any way! (bug reports, testing, research, etc.)</Control>
 
 			<Control ID="btnOk">OK</Control>
-		</Form>
-		<Form ID="frmGameConfig" Title="Game Configuration">
-			<Control ID="grpDipSwitches">DIP Switches</Control>
-		</Form>
-		<Form ID="frmUpdatePrompt" Title="Mesen - Update Available">
-			<Control ID="lblLatestVersion">Latest Version:</Control>
-			<Control ID="lblCurrentVersion">Current Version:</Control>
-			<Control ID="lblChangeLog">Changelog:</Control>
-			<Control ID="lblDonate">If you want to support Mesen, please consider donating.  Thank you!</Control>
-			<Control ID="btnUpdate">Update</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmSelectRom" Title="Select Rom...">
-			<Control ID="lblSearch">Search:</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="GetKeyWindow">
 			<Control ID="Title">Set key binding...</Control>
@@ -695,6 +659,7 @@
 			<Control ID="lblCopying">Copying:</Control>
 		</Form>
 		<Form ID="SetupWizardWindow">
+			<Control ID="wndTitle">Mesen</Control>
 			<Control ID="lblMesen">Mesen - Emulator</Control>
 			<Control ID="lblConfigWizard">Configuration</Control>
 			<Control ID="lblInitialSetup">Please take a moment to perform Mesen's initial setup.</Control>
@@ -777,6 +742,14 @@
 			<Control ID="Hint">(not recommended)</Control>
 		</Form>
 
+		<Form ID="SystemSpecificSettings">
+			<Control ID="lblSystemSpecificSettings">System-specific settings</Control>
+			<Control ID="lblNes">NES</Control>
+			<Control ID="lblSnes">SNES</Control>
+			<Control ID="lblGameboy">Game Boy</Control>
+			<Control ID="lblPcEngine">PC Engine</Control>
+		</Form>
+		
 		<Form ID="AudioPlayerView">
 			<Control ID="btnPrevTrack">Previous track</Control>
 			<Control ID="btnNextTrack">Next track</Control>
@@ -825,6 +798,7 @@
 			<Control ID="lblSource">Source:</Control>
 			<Control ID="lblSize">Size:</Control>
 			<Control ID="lblAddress">Address:</Control>
+			<Control ID="lblFormat">Format:</Control>
 			<Control ID="lblTileLayout">Tile Layout:</Control>
 			<Control ID="lblFilter">Filter:</Control>
 			<Control ID="lblBackground">Background:</Control>
@@ -988,7 +962,48 @@
 			<Control ID="mnuOptions">_Options</Control>
 			<Control ID="btnToggleSettingsPanel">Toggle settings panel</Control>
 		</Form>
-	
+
+		<Form ID="BreakpointListView">
+			<Control ID="colEnabled">E</Control>
+			<Control ID="colMarked">M</Control>
+			<Control ID="colType">Type</Control>
+			<Control ID="colAddress">Address</Control>
+			<Control ID="colCondition">Condition</Control>
+		</Form>
+		
+		<Form ID="CallStackView">
+			<Control ID="colFunction">Function</Control>
+			<Control ID="colPcAddress">PC Address</Control>
+			<Control ID="colRomAddress">ROM Address</Control>
+		</Form>
+		
+		<Form ID="FindResultListView">
+			<Control ID="colAddress">Address</Control>
+			<Control ID="colResult">Result</Control>
+		</Form>
+
+		<Form ID="FunctionListView">
+			<Control ID="colFunction">Function</Control>
+			<Control ID="colCpuAddr">CPU Addr</Control>
+			<Control ID="colRomAddr">ROM Addr</Control>
+		</Form>
+
+		<Form ID="LabelListView">
+			<Control ID="colLabel">Label</Control>
+			<Control ID="colCpuAddr">CPU Addr</Control>
+			<Control ID="colRomAddr">ROM Addr</Control>
+			<Control ID="colComment">Comment</Control>
+		</Form>
+
+		<Form ID="WatchListView">
+			<Control ID="colName">Name</Control>
+			<Control ID="colValue">Value</Control>
+		</Form>
+		
+		<Form ID="QuickSearchView">
+			<Control ID="lblSearch">Search</Control>
+		</Form>
+
 		<Form ID="SourceViewView">
 			<Control ID="lblFile">File:</Control>
 		</Form>
@@ -1033,6 +1048,7 @@
 		</Form>
 
 		<Form ID="MemoryToolsWindow">
+			<Control ID="wndTitle">Memory Tools</Control>
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuSearch">_Search</Control>
 		</Form>
@@ -1049,6 +1065,7 @@
 			<Control ID="chkHighlightExec">Execution</Control>
 			<Control ID="chkHighlightCode">Code</Control>
 			<Control ID="chkHighlightData">Data</Control>
+			<Control ID="lblUnidentified">Unidentified</Control>
 			<Control ID="chkHighlightLabel">Labels</Control>
 			<Control ID="chkHighlightNesPcmData">DPCM Data</Control>
 			<Control ID="chkHighlightNesDrawnChrRom">Drawn tiles (PPU)</Control>

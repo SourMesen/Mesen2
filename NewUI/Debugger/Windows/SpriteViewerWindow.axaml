@@ -157,12 +157,12 @@
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="#" Width="1*">
+						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding SpriteIndex}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="X" Header="X" Width="1*">
+						<DataBoxTemplateColumn ColumnName="X" Header="{l:Translate colX}" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -173,7 +173,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Y" Header="Y" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Y" Header="{l:Translate colY}" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -184,7 +184,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Size" Header="Size" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Size" Header="{l:Translate colSize}" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="{Binding Width}" />
@@ -193,7 +193,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="TileIndex" Header="Tile" Width="1*">
+						<DataBoxTemplateColumn ColumnName="TileIndex" Header="{l:Translate colTileIndex}" Width="1*">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -201,17 +201,17 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Palette" Header="Palette" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Palette" Header="{l:Translate colPalette}" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Palette}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Priority" Header="Priority" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Priority" Header="{l:Translate colPriority}" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Priority, Converter={StaticResource Enum}}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Flags" Header="Flags" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Flags" Header="{l:Translate colFlags}" Width="1*">
 							<DataTemplate>
 								<TextBlock Text="{Binding Flags}" />
 							</DataTemplate>

@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
@@ -32,17 +33,17 @@
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn
-					Header="Function"
+					Header="{l:Translate colFunction}"
 					Binding="{Binding EntryPoint}"
 					Width="1*" 
 				/>
 				<DataBoxTextColumn
-					Header="PC Address"
+					Header="{l:Translate colPcAddress}"
 					Binding="{Binding PcAddress}"
 					Width="1*"
 				/>
 				<DataBoxTextColumn
-					Header="ROM Address"
+					Header="{l:Translate colRomAddress}"
 					Binding="{Binding AbsAddress}"
 					Width="1*"
 				/>

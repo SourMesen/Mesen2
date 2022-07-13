@@ -98,37 +98,37 @@
 					</DataBox.Styles>
 
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="PC" Width="1*" ColumnName="ProgramCounter">
+						<DataBoxTemplateColumn Header="{l:Translate colPc}" Width="1*" ColumnName="ProgramCounter">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Scanline" Width="1*" ColumnName="Scanline">
+						<DataBoxTemplateColumn Header="{l:Translate colScanline}" Width="1*" ColumnName="Scanline">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Cycle" Width="1*" ColumnName="Cycle">
+						<DataBoxTemplateColumn Header="{l:Translate colCycle}" Width="1*" ColumnName="Cycle">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Type" Width="1*" ColumnName="Type">
+						<DataBoxTemplateColumn Header="{l:Translate colType}" Width="1*" ColumnName="Type">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Address" Width="1*" ColumnName="Address">
+						<DataBoxTemplateColumn Header="{l:Translate colAddress}" Width="1*" ColumnName="Address">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Value" Width="1*" ColumnName="Value">
+						<DataBoxTemplateColumn Header="{l:Translate colValue}" Width="1*" ColumnName="Value">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="Details" Width="4*" CanUserSort="False">
+						<DataBoxTemplateColumn Header="{l:Translate colDetails}" Width="4*" CanUserSort="False">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Details}" />
 							</DataTemplate>

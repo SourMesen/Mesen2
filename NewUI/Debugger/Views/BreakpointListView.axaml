@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
@@ -29,11 +30,11 @@
 			GridLinesVisibility="All"
 		>
 			<DataBox.Columns>
-				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="E" Binding="{Binding Breakpoint.Enabled}" Width="21" />
-				<DataBoxCheckBoxColumn ColumnName="Marked" Header="M" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
-				<DataBoxTextColumn ColumnName="Type" Header="Type" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
-				<DataBoxTextColumn ColumnName="Address" Header="Address" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="Condition" Header="Condition" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="{l:Translate colEnabled}" Binding="{Binding Breakpoint.Enabled}" Width="21" />
+				<DataBoxCheckBoxColumn ColumnName="Marked" Header="{l:Translate colMarked}" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
+				<DataBoxTextColumn ColumnName="Type" Header="{l:Translate colType}" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
+				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Condition" Header="{l:Translate colCondition}" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

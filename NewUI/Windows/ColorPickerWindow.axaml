@@ -5,6 +5,7 @@
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
 	xmlns:picker="using:ThemeEditor.Controls.ColorPicker"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
@@ -12,12 +13,12 @@
 	Icon="/Assets/Icon.ico"
 	Width="400" Height="350"
 	x:DataType="vm:ColorPickerViewModel"
-	Title="Color picker"
+	Title="{l:Translate wndTitle}"
 >
 	<DockPanel Margin="2">
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick">OK</Button>
-			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick">Cancel</Button>
+			<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 		</StackPanel>
 		<picker:ColorPicker Color="{CompiledBinding Color, Mode = TwoWay}" />
 	</DockPanel>

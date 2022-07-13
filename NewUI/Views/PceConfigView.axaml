@@ -33,7 +33,7 @@
 		</TabItem>
 		<TabItem Header="{l:Translate tpgAudio}">
 			<StackPanel>
-				<c:GroupBox Header="Volume" HorizontalAlignment="Left">
+				<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
 					<StackPanel Orientation="Horizontal" Height="150">
 						<StackPanel.Styles>
 							<Style Selector="c|MesenSlider">

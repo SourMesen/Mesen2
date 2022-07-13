@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -42,10 +43,10 @@
 			CellDoubleClick="OnCellDoubleClick"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Label" Header="Label" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="Comment" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Label" Header="{l:Translate colLabel}" Binding="{Binding Label.Label}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="{l:Translate colComment}" Binding="{Binding Label.Comment}" Width="1*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

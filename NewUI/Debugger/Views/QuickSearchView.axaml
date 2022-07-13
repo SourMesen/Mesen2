@@ -32,7 +32,7 @@
 		Padding="2 1"
 	>
 		<DockPanel>
-			<TextBlock Text="Search:" VerticalAlignment="Center" />
+			<TextBlock Text="{l:Translate lblSearch}" VerticalAlignment="Center" />
 			<TextBox
 				Name="txtSearch"
 				Width="120"

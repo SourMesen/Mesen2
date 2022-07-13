@@ -6,6 +6,7 @@
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:c="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
@@ -36,9 +37,9 @@
 			CellDoubleClick="OnCellDoubleClick"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Function" Header="Function" Binding="{Binding LabelName}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="CPU Addr" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="ROM Addr" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Function" Header="{l:Translate colFunction}" Binding="{Binding LabelName}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

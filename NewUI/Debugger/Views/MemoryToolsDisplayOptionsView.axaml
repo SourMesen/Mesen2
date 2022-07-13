@@ -88,7 +88,7 @@
 			<DockPanel>
 				<dc:NavButton Nav="NextUnknown" />
 				<dc:NavButton Nav="PrevUnknown" />
-				<TextBlock Text="Unidentified" Margin="38 0 0 0"  VerticalAlignment="Center" />
+				<TextBlock Text="{l:Translate lblUnidentified}" Margin="38 0 0 0"  VerticalAlignment="Center" />
 			</DockPanel>
 
 			<dc:ColorCheckbox

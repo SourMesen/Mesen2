@@ -98,7 +98,7 @@
 						Margin="1"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="5" Text="Format:" IsVisible="{CompiledBinding ShowFormatDropdown}" />
+					<TextBlock Grid.Column="0" Grid.Row="5" Text="{l:Translate lblFormat}" IsVisible="{CompiledBinding ShowFormatDropdown}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="5"
 						SelectedItem="{CompiledBinding Config.Format}"
