@@ -85,7 +85,7 @@ public:
 
 	void ProcessConfigChange() override;
 
-	uint64_t GetCpuCycleCount();
+	uint64_t GetCpuCycleCount() override;
 
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
@@ -116,5 +116,5 @@ public:
 	void GetPpuState(BaseState& state) override;
 	void SetPpuState(BaseState& state) override;
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
-	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 };

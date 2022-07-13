@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Mesen.Interop;
 
 namespace Mesen
 {
@@ -60,6 +61,7 @@ namespace Mesen
 				Program.CommandLineArgs = (string[])args.Clone();
 				bool useWgl = args.Any(arg => arg.ToLowerInvariant() == "-wgl");
 				BuildAvaloniaApp(useWgl).StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+				EmuApi.Release();
 			}
 		}
 

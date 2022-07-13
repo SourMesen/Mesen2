@@ -117,7 +117,7 @@ void SnesDebugger::ProcessConfigChange()
 
 	_runSpc = _spcTraceLogger->IsEnabled() || _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
 	_runCoprocessors = (
-		_dspTraceLogger && _dspTraceLogger->IsEnabled() || 
+		(_dspTraceLogger && _dspTraceLogger->IsEnabled()) || 
 		_settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled) ||
 		_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)
 	);

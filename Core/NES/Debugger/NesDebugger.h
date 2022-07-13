@@ -66,7 +66,7 @@ public:
 
 	void Reset() override;
 
-	uint64_t GetCpuCycleCount();
+	uint64_t GetCpuCycleCount() override;
 
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
@@ -76,7 +76,7 @@ public:
 	void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
 	void ProcessPpuCycle();
 
-	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;

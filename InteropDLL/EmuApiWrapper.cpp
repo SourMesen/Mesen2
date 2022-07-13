@@ -183,14 +183,15 @@ extern "C" {
 
 	DllExport bool __stdcall IsPaused()
 	{
-		//TODO sometimes crashes when called after refresh (e.g by timer, etc.)
 		return _emu->IsPaused();
 	}
 
 	DllExport void __stdcall Release()
 	{
-		_emu->Stop(true);
-		_emu->Release();
+		if(_emu) {
+			_emu->Stop(true);
+			_emu->Release();
+		}
 
 		_renderer.reset();
 		_soundManager.reset();

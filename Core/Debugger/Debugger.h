@@ -57,7 +57,7 @@ private:
 
 	EmuSettings* _settings = nullptr;
 
-	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1] = {};
+	CpuInfo _debuggers[(int)DebugUtilities::GetLastCpuType() + 1];
 
 	CpuType _mainCpuType = CpuType::Snes;
 	unordered_set<CpuType> _cpuTypes;

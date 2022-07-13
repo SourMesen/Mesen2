@@ -67,7 +67,7 @@ public:
 
 	void Reset() override;
 
-	uint64_t GetCpuCycleCount();
+	uint64_t GetCpuCycleCount() override;
 
 	void ProcessInstruction();
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
@@ -90,7 +90,7 @@ public:
 	ITraceLogger* GetTraceLogger() override;
 	PpuTools* GetPpuTools() override;
 	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
-	void ProcessInputOverrides(DebugControllerState inputOverrides[8]);
+	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 	CallstackManager* GetCallstackManager() override;
 	IAssembler* GetAssembler() override;
 	BaseEventManager* GetEventManager() override;

@@ -1,4 +1,3 @@
-#pragma once
 #include "stdafx.h"
 #include "Debugger/Disassembler.h"
 #include "Debugger/DisassemblySearch.h"

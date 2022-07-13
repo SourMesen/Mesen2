@@ -353,7 +353,7 @@ bool NesDebugger::IsRegister(MemoryOperationInfo& op)
 {
 	if(op.Address >= 0x2000 && op.Address <= 0x3FFF) {
 		return true;
-	} else if(op.Address >= 0x4000 && op.Address <= 0x4015 || (op.Address == 0x4017 && op.Type == MemoryOperationType::Write)) {
+	} else if((op.Address >= 0x4000 && op.Address <= 0x4015) || (op.Address == 0x4017 && op.Type == MemoryOperationType::Write)) {
 		return true;
 	} else if(op.Address == 0x4016 || (op.Address == 0x4017 && op.Type == MemoryOperationType::Read)) {
 		return true;

@@ -134,7 +134,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 	AddressInfo addrInfo = {};
 
-	auto pushEndBlock = [&relAddress, &prevAddrInfo, &results, &inVerifiedBlock, &inUnknownBlock, &byteCounter, showData, showUnident, bytesPerRow]() {
+	auto pushEndBlock = [&]() {
 		if(inUnknownBlock || inVerifiedBlock) {
 			int flags = LineFlags::BlockEnd;
 			if(inVerifiedBlock) {

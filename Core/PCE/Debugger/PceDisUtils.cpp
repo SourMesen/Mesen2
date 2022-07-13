@@ -84,7 +84,7 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 		}
 	};
 
-	auto writeZeroAddr = [&str, &info, &writeLabelOrAddr, labelManager](uint8_t zero) {
+	auto writeZeroAddr = [&str](uint8_t zero) {
 		str.WriteAll('$', HexUtilities::ToHex(zero));
 	};
 

@@ -11,7 +11,6 @@ private:
 	uint16_t _scaler = 1024 * 3;
 	bool _enabled = false;
 	PceMemoryManager* _memoryManager = nullptr;
-	uint64_t _lastClock = 0;
 
 public:
 	PceTimer(PceMemoryManager* memoryManager);

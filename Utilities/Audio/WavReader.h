@@ -5,7 +5,6 @@
 class WavReader
 {
 private:
-	int16_t* _outputBuffer = nullptr;
 	uint8_t* _fileData = nullptr;
 
 	uint32_t _fileOffset = 0;

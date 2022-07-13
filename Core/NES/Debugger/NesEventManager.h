@@ -78,9 +78,9 @@ public:
 
 	void ClearFrameEvents() override;
 
-	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt);
+	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt) override;
 
-	uint32_t TakeEventSnapshot();
+	uint32_t TakeEventSnapshot() override;
 
 	FrameInfo GetDisplayBufferSize() override;
 

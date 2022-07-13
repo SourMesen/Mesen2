@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Utilities
 {
-	public class MouseManager
+	public class MouseManager : IDisposable
 	{
 		private const int LeftMouseButtonKeyCode = 0x200;
 		private const int RightMouseButtonKeyCode = 0x201;
@@ -228,5 +228,12 @@ namespace Mesen.Utilities
 			}
 		}
 
+		public void Dispose()
+		{
+			if(_timer is DispatcherTimer timer) {
+				timer.Tick -= tmrProcessMouse;
+				timer.Stop();
+			}
+		}
 	}
 }

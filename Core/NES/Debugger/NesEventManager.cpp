@@ -154,7 +154,7 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 					}
 				} else if(addr >= 0x4018 && _mapper->IsWriteRegister(addr)) {
 					return _config.MapperRegisterWrites;
-				} else if(addr >= 0x4000 && addr <= 0x4015 || addr == 0x4017) {
+				} else if((addr >= 0x4000 && addr <= 0x4015) || addr == 0x4017) {
 					return _config.ApuRegisterWrites;
 				} else if(addr == 0x4016) {
 					return _config.ControlRegisterWrites;

@@ -103,7 +103,7 @@ namespace Mesen.Windows
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			EmuApi.Release();
+			_mouseManager.Dispose();
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
