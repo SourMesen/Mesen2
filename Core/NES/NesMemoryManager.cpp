@@ -125,10 +125,7 @@ uint8_t NesMemoryManager::Read(uint16_t addr, MemoryOperationType operationType)
 void NesMemoryManager::Write(uint16_t addr, uint8_t value, MemoryOperationType operationType)
 {
 	_emu->ProcessMemoryWrite<CpuType::Nes>(addr, value, operationType);
-	//TODO
-	//if(_console->DebugProcessRamOperation(operationType, addr, value)) {
-		_ramWriteHandlers[addr]->WriteRam(addr, value);
-	//}
+	_ramWriteHandlers[addr]->WriteRam(addr, value);
 }
 
 void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects)

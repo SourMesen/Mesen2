@@ -807,8 +807,7 @@ void BaseMapper::WriteRam(uint16_t addr, uint8_t value)
 		if(_hasBusConflicts) {
 			uint8_t prgValue = _prgPages[addr >> 8][(uint8_t)addr];
 			if(value != prgValue) {
-				//TODO
-				//_console->DebugProcessEvent(EventType::BusConflict);
+				_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBusConflict);
 			}
 			value &= prgValue;
 		}

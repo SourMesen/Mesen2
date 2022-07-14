@@ -1200,6 +1200,7 @@ namespace Mesen.Interop
 		NesBreakOnDecayedOamRead = 100,
 		NesBreakOnPpu2006ScrollGlitch = 101,
 		BreakOnUnofficialOpCode = 102,
+		NesBusConflict = 103,
 	}
 
 	public struct BreakEvent

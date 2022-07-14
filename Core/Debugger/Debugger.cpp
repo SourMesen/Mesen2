@@ -503,11 +503,14 @@ void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 {
 	//TODO
 	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
+	bool nesDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
 	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnDisableLcdOutsideVblank)) {
 		return;
 	} else if(source == BreakSource::GbInvalidVramAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidVramAccess)) {
 		return;
 	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidOamAccess)) {
+		return;
+	} else if(source == BreakSource::NesBusConflict && (!nesDebugger || !_settings->GetDebugConfig().NesBreakOnBusConflict)) {
 		return;
 	}
 	SleepUntilResume(sourceCpu, source);

@@ -2310,6 +2310,7 @@
 			<Value ID="NesBreakOnDecayedOamRead">Decayed OAM read</Value>
 			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
 			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
+			<Value ID="NesBusConflict">Bus conflict</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>
