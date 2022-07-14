@@ -13,6 +13,7 @@
 	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Windows.ConfigWindow"
 	Width="620" Height="500"
+  Topmost="{CompiledBinding AlwaysOnTop}"
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>

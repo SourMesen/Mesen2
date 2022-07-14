@@ -49,7 +49,6 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
 				case EmulatorShortcut.ToggleOsd: ToggleOsd(); break;
 				
-				//TODO
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
 
 				case EmulatorShortcut.ToggleDebugInfo: ToggleDebugInfo(); break;

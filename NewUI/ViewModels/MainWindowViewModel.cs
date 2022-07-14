@@ -29,7 +29,7 @@ namespace Mesen.ViewModels
 		[Reactive] public string WindowTitle { get; private set; } = "Mesen";
 		[Reactive] public Size RendererSize { get; set; }
 
-		private Configuration Config { get; }
+		public Configuration Config { get; }
 
 		public MainWindowViewModel()
 		{

@@ -39,12 +39,9 @@ namespace Mesen.Views
 		private async Task<Color> SelectColor(Color color)
 		{
 			ColorPickerViewModel model = new ColorPickerViewModel() { Color = color };
-			ColorPickerWindow wnd = new ColorPickerWindow() {
-				DataContext = model
-			};
-			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			ColorPickerWindow wnd = new ColorPickerWindow() { DataContext = model };
 
-			bool success = await wnd.ShowDialog<bool>(VisualRoot as Window);
+			bool success = await wnd.ShowCenteredDialog<bool>(VisualRoot);
 			if(success) {
 				return model.Color;
 			}

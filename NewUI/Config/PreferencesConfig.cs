@@ -46,7 +46,6 @@ namespace Mesen.Config
 		[Reactive] public bool EnableRewind { get; set; } = true;
 		[Reactive] public UInt32 RewindBufferSize { get; set; } = 30;
 
-		//TODO remove?
 		[Reactive] public bool AlwaysOnTop { get; set; } = false;
 
 		[Reactive] public bool AutoHideMenu { get; set; } = false;
@@ -174,9 +173,6 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
-			//TODO
-			//frmMain.Instance.TopMost = AlwaysOnTop;
-
 			List<InteropShortcutKeyInfo> shortcutKeys = new List<InteropShortcutKeyInfo>();
 			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys) {
 				if(!shortcutInfo.KeyCombination.IsEmpty) {

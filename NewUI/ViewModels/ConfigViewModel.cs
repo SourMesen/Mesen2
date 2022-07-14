@@ -21,12 +21,14 @@ namespace Mesen.ViewModels
 		[Reactive] public PceConfigViewModel? PcEngine { get; set; }
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
+		public bool AlwaysOnTop { get; }
 
 		[Obsolete("For designer only")]
 		public ConfigViewModel() : this(ConfigWindowTab.Audio) { }
 
 		public ConfigViewModel(ConfigWindowTab selectedTab)
 		{
+			AlwaysOnTop = ConfigManager.Config.Preferences.AlwaysOnTop;
 			SelectedIndex = selectedTab;
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedIndex).Subscribe((tab) => {

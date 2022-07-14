@@ -89,12 +89,9 @@ namespace Mesen.Controls
 		private async void PaletteColor_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)
 		{
 			ColorPickerViewModel model = new ColorPickerViewModel() { Color = e.Color };
-			ColorPickerWindow wnd = new ColorPickerWindow() {
-				DataContext = model
-			};
-			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			ColorPickerWindow wnd = new ColorPickerWindow() { DataContext = model };
 
-			bool success = await wnd.ShowDialog<bool>(VisualRoot as Window);
+			bool success = await wnd.ShowCenteredDialog<bool>(VisualRoot );
 			if(success) {
 				UInt32[] colors = (UInt32[])Palette.Clone();
 				colors[e.ColorIndex] = model.Color.ToUint32();

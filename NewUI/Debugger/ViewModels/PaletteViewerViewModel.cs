@@ -153,7 +153,7 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				//Show palette and let user pick a color
 				ColorIndexPickerWindow colorPicker = new ColorIndexPickerWindow(CpuType, selectedPalette);
-				int? colorIndex = await colorPicker.ShowDialog<int?>(wnd);
+				int? colorIndex = await colorPicker.ShowCenteredDialog<int?>(wnd);
 				if(colorIndex.HasValue) {
 					DebugApi.SetPaletteColor(CpuType, selectedPalette, (uint)colorIndex.Value);
 					RefreshData();
