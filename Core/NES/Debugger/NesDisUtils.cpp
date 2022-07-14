@@ -163,25 +163,25 @@ uint32_t NesDisUtils::GetOperandAddress(DisassemblyInfo& info, uint32_t memoryAd
 	return opAddr;
 }
 
-int32_t NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& state, MemoryDumper* memoryDumper)
+EffectiveAddressInfo NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& state, MemoryDumper* memoryDumper)
 {
 	uint8_t* byteCode = info.GetByteCode();
 	switch(_opMode[info.GetOpCode()]) {
 		default: break;
 
-		case NesAddrMode::ZeroX: return (uint8_t)(byteCode[1] + state.X); break;
-		case NesAddrMode::ZeroY: return (uint8_t)(byteCode[1] + state.Y); break;
+		case NesAddrMode::ZeroX: return { (uint8_t)(byteCode[1] + state.X), 1 }; break;
+		case NesAddrMode::ZeroY: return { (uint8_t)(byteCode[1] + state.Y), 1 }; break;
 
 		case NesAddrMode::IndX: {
 			uint8_t zeroAddr = byteCode[1] + state.X;
-			return memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
+			return { memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8, 1 };
 		}
 
 		case NesAddrMode::IndY:
 		case NesAddrMode::IndYW: {
 			uint8_t zeroAddr = byteCode[1];
 			uint16_t addr = memoryDumper->GetMemoryValue(MemoryType::NesMemory, zeroAddr) | memoryDumper->GetMemoryValue(MemoryType::NesMemory, (uint8_t)(zeroAddr + 1)) << 8;
-			return (uint16_t)(addr + state.Y);
+			return { (uint16_t)(addr + state.Y), 1 };
 		}
 
 		case NesAddrMode::Ind: {
@@ -190,22 +190,22 @@ int32_t NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& sta
 				//CPU bug when indirect address starts at the end of a page
 				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
 				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr & 0xFF00);
-				return lo | (hi << 8);
+				return { lo | (hi << 8), 1 };
 			} else {
-				return memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
+				return { memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr), 1 };
 			}
 		}
 	
 		case NesAddrMode::AbsX:
 		case NesAddrMode::AbsXW:
-			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.X) & 0xFFFF;
+			return { (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.X) & 0xFFFF, 1 };
 
 		case NesAddrMode::AbsY:
 		case NesAddrMode::AbsYW:
-			return (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.Y) & 0xFFFF;
+			return { (uint16_t)((byteCode[1] | (byteCode[2] << 8)) + state.Y) & 0xFFFF, 1 };
 	}
 
-	return -1;
+	return {};
 }
 
 uint8_t NesDisUtils::GetOpSize(NesAddrMode addrMode)

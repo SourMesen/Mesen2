@@ -174,7 +174,7 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state)
+EffectiveAddressInfo PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state)
 {
 	switch(_opMode[info.GetOpCode()]) {
 		default: break;
@@ -202,13 +202,13 @@ int32_t PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceConsole* cons
 			for(int i = count - 1; i > 0; i--) {
 				MemoryOperationInfo opInfo = pceCpu.GetOperationInfo(i);
 				if(opInfo.Type != MemoryOperationType::ExecOperand) {
-					return opInfo.Address;
+					return { (int32_t)opInfo.Address, 1 };
 				}
 			}
 			break;
 	}
 
-	return -1;
+	return {};
 }
 
 uint8_t PceDisUtils::GetOpSize(PceAddrMode addrMode)

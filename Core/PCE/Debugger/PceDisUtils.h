@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "Debugger/DebugTypes.h"
 
-class DisassemblyInfo;
 class LabelManager;
 class MemoryDumper;
 class EmuSettings;
@@ -17,7 +16,7 @@ private:
 
 public:
 	static void GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings);
-	static int32_t GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state);
+	static EffectiveAddressInfo GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state);
 
 	static uint8_t GetOpSize(uint8_t opCode);
 	static char const* const GetOpName(uint8_t opCode);

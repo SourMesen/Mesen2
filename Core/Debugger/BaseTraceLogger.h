@@ -171,10 +171,10 @@ protected:
 	
 	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
 	{
-		int32_t effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress >= 0) {
+		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
+		if(effectiveAddress.Address >= 0) {
 			if(_options.UseLabels) {
-				AddressInfo addr { effectiveAddress, cpuMemoryType };
+				AddressInfo addr { effectiveAddress.Address, cpuMemoryType };
 				string label = _labelManager->GetLabel(addr);
 				if(!label.empty()) {
 					WriteStringValue(output, " [" + label + "]", rowPart);
@@ -182,19 +182,18 @@ protected:
 				}
 			}
 
-			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress) + "]", rowPart);
+			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress.Address) + "]", rowPart);
 		}
 	}
 
 	void WriteMemoryValue(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType memType, CpuType cpuType)
 	{
-		int32_t address = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(address >= 0) {
-			uint8_t valueSize;
-			uint16_t value = info.GetMemoryValue(address, _memoryDumper, memType, valueSize);
+		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
+		if(effectiveAddress.Address >= 0 && effectiveAddress.ValueSize > 0) {
+			uint16_t value = info.GetMemoryValue(effectiveAddress, _memoryDumper, memType);
 			if(rowPart.DisplayInHex) {
 				output += "= $";
-				if(valueSize == 2) {
+				if(effectiveAddress.ValueSize == 2) {
 					WriteIntValue(output, (uint16_t)value, rowPart);
 				} else {
 					WriteIntValue(output, (uint8_t)value, rowPart);

@@ -113,10 +113,10 @@ namespace Mesen.Debugger
 
 			this.Address = data.Address;
 			this.AbsoluteAddress = data.AbsoluteAddress;
-			this.EffectiveAddress = data.EffectiveAddress;
+			this.EffectiveAddress = data.EffectiveAddress.Address;
 			this.Flags = (LineFlags)data.Flags;
 			this.Value = data.Value;
-			this.ValueSize = data.ValueSize;
+			this.ValueSize = data.EffectiveAddress.ValueSize;
 		}
 
 		private string ConvertString(byte[] stringArray)
@@ -158,7 +158,13 @@ namespace Mesen.Debugger
 			};
 		}
 	}
-	
+
+	public struct EffectiveAddressInfo
+	{
+		public Int32 Address;
+		public byte ValueSize;
+	}
+
 	public struct InteropCodeLineData
 	{
 		public Int32 Address;
@@ -166,9 +172,8 @@ namespace Mesen.Debugger
 		public byte OpSize;
 		public UInt16 Flags;
 
-		public Int32 EffectiveAddress;
+		public EffectiveAddressInfo EffectiveAddress;
 		public UInt16 Value;
-		public byte ValueSize;
 		public CpuType LineCpuType;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]

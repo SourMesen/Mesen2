@@ -10,6 +10,12 @@ class EmuSettings;
 enum class MemoryType;
 enum class CpuType : uint8_t;
 
+struct EffectiveAddressInfo
+{
+	int32_t Address = -1;
+	uint8_t ValueSize = 0;
+};
+
 class DisassemblyInfo
 {
 private:
@@ -49,7 +55,8 @@ public:
 	bool IsJump();
 	void UpdateCpuFlags(uint8_t& cpuFlags);
 
-	int32_t GetEffectiveAddress(Debugger* debugger, void *cpuState, CpuType type);
-	uint16_t GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType, uint8_t &valueSize);
+	EffectiveAddressInfo GetEffectiveAddress(Debugger* debugger, void *cpuState, CpuType type);
+
+	uint16_t GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType);
 };
 

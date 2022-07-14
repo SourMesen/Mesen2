@@ -79,7 +79,7 @@ void DisassemblyInfo::GetDisassembly(string &out, uint32_t memoryAddr, LabelMana
 
 }
 
-int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState, CpuType cpuType)
+EffectiveAddressInfo DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState, CpuType cpuType)
 {
 	switch(_cpuType) {
 		case CpuType::Sa1:
@@ -91,7 +91,7 @@ int32_t DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, void *cpuState,
 		case CpuType::Cx4: return Cx4DisUtils::GetEffectiveAddress(*this, *(Cx4State*)cpuState, debugger->GetMemoryDumper());
 		
 		case CpuType::NecDsp:
-			return -1;
+			return {};
 
 		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, *(GbCpuState*)cpuState);
 
@@ -259,14 +259,11 @@ void DisassemblyInfo::UpdateCpuFlags(uint8_t& cpuFlags)
 	}
 }
 
-uint16_t DisassemblyInfo::GetMemoryValue(uint32_t effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType, uint8_t &valueSize)
+uint16_t DisassemblyInfo::GetMemoryValue(EffectiveAddressInfo effectiveAddress, MemoryDumper *memoryDumper, MemoryType memType)
 {
-	//TODO cleanup
-	if((_cpuType == CpuType::Spc || _cpuType == CpuType::Gameboy || _cpuType == CpuType::Nes || _cpuType == CpuType::Pce) || (_flags & ProcFlags::MemoryMode8)) {
-		valueSize = 1;
-		return memoryDumper->GetMemoryValue(memType, effectiveAddress);
+	if(effectiveAddress.ValueSize == 2) {
+		return memoryDumper->GetMemoryValueWord(memType, effectiveAddress.Address);
 	} else {
-		valueSize = 2;
-		return memoryDumper->GetMemoryValueWord(memType, effectiveAddress);
+		return memoryDumper->GetMemoryValue(memType, effectiveAddress.Address);
 	}
 }

@@ -129,7 +129,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SpcState &state)
+EffectiveAddressInfo SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SpcState &state)
 {
 	if(_needAddress[info.GetOpCode()]) {
 		Spc* spc = console->GetSpc();
@@ -141,11 +141,11 @@ int32_t SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *con
 		for(int i = count - 1; i > 0; i--) {
 			MemoryOperationInfo opInfo = dummySpc.GetOperationInfo(i);
 			if(opInfo.Type != MemoryOperationType::ExecOperand) {
-				return opInfo.Address;
+				return { (int32_t)opInfo.Address, 1 };
 			}
 		}
 	}
-	return -1;
+	return {};
 }
 
 uint8_t SpcDisUtils::GetOpSize(uint8_t opCode)

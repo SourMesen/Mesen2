@@ -307,7 +307,6 @@ private:
 
 public:
 	void SetDummyState(PceCpuState& state);
-	int32_t GetLastOperand();
 
 	uint32_t GetOperationCount();
 	MemoryOperationInfo GetOperationInfo(uint32_t index);

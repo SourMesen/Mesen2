@@ -57,8 +57,3 @@ MemoryOperationInfo DummyPceCpu::GetOperationInfo(uint32_t index)
 {
 	return _memOperations[index];
 }
-
-int32_t DummyPceCpu::GetLastOperand()
-{
-	return _operand;
-}

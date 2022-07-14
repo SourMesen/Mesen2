@@ -103,17 +103,42 @@ uint32_t SnesDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryA
 	return opAddr;
 }
 
-int32_t SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SnesCpuState &state, CpuType type)
+EffectiveAddressInfo SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SnesCpuState &state, CpuType type)
 {
 	if(HasEffectiveAddress(SnesDisUtils::OpMode[info.GetOpCode()])) {
-		DummySnesCpu cpu(console, type);
+		DummySnesCpu dummyCpu(console, type);
 		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
 		state.PS |= info.GetFlags();
-		cpu.SetDummyState(state);
-		cpu.Exec();
-		return cpu.GetLastOperand();
+		dummyCpu.SetDummyState(state);
+		dummyCpu.Exec();
+
+		bool isJump = SnesDisUtils::IsUnconditionalJump(info.GetOpCode()) || SnesDisUtils::IsUnconditionalJump(info.GetOpCode());
+		if(isJump) {
+			//For jumps, return the target address, and show no value
+			return { dummyCpu.GetLastOperand(), 0 };
+		}
+
+		//For everything else, return the last read/write address
+		uint32_t count = dummyCpu.GetOperationCount();
+		for(int i = count - 1; i > 0; i--) {
+			MemoryOperationInfo opInfo = dummyCpu.GetOperationInfo(i);
+
+			if(opInfo.Type != MemoryOperationType::ExecOperand) {
+				MemoryOperationInfo prevOpInfo = dummyCpu.GetOperationInfo(i - 1);
+				EffectiveAddressInfo result;
+				if(prevOpInfo.Type == opInfo.Type) {
+					//For 16-bit read/writes, return the first address
+					result.Address = prevOpInfo.Address;
+					result.ValueSize = 2;
+				} else {
+					result.Address = opInfo.Address;
+					result.ValueSize = 1;
+				}
+				return result;
+			}
+		}
 	}
-	return -1;
+	return {};
 }
 
 bool SnesDisUtils::CanDisassembleNextOp(uint8_t opCode)
@@ -268,7 +293,17 @@ CdlFlags::CdlFlags SnesDisUtils::GetOpFlags(uint8_t opCode, uint32_t pc, uint32_
 
 bool SnesDisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return opCode == 0x20 || opCode == 0x22 || opCode == 0xFC; //JSR, JSL
+	switch(opCode) {
+		case 0x00: //BRK
+		case 0x02: //COP
+		case 0x20: //JSR
+		case 0x22: //JSL
+		case 0xFC: //JSR
+			return true;
+
+		default:
+			return false;
+	}
 }
 
 bool SnesDisUtils::IsReturnInstruction(uint8_t opCode)

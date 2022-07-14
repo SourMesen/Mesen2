@@ -136,21 +136,21 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 	out += str.ToString();
 }
 
-int32_t GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, GbCpuState& state)
+EffectiveAddressInfo GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, GbCpuState& state)
 {
 	switch(_gbEffAddrType[info.GetOpCode()]) {
 		default:
-		case AddrType::None: return -1;
+		case AddrType::None: return {};
 
-		case AddrType::BC: return (state.B << 8) | state.C;
-		case AddrType::DE: return (state.D << 8) | state.E;
-		case AddrType::HL: return (state.H << 8) | state.L;
-		case AddrType::C: return 0xFF00 + state.C;
+		case AddrType::BC: return { (state.B << 8) | state.C, 1 };
+		case AddrType::DE: return { (state.D << 8) | state.E, 1 };
+		case AddrType::HL: return { (state.H << 8) | state.L, 1 };
+		case AddrType::C: return { 0xFF00 + state.C, 1 };
 		case AddrType::Suff:
 			if((info.GetByteCode()[1] & 0x07) == 0x06) {
-				return (state.H << 8) | state.L;
+				return { (state.H << 8) | state.L, 1 };
 			}
-			return -1;
+			return {};
 	}
 }
 

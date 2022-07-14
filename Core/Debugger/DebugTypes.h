@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Core/MemoryOperationType.h"
 #include "Core/Shared/CpuType.h"
+#include "Core/Debugger/DisassemblyInfo.h"
 
 enum class MemoryType;
 enum class CpuType : uint8_t;
@@ -157,9 +158,8 @@ struct CodeLineData
 	uint8_t OpSize;
 	uint16_t Flags;
 
-	int32_t EffectiveAddress;
+	EffectiveAddressInfo EffectiveAddress;
 	uint16_t Value;
-	uint8_t ValueSize;
 	CpuType LineCpuType;
 
 	uint8_t ByteCode[8];

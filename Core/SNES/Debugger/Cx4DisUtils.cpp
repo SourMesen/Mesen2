@@ -210,14 +210,14 @@ void Cx4DisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	out += str.ToString();
 }
 
-int32_t Cx4DisUtils::GetEffectiveAddress(DisassemblyInfo& info, Cx4State& state, MemoryDumper* memoryDumper)
+EffectiveAddressInfo Cx4DisUtils::GetEffectiveAddress(DisassemblyInfo& info, Cx4State& state, MemoryDumper* memoryDumper)
 {
 	uint8_t op = info.GetByteCode()[1] & 0xFC;
 	uint8_t param1 = info.GetByteCode()[1] & 0x03;
 	uint8_t param2 = info.GetByteCode()[0] & 0xFF;
 
 	switch(op) {
-		default: return -1;
+		default: return {};
 
 		case 0x08:
 		case 0x0C:
@@ -231,9 +231,9 @@ int32_t Cx4DisUtils::GetEffectiveAddress(DisassemblyInfo& info, Cx4State& state,
 		case 0x38:
 			//Show destination address for branches & JSR
 			if(param1) {
-				return (state.P << 9) | (param2 * 2);
+				return { (state.P << 9) | (param2 * 2), 1 };
 			} else {
-				return state.Cache.Address[state.Cache.Page] | (param2 * 2);
+				return { (int32_t)(state.Cache.Address[state.Cache.Page] | (param2 * 2)), 1 };
 			}
 	}
 }
