@@ -6,8 +6,10 @@
 #pragma warning( disable : 4245 ) //conversion from 'x' to 'y', signed/unsigned mismatch
 #endif 
 
+#ifdef __clang__
 //TODO, fix warnings and remove this
 #pragma clang diagnostic ignored "-Wswitch"
+#endif 
 
 #include <stdio.h>
 #include <string.h>

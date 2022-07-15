@@ -106,10 +106,13 @@ void NesConsole::Stop()
 void NesConsole::Reset()
 {
 	_memoryManager->Reset(true);
-	//TODO option to not reset ppu on reset
-	_ppu->Reset();
+	
+	if(!GetNesConfig().DisablePpuReset) {
+		_ppu->Reset();
+	}
+
 	_apu->Reset(true);
-	_cpu->Reset(true, ConsoleRegion::Ntsc);
+	_cpu->Reset(true, _region);
 	_controlManager->Reset(true);
 	_mixer->Reset();
 	if(_vsSubConsole) {
