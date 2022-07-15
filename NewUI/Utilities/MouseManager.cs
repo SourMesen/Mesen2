@@ -98,6 +98,8 @@ namespace Mesen.Utilities
 			}
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 
+			UpdateMainMenuVisibility(mousePos);
+
 			if(_wnd.IsActive && (_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen)) {
 				//When mouse or keyboard focus is in menu, release mouse and keep arrow cursor
 				SetMouseOffScreen();
@@ -131,13 +133,32 @@ namespace Mesen.Utilities
 					} else {
 						ReleaseMouse();
 					}
-				} 
+				}
 
 				if(!_mouseCaptured) {
 					GlobalMouse.SetCursorIcon(MouseIcon);
 				}
 			} else {
 				SetMouseOffScreen();
+			}
+		}
+
+		private void UpdateMainMenuVisibility(PixelPoint mousePos)
+		{
+			bool autoHideMenu = _wnd.WindowState == WindowState.FullScreen || ConfigManager.Config.Preferences.AutoHideMenu;
+			if(autoHideMenu) {
+				if(_mainMenu.MainMenu.IsOpen) {
+					MainWindowViewModel.Instance.IsMenuVisible = true;
+				} else {
+					PixelPoint wndTopLeft = _wnd.PointToScreen(new Point(0, 0));
+					bool showMenu = (
+						mousePos.Y >= wndTopLeft.Y - 15 && mousePos.Y <= wndTopLeft.Y + Math.Max(_mainMenu.Bounds.Height + 10, 35) &&
+						mousePos.X >= wndTopLeft.X && mousePos.X <= wndTopLeft.X + _wnd.Bounds.Width
+					);
+					MainWindowViewModel.Instance.IsMenuVisible = showMenu;
+				}
+			} else {
+				MainWindowViewModel.Instance.IsMenuVisible = true;
 			}
 		}
 

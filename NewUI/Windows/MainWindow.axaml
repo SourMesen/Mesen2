@@ -31,8 +31,10 @@
 	</Window.DataTemplates>
 	
 	<DockPanel>
-		<Panel DockPanel.Dock="Top" DataContext="{CompiledBinding MainMenu}">
-			<v:MainMenuView Name="MainMenu" />
+		<Panel DockPanel.Dock="Top" IsVisible="{CompiledBinding IsMenuVisible}">
+			<Panel DataContext="{CompiledBinding MainMenu}">
+				<v:MainMenuView Name="MainMenu" />
+			</Panel>
 		</Panel>
 		
 		<ContentControl Name="AudioPlayer" DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />

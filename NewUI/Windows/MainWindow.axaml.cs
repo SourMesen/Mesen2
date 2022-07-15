@@ -272,7 +272,11 @@ namespace Mesen.Windows
 				_renderer.Height = double.NaN;
 
 				double aspectRatio = EmuApi.GetAspectRatio();
-				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + _mainMenu.Bounds.Height + _audioPlayer.Bounds.Height);
+
+				//When menu is set to auto-hide, don't count its height when calculating the window's final size
+				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
+
+				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + menuHeight + _audioPlayer.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_renderer.Width = screenSize.Width * scale;
@@ -287,8 +291,6 @@ namespace Mesen.Windows
 				_renderer.Height = double.NaN;
 				ResizeRenderer();
 			}
-
-			_mainMenu.IsVisible = WindowState != WindowState.FullScreen;
 		}
 
 		public void ToggleFullscreen()

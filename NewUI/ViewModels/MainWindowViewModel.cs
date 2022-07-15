@@ -29,6 +29,8 @@ namespace Mesen.ViewModels
 		[Reactive] public string WindowTitle { get; private set; } = "Mesen";
 		[Reactive] public Size RendererSize { get; set; }
 
+		[Reactive] public bool IsMenuVisible { get; set; }
+
 		public Configuration Config { get; }
 
 		public MainWindowViewModel()
@@ -39,6 +41,8 @@ namespace Mesen.ViewModels
 			MainMenu = new MainMenuViewModel(this);
 			RomInfo = new RomInfo();
 			RecentGames = new RecentGamesViewModel();
+
+			IsMenuVisible = !Config.Preferences.AutoHideMenu;
 		}
 
 		public void Init(MainWindow wnd)
