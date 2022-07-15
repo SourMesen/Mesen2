@@ -54,16 +54,15 @@
 		<TabItem Header="{l:Translate tpgFiles}">
 			<StackPanel>
 				<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
-					<CheckBox Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
-					<CheckBox Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
-					<CheckBox Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
-					<CheckBox Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
-					<CheckBox Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
-					<CheckBox Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
-					<CheckBox Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
-
-					<CheckBox Content="{l:Translate chkMovieFiles}" IsChecked="{CompiledBinding Config.AssociateMovieFiles}" />
-					<CheckBox Content="{l:Translate chkSaveStateFiles}" IsChecked="{CompiledBinding Config.AssociateSaveStateFiles}" />
+					<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+						<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
+						<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
+						<CheckBox Grid.Row="2" Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
+						<CheckBox Grid.Row="3" Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
+						<CheckBox Grid.Row="0" Grid.Column="2" Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
+						<CheckBox Grid.Row="1" Grid.Column="2" Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
+						<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
+					</Grid>
 				</c:OptionSection>
 				<c:OptionSection Header="{l:Translate grpPathOverrides}">
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">

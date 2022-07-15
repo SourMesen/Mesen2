@@ -75,9 +75,6 @@ namespace Mesen.Config
 			}
 
 			List<string> mimeTypes = new List<string>();
-			CreateMimeType("x-mesen_s-mss", "mss", "Mesen-S Save State", mimeTypes, cfg.AssociateSaveStateFiles);
-			CreateMimeType("x-mesen_s-msm", "msm", "Mesen-S Movie File", mimeTypes, cfg.AssociateMovieFiles);
-
 			CreateMimeType("x-mesen_s-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
 			CreateMimeType("x-mesen_s-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
 			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
