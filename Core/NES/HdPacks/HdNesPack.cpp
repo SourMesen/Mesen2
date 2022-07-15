@@ -200,10 +200,6 @@ void HdNesPack::OnBeforeApplyFilter()
 		NesDefaultVideoFilter::GetFullPalette(_palette, _settings->GetNesConfig(), PpuModel::Ppu2C02);
 	}
 	_cacheEnabled = (_hdData->OptionFlags & (int)HdPackOptions::DisableCache) == 0;
-	//TODO
-	/*if(_hdData->OptionFlags & (int)HdPackOptions::NoSpriteLimit) {
-		_settings->SetFlags(EmulationFlags::RemoveSpriteLimit | EmulationFlags::AdaptiveSpriteLimit);
-	}*/
 
 	for(int layer = 0; layer < 4; layer++) {
 		uint32_t activeCount = 0;

@@ -27,6 +27,7 @@ class HdNesPpu final : public NesPpu<HdNesPpu>
 	HdScreenInfo* _info = nullptr;
 	uint32_t _version = 0;
 	bool _isChrRam = false;
+	bool _forceRemoveSpriteLimit = false;
 	HdPackData* _hdData = nullptr;
 	NesSpriteInfoEx _exSpriteInfo[64] = {};
 	NesTileInfoEx _previousTileEx = {};
@@ -38,6 +39,9 @@ public:
 	virtual ~HdNesPpu();
 	
 	void* OnBeforeSendFrame();
+
+	__forceinline bool RemoveSpriteLimit() { return _forceRemoveSpriteLimit || _console->GetNesConfig().RemoveSpriteLimit; }
+	__forceinline bool UseAdaptiveSpriteLimit() { return _forceRemoveSpriteLimit || _console->GetNesConfig().AdaptiveSpriteLimit; }
 
 	__forceinline void StoreSpriteInformation(bool verticalMirror, uint16_t tileAddr, uint8_t lineOffset)
 	{

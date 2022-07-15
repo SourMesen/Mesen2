@@ -14,6 +14,7 @@ HdNesPpu::HdNesPpu(NesConsole* console, HdPackData* hdData) : NesPpu(console)
 	_screenInfo[0] = new HdScreenInfo(_isChrRam);
 	_screenInfo[1] = new HdScreenInfo(_isChrRam);
 	_info = _screenInfo[0];
+	_forceRemoveSpriteLimit = (_hdData->OptionFlags & (int)HdPackOptions::NoSpriteLimit) != 0;
 }
 
 HdNesPpu::~HdNesPpu()

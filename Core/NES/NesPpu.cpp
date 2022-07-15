@@ -704,10 +704,10 @@ template<class T> void NesPpu<T>::LoadSprite(uint8_t spriteY, uint8_t tileIndex,
 
 template<class T> void NesPpu<T>::LoadExtraSprites()
 {
-	if(_spriteCount == 8 && _console->GetNesConfig().RemoveSpriteLimit) {
+	if(_spriteCount == 8 && ((T*)this)->RemoveSpriteLimit()) {
 		bool loadExtraSprites = true;
 		
-		if(_console->GetNesConfig().AdaptiveSpriteLimit) {
+		if(((T*)this)->UseAdaptiveSpriteLimit()) {
 			uint16_t lastPosition = 0xFFFF;
 			uint8_t identicalSpriteCount = 0;
 			uint8_t maxIdenticalSpriteCount = 0;
