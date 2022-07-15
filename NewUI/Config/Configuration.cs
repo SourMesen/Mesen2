@@ -101,16 +101,13 @@ namespace Mesen.Config
 		public void Serialize(string configFile)
 		{
 			try {
-				if(!ConfigManager.DoNotSaveSettings) {
-					string cfgData = JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options);
-					if(_fileData != cfgData) {
-						FileHelper.WriteAllText(configFile, cfgData);
-						_fileData = cfgData;
-					}
+				string cfgData = JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options);
+				if(_fileData != cfgData) {
+					FileHelper.WriteAllText(configFile, cfgData);
+					_fileData = cfgData;
 				}
 			} catch {
 				//This can sometime fail due to the file being used by another Mesen instance, etc.
-				//In this case, the _needToSave flag will still be set, and the config will be saved when the emulator is closed
 			}
 		}
 	}

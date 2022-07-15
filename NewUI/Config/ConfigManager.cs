@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using Mesen.Interop;
+using System.Diagnostics;
+using Mesen.Utilities;
 
 namespace Mesen.Config
 {
@@ -17,13 +19,12 @@ namespace Mesen.Config
 		private static string? _homeFolder = null;
 		private static object _initLock = new object();
 
-		public static bool DoNotSaveSettings { get; set; }
-
 		public static string DefaultPortableFolder { get { return Path.GetDirectoryName(Program.ExePath) ?? "./"; } }
 		public static string DefaultDocumentsFolder
 		{
 			get
 			{
+				//TODO
 				/*if(Program.IsMono) {
 					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".config", "mesen-s");
 				} else {
@@ -241,17 +242,14 @@ namespace Mesen.Config
 			Config.ApplyConfig();
 		}
 
-		public static void RestartMesen(bool preventSave = false)
+		public static void RestartMesen()
 		{
-			if(preventSave) {
-				DoNotSaveSettings = true;
+			ProcessModule? mainModule = Process.GetCurrentProcess().MainModule;
+			if(mainModule?.FileName == null) {
+				return;
 			}
-
-			/*if(Program.IsMono) {
-				System.Diagnostics.Process.Start("mono", "\"" + Assembly.GetEntryAssembly().Location + "\" /delayrestart");
-			} else {
-				System.Diagnostics.Process.Start(Assembly.GetEntryAssembly().Location, "/delayrestart");
-			}*/
+			SingleInstance.Instance.Dispose();
+			Process.Start(mainModule.FileName);
 		}
 	}
 }

@@ -11,11 +11,15 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public PreferencesConfig Config { get; set; }
 
+		public string DataStorageLocation { get; }
+
 		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
 		public PreferencesConfigViewModel()
 		{
 			Config = ConfigManager.Config.Preferences.Clone();
+
+			DataStorageLocation = ConfigManager.HomeFolder;
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {
 				EmulatorShortcut.FastForward,

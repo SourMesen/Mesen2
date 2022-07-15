@@ -64,6 +64,15 @@
 						<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
 					</Grid>
 				</c:OptionSection>
+
+				<c:OptionSection Header="{l:Translate grpDataStorageLocation}">
+					<DockPanel>
+						<TextBlock Text="{l:Translate lblDataLocation}" DockPanel.Dock="Left" VerticalAlignment="Center" />
+						<Button DockPanel.Dock="Right" Content="{l:Translate btnChangeStorageFolder}" Click="btnChangeStorageFolder_OnClick" />
+						<TextBox IsReadOnly="True" Text="{CompiledBinding DataStorageLocation}" />
+					</DockPanel>
+				</c:OptionSection>
+
 				<c:OptionSection Header="{l:Translate grpPathOverrides}">
 					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 						<CheckBox Grid.Row="0" Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />

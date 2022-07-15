@@ -485,9 +485,8 @@
 			<Control ID="chkMovieFiles">Mesen movies: .msm</Control>
 			<Control ID="chkSaveStateFiles">Mesen save states: .mss</Control>
 
-			<Control ID="grpDataStorageLocation">Data Storage Location</Control>
-			<Control ID="radStorageDocuments">Store data in my user profile</Control>
-			<Control ID="radStoragePortable">Store data in the same folder as the application</Control>
+			<Control ID="grpDataStorageLocation">Data Storage Folder</Control>
+			<Control ID="btnChangeStorageFolder">Change folder...</Control>
 			<Control ID="lblDataLocation">Folder:</Control>
 
 			<Control ID="grpPathOverrides">Folder Overrides</Control>
@@ -530,6 +529,16 @@
 
 			<Control ID="lblLastFolderUsed">Last Folder Used</Control>
 
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		<Form ID="SelectStorageFolderWindow">
+			<Control ID="wndTitle">Select Data Storage Folder</Control>
+			<Control ID="lblStorageHint">Select where you want to store Mesen's data:</Control>
+			<Control ID="radStorageDocuments">Store data in my user profile</Control>
+			<Control ID="radStoragePortable">Store data in the same folder as the application</Control>
+			<Control ID="lblFolder">Destination folder: </Control>
+			<Control ID="lblCopyingFiles">Copying files...</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>

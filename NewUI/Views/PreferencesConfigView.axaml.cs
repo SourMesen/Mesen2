@@ -8,6 +8,8 @@ using Avalonia.Themes.Fluent;
 using Avalonia.Styling;
 using System.Collections.Generic;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Interactivity;
+using Mesen.Windows;
 
 namespace Mesen.Views
 {
@@ -21,6 +23,21 @@ namespace Mesen.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		private void btnChangeStorageFolder_OnClick(object sender, RoutedEventArgs e)
+		{
+			ShowSelectFolderWindow();
+		}
+
+		private async void ShowSelectFolderWindow()
+		{
+			SelectStorageFolderWindow wnd = new();
+			if(await wnd.ShowCenteredDialog<bool>(VisualRoot)) {
+				(VisualRoot as Window)?.Close();
+				ApplicationHelper.GetMainWindow()?.Close();
+				ConfigManager.RestartMesen();
+			}
 		}
 	}
 }

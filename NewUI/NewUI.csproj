@@ -484,6 +484,9 @@
     <Compile Update="Windows\CheatEditWindow.axaml.cs">
       <DependentUpon>CheatEditWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\SelectStorageFolderWindow.axaml.cs">
+      <DependentUpon>SelectStorageFolderWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\InputBarcodeWindow.axaml.cs">
       <DependentUpon>InputBarcodeWindow.axaml</DependentUpon>
     </Compile>

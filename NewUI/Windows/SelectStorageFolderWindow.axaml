@@ -1,0 +1,50 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:picker="using:ThemeEditor.Controls.ColorPicker"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.SelectStorageFolderWindow"
+  x:Name="root"
+	Icon="/Assets/Icon.ico"
+	Width="400" Height="120"
+	x:DataType="vm:SelectStorageFolderViewModel"
+	Title="{l:Translate wndTitle}"  
+>
+	<Design.DataContext>
+		<vm:SelectStorageFolderViewModel />
+	</Design.DataContext>
+
+	<Panel>
+		<DockPanel Margin="2" IsVisible="{CompiledBinding IsCopying}">
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+				<TextBlock Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{l:Translate lblCopyingFiles}" />
+				<ProgressBar Minimum="0" Maximum="100" Height="20" Value="{CompiledBinding CopyProgress}" />
+			</StackPanel>
+		</DockPanel>
+		
+		<DockPanel Margin="2" IsVisible="{CompiledBinding !IsCopying}">
+			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+				<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+			</StackPanel>
+
+			<StackPanel Margin="5">
+				<TextBlock Text="{l:Translate lblStorageHint}" />
+				<StackPanel Margin="5 5 0 0">
+					<RadioButton Content="{l:Translate radStorageDocuments}" IsChecked="{CompiledBinding StoreInUserProfile}" />
+					<RadioButton Content="{l:Translate radStoragePortable}" IsChecked="{CompiledBinding !StoreInUserProfile}" />
+				</StackPanel>
+				<DockPanel>
+					<TextBlock Text="{l:Translate lblFolder}" DockPanel.Dock="Left" VerticalAlignment="Center" />
+					<TextBox IsReadOnly="True" Text="{CompiledBinding DestinationFolder}" />
+				</DockPanel>
+			</StackPanel>
+		</DockPanel>
+	</Panel>
+</Window>
