@@ -387,7 +387,7 @@
 
 		<Form ID="ColorPickerWindow">
 			<Control ID="wndTitle">Color picker</Control>
-			<Control ID="btkOk">OK</Control>
+			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		

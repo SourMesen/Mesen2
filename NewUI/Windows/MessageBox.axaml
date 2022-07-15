@@ -19,13 +19,15 @@
 					<Image Name="imgWarning" Source="/Assets/MsgBoxWarning.png" IsVisible="False" />
 					<Image Name="imgQuestion" Source="/Assets/MsgBoxQuestion.png" IsVisible="False" />
 				</Panel>
-				<TextBlock
-					HorizontalAlignment="Center"
-					Name="Text"
-					MaxWidth="400"
-					TextWrapping="Wrap"
-					FontSize="12"
-				/>
+				<ScrollViewer MaxHeight="500">
+					<TextBlock
+						HorizontalAlignment="Center"
+						Name="Text"
+						MaxWidth="400"
+						TextWrapping="Wrap"
+						FontSize="12"
+					/>
+				</ScrollViewer>
 			</StackPanel>
 		</Panel>
 

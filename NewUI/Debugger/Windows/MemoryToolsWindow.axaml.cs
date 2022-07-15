@@ -382,8 +382,10 @@ namespace Mesen.Debugger.Windows
 		{
 			string? filename = await FileDialogHelper.OpenFile(ConfigManager.DebuggerFolder, this, FileDialogHelper.DmpExt);
 			if(filename != null) {
-				byte[] dmpData = File.ReadAllBytes(filename);
-				DebugApi.SetMemoryState(_model.Config.MemoryType, dmpData, dmpData.Length);
+				byte[]? dmpData = FileHelper.ReadAllBytes(filename);
+				if(dmpData != null) {
+					DebugApi.SetMemoryState(_model.Config.MemoryType, dmpData, dmpData.Length);
+				}
 			}
 		}
 
@@ -392,7 +394,7 @@ namespace Mesen.Debugger.Windows
 			string name = EmuApi.GetRomInfo().GetRomName() + " - " + _model.Config.MemoryType.ToString() + ".dmp";
 			string? filename = await FileDialogHelper.SaveFile(ConfigManager.DebuggerFolder, name, this, FileDialogHelper.DmpExt);
 			if(filename != null) {
-				File.WriteAllBytes(filename, DebugApi.GetMemoryState(_model.Config.MemoryType));
+				FileHelper.WriteAllBytes(filename, DebugApi.GetMemoryState(_model.Config.MemoryType));
 			}
 		}
 

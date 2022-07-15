@@ -133,7 +133,11 @@ namespace Mesen.Debugger.Utilities
 							//Run the code in a posted action to prevent the crash
 							Dispatcher.UIThread.Post(() => { value(); });
 						} else {
-							value();
+							try {
+								value();
+							} catch(Exception ex) {
+								MesenMsgBox.ShowException(ex);
+							}
 						}
 					}
 				};

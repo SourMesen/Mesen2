@@ -22,6 +22,7 @@ GameClientConnection::GameClientConnection(Emulator* emu, unique_ptr<Socket> soc
 	_shutdown = false;
 	_enableControllers = false;
 	_minimumQueueSize = 3;
+	_controllerType = ControllerType::None;
 
 	MessageManager::DisplayMessage("NetPlay", "ConnectedToServer");
 }
@@ -215,12 +216,12 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 
 void GameClientConnection::InitControlDevice()
 {
-	//Pretend we are using port 0 (to use player 1's keybindings during netplay)
 	BaseControlManager* controlManager = _emu->GetControlManager();
 	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort);
 	if(device) {
-		ControllerType type = device->GetControllerType();
-		_newControlDevice = controlManager->CreateControllerDevice(type, 0);
+		_controllerType = device->GetControllerType();
+	} else {
+		_controllerType = ControllerType::None;
 	}
 }
 
@@ -236,10 +237,9 @@ void GameClientConnection::ProcessNotification(ConsoleNotificationType type, voi
 void GameClientConnection::SendInput()
 {
 	if(_gameLoaded) {
-		if(_newControlDevice) {
-			//TODO, not thread-safe
-			_controlDevice = _newControlDevice;
-			_newControlDevice.reset();
+		if(_controllerType != _controlDevice->GetControllerType()) {
+			//Pretend we are using port 0 (to use player 1's keybindings during netplay)
+			_controlDevice = _emu->GetControlManager()->CreateControllerDevice(_controllerType, 0);
 		}
 
 		ControlDeviceState inputState;

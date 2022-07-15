@@ -230,24 +230,7 @@ namespace Mesen.Utilities
 		}
 
 		//TODO
-		/*public void SetRegion(ConsoleRegion region)
-		{
-			/*ConfigManager.Config.Emulation.Region = region;
-			ConfigManager.Config.Emulation.ApplyConfig();
-			ConfigManager.SaveConfig();
-		}*/
-
-		//TODO
-		/*public void ToggleBilinearInterpolation()
-		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.UseBilinearInterpolation);
-		}
-
-		public void ToggleBlendHighResolutionModes()
-		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.BlendHighResolutionModes);
-		}
-
+		/*
 		private void ToggleBgLayer0()
 		{
 			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer0);

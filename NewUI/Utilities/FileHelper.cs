@@ -42,18 +42,17 @@ namespace Mesen.Utilities
 
 		private static T? AttemptOperation<T>(Func<T> action)
 		{
-			int retry = 2;
+			int retry = 3;
 			while(retry > 0) {
 				try {
 					return action();
-				} catch(Exception e) {
+				} catch(Exception ex) {
+					retry--;
 					if(retry == 0) {
-						//TODO
-						//MesenMsgBox.ShowException(e);
+						MesenMsgBox.ShowException(ex);
 						return default;
 					} else {
 						System.Threading.Thread.Sleep(50);
-						retry--;
 					}
 				}
 			}

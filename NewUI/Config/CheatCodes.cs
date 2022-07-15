@@ -38,7 +38,7 @@ namespace Mesen.Config
 		{
 			try {
 				if(Cheats.Count > 0) {
-					File.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, JsonHelper.Options));
+					FileHelper.WriteAllText(CheatCodes.FilePath, JsonSerializer.Serialize(this, JsonHelper.Options));
 				} else {
 					if(File.Exists(CheatCodes.FilePath)) {
 						File.Delete(CheatCodes.FilePath);

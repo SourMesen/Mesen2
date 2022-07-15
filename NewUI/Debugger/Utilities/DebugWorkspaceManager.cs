@@ -152,7 +152,7 @@ namespace Mesen.Debugger.Utilities
 				WorkspaceByCpu[cpuType] = workspace;
 			}
 
-			File.WriteAllText(path, JsonSerializer.Serialize(this, typeof(DebugWorkspace), JsonHelper.Options));
+			FileHelper.WriteAllText(path, JsonSerializer.Serialize(this, typeof(DebugWorkspace), JsonHelper.Options));
 		}
 
 		public void Reset()

@@ -17,7 +17,11 @@ namespace Mesen.Utilities
 		{
 			using(SHA256 sha256Hash = SHA256.Create()) {
 				// ComputeHash - returns byte array  
-				byte[] bytes = sha256Hash.ComputeHash(File.ReadAllBytes(filename));
+				byte[]? fileData = FileHelper.ReadAllBytes(filename);
+				if(fileData == null) {
+					return "";
+				}
+				byte[] bytes = sha256Hash.ComputeHash(fileData);
 
 				// Convert byte array to a string   
 				StringBuilder builder = new StringBuilder();

@@ -104,7 +104,7 @@ namespace Mesen.Config
 				if(!ConfigManager.DoNotSaveSettings) {
 					string cfgData = JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options);
 					if(_fileData != cfgData) {
-						File.WriteAllText(configFile, cfgData);
+						FileHelper.WriteAllText(configFile, cfgData);
 						_fileData = cfgData;
 					}
 				}

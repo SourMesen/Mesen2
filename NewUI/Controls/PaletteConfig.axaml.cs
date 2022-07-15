@@ -146,7 +146,7 @@ namespace Mesen.Controls
 				bytePalette.Add((byte)(value >> 8 & 0xFF));
 				bytePalette.Add((byte)(value & 0xFF));
 			}
-			File.WriteAllBytes(filename, bytePalette.ToArray());
+			FileHelper.WriteAllBytes(filename, bytePalette.ToArray());
 		}
 	}
 

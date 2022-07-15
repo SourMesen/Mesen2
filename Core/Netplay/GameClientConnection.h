@@ -26,7 +26,7 @@ private:
 	vector<PlayerInfo> _playerList;
 
 	shared_ptr<BaseControlDevice> _controlDevice;
-	shared_ptr<BaseControlDevice> _newControlDevice;
+	atomic<ControllerType> _controllerType;
 	ControlDeviceState _lastInputSent = {};
 	bool _gameLoaded = false;
 	uint8_t _controllerPort = GameConnection::SpectatorPort;

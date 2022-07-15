@@ -51,7 +51,7 @@ namespace Mesen.Debugger.Labels
 			foreach(CodeLabel label in labels) {
 				sb.Append(label.ToString() + "\n");
 			}
-			File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+			FileHelper.WriteAllText(path, sb.ToString(), Encoding.UTF8);
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Microsoft.Win32;
 
 namespace Mesen.Config
@@ -21,7 +22,7 @@ namespace Mesen.Config
 			string filename = Path.Combine(baseFolder, mimeType + ".xml");
 			
 			if(addType) {
-				File.WriteAllText(filename,
+				FileHelper.WriteAllText(filename,
 					"<?xml version=\"1.0\" encoding=\"utf-8\"?>" + Environment.NewLine +
 					"<mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">" + Environment.NewLine +
 					"\t<mime-type type=\"application/" + mimeType + "\">" + Environment.NewLine +
@@ -141,7 +142,7 @@ namespace Mesen.Config
 				"StartupNotify=true" + Environment.NewLine +
 				"Icon=MesenSIcon" + Environment.NewLine;
 
-			File.WriteAllText(filename, content);
+			FileHelper.WriteAllText(filename, content);
 		}
 
 		static public void UpdateFileAssociation(string extension, bool associate)

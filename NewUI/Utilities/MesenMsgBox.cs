@@ -12,6 +12,11 @@ namespace Mesen.Utilities
 {
 	public class MesenMsgBox
 	{
+		public static Task ShowException(Exception ex)
+		{
+			return MesenMsgBox.Show(null, "UnexpectedError", MessageBoxButtons.OK, MessageBoxIcon.Error, ex.Message + Environment.NewLine + Environment.StackTrace);
+		}
+
 		public static Task<DialogResult> Show(IRenderRoot? parent, string text, MessageBoxButtons buttons, MessageBoxIcon icon, params string[] args)
 		{
 			Window? wnd = parent as Window;
