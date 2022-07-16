@@ -22,7 +22,7 @@
 		<vm:SetupWizardViewModel />
 	</Design.DataContext>
 
-	<Border 	BorderThickness="3" BorderBrush="Gray">
+	<Border BorderThickness="3" BorderBrush="Gray">
 		<DockPanel Margin="10">
 			<DockPanel DockPanel.Dock="Top">
 				<Image
@@ -50,7 +50,6 @@
 					Width="70"
 					HorizontalAlignment="Right"
 					HorizontalContentAlignment="Center"
-					IsCancel="True"
 					Click="btnOk_OnClick"
 					Content="{l:Translate btnOk}"
 				/>
