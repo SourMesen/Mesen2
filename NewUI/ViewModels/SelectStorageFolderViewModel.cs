@@ -3,6 +3,7 @@ using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +30,8 @@ namespace Mesen.ViewModels
 			}
 
 			foreach(string file in Directory.GetFiles(source)) {
-				if(Path.GetExtension(file).ToLower() != ".exe" && Path.GetExtension(file).ToLower() != ".dll") {
+				string ext = Path.GetExtension(file).ToLower();
+				if(ext != ".exe" && ext != ".dll" && ext != "") {
 					sourceFiles.Add(file);
 					targetFiles.Add(Path.Combine(target, Path.GetFileName(file)));
 				}
@@ -54,7 +56,9 @@ namespace Mesen.ViewModels
 						try {
 							File.Copy(sourceFiles[i], targetFiles[i], true);
 						} catch(Exception ex) {
-							MesenMsgBox.ShowException(ex);
+							Dispatcher.UIThread.Post(() => {
+								MesenMsgBox.ShowException(ex);
+							});
 							return false;
 						}
 						filesCopied++;
@@ -85,7 +89,12 @@ namespace Mesen.ViewModels
 						File.Delete(Path.Combine(source, "settings.backup.json"));
 					}
 					File.Move(Path.Combine(source, "settings.json"), Path.Combine(source, "settings.backup.json"));
-				} catch { }
+				} catch(Exception ex) {
+					Dispatcher.UIThread.Post(() => {
+						MesenMsgBox.ShowException(ex);
+					});
+				}
+				ConfigManager.ResetHomeFolder();
 				return true;
 			} else {
 				return false;

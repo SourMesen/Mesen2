@@ -24,12 +24,6 @@ namespace Mesen.Config
 		{
 			get
 			{
-				//TODO
-				/*if(Program.IsMono) {
-					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".config", "mesen-s");
-				} else {
-					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mesen-S");
-				}*/
 				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mesen-SCore");
 			}
 		}
@@ -49,9 +43,9 @@ namespace Mesen.Config
 		public static void CreateConfig(bool portable)
 		{
 			if(portable) {
-				HomeFolder = DefaultPortableFolder;
+				_homeFolder = DefaultPortableFolder;
 			} else {
-				HomeFolder = DefaultDocumentsFolder;
+				_homeFolder = DefaultDocumentsFolder;
 			}
 
 			LoadConfig();
@@ -148,6 +142,11 @@ namespace Mesen.Config
 			}
 		}
 
+		public static void ResetHomeFolder()
+		{
+			_homeFolder = null;
+		}
+
 		public static string HomeFolder {
 			get
 			{
@@ -164,10 +163,6 @@ namespace Mesen.Config
 				}
 
 				return _homeFolder;
-			}
-			private set
-			{
-				_homeFolder = value;
 			}
 		}
 

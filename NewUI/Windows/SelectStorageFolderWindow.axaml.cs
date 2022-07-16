@@ -41,7 +41,9 @@ namespace Mesen.Windows
 
 		private async void StartProcess()
 		{
-			Close(await _model.MigrateData());
+			if(await _model.MigrateData()) {
+				Close(true);
+			}
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
