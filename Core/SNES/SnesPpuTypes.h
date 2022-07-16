@@ -131,7 +131,7 @@ struct SnesPpuState : public BaseState
 	uint16_t HClock = 0;
 	uint32_t FrameCount = 0;
 
-	bool ForcedVblank = false;
+	bool ForcedBlank = false;
 	uint8_t ScreenBrightness = 0;
 
 	Mode7Config Mode7 = {};

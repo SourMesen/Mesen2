@@ -551,7 +551,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("$2100", "Brightness", null),
 				new RegEntry("$2100.0-3", "Brightness", ppu.ScreenBrightness),
-				new RegEntry("$2100.7", "Forced Blank", ppu.ForcedVblank),
+				new RegEntry("$2100.7", "Forced Blank", ppu.ForcedBlank),
 				new RegEntry("$2101", "OAM Settings", null),
 				new RegEntry("$2100.0-2", "OAM Table Address", ppu.OamBaseAddress, Format.X16),
 				new RegEntry("$2100.3-4", "OAM Second Table Address", (ppu.OamBaseAddress + ppu.OamAddressOffset) & 0x7FFF, Format.X16),

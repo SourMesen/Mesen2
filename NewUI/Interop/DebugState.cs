@@ -89,7 +89,7 @@ namespace Mesen.Interop
 		public UInt16 HClock;
 		public UInt32 FrameCount;
 
-		[MarshalAs(UnmanagedType.I1)] public bool ForcedVblank;
+		[MarshalAs(UnmanagedType.I1)] public bool ForcedBlank;
 		public byte ScreenBrightness;
 
 		public Mode7Config Mode7;

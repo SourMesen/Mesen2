@@ -58,7 +58,7 @@ void SnesPpu::PowerOn()
 	_currentBuffer = _outputBuffers[0];
 	
 	_state = {};
-	_state.ForcedVblank = true;
+	_state.ForcedBlank = true;
 	_state.VramIncrementValue = 1;
 	if(_settings->GetSnesConfig().EnableRandomPowerOnState) {
 		RandomizeState();
@@ -76,7 +76,7 @@ void SnesPpu::PowerOn()
 void SnesPpu::Reset()
 {
 	_scanline = 0;
-	_state.ForcedVblank = true;
+	_state.ForcedBlank = true;
 	_oddFrame = 0;
 }
 
@@ -271,7 +271,7 @@ void SnesPpu::GetVerticalOffsetByte(uint8_t columnIndex)
 
 void SnesPpu::FetchTileData()
 {
-	if(_state.ForcedVblank) {
+	if(_state.ForcedBlank) {
 		return;
 	}
 
@@ -453,7 +453,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			_latchRequest = false;
 
 			//Reset OAM address at the start of vblank?
-			if(!_state.ForcedVblank) {
+			if(!_state.ForcedBlank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
 				_internalOamAddress = (_state.OamRamAddress << 1);
 			}
@@ -580,7 +580,7 @@ void SnesPpu::EvaluateNextLineSprites()
 		_oamEvaluationIndex = _state.EnableOamPriority ? ((_internalOamAddress & 0x1FC) >> 2) : 0;
 	}
 
-	if(_state.ForcedVblank) {
+	if(_state.ForcedBlank) {
 		return;
 	}
 
@@ -623,7 +623,7 @@ void SnesPpu::FetchSpriteData()
 	for(int x = _fetchSpriteStart; x <= _fetchSpriteEnd; x++) {
 		if(x >= 2) {
 			//Fetch the tile using the OAM data loaded on the past 2 cycles, before overwriting it in FetchSpriteAttributes below
-			if(!_state.ForcedVblank) {
+			if(!_state.ForcedBlank) {
 				FetchSpriteTile(x & 0x01);
 			}
 
@@ -855,7 +855,7 @@ void SnesPpu::RenderScanline()
 	if(!_skipRender && _drawStartX <= 255 && hPos > 22 && _scanline > 0) {
 		_drawEndX = std::min(hPos - 22, 255);
 
-		if(_state.ForcedVblank) {
+		if(_state.ForcedBlank) {
 			//Forced blank, output black
 			memset(_mainScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
 			memset(_subScreenBuffer + _drawStartX, 0, (_drawEndX - _drawStartX + 1) * 2);
@@ -1578,7 +1578,7 @@ void SnesPpu::UpdateOamAddress()
 
 uint16_t SnesPpu::GetOamAddress()
 {
-	if(_state.ForcedVblank || _scanline >= _vblankStartScanline) {
+	if(_state.ForcedBlank || _scanline >= _vblankStartScanline) {
 		return _internalOamAddress;
 	} else {
 		if(_memoryManager->GetHClock() <= 255 * 4) {
@@ -1783,12 +1783,12 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 	switch(addr) {
 		case 0x2100:
-			if(_state.ForcedVblank && _scanline == _nmiScanline) {
+			if(_state.ForcedBlank && _scanline == _nmiScanline) {
 				//"writing this register on the first line of V-Blank (225 or 240, depending on overscan) when force blank is currently active causes the OAM Address Reset to occur."
 				UpdateOamAddress();
 			}
 
-			_state.ForcedVblank = (value & 0x80) != 0;
+			_state.ForcedBlank = (value & 0x80) != 0;
 			_state.ScreenBrightness = value & 0x0F;
 			break;
 
@@ -1826,7 +1826,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 				}
 			} 
 
-			if(!_state.ForcedVblank && _scanline < _nmiScanline) {
+			if(!_state.ForcedBlank && _scanline < _nmiScanline) {
 				//During rendering the high table is also written to when writing to OAM
 				oamAddr = 0x200 | ((oamAddr & 0x1F0) >> 4);
 			}
@@ -1940,7 +1940,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2118:
 			//VMDATAL - VRAM Data Write low byte
-			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
+			if(_scanline >= _nmiScanline || _state.ForcedBlank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_emu->ProcessPpuWrite<CpuType::Snes>(GetVramAddress() << 1, value, MemoryType::SnesVideoRam);
 				_vram[GetVramAddress()] = value | (_vram[GetVramAddress()] & 0xFF00);
@@ -1954,7 +1954,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 		case 0x2119:
 			//VMDATAH - VRAM Data Write high byte
-			if(_scanline >= _nmiScanline || _state.ForcedVblank) {
+			if(_scanline >= _nmiScanline || _state.ForcedBlank) {
 				//Only write the value if in vblank or forced blank (writes to VRAM outside vblank/forced blank are not allowed)
 				_emu->ProcessPpuWrite<CpuType::Snes>((GetVramAddress() << 1) + 1, value, MemoryType::SnesVideoRam);
 				_vram[GetVramAddress()] = (value << 8) | (_vram[GetVramAddress()] & 0xFF); 
@@ -2144,7 +2144,7 @@ void SnesPpu::Serialize(Serializer &s)
 {
 	uint16_t unused_oamRenderAddress = 0;
 	s.Stream(
-		_state.ForcedVblank, _state.ScreenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _state.BgMode,
+		_state.ForcedBlank, _state.ScreenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _state.BgMode,
 		_state.Mode1Bg3Priority, _state.MainScreenLayers, _state.SubScreenLayers, _state.VramAddress, _state.VramIncrementValue, _state.VramAddressRemapping,
 		_state.VramAddrIncrementOnSecondReg, _state.VramReadBuffer, _state.Ppu1OpenBus, _state.Ppu2OpenBus, _state.CgramAddress, _state.MosaicSize, _state.MosaicEnabled,
 		_mosaicScanlineCounter, _state.OamMode, _state.OamBaseAddress, _state.OamAddressOffset, _state.OamRamAddress, _state.EnableOamPriority,
