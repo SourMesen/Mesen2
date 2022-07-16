@@ -160,6 +160,8 @@ namespace Mesen.Config
 					} else {
 						_homeFolder = documentsFolder;
 					}
+
+					Directory.CreateDirectory(_homeFolder);
 				}
 
 				return _homeFolder;
