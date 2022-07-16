@@ -52,6 +52,10 @@ namespace Mesen.Config
 
 				wnd.Width = WindowSize.Width;
 				wnd.Height = WindowSize.Height;
+
+				//Set position again after opening
+				//Fixes KDE (or X11?) not showing the window in the specified position
+				wnd.Opened += (s, e) => { wnd.Position = WindowLocation; };
 			}
 		}
 	}

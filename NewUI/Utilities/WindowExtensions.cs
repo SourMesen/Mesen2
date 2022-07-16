@@ -18,7 +18,12 @@ namespace Mesen.Utilities
 			Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
 			PixelPoint controlPosition = parent.PointToScreen(new Point(0, 0));
 			PixelPoint screenCenter = new PixelPoint(controlPosition.X + (int)wndCenter.Width, controlPosition.Y + (int)wndCenter.Height);
-			child.Position = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
+			PixelPoint startPosition = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
+			child.Position = startPosition;
+
+			//Set position again after opening
+			//Fixes KDE (or X11?) not showing the window in the specified position
+			child.Opened += (s,e) => { child.Position = startPosition; };
 		}
 
 		public static void ShowCentered(this Window child, IVisual? parent)
@@ -52,6 +57,11 @@ namespace Mesen.Utilities
 		{
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
 			child.Position = startPosition;
+
+			//Set position again after opening
+			//Fixes KDE (or X11?) not showing the window in the specified position
+			child.Opened += (s, e) => { child.Position = startPosition; };
+
 			return InternalShowDialog<TResult>(child, parent);
 		}
 
