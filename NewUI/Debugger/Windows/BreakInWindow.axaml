@@ -14,7 +14,6 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
-	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Debugger.Windows.BreakInWindow"
 	Width="340"
 	Height="100"

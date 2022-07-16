@@ -8,7 +8,6 @@
 	xmlns:vm="using:Mesen.ViewModels"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="505"
-	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Windows.MainWindow"
 	Width="512" Height="505"
 	DragDrop.AllowDrop="True"

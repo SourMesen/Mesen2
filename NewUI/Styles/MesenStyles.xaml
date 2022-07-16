@@ -122,6 +122,7 @@
 	<Style Selector="Window">
 		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
 		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+		<Setter Property="Icon" Value="/Assets/Icon.ico" />
 	</Style>
 	
 	<Style Selector="ItemsRepeater,ItemsPresenter">

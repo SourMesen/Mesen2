@@ -14,7 +14,6 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
-	Icon="/Assets/Icon.ico"
 	x:Class="Mesen.Debugger.Windows.FindAllOccurrencesWindow"
 	Width="300" Height="100"
 	Name="root"

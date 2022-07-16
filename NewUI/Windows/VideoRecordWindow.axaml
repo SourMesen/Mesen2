@@ -10,7 +10,6 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="130"
 	x:Class="Mesen.Windows.VideoRecordWindow"
-	Icon="/Assets/Icon.ico"
 	Width="500" Height="130"
 	x:DataType="vm:VideoRecordConfigViewModel"
 	Title="{l:Translate wndTitle}"

@@ -11,7 +11,6 @@
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.SelectStorageFolderWindow"
   x:Name="root"
-	Icon="/Assets/Icon.ico"
 	Width="400" Height="120"
 	x:DataType="vm:SelectStorageFolderViewModel"
 	Title="{l:Translate wndTitle}"  

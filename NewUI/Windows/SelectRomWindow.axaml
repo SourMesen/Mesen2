@@ -9,7 +9,6 @@
 	Width="400"
 	Height="450"
 	x:Class="Mesen.Windows.SelectRomWindow"
-	Icon="/Assets/Icon.ico"
 	Title="{l:Translate wndTitle}"
 	x:DataType="w:SelectRomViewModel"
 >

@@ -11,7 +11,6 @@
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.AboutWindow"
 	Width="350" Height="460"
-	Icon="/Assets/Icon.ico"
 	Title="{l:Translate wndTitle}"
 	CanResize="False"
 	Name="root"
