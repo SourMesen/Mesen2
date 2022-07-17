@@ -170,6 +170,10 @@ namespace Mesen.Windows
 				Dispatcher.UIThread.Post(() => {
 					//Load the debugger window styles once everything else is done
 					StyleHelper.LoadDebuggerStyles();
+
+					if(ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates) {
+						_model.MainMenu.CheckForUpdate(this, true);
+					}
 				});
 			});
 		}

@@ -17,10 +17,12 @@
 					<Image Name="imgError" Source="/Assets/MsgBoxError.png" IsVisible="False" />
 					<Image Name="imgWarning" Source="/Assets/MsgBoxWarning.png" IsVisible="False" />
 					<Image Name="imgQuestion" Source="/Assets/MsgBoxQuestion.png" IsVisible="False" />
+					<Image Name="imgInfo" Source="/Assets/MsgBoxInfo.png" IsVisible="False" />
 				</Panel>
 				<ScrollViewer MaxHeight="500">
 					<TextBlock
 						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
 						Name="Text"
 						MaxWidth="400"
 						TextWrapping="Wrap"

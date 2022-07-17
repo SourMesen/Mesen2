@@ -616,6 +616,13 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+		<Form ID="UpdatePromptWindow">
+			<Control ID="wndTitle">Mesen Updater</Control>
+			<Control ID="lblLatestVersion">Latest version:</Control>
+			<Control ID="lblInstalledVersion">Installed version:</Control>
+			<Control ID="btnUpdate">Update</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
 		<Form ID="frmHdPackEditor" Title="HD Pack Builder">
 			<Control ID="grpPreview">CHR Bank Preview</Control>
 			<Control ID="lblChrBank">CHR Bank:</Control>

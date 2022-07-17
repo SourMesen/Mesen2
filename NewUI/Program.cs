@@ -35,6 +35,11 @@ namespace Mesen
 				NativeLibrary.SetDllImportResolver(typeof(HarfBuzzSharp.Blob).Assembly, DllImportResolver);
 			}
 
+			if(args.Length >= 4 && args[0] == "--update") {
+				UpdateHelper.AttemptUpdate(args[1], args[2], args[3], args.Contains("admin"));
+				return;
+			}
+
 			Environment.CurrentDirectory = ConfigManager.HomeFolder;
 
 			if(!File.Exists(ConfigManager.GetConfigFile())) {

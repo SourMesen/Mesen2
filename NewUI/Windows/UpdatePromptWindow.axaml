@@ -1,0 +1,45 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:vm="using:Mesen.ViewModels"
+	mc:Ignorable="d"
+	Width="500"
+	Height="300"
+  CanResize="False"
+	x:Class="Mesen.Windows.UpdatePromptWindow"
+	Title="{l:Translate wndTitle}"
+	x:DataType="vm:UpdatePromptViewModel"
+>
+	<DockPanel HorizontalAlignment="Stretch">
+		<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" DockPanel.Dock="Top">
+			<TextBlock Margin="2" Text="{l:Translate lblLatestVersion}" />
+			<TextBlock Margin="2" Grid.Column="1" Text="{CompiledBinding LatestVersion}" />
+			<TextBlock Margin="2" Grid.Row="1" Text="{l:Translate lblInstalledVersion}" />
+			<TextBlock Margin="2" Grid.Column="1" Grid.Row="1" Text="{CompiledBinding InstalledVersion}" />
+		</Grid>
+		
+		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
+			<StackPanel.Styles>
+				<Style Selector="Button">
+					<Setter Property="Margin" Value="3"/>
+					<Setter Property="Width" Value="73"/>
+					<Setter Property="HorizontalContentAlignment" Value="Center"/>
+				</Style>
+			</StackPanel.Styles>
+			<Button Content="{l:Translate btnUpdate}" Click="OnUpdateClick" />
+			<Button Content="{l:Translate btnCancel}" IsCancel="True" Click="OnCancelClick" />
+		</StackPanel>
+
+		<TextBox
+			Text="{CompiledBinding Changelog}"
+			IsReadOnly="True"
+			TextWrapping="Wrap"
+			AcceptsReturn="True"
+			Height="NaN"		
+			ScrollViewer.VerticalScrollBarVisibility="Visible"
+		/>
+	</DockPanel>
+</Window>

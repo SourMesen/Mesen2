@@ -562,7 +562,7 @@ namespace Mesen.ViewModels
 				new MainMenuAction() {
 					ActionType = ActionType.HistoryViewer,
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => { }
+					OnClick = () => { } //TODO
 				},
 
 				GetMoviesMenu(wnd),
@@ -588,7 +588,7 @@ namespace Mesen.ViewModels
 						new MainMenuAction() {
 							ActionType = ActionType.HdPackBuilder,
 							IsEnabled = () => false,
-							OnClick = () => { }
+							OnClick = () => { } //TODO
 						}
 					}
 				},
@@ -933,11 +933,11 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.CheckForUpdates,
-					OnClick = () => { }
+					OnClick = () => CheckForUpdate(wnd, false)
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
-					OnClick = () => { }
+					OnClick = () => { } //TODO
 				},
 				new ContextMenuSeparator(),
 				new MainMenuAction() {
@@ -947,6 +947,19 @@ namespace Mesen.ViewModels
 					}
 				},
 			};
+		}
+
+		public async void CheckForUpdate(Window wnd, bool silent)
+		{
+			UpdatePromptViewModel updateInfo = await UpdatePromptViewModel.GetUpdateInformation();
+			if(updateInfo.LatestVersion > updateInfo.InstalledVersion) {
+				UpdatePromptWindow updatePrompt = new UpdatePromptWindow(updateInfo);
+				if(await updatePrompt.ShowCenteredDialog<bool>(wnd) == true) {
+					wnd.Close();
+				}
+			} else if(!silent) {
+				await MesenMsgBox.Show(null, "MesenUpToDate", MessageBoxButtons.OK, MessageBoxIcon.Info);
+			}
 		}
 
 		private async void InstallHdPack(Window wnd)

@@ -32,8 +32,8 @@ namespace Mesen.Windows
 				case MessageBoxIcon.Error: msgbox.FindControl<Image>("imgError").IsVisible = true; break;
 				case MessageBoxIcon.Warning: msgbox.FindControl<Image>("imgWarning").IsVisible = true; break;
 				case MessageBoxIcon.Question: msgbox.FindControl<Image>("imgQuestion").IsVisible = true; break;
+				case MessageBoxIcon.Info: msgbox.FindControl<Image>("imgInfo").IsVisible = true; break;
 			}
-
 
 			StackPanel buttonPanel = msgbox.FindControl<StackPanel>("pnlButtons");
 			void AddButton(string caption, DialogResult r)
@@ -87,7 +87,8 @@ namespace Mesen.Windows
 	{
 		Error,
 		Warning,
-		Question
+		Question,
+		Info
 	}
 
 	public enum DialogResult
