@@ -91,8 +91,8 @@ shared_ptr<BaseControlDevice> BaseControlManager::GetControlDeviceByIndex(uint8_
 			shared_ptr<IControllerHub> hub = std::dynamic_pointer_cast<IControllerHub>(_controlDevices[i]);
 			if(hub) {
 				int portCount = hub->GetHubPortCount();
-				for(int i = 0; i < portCount; i++) {
-					shared_ptr<BaseControlDevice> device = hub->GetController(i);
+				for(int j = 0; j < portCount; j++) {
+					shared_ptr<BaseControlDevice> device = hub->GetController(j);
 					if(counter == index) {
 						return device;
 					}
