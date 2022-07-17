@@ -39,7 +39,7 @@ namespace Mesen.Utilities.GlobalMouseLib
 			}
 		}
 
-		public void CaptureCursor(int x, int y, int width, int height)
+		public void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 		{
 			ClipCursor(new WinRect() { Left = x, Top = y, Right = x + width, Bottom = y + height });
 		}

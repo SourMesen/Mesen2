@@ -15,6 +15,8 @@ namespace Mesen.Utilities.GlobalMouseLib
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				_impl = new GlobalMouseWindowsImpl();
+			} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+				_impl = new GlobalMouseX11Impl();
 			} else {
 				_impl = new GlobalMouseStubImpl();
 			}
@@ -40,9 +42,9 @@ namespace Mesen.Utilities.GlobalMouseLib
 			_impl.SetCursorIcon(icon);
 		}
 
-		public static void CaptureCursor(int x, int y, int width, int height)
+		public static void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 		{
-			_impl.CaptureCursor(x, y, width, height);
+			_impl.CaptureCursor(x, y, width, height, rendererHandle);
 		}
 
 		public static void ReleaseCursor()

@@ -1,4 +1,6 @@
-﻿namespace Mesen.Utilities.GlobalMouseLib
+﻿using System;
+
+namespace Mesen.Utilities.GlobalMouseLib
 {
 	public class GlobalMouseStubImpl : IGlobalMouseImpl
 	{
@@ -20,7 +22,7 @@
 		{
 		}
 
-		public void CaptureCursor(int x, int y, int width, int height)
+		public void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 		{
 		}
 

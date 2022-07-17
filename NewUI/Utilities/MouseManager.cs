@@ -237,7 +237,7 @@ namespace Mesen.Utilities
 				
 				PixelPoint topLeft = _renderer.PointToScreen(new Point(0, 0));
 
-				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, (int)_renderer.Bounds.Width, (int)_renderer.Bounds.Height);
+				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, (int)_renderer.Bounds.Width, (int)_renderer.Bounds.Height, _renderer.Handle);
 			}
 		}
 
