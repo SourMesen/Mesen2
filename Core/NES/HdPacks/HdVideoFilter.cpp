@@ -34,6 +34,11 @@ OverscanDimensions HdVideoFilter::GetOverscan()
 
 void HdVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
+	if(_frameData == nullptr) {
+		//_frameData can be null when loading a save state
+		return;
+	}
+
 	OverscanDimensions overscan = GetOverscan();
 	_hdNesPack->Process((HdScreenInfo*)_frameData, GetOutputBuffer(), overscan);
 }
