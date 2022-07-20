@@ -56,11 +56,12 @@ bool Serializer::LoadFrom(istream &file)
 
 	uint32_t size = (uint32_t)_data.size();
 	uint32_t i = 0;
+	string key;
 	while(i < size) {
-		string key;
+		key.clear();
 		for(uint32_t j = i; j < size; j++) {
 			if(_data[j] == 0) {
-				key = string(&_data[i], &_data[j]);
+				key.append((char*)&_data[i]);
 				break;
 			} else if(_data[j] <= ' ' || _data[j] >= 127) {
 				//invalid characters in key, state is invalid
@@ -86,7 +87,7 @@ bool Serializer::LoadFrom(istream &file)
 			return false;
 		}
 
-		_values[key] = SerializeValue(&_data[i], valueSize, key);
+		_values.emplace(key, SerializeValue(&_data[i], valueSize));
 
 		i += valueSize;
 	}

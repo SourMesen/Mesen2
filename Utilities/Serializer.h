@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
+#include "Utilities/FastString.h"
 
 class Serializer;
 
@@ -14,7 +15,6 @@ class Serializer;
 
 struct SerializeValue
 {
-	string Key;
 	uint8_t* DataPtr;
 	uint32_t Size;
 
@@ -24,11 +24,10 @@ struct SerializeValue
 		Size = 0;
 	}
 
-	SerializeValue(uint8_t* ptr, uint32_t size, string key)
+	SerializeValue(uint8_t* ptr, uint32_t size)
 	{
 		DataPtr = ptr;
 		Size = size;
-		Key = key;
 	}
 };
 
@@ -93,8 +92,8 @@ private:
 	void WriteValue(T value)
 	{
 		uint8_t* ptr = (uint8_t*)&value;
-		bool isBigEndian = false;
-		int mask = isBigEndian ? sizeof(T) - 1 : 0;
+		constexpr bool isBigEndian = false;
+		constexpr int mask = isBigEndian ? sizeof(T) - 1 : 0;
 		for(int i = 0; i < sizeof(T); i++) {
 			_data.push_back(ptr[i ^ mask]);
 		}
@@ -104,8 +103,8 @@ private:
 	void ReadValue(T& value, uint8_t* src)
 	{
 		uint8_t* ptr = (uint8_t*)&value;
-		bool isBigEndian = false;
-		int mask = isBigEndian ? sizeof(T) - 1 : 0;
+		constexpr bool isBigEndian = false;
+		constexpr int mask = isBigEndian ? sizeof(T) - 1 : 0;
 		for(int i = 0; i < sizeof(T); i++) {
 			ptr[i ^ mask] = src[i];
 		}
@@ -211,18 +210,26 @@ public:
 			WriteValue((uint32_t)(elementCount * sizeof(T)));
 
 			//Write array content
-			for(uint32_t i = 0; i < elementCount; i++) {
-				WriteValue(arrayValues[i]);
+			if constexpr(sizeof(T) == 1) {
+				_data.insert(_data.end(), arrayValues, arrayValues + elementCount);
+			} else {
+				for(uint32_t i = 0; i < elementCount; i++) {
+					WriteValue(arrayValues[i]);
+				}
 			}
 		} else {
 			auto result = _values.find(key);
 			if(result != _values.end()) {
 				SerializeValue& savedValue = result->second;
 				if(savedValue.Size >= elementCount * sizeof(T)) {
-					uint8_t* src = savedValue.DataPtr;
-					for(uint32_t i = 0; i < elementCount; i++) {
-						ReadValue(arrayValues[i], src);
-						src += sizeof(T);
+					if constexpr(sizeof(T) == 1) {
+						memcpy(arrayValues, savedValue.DataPtr, elementCount);
+					} else {
+						uint8_t* src = savedValue.DataPtr;
+						for(uint32_t i = 0; i < elementCount; i++) {
+							ReadValue(arrayValues[i], src);
+							src += sizeof(T);
+						}
 					}
 				} else {
 					memset(arrayValues, 0, sizeof(T) * elementCount);
