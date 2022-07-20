@@ -131,22 +131,20 @@ namespace Vrc7Opll
 	protected:
 		void Serialize(Serializer& s) override
 		{
-			ArrayInfo<uint8_t> lowFreq{ LowFreq, 6 };
-			ArrayInfo<uint8_t> hiFreq{ HiFreq, 6 };
-			ArrayInfo<uint8_t> instVol{ InstVol, 6 };
-			ArrayInfo<uint8_t> custInst{ CustInst, 8 };
-			ArrayInfo<int32_t> slotOnFlag{ slot_on_flag, 12 };
-			ArrayInfo<int32_t> patchNumber{ patch_number, 6 };
-			ArrayInfo<int32_t> keyStatus{ key_status, 6 };
+			SVArray(LowFreq, 6);
+			SVArray(HiFreq, 6);
+			SVArray(InstVol, 6);
+			SVArray(CustInst, 8);
+			SVArray(slot_on_flag, 12);
+			SVArray(patch_number, 6);
+			SVArray(key_status, 6);
 
-			s.Stream(tables.get());
+			SV(tables);
 			for(int i = 0; i < 12; i++) {
-				s.Stream(&slot[i]);
+				SVI(slot[i]);
 			}
 
-			s.Stream(adr, _out, realstep, oplltime, opllstep, prev, next, pm_phase, lfo_pm, am_phase, lfo_am, _mask,
-				lowFreq, hiFreq, instVol, custInst, slotOnFlag, patchNumber, keyStatus
-			);
+			SV(adr); SV(_out); SV(realstep); SV(oplltime); SV(opllstep); SV(prev); SV(next); SV(pm_phase); SV(lfo_pm); SV(am_phase); SV(lfo_am); SV(_mask);
 		}
 
 	public:

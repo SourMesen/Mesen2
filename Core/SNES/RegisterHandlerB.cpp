@@ -90,5 +90,5 @@ AddressInfo RegisterHandlerB::GetAbsoluteAddress(uint32_t address)
 
 void RegisterHandlerB::Serialize(Serializer &s)
 {
-	s.Stream(_wramPosition);
+	SV(_wramPosition);
 }

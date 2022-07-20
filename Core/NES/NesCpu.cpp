@@ -83,8 +83,8 @@ NesCpu::NesCpu(NesConsole* console)
 
 void NesCpu::Reset(bool softReset, ConsoleRegion region)
 {
-	_state.NMIFlag = false;
-	_state.IRQFlag = 0;
+	_state.NmiFlag = false;
+	_state.IrqFlag = 0;
 
 	_spriteDmaTransfer = false;
 	_spriteDmaOffset = 0;
@@ -316,15 +316,15 @@ void NesCpu::EndCpuCycle(bool forRead)
 	//"This edge detector polls the status of the NMI line during φ2 of each CPU cycle (i.e., during the 
 	//second half of each cycle) and raises an internal signal if the input goes from being high during 
 	//one cycle to being low during the next"
-	if(!_prevNmiFlag && _state.NMIFlag) {
+	if(!_prevNmiFlag && _state.NmiFlag) {
 		_needNmi = true;
 	}
-	_prevNmiFlag = _state.NMIFlag;
+	_prevNmiFlag = _state.NmiFlag;
 
 	//"it's really the status of the interrupt lines at the end of the second-to-last cycle that matters."
 	//Keep the irq lines values from the previous cycle.  The before-to-last cycle's values will be used
 	_prevRunIrq = _runIrq;
-	_runIrq = ((_state.IRQFlag & _irqMask) > 0 && !CheckFlag(PSFlags::Interrupt));
+	_runIrq = ((_state.IrqFlag & _irqMask) > 0 && !CheckFlag(PSFlags::Interrupt));
 }
 
 void NesCpu::StartCpuCycle(bool forRead)
@@ -447,8 +447,24 @@ void NesCpu::SetMasterClockDivider(ConsoleRegion region)
 
 void NesCpu::Serialize(Serializer &s)
 {
-	s.Stream(_state.PC, _state.SP, _state.PS, _state.A, _state.X, _state.Y, _state.CycleCount, _state.NMIFlag, 
-			_state.IRQFlag, _dmcDmaRunning, _spriteDmaTransfer,
-			_needDummyRead, _needHalt, _startClockCount, _endClockCount, _ppuOffset, _masterClock,
-			_prevNeedNmi, _prevNmiFlag, _needNmi);
+	SV(_state.PC);
+	SV(_state.SP);
+	SV(_state.PS);
+	SV(_state.A);
+	SV(_state.X);
+	SV(_state.Y);
+	SV(_state.CycleCount);
+	SV(_state.NmiFlag);
+	SV(_state.IrqFlag);
+	SV(_dmcDmaRunning);
+	SV(_spriteDmaTransfer);
+	SV(_needDummyRead);
+	SV(_needHalt);
+	SV(_startClockCount);
+	SV(_endClockCount);
+	SV(_ppuOffset);
+	SV(_masterClock);
+	SV(_prevNeedNmi);
+	SV(_prevNmiFlag);
+	SV(_needNmi);
 }

@@ -15,7 +15,7 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_emuVersion, _protocolVersion, _hashedPassword, _spectator);
+		SV(_emuVersion); SV(_protocolVersion); SV(_hashedPassword); SV(_spectator);
 	}
 
 public:

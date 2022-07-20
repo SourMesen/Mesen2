@@ -20,8 +20,8 @@ protected:
 	{
 		BaseControlDevice::Serialize(s);
 
-		ArrayInfo<uint8_t> bitStream{ _barcodeStream, BarcodeBattlerReader::StreamSize };
-		s.Stream(_newBarcode, _newBarcodeDigitCount, _insertCycle, bitStream);
+		SVArray(_barcodeStream, BarcodeBattlerReader::StreamSize);
+		SV(_newBarcode); SV(_newBarcodeDigitCount); SV(_insertCycle);
 	}
 
 	bool IsRawString() override

@@ -167,7 +167,11 @@ class MMC3 : public BaseMapper
 					} else {
 						access = MemoryAccessType::NoAccess;
 					}
-					SetCpuMemoryMapping(0x6000, 0x7FFF, 0, HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam, access);
+					if((HasBattery() && _saveRamSize > 0) || (!HasBattery() && _workRamSize > 0)) {
+						SetCpuMemoryMapping(0x6000, 0x7FFF, 0, HasBattery() ? PrgMemoryType::SaveRam : PrgMemoryType::WorkRam, access);
+					} else {
+						RemoveCpuMemoryMapping(0x6000, 0x7FFF);
+					}
 				}
 			}
 
@@ -178,10 +182,10 @@ class MMC3 : public BaseMapper
 		void Serialize(Serializer& s) override
 		{
 			BaseMapper::Serialize(s);
-			ArrayInfo<uint8_t> registers = { _registers, 8 };
-			s.Stream(&_a12Watcher);
-			s.Stream(_state.Reg8000, _state.RegA000, _state.RegA001, _currentRegister, _chrMode, _prgMode,
-				_irqReloadValue, _irqCounter, _irqReload, _irqEnabled, _wramEnabled, _wramWriteProtected, registers);
+			SVArray(_registers, 8);
+			SV(_a12Watcher);
+			SV(_state.Reg8000); SV(_state.RegA000); SV(_state.RegA001); SV(_currentRegister); SV(_chrMode); SV(_prgMode);
+			SV(_irqReloadValue); SV(_irqCounter); SV(_irqReload); SV(_irqEnabled); SV(_wramEnabled); SV(_wramWriteProtected);
 		}
 
 		uint16_t GetPRGPageSize() override { return 0x2000; }

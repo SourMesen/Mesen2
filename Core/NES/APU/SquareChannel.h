@@ -126,9 +126,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_realPeriod, _duty, _dutyPos, _sweepEnabled, _sweepPeriod, _sweepNegate, _sweepShift, _reloadSweep, _sweepDivider, _sweepTargetPeriod);
-		s.Stream(&_timer);
-		s.Stream(&_envelope);
+		SV(_realPeriod); SV(_duty); SV(_dutyPos); SV(_sweepEnabled); SV(_sweepPeriod); SV(_sweepNegate); SV(_sweepShift); SV(_reloadSweep); SV(_sweepDivider); SV(_sweepTargetPeriod);
+		SV(_timer);
+		SV(_envelope);
 	}
 
 	void GetMemoryRanges(MemoryRanges &ranges) override

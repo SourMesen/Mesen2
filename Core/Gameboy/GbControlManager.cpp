@@ -125,5 +125,8 @@ void GbControlManager::UpdateInputState()
 
 void GbControlManager::Serialize(Serializer& s)
 {
-	s.Stream(_state.InputSelect);
+	SV(_state.InputSelect);
+	for(uint8_t i = 0; i < _controlDevices.size(); i++) {
+		SVI(_controlDevices[i]);
+	}
 }

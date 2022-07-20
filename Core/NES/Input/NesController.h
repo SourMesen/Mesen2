@@ -17,7 +17,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBuffer, _microphoneEnabled);
+		SV(_stateBuffer); SV(_microphoneEnabled);
 	}
 
 	uint8_t GetControllerStateBuffer()

@@ -127,8 +127,8 @@ namespace Vrc7Opll
 	protected:
 		void Serialize(Serializer& s) override
 		{
-			s.Stream(_type, feedback, output[0], output[1], phase, dphase, pgout, _fnum, _block, _volume, _sustine, tll, rks, eg_mode, eg_phase, eg_dphase, _egout,
-				patch.TL, patch.FB, patch.EG, patch.ML, patch.AR, patch.DR, patch.SL, patch.RR, patch.KR, patch.KL, patch.AM, patch.PM, patch.WF);
+			SV(_type); SV(feedback); SV(output[0]); SV(output[1]); SV(phase); SV(dphase); SV(pgout); SV(_fnum); SV(_block); SV(_volume); SV(_sustine); SV(tll); SV(rks); SV(eg_mode); SV(eg_phase); SV(eg_dphase); SV(_egout);
+			SV(patch.TL); SV(patch.FB); SV(patch.EG); SV(patch.ML); SV(patch.AR); SV(patch.DR); SV(patch.SL); SV(patch.RR); SV(patch.KR); SV(patch.KL); SV(patch.AM); SV(patch.PM); SV(patch.WF);
 
 			if(!s.IsSaving()) {
 				UpdateAll();

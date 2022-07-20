@@ -95,9 +95,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_shiftRegister, _modeFlag);
-		s.Stream(&_envelope);
-		s.Stream(&_timer);
+		SV(_shiftRegister); SV(_modeFlag);
+		SV(_envelope);
+		SV(_timer);
 	}
 
 	void GetMemoryRanges(MemoryRanges &ranges) override

@@ -93,6 +93,6 @@ public:
 
 	void Serialize(Serializer &s)
 	{
-		s.Stream(_stage0, _stage1, _stage2, _output, _target, _enabled, _timersEnabled, _prevStage1);
+		SV(_stage0); SV(_stage1); SV(_stage2); SV(_output); SV(_target); SV(_enabled); SV(_timersEnabled); SV(_prevStage1);
 	}
 };

@@ -772,21 +772,21 @@ void Emulator::WaitForLock()
 
 void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLevel)
 {
-	Serializer serializer(SaveStateManager::FileFormatVersion);
+	Serializer s(SaveStateManager::FileFormatVersion);
 	if(includeSettings) {
-		serializer.Stream(_settings.get());
+		SV(_settings);
 	}
-	serializer.Stream(_console.get());
-	serializer.Save(out, compressionLevel);
+	s.Stream(_console, "");
+	s.Save(out, compressionLevel);
 }
 
 void Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, bool compressed)
 {
-	Serializer serializer(in, fileFormatVersion, compressed);
+	Serializer s(in, fileFormatVersion, compressed);
 	if(includeSettings) {
-		serializer.Stream(_settings.get());
+		SV(_settings);
 	}
-	serializer.Stream(_console.get());
+	s.Stream(_console, "");
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 }
 

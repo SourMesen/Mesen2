@@ -184,9 +184,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 
 void GbNoiseChannel::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.Volume, _state.EnvVolume, _state.EnvRaiseVolume, _state.EnvPeriod, _state.EnvTimer,
-		_state.ShiftRegister, _state.PeriodShift, _state.Divisor, _state.ShortWidthMode,
-		_state.Length, _state.LengthEnabled, _state.Enabled, _state.Timer, _state.Output
-	);
+	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer);
+	SV(_state.ShiftRegister); SV(_state.PeriodShift); SV(_state.Divisor); SV(_state.ShortWidthMode);
+	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.Output);
 }

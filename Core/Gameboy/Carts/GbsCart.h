@@ -147,6 +147,6 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_prgBank, _currentTrack, _startClock);
+		SV(_prgBank); SV(_currentTrack); SV(_startClock);
 	}
 };

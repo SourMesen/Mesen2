@@ -135,7 +135,11 @@ private:
 		uint8_t accessType;
 
 		GetCpuBankInfo(0x5113, value, memoryType, accessType);
-		SetCpuMemoryMapping(0x6000, 0x7FFF, value, memoryType, accessType);
+		if(accessType == MemoryAccessType::NoAccess) {
+			RemoveCpuMemoryMapping(0x6000, 0x7FFF);
+		} else {
+			SetCpuMemoryMapping(0x6000, 0x7FFF, value, memoryType, accessType);
+		}
 
 		//PRG Bank 0
 		//Mode 0,1,2 - Ignored
@@ -381,15 +385,15 @@ protected:
 	{
 		BaseMapper::Serialize(s);
 
-		ArrayInfo<uint8_t> prgBanks = { _prgBanks, 5 };
-		ArrayInfo<uint16_t> chrBanks = { _chrBanks, 12 };
-		s.Stream(_audio.get());
-		s.Stream(_prgRamProtect1, _prgRamProtect2, _fillModeTile, _fillModeColor, _verticalSplitEnabled, _verticalSplitRightSide,
-				_verticalSplitDelimiterTile, _verticalSplitScroll, _verticalSplitBank, _multiplierValue1, _multiplierValue2,
-				_nametableMapping, _extendedRamMode, _exAttributeLastNametableFetch, _exAttrLastFetchCounter, _exAttrSelectedChrBank, 
-				_prgMode, prgBanks, _chrMode, _chrUpperBits, chrBanks, _lastChrReg, 
-				_irqCounterTarget, _irqEnabled, _scanlineCounter, _irqPending, _ppuInFrame,
-				_splitInSplitRegion, _splitVerticalScroll, _splitTile, _splitTileNumber, _needInFrame);
+		SVArray(_prgBanks, 5);
+		SVArray(_chrBanks, 12);
+		SV(_audio);
+		SV(_prgRamProtect1); SV(_prgRamProtect2); SV(_fillModeTile); SV(_fillModeColor); SV(_verticalSplitEnabled); SV(_verticalSplitRightSide);
+		SV(_verticalSplitDelimiterTile); SV(_verticalSplitScroll); SV(_verticalSplitBank); SV(_multiplierValue1); SV(_multiplierValue2);
+		SV(_nametableMapping); SV(_extendedRamMode); SV(_exAttributeLastNametableFetch); SV(_exAttrLastFetchCounter); SV(_exAttrSelectedChrBank);
+		SV(_prgMode); SV(_chrMode); SV(_chrUpperBits); SV(_lastChrReg);
+		SV(_irqCounterTarget); SV(_irqEnabled); SV(_scanlineCounter); SV(_irqPending); SV(_ppuInFrame);
+		SV(_splitInSplitRegion); SV(_splitVerticalScroll); SV(_splitTile); SV(_splitTileNumber); SV(_needInFrame);
 
 		if(!s.IsSaving()) {
 			UpdatePrgBanks();

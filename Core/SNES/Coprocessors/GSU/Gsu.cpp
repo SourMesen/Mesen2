@@ -607,26 +607,24 @@ AddressInfo Gsu::GetAbsoluteAddress(uint32_t address)
 
 void Gsu::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.CycleCount, _state.RegisterLatch, _state.ProgramBank, _state.RomBank, _state.RamBank, _state.IrqDisabled,
-		_state.HighSpeedMode, _state.ClockSelect, _state.BackupRamEnabled, _state.ScreenBase, _state.ColorGradient, _state.PlotBpp,
-		_state.ScreenHeight, _state.GsuRamAccess, _state.GsuRomAccess, _state.CacheBase, _state.PlotTransparent, _state.PlotDither,
-		_state.ColorHighNibble, _state.ColorFreezeHigh, _state.ObjMode, _state.ColorReg, _state.SrcReg, _state.DestReg,
-		_state.RomReadBuffer, _state.RomDelay, _state.ProgramReadBuffer, _state.RamWriteAddress, _state.RamWriteValue, _state.RamDelay,
-		_state.RamAddress, _state.PrimaryCache.X, _state.PrimaryCache.Y, _state.PrimaryCache.ValidBits, _state.SecondaryCache.X,
-		_state.SecondaryCache.Y, _state.SecondaryCache.ValidBits,
-		_state.SFR.Alt1, _state.SFR.Alt2, _state.SFR.Carry, _state.SFR.ImmHigh, _state.SFR.ImmLow, _state.SFR.Irq, _state.SFR.Overflow,
-		_state.SFR.Prefix, _state.SFR.RomReadPending, _state.SFR.Running, _state.SFR.Sign, _state.SFR.Zero
-	);
+	SV(_state.CycleCount); SV(_state.RegisterLatch); SV(_state.ProgramBank); SV(_state.RomBank); SV(_state.RamBank); SV(_state.IrqDisabled);
+	SV(_state.HighSpeedMode); SV(_state.ClockSelect); SV(_state.BackupRamEnabled); SV(_state.ScreenBase); SV(_state.ColorGradient); SV(_state.PlotBpp);
+	SV(_state.ScreenHeight); SV(_state.GsuRamAccess); SV(_state.GsuRomAccess); SV(_state.CacheBase); SV(_state.PlotTransparent); SV(_state.PlotDither);
+	SV(_state.ColorHighNibble); SV(_state.ColorFreezeHigh); SV(_state.ObjMode); SV(_state.ColorReg); SV(_state.SrcReg); SV(_state.DestReg);
+	SV(_state.RomReadBuffer); SV(_state.RomDelay); SV(_state.ProgramReadBuffer); SV(_state.RamWriteAddress); SV(_state.RamWriteValue); SV(_state.RamDelay);
+	SV(_state.RamAddress); SV(_state.PrimaryCache.X); SV(_state.PrimaryCache.Y); SV(_state.PrimaryCache.ValidBits); SV(_state.SecondaryCache.X);
+	SV(_state.SecondaryCache.Y); SV(_state.SecondaryCache.ValidBits);
+	SV(_state.SFR.Alt1); SV(_state.SFR.Alt2); SV(_state.SFR.Carry); SV(_state.SFR.ImmHigh); SV(_state.SFR.ImmLow); SV(_state.SFR.Irq); SV(_state.SFR.Overflow);
+	SV(_state.SFR.Prefix); SV(_state.SFR.RomReadPending); SV(_state.SFR.Running); SV(_state.SFR.Sign); SV(_state.SFR.Zero);
 
-	s.StreamArray(_state.R, 16);
-	s.StreamArray(_state.PrimaryCache.Pixels, 8);
-	s.StreamArray(_state.SecondaryCache.Pixels, 8);
+	SVArray(_state.R, 16);
+	SVArray(_state.PrimaryCache.Pixels, 8);
+	SVArray(_state.SecondaryCache.Pixels, 8);
 
-	s.Stream(_waitForRamAccess, _waitForRomAccess, _stopped);
-	s.StreamArray(_cacheValid, 32);
-	s.StreamArray(_cache, 512);
-	s.StreamArray(_gsuRam, _gsuRamSize);
+	SV(_waitForRamAccess); SV(_waitForRomAccess); SV(_stopped);
+	SVArray(_cacheValid, 32);
+	SVArray(_cache, 512);
+	SVArray(_gsuRam, _gsuRamSize);
 }
 
 void Gsu::LoadBattery()

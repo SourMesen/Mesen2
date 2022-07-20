@@ -26,8 +26,8 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		ArrayInfo<uint8_t> data{ (uint8_t*)_data, BattleBox::FileSize };
-		s.Stream(_lastWrite, _address, _chipSelect, _output, _writeEnabled, _inputBitPosition, _isWrite, _isRead, _inputData, data);
+		SVArray((uint8_t*)_data, BattleBox::FileSize);
+		SV(_lastWrite); SV(_address); SV(_chipSelect); SV(_output); SV(_writeEnabled); SV(_inputBitPosition); SV(_isWrite); SV(_isRead); SV(_inputData);
 	}
 
 public:

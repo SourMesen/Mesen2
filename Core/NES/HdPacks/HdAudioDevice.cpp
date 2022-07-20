@@ -37,9 +37,9 @@ void HdAudioDevice::Serialize(Serializer& s)
 		if(trackOffset < 0) {
 			_lastBgmTrack = -1;
 		}
-		s.Stream(_album, _lastBgmTrack, trackOffset, _sfxVolume, _bgmVolume, _playbackOptions);
+		SV(_album); SV(_lastBgmTrack); SV(trackOffset); SV(_sfxVolume); SV(_bgmVolume); SV(_playbackOptions);
 	} else {
-		s.Stream(_album, _lastBgmTrack, trackOffset, _sfxVolume, _bgmVolume, _playbackOptions);
+		SV(_album); SV(_lastBgmTrack); SV(trackOffset); SV(_sfxVolume); SV(_bgmVolume); SV(_playbackOptions);
 		if(_lastBgmTrack != -1 && trackOffset > 0) {
 			PlayBgmTrack(_lastBgmTrack, trackOffset);
 		}

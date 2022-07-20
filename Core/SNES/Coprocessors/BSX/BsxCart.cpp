@@ -187,11 +187,11 @@ void BsxCart::Reset()
 
 void BsxCart::Serialize(Serializer& s)
 {
-	ArrayInfo<uint8_t> psRam = { _psRam, _psRamSize };
-	ArrayInfo<uint8_t> regs = { _regs, 0x10 };
-	ArrayInfo<uint8_t> dirtyRegs = { _dirtyRegs, 0x10 };
-	s.Stream(psRam, regs, dirtyRegs, _dirty);
-	s.Stream(_satellaview.get());
+	SVArray(_psRam, _psRamSize);
+	SVArray(_regs, 0x10);
+	SVArray(_dirtyRegs, 0x10);
+	SV(_dirty);
+	SV(_satellaview);
 
 	if(!s.IsSaving()) {
 		UpdateMemoryMappings();

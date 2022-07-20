@@ -19,7 +19,7 @@ protected:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_speed, _gain, _envelopeOff, _volumeIncrease, _frequency, _timer, _masterSpeed);
+		SV(_speed); SV(_gain); SV(_envelopeOff); SV(_volumeIncrease); SV(_frequency); SV(_timer); SV(_masterSpeed);
 	}
 
 public:

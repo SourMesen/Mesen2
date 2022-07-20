@@ -587,16 +587,14 @@ NecDspState& NecDsp::GetState()
 
 void NecDsp::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.A, _state.B, _state.DP, _state.DR, _state.K, _state.L, _state.M, _state.N, _state.PC,
-		_state.RP, _state.SerialIn, _state.SerialOut, _state.SP, _state.SR, _state.TR, _state.TRB, 
-		_state.FlagsA.Carry, _state.FlagsA.Overflow0, _state.FlagsA.Overflow1, _state.FlagsA.Sign0, _state.FlagsA.Sign1, _state.FlagsA.Zero,
-		_state.FlagsB.Carry, _state.FlagsB.Overflow0, _state.FlagsB.Overflow1, _state.FlagsB.Sign0, _state.FlagsB.Sign1, _state.FlagsB.Zero,
-		_state.CycleCount
-	);
+	SV(_state.A); SV(_state.B); SV(_state.DP); SV(_state.DR); SV(_state.K); SV(_state.L); SV(_state.M); SV(_state.N); SV(_state.PC);
+	SV(_state.RP); SV(_state.SerialIn); SV(_state.SerialOut); SV(_state.SP); SV(_state.SR); SV(_state.TR); SV(_state.TRB); 
+	SV(_state.FlagsA.Carry); SV(_state.FlagsA.Overflow0); SV(_state.FlagsA.Overflow1); SV(_state.FlagsA.Sign0); SV(_state.FlagsA.Sign1); SV(_state.FlagsA.Zero);
+	SV(_state.FlagsB.Carry); SV(_state.FlagsB.Overflow0); SV(_state.FlagsB.Overflow1); SV(_state.FlagsB.Sign0); SV(_state.FlagsB.Sign1); SV(_state.FlagsB.Zero);
+	SV(_state.CycleCount);
 
-	s.Stream(_opCode, _inRqmLoop);
-	s.StreamArray<uint16_t>(_ram, _ramSize);
-	s.StreamArray<uint16_t>(_stack, _stackSize);
+	SV(_opCode); SV(_inRqmLoop);
+	SVArray(_ram, _ramSize);
+	SVArray(_stack, _stackSize);
 }
 

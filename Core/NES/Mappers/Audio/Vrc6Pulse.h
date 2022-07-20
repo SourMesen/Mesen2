@@ -17,7 +17,7 @@ private:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_volume, _dutyCycle, _ignoreDuty, _frequency, _enabled, _timer, _step, _frequencyShift);
+		SV(_volume); SV(_dutyCycle); SV(_ignoreDuty); SV(_frequency); SV(_enabled); SV(_timer); SV(_step); SV(_frequencyShift);
 	}
 
 public:

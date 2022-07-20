@@ -21,8 +21,8 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		ArrayInfo<uint8_t> packetBytes { _packetBytes, 3 };
-		s.Stream(_stateBuffer, _packetPos, _packetSize, packetBytes);
+		SVArray(_packetBytes, 3);
+		SV(_stateBuffer); SV(_packetPos); SV(_packetSize);
 	}
 
 	void InternalSetStateFromInput() override

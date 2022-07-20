@@ -311,16 +311,16 @@ void SnesConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 
 void SnesConsole::Serialize(Serializer& s)
 {
-	s.Stream(_cpu.get());
-	s.Stream(_memoryManager.get());
-	s.Stream(_ppu.get());
-	s.Stream(_dmaController.get());
-	s.Stream(_internalRegisters.get());
-	s.Stream(_cart.get());
-	s.Stream(_controlManager.get());
-	s.Stream(_spc.get());
+	SV(_cpu);
+	SV(_memoryManager);
+	SV(_ppu);
+	SV(_dmaController);
+	SV(_internalRegisters);
+	SV(_cart);
+	SV(_controlManager);
+	SV(_spc);
 	if(_msu1) {
-		s.Stream(_msu1.get());
+		SV(_msu1);
 	}
 }
 

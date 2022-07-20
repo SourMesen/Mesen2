@@ -12,7 +12,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_ignoreRows);
+		SV(_ignoreRows);
 	}
 
 public:

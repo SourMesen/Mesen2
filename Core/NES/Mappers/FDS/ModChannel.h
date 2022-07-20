@@ -21,8 +21,8 @@ protected:
 	{
 		BaseFdsChannel::Serialize(s);
 		
-		ArrayInfo<uint8_t> modTable = { _modTable, 64 };
-		s.Stream(_counter, _modulationDisabled, _modTablePosition, _overflowCounter, modTable, _output);
+		SVArray(_modTable, 64);
+		SV(_counter); SV(_modulationDisabled); SV(_modTablePosition); SV(_overflowCounter); SV(_output);
 	}
 
 public:

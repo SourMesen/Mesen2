@@ -431,23 +431,21 @@ bool Cx4::IsBusy()
 
 void Cx4::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.CycleCount, _state.PB, _state.PC, _state.A, _state.P, _state.SP, _state.Mult, _state.RomBuffer,
-		_state.RamBuffer[0], _state.RamBuffer[1], _state.RamBuffer[2], _state.MemoryDataReg, _state.MemoryAddressReg,
-		_state.DataPointerReg, _state.Negative, _state.Zero, _state.Carry, _state.Overflow, _state.IrqFlag, _state.Stopped,
-		_state.Locked, _state.IrqDisabled, _state.SingleRom, _state.RamAccessDelay, _state.RomAccessDelay, _state.Bus.Address,
-		_state.Bus.DelayCycles, _state.Bus.Enabled, _state.Bus.Reading, _state.Bus.Writing, _state.Dma.Dest, _state.Dma.Enabled,
-		_state.Dma.Length, _state.Dma.Source, _state.Dma.Pos, _state.Suspend.Duration, _state.Suspend.Enabled, _state.Cache.Enabled,
-		_state.Cache.Lock[0], _state.Cache.Lock[1], _state.Cache.Address[0], _state.Cache.Address[1], _state.Cache.Base,
-		_state.Cache.Page, _state.Cache.ProgramBank, _state.Cache.ProgramCounter, _state.Cache.Pos
-	);
+	SV(_state.CycleCount); SV(_state.PB); SV(_state.PC); SV(_state.A); SV(_state.P); SV(_state.SP); SV(_state.Mult); SV(_state.RomBuffer);
+	SV(_state.RamBuffer[0]); SV(_state.RamBuffer[1]); SV(_state.RamBuffer[2]); SV(_state.MemoryDataReg); SV(_state.MemoryAddressReg);
+	SV(_state.DataPointerReg); SV(_state.Negative); SV(_state.Zero); SV(_state.Carry); SV(_state.Overflow); SV(_state.IrqFlag); SV(_state.Stopped);
+	SV(_state.Locked); SV(_state.IrqDisabled); SV(_state.SingleRom); SV(_state.RamAccessDelay); SV(_state.RomAccessDelay); SV(_state.Bus.Address);
+	SV(_state.Bus.DelayCycles); SV(_state.Bus.Enabled); SV(_state.Bus.Reading); SV(_state.Bus.Writing); SV(_state.Dma.Dest); SV(_state.Dma.Enabled);
+	SV(_state.Dma.Length); SV(_state.Dma.Source); SV(_state.Dma.Pos); SV(_state.Suspend.Duration); SV(_state.Suspend.Enabled); SV(_state.Cache.Enabled);
+	SV(_state.Cache.Lock[0]); SV(_state.Cache.Lock[1]); SV(_state.Cache.Address[0]); SV(_state.Cache.Address[1]); SV(_state.Cache.Base);
+	SV(_state.Cache.Page); SV(_state.Cache.ProgramBank); SV(_state.Cache.ProgramCounter); SV(_state.Cache.Pos);
 	
-	s.StreamArray(_state.Stack, 8);
-	s.StreamArray(_state.Regs, 16);
-	s.StreamArray(_state.Vectors, 0x20);
-	s.StreamArray(_prgRam[0], 256);
-	s.StreamArray(_prgRam[1], 256);
-	s.StreamArray(_dataRam, Cx4::DataRamSize);
+	SVArray(_state.Stack, 8);
+	SVArray(_state.Regs, 16);
+	SVArray(_state.Vectors, 0x20);
+	SVArray(_prgRam[0], 256);
+	SVArray(_prgRam[1], 256);
+	SVArray(_dataRam, Cx4::DataRamSize);
 }
 
 uint8_t Cx4::Peek(uint32_t addr)

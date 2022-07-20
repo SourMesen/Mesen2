@@ -337,21 +337,21 @@ uint64_t Gameboy::GetApuCycleCount()
 
 void Gameboy::Serialize(Serializer& s)
 {
-	s.Stream(_cpu.get());
-	s.Stream(_ppu.get());
-	s.Stream(_apu.get());
-	s.Stream(_memoryManager.get());
-	s.Stream(_cart.get());
-	s.Stream(_timer.get());
-	s.Stream(_dmaController.get());
-	s.Stream(_controlManager.get());
-	s.Stream(_hasBattery);
+	SV(_cpu);
+	SV(_ppu);
+	SV(_apu);
+	SV(_cart); //Process cart before memory manager to ensure mappings are updated properly
+	SV(_memoryManager);
+	SV(_timer);
+	SV(_dmaController);
+	SV(_controlManager);
+	SV(_hasBattery);
 
-	s.StreamArray(_cartRam, _cartRamSize);
-	s.StreamArray(_workRam, _workRamSize);
-	s.StreamArray(_videoRam, _videoRamSize);
-	s.StreamArray(_spriteRam, Gameboy::SpriteRamSize);
-	s.StreamArray(_highRam, Gameboy::HighRamSize);
+	SVArray(_cartRam, _cartRamSize);
+	SVArray(_workRam, _workRamSize);
+	SVArray(_videoRam, _videoRamSize);
+	SVArray(_spriteRam, Gameboy::SpriteRamSize);
+	SVArray(_highRam, Gameboy::HighRamSize);
 }
 
 void Gameboy::Stop()

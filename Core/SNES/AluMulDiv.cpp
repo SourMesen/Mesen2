@@ -112,8 +112,6 @@ AluState AluMulDiv::GetState()
 
 void AluMulDiv::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.MultOperand1, _state.MultOperand2, _state.MultOrRemainderResult, _state.Dividend, _state.Divisor, _state.DivResult,
-		_divCounter, _multCounter, _shift, _prevCpuCycle
-	);
+	SV(_state.MultOperand1); SV(_state.MultOperand2); SV(_state.MultOrRemainderResult); SV(_state.Dividend); SV(_state.Divisor); SV(_state.DivResult);
+	SV(_divCounter); SV(_multCounter); SV(_shift); SV(_prevCpuCycle);
 }

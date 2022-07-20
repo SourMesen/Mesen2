@@ -119,7 +119,7 @@ void Msu1::LoadTrack(uint32_t startOffset)
 void Msu1::Serialize(Serializer &s)
 {
 	uint32_t offset = _pcmReader.GetOffset();
-	s.Stream(_trackSelect, _tmpDataPointer, _dataPointer, _repeat, _paused, _volume, _trackMissing, _audioBusy, _dataBusy, offset);
+	SV(_trackSelect); SV(_tmpDataPointer); SV(_dataPointer); SV(_repeat); SV(_paused); SV(_volume); SV(_trackMissing); SV(_audioBusy); SV(_dataBusy); SV(offset);
 	if(!s.IsSaving()) {
 		_dataFile.seekg(_dataPointer, ios::beg);
 		LoadTrack(offset);

@@ -12,10 +12,10 @@ void FdsAudio::Serialize(Serializer& s)
 {
 	BaseExpansionAudio::Serialize(s);
 
-	ArrayInfo<uint8_t> waveTable = { _waveTable, 64 };
-	s.Stream(&_volume);
-	s.Stream(&_mod);
-	s.Stream(_waveWriteEnabled, _disableEnvelopes, _haltWaveform, _masterVolume, _waveOverflowCounter, _wavePitch, _wavePosition, _lastOutput, waveTable);
+	SVArray(_waveTable, 64);
+	SV(_volume);
+	SV(_mod);
+	SV(_waveWriteEnabled); SV(_disableEnvelopes); SV(_haltWaveform); SV(_masterVolume); SV(_waveOverflowCounter); SV(_wavePitch); SV(_wavePosition); SV(_lastOutput);
 }
 
 void FdsAudio::ClockAudio()

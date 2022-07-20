@@ -37,19 +37,21 @@ void BsxMemoryPack::SaveBattery()
 
 void BsxMemoryPack::Serialize(Serializer& s)
 {
-	s.Stream(_enableCsr, _enableEsr, _enableVendorInfo, _writeByte, _command);
+	SV(_enableCsr);
+	SV(_enableEsr);
+	SV(_enableVendorInfo);
+	SV(_writeByte);
+	SV(_command);
 	
 	if(s.IsSaving()) {
 		//Save content of memory pack as an IPS patch
 		vector<uint8_t> newData(_data, _data + _dataSize);
 		vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgData, newData);
-		VectorInfo<uint8_t> data { &ipsData };
-		s.Stream(data);
+		SVVector(ipsData);
 	} else {
 		//Apply IPS patch to original data and overwrite the current data
 		vector<uint8_t> ipsData;
-		VectorInfo<uint8_t> data { &ipsData };
-		s.Stream(data);
+		SVVector(ipsData);
 
 		if(ipsData.size() > 8) {
 			vector<uint8_t> output;

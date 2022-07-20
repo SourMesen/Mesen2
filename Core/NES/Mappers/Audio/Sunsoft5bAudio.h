@@ -78,10 +78,10 @@ protected:
 	{
 		BaseExpansionAudio::Serialize(s);
 
-		ArrayInfo<int16_t> timer{ _timer, 3 };
-		ArrayInfo<uint8_t> registers{ _registers, 0x10 };
-		ArrayInfo<uint8_t> toneStep{ _toneStep, 3 };
-		s.Stream(timer, registers, toneStep, _currentRegister, _lastOutput, _processTick);
+		SVArray(_timer, 3);
+		SVArray(_registers, 0x10);
+		SVArray(_toneStep, 3);
+		SV(_currentRegister); SV(_lastOutput); SV(_processTick);
 	}
 
 	void ClockAudio() override

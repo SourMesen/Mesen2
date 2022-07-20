@@ -89,7 +89,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_ramRtcEnabled, _prgBank, _ramBank);
-		s.StreamArray(_rtcRegisters, 5);
+		SV(_ramRtcEnabled);
+		SV(_prgBank);
+		SV(_ramBank);
+		SVArray(_rtcRegisters, 5);
 	}
 };

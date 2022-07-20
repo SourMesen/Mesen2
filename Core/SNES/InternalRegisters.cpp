@@ -237,11 +237,9 @@ AluState InternalRegisters::GetAluState()
 
 void InternalRegisters::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.EnableFastRom, _nmiFlag, _state.EnableNmi, _state.EnableHorizontalIrq, _state.EnableVerticalIrq, _state.HorizontalTimer,
-		_state.VerticalTimer, _state.IoPortOutput, _state.ControllerData[0], _state.ControllerData[1], _state.ControllerData[2], _state.ControllerData[3],
-		_irqLevel, _needIrq, _state.EnableAutoJoypadRead, _irqFlag
-	);
+	SV(_state.EnableFastRom); SV(_nmiFlag); SV(_state.EnableNmi); SV(_state.EnableHorizontalIrq); SV(_state.EnableVerticalIrq); SV(_state.HorizontalTimer);
+	SV(_state.VerticalTimer); SV(_state.IoPortOutput); SV(_state.ControllerData[0]); SV(_state.ControllerData[1]); SV(_state.ControllerData[2]); SV(_state.ControllerData[3]);
+	SV(_irqLevel); SV(_needIrq); SV(_state.EnableAutoJoypadRead); SV(_irqFlag);
 
-	s.Stream(&_aluMulDiv);
+	SV(_aluMulDiv);
 }

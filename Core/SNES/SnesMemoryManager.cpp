@@ -413,13 +413,7 @@ bool SnesMemoryManager::IsWorkRam(uint32_t cpuAddress)
 
 void SnesMemoryManager::Serialize(Serializer &s)
 {
-	s.Stream(_masterClock, _openBus, _cpuSpeed, _hClock, _dramRefreshPosition);
-	s.StreamArray(_workRam, SnesMemoryManager::WorkRamSize);
-
-	if(s.GetVersion() < 8) {
-		bool unusedHasEvent[1369];
-		s.StreamArray(unusedHasEvent, sizeof(unusedHasEvent));
-	}
-
-	s.Stream(_registerHandlerB.get());
+	SV(_masterClock); SV(_openBus); SV(_cpuSpeed); SV(_hClock); SV(_dramRefreshPosition);
+	SVArray(_workRam, SnesMemoryManager::WorkRamSize);
+	SV(_registerHandlerB);
 }

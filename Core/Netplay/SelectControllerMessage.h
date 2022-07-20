@@ -10,7 +10,7 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_portNumber);
+		SV(_portNumber);
 	}
 
 public:

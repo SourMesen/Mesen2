@@ -42,6 +42,6 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseMapper::Serialize(s);
-		s.Stream(_bf9097Mode);
+		SV(_bf9097Mode);
 	}
 };

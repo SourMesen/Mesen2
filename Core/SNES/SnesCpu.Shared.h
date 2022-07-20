@@ -1,4 +1,4 @@
-﻿void SnesCpu::PowerOn()
+void SnesCpu::PowerOn()
 {
 	_state = {};
 	_state.PC = GetResetVector();
@@ -582,9 +582,7 @@ bool SnesCpu::CheckFlag(uint8_t flag)
 
 void SnesCpu::Serialize(Serializer &s)
 {
-	s.Stream(
-		_state.A, _state.CycleCount, _state.D, _state.DBR, _state.EmulationMode, _state.IrqSource, _state.K,
-		_state.NmiFlag, _state.PC, _state.PrevIrqSource, _state.PrevNmiFlag, _state.PS, _state.SP, _state.StopState,
-		_state.X, _state.Y, _state.IrqLock, _state.NeedNmi, _state.PrevNeedNmi
-	);
+	SV(_state.A); SV(_state.CycleCount); SV(_state.D); SV(_state.DBR); SV(_state.EmulationMode); SV(_state.IrqSource); SV(_state.K);
+	SV(_state.NmiFlag); SV(_state.PC); SV(_state.PrevIrqSource); SV(_state.PrevNmiFlag); SV(_state.PS); SV(_state.SP); SV(_state.StopState);
+	SV(_state.X); SV(_state.Y); SV(_state.IrqLock); SV(_state.NeedNmi); SV(_state.PrevNeedNmi);
 }

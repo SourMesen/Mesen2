@@ -65,7 +65,7 @@ public:
 
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_enabled, _lengthCounterHalt, _newHaltValue, _lengthCounter, _lengthCounterPreviousValue, _lengthCounterReloadValue);
+		SV(_enabled); SV(_lengthCounterHalt); SV(_newHaltValue); SV(_lengthCounter); SV(_lengthCounterPreviousValue); SV(_lengthCounterReloadValue);
 	}
 
 	bool GetStatus()

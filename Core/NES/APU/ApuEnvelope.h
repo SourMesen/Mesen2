@@ -61,8 +61,8 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_constantVolume, _volume, _envelopeCounter, _start, _divider, _counter);
-		s.Stream(&LengthCounter);
+		SV(_constantVolume); SV(_volume); SV(_envelopeCounter); SV(_start); SV(_divider); SV(_counter);
+		SV(LengthCounter);
 	}
 
 	void TickEnvelope()

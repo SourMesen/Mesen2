@@ -18,10 +18,11 @@ private:
 protected:
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(&_pulse1);
-		s.Stream(&_pulse2);
-		s.Stream(&_saw);
-		s.Stream(_lastOutput, _haltAudio);
+		SV(_pulse1);
+		SV(_pulse2);
+		SV(_saw);
+		SV(_lastOutput);
+		SV(_haltAudio);
 	}
 	
 	void ClockAudio() override

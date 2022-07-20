@@ -15,7 +15,7 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_romFilename, _sha1Hash, _controllerPort, _paused);
+		SV(_romFilename); SV(_sha1Hash); SV(_controllerPort); SV(_paused);
 	}
 
 public:

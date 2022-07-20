@@ -12,8 +12,8 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_portNumber);
-		s.StreamVector(_inputState.State);
+		SV(_portNumber);
+		SVVector(_inputState.State);
 	}
 
 public:

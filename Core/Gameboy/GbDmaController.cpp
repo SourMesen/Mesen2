@@ -150,8 +150,6 @@ void GbDmaController::ProcessDmaBlock()
 
 void GbDmaController::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.OamDmaSource, _state.DmaStartDelay, _state.InternalDest, _state.DmaCounter, _state.DmaReadBuffer,
-		_state.CgbDmaDest, _state.CgbDmaLength, _state.CgbDmaSource, _state.CgbHdmaDone, _state.CgbHdmaRunning
-	);
+	SV(_state.OamDmaSource); SV(_state.DmaStartDelay); SV(_state.InternalDest); SV(_state.DmaCounter); SV(_state.DmaReadBuffer);
+	SV(_state.CgbDmaDest); SV(_state.CgbDmaLength); SV(_state.CgbDmaSource); SV(_state.CgbHdmaDone); SV(_state.CgbHdmaRunning);
 }

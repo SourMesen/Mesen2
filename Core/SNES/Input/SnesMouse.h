@@ -21,7 +21,7 @@ protected:
 	void Serialize(Serializer &s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBuffer, _sensitivity);
+		SV(_stateBuffer); SV(_sensitivity);
 	}
 
 	string GetKeyNames() override

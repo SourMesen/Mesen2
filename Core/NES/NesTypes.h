@@ -49,8 +49,8 @@ struct NesCpuState : BaseState
 	uint8_t X = 0;
 	uint8_t Y = 0;
 	uint8_t PS = 0;
-	uint8_t IRQFlag = 0;
-	bool NMIFlag = false;
+	uint8_t IrqFlag = 0;
+	bool NmiFlag = false;
 };
 
 enum class PrgMemoryType

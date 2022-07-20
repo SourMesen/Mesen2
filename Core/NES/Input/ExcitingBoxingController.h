@@ -15,7 +15,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_selectedSensors);
+		SV(_selectedSensors);
 	}
 
 	string GetKeyNames() override

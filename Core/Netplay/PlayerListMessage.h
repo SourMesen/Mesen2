@@ -12,18 +12,19 @@ protected:
 	{
 		if(s.IsSaving()) {
 			uint32_t playerCount = (uint32_t)_playerList.size();
-			s.Stream(playerCount);
+			SV(playerCount);
 			for(uint32_t i = 0; i < playerCount; i++) {
-				s.Stream(_playerList[i].ControllerPort, _playerList[i].IsHost);
+				SVI(_playerList[i].ControllerPort);
+				SVI(_playerList[i].IsHost);
 			}
 		} else {
 			uint32_t playerCount = 0;
-			s.Stream(playerCount);
-			
+			SV(playerCount);
+			_playerList.resize(playerCount);
+
 			for(uint32_t i = 0; i < playerCount; i++) {
-				PlayerInfo playerInfo;
-				s.Stream(playerInfo.ControllerPort, playerInfo.IsHost);
-				_playerList.push_back(playerInfo);
+				SVI(_playerList[i].ControllerPort);
+				SVI(_playerList[i].IsHost);
 			}
 		}
 	}

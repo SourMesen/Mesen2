@@ -127,8 +127,8 @@ void DeltaModulationChannel::Run(uint32_t targetCycle)
 
 void DeltaModulationChannel::Serialize(Serializer &s)
 {
-	s.Stream(_sampleAddr, _sampleLength, _outputLevel, _irqEnabled, _loopFlag, _currentAddr, _bytesRemaining, _readBuffer, _bufferEmpty, _shiftRegister, _bitsRemaining, _silenceFlag, _needToRun);
-	s.Stream(&_timer);
+	SV(_sampleAddr); SV(_sampleLength); SV(_outputLevel); SV(_irqEnabled); SV(_loopFlag); SV(_currentAddr); SV(_bytesRemaining); SV(_readBuffer); SV(_bufferEmpty); SV(_shiftRegister); SV(_bitsRemaining); SV(_silenceFlag); SV(_needToRun);
+	SV(_timer);
 }
 
 bool DeltaModulationChannel::IrqPending(uint32_t cyclesToRun)

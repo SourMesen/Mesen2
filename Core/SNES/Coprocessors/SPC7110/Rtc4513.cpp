@@ -188,6 +188,6 @@ void Rtc4513::Write(uint16_t addr, uint8_t value)
 
 void Rtc4513::Serialize(Serializer& s)
 {
-	ArrayInfo<uint8_t> regs = { _regs, 0x10 };
-	s.Stream(_lastTime, _enabled, _mode, _index, regs);
+	SVArray(_regs, 0x10);
+	SV(_lastTime); SV(_enabled); SV(_mode); SV(_index);
 }

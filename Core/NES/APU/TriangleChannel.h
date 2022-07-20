@@ -61,9 +61,9 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_linearCounter, _linearCounterReload, _linearReloadFlag, _linearControlFlag, _sequencePosition);
-		s.Stream(&_timer);
-		s.Stream(&_lengthCounter);
+		SV(_linearCounter); SV(_linearCounterReload); SV(_linearReloadFlag); SV(_linearControlFlag); SV(_sequencePosition);
+		SV(_timer);
+		SV(_lengthCounter);
 	}
 
 	void GetMemoryRanges(MemoryRanges &ranges) override

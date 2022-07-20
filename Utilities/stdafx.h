@@ -9,7 +9,8 @@
 #include <atomic>
 #include <cstring>
 #include <algorithm>
-
+#include <unordered_map>
+#include <unordered_set>
 #include "UTF8Util.h"
 
 using std::shared_ptr;
@@ -22,6 +23,8 @@ using std::string;
 using std::vector;
 using std::atomic;
 using std::atomic_flag;
+using std::unordered_map;
+using std::unordered_set;
 
 #ifndef __MINGW32__
 	#ifdef __clang__

@@ -20,46 +20,38 @@ EmuSettings::EmuSettings(Emulator* emu)
 
 void EmuSettings::Serialize(Serializer& s)
 {
-	//Save/load settings that have an impact on emulation (for movies, netplay, etc.)
-	s.Stream(
-		_video.IntegerFpsMode,
-		_emulation.RunAheadFrames
-	);
+	//Save/load settings that have an impact on emulation (for movies), netplay), etc.)
+	SV(_video.IntegerFpsMode);
+	SV(_emulation.RunAheadFrames);
 
 	switch(_emu->GetConsoleType()) {
 		case ConsoleType::Nes:
-			s.Stream(
-				_nes.ConsoleType, _nes.DipSwitches,
-				_nes.DisableOamAddrBug, _nes.DisablePaletteRead, _nes.DisablePpu2004Reads,
-				_nes.DisableGameGenieBusConflicts, _nes.DisablePpuReset, _nes.EnableOamDecay,
-				_nes.EnablePpu2000ScrollGlitch, _nes.EnablePpu2006ScrollGlitch, _nes.EnablePpuOamRowCorruption,
-				_nes.PpuExtraScanlinesAfterNmi, _nes.PpuExtraScanlinesBeforeNmi,
-				_nes.Region,
-				_nes.LightDetectionRadius,
-				_nes.Port1.Type, _nes.Port1SubPorts[0].Type, _nes.Port1SubPorts[1].Type, _nes.Port1SubPorts[2].Type, _nes.Port1SubPorts[3].Type,
-				_nes.Port2.Type,
-				_nes.ExpPort.Type, _nes.ExpPortSubPorts[0].Type, _nes.ExpPortSubPorts[1].Type, _nes.ExpPortSubPorts[2].Type, _nes.ExpPortSubPorts[3].Type
-			);
+			SV(_nes.ConsoleType); SV(_nes.DipSwitches);
+			SV(_nes.DisableOamAddrBug); SV(_nes.DisablePaletteRead); SV(_nes.DisablePpu2004Reads);
+			SV(_nes.DisableGameGenieBusConflicts); SV(_nes.DisablePpuReset); SV(_nes.EnableOamDecay);
+			SV(_nes.EnablePpu2000ScrollGlitch); SV(_nes.EnablePpu2006ScrollGlitch); SV(_nes.EnablePpuOamRowCorruption);
+			SV(_nes.PpuExtraScanlinesAfterNmi); SV(_nes.PpuExtraScanlinesBeforeNmi);
+			SV(_nes.Region);
+			SV(_nes.LightDetectionRadius);
+			SV(_nes.Port1.Type); SV(_nes.Port1SubPorts[0].Type); SV(_nes.Port1SubPorts[1].Type); SV(_nes.Port1SubPorts[2].Type); SV(_nes.Port1SubPorts[3].Type);
+			SV(_nes.Port2.Type);
+			SV(_nes.ExpPort.Type); SV(_nes.ExpPortSubPorts[0].Type); SV(_nes.ExpPortSubPorts[1].Type); SV(_nes.ExpPortSubPorts[2].Type); SV(_nes.ExpPortSubPorts[3].Type);
 			break;
 
 		case ConsoleType::Snes:
-			s.Stream(
-				_snes.GsuClockSpeed,
-				_snes.PpuExtraScanlinesAfterNmi, _snes.PpuExtraScanlinesBeforeNmi,
-				_snes.Region,
-				_snes.Port1.Type, _snes.Port1SubPorts[0].Type, _snes.Port1SubPorts[1].Type, _snes.Port1SubPorts[2].Type, _snes.Port1SubPorts[3].Type,
-				_snes.Port2.Type, _snes.Port2SubPorts[0].Type, _snes.Port2SubPorts[1].Type, _snes.Port2SubPorts[2].Type, _snes.Port2SubPorts[3].Type,
-				_snes.BsxCustomDate
-			);
+			SV(_snes.GsuClockSpeed);
+			SV(_snes.PpuExtraScanlinesAfterNmi); SV(_snes.PpuExtraScanlinesBeforeNmi);
+			SV(_snes.Region);
+			SV(_snes.Port1.Type); SV(_snes.Port1SubPorts[0].Type); SV(_snes.Port1SubPorts[1].Type); SV(_snes.Port1SubPorts[2].Type); SV(_snes.Port1SubPorts[3].Type);
+			SV(_snes.Port2.Type); SV(_snes.Port2SubPorts[0].Type); SV(_snes.Port2SubPorts[1].Type); SV(_snes.Port2SubPorts[2].Type); SV(_snes.Port2SubPorts[3].Type);
+			SV(_snes.BsxCustomDate);
 			break;
 
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:
-			s.Stream(
-				_gameboy.Controller.Type,
-				_gameboy.Model,
-				_gameboy.UseSgb2
-			);
+			SV(_gameboy.Controller.Type);
+			SV(_gameboy.Model);
+			SV(_gameboy.UseSgb2);
 			break;
 
 

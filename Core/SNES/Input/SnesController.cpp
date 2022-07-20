@@ -64,7 +64,7 @@ uint16_t SnesController::ToByte()
 void SnesController::Serialize(Serializer & s)
 {
 	BaseControlDevice::Serialize(s);
-	s.Stream(_stateBuffer);
+	SV(_stateBuffer);
 }
 
 void SnesController::RefreshStateBuffer()

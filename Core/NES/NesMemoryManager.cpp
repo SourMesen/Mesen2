@@ -149,8 +149,7 @@ void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSide
 
 void NesMemoryManager::Serialize(Serializer &s)
 {
-	ArrayInfo<uint8_t> internalRam = { _internalRAM, NesMemoryManager::InternalRAMSize };
-	s.Stream(internalRam);
+	SVArray(_internalRAM, NesMemoryManager::InternalRAMSize);
 }
 
 uint8_t NesMemoryManager::GetOpenBus(uint8_t mask)

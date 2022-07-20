@@ -15,8 +15,8 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.StreamVector(_stateData);
-		s.StreamVector(_activeCheats);
+		SVVector(_stateData);
+		SVVector(_activeCheats);
 	}
 
 public:

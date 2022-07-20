@@ -11,7 +11,7 @@ private:
 protected:	
 	void Serialize(Serializer &s) override
 	{
-		s.StreamVector(_inputState.State);
+		SVVector(_inputState.State);
 	}
 
 public:

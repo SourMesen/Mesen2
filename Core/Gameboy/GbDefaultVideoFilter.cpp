@@ -4,6 +4,7 @@
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/RewindManager.h"
 #include "Shared/SettingTypes.h"
 
 GbDefaultVideoFilter::GbDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
@@ -88,7 +89,11 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
 	}
-	_blendFrames = gbConfig.BlendFrames;
+	bool blendFrames = gbConfig.BlendFrames && !_emu->GetRewindManager()->IsRewinding();
+	if(_blendFrames != blendFrames) {
+		_blendFrames = blendFrames;
+		memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));
+	}
 	_videoConfig = config;
 }
 

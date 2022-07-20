@@ -326,6 +326,6 @@ void BaseControlDevice::SwapButtons(shared_ptr<BaseControlDevice> state1, uint8_
 void BaseControlDevice::Serialize(Serializer &s)
 {
 	auto lock = _stateLock.AcquireSafe();
-	s.Stream(_strobe);
-	s.StreamVector(_state.State);
+	SV(_strobe);
+	SVVector(_state.State);
 }

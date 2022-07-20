@@ -23,8 +23,10 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		VectorInfo<uint8_t> data { &_data };
-		s.Stream(_enabled, _isPlaying, _cycle, data);
+		SVVector(_data);
+		SV(_enabled);
+		SV(_isPlaying);
+		SV(_cycle);
 
 		if(!s.IsSaving() && _isRecording) {
 			StopRecording();

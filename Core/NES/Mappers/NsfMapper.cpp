@@ -376,14 +376,12 @@ void NsfMapper::Serialize(Serializer& s)
 {
 	BaseMapper::Serialize(s);
 
-	s.Stream(_mmc5Audio.get());
-	s.Stream(_vrc6Audio.get());
-	s.Stream(_vrc7Audio.get());
-	s.Stream(_fdsAudio.get());
-	s.Stream(_namcoAudio.get());
-	s.Stream(_sunsoftAudio.get());
+	SV(_mmc5Audio);
+	SV(_vrc6Audio);
+	SV(_vrc7Audio);
+	SV(_fdsAudio);
+	SV(_namcoAudio);
+	SV(_sunsoftAudio);
 
-	s.Stream(
-		_irqCounter, _mmc5MultiplierValues[0], _mmc5MultiplierValues[1], _hasBankSwitching, _songNumber
-	);
+	SV(_irqCounter); SV(_mmc5MultiplierValues[0]); SV(_mmc5MultiplierValues[1]); SV(_hasBankSwitching); SV(_songNumber);
 }

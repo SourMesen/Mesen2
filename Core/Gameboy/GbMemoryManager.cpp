@@ -481,17 +481,16 @@ uint64_t GbMemoryManager::GetApuCycleCount()
 
 void GbMemoryManager::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.DisableBootRom, _state.IrqEnabled, _state.IrqRequests,
-		_state.ApuCycleCount, _state.CgbHighSpeed, _state.CgbSwitchSpeedRequest, _state.CgbWorkRamBank,
-		_state.SerialData, _state.SerialControl, _state.SerialBitCount, _state.CycleCount,
-		_state.CgbRegFF72, _state.CgbRegFF73, _state.CgbRegFF74, _state.CgbRegFF75
-	);
-	s.StreamArray(_state.MemoryType, 0x100);
-	s.StreamArray(_state.MemoryOffset, 0x100);
-	s.StreamArray(_state.MemoryAccessType, 0x100);
-	s.StreamArray(_state.IsReadRegister, 0x100);
-	s.StreamArray(_state.IsWriteRegister, 0x100);
+	SV(_state.DisableBootRom); SV(_state.IrqEnabled); SV(_state.IrqRequests);
+	SV(_state.ApuCycleCount); SV(_state.CgbHighSpeed); SV(_state.CgbSwitchSpeedRequest); SV(_state.CgbWorkRamBank);
+	SV(_state.SerialData); SV(_state.SerialControl); SV(_state.SerialBitCount); SV(_state.CycleCount);
+	SV(_state.CgbRegFF72); SV(_state.CgbRegFF73); SV(_state.CgbRegFF74); SV(_state.CgbRegFF75);
+
+	SVArray(_state.MemoryType, 0x100);
+	SVArray(_state.MemoryOffset, 0x100);
+	SVArray(_state.MemoryAccessType, 0x100);
+	SVArray(_state.IsReadRegister, 0x100);
+	SVArray(_state.IsWriteRegister, 0x100);
 
 	if(!s.IsSaving()) {
 		//Restore mappings based on state

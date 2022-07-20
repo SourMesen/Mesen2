@@ -247,9 +247,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 void GbSquareChannel::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.SweepPeriod, _state.SweepNegate, _state.SweepShift, _state.SweepTimer, _state.SweepEnabled, _state.SweepFreq,
-		_state.Volume, _state.EnvVolume, _state.EnvRaiseVolume, _state.EnvPeriod, _state.EnvTimer, _state.Duty, _state.Frequency,
-		_state.Length, _state.LengthEnabled, _state.Enabled, _state.Timer, _state.DutyPos, _state.Output
-	);
+	SV(_state.SweepPeriod); SV(_state.SweepNegate); SV(_state.SweepShift); SV(_state.SweepTimer); SV(_state.SweepEnabled); SV(_state.SweepFreq);
+	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.Duty); SV(_state.Frequency);
+	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
 }

@@ -59,9 +59,9 @@ protected:
 	{
 		BaseExpansionAudio::Serialize(s);
 
-		s.Stream(&_square1);
-		s.Stream(&_square2);
-		s.Stream(_audioCounter, _lastOutput, _pcmReadMode, _pcmIrqEnabled, _pcmOutput);
+		SV(_square1);
+		SV(_square2);
+		SV(_audioCounter); SV(_lastOutput); SV(_pcmReadMode); SV(_pcmIrqEnabled); SV(_pcmOutput);
 	}
 
 	void ClockAudio() override

@@ -510,26 +510,23 @@ void Fds::Serialize(Serializer& s)
 {
 	BaseMapper::Serialize(s);
 
-	s.Stream(_audio.get());
+	SV(_audio);
 
-	s.Stream(_irqReloadValue, _irqCounter, _irqEnabled, _irqRepeatEnabled, _diskRegEnabled, _soundRegEnabled, _writeDataReg, _motorOn, _resetTransfer,
-		_readMode, _crcControl, _diskReady, _diskIrqEnabled, _extConWriteReg, _badCrc, _endOfHead, _readWriteEnabled, _readDataReg, _diskWriteProtected,
-		_diskNumber, _diskPosition, _delay, _previousCrcControlFlag, _gapEnded, _scanningDisk, _transferComplete,
-		_autoDiskEjectCounter, _autoDiskSwitchCounter, _restartAutoInsertCounter, _previousFrame, _lastDiskCheckFrame,
-		_successiveChecks, _previousDiskNumber, _crcAccumulator
-	);
+	SV(_irqReloadValue); SV(_irqCounter); SV(_irqEnabled); SV(_irqRepeatEnabled); SV(_diskRegEnabled); SV(_soundRegEnabled); SV(_writeDataReg); SV(_motorOn); SV(_resetTransfer);
+	SV(_readMode); SV(_crcControl); SV(_diskReady); SV(_diskIrqEnabled); SV(_extConWriteReg); SV(_badCrc); SV(_endOfHead); SV(_readWriteEnabled); SV(_readDataReg); SV(_diskWriteProtected);
+	SV(_diskNumber); SV(_diskPosition); SV(_delay); SV(_previousCrcControlFlag); SV(_gapEnded); SV(_scanningDisk); SV(_transferComplete);
+	SV(_autoDiskEjectCounter); SV(_autoDiskSwitchCounter); SV(_restartAutoInsertCounter); SV(_previousFrame); SV(_lastDiskCheckFrame);
+	SV(_successiveChecks); SV(_previousDiskNumber); SV(_crcAccumulator);
 
 	if(s.IsSaving()) {
 		for(size_t i = 0; i < _fdsDiskSides.size(); i++) {
 			vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgDiskSides[i], _fdsDiskSides[i]);
-			VectorInfo<uint8_t> data { &ipsData };
-			s.Stream(data);
+			SVVectorI(ipsData);
 		}
 	} else {
 		for(size_t i = 0; i < _fdsDiskSides.size(); i++) {
 			vector<uint8_t> ipsData;
-			VectorInfo<uint8_t> data { &ipsData };
-			s.Stream(data);
+			SVVectorI(ipsData);
 			IpsPatcher::PatchBuffer(ipsData, _orgDiskSides[i], _fdsDiskSides[i]);
 		}
 

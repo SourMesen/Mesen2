@@ -39,7 +39,7 @@ public:
 			_previousCycle = 0;
 		}
 
-		s.Stream(_timer, _period, _lastOutput);
+		SV(_timer); SV(_period); SV(_lastOutput);
 	}
 
 	__forceinline void AddOutput(int8_t output)

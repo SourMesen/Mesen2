@@ -259,10 +259,8 @@ uint8_t BsxStream::GetTime()
 
 void BsxStream::Serialize(Serializer& s)
 {
-	s.Stream(
-		_channel, _prefix, _data, _status, _prefixLatch, _dataLatch, _firstPacket, _fileOffset, _fileIndex,
-		_queueLength, _prefixQueueLength, _dataQueueLength, _resetDate, _resetMasterClock, _activeChannel, _activeFileIndex
-	);
+	SV(_channel); SV(_prefix); SV(_data); SV(_status); SV(_prefixLatch); SV(_dataLatch); SV(_firstPacket); SV(_fileOffset); SV(_fileIndex);
+	SV(_queueLength); SV(_prefixQueueLength); SV(_dataQueueLength); SV(_resetDate); SV(_resetMasterClock); SV(_activeChannel); SV(_activeFileIndex);
 
 	if(!s.IsSaving()) {
 		InitTimeStruct();

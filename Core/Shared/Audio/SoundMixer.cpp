@@ -65,6 +65,11 @@ void SoundMixer::StopAudio(bool clearBuffer)
 
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
+	if(_emu->IsPaused()) {
+		//Prevent audio from played if emulation is paused
+		return;
+	}
+
 	EmuSettings* settings = _emu->GetSettings();
 	AudioPlayerHud* audioPlayer = _emu->GetAudioPlayerHud();
 	AudioConfig cfg = settings->GetAudioConfig();

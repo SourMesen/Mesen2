@@ -32,7 +32,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBuffer, _readCount, _enabled);
+		SV(_stateBuffer); SV(_readCount); SV(_enabled);
 	}
 
 public:

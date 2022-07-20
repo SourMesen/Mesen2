@@ -51,7 +51,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBufferL, _stateBufferH);
+		SV(_stateBufferL); SV(_stateBufferH);
 	}
 
 public:

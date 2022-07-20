@@ -128,7 +128,7 @@ void GbPpu::ExecCycle()
 			//Mode turns to hblank on the same cycle as the last pixel is output (IRQ is on next cycle)
 			_state.Mode = PpuMode::HBlank;
 			if(_state.Scanline < 143) {
-				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 – 153)"
+				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 - 153)"
 				_dmaController->ProcessHdma();
 			}
 		}
@@ -992,32 +992,29 @@ void GbPpu::WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t v
 
 void GbPpu::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.Scanline, _state.Cycle, _state.Mode, _state.LyCompare, _state.BgPalette, _state.ObjPalette0, _state.ObjPalette1,
-		_state.ScrollX, _state.ScrollY, _state.WindowX, _state.WindowY, _state.Control, _state.LcdEnabled, _state.WindowTilemapSelect,
-		_state.WindowEnabled, _state.BgTileSelect, _state.BgTilemapSelect, _state.LargeSprites, _state.SpritesEnabled, _state.BgEnabled,
-		_state.Status, _state.FrameCount, _lastFrameTime, _state.LyCoincidenceFlag,
-		_state.CgbBgPalAutoInc, _state.CgbBgPalPosition,
-		_state.CgbObjPalAutoInc, _state.CgbObjPalPosition, _state.CgbVramBank, _state.CgbEnabled,
-		_latchWindowX, _latchWindowY, _latchWindowEnabled, _windowCounter, _isFirstFrame, _rendererIdle,
-		_state.IdleCycles, _state.Ly, _state.LyForCompare, _state.IrqMode
-	);
+	SV(_state.Scanline); SV(_state.Cycle); SV(_state.Mode); SV(_state.LyCompare); SV(_state.BgPalette); SV(_state.ObjPalette0); SV(_state.ObjPalette1);
+	SV(_state.ScrollX); SV(_state.ScrollY); SV(_state.WindowX); SV(_state.WindowY); SV(_state.Control); SV(_state.LcdEnabled); SV(_state.WindowTilemapSelect);
+	SV(_state.WindowEnabled); SV(_state.BgTileSelect); SV(_state.BgTilemapSelect); SV(_state.LargeSprites); SV(_state.SpritesEnabled); SV(_state.BgEnabled);
+	SV(_state.Status); SV(_state.FrameCount); SV(_lastFrameTime); SV(_state.LyCoincidenceFlag);
+	SV(_state.CgbBgPalAutoInc); SV(_state.CgbBgPalPosition);
+	SV(_state.CgbObjPalAutoInc); SV(_state.CgbObjPalPosition); SV(_state.CgbVramBank); SV(_state.CgbEnabled);
+	SV(_latchWindowX); SV(_latchWindowY); SV(_latchWindowEnabled); SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
+	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
+	SV(_state.StatIrqFlag);
 
-	s.StreamArray(_state.CgbBgPalettes, 4 * 8);
-	s.StreamArray(_state.CgbObjPalettes, 4 * 8);
+	SVArray(_state.CgbBgPalettes, 4 * 8);
+	SVArray(_state.CgbObjPalettes, 4 * 8);
 
-	s.Stream(
-		_bgFetcher.Attributes, _bgFetcher.Step, _bgFetcher.Addr, _bgFetcher.LowByte, _bgFetcher.HighByte,
-		_oamFetcher.Attributes, _oamFetcher.Step, _oamFetcher.Addr, _oamFetcher.LowByte, _oamFetcher.HighByte,
-		_drawnPixels, _fetchColumn, _fetchWindow, _fetchSprite, _spriteCount,
-		_bgFifo.Position, _bgFifo.Size, _oamFifo.Position, _oamFifo.Size
-	);
+	SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
+	SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
+	SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
+	SV(_bgFifo.Position); SV(_bgFifo.Size); SV(_oamFifo.Position); SV(_oamFifo.Size);
 
 	for(int i = 0; i < 8; i++) {
-		s.Stream(_bgFifo.Content[i].Color, _bgFifo.Content[i].Attributes);
-		s.Stream(_oamFifo.Content[i].Color, _oamFifo.Content[i].Attributes);
+		SVI(_bgFifo.Content[i].Color); SVI(_bgFifo.Content[i].Attributes);
+		SVI(_oamFifo.Content[i].Color); SVI(_oamFifo.Content[i].Attributes);
 	}
 
-	s.StreamArray(_spriteX, 10);
-	s.StreamArray(_spriteIndexes, 10);
+	SVArray(_spriteX, 10);
+	SVArray(_spriteIndexes, 10);
 }

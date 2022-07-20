@@ -75,7 +75,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseMapper::Serialize(s);
-		s.Stream(_prgChrSelectBit);
+		SV(_prgChrSelectBit);
 	}
 
 	void ProcessCpuClock() override

@@ -443,19 +443,26 @@ uint8_t* Spc::GetSpcRom()
 
 void Spc::Serialize(Serializer &s)
 {
-	s.Stream(_state.A, _state.Cycle, _state.PC, _state.PS, _state.SP, _state.X, _state.Y);
-	s.Stream(_state.CpuRegs[0], _state.CpuRegs[1], _state.CpuRegs[2], _state.CpuRegs[3]);
-	s.Stream(_state.OutputReg[0], _state.OutputReg[1], _state.OutputReg[2], _state.OutputReg[3]);
-	s.Stream(_state.RamReg[0], _state.RamReg[1]);
-	s.Stream(_state.ExternalSpeed, _state.InternalSpeed, _state.WriteEnabled, _state.TimersEnabled);
-	s.Stream(_state.DspReg, _state.RomEnabled, _clockRatio);
+	SV(_state.A); SV(_state.Cycle); SV(_state.PC); SV(_state.PS); SV(_state.SP); SV(_state.X); SV(_state.Y);
+	SV(_state.CpuRegs[0]); SV(_state.CpuRegs[1]); SV(_state.CpuRegs[2]); SV(_state.CpuRegs[3]);
+	SV(_state.OutputReg[0]); SV(_state.OutputReg[1]); SV(_state.OutputReg[2]); SV(_state.OutputReg[3]);
+	SV(_state.RamReg[0]); SV(_state.RamReg[1]);
+	SV(_state.ExternalSpeed); SV(_state.InternalSpeed); SV(_state.WriteEnabled); SV(_state.TimersEnabled);
+	SV(_state.DspReg); SV(_state.RomEnabled); SV(_clockRatio);
 
+	s.PushNamePrefix("timer0", -1);
 	_state.Timer0.Serialize(s);
-	_state.Timer1.Serialize(s);
-	_state.Timer2.Serialize(s);
+	s.PopNamePrefix();
 
-	ArrayInfo<uint8_t> ram { _ram, Spc::SpcRamSize };
-	s.Stream(ram);
+	s.PushNamePrefix("timer1", -1);
+	_state.Timer1.Serialize(s);
+	s.PopNamePrefix();
+
+	s.PushNamePrefix("timer2", -1);
+	_state.Timer2.Serialize(s);
+	s.PopNamePrefix();
+
+	SVArray(_ram, Spc::SpcRamSize);
 
 	uint8_t dspState[SPC_DSP::state_size];
 	memset(dspState, 0, SPC_DSP::state_size);
@@ -466,9 +473,9 @@ void Spc::Serialize(Serializer &s)
 			*output += size;
 		});
 
-		s.StreamArray(dspState, SPC_DSP::state_size);
+		SVArray(dspState, SPC_DSP::state_size);
 	} else {
-		s.StreamArray(dspState, SPC_DSP::state_size);
+		SVArray(dspState, SPC_DSP::state_size);
 
 		UpdateClockRatio();
 
@@ -481,7 +488,7 @@ void Spc::Serialize(Serializer &s)
 		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
 
-	s.Stream(_operandA, _operandB, _tmp1, _tmp2, _tmp3, _opCode, _opStep, _opSubStep, _enabled, _state.TimersDisabled);
+	SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled); SV(_state.TimersDisabled);
 }
 
 uint8_t Spc::GetOpCode()

@@ -35,8 +35,8 @@ protected:
 	{
 		BaseExpansionAudio::Serialize(s);
 
-		s.Stream(_opllEmulator.get());
-		s.Stream(_currentReg, _previousOutput, _clockTimer, _muted);
+		SV(_opllEmulator);
+		SV(_currentReg); SV(_previousOutput); SV(_clockTimer); SV(_muted);
 	}
 
 public:

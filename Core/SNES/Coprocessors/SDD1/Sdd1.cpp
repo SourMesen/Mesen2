@@ -98,11 +98,11 @@ void Sdd1::Write(uint32_t addr, uint8_t value)
 
 void Sdd1::Serialize(Serializer &s)
 {
-	s.Stream(_state.AllowDmaProcessing, _state.ProcessNextDma, _state.NeedInit);
-	s.StreamArray(_state.DmaAddress, 8);
-	s.StreamArray(_state.DmaLength, 8);
-	s.StreamArray(_state.SelectedBanks, 4);
-	s.Stream(_sdd1Mmc.get());
+	SV(_state.AllowDmaProcessing); SV(_state.ProcessNextDma); SV(_state.NeedInit);
+	SVArray(_state.DmaAddress, 8);
+	SVArray(_state.DmaLength, 8);
+	SVArray(_state.SelectedBanks, 4);
+	SV(_sdd1Mmc);
 }
 
 uint8_t Sdd1::Peek(uint32_t addr)

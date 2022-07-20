@@ -80,7 +80,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_row, _column, _enabled);
+		SV(_row); SV(_column); SV(_enabled);
 	}
 
 public:

@@ -14,7 +14,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		NesController::Serialize(s);
-		s.Stream(_state);
+		SV(_state);
 	}
 
 	void InternalSetStateFromInput() override

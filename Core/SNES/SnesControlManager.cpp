@@ -102,7 +102,7 @@ void SnesControlManager::Serialize(Serializer &s)
 		UpdateControlDevices();
 	}
 
-	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
-		s.Stream(device.get());
+	for(size_t i = 0; i < _controlDevices.size(); i++) {
+		SVI(_controlDevices[i]);
 	}
 }

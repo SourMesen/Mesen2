@@ -48,7 +48,7 @@ void VsControlManager::Reset(bool softReset)
 void VsControlManager::Serialize(Serializer& s)
 {
 	NesControlManager::Serialize(s);
-	s.Stream(_prgChrSelectBit, _protectionCounter, _refreshState);
+	SV(_prgChrSelectBit); SV(_protectionCounter); SV(_refreshState);
 }
 
 void VsControlManager::GetMemoryRanges(MemoryRanges &ranges)

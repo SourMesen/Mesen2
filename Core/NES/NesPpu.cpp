@@ -1393,24 +1393,24 @@ template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)
 
 template<class T> void NesPpu<T>::Serialize(Serializer& s)
 {
-	ArrayInfo<uint8_t> paletteRam = { _paletteRAM, 0x20 };
-	ArrayInfo<uint8_t> spriteRam = { _spriteRAM, 0x100 };
-	ArrayInfo<uint8_t> secondarySpriteRam = { _secondarySpriteRAM, 0x20 };
-	ArrayInfo<int32_t> openBusDecayStamp = { _openBusDecayStamp, 8 };
+	SVArray(_paletteRAM, 0x20);
+	SVArray(_spriteRAM, 0x100);
+	SVArray(_secondarySpriteRAM, 0x20);
+	SVArray(_openBusDecayStamp, 8);
 
-	s.Stream(_spriteRamAddr, _videoRamAddr, _xScroll, _tmpVideoRamAddr, _writeToggle,
-		_highBitShift, _lowBitShift, _control.VerticalWrite, _control.SpritePatternAddr, _control.BackgroundPatternAddr, _control.LargeSprites, _control.NmiOnVerticalBlank,
-		_mask.Grayscale, _mask.BackgroundMask, _mask.SpriteMask, _mask.BackgroundEnabled, _mask.SpritesEnabled, _mask.IntensifyRed, _mask.IntensifyGreen,
-		_mask.IntensifyBlue, _paletteRamMask, _intensifyColorBits, _statusFlags.SpriteOverflow, _statusFlags.Sprite0Hit, _statusFlags.VerticalBlank, _scanline,
-		_cycle, _frameCount, _memoryReadBuffer, _currentTilePalette, _tile.LowByte, _tile.HighByte,
-		_tile.PaletteOffset, _tile.TileAddr, _previousTilePalette, _spriteIndex, _spriteCount,
-		_secondaryOAMAddr, _sprite0Visible, _oamCopybuffer, _spriteInRange, _sprite0Added, _spriteAddrH, _spriteAddrL, _oamCopyDone, _region,
-		_prevRenderingEnabled, _renderingEnabled, _openBus, _ignoreVramRead, paletteRam, spriteRam, secondarySpriteRam,
-		openBusDecayStamp, _overflowBugCounter, _updateVramAddr, _updateVramAddrDelay,
-		_needStateUpdate, _ppuBusAddress, _preventVblFlag, _masterClock, _needVideoRamIncrement);
+	SV(_spriteRamAddr); SV(_videoRamAddr); SV(_xScroll); SV(_tmpVideoRamAddr); SV(_writeToggle);
+	SV(_highBitShift); SV(_lowBitShift); SV(_control.VerticalWrite); SV(_control.SpritePatternAddr); SV(_control.BackgroundPatternAddr); SV(_control.LargeSprites); SV(_control.NmiOnVerticalBlank);
+	SV(_mask.Grayscale); SV(_mask.BackgroundMask); SV(_mask.SpriteMask); SV(_mask.BackgroundEnabled); SV(_mask.SpritesEnabled); SV(_mask.IntensifyRed); SV(_mask.IntensifyGreen);
+	SV(_mask.IntensifyBlue); SV(_paletteRamMask); SV(_intensifyColorBits); SV(_statusFlags.SpriteOverflow); SV(_statusFlags.Sprite0Hit); SV(_statusFlags.VerticalBlank); SV(_scanline);
+	SV(_cycle); SV(_frameCount); SV(_memoryReadBuffer); SV(_currentTilePalette); SV(_tile.LowByte); SV(_tile.HighByte);
+	SV(_tile.PaletteOffset); SV(_tile.TileAddr); SV(_previousTilePalette); SV(_spriteIndex); SV(_spriteCount);
+	SV(_secondaryOAMAddr); SV(_sprite0Visible); SV(_oamCopybuffer); SV(_spriteInRange); SV(_sprite0Added); SV(_spriteAddrH); SV(_spriteAddrL); SV(_oamCopyDone); SV(_region);
+	SV(_prevRenderingEnabled); SV(_renderingEnabled); SV(_openBus); SV(_ignoreVramRead);
+	SV(_overflowBugCounter); SV(_updateVramAddr); SV(_updateVramAddrDelay);
+	SV(_needStateUpdate); SV(_ppuBusAddress); SV(_preventVblFlag); SV(_masterClock); SV(_needVideoRamIncrement);
 
 	for(int i = 0; i < 64; i++) {
-		s.Stream(_spriteTiles[i].SpriteX, _spriteTiles[i].LowByte, _spriteTiles[i].HighByte, _spriteTiles[i].PaletteOffset, _spriteTiles[i].HorizontalMirror, _spriteTiles[i].BackgroundPriority);
+		SVI(_spriteTiles[i].SpriteX); SVI(_spriteTiles[i].LowByte); SVI(_spriteTiles[i].HighByte); SVI(_spriteTiles[i].PaletteOffset); SVI(_spriteTiles[i].HorizontalMirror); SVI(_spriteTiles[i].BackgroundPriority);
 	}
 
 	if(!s.IsSaving()) {

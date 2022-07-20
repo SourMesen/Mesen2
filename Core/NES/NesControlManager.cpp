@@ -277,13 +277,14 @@ void NesControlManager::Reset(bool softReset)
 
 void NesControlManager::Serialize(Serializer& s)
 {
-	s.Stream(_lagCounter, _pollCounter);
+	SV(_lagCounter);
+	SV(_pollCounter);
 
 	if(!s.IsSaving()) {
 		UpdateControlDevices();
 	}
 
 	for(uint8_t i = 0; i < _controlDevices.size(); i++) {
-		s.Stream(_controlDevices[i].get());
+		SVI(_controlDevices[i]);
 	}
 }

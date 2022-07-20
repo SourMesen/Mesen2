@@ -21,7 +21,7 @@ string FdsInputButtons::GetKeyNames()
 void FdsInputButtons::Serialize(Serializer& s)
 {
 	BaseControlDevice::Serialize(s);
-	s.Stream(_needEjectDisk, _insertDiskNumber, _insertDiskDelay);
+	SV(_needEjectDisk); SV(_insertDiskNumber); SV(_insertDiskDelay);
 }
 
 void FdsInputButtons::OnAfterSetState()

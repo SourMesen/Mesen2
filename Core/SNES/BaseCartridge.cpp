@@ -646,15 +646,15 @@ void BaseCartridge::SetupCpuHalt()
 
 void BaseCartridge::Serialize(Serializer &s)
 {
-	s.StreamArray(_saveRam, _saveRamSize);
+	SVArray(_saveRam, _saveRamSize);
 	if(_coprocessor) {
-		s.Stream(_coprocessor.get());
+		SV(_coprocessor);
 	}
 	if(_bsxMemPack) {
-		s.Stream(_bsxMemPack.get());
+		SV(_bsxMemPack);
 	}
 	if(_gameboy) {
-		s.Stream(_gameboy.get());
+		SV(_gameboy);
 	}
 }
 

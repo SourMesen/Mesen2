@@ -108,7 +108,10 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 	
 	if((uint16_t)(endAddr - startAddr) >= pageSize) {
 		#ifdef _DEBUG
-		MessageManager::DisplayMessage("Debug", "Tried to map undefined prg - page size too small for selected range.");
+		uint16_t gap = endAddr - startAddr + 1;
+		if(gap % pageSize != 0) {
+			MessageManager::DisplayMessage("Debug", "Tried to map undefined prg - page size too small for selected range.");
+		}
 		#endif
 		
 		//If range is bigger than a single page, keep going until we reach the last page
@@ -503,22 +506,22 @@ void BaseMapper::RemoveRegisterRange(uint16_t startAddr, uint16_t endAddr, Memor
 
 void BaseMapper::Serialize(Serializer& s)
 {
-	//Need to get the number of nametables in the state first, before we try to stream the nametable ram array
-	s.Stream(_nametableCount);
+	//Need to get the number of nametables in the state first), before we try to stream the nametable ram array
+	SV(_nametableCount);
 
-	ArrayInfo<uint8_t> chrRam = { _chrRam, _chrRamSize };
-	ArrayInfo<uint8_t> workRam = { _workRam, _workRamSize };
-	ArrayInfo<uint8_t> saveRam = { _saveRam, _saveRamSize };
-	ArrayInfo<uint8_t> nametableRam = { _nametableRam, _nametableCount * BaseMapper::NametableSize };
+	SVArray(_chrRam, _chrRamSize);
+	SVArray(_workRam, _workRamSize);
+	SVArray(_saveRam, _saveRamSize);
+	SVArray(_nametableRam, _nametableCount * BaseMapper::NametableSize);
 
-	ArrayInfo<int32_t> prgMemoryOffset = { _prgMemoryOffset, 0x100 };
-	ArrayInfo<int32_t> chrMemoryOffset = { _chrMemoryOffset, 0x40 };
-	ArrayInfo<PrgMemoryType> prgMemoryType = { _prgMemoryType, 0x100 };
-	ArrayInfo<ChrMemoryType> chrMemoryType = { _chrMemoryType, 0x40 };
-	ArrayInfo<MemoryAccessType> prgMemoryAccess = { _prgMemoryAccess, 0x100 };
-	ArrayInfo<MemoryAccessType> chrMemoryAccess = { _chrMemoryAccess, 0x40 };
+	SVArray(_prgMemoryOffset, 0x100);
+	SVArray(_chrMemoryOffset, 0x40);
+	SVArray(_prgMemoryType, 0x100);
+	SVArray(_chrMemoryType, 0x40);
+	SVArray(_prgMemoryAccess, 0x100);
+	SVArray(_chrMemoryAccess, 0x40);
 
-	s.Stream(_mirroringType, chrRam, workRam, saveRam, nametableRam, prgMemoryOffset, chrMemoryOffset, prgMemoryType, chrMemoryType, prgMemoryAccess, chrMemoryAccess);
+	SV(_mirroringType);
 
 	if(!s.IsSaving()) {
 		RestorePrgChrState();
@@ -565,8 +568,8 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 
 	if(romData.WorkRamSize == -1) {
 		_workRamSize = HasBattery() ? 0 : GetWorkRamSize();
-	} else if(ForceSaveRamSize()) {
-		_workRamSize = ForceWorkRamSize();
+	} else if(ForceWorkRamSize()) {
+		_workRamSize = GetWorkRamSize();
 	} else {
 		_workRamSize = romData.WorkRamSize;
 	}
@@ -792,7 +795,8 @@ uint8_t BaseMapper::PeekRam(uint16_t addr)
 uint8_t BaseMapper::DebugReadRAM(uint16_t addr)
 {
 	if(_prgMemoryAccess[addr >> 8] & MemoryAccessType::Read) {
-		return _prgPages[addr >> 8][(uint8_t)addr];
+		uint8_t* page = _prgPages[addr >> 8];
+		return page[(uint8_t)addr];
 	} else {
 		//assert(false);
 	}
@@ -820,11 +824,12 @@ void BaseMapper::WriteRam(uint16_t addr, uint8_t value)
 void BaseMapper::DebugWriteRAM(uint16_t addr, uint8_t value)
 {
 	if(_isWriteRegisterAddr[addr]) {
-		if(_hasBusConflicts) {
-			value &= _prgPages[addr >> 8][(uint8_t)addr];
-		}
+		//not supported
 	} else {
-		WritePrgRam(addr, value);
+		if(_prgMemoryAccess[addr >> 8] & MemoryAccessType::Write) {
+			uint8_t* page = _prgPages[addr >> 8];
+			page[(uint8_t)addr] = value;
+		}
 	}
 }
 

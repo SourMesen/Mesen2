@@ -31,15 +31,17 @@ NesSoundMixer::~NesSoundMixer()
 
 void NesSoundMixer::Serialize(Serializer& s)
 {
-	s.Stream(_clockRate, _sampleRate);
+	SV(_clockRate);
+	SV(_sampleRate);
 
 	if(!s.IsSaving()) {
 		Reset();
 		UpdateRates(true);
 	}
 
-	ArrayInfo<int16_t> currentOutput = { _currentOutput, MaxChannelCount };
-	s.Stream(_previousOutputLeft, currentOutput, _previousOutputRight);
+	SVArray(_currentOutput, MaxChannelCount);
+	SV(_previousOutputLeft);
+	SV(_previousOutputRight);
 }
 
 void NesSoundMixer::Reset()

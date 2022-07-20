@@ -64,7 +64,7 @@ public:
 
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_previousCycle, _currentStep, _stepMode, _inhibitIRQ, _blockFrameCounterTick, _writeDelayCounter, _newValue);
+		SV(_previousCycle); SV(_currentStep); SV(_stepMode); SV(_inhibitIRQ); SV(_blockFrameCounterTick); SV(_writeDelayCounter); SV(_newValue);
 
 		if(!s.IsSaving()) {
 			SetRegion(_console->GetRegion());

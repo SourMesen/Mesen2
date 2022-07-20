@@ -31,7 +31,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_enableP1, _enableP2);
+		SV(_enableP1); SV(_enableP2);
 	}
 
 public:

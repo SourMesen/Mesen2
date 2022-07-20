@@ -145,9 +145,7 @@ uint8_t GbWaveChannel::ReadRam(uint16_t addr)
 
 void GbWaveChannel::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.DacEnabled, _state.SampleBuffer, _state.Position, _state.Volume, _state.Frequency,
-		_state.Length, _state.LengthEnabled, _state.Enabled, _state.Timer, _state.Output
-	);
-	s.StreamArray(_state.Ram, 0x10);
+	SV(_state.DacEnabled); SV(_state.SampleBuffer); SV(_state.Position); SV(_state.Volume); SV(_state.Frequency);
+	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.Output);
+	SVArray(_state.Ram, 0x10);
 }

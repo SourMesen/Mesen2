@@ -12,7 +12,7 @@ private:
 protected:
 	void Serialize(Serializer &s) override
 	{
-		s.Stream(_disconnectMessage);
+		SV(_disconnectMessage);
 	}
 
 public:

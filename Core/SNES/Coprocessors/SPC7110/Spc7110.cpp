@@ -55,18 +55,16 @@ Spc7110::Spc7110(SnesConsole* console, bool useRtc) : BaseCoprocessor(MemoryType
 
 void Spc7110::Serialize(Serializer& s)
 {
-	ArrayInfo<uint8_t> decompBuffer = { _decompBuffer, 32 };
-	ArrayInfo<uint8_t> dataRomBanks = { _dataRomBanks, 3 };
+	SVArray(_decompBuffer, 32);
+	SVArray(_dataRomBanks, 3);
 
-	s.Stream(
-		_directoryBase, _directoryIndex, _targetOffset, _dataLengthCounter, _skipBytes, _decompFlags, _decompMode, _srcAddress, _decompOffset, _decompStatus,
-		decompBuffer, _dividend = 0, _multiplier, _divisor, _multDivResult, _remainder, _aluState, _aluFlags, _sramEnabled, dataRomBanks, _dataRomSize, _readBase,
-		_readOffset, _readStep, _readMode, _readBuffer
-	);
+	SV(_directoryBase); SV(_directoryIndex); SV(_targetOffset); SV(_dataLengthCounter); SV(_skipBytes); SV(_decompFlags); SV(_decompMode); SV(_srcAddress); SV(_decompOffset); SV(_decompStatus);
+	SV(_dividend); SV(_multiplier); SV(_divisor); SV(_multDivResult); SV(_remainder); SV(_aluState); SV(_aluFlags); SV(_sramEnabled); SV(_dataRomSize); SV(_readBase);
+	SV(_readOffset); SV(_readStep); SV(_readMode); SV(_readBuffer);
 
-	s.Stream(_decomp.get());
+	SV(_decomp);
 	if(_rtc) {
-		s.Stream(_rtc.get());
+		SV(_rtc);
 	}
 }
 

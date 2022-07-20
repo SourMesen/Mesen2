@@ -1416,9 +1416,7 @@ void GbCpu::PREFIX()
 
 void GbCpu::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.PC, _state.SP, _state.A, _state.Flags, _state.B,
-		_state.C, _state.D, _state.E, _state.H, _state.L, _state.IME, _state.Halted,
-		_state.EiPending
-	);
+	SV(_state.PC); SV(_state.SP); SV(_state.A); SV(_state.Flags); SV(_state.B);
+	SV(_state.C); SV(_state.D); SV(_state.E); SV(_state.H); SV(_state.L); SV(_state.IME); SV(_state.Halted);
+	SV(_state.EiPending);
 }

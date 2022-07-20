@@ -134,7 +134,7 @@ AddressInfo BsxSatellaview::GetAbsoluteAddress(uint32_t address)
 
 void BsxSatellaview::Serialize(Serializer& s)
 {
-	s.Stream(_extOutput, _streamReg, _customDate, _prevMasterClock);
-	s.Stream(&_stream[0]);
-	s.Stream(&_stream[1]);
+	SV(_extOutput); SV(_streamReg); SV(_customDate); SV(_prevMasterClock);
+	SV(_stream[0]);
+	SV(_stream[1]);
 }

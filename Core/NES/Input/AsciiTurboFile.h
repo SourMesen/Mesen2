@@ -20,8 +20,8 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		ArrayInfo<uint8_t> data { _data, AsciiTurboFile::FileSize };
-		s.Stream(_position, _lastWrite, data);
+		SVArray(_data, AsciiTurboFile::FileSize);
+		SV(_position); SV(_lastWrite);
 	}
 
 public:

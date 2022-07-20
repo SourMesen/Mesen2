@@ -331,18 +331,16 @@ void GbApu::ProcessLengthEnableFlag(uint8_t value, T &length, bool &lengthEnable
 
 void GbApu::Serialize(Serializer& s)
 {
-	s.Stream(
-		_state.ApuEnabled, _state.FrameSequenceStep,
-		_state.EnableLeftSq1, _state.EnableLeftSq2, _state.EnableLeftWave, _state.EnableLeftNoise,
-		_state.EnableRightSq1, _state.EnableRightSq2, _state.EnableRightWave, _state.EnableRightNoise,
-		_state.LeftVolume, _state.RightVolume, _state.ExtAudioLeftEnabled, _state.ExtAudioRightEnabled,
-		_prevLeftOutput, _prevRightOutput, _clockCounter, _prevClockCount
-	);
+	SV(_state.ApuEnabled); SV(_state.FrameSequenceStep);
+	SV(_state.EnableLeftSq1); SV(_state.EnableLeftSq2); SV(_state.EnableLeftWave); SV(_state.EnableLeftNoise);
+	SV(_state.EnableRightSq1); SV(_state.EnableRightSq2); SV(_state.EnableRightWave); SV(_state.EnableRightNoise);
+	SV(_state.LeftVolume); SV(_state.RightVolume); SV(_state.ExtAudioLeftEnabled); SV(_state.ExtAudioRightEnabled);
+	SV(_prevLeftOutput); SV(_prevRightOutput); SV(_clockCounter); SV(_prevClockCount);
 
-	s.Stream(_square1.get());
-	s.Stream(_square2.get());
-	s.Stream(_wave.get());
-	s.Stream(_noise.get());
+	SV(_square1);
+	SV(_square2);
+	SV(_wave);
+	SV(_noise);
 }
 
 template void GbApu::ProcessLengthEnableFlag<uint8_t>(uint8_t value, uint8_t& length, bool& lengthEnabled, bool& enabled);

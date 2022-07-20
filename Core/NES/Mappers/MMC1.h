@@ -118,8 +118,12 @@ class MMC1 : public BaseMapper
 					SetCpuMemoryMapping(0x6000, 0x7FFF, (extraReg >> 2) & 0x01, memType, access);
 				}
 			} else {
-				//Everything else - 8kb of work or save ram
-				SetCpuMemoryMapping(0x6000, 0x7FFF, 0, memType, access);
+				if(_saveRamSize + _workRamSize == 0) {
+					RemoveCpuMemoryMapping(0x6000, 0x7FFF);
+				} else {
+					//Everything else - 8kb of work or save ram
+					SetCpuMemoryMapping(0x6000, 0x7FFF, 0, memType, access);
+				}
 			}
 
 			if(_romInfo.SubMapperID == 5) {
@@ -152,7 +156,7 @@ class MMC1 : public BaseMapper
 		void Serialize(Serializer& s) override
 		{
 			BaseMapper::Serialize(s);
-			s.Stream( _writeBuffer, _shiftCount, _wramDisable, _chrMode, _prgMode, _slotSelect, _chrReg0, _chrReg1, _prgReg, _lastWriteCycle, _lastChrReg);
+			SV(_writeBuffer); SV(_shiftCount); SV(_wramDisable); SV(_chrMode); SV(_prgMode); SV(_slotSelect); SV(_chrReg0); SV(_chrReg1); SV(_prgReg); SV(_lastWriteCycle); SV(_lastChrReg);
 		}
 
 		void InitMapper() override

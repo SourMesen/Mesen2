@@ -29,7 +29,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBuffer, _currentValue);
+		SV(_stateBuffer); SV(_currentValue);
 	}
 
 	void RefreshStateBuffer() override

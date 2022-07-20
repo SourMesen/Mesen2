@@ -14,7 +14,7 @@ protected:
 	void Serialize(Serializer &s) override
 	{
 		ControllerHub::Serialize(s);
-		s.Stream(_signature[0], _signature[1], _sigCounter[0], _sigCounter[1]);
+		SV(_signature[0]); SV(_signature[1]); SV(_sigCounter[0]); SV(_sigCounter[1]);
 	}
 
 	void RefreshStateBuffer() override

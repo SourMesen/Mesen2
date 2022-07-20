@@ -120,9 +120,9 @@ protected:
 	{
 		BaseExpansionAudio::Serialize(s);
 
-		ArrayInfo<uint8_t> internalRam{ _internalRam, 0x80 };
-		ArrayInfo<int16_t> channelOutput{ _channelOutput, 8 };
-		s.Stream(internalRam, channelOutput, _ramPosition, _autoIncrement, _updateCounter, _currentChannel, _lastOutput, _disableSound);
+		SVArray(_internalRam, 0x80);
+		SVArray(_channelOutput, 8);
+		SV(_ramPosition); SV(_autoIncrement); SV(_updateCounter); SV(_currentChannel); SV(_lastOutput); SV(_disableSound);
 	}
 
 	void ClockAudio() override

@@ -344,14 +344,12 @@ AddressInfo SuperGameboy::GetAbsoluteAddress(uint32_t address)
 
 void SuperGameboy::Serialize(Serializer& s)
 {
-	s.Stream(
-		_control, _resetClock, _input[0], _input[1], _input[2], _input[3], _inputIndex, _listeningForPacket, _packetReady,
-		_inputWriteClock, _inputValue, _packetByte, _packetBit, _lcdRowSelect, _readPosition, _waitForHigh, _clockRatio
-	);
+	SV(_control); SV(_resetClock); SV(_input[0]); SV(_input[1]); SV(_input[2]); SV(_input[3]); SV(_inputIndex); SV(_listeningForPacket); SV(_packetReady);
+	SV(_inputWriteClock); SV(_inputValue); SV(_packetByte); SV(_packetBit); SV(_lcdRowSelect); SV(_readPosition); SV(_waitForHigh); SV(_clockRatio);
 
-	s.StreamArray(_packetData, 16);
-	s.StreamArray(_lcdBuffer[0], 1280);
-	s.StreamArray(_lcdBuffer[1], 1280);
-	s.StreamArray(_lcdBuffer[2], 1280);
-	s.StreamArray(_lcdBuffer[3], 1280);
+	SVArray(_packetData, 16);
+	SVArray(_lcdBuffer[0], 1280);
+	SVArray(_lcdBuffer[1], 1280);
+	SVArray(_lcdBuffer[2], 1280);
+	SVArray(_lcdBuffer[3], 1280);
 }

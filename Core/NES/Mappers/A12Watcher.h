@@ -20,7 +20,7 @@ private:
 public:
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_lastCycle, _cyclesDown);
+		SV(_lastCycle); SV(_cyclesDown);
 	}
 
 	template<uint8_t minDelay = 10>

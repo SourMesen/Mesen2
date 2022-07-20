@@ -40,8 +40,8 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseMapper::Serialize(s);
-		s.Stream(_audio.get());
-		s.Stream(_command, _workRamValue, _irqEnabled, _irqCounterEnabled, _irqCounter);
+		SV(_audio);
+		SV(_command); SV(_workRamValue); SV(_irqEnabled); SV(_irqCounterEnabled); SV(_irqCounter);
 		if(!s.IsSaving()) {
 			UpdateWorkRam();
 		}

@@ -144,7 +144,7 @@ namespace Vrc7Opll {
 	protected:
 		void Serialize(Serializer& s) override
 		{
-			s.Stream(clk, rate);
+			SV(clk); SV(rate);
 			if(!s.IsSaving()) {
 				maketables(clk, rate);
 			}

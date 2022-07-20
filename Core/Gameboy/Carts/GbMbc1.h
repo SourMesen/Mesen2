@@ -57,6 +57,6 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		s.Stream(_ramEnabled, _prgBank, _ramBank, _mode);
+		SV(_ramEnabled); SV(_prgBank); SV(_ramBank); SV(_mode);
 	}
 };

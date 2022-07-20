@@ -840,28 +840,26 @@ void Sa1::SaveBattery()
 
 void Sa1::Serialize(Serializer &s)
 {
-	s.Stream(_cpu.get());
+	SV(_cpu);
 
-	s.Stream(
-		_state.Sa1ResetVector, _state.Sa1IrqVector, _state.Sa1NmiVector, _state.Sa1IrqRequested, _state.Sa1IrqEnabled, _state.Sa1NmiRequested, _state.Sa1NmiEnabled,
-		_state.Sa1Wait, _state.Sa1Reset, _state.DmaIrqEnabled, _state.TimerIrqEnabled, _state.Sa1MessageReceived, _state.CpuMessageReceived, _state.CpuIrqVector,
-		_state.CpuNmiVector, _state.UseCpuIrqVector, _state.UseCpuNmiVector, _state.CpuIrqRequested, _state.CpuIrqEnabled, _state.CharConvIrqFlag, _state.CharConvIrqEnabled,
-		_state.CpuBwBank, _state.CpuBwWriteEnabled, _state.Sa1BwBank, _state.Sa1BwMode, _state.Sa1BwWriteEnabled, _state.BwWriteProtectedArea, _state.BwRam2BppMode,
-		_state.CpuIRamWriteProtect, _state.Sa1IRamWriteProtect, _state.DmaSrcAddr, _state.DmaDestAddr, _state.DmaSize, _state.DmaEnabled, _state.DmaPriority,
-		_state.DmaCharConv, _state.DmaCharConvAuto, _state.DmaDestDevice, _state.DmaSrcDevice, _state.DmaRunning, _state.DmaIrqFlag, _state.HorizontalTimerEnabled,
-		_state.VerticalTimerEnabled, _state.UseLinearTimer, _state.HTimer, _state.VTimer, _state.LinearTimerValue, _state.MathOp, _state.MultiplicandDividend,
-		_state.MultiplierDivisor, _state.MathOpResult, _state.MathOverflow, _state.VarLenAutoInc, _state.VarLenBitCount, _state.VarLenAddress,
-		_state.Banks[0], _state.Banks[1], _state.Banks[2], _state.Banks[3],
-		_state.BitmapRegister1[0], _state.BitmapRegister1[1], _state.BitmapRegister1[2], _state.BitmapRegister1[3],
-		_state.BitmapRegister1[4], _state.BitmapRegister1[5], _state.BitmapRegister1[6], _state.BitmapRegister1[7],
-		_state.BitmapRegister2[0], _state.BitmapRegister2[1], _state.BitmapRegister2[2], _state.BitmapRegister2[3],
-		_state.BitmapRegister2[4], _state.BitmapRegister2[5], _state.BitmapRegister2[6], _state.BitmapRegister2[7],
-		_state.CharConvDmaActive, _state.CharConvBpp, _state.CharConvFormat, _state.CharConvWidth, _state.CharConvCounter,
-		_state.VarLenCurrentBit
-	);
+	SV(_state.Sa1ResetVector); SV(_state.Sa1IrqVector); SV(_state.Sa1NmiVector); SV(_state.Sa1IrqRequested); SV(_state.Sa1IrqEnabled); SV(_state.Sa1NmiRequested); SV(_state.Sa1NmiEnabled);
+	SV(_state.Sa1Wait); SV(_state.Sa1Reset); SV(_state.DmaIrqEnabled); SV(_state.TimerIrqEnabled); SV(_state.Sa1MessageReceived); SV(_state.CpuMessageReceived); SV(_state.CpuIrqVector);
+	SV(_state.CpuNmiVector); SV(_state.UseCpuIrqVector); SV(_state.UseCpuNmiVector); SV(_state.CpuIrqRequested); SV(_state.CpuIrqEnabled); SV(_state.CharConvIrqFlag); SV(_state.CharConvIrqEnabled);
+	SV(_state.CpuBwBank); SV(_state.CpuBwWriteEnabled); SV(_state.Sa1BwBank); SV(_state.Sa1BwMode); SV(_state.Sa1BwWriteEnabled); SV(_state.BwWriteProtectedArea); SV(_state.BwRam2BppMode);
+	SV(_state.CpuIRamWriteProtect); SV(_state.Sa1IRamWriteProtect); SV(_state.DmaSrcAddr); SV(_state.DmaDestAddr); SV(_state.DmaSize); SV(_state.DmaEnabled); SV(_state.DmaPriority);
+	SV(_state.DmaCharConv); SV(_state.DmaCharConvAuto); SV(_state.DmaDestDevice); SV(_state.DmaSrcDevice); SV(_state.DmaRunning); SV(_state.DmaIrqFlag); SV(_state.HorizontalTimerEnabled);
+	SV(_state.VerticalTimerEnabled); SV(_state.UseLinearTimer); SV(_state.HTimer); SV(_state.VTimer); SV(_state.LinearTimerValue); SV(_state.MathOp); SV(_state.MultiplicandDividend);
+	SV(_state.MultiplierDivisor); SV(_state.MathOpResult); SV(_state.MathOverflow); SV(_state.VarLenAutoInc); SV(_state.VarLenBitCount); SV(_state.VarLenAddress);
+	SV(_state.Banks[0]); SV(_state.Banks[1]); SV(_state.Banks[2]); SV(_state.Banks[3]);
+	SV(_state.BitmapRegister1[0]); SV(_state.BitmapRegister1[1]); SV(_state.BitmapRegister1[2]); SV(_state.BitmapRegister1[3]);
+	SV(_state.BitmapRegister1[4]); SV(_state.BitmapRegister1[5]); SV(_state.BitmapRegister1[6]); SV(_state.BitmapRegister1[7]);
+	SV(_state.BitmapRegister2[0]); SV(_state.BitmapRegister2[1]); SV(_state.BitmapRegister2[2]); SV(_state.BitmapRegister2[3]);
+	SV(_state.BitmapRegister2[4]); SV(_state.BitmapRegister2[5]); SV(_state.BitmapRegister2[6]); SV(_state.BitmapRegister2[7]);
+	SV(_state.CharConvDmaActive); SV(_state.CharConvBpp); SV(_state.CharConvFormat); SV(_state.CharConvWidth); SV(_state.CharConvCounter);
+	SV(_state.VarLenCurrentBit);
 
-	s.Stream(_lastAccessMemType, _openBus);
-	s.StreamArray(_iRam, Sa1::InternalRamSize);
+	SV(_lastAccessMemType); SV(_openBus);
+	SVArray(_iRam, Sa1::InternalRamSize);
 
 	if(!s.IsSaving()) {
 		UpdatePrgRomMappings();

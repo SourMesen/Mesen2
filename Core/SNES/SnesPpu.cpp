@@ -1754,7 +1754,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 			if(_regs->GetIoPortOutput() & 0x80) {
 				_locationLatched = false;
 
-				//"The high/low selector is reset to ÅelowÅf when $213F is read" (the selector is NOT reset when the counter is latched)
+				//"The high/low selector is reset to elowf when $213F is read" (the selector is NOT reset when the counter is latched)
 				_horizontalLocToggle = false;
 				_verticalLocationToggle = false;
 			}
@@ -1863,7 +1863,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			_state.MosaicSize = ((value & 0xF0) >> 4) + 1;
 			uint8_t mosaicEnabled = value & 0x0F;
 			if(!_state.MosaicEnabled && mosaicEnabled) {
-				//"If this register is set during the frame, the Åstarting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
+				//"If this register is set during the frame, the starting scanline is the current scanline, otherwise it is the first visible scanline of the frame."
 				//This is only done when mosaic is turned on from an off state (FF6 mosaic effect looks wrong otherwise)
 				//FF6's mosaic effect is broken on some screens without this.
 				_mosaicScanlineCounter = _state.MosaicSize + 1;
@@ -2142,54 +2142,49 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 
 void SnesPpu::Serialize(Serializer &s)
 {
-	uint16_t unused_oamRenderAddress = 0;
-	s.Stream(
-		_state.ForcedBlank, _state.ScreenBrightness, _scanline, _frameCount, _drawStartX, _drawEndX, _state.BgMode,
-		_state.Mode1Bg3Priority, _state.MainScreenLayers, _state.SubScreenLayers, _state.VramAddress, _state.VramIncrementValue, _state.VramAddressRemapping,
-		_state.VramAddrIncrementOnSecondReg, _state.VramReadBuffer, _state.Ppu1OpenBus, _state.Ppu2OpenBus, _state.CgramAddress, _state.MosaicSize, _state.MosaicEnabled,
-		_mosaicScanlineCounter, _state.OamMode, _state.OamBaseAddress, _state.OamAddressOffset, _state.OamRamAddress, _state.EnableOamPriority,
-		_internalOamAddress, _oamWriteBuffer, _timeOver, _rangeOver, _state.HiResMode, _state.ScreenInterlace, _state.ObjInterlace,
-		_state.OverscanMode, _state.DirectColorMode, _state.ColorMathClipMode, _state.ColorMathPreventMode, _state.ColorMathAddSubscreen, _state.ColorMathEnabled,
-		_state.ColorMathSubstractMode, _state.ColorMathHalveResult, _state.FixedColor, _hvScrollLatchValue, _hScrollLatchValue, 
-		_horizontalLocation, _horizontalLocToggle, _verticalLocation, _verticalLocationToggle, _locationLatched,
-		_state.MaskLogic[0], _state.MaskLogic[1], _state.MaskLogic[2], _state.MaskLogic[3], _state.MaskLogic[4], _state.MaskLogic[5],
-		_state.WindowMaskMain[0], _state.WindowMaskMain[1], _state.WindowMaskMain[2], _state.WindowMaskMain[3], _state.WindowMaskMain[4],
-		_state.WindowMaskSub[0], _state.WindowMaskSub[1], _state.WindowMaskSub[2], _state.WindowMaskSub[3], _state.WindowMaskSub[4],
-		_state.Mode7.CenterX, _state.Mode7.CenterY, _state.ExtBgEnabled, _state.Mode7.FillWithTile0, _state.Mode7.HorizontalMirroring,
-		_state.Mode7.HScroll, _state.Mode7.LargeMap, _state.Mode7.Matrix[0], _state.Mode7.Matrix[1], _state.Mode7.Matrix[2], _state.Mode7.Matrix[3],
-		_state.Mode7.ValueLatch, _state.Mode7.VerticalMirroring, _state.Mode7.VScroll, unused_oamRenderAddress, _oddFrame, _vblankStartScanline,
-		_state.CgramAddressLatch, _state.CgramWriteBuffer, _nmiScanline, _vblankEndScanline, _adjustedVblankEndScanline, _baseVblankEndScanline,
-		_overclockEnabled
-	);
-
+	SV(_state.ForcedBlank); SV(_state.ScreenBrightness); SV(_scanline); SV(_frameCount); SV(_drawStartX); SV(_drawEndX); SV(_state.BgMode);
+	SV(_state.Mode1Bg3Priority); SV(_state.MainScreenLayers); SV(_state.SubScreenLayers); SV(_state.VramAddress); SV(_state.VramIncrementValue); SV(_state.VramAddressRemapping);
+	SV(_state.VramAddrIncrementOnSecondReg); SV(_state.VramReadBuffer); SV(_state.Ppu1OpenBus); SV(_state.Ppu2OpenBus); SV(_state.CgramAddress); SV(_state.MosaicSize); SV(_state.MosaicEnabled);
+	SV(_mosaicScanlineCounter); SV(_state.OamMode); SV(_state.OamBaseAddress); SV(_state.OamAddressOffset); SV(_state.OamRamAddress); SV(_state.EnableOamPriority);
+	SV(_internalOamAddress); SV(_oamWriteBuffer); SV(_timeOver); SV(_rangeOver); SV(_state.HiResMode); SV(_state.ScreenInterlace); SV(_state.ObjInterlace);
+	SV(_state.OverscanMode); SV(_state.DirectColorMode); SV(_state.ColorMathClipMode); SV(_state.ColorMathPreventMode); SV(_state.ColorMathAddSubscreen); SV(_state.ColorMathEnabled);
+	SV(_state.ColorMathSubstractMode); SV(_state.ColorMathHalveResult); SV(_state.FixedColor); SV(_hvScrollLatchValue); SV(_hScrollLatchValue); 
+	SV(_horizontalLocation); SV(_horizontalLocToggle); SV(_verticalLocation); SV(_verticalLocationToggle); SV(_locationLatched);
+	SV(_state.MaskLogic[0]); SV(_state.MaskLogic[1]); SV(_state.MaskLogic[2]); SV(_state.MaskLogic[3]); SV(_state.MaskLogic[4]); SV(_state.MaskLogic[5]);
+	SV(_state.WindowMaskMain[0]); SV(_state.WindowMaskMain[1]); SV(_state.WindowMaskMain[2]); SV(_state.WindowMaskMain[3]); SV(_state.WindowMaskMain[4]);
+	SV(_state.WindowMaskSub[0]); SV(_state.WindowMaskSub[1]); SV(_state.WindowMaskSub[2]); SV(_state.WindowMaskSub[3]); SV(_state.WindowMaskSub[4]);
+	SV(_state.Mode7.CenterX); SV(_state.Mode7.CenterY); SV(_state.ExtBgEnabled); SV(_state.Mode7.FillWithTile0); SV(_state.Mode7.HorizontalMirroring);
+	SV(_state.Mode7.HScroll); SV(_state.Mode7.LargeMap); SV(_state.Mode7.Matrix[0]); SV(_state.Mode7.Matrix[1]); SV(_state.Mode7.Matrix[2]); SV(_state.Mode7.Matrix[3]);
+	SV(_state.Mode7.ValueLatch); SV(_state.Mode7.VerticalMirroring); SV(_state.Mode7.VScroll); SV(_oddFrame); SV(_vblankStartScanline);
+	SV(_state.CgramAddressLatch); SV(_state.CgramWriteBuffer); SV(_nmiScanline); SV(_vblankEndScanline); SV(_adjustedVblankEndScanline); SV(_baseVblankEndScanline);
+	SV(_overclockEnabled);
+	
 	for(int i = 0; i < 4; i++) {
-		s.Stream(
-			_state.Layers[i].ChrAddress, _state.Layers[i].DoubleHeight, _state.Layers[i].DoubleWidth, _state.Layers[i].HScroll,
-			_state.Layers[i].LargeTiles, _state.Layers[i].TilemapAddress, _state.Layers[i].VScroll
-		);
+		SVI(_state.Layers[i].ChrAddress); SVI(_state.Layers[i].DoubleHeight); SVI(_state.Layers[i].DoubleWidth); SVI(_state.Layers[i].HScroll);
+		SVI(_state.Layers[i].LargeTiles); SVI(_state.Layers[i].TilemapAddress); SVI(_state.Layers[i].VScroll);
 	}
 
 	for(int i = 0; i < 2; i++) {
-		s.Stream(
-			_state.Window[i].ActiveLayers[0], _state.Window[i].ActiveLayers[1], _state.Window[i].ActiveLayers[2], _state.Window[i].ActiveLayers[3], _state.Window[i].ActiveLayers[4], _state.Window[i].ActiveLayers[5],
-			_state.Window[i].InvertedLayers[0], _state.Window[i].InvertedLayers[1], _state.Window[i].InvertedLayers[2], _state.Window[i].InvertedLayers[3], _state.Window[i].InvertedLayers[4], _state.Window[i].InvertedLayers[5],
-			_state.Window[i].Left, _state.Window[i].Right
-		);
+		SVI(_state.Window[i].ActiveLayers[0]); SVI(_state.Window[i].ActiveLayers[1]); SVI(_state.Window[i].ActiveLayers[2]); SVI(_state.Window[i].ActiveLayers[3]); SVI(_state.Window[i].ActiveLayers[4]); SVI(_state.Window[i].ActiveLayers[5]);
+		SVI(_state.Window[i].InvertedLayers[0]); SVI(_state.Window[i].InvertedLayers[1]); SVI(_state.Window[i].InvertedLayers[2]); SVI(_state.Window[i].InvertedLayers[3]); SVI(_state.Window[i].InvertedLayers[4]); SVI(_state.Window[i].InvertedLayers[5]);
+		SVI(_state.Window[i].Left); SVI(_state.Window[i].Right);
 	}
 
-	s.StreamArray(_vram, SnesPpu::VideoRamSize >> 1);
-	s.StreamArray(_oamRam, SnesPpu::SpriteRamSize);
-	s.StreamArray(_cgram, SnesPpu::CgRamSize >> 1);
+	SVArray(_vram, SnesPpu::VideoRamSize >> 1);
+	SVArray(_oamRam, SnesPpu::SpriteRamSize);
+	SVArray(_cgram, SnesPpu::CgRamSize >> 1);
 	
-	for(int i = 0; i < 4; i++) {
-		for(int j = 0; j < 33; j++) {
-			s.Stream(
-				_layerData[i].Tiles[j].ChrData[0], _layerData[i].Tiles[j].ChrData[1], _layerData[i].Tiles[j].ChrData[2], _layerData[i].Tiles[j].ChrData[3],
-				_layerData[i].Tiles[j].TilemapData, _layerData[i].Tiles[j].VScroll
-			);
-		}
+	for(int i = 0; i < 33; i++) {
+		SVI(_layerData[0].Tiles[i].ChrData[0]); SVI(_layerData[0].Tiles[i].ChrData[1]); SVI(_layerData[0].Tiles[i].ChrData[2]); SVI(_layerData[0].Tiles[i].ChrData[3]);
+		SVI(_layerData[0].Tiles[i].TilemapData); SVI(_layerData[0].Tiles[i].VScroll);
+		SVI(_layerData[1].Tiles[i].ChrData[0]); SVI(_layerData[1].Tiles[i].ChrData[1]); SVI(_layerData[1].Tiles[i].ChrData[2]); SVI(_layerData[1].Tiles[i].ChrData[3]);
+		SVI(_layerData[1].Tiles[i].TilemapData); SVI(_layerData[1].Tiles[i].VScroll);
+		SVI(_layerData[2].Tiles[i].ChrData[0]); SVI(_layerData[2].Tiles[i].ChrData[1]); SVI(_layerData[2].Tiles[i].ChrData[2]); SVI(_layerData[2].Tiles[i].ChrData[3]);
+		SVI(_layerData[2].Tiles[i].TilemapData); SVI(_layerData[2].Tiles[i].VScroll);
+		SVI(_layerData[3].Tiles[i].ChrData[0]); SVI(_layerData[3].Tiles[i].ChrData[1]); SVI(_layerData[3].Tiles[i].ChrData[2]); SVI(_layerData[3].Tiles[i].ChrData[3]);
+		SVI(_layerData[3].Tiles[i].TilemapData); SVI(_layerData[3].Tiles[i].VScroll);
 	}
-	s.Stream(_hOffset, _vOffset, _fetchBgStart, _fetchBgEnd, _fetchSpriteStart, _fetchSpriteEnd);
+	SV(_hOffset); SV(_vOffset); SV(_fetchBgStart); SV(_fetchBgEnd); SV(_fetchSpriteStart); SV(_fetchSpriteEnd);
 }
 
 void SnesPpu::RandomizeState()

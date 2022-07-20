@@ -777,12 +777,12 @@ public:
 	
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 	void SetMasterClockDivider(ConsoleRegion region);
-	void SetNmiFlag() { _state.NMIFlag = true; }
-	void ClearNmiFlag() { _state.NMIFlag = false; }
+	void SetNmiFlag() { _state.NmiFlag = true; }
+	void ClearNmiFlag() { _state.NmiFlag = false; }
 	void SetIrqMask(uint8_t mask) { _irqMask = mask; }
-	void SetIrqSource(IRQSource source) { _state.IRQFlag |= (int)source; }
-	bool HasIrqSource(IRQSource source) { return (_state.IRQFlag & (int)source) != 0; }
-	void ClearIrqSource(IRQSource source) { _state.IRQFlag &= ~(int)source; }
+	void SetIrqSource(IRQSource source) { _state.IrqFlag |= (int)source; }
+	bool HasIrqSource(IRQSource source) { return (_state.IrqFlag & (int)source) != 0; }
+	void ClearIrqSource(IRQSource source) { _state.IrqFlag &= ~(int)source; }
 
 	void RunDMATransfer(uint8_t offsetValue);
 	void StartDmcTransfer();

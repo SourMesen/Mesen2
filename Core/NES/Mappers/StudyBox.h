@@ -101,10 +101,8 @@ protected:
 	{
 		BaseMapper::Serialize(s);
 		int32_t audioPosition = _wavReader ? _wavReader->GetPosition() : -1;
-		s.Stream(
-			_readyForBit, _processBitDelay, _reg4202, _commandCounter, _command, _currentPage, _seekPage, _seekPageDelay, _enableDecoder,
-			_audioEnabled, _motorDisabled, _byteReadDelay, _irqEnabled, _pageFound, _pageIndex, _pagePosition, _inDataDelay, _inDataRegion, audioPosition
-		);
+		SV(_readyForBit); SV(_processBitDelay); SV(_reg4202); SV(_commandCounter); SV(_command); SV(_currentPage); SV(_seekPage); SV(_seekPageDelay); SV(_enableDecoder);
+		SV(_audioEnabled); SV(_motorDisabled); SV(_byteReadDelay); SV(_irqEnabled); SV(_pageFound); SV(_pageIndex); SV(_pagePosition); SV(_inDataDelay); SV(_inDataRegion); SV(audioPosition);
 
 		if(!s.IsSaving() && audioPosition >= 0 && _wavReader) {
 			_wavReader->Play(audioPosition);

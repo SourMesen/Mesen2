@@ -75,22 +75,22 @@ void NesConsole::Serialize(Serializer& s)
 {
 	_apu->EndFrame();
 
-	s.Stream(_cpu.get());
-	s.Stream(_ppu.get());
-	s.Stream(_memoryManager.get());
-	s.Stream(_apu.get());
-	s.Stream(_controlManager.get());
-	s.Stream(_mapper.get());
-	s.Stream(_mixer.get());
+	SV(_cpu);
+	SV(_ppu);
+	SV(_memoryManager);
+	SV(_apu);
+	SV(_controlManager);
+	SV(_mapper);
+	SV(_mixer);
 
 	if(_hdAudioDevice) {
-		//For HD packs, save the state of the bgm playback
-		s.Stream(_hdAudioDevice.get());
+		//For HD packs), save the state of the bgm playback
+		SV(_hdAudioDevice);
 	}
 
 	if(_vsSubConsole) {
 		//For VS Dualsystem, the sub console's savestate is appended to the end of the file
-		s.Stream(_vsSubConsole.get());
+		SV(_vsSubConsole);
 	}
 
 	if(!s.IsSaving()) {

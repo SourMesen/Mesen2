@@ -50,7 +50,7 @@ protected:
 	void Serialize(Serializer &s) override
 	{
 		BaseControlDevice::Serialize(s);
-		s.Stream(_stateBuffer, _prevTurboButton, _prevFireButton, _prevPauseButton, _turbo);
+		SV(_stateBuffer); SV(_prevTurboButton); SV(_prevFireButton); SV(_prevPauseButton); SV(_turbo);
 	}
 
 	void RefreshStateBuffer() override
