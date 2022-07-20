@@ -519,12 +519,12 @@ void Fds::Serialize(Serializer& s)
 	SV(_successiveChecks); SV(_previousDiskNumber); SV(_crcAccumulator);
 
 	if(s.IsSaving()) {
-		for(size_t i = 0; i < _fdsDiskSides.size(); i++) {
+		for(int i = 0; i < (int)_fdsDiskSides.size(); i++) {
 			vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgDiskSides[i], _fdsDiskSides[i]);
 			SVVectorI(ipsData);
 		}
 	} else {
-		for(size_t i = 0; i < _fdsDiskSides.size(); i++) {
+		for(int i = 0; i < (int)_fdsDiskSides.size(); i++) {
 			vector<uint8_t> ipsData;
 			SVVectorI(ipsData);
 			IpsPatcher::PatchBuffer(ipsData, _orgDiskSides[i], _fdsDiskSides[i]);

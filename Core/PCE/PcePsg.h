@@ -3,12 +3,13 @@
 #include "PCE/PceConstants.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PcePsgChannel.h"
+#include "Utilities/ISerializable.h"
 
 class Emulator;
 class SoundMixer;
 struct blip_t;
 
-class PcePsg
+class PcePsg : public ISerializable
 {
 private:
 	static constexpr int MaxSamples = 4000;
@@ -42,4 +43,6 @@ public:
 
 	void Write(uint16_t addr, uint8_t value);
 	void Run();
+
+	void Serialize(Serializer& s) override;
 };

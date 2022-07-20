@@ -8,6 +8,7 @@
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
+#include "Utilities/Serializer.h"
 
 using namespace ScsiSignal;
 
@@ -420,4 +421,36 @@ void PceScsiBus::Exec()
 		}
 
 	} while(_stateChanged);
+}
+
+void PceScsiBus::Serialize(Serializer& s)
+{
+	for(int i = 0; i < 9; i++) {
+		SVI(_state.Signals[i]);
+	}
+
+	SV(_state.Phase);
+	SV(_state.StatusDone);
+	SV(_state.MessageDone);
+	SV(_state.MessageData);
+	SV(_state.DataPort);
+	SV(_state.DiscReading);
+	SV(_state.DataTransfer);
+	SV(_state.DataTransferDone);
+	SV(_state.Sector);
+	SV(_state.SectorsToRead);
+	
+	SV(_stateChanged);
+	SV(_readStartClock);
+	SV(_cmdBuffer);
+
+	if(s.IsSaving()) {
+		vector<uint8_t> dataBuffer = vector<uint8_t>(_dataBuffer.begin(), _dataBuffer.end());
+		SV(dataBuffer);
+	} else {
+		vector<uint8_t> dataBuffer;
+		SV(dataBuffer);		
+		_dataBuffer.clear();
+		_dataBuffer.insert(_dataBuffer.end(), dataBuffer.begin(), dataBuffer.end());
+	}
 }

@@ -19,7 +19,10 @@ struct SerializeValue
 	uint32_t Size;
 
 	SerializeValue()
-	{}
+	{
+		DataPtr = nullptr;
+		Size = 0;
+	}
 
 	SerializeValue(uint8_t* ptr, uint32_t size, string key)
 	{
@@ -121,9 +124,11 @@ public:
 
 	template<typename T> void Stream(T& value, const char* name, int index = -1)
 	{
-		static_assert(!is_unique_ptr<std::remove_cv_t<T>>::value, "Unexpected unique_ptr");
-		static_assert(!is_shared_ptr<std::remove_cv_t<T>>::value, "Unexpected shared_ptr");
-		static_assert(!std::is_pointer<T>::value, "Unexpected pointer");
+		static_assert(!is_unique_ptr<std::remove_cv_t<T>>::value, "[Serializer] Unexpected unique_ptr");
+		static_assert(!is_shared_ptr<std::remove_cv_t<T>>::value, "[Serializer] Unexpected shared_ptr");
+		static_assert(!std::is_pointer<T>::value, "[Serializer] Unexpected pointer");
+		static_assert(!std::is_class<T>::value || std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
+		static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value || std::is_base_of<ISerializable, T>::value, "[Serializer] Invalid value type");
 		
 		if constexpr(std::is_base_of<ISerializable, T>::value) {
 			Stream((ISerializable&)value, name, index);
@@ -152,6 +157,8 @@ public:
 					} else {
 						value = (T)0;
 					}
+				} else {
+					value = (T)0;
 				}
 			}
 		}
@@ -166,7 +173,7 @@ public:
 
 	template<typename T> void Stream(unique_ptr<T>& obj, const char* name, int index = -1)
 	{
-		static_assert(std::is_assignable<ISerializable, T>::value);
+		static_assert(std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
 		PushNamePrefix(name, index);
 		((ISerializable*)obj.get())->Serialize(*this);
 		PopNamePrefix();
@@ -174,7 +181,7 @@ public:
 
 	template<typename T> void Stream(const unique_ptr<T>& obj, const char* name, int index = -1)
 	{
-		static_assert(std::is_assignable<ISerializable, T>::value);
+		static_assert(std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
 		PushNamePrefix(name, index);
 		((ISerializable*)obj.get())->Serialize(*this);
 		PopNamePrefix();
@@ -182,7 +189,7 @@ public:
 
 	template<typename T> void Stream(shared_ptr<T>& obj, const char* name, int index = -1)
 	{
-		static_assert(std::is_assignable<ISerializable, T>::value);
+		static_assert(std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
 		PushNamePrefix(name, index);
 		((ISerializable*)obj.get())->Serialize(*this);
 		PopNamePrefix();
@@ -220,6 +227,8 @@ public:
 				} else {
 					memset(arrayValues, 0, sizeof(T) * elementCount);
 				}
+			} else {
+				memset(arrayValues, 0, sizeof(T) * elementCount);
 			}
 		}
 	}
@@ -256,6 +265,8 @@ public:
 					ReadValue(values[i], src);
 					src += sizeof(T);
 				}
+			} else {
+				values.clear();
 			}
 		}
 	}
@@ -282,6 +293,8 @@ public:
 			if(result != _values.end()) {
 				SerializeValue& savedValue = result->second;
 				value = string(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
+			} else {
+				value = "";
 			}
 		}
 	}

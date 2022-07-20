@@ -3,12 +3,13 @@
 #include "PCE/PceTypes.h"
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"
+#include "Utilities/ISerializable.h"
 
 class Emulator;
 class PceCdRom;
 struct DiscInfo;
 
-class PceCdAudioPlayer : public IAudioProvider
+class PceCdAudioPlayer : public IAudioProvider, public ISerializable
 {
 	Emulator* _emu = nullptr;
 	DiscInfo* _disc = nullptr;
@@ -41,4 +42,6 @@ public:
 	int16_t GetRightSample() { return _state.RightSample; }
 
 	void MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate) override;
+
+	void Serialize(Serializer& s) override;
 };

@@ -58,7 +58,7 @@ bool Serializer::LoadFrom(istream &file)
 	uint32_t i = 0;
 	while(i < size) {
 		string key;
-		for(int j = i; j < size; j++) {
+		for(uint32_t j = i; j < size; j++) {
 			if(_data[j] == 0) {
 				key = string(&_data[i], &_data[j]);
 				break;

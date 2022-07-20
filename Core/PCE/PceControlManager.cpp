@@ -77,3 +77,14 @@ void PceControlManager::UpdateControlDevices()
 		RegisterControlDevice(device);
 	}
 }
+
+void PceControlManager::Serialize(Serializer& s)
+{
+	if(!s.IsSaving()) {
+		UpdateControlDevices();
+	}
+
+	for(int i = 0; i < (int)_controlDevices.size(); i++) {
+		SVI(_controlDevices[i]);
+	}
+}

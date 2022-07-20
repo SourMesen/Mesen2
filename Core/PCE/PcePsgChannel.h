@@ -2,10 +2,11 @@
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
 #include "Utilities/RandomHelper.h"
+#include "Utilities/ISerializable.h"
 
 class PcePsg;
 
-class PcePsgChannel
+class PcePsgChannel : public ISerializable
 {
 private:
 	PcePsgChannelState _state = {};
@@ -27,4 +28,6 @@ public:
 	int16_t GetOutput(bool forLeftChannel, uint8_t masterVolume);
 	uint16_t GetTimer();
 	void Write(uint16_t addr, uint8_t value);
+
+	void Serialize(Serializer& s) override;
 };

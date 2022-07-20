@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "PCE/IPceMapper.h"
 #include "PCE/PceTypes.h"
+#include "Utilities/ISerializable.h"
 
 class Emulator;
 
@@ -12,6 +13,7 @@ private:
 
 	PceArcadeCardState _state = {};
 	uint8_t* _ram = nullptr;
+	bool _isRamUsed = false;
 
 	uint32_t GetAddress(PceArcadeCardPortConfig& port);
 	void ProcessAutoInc(PceArcadeCardPortConfig& port);
@@ -31,4 +33,6 @@ public:
 
 	uint8_t Read(uint8_t bank, uint16_t addr, uint8_t value) override;
 	void Write(uint8_t bank, uint16_t addr, uint8_t value) override;
+	
+	void Serialize(Serializer& s) override;
 };

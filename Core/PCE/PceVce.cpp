@@ -3,6 +3,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/CpuType.h"
+#include "Utilities/Serializer.h"
 #include "MemoryType.h"
 
 PceVce::PceVce(Emulator* emu, PceConsole* console)
@@ -86,4 +87,13 @@ void PceVce::Write(uint16_t addr, uint8_t value)
 		case 0x06: break; //Unused, writes do nothing
 		case 0x07: break; //Unused, writes do nothing
 	}
+}
+
+void PceVce::Serialize(Serializer& s)
+{
+	SVArray(_paletteRam, 0x200);
+	SV(_state.ClockDivider);
+	SV(_state.Grayscale);
+	SV(_state.PalAddr);
+	SV(_state.ScanlineCount);
 }

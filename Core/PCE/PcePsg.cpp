@@ -5,6 +5,7 @@
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Audio/blip_buf.h"
+#include "Utilities/Serializer.h"
 
 PcePsg::PcePsg(Emulator* emu)
 {
@@ -134,4 +135,22 @@ void PcePsg::Run()
 	}
 
 	_lastClock = clock - clocksToRun;
+}
+
+void PcePsg::Serialize(Serializer& s)
+{
+	SV(_state.ChannelSelect);
+	SV(_state.LeftVolume);
+	SV(_state.LfoControl);
+	SV(_state.LfoFrequency);
+	SV(_state.RightVolume);
+
+	SV(_lastClock);
+	SV(_prevLeftOutput);
+	SV(_prevRightOutput);
+	SV(_clockCounter);
+
+	for(int i = 0; i < 6; i++) {
+		SVI(_channels[i]);
+	}
 }

@@ -7,12 +7,13 @@
 
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
+#include "Utilities/ISerializable.h"
 #include "MemoryOperationType.h"
 
 class Emulator;
 class PceMemoryManager;
 
-class PceCpu
+class PceCpu : public ISerializable
 {
 private:
 	static constexpr uint16_t ResetVector = 0xFFFE;
@@ -297,6 +298,8 @@ public:
 	PceCpuState& GetState() { return _state; }
 
 	void Exec();
+
+	void Serialize(Serializer& s) override;
 
 #ifdef DUMMYCPU
 private:

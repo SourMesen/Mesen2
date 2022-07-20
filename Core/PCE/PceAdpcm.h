@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"
+#include "Utilities/ISerializable.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceTypes.h"
 
@@ -9,7 +10,7 @@ class Emulator;
 class PceCdRom;
 class PceScsiBus;
 
-class PceAdpcm : public IAudioProvider
+class PceAdpcm : public IAudioProvider, public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;
@@ -102,4 +103,6 @@ public:
 	uint8_t Read(uint16_t addr);
 
 	void MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate) override;
+
+	void Serialize(Serializer& s) override;
 };

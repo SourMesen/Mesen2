@@ -1,12 +1,11 @@
 #pragma once
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
-#include "Utilities/VirtualFile.h"
-#include "Shared/MessageManager.h"
-#include "Shared/CdReader.h"
+#include "Utilities/ISerializable.h"
 
 class PceConsole;
 class PceCdRom;
+struct DiscInfo;
 
 namespace ScsiSignal
 {
@@ -41,7 +40,7 @@ enum class ScsiCommand
 	ReadToc = 0xDE
 };
 
-class PceScsiBus
+class PceScsiBus : public ISerializable
 {
 private:
 	DiscInfo* _disc = nullptr;
@@ -112,4 +111,6 @@ public:
 	void SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val);
 
 	void Exec();
+
+	void Serialize(Serializer& s) override;
 };

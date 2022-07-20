@@ -8,6 +8,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 using namespace ScsiSignal;
 
@@ -276,4 +277,31 @@ void PceAdpcm::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 	_resampler.SetSampleRates(freq, sampleRate);
 	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
 	_samplesToPlay.clear();
+}
+
+void PceAdpcm::Serialize(Serializer& s)
+{
+	SVArray(_ram, 0x10000);
+
+	SV(_state.Nibble);
+	SV(_state.ReadAddress);
+	SV(_state.WriteAddress);
+	SV(_state.AddressPort);
+	SV(_state.DmaControl);
+	SV(_state.Control);
+	SV(_state.PlaybackRate);
+	SV(_state.FadeTimer);
+	SV(_state.AdpcmLength);
+	SV(_state.EndReached);
+	SV(_state.HalfReached);
+	SV(_state.Playing);
+	SV(_state.ReadBuffer);
+	SV(_state.ReadClockCounter);
+	SV(_state.WriteBuffer);
+	SV(_state.WriteClockCounter);
+
+	SV(_currentOutput);
+	SV(_magnitude);
+	SV(_clocksPerSample);
+	SV(_nextSampleCounter);
 }

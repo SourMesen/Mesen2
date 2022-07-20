@@ -14,6 +14,7 @@
 #include "PCE/IPceMapper.h"
 #include "PCE/PceArcadeCard.h"
 #include "PCE/PceSf2RomMapper.h"
+#include "Utilities/Serializer.h"
 #include "Utilities/CRC32.h"
 #include "MemoryType.h"
 #include "FirmwareHelper.h"
@@ -21,10 +22,6 @@
 PceConsole::PceConsole(Emulator* emu)
 {
 	_emu = emu;
-}
-
-void PceConsole::Serialize(Serializer& s)
-{
 }
 
 void PceConsole::Stop()
@@ -309,4 +306,26 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 
 	state.IsSuperGrafx = _vdc2 != nullptr;
 	state.HasCdRom = _cdrom != nullptr;
+}
+
+void PceConsole::Serialize(Serializer& s)
+{
+	SV(_cpu);
+	SV(_vdc);
+	if(_vdc2) {
+		SV(_vdc2);
+	}
+	SV(_vpc);
+	SV(_vce);
+	SV(_psg);
+	SV(_memoryManager);
+	SV(_controlManager);
+
+	if(_cdrom) {
+		SV(_cdrom);
+	}
+
+	if(_mapper) {
+		SV(_mapper);
+	}
 }

@@ -6,6 +6,7 @@
 #include "PCE/PceConstants.h"
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
+#include "Utilities/Serializer.h"
 #include "EventType.h"
 
 PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2)
@@ -1111,5 +1112,157 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 					}
 					break;
 			}
+	}
+}
+
+void PceVdc::Serialize(Serializer& s)
+{
+	SVArray(_vram, 0x8000);
+	SVArray(_spriteRam, 0x100);
+	SVArray(_rowBuffer, PceConstants::MaxScreenWidth);
+
+	SV(_state.FrameCount);
+	SV(_state.HClock);
+	SV(_state.Scanline);
+	SV(_state.RcrCounter);
+	SV(_state.CurrentReg);
+	SV(_state.MemAddrWrite);
+	SV(_state.MemAddrRead);
+	SV(_state.ReadBuffer);
+	SV(_state.VramData);
+	SV(_state.EnableCollisionIrq);
+	SV(_state.EnableOverflowIrq);
+	SV(_state.EnableScanlineIrq);
+	SV(_state.EnableVerticalBlankIrq);
+	SV(_state.OutputVerticalSync);
+	SV(_state.OutputHorizontalSync);
+	SV(_state.SpritesEnabled);
+	SV(_state.BackgroundEnabled);
+	SV(_state.VramAddrIncrement);
+	SV(_state.RasterCompareRegister);
+	SV(_state.ColumnCount);
+	SV(_state.RowCount);
+	SV(_state.SpriteAccessMode);
+	SV(_state.VramAccessMode);
+	SV(_state.CgMode);
+	SV(_state.BgScrollYUpdatePending);
+	SV(_state.HvLatch.BgScrollX);
+	SV(_state.HvLatch.BgScrollY);
+	SV(_state.HvLatch.HorizDisplayEnd);
+	SV(_state.HvLatch.HorizDisplayStart);
+	SV(_state.HvLatch.HorizDisplayWidth);
+	SV(_state.HvLatch.HorizSyncWidth);
+	SV(_state.HvLatch.VertDisplayStart);
+	SV(_state.HvLatch.VertDisplayWidth);
+	SV(_state.HvLatch.VertEndPosVcr);
+	SV(_state.HvLatch.VertSyncWidth);
+	SV(_state.HvReg.BgScrollX);
+	SV(_state.HvReg.BgScrollY);
+	SV(_state.HvReg.HorizDisplayEnd);
+	SV(_state.HvReg.HorizDisplayStart);
+	SV(_state.HvReg.HorizDisplayWidth);
+	SV(_state.HvReg.HorizSyncWidth);
+	SV(_state.HvReg.VertDisplayStart);
+	SV(_state.HvReg.VertDisplayWidth);
+	SV(_state.HvReg.VertEndPosVcr);
+	SV(_state.HvReg.VertSyncWidth);
+	SV(_state.VramSatbIrqEnabled);
+	SV(_state.VramVramIrqEnabled);
+	SV(_state.DecrementSrc);
+	SV(_state.DecrementDst);
+	SV(_state.RepeatSatbTransfer);
+	SV(_state.BlockSrc);
+	SV(_state.BlockDst);
+	SV(_state.BlockLen);
+	SV(_state.SatbBlockSrc);
+	SV(_state.SatbTransferPending);
+	SV(_state.SatbTransferRunning);
+	SV(_state.SatbTransferNextWordCounter);
+	SV(_state.SatbTransferOffset);
+	SV(_state.VerticalBlank);
+	SV(_state.VramTransferDone);
+	SV(_state.SatbTransferDone);
+	SV(_state.ScanlineDetected);
+	SV(_state.SpriteOverflow);
+	SV(_state.Sprite0Hit);
+	SV(_state.BurstModeEnabled);
+	SV(_state.NextSpritesEnabled);
+	SV(_state.NextBackgroundEnabled);
+
+	SV(_vramOpenBus);
+	SV(_lastDrawHClock);
+	SV(_xStart);
+	SV(_hMode);
+	SV(_hModeCounter);
+	SV(_vMode);
+	SV(_vModeCounter);
+
+	SV(_screenOffsetX);
+	SV(_needRcrIncrement);
+	SV(_needVertBlankIrq);
+	SV(_verticalBlankDone);
+
+	SV(_spriteCount);
+	SV(_spriteRow);
+	SV(_evalStartCycle);
+	SV(_evalEndCycle);
+	SV(_evalLastCycle);
+	SV(_hasSpriteOverflow);
+
+	SV(_loadBgStart);
+	SV(_loadBgEnd);
+	SV(_loadBgLastCycle);
+	SV(_tileCount);
+	SV(_allowVramAccess);
+
+	SV(_pendingMemoryRead);
+	SV(_pendingMemoryWrite);
+
+	SV(_vramDmaRunning);
+	SV(_vramDmaReadCycle);
+	SV(_vramDmaBuffer);
+	SV(_vramDmaPendingCycles);
+
+	SV(_nextEvent);
+	SV(_nextEventCounter);
+
+	SV(_drawSpriteCount);
+	SV(_totalSpriteCount);
+	SV(_rowHasSprite0);
+	SV(_loadSpriteStart);
+	
+	for(int i = 0; i < 64; i++) {
+		SVI(_sprites[i].TileData[0]);
+		SVI(_sprites[i].TileData[1]);
+		SVI(_sprites[i].TileData[2]);
+		SVI(_sprites[i].TileData[3]);
+		SVI(_sprites[i].X);
+		SVI(_sprites[i].TileAddress);
+		SVI(_sprites[i].Index);
+		SVI(_sprites[i].Palette);
+		SVI(_sprites[i].HorizontalMirroring);
+		SVI(_sprites[i].ForegroundPriority);
+		SVI(_sprites[i].LoadSp23);
+	}
+
+	for(int i = 0; i < 64; i++) {
+		SVI(_drawSprites[i].TileData[0]);
+		SVI(_drawSprites[i].TileData[1]);
+		SVI(_drawSprites[i].TileData[2]);
+		SVI(_drawSprites[i].TileData[3]);
+		SVI(_drawSprites[i].X);
+		SVI(_drawSprites[i].TileAddress);
+		SVI(_drawSprites[i].Index);
+		SVI(_drawSprites[i].Palette);
+		SVI(_drawSprites[i].HorizontalMirroring);
+		SVI(_drawSprites[i].ForegroundPriority);
+		SVI(_drawSprites[i].LoadSp23);
+	}
+
+	for(int i = 0; i < 100; i++) {
+		SVI(_tiles[i].TileData[0]);
+		SVI(_tiles[i].TileData[1]);
+		SVI(_tiles[i].Palette);
+		SVI(_tiles[i].TileAddr);
 	}
 }

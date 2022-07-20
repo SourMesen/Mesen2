@@ -8,6 +8,7 @@
 #include "Shared/RewindManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/NotificationManager.h"
+#include "Utilities/Serializer.h"
 #include "EventType.h"
 
 PceVpc::PceVpc(Emulator* emu, PceConsole* console, PceVce* vce)
@@ -309,5 +310,21 @@ void PceVpc::SetPriorityConfig(PceVpcPixelWindow wnd, uint8_t value)
 		case 1: cfg.PriorityMode = PceVpcPriorityMode::Vdc2SpritesAboveVdc1Bg; break;
 		case 2: cfg.PriorityMode = PceVpcPriorityMode::Vdc1SpritesBelowVdc2Bg; break;
 		case 3: cfg.PriorityMode = PceVpcPriorityMode::Default; break;
+	}
+}
+
+void PceVpc::Serialize(Serializer& s)
+{
+	SV(_hasIrqVdc1);
+	SV(_hasIrqVdc2);
+	SV(_state.Priority1);
+	SV(_state.Priority2);
+	SV(_state.StToVdc2Mode);
+	SV(_state.Window1);
+	SV(_state.Window2);
+	for(int i = 0; i < 4; i++) {
+		SVI(_state.WindowCfg[i].PriorityMode);
+		SVI(_state.WindowCfg[i].Vdc1Enabled);
+		SVI(_state.WindowCfg[i].Vdc2Enabled);
 	}
 }

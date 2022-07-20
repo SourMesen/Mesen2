@@ -2,13 +2,14 @@
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
+#include "Utilities/ISerializable.h"
 
 class PceVdc;
 class PceVce;
 class PceConsole;
 class Emulator;
 
-class PceVpc
+class PceVpc : public ISerializable
 {
 public:
 	static constexpr uint16_t SpritePixelFlag = 0x8000;
@@ -57,4 +58,6 @@ public:
 
 	uint16_t* GetScreenBuffer() { return _currentOutBuffer; }
 	uint16_t* GetPreviousScreenBuffer() { return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0]; }
+
+	void Serialize(Serializer& s) override;
 };

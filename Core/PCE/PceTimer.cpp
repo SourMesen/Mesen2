@@ -54,3 +54,11 @@ uint8_t PceTimer::Read(uint16_t addr)
 		return _counter;
 	}
 }
+
+void PceTimer::Serialize(Serializer& s)
+{
+	SV(_reloadValue);
+	SV(_counter);
+	SV(_scaler);
+	SV(_enabled);
+}

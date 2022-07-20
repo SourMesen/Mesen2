@@ -17,10 +17,14 @@
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/RandomHelper.h"
+#include "Utilities/ISerializable.h"
+#include "Utilities/Serializer.h"
+
+//TODO refactor into .cpp file, move timer to pceconsole, move cdrom ram/etc somewhere else?
 
 class Emulator;
 
-class PceMemoryManager
+class PceMemoryManager : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;
@@ -516,5 +520,25 @@ public:
 	void ClearIrqSource(PceIrqSource source)
 	{
 		_state.ActiveIrqs &= ~(int)source;
+	}
+
+	void Serialize(Serializer& s)
+	{
+		SVArray(_workRam, _workRamSize);
+		SVArray(_saveRam, _saveRamSize);
+		SVArray(_cdromRam, _cdromRamSize);
+		SVArray(_cardRam, _cardRamSize);
+
+		SV(_state.ActiveIrqs);
+		SV(_state.CycleCount);
+		SV(_state.DisabledIrqs);
+		SV(_state.FastCpuSpeed);
+		SV(_state.IoBuffer);
+		for(int i = 0; i < 8; i++) {
+			SVI(_state.Mpr[i]);
+		}
+		SV(_state.MprReadBuffer);
+
+		SV(_timer);
 	}
 };

@@ -2,10 +2,12 @@
 #include "PCE/PceArcadeCard.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
+#include "Utilities/Serializer.h"
 
 PceArcadeCard::PceArcadeCard(Emulator* emu)
 {
 	_ram = new uint8_t[PceArcadeCard::ArcadeRamMemSize];
+	_isRamUsed = false;
 	emu->GetSettings()->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
 	emu->RegisterMemory(MemoryType::PceArcadeCardRam, _ram, PceArcadeCard::ArcadeRamMemSize);
 }
@@ -60,6 +62,7 @@ void PceArcadeCard::WritePortValue(uint8_t portNumber, uint8_t value)
 	PceArcadeCardPortConfig& port = _state.Port[portNumber];
 	uint32_t addr = GetAddress(port);
 	ProcessAutoInc(port);
+	_isRamUsed = true;
 	_ram[addr] = value;
 }
 
@@ -204,4 +207,28 @@ void PceArcadeCard::Write(uint8_t bank, uint16_t addr, uint8_t value)
 	} else if(bank >= 0x40 && bank <= 0x43) {
 		WritePortValue(bank & 0x03, value);
 	}
+}
+
+void PceArcadeCard::Serialize(Serializer& s)
+{
+	SV(_isRamUsed);
+	if(_isRamUsed) {
+		SVArray(_ram, PceArcadeCard::ArcadeRamMemSize);
+	}
+
+	for(int i = 0; i < 4; i++) {
+		SVI(_state.Port[i].AddIncrementToBase);
+		SVI(_state.Port[i].AddOffset);
+		SVI(_state.Port[i].AddOffsetTrigger);
+		SVI(_state.Port[i].AutoIncrement);
+		SVI(_state.Port[i].BaseAddress);
+		SVI(_state.Port[i].Control);
+		SVI(_state.Port[i].IncValue);
+		SVI(_state.Port[i].Offset);
+		SVI(_state.Port[i].SignedIncrement);
+		SVI(_state.Port[i].SignedOffset);
+	}
+	SV(_state.RotateReg);
+	SV(_state.ShiftReg);
+	SV(_state.ValueReg);
 }

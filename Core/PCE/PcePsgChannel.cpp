@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "PCE/PcePsgChannel.h"
 #include "PCE/PcePsg.h"
+#include "Utilities/Serializer.h"
 
 PcePsgChannel::PcePsgChannel()
 {
 	for(int i = 0; i < 0x1000; i++) {
+		//TODO, this changes on power cycle
 		_noiseData[i] = RandomHelper::GetBool() ? 0x1F : 0x00;
 	}
 }
@@ -135,4 +137,23 @@ void PcePsgChannel::Write(uint16_t addr, uint8_t value)
 		_state.NoiseFrequency = (value & 0x1F);
 		break;
 	}
+}
+
+void PcePsgChannel::Serialize(Serializer& s)
+{
+	SV(_state.Amplitude);
+	SV(_state.CurrentOutput);
+	SV(_state.DdaEnabled);
+	SV(_state.DdaOutputValue);
+	SV(_state.Enabled);
+	SV(_state.Frequency);
+	SV(_state.LeftVolume);
+	SV(_state.NoiseEnabled);
+	SV(_state.NoiseFrequency);
+	SV(_state.ReadAddr);
+	SV(_state.RightVolume);
+	SV(_state.Timer);
+	SV(_state.WriteAddr);
+
+	SVArray(_state.WaveData, 0x20);
 }

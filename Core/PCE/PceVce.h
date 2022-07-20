@@ -1,11 +1,12 @@
 #pragma once
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
+#include "Utilities/ISerializable.h"
 
 class PceConsole;
 class Emulator;
 
-class PceVce
+class PceVce : public ISerializable
 {
 private:
 	PceVceState _state = {};
@@ -26,4 +27,6 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	void Serialize(Serializer& s) override;
 };

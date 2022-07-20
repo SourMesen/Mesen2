@@ -102,7 +102,7 @@ void SnesControlManager::Serialize(Serializer &s)
 		UpdateControlDevices();
 	}
 
-	for(size_t i = 0; i < _controlDevices.size(); i++) {
+	for(int i = 0; i < (int)_controlDevices.size(); i++) {
 		SVI(_controlDevices[i]);
 	}
 }

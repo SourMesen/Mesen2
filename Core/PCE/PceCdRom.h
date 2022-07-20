@@ -4,12 +4,14 @@
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceTypes.h"
+#include "Shared/CdReader.h"
+#include "Utilities/ISerializable.h"
 
 class Emulator;
 class PceConsole;
 class PceMemoryManager;
 
-class PceCdRom
+class PceCdRom : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;
@@ -41,4 +43,6 @@ public:
 
 	void Write(uint16_t addr, uint8_t value);
 	uint8_t Read(uint16_t addr);
+
+	void Serialize(Serializer& s) override;
 };

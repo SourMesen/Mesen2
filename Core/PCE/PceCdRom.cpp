@@ -8,6 +8,7 @@
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/HexUtilities.h"
+#include "Utilities/Serializer.h"
 
 using namespace ScsiSignal;
 
@@ -124,6 +125,7 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x01: return _scsi.GetDataPort();
 		case 0x02: return _state.EnabledIrqs | (_scsi.CheckSignal(Ack) ? 0x80 : 0);
 		case 0x03:
+			//TODO BramLocked doesn't do anything
 			_state.BramLocked = true;
 			_state.ReadRightChannel = !_state.ReadRightChannel;
 
@@ -167,4 +169,16 @@ uint8_t PceCdRom::Read(uint16_t addr)
 	}
 
 	return 0xFF;
+}
+
+void PceCdRom::Serialize(Serializer& s)
+{
+	SV(_state.ActiveIrqs);
+	SV(_state.BramLocked);
+	SV(_state.EnabledIrqs);
+	SV(_state.ReadRightChannel);
+
+	SV(_scsi);
+	SV(_adpcm);
+	SV(_audioPlayer);
 }

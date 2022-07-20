@@ -3,6 +3,7 @@
 #include "Shared/Emulator.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConsole.h"
+#include "Utilities/Serializer.h"
 #include "Utilities/RandomHelper.h"
 
 typedef PceCpu C;
@@ -421,4 +422,15 @@ void PceCpu::ProcessIrq(bool forBrk)
 		_emu->ProcessInterrupt<CpuType::Pce>(originalPc, _state.PC, false);
 #endif
 	}
+}
+
+void PceCpu::Serialize(Serializer& s)
+{
+	SV(_state.PC);
+	SV(_state.SP);
+	SV(_state.PS);
+	SV(_state.A);
+	SV(_state.X);
+	SV(_state.Y);
+	SV(_state.CycleCount);
 }

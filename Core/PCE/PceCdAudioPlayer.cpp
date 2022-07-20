@@ -5,6 +5,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/CdReader.h"
+#include "Utilities/Serializer.h"
 
 PceCdAudioPlayer::PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& disc)
 {
@@ -92,4 +93,18 @@ void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sam
 	_resampler.SetSampleRates(44100, sampleRate);
 	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
 	_samplesToPlay.clear();
+}
+
+void PceCdAudioPlayer::Serialize(Serializer& s)
+{
+	SV(_state.Playing);
+	SV(_state.StartSector);
+	SV(_state.EndSector);
+	SV(_state.EndBehavior);
+	SV(_state.CurrentSector);
+	SV(_state.CurrentSample);
+	SV(_state.LeftSample);
+	SV(_state.RightSample);
+
+	SV(_clockCounter);
 }

@@ -4,6 +4,7 @@
 #include "MemoryType.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
+#include "Utilities/ISerializable.h"
 
 class PceConsole;
 class PceVce;
@@ -53,7 +54,7 @@ struct PceSpriteInfo
 	bool LoadSp23;
 };
 
-class PceVdc
+class PceVdc : public ISerializable
 {
 private:
 	PceVdcState _state = {};
@@ -186,4 +187,6 @@ public:
 
 	uint8_t ReadRegister(uint16_t addr);
 	void WriteRegister(uint16_t addr, uint8_t value);
+
+	void Serialize(Serializer& s) override;
 };
