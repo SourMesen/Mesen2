@@ -75,6 +75,10 @@ namespace Mesen.Utilities
 
 		private void tmrProcessMouse(object? sender, EventArgs e)
 		{
+			if(MainWindowViewModel.Instance.RecentGames.Visible) {
+				return;
+			}
+			
 			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
 			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && EmuApi.IsRunning()) {
 				//Close menu when renderer is clicked

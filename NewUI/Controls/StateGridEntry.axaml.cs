@@ -130,7 +130,7 @@ namespace Mesen.Controls
 					} catch { }
 
 					Dispatcher.UIThread.Post(() => {
-						Image = img;
+						Image = img ?? StateGridEntry.EmptyImage;
 					});
 				});
 			} else {

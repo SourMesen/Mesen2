@@ -16,13 +16,14 @@ PceVpc::PceVpc(Emulator* emu, PceConsole* console, PceVce* vce)
 	_console = console;
 	_vce = vce;
 
-	_outBuffer[0] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
-	_outBuffer[1] = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
+	//Add an extra line to the buffer - this is used to store clock divider values for each row
+	uint32_t bufferSize = PceConstants::MaxScreenWidth * (PceConstants::ScreenHeight + 1);
+	_outBuffer[0] = new uint16_t[bufferSize];
+	_outBuffer[1] = new uint16_t[bufferSize];
 	_currentOutBuffer = _outBuffer[0];
-	_currentClockDividers = _rowVceClockDivider[0];
 
-	memset(_outBuffer[0], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
-	memset(_outBuffer[1], 0, PceConstants::MaxScreenWidth * PceConstants::ScreenHeight * sizeof(uint16_t));
+	memset(_outBuffer[0], 0, bufferSize * sizeof(uint16_t));
+	memset(_outBuffer[1], 0, bufferSize * sizeof(uint16_t));
 }
 
 PceVpc::~PceVpc()
@@ -156,9 +157,10 @@ void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 		uint16_t row = scanline - 14;
 		if(row == 0) {
 			_currentOutBuffer = _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0];
-			_currentClockDividers = _currentOutBuffer == _outBuffer[0] ? _rowVceClockDivider[0] : _rowVceClockDivider[1];
 		}
-		_currentClockDividers[row] = _vce->GetClockDivider();
+		
+		//Store clock dividers for each row at the end of the buffer
+		_currentOutBuffer[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight + row] = _vce->GetClockDivider();
 	}
 }
 
@@ -241,7 +243,6 @@ void PceVpc::SendFrame(PceVdc* vdc)
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
 	RenderedFrame frame(_currentOutBuffer, 512, PceConstants::ScreenHeight * 2, 0.5, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
-	frame.Data = _currentClockDividers;
 	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 
 	_emu->ProcessEndOfFrame();
@@ -266,7 +267,6 @@ void PceVpc::DebugSendFrame()
 	}
 
 	RenderedFrame frame(_currentOutBuffer, 512, PceConstants::ScreenHeight * 2, 0.5, _vdc1->GetState().FrameCount);
-	frame.Data = _currentClockDividers;
 	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
 }
 

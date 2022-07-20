@@ -46,12 +46,13 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t yOffset = overscan.Top * 2 * baseWidth;
 	PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
 
-	uint8_t* rowVceClockDivider = (uint8_t*)_frameData;
+	constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 
 	//Convert RGB333 to RGB555 since this is what blargg's SNES NTSC filter expects
 	for(uint32_t i = 0; i < frameInfo.Height / 2; i++) {
-		uint32_t leftOverscan = PceConstants::GetLeftOverscan(rowVceClockDivider[i]);
-		uint32_t rowWidth = PceConstants::GetRowWidth(rowVceClockDivider[i]);
+		uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i];
+		uint32_t leftOverscan = PceConstants::GetLeftOverscan(clockDivider);
+		uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 
 		double ratio = (double)rowWidth / 512;
 		for(uint32_t j = 0; j < 512; j++) {

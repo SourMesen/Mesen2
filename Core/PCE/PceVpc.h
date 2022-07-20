@@ -26,9 +26,6 @@ private:
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;
 
-	uint8_t _rowVceClockDivider[2][PceConstants::ScreenHeight] = {};
-	uint8_t* _currentClockDividers = nullptr;
-
 	PceVpcState _state = {};
 
 	void SetPriorityConfig(PceVpcPixelWindow wnd, uint8_t value);
@@ -60,6 +57,4 @@ public:
 
 	uint16_t* GetScreenBuffer() { return _currentOutBuffer; }
 	uint16_t* GetPreviousScreenBuffer() { return _currentOutBuffer == _outBuffer[0] ? _outBuffer[1] : _outBuffer[0]; }
-	uint8_t* GetRowClockDividers() { return _currentClockDividers; }
-	uint8_t* GetPreviousRowClockDividers() { return _currentClockDividers == _rowVceClockDivider[0] ? _rowVceClockDivider[1] : _rowVceClockDivider[0]; }
 };

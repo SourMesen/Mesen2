@@ -88,16 +88,17 @@ public:
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
 	{
-		uint8_t* rowVceClockDivider = (uint8_t*)_frameData;
 		uint32_t* out = GetOutputBuffer();
 		FrameInfo frameInfo = _frameInfo;
 		OverscanDimensions overscan = GetOverscan();
 
 		uint32_t yOffset = overscan.Top * PceConstants::MaxScreenWidth;
+		constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 
 		for(uint32_t i = 0; i < frameInfo.Height / 2; i++) {
-			uint32_t xOffset = PceConstants::GetLeftOverscan(rowVceClockDivider[i]);
-			uint32_t rowWidth = PceConstants::GetRowWidth(rowVceClockDivider[i]);
+			uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i];
+			uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider);
+			uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 			if(rowWidth == frameInfo.Width) {
 				//512px output
 				for(uint32_t j = 0; j < frameInfo.Width; j++) {

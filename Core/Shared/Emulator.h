@@ -190,7 +190,7 @@ public:
 	void SuspendDebugger(bool release);
 
 	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);
-	void Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, bool compressed = true);
+	bool Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings);
 
 	SoundMixer* GetSoundMixer();
 	VideoRenderer* GetVideoRenderer();

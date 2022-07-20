@@ -637,13 +637,6 @@ struct FrameInfo
 	uint32_t Height;
 };
 
-struct ScreenSize
-{
-	int32_t Width;
-	int32_t Height;
-	double Scale;
-};
-
 enum class EmulatorShortcut
 {
 	FastForward,

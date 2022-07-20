@@ -138,15 +138,15 @@ uint32_t PceEventManager::TakeEventSnapshot()
 	constexpr uint32_t size = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 	if(scanline < 14 || scanline >= 256) {
 		memcpy(_ppuBuffer, _vpc->GetScreenBuffer(), size * sizeof(uint16_t));
-		memcpy(_rowClockDividers, _vpc->GetRowClockDividers(), PceConstants::ScreenHeight);
+		memcpy(_rowClockDividers, _vpc->GetScreenBuffer()+size, PceConstants::ScreenHeight * sizeof(uint16_t));
 	} else {
 		uint32_t scanlineOffset = (scanline - 14);
 		uint32_t offset = PceConstants::MaxScreenWidth * scanlineOffset;
 		memcpy(_ppuBuffer, _vpc->GetScreenBuffer(), offset * sizeof(uint16_t));
 		memcpy(_ppuBuffer + offset, _vpc->GetPreviousScreenBuffer() + offset, (size - offset) * sizeof(uint16_t));
 		
-		memcpy(_rowClockDividers, _vpc->GetRowClockDividers(), scanlineOffset);
-		memcpy(_rowClockDividers + scanlineOffset, _vpc->GetPreviousRowClockDividers() + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset));
+		memcpy(_rowClockDividers, _vpc->GetScreenBuffer()+size, scanlineOffset * sizeof(uint16_t));
+		memcpy(_rowClockDividers + scanlineOffset, _vpc->GetPreviousScreenBuffer() + size + scanlineOffset, (PceConstants::ScreenHeight - scanlineOffset) * sizeof(uint16_t));
 	}
 
 	_snapshotCurrentFrame = _debugEvents;

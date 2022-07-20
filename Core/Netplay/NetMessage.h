@@ -29,8 +29,10 @@ public:
 
 	void Initialize()
 	{
-		Serializer s(_receivedData, SaveStateManager::FileFormatVersion);
-		Serialize(s);
+		Serializer s(SaveStateManager::FileFormatVersion, false);
+		if(s.LoadFrom(_receivedData)) {
+			Serialize(s);
+		}
 	}
 
 	MessageType GetType()
@@ -40,11 +42,11 @@ public:
 
 	void Send(Socket &socket)
 	{
-		Serializer s(SaveStateManager::FileFormatVersion);
+		Serializer s(SaveStateManager::FileFormatVersion, true);
 		Serialize(s);
 
 		stringstream out;
-		s.Save(out);
+		s.SaveTo(out);
 
 		string data = out.str();
 		uint32_t messageLength = (uint32_t)data.size() + 1;

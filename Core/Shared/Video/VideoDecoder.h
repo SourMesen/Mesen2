@@ -55,6 +55,7 @@ public:
 	uint32_t GetFrameCount();
 	FrameInfo GetBaseFrameInfo(bool removeOverscan);
 	FrameInfo GetFrameInfo();
+	double GetLastFrameScale() { return _frame.Scale; }
 
 	void UpdateFrame(RenderedFrame frame, bool sync, bool forRewind);
 

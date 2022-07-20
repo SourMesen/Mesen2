@@ -50,7 +50,6 @@ void VideoRenderer::SetRendererSize(uint32_t width, uint32_t height)
 
 void VideoRenderer::StartThread()
 {
-#ifndef LIBRETRO
 	if(!_renderThread) {
 		auto lock = _stopStartLock.AcquireSafe();
 		if(!_renderThread) {
@@ -60,12 +59,10 @@ void VideoRenderer::StartThread()
 			_renderThread.reset(new std::thread(&VideoRenderer::RenderThread, this));
 		}
 	}
-#endif
 }
 
 void VideoRenderer::StopThread()
 {
-#ifndef LIBRETRO
 	_stopFlag = true;
 	if(_renderThread) {
 		auto lock = _stopStartLock.AcquireSafe();
@@ -74,7 +71,6 @@ void VideoRenderer::StopThread()
 			_renderThread.reset();
 		}
 	}
-#endif
 }
 
 void VideoRenderer::RenderThread()

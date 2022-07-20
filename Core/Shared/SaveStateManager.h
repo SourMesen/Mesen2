@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 class Emulator;
+struct RenderedFrame;
 
 class SaveStateManager
 {
@@ -12,8 +13,11 @@ private:
 	Emulator* _emu;
 
 	string GetStateFilepath(int stateIndex);	
-	void SaveScreenshotData(ostream& stream);
-	bool GetScreenshotData(vector<uint8_t>& out, uint32_t& width, uint32_t& height, istream& stream);
+	void SaveVideoData(ostream& stream);
+	bool GetVideoData(vector<uint8_t>& out, RenderedFrame& frame, istream& stream);
+
+	void WriteValue(ostream& stream, uint32_t value);
+	uint32_t ReadValue(istream& stream);
 
 public:
 	static constexpr uint32_t FileFormatVersion = 3;

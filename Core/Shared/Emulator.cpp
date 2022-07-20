@@ -225,7 +225,7 @@ void Emulator::RunFrameWithRunAhead()
 	if(!wasReset) {
 		//Load the state we saved earlier
 		_isRunAheadFrame = true;
-		Deserialize(runAheadState, SaveStateManager::FileFormatVersion, false, false);
+		Deserialize(runAheadState, SaveStateManager::FileFormatVersion, false);
 		_isRunAheadFrame = false;
 	}
 }
@@ -772,22 +772,27 @@ void Emulator::WaitForLock()
 
 void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLevel)
 {
-	Serializer s(SaveStateManager::FileFormatVersion);
+	Serializer s(SaveStateManager::FileFormatVersion, true);
 	if(includeSettings) {
 		SV(_settings);
 	}
 	s.Stream(_console, "");
-	s.Save(out, compressionLevel);
+	s.SaveTo(out, compressionLevel);
 }
 
-void Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, bool compressed)
+bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings)
 {
-	Serializer s(in, fileFormatVersion, compressed);
+	Serializer s(fileFormatVersion, false);
+	if(!s.LoadFrom(in)) {
+		return false;
+	}
+
 	if(includeSettings) {
 		SV(_settings);
 	}
 	s.Stream(_console, "");
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
+	return true;
 }
 
 SoundMixer* Emulator::GetSoundMixer()

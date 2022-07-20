@@ -199,7 +199,6 @@ void VideoDecoder::UpdateFrame(RenderedFrame frame, bool sync, bool forRewind)
 
 void VideoDecoder::StartThread()
 {
-#ifndef LIBRETRO
 	auto lock = _stopStartLock.AcquireSafe();
 	if(!_decodeThread) {
 		_videoFilter.reset();
@@ -214,12 +213,10 @@ void VideoDecoder::StartThread()
 
 		_decodeThread.reset(new thread(&VideoDecoder::DecodeThread, this));
 	}
-#endif
 }
 
 void VideoDecoder::StopThread()
 {
-#ifndef LIBRETRO
 	auto lock = _stopStartLock.AcquireSafe();
 	_stopFlag = true;
 	if(_decodeThread) {
@@ -231,7 +228,6 @@ void VideoDecoder::StopThread()
 		//Clear whole screen
 		_emu->GetVideoRenderer()->ClearFrame();
 	}
-#endif
 }
 
 bool VideoDecoder::IsRunning()

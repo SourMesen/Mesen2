@@ -62,25 +62,21 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	uint32_t emuVersion = _emu->GetSettings()->GetVersion();
 	uint32_t formatVersion = SaveStateManager::FileFormatVersion;
 	stream.write("MSS", 3);
-	stream.write((char*)&emuVersion, sizeof(emuVersion));
-	stream.write((char*)&formatVersion, sizeof(uint32_t));
+	WriteValue(stream, emuVersion);
+	WriteValue(stream, formatVersion);
 
 	//TODO, performance
 	//string sha1Hash = _emu->GetHash(HashType::Sha1);
 	string sha1Hash = "0000000000000000000000000000000000000000";
 	stream.write(sha1Hash.c_str(), sha1Hash.size());
 
-	ConsoleType consoleType = _emu->GetConsoleType();
-	stream.write((char*)&consoleType, sizeof(consoleType));
+	WriteValue(stream, (uint32_t)_emu->GetConsoleType());
 
-	#ifndef LIBRETRO
-	SaveScreenshotData(stream);
-	#endif
+	SaveVideoData(stream);
 
 	RomInfo romInfo = _emu->GetRomInfo();
 	string romName = FolderUtilities::GetFilename(romInfo.RomFile.GetFileName(), true);
-	uint32_t nameLength = (uint32_t)romName.size();
-	stream.write((char*)&nameLength, sizeof(uint32_t));
+	WriteValue(stream, (uint32_t)romName.size());
 	stream.write(romName.c_str(), romName.size());
 }
 
@@ -116,34 +112,40 @@ void SaveStateManager::SaveState(int stateIndex, bool displayMessage)
 	}
 }
 
-void SaveStateManager::SaveScreenshotData(ostream& stream)
+void SaveStateManager::SaveVideoData(ostream& stream)
 {
 	PpuFrameInfo frame = _emu->GetPpuFrame();
-	stream.write((char*)&frame.Width, sizeof(uint32_t));
-	stream.write((char*)&frame.Height, sizeof(uint32_t));
+	WriteValue(stream, frame.FrameBufferSize);
+	WriteValue(stream, frame.Width);
+	WriteValue(stream, frame.Height);
+	WriteValue(stream, (uint32_t)(_emu->GetVideoDecoder()->GetLastFrameScale() * 100));
 
-	unsigned long compressedSize = compressBound(512*478*2);
+	unsigned long compressedSize = compressBound(frame.FrameBufferSize);
 	vector<uint8_t> compressedData(compressedSize, 0);
-	compress2(compressedData.data(), &compressedSize, (const unsigned char*)frame.FrameBuffer, frame.Width*frame.Height*2, MZ_DEFAULT_LEVEL);
+	compress2(compressedData.data(), &compressedSize, (const unsigned char*)frame.FrameBuffer, frame.FrameBufferSize, MZ_DEFAULT_LEVEL);
 
-	uint32_t screenshotLength = (uint32_t)compressedSize;
-	stream.write((char*)&screenshotLength, sizeof(uint32_t));
-	stream.write((char*)compressedData.data(), screenshotLength);
+	WriteValue(stream, (uint32_t)compressedSize);
+	stream.write((char*)compressedData.data(), (uint32_t)compressedSize);
 }
 
-bool SaveStateManager::GetScreenshotData(vector<uint8_t>& out, uint32_t &width, uint32_t &height, istream& stream)
+bool SaveStateManager::GetVideoData(vector<uint8_t>& out, RenderedFrame& frame, istream& stream)
 {
-	stream.read((char*)&width, sizeof(uint32_t));
-	stream.read((char*)&height, sizeof(uint32_t));
+	uint32_t frameBufferSize = ReadValue(stream);
+	frame.Width = ReadValue(stream);
+	frame.Height = ReadValue(stream);
+	frame.Scale = ReadValue(stream) / 100.0;
 
-	uint32_t screenshotLength = 0;
-	stream.read((char*)&screenshotLength, sizeof(uint32_t));
+	uint32_t compressedSize = ReadValue(stream);
+	if(compressedSize > 1024 * 1024 * 2) {
+		//Data is larger than 2mb, this is probably invalid
+		return false;
+	}
 
-	vector<uint8_t> compressedData(screenshotLength, 0);
-	stream.read((char*)compressedData.data(), screenshotLength);
+	vector<uint8_t> compressedData(compressedSize, 0);
+	stream.read((char*)compressedData.data(), compressedSize);
 
-	out = vector<uint8_t>(width * height * 2, 0);
-	unsigned long decompSize = width * height * 2;
+	out = vector<uint8_t>(frameBufferSize, 0);
+	unsigned long decompSize = frameBufferSize;
 	if(uncompress(out.data(), &decompSize, compressedData.data(), (unsigned long)compressedData.size()) == MZ_OK) {
 		return true;
 	}
@@ -160,61 +162,57 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 	char header[3];
 	stream.read(header, 3);
 	if(memcmp(header, "MSS", 3) == 0) {
-		uint32_t emuVersion, fileFormatVersion;
-
-		stream.read((char*)&emuVersion, sizeof(emuVersion));
+		uint32_t emuVersion = ReadValue(stream);
 		if(emuVersion > _emu->GetSettings()->GetVersion()) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateNewerVersion");
 			return false;
 		}
 
-		stream.read((char*)&fileFormatVersion, sizeof(fileFormatVersion));
+		uint32_t fileFormatVersion = ReadValue(stream);
 		if(fileFormatVersion < SaveStateManager::MinimumSupportedVersion) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateIncompatibleVersion");
 			return false;
+		}
+		
+		char hash[41] = {};
+		stream.read(hash, 40);
+
+		ConsoleType consoleType = (ConsoleType)ReadValue(stream);
+		if(consoleType != _emu->GetConsoleType()) {
+			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
+			return false;
+		}
+			
+		RenderedFrame frame;
+		vector<uint8_t> frameData;
+		if(GetVideoData(frameData, frame, stream)) {
+			frame.FrameBuffer = frameData.data();
 		} else {
-			char hash[41] = {};
-			stream.read(hash, 40);
-
-			ConsoleType consoleType;
-			stream.read((char*)&consoleType, sizeof(consoleType));
-			if(consoleType != _emu->GetConsoleType()) {
-				MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
-				return false;
-			}
-			
-			#ifndef LIBRETRO
-			vector<uint8_t> frameData;
-			uint32_t width = 0;
-			uint32_t height = 0;
-			if(GetScreenshotData(frameData, width, height, stream)) {
-				RenderedFrame frame(frameData.data(), width, height);
-				_emu->GetVideoDecoder()->UpdateFrame(frame, true, true);
-			}
-			#endif
-
-			uint32_t nameLength = 0;
-			stream.read((char*)&nameLength, sizeof(uint32_t));
-			
-			vector<char> nameBuffer(nameLength);
-			stream.read(nameBuffer.data(), nameBuffer.size());
-			string romName(nameBuffer.data(), nameLength);
-			
-			if(!_emu->IsRunning() /*|| cartridge->GetSha1Hash() != string(hash)*/) {
-				//Game isn't loaded, or CRC doesn't match
-				//TODO: Try to find and load the game
-				return false;
-			}
+			MessageManager::DisplayMessage("SaveStates", "SaveStateInvalidFile");
+			return false;
 		}
 
-		//Stop any movie that might have been playing/recording if a state is loaded
-		//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
-		_emu->GetMovieManager()->Stop();
+		uint32_t nameLength = ReadValue(stream);
+			
+		vector<char> nameBuffer(nameLength);
+		stream.read(nameBuffer.data(), nameBuffer.size());
+		string romName(nameBuffer.data(), nameLength);
+			
+		if(!_emu->IsRunning() /*|| cartridge->GetSha1Hash() != string(hash)*/) {
+			//Game isn't loaded, or CRC doesn't match
+			//TODO: Try to find and load the game
+			return false;
+		}
 
-		_emu->Deserialize(stream, fileFormatVersion, false);
-
-		return true;
+		if(_emu->Deserialize(stream, fileFormatVersion, false)) {
+			//Stop any movie that might have been playing/recording if a state is loaded
+			//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
+			_emu->GetMovieManager()->Stop();
+			_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
+			return true;
+		}
 	}
+
 	MessageManager::DisplayMessage("SaveStates", "SaveStateInvalidFile");
 	return false;
 }
@@ -252,8 +250,6 @@ bool SaveStateManager::LoadState(int stateIndex)
 
 void SaveStateManager::SaveRecentGame(string romName, string romPath, string patchPath)
 {
-#ifndef LIBRETRO
-	//Don't do this for libretro core
 	string filename = FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
 	ZipWriter writer;
 	writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));
@@ -272,7 +268,6 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 	romInfoStream << patchPath << std::endl;
 	writer.AddFile(romInfoStream, "RomInfo.txt");
 	writer.Save();
-#endif
 }
 
 void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
@@ -312,15 +307,12 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 	char header[3];
 	stream.read(header, 3);
 	if(memcmp(header, "MSS", 3) == 0) {
-		uint32_t emuVersion = 0;
-
-		stream.read((char*)&emuVersion, sizeof(emuVersion));
+		uint32_t emuVersion = ReadValue(stream);
 		if(emuVersion > _emu->GetSettings()->GetVersion()) {
 			return -1;
 		}
 
-		uint32_t fileFormatVersion = 0;
-		stream.read((char*)&fileFormatVersion, sizeof(fileFormatVersion));
+		uint32_t fileFormatVersion = ReadValue(stream);
 		if(fileFormatVersion < SaveStateManager::MinimumSupportedVersion) {
 			return -1;
 		}
@@ -329,12 +321,11 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 		stream.seekg(44, ios::cur);
 
 		vector<uint8_t> frameData;
-		uint32_t width = 0;
-		uint32_t height = 0;
-		if(GetScreenshotData(frameData, width, height, stream)) {
+		RenderedFrame frame;
+		if(GetVideoData(frameData, frame, stream)) {
 			FrameInfo baseFrameInfo;
-			baseFrameInfo.Width = width;
-			baseFrameInfo.Height = height;
+			baseFrameInfo.Width = frame.Width;
+			baseFrameInfo.Height = frame.Height;
 			
 			unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 			filter->SetBaseFrameInfo(baseFrameInfo);
@@ -350,4 +341,24 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 		}
 	}
 	return -1;
+}
+
+void SaveStateManager::WriteValue(ostream& stream, uint32_t value)
+{
+	stream.put(value & 0xFF);
+	stream.put((value >> 8) & 0xFF);
+	stream.put((value >> 16) & 0xFF);
+	stream.put((value >> 24) & 0xFF);
+}
+
+uint32_t SaveStateManager::ReadValue(istream& stream)
+{
+	char a = 0, b = 0, c = 0, d = 0;
+	stream.get(a);
+	stream.get(b);
+	stream.get(c);
+	stream.get(d);
+	
+	uint32_t result = (uint8_t)a | ((uint8_t)b << 8) | ((uint8_t)c << 16) | ((uint8_t)d << 24);
+	return result;
 }

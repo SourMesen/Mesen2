@@ -29,7 +29,7 @@ void RecordedRomTest::SaveFrame()
 	PpuFrameInfo frame = _emu->GetPpuFrame();
 
 	uint8_t md5Hash[16];
-	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint16_t));
+	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.FrameBufferSize);
 
 	if(memcmp(_previousHash, md5Hash, 16) == 0 && _currentCount < 255) {
 		_currentCount++;

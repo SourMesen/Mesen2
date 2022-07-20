@@ -323,6 +323,7 @@ PpuFrameInfo NesConsole::GetPpuFrame()
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer(false);
 	frame.Width = NesConstants::ScreenWidth;
 	frame.Height = NesConstants::ScreenHeight;
+	frame.FrameBufferSize = frame.Width * frame.Height * sizeof(uint16_t);
 	frame.FrameCount = _ppu->GetFrameCount();
 	frame.FirstScanline = -1;
 	frame.ScanlineCount = _ppu->GetScanlineCount();

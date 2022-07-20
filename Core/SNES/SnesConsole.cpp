@@ -72,7 +72,6 @@ void SnesConsole::OnBeforeRun()
 
 void SnesConsole::ProcessEndOfFrame()
 {
-#ifndef LIBRETRO
 	_cart->RunCoprocessors();
 	if(_cart->GetCoprocessor()) {
 		_cart->GetCoprocessor()->ProcessEndOfFrame();
@@ -83,7 +82,6 @@ void SnesConsole::ProcessEndOfFrame()
 	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
 	_internalRegisters->ProcessAutoJoypadRead();
-#endif
 	_frameRunning = false;
 }
 
@@ -202,6 +200,7 @@ PpuFrameInfo SnesConsole::GetPpuFrame()
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
 	frame.Width = 256;
 	frame.Height = 239;
+	frame.FrameBufferSize = frame.Width * frame.Height * sizeof(uint16_t);
 	frame.FrameCount = _ppu->GetFrameCount();
 	frame.FirstScanline = 0;
 	frame.ScanlineCount = _ppu->GetVblankEndScanline() + 1;

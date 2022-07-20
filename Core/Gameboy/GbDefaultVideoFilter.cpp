@@ -89,7 +89,7 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
 	}
-	bool blendFrames = gbConfig.BlendFrames && !_emu->GetRewindManager()->IsRewinding();
+	bool blendFrames = gbConfig.BlendFrames && !_emu->GetRewindManager()->IsRewinding() && !_emu->IsPaused();
 	if(_blendFrames != blendFrames) {
 		_blendFrames = blendFrames;
 		memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));

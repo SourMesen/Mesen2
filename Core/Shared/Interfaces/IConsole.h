@@ -27,6 +27,7 @@ struct PpuFrameInfo
 	uint8_t* FrameBuffer;
 	uint32_t Width;
 	uint32_t Height;
+	uint32_t FrameBufferSize;
 	uint32_t FrameCount;
 	uint32_t ScanlineCount;
 	int32_t FirstScanline;
