@@ -14,7 +14,6 @@ class IInputProvider;
 class Emulator;
 class NesConsole;
 enum class ControllerType;
-enum class ExpansionPortDevice;
 
 class NesControlManager : public ISerializable, public INesMemoryHandler, public BaseControlManager
 {

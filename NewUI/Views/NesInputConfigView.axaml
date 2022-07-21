@@ -148,7 +148,9 @@
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpGeneral}">
-				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+				<CheckBox IsChecked="{CompiledBinding Config.AutoConfigureInput}" Content="{l:Translate chkAutoConfigureInput}" />
+
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 					<TextBlock Grid.Row="0" Text="{l:Translate lblLightDetectionRadius}" VerticalAlignment="Top" Margin="0 15 5 0" />
 					<c:MesenSlider
 						Margin="12 12 10 0"

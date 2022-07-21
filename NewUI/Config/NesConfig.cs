@@ -28,6 +28,7 @@ namespace Mesen.Config
 		[Reactive] public NesControllerConfig ExpPortD { get; set; } = new();
 
 		[Reactive] public UInt32 LightDetectionRadius { get; set; } = 0;
+		[Reactive] public bool AutoConfigureInput { get; set; } = true;
 
 		//General
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
@@ -140,6 +141,7 @@ namespace Mesen.Config
 				ExpPortD = ExpPortD.ToInterop(),
 
 				LightDetectionRadius = LightDetectionRadius,
+				AutoConfigureInput = AutoConfigureInput,
 
 				Region = Region,
 				EnableHdPacks = EnableHdPacks,
@@ -267,6 +269,22 @@ namespace Mesen.Config
 				}
 			}
 		}
+
+		public void UpdateInputFromCoreConfig()
+		{
+			//Used to update input devices when the core requests changes
+			InteropNesConfig cfg = ConfigApi.GetNesConfig();
+			Port1.Type = cfg.Port1.Type;
+			Port1A.Type = cfg.Port1A.Type;
+			Port1B.Type = cfg.Port1B.Type;
+			Port1C.Type = cfg.Port1C.Type;
+			Port1D.Type = cfg.Port1D.Type;
+			Port2.Type = cfg.Port2.Type;
+			ExpPort.Type = cfg.ExpPort.Type;
+			ExpPortA.Type = cfg.ExpPortA.Type;
+			ExpPortB.Type = cfg.ExpPortB.Type;
+			ApplyConfig();
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -287,6 +305,7 @@ namespace Mesen.Config
 		public InteropControllerConfig ExpPortD;
 
 		public UInt32 LightDetectionRadius;
+		[MarshalAs(UnmanagedType.I1)] public bool AutoConfigureInput;
 
 		public ConsoleRegion Region;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableHdPacks;

@@ -22,6 +22,8 @@ struct HdPackData;
 enum class DebugEventType;
 enum class EventType;
 enum class ConsoleRegion;
+enum class GameInputType;
+enum class GameSystem;
 
 class NesConsole final : public IConsole
 {
@@ -48,6 +50,8 @@ private:
 	
 	void UpdateRegion(bool forceUpdate = false);
 	void LoadHdPack(VirtualFile& romFile);
+	
+	void InitializeInputDevices(GameInputType inputType, GameSystem system);
 
 public:
 	NesConsole(Emulator* emulator);

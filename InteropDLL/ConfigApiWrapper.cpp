@@ -72,8 +72,14 @@ extern "C" {
 		_emu->GetSettings()->SetShortcutKeys(shortcutList);
 	}
 
+	DllExport NesConfig __stdcall GetNesConfig()
+	{
+		return _emu->GetSettings()->GetNesConfig();
+	}
+
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
+		//TODO - used by netplay?
 		BaseControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(player);

@@ -14,7 +14,6 @@ class Emulator;
 class SystemActionManager;
 struct ControllerData;
 enum class ControllerType;
-enum class ExpansionPortDevice;
 
 class SnesControlManager : public ISerializable, public BaseControlManager
 {

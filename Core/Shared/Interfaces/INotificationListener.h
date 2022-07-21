@@ -25,7 +25,8 @@ enum class ConsoleNotificationType
 	BeforeGameUnload,
 	BeforeGameLoad,
 	GameLoadFailed,
-	CheatsChanged
+	CheatsChanged,
+	RequestConfigChange
 };
 
 class INotificationListener

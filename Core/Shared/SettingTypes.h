@@ -481,6 +481,7 @@ struct NesConfig
 	ControllerConfig ExpPortSubPorts[4];
 
 	uint32_t LightDetectionRadius = 0;
+	bool AutoConfigureInput = true;
 
 	ConsoleRegion Region = ConsoleRegion::Auto;
 	bool EnableHdPacks = true;

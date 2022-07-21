@@ -216,6 +216,10 @@ namespace Mesen.Windows
 					});
 					break;
 
+				case ConsoleNotificationType.RequestConfigChange:
+					UpdateInputConfiguration();
+					break;
+
 				case ConsoleNotificationType.EmulationStopped:
 					Dispatcher.UIThread.Post(() => {
 						_model.RomInfo = new RomInfo();
@@ -249,6 +253,12 @@ namespace Mesen.Windows
 					tcs.Task.Wait();
 					break;
 			}
+		}
+
+		private static void UpdateInputConfiguration()
+		{
+			//Used to update input devices when the core requests changes (NES-only for now)
+			ConfigManager.Config.Nes.UpdateInputFromCoreConfig();
 		}
 
 		private void InitializeComponent()

@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Controls;
+using Mesen.Interop;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,6 +16,8 @@ namespace Mesen.ViewModels
 {
 	public class NesConfigViewModel : DisposableViewModel
 	{
+		private NotificationListener? _listener = null;
+
 		[Reactive] public NesConfig Config { get; set; }
 
 		[Reactive] public bool ShowExpansionVolume { get; set; }
@@ -50,11 +54,24 @@ namespace Mesen.ViewModels
 				return;
 			}
 
+			_listener = AddDisposable(new NotificationListener());
+			_listener.OnNotification += listener_OnNotification;
+
 			AddDisposable(Input);
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
 			AddDisposable(this.WhenAnyValue(x => x.Config.StereoFilter).Select(x => x == StereoFilter.Delay).ToPropertyEx(this, x => x.IsDelayStereoEffect));
 			AddDisposable(this.WhenAnyValue(x => x.Config.StereoFilter).Select(x => x == StereoFilter.Panning).ToPropertyEx(this, x => x.IsPanningStereoEffect));
 			AddDisposable(this.WhenAnyValue(x => x.Config.StereoFilter).Select(x => x == StereoFilter.CombFilter).ToPropertyEx(this, x => x.IsCombStereoEffect));
+		}
+
+		private void listener_OnNotification(NotificationEventArgs e)
+		{
+			if(e.NotificationType == ConsoleNotificationType.RequestConfigChange) {
+				//Update configuration when game is loaded
+				Dispatcher.UIThread.Post(() => {
+					Config.UpdateInputFromCoreConfig();
+				});
+			}
 		}
 
 		public void LoadPaletteFile(string filename)

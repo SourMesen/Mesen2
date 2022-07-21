@@ -136,7 +136,7 @@ namespace Mesen.Debugger.Utilities
 							try {
 								value();
 							} catch(Exception ex) {
-								MesenMsgBox.ShowException(ex);
+								Dispatcher.UIThread.Post(() => MesenMsgBox.ShowException(ex));
 							}
 						}
 					}

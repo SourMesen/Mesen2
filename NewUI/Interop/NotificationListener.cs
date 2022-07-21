@@ -75,6 +75,7 @@ namespace Mesen.Interop
 		BeforeGameUnload,
 		BeforeGameLoad,
 		GameLoadFailed,
-		CheatsChanged
+		CheatsChanged,
+		RequestConfigChange
 	}
 }

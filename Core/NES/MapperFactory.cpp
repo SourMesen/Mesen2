@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Shared/NotificationManager.h"
 #include "NES/MapperFactory.h"
 #include "NES/NesConsole.h"
 #include "NES/Loaders/RomLoader.h"
@@ -671,16 +670,6 @@ unique_ptr<BaseMapper> MapperFactory::InitializeFromFile(NesConsole* console, Vi
 	romData = {};
 	bool databaseEnabled = !console->GetNesConfig().DisableGameDatabase;
 	if(RomLoader::LoadFile(romFile, romData, databaseEnabled)) {
-		if((romData.Info.IsInDatabase || romData.Info.IsNes20Header) && romData.Info.InputType != GameInputType::Unspecified) {
-			//If in DB or a NES 2.0 file, auto-configure the inputs
-			//TODO NES
-			/*
-			if(console->GetNesConfig()->CheckFlag(EmulationFlags::AutoConfigureInput)) {
-				console->GetSettings()->InitializeInputDevices(romData.Info.InputType, romData.Info.System, false);
-			}
-			*/
-		}
-
 		unique_ptr<BaseMapper> mapper(GetMapperFromID(romData));
 		if(mapper) {
 			result = LoadRomResult::Success;

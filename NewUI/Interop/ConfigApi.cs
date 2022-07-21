@@ -35,6 +35,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 
 		[DllImport(DllPath)] public static extern ControllerType GetControllerType(int player);
+		[DllImport(DllPath)] public static extern InteropNesConfig GetNesConfig();
 
 		[DllImport(DllPath, EntryPoint = "GetAudioDevices")] private static extern void GetAudioDevicesWrapper(IntPtr outDeviceList, Int32 maxSize);
 		public unsafe static List<string> GetAudioDevices()

@@ -23,11 +23,12 @@
 #include "NES/Mappers/FDS/Fds.h"
 #include "Shared/Emulator.h"
 #include "Shared/CheatManager.h"
-#include "Netplay/GameClient.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/Interfaces/IBattery.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/NotificationManager.h"
+#include "Netplay/GameClient.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/Serializer.h"
 
@@ -132,6 +133,11 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			if(result != LoadRomResult::Success) {
 				return result;
 			}
+		}
+		
+		//If in DB or a NES 2.0 file, auto-configure the inputs (if option is enabled)
+		if(GetNesConfig().AutoConfigureInput && (romData.Info.IsInDatabase || romData.Info.IsNes20Header) && romData.Info.InputType != GameInputType::Unspecified) {
+			InitializeInputDevices(romData.Info.InputType, romData.Info.System);
 		}
 
 		_mapper.swap(mapper);
@@ -463,6 +469,123 @@ void NesConsole::DebugWriteVram(uint16_t addr, uint8_t value)
 	} else {
 		_mapper->DebugWriteVram(addr, value);
 	}
+}
+
+void NesConsole::InitializeInputDevices(GameInputType inputType, GameSystem system)
+{
+	ControllerType port1 = ControllerType::NesController;
+	ControllerType port2 = ControllerType::NesController;
+	ControllerType expDevice = ControllerType::None;
+
+	auto log = [](string text) {
+		MessageManager::Log(text);
+	};
+
+	bool isFamicom = (system == GameSystem::Famicom || system == GameSystem::FDS || system == GameSystem::Dendy);
+
+	if(inputType == GameInputType::VsZapper) {
+		//VS Duck Hunt, etc. need the zapper in the first port
+		log("[Input] VS Zapper connected");
+		port1 = ControllerType::NesZapper;
+	} else if(inputType == GameInputType::Zapper) {
+		log("[Input] Zapper connected");
+		if(isFamicom) {
+			expDevice = ControllerType::FamicomZapper;
+		} else {
+			port2 = ControllerType::NesZapper;
+		}
+	} else if(inputType == GameInputType::FourScore) {
+		log("[Input] Four score connected");
+		port1 = ControllerType::FourScore;
+		port2 = ControllerType::FourScore;
+	} else if(inputType == GameInputType::FourPlayerAdapter) {
+		log("[Input] Four player adapter connected");
+		expDevice = ControllerType::TwoPlayerAdapter;
+	} else if(inputType == GameInputType::ArkanoidControllerFamicom) {
+		log("[Input] Arkanoid controller (Famicom) connected");
+		expDevice = ControllerType::FamicomArkanoidController;
+	} else if(inputType == GameInputType::ArkanoidControllerNes) {
+		log("[Input] Arkanoid controller (NES) connected");
+		port2 = ControllerType::NesArkanoidController;
+	} else if(inputType == GameInputType::DoubleArkanoidController) {
+		log("[Input] 2x arkanoid controllers (NES) connected");
+		port1 = ControllerType::NesArkanoidController;
+		port2 = ControllerType::NesArkanoidController;
+	} else if(inputType == GameInputType::OekaKidsTablet) {
+		log("[Input] Oeka Kids Tablet connected");
+		expDevice = ControllerType::OekaKidsTablet;
+	} else if(inputType == GameInputType::KonamiHyperShot) {
+		log("[Input] Konami Hyper Shot connected");
+		expDevice = ControllerType::KonamiHyperShot;
+	} else if(inputType == GameInputType::FamilyBasicKeyboard) {
+		log("[Input] Family Basic Keyboard connected");
+		expDevice = ControllerType::FamilyBasicKeyboard;
+	} else if(inputType == GameInputType::PartyTap) {
+		log("[Input] Party Tap connected");
+		expDevice = ControllerType::PartyTap;
+	} else if(inputType == GameInputType::PachinkoController) {
+		log("[Input] Pachinko controller connected");
+		expDevice = ControllerType::Pachinko;
+	} else if(inputType == GameInputType::ExcitingBoxing) {
+		log("[Input] Exciting Boxing controller connected");
+		expDevice = ControllerType::ExcitingBoxing;
+	} else if(inputType == GameInputType::SuborKeyboardMouse1) {
+		log("[Input] Subor mouse connected");
+		log("[Input] Subor keyboard connected");
+		expDevice = ControllerType::SuborKeyboard;
+		port2 = ControllerType::SuborMouse;
+	} else if(inputType == GameInputType::JissenMahjong) {
+		log("[Input] Jissen Mahjong controller connected");
+		expDevice = ControllerType::JissenMahjong;
+	} else if(inputType == GameInputType::BarcodeBattler) {
+		log("[Input] Barcode Battler barcode reader connected");
+		expDevice = ControllerType::BarcodeBattler;
+	} else if(inputType == GameInputType::BandaiHypershot) {
+		log("[Input] Bandai Hyper Shot gun connected");
+		expDevice = ControllerType::BandaiHyperShot;
+	} else if(inputType == GameInputType::BattleBox) {
+		log("[Input] Battle Box connected");
+		expDevice = ControllerType::BattleBox;
+	} else if(inputType == GameInputType::TurboFile) {
+		log("[Input] Ascii Turbo File connected");
+		expDevice = ControllerType::AsciiTurboFile;
+	} else if(inputType == GameInputType::FamilyTrainerSideA) {
+		log("[Input] Family Trainer mat connected (Side A)");
+		expDevice = ControllerType::FamilyTrainerMatSideA;
+	} else if(inputType == GameInputType::FamilyTrainerSideB) {
+		log("[Input] Family Trainer mat connected (Side B)");
+		expDevice = ControllerType::FamilyTrainerMatSideB;
+	} else if(inputType == GameInputType::PowerPadSideA) {
+		log("[Input] Power Pad connected (Side A)");
+		port2 = ControllerType::PowerPadSideA;
+	} else if(inputType == GameInputType::PowerPadSideB) {
+		log("[Input] Power Pad connected (Side B)");
+		port2 = ControllerType::PowerPadSideB;
+	} else if(inputType == GameInputType::SnesControllers) {
+		log("[Input] 2 SNES controllers connected");
+		port1 = ControllerType::SnesController;
+		port2 = ControllerType::SnesController;
+	} else {
+		log("[Input] 2 standard controllers connected");
+	}
+
+	isFamicom = (system == GameSystem::Famicom || system == GameSystem::FDS || system == GameSystem::Dendy);
+
+	NesConfig& cfg = GetNesConfig();
+	cfg.Port1.Type = port1;
+	cfg.Port2.Type = port2;
+	cfg.ExpPort.Type = expDevice;
+
+	if(port1 == ControllerType::FourScore) {
+		cfg.Port1SubPorts[0].Type = ControllerType::NesController;
+		cfg.Port1SubPorts[1].Type = ControllerType::NesController;
+		cfg.Port1SubPorts[2].Type = ControllerType::NesController;
+		cfg.Port1SubPorts[3].Type = ControllerType::NesController;
+	} else if(expDevice == ControllerType::TwoPlayerAdapter) {
+		cfg.ExpPortSubPorts[0].Type = ControllerType::NesController;
+		cfg.ExpPortSubPorts[1].Type = ControllerType::NesController;
+	}
+	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RequestConfigChange);
 }
 
 void NesConsole::ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value)

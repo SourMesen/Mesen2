@@ -59,6 +59,7 @@
 		<Form ID="NesInputConfigView">
 			<Control ID="grpControllers">Controllers</Control>
 			<Control ID="grpGeneral">General</Control>
+			<Control ID="chkAutoConfigureInput">Automatically configure controllers when loading a game</Control>
 			<Control ID="lblLightDetectionRadius">Light detection radius for light guns:</Control>
 			<Control ID="lblSmall">Small</Control>
 			<Control ID="lblLarge">Large</Control>
