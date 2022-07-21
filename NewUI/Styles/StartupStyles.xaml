@@ -10,7 +10,8 @@
 	</Styles.Resources>
 	
 	<Style Selector="Window">
-		<Setter Property="Background" Value="#000000"/>
+		<Setter Property="Background" Value="#181818"/>
+		<Setter Property="Icon" Value="/Assets/Icon.ico" />
 		<Setter Property="Template">
 			<ControlTemplate>
 				<Panel>

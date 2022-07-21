@@ -25,6 +25,7 @@ namespace Mesen.ViewModels
 		
 		public RecentGamesViewModel()
 		{
+			Visible = !ConfigManager.Config.Preferences.DisableGameSelectionScreen;
 		}
 
 		public void Init(GameScreenMode mode)

@@ -80,7 +80,6 @@ namespace Mesen.Config
 				FirstRun = false;
 			}
 			Preferences.InitializeDefaultShortcuts();
-			ConfigManager.Config.Save();
 		}
 
 		public static Configuration Deserialize(string configFile)

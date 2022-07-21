@@ -150,15 +150,17 @@ namespace Mesen.Controls
 
 			grid.Children.Clear();
 
-			grid.ColumnDefinitions = new ColumnDefinitions();
+			ColumnDefinitions columnDefinitions = new ColumnDefinitions();
 			for(int i = 0; i < colCount; i++) {
-				grid.ColumnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
+				columnDefinitions.Add(new ColumnDefinition(1, GridUnitType.Star));
 			}
+			grid.ColumnDefinitions = columnDefinitions;
 
-			grid.RowDefinitions = new RowDefinitions();
+			RowDefinitions rowDefinitions = new RowDefinitions();
 			for(int i = 0; i < rowCount; i++) {
-				grid.RowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
+				rowDefinitions.Add(new RowDefinition(1, GridUnitType.Star));
 			}
+			grid.RowDefinitions = rowDefinitions;
 
 			int elementsPerPage = ElementsPerPage;
 			int startIndex = elementsPerPage * SelectedPage;
@@ -166,6 +168,7 @@ namespace Mesen.Controls
 			ShowArrows = Entries.Count > elementsPerPage;
 			ShowClose = Mode != GameScreenMode.RecentGames;
 
+			List<StateGridEntry> entries = new();
 			for(int row = 0; row < rowCount; row++) {
 				for(int col = 0; col < colCount; col++) {
 					int index = startIndex + row * colCount + col;
@@ -181,9 +184,10 @@ namespace Mesen.Controls
 					ctrl.Entry = Entries[index];
 					ctrl.Init();
 
-					grid.Children.Add(ctrl);
+					entries.Add(ctrl);
 				}
 			}
+			grid.Children.AddRange(entries);
 		}
 	}
 }
