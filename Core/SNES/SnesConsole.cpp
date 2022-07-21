@@ -198,8 +198,8 @@ PpuFrameInfo SnesConsole::GetPpuFrame()
 	//TODO null checks
 	PpuFrameInfo frame = {};
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
-	frame.Width = 256;
-	frame.Height = 239;
+	frame.Width = _ppu->IsHighResOutput() ? 512 : 256;
+	frame.Height = _ppu->IsHighResOutput() ? 478 : 239;
 	frame.FrameBufferSize = frame.Width * frame.Height * sizeof(uint16_t);
 	frame.FrameCount = _ppu->GetFrameCount();
 	frame.FirstScanline = 0;
