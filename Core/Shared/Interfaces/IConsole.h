@@ -46,15 +46,10 @@ class IConsole : public ISerializable
 public:
 	virtual ~IConsole() {}
 
-	virtual void Stop() = 0;
 	virtual void Reset() = 0;
 
-	virtual void OnBeforeRun() = 0;
-	
 	virtual LoadRomResult LoadRom(VirtualFile& romFile) = 0;
-	virtual void Init() = 0;
 
-	//virtual void RunFrameWithRunAhead() = 0;
 	virtual void RunFrame() = 0;
 
 	virtual void SaveBattery() = 0;

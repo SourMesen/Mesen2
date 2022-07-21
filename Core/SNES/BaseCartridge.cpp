@@ -34,8 +34,6 @@
 
 BaseCartridge::~BaseCartridge()
 {
-	SaveBattery();
-
 	delete[] _prgRom;
 	delete[] _saveRam;
 }

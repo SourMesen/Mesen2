@@ -28,6 +28,7 @@
 #include "Shared/Interfaces/IBarcodeReader.h"
 #include "Shared/Interfaces/ITapeRecorder.h"
 #include "Shared/BaseControlManager.h"
+#include "Shared/SystemActionManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"
@@ -41,7 +42,6 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
-#include "SystemActionManager.h"
 #include "MemoryOperationType.h"
 #include "EventType.h"
 
@@ -118,8 +118,6 @@ void Emulator::Run()
 
 	_emulationThreadId = std::this_thread::get_id();
 
-	_console->OnBeforeRun();
-
 	_frameDelay = GetFrameDelay();
 	_stats.reset(new DebugStats());
 	_frameLimiter.reset(new FrameLimiter(_frameDelay));
@@ -147,12 +145,6 @@ void Emulator::Run()
 		if(_paused && !_stopFlag && !_debugger) {
 			WaitForPauseEnd();
 		}
-
-		//TODO
-		/*if(_memoryManager->GetMasterClock() == 0) {
-			//After a reset or power cycle, run the PPU/etc ahead of the CPU (simulates delay CPU takes to get out of reset)
-			_memoryManager->IncMasterClockStartup();
-		}*/
 	}
 
 	_movieManager->Stop();
@@ -265,7 +257,7 @@ void Emulator::ProcessEndOfFrame()
 	_frameRunning = false;
 }
 
-void Emulator::Stop(bool sendNotification, bool preventRecentGameSave)
+void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool saveBattery)
 {
 	BlockDebuggerRequests();
 
@@ -294,8 +286,10 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave)
 	_rewindManager.reset();
 
 	if(_console) {
-		_console->SaveBattery();
-		_console->Stop();
+		if(saveBattery) {
+			//Only save battery on power off, otherwise SaveBattery() is called by LoadRom()
+			_console->SaveBattery();
+		}
 		_console.reset();
 	}
 
@@ -372,51 +366,13 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_console->SaveBattery();
 	}
 	
-	//TODO need to restore name if load fails
-	_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
-
-	//TODO fix
-	//backup emulation config (can be temporarily overriden to control the power on RAM state)
-	EmulationConfig orgConfig = _settings->GetEmulationConfig();
-
-	static const vector<string> _nesExtensions = { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" };
-	static const vector<string> _snesExtensions = { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" };
-	static const vector<string> _gbExtensions = { ".gb", ".gbc", ".gbs" };
-	static const vector<string> _pceExtensions = { ".pce", ".cue" };
-	
 	unique_ptr<IConsole> console;
-	string romExt = romFile.GetFileExtension();
 	LoadRomResult result = LoadRomResult::UnknownType;
-
-	//TODO: Rework 
-	// -doesn't work correctly when loading fails while another rom is already loaded
-	// -doesn't work correctly with vs dual system
-	if(std::find(_nesExtensions.begin(), _nesExtensions.end(), romExt) != _nesExtensions.end()) {
-		memset(_consoleMemory, 0, sizeof(_consoleMemory));
-		console.reset(new NesConsole(this));
-		result = console->LoadRom(romFile);
-	} 
+	TryLoadRom<NesConsole>(romFile, result, console);
+	TryLoadRom<SnesConsole>(romFile, result, console);
+	TryLoadRom<Gameboy>(romFile, result, console);
+	TryLoadRom<PceConsole>(romFile, result, console);
 	
-	if(result == LoadRomResult::UnknownType && std::find(_snesExtensions.begin(), _snesExtensions.end(), romExt) != _snesExtensions.end()) {
-		memset(_consoleMemory, 0, sizeof(_consoleMemory));
-		console.reset(new SnesConsole(this));
-		result = console->LoadRom(romFile);
-	}
-	
-	if(result == LoadRomResult::UnknownType && std::find(_gbExtensions.begin(), _gbExtensions.end(), romExt) != _gbExtensions.end()) {
-		memset(_consoleMemory, 0, sizeof(_consoleMemory));
-		console.reset(new Gameboy(this, false));
-		result = console->LoadRom(romFile);
-	}
-
-	if(std::find(_pceExtensions.begin(), _pceExtensions.end(), romExt) != _pceExtensions.end()) {
-		memset(_consoleMemory, 0, sizeof(_consoleMemory));
-		console.reset(new PceConsole(this));
-		result = console->LoadRom(romFile);
-	}
-
-	_settings->SetEmulationConfig(orgConfig);
-
 	if(result != LoadRomResult::Success) {
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoadFailed);
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
@@ -437,7 +393,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	if(stopRom) {
 		//Only update the recent game entry if the game that was loaded is a different game
 		bool gameChanged = (string)_rom.RomFile != (string)romFile || (string)_rom.PatchFile != (string)patchFile;
-		Stop(false, !gameChanged);
+		Stop(false, !gameChanged, false);
 		//TODO PERF
 		//KeyManager::UpdateDevices();
 	}
@@ -458,11 +414,16 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_cheatManager->ClearCheats(false);
 
-	//TODO
-	//UpdateRegion();
+	uint32_t pollCounter = 0;
+	if(forPowerCycle && GetControlManager()) {
+		//When power cycling, poll counter must be preserved to allow movies to playback properly
+		pollCounter = GetControlManager()->GetPollCounter();
+	}
 
 	_console.swap(console);
-	_console->Init();
+
+	//Restore pollcounter (used by movies when a power cycle is in the movie)
+	GetControlManager()->SetPollCounter(pollCounter);
 
 	if(debuggerActive) {
 		InitDebugger();
@@ -471,10 +432,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_rewindManager.reset(new RewindManager(this));
 	_notificationManager->RegisterNotificationListener(_rewindManager);
 
-	//TODO
 	GetControlManager()->UpdateControlDevices();
 	GetControlManager()->UpdateInputState();
-	//UpdateRegion();
 
 	_autoSaveStateFrameCounter = 0;
 
@@ -506,6 +465,35 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	}
 
 	return true;
+}
+
+template<typename T>
+void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console)
+{
+	if(result == LoadRomResult::UnknownType) {
+		string romExt = romFile.GetFileExtension();
+		vector<string> extensions = T::GetSupportedExtensions();
+		if(std::find(extensions.begin(), extensions.end(), romExt) != extensions.end()) {
+			//Keep a copy of the current state of _consoleMemory
+			ConsoleMemoryInfo consoleMemory[(int)MemoryType::Register + 1] = {};
+			memcpy(consoleMemory, _consoleMemory, sizeof(_consoleMemory));
+
+			//Attempt to load rom with specified core
+			memset(_consoleMemory, 0, sizeof(_consoleMemory));
+
+			//Change filename for batterymanager to allow loading the correct files
+			_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
+
+			console.reset(new T(this));
+			result = console->LoadRom(romFile);
+
+			if(result != LoadRomResult::Success) {
+				//Restore state if load fails
+				memcpy(_consoleMemory, consoleMemory, sizeof(_consoleMemory));
+				_batteryManager->Initialize(FolderUtilities::GetFilename(_rom.RomFile.GetFileName(), false));
+			}
+		}
+	}
 }
 
 RomInfo& Emulator::GetRomInfo()

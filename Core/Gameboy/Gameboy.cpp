@@ -34,8 +34,6 @@ Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 
 Gameboy::~Gameboy()
 {
-	SaveBattery();
-
 	delete[] _cartRam;
 	delete[] _prgRom;
 
@@ -354,18 +352,10 @@ void Gameboy::Serialize(Serializer& s)
 	SVArray(_highRam, Gameboy::HighRamSize);
 }
 
-void Gameboy::Stop()
-{
-}
-
 void Gameboy::Reset()
 {
 	//The GB has no reset button, behave like power cycle
 	_emu->ReloadRom(true);
-}
-
-void Gameboy::OnBeforeRun()
-{
 }
 
 LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
@@ -476,10 +466,6 @@ GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
 	}
 
 	return model;
-}
-
-void Gameboy::Init()
-{
 }
 
 void Gameboy::RunFrame()

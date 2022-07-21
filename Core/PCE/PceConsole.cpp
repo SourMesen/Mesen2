@@ -24,18 +24,10 @@ PceConsole::PceConsole(Emulator* emu)
 	_emu = emu;
 }
 
-void PceConsole::Stop()
-{
-}
-
 void PceConsole::Reset()
 {
 	//The PC Engine has no reset button, behave like power cycle
 	_emu->ReloadRom(true);
-}
-
-void PceConsole::OnBeforeRun()
-{
 }
 
 LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
@@ -123,10 +115,6 @@ bool PceConsole::IsSuperGrafxCard(uint32_t crc32)
 {
 	//These are the 5 SuperGrafx-exclusive games
 	return crc32 == 0xB486A8ED || crc32 == 0x1F041166 || crc32 == 0x3B13AF61 || crc32 == 0x4C2126B0 || crc32 == 0x8C4588E2;
-}
-
-void PceConsole::Init()
-{
 }
 
 void PceConsole::RunFrame()

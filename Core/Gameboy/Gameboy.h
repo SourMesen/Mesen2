@@ -67,8 +67,10 @@ private:
 public:
 	static constexpr int HeaderOffset = 0x134;
 
-	Gameboy(Emulator* emu, bool allowSgb);
+	Gameboy(Emulator* emu, bool allowSgb = false);
 	virtual ~Gameboy();
+	
+	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbs" }; }
 
 	void PowerOn(SuperGameboy* sgb);
 
@@ -104,11 +106,8 @@ public:
 	void Serialize(Serializer& s) override;
 
 	// Inherited via IConsole
-	void Stop() override;
 	void Reset() override;
-	void OnBeforeRun() override;
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
-	void Init() override;
 	void RunFrame() override;
 	BaseControlManager* GetControlManager() override;
 	ConsoleRegion GetRegion() override;

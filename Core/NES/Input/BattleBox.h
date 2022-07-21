@@ -33,17 +33,12 @@ protected:
 public:
 	BattleBox(Emulator* emu) : BaseControlDevice(emu, ControllerType::BattleBox, BaseControlDevice::ExpDevicePort)
 	{
-		_emu->GetBatteryManager()->LoadBattery(".bb", (uint8_t*)_data, BattleBox::FileSize);
-	}
-
-	~BattleBox()
-	{
-		SaveBattery();
+		_emu->GetBatteryManager()->LoadBattery(".battlebox.sav", (uint8_t*)_data, BattleBox::FileSize);
 	}
 
 	void SaveBattery() override
 	{
-		_emu->GetBatteryManager()->SaveBattery(".bb", (uint8_t*)_data, BattleBox::FileSize);
+		_emu->GetBatteryManager()->SaveBattery(".battlebox.sav", (uint8_t*)_data, BattleBox::FileSize);
 	}
 	
 	uint8_t ReadRam(uint16_t addr) override

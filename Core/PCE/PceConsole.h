@@ -37,16 +37,15 @@ private:
 
 public:
 	PceConsole(Emulator* emu);
-
+	
+	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue" }; }
+	
 	void Serialize(Serializer& s) override;
 
-	void Stop() override;
 	void Reset() override;
-	void Init() override;
 	
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
 
-	void OnBeforeRun() override;
 	void RunFrame() override;
 
 	void SaveBattery() override;

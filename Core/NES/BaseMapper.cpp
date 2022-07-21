@@ -417,7 +417,7 @@ void BaseMapper::LoadBattery()
 	}
 
 	if(_hasChrBattery && _chrRamSize > 0) {
-		_emu->GetBatteryManager()->LoadBattery(".sav.chr", _chrRam, _chrRamSize);
+		_emu->GetBatteryManager()->LoadBattery(".chr.sav", _chrRam, _chrRamSize);
 	}
 }
 
@@ -428,7 +428,7 @@ void BaseMapper::SaveBattery()
 	}
 
 	if(_hasChrBattery && _chrRamSize > 0) {
-		_emu->GetBatteryManager()->SaveBattery(".sav.chr", _chrRam, _chrRamSize);
+		_emu->GetBatteryManager()->SaveBattery(".chr.sav", _chrRam, _chrRamSize);
 	}
 }
 

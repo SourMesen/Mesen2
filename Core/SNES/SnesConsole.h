@@ -70,12 +70,12 @@ private:
 public:
 	SnesConsole(Emulator* emu);
 	~SnesConsole();
+	
+	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" }; }
 
 	void Initialize();
 	void Release();
 	
-	void OnBeforeRun() override;
-	void Stop() override;
 	void Reset() override;
 
 	void RunFrame() override;
@@ -83,7 +83,6 @@ public:
 	void ProcessEndOfFrame();
 
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
-	void Init() override;
 
 	uint64_t GetMasterClock() override;
 	uint32_t GetMasterClockRate() override;

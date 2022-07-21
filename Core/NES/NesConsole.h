@@ -53,6 +53,8 @@ public:
 	NesConsole(Emulator* emulator);
 	~NesConsole();
 
+	static vector<string> GetSupportedExtensions() { return { ".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox" }; }
+
 	NesCpu* GetCpu() { return _cpu.get(); }
 	BaseNesPpu* GetPpu() { return _ppu.get(); }
 	NesApu* GetApu() { return _apu.get(); }
@@ -73,11 +75,8 @@ public:
 
 	// Inherited via IConsole
 	void Serialize(Serializer& s) override;
-	void Stop() override;
 	void Reset() override;
-	void OnBeforeRun() override;
 	LoadRomResult LoadRom(VirtualFile& romFile) override;
-	void Init() override;
 	void RunFrame() override;
 	BaseControlManager* GetControlManager() override;
 	double GetFps() override;

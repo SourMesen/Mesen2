@@ -98,11 +98,6 @@ void NesConsole::Serialize(Serializer& s)
 	}
 }
 
-void NesConsole::Stop()
-{
-	//TODO
-}
-
 void NesConsole::Reset()
 {
 	_memoryManager->Reset(true);
@@ -118,11 +113,6 @@ void NesConsole::Reset()
 	if(_vsSubConsole) {
 		_vsSubConsole->Reset();
 	}
-}
-
-void NesConsole::OnBeforeRun()
-{
-	//TODO
 }
 
 LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
@@ -156,19 +146,9 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_controlManager.reset(new NesControlManager(this));
 		}
 
-		/*if(!isDifferentGame && forPowerCycle) {
-			_mapper->CopyPrgChrRom(previousMapper);
-		}*/
-
 		/*
 		//Temporarely disable battery saves to prevent battery files from being created for the wrong game (for Battle Box & Turbo File)
 		_batteryManager->SetSaveEnabled(false);
-		*/
-		uint32_t pollCounter = 0;
-		/*if(_controlManager && !isDifferentGame) {
-			//When power cycling, poll counter must be preserved to allow movies to playback properly
-			pollCounter = _controlManager->GetPollCounter();
-		}
 		*/
 
 		//Re-enable battery saves
@@ -182,9 +162,6 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		} else {
 			_ppu.reset(new DefaultNesPpu(this));
 		}
-
-		_controlManager->SetPollCounter(pollCounter);
-		_controlManager->UpdateControlDevices();
 
 		_mapper->InitSpecificMapper(romData);
 
@@ -250,11 +227,6 @@ void NesConsole::UpdateRegion(bool forceUpdate)
 		_apu->SetRegion(_region);
 		_mixer->SetRegion(_region);
 	}
-}
-
-void NesConsole::Init()
-{
-	//Reset();
 }
 
 void NesConsole::RunFrame()

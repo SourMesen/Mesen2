@@ -62,14 +62,6 @@ void SnesConsole::RunFrame()
 	}
 }
 
-void SnesConsole::OnBeforeRun()
-{
-	_memoryManager->IncMasterClockStartup();
-
-	//TODO?
-	//_controlManager->UpdateInputState();
-}
-
 void SnesConsole::ProcessEndOfFrame()
 {
 	_cart->RunCoprocessors();
@@ -85,10 +77,6 @@ void SnesConsole::ProcessEndOfFrame()
 	_frameRunning = false;
 }
 
-void SnesConsole::Stop()
-{
-}
-
 void SnesConsole::Reset()
 {
 	_dmaController->Reset();
@@ -97,10 +85,13 @@ void SnesConsole::Reset()
 	_spc->Reset();
 	_ppu->Reset();
 	_cart->Reset();
-	//_controlManager->Reset();
+	_controlManager->Reset(true);
 
 	//Reset cart before CPU to ensure correct memory mappings when fetching reset vector
 	_cpu->Reset();
+
+	//After reset, run the PPU/etc ahead of the CPU (simulates delay CPU takes to get out of reset)
+	_memoryManager->IncMasterClockStartup();
 }
 
 LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
@@ -135,19 +126,14 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 
 		_ppu->PowerOn();
 		_cpu->PowerOn();
-
-		_controlManager->UpdateControlDevices();
-				
-		UpdateRegion();
+		
+		//After power on, run the PPU/etc ahead of the CPU (simulates delay CPU takes to get out of reset)
+		_memoryManager->IncMasterClockStartup();
 
 		return LoadRomResult::Success;
 	}
 
 	return LoadRomResult::UnknownType;
-}
-
-void SnesConsole::Init()
-{
 }
 
 uint64_t SnesConsole::GetMasterClock()

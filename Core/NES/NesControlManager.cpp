@@ -157,6 +157,8 @@ void NesControlManager::UpdateControlDevices()
 
 	bool hadKeyboard = IsKeyboardConnected();
 
+	SaveBattery();
+
 	ClearDevices();
 
 	for(int i = 0; i < 2; i++) {

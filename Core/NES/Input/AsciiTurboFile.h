@@ -27,17 +27,12 @@ protected:
 public:
 	AsciiTurboFile(Emulator* emu) : BaseControlDevice(emu, ControllerType::AsciiTurboFile, BaseControlDevice::ExpDevicePort)
 	{
-		_emu->GetBatteryManager()->LoadBattery(".tf", _data, AsciiTurboFile::FileSize);
-	}
-
-	~AsciiTurboFile()
-	{
-		SaveBattery();
+		_emu->GetBatteryManager()->LoadBattery(".turbofile.sav", _data, AsciiTurboFile::FileSize);
 	}
 
 	void SaveBattery() override
 	{
-		_emu->GetBatteryManager()->SaveBattery(".tf", _data, AsciiTurboFile::FileSize);
+		_emu->GetBatteryManager()->SaveBattery(".turbofile.sav", _data, AsciiTurboFile::FileSize);
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

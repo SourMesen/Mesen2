@@ -117,6 +117,8 @@ private:
 
 	double GetFrameDelay();
 
+	template<typename T> void TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console);
+
 public:
 	class DebuggerRequest
 	{
@@ -155,7 +157,7 @@ public:
 	void Release();
 
 	void Run();
-	void Stop(bool sendNotification, bool preventRecentGameSave = false);
+	void Stop(bool sendNotification, bool preventRecentGameSave = false, bool saveBattery = true);
 
 	void OnBeforeSendFrame();
 	void ProcessEndOfFrame();
