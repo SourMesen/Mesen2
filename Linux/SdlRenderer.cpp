@@ -56,8 +56,7 @@ bool SdlRenderer::Init()
 
 	uint32_t baseFlags = _vsyncEnabled ? SDL_RENDERER_PRESENTVSYNC : 0;
 
-	//TODO SDL_RENDERER_ACCELERATED ?
-	_sdlRenderer = SDL_CreateRenderer(_sdlWindow, -1, baseFlags | SDL_RENDERER_SOFTWARE);
+	_sdlRenderer = SDL_CreateRenderer(_sdlWindow, -1, baseFlags | SDL_RENDERER_ACCELERATED);
 	if(!_sdlRenderer) {
 		LogSdlError("[SDL] Failed to create accelerated renderer.");
 

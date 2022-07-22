@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 
 namespace Mesen.ViewModels
 {
@@ -15,6 +16,7 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool ShowCustomRatio { get; }
 		[ObservableAsProperty] public bool ShowNtscBlarggSettings { get; }
 		[ObservableAsProperty] public bool ShowNtscBisqwitSettings { get; }
+		public bool ShowExclusiveFullscreenSettings { get; }
 
 		public ReactiveCommand<Unit, Unit> PresetCompositeCommand { get; }
 		public ReactiveCommand<Unit, Unit> PresetSVideoCommand { get; }
@@ -38,6 +40,9 @@ namespace Mesen.ViewModels
 			AddDisposable(this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBlargg).ToPropertyEx(this, _ => _.ShowNtscBlarggSettings));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBisqwit).ToPropertyEx(this, _ => _.ShowNtscBisqwitSettings));
+
+			//Exclusive fullscreen is only supported on Windows currently
+			ShowExclusiveFullscreenSettings = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
 			if(Design.IsDesignMode) {
 				return;
