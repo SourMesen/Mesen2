@@ -26,5 +26,7 @@ public:
 	static void GenerateFullColorPalette(uint32_t paletteBuffer[512]);
 	static void GetFullPalette(uint32_t palette[512], NesConfig& nesCfg, PpuModel model);
 
+	static uint32_t GetDefaultPixelBrightness(uint16_t colorIndex, PpuModel model);
+
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override;
 };

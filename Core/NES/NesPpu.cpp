@@ -10,6 +10,7 @@
 #include "NES/NesControlManager.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesConstants.h"
+#include "NES/NesDefaultVideoFilter.h"
 
 #include "NES/DefaultNesPpu.h"
 #include "NES/NsfPpu.h"
@@ -1386,9 +1387,7 @@ template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)
 {
 	//Used by Zapper, gives a rough approximation of the brightness level of the specific pixel
 	uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
-	NesConfig& cfg = _settings->GetNesConfig();
-	uint32_t argbColor = cfg.UserPalette[pixelData & 0x3F];
-	return (argbColor & 0xFF) + ((argbColor >> 8) & 0xFF) + ((argbColor >> 16) & 0xFF);
+	return NesDefaultVideoFilter::GetDefaultPixelBrightness(pixelData, GetPpuModel());
 }
 
 template<class T> void NesPpu<T>::Serialize(Serializer& s)
