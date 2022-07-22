@@ -2105,9 +2105,9 @@
 			<Value ID="RC2C0503">RC2C05-03</Value>
 			<Value ID="RC2C0504">RC2C05-04</Value>
 			<Value ID="RC2C0505">RC2C05-05</Value>
-			<Value ID="Undefined">Reserved ($D)</Value>
-			<Value ID="Undefined2">Reserved ($E)</Value>
-			<Value ID="Undefined3">Reserved ($F)</Value>
+			<Value ID="ReservedD">Reserved ($D)</Value>
+			<Value ID="ReservedE">Reserved ($E)</Value>
+			<Value ID="ReservedF">Reserved ($F)</Value>
 		</Enum>
 		<Enum ID="VsSystemType">
 			<Value ID="Default">Default</Value>
@@ -2171,7 +2171,7 @@
 			<Value ID="StandardControllerWithSwappedButtons">Standard Controller with swapped Left-Right/Up-Down/B-A</Value>
 			<Value ID="ExcaliborSudokuPad">Excalibor Sudoku Pad</Value>
 			<Value ID="AblPinball">ABL Pinball</Value>
-			<Value ID="GoldenNuggetCasino"> Golden Nugget Casino</Value>
+			<Value ID="GoldenNuggetCasino">Golden Nugget Casino</Value>
 		</Enum>
 		
 		<Enum ID="CpuType">
