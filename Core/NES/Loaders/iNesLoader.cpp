@@ -131,7 +131,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		Log("[iNes] Trainer: Yes");
 	}
 
-	if(!_checkOnly) {
+	if(!_checkOnly && !romData.Info.IsNes20Header) {
 		GameDatabase::SetGameInfo(romData.Info.Hash.PrgChrCrc32, romData, databaseEnabled, preloadedHeader != nullptr);
 	}
 
