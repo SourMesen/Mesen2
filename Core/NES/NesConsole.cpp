@@ -508,7 +508,7 @@ void NesConsole::InitializeInputDevices(GameInputType inputType, GameSystem syst
 		log("[Input] Arkanoid controller (NES) connected");
 		port2 = ControllerType::NesArkanoidController;
 	} else if(inputType == GameInputType::DoubleArkanoidController) {
-		log("[Input] 2x arkanoid controllers (NES) connected");
+		log("[Input] 2 arkanoid controllers (NES) connected");
 		port1 = ControllerType::NesArkanoidController;
 		port2 = ControllerType::NesArkanoidController;
 	} else if(inputType == GameInputType::OekaKidsTablet) {
@@ -566,7 +566,7 @@ void NesConsole::InitializeInputDevices(GameInputType inputType, GameSystem syst
 		port1 = ControllerType::SnesController;
 		port2 = ControllerType::SnesController;
 	} else {
-		log("[Input] 2 standard controllers connected");
+		log("[Input] 2 NES controllers connected");
 	}
 
 	isFamicom = (system == GameSystem::Famicom || system == GameSystem::FDS || system == GameSystem::Dendy);
