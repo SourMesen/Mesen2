@@ -77,7 +77,15 @@
 				<c:OptionSection Header="{l:Translate lblChipSpecificOc}">
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
 						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.GsuClockSpeed}" Minimum="0" Maximum="1000" />
+						<NumericUpDown
+							Grid.Column="1"
+							Grid.Row="0"
+							Value="{CompiledBinding Config.GsuClockSpeed}"
+							Minimum="100"
+							Maximum="1000"
+							Increment="100"
+							LostFocus="nudGsuSpeed_LostFocus"
+						/>
 					</Grid>
 				</c:OptionSection>
 			</StackPanel>

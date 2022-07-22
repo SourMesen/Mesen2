@@ -24,7 +24,7 @@ Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(MemoryType
 	_memoryType = MemoryType::Register;
 	_settings = _emu->GetSettings();
 
-	_clockMultiplier = _settings->GetSnesConfig().GsuClockSpeed / 100;
+	_clockMultiplier = std::max(1u, _settings->GetSnesConfig().GsuClockSpeed / 100);
 
 	_state = {};
 	_state.ProgramReadBuffer = 0x01; //Run a NOP on first cycle
@@ -80,9 +80,9 @@ Gsu::~Gsu()
 
 void Gsu::ProcessEndOfFrame()
 {
-	uint8_t clockMultiplier = _settings->GetSnesConfig().GsuClockSpeed / 100;
+	uint8_t clockMultiplier = std::max(1u, _settings->GetSnesConfig().GsuClockSpeed / 100);
 	if(_clockMultiplier != clockMultiplier) {
-		_state.CycleCount = _state.CycleCount / _clockMultiplier * clockMultiplier;
+		_state.CycleCount = (uint64_t)((double)_state.CycleCount / _clockMultiplier * clockMultiplier);
 		_clockMultiplier = clockMultiplier;
 	}
 }
