@@ -40,10 +40,6 @@ namespace Mesen.Utilities
 
 		private static void InternalLoadRom(ResourcePath romPath, ResourcePath? patchPath)
 		{
-			//Update core config before loading a new game to ensure any changes done
-			//by the core (e.g ram init overrides for specific games) are reset
-			ConfigManager.Config.ApplyConfig();
-
 			//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
 			Task.Run(() => {
 				if(EmuApi.LoadRom(romPath, patchPath)) {

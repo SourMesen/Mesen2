@@ -96,6 +96,9 @@ void SnesConsole::Reset()
 
 LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 {
+	SnesConfig config = _settings->GetSnesConfig();
+	LoadRomResult result = LoadRomResult::UnknownType;
+
 	unique_ptr<BaseCartridge> cart = BaseCartridge::CreateCartridge(this, romFile);
 	if(cart) {
 		_cart.swap(cart);
@@ -130,10 +133,12 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 		//After power on, run the PPU/etc ahead of the CPU (simulates delay CPU takes to get out of reset)
 		_memoryManager->IncMasterClockStartup();
 
-		return LoadRomResult::Success;
+		result = LoadRomResult::Success;
 	}
 
-	return LoadRomResult::UnknownType;
+	//Loading a cartridge can alter the SNES ram init settings - restore their original values here
+	_settings->SetSnesConfig(config);
+	return result;
 }
 
 uint64_t SnesConsole::GetMasterClock()
