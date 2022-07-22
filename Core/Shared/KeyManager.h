@@ -21,11 +21,11 @@ public:
 	static void SetSettings(EmuSettings* settings);
 
 	static void RefreshKeyState();
-	static bool IsKeyPressed(uint32_t keyCode);
+	static bool IsKeyPressed(uint16_t keyCode);
 	static bool IsMouseButtonPressed(MouseButton button);
-	static vector<uint32_t> GetPressedKeys();
-	static string GetKeyName(uint32_t keyCode);
-	static uint32_t GetKeyCode(string keyName);
+	static vector<uint16_t> GetPressedKeys();
+	static string GetKeyName(uint16_t keyCode);
+	static uint16_t GetKeyCode(string keyName);
 
 	static void UpdateDevices();
 	

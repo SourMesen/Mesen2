@@ -24,7 +24,9 @@ namespace Mesen.Controls
 
 		static MultiKeyBindingButton()
 		{
-			KeyBindingProperty.Changed.AddClassHandler<MultiKeyBindingButton>((x, e) => x.Content = x.KeyBinding.ToString());
+			KeyBindingProperty.Changed.AddClassHandler<MultiKeyBindingButton>((x, e) => {
+				x.SetKeyName();
+			});
 		}
 
 		public MultiKeyBindingButton()
@@ -40,12 +42,12 @@ namespace Mesen.Controls
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			this.Content = this.KeyBinding.ToString();
+			SetKeyName();
 		}
 
 		protected override async void OnClick()
 		{
-			GetKeyWindow wnd = new GetKeyWindow();
+			GetKeyWindow wnd = new GetKeyWindow(true);
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowCenteredDialog(VisualRoot);
@@ -60,6 +62,13 @@ namespace Mesen.Controls
 			if(e.InitialPressMouseButton == MouseButton.Right) {
 				this.KeyBinding = new KeyCombination();
 			}
+		}
+
+		private void SetKeyName()
+		{
+			string keyname = KeyBinding.ToString();
+			this.Content = keyname;
+			ToolTip.SetTip(this, string.IsNullOrWhiteSpace(keyname) ? null : keyname);
 		}
 	}
 }

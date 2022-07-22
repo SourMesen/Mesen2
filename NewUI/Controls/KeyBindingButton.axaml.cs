@@ -14,9 +14,9 @@ namespace Mesen.Controls
 	{
 		Type IStyleable.StyleKey => typeof(Button);
 
-		public static readonly StyledProperty<UInt32> KeyBindingProperty = AvaloniaProperty.Register<KeyBindingButton, UInt32>(nameof(KeyBinding), 0, false, Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<UInt16> KeyBindingProperty = AvaloniaProperty.Register<KeyBindingButton, UInt16>(nameof(KeyBinding), 0, false, Avalonia.Data.BindingMode.TwoWay);
 
-		public UInt32 KeyBinding
+		public UInt16 KeyBinding
 		{
 			get { return GetValue(KeyBindingProperty); }
 			set { SetValue(KeyBindingProperty, value); }
@@ -35,12 +35,12 @@ namespace Mesen.Controls
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			this.Content = InputApi.GetKeyName(this.KeyBinding);
+			SetKeyName(this.KeyBinding);
 		}
 
 		protected override async void OnClick()
 		{
-			GetKeyWindow wnd = new GetKeyWindow();
+			GetKeyWindow wnd = new GetKeyWindow(true);
 			wnd.SingleKeyMode = true;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowCenteredDialog(VisualRoot);
@@ -62,9 +62,16 @@ namespace Mesen.Controls
 			base.OnPropertyChanged(change);
 
 			if(change.Property == KeyBindingProperty) {
-				UInt32 value = Convert.ToUInt32(change.NewValue.Value);
-				this.Content = InputApi.GetKeyName(value);
+				UInt16 value = Convert.ToUInt16(change.NewValue.Value);
+				SetKeyName(value);
 			}
+		}
+
+		private void SetKeyName(ushort value)
+		{
+			string keyname = InputApi.GetKeyName(value);
+			this.Content = keyname;
+			ToolTip.SetTip(this, string.IsNullOrWhiteSpace(keyname) ? null : keyname);
 		}
 	}
 }

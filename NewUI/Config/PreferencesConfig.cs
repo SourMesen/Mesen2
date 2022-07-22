@@ -88,9 +88,9 @@ namespace Mesen.Config
 
 		public void InitializeDefaultShortcuts()
 		{
-			uint ctrl = InputApi.GetKeyCode("Left Ctrl");
-			uint alt = InputApi.GetKeyCode("Left Alt");
-			uint shift = InputApi.GetKeyCode("Left Shift");
+			UInt16 ctrl = InputApi.GetKeyCode("Left Ctrl");
+			UInt16 alt = InputApi.GetKeyCode("Left Alt");
+			UInt16 shift = InputApi.GetKeyCode("Left Shift");
 
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.FastForward, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Tab") }, KeyCombination2 = new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 R2") } });
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.Rewind, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Backspace") }, KeyCombination2 = new KeyCombination() { Key1 = InputApi.GetKeyCode("Pad1 L2") } });

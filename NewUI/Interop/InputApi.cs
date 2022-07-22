@@ -10,7 +10,7 @@ namespace Mesen.Interop
 	{
 		private const string DllPath = "MesenSCore.dll";
 		
-		[DllImport(DllPath)] public static extern void SetKeyState(Int32 scanCode, [MarshalAs(UnmanagedType.I1)]bool pressed);
+		[DllImport(DllPath)] public static extern void SetKeyState(UInt16 scanCode, [MarshalAs(UnmanagedType.I1)]bool pressed);
 		[DllImport(DllPath)] public static extern void ResetKeyState();
 
 		[DllImport(DllPath)] public static extern void SetMouseMovement(Int16 x, Int16 y);
@@ -18,14 +18,14 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void DisableAllKeys([MarshalAs(UnmanagedType.I1)]bool disabled);
 		[DllImport(DllPath)] public static extern void UpdateInputDevices();
 
-		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
+		[DllImport(DllPath)] public static extern UInt16 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
 		
 		[DllImport(DllPath)] public static extern void ResetLagCounter();
 
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
-		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key, IntPtr outKeyName, Int32 maxLength);
-		public unsafe static string GetKeyName(UInt32 key)
+		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt16 key, IntPtr outKeyName, Int32 maxLength);
+		public unsafe static string GetKeyName(UInt16 key)
 		{
 			byte[] outKeyName = new byte[1000];
 			fixed(byte* ptr = outKeyName) {
@@ -35,9 +35,9 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetPressedKeys")] private static extern void GetPressedKeysWrapper(IntPtr keyBuffer);
-		public static List<UInt32> GetPressedKeys()
+		public static List<UInt16> GetPressedKeys()
 		{
-			UInt32[] keyBuffer = new UInt32[3];
+			UInt16[] keyBuffer = new UInt16[3];
 			GCHandle handle = GCHandle.Alloc(keyBuffer, GCHandleType.Pinned);
 			try {
 				InputApi.GetPressedKeysWrapper(handle.AddrOfPinnedObject());
@@ -45,7 +45,7 @@ namespace Mesen.Interop
 				handle.Free();
 			}
 
-			List<UInt32> keys = new List<UInt32>();
+			List<UInt16> keys = new List<UInt16>();
 			for(int i = 0; i < 3; i++) {
 				if(keyBuffer[i] != 0) {
 					keys.Add(keyBuffer[i]);

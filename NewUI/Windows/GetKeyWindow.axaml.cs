@@ -11,6 +11,9 @@ using Mesen.Interop;
 using Avalonia.Threading;
 using Avalonia;
 using Mesen.Config;
+using Mesen.Utilities.GlobalMouseLib;
+using Mesen.Utilities;
+using Mesen.Localization;
 
 namespace Mesen.Windows
 {
@@ -18,17 +21,26 @@ namespace Mesen.Windows
 	{
 		private DispatcherTimer _timer; 
 		
-		private List<UInt32> _prevScanCodes = new List<UInt32>();
+		private List<UInt16> _prevScanCodes = new List<UInt16>();
 		private TextBlock lblCurrentKey;
+		private bool _allowMouseButtons;
+
+		public string HintLabel { get; }
 		public bool SingleKeyMode { get; set; } = false;
 		
 		public DbgShortKeys DbgShortcutKey { get; set; } = new DbgShortKeys();
 		public KeyCombination ShortcutKey { get; set; } = new KeyCombination();
 
-		public GetKeyWindow()
+		[Obsolete("For designer only")]
+		public GetKeyWindow() : this(true) { }
+
+		public GetKeyWindow(bool allowMouseButtons)
 		{
+			_allowMouseButtons = allowMouseButtons;
+			HintLabel = ResourceHelper.GetMessage(_allowMouseButtons ? "SetKeyMouseHint" : "SetKeyHint");
+
 			InitializeComponent();
-			
+
 			lblCurrentKey = this.FindControl<TextBlock>("lblCurrentKey");
 			
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.Normal, (s, e) => UpdateKeyDisplay());
@@ -52,14 +64,14 @@ namespace Mesen.Windows
 
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((int)e.Key, true);
+			InputApi.SetKeyState((UInt16)e.Key, true);
 			DbgShortcutKey = new DbgShortKeys(e.KeyModifiers, e.Key);
 			e.Handled = true;
 		}
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((int)e.Key, false);
+			InputApi.SetKeyState((UInt16)e.Key, false);
 			e.Handled = true;
 		}
 
@@ -95,12 +107,24 @@ namespace Mesen.Windows
 
 		private void UpdateKeyDisplay()
 		{
-			List<UInt32> scanCodes = InputApi.GetPressedKeys();
+			if(_allowMouseButtons) {
+				MousePosition p = GlobalMouse.GetMousePosition();
+				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
+				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, 1.0));
+				bool mouseInsideWindow = clientBounds.Contains(mousePos);
+				InputApi.SetKeyState(MouseManager.LeftMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Left));
+				InputApi.SetKeyState(MouseManager.RightMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));
+				InputApi.SetKeyState(MouseManager.MiddleMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle));
+				InputApi.SetKeyState(MouseManager.MouseButton4KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4));
+				InputApi.SetKeyState(MouseManager.MouseButton5KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5));
+			}
+
+			List<UInt16> scanCodes = InputApi.GetPressedKeys();
 
 			if(this.SingleKeyMode) {
 				if(scanCodes.Count >= 1) {
 					//Always use the largest scancode (when multiple buttons are pressed at once)
-					scanCodes = new List<UInt32> { scanCodes.OrderBy(code => -code).First() };
+					scanCodes = new List<UInt16> { scanCodes.OrderBy(code => -code).First() };
 					this.SelectKeyCombination(new KeyCombination(scanCodes));
 				}
 			} else {

@@ -14,6 +14,8 @@ namespace Mesen.Utilities.GlobalMouseLib
 				case MouseButtons.Left: return (GetAsyncKeyState((int)WindowsMouseButton.VK_LBUTTON) & 0x8000) != 0;
 				case MouseButtons.Right: return (GetAsyncKeyState((int)WindowsMouseButton.VK_RBUTTON) & 0x8000) != 0;
 				case MouseButtons.Middle: return (GetAsyncKeyState((int)WindowsMouseButton.VK_MBUTTON) & 0x8000) != 0;
+				case MouseButtons.Button4: return (GetAsyncKeyState((int)WindowsMouseButton.VK_XBUTTON1) & 0x8000) != 0;
+				case MouseButtons.Button5: return (GetAsyncKeyState((int)WindowsMouseButton.VK_XBUTTON2) & 0x8000) != 0;
 			}
 
 			return false;
@@ -90,7 +92,9 @@ namespace Mesen.Utilities.GlobalMouseLib
 		{
 			VK_LBUTTON = 1,
 			VK_RBUTTON = 2,
-			VK_MBUTTON = 4
+			VK_MBUTTON = 4,
+			VK_XBUTTON1 = 5,
+			VK_XBUTTON2 = 6,
 		}
 
 		private enum Cursor

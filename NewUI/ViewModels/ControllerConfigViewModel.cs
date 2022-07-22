@@ -67,11 +67,11 @@ namespace Mesen.ViewModels
 	public class CustomKeyMapping : ViewModelBase
 	{
 		public string Name { get; set; }
-		public UInt32[] Mappings { get; set; }
+		public UInt16[] Mappings { get; set; }
 		public int Index { get; set; }
-		[Reactive] public UInt32 KeyMapping { get; set; }
+		[Reactive] public UInt16 KeyMapping { get; set; }
 
-		public CustomKeyMapping(string name, UInt32[] mappings, int index)
+		public CustomKeyMapping(string name, UInt16[] mappings, int index)
 		{
 			Name = name;
 			Mappings = mappings;

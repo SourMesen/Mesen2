@@ -57,7 +57,9 @@ namespace Mesen.Utilities.GlobalMouseLib
 	{
 		Left = 1,
 		Right = 2,
-		Middle = 3
+		Middle = 3,
+		Button4 = 4,
+		Button5 = 5
 	}
 
 	public enum CursorIcon

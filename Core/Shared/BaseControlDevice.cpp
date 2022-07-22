@@ -228,7 +228,7 @@ void BaseControlDevice::InvertBit(uint8_t bit)
 	}
 }
 
-void BaseControlDevice::SetPressedState(uint8_t bit, uint32_t keyCode)
+void BaseControlDevice::SetPressedState(uint8_t bit, uint16_t keyCode)
 {
 	if(KeyManager::IsKeyPressed(keyCode)) {
 		SetBit(bit);

@@ -355,7 +355,7 @@ namespace Mesen.Windows
 
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((int)e.Key, true);
+			InputApi.SetKeyState((UInt16)e.Key, true);
 			if(e.Key == Key.Tab || e.Key == Key.F10) {
 				//Prevent menu/window from handling these keys to avoid issue with custom shortcuts
 				e.Handled = true;
@@ -364,7 +364,7 @@ namespace Mesen.Windows
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((int)e.Key, false);
+			InputApi.SetKeyState((UInt16)e.Key, false);
 		}
 
 		private void OnActiveChanged()

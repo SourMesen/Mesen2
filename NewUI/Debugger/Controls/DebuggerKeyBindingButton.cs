@@ -40,7 +40,7 @@ namespace Mesen.Debugger.Controls
 
 		protected override async void OnClick()
 		{
-			GetKeyWindow wnd = new GetKeyWindow();
+			GetKeyWindow wnd = new GetKeyWindow(false);
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowCenteredDialog(VisualRoot);

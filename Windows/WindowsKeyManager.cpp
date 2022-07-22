@@ -9,11 +9,13 @@ WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 
 	ResetKeyState();
 
+	_keyDefinitions = KeyDefinition::GetSharedKeyDefinitions();
+
 	//Init XInput buttons
 	vector<string> buttonNames = { "Up", "Down", "Left", "Right", "Start", "Back", "L3", "R3", "L1", "R1", "?", "?", "A", "B", "X", "Y", "L2", "R2", "RT Up", "RT Down", "RT Left", "RT Right", "LT Up", "LT Down", "LT Left", "LT Right" };
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < (int)buttonNames.size(); j++) {
-			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(0xFFFF + i * 0x100 + j + 1) });
+			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(WindowsKeyManager::BaseXInputIndex + i * 0x100 + j + 1) });
 		}
 	}
 
@@ -21,11 +23,11 @@ WindowsKeyManager::WindowsKeyManager(Emulator* emu, HWND hWnd)
 	vector<string> diButtonNames = { "Y+", "Y-", "X-", "X+", "Y2+", "Y2-", "X2-", "X2+", "Z+", "Z-", "Z2+", "Z2-", "DPad Up", "DPad Down", "DPad Right", "DPad Left" };
 	for(int i = 0; i < 16; i++) {
 		for(int j = 0; j < (int)diButtonNames.size(); j++) {
-			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " " + diButtonNames[j], (uint32_t)(0x11000 + i * 0x100 + j) });
+			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " " + diButtonNames[j], (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j) });
 		}
 
 		for(int j = 0; j < 128; j++) {
-			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " But" + std::to_string(j + 1), (uint32_t)(0x11000 + i * 0x100 + j + 0x10)});
+			_keyDefinitions.push_back({ "Joy" + std::to_string(i + 1) + " But" + std::to_string(j + 1), (uint32_t)(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j + diButtonNames.size())});
 		}
 	}
 
@@ -71,29 +73,29 @@ void WindowsKeyManager::RefreshState()
 	_directInput->RefreshState();
 }
 
-bool WindowsKeyManager::IsKeyPressed(uint32_t key)
+bool WindowsKeyManager::IsKeyPressed(uint16_t key)
 {
 	if(_disableAllKeys) {
 		return false;
 	}
 
-	if(key >= 0x10000) {
+	if(key >= WindowsKeyManager::BaseXInputIndex) {
 		if(!_xInput || !_directInput) {
 			return false;
 		}
 
-		if(key >= 0x11000) {
+		if(key >= WindowsKeyManager::BaseDirectInputIndex) {
 			//Directinput key
-			uint8_t gamepadPort = (key - 0x11000) / 0x100;
-			uint8_t gamepadButton = (key - 0x11000) % 0x100;
+			uint8_t gamepadPort = (key - WindowsKeyManager::BaseDirectInputIndex) / 0x100;
+			uint8_t gamepadButton = (key - WindowsKeyManager::BaseDirectInputIndex) % 0x100;
 			return _directInput->IsPressed(gamepadPort, gamepadButton);
 		} else {
 			//XInput key
-			uint8_t gamepadPort = (key - 0xFFFF) / 0x100;
-			uint8_t gamepadButton = (key - 0xFFFF) % 0x100;
+			uint8_t gamepadPort = (key - WindowsKeyManager::BaseXInputIndex) / 0x100;
+			uint8_t gamepadButton = (key - WindowsKeyManager::BaseXInputIndex) % 0x100;
 			return _xInput->IsPressed(gamepadPort, gamepadButton);
 		}
-	} else if(key < 0x200) {
+	} else if(key < 0x205) {
 		return _keyState[key] != 0;
 	}
 	return false;
@@ -101,18 +103,12 @@ bool WindowsKeyManager::IsKeyPressed(uint32_t key)
 
 bool WindowsKeyManager::IsMouseButtonPressed(MouseButton button)
 {
-	switch(button) {
-		case MouseButton::LeftButton: return _mouseState[0];
-		case MouseButton::RightButton: return _mouseState[1];
-		case MouseButton::MiddleButton: return _mouseState[2];
-	}
-
-	return false;
+	return _keyState[WindowsKeyManager::BaseMouseButtonIndex + (int)button];
 }
 
-vector<uint32_t> WindowsKeyManager::GetPressedKeys()
+vector<uint16_t> WindowsKeyManager::GetPressedKeys()
 {
-	vector<uint32_t> result;
+	vector<uint16_t> result;
 	if(!_xInput || !_directInput) {
 		return result;
 	}
@@ -121,7 +117,7 @@ vector<uint32_t> WindowsKeyManager::GetPressedKeys()
 	for(int i = 0; i < XUSER_MAX_COUNT; i++) {
 		for(int j = 1; j <= 26; j++) {
 			if(_xInput->IsPressed(i, j)) {
-				result.push_back(0xFFFF + i * 0x100 + j);
+				result.push_back(WindowsKeyManager::BaseXInputIndex + i * 0x100 + j);
 			}
 		}
 	}
@@ -130,12 +126,12 @@ vector<uint32_t> WindowsKeyManager::GetPressedKeys()
 	for(int i = _directInput->GetJoystickCount() - 1; i >= 0; i--) {
 		for(int j = 0; j < 16+128; j++) {
 			if(_directInput->IsPressed(i, j)) {
-				result.push_back(0x11000 + i * 0x100 + j);
+				result.push_back(WindowsKeyManager::BaseDirectInputIndex + i * 0x100 + j);
 			}
 		}
 	}
 
-	for(int i = 0; i < 0x200; i++) {
+	for(int i = 0; i < 0x205; i++) {
 		if(_keyState[i]) {
 			result.push_back(i);
 		}
@@ -143,7 +139,7 @@ vector<uint32_t> WindowsKeyManager::GetPressedKeys()
 	return result;
 }
 
-string WindowsKeyManager::GetKeyName(uint32_t keyCode)
+string WindowsKeyManager::GetKeyName(uint16_t keyCode)
 {
 	auto keyDef = _keyNames.find(keyCode);
 	if(keyDef != _keyNames.end()) {
@@ -152,7 +148,7 @@ string WindowsKeyManager::GetKeyName(uint32_t keyCode)
 	return "";
 }
 
-uint32_t WindowsKeyManager::GetKeyCode(string keyName)
+uint16_t WindowsKeyManager::GetKeyCode(string keyName)
 {
 	auto keyDef = _keyCodes.find(keyName);
 	if(keyDef != _keyCodes.end()) {
@@ -173,9 +169,7 @@ void WindowsKeyManager::UpdateDevices()
 
 void WindowsKeyManager::SetKeyState(uint16_t scanCode, bool state)
 {
-	if(scanCode > 0xFFF) {
-		_mouseState[scanCode & 0x03] = state;
-	} else {
+	if(scanCode < 0x205) {
 		_keyState[scanCode] = state;
 	}
 }
@@ -187,6 +181,5 @@ void WindowsKeyManager::SetDisabled(bool disabled)
 
 void WindowsKeyManager::ResetKeyState()
 {
-	memset(_mouseState, 0, sizeof(_mouseState));
 	memset(_keyState, 0, sizeof(_keyState));
 }

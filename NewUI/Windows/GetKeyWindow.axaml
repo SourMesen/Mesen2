@@ -12,6 +12,7 @@
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Windows.GetKeyWindow"
+  Name="root"
 	Width="350"
 	Height="100"
 	Title="{l:Translate Title}"
@@ -20,7 +21,7 @@
 		<StackPanel VerticalAlignment="Center">
 			<Panel VerticalAlignment="Center" Height="40">
 				<TextBlock
-					Text="{l:Translate lblSetKeyMessage}"
+					Text="{CompiledBinding HintLabel, ElementName=root}"
 					TextWrapping="Wrap"
 					HorizontalAlignment="Center"
 					VerticalAlignment="Center"

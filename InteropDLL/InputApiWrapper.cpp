@@ -27,9 +27,9 @@ extern "C"
 		} 
 	}
 
-	DllExport void __stdcall GetPressedKeys(uint32_t *keyBuffer)
+	DllExport void __stdcall GetPressedKeys(uint16_t* keyBuffer)
 	{
-		vector<uint32_t> pressedKeys = KeyManager::GetPressedKeys();
+		vector<uint16_t> pressedKeys = KeyManager::GetPressedKeys();
 		for(size_t i = 0; i < pressedKeys.size() && i < 3; i++) {
 			keyBuffer[i] = pressedKeys[i];
 		}
@@ -42,7 +42,7 @@ extern "C"
 		}
 	}
 
-	DllExport void __stdcall SetKeyState(int32_t scanCode, bool state)
+	DllExport void __stdcall SetKeyState(uint16_t scanCode, bool state)
 	{
 		if(_keyManager) {
 			_keyManager->SetKeyState(scanCode, state);
@@ -57,12 +57,12 @@ extern "C"
 		}
 	}
 
-	DllExport void __stdcall GetKeyName(uint32_t keyCode, char* outKeyName, uint32_t maxLength)
+	DllExport void __stdcall GetKeyName(uint16_t keyCode, char* outKeyName, uint32_t maxLength)
 	{
 		StringUtilities::CopyToBuffer(KeyManager::GetKeyName(keyCode), outKeyName, maxLength);
 	}
 
-	DllExport uint32_t __stdcall GetKeyCode(char* keyName)
+	DllExport uint16_t __stdcall GetKeyCode(char* keyName)
 	{
 		if(keyName) {
 			return KeyManager::GetKeyCode(keyName);

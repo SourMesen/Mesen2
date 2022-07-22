@@ -2,8 +2,9 @@
 #include <unordered_map>
 #include <vector>
 #include <thread>
-#include "Core/Shared/Interfaces/IKeyManager.h"
 #include "Utilities/AutoResetEvent.h"
+#include "Shared/Interfaces/IKeyManager.h"
+#include "Shared/KeyDefinitions.h"
 
 class LinuxGameController;
 class Emulator;
@@ -11,12 +12,16 @@ class Emulator;
 class LinuxKeyManager : public IKeyManager
 {
 private:
+	static constexpr int BaseMouseButtonIndex = 0x200;
+	static constexpr int BaseGamepadIndex = 0x1000;
+
 	Emulator* _emu;
 	std::vector<shared_ptr<LinuxGameController>> _controllers;
-	bool _keyState[0x200];
-	bool _mouseState[0x03];
-	std::unordered_map<uint32_t, string> _keyNames;
-	std::unordered_map<string, uint32_t> _keyCodes;	
+
+	vector<KeyDefinition> _keyDefinitions;
+	bool _keyState[0x205];
+	std::unordered_map<uint16_t, string> _keyNames;
+	std::unordered_map<string, uint16_t> _keyCodes;
 
 	std::thread _updateDeviceThread;
 	atomic<bool> _stopUpdateDeviceThread; 
@@ -31,11 +36,11 @@ public:
 	virtual ~LinuxKeyManager();
 
 	void RefreshState();
-	bool IsKeyPressed(uint32_t key);
+	bool IsKeyPressed(uint16_t key);
 	bool IsMouseButtonPressed(MouseButton button);
-	std::vector<uint32_t> GetPressedKeys();
-	string GetKeyName(uint32_t key);
-	uint32_t GetKeyCode(string keyName);
+	std::vector<uint16_t> GetPressedKeys();
+	string GetKeyName(uint16_t key);
+	uint16_t GetKeyCode(string keyName);
 
 	void UpdateDevices();
 	void SetKeyState(uint16_t scanCode, bool state);

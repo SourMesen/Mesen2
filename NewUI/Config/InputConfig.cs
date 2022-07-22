@@ -53,27 +53,27 @@ namespace Mesen.Config
 
 	public class KeyMapping : ReactiveObject
 	{
-		[Reactive] public UInt32 A { get; set; }
-		[Reactive] public UInt32 B { get; set; }
-		[Reactive] public UInt32 X { get; set; }
-		[Reactive] public UInt32 Y { get; set; }
-		[Reactive] public UInt32 L { get; set; }
-		[Reactive] public UInt32 R { get; set; }
-		[Reactive] public UInt32 Up { get; set; }
-		[Reactive] public UInt32 Down { get; set; }
-		[Reactive] public UInt32 Left { get; set; }
-		[Reactive] public UInt32 Right { get; set; }
-		[Reactive] public UInt32 Start { get; set; }
-		[Reactive] public UInt32 Select { get; set; }
+		[Reactive] public UInt16 A { get; set; }
+		[Reactive] public UInt16 B { get; set; }
+		[Reactive] public UInt16 X { get; set; }
+		[Reactive] public UInt16 Y { get; set; }
+		[Reactive] public UInt16 L { get; set; }
+		[Reactive] public UInt16 R { get; set; }
+		[Reactive] public UInt16 Up { get; set; }
+		[Reactive] public UInt16 Down { get; set; }
+		[Reactive] public UInt16 Left { get; set; }
+		[Reactive] public UInt16 Right { get; set; }
+		[Reactive] public UInt16 Start { get; set; }
+		[Reactive] public UInt16 Select { get; set; }
 
-		[Reactive] public UInt32 TurboA { get; set; }
-		[Reactive] public UInt32 TurboB { get; set; }
-		[Reactive] public UInt32 TurboX { get; set; }
-		[Reactive] public UInt32 TurboY { get; set; }
-		[Reactive] public UInt32 TurboL { get; set; }
-		[Reactive] public UInt32 TurboR { get; set; }
-		[Reactive] public UInt32 TurboSelect { get; set; }
-		[Reactive] public UInt32 TurboStart { get; set; }
+		[Reactive] public UInt16 TurboA { get; set; }
+		[Reactive] public UInt16 TurboB { get; set; }
+		[Reactive] public UInt16 TurboX { get; set; }
+		[Reactive] public UInt16 TurboY { get; set; }
+		[Reactive] public UInt16 TurboL { get; set; }
+		[Reactive] public UInt16 TurboR { get; set; }
+		[Reactive] public UInt16 TurboSelect { get; set; }
+		[Reactive] public UInt16 TurboStart { get; set; }
 
 		public virtual InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
 		{
@@ -205,32 +205,32 @@ namespace Mesen.Config
 	[StructLayout(LayoutKind.Sequential)]
 	public struct InteropKeyMapping
 	{
-		public UInt32 A;
-		public UInt32 B;
-		public UInt32 X;
-		public UInt32 Y;
-		public UInt32 L;
-		public UInt32 R;
-		public UInt32 Up;
-		public UInt32 Down;
-		public UInt32 Left;
-		public UInt32 Right;
-		public UInt32 Start;
-		public UInt32 Select;
+		public UInt16 A;
+		public UInt16 B;
+		public UInt16 X;
+		public UInt16 Y;
+		public UInt16 L;
+		public UInt16 R;
+		public UInt16 Up;
+		public UInt16 Down;
+		public UInt16 Left;
+		public UInt16 Right;
+		public UInt16 Start;
+		public UInt16 Select;
 
-		public UInt32 TurboA;
-		public UInt32 TurboB;
-		public UInt32 TurboX;
-		public UInt32 TurboY;
-		public UInt32 TurboL;
-		public UInt32 TurboR;
-		public UInt32 TurboSelect;
-		public UInt32 TurboStart;
+		public UInt16 TurboA;
+		public UInt16 TurboB;
+		public UInt16 TurboX;
+		public UInt16 TurboY;
+		public UInt16 TurboL;
+		public UInt16 TurboR;
+		public UInt16 TurboSelect;
+		public UInt16 TurboStart;
 		
-		public UInt32 Microphone;
+		public UInt16 Microphone;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 100)]
-		public UInt32[] CustomKeys;
+		public UInt16[] CustomKeys;
 	}
 
 	public struct InteropKeyMappingSet

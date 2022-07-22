@@ -215,31 +215,31 @@ enum class ControllerType
 
 struct KeyMapping
 {
-	uint32_t A = 0;
-	uint32_t B = 0;
-	uint32_t X = 0;
-	uint32_t Y = 0;
-	uint32_t L = 0;
-	uint32_t R = 0;
-	uint32_t Up = 0;
-	uint32_t Down = 0;
-	uint32_t Left = 0;
-	uint32_t Right = 0;
-	uint32_t Start = 0;
-	uint32_t Select = 0;
+	uint16_t A = 0;
+	uint16_t B = 0;
+	uint16_t X = 0;
+	uint16_t Y = 0;
+	uint16_t L = 0;
+	uint16_t R = 0;
+	uint16_t Up = 0;
+	uint16_t Down = 0;
+	uint16_t Left = 0;
+	uint16_t Right = 0;
+	uint16_t Start = 0;
+	uint16_t Select = 0;
 
-	uint32_t TurboA = 0;
-	uint32_t TurboB = 0;
-	uint32_t TurboX = 0;
-	uint32_t TurboY = 0;
-	uint32_t TurboL = 0;
-	uint32_t TurboR = 0;
-	uint32_t TurboSelect = 0;
-	uint32_t TurboStart = 0;
+	uint16_t TurboA = 0;
+	uint16_t TurboB = 0;
+	uint16_t TurboX = 0;
+	uint16_t TurboY = 0;
+	uint16_t TurboL = 0;
+	uint16_t TurboR = 0;
+	uint16_t TurboSelect = 0;
+	uint16_t TurboStart = 0;
 	
-	uint32_t Microphone = 0;
+	uint16_t Microphone = 0;
 
-	uint32_t CustomKeys[100] = {};
+	uint16_t CustomKeys[100] = {};
 
 	bool HasKeySet()
 	{

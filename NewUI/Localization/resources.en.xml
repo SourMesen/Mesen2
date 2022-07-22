@@ -606,7 +606,6 @@
 		</Form>
 		<Form ID="GetKeyWindow">
 			<Control ID="Title">Set key binding...</Control>
-			<Control ID="lblSetKeyMessage">Press any key on your keyboard or controller to set a new binding.</Control>
 		</Form>
 		<Form ID="VideoRecordWindow">
 			<Control ID="wndTitle">Video Recording Options</Control>
@@ -1340,7 +1339,10 @@
 		<Message ID="MovieExportSpecificRange">Export specific range...</Message>
 		<Message ID="MovieSaveError">An error occurred while trying to save the movie file.</Message>
 		<Message ID="FileSaveError">An error occurred while trying to save the file.</Message>
-		
+
+		<Message ID="SetKeyHint">Press any key on your keyboard or controller to set a new binding.</Message>
+		<Message ID="SetKeyMouseHint">Press any key on your keyboard, controller or mouse to set a new binding.</Message>
+
 		<Message ID="ClearHistory">Clear History</Message>
 
 		<Message ID="FirmwareNotFound">This game requires a firmware file for the {0} chip.&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>

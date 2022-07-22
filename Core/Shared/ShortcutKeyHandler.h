@@ -17,8 +17,8 @@ private:
 	SimpleLock _lock;
 	
 	int _keySetIndex;
-	vector<uint32_t> _pressedKeys;
-	vector<uint32_t> _lastPressedKeys;
+	vector<uint16_t> _pressedKeys;
+	vector<uint16_t> _lastPressedKeys;
 	bool _isKeyUp;
 
 	Timer _runSingleFrameRepeatTimer;
@@ -32,7 +32,7 @@ private:
 	
 	bool IsKeyPressed(EmulatorShortcut key);
 	bool IsKeyPressed(KeyCombination comb);
-	bool IsKeyPressed(uint32_t keyCode, bool mergeCtrlAltShift);
+	bool IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift);
 
 	bool DetectKeyPress(EmulatorShortcut key);
 	bool DetectKeyRelease(EmulatorShortcut key);

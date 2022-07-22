@@ -9,9 +9,9 @@ namespace Mesen.Config.Shortcuts
 {
 	public class KeyCombination
 	{
-		public UInt32 Key1 { get; set; }
-		public UInt32 Key2 { get; set; }
-		public UInt32 Key3 { get; set; }
+		public UInt16 Key1 { get; set; }
+		public UInt16 Key2 { get; set; }
+		public UInt16 Key3 { get; set; }
 
 		public bool IsEmpty { get { return Key1 == 0 && Key2 == 0 && Key3 == 0; } }
 
@@ -28,7 +28,7 @@ namespace Mesen.Config.Shortcuts
 		{
 		}
 
-		public KeyCombination(List<UInt32>? keyCodes = null)
+		public KeyCombination(List<UInt16>? keyCodes = null)
 		{
 			if(keyCodes != null) {
 				if(keyCodes.Any(code => code > 0xFFFF)) {
@@ -38,9 +38,9 @@ namespace Mesen.Config.Shortcuts
 					keyCodes = keyCodes.Where(code => code > 0xFFFF).ToList();
 				}
 
-				Key1 = keyCodes.Count > 0 ? keyCodes[0] : 0;
-				Key2 = keyCodes.Count > 1 ? keyCodes[1] : 0;
-				Key3 = keyCodes.Count > 2 ? keyCodes[2] : 0;
+				Key1 = keyCodes.Count > 0 ? keyCodes[0] : (UInt16)0;
+				Key2 = keyCodes.Count > 1 ? keyCodes[1] : (UInt16)0;
+				Key3 = keyCodes.Count > 2 ? keyCodes[2] : (UInt16)0;
 			} else {
 				Key1 = 0;
 				Key2 = 0;
@@ -50,8 +50,8 @@ namespace Mesen.Config.Shortcuts
 
 		private string GetKeyNames()
 		{
-			List<UInt32> scanCodes = new List<uint>() { Key1, Key2, Key3 };
-			List<string> keyNames = scanCodes.Select((UInt32 scanCode) => InputApi.GetKeyName(scanCode)).Where((keyName) => !string.IsNullOrWhiteSpace(keyName)).ToList();
+			List<UInt16> scanCodes = new List<UInt16>() { Key1, Key2, Key3 };
+			List<string> keyNames = scanCodes.Select((UInt16 scanCode) => InputApi.GetKeyName(scanCode)).Where((keyName) => !string.IsNullOrWhiteSpace(keyName)).ToList();
 
 			if(keyNames.Count > 1) {
 				//Merge left/right ctrl/alt/shift for key combinations

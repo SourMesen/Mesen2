@@ -41,10 +41,16 @@
 
 #include <string>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include <thread>
 
 using std::list;
 using std::vector;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::string;
+using std::unordered_map;
+using std::unordered_set;
+using std::thread;
 using namespace std::literals::string_literals;

@@ -24,11 +24,14 @@ public class GlobalMouseX11Impl : IGlobalMouseImpl
 	public bool IsMouseButtonPressed(MouseButtons button)
 	{
 		GetCursorPos(_x11, null, out int keys);
-
 		switch(button) {
 			case MouseButtons.Left: return (keys & (1 << 8)) != 0;
 			case MouseButtons.Middle: return (keys & (1 << 9)) != 0;
 			case MouseButtons.Right: return (keys & (1 << 10)) != 0;
+
+			//TODO back/forward are not supported by XQueryPointer?
+			//case MouseButtons.Button4: return (keys & (1 << 11)) != 0;
+			//case MouseButtons.Button5: return (keys & (1 << 12)) != 0;
 		}
 
 		return false;

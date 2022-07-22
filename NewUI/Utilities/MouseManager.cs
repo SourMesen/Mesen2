@@ -18,9 +18,11 @@ namespace Mesen.Utilities
 {
 	public class MouseManager : IDisposable
 	{
-		private const int LeftMouseButtonKeyCode = 0x200;
-		private const int RightMouseButtonKeyCode = 0x201;
-		private const int MiddleMouseButtonKeyCode = 0x202;
+		public const int LeftMouseButtonKeyCode = 0x200;
+		public const int RightMouseButtonKeyCode = 0x201;
+		public const int MiddleMouseButtonKeyCode = 0x202;
+		public const int MouseButton4KeyCode = 0x203;
+		public const int MouseButton5KeyCode = 0x204;
 
 		private DispatcherTimer _timer = new DispatcherTimer();
 
@@ -122,6 +124,8 @@ namespace Mesen.Utilities
 				InputApi.SetKeyState(LeftMouseButtonKeyCode, leftPressed);
 				InputApi.SetKeyState(RightMouseButtonKeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));
 				InputApi.SetKeyState(MiddleMouseButtonKeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle));
+				InputApi.SetKeyState(MouseButton4KeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4));
+				InputApi.SetKeyState(MouseButton5KeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5));
 
 				if(!_mouseCaptured && AllowMouseCapture && leftPressed) {
 					//If the mouse button is clicked and mouse isn't captured but can be, turn on mouse capture

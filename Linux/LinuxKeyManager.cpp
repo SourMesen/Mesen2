@@ -11,6 +11,8 @@ LinuxKeyManager::LinuxKeyManager(Emulator* emu)
 
 	ResetKeyState();
 
+	_keyDefinitions = KeyDefinition::GetSharedKeyDefinitions();
+
 	vector<string> buttonNames = { 
 		"A", "B", "C", "X", "Y", "Z", "L1", "R1", "L2", "R2", "Select", "Start", "L3", "R3", 
 		"X+", "X-", "Y+", "Y-", "Z+", "Z-", 
@@ -26,7 +28,7 @@ LinuxKeyManager::LinuxKeyManager(Emulator* emu)
 
 	for(int i = 0; i < 20; i++) {
 		for(int j = 0; j < (int)buttonNames.size(); j++) {
-			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(0x10000 + i * 0x100 + j) });
+			_keyDefinitions.push_back({ "Pad" + std::to_string(i + 1) + " " + buttonNames[j], (uint32_t)(LinuxKeyManager::BaseGamepadIndex + i * 0x100 + j) });
 		}
 	}
 
@@ -51,23 +53,23 @@ LinuxKeyManager::~LinuxKeyManager()
 
 void LinuxKeyManager::RefreshState()
 {
-	//TODO: NOT IMPLEMENTED YET;
+	//TODO: NOT IMPLEMENTED YET
 	//Only needed to detect poll controller input
 }
 
-bool LinuxKeyManager::IsKeyPressed(uint32_t key)
+bool LinuxKeyManager::IsKeyPressed(uint16_t key)
 {
 	if(_disableAllKeys) {
 		return false;
 	}
 
-	if(key >= 0x10000) {
-		uint8_t gamepadPort = (key - 0x10000) / 0x100;
-		uint8_t gamepadButton = (key - 0x10000) % 0x100;
+	if(key >= LinuxKeyManager::BaseGamepadIndex) {
+		uint8_t gamepadPort = (key - LinuxKeyManager::BaseGamepadIndex) / 0x100;
+		uint8_t gamepadButton = (key - LinuxKeyManager::BaseGamepadIndex) % 0x100;
 		if(_controllers.size() > gamepadPort) {
 			return _controllers[gamepadPort]->IsButtonPressed(gamepadButton);
 		}
-	} else if(key) {
+	} else if(key < 0x205) {
 		return _keyState[key] != 0;
 	}
 	return false;
@@ -75,27 +77,21 @@ bool LinuxKeyManager::IsKeyPressed(uint32_t key)
 
 bool LinuxKeyManager::IsMouseButtonPressed(MouseButton button)
 {
-	switch(button) {
-		case MouseButton::LeftButton: return _mouseState[0];
-		case MouseButton::RightButton: return _mouseState[1];
-		case MouseButton::MiddleButton: return _mouseState[2];
-	}
-
-	return false;
+	return _keyState[LinuxKeyManager::BaseMouseButtonIndex + (int)button];
 }
 
-vector<uint32_t> LinuxKeyManager::GetPressedKeys()
+vector<uint16_t> LinuxKeyManager::GetPressedKeys()
 {
-	vector<uint32_t> pressedKeys;
+	vector<uint16_t> pressedKeys;
 	for(size_t i = 0; i < _controllers.size(); i++) {
 		for(int j = 0; j <= 54; j++) {
 			if(_controllers[i]->IsButtonPressed(j)) {
-				pressedKeys.push_back(0x10000 + i * 0x100 + j);
+				pressedKeys.push_back(LinuxKeyManager::BaseGamepadIndex + i * 0x100 + j);
 			}
 		}
 	}
 
-	for(int i = 0; i < 0x200; i++) {
+	for(int i = 0; i < 0x205; i++) {
 		if(_keyState[i]) {
 			pressedKeys.push_back(i);
 		}
@@ -103,7 +99,7 @@ vector<uint32_t> LinuxKeyManager::GetPressedKeys()
 	return pressedKeys;
 }
 
-string LinuxKeyManager::GetKeyName(uint32_t key)
+string LinuxKeyManager::GetKeyName(uint16_t key)
 {
 	auto keyDef = _keyNames.find(key);
 	if(keyDef != _keyNames.end()) {
@@ -112,7 +108,7 @@ string LinuxKeyManager::GetKeyName(uint32_t key)
 	return "";
 }
 
-uint32_t LinuxKeyManager::GetKeyCode(string keyName)
+uint16_t LinuxKeyManager::GetKeyCode(string keyName)
 {
 	auto keyDef = _keyCodes.find(keyName);
 	if(keyDef != _keyCodes.end()) {
@@ -190,16 +186,13 @@ void LinuxKeyManager::StartUpdateDeviceThread()
 
 void LinuxKeyManager::SetKeyState(uint16_t scanCode, bool state)
 {
-	if(scanCode > 0xFFF) {
-		_mouseState[scanCode & 0x03] = state;
-	} else {
+	if(scanCode < 0x205) {
 		_keyState[scanCode] = state;
 	}
 }
 
 void LinuxKeyManager::ResetKeyState()
 {
-	memset(_mouseState, 0, sizeof(_mouseState));
 	memset(_keyState, 0, sizeof(_keyState));
 }
 

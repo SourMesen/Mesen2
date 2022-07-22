@@ -38,7 +38,7 @@ protected:
 
 	virtual string GetKeyNames() { return ""; }
 
-	void SetPressedState(uint8_t bit, uint32_t keyCode);
+	void SetPressedState(uint8_t bit, uint16_t keyCode);
 	void SetPressedState(uint8_t bit, bool enabled);
 
 	void SetCoordinates(MousePosition pos);

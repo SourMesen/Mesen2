@@ -32,7 +32,7 @@ void KeyManager::SetSettings(EmuSettings *settings)
 	_settings = settings;
 }
 
-bool KeyManager::IsKeyPressed(uint32_t keyCode)
+bool KeyManager::IsKeyPressed(uint16_t keyCode)
 {
 	if(_keyManager != nullptr) {
 		return _settings->IsInputEnabled() && _keyManager->IsKeyPressed(keyCode);
@@ -48,15 +48,15 @@ bool KeyManager::IsMouseButtonPressed(MouseButton button)
 	return false;
 }
 
-vector<uint32_t> KeyManager::GetPressedKeys()
+vector<uint16_t> KeyManager::GetPressedKeys()
 {
 	if(_keyManager != nullptr) {
 		return _keyManager->GetPressedKeys();
 	}
-	return vector<uint32_t>();
+	return vector<uint16_t>();
 }
 
-string KeyManager::GetKeyName(uint32_t keyCode)
+string KeyManager::GetKeyName(uint16_t keyCode)
 {
 	if(_keyManager != nullptr) {
 		return _keyManager->GetKeyName(keyCode);
@@ -64,7 +64,7 @@ string KeyManager::GetKeyName(uint32_t keyCode)
 	return "";
 }
 
-uint32_t KeyManager::GetKeyCode(string keyName)
+uint16_t KeyManager::GetKeyCode(string keyName)
 {
 	if(_keyManager != nullptr) {
 		return _keyManager->GetKeyCode(keyName);

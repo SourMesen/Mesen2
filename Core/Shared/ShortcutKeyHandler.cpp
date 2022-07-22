@@ -68,7 +68,7 @@ bool ShortcutKeyHandler::IsKeyPressed(KeyCombination comb)
 		(comb.Key3 == 0 || IsKeyPressed(comb.Key3, mergeCtrlAltShift));
 }
 
-bool ShortcutKeyHandler::IsKeyPressed(uint32_t keyCode, bool mergeCtrlAltShift)
+bool ShortcutKeyHandler::IsKeyPressed(uint16_t keyCode, bool mergeCtrlAltShift)
 {
 	if(keyCode >= 116 && keyCode <= 121 && mergeCtrlAltShift) {
 		//Left/right ctrl/alt/shift
