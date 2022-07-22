@@ -177,6 +177,30 @@ void BaseControlManager::UpdateInputState()
 	_pollCounter++;
 }
 
+void BaseControlManager::ProcessEndOfFrame()
+{
+	if(!_wasInputRead) {
+		_lagCounter++;
+	}
+	_wasInputRead = false;
+}
+
+void BaseControlManager::SetInputReadFlag()
+{
+	//Used for lag counter - any frame where the input is read does not count as lag
+	_wasInputRead = true;
+}
+
+uint32_t BaseControlManager::GetLagCounter()
+{
+	return _lagCounter;
+}
+
+void BaseControlManager::ResetLagCounter()
+{
+	_lagCounter = 0;
+}
+
 bool BaseControlManager::HasControlDevice(ControllerType type)
 {
 	auto lock = _deviceLock.AcquireSafe();

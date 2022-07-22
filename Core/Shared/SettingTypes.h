@@ -609,6 +609,7 @@ struct PreferencesConfig
 	bool ShowFps = false;
 	bool ShowFrameCounter = false;
 	bool ShowGameTimer = false;
+	bool ShowLagCounter = false;
 	bool ShowDebugInfo = false;
 	bool DisableOsd = false;
 	bool AllowBackgroundInput = false;

@@ -31,7 +31,7 @@ public:
 
 	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 
-	uint8_t Read(uint16_t addr);
+	uint8_t Read(uint16_t addr, bool forAutoRead = false);
 	void Write(uint16_t addr, uint8_t value);
 
 	void Serialize(Serializer &s) override;

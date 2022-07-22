@@ -21,6 +21,7 @@ void InternalRegisters::Initialize(SnesConsole* console)
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
 	_ppu = _console->GetPpu();
+	_controlManager = (SnesControlManager*)_console->GetControlManager();
 	Reset();
 
 	//Power on values
@@ -48,18 +49,17 @@ void InternalRegisters::ProcessAutoJoypadRead()
 		return;
 	}
 
-	SnesControlManager* controlManager = (SnesControlManager*)_console->GetControlManager();
-
-	controlManager->Write(0x4016, 1);
-	controlManager->Write(0x4016, 0);
+	//TODO timing
+	_controlManager->Write(0x4016, 1);
+	_controlManager->Write(0x4016, 0);
 
 	for(int i = 0; i < 4; i++) {
 		_state.ControllerData[i] = 0;
 	}
 
 	for(int i = 0; i < 16; i++) {
-		uint8_t port1 = controlManager->Read(0x4016);
-		uint8_t port2 = controlManager->Read(0x4017);
+		uint8_t port1 = _controlManager->Read(0x4016, true);
+		uint8_t port2 = _controlManager->Read(0x4017, true);
 
 		_state.ControllerData[0] <<= 1;
 		_state.ControllerData[1] <<= 1;
@@ -149,8 +149,16 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		case 0x4217: 
 			return _aluMulDiv.Read(addr);
 
-		case 0x4218: return (uint8_t)_state.ControllerData[0];
-		case 0x4219: return (uint8_t)(_state.ControllerData[0] >> 8);
+		case 0x4218:
+			//When P1 auto-poll registers are read, don't count frame as a lag frame
+			_controlManager->SetInputReadFlag();
+			return (uint8_t)_state.ControllerData[0];
+
+		case 0x4219:
+			//When P1 auto-poll registers are read, don't count frame as a lag frame
+			_controlManager->SetInputReadFlag();
+			return (uint8_t)(_state.ControllerData[0] >> 8);
+
 		case 0x421A: return (uint8_t)_state.ControllerData[1];
 		case 0x421B: return (uint8_t)(_state.ControllerData[1] >> 8);
 		case 0x421C: return (uint8_t)_state.ControllerData[2];

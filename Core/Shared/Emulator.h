@@ -239,6 +239,8 @@ public:
 
 	TimingInfo GetTimingInfo();
 	uint32_t GetFrameCount();
+	uint32_t GetLagCounter();
+	void ResetLagCounter();
 	double GetFps();
 	
 	template<CpuType type> __forceinline void ProcessInstruction()

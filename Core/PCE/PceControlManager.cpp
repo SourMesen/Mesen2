@@ -42,6 +42,8 @@ shared_ptr<BaseControlDevice> PceControlManager::CreateControllerDevice(Controll
 
 uint8_t PceControlManager::ReadInputPort()
 {
+	SetInputReadFlag();
+
 	uint8_t result = 0;
 	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
 		if(device->IsConnected()) {

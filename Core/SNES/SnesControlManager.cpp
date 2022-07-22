@@ -79,8 +79,12 @@ void SnesControlManager::UpdateControlDevices()
 	}
 }
 
-uint8_t SnesControlManager::Read(uint16_t addr)
+uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 {
+	if(!forAutoRead) {
+		SetInputReadFlag();
+	}
+
 	uint8_t value = _console->GetMemoryManager()->GetOpenBus() & (addr == 0x4016 ? 0xFC : 0xE0);
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		value |= device->ReadRam(addr);

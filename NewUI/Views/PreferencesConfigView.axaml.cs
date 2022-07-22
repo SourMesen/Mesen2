@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Interactivity;
 using Mesen.Windows;
+using Mesen.Interop;
 
 namespace Mesen.Views
 {
@@ -23,6 +24,11 @@ namespace Mesen.Views
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+		
+		private void btnResetLagCounter_OnClick(object sender, RoutedEventArgs e)
+		{
+			InputApi.ResetLagCounter();
 		}
 
 		private void btnChangeStorageFolder_OnClick(object sender, RoutedEventArgs e)

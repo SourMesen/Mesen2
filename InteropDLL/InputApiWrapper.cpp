@@ -75,4 +75,9 @@ extern "C"
 	{
 		return _emu->GetControlManager()->HasControlDevice(type);
 	}
+
+	DllExport void __stdcall ResetLagCounter()
+	{
+		_emu->ResetLagCounter();
+	}
 }

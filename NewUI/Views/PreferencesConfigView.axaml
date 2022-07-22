@@ -155,6 +155,10 @@
 					<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
 					<CheckBox Content="{l:Translate chkShowFrameCounter}" IsChecked="{CompiledBinding Config.ShowFrameCounter}" />
 					<CheckBox Content="{l:Translate chkShowGameTimer}" IsChecked="{CompiledBinding Config.ShowGameTimer}" />
+					<StackPanel Orientation="Horizontal">
+						<CheckBox Content="{l:Translate chkShowLagCounter}" IsChecked="{CompiledBinding Config.ShowLagCounter}" />
+						<c:ButtonWithIcon Icon="Assets/Refresh.png" Text="{l:Translate btnResetLagCounter}" Click="btnResetLagCounter_OnClick" Margin="10 -5 0 -5" />
+					</StackPanel>
 					<CheckBox Content="{l:Translate chkShowDebugInformation}" IsChecked="{CompiledBinding Config.ShowDebugInfo}" />
 				</c:OptionSection>
 

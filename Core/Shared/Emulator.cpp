@@ -253,6 +253,8 @@ void Emulator::ProcessEndOfFrame()
 			_frameDelay = newFrameDelay;
 			_frameLimiter->SetDelay(_frameDelay);
 		}
+
+		GetControlManager()->ProcessEndOfFrame();
 	}
 	_frameRunning = false;
 }
@@ -593,6 +595,20 @@ uint32_t Emulator::GetFrameCount()
 		return _console->GetPpuFrame().FrameCount;
 	} else {
 		return 0;
+	}
+}
+
+uint32_t Emulator::GetLagCounter()
+{
+	BaseControlManager* controlManager = GetControlManager();
+	return controlManager ? controlManager->GetLagCounter() : 0;
+}
+
+void Emulator::ResetLagCounter()
+{
+	BaseControlManager* controlManager = GetControlManager();
+	if(controlManager) {
+		controlManager->ResetLagCounter();
 	}
 }
 

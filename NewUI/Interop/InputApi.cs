@@ -20,6 +20,8 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern UInt32 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);
 		
+		[DllImport(DllPath)] public static extern void ResetLagCounter();
+
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt32 key, IntPtr outKeyName, Int32 maxLength);

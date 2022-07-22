@@ -60,6 +60,8 @@ void GbControlManager::UpdateControlDevices()
 
 uint8_t GbControlManager::ReadInputPort()
 {
+	SetInputReadFlag();
+
 	//Bit 7 - Not used
 	//Bit 6 - Not used
 	//Bit 5 - P15 Select Button Keys      (0=Select)
@@ -84,7 +86,7 @@ uint8_t GbControlManager::ReadInputPort()
 			}
 		}
 	} else {
-		BaseControlDevice* controller = (GbController*)GetControlDevice(0).get();
+		shared_ptr<BaseControlDevice> controller = GetControlDevice(0);
 		if(controller && controller->GetControllerType() == ControllerType::GameboyController) {
 			if(!(inputSelect & 0x20)) {
 				result &= ~(controller->IsPressed(GbController::A) ? 0x01 : 0);

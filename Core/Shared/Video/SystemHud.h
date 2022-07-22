@@ -41,6 +41,7 @@ private:
 
 	void ShowFpsCounter(int lineNumber);
 	void ShowFrameCounter(int lineNumber);
+	void ShowLagCounter(int lineNumber);
 	void ShowGameTimer(int lineNumber);
 
 	void DrawCounters();

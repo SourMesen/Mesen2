@@ -503,6 +503,8 @@
 			<Control ID="chkShowFullPathInRecents">Show full file path in recent file list</Control>
 			<Control ID="chkShowFrameCounter">Show frame counter</Control>
 			<Control ID="chkShowGameTimer">Show game timer</Control>
+			<Control ID="chkShowLagCounter">Show lag counter</Control>
+			<Control ID="btnResetLagCounter">Reset lag counter</Control>
 			<Control ID="chkShowVsConfigOnLoad">Show game configuration dialog when loading VS System games</Control>
 
 			<Control ID="lblAdvancedMisc">Miscellaneous Settings</Control>

@@ -19,8 +19,6 @@ class NesControlManager : public ISerializable, public INesMemoryHandler, public
 {
 private:
 	NesConfig _prevConfig = {};
-	uint32_t _lagCounter = 0;
-	bool _isLagging = false;
 
 protected:
 	NesConsole* _console;
@@ -35,9 +33,6 @@ public:
 
 	void UpdateControlDevices() override;
 	void UpdateInputState() override;
-
-	uint32_t GetLagCounter();
-	void ResetLagCounter();
 
 	void SaveBattery();
 

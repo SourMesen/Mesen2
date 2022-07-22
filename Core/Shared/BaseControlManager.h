@@ -23,6 +23,8 @@ protected:
 	vector<shared_ptr<BaseControlDevice>> _systemDevices;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
 	uint32_t _pollCounter = 0;
+	uint32_t _lagCounter = 0;
+	bool _wasInputRead = false;
 
 	void RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice);
 
@@ -36,6 +38,12 @@ public:
 
 	virtual void UpdateControlDevices() {}
 	virtual void UpdateInputState();
+
+	void ProcessEndOfFrame();
+
+	void SetInputReadFlag();
+	uint32_t GetLagCounter();
+	void ResetLagCounter();
 
 	bool HasControlDevice(ControllerType type);
 	virtual bool IsKeyboardConnected() { return false; }

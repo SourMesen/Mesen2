@@ -1,13 +1,14 @@
 #pragma once
 #include "stdafx.h"
 #include "SNES/AluMulDiv.h"
-#include "SNES/SnesConsole.h"
 #include "SNES/SnesCpu.h"
 #include "SNES/SnesPpu.h"
 #include "SNES/InternalRegisterTypes.h"
 #include "Utilities/ISerializable.h"
 
+class SnesConsole;
 class SnesMemoryManager;
+class SnesControlManager;
 
 class InternalRegisters final : public ISerializable
 {
@@ -16,6 +17,7 @@ private:
 	SnesCpu* _cpu = nullptr;
 	SnesPpu* _ppu = nullptr;
 	SnesMemoryManager* _memoryManager = nullptr;
+	SnesControlManager* _controlManager = nullptr;
 
 	AluMulDiv _aluMulDiv = {};
 

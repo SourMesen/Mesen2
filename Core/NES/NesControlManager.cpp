@@ -216,26 +216,10 @@ void NesControlManager::RemapControllerButtons()
 
 void NesControlManager::UpdateInputState()
 {
-	if(_isLagging) {
-		_lagCounter++;
-	} else {
-		_isLagging = true;
-	}
-
 	BaseControlManager::UpdateInputState();
 
 	//Used by VS System games
 	RemapControllerButtons();
-}
-
-uint32_t NesControlManager::GetLagCounter()
-{
-	return _lagCounter;
-}
-
-void NesControlManager::ResetLagCounter()
-{
-	_lagCounter = 0;
 }
 
 void NesControlManager::SaveBattery()
@@ -250,8 +234,7 @@ void NesControlManager::SaveBattery()
 
 uint8_t NesControlManager::ReadRam(uint16_t addr)
 {
-	//Used for lag counter - any frame where the input is read does not count as lag
-	_isLagging = false;
+	SetInputReadFlag();
 
 	uint8_t value = _console->GetMemoryManager()->GetOpenBus(GetOpenBusMask(addr - 0x4016));
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {

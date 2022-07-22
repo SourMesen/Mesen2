@@ -3,6 +3,7 @@
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/MessageManager.h"
+#include "Shared/BaseControlManager.h"
 #include "Shared/Video/DrawStringCommand.h"
 #include "Shared/Interfaces/IMessageManager.h"
 
@@ -119,6 +120,16 @@ void SystemHud::ShowFrameCounter(int lineNumber)
 	DrawString(frameCounter, _screenWidth - 8 - length, yPos);
 }
 
+void SystemHud::ShowLagCounter(int lineNumber)
+{
+	int yPos = 10 + 10 * lineNumber;
+	uint32_t count = _emu->GetLagCounter();
+
+	string lagCounter = MessageManager::Localize("Lag") + ": " + std::to_string(count);
+	uint32_t length = DrawStringCommand::MeasureString(lagCounter).X;
+	DrawString(lagCounter, _screenWidth - 8 - length, yPos);
+}
+
 void SystemHud::DrawCounters()
 {
 	int lineNumber = 0;
@@ -133,7 +144,9 @@ void SystemHud::DrawCounters()
 	if(cfg.ShowFrameCounter) {
 		ShowFrameCounter(lineNumber++);
 	}
-
+	if(cfg.ShowLagCounter) {
+		ShowLagCounter(lineNumber++);
+	}
 	_renderedFrameCount++;
 }
 
