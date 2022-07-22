@@ -733,7 +733,7 @@ namespace Mesen.ViewModels
 		private void InitDebugMenu(Window wnd)
 		{
 			Func<bool> isSuperGameBoy = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Snes && MainWindow.RomInfo.Format == RomFormat.Gb;
-			Func<bool> isNesFormat = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes && MainWindow.RomInfo.Format == RomFormat.iNes;
+			Func<bool> isNesFormat = () => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes && (MainWindow.RomInfo.Format == RomFormat.iNes || MainWindow.RomInfo.Format == RomFormat.VsSystem || MainWindow.RomInfo.Format == RomFormat.VsDualSystem);
 
 			DebugMenuItems = new List<object>() {
 				new ContextMenuAction() {
