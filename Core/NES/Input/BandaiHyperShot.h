@@ -9,7 +9,7 @@ class BandaiHyperShot : public NesController
 {
 private:
 	NesConsole* _console;
-	uint32_t _stateBuffer = 0;
+	uint32_t _hypershotState = 0;
 
 protected:
 	enum ZapperButtons { Fire = 9 };
@@ -42,8 +42,8 @@ protected:
 
 	void Serialize(Serializer& s) override
 	{
-		BaseControlDevice::Serialize(s);
-		SV(_stateBuffer);
+		NesController::Serialize(s);
+		SV(_hypershotState);
 	}
 
 public:
@@ -54,15 +54,15 @@ public:
 
 	void RefreshStateBuffer() override
 	{
-		_stateBuffer = (uint32_t)ToByte();
+		_hypershotState = (uint32_t)ToByte();
 	}
 
 	uint8_t ReadRam(uint16_t addr) override
 	{
 		if(addr == 0x4016) {
 			StrobeProcessRead();
-			uint8_t output = (_stateBuffer & 0x01) << 1;
-			_stateBuffer >>= 1;
+			uint8_t output = (_hypershotState & 0x01) << 1;
+			_hypershotState >>= 1;
 			return output;
 		} else {
 			return (IsLightFound() ? 0 : 0x08) | (IsPressed(ZapperButtons::Fire) ? 0x10 : 0x00);

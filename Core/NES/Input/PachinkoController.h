@@ -6,7 +6,7 @@ class PachinkoController : public NesController
 {
 private:
 	uint8_t _analogData = 0;
-	uint16_t _state = 0;
+	uint16_t _pachinkoState = 0;
 
 protected:
 	enum PachinkoButtons { Press = 8, Release = 9 };
@@ -14,7 +14,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		NesController::Serialize(s);
-		SV(_state); SV(_analogData);
+		SV(_pachinkoState); SV(_analogData);
 	}
 
 	void InternalSetStateFromInput() override
@@ -37,8 +37,8 @@ public:
 		uint8_t output = 0;
 		if(addr == 0x4016) {
 			StrobeProcessRead();
-			output = (_state & 0x01) << 1;
-			_state >>= 1;
+			output = (_pachinkoState & 0x01) << 1;
+			_pachinkoState >>= 1;
 		}
 		return output;
 	}
@@ -62,6 +62,6 @@ public:
 			((_analogData & 0x80) >> 7);
 
 		NesController::RefreshStateBuffer();
-		_state = (GetControllerStateBuffer() & 0xFF) | (~analogData << 8);
+		_pachinkoState = (GetControllerStateBuffer() & 0xFF) | (~analogData << 8);
 	}
 };
