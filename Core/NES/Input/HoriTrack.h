@@ -20,8 +20,6 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		NesController::InternalSetStateFromInput();
-		SetPressedState(NesController::Buttons::A, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-		SetPressedState(NesController::Buttons::B, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
 		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 

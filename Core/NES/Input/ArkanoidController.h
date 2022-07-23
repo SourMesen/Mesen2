@@ -22,7 +22,9 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(Buttons::Fire, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+		}
 		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
@@ -47,7 +49,7 @@ protected:
 	}
 
 public:
-	ArkanoidController(Emulator* emu, ControllerType type, uint8_t port) : BaseControlDevice(emu, type, port)
+	ArkanoidController(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, type, port, keyMappings)
 	{
 	}
 

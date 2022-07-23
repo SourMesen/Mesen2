@@ -31,10 +31,10 @@ namespace Mesen.ViewModels
 			Config = config;
 			Type = type;
 
-			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1);
-			KeyMapping2 = new KeyMappingViewModel(type, config.Mapping2);
-			KeyMapping3 = new KeyMappingViewModel(type, config.Mapping3);
-			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4);
+			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1, 0);
+			KeyMapping2 = new KeyMappingViewModel(type, config.Mapping2, 1);
+			KeyMapping3 = new KeyMappingViewModel(type, config.Mapping3, 2);
+			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4, 3);
 
 			ShowPresets = type.HasPresets();
 			ShowTurbo = type.HasTurbo();
@@ -47,20 +47,23 @@ namespace Mesen.ViewModels
 		[Reactive] public KeyMapping Mapping { get; set; }
 		[Reactive] public List<CustomKeyMapping> CustomKeys { get; set; } = new();
 
-		[Obsolete("For designer only")]
-		public KeyMappingViewModel() : this(ControllerType.None, new()) { }
+		private int _mappingIndex = 0;
 
-		public KeyMappingViewModel(ControllerType type, KeyMapping mapping)
+		[Obsolete("For designer only")]
+		public KeyMappingViewModel() : this(ControllerType.None, new(), 0) { }
+
+		public KeyMappingViewModel(ControllerType type, KeyMapping mapping, int mappingIndex)
 		{
 			Type = type;
 			Mapping = mapping;
+			_mappingIndex = mappingIndex;
 
-			CustomKeys = Mapping.ToCustomKeys(type);
+			CustomKeys = Mapping.ToCustomKeys(type, _mappingIndex);
 		}
 
 		public void RefreshCustomKeys()
 		{
-			CustomKeys = Mapping.ToCustomKeys(Type);
+			CustomKeys = Mapping.ToCustomKeys(Type, _mappingIndex);
 		}
 	}
 

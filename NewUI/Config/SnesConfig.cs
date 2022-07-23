@@ -12,18 +12,18 @@ namespace Mesen.Config
 	public class SnesConfig : BaseConfig<SnesConfig>
 	{
 		//Input
-		[Reactive] public ControllerConfig Port1 { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port2 { get; set; } = new ControllerConfig();
+		[Reactive] public SnesControllerConfig Port1 { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port2 { get; set; } = new SnesControllerConfig();
 		
-		[Reactive] public ControllerConfig Port1A { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port1B { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port1C { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port1D { get; set; } = new ControllerConfig();
+		[Reactive] public SnesControllerConfig Port1A { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port1B { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port1C { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port1D { get; set; } = new SnesControllerConfig();
 		
-		[Reactive] public ControllerConfig Port2A { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port2B { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port2C { get; set; } = new ControllerConfig();
-		[Reactive] public ControllerConfig Port2D { get; set; } = new ControllerConfig();
+		[Reactive] public SnesControllerConfig Port2A { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port2B { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port2C { get; set; } = new SnesControllerConfig();
+		[Reactive] public SnesControllerConfig Port2D { get; set; } = new SnesControllerConfig();
 
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
@@ -103,24 +103,24 @@ namespace Mesen.Config
 
 		public void InitializeDefaults(DefaultKeyMappingType defaultMappings)
 		{
-			List<KeyMapping> mappings = new List<KeyMapping>();
+			List<SnesKeyMapping> mappings = new List<SnesKeyMapping>();
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Xbox)) {
-				KeyMapping mapping = new();
+				SnesKeyMapping mapping = new();
 				KeyPresets.ApplyXboxLayout(mapping, 0, ControllerType.SnesController);
 				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.Ps4)) {
-				KeyMapping mapping = new();
+				SnesKeyMapping mapping = new();
 				KeyPresets.ApplyPs4Layout(mapping, 0, ControllerType.SnesController);
 				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.WasdKeys)) {
-				KeyMapping mapping = new();
+				SnesKeyMapping mapping = new();
 				KeyPresets.ApplyWasdLayout(mapping, ControllerType.SnesController);
 				mappings.Add(mapping);
 			}
 			if(defaultMappings.HasFlag(DefaultKeyMappingType.ArrowKeys)) {
-				KeyMapping mapping = new();
+				SnesKeyMapping mapping = new();
 				KeyPresets.ApplyArrowLayout(mapping, ControllerType.SnesController);
 				mappings.Add(mapping);
 			}

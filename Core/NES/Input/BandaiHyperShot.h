@@ -24,14 +24,16 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		NesController::InternalSetStateFromInput();
-
-		SetPressedState(ZapperButtons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-
 		MousePosition pos = KeyManager::GetMousePosition();
-		if(KeyManager::IsMouseButtonPressed(MouseButton::RightButton)) {
-			pos.X = -1;
-			pos.Y = -1;
+
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(ZapperButtons::Fire, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+			if(KeyManager::IsKeyPressed(keyMapping.CustomKeys[1])) {
+				pos.X = -1;
+				pos.Y = -1;
+			}
 		}
+
 		SetCoordinates(pos);
 	}
 

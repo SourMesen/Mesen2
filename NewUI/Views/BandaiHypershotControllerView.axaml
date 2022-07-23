@@ -1,0 +1,23 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:v="using:Mesen.Views"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d"
+	x:DataType="vm:KeyMappingViewModel"
+	x:Class="Mesen.Views.BandaiHypershotControllerView"
+>
+	<Design.DataContext>
+		<vm:KeyMappingViewModel />
+	</Design.DataContext>
+
+	<StackPanel>
+		<v:NesControllerView />
+		<v:DefaultControllerView />
+	</StackPanel>
+</UserControl>

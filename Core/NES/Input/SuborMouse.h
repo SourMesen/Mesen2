@@ -27,13 +27,15 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		SetPressedState(Buttons::Left, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-		SetPressedState(Buttons::Right, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(Buttons::Left, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+			SetPressedState(Buttons::Right, KeyManager::IsKeyPressed(keyMapping.CustomKeys[1]));
+		}
 		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
 	}
 
 public:
-	SuborMouse(Emulator* emu, uint8_t port) : BaseControlDevice(emu, ControllerType::SuborMouse, port)
+	SuborMouse(Emulator* emu, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(emu, ControllerType::SuborMouse, port, keyMappings)
 	{
 	}
 

@@ -26,11 +26,11 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-		SetPressedState(Buttons::Cursor, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));
-		SetPressedState(Buttons::Turbo, KeyManager::IsMouseButtonPressed(MouseButton::MiddleButton));
 		for(KeyMapping& keyMapping : _keyMappings) {
-			SetPressedState(Buttons::Pause, KeyManager::IsKeyPressed(keyMapping.Start));
+			SetPressedState(Buttons::Fire, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+			SetPressedState(Buttons::Cursor, KeyManager::IsKeyPressed(keyMapping.CustomKeys[1]));
+			SetPressedState(Buttons::Turbo, KeyManager::IsKeyPressed(keyMapping.CustomKeys[2]));
+			SetPressedState(Buttons::Pause, KeyManager::IsKeyPressed(keyMapping.CustomKeys[3]));
 		}
 
 		MousePosition pos = KeyManager::GetMousePosition();

@@ -78,14 +78,14 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::NesZapper: {
 			RomFormat romFormat = _console->GetRomFormat();
 			if(romFormat == RomFormat::VsSystem || romFormat == RomFormat::VsDualSystem) {
-				device.reset(new VsZapper(_console, port));
+				device.reset(new VsZapper(_console, port, keys));
 			} else {
-				device.reset(new Zapper(_console, type, port));
+				device.reset(new Zapper(_console, type, port, keys));
 			}
 			break;
 		}
 
-		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port)); break;
+		case ControllerType::NesArkanoidController: device.reset(new ArkanoidController(_emu, type, port, keys)); break;
 		case ControllerType::SnesController: device.reset(new SnesController(_emu, port, keys)); break;
 		
 		case ControllerType::PowerPadSideA:
@@ -93,14 +93,14 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 			device.reset(new PowerPad(_emu, type, port, keys));
 			break;
 
-		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
-		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port)); break;
+		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port, keys)); break;
+		case ControllerType::SuborMouse: device.reset(new SuborMouse(_emu, port, keys)); break;
 		case ControllerType::VirtualBoyController: device.reset(new VirtualBoyController(_emu, port, keys)); break;
 
 		//Exp port devices
-		case ControllerType::FamicomZapper: device.reset(new Zapper(_console, type, BaseControlDevice::ExpDevicePort)); break;
-		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort)); break;
-		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu)); break;
+		case ControllerType::FamicomZapper: device.reset(new Zapper(_console, type, BaseControlDevice::ExpDevicePort, keys)); break;
+		case ControllerType::FamicomArkanoidController: device.reset(new ArkanoidController(_emu, type, BaseControlDevice::ExpDevicePort, keys)); break;
+		case ControllerType::OekaKidsTablet: device.reset(new OekaKidsTablet(_emu, keys)); break;
 		
 		case ControllerType::FamilyTrainerMatSideA:
 		case ControllerType::FamilyTrainerMatSideB:

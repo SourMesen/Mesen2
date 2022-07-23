@@ -77,7 +77,7 @@ namespace Mesen.Config
 
 		public virtual InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
 		{
-			return new InteropKeyMapping() {
+			InteropKeyMapping mappings = new InteropKeyMapping() {
 				A = this.A,
 				B = this.B,
 				X = this.X,
@@ -99,9 +99,33 @@ namespace Mesen.Config
 				TurboSelect = this.TurboSelect,
 				TurboStart = this.TurboStart
 			};
+
+			UInt16[]? customKeys = GetCustomButtons(type);
+			if(customKeys == null && mappingIndex == 0) {
+				customKeys = GetDefaultCustomKeys(type);
+			}
+
+			if(customKeys != null) {
+				mappings.CustomKeys = new UInt16[100];
+				for(int i = 0; i < customKeys.Length; i++) {
+					mappings.CustomKeys[i] = customKeys[i];
+				}
+			}
+
+			return mappings;
 		}
 
-		public virtual List<CustomKeyMapping> ToCustomKeys(ControllerType type)
+		protected virtual UInt16[]? GetCustomButtons(ControllerType type)
+		{
+			return null;
+		}
+
+		protected virtual UInt16[]? GetDefaultCustomKeys(ControllerType type)
+		{
+			return null;
+		}
+
+		public virtual List<CustomKeyMapping> ToCustomKeys(ControllerType type, int mappingIndex)
 		{
 			return new();
 		}
@@ -363,6 +387,14 @@ namespace Mesen.Config
 				case ControllerType.HoriTrack:
 				case ControllerType.KonamiHyperShot:
 				case ControllerType.BandaiHyperShot:
+				case ControllerType.SuborMouse:
+				case ControllerType.SnesMouse:
+				case ControllerType.FamicomZapper:
+				case ControllerType.NesZapper:
+				case ControllerType.OekaKidsTablet:
+				case ControllerType.FamicomArkanoidController:
+				case ControllerType.NesArkanoidController:
+				case ControllerType.SuperScope:
 					return true;
 			}
 

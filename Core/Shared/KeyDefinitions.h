@@ -197,11 +197,11 @@ struct KeyDefinition
 			{ "OemClear", 171 },
 			{ "DeadCharProcessed", 172 },
 
-			{ "Mouse 1 (Left)", 0x200 },
-			{ "Mouse 2 (Right)", 0x201 },
-			{ "Mouse 3 (Middle)", 0x202 },
-			{ "Mouse 4 (Back)", 0x203 },
-			{ "Mouse 5 (Forward)", 0x204 },
+			{ "Mouse Left", 0x200 },
+			{ "Mouse Right", 0x201 },
+			{ "Mouse Middle", 0x202 },
+			{ "Mouse 4", 0x203 },
+			{ "Mouse 5", 0x204 },
 
 			{ "FnLeftArrow", 10001 },
 			{ "FnRightArrow", 10002 },

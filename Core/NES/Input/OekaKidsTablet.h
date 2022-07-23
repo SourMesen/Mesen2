@@ -8,7 +8,6 @@
 class OekaKidsTablet : public BaseControlDevice
 {
 private:
-	bool _strobe = false;
 	bool _shift = false;
 	uint32_t _stateBuffer = 0;
 
@@ -24,19 +23,22 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		MousePosition pos = KeyManager::GetMousePosition();
-		SetPressedState(Buttons::Click, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-		SetPressedState(Buttons::Touch, pos.Y >= 48 || KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(Buttons::Click, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+			SetPressedState(Buttons::Touch, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));			
+		}
+		SetPressedState(Buttons::Touch, pos.Y >= 48);
 		SetCoordinates(pos);
 	}
 
 	void Serialize(Serializer& s) override
 	{
 		BaseControlDevice::Serialize(s);
-		SV(_strobe); SV(_shift); SV(_stateBuffer);
+		SV(_shift); SV(_stateBuffer);
 	}
 
 public:
-	OekaKidsTablet(Emulator* emu) : BaseControlDevice(emu, ControllerType::OekaKidsTablet, BaseControlDevice::ExpDevicePort)
+	OekaKidsTablet(Emulator* emu, KeyMappingSet keyMappings) : BaseControlDevice(emu, ControllerType::OekaKidsTablet, BaseControlDevice::ExpDevicePort, keyMappings)
 	{
 	}
 

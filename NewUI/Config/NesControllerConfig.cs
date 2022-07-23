@@ -25,20 +25,25 @@ namespace Mesen.Config
 
 	public class NesKeyMapping : KeyMapping
 	{
-		public UInt16[]? PowerPadButtons = null;
-		public UInt16[]? FamilyBasicKeyboardButtons = null;
-		public UInt16[]? PartyTapButtons = null;
-		public UInt16[]? PachinkoButtons = null;
-		public UInt16[]? ExcitingBoxingButtons = null;
-		public UInt16[]? JissenMahjongButtons = null;
-		public UInt16[]? SuborKeyboardButtons = null;
-		public UInt16[]? BandaiMicrophoneButtons = null;
-		public UInt16[]? VirtualBoyButtons = null;
-		public UInt16[]? KonamiHyperShotButtons = null;
+		public UInt16[]? PowerPadButtons { get; set; } = null;
+		public UInt16[]? FamilyBasicKeyboardButtons { get; set; } = null;
+		public UInt16[]? PartyTapButtons { get; set; } = null;
+		public UInt16[]? PachinkoButtons { get; set; } = null;
+		public UInt16[]? ExcitingBoxingButtons { get; set; } = null;
+		public UInt16[]? JissenMahjongButtons { get; set; } = null;
+		public UInt16[]? SuborKeyboardButtons { get; set; } = null;
+		public UInt16[]? BandaiMicrophoneButtons { get; set; } = null;
+		public UInt16[]? VirtualBoyButtons { get; set; } = null;
+		public UInt16[]? KonamiHyperShotButtons { get; set; } = null;
+		public UInt16[]? ArkanoidButtons { get; set; } = null;
+		public UInt16[]? ZapperButtons { get; set; } = null;
+		public UInt16[]? MouseButtons { get; set; } = null;
+		public UInt16[]? OekakidsButtons { get; set; } = null;
+		public UInt16[]? BandaiHypershotButtons { get; set; } = null;
 
 		public UInt16 Microphone { get; set; } = 0;
 
-		private UInt16[]? GetCustomButtons(ControllerType type)
+		protected override UInt16[]? GetCustomButtons(ControllerType type)
 		{
 			return type switch {
 				ControllerType.PowerPadSideA => PowerPadButtons,
@@ -53,35 +58,28 @@ namespace Mesen.Config
 				ControllerType.SuborKeyboard => SuborKeyboardButtons,
 				ControllerType.VbController => VirtualBoyButtons,
 				ControllerType.KonamiHyperShot => KonamiHyperShotButtons,
+				ControllerType.FamicomArkanoidController => ArkanoidButtons,
+				ControllerType.NesArkanoidController => ArkanoidButtons,
+				ControllerType.FamicomZapper => ZapperButtons,
+				ControllerType.NesZapper => ZapperButtons,
+				ControllerType.SnesMouse => MouseButtons,
+				ControllerType.SuborMouse => MouseButtons,
+				ControllerType.OekaKidsTablet => OekakidsButtons,
+				ControllerType.BandaiHyperShot => BandaiHypershotButtons,
 				_ => null
 			};
 		}
 
-		public override InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
-		{
-			InteropKeyMapping mappings = base.ToInterop(type, mappingIndex);
-			mappings.Microphone = Microphone;
-
-			UInt16[]? customKeys = GetCustomButtons(type);
-			if(customKeys == null && mappingIndex == 0) {
-				customKeys = GetDefaultCustomKeys(type);
-			}
-
-			if(customKeys != null) {
-				mappings.CustomKeys = new UInt16[100];
-				for(int i = 0; i < customKeys.Length; i++) {
-					mappings.CustomKeys[i] = customKeys[i];
-				}
-			}
-
-			return mappings;
-		}
-
-		public override List<CustomKeyMapping> ToCustomKeys(ControllerType type)
+		public override List<CustomKeyMapping> ToCustomKeys(ControllerType type, int mappingIndex)
 		{
 			UInt16[]? buttonMappings = GetCustomButtons(type);
 			if(buttonMappings == null) {
-				SetDefaultKeys(type, null);
+				if(mappingIndex == 0) {
+					SetDefaultKeys(type, null);
+				} else {
+					ClearKeys(type);
+				}
+
 				buttonMappings = GetCustomButtons(type);
 				if(buttonMappings == null) {
 					return new List<CustomKeyMapping>();
@@ -102,6 +100,11 @@ namespace Mesen.Config
 				ControllerType.SuborKeyboard => Enum.GetValues<NesSuborKeyboardButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.VbController => Enum.GetValues<NesVirtualBoyButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.KonamiHyperShot => Enum.GetValues<NesKonamiHyperShotButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.NesArkanoidController or ControllerType.FamicomArkanoidController => Enum.GetValues<NesArkanoidButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.NesZapper or ControllerType.FamicomZapper => Enum.GetValues<NesZapperButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.SnesMouse or ControllerType.SuborMouse => Enum.GetValues<GenericMouseButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.OekaKidsTablet => Enum.GetValues<NesOekakidsButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.BandaiHyperShot => Enum.GetValues<NesZapperButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				_ => new()
 			};
 
@@ -152,6 +155,30 @@ namespace Mesen.Config
 					KonamiHyperShotButtons = new UInt16[4];
 					break;
 
+				case ControllerType.SuborMouse:
+				case ControllerType.SnesMouse:
+					MouseButtons = new UInt16[2];
+					break;
+
+				case ControllerType.FamicomZapper:
+				case ControllerType.NesZapper:
+					ZapperButtons = new UInt16[2];
+					break;
+
+				case ControllerType.BandaiHyperShot:
+					base.ClearKeys(type);
+					BandaiHypershotButtons = new UInt16[2];
+					break;
+
+				case ControllerType.FamicomArkanoidController:
+				case ControllerType.NesArkanoidController:
+					ArkanoidButtons = new UInt16[1];
+					break;
+
+				case ControllerType.OekaKidsTablet:
+					OekakidsButtons = new UInt16[1];
+					break;
+
 				case ControllerType.SnesController:
 				case ControllerType.NesController:
 				case ControllerType.FamicomController:
@@ -161,7 +188,7 @@ namespace Mesen.Config
 			}
 		}
 
-		private UInt16[]? GetDefaultCustomKeys(ControllerType type)
+		protected override UInt16[]? GetDefaultCustomKeys(ControllerType type)
 		{
 			switch(type) {
 				case ControllerType.FamilyBasicKeyboard:
@@ -332,6 +359,32 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("L"),
 					};
 
+				case ControllerType.SuborMouse:
+				case ControllerType.SnesMouse:
+					return new UInt16[2] {
+						InputApi.GetKeyCode("Mouse Left"),
+						InputApi.GetKeyCode("Mouse Right")
+					};
+
+				case ControllerType.FamicomZapper:
+				case ControllerType.NesZapper:
+				case ControllerType.BandaiHyperShot:
+					return new UInt16[2] {
+						InputApi.GetKeyCode("Mouse Left"),
+						InputApi.GetKeyCode("Mouse Right")
+					};
+
+				case ControllerType.OekaKidsTablet:
+					return new UInt16[1] {
+						InputApi.GetKeyCode("Mouse Left")
+					};
+
+				case ControllerType.FamicomArkanoidController:
+				case ControllerType.NesArkanoidController:
+					return new UInt16[1] {
+						InputApi.GetKeyCode("Mouse Left")
+					};
+
 				default:
 					return null;
 			}
@@ -340,43 +393,37 @@ namespace Mesen.Config
 		public override void SetDefaultKeys(ControllerType type, KeyPresetType? preset)
 		{
 			switch(type) {
-				case ControllerType.FamilyBasicKeyboard:
-					FamilyBasicKeyboardButtons = GetDefaultCustomKeys(type);
+				case ControllerType.FamilyBasicKeyboard: FamilyBasicKeyboardButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.PartyTap: PartyTapButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.Pachinko: PachinkoButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.ExcitingBoxing: ExcitingBoxingButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.JissenMahjong: JissenMahjongButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.SuborKeyboard: SuborKeyboardButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.VbController: VirtualBoyButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.KonamiHyperShot: KonamiHyperShotButtons = GetDefaultCustomKeys(type); break;
+				
+				case ControllerType.NesZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.FamicomZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
+				
+				case ControllerType.BandaiHyperShot:
+					BandaiHypershotButtons = GetDefaultCustomKeys(type);
+					//Set default controller keys, too
+					base.SetDefaultKeys(type, preset);
 					break;
+				
+				case ControllerType.NesArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.FamicomArkanoidController: ArkanoidButtons = GetDefaultCustomKeys(type); break;
+				
+				case ControllerType.SuborMouse: MouseButtons = GetDefaultCustomKeys(type); break;
+				case ControllerType.SnesMouse: MouseButtons = GetDefaultCustomKeys(type); break;
+				
+				case ControllerType.OekaKidsTablet: OekakidsButtons = GetDefaultCustomKeys(type); break;
 
 				case ControllerType.PowerPadSideA:
 				case ControllerType.PowerPadSideB:
 				case ControllerType.FamilyTrainerMatSideA:
 				case ControllerType.FamilyTrainerMatSideB:
 					PowerPadButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.PartyTap:
-					PartyTapButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.Pachinko:
-					PachinkoButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.ExcitingBoxing:
-					ExcitingBoxingButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.JissenMahjong:
-					JissenMahjongButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.SuborKeyboard:
-					SuborKeyboardButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.VbController:
-					VirtualBoyButtons = GetDefaultCustomKeys(type);
-					break;
-
-				case ControllerType.KonamiHyperShot:
-					KonamiHyperShotButtons = GetDefaultCustomKeys(type);
 					break;
 
 				default:
@@ -386,13 +433,17 @@ namespace Mesen.Config
 		}
 	}
 
-	public enum NesPowerPadButtons { B1 = 0, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12 }
-	public enum NesExcitingBoxingButtons { LeftHook = 0, MoveRight, MoveLeft, RightHook, LeftJab, HitBody, RightJab, Straight }
-	public enum NesVirtualBoyButtons { Down1 = 0, Left1, Select, Start, Up0, Down0, Left0, Right0, Right1, Up1, L, R, B, A };
-	public enum NesPartyTapButtons { B1 = 0, B2, B3, B4, B5, B6 };
+	public enum NesPowerPadButtons { B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12 }
+	public enum NesExcitingBoxingButtons { LeftHook, MoveRight, MoveLeft, RightHook, LeftJab, HitBody, RightJab, Straight }
+	public enum NesVirtualBoyButtons { Down1, Left1, Select, Start, Up0, Down0, Left0, Right0, Right1, Up1, L, R, B, A };
+	public enum NesPartyTapButtons { B1, B2, B3, B4, B5, B6 };
 	public enum NesPachinkoButtons { Press, Release };
-	public enum NesJissenMahjongButtons { A = 0, B, C, D, E, F, G, H, I, J, K, L, M, N, Select, Start, Kan, Pon, Chii, Riichi, Ron };
-	public enum NesKonamiHyperShotButtons { Player1Run = 0, Player1Jump, Player2Run, Player2Jump };
+	public enum NesJissenMahjongButtons { A, B, C, D, E, F, G, H, I, J, K, L, M, N, Select, Start, Kan, Pon, Chii, Riichi, Ron };
+	public enum NesKonamiHyperShotButtons { Player1Run, Player1Jump, Player2Run, Player2Jump };
+	public enum NesArkanoidButtons { Fire };
+	public enum NesZapperButtons { Fire, AimOffscreen };
+	public enum NesOekakidsButtons { Click };
+	public enum GenericMouseButtons { LeftButton, RightButton };
 
 	public enum NesFamilyBasicKeyboardButtons
 	{

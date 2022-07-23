@@ -71,7 +71,7 @@ public:
 					break;
 
 				case ControllerType::SnesMouse:
-					_ports[i].reset(new SnesMouse(emu, 0));
+					_ports[i].reset(new SnesMouse(emu, 0, controllers[i].Keys));
 					break;
 
 				case ControllerType::PceController:

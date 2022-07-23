@@ -1642,6 +1642,26 @@
 			<Value ID="Player2Jump">Player 2 - Jump</Value>
 			<Value ID="Player2Run">Player 2 - Run</Value>
 		</Enum>
+		<Enum ID="NesZapperButtons">
+			<Value ID="Fire">Fire</Value>
+			<Value ID="AimOffscreen">Aim offscreen (hold)</Value>
+		</Enum>
+		<Enum ID="GenericMouseButtons">
+			<Value ID="LeftButton">Left Button</Value>
+			<Value ID="RightButton">Right Button</Value>
+		</Enum>
+		<Enum ID="SnesSuperScopeButtons">
+			<Value ID="Fire">Fire</Value>
+			<Value ID="Cursor">Cursor</Value>
+			<Value ID="Turbo">Turbo</Value>
+			<Value ID="Pause">Pause</Value>
+		</Enum>
+		<Enum ID="NesArkanoidButtons">
+			<Value ID="Fire">Fire</Value>
+		</Enum>
+		<Enum ID="NesOekakidsButtons">
+			<Value ID="Click">Click</Value>
+		</Enum>
 		<Enum ID="NesVirtualBoyButtons">
 			<Value ID="Down1">D-Pad (right) - Down</Value>
 			<Value ID="Left1">D-Pad (right) - Left</Value>

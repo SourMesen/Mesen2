@@ -40,7 +40,7 @@ shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(Control
 			device.reset(new SnesController(_emu, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys));
 			break;
 
-		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port)); break;
+		case ControllerType::SnesMouse: device.reset(new SnesMouse(_emu, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys)); break;
 
 		case ControllerType::SuperScope: device.reset(new SuperScope(_console, port, port == 0 ? cfg.Port1.Keys : cfg.Port2.Keys)); break;
 		

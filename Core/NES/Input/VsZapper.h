@@ -22,7 +22,7 @@ protected:
 	}
 
 public:
-	VsZapper(NesConsole* console, uint8_t port) : Zapper(console, ControllerType::NesZapper, port)
+	VsZapper(NesConsole* console, uint8_t port, KeyMappingSet keyMappings) : Zapper(console, ControllerType::NesZapper, port, keyMappings)
 	{
 	}
 

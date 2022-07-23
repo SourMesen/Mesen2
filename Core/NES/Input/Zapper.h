@@ -27,13 +27,16 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		SetPressedState(Buttons::Fire, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
-
 		MousePosition pos = KeyManager::GetMousePosition();
-		if(KeyManager::IsMouseButtonPressed(MouseButton::RightButton)) {
-			pos.X = -1;
-			pos.Y = -1;
+
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(Buttons::Fire, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
+			if(KeyManager::IsKeyPressed(keyMapping.CustomKeys[1])) {
+				pos.X = -1;
+				pos.Y = -1;
+			}
 		}
+
 		SetCoordinates(pos);
 	}
 
@@ -43,7 +46,7 @@ protected:
 	}
 
 public:
-	Zapper(NesConsole* console, ControllerType type, uint8_t port) : BaseControlDevice(console->GetEmulator(), type, port)
+	Zapper(NesConsole* console, ControllerType type, uint8_t port, KeyMappingSet keyMappings) : BaseControlDevice(console->GetEmulator(), type, port, keyMappings)
 	{
 		_console = console;
 	}

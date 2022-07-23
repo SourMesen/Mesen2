@@ -282,6 +282,9 @@
     <Compile Update="Debugger\Windows\MemoryToolsWindow.axaml.cs">
       <DependentUpon>MemoryToolsWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\BandaiHypershotControllerView.axaml.cs">
+      <DependentUpon>BandaiHypershotControllerView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\PceAvenuePad6View.axaml.cs">
       <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
     </Compile>
