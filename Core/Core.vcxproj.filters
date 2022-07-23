@@ -1853,6 +1853,45 @@
     <ClInclude Include="Debugger\DisassemblySearch.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Action53.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\ColorDreams.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\CpRom.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\McAcc.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MMC2.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MMC4.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\NsfCart31.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VRC1.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VRC2_4.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VRC3.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VRC6.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VRC7.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\VrcIrq.h">
+      <Filter>NES\Mappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
