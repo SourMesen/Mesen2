@@ -239,7 +239,7 @@ DebugTilemapTileInfo NesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 	uint8_t nametableIndex = (column >= 32 ? 1 : 0) | (row >= 30 ? 2 : 0);
 
 	column &= 0x1F;
-	if(row > 30) {
+	if(row >= 30) {
 		row -= 30;
 	}
 
