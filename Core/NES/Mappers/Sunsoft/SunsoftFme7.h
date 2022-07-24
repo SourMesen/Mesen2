@@ -15,12 +15,12 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	virtual uint16_t GetPRGPageSize() override { return 0x2000; }
-	virtual uint16_t GetCHRPageSize() override { return 0x400; }
-	virtual uint32_t GetWorkRamSize() override { return 0x8000; }
-	virtual uint32_t GetWorkRamPageSize() override { return 0x2000; }
-	virtual uint32_t GetSaveRamSize() override { return 0x8000; }
-	virtual uint32_t GetSaveRamPageSize() override { return 0x2000; }
+	uint16_t GetPRGPageSize() override { return 0x2000; }
+	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint32_t GetWorkRamSize() override { return 0x8000; }
+	uint32_t GetWorkRamPageSize() override { return 0x2000; }
+	uint32_t GetSaveRamSize() override { return 0x8000; }
+	uint32_t GetSaveRamPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -41,7 +41,11 @@ protected:
 	{
 		BaseMapper::Serialize(s);
 		SV(_audio);
-		SV(_command); SV(_workRamValue); SV(_irqEnabled); SV(_irqCounterEnabled); SV(_irqCounter);
+		SV(_command);
+		SV(_workRamValue);
+		SV(_irqEnabled);
+		SV(_irqCounterEnabled);
+		SV(_irqCounter);
 		if(!s.IsSaving()) {
 			UpdateWorkRam();
 		}

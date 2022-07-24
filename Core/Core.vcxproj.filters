@@ -1718,9 +1718,6 @@
     <ClInclude Include="Shared\Interfaces\ITapeRecorder.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\SunsoftFme7.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
     <ClInclude Include="NES\BisqwitNtscFilter.h">
       <Filter>NES</Filter>
     </ClInclude>
@@ -2333,6 +2330,72 @@
     <ClInclude Include="NES\Mappers\Homebrew\NsfCart31.h">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft3.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft4.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft89.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft93.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft184.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sunsoft\SunsoftFme7.h">
+      <Filter>NES\Mappers\Sunsoft</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco108.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco108_76.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco108_88.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco108_95.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco108_154.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Namco\Namco163.h">
+      <Filter>NES\Mappers\Namco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoJf11_14.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoJf13.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoJf16.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoJf17_19.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoJfxx.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Jaleco\JalecoSs88006.h">
+      <Filter>NES\Mappers\Jaleco</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Irem\IremG101.h">
+      <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Irem\IremH3001.h">
+      <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Irem\IremLrog017.h">
+      <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Irem\IremTamS1.h">
+      <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2465,6 +2528,18 @@
     </Filter>
     <Filter Include="NES\Mappers\Homebrew">
       <UniqueIdentifier>{d14ca08f-8203-4696-95e4-2820cb018c54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Sunsoft">
+      <UniqueIdentifier>{d14c1324-ec61-4ec6-99c4-bc04164628cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Jaleco">
+      <UniqueIdentifier>{eb4654ad-9f51-4f1b-b055-fc6cb7713ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Namco">
+      <UniqueIdentifier>{0a2d963a-f9f3-4fa6-be24-b0323653b216}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Irem">
+      <UniqueIdentifier>{b5d6095d-044a-4a91-b3bf-6196e7525511}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -72,16 +72,16 @@
 //#include "Henggedianzi177.h"
 //#include "Henggedianzi179.h"
 //#include "Hp898f.h"
-//#include "IremG101.h"
-//#include "IremH3001.h"
-//#include "IremLrog017.h"
-//#include "IremTamS1.h"
-//#include "JalecoJf11_14.h"
-//#include "JalecoJf13.h"
-//#include "JalecoJf16.h"
-//#include "JalecoJf17_19.h"
-//#include "JalecoJfxx.h"
-//#include "JalecoSs88006.h"
+#include "NES/Mappers/Irem/IremG101.h"
+#include "NES/Mappers/Irem/IremH3001.h"
+#include "NES/Mappers/Irem/IremLrog017.h"
+#include "NES/Mappers/Irem/IremTamS1.h"
+#include "NES/Mappers/Jaleco/JalecoJf11_14.h"
+#include "NES/Mappers/Jaleco/JalecoJf13.h"
+#include "NES/Mappers/Jaleco/JalecoJf16.h"
+#include "NES/Mappers/Jaleco/JalecoJf17_19.h"
+#include "NES/Mappers/Jaleco/JalecoJfxx.h"
+#include "NES/Mappers/Jaleco/JalecoSs88006.h"
 //#include "JyCompany.h"
 #include "NES/Mappers/Kaiser/Kaiser202.h"
 #include "NES/Mappers/Kaiser/Kaiser7012.h"
@@ -195,13 +195,13 @@
 #include "NES/Mappers/Mmc3Variants/MMC3_StreetHeroes.h"
 #include "NES/Mappers/MMC4.h"
 #include "NES/Mappers/MMC5.h"
-/*#include "Namco108.h"
-#include "Namco108_76.h"
-#include "Namco108_88.h"
-#include "Namco108_95.h"
-#include "Namco108_154.h"
-#include "Namco163.h"
-#include "Nanjing.h"
+#include "NES/Mappers/Namco/Namco108.h"
+#include "NES/Mappers/Namco/Namco108_76.h"
+#include "NES/Mappers/Namco/Namco108_88.h"
+#include "NES/Mappers/Namco/Namco108_95.h"
+#include "NES/Mappers/Namco/Namco108_154.h"
+#include "NES/Mappers/Namco/Namco163.h"
+/*#include "Nanjing.h"
 #include "Nina01.h"
 #include "Nina03_06.h"
 #include "NovelDiamond.h"*/
@@ -228,13 +228,13 @@
 //#include "SealieComputing.h"
 //#include "Smb2j.h"
 #include "NES/Mappers/StudyBox.h"
-/*#include "Subor166.h"
-#include "Sunsoft3.h"
-#include "Sunsoft4.h"
-#include "Sunsoft89.h"
-#include "Sunsoft93.h"
-#include "Sunsoft184.h"*/
-#include "NES/Mappers/SunsoftFme7.h"
+//#include "Subor166.h"
+#include "NES/Mappers/Sunsoft/Sunsoft3.h"
+#include "NES/Mappers/Sunsoft/Sunsoft4.h"
+#include "NES/Mappers/Sunsoft/Sunsoft89.h"
+#include "NES/Mappers/Sunsoft/Sunsoft93.h"
+#include "NES/Mappers/Sunsoft/Sunsoft184.h"
+#include "NES/Mappers/Sunsoft/SunsoftFme7.h"
 //#include "Supervision.h"
 //#include "Super40in1Ws.h"
 //#include "T230.h"
@@ -296,10 +296,10 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 13: return new CpRom();
 		case 14: return new MMC3_14();
 		case 15: return new Mapper15();
-		/*case 16: return new BandaiFcg();
-		case 17: return new FrontFareast();
+		//case 16: return new BandaiFcg();
+		//case 17: return new FrontFareast();
 		case 18: return new JalecoSs88006();
-		case 19: return new Namco163();*/
+		case 19: return new Namco163();
 		case 21: return new VRC2_4();
 		case 22: return new VRC2_4();
 		case 23: return new VRC2_4();
@@ -311,8 +311,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		//case 29: return new SealieComputing();
 		//case 30: return new UnRom512();
 		case 31: return new NsfCart31();
-		/*case 32: return new IremG101();
-		case 33: return new TaitoTc0190();
+		case 32: return new IremG101();
+		/*case 33: return new TaitoTc0190();
 		case 34: 
 			switch(romData.Info.SubMapperID) {
 				case 0: return (romData.ChrRom.size() > 0) ? (BaseMapper*)new Nina01() : (BaseMapper*)new BnRom(); //BnROM uses CHR RAM (so no CHR rom in the .NES file)
@@ -348,39 +348,39 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 62: return new Mapper62();
 		case 63: return new Bmc63();
 		//case 64: return new Rambo1();
-		//case 65: return new IremH3001();
+		case 65: return new IremH3001();
 		//case 66: return new GxRom();
-		//case 67: return new Sunsoft3();
-		//case 68: return new Sunsoft4();
+		case 67: return new Sunsoft3();
+		case 68: return new Sunsoft4();
 		case 69: return new SunsoftFme7();
 		//case 70: return new Bandai74161_7432(false);
 		case 71: return new BF909x();
-		/*case 72: return new JalecoJf17_19(false);*/
+		case 72: return new JalecoJf17_19(false);
 		case 73: return new VRC3();
 		case 74: return new MMC3_ChrRam(0x08, 0x09, 2);
 		case 75: return new VRC1();
-		//case 76: return new Namco108_76();
-		//case 77: return new IremLrog017();
-		//case 78: return new JalecoJf16();
+		case 76: return new Namco108_76();
+		case 77: return new IremLrog017();
+		case 78: return new JalecoJf16();
 		//case 79: return new Nina03_06(false);
 		//case 80: return new TaitoX1005(false);
 		//case 82: return new TaitoX1017();
 		case 83: return new Mapper83();
 		case 85: return new VRC7();
-		//case 86: return new JalecoJf13();
-		//case 87: return new JalecoJfxx(false);
-		//case 88: return new Namco108_88();
-		//case 89: return new Sunsoft89();
+		case 86: return new JalecoJf13();
+		case 87: return new JalecoJfxx(false);
+		case 88: return new Namco108_88();
+		case 89: return new Sunsoft89();
 		//case 90: return new JyCompany();
 		case 91: return new Mapper91();
-		//case 92: return new JalecoJf17_19(true);
-		//case 93: return new Sunsoft93();
+		case 92: return new JalecoJf17_19(true);
+		case 93: return new Sunsoft93();
 		//case 94: return new UnRom_94();
-		//case 95: return new Namco108_95();
+		case 95: return new Namco108_95();
 		case 96: return new OekaKids();
-		//case 97: return new IremTamS1();
+		case 97: return new IremTamS1();
 		case 99: return new VsSystem();
-		//case 101: return new JalecoJfxx(true);
+		case 101: return new JalecoJfxx(true);
 		case 103: return new Mapper103();
 		//case 104: return new GoldenFive();
 		//case 105: return new MMC1_105(); break;
@@ -408,7 +408,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 137: return new Sachen8259(Sachen8259Variant::Sachen8259D);
 		case 138: return new Sachen8259(Sachen8259Variant::Sachen8259B);
 		case 139: return new Sachen8259(Sachen8259Variant::Sachen8259C);
-		//case 140: return new JalecoJf11_14();
+		case 140: return new JalecoJf11_14();
 		case 141: return new Sachen8259(Sachen8259Variant::Sachen8259A);
 		case 142: return new Kaiser202();
 		case 143: return new Sachen_143();
@@ -420,14 +420,14 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 149: return new Sachen_149();
 		case 150: return new Sachen74LS374N();
 		case 151: return new VRC1();
-		/*case 152: return new Bandai74161_7432(true);
-		case 153: return new BandaiFcg();
+		//case 152: return new Bandai74161_7432(true);
+		//case 153: return new BandaiFcg();
 		case 154: return new Namco108_154();
-		case 155: return new MMC1_155();
-		case 156: return new DaouInfosys();
-		case 157: return new BandaiFcg();
-		case 158: return new Rambo1_158();
-		case 159: return new BandaiFcg();*/
+		//case 155: return new MMC1_155();
+		//case 156: return new DaouInfosys();
+		//case 157: return new BandaiFcg();
+		//case 158: return new Rambo1_158();
+		//case 159: return new BandaiFcg();
 		case 162: return new Waixing162();
 		//case 163: return new Nanjing();
 		case 164: return new Waixing164();
@@ -448,7 +448,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		//case 180: return new UnRom_180();
 		case 182: return new MMC3_182();
 		case 183: return new Mapper183();
-		//case 184: return new Sunsoft184();
+		case 184: return new Sunsoft184();
 		case 185: return new CNROM(true);
 		case 186: break; //The study box is handled as a bios file, not a iNES rom
 		case 187: return new MMC3_187();
@@ -470,11 +470,11 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 203: return new Mapper203();
 		case 204: return new Mapper204();
 		case 205: return new MMC3_205();
-		//case 206: return new Namco108();
+		case 206: return new Namco108();
 		//case 207: return new TaitoX1005(true);
 		case 208: return new MMC3_208();
 		//case 209: return new JyCompany();
-		//case 210: return new Namco163();
+		case 210: return new Namco163();
 		//case 211: return new JyCompany();
 		case 212: return new Mapper212();
 		case 213: return new Mapper213();
