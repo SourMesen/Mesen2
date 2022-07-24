@@ -6,13 +6,13 @@
 class Action53 : public BaseMapper
 {
 private:
-	uint8_t _selectedReg;
-	uint8_t _regs[4];
-	uint8_t _mirroringBit;
+	uint8_t _selectedReg = 0;
+	uint8_t _regs[4] = {};
+	uint8_t _mirroringBit = 0;
 
 protected:
-	virtual uint16_t GetPRGPageSize() override { return 0x4000; }
-	virtual uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPRGPageSize() override { return 0x4000; }
+	uint16_t GetCHRPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{

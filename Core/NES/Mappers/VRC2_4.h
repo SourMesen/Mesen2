@@ -22,15 +22,15 @@ class VRC2_4 : public BaseMapper
 {
 	private:
 		unique_ptr<VrcIrq> _irq;
-		VRCVariant _variant;
-		bool _useHeuristics;
+		VRCVariant _variant = {};
+		bool _useHeuristics = false;
 
-		uint8_t _prgReg0;
-		uint8_t _prgReg1;
-		uint8_t _prgMode;
+		uint8_t _prgReg0 = 0;
+		uint8_t _prgReg1 = 0;
+		uint8_t _prgMode = 0;
 
-		uint8_t _hiCHRRegs[8];
-		uint8_t _loCHRRegs[8];
+		uint8_t _hiCHRRegs[8] = {};
+		uint8_t _loCHRRegs[8] = {};
 
 		uint8_t _latch = 0;
 

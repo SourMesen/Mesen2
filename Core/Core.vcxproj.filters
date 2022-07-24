@@ -1892,6 +1892,162 @@
     <ClInclude Include="NES\Mappers\VrcIrq.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Bmc8in1.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Bmc830118C.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\BmcGn45.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\BmcHpxx.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\DragonFighter.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Mapper91.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_12.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_14.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_37.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_44.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_45.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_47.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_49.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_52.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_114.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_115.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_121.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_123.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_126.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_134.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_165.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_182.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_187.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_189.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_196.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_197.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_198.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_199.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_205.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_208.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_215.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_217.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_219.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_224.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_238.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_245.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_249.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_250.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_254.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_Bmc411120C.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_BmcF15.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_ChrRam.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_Coolboy.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_Kof97.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_MaliSB.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_StreetHeroes.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\ResetTxrom.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\TaitoTc0690.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Unl158B.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Unl8237A.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2006,6 +2162,9 @@
     </Filter>
     <Filter Include="PCE\Input">
       <UniqueIdentifier>{a2cd79a6-585b-408d-b6af-c273b94092a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Mmc3Variants">
+      <UniqueIdentifier>{bf15a3c8-6716-44ff-b34c-e24298c48dc9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
