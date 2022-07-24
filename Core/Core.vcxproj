@@ -115,8 +115,8 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper83.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Unl255in1.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlD1038.h" />
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGame.h" />
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGameAudio.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\UnlDripGame.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\UnlDripGameAudio.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlPci556.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlPuzzle.h" />
     <ClInclude Include="NES\Mappers\MMC2.h" />

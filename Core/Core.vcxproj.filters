@@ -2231,12 +2231,6 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlD1038.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGame.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGameAudio.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlPci556.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
@@ -2395,6 +2389,12 @@
     </ClInclude>
     <ClInclude Include="NES\Mappers\Irem\IremTamS1.h">
       <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\UnlDripGame.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\UnlDripGameAudio.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

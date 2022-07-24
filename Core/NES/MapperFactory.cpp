@@ -253,7 +253,7 @@
 #include "NES/Mappers/MiscUnlicensed/Unl255in1.h"
 #include "NES/Mappers/Mmc3Variants/Unl8237A.h"
 #include "NES/Mappers/MiscUnlicensed/UnlD1038.h"
-#include "NES/Mappers/MiscUnlicensed/UnlDripGame.h"
+#include "NES/Mappers/Homebrew/UnlDripGame.h"
 #include "NES/Mappers/MiscUnlicensed/UnlPci556.h"
 #include "NES/Mappers/MiscUnlicensed/UnlPuzzle.h"
 #include "NES/Mappers/UNROM.h"
