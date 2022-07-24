@@ -3,7 +3,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
-#include "NES/Mappers/Sachen/TxcChip.h"
+#include "NES/Mappers/Txc/TxcChip.h"
 
 class Sachen_136 : public BaseMapper
 {

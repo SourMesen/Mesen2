@@ -6,34 +6,26 @@
 class TxcChip : public ISerializable
 {
 private:
-	uint8_t _accumulator;
-	uint8_t _inverter;
-	uint8_t _staging;
-	uint8_t _output;
-	bool _increase;
-	bool _yFlag;
-	bool _invert;
+	uint8_t _accumulator = 0;
+	uint8_t _inverter = 0;
+	uint8_t _staging = 0;
+	uint8_t _output = 0;
+	bool _increase = false;
+	bool _yFlag = false;
+	bool _invert = false;
 
-	uint8_t _mask;
-	bool _isJv001;
+	uint8_t _mask = 0;
+	bool _isJv001 = false;
 
 public:
 	TxcChip(bool isJv001)
 	{
-		_accumulator = 0;
-		_inverter = 0;
-		_staging = 0;
-		_output = 0;
-
-		_increase = false;
-		_yFlag = false;
-
 		_isJv001 = isJv001;
 		_mask = isJv001 ? 0x0F : 0x07;
 		_invert = isJv001;
 	}
 
-	void Serialize(Serializer& s) override
+	void Serialize(Serializer& s)
 	{
 		SV(_accumulator);
 		SV(_invert);

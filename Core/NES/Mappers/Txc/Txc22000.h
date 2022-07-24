@@ -1,14 +1,13 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/BaseMapper.h"
-#include "NES/NesConsole.h"
-#include "NES/NesMemoryManager.h"
 #include "NES/Mappers/Txc/TxcChip.h"
 
-class Sachen_147 : public BaseMapper
+class Txc22000 : public BaseMapper
 {
 private:
-	TxcChip _txc = TxcChip(true);
+	TxcChip _txc = TxcChip(false);
+	uint8_t _chrBank = 0;
 
 protected:
 	uint16_t GetPRGPageSize() override { return 0x8000; }
@@ -19,9 +18,10 @@ protected:
 
 	void InitMapper() override
 	{
-		AddRegisterRange(0x4020, 0x5FFF, MemoryOperation::Any);
+		AddRegisterRange(0x4100, 0x5FFF, MemoryOperation::Any);
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 
+		_chrBank = 0;
 		SelectPRGPage(0, 0);
 		SelectCHRPage(0, 0);
 	}
@@ -30,22 +30,21 @@ protected:
 	{
 		BaseMapper::Serialize(s);
 		SV(_txc);
+		SV(_chrBank);
 	}
 
 	void UpdateState()
 	{
-		uint8_t out = _txc.GetOutput();
-		SelectPRGPage(0, ((out & 0x20) >> 4) | (out & 0x01));
-		SelectCHRPage(0, (out & 0x1E) >> 1);
+		SelectPRGPage(0, _txc.GetOutput() & 0x03);
+		SelectCHRPage(0, _chrBank);
 	}
-	
+
 	uint8_t ReadRegister(uint16_t addr) override
 	{
 		uint8_t openBus = _console->GetMemoryManager()->GetOpenBus();
 		uint8_t value = openBus;
 		if((addr & 0x103) == 0x100) {
-			uint8_t v = _txc.Read();
-			value = ((v & 0x3F) << 2) | ((v & 0xC0) >> 6);
+			value = (openBus & 0xCF) | ((_txc.Read() << 4) & 0x30);
 		}
 		UpdateState();
 		return value;
@@ -53,9 +52,10 @@ protected:
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		_txc.Write(addr, ((value & 0xFC) >> 2) | ((value & 0x03) << 6));
-		if(addr >= 0x8000) {
-			UpdateState();
+		if((addr & 0xF200) == 0x4200) {
+			_chrBank = value;
 		}
+		_txc.Write(addr, (value >> 4) & 0x03);
+		UpdateState();
 	}
 };

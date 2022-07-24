@@ -1,11 +1,9 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/BaseMapper.h"
-#include "NES/NesConsole.h"
-#include "NES/NesMemoryManager.h"
 #include "NES/Mappers/Txc/TxcChip.h"
 
-class Sachen_147 : public BaseMapper
+class Txc22211B : public BaseMapper
 {
 private:
 	TxcChip _txc = TxcChip(true);
@@ -34,18 +32,21 @@ protected:
 
 	void UpdateState()
 	{
-		uint8_t out = _txc.GetOutput();
-		SelectPRGPage(0, ((out & 0x20) >> 4) | (out & 0x01));
-		SelectCHRPage(0, (out & 0x1E) >> 1);
+		SelectCHRPage(0, _txc.GetOutput());
+		SetMirroringType(_txc.GetInvertFlag() ? MirroringType::Vertical : MirroringType::Horizontal);
 	}
-	
+
+	uint8_t ConvertValue(uint8_t v)
+	{
+		return ((v & 0x01) << 5) | ((v & 0x02) << 3) | ((v & 0x04) << 1) | ((v & 0x08) >> 1) | ((v & 0x10) >> 3) | ((v & 0x20) >> 5);
+	}
+
 	uint8_t ReadRegister(uint16_t addr) override
 	{
 		uint8_t openBus = _console->GetMemoryManager()->GetOpenBus();
 		uint8_t value = openBus;
 		if((addr & 0x103) == 0x100) {
-			uint8_t v = _txc.Read();
-			value = ((v & 0x3F) << 2) | ((v & 0xC0) >> 6);
+			value = (openBus & 0xC0) | ConvertValue(_txc.Read());
 		}
 		UpdateState();
 		return value;
@@ -53,7 +54,7 @@ protected:
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		_txc.Write(addr, ((value & 0xFC) >> 2) | ((value & 0x03) << 6));
+		_txc.Write(addr, ConvertValue(value));
 		if(addr >= 0x8000) {
 			UpdateState();
 		}

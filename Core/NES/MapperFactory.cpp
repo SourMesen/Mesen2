@@ -19,7 +19,7 @@
 //#include "Bb.h"
 #include "NES/Mappers/BF909x.h"
 //#include "BF9096.h"
-#include "NES/Mappers/MiscUnlicensed/Bmc11160.h"
+#include "NES/Mappers/Txc/Bmc11160.h"
 #include "NES/Mappers/MiscUnlicensed/Bmc12in1.h"
 #include "NES/Mappers/MiscUnlicensed/Bmc51.h"
 #include "NES/Mappers/MiscUnlicensed/Bmc63.h"
@@ -108,7 +108,7 @@
 #include "NES/Mappers/MiscUnlicensed/Mapper57.h"
 #include "NES/Mappers/MiscUnlicensed/Mapper58.h"
 #include "NES/Mappers/MiscUnlicensed/Mapper60.h"
-#include "NES/Mappers/MiscUnlicensed/Mapper61.h"
+#include "NES/Mappers/Txc/Mapper61.h"
 #include "NES/Mappers/MiscUnlicensed/Mapper62.h"
 #include "NES/Mappers/MiscUnlicensed/Mapper83.h"
 #include "NES/Mappers/Mmc3Variants/Mapper91.h"
@@ -170,7 +170,7 @@
 #include "NES/Mappers/Mmc3Variants/MMC3_165.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_182.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_187.h"
-#include "NES/Mappers/Mmc3Variants/MMC3_189.h"
+#include "NES/Mappers/Txc/MMC3_189.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_196.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_197.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_198.h"
@@ -244,10 +244,10 @@
 #include "NES/Mappers/Taito/TaitoX1005.h"
 #include "NES/Mappers/Taito/TaitoX1017.h"
 //#include "Tf1201.h"
-//#include "Txc22000.h"
-//#include "Txc22211A.h"
-//#include "Txc22211B.h"
-//#include "Txc22211C.h"
+#include "NES/Mappers/Txc/Txc22000.h"
+#include "NES/Mappers/Txc/Txc22211A.h"
+#include "NES/Mappers/Txc/Txc22211B.h"
+#include "NES/Mappers/Txc/Txc22211C.h"
 #include "NES/Mappers/TxSRom.h"
 #include "NES/Mappers/Mmc3Variants/Unl158B.h"
 #include "NES/Mappers/MiscUnlicensed/Unl255in1.h"
@@ -320,7 +320,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 				case 2: return new BnRom();
 			}*/
 		case 35: return new Mapper35();
-		//case 36: return new Txc22000();
+		case 36: return new Txc22000();
 		case 37: return new MMC3_37();
 		case 38: return new UnlPci556();
 		case 39: return new Mapper39();
@@ -401,7 +401,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 123: return new MMC3_123();
 		//case 125: return new Lh32();
 		case 126: return new MMC3_126();
-		//case 132: return new Txc22211A();
+		case 132: return new Txc22211A();
 		case 133: return new Sachen_133();
 		case 134: return new MMC3_134();
 		case 136: return new Sachen_136();
@@ -437,8 +437,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		//case 168: return new Racermate();
 		case 170: return new Mapper170();
 		case 171: return new Kaiser7058();
-		//case 172: return new Txc22211B();
-		//case 173: return new Txc22211C();
+		case 172: return new Txc22211B();
+		case 173: return new Txc22211C();
 		case 174: return new Mapper174();
 		case 175: return new Kaiser7022();
 		//case 176: return new Fk23C();

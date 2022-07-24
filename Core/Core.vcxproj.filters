@@ -1952,9 +1952,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_187.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_189.h">
-      <Filter>NES\Mappers\Mmc3Variants</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_196.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
@@ -2063,9 +2060,6 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc8157.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc11160.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc60311C.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
@@ -2115,9 +2109,6 @@
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper60.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper61.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper62.h">
@@ -2259,9 +2250,6 @@
       <Filter>NES\Mappers\Sachen</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\Sachen\Sachen8259.h">
-      <Filter>NES\Mappers\Sachen</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\Sachen\TxcChip.h">
       <Filter>NES\Mappers\Sachen</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser202.h">
@@ -2447,6 +2435,30 @@
     <ClInclude Include="NES\Mappers\Homebrew\UnRom512.h">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Bmc11160.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Mapper61.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\MMC3_189.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Txc22000.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Txc22211A.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Txc22211B.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\Txc22211C.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Txc\TxcChip.h">
+      <Filter>NES\Mappers\Txc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2597,6 +2609,9 @@
     </Filter>
     <Filter Include="NES\Mappers\Taito">
       <UniqueIdentifier>{70f33fab-002b-49c8-84a1-785f3acf0b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Txc">
+      <UniqueIdentifier>{fa88c764-afa0-48af-9891-6925faf4dcb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

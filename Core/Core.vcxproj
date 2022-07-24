@@ -65,7 +65,6 @@
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser7057.h" />
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser7058.h" />
     <ClInclude Include="NES\Mappers\McAcc.h" />
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc11160.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc12in1.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc190in1.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc235.h" />
@@ -124,7 +123,6 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper57.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper58.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper60.h" />
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper61.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper62.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper83.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Unl255in1.h" />
@@ -151,7 +149,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_165.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_182.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_187.h" />
-    <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_189.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_196.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_197.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_198.h" />
@@ -202,7 +199,6 @@
     <ClInclude Include="NES\Mappers\Sachen\Sachen_147.h" />
     <ClInclude Include="NES\Mappers\Sachen\Sachen_148.h" />
     <ClInclude Include="NES\Mappers\Sachen\Sachen_149.h" />
-    <ClInclude Include="NES\Mappers\Sachen\TxcChip.h" />
     <ClInclude Include="NES\Mappers\StudyBox.h" />
     <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft184.h" />
     <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft3.h" />
@@ -214,6 +210,14 @@
     <ClInclude Include="NES\Mappers\Taito\TaitoTc0690.h" />
     <ClInclude Include="NES\Mappers\Taito\TaitoX1005.h" />
     <ClInclude Include="NES\Mappers\Taito\TaitoX1017.h" />
+    <ClInclude Include="NES\Mappers\Txc\Bmc11160.h" />
+    <ClInclude Include="NES\Mappers\Txc\Mapper61.h" />
+    <ClInclude Include="NES\Mappers\Txc\MMC3_189.h" />
+    <ClInclude Include="NES\Mappers\Txc\Txc22000.h" />
+    <ClInclude Include="NES\Mappers\Txc\Txc22211A.h" />
+    <ClInclude Include="NES\Mappers\Txc\Txc22211B.h" />
+    <ClInclude Include="NES\Mappers\Txc\Txc22211C.h" />
+    <ClInclude Include="NES\Mappers\Txc\TxcChip.h" />
     <ClInclude Include="NES\Mappers\VRC1.h" />
     <ClInclude Include="NES\Mappers\VRC2_4.h" />
     <ClInclude Include="NES\Mappers\VRC3.h" />
