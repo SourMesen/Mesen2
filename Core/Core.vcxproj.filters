@@ -2027,9 +2027,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\TaitoTc0690.h">
-      <Filter>NES\Mappers\Mmc3Variants</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
@@ -2396,6 +2393,42 @@
     <ClInclude Include="NES\Mappers\Homebrew\UnlDripGameAudio.h">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\Bandai74161_7432.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\BandaiFcg.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\BandaiKaraoke.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Taito\TaitoTc0190.h">
+      <Filter>NES\Mappers\Taito</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Taito\TaitoTc0690.h">
+      <Filter>NES\Mappers\Taito</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Taito\TaitoX1005.h">
+      <Filter>NES\Mappers\Taito</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Taito\TaitoX1017.h">
+      <Filter>NES\Mappers\Taito</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\BaseEeprom24C0X.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\Eeprom24C01.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Bandai\Eeprom24C02.h">
+      <Filter>NES\Mappers\Bandai</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Input\BandaiMicrophone.h">
+      <Filter>NES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Input\DatachBarcodeReader.h">
+      <Filter>NES\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2540,6 +2573,12 @@
     </Filter>
     <Filter Include="NES\Mappers\Irem">
       <UniqueIdentifier>{b5d6095d-044a-4a91-b3bf-6196e7525511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Bandai">
+      <UniqueIdentifier>{0c2422b2-eb26-4496-8231-0952f607f7dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Taito">
+      <UniqueIdentifier>{70f33fab-002b-49c8-84a1-785f3acf0b58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

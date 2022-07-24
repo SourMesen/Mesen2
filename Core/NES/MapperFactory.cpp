@@ -13,10 +13,10 @@
 /*#include "ActionEnterprises.h"
 #include "Ax5705.h"*/
 #include "NES/Mappers/AXROM.h"
-/*#include "Bandai74161_7432.h"*/
-//#include "NES/Mappers/BandaiFcg.h"
-/*#include "BandaiKaraoke.h"
-#include "Bb.h"*/
+#include "NES/Mappers/Bandai/Bandai74161_7432.h"
+#include "NES/Mappers/Bandai/BandaiFcg.h"
+#include "NES/Mappers/Bandai/BandaiKaraoke.h"
+//#include "Bb.h"
 #include "NES/Mappers/BF909x.h"
 //#include "BF9096.h"
 #include "NES/Mappers/MiscUnlicensed/Bmc11160.h"
@@ -239,10 +239,10 @@
 //#include "Super40in1Ws.h"
 //#include "T230.h"
 //#include "T262.h"
-//#include "TaitoTc0190.h"
-#include "NES/Mappers/Mmc3Variants/TaitoTc0690.h"
-//#include "TaitoX1005.h"
-//#include "TaitoX1017.h"
+#include "NES/Mappers/Taito/TaitoTc0190.h"
+#include "NES/Mappers/Taito/TaitoTc0690.h"
+#include "NES/Mappers/Taito/TaitoX1005.h"
+#include "NES/Mappers/Taito/TaitoX1017.h"
 //#include "Tf1201.h"
 //#include "Txc22000.h"
 //#include "Txc22211A.h"
@@ -296,7 +296,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 13: return new CpRom();
 		case 14: return new MMC3_14();
 		case 15: return new Mapper15();
-		//case 16: return new BandaiFcg();
+		case 16: return new BandaiFcg();
 		//case 17: return new FrontFareast();
 		case 18: return new JalecoSs88006();
 		case 19: return new Namco163();
@@ -312,8 +312,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		//case 30: return new UnRom512();
 		case 31: return new NsfCart31();
 		case 32: return new IremG101();
-		/*case 33: return new TaitoTc0190();
-		case 34: 
+		case 33: return new TaitoTc0190();
+		/*case 34: 
 			switch(romData.Info.SubMapperID) {
 				case 0: return (romData.ChrRom.size() > 0) ? (BaseMapper*)new Nina01() : (BaseMapper*)new BnRom(); //BnROM uses CHR RAM (so no CHR rom in the .NES file)
 				case 1: return new Nina01();
@@ -353,7 +353,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 67: return new Sunsoft3();
 		case 68: return new Sunsoft4();
 		case 69: return new SunsoftFme7();
-		//case 70: return new Bandai74161_7432(false);
+		case 70: return new Bandai74161_7432(false);
 		case 71: return new BF909x();
 		case 72: return new JalecoJf17_19(false);
 		case 73: return new VRC3();
@@ -363,8 +363,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 77: return new IremLrog017();
 		case 78: return new JalecoJf16();
 		//case 79: return new Nina03_06(false);
-		//case 80: return new TaitoX1005(false);
-		//case 82: return new TaitoX1017();
+		case 80: return new TaitoX1005(false);
+		case 82: return new TaitoX1017();
 		case 83: return new Mapper83();
 		case 85: return new VRC7();
 		case 86: return new JalecoJf13();
@@ -420,14 +420,14 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 149: return new Sachen_149();
 		case 150: return new Sachen74LS374N();
 		case 151: return new VRC1();
-		//case 152: return new Bandai74161_7432(true);
-		//case 153: return new BandaiFcg();
+		case 152: return new Bandai74161_7432(true);
+		case 153: return new BandaiFcg();
 		case 154: return new Namco108_154();
 		//case 155: return new MMC1_155();
 		//case 156: return new DaouInfosys();
-		//case 157: return new BandaiFcg();
+		case 157: return new BandaiFcg();
 		//case 158: return new Rambo1_158();
-		//case 159: return new BandaiFcg();
+		case 159: return new BandaiFcg();
 		case 162: return new Waixing162();
 		//case 163: return new Nanjing();
 		case 164: return new Waixing164();
@@ -452,7 +452,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 185: return new CNROM(true);
 		case 186: break; //The study box is handled as a bios file, not a iNES rom
 		case 187: return new MMC3_187();
-		//case 188: return new BandaiKaraoke();
+		case 188: return new BandaiKaraoke();
 		case 189: return new MMC3_189();
 		//case 190: return new MagicKidGooGoo();
 		case 191: return new MMC3_ChrRam(0x80, 0xFF, 2);
@@ -471,7 +471,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 204: return new Mapper204();
 		case 205: return new MMC3_205();
 		case 206: return new Namco108();
-		//case 207: return new TaitoX1005(true);
+		case 207: return new TaitoX1005(true);
 		case 208: return new MMC3_208();
 		//case 209: return new JyCompany();
 		case 210: return new Namco163();

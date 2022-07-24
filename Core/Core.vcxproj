@@ -23,9 +23,17 @@
     <ClInclude Include="Debugger\CdlManager.h" />
     <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
+    <ClInclude Include="NES\Input\BandaiMicrophone.h" />
+    <ClInclude Include="NES\Input\DatachBarcodeReader.h" />
     <ClInclude Include="NES\Loaders\StudyBoxLoader.h" />
     <ClInclude Include="NES\Loaders\UnifBoards.h" />
     <ClInclude Include="NES\Loaders\UnifLoader.h" />
+    <ClInclude Include="NES\Mappers\Bandai\Bandai74161_7432.h" />
+    <ClInclude Include="NES\Mappers\Bandai\BandaiFcg.h" />
+    <ClInclude Include="NES\Mappers\Bandai\BandaiKaraoke.h" />
+    <ClInclude Include="NES\Mappers\Bandai\BaseEeprom24C0X.h" />
+    <ClInclude Include="NES\Mappers\Bandai\Eeprom24C01.h" />
+    <ClInclude Include="NES\Mappers\Bandai\Eeprom24C02.h" />
     <ClInclude Include="NES\Mappers\Homebrew\Action53.h" />
     <ClInclude Include="NES\Mappers\ColorDreams.h" />
     <ClInclude Include="NES\Mappers\CpRom.h" />
@@ -168,7 +176,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_StreetHeroes.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\ResetTxrom.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h" />
-    <ClInclude Include="NES\Mappers\Mmc3Variants\TaitoTc0690.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl158B.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl8237A.h" />
@@ -197,6 +204,10 @@
     <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft89.h" />
     <ClInclude Include="NES\Mappers\Sunsoft\Sunsoft93.h" />
     <ClInclude Include="NES\Mappers\Sunsoft\SunsoftFme7.h" />
+    <ClInclude Include="NES\Mappers\Taito\TaitoTc0190.h" />
+    <ClInclude Include="NES\Mappers\Taito\TaitoTc0690.h" />
+    <ClInclude Include="NES\Mappers\Taito\TaitoX1005.h" />
+    <ClInclude Include="NES\Mappers\Taito\TaitoX1017.h" />
     <ClInclude Include="NES\Mappers\VRC1.h" />
     <ClInclude Include="NES\Mappers\VRC2_4.h" />
     <ClInclude Include="NES\Mappers\VRC3.h" />

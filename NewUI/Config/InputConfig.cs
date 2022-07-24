@@ -315,6 +315,10 @@ namespace Mesen.Config
 		AsciiTurboFile,
 		BattleBox,
 
+		//NES cart input devices
+		BandaiMicrophone,
+		DatachBarcodeReader,
+
 		//Game Boy
 		GameboyController,
 

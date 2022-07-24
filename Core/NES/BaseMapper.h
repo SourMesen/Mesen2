@@ -10,7 +10,6 @@
 #include "Utilities/ISerializable.h"
 
 class NesConsole;
-class BaseControlDevice;
 enum class MemoryType;
 struct MapperStateEntry;
 

@@ -204,6 +204,10 @@ enum class ControllerType
 	AsciiTurboFile,
 	BattleBox,
 
+	//NES cart input devices
+	BandaiMicrophone,
+	DatachBarcodeReader,
+
 	//Game Boy
 	GameboyController,
 
