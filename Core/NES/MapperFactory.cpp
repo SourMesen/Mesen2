@@ -44,7 +44,7 @@
 //#include "Bs5.h"
 //#include "Caltron41.h"
 //#include "Cc21.h"
-//#include "Cheapocabra.h"
+#include "NES/Mappers/Homebrew/Cheapocabra.h"
 //#include "CityFighter.h"
 #include "NES/Mappers/CNROM.h"
 #include "NES/Mappers/CpRom.h"
@@ -56,9 +56,9 @@
 /*#include "DreamTech01.h"
 #include "Edu2000.h"
 #include "Eh8813A.h"
-#include "FamicomBox.h"
-#include "FaridSlrom.h"
-#include "FaridUnrom.h"*/
+#include "FamicomBox.h"*/
+#include "NES/Mappers/Homebrew/FaridSlrom.h"
+#include "NES/Mappers/Homebrew/FaridUnrom.h"
 #include "NES/Mappers/FDS/Fds.h"
 #include "NES/Mappers/FDS/FdsAudio.h"
 //#include "Fk23C.h"
@@ -225,7 +225,7 @@
 #include "NES/Mappers/Sachen/Sachen74LS374N.h"
 #include "NES/Mappers/Sachen/Sachen8259.h"
 #include "NES/Mappers/Mmc3Variants/Sachen9602.h"
-//#include "SealieComputing.h"
+#include "NES/Mappers/Homebrew/SealieComputing.h"
 //#include "Smb2j.h"
 #include "NES/Mappers/StudyBox.h"
 //#include "Subor166.h"
@@ -257,9 +257,9 @@
 #include "NES/Mappers/MiscUnlicensed/UnlPci556.h"
 #include "NES/Mappers/MiscUnlicensed/UnlPuzzle.h"
 #include "NES/Mappers/UNROM.h"
-/*#include "UnRom_94.h"
-#include "UnRom_180.h"
-#include "UnRom512.h"*/
+//#include "UnRom_94.h"
+//#include "UnRom_180.h"
+#include "NES/Mappers/Homebrew/UnRom512.h"
 #include "NES/Mappers/VRC1.h"
 #include "NES/Mappers/VRC2_4.h"
 #include "NES/Mappers/VRC3.h"
@@ -308,8 +308,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 26: return new VRC6(VRCVariant::VRC6b);
 		case 27: return new VRC2_4();
 		case 28: return new Action53();
-		//case 29: return new SealieComputing();
-		//case 30: return new UnRom512();
+		case 29: return new SealieComputing();
+		case 30: return new UnRom512();
 		case 31: return new NsfCart31();
 		case 32: return new IremG101();
 		case 33: return new TaitoTc0190();
@@ -387,7 +387,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 106: return new Mapper106();
 		case 107: return new Mapper107();
 		//case 108: return new Bb();
-		//case 111: return new Cheapocabra();
+		case 111: return new Cheapocabra();
 		case 112: return new Mapper112();
 		//case 113: return new Nina03_06(true);
 		case 114: return new MMC3_114();
@@ -568,8 +568,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 320: return new Bmc830425C4391T();
 		//321
 		case 322: break; //K-3033
-		//case 323: return new FaridSlrom();
-		//case 324: return new FaridUnrom();
+		case 323: return new FaridSlrom();
+		case 324: return new FaridUnrom();
 		case 325: return new MMC3_MaliSB();
 		case 327: break; //10-24-C-A1
 		//case 328: return new Rt01();

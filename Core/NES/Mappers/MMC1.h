@@ -5,7 +5,7 @@
 
 class MMC1 : public BaseMapper
 {
-private:
+protected:
 	uint8_t _writeBuffer = 0;
 	uint8_t _shiftCount = 0;
 
@@ -23,7 +23,6 @@ private:
 	bool _forceWramOn = false;
 	uint16_t _lastChrReg = 0;
 
-private:
 	void ResetBuffer()
 	{
 		_shiftCount = 0;

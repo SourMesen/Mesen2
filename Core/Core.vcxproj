@@ -37,7 +37,13 @@
     <ClInclude Include="NES\Mappers\Homebrew\Action53.h" />
     <ClInclude Include="NES\Mappers\ColorDreams.h" />
     <ClInclude Include="NES\Mappers\CpRom.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\Cheapocabra.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\FaridSlrom.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\FaridUnrom.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\FlashSST39SF040.h" />
     <ClInclude Include="NES\Mappers\Homebrew\MagicFloor218.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\SealieComputing.h" />
+    <ClInclude Include="NES\Mappers\Homebrew\UnRom512.h" />
     <ClInclude Include="NES\Mappers\Irem\IremG101.h" />
     <ClInclude Include="NES\Mappers\Irem\IremH3001.h" />
     <ClInclude Include="NES\Mappers\Irem\IremLrog017.h" />
