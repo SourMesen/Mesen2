@@ -1853,9 +1853,6 @@
     <ClInclude Include="Debugger\DisassemblySearch.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Action53.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\ColorDreams.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
@@ -1869,9 +1866,6 @@
       <Filter>NES\Mappers</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MMC4.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\NsfCart31.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\VRC1.h">
@@ -2048,6 +2042,297 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl8237A.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc12in1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc51.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc63.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc64in1NoRepeat.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc70in1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc190in1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc235.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc255.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc8157.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc11160.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc60311C.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc80013B.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc810544CA1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc830425C4391T.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\BmcG146.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\BmcK3046.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\BmcNtd03.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper15.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper35.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper39.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper40.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper42.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper43.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper50.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper57.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper58.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper60.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper61.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper62.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper83.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper103.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper106.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper107.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper112.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper116.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper117.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper120.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper170.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper174.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper183.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper200.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper202.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper203.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper204.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper212.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper213.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper214.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper216.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper221.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper222.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper225.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper226.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper227.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper229.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper230.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper231.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper233.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper234.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper240.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper241.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper244.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper246.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Unl255in1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlD1038.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGame.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlDripGameAudio.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlPci556.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\UnlPuzzle.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_133.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_136.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_143.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_145.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_147.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_148.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen_149.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen74LS374N.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen8259.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\TxcChip.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser202.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7012.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7013B.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7016.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7017.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7022.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7031.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7037.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7057.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Kaiser\Kaiser7058.h">
+      <Filter>NES\Mappers\Kaiser</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Mapper242.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Mapper253.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Waixing162.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Waixing164.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Waixing178.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Waixing252.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\MagicFloor218.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\Action53.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Homebrew\NsfCart31.h">
+      <Filter>NES\Mappers\Homebrew</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2165,6 +2450,21 @@
     </Filter>
     <Filter Include="NES\Mappers\Mmc3Variants">
       <UniqueIdentifier>{bf15a3c8-6716-44ff-b34c-e24298c48dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\MiscUnlicensed">
+      <UniqueIdentifier>{50a463ae-f48f-45d7-bc60-842bdeaa4348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Sachen">
+      <UniqueIdentifier>{66ec3960-8a17-49c6-8234-e84b6ddab078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Kaiser">
+      <UniqueIdentifier>{202c2e13-3eb0-427f-adf8-7c762d63374d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Waixing">
+      <UniqueIdentifier>{411607e1-ca14-4d8e-877c-eb9a48ae5413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Homebrew">
+      <UniqueIdentifier>{d14ca08f-8203-4696-95e4-2820cb018c54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

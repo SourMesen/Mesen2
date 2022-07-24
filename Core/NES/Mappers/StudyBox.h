@@ -18,7 +18,7 @@ class StudyBox : public BaseMapper, IAudioProvider
 {
 private:
 	unique_ptr<WavReader> _wavReader;
-	uint32_t _audioSampleRate;
+	uint32_t _audioSampleRate = 44100;
 
 	bool _readyForBit = false;
 	uint16_t _processBitDelay = 0;
