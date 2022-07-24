@@ -1823,9 +1823,6 @@
     <ClInclude Include="Debugger\DisassemblySearch.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\ColorDreams.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\CpRom.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
@@ -1863,9 +1860,6 @@
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\DragonFighter.h">
-      <Filter>NES\Mappers\Mmc3Variants</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\Mapper91.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_12.h">
@@ -2040,9 +2034,6 @@
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper15.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper35.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper39.h">
@@ -2580,6 +2571,69 @@
     <ClInclude Include="NES\Mappers\Nintendo\FamicomBox.h">
       <Filter>NES\Mappers\Nintendo</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Irem\BnRom.h">
+      <Filter>NES\Mappers\Irem</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\JyCompany\JyCompany.h">
+      <Filter>NES\Mappers\JyCompany</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\JyCompany\Mapper35.h">
+      <Filter>NES\Mappers\JyCompany</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\JyCompany\Mapper91.h">
+      <Filter>NES\Mappers\JyCompany</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nanjing.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Tengen\Rambo1.h">
+      <Filter>NES\Mappers\Tengen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Tengen\Rambo1_158.h">
+      <Filter>NES\Mappers\Tengen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Fk23C.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\ColorDreams.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\ColorDreams46.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Dance2000.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nina01.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nina03_06.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Racermate.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Subor166.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Waixing\Bs5.h">
+      <Filter>NES\Mappers\Waixing</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Ac08.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Cc21.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Ghostbusters63in1.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Gs2013.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Malee.h">
+      <Filter>NES\Mappers\MiscUnlicensed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2745,6 +2799,12 @@
     </Filter>
     <Filter Include="NES\Mappers\Nintendo">
       <UniqueIdentifier>{9c681306-e1fc-4652-aaec-2fbed5dfe5dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\JyCompany">
+      <UniqueIdentifier>{0f6f5510-5858-409e-b623-73aef2f22be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Tengen">
+      <UniqueIdentifier>{72bc28c9-eab2-43ff-bc3c-2aa31734cee7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

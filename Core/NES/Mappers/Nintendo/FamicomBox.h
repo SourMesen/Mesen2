@@ -10,8 +10,8 @@
 class FamicomBox : public BaseMapper
 {
 private:
-	uint8_t _regs[8];
-	uint8_t _extInternalRam[0x2000];
+	uint8_t _regs[8] = {};
+	uint8_t _extInternalRam[0x2000] = {};
 	InternalRamHandler<0x1FFF> _extendedRamHandler;
 
 protected:

@@ -38,7 +38,6 @@
     <ClInclude Include="NES\Mappers\Codemasters\BF909x.h" />
     <ClInclude Include="NES\Mappers\Codemasters\GoldenFive.h" />
     <ClInclude Include="NES\Mappers\Homebrew\Action53.h" />
-    <ClInclude Include="NES\Mappers\ColorDreams.h" />
     <ClInclude Include="NES\Mappers\CpRom.h" />
     <ClInclude Include="NES\Mappers\Homebrew\Cheapocabra.h" />
     <ClInclude Include="NES\Mappers\Homebrew\FaridSlrom.h" />
@@ -47,6 +46,7 @@
     <ClInclude Include="NES\Mappers\Homebrew\MagicFloor218.h" />
     <ClInclude Include="NES\Mappers\Homebrew\SealieComputing.h" />
     <ClInclude Include="NES\Mappers\Homebrew\UnRom512.h" />
+    <ClInclude Include="NES\Mappers\Irem\BnRom.h" />
     <ClInclude Include="NES\Mappers\Irem\IremG101.h" />
     <ClInclude Include="NES\Mappers\Irem\IremH3001.h" />
     <ClInclude Include="NES\Mappers\Irem\IremLrog017.h" />
@@ -57,6 +57,9 @@
     <ClInclude Include="NES\Mappers\Jaleco\JalecoJf17_19.h" />
     <ClInclude Include="NES\Mappers\Jaleco\JalecoJfxx.h" />
     <ClInclude Include="NES\Mappers\Jaleco\JalecoSs88006.h" />
+    <ClInclude Include="NES\Mappers\JyCompany\JyCompany.h" />
+    <ClInclude Include="NES\Mappers\JyCompany\Mapper35.h" />
+    <ClInclude Include="NES\Mappers\JyCompany\Mapper91.h" />
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser202.h" />
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser7012.h" />
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser7013B.h" />
@@ -69,6 +72,7 @@
     <ClInclude Include="NES\Mappers\Kaiser\Kaiser7058.h" />
     <ClInclude Include="NES\Mappers\McAcc.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\A65AS.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Ac08.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\ActionEnterprises.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Ax5705.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bb.h" />
@@ -86,18 +90,25 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Bmc830425C4391T.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\BmcG146.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\BmcK3046.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Cc21.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\CityFighter.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\ColorDreams.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\ColorDreams46.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Dance2000.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\DaouInfosys.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\DreamTech01.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Edu2000.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Eh8813A.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\FrontFareast.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Ghostbusters63in1.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Gkcx1.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Gs2004.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Gs2013.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Henggedianzi177.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Henggedianzi179.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Hp898f.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\MagicKidGooGoo.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Malee.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper103.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper106.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper107.h" />
@@ -128,7 +139,6 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper241.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper244.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper246.h" />
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper35.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper39.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper42.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper43.h" />
@@ -138,8 +148,13 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper60.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper62.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper83.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nanjing.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nina01.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Nina03_06.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\NovelDiamond.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Racermate.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Rt01.h" />
+    <ClInclude Include="NES\Mappers\MiscUnlicensed\Subor166.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Super40in1Ws.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Supervision.h" />
     <ClInclude Include="NES\Mappers\MiscUnlicensed\T230.h" />
@@ -156,7 +171,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\BmcGn45.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\BmcHpxx.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\DragonFighter.h" />
-    <ClInclude Include="NES\Mappers\Mmc3Variants\Mapper91.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_114.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_115.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_12.h" />
@@ -255,6 +269,8 @@
     <ClInclude Include="NES\Mappers\Taito\TaitoTc0690.h" />
     <ClInclude Include="NES\Mappers\Taito\TaitoX1005.h" />
     <ClInclude Include="NES\Mappers\Taito\TaitoX1017.h" />
+    <ClInclude Include="NES\Mappers\Tengen\Rambo1.h" />
+    <ClInclude Include="NES\Mappers\Tengen\Rambo1_158.h" />
     <ClInclude Include="NES\Mappers\Txc\Bmc11160.h" />
     <ClInclude Include="NES\Mappers\Txc\Mapper61.h" />
     <ClInclude Include="NES\Mappers\Txc\MMC3_189.h" />
@@ -269,6 +285,8 @@
     <ClInclude Include="NES\Mappers\VRC6.h" />
     <ClInclude Include="NES\Mappers\VRC7.h" />
     <ClInclude Include="NES\Mappers\VrcIrq.h" />
+    <ClInclude Include="NES\Mappers\Waixing\Bs5.h" />
+    <ClInclude Include="NES\Mappers\Waixing\Fk23C.h" />
     <ClInclude Include="NES\Mappers\Waixing\Mapper242.h" />
     <ClInclude Include="NES\Mappers\Waixing\Mapper253.h" />
     <ClInclude Include="NES\Mappers\Waixing\Waixing162.h" />
