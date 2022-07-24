@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Mappers/MMC3.h"
+#include "NES/Mappers/Nintendo/MMC3.h"
 
 //Based on krikzz's research: https://forums.nesdev.com/viewtopic.php?p=242427#p242427
 class McAcc : public MMC3

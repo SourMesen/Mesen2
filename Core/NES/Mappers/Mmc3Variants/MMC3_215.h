@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Mappers/MMC3.h"
+#include "NES/Mappers/Nintendo/MMC3.h"
 
 //Unif: UNL-8237
 class MMC3_215 : public MMC3

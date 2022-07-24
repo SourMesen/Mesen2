@@ -93,7 +93,7 @@ protected:
 	uint16_t GetPRGPageSize() override { return 0x4000; }
 	uint16_t GetCHRPageSize() override { return 0x1000; }
 
-	void UpdateState()
+	virtual void UpdateState()
 	{
 		uint8_t extraReg = (_lastChrReg == 0xC000 && _chrMode) ? _chrReg1 : _chrReg0;
 		uint8_t prgBankSelect = 0;

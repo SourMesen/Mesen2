@@ -1,6 +1,6 @@
 #pragma once
-#include "../../stdafx.h"
-#include "../BaseMapper.h"
+#include "stdafx.h"
+#include "NES/BaseMapper.h"
 
 class NROM : public BaseMapper
 {

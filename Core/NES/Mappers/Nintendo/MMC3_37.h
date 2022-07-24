@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Mappers/MMC3.h"
+#include "NES/Mappers/Nintendo/MMC3.h"
 
-class MMC3_47 : public MMC3
+class MMC3_37 : public MMC3
 {
 private:
 	uint8_t _selectedBlock = 0;
@@ -25,8 +25,7 @@ protected:
 
 	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
-		page &= 0x7F;
-		if(_selectedBlock == 1) {
+		if(_selectedBlock >= 4) {
 			page |= 0x80;
 		}
 
@@ -35,8 +34,16 @@ protected:
 
 	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
-		page &= 0x0F;
-		if(_selectedBlock == 1) {
+		if(_selectedBlock <= 2) {
+			page &= 0x07;
+		} else if(_selectedBlock == 3) {
+			page &= 0x07;
+			page |= 0x08;
+		} else if(_selectedBlock == 7) {
+			page &= 0x07;
+			page |= 0x20;
+		} else if(_selectedBlock >= 4) {
+			page &= 0x0F;
 			page |= 0x10;
 		}
 
@@ -47,7 +54,7 @@ protected:
 	{
 		if(addr < 0x8000) {
 			if(CanWriteToWorkRam()) {
-				_selectedBlock = value & 0x01;
+				_selectedBlock = value & 0x07;
 				UpdateState();
 			}
 		} else {

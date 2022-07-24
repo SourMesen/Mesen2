@@ -4,7 +4,7 @@
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
 #include "NES/Mappers/Audio/Mmc5Audio.h"
-#include "NES/Mappers/Mmc5MemoryHandler.h"
+#include "NES/Mappers/Nintendo/Mmc5MemoryHandler.h"
 #include "Utilities/HexUtilities.h"
 
 class MMC5 : public BaseMapper

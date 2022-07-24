@@ -5,11 +5,11 @@
 class CNROM : public BaseMapper
 {
 private:
-	bool _enableCopyProtection;
+	bool _enableCopyProtection = false;
 
 protected:
-	virtual uint16_t GetPRGPageSize() override { return 0x8000; }
-	virtual uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPRGPageSize() override { return 0x8000; }
+	uint16_t GetCHRPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{

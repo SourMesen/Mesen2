@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "NES/Debugger/NesPpuTools.h"
-#include "NES/Mappers/MMC5.h"
+#include "NES/Mappers/Nintendo/MMC5.h"
 #include "NES/NesConsole.h"
 #include "NES/NesTypes.h"
 #include "NES/NesDefaultVideoFilter.h"

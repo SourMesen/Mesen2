@@ -1014,27 +1014,6 @@
     <ClInclude Include="NES\Mappers\AXROM.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\BF909x.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\CNROM.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MMC1.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MMC3.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MMC5.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc5MemoryHandler.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\NROM.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
     <ClCompile Include="NES\Mappers\NsfMapper.cpp">
       <Filter>NES\Mappers</Filter>
     </ClCompile>
@@ -1042,12 +1021,6 @@
       <Filter>NES\Mappers</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\OekaKids.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\TxSRom.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\UNROM.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
     <ClCompile Include="Shared\Audio\AudioPlayerHud.cpp">
@@ -1859,12 +1832,6 @@
     <ClInclude Include="NES\Mappers\McAcc.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\MMC2.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MMC4.h">
-      <Filter>NES\Mappers</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\VRC1.h">
       <Filter>NES\Mappers</Filter>
     </ClInclude>
@@ -2021,9 +1988,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\ResetTxrom.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
-      <Filter>NES\Mappers\Mmc3Variants</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
@@ -2082,9 +2046,6 @@
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper39.h">
-      <Filter>NES\Mappers\MiscUnlicensed</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper40.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Mapper42.h">
@@ -2537,6 +2498,88 @@
     <ClInclude Include="NES\Mappers\MiscUnlicensed\Yoko.h">
       <Filter>NES\Mappers\MiscUnlicensed</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Whirlwind\Lh10.h">
+      <Filter>NES\Mappers\Whirlwind</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Whirlwind\Lh32.h">
+      <Filter>NES\Mappers\Whirlwind</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Whirlwind\Lh51.h">
+      <Filter>NES\Mappers\Whirlwind</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Whirlwind\Mapper40.h">
+      <Filter>NES\Mappers\Whirlwind</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Whirlwind\Smb2j.h">
+      <Filter>NES\Mappers\Whirlwind</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Sachen\Sachen9602.h">
+      <Filter>NES\Mappers\Sachen</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h" />
+    <ClInclude Include="NES\Mappers\Codemasters\BF909x.h">
+      <Filter>NES\Mappers\Codemasters</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Codemasters\BF9096.h">
+      <Filter>NES\Mappers\Codemasters</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Codemasters\GoldenFive.h">
+      <Filter>NES\Mappers\Codemasters</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\CNROM.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\GxRom.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC1.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC1_105.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC1_155.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC2.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC3.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC3_37.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC3_47.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC4.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\MMC5.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\Mmc5MemoryHandler.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\NROM.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\TxSRom.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\UNROM.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\UnRom_94.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\UnRom_180.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Nintendo\FamicomBox.h">
+      <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2693,6 +2736,15 @@
     </Filter>
     <Filter Include="NES\Mappers\Ntdec">
       <UniqueIdentifier>{3405ecf1-d0a1-4b29-a0d7-bb97d947b438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Whirlwind">
+      <UniqueIdentifier>{48382911-0b8f-400f-9845-2d45c7e3b150}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Codemasters">
+      <UniqueIdentifier>{ba051222-6ec9-4c9e-ba10-e41f320e66ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NES\Mappers\Nintendo">
+      <UniqueIdentifier>{9c681306-e1fc-4652-aaec-2fbed5dfe5dc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

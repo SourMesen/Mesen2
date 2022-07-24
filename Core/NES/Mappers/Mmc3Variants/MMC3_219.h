@@ -1,5 +1,5 @@
 #pragma once
-#include "NES/Mappers/MMC3.h"
+#include "NES/Mappers/Nintendo/MMC3.h"
 
 class MMC3_219 : public MMC3
 {

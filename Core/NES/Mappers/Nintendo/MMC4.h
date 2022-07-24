@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Mappers/MMC2.h"
+#include "NES/Mappers/Nintendo/MMC2.h"
 
 class MMC4 : public MMC2
 {
