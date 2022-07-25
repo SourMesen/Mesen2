@@ -316,7 +316,7 @@ protected:
 				case 0x8001: {
 					uint8_t reg = _currentRegister & (_extendedMmc3Mode ? 0x0F : 0x07);
 					if(reg < 12) {
-						_mmc3Registers[_currentRegister & (_extendedMmc3Mode ? 0x0F : 0x07)] = value;
+						_mmc3Registers[reg] = value;
 						UpdateState();
 					}
 					break;

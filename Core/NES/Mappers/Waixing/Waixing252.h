@@ -1,6 +1,7 @@
 #pragma once
+#include "stdafx.h"
 #include "NES/BaseMapper.h"
-#include "NES/Mappers/VrcIrq.h"
+#include "NES/Mappers/Konami/VrcIrq.h"
 
 class Waixing252 : public BaseMapper
 {

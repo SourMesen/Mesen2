@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "NES/Mappers/MiscUnlicensed/Mapper226.h"
+#include "NES/Mappers/Unlicensed/Mapper226.h"
 
 class Mapper233 : public Mapper226
 {

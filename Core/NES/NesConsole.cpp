@@ -19,7 +19,7 @@
 #include "NES/BisqwitNtscFilter.h"
 #include "NES/NesConstants.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
-#include "NES/Mappers/NsfMapper.h"
+#include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/Mappers/FDS/Fds.h"
 #include "Shared/Emulator.h"
 #include "Shared/CheatManager.h"

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/BaseMapper.h"
+#include "Utilities/Serializer.h"
 
 class Bandai74161_7432 : public BaseMapper
 {

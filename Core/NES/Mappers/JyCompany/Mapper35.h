@@ -3,6 +3,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/Mappers/A12Watcher.h"
 #include "NES/NesCpu.h"
+#include "NES/BaseNesPpu.h"
 
 class Mapper35 : public BaseMapper
 {

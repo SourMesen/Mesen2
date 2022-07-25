@@ -17,7 +17,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesMemoryManager.h"
 #include "NES/Input/NesController.h"
-#include "NES/Mappers/NsfMapper.h"
+#include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/Debugger/DummyNesCpu.h"
 #include "NES/Debugger/NesCodeDataLogger.h"
 #include "NES/Debugger/NesDebugger.h"

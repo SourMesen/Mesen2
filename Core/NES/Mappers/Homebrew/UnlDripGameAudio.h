@@ -1,4 +1,8 @@
+#pragma once
+#include "stdafx.h"
 #include "NES/APU/BaseExpansionAudio.h"
+#include "NES/APU/NesApu.h"
+#include "NES/NesConsole.h"
 
 class UnlDripGameAudio : public BaseExpansionAudio
 {

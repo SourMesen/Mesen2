@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <random>
-#include "NES/Mappers/NsfMapper.h"
+#include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/NesConstants.h"
 #include "NES/NesConsole.h"
 #include "NES/NesCpu.h"
