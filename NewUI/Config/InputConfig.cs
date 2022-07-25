@@ -399,6 +399,7 @@ namespace Mesen.Config
 				case ControllerType.FamicomArkanoidController:
 				case ControllerType.NesArkanoidController:
 				case ControllerType.SuperScope:
+				case ControllerType.BandaiMicrophone:
 					return true;
 			}
 

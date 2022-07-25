@@ -73,7 +73,7 @@ extern "C"
 
 	DllExport bool __stdcall HasControlDevice(ControllerType type)
 	{
-		return _emu->GetControlManager()->HasControlDevice(type);
+		return _emu->HasControlDevice(type);
 	}
 
 	DllExport void __stdcall ResetLagCounter()

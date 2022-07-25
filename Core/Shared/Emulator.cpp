@@ -612,6 +612,12 @@ void Emulator::ResetLagCounter()
 	}
 }
 
+bool Emulator::HasControlDevice(ControllerType type)
+{
+	BaseControlManager* controlManager = GetControlManager();
+	return controlManager ? controlManager->HasControlDevice(type) : false;
+}
+
 double Emulator::GetFps()
 {
 	return _console->GetFps();

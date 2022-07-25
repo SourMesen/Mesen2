@@ -484,6 +484,8 @@ struct NesConfig
 	ControllerConfig Port1SubPorts[4];
 	ControllerConfig ExpPortSubPorts[4];
 
+	ControllerConfig MapperInput;
+
 	uint32_t LightDetectionRadius = 0;
 	bool AutoConfigureInput = true;
 

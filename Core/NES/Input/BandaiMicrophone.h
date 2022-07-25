@@ -16,18 +16,17 @@ protected:
 
 	void InternalSetStateFromInput() override
 	{
-		//TODO
 		//Make sure the key bindings are properly updated (not ideal, but good enough)
-		/*_keyMappings = _emu->GetSettings()->GetNesConfig().Port1.Keys.GetKeyMappingArray();
+		_keyMappings = _emu->GetSettings()->GetNesConfig().MapperInput.Keys.GetKeyMappingArray();
 
-		for(KeyMapping keyMapping : _keyMappings) {
-			SetPressedState(Buttons::A, keyMapping.BandaiMicrophoneButtons[0]);
-			SetPressedState(Buttons::B, keyMapping.BandaiMicrophoneButtons[1]);
+		for(KeyMapping& keyMapping : _keyMappings) {
+			SetPressedState(Buttons::A, keyMapping.CustomKeys[BandaiMicrophone::Buttons::A]);
+			SetPressedState(Buttons::B, keyMapping.CustomKeys[BandaiMicrophone::Buttons::B]);
 			if((_emu->GetFrameCount() % 2) == 0) {
 				//Alternate between 1 and 0s (not sure if the game does anything with this data?)
-				SetPressedState(Buttons::Microphone, keyMapping.BandaiMicrophoneButtons[2]);
+				SetPressedState(Buttons::Microphone, keyMapping.CustomKeys[BandaiMicrophone::Buttons::Microphone]);
 			}
-		}*/
+		}
 	}
 
 public:

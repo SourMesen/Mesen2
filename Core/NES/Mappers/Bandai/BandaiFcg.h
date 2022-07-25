@@ -3,6 +3,7 @@
 #include "NES/NesCpu.h"
 #include "NES/NesConsole.h"
 #include "NES/NesMemoryManager.h"
+#include "NES/NesControlManager.h"
 #include "NES/Input/DatachBarcodeReader.h"
 #include "NES/Mappers/Bandai/BaseEeprom24C0X.h"
 #include "NES/Mappers/Bandai/Eeprom24C01.h"
@@ -43,9 +44,8 @@ protected:
 
 		if(_romInfo.MapperID == 157) {
 			//"Mapper 157 is used for Datach Joint ROM System boards"
-			
-			//TODO register in control manager
 			_barcodeReader.reset(new DatachBarcodeReader(_console));
+			_console->GetControlManager()->AddSystemControlDevice(_barcodeReader);
 
 			//Datach Joint ROM System
 			//"It contains an internal 256-byte serial EEPROM (24C02) that is shared among all Datach games."

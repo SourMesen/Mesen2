@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Config.Shortcuts;
+using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.Views;
@@ -26,6 +27,9 @@ namespace Mesen.ViewModels
 		
 		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
+		private MainWindowViewModel MainWindow { get; }
+		
+		[Reactive] public bool ShowMapperInput { get; private set; }
 		[Reactive] public bool HasFourScore { get; private set; }
 		[ObservableAsProperty] public bool HasFourPlayerAdapter { get; }
 		[ObservableAsProperty] public bool HasExpansionHub { get; }
@@ -100,12 +104,17 @@ namespace Mesen.ViewModels
 			ControllerType.BattleBox
 		};
 
+		public Enum[] AvailableControllerTypesMapperInput => new Enum[] {
+			ControllerType.BandaiMicrophone,
+		};
+
 		[Obsolete("For designer only")]
 		public NesInputConfigViewModel() : this(new NesConfig(), new PreferencesConfig()) { }
 
 		public NesInputConfigViewModel(NesConfig config, PreferencesConfig preferences)
 		{
 			Config = config;
+			MainWindow = MainWindowViewModel.Instance;
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Port1.Type, x => x.Config.Port2.Type).Subscribe(t => {
 				Dispatcher.UIThread.Post(() => {
@@ -136,6 +145,10 @@ namespace Mesen.ViewModels
 					.Select(t => t == ControllerType.TwoPlayerAdapter ? AvailableControllerTypesTwoPlayer : AvailableControllerTypesFourPlayer)
 					.ToPropertyEx(this, x => x.AvailableControllerTypesExpansionHub)
 			);
+
+			AddDisposable(this.WhenAnyValue(x => x.MainWindow.RomInfo).Subscribe(x => {
+				ShowMapperInput = InputApi.HasControlDevice(ControllerType.BandaiMicrophone);
+			}));
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {
 				EmulatorShortcut.FdsSwitchDiskSide,

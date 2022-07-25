@@ -26,6 +26,8 @@ namespace Mesen.Config
 		[Reactive] public NesControllerConfig ExpPortB { get; set; } = new();
 		[Reactive] public NesControllerConfig ExpPortC { get; set; } = new();
 		[Reactive] public NesControllerConfig ExpPortD { get; set; } = new();
+		
+		[Reactive] public NesControllerConfig MapperInput { get; set; } = new();
 
 		[Reactive] public UInt32 LightDetectionRadius { get; set; } = 0;
 		[Reactive] public bool AutoConfigureInput { get; set; } = true;
@@ -139,6 +141,8 @@ namespace Mesen.Config
 				ExpPortB = ExpPortB.ToInterop(),
 				ExpPortC = ExpPortC.ToInterop(),
 				ExpPortD = ExpPortD.ToInterop(),
+				
+				MapperInput = MapperInput.ToInterop(),
 
 				LightDetectionRadius = LightDetectionRadius,
 				AutoConfigureInput = AutoConfigureInput,
@@ -303,6 +307,8 @@ namespace Mesen.Config
 		public InteropControllerConfig ExpPortB;
 		public InteropControllerConfig ExpPortC;
 		public InteropControllerConfig ExpPortD;
+
+		public InteropControllerConfig MapperInput;
 
 		public UInt32 LightDetectionRadius;
 		[MarshalAs(UnmanagedType.I1)] public bool AutoConfigureInput;

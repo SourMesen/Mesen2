@@ -26,8 +26,8 @@ protected:
 		SelectPrgPage(1, 0x07);
 		SelectChrPage(0, 0);
 
-		//TODO register in control manager
 		_microphone.reset(new BandaiMicrophone(_emu, _emu->GetSettings()->GetNesConfig().Port1.Keys));
+		_console->GetControlManager()->AddSystemControlDevice(_microphone);
 	}
 
 	uint8_t ReadRegister(uint16_t addr) override

@@ -85,6 +85,7 @@
 			<Control ID="lblExpPortD">Port 4:</Control>
 
 			<Control ID="lblExpansionDevice">Expansion device:</Control>
+			<Control ID="lblMapperInput">Cartridge:</Control>
 		</Form>
 		<Form ID="SnesInputConfigView">
 			<Control ID="lblPort1">Port 1:</Control>
@@ -1596,6 +1597,9 @@
 			<Value ID="AsciiTurboFile">Turbo File</Value>
 			<Value ID="BattleBox">Battle Box</Value>
 
+			<Value ID="BandaiMicrophone">Bandai Microphone</Value>
+			<Value ID="DatachBarcodeReader">Datach Barcode Reader</Value>
+
 			<Value ID="GameboyController">Gameboy Controller</Value>
 			<Value ID="PceController">2-button Controller</Value>
 			<Value ID="PceAvenuePad6">6-button Controller</Value>
@@ -1661,6 +1665,11 @@
 		</Enum>
 		<Enum ID="NesOekakidsButtons">
 			<Value ID="Click">Click</Value>
+		</Enum>
+		<Enum ID="NesBandaiMicrophoneButtons">
+			<Value ID="A">A</Value>
+			<Value ID="B">B</Value>
+			<Value ID="Microphone">Microphone</Value>
 		</Enum>
 		<Enum ID="NesVirtualBoyButtons">
 			<Value ID="Down1">D-Pad (right) - Down</Value>

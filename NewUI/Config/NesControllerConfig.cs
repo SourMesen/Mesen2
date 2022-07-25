@@ -66,6 +66,7 @@ namespace Mesen.Config
 				ControllerType.SuborMouse => MouseButtons,
 				ControllerType.OekaKidsTablet => OekakidsButtons,
 				ControllerType.BandaiHyperShot => BandaiHypershotButtons,
+				ControllerType.BandaiMicrophone => BandaiMicrophoneButtons,
 				_ => null
 			};
 		}
@@ -105,6 +106,7 @@ namespace Mesen.Config
 				ControllerType.SnesMouse or ControllerType.SuborMouse => Enum.GetValues<GenericMouseButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.OekaKidsTablet => Enum.GetValues<NesOekakidsButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				ControllerType.BandaiHyperShot => Enum.GetValues<NesZapperButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
+				ControllerType.BandaiMicrophone => Enum.GetValues<NesBandaiMicrophoneButtons>().Select(val => new CustomKeyMapping(ResourceHelper.GetEnumText(val), buttonMappings, (int)val)).ToList(),
 				_ => new()
 			};
 
@@ -163,6 +165,10 @@ namespace Mesen.Config
 				case ControllerType.FamicomZapper:
 				case ControllerType.NesZapper:
 					ZapperButtons = new UInt16[2];
+					break;
+
+				case ControllerType.BandaiMicrophone:
+					BandaiMicrophoneButtons = new UInt16[3];
 					break;
 
 				case ControllerType.BandaiHyperShot:
@@ -374,6 +380,13 @@ namespace Mesen.Config
 						InputApi.GetKeyCode("Mouse Right")
 					};
 
+				case ControllerType.BandaiMicrophone:
+					return new UInt16[3] {
+						InputApi.GetKeyCode("1"),
+						InputApi.GetKeyCode("2"),
+						InputApi.GetKeyCode("3")
+					};
+
 				case ControllerType.OekaKidsTablet:
 					return new UInt16[1] {
 						InputApi.GetKeyCode("Mouse Left")
@@ -404,7 +417,9 @@ namespace Mesen.Config
 				
 				case ControllerType.NesZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
 				case ControllerType.FamicomZapper: ZapperButtons = GetDefaultCustomKeys(type); break;
-				
+
+				case ControllerType.BandaiMicrophone: BandaiMicrophoneButtons = GetDefaultCustomKeys(type); break;
+
 				case ControllerType.BandaiHyperShot:
 					BandaiHypershotButtons = GetDefaultCustomKeys(type);
 					//Set default controller keys, too
@@ -443,6 +458,7 @@ namespace Mesen.Config
 	public enum NesArkanoidButtons { Fire };
 	public enum NesZapperButtons { Fire, AimOffscreen };
 	public enum NesOekakidsButtons { Click };
+	public enum NesBandaiMicrophoneButtons { A, B, Microphone };
 	public enum GenericMouseButtons { LeftButton, RightButton };
 
 	public enum NesFamilyBasicKeyboardButtons

@@ -241,6 +241,9 @@ public:
 	uint32_t GetFrameCount();
 	uint32_t GetLagCounter();
 	void ResetLagCounter();
+	
+	bool HasControlDevice(ControllerType type);
+
 	double GetFps();
 	
 	template<CpuType type> __forceinline void ProcessInstruction()

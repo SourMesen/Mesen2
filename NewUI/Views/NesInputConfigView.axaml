@@ -21,7 +21,7 @@
 	<ScrollViewer AllowAutoHide="False">
 		<StackPanel>
 			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblPlayer1}" />
 					<c:InputComboBox
 						Grid.Row="0" Grid.Column="1"
@@ -145,6 +145,16 @@
 							/>
 						</Grid>
 					</c:GroupBox>
+
+					<TextBlock Grid.Row="5" Grid.Column="0" Text="{l:Translate lblMapperInput}" Margin="0 10 0 0" IsVisible="{CompiledBinding ShowMapperInput}" />
+					<c:InputComboBox
+						Margin="0 10 0 0"
+						Grid.Row="5" Grid.Column="1"
+						Config="{CompiledBinding Config.MapperInput}"
+						ControllerType="{CompiledBinding Config.MapperInput.Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesMapperInput}"
+						IsVisible="{CompiledBinding ShowMapperInput}"
+					/>
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpGeneral}">
