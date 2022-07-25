@@ -11,14 +11,14 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0xC000; }
 	uint16_t RegisterEndAddress() override { return 0xC014; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
 		memset(_chrLow, 0, sizeof(_chrLow));
 		memset(_chrHigh, 0, sizeof(_chrHigh));
-		SelectPRGPage(1, -1);
+		SelectPrgPage(1, -1);
 		SetMirroringType(MirroringType::ScreenAOnly);
 	}
 
@@ -37,7 +37,7 @@ protected:
 	void UpdateChrBanks()
 	{
 		for(int i = 0; i < 8; i++) {
-			SelectCHRPage(i, (_chrHigh[i] << 8) | _chrLow[i]);
+			SelectChrPage(i, (_chrHigh[i] << 8) | _chrLow[i]);
 		}
 	}
 
@@ -57,7 +57,7 @@ protected:
 			}
 
 			case 0xC010:
-				SelectPRGPage(0, value);
+				SelectPrgPage(0, value);
 				break;
 
 			case 0xC014:

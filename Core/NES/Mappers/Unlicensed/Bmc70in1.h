@@ -13,8 +13,8 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 4; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -28,7 +28,7 @@ protected:
 			_useOuterBank = true;
 		}
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		UpdateState();
 	}
 
@@ -53,8 +53,8 @@ protected:
 	{
 		switch(_bankMode) {
 			case 0x00: case 0x10:
-				SelectPRGPage(0, _outerBank | _prgReg);
-				SelectPRGPage(1, _outerBank | 7);
+				SelectPrgPage(0, _outerBank | _prgReg);
+				SelectPrgPage(1, _outerBank | 7);
 				break;
 			
 			case 0x20:
@@ -62,13 +62,13 @@ protected:
 				break;
 			
 			case 0x30:
-				SelectPRGPage(0, _outerBank | _prgReg);
-				SelectPRGPage(1, _outerBank | _prgReg);
+				SelectPrgPage(0, _outerBank | _prgReg);
+				SelectPrgPage(1, _outerBank | _prgReg);
 				break;
 		}
 
 		if(!_useOuterBank) {
-			SelectCHRPage(0, _chrReg);
+			SelectChrPage(0, _chrReg);
 		}
 	}
 

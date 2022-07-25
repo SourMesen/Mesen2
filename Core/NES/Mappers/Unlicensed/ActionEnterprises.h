@@ -5,8 +5,8 @@
 class ActionEnterprises : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -28,14 +28,14 @@ protected:
 
 		uint8_t prgPage = ((addr >> 6) & 0x1F) | (chipSelect << 5);
 		if(addr & 0x20) {
-			SelectPRGPage(0, prgPage);
-			SelectPRGPage(1, prgPage);
+			SelectPrgPage(0, prgPage);
+			SelectPrgPage(1, prgPage);
 		} else {
-			SelectPRGPage(0, prgPage & 0xFE);
-			SelectPRGPage(1, (prgPage & 0xFE) + 1);
+			SelectPrgPage(0, prgPage & 0xFE);
+			SelectPrgPage(1, (prgPage & 0xFE) + 1);
 		}
 
-		SelectCHRPage(0, ((addr & 0x0F) << 2) | (value & 0x03));
+		SelectChrPage(0, ((addr & 0x0F) << 2) | (value & 0x03));
 
 		SetMirroringType(addr & 0x2000 ? MirroringType::Horizontal : MirroringType::Vertical);
 	}

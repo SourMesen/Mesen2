@@ -12,8 +12,8 @@ private:
 	uint8_t _prgReg = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -21,11 +21,11 @@ protected:
 		_irqEnabled = false;
 		_prgReg = 0;
 
-		SelectPRGPage(0, -4);
-		SelectPRGPage(1, -3);
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, -4);
+		SelectPrgPage(1, -3);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
+		SelectChrPage(0, 0);
 
 		UpdateState();
 	}
@@ -67,7 +67,7 @@ protected:
 		switch(addr & 0xE003) {
 			case 0x8000:
 				if(_chrRomSize > 0) {
-					SelectCHRPage(0, value & 0x0F);
+					SelectChrPage(0, value & 0x0F);
 				}
 				break;
 

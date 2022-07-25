@@ -78,8 +78,8 @@ class VRC2_4 : public BaseMapper
 		}
 
 	protected:
-		uint16_t GetPRGPageSize() override { return 0x2000; }
-		uint16_t GetCHRPageSize() override { return 0x0400; }
+		uint16_t GetPrgPageSize() override { return 0x2000; }
+		uint16_t GetChrPageSize() override { return 0x0400; }
 		bool AllowRegisterRead() override { return true; }
 
 		void InitMapper() override 
@@ -123,19 +123,19 @@ class VRC2_4 : public BaseMapper
 					//"On VRC2a (mapper 022) only the high 7 bits of the CHR regs are used -- the low bit is ignored.  Therefore, you effectively have to right-shift the CHR page by 1 to get the actual page number."
 					page >>= 1;
 				}
-				SelectCHRPage(i, page);
+				SelectChrPage(i, page);
 			}
 
 			if(_prgMode == 0) {
-				SelectPRGPage(0, _prgReg0);
-				SelectPRGPage(1, _prgReg1);
-				SelectPRGPage(2, -2);
-				SelectPRGPage(3, -1);
+				SelectPrgPage(0, _prgReg0);
+				SelectPrgPage(1, _prgReg1);
+				SelectPrgPage(2, -2);
+				SelectPrgPage(3, -1);
 			} else {
-				SelectPRGPage(0, -2);
-				SelectPRGPage(1, _prgReg1);
-				SelectPRGPage(2, _prgReg0);
-				SelectPRGPage(3, -1);
+				SelectPrgPage(0, -2);
+				SelectPrgPage(1, _prgReg1);
+				SelectPrgPage(2, _prgReg0);
+				SelectPrgPage(3, -1);
 			}
 		}
 

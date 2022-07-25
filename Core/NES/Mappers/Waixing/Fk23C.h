@@ -43,8 +43,8 @@ private:
 	A12Watcher _a12Watcher;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	
 	uint32_t GetChrRamSize() override { return 0x40000; } //Some games have up to 256kb of CHR RAM (only used for iNES 1.0 files w/ no DB entry)
 	uint16_t GetChrRamPageSize() override { return 0x400; }
@@ -150,10 +150,10 @@ protected:
 		}
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		bool useChrRam = !HasChrRom() || (_selectChrRam && _chrRamSize > 0) || (_wramConfigEnabled && _ramInFirstChrBank && page <= 7);
-		BaseMapper::SelectCHRPage(slot, page, useChrRam ? ChrMemoryType::ChrRam : ChrMemoryType::ChrRom);
+		BaseMapper::SelectChrPage(slot, page, useChrRam ? ChrMemoryType::ChrRam : ChrMemoryType::ChrRom);
 	}
 
 	void UpdatePrg()
@@ -165,18 +165,18 @@ protected:
 				if(_extendedMmc3Mode) {
 					uint8_t swap = _invertPrgA14 ? 2 : 0;
 					uint16_t outer = (_prgBaseBits << 1);
-					SelectPRGPage(0 ^ swap, _mmc3Registers[6] | outer);
-					SelectPRGPage(1, _mmc3Registers[7] | outer);
-					SelectPRGPage(2 ^ swap, _mmc3Registers[8] | outer);
-					SelectPRGPage(3, _mmc3Registers[9] | outer);
+					SelectPrgPage(0 ^ swap, _mmc3Registers[6] | outer);
+					SelectPrgPage(1, _mmc3Registers[7] | outer);
+					SelectPrgPage(2 ^ swap, _mmc3Registers[8] | outer);
+					SelectPrgPage(3, _mmc3Registers[9] | outer);
 				} else {
 					uint8_t swap = _invertPrgA14 ? 2 : 0;
 					uint8_t innerMask = 0x3F >> _prgBankingMode;
 					uint16_t outer = (_prgBaseBits << 1) & ~innerMask;
-					SelectPRGPage(0 ^ swap, (_mmc3Registers[6] & innerMask) | outer);
-					SelectPRGPage(1, (_mmc3Registers[7] & innerMask) | outer);
-					SelectPRGPage(2 ^ swap, (0xFE & innerMask) | outer);
-					SelectPRGPage(3, (0xFF & innerMask) | outer);
+					SelectPrgPage(0 ^ swap, (_mmc3Registers[6] & innerMask) | outer);
+					SelectPrgPage(1, (_mmc3Registers[7] & innerMask) | outer);
+					SelectPrgPage(2 ^ swap, (0xFE & innerMask) | outer);
+					SelectPrgPage(3, (0xFF & innerMask) | outer);
 				}
 				break;
 
@@ -199,32 +199,32 @@ protected:
 		if(!_mmc3ChrMode) {
 			uint16_t innerMask = _cnromChrMode ? (_outerChrBankSize ? 1 : 3) : 0;
 			for(int i = 0; i < 8; i++) {
-				SelectCHRPage(i, (((_cnromChrReg & innerMask) | _chrBaseBits) << 3) + i);
+				SelectChrPage(i, (((_cnromChrReg & innerMask) | _chrBaseBits) << 3) + i);
 			}
 		} else {
 			uint8_t swap = _invertChrA12 ? 0x04 : 0;
 			if(_extendedMmc3Mode) {
 				uint16_t outer = (_chrBaseBits << 3);
-				SelectCHRPage(0 ^ swap, _mmc3Registers[0] | outer);
-				SelectCHRPage(1 ^ swap, _mmc3Registers[10] | outer);
-				SelectCHRPage(2 ^ swap, _mmc3Registers[1] | outer);
-				SelectCHRPage(3 ^ swap, _mmc3Registers[11] | outer);
-				SelectCHRPage(4 ^ swap, _mmc3Registers[2] | outer);
-				SelectCHRPage(5 ^ swap, _mmc3Registers[3] | outer);
-				SelectCHRPage(6 ^ swap, _mmc3Registers[4] | outer);
-				SelectCHRPage(7 ^ swap, _mmc3Registers[5] | outer);
+				SelectChrPage(0 ^ swap, _mmc3Registers[0] | outer);
+				SelectChrPage(1 ^ swap, _mmc3Registers[10] | outer);
+				SelectChrPage(2 ^ swap, _mmc3Registers[1] | outer);
+				SelectChrPage(3 ^ swap, _mmc3Registers[11] | outer);
+				SelectChrPage(4 ^ swap, _mmc3Registers[2] | outer);
+				SelectChrPage(5 ^ swap, _mmc3Registers[3] | outer);
+				SelectChrPage(6 ^ swap, _mmc3Registers[4] | outer);
+				SelectChrPage(7 ^ swap, _mmc3Registers[5] | outer);
 			} else {
 				uint8_t innerMask = (_outerChrBankSize ? 0x7F : 0xFF);
 				uint16_t outer = (_chrBaseBits << 3) & ~innerMask;
 
-				SelectCHRPage(0 ^ swap, ((_mmc3Registers[0] & 0xFE) & innerMask) | outer);
-				SelectCHRPage(1 ^ swap, ((_mmc3Registers[0] | 0x01) & innerMask) | outer);
-				SelectCHRPage(2 ^ swap, ((_mmc3Registers[1] & 0xFE) & innerMask) | outer);
-				SelectCHRPage(3 ^ swap, ((_mmc3Registers[1] | 0x01) & innerMask) | outer);
-				SelectCHRPage(4 ^ swap, (_mmc3Registers[2] & innerMask) | outer);
-				SelectCHRPage(5 ^ swap, (_mmc3Registers[3] & innerMask) | outer);
-				SelectCHRPage(6 ^ swap, (_mmc3Registers[4] & innerMask) | outer);
-				SelectCHRPage(7 ^ swap, (_mmc3Registers[5] & innerMask) | outer);
+				SelectChrPage(0 ^ swap, ((_mmc3Registers[0] & 0xFE) & innerMask) | outer);
+				SelectChrPage(1 ^ swap, ((_mmc3Registers[0] | 0x01) & innerMask) | outer);
+				SelectChrPage(2 ^ swap, ((_mmc3Registers[1] & 0xFE) & innerMask) | outer);
+				SelectChrPage(3 ^ swap, ((_mmc3Registers[1] | 0x01) & innerMask) | outer);
+				SelectChrPage(4 ^ swap, (_mmc3Registers[2] & innerMask) | outer);
+				SelectChrPage(5 ^ swap, (_mmc3Registers[3] & innerMask) | outer);
+				SelectChrPage(6 ^ swap, (_mmc3Registers[4] & innerMask) | outer);
+				SelectChrPage(7 ^ swap, (_mmc3Registers[5] & innerMask) | outer);
 			}
 		}
 	}

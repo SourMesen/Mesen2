@@ -7,8 +7,8 @@
 class JalecoSs88006 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	static constexpr uint16_t _irqMask[4] = { 0xFFFF, 0x0FFF, 0x00FF, 0x000F };
 
@@ -28,7 +28,7 @@ protected:
 		_irqCounterSize = 0;
 		_irqEnabled = false;
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 	}
 
 	virtual void Serialize(Serializer& s) override
@@ -61,7 +61,7 @@ protected:
 			_prgBanks[bankNumber] = (_prgBanks[bankNumber] & 0xF0) | value;
 		}
 
-		SelectPRGPage(bankNumber, _prgBanks[bankNumber]);
+		SelectPrgPage(bankNumber, _prgBanks[bankNumber]);
 	}
 
 	void UpdateChrBank(uint8_t bankNumber, uint8_t value, bool updateUpperBits)
@@ -72,7 +72,7 @@ protected:
 			_chrBanks[bankNumber] = (_chrBanks[bankNumber] & 0xF0) | value;
 		}
 
-		SelectCHRPage(bankNumber, _chrBanks[bankNumber]);
+		SelectChrPage(bankNumber, _chrBanks[bankNumber]);
 	}
 
 	virtual void ProcessCpuClock() override

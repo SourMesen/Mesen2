@@ -9,7 +9,7 @@ private:
 	bool _needUpdate = false;
 
 protected:
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 	uint32_t GetChrRamSize() override { return 0x1000; }
 	uint16_t GetChrRamPageSize() override { return 0x1000; }	
 	
@@ -28,9 +28,9 @@ protected:
 		for(int i = 0; i < 2; i++) {
 			page = _registers[i == 0 ? (_chrLatch[0] ? 1 : 0) : (_chrLatch[1] ? 4 : 2)];
 			if(page == 0) {
-				SelectCHRPage(i, 0, ChrMemoryType::ChrRam);
+				SelectChrPage(i, 0, ChrMemoryType::ChrRam);
 			} else {
-				SelectCHRPage(i, page >> 2, ChrMemoryType::ChrRom);
+				SelectChrPage(i, page >> 2, ChrMemoryType::ChrRom);
 			}
 		}
 

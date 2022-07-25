@@ -5,8 +5,8 @@
 class MMC4 : public MMC2
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 
 	void InitMapper() override
 	{
@@ -18,15 +18,15 @@ protected:
 		_rightChrPage[1] = GetPowerOnByte() & 0x1F;
 		_needChrUpdate = false;
 
-		SelectPRGPage(1, -1);
+		SelectPrgPage(1, -1);
 	}
 
 public:
 	void NotifyVramAddressChange(uint16_t addr) override
 	{
 		if(_needChrUpdate) {
-			SelectCHRPage(0, _leftChrPage[_leftLatch]);
-			SelectCHRPage(1, _rightChrPage[_rightLatch]);
+			SelectChrPage(0, _leftChrPage[_leftLatch]);
+			SelectChrPage(1, _rightChrPage[_rightLatch]);
 			_needChrUpdate = false;
 		}
 

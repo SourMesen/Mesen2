@@ -69,11 +69,11 @@ protected:
 				uint8_t prgReg = (_prgReg & 0x07) | 0x08;
 				if(_prgMode) {
 					if(_slotSelect) {
-						SelectPRGPage(0, prgReg);
-						SelectPRGPage(1, 0x0F);
+						SelectPrgPage(0, prgReg);
+						SelectPrgPage(1, 0x0F);
 					} else {
-						SelectPRGPage(0, 0x08);
-						SelectPRGPage(1, prgReg);
+						SelectPrgPage(0, 0x08);
+						SelectPrgPage(1, prgReg);
 					}
 				} else {
 					SelectPrgPage2x(0, prgReg & 0xFE);

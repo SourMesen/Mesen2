@@ -5,18 +5,18 @@
 class GxRom : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, GetPowerOnByte() & 0x03);
-		SelectCHRPage(0, GetPowerOnByte() & 0x03);
+		SelectPrgPage(0, GetPowerOnByte() & 0x03);
+		SelectChrPage(0, GetPowerOnByte() & 0x03);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		SelectPRGPage(0, (value >> 4) & 0x03);
-		SelectCHRPage(0, value & 0x03);
+		SelectPrgPage(0, (value >> 4) & 0x03);
+		SelectChrPage(0, value & 0x03);
 	}
 };

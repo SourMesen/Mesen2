@@ -11,8 +11,8 @@ private:
 	bool _irqEnabled = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x1000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x1000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x4122; }
 	uint16_t RegisterEndAddress() override { return 0x4122; }
 
@@ -20,15 +20,15 @@ protected:
 	{
 		SelectPrgPage4x(0, 0);
 		SelectPrgPage4x(1, 4);
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 
 		if(_prgSize >= 0x10000) {
 			AddRegisterRange(0x4022, 0x4022, MemoryOperation::Write);
 		}
 
-		SetCpuMemoryMapping(0x5000, 0x5FFF, GetPRGPageCount() - 3, PrgMemoryType::PrgRom);
-		SetCpuMemoryMapping(0x6000, 0x6FFF, GetPRGPageCount() - 2, PrgMemoryType::PrgRom);
-		SetCpuMemoryMapping(0x7000, 0x7FFF, GetPRGPageCount() - 1, PrgMemoryType::PrgRom);
+		SetCpuMemoryMapping(0x5000, 0x5FFF, GetPrgPageCount() - 3, PrgMemoryType::PrgRom);
+		SetCpuMemoryMapping(0x6000, 0x6FFF, GetPrgPageCount() - 2, PrgMemoryType::PrgRom);
+		SetCpuMemoryMapping(0x7000, 0x7FFF, GetPrgPageCount() - 1, PrgMemoryType::PrgRom);
 
 		_irqCounter = 0;
 		_irqEnabled = false;

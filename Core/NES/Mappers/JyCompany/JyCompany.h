@@ -54,8 +54,8 @@ private:
 	uint16_t _lastPpuAddr = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -185,10 +185,10 @@ protected:
 
 			case 2:
 			case 3:
-				SelectPRGPage(0, prgRegs[0]);
-				SelectPRGPage(1, prgRegs[1]);
-				SelectPRGPage(2, prgRegs[2]);
-				SelectPRGPage(3, (_prgMode & 0x04) ? prgRegs[3] : 0x3F);
+				SelectPrgPage(0, prgRegs[0]);
+				SelectPrgPage(1, prgRegs[1]);
+				SelectPrgPage(2, prgRegs[2]);
+				SelectPrgPage(3, (_prgMode & 0x04) ? prgRegs[3] : 0x3F);
 				if(_enablePrgAt6000) {
 					SetCpuMemoryMapping(0x6000, 0x7FFF, prgRegs[3], PrgMemoryType::PrgRom);
 				}
@@ -245,7 +245,7 @@ protected:
 
 			case 3:
 				for(int i = 0; i < 8; i++) {
-					SelectCHRPage(i, chrRegs[i]);
+					SelectChrPage(i, chrRegs[i]);
 				}
 				break;
 		}

@@ -8,8 +8,8 @@ private:
 	bool _openBus = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -37,11 +37,11 @@ protected:
 		if(_openBus) {
 			RemoveCpuMemoryMapping(0x8000, 0xBFFF);
 		} else {
-			SelectPRGPage(0, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x0 : (addr >> 1 & 0x2) | 0x0));
-			SelectPRGPage(1, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x1 : (addr >> 1 & 0x2) | 0x1));
+			SelectPrgPage(0, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x0 : (addr >> 1 & 0x2) | 0x0));
+			SelectPrgPage(1, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x1 : (addr >> 1 & 0x2) | 0x1));
 		}
-		SelectPRGPage(2, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x2 : (addr >> 1 & 0x2) | 0x0));
-		SelectPRGPage(3, (addr & 0x800) ? ((addr & 0x07C) | ((addr & 0x06) ? 0x03 : 0x01)) : ((addr >> 1 & 0x01FC) | ((addr & 0x02) ? 0x03 : ((addr >> 1 & 0x02) | 0x01))));
+		SelectPrgPage(2, (addr >> 1 & 0x1FC) | ((addr & 0x2) ? 0x2 : (addr >> 1 & 0x2) | 0x0));
+		SelectPrgPage(3, (addr & 0x800) ? ((addr & 0x07C) | ((addr & 0x06) ? 0x03 : 0x01)) : ((addr >> 1 & 0x01FC) | ((addr & 0x02) ? 0x03 : ((addr >> 1 & 0x02) | 0x01))));
 
 		SetMirroringType(addr & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);
 	}

@@ -13,8 +13,8 @@ private:
 
 protected:
 	bool AllowRegisterRead() override { return true; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 
 	void InitMapper() override
 	{
@@ -39,26 +39,26 @@ protected:
 				uint32_t currentNametable = (addr >> 11) & 0x01;
 				if(currentNametable != _lastNt) {
 					_lastNt = currentNametable;
-					SelectCHRPage(0, _lastNt);
+					SelectChrPage(0, _lastNt);
 				}
 			}
 		} else {
 			if(_lastNt != 0) {
 				_lastNt = 0;
-				SelectCHRPage(0, _lastNt);
+				SelectChrPage(0, _lastNt);
 			}
 		}
 	}
 
 	void UpdateState()
 	{
-		SelectCHRPage(0, _lastNt);
-		SelectCHRPage(1, 1);
+		SelectChrPage(0, _lastNt);
+		SelectChrPage(1, 1);
 		if(_mode & 0x04)
 			SelectPrgPage2x(0, (_prgReg & 0x07) << 1);
 		else {
-			SelectPRGPage(0, _prgReg & 0x0F);
-			SelectPRGPage(1, 0);
+			SelectPrgPage(0, _prgReg & 0x0F);
+			SelectPrgPage(1, 0);
 		}
 		SetMirroringType(_mode & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);
 	}

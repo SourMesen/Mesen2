@@ -5,12 +5,12 @@
 class A65AS : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		WriteRegister(0x8000, 0);
 	}
 
@@ -19,8 +19,8 @@ protected:
 		if(value & 0x40) {
 			SelectPrgPage2x(0, value & 0x1E);
 		} else {
-			SelectPRGPage(0, ((value & 0x30) >> 1) | (value & 0x07));
-			SelectPRGPage(1, ((value & 0x30) >> 1) | 0x07);
+			SelectPrgPage(0, ((value & 0x30) >> 1) | (value & 0x07));
+			SelectPrgPage(1, ((value & 0x30) >> 1) | 0x07);
 		}
 		
 		if(value & 0x80) {

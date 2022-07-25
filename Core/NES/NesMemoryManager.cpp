@@ -13,14 +13,14 @@ NesMemoryManager::NesMemoryManager(NesConsole* console)
 	_console = console;
 	_emu = console->GetEmulator();
 	_cheatManager = _emu->GetCheatManager();
-	_internalRAM = new uint8_t[InternalRAMSize];
-	_emu->RegisterMemory(MemoryType::NesInternalRam, _internalRAM, InternalRAMSize);
-	_internalRamHandler.SetInternalRam(_internalRAM);
+	_internalRam = new uint8_t[InternalRamSize];
+	_emu->RegisterMemory(MemoryType::NesInternalRam, _internalRam, InternalRamSize);
+	_internalRamHandler.SetInternalRam(_internalRam);
 
-	_ramReadHandlers = new INesMemoryHandler*[RAMSize];
-	_ramWriteHandlers = new INesMemoryHandler*[RAMSize];
+	_ramReadHandlers = new INesMemoryHandler*[RamSize];
+	_ramWriteHandlers = new INesMemoryHandler*[RamSize];
 
-	for(int i = 0; i < RAMSize; i++) {
+	for(int i = 0; i < RamSize; i++) {
 		_ramReadHandlers[i] = &_openBusHandler;
 		_ramWriteHandlers[i] = &_openBusHandler;
 	}
@@ -30,7 +30,7 @@ NesMemoryManager::NesMemoryManager(NesConsole* console)
 
 NesMemoryManager::~NesMemoryManager()
 {
-	delete[] _internalRAM;
+	delete[] _internalRam;
 
 	delete[] _ramReadHandlers;
 	delete[] _ramWriteHandlers;
@@ -44,7 +44,7 @@ void NesMemoryManager::SetMapper(BaseMapper* mapper)
 void NesMemoryManager::Reset(bool softReset)
 {
 	if(!softReset) {
-		_emu->GetSettings()->InitializeRam(_internalRAM, InternalRAMSize);
+		_emu->GetSettings()->InitializeRam(_internalRam, InternalRamSize);
 	}
 
 	_mapper->Reset(softReset);
@@ -90,9 +90,9 @@ void NesMemoryManager::UnregisterIODevice(INesMemoryHandler*handler)
 	}
 }
 
-uint8_t* NesMemoryManager::GetInternalRAM()
+uint8_t* NesMemoryManager::GetInternalRam()
 {
-	return _internalRAM;
+	return _internalRam;
 }
 
 uint8_t NesMemoryManager::DebugRead(uint16_t addr)
@@ -138,7 +138,7 @@ void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSide
 			if(disableSideEffects) {
 				if(handler == _mapper) {
 					//Only allow writes to prg/chr ram/rom (e.g not ppu, apu, mapper registers, etc.)
-					((BaseMapper*)handler)->DebugWriteRAM(addr, value);
+					((BaseMapper*)handler)->DebugWriteRam(addr, value);
 				}
 			} else {
 				handler->WriteRam(addr, value);
@@ -149,7 +149,7 @@ void NesMemoryManager::DebugWrite(uint16_t addr, uint8_t value, bool disableSide
 
 void NesMemoryManager::Serialize(Serializer &s)
 {
-	SVArray(_internalRAM, NesMemoryManager::InternalRAMSize);
+	SVArray(_internalRam, NesMemoryManager::InternalRamSize);
 }
 
 uint8_t NesMemoryManager::GetOpenBus(uint8_t mask)

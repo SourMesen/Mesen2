@@ -10,18 +10,18 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		_irqCounter = 0;
 
 		SetCpuMemoryMapping(0x6000, 0x7FFF, 6, PrgMemoryType::PrgRom);
-		SelectPRGPage(0, 4);
-		SelectPRGPage(1, 5);
-		SelectPRGPage(3, 7);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 4);
+		SelectPrgPage(1, 5);
+		SelectPrgPage(3, 7);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -51,7 +51,7 @@ protected:
 				_irqCounter = 4096;
 				break;
 			case 0xE000:
-				SelectPRGPage(2, value);
+				SelectPrgPage(2, value);
 				break;
 		}
 	}

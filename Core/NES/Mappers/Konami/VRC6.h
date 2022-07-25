@@ -22,8 +22,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	
 	void InitMapper() override
 	{
@@ -33,7 +33,7 @@ protected:
 		_irq->Reset();
 		_audio->Reset();
 		memset(_chrRegisters, 0, sizeof(_chrRegisters));
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 	}
 	
 	void Serialize(Serializer& s) override
@@ -69,36 +69,36 @@ protected:
 
 		switch(_bankingMode & 0x03) {
 			case 0:
-				SelectCHRPage(0, _chrRegisters[0]);
-				SelectCHRPage(1, _chrRegisters[1]);
-				SelectCHRPage(2, _chrRegisters[2]);
-				SelectCHRPage(3, _chrRegisters[3]);
-				SelectCHRPage(4, _chrRegisters[4]);
-				SelectCHRPage(5, _chrRegisters[5]);
-				SelectCHRPage(6, _chrRegisters[6]);
-				SelectCHRPage(7, _chrRegisters[7]);
+				SelectChrPage(0, _chrRegisters[0]);
+				SelectChrPage(1, _chrRegisters[1]);
+				SelectChrPage(2, _chrRegisters[2]);
+				SelectChrPage(3, _chrRegisters[3]);
+				SelectChrPage(4, _chrRegisters[4]);
+				SelectChrPage(5, _chrRegisters[5]);
+				SelectChrPage(6, _chrRegisters[6]);
+				SelectChrPage(7, _chrRegisters[7]);
 				break;
 
 			case 1:
-				SelectCHRPage(0, _chrRegisters[0] & mask);
-				SelectCHRPage(1, (_chrRegisters[0] & mask) | orMask);
-				SelectCHRPage(2, _chrRegisters[1] & mask);
-				SelectCHRPage(3, (_chrRegisters[1] & mask) | orMask);
-				SelectCHRPage(4, _chrRegisters[2] & mask);
-				SelectCHRPage(5, (_chrRegisters[2] & mask) | orMask);
-				SelectCHRPage(6, _chrRegisters[3] & mask);
-				SelectCHRPage(7, (_chrRegisters[3] & mask) | orMask);
+				SelectChrPage(0, _chrRegisters[0] & mask);
+				SelectChrPage(1, (_chrRegisters[0] & mask) | orMask);
+				SelectChrPage(2, _chrRegisters[1] & mask);
+				SelectChrPage(3, (_chrRegisters[1] & mask) | orMask);
+				SelectChrPage(4, _chrRegisters[2] & mask);
+				SelectChrPage(5, (_chrRegisters[2] & mask) | orMask);
+				SelectChrPage(6, _chrRegisters[3] & mask);
+				SelectChrPage(7, (_chrRegisters[3] & mask) | orMask);
 				break;
 
 			case 2: case 3:
-				SelectCHRPage(0, _chrRegisters[0]);
-				SelectCHRPage(1, _chrRegisters[1]);
-				SelectCHRPage(2, _chrRegisters[2]);
-				SelectCHRPage(3, _chrRegisters[3]);
-				SelectCHRPage(4, _chrRegisters[4] & mask);
-				SelectCHRPage(5, (_chrRegisters[4] & mask) | orMask);
-				SelectCHRPage(6, _chrRegisters[5] & mask);
-				SelectCHRPage(7, (_chrRegisters[5] & mask) | orMask);
+				SelectChrPage(0, _chrRegisters[0]);
+				SelectChrPage(1, _chrRegisters[1]);
+				SelectChrPage(2, _chrRegisters[2]);
+				SelectChrPage(3, _chrRegisters[3]);
+				SelectChrPage(4, _chrRegisters[4] & mask);
+				SelectChrPage(5, (_chrRegisters[4] & mask) | orMask);
+				SelectChrPage(6, _chrRegisters[5] & mask);
+				SelectChrPage(7, (_chrRegisters[5] & mask) | orMask);
 				break;
 		}
 		
@@ -248,7 +248,7 @@ protected:
 				break;
 				
 			case 0xC000: case 0xC001: case 0xC002: case 0xC003:
-				SelectPRGPage(2, value & 0x1F);
+				SelectPrgPage(2, value & 0x1F);
 				break;
 
 			case 0xD000: case 0xD001: case 0xD002: case 0xD003:

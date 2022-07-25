@@ -72,12 +72,12 @@ protected:
 
 	virtual void InitMapper() = 0;
 	virtual void InitMapper(RomData &romData);
-	virtual uint16_t GetPRGPageSize() = 0;
-	virtual uint16_t GetCHRPageSize() = 0;
+	virtual uint16_t GetPrgPageSize() = 0;
+	virtual uint16_t GetChrPageSize() = 0;
 
 	bool IsNes20();
 
-	virtual uint16_t GetChrRamPageSize() { return GetCHRPageSize(); }
+	virtual uint16_t GetChrRamPageSize() { return GetChrPageSize(); }
 
 	//Save ram is battery backed and saved to disk
 	virtual uint32_t GetSaveRamSize() { return 0x2000; }
@@ -108,7 +108,7 @@ protected:
 
 	void SelectPrgPage4x(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom);
 	void SelectPrgPage2x(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom);
-	virtual void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom);
+	virtual void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom);
 	void SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16_t pageNumber, PrgMemoryType type, int8_t accessType = -1);
 	void SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, PrgMemoryType type, uint32_t sourceOffset, int8_t accessType);
 	void SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t *source, int8_t accessType = -1);
@@ -117,7 +117,7 @@ protected:
 	virtual void SelectChrPage8x(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default);
 	virtual void SelectChrPage4x(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default);
 	virtual void SelectChrPage2x(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default);
-	virtual void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default);
+	virtual void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default);
 	void SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint16_t pageNumber, ChrMemoryType type = ChrMemoryType::Default, int8_t accessType = -1);
 	void SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMemoryType type, uint32_t sourceOffset, int8_t accessType);
 	void SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t* sourceMemory, int8_t accessType = -1);
@@ -127,8 +127,8 @@ protected:
 	virtual void LoadBattery();
 	string GetBatteryFilename();
 
-	uint32_t GetPRGPageCount();
-	uint32_t GetCHRPageCount();
+	uint32_t GetPrgPageCount();
+	uint32_t GetChrPageCount();
 
 	uint8_t GetPowerOnByte(uint8_t defaultValue = 0);
 	uint32_t GetDipSwitches();
@@ -179,9 +179,9 @@ public:
 
 	uint8_t ReadRam(uint16_t addr) override;
 	uint8_t PeekRam(uint16_t addr) override;
-	uint8_t DebugReadRAM(uint16_t addr);
+	uint8_t DebugReadRam(uint16_t addr);
 	void WriteRam(uint16_t addr, uint8_t value) override;
-	void DebugWriteRAM(uint16_t addr, uint8_t value);
+	void DebugWriteRam(uint16_t addr, uint8_t value);
 	void WritePrgRam(uint16_t addr, uint8_t value);
 
 	virtual uint8_t MapperReadVram(uint16_t addr, MemoryOperationType operationType);

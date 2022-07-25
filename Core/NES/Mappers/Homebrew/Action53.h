@@ -11,8 +11,8 @@ private:
 	uint8_t _mirroringBit = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -22,7 +22,7 @@ protected:
 
 		AddRegisterRange(0x5000, 0x5FFF, MemoryOperation::Write);
 
-		SelectPRGPage(1, -1);
+		SelectPrgPage(1, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -54,23 +54,23 @@ protected:
 		uint8_t prgSelect = _regs[1] & 0x0F;
 		uint16_t outerPrgSelect = _regs[3] << 1;
 
-		SelectCHRPage(0, chrSelect);
+		SelectChrPage(0, chrSelect);
 
 		if(prgSize) {
 			uint8_t bank = (slotSelect ? 0 : 1);
 			switch(gameSize) {
-				case 0: SelectPRGPage(bank, (outerPrgSelect & 0x1FE) | (prgSelect & 0x01)); break;
-				case 1: SelectPRGPage(bank, (outerPrgSelect & 0x1FC) | (prgSelect & 0x03)); break;
-				case 2: SelectPRGPage(bank, (outerPrgSelect & 0x1F8) | (prgSelect & 0x07)); break;
-				case 3: SelectPRGPage(bank, (outerPrgSelect & 0x1F0) | (prgSelect & 0x0F)); break;
+				case 0: SelectPrgPage(bank, (outerPrgSelect & 0x1FE) | (prgSelect & 0x01)); break;
+				case 1: SelectPrgPage(bank, (outerPrgSelect & 0x1FC) | (prgSelect & 0x03)); break;
+				case 2: SelectPrgPage(bank, (outerPrgSelect & 0x1F8) | (prgSelect & 0x07)); break;
+				case 3: SelectPrgPage(bank, (outerPrgSelect & 0x1F0) | (prgSelect & 0x0F)); break;
 			}
-			SelectPRGPage(slotSelect ? 1 : 0, (outerPrgSelect & 0x1FE) | slotSelect);
+			SelectPrgPage(slotSelect ? 1 : 0, (outerPrgSelect & 0x1FE) | slotSelect);
 		} else {
 			prgSelect <<= 1;
 			uint16_t outerAnd[4]{ 0x1FE, 0x1FC, 0x1F8, 0x1F0 };
 			uint8_t innerAnd[4]{ 0x01, 0x03, 0x07, 0x0F };
-			SelectPRGPage(0, (outerPrgSelect & outerAnd[gameSize]) | (prgSelect & innerAnd[gameSize]));
-			SelectPRGPage(1, (outerPrgSelect & outerAnd[gameSize]) | ((prgSelect | 0x01) & innerAnd[gameSize]));
+			SelectPrgPage(0, (outerPrgSelect & outerAnd[gameSize]) | (prgSelect & innerAnd[gameSize]));
+			SelectPrgPage(1, (outerPrgSelect & outerAnd[gameSize]) | ((prgSelect | 0x01) & innerAnd[gameSize]));
 		}
 	}
 

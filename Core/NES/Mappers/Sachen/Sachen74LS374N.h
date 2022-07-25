@@ -14,8 +14,8 @@ protected:
 	uint32_t GetDipSwitchCount() override { return _romInfo.MapperID == 150 ? 1 : 0; }
 	uint16_t RegisterStartAddress() override { return 0x4100; }
 	uint16_t RegisterEndAddress() override { return 0x7FFF; }
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -40,8 +40,8 @@ protected:
 		} else {
 			chrPage = (_regs[2] & 0x01) | ((_regs[4] & 0x01) << 1) | ((_regs[6] & 0x03) << 2);
 		}
-		SelectCHRPage(0, chrPage);
-		SelectPRGPage(0, _regs[5] & 0x03);
+		SelectChrPage(0, chrPage);
+		SelectPrgPage(0, _regs[5] & 0x03);
 
 		switch((_regs[7] >> 1) & 0x03) {
 			case 0: SetNametables(0, 0, 0, 1); break;

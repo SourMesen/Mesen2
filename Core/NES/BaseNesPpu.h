@@ -36,7 +36,7 @@ protected:
 	//32
 	bool _sprite0Visible = false;
 	uint8_t _spriteCount = 0;
-	uint8_t _secondaryOAMAddr = 0;
+	uint8_t _secondaryOamAddr = 0;
 	uint8_t _oamCopybuffer = 0;
 	bool _spriteInRange = false;
 	bool _sprite0Added = false;
@@ -53,8 +53,8 @@ protected:
 	////////////////////////
 	//64 : end of cache line
 	////////////////////////
-	uint8_t _paletteRAM[0x20] = {};
-	uint8_t _secondarySpriteRAM[0x20] = {};
+	uint8_t _paletteRam[0x20] = {};
+	uint8_t _secondarySpriteRam[0x20] = {};
 	////////////////////////
 	//128 : end of cache line
 	////////////////////////
@@ -82,7 +82,7 @@ protected:
   ////////////////////////
 	//192 : end of cache line
 	////////////////////////
-	uint8_t _spriteRAM[0x100] = {};
+	uint8_t _spriteRam[0x100] = {};
 	////////////////////////
 	//448 : end of cache line
 	////////////////////////

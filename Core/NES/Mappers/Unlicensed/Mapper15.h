@@ -5,12 +5,12 @@
 class Mapper15 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Reset(bool softReset) override
@@ -30,28 +30,28 @@ protected:
 		
 		switch(mode) {
 			case 0:
-				SelectPRGPage(0, bank  ^ subBank);
-				SelectPRGPage(1, (bank + 1) ^ subBank);
-				SelectPRGPage(2, (bank + 2) ^ subBank);
-				SelectPRGPage(3, (bank + 3) ^ subBank);
+				SelectPrgPage(0, bank  ^ subBank);
+				SelectPrgPage(1, (bank + 1) ^ subBank);
+				SelectPrgPage(2, (bank + 2) ^ subBank);
+				SelectPrgPage(3, (bank + 3) ^ subBank);
 				break;
 
 			case 1:
 			case 3:
 				bank |= subBank;
-				SelectPRGPage(0, bank);
-				SelectPRGPage(1, bank + 1);
+				SelectPrgPage(0, bank);
+				SelectPrgPage(1, bank + 1);
 				bank = ((mode == 3) ? bank : (bank | 0x0E)) | subBank;
-				SelectPRGPage(2, bank + 0);
-				SelectPRGPage(3, bank + 1);
+				SelectPrgPage(2, bank + 0);
+				SelectPrgPage(3, bank + 1);
 				break;
 
 			case 2:
 				bank |= subBank;
-				SelectPRGPage(0, bank);
-				SelectPRGPage(1, bank);
-				SelectPRGPage(2, bank);
-				SelectPRGPage(3, bank);
+				SelectPrgPage(0, bank);
+				SelectPrgPage(1, bank);
+				SelectPrgPage(2, bank);
+				SelectPrgPage(3, bank);
 				break;
 		}
 	}

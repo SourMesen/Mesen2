@@ -13,8 +13,8 @@ private:
 	A12Watcher _a12Watcher;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -53,12 +53,12 @@ protected:
 	{
 		switch(addr) {
 			case 0x8000: case 0x8001: case 0x8002: case 0x8003:
-				SelectPRGPage(addr & 0x03, value);
+				SelectPrgPage(addr & 0x03, value);
 				break;
 
 			case 0xA000: case 0xA001: case 0xA002: case 0xA003:
 			case 0xA004: case 0xA005: case 0xA006: case 0xA007:
-				SelectCHRPage(addr & 0x07, value);
+				SelectChrPage(addr & 0x07, value);
 				break;
 
 			case 0xC001: _irqReloadValue = value; break;

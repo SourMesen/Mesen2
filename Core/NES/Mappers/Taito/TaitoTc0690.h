@@ -14,8 +14,8 @@ protected:
 	void InitMapper() override
 	{
 		_irqDelay = 0;
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 
 		//This cart appears to behave differently (maybe not an identical mapper?)
 		//IRQ seems to be triggered at a different timing (approx 100 cpu cycles before regular mapper 48 timings)
@@ -49,21 +49,21 @@ protected:
 	{
 		switch(addr & 0xE003) {
 			case 0x8000:
-				SelectPRGPage(0, value & 0x3F);
+				SelectPrgPage(0, value & 0x3F);
 				break;
 			case 0x8001:
-				SelectPRGPage(1, value & 0x3F);
+				SelectPrgPage(1, value & 0x3F);
 				break;
 			case 0x8002:
-				SelectCHRPage(0, value * 2);
-				SelectCHRPage(1, value * 2 + 1);
+				SelectChrPage(0, value * 2);
+				SelectChrPage(1, value * 2 + 1);
 				break;
 			case 0x8003:
-				SelectCHRPage(2, value * 2);
-				SelectCHRPage(3, value * 2 + 1);
+				SelectChrPage(2, value * 2);
+				SelectChrPage(3, value * 2 + 1);
 				break;
 			case 0xA000: case 0xA001: case 0xA002: case 0xA003:
-				SelectCHRPage(4 + (addr & 0x03), value);
+				SelectChrPage(4 + (addr & 0x03), value);
 				break;
 
 			case 0xC000:

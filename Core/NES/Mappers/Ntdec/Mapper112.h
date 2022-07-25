@@ -12,8 +12,8 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0x8000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -24,8 +24,8 @@ protected:
 		SetMirroringType(MirroringType::Vertical);
 		AddRegisterRange(0x4020, 0x5FFF, MemoryOperation::Write);
 
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 		UpdateState();
 	}
 	
@@ -38,15 +38,15 @@ protected:
 
 	void UpdateState()
 	{
-		SelectPRGPage(0, _registers[0]);
-		SelectPRGPage(1, _registers[1]);
+		SelectPrgPage(0, _registers[0]);
+		SelectPrgPage(1, _registers[1]);
 
 		SelectChrPage2x(0, _registers[2]);
 		SelectChrPage2x(1, _registers[3]);
-		SelectCHRPage(4, _registers[4] | ((_outerChrBank & 0x10) << 4));
-		SelectCHRPage(5, _registers[5] | ((_outerChrBank & 0x20) << 3));
-		SelectCHRPage(6, _registers[6] | ((_outerChrBank & 0x40) << 2));
-		SelectCHRPage(7, _registers[7] | ((_outerChrBank & 0x80) << 1));
+		SelectChrPage(4, _registers[4] | ((_outerChrBank & 0x10) << 4));
+		SelectChrPage(5, _registers[5] | ((_outerChrBank & 0x20) << 3));
+		SelectChrPage(6, _registers[6] | ((_outerChrBank & 0x40) << 2));
+		SelectChrPage(7, _registers[7] | ((_outerChrBank & 0x80) << 1));
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

@@ -27,10 +27,10 @@ private:
 		//"$4120-7FFF:  [AAAA BBBB]"
 		//" 'A' and 'B' bits of the $4120 reg seem to be effectively OR'd."
 		uint8_t prgPage = (((_prgReg) | (_prgReg >> 4)) & 0x07) * 4;
-		SelectPRGPage(0, prgPage);
-		SelectPRGPage(1, prgPage+1);
-		SelectPRGPage(2, prgPage+2);
-		SelectPRGPage(3, prgPage+3);
+		SelectPrgPage(0, prgPage);
+		SelectPrgPage(1, prgPage+1);
+		SelectPrgPage(2, prgPage+2);
+		SelectPrgPage(3, prgPage+3);
 	}
 
 	void Serialize(Serializer& s) override

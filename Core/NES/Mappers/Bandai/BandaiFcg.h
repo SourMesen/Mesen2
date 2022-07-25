@@ -23,8 +23,8 @@ private:
 	unique_ptr<BaseEeprom24C0X> _extraEeprom;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint16_t RegisterStartAddress() override { return 0x6000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 	bool AllowRegisterRead() override { return true; }
@@ -87,7 +87,7 @@ protected:
 		}
 
 		//Last bank
-		SelectPRGPage(1, 0x0F);
+		SelectPrgPage(1, 0x0F);
 	}
 
 	void Serialize(Serializer& s) override
@@ -158,15 +158,15 @@ protected:
 		switch(addr & 0x000F) {
 			case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
 				_chrRegs[addr & 0x07] = value;
-				if(_romInfo.MapperID == 153 || GetPRGPageCount() >= 0x20) {
+				if(_romInfo.MapperID == 153 || GetPrgPageCount() >= 0x20) {
 					_prgBankSelect = 0;
 					for(int i = 0; i < 8; i++) {
 						_prgBankSelect |= (_chrRegs[i] & 0x01) << 4;
 					}
-					SelectPRGPage(0, _prgPage | _prgBankSelect);
-					SelectPRGPage(1, 0x0F | _prgBankSelect);
+					SelectPrgPage(0, _prgPage | _prgBankSelect);
+					SelectPrgPage(1, 0x0F | _prgBankSelect);
 				} else if(!HasChrRam() && _romInfo.MapperID != 157) {
-					SelectCHRPage(addr & 0x07, value);
+					SelectChrPage(addr & 0x07, value);
 				}
 
 				if(_extraEeprom && _romInfo.MapperID == 157 && (addr & 0x0F) <= 3) {
@@ -176,7 +176,7 @@ protected:
 
 			case 0x08:
 				_prgPage = value & 0x0F;
-				SelectPRGPage(0, _prgPage | _prgBankSelect);
+				SelectPrgPage(0, _prgPage | _prgBankSelect);
 				break;
 
 			case 0x09:

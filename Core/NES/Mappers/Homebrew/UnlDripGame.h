@@ -19,8 +19,8 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 1; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 	bool AllowRegisterRead() override { return true; }
 	uint16_t RegisterStartAddress() override { return 0x8000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
@@ -40,7 +40,7 @@ protected:
 		_emu->GetSettings()->InitializeRam(_extendedAttributes[0], 0x400);
 		_emu->GetSettings()->InitializeRam(_extendedAttributes[1], 0x400);
 
-		SelectPRGPage(1, -1);
+		SelectPrgPage(1, -1);
 
 		AddRegisterRange(0x4800, 0x5FFF, MemoryOperation::Read);
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
@@ -163,11 +163,11 @@ protected:
 					UpdateWorkRamState();
 					break;
 
-				case 0x800B: SelectPRGPage(0, value & 0x0F); break;
-				case 0x800C: SelectCHRPage(0, value & 0x0F); break;
-				case 0x800D: SelectCHRPage(1, value & 0x0F); break;
-				case 0x800E: SelectCHRPage(2, value & 0x0F); break;
-				case 0x800F: SelectCHRPage(3, value & 0x0F); break;
+				case 0x800B: SelectPrgPage(0, value & 0x0F); break;
+				case 0x800C: SelectChrPage(0, value & 0x0F); break;
+				case 0x800D: SelectChrPage(1, value & 0x0F); break;
+				case 0x800E: SelectChrPage(2, value & 0x0F); break;
+				case 0x800F: SelectChrPage(3, value & 0x0F); break;
 			}
 		} else {
 			//Attribute expansion memory at $C000-$C7FF is mirrored throughout $C000-$FFFF.

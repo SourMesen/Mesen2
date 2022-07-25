@@ -9,12 +9,12 @@ private:
 	uint8_t _mode = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Reset(bool softReset) override
@@ -33,12 +33,12 @@ protected:
 	void UpdateState()
 	{
 		if(_mode & 0x02) {
-			SelectPRGPage(0, (_regs[0] & 0x0F) | (_regs[1] & 0x70));
+			SelectPrgPage(0, (_regs[0] & 0x0F) | (_regs[1] & 0x70));
 		} else {
-			SelectPRGPage(0, _regs[0] & 0x03);
+			SelectPrgPage(0, _regs[0] & 0x03);
 		}
 		
-		SelectPRGPage(1, _regs[1] & 0x7F);
+		SelectPrgPage(1, _regs[1] & 0x7F);
 		SetMirroringType(_regs[0] & 0x10 ? MirroringType::Vertical : MirroringType::Horizontal);
 	}
 

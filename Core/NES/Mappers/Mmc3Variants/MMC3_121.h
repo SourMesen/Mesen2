@@ -30,29 +30,29 @@ protected:
 		return _exRegs[4];
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		uint8_t orValue = (_exRegs[3] & 0x80) >> 2;
 		if(_exRegs[5] & 0x3F) {
-			BaseMapper::SelectPRGPage(slot, (page & 0x1F) | orValue, memoryType);
-			BaseMapper::SelectPRGPage(1, _exRegs[2] | orValue, memoryType);
-			BaseMapper::SelectPRGPage(2, _exRegs[1] | orValue, memoryType);
-			BaseMapper::SelectPRGPage(3, _exRegs[0] | orValue, memoryType);
+			BaseMapper::SelectPrgPage(slot, (page & 0x1F) | orValue, memoryType);
+			BaseMapper::SelectPrgPage(1, _exRegs[2] | orValue, memoryType);
+			BaseMapper::SelectPrgPage(2, _exRegs[1] | orValue, memoryType);
+			BaseMapper::SelectPrgPage(3, _exRegs[0] | orValue, memoryType);
 		} else {
-			BaseMapper::SelectPRGPage(slot, (page & 0x1F) | orValue, memoryType);
+			BaseMapper::SelectPrgPage(slot, (page & 0x1F) | orValue, memoryType);
 		}
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
 	{
 		if(_prgSize == _chrRomSize) {
 			//Hack for Super 3-in-1
-			BaseMapper::SelectCHRPage(slot, page | ((_exRegs[3] & 0x80) << 1), memoryType);
+			BaseMapper::SelectChrPage(slot, page | ((_exRegs[3] & 0x80) << 1), memoryType);
 		} else {			
 			if((slot < 4 && _chrMode == 0) || (slot >= 4 && _chrMode == 1)) {
 				page |= 0x100;
 			}
-			BaseMapper::SelectCHRPage(slot, page, memoryType);
+			BaseMapper::SelectChrPage(slot, page, memoryType);
 		}
 	}
 

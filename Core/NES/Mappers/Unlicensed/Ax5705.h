@@ -8,18 +8,18 @@ private:
 	uint8_t _chrReg[8] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
 		memset(_chrReg, 0, sizeof(_chrReg));
 
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 
 		for(int i = 0; i < 8; i++) {
-			SelectCHRPage(i, _chrReg[i]);
+			SelectChrPage(i, _chrReg[i]);
 		}
 	}
 
@@ -36,7 +36,7 @@ protected:
 		} else {
 			_chrReg[index] = (_chrReg[index] & 0x0F) | ((((value & 0x04) >> 1) | ((value & 0x02) << 1) | (value & 0x09)) << 4);
 		}
-		SelectCHRPage(index, _chrReg[index]);
+		SelectChrPage(index, _chrReg[index]);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -55,9 +55,9 @@ protected:
 			}
 		} else {
 			switch(addr & 0xF00F) {
-				case 0x8000: SelectPRGPage(0, ((value & 0x02) << 2) | ((value & 0x08) >> 2) | (value & 0x05)); break; // EPROM dump have mixed PRG and CHR banks, data lines to mapper seems to be mixed
+				case 0x8000: SelectPrgPage(0, ((value & 0x02) << 2) | ((value & 0x08) >> 2) | (value & 0x05)); break; // EPROM dump have mixed PRG and CHR banks, data lines to mapper seems to be mixed
 				case 0x8008: SetMirroringType(value & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical); break;
-				case 0xA000: SelectPRGPage(1, ((value & 0x02) << 2) | ((value & 0x08) >> 2) | (value & 0x05)); break;
+				case 0xA000: SelectPrgPage(1, ((value & 0x02) << 2) | ((value & 0x08) >> 2) | (value & 0x05)); break;
 			}
 		}
 	}

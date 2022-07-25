@@ -599,7 +599,7 @@ void NesConsole::ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_
 		if(absAddr.Address >= 0) {
 			//Game Genie causes a bus conflict when the cartridge maps anything below $8000
 			//Only processed when addr >= $C020 because the mapper implementation never maps anything below $4020
-			value &= _mapper->DebugReadRAM(addr - 0x8000);
+			value &= _mapper->DebugReadRam(addr - 0x8000);
 		}
 	}
 }

@@ -15,8 +15,8 @@ private:
 	vector<uint8_t> _orgPrgRom;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint32_t GetWorkRamSize() override { return 0; }
 	uint32_t GetSaveRamSize() override { return 0; }
 	uint16_t RegisterStartAddress() override { return 0x8000; }
@@ -28,8 +28,8 @@ protected:
 	void InitMapper() override
 	{
 		_flash.reset(new FlashSST39SF040(_prgRom, _prgSize));
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, -1);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, -1);
 
 		_enableMirroringBit = false;
 		if(GetMirroringType() == MirroringType::ScreenAOnly || GetMirroringType() == MirroringType::ScreenBOnly) {
@@ -115,10 +115,10 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		if(!HasBattery() || addr >= 0xC000) {
-			SelectPRGPage(0, value & 0x1F);
+			SelectPrgPage(0, value & 0x1F);
 			_prgBank = value & 0x1F;
 
-			SelectCHRPage(0, (value >> 5) & 0x03);
+			SelectChrPage(0, (value >> 5) & 0x03);
 
 			if(_enableMirroringBit) {
 				SetMirroringType(value & 0x80 ? MirroringType::ScreenBOnly : MirroringType::ScreenAOnly);

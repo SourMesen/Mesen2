@@ -8,8 +8,8 @@ private:
 	uint8_t _regs[4] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -40,14 +40,14 @@ protected:
 				SelectPrgPage2x(0, (_regs[1] & 0x1F) << 1);
 			} else {
 				int bank = ((_regs[1] & 0x1F) << 1) | ((_regs[1] >> 6) & 0x01);
-				SelectPRGPage(0, bank);
-				SelectPRGPage(1, bank);
+				SelectPrgPage(0, bank);
+				SelectPrgPage(1, bank);
 			}
 		} else {
-			SelectPRGPage(1, ((_regs[1] & 0x1F) << 1) | ((_regs[1] >> 6) & 0x01));
+			SelectPrgPage(1, ((_regs[1] & 0x1F) << 1) | ((_regs[1] >> 6) & 0x01));
 		}
 		SetMirroringType(_regs[0] & 0x20 ? MirroringType::Horizontal : MirroringType::Vertical);
-		SelectCHRPage(0, (_regs[2] << 2) | ((_regs[0] >> 1) & 0x03));
+		SelectChrPage(0, (_regs[2] << 2) | ((_regs[0] >> 1) & 0x03));
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

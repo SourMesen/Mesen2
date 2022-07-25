@@ -10,8 +10,8 @@ private:
 	uint8_t _chrBank = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x8000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 	bool AllowRegisterRead() override { return true; }
@@ -22,8 +22,8 @@ protected:
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 
 		_chrBank = 0;
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -35,8 +35,8 @@ protected:
 
 	void UpdateState()
 	{
-		SelectPRGPage(0, _txc.GetOutput() & 0x03);
-		SelectCHRPage(0, _chrBank);
+		SelectPrgPage(0, _txc.GetOutput() & 0x03);
+		SelectChrPage(0, _chrBank);
 	}
 
 	uint8_t ReadRegister(uint16_t addr) override

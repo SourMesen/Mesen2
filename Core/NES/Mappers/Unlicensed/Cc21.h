@@ -5,14 +5,14 @@
 class Cc21 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
-		SelectCHRPage(1, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
+		SelectChrPage(1, 0);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -23,8 +23,8 @@ protected:
 		}
 
 		if(_chrRomSize == 0x2000) {
-			SelectCHRPage(0, latch & 0x01);
-			SelectCHRPage(1, latch & 0x01);
+			SelectChrPage(0, latch & 0x01);
+			SelectChrPage(1, latch & 0x01);
 		} else {
 			//Overdumped roms
 			SelectChrPage2x(0, (latch & 0x01) << 1);

@@ -29,15 +29,15 @@ protected:
 	{
 		uint8_t outerBank = _outerBank << 6;
 		if(_prgMode == 0) {
-			SelectPRGPage(0, (_registers[6] & 0x3F) | outerBank);
-			SelectPRGPage(1, (_registers[7] & 0x3F) | outerBank);
-			SelectPRGPage(2, 0x3E | outerBank);
-			SelectPRGPage(3, 0x3F | outerBank);
+			SelectPrgPage(0, (_registers[6] & 0x3F) | outerBank);
+			SelectPrgPage(1, (_registers[7] & 0x3F) | outerBank);
+			SelectPrgPage(2, 0x3E | outerBank);
+			SelectPrgPage(3, 0x3F | outerBank);
 		} else if(_prgMode == 1) {
-			SelectPRGPage(0, 0x3E | outerBank);
-			SelectPRGPage(1, (_registers[6] & 0x3F) | outerBank);
-			SelectPRGPage(2, (_registers[7] & 0x3F) | outerBank);
-			SelectPRGPage(3, 0x3F | outerBank);
+			SelectPrgPage(0, 0x3E | outerBank);
+			SelectPrgPage(1, (_registers[6] & 0x3F) | outerBank);
+			SelectPrgPage(2, (_registers[7] & 0x3F) | outerBank);
+			SelectPrgPage(3, 0x3F | outerBank);
 		}
 	}
 

@@ -5,8 +5,8 @@
 class Mapper214 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -15,8 +15,8 @@ protected:
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		SelectCHRPage(0, addr & 0x03);
-		SelectPRGPage(0, (addr >> 2) & 0x03);
-		SelectPRGPage(1, (addr >> 2) & 0x03);
+		SelectChrPage(0, addr & 0x03);
+		SelectPrgPage(0, (addr >> 2) & 0x03);
+		SelectPrgPage(1, (addr >> 2) & 0x03);
 	}
 };

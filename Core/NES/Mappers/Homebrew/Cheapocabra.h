@@ -14,8 +14,8 @@ private:
 	vector<uint8_t> _orgPrgRom;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint32_t GetWorkRamSize() override { return 0; }
 	uint32_t GetSaveRamSize() override { return 0; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
@@ -80,9 +80,9 @@ protected:
 	{
 		if(addr < 0x8000) {
 			_prgReg = value & 0x0F;
-			SelectPRGPage(0, _prgReg);
+			SelectPrgPage(0, _prgReg);
 
-			SelectCHRPage(0, (value >> 4) & 0x01);
+			SelectChrPage(0, (value >> 4) & 0x01);
 			for(int i = 0; i < 8; i++) {
 				SetNametable(i, ((value & 0x20) ? 8 : 0) + i);
 			}

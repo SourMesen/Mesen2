@@ -16,8 +16,8 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0x6000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -45,7 +45,7 @@ protected:
 	void UpdatePrg()
 	{
 		SetCpuMemoryMapping(0x6000, 0x7FFF, _prgReg, PrgMemoryType::PrgRom);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -56,11 +56,11 @@ protected:
 		} else if(((addr & 0xF80C) >= 0xB000) && ((addr & 0xF80C) <= 0xE00C)) {
 			int slot = (((addr >> 11) - 6) | (addr >> 3)) & 0x07;
 			_chrRegs[slot] = (_chrRegs[slot] & (0xF0 >> (addr & 0x04))) | ((value & 0x0F) << (addr & 0x04));
-			SelectCHRPage(slot, _chrRegs[slot]);
+			SelectChrPage(slot, _chrRegs[slot]);
 		} else switch(addr & 0xF80C) {
-			case 0x8800: SelectPRGPage(0, value); break;
-			case 0xA800: SelectPRGPage(1, value); break;
-			case 0xA000: SelectPRGPage(2, value); break;
+			case 0x8800: SelectPrgPage(0, value); break;
+			case 0xA800: SelectPrgPage(1, value); break;
+			case 0xA000: SelectPrgPage(2, value); break;
 			case 0x9800:
 				switch(value & 0x03) {
 					case 0: SetMirroringType(MirroringType::Vertical); break;

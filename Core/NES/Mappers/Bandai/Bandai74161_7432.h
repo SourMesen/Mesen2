@@ -9,14 +9,14 @@ private:
 	bool _enableMirroringControl = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, -1);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, -1);
+		SelectChrPage(0, 0);
 
 		//Hack to make Kamen Rider Club - Gekitotsu Shocker Land work correctly (bad header)
 		SetMirroringType(MirroringType::Vertical);
@@ -36,8 +36,8 @@ protected:
 		}
 		
 		//Biggest PRG ROM I could find for mapper 70/152 is 128kb, so the 4th bit will never be used on those
-		SelectPRGPage(0, (value >> 4) & 0x07);
-		SelectCHRPage(0, value & 0x0F);
+		SelectPrgPage(0, (value >> 4) & 0x07);
+		SelectChrPage(0, value & 0x0F);
 	}
 
 	virtual void Serialize(Serializer& s) override

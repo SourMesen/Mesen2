@@ -9,15 +9,15 @@ private:
 	uint8_t _regs[8] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	
 	void InitMapper() override
 	{
 		memset(_regs, 0, sizeof(_regs));
 		_currentRegister = 0;
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		RemoveRegisterRange(0xC000, 0xDFFF);
 
 		UpdateState();
@@ -37,10 +37,10 @@ protected:
 	void UpdateState()
 	{
 		SetCpuMemoryMapping(0x6000, 0x7FFF, -2, PrgMemoryType::PrgRom);
-		SelectPRGPage(0, _regs[6]);
-		SelectPRGPage(1, _regs[7]);
-		SelectPRGPage(2, 0, PrgMemoryType::WorkRam);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(0, _regs[6]);
+		SelectPrgPage(1, _regs[7]);
+		SelectPrgPage(2, 0, PrgMemoryType::WorkRam);
+		SelectPrgPage(3, -1);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

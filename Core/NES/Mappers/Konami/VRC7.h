@@ -24,8 +24,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	void InitMapper() override
 	{
@@ -35,7 +35,7 @@ protected:
 		_irq->Reset();
 		_controlFlags = 0;
 		memset(_chrRegisters, 0, sizeof(_chrRegisters));
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 		
 		UpdateState(); //disable wram, set mirroring mode
 	}
@@ -81,20 +81,20 @@ protected:
 		}
 
 		switch(addr & 0xF038) {
-			case 0x8000: SelectPRGPage(0, value & 0x3F); break;
-			case 0x8008: SelectPRGPage(1, value & 0x3F); break;
-			case 0x9000: SelectPRGPage(2, value & 0x3F); break;
+			case 0x8000: SelectPrgPage(0, value & 0x3F); break;
+			case 0x8008: SelectPrgPage(1, value & 0x3F); break;
+			case 0x9000: SelectPrgPage(2, value & 0x3F); break;
 				
 			case 0x9010: case 0x9030: _audio->WriteReg(addr, value); break;
 			 
-			case 0xA000: SelectCHRPage(0, value);  break;
-			case 0xA008: SelectCHRPage(1, value);  break;
-			case 0xB000: SelectCHRPage(2, value);  break;
-			case 0xB008: SelectCHRPage(3, value);  break;
-			case 0xC000: SelectCHRPage(4, value);  break;
-			case 0xC008: SelectCHRPage(5, value);  break;
-			case 0xD000: SelectCHRPage(6, value);  break;
-			case 0xD008: SelectCHRPage(7, value);  break;
+			case 0xA000: SelectChrPage(0, value);  break;
+			case 0xA008: SelectChrPage(1, value);  break;
+			case 0xB000: SelectChrPage(2, value);  break;
+			case 0xB008: SelectChrPage(3, value);  break;
+			case 0xC000: SelectChrPage(4, value);  break;
+			case 0xC008: SelectChrPage(5, value);  break;
+			case 0xD000: SelectChrPage(6, value);  break;
+			case 0xD008: SelectChrPage(7, value);  break;
 
 			case 0xE000: _controlFlags = value; UpdateState(); break;				
 

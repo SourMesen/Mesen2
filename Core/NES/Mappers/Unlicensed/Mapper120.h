@@ -10,15 +10,15 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0x41FF; }
 	uint16_t RegisterEndAddress() override { return 0x41FF; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		_prgReg = 0;
 		UpdatePrg();
 		SelectPrgPage4x(0, 8);
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override

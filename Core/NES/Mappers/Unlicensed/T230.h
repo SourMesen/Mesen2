@@ -18,8 +18,8 @@ private:
 	uint8_t _loCHRRegs[8] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	void InitMapper() override
 	{
@@ -48,19 +48,19 @@ protected:
 			SelectChrPage8x(0, 0);
 		} else {
 			for(int i = 0; i < 8; i++) {
-				SelectCHRPage(i, _loCHRRegs[i] | (_hiCHRRegs[i] << 4));
+				SelectChrPage(i, _loCHRRegs[i] | (_hiCHRRegs[i] << 4));
 			}
 		}
 
 		if(_prgMode == 0) {
-			SelectPRGPage(0, _prgReg0 | _outerBank);
-			SelectPRGPage(2, (-2 & 0x1F) | _outerBank);
+			SelectPrgPage(0, _prgReg0 | _outerBank);
+			SelectPrgPage(2, (-2 & 0x1F) | _outerBank);
 		} else {
-			SelectPRGPage(0, (-2 & 0x1F) | _outerBank);
-			SelectPRGPage(2, _prgReg0 | _outerBank);
+			SelectPrgPage(0, (-2 & 0x1F) | _outerBank);
+			SelectPrgPage(2, _prgReg0 | _outerBank);
 		}
-		SelectPRGPage(1, _prgReg1);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(1, _prgReg1);
+		SelectPrgPage(3, -1);
 
 	}
 

@@ -8,17 +8,17 @@ private:
 	uint8_t _regs[4] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x800; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x800; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		SetMirroringType(MirroringType::Vertical);
 		memset(_regs, 0, sizeof(_regs));
 		for(int i = 0; i < 16; i++) {
-			SelectPRGPage(i, 15 - i);
+			SelectPrgPage(i, 15 - i);
 		}
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		UpdateState();
 	}
 

@@ -71,8 +71,8 @@ private:
 	void SelectNextTrack();
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x1000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x1000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint32_t GetWorkRamSize() override { return 0x4000; }
 	uint32_t GetWorkRamPageSize() override { return 0x1000; }
 	bool AllowRegisterRead() override { return true; }

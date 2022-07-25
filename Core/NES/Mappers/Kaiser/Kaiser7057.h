@@ -8,13 +8,13 @@ private:
 	uint8_t _regs[8] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x800; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x800; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		memset(_regs, 0, sizeof(_regs));
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		UpdateState();
 	}
 
@@ -32,7 +32,7 @@ protected:
 	{
 		for(int i = 0; i < 4; i++) {
 			SetCpuMemoryMapping(0x6000 + 0x800 * i, 0x67FF + 0x800 * i, _regs[4 + i], PrgMemoryType::PrgRom);
-			SelectPRGPage(i, _regs[i]);
+			SelectPrgPage(i, _regs[i]);
 		}
 		SelectPrgPage4x(1, 0x34);
 		SelectPrgPage4x(2, 0x38);

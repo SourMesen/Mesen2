@@ -35,16 +35,16 @@ protected:
 		SVArray(_exRegs, 4);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(!(_exRegs[1] & 0x08)) {
 			page = (_exRegs[1] << 3 & 0x80) | (page & 0x7F);
 		}
 
-		MMC3::SelectCHRPage(slot, (_exRegs[1] << 8 & 0x0300) | page);
+		MMC3::SelectChrPage(slot, (_exRegs[1] << 8 & 0x0300) | page);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(_exRegs[1] & 0x08) {
 			page = (page & 0x1F);
@@ -52,7 +52,7 @@ protected:
 			page = (page & 0x0F) | (_exRegs[1] & 0x10);
 		}
 
-		MMC3::SelectPRGPage(slot, (_exRegs[1] << 5 & 0x60) | page);
+		MMC3::SelectPrgPage(slot, (_exRegs[1] << 5 & 0x60) | page);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -65,10 +65,10 @@ protected:
 					if(value & 0x80) {
 						value = (value & 0x0F) | (_exRegs[1] << 4 & 0x30);
 						value <<= 1;
-						SelectPRGPage(0, value);
-						SelectPRGPage(1, value + 1);
-						SelectPRGPage(2, value);
-						SelectPRGPage(3, value + 1);
+						SelectPrgPage(0, value);
+						SelectPrgPage(1, value + 1);
+						SelectPrgPage(2, value);
+						SelectPrgPage(3, value + 1);
 					} else {
 						UpdatePrgMapping();
 					}

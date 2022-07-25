@@ -7,33 +7,33 @@ class MMC3_126 : public MMC3
 private:
 	uint8_t _exRegs[4] = {};
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		uint16_t reg = _exRegs[0];
 		page &= ((~reg >> 2) & 0x10) | 0x0F;
 		page |= (reg & (0x06 | (reg & 0x40) >> 6)) << 4 | (reg & 0x10) << 3;
 
 		if(!(_exRegs[3] & 0x03)) {
-			MMC3::SelectPRGPage(slot, page, memoryType);
+			MMC3::SelectPrgPage(slot, page, memoryType);
 		} else if((_prgMode << 1) == slot) {
 			if((_exRegs[3] & 0x03) == 0x03) {
-				MMC3::SelectPRGPage(0, page, memoryType);
-				MMC3::SelectPRGPage(1, page + 1, memoryType);
-				MMC3::SelectPRGPage(2, page + 2, memoryType);
-				MMC3::SelectPRGPage(3, page + 3, memoryType);
+				MMC3::SelectPrgPage(0, page, memoryType);
+				MMC3::SelectPrgPage(1, page + 1, memoryType);
+				MMC3::SelectPrgPage(2, page + 2, memoryType);
+				MMC3::SelectPrgPage(3, page + 3, memoryType);
 			} else {
-				MMC3::SelectPRGPage(0, page, memoryType);
-				MMC3::SelectPRGPage(1, page + 1, memoryType);
-				MMC3::SelectPRGPage(2, page, memoryType);
-				MMC3::SelectPRGPage(3, page + 1, memoryType);
+				MMC3::SelectPrgPage(0, page, memoryType);
+				MMC3::SelectPrgPage(1, page + 1, memoryType);
+				MMC3::SelectPrgPage(2, page, memoryType);
+				MMC3::SelectPrgPage(3, page + 1, memoryType);
 			}
 		}
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
 	{
 		if(!(_exRegs[3] & 0x10)) {
-			MMC3::SelectCHRPage(slot, GetChrOuterBank() | (page & ((_exRegs[0] & 0x80) - 1)));
+			MMC3::SelectChrPage(slot, GetChrOuterBank() | (page & ((_exRegs[0] & 0x80) - 1)));
 		}
 	}
 
@@ -72,7 +72,7 @@ private:
 					if(_exRegs[3] & 0x10) {
 						uint16_t page = GetChrOuterBank() | ((_exRegs[2] & 0x0F) << 3);
 						for(int i = 0; i < 8; i++) {
-							MMC3::SelectCHRPage(i, page + i);
+							MMC3::SelectChrPage(i, page + i);
 						}
 					} else {
 						MMC3::UpdateChrMapping();

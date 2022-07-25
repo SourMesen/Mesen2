@@ -16,12 +16,12 @@ private:
 
 		_autoSwitchCHR = (_registers[0] & 0x80) == 0x80;
 
-		SelectPRGPage(0, prgPage);
+		SelectPrgPage(0, prgPage);
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 	bool AllowRegisterRead() override { return true; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
@@ -43,9 +43,9 @@ protected:
 		_toggle = true;
 		_registers[4] = 0;
 
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
-		SelectCHRPage(1, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
+		SelectChrPage(1, 0);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -59,21 +59,21 @@ protected:
 				}
 				_registers[4] = value;
 			} else if(addr == 0x5100 && value == 6) {
-				SelectPRGPage(0, 3);
+				SelectPrgPage(0, 3);
 			} else {
 				switch(addr & 0x7300) {
 					case 0x5000:
 						_registers[0] = value;
 						if(!(_registers[0] & 0x80) && _console->GetPpu()->GetCurrentScanline() < 128) {
-							SelectCHRPage(0, 0);
-							SelectCHRPage(1, 1);
+							SelectChrPage(0, 0);
+							SelectChrPage(1, 1);
 						}
 						UpdateState();
 						break;
 					case 0x5100:
 						_registers[1] = value;
 						if(value == 6) {
-							SelectPRGPage(0, 3);
+							SelectPrgPage(0, 3);
 						}
 						break;
 					case 0x5200:
@@ -108,11 +108,11 @@ public:
 		BaseNesPpu* ppu = _console->GetPpu();
 		if(_autoSwitchCHR && ppu->GetCurrentCycle() > 256) {
 			if(ppu->GetCurrentScanline() == 239) {
-				SelectCHRPage(0, 0);
-				SelectCHRPage(1, 0);
+				SelectChrPage(0, 0);
+				SelectChrPage(1, 0);
 			} else if(ppu->GetCurrentScanline() == 127) {
-				SelectCHRPage(0, 1);
-				SelectCHRPage(1, 1);
+				SelectChrPage(0, 1);
+				SelectChrPage(1, 1);
 			}
 		}
 	}

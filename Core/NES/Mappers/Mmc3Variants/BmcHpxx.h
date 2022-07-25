@@ -38,7 +38,7 @@ protected:
 		SV(_locked);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(_exRegs[0] & 0x04) {
 			switch(_exRegs[0] & 0x03) {
@@ -56,11 +56,11 @@ protected:
 				base = _exRegs[2] & 0x20;
 				mask = 0xFF;
 			}
-			MMC3::SelectCHRPage(slot, (page & mask) | (base << 3));
+			MMC3::SelectChrPage(slot, (page & mask) | (base << 3));
 		}
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(_exRegs[0] & 0x04) {
 			if((_exRegs[0] & 0x0F) == 0x04) {
@@ -78,7 +78,7 @@ protected:
 				base = _exRegs[1] & 0x10;
 				mask = 0x1F;
 			}
-			MMC3::SelectPRGPage(slot, (page & mask) | (base << 1));
+			MMC3::SelectPrgPage(slot, (page & mask) | (base << 1));
 		}
 	}
 

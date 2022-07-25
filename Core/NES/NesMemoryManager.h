@@ -16,15 +16,15 @@ class NesConsole;
 class NesMemoryManager : public ISerializable
 {
 	private:
-		static constexpr int RAMSize = 0x10000;
-		static constexpr int VRAMSize = 0x4000;
+		static constexpr int RamSize = 0x10000;
+		static constexpr int VramSize = 0x4000;
 		
 		Emulator* _emu = nullptr;
 		CheatManager* _cheatManager;
 		NesConsole* _console;
 		BaseMapper* _mapper;
 
-		uint8_t *_internalRAM;
+		uint8_t *_internalRam;
 
 		OpenBusHandler _openBusHandler;
 		InternalRamHandler<0x7FF> _internalRamHandler;
@@ -37,7 +37,7 @@ class NesMemoryManager : public ISerializable
 		void Serialize(Serializer &s) override;
 
 	public:
-		static const int InternalRAMSize = 0x800;
+		static const int InternalRamSize = 0x800;
 
 		NesMemoryManager(NesConsole* console);
 		virtual ~NesMemoryManager();
@@ -53,7 +53,7 @@ class NesMemoryManager : public ISerializable
 		uint16_t DebugReadWord(uint16_t addr);
 		void DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects = true);
 
-		uint8_t* GetInternalRAM();
+		uint8_t* GetInternalRam();
 
 		uint8_t Read(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 		void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);

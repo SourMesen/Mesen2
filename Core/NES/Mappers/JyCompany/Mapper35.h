@@ -13,15 +13,15 @@ private:
 	A12Watcher _a12Watcher;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	void InitMapper() override
 	{
 		_irqEnabled = false;
 		_irqCounter = 0;
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -36,12 +36,12 @@ protected:
 	{
 		switch(addr & 0xF007) {
 			case 0x8000: case 0x8001: case 0x8002: case 0x8003:
-				SelectPRGPage(addr & 0x03, value);
+				SelectPrgPage(addr & 0x03, value);
 				break;
 
 			case 0x9000: case 0x9001: case 0x9002: case 0x9003:
 			case 0x9004: case 0x9005: case 0x9006: case 0x9007:
-				SelectCHRPage(addr & 0x07, value);
+				SelectChrPage(addr & 0x07, value);
 				break;
 
 			case 0xC002: 

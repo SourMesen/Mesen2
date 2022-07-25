@@ -13,8 +13,8 @@ private:
 	bool _irqEnabled = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x4020; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 
@@ -27,9 +27,9 @@ protected:
 
 		UpdateState();
 		SetCpuMemoryMapping(0x5000, 0x5FFF, 8, PrgMemoryType::PrgRom);
-		SelectPRGPage(0, 1);
-		SelectPRGPage(1, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 1);
+		SelectPrgPage(1, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -59,8 +59,8 @@ protected:
 	void UpdateState()
 	{
 		SetCpuMemoryMapping(0x6000, 0x7FFF, _swap ? 0 : 2, PrgMemoryType::PrgRom);
-		SelectPRGPage(2, _reg);
-		SelectPRGPage(3, _swap ? 8 : 9);
+		SelectPrgPage(2, _reg);
+		SelectPrgPage(3, _swap ? 8 : 9);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

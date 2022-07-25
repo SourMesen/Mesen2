@@ -93,7 +93,7 @@ void NsfMapper::Reset(bool softReset)
 	NesMemoryManager* mm = _console->GetMemoryManager();
 
 	//Clear internal + work RAM
-	memset(mm->GetInternalRAM(), 0, NesMemoryManager::InternalRAMSize);
+	memset(mm->GetInternalRam(), 0, NesMemoryManager::InternalRamSize);
 	memset(_workRam, 0, _workRamSize);
 
 	//Reset APU
@@ -114,7 +114,7 @@ void NsfMapper::Reset(bool softReset)
 	if(!_hasBankSwitching) {
 		//Update bank config to select the right banks on init when no bankswitching is setup in header
 		int8_t startBank = (_nsfHeader.LoadAddress / 0x1000);
-		for(int32_t i = 0; i < (int32_t)GetPRGPageCount(); i++) {
+		for(int32_t i = 0; i < (int32_t)GetPrgPageCount(); i++) {
 			if((startBank + i) > 0x0F) {
 				break;
 			}

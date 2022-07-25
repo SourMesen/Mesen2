@@ -5,8 +5,8 @@
 class IremG101 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	uint8_t _prgRegs[2] = {};
 	uint8_t _prgMode = 0;
@@ -16,8 +16,8 @@ protected:
 		_prgRegs[0] = _prgRegs[1] = 0;
 		_prgMode = 0;
 
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 
 		if(_romInfo.SubMapperID == 1) {
 			//032: 1 Major League
@@ -38,15 +38,15 @@ protected:
 	void UpdatePrgMode()
 	{
 		if(_prgMode == 0) {
-			SelectPRGPage(0, _prgRegs[0]);
-			SelectPRGPage(1, _prgRegs[1]);
-			SelectPRGPage(2, -2);
-			SelectPRGPage(3, -1);
+			SelectPrgPage(0, _prgRegs[0]);
+			SelectPrgPage(1, _prgRegs[1]);
+			SelectPrgPage(2, -2);
+			SelectPrgPage(3, -1);
 		} else {
-			SelectPRGPage(0, -2);
-			SelectPRGPage(1, _prgRegs[1]);
-			SelectPRGPage(2, _prgRegs[0]);
-			SelectPRGPage(3, -1);
+			SelectPrgPage(0, -2);
+			SelectPrgPage(1, _prgRegs[1]);
+			SelectPrgPage(2, _prgRegs[0]);
+			SelectPrgPage(3, -1);
 		}
 	}
 
@@ -55,7 +55,7 @@ protected:
 		switch(addr & 0xF000) {
 			case 0x8000:
 				_prgRegs[0] = value & 0x1F;
-				SelectPRGPage(_prgMode == 0 ? 0 : 2, _prgRegs[0]);
+				SelectPrgPage(_prgMode == 0 ? 0 : 2, _prgRegs[0]);
 				break;
 			case 0x9000:
 				_prgMode = (value & 0x02) >> 1;
@@ -67,10 +67,10 @@ protected:
 				break;
 			case 0xA000:
 				_prgRegs[1] = value & 0x1F;
-				SelectPRGPage(1, _prgRegs[1]);
+				SelectPrgPage(1, _prgRegs[1]);
 				break;
 			case 0xB000:
-				SelectCHRPage(addr & 0x07, value);
+				SelectChrPage(addr & 0x07, value);
 				break;
 		}
 	}

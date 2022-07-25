@@ -10,8 +10,8 @@ private:
 	unique_ptr<VrcIrq> _irq;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -19,8 +19,8 @@ protected:
 
 		memset(_chrRegs, 0, sizeof(_chrRegs));
 
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -50,9 +50,9 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		if(addr <= 0x8FFF) {
-			SelectPRGPage(0, value);
+			SelectPrgPage(0, value);
 		} else if(addr >= 0xA000 && addr <= 0xAFFF) {
-			SelectPRGPage(1, value);
+			SelectPrgPage(1, value);
 		} else if(addr >= 0xB000 && addr <= 0xEFFF) {
 			uint8_t shift = addr & 0x4;
 			uint8_t bank = (((addr - 0xB000) >> 1 & 0x1800) | (addr << 7 & 0x0400)) / 0x400;

@@ -27,23 +27,23 @@ protected:
 		SV(_reg);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
-		MMC3::SelectCHRPage(slot, ((_reg & 0x0C) << 5) | (page & 0x7F), memoryType);
+		MMC3::SelectChrPage(slot, ((_reg & 0x0C) << 5) | (page & 0x7F), memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if((_reg & 0x0C) == 0x0C) {
 			if(slot == 0) {
-				MMC3::SelectPRGPage(0, ((_reg & 0x0C) << 2) | (page & 0x0F));
-				MMC3::SelectPRGPage(2, 0x32 | (page & 0x0F));
+				MMC3::SelectPrgPage(0, ((_reg & 0x0C) << 2) | (page & 0x0F));
+				MMC3::SelectPrgPage(2, 0x32 | (page & 0x0F));
 			} else if(slot == 1) {
-				MMC3::SelectPRGPage(1, ((_reg & 0x0C) << 2) | (page & 0x0F));
-				MMC3::SelectPRGPage(3, 0x32 | (page & 0x0F));
+				MMC3::SelectPrgPage(1, ((_reg & 0x0C) << 2) | (page & 0x0F));
+				MMC3::SelectPrgPage(3, 0x32 | (page & 0x0F));
 			}
 		} else {
-			MMC3::SelectPRGPage(slot, ((_reg & 0x0C) << 2) | (page & 0x0F));
+			MMC3::SelectPrgPage(slot, ((_reg & 0x0C) << 2) | (page & 0x0F));
 		}
 	}
 

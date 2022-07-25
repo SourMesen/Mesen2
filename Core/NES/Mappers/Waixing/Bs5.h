@@ -6,14 +6,14 @@ class Bs5 : public BaseMapper
 {
 protected:
 	uint32_t GetDipSwitchCount() override { return 2; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 
 	void InitMapper() override
 	{
 		for(int i = 0; i < 4; i++) {
-			SelectPRGPage(i, -1);
-			SelectCHRPage(i, -1);
+			SelectPrgPage(i, -1);
+			SelectChrPage(i, -1);
 		}
 	}
 
@@ -22,12 +22,12 @@ protected:
 		int bank = (addr >> 10) & 0x03;
 		switch(addr & 0xF000) {
 			case 0x8000: 
-				SelectCHRPage(bank, addr & 0x1F); 
+				SelectChrPage(bank, addr & 0x1F); 
 				break;
 
 			case 0xA000:
 				if(addr & (1 << (GetDipSwitches() + 4))) {
-					SelectPRGPage(bank, addr & 0x0F);
+					SelectPrgPage(bank, addr & 0x0F);
 				}
 				break;
 		}

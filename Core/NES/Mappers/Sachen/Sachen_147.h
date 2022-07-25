@@ -11,8 +11,8 @@ private:
 	TxcChip _txc = TxcChip(true);
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x8000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 	bool AllowRegisterRead() override { return true; }
@@ -22,8 +22,8 @@ protected:
 		AddRegisterRange(0x4020, 0x5FFF, MemoryOperation::Any);
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -35,8 +35,8 @@ protected:
 	void UpdateState()
 	{
 		uint8_t out = _txc.GetOutput();
-		SelectPRGPage(0, ((out & 0x20) >> 4) | (out & 0x01));
-		SelectCHRPage(0, (out & 0x1E) >> 1);
+		SelectPrgPage(0, ((out & 0x20) >> 4) | (out & 0x01));
+		SelectChrPage(0, (out & 0x1E) >> 1);
 	}
 	
 	uint8_t ReadRegister(uint16_t addr) override

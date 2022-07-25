@@ -14,8 +14,8 @@ protected:
 	virtual uint16_t RegisterStartAddress() override { return 0x6000; }
 	virtual uint16_t RegisterEndAddress() override { return 0xFFFF; }
 
-	virtual uint16_t GetPRGPageSize() override { return 0x2000; }
-	virtual uint16_t GetCHRPageSize() override { return 0x2000; }
+	virtual uint16_t GetPrgPageSize() override { return 0x2000; }
+	virtual uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{

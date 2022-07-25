@@ -22,8 +22,8 @@ protected:
 	uint8_t _rightChrPage[2] = {};
 	bool _needChrUpdate = 0;
 
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 
 	void InitMapper() override
 	{
@@ -35,9 +35,9 @@ protected:
 		_rightChrPage[1] = GetPowerOnByte() & 0x1F;
 		_needChrUpdate = false;
 
-		SelectPRGPage(1, -3);
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(1, -3);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -56,27 +56,27 @@ protected:
 	{
 		switch((MMC2Registers)(addr >> 12)) {
 			case MMC2Registers::RegA000:
-				SelectPRGPage(0, value & 0x0F);
+				SelectPrgPage(0, value & 0x0F);
 				break;
 
 			case MMC2Registers::RegB000:
 				_leftChrPage[0] = value & 0x1F;
-				SelectCHRPage(0, _leftChrPage[_leftLatch]);
+				SelectChrPage(0, _leftChrPage[_leftLatch]);
 				break;
 
 			case MMC2Registers::RegC000:
 				_leftChrPage[1] = value & 0x1F;
-				SelectCHRPage(0, _leftChrPage[_leftLatch]);
+				SelectChrPage(0, _leftChrPage[_leftLatch]);
 				break;
 
 			case MMC2Registers::RegD000:
 				_rightChrPage[0] = value & 0x1F;
-				SelectCHRPage(1, _rightChrPage[_rightLatch]);
+				SelectChrPage(1, _rightChrPage[_rightLatch]);
 				break;
 
 			case MMC2Registers::RegE000:
 				_rightChrPage[1] = value & 0x1F;
-				SelectCHRPage(1, _rightChrPage[_rightLatch]);
+				SelectChrPage(1, _rightChrPage[_rightLatch]);
 				break;
 
 			case MMC2Registers::RegF000:
@@ -89,8 +89,8 @@ public:
 	void NotifyVramAddressChange(uint16_t addr) override
 	{
 		if(_needChrUpdate) {
-			SelectCHRPage(0, _leftChrPage[_leftLatch]);
-			SelectCHRPage(1, _rightChrPage[_rightLatch]);
+			SelectChrPage(0, _leftChrPage[_leftLatch]);
+			SelectChrPage(1, _rightChrPage[_rightLatch]);
 			_needChrUpdate = false;
 		}
 

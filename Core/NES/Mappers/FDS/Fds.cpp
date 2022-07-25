@@ -38,7 +38,7 @@ void Fds::InitMapper()
 	SetCpuMemoryMapping(0x6000, 0xDFFF, 0, PrgMemoryType::WorkRam, MemoryAccessType::ReadWrite);
 
 	//8k of CHR RAM
-	SelectCHRPage(0, 0);
+	SelectChrPage(0, 0);
 }
 
 void Fds::InitMapper(RomData &romData)

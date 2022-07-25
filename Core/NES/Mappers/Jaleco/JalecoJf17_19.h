@@ -11,16 +11,16 @@ private:
 	bool _chrFlag = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool HasBusConflicts() override { return true; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, -1);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, -1);
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	virtual void Serialize(Serializer& s) override
@@ -34,14 +34,14 @@ protected:
 	{
 		if(!_prgFlag && (value & 0x80)) {
 			if(_jf19Mode) {
-				SelectPRGPage(1, value & 0x0F);
+				SelectPrgPage(1, value & 0x0F);
 			} else {
-				SelectPRGPage(0, value & 0x07);
+				SelectPrgPage(0, value & 0x07);
 			}
 		}
 
 		if(!_chrFlag && (value & 0x40)) {
-			SelectCHRPage(0, value & 0x0F);
+			SelectChrPage(0, value & 0x0F);
 		}
 		
 		_prgFlag = (value & 0x80) == 0x80;

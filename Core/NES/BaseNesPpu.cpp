@@ -64,9 +64,9 @@ uint16_t BaseNesPpu::GetCurrentBgColor()
 {
 	uint16_t color;
 	if((IsRenderingEnabled() && _scanline < 240) || (_ppuBusAddress & 0x3F00) != 0x3F00) {
-		color = _paletteRAM[0];
+		color = _paletteRam[0];
 	} else {
-		color = _paletteRAM[_ppuBusAddress & 0x1F];
+		color = _paletteRam[_ppuBusAddress & 0x1F];
 	}
 	return (color & _paletteRamMask) | _intensifyColorBits;
 }
@@ -77,7 +77,7 @@ uint8_t BaseNesPpu::ReadPaletteRam(uint16_t addr)
 	if(addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1C) {
 		addr &= ~0x10;
 	}
-	return _paletteRAM[addr];
+	return _paletteRam[addr];
 }
 
 void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
@@ -85,19 +85,19 @@ void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
 	addr &= 0x1F;
 	value &= 0x3F;
 	if(addr == 0x00 || addr == 0x10) {
-		_paletteRAM[0x00] = value;
-		_paletteRAM[0x10] = value;
+		_paletteRam[0x00] = value;
+		_paletteRam[0x10] = value;
 	} else if(addr == 0x04 || addr == 0x14) {
-		_paletteRAM[0x04] = value;
-		_paletteRAM[0x14] = value;
+		_paletteRam[0x04] = value;
+		_paletteRam[0x14] = value;
 	} else if(addr == 0x08 || addr == 0x18) {
-		_paletteRAM[0x08] = value;
-		_paletteRAM[0x18] = value;
+		_paletteRam[0x08] = value;
+		_paletteRam[0x18] = value;
 	} else if(addr == 0x0C || addr == 0x1C) {
-		_paletteRAM[0x0C] = value;
-		_paletteRAM[0x1C] = value;
+		_paletteRam[0x0C] = value;
+		_paletteRam[0x1C] = value;
 	} else {
-		_paletteRAM[addr] = value;
+		_paletteRam[addr] = value;
 	}
 }
 

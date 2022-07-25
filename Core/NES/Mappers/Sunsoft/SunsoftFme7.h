@@ -15,8 +15,8 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetWorkRamSize() override { return 0x8000; }
 	uint32_t GetWorkRamPageSize() override { return 0x2000; }
 	uint32_t GetSaveRamSize() override { return 0x8000; }
@@ -32,7 +32,7 @@ protected:
 		_irqCounterEnabled = false;
 		_irqCounter = 0;
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 
 		UpdateWorkRam();
 	}
@@ -84,7 +84,7 @@ protected:
 			case 0xA000:
 				switch(_command) {
 					case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-						SelectCHRPage(_command, value);
+						SelectChrPage(_command, value);
 						break;
 
 					case 8: {
@@ -94,7 +94,7 @@ protected:
 					}
 
 					case 9: case 0xA: case 0xB:
-						SelectPRGPage(_command - 9, value & 0x3F);
+						SelectPrgPage(_command - 9, value & 0x3F);
 						break;
 
 					case 0xC:

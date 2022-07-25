@@ -7,8 +7,8 @@ private:
 	uint8_t _regs[4] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x4800; }
 	uint16_t RegisterEndAddress() override { return 0x4FFF; }
 	uint32_t GetWorkRamSize() override { return 0x8000; }
@@ -17,7 +17,7 @@ protected:
 	{
 		memset(_regs, 0, sizeof(_regs));
 		UpdateState();
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -34,17 +34,17 @@ protected:
 		uint16_t sbank = _regs[1] & 0x07;
 		uint16_t bbank = _regs[2];
 		if(_regs[0] & 0x02) {
-			SelectPRGPage(0, (bbank << 3) | sbank);
+			SelectPrgPage(0, (bbank << 3) | sbank);
 			if(_regs[0] & 0x04) {
-				SelectPRGPage(1, (bbank << 3) | 0x06 | (_regs[1] & 0x01));
+				SelectPrgPage(1, (bbank << 3) | 0x06 | (_regs[1] & 0x01));
 			} else {
-				SelectPRGPage(1, (bbank << 3) | 0x07);
+				SelectPrgPage(1, (bbank << 3) | 0x07);
 			}
 		} else {
 			uint16_t bank = (bbank << 3) | sbank;
 			if(_regs[0] & 0x04) {
-				SelectPRGPage(0, bank);
-				SelectPRGPage(1, bank);
+				SelectPrgPage(0, bank);
+				SelectPrgPage(1, bank);
 			} else {
 				SelectPrgPage2x(0, bank);
 			}

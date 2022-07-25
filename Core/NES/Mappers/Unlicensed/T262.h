@@ -11,14 +11,14 @@ private:
 	bool _mode = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 7);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 7);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -42,7 +42,7 @@ protected:
 
 		_bank = value & 0x07;
 
-		SelectPRGPage(0, _base | _bank);
-		SelectPRGPage(1, _base | (_mode ? _bank : 7));
+		SelectPrgPage(0, _base | _bank);
+		SelectPrgPage(1, _base | (_mode ? _bank : 7));
 	}
 };

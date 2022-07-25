@@ -8,13 +8,13 @@ private:
 	bool _enableCopyProtection = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, GetPowerOnByte());
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, GetPowerOnByte());
 	}
 	
 	bool HasBusConflicts() override { return (_romInfo.MapperID == 3 && _romInfo.SubMapperID == 2) || _romInfo.MapperID == 185; }
@@ -36,12 +36,12 @@ protected:
 			);
 
 			if(validAccess) {
-				SelectCHRPage(0, 0);
+				SelectChrPage(0, 0);
 			} else {
 				RemovePpuMemoryMapping(0x0000, 0x1FFF);
 			}
 		} else {
-			SelectCHRPage(0, value);
+			SelectChrPage(0, value);
 		}
 	}
 

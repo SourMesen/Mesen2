@@ -11,18 +11,18 @@ private:
 	bool _irqEnabled = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
 		_irqEnabled = false;
 		_irqCounter = 0;
 
-		SelectPRGPage(0, -1);
-		SelectPRGPage(1, -1);
-		SelectPRGPage(2, -1);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(0, -1);
+		SelectPrgPage(1, -1);
+		SelectPrgPage(2, -1);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -46,12 +46,12 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		switch(addr & 0x0F) {
-			case 0: case 2: SelectCHRPage(addr & 0x0F, value & 0xFE); break;
-			case 1: case 3: SelectCHRPage(addr & 0x0F, value | 0x01); break;
-			case 4: case 5: case 6: case 7: SelectCHRPage(addr & 0x0F, value); break;
+			case 0: case 2: SelectChrPage(addr & 0x0F, value & 0xFE); break;
+			case 1: case 3: SelectChrPage(addr & 0x0F, value | 0x01); break;
+			case 4: case 5: case 6: case 7: SelectChrPage(addr & 0x0F, value); break;
 
-			case 8: case 0x0B: SelectPRGPage((addr & 0x0F) - 8, (value & 0x0F) | 0x10); break;
-			case 9: case 0x0A: SelectPRGPage((addr & 0x0F) - 8, value & 0x1F); break;
+			case 8: case 0x0B: SelectPrgPage((addr & 0x0F) - 8, (value & 0x0F) | 0x10); break;
+			case 9: case 0x0A: SelectPrgPage((addr & 0x0F) - 8, value & 0x1F); break;
 
 			case 0x0D: 
 				_irqEnabled = false; 

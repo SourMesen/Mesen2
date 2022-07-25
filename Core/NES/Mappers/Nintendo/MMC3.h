@@ -94,40 +94,40 @@ protected:
 	virtual void UpdateChrMapping()
 	{
 		if(_chrMode == 0) {
-			SelectCHRPage(0, _registers[0] & 0xFE);
-			SelectCHRPage(1, _registers[0] | 0x01);
-			SelectCHRPage(2, _registers[1] & 0xFE);
-			SelectCHRPage(3, _registers[1] | 0x01);
+			SelectChrPage(0, _registers[0] & 0xFE);
+			SelectChrPage(1, _registers[0] | 0x01);
+			SelectChrPage(2, _registers[1] & 0xFE);
+			SelectChrPage(3, _registers[1] | 0x01);
 
-			SelectCHRPage(4, _registers[2]);
-			SelectCHRPage(5, _registers[3]);
-			SelectCHRPage(6, _registers[4]);
-			SelectCHRPage(7, _registers[5]);
+			SelectChrPage(4, _registers[2]);
+			SelectChrPage(5, _registers[3]);
+			SelectChrPage(6, _registers[4]);
+			SelectChrPage(7, _registers[5]);
 		} else if(_chrMode == 1) {
-			SelectCHRPage(0, _registers[2]);
-			SelectCHRPage(1, _registers[3]);
-			SelectCHRPage(2, _registers[4]);
-			SelectCHRPage(3, _registers[5]);
+			SelectChrPage(0, _registers[2]);
+			SelectChrPage(1, _registers[3]);
+			SelectChrPage(2, _registers[4]);
+			SelectChrPage(3, _registers[5]);
 
-			SelectCHRPage(4, _registers[0] & 0xFE);
-			SelectCHRPage(5, _registers[0] | 0x01);
-			SelectCHRPage(6, _registers[1] & 0xFE);
-			SelectCHRPage(7, _registers[1] | 0x01);
+			SelectChrPage(4, _registers[0] & 0xFE);
+			SelectChrPage(5, _registers[0] | 0x01);
+			SelectChrPage(6, _registers[1] & 0xFE);
+			SelectChrPage(7, _registers[1] | 0x01);
 		}
 	}
 
 	virtual void UpdatePrgMapping()
 	{
 		if(_prgMode == 0) {
-			SelectPRGPage(0, _registers[6]);
-			SelectPRGPage(1, _registers[7]);
-			SelectPRGPage(2, -2);
-			SelectPRGPage(3, -1);
+			SelectPrgPage(0, _registers[6]);
+			SelectPrgPage(1, _registers[7]);
+			SelectPrgPage(2, -2);
+			SelectPrgPage(3, -1);
 		} else if(_prgMode == 1) {
-			SelectPRGPage(0, -2);
-			SelectPRGPage(1, _registers[7]);
-			SelectPRGPage(2, _registers[6]);
-			SelectPRGPage(3, -1);
+			SelectPrgPage(0, -2);
+			SelectPrgPage(1, _registers[7]);
+			SelectPrgPage(2, _registers[6]);
+			SelectPrgPage(3, -1);
 		}
 	}
 
@@ -189,8 +189,8 @@ protected:
 		SV(_irqReloadValue); SV(_irqCounter); SV(_irqReload); SV(_irqEnabled); SV(_wramEnabled); SV(_wramWriteProtected);
 	}
 
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	uint32_t GetSaveRamPageSize() override { return _romInfo.SubMapperID == 1 ? 0x200 : 0x2000; }
 	uint32_t GetSaveRamSize() override { return _romInfo.SubMapperID == 1 ? 0x400 : 0x2000; }
 

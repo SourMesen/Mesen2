@@ -16,7 +16,7 @@ class SnesControlManager;
 class NesConsole;
 class EmuSettings;
 
-enum PPURegisters
+enum PpuRegisters
 {
 	Control = 0x00,
 	Mask = 0x01,
@@ -84,12 +84,12 @@ protected:
 
 	void UpdateApuStatus();
 
-	PPURegisters GetRegisterID(uint16_t addr)
+	PpuRegisters GetRegisterID(uint16_t addr)
 	{
 		if(addr == 0x4014) {
-			return PPURegisters::SpriteDMA;
+			return PpuRegisters::SpriteDMA;
 		} else {
-			return (PPURegisters)(addr & 0x07);
+			return (PpuRegisters)(addr & 0x07);
 		}
 	}
 
@@ -131,7 +131,7 @@ public:
 
 	uint8_t* GetSecondarySpriteRam()
 	{
-		return _secondarySpriteRAM;
+		return _secondarySpriteRam;
 	}
 
 	uint32_t GetPixelBrightness(uint8_t x, uint8_t y) override;

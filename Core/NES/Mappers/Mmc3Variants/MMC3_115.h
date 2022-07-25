@@ -22,10 +22,10 @@ protected:
 		MMC3::InitMapper();
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		page |= (_chrReg << 8);
-		BaseMapper::SelectCHRPage(slot, page);
+		BaseMapper::SelectChrPage(slot, page);
 	}
 
 	void UpdateState() override

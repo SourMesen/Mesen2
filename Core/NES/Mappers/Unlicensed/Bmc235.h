@@ -8,13 +8,13 @@ private:
 	bool _openBus = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		SelectPrgPage2x(0, 0);
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Reset(bool softReset) override
@@ -44,7 +44,7 @@ protected:
 		};
 
 		uint8_t mode;
-		switch(GetPRGPageCount()) {
+		switch(GetPrgPageCount()) {
 			case 64: mode = 0; break;
 			case 128: mode = 1; break;
 			case 256: mode = 2; break;
@@ -60,8 +60,8 @@ protected:
 			RemoveCpuMemoryMapping(0x8000, 0xFFFF);
 		} else if(addr & 0x800) {
 			bank = (bank << 1) | (addr >> 12 & 0x01);
-			SelectPRGPage(0, bank);
-			SelectPRGPage(1, bank);
+			SelectPrgPage(0, bank);
+			SelectPrgPage(1, bank);
 		} else {
 			SelectPrgPage2x(0, bank << 1);
 		}

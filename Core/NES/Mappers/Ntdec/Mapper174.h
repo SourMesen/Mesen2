@@ -6,8 +6,8 @@
 class Mapper174 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -20,10 +20,10 @@ protected:
 		if(addr & 0x80) {
 			SelectPrgPage2x(0, prgBank & 0xFE);
 		} else {
-			SelectPRGPage(0, prgBank);
-			SelectPRGPage(1, prgBank);
+			SelectPrgPage(0, prgBank);
+			SelectPrgPage(1, prgBank);
 		}
-		SelectCHRPage(0, (addr >> 1) & 0x07);
+		SelectChrPage(0, (addr >> 1) & 0x07);
 
 		SetMirroringType(addr & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);
 	}

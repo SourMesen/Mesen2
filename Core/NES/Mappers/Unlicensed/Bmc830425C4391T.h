@@ -10,8 +10,8 @@ private:
 	uint8_t _prgMode = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -19,7 +19,7 @@ protected:
 		_outerReg = 0;
 		_prgMode = 0;
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		UpdateState();
 	}
 
@@ -35,12 +35,12 @@ protected:
 	{
 		if(_prgMode) {
 			//UNROM mode
-			SelectPRGPage(0, (_innerReg & 0x07) | (_outerReg << 3));
-			SelectPRGPage(1, 0x07 | (_outerReg << 3));
+			SelectPrgPage(0, (_innerReg & 0x07) | (_outerReg << 3));
+			SelectPrgPage(1, 0x07 | (_outerReg << 3));
 		} else {
 			//UOROM mode
-			SelectPRGPage(0, _innerReg | (_outerReg << 3));
-			SelectPRGPage(1, 0x0F | (_outerReg << 3));
+			SelectPrgPage(0, _innerReg | (_outerReg << 3));
+			SelectPrgPage(1, 0x0F | (_outerReg << 3));
 		}
 	}
 

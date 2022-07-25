@@ -19,8 +19,8 @@ private:
 	uint8_t _chrOr[3] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return _variant == Sachen8259Variant::Sachen8259D ? 0x400 : 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return _variant == Sachen8259Variant::Sachen8259D ? 0x400 : 0x800; }
 	uint16_t RegisterStartAddress() override { return 0x4100; }
 	uint16_t RegisterEndAddress() override { return 0x7FFF; }
 	
@@ -29,7 +29,7 @@ protected:
 		_currentReg = 0;
 		memset(_regs, 0, sizeof(_regs));
 
-		SelectPRGPage(0, 0);
+		SelectPrgPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -55,21 +55,21 @@ protected:
 			SetMirroringType(MirroringType::Horizontal);
 		}
 
-		SelectPRGPage(0, _regs[5]);
+		SelectPrgPage(0, _regs[5]);
 
 		if(_variant == Sachen8259Variant::Sachen8259D) {
-			SelectCHRPage(0, _regs[0]);
-			SelectCHRPage(1, ((_regs[4] & 0x01) << 4) | _regs[simpleMode ? 0 : 1]);
-			SelectCHRPage(2, ((_regs[4] & 0x02) << 3) | _regs[simpleMode ? 0 : 2]);
-			SelectCHRPage(3, ((_regs[4] & 0x04) << 2) | ((_regs[6] & 0x01) << 3) | _regs[simpleMode ? 0 : 3]);
+			SelectChrPage(0, _regs[0]);
+			SelectChrPage(1, ((_regs[4] & 0x01) << 4) | _regs[simpleMode ? 0 : 1]);
+			SelectChrPage(2, ((_regs[4] & 0x02) << 3) | _regs[simpleMode ? 0 : 2]);
+			SelectChrPage(3, ((_regs[4] & 0x04) << 2) | ((_regs[6] & 0x01) << 3) | _regs[simpleMode ? 0 : 3]);
 			SelectChrPage4x(1, -4);
 		} else {
 			if(!HasChrRam()) {
 				uint8_t chrHigh = _regs[4] << 3;
-				SelectCHRPage(0, ((chrHigh | _regs[0]) << _shift));
-				SelectCHRPage(1, ((chrHigh | (_regs[simpleMode ? 0 : 1])) << _shift) | _chrOr[0]);
-				SelectCHRPage(2, ((chrHigh | (_regs[simpleMode ? 0 : 2])) << _shift) | _chrOr[1]);
-				SelectCHRPage(3, ((chrHigh | (_regs[simpleMode ? 0 : 3])) << _shift) | _chrOr[2]);
+				SelectChrPage(0, ((chrHigh | _regs[0]) << _shift));
+				SelectChrPage(1, ((chrHigh | (_regs[simpleMode ? 0 : 1])) << _shift) | _chrOr[0]);
+				SelectChrPage(2, ((chrHigh | (_regs[simpleMode ? 0 : 2])) << _shift) | _chrOr[1]);
+				SelectChrPage(3, ((chrHigh | (_regs[simpleMode ? 0 : 3])) << _shift) | _chrOr[2]);
 			}
 		}
 	}

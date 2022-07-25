@@ -51,8 +51,8 @@ protected:
 	uint16_t RegisterEndAddress() override { return 0x4203; }
 	bool AllowRegisterRead() override { return true; }
 
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	uint32_t GetWorkRamSize() override { return 0x10000; }
 	uint32_t GetWorkRamPageSize() override { return 0x1000; }
@@ -68,8 +68,8 @@ protected:
 		}
 		_emu->RegisterMemory(MemoryType::NesPrgRom, _prgRom, _prgSize);
 
-		SelectPRGPage(1, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(1, 0);
+		SelectChrPage(0, 0);
 
 		//First bank (on the 2nd RAM chip, so bank #8 in the code) is mapped to 4000-4FFF, but the first 1kb is not accessible
 		SetCpuMemoryMapping(0x4000, 0x4FFF, 8, PrgMemoryType::WorkRam);
@@ -246,7 +246,7 @@ protected:
 
 			case 0x4201:
 				//PRG Select
-				SelectPRGPage(0, value); 
+				SelectPrgPage(0, value); 
 				break;
 
 			case 0x4202:

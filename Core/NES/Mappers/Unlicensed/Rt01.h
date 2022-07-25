@@ -5,18 +5,18 @@
 class Rt01 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 0);
-		SelectCHRPage(0, 0);
-		SelectCHRPage(1, 0);
-		SelectCHRPage(2, 0);
-		SelectCHRPage(3, 0);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 0);
+		SelectChrPage(0, 0);
+		SelectChrPage(1, 0);
+		SelectChrPage(2, 0);
+		SelectChrPage(3, 0);
 	}
 
 	uint8_t ReadRegister(uint16_t addr) override

@@ -9,8 +9,8 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 2; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -37,12 +37,12 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		if(addr & 0x80) {
-			SelectPRGPage(0, (addr & 0x70) >> 4);
-			SelectPRGPage(1, (addr & 0x70) >> 4);
+			SelectPrgPage(0, (addr & 0x70) >> 4);
+			SelectPrgPage(1, (addr & 0x70) >> 4);
 		} else {
 			SelectPrgPage2x(0, (addr & 0x60) >> 4);
 		}
-		SelectCHRPage(0, addr & 0x07);
+		SelectChrPage(0, addr & 0x07);
 		SetMirroringType(addr & 0x08 ? MirroringType::Horizontal : MirroringType::Vertical);
 		_returnDipSwitch = (addr & 0x100) == 0x100;
 	}

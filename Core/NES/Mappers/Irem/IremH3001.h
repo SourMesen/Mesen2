@@ -12,15 +12,15 @@ private:
 	uint16_t _irqReloadValue = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 1);
-		SelectPRGPage(2, 0xFE);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 1);
+		SelectPrgPage(2, 0xFE);
+		SelectPrgPage(3, -1);
 	}
 	
 	void Serialize(Serializer& s) override
@@ -45,7 +45,7 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		switch(addr) {
-			case 0x8000: SelectPRGPage(0, value); break;
+			case 0x8000: SelectPrgPage(0, value); break;
 
 			case 0x9001: SetMirroringType(value & 0x80 ? MirroringType::Horizontal : MirroringType::Vertical); break;
 			case 0x9003: 
@@ -61,18 +61,18 @@ protected:
 			case 0x9005: _irqReloadValue = (_irqReloadValue & 0x00FF) | (value << 8); break;
 			case 0x9006: _irqReloadValue = (_irqReloadValue & 0xFF00) | value; break;
 
-			case 0xA000: SelectPRGPage(1, value); break;
+			case 0xA000: SelectPrgPage(1, value); break;
 			
-			case 0xB000: SelectCHRPage(0, value); break;
-			case 0xB001: SelectCHRPage(1, value); break;
-			case 0xB002: SelectCHRPage(2, value); break;
-			case 0xB003: SelectCHRPage(3, value); break;
-			case 0xB004: SelectCHRPage(4, value); break;
-			case 0xB005: SelectCHRPage(5, value); break;
-			case 0xB006: SelectCHRPage(6, value); break;
-			case 0xB007: SelectCHRPage(7, value); break;
+			case 0xB000: SelectChrPage(0, value); break;
+			case 0xB001: SelectChrPage(1, value); break;
+			case 0xB002: SelectChrPage(2, value); break;
+			case 0xB003: SelectChrPage(3, value); break;
+			case 0xB004: SelectChrPage(4, value); break;
+			case 0xB005: SelectChrPage(5, value); break;
+			case 0xB006: SelectChrPage(6, value); break;
+			case 0xB007: SelectChrPage(7, value); break;
 
-			case 0xC000: SelectPRGPage(2, value); break;
+			case 0xC000: SelectPrgPage(2, value); break;
 		}
 	}
 };

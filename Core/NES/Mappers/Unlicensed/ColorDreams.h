@@ -5,14 +5,14 @@
 class ColorDreams : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool HasBusConflicts() override { return true; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -23,7 +23,7 @@ protected:
 		}
 
 		//TODO: Re-add size restriction when adding an option to prevent oversized roms
-		SelectPRGPage(0, value & 0x0F);
-		SelectCHRPage(0, (value >> 4) & 0x0F);
+		SelectPrgPage(0, value & 0x0F);
+		SelectChrPage(0, (value >> 4) & 0x0F);
 	}
 };

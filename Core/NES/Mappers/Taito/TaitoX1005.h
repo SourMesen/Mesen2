@@ -14,8 +14,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	uint16_t RegisterStartAddress() override { return 0x7EF0; }
 	uint16_t RegisterEndAddress() override { return 0x7EFF; }
 
@@ -28,7 +28,7 @@ protected:
 	{
 		_ramPermission = 0;
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 
 		UpdateRamAccess();
 	}
@@ -37,26 +37,26 @@ protected:
 	{
 		switch(addr) {
 			case 0x7EF0:
-				SelectCHRPage(0, value);
-				SelectCHRPage(1, value  + 1);
+				SelectChrPage(0, value);
+				SelectChrPage(1, value  + 1);
 				if(_alternateMirroring) {
 					SetNametable(0, value >> 7);
 					SetNametable(1, value >> 7);
 				}
 				break;
 			case 0x7EF1:
-				SelectCHRPage(2, value );
-				SelectCHRPage(3, value + 1);
+				SelectChrPage(2, value );
+				SelectChrPage(3, value + 1);
 				if(_alternateMirroring) {
 					SetNametable(2, value >> 7);
 					SetNametable(3, value >> 7);
 				}
 				break;
 
-			case 0x7EF2: SelectCHRPage(4, value); break;
-			case 0x7EF3: SelectCHRPage(5, value); break;
-			case 0x7EF4: SelectCHRPage(6, value); break;
-			case 0x7EF5: SelectCHRPage(7, value); break;
+			case 0x7EF2: SelectChrPage(4, value); break;
+			case 0x7EF3: SelectChrPage(5, value); break;
+			case 0x7EF4: SelectChrPage(6, value); break;
+			case 0x7EF5: SelectChrPage(7, value); break;
 
 			case 0x7EF6: case 0x7EF7:
 				if(!_alternateMirroring) {
@@ -70,15 +70,15 @@ protected:
 				break;
 
 			case 0x7EFA: case 0x7EFB:
-				SelectPRGPage(0, value);
+				SelectPrgPage(0, value);
 				break;
 
 			case 0x7EFC: case 0x7EFD:
-				SelectPRGPage(1, value);
+				SelectPrgPage(1, value);
 				break;
 
 			case 0x7EFE: case 0x7EFF:
-				SelectPRGPage(2, value);
+				SelectPrgPage(2, value);
 				break;
 		}
 	}

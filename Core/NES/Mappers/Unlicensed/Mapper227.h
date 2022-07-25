@@ -4,8 +4,8 @@
 class Mapper227 : public BaseMapper
 {
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -23,25 +23,25 @@ protected:
 			if(sFlag) {
 				SelectPrgPage2x(0, prgBank & 0xFE);
 			} else {
-				SelectPRGPage(0, prgBank);
-				SelectPRGPage(1, prgBank);
+				SelectPrgPage(0, prgBank);
+				SelectPrgPage(1, prgBank);
 			}
 		} else {
 			if(sFlag){
 				if(lFlag) {
-					SelectPRGPage(0, prgBank & 0x3E);
-					SelectPRGPage(1, prgBank | 0x07);
+					SelectPrgPage(0, prgBank & 0x3E);
+					SelectPrgPage(1, prgBank | 0x07);
 				} else {
-					SelectPRGPage(0, prgBank & 0x3E);
-					SelectPRGPage(1, prgBank & 0x38);
+					SelectPrgPage(0, prgBank & 0x3E);
+					SelectPrgPage(1, prgBank & 0x38);
 				}
 			} else {
 				if(lFlag) {
-					SelectPRGPage(0, prgBank);
-					SelectPRGPage(1, prgBank | 0x07);
+					SelectPrgPage(0, prgBank);
+					SelectPrgPage(1, prgBank | 0x07);
 				} else {
-					SelectPRGPage(0, prgBank);
-					SelectPRGPage(1, prgBank & 0x38);
+					SelectPrgPage(0, prgBank);
+					SelectPrgPage(1, prgBank & 0x38);
 				}
 			}
 		}

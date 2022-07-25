@@ -14,8 +14,8 @@ private:
 	uint16_t _irqScaler = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetChrRamSize() override { return 0x800; }
 	uint16_t GetChrRamPageSize() override { return 0x400; }
 
@@ -29,8 +29,8 @@ protected:
 		_irqCounter = 0;
 		_irqEnabled = false;
 
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -55,9 +55,9 @@ protected:
 		for(uint16_t i = 0; i < 8; i++) {
 			uint16_t page = _chrLow[i] | (_chrHigh[i] << 8);
 			if((_chrLow[i] == 4 || _chrLow[i] == 5) && !_forceChrRom) {
-				SelectCHRPage(i, page & 0x01, ChrMemoryType::ChrRam);
+				SelectChrPage(i, page & 0x01, ChrMemoryType::ChrRam);
 			} else {
-				SelectCHRPage(i, page);
+				SelectChrPage(i, page);
 			}
 		}
 	}
@@ -97,8 +97,8 @@ protected:
 			UpdateChr();
 		} else {
 			switch(addr) {
-				case 0x8010: SelectPRGPage(0, value); break;
-				case 0xA010: SelectPRGPage(1, value); break;
+				case 0x8010: SelectPrgPage(0, value); break;
+				case 0xA010: SelectPrgPage(1, value); break;
 				case 0x9400:
 					switch(value & 0x03) {
 						case 0: SetMirroringType(MirroringType::Vertical); break;

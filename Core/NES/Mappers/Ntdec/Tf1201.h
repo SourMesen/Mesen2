@@ -14,8 +14,8 @@ private:
 	bool _irqEnabled = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -47,21 +47,21 @@ protected:
 	void UpdateChr()
 	{
 		for(int i = 0; i < 8; i++) {
-			SelectCHRPage(i, _chrRegs[i]);
+			SelectChrPage(i, _chrRegs[i]);
 		}
 	}
 
 	void UpdatePrg()
 	{
 		if(_swapPrg) {
-			SelectPRGPage(0, -2);
-			SelectPRGPage(2, _prgRegs[0]);
+			SelectPrgPage(0, -2);
+			SelectPrgPage(2, _prgRegs[0]);
 		} else {
-			SelectPRGPage(0, _prgRegs[0]);
-			SelectPRGPage(2, -2);
+			SelectPrgPage(0, _prgRegs[0]);
+			SelectPrgPage(2, -2);
 		}
-		SelectPRGPage(1, _prgRegs[1]);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(1, _prgRegs[1]);
+		SelectPrgPage(3, -1);
 	}
 
 	void ProcessCpuClock() override

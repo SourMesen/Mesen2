@@ -52,8 +52,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetSaveRamPageSize() override { return 0x800; }
 	bool AllowRegisterRead() override { return true; }
 	
@@ -96,7 +96,7 @@ protected:
 		AddRegisterRange(0x4800, 0x5FFF, MemoryOperation::Any);
 		RemoveRegisterRange(0x6000, 0xFFFF, MemoryOperation::Read);
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 		UpdateSaveRamAccess();
 	}
 	
@@ -200,9 +200,9 @@ protected:
 			case 0x8000: case 0x8800: case 0x9000: case 0x9800: {
 				uint8_t bankNumber = (addr - 0x8000) >> 11;
 				if(!_lowChrNtMode && value >= 0xE0 && _variant == NamcoVariant::Namco163) {
-					SelectCHRPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
+					SelectChrPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
 				} else {
-					SelectCHRPage(bankNumber, value);
+					SelectChrPage(bankNumber, value);
 				}
 				break;
 			}
@@ -210,9 +210,9 @@ protected:
 			case 0xA000: case 0xA800: case 0xB000: case 0xB800: {
 				uint8_t bankNumber = ((addr - 0xA000) >> 11) + 4;
 				if(!_highChrNtMode && value >= 0xE0 && _variant == NamcoVariant::Namco163) {
-					SelectCHRPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
+					SelectChrPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
 				} else {
-					SelectCHRPage(bankNumber, value);
+					SelectChrPage(bankNumber, value);
 				}
 				break;
 			}
@@ -230,9 +230,9 @@ protected:
 				} else {
 					uint8_t bankNumber = ((addr - 0xC000) >> 11) + 8;
 					if(value >= 0xE0) {
-						SelectCHRPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
+						SelectChrPage(bankNumber, value & 0x01, ChrMemoryType::NametableRam);
 					} else {
-						SelectCHRPage(bankNumber, value);
+						SelectChrPage(bankNumber, value);
 					}
 				}
 				break;
@@ -244,7 +244,7 @@ protected:
 					SetVariant(NamcoVariant::Namco340);
 				}
 
-				SelectPRGPage(0, value & 0x3F);
+				SelectPrgPage(0, value & 0x3F);
 
 				if(_variant == NamcoVariant::Namco340) {
 					switch((value & 0xC0) >> 6) {
@@ -259,7 +259,7 @@ protected:
 				break;
 
 			case 0xE800:
-				SelectPRGPage(1, value & 0x3F);
+				SelectPrgPage(1, value & 0x3F);
 				if(_variant == NamcoVariant::Namco163) {
 					_lowChrNtMode = (value & 0x40) == 0x40;
 					_highChrNtMode = (value & 0x80) == 0x80;
@@ -267,7 +267,7 @@ protected:
 				break;
 
 			case 0xF000:
-				SelectPRGPage(2, value & 0x3F);
+				SelectPrgPage(2, value & 0x3F);
 				break;
 
 			case 0xF800:

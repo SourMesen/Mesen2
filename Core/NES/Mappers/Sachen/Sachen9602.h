@@ -24,11 +24,11 @@ protected:
 		SV(_regs[1]);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
-		MMC3::SelectPRGPage(slot, (page & 0x3F) | (_regs[1] << 6));
-		MMC3::SelectPRGPage(_prgMode ? 0 : 2, 0x3E);
-		MMC3::SelectPRGPage(3, 0x3F);
+		MMC3::SelectPrgPage(slot, (page & 0x3F) | (_regs[1] << 6));
+		MMC3::SelectPrgPage(_prgMode ? 0 : 2, 0x3E);
+		MMC3::SelectPrgPage(3, 0x3F);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

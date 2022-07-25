@@ -13,8 +13,8 @@ class Kaiser202 : public BaseMapper
 	uint8_t _prgRegs[4] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 
 	void InitMapper() override
 	{
@@ -24,7 +24,7 @@ protected:
 		_selectedReg = 0;
 		memset(_prgRegs, 0, sizeof(_prgRegs));
 		
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -94,13 +94,13 @@ protected:
 						break;
 
 					case 0xFC00:
-						SelectCHRPage(addr & 0x07, value);
+						SelectChrPage(addr & 0x07, value);
 						break;
 				}
 
-				SelectPRGPage(0, _prgRegs[0]);
-				SelectPRGPage(1, _prgRegs[1]);
-				SelectPRGPage(2, _prgRegs[2]);
+				SelectPrgPage(0, _prgRegs[0]);
+				SelectPrgPage(1, _prgRegs[1]);
+				SelectPrgPage(2, _prgRegs[2]);
 				break;
 		}
 	}

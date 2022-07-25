@@ -26,17 +26,17 @@ protected:
 		_registers[6] = (_registers[6] & 0x3F) | orValue;
 		_registers[7] = (_registers[7] & 0x3F) | orValue;
 
-		uint16_t lastPageInBlock = (GetPRGPageCount() >= 0x40 ? (0x3F | orValue) : -1);
+		uint16_t lastPageInBlock = (GetPrgPageCount() >= 0x40 ? (0x3F | orValue) : -1);
 		if(_prgMode == 0) {
-			SelectPRGPage(0, _registers[6]);
-			SelectPRGPage(1, _registers[7]);
-			SelectPRGPage(2, lastPageInBlock - 1);
-			SelectPRGPage(3, lastPageInBlock);
+			SelectPrgPage(0, _registers[6]);
+			SelectPrgPage(1, _registers[7]);
+			SelectPrgPage(2, lastPageInBlock - 1);
+			SelectPrgPage(3, lastPageInBlock);
 		} else if(_prgMode == 1) {
-			SelectPRGPage(0, lastPageInBlock - 1);
-			SelectPRGPage(1, _registers[7]);
-			SelectPRGPage(2, _registers[6]);
-			SelectPRGPage(3, lastPageInBlock);
+			SelectPrgPage(0, lastPageInBlock - 1);
+			SelectPrgPage(1, _registers[7]);
+			SelectPrgPage(2, _registers[6]);
+			SelectPrgPage(3, lastPageInBlock);
 		}
 	}
 };

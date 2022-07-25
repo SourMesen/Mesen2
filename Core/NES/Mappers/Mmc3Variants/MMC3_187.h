@@ -21,40 +21,40 @@ protected:
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if((_chrMode && slot >= 4) || (!_chrMode && slot < 4)) {
 			page |= 0x100;
 		}
-		BaseMapper::SelectCHRPage(slot, page);
+		BaseMapper::SelectChrPage(slot, page);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(!(_exRegs[0] & 0x80)) {
-			BaseMapper::SelectPRGPage(slot, page & 0x3F, memoryType);
+			BaseMapper::SelectPrgPage(slot, page & 0x3F, memoryType);
 		} else {
 			uint16_t exPage = _exRegs[0] & 0x1F;
 
 			if(_exRegs[0] & 0x20) {
 				if(_exRegs[0] & 0x40) {
 					exPage &= 0xFC;
-					BaseMapper::SelectPRGPage(0, exPage);
-					BaseMapper::SelectPRGPage(1, exPage +1);
-					BaseMapper::SelectPRGPage(2, exPage +2);
-					BaseMapper::SelectPRGPage(3, exPage +3);
+					BaseMapper::SelectPrgPage(0, exPage);
+					BaseMapper::SelectPrgPage(1, exPage +1);
+					BaseMapper::SelectPrgPage(2, exPage +2);
+					BaseMapper::SelectPrgPage(3, exPage +3);
 				} else {
 					exPage &= 0xFE;
-					BaseMapper::SelectPRGPage(0, (exPage << 1));
-					BaseMapper::SelectPRGPage(1, (exPage << 1) + 1);
-					BaseMapper::SelectPRGPage(2, (exPage << 1) + 2);
-					BaseMapper::SelectPRGPage(3, (exPage << 1) + 3);
+					BaseMapper::SelectPrgPage(0, (exPage << 1));
+					BaseMapper::SelectPrgPage(1, (exPage << 1) + 1);
+					BaseMapper::SelectPrgPage(2, (exPage << 1) + 2);
+					BaseMapper::SelectPrgPage(3, (exPage << 1) + 3);
 				}
 			} else {
-				BaseMapper::SelectPRGPage(0, (exPage << 1));
-				BaseMapper::SelectPRGPage(1, (exPage << 1) + 1);
-				BaseMapper::SelectPRGPage(2, (exPage << 1));
-				BaseMapper::SelectPRGPage(3, (exPage << 1) + 1);
+				BaseMapper::SelectPrgPage(0, (exPage << 1));
+				BaseMapper::SelectPrgPage(1, (exPage << 1) + 1);
+				BaseMapper::SelectPrgPage(2, (exPage << 1));
+				BaseMapper::SelectPrgPage(3, (exPage << 1) + 1);
 			}
 		}
 	}

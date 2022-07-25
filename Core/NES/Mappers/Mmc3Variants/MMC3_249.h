@@ -21,16 +21,16 @@ protected:
 		SV(_exReg);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(_exReg & 0x02) {
 			page = (page & 0x03) | ((page >> 1) & 0x04) | ((page >> 4) & 0x08) | ((page >> 2) & 0x10) | ((page << 3) & 0x20) | ((page << 2) & 0xC0);
 		}
 
-		BaseMapper::SelectCHRPage(slot, page, memoryType);
+		BaseMapper::SelectChrPage(slot, page, memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(_exReg & 0x02) {
 			if(page < 0x20) {
@@ -41,7 +41,7 @@ protected:
 			}
 		}
 
-		BaseMapper::SelectPRGPage(slot, page, memoryType);
+		BaseMapper::SelectPrgPage(slot, page, memoryType);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

@@ -30,8 +30,8 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0x4100; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -126,18 +126,18 @@ protected:
 	{
 		switch(_mode & 0x03) {
 			case 0:
-				SelectPRGPage(0, _vrc2Prg[0]);
-				SelectPRGPage(1, _vrc2Prg[1]);
-				SelectPRGPage(2, -2);
-				SelectPRGPage(3, -1);
+				SelectPrgPage(0, _vrc2Prg[0]);
+				SelectPrgPage(1, _vrc2Prg[1]);
+				SelectPrgPage(2, -2);
+				SelectPrgPage(3, -1);
 				break;
 
 			case 1: {
 				uint32_t prgMode = (_mmc3Ctrl >> 5) & 0x02;
-				SelectPRGPage(0, _mmc3Regs[6 + prgMode]);
-				SelectPRGPage(1, _mmc3Regs[7]);
-				SelectPRGPage(2, _mmc3Regs[6 + (prgMode ^ 0x02)]);
-				SelectPRGPage(3, _mmc3Regs[9]);
+				SelectPrgPage(0, _mmc3Regs[6 + prgMode]);
+				SelectPrgPage(1, _mmc3Regs[7]);
+				SelectPrgPage(2, _mmc3Regs[6 + (prgMode ^ 0x02)]);
+				SelectPrgPage(3, _mmc3Regs[9]);
 				break;
 			}
 
@@ -166,20 +166,20 @@ protected:
 		switch(_mode & 0x03) {
 			case 0:
 				for(int i = 0; i < 8; i++) {
-					SelectCHRPage(i, outerBank | _vrc2Chr[i]);
+					SelectChrPage(i, outerBank | _vrc2Chr[i]);
 				}
 				break;
 
 			case 1: {
 				uint32_t slotSwap = (_mmc3Ctrl & 0x80) ? 4 : 0;
-				SelectCHRPage(0 ^ slotSwap, outerBank | ((_mmc3Regs[0]) & 0xFE));
-				SelectCHRPage(1 ^ slotSwap, outerBank | (_mmc3Regs[0] | 1));
-				SelectCHRPage(2 ^ slotSwap, outerBank | ((_mmc3Regs[1]) & 0xFE));
-				SelectCHRPage(3 ^ slotSwap, outerBank | (_mmc3Regs[1] | 1));
-				SelectCHRPage(4 ^ slotSwap, outerBank | _mmc3Regs[2]);
-				SelectCHRPage(5 ^ slotSwap, outerBank | _mmc3Regs[3]);
-				SelectCHRPage(6 ^ slotSwap, outerBank | _mmc3Regs[4]);
-				SelectCHRPage(7 ^ slotSwap, outerBank | _mmc3Regs[5]);
+				SelectChrPage(0 ^ slotSwap, outerBank | ((_mmc3Regs[0]) & 0xFE));
+				SelectChrPage(1 ^ slotSwap, outerBank | (_mmc3Regs[0] | 1));
+				SelectChrPage(2 ^ slotSwap, outerBank | ((_mmc3Regs[1]) & 0xFE));
+				SelectChrPage(3 ^ slotSwap, outerBank | (_mmc3Regs[1] | 1));
+				SelectChrPage(4 ^ slotSwap, outerBank | _mmc3Regs[2]);
+				SelectChrPage(5 ^ slotSwap, outerBank | _mmc3Regs[3]);
+				SelectChrPage(6 ^ slotSwap, outerBank | _mmc3Regs[4]);
+				SelectChrPage(7 ^ slotSwap, outerBank | _mmc3Regs[5]);
 				break;
 			}
 

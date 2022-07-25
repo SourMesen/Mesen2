@@ -36,25 +36,25 @@ protected:
 		int outerBank0 = (_mode & 0x08) ? 0x100 : 0;
 		int outerBank1 = (_mode & 0x20) ? 0x100 : 0;
 		int outerBank2 = (_mode & 0x80) ? 0x100 : 0;
-		SelectCHRPage(0 ^ slotSwap, outerBank0 | (_registers[0] & (~1)));
-		SelectCHRPage(1 ^ slotSwap, outerBank0 | _registers[0] | 1);
-		SelectCHRPage(2 ^ slotSwap, outerBank0 | (_registers[1] & (~1)));
-		SelectCHRPage(3 ^ slotSwap, outerBank0 | _registers[1] | 1);
-		SelectCHRPage(4 ^ slotSwap, outerBank1 | _registers[2]);
-		SelectCHRPage(5 ^ slotSwap, outerBank1 | _registers[3]);
-		SelectCHRPage(6 ^ slotSwap, outerBank2 | _registers[4]);
-		SelectCHRPage(7 ^ slotSwap, outerBank2 | _registers[5]);
+		SelectChrPage(0 ^ slotSwap, outerBank0 | (_registers[0] & (~1)));
+		SelectChrPage(1 ^ slotSwap, outerBank0 | _registers[0] | 1);
+		SelectChrPage(2 ^ slotSwap, outerBank0 | (_registers[1] & (~1)));
+		SelectChrPage(3 ^ slotSwap, outerBank0 | _registers[1] | 1);
+		SelectChrPage(4 ^ slotSwap, outerBank1 | _registers[2]);
+		SelectChrPage(5 ^ slotSwap, outerBank1 | _registers[3]);
+		SelectChrPage(6 ^ slotSwap, outerBank2 | _registers[4]);
+		SelectChrPage(7 ^ slotSwap, outerBank2 | _registers[5]);
 	}
 
 	void UpdateVrcState()
 	{
-		SelectPRGPage(0, _vrcPrgRegs[0]);
-		SelectPRGPage(1, _vrcPrgRegs[1]);
-		SelectPRGPage(2, -2);
-		SelectPRGPage(3, -1);
+		SelectPrgPage(0, _vrcPrgRegs[0]);
+		SelectPrgPage(1, _vrcPrgRegs[1]);
+		SelectPrgPage(2, -2);
+		SelectPrgPage(3, -1);
 
 		for(int i = 0; i < 8; i++) {
-			SelectCHRPage(i, _vrcChrRegs[i]);
+			SelectChrPage(i, _vrcChrRegs[i]);
 		}
 		
 		SetMirroringType(_vrcMirroring & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);

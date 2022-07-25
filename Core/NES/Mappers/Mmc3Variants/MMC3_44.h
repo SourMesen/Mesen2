@@ -20,20 +20,20 @@ protected:
 		UpdateState();
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		page &= _selectedBlock <= 5 ? 0x7F : 0xFF;
 		page |= _selectedBlock * 0x80;
 
-		MMC3::SelectCHRPage(slot, page, memoryType);
+		MMC3::SelectChrPage(slot, page, memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		page &= _selectedBlock <= 5 ? 0x0F : 0x1F;
 		page |= _selectedBlock * 0x10;
 
-		MMC3::SelectPRGPage(slot, page, memoryType);
+		MMC3::SelectPrgPage(slot, page, memoryType);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

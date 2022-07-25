@@ -8,16 +8,16 @@ private:
 	uint8_t _reg = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool HasBusConflicts() override { return true; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 7);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 7);
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Reset(bool softReset) override
@@ -48,7 +48,7 @@ protected:
 
 		uint8_t outer = _reg & 0x70;
 		
-		SelectPRGPage(0, (_reg & 0x07) | (outer >> 1));
-		SelectPRGPage(1, 0x07 | (outer >> 1));
+		SelectPrgPage(0, (_reg & 0x07) | (outer >> 1));
+		SelectPrgPage(1, 0x07 | (outer >> 1));
 	}
 };

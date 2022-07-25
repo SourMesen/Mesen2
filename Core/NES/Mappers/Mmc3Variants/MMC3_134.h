@@ -8,14 +8,14 @@ class MMC3_134 : public MMC3
 private:
 	uint8_t _exReg = 0;
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
-		BaseMapper::SelectCHRPage(slot, (page & 0xFF) | ((_exReg & 0x20) << 3), memoryType);
+		BaseMapper::SelectChrPage(slot, (page & 0xFF) | ((_exReg & 0x20) << 3), memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
-		BaseMapper::SelectPRGPage(slot, (page & 0x1F) | ((_exReg & 0x02) << 4), memoryType);
+		BaseMapper::SelectPrgPage(slot, (page & 0x1F) | ((_exReg & 0x02) << 4), memoryType);
 	}
 
 	void InitMapper() override 

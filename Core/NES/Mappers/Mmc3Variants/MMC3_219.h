@@ -43,7 +43,7 @@ protected:
 				case 0x8001:
 					if(_exRegs[0] >= 0x23 && _exRegs[0] <= 0x26) {
 						uint8_t prgBank = ((value & 0x20) >> 5) | ((value & 0x10) >> 3) | ((value & 0x08) >> 1) | ((value & 0x04) << 1);
-						SelectPRGPage(0x26 - _exRegs[0], prgBank);
+						SelectPrgPage(0x26 - _exRegs[0], prgBank);
 					}
 
 					switch(_exRegs[1]) {
@@ -51,19 +51,19 @@ protected:
 							_exRegs[2] = value << 4; 
 							break;
 
-						case 0x09: SelectCHRPage(0, _exRegs[2] | (value >> 1 & 0x0E)); break;
-						case 0x0B: SelectCHRPage(1, _exRegs[2] | (value >> 1 | 0x1)); break;
+						case 0x09: SelectChrPage(0, _exRegs[2] | (value >> 1 & 0x0E)); break;
+						case 0x0B: SelectChrPage(1, _exRegs[2] | (value >> 1 | 0x1)); break;
 						case 0x0C:
-						case 0x0D: SelectCHRPage(2, _exRegs[2] | (value >> 1 & 0xE)); break;
-						case 0x0F: SelectCHRPage(3, _exRegs[2] | (value >> 1 | 0x1)); break;
+						case 0x0D: SelectChrPage(2, _exRegs[2] | (value >> 1 & 0xE)); break;
+						case 0x0F: SelectChrPage(3, _exRegs[2] | (value >> 1 | 0x1)); break;
 						case 0x10:
-						case 0x11: SelectCHRPage(4, _exRegs[2] | (value >> 1 & 0xF)); break;
+						case 0x11: SelectChrPage(4, _exRegs[2] | (value >> 1 & 0xF)); break;
 						case 0x14:
-						case 0x15: SelectCHRPage(5, _exRegs[2] | (value >> 1 & 0xF)); break;
+						case 0x15: SelectChrPage(5, _exRegs[2] | (value >> 1 & 0xF)); break;
 						case 0x18:
-						case 0x19: SelectCHRPage(6, _exRegs[2] | (value >> 1 & 0xF)); break;
+						case 0x19: SelectChrPage(6, _exRegs[2] | (value >> 1 & 0xF)); break;
 						case 0x1C:
-						case 0x1D: SelectCHRPage(7, _exRegs[2] | (value >> 1 & 0xF)); break;
+						case 0x1D: SelectChrPage(7, _exRegs[2] | (value >> 1 & 0xF)); break;
 					}
 					break;
 

@@ -21,8 +21,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x0400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x0400; }
 	uint16_t RegisterStartAddress() override { return 0x7EF0; }
 	uint16_t RegisterEndAddress() override { return 0x7EFF; }
 
@@ -35,7 +35,7 @@ protected:
 		memset(_ramPermission, 0, sizeof(_ramPermission));
 		memset(_chrRegs, 0, sizeof(_chrRegs));
 
-		SelectPRGPage(3, -1);
+		SelectPrgPage(3, -1);
 
 		UpdateRamAccess();
 	}
@@ -47,15 +47,15 @@ protected:
 			SelectChrPage2x(0, _chrRegs[0] & 0xFE);
 			SelectChrPage2x(1, _chrRegs[1] & 0xFE);
 
-			SelectCHRPage(4, _chrRegs[2]);
-			SelectCHRPage(5, _chrRegs[3]);
-			SelectCHRPage(6, _chrRegs[4]);
-			SelectCHRPage(7, _chrRegs[5]);
+			SelectChrPage(4, _chrRegs[2]);
+			SelectChrPage(5, _chrRegs[3]);
+			SelectChrPage(6, _chrRegs[4]);
+			SelectChrPage(7, _chrRegs[5]);
 		} else {
-			SelectCHRPage(0, _chrRegs[2]);
-			SelectCHRPage(1, _chrRegs[3]);
-			SelectCHRPage(2, _chrRegs[4]);
-			SelectCHRPage(3, _chrRegs[5]);
+			SelectChrPage(0, _chrRegs[2]);
+			SelectChrPage(1, _chrRegs[3]);
+			SelectChrPage(2, _chrRegs[4]);
+			SelectChrPage(3, _chrRegs[5]);
 
 			//Regs 0 & 1 ignore the LSB
 			SelectChrPage2x(2, _chrRegs[0] & 0xFE);
@@ -90,15 +90,15 @@ protected:
 				break;
 
 			case 0x7EFA:
-				SelectPRGPage(0, value >> 2);
+				SelectPrgPage(0, value >> 2);
 				break;
 
 			case 0x7EFB:
-				SelectPRGPage(1, value >> 2);
+				SelectPrgPage(1, value >> 2);
 				break;
 
 			case 0x7EFC:
-				SelectPRGPage(2, value >> 2);
+				SelectPrgPage(2, value >> 2);
 				break;
 		}
 	}

@@ -18,8 +18,8 @@ protected:
 	uint32_t GetDipSwitchCount() override { return 2; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -73,17 +73,17 @@ protected:
 	{
 		SetMirroringType(_mode & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);
 
-		SelectCHRPage(0, _regs[3]);
-		SelectCHRPage(1, _regs[4]);
-		SelectCHRPage(2, _regs[5]);
-		SelectCHRPage(3, _regs[6]);
+		SelectChrPage(0, _regs[3]);
+		SelectChrPage(1, _regs[4]);
+		SelectChrPage(2, _regs[5]);
+		SelectChrPage(3, _regs[6]);
 
 		if(_mode & 0x10) {
 			uint32_t outer = (_bank & 0x08) << 1;
-			SelectPRGPage(0, outer | (_regs[0] & 0x0F));
-			SelectPRGPage(1, outer | (_regs[1] & 0x0F));
-			SelectPRGPage(2, outer | (_regs[2] & 0x0F));
-			SelectPRGPage(3, outer | 0x0F);
+			SelectPrgPage(0, outer | (_regs[0] & 0x0F));
+			SelectPrgPage(1, outer | (_regs[1] & 0x0F));
+			SelectPrgPage(2, outer | (_regs[2] & 0x0F));
+			SelectPrgPage(3, outer | 0x0F);
 		} else if(_mode & 0x08) {
 			SelectPrgPage4x(0, (_bank & 0xFE) << 1);
 		} else {

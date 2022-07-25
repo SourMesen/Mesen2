@@ -9,8 +9,8 @@ private:
 	uint8_t _chrReg = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -34,7 +34,7 @@ protected:
 	void UpdateState()
 	{
 		SetCpuMemoryMapping(0x6000, 0x7FFF, _prgReg, PrgMemoryType::PrgRom);
-		SelectCHRPage(0, _chrReg);
+		SelectChrPage(0, _chrReg);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

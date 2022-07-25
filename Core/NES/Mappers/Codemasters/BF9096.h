@@ -9,18 +9,18 @@ private:
 	uint8_t _prgPage = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		_prgPage = 0;
 		_prgBlock = 0;
 		
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 3);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 3);
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -39,8 +39,8 @@ protected:
 
 		}
 		
-		SelectPRGPage(0, (_prgBlock << 2) | _prgPage);
-		SelectPRGPage(1, (_prgBlock << 2) | 3);
+		SelectPrgPage(0, (_prgBlock << 2) | _prgPage);
+		SelectPrgPage(1, (_prgBlock << 2) | 3);
 	}
 
 	void Serialize(Serializer& s) override

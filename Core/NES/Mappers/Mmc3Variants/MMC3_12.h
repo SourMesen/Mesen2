@@ -22,7 +22,7 @@ protected:
 		SV(_chrSelection);
 	}
 
-	virtual void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	virtual void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(slot < 4 && (_chrSelection & 0x01)) {
 			//0x0000 to 0x0FFF
@@ -32,7 +32,7 @@ protected:
 			page |= 0x100;
 		}
 
-		MMC3::SelectCHRPage(slot, page, memoryType);
+		MMC3::SelectChrPage(slot, page, memoryType);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

@@ -8,14 +8,14 @@ private:
 	uint8_t _regs[4] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		memset(_regs, 0, sizeof(_regs));
 		WriteRegister(0x8000, 0);
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -40,16 +40,16 @@ protected:
 		if(_regs[1] & 0x08) {
 			//32 KiB NROM
 			uint8_t bank = (outerBank | innerBank) & 0xFE;
-			SelectPRGPage(0, altMode  ? bank + 1 : bank);
-			SelectPRGPage(1, altMode ? bank : bank + 1);
+			SelectPrgPage(0, altMode  ? bank + 1 : bank);
+			SelectPrgPage(1, altMode ? bank : bank + 1);
 		} else if(_regs[1] & 0x04) {
 			//512 KiB inverted UNROM(mapper 180)
-			SelectPRGPage(0, 0x1F);
-			SelectPRGPage(1, outerBank | innerBank);
+			SelectPrgPage(0, 0x1F);
+			SelectPrgPage(1, outerBank | innerBank);
 		} else {
 			//512 KiB UNROM
-			SelectPRGPage(0, outerBank | innerBank);
-			SelectPRGPage(1, altMode ? 0x20 : 0x07);
+			SelectPrgPage(0, outerBank | innerBank);
+			SelectPrgPage(1, altMode ? 0x20 : 0x07);
 		}
 	}
 };

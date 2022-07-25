@@ -31,14 +31,14 @@ protected:
 		}
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
-		MMC3::SelectCHRPage(slot, (page & 0x7F) | (_selectedBlock << 3), memoryType);
+		MMC3::SelectChrPage(slot, (page & 0x7F) | (_selectedBlock << 3), memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
-		MMC3::SelectPRGPage(slot, (page & 0x0F) | _selectedBlock, memoryType);
+		MMC3::SelectPrgPage(slot, (page & 0x0F) | _selectedBlock, memoryType);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override

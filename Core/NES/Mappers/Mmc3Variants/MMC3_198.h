@@ -21,8 +21,8 @@ protected:
 	{
 		_exRegs[0] = 0;
 		_exRegs[1] = 1;
-		_exRegs[2] = GetPRGPageCount() - 2;
-		_exRegs[3] = GetPRGPageCount() - 1;
+		_exRegs[2] = GetPrgPageCount() - 2;
+		_exRegs[3] = GetPrgPageCount() - 1;
 
 		//Set 4kb of work ram at $5000, mirrored
 		SetCpuMemoryMapping(0x5000, 0x7FFF, 0, PrgMemoryType::WorkRam);
@@ -48,9 +48,9 @@ protected:
 		MMC3::WriteRegister(addr, value);
 	}
 	
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType) override
 	{
-		MMC3::SelectPRGPage(slot, _exRegs[slot], memoryType);
+		MMC3::SelectPrgPage(slot, _exRegs[slot], memoryType);
 	}
 
 	void UpdateChrMapping() override

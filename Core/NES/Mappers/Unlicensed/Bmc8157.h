@@ -10,14 +10,14 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 1; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
 		_lastAddr = 0;
 		UpdateState();
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -49,8 +49,8 @@ protected:
 		if(outer512Prg && _prgSize <= 1024 * 512 && GetDipSwitches() != 0) {
 			RemoveCpuMemoryMapping(0x8000, 0xFFFF);
 		} else {
-			SelectPRGPage(0, (outer512Prg << 6) | (outer128Prg << 3) | innerPrg0);
-			SelectPRGPage(1, (outer512Prg << 6) | (outer128Prg << 3) | baseBank);
+			SelectPrgPage(0, (outer512Prg << 6) | (outer128Prg << 3) | innerPrg0);
+			SelectPrgPage(1, (outer512Prg << 6) | (outer128Prg << 3) | baseBank);
 			SetMirroringType(_lastAddr & 0x02 ? MirroringType::Horizontal : MirroringType::Vertical);
 		}
 	}

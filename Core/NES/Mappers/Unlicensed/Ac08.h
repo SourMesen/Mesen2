@@ -9,8 +9,8 @@ private:
 	uint8_t _reg = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -19,7 +19,7 @@ protected:
 		_reg = 0;
 
 		SelectPrgPage4x(0, -4);
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		UpdateState();
 	}
 

@@ -11,8 +11,8 @@ private:
 	bool _ffeAltMode = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint32_t GetChrRamSize() override { return 0x8000; }
 	uint16_t RegisterStartAddress() override { return 0x42FE; }
 	uint16_t RegisterEndAddress() override { return 0x4517; }
@@ -111,11 +111,11 @@ protected:
 				} else {
 					switch(addr) {
 						case 0x4504: case 0x4505: case 0x4506: case 0x4507:
-							SelectPRGPage(addr - 0x4504, value);
+							SelectPrgPage(addr - 0x4504, value);
 							break;
 
 						case 0x4510: case 0x4511: case 0x4512: case 0x4513: case 0x4514: case 0x4515: case 0x4516: case 0x4517:
-							SelectCHRPage(addr - 0x4510, value);
+							SelectChrPage(addr - 0x4510, value);
 							break;
 					}
 				}

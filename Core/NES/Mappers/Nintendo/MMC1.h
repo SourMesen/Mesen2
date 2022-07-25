@@ -90,8 +90,8 @@ protected:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x1000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x1000; }
 
 	virtual void UpdateState()
 	{
@@ -132,11 +132,11 @@ protected:
 		} else {
 			if(_prgMode) {
 				if(_slotSelect) {
-					SelectPRGPage(0, _prgReg | prgBankSelect);
-					SelectPRGPage(1, 0x0F | prgBankSelect);
+					SelectPrgPage(0, _prgReg | prgBankSelect);
+					SelectPrgPage(1, 0x0F | prgBankSelect);
 				} else {
-					SelectPRGPage(0, 0 | prgBankSelect);
-					SelectPRGPage(1, _prgReg | prgBankSelect);
+					SelectPrgPage(0, 0 | prgBankSelect);
+					SelectPrgPage(1, _prgReg | prgBankSelect);
 				}
 			} else {
 				SelectPrgPage2x(0, (_prgReg & 0xFE) | prgBankSelect);
@@ -144,11 +144,11 @@ protected:
 		}
 
 		if(_chrMode) {
-			SelectCHRPage(0, _chrReg0);
-			SelectCHRPage(1, _chrReg1);
+			SelectChrPage(0, _chrReg0);
+			SelectChrPage(1, _chrReg1);
 		} else {
-			SelectCHRPage(0, _chrReg0 & 0x1E);
-			SelectCHRPage(1, (_chrReg0 & 0x1E) + 1);
+			SelectChrPage(0, _chrReg0 & 0x1E);
+			SelectChrPage(1, (_chrReg0 & 0x1E) + 1);
 		}
 	}
 

@@ -8,14 +8,14 @@ private:
 	bool _prgMode1 = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 0);
+		SelectChrPage(0, 0);
 	}
 
 	virtual void Serialize(Serializer& s) override
@@ -28,13 +28,13 @@ protected:
 	{
 		_prgMode1 = (addr & 0x09) == 0x09;
 		
-		SelectCHRPage(0, (addr >> 1) & 0x07);
+		SelectChrPage(0, (addr >> 1) & 0x07);
 		if(_prgMode1) {
-			SelectPRGPage(0, (addr >> 1) & 0x07);
-			SelectPRGPage(1, ((addr >> 1) & 0x07) + 1);
+			SelectPrgPage(0, (addr >> 1) & 0x07);
+			SelectPrgPage(1, ((addr >> 1) & 0x07) + 1);
 		} else {
-			SelectPRGPage(0, (addr >> 1) & 0x07);
-			SelectPRGPage(1, (addr >> 1) & 0x07);
+			SelectPrgPage(0, (addr >> 1) & 0x07);
+			SelectPrgPage(1, (addr >> 1) & 0x07);
 		}
 		
 		SetMirroringType(addr & 0x01 ? MirroringType::Horizontal : MirroringType::Vertical);

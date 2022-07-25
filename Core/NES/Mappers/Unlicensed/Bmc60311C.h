@@ -10,8 +10,8 @@ private:
 	uint8_t _mode = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x6000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 
@@ -22,7 +22,7 @@ protected:
 		_mode = 0;
 
 		UpdateState();
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -40,8 +40,8 @@ protected:
 		switch(_mode & 0x03) {
 			case 0:
 				//0: NROM-128: Same inner/outer 16 KiB bank at CPU $8000-$BFFF and $C000-$FFFF
-				SelectPRGPage(0, page);
-				SelectPRGPage(1, page);
+				SelectPrgPage(0, page);
+				SelectPrgPage(1, page);
 				break;
 
 			case 1:
@@ -51,8 +51,8 @@ protected:
 
 			case 2:
 				//2: UNROM: Inner/outer bank at CPU $8000-BFFF, fixed inner bank 7 within outer bank at $C000-$FFFF
-				SelectPRGPage(0, page);
-				SelectPRGPage(1, _outerPrg | 7);
+				SelectPrgPage(0, page);
+				SelectPrgPage(1, _outerPrg | 7);
 				break;
 
 			case 3:

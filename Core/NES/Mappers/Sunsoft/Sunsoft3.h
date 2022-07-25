@@ -12,12 +12,12 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(1, -1);
+		SelectPrgPage(1, -1);
 	}
 
 	void Serialize(Serializer& s) override
@@ -42,10 +42,10 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		switch(addr & 0xF800) {
-			case 0x8800: SelectCHRPage(0, value); break;
-			case 0x9800: SelectCHRPage(1, value); break;
-			case 0xA800: SelectCHRPage(2, value); break;
-			case 0xB800: SelectCHRPage(3, value); break;
+			case 0x8800: SelectChrPage(0, value); break;
+			case 0x9800: SelectChrPage(1, value); break;
+			case 0xA800: SelectChrPage(2, value); break;
+			case 0xB800: SelectChrPage(3, value); break;
 			case 0xC800: 
 				_irqCounter &= _irqLatch ? 0xFF00 : 0x00FF;
 				_irqCounter |= _irqLatch ? value : (value << 8);
@@ -64,7 +64,7 @@ protected:
 					case 3: SetMirroringType(MirroringType::ScreenBOnly); break;
 				}
 				break;
-			case 0xF800: SelectPRGPage(0, value); break;
+			case 0xF800: SelectPrgPage(0, value); break;
 		}
 	}
 };

@@ -16,8 +16,8 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 
 	void InitMapper() override
 	{
@@ -46,11 +46,11 @@ protected:
 	{
 		SelectPrgPage4x(0x8000, _prgReg);
 		if(!_prgMode) {
-			SelectPRGPage(2, _prgReg);
+			SelectPrgPage(2, _prgReg);
 		}
 
 		for(int i = 0; i < 8; i++) {
-			SelectCHRPage(i, _chrRegs[i]);
+			SelectChrPage(i, _chrRegs[i]);
 		}
 
 		switch(_mirroring) {

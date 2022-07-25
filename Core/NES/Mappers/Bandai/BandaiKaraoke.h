@@ -12,8 +12,8 @@ private:
 	shared_ptr<BandaiMicrophone> _microphone;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 	bool HasBusConflicts() override { return true; }
 
@@ -22,9 +22,9 @@ protected:
 		AddRegisterRange(0x6000, 0x7FFF, MemoryOperation::Read);
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 0x07);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 0x07);
+		SelectChrPage(0, 0);
 
 		//TODO register in control manager
 		_microphone.reset(new BandaiMicrophone(_emu, _emu->GetSettings()->GetNesConfig().Port1.Keys));
@@ -39,11 +39,11 @@ protected:
 	{
 		if(value & 0x10) {
 			//Select internal rom
-			SelectPRGPage(0, value & 0x07);
+			SelectPrgPage(0, value & 0x07);
 		} else {
 			//Select expansion rom
 			if(_prgSize >= 0x40000) {
-				SelectPRGPage(0, (value & 0x07) | 0x08);
+				SelectPrgPage(0, (value & 0x07) | 0x08);
 			} else {
 				//Open bus for roms that don't contain the expansion rom
 				RemoveCpuMemoryMapping(0x8000, 0xBFFF);

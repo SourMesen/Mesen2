@@ -8,8 +8,8 @@ private:
 	uint8_t _regs[2] = {};
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -37,11 +37,11 @@ protected:
 		if(chip < (_regs[0] >> 7)) {
 			RemoveCpuMemoryMapping(0x8000, 0xFFFF);
 		} else {
-			SelectPRGPage(0, chip | (_regs[0] & 0x1E) | (_regs[0] >> 5 & _regs[0]));
-			SelectPRGPage(1, chip | (_regs[0] & 0x1F) | (~_regs[0] >> 5 & 0x01));
+			SelectPrgPage(0, chip | (_regs[0] & 0x1E) | (_regs[0] >> 5 & _regs[0]));
+			SelectPrgPage(1, chip | (_regs[0] & 0x1F) | (~_regs[0] >> 5 & 0x01));
 		}
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 		SetMirroringType(_regs[0] & 0x40 ? MirroringType::Vertical : MirroringType::Horizontal);
 	}
 

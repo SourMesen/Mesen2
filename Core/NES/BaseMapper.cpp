@@ -25,10 +25,10 @@ void BaseMapper::Reset(bool softReset) { }
 
 //Make sure the page size is no bigger than the size of the ROM itself
 //Otherwise we will end up reading from unallocated memory
-uint16_t BaseMapper::InternalGetPrgPageSize() { return std::min((uint32_t)GetPRGPageSize(), _prgSize); }
+uint16_t BaseMapper::InternalGetPrgPageSize() { return std::min((uint32_t)GetPrgPageSize(), _prgSize); }
 uint16_t BaseMapper::InternalGetSaveRamPageSize() { return std::min((uint32_t)GetSaveRamPageSize(), _saveRamSize); }
 uint16_t BaseMapper::InternalGetWorkRamPageSize() { return std::min((uint32_t)GetWorkRamPageSize(), _workRamSize); }
-uint16_t BaseMapper::InternalGetChrPageSize() { return std::min((uint32_t)GetCHRPageSize(), _chrRomSize); }
+uint16_t BaseMapper::InternalGetChrPageSize() { return std::min((uint32_t)GetChrPageSize(), _chrRomSize); }
 uint16_t BaseMapper::InternalGetChrRamPageSize() { return std::min((uint32_t)GetChrRamPageSize(), _chrRamSize); }
 	
 bool BaseMapper::ValidateAddressRange(uint16_t startAddr, uint16_t endAddr)
@@ -55,7 +55,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 	uint8_t defaultAccessType = MemoryAccessType::Read;
 	switch(type) {
 		case PrgMemoryType::PrgRom:
-			pageCount = GetPRGPageCount();
+			pageCount = GetPrgPageCount();
 			pageSize = InternalGetPrgPageSize();
 			break;
 		case PrgMemoryType::SaveRam:
@@ -205,7 +205,7 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 				#endif
 				return;
 			}
-			pageCount = GetCHRPageCount();
+			pageCount = GetChrPageCount();
 			break;
 
 		case ChrMemoryType::ChrRam:
@@ -326,13 +326,13 @@ void BaseMapper::SelectPrgPage4x(uint16_t slot, uint16_t page, PrgMemoryType mem
 
 void BaseMapper::SelectPrgPage2x(uint16_t slot, uint16_t page, PrgMemoryType memoryType)
 {
-	BaseMapper::SelectPRGPage(slot*2, page, memoryType);
-	BaseMapper::SelectPRGPage(slot*2+1, page+1, memoryType);
+	BaseMapper::SelectPrgPage(slot*2, page, memoryType);
+	BaseMapper::SelectPrgPage(slot*2+1, page+1, memoryType);
 }
 
-void BaseMapper::SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType)
+void BaseMapper::SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType)
 {
-	if(_prgSize < 0x8000 && GetPRGPageSize() > _prgSize) {
+	if(_prgSize < 0x8000 && GetPrgPageSize() > _prgSize) {
 		//Total PRG size is smaller than available memory range, map the entire PRG to all slots
 		//i.e same logic as NROM (mapper 0) when PRG is 16kb
 		//Needed by "Pyramid" (mapper 79)
@@ -366,11 +366,11 @@ void BaseMapper::SelectChrPage4x(uint16_t slot, uint16_t page, ChrMemoryType mem
 
 void BaseMapper::SelectChrPage2x(uint16_t slot, uint16_t page, ChrMemoryType memoryType)
 {
-	BaseMapper::SelectCHRPage(slot*2, page, memoryType);
-	BaseMapper::SelectCHRPage(slot*2+1, page+1, memoryType);
+	BaseMapper::SelectChrPage(slot*2, page, memoryType);
+	BaseMapper::SelectChrPage(slot*2+1, page+1, memoryType);
 }
 
-void BaseMapper::SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType)
+void BaseMapper::SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType)
 {
 	uint16_t pageSize;
 	if(memoryType == ChrMemoryType::NametableRam) {
@@ -432,13 +432,13 @@ void BaseMapper::SaveBattery()
 	}
 }
 
-uint32_t BaseMapper::GetPRGPageCount()
+uint32_t BaseMapper::GetPrgPageCount()
 {
 	uint16_t pageSize = InternalGetPrgPageSize();
 	return pageSize ? (_prgSize / pageSize) : 0;
 }
 
-uint32_t BaseMapper::GetCHRPageCount()
+uint32_t BaseMapper::GetChrPageCount()
 {
 	uint16_t pageSize = InternalGetChrPageSize();
 	return pageSize ? (_chrRomSize / pageSize) : 0;
@@ -789,10 +789,10 @@ uint8_t BaseMapper::ReadRam(uint16_t addr)
 
 uint8_t BaseMapper::PeekRam(uint16_t addr)
 {
-	return DebugReadRAM(addr);
+	return DebugReadRam(addr);
 }
 
-uint8_t BaseMapper::DebugReadRAM(uint16_t addr)
+uint8_t BaseMapper::DebugReadRam(uint16_t addr)
 {
 	if(_prgMemoryAccess[addr >> 8] & MemoryAccessType::Read) {
 		uint8_t* page = _prgPages[addr >> 8];
@@ -821,7 +821,7 @@ void BaseMapper::WriteRam(uint16_t addr, uint8_t value)
 	}
 }
 
-void BaseMapper::DebugWriteRAM(uint16_t addr, uint8_t value)
+void BaseMapper::DebugWriteRam(uint16_t addr, uint8_t value)
 {
 	if(_isWriteRegisterAddr[addr]) {
 		//not supported
@@ -1034,9 +1034,9 @@ CartridgeState BaseMapper::GetState()
 	state.ChrRomSize = _chrRomSize;
 	state.ChrRamSize = _chrRamSize;
 
-	state.PrgPageCount = GetPRGPageCount();
+	state.PrgPageCount = GetPrgPageCount();
 	state.PrgPageSize = InternalGetPrgPageSize();
-	state.ChrPageCount = GetCHRPageCount();
+	state.ChrPageCount = GetChrPageCount();
 	state.ChrPageSize = InternalGetChrPageSize();
 	state.ChrRamPageSize = InternalGetChrRamPageSize();
 	for(int i = 0; i < 0x100; i++) {

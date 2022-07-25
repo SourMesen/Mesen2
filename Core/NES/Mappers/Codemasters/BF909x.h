@@ -9,8 +9,8 @@ private:
 	bool _bf9097Mode = false;  //Auto-detect for firehawk
 
 protected:
-	virtual uint16_t GetPRGPageSize() override { return 0x4000; }
-	virtual uint16_t GetCHRPageSize() override {	return 0x2000; }
+	virtual uint16_t GetPrgPageSize() override { return 0x4000; }
+	virtual uint16_t GetChrPageSize() override {	return 0x2000; }
 
 	void InitMapper() override 
 	{
@@ -19,10 +19,10 @@ protected:
 		}
 
 		//First and last PRG page
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, -1);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, -1);
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
@@ -33,7 +33,7 @@ protected:
 		}
 
 		if(addr >= 0xC000 || !_bf9097Mode) {
-			SelectPRGPage(0, value);
+			SelectPrgPage(0, value);
 		} else if(addr < 0xC000) {
 			SetMirroringType((value & 0x10) ? MirroringType::ScreenAOnly : MirroringType::ScreenBOnly);
 		}

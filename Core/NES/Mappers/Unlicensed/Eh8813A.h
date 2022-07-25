@@ -9,8 +9,8 @@ private:
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 4; }
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override {	return true; }
 
 	void InitMapper() override
@@ -44,13 +44,13 @@ protected:
 			_alterReadAddress = (addr & 0x40) == 0x40;
 
 			if(addr & 0x80) {
-				SelectPRGPage(0, addr & 0x07);
-				SelectPRGPage(1, addr & 0x07);
+				SelectPrgPage(0, addr & 0x07);
+				SelectPrgPage(1, addr & 0x07);
 			} else {
 				SelectPrgPage2x(0, addr & 0x06);
 			}
 
-			SelectCHRPage(0, value & 0x0F);
+			SelectChrPage(0, value & 0x0F);
 		}
 	}
 };

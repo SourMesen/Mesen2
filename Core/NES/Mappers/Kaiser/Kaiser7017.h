@@ -12,8 +12,8 @@ class Kaiser7017 : public BaseMapper
 	bool _irqEnabled = false;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 	uint16_t RegisterStartAddress() override { return 0x4020; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
@@ -23,7 +23,7 @@ protected:
 		RemoveRegisterRange(0x4020, 0x5FFF, MemoryOperation::Read);
 		AddRegisterRange(0x4030, 0x4030, MemoryOperation::Read);
 
-		SelectCHRPage(0, 0);
+		SelectChrPage(0, 0);
 
 		_prgReg = 0;
 		_mirroring = MirroringType::Vertical;
@@ -44,8 +44,8 @@ protected:
 
 	void UpdateState()
 	{
-		SelectPRGPage(0, _prgReg);
-		SelectPRGPage(1, 2);
+		SelectPrgPage(0, _prgReg);
+		SelectPrgPage(1, 2);
 		SetMirroringType(_mirroring);
 	}
 

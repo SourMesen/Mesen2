@@ -9,8 +9,8 @@ private:
 	uint8_t _mode = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x6000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 

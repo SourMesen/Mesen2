@@ -10,8 +10,8 @@ private:
 protected:
 	uint16_t RegisterStartAddress() override { return 0xFF80; }
 	uint16_t RegisterEndAddress() override { return 0xFF9F; }
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
 	bool HasBusConflicts() override { return true; }
 
@@ -26,12 +26,12 @@ protected:
 	{
 		if(_regs[0] & 0x40) {
 			//NINA-03 mode
-			SelectPRGPage(0, (_regs[0] & 0x0E) | (_regs[1] & 0x01));
-			SelectCHRPage(0, ((_regs[0] << 2) & 0x38) | ((_regs[1] >> 4) & 0x07));
+			SelectPrgPage(0, (_regs[0] & 0x0E) | (_regs[1] & 0x01));
+			SelectChrPage(0, ((_regs[0] << 2) & 0x38) | ((_regs[1] >> 4) & 0x07));
 		} else {
 			//CNROM mode
-			SelectPRGPage(0, _regs[0] & 0x0F);
-			SelectCHRPage(0, ((_regs[0] << 2) & 0x3C) | ((_regs[1] >> 4) & 0x03));
+			SelectPrgPage(0, _regs[0] & 0x0F);
+			SelectChrPage(0, ((_regs[0] << 2) & 0x3C) | ((_regs[1] >> 4) & 0x03));
 		}
 
 		SetMirroringType(_regs[0] & 0x80 ? MirroringType::Horizontal : MirroringType::Vertical);

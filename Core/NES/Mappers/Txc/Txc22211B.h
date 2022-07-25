@@ -9,8 +9,8 @@ private:
 	TxcChip _txc = TxcChip(true);
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x8000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x8000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 	uint16_t RegisterStartAddress() override { return 0x8000; }
 	uint16_t RegisterEndAddress() override { return 0xFFFF; }
 	bool AllowRegisterRead() override { return true; }
@@ -20,8 +20,8 @@ protected:
 		AddRegisterRange(0x4020, 0x5FFF, MemoryOperation::Any);
 		RemoveRegisterRange(0x8000, 0xFFFF, MemoryOperation::Read);
 
-		SelectPRGPage(0, 0);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(0, 0);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -32,7 +32,7 @@ protected:
 
 	void UpdateState()
 	{
-		SelectCHRPage(0, _txc.GetOutput());
+		SelectChrPage(0, _txc.GetOutput());
 		SetMirroringType(_txc.GetInvertFlag() ? MirroringType::Vertical : MirroringType::Horizontal);
 	}
 

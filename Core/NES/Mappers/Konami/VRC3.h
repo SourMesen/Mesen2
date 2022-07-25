@@ -13,13 +13,13 @@ private:
 	uint16_t _irqCounter = 0;
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x2000; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
-		SelectPRGPage(1, -1);
-		SelectCHRPage(0, 0);
+		SelectPrgPage(1, -1);
+		SelectChrPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -73,7 +73,7 @@ protected:
 				_console->GetCpu()->ClearIrqSource(IRQSource::External);
 				_irqEnabled = _irqEnableOnAck;				
 				break;
-			case 0xF000: SelectPRGPage(0, value & 0x07); break;
+			case 0xF000: SelectPrgPage(0, value & 0x07); break;
 		}
 	}
 };

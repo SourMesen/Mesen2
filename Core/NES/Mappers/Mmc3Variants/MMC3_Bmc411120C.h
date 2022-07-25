@@ -24,17 +24,17 @@ protected:
 		SV(_exReg);
 	}
 	
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
-		MMC3::SelectCHRPage(slot, page | ((_exReg & 0x03) << 7), memoryType);
+		MMC3::SelectChrPage(slot, page | ((_exReg & 0x03) << 7), memoryType);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(_exReg & (0x08 | (GetDipSwitches() << 2))) {
 			MMC3::SelectPrgPage4x(0, (((_exReg >> 4) & 0x03) | 0x0C) << 2);
 		} else {
-			MMC3::SelectPRGPage(slot, (page & 0x0F) | ((_exReg & 0x03) << 4));
+			MMC3::SelectPrgPage(slot, (page & 0x0F) | ((_exReg & 0x03) << 4));
 		}
 	}
 

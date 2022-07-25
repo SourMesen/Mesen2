@@ -10,8 +10,8 @@ class OekaKids : public BaseMapper
 	uint16_t _lastAddress = 0;
 
 protected:
-	virtual uint16_t GetPRGPageSize() override { return 0x8000; }
-	virtual uint16_t GetCHRPageSize() override { return 0x1000; }
+	virtual uint16_t GetPrgPageSize() override { return 0x8000; }
+	virtual uint16_t GetChrPageSize() override { return 0x1000; }
 	virtual bool HasBusConflicts() override { return true; }
 
 	void InitMapper() override
@@ -20,7 +20,7 @@ protected:
 		_innerChrBank = 0;
 		_lastAddress = 0;
 
-		SelectPRGPage(0, 0);
+		SelectPrgPage(0, 0);
 	}
 
 	void Serialize(Serializer& s) override
@@ -31,8 +31,8 @@ protected:
 
 	void UpdateChrBanks()
 	{
-		SelectCHRPage(0, _outerChrBank | _innerChrBank);
-		SelectCHRPage(1, _outerChrBank | 0x03);
+		SelectChrPage(0, _outerChrBank | _innerChrBank);
+		SelectChrPage(1, _outerChrBank | 0x03);
 	}
 
 	void NotifyVramAddressChange(uint16_t addr) override
@@ -47,7 +47,7 @@ protected:
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		SelectPRGPage(0, value & 0x03);
+		SelectPrgPage(0, value & 0x03);
 		_outerChrBank = value & 0x04;
 		UpdateChrBanks();
 	}

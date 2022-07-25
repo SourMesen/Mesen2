@@ -13,14 +13,14 @@ protected:
 	uint16_t GetChrRamPageSize() override { return 0x400; }
 	uint32_t GetChrRamSize() override { return _chrRamSize * 0x400; }
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(page >= _firstRamBank && page <= _lastRamBank) {
 			memoryType = ChrMemoryType::ChrRam;
 			page -= _firstRamBank;
 		}
 
-		MMC3::SelectCHRPage(slot, page, memoryType);
+		MMC3::SelectChrPage(slot, page, memoryType);
 	}
 
 	void Serialize(Serializer& s) override

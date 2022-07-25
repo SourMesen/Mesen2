@@ -216,14 +216,14 @@ private:
 			SelectChrPage2x(2, _chrBanks[chrA ? 0x05 : 0x09] << 1);
 			SelectChrPage2x(3, _chrBanks[chrA ? 0x07 : 0x0B] << 1);
 		} else if(_chrMode == 3) {
-			SelectCHRPage(0, _chrBanks[chrA ? 0x00 : 0x08]);
-			SelectCHRPage(1, _chrBanks[chrA ? 0x01 : 0x09]);
-			SelectCHRPage(2, _chrBanks[chrA ? 0x02 : 0x0A]);
-			SelectCHRPage(3, _chrBanks[chrA ? 0x03 : 0x0B]);
-			SelectCHRPage(4, _chrBanks[chrA ? 0x04 : 0x08]);
-			SelectCHRPage(5, _chrBanks[chrA ? 0x05 : 0x09]);
-			SelectCHRPage(6, _chrBanks[chrA ? 0x06 : 0x0A]);
-			SelectCHRPage(7, _chrBanks[chrA ? 0x07 : 0x0B]);
+			SelectChrPage(0, _chrBanks[chrA ? 0x00 : 0x08]);
+			SelectChrPage(1, _chrBanks[chrA ? 0x01 : 0x09]);
+			SelectChrPage(2, _chrBanks[chrA ? 0x02 : 0x0A]);
+			SelectChrPage(3, _chrBanks[chrA ? 0x03 : 0x0B]);
+			SelectChrPage(4, _chrBanks[chrA ? 0x04 : 0x08]);
+			SelectChrPage(5, _chrBanks[chrA ? 0x05 : 0x09]);
+			SelectChrPage(6, _chrBanks[chrA ? 0x06 : 0x0A]);
+			SelectChrPage(7, _chrBanks[chrA ? 0x07 : 0x0B]);
 		}
 	}
 
@@ -303,8 +303,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5206; }
 	uint32_t GetSaveRamPageSize() override { return 0x2000; }
@@ -482,7 +482,7 @@ protected:
 					}
 				} else if(_splitInSplitRegion) {
 					//CHR tile fetches for split region
-					return _chrRom[(_verticalSplitBank % (GetCHRPageCount() / 4)) * 0x1000 + (((addr & ~0x07) | (verticalSplitScroll & 0x07)) & 0xFFF)];
+					return _chrRom[(_verticalSplitBank % (GetChrPageCount() / 4)) * 0x1000 + (((addr & ~0x07) | (verticalSplitScroll & 0x07)) & 0xFFF)];
 				}
 			}
 
@@ -597,7 +597,7 @@ protected:
 				_scanlineCounter = 0;
 				_irqPending = false;
 				_console->GetCpu()->ClearIrqSource(IRQSource::External);
-				return DebugReadRAM(addr);
+				return DebugReadRam(addr);
 		}
 
 		return _console->GetMemoryManager()->GetOpenBus();

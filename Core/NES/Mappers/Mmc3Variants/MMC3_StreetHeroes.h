@@ -39,16 +39,16 @@ protected:
 		UpdateState();
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType = ChrMemoryType::Default) override
 	{
 		if(_exReg & 0x40) {
-			MMC3::SelectCHRPage(0, 0, ChrMemoryType::ChrRam);
+			MMC3::SelectChrPage(0, 0, ChrMemoryType::ChrRam);
 		} else {
 			switch(slot) {
-				case 0: case 1: MMC3::SelectCHRPage(slot, page | ((_exReg & 0x08) << 5)); break;
-				case 2: case 3: MMC3::SelectCHRPage(slot, page | ((_exReg & 0x04) << 6)); break;
-				case 4: case 5: MMC3::SelectCHRPage(slot, page | ((_exReg & 0x01) << 8)); break;
-				default: MMC3::SelectCHRPage(slot, page | ((_exReg & 0x02) << 7)); break;
+				case 0: case 1: MMC3::SelectChrPage(slot, page | ((_exReg & 0x08) << 5)); break;
+				case 2: case 3: MMC3::SelectChrPage(slot, page | ((_exReg & 0x04) << 6)); break;
+				case 4: case 5: MMC3::SelectChrPage(slot, page | ((_exReg & 0x01) << 8)); break;
+				default: MMC3::SelectChrPage(slot, page | ((_exReg & 0x02) << 7)); break;
 			}
 		}
 	}

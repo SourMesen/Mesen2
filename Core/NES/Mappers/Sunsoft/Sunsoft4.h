@@ -36,8 +36,8 @@ private:
 	}
 
 protected:
-	uint16_t GetPRGPageSize() override { return 0x4000; }
-	uint16_t GetCHRPageSize() override { return 0x800; }
+	uint16_t GetPrgPageSize() override { return 0x4000; }
+	uint16_t GetChrPageSize() override { return 0x800; }
 
 	void InitMapper() override
 	{
@@ -49,8 +49,8 @@ protected:
 		_prgRamEnabled = false;
 
 		//Bank 0's initial state is undefined, but some roms expect it to be the first page
-		SelectPRGPage(0, 0);
-		SelectPRGPage(1, 7);
+		SelectPrgPage(0, 0);
+		SelectPrgPage(1, 7);
 
 		UpdateState();
 	}
@@ -76,7 +76,7 @@ protected:
 			if(_licensingTimer == 0) {
 				RemoveCpuMemoryMapping(0x8000, 0xBFFF);
 			} else {
-				SelectPRGPage(0, _externalPage);
+				SelectPrgPage(0, _externalPage);
 			}
 		}
 	}
@@ -103,10 +103,10 @@ protected:
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
 		switch(addr & 0xF000) {
-			case 0x8000: SelectCHRPage(0, value); break;
-			case 0x9000: SelectCHRPage(1, value); break;
-			case 0xA000: SelectCHRPage(2, value); break;
-			case 0xB000: SelectCHRPage(3, value); break;
+			case 0x8000: SelectChrPage(0, value); break;
+			case 0x9000: SelectChrPage(1, value); break;
+			case 0xA000: SelectChrPage(2, value); break;
+			case 0xB000: SelectChrPage(3, value); break;
 			case 0xC000: 
 				_ntRegs[0] = value | 0x80;
 				UpdateNametables();
@@ -127,13 +127,13 @@ protected:
 				break;
 			case 0xF000: 
 				bool externalPrg = (value & 0x08) == 0;
-				if(externalPrg && GetPRGPageCount() > 8) {
+				if(externalPrg && GetPrgPageCount() > 8) {
 					_usingExternalRom = true;
-					_externalPage = 0x08 | ((value & 0x07) % (GetPRGPageCount() - 0x08));
-					SelectPRGPage(0, _externalPage);
+					_externalPage = 0x08 | ((value & 0x07) % (GetPrgPageCount() - 0x08));
+					SelectPrgPage(0, _externalPage);
 				} else {
 					_usingExternalRom = false;
-					SelectPRGPage(0, value & 0x07);
+					SelectPrgPage(0, value & 0x07);
 				}
 
 				_prgRamEnabled = (value & 0x10) == 0x10;

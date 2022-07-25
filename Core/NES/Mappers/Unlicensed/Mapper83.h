@@ -17,8 +17,8 @@ class Mapper83 : public BaseMapper
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 2; }
-	uint16_t GetPRGPageSize() override { return 0x2000; }
-	uint16_t GetCHRPageSize() override { return 0x400; }
+	uint16_t GetPrgPageSize() override { return 0x2000; }
+	uint16_t GetChrPageSize() override { return 0x400; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
@@ -81,7 +81,7 @@ protected:
 			SelectChrPage2x(3, _regs[7] << 1);
 		} else {
 			for(int i = 0; i < 8; i++) {
-				SelectCHRPage(i, _regs[i] | ((_bank & 0x30) << 4));
+				SelectChrPage(i, _regs[i] | ((_bank & 0x30) << 4));
 			}
 		}
 		
@@ -89,10 +89,10 @@ protected:
 			SelectPrgPage2x(0, (_bank & 0x3F) << 1);
 			SelectPrgPage2x(1, ((_bank & 0x30) | 0x0F) << 1);
 		} else {
-			SelectPRGPage(0, _regs[8]);
-			SelectPRGPage(1, _regs[9]);
-			SelectPRGPage(2, _regs[10]);
-			SelectPRGPage(3, -1);
+			SelectPrgPage(0, _regs[8]);
+			SelectPrgPage(1, _regs[9]);
+			SelectPrgPage(2, _regs[10]);
+			SelectPrgPage(3, -1);
 		}
 	}
 

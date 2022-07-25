@@ -77,7 +77,7 @@ public:
 
 		if(IsRenderingEnabled() || ((_videoRamAddr & 0x3F00) != 0x3F00)) {
 			uint32_t color = GetPixelColor();
-			pixel = (_paletteRAM[color & 0x03 ? color : 0] & _paletteRamMask) | _intensifyColorBits;
+			pixel = (_paletteRam[color & 0x03 ? color : 0] & _paletteRamMask) | _intensifyColorBits;
 
 			bool usePrev = (_xScroll + ((_cycle - 1) & 0x07) < 8);
 			uint8_t tilePalette = usePrev ? _previousTilePalette : _currentTilePalette;
@@ -114,9 +114,9 @@ public:
 							_console->GetMapper()->CopyChrTile(spriteEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Sprite[j].TileData);
 						}
 						if(_version >= 100) {
-							tileInfo.Sprite[j].PaletteColors = 0xFF000000 | _paletteRAM[sprite.PaletteOffset + 3] | (_paletteRAM[sprite.PaletteOffset + 2] << 8) | (_paletteRAM[sprite.PaletteOffset + 1] << 16);
+							tileInfo.Sprite[j].PaletteColors = 0xFF000000 | _paletteRam[sprite.PaletteOffset + 3] | (_paletteRam[sprite.PaletteOffset + 2] << 8) | (_paletteRam[sprite.PaletteOffset + 1] << 16);
 						} else {
-							tileInfo.Sprite[j].PaletteColors = _paletteRAM[sprite.PaletteOffset + 3] | (_paletteRAM[sprite.PaletteOffset + 2] << 8) | (_paletteRAM[sprite.PaletteOffset + 1] << 16);
+							tileInfo.Sprite[j].PaletteColors = _paletteRam[sprite.PaletteOffset + 3] | (_paletteRam[sprite.PaletteOffset + 2] << 8) | (_paletteRam[sprite.PaletteOffset + 1] << 16);
 						}
 						if(spriteEx.OffsetY >= 8) {
 							tileInfo.Sprite[j].OffsetY = spriteEx.OffsetY - 8;
@@ -161,9 +161,9 @@ public:
 					_console->GetMapper()->CopyChrTile(lastTileEx.AbsoluteTileAddr & 0xFFFFFFF0, tileInfo.Tile.TileData);
 				}
 				if(_version >= 100) {
-					tileInfo.Tile.PaletteColors = _paletteRAM[tilePalette + 3] | (_paletteRAM[tilePalette + 2] << 8) | (_paletteRAM[tilePalette + 1] << 16) | (_paletteRAM[0] << 24);
+					tileInfo.Tile.PaletteColors = _paletteRam[tilePalette + 3] | (_paletteRam[tilePalette + 2] << 8) | (_paletteRam[tilePalette + 1] << 16) | (_paletteRam[0] << 24);
 				} else {
-					tileInfo.Tile.PaletteColors = _paletteRAM[tilePalette + 3] | (_paletteRAM[tilePalette + 2] << 8) | (_paletteRAM[tilePalette + 1] << 16);
+					tileInfo.Tile.PaletteColors = _paletteRam[tilePalette + 3] | (_paletteRam[tilePalette + 2] << 8) | (_paletteRam[tilePalette + 1] << 16);
 				}
 				tileInfo.Tile.OffsetY = lastTileEx.OffsetY;
 				tileInfo.Tile.OffsetX = (_xScroll + ((_cycle - 1) & 0x07)) & 0x07;

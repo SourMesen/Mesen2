@@ -34,7 +34,7 @@ protected:
 		SV(_reg);
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		if(_reg & 0x80) {
 			uint32_t bank = _reg & 0x07;
@@ -45,7 +45,7 @@ protected:
 				SelectPrgPage2x(1, bank << 1);
 			}
 		} else {
-			MMC3::SelectPRGPage(slot, page & 0x0F);
+			MMC3::SelectPrgPage(slot, page & 0x0F);
 		}
 	}
 

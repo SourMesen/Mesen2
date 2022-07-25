@@ -49,16 +49,16 @@ protected:
 		SVArray(_exRegs, 3);
 	}
 
-	void SelectCHRPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
+	void SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memoryType) override
 	{
 		if(_exRegs[0] & 0x40) {
-			MMC3::SelectCHRPage(slot, ((_exRegs[1] & 0x0C) << 6) | (page & 0x7F) | ((_exRegs[1] & 0x20) << 2), memoryType);
+			MMC3::SelectChrPage(slot, ((_exRegs[1] & 0x0C) << 6) | (page & 0x7F) | ((_exRegs[1] & 0x20) << 2), memoryType);
 		} else {
-			MMC3::SelectCHRPage(slot, ((_exRegs[1] & 0x0C) << 6) | page, memoryType);
+			MMC3::SelectChrPage(slot, ((_exRegs[1] & 0x0C) << 6) | page, memoryType);
 		}
 	}
 
-	void SelectPRGPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
+	void SelectPrgPage(uint16_t slot, uint16_t page, PrgMemoryType memoryType = PrgMemoryType::PrgRom) override
 	{
 		uint8_t sbank = 0;
 		uint8_t bank = 0;
@@ -80,18 +80,18 @@ protected:
 		if(_exRegs[0] & 0x80) {
 			bank <<= 1;
 			if(_exRegs[0] & 0x20) {
-				MMC3::SelectPRGPage(0, bank);
-				MMC3::SelectPRGPage(1, bank + 1);
-				MMC3::SelectPRGPage(2, bank + 2);
-				MMC3::SelectPRGPage(3, bank + 3);
+				MMC3::SelectPrgPage(0, bank);
+				MMC3::SelectPrgPage(1, bank + 1);
+				MMC3::SelectPrgPage(2, bank + 2);
+				MMC3::SelectPrgPage(3, bank + 3);
 			} else {
-				MMC3::SelectPRGPage(0, bank);
-				MMC3::SelectPRGPage(1, bank + 1);
-				MMC3::SelectPRGPage(2, bank);
-				MMC3::SelectPRGPage(3, bank + 1);
+				MMC3::SelectPrgPage(0, bank);
+				MMC3::SelectPrgPage(1, bank + 1);
+				MMC3::SelectPrgPage(2, bank);
+				MMC3::SelectPrgPage(3, bank + 1);
 			}
 		} else {
-			MMC3::SelectPRGPage(slot, ((_exRegs[1] & 0x03) << 5) | (page & mask) | sbank);
+			MMC3::SelectPrgPage(slot, ((_exRegs[1] & 0x03) << 5) | (page & mask) | sbank);
 		}
 	}
 
