@@ -7,6 +7,7 @@
 #include "PCE/PceTypes.h"
 
 class Emulator;
+class PceConsole;
 class PceCdRom;
 class PceScsiBus;
 
@@ -92,7 +93,7 @@ private:
 	void PlaySample();
 
 public:
-	PceAdpcm(Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi);
+	PceAdpcm(PceConsole* console, Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi);
 	~PceAdpcm();
 
 	void Exec();

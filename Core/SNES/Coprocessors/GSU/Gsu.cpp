@@ -29,12 +29,12 @@ Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(MemoryType
 	_state = {};
 	_state.ProgramReadBuffer = 0x01; //Run a NOP on first cycle
 
-	_settings->InitializeRam(_cache, 512);
+	_console->InitializeRam(_cache, 512);
 
 	_gsuRamSize = gsuRamSize;
 	_gsuRam = new uint8_t[_gsuRamSize];
 	_emu->RegisterMemory(MemoryType::GsuWorkRam, _gsuRam, _gsuRamSize);
-	_settings->InitializeRam(_gsuRam, _gsuRamSize);
+	_console->InitializeRam(_gsuRam, _gsuRamSize);
 
 	for(uint32_t i = 0; i < _gsuRamSize / 0x1000; i++) {
 		_gsuRamHandlers.push_back(unique_ptr<IMemoryHandler>(new RamHandler(_gsuRam, i * 0x1000, _gsuRamSize, MemoryType::GsuWorkRam)));
@@ -452,7 +452,7 @@ void Gsu::Reset()
 	_state = {};
 	_state.ProgramReadBuffer = 0x01; //Run a NOP on first cycle
 	
-	_emu->GetSettings()->InitializeRam(_cache, 512);
+	_console->InitializeRam(_cache, 512);
 	memset(_cacheValid, 0, sizeof(_cacheValid));
 	_waitForRomAccess = false;
 	_waitForRamAccess = false;

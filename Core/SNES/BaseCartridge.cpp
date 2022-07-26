@@ -221,13 +221,13 @@ void BaseCartridge::LoadRom()
 
 	LoadEmbeddedFirmware();
 
-	ApplyConfigOverrides();
+	InitRamPowerOnState();
 
 	uint8_t rawSramSize = std::min(_cartInfo.SramSize & 0x0F, 8);
 	_saveRamSize = rawSramSize > 0 ? 1024 * (1 << rawSramSize) : 0;
 	_saveRam = new uint8_t[_saveRamSize];
 	_emu->RegisterMemory(MemoryType::SnesSaveRam, _saveRam, _saveRamSize);
-	_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
+	_emu->GetSettings()->InitializeRam(GetRamPowerOnState(), _saveRam, _saveRamSize);
 
 	DisplayCartInfo();
 }
@@ -579,18 +579,23 @@ void BaseCartridge::MapBsxMemoryPack(MemoryMappings& mm)
 	}
 }
 
-void BaseCartridge::ApplyConfigOverrides()
+void BaseCartridge::InitRamPowerOnState()
 {
 	string name = GetCartName();
 	if(name == "POWERDRIVE" || name == "DEATH BRADE" || name == "RPG SAILORMOON") {
 		//These games work better when ram is initialized to $FF
-		SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
-		cfg.RamPowerOnState = RamState::AllOnes;
+		_ramPowerOnState = RamState::AllOnes;
 	} else if(name == "SUPER KEIBA 2") {
 		//Super Keiba 2 behaves incorrectly if save ram is filled with 0s
-		SnesConfig& cfg = _emu->GetSettings()->GetSnesConfig();
-		cfg.RamPowerOnState = RamState::Random;
+		_ramPowerOnState = RamState::Random;
+	} else {
+		_ramPowerOnState = _emu->GetSettings()->GetSnesConfig().RamPowerOnState;
 	}
+}
+
+RamState BaseCartridge::GetRamPowerOnState()
+{
+	return _ramPowerOnState;
 }
 
 void BaseCartridge::LoadSpc()

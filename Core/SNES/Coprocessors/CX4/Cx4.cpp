@@ -24,7 +24,7 @@ Cx4::Cx4(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
 	_cpu = console->GetCpu();
 	
 	_emu->RegisterMemory(MemoryType::Cx4DataRam, _dataRam, Cx4::DataRamSize);
-	_emu->GetSettings()->InitializeRam(_dataRam, Cx4::DataRamSize);
+	_console->InitializeRam(_dataRam, Cx4::DataRamSize);
 	
 	auto &prgRomHandlers = console->GetCartridge()->GetPrgRomHandlers();
 	auto &saveRamHandlers = console->GetCartridge()->GetSaveRamHandlers();

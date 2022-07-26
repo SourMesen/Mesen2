@@ -32,7 +32,7 @@ void SnesMemoryManager::Initialize(SnesConsole *console)
 
 	_workRam = new uint8_t[SnesMemoryManager::WorkRamSize];
 	_emu->RegisterMemory(MemoryType::SnesWorkRam, _workRam, SnesMemoryManager::WorkRamSize);
-	_emu->GetSettings()->InitializeRam(_workRam, SnesMemoryManager::WorkRamSize);
+	_console->InitializeRam(_workRam, SnesMemoryManager::WorkRamSize);
 
 	_registerHandlerA.reset(new RegisterHandlerA(
 		console->GetDmaController(),

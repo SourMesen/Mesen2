@@ -19,8 +19,8 @@ PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, boo
 	_vram = new uint16_t[0x8000];
 	_spriteRam = new uint16_t[0x100];
 
-	_emu->GetSettings()->InitializeRam(_vram, 0x10000);
-	_emu->GetSettings()->InitializeRam(_spriteRam, 0x200);
+	console->InitializeRam(_vram, 0x10000);
+	console->InitializeRam(_spriteRam, 0x200);
 
 	//These values can't ever be 0, init them to a possible value
 	_state.ColumnCount = 32;

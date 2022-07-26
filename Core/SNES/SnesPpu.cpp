@@ -64,9 +64,9 @@ void SnesPpu::PowerOn()
 		RandomizeState();
 	}
 
-	_settings->InitializeRam(_vram, SnesPpu::VideoRamSize);
-	_settings->InitializeRam(_cgram, SnesPpu::CgRamSize);
-	_settings->InitializeRam(_oamRam, SnesPpu::SpriteRamSize);
+	_console->InitializeRam(_vram, SnesPpu::VideoRamSize);
+	_console->InitializeRam(_cgram, SnesPpu::CgRamSize);
+	_console->InitializeRam(_oamRam, SnesPpu::SpriteRamSize);
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));
 	

@@ -13,7 +13,7 @@ private:
 	uint8_t _lastWrite = 0;
 	uint8_t _address = 0;
 	uint8_t _chipSelect = 0;
-	uint16_t _data[BattleBox::FileSize/2];
+	uint16_t _data[BattleBox::FileSize / 2] = {};
 	uint8_t _output = 0;
 	bool _writeEnabled = false;
 
@@ -21,6 +21,8 @@ private:
 	uint16_t _inputData = 0;
 	bool _isWrite = false;
 	bool _isRead = false;
+	
+	NesConsole* _console = nullptr;
 
 protected:
 	void Serialize(Serializer& s) override
@@ -31,8 +33,14 @@ protected:
 	}
 
 public:
-	BattleBox(Emulator* emu) : BaseControlDevice(emu, ControllerType::BattleBox, BaseControlDevice::ExpDevicePort)
+	BattleBox(NesConsole* console) : BaseControlDevice(console->GetEmulator(), ControllerType::BattleBox, BaseControlDevice::ExpDevicePort)
 	{
+		_console = console;
+	}
+
+	void Init() override
+	{
+		_console->InitializeRam(_data, BattleBox::FileSize);
 		_emu->GetBatteryManager()->LoadBattery(".battlebox.sav", (uint8_t*)_data, BattleBox::FileSize);
 	}
 

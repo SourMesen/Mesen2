@@ -33,7 +33,7 @@ Sa1::Sa1(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
 	_iRam = new uint8_t[Sa1::InternalRamSize];
 	_emu->RegisterMemory(MemoryType::Sa1InternalRam, _iRam, Sa1::InternalRamSize);
 	_iRamHandler.reset(new Sa1IRamHandler(_iRam));
-	_emu->GetSettings()->InitializeRam(_iRam, 0x800);
+	_console->InitializeRam(_iRam, 0x800);
 	
 	//Register the SA1 in the CPU's memory space ($22xx-$23xx registers)
 	MemoryMappings* cpuMappings = _memoryManager->GetMemoryMappings();

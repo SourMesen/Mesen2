@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "PCE/PceArcadeCard.h"
+#include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 
-PceArcadeCard::PceArcadeCard(Emulator* emu)
+PceArcadeCard::PceArcadeCard(PceConsole* console, Emulator* emu)
 {
 	_ram = new uint8_t[PceArcadeCard::ArcadeRamMemSize];
 	_isRamUsed = false;
-	emu->GetSettings()->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
+	console->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
 	emu->RegisterMemory(MemoryType::PceArcadeCardRam, _ram, PceArcadeCard::ArcadeRamMemSize);
 }
 

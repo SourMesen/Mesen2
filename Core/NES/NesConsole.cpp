@@ -603,3 +603,9 @@ void NesConsole::ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_
 		}
 	}
 }
+
+void NesConsole::InitializeRam(void* data, uint32_t length)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	settings->InitializeRam(settings->GetNesConfig().RamPowerOnState, data, length);
+}

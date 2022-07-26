@@ -130,6 +130,7 @@ vector<shared_ptr<BaseControlDevice>> BaseControlManager::GetControlDevices()
 
 void BaseControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice)
 {
+	controlDevice->Init();
 	_controlDevices.push_back(controlDevice);
 }
 

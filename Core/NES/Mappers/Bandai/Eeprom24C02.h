@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "NES/Mappers/Bandai/BaseEeprom24C0X.h"
+#include "NES/NesConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BatteryManager.h"
@@ -26,10 +27,10 @@ private:
 	}
 
 public:
-	Eeprom24C02(Emulator* emu)
+	Eeprom24C02(NesConsole* console)
 	{
-		_emu = emu;
-		_emu->GetSettings()->InitializeRam(_romData, 256);
+		console->InitializeRam(_romData, 256);
+		_emu = console->GetEmulator();
 		_emu->GetBatteryManager()->LoadBattery(".eeprom256", _romData, 256);
 	}
 

@@ -44,7 +44,7 @@ void NesMemoryManager::SetMapper(BaseMapper* mapper)
 void NesMemoryManager::Reset(bool softReset)
 {
 	if(!softReset) {
-		_emu->GetSettings()->InitializeRam(_internalRam, InternalRamSize);
+		_console->InitializeRam(_internalRam, InternalRamSize);
 	}
 
 	_mapper->Reset(softReset);

@@ -129,4 +129,5 @@ public:
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
 
 	void RefreshRamCheats();
+	void InitializeRam(void* data, uint32_t length);
 };

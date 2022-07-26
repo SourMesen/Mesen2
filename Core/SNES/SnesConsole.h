@@ -109,6 +109,8 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;
 
+	void InitializeRam(void* data, uint32_t length);
+
 	double GetFps() override;
 	PpuFrameInfo GetPpuFrame() override;
 

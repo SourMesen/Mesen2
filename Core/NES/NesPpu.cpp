@@ -53,8 +53,8 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	_emu->RegisterMemory(MemoryType::NesSecondarySpriteRam, _secondarySpriteRam, sizeof(_secondarySpriteRam));
 	_emu->RegisterMemory(MemoryType::NesPaletteRam, _paletteRam, sizeof(_paletteRam));
 	
-	_settings->InitializeRam(_spriteRam, 0x100);
-	_settings->InitializeRam(_secondarySpriteRam, 0x20);
+	_console->InitializeRam(_spriteRam, 0x100);
+	_console->InitializeRam(_secondarySpriteRam, 0x20);
 
 	UpdateTimings(ConsoleRegion::Ntsc);
 

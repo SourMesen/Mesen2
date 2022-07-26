@@ -117,8 +117,8 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::BarcodeBattler: device.reset(new BarcodeBattlerReader(_emu)); break;
 		case ControllerType::HoriTrack: device.reset(new HoriTrack(_emu, keys)); break;
 		case ControllerType::BandaiHyperShot: device.reset(new BandaiHyperShot(_console, keys)); break;
-		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_emu)); break;
-		case ControllerType::BattleBox: device.reset(new BattleBox(_emu)); break;
+		case ControllerType::AsciiTurboFile: device.reset(new AsciiTurboFile(_console)); break;
+		case ControllerType::BattleBox: device.reset(new BattleBox(_console)); break;
 		
 		case ControllerType::FourScore: {
 			std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 4, controllers);

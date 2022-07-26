@@ -104,7 +104,7 @@ public:
 	
 	int GetRandomValue(int maxValue);
 	bool GetRandomBool();
-	void InitializeRam(void* data, uint32_t length);
+	void InitializeRam(RamState state, void* data, uint32_t length);
 
 	bool IsInputEnabled();
 	double GetControllerDeadzoneRatio();

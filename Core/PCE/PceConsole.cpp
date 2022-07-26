@@ -72,7 +72,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	uint32_t cardRamSize = 0;
 	if(_cdrom) {
 		if(cfg.CdRomType == PceCdRomType::Arcade) {
-			_mapper.reset(new PceArcadeCard(_emu));
+			_mapper.reset(new PceArcadeCard(this, _emu));
 		}
 		if(cfg.CdRomType == PceCdRomType::SuperCdRom || cfg.CdRomType == PceCdRomType::Arcade) {
 			cardRamSize = 0x30000;
@@ -316,4 +316,10 @@ void PceConsole::Serialize(Serializer& s)
 	if(_mapper) {
 		SV(_mapper);
 	}
+}
+
+void PceConsole::InitializeRam(void* data, uint32_t length)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	settings->InitializeRam(settings->GetPcEngineConfig().RamPowerOnState, data, length);
 }

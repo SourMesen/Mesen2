@@ -14,7 +14,8 @@ private:
 	static constexpr int BitCount = FileSize * 8;
 	uint8_t _lastWrite = 0;
 	uint16_t _position = 0;
-	uint8_t _data[AsciiTurboFile::FileSize];
+	uint8_t _data[AsciiTurboFile::FileSize] = {};
+	NesConsole* _console = nullptr;
 
 protected:
 	void Serialize(Serializer& s) override
@@ -25,8 +26,14 @@ protected:
 	}
 
 public:
-	AsciiTurboFile(Emulator* emu) : BaseControlDevice(emu, ControllerType::AsciiTurboFile, BaseControlDevice::ExpDevicePort)
+	AsciiTurboFile(NesConsole* console) : BaseControlDevice(console->GetEmulator(), ControllerType::AsciiTurboFile, BaseControlDevice::ExpDevicePort)
 	{
+		_console = console;
+	}
+
+	void Init() override
+	{
+		_console->InitializeRam(_data, AsciiTurboFile::FileSize);
 		_emu->GetBatteryManager()->LoadBattery(".turbofile.sav", _data, AsciiTurboFile::FileSize);
 	}
 

@@ -42,6 +42,8 @@ public:
 	
 	void Serialize(Serializer& s) override;
 
+	void InitializeRam(void* data, uint32_t length);
+
 	void Reset() override;
 	
 	LoadRomResult LoadRom(VirtualFile& romFile) override;

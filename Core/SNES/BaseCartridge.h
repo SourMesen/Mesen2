@@ -21,12 +21,13 @@ class SnesConsole;
 class Emulator;
 class SpcFileData;
 enum class ConsoleRegion;
+enum class RamState;
 
 class BaseCartridge : public ISerializable
 {
 private:
-	Emulator *_emu;
-	SnesConsole *_console;
+	Emulator *_emu = nullptr;
+	SnesConsole *_console = nullptr;
 
 	vector<unique_ptr<IMemoryHandler>> _prgRomHandlers;
 	vector<unique_ptr<IMemoryHandler>> _saveRamHandlers;
@@ -61,6 +62,8 @@ private:
 	unique_ptr<SpcFileData> _spcData;
 	vector<uint8_t> _embeddedFirmware;
 
+	RamState _ramPowerOnState = {};
+
 	void LoadBattery();
 
 	int32_t GetHeaderScore(uint32_t addr);
@@ -72,8 +75,9 @@ private:
 
 	bool MapSpecificCarts(MemoryMappings& mm);
 	void MapBsxMemoryPack(MemoryMappings& mm);
-	void ApplyConfigOverrides();
-	
+
+	void InitRamPowerOnState();
+
 	void LoadRom();
 	void LoadSpc();
 	bool LoadGameboy(VirtualFile& romFile);
@@ -97,6 +101,8 @@ public:
 
 	SnesCartInformation GetHeader();
 	uint32_t GetHeaderOffset();
+
+	RamState GetRamPowerOnState();
 
 	ConsoleRegion GetRegion();
 	uint32_t GetCrc32();

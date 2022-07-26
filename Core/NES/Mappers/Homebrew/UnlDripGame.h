@@ -37,8 +37,8 @@ protected:
 		_wramWriteEnabled = false;
 		_lastNametableFetchAddr = 0;
 
-		_emu->GetSettings()->InitializeRam(_extendedAttributes[0], 0x400);
-		_emu->GetSettings()->InitializeRam(_extendedAttributes[1], 0x400);
+		_console->InitializeRam(_extendedAttributes[0], 0x400);
+		_console->InitializeRam(_extendedAttributes[1], 0x400);
 
 		SelectPrgPage(1, -1);
 

@@ -57,6 +57,8 @@ public:
 
 	BaseControlDevice(Emulator* emu, ControllerType type, uint8_t port, KeyMappingSet keyMappingSet = KeyMappingSet());
 	virtual ~BaseControlDevice();
+	
+	virtual void Init() {}
 
 	uint8_t GetPort();
 	ControllerType GetControllerType();

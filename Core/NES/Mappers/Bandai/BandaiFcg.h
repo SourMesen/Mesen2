@@ -52,14 +52,14 @@ protected:
 			//"One game, Battle Rush: Build up Robot Tournament, has an additional external 128-byte serial EEPROM (24C01) on the game cartridge."
 			//"The NES 2.0 header's PRG-NVRAM field will only denote whether the game cartridge has an additional 128-byte serial EEPROM"
 			if(!IsNes20() || _romInfo.NesHeader.GetSaveRamSize() == 128) {
-				_extraEeprom.reset(new Eeprom24C01(_emu));
+				_extraEeprom.reset(new Eeprom24C01(_console));
 			}
 			
 			//All mapper 157 games have an internal 256-byte EEPROM
-			_standardEeprom.reset(new Eeprom24C02(_emu));
+			_standardEeprom.reset(new Eeprom24C02(_console));
 		} else if(_romInfo.MapperID == 159) {
 			//LZ93D50 with 128 byte serial EEPROM (24C01)
-			_standardEeprom.reset(new Eeprom24C01(_emu));
+			_standardEeprom.reset(new Eeprom24C01(_console));
 		} else if(_romInfo.MapperID == 16) {
 			//"INES Mapper 016 submapper 4: FCG-1/2 ASIC, no serial EEPROM, banked CHR-ROM"
 			//"INES Mapper 016 submapper 5: LZ93D50 ASIC and no or 256-byte serial EEPROM, banked CHR-ROM"
@@ -67,7 +67,7 @@ protected:
 			//Add a 256 byte serial EEPROM (24C02)
 			if(!IsNes20() || (_romInfo.SubMapperID == 5 && _romInfo.NesHeader.GetSaveRamSize() == 256)) {
 				//Connect a 256-byte EEPROM for iNES roms, and when submapper 5 + 256 bytes of save ram in header
-				_standardEeprom.reset(new Eeprom24C02(_emu));
+				_standardEeprom.reset(new Eeprom24C02(_console));
 			}
 		}
 

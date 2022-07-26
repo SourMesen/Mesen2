@@ -84,7 +84,7 @@ public:
 
 		memcpy(_prgRom, romData.data(), _prgRomSize);
 		
-		_emu->GetSettings()->InitializeRam(_workRam, _workRamSize);
+		_console->InitializeRam(_workRam, _workRamSize);
 
 		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 
@@ -92,7 +92,7 @@ public:
 			//Save RAM is enabled, initialize it
 			_saveRamSize = 0x2000;
 			_saveRam = new uint8_t[_saveRamSize];
-			_emu->GetSettings()->InitializeRam(_saveRam, _saveRamSize);
+			_console->InitializeRam(_saveRam, _saveRamSize);
 			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
 
 			_saveRam[0] = 0x48;
@@ -110,7 +110,7 @@ public:
 		if(_cdrom) {
 			_cdromRamSize = 0x10000;
 			_cdromRam = new uint8_t[_cdromRamSize];
-			_emu->GetSettings()->InitializeRam(_cdromRam, _cdromRamSize);
+			_console->InitializeRam(_cdromRam, _cdromRamSize);
 			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
 		}
 
@@ -127,7 +127,7 @@ public:
 
 			_cardRamSize = cardRamSize;
 			_cardRam = new uint8_t[cardRamSize];
-			_emu->GetSettings()->InitializeRam(_cardRam, _cardRamSize);
+			_console->InitializeRam(_cardRam, _cardRamSize);
 			_emu->RegisterMemory(MemoryType::PceCardRam, _cardRam, _cardRamSize);
 		}
 

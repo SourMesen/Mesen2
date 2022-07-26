@@ -25,7 +25,7 @@ Spc::Spc(SnesConsole* console)
 
 	_ram = new uint8_t[Spc::SpcRamSize];
 	_emu->RegisterMemory(MemoryType::SpcRam, _ram, Spc::SpcRamSize);
-	_emu->GetSettings()->InitializeRam(_ram, Spc::SpcRamSize);
+	_console->InitializeRam(_ram, Spc::SpcRamSize);
 
 	_emu->RegisterMemory(MemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
 

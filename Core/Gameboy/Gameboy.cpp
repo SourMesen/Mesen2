@@ -124,11 +124,11 @@ void Gameboy::Init(GbCart* cart, std::vector<uint8_t>& romData, uint32_t cartRam
 	
 	_emu->RegisterMemory(MemoryType::GbBootRom, _bootRom, _bootRomSize);
 
-	settings->InitializeRam(_cartRam, _cartRamSize);
-	settings->InitializeRam(_workRam, _workRamSize);
-	settings->InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
-	settings->InitializeRam(_highRam, Gameboy::HighRamSize);
-	settings->InitializeRam(_videoRam, _videoRamSize);
+	InitializeRam(_cartRam, _cartRamSize);
+	InitializeRam(_workRam, _workRamSize);
+	InitializeRam(_spriteRam, Gameboy::SpriteRamSize);
+	InitializeRam(_highRam, Gameboy::HighRamSize);
+	InitializeRam(_videoRam, _videoRamSize);
 
 	LoadBattery();
 	if(!_allowSgb) {
@@ -591,4 +591,10 @@ void Gameboy::RefreshRamCheats()
 			_memoryManager->DebugWrite(code.Address, code.Value);
 		}
 	}
+}
+
+void Gameboy::InitializeRam(void* data, uint32_t length)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	settings->InitializeRam(settings->GetGameboyConfig().RamPowerOnState, data, length);
 }

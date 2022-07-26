@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PCE/PceVce.h"
+#include "PCE/PceConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/CpuType.h"
@@ -16,7 +17,7 @@ PceVce::PceVce(Emulator* emu, PceConsole* console)
 	_state.ClockDivider = 4;
 	_state.ScanlineCount = 262;
 
-	_emu->GetSettings()->InitializeRam(_paletteRam, 0x400);
+	_console->InitializeRam(_paletteRam, 0x400);
 	for(int i = 0; i < 0x200; i++) {
 		_paletteRam[i] &= 0x1FF;
 	}

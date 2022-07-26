@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "PCE/PceConsole.h"
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceCdRom.h"
@@ -12,7 +13,7 @@
 
 using namespace ScsiSignal;
 
-PceAdpcm::PceAdpcm(Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
+PceAdpcm::PceAdpcm(PceConsole* console, Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
 {
 	_state = {};
 	_cdrom = cdrom;
@@ -20,7 +21,7 @@ PceAdpcm::PceAdpcm(Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
 	_emu = emu;
 
 	_ram = new uint8_t[0x10000];
-	emu->GetSettings()->InitializeRam(_ram, 0x10000);
+	console->InitializeRam(_ram, 0x10000);
 	emu->RegisterMemory(MemoryType::PceAdpcmRam, _ram, 0x10000);
 }
 

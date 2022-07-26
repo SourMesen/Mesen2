@@ -405,22 +405,8 @@ bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 	return (_debuggerFlags & (uint64_t)flag) != 0;
 }
 
-void EmuSettings::InitializeRam(void* data, uint32_t length)
+void EmuSettings::InitializeRam(RamState state, void* data, uint32_t length)
 {
-	RamState state;
-	switch(_emu->GetConsoleType()) {
-		default:
-		case ConsoleType::Snes: state = _snes.RamPowerOnState; break;
-		case ConsoleType::Nes: state = _nes.RamPowerOnState; break;
-		
-		case ConsoleType::Gameboy:
-		case ConsoleType::GameboyColor:
-			state = _gameboy.RamPowerOnState;
-			break;
-
-		case ConsoleType::PcEngine: state = _pce.RamPowerOnState; break;
-	}
-
 	switch(state) {
 		default:
 		case RamState::AllZeros: memset(data, 0, length); break;

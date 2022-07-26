@@ -488,3 +488,15 @@ void SnesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 		state.Cx4 = _cart->GetCx4()->GetState();
 	}
 }
+
+void SnesConsole::InitializeRam(void* data, uint32_t length)
+{
+	EmuSettings* settings = _emu->GetSettings();
+	RamState state;
+	if(_cart) {
+		state = _cart->GetRamPowerOnState();
+	} else {
+		state = settings->GetSnesConfig().RamPowerOnState;
+	}
+	settings->InitializeRam(state, data, length);
+}

@@ -74,8 +74,8 @@ NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &prog
 
 	_stackMask = _stackSize - 1;
 
-	_emu->GetSettings()->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
-	_emu->GetSettings()->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
+	_console->InitializeRam(_ram, _ramSize * sizeof(uint16_t));
+	_console->InitializeRam(_stack, _stackSize * sizeof(uint16_t));
 
 	memcpy(_progRom, programRom.data(), _progSize);
 	BuildProgramCache();

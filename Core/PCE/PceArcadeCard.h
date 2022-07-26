@@ -5,6 +5,7 @@
 #include "Utilities/ISerializable.h"
 
 class Emulator;
+class PceConsole;
 
 class PceArcadeCard final : public IPceMapper
 {
@@ -26,7 +27,7 @@ private:
 	void WritePortRegister(uint8_t portNumber, uint8_t reg, uint8_t value);
 
 public:
-	PceArcadeCard(Emulator* emu);
+	PceArcadeCard(PceConsole* console, Emulator* emu);
 	virtual ~PceArcadeCard();
 
 	PceArcadeCardState& GetState() { return _state; }
