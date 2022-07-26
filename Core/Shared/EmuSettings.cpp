@@ -20,7 +20,8 @@ EmuSettings::EmuSettings(Emulator* emu)
 
 void EmuSettings::Serialize(Serializer& s)
 {
-	//Save/load settings that have an impact on emulation (for movies), netplay), etc.)
+	//Save/load settings that have an impact on emulation (for movies), netplay, etc.)
+	//TODO: These should probably not be loaded except for movie playback and netplay clients
 	SV(_video.IntegerFpsMode);
 	SV(_emulation.RunAheadFrames);
 
@@ -54,8 +55,17 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_gameboy.UseSgb2);
 			break;
 
-
 		case ConsoleType::PcEngine:
+			SV(_pce.CdRomType);
+			SV(_pce.ConsoleType);
+			SV(_pce.DisableCdRomSaveRamForHuCardGames);
+			SV(_pce.EnableCdRomForHuCardGames);
+			SV(_pce.Port1.Type);
+			SV(_pce.Port1SubPorts[0].Type);
+			SV(_pce.Port1SubPorts[1].Type);
+			SV(_pce.Port1SubPorts[2].Type);
+			SV(_pce.Port1SubPorts[3].Type);
+			SV(_pce.Port1SubPorts[4].Type);
 			break;
 
 		default:
