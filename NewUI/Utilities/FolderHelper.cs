@@ -52,28 +52,5 @@ namespace Mesen.Utilities
 			}
 			return true;
 		}
-		
-		//TODO
-		/*public static bool MigrateData(string source, string target, Form parent)
-		{
-			using(frmCopyFiles frm = new frmCopyFiles(source, target)) {
-				frm.ShowDialog(parent);
-				if(frm.Exception != null) {
-					throw frm.Exception;
-				}
-			}
-			if(File.Exists(Path.Combine(source, "settings.backup.xml"))) {
-				File.Delete(Path.Combine(source, "settings.backup.xml"));
-			}
-			File.Move(Path.Combine(source, "settings.xml"), Path.Combine(source, "settings.backup.xml"));
-
-			ConfigManager.InitHomeFolder();
-			ConfigManager.ApplyChanges();
-			ConfigManager.SaveConfig();
-
-			ConfigManager.RestartMesen(true);
-
-			return true;
-		}*/
 	}
 }

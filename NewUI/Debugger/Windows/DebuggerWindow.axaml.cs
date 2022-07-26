@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using Avalonia.VisualTree;
 using Avalonia.Input;
 using Mesen.Debugger.Views;
+using System.Linq;
+using System.IO;
 
 namespace Mesen.Debugger.Windows
 {
@@ -48,6 +50,8 @@ namespace Mesen.Debugger.Windows
 			if(Design.IsDesignMode) {
 				return;
 			}
+			
+			AddHandler(DragDrop.DropEvent, OnDrop);
 
 			_model.Config.LoadWindowSettings(this);
 		}
@@ -195,6 +199,14 @@ namespace Mesen.Debugger.Windows
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
+		}
+
+		private void OnDrop(object? sender, DragEventArgs e)
+		{
+			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
+			if(filename != null && File.Exists(filename)) {
+				DebugWorkspaceManager.LoadSupportedFile(filename, true);
+			}
 		}
 	}
 }

@@ -38,8 +38,8 @@
 		
 		<ContentControl Name="AudioPlayer" DockPanel.Dock="Bottom" Content="{CompiledBinding AudioPlayer}" />
 
-		<Panel Background="#181818">
-			<ContentControl Content="{CompiledBinding RecentGames}" IsVisible="{CompiledBinding RecentGames.Visible}" />
+		<Panel Background="Black">
+			<ContentControl Background="#181818" Content="{CompiledBinding RecentGames}" IsVisible="{CompiledBinding RecentGames.Visible}" />
 			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{CompiledBinding !RecentGames.Visible}" />
 		</Panel>
 	</DockPanel>

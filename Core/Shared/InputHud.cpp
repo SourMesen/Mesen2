@@ -178,6 +178,11 @@ void InputHud::EndDrawController()
 
 void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controllerData)
 {
+	if(_emu->GetAudioPlayerHud()) {
+		//Don't draw controllers when playing an audio file
+		return;
+	}
+
 	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
 	
 	bool hasVisiblePort = false;

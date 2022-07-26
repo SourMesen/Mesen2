@@ -529,7 +529,6 @@ PpuFrameInfo Emulator::GetPpuFrame()
 
 ConsoleRegion Emulator::GetRegion()
 {
-	//TODO is this really useful?
 	if(_console) {
 		return _console->GetRegion();
 	} else {

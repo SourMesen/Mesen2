@@ -44,6 +44,7 @@ namespace Mesen.Utilities
 			Task.Run(() => {
 				if(EmuApi.LoadRom(romPath, patchPath)) {
 					ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
+					ConfigManager.Config.Save();
 				}
 			});
 		}

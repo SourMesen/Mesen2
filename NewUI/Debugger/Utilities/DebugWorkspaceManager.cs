@@ -48,7 +48,7 @@ namespace Mesen.Debugger.Utilities
 			SymbolProvider = null;
 			if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
 				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.DbgFileExt);
-				LoadDbgSymbolFile(dbgPath);
+				LoadDbgSymbolFile(dbgPath, false);
 			} 
 			
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadMlbFiles) {
@@ -72,11 +72,11 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
-		public static void LoadDbgSymbolFile(string path)
+		public static void LoadDbgSymbolFile(string path, bool showResult)
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.DbgFileExt) {
 				ResetLabels();
-				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, true);
+				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, showResult);
 			}
 		}
 
@@ -92,6 +92,15 @@ namespace Mesen.Debugger.Utilities
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.CdlExt) {
 				DebugApi.LoadCdlFile(_romInfo.ConsoleType.GetMainCpuType().GetPrgRomMemoryType(), path);
+			}
+		}
+
+		public static void LoadSupportedFile(string filename, bool showResult)
+		{
+			switch(Path.GetExtension(filename).ToLower().Substring(1)) {
+				case FileDialogHelper.DbgFileExt: LoadDbgSymbolFile(filename, showResult); break;
+				case FileDialogHelper.MesenLabelExt: LoadMesenLabelFile(filename, showResult); break;
+				case FileDialogHelper.CdlExt: LoadCdlFile(filename); break;
 			}
 		}
 

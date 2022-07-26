@@ -10,26 +10,26 @@ namespace Mesen.Utilities
 {
 	public class FileDialogHelper
 	{
-		public static string RomExt = "[[ROMFILES]]";
-		public static string MesenMovieExt = "msm";
-		public static string TblExt = "tbl";
-		public static string PaletteExt = "pal";
-		public static string TraceExt = "txt";
-		public static string ZipExt = "zip";
-		public static string GifExt = "gif";
-		public static string AviExt = "avi";
-		public static string WaveExt = "wav";
-		public static string MesenSaveStateExt = "mss";
-		public static string WatchFileExt = "txt";
-		public static string LuaExt = "lua";
-		public static string PngExt = "png";
-		public static string DmpExt = "dmp";
-		public static string IpsExt = "ips";
-		public static string CdlExt = "cdl";
-		public static string DbgFileExt = "dbg";
-		public static string MesenLabelExt = "mlb";
-		public static string BinExt = "bin";
-		public static string NesExt = "nes";
+		public const string RomExt = "[[ROMFILES]]";
+		public const string MesenMovieExt = "msm";
+		public const string TblExt = "tbl";
+		public const string PaletteExt = "pal";
+		public const string TraceExt = "txt";
+		public const string ZipExt = "zip";
+		public const string GifExt = "gif";
+		public const string AviExt = "avi";
+		public const string WaveExt = "wav";
+		public const string MesenSaveStateExt = "mss";
+		public const string WatchFileExt = "txt";
+		public const string LuaExt = "lua";
+		public const string PngExt = "png";
+		public const string DmpExt = "dmp";
+		public const string IpsExt = "ips";
+		public const string CdlExt = "cdl";
+		public const string DbgFileExt = "dbg";
+		public const string MesenLabelExt = "mlb";
+		public const string BinExt = "bin";
+		public const string NesExt = "nes";
 
 		public static async Task<string?> OpenFile(string? initialFolder, IRenderRoot? parent, params string[] extensions)
 		{

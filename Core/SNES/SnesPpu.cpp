@@ -518,7 +518,7 @@ void SnesPpu::UpdateSpcState()
 
 void SnesPpu::UpdateNmiScanline()
 {
-	if(_emu->GetRegion() == ConsoleRegion::Ntsc) {
+	if(_console->GetRegion() == ConsoleRegion::Ntsc) {
 		if(!_state.ScreenInterlace || _oddFrame) {
 			_baseVblankEndScanline = 261;
 		} else {
@@ -1747,7 +1747,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 				(_oddFrame ? 0x80 : 0) |
 				(_locationLatched ? 0x40 : 0) |
 				(_state.Ppu2OpenBus & 0x20) |
-				(_emu->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
+				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0) |
 				0x03 //PPU (5c78) chip version
 			);
 

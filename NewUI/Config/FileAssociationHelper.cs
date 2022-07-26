@@ -63,10 +63,10 @@ namespace Mesen.Config
 
 			//Use a GUID to get a unique filename and then delete old files to force a reset of file associations
 			//Otherwise they are sometimes not refreshed properly
-			string desktopFilename = "mesen-s." + Guid.NewGuid().ToString() + ".desktop";
+			string desktopFilename = "mesen." + Guid.NewGuid().ToString() + ".desktop";
 			string desktopFile = Path.Combine(desktopFolder, desktopFilename);
 
-			foreach(string file in Directory.GetFiles(desktopFolder, "mesen-s.*.desktop")) {
+			foreach(string file in Directory.GetFiles(desktopFolder, "mesen.*.desktop")) {
 				if(File.Exists(file)) {
 					try {
 						File.Delete(file);
@@ -75,12 +75,12 @@ namespace Mesen.Config
 			}
 
 			List<string> mimeTypes = new List<string>();
-			CreateMimeType("x-mesen_s-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
-			CreateMimeType("x-mesen_s-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
-			CreateMimeType("x-mesen_s-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
-			CreateMimeType("x-mesen_s-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
-			CreateMimeType("x-mesen_s-bs", "bs", "BS-X Memory Pack", mimeTypes, cfg.AssociateSnesRomFiles);
-			CreateMimeType("x-mesen_s-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSnesMusicFiles);
+			CreateMimeType("x-mesen-sfc", "sfc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen-smc", "smc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen-swc", "swc", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen-fig", "fig", "SNES Rom", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen-bs", "bs", "BS-X Memory Pack", mimeTypes, cfg.AssociateSnesRomFiles);
+			CreateMimeType("x-mesen-spc", "spc", "SPC Sound File", mimeTypes, cfg.AssociateSnesMusicFiles);
 
 			CreateMimeType("x-mesen-nes", "nes", "NES ROM", mimeTypes, cfg.AssociateNesRomFiles);
 			CreateMimeType("x-mesen-fds", "fds", "FDS ROM", mimeTypes, cfg.AssociateNesRomFiles);
@@ -126,9 +126,9 @@ namespace Mesen.Config
 			string content = 
 				"[Desktop Entry]" + Environment.NewLine +
 				"Type=Application" + Environment.NewLine +
-				"Name=Mesen-S" + Environment.NewLine +
-				"Comment=SNES Emulator" + Environment.NewLine +
-				"Keywords=game;snes;super;famicom;emulator;emu;ファミコン;nintendo" + Environment.NewLine +
+				"Name=Mesen" + Environment.NewLine +
+				"Comment=Emulator" + Environment.NewLine +
+				"Keywords=game;emulator;emu" + Environment.NewLine +
 				"Categories=GNOME;GTK;Game;Emulator;" + Environment.NewLine;
 			if(mimeTypes != null) {
 				content += "MimeType=" + string.Join(";", mimeTypes.Select(type => "application/" + type)) + Environment.NewLine;

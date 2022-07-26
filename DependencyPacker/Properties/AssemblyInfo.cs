@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DependencyPacker")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Mesen-S")]
+[assembly: AssemblyCompany("Mesen")]
 [assembly: AssemblyProduct("DependencyPacker")]
 [assembly: AssemblyCopyright("Copyright © Mesen 2019")]
 [assembly: AssemblyTrademark("")]

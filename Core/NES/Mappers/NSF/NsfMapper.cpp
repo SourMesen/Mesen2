@@ -161,7 +161,7 @@ void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
 
 uint32_t NsfMapper::GetIrqReloadValue()
 {
-	switch(_emu->GetRegion()) {
+	switch(_console->GetRegion()) {
 		default:
 		case ConsoleRegion::Ntsc: return (uint16_t)(_nsfHeader.PlaySpeedNtsc * (NesConstants::ClockRateNtsc / 1000000.0)); break;
 		case ConsoleRegion::Pal: return (uint16_t)(_nsfHeader.PlaySpeedPal * (NesConstants::ClockRatePal / 1000000.0)); break;

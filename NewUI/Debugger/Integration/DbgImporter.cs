@@ -2,11 +2,14 @@
 using Mesen.Debugger.Integration;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
+using Mesen.Utilities;
+using Mesen.Windows;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Mesen.Debugger.Integration
@@ -617,7 +620,7 @@ namespace Mesen.Debugger.Integration
 					SpanInfo span = _spans[line.SpanIDs[0]];
 					SegmentInfo segment = _segments[span.SegmentID];
 
-					if(_files[line.FileID].Data == null) {
+					if(_files[line.FileID].IsFileMissing) {
 						//File was not found.
 						if(_filesNotFound.Add(_files[line.FileID].Name)) {
 							_errorCount++;
@@ -840,7 +843,7 @@ namespace Mesen.Debugger.Integration
 		protected abstract bool IsJumpToSubroutine(byte opCode);
 		protected abstract CdlFlags GetOpFlags(byte opCode, int opSize);
 
-		public static DbgImporter Import(RomFormat romFormat, string path, bool importComments, bool silent)
+		public static DbgImporter Import(RomFormat romFormat, string path, bool importComments, bool showResult)
 		{
 			DbgImporter? importer = romFormat switch {
 				RomFormat.Sfc or RomFormat.SfcWithCopierHeader => new SnesDbgImporter(romFormat),
@@ -849,12 +852,12 @@ namespace Mesen.Debugger.Integration
 				_ => throw new NotImplementedException()
 			};
 
-			importer.Import(path, importComments, silent);
+			importer.Import(path, importComments, showResult);
 
 			return importer;
 		}
 
-		private void Import(string path, bool importComments, bool silent = false)
+		private void Import(string path, bool importComments, bool showResult)
 		{
 			SymbolFileStamp = File.GetLastWriteTime(path);
 
@@ -925,24 +928,25 @@ namespace Mesen.Debugger.Integration
 
 			LabelManager.SetLabels(labelsToImport, true);
 
-			if(!silent) {
+			if(showResult) {
 				if(_errorCount > 0) {
 					_errorCount -= _filesNotFound.Count;
-					string message = $"Import completed with {labelsToImport.Count} labels imported";
+					StringBuilder missingFiles = new();
+					foreach(string file in _filesNotFound) {
+						missingFiles.AppendLine(file);
+					}
+
 					if(_errorCount > 0) {
-						message += $"and {_errorCount} errors - please file a bug report and attach the DBG file you tried to import.";
-					}
-					if(_filesNotFound.Count > 0) {
-						message += Environment.NewLine + Environment.NewLine + "The following files could not be found:";
-						foreach(string file in _filesNotFound) {
-							message += Environment.NewLine + file;
+						if(_filesNotFound.Count > 0) {
+							MesenMsgBox.Show(null, "ImportLabelsWithErrorsAndMissingFiles", MessageBoxButtons.OK, MessageBoxIcon.Warning, labelsToImport.Count.ToString(), _errorCount.ToString(), missingFiles.ToString());
+						} else {
+							MesenMsgBox.Show(null, "ImportLabelsWithErrors", MessageBoxButtons.OK, MessageBoxIcon.Warning, labelsToImport.Count.ToString(), _errorCount.ToString());
 						}
+					} else {
+						MesenMsgBox.Show(null, "ImportLabelsWithMissingFiles", MessageBoxButtons.OK, MessageBoxIcon.Warning, labelsToImport.Count.ToString(), missingFiles.ToString());
 					}
-					//TODO
-					//MessageBox.Show(message, "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				} else {
-					//TODO
-					//MessageBox.Show($"Import completed with {labelCount} labels imported.", "Mesen-S", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MesenMsgBox.Show(null, "ImportLabels", MessageBoxButtons.OK, MessageBoxIcon.Info, labelsToImport.Count.ToString());
 				}
 			}
 		}
@@ -972,6 +976,7 @@ namespace Mesen.Debugger.Integration
 			public int ID { get; }
 			public string Name { get; }
 			public bool IsAssembly { get; }
+			public bool IsFileMissing { get; private set; }
 			public SourceFileInfo SourceFile { get; }
 
 			private string[]? _data = null;
@@ -997,12 +1002,14 @@ namespace Mesen.Debugger.Integration
 				ID = id;
 				Name = filename;
 				IsAssembly = isAsm;
+				IsFileMissing = true;
 				SourceFile = new SourceFileInfo(Name, IsAssembly, this);
 			}
 
 			public void SetSourceFile(string sourceFile)
 			{
 				_sourceFile = sourceFile;
+				IsFileMissing = false;
 			}
 		}
 

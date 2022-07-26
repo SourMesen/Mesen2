@@ -1,4 +1,4 @@
-//Altered to integrate with Mesen-S's code
+//Altered to integrate with Mesen's code
 
 /************************************************************************
 

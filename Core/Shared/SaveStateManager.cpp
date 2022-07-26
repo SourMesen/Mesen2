@@ -154,7 +154,10 @@ bool SaveStateManager::GetVideoData(vector<uint8_t>& out, RenderedFrame& frame, 
 
 bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 {
-	if(_emu->GetGameClient()->Connected()) {
+	if(!_emu->IsRunning()) {
+		//Can't load a state if no game is running
+		return false;
+	} else if(_emu->GetGameClient()->Connected()) {
 		MessageManager::DisplayMessage("Netplay", "NetplayNotAllowed");
 		return false;
 	}
@@ -197,12 +200,6 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 		vector<char> nameBuffer(nameLength);
 		stream.read(nameBuffer.data(), nameBuffer.size());
 		string romName(nameBuffer.data(), nameLength);
-			
-		if(!_emu->IsRunning() /*|| cartridge->GetSha1Hash() != string(hash)*/) {
-			//Game isn't loaded, or CRC doesn't match
-			//TODO: Try to find and load the game
-			return false;
-		}
 
 		if(_emu->Deserialize(stream, fileFormatVersion, false)) {
 			//Stop any movie that might have been playing/recording if a state is loaded

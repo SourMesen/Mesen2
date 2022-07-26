@@ -115,8 +115,7 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 		_msu1.reset(Msu1::Init(_emu, romFile, _spc.get()));
 
 		if(_cart->GetSpcData()) {
-			//TODO
-    		_spc->LoadSpcFile(_cart->GetSpcData());
+			_spc->LoadSpcFile(_cart->GetSpcData());
 			_spcPlaylist = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".spc" }, false);
 			std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
 			auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), romFile.GetFilePath());
@@ -186,7 +185,6 @@ double SnesConsole::GetFps()
 
 PpuFrameInfo SnesConsole::GetPpuFrame()
 {
-	//TODO null checks
 	PpuFrameInfo frame = {};
 	frame.FrameBuffer = (uint8_t*)_ppu->GetScreenBuffer();
 	frame.Width = _ppu->IsHighResOutput() ? 512 : 256;

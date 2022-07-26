@@ -79,7 +79,7 @@ extern "C" {
 
 	DllExport ControllerType __stdcall GetControllerType(int player)
 	{
-		//TODO - used by netplay?
+		//TODO - used by netplay UI
 		BaseControlManager* controlManager = _emu->GetControlManager();
 		if(controlManager) {
 			shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(player);
