@@ -87,7 +87,9 @@ namespace Mesen.Windows
 					break;
 
 				case ConsoleNotificationType.GameLoaded:
-					_model.LoadCheats();
+					Dispatcher.UIThread.Post(() => {
+						_model.LoadCheats();
+					});
 					break;
 
 				case ConsoleNotificationType.BeforeEmulationStop:

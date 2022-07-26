@@ -523,7 +523,9 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.GameLoaded:
-					_model.UpdateAvailableMemoryTypes();
+					Dispatcher.UIThread.Post(() => {
+						_model.UpdateAvailableMemoryTypes();
+					});
 					break;
 			}
 		}
