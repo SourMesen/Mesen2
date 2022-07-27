@@ -103,7 +103,7 @@ void VideoRenderer::RenderThread()
 
 void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 {
-	shared_ptr<IVideoRecorder> recorder = _recorder;
+	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
 		recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps());
 	}
@@ -152,14 +152,14 @@ void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t c
 	}
 
 	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps())) {
-		_recorder = recorder;
+		_recorder.reset(recorder);
 		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
 	}
 }
 
 void VideoRenderer::AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
 {
-	shared_ptr<IVideoRecorder> recorder = _recorder;
+	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
 		recorder->AddSound(soundBuffer, sampleCount, sampleRate);
 	}
@@ -167,7 +167,7 @@ void VideoRenderer::AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount
 
 void VideoRenderer::StopRecording()
 {
-	shared_ptr<IVideoRecorder> recorder = _recorder;
+	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
 		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStopped", recorder->GetOutputFile());
 	}
@@ -176,5 +176,5 @@ void VideoRenderer::StopRecording()
 
 bool VideoRenderer::IsRecording()
 {
-	return _recorder != nullptr && _recorder->IsRecording();
+	return _recorder != nullptr;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Core/Shared/Interfaces/IAudioDevice.h"
+#include "Utilities/safe_ptr.h"
 
 class Emulator;
 class Equalizer;
@@ -18,7 +19,7 @@ private:
 	Emulator *_emu;
 	unique_ptr<Equalizer> _equalizer;
 	unique_ptr<SoundResampler> _resampler;
-	shared_ptr<WaveRecorder> _waveRecorder;
+	safe_ptr<WaveRecorder> _waveRecorder;
 	int16_t *_sampleBuffer = nullptr;
 
 	int16_t _leftSample = 0;

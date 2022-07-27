@@ -23,8 +23,14 @@ public:
 
 	shared_ptr<T> lock()
 	{
-		auto lock = _lock.AcquireSafe();
-		return _shared;
+		if(_ptr) {
+			//Only need to take the lock if _ptr is still set
+			//Otherwise the shared_ptr is empty and there's no need to copy it
+			auto lock = _lock.AcquireSafe();
+			return _shared;
+		} else {
+			return nullptr;
+		}
 	}
 
 	void reset(T* ptr = nullptr)

@@ -130,8 +130,9 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 	RewindManager* rewindManager = _emu->GetRewindManager();
 	if(!_emu->IsRunAheadFrame() && rewindManager && rewindManager->SendAudio(out, count)) {
 		if(isRecording) {
-			if(_waveRecorder) {
-				_waveRecorder->WriteSamples(out, count, cfg.SampleRate, true);
+			shared_ptr<WaveRecorder> recorder = _waveRecorder.lock();
+			if(recorder) {
+				recorder->WriteSamples(out, count, cfg.SampleRate, true);
 			}
 			_emu->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
@@ -181,7 +182,7 @@ void SoundMixer::StopRecording()
 
 bool SoundMixer::IsRecording()
 {
-	return _waveRecorder.get() != nullptr;
+	return _waveRecorder != nullptr;
 }
 
 void SoundMixer::GetLastSamples(int16_t &left, int16_t &right)

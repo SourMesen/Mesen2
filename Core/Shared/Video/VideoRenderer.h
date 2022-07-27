@@ -5,6 +5,7 @@
 #include "Shared/RenderedFrame.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Utilities/SimpleLock.h"
+#include "Utilities/safe_ptr.h"
 
 class IRenderingDevice;
 class Emulator;
@@ -38,7 +39,7 @@ private:
 	RenderedFrame _lastFrame;
 	SimpleLock _frameLock;
 
-	shared_ptr<IVideoRecorder> _recorder;
+	safe_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
 
