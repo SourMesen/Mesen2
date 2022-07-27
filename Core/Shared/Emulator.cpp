@@ -65,7 +65,6 @@ Emulator::Emulator() :
 	_isRunAheadFrame = false;
 	_lockCounter = 0;
 	_threadPaused = false;
-	_lockCounter = 0;
 
 	_debugRequestCount = 0;
 	_allowDebuggerRequest = true;
@@ -146,8 +145,6 @@ void Emulator::Run()
 			WaitForPauseEnd();
 		}
 	}
-
-	_movieManager->Stop();
 
 	_emulationThreadId = thread::id();
 
@@ -283,6 +280,7 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 		_notificationManager->SendNotification(ConsoleNotificationType::BeforeEmulationStop);
 	}
 
+	_movieManager->Stop();
 	_videoDecoder->StopThread();
 	_videoRenderer->StopThread();
 	_rewindManager.reset();
@@ -330,7 +328,7 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
-	if(GetEmulationThreadId() == std::this_thread::get_id()) {
+	if(IsEmulationThread()) {
 		_threadPaused = true;
 	}
 
@@ -367,7 +365,11 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//Make sure the battery is saved to disk before we load another game (or reload the same game)
 		_console->SaveBattery();
 	}
-	
+
+	if(!forPowerCycle) {
+		_movieManager->Stop();
+	}
+
 	unique_ptr<IConsole> console;
 	LoadRomResult result = LoadRomResult::UnknownType;
 	TryLoadRom<NesConsole>(romFile, result, console);
@@ -1011,6 +1013,11 @@ bool Emulator::IsDebugging()
 thread::id Emulator::GetEmulationThreadId()
 {
 	return _emulationThreadId;
+}
+
+bool Emulator::IsEmulationThread()
+{
+	return _emulationThreadId == std::this_thread::get_id();
 }
 
 void Emulator::RegisterMemory(MemoryType type, void* memory, uint32_t size)

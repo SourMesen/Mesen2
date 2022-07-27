@@ -13,7 +13,7 @@ struct CheatCode;
 class MesenMovie : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
 private:
-	Emulator* _emu;
+	Emulator* _emu = nullptr;
 
 	VirtualFile _movieFile;
 	unique_ptr<ZipReader> _reader;
@@ -23,15 +23,14 @@ private:
 	vector<vector<string>> _inputData;
 	vector<string> _cheats;
 	vector<CheatCode> _originalCheats;
-	std::unordered_map<string, string> _settings;
+	stringstream _emuSettingsBackup;
+	unordered_map<string, string> _settings;
 	string _filename;
-	bool _forTest;
+	bool _forTest = false;
 
 private:
 	void ParseSettings(stringstream &data);
-	void ApplySettings();
-	bool LoadGame();
-	void Stop();
+	bool ApplySettings(istream& settingsData);
 
 	uint32_t LoadInt(std::unordered_map<string, string> &settings, string name, uint32_t defaultValue = 0);
 	bool LoadBool(std::unordered_map<string, string> &settings, string name);
@@ -45,6 +44,8 @@ public:
 	virtual ~MesenMovie();
 
 	bool Play(VirtualFile &file) override;
+	void Stop() override;
+
 	bool SetInput(BaseControlDevice* device) override;
 	bool IsPlaying() override;
 

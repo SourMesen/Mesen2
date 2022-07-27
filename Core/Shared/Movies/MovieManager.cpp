@@ -17,7 +17,7 @@ void MovieManager::Record(RecordMovieOptions options)
 {
 	shared_ptr<MovieRecorder> recorder(new MovieRecorder(_emu));
 	if(recorder->Record(options)) {
-		_recorder = recorder;
+		_recorder.reset(recorder);
 	}
 }
 
@@ -38,7 +38,7 @@ void MovieManager::Play(VirtualFile file, bool forTest)
 		}
 
 		if(player && player->Play(file)) {
-			_player = player;
+			_player.reset(player);
 			if(!forTest) {
 				MessageManager::DisplayMessage("Movies", "MoviePlaying", file.GetFileName());
 			}
@@ -48,6 +48,10 @@ void MovieManager::Play(VirtualFile file, bool forTest)
 
 void MovieManager::Stop()
 {
+	shared_ptr<IMovie> player = _player.lock();
+	if(player) {
+		player->Stop();
+	}
 	_player.reset();
 	_recorder.reset();
 }

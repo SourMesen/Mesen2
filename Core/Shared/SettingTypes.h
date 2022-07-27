@@ -160,7 +160,6 @@ struct AudioConfig
 	uint32_t AudioPlayerSilenceDelay = 3;
 };
 
-//Update ControllerTypeNames when changing this
 enum class ControllerType
 {
 	None,

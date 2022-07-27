@@ -100,7 +100,7 @@ uint8_t NesApu::ReadRam(uint16_t addr)
 
 uint8_t NesApu::PeekRam(uint16_t addr)
 {
-	if(_console->GetEmulator()->GetEmulationThreadId() == std::this_thread::get_id()) {
+	if(_console->GetEmulator()->IsEmulationThread()) {
 		//Only run the Apu (to catch up) if we're running this in the emulation thread (not 100% accurate, but we can't run the Apu from any other thread without locking)
 		Run();
 	}

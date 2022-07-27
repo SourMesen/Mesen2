@@ -135,8 +135,8 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			}
 		}
 		
-		//If in DB or a NES 2.0 file, auto-configure the inputs (if option is enabled)
-		if(GetNesConfig().AutoConfigureInput && (romData.Info.IsInDatabase || romData.Info.IsNes20Header) && romData.Info.InputType != GameInputType::Unspecified) {
+		if(GetNesConfig().AutoConfigureInput && romData.Info.InputType != GameInputType::Unspecified) {
+			//Auto-configure the inputs (if option is enabled)
 			InitializeInputDevices(romData.Info.InputType, romData.Info.System);
 		}
 
@@ -152,14 +152,6 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_controlManager.reset(new NesControlManager(this));
 		}
 
-		/*
-		//Temporarely disable battery saves to prevent battery files from being created for the wrong game (for Battle Box & Turbo File)
-		_batteryManager->SetSaveEnabled(false);
-		*/
-
-		//Re-enable battery saves
-		/*_batteryManager->SetSaveEnabled(true);
-		*/
 		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
 			_ppu.reset(new HdNesPpu(this, _hdData.get()));
 		} else if(dynamic_cast<NsfMapper*>(_mapper.get())) {

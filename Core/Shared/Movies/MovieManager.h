@@ -4,6 +4,7 @@
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Movies/MovieTypes.h"
 #include "Shared/Movies/MovieRecorder.h"
+#include "Utilities/safe_ptr.h"
 
 class VirtualFile;
 class Emulator;
@@ -11,7 +12,8 @@ class Emulator;
 class IMovie : public IInputProvider
 {
 public:
-	virtual bool Play(VirtualFile &file) = 0;
+	virtual bool Play(VirtualFile& file) = 0;
+	virtual void Stop() = 0;
 	virtual bool IsPlaying() = 0;
 };
 
@@ -19,8 +21,8 @@ class MovieManager
 {
 private:
 	Emulator* _emu;
-	shared_ptr<IMovie> _player;
-	shared_ptr<MovieRecorder> _recorder;
+	safe_ptr<IMovie> _player;
+	safe_ptr<MovieRecorder> _recorder;
 
 public:
 	MovieManager(Emulator* emu);

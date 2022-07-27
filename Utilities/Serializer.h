@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/FastString.h"
+#include "Utilities/magic_enum.hpp"
 
 class Serializer;
 
@@ -42,8 +43,11 @@ private:
 
 	uint32_t _version = 0;
 	bool _saving = false;
+	bool _useTextFormat = false;
 
 private:
+	bool LoadFromTextFormat(istream& file);
+
 	string GetKey(const char* name, int index)
 	{
 		string key;
@@ -110,8 +114,45 @@ private:
 		}
 	}
 
+	template<typename T>
+	void WriteTextFormat(string key, T& value)
+	{
+		//Write key
+		_data.insert(_data.end(), key.begin(), key.end());
+		_data.push_back(' ');
+		if constexpr(std::is_enum<T>::value) {
+			auto enumStr = magic_enum::enum_name(value);
+			_data.insert(_data.end(), enumStr.begin(), enumStr.end());
+		} else if constexpr(std::is_same<T, bool>::value) {
+			string boolStr = value ? "true" : "false";
+			_data.insert(_data.end(), boolStr.begin(), boolStr.end());
+		} else {
+			auto valueStr = std::to_string(value);
+			_data.insert(_data.end(), valueStr.begin(), valueStr.end());
+		}
+		_data.push_back('\n');
+	}
+
+	template<typename T>
+	void ReadTextFormat(SerializeValue& savedValue, T& value)
+	{
+		string textValue(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
+		if constexpr(std::is_enum<T>::value) {
+			auto enumValue = magic_enum::enum_cast<T>(textValue);
+			if(enumValue.has_value()) {
+				value = enumValue.value();
+			}
+		} else if constexpr(std::is_same<T, bool>::value) {
+			value = textValue == "true";
+		} else {
+			if(textValue.find_first_not_of("0123456789") == string::npos) {
+				value = (T)std::stol(textValue);
+			}
+		}
+	}
+
 public:
-	Serializer(uint32_t version, bool forSave);
+	Serializer(uint32_t version, bool forSave, bool useTextFormat = false);
 
 	uint32_t GetVersion() { return _version; }
 	bool IsSaving() { return _saving; }
@@ -138,23 +179,31 @@ public:
 			}
 
 			if(_saving) {
-				//Write key
-				_data.insert(_data.end(), key.begin(), key.end());
-				_data.push_back(0);
+				if(_useTextFormat) {
+					WriteTextFormat(key, value);
+				} else {
+					//Write key
+					_data.insert(_data.end(), key.begin(), key.end());
+					_data.push_back(0);
 
-				//Write value size
-				WriteValue((uint32_t)sizeof(T));
+					//Write value size
+					WriteValue((uint32_t)sizeof(T));
 
-				//Write value
-				WriteValue(value);
+					//Write value
+					WriteValue(value);
+				}
 			} else {
 				auto result = _values.find(key);
 				if(result != _values.end()) {
 					SerializeValue& savedValue = result->second;
-					if(savedValue.Size >= sizeof(T)) {
-						ReadValue(value, savedValue.DataPtr);
+					if(_useTextFormat) {
+						ReadTextFormat(savedValue, value);
 					} else {
-						value = (T)0;
+						if(savedValue.Size >= sizeof(T)) {
+							ReadValue(value, savedValue.DataPtr);
+						} else {
+							value = (T)0;
+						}
 					}
 				} else {
 					value = (T)0;

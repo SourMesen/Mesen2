@@ -16,6 +16,8 @@
 #include "Shared/Movies/MovieRecorder.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/CheatManager.h"
+#include "Utilities/Serializer.h"
+#include "Utilities/magic_enum.hpp"
 
 MovieRecorder::MovieRecorder(Emulator* emu)
 {
@@ -72,9 +74,6 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 void MovieRecorder::GetGameSettings(stringstream &out)
 {
 	EmuSettings* settings = _emu->GetSettings();
-	EmulationConfig emuConfig = settings->GetEmulationConfig();
-	InputConfig inputConfig = settings->GetInputConfig();
-	
 	WriteString(out, MovieKeys::MesenVersion, settings->GetVersionString());
 	WriteInt(out, MovieKeys::MovieFormatVersion, MovieRecorder::MovieFormatVersion);
 
@@ -91,43 +90,18 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		WriteString(out, MovieKeys::PatchedRomSha1, romFile.GetSha1Hash());
 	}
 
-	ConsoleRegion region = _emu->GetRegion();
-	switch(region) {
-		case ConsoleRegion::Auto:
-		case ConsoleRegion::Ntsc: WriteString(out, MovieKeys::Region, "NTSC"); break;
+	Serializer s(0, true, true);
+	ConsoleType consoleType = _emu->GetConsoleType();
+	s.Stream(consoleType, "emu.consoleType", -1);
+	s.Stream(*settings, "", -1);
 
-		case ConsoleRegion::Pal: WriteString(out, MovieKeys::Region, "PAL"); break;
-	}
+	std::stringstream settingsOut;
+	s.SaveTo(settingsOut, 0);
 
-	/*WriteString(out, MovieKeys::Controller1, ControllerTypeNames[(int)inputConfig.Controllers[0].Type]);
-	WriteString(out, MovieKeys::Controller2, ControllerTypeNames[(int)inputConfig.Controllers[1].Type]);
-	WriteString(out, MovieKeys::Controller3, ControllerTypeNames[(int)inputConfig.Controllers[2].Type]);
-	WriteString(out, MovieKeys::Controller4, ControllerTypeNames[(int)inputConfig.Controllers[3].Type]);
-	WriteString(out, MovieKeys::Controller5, ControllerTypeNames[(int)inputConfig.Controllers[4].Type]);*/
-
-	switch(_emu->GetConsoleType()) {
-		case ConsoleType::Snes: {
-			SnesConfig snesCfg = settings->GetSnesConfig();
-			WriteInt(out, MovieKeys::ExtraScanlinesBeforeNmi, snesCfg.PpuExtraScanlinesBeforeNmi);
-			WriteInt(out, MovieKeys::ExtraScanlinesAfterNmi, snesCfg.PpuExtraScanlinesAfterNmi);
-			WriteInt(out, MovieKeys::GsuClockSpeed, snesCfg.GsuClockSpeed);
-
-			switch(snesCfg.RamPowerOnState) {
-				case RamState::AllZeros: WriteString(out, MovieKeys::RamPowerOnState, "AllZeros"); break;
-				case RamState::AllOnes: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break;
-				case RamState::Random: WriteString(out, MovieKeys::RamPowerOnState, "AllOnes"); break; //TODO: Random memory isn't supported for movies yet
-			}
-			break;
-		}
-
-		default:
-			//TODO
-			break;
-	}
+	out << settingsOut.str();
 
 	for(CheatCode &code : _emu->GetCheatManager()->GetCheats()) {
-		//TODO
-		out << "Cheat " << string(code.Code) << "\n";
+		out << "Cheat " << magic_enum::enum_name(code.Type) << " "  << string(code.Code) << "\n";
 	}
 }
 
@@ -212,6 +186,8 @@ void MovieRecorder::ProcessNotification(ConsoleNotificationType type, void *para
 		_emu->GetControlManager()->RegisterInputRecorder(this);
 	}
 }
+
+//TODO history viewer
 /*
 bool MovieRecorder::CreateMovie(string movieFile, std::deque<RewindData> &data, uint32_t startPosition, uint32_t endPosition)
 {

@@ -61,10 +61,11 @@ namespace Mesen.Windows
 				new("nes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("snes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("stb_vorbis", "", "Public domain", "https://github.com/nothings/stb"),
-				new("emu2413.c (Mitsukata Okazaki)", "Mitsukata Okazaki", "?", ""),
+				new("emu2413", "Mitsukata Okazaki", "MIT", "https://github.com/digital-sound-antiques/emu2413"),
 				new("SDD-1 Decomp. (Andreas Naive)", "Andreas Naive", "Public domain", ""),
 				new("LED Icons", "", "CC BY 4.0", "http://led24.de"),
-				new("SDL2", "", "zlib", "https://www.libsdl.org/")
+				new("SDL2", "", "zlib", "https://www.libsdl.org/"),
+				new("magic_enum", "", "MIT", "https://github.com/Neargye/magic_enum")
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));

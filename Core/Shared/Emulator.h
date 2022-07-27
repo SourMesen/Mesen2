@@ -226,6 +226,7 @@ public:
 	bool IsDebugging();
 
 	thread::id GetEmulationThreadId();
+	bool IsEmulationThread();
 
 	void RegisterMemory(MemoryType type, void* memory, uint32_t size);
 	ConsoleMemoryInfo GetMemory(MemoryType type);

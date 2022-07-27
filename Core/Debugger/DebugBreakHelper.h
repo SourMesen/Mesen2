@@ -14,7 +14,7 @@ public:
 	{
 		_debugger = debugger;
 
-		_needBreak = debugger->GetEmulator()->GetEmulationThreadId() != std::this_thread::get_id();
+		_needBreak = !debugger->GetEmulator()->IsEmulationThread();
 
 		if(_needBreak) {
 			//Only attempt to break if this is done in a thread other than the main emulation thread (and the debugger is active)

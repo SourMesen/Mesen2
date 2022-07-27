@@ -52,3 +52,15 @@ public:
 		return _ptr;
 	}
 };
+
+template<typename T>
+bool operator==(const safe_ptr<T>& ptr, nullptr_t)
+{
+	return !(bool)ptr;
+}
+
+template<typename T>
+bool operator!=(const safe_ptr<T>& ptr, nullptr_t)
+{
+	return (bool)ptr;
+}

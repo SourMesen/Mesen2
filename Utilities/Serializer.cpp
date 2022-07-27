@@ -4,10 +4,11 @@
 #include "ISerializable.h"
 #include "miniz.h"
 
-Serializer::Serializer(uint32_t version, bool forSave)
+Serializer::Serializer(uint32_t version, bool forSave, bool useTextFormat)
 {
 	_version = version;
 	_saving = forSave;
+	_useTextFormat = useTextFormat;
 	if(forSave) {
 		_data.reserve(0x50000);
 	}
@@ -17,6 +18,10 @@ bool Serializer::LoadFrom(istream &file)
 {
 	if(_saving) {
 		return false;
+	}
+
+	if(_useTextFormat) {
+		return LoadFromTextFormat(file);
 	}
 
 	char value = 0;
@@ -95,24 +100,83 @@ bool Serializer::LoadFrom(istream &file)
 	return _values.size() > 0;
 }
 
+bool Serializer::LoadFromTextFormat(istream& file)
+{
+	uint32_t pos = (uint32_t)file.tellg();
+	file.seekg(0, std::ios::end);
+	uint32_t stateSize = (uint32_t)file.tellg() - pos;
+	file.seekg(pos, std::ios::beg);
+
+	_data = vector<uint8_t>(stateSize, 0);
+	file.read((char*)_data.data(), stateSize);
+
+	uint32_t size = (uint32_t)_data.size();
+	uint32_t i = 0;
+	string key;
+	while(i < size) {
+		key.clear();
+		for(uint32_t j = i; j < size; j++) {
+			if(_data[j] == ' ') {
+				key.append((char*)&_data[i], j - i);
+				break;
+			} else if(_data[j] < ' ' || _data[j] >= 127) {
+				//invalid characters in key, state is invalid
+				return false;
+			}
+		}
+
+		if(key.empty()) {
+			//invalid
+			return false;
+		}
+
+		i += (uint32_t)key.size() + 1;
+		if(i >= size - 4) {
+			//invalid
+			return false;
+		}
+
+		uint32_t valueSize = 0;
+		for(uint32_t j = i; j < size; j++) {
+			if(_data[j] == '\n') {
+				valueSize = j - i;
+				break;
+			}
+		}
+
+		if(i + valueSize > size) {
+			//invalid
+			return false;
+		}
+
+		_values.emplace(key, SerializeValue(&_data[i], valueSize));
+
+		i += valueSize + 1;
+	}
+}
+
 void Serializer::SaveTo(ostream& file, int compressionLevel)
 {
-	bool isCompressed = compressionLevel > 0;
-	file.put((char)isCompressed);
-
-	if(isCompressed) {
-		unsigned long compressedSize = compressBound((unsigned long)_data.size());
-		uint8_t* compressedData = new uint8_t[compressedSize];
-		compress2(compressedData, &compressedSize, (unsigned char*)_data.data(), (unsigned long)_data.size(), compressionLevel);
-
-		uint32_t size = (uint32_t)compressedSize;
-		uint32_t originalSize = (uint32_t)_data.size();
-		file.write((char*)&originalSize, sizeof(uint32_t));
-		file.write((char*)&size, sizeof(uint32_t));
-		file.write((char*)compressedData, compressedSize);
-		delete[] compressedData;
-	} else {
+	if(_useTextFormat) {
 		file.write((char*)_data.data(), _data.size());
+	} else {
+		bool isCompressed = compressionLevel > 0;
+		file.put((char)isCompressed);
+
+		if(isCompressed) {
+			unsigned long compressedSize = compressBound((unsigned long)_data.size());
+			uint8_t* compressedData = new uint8_t[compressedSize];
+			compress2(compressedData, &compressedSize, (unsigned char*)_data.data(), (unsigned long)_data.size(), compressionLevel);
+
+			uint32_t size = (uint32_t)compressedSize;
+			uint32_t originalSize = (uint32_t)_data.size();
+			file.write((char*)&originalSize, sizeof(uint32_t));
+			file.write((char*)&size, sizeof(uint32_t));
+			file.write((char*)compressedData, compressedSize);
+			delete[] compressedData;
+		} else {
+			file.write((char*)_data.data(), _data.size());
+		}
 	}
 }
 
@@ -132,4 +196,3 @@ void Serializer::PopNamePrefix()
 {
 	_prefixes.pop_back();
 }
-

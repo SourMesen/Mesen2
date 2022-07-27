@@ -537,11 +537,8 @@ namespace Mesen.ViewModels
 					new MainMenuAction() {
 						ActionType = ActionType.Stop,
 						IsEnabled = () => IsGameRunning && (RecordApi.MovieRecording() || RecordApi.MoviePlaying()),
-						OnClick = async () => {
-							string? filename = await FileDialogHelper.OpenFile(ConfigManager.MovieFolder, wnd, FileDialogHelper.MesenMovieExt);
-							if(filename != null) {
-								RecordApi.MovieStop();
-							}
+						OnClick = () => {
+							RecordApi.MovieStop();
 						}
 					}
 				}

@@ -45,6 +45,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "Lag", u8"Lag" },
 	{ "Mapper", u8"Mapper: %1, SubMapper: %2" },
 	{ "MovieEnded", u8"Movie ended." },
+	{ "MovieStopped", u8"Movie stopped." },
 	{ "MovieInvalid", u8"Invalid movie file." },
 	{ "MovieMissingRom", u8"Missing ROM required (%1) to play movie." },
 	{ "MovieNewerVersion", u8"Cannot load movies created by a more recent version of Mesen. Please download the latest version." },

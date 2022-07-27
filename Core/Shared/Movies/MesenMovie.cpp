@@ -15,6 +15,8 @@
 #include "Utilities/StringUtilities.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/VirtualFile.h"
+#include "Utilities/magic_enum.hpp"
+#include "Utilities/Serializer.h"
 
 MesenMovie::MesenMovie(Emulator* emu, bool forTest)
 {
@@ -30,19 +32,30 @@ MesenMovie::~MesenMovie()
 void MesenMovie::Stop()
 {
 	if(_playing) {
+		bool isEndOfMovie = _lastPollCounter >= _inputData.size();
+
 		if(!_forTest) {
-			MessageManager::DisplayMessage("Movies", "MovieEnded");
+			MessageManager::DisplayMessage("Movies", isEndOfMovie ? "MovieEnded" : "MovieStopped");
 		}
 
-		if(_emu->GetSettings()->GetPreferences().PauseOnMovieEnd) {
-			_emu->Pause();
-		}
+		if(!_emu->IsEmulationThread()) {
+			EmuSettings* settings = _emu->GetSettings();
+			if(isEndOfMovie && settings->GetPreferences().PauseOnMovieEnd) {
+				_emu->Pause();
+			}
+			_emu->GetCheatManager()->SetCheats(_originalCheats);
 
-		_emu->GetCheatManager()->SetCheats(_originalCheats);
+			Serializer backup(0, false, false);
+			backup.LoadFrom(_emuSettingsBackup);
+			backup.Stream(*settings, "", -1);
+		}
 
 		_playing = false;
 	}
-	_emu->GetControlManager()->UnregisterInputProvider(this);
+
+	if(_emu->GetControlManager()) {
+		_emu->GetControlManager()->UnregisterInputProvider(this);
+	}
 }
 
 bool MesenMovie::SetInput(BaseControlDevice *device)
@@ -59,6 +72,7 @@ bool MesenMovie::SetInput(BaseControlDevice *device)
 			_deviceIndex = 0;
 		}
 	} else {
+		//End of input data reached (movie end)
 		_emu->GetMovieManager()->Stop();
 	}
 	return true;
@@ -114,40 +128,33 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	_deviceIndex = 0;
 
-	ParseSettings(settingsData);
+	auto emuLock = _emu->AcquireLock();
 	
-	_emu->Lock();
-		
-	_emu->GetBatteryManager()->SetBatteryProvider(shared_from_this());
-	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
-	ApplySettings();
+	ParseSettings(settingsData);
 
-	//TODO
-	//Disable auto-configure input option (otherwise the movie file's input types are ignored)
-	//bool autoConfigureInput = _console->GetSettings()->CheckFlag(EmulationFlags::AutoConfigureInput);
-	//_console->GetSettings()->ClearFlags(EmulationFlags::AutoConfigureInput);
-
-	BaseControlManager *controlManager = _emu->GetControlManager();
-	if(controlManager) {
-		//ControlManager can be empty if no game is loaded
-		controlManager->SetPollCounter(0);
+	if(LoadInt(_settings, MovieKeys::MovieFormatVersion, 0) < 2) {
+		MessageManager::DisplayMessage("Movies", "MovieIncompatibleVersion");
+		return false;
 	}
 
-	//bool gameLoaded = LoadGame();
-	//TODO
-	//_console->GetSettings()->SetFlagState(EmulationFlags::AutoConfigureInput, autoConfigureInput);
-
-	/*if(!gameLoaded) {
-		_console->Unlock();
+	if(!ApplySettings(settingsData)) {
 		return false;
-	}*/
+	}
+	
+	_emu->GetBatteryManager()->SetBatteryProvider(shared_from_this());
+	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
+
+	_emu->PowerCycle();
+
+	//Re-apply settings - power cycling can alter some (e.g auto-configure input types, etc.)
+	ApplySettings(settingsData);
 
 	_originalCheats = _emu->GetCheatManager()->GetCheats();
 
-	controlManager->UpdateControlDevices();
-	if(!_forTest) {
-		_emu->PowerCycle();
-	} else {
+	BaseControlManager *controlManager = _emu->GetControlManager();
+
+	if(_forTest) {
+		//TODO to validate test behavior
 		controlManager->RegisterInputProvider(this);
 	}
 
@@ -156,16 +163,13 @@ bool MesenMovie::Play(VirtualFile &file)
 	stringstream saveStateData;
 	if(_reader->GetStream("SaveState.mss", saveStateData)) {
 		if(!_emu->GetSaveStateManager()->LoadState(saveStateData, true)) {
-			_emu->Resume();
 			return false;
-		} else {
-			_emu->GetControlManager()->SetPollCounter(0);
 		}
 	}
 
+	controlManager->UpdateControlDevices();
+	controlManager->SetPollCounter(0);
 	_playing = true;
-
-	_emu->Unlock();
 
 	return true;
 }
@@ -203,66 +207,30 @@ void MesenMovie::ParseSettings(stringstream &data)
 	}
 }
 
-bool MesenMovie::LoadGame()
-{
-	/*string mesenVersion = LoadString(_settings, MovieKeys::MesenVersion);
-	string gameFile = LoadString(_settings, MovieKeys::GameFile);
-	string sha1Hash = LoadString(_settings, MovieKeys::Sha1);
-	//string patchFile = LoadString(_settings, MovieKeys::PatchFile);
-	//string patchFileSha1 = LoadString(_settings, MovieKeys::PatchFileSha1);
-	//string patchedRomSha1 = LoadString(_settings, MovieKeys::PatchedRomSha1);
-
-	if(_console->GetSettings()->CheckFlag(EmulationFlags::AllowMismatchingSaveState) && _console->GetRomInfo().RomName == gameFile) {
-		//Loaded game has the right name, and we don't want to validate the hash values
-		_console->PowerCycle();
-		return true;
-	}
-
-	HashInfo hashInfo;
-	hashInfo.Sha1 = sha1Hash;
-
-	VirtualFile romFile = _console->FindMatchingRom(gameFile, hashInfo);
-	bool gameLoaded = false;
-	if(romFile.IsValid()) {
-		VirtualFile patchFile(_movieFile.GetFilePath(), "PatchData.dat");
-		if(patchFile.IsValid()) {
-			gameLoaded = _console->Initialize(romFile, patchFile);
-		} else {
-			gameLoaded = _console->Initialize(romFile);
-		}
-	}
-
-	return gameLoaded;*/
-	return true;
-}
-
-void MesenMovie::ApplySettings()
+bool MesenMovie::ApplySettings(istream& settingsData)
 {
 	EmuSettings* settings = _emu->GetSettings();
-	EmulationConfig emuConfig = settings->GetEmulationConfig();
+	
+	settingsData.clear();
+	settingsData.seekg(0, std::ios::beg);
+	Serializer s(0, false, true);
+	s.LoadFrom(settingsData);
 
-	//TODO
-	/*InputConfig inputConfig = settings->GetInputConfig();
+	ConsoleType consoleType = {};
+	s.Stream(consoleType, "emu.consoleType", -1);
 
-	inputConfig.Controllers[0].Type = FromString(LoadString(_settings, MovieKeys::Controller1), ControllerTypeNames, ControllerType::None);
-	inputConfig.Controllers[1].Type = FromString(LoadString(_settings, MovieKeys::Controller2), ControllerTypeNames, ControllerType::None);
-	inputConfig.Controllers[2].Type = FromString(LoadString(_settings, MovieKeys::Controller3), ControllerTypeNames, ControllerType::None);
-	inputConfig.Controllers[3].Type = FromString(LoadString(_settings, MovieKeys::Controller4), ControllerTypeNames, ControllerType::None);
-	inputConfig.Controllers[4].Type = FromString(LoadString(_settings, MovieKeys::Controller5), ControllerTypeNames, ControllerType::None);
-	emuConfig.Region = FromString(LoadString(_settings, MovieKeys::Region), ConsoleRegionNames, ConsoleRegion::Ntsc);
-	*/
-
-	//TODO
-	/*
-	if(!_forTest) {
-		emuConfig.RamPowerOnState = FromString(LoadString(_settings, MovieKeys::RamPowerOnState), RamStateNames, RamState::AllOnes);
+	if(consoleType != _emu->GetConsoleType()) {
+		return false;
 	}
-	emuConfig.PpuExtraScanlinesAfterNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesAfterNmi);
-	emuConfig.PpuExtraScanlinesBeforeNmi = LoadInt(_settings, MovieKeys::ExtraScanlinesBeforeNmi);
-	emuConfig.GsuClockSpeed = LoadInt(_settings, MovieKeys::GsuClockSpeed, 100);*/
 
-	//settings->SetEmulationConfig(emuConfig);
-	//settings->SetInputConfig(inputConfig);
+	Serializer backup(0, true, false);
+	backup.Stream(*settings, "", -1);
+	backup.SaveTo(_emuSettingsBackup);
+
+	//Load settings
+	s.Stream(*settings, "", -1);
+
+	return true;
 }
 
 uint32_t MesenMovie::LoadInt(std::unordered_map<string, string> &settings, string name, uint32_t defaultValue)
@@ -324,12 +292,14 @@ bool MesenMovie::LoadCheat(string cheatData, CheatCode &code)
 	vector<string> data = StringUtilities::Split(cheatData, ' ');
 
 	if(data.size() == 2) {
-		//TODO
-		//code.Address = HexUtilities::FromHex(data[0]);
-		//code.Value = HexUtilities::FromHex(data[1]);
-		return true;
-	} else {
-		MessageManager::Log("[Movie] Invalid cheat definition: " + cheatData);
+		auto cheatType = magic_enum::enum_cast<CheatType>(data[0]);
+		if(cheatType.has_value() && data[1].size() <= 15) {
+			code.Type = cheatType.value();
+			memcpy(code.Code, data[1].c_str(), data[1].size() + 1);
+			return true;
+		}
 	}
+	
+	MessageManager::Log("[Movie] Invalid cheat definition: " + cheatData);
 	return false;
 }
