@@ -42,12 +42,14 @@ namespace Mesen.Config
 
 		public static void CreateConfig(bool portable)
 		{
+			string homeFolder;
 			if(portable) {
-				_homeFolder = DefaultPortableFolder;
+				homeFolder = DefaultPortableFolder;
 			} else {
-				_homeFolder = DefaultDocumentsFolder;
+				homeFolder = DefaultDocumentsFolder;
 			}
-
+			Program.ExtractNativeDependencies(homeFolder);
+			_homeFolder = homeFolder;
 			LoadConfig();
 		}
 		
