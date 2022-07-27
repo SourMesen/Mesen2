@@ -277,7 +277,7 @@
 			<Control ID="chkShowColorIndexes">Show color indexes</Control>
 			<Control ID="chkUseCustomVsPalette">Use this palette for VS System games</Control>
 
-			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flashing)</Control>
+			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flickering)</Control>
 			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
