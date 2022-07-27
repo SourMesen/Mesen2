@@ -98,6 +98,18 @@ uint8_t InternalRegisters::Peek(uint16_t addr)
 	switch(addr) {
 		case 0x4210: return (_nmiFlag ? 0x80 : 0) | 0x02;
 		case 0x4211: return (_irqFlag ? 0x80 : 0);
+
+		case 0x4214:
+		case 0x4215:
+		case 0x4216:
+		case 0x4217:
+			//Not completely accurate because the ALU results are only 
+			//updated when the CPU actually reads the registers
+			return _aluMulDiv.Peek(addr);
+
+		case 0x4218: return (uint8_t)_state.ControllerData[0];
+		case 0x4219: return (uint8_t)(_state.ControllerData[0] >> 8);
+
 		default: return Read(addr);
 	}
 }

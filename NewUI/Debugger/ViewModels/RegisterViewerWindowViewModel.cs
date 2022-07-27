@@ -33,6 +33,9 @@ namespace Mesen.Debugger.ViewModels
 		}
 
 		private RomInfo _romInfo = new RomInfo();
+		private byte _snesReg4210;
+		private byte _snesReg4211;
+		private byte _snesReg4212;
 
 		public RegisterViewerWindowViewModel()
 		{
@@ -87,6 +90,9 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			if(_romInfo.ConsoleType == ConsoleType.Snes) {
+				_snesReg4210 = DebugApi.GetMemoryValue(MemoryType.SnesMemory, 0x4210);
+				_snesReg4211 = DebugApi.GetMemoryValue(MemoryType.SnesMemory, 0x4211);
+				_snesReg4212 = DebugApi.GetMemoryValue(MemoryType.SnesMemory, 0x4212);
 				_state = DebugApi.GetConsoleState<SnesState>(ConsoleType.Snes);
 			} else if(_romInfo.ConsoleType == ConsoleType.Nes) {
 				_state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes);
@@ -854,15 +860,12 @@ namespace Mesen.Debugger.ViewModels
 		{
 			List<RegEntry> entries = new List<RegEntry>();
 
-			//TODO
-			/*for(int i = 0; i < 8; i++) {
-				entries.Add(new RegEntry("$420C." + i.ToString(), "HDMA Channel " + i.ToString() + " Enabled", _state.DmaChannels[i].DmaActive));
-			}*/
-
 			for(int i = 0; i < 8; i++) {
-				DmaChannelConfig ch = state.DmaChannels[i];
+				DmaChannelConfig ch = state.Dma.Channels[i];
 				entries.Add(new RegEntry("DMA Channel " + i.ToString(), "", null));
 				entries.Add(new RegEntry("$420B." + i.ToString(), "Channel Enabled", ch.DmaActive));
+				entries.Add(new RegEntry("$420C." + i.ToString(), "HDMA Enabled", (state.Dma.HdmaChannels & (1 << i)) != 0));
+
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.0-2", "Transfer Mode", ch.TransferMode, Format.D));
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.3", "Fixed", ch.FixedTransfer));
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.4", "Decrement", ch.Decrement));
@@ -872,6 +875,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "1", "B Bus Address", ch.DestAddress, Format.X8));
 				entries.Add(new RegEntry("$43" + i.ToString() + "2/3/4", "A Bus Address", ((ch.SrcBank << 16) | ch.SrcAddress), Format.X24));
 				entries.Add(new RegEntry("$43" + i.ToString() + "5/6", "Size", ch.TransferSize, Format.X16));
+
 				entries.Add(new RegEntry("$43" + i.ToString() + "7", "HDMA Bank", ch.HdmaBank, Format.X8));
 				entries.Add(new RegEntry("$43" + i.ToString() + "8/9", "HDMA Address", ch.HdmaTableAddress, Format.X16));
 				entries.Add(new RegEntry("$43" + i.ToString() + "A", "HDMA Line Counter", ch.HdmaLineCounterAndRepeat, Format.X8));
@@ -888,12 +892,13 @@ namespace Mesen.Debugger.ViewModels
 		{
 			InternalRegisterState regs = state.InternalRegs;
 			AluState alu = state.Alu;
+
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("$4200 - $4201", "IRQ/NMI/Autopoll Enabled", null),
-				new RegEntry("$4200.7", "NMI Enabled", regs.EnableNmi),
-				new RegEntry("$4200.5", "V IRQ Enabled", regs.EnableVerticalIrq),
-				new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableHorizontalIrq),
 				new RegEntry("$4200.0", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
+				new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableHorizontalIrq),
+				new RegEntry("$4200.5", "V IRQ Enabled", regs.EnableVerticalIrq),
+				new RegEntry("$4200.7", "NMI Enabled", regs.EnableNmi),
 
 				new RegEntry("$4201", "IO Port", regs.IoPortOutput, Format.X8),
 
@@ -907,16 +912,15 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$4207/8", "H Timer", regs.HorizontalTimer, Format.X16),
 				new RegEntry("$4209/A", "V Timer", regs.VerticalTimer, Format.X16),
 
-				new RegEntry("$4207 - $420A", "Misc. Flags", null),
+				new RegEntry("$420D - $4212", "Misc. Flags", null),
 
-				new RegEntry("$420D", "FastROM Enabled", regs.EnableFastRom),
-				//TODO
-				/*new RegEntry("$4210", "NMI Flag", (_reg4210 & 0x80) != 0),
-				new RegEntry("$4211", "IRQ Flag", (_reg4211 & 0x80) != 0),
+				new RegEntry("$420D.0", "FastROM Enabled", regs.EnableFastRom),
+				new RegEntry("$4210.7", "NMI Flag", (_snesReg4210 & 0x80) != 0),
+				new RegEntry("$4211.7", "IRQ Flag", (_snesReg4211 & 0x80) != 0),
 
-				new RegEntry("$4212.x", "V-Blank Flag", (_reg4212 & 0x80) != 0),
-				new RegEntry("$4212.x", "H-Blank Flag", (_reg4212 & 0x40) != 0),
-				new RegEntry("$4212.x", "Auto Joypad Read", (_reg4212 & 0x01) != 0),*/
+				new RegEntry("$4212.0", "Auto Joypad Read Active", (_snesReg4212 & 0x01) != 0),
+				new RegEntry("$4212.6", "H-Blank Flag", (_snesReg4212 & 0x40) != 0),
+				new RegEntry("$4212.7", "V-Blank Flag", (_snesReg4212 & 0x80) != 0),
 
 				new RegEntry("$4214 - $4217", "Mult/Div Registers (Result)", null),
 				new RegEntry("$4214/5", "Quotient", alu.DivResult, Format.X16),

@@ -933,6 +933,14 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool NMIFlag;
 	};
 
+	public struct SnesDmaControllerState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+		public DmaChannelConfig[] Channels;
+
+		public byte HdmaChannels;
+	}
+
 	public struct SnesState : BaseState
 	{
 		public UInt64 MasterClock;
@@ -945,9 +953,7 @@ namespace Mesen.Interop
 		public GsuState Gsu;
 		public Cx4State Cx4;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-		public DmaChannelConfig[] DmaChannels;
-
+		public SnesDmaControllerState Dma;
 		public InternalRegisterState InternalRegs;
 		public AluState Alu;
 	}

@@ -467,9 +467,7 @@ void SnesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	state.Spc = _spc->GetState();
 	state.Dsp = _spc->GetDspState();
 
-	for(int i = 0; i < 8; i++) {
-		state.DmaChannels[i] = _dmaController->GetChannelConfig(i);
-	}
+	state.Dma = _dmaController->GetState();
 	state.InternalRegs = _internalRegisters->GetState();
 	state.Alu = _internalRegisters->GetAluState();
 

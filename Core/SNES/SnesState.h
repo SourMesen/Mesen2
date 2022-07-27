@@ -23,7 +23,7 @@ struct SnesState
 	GsuState Gsu;
 	Cx4State Cx4;
 
-	DmaChannelConfig DmaChannels[8];
+	SnesDmaControllerState Dma;
 	InternalRegisterState InternalRegs;
 	AluState Alu;
 };

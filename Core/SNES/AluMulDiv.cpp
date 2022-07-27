@@ -59,7 +59,11 @@ void AluMulDiv::Run(bool isRead)
 uint8_t AluMulDiv::Read(uint16_t addr)
 {
 	Run(true);
+	return Peek(addr);
+}
 
+uint8_t AluMulDiv::Peek(uint16_t addr)
+{
 	switch(addr) {
 		case 0x4214: return (uint8_t)_state.DivResult;
 		case 0x4215: return (uint8_t)(_state.DivResult >> 8);

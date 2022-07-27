@@ -26,3 +26,9 @@ struct DmaChannelConfig
 
 	uint8_t UnusedRegister;
 };
+
+struct SnesDmaControllerState
+{
+	DmaChannelConfig Channel[8];
+	uint8_t HdmaChannels;
+};
