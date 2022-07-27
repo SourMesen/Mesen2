@@ -41,10 +41,12 @@ namespace Mesen.Config
 		{
 			UInt16[]? buttonMappings = GetCustomButtons(type);
 			if(buttonMappings == null) {
-				if(mappingIndex == 0) {
-					SetDefaultKeys(type, null);
-				} else {
-					ClearKeys(type);
+				if(GetDefaultCustomKeys(type) != null) {
+					if(mappingIndex == 0) {
+						SetDefaultKeys(type, null);
+					} else {
+						ClearKeys(type);
+					}
 				}
 
 				buttonMappings = GetCustomButtons(type);
