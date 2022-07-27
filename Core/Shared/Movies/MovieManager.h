@@ -12,6 +12,8 @@ class Emulator;
 class IMovie : public IInputProvider
 {
 public:
+	virtual ~IMovie() = default;
+
 	virtual bool Play(VirtualFile& file) = 0;
 	virtual void Stop() = 0;
 	virtual bool IsPlaying() = 0;
@@ -20,7 +22,7 @@ public:
 class MovieManager
 {
 private:
-	Emulator* _emu;
+	Emulator* _emu = nullptr;
 	safe_ptr<IMovie> _player;
 	safe_ptr<MovieRecorder> _recorder;
 

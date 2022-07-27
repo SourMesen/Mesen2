@@ -6,7 +6,7 @@
 #include "Utilities/Video/AviWriter.h"
 #include "Utilities/Video/IVideoRecorder.h"
 
-class AviRecorder : public IVideoRecorder
+class AviRecorder final : public IVideoRecorder
 {
 private:
 	std::thread _aviWriterThread;

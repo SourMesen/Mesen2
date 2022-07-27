@@ -10,7 +10,7 @@ class ZipReader;
 class Emulator;
 struct CheatCode;
 
-class MesenMovie : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
+class MesenMovie final : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
 private:
 	Emulator* _emu = nullptr;

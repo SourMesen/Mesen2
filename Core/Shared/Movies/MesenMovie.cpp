@@ -26,7 +26,6 @@ MesenMovie::MesenMovie(Emulator* emu, bool forTest)
 
 MesenMovie::~MesenMovie()
 {
-	Stop();
 }
 
 void MesenMovie::Stop()

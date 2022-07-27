@@ -4,6 +4,8 @@
 class IVideoRecorder
 {
 public:
+	virtual ~IVideoRecorder() = default;
+
 	virtual bool StartRecording(string filename, uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps) = 0;
 	virtual void StopRecording() = 0;
 

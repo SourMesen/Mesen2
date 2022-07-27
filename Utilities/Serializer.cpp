@@ -153,6 +153,8 @@ bool Serializer::LoadFromTextFormat(istream& file)
 
 		i += valueSize + 1;
 	}
+
+	return true;
 }
 
 void Serializer::SaveTo(ostream& file, int compressionLevel)

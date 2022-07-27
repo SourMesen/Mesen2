@@ -4,7 +4,7 @@
 
 struct GifWriter;
 
-class GifRecorder : public IVideoRecorder
+class GifRecorder final : public IVideoRecorder
 {
 private:
 	std::unique_ptr<GifWriter> _gif;
