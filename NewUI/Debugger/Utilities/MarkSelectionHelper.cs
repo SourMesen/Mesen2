@@ -14,19 +14,19 @@ namespace Mesen.Debugger.Utilities
 				SubActions = new() {
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsCode,
-						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _),
+						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _, out _),
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsCode),
 						OnClick = () => MarkSelectionAs(getMemType(), getSelStart(), getSelEnd(), refreshView, CdlFlags.Code)
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsData,
-						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _),
+						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _, out _),
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsData),
 						OnClick = () => MarkSelectionAs(getMemType(), getSelStart(), getSelEnd(), refreshView, CdlFlags.Data)
 					},
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsUnidentified,
-						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _),
+						IsEnabled = () => GetMarkStartEnd(getMemType(), getSelStart(), getSelEnd(), out _, out _, out _),
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MarkAsUnidentified),
 						OnClick = () => MarkSelectionAs(getMemType(), getSelStart(), getSelEnd(), refreshView, CdlFlags.None)
 					}
@@ -43,15 +43,17 @@ namespace Mesen.Debugger.Utilities
 			return address;
 		}
 
-		private static bool GetMarkStartEnd(MemoryType memType, int selStart, int selEnd, out int start, out int end)
+		private static bool GetMarkStartEnd(MemoryType memType, int selStart, int selEnd, out int start, out int end, out MemoryType startMemType)
 		{
 			start = selStart;
 			end = selEnd;
+			startMemType = memType;
 
 			if(memType.IsRelativeMemory()) {
 				AddressInfo startAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = start, Type = memType });
 				AddressInfo endAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = end, Type = memType });
 				if(startAddr.Type == endAddr.Type && startAddr.Type.SupportsCdl() && !startAddr.Type.IsPpuMemory() && endAddr.Address - startAddr.Address == end - start) {
+					startMemType = startAddr.Type;
 					start = startAddr.Address;
 					end = endAddr.Address;
 				} else {
@@ -66,8 +68,8 @@ namespace Mesen.Debugger.Utilities
 
 		private static void MarkSelectionAs(MemoryType memType, int selStart, int selEnd, Action refreshView, CdlFlags type)
 		{
-			if(GetMarkStartEnd(memType, selStart, selEnd, out int start, out int end)) {
-				DebugApi.MarkBytesAs(memType, (UInt32)start, (UInt32)end, type);
+			if(GetMarkStartEnd(memType, selStart, selEnd, out int start, out int end, out MemoryType startMemType)) {
+				DebugApi.MarkBytesAs(startMemType, (UInt32)start, (UInt32)end, type);
 				refreshView();
 			}
 		}
