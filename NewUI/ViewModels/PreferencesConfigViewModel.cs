@@ -58,11 +58,12 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.ToggleAlwaysOnTop,
 				EmulatorShortcut.ToggleCheats,
 
-				EmulatorShortcut.ToggleBgLayer0,
 				EmulatorShortcut.ToggleBgLayer1,
 				EmulatorShortcut.ToggleBgLayer2,
 				EmulatorShortcut.ToggleBgLayer3,
-				EmulatorShortcut.ToggleSprites,
+				EmulatorShortcut.ToggleBgLayer4,
+				EmulatorShortcut.ToggleSprites1,
+				EmulatorShortcut.ToggleSprites2,
 				EmulatorShortcut.EnableAllLayers,
 
 				EmulatorShortcut.ToggleAudio,

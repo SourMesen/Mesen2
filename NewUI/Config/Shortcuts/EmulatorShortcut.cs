@@ -72,11 +72,12 @@ namespace Mesen.Config.Shortcuts
 		IncreaseVolume,
 		DecreaseVolume,
 
-		ToggleBgLayer0,
 		ToggleBgLayer1,
 		ToggleBgLayer2,
 		ToggleBgLayer3,
-		ToggleSprites,
+		ToggleBgLayer4,
+		ToggleSprites1,
+		ToggleSprites2,
 		EnableAllLayers,
 
 		SaveStateSlot1,

@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Mesen.Config;
 using Mesen.Config.Shortcuts;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.ViewModels;
 using Mesen.Windows;
 using System;
@@ -71,13 +72,13 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.SetScale5x: _mainWindow.SetScale(5); break;
 				case EmulatorShortcut.SetScale6x: _mainWindow.SetScale(6); break;
 
-				//TODO
-				/*case EmulatorShortcut.ToggleBgLayer0: ToggleBgLayer0(); break;
-				case EmulatorShortcut.ToggleBgLayer1: ToggleBgLayer1(); break;
-				case EmulatorShortcut.ToggleBgLayer2: ToggleBgLayer2(); break;
-				case EmulatorShortcut.ToggleBgLayer3: ToggleBgLayer3(); break;
-				case EmulatorShortcut.ToggleSprites: ToggleSprites(); break;
-				case EmulatorShortcut.EnableAllLayers: EnableAllLayers(); break;*/
+				case EmulatorShortcut.ToggleBgLayer1: ToggleVideoLayer(VideoLayer.Bg1); break;
+				case EmulatorShortcut.ToggleBgLayer2: ToggleVideoLayer(VideoLayer.Bg2); break;
+				case EmulatorShortcut.ToggleBgLayer3: ToggleVideoLayer(VideoLayer.Bg3); break;
+				case EmulatorShortcut.ToggleBgLayer4: ToggleVideoLayer(VideoLayer.Bg4); break;
+				case EmulatorShortcut.ToggleSprites1: ToggleVideoLayer(VideoLayer.Sprite1); break;
+				case EmulatorShortcut.ToggleSprites2: ToggleVideoLayer(VideoLayer.Sprite2); break;
+				case EmulatorShortcut.EnableAllLayers: EnableAllLayers(); break;
 
 				case EmulatorShortcut.ToggleRecordVideo: ToggleRecordVideo(); break;
 				case EmulatorShortcut.ToggleRecordAudio: ToggleRecordAudio(); break;
@@ -229,50 +230,92 @@ namespace Mesen.Utilities
 			}
 		}
 
-		//TODO
-		/*
-		private void ToggleBgLayer0()
+		enum VideoLayer
 		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer0);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer0 ? "BgLayerDisabled" : "BgLayerEnabled", "1"));
+			Bg1,
+			Bg2,
+			Bg3,
+			Bg4,
+			Sprite1,
+			Sprite2,
 		}
 
-		private void ToggleBgLayer1()
+		private (Func<bool>? get, Action<bool>? set) GetFlagSetterGetter(VideoLayer layer)
 		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer1);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer1 ? "BgLayerDisabled" : "BgLayerEnabled", "2"));
+			switch(MainWindowViewModel.Instance.RomInfo.ConsoleType) {
+				case ConsoleType.Snes:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Snes.HideBgLayer1, (val) => ConfigManager.Config.Snes.HideBgLayer1 = val);
+						case VideoLayer.Bg2: return (() => ConfigManager.Config.Snes.HideBgLayer2, (val) => ConfigManager.Config.Snes.HideBgLayer2 = val);
+						case VideoLayer.Bg3: return (() => ConfigManager.Config.Snes.HideBgLayer3, (val) => ConfigManager.Config.Snes.HideBgLayer3 = val);
+						case VideoLayer.Bg4: return (() => ConfigManager.Config.Snes.HideBgLayer4, (val) => ConfigManager.Config.Snes.HideBgLayer4 = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Snes.HideSprites, (val) => ConfigManager.Config.Snes.HideSprites = val);
+					}
+					break;
+
+				case ConsoleType.Nes:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Nes.DisableBackground, (val) => ConfigManager.Config.Nes.DisableBackground = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Nes.DisableSprites, (val) => ConfigManager.Config.Nes.DisableSprites = val);
+					}
+					break;
+
+				case ConsoleType.Gameboy:
+				case ConsoleType.GameboyColor:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Gameboy.DisableBackground, (val) => ConfigManager.Config.Gameboy.DisableBackground = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Gameboy.DisableSprites, (val) => ConfigManager.Config.Gameboy.DisableSprites = val);
+					}
+					break;
+
+				case ConsoleType.PcEngine:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.PcEngine.DisableBackground, (val) => ConfigManager.Config.PcEngine.DisableBackground = val);
+						case VideoLayer.Bg2: return (() => ConfigManager.Config.PcEngine.DisableBackgroundVdc2, (val) => ConfigManager.Config.PcEngine.DisableBackgroundVdc2 = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.PcEngine.DisableSprites, (val) => ConfigManager.Config.PcEngine.DisableSprites = val);
+						case VideoLayer.Sprite2: return (() => ConfigManager.Config.PcEngine.DisableSpritesVdc2, (val) => ConfigManager.Config.PcEngine.DisableSpritesVdc2 = val);
+					}
+					break;
+			}
+
+			return (null, null);
 		}
 
-		private void ToggleBgLayer2()
+		private void ToggleVideoLayer(VideoLayer layer)
 		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer2);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer2 ? "BgLayerDisabled" : "BgLayerEnabled", "3"));
+			(Func<bool>? get, Action<bool>? set) = GetFlagSetterGetter(layer);
+			if(get != null && set != null) {
+				set(!get());
+				EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(get() ? "VideoLayerDisabled" : "VideoLayerEnabled", ResourceHelper.GetEnumText(layer)));
+				ConfigManager.Config.Snes.ApplyConfig();
+				ConfigManager.Config.Nes.ApplyConfig();
+				ConfigManager.Config.Gameboy.ApplyConfig();
+				ConfigManager.Config.PcEngine.ApplyConfig();
+			}
 		}
 
-		private void ToggleBgLayer3()
-		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.HideBgLayer3);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideBgLayer3 ? "BgLayerDisabled" : "BgLayerEnabled", "4"));
-		}
-
-		private void ToggleSprites()
-		{
-			InvertConfigFlag(ref ConfigManager.Config.Video.HideSprites);
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(ConfigManager.Config.Video.HideSprites ? "SpriteLayerDisabled" : "SpriteLayerEnabled"));
-		}
-		
 		private void EnableAllLayers()
 		{
-			ConfigManager.Config.Video.HideBgLayer0 = false;
-			ConfigManager.Config.Video.HideBgLayer1 = false;
-			ConfigManager.Config.Video.HideBgLayer2 = false;
-			ConfigManager.Config.Video.HideBgLayer3 = false;
-			ConfigManager.Config.Video.HideSprites = false;
-			ConfigManager.Config.ApplyConfig();
-			ConfigManager.ApplyChanges();
+			ConfigManager.Config.Snes.HideBgLayer1 = false;
+			ConfigManager.Config.Snes.HideBgLayer2 = false;
+			ConfigManager.Config.Snes.HideBgLayer3 = false;
+			ConfigManager.Config.Snes.HideBgLayer4 = false;
+			ConfigManager.Config.Snes.HideSprites = false;
+			ConfigManager.Config.Nes.DisableBackground = false;
+			ConfigManager.Config.Nes.DisableSprites = false;
+			ConfigManager.Config.Gameboy.DisableBackground = false;
+			ConfigManager.Config.Gameboy.DisableSprites = false;
+			ConfigManager.Config.PcEngine.DisableBackground = false;
+			ConfigManager.Config.PcEngine.DisableBackgroundVdc2 = false;
+			ConfigManager.Config.PcEngine.DisableSprites = false;
+			ConfigManager.Config.PcEngine.DisableSpritesVdc2 = false;
+			ConfigManager.Config.Snes.ApplyConfig();
+			ConfigManager.Config.Nes.ApplyConfig();
+			ConfigManager.Config.Gameboy.ApplyConfig();
+			ConfigManager.Config.PcEngine.ApplyConfig();
 
 			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
-		}*/
+		}
 
 		private void SetEmulationSpeed(uint emulationSpeed)
 		{

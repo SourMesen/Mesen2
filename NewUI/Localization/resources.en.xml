@@ -350,6 +350,8 @@
 			<Control ID="lblLcdSettings">LCD Settings</Control>
 			<Control ID="chkGbBlendFrames">Enable LCD frame blending</Control>
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
+			<Control ID="chkDisableBackground">Disable background</Control>
+			<Control ID="chkDisableSprites">Disable sprites</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
@@ -1329,11 +1331,9 @@
 		<Message ID="LoadFromFile">Load from file...</Message>
 		<Message ID="SaveToFile">Save to file...</Message>
 
-		<Message ID="BgLayerDisabled">BG{0} layer disabled.</Message>
-		<Message ID="BgLayerEnabled">BG{0} layer enabled.</Message>
-		<Message ID="SpriteLayerDisabled">Sprite layer disabled.</Message>
-		<Message ID="SpriteLayerEnabled">Sprite layer enabled.</Message>
-		<Message ID="AllLayersEnabled">All layers enabled.</Message>
+		<Message ID="VideoLayerDisabled">{0} disabled.</Message>
+		<Message ID="VideoLayerEnabled">{0} enabled.</Message>
+		<Message ID="AllLayersEnabled">All BG/sprite layers enabled.</Message>
 		
 		<Message ID="MovieSegment">Segment #{0}</Message>
 		<Message ID="MovieExportEntireSegment">Export entire segment</Message>
@@ -1487,15 +1487,14 @@
 			<Value ID="ToggleLagCounter">Toggle Lag Counter</Value>
 			<Value ID="ToggleOsd">Toggle OSD (On-Screen Display)</Value>
 			<Value ID="ToggleAlwaysOnTop">Toggle Display on Top</Value>
-			<Value ID="ToggleBackground">Toggle Background Layer</Value>
-			<Value ID="ToggleSprites">Toggle Sprite Layer</Value>
 			<Value ID="ToggleKeyboardMode">Toggle Keyboard Mode</Value>
 
-			<Value ID="ToggleBgLayer0">Toggle BG Layer 0</Value>
 			<Value ID="ToggleBgLayer1">Toggle BG Layer 1</Value>
 			<Value ID="ToggleBgLayer2">Toggle BG Layer 2</Value>
 			<Value ID="ToggleBgLayer3">Toggle BG Layer 3</Value>
-			<Value ID="ToggleSprites">Toggle Sprites</Value>
+			<Value ID="ToggleBgLayer4">Toggle BG Layer 4</Value>
+			<Value ID="ToggleSprites1">Toggle Sprite Layer 1</Value>
+			<Value ID="ToggleSprites2">Toggle Sprite Layer 2</Value>
 			<Value ID="EnableAllLayers">Enable All Layers</Value>
 
 			<Value ID="ToggleRecordVideo">Start/Stop Recording Video</Value>
@@ -2069,7 +2068,15 @@
 			<Value ID="PceRaw">Raw (AAAAAA:VV)</Value>
 			<Value ID="PceAddress">Physical Address (AAAAAA:VV)</Value>
 		</Enum>
-		
+		<Enum ID="VideoLayer">
+			<Value ID="Bg1">BG layer 1</Value>
+			<Value ID="Bg2">BG layer 2</Value>
+			<Value ID="Bg3">BG layer 3</Value>
+			<Value ID="Bg4">BG layer 4</Value>
+			<Value ID="Sprite1">Sprite layer 1</Value>
+			<Value ID="Sprite2">Sprite layer 2</Value>
+		</Enum>
+
 		<Enum ID="MemorySizes">
 			<Value ID="None">None</Value>
 			<Value ID="_128Bytes">128 bytes</Value>

@@ -18,6 +18,9 @@ namespace Mesen.Config
 
 		[Reactive] public bool BlendFrames { get; set; } = true;
 		[Reactive] public bool GbcAdjustColors { get; set; } = true;
+		
+		[Reactive] public bool DisableBackground { get; set; } = false;
+		[Reactive] public bool DisableSprites { get; set; } = false;
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 
@@ -39,6 +42,8 @@ namespace Mesen.Config
 
 				BlendFrames = BlendFrames,
 				GbcAdjustColors = GbcAdjustColors,
+				DisableBackground = DisableBackground,
+				DisableSprites = DisableSprites,
 
 				RamPowerOnState = RamPowerOnState,
 
@@ -104,6 +109,9 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.I1)] public bool BlendFrames;
 		[MarshalAs(UnmanagedType.I1)] public bool GbcAdjustColors;
+		
+		[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableSprites;
 
 		public RamState RamPowerOnState;
 

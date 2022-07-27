@@ -356,11 +356,12 @@ void GbPpu::RunDrawCycle()
 
 	if(_fetchSprite == -1 && _bgFifo.Size > 0) {
 		if(_drawnPixels >= 0) {
+			GameboyConfig& cfg = _emu->GetSettings()->GetGameboyConfig();
 			uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
 
 			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
 			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
-			if(sprite.Color != 0 && (entry.Color == 0 || (!(sprite.Attributes & 0x80) && !(entry.Attributes & 0x80)) || (_state.CgbEnabled && !_state.BgEnabled))) {
+			if(!cfg.DisableSprites && sprite.Color != 0 && (entry.Color == 0 || (!(sprite.Attributes & 0x80) && !(entry.Attributes & 0x80)) || (_state.CgbEnabled && !_state.BgEnabled))) {
 				//Use sprite pixel if:
 				//  -BG color is 0, OR
 				//  -Sprite is background priority AND BG does not have its priority bit set, OR
@@ -375,14 +376,18 @@ void GbPpu::RunDrawCycle()
 					_currentBuffer[outOffset] = _state.CgbObjPalettes[((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex];
 				}
 			} else {
-				if(_state.CgbEnabled) {
-					_currentBuffer[outOffset] = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
-				} else {
-					uint8_t colorIndex = (_state.BgPalette >> (entry.Color * 2)) & 0x03;
-					if(_gameboy->IsSgb()) {
-						_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
+				if(!cfg.DisableBackground) {
+					if(_state.CgbEnabled) {
+						_currentBuffer[outOffset] = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
+					} else {
+						uint8_t colorIndex = (_state.BgPalette >> (entry.Color * 2)) & 0x03;
+						if(_gameboy->IsSgb()) {
+							_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
+						}
+						_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
 					}
-					_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
+				} else {
+					_currentBuffer[outOffset] = _state.CgbBgPalettes[0];
 				}
 			}
 		}
@@ -522,9 +527,9 @@ void GbPpu::ClockTileFetcher()
 			//Fetch tile data (high byte)
 			_bgFetcher.HighByte = _vram[_bgFetcher.Addr + 1];
 			
-			//Fallthrough
+			[[fallthrough]];
 		}
-
+		
 		case 6:
 		case 7:
 			if(_bgFifo.Size == 0) {

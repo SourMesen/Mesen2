@@ -361,6 +361,9 @@ struct GameboyConfig
 
 	bool BlendFrames = true;
 	bool GbcAdjustColors = true;
+	
+	bool DisableBackground = false;
+	bool DisableSprites = false;
 
 	RamState RamPowerOnState = RamState::Random;
 	
@@ -710,11 +713,12 @@ enum class EmulatorShortcut
 	IncreaseVolume,
 	DecreaseVolume,
 
-	ToggleBgLayer0,
 	ToggleBgLayer1,
 	ToggleBgLayer2,
 	ToggleBgLayer3,
-	ToggleSprites,
+	ToggleBgLayer4,
+	ToggleSprites1,
+	ToggleSprites2,
 	EnableAllLayers,
 
 	SaveStateSlot1,

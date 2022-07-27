@@ -124,6 +124,8 @@
 				<c:OptionSection Header="{l:Translate lblLcdSettings}">
 					<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
 					<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
 				</c:OptionSection>
 			</StackPanel>
 		</TabItem>
