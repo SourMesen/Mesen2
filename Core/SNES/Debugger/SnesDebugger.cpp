@@ -77,7 +77,7 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	}
 
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
-	_callstackManager.reset(new CallstackManager(debugger));
+	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, cpuType, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));

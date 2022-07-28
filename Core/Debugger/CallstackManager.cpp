@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "CallstackManager.h"
-#include "Debugger.h"
-#include "DebugBreakHelper.h"
-#include "Profiler.h"
+#include "Debugger/CallstackManager.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/Profiler.h"
 
-CallstackManager::CallstackManager(Debugger* debugger)
+CallstackManager::CallstackManager(Debugger* debugger, IConsole* console)
 {
 	_debugger = debugger;
-	_profiler.reset(new Profiler(debugger));
+	_profiler.reset(new Profiler(debugger, console));
 }
 
 CallstackManager::~CallstackManager()

@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include <limits>
 #include "Profiler.h"
-#include "DebugBreakHelper.h"
-#include "Debugger.h"
-#include "SNES/SnesConsole.h"
-#include "MemoryDumper.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/MemoryDumper.h"
+#include "Debugger/DebugTypes.h"
+#include "Shared/Interfaces/IConsole.h"
 
 static constexpr int32_t ResetFunctionIndex = -1;
 
-Profiler::Profiler(Debugger* debugger)
+Profiler::Profiler(Debugger* debugger, IConsole* console)
 {
 	_debugger = debugger;
-	_emu = debugger->GetEmulator();
+	_console = console;
 	InternalReset();
 }
 
@@ -53,8 +53,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 void Profiler::UpdateCycles()
 {
-	//TODO Replace with _console->GetMasterClock()
-	uint64_t masterClock = _emu->GetMasterClock();
+	uint64_t masterClock = _console->GetMasterClock();
 	
 	ProfiledFunction& func = _functions[_currentFunction];
 	uint64_t clockGap = masterClock - _prevMasterClock;
@@ -102,7 +101,7 @@ void Profiler::Reset()
 
 void Profiler::ResetState()
 {
-	_prevMasterClock = _emu->GetMasterClock();
+	_prevMasterClock = _console->GetMasterClock();
 	_currentCycleCount = 0;
 	_functionStack.clear();
 	_stackFlags.clear();

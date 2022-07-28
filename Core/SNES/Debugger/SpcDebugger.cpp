@@ -32,7 +32,7 @@ SpcDebugger::SpcDebugger(Debugger* debugger)
 
 	_traceLogger.reset(new SpcTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
 
-	_callstackManager.reset(new CallstackManager(debugger));
+	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Spc, debugger->GetEventManager(CpuType::Snes)));
 	_step.reset(new StepRequest());
 }

@@ -4,6 +4,7 @@
 
 class Debugger;
 class Profiler;
+class IConsole;
 
 class CallstackManager
 {
@@ -13,7 +14,7 @@ private:
 	unique_ptr<Profiler> _profiler;
 
 public:
-	CallstackManager(Debugger* debugger);
+	CallstackManager(Debugger* debugger, IConsole* console);
 	~CallstackManager();
 
 	void Push(AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t returnAddress, StackFrameFlags flags);

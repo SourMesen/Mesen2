@@ -60,7 +60,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 
 	_eventManager.reset(new PceEventManager(debugger, console));
-	_callstackManager.reset(new CallstackManager(debugger));
+	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new PceAssembler(_debugger->GetLabelManager()));

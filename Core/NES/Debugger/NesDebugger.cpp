@@ -74,7 +74,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 
 	_eventManager.reset(new NesEventManager(debugger, console));
-	_callstackManager.reset(new CallstackManager(debugger));
+	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Nes, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new NesAssembler(_debugger->GetLabelManager()));

@@ -57,7 +57,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
-	_callstackManager.reset(new CallstackManager(debugger));
+	_callstackManager.reset(new CallstackManager(debugger, _gameboy));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gameboy, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new GbAssembler(debugger->GetLabelManager()));
