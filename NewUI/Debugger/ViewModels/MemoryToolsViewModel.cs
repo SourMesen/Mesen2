@@ -134,8 +134,9 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			int memSize = DebugApi.GetMemorySize(Config.MemoryType);
-			//TODO performance (snes), load in batches instead?
-			CdlFlags[] cdlData = DebugApi.GetCdlData(0, (uint)memSize, Config.MemoryType);
+			VirtualArray<CdlFlags> cdlData = new VirtualArray<CdlFlags>(memSize, (start, end) => {
+				return DebugApi.GetCdlData((uint)start, (uint)(end - start + 1), Config.MemoryType);
+			});
 
 			Func<int, bool> predicate = nav switch {
 				NavType.PrevCode or NavType.NextCode => (x) => cdlData[x].HasFlag(CdlFlags.Code),
@@ -150,8 +151,9 @@ namespace Mesen.Debugger.ViewModels
 		private void SearchNextAccessMatch(NavType nav)
 		{
 			int memSize = DebugApi.GetMemorySize(Config.MemoryType);
-			//TODO performance (snes), load in batches instead?
-			AddressCounters[] counters = DebugApi.GetMemoryAccessCounts(Config.MemoryType);
+			VirtualArray<AddressCounters> counters = new VirtualArray<AddressCounters>(memSize, (start, end) => {
+				return DebugApi.GetMemoryAccessCounts((uint)start, (uint)(end - start + 1), Config.MemoryType);
+			});
 
 			TimingInfo timing = EmuApi.GetTimingInfo();
 			double cyclesPerFrame = timing.MasterClockRate / timing.Fps;
@@ -202,10 +204,13 @@ namespace Mesen.Debugger.ViewModels
 			int endPos = SelectionStart;
 			int startPos = endPos + offset;
 
-			//TODO, change this to avoid loading all of memory type at once
 			MemoryType memType = Config.MemoryType;
 			int memSize = DebugApi.GetMemorySize(memType);
-			byte[] mem = DebugApi.GetMemoryState(memType);
+			//TODO this can be a bit slow in edge cases depending on search+filters.
+			//(e.g search 00 00 00 in a code segment with no matches)
+			VirtualArray<byte> mem = new VirtualArray<byte>(memSize, (start, end) => {
+				return DebugApi.GetMemoryValues(memType, (uint)start, (uint)end);
+			});
 			int searchLen = data.Data.Length;
 
 			bool firstLoop = true;
@@ -224,8 +229,9 @@ namespace Mesen.Debugger.ViewModels
 				firstLoop = false;
 
 				int j = 0;
-				while(j < searchLen) {
-					if(data.Data[j] != mem[i+j] && (data.DataAlt == null || data.DataAlt[j] != mem[i+j])) {
+				while(j < searchLen && i + j < memSize) {
+					byte val = mem[i + j];
+					if(data.Data[j] != val && (data.DataAlt == null || data.DataAlt[j] != val)) {
 						break;
 					} else if(j == searchLen - 1) {
 						//Match
