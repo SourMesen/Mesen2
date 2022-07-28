@@ -175,7 +175,7 @@ protected:
 
 	void WriteRegister(uint16_t addr, uint8_t value) override
 	{
-		uint64_t currentCycle = _emu->GetMasterClock();
+		uint64_t currentCycle = _console->GetMasterClock();
 
 		//Ignore write if within 2 cycles of another write (i.e the real write after a dummy write)
 		if(currentCycle - _lastWriteCycle >= 2) {

@@ -24,6 +24,7 @@
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "Shared/Emulator.h"
+#include "Shared/TimingInfo.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BaseControlManager.h"
 #include "Utilities/Serializer.h"
@@ -195,6 +196,14 @@ PpuFrameInfo SnesConsole::GetPpuFrame()
 	frame.ScanlineCount = _ppu->GetVblankEndScanline() + 1;
 	frame.CycleCount = 341;
 	return frame;
+}
+
+TimingInfo SnesConsole::GetTimingInfo(CpuType cpuType)
+{
+	if(cpuType == CpuType::Gameboy && _cart->GetGameboy()) {
+		return _cart->GetGameboy()->GetTimingInfo(cpuType);
+	}
+	return IConsole::GetTimingInfo(cpuType);
 }
 
 vector<CpuType> SnesConsole::GetCpuTypes()

@@ -53,6 +53,7 @@ void Profiler::StackFunction(AddressInfo &addr, StackFrameFlags stackFlag)
 
 void Profiler::UpdateCycles()
 {
+	//TODO Replace with _console->GetMasterClock()
 	uint64_t masterClock = _emu->GetMasterClock();
 	
 	ProfiledFunction& func = _functions[_currentFunction];

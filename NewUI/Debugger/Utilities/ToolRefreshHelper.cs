@@ -96,7 +96,7 @@ namespace Mesen.Debugger.Utilities
 					}
 					model.OnGameLoaded();
 
-					cfg.UpdateMinMaxValues();
+					cfg.UpdateMinMaxValues(model.CpuType);
 
 					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
 						DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.Config.RefreshScanline, cfg.Config.RefreshCycle, model.CpuType);

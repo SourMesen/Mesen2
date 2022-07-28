@@ -18,20 +18,23 @@ namespace Mesen.Debugger.ViewModels
 
 		public ReactiveCommand<Unit, Unit> ResetCommand { get; }
 
-		[Obsolete("For designer only")]
-		public RefreshTimingViewModel() : this(new RefreshTimingConfig()) { }
+		private CpuType _cpuType;
 
-		public RefreshTimingViewModel(RefreshTimingConfig config)
+		[Obsolete("For designer only")]
+		public RefreshTimingViewModel() : this(new RefreshTimingConfig(), CpuType.Snes) { }
+
+		public RefreshTimingViewModel(RefreshTimingConfig config, CpuType cpuType)
 		{
 			Config = config;
+			_cpuType = cpuType;
 
-			UpdateMinMaxValues();
+			UpdateMinMaxValues(_cpuType);
 			ResetCommand = ReactiveCommand.Create(Reset);
 		}
 
 		public void Reset()
 		{
-			Config.RefreshScanline = EmuApi.GetRomInfo().ConsoleType switch {
+			Config.RefreshScanline = _cpuType.GetConsoleType() switch {
 				ConsoleType.Snes => 240,
 				ConsoleType.Nes => 241,
 				ConsoleType.Gameboy => 144,
@@ -43,9 +46,10 @@ namespace Mesen.Debugger.ViewModels
 			Config.RefreshCycle = 0;
 		}
 
-		public void UpdateMinMaxValues()
+		public void UpdateMinMaxValues(CpuType cpuType)
 		{
-			TimingInfo timing = EmuApi.GetTimingInfo();
+			_cpuType = cpuType;
+			TimingInfo timing = EmuApi.GetTimingInfo(_cpuType);
 			MinScanline = timing.FirstScanline;
 			MaxScanline = (int)timing.ScanlineCount + timing.FirstScanline - 1;
 			MaxCycle = (int)timing.CycleCount - 1;

@@ -286,7 +286,7 @@ namespace Mesen.Debugger.ViewModels
 
 				if(CpuType == CpuType.Snes) {
 					UInt64 prevMasterClock = _masterClock;
-					_masterClock = EmuApi.GetTimingInfo().MasterClock;
+					_masterClock = EmuApi.GetTimingInfo(CpuType).MasterClock;
 					if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
 						elapsedCycles += $" ({_masterClock - prevMasterClock} master clocks)";
 					}

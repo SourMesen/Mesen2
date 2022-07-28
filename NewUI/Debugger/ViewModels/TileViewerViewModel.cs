@@ -69,8 +69,8 @@ namespace Mesen.Debugger.ViewModels
 		public TileViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TileViewer;
-			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
 
 			InitBitmap();
 

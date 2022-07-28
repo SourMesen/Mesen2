@@ -68,8 +68,8 @@ namespace Mesen.Debugger.ViewModels
 
 			ListView = AddDisposable(new SpriteViewerListViewModel(this));
 
-			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
 			CpuType = cpuType;
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
 			_spriteGrid = spriteGrid;
 
 			InitBitmap(256, 256);

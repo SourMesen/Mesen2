@@ -114,6 +114,8 @@ public:
 	double GetFps() override;
 	PpuFrameInfo GetPpuFrame() override;
 
+	TimingInfo GetTimingInfo(CpuType cpuType) override;
+
 	vector<CpuType> GetCpuTypes() override;
 	void SaveBattery() override;
 

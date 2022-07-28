@@ -95,7 +95,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 	_vpc->ConnectVdc(_vdc.get(), _vdc2.get());
 
-	_psg.reset(new PcePsg(_emu));
+	_psg.reset(new PcePsg(_emu, this));
 	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize));
 	_cpu.reset(new PceCpu(_emu, _memoryManager.get()));
 

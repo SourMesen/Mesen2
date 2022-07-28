@@ -561,22 +561,12 @@ vector<CpuType> Emulator::GetCpuTypes()
 	}
 }
 
-//TODO: add cputype param to allow getting GB timing info from UI in SGB mode
-TimingInfo Emulator::GetTimingInfo()
+TimingInfo Emulator::GetTimingInfo(CpuType cpuType)
 {
-	TimingInfo info = {};
 	if(_console) {
-		info.MasterClock = GetMasterClock();
-		info.MasterClockRate = GetMasterClockRate();
-		info.FrameCount = GetFrameCount();
-		info.Fps = GetFps();
-
-		PpuFrameInfo frameInfo = GetPpuFrame();
-		info.CycleCount = frameInfo.CycleCount;
-		info.ScanlineCount = frameInfo.ScanlineCount;
-		info.FirstScanline = frameInfo.FirstScanline;
+		return _console->GetTimingInfo(cpuType);
 	}
-	return info;
+	return {};
 }
 
 uint64_t Emulator::GetMasterClock()

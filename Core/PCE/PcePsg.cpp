@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PCE/PcePsg.h"
+#include "PCE/PceConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/MessageManager.h"
@@ -7,9 +8,10 @@
 #include "Utilities/Audio/blip_buf.h"
 #include "Utilities/Serializer.h"
 
-PcePsg::PcePsg(Emulator* emu)
+PcePsg::PcePsg(Emulator* emu, PceConsole* console)
 {
 	_emu = emu;
+	_console = console;
 	_soundMixer = emu->GetSoundMixer();
 
 	_soundBuffer = new int16_t[PcePsg::MaxSamples * 2];
@@ -89,7 +91,7 @@ void PcePsg::Write(uint16_t addr, uint8_t value)
 
 void PcePsg::Run()
 {
-	uint64_t clock = _emu->GetMasterClock();
+	uint64_t clock = _console->GetMasterClock();
 	uint32_t clocksToRun = clock - _lastClock;
 	PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 	while(clocksToRun >= 6) {

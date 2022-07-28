@@ -162,7 +162,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
 			_traceLogger->Log(_cpu->GetState(), disInfo, operation);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _gameboy->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
 			_codeDataLogger->SetCode(addressInfo.Address);
@@ -172,7 +172,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 			_traceLogger->LogNonExec(operation);
 		}
 
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _emu->GetMasterClock());
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _gameboy->GetMasterClock());
 		_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		if(addressInfo.Address >= 0 && addressInfo.Type == MemoryType::GbPrgRom) {
@@ -184,7 +184,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
-			ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock());
+			ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
 			if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
 				//Memory access was a read on an uninitialized memory address
 				if(result == ReadResult::FirstUninitRead) {
@@ -222,7 +222,7 @@ void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType 
 		_eventManager->AddEvent(DebugEventType::Register, operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _gameboy->GetMasterClock());
 }
 
 void GbDebugger::Run()

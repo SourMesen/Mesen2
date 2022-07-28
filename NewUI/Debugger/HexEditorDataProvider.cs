@@ -97,7 +97,7 @@ namespace Mesen.Debugger
 				}
 			}
 
-			_timing = EmuApi.GetTimingInfo();
+			_timing = EmuApi.GetTimingInfo(_cpuType);
 		}
 
 		public static Color DarkerColor(byte alpha, Color input, double brightnessPercentage)

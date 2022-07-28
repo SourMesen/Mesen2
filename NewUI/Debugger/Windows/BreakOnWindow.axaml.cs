@@ -46,8 +46,7 @@ namespace Mesen.Debugger.Windows
 			Value = _lastValue;
 
 			if(!Design.IsDesignMode) {
-				//TODO SGB debugger
-				TimingInfo timing = EmuApi.GetTimingInfo();
+				TimingInfo timing = EmuApi.GetTimingInfo(_cpuType);
 				Min = timing.FirstScanline;
 				Max = (int)timing.ScanlineCount + timing.FirstScanline - 1;
 			}

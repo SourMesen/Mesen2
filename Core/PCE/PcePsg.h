@@ -6,6 +6,7 @@
 #include "Utilities/ISerializable.h"
 
 class Emulator;
+class PceConsole;
 class SoundMixer;
 struct blip_t;
 
@@ -17,6 +18,7 @@ private:
 	static constexpr int PsgFrequency = PceConstants::MasterClockRate / 6;
 
 	Emulator* _emu = nullptr;
+	PceConsole* _console = nullptr;
 	SoundMixer* _soundMixer = nullptr;
 	PcePsgState _state = {};
 	PcePsgChannel _channels[6] = {};
@@ -31,7 +33,7 @@ private:
 	uint32_t _clockCounter = 0;
 
 public:
-	PcePsg(Emulator* emu);
+	PcePsg(Emulator* emu, PceConsole* console);
 	~PcePsg();
 
 	bool IsLfoEnabled();

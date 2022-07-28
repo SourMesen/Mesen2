@@ -68,10 +68,9 @@ namespace Mesen.Debugger.ViewModels
 		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
 			Config = ConfigManager.Config.Debug.TilemapViewer;
-			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
-
 			CpuType = cpuType;
-
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
+			
 			_picViewer = picViewer;
 			InitForCpuType();
 
@@ -371,7 +370,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			Interlocked.Exchange(ref _masterClock, EmuApi.GetTimingInfo().MasterClock);
+			Interlocked.Exchange(ref _masterClock, EmuApi.GetTimingInfo(CpuType).MasterClock);
 
 			BaseState ppuState = DebugApi.GetPpuState(CpuType);
 			_ppuState = ppuState;

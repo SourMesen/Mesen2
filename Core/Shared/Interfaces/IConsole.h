@@ -4,6 +4,7 @@
 #include "Core/Debugger/DebugTypes.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
 #include "Shared/RomInfo.h"
+#include "Shared/TimingInfo.h"
 
 class BaseControlManager;
 class VirtualFile;
@@ -66,6 +67,21 @@ public:
 	virtual uint32_t GetMasterClockRate() = 0;
 
 	virtual double GetFps() = 0;
+
+	virtual TimingInfo GetTimingInfo(CpuType cpuType)
+	{
+		TimingInfo info = {};
+		info.MasterClock = GetMasterClock();
+		info.MasterClockRate = GetMasterClockRate();
+		info.Fps = GetFps();
+
+		PpuFrameInfo frameInfo = GetPpuFrame();
+		info.FrameCount = frameInfo.FrameCount;
+		info.CycleCount = frameInfo.CycleCount;
+		info.ScanlineCount = frameInfo.ScanlineCount;
+		info.FirstScanline = frameInfo.FirstScanline;
+		return info;
+	}
 
 	virtual BaseVideoFilter* GetVideoFilter() = 0;
 

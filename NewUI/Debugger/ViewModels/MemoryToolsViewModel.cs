@@ -155,7 +155,7 @@ namespace Mesen.Debugger.ViewModels
 				return DebugApi.GetMemoryAccessCounts((uint)start, (uint)(end - start + 1), Config.MemoryType);
 			});
 
-			TimingInfo timing = EmuApi.GetTimingInfo();
+			TimingInfo timing = EmuApi.GetTimingInfo(Config.MemoryType.ToCpuType());
 			double cyclesPerFrame = timing.MasterClockRate / timing.Fps;
 			int framesToFade = Config.FadeSpeed.ToFrameCount();
 			double targetClock = framesToFade == 0 ? 0 : timing.MasterClock - cyclesPerFrame * framesToFade;
@@ -198,13 +198,13 @@ namespace Mesen.Debugger.ViewModels
 				return false;
 			}
 			
-			TimingInfo timingInfo = Search.IsAccessFiltered && Search.FilterTimeSpanEnabled ? EmuApi.GetTimingInfo() : new();
+			MemoryType memType = Config.MemoryType;
+			TimingInfo timingInfo = Search.IsAccessFiltered && Search.FilterTimeSpanEnabled ? EmuApi.GetTimingInfo(memType.ToCpuType()) : new();
 
 			int offset = direction == SearchDirection.Forward ? 1 : -1;
 			int endPos = SelectionStart;
 			int startPos = endPos + offset;
 
-			MemoryType memType = Config.MemoryType;
 			int memSize = DebugApi.GetMemorySize(memType);
 			//TODO this can be a bit slow in edge cases depending on search+filters.
 			//(e.g search 00 00 00 in a code segment with no matches)

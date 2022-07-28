@@ -238,7 +238,7 @@ public:
 	bool IsRunning();
 	bool IsRunAheadFrame();
 
-	TimingInfo GetTimingInfo();
+	TimingInfo GetTimingInfo(CpuType cpuType);
 	uint32_t GetFrameCount();
 	uint32_t GetLagCounter();
 	void ResetLagCounter();

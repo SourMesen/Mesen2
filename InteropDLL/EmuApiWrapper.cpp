@@ -135,9 +135,9 @@ extern "C" {
 		}
 	}
 
-	DllExport TimingInfo __stdcall GetTimingInfo()
+	DllExport TimingInfo __stdcall GetTimingInfo(CpuType cpuType)
 	{
-		return _emu->GetTimingInfo();
+		return _emu->GetTimingInfo(cpuType);
 	}
 
 	DllExport void __stdcall TakeScreenshot() { _emu->GetVideoDecoder()->TakeScreenshot(); }

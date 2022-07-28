@@ -40,13 +40,14 @@ namespace Mesen.Debugger.ViewModels
 		public RegisterViewerWindowViewModel()
 		{
 			Config = ConfigManager.Config.Debug.RegisterViewer;
-			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming);
+			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, CpuType);
 
 			if(Design.IsDesignMode) {
 				return;
 			}
 
 			UpdateRomInfo();
+			RefreshTiming.UpdateMinMaxValues(CpuType);
 			RefreshData();
 		}
 
