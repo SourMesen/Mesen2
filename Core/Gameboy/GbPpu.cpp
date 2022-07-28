@@ -357,7 +357,6 @@ void GbPpu::RunDrawCycle()
 	if(_fetchSprite == -1 && _bgFifo.Size > 0) {
 		if(_drawnPixels >= 0) {
 			GameboyConfig& cfg = _emu->GetSettings()->GetGameboyConfig();
-			uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
 
 			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
 			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
@@ -367,27 +366,20 @@ void GbPpu::RunDrawCycle()
 				//  -Sprite is background priority AND BG does not have its priority bit set, OR
 				//  -On CGB, the "bg enabled" flag is cleared, causing all sprites to appear above BG tiles
 				if(_state.CgbEnabled) {
-					_currentBuffer[outOffset] = _state.CgbObjPalettes[sprite.Color | ((sprite.Attributes & 0x07) << 2)];
+					WriteObjPixel(sprite.Color | ((sprite.Attributes & 0x07) << 2));
 				} else {
 					uint8_t colorIndex = (((sprite.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (sprite.Color * 2)) & 0x03;
-					if(_gameboy->IsSgb()) {
-						_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
-					} 
-					_currentBuffer[outOffset] = _state.CgbObjPalettes[((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex];
+					WriteObjPixel(((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex);
 				}
 			} else {
 				if(!cfg.DisableBackground) {
 					if(_state.CgbEnabled) {
-						_currentBuffer[outOffset] = _state.CgbBgPalettes[entry.Color | ((entry.Attributes & 0x07) << 2)];
+						WriteBgPixel(entry.Color | ((entry.Attributes & 0x07) << 2));
 					} else {
-						uint8_t colorIndex = (_state.BgPalette >> (entry.Color * 2)) & 0x03;
-						if(_gameboy->IsSgb()) {
-							_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex);
-						}
-						_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
+						WriteBgPixel((_state.BgPalette >> (entry.Color * 2)) & 0x03);
 					}
 				} else {
-					_currentBuffer[outOffset] = _state.CgbBgPalettes[0];
+					WriteBgPixel(0);
 				}
 			}
 		}
@@ -401,6 +393,24 @@ void GbPpu::RunDrawCycle()
 	}
 
 	ClockTileFetcher();
+}
+
+void GbPpu::WriteBgPixel(uint8_t colorIndex)
+{
+	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
+	_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
+	if(_gameboy->IsSgb()) {
+		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
+	}
+}
+
+void GbPpu::WriteObjPixel(uint8_t colorIndex)
+{
+	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
+	_currentBuffer[outOffset] = _state.CgbObjPalettes[colorIndex];
+	if(_gameboy->IsSgb()) {
+		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
+	}
 }
 
 void GbPpu::RunSpriteEvaluation()

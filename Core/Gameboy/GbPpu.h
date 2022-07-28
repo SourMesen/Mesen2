@@ -51,6 +51,9 @@ private:
 	bool _isFirstFrame = true;
 	bool _rendererIdle = false;
 
+	__forceinline void WriteBgPixel(uint8_t colorIndex);
+	__forceinline void WriteObjPixel(uint8_t colorIndex);
+
 	__forceinline void ProcessPpuCycle();
 
 	__forceinline void ExecCycle();
