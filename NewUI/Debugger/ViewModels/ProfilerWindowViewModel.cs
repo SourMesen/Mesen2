@@ -21,7 +21,7 @@ namespace Mesen.Debugger.ViewModels
 	public class ProfilerWindowViewModel : ViewModelBase
 	{
 		[Reactive] public List<ProfilerTab> ProfilerTabs { get; set; } = new List<ProfilerTab>();
-		[Reactive] public ProfilerTab SelectedTab { get; set; } = null!;
+		[Reactive] public ProfilerTab? SelectedTab { get; set; } = null;
 
 		public ProfilerConfig Config { get; }
 
@@ -34,6 +34,12 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			UpdateAvailableTabs();
+
+			this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => {
+				if(SelectedTab != null && EmuApi.IsPaused()) {
+					RefreshData();
+				}
+			});
 		}
 
 		public void UpdateAvailableTabs()
@@ -115,7 +121,7 @@ namespace Mesen.Debugger.ViewModels
 				GridData.Add(new ProfiledFunctionViewModel());
 			}
 
-			for(int i = 0; i < GridData.Count; i++) {
+			for(int i = 0; i < profilerData.Length; i++) {
 				GridData[i].Update(profilerData[i], CpuType, _totalCycles);
 			}
 		}

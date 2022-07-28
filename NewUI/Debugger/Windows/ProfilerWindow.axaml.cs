@@ -63,6 +63,10 @@ namespace Mesen.Debugger.Windows
 
 		private void OnCellDoubleClick(DataBoxCell cell)
 		{
+			if(_model.SelectedTab == null) {
+				return;
+			}
+
 			int index = _model.SelectedTab.Selection.SelectedIndex;
 			if(index >= 0) {
 				ProfiledFunction? funcData = _model.SelectedTab.GetRawData(index);
@@ -77,7 +81,7 @@ namespace Mesen.Debugger.Windows
 
 		private void OnResetClick(object sender, RoutedEventArgs e)
 		{
-			_model.SelectedTab.ResetData();
+			_model.SelectedTab?.ResetData();
 		}
 
 		private void InitializeComponent()
