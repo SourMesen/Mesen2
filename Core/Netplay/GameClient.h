@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/Interfaces/INotificationListener.h"
+#include "Netplay/NetplayTypes.h"
 
 class Socket;
 class GameClientConnection;
@@ -27,9 +28,9 @@ public:
 	void Connect(ClientConnectionData &connectionData);
 	void Disconnect();
 
-	void SelectController(uint8_t port);
-	uint8_t GetControllerPort();
-	uint8_t GetAvailableControllers();
+	void SelectController(NetplayControllerInfo controller);
+	NetplayControllerInfo GetControllerPort();
+	vector<NetplayControllerUsageInfo> GetControllerList();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 };

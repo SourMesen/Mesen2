@@ -5,24 +5,25 @@
 class SelectControllerMessage : public NetMessage
 {
 private:
-	uint8_t _portNumber = 0;
+	NetplayControllerInfo _controller = {};
 
 protected:
 	void Serialize(Serializer &s) override
 	{
-		SV(_portNumber);
+		SV(_controller.Port);
+		SV(_controller.SubPort);
 	}
 
 public:
 	SelectControllerMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) { }
 
-	SelectControllerMessage(uint8_t port) : NetMessage(MessageType::SelectController)
+	SelectControllerMessage(NetplayControllerInfo controller) : NetMessage(MessageType::SelectController)
 	{
-		_portNumber = port;
+		_controller = controller;
 	}
 
-	uint8_t GetPortNumber()
+	NetplayControllerInfo GetController()
 	{
-		return _portNumber;
+		return _controller;
 	}
 };

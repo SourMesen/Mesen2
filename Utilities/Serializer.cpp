@@ -80,7 +80,7 @@ bool Serializer::LoadFrom(istream &file)
 		}
 
 		i += (uint32_t)key.size() + 1;
-		if(i >= size - 4) {
+		if(i + 4 > size) {
 			//invalid
 			return false;
 		}
@@ -92,7 +92,7 @@ bool Serializer::LoadFrom(istream &file)
 			return false;
 		}
 
-		_values.emplace(key, SerializeValue(&_data[i], valueSize));
+		_values.emplace(key, SerializeValue(i < _data.size() ? &_data[i] : nullptr, valueSize));
 
 		i += valueSize;
 	}

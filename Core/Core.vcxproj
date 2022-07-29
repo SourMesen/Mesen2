@@ -298,6 +298,7 @@
     <ClInclude Include="NES\Mappers\Whirlwind\Lh51.h" />
     <ClInclude Include="NES\Mappers\Whirlwind\Mapper40.h" />
     <ClInclude Include="NES\Mappers\Whirlwind\Smb2j.h" />
+    <ClInclude Include="Netplay\NetplayTypes.h" />
     <ClInclude Include="PCE\Debugger\PceAssembler.h" />
     <ClInclude Include="PCE\IPceMapper.h" />
     <ClInclude Include="PCE\PceArcadeCard.h" />

@@ -89,6 +89,7 @@ namespace Mesen.Debugger.Utilities
 						return false;
 					};
 				}
+				this.RaiseAndSetIfChanged(ref _subActions, value);
 			}
 		}
 

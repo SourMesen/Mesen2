@@ -516,8 +516,7 @@ string Emulator::GetHash(HashType type)
 
 uint32_t Emulator::GetCrc32()
 {
-	//TODO
-	return 0;
+	return _rom.RomFile.GetCrc32();
 }
 
 PpuFrameInfo Emulator::GetPpuFrame()

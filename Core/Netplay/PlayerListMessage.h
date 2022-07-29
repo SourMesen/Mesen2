@@ -14,7 +14,8 @@ protected:
 			uint32_t playerCount = (uint32_t)_playerList.size();
 			SV(playerCount);
 			for(uint32_t i = 0; i < playerCount; i++) {
-				SVI(_playerList[i].ControllerPort);
+				SVI(_playerList[i].ControllerPort.Port);
+				SVI(_playerList[i].ControllerPort.SubPort);
 				SVI(_playerList[i].IsHost);
 			}
 		} else {
@@ -23,7 +24,8 @@ protected:
 			_playerList.resize(playerCount);
 
 			for(uint32_t i = 0; i < playerCount; i++) {
-				SVI(_playerList[i].ControllerPort);
+				SVI(_playerList[i].ControllerPort.Port);
+				SVI(_playerList[i].ControllerPort.SubPort);
 				SVI(_playerList[i].IsHost);
 			}
 		}

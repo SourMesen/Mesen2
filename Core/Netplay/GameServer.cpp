@@ -7,13 +7,14 @@
 #include "Shared/NotificationManager.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/Socket.h"
+#include "Shared/ControllerHub.h"
 
 GameServer::GameServer(Emulator* emu)
 {
 	_emu = emu;
 	_stop = false;
 	_initialized = false;
-	_hostControllerPort = 0;
+	_hostControllerPort = {};
 }
 
 GameServer::~GameServer()
@@ -59,23 +60,22 @@ void GameServer::UpdateConnections()
 bool GameServer::SetInput(BaseControlDevice *device)
 {
 	uint8_t port = device->GetPort();
-
-	if(device->GetControllerType() == ControllerType::Multitap) {
-		//TODO
-		//Need special handling for the multitap, merge data from P3/4/5 with P1 (or P2, depending which port the multitap is plugged into)
-		/*GameServerConnection* connection = GetNetPlayDevice(port);
-		if(connection) {
-			((Multitap*)device)->SetControllerState(0, connection->GetState());
-		}
-
-		for(int i = 2; i < 5; i++) {
-			connection = GetNetPlayDevice(i);
+	IControllerHub* hub = dynamic_cast<IControllerHub*>(device);
+	if(hub) {
+		for(int i = 0, len = hub->GetHubPortCount(); i < len; i++) {
+			NetplayControllerInfo controller { port, (uint8_t)i };
+			GameServerConnection* connection = GetNetPlayDevice(controller);
 			if(connection) {
-				((Multitap*)device)->SetControllerState(i - 1, connection->GetState());
+				shared_ptr<BaseControlDevice> hubController = hub->GetController(i);
+				if(hubController) {
+					hubController->SetRawState(connection->GetState());
+				}
 			}
-		}*/
+		}
+		hub->RefreshHubState();
 	} else {
-		GameServerConnection* connection = GetNetPlayDevice(port);
+		NetplayControllerInfo controller { port, 0 };
+		GameServerConnection* connection = GetNetPlayDevice(controller);
 		if(connection) {
 			//Device is controlled by a client
 			device->SetRawState(connection->GetState());
@@ -150,6 +150,7 @@ void GameServer::StopServer()
 		_serverThread.reset();
 	}
 
+	_openConnections.clear();
 	_initialized = false;
 	_listener.reset();
 	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
@@ -168,32 +169,65 @@ bool GameServer::Started()
 	return _initialized;
 }
 
-uint8_t GameServer::GetHostControllerPort()
+NetplayControllerInfo GameServer::GetHostControllerPort()
 {
 	return _hostControllerPort;
 }
 
-void GameServer::SetHostControllerPort(uint8_t port)
+void GameServer::SetHostControllerPort(NetplayControllerInfo controller)
 {
 	if(Started()) {
 		auto lock = _emu->AcquireLock();
-		if(port == GameConnection::SpectatorPort || GetAvailableControllers() & (1 << port)) {
-			//Port is available
-			_hostControllerPort = port;
-			SendPlayerList();
+
+		if(controller.Port != GameConnection::SpectatorPort) {
+			for(NetplayControllerUsageInfo& c : GetControllerList()) {
+				if(c.InUse && controller.Port == c.Port.Port && controller.SubPort == c.Port.SubPort) {
+					//Controller is in use
+					return;
+				}
+			}
 		}
+
+		//Port is available
+		_hostControllerPort = controller;
+		SendPlayerList();
 	}
 }
 
-uint8_t GameServer::GetAvailableControllers()
+vector<NetplayControllerUsageInfo> GameServer::GetControllerList()
 {
-	uint8_t availablePorts = (1 << BaseControlDevice::PortCount) - 1;
-	for(PlayerInfo &playerInfo : GetPlayerList()) {
-		if(playerInfo.ControllerPort < BaseControlDevice::PortCount) {
-			availablePorts &= ~(1 << playerInfo.ControllerPort);
+	vector<PlayerInfo> players = GetPlayerList();
+	return GetControllerList(_emu, players);
+}
+
+vector<NetplayControllerUsageInfo> GameServer::GetControllerList(Emulator* emu, vector<PlayerInfo>& players)
+{
+	vector<NetplayControllerUsageInfo> controllers;
+	auto lock = emu->AcquireLock();
+	if(emu->GetControlManager()) {
+		for(uint8_t i = 0; i < BaseControlDevice::PortCount; i++) {
+			for(uint8_t j = 0; j < 5; j++) {
+				shared_ptr<BaseControlDevice> controller = emu->GetControlManager()->GetControlDevice(i, j);
+				if(controller) {
+					NetplayControllerUsageInfo result = {};
+					result.Port.Port = i;
+					result.Port.SubPort = j;
+					result.Type = controller->GetControllerType();
+					result.InUse = false;
+
+					for(PlayerInfo& player : players) {
+						if(player.ControllerPort.Port == i && player.ControllerPort.SubPort == j) {
+							result.InUse = true;
+							break;
+						}
+					}
+
+					controllers.push_back(result);
+				}
+			}
 		}
-	}
-	return availablePorts;
+	}	
+	return controllers;
 }
 
 vector<PlayerInfo> GameServer::GetPlayerList()
@@ -225,35 +259,36 @@ void GameServer::SendPlayerList()
 	}
 }
 
-void GameServer::RegisterNetPlayDevice(GameServerConnection* device, uint8_t port)
+void GameServer::RegisterNetPlayDevice(GameServerConnection* device, NetplayControllerInfo controller)
 {
-	_netPlayDevices[port] = device;
+	_netPlayDevices[controller.Port][controller.SubPort] = device;
 }
 
 void GameServer::UnregisterNetPlayDevice(GameServerConnection* device)
 {
 	if(device != nullptr) {
 		for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-			if(_netPlayDevices[i] == device) {
-				_netPlayDevices[i] = nullptr;
-				break;
+			for(int j = 0; j < 5; j++) {
+				if(_netPlayDevices[i][j] == device) {
+					_netPlayDevices[i][j] = nullptr;
+					return;
+				}
 			}
 		}
 	}
 }
 
-GameServerConnection* GameServer::GetNetPlayDevice(uint8_t port)
+GameServerConnection* GameServer::GetNetPlayDevice(NetplayControllerInfo controller)
 {
-	return _netPlayDevices[port];
+	return _netPlayDevices[controller.Port][controller.SubPort];
 }
 
-uint8_t GameServer::GetFirstFreeControllerPort()
+NetplayControllerInfo GameServer::GetFirstFreeControllerPort()
 {
-	uint8_t hostPost = _emu->GetGameServer()->GetHostControllerPort();
-	for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-		if(hostPost != i && _netPlayDevices[i] == nullptr) {
-			return i;
+	for(NetplayControllerUsageInfo& c : GetControllerList()) {
+		if(!c.InUse) {
+			return c.Port;
 		}
 	}
-	return GameConnection::SpectatorPort;
+	return NetplayControllerInfo { GameConnection::SpectatorPort, 0 };
 }

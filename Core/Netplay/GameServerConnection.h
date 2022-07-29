@@ -2,19 +2,26 @@
 #include "stdafx.h"
 #include <deque>
 #include "Netplay/GameConnection.h"
+#include "Netplay/NetplayTypes.h"
 #include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/ControlDeviceState.h"
+#include "Utilities/SimpleLock.h"
 
 class HandShakeMessage;
 class GameServer;
 
-class GameServerConnection : public GameConnection, public INotificationListener
+class GameServerConnection final : public GameConnection, public INotificationListener
 {
 private:
-	GameServer* _server;
-	list<ControlDeviceState> _inputData;
-	int _controllerPort = 0;
+	GameServer* _server = nullptr;
+
+	SimpleLock _inputLock;
+	ControlDeviceState _inputData = {};
+
+	string _previousConfig = "";
+
+	NetplayControllerInfo _controllerPort = {};
 	string _connectionHash;
 	string _serverPassword;
 	bool _handshakeCompleted = false;
@@ -22,7 +29,7 @@ private:
 	void PushState(ControlDeviceState state);
 	void SendServerInformation();
 	void SendGameInformation();
-	void SelectControllerPort(uint8_t port);
+	void SelectControllerPort(NetplayControllerInfo port);
 
 	void SendForceDisconnectMessage(string disconnectMessage);
 
@@ -38,7 +45,7 @@ public:
 	ControlDeviceState GetState();
 	void SendMovieData(uint8_t port, ControlDeviceState state);
 
-	uint8_t GetControllerPort();
+	NetplayControllerInfo GetControllerPort();
 
 	virtual void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 };

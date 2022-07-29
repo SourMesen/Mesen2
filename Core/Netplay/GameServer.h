@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <thread>
 #include "Netplay/GameServerConnection.h"
+#include "Netplay/NetplayTypes.h"
 #include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
@@ -20,9 +21,9 @@ private:
 	vector<unique_ptr<GameServerConnection>> _openConnections;
 	bool _initialized = false;
 	
-	GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount] = {};
+	GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount][5] = {};
 
-	uint8_t _hostControllerPort = 0;
+	NetplayControllerInfo _hostControllerPort = {};
 
 	void AcceptConnections();
 	void UpdateConnections();
@@ -39,11 +40,13 @@ public:
 	void StopServer();
 	bool Started();
 
-	uint8_t GetHostControllerPort();
-	void SetHostControllerPort(uint8_t port);
-	uint8_t GetAvailableControllers();
+	NetplayControllerInfo GetHostControllerPort();
+	void SetHostControllerPort(NetplayControllerInfo controller);
+	vector<NetplayControllerUsageInfo> GetControllerList();
 	vector<PlayerInfo> GetPlayerList();
 	void SendPlayerList();
+	
+	static vector<NetplayControllerUsageInfo> GetControllerList(Emulator* emu, vector<PlayerInfo>& players);
 
 	bool SetInput(BaseControlDevice *device) override;
 	void RecordInput(vector<shared_ptr<BaseControlDevice>> devices) override;
@@ -51,8 +54,8 @@ public:
 	// Inherited via INotificationListener
 	virtual void ProcessNotification(ConsoleNotificationType type, void * parameter) override;
 
-	void RegisterNetPlayDevice(GameServerConnection* connection, uint8_t port);
+	void RegisterNetPlayDevice(GameServerConnection* connection, NetplayControllerInfo controller);
 	void UnregisterNetPlayDevice(GameServerConnection* device);
-	uint8_t GetFirstFreeControllerPort();
-	GameServerConnection* GetNetPlayDevice(uint8_t port);
+	NetplayControllerInfo GetFirstFreeControllerPort();
+	GameServerConnection* GetNetPlayDevice(NetplayControllerInfo controller);
 };

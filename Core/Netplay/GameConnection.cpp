@@ -17,6 +17,11 @@ GameConnection::GameConnection(Emulator* emu, unique_ptr<Socket> socket)
 	_socket.swap(socket);
 }
 
+GameConnection::~GameConnection()
+{
+	Disconnect();
+}
+
 void GameConnection::ReadSocket()
 {
 	auto lock = _socketLock.AcquireSafe();

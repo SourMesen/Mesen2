@@ -10,6 +10,7 @@
 #include "Netplay/PlayerListMessage.h"
 #include "Netplay/ForceDisconnectMessage.h"
 #include "Netplay/ServerInformationMessage.h"
+#include "Netplay/GameServer.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -48,6 +49,7 @@ void GameClientConnection::Shutdown()
 		MessageManager::DisplayMessage("NetPlay", "ConnectionLost");
 		_emu->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
 	}
+	Disconnect();
 }
 
 void GameClientConnection::SendHandshake()
@@ -56,9 +58,9 @@ void GameClientConnection::SendHandshake()
 	SendNetMessage(message);
 }
 
-void GameClientConnection::SendControllerSelection(uint8_t port)
+void GameClientConnection::SendControllerSelection(NetplayControllerInfo controller)
 {
-	SelectControllerMessage message(port);
+	SelectControllerMessage message(controller);
 	SendNetMessage(message);
 }
 
@@ -111,20 +113,14 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 			DisableControllers();
 			_emu->Lock();
 			gameInfo = (GameInformationMessage*)message;
-			if(gameInfo->GetPort() != _controllerPort) {
+			if(gameInfo->GetPort().Port != _controllerPort.Port || gameInfo->GetPort().SubPort != _controllerPort.SubPort) {
 				_controllerPort = gameInfo->GetPort();
-
-				if(_controllerPort == GameConnection::SpectatorPort) {
-					MessageManager::DisplayMessage("NetPlay", "ConnectedAsSpectator");
-				} else {
-					MessageManager::DisplayMessage("NetPlay", "ConnectedAsPlayer", std::to_string(_controllerPort + 1));
-				}
 			}
 
 			ClearInputData();
 			_emu->Unlock();
 
-			_gameLoaded = AttemptLoadGame(gameInfo->GetRomFilename(), gameInfo->GetSha1Hash());
+			_gameLoaded = AttemptLoadGame(gameInfo->GetRomFilename(), gameInfo->GetCrc32());
 			if(!_gameLoaded) {
 				_emu->Stop(true);
 			} else {
@@ -142,10 +138,10 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 	}
 }
 
-bool GameClientConnection::AttemptLoadGame(string filename, string sha1Hash)
+bool GameClientConnection::AttemptLoadGame(string filename, uint32_t crc32)
 {
 	if(filename.size() > 0) {
-		if(!RomFinder::LoadMatchingRom(_emu, filename, sha1Hash)) {
+		if(!RomFinder::LoadMatchingRom(_emu, filename, crc32)) {
 			MessageManager::DisplayMessage("NetPlay", "CouldNotFindRom", filename);
 			return false;
 		} else {
@@ -217,7 +213,7 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 void GameClientConnection::InitControlDevice()
 {
 	BaseControlManager* controlManager = _emu->GetControlManager();
-	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort);
+	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort.Port, _controllerPort.SubPort);
 	if(device) {
 		_controllerType = device->GetControllerType();
 	} else {
@@ -237,7 +233,7 @@ void GameClientConnection::ProcessNotification(ConsoleNotificationType type, voi
 void GameClientConnection::SendInput()
 {
 	if(_gameLoaded) {
-		if(_controllerType != _controlDevice->GetControllerType()) {
+		if(!_controlDevice || _controllerType != _controlDevice->GetControllerType()) {
 			//Pretend we are using port 0 (to use player 1's keybindings during netplay)
 			_controlDevice = _emu->GetControlManager()->CreateControllerDevice(_controllerType, 0);
 		}
@@ -256,23 +252,17 @@ void GameClientConnection::SendInput()
 	}
 }
 
-void GameClientConnection::SelectController(uint8_t port)
+void GameClientConnection::SelectController(NetplayControllerInfo controller)
 {
-	SendControllerSelection(port);
+	SendControllerSelection(controller);
 }
 
-uint8_t GameClientConnection::GetAvailableControllers()
+vector<NetplayControllerUsageInfo> GameClientConnection::GetControllerList()
 {
-	uint8_t availablePorts = (1 << BaseControlDevice::PortCount) - 1;
-	for(PlayerInfo &playerInfo : _playerList) {
-		if(playerInfo.ControllerPort < BaseControlDevice::PortCount) {
-			availablePorts &= ~(1 << playerInfo.ControllerPort);
-		}
-	}
-	return availablePorts;
+	return GameServer::GetControllerList(_emu, _playerList);
 }
 
-uint8_t GameClientConnection::GetControllerPort()
+NetplayControllerInfo GameClientConnection::GetControllerPort()
 {
 	return _controllerPort;
 }

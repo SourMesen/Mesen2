@@ -224,7 +224,12 @@ namespace Mesen.Utilities
 
 		private async void OpenFile()
 		{
-			string? filename = await FileDialogHelper.OpenFile(null, _mainWindow, FileDialogHelper.RomExt);
+			string? initialFolder = null;
+			if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
+				initialFolder = ConfigManager.Config.Preferences.GameFolder;
+			}
+
+			string? filename = await FileDialogHelper.OpenFile(initialFolder, _mainWindow, FileDialogHelper.RomExt);
 			if(filename != null) {
 				LoadRomHelper.LoadFile(filename);
 			}

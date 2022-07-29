@@ -77,19 +77,6 @@ extern "C" {
 		return _emu->GetSettings()->GetNesConfig();
 	}
 
-	DllExport ControllerType __stdcall GetControllerType(int player)
-	{
-		//TODO - used by netplay UI
-		BaseControlManager* controlManager = _emu->GetControlManager();
-		if(controlManager) {
-			shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(player);
-			if(device) {
-				return device->GetControllerType();
-			}
-		}
-		return ControllerType::None;
-	}
-
 	DllExport void __stdcall GetAudioDevices(char* outDeviceList, uint32_t maxLength)
 	{
 		StringUtilities::CopyToBuffer(_soundManager ? _soundManager->GetAvailableDevices() : "", outDeviceList, maxLength);

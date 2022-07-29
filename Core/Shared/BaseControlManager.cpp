@@ -70,13 +70,20 @@ vector<ControllerData> BaseControlManager::GetPortStates()
 	return states;
 }
 
-shared_ptr<BaseControlDevice> BaseControlManager::GetControlDevice(uint8_t port)
+shared_ptr<BaseControlDevice> BaseControlManager::GetControlDevice(uint8_t port, uint8_t subPort)
 {
 	auto lock = _deviceLock.AcquireSafe();
 
 	auto result = std::find_if(_controlDevices.begin(), _controlDevices.end(), [port](const shared_ptr<BaseControlDevice> control) { return control->GetPort() == port; });
-	if(result != _controlDevices.end()) {
-		return *result;
+	for(size_t i = 0; i < _controlDevices.size(); i++) {
+		if(_controlDevices[i] && _controlDevices[i]->GetPort() == port) {
+			shared_ptr<IControllerHub> hub = std::dynamic_pointer_cast<IControllerHub>(_controlDevices[i]);
+			if(hub) {
+				return hub->GetController(subPort);
+			} else {
+				return subPort == 0 ? _controlDevices[i] : nullptr;
+			}
+		}
 	}
 	return nullptr;
 }

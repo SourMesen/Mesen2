@@ -2,36 +2,37 @@
 #include "stdafx.h"
 #include "Shared/MessageManager.h"
 #include "Netplay/NetMessage.h"
+#include "Netplay/NetplayTypes.h"
 #include "Utilities/FolderUtilities.h"
 
 class GameInformationMessage : public NetMessage
 {
 private:
 	string _romFilename;
-	string _sha1Hash;
-	uint8_t _controllerPort = 0;
+	uint32_t _crc32 = 0;
+	NetplayControllerInfo _controller = {};
 	bool _paused = false;
 
 protected:
 	void Serialize(Serializer &s) override
 	{
-		SV(_romFilename); SV(_sha1Hash); SV(_controllerPort); SV(_paused);
+		SV(_romFilename); SV(_crc32); SV(_controller.Port); SV(_controller.SubPort); SV(_paused);
 	}
 
 public:
 	GameInformationMessage(void* buffer, uint32_t length) : NetMessage(buffer, length) { }
 
-	GameInformationMessage(string filepath, string sha1Hash, uint8_t port, bool paused) : NetMessage(MessageType::GameInformation)
+	GameInformationMessage(string filepath, uint32_t crc32, NetplayControllerInfo controller, bool paused) : NetMessage(MessageType::GameInformation)
 	{
 		_romFilename = FolderUtilities::GetFilename(filepath, true);
-		_sha1Hash = sha1Hash;
-		_controllerPort = port;
+		_crc32 = crc32;
+		_controller = controller;
 		_paused = paused;
 	}
 	
-	uint8_t GetPort()
+	NetplayControllerInfo GetPort()
 	{
-		return _controllerPort;
+		return _controller;
 	}
 
 	string GetRomFilename()
@@ -39,9 +40,9 @@ public:
 		return _romFilename;
 	}
 
-	string GetSha1Hash()
+	uint32_t GetCrc32()
 	{
-		return _sha1Hash;
+		return _crc32;
 	}
 
 	bool IsPaused()

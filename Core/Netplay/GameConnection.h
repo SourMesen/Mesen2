@@ -6,12 +6,6 @@ class Socket;
 class NetMessage;
 class Emulator;
 
-struct PlayerInfo
-{
-	uint8_t ControllerPort;
-	bool IsHost;
-};
-
 class GameConnection
 {
 protected:
@@ -26,7 +20,6 @@ protected:
 	SimpleLock _socketLock;
 
 private:
-
 	void ReadSocket();
 
 	bool ExtractMessage(void *buffer, uint32_t &messageLength);
@@ -40,6 +33,7 @@ protected:
 public:
 	static constexpr uint8_t SpectatorPort = 0xFF;
 	GameConnection(Emulator* emu, unique_ptr<Socket> socket);
+	virtual ~GameConnection();
 
 	bool ConnectionError();
 	void ProcessMessages();

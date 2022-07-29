@@ -9,6 +9,7 @@
 #include "Utilities/Patches/BpsPatcher.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Patches/UpsPatcher.h"
+#include "Utilities/CRC32.h"
 
 const std::initializer_list<string> VirtualFile::RomExtensions = {
 	".nes", ".fds", ".unif", ".unf", ".nsf", ".nsfe", ".studybox",
@@ -160,6 +161,12 @@ string VirtualFile::GetSha1Hash()
 {
 	LoadFile();
 	return SHA1::GetHash(_data);
+}
+
+uint32_t VirtualFile::GetCrc32()
+{
+	LoadFile();
+	return CRC32::GetCRC(_data);
 }
 
 size_t VirtualFile::GetSize()

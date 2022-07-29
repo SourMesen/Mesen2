@@ -35,6 +35,8 @@ namespace Mesen.ViewModels
 		[Reactive] public List<object> ToolsMenuItems { get; set; } = new();
 		[Reactive] public List<object> DebugMenuItems { get; set; } = new();
 		[Reactive] public List<object> HelpMenuItems { get; set; } = new();
+		
+		[Reactive] private List<object> _netPlayControllers { get; set; } = new();
 
 		private RomInfo RomInfo => MainWindow.RomInfo;
 		private bool IsGameRunning => RomInfo.Format != RomFormat.Unknown;
@@ -44,6 +46,7 @@ namespace Mesen.ViewModels
 		private List<RecentItem> RecentItems => ConfigManager.Config.RecentFiles.Items;
 
 		private ConfigWindow? _cfgWindow = null;
+		private MainMenuAction _selectControllerAction = new();
 
 		[Obsolete("For designer only")]
 		public MainMenuViewModel() : this(new MainWindowViewModel()) { }
@@ -658,6 +661,12 @@ namespace Mesen.ViewModels
 
 		private MainMenuAction GetNetPlayMenu(MainWindow wnd)
 		{
+			_selectControllerAction = new MainMenuAction() {
+				ActionType = ActionType.SelectController,
+				IsEnabled = () => NetplayApi.IsConnected() || NetplayApi.IsServerRunning(),
+				SubActions = _netPlayControllers
+			};
+
 			return new MainMenuAction() {
 				ActionType = ActionType.NetPlay,
 				SubActions = new List<object> {
@@ -701,29 +710,8 @@ namespace Mesen.ViewModels
 
 					new ContextMenuSeparator(),
 
-					new MainMenuAction() {
-						ActionType = ActionType.SelectController,
-						IsEnabled = () => NetplayApi.IsConnected() || NetplayApi.IsServerRunning(),
-						SubActions = new List<object> {
-							GetSelectControllerAction(0),
-							GetSelectControllerAction(1),
-							GetSelectControllerAction(2),
-							GetSelectControllerAction(3),
-							GetSelectControllerAction(4),
-						}
-					}
+					_selectControllerAction
 				}
-			};
-		}
-
-		private MainMenuAction GetSelectControllerAction(int i)
-		{
-			return new MainMenuAction() {
-				ActionType = ActionType.Custom,
-				CustomText = ResourceHelper.GetMessage("Player") + " " + (i + 1) + " (" + ResourceHelper.GetEnumText(ConfigApi.GetControllerType(i)) + ")",
-				IsSelected = () => i == NetplayApi.NetPlayGetControllerPort(),
-				IsEnabled = () => (NetplayApi.NetPlayGetAvailableControllers() & (1 << i)) != 0,
-				OnClick = () => NetplayApi.NetPlaySelectController(i)
 			};
 		}
 
@@ -1039,6 +1027,48 @@ namespace Mesen.ViewModels
 				//Invalid file (file missing, not a zip file, etc.)
 				await MesenMsgBox.Show(wnd, "InstallHdPackInvalidZipFile", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		public void UpdateNetplayMenu()
+		{
+			if(!NetplayApi.IsServerRunning() && !NetplayApi.IsConnected()) {
+				return;
+			}
+
+			List<object> controllerActions = new();
+
+			NetplayControllerInfo clientPort = NetplayApi.NetPlayGetControllerPort();
+
+			int playerIndex = 1;
+			NetplayControllerUsageInfo[] controllers = NetplayApi.NetPlayGetControllerList();
+
+			for(int i = 0; i < controllers.Length; i++) {
+				NetplayControllerUsageInfo controller = controllers[i];
+				if(controller.Type == ControllerType.None) {
+					//Skip this controller/port (when type is none, the "port" for hardware buttons, etc.)
+					continue;
+				}
+
+				MainMenuAction action = new();
+				action.ActionType = ActionType.Custom;
+				action.CustomText = ResourceHelper.GetMessage("Player") + " " + playerIndex + " (" + ResourceHelper.GetEnumText(controller.Type) + ")";
+				action.IsSelected = () => controller.Port.Port == clientPort.Port && controller.Port.SubPort == clientPort.SubPort;
+				action.IsEnabled = () => !controller.InUse;
+				action.OnClick = () => NetplayApi.NetPlaySelectController(controller.Port);
+				controllerActions.Add(action);
+				playerIndex++;
+			}
+
+			controllerActions.Add(new ContextMenuSeparator());
+
+			controllerActions.Add(new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(ControllerType.None),
+				IsSelected = () => clientPort.Port == 0xFF,
+				OnClick = () => NetplayApi.NetPlaySelectController(new NetplayControllerInfo() { Port = 0xFF })
+			});
+
+			_selectControllerAction.SubActions = controllerActions;
 		}
 	}
 }

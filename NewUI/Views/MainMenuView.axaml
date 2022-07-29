@@ -20,7 +20,7 @@
 		<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
 		<MenuItem Header="{l:Translate mnuGame}" Classes="ActionMenu" Items="{CompiledBinding GameMenuItems}" />
 		<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
-		<MenuItem Header="{l:Translate mnuTools}" Classes="ActionMenu" Items="{CompiledBinding ToolsMenuItems}" />
+		<MenuItem Header="{l:Translate mnuTools}" Classes="ActionMenu" Items="{CompiledBinding ToolsMenuItems}" SubmenuOpened="mnuTools_Opened" />
 		<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
 		<MenuItem Header="{l:Translate mnuHelp}" Classes="ActionMenu" Items="{CompiledBinding HelpMenuItems}" />
 	</Menu>

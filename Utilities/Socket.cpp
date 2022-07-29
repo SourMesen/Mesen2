@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include <cstring>
 #include <thread>
-#include "Socket.h"
-
-#ifndef LIBRETRO
-#include "UPnPPortMapper.h"
+#include "Utilities/Socket.h"
+#include "Utilities/UPnPPortMapper.h"
 using namespace std;
 
 #ifdef _WIN32
@@ -264,78 +262,3 @@ int Socket::Recv(char *buf, int len, int flags)
 
 	return returnVal;
 }
-
-#else
-
-//Libretro port does not need sockets.
-
-Socket::Socket()
-{
-}
-
-Socket::Socket(uintptr_t socket)
-{
-}
-
-Socket::~Socket()
-{
-}
-
-void Socket::SetSocketOptions()
-{
-}
-
-void Socket::SetConnectionErrorFlag()
-{
-}
-
-void Socket::Close()
-{
-}
-
-bool Socket::ConnectionError()
-{
-	return true;
-}
-
-void Socket::Bind(uint16_t port)
-{
-}
-
-bool Socket::Connect(const char* hostname, uint16_t port)
-{
-	return false;
-}
-
-void Socket::Listen(int backlog)
-{
-}
-
-unique_ptr<Socket> Socket::Accept()
-{
-	return unique_ptr<Socket>(new Socket(0));
-}
-
-bool WouldBlock(int nError)
-{
-	return false;
-}
-
-int Socket::Send(char *buf, int len, int flags)
-{
-	return 0;
-}
-
-void Socket::BufferedSend(char *buf, int len)
-{
-}
-
-void Socket::SendBuffer()
-{
-}
-
-int Socket::Recv(char *buf, int len, int flags)
-{
-	return 0;
-}
-#endif

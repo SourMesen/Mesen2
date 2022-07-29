@@ -16,8 +16,30 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void Disconnect();
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool IsConnected();
 
-		[DllImport(DllPath)] public static extern Int32 NetPlayGetAvailableControllers();
-		[DllImport(DllPath)] public static extern void NetPlaySelectController(Int32 controllerPort);
-		[DllImport(DllPath)] public static extern Int32 NetPlayGetControllerPort();
+		[DllImport(DllPath)] private static extern void NetPlayGetControllerList([In,Out] NetplayControllerUsageInfo[] controllers, ref Int32 length);
+		public static NetplayControllerUsageInfo[] NetPlayGetControllerList()
+		{
+			NetplayControllerUsageInfo[] controllers = new NetplayControllerUsageInfo[16];
+			int length = 16;
+			NetplayApi.NetPlayGetControllerList(controllers, ref length);
+			Array.Resize(ref controllers, length);
+			return controllers;
+		}
+
+		[DllImport(DllPath)] public static extern void NetPlaySelectController(NetplayControllerInfo controllerPort);
+		[DllImport(DllPath)] public static extern NetplayControllerInfo NetPlayGetControllerPort();
+	}
+
+	public struct NetplayControllerInfo
+	{
+		public byte Port;
+		public byte SubPort;
+	}
+
+	public struct NetplayControllerUsageInfo
+	{
+		public NetplayControllerInfo Port;
+		public ControllerType Type;
+		[MarshalAs(UnmanagedType.I1)] public bool InUse;
 	}
 }

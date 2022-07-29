@@ -2631,6 +2631,9 @@
     <ClInclude Include="NES\Mappers\NSF\NsfMapper.h">
       <Filter>NES\Mappers\NSF</Filter>
     </ClInclude>
+    <ClInclude Include="Netplay\NetplayTypes.h">
+      <Filter>Netplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

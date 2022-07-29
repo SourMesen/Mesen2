@@ -21,25 +21,31 @@ extern "C" {
 	DllExport void __stdcall Disconnect() { _emu->GetGameClient()->Disconnect(); }
 	DllExport bool __stdcall IsConnected() { return _emu->GetGameClient()->Connected(); }
 
-	DllExport int32_t __stdcall NetPlayGetAvailableControllers()
+	DllExport void __stdcall NetPlayGetControllerList(NetplayControllerUsageInfo* list, int32_t& length)
+	{
+		vector<NetplayControllerUsageInfo> controllers;
+		if(_emu->GetGameServer()->Started()) {
+			controllers = _emu->GetGameServer()->GetControllerList();
+		} else {
+			controllers = _emu->GetGameClient()->GetControllerList();
+		}
+
+		for(size_t i = 0; i < controllers.size() && i < length; i++) {
+			list[i] = controllers[i];
+		}
+		length = (int32_t)controllers.size();
+	}
+
+	DllExport void __stdcall NetPlaySelectController(NetplayControllerInfo controller)
 	{
 		if(_emu->GetGameServer()->Started()) {
-			return _emu->GetGameServer()->GetAvailableControllers();
+			return _emu->GetGameServer()->SetHostControllerPort(controller);
 		} else {
-			return _emu->GetGameServer()->GetAvailableControllers();
+			return _emu->GetGameClient()->SelectController(controller);
 		}
 	}
 
-	DllExport void __stdcall NetPlaySelectController(int32_t port)
-	{
-		if(_emu->GetGameServer()->Started()) {
-			return _emu->GetGameServer()->SetHostControllerPort(port);
-		} else {
-			return _emu->GetGameClient()->SelectController(port);
-		}
-	}
-
-	DllExport int32_t __stdcall NetPlayGetControllerPort()
+	DllExport NetplayControllerInfo __stdcall NetPlayGetControllerPort()
 	{
 		if(_emu->GetGameServer()->Started()) {
 			return _emu->GetGameServer()->GetHostControllerPort();

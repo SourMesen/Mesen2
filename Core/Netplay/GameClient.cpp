@@ -25,14 +25,13 @@ bool GameClient::Connected()
 
 void GameClient::Connect(ClientConnectionData &connectionData)
 {
-	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
-
 	_stop = false;
 	unique_ptr<Socket> socket(new Socket());
 	if(socket->Connect(connectionData.Host.c_str(), connectionData.Port)) {
 		_connection.reset(new GameClientConnection(_emu, std::move(socket), connectionData));
 		_connected = true;
 		_clientThread.reset(new thread(&GameClient::Exec, this));
+		_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 	} else {
 		MessageManager::DisplayMessage("NetPlay", "CouldNotConnect");
 		_connected = false;
@@ -57,17 +56,21 @@ void GameClient::Exec()
 				_connection->ProcessMessages();
 				_connection->SendInput();
 			} else {
-				_connected = false;
-				_connection->Shutdown();
 				break;
 			}
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
+		_connected = false;
+		_connection->Shutdown();
 	}
 }
 
 void GameClient::ProcessNotification(ConsoleNotificationType type, void* parameter)
 {
+	if(!_connected) {
+		return;
+	}
+
 	if(type == ConsoleNotificationType::GameLoaded &&
 		std::this_thread::get_id() != _clientThread->get_id() && 
 		!_emu->IsEmulationThread()
@@ -82,19 +85,19 @@ void GameClient::ProcessNotification(ConsoleNotificationType type, void* paramet
 	}
 }
 
-void GameClient::SelectController(uint8_t port)
+void GameClient::SelectController(NetplayControllerInfo controller)
 {
 	if(_connection) {
-		_connection->SelectController(port);
+		_connection->SelectController(controller);
 	}
 }
 
-uint8_t GameClient::GetAvailableControllers()
+vector<NetplayControllerUsageInfo> GameClient::GetControllerList()
 {
-	return _connection ? _connection->GetAvailableControllers() : 0;
+	return _connection ? _connection->GetControllerList() : vector<NetplayControllerUsageInfo>();
 }
 
-uint8_t GameClient::GetControllerPort()
+NetplayControllerInfo GameClient::GetControllerPort()
 {
-	return _connection ? _connection->GetControllerPort() : GameConnection::SpectatorPort;
+	return _connection ? _connection->GetControllerPort() : NetplayControllerInfo { GameConnection::SpectatorPort, 0 };
 }

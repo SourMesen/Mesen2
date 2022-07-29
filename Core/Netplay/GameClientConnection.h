@@ -9,10 +9,11 @@
 #include "Shared/ControlDeviceState.h"
 #include "Netplay/GameConnection.h"
 #include "Netplay/ClientConnectionData.h"
+#include "Netplay/NetplayTypes.h"
 
 class Emulator;
 
-class GameClientConnection : public GameConnection, public INotificationListener, public IInputProvider
+class GameClientConnection final : public GameConnection, public INotificationListener, public IInputProvider
 {
 private:
 	std::deque<ControlDeviceState> _inputData[BaseControlDevice::PortCount];
@@ -29,17 +30,17 @@ private:
 	atomic<ControllerType> _controllerType;
 	ControlDeviceState _lastInputSent = {};
 	bool _gameLoaded = false;
-	uint8_t _controllerPort = GameConnection::SpectatorPort;
+	NetplayControllerInfo _controllerPort = { GameConnection::SpectatorPort, 0 };
 	ClientConnectionData _connectionData = {};
 	string _serverSalt;
 
 private:
 	void SendHandshake();
-	void SendControllerSelection(uint8_t port);
+	void SendControllerSelection(NetplayControllerInfo controller);
 	void ClearInputData();
 	void PushControllerState(uint8_t port, ControlDeviceState state);
 	void DisableControllers();
-	bool AttemptLoadGame(string filename, string sha1Hash);
+	bool AttemptLoadGame(string filename, uint32_t crc32);
 
 protected:
 	void ProcessMessage(NetMessage* message) override;
@@ -56,7 +57,7 @@ public:
 	void InitControlDevice();
 	void SendInput();
 
-	void SelectController(uint8_t port);
-	uint8_t GetAvailableControllers();
-	uint8_t GetControllerPort();
+	void SelectController(NetplayControllerInfo controller);
+	vector<NetplayControllerUsageInfo> GetControllerList();
+	NetplayControllerInfo GetControllerPort();
 };

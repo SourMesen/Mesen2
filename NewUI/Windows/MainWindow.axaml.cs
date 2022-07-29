@@ -162,6 +162,13 @@ namespace Mesen.Windows
 				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 
+				if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
+					EmuApi.AddKnownGameFolder(ConfigManager.Config.Preferences.GameFolder);
+				}
+				foreach(RecentItem recentItem in ConfigManager.Config.RecentFiles.Items) {
+					EmuApi.AddKnownGameFolder(recentItem.RomFile.Folder);
+				}
+
 				ProcessCommandLineArgs(Program.CommandLineArgs);
 
 				ConfigManager.Config.Preferences.UpdateFileAssociations();

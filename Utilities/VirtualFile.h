@@ -32,6 +32,7 @@ public:
 	string GetFileName();
 	string GetFileExtension();
 	string GetSha1Hash();
+	uint32_t GetCrc32();
 
 	size_t GetSize();
 
