@@ -2,18 +2,16 @@
 * UDP object
 * LuaSocket toolkit
 \*=========================================================================*/
-#include <string.h>
-#include <stdlib.h>
-
-#include "lua.h"
-#include "lauxlib.h"
-#include "compat.h"
+#include "luasocket.h"
 
 #include "auxiliar.h"
 #include "socket.h"
 #include "inet.h"
 #include "options.h"
 #include "udp.h"
+
+#include <string.h>
+#include <stdlib.h>
 
 /* min and max macros */
 #ifndef MIN
@@ -88,6 +86,8 @@ static t_opt optset[] = {
     {"ipv6-add-membership",  opt_set_ip6_add_membership},
     {"ipv6-drop-membership", opt_set_ip6_drop_membersip},
     {"ipv6-v6only",          opt_set_ip6_v6only},
+	{"recv-buffer-size",     opt_set_recv_buf_size},
+	{"send-buffer-size",     opt_set_send_buf_size},
     {NULL,                   NULL}
 };
 
@@ -104,6 +104,8 @@ static t_opt optget[] = {
     {"ipv6-multicast-hops",  opt_get_ip6_unicast_hops},
     {"ipv6-multicast-loop",  opt_get_ip6_multicast_loop},
     {"ipv6-v6only",          opt_get_ip6_v6only},
+	{"recv-buffer-size",     opt_get_recv_buf_size},
+	{"send-buffer-size",     opt_get_send_buf_size},
     {NULL,                   NULL}
 };
 
@@ -182,11 +184,14 @@ static int meth_sendto(lua_State *L) {
     memset(&aihint, 0, sizeof(aihint));
     aihint.ai_family = udp->family;
     aihint.ai_socktype = SOCK_DGRAM;
-    aihint.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
+    aihint.ai_flags = AI_NUMERICHOST;
+#ifdef AI_NUMERICSERV
+    aihint.ai_flags |= AI_NUMERICSERV;
+#endif
     err = getaddrinfo(ip, port, &aihint, &ai);
 	if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerrorA(err));
+        lua_pushstring(L, LUA_GAI_STRERROR(err));
         return 2;
     }
 
@@ -285,7 +290,7 @@ static int meth_receivefrom(lua_State *L) {
         INET6_ADDRSTRLEN, portstr, 6, NI_NUMERICHOST | NI_NUMERICSERV);
 	if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerrorA(err));
+        lua_pushstring(L, LUA_GAI_STRERROR(err));
         if (wanted > sizeof(buf)) free(dgram);
         return 2;
     }

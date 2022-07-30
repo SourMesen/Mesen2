@@ -1,10 +1,12 @@
+#include "luasocket.h"
 #include "compat.h"
 
 #if LUA_VERSION_NUM==501
+
 /*
 ** Adapted from Lua 5.2
 */
-void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
+void luasocket_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
   luaL_checkstack(L, nup+1, "too many upvalues");
   for (; l->name != NULL; l++) {  /* fill the table with given functions */
     int i;
@@ -20,7 +22,7 @@ void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
 /*
 ** Duplicated from Lua 5.2
 */
-void *luaL_testudata (lua_State *L, int ud, const char *tname) {
+void *luasocket_testudata (lua_State *L, int ud, const char *tname) {
   void *p = lua_touserdata(L, ud);
   if (p != NULL) {  /* value is a userdata? */
     if (lua_getmetatable(L, ud)) {  /* does it have a metatable? */

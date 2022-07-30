@@ -2,14 +2,11 @@
 * Auxiliar routines for class hierarchy manipulation
 * LuaSocket toolkit
 \*=========================================================================*/
+#include "luasocket.h"
+#include "auxiliar.h"
 #include <string.h>
 #include <stdio.h>
 
-#include "auxiliar.h"
-
-/*=========================================================================*\
-* Exported functions
-\*=========================================================================*/
 /*-------------------------------------------------------------------------*\
 * Initializes the module
 \*-------------------------------------------------------------------------*/
@@ -155,4 +152,3 @@ int auxiliar_typeerror (lua_State *L, int narg, const char *tname) {
       luaL_typename(L, narg));
   return luaL_argerror(L, narg, msg);
 }
-
