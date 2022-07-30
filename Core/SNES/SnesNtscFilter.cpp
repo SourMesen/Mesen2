@@ -19,9 +19,19 @@ FrameInfo SnesNtscFilter::GetFrameInfo()
 	int heightMultiplier = _baseFrameInfo.Width == 512 ? 1 : 2;
 	
 	FrameInfo frameInfo;
-	frameInfo.Width = SNES_NTSC_OUT_WIDTH(_baseFrameInfo.Width / widthDivider) - overscan.Left*2 - overscan.Right*2;
-	frameInfo.Height = _baseFrameInfo.Height * heightMultiplier - overscan.Top*2 - overscan.Bottom*2;
+	frameInfo.Width = SNES_NTSC_OUT_WIDTH(_baseFrameInfo.Width / widthDivider) - overscan.Left - overscan.Right;
+	frameInfo.Height = _baseFrameInfo.Height * heightMultiplier - overscan.Top - overscan.Bottom;
 	return frameInfo;
+}
+
+OverscanDimensions SnesNtscFilter::GetOverscan()
+{
+	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
+	overscan.Top *= 2;
+	overscan.Bottom *= 2;
+	overscan.Left *= 2;
+	overscan.Right *= 2;
+	return overscan;
 }
 
 void SnesNtscFilter::OnBeforeApplyFilter()
@@ -39,8 +49,8 @@ void SnesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	
 	bool useHighResOutput = _baseFrameInfo.Width == 512;
 	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(256);
-	uint32_t xOffset = overscan.Left * 2;
-	uint32_t yOffset = overscan.Top * baseWidth;
+	uint32_t xOffset = overscan.Left;
+	uint32_t yOffset = overscan.Top/2 * baseWidth;
 
 	if(useHighResOutput) {
 		snes_ntsc_blit_hires(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, baseWidth * 4);

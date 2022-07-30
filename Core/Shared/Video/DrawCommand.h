@@ -6,13 +6,13 @@ class DrawCommand
 {
 private:
 	int _frameCount = 0;
-	uint32_t* _argbBuffer = nullptr;
-	FrameInfo _frameInfo = {};
-	OverscanDimensions _overscan = {};
 	int32_t _startFrame = 0;
 	bool _disableAutoScale = false;
 
 protected:
+	uint32_t* _argbBuffer = nullptr;
+	FrameInfo _frameInfo = {};
+	OverscanDimensions _overscan = {};
 	bool _useIntegerScaling = false;
 	float _xScale = 1;
 	int _yScale = 1;
@@ -38,8 +38,8 @@ protected:
 	{
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
-			int top = (int)(_overscan.Top * _yScale);
-			int left = (int)(_overscan.Left * _xScale);
+			int top = (int)_overscan.Top;
+			int left = (int)_overscan.Left;
 			if(_yScale == 1 && _xScale == 1) {
 				int32_t offset = ((int32_t)y - top) * _frameInfo.Width + (int32_t)x - left;
 				if((int32_t)x - left >= (int32_t)_frameInfo.Width || (int32_t)y - top >= (int32_t)_frameInfo.Height || offset < 0) {
@@ -108,6 +108,7 @@ public:
 			_overscan = overscan;
 
 			if(autoScale && !_disableAutoScale) {
+				//TODO review
 				float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
 				_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;
 				_xScale = (float)scale;

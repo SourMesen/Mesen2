@@ -119,6 +119,8 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 		}
 	}
 
+	_emu->GetDebugHud()->Draw(outputBuffer, frameSize, overscan, _frame.FrameNumber, true);
+
 	if(_scaleFilter && !isAudioPlayer) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height);
 		frameSize = _scaleFilter->GetFrameInfo(frameSize);
@@ -134,8 +136,6 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	}
 
 	RenderedFrame convertedFrame((void*)outputBuffer, frameSize.Width, frameSize.Height, _frame.Scale, _frame.FrameNumber, _frame.InputData);
-
-	_emu->GetDebugHud()->Draw(outputBuffer, frameSize, overscan, _frame.FrameNumber, true);
 
 	double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), _baseFrameSize);
 	if(frameSize.Height != _lastFrameSize.Height || frameSize.Width != _lastFrameSize.Width || aspectRatio != _lastAspectRatio) {

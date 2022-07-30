@@ -32,13 +32,10 @@ void BaseVideoFilter::SetBaseFrameInfo(FrameInfo frameInfo)
 
 FrameInfo BaseVideoFilter::GetFrameInfo()
 {
-	//TODO this is originally snes-specific code
-	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
-
 	FrameInfo frameInfo = _baseFrameInfo;
 	OverscanDimensions overscan = GetOverscan();
-	frameInfo.Width -= overscan.Left * overscanMultiplier + overscan.Right * overscanMultiplier;
-	frameInfo.Height -= overscan.Top * overscanMultiplier + overscan.Bottom * overscanMultiplier;
+	frameInfo.Width -= overscan.Left + overscan.Right;
+	frameInfo.Height -= overscan.Top + overscan.Bottom;
 	return frameInfo;
 }
 
@@ -59,6 +56,11 @@ OverscanDimensions BaseVideoFilter::GetOverscan()
 	return _overscan;
 }
 
+void BaseVideoFilter::SetOverscan(OverscanDimensions overscan)
+{
+	_overscan = overscan;
+}
+
 void BaseVideoFilter::OnBeforeApplyFilter()
 {
 }
@@ -73,10 +75,10 @@ uint32_t BaseVideoFilter::GetBufferSize()
 	return _bufferSize * sizeof(uint32_t);
 }
 
-FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData)
+FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData, bool enableOverscan)
 {
 	auto lock = _frameLock.AcquireSafe();
-	_overscan = _emu->GetSettings()->GetOverscan();
+	_overscan = enableOverscan ? _emu->GetSettings()->GetOverscan() : OverscanDimensions{};
 	_isOddFrame = frameNumber % 2;
 	_frameData = frameData;
 	FrameInfo frameInfo = GetFrameInfo();

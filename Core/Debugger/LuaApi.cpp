@@ -464,9 +464,10 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 	FrameInfo frameSize;
 	frameSize.Height = frame.Height;
 	frameSize.Width = frame.Width;
-	unique_ptr<BaseVideoFilter> filter = unique_ptr<BaseVideoFilter>(_emu->GetVideoFilter());
+	
+	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 	filter->SetBaseFrameInfo(frameSize);
-	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr);
+	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr, false);
 	uint32_t* rgbBuffer = filter->GetOutputBuffer();
 
 	lua_createtable(lua, frameSize.Height*frameSize.Width, 0);
@@ -489,11 +490,16 @@ int LuaApi::SetScreenBuffer(lua_State *lua)
 	frameSize.Height = frame.Height;
 	frameSize.Width = frame.Width;
 
+	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
+	filter->SetBaseFrameInfo(frameSize);
+	filter->SetOverscan({});
+	frameSize = filter->GetFrameInfo();
+
 	int startFrame = _emu->GetFrameCount();
-	unique_ptr<DrawScreenBufferCommand> cmd(new DrawScreenBufferCommand(frame.Width, frame.Height, startFrame));
+	unique_ptr<DrawScreenBufferCommand> cmd(new DrawScreenBufferCommand(frameSize.Width, frameSize.Height, startFrame));
 
 	luaL_checktype(lua, 1, LUA_TTABLE);
-	for(int i = 0, len = frame.Height * frame.Width; i < len; i++) {
+	for(int i = 0, len = frameSize.Height * frameSize.Width; i < len; i++) {
 		lua_rawgeti(lua, 1, i+1);
 		uint32_t color = (uint32_t)lua_tointeger(lua, -1);
 		lua_pop(lua, 1);

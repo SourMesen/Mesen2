@@ -12,10 +12,13 @@ private:
 protected:
 	void InternalDraw()
 	{
-		for(uint32_t y = 0; y < _height; y++) {
-			for(uint32_t x = 0; x < _width; x++) {
-				DrawPixel(x, y, _screenBuffer[(y * _width) + x]);
-			}
+		int top = (int)_overscan.Top;
+		int left = (int)_overscan.Left;
+		int width = _frameInfo.Width;
+		int srcOffset = top * _width + left;
+
+		for(uint32_t y = 0; y < _frameInfo.Height; y++) {
+			memcpy(_argbBuffer + y * _frameInfo.Width, _screenBuffer + srcOffset + y * _width, width * sizeof(uint32_t));
 		}
 	}
 

@@ -24,6 +24,17 @@ FrameInfo SnesDefaultVideoFilter::GetFrameInfo()
 	}
 }
 
+OverscanDimensions SnesDefaultVideoFilter::GetOverscan()
+{
+	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
+	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
+	overscan.Top *= overscanMultiplier;
+	overscan.Bottom *= overscanMultiplier;
+	overscan.Left *= overscanMultiplier;
+	overscan.Right *= overscanMultiplier;
+	return overscan;
+}
+
 void SnesDefaultVideoFilter::InitLookupTable()
 {
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
@@ -95,10 +106,9 @@ void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	FrameInfo frameInfo = _frameInfo;
 	OverscanDimensions overscan = GetOverscan();
 	
-	int overscanMultiplier = _baseFrameInfo.Width == 512 ? 2 : 1;
 	uint32_t width = _baseFrameInfo.Width;
-	uint32_t xOffset = overscan.Left * overscanMultiplier;
-	uint32_t yOffset = overscan.Top * overscanMultiplier * width;
+	uint32_t xOffset = overscan.Left;
+	uint32_t yOffset = overscan.Top * width;
 
 	for(uint32_t i = 0; i < frameInfo.Height; i++) {
 		for(uint32_t j = 0; j < frameInfo.Width; j++) {

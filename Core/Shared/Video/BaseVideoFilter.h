@@ -31,7 +31,6 @@ protected:
 	virtual void OnBeforeApplyFilter();
 	bool IsOddFrame();
 	uint32_t GetBufferSize();
-	virtual FrameInfo GetFrameInfo();
 	
 	template<typename T> bool NtscFilterOptionsChanged(T& ntscSetup);
 	template<typename T> void InitNtscFilter(T& ntscSetup);
@@ -41,11 +40,13 @@ public:
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();
-	FrameInfo SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData);
+	FrameInfo SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData, bool enableOverscan = true);
 	void TakeScreenshot(string romName, VideoFilterType filterType);
 	void TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream = nullptr);
 
 	virtual OverscanDimensions GetOverscan();
-	
+	void SetOverscan(OverscanDimensions dimensions);
+	virtual FrameInfo GetFrameInfo();
+
 	void SetBaseFrameInfo(FrameInfo frameInfo);
 };
