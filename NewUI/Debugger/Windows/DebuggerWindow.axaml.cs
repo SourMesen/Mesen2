@@ -205,6 +205,7 @@ namespace Mesen.Debugger.Windows
 		{
 			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
 			if(filename != null && File.Exists(filename)) {
+				Activate();
 				DebugWorkspaceManager.LoadSupportedFile(filename, true);
 			}
 		}

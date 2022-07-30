@@ -480,6 +480,7 @@ namespace Mesen.Debugger.Integration
 			int? size = null;
 			int[] definitions = Array.Empty<int>();
 			int[] references = Array.Empty<int>();
+			string? type = null;
 
 			DbgReader.ReadEntry(row, (ref ReadOnlySpan<char> name, ref ReadOnlySpan<char> data) => {
 				if(name.IsEqual("id")) {
@@ -498,11 +499,13 @@ namespace Mesen.Debugger.Integration
 					references = DbgReader.ReadIntArray(data);
 				} else if(name.IsEqual("def")) {
 					definitions = DbgReader.ReadIntArray(data);
+				} else if(name.IsEqual("type")) {
+					type = data.ToString();					
 				}
 			});
 
 			if(id != null && symbolName != null) {
-				SymbolInfo symbol = new SymbolInfo(id.Value, symbolName, address, segmentId, exportSymbolId, size, definitions, references);
+				SymbolInfo symbol = new SymbolInfo(id.Value, symbolName, address, segmentId, exportSymbolId, size, definitions, references, type);
 				_symbols.Add(symbol.ID, symbol);
 				return true;
 			} else {
@@ -569,6 +572,8 @@ namespace Mesen.Debugger.Integration
 
 		private void LoadLabels()
 		{
+			Dictionary<MemoryType, Dictionary<int, string>> labelAliases = GatherLabelAliases();
+
 			foreach(KeyValuePair<int, SymbolInfo> kvp in _symbols) {
 				try {
 					SymbolInfo symbol = kvp.Value;
@@ -594,10 +599,16 @@ namespace Mesen.Debugger.Integration
 						}
 
 						AddressInfo? addressInfo = GetSymbolAddressInfo(symbol);
-						if(addressInfo != null) {
+						if(addressInfo != null && (symbol.Type == "lab" || symbol.Size != null)) {
 							CodeLabel label = this.CreateLabel(addressInfo.Value.Address, addressInfo.Value.Type, (uint)GetSymbolSize(symbol));
-							if(label != null) {
-								label.Label = newName;
+							label.Label = newName;
+							label.Length = (uint)GetSymbolSize(symbol);
+
+							//Add aliases to comment if aliases exist
+							if(labelAliases.TryGetValue(addressInfo.Value.Type, out Dictionary<int, string>? aliases)) {
+								if(aliases.TryGetValue(addressInfo.Value.Address, out string? alias)) {
+									label.Comment = "Aliases: " + Environment.NewLine + alias + Environment.NewLine + label.Comment;
+								}
 							}
 						}
 					}
@@ -605,6 +616,37 @@ namespace Mesen.Debugger.Integration
 					_errorCount++;
 				}
 			}
+		}
+
+		private Dictionary<MemoryType, Dictionary<int, string>> GatherLabelAliases()
+		{
+			//Generate a list of all known aliases for addresses (type=equ or size undefined)
+			Dictionary<MemoryType, Dictionary<int, string>> labelAliases = new();
+			foreach(KeyValuePair<int, SymbolInfo> kvp in _symbols) {
+				try {
+					SymbolInfo symbol = kvp.Value;
+					if(symbol.Type != "lab" || symbol.Size == null) {
+						AddressInfo? addr = GetSymbolAddressInfo(symbol);
+						if(addr != null) {
+							if(!labelAliases.TryGetValue(addr.Value.Type, out Dictionary<int, string>? aliases)) {
+								aliases = new();
+								labelAliases[addr.Value.Type] = aliases;
+							}
+
+							string? alias = "";
+							if(aliases.TryGetValue(addr.Value.Address, out alias)) {
+								alias += Environment.NewLine + symbol.Name;
+							} else {
+								alias = symbol.Name;
+							}
+
+							aliases[addr.Value.Address] = alias;
+						}
+					}
+				} catch { }
+			}
+
+			return labelAliases;
 		}
 
 		private void LoadComments()
@@ -1068,11 +1110,12 @@ namespace Mesen.Debugger.Integration
 			public int? SegmentID { get; }
 			public int? ExportSymbolID { get; }
 			public int? Size { get; }
+			public string? Type { get; } //"lab", "equ" or "imp" (label, equate, import?)
 			public int[] References { get; }
 			public int[] Definitions { get; }
 			public SourceSymbol SourceSymbol { get => new SourceSymbol(Name, Address, this); }
 
-			public SymbolInfo(int id, string name, int? address, int? segmentId, int? exportSymbolId, int? size, int[] definitions, int[] references)
+			public SymbolInfo(int id, string name, int? address, int? segmentId, int? exportSymbolId, int? size, int[] definitions, int[] references, string? type)
 			{
 				ID = id;
 				Name = name;
@@ -1082,6 +1125,7 @@ namespace Mesen.Debugger.Integration
 				Size = size;
 				Definitions = definitions;
 				References = references;
+				Type = type;
 			}
 		}
 
