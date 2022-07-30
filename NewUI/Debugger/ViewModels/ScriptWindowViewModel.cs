@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Mesen.Localization;
+using Avalonia.Threading;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -163,7 +164,7 @@ namespace Mesen.Debugger.ViewModels
 				await SaveScript();
 			}
 
-			ScriptId = DebugApi.LoadScript(ScriptName, Code, ScriptId);
+			ScriptId = DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, ScriptId);
 		}
 
 		private List<ContextMenuAction> GetScriptMenuAction()
@@ -266,7 +267,9 @@ namespace Mesen.Debugger.ViewModels
 			_fileWatcher.Changed += (s, e) => {
 				if(Config.AutoReloadScriptWhenFileChanges) {
 					System.Threading.Thread.Sleep(100);
-					LoadScript(FilePath);
+					Dispatcher.UIThread.Post(() => {
+						LoadScript(FilePath);
+					});
 				}
 			};
 			_fileWatcher.EnableRaisingEvents = true;

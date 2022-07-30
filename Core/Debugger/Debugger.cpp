@@ -300,6 +300,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 
 		_waitForBreakResume = true;
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
+		ProcessEvent(EventType::CodeBreak);
 		notificationSent = true;
 	}
 

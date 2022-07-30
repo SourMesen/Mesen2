@@ -7,7 +7,6 @@ enum class RomFormat
 	Unknown,
 	
 	Sfc,
-	SfcWithCopierHeader,
 	Spc,
 
 	Gb,

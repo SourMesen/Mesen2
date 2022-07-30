@@ -123,7 +123,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		case ControllerType::FourScore: {
 			std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 4, controllers);
 			controllers[0].Keys = cfg.Port1.Keys;
-			device.reset(new FourScore(_emu, type, controllers));
+			device.reset(new FourScore(_emu, type, 0, controllers));
 			break;
 		}
 
@@ -134,7 +134,7 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 			if(type == ControllerType::TwoPlayerAdapter) {
 				device.reset(new TwoPlayerAdapter(_emu, type, controllers));
 			} else {
-				device.reset(new FourScore(_emu, type, controllers));
+				device.reset(new FourScore(_emu, type, BaseControlDevice::ExpDevicePort, controllers));
 			}
 			break;
 		}

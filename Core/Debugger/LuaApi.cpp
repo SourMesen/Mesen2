@@ -2,16 +2,11 @@
 
 #ifndef LIBRETRO
 #include "LuaApi.h"
-#include "../Lua/lua.hpp"
+#include "Lua/lua.hpp"
 #include "Debugger/LuaCallHelper.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/ScriptingContext.h"
-#include "SNES/SnesConsole.h"
-#include "SNES/BaseCartridge.h"
-#include "SNES/SnesControlManager.h"
-#include "SNES/Input/SnesController.h"
-#include "SNES/SnesPpu.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/LabelManager.h"
 #include "Shared/Video/DebugHud.h"
@@ -20,10 +15,15 @@
 #include "Shared/RewindManager.h"
 #include "Shared/SaveStateManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/Video/BaseVideoFilter.h"
+#include "Shared/Video/DrawScreenBufferCommand.h"
 #include "Shared/KeyManager.h"
 #include "Shared/Interfaces/IKeyManager.h"
+#include "Shared/ControllerHub.h"
+#include "Shared/BaseControlManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/magic_enum.hpp"
 #include "MemoryOperationType.h"
 
 #ifdef _MSC_VER
@@ -42,6 +42,8 @@
 #define lua_readbool(name, dest) lua_getfield(lua, -1, #name); dest = l.ReadBool();
 #define error(text) luaL_error(lua, text); return 0;
 #define errorCond(cond, text) if(cond) { luaL_error(lua, text); return 0; }
+#define checkEnum(enumType, enumValue, text) if(!magic_enum::enum_contains<enumType>(enumValue)) { luaL_error(lua, text); return 0; }
+
 #define checkparams() if(!l.CheckParamCount()) { return 0; }
 #define checkminparams(x) if(!l.CheckParamCount(x)) { return 0; }
 #define checkinitdone() if(!_context->CheckInitDone()) { error("This function cannot be called outside a callback"); }
@@ -52,6 +54,8 @@ Emulator* LuaApi::_emu = nullptr;
 SnesPpu* LuaApi::_ppu = nullptr;
 MemoryDumper* LuaApi::_memoryDumper = nullptr;
 ScriptingContext* LuaApi::_context = nullptr;
+CpuType LuaApi::_defaultCpuType = {};
+MemoryType LuaApi::_defaultMemType = {};
 
 void LuaApi::SetContext(ScriptingContext* context)
 {
@@ -59,9 +63,19 @@ void LuaApi::SetContext(ScriptingContext* context)
 	_debugger = _context->GetDebugger();
 	_memoryDumper = _debugger->GetMemoryDumper();
 	_emu = _debugger->GetEmulator();
+	
+	_defaultCpuType = _emu->GetCpuTypes()[0];
+	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);
 
 	//TODO
 	//_ppu = _debugger->GetConsole()->GetPpu().get();
+}
+
+void LuaApi::LuaPushIntValue(lua_State* lua, string name, int value)
+{
+	lua_pushstring(lua, name.c_str());
+	lua_pushinteger(lua, value);
+	lua_settable(lua, -3);
 }
 
 int LuaApi::GetLibrary(lua_State *lua)
@@ -95,6 +109,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "takeScreenshot", LuaApi::TakeScreenshot },
 		{ "isKeyPressed", LuaApi::IsKeyPressed },
 		{ "getInput", LuaApi::GetInput },
+		{ "setInput", LuaApi::SetInput },
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
 		{ "getState", LuaApi::GetState },
@@ -110,28 +125,16 @@ int LuaApi::GetLibrary(lua_State *lua)
 	//Expose MemoryType enum as "emu.memType"
 	lua_pushliteral(lua, "memType");
 	lua_newtable(lua);
-	lua_pushintvalue(cpu, MemoryType::SnesMemory);
-	lua_pushintvalue(spc, MemoryType::SpcMemory);
-	lua_pushintvalue(sa1, MemoryType::Sa1Memory);
-	lua_pushintvalue(gsu, MemoryType::GsuMemory);
-	lua_pushintvalue(cx4, MemoryType::Cx4Memory);
-	lua_pushintvalue(gameboy, MemoryType::GameboyMemory);
-	lua_pushintvalue(cgram, MemoryType::SnesCgRam);
-	lua_pushintvalue(vram, MemoryType::SnesVideoRam);
-	lua_pushintvalue(oam, MemoryType::SnesSpriteRam);
-	lua_pushintvalue(prgRom, MemoryType::SnesPrgRom);
-	lua_pushintvalue(workRam, MemoryType::SnesWorkRam);
-	lua_pushintvalue(saveRam, MemoryType::SnesSaveRam);
-	lua_pushintvalue(gbPrgRom, MemoryType::GbPrgRom);
-	lua_pushintvalue(gbWorkRam, MemoryType::GbWorkRam);
-	lua_pushintvalue(gbCartRam, MemoryType::GbCartRam);
-	lua_pushintvalue(gbVideoRam, MemoryType::GbVideoRam);
-	lua_pushintvalue(cpuDebug, MemoryType::SnesMemory | 0x100);
-	lua_pushintvalue(spcDebug, MemoryType::SpcMemory | 0x100);
-	lua_pushintvalue(sa1Debug, MemoryType::Sa1Memory | 0x100);
-	lua_pushintvalue(gsuDebug, MemoryType::GsuMemory | 0x100);
-	lua_pushintvalue(cx4Debug, MemoryType::Cx4Memory | 0x100);
-	lua_pushintvalue(gameboyDebug, MemoryType::GameboyMemory | 0x100);
+	for(auto& entry : magic_enum::enum_entries<MemoryType>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		if(DebugUtilities::IsRelativeMemory(entry.first)) {
+			name = name.substr(0, name.size() - 6);
+			string debugName = name + "Debug";
+			LuaPushIntValue(lua, debugName, (int)entry.first | 0x100);
+		}
+		LuaPushIntValue(lua, name, (int)entry.first);
+	}
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "memCallbackType");
@@ -143,28 +146,13 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "counterMemType");
 	lua_newtable(lua);
-	lua_pushintvalue(prgRom, MemoryType::SnesPrgRom);
-	lua_pushintvalue(workRam, MemoryType::SnesWorkRam);
-	lua_pushintvalue(saveRam, MemoryType::SnesSaveRam);
-	lua_pushintvalue(videoRam, MemoryType::SnesVideoRam);
-	lua_pushintvalue(spriteRam, MemoryType::SnesSpriteRam);
-	lua_pushintvalue(cgRam, MemoryType::SnesCgRam);
-	lua_pushintvalue(spcRam, MemoryType::SpcRam);
-	lua_pushintvalue(spcRom, MemoryType::SpcRom);
-	lua_pushintvalue(dspProgramRom, MemoryType::DspProgramRom);
-	lua_pushintvalue(dspDataRom, MemoryType::DspDataRom);
-	lua_pushintvalue(dspDataRam, MemoryType::DspDataRam);
-	lua_pushintvalue(sa1InternalRam, MemoryType::Sa1InternalRam);
-	lua_pushintvalue(gsuWorkRam, MemoryType::GsuWorkRam);
-	lua_pushintvalue(cx4DataRam, MemoryType::Cx4DataRam);
-	lua_pushintvalue(bsxPsRam, MemoryType::BsxPsRam);
-	lua_pushintvalue(bsxMemoryPack, MemoryType::BsxMemoryPack);
-	lua_pushintvalue(gbPrgRom, MemoryType::GbPrgRom);
-	lua_pushintvalue(gbWorkRam, MemoryType::GbWorkRam);
-	lua_pushintvalue(gbCartRam, MemoryType::GbCartRam);
-	lua_pushintvalue(gbVideoRam, MemoryType::GbVideoRam);
-	lua_pushintvalue(gbHighRam, MemoryType::GbHighRam);
-	lua_pushintvalue(gbBootRom, MemoryType::GbBootRom);
+	for(auto& entry : magic_enum::enum_entries<MemoryType>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		if(!DebugUtilities::IsRelativeMemory(entry.first)) {
+			LuaPushIntValue(lua, name, (int)entry.first);
+		}
+	}
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "counterOpType");
@@ -200,13 +188,11 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "cpuType");
 	lua_newtable(lua);
-	lua_pushintvalue(cpu, CpuType::Snes);
-	lua_pushintvalue(spc, CpuType::Spc);
-	lua_pushintvalue(dsp, CpuType::NecDsp);
-	lua_pushintvalue(sa1, CpuType::Sa1);
-	lua_pushintvalue(gsu, CpuType::Gsu);
-	lua_pushintvalue(cx4, CpuType::Cx4);
-	lua_pushintvalue(gameboy, CpuType::Gameboy);
+	for(auto& entry : magic_enum::enum_entries<CpuType>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		LuaPushIntValue(lua, name, (int)entry.first);
+	}
 	lua_settable(lua, -3);
 
 	return 1;
@@ -304,6 +290,7 @@ int LuaApi::GetPrgRomOffset(lua_State *lua)
 	checkminparams(1);
 	errorCond(address < 0 || address > 0xFFFF, "address must be between 0 and $FFFF");
 	
+	//TODO
 	AddressInfo relAddress { address, MemoryType::SnesMemory };
 	int32_t prgRomOffset = _debugger->GetAbsoluteAddress(relAddress).Address;
 	l.Return(prgRomOffset);
@@ -314,7 +301,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
-	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Snes);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)_defaultCpuType);
 	int32_t endAddr = l.ReadInteger(-1);
 	uint32_t startAddr = l.ReadInteger();
 	CallbackType callbackType = (CallbackType)l.ReadInteger();
@@ -326,8 +313,8 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 	}
 
 	errorCond(startAddr > (uint32_t)endAddr, "start address must be <= end address");
-	errorCond(callbackType < CallbackType::CpuRead || callbackType > CallbackType::CpuExec, "the specified type is invalid");
-	errorCond(cpuType < CpuType::Snes || cpuType > CpuType::Gameboy, "the cpu type is invalid");
+	checkEnum(CallbackType, callbackType, "the specified callback type is invalid");
+	checkEnum(CpuType, cpuType, "the cpu type is invalid");
 	errorCond(reference == LUA_NOREF, "the specified function could not be found");
 	_context->RegisterMemoryCallback(callbackType, startAddr, endAddr, cpuType, reference);
 	_context->Log("Registered memory callback from $" + HexUtilities::ToHex((uint32_t)startAddr) + " to $" + HexUtilities::ToHex((uint32_t)endAddr));
@@ -340,7 +327,7 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
 
-	CpuType cpuType = (CpuType)l.ReadInteger((int)CpuType::Snes);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)_defaultCpuType);
 	int endAddr = l.ReadInteger(-1);
 	int startAddr = l.ReadInteger();
 	CallbackType type = (CallbackType)l.ReadInteger();
@@ -353,7 +340,7 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 	}
 
 	errorCond(startAddr > endAddr, "start address must be <= end address");
-	errorCond(type < CallbackType::CpuRead || type > CallbackType::CpuExec, "the specified type is invalid");
+	checkEnum(CallbackType, type, "the specified type is invalid");
 	errorCond(reference == LUA_NOREF, "function reference is invalid");
 	_context->UnregisterMemoryCallback(type, startAddr, endAddr, cpuType, reference);
 	return l.ReturnCount();
@@ -365,7 +352,7 @@ int LuaApi::RegisterEventCallback(lua_State *lua)
 	EventType type = (EventType)l.ReadInteger();
 	int reference = l.GetReference();
 	checkparams();
-	errorCond(type < EventType::Nmi || type >= EventType::EventTypeSize, "the specified type is invalid");
+	checkEnum(EventType, type, "the specified type is invalid");
 	errorCond(reference == LUA_NOREF, "the specified function could not be found");
 	_context->RegisterEventCallback(type, reference);
 	l.Return(reference);
@@ -378,7 +365,8 @@ int LuaApi::UnregisterEventCallback(lua_State *lua)
 	EventType type = (EventType)l.ReadInteger();
 	int reference = l.ReadInteger();
 	checkparams();
-	errorCond(type < EventType::Nmi || type >= EventType::EventTypeSize, "the specified type is invalid");
+
+	checkEnum(EventType, type, "the specified type is invalid");
 	errorCond(reference == LUA_NOREF, "function reference is invalid");
 	_context->UnregisterEventCallback(type, reference);
 	return l.ReturnCount();
@@ -472,33 +460,47 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 
-	//int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+	PpuFrameInfo frame = _emu->GetPpuFrame();
+	FrameInfo frameSize;
+	frameSize.Height = frame.Height;
+	frameSize.Width = frame.Width;
+	unique_ptr<BaseVideoFilter> filter = unique_ptr<BaseVideoFilter>(_emu->GetVideoFilter());
+	filter->SetBaseFrameInfo(frameSize);
+	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr);
 
 	lua_newtable(lua);
-	for(int y = 0; y < 239; y++) {
-		for(int x = 0; x < 256; x++) {
-			//TODO
-			//lua_pushinteger(lua, DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
-			lua_rawseti(lua, -2, (y << 8) + x);
+	for(uint32_t y = 0; y < frameSize.Height; y++) {
+		for(uint32_t x = 0; x < frameSize.Width; x++) {
+			int offset = y * frameSize.Width + x;
+			lua_pushinteger(lua, filter->GetOutputBuffer()[offset] & 0xFFFFFF);
+			lua_rawseti(lua, -2, offset);
 		}
 	}
 
 	return 1;
 }
 
+//TODO need api to get current screen size
+
 int LuaApi::SetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	uint32_t pixels[256*239] = {};
+	
+	PpuFrameInfo frame = _emu->GetPpuFrame();
+	FrameInfo frameSize;
+	frameSize.Height = frame.Height;
+	frameSize.Width = frame.Width;
+
+	int startFrame = _emu->GetFrameCount();
+	unique_ptr<DrawScreenBufferCommand> cmd(new DrawScreenBufferCommand(frame.Width, frame.Height, startFrame));
+
 	luaL_checktype(lua, 1, LUA_TTABLE);
-	for(int i = 0; i < 256*239; i++) {
+	for(int i = 0, len = frame.Height * frame.Width; i < len; i++) {
 		lua_rawgeti(lua, 1, i);
-		pixels[i] = l.ReadInteger() ^ 0xFF000000;
+		cmd->SetPixel(i, l.ReadInteger() ^ 0xFF000000);
 	}
 	
-	int startFrame = _emu->GetFrameCount();
-	_emu->GetDebugHud()->DrawScreenBuffer(pixels, startFrame);
-
+	_emu->GetDebugHud()->AddCommand(std::move(cmd));
 	return l.ReturnCount();
 }
 
@@ -508,11 +510,11 @@ int LuaApi::GetPixel(lua_State *lua)
 	int y = l.ReadInteger();
 	int x = l.ReadInteger();
 	checkparams();
+	//TODO
 	errorCond(x < 0 || x > 255 || y < 0 || y > 238, "invalid x,y coordinates (must be between 0-255, 0-238)");
 
 	//int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
 
-	//Ignores intensify & grayscale bits
 	//TODO
 	//l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
 	return l.ReturnCount();
@@ -566,7 +568,7 @@ int LuaApi::Break(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
-	_debugger->Step(CpuType::Snes, 1, StepType::Step);
+	_debugger->Step(_defaultCpuType, 1, StepType::Step);
 	return l.ReturnCount();
 }
 
@@ -589,7 +591,7 @@ int LuaApi::Execute(lua_State *lua)
 	errorCond(count <= 0, "count must be >= 1");
 	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 
-	_debugger->Step(CpuType::Snes, count, type);
+	_debugger->Step(_defaultCpuType, count, type);
 
 	return l.ReturnCount();
 }
@@ -629,29 +631,87 @@ int LuaApi::IsKeyPressed(lua_State *lua)
 int LuaApi::GetInput(lua_State *lua)
 {
 	LuaCallHelper l(lua);
+	l.ForceParamCount(2);
+	int subport = l.ReadInteger(0);
 	int port = l.ReadInteger();
-	checkparams();
-	errorCond(port < 0 || port > 4, "Invalid port number - must be between 0 to 4");
+	checkminparams(1);
 
-	//TODO
-	shared_ptr<SnesController> controller = std::dynamic_pointer_cast<SnesController>(_emu->GetControlManager()->GetControlDevice(port));
-	errorCond(controller == nullptr, "Input port must be connected to a standard controller");
+	errorCond(port < 0 || port > 5, "Invalid port number - must be between 0 to 4");
+	errorCond(subport < 0 || subport > IControllerHub::MaxSubPorts, "Invalid subport number");
+
+	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->GetControlDevice(port, subport);
 
 	lua_newtable(lua);
-	lua_pushboolvalue(a, controller->IsPressed(SnesController::Buttons::A));
-	lua_pushboolvalue(b, controller->IsPressed(SnesController::Buttons::B));
-	lua_pushboolvalue(x, controller->IsPressed(SnesController::Buttons::X));
-	lua_pushboolvalue(y, controller->IsPressed(SnesController::Buttons::Y));
-	lua_pushboolvalue(l, controller->IsPressed(SnesController::Buttons::L));
-	lua_pushboolvalue(r, controller->IsPressed(SnesController::Buttons::R));
-	lua_pushboolvalue(start, controller->IsPressed(SnesController::Buttons::Start));
-	lua_pushboolvalue(select, controller->IsPressed(SnesController::Buttons::Select));
-	lua_pushboolvalue(up, controller->IsPressed(SnesController::Buttons::Up));
-	lua_pushboolvalue(down, controller->IsPressed(SnesController::Buttons::Down));
-	lua_pushboolvalue(left, controller->IsPressed(SnesController::Buttons::Left));
-	lua_pushboolvalue(right, controller->IsPressed(SnesController::Buttons::Right));
+
+	if(controller) {
+		vector<DeviceButtonName> buttons = controller->GetKeyNameAssociations();
+		for(DeviceButtonName& btn : buttons) {
+			lua_pushstring(lua, btn.Name.c_str());
+			if(btn.IsNumeric) {
+				if(btn.ButtonId == BaseControlDevice::DeviceXCoordButtonId) {
+					lua_pushinteger(lua, controller->GetCoordinates().X);
+				} else if(btn.ButtonId == BaseControlDevice::DeviceYCoordButtonId) {
+					lua_pushinteger(lua, controller->GetCoordinates().Y);
+				}
+			} else {
+				lua_pushboolean(lua, controller->IsPressed(btn.ButtonId));
+			}
+			lua_settable(lua, -3);
+		}
+	}
+
 	return 1;
 }
+
+int LuaApi::SetInput(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(4);
+	lua_settop(lua, 4);
+
+	bool allowUserInput = l.ReadBool(false);
+	int subport = l.ReadInteger(0);
+	int port = l.ReadInteger();
+
+	errorCond(port < 0 || port > 5, "Invalid port number - must be between 0 to 4");
+	errorCond(subport < 0 || subport > IControllerHub::MaxSubPorts, "Invalid subport number");
+
+	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->GetControlDevice(port, subport);
+	if(!controller) {
+		return 0;
+	}
+
+	luaL_checktype(lua, 1, LUA_TTABLE);
+
+	vector<DeviceButtonName> buttons = controller->GetKeyNameAssociations();
+	for(DeviceButtonName& btn : buttons) {
+		lua_getfield(lua, 1, btn.Name.c_str());
+		if(btn.IsNumeric) {
+			Nullable<int32_t> btnState = l.ReadOptionalInteger();
+			if(btnState.HasValue || !allowUserInput) {
+				if(btn.ButtonId == BaseControlDevice::DeviceXCoordButtonId) {
+					MousePosition pos = controller->GetCoordinates();
+					pos.X = (int16_t)btnState.Value;
+					controller->SetCoordinates(pos);
+				} else if(btn.ButtonId == BaseControlDevice::DeviceYCoordButtonId) {
+					MousePosition pos = controller->GetCoordinates();
+					pos.Y = (int16_t)btnState.Value;
+					controller->SetCoordinates(pos);
+				}
+			}
+		} else {
+			Nullable<bool> btnState = l.ReadOptionalBool();
+			if(btnState.HasValue || !allowUserInput) {
+				controller->SetBitValue(btn.ButtonId, btnState.Value);
+			}
+		}
+	}
+	
+	lua_pop(lua, 1);
+
+	return l.ReturnCount();
+}
+
 
 int LuaApi::GetAccessCounters(lua_State *lua)
 {
@@ -660,7 +720,9 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	MemoryOperationType operationType = (MemoryOperationType)l.ReadInteger();
 	MemoryType memoryType = (MemoryType)l.ReadInteger();
 	errorCond(operationType >= MemoryOperationType::ExecOperand, "Invalid operation type");
-	errorCond(memoryType >= MemoryType::Register, "Invalid memory type");
+	errorCond(memoryType == MemoryType::Register, "Invalid memory type");
+	checkEnum(MemoryType, memoryType, "Invalid memory type");
+
 	checkparams();
 
 	uint32_t size = 0;

@@ -10,6 +10,7 @@ private:
 	FrameInfo _frameInfo = {};
 	OverscanDimensions _overscan = {};
 	int32_t _startFrame = 0;
+	bool _disableAutoScale = false;
 
 protected:
 	bool _useIntegerScaling = false;
@@ -82,11 +83,12 @@ protected:
 	}
 
 public:
-	DrawCommand(int startFrame, int frameCount, bool useIntegerScaling = false)
+	DrawCommand(int startFrame, int frameCount, bool useIntegerScaling = false, bool disableAutoScale = false)
 	{ 
 		_frameCount = frameCount > 0 ? frameCount : -1;
 		_startFrame = startFrame;
 		_useIntegerScaling = useIntegerScaling;
+		_disableAutoScale = disableAutoScale;
 	}
 
 	virtual ~DrawCommand()
@@ -105,7 +107,7 @@ public:
 			_frameInfo = frameInfo;
 			_overscan = overscan;
 
-			if(autoScale) {
+			if(autoScale && !_disableAutoScale) {
 				float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
 				_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;
 				_xScale = (float)scale;

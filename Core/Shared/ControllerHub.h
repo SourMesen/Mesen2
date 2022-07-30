@@ -3,20 +3,13 @@
 #include "stdafx.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/InputHud.h"
+#include "Shared/IControllerHub.h"
 #include "SNES/Input/SnesController.h"
 #include "SNES/Input/SnesMouse.h"
 #include "NES/Input/NesController.h"
 #include "PCE/Input/PceController.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/StringUtilities.h"
-
-class IControllerHub
-{
-public:
-	virtual void RefreshHubState() = 0;
-	virtual int GetHubPortCount() = 0;
-	virtual shared_ptr<BaseControlDevice> GetController(int index) = 0;
-};
 
 template<int HubPortCount>
 class ControllerHub : public BaseControlDevice, public IControllerHub
@@ -58,6 +51,8 @@ protected:
 public:
 	ControllerHub(Emulator* emu, ControllerType type, int port, ControllerConfig controllers[]) : BaseControlDevice(emu, type, port)
 	{
+		static_assert(HubPortCount <= MaxSubPorts, "Port count too large");
+
 		for(int i = 0; i < HubPortCount; i++) {
 			switch(controllers[i].Type) {
 				case ControllerType::FamicomController:

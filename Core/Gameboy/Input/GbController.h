@@ -77,4 +77,18 @@ public:
 
 		hud.DrawNumber(_port + 1, 16, 2);
 	}
+
+	vector<DeviceButtonName> GetKeyNameAssociations() override
+	{
+		return {
+			{ "a", Buttons::A },
+			{ "b", Buttons::B },
+			{ "start", Buttons::Start },
+			{ "select", Buttons::Select },
+			{ "up", Buttons::Up },
+			{ "down", Buttons::Down },
+			{ "left", Buttons::Left },
+			{ "right", Buttons::Right },
+		};
+	}
 };

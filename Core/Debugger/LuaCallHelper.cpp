@@ -66,16 +66,16 @@ Nullable<bool> LuaCallHelper::ReadOptionalBool()
 	return result;
 }
 
-Nullable<uint32_t> LuaCallHelper::ReadOptionalInteger()
+Nullable<int32_t> LuaCallHelper::ReadOptionalInteger()
 {
 	_paramCount++;
-	Nullable<uint32_t> result;
+	Nullable<int32_t> result;
 	if(lua_isinteger(_lua, -1)) {
 		result.HasValue = true;
-		result.Value = (uint32_t)lua_tointeger(_lua, -1);
+		result.Value = (int32_t)lua_tointeger(_lua, -1);
 	} else if(lua_isnumber(_lua, -1)) {
 		result.HasValue = true;
-		result.Value = (uint32_t)lua_tonumber(_lua, -1);
+		result.Value = (int32_t)lua_tonumber(_lua, -1);
 	}
 	lua_pop(_lua, 1);
 	return result;

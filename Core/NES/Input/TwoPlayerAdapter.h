@@ -7,7 +7,7 @@
 class TwoPlayerAdapter : public ControllerHub<2>
 {
 public:
-	TwoPlayerAdapter(Emulator* emu, ControllerType type, ControllerConfig controllers[]) : ControllerHub(emu, type, 0, controllers)
+	TwoPlayerAdapter(Emulator* emu, ControllerType type, ControllerConfig controllers[]) : ControllerHub(emu, type, BaseControlDevice::ExpDevicePort, controllers)
 	{}
 
 	void WriteRam(uint16_t addr, uint8_t value) override

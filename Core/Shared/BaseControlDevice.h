@@ -9,10 +9,15 @@
 class Emulator;
 class InputHud;
 
+struct DeviceButtonName
+{
+	string Name;
+	int ButtonId = 0;
+	bool IsNumeric = false;
+};
+
 class BaseControlDevice : public ISerializable
 {
-private:
-
 protected:
 	ControlDeviceState _state = {};
 
@@ -41,14 +46,15 @@ protected:
 	void SetPressedState(uint8_t bit, uint16_t keyCode);
 	void SetPressedState(uint8_t bit, bool enabled);
 
-	void SetCoordinates(MousePosition pos);
-
 	void SetMovement(MouseMovement mov);
 	MouseMovement GetMovement();
 
 	virtual void InternalSetStateFromInput();
 
 public:
+	static constexpr int DeviceXCoordButtonId = 0xFFFE;
+	static constexpr int DeviceYCoordButtonId = 0xFFFF;
+
 	static constexpr uint8_t ExpDevicePort = 4;
 	static constexpr uint8_t ConsoleInputPort = 5;
 	static constexpr uint8_t MapperInputPort = 6;
@@ -64,8 +70,10 @@ public:
 	ControllerType GetControllerType();
 
 	bool IsPressed(uint8_t bit);
+
 	MousePosition GetCoordinates();
-	
+	void SetCoordinates(MousePosition pos);
+
 	void Connect();
 	void Disconnect();
 	bool IsConnected();
@@ -90,6 +98,9 @@ public:
 
 	virtual uint8_t ReadRam(uint16_t addr) = 0;
 	virtual void WriteRam(uint16_t addr, uint8_t value) = 0;
+
+	//Used by Lua API
+	virtual vector<DeviceButtonName> GetKeyNameAssociations() { return {}; }
 
 	virtual bool HasControllerType(ControllerType type);
 	

@@ -148,7 +148,7 @@ string BaseControlDevice::GetTextState()
 		int keyNumber = 0;
 		for(size_t i = 0; i < keyNames.size(); i++) {
 			if(keyNames[i] != ':') {
-				//Ignore colons in string (used by multitap to split controllers)
+				//Ignore colons in string (used by ControllerHub to split controllers)
 				output += IsPressed((uint8_t)keyNumber) ? keyNames[i] : '.';
 				keyNumber++;
 			} else {

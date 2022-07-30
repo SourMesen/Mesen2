@@ -30,7 +30,7 @@ public:
 	int GetReference();
 
 	Nullable<bool> ReadOptionalBool();
-	Nullable<uint32_t> ReadOptionalInteger();
+	Nullable<int32_t> ReadOptionalInteger();
 
 	void Return(bool value);
 	void Return(int value);

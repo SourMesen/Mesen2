@@ -206,7 +206,7 @@ vector<NetplayControllerUsageInfo> GameServer::GetControllerList(Emulator* emu, 
 	auto lock = emu->AcquireLock();
 	if(emu->GetControlManager()) {
 		for(uint8_t i = 0; i < BaseControlDevice::PortCount; i++) {
-			for(uint8_t j = 0; j < 5; j++) {
+			for(uint8_t j = 0; j < IControllerHub::MaxSubPorts; j++) {
 				shared_ptr<BaseControlDevice> controller = emu->GetControlManager()->GetControlDevice(i, j);
 				if(controller) {
 					NetplayControllerUsageInfo result = {};
@@ -268,7 +268,7 @@ void GameServer::UnregisterNetPlayDevice(GameServerConnection* device)
 {
 	if(device != nullptr) {
 		for(int i = 0; i < BaseControlDevice::PortCount; i++) {
-			for(int j = 0; j < 5; j++) {
+			for(int j = 0; j < IControllerHub::MaxSubPorts; j++) {
 				if(_netPlayDevices[i][j] == device) {
 					_netPlayDevices[i][j] = nullptr;
 					return;

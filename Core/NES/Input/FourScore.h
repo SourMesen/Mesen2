@@ -35,7 +35,7 @@ protected:
 
 
 public:
-	FourScore(Emulator* emu, ControllerType type, ControllerConfig controllers[]) : ControllerHub(emu, type, 0, controllers)
+	FourScore(Emulator* emu, ControllerType type, uint8_t port, ControllerConfig controllers[]) : ControllerHub(emu, type, port, controllers)
 	{
 	}
 

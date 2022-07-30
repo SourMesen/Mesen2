@@ -42,7 +42,7 @@ protected:
 	bool _initDone = false;
 
 	vector<MemoryCallback> _callbacks[3];
-	vector<int> _eventCallbacks[(int)EventType::EventTypeSize];
+	vector<int> _eventCallbacks[(int)EventType::LastValue + 1];
 
 	virtual void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType) = 0;
 	virtual int InternalCallEventCallback(EventType type) = 0;

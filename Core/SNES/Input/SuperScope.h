@@ -129,4 +129,16 @@ public:
 
 		hud.DrawMousePosition(GetCoordinates());
 	}
+
+	vector<DeviceButtonName> GetKeyNameAssociations() override
+	{
+		return {
+			{ "x", BaseControlDevice::DeviceXCoordButtonId, true },
+			{ "y", BaseControlDevice::DeviceYCoordButtonId, true },
+			{ "fire", Buttons::Fire },
+			{ "turbo", Buttons::Turbo },
+			{ "cursor", Buttons::Cursor },
+			{ "pause", Buttons::Pause },
+		};
+	}
 };

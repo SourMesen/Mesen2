@@ -133,4 +133,22 @@ public:
 
 		hud.DrawNumber(hud.GetControllerIndex() + 1, 15, 2);
 	}
+
+	vector<DeviceButtonName> GetKeyNameAssociations() override
+	{
+		return {
+			{ "i", Buttons::I },
+			{ "ii", Buttons::II },
+			{ "iii", Buttons::III },
+			{ "iv", Buttons::IV },
+			{ "v", Buttons::V },
+			{ "vi", Buttons::VI },
+			{ "run", Buttons::Run },
+			{ "select", Buttons::Select },
+			{ "up", Buttons::Up },
+			{ "down", Buttons::Down },
+			{ "left", Buttons::Left },
+			{ "right", Buttons::Right },
+		};
+	}
 };

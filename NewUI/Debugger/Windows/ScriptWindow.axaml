@@ -63,7 +63,9 @@
 				VerticalContentAlignment="Top"
 				Height="NaN"
 				Text="{CompiledBinding Log}"
+				TextWrapping="Wrap"
 				IsReadOnly="True"
+				ScrollViewer.VerticalScrollBarVisibility="Visible"
 			/>
 		</Grid>
 	</DockPanel>

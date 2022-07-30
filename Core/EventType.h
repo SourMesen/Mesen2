@@ -13,5 +13,7 @@ enum class EventType
 	StateSaved,
 	GbStartFrame,
 	GbEndFrame,
-	EventTypeSize
+	CodeBreak,
+
+	LastValue
 };

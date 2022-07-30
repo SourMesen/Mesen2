@@ -106,4 +106,14 @@ public:
 		_packetPos = 0;
 		_stateBuffer = _packetBytes[0];
 	}
+
+	vector<DeviceButtonName> GetKeyNameAssociations() override
+	{
+		return {
+			{ "xOffset", BaseControlDevice::DeviceXCoordButtonId, true },
+			{ "yOffset", BaseControlDevice::DeviceYCoordButtonId, true },
+			{ "left", Buttons::Left },
+			{ "right", Buttons::Right }
+		};
+	}
 };

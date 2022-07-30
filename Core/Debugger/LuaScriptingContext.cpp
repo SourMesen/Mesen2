@@ -10,6 +10,7 @@
 #include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Utilities/magic_enum.hpp"
 #include "EventType.h"
 
 LuaScriptingContext* LuaScriptingContext::_context = nullptr;
@@ -30,8 +31,8 @@ LuaScriptingContext::~LuaScriptingContext()
 			}
 		}
 
-		for(int i = (int)EventType::Reset; i < (int)EventType::EventTypeSize; i++) {
-			for(int& ref : _eventCallbacks[i]) {
+		for(auto& entry : magic_enum::enum_entries<EventType>()) {
+			for(int& ref : _eventCallbacks[(int)entry.first]) {
 				references.emplace(ref);
 			}
 		}

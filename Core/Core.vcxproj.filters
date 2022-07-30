@@ -2634,6 +2634,9 @@
     <ClInclude Include="Netplay\NetplayTypes.h">
       <Filter>Netplay</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\IControllerHub.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

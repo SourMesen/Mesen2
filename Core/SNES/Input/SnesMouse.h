@@ -98,4 +98,14 @@ public:
 
 		hud.DrawNumber(hud.GetControllerIndex() + 1, 4, 7);
 	}
+
+	vector<DeviceButtonName> GetKeyNameAssociations() override
+	{
+		return {
+			{ "xOffset", BaseControlDevice::DeviceXCoordButtonId, true },
+			{ "yOffset", BaseControlDevice::DeviceYCoordButtonId, true },
+			{ "left", Buttons::Left },
+			{ "right", Buttons::Right }
+		};
+	}
 };

@@ -25,4 +25,5 @@ public:
 	void WriteRam(uint16_t addr, uint8_t value) override;
 
 	void InternalDrawController(InputHud& hud) override;
+	vector<DeviceButtonName> GetKeyNameAssociations() override;
 };

@@ -140,7 +140,6 @@ namespace Mesen.Interop
 		Unknown,
 
 		Sfc,
-		SfcWithCopierHeader,
 		Spc,
 
 		Gb,

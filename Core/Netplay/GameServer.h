@@ -6,6 +6,7 @@
 #include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
+#include "Shared/IControllerHub.h"
 
 class Emulator;
 
@@ -21,7 +22,7 @@ private:
 	vector<unique_ptr<GameServerConnection>> _openConnections;
 	bool _initialized = false;
 	
-	GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount][5] = {};
+	GameServerConnection* _netPlayDevices[BaseControlDevice::PortCount][IControllerHub::MaxSubPorts] = {};
 
 	NetplayControllerInfo _hostControllerPort = {};
 
