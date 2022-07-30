@@ -467,14 +467,12 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 	unique_ptr<BaseVideoFilter> filter = unique_ptr<BaseVideoFilter>(_emu->GetVideoFilter());
 	filter->SetBaseFrameInfo(frameSize);
 	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr);
+	uint32_t* rgbBuffer = filter->GetOutputBuffer();
 
-	lua_newtable(lua);
-	for(uint32_t y = 0; y < frameSize.Height; y++) {
-		for(uint32_t x = 0; x < frameSize.Width; x++) {
-			int offset = y * frameSize.Width + x;
-			lua_pushinteger(lua, filter->GetOutputBuffer()[offset] & 0xFFFFFF);
-			lua_rawseti(lua, -2, offset);
-		}
+	lua_createtable(lua, frameSize.Height*frameSize.Width, 0);
+	for(int32_t i = 0, len = frameSize.Height * frameSize.Width; i < len; i++) {
+		lua_pushinteger(lua, rgbBuffer[i] & 0xFFFFFF);
+		lua_rawseti(lua, -2, i + 1);
 	}
 
 	return 1;
@@ -496,8 +494,10 @@ int LuaApi::SetScreenBuffer(lua_State *lua)
 
 	luaL_checktype(lua, 1, LUA_TTABLE);
 	for(int i = 0, len = frame.Height * frame.Width; i < len; i++) {
-		lua_rawgeti(lua, 1, i);
-		cmd->SetPixel(i, l.ReadInteger() ^ 0xFF000000);
+		lua_rawgeti(lua, 1, i+1);
+		uint32_t color = (uint32_t)lua_tointeger(lua, -1);
+		lua_pop(lua, 1);
+		cmd->SetPixel(i, color ^ 0xFF000000);
 	}
 	
 	_emu->GetDebugHud()->AddCommand(std::move(cmd));
