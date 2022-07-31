@@ -14,6 +14,24 @@ class Serializer;
 #define SVVector(var) (s.Stream(var, #var))
 #define SVVectorI(var) (s.Stream(var, #var, i))
 
+enum class SerializeMapValueFormat
+{
+	Integer,
+	Double,
+	Bool
+};
+
+struct SerializeMapValue
+{
+	SerializeMapValueFormat Format;
+	union
+	{
+		int64_t Integer;
+		double Double;
+		bool Bool;
+	} Value;
+};
+
 struct SerializeValue
 {
 	uint8_t* DataPtr;
@@ -32,6 +50,13 @@ struct SerializeValue
 	}
 };
 
+enum class SerializeFormat
+{
+	Binary,
+	Text,
+	Map
+};
+
 class Serializer
 {
 private:
@@ -41,9 +66,12 @@ private:
 	unordered_set<string> _usedKeys;
 	unordered_map<string, SerializeValue> _values;
 
+	//Used by Lua API
+	unordered_map<string, SerializeMapValue> _mapValues;
+
 	uint32_t _version = 0;
 	bool _saving = false;
-	bool _useTextFormat = false;
+	SerializeFormat _format = SerializeFormat::Binary;
 
 private:
 	bool LoadFromTextFormat(istream& file);
@@ -115,6 +143,48 @@ private:
 	}
 
 	template<typename T>
+	void WriteMapFormat(string key, T& value)
+	{
+		SerializeMapValue result;
+		if constexpr(std::is_same<T, bool>::value) {
+			result.Format = SerializeMapValueFormat::Bool;
+			result.Value.Bool = value;
+		} else if constexpr(std::is_integral<T>::value) {
+			result.Format = SerializeMapValueFormat::Integer;
+			result.Value.Integer = value;
+		} else if constexpr(std::is_floating_point<T>::value) {
+			result.Format = SerializeMapValueFormat::Double;
+			result.Value.Double = value;
+		} else {
+			//ignore value
+			return;
+		}
+		_mapValues[key] = result;
+	}
+
+	template<typename T>
+	void ReadMapFormat(string key, T& value)
+	{
+		auto result = _mapValues.find(key);
+		if(result != _mapValues.end()) {
+			SerializeMapValue mapVal = result->second;
+			if constexpr(std::is_same<T, bool>::value) {
+				if(mapVal.Format == SerializeMapValueFormat::Bool) {
+					value = mapVal.Value.Bool;
+				}
+			} else if constexpr(std::is_integral<T>::value) {
+				if(mapVal.Format == SerializeMapValueFormat::Integer) {
+					value = (T)mapVal.Value.Integer;
+				}
+			} else if constexpr(std::is_floating_point<T>::value) {
+				if(mapVal.Format == SerializeMapValueFormat::Double) {
+					value = (double)mapVal.Value.Double;
+				}
+			}
+		}
+	}
+
+	template<typename T>
 	void WriteTextFormat(string key, T& value)
 	{
 		//Write key
@@ -152,11 +222,14 @@ private:
 	}
 
 public:
-	Serializer(uint32_t version, bool forSave, bool useTextFormat = false);
+	Serializer(uint32_t version, bool forSave, SerializeFormat format = SerializeFormat::Binary);
 
 	uint32_t GetVersion() { return _version; }
 	bool IsSaving() { return _saving; }
 	
+	SerializeFormat GetFormat() { return _format; }
+	unordered_map<string, SerializeMapValue>& GetMapValues() { return _mapValues; }
+
 	template <class T> struct is_unique_ptr : std::false_type {};
 	template <class T, class D> struct is_unique_ptr<std::unique_ptr<T, D>> : std::true_type {};
 	template <class T> struct is_shared_ptr : std::false_type {};
@@ -179,34 +252,52 @@ public:
 			}
 
 			if(_saving) {
-				if(_useTextFormat) {
-					WriteTextFormat(key, value);
-				} else {
-					//Write key
-					_data.insert(_data.end(), key.begin(), key.end());
-					_data.push_back(0);
+				switch(_format) {
+					case SerializeFormat::Binary:
+						//Write key
+						_data.insert(_data.end(), key.begin(), key.end());
+						_data.push_back(0);
 
-					//Write value size
-					WriteValue((uint32_t)sizeof(T));
+						//Write value size
+						WriteValue((uint32_t)sizeof(T));
 
-					//Write value
-					WriteValue(value);
+						//Write value
+						WriteValue(value);
+						break;
+
+					case SerializeFormat::Text: WriteTextFormat(key, value); break;
+					case SerializeFormat::Map: WriteMapFormat(key, value); break;
 				}
 			} else {
-				auto result = _values.find(key);
-				if(result != _values.end()) {
-					SerializeValue& savedValue = result->second;
-					if(_useTextFormat) {
-						ReadTextFormat(savedValue, value);
-					} else {
-						if(savedValue.Size >= sizeof(T)) {
-							ReadValue(value, savedValue.DataPtr);
+				switch(_format) {
+					case SerializeFormat::Binary: {
+						auto result = _values.find(key);
+						if(result != _values.end()) {
+							SerializeValue& savedValue = result->second;
+							if(savedValue.Size >= sizeof(T)) {
+								ReadValue(value, savedValue.DataPtr);
+							} else {
+								value = (T)0;
+							}
 						} else {
 							value = (T)0;
 						}
+						break;
 					}
-				} else {
-					value = (T)0;
+
+					case SerializeFormat::Text: {
+						auto result = _values.find(key);
+						if(result != _values.end()) {
+							ReadTextFormat(result->second, value);
+						} else {
+							value = (T)0;
+						}
+						break;
+					}
+
+					case SerializeFormat::Map:
+						ReadMapFormat(key, value);
+						break;
 				}
 			}
 		}
@@ -245,6 +336,10 @@ public:
 
 	template<typename T> void StreamArray(T* arrayValues, uint32_t elementCount, const char* name)
 	{
+		if(_format == SerializeFormat::Map) {
+			return;
+		}
+
 		string key = GetKey(name, -1);
 		if(!_usedKeys.emplace(key).second) {
 			throw std::runtime_error("Duplicate key");
@@ -291,6 +386,10 @@ public:
 
 	template<typename T> void Stream(vector<T>& values, const char* name, int index = -1)
 	{
+		if(_format == SerializeFormat::Map) {
+			return;
+		}
+
 		string key = GetKey(name, index);
 		if(!_usedKeys.emplace(key).second) {
 			throw std::runtime_error("Duplicate key");
@@ -329,6 +428,10 @@ public:
 
 	template<> void Stream(string& value, const char* name, int index)
 	{
+		if(_format == SerializeFormat::Map) {
+			return;
+		}
+
 		string key = GetKey(name, index);
 		if(!_usedKeys.emplace(key).second) {
 			throw std::runtime_error("Duplicate key");
@@ -359,4 +462,5 @@ public:
 	void PopNamePrefix();
 	void SaveTo(ostream &file, int compressionLevel = 1);
 	bool LoadFrom(istream& file);
+	void LoadFromMap(unordered_map<string, SerializeMapValue>& map);
 };

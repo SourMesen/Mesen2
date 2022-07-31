@@ -1189,80 +1189,83 @@ void PceVdc::Serialize(Serializer& s)
 	SV(_state.NextSpritesEnabled);
 	SV(_state.NextBackgroundEnabled);
 
-	SV(_vramOpenBus);
-	SV(_lastDrawHClock);
-	SV(_xStart);
-	SV(_hMode);
-	SV(_hModeCounter);
-	SV(_vMode);
-	SV(_vModeCounter);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		//Hide these entries from the Lua API
+		SV(_vramOpenBus);
+		SV(_lastDrawHClock);
+		SV(_xStart);
+		SV(_hMode);
+		SV(_hModeCounter);
+		SV(_vMode);
+		SV(_vModeCounter);
 
-	SV(_screenOffsetX);
-	SV(_needRcrIncrement);
-	SV(_needVertBlankIrq);
-	SV(_verticalBlankDone);
+		SV(_screenOffsetX);
+		SV(_needRcrIncrement);
+		SV(_needVertBlankIrq);
+		SV(_verticalBlankDone);
 
-	SV(_spriteCount);
-	SV(_spriteRow);
-	SV(_evalStartCycle);
-	SV(_evalEndCycle);
-	SV(_evalLastCycle);
-	SV(_hasSpriteOverflow);
+		SV(_spriteCount);
+		SV(_spriteRow);
+		SV(_evalStartCycle);
+		SV(_evalEndCycle);
+		SV(_evalLastCycle);
+		SV(_hasSpriteOverflow);
 
-	SV(_loadBgStart);
-	SV(_loadBgEnd);
-	SV(_loadBgLastCycle);
-	SV(_tileCount);
-	SV(_allowVramAccess);
+		SV(_loadBgStart);
+		SV(_loadBgEnd);
+		SV(_loadBgLastCycle);
+		SV(_tileCount);
+		SV(_allowVramAccess);
 
-	SV(_pendingMemoryRead);
-	SV(_pendingMemoryWrite);
+		SV(_pendingMemoryRead);
+		SV(_pendingMemoryWrite);
 
-	SV(_vramDmaRunning);
-	SV(_vramDmaReadCycle);
-	SV(_vramDmaBuffer);
-	SV(_vramDmaPendingCycles);
+		SV(_vramDmaRunning);
+		SV(_vramDmaReadCycle);
+		SV(_vramDmaBuffer);
+		SV(_vramDmaPendingCycles);
 
-	SV(_nextEvent);
-	SV(_nextEventCounter);
+		SV(_nextEvent);
+		SV(_nextEventCounter);
 
-	SV(_drawSpriteCount);
-	SV(_totalSpriteCount);
-	SV(_rowHasSprite0);
-	SV(_loadSpriteStart);
-	
-	for(int i = 0; i < 64; i++) {
-		SVI(_sprites[i].TileData[0]);
-		SVI(_sprites[i].TileData[1]);
-		SVI(_sprites[i].TileData[2]);
-		SVI(_sprites[i].TileData[3]);
-		SVI(_sprites[i].X);
-		SVI(_sprites[i].TileAddress);
-		SVI(_sprites[i].Index);
-		SVI(_sprites[i].Palette);
-		SVI(_sprites[i].HorizontalMirroring);
-		SVI(_sprites[i].ForegroundPriority);
-		SVI(_sprites[i].LoadSp23);
-	}
+		SV(_drawSpriteCount);
+		SV(_totalSpriteCount);
+		SV(_rowHasSprite0);
+		SV(_loadSpriteStart);
 
-	for(int i = 0; i < 64; i++) {
-		SVI(_drawSprites[i].TileData[0]);
-		SVI(_drawSprites[i].TileData[1]);
-		SVI(_drawSprites[i].TileData[2]);
-		SVI(_drawSprites[i].TileData[3]);
-		SVI(_drawSprites[i].X);
-		SVI(_drawSprites[i].TileAddress);
-		SVI(_drawSprites[i].Index);
-		SVI(_drawSprites[i].Palette);
-		SVI(_drawSprites[i].HorizontalMirroring);
-		SVI(_drawSprites[i].ForegroundPriority);
-		SVI(_drawSprites[i].LoadSp23);
-	}
+		for(int i = 0; i < 64; i++) {
+			SVI(_sprites[i].TileData[0]);
+			SVI(_sprites[i].TileData[1]);
+			SVI(_sprites[i].TileData[2]);
+			SVI(_sprites[i].TileData[3]);
+			SVI(_sprites[i].X);
+			SVI(_sprites[i].TileAddress);
+			SVI(_sprites[i].Index);
+			SVI(_sprites[i].Palette);
+			SVI(_sprites[i].HorizontalMirroring);
+			SVI(_sprites[i].ForegroundPriority);
+			SVI(_sprites[i].LoadSp23);
+		}
 
-	for(int i = 0; i < 100; i++) {
-		SVI(_tiles[i].TileData[0]);
-		SVI(_tiles[i].TileData[1]);
-		SVI(_tiles[i].Palette);
-		SVI(_tiles[i].TileAddr);
+		for(int i = 0; i < 64; i++) {
+			SVI(_drawSprites[i].TileData[0]);
+			SVI(_drawSprites[i].TileData[1]);
+			SVI(_drawSprites[i].TileData[2]);
+			SVI(_drawSprites[i].TileData[3]);
+			SVI(_drawSprites[i].X);
+			SVI(_drawSprites[i].TileAddress);
+			SVI(_drawSprites[i].Index);
+			SVI(_drawSprites[i].Palette);
+			SVI(_drawSprites[i].HorizontalMirroring);
+			SVI(_drawSprites[i].ForegroundPriority);
+			SVI(_drawSprites[i].LoadSp23);
+		}
+
+		for(int i = 0; i < 100; i++) {
+			SVI(_tiles[i].TileData[0]);
+			SVI(_tiles[i].TileData[1]);
+			SVI(_tiles[i].Palette);
+			SVI(_tiles[i].TileAddr);
+		}
 	}
 }

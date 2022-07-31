@@ -90,7 +90,7 @@ void MovieRecorder::GetGameSettings(stringstream &out)
 		WriteString(out, MovieKeys::PatchedRomSha1, romFile.GetSha1Hash());
 	}
 
-	Serializer s(0, true, true);
+	Serializer s(0, true, SerializeFormat::Text);
 	ConsoleType consoleType = _emu->GetConsoleType();
 	s.Stream(consoleType, "emu.consoleType", -1);
 	s.Stream(*settings, "", -1);

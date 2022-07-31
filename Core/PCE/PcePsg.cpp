@@ -147,10 +147,13 @@ void PcePsg::Serialize(Serializer& s)
 	SV(_state.LfoFrequency);
 	SV(_state.RightVolume);
 
-	SV(_lastClock);
-	SV(_prevLeftOutput);
-	SV(_prevRightOutput);
-	SV(_clockCounter);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		//Hide these entries from the Lua API
+		SV(_lastClock);
+		SV(_prevLeftOutput);
+		SV(_prevRightOutput);
+		SV(_clockCounter);
+	}
 
 	for(int i = 0; i < 6; i++) {
 		SVI(_channels[i]);

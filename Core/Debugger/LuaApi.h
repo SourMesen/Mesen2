@@ -78,7 +78,7 @@ public:
 	static int GetRomInfo(lua_State *lua);
 	static int GetLogWindowLog(lua_State *lua);
 
-	//static int SetState(lua_State *lua);
+	static int SetState(lua_State *lua);
 	static int GetState(lua_State *lua);
 
 	static int GetAccessCounters(lua_State *lua);

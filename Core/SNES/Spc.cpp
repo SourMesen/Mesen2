@@ -488,7 +488,9 @@ void Spc::Serialize(Serializer &s)
 		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
 
-	SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled); SV(_state.TimersDisabled);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled); SV(_state.TimersDisabled);
+	}
 }
 
 uint8_t Spc::GetOpCode()

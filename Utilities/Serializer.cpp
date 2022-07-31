@@ -4,11 +4,11 @@
 #include "ISerializable.h"
 #include "miniz.h"
 
-Serializer::Serializer(uint32_t version, bool forSave, bool useTextFormat)
+Serializer::Serializer(uint32_t version, bool forSave, SerializeFormat format)
 {
 	_version = version;
 	_saving = forSave;
-	_useTextFormat = useTextFormat;
+	_format = format;
 	if(forSave) {
 		_data.reserve(0x50000);
 	}
@@ -20,7 +20,7 @@ bool Serializer::LoadFrom(istream &file)
 		return false;
 	}
 
-	if(_useTextFormat) {
+	if(_format == SerializeFormat::Text) {
 		return LoadFromTextFormat(file);
 	}
 
@@ -159,7 +159,7 @@ bool Serializer::LoadFromTextFormat(istream& file)
 
 void Serializer::SaveTo(ostream& file, int compressionLevel)
 {
-	if(_useTextFormat) {
+	if(_format == SerializeFormat::Text) {
 		file.write((char*)_data.data(), _data.size());
 	} else {
 		bool isCompressed = compressionLevel > 0;
@@ -180,6 +180,11 @@ void Serializer::SaveTo(ostream& file, int compressionLevel)
 			file.write((char*)_data.data(), _data.size());
 		}
 	}
+}
+
+void Serializer::LoadFromMap(unordered_map<string, SerializeMapValue>& map)
+{
+	_mapValues = map;
 }
 
 void Serializer::PushNamePrefix(const char* name, int index)

@@ -1020,16 +1020,19 @@ void GbPpu::Serialize(Serializer& s)
 	SVArray(_state.CgbBgPalettes, 4 * 8);
 	SVArray(_state.CgbObjPalettes, 4 * 8);
 
-	SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
-	SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
-	SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
-	SV(_bgFifo.Position); SV(_bgFifo.Size); SV(_oamFifo.Position); SV(_oamFifo.Size);
+	if(s.GetFormat() != SerializeFormat::Map) {
+		//Hide these entries from the Lua API
+		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
+		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
+		SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
+		SV(_bgFifo.Position); SV(_bgFifo.Size); SV(_oamFifo.Position); SV(_oamFifo.Size);
 
-	for(int i = 0; i < 8; i++) {
-		SVI(_bgFifo.Content[i].Color); SVI(_bgFifo.Content[i].Attributes);
-		SVI(_oamFifo.Content[i].Color); SVI(_oamFifo.Content[i].Attributes);
+		for(int i = 0; i < 8; i++) {
+			SVI(_bgFifo.Content[i].Color); SVI(_bgFifo.Content[i].Attributes);
+			SVI(_oamFifo.Content[i].Color); SVI(_oamFifo.Content[i].Attributes);
+		}
+
+		SVArray(_spriteX, 10);
+		SVArray(_spriteIndexes, 10);
 	}
-
-	SVArray(_spriteX, 10);
-	SVArray(_spriteIndexes, 10);
 }

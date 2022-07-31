@@ -44,7 +44,7 @@ void MesenMovie::Stop()
 			}
 			_emu->GetCheatManager()->SetCheats(_originalCheats);
 
-			Serializer backup(0, false, false);
+			Serializer backup(0, false);
 			backup.LoadFrom(_emuSettingsBackup);
 			backup.Stream(*settings, "", -1);
 		}
@@ -212,7 +212,7 @@ bool MesenMovie::ApplySettings(istream& settingsData)
 	
 	settingsData.clear();
 	settingsData.seekg(0, std::ios::beg);
-	Serializer s(0, false, true);
+	Serializer s(0, false, SerializeFormat::Text);
 	s.LoadFrom(settingsData);
 
 	ConsoleType consoleType = {};
@@ -222,7 +222,7 @@ bool MesenMovie::ApplySettings(istream& settingsData)
 		return false;
 	}
 
-	Serializer backup(0, true, false);
+	Serializer backup(0, true);
 	backup.Stream(*settings, "", -1);
 	backup.SaveTo(_emuSettingsBackup);
 

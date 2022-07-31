@@ -454,17 +454,21 @@ void NesCpu::Serialize(Serializer &s)
 	SV(_state.X);
 	SV(_state.Y);
 	SV(_state.CycleCount);
-	SV(_state.NmiFlag);
-	SV(_state.IrqFlag);
-	SV(_dmcDmaRunning);
-	SV(_spriteDmaTransfer);
-	SV(_needDummyRead);
-	SV(_needHalt);
-	SV(_startClockCount);
-	SV(_endClockCount);
-	SV(_ppuOffset);
-	SV(_masterClock);
-	SV(_prevNeedNmi);
-	SV(_prevNmiFlag);
-	SV(_needNmi);
+
+	if(s.GetFormat() != SerializeFormat::Map) {
+		//Hide these entries from the Lua API
+		SV(_state.NmiFlag);
+		SV(_state.IrqFlag);
+		SV(_dmcDmaRunning);
+		SV(_spriteDmaTransfer);
+		SV(_needDummyRead);
+		SV(_needHalt);
+		SV(_startClockCount);
+		SV(_endClockCount);
+		SV(_ppuOffset);
+		SV(_masterClock);
+		SV(_prevNeedNmi);
+		SV(_prevNmiFlag);
+		SV(_needNmi);
+	}
 }

@@ -1401,20 +1401,50 @@ template<class T> void NesPpu<T>::Serialize(Serializer& s)
 	SV(_highBitShift); SV(_lowBitShift); SV(_control.VerticalWrite); SV(_control.SpritePatternAddr); SV(_control.BackgroundPatternAddr); SV(_control.LargeSprites); SV(_control.NmiOnVerticalBlank);
 	SV(_mask.Grayscale); SV(_mask.BackgroundMask); SV(_mask.SpriteMask); SV(_mask.BackgroundEnabled); SV(_mask.SpritesEnabled); SV(_mask.IntensifyRed); SV(_mask.IntensifyGreen);
 	SV(_mask.IntensifyBlue); SV(_paletteRamMask); SV(_intensifyColorBits); SV(_statusFlags.SpriteOverflow); SV(_statusFlags.Sprite0Hit); SV(_statusFlags.VerticalBlank); SV(_scanline);
-	SV(_cycle); SV(_frameCount); SV(_memoryReadBuffer); SV(_currentTilePalette); SV(_tile.LowByte); SV(_tile.HighByte);
-	SV(_tile.PaletteOffset); SV(_tile.TileAddr); SV(_previousTilePalette); SV(_spriteIndex); SV(_spriteCount);
-	SV(_secondaryOamAddr); SV(_sprite0Visible); SV(_oamCopybuffer); SV(_spriteInRange); SV(_sprite0Added); SV(_spriteAddrH); SV(_spriteAddrL); SV(_oamCopyDone); SV(_region);
-	SV(_prevRenderingEnabled); SV(_renderingEnabled); SV(_openBus); SV(_ignoreVramRead);
-	SV(_overflowBugCounter); SV(_updateVramAddr); SV(_updateVramAddrDelay);
-	SV(_needStateUpdate); SV(_ppuBusAddress); SV(_preventVblFlag); SV(_masterClock); SV(_needVideoRamIncrement);
+	SV(_cycle); SV(_frameCount); SV(_memoryReadBuffer); SV(_region);
 
-	for(int i = 0; i < 64; i++) {
-		SVI(_spriteTiles[i].SpriteX); SVI(_spriteTiles[i].LowByte); SVI(_spriteTiles[i].HighByte); SVI(_spriteTiles[i].PaletteOffset); SVI(_spriteTiles[i].HorizontalMirror); SVI(_spriteTiles[i].BackgroundPriority);
+	SV(_ppuBusAddress); SV(_masterClock);
+
+	if(s.GetFormat() != SerializeFormat::Map) {
+		//Hide these entries from the Lua API
+		SV(_currentTilePalette);
+		SV(_tile.LowByte);
+		SV(_tile.HighByte);
+		SV(_tile.PaletteOffset);
+		SV(_tile.TileAddr);
+		SV(_previousTilePalette);
+
+		SV(_spriteIndex);
+		SV(_spriteCount);
+		SV(_spriteAddrH);
+		SV(_spriteAddrL);
+		SV(_sprite0Added);
+		SV(_sprite0Visible);
+		SV(_oamCopybuffer);
+		SV(_secondaryOamAddr);
+		SV(_spriteInRange);
+		SV(_prevRenderingEnabled);
+		SV(_renderingEnabled);
+		SV(_openBus);
+		SV(_ignoreVramRead);
+
+		SV(_oamCopyDone);
+		SV(_needStateUpdate);
+		SV(_preventVblFlag);
+		SV(_needVideoRamIncrement);
+		SV(_overflowBugCounter);
+		SV(_updateVramAddr);
+		SV(_updateVramAddrDelay);
+
+		for(int i = 0; i < 64; i++) {
+			SVI(_spriteTiles[i].SpriteX); SVI(_spriteTiles[i].LowByte); SVI(_spriteTiles[i].HighByte); SVI(_spriteTiles[i].PaletteOffset); SVI(_spriteTiles[i].HorizontalMirror); SVI(_spriteTiles[i].BackgroundPriority);
+		}
 	}
 
 	if(!s.IsSaving()) {
 		UpdateTimings(_region);
 		UpdateMinimumDrawCycles();
+		UpdateGrayscaleAndIntensifyBits();
 
 		for(int i = 0; i < 0x20; i++) {
 			//Set oam decay cycle to the current cycle to ensure it doesn't decay when loading a state

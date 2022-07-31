@@ -18,6 +18,7 @@
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/Video/DrawScreenBufferCommand.h"
 #include "Shared/KeyManager.h"
+#include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/ControllerHub.h"
 #include "Shared/BaseControlManager.h"
@@ -115,7 +116,10 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "setInput", LuaApi::SetInput },
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
+		
 		{ "getState", LuaApi::GetState },
+		{ "setState", LuaApi::SetState },
+
 		{ "getScriptDataFolder", LuaApi::GetScriptDataFolder },
 		{ "getRomInfo", LuaApi::GetRomInfo },
 		{ "getLogWindowLog", LuaApi::GetLogWindowLog },
@@ -830,174 +834,85 @@ int LuaApi::GetState(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 
-	//TODO
-	/*
+	Serializer s(0, true, SerializeFormat::Map);
+	s.Stream(*_emu->GetConsole(), "", -1);
+	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
+
 	lua_newtable(lua);
-	lua_pushintvalue(masterClock, state.MasterClock);
-
-	lua_starttable("cpu");
-	lua_pushintvalue(a, state.Cpu.A);
-	lua_pushintvalue(cycleCount, state.Cpu.CycleCount);
-	lua_pushboolvalue(emulationMode, state.Cpu.EmulationMode);
-	lua_pushintvalue(irqFlag, state.Cpu.IrqSource);
-	lua_pushboolvalue(nmiFlag, state.Cpu.NmiFlag);
-	lua_pushintvalue(k, state.Cpu.K);
-	lua_pushintvalue(pc, state.Cpu.PC);
-	lua_pushintvalue(status, state.Cpu.PS);
-	lua_pushintvalue(sp, state.Cpu.SP);
-	lua_pushintvalue(x, state.Cpu.X);
-	lua_pushintvalue(y, state.Cpu.Y);
-	lua_pushintvalue(d, state.Cpu.D);
-	lua_pushintvalue(db, state.Cpu.DBR);
-	lua_endtable(); //end cpu
-
-	lua_starttable("ppu");
-	lua_pushintvalue(cycle, state.Ppu.Cycle);
-	lua_pushintvalue(frameCount, state.Ppu.FrameCount);
-	lua_pushintvalue(scanline, state.Ppu.Scanline);
-	lua_pushintvalue(hClock, state.Ppu.HClock);
-	lua_pushboolvalue(forcedVblank, state.Ppu.ForcedVblank);
-	lua_pushintvalue(screenBrightness, state.Ppu.ScreenBrightness);
-	
-	lua_starttable("mode7");
-	
-	lua_starttable("matrix");
-	lua_pusharrayvalue(0, state.Ppu.Mode7.Matrix[0]);
-	lua_pusharrayvalue(1, state.Ppu.Mode7.Matrix[0]);
-	lua_pusharrayvalue(2, state.Ppu.Mode7.Matrix[0]);
-	lua_pusharrayvalue(3, state.Ppu.Mode7.Matrix[0]);
-	lua_endtable();
-
-	lua_pushintvalue(hScroll, state.Ppu.Mode7.HScroll);
-	lua_pushintvalue(vScroll, state.Ppu.Mode7.VScroll);
-	lua_pushintvalue(centerX, state.Ppu.Mode7.CenterX);
-	lua_pushintvalue(centerY, state.Ppu.Mode7.CenterY);
-	lua_pushintvalue(valueLatch, state.Ppu.Mode7.ValueLatch);
-	lua_pushboolvalue(largeMap, state.Ppu.Mode7.LargeMap);
-	lua_pushboolvalue(fillWithTile0, state.Ppu.Mode7.FillWithTile0);
-	lua_pushboolvalue(horizontalMirroring, state.Ppu.Mode7.HorizontalMirroring);
-	lua_pushboolvalue(verticalMirroring, state.Ppu.Mode7.VerticalMirroring);
-	lua_endtable(); //end mode7
-
-	lua_pushintvalue(bgMode, state.Ppu.BgMode);
-	lua_pushboolvalue(mode1Bg3Priority, state.Ppu.Mode1Bg3Priority);
-	lua_pushintvalue(mainScreenLayers, state.Ppu.MainScreenLayers);
-	lua_pushintvalue(subScreenLayers, state.Ppu.SubScreenLayers);
-	
-	lua_starttable("layers")
-	for(int i = 0; i < 4; i++) {
-		lua_pushinteger(lua, i);
-		
-		lua_newtable(lua);
-		lua_pushintvalue(tilemapAddress, state.Ppu.Layers[i].TilemapAddress);
-		lua_pushintvalue(chrAddress, state.Ppu.Layers[i].ChrAddress);
-		lua_pushintvalue(hScroll, state.Ppu.Layers[i].HScroll);
-		lua_pushintvalue(vScroll, state.Ppu.Layers[i].VScroll);
-		lua_pushintvalue(doubleWidth, state.Ppu.Layers[i].DoubleWidth);
-		lua_pushintvalue(doubleHeight, state.Ppu.Layers[i].DoubleHeight);
-		lua_pushintvalue(largeTiles, state.Ppu.Layers[i].LargeTiles);		
-
+	for(auto& kvp : values) {
+		lua_pushstring(lua, kvp.first.c_str());
+		switch(kvp.second.Format) {
+			case SerializeMapValueFormat::Integer: lua_pushinteger(lua, kvp.second.Value.Integer); break;
+			case SerializeMapValueFormat::Double: lua_pushnumber(lua, kvp.second.Value.Double); break;
+			case SerializeMapValueFormat::Bool: lua_pushboolean(lua, kvp.second.Value.Bool); break;
+		}
 		lua_settable(lua, -3);
 	}
-	lua_endtable(); //end layers
-
-	lua_starttable("windows")
-	for(int i = 0; i < 2; i++) {
-		lua_pushinteger(lua, i);
-
-		lua_newtable(lua);
-		lua_pushintvalue(activeLayers, (
-			(uint8_t)state.Ppu.Window[i].ActiveLayers[0] |
-			((uint8_t)state.Ppu.Window[i].ActiveLayers[1] << 1) |
-			((uint8_t)state.Ppu.Window[i].ActiveLayers[2] << 2) |
-			((uint8_t)state.Ppu.Window[i].ActiveLayers[3] << 3) |
-			((uint8_t)state.Ppu.Window[i].ActiveLayers[4] << 4) |
-			((uint8_t)state.Ppu.Window[i].ActiveLayers[5] << 5)
-		));
-
-		lua_pushintvalue(invertedLayers, (
-			(uint8_t)state.Ppu.Window[i].InvertedLayers[0] |
-			((uint8_t)state.Ppu.Window[i].InvertedLayers[1] << 1) |
-			((uint8_t)state.Ppu.Window[i].InvertedLayers[2] << 2) |
-			((uint8_t)state.Ppu.Window[i].InvertedLayers[3] << 3) |
-			((uint8_t)state.Ppu.Window[i].InvertedLayers[4] << 4) |
-			((uint8_t)state.Ppu.Window[i].InvertedLayers[5] << 5)
-		));
-
-		lua_pushintvalue(left, state.Ppu.Window[i].Left);
-		lua_pushintvalue(right, state.Ppu.Window[i].Right);
-
-		lua_settable(lua, -3);
-	}
-	lua_endtable(); //end windows
-	
-	lua_pushboolvalue(windowMaskLogicBg0, (int)state.Ppu.MaskLogic[0]);
-	lua_pushboolvalue(windowMaskLogicBg1, (int)state.Ppu.MaskLogic[1]);
-	lua_pushboolvalue(windowMaskLogicBg2, (int)state.Ppu.MaskLogic[2]);
-	lua_pushboolvalue(windowMaskLogicBg3, (int)state.Ppu.MaskLogic[3]);
-	lua_pushboolvalue(windowMaskLogicSprites, (int)state.Ppu.MaskLogic[4]);
-	lua_pushboolvalue(windowMaskLogicColor, (int)state.Ppu.MaskLogic[5]);
-
-	lua_pushboolvalue(windowMaskMainBg0, state.Ppu.WindowMaskMain[0]);
-	lua_pushboolvalue(windowMaskMainBg1, state.Ppu.WindowMaskMain[1]);
-	lua_pushboolvalue(windowMaskMainBg2, state.Ppu.WindowMaskMain[2]);
-	lua_pushboolvalue(windowMaskMainBg3, state.Ppu.WindowMaskMain[3]);
-	lua_pushboolvalue(windowMaskMainSprites, state.Ppu.WindowMaskMain[4]);
-
-	lua_pushboolvalue(windowMaskSubBg0, state.Ppu.WindowMaskSub[0]);
-	lua_pushboolvalue(windowMaskSubBg1, state.Ppu.WindowMaskSub[1]);
-	lua_pushboolvalue(windowMaskSubBg2, state.Ppu.WindowMaskSub[2]);
-	lua_pushboolvalue(windowMaskSubBg3, state.Ppu.WindowMaskSub[3]);
-	lua_pushboolvalue(windowMaskSubSprites, state.Ppu.WindowMaskSub[4]);
-
-	lua_pushintvalue(vramAddress, state.Ppu.VramAddress);
-	lua_pushintvalue(vramIncrementValue, state.Ppu.VramIncrementValue);
-	lua_pushintvalue(vramAddressRemapping, state.Ppu.VramAddressRemapping);
-	lua_pushboolvalue(vramAddrIncrementOnSecondReg, state.Ppu.VramAddrIncrementOnSecondReg);
-	lua_pushintvalue(vramReadBuffer, state.Ppu.VramReadBuffer);
-
-	lua_pushintvalue(ppu1OpenBus, state.Ppu.Ppu1OpenBus);
-	lua_pushintvalue(ppu2OpenBus, state.Ppu.Ppu2OpenBus);
-	
-	lua_pushintvalue(cgramAddress, state.Ppu.CgramAddress);
-	lua_pushintvalue(cgramWriteBuffer, state.Ppu.CgramWriteBuffer);
-	lua_pushboolvalue(cgramAddressLatch, state.Ppu.CgramAddressLatch);
-
-	lua_pushintvalue(mosaicSize, state.Ppu.MosaicSize);
-	lua_pushintvalue(mosaicEnabled, state.Ppu.MosaicEnabled);
-
-	lua_pushintvalue(oamRamAddress, state.Ppu.OamRamAddress);
-	lua_pushintvalue(oamMode, state.Ppu.OamMode);
-	lua_pushintvalue(oamBaseAddress, state.Ppu.OamBaseAddress);
-	lua_pushintvalue(oamAddressOffset, state.Ppu.OamAddressOffset);
-	lua_pushboolvalue(enableOamPriority, state.Ppu.EnableOamPriority);
-
-	lua_pushboolvalue(extBgEnabled, state.Ppu.ExtBgEnabled);
-	lua_pushboolvalue(hiResMode, state.Ppu.HiResMode);
-	lua_pushboolvalue(screenInterlace, state.Ppu.ScreenInterlace);
-	lua_pushboolvalue(objInterlace, state.Ppu.ObjInterlace);
-	lua_pushboolvalue(overscanMode, state.Ppu.OverscanMode);
-	lua_pushboolvalue(directColorMode, state.Ppu.DirectColorMode);
-
-	lua_pushintvalue(colorMathClipMode, (int)state.Ppu.ColorMathClipMode);
-	lua_pushintvalue(colorMathPreventMode, (int)state.Ppu.ColorMathPreventMode);
-	lua_pushboolvalue(colorMathAddSubscreen, state.Ppu.ColorMathAddSubscreen);
-	lua_pushintvalue(colorMathEnabled, state.Ppu.ColorMathEnabled);
-	lua_pushboolvalue(colorMathSubstractMode, state.Ppu.ColorMathSubstractMode);
-	lua_pushboolvalue(colorMathHalveResult, state.Ppu.ColorMathHalveResult);
-	lua_pushintvalue(fixedColor, state.Ppu.FixedColor);
-
-	lua_endtable(); //end ppu
-
-	lua_starttable("spc");
-	lua_pushintvalue(a, state.Spc.A);
-	lua_pushintvalue(pc, state.Spc.PC);
-	lua_pushintvalue(status, state.Spc.PS);
-	lua_pushintvalue(sp, state.Spc.SP);
-	lua_pushintvalue(x, state.Spc.X);
-	lua_pushintvalue(y, state.Spc.Y);
-	lua_endtable(); //end spc
-	*/
 	return 1;
 }
+
+int LuaApi::SetState(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	lua_settop(lua, 1);
+	luaL_checktype(lua, -1, LUA_TTABLE);
+
+	unordered_map<string, SerializeMapValue> map;
+
+	lua_pushnil(lua);  /* first key */
+	while(lua_next(lua, -2) != 0) {
+		/* uses 'key' (at index -2) and 'value' (at index -1) */
+		if(lua_type(lua, -2) == LUA_TSTRING) {
+			size_t len = 0;
+			const char* cstr = lua_tolstring(lua, -2, &len);
+			string key = string(cstr, len);
+
+			switch(lua_type(lua, -1)) {
+				case LUA_TBOOLEAN: {
+					SerializeMapValue val;
+					val.Format = SerializeMapValueFormat::Bool;
+					val.Value.Bool = lua_toboolean(lua, -1);
+					map[key] = val;
+					break;
+				}
+
+				case LUA_TNUMBER: {
+					SerializeMapValue val;
+					if(lua_isinteger(lua, -1)) {
+						val.Format = SerializeMapValueFormat::Integer;
+						val.Value.Integer = lua_tointeger(lua, -1);
+						map[key] = val;
+					} else if(lua_isnumber(lua, -1)) {
+						val.Format = SerializeMapValueFormat::Double;
+						val.Value.Double = lua_tonumber(lua, -1);
+						map[key] = val;
+					}
+					break;
+				}
+			}
+		}
+		
+		/* removes 'value'; keeps 'key' for next iteration */
+		lua_pop(lua, 1);
+	}
+
+	Serializer s(0, false, SerializeFormat::Map);
+	s.LoadFromMap(map);
+
+	s.Stream(*_emu->GetConsole(), "", -1);
+	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
+
+	lua_newtable(lua);
+	for(auto& kvp : values) {
+		lua_pushstring(lua, kvp.first.c_str());
+		switch(kvp.second.Format) {
+			case SerializeMapValueFormat::Integer: lua_pushinteger(lua, kvp.second.Value.Integer); break;
+			case SerializeMapValueFormat::Double: lua_pushnumber(lua, kvp.second.Value.Double); break;
+			case SerializeMapValueFormat::Bool: lua_pushboolean(lua, kvp.second.Value.Bool); break;
+		}
+		lua_settable(lua, -3);
+	}
+	return 1;
+}
+
 #endif
