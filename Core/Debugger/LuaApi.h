@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Shared/CpuType.h"
+#include "Shared/SettingTypes.h"
 #include "MemoryType.h"
 
 struct lua_State;
@@ -38,8 +39,11 @@ public:
 	static int DrawPixel(lua_State *lua);
 	static int DrawRectangle(lua_State *lua);
 	static int ClearScreen(lua_State *lua);
+	
+	static int GetScreenSize(lua_State* lua);
 	static int GetScreenBuffer(lua_State *lua);
 	static int SetScreenBuffer(lua_State *lua);
+
 	static int GetPixel(lua_State *lua);
 	static int GetMouseState(lua_State *lua);
 
@@ -81,6 +85,8 @@ public:
 	static int ResetAccessCounters(lua_State *lua);
 
 private:
+	static FrameInfo InternalGetScreenSize();
+
 	static Emulator* _emu;
 	static SnesPpu* _ppu;
 	static Debugger* _debugger;

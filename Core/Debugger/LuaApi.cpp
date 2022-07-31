@@ -94,9 +94,12 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "drawPixel", LuaApi::DrawPixel },
 		{ "drawLine", LuaApi::DrawLine },
 		{ "drawRectangle", LuaApi::DrawRectangle },
-		{ "clearScreen", LuaApi::ClearScreen },
+		{ "clearScreen", LuaApi::ClearScreen },		
+
+		{ "getScreenSize", LuaApi::GetScreenSize },
 		{ "getScreenBuffer", LuaApi::GetScreenBuffer },
 		{ "setScreenBuffer", LuaApi::SetScreenBuffer },
+
 		{ "getPixel", LuaApi::GetPixel },
 		{ "getMouseState", LuaApi::GetMouseState },
 		{ "log", LuaApi::Log },
@@ -456,6 +459,30 @@ int LuaApi::ClearScreen(lua_State *lua)
 	return l.ReturnCount();
 }
 
+FrameInfo LuaApi::InternalGetScreenSize()
+{
+	PpuFrameInfo frame = _emu->GetPpuFrame();
+	FrameInfo frameSize;
+	frameSize.Height = frame.Height;
+	frameSize.Width = frame.Width;
+
+	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
+	filter->SetBaseFrameInfo(frameSize);
+	filter->SetOverscan({});
+	return filter->GetFrameInfo();
+}
+
+int LuaApi::GetScreenSize(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+
+	FrameInfo size = InternalGetScreenSize();
+	lua_newtable(lua);
+	lua_pushintvalue(width, size.Width);
+	lua_pushintvalue(height, size.Height);
+	return 1;
+}
+
 int LuaApi::GetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
@@ -479,27 +506,17 @@ int LuaApi::GetScreenBuffer(lua_State *lua)
 	return 1;
 }
 
-//TODO need api to get current screen size
-
 int LuaApi::SetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	
-	PpuFrameInfo frame = _emu->GetPpuFrame();
-	FrameInfo frameSize;
-	frameSize.Height = frame.Height;
-	frameSize.Width = frame.Width;
-
-	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
-	filter->SetBaseFrameInfo(frameSize);
-	filter->SetOverscan({});
-	frameSize = filter->GetFrameInfo();
+	FrameInfo size = InternalGetScreenSize();
 
 	int startFrame = _emu->GetFrameCount();
-	unique_ptr<DrawScreenBufferCommand> cmd(new DrawScreenBufferCommand(frameSize.Width, frameSize.Height, startFrame));
+	unique_ptr<DrawScreenBufferCommand> cmd(new DrawScreenBufferCommand(size.Width, size.Height, startFrame));
 
 	luaL_checktype(lua, 1, LUA_TTABLE);
-	for(int i = 0, len = frameSize.Height * frameSize.Width; i < len; i++) {
+	for(int i = 0, len = size.Height * size.Width; i < len; i++) {
 		lua_rawgeti(lua, 1, i+1);
 		uint32_t color = (uint32_t)lua_tointeger(lua, -1);
 		lua_pop(lua, 1);
