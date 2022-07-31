@@ -74,8 +74,6 @@ bool NesConsole::IsVsMainConsole()
 
 void NesConsole::Serialize(Serializer& s)
 {
-	_apu->EndFrame();
-
 	SV(_cpu);
 	SV(_ppu);
 	SV(_memoryManager);

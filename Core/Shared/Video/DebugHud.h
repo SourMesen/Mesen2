@@ -2,8 +2,7 @@
 #include "stdafx.h"
 #include "Utilities/SimpleLock.h"
 #include "Shared/SettingTypes.h"
-
-class DrawCommand;
+#include "Shared/Video/DrawCommand.h"
 
 class DebugHud
 {
@@ -24,5 +23,11 @@ public:
 	void DrawRectangle(int x, int y, int width, int height, int color, bool fill, int frameCount, int startFrame = -1);
 	void DrawString(int x, int y, string text, int color, int backColor, int frameCount, int startFrame = -1, int maxWidth = 0);
 
-	void AddCommand(unique_ptr<DrawCommand> cmd);
+	__forceinline void AddCommand(unique_ptr<DrawCommand> cmd)
+	{
+		auto lock = _commandLock.AcquireSafe();
+		if(_commands.size() < DebugHud::MaxCommandCount) {
+			_commands.push_back(std::move(cmd));
+		}
+	}
 };

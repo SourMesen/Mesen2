@@ -31,6 +31,8 @@ private:
 	bool _inExecOpEvent = false;
 
 	Debugger* _debugger = nullptr;
+	CpuType _defaultCpuType = {};
+	MemoryType _defaultMemType = {};
 
 	std::unordered_map<int32_t, string> _saveSlotData;
 	int32_t _saveSlot = -1;
@@ -73,6 +75,9 @@ public:
 	bool CheckInStartFrameEvent();
 	bool CheckInExecOpEvent();
 	bool CheckStateLoadedFlag();
+
+	CpuType GetDefaultCpuType() { return _defaultCpuType; }
+	MemoryType GetDefaultMemType() { return _defaultMemType; }
 	
 	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
 	virtual void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);

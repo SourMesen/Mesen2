@@ -15,10 +15,10 @@ private:
 
 protected:
 	bool _enabled = false;
-	bool _lengthCounterHalt = false;
-	uint8_t _lengthCounter = 0;
-	uint8_t _lengthCounterReloadValue = 0;
-	uint8_t _lengthCounterPreviousValue = 0;
+	bool _halt = false;
+	uint8_t _counter = 0;
+	uint8_t _reloadValue = 0;
+	uint8_t _previousValue = 0;
 
 public:
 	void InitializeLengthCounter(bool haltFlag)
@@ -30,8 +30,8 @@ public:
 	void LoadLengthCounter(uint8_t value)
 	{
 		if(_enabled) {
-			_lengthCounterReloadValue = _lcLookupTable[value];
-			_lengthCounterPreviousValue = _lengthCounter;
+			_reloadValue = _lcLookupTable[value];
+			_previousValue = _counter;
 			_console->GetApu()->SetNeedToRun();
 		}
 	}
@@ -47,60 +47,60 @@ public:
 			_enabled = false;
 			if(_channel != AudioChannel::Triangle) {
 				//"At reset, length counters should be enabled, triangle unaffected"
-				_lengthCounterHalt = false;
-				_lengthCounter = 0;
+				_halt = false;
+				_counter = 0;
 				_newHaltValue = false;
-				_lengthCounterReloadValue = 0;
-				_lengthCounterPreviousValue = 0;			
+				_reloadValue = 0;
+				_previousValue = 0;			
 			}
 		} else {
 			_enabled = false;
-			_lengthCounterHalt = false;
-			_lengthCounter = 0;
+			_halt = false;
+			_counter = 0;
 			_newHaltValue = false;
-			_lengthCounterReloadValue = 0;
-			_lengthCounterPreviousValue = 0;		
+			_reloadValue = 0;
+			_previousValue = 0;		
 		}
 	}
 
 	void Serialize(Serializer &s) override
 	{
-		SV(_enabled); SV(_lengthCounterHalt); SV(_newHaltValue); SV(_lengthCounter); SV(_lengthCounterPreviousValue); SV(_lengthCounterReloadValue);
+		SV(_enabled); SV(_halt); SV(_newHaltValue); SV(_counter); SV(_previousValue); SV(_reloadValue);
 	}
 
 	bool GetStatus()
 	{
-		return _lengthCounter > 0;
+		return _counter > 0;
 	}
 
 	bool IsHalted()
 	{
-		return _lengthCounterHalt;
+		return _halt;
 	}
 	
 	void ReloadCounter()
 	{
-		if(_lengthCounterReloadValue) {
-			if(_lengthCounter == _lengthCounterPreviousValue) {
-				_lengthCounter = _lengthCounterReloadValue;
+		if(_reloadValue) {
+			if(_counter == _previousValue) {
+				_counter = _reloadValue;
 			}
-			_lengthCounterReloadValue = 0;
+			_reloadValue = 0;
 		}
 
-		_lengthCounterHalt = _newHaltValue;
+		_halt = _newHaltValue;
 	}
 
 	void TickLengthCounter()
 	{
-		if(_lengthCounter > 0 && !_lengthCounterHalt) {
-			_lengthCounter--;
+		if(_counter > 0 && !_halt) {
+			_counter--;
 		}
 	}
 
 	void SetEnabled(bool enabled)
 	{
 		if(!enabled) {
-			_lengthCounter = 0;
+			_counter = 0;
 		}
 		_enabled = enabled;
 	}
@@ -113,9 +113,9 @@ public:
 	ApuLengthCounterState GetState()
 	{
 		ApuLengthCounterState state;
-		state.Counter = _lengthCounter;
-		state.Halt = _lengthCounterHalt;
-		state.ReloadValue = _lengthCounterReloadValue;
+		state.Counter = _counter;
+		state.Halt = _halt;
+		state.ReloadValue = _reloadValue;
 		return state;
 	}
 };

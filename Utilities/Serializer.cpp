@@ -187,16 +187,42 @@ void Serializer::LoadFromMap(unordered_map<string, SerializeMapValue>& map)
 	_mapValues = map;
 }
 
-void Serializer::PushNamePrefix(const char* name, int index)
+string Serializer::NormalizeName(const char* name, int index)
 {
-	string valName = name;
+	string valName = name[0] == '_' ? name + 1 : name;
+	if(valName.size() > 6 && memcmp(valName.c_str(), "state.", 6) == 0) {
+		valName = valName.substr(6);
+	}
+
+	for(size_t i = 0, len = valName.size(); i < len; i++) {
+		char c = valName[i];
+		if(c >= 'A' && c <= 'Z') {
+			valName[i] = ::tolower(c);
+		} else {
+			size_t pos = valName.find_first_of('.', i);
+			if(pos == string::npos) {
+				break;
+			} else {
+				i = pos;
+			}
+		}
+	}
+
 	if(index >= 0) {
 		size_t pos = valName.find("[i]");
 		if(pos != string::npos) {
 			valName.replace(pos, 3, "[" + std::to_string(index) + "]");
+		} else {
+			valName += "[" + std::to_string(index) + "]";
 		}
 	}
-	_prefixes.push_back(name[0] == '_' ? valName.substr(1) : valName);
+
+	return valName;
+}
+
+void Serializer::PushNamePrefix(const char* name, int index)
+{
+	_prefixes.push_back(NormalizeName(name, index));
 }
 
 void Serializer::PopNamePrefix()

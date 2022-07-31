@@ -11,8 +11,6 @@ private:
 	bool _constantVolume = false;
 	uint8_t _volume = 0;
 
-	uint8_t _envelopeCounter = 0;
-
 	bool _start = false;
 	int8_t _divider = 0;
 	uint8_t _counter = 0;
@@ -53,7 +51,6 @@ public:
 	{
 		_constantVolume = false;
 		_volume = 0;
-		_envelopeCounter = 0;
 		_start = false;
 		_divider = 0;
 		_counter = 0;
@@ -61,7 +58,7 @@ public:
 
 	void Serialize(Serializer& s) override
 	{
-		SV(_constantVolume); SV(_volume); SV(_envelopeCounter); SV(_start); SV(_divider); SV(_counter);
+		SV(_constantVolume); SV(_volume); SV(_start); SV(_divider); SV(_counter);
 		SV(LengthCounter);
 	}
 

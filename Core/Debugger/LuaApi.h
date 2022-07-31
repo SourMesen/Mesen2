@@ -8,8 +8,6 @@ struct lua_State;
 class ScriptingContext;
 class Debugger;
 class Emulator;
-class SnesConsole;
-class SnesPpu;
 class MemoryDumper;
 
 class LuaApi
@@ -88,11 +86,7 @@ private:
 	static FrameInfo InternalGetScreenSize();
 
 	static Emulator* _emu;
-	static SnesPpu* _ppu;
 	static Debugger* _debugger;
 	static MemoryDumper* _memoryDumper;
 	static ScriptingContext* _context;
-
-	static CpuType _defaultCpuType;
-	static MemoryType _defaultMemType;
 };

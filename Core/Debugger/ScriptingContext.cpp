@@ -9,6 +9,8 @@
 ScriptingContext::ScriptingContext(Debugger *debugger)
 {
 	_debugger = debugger;
+	_defaultCpuType = debugger->GetEmulator()->GetCpuTypes()[0];
+	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);
 }
 
 void ScriptingContext::Log(string message)

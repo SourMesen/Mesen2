@@ -52,11 +52,8 @@
 
 Debugger* LuaApi::_debugger = nullptr;
 Emulator* LuaApi::_emu = nullptr;
-SnesPpu* LuaApi::_ppu = nullptr;
 MemoryDumper* LuaApi::_memoryDumper = nullptr;
 ScriptingContext* LuaApi::_context = nullptr;
-CpuType LuaApi::_defaultCpuType = {};
-MemoryType LuaApi::_defaultMemType = {};
 
 void LuaApi::SetContext(ScriptingContext* context)
 {
@@ -64,12 +61,6 @@ void LuaApi::SetContext(ScriptingContext* context)
 	_debugger = _context->GetDebugger();
 	_memoryDumper = _debugger->GetMemoryDumper();
 	_emu = _debugger->GetEmulator();
-	
-	_defaultCpuType = _emu->GetCpuTypes()[0];
-	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);
-
-	//TODO
-	//_ppu = _debugger->GetConsole()->GetPpu().get();
 }
 
 void LuaApi::LuaPushIntValue(lua_State* lua, string name, int value)
@@ -86,11 +77,15 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "write", LuaApi::WriteMemory },
 		{ "readWord", LuaApi::ReadMemoryWord },
 		{ "writeWord", LuaApi::WriteMemoryWord },
+		
 		{ "getPrgRomOffset", LuaApi::GetPrgRomOffset },
+		{ "getLabelAddress", LuaApi::GetLabelAddress },
+
 		{ "addMemoryCallback", LuaApi::RegisterMemoryCallback },
 		{ "removeMemoryCallback", LuaApi::UnregisterMemoryCallback },
 		{ "addEventCallback", LuaApi::RegisterEventCallback },
 		{ "removeEventCallback", LuaApi::UnregisterEventCallback },
+
 		{ "drawString", LuaApi::DrawString },
 		{ "drawPixel", LuaApi::DrawPixel },
 		{ "drawLine", LuaApi::DrawLine },
@@ -100,20 +95,24 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "getScreenSize", LuaApi::GetScreenSize },
 		{ "getScreenBuffer", LuaApi::GetScreenBuffer },
 		{ "setScreenBuffer", LuaApi::SetScreenBuffer },
-
 		{ "getPixel", LuaApi::GetPixel },
+
 		{ "getMouseState", LuaApi::GetMouseState },
 		{ "log", LuaApi::Log },
 		{ "displayMessage", LuaApi::DisplayMessage },
+
 		{ "reset", LuaApi::Reset },
 		{ "breakExecution", LuaApi::Break },
 		{ "resume", LuaApi::Resume },
 		{ "execute", LuaApi::Execute },
 		{ "rewind", LuaApi::Rewind },
+
 		{ "takeScreenshot", LuaApi::TakeScreenshot },
+
 		{ "isKeyPressed", LuaApi::IsKeyPressed },
 		{ "getInput", LuaApi::GetInput },
 		{ "setInput", LuaApi::SetInput },
+
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
 		
@@ -123,7 +122,6 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "getScriptDataFolder", LuaApi::GetScriptDataFolder },
 		{ "getRomInfo", LuaApi::GetRomInfo },
 		{ "getLogWindowLog", LuaApi::GetLogWindowLog },
-		{ "getLabelAddress", LuaApi::GetLabelAddress },
 		{ NULL,NULL }
 	};
 
@@ -308,7 +306,7 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
-	CpuType cpuType = (CpuType)l.ReadInteger((int)_defaultCpuType);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)_context->GetDefaultCpuType());
 	int32_t endAddr = l.ReadInteger(-1);
 	uint32_t startAddr = l.ReadInteger();
 	CallbackType callbackType = (CallbackType)l.ReadInteger();
@@ -334,7 +332,7 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 	LuaCallHelper l(lua);
 	l.ForceParamCount(5);
 
-	CpuType cpuType = (CpuType)l.ReadInteger((int)_defaultCpuType);
+	CpuType cpuType = (CpuType)l.ReadInteger((int)_context->GetDefaultCpuType());
 	int endAddr = l.ReadInteger(-1);
 	int startAddr = l.ReadInteger();
 	CallbackType type = (CallbackType)l.ReadInteger();
@@ -595,7 +593,7 @@ int LuaApi::Break(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
-	_debugger->Step(_defaultCpuType, 1, StepType::Step);
+	_debugger->Step(_context->GetDefaultCpuType(), 1, StepType::Step);
 	return l.ReturnCount();
 }
 
@@ -618,7 +616,7 @@ int LuaApi::Execute(lua_State *lua)
 	errorCond(count <= 0, "count must be >= 1");
 	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 
-	_debugger->Step(_defaultCpuType, count, type);
+	_debugger->Step(_context->GetDefaultCpuType(), count, type);
 
 	return l.ReturnCount();
 }

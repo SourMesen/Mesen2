@@ -28,10 +28,11 @@ class NesApu : public ISerializable, public INesMemoryHandler
 		uint32_t _previousCycle;
 		uint32_t _currentCycle;
 
-		unique_ptr<SquareChannel> _squareChannel[2];
-		unique_ptr<TriangleChannel> _triangleChannel;
-		unique_ptr<NoiseChannel> _noiseChannel;
-		unique_ptr<DeltaModulationChannel> _deltaModulationChannel;
+		unique_ptr<SquareChannel> _square1;
+		unique_ptr<SquareChannel> _square2;
+		unique_ptr<TriangleChannel> _triangle;
+		unique_ptr<NoiseChannel> _noise;
+		unique_ptr<DeltaModulationChannel> _dmc;
 		unique_ptr<ApuFrameCounter> _frameCounter;
 
 		NesConsole* _console;

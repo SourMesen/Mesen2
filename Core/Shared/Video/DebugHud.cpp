@@ -52,11 +52,3 @@ void DebugHud::DrawString(int x, int y, string text, int color, int backColor, i
 {
 	AddCommand(unique_ptr<DrawCommand>(new DrawStringCommand(x, y, text, color, backColor, frameCount, startFrame, maxWidth)));
 }
-
-void DebugHud::AddCommand(unique_ptr<DrawCommand> cmd)
-{
-	auto lock = _commandLock.AcquireSafe();
-	if(_commands.size() < DebugHud::MaxCommandCount) {
-		_commands.push_back(std::move(cmd));
-	}
-}
