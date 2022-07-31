@@ -9,10 +9,14 @@
 	<Color name="Mesen" fontWeight="bold" foreground="Indigo" />
 
 	<RuleSet>
+		<Span color="Comment" multiline="true">
+			<Begin>--\[\[</Begin>
+			<End>\]\]</End>
+		</Span>
 		<Span color="Comment">
 			<Begin>--</Begin>
 		</Span>
-
+		
 		<Keywords color="Mesen">
 			<Word>emu</Word>
 		</Keywords>
@@ -91,8 +95,13 @@
 			[+\-*/%^#&amp;~|&lt;&gt;=(){}[\]:;,.]
 		</Rule>
 
+		<Span color="StringLiteral" multiline="true">
+			<Begin>\[\[</Begin>
+			<End>\]\]</End>
+		</Span>
+
 		<Rule color="StringLiteral">
 			".*?[^\\]"|'.*?[^\\]'
 		</Rule>
-	</RuleSet>
+			</RuleSet>
 </SyntaxDefinition>
