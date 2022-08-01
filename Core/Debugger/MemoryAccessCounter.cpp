@@ -47,6 +47,7 @@ ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint
 	}
 
 	counts.ReadStamp = masterClock;
+	counts.ReadCounter++;
 	return ReadResult::Normal;
 }
 
@@ -56,7 +57,9 @@ void MemoryAccessCounter::ProcessMemoryWrite(AddressInfo& addressInfo, uint64_t 
 		return;
 	}
 
-	_counters[(int)addressInfo.Type][addressInfo.Address].WriteStamp = masterClock;
+	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
+	counts.WriteStamp = masterClock;
+	counts.WriteCounter++;
 }
 
 void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t masterClock)
@@ -65,7 +68,9 @@ void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t m
 		return;
 	}
 
-	_counters[(int)addressInfo.Type][addressInfo.Address].ExecStamp = masterClock;
+	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
+	counts.ExecStamp = masterClock;
+	counts.ExecCounter++;
 }
 
 void MemoryAccessCounter::ResetCounts()

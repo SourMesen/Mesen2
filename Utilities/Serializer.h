@@ -18,7 +18,8 @@ enum class SerializeMapValueFormat
 {
 	Integer,
 	Double,
-	Bool
+	Bool,
+	String
 };
 
 union MapValue
@@ -36,8 +37,10 @@ struct SerializeMapValue
 {
 	SerializeMapValueFormat Format;
 	MapValue Value;
+	string StringValue;
 
 	SerializeMapValue(SerializeMapValueFormat f, MapValue v) : Format(f), Value(v) {}
+	SerializeMapValue(string v) : Format(SerializeMapValueFormat::String), Value(false), StringValue(v) {}
 };
 
 struct SerializeValue
@@ -127,7 +130,9 @@ private:
 			_mapValues.try_emplace(key, SerializeMapValueFormat::Integer, (int64_t)value);
 		} else if constexpr(std::is_floating_point<T>::value) {
 			_mapValues.try_emplace(key, SerializeMapValueFormat::Double, (double)value);
-		}		
+		} else if constexpr(std::is_same<T, string>::value) {
+			_mapValues.try_emplace(key, value);
+		}	
 	}
 
 	template<typename T>
@@ -147,6 +152,10 @@ private:
 			} else if constexpr(std::is_floating_point<T>::value) {
 				if(mapVal.Format == SerializeMapValueFormat::Double) {
 					value = (double)mapVal.Value.Double;
+				}
+			} else if constexpr(std::is_same<T, string>::value) {
+				if(mapVal.Format == SerializeMapValueFormat::String) {
+					value = mapVal.StringValue;
 				}
 			}
 		}
@@ -396,32 +405,36 @@ public:
 
 	template<> void Stream(string& value, const char* name, int index)
 	{
-		if(_format == SerializeFormat::Map) {
-			return;
-		}
-
 		string key = GetKey(name, index);
 		if(!_usedKeys.emplace(key).second) {
 			throw std::runtime_error("Duplicate key");
 		}
 
-		if(_saving) {
-			//Write key
-			_data.insert(_data.end(), key.begin(), key.end());
-			_data.push_back(0);
-
-			//Write string size
-			WriteValue((uint32_t)value.size());
-
-			//Write string content
-			_data.insert(_data.end(), value.begin(), value.end());
-		} else {
-			auto result = _values.find(key);
-			if(result != _values.end()) {
-				SerializeValue& savedValue = result->second;
-				value = string(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
+		if(_format == SerializeFormat::Map) {
+			if(_saving) {
+				WriteMapFormat(key, value);
 			} else {
-				value = "";
+				ReadMapFormat(key, value);
+			}
+		} else {
+			if(_saving) {
+				//Write key
+				_data.insert(_data.end(), key.begin(), key.end());
+				_data.push_back(0);
+
+				//Write string size
+				WriteValue((uint32_t)value.size());
+
+				//Write string content
+				_data.insert(_data.end(), value.begin(), value.end());
+			} else {
+				auto result = _values.find(key);
+				if(result != _values.end()) {
+					SerializeValue& savedValue = result->second;
+					value = string(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
+				} else {
+					value = "";
+				}
 			}
 		}
 	}

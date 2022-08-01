@@ -122,6 +122,18 @@ bool LabelManager::ContainsLabel(string &label)
 	return _codeLabelReverseLookup.find(label) != _codeLabelReverseLookup.end();
 }
 
+AddressInfo LabelManager::GetLabelAbsoluteAddress(string& label)
+{
+	AddressInfo addr = { -1, MemoryType::Register };
+	auto result = _codeLabelReverseLookup.find(label);
+	if(result != _codeLabelReverseLookup.end()) {
+		uint64_t key = result->second;
+		addr.Type = GetKeyMemoryType(key);
+		addr.Address = (int32_t)(key & 0xFFFFFFFF);
+	}
+	return addr;
+}
+
 int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 {
 	auto result = _codeLabelReverseLookup.find(label);

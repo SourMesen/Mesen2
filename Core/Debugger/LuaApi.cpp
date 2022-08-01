@@ -287,9 +287,13 @@ int LuaApi::ConvertAddress(lua_State *lua)
 		result = _debugger->GetRelativeAddress(src, cpuType);
 	}
 
-	lua_newtable(lua);
-	lua_pushintvalue(address, result.Address);
-	lua_pushintvalue(memType, result.Type);
+	if(result.Address < 0) {
+		lua_pushnil(lua);
+	} else {
+		lua_newtable(lua);
+		lua_pushintvalue(address, result.Address);
+		lua_pushintvalue(memType, result.Type);
+	}
 	return 1;
 }
 
@@ -300,20 +304,23 @@ int LuaApi::GetLabelAddress(lua_State* lua)
 	checkparams();
 	errorCond(label.length() == 0, "label cannot be empty");
 
-	LabelManager* lblMan = _debugger->GetLabelManager();
-	//TODO hardcoded cpu type
-	int32_t value = lblMan->GetLabelRelativeAddress(label, CpuType::Snes);
-	if(value == -2) {
+	LabelManager* labelManager = _debugger->GetLabelManager();
+	AddressInfo addr = labelManager->GetLabelAbsoluteAddress(label);
+	if(addr.Address < 0) {
+		//TODO multibyte label review?
 		//Check to see if the label is a multi-byte label instead
 		string mbLabel = label + "+0";
-		//TODO hardcoded cpu type
-		value = lblMan->GetLabelRelativeAddress(mbLabel, CpuType::Snes);
+		addr = labelManager->GetLabelAbsoluteAddress(mbLabel);
 	}
-	errorCond(value == -1, "label out of scope (not mapped to CPU memory)");
-	errorCond(value <= -2, "label not found");
 
-	l.Return(value);
-	return l.ReturnCount();
+	if(addr.Address < 0) {
+		lua_pushnil(lua);
+	} else {
+		lua_newtable(lua);
+		lua_pushintvalue(address, addr.Address);
+		lua_pushintvalue(memType, addr.Type);
+	}
+	return 1;
 }
 
 int LuaApi::RegisterMemoryCallback(lua_State *lua)
@@ -769,31 +776,30 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	counts.resize(_memoryDumper->GetMemorySize(memoryType), {});
 	_debugger->GetMemoryAccessCounter()->GetAccessCounts(0, size, memoryType, counts.data());
 
-	//TODO
-	/*lua_newtable(lua);
+	lua_createtable(lua, size, 0);
 	switch(operationType) {
 		default:
 		case MemoryOperationType::Read: 
 			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].ReadCount);
-				lua_rawseti(lua, -2, i);
+				lua_pushinteger(lua, counts[i].ReadCounter);
+				lua_rawseti(lua, -2, i + 1);
 			}
 			break;
 
 		case MemoryOperationType::Write:
 			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].WriteCount);
-				lua_rawseti(lua, -2, i);
+				lua_pushinteger(lua, counts[i].WriteCounter);
+				lua_rawseti(lua, -2, i + 1);
 			}
 			break;
 
 		case MemoryOperationType::ExecOpCode:
 			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].ExecCount);
-				lua_rawseti(lua, -2, i);
+				lua_pushinteger(lua, counts[i].ExecCounter);
+				lua_rawseti(lua, -2, i + 1);
 			}
 			break;
-	}*/
+	}
 	return 1;
 }
 
@@ -851,7 +857,12 @@ int LuaApi::GetState(lua_State *lua)
 	
 	//Add some more Lua-specific values
 	uint32_t clockRate = _emu->GetMasterClockRate();
+	string consoleType = string(magic_enum::enum_name<ConsoleType>(_emu->GetConsoleType()));
+	string region = string(magic_enum::enum_name<ConsoleRegion>(_emu->GetRegion()));
+	
 	SV(clockRate);
+	SV(consoleType);
+	SV(region);
 
 	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
 
@@ -862,6 +873,7 @@ int LuaApi::GetState(lua_State *lua)
 			case SerializeMapValueFormat::Integer: lua_pushinteger(lua, kvp.second.Value.Integer); break;
 			case SerializeMapValueFormat::Double: lua_pushnumber(lua, kvp.second.Value.Double); break;
 			case SerializeMapValueFormat::Bool: lua_pushboolean(lua, kvp.second.Value.Bool); break;
+			case SerializeMapValueFormat::String: lua_pushstring(lua, kvp.second.StringValue.c_str()); break;
 		}
 		lua_settable(lua, -3);
 	}

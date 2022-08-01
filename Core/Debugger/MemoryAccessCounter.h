@@ -17,6 +17,9 @@ struct AddressCounters
 	uint64_t ReadStamp;
 	uint64_t WriteStamp;
 	uint64_t ExecStamp;
+	uint32_t ReadCounter;
+	uint32_t WriteCounter;
+	uint32_t ExecCounter;
 };
 
 enum class ReadResult

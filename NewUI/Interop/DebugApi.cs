@@ -572,6 +572,9 @@ namespace Mesen.Interop
 		public UInt64 ReadStamp;
 		public UInt64 WriteStamp;
 		public UInt64 ExecStamp;
+		public UInt32 ReadCounter;
+		public UInt32 WriteCounter;
+		public UInt32 ExecCounter;
 	}
 
 	public struct AddressInfo
