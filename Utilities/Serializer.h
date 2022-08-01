@@ -21,15 +21,23 @@ enum class SerializeMapValueFormat
 	Bool
 };
 
+union MapValue
+{
+	int64_t Integer;
+	double Double;
+	bool Bool;
+
+	MapValue(bool b) { Bool = b; }
+	MapValue(double d) { Double = d; }
+	MapValue(int64_t i) { Integer = i; }
+};
+
 struct SerializeMapValue
 {
 	SerializeMapValueFormat Format;
-	union
-	{
-		int64_t Integer;
-		double Double;
-		bool Bool;
-	} Value;
+	MapValue Value;
+
+	SerializeMapValue(SerializeMapValueFormat f, MapValue v) : Format(f), Value(v) {}
 };
 
 struct SerializeValue
@@ -62,6 +70,7 @@ class Serializer
 private:
 	vector<uint8_t> _data;
 	vector<string> _prefixes;
+	string _prefix;
 
 	unordered_set<string> _usedKeys;
 	unordered_map<string, SerializeValue> _values;
@@ -76,21 +85,15 @@ private:
 private:
 	bool LoadFromTextFormat(istream& file);
 	string NormalizeName(const char* name, int index);
+	void UpdatePrefix();
 
 	string GetKey(const char* name, int index)
 	{
-		string key;
-		for(string& prefix : _prefixes) {
-			if(prefix.size()) {
-				key += prefix + ".";
-			}
-		}
-
 		string valName = NormalizeName(name, index);
 		if(valName.empty()) {
 			throw std::runtime_error("invalid value name");
 		}
-		return key + valName;
+		return _prefix + valName;
 	}
 
 	template<typename T>
@@ -116,27 +119,19 @@ private:
 	}
 
 	template<typename T>
-	void WriteMapFormat(string key, T& value)
+	void WriteMapFormat(string& key, T& value)
 	{
-		SerializeMapValue result;
 		if constexpr(std::is_same<T, bool>::value) {
-			result.Format = SerializeMapValueFormat::Bool;
-			result.Value.Bool = value;
+			_mapValues.try_emplace(key, SerializeMapValueFormat::Bool, (bool)value);
 		} else if constexpr(std::is_integral<T>::value) {
-			result.Format = SerializeMapValueFormat::Integer;
-			result.Value.Integer = value;
+			_mapValues.try_emplace(key, SerializeMapValueFormat::Integer, (int64_t)value);
 		} else if constexpr(std::is_floating_point<T>::value) {
-			result.Format = SerializeMapValueFormat::Double;
-			result.Value.Double = value;
-		} else {
-			//ignore value
-			return;
-		}
-		_mapValues[key] = result;
+			_mapValues.try_emplace(key, SerializeMapValueFormat::Double, (double)value);
+		}		
 	}
 
 	template<typename T>
-	void ReadMapFormat(string key, T& value)
+	void ReadMapFormat(string& key, T& value)
 	{
 		auto result = _mapValues.find(key);
 		if(result != _mapValues.end()) {
@@ -158,7 +153,7 @@ private:
 	}
 
 	template<typename T>
-	void WriteTextFormat(string key, T& value)
+	void WriteTextFormat(string& key, T& value)
 	{
 		//Write key
 		_data.insert(_data.end(), key.begin(), key.end());

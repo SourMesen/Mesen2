@@ -1,16 +1,138 @@
 #include "stdafx.h"
 #include <algorithm>
+#include "Lua/lua.hpp"
+#include "Lua/luasocket.hpp"
 #include "Debugger/ScriptingContext.h"
+#include "Debugger/LuaApi.h"
+#include "Debugger/LuaCallHelper.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/SaveStateManager.h"
+#include "Utilities/magic_enum.hpp"
+#include "EventType.h"
+
+ScriptingContext* ScriptingContext::_context = nullptr;
 
 ScriptingContext::ScriptingContext(Debugger *debugger)
 {
 	_debugger = debugger;
+	_settings = debugger->GetEmulator()->GetSettings();
 	_defaultCpuType = debugger->GetEmulator()->GetCpuTypes()[0];
 	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);
+}
+
+ScriptingContext::~ScriptingContext()
+{
+	if(_lua) {
+		//Cleanup all references, this is required to prevent crashes that can occur when calling lua_close
+		std::unordered_set<int> references;
+		for(int i = (int)CallbackType::CpuRead; i <= (int)CallbackType::CpuExec; i++) {
+			for(MemoryCallback& callback : _callbacks[i]) {
+				references.emplace(callback.Reference);
+			}
+		}
+
+		for(auto& entry : magic_enum::enum_entries<EventType>()) {
+			for(int& ref : _eventCallbacks[(int)entry.first]) {
+				references.emplace(ref);
+			}
+		}
+
+		for(const int& ref : references) {
+			luaL_unref(_lua, LUA_REGISTRYINDEX, ref);
+		}
+
+		lua_close(_lua);
+		_lua = nullptr;
+	}
+}
+
+bool ScriptingContext::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
+{
+	_scriptName = scriptName;
+
+	int iErr = 0;
+	_lua = luaL_newstate();
+
+	_context = this;
+	LuaApi::SetContext(this);
+
+	EmuSettings* settings = debugger->GetEmulator()->GetSettings();
+	bool allowIoOsAccess = settings->GetDebugConfig().ScriptAllowIoOsAccess;
+	LuaOpenLibs(_lua, allowIoOsAccess);
+
+	//Prevent lua code from loading any files
+	SANDBOX_ALLOW_LOADFILE = allowIoOsAccess ? 1 : 0;
+
+	//Load LuaSocket into Lua core
+	if(allowIoOsAccess && settings->GetDebugConfig().ScriptAllowNetworkAccess) {
+		lua_getglobal(_lua, "package");
+		lua_getfield(_lua, -1, "preload");
+		lua_pushcfunction(_lua, luaopen_socket_core);
+		lua_setfield(_lua, -2, "socket.core");
+		lua_pushcfunction(_lua, luaopen_mime_core);
+		lua_setfield(_lua, -2, "mime.core");
+		lua_pop(_lua, 2);
+	}
+
+	luaL_requiref(_lua, "emu", LuaApi::GetLibrary, 1);
+	Log("Loading script...");
+	if((iErr = luaL_loadbufferx(_lua, scriptContent.c_str(), scriptContent.size(), ("@" + scriptName).c_str(), nullptr)) == 0) {
+		_timer.Reset();
+		lua_setwatchdogtimer(_lua, ScriptingContext::ExecutionCountHook, 1000);
+		if((iErr = lua_pcall(_lua, 0, LUA_MULTRET, 0)) == 0) {
+			//Script loaded properly
+			Log("Script loaded successfully.");
+			_initDone = true;
+			return true;
+		}
+	}
+
+	if(lua_isstring(_lua, -1)) {
+		Log(lua_tostring(_lua, -1));
+	}
+	return false;
+}
+
+void ScriptingContext::ExecutionCountHook(lua_State* lua)
+{
+	uint32_t timeout = _context->_settings->GetDebugConfig().ScriptTimeout;
+	if(_context->_timer.GetElapsedMS() > timeout * 1000) {
+		luaL_error(lua, (std::string("Maximum execution time (") + std::to_string(timeout) + " seconds) exceeded.").c_str());
+	}
+	lua_setwatchdogtimer(lua, ScriptingContext::ExecutionCountHook, 1000);
+}
+
+void ScriptingContext::LuaOpenLibs(lua_State* L, bool allowIoOsAccess)
+{
+	constexpr luaL_Reg loadedlibs[] = {
+	  {"_G", luaopen_base},
+	  {LUA_LOADLIBNAME, luaopen_package},
+	  {LUA_COLIBNAME, luaopen_coroutine},
+	  {LUA_TABLIBNAME, luaopen_table},
+	  {LUA_IOLIBNAME, luaopen_io},
+	  {LUA_OSLIBNAME, luaopen_os},
+	  {LUA_STRLIBNAME, luaopen_string},
+	  {LUA_MATHLIBNAME, luaopen_math},
+	  {LUA_UTF8LIBNAME, luaopen_utf8},
+	  {LUA_DBLIBNAME, luaopen_debug},
+	  {NULL, NULL}
+	};
+
+	const luaL_Reg* lib;
+	/* "require" functions from 'loadedlibs' and set results to global table */
+	for(lib = loadedlibs; lib->func; lib++) {
+		if(!allowIoOsAccess) {
+			//Skip loading IO, OS and Package lib when sandboxed
+			if(strcmp(lib->name, LUA_IOLIBNAME) == 0 || strcmp(lib->name, LUA_OSLIBNAME) == 0 || strcmp(lib->name, LUA_LOADLIBNAME) == 0) {
+				continue;
+			}
+		}
+		luaL_requiref(L, lib->name, lib->func, 1);
+		lua_pop(L, 1);  /* remove lib */
+	}
 }
 
 void ScriptingContext::Log(string message)
@@ -115,6 +237,8 @@ void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr
 			break;
 		}
 	}
+
+	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
 }
 
 void ScriptingContext::RegisterEventCallback(EventType type, int reference)
@@ -126,6 +250,65 @@ void ScriptingContext::UnregisterEventCallback(EventType type, int reference)
 {
 	vector<int> &callbacks = _eventCallbacks[(int)type];
 	callbacks.erase(std::remove(callbacks.begin(), callbacks.end(), reference), callbacks.end());
+	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
+}
+
+
+void ScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t& value, CallbackType type, CpuType cpuType)
+{
+	if(_callbacks[(int)type].empty()) {
+		return;
+	}
+
+	_context = this;
+	bool needTimerReset = true;
+	lua_setwatchdogtimer(_lua, ScriptingContext::ExecutionCountHook, 1000);
+	LuaApi::SetContext(this);
+	for(MemoryCallback& callback : _callbacks[(int)type]) {
+		if(callback.Type != cpuType || addr < callback.StartAddress || addr > callback.EndAddress) {
+			continue;
+		}
+
+		if(needTimerReset) {
+			_timer.Reset();
+			needTimerReset = false;
+		}
+
+		int top = lua_gettop(_lua);
+		lua_rawgeti(_lua, LUA_REGISTRYINDEX, callback.Reference);
+		lua_pushinteger(_lua, addr);
+		lua_pushinteger(_lua, value);
+		if(lua_pcall(_lua, 2, LUA_MULTRET, 0) != 0) {
+			Log(lua_tostring(_lua, -1));
+		} else {
+			int returnParamCount = lua_gettop(_lua) - top;
+			if(returnParamCount && lua_isinteger(_lua, -1)) {
+				int newValue = (int)lua_tointeger(_lua, -1);
+				value = (uint8_t)newValue;
+			}
+			lua_settop(_lua, top);
+		}
+	}
+}
+
+int ScriptingContext::InternalCallEventCallback(EventType type)
+{
+	if(_eventCallbacks[(int)type].empty()) {
+		return 0;
+	}
+
+	_timer.Reset();
+	_context = this;
+	lua_setwatchdogtimer(_lua, ScriptingContext::ExecutionCountHook, 1000);
+	LuaApi::SetContext(this);
+	LuaCallHelper l(_lua);
+	for(int& ref : _eventCallbacks[(int)type]) {
+		lua_rawgeti(_lua, LUA_REGISTRYINDEX, ref);
+		if(lua_pcall(_lua, 0, 0, 0) != 0) {
+			Log(lua_tostring(_lua, -1));
+		}
+	}
+	return l.ReturnCount();
 }
 
 void ScriptingContext::RequestSaveState(int slot)

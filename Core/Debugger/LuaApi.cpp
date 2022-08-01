@@ -834,6 +834,11 @@ int LuaApi::GetState(lua_State *lua)
 
 	Serializer s(0, true, SerializeFormat::Map);
 	s.Stream(*_emu->GetConsole(), "", -1);
+	
+	//Add some more Lua-specific values
+	uint32_t clockRate = _emu->GetMasterClockRate();
+	SV(clockRate);
+
 	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
 
 	lua_newtable(lua);
@@ -867,23 +872,15 @@ int LuaApi::SetState(lua_State* lua)
 
 			switch(lua_type(lua, -1)) {
 				case LUA_TBOOLEAN: {
-					SerializeMapValue val;
-					val.Format = SerializeMapValueFormat::Bool;
-					val.Value.Bool = lua_toboolean(lua, -1);
-					map[key] = val;
+					map.try_emplace(key, SerializeMapValueFormat::Bool, (bool)lua_toboolean(lua, -1));
 					break;
 				}
 
 				case LUA_TNUMBER: {
-					SerializeMapValue val;
 					if(lua_isinteger(lua, -1)) {
-						val.Format = SerializeMapValueFormat::Integer;
-						val.Value.Integer = lua_tointeger(lua, -1);
-						map[key] = val;
+						map.try_emplace(key, SerializeMapValueFormat::Integer, (int64_t)lua_tointeger(lua, -1));
 					} else if(lua_isnumber(lua, -1)) {
-						val.Format = SerializeMapValueFormat::Double;
-						val.Value.Double = lua_tonumber(lua, -1);
-						map[key] = val;
+						map.try_emplace(key, SerializeMapValueFormat::Double, (double)lua_tonumber(lua, -1));
 					}
 					break;
 				}

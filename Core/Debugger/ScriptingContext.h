@@ -2,10 +2,12 @@
 #include "stdafx.h"
 #include <deque>
 #include "Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
+#include "Debugger/DebugTypes.h"
 #include "EventType.h"
-#include "DebugTypes.h"
 
 class Debugger;
+struct lua_State;
 
 enum class CallbackType
 {
@@ -25,7 +27,12 @@ struct MemoryCallback
 class ScriptingContext
 {
 private:
-	std::deque<string> _logRows;
+	static ScriptingContext* _context;
+	lua_State* _lua = nullptr;
+	Timer _timer;
+	EmuSettings* _settings = nullptr;
+
+	deque<string> _logRows;
 	SimpleLock _logLock;
 	bool _inStartFrameEvent = false;
 	bool _inExecOpEvent = false;
@@ -39,6 +46,9 @@ private:
 	int32_t _loadSlot = -1;
 	bool _stateLoaded = false;
 
+	static void ExecutionCountHook(lua_State* lua);
+	void LuaOpenLibs(lua_State* L, bool allowIoOsAccess);
+
 protected:
 	string _scriptName;
 	bool _initDone = false;
@@ -46,13 +56,13 @@ protected:
 	vector<MemoryCallback> _callbacks[3];
 	vector<int> _eventCallbacks[(int)EventType::LastValue + 1];
 
-	virtual void InternalCallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType) = 0;
-	virtual int InternalCallEventCallback(EventType type) = 0;
+	void InternalCallMemoryCallback(uint32_t addr, uint8_t& value, CallbackType type, CpuType cpuType);
+	int InternalCallEventCallback(EventType type);
 
 public:
 	ScriptingContext(Debugger* debugger);
-	virtual ~ScriptingContext() {}
-	virtual bool LoadScript(string scriptName, string scriptContent, Debugger* debugger) = 0;
+	~ScriptingContext();
+	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger);
 
 	void Log(string message);
 	string GetLog();
@@ -80,7 +90,7 @@ public:
 	MemoryType GetDefaultMemType() { return _defaultMemType; }
 	
 	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
-	virtual void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
 	void RegisterEventCallback(EventType type, int reference);
-	virtual void UnregisterEventCallback(EventType type, int reference);
+	void UnregisterEventCallback(EventType type, int reference);
 };

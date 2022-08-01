@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "ScriptHost.h"
-#include "ScriptingContext.h"
+#include "Debugger/ScriptHost.h"
+#include "Debugger/ScriptingContext.h"
+#include "Debugger/ScriptingContext.h"
 #include "EventType.h"
 #include "MemoryOperationType.h"
-#include "LuaScriptingContext.h"
 
 ScriptHost::ScriptHost(int scriptId)
 {
@@ -23,7 +23,7 @@ string ScriptHost::GetLog()
 
 bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
 {
-	_context.reset(new LuaScriptingContext(debugger));
+	_context.reset(new ScriptingContext(debugger));
 	if(!_context->LoadScript(scriptName, scriptContent, debugger)) {
 		return false;
 	}

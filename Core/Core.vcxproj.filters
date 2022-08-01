@@ -126,12 +126,6 @@
     <ClInclude Include="Debugger\LuaCallHelper.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClCompile Include="Debugger\LuaScriptingContext.cpp">
-      <Filter>Debugger</Filter>
-    </ClCompile>
-    <ClInclude Include="Debugger\LuaScriptingContext.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClCompile Include="Debugger\MemoryAccessCounter.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>

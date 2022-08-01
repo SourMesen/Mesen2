@@ -10,7 +10,15 @@ Serializer::Serializer(uint32_t version, bool forSave, SerializeFormat format)
 	_saving = forSave;
 	_format = format;
 	if(forSave) {
-		_data.reserve(0x50000);
+		switch(format) {
+			case SerializeFormat::Binary:
+				_data.reserve(0x50000);
+				break;
+
+			case SerializeFormat::Map:
+				_mapValues.reserve(500);
+				break;
+		}
 	}
 }
 
@@ -223,9 +231,21 @@ string Serializer::NormalizeName(const char* name, int index)
 void Serializer::PushNamePrefix(const char* name, int index)
 {
 	_prefixes.push_back(NormalizeName(name, index));
+	UpdatePrefix();
 }
 
 void Serializer::PopNamePrefix()
 {
 	_prefixes.pop_back();
+	UpdatePrefix();
+}
+
+void Serializer::UpdatePrefix()
+{
+	_prefix.clear();
+	for(string& prefix : _prefixes) {
+		if(prefix.size()) {
+			_prefix += prefix + ".";
+		}
+	}
 }

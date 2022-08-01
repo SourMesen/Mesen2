@@ -577,7 +577,6 @@
     <ClInclude Include="Debugger\LabelManager.h" />
     <ClInclude Include="Debugger\LuaApi.h" />
     <ClInclude Include="Debugger\LuaCallHelper.h" />
-    <ClInclude Include="Debugger\LuaScriptingContext.h" />
     <ClInclude Include="Debugger\MemoryAccessCounter.h" />
     <ClInclude Include="Netplay\MessageType.h" />
     <ClInclude Include="Netplay\MovieDataMessage.h" />
@@ -849,7 +848,6 @@
     <ClCompile Include="Debugger\LabelManager.cpp" />
     <ClCompile Include="Debugger\LuaApi.cpp" />
     <ClCompile Include="Debugger\LuaCallHelper.cpp" />
-    <ClCompile Include="Debugger\LuaScriptingContext.cpp" />
     <ClCompile Include="Debugger\MemoryAccessCounter.cpp" />
     <ClCompile Include="Debugger\MemoryDumper.cpp" />
     <ClCompile Include="SNES\SnesMemoryManager.cpp" />
