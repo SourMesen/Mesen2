@@ -78,7 +78,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "readWord", LuaApi::ReadMemoryWord },
 		{ "writeWord", LuaApi::WriteMemoryWord },
 		
-		{ "getPrgRomOffset", LuaApi::GetPrgRomOffset },
+		{ "convertAddress", LuaApi::ConvertAddress },
 		{ "getLabelAddress", LuaApi::GetLabelAddress },
 
 		{ "addMemoryCallback", LuaApi::RegisterMemoryCallback },
@@ -203,29 +203,6 @@ int LuaApi::GetLibrary(lua_State *lua)
 	return 1;
 }
 
-int LuaApi::GetLabelAddress(lua_State *lua)
-{
-	LuaCallHelper l(lua);
-	string label = l.ReadString();
-	checkparams();
-	errorCond(label.length() == 0, "label cannot be empty");
-
-	LabelManager* lblMan = _debugger->GetLabelManager();
-	//TODO hardcoded cpu type
-	int32_t value = lblMan->GetLabelRelativeAddress(label, CpuType::Snes);
-	if(value == -2) {
-		//Check to see if the label is a multi-byte label instead
-		string mbLabel = label + "+0";
-		//TODO hardcoded cpu type
-		value = lblMan->GetLabelRelativeAddress(mbLabel, CpuType::Snes);
-	}
-	errorCond(value == -1, "label out of scope (not mapped to CPU memory)");
-	errorCond(value <= -2, "label not found");
-
-	l.Return(value);
-	return l.ReturnCount();
-}
-
 int LuaApi::ReadMemory(lua_State *lua)
 {
 	LuaCallHelper l(lua);
@@ -288,17 +265,54 @@ int LuaApi::WriteMemoryWord(lua_State *lua)
 	return l.ReturnCount();
 }
 
-int LuaApi::GetPrgRomOffset(lua_State *lua)
+int LuaApi::ConvertAddress(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	int address = l.ReadInteger();
+	l.ForceParamCount(3);
+	CpuType cpuType = (CpuType)l.ReadInteger((uint32_t)_context->GetDefaultCpuType());
+	MemoryType memType = (MemoryType)l.ReadInteger((uint32_t)_context->GetDefaultMemType());
+	uint32_t address = l.ReadInteger();
 	checkminparams(1);
-	errorCond(address < 0 || address > 0xFFFF, "address must be between 0 and $FFFF");
-	
-	//TODO
-	AddressInfo relAddress { address, MemoryType::SnesMemory };
-	int32_t prgRomOffset = _debugger->GetAbsoluteAddress(relAddress).Address;
-	l.Return(prgRomOffset);
+
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+	checkEnum(MemoryType, memType, "invalid memory type");
+	errorCond(address < 0 || address >= _memoryDumper->GetMemorySize(memType), "address is out of range");
+
+	AddressInfo src { address, memType };
+	AddressInfo result;
+	if(DebugUtilities::IsRelativeMemory(memType)) {
+		result = _debugger->GetAbsoluteAddress(src);
+		//todo result when MemoryType::Register?
+	} else {
+		result = _debugger->GetRelativeAddress(src, cpuType);
+	}
+
+	lua_newtable(lua);
+	lua_pushintvalue(address, result.Address);
+	lua_pushintvalue(memType, result.Type);
+	return 1;
+}
+
+int LuaApi::GetLabelAddress(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	string label = l.ReadString();
+	checkparams();
+	errorCond(label.length() == 0, "label cannot be empty");
+
+	LabelManager* lblMan = _debugger->GetLabelManager();
+	//TODO hardcoded cpu type
+	int32_t value = lblMan->GetLabelRelativeAddress(label, CpuType::Snes);
+	if(value == -2) {
+		//Check to see if the label is a multi-byte label instead
+		string mbLabel = label + "+0";
+		//TODO hardcoded cpu type
+		value = lblMan->GetLabelRelativeAddress(mbLabel, CpuType::Snes);
+	}
+	errorCond(value == -1, "label out of scope (not mapped to CPU memory)");
+	errorCond(value <= -2, "label not found");
+
+	l.Return(value);
 	return l.ReturnCount();
 }
 

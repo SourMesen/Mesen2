@@ -18,14 +18,13 @@ public:
 
 	static void LuaPushIntValue(lua_State* lua, string name, int value);
 
-	static int GetLabelAddress(lua_State *lua);
-
 	static int ReadMemory(lua_State *lua);
 	static int WriteMemory(lua_State *lua);
 	static int ReadMemoryWord(lua_State *lua);
 	static int WriteMemoryWord(lua_State *lua);
-	static int GetPrgRomOffset(lua_State *lua);
-	//static int RevertPrgChrChanges(lua_State *lua);
+
+	static int GetLabelAddress(lua_State* lua);
+	static int ConvertAddress(lua_State *lua);
 
 	static int RegisterMemoryCallback(lua_State *lua);
 	static int UnregisterMemoryCallback(lua_State *lua);
