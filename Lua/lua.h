@@ -448,6 +448,10 @@ typedef struct lua_Debug lua_Debug;  /* activation record */
 /* Functions to be called by the debugger in specific events */
 typedef void (*lua_Hook) (lua_State *L, lua_Debug *ar);
 
+// ##### MESEN MODIFICATION #####
+typedef void (*lua_WatchDogHook) (lua_State* L);
+// ##### MESEN MODIFICATION #####
+
 
 LUA_API int (lua_getstack) (lua_State *L, int level, lua_Debug *ar);
 LUA_API int (lua_getinfo) (lua_State *L, const char *what, lua_Debug *ar);
@@ -461,6 +465,11 @@ LUA_API void  (lua_upvaluejoin) (lua_State *L, int fidx1, int n1,
                                                int fidx2, int n2);
 
 LUA_API void (lua_sethook) (lua_State *L, lua_Hook func, int mask, int count);
+
+// ##### MESEN MODIFICATION #####
+LUA_API void lua_setwatchdogtimer(lua_State* L, lua_WatchDogHook func, int count);
+// ##### MESEN MODIFICATION #####
+
 LUA_API lua_Hook (lua_gethook) (lua_State *L);
 LUA_API int (lua_gethookmask) (lua_State *L);
 LUA_API int (lua_gethookcount) (lua_State *L);

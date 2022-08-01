@@ -324,6 +324,11 @@ struct lua_State {
   int basehookcount;
   int hookcount;
   volatile l_signalT hookmask;
+
+  // ##### MESEN MODIFICATION #####
+  int watchdogtimer;
+  lua_WatchDogHook watchdoghook;
+  // ##### MESEN MODIFICATION #####
 };
 
 

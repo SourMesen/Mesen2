@@ -6,7 +6,6 @@
 #include "Utilities/Timer.h"
 
 struct lua_State;
-struct lua_Debug;
 class Debugger;
 class EmuSettings;
 
@@ -18,7 +17,7 @@ private:
 	Timer _timer;
 	EmuSettings* _settings = nullptr;
 
-	static void ExecutionCountHook(lua_State* lua, lua_Debug* ar);
+	static void ExecutionCountHook(lua_State* lua);
 
 	void LuaOpenLibs(lua_State* L, bool allowIoOsAccess);
 

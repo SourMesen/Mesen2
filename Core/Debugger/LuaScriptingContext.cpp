@@ -46,12 +46,13 @@ LuaScriptingContext::~LuaScriptingContext()
 	}
 }
 
-void LuaScriptingContext::ExecutionCountHook(lua_State *lua, lua_Debug *ar)
+void LuaScriptingContext::ExecutionCountHook(lua_State *lua)
 {
 	uint32_t timeout = _context->_settings->GetDebugConfig().ScriptTimeout;
 	if(_context->_timer.GetElapsedMS() > timeout * 1000) {
 		luaL_error(lua, (std::string("Maximum execution time (") + std::to_string(timeout) + " seconds) exceeded.").c_str());
 	}
+	lua_setwatchdogtimer(lua, LuaScriptingContext::ExecutionCountHook, 1000);
 }
 
 void LuaScriptingContext::LuaOpenLibs(lua_State* L, bool allowIoOsAccess)
@@ -116,7 +117,7 @@ bool LuaScriptingContext::LoadScript(string scriptName, string scriptContent, De
 	Log("Loading script...");
 	if((iErr = luaL_loadbufferx(_lua, scriptContent.c_str(), scriptContent.size(), ("@" + scriptName).c_str(), nullptr)) == 0) {
 		_timer.Reset();
-		lua_sethook(_lua, LuaScriptingContext::ExecutionCountHook, LUA_MASKCOUNT, 1000);
+		lua_setwatchdogtimer(_lua, LuaScriptingContext::ExecutionCountHook, 1000);
 		if((iErr = lua_pcall(_lua, 0, LUA_MULTRET, 0)) == 0) {
 			//Script loaded properly
 			Log("Script loaded successfully.");
@@ -149,13 +150,18 @@ void LuaScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t &val
 		return;
 	}
 
-	_timer.Reset();
 	_context = this;
-	lua_sethook(_lua, LuaScriptingContext::ExecutionCountHook, LUA_MASKCOUNT, 1000); 
+	bool needTimerReset = true;
+	lua_setwatchdogtimer(_lua, LuaScriptingContext::ExecutionCountHook, 1000);
 	LuaApi::SetContext(this);
 	for(MemoryCallback &callback: _callbacks[(int)type]) {
 		if(callback.Type != cpuType || addr < callback.StartAddress || addr > callback.EndAddress) {
 			continue;
+		}
+
+		if(needTimerReset) {
+			_timer.Reset();
+			needTimerReset = false;
 		}
 
 		int top = lua_gettop(_lua);
@@ -183,7 +189,7 @@ int LuaScriptingContext::InternalCallEventCallback(EventType type)
 
 	_timer.Reset();
 	_context = this;
-	lua_sethook(_lua, LuaScriptingContext::ExecutionCountHook, LUA_MASKCOUNT, 1000); 
+	lua_setwatchdogtimer(_lua, LuaScriptingContext::ExecutionCountHook, 1000);
 	LuaApi::SetContext(this);
 	LuaCallHelper l(_lua);
 	for(int &ref : _eventCallbacks[(int)type]) {

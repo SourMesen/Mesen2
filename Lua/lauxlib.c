@@ -772,12 +772,14 @@ static int skipcomment (LoadF *lf, int *cp) {
   else return 0;  /* no comment */
 }
 
+// ##### MESEN MODIFICATION #####
 int SANDBOX_ALLOW_LOADFILE = 0;
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
   if (!SANDBOX_ALLOW_LOADFILE) {
     return LUA_ERRERR;
   }
+  // ##### MESEN MODIFICATION #####
 
   LoadF lf;
   int status, readstatus;

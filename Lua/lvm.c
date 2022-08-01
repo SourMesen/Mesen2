@@ -1122,7 +1122,11 @@ void luaV_finishOp (lua_State *L) {
 
 
 /* fetch an instruction and prepare its execution */
+// ##### MESEN MODIFICATION (watchdogtimer) #####
 #define vmfetch()	{ \
+  if (L->watchdogtimer && !--L->watchdogtimer) { \
+    (*L->watchdoghook)(L); \
+  } \
   if (l_unlikely(trap)) {  /* stack reallocation or hooks? */ \
     trap = luaG_traceexec(L, pc);  /* handle hooks */ \
     updatebase(ci);  /* correct stack */ \

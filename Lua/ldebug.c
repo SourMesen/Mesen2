@@ -141,6 +141,13 @@ LUA_API void lua_sethook (lua_State *L, lua_Hook func, int mask, int count) {
     settraps(L->ci);  /* to trace inside 'luaV_execute' */
 }
 
+// ##### MESEN MODIFICATION #####
+LUA_API void lua_setwatchdogtimer(lua_State* L, lua_WatchDogHook func, int count)
+{
+	L->watchdoghook = func;
+	L->watchdogtimer = count;
+}
+// ##### MESEN MODIFICATION #####
 
 LUA_API lua_Hook lua_gethook (lua_State *L) {
   return L->hook;
