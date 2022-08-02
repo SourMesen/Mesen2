@@ -14,6 +14,11 @@ ScriptManager::ScriptManager(Debugger* debugger)
 	_nextScriptId = 1;
 }
 
+ScriptManager::~ScriptManager()
+{
+	_debugger->GetEmulator()->GetDebugHud()->ClearScreen();
+}
+
 int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
 {
 	DebugBreakHelper helper(_debugger);
@@ -88,4 +93,3 @@ void ScriptManager::ProcessEvent(EventType type)
 		script->ProcessEvent(type);
 	}
 }
-

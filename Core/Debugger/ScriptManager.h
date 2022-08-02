@@ -23,6 +23,7 @@ private:
 
 public:
 	ScriptManager(Debugger *debugger);
+	~ScriptManager();
 
 	__forceinline bool HasScript() { return _hasScript; }
 	int32_t LoadScript(string name, string content, int32_t scriptId);
