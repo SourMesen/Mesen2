@@ -88,9 +88,9 @@ private:
 	void Reset();
 
 	template<CpuType type, typename DebuggerType> DebuggerType* GetDebugger();
-
-	template<CpuType type>
-	uint64_t GetCpuCycleCount();
+	template<CpuType type> uint64_t GetCpuCycleCount();
+	template<CpuType type, typename T> void ProcessScripts(uint32_t addr, T& value, MemoryOperationType opType);
+	template<CpuType type, typename T> void ProcessScripts(uint32_t addr, T& value, MemoryType memType, MemoryOperationType opType);
 
 public:
 	Debugger(Emulator* emu, IConsole* console);
@@ -98,11 +98,11 @@ public:
 	void Release();
 
 	template<CpuType type> void ProcessInstruction();
-	template<CpuType type> void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType);
-	template<CpuType type> void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType);
+	template<CpuType type, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
+	template<CpuType type, typename T> void ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type> void ProcessIdleCycle();
-	template<CpuType type> void ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
-	template<CpuType type> void ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType);
+	template<CpuType type, typename T> void ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType);
+	template<CpuType type, typename T> void ProcessPpuWrite(uint16_t addr, T& value, MemoryType memoryType);
 	template<CpuType type> void ProcessPpuCycle();
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 

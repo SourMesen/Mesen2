@@ -145,9 +145,9 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "memCallbackType");
 	lua_newtable(lua);
-	lua_pushintvalue(read, CallbackType::CpuRead);
-	lua_pushintvalue(write, CallbackType::CpuWrite);
-	lua_pushintvalue(exec, CallbackType::CpuExec);
+	lua_pushintvalue(read, CallbackType::Read);
+	lua_pushintvalue(write, CallbackType::Write);
+	lua_pushintvalue(exec, CallbackType::Exec);
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "counterMemType");
@@ -327,23 +327,29 @@ int LuaApi::GetLabelAddress(lua_State* lua)
 int LuaApi::RegisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(5);
+	l.ForceParamCount(6);
+
+	MemoryType memType = (MemoryType)l.ReadInteger((int)_context->GetDefaultMemType());
 	CpuType cpuType = (CpuType)l.ReadInteger((int)_context->GetDefaultCpuType());
 	int32_t endAddr = l.ReadInteger(-1);
 	uint32_t startAddr = l.ReadInteger();
 	CallbackType callbackType = (CallbackType)l.ReadInteger();
 	int reference = l.GetReference();
+
 	checkminparams(3);
 
 	if(endAddr == -1) {
 		endAddr = startAddr;
 	}
 
+	errorCond(startAddr < 0, "start address must be >= 0");
 	errorCond(startAddr > (uint32_t)endAddr, "start address must be <= end address");
-	checkEnum(CallbackType, callbackType, "the specified callback type is invalid");
-	checkEnum(CpuType, cpuType, "the cpu type is invalid");
-	errorCond(reference == LUA_NOREF, "the specified function could not be found");
-	_context->RegisterMemoryCallback(callbackType, startAddr, endAddr, cpuType, reference);
+	checkEnum(CallbackType, callbackType, "invalid callback type");
+	checkEnum(MemoryType, memType, "invalid memory type");
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+	errorCond(reference == LUA_NOREF, "callback function could not be found");
+
+	_context->RegisterMemoryCallback(callbackType, startAddr, endAddr, memType, cpuType, reference);
 	_context->Log("Registered memory callback from $" + HexUtilities::ToHex((uint32_t)startAddr) + " to $" + HexUtilities::ToHex((uint32_t)endAddr));
 	l.Return(reference);
 	return l.ReturnCount();
@@ -352,12 +358,13 @@ int LuaApi::RegisterMemoryCallback(lua_State *lua)
 int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(5);
-
+	l.ForceParamCount(6);
+	
+	MemoryType memType = (MemoryType)l.ReadInteger((int)_context->GetDefaultMemType());
 	CpuType cpuType = (CpuType)l.ReadInteger((int)_context->GetDefaultCpuType());
 	int endAddr = l.ReadInteger(-1);
 	int startAddr = l.ReadInteger();
-	CallbackType type = (CallbackType)l.ReadInteger();
+	CallbackType callbackType = (CallbackType)l.ReadInteger();
 	int reference = l.ReadInteger();
 
 	checkminparams(3);
@@ -366,10 +373,14 @@ int LuaApi::UnregisterMemoryCallback(lua_State *lua)
 		endAddr = startAddr;
 	}
 
+	errorCond(startAddr < 0, "start address must be >= 0");
 	errorCond(startAddr > endAddr, "start address must be <= end address");
-	checkEnum(CallbackType, type, "the specified type is invalid");
-	errorCond(reference == LUA_NOREF, "function reference is invalid");
-	_context->UnregisterMemoryCallback(type, startAddr, endAddr, cpuType, reference);
+	checkEnum(CallbackType, callbackType, "invalid callback type");
+	checkEnum(MemoryType, memType, "invalid memory type");
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+	errorCond(reference == LUA_NOREF, "callback function could not be found");
+
+	_context->UnregisterMemoryCallback(callbackType, startAddr, endAddr, memType, cpuType, reference);
 	return l.ReturnCount();
 }
 
@@ -379,8 +390,8 @@ int LuaApi::RegisterEventCallback(lua_State *lua)
 	EventType type = (EventType)l.ReadInteger();
 	int reference = l.GetReference();
 	checkparams();
-	checkEnum(EventType, type, "the specified type is invalid");
-	errorCond(reference == LUA_NOREF, "the specified function could not be found");
+	checkEnum(EventType, type, "invalid event type");
+	errorCond(reference == LUA_NOREF, "callback function could not be found");
 	_context->RegisterEventCallback(type, reference);
 	l.Return(reference);
 	return l.ReturnCount();
@@ -393,8 +404,8 @@ int LuaApi::UnregisterEventCallback(lua_State *lua)
 	int reference = l.ReadInteger();
 	checkparams();
 
-	checkEnum(EventType, type, "the specified type is invalid");
-	errorCond(reference == LUA_NOREF, "function reference is invalid");
+	checkEnum(EventType, type, "invalid event type");
+	errorCond(reference == LUA_NOREF, "callback function could not be found");
 	_context->UnregisterEventCallback(type, reference);
 	return l.ReturnCount();
 }

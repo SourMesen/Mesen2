@@ -12,6 +12,7 @@
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/LabelManager.h"
 #include "Debugger/ScriptManager.h"
+#include "Debugger/ScriptHost.h"
 #include "Debugger/CallstackManager.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/BaseEventManager.h"
@@ -182,8 +183,8 @@ void Debugger::ProcessInstruction()
 	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = false;
 }
 
-template<CpuType type>
-void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
+template<CpuType type, typename T>
+void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
@@ -196,14 +197,14 @@ void Debugger::ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationTy
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessRead(addr, value, opType); break;
 	}
-	
-	if(_scriptManager->HasScript()) {
-		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
+
+	if(_scriptManager->HasCpuMemoryCallbacks()) {
+		ProcessScripts<type>(addr, value, opType);
 	}
 }
 
-template<CpuType type>
-void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
+template<CpuType type, typename T>
+void Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
@@ -217,8 +218,8 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationT
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessWrite(addr, value, opType); break;
 	}
 	
-	if(_scriptManager->HasScript()) {
-		_scriptManager->ProcessMemoryOperation(addr, value, opType, type);
+	if(_scriptManager->HasCpuMemoryCallbacks()) {
+		ProcessScripts<type>(addr, value, opType);
 	}
 }
 
@@ -233,8 +234,8 @@ void Debugger::ProcessIdleCycle()
 	}
 }
 
-template<CpuType type>
-void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType)
+template<CpuType type, typename T>
+void Debugger::ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
@@ -243,10 +244,14 @@ void Debugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryTyp
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		default: throw std::runtime_error("Invalid cpu type");
 	}
+
+	if(_scriptManager->HasPpuMemoryCallbacks()) {
+		ProcessScripts<type>(addr, value, memoryType, opType);
+	}
 }
 
-template<CpuType type>
-void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
+template<CpuType type, typename T>
+void Debugger::ProcessPpuWrite(uint16_t addr, T& value, MemoryType memoryType)
 {
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
@@ -254,6 +259,10 @@ void Debugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryTy
 		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		default: throw std::runtime_error("Invalid cpu type");
+	}
+
+	if(_scriptManager->HasPpuMemoryCallbacks()) {
+		ProcessScripts<type>(addr, value, memoryType, MemoryOperationType::Write);
 	}
 }
 
@@ -396,6 +405,33 @@ void Debugger::ProcessEvent(EventType type)
 		case EventType::StateLoaded:
 			_memoryAccessCounter->ResetCounts();
 			break;
+	}
+}
+
+template<CpuType type, typename T>
+void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryOperationType opType)
+{
+	MemoryOperationInfo memOp = GetDebugger<type, IDebugger>()->InstructionProgress.LastMemOperation;
+	AddressInfo relAddr = { (int32_t)memOp.Address, memOp.MemType };
+	if constexpr(std::is_same<T, uint8_t>::value) {
+		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type);
+	} else {
+		//TODO NEC DSP
+		uint8_t val = (uint8_t)value;
+		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type);
+	}
+}
+
+template<CpuType type, typename T>
+void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryType memType, MemoryOperationType opType)
+{
+	AddressInfo relAddr = { (int32_t)addr, memType };
+	if constexpr(std::is_same<T, uint8_t>::value) {
+		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type);
+	} else {
+		//TODO NEC DSP and PCE VDC
+		uint8_t val = (uint8_t)value;
+		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type);
 	}
 }
 
@@ -835,25 +871,25 @@ template void Debugger::ProcessInstruction<CpuType::Gameboy>();
 template void Debugger::ProcessInstruction<CpuType::Nes>();
 template void Debugger::ProcessInstruction<CpuType::Pce>();
 
-template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Nes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 
-template void Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 
 template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();
@@ -864,15 +900,17 @@ template void Debugger::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, 
 template void Debugger::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Pce>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
-template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
-template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
-template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
-template void Debugger::ProcessPpuRead<CpuType::Pce>(uint16_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Snes>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Gameboy>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Nes>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Pce>(uint16_t addr, uint16_t& value, MemoryType memoryType, MemoryOperationType opType);
+template void Debugger::ProcessPpuRead<CpuType::Pce>(uint16_t addr, uint8_t& value, MemoryType memoryType, MemoryOperationType opType);
 
-template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t value, MemoryType memoryType);
-template void Debugger::ProcessPpuWrite<CpuType::Pce>(uint16_t addr, uint8_t value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Snes>(uint16_t addr, uint8_t& value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Gameboy>(uint16_t addr, uint8_t& value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Nes>(uint16_t addr, uint8_t& value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Pce>(uint16_t addr, uint16_t& value, MemoryType memoryType);
+template void Debugger::ProcessPpuWrite<CpuType::Pce>(uint16_t addr, uint8_t& value, MemoryType memoryType);
 
 template void Debugger::ProcessPpuCycle<CpuType::Snes>();
 template void Debugger::ProcessPpuCycle<CpuType::Gameboy>();

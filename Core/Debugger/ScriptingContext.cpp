@@ -7,6 +7,7 @@
 #include "Debugger/LuaCallHelper.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/ScriptManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SaveStateManager.h"
@@ -28,7 +29,7 @@ ScriptingContext::~ScriptingContext()
 	if(_lua) {
 		//Cleanup all references, this is required to prevent crashes that can occur when calling lua_close
 		std::unordered_set<int> references;
-		for(int i = (int)CallbackType::CpuRead; i <= (int)CallbackType::CpuExec; i++) {
+		for(int i = (int)CallbackType::Read; i <= (int)CallbackType::Exec; i++) {
 			for(MemoryCallback& callback : _callbacks[i]) {
 				references.emplace(callback.Reference);
 			}
@@ -164,10 +165,10 @@ string ScriptingContext::GetScriptName()
 	return _scriptName;
 }
 
-void ScriptingContext::CallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType)
+void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType)
 {
-	_inExecOpEvent = type == CallbackType::CpuExec;
-	InternalCallMemoryCallback(addr, value, type, cpuType);
+	_inExecOpEvent = type == CallbackType::Exec;
+	InternalCallMemoryCallback(relAddr, value, type, cpuType);
 	_inExecOpEvent = false;
 }
 
@@ -202,37 +203,58 @@ bool ScriptingContext::CheckStateLoadedFlag()
 	return stateLoaded;
 }
 
-void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference)
+void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference)
 {
 	if(endAddr < startAddr) {
 		return;
-	}
-
-	if(startAddr == 0 && endAddr == 0) {
-		endAddr = 0xFFFFFF;
 	}
 
 	MemoryCallback callback;
 	callback.StartAddress = (uint32_t)startAddr;
 	callback.EndAddress = (uint32_t)endAddr;
 	callback.Reference = reference;
-	callback.Type = cpuType;
+	callback.Cpu = cpuType;
+	callback.MemType = memType;
+
+	if(DebugUtilities::IsPpuMemory(memType)) {
+		_debugger->GetScriptManager()->EnablePpuMemoryCallbacks();
+	} else {
+		_debugger->GetScriptManager()->EnableCpuMemoryCallbacks();
+	}
+
 	_callbacks[(int)type].push_back(callback);
 }
 
-void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference)
+void ScriptingContext::RefreshMemoryCallbackFlags()
+{
+	for(int i = (int)CallbackType::Read; i <= (int)CallbackType::Exec; i++) {
+		for(size_t j = 0, len = _callbacks[i].size(); j < len; j++) {
+			if(DebugUtilities::IsPpuMemory(_callbacks[i][j].MemType)) {
+				_debugger->GetScriptManager()->EnablePpuMemoryCallbacks();
+			} else {
+				_debugger->GetScriptManager()->EnableCpuMemoryCallbacks();
+			}
+		}
+	}
+}
+
+void ScriptingContext::UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference)
 {
 	if(endAddr < startAddr) {
 		return;
 	}
 
-	if(startAddr == 0 && endAddr == 0) {
-		endAddr = 0xFFFFFF;
-	}
-
 	for(size_t i = 0; i < _callbacks[(int)type].size(); i++) {
 		MemoryCallback &callback = _callbacks[(int)type][i];
-		if(callback.Reference == reference && callback.Type == cpuType && (int)callback.StartAddress == startAddr && (int)callback.EndAddress == endAddr) {
+		bool isMatch = (
+			callback.Reference == reference &&
+			callback.Cpu == cpuType &&
+			callback.MemType == memType &&
+			(int)callback.StartAddress == startAddr &&
+			(int)callback.EndAddress == endAddr
+		);
+
+		if(isMatch) {
 			_callbacks[(int)type].erase(_callbacks[(int)type].begin() + i);
 			break;
 		}
@@ -253,8 +275,12 @@ void ScriptingContext::UnregisterEventCallback(EventType type, int reference)
 	luaL_unref(_lua, LUA_REGISTRYINDEX, reference);
 }
 
+bool ScriptingContext::IsAddressMatch(MemoryCallback& callback, AddressInfo addr)
+{
+	return addr.Type == callback.MemType && addr.Address >= (int32_t)callback.StartAddress && addr.Address <= (int32_t)callback.EndAddress;
+}
 
-void ScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t& value, CallbackType type, CpuType cpuType)
+void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType)
 {
 	if(_callbacks[(int)type].empty()) {
 		return;
@@ -265,8 +291,18 @@ void ScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t& value,
 	lua_setwatchdogtimer(_lua, ScriptingContext::ExecutionCountHook, 1000);
 	LuaApi::SetContext(this);
 	for(MemoryCallback& callback : _callbacks[(int)type]) {
-		if(callback.Type != cpuType || addr < callback.StartAddress || addr > callback.EndAddress) {
+		if(callback.Cpu != cpuType) {
 			continue;
+		} 
+
+		if(DebugUtilities::IsRelativeMemory(callback.MemType)) {
+			if(!IsAddressMatch(callback, relAddr)) {
+				continue;
+			}
+		} else {
+			if(!IsAddressMatch(callback, _debugger->GetAbsoluteAddress(relAddr))) {
+				continue;
+			}
 		}
 
 		if(needTimerReset) {
@@ -276,7 +312,7 @@ void ScriptingContext::InternalCallMemoryCallback(uint32_t addr, uint8_t& value,
 
 		int top = lua_gettop(_lua);
 		lua_rawgeti(_lua, LUA_REGISTRYINDEX, callback.Reference);
-		lua_pushinteger(_lua, addr);
+		lua_pushinteger(_lua, relAddr.Address);
 		lua_pushinteger(_lua, value);
 		if(lua_pcall(_lua, 2, LUA_MULTRET, 0) != 0) {
 			Log(lua_tostring(_lua, -1));

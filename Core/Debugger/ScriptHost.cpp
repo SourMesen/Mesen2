@@ -30,37 +30,17 @@ bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* d
 	return true;
 }
 
-void ScriptHost::ProcessMemoryOperation(uint32_t addr, uint8_t &value, MemoryOperationType type, CpuType cpuType)
-{
-	if(_context) {
-		switch(type) {
-			case MemoryOperationType::Read: _context->CallMemoryCallback(addr, value, CallbackType::CpuRead, cpuType); break;
-			case MemoryOperationType::Write: _context->CallMemoryCallback(addr, value, CallbackType::CpuWrite, cpuType); break;
-			case MemoryOperationType::ExecOpCode: _context->CallMemoryCallback(addr, value, CallbackType::CpuExec, cpuType); break;
-			default: break;
-		}
-	}
-}
-
 void ScriptHost::ProcessEvent(EventType eventType)
 {
-	if(_context) {
-		_context->CallEventCallback(eventType);
-	}
+	_context->CallEventCallback(eventType);
 }
 
 bool ScriptHost::ProcessSavestate()
 {
-	if(_context) {
-		return _context->ProcessSavestate();
-	}
-	return false;
+	return _context->ProcessSavestate();
 }
 
 bool ScriptHost::CheckStateLoadedFlag()
 {
-	if(_context) {
-		return _context->CheckStateLoadedFlag();
-	}
-	return false;
+	return _context->CheckStateLoadedFlag();
 }

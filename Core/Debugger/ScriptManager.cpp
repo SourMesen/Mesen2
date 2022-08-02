@@ -20,13 +20,14 @@ int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
 	auto lock = _scriptLock.AcquireSafe();
 
 	if(scriptId < 0) {
-		shared_ptr<ScriptHost> script(new ScriptHost(_nextScriptId++));
+		unique_ptr<ScriptHost> script(new ScriptHost(_nextScriptId++));
 		script->LoadScript(name, content, _debugger);
-		_scripts.push_back(script);
+		scriptId = script->GetScriptId();
+		_scripts.push_back(std::move(script));
 		_hasScript = true;
-		return script->GetScriptId();
+		return scriptId;
 	} else {
-		auto result = std::find_if(_scripts.begin(), _scripts.end(), [=](shared_ptr<ScriptHost> &script) {
+		auto result = std::find_if(_scripts.begin(), _scripts.end(), [=](unique_ptr<ScriptHost> &script) {
 			return script->GetScriptId() == scriptId;
 		});
 		if(result != _scripts.end()) {
@@ -34,6 +35,7 @@ int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
 			(*result)->ProcessEvent(EventType::ScriptEnded);
 
 			(*result)->LoadScript(name, content, _debugger);
+			RefreshMemoryCallbackFlags();
 			return scriptId;
 		}
 	}
@@ -45,7 +47,7 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 {
 	DebugBreakHelper helper(_debugger);
 	auto lock = _scriptLock.AcquireSafe();
-	_scripts.erase(std::remove_if(_scripts.begin(), _scripts.end(), [=](const shared_ptr<ScriptHost>& script) {
+	_scripts.erase(std::remove_if(_scripts.begin(), _scripts.end(), [=](const unique_ptr<ScriptHost>& script) {
 		if(script->GetScriptId() == scriptId) {
 			//Send a ScriptEnded event before unloading the script
 			script->ProcessEvent(EventType::ScriptEnded);
@@ -54,13 +56,25 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 		}
 		return false;
 	}), _scripts.end());
+
+	RefreshMemoryCallbackFlags();
+
 	_hasScript = _scripts.size() > 0;
+}
+
+void ScriptManager::RefreshMemoryCallbackFlags()
+{
+	_isPpuMemoryCallbackEnabled = false;
+	_isCpuMemoryCallbackEnabled = false;
+	for(unique_ptr<ScriptHost>& script : _scripts) {
+		script->RefreshMemoryCallbackFlags();
+	}
 }
 
 string ScriptManager::GetScriptLog(int32_t scriptId)
 {
 	auto lock = _scriptLock.AcquireSafe();
-	for(shared_ptr<ScriptHost> &script : _scripts) {
+	for(unique_ptr<ScriptHost> &script : _scripts) {
 		if(script->GetScriptId() == scriptId) {
 			return script->GetLog();
 		}
@@ -70,18 +84,8 @@ string ScriptManager::GetScriptLog(int32_t scriptId)
 
 void ScriptManager::ProcessEvent(EventType type)
 {
-	if(_hasScript) {
-		for(shared_ptr<ScriptHost> &script : _scripts) {
-			script->ProcessEvent(type);
-		}
+	for(unique_ptr<ScriptHost> &script : _scripts) {
+		script->ProcessEvent(type);
 	}
 }
 
-void ScriptManager::ProcessMemoryOperation(uint32_t address, uint8_t &value, MemoryOperationType type, CpuType cpuType)
-{
-	if(_hasScript) {
-		for(shared_ptr<ScriptHost> &script : _scripts) {
-			script->ProcessMemoryOperation(address, value, type, cpuType);
-		}
-	}
-}

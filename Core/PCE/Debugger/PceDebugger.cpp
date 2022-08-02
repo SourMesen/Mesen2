@@ -284,7 +284,7 @@ void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	);
 }
 
-void PceDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memoryType)
+void PceDebugger::ProcessPpuRead(uint16_t addr, uint16_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Read, memoryType);
 	AddressInfo addressInfo { addr, memoryType };
@@ -292,7 +292,7 @@ void PceDebugger::ProcessPpuRead(uint16_t addr, uint8_t value, MemoryType memory
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _console->GetMasterClock());
 }
 
-void PceDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memoryType)
+void PceDebugger::ProcessPpuWrite(uint16_t addr, uint16_t value, MemoryType memoryType)
 {
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::Write, memoryType);
 	AddressInfo addressInfo { addr, memoryType };

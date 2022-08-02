@@ -254,14 +254,14 @@ public:
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessMemoryRead(uint32_t addr, uint8_t value, MemoryOperationType opType)
+	template<CpuType type, typename T> __forceinline void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 	{
 		if(_debugger) {
 			_debugger->ProcessMemoryRead<type>(addr, value, opType);
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessMemoryWrite(uint32_t addr, uint8_t value, MemoryOperationType opType)
+	template<CpuType type, typename T> __forceinline void ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 	{
 		if(_debugger) {
 			_debugger->ProcessMemoryWrite<type>(addr, value, opType);
@@ -275,14 +275,14 @@ public:
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessPpuRead(uint32_t addr, uint8_t value, MemoryType memoryType, MemoryOperationType opType = MemoryOperationType::Read)
+	template<CpuType type, typename T> __forceinline void ProcessPpuRead(uint32_t addr, T& value, MemoryType memoryType, MemoryOperationType opType = MemoryOperationType::Read)
 	{
 		if(_debugger) {
 			_debugger->ProcessPpuRead<type>(addr, value, memoryType, opType);
 		}
 	}
 
-	template<CpuType type> __forceinline void ProcessPpuWrite(uint32_t addr, uint8_t value, MemoryType memoryType)
+	template<CpuType type, typename T> __forceinline void ProcessPpuWrite(uint32_t addr, T& value, MemoryType memoryType)
 	{
 		if(_debugger) {
 			_debugger->ProcessPpuWrite<type>(addr, value, memoryType);

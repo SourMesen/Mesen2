@@ -544,8 +544,8 @@ void PceVdc::ProcessSatbTransfer()
 
 		int i = _state.SatbTransferOffset;
 		uint16_t value = ReadVram(_state.SatbBlockSrc + i);
-		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value & 0xFF, _spriteRamType);
-		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value >> 8, _spriteRamType);
+		_emu->ProcessPpuWrite<CpuType::Pce>(i << 1, value, _spriteRamType);
+		_emu->ProcessPpuWrite<CpuType::Pce>((i << 1) + 1, value, _spriteRamType);
 		_spriteRam[i] = value;
 
 		_state.SatbTransferOffset++;
@@ -861,8 +861,8 @@ void PceVdc::DrawScanline()
 void PceVdc::ProcessVramRead()
 {
 	_state.ReadBuffer = ReadVram(_state.MemAddrRead);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), (uint8_t)_state.ReadBuffer, _vramType);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, (uint8_t)(_state.ReadBuffer >> 8), _vramType);
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), _state.ReadBuffer, _vramType);
+	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, _state.ReadBuffer, _vramType);
 	_pendingMemoryRead = false;
 }
 
@@ -870,7 +870,7 @@ void PceVdc::ProcessVramWrite()
 {
 	if(_state.MemAddrWrite < 0x8000) {
 		//Ignore writes to mirror at $8000+
-		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData & 0xFF, _vramType);
+		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData, _vramType);
 		_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, _state.VramData, _vramType);
 		_vram[_state.MemAddrWrite] = _state.VramData;
 		_state.MemAddrWrite += _state.VramAddrIncrement;

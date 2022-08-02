@@ -11,16 +11,17 @@ struct lua_State;
 
 enum class CallbackType
 {
-	CpuRead = 0,
-	CpuWrite = 1,
-	CpuExec = 2
+	Read = 0,
+	Write = 1,
+	Exec = 2
 };
 
 struct MemoryCallback
 {
 	uint32_t StartAddress;
 	uint32_t EndAddress;
-	CpuType Type;
+	CpuType Cpu;
+	MemoryType MemType;
 	int Reference;
 };
 
@@ -56,8 +57,9 @@ protected:
 	vector<MemoryCallback> _callbacks[3];
 	vector<int> _eventCallbacks[(int)EventType::LastValue + 1];
 
-	void InternalCallMemoryCallback(uint32_t addr, uint8_t& value, CallbackType type, CpuType cpuType);
+	void InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType);
 	int InternalCallEventCallback(EventType type);
+	bool IsAddressMatch(MemoryCallback& callback, AddressInfo addr);
 
 public:
 	ScriptingContext(Debugger* debugger);
@@ -79,7 +81,7 @@ public:
 	void ClearSavestateData(int slot);
 	bool ProcessSavestate();
 
-	void CallMemoryCallback(uint32_t addr, uint8_t &value, CallbackType type, CpuType cpuType);
+	void CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType);
 	int CallEventCallback(EventType type);
 	bool CheckInitDone();
 	bool CheckInStartFrameEvent();
@@ -89,8 +91,10 @@ public:
 	CpuType GetDefaultCpuType() { return _defaultCpuType; }
 	MemoryType GetDefaultMemType() { return _defaultMemType; }
 	
-	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, CpuType cpuType, int reference);
+	void RefreshMemoryCallbackFlags();
+
+	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
 	void RegisterEventCallback(EventType type, int reference);
 	void UnregisterEventCallback(EventType type, int reference);
 };

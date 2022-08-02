@@ -2002,10 +2002,11 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//CGRAM Data write (CGDATA)
 			if(_state.CgramAddressLatch) {
 				//MSB ignores the 7th bit (colors are 15-bit only)
+				value &= 0x7F;
 				_emu->ProcessPpuWrite<CpuType::Snes>(_state.CgramAddress << 1, _state.CgramWriteBuffer, MemoryType::SnesCgRam);
-				_emu->ProcessPpuWrite<CpuType::Snes>((_state.CgramAddress << 1) + 1, value & 0x7F, MemoryType::SnesCgRam);
+				_emu->ProcessPpuWrite<CpuType::Snes>((_state.CgramAddress << 1) + 1, value, MemoryType::SnesCgRam);
 
-				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | ((value & 0x7F) << 8);
+				_cgram[_state.CgramAddress] = _state.CgramWriteBuffer | (value << 8);
 				_state.CgramAddress++;
 			} else {
 				_state.CgramWriteBuffer = value;
