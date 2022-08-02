@@ -30,8 +30,10 @@ public:
 	static int UnregisterMemoryCallback(lua_State *lua);
 	static int RegisterEventCallback(lua_State *lua);
 	static int UnregisterEventCallback(lua_State *lua);
-	
+
+	static int MeasureString(lua_State* lua);
 	static int DrawString(lua_State *lua);
+
 	static int DrawLine(lua_State *lua);
 	static int DrawPixel(lua_State *lua);
 	static int DrawRectangle(lua_State *lua);

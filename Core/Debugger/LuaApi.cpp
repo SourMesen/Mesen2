@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-#ifndef LIBRETRO
 #include "LuaApi.h"
 #include "Lua/lua.hpp"
 #include "Debugger/LuaCallHelper.h"
@@ -17,6 +15,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/Video/DrawScreenBufferCommand.h"
+#include "Shared/Video/DrawStringCommand.h"
 #include "Shared/KeyManager.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Shared/Interfaces/IKeyManager.h"
@@ -86,7 +85,9 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "addEventCallback", LuaApi::RegisterEventCallback },
 		{ "removeEventCallback", LuaApi::UnregisterEventCallback },
 
+		{ "measureString", LuaApi::MeasureString },
 		{ "drawString", LuaApi::DrawString },
+
 		{ "drawPixel", LuaApi::DrawPixel },
 		{ "drawLine", LuaApi::DrawLine },
 		{ "drawRectangle", LuaApi::DrawRectangle },
@@ -278,7 +279,7 @@ int LuaApi::ConvertAddress(lua_State *lua)
 	checkEnum(MemoryType, memType, "invalid memory type");
 	errorCond(address < 0 || address >= _memoryDumper->GetMemorySize(memType), "address is out of range");
 
-	AddressInfo src { address, memType };
+	AddressInfo src { (int32_t)address, memType };
 	AddressInfo result;
 	if(DebugUtilities::IsRelativeMemory(memType)) {
 		result = _debugger->GetAbsoluteAddress(src);
@@ -398,12 +399,28 @@ int LuaApi::UnregisterEventCallback(lua_State *lua)
 	return l.ReturnCount();
 }
 
+int LuaApi::MeasureString(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(2);
+	int maxWidth = l.ReadInteger(0);
+	string text = l.ReadString();
+	checkminparams(1);
+
+	TextSize size = DrawStringCommand::MeasureString(text, maxWidth);
+	lua_newtable(lua);
+	lua_pushintvalue(width, size.X);
+	lua_pushintvalue(height, size.Y);
+	return 1;
+}
+
 int LuaApi::DrawString(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(7);
+	l.ForceParamCount(8);
 	int displayDelay = l.ReadInteger(0);
 	int frameCount = l.ReadInteger(1);
+	int maxWidth = l.ReadInteger(0);
 	int backColor = l.ReadInteger(0);
 	int color = l.ReadInteger(0xFFFFFF);
 	string text = l.ReadString();
@@ -412,7 +429,7 @@ int LuaApi::DrawString(lua_State *lua)
 	checkminparams(3);
 
 	int startFrame = _emu->GetFrameCount() + displayDelay;
-	_emu->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame);
+	_emu->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame, maxWidth);
 
 	return l.ReturnCount();
 }
@@ -935,5 +952,3 @@ int LuaApi::SetState(lua_State* lua)
 	}
 	return 1;
 }
-
-#endif

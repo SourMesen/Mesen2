@@ -226,14 +226,15 @@ public:
 		_backColor = (~backColor & 0xFF000000) | (backColor & 0xFFFFFF);
 	}
 
-	static TextSize MeasureString(string text, uint32_t maxWidth = 0)
+	static TextSize MeasureString(string& text, uint32_t maxWidth = 0)
 	{
 		uint32_t maxX = 0;
 		uint32_t x = 0;
 		uint32_t y = 0;
 		uint32_t lineHeight = 9;
 
-		auto newLine = [&x, &y, &lineHeight]() {
+		auto newLine = [&]() {
+			maxX = std::max(x, maxX);
 			x = 0;
 			y += lineHeight;
 			lineHeight = 9;

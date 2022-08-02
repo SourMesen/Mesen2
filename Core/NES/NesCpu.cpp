@@ -280,7 +280,7 @@ uint16_t NesCpu::FetchOperand()
 		default: break;
 	}
 	
-#if !defined(LIBRETRO) && !defined(DUMMYCPU)
+#if !defined(DUMMYCPU)
 	if(_lastCrashWarning == 0 || _state.CycleCount - _lastCrashWarning > 5000000) {
 		MessageManager::DisplayMessage("Error", "GameCrash", "Invalid OP code - CPU crashed.");
 		_lastCrashWarning = _state.CycleCount;

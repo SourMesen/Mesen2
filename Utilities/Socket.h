@@ -5,7 +5,6 @@
 class Socket
 {
 private:
-#ifndef LIBRETRO
 	#ifdef _WIN32
 	bool _cleanupWSA = false;
 	#endif
@@ -13,7 +12,6 @@ private:
 	uintptr_t _socket = (uintptr_t)~0;
 	bool _connectionError = false;
 	int32_t _UPnPPort = -1;
-#endif
 
 public:
 	Socket();
