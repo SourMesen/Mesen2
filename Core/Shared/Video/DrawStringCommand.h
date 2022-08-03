@@ -158,6 +158,15 @@ protected:
 			} else if(c == 0x20) {
 				//Space (ignore spaces at the start of a new line, when text wrapping is enabled)
 				if(lineWidth > 0 || _maxWidth == 0) {
+					if(_backColor & 0xFF000000) {
+						//Draw bg color for spaces (when bg color is set)
+						for(int row = 0; row < lineHeight; row++) {
+							for(int column = 0; column < 6; column++) {
+								DrawPixel(x + column, y + row - 1, _backColor);
+							}
+						}
+					}
+
 					lineWidth += 6;
 					x += 6;
 				}

@@ -13,13 +13,13 @@ function Main()
       emu.drawRectangle( 95, 87, 67, 11, 0x808080, false, 50)
       if mode == 0 then
         size = 8
-        emu.drawString(96, 89, "  8x8 Grid  ", 0xFFFFFF, 0x404040, 50)
+        emu.drawString(96, 89, "  8x8 Grid  ", 0xFFFFFF, 0x404040, 0, 50)
       elseif mode == 1 then
         size = 16
-        emu.drawString(96, 89, " 16x16 Grid ", 0xFFFFFF, 0x404040, 50)
+        emu.drawString(96, 89, " 16x16 Grid ", 0xFFFFFF, 0x404040, 0, 50)
       else
         size = 32
-        emu.drawString(96, 89, " 32x32 Grid ", 0xFFFFFF, 0x404040, 50)
+        emu.drawString(96, 89, " 32x32 Grid ", 0xFFFFFF, 0x404040, 0, 50)
       end
     end
   else
