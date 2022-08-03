@@ -45,6 +45,7 @@ public:
 	static int ClearScreen(lua_State *lua);
 	
 	static int GetScreenSize(lua_State* lua);
+	static int GetDrawSurfaceSize(lua_State* lua);
 	static int GetScreenBuffer(lua_State *lua);
 	static int SetScreenBuffer(lua_State *lua);
 

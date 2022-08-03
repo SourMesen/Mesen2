@@ -109,11 +109,15 @@ void KeyManager::SetMousePosition(Emulator* emu, double x, double y)
 	if(x < 0 || y < 0) {
 		_mousePosition.X = -1;
 		_mousePosition.Y = -1;
+		_mousePosition.RelativeX = -1;
+		_mousePosition.RelativeY = -1;
 	} else {
 		OverscanDimensions overscan = emu->GetSettings()->GetOverscan();
 		FrameInfo frame = emu->GetVideoDecoder()->GetBaseFrameInfo(true);
 		_mousePosition.X = (int32_t)(x*frame.Width + overscan.Left);
 		_mousePosition.Y = (int32_t)(y*frame.Height + overscan.Top);
+		_mousePosition.RelativeX = x;
+		_mousePosition.RelativeY = y;
 	}
 }
 

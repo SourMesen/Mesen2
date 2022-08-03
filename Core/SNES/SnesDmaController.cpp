@@ -617,11 +617,10 @@ void SnesDmaController::Serialize(Serializer &s)
 {
 	SV(_hdmaPending); SV(_state.HdmaChannels); SV(_dmaPending); SV(_dmaStartClock); SV(_hdmaInitPending); SV(_dmaStartDelay); SV(_needToProcess);
 	for(int i = 0; i < 8; i++) {
-		DmaChannelConfig& channel = _state.Channel[i];
-		SVI(channel.Decrement); SVI(channel.DestAddress); SVI(channel.DoTransfer); SVI(channel.FixedTransfer);
-		SVI(channel.HdmaBank); SVI(channel.HdmaFinished); SVI(channel.HdmaIndirectAddressing);
-		SVI(channel.HdmaLineCounterAndRepeat); SVI(channel.HdmaTableAddress);
-		SVI(channel.InvertDirection); SVI(channel.SrcAddress); SVI(channel.SrcBank); SVI(channel.TransferMode);
-		SVI(channel.TransferSize); SVI(channel.UnusedControlFlag); SVI(channel.DmaActive); SVI(channel.UnusedRegister);
+		SVI(_state.Channel[i].Decrement); SVI(_state.Channel[i].DestAddress); SVI(_state.Channel[i].DoTransfer); SVI(_state.Channel[i].FixedTransfer);
+		SVI(_state.Channel[i].HdmaBank); SVI(_state.Channel[i].HdmaFinished); SVI(_state.Channel[i].HdmaIndirectAddressing);
+		SVI(_state.Channel[i].HdmaLineCounterAndRepeat); SVI(_state.Channel[i].HdmaTableAddress);
+		SVI(_state.Channel[i].InvertDirection); SVI(_state.Channel[i].SrcAddress); SVI(_state.Channel[i].SrcBank); SVI(_state.Channel[i].TransferMode);
+		SVI(_state.Channel[i].TransferSize); SVI(_state.Channel[i].UnusedControlFlag); SVI(_state.Channel[i].DmaActive); SVI(_state.Channel[i].UnusedRegister);
 	}
 }

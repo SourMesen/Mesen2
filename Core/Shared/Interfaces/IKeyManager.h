@@ -14,6 +14,8 @@ struct MousePosition
 {
 	int16_t X;
 	int16_t Y;
+	double RelativeX;
+	double RelativeY;
 };
 
 struct MouseMovement

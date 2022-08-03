@@ -37,7 +37,7 @@
 #define lua_pushstringvalue(name, value) lua_pushliteral(lua, #name); lua_pushstring(lua, value.c_str()); lua_settable(lua, -3);
 #define lua_pusharrayvalue(index, value) lua_pushinteger(lua, index); lua_pushinteger(lua, value); lua_settable(lua, -3);
 
-#define lua_starttable(name) lua_pushliteral(lua, name); lua_newtable(lua);
+#define lua_starttable(name) lua_pushliteral(lua, #name); lua_newtable(lua);
 #define lua_endtable() lua_settable(lua, -3);
 #define lua_readint(name, dest) lua_getfield(lua, -1, #name); dest = l.ReadInteger();
 #define lua_readbool(name, dest) lua_getfield(lua, -1, #name); dest = l.ReadBool();
@@ -95,6 +95,8 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "clearScreen", LuaApi::ClearScreen },
 
 		{ "getScreenSize", LuaApi::GetScreenSize },
+		{ "getDrawSurfaceSize", LuaApi::GetDrawSurfaceSize },
+
 		{ "getScreenBuffer", LuaApi::GetScreenBuffer },
 		{ "setScreenBuffer", LuaApi::SetScreenBuffer },
 		{ "getPixel", LuaApi::GetPixel },
@@ -571,6 +573,38 @@ int LuaApi::GetScreenSize(lua_State* lua)
 	return 1;
 }
 
+int LuaApi::GetDrawSurfaceSize(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(1);
+	ScriptDrawSurface surface = (ScriptDrawSurface)l.ReadInteger((uint32_t)_context->GetDrawSurface());
+	checkEnum(ScriptDrawSurface, surface, "invalid draw surface");
+
+	FrameInfo size;
+	OverscanDimensions overscan;
+	if(surface == ScriptDrawSurface::ConsoleScreen) {
+		size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
+		overscan = _emu->GetSettings()->GetOverscan();
+	} else {
+		std::tie(size, overscan) = _emu->GetVideoRenderer()->GetScriptHudSize();
+	}
+
+	lua_newtable(lua);
+	lua_pushintvalue(width, size.Width + overscan.Left + overscan.Right);
+	lua_pushintvalue(height, size.Height + overscan.Top + overscan.Bottom);
+	lua_pushintvalue(visibleWidth, size.Width);
+	lua_pushintvalue(visibleHeight, size.Height);
+
+	lua_starttable(overscan);
+	lua_pushintvalue(top, overscan.Top);
+	lua_pushintvalue(bottom, overscan.Bottom);
+	lua_pushintvalue(left, overscan.Left);
+	lua_pushintvalue(right, overscan.Right);
+	lua_endtable();
+
+	return 1;
+}
+
 int LuaApi::GetScreenBuffer(lua_State *lua)
 {
 	LuaCallHelper l(lua);
@@ -639,6 +673,9 @@ int LuaApi::GetMouseState(lua_State *lua)
 	lua_newtable(lua);
 	lua_pushintvalue(x, pos.X);
 	lua_pushintvalue(y, pos.Y);
+	lua_pushdoublevalue(relativeX, pos.RelativeX);
+	lua_pushdoublevalue(relativeY, pos.RelativeY);
+	
 	lua_pushboolvalue(left, KeyManager::IsMouseButtonPressed(MouseButton::LeftButton));
 	lua_pushboolvalue(middle, KeyManager::IsMouseButtonPressed(MouseButton::MiddleButton));
 	lua_pushboolvalue(right, KeyManager::IsMouseButtonPressed(MouseButton::RightButton));

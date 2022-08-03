@@ -260,6 +260,9 @@ public:
 			} else if(c == 0x20) {
 				//Space (ignore spaces at the start of a new line, when text wrapping is enabled)
 				if(x > 0 || maxWidth == 0) {
+					if(maxWidth > 0 && x + 6 > maxWidth) {
+						newLine();
+					}
 					x += 6;
 				}
 			} else if(c >= 0x80) {
@@ -281,10 +284,11 @@ public:
 				}
 			} else {
 				//Variable size font for standard ASCII
-				if(maxWidth > 0 && x + GetCharWidth(c) > maxWidth) {
+				int charWidth = GetCharWidth(c);
+				if(maxWidth > 0 && x + charWidth > maxWidth) {
 					newLine();
 				}
-				x += GetCharWidth(c);
+				x += charWidth;
 			}
 		}
 

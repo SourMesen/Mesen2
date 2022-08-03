@@ -57,6 +57,7 @@ public:
 	void SetRendererSize(uint32_t width, uint32_t height);
 	
 	void SetScriptHudScale(uint32_t scale) { _scriptHudScale = scale; }
+	std::pair<FrameInfo, OverscanDimensions> GetScriptHudSize();
 
 	void StartThread();
 	void StopThread();

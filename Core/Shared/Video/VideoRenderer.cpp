@@ -107,18 +107,23 @@ void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
 		}
 
 		if(_emu->GetScriptHud()->HasCommands()) {
-			FrameInfo scriptHudSize = { _scriptHudSurface.Width, _scriptHudSurface.Height };
-			OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
-			overscan.Top *= _scriptHudScale;
-			overscan.Bottom *= _scriptHudScale;
-			overscan.Left *= _scriptHudScale;
-			overscan.Right *= _scriptHudScale;
-
-			_emu->GetScriptHud()->Draw(_scriptHudSurface.Buffer, scriptHudSize, overscan, frame.FrameNumber, false);
+			auto [size, overscan] = GetScriptHudSize();
+			_emu->GetScriptHud()->Draw(_scriptHudSurface.Buffer, size, overscan, frame.FrameNumber, false);
 			_needScriptHudClear = true;
 			_lastScriptHudFrameNumber = frame.FrameNumber;
 		}
 	}
+}
+
+std::pair<FrameInfo, OverscanDimensions> VideoRenderer::GetScriptHudSize()
+{
+	FrameInfo scriptHudSize = { _scriptHudSurface.Width, _scriptHudSurface.Height };
+	OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
+	overscan.Top *= _scriptHudScale;
+	overscan.Bottom *= _scriptHudScale;
+	overscan.Left *= _scriptHudScale;
+	overscan.Right *= _scriptHudScale;
+	return { scriptHudSize, overscan };
 }
 
 void VideoRenderer::UpdateFrame(RenderedFrame& frame)
