@@ -46,7 +46,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<ContextMenuAction> HelpMenuActions { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 
-		public ScriptWindowViewModel()
+		public ScriptWindowViewModel(ScriptStartupBehavior? behavior = null)
 		{
 			this.WhenAnyValue(x => x.ScriptName).Select(x => {
 				string wndTitle = ResourceHelper.GetViewLabel(nameof(ScriptWindow), "wndTitle");
@@ -56,7 +56,7 @@ namespace Mesen.Debugger.ViewModels
 				return wndTitle;
 			}).ToPropertyEx(this, x => x.WindowTitle);
 
-			switch(Config.ScriptStartupBehavior) {
+			switch(behavior ?? Config.ScriptStartupBehavior) {
 				case ScriptStartupBehavior.ShowBlankWindow: break;
 				case ScriptStartupBehavior.ShowTutorial: LoadScriptFromResource("Mesen.Debugger.Utilities.LuaScripts.Example.lua"); break;
 				case ScriptStartupBehavior.LoadLastScript: LoadScript(Config.RecentScripts[0]); break;
@@ -77,27 +77,11 @@ namespace Mesen.Debugger.ViewModels
 			};
 			_recentScriptsAction.IsEnabled = () => _recentScriptsAction.SubActions.Count > 0;
 
-			ScriptMenuActions = GetScriptMenuAction();
-			ToolbarActions = GetScriptMenuAction();
+			ScriptMenuActions = GetScriptMenuActions();
+			ToolbarActions = GetToolbarActions();
 
-			FileMenuActions = new() {
-				new ContextMenuAction() {
-					ActionType = ActionType.NewScript,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_NewScript),
-					OnClick = () => {
-						new ScriptWindow(new ScriptWindowViewModel()).Show();
-					}
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.Open,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_OpenScript),
-					OnClick = () => OpenScript()
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.Save,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_SaveScript),
-					OnClick = async () => await SaveScript()
-				},
+			FileMenuActions = GetSharedFileActions();
+			FileMenuActions.AddRange(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.SaveAs,
 					OnClick = async () => await SaveAs(Path.GetFileName(FilePath))
@@ -113,7 +97,7 @@ namespace Mesen.Debugger.ViewModels
 					ActionType = ActionType.Exit,
 					OnClick = () => _wnd?.Close()
 				}
-			};
+			});
 
 			HelpMenuActions = new() {
 				new ContextMenuAction() {
@@ -125,6 +109,43 @@ namespace Mesen.Debugger.ViewModels
 			UpdateRecentScriptsMenu();
 			DebugShortcutManager.RegisterActions(_wnd, ScriptMenuActions);
 			DebugShortcutManager.RegisterActions(_wnd, FileMenuActions);
+		}
+
+		private List<ContextMenuAction> GetSharedFileActions()
+		{
+			return new() {
+				new ContextMenuAction() {
+					ActionType = ActionType.NewScript,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_NewScript),
+					OnClick = () => {
+						new ScriptWindow(new ScriptWindowViewModel(ScriptStartupBehavior.ShowBlankWindow)).Show();
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Open,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_OpenScript),
+					OnClick = () => OpenScript()
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.Save,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_SaveScript),
+					OnClick = async () => await SaveScript()
+				}
+			};
+		}
+
+		private List<ContextMenuAction> GetToolbarActions()
+		{
+			List<ContextMenuAction> actions = GetSharedFileActions();
+			actions.Add(new ContextMenuSeparator());
+			actions.AddRange(GetScriptMenuActions());
+			actions.Add(new ContextMenuSeparator());
+			actions.Add(new ContextMenuAction() {
+				ActionType = ActionType.BuiltInScripts,
+				AlwaysShowLabel = true,
+				SubActions = GetBuiltInScriptActions()
+			});			
+			return actions;
 		}
 
 		private List<object> GetBuiltInScriptActions()
@@ -155,6 +176,7 @@ namespace Mesen.Debugger.ViewModels
 				using StreamReader sr = new StreamReader(stream);
 				LoadScriptFromString(sr.ReadToEnd());
 				ScriptName = scriptName;
+				FilePath = "";
 			}
 		}
 
@@ -167,13 +189,12 @@ namespace Mesen.Debugger.ViewModels
 			ScriptId = DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, ScriptId);
 		}
 
-		private List<ContextMenuAction> GetScriptMenuAction()
+		private List<ContextMenuAction> GetScriptMenuActions()
 		{
 			 return new() {
 				new ContextMenuAction() {
 					ActionType = ActionType.RunScript,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_RunScript),
-					IsEnabled = () => ScriptId < 0,
 					OnClick = RunScript
 				},
 				new ContextMenuAction() {

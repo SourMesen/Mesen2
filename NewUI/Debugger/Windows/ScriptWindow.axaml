@@ -59,6 +59,7 @@
 			<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
 
 			<TextBox
+				Name="txtScriptLog"
 				Grid.Row="2"
 				VerticalContentAlignment="Top"
 				Height="NaN"
