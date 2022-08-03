@@ -880,11 +880,15 @@ int LuaApi::GetScriptDataFolder(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
-	string baseFolder = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "LuaScriptData");
-	FolderUtilities::CreateFolder(baseFolder);
-	string scriptFolder = FolderUtilities::CombinePath(baseFolder, FolderUtilities::GetFilename(_context->GetScriptName(), false));
-	FolderUtilities::CreateFolder(scriptFolder);
-	l.Return(scriptFolder);
+	if(_emu->GetSettings()->GetDebugConfig().ScriptAllowIoOsAccess) {
+		string baseFolder = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "LuaScriptData");
+		FolderUtilities::CreateFolder(baseFolder);
+		string scriptFolder = FolderUtilities::CombinePath(baseFolder, FolderUtilities::GetFilename(_context->GetScriptName(), false));
+		FolderUtilities::CreateFolder(scriptFolder);
+		l.Return(scriptFolder);
+	} else {
+		l.Return("");
+	}
 	return l.ReturnCount();
 }
 
