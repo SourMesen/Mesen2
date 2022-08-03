@@ -11,7 +11,7 @@ class PceConsole;
 class PceCdRom;
 class PceScsiBus;
 
-class PceAdpcm : public IAudioProvider, public ISerializable
+class PceAdpcm final : public IAudioProvider, public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;

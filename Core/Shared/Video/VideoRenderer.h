@@ -3,6 +3,7 @@
 #include <thread>
 #include "Shared/SettingTypes.h"
 #include "Shared/RenderedFrame.h"
+#include "Shared/Interfaces/IRenderingDevice.h"
 #include "Utilities/AutoResetEvent.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/safe_ptr.h"
@@ -33,8 +34,12 @@ private:
 	unique_ptr<DebugHud> _rendererHud;
 	unique_ptr<SystemHud> _systemHud;
 	unique_ptr<InputHud> _inputHud;
-	uint32_t* _hudSurface = nullptr;
-	FrameInfo _hudSize = {};
+	
+	RenderSurfaceInfo _emuHudSurface = {};
+	RenderSurfaceInfo _scriptHudSurface = {};
+	bool _needScriptHudClear = false;
+	uint32_t _scriptHudScale = 2;
+	uint32_t _lastScriptHudFrameNumber = 0;
 
 	RenderedFrame _lastFrame;
 	SimpleLock _frameLock;
@@ -42,6 +47,7 @@ private:
 	safe_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
+	void DrawScriptHud(RenderedFrame& frame);
 
 public:
 	VideoRenderer(Emulator* emu);
@@ -49,6 +55,8 @@ public:
 
 	FrameInfo GetRendererSize();
 	void SetRendererSize(uint32_t width, uint32_t height);
+	
+	void SetScriptHudScale(uint32_t scale) { _scriptHudScale = scale; }
 
 	void StartThread();
 	void StopThread();

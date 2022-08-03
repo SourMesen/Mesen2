@@ -13,7 +13,7 @@ private:
 	uint32_t* _ntscBuffer = nullptr;
 
 protected:
-	void OnBeforeApplyFilter();
+	void OnBeforeApplyFilter() override;
 
 public:
 	SnesNtscFilter(Emulator* emu);

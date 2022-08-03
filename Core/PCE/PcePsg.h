@@ -10,7 +10,7 @@ class PceConsole;
 class SoundMixer;
 struct blip_t;
 
-class PcePsg : public ISerializable
+class PcePsg final : public ISerializable
 {
 private:
 	static constexpr int MaxSamples = 4000;

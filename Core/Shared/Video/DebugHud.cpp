@@ -10,6 +10,7 @@
 
 DebugHud::DebugHud()
 {
+	_commandCount = 0;
 }
 
 DebugHud::~DebugHud()
@@ -31,6 +32,7 @@ void DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimension
 		command->Draw(argbBuffer, frameInfo, overscan, frameNumber, autoScale);
 	}
 	_commands.erase(std::remove_if(_commands.begin(), _commands.end(), [](const unique_ptr<DrawCommand>& c) { return c->Expired(); }), _commands.end());
+	_commandCount = (uint32_t)_commands.size();
 }
 
 void DebugHud::DrawPixel(int x, int y, int color, int frameCount, int startFrame)

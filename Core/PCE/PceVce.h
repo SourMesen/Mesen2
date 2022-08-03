@@ -6,7 +6,7 @@
 class PceConsole;
 class Emulator;
 
-class PceVce : public ISerializable
+class PceVce final : public ISerializable
 {
 private:
 	PceVceState _state = {};

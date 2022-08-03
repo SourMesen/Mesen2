@@ -64,6 +64,7 @@ private:
 
 	const unique_ptr<EmuSettings> _settings;
 	const unique_ptr<DebugHud> _debugHud;
+	const unique_ptr<DebugHud> _scriptHud;
 	const unique_ptr<NotificationManager> _notificationManager;
 	const unique_ptr<BatteryManager> _batteryManager;
 	const unique_ptr<SoundMixer> _soundMixer;
@@ -203,6 +204,7 @@ public:
 	SaveStateManager* GetSaveStateManager();
 	RewindManager* GetRewindManager();
 	DebugHud* GetDebugHud();
+	DebugHud* GetScriptHud();
 	BatteryManager* GetBatteryManager();
 	CheatManager* GetCheatManager();
 	MovieManager* GetMovieManager();

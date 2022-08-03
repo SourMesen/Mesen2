@@ -13,7 +13,7 @@
 class Emulator;
 class PceMemoryManager;
 
-class PceCpu : public ISerializable
+class PceCpu final : public ISerializable
 {
 private:
 	static constexpr uint16_t ResetVector = 0xFFFE;

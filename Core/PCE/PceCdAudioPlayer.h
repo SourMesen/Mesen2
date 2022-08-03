@@ -9,7 +9,7 @@ class Emulator;
 class PceCdRom;
 struct DiscInfo;
 
-class PceCdAudioPlayer : public IAudioProvider, public ISerializable
+class PceCdAudioPlayer final : public IAudioProvider, public ISerializable
 {
 	Emulator* _emu = nullptr;
 	DiscInfo* _disc = nullptr;

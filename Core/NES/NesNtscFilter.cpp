@@ -15,13 +15,23 @@ NesNtscFilter::NesNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 	_ntscBuffer = new uint32_t[NES_NTSC_OUT_WIDTH(256) * 240];
 }
 
+OverscanDimensions NesNtscFilter::GetOverscan()
+{
+	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
+	overscan.Top *= 2;
+	overscan.Bottom *= 2;
+	overscan.Left *= 2;
+	overscan.Right *= 2;
+	return overscan;
+}
+
 FrameInfo NesNtscFilter::GetFrameInfo()
 {
 	OverscanDimensions overscan = GetOverscan();
 	
 	FrameInfo frameInfo;
-	frameInfo.Width = NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) - overscan.Left*2 - overscan.Right*2;
-	frameInfo.Height = _baseFrameInfo.Height*2 - overscan.Top*2 - overscan.Bottom*2;
+	frameInfo.Width = NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) - overscan.Left - overscan.Right;
+	frameInfo.Height = _baseFrameInfo.Height*2 - overscan.Top - overscan.Bottom;
 	return frameInfo;
 }
 
@@ -55,8 +65,8 @@ void NesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	OverscanDimensions overscan = GetOverscan();
 	
 	uint32_t baseWidth = NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width);
-	uint32_t xOffset = overscan.Left * 2;
-	uint32_t yOffset = overscan.Top * 2 * baseWidth;
+	uint32_t xOffset = overscan.Left;
+	uint32_t yOffset = overscan.Top/2 * baseWidth;
 
 	nes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) * 4);
 

@@ -133,13 +133,21 @@ void Renderer::CleanupDevice()
 		_pd3dDevice->Release();
 		_pd3dDevice = nullptr;
 	}
-	if(_pHudTexture) {
-		_pHudTexture->Release();
-		_pHudTexture = nullptr;
+	if(_emuHud.Texture) {
+		_emuHud.Texture->Release();
+		_emuHud.Texture = nullptr;
 	}
-	if(_pHudTextureSrv) {
-		_pHudTextureSrv->Release();
-		_pHudTextureSrv = nullptr;
+	if(_emuHud.Shader) {
+		_emuHud.Shader->Release();
+		_emuHud.Shader = nullptr;
+	}
+	if(_scriptHud.Texture) {
+		_scriptHud.Texture->Release();
+		_scriptHud.Texture = nullptr;
+	}
+	if(_scriptHud.Shader) {
+		_scriptHud.Shader->Release();
+		_scriptHud.Shader = nullptr;
 	}
 }
 
@@ -424,60 +432,60 @@ void Renderer::DrawScreen()
 	_spriteBatch->Draw(_pTextureSrv, destRect);
 }
 
-bool Renderer::CreateHudTexture(uint32_t width, uint32_t height)
+bool Renderer::CreateHudTexture(HudRenderInfo& hud, uint32_t newWidth, uint32_t newHeight)
 {
-	if(_pHudTexture) {
-		_pHudTexture->Release();
-		_pHudTexture = nullptr;
+	if(hud.Texture) {
+		hud.Texture->Release();
+		hud.Texture = nullptr;
 	}
-	if(_pHudTextureSrv) {
-		_pHudTextureSrv->Release();
-		_pHudTextureSrv = nullptr;
+	if(hud.Shader) {
+		hud.Shader->Release();
+		hud.Shader = nullptr;
 	}
 
-	_hudWidth = width;
-	_hudHeight = height;
+	hud.Width = newWidth;
+	hud.Height = newHeight;
 
-	_pHudTexture = CreateTexture(width, height);
-	if(!_pHudTexture) {
+	hud.Texture = CreateTexture(hud.Width, hud.Height);
+	if(!hud.Texture) {
 		return false;
 	}
-	_pHudTextureSrv = GetShaderResourceView(_pHudTexture);
-	if(!_pHudTextureSrv) {
+	hud.Shader = GetShaderResourceView(hud.Texture);
+	if(!hud.Shader) {
 		return false;
 	}
 
 	return true;
 }
 
-void Renderer::DrawHud(uint32_t* hudBuffer, uint32_t width, uint32_t height)
+void Renderer::DrawHud(HudRenderInfo& hud, uint32_t* hudBuffer, uint32_t newWidth, uint32_t newHeight)
 {
-	if(width == 0 && height == 0) {
+	if(newWidth == 0 && newHeight == 0) {
 		return;
 	}
 
-	if(_hudWidth != width || _hudHeight != height || !_pHudTexture || !_pHudTextureSrv) {
-		if(!CreateHudTexture(width, height)) {
+	if(hud.Width != newWidth || hud.Height != newHeight || !hud.Texture || !hud.Shader) {
+		if(!CreateHudTexture(hud, newWidth, newHeight)) {
 			return;
 		}
 	}
 
 	//Copy buffer to texture
-	uint32_t rowPitch = width * sizeof(uint32_t);
+	uint32_t rowPitch = hud.Width * sizeof(uint32_t);
 	D3D11_MAPPED_SUBRESOURCE dd;
-	HRESULT hr = _pDeviceContext->Map(_pHudTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
+	HRESULT hr = _pDeviceContext->Map(hud.Texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
 	if(FAILED(hr)) {
 		MessageManager::Log("DeviceContext::Map() failed - Error:" + std::to_string(hr));
 		return;
 	}
 	uint8_t* surfacePointer = (uint8_t*)dd.pData;
 	uint8_t* videoBuffer = (uint8_t*)hudBuffer;
-	for(uint32_t i = 0, iMax = height; i < iMax; i++) {
+	for(uint32_t i = 0, iMax = hud.Height; i < iMax; i++) {
 		memcpy(surfacePointer, videoBuffer, rowPitch);
 		videoBuffer += rowPitch;
 		surfacePointer += dd.RowPitch;
 	}
-	_pDeviceContext->Unmap(_pHudTexture, 0);
+	_pDeviceContext->Unmap(hud.Texture, 0);
 
 	RECT destRect;
 	destRect.left = _leftMargin;
@@ -485,10 +493,10 @@ void Renderer::DrawHud(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 	destRect.right = _screenWidth + _leftMargin;
 	destRect.bottom = _screenHeight + _topMargin;
 
-	_spriteBatch->Draw(_pHudTextureSrv, destRect);
+	_spriteBatch->Draw(hud.Shader, destRect);
 }
 
-void Renderer::Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight)
+void Renderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud)
 {
 	auto lock = _frameLock.AcquireSafe();
 	if(_newFullscreen != _fullscreen) {
@@ -516,7 +524,8 @@ void Renderer::Render(uint32_t* hudBuffer, uint32_t hudWidth, uint32_t hudHeight
 
 	//Draw HUD
 	_spriteBatch->Begin(SpriteSortMode_Immediate, false);
-	DrawHud(hudBuffer, hudWidth, hudHeight);
+	DrawHud(_scriptHud, scriptHud.Buffer, scriptHud.Width, scriptHud.Height);
+	DrawHud(_emuHud, emuHud.Buffer, emuHud.Width, emuHud.Height);
 	_spriteBatch->End();
 
 	// Present the information rendered to the back buffer to the front buffer (the screen)

@@ -11,7 +11,7 @@ class Emulator;
 class PceConsole;
 class PceMemoryManager;
 
-class PceCdRom : public ISerializable
+class PceCdRom final : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;

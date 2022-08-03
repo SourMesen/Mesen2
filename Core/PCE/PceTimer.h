@@ -4,7 +4,7 @@
 
 class PceMemoryManager;
 
-class PceTimer : public ISerializable
+class PceTimer final : public ISerializable
 {
 private:
 	uint8_t _reloadValue = 0;

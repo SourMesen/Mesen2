@@ -8,6 +8,13 @@
 
 class Emulator;
 
+struct HudRenderInfo
+{
+	SDL_Texture* Texture = nullptr;
+	uint32_t Width = 0;
+	uint32_t Height = 0;
+};
+
 class SdlRenderer : public IRenderingDevice, public BaseRenderer
 {
 private:
@@ -15,7 +22,9 @@ private:
 	SDL_Window* _sdlWindow = nullptr;
 	SDL_Renderer *_sdlRenderer = nullptr;
 	SDL_Texture* _sdlTexture = nullptr;
-	SDL_Texture *_sdlHudTexture = nullptr;
+
+	HudRenderInfo _emuHud = {};
+	HudRenderInfo _scriptHud = {};
 	
 	bool _useBilinearInterpolation = false;
 
@@ -34,15 +43,15 @@ private:
 	uint32_t _frameWidth = 0;
 	uint32_t _newFrameBufferSize = 0;
 
-	uint32_t _hudWidth = 0;
-	uint32_t _hudHeight = 0;
-
 	bool _vsyncEnabled = false;
 
 	bool Init();
 	void Cleanup();
 	void LogSdlError(const char* msg);
 	void SetScreenSize(uint32_t width, uint32_t height);
+	
+	void UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height);
+	void UpdateHudTexture(HudRenderInfo& hud, uint32_t* src);
 
 public:
 	SdlRenderer(Emulator* emu, void* windowHandle, bool registerAsMessageManager);
@@ -50,7 +59,7 @@ public:
 
 	void ClearFrame() override;
 	void UpdateFrame(RenderedFrame& frame) override;
-	void Render(uint32_t* hudBuffer, uint32_t width, uint32_t height) override;
+	void Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud) override;
 	void Reset() override;
 
 	void SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle) override;

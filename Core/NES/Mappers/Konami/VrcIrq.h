@@ -4,7 +4,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
-class VrcIrq : public ISerializable
+class VrcIrq final : public ISerializable
 {
 private:
 	NesConsole* _console;

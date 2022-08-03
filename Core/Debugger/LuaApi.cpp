@@ -14,6 +14,7 @@
 #include "Shared/SaveStateManager.h"
 #include "Shared/Emulator.h"
 #include "Shared/Video/BaseVideoFilter.h"
+#include "Shared/Video/VideoRenderer.h"
 #include "Shared/Video/DrawScreenBufferCommand.h"
 #include "Shared/Video/DrawStringCommand.h"
 #include "Shared/KeyManager.h"
@@ -91,7 +92,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "drawPixel", LuaApi::DrawPixel },
 		{ "drawLine", LuaApi::DrawLine },
 		{ "drawRectangle", LuaApi::DrawRectangle },
-		{ "clearScreen", LuaApi::ClearScreen },		
+		{ "clearScreen", LuaApi::ClearScreen },
 
 		{ "getScreenSize", LuaApi::GetScreenSize },
 		{ "getScreenBuffer", LuaApi::GetScreenBuffer },
@@ -119,6 +120,8 @@ int LuaApi::GetLibrary(lua_State *lua)
 		
 		{ "getState", LuaApi::GetState },
 		{ "setState", LuaApi::SetState },
+
+		{ "selectDrawSurface", LuaApi::SelectDrawSurface },
 
 		{ "getScriptDataFolder", LuaApi::GetScriptDataFolder },
 		{ "getRomInfo", LuaApi::GetRomInfo },
@@ -170,20 +173,11 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 	lua_pushliteral(lua, "eventType");
 	lua_newtable(lua);
-	lua_pushintvalue(reset, EventType::Reset);
-	lua_pushintvalue(nmi, EventType::Nmi);
-	lua_pushintvalue(irq, EventType::Irq);
-	lua_pushintvalue(startFrame, EventType::StartFrame);
-	lua_pushintvalue(endFrame, EventType::EndFrame);
-	lua_pushintvalue(inputPolled, EventType::InputPolled);
-	lua_pushintvalue(scriptEnded, EventType::ScriptEnded);
-	lua_pushintvalue(stateLoaded, EventType::StateLoaded);
-	lua_pushintvalue(stateSaved, EventType::StateSaved);
-	lua_pushintvalue(gbStartFrame, EventType::GbStartFrame);
-	lua_pushintvalue(gbEndFrame, EventType::GbEndFrame);
-	//TODO
-	/*lua_pushintvalue(codeBreak, EventType::CodeBreak);
-	*/
+	for(auto& entry : magic_enum::enum_entries<EventType>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		LuaPushIntValue(lua, name, (int)entry.first);
+	}
 	lua_settable(lua, -3);
 
 	lua_pushliteral(lua, "stepType");
@@ -201,7 +195,45 @@ int LuaApi::GetLibrary(lua_State *lua)
 	}
 	lua_settable(lua, -3);
 
+	lua_pushliteral(lua, "drawSurface");
+	lua_newtable(lua);
+	for(auto& entry : magic_enum::enum_entries<ScriptDrawSurface>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		LuaPushIntValue(lua, name, (int)entry.first);
+	}
+	lua_settable(lua, -3);
+
 	return 1;
+}
+
+DebugHud* LuaApi::GetHud()
+{
+	if(_context->GetDrawSurface() == ScriptDrawSurface::ConsoleScreen) {
+		return _emu->GetDebugHud();
+	} else {
+		return _emu->GetScriptHud();
+	}
+}
+
+int LuaApi::SelectDrawSurface(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	l.ForceParamCount(2);
+	int surfaceScale = l.ReadInteger(-1);
+	ScriptDrawSurface surface = (ScriptDrawSurface)l.ReadInteger();
+	checkminparams(1);
+	if(surfaceScale != -1) {
+		errorCond(surface == ScriptDrawSurface::ConsoleScreen && surfaceScale != 1, "scale for the console screen must be 1");
+		errorCond(surface == ScriptDrawSurface::ScriptHud && (surfaceScale < 1 || surfaceScale > 4), "scale for the script HUD must be between 1 and 4");
+	}
+	checkEnum(ScriptDrawSurface, surface, "invalid draw surface value");
+	_context->SetDrawSurface(surface);
+
+	if(surfaceScale != -1 && surface == ScriptDrawSurface::ScriptHud) {
+		_emu->GetVideoRenderer()->SetScriptHudScale(surfaceScale);
+	}
+	return 0;
 }
 
 int LuaApi::ReadMemory(lua_State *lua)
@@ -215,6 +247,7 @@ int LuaApi::ReadMemory(lua_State *lua)
 	int address = l.ReadInteger();
 	checkminparams(2);
 	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
 	uint8_t value = _memoryDumper->GetMemoryValue(memType, address, disableSideEffects);
 	l.Return(returnSignedValue ? (int8_t)value : value);
 	return l.ReturnCount();
@@ -231,6 +264,7 @@ int LuaApi::WriteMemory(lua_State *lua)
 	checkparams();
 	errorCond(value > 255 || value < -128, "value out of range");
 	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
 	_memoryDumper->SetMemoryValue(memType, address, value, disableSideEffects);
 	return l.ReturnCount();
 }
@@ -246,6 +280,7 @@ int LuaApi::ReadMemoryWord(lua_State *lua)
 	int address = l.ReadInteger();
 	checkminparams(2);
 	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
 	uint16_t value = _memoryDumper->GetMemoryValueWord(memType, address, disableSideEffects);
 	l.Return(returnSignedValue ? (int16_t)value : value);
 	return l.ReturnCount();
@@ -262,6 +297,7 @@ int LuaApi::WriteMemoryWord(lua_State *lua)
 	checkparams();
 	errorCond(value > 65535 || value < -32768, "value out of range");
 	errorCond(address < 0, "address must be >= 0");
+	checkEnum(MemoryType, memType, "invalid memory type");
 	_memoryDumper->SetMemoryValueWord(memType, address, value, disableSideEffects);
 	return l.ReturnCount();
 }
@@ -440,7 +476,7 @@ int LuaApi::DrawString(lua_State *lua)
 	checkminparams(3);
 
 	int startFrame = _emu->GetFrameCount() + displayDelay;
-	_emu->GetDebugHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame, maxWidth);
+	GetHud()->DrawString(x, y, text, color, backColor, frameCount, startFrame, maxWidth);
 
 	return l.ReturnCount();
 }
@@ -459,7 +495,7 @@ int LuaApi::DrawLine(lua_State *lua)
 	checkminparams(4);
 
 	int startFrame = _emu->GetFrameCount() + displayDelay;
-	_emu->GetDebugHud()->DrawLine(x, y, x2, y2, color, frameCount, startFrame);
+	GetHud()->DrawLine(x, y, x2, y2, color, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -476,7 +512,7 @@ int LuaApi::DrawPixel(lua_State *lua)
 	checkminparams(3);
 
 	int startFrame = _emu->GetFrameCount() + displayDelay;
-	_emu->GetDebugHud()->DrawPixel(x, y, color, frameCount, startFrame);
+	GetHud()->DrawPixel(x, y, color, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -496,7 +532,7 @@ int LuaApi::DrawRectangle(lua_State *lua)
 	checkminparams(4);
 
 	int startFrame = _emu->GetFrameCount() + displayDelay;
-	_emu->GetDebugHud()->DrawRectangle(x, y, width, height, color, fill, frameCount, startFrame);
+	GetHud()->DrawRectangle(x, y, width, height, color, fill, frameCount, startFrame);
 
 	return l.ReturnCount();
 }
@@ -507,6 +543,7 @@ int LuaApi::ClearScreen(lua_State *lua)
 	checkparams();
 
 	_emu->GetDebugHud()->ClearScreen();
+	_emu->GetScriptHud()->ClearScreen();
 	return l.ReturnCount();
 }
 

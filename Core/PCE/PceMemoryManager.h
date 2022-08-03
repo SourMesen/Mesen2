@@ -24,7 +24,7 @@
 
 class Emulator;
 
-class PceMemoryManager : public ISerializable
+class PceMemoryManager final : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;

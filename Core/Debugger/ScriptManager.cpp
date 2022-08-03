@@ -17,6 +17,7 @@ ScriptManager::ScriptManager(Debugger* debugger)
 ScriptManager::~ScriptManager()
 {
 	_debugger->GetEmulator()->GetDebugHud()->ClearScreen();
+	_debugger->GetEmulator()->GetScriptHud()->ClearScreen();
 }
 
 int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
@@ -57,6 +58,7 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 			//Send a ScriptEnded event before unloading the script
 			script->ProcessEvent(EventType::ScriptEnded);
 			_debugger->GetEmulator()->GetDebugHud()->ClearScreen();
+			_debugger->GetEmulator()->GetScriptHud()->ClearScreen();
 			return true;
 		}
 		return false;

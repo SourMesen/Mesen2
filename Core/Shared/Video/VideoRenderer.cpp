@@ -20,16 +20,10 @@ VideoRenderer::VideoRenderer(Emulator* emu)
 	_rendererHud.reset(new DebugHud());
 	_systemHud.reset(new SystemHud(_emu, _rendererHud.get()));
 	_inputHud.reset(new InputHud(emu, _rendererHud.get()));
-
-	_hudSurface = new uint32_t[256*240];
-	_hudSize.Width = 256;
-	_hudSize.Height = 240;
 }
 
 VideoRenderer::~VideoRenderer()
 {
-	delete[] _hudSurface;
-
 	_stopFlag = true;
 	StopThread();
 }
@@ -80,11 +74,8 @@ void VideoRenderer::RenderThread()
 		_waitForRender.Wait(32);
 		if(_renderer) {
 			FrameInfo size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
-			if(_hudSize.Width != size.Width || _hudSize.Height != size.Height) {
-				delete[] _hudSurface;
-				_hudSurface = new uint32_t[size.Height * size.Width];
-				_hudSize = size;
-			}
+			_emuHudSurface.UpdateSize(size.Width, size.Height);
+			_scriptHudSurface.UpdateSize(size.Width * _scriptHudScale, size.Height * _scriptHudScale);
 
 			RenderedFrame frame;
 			{
@@ -92,11 +83,40 @@ void VideoRenderer::RenderThread()
 				frame = _lastFrame;
 			}
 
-			memset(_hudSurface, 0, _hudSize.Width * _hudSize.Height * sizeof(uint32_t));
-			_inputHud->DrawControllers(_hudSize, frame.InputData);
-			_systemHud->Draw(_hudSize.Width, _hudSize.Height);
-			_rendererHud->Draw(_hudSurface, _hudSize, {}, 0, false);
-			_renderer->Render(_hudSurface, _hudSize.Width, _hudSize.Height);
+			_emuHudSurface.Clear();
+			_inputHud->DrawControllers(size, frame.InputData);
+			_systemHud->Draw(size.Width, size.Height);
+			_rendererHud->Draw(_emuHudSurface.Buffer, size, {}, 0, false);
+
+			DrawScriptHud(frame);
+
+			_renderer->Render(_emuHudSurface, _scriptHudSurface);
+		}
+	}
+}
+
+void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
+{
+	if(_lastScriptHudFrameNumber != frame.FrameNumber) {
+		//Clear+draw HUD for scripts
+		//-Only when frame number changes (to prevent the HUD from disappearing when paused, etc.)
+		//-Only when commands are queued, otherwise skip drawing/clearing to avoid wasting CPU time
+		if(_needScriptHudClear) {
+			_scriptHudSurface.Clear();
+			_needScriptHudClear = false;
+		}
+
+		if(_emu->GetScriptHud()->HasCommands()) {
+			FrameInfo scriptHudSize = { _scriptHudSurface.Width, _scriptHudSurface.Height };
+			OverscanDimensions overscan = _emu->GetSettings()->GetOverscan();
+			overscan.Top *= _scriptHudScale;
+			overscan.Bottom *= _scriptHudScale;
+			overscan.Left *= _scriptHudScale;
+			overscan.Right *= _scriptHudScale;
+
+			_emu->GetScriptHud()->Draw(_scriptHudSurface.Buffer, scriptHudSize, overscan, frame.FrameNumber, false);
+			_needScriptHudClear = true;
+			_lastScriptHudFrameNumber = frame.FrameNumber;
 		}
 	}
 }

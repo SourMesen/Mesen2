@@ -3,13 +3,6 @@
 #The only external dependency is SDL2 - everything else is pretty standard.
 #Run "make" to build, "make run" to run
 
-#----------------------
-#Platform Configuration
-#----------------------
-#To specify whether you want to build for x86 or x64:
-#"MESENPLATFORM=x86 make" or "MESENPLATFORM=x64 make"
-#Default is x64
-
 #-----------------------
 # Link Time Optimization
 #-----------------------
@@ -142,7 +135,7 @@ official:
 	./build.sh
 
 run:
-	./NewUI/bin/x64/Release/linux-x64/publish/Mesen-X
+	./NewUI/bin/x64/Release/linux-x64/publish/Mesen
 
 clean:
 	rm -r $(COREOBJ)

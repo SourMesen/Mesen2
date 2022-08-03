@@ -19,7 +19,7 @@ protected:
 
 	virtual void InternalDraw() = 0;
 
-	void InternalDrawPixel(int32_t offset, int color, uint32_t alpha)
+	__forceinline void InternalDrawPixel(int32_t offset, int color, uint32_t alpha)
 	{
 		if(alpha != 0xFF000000) {
 			if(_argbBuffer[offset] == 0) {
@@ -34,19 +34,31 @@ protected:
 		}
 	}
 
+	__forceinline bool IsOutOfBounds(int32_t x, int32_t y)
+	{
+		int top = (int)_overscan.Top;
+		int left = (int)_overscan.Left;
+		return (
+			x < left ||
+			y < top ||
+			x - left >= (int32_t)_frameInfo.Width ||
+			y - top >= (int32_t)_frameInfo.Height
+		);
+	}
+
 	void DrawPixel(uint32_t x, uint32_t y, int color)
 	{
 		uint32_t alpha = (color & 0xFF000000);
 		if(alpha > 0) {
 			int top = (int)_overscan.Top;
 			int left = (int)_overscan.Left;
+
 			if(_yScale == 1 && _xScale == 1) {
-				int32_t offset = ((int32_t)y - top) * _frameInfo.Width + (int32_t)x - left;
-				if((int32_t)x - left >= (int32_t)_frameInfo.Width || (int32_t)y - top >= (int32_t)_frameInfo.Height || offset < 0) {
-					//Out of bounds, skip drawing
+				if(IsOutOfBounds(x, y)) {
 					return;
 				}
 
+				int32_t offset = ((int32_t)y - top) * _frameInfo.Width + (int32_t)x - left;
 				InternalDrawPixel(offset, color, alpha);
 			} else {
 				int xPixelCount = _useIntegerScaling ? (int)std::floor(_xScale): (int)((x + 1)*_xScale) - (int)(x*_xScale);
@@ -56,11 +68,10 @@ protected:
 				for(int i = 0; i < _yScale; i++) {
 					for(int j = 0; j < xPixelCount; j++) {
 						int32_t offset = ((int32_t)y - top + i) * _frameInfo.Width + (int32_t)x - left + j;
-						if((int32_t)x - left + j >= (int32_t)_frameInfo.Width || (int32_t)y - top + i >= (int32_t)_frameInfo.Height || offset < 0) {
+						if(IsOutOfBounds(x + j, y + i)) {
 							//Out of bounds, skip drawing
 							continue;
 						}
-
 						InternalDrawPixel(offset, color, alpha);
 					}
 				}

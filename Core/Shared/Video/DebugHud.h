@@ -9,11 +9,14 @@ class DebugHud
 private:
 	static constexpr size_t MaxCommandCount = 500000;
 	vector<unique_ptr<DrawCommand>> _commands;
+	atomic<uint32_t> _commandCount;
 	SimpleLock _commandLock;
 
 public:
 	DebugHud();
 	~DebugHud();
+
+	bool HasCommands() { return _commandCount > 0; }
 
 	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale);
 	void ClearScreen();
@@ -28,6 +31,7 @@ public:
 		auto lock = _commandLock.AcquireSafe();
 		if(_commands.size() < DebugHud::MaxCommandCount) {
 			_commands.push_back(std::move(cmd));
+			_commandCount++;
 		}
 	}
 };

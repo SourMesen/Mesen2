@@ -4,7 +4,7 @@
 #include "Utilities/Serializer.h"
 
 //SST39SF040 chip emulation - used by mapper 30 (UNROM512) & mapper 111 (GTROM)
-class FlashSST39SF040 : public ISerializable
+class FlashSST39SF040 final : public ISerializable
 {
 private:
 	enum class ChipMode

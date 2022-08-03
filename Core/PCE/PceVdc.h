@@ -54,7 +54,7 @@ struct PceSpriteInfo
 	bool LoadSp23;
 };
 
-class PceVdc : public ISerializable
+class PceVdc final : public ISerializable
 {
 private:
 	PceVdcState _state = {};

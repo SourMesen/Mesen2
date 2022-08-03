@@ -60,13 +60,13 @@ public:
 };
 
 template<typename T>
-bool operator==(const safe_ptr<T>& ptr, nullptr_t)
+bool operator==(const safe_ptr<T>& ptr, std::nullptr_t)
 {
 	return !(bool)ptr;
 }
 
 template<typename T>
-bool operator!=(const safe_ptr<T>& ptr, nullptr_t)
+bool operator!=(const safe_ptr<T>& ptr, std::nullptr_t)
 {
 	return (bool)ptr;
 }

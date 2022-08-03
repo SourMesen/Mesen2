@@ -86,9 +86,13 @@ void SdlRenderer::Cleanup()
 		SDL_DestroyTexture(_sdlTexture);
 		_sdlTexture = nullptr;		
 	}
-	if(_sdlHudTexture) {
-		SDL_DestroyTexture(_sdlHudTexture);
-		_sdlHudTexture = nullptr;
+	if(_emuHud.Texture) {
+		SDL_DestroyTexture(_emuHud.Texture);
+		_emuHud.Texture = nullptr;
+	}
+	if(_scriptHud.Texture) {
+		SDL_DestroyTexture(_scriptHud.Texture);
+		_scriptHud.Texture = nullptr;
 	}
 	if(_sdlRenderer) {
 		SDL_DestroyRenderer(_sdlRenderer);
@@ -155,22 +159,44 @@ void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 	_frameChanged = true;	
 }
 
-void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
+void SdlRenderer::UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height)
+{
+	if(!hud.Texture || hud.Width != width || hud.Height != height) {
+		if(hud.Texture) {
+			SDL_DestroyTexture(hud.Texture);
+		}
+		hud.Width = width;
+		hud.Height = height;
+		hud.Texture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+		SDL_SetTextureBlendMode(hud.Texture, SDL_BLENDMODE_BLEND);
+	}
+}
+
+void SdlRenderer::UpdateHudTexture(HudRenderInfo& hud, uint32_t* src)
+{
+	uint8_t* textureBuffer;
+	int rowPitch;
+	if(SDL_LockTexture(hud.Texture, nullptr, (void**)&textureBuffer, &rowPitch) == 0) {
+		for(uint32_t i = 0, iMax = hud.Height; i < iMax; i++) {
+			memcpy(textureBuffer, src, hud.Width * _bytesPerPixel);
+			src += hud.Width;
+			textureBuffer += rowPitch;
+		}
+	} else {
+		LogSdlError("SDL_LockTexture failed (HUD)");
+	}
+	SDL_UnlockTexture(hud.Texture);
+}
+
+void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud)
 {
 	SetScreenSize(_requiredWidth, _requiredHeight);
 	if(!_sdlRenderer || !_sdlTexture) {
 		return;
 	}
 
-	if(!_sdlHudTexture || _hudWidth != width || _hudHeight != height) {
-		if(_sdlHudTexture) {
-			SDL_DestroyTexture(_sdlHudTexture);
-		}
-		_hudWidth = width;
-		_hudHeight = height;
-		_sdlHudTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-		SDL_SetTextureBlendMode(_sdlHudTexture, SDL_BLENDMODE_BLEND);
-	}
+	UpdateHudSize(_emuHud, emuHud.Width, emuHud.Height);
+	UpdateHudSize(_scriptHud, scriptHud.Width, scriptHud.Height);
 
 	if(SDL_RenderClear(_sdlRenderer) != 0) {
 		LogSdlError("SDL_RenderClear failed");
@@ -194,17 +220,8 @@ void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 	
 	SDL_UnlockTexture(_sdlTexture);
 
-	if(SDL_LockTexture(_sdlHudTexture, nullptr, (void**)&textureBuffer, &rowPitch) == 0) {
-		for(uint32_t i = 0, iMax = height; i < iMax; i++) {
-			memcpy(textureBuffer, hudBuffer, width * _bytesPerPixel);
-			hudBuffer += width;
-			textureBuffer += rowPitch;
-		}
-	} else {
-		LogSdlError("SDL_LockTexture failed (HUD)");
-	}
-
-	SDL_UnlockTexture(_sdlHudTexture);
+	UpdateHudTexture(_emuHud, emuHud.Buffer);
+	UpdateHudTexture(_scriptHud, scriptHud.Buffer);
 
 	SDL_Rect source = {0, 0, (int)_frameWidth, (int)_frameHeight };
 	SDL_Rect dest = {0, 0, (int)_screenWidth, (int)_screenHeight };
@@ -213,9 +230,14 @@ void SdlRenderer::Render(uint32_t* hudBuffer, uint32_t width, uint32_t height)
 			LogSdlError("SDL_RenderCopy failed");	
 	}
 
-	SDL_Rect hudSource = { 0, 0, (int)width, (int)height };
-	if(SDL_RenderCopy(_sdlRenderer, _sdlHudTexture, &hudSource, &dest) != 0) {
-		LogSdlError("SDL_RenderCopy failed (HUD)");
+	SDL_Rect scriptHudSource = { 0, 0, (int)_scriptHud.Width, (int)_scriptHud.Height };
+	if(SDL_RenderCopy(_sdlRenderer, _scriptHud.Texture, &scriptHudSource, &dest) != 0) {
+		LogSdlError("SDL_RenderCopy failed (_scriptHud)");
+	}
+
+	SDL_Rect emuHudSource = { 0, 0, (int)_emuHud.Width, (int)_emuHud.Height };
+	if(SDL_RenderCopy(_sdlRenderer, _emuHud.Texture, &emuHudSource, &dest) != 0) {
+		LogSdlError("SDL_RenderCopy failed (_emuHud)");
 	}
 
 	SDL_RenderPresent(_sdlRenderer);

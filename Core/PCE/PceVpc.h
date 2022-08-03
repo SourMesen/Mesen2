@@ -9,7 +9,7 @@ class PceVce;
 class PceConsole;
 class Emulator;
 
-class PceVpc : public ISerializable
+class PceVpc final : public ISerializable
 {
 public:
 	static constexpr uint16_t SpritePixelFlag = 0x8000;

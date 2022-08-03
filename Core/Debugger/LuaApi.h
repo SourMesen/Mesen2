@@ -9,6 +9,7 @@ class ScriptingContext;
 class Debugger;
 class Emulator;
 class MemoryDumper;
+class DebugHud;
 
 class LuaApi
 {
@@ -17,6 +18,10 @@ public:
 	static int GetLibrary(lua_State *lua);
 
 	static void LuaPushIntValue(lua_State* lua, string name, int value);
+
+	static DebugHud* GetHud();
+
+	static int SelectDrawSurface(lua_State* lua);
 
 	static int ReadMemory(lua_State *lua);
 	static int WriteMemory(lua_State *lua);

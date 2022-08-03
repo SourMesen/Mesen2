@@ -25,6 +25,12 @@ struct MemoryCallback
 	int Reference;
 };
 
+enum class ScriptDrawSurface
+{
+	ConsoleScreen,
+	ScriptHud
+};
+
 class ScriptingContext
 {
 private:
@@ -46,6 +52,8 @@ private:
 	int32_t _saveSlot = -1;
 	int32_t _loadSlot = -1;
 	bool _stateLoaded = false;
+	
+	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
 
 	static void ExecutionCountHook(lua_State* lua);
 	void LuaOpenLibs(lua_State* L, bool allowIoOsAccess);
@@ -71,6 +79,9 @@ public:
 
 	Debugger* GetDebugger();
 	string GetScriptName();
+
+	void SetDrawSurface(ScriptDrawSurface surface) { _drawSurface = surface; }
+	ScriptDrawSurface GetDrawSurface() { return _drawSurface; }
 
 	void RequestSaveState(int slot);
 	bool RequestLoadState(int slot);
