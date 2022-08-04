@@ -11,6 +11,7 @@
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/MessageManager.h"
+#include "Shared/CheatManager.h"
 #include "Shared/RewindManager.h"
 #include "Shared/SaveStateManager.h"
 #include "Shared/Emulator.h"
@@ -129,6 +130,9 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
 
+		{ "addCheat", LuaApi::AddCheat },
+		{ "clearCheats", LuaApi::ClearCheats },
+
 		{ "createSavestate", LuaApi::CreateSavestate },
 		{ "loadSavestate", LuaApi::LoadSavestate },
 
@@ -160,6 +164,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	}
 	lua_settable(lua, -3);
 
+	GenerateEnumDefinition<CheatType>(lua, "cheatType");
 	GenerateEnumDefinition<StepType>(lua, "stepType");
 	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
 	GenerateEnumDefinition<CallbackType>(lua, "memCallbackType");
@@ -933,6 +938,33 @@ int LuaApi::GetLogWindowLog(lua_State *lua)
 	checkparams();
 	
 	l.Return(MessageManager::GetLog());
+	return l.ReturnCount();
+}
+
+int LuaApi::AddCheat(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	string code = l.ReadString();
+	CheatType cheatType = (CheatType)l.ReadInteger();
+	checkparams();
+
+	checkEnum(CheatType, cheatType, "invalid cheat type");
+	errorCond(code.length() > 15, "codes must be 15 characters or less");
+
+	CheatCode cheatCode = {};
+	cheatCode.Type = cheatType;
+	memcpy(cheatCode.Code, code.c_str(), code.length());
+	if(!_emu->GetCheatManager()->AddCheat(cheatCode)) {
+		error("invalid cheat code")
+	}
+	return l.ReturnCount();
+}
+
+int LuaApi::ClearCheats(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	checkparams();
+	_emu->GetCheatManager()->InternalClearCheats();
 	return l.ReturnCount();
 }
 

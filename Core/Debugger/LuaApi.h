@@ -75,8 +75,8 @@ public:
 	static int GetInput(lua_State *lua);
 	static int SetInput(lua_State *lua);
 
-	/*static int AddCheat(lua_State *lua);
-	static int ClearCheats(lua_State *lua);*/
+	static int AddCheat(lua_State *lua);
+	static int ClearCheats(lua_State *lua);
 
 	static int GetScriptDataFolder(lua_State *lua);
 	static int GetRomInfo(lua_State *lua);

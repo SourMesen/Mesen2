@@ -51,8 +51,6 @@ private:
 	vector<InternalCheatCode> _ramRefreshCheats[CpuTypeUtilities::GetCpuTypeCount()];
 	unordered_map<uint32_t, InternalCheatCode> _cheatsByAddress[CpuTypeUtilities::GetCpuTypeCount()];
 	
-	void AddCheat(CheatCode code);
-
 	optional<InternalCheatCode> TryConvertCode(CheatCode code);
 	
 	optional<InternalCheatCode> ConvertFromSnesGameGenie(string code);
@@ -81,6 +79,9 @@ private:
 
 public:
 	CheatManager(Emulator* emu);
+
+	bool AddCheat(CheatCode code);
+	void InternalClearCheats();
 
 	void SetCheats(vector<CheatCode>& codes);
 	void SetCheats(CheatCode codes[], uint32_t length);

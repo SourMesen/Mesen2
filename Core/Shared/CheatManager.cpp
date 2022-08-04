@@ -30,13 +30,12 @@ optional<InternalCheatCode> CheatManager::TryConvertCode(CheatCode code)
 	}
 }
 
-void CheatManager::AddCheat(CheatCode code)
+bool CheatManager::AddCheat(CheatCode code)
 {
 	optional<InternalCheatCode> convertedCode = TryConvertCode(code);
 
 	if(!convertedCode.has_value()) {
-		MessageManager::DisplayMessage("Cheats", "Invalid cheat: " + string(code.Code));
-		return;
+		return false;
 	}
 
 	_cheats.push_back(code);
@@ -49,6 +48,8 @@ void CheatManager::AddCheat(CheatCode code)
 		_hasCheats[cpuIndex] = true;
 		_bankHasCheats[cpuIndex][convertedCode->Address >> GetBankShift(convertedCode->Cpu)] = true;
 	}
+
+	return true;
 }
 
 void CheatManager::SetCheats(vector<CheatCode>& codes)
@@ -58,7 +59,9 @@ void CheatManager::SetCheats(vector<CheatCode>& codes)
 	bool hasCheats = !_cheats.empty();
 	ClearCheats(false);
 	for(CheatCode &code : codes) {
-		AddCheat(code);
+		if(!AddCheat(code)) {
+			MessageManager::DisplayMessage("Cheats", "Invalid cheat: " + string(code.Code));
+		}
 	}
 
 	if(codes.size() > 1) {
@@ -78,12 +81,8 @@ void CheatManager::SetCheats(CheatCode codes[], uint32_t length)
 	SetCheats(cheats);
 }
 
-void CheatManager::ClearCheats(bool showMessage)
+void CheatManager::InternalClearCheats()
 {
-	auto lock = _emu->AcquireLock();
-
-	bool hadCheats = !_cheats.empty();
-
 	_cheats.clear();
 	for(int i = 0; i < CpuTypeUtilities::GetCpuTypeCount(); i++) {
 		_cheatsByAddress[i].clear();
@@ -91,6 +90,14 @@ void CheatManager::ClearCheats(bool showMessage)
 	}
 	memset(_hasCheats, 0, sizeof(_hasCheats));
 	memset(_bankHasCheats, 0, sizeof(_bankHasCheats));
+}
+
+void CheatManager::ClearCheats(bool showMessage)
+{
+	auto lock = _emu->AcquireLock();
+
+	bool hadCheats = !_cheats.empty();
+	InternalClearCheats();
 
 	if(showMessage && hadCheats) {
 		MessageManager::DisplayMessage("Cheats", "CheatsDisabled");
@@ -122,7 +129,7 @@ optional<InternalCheatCode> CheatManager::ConvertFromNesGameGenie(string code)
 	int valueBits[8] = { 3, 6, 5, 4, 23, 2, 1, 0 };
 	int rawCode = 0;
 	for(int i = 0, len = (int)code.size(); i < len; i++) {
-		rawCode |= ggLetters.find(code[i]) << (i * 4);
+		rawCode |= ggLetters.find(std::toupper(code[i])) << (i * 4);
 	}
 
 	int compareValue = -1;
