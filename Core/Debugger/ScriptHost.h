@@ -21,35 +21,12 @@ public:
 	string GetLog();
 
 	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger);
-
-	void ProcessEvent(EventType eventType);
-	bool ProcessSavestate();
-
-	bool CheckStateLoadedFlag();
 	void RefreshMemoryCallbackFlags() { _context->RefreshMemoryCallbackFlags(); }
 
-	__forceinline void ProcessMemoryOperation(AddressInfo relAddr, uint8_t& value, MemoryOperationType type, CpuType cpuType)
+	void ProcessEvent(EventType eventType);
+
+	__forceinline void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType callbackType, CpuType cpuType)
 	{
-		switch(type) {
-			case MemoryOperationType::Read:
-			case MemoryOperationType::DmaRead:
-			case MemoryOperationType::PpuRenderingRead:
-			case MemoryOperationType::DummyRead:
-				_context->CallMemoryCallback(relAddr, value, CallbackType::Read, cpuType);
-				break;
-
-			case MemoryOperationType::Write:
-			case MemoryOperationType::DummyWrite:
-			case MemoryOperationType::DmaWrite:
-				_context->CallMemoryCallback(relAddr, value, CallbackType::Write, cpuType);
-				break;
-
-			case MemoryOperationType::ExecOpCode:
-			case MemoryOperationType::ExecOperand:
-				_context->CallMemoryCallback(relAddr, value, CallbackType::Exec, cpuType);
-				break;
-
-			default: break;
-		}
+		_context->CallMemoryCallback(relAddr, value, callbackType, cpuType);
 	}
 };

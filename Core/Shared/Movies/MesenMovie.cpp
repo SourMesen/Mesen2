@@ -161,7 +161,7 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	stringstream saveStateData;
 	if(_reader->GetStream("SaveState.mss", saveStateData)) {
-		if(!_emu->GetSaveStateManager()->LoadState(saveStateData, true)) {
+		if(!_emu->GetSaveStateManager()->LoadState(saveStateData)) {
 			return false;
 		}
 	}

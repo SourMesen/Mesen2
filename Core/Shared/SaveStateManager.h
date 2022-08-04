@@ -34,8 +34,8 @@ public:
 	void SaveState(ostream &stream);
 	bool SaveState(string filepath);
 	void SaveState(int stateIndex, bool displayMessage = true);
-	bool LoadState(istream &stream, bool hashCheckRequired = true);
-	bool LoadState(string filepath, bool hashCheckRequired = true);
+	bool LoadState(istream &stream);
+	bool LoadState(string filepath);
 	bool LoadState(int stateIndex);
 
 	void SaveRecentGame(string romName, string romPath, string patchPath);

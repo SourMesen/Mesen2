@@ -181,6 +181,13 @@ void Debugger::ProcessInstruction()
 	}
 
 	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = false;
+	
+	if(_scriptManager->HasCpuMemoryCallbacks()) {
+		MemoryOperationInfo memOp = _debuggers[(int)type].Debugger->InstructionProgress.LastMemOperation;
+		AddressInfo relAddr = { (int32_t)memOp.Address, memOp.MemType };
+		uint8_t value = (uint8_t)memOp.Value;
+		_scriptManager->ProcessMemoryOperation(relAddr, value, MemoryOperationType::ExecOpCode, type, true);
+	}
 }
 
 template<CpuType type, typename T>
@@ -414,11 +421,11 @@ void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryOperationType opTyp
 	MemoryOperationInfo memOp = GetDebugger<type, IDebugger>()->InstructionProgress.LastMemOperation;
 	AddressInfo relAddr = { (int32_t)memOp.Address, memOp.MemType };
 	if constexpr(std::is_same<T, uint8_t>::value) {
-		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type);
+		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type, false);
 	} else {
 		//TODO NEC DSP
 		uint8_t val = (uint8_t)value;
-		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type);
+		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type, false);
 	}
 }
 
@@ -427,11 +434,11 @@ void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryType memType, Memor
 {
 	AddressInfo relAddr = { (int32_t)addr, memType };
 	if constexpr(std::is_same<T, uint8_t>::value) {
-		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type);
+		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type, false);
 	} else {
 		//TODO NEC DSP and PCE VDC
 		uint8_t val = (uint8_t)value;
-		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type);
+		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type, false);
 	}
 }
 

@@ -41,18 +41,12 @@ private:
 
 	deque<string> _logRows;
 	SimpleLock _logLock;
-	bool _inStartFrameEvent = false;
-	bool _inExecOpEvent = false;
+	bool _allowSaveState = false;
 
 	Debugger* _debugger = nullptr;
 	CpuType _defaultCpuType = {};
 	MemoryType _defaultMemType = {};
 
-	std::unordered_map<int32_t, string> _saveSlotData;
-	int32_t _saveSlot = -1;
-	int32_t _loadSlot = -1;
-	bool _stateLoaded = false;
-	
 	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
 
 	static void ExecutionCountHook(lua_State* lua);
@@ -66,7 +60,6 @@ protected:
 	vector<int> _eventCallbacks[(int)EventType::LastValue + 1];
 
 	void InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType);
-	int InternalCallEventCallback(EventType type);
 	bool IsAddressMatch(MemoryCallback& callback, AddressInfo addr);
 
 public:
@@ -83,21 +76,10 @@ public:
 	void SetDrawSurface(ScriptDrawSurface surface) { _drawSurface = surface; }
 	ScriptDrawSurface GetDrawSurface() { return _drawSurface; }
 
-	void RequestSaveState(int slot);
-	bool RequestLoadState(int slot);
-	void SaveState();
-	bool LoadState();
-	bool LoadState(string stateData);
-	string GetSavestateData(int slot);
-	void ClearSavestateData(int slot);
-	bool ProcessSavestate();
-
 	void CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType);
 	int CallEventCallback(EventType type);
 	bool CheckInitDone();
-	bool CheckInStartFrameEvent();
-	bool CheckInExecOpEvent();
-	bool CheckStateLoadedFlag();
+	bool IsSaveStateAllowed();
 
 	CpuType GetDefaultCpuType() { return _defaultCpuType; }
 	MemoryType GetDefaultMemType() { return _defaultMemType; }

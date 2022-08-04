@@ -34,13 +34,3 @@ void ScriptHost::ProcessEvent(EventType eventType)
 {
 	_context->CallEventCallback(eventType);
 }
-
-bool ScriptHost::ProcessSavestate()
-{
-	return _context->ProcessSavestate();
-}
-
-bool ScriptHost::CheckStateLoadedFlag()
-{
-	return _context->CheckStateLoadedFlag();
-}

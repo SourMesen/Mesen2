@@ -48,7 +48,7 @@
 #define checkparams() if(!l.CheckParamCount()) { return 0; }
 #define checkminparams(x) if(!l.CheckParamCount(x)) { return 0; }
 #define checkinitdone() if(!_context->CheckInitDone()) { error("This function cannot be called outside a callback"); }
-#define checksavestateconditions() if(!_context->CheckInStartFrameEvent() && !_context->CheckInExecOpEvent()) { error("This function must be called inside a StartFrame event callback or a CpuExec memory operation callback"); }
+#define checksavestateconditions() if(!_context->IsSaveStateAllowed()) { error("This function must be called inside an exec memory operation callback for the main CPU"); }
 
 Debugger* LuaApi::_debugger = nullptr;
 Emulator* LuaApi::_emu = nullptr;
@@ -131,7 +131,10 @@ int LuaApi::GetLibrary(lua_State *lua)
 
 		{ "getAccessCounters", LuaApi::GetAccessCounters },
 		{ "resetAccessCounters", LuaApi::ResetAccessCounters },
-		
+
+		{ "createSavestate", LuaApi::CreateSavestate },
+		{ "loadSavestate", LuaApi::LoadSavestate },
+
 		{ "getState", LuaApi::GetState },
 		{ "setState", LuaApi::SetState },
 
@@ -935,6 +938,30 @@ int LuaApi::GetLogWindowLog(lua_State *lua)
 	checkparams();
 	
 	l.Return(MessageManager::GetLog());
+	return l.ReturnCount();
+}
+
+int LuaApi::CreateSavestate(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	checksavestateconditions();
+	stringstream ss;
+	_emu->GetSaveStateManager()->SaveState(ss);
+	l.Return(ss.str());
+	return l.ReturnCount();
+}
+
+int LuaApi::LoadSavestate(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	string savestate = l.ReadString();
+	checkparams();
+	checksavestateconditions();
+	
+	stringstream ss;
+	ss << savestate;
+	bool result = _emu->GetSaveStateManager()->LoadState(ss);
+	l.Return(result);
 	return l.ReturnCount();
 }
 

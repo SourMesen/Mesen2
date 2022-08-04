@@ -167,18 +167,9 @@ string ScriptingContext::GetScriptName()
 
 void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType)
 {
-	_inExecOpEvent = type == CallbackType::Exec;
+	_allowSaveState = type == CallbackType::Exec && cpuType == _defaultCpuType;
 	InternalCallMemoryCallback(relAddr, value, type, cpuType);
-	_inExecOpEvent = false;
-}
-
-int ScriptingContext::CallEventCallback(EventType type)
-{
-	_inStartFrameEvent = type == EventType::StartFrame;
-	int returnValue = InternalCallEventCallback(type);
-	_inStartFrameEvent = false;
-
-	return returnValue;
+	_allowSaveState = false;
 }
 
 bool ScriptingContext::CheckInitDone()
@@ -186,21 +177,9 @@ bool ScriptingContext::CheckInitDone()
 	return _initDone;
 }
 
-bool ScriptingContext::CheckInStartFrameEvent()
+bool ScriptingContext::IsSaveStateAllowed()
 {
-	return _inStartFrameEvent;
-}
-
-bool ScriptingContext::CheckInExecOpEvent()
-{
-	return _inExecOpEvent;
-}
-
-bool ScriptingContext::CheckStateLoadedFlag()
-{
-	bool stateLoaded = _stateLoaded;
-	_stateLoaded = false;
-	return stateLoaded;
+	return _allowSaveState;
 }
 
 void ScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference)
@@ -327,7 +306,7 @@ void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& 
 	}
 }
 
-int ScriptingContext::InternalCallEventCallback(EventType type)
+int ScriptingContext::CallEventCallback(EventType type)
 {
 	if(_eventCallbacks[(int)type].empty()) {
 		return 0;
@@ -345,88 +324,4 @@ int ScriptingContext::InternalCallEventCallback(EventType type)
 		}
 	}
 	return l.ReturnCount();
-}
-
-void ScriptingContext::RequestSaveState(int slot)
-{
-	_saveSlot = slot;
-	if(_inExecOpEvent) {
-		SaveState();
-	} else {
-		_saveSlotData.erase(slot);
-	}
-}
-
-bool ScriptingContext::RequestLoadState(int slot)
-{
-	if(_saveSlotData.find(slot) != _saveSlotData.end()) {
-		_loadSlot = slot;
-		if(_inExecOpEvent) {
-			return LoadState();
-		} else {
-			return true;
-		}
-	}
-	return false;
-}
-
-void ScriptingContext::SaveState()
-{
-	if(_saveSlot >= 0) {
-		stringstream ss;
-		_debugger->GetEmulator()->GetSaveStateManager()->SaveState(ss);
-		_saveSlotData[_saveSlot] = ss.str();
-		_saveSlot = -1;
-	}
-}
-
-bool ScriptingContext::LoadState()
-{
-	if(_loadSlot >= 0 && _saveSlotData.find(_loadSlot) != _saveSlotData.end()) {
-		stringstream ss;
-		ss << _saveSlotData[_loadSlot];
-		bool result = _debugger->GetEmulator()->GetSaveStateManager()->LoadState(ss);
-		_loadSlot = -1;
-		if(result) {
-			_stateLoaded = true;
-		}
-		return result;
-	}
-	return false;
-}
-
-bool ScriptingContext::LoadState(string stateData)
-{
-	stringstream ss;
-	ss << stateData;
-	bool result = _debugger->GetEmulator()->GetSaveStateManager()->LoadState(ss);
-	if(result) {
-		_stateLoaded = true;
-	}
-	return result;
-}
-
-bool ScriptingContext::ProcessSavestate()
-{
-	SaveState();
-	return LoadState();
-}
-
-string ScriptingContext::GetSavestateData(int slot)
-{
-	if(slot >= 0) {
-		auto result = _saveSlotData.find(slot);
-		if(result != _saveSlotData.end()) {
-			return result->second;
-		}
-	}
-
-	return "";
-}
-
-void ScriptingContext::ClearSavestateData(int slot)
-{
-	if(slot >= 0) {
-		_saveSlotData.erase(slot);
-	}
 }

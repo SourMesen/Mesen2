@@ -152,7 +152,7 @@ bool SaveStateManager::GetVideoData(vector<uint8_t>& out, RenderedFrame& frame, 
 	return false;
 }
 
-bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
+bool SaveStateManager::LoadState(istream &stream)
 {
 	if(!_emu->IsRunning()) {
 		//Can't load a state if no game is running
@@ -214,14 +214,14 @@ bool SaveStateManager::LoadState(istream &stream, bool hashCheckRequired)
 	return false;
 }
 
-bool SaveStateManager::LoadState(string filepath, bool hashCheckRequired)
+bool SaveStateManager::LoadState(string filepath)
 {
 	ifstream file(filepath, ios::in | ios::binary);
 	bool result = false;
 
 	if(file.good()) {
 		_emu->Lock();
-		result = LoadState(file, hashCheckRequired);
+		result = LoadState(file);
 		_emu->Unlock();
 		file.close();
 
@@ -238,7 +238,7 @@ bool SaveStateManager::LoadState(string filepath, bool hashCheckRequired)
 bool SaveStateManager::LoadState(int stateIndex)
 {
 	string filepath = SaveStateManager::GetStateFilepath(stateIndex);
-	if(LoadState(filepath, false)) {
+	if(LoadState(filepath)) {
 		MessageManager::DisplayMessage("SaveStates", "SaveStateLoaded", std::to_string(stateIndex));
 		return true;
 	}
@@ -285,7 +285,7 @@ void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 		if(_emu->LoadRom(romPath, patchPath)) {
 			if(!resetGame) {
 				auto lock = _emu->AcquireLock();
-				SaveStateManager::LoadState(stateStream, false);
+				SaveStateManager::LoadState(stateStream);
 			}
 		}
 	} catch(std::exception&) { 

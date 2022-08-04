@@ -37,10 +37,36 @@ public:
 	void EnablePpuMemoryCallbacks() { _isPpuMemoryCallbackEnabled = true; }
 	bool HasPpuMemoryCallbacks() { return _scripts.size() && _isPpuMemoryCallbackEnabled; }
 	
-	__forceinline void ProcessMemoryOperation(AddressInfo relAddr, uint8_t& value, MemoryOperationType type, CpuType cpuType)
+	__forceinline void ProcessMemoryOperation(AddressInfo relAddr, uint8_t& value, MemoryOperationType type, CpuType cpuType, bool processExec)
 	{
-		for(unique_ptr<ScriptHost>& script : _scripts) {
-			script->ProcessMemoryOperation(relAddr, value, type, cpuType);
+		switch(type) {
+			case MemoryOperationType::Read:
+			case MemoryOperationType::DmaRead:
+			case MemoryOperationType::PpuRenderingRead:
+			case MemoryOperationType::DummyRead:
+				for(unique_ptr<ScriptHost>& script : _scripts) {
+					script->CallMemoryCallback(relAddr, value, CallbackType::Read, cpuType);
+				}
+				break;
+
+			case MemoryOperationType::Write:
+			case MemoryOperationType::DummyWrite:
+			case MemoryOperationType::DmaWrite:
+				for(unique_ptr<ScriptHost>& script : _scripts) {
+					script->CallMemoryCallback(relAddr, value, CallbackType::Write, cpuType);
+				}
+				break;
+
+			case MemoryOperationType::ExecOpCode:
+			case MemoryOperationType::ExecOperand:
+				if(processExec) {
+					for(unique_ptr<ScriptHost>& script : _scripts) {
+						script->CallMemoryCallback(relAddr, value, CallbackType::Exec, cpuType);
+					}
+				}
+				break;
+
+			default: break;
 		}
 	}
 };
