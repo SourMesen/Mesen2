@@ -96,4 +96,6 @@ private:
 	static Debugger* _debugger;
 	static MemoryDumper* _memoryDumper;
 	static ScriptingContext* _context;
+	
+	template<typename T> static void GenerateEnumDefinition(lua_State* lua, string enumName);
 };

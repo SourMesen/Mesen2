@@ -55,6 +55,16 @@ Emulator* LuaApi::_emu = nullptr;
 MemoryDumper* LuaApi::_memoryDumper = nullptr;
 ScriptingContext* LuaApi::_context = nullptr;
 
+enum class AccessCounterType
+{
+	ReadCount,
+	WriteCount,
+	ExecCount,
+	LastReadClock,
+	LastWriteClock,
+	LastExecClock
+};
+
 void LuaApi::SetContext(ScriptingContext* context)
 {
 	_context = context;
@@ -148,65 +158,32 @@ int LuaApi::GetLibrary(lua_State *lua)
 	}
 	lua_settable(lua, -3);
 
-	lua_pushliteral(lua, "memCallbackType");
-	lua_newtable(lua);
-	lua_pushintvalue(read, CallbackType::Read);
-	lua_pushintvalue(write, CallbackType::Write);
-	lua_pushintvalue(exec, CallbackType::Exec);
-	lua_settable(lua, -3);
-
-	lua_pushliteral(lua, "counterMemType");
-	lua_newtable(lua);
-	for(auto& entry : magic_enum::enum_entries<MemoryType>()) {
-		string name = string(entry.second);
-		name[0] = ::tolower(name[0]);
-		if(!DebugUtilities::IsRelativeMemory(entry.first)) {
-			LuaPushIntValue(lua, name, (int)entry.first);
-		}
-	}
-	lua_settable(lua, -3);
-
-	lua_pushliteral(lua, "counterOpType");
-	lua_newtable(lua);
-	lua_pushintvalue(read, MemoryOperationType::Read);
-	lua_pushintvalue(write, MemoryOperationType::Write);
-	lua_pushintvalue(exec, MemoryOperationType::ExecOpCode);
-	lua_settable(lua, -3);
-
-	lua_pushliteral(lua, "eventType");
-	lua_newtable(lua);
-	for(auto& entry : magic_enum::enum_entries<EventType>()) {
-		string name = string(entry.second);
-		name[0] = ::tolower(name[0]);
-		LuaPushIntValue(lua, name, (int)entry.first);
-	}
-	lua_settable(lua, -3);
-
 	lua_pushliteral(lua, "stepType");
 	lua_newtable(lua);
 	lua_pushintvalue(cpuInstructions, StepType::Step);
 	lua_pushintvalue(ppuCycles, StepType::PpuStep);
 	lua_settable(lua, -3);
 
-	lua_pushliteral(lua, "cpuType");
-	lua_newtable(lua);
-	for(auto& entry : magic_enum::enum_entries<CpuType>()) {
-		string name = string(entry.second);
-		name[0] = ::tolower(name[0]);
-		LuaPushIntValue(lua, name, (int)entry.first);
-	}
-	lua_settable(lua, -3);
-
-	lua_pushliteral(lua, "drawSurface");
-	lua_newtable(lua);
-	for(auto& entry : magic_enum::enum_entries<ScriptDrawSurface>()) {
-		string name = string(entry.second);
-		name[0] = ::tolower(name[0]);
-		LuaPushIntValue(lua, name, (int)entry.first);
-	}
-	lua_settable(lua, -3);
+	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
+	GenerateEnumDefinition<CallbackType>(lua, "memCallbackType");
+	GenerateEnumDefinition<EventType>(lua, "eventType");
+	GenerateEnumDefinition<CpuType>(lua, "cpuType");
+	GenerateEnumDefinition<ScriptDrawSurface>(lua, "drawSurface");
 
 	return 1;
+}
+
+template<typename T>
+void LuaApi::GenerateEnumDefinition(lua_State* lua, string enumName)
+{
+	lua_pushstring(lua, enumName.c_str());
+	lua_newtable(lua);
+	for(auto& entry : magic_enum::enum_entries<T>()) {
+		string name = string(entry.second);
+		name[0] = ::tolower(name[0]);
+		LuaPushIntValue(lua, name, (int)entry.first);
+	}
+	lua_settable(lua, -3);
 }
 
 DebugHud* LuaApi::GetHud()
@@ -865,43 +842,36 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	l.ForceParamCount(2);
-	MemoryOperationType operationType = (MemoryOperationType)l.ReadInteger();
+	AccessCounterType counterType = (AccessCounterType)l.ReadInteger();
 	MemoryType memoryType = (MemoryType)l.ReadInteger();
-	errorCond(operationType >= MemoryOperationType::ExecOperand, "Invalid operation type");
 	errorCond(memoryType == MemoryType::Register, "Invalid memory type");
 	checkEnum(MemoryType, memoryType, "Invalid memory type");
-
+	checkEnum(AccessCounterType, counterType, "Invalid counter type");
 	checkparams();
 
-	uint32_t size = 0;
+	uint32_t size = _memoryDumper->GetMemorySize(memoryType);
 	vector<AddressCounters> counts;
-	counts.resize(_memoryDumper->GetMemorySize(memoryType), {});
+	counts.resize(size, {});
 	_debugger->GetMemoryAccessCounter()->GetAccessCounts(0, size, memoryType, counts.data());
 
-	lua_createtable(lua, size, 0);
-	switch(operationType) {
-		default:
-		case MemoryOperationType::Read: 
-			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].ReadCounter);
-				lua_rawseti(lua, -2, i + 1);
-			}
-			break;
+	auto getValue = [&](AddressCounters& counter) -> uint64_t {
+		switch(counterType) {
+			default:
+			case AccessCounterType::ReadCount: return counter.ReadCounter;
+			case AccessCounterType::WriteCount: return counter.WriteCounter;
+			case AccessCounterType::ExecCount: return counter.ExecCounter;
+			case AccessCounterType::LastReadClock: return counter.ReadStamp;
+			case AccessCounterType::LastWriteClock: return counter.WriteStamp;
+			case AccessCounterType::LastExecClock: return counter.ExecStamp;
+		}
+	};
 
-		case MemoryOperationType::Write:
-			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].WriteCounter);
-				lua_rawseti(lua, -2, i + 1);
-			}
-			break;
-
-		case MemoryOperationType::ExecOpCode:
-			for(uint32_t i = 0; i < size; i++) {
-				lua_pushinteger(lua, counts[i].ExecCounter);
-				lua_rawseti(lua, -2, i + 1);
-			}
-			break;
+	lua_newtable(lua);
+	for(uint32_t i = 0; i < size; i++) {
+		lua_pushinteger(lua, getValue(counts[i]));
+		lua_rawseti(lua, -2, i);
 	}
+
 	return 1;
 }
 
