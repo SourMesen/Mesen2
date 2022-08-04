@@ -279,7 +279,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
-		case StepType::PpuFrame: step.PpuStepCount = 341 * _ppu->GetScanlineCount(); break;
+		case StepType::PpuFrame: step.PpuStepCount = 341 * _ppu->GetScanlineCount() * stepCount; break;
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));

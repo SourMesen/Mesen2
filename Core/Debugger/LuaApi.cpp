@@ -7,6 +7,7 @@
 #include "Debugger/ScriptingContext.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/LabelManager.h"
+#include "Shared/SystemActionManager.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/MessageManager.h"
@@ -26,10 +27,6 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/magic_enum.hpp"
 #include "MemoryOperationType.h"
-
-#ifdef _MSC_VER
-#pragma warning( disable : 4702 ) //unreachable code
-#endif
 
 #define lua_pushintvalue(name, value) lua_pushliteral(lua, #name); lua_pushinteger(lua, (int)value); lua_settable(lua, -3);
 #define lua_pushdoublevalue(name, value) lua_pushliteral(lua, #name); lua_pushnumber(lua, (double)value); lua_settable(lua, -3);
@@ -120,7 +117,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "reset", LuaApi::Reset },
 		{ "breakExecution", LuaApi::Break },
 		{ "resume", LuaApi::Resume },
-		{ "execute", LuaApi::Execute },
+		{ "step", LuaApi::Step },
 		{ "rewind", LuaApi::Rewind },
 
 		{ "takeScreenshot", LuaApi::TakeScreenshot },
@@ -163,12 +160,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 	}
 	lua_settable(lua, -3);
 
-	lua_pushliteral(lua, "stepType");
-	lua_newtable(lua);
-	lua_pushintvalue(cpuInstructions, StepType::Step);
-	lua_pushintvalue(ppuCycles, StepType::PpuStep);
-	lua_settable(lua, -3);
-
+	GenerateEnumDefinition<StepType>(lua, "stepType");
 	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
 	GenerateEnumDefinition<CallbackType>(lua, "memCallbackType");
 	GenerateEnumDefinition<EventType>(lua, "eventType");
@@ -702,8 +694,7 @@ int LuaApi::Reset(lua_State *lua)
 	LuaCallHelper l(lua);
 	checkparams();
 	checkinitdone();
-	//TODO should this use the action manager reset instead?
-	_emu->Reset();
+	_emu->GetSystemActionManager()->Reset();
 	return l.ReturnCount();
 }
 
@@ -725,17 +716,21 @@ int LuaApi::Resume(lua_State *lua)
 	return l.ReturnCount();
 }
 
-int LuaApi::Execute(lua_State *lua)
+int LuaApi::Step(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	StepType type = (StepType)l.ReadInteger();
+	l.ForceParamCount(3);
+	CpuType cpuType = (CpuType)l.ReadInteger((uint32_t)_context->GetDefaultCpuType());
+	StepType stepType = (StepType)l.ReadInteger();
 	int count = l.ReadInteger();
-	checkparams();
+	checkminparams(2);
 	checkinitdone();
-	errorCond(count <= 0, "count must be >= 1");
-	errorCond(type != StepType::Step && type != StepType::PpuStep, "type is invalid");
 
-	_debugger->Step(_context->GetDefaultCpuType(), count, type);
+	errorCond(count <= 0, "count must be >= 1");
+	checkEnum(StepType, stepType, "invalid step type");
+	checkEnum(CpuType, cpuType, "invalid cpu type");
+
+	_debugger->Step(cpuType, count, stepType);
 
 	return l.ReturnCount();
 }

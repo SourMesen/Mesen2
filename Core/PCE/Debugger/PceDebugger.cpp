@@ -257,7 +257,7 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = PceConstants::ClockPerScanline * stepCount; break;
-		case StepType::PpuFrame: step.PpuStepCount = PceConstants::ClockPerScanline * _vce->GetScanlineCount(); break;
+		case StepType::PpuFrame: step.PpuStepCount = PceConstants::ClockPerScanline * _vce->GetScanlineCount() * stepCount; break;
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));
