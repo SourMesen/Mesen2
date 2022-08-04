@@ -593,18 +593,24 @@ int LuaApi::GetDrawSurfaceSize(lua_State* lua)
 	return 1;
 }
 
-int LuaApi::GetScreenBuffer(lua_State *lua)
+std::pair<unique_ptr<BaseVideoFilter>, FrameInfo> LuaApi::GetRenderedFrame()
 {
-	LuaCallHelper l(lua);
-
 	PpuFrameInfo frame = _emu->GetPpuFrame();
 	FrameInfo frameSize;
 	frameSize.Height = frame.Height;
 	frameSize.Width = frame.Width;
-	
+
 	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 	filter->SetBaseFrameInfo(frameSize);
 	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr, false);
+	return std::make_pair(std::move(filter), frameSize);
+}
+
+int LuaApi::GetScreenBuffer(lua_State *lua)
+{
+	LuaCallHelper l(lua);
+
+	auto [filter, frameSize] = GetRenderedFrame();
 	uint32_t* rgbBuffer = filter->GetOutputBuffer();
 
 	lua_createtable(lua, frameSize.Height*frameSize.Width, 0);
@@ -643,13 +649,12 @@ int LuaApi::GetPixel(lua_State *lua)
 	int y = l.ReadInteger();
 	int x = l.ReadInteger();
 	checkparams();
-	//TODO
-	errorCond(x < 0 || x > 255 || y < 0 || y > 238, "invalid x,y coordinates (must be between 0-255, 0-238)");
 
-	//int multiplier = _ppu->IsHighResOutput() ? 2 : 1;
+	auto [filter, frameSize] = GetRenderedFrame();
+	errorCond(x < 0 || x >= (int)frameSize.Width || y < 0 || y >= (int)frameSize.Height, "invalid x,y coordinates");
 
-	//TODO
-	//l.Return(DefaultVideoFilter::ToArgb(*(_ppu->GetScreenBuffer() + y * 256 * multiplier * multiplier + x * multiplier)) & 0xFFFFFF);
+	uint32_t* rgbBuffer = filter->GetOutputBuffer();
+	l.Return(rgbBuffer[y * frameSize.Width + x]);
 	return l.ReturnCount();
 }
 

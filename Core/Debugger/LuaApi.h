@@ -10,6 +10,7 @@ class Debugger;
 class Emulator;
 class MemoryDumper;
 class DebugHud;
+class BaseVideoFilter;
 
 class LuaApi
 {
@@ -99,5 +100,6 @@ private:
 	static MemoryDumper* _memoryDumper;
 	static ScriptingContext* _context;
 	
+	static std::pair<unique_ptr<BaseVideoFilter>, FrameInfo> GetRenderedFrame();
 	template<typename T> static void GenerateEnumDefinition(lua_State* lua, string enumName);
 };
