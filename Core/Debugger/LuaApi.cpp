@@ -83,6 +83,8 @@ void LuaApi::LuaPushIntValue(lua_State* lua, string name, int value)
 int LuaApi::GetLibrary(lua_State *lua)
 {
 	static const luaL_Reg apilib[] = {
+		{ "getMemorySize", LuaApi::GetMemorySize },
+
 		{ "read", LuaApi::ReadMemory },
 		{ "write", LuaApi::WriteMemory },
 		{ "readWord", LuaApi::ReadMemoryWord },
@@ -213,6 +215,15 @@ int LuaApi::SelectDrawSurface(lua_State* lua)
 		_emu->GetVideoRenderer()->SetScriptHudScale(surfaceScale);
 	}
 	return 0;
+}
+
+int LuaApi::GetMemorySize(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	MemoryType memType = (MemoryType)l.ReadInteger();
+	checkEnum(MemoryType, memType, "invalid memory type");
+	l.Return(_memoryDumper->GetMemorySize(memType));
+	return l.ReturnCount();
 }
 
 int LuaApi::ReadMemory(lua_State *lua)
@@ -836,7 +847,6 @@ int LuaApi::SetInput(lua_State* lua)
 
 	return l.ReturnCount();
 }
-
 
 int LuaApi::GetAccessCounters(lua_State *lua)
 {

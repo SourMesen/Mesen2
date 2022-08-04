@@ -23,6 +23,8 @@ public:
 
 	static int SelectDrawSurface(lua_State* lua);
 
+	static int GetMemorySize(lua_State* lua);
+
 	static int ReadMemory(lua_State *lua);
 	static int WriteMemory(lua_State *lua);
 	static int ReadMemoryWord(lua_State *lua);
