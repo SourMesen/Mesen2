@@ -80,7 +80,10 @@ void NesConsole::Serialize(Serializer& s)
 	SV(_apu);
 	SV(_controlManager);
 	SV(_mapper);
-	SV(_mixer);
+
+	if(s.GetFormat() != SerializeFormat::Map) {
+		SV(_mixer);
+	}
 
 	if(_hdAudioDevice) {
 		//For HD packs), save the state of the bgm playback

@@ -225,6 +225,7 @@ void NesApu::Serialize(Serializer& s)
 		//End the Apu frame - makes it simpler to restore sound after a state reload
 		EndFrame();
 	} else {
+		EndFrame();
 		_previousCycle = 0;
 		_currentCycle = 0;
 	}
