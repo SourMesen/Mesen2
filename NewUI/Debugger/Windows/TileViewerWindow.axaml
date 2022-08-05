@@ -24,6 +24,13 @@
 		<dvm:TileViewerViewModel />
 	</Design.DataContext>
 
+	<Window.Styles>
+		<Style Selector="Button.selected">
+			<Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+			<Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+		</Style>
+	</Window.Styles>
+	
 	<Window.Resources>
 		<VisualBrush x:Key="DisabledOverlayBrush" TileMode="Tile" Stretch="None" AlignmentX="Left" AlignmentY="Top" SourceRect="0,0,7,7" DestinationRect="0,0,7,7">
 			<VisualBrush.Visual>
@@ -65,7 +72,7 @@
 							</ItemsPresenter.ItemsPanel>
 							<ItemsPresenter.ItemTemplate>
 								<DataTemplate>
-									<Button Content="{Binding Name}" MinWidth="25" Command="{Binding ClickCommand}" />
+									<Button Classes.selected="{Binding Selected}"  Content="{Binding Name}" MinWidth="25" Command="{Binding ClickCommand}" />
 								</DataTemplate>
 							</ItemsPresenter.ItemTemplate>
 						</ItemsPresenter>
@@ -80,16 +87,9 @@
 						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
 					/>
 
-					<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblSize}" />
-					<StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
-						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
-						<TextBlock Margin="5 0">by</TextBlock>
-						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
-					</StackPanel>
-
-					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblAddress}" />
+					<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblAddress}" />
 					<dc:HexInput
-						Grid.Column="1" Grid.Row="4"
+						Grid.Column="1" Grid.Row="3"
 						Value="{CompiledBinding Config.StartAddress}"
 						LargeIncrement="{CompiledBinding AddressIncrement}"
 						SmallIncrement="1"
@@ -98,6 +98,13 @@
 						Margin="1"
 					/>
 
+					<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblSize}" />
+					<StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal">
+						<NumericUpDown Value="{CompiledBinding Config.ColumnCount}" Minimum="4" Maximum="256" Increment="2" />
+						<TextBlock Margin="5 0">by</TextBlock>
+						<NumericUpDown Value="{CompiledBinding Config.RowCount}" Minimum="4" Maximum="256" Increment="2" />
+					</StackPanel>
+					
 					<TextBlock Grid.Column="0" Grid.Row="5" Text="{l:Translate lblFormat}" IsVisible="{CompiledBinding ShowFormatDropdown}" />
 					<c:EnumComboBox
 						Grid.Column="1" Grid.Row="5"
@@ -169,6 +176,7 @@
 			GridSizeX="{CompiledBinding GridSizeX}"
 			GridSizeY="{CompiledBinding GridSizeY}"
 			SelectionRect="{CompiledBinding SelectionRect}"
+			OverlayLines="{CompiledBinding PageDelimiters}"
 		/>
 	</DockPanel>
 </Window>

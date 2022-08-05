@@ -36,6 +36,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
 
 		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<ScrollPictureViewer, List<Rect>?>(nameof(HighlightRects), null);
+		public static readonly StyledProperty<List<PictureViewerLine>?> OverlayLinesProperty = AvaloniaProperty.Register<PictureViewer, List<PictureViewerLine>?>(nameof(OverlayLines), null);
 
 		public Vector ScrollOffset
 		{
@@ -131,6 +132,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(HighlightRectsProperty); }
 			set { SetValue(HighlightRectsProperty, value); }
+		}
+
+		public List<PictureViewerLine>? OverlayLines
+		{
+			get { return GetValue(OverlayLinesProperty); }
+			set { SetValue(OverlayLinesProperty, value); }
 		}
 
 		public GridRowColumn? GridHighlight

@@ -36,6 +36,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
 
 		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<PictureViewer, List<Rect>?>(nameof(HighlightRects), null);
+		public static readonly StyledProperty<List<PictureViewerLine>?> OverlayLinesProperty = AvaloniaProperty.Register<PictureViewer, List<PictureViewerLine>?>(nameof(OverlayLines), null);
 
 		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
 		public event EventHandler<PositionClickedEventArgs> PositionClicked
@@ -131,6 +132,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(HighlightRectsProperty); }
 			set { SetValue(HighlightRectsProperty, value); }
+		}
+
+		public List<PictureViewerLine>? OverlayLines
+		{
+			get { return GetValue(OverlayLinesProperty); }
+			set { SetValue(OverlayLinesProperty, value); }
 		}
 
 		public GridRowColumn? GridHighlight
@@ -398,7 +405,14 @@ namespace Mesen.Debugger.Controls
 					context.DrawRectangle(pen, rect);
 				}
 			}
-			
+
+			if(OverlayLines?.Count > 0) {
+				foreach(PictureViewerLine line in OverlayLines) {
+					Pen pen = new Pen(line.Color.ToUint32(), 2, line.DashStyle);
+					context.DrawLine(pen, line.Start * Zoom, line.End * Zoom);
+				}
+			}
+
 			if(MouseOverRect != null && MouseOverRect != Rect.Empty) {
 				Rect rect = ToDrawRect(MouseOverRect.Value);
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, 0);
@@ -470,5 +484,13 @@ namespace Mesen.Debugger.Controls
 		public int Width;
 		public int Height;
 		public string DisplayValue = "";
+	}
+
+	public struct PictureViewerLine
+	{
+		public Point Start;
+		public Point End;
+		public Color Color;
+		public IDashStyle? DashStyle;
 	}
 }

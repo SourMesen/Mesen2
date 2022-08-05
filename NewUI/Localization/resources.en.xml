@@ -2259,11 +2259,11 @@
 			<Value ID="NesMemory">CPU Memory</Value>
 			<Value ID="NesPpuMemory">PPU Memory</Value>
 			<Value ID="NesPrgRom">PRG ROM</Value>
-			<Value ID="NesInternalRam">NES RAM (2kb)</Value>
+			<Value ID="NesInternalRam">System RAM</Value>
 			<Value ID="NesWorkRam">Work RAM</Value>
 			<Value ID="NesSaveRam">Save RAM</Value>
-			<Value ID="NesNametableRam">Nametable RAM</Value>
-			<Value ID="NesSpriteRam">Sprite / OAM RAM</Value>
+			<Value ID="NesNametableRam">Nametable RAM (CIRAM)</Value>
+			<Value ID="NesSpriteRam">Sprite RAM (OAM)</Value>
 			<Value ID="NesSecondarySpriteRam">Secondary OAM RAM</Value>
 			<Value ID="NesChrRom">CHR ROM</Value>
 			<Value ID="NesChrRam">CHR RAM</Value>

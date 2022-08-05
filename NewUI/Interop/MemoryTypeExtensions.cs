@@ -139,6 +139,8 @@ namespace Mesen.Interop
 				case MemoryType.NesSecondarySpriteRam:
 				case MemoryType.NesSpriteRam:
 				case MemoryType.NesPaletteRam:
+				case MemoryType.NesInternalRam:
+				case MemoryType.NesNametableRam:
 
 				case MemoryType.PceSpriteRam:
 				case MemoryType.PceSpriteRamVdc2:
