@@ -210,5 +210,25 @@ namespace Mesen.Debugger.Controls
 				_lastPosition = e.GetPosition(this);
 			}
 		}
+
+		public void ScrollToSelection()
+		{
+			Size viewport = this.FindControl<ScrollViewer>("scrollViewer").Viewport;
+			Vector offset = ScrollOffset;
+
+			Rect rect = SelectionRect * Zoom;
+
+			Rect visibleWindow = new Rect(new Point(offset.X, offset.Y), viewport);
+
+			if(!visibleWindow.Contains(rect)) {
+				Size extent = this.FindControl<ScrollViewer>("scrollViewer").Extent;
+				Size maxOffsets = extent - viewport;
+
+				ScrollOffset = new Vector(
+					Math.Max(0, Math.Min(rect.Left - 8, maxOffsets.Width)),
+					Math.Max(0, Math.Min(rect.Top - 8, maxOffsets.Height))
+				);
+			}
+		}
 	}
 }
