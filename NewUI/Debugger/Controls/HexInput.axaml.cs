@@ -107,7 +107,7 @@ namespace Mesen.Debugger.Controls
 		[DependsOn(nameof(LargeIncrement))]
 		public bool CanIncrementLarge(object parameter)
 		{
-			return Value < Maximum && Value != Maximum - LargeIncrement + 1;
+			return Value < Maximum && Value < Maximum - LargeIncrement + 1;
 		}
 
 		public void IncrementSmall(object parameter)
