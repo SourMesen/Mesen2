@@ -5,6 +5,8 @@
 class Debugger;
 class Emulator;
 struct BaseState;
+struct LayerConfig;
+struct FrameInfo;
 
 struct SnesPpuToolsState
 {
@@ -18,9 +20,12 @@ struct SnesPpuToolsState
 class SnesPpuTools final : public PpuTools
 {
 private:
-	SnesPpuToolsState _state;
+	SnesPpuToolsState _state = {};
 
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	
+	template<TileFormat format> void RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32_t* palette);
+	template<TileFormat format> void RenderTilemap(int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, const uint8_t& bpp, uint32_t* outBuffer, FrameInfo& outputSize, uint32_t* palette, const uint16_t& basePaletteOffset);
 
 public:
 	SnesPpuTools(Debugger* debugger, Emulator *emu);

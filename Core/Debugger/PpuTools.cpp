@@ -14,65 +14,6 @@ PpuTools::PpuTools(Debugger* debugger, Emulator *emu)
 	_debugger = debugger;
 }
 
-uint8_t PpuTools::GetTilePixelColor(const uint8_t* ram, const uint32_t ramMask, uint32_t rowStart, uint8_t pixelIndex, const TileFormat format)
-{
-	uint8_t shift = (7 - pixelIndex);
-	uint8_t color;
-	switch(format) {
-		case TileFormat::PceSpriteBpp4: {
-			shift = 15 - pixelIndex;
-			if(shift >= 8) {
-				shift -= 8;
-				rowStart++;
-			}
-			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(rowStart + 64) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(rowStart + 96) & ramMask] >> shift) & 0x01) << 3);
-			return color;
-		}
-
-		case TileFormat::Bpp2:
-			color = (((ram[rowStart & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
-			return color;
-		
-		case TileFormat::NesBpp2:
-			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(rowStart + 8) & ramMask] >> shift) & 0x01) << 1);
-			return color;
-
-		case TileFormat::Bpp4:
-			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(rowStart + 16) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(rowStart + 17) & ramMask] >> shift) & 0x01) << 3);
-			return color;
-
-		case TileFormat::Bpp8:
-		case TileFormat::DirectColor:
-			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
-			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
-			color |= (((ram[(rowStart + 16) & ramMask] >> shift) & 0x01) << 2);
-			color |= (((ram[(rowStart + 17) & ramMask] >> shift) & 0x01) << 3);
-			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 4);
-			color |= (((ram[(rowStart + 33) & ramMask] >> shift) & 0x01) << 5);
-			color |= (((ram[(rowStart + 48) & ramMask] >> shift) & 0x01) << 6);
-			color |= (((ram[(rowStart + 49) & ramMask] >> shift) & 0x01) << 7);
-			return color;
-
-		case TileFormat::Mode7:
-		case TileFormat::Mode7DirectColor:
-			return ram[(rowStart + pixelIndex * 2 + 1) & ramMask];
-		
-		case TileFormat::Mode7ExtBg:
-			return ram[(rowStart + pixelIndex * 2 + 1) & ramMask] & 0x7F;
-
-		default:
-			throw std::runtime_error("unsupported format");
-	}
-}
-
 void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 {
 	int alpha = input[3] + 1;
@@ -83,38 +24,23 @@ void PpuTools::BlendColors(uint8_t output[4], uint8_t input[4])
 	output[3] = 0xFF;
 }
 
-uint32_t PpuTools::GetRgbPixelColor(TileFormat format, const uint32_t* colors, uint8_t colorIndex, uint8_t palette)
+void PpuTools::GetTileView(GetTileViewOptions options, uint8_t* source, uint32_t srcSize, const uint32_t* colors, uint32_t* outBuffer)
 {
-	switch(format) {
-		case TileFormat::DirectColor:
-			return SnesDefaultVideoFilter::ToArgb(
-				((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
-				(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
-				(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
-			);
-		
-		case TileFormat::NesBpp2:
-		case TileFormat::Bpp2:
-			return colors[palette * 4 + colorIndex];
-
-		case TileFormat::Bpp4:
-		case TileFormat::PceSpriteBpp4:
-			return colors[palette * 16 + colorIndex];
-
-		case TileFormat::Bpp8:
-		case TileFormat::Mode7:
-		case TileFormat::Mode7ExtBg:
-			return colors[colorIndex];
-
-		case TileFormat::Mode7DirectColor:
-			return SnesDefaultVideoFilter::ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
-
-		default:
-			throw std::runtime_error("unsupported format");
+	switch(options.Format) {
+		case TileFormat::Bpp2: InternalGetTileView<TileFormat::Bpp2>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::Bpp4: InternalGetTileView<TileFormat::Bpp4>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::Bpp8: InternalGetTileView<TileFormat::Bpp8>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::DirectColor: InternalGetTileView<TileFormat::DirectColor>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::Mode7: InternalGetTileView<TileFormat::Mode7>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::Mode7DirectColor: InternalGetTileView<TileFormat::Mode7DirectColor>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::Mode7ExtBg: InternalGetTileView<TileFormat::Mode7ExtBg>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::NesBpp2: InternalGetTileView<TileFormat::NesBpp2>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::PceSpriteBpp4: InternalGetTileView<TileFormat::PceSpriteBpp4>(options, source, srcSize, colors, outBuffer); break;
 	}
 }
 
-void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t *colors, uint32_t *outBuffer)
+template<TileFormat format>
+void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t *colors, uint32_t *outBuffer)
 {
 	constexpr uint32_t grayscaleColorsBpp2[4] = { 0xFF000000, 0xFF666666, 0xFFBBBBBB, 0xFFFFFFFF };
 	constexpr uint32_t grayscaleColorsBpp4[16] = {
@@ -203,11 +129,11 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t
 			for(int y = 0; y < tileHeight; y++) {
 				uint32_t pixelStart = addr + y * rowOffset;
 				for(int x = 0; x < tileWidth; x++) {
-					uint8_t color = GetTilePixelColor(ram, ramMask, pixelStart, x, options.Format);
+					uint8_t color = GetTilePixelColor<format>(ram, ramMask, pixelStart, x);
 					if(color != 0 || options.Background == TileBackground::PaletteColor) {
 						uint32_t pos = baseOutputOffset + (y * options.Width * tileWidth) + x;
 						if(pos < outputSize) {
-							outBuffer[pos] = GetRgbPixelColor(options.Format, colors, color & colorMask, options.Palette);
+							outBuffer[pos] = GetRgbPixelColor<format>(colors, color & colorMask, options.Palette);
 						}
 					}
 				}

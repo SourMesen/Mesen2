@@ -12,7 +12,6 @@ static constexpr uint8_t layerBpp[8][4] = {
 
 SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, emu)
 {
-	_state = {};
 }
 
 void SnesPpuTools::GetPpuToolsState(BaseState& state)
@@ -65,72 +64,35 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 		rowCount = 128;
 		if(options.Layer == 1) {
 			format = TileFormat::Mode7ExtBg;
+			RenderMode7Tilemap<TileFormat::Mode7ExtBg>(vram, outBuffer, palette);
+		} else if(directColor) {
+			format = TileFormat::Mode7DirectColor;
+			RenderMode7Tilemap<TileFormat::Mode7DirectColor>(vram, outBuffer, palette);
 		} else {
-			format = directColor ? TileFormat::Mode7DirectColor : TileFormat::Mode7;
-		}
-		
-		for(int row = 0; row < 128; row++) {
-			for(int column = 0; column < 128; column++) {
-				uint32_t tileIndex = vram[row * 256 + column * 2];
-				uint32_t tileAddr = tileIndex * 128;
-
-				for(int y = 0; y < 8; y++) {
-					uint32_t pixelStart = tileAddr + y * 16;
-
-					for(int x = 0; x < 8; x++) {
-						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, pixelStart, x, format);
-
-						if(color != 0) {
-							uint32_t rgbColor = GetRgbPixelColor(format, palette, color, 0);
-							outBuffer[((row * 8) + y) * outputSize.Width + column * 8 + x] = rgbColor;
-						}
-					}
-				}
-			}
+			format = TileFormat::Mode7;
+			RenderMode7Tilemap<TileFormat::Mode7>(vram, outBuffer, palette);
 		}
 	} else {
 		if(directColor) {
 			format = TileFormat::DirectColor;
+			RenderTilemap<TileFormat::DirectColor>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
 		} else {
 			switch(bpp) {
 				default:
-				case 2: format = TileFormat::Bpp2; break;
-				case 4: format = TileFormat::Bpp4; break;
-				case 8: format = TileFormat::Bpp8; break;
-			}
-		}
+				case 2:
+					format = TileFormat::Bpp2;
+					RenderTilemap<TileFormat::Bpp2>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					break;
 
-		for(int row = 0; row < rowCount; row++) {
-			uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
-			uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+				case 4:
+					format = TileFormat::Bpp4;
+					RenderTilemap<TileFormat::Bpp4>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					break;
 
-			for(int column = 0; column < columnCount; column++) {
-				uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
-
-				bool vMirror = (vram[addr + 1] & 0x80) != 0;
-				bool hMirror = (vram[addr + 1] & 0x40) != 0;
-				uint16_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
-
-				for(int y = 0; y < tileHeight; y++) {
-					uint8_t yOffset = vMirror ? (7 - (y & 0x07)) : (y & 0x07);
-
-					for(int x = 0; x < tileWidth; x++) {
-						uint16_t tileOffset = (
-							(largeTileHeight ? ((y & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
-							(largeTileWidth ? ((x & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
-						);
-
-						uint16_t tileStart = (layer.ChrAddress << 1) + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
-						uint16_t pixelStart = tileStart + yOffset * 2;
-
-						uint8_t pixelIndex = hMirror ? (7 - (x & 0x07)) : (x & 0x07);
-						uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, pixelStart, pixelIndex, format);
-						if(color != 0) {
-							uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-							outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor(format, palette + basePaletteOffset, color, paletteIndex);
-						}
-					}
-				}
+				case 8:
+					format = TileFormat::Bpp8;
+					RenderTilemap<TileFormat::Bpp8>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					break;
 			}
 		}
 	}
@@ -156,6 +118,64 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 	result.ScrollWidth = isDoubleWidthScreen ? 512 : 256;
 	result.ScrollHeight = isDoubleHeightScreen ? height * 2 : height;
 	return result;
+}
+
+template<TileFormat format>
+void SnesPpuTools::RenderTilemap(int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, const uint8_t& bpp, uint32_t* outBuffer, FrameInfo& outputSize, uint32_t* palette, const uint16_t& basePaletteOffset)
+{
+	for(int row = 0; row < rowCount; row++) {
+		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
+		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
+
+		for(int column = 0; column < columnCount; column++) {
+			uint16_t addr = (baseOffset + (column & 0x1F) + (layer.DoubleWidth ? ((column & 0x20) << 5) : 0)) << 1;
+
+			bool vMirror = (vram[addr + 1] & 0x80) != 0;
+			bool hMirror = (vram[addr + 1] & 0x40) != 0;
+			uint16_t tileIndex = ((vram[addr + 1] & 0x03) << 8) | vram[addr];
+
+			for(int y = 0; y < tileHeight; y++) {
+				uint8_t yOffset = vMirror ? (7 - (y & 0x07)) : (y & 0x07);
+
+				for(int x = 0; x < tileWidth; x++) {
+					uint16_t tileOffset = (
+						(largeTileHeight ? ((y & 0x08) ? (vMirror ? 0 : 16) : (vMirror ? 16 : 0)) : 0) +
+						(largeTileWidth ? ((x & 0x08) ? (hMirror ? 0 : 1) : (hMirror ? 1 : 0)) : 0)
+					);
+
+					uint16_t tileStart = (layer.ChrAddress << 1) + ((tileIndex + tileOffset) & 0x3FF) * 8 * bpp;
+					uint16_t pixelStart = tileStart + yOffset * 2;
+
+					uint8_t pixelIndex = hMirror ? (7 - (x & 0x07)) : (x & 0x07);
+					uint8_t color = GetTilePixelColor<format>(vram, SnesPpu::VideoRamSize - 1, pixelStart, pixelIndex);
+					if(color != 0) {
+						uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
+						outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor<format>(palette + basePaletteOffset, color, paletteIndex);
+					}
+				}
+			}
+		}
+	}
+}
+
+template<TileFormat format>
+void SnesPpuTools::RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32_t* palette)
+{
+	for(int row = 0; row < 1024; row++) {
+		for(int column = 0; column < 128; column++) {
+			uint32_t tileIndex = vram[(row>>3) * 256 + column * 2];
+			uint32_t tileAddr = tileIndex * 128;
+			uint32_t pixelStart = tileAddr + (row & 0x7) * 16;
+
+			for(int x = 0; x < 8; x++) {
+				uint8_t color = GetTilePixelColor<format>(vram, SnesPpu::VideoRamSize - 1, pixelStart, x);
+
+				if(color != 0) {
+					outBuffer[row * 1024 + column * 8 + x] = GetRgbPixelColor<format>(palette, color, 0);
+				}
+			}
+		}
+	}
 }
 
 static constexpr uint8_t _oamSizes[8][2][2] = {
@@ -310,9 +330,9 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 			uint8_t tileIndex = (row << 4) | column;
 			uint16_t tileStart = ((state.OamBaseAddress + (tileIndex << 4) + (useSecondTable ? state.OamAddressOffset : 0)) & 0x7FFF) << 1;
 
-			uint8_t color = GetTilePixelColor(vram, SnesPpu::VideoRamSize - 1, tileStart + yOffset * 2, xOffset, TileFormat::Bpp4);
+			uint8_t color = GetTilePixelColor<TileFormat::Bpp4>(vram, SnesPpu::VideoRamSize - 1, tileStart + yOffset * 2, xOffset);
 			if(color != 0) {
-				sprite.SpritePreview[outOffset] = GetRgbPixelColor(TileFormat::Bpp4, palette, color, sprite.Palette + 8);
+				sprite.SpritePreview[outOffset] = GetRgbPixelColor<TileFormat::Bpp4>(palette, color, sprite.Palette + 8);
 			} else {
 				sprite.SpritePreview[outOffset] = 0;
 			}

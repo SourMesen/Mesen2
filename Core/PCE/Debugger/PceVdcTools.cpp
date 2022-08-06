@@ -89,7 +89,7 @@ DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& b
 			for(int y = 0; y < 8; y++) {
 				uint16_t tileAddr = tileIndex * 32 + y * 2;
 				for(int x = 0; x < 8; x++) {
-					uint8_t color = GetTilePixelColor(vram, 0xFFFF, tileAddr, x, TileFormat::Bpp4);
+					uint8_t color = GetTilePixelColor<TileFormat::Bpp4>(vram, 0xFFFF, tileAddr, x);
 					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
 					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
 					outBuffer[outPos] = palette[palAddr];
@@ -243,7 +243,7 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 				//Display specific pattern when open bus, to make problem obvious in sprite viewer
 				color = xOffset;
 			} else {
-				color = GetTilePixelColor(vram, 0xFFFF, pixelStart * 2, xOffset, TileFormat::PceSpriteBpp4);
+				color = GetTilePixelColor<TileFormat::PceSpriteBpp4>(vram, 0xFFFF, pixelStart * 2, xOffset);
 			}			
 
 			if(color != 0) {
