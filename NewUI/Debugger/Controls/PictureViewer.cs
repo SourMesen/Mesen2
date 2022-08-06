@@ -492,7 +492,7 @@ namespace Mesen.Debugger.Controls
 		public Point Start;
 		public Point End;
 		public Color Color;
-		public int? Width;
+		public double? Width;
 		public IDashStyle? DashStyle;
 	}
 }

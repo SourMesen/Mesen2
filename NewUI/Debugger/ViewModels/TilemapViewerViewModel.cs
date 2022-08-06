@@ -574,6 +574,16 @@ namespace Mesen.Debugger.ViewModels
 			if(_ppuToolsState is SnesPpuToolsState toolsState && _ppuState is SnesPpuState ppuState) {
 				List<PictureViewerLine> lines = new();
 
+				Point prevStart = new();
+				Point prevEnd = new();
+				void AddLine(Point start, Point end, Color color) {
+					if(start != prevStart && end != prevEnd) {
+						lines.Add(new PictureViewerLine() { Start = start, End = end, Width = 1.5, Color = color });
+						prevStart = start;
+						prevEnd = end;
+					}
+				}
+
 				HslColor baseColor = ColorHelper.RgbToHsl(Color.FromRgb(255, 0, 255));
 				for(int i = 0; i < 239; i++) {
 					if(toolsState.ScanlineBgMode[i] == 7) {
@@ -585,13 +595,13 @@ namespace Mesen.Debugger.ViewModels
 						int endX = toolsState.Mode7EndX[i] >> 8;
 						int endY = toolsState.Mode7EndY[i] >> 8;
 
-						lines.Add(new PictureViewerLine() { Start = new Point(startX, startY), End = new Point(endX, endY), Width = 1, Color = alphaColor });
+						AddLine(new Point(startX, startY), new Point(endX, endY), alphaColor);
 						if(!ppuState.Mode7.LargeMap) {
 							void Translate(ref int start, ref int end, int offset, Func<int, bool> predicate) {
 								while(predicate(start) || predicate(end)) {
 									start += offset;
 									end += offset;
-									lines.Add(new PictureViewerLine() { Start = new Point(startX, startY), End = new Point(endX, endY), Width = 1, Color = alphaColor });
+									AddLine(new Point(startX, startY), new Point(endX, endY), alphaColor);
 								}
 							}
 
@@ -601,7 +611,7 @@ namespace Mesen.Debugger.ViewModels
 							Translate(ref startY, ref endY, -1024, x => x >= 1024);
 						}
 					}
-					baseColor.H--;
+					baseColor.H = (baseColor.H + 1) % 360;
 				}
 				OverlayLines = lines;
 			} else {
