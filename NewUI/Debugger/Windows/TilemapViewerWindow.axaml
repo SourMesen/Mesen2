@@ -108,6 +108,7 @@
 			AltGridSizeX="16"
 			AltGridSizeY="16"
 			ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
+			OverlayLines="{CompiledBinding OverlayLines}"
 		/>
 	</DockPanel>
 </Window>

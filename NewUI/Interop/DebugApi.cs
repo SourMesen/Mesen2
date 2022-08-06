@@ -136,6 +136,25 @@ namespace Mesen.Interop
 			};
 		}
 
+		[DllImport(DllPath)] private static extern void GetPpuToolsState(CpuType cpuType, IntPtr state);
+		public unsafe static T GetPpuToolsState<T>(CpuType cpuType) where T : struct, BaseState
+		{
+			byte* ptr = stackalloc byte[Marshal.SizeOf(typeof(T))];
+			DebugApi.GetPpuToolsState(cpuType, (IntPtr)ptr);
+			return Marshal.PtrToStructure<T>((IntPtr)ptr);
+		}
+
+		public static BaseState GetPpuToolsState(CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Snes => GetPpuToolsState<SnesPpuToolsState>(cpuType),
+				CpuType.Nes => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
+				CpuType.Gameboy => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
+				CpuType.Pce => GetPpuToolsState<EmptyPpuToolsState>(cpuType),
+				_ => throw new Exception("Unsupport cpu type")
+			};
+		}
+
 		[DllImport(DllPath)] private static extern void SetPpuState(IntPtr state, CpuType cpuType);
 		public unsafe static void SetPpuState(BaseState state, CpuType cpuType)
 		{

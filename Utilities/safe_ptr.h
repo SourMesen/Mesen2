@@ -47,6 +47,11 @@ public:
 		_shared = ptr;
 	}
 
+	T* get()
+	{
+		return _ptr;
+	}
+
 	operator bool() const
 	{
 		return _ptr != nullptr;

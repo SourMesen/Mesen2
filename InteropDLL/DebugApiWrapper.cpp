@@ -150,6 +150,7 @@ extern "C"
 
 	DllExport void __stdcall GetTileView(CpuType cpuType, GetTileViewOptions options, uint8_t* source, uint32_t srcSize, uint32_t* colors, uint32_t* buffer) { WithToolVoid(GetPpuTools(cpuType), GetTileView(options, source, srcSize, colors, buffer)); }
 
+	DllExport void __stdcall GetPpuToolsState(CpuType cpuType, BaseState& state) { return WithToolVoid(GetPpuTools(cpuType), GetPpuToolsState(state)); }
 	DllExport DebugTilemapInfo __stdcall GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outputBuffer) { return WithTool(DebugTilemapInfo, GetPpuTools(cpuType), GetTilemap(options, state, vram, palette, outputBuffer)); }
 	DllExport FrameInfo __stdcall GetTilemapSize(CpuType cpuType, GetTilemapOptions options, BaseState& state) { return WithTool(FrameInfo, GetPpuTools(cpuType), GetTilemapSize(options, state)); }
 	DllExport DebugTilemapTileInfo __stdcall GetTilemapTileInfo(uint32_t x, uint32_t y, CpuType cpuType, GetTilemapOptions options, uint8_t* vram, BaseState& state) { return WithTool(DebugTilemapTileInfo, GetPpuTools(cpuType), GetTilemapTileInfo(x, y, vram, options, state)); }

@@ -12,6 +12,21 @@ static constexpr uint8_t layerBpp[8][4] = {
 
 SnesPpuTools::SnesPpuTools(Debugger* debugger, Emulator *emu) : PpuTools(debugger, emu)
 {
+	_state = {};
+}
+
+void SnesPpuTools::GetPpuToolsState(BaseState& state)
+{
+	(SnesPpuToolsState&)state = _state;
+}
+
+void SnesPpuTools::SetPpuScanlineState(uint16_t scanline, uint8_t mode, int32_t mode7startX, int32_t mode7startY, int32_t mode7endX, int32_t mode7endY)
+{
+	_state.ScanlineBgMode[scanline] = mode;
+	_state.Mode7StartX[scanline] = mode7startX;
+	_state.Mode7StartY[scanline] = mode7startY;
+	_state.Mode7EndX[scanline] = mode7endX;
+	_state.Mode7EndY[scanline] = mode7endY;
 }
 
 DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)

@@ -7,6 +7,8 @@
 #include "SNES/InternalRegisters.h"
 #include "SNES/SnesControlManager.h"
 #include "SNES/SnesDmaController.h"
+#include "SNES/Debugger/SnesPpuTools.h"
+#include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Video/VideoDecoder.h"
@@ -19,6 +21,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
+//TODO remove
 #ifdef _MSC_VER
 #pragma warning ( disable : 4127 ) //conditional expression is constant
 #endif
@@ -443,6 +446,10 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 
 			memset(_mainScreenFlags, 0, sizeof(_mainScreenFlags));
 			memset(_subScreenPriority, 0, sizeof(_subScreenPriority));
+
+			if(!_skipRender && _emu->IsDebugging()) {
+				DebugProcessMode7Overlay();
+			}
 		}
 
 		_scanline++;
@@ -1141,6 +1148,14 @@ void SnesPpu::RenderTilemapMode7()
 		xStep = -xStep;
 		yStep = -yStep;
 	}
+	
+	if(_drawStartX == 0) {
+		//Keep start/end values - used by tilemap viewer
+		_debugMode7StartX = xValue;
+		_debugMode7StartY = yValue;
+		_debugMode7EndX = xValue + xStep * 256;
+		_debugMode7EndY = yValue + yStep * 256;
+	}
 
 	xValue += xStep * _drawStartX;
 	yValue += yStep * _drawStartX;
@@ -1499,6 +1514,19 @@ void SnesPpu::DebugSendFrame()
 
 	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount);
 	_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
+}
+
+void SnesPpu::DebugProcessMode7Overlay()
+{
+	//Store mode 7 related information in ppu tools to allow tilemap viewer to display mode 7 overlay
+	SnesPpuTools* ppuTools = ((SnesPpuTools*)_emu->InternalGetDebugger()->GetPpuTools(CpuType::Snes));
+	ppuTools->SetPpuScanlineState(_scanline, _state.ForcedBlank ? 0 : _state.BgMode, _debugMode7StartX, _debugMode7StartY, _debugMode7EndX, _debugMode7EndY);
+	if(_scanline == _vblankStartScanline - 1) {
+		for(int i = _scanline + 1; i < 239; i++) {
+			ppuTools->SetPpuScanlineState(i, 0, 0, 0, 0, 0);
+		}
+	}
+	_debugMode7StartX = _debugMode7StartY = _debugMode7EndX = _debugMode7EndY = 0;
 }
 
 bool SnesPpu::IsHighResOutput()

@@ -45,6 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public TilemapViewerTab SelectedTab { get; set; }
 
 		[Reactive] public Rect ScrollOverlayRect { get; private set; } = Rect.Empty;
+		[Reactive] public List<PictureViewerLine>? OverlayLines { get; private set; } = null;
 		
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
@@ -53,6 +54,7 @@ namespace Mesen.Debugger.ViewModels
 		private PictureViewer _picViewer;
 		private UInt64 _masterClock;
 		private BaseState? _ppuState;
+		private BaseState? _ppuToolsState;
 		private byte[] _prevVram = Array.Empty<byte>();
 		private byte[] _vram = Array.Empty<byte>();
 		private UInt32[] _rgbPalette = Array.Empty<UInt32>();
@@ -374,6 +376,7 @@ namespace Mesen.Debugger.ViewModels
 
 			BaseState ppuState = DebugApi.GetPpuState(CpuType);
 			_ppuState = ppuState;
+			_ppuToolsState = DebugApi.GetPpuToolsState(CpuType);
 			_prevVram = _vram;
 			_vram = DebugApi.GetMemoryState(GetVramMemoryType());
 			_accessCounters = DebugApi.GetMemoryAccessCounts(GetVramMemoryType());
@@ -439,8 +442,11 @@ namespace Mesen.Debugger.ViewModels
 						_tilemapInfo.ScrollWidth,
 						_tilemapInfo.ScrollHeight
 					);
+
+					DrawMode7Overlay();
 				} else {
 					ScrollOverlayRect = Rect.Empty;
+					OverlayLines = null;
 				}
 			});
 		}
@@ -560,6 +566,46 @@ namespace Mesen.Debugger.ViewModels
 				}
 				palette = Math.Max(0, palette);
 				TileEditorWindow.OpenAtTile(addresses, columnCount, _tilemapInfo.Format, palette, wnd);
+			}
+		}
+
+		private void DrawMode7Overlay()
+		{
+			if(_ppuToolsState is SnesPpuToolsState toolsState && _ppuState is SnesPpuState ppuState) {
+				List<PictureViewerLine> lines = new();
+
+				HslColor baseColor = ColorHelper.RgbToHsl(Color.FromRgb(255, 0, 255));
+				for(int i = 0; i < 239; i++) {
+					if(toolsState.ScanlineBgMode[i] == 7) {
+						Color lineColor = ColorHelper.HslToRgb(baseColor);
+						Color alphaColor = Color.FromArgb(0xA0, lineColor.R, lineColor.G, lineColor.B);
+
+						int startX = toolsState.Mode7StartX[i] >> 8;
+						int startY = toolsState.Mode7StartY[i] >> 8;
+						int endX = toolsState.Mode7EndX[i] >> 8;
+						int endY = toolsState.Mode7EndY[i] >> 8;
+
+						lines.Add(new PictureViewerLine() { Start = new Point(startX, startY), End = new Point(endX, endY), Width = 1, Color = alphaColor });
+						if(!ppuState.Mode7.LargeMap) {
+							void Translate(ref int start, ref int end, int offset, Func<int, bool> predicate) {
+								while(predicate(start) || predicate(end)) {
+									start += offset;
+									end += offset;
+									lines.Add(new PictureViewerLine() { Start = new Point(startX, startY), End = new Point(endX, endY), Width = 1, Color = alphaColor });
+								}
+							}
+
+							Translate(ref startX, ref endX, 1024, x => x < 0);
+							Translate(ref startY, ref endY, 1024, x => x < 0);
+							Translate(ref startX, ref endX, -1024, x => x >= 1024);
+							Translate(ref startY, ref endY, -1024, x => x >= 1024);
+						}
+					}
+					baseColor.H--;
+				}
+				OverlayLines = lines;
+			} else {
+				OverlayLines = null;
 			}
 		}
 

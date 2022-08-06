@@ -6,13 +6,27 @@ class Debugger;
 class Emulator;
 struct BaseState;
 
+struct SnesPpuToolsState
+{
+	uint8_t ScanlineBgMode[239];
+	int32_t Mode7StartX[239];
+	int32_t Mode7StartY[239];
+	int32_t Mode7EndX[239];
+	int32_t Mode7EndY[239];
+};
+
 class SnesPpuTools final : public PpuTools
 {
 private:
+	SnesPpuToolsState _state;
+
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
 	SnesPpuTools(Debugger* debugger, Emulator *emu);
+
+	void GetPpuToolsState(BaseState& state) override;
+	void SetPpuScanlineState(uint16_t scanline, uint8_t mode, int32_t mode7startX, int32_t mode7startY, int32_t mode7endX, int32_t mode7endY);
 
 	DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) override;
 	FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) override;

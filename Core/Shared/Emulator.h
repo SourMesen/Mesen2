@@ -226,6 +226,7 @@ public:
 	void StopDebugger();
 	DebuggerRequest GetDebugger(bool autoInit = false);
 	bool IsDebugging();
+	Debugger* InternalGetDebugger() { return _debugger.get(); }
 
 	thread::id GetEmulationThreadId();
 	bool IsEmulationThread();

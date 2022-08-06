@@ -116,6 +116,11 @@ private:
 	uint8_t _spritePaletteCopy[256] = {};
 	uint8_t _spriteColorsCopy[256] = {};
 
+	int32_t _debugMode7StartX = 0;
+	int32_t _debugMode7StartY = 0;
+	int32_t _debugMode7EndX = 0;
+	int32_t _debugMode7EndY = 0;
+
 	void RenderSprites(const uint8_t priorities[4]);
 
 	template<bool hiResMode>
@@ -203,6 +208,8 @@ private:
 	uint16_t GetOamAddress();
 	
 	void RandomizeState();
+
+	__noinline void DebugProcessMode7Overlay();
 
 public:
 	SnesPpu(Emulator* emu, SnesConsole* console);

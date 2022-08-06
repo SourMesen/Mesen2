@@ -151,7 +151,8 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<PictureViewer>(
 				SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty,
 				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
-				HighlightRectsProperty, MouseOverRectProperty, GridHighlightProperty
+				HighlightRectsProperty, MouseOverRectProperty, GridHighlightProperty,
+				OverlayLinesProperty
 			);
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
@@ -408,7 +409,7 @@ namespace Mesen.Debugger.Controls
 
 			if(OverlayLines?.Count > 0) {
 				foreach(PictureViewerLine line in OverlayLines) {
-					Pen pen = new Pen(line.Color.ToUint32(), 2, line.DashStyle);
+					Pen pen = new Pen(line.Color.ToUint32(), line.Width ?? 2, line.DashStyle);
 					context.DrawLine(pen, line.Start * Zoom, line.End * Zoom);
 				}
 			}
@@ -491,6 +492,7 @@ namespace Mesen.Debugger.Controls
 		public Point Start;
 		public Point End;
 		public Color Color;
+		public int? Width;
 		public IDashStyle? DashStyle;
 	}
 }

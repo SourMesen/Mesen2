@@ -958,6 +958,28 @@ namespace Mesen.Interop
 		public AluState Alu;
 	}
 
+	public struct EmptyPpuToolsState : BaseState
+	{
+	}
+
+	public struct SnesPpuToolsState : BaseState
+	{
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 239)]
+		public byte[] ScanlineBgMode;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 239)]
+		public Int32[] Mode7StartX;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 239)]
+		public Int32[] Mode7StartY;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 239)]
+		public Int32[] Mode7EndX;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 239)]
+		public Int32[] Mode7EndY;
+	}
+
 	public struct NesPpuStatusFlags
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool SpriteOverflow;

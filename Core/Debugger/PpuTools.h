@@ -188,6 +188,8 @@ protected:
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
 
+	virtual void GetPpuToolsState(BaseState& state) {};
+
 	virtual DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) = 0;
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t* palette, uint32_t *outBuffer);
