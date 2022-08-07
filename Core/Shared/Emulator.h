@@ -22,6 +22,7 @@ class RewindManager;
 class BatteryManager;
 class CheatManager;
 class MovieManager;
+class HistoryViewer;
 class FrameLimiter;
 class DebugStats;
 class BaseControlManager;
@@ -73,6 +74,7 @@ private:
 	const unique_ptr<SaveStateManager> _saveStateManager;
 	const unique_ptr<CheatManager> _cheatManager;
 	const unique_ptr<MovieManager> _movieManager;
+	const unique_ptr<HistoryViewer> _historyViewer;
 	
 	const shared_ptr<GameServer> _gameServer;
 	const shared_ptr<GameClient> _gameClient;
@@ -154,7 +156,7 @@ public:
 	Emulator();
 	~Emulator();
 
-	void Initialize();
+	void Initialize(bool enableShortcuts = true);
 	void Release();
 
 	void Run();
@@ -208,6 +210,7 @@ public:
 	BatteryManager* GetBatteryManager();
 	CheatManager* GetCheatManager();
 	MovieManager* GetMovieManager();
+	HistoryViewer* GetHistoryViewer();
 	GameServer* GetGameServer();
 	GameClient* GetGameClient();
 	shared_ptr<SystemActionManager> GetSystemActionManager();

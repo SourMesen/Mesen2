@@ -82,7 +82,7 @@ private:
 	void ResetNesBuffers();
 
 public:
-	Renderer(Emulator* emu, HWND hWnd, bool registerAsMessageManager);
+	Renderer(Emulator* emu, HWND hWnd);
 	~Renderer();
 
 	void SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle) override;

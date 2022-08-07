@@ -728,5 +728,12 @@ namespace Mesen.Debugger.Utilities
 		GoToPrevExec,
 		[IconFile("NextExec")]
 		GoToNextExec,
+
+		[IconFile("Export")]
+		ExportMovie,
+		[IconFile("SaveFloppy")]
+		CreateSaveState,
+		[IconFile("MediaPlay")]
+		ResumeGameplay,
 	}
 }

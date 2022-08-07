@@ -18,6 +18,21 @@ EmuSettings::EmuSettings(Emulator* emu)
 	_mt = std::mt19937(rd());
 }
 
+void EmuSettings::CopySettings(EmuSettings& src)
+{
+	SetVideoConfig(src._video);
+	SetAudioConfig(src._audio);
+	SetInputConfig(src._input);
+	SetEmulationConfig(src._emulation);
+	SetPreferences(src._preferences);
+	SetAudioPlayerConfig(src._audioPlayer);
+	SetDebugConfig(src._debug);
+	SetSnesConfig(src._snes);
+	SetGameboyConfig(src._gameboy);
+	SetNesConfig(src._nes);
+	SetPcEngineConfig(src._pce);
+}
+
 void EmuSettings::Serialize(Serializer& s)
 {
 	//Save/load settings that have an impact on emulation (for movies), netplay, etc.)
@@ -111,9 +126,8 @@ VideoConfig& EmuSettings::GetVideoConfig()
 
 void EmuSettings::SetAudioConfig(AudioConfig& config)
 {
-	ProcessString(_audioDevice, &config.AudioDevice);
-
 	_audio = config;
+	ProcessString(_audioDevice, &_audio.AudioDevice);
 }
 
 AudioConfig& EmuSettings::GetAudioConfig()
@@ -183,10 +197,6 @@ PcEngineConfig& EmuSettings::GetPcEngineConfig()
 
 void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
-	ProcessString(_saveFolder, &config.SaveFolderOverride);
-	ProcessString(_saveStateFolder, &config.SaveStateFolderOverride);
-	ProcessString(_screenshotFolder, &config.ScreenshotFolderOverride);
-
 	MessageManager::SetOsdState(!config.DisableOsd);
 
 	FolderUtilities::SetFolderOverrides(
@@ -197,6 +207,9 @@ void EmuSettings::SetPreferences(PreferencesConfig& config)
 	);
 
 	_preferences = config;
+	ProcessString(_saveFolder, &_preferences.SaveFolderOverride);
+	ProcessString(_saveStateFolder, &_preferences.SaveStateFolderOverride);
+	ProcessString(_screenshotFolder, &_preferences.ScreenshotFolderOverride);
 }
 
 PreferencesConfig& EmuSettings::GetPreferences()
@@ -413,6 +426,17 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 {
 	return (_debuggerFlags & (uint64_t)flag) != 0;
+}
+
+RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)
+{
+	switch(consoleType) {
+		case ConsoleType::Snes: return _snes.RamPowerOnState;
+		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState;
+		case ConsoleType::GameboyColor: return _gameboy.RamPowerOnState;
+		case ConsoleType::Nes: return _nes.RamPowerOnState;
+		case ConsoleType::PcEngine: return _pce.RamPowerOnState;
+	}
 }
 
 void EmuSettings::InitializeRam(RamState state, void* data, uint32_t length)

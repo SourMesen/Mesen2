@@ -40,21 +40,23 @@ namespace Mesen
 				width = height * aspectRatio;
 			}
 
-			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && wnd.WindowState == WindowState.FullScreen) {
-				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
-				double scale = (height * LayoutHelper.GetLayoutScale(this)) / baseSize.Height;
-				if(scale != Math.Floor(scale)) {
-					height = baseSize.Height * Math.Max(1, Math.Floor(scale));
-					width = height * aspectRatio;
+			if(DataContext is MainWindowViewModel model) {
+				if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && wnd.WindowState == WindowState.FullScreen) {
+					FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+					double scale = (height * LayoutHelper.GetLayoutScale(this)) / baseSize.Height;
+					if(scale != Math.Floor(scale)) {
+						height = baseSize.Height * Math.Max(1, Math.Floor(scale));
+						width = height * aspectRatio;
+					}
 				}
+
+				EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
+				model.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
+			} else if(DataContext is HistoryViewerViewModel historyViewer) {
+				historyViewer.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
 			}
 
-			EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
-			Size size = new Size(width, height);
-			if(DataContext is MainWindowViewModel model) {
-				model.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
-			}
-			return size;
+			return new Size(width, height);
 		}
 	}
 }

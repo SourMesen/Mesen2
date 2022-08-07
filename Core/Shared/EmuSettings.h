@@ -46,6 +46,8 @@ private:
 
 public:
 	EmuSettings(Emulator* emu);
+	
+	void CopySettings(EmuSettings& src);
 
 	void Serialize(Serializer& s) override;
 
@@ -101,7 +103,8 @@ public:
 
 	void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 	bool CheckDebuggerFlag(DebuggerFlags flags);
-	
+
+	RamState GetDefaultRamPowerOnState(ConsoleType consoleType);	
 	int GetRandomValue(int maxValue);
 	bool GetRandomBool();
 	void InitializeRam(RamState state, void* data, uint32_t length);

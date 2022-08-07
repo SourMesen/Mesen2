@@ -5,6 +5,7 @@
 
 class Emulator;
 
+//TODO remove?
 class BaseRenderer
 {
 protected:
@@ -13,6 +14,6 @@ protected:
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
 	
-	BaseRenderer(Emulator* emu, bool registerAsMessageManager);
+	BaseRenderer(Emulator* emu);
 	virtual ~BaseRenderer();
 };

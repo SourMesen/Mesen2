@@ -17,13 +17,17 @@ class BatteryManager
 {
 private:
 	string _romName;
+	bool _hasBattery = false;
+
 	std::weak_ptr<IBatteryProvider> _provider;
 	std::weak_ptr<IBatteryRecorder> _recorder;
 
 	string GetBasePath();
 
 public:
-	void Initialize(string romName);
+	void Initialize(string romName, bool setBatteryFlag = false);
+
+	bool HasBattery() { return _hasBattery; }
 
 	void SetBatteryProvider(shared_ptr<IBatteryProvider> provider);
 	void SetBatteryRecorder(shared_ptr<IBatteryRecorder> recorder);

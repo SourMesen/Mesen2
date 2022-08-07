@@ -41,13 +41,17 @@ namespace Mesen.Utilities
 			return null;
 		}
 
-		public static T GetOrCreateUniqueWindow<T>(Control centerParent, Func<T> createWindow) where T : Window
+		public static T GetOrCreateUniqueWindow<T>(Control? centerParent, Func<T> createWindow) where T : Window
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				T? wnd = desktop.Windows.Where(w => w is T).FirstOrDefault() as T;
 				if(wnd == null) {
 					wnd = createWindow();
-					wnd.ShowCentered((Control)centerParent);
+					if(centerParent != null) {
+						wnd.ShowCentered((Control)centerParent);
+					} else {
+						wnd.Show();
+					}
 					return wnd;
 				} else {
 					wnd.BringToFront();

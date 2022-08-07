@@ -5,6 +5,7 @@
 #include "Shared/Interfaces/IInputRecorder.h"
 #include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/BatteryManager.h"
+#include "Shared/RewindData.h"
 #include "Shared/Movies/MovieTypes.h"
 
 class ZipWriter;
@@ -47,4 +48,6 @@ public:
 
 	// Inherited via INotificationListener
 	void ProcessNotification(ConsoleNotificationType type, void *parameter) override;
+
+	bool CreateMovie(string movieFile, deque<RewindData>& data, uint32_t startPosition, uint32_t endPosition, bool hasBattery);
 };

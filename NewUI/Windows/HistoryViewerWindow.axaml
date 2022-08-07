@@ -1,0 +1,65 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.HistoryViewerWindow"
+	Width="512" Height="535"
+	Icon="/Assets/HistoryViewer.png"
+	Title="{l:Translate wndTitle}"
+  x:DataType="vm:HistoryViewerViewModel"
+	Name="root"
+>
+	<Design.DataContext>
+		<vm:HistoryViewerViewModel />
+	</Design.DataContext>
+	
+	<DockPanel>
+		<Menu DockPanel.Dock="Top" Name="MainMenu">
+			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
+		</Menu>
+
+		<Border Name="ControlBar" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="0 1 0 0" DockPanel.Dock="Bottom">
+			<DockPanel HorizontalAlignment="Stretch" Margin="5 0 5 0">
+				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPlay.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{CompiledBinding IsPaused}" Command="{Binding TogglePause}" />
+				<c:IconButton DockPanel.Dock="Left" Icon="Assets/MediaPause.png" Width="40" Height="30" Margin="0 0 10 0" IsVisible="{CompiledBinding !IsPaused}" Command="{Binding TogglePause}" />
+
+				<StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="15 0 0 0">
+					<Slider
+					  Minimum="0"
+					  Maximum="100"
+					  Value="{CompiledBinding Volume}"
+						Width="100"
+						TickFrequency="10"
+						Margin="0 -15 0 0"
+						TickPlacement="BottomRight"			 
+					/>				
+					<TextBlock Text="{l:Translate lblVolume}" HorizontalAlignment="Center" Margin="15 -3 0 0" />
+				</StackPanel>
+			
+				<TextBlock Text="{CompiledBinding TotalTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="5 0 10 0" />
+				<TextBlock Text=" / " DockPanel.Dock="Right" VerticalAlignment="Center" />
+				<TextBlock Text="{CompiledBinding CurrentTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="20 0 5 0" />
+
+				<Slider
+					Minimum="0"
+					Maximum="{CompiledBinding MaxPosition}"
+					Value="{CompiledBinding CurrentPosition}"
+					Margin="0 -3 0 0"
+					VerticalAlignment="Center"
+				/>
+			</DockPanel>
+		</Border>
+
+		<Panel Background="Black">
+			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
+		</Panel>
+	</DockPanel>
+</Window>

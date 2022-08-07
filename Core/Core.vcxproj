@@ -373,6 +373,7 @@
     <ClInclude Include="NES\Input\FamilyMatTrainer.h" />
     <ClInclude Include="NES\Input\FourScore.h" />
     <ClInclude Include="NES\Input\HoriTrack.h" />
+    <ClInclude Include="Shared\HistoryViewer.h" />
     <ClInclude Include="Shared\IControllerHub.h" />
     <ClInclude Include="Shared\Interfaces\IBarcodeReader.h" />
     <ClInclude Include="NES\Input\JissenMahjongController.h" />
@@ -769,6 +770,7 @@
     <ClCompile Include="NES\NesPpu.cpp" />
     <ClCompile Include="NES\NesSoundMixer.cpp" />
     <ClCompile Include="Shared\CdReader.cpp" />
+    <ClCompile Include="Shared\HistoryViewer.cpp" />
     <ClCompile Include="Shared\Video\DrawStringCommand.cpp" />
     <ClCompile Include="Shared\Video\RotateFilter.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />

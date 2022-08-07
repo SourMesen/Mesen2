@@ -1,0 +1,44 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:v="using:Mesen.Views"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.HistoryViewerRangePickerWindow"
+	Width="300" Height="85"
+	Icon="/Assets/HistoryViewer.png"
+	Title="{l:Translate wndTitle}"
+	Name="root"
+>
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
+			<TextBlock Text="{l:Translate lblStartTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
+			<NumericUpDown
+				Grid.Column="1"
+				Value="{CompiledBinding StartTime, ElementName=root}"
+				Minimum="{CompiledBinding MinValue, ElementName=root}"
+				Maximum="{CompiledBinding MaxValue, ElementName=root}"
+		  />
+			<TextBlock Grid.Column="2" Text="{l:Translate lblSeconds}" />
+			<TextBlock Grid.Row="1" Text="{l:Translate lblEndTime}" VerticalAlignment="Center" Margin="0 0 5 0" />
+			<NumericUpDown
+				Grid.Column="1"
+				Grid.Row="1"
+				Value="{CompiledBinding EndTime, ElementName=root}"
+				Minimum="{CompiledBinding MinValue, ElementName=root}"
+				Maximum="{CompiledBinding MaxValue, ElementName=root}"
+		  />			
+			<TextBlock Grid.Row="1" Grid.Column="2" Text="{l:Translate lblSeconds}" />
+		</Grid>
+	</DockPanel>
+</Window>

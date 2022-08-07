@@ -10,6 +10,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SaveStateManager.h"
+#include "Shared/RewindManager.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/RewindData.h"
 #include "Shared/Movies/MovieTypes.h"
@@ -187,20 +188,18 @@ void MovieRecorder::ProcessNotification(ConsoleNotificationType type, void *para
 	}
 }
 
-//TODO history viewer
-/*
-bool MovieRecorder::CreateMovie(string movieFile, std::deque<RewindData> &data, uint32_t startPosition, uint32_t endPosition)
+bool MovieRecorder::CreateMovie(string movieFile, deque<RewindData> &data, uint32_t startPosition, uint32_t endPosition, bool hasBattery)
 {
 	_filename = movieFile;
 	_writer.reset(new ZipWriter());
 	if(startPosition < data.size() && endPosition <= data.size() && _writer->Initialize(_filename)) {
-		vector<shared_ptr<BaseControlDevice>> devices = _console->GetControlManager()->GetControlDevices();
+		vector<shared_ptr<BaseControlDevice>> devices = _emu->GetControlManager()->GetControlDevices();
 		
-		if(startPosition > 0 || _console->GetRomInfo().HasBattery || _console->GetSettings()->GetRamPowerOnState() == RamPowerOnState::Random) {
+		if(startPosition > 0 || hasBattery || _emu->GetSettings()->GetDefaultRamPowerOnState(_emu->GetConsoleType()) == RamState::Random) {
 			//Create a movie from a savestate if we don't start from the beginning (or if the game has save ram, or if the power on ram state is random)
 			_hasSaveState = true;
 			_saveStateData = stringstream();
-			_console->GetSaveStateManager()->GetSaveStateHeader(_saveStateData);
+			_emu->GetSaveStateManager()->GetSaveStateHeader(_saveStateData);
 			data[startPosition].GetStateData(_saveStateData);
 		}
 
@@ -208,11 +207,11 @@ bool MovieRecorder::CreateMovie(string movieFile, std::deque<RewindData> &data, 
 
 		for(uint32_t i = startPosition; i < endPosition; i++) {
 			RewindData rewindData = data[i];
-			for(uint32_t i = 0; i < 30; i++) {
+			for(uint32_t j = 0; j < RewindManager::BufferSize; j++) {
 				for(shared_ptr<BaseControlDevice> &device : devices) {
 					uint8_t port = device->GetPort();
-					if(i < rewindData.InputLogs[port].size()) {
-						device->SetRawState(rewindData.InputLogs[port][i]);
+					if(j < rewindData.InputLogs[port].size()) {
+						device->SetRawState(rewindData.InputLogs[port][j]);
 						_inputData << ("|" + device->GetTextState());
 					}
 				}
@@ -225,4 +224,3 @@ bool MovieRecorder::CreateMovie(string movieFile, std::deque<RewindData> &data, 
 	}
 	return false;
 }
-*/

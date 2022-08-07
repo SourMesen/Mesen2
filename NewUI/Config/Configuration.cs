@@ -35,6 +35,7 @@ namespace Mesen.Config
 		[Reactive] public MovieRecordConfig MovieRecord { get; set; } = new();
 		[Reactive] public CheatWindowConfig Cheats { get; set; } = new();
 		[Reactive] public NetplayConfig Netplay { get; set; } = new();
+		[Reactive] public HistoryViewerConfig HistoryViewer { get; set; } = new();
 		[Reactive] public MainWindowConfig MainWindow { get; set; } = new();
 		
 		public bool FirstRun { get; set; } = true;

@@ -561,8 +561,10 @@ namespace Mesen.ViewModels
 
 				new MainMenuAction() {
 					ActionType = ActionType.HistoryViewer,
-					IsEnabled = () => IsGameRunning,
-					OnClick = () => { } //TODO
+					IsEnabled = () => IsGameRunning && HistoryApi.HistoryViewerEnabled(),
+					OnClick = () => {
+						ApplicationHelper.GetOrCreateUniqueWindow(null, () => new HistoryViewerWindow());
+					}
 				},
 
 				GetMoviesMenu(wnd),

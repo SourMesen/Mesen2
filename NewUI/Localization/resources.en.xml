@@ -644,24 +644,6 @@
 			<Control ID="btnStopRecording">Stop Recording</Control>
 			<Control ID="btnOpenFolder">Open Save Folder</Control>
 		</Form>
-		<Form ID="frmHistoryViewer" Title="History Viewer">
-			<Control ID="lblVolume">Volume</Control>
-			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuImportMovie">Import Movie</Control>
-			<Control ID="mnuExportMovie">Export Movie</Control>
-			<Control ID="mnuCreateSaveState">Create Save State</Control>
-			<Control ID="mnuResumeGameplay">Resume Gameplay</Control>
-			<Control ID="mnuClose">Close</Control>
-
-			<Control ID="mnuOptions">Options</Control>
-			<Control ID="mnuVideoScale">Video Size</Control>
-			<Control ID="mnuScale1x">1x</Control>
-			<Control ID="mnuScale2x">2x</Control>
-			<Control ID="mnuScale3x">3x</Control>
-			<Control ID="mnuScale4x">4x</Control>
-			<Control ID="mnuScale5x">5x</Control>
-			<Control ID="mnuScale6x">6x</Control>
-		</Form>
 		<Form ID="frmSelectExportRange" Title="Export specific range...">
 			<Control ID="lblStartTime">Start time:</Control>
 			<Control ID="lblEndTime">End time:</Control>
@@ -903,6 +885,24 @@
 		<Form ID="DebugLogWindow">
 			<Control ID="wndTitle">Debug Log</Control>
 			<Control ID="btnClose">Close</Control>
+		</Form>
+
+		<Form ID="HistoryViewerWindow">
+			<Control ID="wndTitle">History Viewer</Control>
+			<Control ID="lblVolume">Volume</Control>
+
+			<Control ID="mnuFile">File</Control>
+			<Control ID="mnuOptions">Options</Control>
+		</Form>
+
+		<Form ID="HistoryViewerRangePickerWindow">
+			<Control ID="wndTitle">Export specific range...</Control>
+			<Control ID="lblStartTime">Start time:</Control>
+			<Control ID="lblEndTime">End time:</Control>
+			<Control ID="lblSeconds"> seconds</Control>
+
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 
 		<Form ID="NesHeaderEditWindow">
@@ -2927,6 +2927,10 @@
 			<Value ID="GoToNextWrite">Next write block</Value>
 			<Value ID="GoToPrevExec">Previous exec block</Value>
 			<Value ID="GoToNextExec">Next exec block</Value>
+
+			<Value ID="ExportMovie">Export Movie</Value>
+			<Value ID="CreateSaveState">Create Save State</Value>
+			<Value ID="ResumeGameplay">Resume Gameplay</Value>
 		</Enum>
 	</Enums>
 </Resources>

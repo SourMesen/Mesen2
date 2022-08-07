@@ -54,7 +54,7 @@ private:
 	void UpdateHudTexture(HudRenderInfo& hud, uint32_t* src);
 
 public:
-	SdlRenderer(Emulator* emu, void* windowHandle, bool registerAsMessageManager);
+	SdlRenderer(Emulator* emu, void* windowHandle);
 	virtual ~SdlRenderer();
 
 	void ClearFrame() override;

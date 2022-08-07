@@ -72,9 +72,9 @@ extern "C" {
 
 			if(!noVideo) {
 				#ifdef _WIN32
-					_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle, true));
+					_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle));
 				#else 
-					_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle, true));
+					_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle));
 				#endif
 			} 
 

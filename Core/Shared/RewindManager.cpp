@@ -236,6 +236,8 @@ void RewindManager::ProcessFrame(RenderedFrame& frame, bool forRewind)
 		newFrame.Width = frame.Width;
 		newFrame.Height = frame.Height;
 		newFrame.Scale = frame.Scale;
+		newFrame.FrameNumber = frame.FrameNumber;
+		newFrame.InputData = frame.InputData;
 		_videoHistoryBuilder.push_back(newFrame);
 
 		if(_videoHistoryBuilder.size() == (size_t)_historyBackup.front().FrameCount) {
@@ -250,7 +252,7 @@ void RewindManager::ProcessFrame(RenderedFrame& frame, bool forRewind)
 			_settings->ClearFlag(EmulationFlags::MaximumSpeed);
 			if(!_videoHistory.empty()) {
 				VideoFrame &frameData = _videoHistory.back();
-				RenderedFrame oldFrame(frameData.Data.data(), frameData.Width, frameData.Height, frameData.Scale, frame.FrameNumber);
+				RenderedFrame oldFrame(frameData.Data.data(), frameData.Width, frameData.Height, frameData.Scale, frameData.FrameNumber, frameData.InputData);
 				_emu->GetVideoRenderer()->UpdateFrame(oldFrame);
 				_videoHistory.pop_back();
 			}
@@ -353,6 +355,13 @@ void RewindManager::RewindSeconds(uint32_t seconds)
 bool RewindManager::HasHistory()
 {
 	return _hasHistory;
+}
+
+deque<RewindData> RewindManager::GetHistory()
+{
+	deque<RewindData> history = _history;
+	history.push_back(_currentHistory);
+	return history;
 }
 
 void RewindManager::SendFrame(RenderedFrame& frame, bool forRewind)

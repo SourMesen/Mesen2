@@ -143,6 +143,10 @@ void GameServer::StartServer(uint16_t port, string password)
 
 void GameServer::StopServer()
 {
+	if(!_serverThread) {
+		return;
+	}
+
 	_stop = true;
 
 	if(_serverThread) {

@@ -339,6 +339,12 @@
     <Compile Update="Windows\CheatEditWindow.axaml.cs">
       <DependentUpon>CheatEditWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\HistoryViewerRangePickerWindow.axaml.cs">
+      <DependentUpon>HistoryViewerRangePickerWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\HistoryViewerWindow.axaml.cs">
+      <DependentUpon>HistoryViewerWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\UpdatePromptWindow.axaml.cs">
       <DependentUpon>UpdatePromptWindow.axaml</DependentUpon>
     </Compile>

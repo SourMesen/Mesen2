@@ -11,7 +11,7 @@
 
 using namespace DirectX;
 
-Renderer::Renderer(Emulator* emu, HWND hWnd, bool registerAsMessageManager) : BaseRenderer(emu, registerAsMessageManager)
+Renderer::Renderer(Emulator* emu, HWND hWnd) : BaseRenderer(emu)
 {
 	_hWnd = hWnd;
 

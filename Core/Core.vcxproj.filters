@@ -2631,6 +2631,9 @@
     <ClInclude Include="Shared\IControllerHub.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\HistoryViewer.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2737,6 +2740,9 @@
     </ClCompile>
     <ClCompile Include="NES\Mappers\NSF\NsfMapper.cpp">
       <Filter>NES\Mappers\NSF</Filter>
+    </ClCompile>
+    <ClCompile Include="Shared\HistoryViewer.cpp">
+      <Filter>Shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

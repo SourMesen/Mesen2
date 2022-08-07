@@ -22,6 +22,7 @@
 #include "Shared/SystemActionManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/TimingInfo.h"
+#include "Shared/HistoryViewer.h"
 #include "Netplay/GameServer.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Interfaces/IConsole.h"
@@ -57,6 +58,7 @@ Emulator::Emulator() :
 	_saveStateManager(new SaveStateManager(this)),
 	_cheatManager(new CheatManager(this)),
 	_movieManager(new MovieManager(this)),
+	_historyViewer(new HistoryViewer(this)),
 	_gameServer(new GameServer(this)),
 	_gameClient(new GameClient(this))
 {
@@ -77,11 +79,13 @@ Emulator::~Emulator()
 {
 }
 
-void Emulator::Initialize()
+void Emulator::Initialize(bool enableShortcuts)
 {
 	_systemActionManager.reset(new SystemActionManager(this));
-	_shortcutKeyHandler.reset(new ShortcutKeyHandler(this));
-	_notificationManager->RegisterNotificationListener(_shortcutKeyHandler);
+	if(enableShortcuts) {
+		_shortcutKeyHandler.reset(new ShortcutKeyHandler(this));
+		_notificationManager->RegisterNotificationListener(_shortcutKeyHandler);
+	}
 
 	_videoDecoder->StartThread();
 	_videoRenderer->StartThread();
@@ -130,6 +134,7 @@ void Emulator::Run()
 		} else {
 			_console->RunFrame();
 			_rewindManager->ProcessEndOfFrame();
+			_historyViewer->ProcessEndOfFrame();
 			ProcessSystemActions();
 		}
 
@@ -210,6 +215,7 @@ void Emulator::RunFrameWithRunAhead()
 	//Run one frame normally (with audio/video output)
 	_console->RunFrame();
 	_rewindManager->ProcessEndOfFrame();
+	_historyViewer->ProcessEndOfFrame();
 
 	bool wasReset = ProcessSystemActions();
 	if(!wasReset) {
@@ -434,7 +440,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		InitDebugger();
 	}
 
+	//TODO reset RewindManager state instead of instance
 	_rewindManager.reset(new RewindManager(this));
+
 	_notificationManager->RegisterNotificationListener(_rewindManager);
 
 	GetControlManager()->UpdateControlDevices();
@@ -487,6 +495,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 			memset(_consoleMemory, 0, sizeof(_consoleMemory));
 
 			//Change filename for batterymanager to allow loading the correct files
+			bool hasBattery = _batteryManager->HasBattery();
 			_batteryManager->Initialize(FolderUtilities::GetFilename(romFile.GetFileName(), false));
 
 			console.reset(new T(this));
@@ -495,7 +504,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 			if(result != LoadRomResult::Success) {
 				//Restore state if load fails
 				memcpy(_consoleMemory, consoleMemory, sizeof(_consoleMemory));
-				_batteryManager->Initialize(FolderUtilities::GetFilename(_rom.RomFile.GetFileName(), false));
+				_batteryManager->Initialize(FolderUtilities::GetFilename(_rom.RomFile.GetFileName(), false), hasBattery);
 			}
 		}
 	}
@@ -859,6 +868,11 @@ CheatManager* Emulator::GetCheatManager()
 MovieManager* Emulator::GetMovieManager()
 {
 	return _movieManager.get();
+}
+
+HistoryViewer* Emulator::GetHistoryViewer()
+{
+	return _historyViewer.get();
 }
 
 GameServer* Emulator::GetGameServer()

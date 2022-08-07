@@ -193,7 +193,11 @@ private:
 			value = textValue == "true";
 		} else {
 			if(textValue.find_first_not_of("0123456789") == string::npos) {
-				value = (T)std::stol(textValue);
+				try {
+					value = (T)std::stoll(textValue);
+				} catch(std::exception&) {
+					value = (T)0;
+				}
 			}
 		}
 	}

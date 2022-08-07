@@ -3,9 +3,10 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
 
-void BatteryManager::Initialize(string romName)
+void BatteryManager::Initialize(string romName, bool setBatteryFlag)
 {
 	_romName = romName;
+	_hasBattery = setBatteryFlag;
 }
 
 string BatteryManager::GetBasePath()
@@ -25,6 +26,12 @@ void BatteryManager::SetBatteryRecorder(shared_ptr<IBatteryRecorder> recorder)
 
 void BatteryManager::SaveBattery(string extension, uint8_t* data, uint32_t length)
 {
+	if(_romName.empty()) {
+		//Battery saves are disabled (used by history viewer)
+		return;
+	}
+
+	_hasBattery = true;
 	ofstream out(GetBasePath() + extension, ios::binary);
 	if(out) {
 		out.write((char*)data, length);
@@ -33,6 +40,11 @@ void BatteryManager::SaveBattery(string extension, uint8_t* data, uint32_t lengt
 
 vector<uint8_t> BatteryManager::LoadBattery(string extension)
 {
+	if(_romName.empty()) {
+		//Battery saves are disabled (used by history viewer)
+		return {};
+	}
+
 	shared_ptr<IBatteryProvider> provider = _provider.lock();
 	
 	vector<uint8_t> batteryData;
@@ -54,6 +66,7 @@ vector<uint8_t> BatteryManager::LoadBattery(string extension)
 		}
 	}
 
+	_hasBattery = true;
 	return batteryData;
 }
 
