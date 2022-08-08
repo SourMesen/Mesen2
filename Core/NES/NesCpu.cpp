@@ -375,7 +375,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 			} else if(_spriteDmaTransfer) {
 				//DMC DMA is not running, or not ready, run sprite DMA
 				processCycle();
-				readValue = _memoryManager->Read(_spriteDmaOffset * 0x100 + spriteReadAddr);
+				readValue = _memoryManager->Read(_spriteDmaOffset * 0x100 + spriteReadAddr, MemoryOperationType::DmaRead);
 				EndCpuCycle(true);
 				spriteReadAddr++;
 				spriteDmaCounter++;
@@ -392,7 +392,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 			if(_spriteDmaTransfer && (spriteDmaCounter & 0x01)) {
 				//Sprite DMA write cycle (only do this if a sprite dma read was performed last cycle)
 				processCycle();
-				_memoryManager->Write(0x2004, readValue, MemoryOperationType::Write);
+				_memoryManager->Write(0x2004, readValue, MemoryOperationType::DmaWrite);
 				EndCpuCycle(true);
 				spriteDmaCounter++;
 				if(spriteDmaCounter == 0x200) {

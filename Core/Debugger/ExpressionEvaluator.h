@@ -76,6 +76,8 @@ enum EvalValues : int64_t
 	Address,
 	IsWrite,
 	IsRead,
+	IsDma,
+	IsDummy,
 	OpProgramCounter,
 
 	R0,

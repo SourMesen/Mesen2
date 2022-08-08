@@ -50,7 +50,7 @@ namespace Mesen.Debugger.Disassembly
 					case MemoryOperationType.DummyRead: progress.Color = Color.FromRgb(184, 160, 255); progress.Text = "DR"; break;
 					case MemoryOperationType.DummyWrite: progress.Color = Color.FromRgb(255, 245, 137); progress.Text = "DW"; break;
 					case MemoryOperationType.DmaRead: progress.Color = Color.FromRgb(255, 160, 221); progress.Text = "DMAR"; break;
-					case MemoryOperationType.DmaWrite: progress.Color = Color.FromRgb(255, 160, 221); progress.Text = "DMAR"; break;
+					case MemoryOperationType.DmaWrite: progress.Color = Color.FromRgb(255, 160, 221); progress.Text = "DMAW"; break;
 					case MemoryOperationType.Idle: progress.Color = Color.FromRgb(240, 240, 240); progress.Text = "I"; break;
 					default: progress.Color = Color.FromRgb(143, 255, 173); progress.Text = "X"; break;
 				}

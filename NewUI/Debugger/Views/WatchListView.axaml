@@ -44,6 +44,9 @@
 		<Style Selector="TextBlock.changed">
 			<Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
 		</Style>
+		<Style Selector="DataBoxRow:selected TextBlock.changed">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
 	</UserControl.Styles>
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">

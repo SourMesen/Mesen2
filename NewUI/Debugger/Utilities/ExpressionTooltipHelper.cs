@@ -57,6 +57,8 @@ namespace Mesen.Debugger.Utilities
 				addRow("  Value: Value being read/written");
 				addRow("  IsRead: True if the CPU is reading data");
 				addRow("  IsWrite: True if the CPU is writing data");
+				addRow("  IsDma: True if the operation was triggered by DMA");
+				addRow("  IsDummy: True if this is a \"dummy\" read or write");
 			}
 
 			addRow(" ");

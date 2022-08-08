@@ -137,6 +137,10 @@ int64_t ExpressionEvaluator::ProcessSharedTokens(string token)
 		return EvalValues::IsWrite;
 	} else if(token == "isread") {
 		return EvalValues::IsRead;
+	} else if(token == "isdma") {
+		return EvalValues::IsDma;
+	} else if(token == "isdummy") {
+		return EvalValues::IsDummy;
 	} else if(token == "oppc") {
 		return EvalValues::OpProgramCounter;
 	}
@@ -389,6 +393,8 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 					case EvalValues::Address: token = operationInfo.Address; break;
 					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite || operationInfo.Type == MemoryOperationType::DummyWrite; break;
 					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite && operationInfo.Type != MemoryOperationType::DummyWrite; break;
+					case EvalValues::IsDma: token = operationInfo.Type == MemoryOperationType::DmaRead || operationInfo.Type == MemoryOperationType::DmaWrite; break;
+					case EvalValues::IsDummy: token = operationInfo.Type == MemoryOperationType::DummyRead|| operationInfo.Type == MemoryOperationType::DummyWrite; break;
 					case EvalValues::OpProgramCounter: token = _cpuDebugger->GetProgramCounter(true); break;
 
 					default:
