@@ -1,0 +1,39 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys="clr-namespace:System;assembly=netstandard"	
+	xmlns:cc="using:AvaloniaEdit.CodeCompletion"
+>
+	<Style Selector="cc|CompletionList">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border BorderBrush="Gray" BorderThickness="1">
+					<cc:CompletionListBox Name="PART_ListBox" FontSize="11">
+						<cc:CompletionListBox.ItemTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal" Margin="0">
+									<Image Source="{Binding Image}"
+											 Width="16"
+											 Height="16"
+											 Margin="0,0,2,0" />
+									<ContentPresenter Content="{Binding Content}" Margin="0 2 0 0" />
+								</StackPanel>
+							</DataTemplate>
+						</cc:CompletionListBox.ItemTemplate>
+					</cc:CompletionListBox>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="cc|CompletionList ListBox">
+		<Setter Property="Padding" Value="0"/>
+	</Style>
+
+	<Style Selector="cc|CompletionList ListBox > ListBoxItem">
+		<Setter Property="Padding" Value="4 0 0 0"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="Height" Value="20"/>
+	</Style>
+</Styles>

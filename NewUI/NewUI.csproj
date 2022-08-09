@@ -33,6 +33,7 @@
 	  <None Remove="Assets\MsgBoxInfo.png" />
 	  <None Remove="Debugger\HighlightAssembly.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
+	  <None Remove="Debugger\Utilities\LuaDocumentation.json" />
 	  <None Remove="Debugger\Utilities\LuaScripts\DrawMode.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Example.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Grid.lua" />
@@ -40,6 +41,7 @@
 	  <None Remove="Dependencies.zip" />
 	  <None Remove="Styles\AvaloniaComboBoxStyles.xaml" />
 	  <None Remove="Styles\AvaloniaContextMenuStyles.xaml" />
+	  <None Remove="Styles\AvaloniaEditStyles.xaml" />
 	  <None Remove="Styles\AvaloniaMenuItemStyles.xaml" />
 	  <None Remove="Styles\AvaloniaNumericUpDownStyles.xaml" />
 	  <None Remove="Styles\AvaloniaScrollViewerStyles.xaml" />
@@ -51,7 +53,6 @@
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.14" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.10.9" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.14" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14" />
@@ -170,6 +171,9 @@
     </Compile>
     <Compile Update="Debugger\Views\QuickSearchView.axaml.cs">
       <DependentUpon>QuickSearchView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\ScriptCodeCompletionView.axaml.cs">
+      <DependentUpon>ScriptCodeCompletionView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\SourceViewView.axaml.cs">
       <DependentUpon>SourceViewView.axaml</DependentUpon>
@@ -426,6 +430,9 @@
   </ItemGroup>
   <ItemGroup>
 	  <AvaloniaResource Include="Assets\**" />
+	  <AvaloniaResource Include="Styles\AvaloniaEditStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </AvaloniaResource>
 	  
 	  <AvaloniaResource Include="Styles\DockStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
@@ -469,12 +476,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
     <EmbeddedResource Include="Debugger\HighlightAssembly.xshd" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaDocumentation.json" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\DrawMode.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Example.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Grid.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="AvaloniaEdit">
+      <HintPath>..\..\AvaloniaEdit\src\AvaloniaEdit\bin\Release\netstandard2.0\AvaloniaEdit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="PreBuildWindows" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'!='linux-x64'">
     <Exec Command="cd $(OutDir)&#xD;&#xA;rd Dependencies /s /q&#xD;&#xA;md Dependencies&#xD;&#xA;copy $(ProjectDir)Dependencies\* Dependencies&#xD;&#xA;copy libHarfBuzzSharp.dll Dependencies&#xD;&#xA;copy libSkiaSharp.dll Dependencies&#xD;&#xA;copy MesenSCore.dll Dependencies&#xD;&#xA;DependencyPacker.exe&#xD;&#xA;copy Dependencies.zip $(ProjectDir)" />

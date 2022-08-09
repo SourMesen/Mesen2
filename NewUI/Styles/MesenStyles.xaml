@@ -9,6 +9,7 @@
 	<StyleInclude Source="/Styles/AvaloniaMenuItemStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaNumericUpDownStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaScrollViewerStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaEditStyles.xaml" />
 	
 	<Design.PreviewWith>
 		<Window Width="440" Height="620" Padding="5">

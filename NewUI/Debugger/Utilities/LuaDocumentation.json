@@ -1,0 +1,361 @@
+[
+{
+	"name": "addCheat",
+	"description": "Adds the specified cheat code.\n\nNote: Cheat codes added via this function are not permanent and not visible in the UI.",
+	"parameters": [
+		{ "name": "cheatType", "type": "Enum", "enumName": "cheatType", "description": "Cheat type/format" },
+		{ "name": "cheatCode", "type": "String", "description": "Cheat code" }
+	]
+},
+{
+	"name": "addEventCallback",
+	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives no parameters.",
+	"parameters": [
+		{ "name": "callback", "type": "Function", "description": "Lua function to call when the event occurs" },
+		{ "name": "eventType", "type": "Enum", "enumName": "eventType", "description": "Event type" }
+	],
+	"returnValue": { "type": "Int", "description": "Value that can be used to remove the callback by calling emu.removeEventCallback()." }
+},
+{
+	"name": "addMemoryCallback",
+	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives 2 parameters (\"address\" and \"value\") that correspond to the address being written to or read from, and the value that is being read/written.\n\nFor reads, the callback is called after the read is performed.\nFor writes, the callback is called before the write is performed.\n\nIf the callback returns an integer value, it will replace the value - you can alter the results of read/write operation by using this.",
+	"parameters": [
+		{ "name": "callback", "type": "Function", "description": "Lua function to call when the event occurs" },
+		{ "name": "callbackType", "type": "Enum", "enumName": "callbackType", "description": "Callback type" },
+		{ "name": "startAddress", "type": "Int", "description": "Start of the address range" },
+		{ "name": "endAddress", "type": "Int", "description": "End of the address range", "defaultValue": "start address" },
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "console main CPU" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type for the callback", "defaultValue": "console main CPU memory" }
+	],
+	"returnValue": { "type": "Int", "description": "Value that can be used to remove the callback by calling emu.removeMemoryCallback()." }
+},
+{
+	"name": "breakExecution",
+	"description": "Breaks the execution."
+},
+{
+	"name": "clearCheats",
+	"description": "Removes all active cheat codes.\n\nNote: This has no impact on cheat codes saved in the UI, but it will disable them temporarily."
+},
+{
+	"name": "clearScreen",
+	"description": "Removes all drawn shapes from the screen."
+},
+{
+	"name": "convertAddress",
+	"description": "Converts an address between CPU addressing mode and ROM/RAM addressing mode.\nWhen a ROM/RAM address is given, a CPU address matching that value is returned, if the value is mapped.\nWhen a CPU address is given, the corresponding ROM/RAM address is returned, if the address is mapped to ROM/RAM.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to convert" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type", "defaultValue": "console main CPU memory" },
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the conversion", "defaultValue": "console main CPU" }
+	],
+	"returnValue": { "type": "Table", "description": "{ address = int, memType = enum }" }
+},
+{
+	"name": "createSavestate",
+	"description": "Creates a savestate and returns it as a binary string.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
+	"returnValue": { "type": "String", "description": "Binary string containing the savestate." }
+},
+{
+	"name": "displayMessage",
+	"description": "Displays a message on the main window in the format \"[category] text\"",
+	"parameters": [
+		{ "name": "category", "type": "String", "description": "The category is the portion shown between brackets" },
+		{ "name": "text", "type": "String", "description": "Text to show on the screen" }
+	]
+},
+{
+	"name": "drawLine",
+	"description": "Draws a line between (x, y) to (x2, y2) using the specified color for a specific number of frames.",
+	"parameters": [
+		{ "name": "x", "type": "Int", "description": "X position (start of line)" },
+		{ "name": "y", "type": "Int", "description": "Y position (start of line)" },
+		{ "name": "x2", "type": "Int", "description": "X position (end of line)" },
+		{ "name": "y2", "type": "Int", "description": "Y position (end of line)" },
+		{ "name": "color", "type": "Int (ARGB)", "description": "Color", "defaultValue": "0xFFFFFF (white)" },
+		{ "name": "duration", "type": "Int", "description": "Number of frames to display", "defaultValue": "1" },
+		{ "name": "delay", "type": "Int", "description": "Number of frames to wait before drawing the line", "defaultValue": "0" }
+	]
+},
+{
+	"name": "drawPixel",
+	"description": "Draws a pixel at the specified (x, y) coordinates using the specified color for a specific number of frames.",
+	"parameters": [
+		{ "name": "x", "type": "Int", "description": "X position" },
+		{ "name": "y", "type": "Int", "description": "Y position" },
+		{ "name": "color", "type": "Int (ARGB)", "description": "Color" },
+		{ "name": "duration", "type": "Int", "description": "Number of frames to display", "defaultValue": "1" },
+		{ "name": "delay", "type": "Int", "description": "Number of frames to wait before drawing the pixel", "defaultValue": "0" }
+	]
+},
+{
+	"name": "drawRectangle",
+	"description": "Draws a rectangle between (x, y) to (x+width, y+height) using the specified color for a specific number of frames. If fill is false, only the rectangle's outline will be drawn.",
+	"parameters": [
+		{ "name": "x", "type": "Int", "description": "X position" },
+		{ "name": "y", "type": "Int", "description": "Y position" },
+		{ "name": "width", "type": "Int", "description": "Width" },
+		{ "name": "height", "type": "Int", "description": "Height" },
+		{ "name": "color", "type": "Int (ARGB)", "description": "Color", "defaultValue": "0xFFFFFF (white)" },
+		{ "name": "fill", "type": "Boolean", "description": "Whether or not to draw an outline, or a filled rectangle.", "defaultValue": "false" },
+		{ "name": "duration", "type": "Int", "description": "Number of frames to display", "defaultValue": "1" },
+		{ "name": "delay", "type": "Int", "description": "Number of frames to wait before drawing the rectangle", "defaultValue": "0" }
+	]
+},
+{
+	"name": "drawString",
+	"description": "Draws text at (x, y) using the specified text and colors for a specific number of frames.",
+	"parameters": [
+		{ "name": "x", "type": "Int", "description": "X position" },
+		{ "name": "y", "type": "Int", "description": "Y position" },
+		{ "name": "text", "type": "String", "description": "Text to display" },
+		{ "name": "textColor", "type": "Int (ARGB)", "description": "Color to use for the text", "defaultValue": "0xFFFFFF (white)" },
+		{ "name": "backgroundColor", "type": "Int (ARGB)", "description": "Color to use for the background", "defaultValue": "0 (transparent)" },
+		{ "name": "maxWidth", "type": "Int", "description": "Max width (pixels) - wraps to next line when reached", "defaultValue": "0" },
+		{ "name": "duration", "type": "Int", "description": "Number of frames to display", "defaultValue": "1" },
+		{ "name": "delay", "type": "Int", "description": "Number of frames to wait before drawing the text", "defaultValue": "0" }
+	]
+},
+{
+	"name": "getAccessCounters",
+	"description": "Returns an array of access counters for the specified memory and operation types.",
+	"parameters": [
+		{ "name": "counterType", "type": "Enum", "enumName": "counterType", "description": "Counter type" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type" }
+	],
+	"returnValue": { "type": "Array", "description": "Array of ints" }
+},
+{
+	"name": "getDrawSurfaceSize",
+	"description": "Returns a table containing the full size, visible size and overscan size for the selected draw surface.",
+	"parameters": [
+		{ "name": "surface", "type": "Enum", "enumName": "drawSurface", "description": "Draw surface", "defaultValue": "current draw surface" }
+	],
+	"returnValue": { "type": "Table", "description": "{ width = int, height = int, visibleWidth = int, visibleHeight = int, overscan = { top = int, bottom = int, left = int, right = int } }" }
+},
+{
+	"name": "getInput",
+	"description": "Returns a table containing the state of all buttons for the selected port/controller. The table's content varies based on the controller type.",
+	"parameters": [
+		{ "name": "port", "type": "Int", "description": "Port number" },
+		{ "name": "subPort", "type": "Int", "description": "Subport number - this is used for multitap-like adapters.", "defaultValue": "0" }
+	],
+	"returnValue": { "type": "Table", "description": "Content varies based on controller type." }
+},
+{
+	"name": "getLabelAddress",
+	"description": "Returns a table containing the address and memory type for the specified label.",
+	"parameters": [
+		{ "name": "label", "type": "String", "description": "Label" }
+	],
+	"returnValue": { "type": "Table", "description": "{ address = int, memType = int }\n\nNote: Returns nil when the specified label could not be found." }
+},
+{
+	"name": "getLogWindowLog",
+	"description": "Returns the same text as what is shown in the emulator's log window.",
+	"parameters": [
+		{ "name": "label", "type": "String", "description": "Label" }
+	],
+	"returnValue": { "type": "Table", "description": "A string containing the log shown in the log window" }
+},
+{
+	"name": "getMemorySize",
+	"description": "Returns the size (in bytes) of the specified memory type.",
+	"parameters": [
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type" }
+	],
+	"returnValue": { "type": "Int", "description": "Size of the specified memory type" }
+},
+{
+	"name": "getMouseState",
+	"description": "Returns a table containing the position and the state of all 3 buttons.",
+	"returnValue": { "type": "Table", "description": "{ x = int, y = int, relativeX = int, relativeY = int, left = bool, middle = bool, right = bool }" }
+},
+{
+	"name": "getPixel",
+	"description": "Returns the color (in ARGB format) of the screen's output for the specified coordinates.",
+	"parameters": [
+		{ "name": "x", "type": "Int", "description": "X position" },
+		{ "name": "y", "type": "Int", "description": "Y position" }
+	],
+	"returnValue": { "type": "Int", "description": "ARGB color" }
+},
+{
+	"name": "getRomInfo",
+	"description": "Returns information about the ROM file that is currently running.",
+	"returnValue": { "type": "Table", "description": "{ name = string, path = string, fileSha1Hash = string }" }
+},
+{
+	"name": "getScreenBuffer",
+	"description": "Returns an array of ARGB values with the contents of the console's screen - can be used with emu.setScreenBuffer() to modify the screen's contents.\n\nNote: The size of the array varies based on the console, game, and sometimes scene. Use emu.getScreenSize() to get the screen's current dimensions.",
+	"returnValue": { "type": "Array", "description": "Array of ARGB values" }
+},
+{
+	"name": "getScreenSize",
+	"description": "Returns a table containing the size of the console's current screen output.",
+	"returnValue": { "type": "Table", "description": "{ width = int, height = int }" }
+},
+{
+	"name": "getScriptDataFolder",
+	"description": "This function returns the path to a unique folder (based on the script's filename) where the script should store its data (if any data needs to be saved). The data will be saved in subfolders inside the LuaScriptData folder in Mesen's home folder.\n\nNote: This function will return an empty string if the \"Allow access to I/O and OS functions\" option is disabled.",
+	"returnValue": { "type": "String", "description": "The folder's path" }
+},
+{
+	"name": "getState",
+	"description": "Returns a table containing key-value pairs that describe the console's current state.\n\nNote: The name of the values returned may change from one version to another. Some values may represent the emulator's internal state and may not be useful (these will be hidden in future versions.)",
+	"returnValue": { "type": "Table", "description": "Content varies for each console and game." }
+},
+{
+	"name": "isKeyPressed",
+	"description": "Returns whether or not a specific key is pressed. The \"keyName\" must be the same as the string shown in the UI when the key is bound to a button.",
+	"parameters": [
+		{ "name": "keyName", "type": "String", "description": "Name of the key to check" }
+	],
+	"returnValue": { "type": "Bool", "description": "The key's state (true when pressed)" }
+},
+{
+	"name": "loadSavestate",
+	"description": "Loads a savestate from a binary string.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
+	"parameters": [
+		{ "name": "state", "type": "String", "description": "Binary data containing the savestate" }
+	]
+},
+{
+	"name": "log",
+	"description": "Logs the specified string in the script's log window - useful for debugging scripts.",
+	"parameters": [
+		{ "name": "text", "type": "String", "description": "Text to log" }
+	]
+},
+{
+	"name": "measureString",
+	"description": "Measures the specified string and returns a table containing the width and height that the string would take when drawn.",
+	"parameters": [
+		{ "name": "text", "type": "String", "description": "String to measure" },
+		{ "name": "maxWidth", "type": "Int", "description": "Max width (pixels) - wraps to next line when reached", "defaultValue": "0" }
+	],
+	"returnValue": { "type": "Table", "description": "{ width = int, height = int }" }
+},
+{
+	"name": "read",
+	"description": "Reads an 8-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to read from" },
+		{ "name": "memoryType", "type": "Enum", "description": "Memory type to read from" },
+		{ "name": "signed", "type": "Bool", "description": "When true, the return value is an 8-bit signed value." }
+	],
+	"returnValue": { "type": "Int", "description": "An 8-bit (signed or unsigned) value." }
+},
+{
+	"name": "readWord",
+	"description": "Reads a 16-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to read from" },
+		{ "name": "memoryType", "type": "Enum", "description": "Memory type to read from" },
+		{ "name": "signed", "type": "Bool", "description": "When true, the return value is a 16-bit signed value." }
+	],
+	"returnValue": { "type": "Int", "description": "A 16-bit (signed or unsigned) value." }
+},
+{
+	"name": "reset",
+	"description": "Resets the current game. If the console does not have a reset button, this will have the same effect as power cycling."
+},
+{
+	"name": "resetAccessCounters",
+	"description": "Resets all access counters."
+},
+{
+	"name": "resume",
+	"description": "Resumes execution after a break."
+},
+{
+	"name": "rewind",
+	"description": "Instantly rewinds the emulation by the number of seconds specified.\n\nNote: This can only be called from inside an \"exec\" memory callback.",
+	"parameters": [
+		{ "name": "seconds", "type": "Int", "description": "Number of seconds to rewind" }
+	]
+},
+{
+	"name": "selectDrawSurface",
+	"description": "Selects the surface on which any subsequent draw call will be drawn to.\n\nconsoleScreen: This surface is the same as the console's output and is a fixed resolution. Anything drawn here will appear in screenshots/videos.\n\nscriptHud: This surface is independent to the console's output and has a configurable resolution. Drawings done on this surface will not appear in screenshots/videos.\n\nNote: setScreenBuffer always draws to the \"consoleScreen\" surface.",
+	"parameters": [
+		{ "name": "surface", "type": "Enum", "enumName": "drawSurface", "description": "Draw surface" },
+		{ "name": "scale", "type": "Int", "description": "Scale to use for the \"scriptHud\" surface (max: 4)", "defaultValue": "current scale" }
+	]
+},
+{
+	"name": "setInput",
+	"description": "Sets the input state for the specified port. Buttons enabled or disabled via setInput will keep their state until the next inputPolled event.\n\nNote: If a button's value is not specified in the \"input\" argument, then the player retains control of that button. For example, \"emu.setInput(0, 0, { select = false, start = false })\" will prevent the player 1 from using both the start and select buttons, but all other buttons will still work as normal.\n\nIt is recommended to use this function within a callback for the inputPolled event. Otherwise, the inputs may not be applied before the ROM has the chance to read them.",
+	"parameters": [
+		{ "name": "port", "type": "Int", "description": "Port number" },
+		{ "name": "subPort", "type": "Int", "description": "Subport number - this is used for multitap-like adapters." },
+		{ "name": "input", "type": "Table", "description": "Controller state to apply to the port, same format as the return value of getState()." }
+	]
+},
+{
+	"name": "setScreenBuffer",
+	"description": "Replaces the current frame with the contents of the specified array.",
+	"parameters": [
+		{ "name": "screenBuffer", "type": "Array", "description": "Array of integers in ARGB format" }
+	]
+},
+{
+	"name": "setState",
+	"description": "Changes the state of the emulator to match the values provided in the \"state\" parameter.\n\nNote: The name of the values returned may change from one version to another. Some values may represent the emulator's internal state and should not be changed (access to these will be removed in future versions.)",
+	"parameters": [
+		{ "name": "state", "type": "Table", "description": "A key-value table containing the state to be applied." }
+	]
+},
+{
+	"name": "step",
+	"description": "Breaks the emulation's execution when the step conditions are reached.",
+	"parameters": [
+		{ "name": "count", "type": "Int", "description": "Number of cycles/frames/etc." },
+		{ "name": "stepType", "type": "Enum", "enumName": "stepType", "description": "Step type" },
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU type", "defaultValue": "console main CPU" }
+	]
+},
+{
+	"name": "takeScreenshot",
+	"description": "Takes a screenshot and returns a PNG file as a string. The screenshot is not saved to the disk.",
+	"returnValue": { "type": "String", "description": "A binary string containing a PNG image." }
+},
+{
+	"name": "removeEventCallback",
+	"description": "Removes a previously registered callback function.",
+	"parameters": [
+		{ "name": "reference", "type": "Int", "description": "Value returned by the call to emu.addEventCallback()" },
+		{ "name": "eventType", "type": "Enum", "enumName": "eventType", "description": "Event type" }
+	]
+},
+{
+	"name": "removeMemoryCallback",
+	"description": "Removes a previously registered callback function.",
+	"parameters": [
+		{ "name": "reference", "type": "Int", "description": "Value returned by the call to emu.addMemoryCallback()" },
+		{ "name": "callbackType", "type": "Enum", "enumName": "callbackType", "description": "Callback type" },
+		{ "name": "startAddress", "type": "Int", "description": "Start of the address range" },
+		{ "name": "endAddress", "type": "Int", "description": "End of the address range", "defaultValue": "start address" },
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "console main CPU" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type for the callback", "defaultValue": "console main CPU memory" }
+	]
+},
+{
+	"name": "write",
+	"description": "Writes an 8-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to write to" },
+		{ "name": "value", "type": "Int", "description": "8-bit value to write" },
+		{ "name": "memoryType", "type": "Enum", "description": "Memory type to write to" }
+	]
+},
+{
+	"name": "writeWord",
+	"description": "Writes a 16-bit value to the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from writing a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
+	"parameters": [
+		{ "name": "address", "type": "Int", "description": "Address to write to" },
+		{ "name": "value", "type": "Int", "description": "16-bit value to write" },
+		{ "name": "memoryType", "type": "Enum", "description": "Memory type to write to" }
+	]
+}
+]

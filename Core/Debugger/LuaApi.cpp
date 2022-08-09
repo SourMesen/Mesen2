@@ -116,7 +116,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "displayMessage", LuaApi::DisplayMessage },
 
 		{ "reset", LuaApi::Reset },
-		{ "breakExecution", LuaApi::Break },
+		{ "breakExecution", LuaApi::BreakExecution },
 		{ "resume", LuaApi::Resume },
 		{ "step", LuaApi::Step },
 		{ "rewind", LuaApi::Rewind },
@@ -703,7 +703,7 @@ int LuaApi::Reset(lua_State *lua)
 	return l.ReturnCount();
 }
 
-int LuaApi::Break(lua_State *lua)
+int LuaApi::BreakExecution(lua_State *lua)
 {
 	LuaCallHelper l(lua);
 	checkparams();
@@ -813,7 +813,6 @@ int LuaApi::SetInput(lua_State* lua)
 	l.ForceParamCount(4);
 	lua_settop(lua, 4);
 
-	bool allowUserInput = l.ReadBool(false);
 	int subport = l.ReadInteger(0);
 	int port = l.ReadInteger();
 
@@ -832,7 +831,7 @@ int LuaApi::SetInput(lua_State* lua)
 		lua_getfield(lua, 1, btn.Name.c_str());
 		if(btn.IsNumeric) {
 			Nullable<int32_t> btnState = l.ReadOptionalInteger();
-			if(btnState.HasValue || !allowUserInput) {
+			if(btnState.HasValue) {
 				if(btn.ButtonId == BaseControlDevice::DeviceXCoordButtonId) {
 					MousePosition pos = controller->GetCoordinates();
 					pos.X = (int16_t)btnState.Value;
@@ -845,7 +844,7 @@ int LuaApi::SetInput(lua_State* lua)
 			}
 		} else {
 			Nullable<bool> btnState = l.ReadOptionalBool();
-			if(btnState.HasValue || !allowUserInput) {
+			if(btnState.HasValue) {
 				controller->SetBitValue(btn.ButtonId, btnState.Value);
 			}
 		}
@@ -859,7 +858,6 @@ int LuaApi::SetInput(lua_State* lua)
 int LuaApi::GetAccessCounters(lua_State *lua)
 {
 	LuaCallHelper l(lua);
-	l.ForceParamCount(2);
 	AccessCounterType counterType = (AccessCounterType)l.ReadInteger();
 	MemoryType memoryType = (MemoryType)l.ReadInteger();
 	errorCond(memoryType == MemoryType::Register, "Invalid memory type");
