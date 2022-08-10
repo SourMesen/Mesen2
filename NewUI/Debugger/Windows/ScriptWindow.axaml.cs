@@ -64,6 +64,7 @@ namespace Mesen.Debugger.Windows
 			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
 			_textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
+			_textEditor.TextArea.PointerMoved += TextArea_PointerMoved;
 
 			_txtScriptLog = this.FindControl<TextBox>("txtScriptLog");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
@@ -140,6 +141,72 @@ namespace Mesen.Debugger.Windows
 
 		private CompletionWindow? _completionWindow;
 		private bool _ctrlPressed;
+		private DocEntryViewModel? _prevTooltipEntry;
+
+		private void TextArea_PointerMoved(object? sender, PointerEventArgs e)
+		{
+			TextViewPosition? posResult = _textEditor.TextArea.TextView.GetPosition(e.GetCurrentPoint(_textEditor.TextArea).Position + _textEditor.TextArea.TextView.ScrollOffset);
+			if(posResult is TextViewPosition pos) {
+				int offset = _textEditor.TextArea.Document.GetOffset(pos.Location.Line, pos.Location.Column);
+				DocEntryViewModel? entry = GetTooltipEntry(offset);
+				if(_prevTooltipEntry != entry) {
+					if(entry != null) {
+						ToolTip.SetTip(this, new ScriptCodeCompletionView() { DataContext = entry });
+						ToolTip.SetHorizontalOffset(this, 10);
+						ToolTip.SetIsOpen(this, true);
+					} else {
+						ToolTip.SetTip(this, null);
+						ToolTip.SetIsOpen(this, false);
+					}
+					_prevTooltipEntry = entry;
+				}
+			}
+		}
+
+		private DocEntryViewModel? GetTooltipEntry(int offset)
+		{
+			if(offset >= _model.Code.Length || _model.Code[offset] == '\r' || _model.Code[offset] == '\n') {
+				//End of line/document, close tooltip
+				return null;
+			}
+
+			//Find the end of the expression
+			for(; offset < _model.Code.Length; offset++) {
+				if(!char.IsLetterOrDigit(_model.Code[offset]) && _model.Code[offset] != '.' && _model.Code[offset] != '_') {
+					break;
+				}
+			}
+
+			//Find the start of the expression
+			int i = offset - 1;
+			for(; i >= 0 && i < _model.Code.Length; i--) {
+				if(!char.IsLetterOrDigit(_model.Code[i]) && _model.Code[i] != '.' && _model.Code[i] != '_') {
+					break;
+				}
+			}
+
+			string expr = _model.Code.Substring(i + 1, offset - i - 1);
+			if(expr.StartsWith("emu.")) {
+				expr = expr.Substring(4);
+				bool hasTrailingDot = expr.EndsWith(".");
+				if(hasTrailingDot) {
+					expr = expr.Substring(0, expr.Length - 1);
+				}
+
+				DocEntryViewModel? entry = null;
+				if(expr.Contains(".")) {
+					string[] parts = expr.Split('.');
+					entry = CodeCompletionHelper.GetEntry(parts[0]);
+					if(parts.Length == 2 && entry != null && entry.EnumValues.Count > 0) {
+						return entry;
+					}
+				}
+
+				return CodeCompletionHelper.GetEntry(expr);
+			}
+
+			return null;
+		}
 
 		private void TextArea_KeyUp(object? sender, KeyEventArgs e)
 		{
