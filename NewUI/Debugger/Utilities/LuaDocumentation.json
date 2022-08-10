@@ -285,11 +285,11 @@
 },
 {
 	"name": "setInput",
-	"description": "Sets the input state for the specified port. Buttons enabled or disabled via setInput will keep their state until the next inputPolled event.\n\nNote: If a button's value is not specified in the \"input\" argument, then the player retains control of that button. For example, \"emu.setInput(0, 0, { select = false, start = false })\" will prevent the player 1 from using both the start and select buttons, but all other buttons will still work as normal.\n\nIt is recommended to use this function within a callback for the inputPolled event. Otherwise, the inputs may not be applied before the ROM has the chance to read them.",
+	"description": "Sets the input state for the specified port. Buttons enabled or disabled via setInput will keep their state until the next inputPolled event.\n\nNote: If a button's value is not specified in the \"input\" argument, then the player retains control of that button. For example, \"emu.setInput({ select = false, start = false }, 0)\" will prevent the player 1 from using both the start and select buttons, but all other buttons will still work as normal.\n\nIt is recommended to use this function within a callback for the inputPolled event. Otherwise, the inputs may not be applied before the ROM has the chance to read them.",
 	"parameters": [
+		{ "name": "input", "type": "Table", "description": "Controller state to apply to the port, same format as the return value of getState()." },
 		{ "name": "port", "type": "Int", "description": "Port number" },
-		{ "name": "subPort", "type": "Int", "description": "Subport number - this is used for multitap-like adapters." },
-		{ "name": "input", "type": "Table", "description": "Controller state to apply to the port, same format as the return value of getState()." }
+		{ "name": "subPort", "type": "Int", "description": "Subport number - this is used for multitap-like adapters.", "defaultValue": "0" }
 	]
 },
 {
