@@ -1,8 +1,6 @@
---This is an example script to give a general idea of how to build scripts
+--This is an example Lua (https://www.lua.org) script to give a general idea of how to build scripts
 --Press F5 or click the Run button to execute it
---Scripts must be written in Lua (https://www.lua.org)
---This text editor contains an auto-complete feature for all Mesen-specific functions
---Typing "emu." will display a list containing every available API function to interact with Mesen
+--Type "emu." to show a list of all available API function
 
 function printInfo()
   --Get the emulation state
@@ -14,10 +12,8 @@ function printInfo()
   --Select colors based on whether the left button is held down
   if mouseState.left == true then
     buffer = emu.getScreenBuffer()
-    for y = 0, 238 do
-      for x = 0, 255 do
-        buffer[y*256+x] = buffer[y*256+x] & 0xFFFF
-      end
+    for i = 1, #buffer do
+      buffer[i] = buffer[i] & 0xFFFF
     end
     emu.setScreenBuffer(buffer)
 
@@ -31,12 +27,12 @@ function printInfo()
   --Draw some rectangles and print some text
   emu.drawRectangle(8, 8, 128, 24, bgColor, true, 1)
   emu.drawRectangle(8, 8, 128, 24, fgColor, false, 1)
-  emu.drawString(12, 12, "Frame: " .. state.ppu.frameCount, 0xFFFFFF, 0xFF000000, 1)
-  emu.drawString(12, 21, "CPU Cycle: " .. state.cpu.cycleCount, 0xFFFFFF, 0xFF000000, 1)
+  emu.drawString(12, 12, "Frame: " .. state["frameCount"], 0xFFFFFF, 0xFF000000)
+  emu.drawString(12, 21, "Clock: " .. state["masterClock"], 0xFFFFFF, 0xFF000000)
   
   emu.drawRectangle(8, 218, 193, 11, bgColor, true, 1)
   emu.drawRectangle(8, 218, 193, 11, fgColor, false, 1)  
-  emu.drawString(11, 220, "Hold left mouse button to switch colors", 0xFFFFFF, 0xFF000000, 1)
+  emu.drawString(11, 220, "Hold left mouse button to switch colors", 0xFFFFFF, 0xFF000000)
   
   --Draw a block behind the mouse cursor - leaves a trail when moving the mouse
   emu.drawRectangle(mouseState.x - 2, mouseState.y - 2, 5, 5, 0xAF00FF90, true, 20)
