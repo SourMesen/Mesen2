@@ -23,6 +23,7 @@ using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 
@@ -59,6 +60,8 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			DataContext = model;
 			_textEditor = this.FindControl<MesenTextEditor>("Editor");
+			_textEditor.TextArea.KeyDown += TextArea_KeyDown;
+			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
 			_textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
 
@@ -135,8 +138,23 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-
 		private CompletionWindow? _completionWindow;
+		private bool _ctrlPressed;
+
+		private void TextArea_KeyUp(object? sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) {
+				_ctrlPressed = false;
+			}
+		}
+
+		private void TextArea_KeyDown(object? sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl || e.KeyModifiers.HasFlag(KeyModifiers.Control)) {
+				_ctrlPressed = true;
+			}
+		}
+
 		private void TextArea_TextEntering(object? sender, TextInputEventArgs e)
 		{
 			if(e.Text?.Length > 0 && _completionWindow != null) {
@@ -146,6 +164,14 @@ namespace Mesen.Debugger.Windows
 					_completionWindow.CompletionList.RequestInsertion(e);
 				}
 			}
+
+			if(_ctrlPressed && e.Text == " ") {
+				//Don't type the space if pressing ctrl+space
+				e.Handled = true;
+
+				OpenCompletionWindow();
+			}
+
 			// Do not set e.Handled=true.
 			// We still want to insert the character that was typed.
 		}
@@ -153,38 +179,92 @@ namespace Mesen.Debugger.Windows
 		private void TextArea_TextEntered(object? sender, TextInputEventArgs e)
 		{
 			if(e.Text == ".") {
-				int offset = _textEditor.TextArea.Caret.Offset;
-				if(offset >= 4 && _model.Code.Substring(offset - 4, 4) == "emu.") {
-					// Open code completion after the user has pressed dot:
-					_completionWindow = new CompletionWindow(_textEditor.TextArea);
-					IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
-					foreach(string name in CodeCompletionHelper.GetEntries()) {
-						data.Add(new MyCompletionData(name));
-					}
-					_completionWindow.Show();
+				OpenCompletionWindow();
+			}
+		}
 
-					_completionWindow.Closed += delegate {
-						_completionWindow = null;
-					};
+		private void OpenCompletionWindow()
+		{
+			int offset = _textEditor.TextArea.Caret.Offset;
+			//Find the start of the expression
+			int i = offset - 1;
+			for(; i >= 0 && i < _model.Code.Length; i--) {
+				if(!char.IsLetterOrDigit(_model.Code[i]) && _model.Code[i] != '.' && _model.Code[i] != '_') {
+					break;
 				}
+			}
+
+			string expr = _model.Code.Substring(i + 1, offset - i - 1);
+			if(expr.StartsWith("emu.")) {
+				expr = expr.Substring(4);
+				bool hasTrailingDot = expr.EndsWith(".");
+				if(hasTrailingDot) {
+					expr = expr.Substring(0, expr.Length - 1);
+				}
+
+				DocEntryViewModel? entry = null;
+				if(expr.Contains(".")) {
+					string[] parts = expr.Split('.');
+					entry = CodeCompletionHelper.GetEntry(parts[0]);
+					if(parts.Length == 2 && entry != null && entry.EnumValues.Count > 0) {
+						OpenCompletionWindow(entry.EnumValues.Select(x => x.Name), expr, parts[1], parts[1].Length);
+						return;
+					}
+				}
+
+				entry = CodeCompletionHelper.GetEntry(expr);
+				if(entry != null && entry.EnumValues.Count > 0 && hasTrailingDot) {
+					OpenCompletionWindow(entry.EnumValues.Select(x => x.Name), expr, "", 0);
+				} else {
+					if(!hasTrailingDot) {
+						OpenCompletionWindow(CodeCompletionHelper.GetEntries(), null, expr, expr.Length);
+					}
+				}
+			}
+		}
+
+		private void OpenCompletionWindow(IEnumerable<string> entries, string? enumName, string defaultFilter, int insertOffset)
+		{
+			_completionWindow = new CompletionWindow(_textEditor.TextArea);
+			IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
+			foreach(string name in entries) {
+				data.Add(new MyCompletionData(name, enumName, -insertOffset));
+			}
+			_completionWindow.Closed += delegate {
+				_completionWindow = null;
+			};
+			_completionWindow.Show();
+			if(defaultFilter.Length > 0) {
+				_completionWindow.CompletionList.SelectItem(defaultFilter);
 			}
 		}
 
 		public class MyCompletionData : ICompletionData
 		{
-			public MyCompletionData(string text)
+			private string? _enumName;
+			private int _insertOffset;
+
+			public MyCompletionData(string text, string? enumName = null, int insertOffset = 0)
 			{
-				this.Text = text;
+				Text = text;
+				_enumName = enumName;
+				_insertOffset = insertOffset;
 			}
 
 			public IBitmap Image
 			{
-				get { return ImageUtilities.BitmapFromAsset("Assets/Function.png")!; }
+				get
+				{
+					if(_enumName != null) {
+						return ImageUtilities.BitmapFromAsset("Assets/Enum.png")!;
+					} else {
+						return ImageUtilities.BitmapFromAsset(CodeCompletionHelper.GetEntry(Text)?.EnumValues.Count > 0 ? "Assets/Enum.png" : "Assets/Function.png")!;
+					}
+				}
 			}
 
 			public string Text { get; private set; }
 
-			// Use this property if you want to show a fancy UIElement in the list.
 			public object Content
 			{
 				get { return new TextBlock() { Text = this.Text }; }
@@ -194,9 +274,22 @@ namespace Mesen.Debugger.Windows
 			{
 				get 
 				{
-					ScriptCodeCompletionView view = new();
-					view.DataContext = CodeCompletionHelper.GetEntry(Text);
-					return view;
+					if(_enumName != null) {
+						DocEntryViewModel? enumEntry = CodeCompletionHelper.GetEntry(_enumName);
+						if(enumEntry != null) {
+							foreach(DocEnumValue val in enumEntry.EnumValues) {
+								if(val.Name == Text) {
+									return val.Description;
+								}
+							}
+						}
+					} else {
+						DocEntryViewModel? entry = CodeCompletionHelper.GetEntry(Text);
+						if(entry != null) {
+							return new ScriptCodeCompletionView() { DataContext = entry };
+						}
+					}
+					return null!;
 				}
 			}
 
@@ -204,7 +297,7 @@ namespace Mesen.Debugger.Windows
 
 			public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 			{
-				textArea.Document.Replace(completionSegment, this.Text);
+				textArea.Document.Replace(completionSegment.Offset + _insertOffset, completionSegment.Length - _insertOffset, this.Text);
 			}
 		}
 	}

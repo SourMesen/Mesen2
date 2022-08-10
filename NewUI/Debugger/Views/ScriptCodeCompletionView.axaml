@@ -10,7 +10,7 @@
 	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:l="using:Mesen.Localization"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="410"
-  MaxWidth="500"
+  MaxWidth="550"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="du:DocEntryViewModel"
@@ -30,45 +30,67 @@
 		<TextBlock FontSize="16" Text="{CompiledBinding Name}" Padding="0 3" />
 		<TextBlock Text="{CompiledBinding Description}" Margin="0 10 0 0" />
 
-		<TextBlock Text="Syntax" TextDecorations="Underline" Margin="0 10 0 0" />
-		<TextBlock Text="{CompiledBinding Syntax}" FontFamily="Consolas" Margin="5 3 0 0" />
+		<StackPanel IsVisible="{CompiledBinding !EnumValues.Count}">
+			<TextBlock Text="Syntax" TextDecorations="Underline" Margin="0 10 0 0" />
+			<TextBlock Text="{CompiledBinding Syntax}" FontFamily="Consolas" Margin="5 3 0 0" />
 
-		<TextBlock Text="Parameters" TextDecorations="Underline" Margin="0 10 0 0" />
-		<Grid IsVisible="{CompiledBinding Parameters.Count}" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto" Margin="5 3 0 0" >
-			<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="0">
-				<ItemsRepeater.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{CompiledBinding Name}" FontWeight="Bold" Padding="2 0" />
-					</DataTemplate>
-				</ItemsRepeater.ItemTemplate>
-			</ItemsRepeater>
-			<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="1">
-				<ItemsRepeater.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{CompiledBinding Type}" FontStyle="Italic" Margin="5 0" Padding="5 0" />
-					</DataTemplate>
-				</ItemsRepeater.ItemTemplate>
-			</ItemsRepeater>
-			<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="2">
-				<ItemsRepeater.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="{CompiledBinding Description}" />
-							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding DefaultValue.Length}">
-								<TextBlock Text=" [default: " />
-								<TextBlock Text="{CompiledBinding DefaultValue}" />
-								<TextBlock Text="]" />
+			<TextBlock Text="Parameters" TextDecorations="Underline" Margin="0 10 0 0" />
+			<Grid IsVisible="{CompiledBinding Parameters.Count}" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto" Margin="5 3 0 0" >
+				<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="0">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{CompiledBinding Name}" FontWeight="Bold" Padding="2 0" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+				<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="1">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{CompiledBinding CalculatedType}" FontStyle="Italic" Margin="5 0" Padding="5 0" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+				<ItemsRepeater Items="{CompiledBinding Parameters}" Grid.Column="2">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{CompiledBinding Description}" />
+								<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding DefaultValue.Length}">
+									<TextBlock Text=" [default: " />
+									<TextBlock Text="{CompiledBinding DefaultValue}" />
+									<TextBlock Text="]" />
+								</StackPanel>
 							</StackPanel>
-						</StackPanel>
-					</DataTemplate>
-				</ItemsRepeater.ItemTemplate>
-			</ItemsRepeater>
-		</Grid>
-		<TextBlock IsVisible="{CompiledBinding !Parameters.Count}" FontStyle="Italic" Text="None" Margin="5 3 0 0" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+			</Grid>
+			<TextBlock IsVisible="{CompiledBinding !Parameters.Count}" FontStyle="Italic" Text="None" Margin="5 3 0 0" />
 
-		<TextBlock Text="Return Value" TextDecorations="Underline" Margin="0 10 0 0" />
-		<TextBlock IsVisible="{CompiledBinding ReturnValue.Type.Length}" Text="{CompiledBinding ReturnValue.Type}" FontStyle="Italic" Margin="5 3 0 0" />
-		<TextBlock IsVisible="{CompiledBinding ReturnValue.Type.Length}" Text="{CompiledBinding ReturnValue.Description}" Margin="5 3 0 0" />
-		<TextBlock IsVisible="{CompiledBinding !ReturnValue.Type.Length}" FontStyle="Italic" Text="None" Margin="5 3 0 0" />
+			<TextBlock Text="Return Value" TextDecorations="Underline" Margin="0 10 0 0" />
+			<TextBlock IsVisible="{CompiledBinding ReturnValue.Type.Length}" Text="{CompiledBinding ReturnValue.Type}" FontStyle="Italic" Margin="5 3 0 0" />
+			<TextBlock IsVisible="{CompiledBinding ReturnValue.Type.Length}" Text="{CompiledBinding ReturnValue.Description}" Margin="5 3 0 0" />
+			<TextBlock IsVisible="{CompiledBinding !ReturnValue.Type.Length}" FontStyle="Italic" Text="None" Margin="5 3 0 0" />
+		</StackPanel>
+
+		<StackPanel IsVisible="{CompiledBinding EnumValues.Count}">
+			<TextBlock Text="Values" TextDecorations="Underline" Margin="0 10 0 0" />
+			<Grid IsVisible="{CompiledBinding EnumValues.Count}" ColumnDefinitions="Auto,Auto" RowDefinitions="Auto" Margin="5 3 0 0" >
+				<ItemsRepeater Items="{CompiledBinding EnumValues}" Grid.Column="0">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{CompiledBinding Name}" FontWeight="Bold" Padding="2 0" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+				<ItemsRepeater Items="{CompiledBinding EnumValues}" Grid.Column="1">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{CompiledBinding Description}" Padding="5 0" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+			</Grid>
+		</StackPanel>
 	</StackPanel>
 </UserControl>

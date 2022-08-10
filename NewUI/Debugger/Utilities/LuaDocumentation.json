@@ -24,8 +24,8 @@
 		{ "name": "callbackType", "type": "Enum", "enumName": "callbackType", "description": "Callback type" },
 		{ "name": "startAddress", "type": "Int", "description": "Start of the address range" },
 		{ "name": "endAddress", "type": "Int", "description": "End of the address range", "defaultValue": "start address" },
-		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "console main CPU" },
-		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type for the callback", "defaultValue": "console main CPU memory" }
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "main CPU" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type for the callback", "defaultValue": "main CPU memory" }
 	],
 	"returnValue": { "type": "Int", "description": "Value that can be used to remove the callback by calling emu.removeMemoryCallback()." }
 },
@@ -46,8 +46,8 @@
 	"description": "Converts an address between CPU addressing mode and ROM/RAM addressing mode.\nWhen a ROM/RAM address is given, a CPU address matching that value is returned, if the value is mapped.\nWhen a CPU address is given, the corresponding ROM/RAM address is returned, if the address is mapped to ROM/RAM.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to convert" },
-		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type", "defaultValue": "console main CPU memory" },
-		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the conversion", "defaultValue": "console main CPU" }
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type", "defaultValue": "main CPU memory" },
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the conversion", "defaultValue": "main CPU" }
 	],
 	"returnValue": { "type": "Table", "description": "{ address = int, memType = enum }" }
 },
@@ -241,7 +241,7 @@
 	"description": "Reads an 8-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
-		{ "name": "memoryType", "type": "Enum", "description": "Memory type to read from" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to read from" },
 		{ "name": "signed", "type": "Bool", "description": "When true, the return value is an 8-bit signed value." }
 	],
 	"returnValue": { "type": "Int", "description": "An 8-bit (signed or unsigned) value." }
@@ -251,7 +251,7 @@
 	"description": "Reads a 16-bit value from the specified address and memory type.\n\nNote: When using \"memType.[cpuName]\" memory types, side-effects can occur from reading a value. Use the \"memType.[cpuName]Debug\" enum values to avoid side-effects.",
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to read from" },
-		{ "name": "memoryType", "type": "Enum", "description": "Memory type to read from" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to read from" },
 		{ "name": "signed", "type": "Bool", "description": "When true, the return value is a 16-bit signed value." }
 	],
 	"returnValue": { "type": "Int", "description": "A 16-bit (signed or unsigned) value." }
@@ -312,7 +312,7 @@
 	"parameters": [
 		{ "name": "count", "type": "Int", "description": "Number of cycles/frames/etc." },
 		{ "name": "stepType", "type": "Enum", "enumName": "stepType", "description": "Step type" },
-		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU type", "defaultValue": "console main CPU" }
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU type", "defaultValue": "main CPU" }
 	]
 },
 {
@@ -336,8 +336,8 @@
 		{ "name": "callbackType", "type": "Enum", "enumName": "callbackType", "description": "Callback type" },
 		{ "name": "startAddress", "type": "Int", "description": "Start of the address range" },
 		{ "name": "endAddress", "type": "Int", "description": "End of the address range", "defaultValue": "start address" },
-		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "console main CPU" },
-		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type for the callback", "defaultValue": "console main CPU memory" }
+		{ "name": "cpuType", "type": "Enum", "enumName": "cpuType", "description": "CPU used for the callback", "defaultValue": "main CPU" },
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type", "defaultValue": "main CPU memory" }
 	]
 },
 {
@@ -346,7 +346,7 @@
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
 		{ "name": "value", "type": "Int", "description": "8-bit value to write" },
-		{ "name": "memoryType", "type": "Enum", "description": "Memory type to write to" }
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to write to" }
 	]
 },
 {
@@ -355,7 +355,173 @@
 	"parameters": [
 		{ "name": "address", "type": "Int", "description": "Address to write to" },
 		{ "name": "value", "type": "Int", "description": "16-bit value to write" },
-		{ "name": "memoryType", "type": "Enum", "description": "Memory type to write to" }
+		{ "name": "memoryType", "type": "Enum", "enumName": "memType", "description": "Memory type to write to" }
+	]
+},
+{
+	"name": "callbackType",
+	"description": "Used by emu.addMemoryCallback() and emu.removeMemoryCallback()",
+	"enumValues": [
+		{ "name": "read", "description": "Callback is called when data is read" },
+		{ "name": "write", "description": "Callback is called when data is written" },
+		{ "name": "exec", "description": "Callback is called when the CPU starts executing an instruction" }
+	]
+},
+{
+	"name": "cheatType",
+	"description": "Used by emu.addCheat()",
+	"enumValues": [
+		{ "name": "nesGameGenie", "description": "Game Genie (NES)" },
+		{ "name": "nesProActionRocky", "description": "Pro Action Rocky (NES)" },
+		{ "name": "nesCustom", "description": "Custom Address:Value code (NES)" },
+		{ "name": "gbGameGenie", "description": "Game Genie (GB)" },
+		{ "name": "gbGameShark", "description": "Game Shark (GB)" },
+		{ "name": "snesGameGenie", "description": "Game Genie (SNES)" },
+		{ "name": "snesProActionReplay", "description": "Pro Action Replay (SNES)" },
+		{ "name": "pceRaw", "description": "24-bit address format (PC Engine)" },
+		{ "name": "pceAddress", "description": "21-bit address format (PC Engine)" }
+	]
+},
+{
+	"name": "counterType",
+	"description": "Used by emu.getAccessCounters()",
+	"enumValues": [
+		{ "name": "readCount", "description": "Returns the number of times each byte was read" },
+		{ "name": "writeCount", "description": "Returns the number of times each byte was written" },
+		{ "name": "execCount", "description": "Returns the number of times each byte was executed" },
+		{ "name": "lastReadClock", "description": "Returns the time at which each byte was last read" },
+		{ "name": "lastWriteClock", "description": "Returns the time at which each byte was last written" },
+		{ "name": "lastExecClock", "description": "Returns the time at which each byte was last executed" }
+	]
+},
+{
+	"name": "cpuType",
+	"description": "Used by several APIs to specify which CPU the API call applies to.",
+	"enumValues": [
+		{ "name": "snes", "description": "SNES - Main CPU - S-CPU 5A22 (65186)" },
+		{ "name": "spc", "description": "SNES - SPC" },
+		{ "name": "necDsp", "description": "SNES - DSP-n" },
+		{ "name": "sa1", "description": "SNES - SA-1" },
+		{ "name": "cx4", "description": "SNES - CX4" },
+		{ "name": "gameboy", "description": "Game Boy - Main CPU (can also be used in SGB mode)" },
+		{ "name": "nes", "description": "NES - Main CPU - 2A03 (6502)" },
+		{ "name": "pce", "description": "PC Engine - Main CPU - HuC6280" }
+	]
+},
+{
+	"name": "drawSurface",
+	"description": "Used by emu.selectDrawSurface() and emu.getDrawSurfaceSize()",
+	"enumValues": [
+		{ "name": "consoleScreen", "description": "Console's framebuffer. Drawings appear in screenshots/videos." },
+		{ "name": "scriptHud", "description": "Separate surface with a configurable resolution. Drawings not shown in screenshots/videos." }
+	]
+},
+{
+	"name": "eventType",
+	"description": "Used by emu.addEventCallback() and emu.removeEventCallback()",
+	"enumValues": [
+		{ "name": "nmi", "description": "Triggered when an NMI occurs (not available on some consoles)" },
+		{ "name": "irq", "description": "Triggered when an IRQ occurs" },
+		{ "name": "startFrame", "description": "Triggered when a frame starts (typically once vertical blank ends)" },
+		{ "name": "endFrame", "description": "Triggered when a frame ends (typically once vertical blank starts)" },
+		{ "name": "reset", "description": "Triggered when the console is reset (not available on some consoles)" },
+		{ "name": "scriptEnded", "description": "Triggered when the Lua script is stopped" },
+		{ "name": "inputPolled", "description": "Triggered after the emulator updates the state of all input devices (once per frame)" },
+		{ "name": "stateLoaded", "description": "Triggered when a savestate is manually loaded" },
+		{ "name": "stateSaved", "description": "Triggered when a savestate is manually saved" },
+		{ "name": "codeBreak", "description": "Triggered when code execution breaks (e.g breakpoint, step, etc.)" }
+	]
+},
+{
+	"name": "memType",
+	"description": "Used by several APIs to specify which memory type to access/use.",
+	"enumValues": [
+		{ "name": "snesMemory", "description": "SNES - S-CPU memory" },
+		{ "name": "spcMemory", "description": "SNES - SPC memory" },
+		{ "name": "sa1Memory", "description": "SNES - SA-1 memory" },
+		{ "name": "necDspMemory", "description": "SNES - DSP-n memory" },
+		{ "name": "gsuMemory", "description": "SNES - GSU memory" },
+		{ "name": "cx4Memory", "description": "SNES - CX4 memory" },
+		{ "name": "gameboyMemory", "description": "Game Boy - CPU memory" },
+		{ "name": "nesMemory", "description": "NES - CPU memory" },
+		{ "name": "nesPpuMemory", "description": "NES - PPU memory" },
+		{ "name": "pceMemory", "description": "PC Engine - CPU memory" },
+
+		{ "name": "snesDebug", "description": "SNES - S-CPU memory (no read/write side-effects)" },
+		{ "name": "spcDebug", "description": "SNES - SPC memory (no read/write side-effects)" },
+		{ "name": "sa1Debug", "description": "SNES - SA-1 memory (no read/write side-effects)" },
+		{ "name": "necDspDebug", "description": "SNES - DSP-n memory (no read/write side-effects)" },
+		{ "name": "gsuDebug", "description": "SNES - GSU memory (no read/write side-effects)" },
+		{ "name": "cx4Debug", "description": "SNES - CX4 memory (no read/write side-effects)" },
+		{ "name": "gameboyDebug", "description": "Game Boy - CPU memory (no read/write side-effects)" },
+		{ "name": "nesDebug", "description": "NES - CPU memory (no read/write side-effects)" },
+		{ "name": "nesPpuDebug", "description": "NES - PPU memory (no read/write side-effects)" },
+		{ "name": "pceDebug", "description": "PC Engine - CPU memory (no read/write side-effects)" },
+
+		{ "name": "snesPrgRom", "description": "SNES - PRG ROM" },
+		{ "name": "snesWorkRam", "description": "SNES - Work RAM" },
+		{ "name": "snesSaveRam", "description": "SNES - Save RAM" },
+		{ "name": "snesVideoRam", "description": "SNES - Video RAM" },
+		{ "name": "snesSpriteRam", "description": "SNES - Sprite RAM (OAM)" },
+		{ "name": "snesCgRam", "description": "SNES - Palette RAM (CGRAM)" },
+		{ "name": "spcRam", "description": "SNES - SPC - RAM" },
+		{ "name": "spcRom", "description": "SNES - SPC - IPL ROM" },
+		{ "name": "dspProgramRom", "description": "SNES - DSP-n - Program ROM" },
+		{ "name": "dspDataRom", "description": "SNES - DSP-n - Data ROM" },
+		{ "name": "dspDataRam", "description": "SNES - DSP-n - Data RAM" },
+		{ "name": "sa1InternalRam", "description": "SNES - SA-1 - IRAM" },
+		{ "name": "gsuWorkRam", "description": "SNES - GSU - Work RAM" },
+		{ "name": "cx4DataRam", "description": "SNES - CX4 - Data RAM" },
+		{ "name": "bsxPsRam", "description": "SNES - BS-X - PSRAM" },
+		{ "name": "bsxMemoryPack", "description": "SNES - BS-X - Memory Pack" },
+
+		{ "name": "gbPrgRom", "description": "Game Boy - PRG ROM" },
+		{ "name": "gbWorkRam", "description": "Game Boy - Work RAM" },
+		{ "name": "gbCartRam", "description": "Game Boy - Cart/Save RAM" },
+		{ "name": "gbHighRam", "description": "Game Boy - High RAM" },
+		{ "name": "gbBootRom", "description": "Game Boy - Boot ROM" },
+		{ "name": "gbVideoRam", "description": "Game Boy - Video RAM" },
+		{ "name": "gbSpriteRam", "description": "Game Boy - Sprite RAM" },
+
+		{ "name": "nesPrgRom", "description": "NES - PRG ROM" },
+		{ "name": "nesInternalRam", "description": "NES - System RAM" },
+		{ "name": "nesWorkRam", "description": "NES - Work RAM" },
+		{ "name": "nesSaveRam", "description": "NES - Save RAM" },
+		{ "name": "nesNametableRam", "description": "NES - Nametable RAM (CIRAM)" },
+		{ "name": "nesSpriteRam", "description": "NES - Sprite RAM (OAM)" },
+		{ "name": "nesSecondarySpriteRam", "description": "NES - Secondary Sprite RAM" },
+		{ "name": "nesPaletteRam", "description": "NES - Palette RAM" },
+		{ "name": "nesChrRam", "description": "NES - CHR RAM" },
+		{ "name": "nesChrRom", "description": "NES - CHR ROM" },
+
+		{ "name": "pcePrgRom", "description": "PC Engine - HuCard ROM" },
+		{ "name": "pceWorkRam", "description": "PC Engine - Work RAM" },
+		{ "name": "pceSaveRam", "description": "PC Engine - Save RAM" },
+		{ "name": "pceCdromRam", "description": "PC Engine - CD-ROM Unit RAM" },
+		{ "name": "pceCardRam", "description": "PC Engine - Card RAM" },
+		{ "name": "pceAdpcmRam", "description": "PC Engine - ADPCM RAM" },
+		{ "name": "pceArcadeCardRam", "description": "PC Engine - Arcade Card RAM" },
+		{ "name": "pceVideoRam", "description": "PC Engine - Video RAM (VDC)" },
+		{ "name": "pceVideoRamVdc2", "description": "PC Engine - Video RAM (VDC2 - SuperGrafx only)" },
+		{ "name": "pceSpriteRam", "description": "PC Engine - Sprite RAM (VDC)" },
+		{ "name": "pceSpriteRamVdc2", "description": "PC Engine - Sprite RAM (VDC2 - SuperGrafx only)" },
+		{ "name": "pcePaletteRam", "description": "PC Engine - Palette RAM (VCE)" }
+	]
+},
+{
+	"name": "stepType",
+	"description": "Used by emu.step()",
+	"enumValues": [
+		{ "name": "step", "description": "Steps the specified number of instructions" },
+		{ "name": "stepOut", "description": "Steps out of the current subroutine (not available for all CPUs)" },
+		{ "name": "stepOver", "description": "Steps over the current subroutine call (not available for all CPUs)" },
+		{ "name": "cpuCycleStep", "description": "Steps the specified number of CPU cycles (not available for all CPUs)" },
+		{ "name": "ppuStep", "description": "Steps the specified number of scanline cycles" },
+		{ "name": "ppuScanline", "description": "Steps the specified number of scanlines" },
+		{ "name": "ppuFrame", "description": "Steps the specified number of video frames" },
+		{ "name": "specificScanline", "description": "Breaks on the specified scanline number" },
+		{ "name": "runToNmi", "description": "Breaks on the next NMI event" },
+		{ "name": "runToIrq", "description": "Breaks on the next IRQ event" }
 	]
 }
 ]

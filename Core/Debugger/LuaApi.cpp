@@ -164,13 +164,13 @@ int LuaApi::GetLibrary(lua_State *lua)
 	}
 	lua_settable(lua, -3);
 
+	GenerateEnumDefinition<CallbackType>(lua, "callbackType");
 	GenerateEnumDefinition<CheatType>(lua, "cheatType");
-	GenerateEnumDefinition<StepType>(lua, "stepType");
 	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
-	GenerateEnumDefinition<CallbackType>(lua, "memCallbackType");
-	GenerateEnumDefinition<EventType>(lua, "eventType");
 	GenerateEnumDefinition<CpuType>(lua, "cpuType");
 	GenerateEnumDefinition<ScriptDrawSurface>(lua, "drawSurface");
+	GenerateEnumDefinition<EventType>(lua, "eventType");
+	GenerateEnumDefinition<StepType>(lua, "stepType");
 
 	return 1;
 }

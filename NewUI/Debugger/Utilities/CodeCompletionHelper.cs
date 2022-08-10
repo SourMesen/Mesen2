@@ -11,27 +11,30 @@ namespace Mesen.Debugger.Utilities
 {
 	public class CodeCompletionHelper
 	{
-		private static DocEntryViewModel[] _documentation;
+		private static Dictionary<string, DocEntryViewModel> _documentation;
 
 		static CodeCompletionHelper()
 		{
 			using StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Utilities.LuaDocumentation.json")!);
-			_documentation = JsonSerializer.Deserialize<DocEntryViewModel[]>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? Array.Empty<DocEntryViewModel>();
+			DocEntryViewModel[] documentation = JsonSerializer.Deserialize<DocEntryViewModel[]>(reader.ReadToEnd(), new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) ?? Array.Empty<DocEntryViewModel>();
+
+			_documentation = new Dictionary<string, DocEntryViewModel>();
+			foreach(DocEntryViewModel entry in documentation) {
+				_documentation[entry.Name] = entry;
+			}
 		}
 
 		public static IEnumerable<string> GetEntries()
 		{
-			return _documentation.Select(x => x.Name);
+			return _documentation.Select(x => x.Key).OrderBy(x => x);
 		}
 
-		public static DocEntryViewModel GetEntry(string keyword)
+		public static DocEntryViewModel? GetEntry(string keyword)
 		{
-			foreach(var entry in _documentation) {
-				if(entry.Name == keyword) {
-					return entry;
-				}
+			if(_documentation.TryGetValue(keyword, out DocEntryViewModel? entry)) {
+				return entry;
 			}
-			return _documentation[0];			
+			return null;
 		}
 	}
 
@@ -41,6 +44,8 @@ namespace Mesen.Debugger.Utilities
 		public string Description { get; set; } = "";
 		public List<DocParam> Parameters { get; set; } = new();
 		public DocReturnValue ReturnValue { get; set; } = new();
+		
+		public List<DocEnumValue> EnumValues { get; set; } = new();
 
 		public string Syntax
 		{
@@ -77,13 +82,32 @@ namespace Mesen.Debugger.Utilities
 	{
 		public string Name { get; set; } = "";
 		public string Type { get; set; } = "";
+		public string EnumName { get; set; } = "";
 		public string Description { get; set; } = "";
 		public string DefaultValue { get; set; } = "";
+
+		public string CalculatedType
+		{
+			get
+			{
+				if(Type.ToLowerInvariant() == "enum") {
+					System.Diagnostics.Debug.Assert(EnumName.Length > 0);
+					return $"Enum ({EnumName})";
+				}
+				return Type;
+			}
+		}
 	}
 
 	public class DocReturnValue
 	{
 		public string Type { get; set; } = "";
+		public string Description { get; set; } = "";
+	}
+	
+	public class DocEnumValue
+	{
+		public string Name { get; set; } = "";
 		public string Description { get; set; } = "";
 	}
 }
