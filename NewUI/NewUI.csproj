@@ -38,6 +38,10 @@
 	  <None Remove="Debugger\Utilities\LuaScripts\Example.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Grid.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\ModifyScreen.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NesDmcCapture.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NesGameBoyMode.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NesLogParallax.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NesSpriteBox.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\ReverseMode.lua" />
 	  <None Remove="Dependencies.zip" />
@@ -479,10 +483,14 @@
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />
     <EmbeddedResource Include="Debugger\HighlightAssembly.xshd" />
     <EmbeddedResource Include="Debugger\Utilities\LuaDocumentation.json" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesDmcCapture.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\DrawMode.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Example.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\Grid.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\ModifyScreen.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesGameBoyMode.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesLogParallax.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesSpriteBox.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\ReverseMode.lua" />
     <EmbeddedResource Include="Dependencies.zip" />
