@@ -90,6 +90,7 @@ namespace Mesen.Debugger.Windows
 			_timer.Start();
 		}
 
+		private bool _needCloseValidation = true;
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -98,8 +99,21 @@ namespace Mesen.Debugger.Windows
 				return;
 			}
 
-			_timer.Stop();
-			_model.Config.SaveWindowSettings(this);
+			if(_needCloseValidation) {
+				e.Cancel = true;
+				ValidateExit();
+			} else {
+				_timer.Stop();
+				_model.Config.SaveWindowSettings(this);
+			}
+		}
+
+		private async void ValidateExit()
+		{
+			if(await _model.SavePrompt()) {
+				_needCloseValidation = false;
+				Close();
+			}
 		}
 		
 		private void UpdateSyntaxDef()

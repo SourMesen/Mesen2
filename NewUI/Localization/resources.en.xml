@@ -1439,6 +1439,8 @@
 		<Message ID="btnCancel">Cancel</Message>
 		<Message ID="btnYes">Yes</Message>
 		<Message ID="btnNo">No</Message>
+
+		<Message ID="ScriptSaveConfirmation">You have unsaved changes for this script - would you like to save them?</Message>
 		
 		<Message ID="AssemblerConfirmation">{0}&#xA;&#xA;OK?</Message>
 		<Message ID="LabelNameInUse">A label with this name already exists.</Message>

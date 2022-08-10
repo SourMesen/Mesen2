@@ -65,10 +65,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public void InitActions(ScriptWindow wnd)
 		{
-			if(wnd == null) {
-				throw new Exception("Invalid parent window");
-			}
-			
 			_wnd = wnd;
 
 			_recentScriptsAction = new ContextMenuAction() {
@@ -102,7 +98,7 @@ namespace Mesen.Debugger.ViewModels
 			HelpMenuActions = new() {
 				new ContextMenuAction() {
 					ActionType = ActionType.HelpApiReference,
-					OnClick = () => Process.Start(new ProcessStartInfo() { FileName = "https://www.mesen.ca/snes/ApiReference.php", UseShellExecute = true })
+					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/docs/api") //TODO website
 				}
 			};
 
@@ -296,12 +292,12 @@ namespace Mesen.Debugger.ViewModels
 			_fileWatcher.EnableRaisingEvents = true;
 		}
 
-		private async Task<bool> SavePrompt()
+		public async Task<bool> SavePrompt()
 		{
 			if(_originalText != Code) {
-				DialogResult result = await MesenMsgBox.Show(_wnd, "You have unsaved changes for this script - would you like to save them?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+				DialogResult result = await MesenMsgBox.Show(_wnd, "ScriptSaveConfirmation", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 				if(result == DialogResult.Yes) {
-					return !(await SaveScript());
+					return await SaveScript();
 				} else if(result == DialogResult.Cancel) {
 					return false;
 				}
@@ -315,6 +311,8 @@ namespace Mesen.Debugger.ViewModels
 				if(_originalText != Code) {
 					if(FileHelper.WriteAllText(FilePath, Code, Encoding.UTF8)) {
 						_originalText = Code;
+					} else {
+						return false;
 					}
 				}
 				return true;
