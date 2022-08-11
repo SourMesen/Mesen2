@@ -89,6 +89,27 @@ protected:
 		}
 	}
 
+	vector<MapperStateEntry> GetMapperStateEntries() override
+	{
+		vector<MapperStateEntry> entries;
+		string mirroringType;
+		switch(GetMirroringType()) {
+			case MirroringType::Horizontal: mirroringType = "Horizontal ($03)"; break;
+			case MirroringType::Vertical: mirroringType = "Vertical ($02)"; break;
+			case MirroringType::ScreenBOnly: mirroringType = "Screen B ($01)"; break;
+			case MirroringType::ScreenAOnly: mirroringType = "Screen A ($00)"; break;
+		}
+		entries.push_back(MapperStateEntry("$8000.0-1", "Mirroring", mirroringType));
+		entries.push_back(MapperStateEntry("$8000.2-3", "PRG Mode", (_prgMode << 1) | _slotSelect, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$8000.4", "CHR Mode", _chrMode, MapperStateValueType::Number8));
+
+		entries.push_back(MapperStateEntry("$A000.0-4", "CHR Bank ($0000)", _chrReg0, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$C000.0-4", "CHR Bank ($1000)", _chrReg1, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$E000.0-3", "PRG Bank", _prgReg, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$E000.4", "WRAM Disabled", _wramDisable));
+		return entries;
+	}
+
 protected:
 	uint16_t GetPrgPageSize() override { return 0x4000; }
 	uint16_t GetChrPageSize() override { return 0x1000; }

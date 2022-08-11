@@ -18,6 +18,7 @@ private:
 protected:
 	uint8_t _leftLatch = 0;
 	uint8_t _rightLatch = 0;
+	uint8_t _prgPage = 0;
 	uint8_t _leftChrPage[2] = {};
 	uint8_t _rightChrPage[2] = {};
 	bool _needChrUpdate = 0;
@@ -43,6 +44,7 @@ protected:
 	void Serialize(Serializer& s) override
 	{
 		BaseMapper::Serialize(s);
+		SV(_prgPage);
 		SV(_leftLatch);
 		SV(_rightLatch);
 		SV(_needChrUpdate);
@@ -56,7 +58,8 @@ protected:
 	{
 		switch((MMC2Registers)(addr >> 12)) {
 			case MMC2Registers::RegA000:
-				SelectPrgPage(0, value & 0x0F);
+				_prgPage = value & 0x0F;
+				SelectPrgPage(0, _prgPage);
 				break;
 
 			case MMC2Registers::RegB000:
@@ -83,6 +86,23 @@ protected:
 				SetMirroringType(((value & 0x01) == 0x01) ? MirroringType::Horizontal : MirroringType::Vertical);
 				break;
 		}
+	}
+
+	vector<MapperStateEntry> GetMapperStateEntries() override
+	{
+		vector<MapperStateEntry> entries;
+		string mirroringType;
+		switch(GetMirroringType()) {
+			case MirroringType::Vertical: mirroringType = "Vertical ($00)"; break;
+			case MirroringType::Horizontal: mirroringType = "Horizontal ($01)"; break;
+		}
+		entries.push_back(MapperStateEntry("$A000.0-3", "PRG Bank", _prgPage, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$B000.0-4", "CHR Bank ($0000) ($FD)", _leftChrPage[0], MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$C000.0-4", "CHR Bank ($0000) ($FE)", _leftChrPage[1], MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$D000.0-4", "CHR Bank ($1000) ($FD)", _rightChrPage[0], MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$E000.0-4", "CHR Bank ($1000) ($FE)", _rightChrPage[1], MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$F000.0", "Mirroring", mirroringType));
+		return entries;
 	}
 
 public:
