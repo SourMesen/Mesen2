@@ -1,5 +1,7 @@
 ﻿using Mesen.Debugger;
 using Mesen.Interop;
+using Mesen.ViewModels;
+using Mesen.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -76,12 +78,6 @@ namespace Mesen.Debugger.Labels
 
 		public static List<CodeLabel> GetLabels(CpuType cpu)
 		{
-			//TODO
-			if(cpu == CpuType.Sa1 || cpu == CpuType.Gsu || cpu == CpuType.Cx4) {
-				//Share label list between SNES CPU and SA1/GSU/CX4 (since they share the same PRG ROM)
-				cpu = CpuType.Snes;
-			}
-
 			return _labels.Where((lbl) => lbl.Matches(cpu)).ToList<CodeLabel>();
 		}
 
@@ -209,11 +205,10 @@ namespace Mesen.Debugger.Labels
 				foreach(string commentLine in label.Comment.Split('\n')) {
 					Match m = LabelManager.AssertRegex.Match(commentLine);
 					if(m.Success) {
-						CpuType cpuType = label.MemoryType.ToCpuType();
-						addAssert(label, m.Groups[1].Value, cpuType);
-						if(cpuType == CpuType.Snes) {
-							//TODO
-							addAssert(label, m.Groups[1].Value, CpuType.Sa1);
+						foreach(CpuType cpuType in MainWindowViewModel.Instance.RomInfo.CpuTypes) {
+							if(cpuType.CanAccessMemoryType(label.MemoryType)) {
+								addAssert(label, m.Groups[1].Value, cpuType);
+							}
 						}
 					}
 				}

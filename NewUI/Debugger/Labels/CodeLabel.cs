@@ -112,7 +112,7 @@ namespace Mesen.Debugger.Labels
 
 		public bool Matches(CpuType type)
 		{
-			return type == this.MemoryType.ToCpuType();
+			return type.CanAccessMemoryType(MemoryType);
 		}
 
 		public AddressInfo GetAbsoluteAddress()
