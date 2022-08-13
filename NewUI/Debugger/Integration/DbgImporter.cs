@@ -572,7 +572,7 @@ namespace Mesen.Debugger.Integration
 
 		private void LoadLabels()
 		{
-			Dictionary<MemoryType, Dictionary<int, string>> labelAliases = GatherLabelAliases();
+			Dictionary<MemoryType, Dictionary<int, List<string>>> labelAliases = GatherLabelAliases();
 
 			foreach(KeyValuePair<int, SymbolInfo> kvp in _symbols) {
 				try {
@@ -605,9 +605,18 @@ namespace Mesen.Debugger.Integration
 							label.Length = (uint)GetSymbolSize(symbol);
 
 							//Add aliases to comment if aliases exist
-							if(labelAliases.TryGetValue(addressInfo.Value.Type, out Dictionary<int, string>? aliases)) {
-								if(aliases.TryGetValue(addressInfo.Value.Address, out string? alias)) {
-									label.Comment = "Aliases: " + Environment.NewLine + alias + Environment.NewLine + label.Comment;
+							if(labelAliases.TryGetValue(addressInfo.Value.Type, out Dictionary<int, List<string>>? aliases)) {
+								if(aliases.TryGetValue(addressInfo.Value.Address, out List<string>? aliasList)) {
+									StringBuilder aliasComment = new();
+									foreach(string alias in aliasList) {
+										if(alias != newName) {
+											if(aliasComment.Length == 0) {
+												aliasComment.AppendLine("Aliases:");
+											}
+											aliasComment.AppendLine(alias);
+										}
+									}
+									label.Comment = aliasComment.ToString().Trim();
 								}
 							}
 						}
@@ -618,29 +627,29 @@ namespace Mesen.Debugger.Integration
 			}
 		}
 
-		private Dictionary<MemoryType, Dictionary<int, string>> GatherLabelAliases()
+		private Dictionary<MemoryType, Dictionary<int, List<string>>> GatherLabelAliases()
 		{
 			//Generate a list of all known aliases for addresses (type=equ or size undefined)
-			Dictionary<MemoryType, Dictionary<int, string>> labelAliases = new();
+			Dictionary<MemoryType, Dictionary<int, List<string>>> labelAliases = new();
 			foreach(KeyValuePair<int, SymbolInfo> kvp in _symbols) {
 				try {
 					SymbolInfo symbol = kvp.Value;
 					if(symbol.Type != "lab" || symbol.Size == null) {
 						AddressInfo? addr = GetSymbolAddressInfo(symbol);
 						if(addr != null) {
-							if(!labelAliases.TryGetValue(addr.Value.Type, out Dictionary<int, string>? aliases)) {
+							if(!labelAliases.TryGetValue(addr.Value.Type, out Dictionary<int, List<string>>? aliases)) {
 								aliases = new();
 								labelAliases[addr.Value.Type] = aliases;
 							}
 
-							string? alias = "";
-							if(aliases.TryGetValue(addr.Value.Address, out alias)) {
-								alias += Environment.NewLine + symbol.Name;
+							List<string>? aliasList = null;
+							if(aliases.TryGetValue(addr.Value.Address, out aliasList)) {
+								aliasList.Add(symbol.Name);
 							} else {
-								alias = symbol.Name;
+								aliasList = new() { symbol.Name };
 							}
 
-							aliases[addr.Value.Address] = alias;
+							aliases[addr.Value.Address] = aliasList;
 						}
 					}
 				} catch { }
