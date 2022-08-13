@@ -80,8 +80,8 @@ namespace Mesen.Debugger.Controls
 		{
 			InitializeComponent();
 
-			_panel = this.FindControl<Panel>("Panel");
-			_thumb = this.FindControl<Rectangle>("Thumb");
+			_panel = this.GetControl<Panel>("Panel");
+			_thumb = this.GetControl<Rectangle>("Thumb");
 
 			_panel.AddHandler(Panel.PointerPressedEvent, (s, e) => {
 				ScrollToPosition(e.GetPosition(_panel));

@@ -163,7 +163,7 @@ namespace Mesen.Debugger.Controls
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		public PictureViewer InnerViewer => this.FindControl<PictureViewer>("picViewer");
+		public PictureViewer InnerViewer => this.GetControl<PictureViewer>("picViewer");
 
 		private void Viewer_PointerPressed(object? sender, PointerPressedEventArgs e)
 		{
@@ -195,8 +195,8 @@ namespace Mesen.Debugger.Controls
 					offset = offset.WithY(0);
 				}
 
-				Size extent = this.FindControl<ScrollViewer>("scrollViewer").Extent;
-				Size viewport = this.FindControl<ScrollViewer>("scrollViewer").Viewport;
+				Size extent = this.GetControl<ScrollViewer>("scrollViewer").Extent;
+				Size viewport = this.GetControl<ScrollViewer>("scrollViewer").Viewport;
 				Size maxOffsets = extent - viewport;
 
 				if(offset.X > maxOffsets.Width) {
@@ -213,7 +213,7 @@ namespace Mesen.Debugger.Controls
 
 		public void ScrollToSelection()
 		{
-			Size viewport = this.FindControl<ScrollViewer>("scrollViewer").Viewport;
+			Size viewport = this.GetControl<ScrollViewer>("scrollViewer").Viewport;
 			Vector offset = ScrollOffset;
 
 			Rect rect = SelectionRect * Zoom;
@@ -221,7 +221,7 @@ namespace Mesen.Debugger.Controls
 			Rect visibleWindow = new Rect(new Point(offset.X, offset.Y), viewport);
 
 			if(!visibleWindow.Contains(rect)) {
-				Size extent = this.FindControl<ScrollViewer>("scrollViewer").Extent;
+				Size extent = this.GetControl<ScrollViewer>("scrollViewer").Extent;
 				Size maxOffsets = extent - viewport;
 
 				ScrollOffset = new Vector(

@@ -50,8 +50,8 @@ namespace Mesen.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.FindControl<TextBox>("txtBarcode").Focus();
-			this.FindControl<TextBox>("txtBarcode").SelectAll();
+			this.GetControl<TextBox>("txtBarcode").Focus();
+			this.GetControl<TextBox>("txtBarcode").SelectAll();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
@@ -62,7 +62,7 @@ namespace Mesen.Windows
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(null);
+			Close(null!);
 		}
 	}
 }

@@ -10,6 +10,7 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
 	VerticalAlignment="Top"
 	HorizontalAlignment="Stretch"
+	x:Name="root"
 	x:Class="Mesen.Views.ShortcutKeysTabView"
 >
 	<Design.DataContext>
@@ -21,21 +22,21 @@
 	</UserControl.Resources>
 
 	<DockPanel>
-		<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 5 36 5" DockPanel.Dock="Top">
-			<TextBlock Grid.Column="0" Text="{l:Translate colAction}"  />
-			<TextBlock Grid.Column="1" Text="{l:Translate colBinding1}" HorizontalAlignment="Center" />
-			<TextBlock Grid.Column="2" Text="{l:Translate colBinding2}" HorizontalAlignment="Center" />
-		</Grid>
+		<Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource MesenGrayBorderColor}" DockPanel.Dock="Top">
+			<Grid ColumnDefinitions="3*, 1*, 1*" Margin="{Binding HeaderMargin, ElementName=root}">
+				<TextBlock Grid.Column="0" Text="{l:Translate colAction}"  />
+				<TextBlock Grid.Column="1" Text="{l:Translate colBinding1}" HorizontalAlignment="Center" />
+				<TextBlock Grid.Column="2" Text="{l:Translate colBinding2}" HorizontalAlignment="Center" />
+			</Grid>
+		</Border>
 		
-		<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="2" Margin="-1 0 -1 0" DockPanel.Dock="Top"/>
-
 		<ScrollViewer AllowAutoHide="False">
 			<ItemsRepeater Items="{Binding ShortcutKeys}">
 				<ItemsRepeater.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>
 							<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 -1 0 0">
-								<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 20 0">
+								<Grid ColumnDefinitions="3*, 1*, 1*" Margin="5 0 0 0">
 									<TextBlock Grid.Column="0" Text="{Binding Shortcut, Converter={StaticResource EnumConverter}}" />
 									<c:MultiKeyBindingButton Grid.Column="1" KeyBinding="{Binding KeyCombination}" HorizontalAlignment="Stretch"  />
 									<c:MultiKeyBindingButton Grid.Column="2" KeyBinding="{Binding KeyCombination2}" HorizontalAlignment="Stretch" />

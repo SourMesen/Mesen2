@@ -12,7 +12,7 @@ namespace Mesen.Views
 		public MainMenuView()
 		{
 			InitializeComponent();
-			MainMenu = this.FindControl<Menu>("MainMenu");
+			MainMenu = this.GetControl<Menu>("MainMenu");
 		}
 
 		private void InitializeComponent()

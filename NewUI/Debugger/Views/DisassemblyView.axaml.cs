@@ -36,7 +36,7 @@ namespace Mesen.Debugger.Views
 		static DisassemblyView()
 		{
 			BoundsProperty.Changed.AddClassHandler<DisassemblyView>((x, e) => {
-				DisassemblyViewer viewer = x.FindControl<DisassemblyViewer>("disViewer");
+				DisassemblyViewer viewer = x.GetControl<DisassemblyViewer>("disViewer");
 				int rowCount = viewer.GetVisibleRowCount();
 				int prevCount = x.Model.VisibleRowCount;
 				if(prevCount != rowCount) {
@@ -52,7 +52,7 @@ namespace Mesen.Debugger.Views
 		{
 			InitializeComponent();
 
-			_viewer = this.FindControl<DisassemblyViewer>("disViewer");
+			_viewer = this.GetControl<DisassemblyViewer>("disViewer");
 
 			InitBreakpointContextMenu();
 			InitMainContextMenu();

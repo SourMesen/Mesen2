@@ -72,10 +72,14 @@ namespace Mesen.Utilities
 				parentWnd = parentWnd.VisualParent;
 			}
 
-			if(parentWnd is Window wnd && wnd.Topmost) {
+			if(!(parentWnd is Window wnd)) {
+				throw new Exception("Could not find parent window");
+			}
+
+			if(wnd.Topmost) {
 				child.Topmost = true;
 			}
-			return child.ShowDialog<TResult>(parentWnd as Window);
+			return child.ShowDialog<TResult>(wnd);
 		}
 
 		public static void BringToFront(this Window wnd)

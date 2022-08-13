@@ -37,7 +37,7 @@ namespace Mesen.Windows
 
 		private void SetDefaultMappings(KeyPresetType? preset)
 		{
-			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
+			int index = this.GetControl<TabControl>("tabMain").SelectedIndex;
 			ControllerConfig cfg = Model.Config;
 			switch(index) {
 				case 0: cfg.Mapping1.SetDefaultKeys(Model.Type, preset); Model.KeyMapping1.RefreshCustomKeys(); break;
@@ -49,7 +49,7 @@ namespace Mesen.Windows
 
 		private void btnClearBindings_OnClick(object sender, RoutedEventArgs e)
 		{
-			int index = this.FindControl<TabControl>("tabMain").SelectedIndex;
+			int index = this.GetControl<TabControl>("tabMain").SelectedIndex;
 			ControllerConfig cfg = Model.Config;
 			switch(index) {
 				case 0: cfg.Mapping1.ClearKeys(Model.Type); Model.KeyMapping1.RefreshCustomKeys(); break;

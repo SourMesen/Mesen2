@@ -102,12 +102,12 @@
 					<StackPanel Margin="10 5 0 0">
 						<StackPanel Orientation="Horizontal">
 							<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerAutoDetectSilence}" Content="{l:Translate chkAudioPlayerAutoDetectSilence}" />
-							<NumericUpDown Margin="5 1" Maximum="999999" Value="{CompiledBinding Config.AudioPlayerSilenceDelay}" />
+							<NumericUpDown Margin="5 1" Maximum="999999" Value="{CompiledBinding Config.AudioPlayerSilenceDelay}" IsEnabled="{CompiledBinding Config.AudioPlayerAutoDetectSilence}" />
 							<TextBlock Text="{l:Translate lblMillisecondsOfSilence}" />
 						</StackPanel>
 						<StackPanel Orientation="Horizontal">
 							<CheckBox IsChecked="{CompiledBinding Config.AudioPlayerEnableTrackLength}" Content="{l:Translate chkAudioPlayerEnableTrackLength}" />
-							<NumericUpDown Margin="5 1" Maximum="9999" Value="{CompiledBinding Config.AudioPlayerTrackLength}" />
+							<NumericUpDown Margin="5 1" Maximum="9999" Value="{CompiledBinding Config.AudioPlayerTrackLength}" IsEnabled="{CompiledBinding Config.AudioPlayerEnableTrackLength}" />
 							<TextBlock Text="{l:Translate lblSeconds}" />
 						</StackPanel>
 					</StackPanel>

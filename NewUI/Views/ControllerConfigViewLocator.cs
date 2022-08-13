@@ -12,9 +12,9 @@ namespace Mesen.Views
 {
 	public class ControllerConfigViewLocator : IDataTemplate
 	{
-		public IControl Build(object data)
+		public IControl Build(object? data)
 		{
-			KeyMappingViewModel mappings = (KeyMappingViewModel)data;
+			KeyMappingViewModel? mappings = data as KeyMappingViewModel;
 
 			if(mappings != null) {
 				return mappings.Type switch {
@@ -34,7 +34,7 @@ namespace Mesen.Views
 			return new TextBlock { Text = "No matching view found for controller type" };
 		}
 
-		public bool Match(object data)
+		public bool Match(object? data)
 		{
 			return data is KeyMappingViewModel;
 		}

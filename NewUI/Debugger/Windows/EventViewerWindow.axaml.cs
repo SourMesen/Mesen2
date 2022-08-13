@@ -33,7 +33,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			PictureViewer viewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
+			PictureViewer viewer = this.GetControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			_model = new EventViewerViewModel(cpuType, viewer, this);
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;
@@ -43,7 +43,7 @@ namespace Mesen.Debugger.Windows
 			}
 
 			viewer.PointerMoved += Viewer_PointerMoved;
-			viewer.PointerLeave += Viewer_PointerLeave;
+			viewer.PointerExited += Viewer_PointerExited;
 		}
 
 		private void InitializeComponent()
@@ -62,7 +62,7 @@ namespace Mesen.Debugger.Windows
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
 		}
 
-		private void Viewer_PointerLeave(object? sender, PointerEventArgs e)
+		private void Viewer_PointerExited(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
 				ToolTip.SetTip(viewer, null);

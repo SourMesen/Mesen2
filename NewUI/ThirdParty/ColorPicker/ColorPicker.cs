@@ -763,6 +763,10 @@ namespace ThemeEditor.Controls.ColorPicker
 
 		private void UpdateValuesFromThumbs()
 		{
+			if(_hueThumb == null || _colorThumb == null) {
+				return;
+			}
+
 			double hueY = Canvas.GetTop(_hueThumb);
 			double colorX = Canvas.GetLeft(_colorThumb);
 			double colorY = Canvas.GetTop(_colorThumb);
@@ -775,6 +779,10 @@ namespace ThemeEditor.Controls.ColorPicker
 
 		private void UpdateColorFromThumbs()
 		{
+			if(_hueThumb == null || _colorThumb == null) {
+				return;
+			}
+
 			double hueY = Canvas.GetTop(_hueThumb);
 			double colorX = Canvas.GetLeft(_colorThumb);
 			double colorY = Canvas.GetTop(_colorThumb);
@@ -839,6 +847,10 @@ namespace ThemeEditor.Controls.ColorPicker
 
 		private void ColorThumb_DragDelta(object? sender, VectorEventArgs e)
 		{
+			if(_colorThumb == null) {
+				return;
+			}
+
 			double left = Canvas.GetLeft(_colorThumb);
 			double top = Canvas.GetTop(_colorThumb);
 			_updating = true;
@@ -880,6 +892,10 @@ namespace ThemeEditor.Controls.ColorPicker
 
 		private void HueThumb_DragDelta(object? sender, VectorEventArgs e)
 		{
+			if(_hueThumb == null) {
+				return;
+			}
+
 			double top = Canvas.GetTop(_hueThumb);
 			_updating = true;
 			MoveThumb(_hueCanvas, _hueThumb, 0, top + e.Vector.Y);

@@ -30,7 +30,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			PictureViewer picViewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
+			PictureViewer picViewer = this.GetControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			picViewer.PositionClicked += PicViewer_PositionClicked;
 			_model = model;
 			_model.InitActions(picViewer, this);

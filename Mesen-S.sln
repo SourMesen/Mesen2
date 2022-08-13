@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewUI", "NewUI\NewUI.csproj", "{CF2D9667-BE12-41AB-A7DC-409528B6CA5D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37749BB2-FA78-4EC9-8990-5628FC0BBA19} = {37749BB2-FA78-4EC9-8990-5628FC0BBA19}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5330148-E8C7-46BA-B54E-69BE59EA337D} = {B5330148-E8C7-46BA-B54E-69BE59EA337D}
@@ -46,11 +51,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SevenZip", "SevenZip\SevenZip.vcxproj", "{52C4BA3A-E699-4305-B23F-C9083FD07AB6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Lua\Lua.vcxproj", "{B609E0A0-5050-4871-91D6-E760633BCDD1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewUI", "NewUI\NewUI.csproj", "{CF2D9667-BE12-41AB-A7DC-409528B6CA5D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{37749BB2-FA78-4EC9-8990-5628FC0BBA19} = {37749BB2-FA78-4EC9-8990-5628FC0BBA19}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

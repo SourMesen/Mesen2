@@ -13,7 +13,7 @@ namespace Mesen.Utilities
 		public static void ApplyTheme(MesenTheme theme)
 		{
 			//Reset styles & load everything needed to display all non-debugger windows
-			Application.Current?.Styles.Clear();
+			//Application.Current?.Styles.Clear();
 
 			var styles = new List<IStyle> {
 				new FluentTheme(new Uri("avares://Mesen/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },

@@ -34,14 +34,14 @@ namespace Mesen.Debugger.Utilities
 			_marginContextMenu = marginContextMenu;
 			_allowMarginClick = _marginContextMenu != null;
 
-			_viewer.PointerLeave += Viewer_PointerLeave;
+			_viewer.PointerExited += Viewer_PointerExited;
 			_viewer.RowClicked += Viewer_RowClicked;
 			_viewer.CodePointerMoved += Viewer_CodePointerMoved;
 			_viewer.PointerWheelChanged += Viewer_PointerWheelChanged;
 			_viewer.KeyDown += Viewer_KeyDown;
 		}
 
-		private void Viewer_PointerLeave(object? sender, PointerEventArgs e)
+		private void Viewer_PointerExited(object? sender, PointerEventArgs e)
 		{
 			_mouseOverCodeLocation = null;
 		}

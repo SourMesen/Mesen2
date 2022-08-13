@@ -57,12 +57,12 @@ namespace Mesen.Controls
 			}
 		}
 
-		protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+		protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 		{
 			base.OnPropertyChanged(change);
 
 			if(change.Property == KeyBindingProperty) {
-				UInt16 value = Convert.ToUInt16(change.NewValue.Value);
+				UInt16 value = Convert.ToUInt16(change.NewValue);
 				SetKeyName(value);
 			}
 		}

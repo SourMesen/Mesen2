@@ -43,8 +43,8 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.FindControl<TextBox>("txtValue").Focus();
-			this.FindControl<TextBox>("txtValue").SelectAll();
+			this.GetControl<TextBox>("txtValue").Focus();
+			this.GetControl<TextBox>("txtValue").SelectAll();
 
 			DebugShortcutManager.RegisterActions(this, new List<ContextMenuAction>() {
 				new ContextMenuAction() {
@@ -62,8 +62,8 @@ namespace Mesen.Debugger.Windows
 
 		private void MemorySearchWindow_Activated(object? sender, EventArgs e)
 		{
-			this.FindControl<TextBox>("txtValue").Focus();
-			this.FindControl<TextBox>("txtValue").SelectAll();
+			this.GetControl<TextBox>("txtValue").Focus();
+			this.GetControl<TextBox>("txtValue").SelectAll();
 		}
 
 		private void FindPrev_OnClick(object sender, RoutedEventArgs e)

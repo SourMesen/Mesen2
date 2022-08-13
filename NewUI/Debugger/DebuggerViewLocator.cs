@@ -9,9 +9,9 @@ namespace Mesen.Debugger
 {
 	class DebuggerViewLocator : IDataTemplate
 	{
-		public IControl Build(object data)
+		public IControl Build(object? data)
 		{
-			string? name = data.GetType().FullName?.Replace("ViewModel", "View");
+			string? name = data?.GetType().FullName?.Replace("ViewModel", "View");
 			if(name == null) {
 				return new TextBlock { Text = "Not Found: " + name };
 			}
@@ -25,7 +25,7 @@ namespace Mesen.Debugger
 					return new TextBlock();
 				}
 			} else {
-				if(data.GetType().Name.StartsWith(nameof(ToolContainerView))) {
+				if(data?.GetType().Name.StartsWith(nameof(ToolContainerView)) == true) {
 					return new ToolContainerView();
 				} else {
 					return new TextBlock { Text = "Not Found: " + name };
@@ -33,7 +33,7 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public bool Match(object data)
+		public bool Match(object? data)
 		{
 			return data is ViewModelBase || data is IDockable;
 		}

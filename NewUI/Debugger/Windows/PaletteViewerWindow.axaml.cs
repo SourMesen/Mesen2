@@ -26,7 +26,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			PaletteSelector palSelector = this.FindControl<PaletteSelector>("palSelector");
+			PaletteSelector palSelector = this.GetControl<PaletteSelector>("palSelector");
 			_model = new PaletteViewerViewModel(cpuType);
 			_model.InitActions(this, palSelector);
 			DataContext = _model;
@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Windows
 			}
 
 			palSelector.PointerMoved += PalSelector_PointerMoved;
-			palSelector.PointerLeave += PalSelector_PointerLeave;
+			palSelector.PointerExited += PalSelector_PointerExited;
 			PointerWheelChanged += Window_PointerWheelChanged;
 		}
 
@@ -54,7 +54,7 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		private void PalSelector_PointerLeave(object? sender, Avalonia.Input.PointerEventArgs e)
+		private void PalSelector_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
 		{
 			if(sender is PaletteSelector viewer) {
 				ToolTip.SetTip(viewer, null);

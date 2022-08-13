@@ -28,7 +28,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.FindControl<MesenNumericTextBox>("startAddress").Focus();
+			this.GetControl<MesenNumericTextBox>("startAddress").Focus();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

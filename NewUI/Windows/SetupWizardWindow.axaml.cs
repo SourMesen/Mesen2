@@ -31,27 +31,27 @@ namespace Mesen.Windows
 			}
 		}
 
-		private void lblCancel_Tapped(object? sender, RoutedEventArgs e)
+		private void lblCancel_Tapped(object? sender, TappedEventArgs e)
 		{
 			Close();
 		}
 
-		private void XboxIcon_Tapped(object? sender, RoutedEventArgs e)
+		private void XboxIcon_Tapped(object? sender, TappedEventArgs e)
 		{
 			_model.EnableXboxMappings = !_model.EnableXboxMappings;
 		}
 
-		private void PsIcon_Tapped(object? sender, RoutedEventArgs e)
+		private void PsIcon_Tapped(object? sender, TappedEventArgs e)
 		{
 			_model.EnablePsMappings = !_model.EnablePsMappings;
 		}
 
-		private void WasdIcon_Tapped(object? sender, RoutedEventArgs e)
+		private void WasdIcon_Tapped(object? sender, TappedEventArgs e)
 		{
 			_model.EnableWasdMappings = !_model.EnableWasdMappings;
 		}
 
-		private void ArrowIcon_Tapped(object? sender, RoutedEventArgs e)
+		private void ArrowIcon_Tapped(object? sender, TappedEventArgs e)
 		{
 			_model.EnableArrowMappings = !_model.EnableArrowMappings;
 		}

@@ -59,14 +59,14 @@ namespace Mesen.Debugger.Windows
 
 			_model = model;
 			DataContext = model;
-			_textEditor = this.FindControl<MesenTextEditor>("Editor");
+			_textEditor = this.GetControl<MesenTextEditor>("Editor");
 			_textEditor.TextArea.KeyDown += TextArea_KeyDown;
 			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
 			_textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
 			_textEditor.TextArea.PointerMoved += TextArea_PointerMoved;
 
-			_txtScriptLog = this.FindControl<TextBox>("txtScriptLog");
+			_txtScriptLog = this.GetControl<TextBox>("txtScriptLog");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
 
 			if(Design.IsDesignMode) {

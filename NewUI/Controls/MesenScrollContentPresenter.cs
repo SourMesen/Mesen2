@@ -26,8 +26,10 @@ namespace Mesen.Controls
 				//to the screen's height, causing a large number of rows to
 				//be created, and then removed again once the measure is
 				//re-calculated with the correct sizes.
-				Child.Measure(availableSize);
-				return Child.DesiredSize.Constrain(availableSize);
+				if(Child != null) {
+					Child.Measure(availableSize);
+					return Child.DesiredSize.Constrain(availableSize);
+				}
 			}
 			return base.MeasureOverride(availableSize);
 		}

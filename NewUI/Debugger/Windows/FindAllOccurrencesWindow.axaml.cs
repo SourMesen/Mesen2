@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			TextBox txt = this.FindControl<TextBox>("txtSearch");
+			TextBox txt = this.GetControl<TextBox>("txtSearch");
 			txt.Focus();
 			txt.SelectAll();
 		}
@@ -53,7 +53,7 @@ namespace Mesen.Debugger.Windows
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(null);
+			Close(null!);
 		}
 	}
 }

@@ -174,17 +174,21 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData()
 		{
 			DebugPaletteInfo paletteInfo = DebugApi.GetPaletteInfo(CpuType);
-			PaletteColors = paletteInfo.GetRgbPalette();
+			uint[] paletteColors = paletteInfo.GetRgbPalette();
+			uint[]? paletteValues;
 			if(paletteInfo.RawFormat == RawPaletteFormat.Indexed) {
-				PaletteValues = paletteInfo.GetRawPalette();
+				paletteValues = paletteInfo.GetRawPalette();
 			} else {
-				PaletteValues = null;
+				paletteValues = null;
 			}
-			PaletteColumnCount = (int)paletteInfo.ColorsPerPalette;
-
-			_palette = new(paletteInfo);
+			int paletteColumnCount = (int)paletteInfo.ColorsPerPalette;
 
 			Dispatcher.UIThread.Post(() => {
+				PaletteColors = paletteColors;
+				PaletteValues = paletteValues;
+				PaletteColumnCount = paletteColumnCount;
+				_palette = new(paletteInfo);
+
 				UpdatePreviewPanel();
 			});
 		}

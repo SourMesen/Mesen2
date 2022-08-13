@@ -10,6 +10,7 @@ using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -126,12 +127,17 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		protected override void OnPointerLeave(PointerEventArgs e)
+		protected override void OnPointerExited(PointerEventArgs e)
 		{
-			base.OnPointerLeave(e);
+			base.OnPointerExited(e);
 			_prevTooltipMapping = null;
 			ToolTip.SetTip(this, null);
 			ToolTip.SetIsOpen(this, false);
+		}
+
+		private FormattedText GetFormattedText(string text, Typeface typeface, double size)
+		{
+			return new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, size, ColorHelper.GetBrush(Colors.Black));
 		}
 
 		public override void Render(DrawingContext context)
@@ -150,9 +156,7 @@ namespace Mesen.Debugger.Controls
 
 			int start = 0;
 			double x = 0;
-			FormattedText noteText = new FormattedText("", new Typeface("Arial"), 9, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			FormattedText addressText = new FormattedText("", new Typeface("Arial"), 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			FormattedText text = new FormattedText("", new Typeface("Arial"), 12, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			Typeface typeface = new Typeface("Arial");
 			Pen borderPen = ColorHelper.GetPen(Color.FromRgb(0x60, 0x60, 0x60));
 			for(int i = 0; i < mappings.Count; i++) {
 				MemoryMappingBlock block = mappings[i];
@@ -163,34 +167,35 @@ namespace Mesen.Debugger.Controls
 				}
 
 				context.DrawRectangle(ColorHelper.GetBrush(block.Color), borderPen, new Rect(x - 0.5, 0.5, blockWidth + 1, BlockHeight));
-				text.Text = GetBlockText(block);
-				addressText.Text = start.ToString("X4");
-				double margin = addressText.Bounds.Height;
+				string blockText = GetBlockText(block);
+				var text = GetFormattedText(blockText, typeface, 12);
+				FormattedText? addressText = GetFormattedText(start.ToString("X4"), typeface, 11);
+				double margin = addressText.Height;
 
-				if(text.Bounds.Width >= blockWidth - margin) {
+				if(text.Width >= blockWidth - margin) {
 					//Hide name if there's no space
-					text.Text = block.Page >= 0 ? $"${block.Page:X2}" : text.Text;
+					text = GetFormattedText(block.Page >= 0 ? $"${block.Page:X2}" : blockText, typeface, 12);
 				}
 
-				if(text.Bounds.Width >= blockWidth - margin) {
+				if(text.Width >= blockWidth - margin) {
 					//Hide address text if there's no space
 					margin = 0;
-					addressText.Text = "";
+					addressText = null;
 				}
 
-				if(text.Bounds.Width < blockWidth - margin) {
-					context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(x + (blockWidth + margin - text.Bounds.Width) / 2, (BlockHeight - text.Bounds.Height) / 2), text);
+				if(text.Width < blockWidth - margin) {
+					context.DrawText(text, new Point(x + (blockWidth + margin - text.Width) / 2, (BlockHeight - text.Height) / 2));
 				}
 
-				if(addressText.Bounds.Height < blockWidth - 4) {
+				if(addressText != null && addressText.Height < blockWidth - 4) {
 					using var rotate = context.PushPostTransform(Matrix.CreateRotation(-Math.PI / 2));
-					context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(-BlockHeight + (BlockHeight - addressText.Bounds.Width) / 2, x), addressText);
+					context.DrawText(addressText, new Point(-BlockHeight + (BlockHeight - addressText.Width) / 2, x));
 				}
 
 				if(!string.IsNullOrEmpty(block.Note)) {
-					noteText.Text = block.Note;
-					if(noteText.Bounds.Width < blockWidth - 15) {
-						context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(x + blockWidth - noteText.Bounds.Width - 3, BlockHeight - noteText.Bounds.Height), noteText);
+					var noteText = GetFormattedText(block.Note, typeface, 9);
+					if(noteText.Width < blockWidth - 15) {
+						context.DrawText(noteText, new Point(x + blockWidth - noteText.Width - 3, BlockHeight - noteText.Height));
 					}
 				}
 

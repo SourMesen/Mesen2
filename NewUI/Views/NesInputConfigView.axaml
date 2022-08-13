@@ -163,7 +163,7 @@
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 					<TextBlock Grid.Row="0" Text="{l:Translate lblLightDetectionRadius}" VerticalAlignment="Top" Margin="0 15 5 0" />
 					<c:MesenSlider
-						Margin="12 12 10 0"
+						Margin="12 5 10 0"
 						HorizontalAlignment="Left"
 						Grid.Row="0"
 						Grid.Column="1"
@@ -175,14 +175,14 @@
 						Value="{CompiledBinding Config.LightDetectionRadius}"
 					/>
 
-					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 -5 5 0">
+					<Grid Grid.Row="1" Grid.Column="1" RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto" Width="115" HorizontalAlignment="Left" Margin="5 0 5 0">
 						<TextBlock Text="{l:Translate lblSmall}" />
 						<TextBlock Text="{l:Translate lblLarge}" Grid.Column="2" />
 					</Grid>
 				</Grid>
 			</c:OptionSection>
 			<c:OptionSection Header="{l:Translate grpHardware}">
-				<v:ShortcutKeysTabView />
+				<v:ShortcutKeysTabView HeaderMargin="0 0 0 0" Margin="0 0 10 0" />
 			</c:OptionSection>
 		</StackPanel>
 	</ScrollViewer>

@@ -32,7 +32,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			_editor = this.FindControl<HexEditor>("Hex");
+			_editor = this.GetControl<HexEditor>("Hex");
 			_model = new MemoryToolsViewModel(_editor);
 			DataContext = _model;
 

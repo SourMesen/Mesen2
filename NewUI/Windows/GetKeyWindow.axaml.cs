@@ -41,7 +41,7 @@ namespace Mesen.Windows
 
 			InitializeComponent();
 
-			lblCurrentKey = this.FindControl<TextBlock>("lblCurrentKey");
+			lblCurrentKey = this.GetControl<TextBlock>("lblCurrentKey");
 			
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(25), DispatcherPriority.Normal, (s, e) => UpdateKeyDisplay());
 			_timer.Start();
@@ -129,7 +129,7 @@ namespace Mesen.Windows
 				}
 			} else {
 				KeyCombination key = new KeyCombination(_prevScanCodes);
-				this.FindControl<TextBlock>("lblCurrentKey").Text = key.ToString();
+				this.GetControl<TextBlock>("lblCurrentKey").Text = key.ToString();
 
 				if(scanCodes.Count < _prevScanCodes.Count) {
 					//Confirm key selection when the user releases a key

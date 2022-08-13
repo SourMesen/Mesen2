@@ -395,10 +395,17 @@ namespace Mesen.Debugger.ViewModels
 		private void RefreshPalette()
 		{
 			DebugPaletteInfo palette = DebugApi.GetPaletteInfo(CpuType, new GetPaletteInfoOptions() { Format = Config.Format });
-			PaletteColors = palette.GetRgbPalette();
-			RawPalette = palette.GetRawPalette();
-			RawFormat = palette.RawFormat;
-			PaletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
+			var paletteColors = palette.GetRgbPalette();
+			var rawPalette = palette.GetRawPalette();
+			var rawFormat = palette.RawFormat;
+			var paletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
+
+			Dispatcher.UIThread.Post(() => {
+				PaletteColors = paletteColors;
+				RawPalette = rawPalette;
+				RawFormat = rawFormat;
+				PaletteColumnCount = paletteColumnCount;
+			});
 		}
 
 		private void RefreshTab()

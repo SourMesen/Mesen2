@@ -60,9 +60,9 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
-			_renderer = this.FindControl<NativeRenderer>("Renderer");
-			_audioPlayer = this.FindControl<ContentControl>("AudioPlayer");
-			_mainMenu = this.FindControl<MainMenuView>("MainMenu");
+			_renderer = this.GetControl<NativeRenderer>("Renderer");
+			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
+			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
 			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
 
@@ -153,7 +153,7 @@ namespace Mesen.Windows
 			});
 			
 			Task.Run(() => {
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl.Handle.Handle, _renderer.Handle, false, false, false);
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, false, false, false);
 				_baseScreenSize = EmuApi.GetBaseScreenSize();
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
@@ -330,7 +330,7 @@ namespace Mesen.Windows
 						//Prevent entering fullscreen mode until a game is loaded
 						return;
 					}
-					EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl.Handle.Handle);
+					EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
 				}
 				WindowState = WindowState.FullScreen;
 			}

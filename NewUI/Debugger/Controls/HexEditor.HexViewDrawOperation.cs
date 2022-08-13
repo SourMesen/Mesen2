@@ -69,7 +69,9 @@ namespace Mesen.Debugger.Controls
 
 			public void Render(IDrawingContextImpl context)
 			{
-				var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
+				var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+				using var lease = leaseFeature?.Lease();
+				var canvas = lease?.SkCanvas;
 				if(canvas == null) {
 					//context.DrawText(Brushes.Black, new Point(), _noSkia.PlatformImpl);
 				} else {
@@ -417,7 +419,9 @@ namespace Mesen.Debugger.Controls
 
 			public void Render(IDrawingContextImpl context)
 			{
-				var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
+				var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+				using var lease = leaseFeature?.Lease();
+				var canvas = lease?.SkCanvas;
 				if(canvas == null) {
 					//context.DrawText(Brushes.Black, new Point(), _noSkia.PlatformImpl);
 				} else {

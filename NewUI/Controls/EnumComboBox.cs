@@ -31,17 +31,17 @@ namespace Mesen.Controls
 			HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
 		}
 
-		protected override void UpdateDataValidation<T>(AvaloniaProperty<T> property, BindingValue<T> value)
+		protected override void UpdateDataValidation(AvaloniaProperty property, BindingValueType state, Exception? error)
 		{
-			if(_enumType == null && property == SelectedItemProperty && value.HasValue) {
-				if(value.Value is Enum selectedItem) {
+			if(_enumType == null && property == SelectedItemProperty && state == BindingValueType.Value) {
+				if(SelectedItem is Enum selectedItem) {
 					_enumType = selectedItem.GetType();
 				} else {
 					throw new Exception("Invalid selected item - not an enum");
 				}
 				InitComboBox();
 			}
-			base.UpdateDataValidation(property, value);
+			base.UpdateDataValidation(property, state, error);
 		}
 
 		private void InitComboBox()

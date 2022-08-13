@@ -28,7 +28,7 @@ namespace Mesen.Debugger.ViewModels
 			_model = model;
 			_wnd = wnd;
 			viewer.PointerMoved += PicViewer_PointerMoved;
-			viewer.PointerLeave += PicViewer_PointerLeave;
+			viewer.PointerExited += PicViewer_PointerExited;
 		}
 
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
@@ -61,7 +61,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private void PicViewer_PointerLeave(object? sender, PointerEventArgs e)
+		private void PicViewer_PointerExited(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
 				ToolTip.SetTip(viewer, null);

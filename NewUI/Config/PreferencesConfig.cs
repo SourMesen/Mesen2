@@ -10,7 +10,6 @@ using ReactiveUI.Fody.Helpers;
 using Avalonia.Styling;
 using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
-using Avalonia.Themes.Fluent;
 using Mesen.Interop;
 
 namespace Mesen.Config

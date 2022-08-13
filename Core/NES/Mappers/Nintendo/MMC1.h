@@ -100,7 +100,7 @@ protected:
 			case MirroringType::ScreenAOnly: mirroringType = "Screen A ($00)"; break;
 		}
 		entries.push_back(MapperStateEntry("$8000.0-1", "Mirroring", mirroringType));
-		entries.push_back(MapperStateEntry("$8000.2-3", "PRG Mode", (_prgMode << 1) | _slotSelect, MapperStateValueType::Number8));
+		entries.push_back(MapperStateEntry("$8000.2-3", "PRG Mode", ((uint8_t)_prgMode << 1) | (uint8_t)_slotSelect, MapperStateValueType::Number8));
 		entries.push_back(MapperStateEntry("$8000.4", "CHR Mode", _chrMode, MapperStateValueType::Number8));
 
 		entries.push_back(MapperStateEntry("$A000.0-4", "CHR Bank ($0000)", _chrReg0, MapperStateValueType::Number8));

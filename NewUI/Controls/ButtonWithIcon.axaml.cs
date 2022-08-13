@@ -39,7 +39,7 @@ namespace Mesen.Controls
 		static ButtonWithIcon()
 		{
 			IconProperty.Changed.AddClassHandler<ButtonWithIcon>((x, e) => {
-				x.FindControl<Image>("IconImage").Source = ImageUtilities.BitmapFromAsset(x.Icon);
+				x.GetControl<Image>("IconImage").Source = ImageUtilities.BitmapFromAsset(x.Icon);
 			});
 		}
 

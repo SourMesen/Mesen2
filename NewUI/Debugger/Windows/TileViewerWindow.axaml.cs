@@ -25,7 +25,7 @@ namespace Mesen.Debugger.Windows
 			this.AttachDevTools();
 #endif
 
-			PictureViewer picViewer = this.FindControl<ScrollPictureViewer>("picViewer").InnerViewer;
+			PictureViewer picViewer = this.GetControl<ScrollPictureViewer>("picViewer").InnerViewer;
 			_model = new TileViewerViewModel(cpuType, picViewer, this);
 			DataContext = _model;
 
@@ -47,7 +47,7 @@ namespace Mesen.Debugger.Windows
 		{
 			TileViewerWindow wnd = DebugWindowManager.GetOrOpenDebugWindow(() => new TileViewerWindow(cpuType));
 			wnd._model.SelectTile(type, address, format, layout, paletteIndex);
-			wnd.FindControl<ScrollPictureViewer>("picViewer").ScrollToSelection();
+			wnd.GetControl<ScrollPictureViewer>("picViewer").ScrollToSelection();
 		}
 
 		protected override void OnOpened(EventArgs e)

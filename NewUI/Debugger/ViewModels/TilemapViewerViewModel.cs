@@ -584,7 +584,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 
-				HslColor baseColor = ColorHelper.RgbToHsl(Color.FromRgb(255, 0, 255));
+				Mesen.Utilities.HslColor baseColor = ColorHelper.RgbToHsl(Color.FromRgb(255, 0, 255));
 				for(int i = 0; i < 239; i++) {
 					if(toolsState.ScanlineBgMode[i] == 7) {
 						Color lineColor = ColorHelper.HslToRgb(baseColor);

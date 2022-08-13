@@ -75,7 +75,7 @@ namespace Mesen.Debugger.Utilities
 				}
 			};
 
-			focusParent.AddHandler<KeyEventArgs>(InputElement.KeyDownEvent, handler, action.RoutingStrategy, handledEventsToo: true);
+			focusParent.AddHandler(InputElement.KeyDownEvent, handler, action.RoutingStrategy, handledEventsToo: true);
 		}
 	}
 }

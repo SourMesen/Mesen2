@@ -26,7 +26,7 @@ namespace Mesen.Debugger.Views
 		{
 			AvaloniaXamlLoader.Load(this);
 
-			DataBox grid = this.FindControl<DataBox>("WatchList");
+			DataBox grid = this.GetControl<DataBox>("WatchList");
 			grid.AddHandler(WatchListView.KeyDownEvent, OnGridKeyDown, RoutingStrategies.Tunnel, true);
 		}
 

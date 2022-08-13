@@ -11,7 +11,7 @@ public class GlobalMouseX11Impl : IGlobalMouseImpl
 
 	public GlobalMouseX11Impl()
 	{
-		_mainWindow = ApplicationHelper.GetMainWindow()?.PlatformImpl.Handle.Handle ?? IntPtr.Zero;
+		_mainWindow = ApplicationHelper.GetMainWindow()?.PlatformImpl?.Handle.Handle ?? IntPtr.Zero;
 		_x11 = new X11Info();
 	}
 

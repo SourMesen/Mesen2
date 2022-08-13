@@ -26,7 +26,7 @@ namespace Mesen.Debugger.Windows
 		static TraceLoggerWindow()
 		{
 			BoundsProperty.Changed.AddClassHandler<TraceLoggerWindow>((x, e) => {
-				DisassemblyViewer viewer = x.FindControl<DisassemblyViewer>("disViewer");
+				DisassemblyViewer viewer = x.GetControl<DisassemblyViewer>("disViewer");
 				x._model.VisibleRowCount = viewer.GetVisibleRowCount() - 1;
 				x._model.MaxScrollPosition = DebugApi.TraceLogBufferSize - x._model.VisibleRowCount;
 			});
@@ -45,7 +45,7 @@ namespace Mesen.Debugger.Windows
 			_model = model;
 			_model.InitializeMenu(this);
 			
-			DisassemblyViewer viewer = this.FindControl<DisassemblyViewer>("disViewer");
+			DisassemblyViewer viewer = this.GetControl<DisassemblyViewer>("disViewer");
 			_model.SetViewer(viewer);
 			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, (rowIndex, rowAddress) => rowIndex, InitContextMenu(viewer));
 

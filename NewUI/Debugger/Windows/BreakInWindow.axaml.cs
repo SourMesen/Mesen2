@@ -63,7 +63,7 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.FindControl<MesenNumericTextBox>("txtValue").Focus();
+			this.GetControl<MesenNumericTextBox>("txtValue").Focus();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

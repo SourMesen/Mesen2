@@ -116,7 +116,7 @@ namespace Mesen.Controls
 				return;
 			}
 
-			Grid grid = this.FindControl<Grid>("Grid");
+			Grid grid = this.GetControl<Grid>("Grid");
 			Size size = grid.Bounds.Size;
 
 			int colCount = Math.Min(4, Math.Max(1, (int)(size.Width / 220)));

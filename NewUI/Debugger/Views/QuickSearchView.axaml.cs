@@ -16,7 +16,7 @@ namespace Mesen.Debugger.Views
 		{
 			InitializeComponent();
 
-			_txtSearch = this.FindControl<TextBox>("txtSearch");
+			_txtSearch = this.GetControl<TextBox>("txtSearch");
 			_txtSearch.KeyDown += txtSearch_KeyDown;
 		}
 

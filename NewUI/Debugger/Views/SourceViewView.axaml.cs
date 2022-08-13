@@ -51,7 +51,7 @@ namespace Mesen.Debugger.Views
 		public SourceViewView()
 		{
 			InitializeComponent();
-			_viewer = this.FindControl<DisassemblyViewer>("disViewer");
+			_viewer = this.GetControl<DisassemblyViewer>("disViewer");
 
 			InitBreakpointContextMenu();
 			InitMainContextMenu();

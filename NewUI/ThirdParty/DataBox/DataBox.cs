@@ -20,7 +20,7 @@ namespace DataBoxControl;
 
 public class DataBox : TemplatedControl
 {
-    public static readonly DirectProperty<DataBox, IEnumerable> ItemsProperty =
+    public static readonly DirectProperty<DataBox, IEnumerable?> ItemsProperty =
         ItemsControl.ItemsProperty.AddOwner<DataBox>( 
             o => o.Items, 
             (o, v) => {
@@ -30,14 +30,14 @@ public class DataBox : TemplatedControl
 					}
 				});
 
-	public static readonly DirectProperty<DataBox, ISelectionModel?> SelectionProperty =
+	public static readonly DirectProperty<DataBox, ISelectionModel> SelectionProperty =
 		DataBoxRowsPresenter.SelectionProperty.AddOwner<DataBox>(
 		  o => o.Selection,
 		  (o, v) => {
 			  if(v != null) {
 				  v.Source = o.Items;
+			     o.Selection = v;
 			  }
-			  o.Selection = v;
 		  },
 		  defaultBindingMode: BindingMode.TwoWay);
 		
@@ -73,8 +73,8 @@ public class DataBox : TemplatedControl
     public static readonly StyledProperty<IBrush> VerticalGridLinesBrushProperty =
         AvaloniaProperty.Register<DataBox, IBrush>(nameof(VerticalGridLinesBrush));
 
-	private IEnumerable _items = Array.Empty<object?>();
-	private ISelectionModel? _selection = new SelectionModel<object?>();
+	private IEnumerable? _items = Array.Empty<object?>();
+	private ISelectionModel _selection = new SelectionModel<object?>();
 
 	private AvaloniaList<DataBoxColumn> _columns;
     private ScrollViewer? _headersPresenterScrollViewer;
@@ -88,13 +88,13 @@ public class DataBox : TemplatedControl
     }
 
     [Content]
-    public IEnumerable Items
+    public IEnumerable? Items
     {
         get { return _items; }
         set { SetAndRaise(ItemsProperty, ref _items, value); }
     }
 
-	public ISelectionModel? Selection
+	public ISelectionModel Selection
 	{
 		get => _selection;
 		set => SetAndRaise(SelectionProperty, ref _selection, value);
@@ -177,19 +177,19 @@ public class DataBox : TemplatedControl
 
         _headersPresenterScrollViewer = e.NameScope.Find<ScrollViewer>("PART_HeadersPresenterScrollViewer");
         _headersPresenter = e.NameScope.Find<DataBoxColumnHeadersPresenter>("PART_HeadersPresenter");
-        _rowsPresenter = e.NameScope.Find<DataBoxRowsPresenter>("PART_RowsPresenter");
+        _rowsPresenter = e.NameScope.Get<DataBoxRowsPresenter>("PART_RowsPresenter");
         _rowsPresenter.AutoScrollToSelectedItem = true;
 
 		  Attach();
     }
 
-	protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 	{
 		if(change.Property == SelectionProperty) {
-			if(change.OldValue.HasValue && change.OldValue.Value is ISelectionModel oldModel) {
+			if(change.OldValue is ISelectionModel oldModel) {
 				oldModel.SelectionChanged -= Selection_SelectionChanged;
 			}
-			if(change.NewValue.HasValue && change.NewValue.Value is ISelectionModel newModel) {
+			if(change.NewValue is ISelectionModel newModel) {
 				newModel.SelectionChanged += Selection_SelectionChanged;
 			}
 		}

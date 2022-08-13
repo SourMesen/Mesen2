@@ -63,6 +63,7 @@
 									Width="8"
 									Height="8"
 									Data="{StaticResource MenuItemChevronPathData}"
+									Fill="{DynamicResource MenuFlyoutSubItemChevron}"
 									Margin="{DynamicResource MenuFlyoutItemChevronMargin}"
 									VerticalAlignment="Center"
 									Grid.Column="3" />

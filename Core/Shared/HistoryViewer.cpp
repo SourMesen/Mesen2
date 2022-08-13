@@ -184,7 +184,7 @@ void HistoryViewer::ProcessEndOfFrame()
 		return;
 	}
 
-	if(_pollCounter >= _history[_position].FrameCount) {
+	if(_pollCounter >= (uint32_t)_history[_position].FrameCount) {
 		_pollCounter = 0;
 		_position++;
 

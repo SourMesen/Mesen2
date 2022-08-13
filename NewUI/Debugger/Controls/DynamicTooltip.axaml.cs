@@ -12,6 +12,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 
 namespace Mesen.Debugger.Controls
 {
@@ -53,15 +54,15 @@ namespace Mesen.Debugger.Controls
 		{
 			//TODO, remove hardcoded font name+size+weight
 			int maxWidth = 0;
-			var text = new FormattedText("", new Typeface("Microsoft Sans Serif", FontStyle.Normal, FontWeight.Bold), 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			Typeface typeface = new Typeface("Microsoft Sans Serif", FontStyle.Normal, FontWeight.Bold);
 			foreach(var item in Items) {
-				text.Text = item.Name;
-				maxWidth = Math.Max(maxWidth, (int)text.Bounds.Width + 5);
+				var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, null);
+				maxWidth = Math.Max(maxWidth, (int)text.Width + 5);
 			}
 			FirstColumnWidth = maxWidth;
 		}
 
-		private void TextBox_Tapped(object? sender, RoutedEventArgs e)
+		private void TextBox_Tapped(object? sender, TappedEventArgs e)
 		{
 			if(sender is TextBox txt) {
 				txt.SelectAll();

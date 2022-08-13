@@ -7,6 +7,7 @@ using Mesen.Interop;
 using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Mesen.Debugger.Controls
 {
@@ -140,9 +141,9 @@ namespace Mesen.Debugger.Controls
 			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(rowNumber, e, lineData, null));
 		}
 
-		protected override void OnPointerLeave(PointerEventArgs e)
+		protected override void OnPointerExited(PointerEventArgs e)
 		{
-			base.OnPointerLeave(e);
+			base.OnPointerExited(e);
 			_previousPointerPos = new Point(0, 0);
 			_prevPointerOverSegment = null;
 			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(-1, e, null, null));
@@ -157,8 +158,13 @@ namespace Mesen.Debugger.Controls
 		private void InitFontAndLetterSize()
 		{
 			this.Font = new Typeface(new FontFamily(this.FontFamily));
-			var text = new FormattedText("A", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			this.LetterSize = text.Bounds.Size;
+			var text = FormatText("A");
+			this.LetterSize = new Size(text.Width, text.Height);
+		}
+
+		private FormattedText FormatText(string text, IBrush? foreground = null, int fontSizeOffset = 0)
+		{
+			return new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, FontSize + fontSizeOffset, foreground);
 		}
 
 		public override void Render(DrawingContext context)
@@ -171,8 +177,8 @@ namespace Mesen.Debugger.Controls
 			InitFontAndLetterSize();
 
 			double y = 0;
-			var text = new FormattedText("", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			var smallText = new FormattedText("", this.Font, this.FontSize - 2, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+			FormattedText text;
+			FormattedText smallText;
 
 			context.FillRectangle(ColorHelper.GetBrush(Colors.White), Bounds);
 
@@ -222,17 +228,17 @@ namespace Mesen.Debugger.Controls
 
 				//Draw address in margin
 				string addressText = line.HasAddress ? line.Address.ToString(addrFormat) : "";
-				text.Text = line.GetAddressText(addressDisplayType, addrFormat);
+				text = FormatText(line.GetAddressText(addressDisplayType, addrFormat), ColorHelper.GetBrush(Colors.Gray));
 
-				Point marginAddressPos = new Point(addressMargin - text.Bounds.Width - 1, y);
-				context.DrawText(ColorHelper.GetBrush(Colors.Gray), marginAddressPos, text);
-				_visibleCodeSegments.Add(new CodeSegmentInfo(addressText, CodeSegmentType.MarginAddress, text.Bounds.Translate(new Vector(marginAddressPos.X, marginAddressPos.Y)), line));
+				Point marginAddressPos = new Point(addressMargin - text.Width - 1, y);
+				context.DrawText(text, marginAddressPos);
+				_visibleCodeSegments.Add(new CodeSegmentInfo(addressText, CodeSegmentType.MarginAddress, new Rect(marginAddressPos.X, marginAddressPos.Y, text.Width, text.Height), line));
 				x += addressMargin;
 
 				if(showByteCode) {
 					//Draw byte code
-					text.Text = line.GetByteCode(styleProvider.ByteCodeSize);
-					context.DrawText(ColorHelper.GetBrush(Colors.Gray), new Point(x + LetterSize.Width / 2, y), text);
+					text = FormatText(line.GetByteCode(styleProvider.ByteCodeSize), ColorHelper.GetBrush(Colors.Gray));
+					context.DrawText(text, new Point(x + LetterSize.Width / 2, y));
 					x += byteCodeMargin;
 				}
 
@@ -258,26 +264,26 @@ namespace Mesen.Debugger.Controls
 
 					if(!string.IsNullOrWhiteSpace(line.Text)) {
 						//Draw block title (when set)
-						smallText.Text = line.Text;
+						smallText = FormatText(line.Text, ColorHelper.GetBrush(Colors.Black), -2);
 						double width = Bounds.Width - x;
-						double textPosX = Math.Round(x + (width / 2) - (smallText.Bounds.Width / 2)) + 0.5;
-						double textPosY = Math.Round(y + (LetterSize.Height / 2) - (smallText.Bounds.Height / 2)) - 0.5;
-						double rectHeight = Math.Round(smallText.Bounds.Height);
-						double rectWidth = Math.Round(smallText.Bounds.Width + 10);
+						double textPosX = Math.Round(x + (width / 2) - (smallText.Width / 2)) + 0.5;
+						double textPosY = Math.Round(y + (LetterSize.Height / 2) - (smallText.Height / 2)) - 0.5;
+						double rectHeight = Math.Round(smallText.Height);
+						double rectWidth = Math.Round(smallText.Width + 10);
 						context.DrawRectangle(ColorHelper.GetBrush(Colors.White), ColorHelper.GetPen(Colors.Gray), new Rect(textPosX - 5, textPosY, rectWidth, rectHeight));
-						context.DrawText(ColorHelper.GetBrush(Colors.Black), new Point(textPosX, textPosY), smallText);
+						context.DrawText(smallText, new Point(textPosX, textPosY));
 					}
 				} else {
 					if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
-						text.Text = GetHighlightedText(text, line, lineParts, out double leftMargin);
+						text = FormatText(GetHighlightedText(line, lineParts, out double leftMargin));
 
 						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
 						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
 						if(b != null) {
-							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.WidthIncludingTrailingWhitespace), Math.Round(LetterSize.Height) - 1));
 						}
 						if(p != null) {
-							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.Bounds.Width), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.WidthIncludingTrailingWhitespace), Math.Round(LetterSize.Height) - 1));
 						}
 					}
 
@@ -290,40 +296,41 @@ namespace Mesen.Debugger.Controls
 					double xStart = x + indent;
 					foreach(CodeColor part in lineParts) {
 						Point pos = new Point(x + indent, y);
-						text.Text = part.Text;
 						SolidColorBrush brush = part.Type switch {
 							CodeSegmentType.Comment or CodeSegmentType.EffectiveAddress or CodeSegmentType.MemoryValue => ColorHelper.GetBrush(part.Color),
 							_ => lineStyle.TextBgColor.HasValue ? new SolidColorBrush(part.Color) : ColorHelper.GetBrush(part.Color)
 						};
-						context.DrawText(brush, pos, text);
-						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, text.Bounds.Translate(pos), line, part.OriginalIndex));
-						x += text.Bounds.Width;
+						text = FormatText(part.Text, brush);
+						context.DrawText(text, pos);
+						_visibleCodeSegments.Add(new CodeSegmentInfo(part.Text, part.Type, new Rect(pos, new Size(text.WidthIncludingTrailingWhitespace, text.Height)), line, part.OriginalIndex));
+						x += text.WidthIncludingTrailingWhitespace;
 					}
 
 					if(!string.IsNullOrWhiteSpace(searchString)) {
-						DrawSearchHighlight(context, y, text, searchString, line, lineParts, xStart);
+						DrawSearchHighlight(context, y, searchString, line, lineParts, xStart);
 					}
 
 					if(lineStyle.Progress != null) {
-						smallText.Text = lineStyle.Progress.Current + " " + lineStyle.Progress.Text;
+						string progressText = lineStyle.Progress.Current + " " + lineStyle.Progress.Text;
+						smallText = FormatText(progressText, ColorHelper.GetBrush(Colors.Black), -2);
 						Point textPos = new Point(
-							Math.Round(Bounds.Width - smallText.Bounds.Width - 8) - 0.5,
-							Math.Round(Math.Round(y) + (RowHeight - smallText.Bounds.Height) / 2)
+							Math.Round(Bounds.Width - smallText.Width - 8) - 0.5,
+							Math.Round(Math.Round(y) + (RowHeight - smallText.Height) / 2)
 						);
 
-						Rect rect = new(Math.Round(textPos.X - 4) + 0.5, Math.Round(y) + 1.5, Math.Round(smallText.Bounds.Width + 8), Math.Round(LetterSize.Height) - 4);
+						Rect rect = new(Math.Round(textPos.X - 4) + 0.5, Math.Round(y) + 1.5, Math.Round(smallText.Width + 8), Math.Round(LetterSize.Height) - 4);
 						context.FillRectangle(ColorHelper.GetBrush(lineStyle.Progress.Color), rect);
 						context.DrawRectangle(ColorHelper.GetPen(Colors.Black), rect);
-						context.DrawText(ColorHelper.GetBrush(Colors.Black), textPos, smallText);
+						context.DrawText(smallText, textPos);
 
-						_visibleCodeSegments.Add(new CodeSegmentInfo(smallText.Text, CodeSegmentType.InstructionProgress, rect, line, -1, lineStyle.Progress));
+						_visibleCodeSegments.Add(new CodeSegmentInfo(progressText, CodeSegmentType.InstructionProgress, rect, line, -1, lineStyle.Progress));
 					}
 				}
 				y += LetterSize.Height;
 			}
 		}
 
-		private static string GetHighlightedText(FormattedText text, CodeLineData line, List<CodeColor> lineParts, out double leftMargin)
+		private string GetHighlightedText(CodeLineData line, List<CodeColor> lineParts, out double leftMargin)
 		{
 			leftMargin = 0;
 			int skipCharCount = 0;
@@ -331,8 +338,8 @@ namespace Mesen.Debugger.Controls
 			bool foundOpCode = false;
 			foreach(CodeColor part in lineParts) {
 				if(!foundOpCode && part.Type != CodeSegmentType.OpCode) {
-					text.Text = part.Text;
-					leftMargin += text.Bounds.Width;
+					FormattedText text = FormatText(part.Text);
+					leftMargin += text.WidthIncludingTrailingWhitespace;
 					skipCharCount += part.Text.Length;
 				} else {
 					foundOpCode = true;
@@ -346,9 +353,9 @@ namespace Mesen.Debugger.Controls
 			return line.Text.Substring(skipCharCount, highlightCharCount).Trim();
 		}
 
-		private void DrawSearchHighlight(DrawingContext context, double y, FormattedText text, string searchString, CodeLineData line, List<CodeColor> lineParts, double xStart)
+		private void DrawSearchHighlight(DrawingContext context, double y, string searchString, CodeLineData line, List<CodeColor> lineParts, double xStart)
 		{
-			DrawHighlightedText(context, line.Text, searchString, y, text, xStart);
+			DrawHighlightedText(context, line.Text, searchString, y, xStart);
 			for(int j = 0; j < lineParts.Count; j++) {
 				CodeColor part = lineParts[j];
 				switch(part.Type) {
@@ -356,26 +363,27 @@ namespace Mesen.Debugger.Controls
 					case CodeSegmentType.MemoryValue:
 					case CodeSegmentType.Comment:
 					case CodeSegmentType.Label:
-						DrawHighlightedText(context, part.Text, searchString, y, text, _visibleCodeSegments[^(lineParts.Count - j)].Bounds.Left);
+						DrawHighlightedText(context, part.Text, searchString, y, _visibleCodeSegments[^(lineParts.Count - j)].Bounds.Left);
 						break;
 				}
 			}
 		}
 
-		private void DrawHighlightedText(DrawingContext context, string hay, string needle, double y, FormattedText formattedText, double startX)
+		private void DrawHighlightedText(DrawingContext context, string hay, string needle, double y, double startX)
 		{
 			int result = hay.IndexOf(needle, StringComparison.OrdinalIgnoreCase);
 			if(result >= 0) {
 				double highlightPos = startX;
+				FormattedText formattedText;
 				if(result > 0) {
-					formattedText.Text = hay.Substring(0, result);
-					highlightPos += formattedText.Bounds.Width;
+					formattedText = FormatText(hay.Substring(0, result));
+					highlightPos += formattedText.Width;
 				}
-				formattedText.Text = hay.Substring(result, needle.Length);
+				formattedText = FormatText(hay.Substring(result, needle.Length), ColorHelper.GetBrush(Colors.White));
 				Point p = new Point(highlightPos, y);
 				SolidColorBrush selectBgBrush = new(Colors.CornflowerBlue);
-				context.FillRectangle(selectBgBrush, formattedText.Bounds.Translate(p));
-				context.DrawText(ColorHelper.GetBrush(Colors.White), p, formattedText);
+				context.FillRectangle(selectBgBrush, new Rect(p, new Size(formattedText.Width, formattedText.Height)));
+				context.DrawText(formattedText, p);
 			}
 		}
 

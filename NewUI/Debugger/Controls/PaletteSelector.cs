@@ -10,6 +10,7 @@ using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,11 +113,11 @@ namespace Mesen.Debugger.Controls
 		public PaletteSelector()
 		{
 			this.GetObservable(SelectionModeProperty).Subscribe((mode) => {
-				this.CoerceValue<int>(SelectedPaletteProperty);
+				this.CoerceValue(SelectedPaletteProperty);
 			});
 
 			this.GetObservable(PaletteColorsProperty).Subscribe((mode) => {
-				this.CoerceValue<int>(SelectedPaletteProperty);
+				this.CoerceValue(SelectedPaletteProperty);
 			});
 
 			Focusable = true;
@@ -214,7 +215,6 @@ namespace Mesen.Debugger.Controls
 			}
 
 			Typeface typeface = new Typeface("Consolas");
-			FormattedText text = new FormattedText("", typeface, 11, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
 			for(int y = 0, max = paletteColors.Length / columnCount; y < max; y++) {
 				for(int x = 0; x < columnCount; x++) {
 					Rect rect = new Rect(x * width, y * height, width, height);
@@ -223,17 +223,20 @@ namespace Mesen.Debugger.Controls
 
 					if(ShowIndexes) {
 						rect = rect.Translate(new Vector(2, 0));
+						string label;
 						if(index < PaletteIndexValues?.Length) {
-							text.Text = PaletteIndexValues[index].ToString("X2");
+							label = PaletteIndexValues[index].ToString("X2");
 						} else {
-							text.Text = index.ToString("X2");
+							label = index.ToString("X2");
 						}
 
-						context.DrawText(Brushes.Black, rect.Translate(new Vector(-1, 0)).Position, text);
-						context.DrawText(Brushes.Black, rect.Translate(new Vector(1, 0)).Position, text);
-						context.DrawText(Brushes.Black, rect.Translate(new Vector(0, -1)).Position, text);
-						context.DrawText(Brushes.Black, rect.Translate(new Vector(0, 1)).Position, text);
-						context.DrawText(Brushes.White, rect.Position, text);
+						FormattedText text = new FormattedText(label, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, Brushes.Black);
+						context.DrawText(text, rect.Translate(new Vector(-1, 0)).Position);
+						context.DrawText(text, rect.Translate(new Vector(1, 0)).Position);
+						context.DrawText(text, rect.Translate(new Vector(0, -1)).Position);
+						context.DrawText(text, rect.Translate(new Vector(0, 1)).Position);
+						text.SetForegroundBrush(Brushes.White);
+						context.DrawText(text, rect.Position);
 					}
 				}
 			}
@@ -309,9 +312,9 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		protected override void OnPointerLeave(PointerEventArgs e)
+		protected override void OnPointerExited(PointerEventArgs e)
 		{
-			base.OnPointerLeave(e);
+			base.OnPointerExited(e);
 			ToolTip.SetTip(this, null);
 			ToolTip.SetIsOpen(this, false);
 		}

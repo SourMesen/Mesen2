@@ -38,7 +38,7 @@
 			<Setter Property="Height" Value="34" />
 		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal] Slider">
-			<Setter Property="Margin" Value="0 -20 0 0" />
+			<Setter Property="Margin" Value="0 -25 0 0" />
 		</Style>
 	</UserControl.Styles>
 	

@@ -32,8 +32,8 @@ namespace Mesen.Windows
 			this.AttachDevTools();
 #endif
 
-			_searchBox = this.FindControl<TextBox>("Search");
-			_listBox = this.FindControl<ListBox>("ListBox");
+			_searchBox = this.GetControl<TextBox>("Search");
+			_listBox = this.GetControl<ListBox>("ListBox");
 		}
 
 		private void InitializeComponent()
@@ -59,10 +59,10 @@ namespace Mesen.Windows
 					if(_searchBox.IsKeyboardFocusWithin) {
 						if(model.FilteredEntries.Count() > 1) {
 							model.SelectedEntry = model.FilteredEntries.ElementAt(1);
-							_listBox.ItemContainerGenerator.ContainerFromIndex(1).Focus();
+							_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
 						} else {
 							model.SelectedEntry = model.FilteredEntries.ElementAt(0);
-							_listBox.ItemContainerGenerator.ContainerFromIndex(1).Focus();
+							_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
 						}
 					}
 				} else if(e.Key == Key.Enter && model.SelectedEntry != null) {
@@ -115,7 +115,7 @@ namespace Mesen.Windows
 			Close();
 		}
 
-		private void OnDoubleClick(object sender, RoutedEventArgs e)
+		private void OnDoubleClick(object sender, TappedEventArgs e)
 		{
 			if(DataContext is SelectRomViewModel model && model.SelectedEntry != null) {
 				model.Cancelled = false;

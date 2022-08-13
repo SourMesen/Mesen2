@@ -31,7 +31,7 @@
 					<TextBox
 						VerticalAlignment="Top"
 						TextWrapping="Wrap"
-						Width="72"
+						Width="78"
 						Height="65"
 						AcceptsReturn="True"
 						IsReadOnly="True"

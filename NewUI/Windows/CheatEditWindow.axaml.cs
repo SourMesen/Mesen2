@@ -38,7 +38,7 @@ namespace Mesen.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			this.FindControl<TextBox>("txtCodes").Focus();
+			this.GetControl<TextBox>("txtCodes").Focus();
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)

@@ -11,6 +11,7 @@ using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Mesen.Debugger.Controls
 {
@@ -277,9 +278,9 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		protected override void OnPointerLeave(PointerEventArgs e)
+		protected override void OnPointerExited(PointerEventArgs e)
 		{
-			base.OnPointerLeave(e);
+			base.OnPointerExited(e);
 			MouseOverRect = null;
 		}
 
@@ -366,7 +367,7 @@ namespace Mesen.Debugger.Controls
 				Source,
 				new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
 				new Rect(0, 0, width, height),
-				Avalonia.Visuals.Media.Imaging.BitmapInterpolationMode.Default
+				BitmapInterpolationMode.Default
 			);
 
 			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
@@ -436,11 +437,11 @@ namespace Mesen.Debugger.Controls
 				Pen pen = new Pen(0x80FFFFFF, Math.Max(1, Zoom - 1));
 				DrawHighlightLines(context, point, p, pen);
 
-				FormattedText text = new FormattedText(point.DisplayValue, new Typeface(FontFamily.Default), 14 + Zoom * 2, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
+				FormattedText text = new FormattedText(point.DisplayValue, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(FontFamily.Default), 14 + Zoom * 2, Brushes.Black);
 
-				Point textPos = new Point(p.X + point.Width * Zoom + 5, p.Y - 5 - text.Bounds.Height);
-				if(text.Bounds.Width + textPos.X >= width) {
-					textPos = textPos.WithX(p.X - text.Bounds.Width - 5);
+				Point textPos = new Point(p.X + point.Width * Zoom + 5, p.Y - 5 - text.Height);
+				if(text.Width + textPos.X >= width) {
+					textPos = textPos.WithX(p.X - text.Width - 5);
 				}
 				if(textPos.Y < 0) {
 					textPos = textPos.WithY(p.Y + point.Height * Zoom + 5);
@@ -448,10 +449,11 @@ namespace Mesen.Debugger.Controls
 
 				for(int i = -2; i <= 2; i++) {
 					for(int j = -2; j <= 2; j++) {
-						context.DrawText(Brushes.Black, textPos + new Point(i, j), text);
+						context.DrawText(text, textPos + new Point(i, j));
 					}
 				}
-				context.DrawText(Brushes.White, textPos, text);
+				text.SetForegroundBrush(Brushes.White);
+				context.DrawText(text, textPos);
 			}
 		}
 

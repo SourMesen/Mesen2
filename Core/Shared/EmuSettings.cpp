@@ -437,6 +437,8 @@ RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)
 		case ConsoleType::Nes: return _nes.RamPowerOnState;
 		case ConsoleType::PcEngine: return _pce.RamPowerOnState;
 	}
+
+	return RamState::AllZeros;
 }
 
 void EmuSettings::InitializeRam(RamState state, void* data, uint32_t length)

@@ -100,6 +100,7 @@
 		<x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">1</x:Double>
 		<x:Double x:Key="MenuFlyoutThemeMinHeight">0</x:Double>
 		<StreamGeometry x:Key="MenuItemChevronPathData">M0,0L4,3.5 0,7z</StreamGeometry>
+		<Color x:Key="MenuFlyoutSubItemChevron">#000000</Color>
 	</Styles.Resources>
 
 	<Style>
@@ -170,20 +171,19 @@
 		<Setter Property="Padding" Value="2 0" />
 	</Style>
 
-	<Style Selector="Menu > MenuItem:selected /template/ Border">
-		<!--<Setter Property="Background" Value="#FAFAFA" />-->
+	<Style Selector="Menu > MenuItem:selected > Border">
 		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 
-	<Style Selector="MenuItem > MenuItem:selected /template/ Border">
+	<Style Selector="MenuItem > MenuItem:selected > Panel > Border">
 		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 
-	<Style Selector="MenuItem /template/ Border">
+	<Style Selector="MenuItem > Panel > Border">
 		<Setter Property="CornerRadius" Value="0" />
 	</Style>
 
@@ -192,7 +192,7 @@
 		<Setter Property="Padding" Value="2 0" />
 	</Style>
 
-	<Style Selector="ContextMenu > MenuItem:selected /template/ Border">
+	<Style Selector="ContextMenu > MenuItem:selected > Panel > Border">
 		<Setter Property="Background" Value="{DynamicResource MesenMenuBackgroundHighlight}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource MesenMenuBorderHighlight}" />
 		<Setter Property="BorderThickness" Value="1" />
@@ -231,6 +231,9 @@
 		<Setter Property="MinHeight" Value="21" />
 		<Setter Property="Height" Value="21" />
 		<Setter Property="SelectionForegroundBrush" Value="#FFF" />
+		
+		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
 	</Style>
 
 	<Style Selector="TextBox[AcceptsReturn=True]">
@@ -238,6 +241,8 @@
 		<Setter Property="VerticalContentAlignment" Value="Top" />
 		<Setter Property="MinHeight" Value="44" />
 		<Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
+		
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
 	</Style>
 	
 	<Style Selector="TextBox[AcceptsReturn=True] ScrollViewer ScrollContentPresenter">
@@ -361,15 +366,16 @@
 		<Setter Property="MinHeight" Value="30" />
 	</Style>
 
-	<Style Selector="TimePicker /template/ TextBlock">
-		<Setter Property="Margin" Value="0 2 0 0" />
-		<Setter Property="Padding" Value="0 0 0 0" />
-		<Setter Property="VerticalAlignment" Value="Center" />
+	<Style Selector="TimePicker Button, DatePicker Button">
+		<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+	</Style>
+	
+	<Style Selector="TimePickerPresenter Button Path, DatePickerPresenter Button Path">
 		<Setter Property="HorizontalAlignment" Value="Center" />
 	</Style>
-
-	<Style Selector="DatePicker /template/ TextBlock">
-		<Setter Property="Margin" Value="0 2 0 0" />
+	
+	<Style Selector="DatePicker /template/ TextBlock, TimePicker /template/ TextBlock">
+		<Setter Property="Margin" Value="10 0" />
 		<Setter Property="Padding" Value="0" />
 		<Setter Property="VerticalAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Center" />

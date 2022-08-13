@@ -64,12 +64,14 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			WindowExtensions.CenterWindow(this, Owner);
+			if(Owner != null) {
+				WindowExtensions.CenterWindow(this, Owner);
+			}
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(null);
+			Close(null!);
 		}
 
 		private void PaletteColor_OnClick(object sender, PaletteSelector.ColorClickEventArgs e)

@@ -41,7 +41,7 @@ namespace Mesen.Debugger.Windows
 			string newLog = DebugApi.GetLog();
 			if(newLog != LogContent) {
 				LogContent = newLog;
-				this.FindControl<TextBox>("txtLog").CaretIndex = Int32.MaxValue;
+				this.GetControl<TextBox>("txtLog").CaretIndex = Int32.MaxValue;
 			}
 		}
 

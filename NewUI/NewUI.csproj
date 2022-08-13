@@ -58,14 +58,11 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.14" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.14" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14" />
-    <PackageReference Include="Dock.Avalonia" Version="0.10.14" />
-    <PackageReference Include="Dock.Avalonia.Themes.Default" Version="0.10.0" />
-    <PackageReference Include="Dock.Model" Version="0.10.14" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="0.10.14" />
+    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0023126-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0023126-beta" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0023126-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0023126-beta" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="0.10.999-cibuild0023126-beta" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
    </ItemGroup>
@@ -459,7 +456,7 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\AvaloniaComboBoxStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
+		  <Generator>MSBuild:Compile</Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Include="Styles\DataBoxStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
@@ -499,6 +496,21 @@
   <ItemGroup>
     <Reference Include="AvaloniaEdit">
       <HintPath>..\..\AvaloniaEdit\src\AvaloniaEdit\bin\Release\netstandard2.0\AvaloniaEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="Dock.Avalonia">
+      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.Avalonia.dll</HintPath>
+    </Reference>
+    <Reference Include="Dock.Model">
+      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Dock.Model.Avalonia">
+      <HintPath>..\..\Dock\src\Dock.Model.Avalonia\bin\Release\net6.0\Dock.Model.Avalonia.dll</HintPath>
+    </Reference>
+    <Reference Include="Dock.Model.ReactiveUI">
+      <HintPath>..\..\Dock\src\Dock.Model.ReactiveUI\bin\Release\net6.0\Dock.Model.ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Dock.ProportionalStackPanel">
+      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.ProportionalStackPanel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="PreBuildWindows" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'!='linux-x64'">

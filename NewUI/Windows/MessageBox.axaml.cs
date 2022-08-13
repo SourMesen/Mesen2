@@ -26,16 +26,16 @@ namespace Mesen.Windows
 		{
 			DialogResult result = DialogResult.OK;
 			MessageBox msgbox = new MessageBox() { Title = title };
-			msgbox.FindControl<TextBlock>("Text").Text = text;
+			msgbox.GetControl<TextBlock>("Text").Text = text;
 			
 			switch(icon) {
-				case MessageBoxIcon.Error: msgbox.FindControl<Image>("imgError").IsVisible = true; break;
-				case MessageBoxIcon.Warning: msgbox.FindControl<Image>("imgWarning").IsVisible = true; break;
-				case MessageBoxIcon.Question: msgbox.FindControl<Image>("imgQuestion").IsVisible = true; break;
-				case MessageBoxIcon.Info: msgbox.FindControl<Image>("imgInfo").IsVisible = true; break;
+				case MessageBoxIcon.Error: msgbox.GetControl<Image>("imgError").IsVisible = true; break;
+				case MessageBoxIcon.Warning: msgbox.GetControl<Image>("imgWarning").IsVisible = true; break;
+				case MessageBoxIcon.Question: msgbox.GetControl<Image>("imgQuestion").IsVisible = true; break;
+				case MessageBoxIcon.Info: msgbox.GetControl<Image>("imgInfo").IsVisible = true; break;
 			}
 
-			StackPanel buttonPanel = msgbox.FindControl<StackPanel>("pnlButtons");
+			StackPanel buttonPanel = msgbox.GetControl<StackPanel>("pnlButtons");
 			void AddButton(string caption, DialogResult r)
 			{
 				Button btn = new Button { Content = caption };

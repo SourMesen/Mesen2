@@ -52,9 +52,9 @@ namespace Mesen.Debugger.Windows
 		protected override void OnOpened(EventArgs e)
 		{
 			base.OnOpened(e);
-			ListBox list = this.FindControl<ListBox>("lstResults");
+			ListBox list = this.GetControl<ListBox>("lstResults");
 			list.DoubleTapped += lstResults_DoubleTapped;
-			TextBox txt = this.FindControl<TextBox>("txtSearch");
+			TextBox txt = this.GetControl<TextBox>("txtSearch");
 			txt.Focus();
 			txt.SelectAll();
 		}

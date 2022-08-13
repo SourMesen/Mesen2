@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Mesen.Utilities;
 using System;
 
 namespace Mesen.Controls
@@ -42,13 +43,9 @@ namespace Mesen.Controls
 
 		private async void btnBrowse_OnClick(object sender, RoutedEventArgs e)
 		{
-			OpenFolderDialog ofd = new OpenFolderDialog();
-			
-			if(VisualRoot is Window wnd) {
-				string? folderName = await ofd.ShowAsync(wnd);
-				if(folderName?.Length > 0) {
-					this.Path = folderName;
-				}
+			string? folderName = await FileDialogHelper.OpenFolder(VisualRoot);
+			if(folderName?.Length > 0) {
+				this.Path = folderName;
 			}
 		}
 	}

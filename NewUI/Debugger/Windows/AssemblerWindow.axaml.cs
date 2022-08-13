@@ -50,8 +50,8 @@ namespace Mesen.Debugger.Windows
 
 			_model = model;
 			DataContext = model;
-			_textEditor = this.FindControl<MesenTextEditor>("Editor");
-			_hexView = this.FindControl<MesenTextEditor>("HexView");
+			_textEditor = this.GetControl<MesenTextEditor>("Editor");
+			_hexView = this.GetControl<MesenTextEditor>("HexView");
 
 			if(Design.IsDesignMode) {
 				return;

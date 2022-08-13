@@ -314,14 +314,14 @@ namespace Mesen.Debugger.ViewModels
 
 					preview.DataContext = SpritePreviews[i];
 					preview.PointerPressed += SpritePreview_PointerPressed;
-					preview.PointerEnter += SpritePreview_PointerEnter;
-					preview.PointerLeave += SpritePreview_PointerLeave;
+					preview.PointerEntered += SpritePreview_PointerEntered;
+					preview.PointerExited += SpritePreview_PointerExited;
 					_spriteGrid.Children.Add(preview);
 				}
 			}
 		}
 
-		private void SpritePreview_PointerLeave(object? sender, PointerEventArgs e)
+		private void SpritePreview_PointerExited(object? sender, PointerEventArgs e)
 		{
 			if(sender is SpritePreviewPanel ctrl) {
 				ToolTip.SetTip(ctrl, null);
@@ -331,7 +331,7 @@ namespace Mesen.Debugger.ViewModels
 			PreviewPanelSprite = null;
 		}
 
-		private void SpritePreview_PointerEnter(object? sender, PointerEventArgs e)
+		private void SpritePreview_PointerEntered(object? sender, PointerEventArgs e)
 		{
 			if(sender is Control ctrl && ctrl.DataContext is SpritePreviewModel sprite) {
 				PreviewPanelTooltip = GetPreviewPanel(sprite, PreviewPanelTooltip);
@@ -412,7 +412,10 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				MemoryType cpuMemory = CpuType.ToMemoryType();
 				_spriteRam = DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1));
-				MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
+				
+				Dispatcher.UIThread.Post(() => {
+					MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
+				});
 			}
 
 			_palette = new RefStruct<DebugPaletteInfo>(DebugApi.GetPaletteInfo(CpuType));

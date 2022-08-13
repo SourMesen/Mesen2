@@ -9,6 +9,7 @@ using System.Text;
 using Mesen.Config;
 using System.Text.RegularExpressions;
 using Mesen.Debugger.Utilities;
+using System.Globalization;
 
 namespace Mesen.Debugger.Controls
 {
@@ -166,15 +167,15 @@ namespace Mesen.Debugger.Controls
 			InitFontAndLetterSize();
 		}
 
-		protected override void OnPointerEnter(PointerEventArgs e)
+		protected override void OnPointerEntered(PointerEventArgs e)
 		{
-			base.OnPointerEnter(e);
+			base.OnPointerEntered(e);
 			Cursor = new Cursor(StandardCursorType.Ibeam);
 		}
 
-		protected override void OnPointerLeave(PointerEventArgs e)
+		protected override void OnPointerExited(PointerEventArgs e)
 		{
-			base.OnPointerLeave(e);
+			base.OnPointerExited(e);
 			Cursor = null;
 		}
 
@@ -675,8 +676,8 @@ namespace Mesen.Debugger.Controls
 		private void InitFontAndLetterSize()
 		{
 			this.Font = new Typeface(new FontFamily(this.FontFamily));
-			var text = new FormattedText("A", this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			this.LetterSize = text.Bounds.Size;
+			var text = new FormattedText("A", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, FontSize, null);
+			this.LetterSize = new Size(text.Width, text.Height);
 		}
 
 		private void DrawRowHeaders(DrawingContext context)
@@ -697,8 +698,8 @@ namespace Mesen.Debugger.Controls
 				sb.Append(i.ToString(HexFormat) + " ");
 			}
 
-			var text = new FormattedText(sb.ToString(), this.Font, this.FontSize, TextAlignment.Left, TextWrapping.NoWrap, Size.Empty);
-			context.DrawText(ColorHelper.GetBrush(HeaderForeground), new Point(RowHeaderWidth, (this.ColumnHeaderHeight - this.LetterSize.Height) / 2), text);
+			var text = new FormattedText(sb.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, FontSize, ColorHelper.GetBrush(HeaderForeground));
+			context.DrawText(text, new Point(RowHeaderWidth, (this.ColumnHeaderHeight - this.LetterSize.Height) / 2));
 		}
 	}
 

@@ -39,9 +39,9 @@ namespace Mesen.Windows
 			this.AttachDevTools();
 #endif
 
-			_renderer = this.FindControl<NativeRenderer>("Renderer");
-			_controlBar = this.FindControl<Border>("ControlBar");
-			_mainMenu = this.FindControl<Menu>("MainMenu");
+			_renderer = this.GetControl<NativeRenderer>("Renderer");
+			_controlBar = this.GetControl<Border>("ControlBar");
+			_mainMenu = this.GetControl<Menu>("MainMenu");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(50), DispatcherPriority.Normal, (s, e) => {
 				_model.Update();
 				UpdateMouse();
@@ -89,7 +89,7 @@ namespace Mesen.Windows
 				return;
 			}
 
-			HistoryApi.HistoryViewerInitialize(PlatformImpl.Handle.Handle, _renderer.Handle);
+			HistoryApi.HistoryViewerInitialize(PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle);
 			_model.Update();
 			_model.SetCoreOptions();
 			_model.InitActions(this);
