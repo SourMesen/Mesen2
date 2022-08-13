@@ -5,8 +5,6 @@
 #include "Shared/Emulator.h"
 
 class Debugger;
-struct GbPpuState;
-struct SnesPpuState;
 
 struct ViewerRefreshConfig
 {
@@ -184,6 +182,17 @@ protected:
 	
 	bool IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOptions& options);
 
+	uint8_t Rgb555to8Bit(uint8_t color) { return (color << 3) + (color >> 2); }
+
+	uint32_t Rgb555ToArgb(uint16_t rgb555)
+	{
+		uint8_t b = Rgb555to8Bit(rgb555 >> 10);
+		uint8_t g = Rgb555to8Bit((rgb555 >> 5) & 0x1F);
+		uint8_t r = Rgb555to8Bit(rgb555 & 0x1F);
+
+		return 0xFF000000 | (r << 16) | (g << 8) | b;
+	}
+
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
 
@@ -221,7 +230,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 {
 	switch(format) {
 		case TileFormat::DirectColor:
-			return SnesDefaultVideoFilter::ToArgb(
+			return Rgb555ToArgb(
 				((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
 				(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
 				(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
@@ -241,7 +250,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 			return colors[colorIndex];
 
 		case TileFormat::Mode7DirectColor:
-			return SnesDefaultVideoFilter::ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
+			return Rgb555ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
 
 		default:
 			throw std::runtime_error("unsupported format");

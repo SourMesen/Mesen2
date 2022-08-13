@@ -4,6 +4,7 @@
 
 class Debugger;
 class Emulator;
+struct GbPpuState;
 
 class GbPpuTools final : public PpuTools
 {

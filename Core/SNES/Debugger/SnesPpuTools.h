@@ -7,6 +7,7 @@ class Emulator;
 struct BaseState;
 struct LayerConfig;
 struct FrameInfo;
+struct SnesPpuState;
 
 struct SnesPpuToolsState
 {
