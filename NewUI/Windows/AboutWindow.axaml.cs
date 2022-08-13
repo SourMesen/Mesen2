@@ -96,5 +96,10 @@ namespace Mesen.Windows
 				ApplicationHelper.OpenBrowser(entry.Url);
 			}
 		}
+
+		private void OnMesenLinkTapped(object? sender, TappedEventArgs e)
+		{
+			ApplicationHelper.OpenBrowser("https://www.mesen.ca");
+		}
 	}
 }
