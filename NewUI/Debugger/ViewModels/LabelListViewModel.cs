@@ -200,6 +200,8 @@ namespace Mesen.Debugger.ViewModels
 			public CpuType CpuType { get; }
 			public string AbsAddressDisplay { get; }
 
+			public string LabelText { get; private set; }
+			public string LabelComment { get; private set; }
 			public int RelAddress { get; private set; }
 			public string RelAddressDisplay => RelAddress >= 0 ? ("$" + RelAddress.ToString(_format)) : "<unavailable>";
 			public object RowBrush => RelAddress >= 0 ? AvaloniaProperty.UnsetValue : Brushes.Gray;
@@ -221,6 +223,8 @@ namespace Mesen.Debugger.ViewModels
 			public LabelViewModel(CodeLabel label, CpuType cpuType)
 			{
 				Label = label;
+				LabelText = label.Label;
+				LabelComment = label.Comment;
 				CpuType = cpuType;
 				RelAddress = Label.GetRelativeAddress(CpuType).Address;
 				_format = "X" + cpuType.GetAddressSize();
