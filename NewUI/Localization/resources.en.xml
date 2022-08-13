@@ -1094,7 +1094,7 @@
 			<Control ID="chkHighDensityTextMode">Use high-density text</Control>
 			<Control ID="chkShowCharacters">Show characters</Control>
 		</Form>
-		<Form ID="MemorySearchWindow">
+		<Form ID="MemoryViewerFindWindow">
 			<Control ID="wndTitle">Find...</Control>
 			<Control ID="lblSearch">Search:</Control>
 			<Control ID="lblDataType">Data Type:</Control>
@@ -2539,6 +2539,7 @@
 			<Value ID="OpenScriptWindow">Open Script Window</Value>
 			<Value ID="OpenWatchWindow">Open Watch Window</Value>
 			<Value ID="OpenTraceLogger">Open Trace Logger</Value>
+			<Value ID="OpenMemorySearch">Open Memory Search</Value>
 			<Value ID="OpenRegisterViewer">Open Register Viewer</Value>
 			<Value ID="OpenDebugLog">Open Debug Log</Value>
 			<Value ID="OpenNesHeaderEditor">Open NES Header Editor</Value>
@@ -2785,6 +2786,7 @@
 			<Value ID="OpenProfiler">Profiler</Value>
 			<Value ID="OpenScriptWindow">Script Window</Value>
 			<Value ID="OpenWatchWindow">Watch Window</Value>
+			<Value ID="OpenMemorySearch">Memory Search</Value>
 			<Value ID="OpenTraceLogger">Trace Logger</Value>
 			<Value ID="OpenRegisterViewer">Register Viewer</Value>
 			<Value ID="OpenDebugLog">Debug Log</Value>

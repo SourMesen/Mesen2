@@ -11,8 +11,8 @@
 	xmlns:l="using:Mesen.Localization"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	x:Class="Mesen.Debugger.Windows.MemorySearchWindow"
-  x:DataType="vm:MemorySearchViewModel"
+	x:Class="Mesen.Debugger.Windows.MemoryViewerFindWindow"
+  x:DataType="vm:MemoryViewerFindViewModel"
 	Width="360"
 	Height="260"
 	Name="root"
@@ -21,7 +21,7 @@
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>
-		<vm:MemorySearchViewModel />
+		<vm:MemoryViewerFindViewModel />
 	</Design.DataContext>
 	
 	<DockPanel Margin="3">

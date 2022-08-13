@@ -829,6 +829,12 @@ namespace Mesen.ViewModels
 					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new DebugLogWindow())
 				},
 				new ContextMenuAction() {
+					ActionType = ActionType.OpenMemorySearch,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenMemorySearch),
+					IsEnabled = () => IsGameRunning,
+					//OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new MemorySearchWindow())
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.OpenProfiler,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenProfiler),
 					IsEnabled = () => IsGameRunning,

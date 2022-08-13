@@ -23,7 +23,7 @@ namespace Mesen.Debugger.Windows
 	{
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;
-		private MemorySearchWindow? _searchWnd;
+		private MemoryViewerFindWindow? _searchWnd;
 
 		public MemoryToolsWindow()
 		{
@@ -279,7 +279,7 @@ namespace Mesen.Debugger.Windows
 		private void OpenSearchWindow()
 		{
 			if(_searchWnd == null) {
-				_searchWnd = new MemorySearchWindow(_model.Search, _model);
+				_searchWnd = new MemoryViewerFindWindow(_model.Search, _model);
 				_searchWnd.Closed += (s, e) => _searchWnd = null;
 				_searchWnd.ShowCenteredWithParent(this);
 			} else {

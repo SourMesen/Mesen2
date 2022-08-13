@@ -135,6 +135,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.OpenScriptWindow,
 				DebuggerShortcut.OpenTraceLogger,
 				DebuggerShortcut.OpenWatchWindow,
+				DebuggerShortcut.OpenMemorySearch,
 				DebuggerShortcut.OpenDebugLog,
 				DebuggerShortcut.OpenNesHeaderEditor,
 

@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Mesen.Debugger.ViewModels;
 
-public class MemorySearchViewModel : ViewModelBase
+public class MemoryViewerFindViewModel : ViewModelBase
 {
 	[Reactive] public SearchDataType DataType { get; set; }
 	[Reactive] public SearchIntType IntType { get; set; }
@@ -39,9 +39,9 @@ public class MemorySearchViewModel : ViewModelBase
 	private MemoryToolsViewModel _memToolsModel;
 
 	[Obsolete("For designer only")]
-	public MemorySearchViewModel() : this(new(new())) { }
+	public MemoryViewerFindViewModel() : this(new(new())) { }
 
-	public MemorySearchViewModel(MemoryToolsViewModel memToolsModel)
+	public MemoryViewerFindViewModel(MemoryToolsViewModel memToolsModel)
 	{
 		_memToolsModel = memToolsModel;
 

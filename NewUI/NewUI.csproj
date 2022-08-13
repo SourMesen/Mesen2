@@ -229,8 +229,8 @@
     <Compile Update="Debugger\Windows\FindAllOccurrencesWindow.axaml.cs">
       <DependentUpon>FindAllOccurrencesWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Windows\MemorySearchWindow.axaml.cs">
-      <DependentUpon>MemorySearchWindow.axaml</DependentUpon>
+    <Compile Update="Debugger\Windows\MemoryViewerFindWindow.axaml.cs">
+      <DependentUpon>MemoryViewerFindWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\BreakOnWindow.axaml.cs">
       <DependentUpon>BreakOnWindow.axaml</DependentUpon>

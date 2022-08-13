@@ -13,15 +13,15 @@ using System.Collections.Generic;
 
 namespace Mesen.Debugger.Windows
 {
-	public class MemorySearchWindow : Window
+	public class MemoryViewerFindWindow : Window
 	{
-		private MemorySearchViewModel _model;
+		private MemoryViewerFindViewModel _model;
 		private MemoryToolsViewModel _viewerModel;
 
 		[Obsolete("For designer only")]
-		public MemorySearchWindow() : this(new(), null!) { }
+		public MemoryViewerFindWindow() : this(new(), null!) { }
 
-		public MemorySearchWindow(MemorySearchViewModel model, MemoryToolsViewModel viewerModel)
+		public MemoryViewerFindWindow(MemoryViewerFindViewModel model, MemoryToolsViewModel viewerModel)
 		{
 			DataContext = model;
 			_model = model;

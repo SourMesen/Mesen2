@@ -40,7 +40,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private HexEditor _editor;
 		public MemoryToolsDisplayOptionsViewModel Options { get; }
-		public MemorySearchViewModel Search { get; }
+		public MemoryViewerFindViewModel Search { get; }
 
 		[Obsolete("For designer only")]
 		public MemoryToolsViewModel() : this(null!) { }

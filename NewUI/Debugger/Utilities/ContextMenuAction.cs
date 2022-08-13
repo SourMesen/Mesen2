@@ -447,6 +447,9 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("LogWindow")]
 		OpenTraceLogger,
+		
+		[IconFile("Find")]
+		OpenMemorySearch,
 
 		[IconFile("VideoOptions")]
 		OpenTilemapViewer,
