@@ -59,6 +59,12 @@
 	</Design.PreviewWith>
 
 	<Style.Resources>
+		<Color x:Key="MesenGridBackground">#00000000</Color>
+		<Color x:Key="MesenMenuBackground">#00000000</Color>
+		<Color x:Key="MesenMenuBackgroundHighlight">#40808080</Color>
+		<Color x:Key="MesenMenuBorderHighlight">#80808080</Color>
+		<Color x:Key="MenuFlyoutSubItemChevron">#FFFFFF</Color>
+		
 		<!-- Custom colors -->
 		<Color x:Key="MesenMenuMarginStartColor">#FF202020</Color>
 		<Color x:Key="MesenMenuMarginEndColor">#FF202020</Color>

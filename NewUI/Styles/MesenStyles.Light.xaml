@@ -76,6 +76,7 @@
 		<Color x:Key="MesenMenuBackgroundHighlight">#B5D7F3</Color>
 		<Color x:Key="MesenMenuBorderHighlight">#0078D7</Color>
 		<Color x:Key="MesenMenuSeparatorBackground">#BDBDBD</Color>
+		<Color x:Key="MenuFlyoutSubItemChevron">#000000</Color>
 		
 		<Color x:Key="MesenMenuMarginStartColor">#fcfcfc</Color>
 		<Color x:Key="MesenMenuMarginEndColor">#f1f1f1</Color>
