@@ -9,7 +9,6 @@
 	<StyleInclude Source="/Styles/AvaloniaMenuItemStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaNumericUpDownStyles.xaml" />
 	<StyleInclude Source="/Styles/AvaloniaScrollViewerStyles.xaml" />
-	<StyleInclude Source="/Styles/AvaloniaEditStyles.xaml" />
 	
 	<Design.PreviewWith>
 		<Window Width="440" Height="620" Padding="5">
@@ -463,6 +462,7 @@
 	</Style>
 
 	<StyleInclude Source="/Styles/DataBoxStyles.xaml" />
+	<StyleInclude Source="/Styles/AvaloniaEditStyles.xaml" />
 
 	<!-- Make dock title and tabs smaller -->
 	<Style Selector="DockControl TabStripItem">

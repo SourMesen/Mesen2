@@ -3,7 +3,41 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:sys="clr-namespace:System;assembly=netstandard"	
 	xmlns:cc="using:AvaloniaEdit.CodeCompletion"
+	xmlns:search="using:AvaloniaEdit.Search"
 >
+	<Style Selector="search|SearchPanel">
+		<Setter Property="BorderBrush" Value="{StaticResource MesenGrayBorderColor}" />
+		<Setter Property="BorderThickness" Value="1 0 0 1" />
+		<Setter Property="Background" Value="{StaticResource ThemeBackgroundBrush}" />
+	</Style>
+
+	<Style Selector="search|SearchPanel Path">
+		<Setter Property="Fill" Value="Black" />
+		<Setter Property="Stroke" Value="Black" />
+	</Style>
+	
+	<Style Selector="search|SearchPanel Button">
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="ContentPresenter#PART_MessageContent TextBlock">
+		<Setter Property="IsVisible" Value="False" />
+	</Style>
+	
+	<Style Selector="search|SearchPanel ToggleButton.ExpanderToggle">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="20">
+					<Path Fill="{DynamicResource ThemeForegroundBrush}"
+				 VerticalAlignment="Center"
+				 HorizontalAlignment="Center"
+				 Data="M 0 2 L 4 6 L 0 10 Z" />
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+	
 	<Style Selector="cc|CompletionList">
 		<Setter Property="Template">
 			<ControlTemplate>

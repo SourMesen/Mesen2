@@ -64,15 +64,6 @@ namespace Mesen.Debugger.Controls
 
 		public MesenTextEditor()
 		{
-			AddHandler(MesenTextEditor.KeyDownEvent, OnTextEditorKeyDown, RoutingStrategies.Tunnel, true);
-		}
-
-		private void OnTextEditorKeyDown(object? sender, KeyEventArgs e)
-		{
-			if(e.KeyModifiers == KeyModifiers.Control && (e.Key == Key.F || e.Key == Key.H)) {
-				//Prevent the built-in ctrl-f search
-				e.Handled = true;
-			}
 		}
 
 		protected override void OnTextChanged(EventArgs e)
