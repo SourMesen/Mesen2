@@ -54,14 +54,24 @@ namespace Mesen.Debugger.Windows
 			base.OnOpened(e);
 			ListBox list = this.GetControl<ListBox>("lstResults");
 			list.DoubleTapped += lstResults_DoubleTapped;
+			list.PointerReleased += List_PointerReleased;
 			TextBox txt = this.GetControl<TextBox>("txtSearch");
 			txt.Focus();
 			txt.SelectAll();
 		}
 
+		bool _isDoubleTap = false;
+		private void List_PointerReleased(object? sender, PointerReleasedEventArgs e)
+		{
+			if(_isDoubleTap) {
+				SelectAndClose();
+				_isDoubleTap = false;
+			}
+		}
+
 		private void lstResults_DoubleTapped(object? sender, RoutedEventArgs e)
 		{
-			SelectAndClose();
+			_isDoubleTap = true;
 		}
 
 		private void MoveSelection(int offset)

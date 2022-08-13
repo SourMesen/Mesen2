@@ -34,7 +34,8 @@
 			Name="ListBox"
 			Items="{CompiledBinding FilteredEntries}"
 			SelectedItem="{CompiledBinding SelectedEntry}"
-			DoubleTapped="OnDoubleClick"
+			DoubleTapped="OnDoubleTapped"
+			PointerReleased="OnPointerReleased"
 		>
 			<ListBox.Styles>
 				<Style Selector="ScrollViewer">

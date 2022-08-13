@@ -115,12 +115,21 @@ namespace Mesen.Windows
 			Close();
 		}
 
-		private void OnDoubleClick(object sender, TappedEventArgs e)
+		bool _isDoubleTap = false;
+		private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
 		{
-			if(DataContext is SelectRomViewModel model && model.SelectedEntry != null) {
-				model.Cancelled = false;
-				Close();
+			if(_isDoubleTap) {
+				if(DataContext is SelectRomViewModel model && model.SelectedEntry != null) {
+					model.Cancelled = false;
+					Close();
+				}
+				_isDoubleTap = false;
 			}
+		}
+
+		private void OnDoubleTapped(object sender, TappedEventArgs e)
+		{
+			_isDoubleTap = true;
 		}
 	}
 

@@ -245,11 +245,20 @@ public class DataBox : TemplatedControl
 		}
 	}
 
+	bool _isDoubleTap = false;
 	internal void OnCellDoubleTapped(object? sender, RoutedEventArgs e)
 	{
+		_isDoubleTap = true;
+	}
+
+	internal void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)
+	{
 		if(sender is DataBoxCell cell) {
-			CellDoubleClick?.Invoke(cell);
+			if(_isDoubleTap) {
+				CellDoubleClick?.Invoke(cell);
+			}
 		}
+		_isDoubleTap = false;
 	}
 }
 
