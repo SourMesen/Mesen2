@@ -372,7 +372,8 @@ namespace Mesen.Debugger.Integration
 				} else if(name.IsEqual("file")) {
 					fileID = Int32.Parse(data);
 				} else if(name.IsEqual("line")) {
-					lineNumber = Int32.Parse(data) - 1;
+					//Sometimes line is set to 0 in the .dbg file (might only occur for C projects?)
+					lineNumber = Math.Max(0, Int32.Parse(data) - 1);
 				} else if(name.IsEqual("type")) {
 					type = (LineType)Int32.Parse(data);
 				} else if(name.IsEqual("span")) {
@@ -393,6 +394,7 @@ namespace Mesen.Debugger.Integration
 		}
 
 		private bool LoadSpans(string row)
+
 		{
 			int? id = null;
 			int? segmentID = null;
