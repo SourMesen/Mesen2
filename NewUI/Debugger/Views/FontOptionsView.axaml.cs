@@ -52,6 +52,11 @@ namespace Mesen.Debugger.Views
 		private async void ValidateFont()
 		{
 			if(DataContext is FontConfig cfg) {
+				if(cfg.FontFamily == InternalFontFamily) {
+					//don't validate if this is the currently selected font
+					return;
+				}
+
 				Typeface typeface = new Typeface(new FontFamily(InternalFontFamily));
 				if(!typeface.GlyphTypeface.IsFixedPitch) {
 					if(await MesenMsgBox.Show(VisualRoot, "NonMonospaceFontWarning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, InternalFontFamily) != Mesen.Windows.DialogResult.Yes) {
@@ -61,7 +66,7 @@ namespace Mesen.Debugger.Views
 				}
 
 				FormattedText text = new FormattedText("W", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, null);
-				if(text.Width < 2 || text.Height < 2) {
+				if(text.Width < 2 || text.Height < 2 || !double.IsFinite(text.Width) || !double.IsFinite(text.Height)) {
 					await MesenMsgBox.Show(VisualRoot, "InvalidFont", MessageBoxButtons.OK, MessageBoxIcon.Error, InternalFontFamily);
 					InternalFontFamily = cfg.FontFamily;
 					return;
