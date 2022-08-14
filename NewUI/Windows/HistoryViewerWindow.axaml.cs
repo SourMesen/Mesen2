@@ -104,6 +104,7 @@ namespace Mesen.Windows
 			if(Design.IsDesignMode) {
 				return;
 			}
+			_timer.Stop();
 			HistoryApi.HistoryViewerRelease();
 			ConfigManager.Config.HistoryViewer.SaveWindowSettings(this);
 		}
