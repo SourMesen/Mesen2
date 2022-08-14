@@ -1,5 +1,6 @@
 ﻿using Avalonia.Media;
 using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -171,15 +172,24 @@ namespace Mesen.Debugger
 				address = int.Parse(match.Groups[2].Value.Substring(1), System.Globalization.NumberStyles.HexNumber);
 			} else if(match.Groups[3].Value.Length > 0) {
 				address = int.Parse(match.Groups[3].Value);
+			} else if(match.Groups[4].Value.Length > 0) {
+				CodeLabel? label = LabelManager.GetLabel(match.Groups[4].Value);
+				if(label == null) {
+					forceHasChanged = true;
+					return "<invalid label>";
+				}
+				address = label.GetRelativeAddress(_cpuType).Address;
 			} else {
 				return "<invalid expression>";
 			}
+
 			int elemCount = int.Parse(match.Groups[5].Value);
 
 			if(address >= 0) {
 				List<string> values = new List<string>(elemCount);
+				MemoryType memType = _cpuType.ToMemoryType();
 				for(int j = address, end = address + elemCount; j < end; j++) {
-					int memValue = DebugApi.GetMemoryValue(MemoryType.SnesMemory, (uint)j);
+					int memValue = DebugApi.GetMemoryValue(memType, (uint)j);
 					values.Add(FormatValue(memValue, style, 1));
 				}
 				newValue = string.Join(" ", values);
