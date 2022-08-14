@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Controls;
 using Mesen.Debugger.Integration;
@@ -55,9 +56,14 @@ namespace Mesen.Debugger.Windows
 			ListBox list = this.GetControl<ListBox>("lstResults");
 			list.DoubleTapped += lstResults_DoubleTapped;
 			list.PointerReleased += List_PointerReleased;
-			TextBox txt = this.GetControl<TextBox>("txtSearch");
-			txt.Focus();
-			txt.SelectAll();
+
+			Dispatcher.UIThread.Post(() => {
+				//Post this to run later, otherwise Linux seems to type the
+				//comma (from the Ctrl+comma shortcut) inside the textbox
+				TextBox txt = this.GetControl<TextBox>("txtSearch");
+				txt.Focus();
+				txt.SelectAll();
+			});
 		}
 
 		bool _isDoubleTap = false;
