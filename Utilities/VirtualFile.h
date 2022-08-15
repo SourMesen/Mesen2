@@ -43,4 +43,19 @@ public:
 	uint8_t ReadByte(uint32_t offset);
 
 	bool ApplyPatch(VirtualFile &patch);
+
+	template<typename T>
+	bool ReadChunk(T& container, int start, int length)
+	{
+		LoadFile();
+
+		if(start < 0 || start >= _data.size()) {
+			return false;
+		} else if(start + length > _data.size()) {
+			return false;
+		}
+
+		container.insert(container.end(), _data.begin() + start, _data.begin() + start + length);
+		return true;
+	}
 };

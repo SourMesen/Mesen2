@@ -65,6 +65,8 @@ struct TrackInfo
 
 struct DiscInfo
 {
+	static constexpr int SectorSize = 2352;
+
 	vector<VirtualFile> Files;
 	vector<TrackInfo> Tracks;
 	uint32_t DiscSize;
@@ -74,7 +76,7 @@ struct DiscInfo
 	int32_t GetTrack(uint32_t sector)
 	{
 		for(size_t i = 0; i < Tracks.size(); i++) {
-			if(Tracks[i].LastSector >= sector) {
+			if(sector >= Tracks[i].FirstSector && sector <= Tracks[i].LastSector) {
 				return (int32_t)i;
 			}
 		}
@@ -99,17 +101,17 @@ struct DiscInfo
 
 	void ReadDataSector(uint32_t sector, deque<uint8_t>& outData)
 	{
+		constexpr int SectorHeaderSize = 16;
+
 		int32_t track = GetTrack(sector);
 		if(track < 0) {
-			LogDebug("Invalid sector/track");
-			for(int j = 0; j < 2048; j++) {
-				outData.push_back(0);
-			}
+			LogDebug("Invalid sector/track (or inside pregap that is not available)");
+			outData.insert(outData.end(), 2048, 0);
 		} else {
-			uint32_t fileIndex = Tracks[track].FileIndex;
-			uint32_t byteOffset = Tracks[track].FileOffset + (sector - Tracks[track].FirstSector) * 2352;
-			for(int j = 0; j < 2048; j++) {
-				outData.push_back(Files[fileIndex].ReadByte(byteOffset + 16 + j));
+			TrackInfo& trk = Tracks[track];
+			uint32_t byteOffset = trk.FileOffset + (sector - trk.FirstSector) * DiscInfo::SectorSize;
+			if(!Files[trk.FileIndex].ReadChunk(outData, byteOffset + SectorHeaderSize, 2048)) {
+				LogDebug("Invalid read offsets");
 			}
 		}
 	}
@@ -123,7 +125,7 @@ struct DiscInfo
 		}
 
 		uint32_t fileIndex = Tracks[track].FileIndex;
-		uint32_t startByte = Tracks[track].FileOffset + (sector - Tracks[track].FirstSector) * 2352;
+		uint32_t startByte = Tracks[track].FileOffset + (sector - Tracks[track].FirstSector) * DiscInfo::SectorSize;
 		return (int16_t)(Files[fileIndex].ReadByte(startByte + sample * 4 + byteOffset) | (Files[fileIndex].ReadByte(startByte + sample * 4 + 1 + byteOffset) << 8));
 	}
 
