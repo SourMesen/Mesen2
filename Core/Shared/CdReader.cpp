@@ -107,7 +107,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	for(size_t i = 0; i < files.size(); i++) {
 		VirtualFile physicalFile = files[i].Filename;
 		if(!physicalFile.IsValid()) {
-			MessageManager::Log("[CUE] Missing/invalid valid: " + files[i].Filename);
+			MessageManager::Log("[CUE] Missing or invalid file: " + files[i].Filename);
 			return false;
 		}
 
