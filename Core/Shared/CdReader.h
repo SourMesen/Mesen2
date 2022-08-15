@@ -20,6 +20,11 @@ struct DiscPosition
 		return ((Minutes * 60) + Seconds) * 75 + Frames;
 	}
 
+	string ToString()
+	{
+		return GetValueString(Minutes) + ":" + GetValueString(Seconds) + ":" + GetValueString(Frames);
+	}
+
 	static DiscPosition FromLba(uint32_t lba)
 	{
 		DiscPosition pos;
@@ -27,6 +32,16 @@ struct DiscPosition
 		pos.Seconds = lba / 75 % 60;
 		pos.Frames = lba % 75;
 		return pos;
+	}
+
+private:
+	string GetValueString(uint32_t val)
+	{
+		if(val < 10) {
+			return "0" + std::to_string(val);
+		} else {
+			return std::to_string(val);
+		}
 	}
 };
 

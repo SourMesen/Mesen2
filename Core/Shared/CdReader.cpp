@@ -3,6 +3,7 @@
 #include "Shared/MessageManager.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/FolderUtilities.h"
+#include "Utilities/magic_enum.hpp"
 
 struct CueIndexEntry
 {
@@ -10,10 +11,17 @@ struct CueIndexEntry
 	DiscPosition Position;
 };
 
+struct CueGapEntry
+{
+	bool HasGap = false;
+	DiscPosition Length;
+};
+
 struct CueTrackEntry
 {
 	uint32_t Number;
 	string Format;
+	CueGapEntry PreGap = {};
 	vector<CueIndexEntry> Indexes;
 };
 
@@ -69,6 +77,33 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 
 			trk.Format = entry[2];
 			files[files.size() - 1].Tracks.push_back(trk);
+		} else if(line.substr(0, 6) == string("PREGAP")) {
+			if(files.empty() || files[files.size() - 1].Tracks.empty()) {
+				MessageManager::Log("[CUE] Unexcepted PREGAP entry");
+				return false;
+			}
+			
+			vector<string> entry = StringUtilities::Split(line, ' ');
+			
+			CueGapEntry gap = {};
+
+			vector<string> lengthParts = StringUtilities::Split(entry[1], ':');
+			if(lengthParts.size() != 3) {
+				MessageManager::Log("[CUE] Invalid PREGAP time format");
+				return false;
+			}
+
+			try {
+				gap.Length.Minutes = std::stoi(lengthParts[0]);
+				gap.Length.Seconds = std::stoi(lengthParts[1]);
+				gap.Length.Frames = std::stoi(lengthParts[2]);
+				gap.HasGap = true;
+			} catch(const std::exception&) {
+				MessageManager::Log("[CUE] Invalid PREGAP time format");
+				return false;
+			}
+
+			files[files.size() - 1].Tracks[files[files.size() - 1].Tracks.size() - 1].PreGap = gap;
 		} else if(line.substr(0, 5) == string("INDEX")) {
 			if(files.empty() || files[files.size() - 1].Tracks.empty()) {
 				MessageManager::Log("[CUE] Unexcepted INDEX entry");
@@ -104,6 +139,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	}
 
 	uint32_t discSize = 0;
+	uint32_t totalPregapLbaLength = 0;
 	for(size_t i = 0; i < files.size(); i++) {
 		VirtualFile physicalFile = files[i].Filename;
 		if(!physicalFile.IsValid()) {
@@ -117,13 +153,21 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 			CueTrackEntry entry = files[i].Tracks[j];
 			TrackInfo trk = {};
 
+			if(entry.PreGap.HasGap) {
+				totalPregapLbaLength += entry.PreGap.Length.ToLba();
+			}
+
 			DiscPosition startPos;
 			for(CueIndexEntry& idx : entry.Indexes) {
 				if(idx.Number == 0) {
 					trk.HasLeadIn = true;
 					trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + discSize / 2352);
 				} else if(idx.Number == 1) {
-					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + discSize / 2352);
+					if(entry.PreGap.HasGap) {
+						trk.HasLeadIn = true;
+						trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength - entry.PreGap.Length.ToLba() + discSize / 2352);
+					}
+					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + discSize / 2352);
 					startPos = idx.Position;
 				}
 			}
@@ -164,6 +208,20 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	disc.EndPosition = lastTrk.EndPosition;
 	disc.DiscSize = discSize;
 	disc.DiscSectorCount = discSize / 2352;
+
+	MessageManager::Log("---- DISC TRACKS ----");
+	int i = 1;
+	for(TrackInfo& trk : disc.Tracks) {
+		MessageManager::Log("Track " + std::to_string(i) + " (" + string(magic_enum::enum_name(trk.Format)) + ")");
+		if(trk.HasLeadIn) {
+			MessageManager::Log("  Lead-in: " + trk.LeadInPosition.ToString());
+		}
+		MessageManager::Log("  Time: " + trk.StartPosition.ToString() + " to " + trk.EndPosition.ToString());
+		MessageManager::Log("  Sectors: " + std::to_string(trk.FirstSector) + " to " + std::to_string(trk.LastSector));
+		MessageManager::Log("  Byte offset: " + std::to_string(trk.FileOffset));
+		i++;
+	}
+	MessageManager::Log("---- END TRACKS ----");
 
 	return true;
 }
