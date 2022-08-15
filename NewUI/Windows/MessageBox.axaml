@@ -32,7 +32,7 @@
 			</StackPanel>
 		</Panel>
 
-		<Panel Height="40" Background="#E7E7E7" HorizontalAlignment="Stretch">
+		<Panel Height="40" Background="{StaticResource MesenGrayBackgroundColor}" HorizontalAlignment="Stretch">
 			<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" Name="pnlButtons">
 				<StackPanel.Styles>
 					<Style Selector="Button">
