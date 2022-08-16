@@ -138,7 +138,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		}
 	}
 
-	uint32_t discSize = 0;
+	int sectorsInPrevFiles = 0;
 	uint32_t totalPregapLbaLength = 0;
 	for(size_t i = 0; i < files.size(); i++) {
 		VirtualFile physicalFile = files[i].Filename;
@@ -148,7 +148,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		}
 
 		disc.Files.push_back(files[i].Filename);
-
+		int sectorsInFile = 0;
 		for(size_t j = 0; j < files[i].Tracks.size(); j++) {
 			CueTrackEntry entry = files[i].Tracks[j];
 			TrackInfo trk = {};
@@ -161,14 +161,17 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 			for(CueIndexEntry& idx : entry.Indexes) {
 				if(idx.Number == 0) {
 					trk.HasLeadIn = true;
-					trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + discSize / DiscInfo::SectorSize);
+					trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + sectorsInPrevFiles);
 				} else if(idx.Number == 1) {
 					if(entry.PreGap.HasGap) {
 						trk.HasLeadIn = true;
-						trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength - entry.PreGap.Length.ToLba() + discSize / DiscInfo::SectorSize);
+						trk.LeadInPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength - entry.PreGap.Length.ToLba() + sectorsInPrevFiles);
 					}
-					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + discSize / DiscInfo::SectorSize);
+					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + sectorsInPrevFiles);
 					startPos = idx.Position;
+				} else {
+					MessageManager::Log("[CUE] Unsupported index number: " + idx.Number);
+					return false;
 				}
 			}
 
@@ -176,38 +179,53 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 				trk.Format = TrackFormat::Audio;
 			} else if(entry.Format == "MODE1/2352") {
 				trk.Format = TrackFormat::Mode1_2352;
+			} else if(entry.Format == "MODE1/2048") {
+				trk.Format = TrackFormat::Mode1_2048;
 			} else {
 				MessageManager::Log("[CUE] Unsupported track format: " + entry.Format);
 				return false;
 			}
 
 			trk.FirstSector = trk.StartPosition.ToLba();
-			trk.FileOffset = startPos.ToLba() * DiscInfo::SectorSize;
-			trk.FileIndex = (uint32_t)disc.Files.size() - 1;
 
+			uint32_t currentFileOffset = 0;
 			if(disc.Tracks.size() > 0) {
 				TrackInfo& prvTrk = disc.Tracks[disc.Tracks.size() - 1];
-				prvTrk.EndPosition = DiscPosition::FromLba((trk.HasLeadIn ? trk.LeadInPosition.ToLba() : trk.FirstSector) - 1);
-				prvTrk.LastSector = prvTrk.EndPosition.ToLba();
-				prvTrk.SectorCount = prvTrk.LastSector - prvTrk.FirstSector + 1;
-				prvTrk.Size = prvTrk.SectorCount * DiscInfo::SectorSize;
+				if(prvTrk.Size == 0) {
+					//Update end position for this file's previous track based on the start of the current track
+					prvTrk.EndPosition = DiscPosition::FromLba((trk.HasLeadIn ? trk.LeadInPosition.ToLba() : trk.FirstSector) - 1);
+					prvTrk.LastSector = prvTrk.EndPosition.ToLba();
+					prvTrk.SectorCount = prvTrk.LastSector - prvTrk.FirstSector + 1;
+					prvTrk.Size = prvTrk.SectorCount * trk.GetSectorSize();
+					sectorsInFile += prvTrk.SectorCount;
+
+					currentFileOffset = prvTrk.FileOffset + prvTrk.Size;
+				}
 			}
+
+			trk.FileOffset = currentFileOffset;
+			if(trk.HasLeadIn && !entry.PreGap.HasGap) {
+				trk.FileOffset += (trk.StartPosition.ToLba() - trk.LeadInPosition.ToLba()) * trk.GetSectorSize();
+			}
+			trk.FileIndex = (uint32_t)disc.Files.size() - 1;
 
 			disc.Tracks.push_back(trk);
 		}
 
-		discSize += (uint32_t)physicalFile.GetSize();
+		//Set end position for last track to be the end of the current file
+		TrackInfo& lastTrk = disc.Tracks[disc.Tracks.size() - 1];
+		lastTrk.Size = (disc.Files[lastTrk.FileIndex].GetSize() - lastTrk.FileOffset) / lastTrk.GetSectorSize() * lastTrk.GetSectorSize();
+		lastTrk.SectorCount = lastTrk.Size / lastTrk.GetSectorSize();
+		lastTrk.EndPosition = DiscPosition::FromLba(lastTrk.FirstSector + lastTrk.SectorCount - 1);
+		lastTrk.LastSector = lastTrk.EndPosition.ToLba();
+		sectorsInFile += lastTrk.SectorCount;
+		sectorsInPrevFiles += sectorsInFile;
 	}
 
-	TrackInfo& lastTrk = disc.Tracks[disc.Tracks.size() - 1];
-	lastTrk.Size = (disc.Files[lastTrk.FileIndex].GetSize() - lastTrk.FileOffset) / DiscInfo::SectorSize * DiscInfo::SectorSize;
-	lastTrk.SectorCount = lastTrk.Size / DiscInfo::SectorSize;
-	lastTrk.EndPosition = DiscPosition::FromLba(lastTrk.FirstSector+lastTrk.SectorCount-1);
-	lastTrk.LastSector = lastTrk.EndPosition.ToLba();
-
-	disc.EndPosition = lastTrk.EndPosition;
-	disc.DiscSize = discSize;
-	disc.DiscSectorCount = discSize / DiscInfo::SectorSize;
+	TrackInfo& discLastTrk = disc.Tracks[disc.Tracks.size() - 1];
+	disc.EndPosition = discLastTrk.EndPosition;
+	disc.DiscSize = discLastTrk.FileOffset + discLastTrk.Size;
+	disc.DiscSectorCount = discLastTrk.LastSector + 1;
 
 	MessageManager::Log("---- DISC TRACKS ----");
 	int i = 1;

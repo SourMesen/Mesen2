@@ -6,7 +6,8 @@
 enum class TrackFormat
 {
 	Audio,
-	Mode1_2352
+	Mode1_2352,
+	Mode1_2048
 };
 
 struct DiscPosition
@@ -61,6 +62,16 @@ struct TrackInfo
 	
 	uint32_t FirstSector;
 	uint32_t LastSector;
+
+	uint32_t GetSectorSize()
+	{
+		switch(Format) {
+			default:
+			case TrackFormat::Audio: return 2352;
+			case TrackFormat::Mode1_2352: return 2352;
+			case TrackFormat::Mode1_2048: return 2048;
+		}
+	}
 };
 
 struct DiscInfo
@@ -101,16 +112,19 @@ struct DiscInfo
 
 	void ReadDataSector(uint32_t sector, deque<uint8_t>& outData)
 	{
-		constexpr int SectorHeaderSize = 16;
+		constexpr int Mode1_2352_SectorHeaderSize = 16;
 
 		int32_t track = GetTrack(sector);
 		if(track < 0) {
-			LogDebug("Invalid sector/track (or inside pregap that is not available)");
+			//TODO support reading pregap when it's ava
+			LogDebug("Invalid sector/track (or inside pregap)");
 			outData.insert(outData.end(), 2048, 0);
 		} else {
 			TrackInfo& trk = Tracks[track];
-			uint32_t byteOffset = trk.FileOffset + (sector - trk.FirstSector) * DiscInfo::SectorSize;
-			if(!Files[trk.FileIndex].ReadChunk(outData, byteOffset + SectorHeaderSize, 2048)) {
+			uint32_t sectorSize = trk.GetSectorSize();
+			uint32_t sectorHeaderSize = trk.Format == TrackFormat::Mode1_2352 ? Mode1_2352_SectorHeaderSize : 0;
+			uint32_t byteOffset = trk.FileOffset + (sector - trk.FirstSector) * sectorSize;
+			if(!Files[trk.FileIndex].ReadChunk(outData, byteOffset + sectorHeaderSize, 2048)) {
 				LogDebug("Invalid read offsets");
 			}
 		}
