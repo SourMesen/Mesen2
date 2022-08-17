@@ -14,24 +14,25 @@ namespace Mesen.Config
 {
 	public class DebugConfig
 	{
-		public DebuggerShortcutsConfig Shortcuts { get; set; } = new DebuggerShortcutsConfig();
-		public TraceLoggerConfig TraceLogger { get; set; } = new TraceLoggerConfig();
-		public HexEditorConfig HexEditor { get; set; } = new HexEditorConfig();
-		public EventViewerConfig EventViewer { get; set; } = new EventViewerConfig();
-		public DebuggerConfig Debugger { get; set; } = new DebuggerConfig();
-		public TilemapViewerConfig TilemapViewer { get; set; } = new TilemapViewerConfig();
-		public TileViewerConfig TileViewer { get; set; } = new TileViewerConfig();
-		public PaletteViewerConfig PaletteViewer { get; set; } = new PaletteViewerConfig();
-		public TileEditorConfig TileEditor { get; set; } = new TileEditorConfig();
-		public RegisterViewerConfig RegisterViewer { get; set; } = new RegisterViewerConfig();
-		public SpriteViewerConfig SpriteViewer { get; set; } = new SpriteViewerConfig();
-		public IntegrationConfig Integration { get; set; } = new IntegrationConfig();
-		public ScriptWindowConfig ScriptWindow { get; set; } = new ScriptWindowConfig();
-		public ProfilerConfig Profiler { get; set; } = new ProfilerConfig();
-		public WatchWindowConfig WatchWindow { get; set; } = new WatchWindowConfig();
-		public AssemblerConfig Assembler { get; set; } = new AssemblerConfig();
-		public DebugLogConfig DebugLog { get; set; } = new DebugLogConfig();
-		public FontConfig Font { get; set; } = new FontConfig();
+		public DebuggerShortcutsConfig Shortcuts { get; set; } = new();
+		public TraceLoggerConfig TraceLogger { get; set; } = new();
+		public HexEditorConfig HexEditor { get; set; } = new();
+		public EventViewerConfig EventViewer { get; set; } = new();
+		public DebuggerConfig Debugger { get; set; } = new();
+		public TilemapViewerConfig TilemapViewer { get; set; } = new();
+		public TileViewerConfig TileViewer { get; set; } = new();
+		public PaletteViewerConfig PaletteViewer { get; set; } = new();
+		public TileEditorConfig TileEditor { get; set; } = new();
+		public RegisterViewerConfig RegisterViewer { get; set; } = new();
+		public SpriteViewerConfig SpriteViewer { get; set; } = new();
+		public IntegrationConfig Integration { get; set; } = new();
+		public ScriptWindowConfig ScriptWindow { get; set; } = new();
+		public ProfilerConfig Profiler { get; set; } = new();
+		public MemorySearchConfig MemorySearch { get; set; } = new();
+		public WatchWindowConfig WatchWindow { get; set; } = new();
+		public AssemblerConfig Assembler { get; set; } = new();
+		public DebugLogConfig DebugLog { get; set; } = new();
+		public FontConfig Font { get; set; } = new();
 
 		public DebugConfig()
 		{		

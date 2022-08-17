@@ -58,6 +58,22 @@ namespace Mesen.Interop
 			};
 		}
 
+		public static MemoryType GetSystemRamType(this CpuType cpuType)
+		{
+			return cpuType switch {
+				CpuType.Snes => MemoryType.SnesWorkRam,
+				CpuType.NecDsp => MemoryType.DspDataRam,
+				CpuType.Sa1 => MemoryType.Sa1InternalRam,
+				CpuType.Gsu => MemoryType.GsuWorkRam,
+				CpuType.Cx4 => MemoryType.Cx4DataRam,
+
+				CpuType.Gameboy => MemoryType.GbWorkRam,
+				CpuType.Nes => MemoryType.NesInternalRam,
+				CpuType.Pce => MemoryType.PceWorkRam,
+				_ => throw new Exception("Invalid CPU type"),
+			};
+		}
+
 		public static int GetAddressSize(this CpuType cpuType)
 		{
 			return cpuType switch {

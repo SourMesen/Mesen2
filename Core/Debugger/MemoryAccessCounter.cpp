@@ -43,6 +43,7 @@ ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint
 	if(counts.WriteStamp == 0 && IsAddressUninitialized(addressInfo)) {
 		ReadResult result = counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead;
 		counts.ReadStamp = masterClock;
+		counts.ReadCounter++;
 		return result;
 	}
 
@@ -77,9 +78,7 @@ void MemoryAccessCounter::ResetCounts()
 {
 	DebugBreakHelper helper(_debugger);
 	for(int i = 0; i < (int)MemoryType::Register; i++) {
-		for(uint32_t j = 0; j < _counters[i].size(); j++) {
-			_counters[i][j] = { j };
-		}
+		memset(_counters[i].data(), 0, _counters[i].size() * sizeof(AddressCounters));
 	}
 }
 
@@ -96,6 +95,8 @@ void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, Memo
 			}
 		}
 	} else {
-		memcpy(counts, _counters[(int)memoryType].data() + offset, length * sizeof(AddressCounters));
+		if(offset + length <= _counters[(int)memoryType].size()) {
+			memcpy(counts, _counters[(int)memoryType].data() + offset, length * sizeof(AddressCounters));
+		}
 	}
 }

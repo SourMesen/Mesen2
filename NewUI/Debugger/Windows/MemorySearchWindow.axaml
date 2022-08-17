@@ -1,0 +1,197 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:sys="using:System"
+	xmlns:v="using:Mesen.Views"
+	xmlns:dbg="using:Mesen.Debugger"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:dvm="using:Mesen.Debugger.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+	x:Class="Mesen.Debugger.Windows.MemorySearchWindow"
+	Icon="/Assets/Find.png"
+	Width="700" Height="500"
+	x:DataType="vm:MemorySearchViewModel"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:MemorySearchViewModel />
+	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="CheckBox.isNotMatch">
+			<Setter Property="Background" Value="LightCoral" />
+		</Style>
+	</Window.Styles>
+	
+	<DockPanel>
+		<DockPanel DockPanel.Dock="Right" Margin="3">
+			<c:ButtonWithIcon
+				Icon="Assets/Refresh.png"
+			  DockPanel.Dock="Bottom"
+				HorizontalAlignment="Right"
+				Text="{l:Translate btnResetCounters}"
+				Command="{Binding ResetCounters}"
+		  />
+			
+			<StackPanel>
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+					<TextBlock Text="{l:Translate lblMemType}" />
+					<c:EnumComboBox
+						Grid.Column="1"
+						SelectedItem="{CompiledBinding MemoryType}"
+						AvailableValues="{CompiledBinding AvailableMemoryTypes}"
+						MinWidth="120"
+				  />
+
+					<TextBlock Grid.Row="1" Text="{l:Translate lblFormat}" />
+					<c:EnumComboBox Grid.Column="1" Grid.Row="1" SelectedItem="{CompiledBinding Format}" />
+
+					<TextBlock Grid.Row="2" Text="{l:Translate lblValueSize}" />
+					<c:EnumComboBox Grid.Column="1" Grid.Row="2" SelectedItem="{CompiledBinding ValueSize}" />
+				</Grid>
+
+				<c:OptionSection Header="{l:Translate lblSearchFilter}">
+					<c:GroupBox Header="{l:Translate lblCompareTo}">
+						<Grid ColumnDefinitions="Auto,5,*" RowDefinitions="Auto,Auto,Auto,Auto">
+							<c:EnumRadioButton
+								Grid.ColumnSpan="3"
+								Value="{CompiledBinding CompareTo}"
+								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.PreviousSearchValue}"
+							/>
+							<c:EnumRadioButton
+								Grid.ColumnSpan="3"
+								Grid.Row="1"
+								Value="{CompiledBinding CompareTo}"
+								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.PreviousRefreshValue}"
+							/>
+							<c:EnumRadioButton
+								Grid.Row="2"
+								Value="{CompiledBinding CompareTo}"
+								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.SpecificValue}"
+							/>
+							<c:MesenNumericTextBox
+								Grid.Row="2"
+								Grid.Column="2"
+								IsEnabled="{CompiledBinding IsSpecificValueEnabled}"
+								Value="{CompiledBinding SpecificValue}"
+								MinWidth="60"
+								Min="{CompiledBinding MinValue}"
+								Max="{CompiledBinding MaxValue}"
+								Hex="{CompiledBinding IsValueHex}"
+							/>
+							<c:EnumRadioButton
+								Grid.Row="3"
+								Value="{CompiledBinding CompareTo}"
+								CheckedWhen="{x:Static dvm:MemorySearchCompareTo.SpecificAddress}"
+							/>
+							<c:MesenNumericTextBox
+								Grid.Row="3"
+								Grid.Column="2"
+								IsEnabled="{CompiledBinding IsSpecificAddressEnabled}"
+								Value="{CompiledBinding SpecificAddress}"
+								Hex="True"
+								MinWidth="60"
+								Min="0"
+								Max="{CompiledBinding MaxAddress}"
+							/>
+						</Grid>
+					</c:GroupBox>
+					<c:GroupBox Header="{l:Translate lblOperator}">
+						<StackPanel>
+							<c:EnumRadioButton 
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.Equal}"
+							/>
+							<c:EnumRadioButton
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.NotEqual}"
+							/>
+							<c:EnumRadioButton
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.LessThan}"
+							/>
+							<c:EnumRadioButton
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.LessThanOrEqual}"
+							/>
+							<c:EnumRadioButton
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.GreaterThan}"
+							/>
+							<c:EnumRadioButton
+								Value="{CompiledBinding Operator}"
+								CheckedWhen="{x:Static dvm:MemorySearchOperator.GreaterThanOrEqual}"
+							/>
+						</StackPanel>
+					</c:GroupBox>
+				
+					<DockPanel>
+						<c:ButtonWithIcon
+							Icon="Assets/Find.png"
+							DockPanel.Dock="Left"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Top"
+							Text="{l:Translate btnApplyFilter}"
+							Command="{Binding AddFilter}"
+						/>
+						<StackPanel>
+							<c:ButtonWithIcon
+								Icon="Assets/Undo.png"
+								HorizontalAlignment="Right"
+								Text="{l:Translate btnUndo}"
+								IsEnabled="{CompiledBinding IsUndoEnabled}"
+								Command="{Binding Undo}"
+							/>
+							<c:ButtonWithIcon
+								Icon="Assets/Close.png"
+								HorizontalAlignment="Right"
+								Text="{l:Translate btnReset}"
+								Command="{Binding ResetSearch}"
+							/>
+						</StackPanel>
+					</DockPanel>
+				</c:OptionSection>
+			</StackPanel>
+		</DockPanel>
+
+		<Border BorderBrush="Gray" BorderThickness="1">
+			<DataBox
+				Items="{Binding ListData}"
+				Selection="{Binding Selection}"
+				SortState="{Binding SortState}"
+				SortMode="Multiple"
+				SortCommand="{Binding SortCommand}"
+				GridLinesVisibility="All"
+			>
+				<DataBox.Columns>
+					<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressString}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="Value" Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="PrevValue" Header="{l:Translate colPrevValue}" Binding="{Binding PrevValue}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ReadCount" Header="{l:Translate colReadCount}" Binding="{Binding ReadCount}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastRead" Header="{l:Translate colLastRead}" Binding="{Binding LastRead}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="WriteCount" Header="{l:Translate colWriteCount}" Binding="{Binding WriteCount}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastWrite" Header="{l:Translate colLastWrite}" Binding="{Binding LastWrite}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ExecCount" Header="{l:Translate colExecCount}" Binding="{Binding ExecCount}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastExec" Header="{l:Translate colLastExec}" Binding="{Binding LastExec}" Width="*" CanUserResize="True" />
+					<DataBoxTemplateColumn
+						ColumnName="Match"
+						CanUserSort="False"
+						Header="{l:Translate colMatch}"
+						Width="*"
+					>
+						<DataTemplate>
+							<CheckBox IsChecked="{Binding IsMatch}" IsHitTestVisible="False" Classes.isNotMatch="{Binding !IsMatch}" />
+						</DataTemplate>
+					</DataBoxTemplateColumn>
+				</DataBox.Columns>
+			</DataBox>
+		</Border>
+	</DockPanel>
+</Window>

@@ -58,11 +58,11 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0023126-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0023126-beta" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0023126-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0023126-beta" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="0.10.999-cibuild0023126-beta" />
+    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0023173-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0023173-beta" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0023173-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0023173-beta" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="0.10.999-cibuild0023173-beta" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
    </ItemGroup>
@@ -243,6 +243,9 @@
     </Compile>
     <Compile Update="Debugger\Windows\DebugLogWindow.axaml.cs">
       <DependentUpon>DebugLogWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Windows\MemorySearchWindow.axaml.cs">
+      <DependentUpon>MemorySearchWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Windows\WatchWindow.axaml.cs">
       <DependentUpon>WatchWindow.axaml</DependentUpon>

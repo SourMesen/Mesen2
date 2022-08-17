@@ -5,6 +5,7 @@ using System.Linq;
 using Avalonia.Styling;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Mesen.Localization;
 
 namespace Mesen.Controls
 {
@@ -30,11 +31,11 @@ namespace Mesen.Controls
 		static EnumRadioButton()
 		{
 			ValueProperty.Changed.AddClassHandler<EnumRadioButton>((x, e) => {
-				x.IsChecked = x.Value.Equals(x.CheckedWhen);
+				x.IsChecked = x.Value?.Equals(x.CheckedWhen) == true;
 			});
 
 			CheckedWhenProperty.Changed.AddClassHandler<EnumRadioButton>((x, e) => {
-				x.IsChecked = x.Value.Equals(x.CheckedWhen);
+				x.IsChecked = x.Value?.Equals(x.CheckedWhen) == true;
 			});
 		}
 
@@ -46,6 +47,9 @@ namespace Mesen.Controls
 		{
 			base.OnAttachedToVisualTree(e);
 			IsChecked = Value.Equals(CheckedWhen);
+			if(Content == null) {
+				Content = ResourceHelper.GetEnumText(CheckedWhen);
+			}
 		}
 
 		protected override void OnChecked(RoutedEventArgs e)

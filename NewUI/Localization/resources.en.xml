@@ -1223,6 +1223,34 @@
 			<Control ID="colMaxCycles">Max. Cycles</Control>
 		</Form>
 		
+		<Form ID="MemorySearchWindow">
+			<Control ID="wndTitle">Memory Search</Control>
+			<Control ID="btnApplyFilter">Apply filter</Control>
+			<Control ID="btnReset">Reset</Control>
+			<Control ID="btnUndo">Undo</Control>
+
+			<Control ID="btnResetCounters">Reset counters</Control>
+
+			<Control ID="lblMemType">Memory type:</Control>
+			<Control ID="lblFormat">Format:</Control>
+			<Control ID="lblValueSize">Value size:</Control>
+
+			<Control ID="lblSearchFilter">Search Filter</Control>
+			<Control ID="lblCompareTo">Compare To</Control>
+			<Control ID="lblOperator">Operator</Control>
+
+			<Control ID="colAddress">Address</Control>
+			<Control ID="colValue">Value</Control>
+			<Control ID="colPrevValue">Last Value</Control>
+			<Control ID="colReadCount">Reads</Control>
+			<Control ID="colWriteCount">Writes</Control>
+			<Control ID="colExecCount">Execs</Control>
+			<Control ID="colLastRead">Last Read</Control>
+			<Control ID="colLastWrite">Last Write</Control>
+			<Control ID="colLastExec">Last Exec</Control>
+			<Control ID="colMatch">Match</Control>
+		</Form>
+		
 		<Form ID="GoToWindow">
 			<Control ID="wndTitle">Go to Address...</Control>
 			<Control ID="lblAddress">Address:</Control>
@@ -2429,6 +2457,30 @@
 			<Value ID="AbsAddress">ROM address</Value>
 			<Value ID="Both">Both</Value>
 			<Value ID="BothCompact">Both (compact)</Value>
+		</Enum>
+		<Enum ID="MemorySearchFormat">
+			<Value ID="Hex">Hex</Value>
+			<Value ID="Signed">Signed</Value>
+			<Value ID="Unsigned">Unsigned</Value>
+		</Enum>
+		<Enum ID="MemorySearchValueSize">
+			<Value ID="Byte">8-bit</Value>
+			<Value ID="Word">16-bit</Value>
+			<Value ID="Dword">32-bit</Value>
+		</Enum>
+		<Enum ID="MemorySearchCompareTo">
+			<Value ID="PreviousSearchValue">Previous search value</Value>
+			<Value ID="PreviousRefreshValue">Previous refresh value</Value>
+			<Value ID="SpecificValue">Specific value:</Value>
+			<Value ID="SpecificAddress">Specific address:</Value>
+		</Enum>
+		<Enum ID="MemorySearchOperator">
+			<Value ID="Equal">Equal</Value>
+			<Value ID="NotEqual">Not equal</Value>
+			<Value ID="LessThan">Less than</Value>
+			<Value ID="GreaterThan">Greater than</Value>
+			<Value ID="LessThanOrEqual">Less than or equal</Value>
+			<Value ID="GreaterThanOrEqual">Greater than or equal</Value>
 		</Enum>
 		<Enum ID="ScriptStartupBehavior">
 			<Value ID="ShowTutorial">Display the tutorial script</Value>

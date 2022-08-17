@@ -21,6 +21,11 @@ namespace Mesen.Utilities
 			_inner.AddRange(items);
 			_collectionChanged?.Invoke(this, EventArgsCache.ResetCollectionChanged);
 		}
+
+		public List<T> GetInnerList()
+		{
+			return _inner;
+		}
 	}
 
 	/// <summary>
