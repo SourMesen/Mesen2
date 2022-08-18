@@ -246,6 +246,8 @@ void NesConsole::RunFrame()
 		}
 	}
 
+	_apu->EndFrame();
+
 	if(!_nextFrameOverclockDisabled) {
 		//Re-update timings to allow overclocking
 		_ppu->UpdateTimings(_region, true);
