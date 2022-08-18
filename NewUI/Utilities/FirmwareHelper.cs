@@ -1,7 +1,9 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Windows;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -37,18 +39,33 @@ namespace Mesen.Utilities
 			string filename = Marshal.PtrToStringUTF8(msg.Filename) ?? "";
 			Window? wnd = ApplicationHelper.GetMainWindow();
 
-			if(await MesenMsgBox.Show(wnd, "FirmwareNotFound", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, msg.Firmware.ToString(), filename, msg.Size.ToString()) == DialogResult.OK) {
-				string? selectedFile = await FileDialogHelper.OpenFile(null, wnd);
-				if(selectedFile != null) {
-					List<string> expectedHashes = msg.GetFileHashes();
-					string filehash = GetFileHash(selectedFile);
-					if(!expectedHashes.Contains(filehash)) {
-						if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, msg.Firmware.ToString(), expectedHashes[0], filehash) != DialogResult.OK) {
-							//Files don't match and user cancelled the action
-							return;
+			if(await MesenMsgBox.Show(wnd, "FirmwareNotFound", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, ResourceHelper.GetEnumText(msg.Firmware), filename, msg.Size.ToString()) == DialogResult.OK) {
+				while(true) {
+					string? selectedFile = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.FirmwareExt);
+					if(selectedFile != null) {
+						try {
+							List<string> expectedHashes = msg.GetFileHashes();
+							if(new FileInfo(selectedFile).Length != msg.Size) {
+								await MesenMsgBox.Show(wnd, "FirmwareFileWrongSize", MessageBoxButtons.OK, MessageBoxIcon.Error, msg.Size.ToString());
+								continue;
+							}
+
+							string filehash = GetFileHash(selectedFile);
+							if(!expectedHashes.Contains(filehash)) {
+								if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, ResourceHelper.GetEnumText(msg.Firmware), expectedHashes[0], filehash) != DialogResult.OK) {
+									//Files don't match and user cancelled the action
+									return;
+								}
+							}
+
+							File.Copy(selectedFile, Path.Combine(ConfigManager.FirmwareFolder, filename), true);
+						} catch(Exception ex) {
+							await MesenMsgBox.ShowException(ex);
 						}
 					}
-					File.Copy(selectedFile, Path.Combine(ConfigManager.FirmwareFolder, filename));
+
+					//Only loop if user picks a file with the wrong size
+					break;
 				}
 			}
 		}

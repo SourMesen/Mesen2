@@ -1386,8 +1386,9 @@
 
 		<Message ID="ClearHistory">Clear History</Message>
 
-		<Message ID="FirmwareNotFound">This game requires a firmware file for the {0} chip.&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
-		<Message ID="FirmwareMismatch">The selected file does not match the firmware required for this chip ({0}).&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>
+		<Message ID="FirmwareNotFound">This game requires a firmware file for the: {0}&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
+		<Message ID="FirmwareMismatch">The selected file does not match the firmware required for the: {0}&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>
+		<Message ID="FirmwareFileWrongSize">The selected file does not match the required size ({0} bytes) and cannot be used.</Message>
 
 		<Message ID="MouseModeEnabled">Mouse enabled - pause to release cursor</Message>
 		<Message ID="BandaiMicrophone">Bandai Microphone</Message>
@@ -2260,7 +2261,29 @@
 			<Value ID="AblPinball">ABL Pinball</Value>
 			<Value ID="GoldenNuggetCasino">Golden Nugget Casino</Value>
 		</Enum>
-		
+
+		<Enum ID="FirmwareType">
+			<Value ID="CX4">CX4</Value>
+			<Value ID="DSP1">DSP-1</Value>
+			<Value ID="DSP1B">DSP-1B</Value>
+			<Value ID="DSP2">DSP-2</Value>
+			<Value ID="DSP3">DSP-3</Value>
+			<Value ID="DSP4">DSP-4</Value>
+			<Value ID="ST010">ST010</Value>
+			<Value ID="ST011">ST011</Value>
+			<Value ID="ST018">ST018</Value>
+			<Value ID="Satellaview">Satellaview (BS-X)</Value>
+			<Value ID="Gameboy">Game Boy CPU</Value>
+			<Value ID="GameboyColor">Game Boy Color CPU</Value>
+			<Value ID="Sgb1GameboyCpu">SGB1 - Game Boy CPU</Value>
+			<Value ID="Sgb2GameboyCpu">SGB2 - Game Boy CPU</Value>
+			<Value ID="SGB1">SGB1</Value>
+			<Value ID="SGB2">SGB2</Value>
+			<Value ID="FDS">Famicom Disk System</Value>
+			<Value ID="StudyBox">Study Box</Value>
+			<Value ID="PceSuperCd">Super CD-ROM²</Value>
+		</Enum>
+
 		<Enum ID="CpuType">
 			<Value ID="Snes">SNES (65816)</Value>
 			<Value ID="Spc">SPC</Value>

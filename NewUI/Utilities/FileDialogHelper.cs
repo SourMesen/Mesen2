@@ -14,6 +14,7 @@ namespace Mesen.Utilities
 	public class FileDialogHelper
 	{
 		public const string RomExt = "[[ROMFILES]]";
+		public const string FirmwareExt = "[[FIRMWAREFILES]]";
 		public const string MesenMovieExt = "msm";
 		public const string TblExt = "tbl";
 		public const string PaletteExt = "pal";
@@ -48,10 +49,13 @@ namespace Mesen.Utilities
 					filter.Add(new FilePickerFileType("NES ROM Files") { Patterns = new List<string>() { "*.nes", "*.fds", "*.unif", "*.studybox", "*.nsf", "*.nsfe" } });
 					filter.Add(new FilePickerFileType("GB ROM Files") { Patterns = new List<string>() { "*.gb", "*.gbc", "*.gbs" } });
 					filter.Add(new FilePickerFileType("PC Engine ROM ROM Files") { Patterns = new List<string>() { "*.pce", "*.cue" } });
+				} else if(ext == FileDialogHelper.FirmwareExt) {
+					filter.Add(new FilePickerFileType("All firmware Files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom" } });
 				} else {
 					filter.Add(new FilePickerFileType(ext.ToUpper() + " files") { Patterns = new List<string>() { "*." + ext } });
 				}
 			}
+			filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
 			IReadOnlyList<IStorageFile> files = await wnd.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions() {
 				SuggestedStartLocation = initialFolder != null ? new BclStorageFolder(new DirectoryInfo(initialFolder)) : null,
