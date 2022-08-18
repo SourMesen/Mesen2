@@ -4,6 +4,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/FastString.h"
 #include "Utilities/magic_enum.hpp"
+#include "Utilities/safe_ptr.h"
 
 class Serializer;
 
@@ -308,6 +309,14 @@ public:
 	}
 
 	template<typename T> void Stream(shared_ptr<T>& obj, const char* name, int index = -1)
+	{
+		static_assert(std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
+		PushNamePrefix(name, index);
+		((ISerializable*)obj.get())->Serialize(*this);
+		PopNamePrefix();
+	}
+
+	template<typename T> void Stream(safe_ptr<T>& obj, const char* name, int index = -1)
 	{
 		static_assert(std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
 		PushNamePrefix(name, index);

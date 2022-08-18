@@ -47,6 +47,14 @@ public:
 		_shared = ptr;
 	}
 
+	void reset(unique_ptr<T>& ptr)
+	{
+		auto lock = _lock.AcquireSafe();
+		_ptr = ptr.get();
+		_shared.reset(ptr.get());
+		ptr.release();
+	}
+
 	T* get()
 	{
 		return _ptr;

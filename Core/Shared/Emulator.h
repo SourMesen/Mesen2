@@ -56,7 +56,7 @@ class Emulator
 private:
 	unique_ptr<thread> _emuThread;
 	unique_ptr<AudioPlayerHud> _audioPlayerHud;
-	unique_ptr<IConsole> _console;
+	safe_ptr<IConsole> _console;
 
 	shared_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
 	shared_ptr<RewindManager> _rewindManager;
