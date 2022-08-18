@@ -782,7 +782,7 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.OpenRegisterViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.OpenRegisterViewer),
 					IsEnabled = () => IsGameRunning,
-					OnClick = () => DebugWindowManager.GetOrOpenDebugWindow(() => new RegisterViewerWindow(new RegisterViewerWindowViewModel()))
+					OnClick = () => DebugWindowManager.OpenDebugWindow(() => new RegisterViewerWindow(new RegisterViewerWindowViewModel()))
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.OpenTraceLogger,
