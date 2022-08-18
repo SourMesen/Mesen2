@@ -642,6 +642,10 @@ void Emulator::PauseOnNextFrame()
 			case ConsoleType::Nes:
 				debugger->Step(CpuType::Nes, 240, StepType::SpecificScanline);
 				break;
+
+			case ConsoleType::PcEngine:
+				debugger->Step(CpuType::Pce, 243, StepType::SpecificScanline);
+				break;
 		}
 	} else {
 		_pauseOnNextFrame = true;
