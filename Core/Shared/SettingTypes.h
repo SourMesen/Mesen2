@@ -705,6 +705,7 @@ enum class EmulatorShortcut
 	ToggleFps,
 	ToggleGameTimer,
 	ToggleFrameCounter,
+	ToggleLagCounter,
 	ToggleOsd,
 	ToggleAlwaysOnTop,
 	ToggleDebugInfo,

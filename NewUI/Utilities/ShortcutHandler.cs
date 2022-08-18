@@ -48,6 +48,7 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleFps: ToggleFps(); break;
 				case EmulatorShortcut.ToggleGameTimer: ToggleGameTimer(); break;
 				case EmulatorShortcut.ToggleFrameCounter: ToggleFrameCounter(); break;
+				case EmulatorShortcut.ToggleLagCounter: ToggleLagCounter(); break;
 				case EmulatorShortcut.ToggleOsd: ToggleOsd(); break;
 				
 				case EmulatorShortcut.ToggleAlwaysOnTop: ToggleAlwaysOnTop(); break;
@@ -414,7 +415,13 @@ namespace Mesen.Utilities
 			ConfigManager.Config.Preferences.ShowFrameCounter = !ConfigManager.Config.Preferences.ShowFrameCounter;
 			ConfigManager.Config.Preferences.ApplyConfig();
 		}
-		
+
+		private void ToggleLagCounter()
+		{
+			ConfigManager.Config.Preferences.ShowLagCounter = !ConfigManager.Config.Preferences.ShowLagCounter;
+			ConfigManager.Config.Preferences.ApplyConfig();
+		}
+
 		private void ToggleGameTimer()
 		{
 			ConfigManager.Config.Preferences.ShowGameTimer = !ConfigManager.Config.Preferences.ShowGameTimer;
