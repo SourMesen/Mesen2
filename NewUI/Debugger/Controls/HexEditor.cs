@@ -22,8 +22,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
-		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
-		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<HexEditor, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
+		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamilyName));
+		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<HexEditor, double>(nameof(FontSize), 12);
 
 		public static readonly StyledProperty<bool> ShowStringViewProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(ShowStringView), false);
 		public static readonly StyledProperty<bool> HighDensityModeProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(HighDensityMode), false);
@@ -81,13 +81,13 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(HighDensityModeProperty, value); }
 		}
 
-		public string FontFamily
+		public FontFamily FontFamily
 		{
 			get { return GetValue(FontFamilyProperty); }
 			set { SetValue(FontFamilyProperty, value); }
 		}
 
-		public float FontSize
+		public double FontSize
 		{
 			get { return GetValue(FontSizeProperty); }
 			set { SetValue(FontSizeProperty, value); }
@@ -149,7 +149,8 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<HexEditor>(
 				DataProviderProperty, TopRowProperty, BytesPerRowProperty, SelectionStartProperty, SelectionLengthProperty,
 				SelectedRowColumnColorProperty, HeaderBackgroundProperty, HeaderForegroundProperty, HeaderHighlightProperty,
-				IsFocusedProperty, HighDensityModeProperty, NewByteValueProperty
+				IsFocusedProperty, HighDensityModeProperty, NewByteValueProperty,
+				FontFamilyProperty, FontSizeProperty
 			);
 
 			FontFamilyProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
@@ -675,7 +676,7 @@ namespace Mesen.Debugger.Controls
 
 		private void InitFontAndLetterSize()
 		{
-			this.Font = new Typeface(new FontFamily(this.FontFamily));
+			this.Font = new Typeface(FontFamily);
 			var text = new FormattedText("A", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, FontSize, null);
 			this.LetterSize = new Size(text.Width, text.Height);
 		}

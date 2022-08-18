@@ -91,7 +91,7 @@ namespace Mesen.Debugger.Utilities
 
 		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo seg)
 		{
-			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 
 			TooltipEntries items = new();
@@ -132,7 +132,7 @@ namespace Mesen.Debugger.Utilities
 
 		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, int address, CodeLabel? label, SourceSymbol? symbol)
 		{
-			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 			TooltipEntries items = new();
 
@@ -183,8 +183,8 @@ namespace Mesen.Debugger.Utilities
 							Height = 150,
 							Lines = new CodeDataProvider(cpuType).GetCodeLines(address, 40),
 							StyleProvider = new BaseStyleProvider(cpuType),
-							FontFamily = ConfigManager.Config.Debug.Font.FontFamily,
-							FontSize = ConfigManager.Config.Debug.Font.FontSize - 1
+							FontFamily = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily,
+							FontSize = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize
 						}
 					});
 				}
@@ -202,7 +202,7 @@ namespace Mesen.Debugger.Utilities
 			CpuInstructionProgress progress = seg.Progress.CpuProgress;
 			MemoryOperationInfo operation = progress.LastMemOperation;
 
-			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Font.FontFamily);
+			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 
 			TooltipEntries items = new();
 			items.AddEntry("Type", ResourceHelper.GetEnumText(operation.Type), monoFont);

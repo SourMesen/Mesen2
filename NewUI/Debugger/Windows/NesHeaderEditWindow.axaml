@@ -52,8 +52,8 @@
 			IsReadOnly="True"
 			Text="{CompiledBinding HeaderBytes}"
 			Width="NaN"
-			FontFamily="Consolas"
-			FontSize="13"
+			FontFamily="{DynamicResource MesenMonospaceFont}"
+			FontSize="{DynamicResource MesenMonospaceFontSize}"
 		/>
 		
 		<Grid ColumnDefinitions="Auto,1.5*,10,Auto,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">

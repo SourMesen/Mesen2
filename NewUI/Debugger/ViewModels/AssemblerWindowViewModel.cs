@@ -34,7 +34,6 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public bool OkEnabled { get; set; } = false;
 		[Reactive] public List<AssemblerError> Errors { get; set; } = new List<AssemblerError>();
-		public FontConfig Font { get; } = ConfigManager.Config.Debug.Font;
 
 		[Reactive] public List<ContextMenuAction> FileMenuActions { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> OptionsMenuActions { get; private set; } = new();

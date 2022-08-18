@@ -21,7 +21,6 @@ namespace Mesen.Debugger.ViewModels
 	public class MemoryToolsViewModel : DisposableViewModel
 	{
 		[Reactive] public HexEditorConfig Config { get; set; }
-		[Reactive] public FontConfig FontConfig { get; set; }
 		[Reactive] public int ScrollPosition { get; set; }
 		[Reactive] public HexEditorDataProvider? DataProvider { get; set; }
 		[Reactive] public TblByteCharConverter? TblConverter { get; set; }
@@ -52,7 +51,6 @@ namespace Mesen.Debugger.ViewModels
 
 			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel(this));
 			Config = ConfigManager.Config.Debug.HexEditor;
-			FontConfig = ConfigManager.Config.Debug.Font;
 			ScrollPosition = 0;
 
 			if(Design.IsDesignMode) {

@@ -7,6 +7,27 @@
 	x:Class="Mesen.App"
 >
 	<Application.Resources>
+		<FontFamily x:Key="MesenFont">Microsoft Sans Serif</FontFamily>
+		<x:Double x:Key="MesenFontSize">11</x:Double>
+		
+		<FontFamily x:Key="MesenMenuFont">Segoe UI</FontFamily>
+		<x:Double x:Key="MesenMenuFontSize">12</x:Double>
+
+		<FontFamily x:Key="MesenDisassemblyFont">Consolas</FontFamily>
+		<x:Double x:Key="MesenDisassemblyFontSize">12</x:Double>
+
+		<FontFamily x:Key="MesenMemoryViewerFont">Consolas</FontFamily>
+		<x:Double x:Key="MesenMemoryViewerFontSize">12</x:Double>
+
+		<FontFamily x:Key="MesenAssemblerFont">Consolas</FontFamily>
+		<x:Double x:Key="MesenAssemblerFontSize">12</x:Double>
+
+		<FontFamily x:Key="MesenScriptWindowFont">Consolas</FontFamily>
+		<x:Double x:Key="MesenScriptWindowFontSize">12</x:Double>
+
+		<FontFamily x:Key="MesenMonospaceFont">Consolas</FontFamily>
+		<x:Double x:Key="MesenMonospaceFontSize">12</x:Double>
+
 		<l:EnumConverter x:Key="Enum" />
 		<u:FontNameConverter x:Key="FontNameConverter" />
 		<VisualBrush x:Key="ViewerBgBrush" TileMode="Tile" Stretch="None" AlignmentX="Left" AlignmentY="Top" SourceRect="0,0,5,5" DestinationRect="0,0,5,5">

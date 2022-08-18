@@ -205,18 +205,18 @@
 	</Style>
 
 	<Style Selector="DatePicker, TimePicker, TextBox, NumericUpDown">
-		<Setter Property="FontSize" Value="11" />
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontSize" Value="{DynamicResource MesenFontSize}" />
+		<Setter Property="FontFamily" Value="{DynamicResource MesenFont}" />
 	</Style>
 	
 	<Style Selector="TextBlock, AccessText">
-		<Setter Property="FontSize" Value="11" />
-		<Setter Property="FontFamily" Value="Microsoft Sans Serif" />
+		<Setter Property="FontSize" Value="{DynamicResource MesenFontSize}" />
+		<Setter Property="FontFamily" Value="{DynamicResource MesenFont}" />
 	</Style>
 
 	<Style Selector="MenuItem AccessText">
-		<Setter Property="FontSize" Value="12" />
-		<Setter Property="FontFamily" Value="Segoe UI" />
+		<Setter Property="FontSize" Value="{DynamicResource MesenMenuFontSize}" />
+		<Setter Property="FontFamily" Value="{DynamicResource MesenMenuFont}" />
 	</Style>
 
 	<Style Selector="TextBox">

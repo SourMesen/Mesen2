@@ -32,7 +32,7 @@ namespace Mesen.Config
 		public WatchWindowConfig WatchWindow { get; set; } = new();
 		public AssemblerConfig Assembler { get; set; } = new();
 		public DebugLogConfig DebugLog { get; set; } = new();
-		public FontConfig Font { get; set; } = new();
+		public DebuggerFontConfig Fonts { get; set; } = new();
 
 		public DebugConfig()
 		{		
@@ -40,6 +40,8 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
+			Fonts.ApplyConfig();
+
 			ConfigApi.SetDebugConfig(new InteropDebugConfig() {
 				BreakOnUninitRead = Debugger.BreakOnUninitRead,
 				ShowJumpLabels = Debugger.ShowJumpLabels,

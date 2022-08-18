@@ -28,106 +28,116 @@
 	
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblModel}" Margin="3 0 5 0" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Model}" MinWidth="200" />
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblModel}" Margin="3 0 5 0" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.Model}" MinWidth="200" />
+					</StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
 				</StackPanel>
-				<CheckBox IsChecked="{CompiledBinding Config.UseSgb2}" Content="{l:Translate chkUseSgb2}" />
-			</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgAudio}">
-			<StackPanel>
-				<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
-					<StackPanel Orientation="Horizontal" Height="150">
-						<StackPanel.Styles>
-							<Style Selector="c|MesenSlider">
-								<Setter Property="Minimum" Value="0" />
-								<Setter Property="Maximum" Value="100" />
-								<Setter Property="Orientation" Value="Vertical" />
-								<Setter Property="Margin" Value="5 0" />
-							</Style>
-						</StackPanel.Styles>
-						
-						<c:MesenSlider Text="Square 1" Value="{CompiledBinding Config.Square1Vol}" />
-						<c:MesenSlider Text="Square 2" Value="{CompiledBinding Config.Square2Vol}" />
-						<c:MesenSlider Text="Wave" Value="{CompiledBinding Config.WaveVol}" />
-						<c:MesenSlider Text="Noise" Value="{CompiledBinding Config.NoiseVol}" />
-					</StackPanel>
-				</c:GroupBox>
-			</StackPanel>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
+						<StackPanel Orientation="Horizontal" Height="150">
+							<StackPanel.Styles>
+								<Style Selector="c|MesenSlider">
+									<Setter Property="Minimum" Value="0" />
+									<Setter Property="Maximum" Value="100" />
+									<Setter Property="Orientation" Value="Vertical" />
+									<Setter Property="Margin" Value="5 0" />
+								</Style>
+							</StackPanel.Styles>
+
+							<c:MesenSlider Text="Square 1" Value="{CompiledBinding Config.Square1Vol}" />
+							<c:MesenSlider Text="Square 2" Value="{CompiledBinding Config.Square2Vol}" />
+							<c:MesenSlider Text="Wave" Value="{CompiledBinding Config.WaveVol}" />
+							<c:MesenSlider Text="Noise" Value="{CompiledBinding Config.NoiseVol}" />
+						</StackPanel>
+					</c:GroupBox>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgEmulation}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgInput}">
-			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblPlayer1}" />
-					<Button
-						Margin="10 0 0 0"
-						Command="{CompiledBinding SetupPlayer}"
-						CommandParameter="{Binding $self}"
-						Content="{l:Translate btnSetup}"
-					/>
-				</StackPanel>
-			</c:OptionSection>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblPlayer1}" />
+						<Button
+							Margin="10 0 0 0"
+							Command="{CompiledBinding SetupPlayer}"
+							CommandParameter="{Binding $self}"
+							Content="{l:Translate btnSetup}"
+						/>
+					</StackPanel>
+				</c:OptionSection>
+			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgVideo}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">
-					<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
-						<TextBlock Text="{l:Translate lblGbBackground}" />
-						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Width="82">
-							<dc:PaletteSelector
-								PaletteColors="{CompiledBinding Config.BgColors}"
-								ColorClick="BgColor_OnClick"
-							/>
-						</Border>
-						<Button
-							Grid.Column="2"
-							Content="{l:Translate btnSelectPreset}"
-							Click="btnSelectPreset_OnClick"
-						>
-							<Button.ContextMenu>
-								<ContextMenu PlacementMode="Bottom">
-									<MenuItem Header="{l:Translate lblGrayscale}" Click="mnuGrayscalePreset_Click" />
-									<MenuItem Header="{l:Translate lblGrayscaleHighContrast}" Click="mnuGrayscaleHighContrastPreset_Click" />
-									<MenuItem Header="{l:Translate lblGreen}" Click="mnuGreenPreset_Click" />
-									<MenuItem Header="{l:Translate lblBrown}" Click="mnuBrownPreset_Click" />
-								</ContextMenu>
-							</Button.ContextMenu>
-						</Button>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblGameboyPalette}" Margin="0">
+						<Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+							<TextBlock Text="{l:Translate lblGbBackground}" />
+							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Width="82">
+								<dc:PaletteSelector
+									PaletteColors="{CompiledBinding Config.BgColors}"
+									ColorClick="BgColor_OnClick"
+								/>
+							</Border>
+							<Button
+								Grid.Column="2"
+								Content="{l:Translate btnSelectPreset}"
+								Click="btnSelectPreset_OnClick"
+							>
+								<Button.ContextMenu>
+									<ContextMenu PlacementMode="Bottom">
+										<MenuItem Header="{l:Translate lblGrayscale}" Click="mnuGrayscalePreset_Click" />
+										<MenuItem Header="{l:Translate lblGrayscaleHighContrast}" Click="mnuGrayscaleHighContrastPreset_Click" />
+										<MenuItem Header="{l:Translate lblGreen}" Click="mnuGreenPreset_Click" />
+										<MenuItem Header="{l:Translate lblBrown}" Click="mnuBrownPreset_Click" />
+									</ContextMenu>
+								</Button.ContextMenu>
+							</Button>
 
-						<TextBlock Text="{l:Translate lblGbObj0}" Grid.Row="1" />
-						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="1" Width="82">
-							<dc:PaletteSelector
-								PaletteColors="{CompiledBinding Config.Obj0Colors}"
-								ColorClick="Obj0Color_OnClick"
-							/>
-						</Border>
+							<TextBlock Text="{l:Translate lblGbObj0}" Grid.Row="1" />
+							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="1" Width="82">
+								<dc:PaletteSelector
+									PaletteColors="{CompiledBinding Config.Obj0Colors}"
+									ColorClick="Obj0Color_OnClick"
+								/>
+							</Border>
 
-						<TextBlock Text="{l:Translate lblGbObj1}" Grid.Row="2" />
-						<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="2" Width="82">
-							<dc:PaletteSelector
-								PaletteColors="{CompiledBinding Config.Obj1Colors}"
-								ColorClick="Obj1Color_OnClick"
-							/>
-						</Border>
-					</Grid>
-				</c:OptionSection>
-				<c:OptionSection Header="{l:Translate lblLcdSettings}">
-					<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
-					<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
-				</c:OptionSection>
-			</StackPanel>
+							<TextBlock Text="{l:Translate lblGbObj1}" Grid.Row="2" />
+							<Border BorderBrush="#555" BorderThickness="1" Margin="0 1 5 0" Grid.Column="1" Grid.Row="2" Width="82">
+								<dc:PaletteSelector
+									PaletteColors="{CompiledBinding Config.Obj1Colors}"
+									ColorClick="Obj1Color_OnClick"
+								/>
+							</Border>
+						</Grid>
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblLcdSettings}">
+						<CheckBox IsChecked="{CompiledBinding Config.GbcAdjustColors}" Content="{l:Translate chkGbcAdjustColors}"/>
+						<CheckBox IsChecked="{CompiledBinding Config.BlendFrames}" Content="{l:Translate chkGbBlendFrames}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 	</TabControl>
 </UserControl>

@@ -140,6 +140,8 @@ namespace Mesen.Windows
 				return;
 			}
 
+			ConfigManager.Config.Preferences.ApplyFontOptions();
+
 			_timerBackgroundFlag.Interval = TimeSpan.FromMilliseconds(200);
 			_timerBackgroundFlag.Tick += timerUpdateBackgroundFlag;
 			_timerBackgroundFlag.Start();

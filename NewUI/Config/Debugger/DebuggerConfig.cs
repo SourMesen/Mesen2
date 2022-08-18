@@ -10,9 +10,6 @@ namespace Mesen.Config
 {
 	public class DebuggerConfig : BaseWindowConfig<DebuggerConfig>
 	{
-		public static string MonospaceFontFamily = "Consolas";
-		public static int DefaultFontSize = 14;
-
 		public DockEntryDefinition? SavedDockLayout { get; set; } = null;
 
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;

@@ -18,7 +18,7 @@
 		<vm:NesInputConfigViewModel />
 	</Design.DataContext>
 
-	<ScrollViewer AllowAutoHide="False">
+	<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 		<StackPanel>
 			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
 				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">

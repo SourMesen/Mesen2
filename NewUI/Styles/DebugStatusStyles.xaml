@@ -36,8 +36,8 @@
 	</Style>
 
 	<Style Selector="TextBox">
-		<Setter Property="FontFamily" Value="Consolas" />
-		<Setter Property="FontSize" Value="12" />
+		<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
+		<Setter Property="FontSize" Value="{DynamicResource MesenMonospaceFontSize}" />
 		<Setter Property="MinWidth" Value="19" />
 
 		<Setter Property="Height" Value="16" />

@@ -15,6 +15,7 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+  Width="600" Height="500"
 	x:Class="Mesen.Debugger.Windows.ScriptWindow"
 	Icon="/Assets/Script.png"
 	x:DataType="vm:ScriptWindowViewModel"
@@ -51,8 +52,8 @@
 					Name="Editor"
 					ShowLineNumbers="True"
 					TextBinding="{CompiledBinding Code}"
-					FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
-					FontSize="{CompiledBinding Font.FontSize}"
+					FontFamily="{DynamicResource MesenScriptWindowFont}"
+					FontSize="{DynamicResource MesenScriptWindowFontSize}"
 				/>
 			</Border>
 

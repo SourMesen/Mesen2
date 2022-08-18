@@ -510,6 +510,11 @@
 			<Control ID="btnResetLagCounter">Reset lag counter</Control>
 			<Control ID="chkShowVsConfigOnLoad">Show game configuration dialog when loading VS System games</Control>
 
+			<Control ID="lblFontSettings">Font Settings</Control>
+			<Control ID="lblFontAntialiasing">Font anti-aliasing:</Control>
+			<Control ID="lblRegularFont">Default font:</Control>
+			<Control ID="lblMenuFont">Menu font:</Control>
+
 			<Control ID="lblAdvancedMisc">Miscellaneous Settings</Control>
 			<Control ID="chkEnableAutoSaveState">Automatically create a save state every </Control>
 			<Control ID="lblSaveStateMinutes">minutes (game clock)</Control>
@@ -1172,6 +1177,13 @@
 			
 			<Control ID="tabFonts">Fonts &amp; Colors</Control>
 			<Control ID="lblFontSettings">Font settings</Control>
+
+			<Control ID="lblDisassemblyFont">Disassembly:</Control>
+			<Control ID="lblMemoryViewerFont">Memory viewer:</Control>
+			<Control ID="lblAssemblerFont">Assembler:</Control>
+			<Control ID="lblScriptWindowFont">Script window:</Control>
+			<Control ID="lblOtherMonoFont">Other (monospace):</Control>
+			
 			<Control ID="lblSyntaxHighlighting">Syntax highlighting</Control>
 			<Control ID="lblCodeOpcodeColor">Opcode</Control>
 			<Control ID="lblCodeLabelDefinitionColor">Label</Control>
@@ -2059,6 +2071,11 @@
 			<Value ID="Equal">Equal</Value>
 			<Value ID="NotEqual">Not equal</Value>
 			<Value ID="Greater">Greater</Value>
+		</Enum>
+		<Enum ID="FontAntialiasing">
+			<Value ID="Disabled">Disabled</Value>
+			<Value ID="Antialias">Anti-aliasing</Value>
+			<Value ID="SubPixelAntialias">Subpixel anti-aliasing</Value>
 		</Enum>
 		<Enum ID="VideoCodec">
 			<Value ID="None">None (Uncompressed)</Value>

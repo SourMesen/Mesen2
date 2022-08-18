@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using System;
@@ -214,7 +215,7 @@ namespace Mesen.Debugger.Controls
 				height = BlockSize;
 			}
 
-			Typeface typeface = new Typeface("Consolas");
+			Typeface typeface = new Typeface(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 			for(int y = 0, max = paletteColors.Length / columnCount; y < max; y++) {
 				for(int x = 0; x < columnCount; x++) {
 					Rect rect = new Rect(x * width, y * height, width, height);

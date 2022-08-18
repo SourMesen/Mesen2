@@ -78,8 +78,8 @@
 					SelectionStart="{CompiledBinding SelectionStart}"
 					SelectionLength="{CompiledBinding SelectionLength}"
 					TopRow="{CompiledBinding ScrollPosition}"
-					FontFamily="{CompiledBinding FontConfig.FontFamily}"
-					FontSize="{CompiledBinding FontConfig.FontSize}"
+					FontFamily="{DynamicResource MesenMemoryViewerFont}"
+					FontSize="{DynamicResource MesenMemoryViewerFontSize}"
 					ShowStringView="{CompiledBinding Config.ShowCharacters}"
 				/>
 			</DockPanel>

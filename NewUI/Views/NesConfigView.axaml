@@ -54,43 +54,45 @@
 
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblRegion}" Margin="5 0" />
-					<c:EnumComboBox
-						Grid.Column="1"
-						Width="130"
-						SelectedItem="{CompiledBinding Config.Region}"
-					/>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRegion}" Margin="5 0" />
+						<c:EnumComboBox
+							Grid.Column="1"
+							Width="130"
+							SelectedItem="{CompiledBinding Config.Region}"
+						/>
+					</StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
+
+					<c:OptionSection Header="{l:Translate lblFdsSettings}">
+						<CheckBox IsChecked="{CompiledBinding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
+						<CheckBox IsChecked="{CompiledBinding Config.FdsFastForwardOnLoad}" Content="{l:Translate chkFdsFastForwardOnLoad}" />
+						<CheckBox IsChecked="{CompiledBinding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblVsDualSystem}">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+							<TextBlock Text="{l:Translate lblVsDualPlayAudio}" />
+							<c:EnumComboBox
+								Grid.Column="1"
+								Width="130"
+								SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
+							/>
+
+							<TextBlock Grid.Row="1" Text="{l:Translate lblVsDualShowVideo}" />
+							<c:EnumComboBox
+								Grid.Row="1"
+								Grid.Column="1"
+								Width="130"
+								SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
+							/>
+						</Grid>
+					</c:OptionSection>
 				</StackPanel>
-				<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameDatabase}" Text="{l:Translate chkDisableGameDatabase}" />
-
-				<c:OptionSection Header="{l:Translate lblFdsSettings}">
-					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoLoadDisk}" Content="{l:Translate chkFdsAutoLoadDisk}" />
-					<CheckBox IsChecked="{CompiledBinding Config.FdsFastForwardOnLoad}" Content="{l:Translate chkFdsFastForwardOnLoad}" />
-					<CheckBox IsChecked="{CompiledBinding Config.FdsAutoInsertDisk}" Content="{l:Translate chkFdsAutoInsertDisk}" />
-				</c:OptionSection>
-
-				<c:OptionSection Header="{l:Translate lblVsDualSystem}">
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-						<TextBlock Text="{l:Translate lblVsDualPlayAudio}" />
-						<c:EnumComboBox
-							Grid.Column="1"
-							Width="130"
-							SelectedItem="{CompiledBinding Config.VsDualAudioOutput}"
-						/>
-						
-						<TextBlock Grid.Row="1" Text="{l:Translate lblVsDualShowVideo}" />
-						<c:EnumComboBox
-							Grid.Row="1"
-							Grid.Column="1"
-							Width="130"
-							SelectedItem="{CompiledBinding Config.VsDualVideoOutput}"
-						/>
-					</Grid>
-				</c:OptionSection>
-			</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		<TabItem Header="{l:Translate tpgAudio}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
@@ -288,36 +290,38 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgEmulation}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
-					</StackPanel>
-					
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeCpuPpuAlignment}" Text="{l:Translate chkRandomizeCpuPpuAlignment}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableOamDecay}" Text="{l:Translate chkEnableOamDecay}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpuOamRowCorruption}" Text="{l:Translate chkEnablePpuOamRowCorruption}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2000ScrollGlitch}" Text="{l:Translate chkEnablePpu2000ScrollGlitch}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2006ScrollGlitch}" Text="{l:Translate chkEnablePpu2006ScrollGlitch}" />
-				</c:OptionSection>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+						</StackPanel>
 
-				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<StackPanel Orientation="Horizontal">
-						<TextBlock Text="{l:Translate lblConsoleType}" Margin="0 0 5 0" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
-					</StackPanel>
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
-					
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeMapperPowerOnState}" Text="{l:Translate chkMapperRandomPowerOnState}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RandomizeCpuPpuAlignment}" Text="{l:Translate chkRandomizeCpuPpuAlignment}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableOamDecay}" Text="{l:Translate chkEnableOamDecay}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpuOamRowCorruption}" Text="{l:Translate chkEnablePpuOamRowCorruption}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2000ScrollGlitch}" Text="{l:Translate chkEnablePpu2000ScrollGlitch}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2006ScrollGlitch}" Text="{l:Translate chkEnablePpu2006ScrollGlitch}" />
+					</c:OptionSection>
 
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
-				</c:OptionSection>
-			</StackPanel>
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblConsoleType}" Margin="0 0 5 0" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.ConsoleType}" MinWidth="200" />
+						</StackPanel>
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpuReset}" Text="{l:Translate chkDisablePpuReset}" />
+
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableOamAddrBug}" Text="{l:Translate chkDisableOamAddrBug}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
+
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">
@@ -325,27 +329,29 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgOverclocking}">
-			<StackPanel>
-				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
-					<Panel>
-						<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
-						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
-					</Panel>
-				</Border>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
+						<Panel>
+							<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
+							<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+						</Panel>
+					</Border>
 
-				<c:OptionSection Header="{l:Translate grpPpuTiming}">
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
-						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
-						<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
-					</Grid>
-				</c:OptionSection>
-			</StackPanel>
+					<c:OptionSection Header="{l:Translate grpPpuTiming}">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
+							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+							<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
+							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+						</Grid>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgVideo}">
-			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
 						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />

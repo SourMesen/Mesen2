@@ -11,6 +11,10 @@ using Avalonia.Styling;
 using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
 using Mesen.Interop;
+using System.Reflection;
+using Mesen.Utilities;
+using Avalonia.Threading;
+using Avalonia.Media;
 
 namespace Mesen.Config
 {
@@ -55,6 +59,10 @@ namespace Mesen.Config
 		[Reactive] public bool ShowDebugInfo { get; set; } = false;
 		[Reactive] public bool DisableOsd { get; set; } = false;
 		[Reactive] public bool DisableGameSelectionScreen { get; set; } = false;
+
+		[Reactive] public FontAntialiasing FontAntialiasing { get; set; } = FontAntialiasing.SubPixelAntialias;
+		[Reactive] public FontConfig MesenFont { get; set; } = new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
+		[Reactive] public FontConfig MesenMenuFont { get; set; } = new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
 
 		[Reactive] public List<ShortcutKeyInfo> ShortcutKeys { get; set; } = new List<ShortcutKeyInfo>();
 
@@ -166,8 +174,47 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("pce", AssociatePceRomFiles);
 		}
 
+		public void ApplyFontOptions()
+		{
+			if(FontAntialiasing != FontAntialiasing.SubPixelAntialias) {
+				Type? renderInterface = typeof(Avalonia.Skia.SkiaPlatform).Assembly.GetType("Avalonia.Skia.PlatformRenderInterface");
+				FieldInfo? prop = renderInterface?.GetField("s_font", BindingFlags.Static | BindingFlags.NonPublic);
+				if(prop?.GetValue(null) is SkiaSharp.SKFont font) {
+					font.Edging = FontAntialiasing switch {
+						FontAntialiasing.Disabled => SkiaSharp.SKFontEdging.Alias,
+						FontAntialiasing.Antialias => SkiaSharp.SKFontEdging.Antialias,
+						FontAntialiasing.SubPixelAntialias or _ => SkiaSharp.SKFontEdging.SubpixelAntialias
+					};
+					font.Subpixel = FontAntialiasing == FontAntialiasing.SubPixelAntialias;
+				}
+			}
+
+			UpdateFonts();
+		}
+
+		private void UpdateFonts()
+		{
+			if(Application.Current != null) {
+				if(Application.Current.Resources["MesenFont"] is FontFamily curMesenFont && curMesenFont != MesenFont.FontFamily) {
+					Application.Current.Resources["MesenFont"] = new FontFamily(MesenFont.FontFamily);
+				}
+				if(Application.Current.Resources["MesenMenuFont"] is FontFamily curMesenMenuFont && curMesenMenuFont != MesenMenuFont.FontFamily) {
+					Application.Current.Resources["MesenMenuFont"] = new FontFamily(MesenMenuFont.FontFamily);
+				}
+
+				if(Application.Current.Resources["MesenFontSize"] is double curMesenFontSize && curMesenFontSize != MesenFont.FontSize) {
+					Application.Current.Resources["MesenFontSize"] = (double)MesenFont.FontSize;
+				}
+				if(Application.Current.Resources["MesenMenuFontSize"] is double curMesenMenuFontSize && curMesenMenuFontSize != MesenMenuFont.FontSize) {
+					Application.Current.Resources["MesenMenuFontSize"] = (double)MesenMenuFont.FontSize;
+				}
+			}
+		}
+
 		public void ApplyConfig()
 		{
+			UpdateFonts();
+
 			List<InteropShortcutKeyInfo> shortcutKeys = new List<InteropShortcutKeyInfo>();
 			foreach(ShortcutKeyInfo shortcutInfo in ShortcutKeys) {
 				if(!shortcutInfo.KeyCombination.IsEmpty) {
@@ -203,6 +250,13 @@ namespace Mesen.Config
 	{
 		Light = 0,
 		Dark = 1
+	}
+
+	public enum FontAntialiasing
+	{
+		Disabled,
+		Antialias,
+		SubPixelAntialias
 	}
 
 	public struct InteropPreferencesConfig

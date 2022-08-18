@@ -11,16 +11,23 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Mesen.Debugger.Views
+namespace Mesen.Views
 {
 	public class FontOptionsView : UserControl
 	{
+		public static readonly StyledProperty<bool> PreferMonospaceProperty = AvaloniaProperty.Register<FontOptionsView, bool>(nameof(PreferMonospace), false);
 		public static readonly StyledProperty<string> InternalFontFamilyProperty = AvaloniaProperty.Register<FontOptionsView, string>(nameof(InternalFontFamily), "", defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
 		public string InternalFontFamily
 		{
 			get { return GetValue(InternalFontFamilyProperty); }
 			set { SetValue(InternalFontFamilyProperty, value); }
+		}
+
+		public bool PreferMonospace
+		{
+			get { return GetValue(PreferMonospaceProperty); }
+			set { SetValue(PreferMonospaceProperty, value); }
 		}
 
 		static FontOptionsView()
@@ -38,7 +45,7 @@ namespace Mesen.Debugger.Views
 			cboFontFamily.Items = fontFamilies;
 
 			ComboBox cboFontSize = this.GetControl<ComboBox>("cboFontSize");
-			cboFontSize.Items = new float[] { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18 };
+			cboFontSize.Items = new double[] { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
@@ -58,7 +65,7 @@ namespace Mesen.Debugger.Views
 				}
 
 				Typeface typeface = new Typeface(new FontFamily(InternalFontFamily));
-				if(!typeface.GlyphTypeface.IsFixedPitch) {
+				if(PreferMonospace && !typeface.GlyphTypeface.IsFixedPitch) {
 					if(await MesenMsgBox.Show(VisualRoot, "NonMonospaceFontWarning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, InternalFontFamily) != Mesen.Windows.DialogResult.Yes) {
 						InternalFontFamily = cfg.FontFamily;
 						return;

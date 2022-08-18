@@ -18,8 +18,8 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<string> SearchStringProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(SearchString), string.Empty);
 
-		public static readonly StyledProperty<string> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(FontFamily), DebuggerConfig.MonospaceFontFamily);
-		public static readonly StyledProperty<float> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, float>(nameof(FontSize), DebuggerConfig.DefaultFontSize);
+		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamilyName));
+		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(FontSize), 12);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
 
@@ -45,13 +45,13 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(StyleProviderProperty, value); }
 		}
 
-		public string FontFamily
+		public FontFamily FontFamily
 		{
 			get { return GetValue(FontFamilyProperty); }
 			set { SetValue(FontFamilyProperty, value); }
 		}
 
-		public float FontSize
+		public double FontSize
 		{
 			get { return GetValue(FontSizeProperty); }
 			set { SetValue(FontSizeProperty, value); }
@@ -157,7 +157,7 @@ namespace Mesen.Debugger.Controls
 
 		private void InitFontAndLetterSize()
 		{
-			this.Font = new Typeface(new FontFamily(this.FontFamily));
+			this.Font = new Typeface(FontFamily);
 			var text = FormatText("A");
 			this.LetterSize = new Size(text.Width, text.Height);
 		}

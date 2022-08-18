@@ -36,8 +36,8 @@ namespace Mesen.Debugger.Controls
 			{
 				_he = he;
 				Bounds = _he.Bounds;
-				_fontFamily = _he.FontFamily;
-				_fontSize = _he.FontSize;
+				_fontFamily = _he.FontFamily.Name;
+				_fontSize = (float)_he.FontSize;
 				_bytesPerRow = _he.BytesPerRow;
 				_hexFormat = _he.HexFormat;
 				_rowHeight = _he.RowHeight;
@@ -394,8 +394,8 @@ namespace Mesen.Debugger.Controls
 			{
 				_he = he;
 				Bounds = _he.Bounds;
-				_fontFamily = _he.FontFamily;
-				_fontSize = _he.FontSize;
+				_fontFamily = _he.FontFamily.Name;
+				_fontSize = (float)_he.FontSize;
 				_bytesPerRow = _he.BytesPerRow;
 				_rowHeight = _he.RowHeight;
 				_rowHeaderWidth = _he.RowHeaderWidth;

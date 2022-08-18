@@ -20,7 +20,7 @@
 
 	<UserControl.Styles>
 		<Style Selector="DataBoxRow ToolTip TextBlock">
-			<Setter Property="FontFamily" Value="Consolas" />
+			<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
 		</Style>
 		<Style Selector="DataBoxRow:selected DataBoxCell TextBlock ToolTip TextBlock">
 			<Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />

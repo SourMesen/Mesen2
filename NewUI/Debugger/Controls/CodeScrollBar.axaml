@@ -19,7 +19,7 @@
 		</Style>
 		
 		<Style Selector="Panel TextBlock">
-			<Setter Property="FontFamily" Value="Consolas" />
+			<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
 			<Setter Property="FontSize" Value="11" />
 			<Setter Property="HorizontalAlignment" Value="Center" />
 			<Setter Property="VerticalAlignment" Value="Top" />
@@ -112,7 +112,7 @@
 					</Canvas.Transitions>
 					<Canvas.Styles>
 						<Style Selector="TextBlock">
-							<Setter Property="FontFamily" Value="Consolas" />
+							<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
 							<Setter Property="FontSize" Value="11" />
 							<Setter Property="VerticalAlignment" Value="Center" />
 							<Setter Property="Foreground" Value="#808080" />

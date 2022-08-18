@@ -25,7 +25,6 @@ namespace Mesen.Debugger.ViewModels
 	public class ScriptWindowViewModel : ViewModelBase
 	{
 		public ScriptWindowConfig Config { get; } = ConfigManager.Config.Debug.ScriptWindow;
-		public FontConfig Font { get; } = ConfigManager.Config.Debug.Font;
 
 		[Reactive] public string Code { get; set; } = "";
 		[Reactive] public string FilePath { get; set; } = "";

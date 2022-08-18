@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -52,11 +53,11 @@ namespace Mesen.Debugger.Controls
 
 		private void ComputeColumnWidth()
 		{
-			//TODO, remove hardcoded font name+size+weight
 			int maxWidth = 0;
-			Typeface typeface = new Typeface("Microsoft Sans Serif", FontStyle.Normal, FontWeight.Bold);
+			double fontSize = ConfigManager.Config.Preferences.MesenFont.FontSize;
+			Typeface typeface = new Typeface(ConfigManager.Config.Preferences.MesenFont.FontFamily, FontStyle.Normal, FontWeight.Bold);
 			foreach(var item in Items) {
-				var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, null);
+				var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, null);
 				maxWidth = Math.Max(maxWidth, (int)text.Width + 5);
 			}
 			FirstColumnWidth = maxWidth;

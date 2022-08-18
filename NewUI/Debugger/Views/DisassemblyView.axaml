@@ -36,8 +36,8 @@
 				Lines="{CompiledBinding Lines}"
 				SearchString="{CompiledBinding QuickSearch.SearchString}"
 				StyleProvider="{CompiledBinding StyleProvider}"
-				FontFamily="{CompiledBinding Config.Font.FontFamily}"
-				FontSize="{CompiledBinding Config.Font.FontSize}"
+				FontFamily="{DynamicResource MesenDisassemblyFont}"
+				FontSize="{DynamicResource MesenDisassemblyFontSize}"
 				ShowByteCode="{CompiledBinding Config.Debugger.ShowByteCode}"
 				AddressDisplayType="{CompiledBinding Config.Debugger.AddressDisplayType}"
 			/>

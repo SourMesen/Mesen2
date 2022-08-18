@@ -20,31 +20,33 @@
 
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblTheme}" Margin="3 0 5 0" />
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
 					<StackPanel Orientation="Horizontal">
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.Theme}" Width="75" />
-						<TextBlock Text="{l:Translate lblRequiresRestart}" Margin="2 0" />
+						<TextBlock Text="{l:Translate lblTheme}" Margin="3 0 5 0" />
+						<StackPanel Orientation="Horizontal">
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.Theme}" Width="75" />
+							<TextBlock Text="{l:Translate lblRequiresRestart}" Margin="2 0" />
+						</StackPanel>
 					</StackPanel>
+					<CheckBox Content="{l:Translate chkAutomaticallyCheckForUpdates}" IsChecked="{CompiledBinding Config.AutomaticallyCheckForUpdates}" />
+					<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />
+
+					<c:OptionSection Header="{l:Translate lblPauseBackgroundSettings}">
+						<CheckBox Content="{l:Translate chkPauseWhenInBackground}" IsChecked="{CompiledBinding Config.PauseWhenInBackground}" />
+						<CheckBox Content="{l:Translate chkPauseInMenuAndConfig}" IsChecked="{CompiledBinding Config.PauseWhenInMenusAndConfig}" />
+						<CheckBox Content="{l:Translate chkAllowBackgroundInput}" IsChecked="{CompiledBinding Config.AllowBackgroundInput}" />
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<CheckBox Content="{l:Translate chkAutoLoadIps}" IsChecked="{CompiledBinding Config.AutoLoadPatches}" />
+						<CheckBox Content="{l:Translate chkAutoHideMenu}" IsChecked="{CompiledBinding Config.AutoHideMenu}" />
+						<CheckBox Content="{l:Translate chkShowMovieIcons}" IsChecked="{CompiledBinding Config.ShowMovieIcons}" />
+						<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
+						<CheckBox Content="{l:Translate chkConfirmExitResetPower}" IsChecked="{CompiledBinding Config.ConfirmExitResetPower}" />
+					</c:OptionSection>
 				</StackPanel>
-				<CheckBox Content="{l:Translate chkAutomaticallyCheckForUpdates}" IsChecked="{CompiledBinding Config.AutomaticallyCheckForUpdates}" />
-				<CheckBox Content="{l:Translate chkSingleInstance}" IsChecked="{CompiledBinding Config.SingleInstance}" />
-
-				<c:OptionSection Header="{l:Translate lblPauseBackgroundSettings}">
-					<CheckBox Content="{l:Translate chkPauseWhenInBackground}" IsChecked="{CompiledBinding Config.PauseWhenInBackground}" />
-					<CheckBox Content="{l:Translate chkPauseInMenuAndConfig}" IsChecked="{CompiledBinding Config.PauseWhenInMenusAndConfig}" />
-					<CheckBox Content="{l:Translate chkAllowBackgroundInput}" IsChecked="{CompiledBinding Config.AllowBackgroundInput}" />
-				</c:OptionSection>
-
-				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<CheckBox Content="{l:Translate chkAutoLoadIps}" IsChecked="{CompiledBinding Config.AutoLoadPatches}" />
-					<CheckBox Content="{l:Translate chkAutoHideMenu}" IsChecked="{CompiledBinding Config.AutoHideMenu}" />
-					<CheckBox Content="{l:Translate chkShowMovieIcons}" IsChecked="{CompiledBinding Config.ShowMovieIcons}" />
-					<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
-					<CheckBox Content="{l:Translate chkConfirmExitResetPower}" IsChecked="{CompiledBinding Config.ConfirmExitResetPower}" />
-				</c:OptionSection>
-			</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgShortcuts}">
@@ -52,129 +54,153 @@
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgFiles}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
-					<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
-						<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
-						<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
-						<CheckBox Grid.Row="2" Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
-						<CheckBox Grid.Row="3" Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
-						<CheckBox Grid.Row="0" Grid.Column="2" Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
-						<CheckBox Grid.Row="1" Grid.Column="2" Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
-						<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
-					</Grid>
-				</c:OptionSection>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
+						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+							<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
+							<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
+							<CheckBox Grid.Row="2" Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
+							<CheckBox Grid.Row="3" Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
+							<CheckBox Grid.Row="0" Grid.Column="2" Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
+							<CheckBox Grid.Row="1" Grid.Column="2" Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
+							<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
+						</Grid>
+					</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate grpDataStorageLocation}">
-					<DockPanel>
-						<TextBlock Text="{l:Translate lblDataLocation}" DockPanel.Dock="Left" VerticalAlignment="Center" />
-						<Button DockPanel.Dock="Right" Content="{l:Translate btnChangeStorageFolder}" Click="btnChangeStorageFolder_OnClick" />
-						<TextBox IsReadOnly="True" Text="{CompiledBinding DataStorageLocation}" />
-					</DockPanel>
-				</c:OptionSection>
+					<c:OptionSection Header="{l:Translate grpDataStorageLocation}">
+						<DockPanel>
+							<TextBlock Text="{l:Translate lblDataLocation}" DockPanel.Dock="Left" VerticalAlignment="Center" />
+							<Button DockPanel.Dock="Right" Content="{l:Translate btnChangeStorageFolder}" Click="btnChangeStorageFolder_OnClick" />
+							<TextBox IsReadOnly="True" Text="{CompiledBinding DataStorageLocation}" />
+						</DockPanel>
+					</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate grpPathOverrides}">
-					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-						<CheckBox Grid.Row="0" Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />
-						<c:PathSelector
-							Grid.Row="0"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideGameFolder}"
-							Path="{CompiledBinding Config.GameFolder}"
-							DisabledPath="{l:Translate lblLastFolderUsed}"
-						/>
-						
-						<CheckBox Grid.Row="1" Content="{l:Translate chkAviOverride}" IsChecked="{CompiledBinding Config.OverrideAviFolder}" />
-						<c:PathSelector
-							Grid.Row="1"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideAviFolder}"
-							Path="{CompiledBinding Config.AviFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultAviFolder}"
-						/>
+					<c:OptionSection Header="{l:Translate grpPathOverrides}">
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+							<CheckBox Grid.Row="0" Content="{l:Translate chkGameOverride}" IsChecked="{CompiledBinding Config.OverrideGameFolder}" />
+							<c:PathSelector
+								Grid.Row="0"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideGameFolder}"
+								Path="{CompiledBinding Config.GameFolder}"
+								DisabledPath="{l:Translate lblLastFolderUsed}"
+							/>
 
-						<CheckBox Grid.Row="2" Content="{l:Translate chkMoviesOverride}" IsChecked="{CompiledBinding Config.OverrideMovieFolder}" />
-						<c:PathSelector
-							Grid.Row="2"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideMovieFolder}"
-							Path="{CompiledBinding Config.MovieFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultMovieFolder}"
-						/>
-						
-						<CheckBox Grid.Row="3" Content="{l:Translate chkSaveDataOverride}" IsChecked="{CompiledBinding Config.OverrideSaveDataFolder}" />
-						<c:PathSelector
-							Grid.Row="3"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideSaveDataFolder}"
-							Path="{CompiledBinding Config.SaveDataFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveDataFolder}"
-						/>
-						
-						<CheckBox Grid.Row="4" Content="{l:Translate chkSaveStatesOverride}" IsChecked="{CompiledBinding Config.OverrideSaveStateFolder}" />
-						<c:PathSelector
-							Grid.Row="4"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideSaveStateFolder}"
-							Path="{CompiledBinding Config.SaveStateFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveStateFolder}"
-						/>
+							<CheckBox Grid.Row="1" Content="{l:Translate chkAviOverride}" IsChecked="{CompiledBinding Config.OverrideAviFolder}" />
+							<c:PathSelector
+								Grid.Row="1"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideAviFolder}"
+								Path="{CompiledBinding Config.AviFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultAviFolder}"
+							/>
 
-						<CheckBox Grid.Row="5" Content="{l:Translate chkScreenshotsOverride}" IsChecked="{CompiledBinding Config.OverrideScreenshotFolder}" />
-						<c:PathSelector
-							Grid.Row="5"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideScreenshotFolder}"
-							Path="{CompiledBinding Config.OverrideScreenshotFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultScreenshotFolder}"
-						/>
-						
-						<CheckBox Grid.Row="6" Content="{l:Translate chkWaveOverride}" IsChecked="{CompiledBinding Config.OverrideWaveFolder}" />
-						<c:PathSelector
-							Grid.Row="6"
-							Grid.Column="1"
-							Editable="{CompiledBinding Config.OverrideWaveFolder}"
-							Path="{CompiledBinding Config.WaveFolder}"
-							DisabledPath="{x:Static cfg:ConfigManager.DefaultWaveFolder}"
-						/>
-					</Grid>
-				</c:OptionSection>
-			</StackPanel>
+							<CheckBox Grid.Row="2" Content="{l:Translate chkMoviesOverride}" IsChecked="{CompiledBinding Config.OverrideMovieFolder}" />
+							<c:PathSelector
+								Grid.Row="2"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideMovieFolder}"
+								Path="{CompiledBinding Config.MovieFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultMovieFolder}"
+							/>
+
+							<CheckBox Grid.Row="3" Content="{l:Translate chkSaveDataOverride}" IsChecked="{CompiledBinding Config.OverrideSaveDataFolder}" />
+							<c:PathSelector
+								Grid.Row="3"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideSaveDataFolder}"
+								Path="{CompiledBinding Config.SaveDataFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveDataFolder}"
+							/>
+
+							<CheckBox Grid.Row="4" Content="{l:Translate chkSaveStatesOverride}" IsChecked="{CompiledBinding Config.OverrideSaveStateFolder}" />
+							<c:PathSelector
+								Grid.Row="4"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideSaveStateFolder}"
+								Path="{CompiledBinding Config.SaveStateFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultSaveStateFolder}"
+							/>
+
+							<CheckBox Grid.Row="5" Content="{l:Translate chkScreenshotsOverride}" IsChecked="{CompiledBinding Config.OverrideScreenshotFolder}" />
+							<c:PathSelector
+								Grid.Row="5"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideScreenshotFolder}"
+								Path="{CompiledBinding Config.OverrideScreenshotFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultScreenshotFolder}"
+							/>
+
+							<CheckBox Grid.Row="6" Content="{l:Translate chkWaveOverride}" IsChecked="{CompiledBinding Config.OverrideWaveFolder}" />
+							<c:PathSelector
+								Grid.Row="6"
+								Grid.Column="1"
+								Editable="{CompiledBinding Config.OverrideWaveFolder}"
+								Path="{CompiledBinding Config.WaveFolder}"
+								DisabledPath="{x:Static cfg:ConfigManager.DefaultWaveFolder}"
+							/>
+						</Grid>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgAdvanced}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblWindowSettings}" Margin="0">
-					<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
-				</c:OptionSection>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblWindowSettings}" Margin="0">
+						<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
+					</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblUiDisplaySettings}">
-					<CheckBox Content="{l:Translate chkDisableOsd}" IsChecked="{CompiledBinding Config.DisableOsd}" />
-					<CheckBox Content="{l:Translate chkDisableGameSelectionScreen}" IsChecked="{CompiledBinding Config.DisableGameSelectionScreen}" />
-					<CheckBox Content="{l:Translate chkDisplayTitleBarInfo}" IsChecked="{CompiledBinding Config.ShowTitleBarInfo}" />
-					<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
-					<CheckBox Content="{l:Translate chkShowFrameCounter}" IsChecked="{CompiledBinding Config.ShowFrameCounter}" />
-					<CheckBox Content="{l:Translate chkShowGameTimer}" IsChecked="{CompiledBinding Config.ShowGameTimer}" />
-					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="{l:Translate chkShowLagCounter}" IsChecked="{CompiledBinding Config.ShowLagCounter}" />
-						<c:ButtonWithIcon Icon="Assets/Refresh.png" Text="{l:Translate btnResetLagCounter}" Click="btnResetLagCounter_OnClick" Margin="10 -5 0 -5" />
-					</StackPanel>
-					<CheckBox Content="{l:Translate chkShowDebugInformation}" IsChecked="{CompiledBinding Config.ShowDebugInfo}" />
-				</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblUiDisplaySettings}">
+						<CheckBox Content="{l:Translate chkDisableOsd}" IsChecked="{CompiledBinding Config.DisableOsd}" />
+						<CheckBox Content="{l:Translate chkDisableGameSelectionScreen}" IsChecked="{CompiledBinding Config.DisableGameSelectionScreen}" />
+						<CheckBox Content="{l:Translate chkDisplayTitleBarInfo}" IsChecked="{CompiledBinding Config.ShowTitleBarInfo}" />
+						<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
+						<CheckBox Content="{l:Translate chkShowFrameCounter}" IsChecked="{CompiledBinding Config.ShowFrameCounter}" />
+						<CheckBox Content="{l:Translate chkShowGameTimer}" IsChecked="{CompiledBinding Config.ShowGameTimer}" />
+						<StackPanel Orientation="Horizontal">
+							<CheckBox Content="{l:Translate chkShowLagCounter}" IsChecked="{CompiledBinding Config.ShowLagCounter}" />
+							<c:ButtonWithIcon Icon="Assets/Refresh.png" Text="{l:Translate btnResetLagCounter}" Click="btnResetLagCounter_OnClick" Margin="10 -5 0 -5" />
+						</StackPanel>
+						<CheckBox Content="{l:Translate chkShowDebugInformation}" IsChecked="{CompiledBinding Config.ShowDebugInfo}" />
+					</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblMiscSettings}">
-					<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-						<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{CompiledBinding Config.EnableAutoSaveState}" />
-						<NumericUpDown Value="{CompiledBinding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{CompiledBinding Config.EnableAutoSaveState}" />
-						<TextBlock Text="{l:Translate lblSaveStateMinutes}" />
-					</StackPanel>
-					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="{l:Translate lblRewind}" IsChecked="{CompiledBinding Config.EnableRewind}" />
-						<NumericUpDown Value="{CompiledBinding Config.RewindBufferSize}" Margin="5 0" Minimum="1" Maximum="300" IsEnabled="{CompiledBinding Config.EnableRewind}" />
-						<TextBlock Text="{l:Translate lblRewindMinutes}" />
-					</StackPanel>
-				</c:OptionSection>
-			</StackPanel>
+					<c:OptionSection Header="{l:Translate lblFontSettings}">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto" Margin="0 0 0 5">
+							<TextBlock Text="{l:Translate lblFontAntialiasing}" />
+							<StackPanel Orientation="Horizontal" Grid.Column="1" >
+								<c:EnumComboBox
+									SelectedItem="{CompiledBinding Config.FontAntialiasing}"
+									MinWidth="150"
+								/>
+								<TextBlock Margin="3 0 0 0" Text="{l:Translate lblRequiresRestart}" />
+							</StackPanel>
+						</Grid>
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+							<TextBlock Text="{l:Translate lblRegularFont}" />
+							<v:FontOptionsView Grid.Row="0" Grid.Column="1" DataContext="{CompiledBinding Config.MesenFont}" />
+
+							<TextBlock Text="{l:Translate lblMenuFont}" Grid.Row="1"/>
+							<v:FontOptionsView Grid.Row="1" Grid.Column="1" DataContext="{CompiledBinding Config.MesenMenuFont}" />
+						</Grid>
+					</c:OptionSection>
+
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+							<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{CompiledBinding Config.EnableAutoSaveState}" />
+							<NumericUpDown Value="{CompiledBinding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{CompiledBinding Config.EnableAutoSaveState}" />
+							<TextBlock Text="{l:Translate lblSaveStateMinutes}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<CheckBox Content="{l:Translate lblRewind}" IsChecked="{CompiledBinding Config.EnableRewind}" />
+							<NumericUpDown Value="{CompiledBinding Config.RewindBufferSize}" Margin="5 0" Minimum="1" Maximum="300" IsEnabled="{CompiledBinding Config.EnableRewind}" />
+							<TextBlock Text="{l:Translate lblRewindMinutes}" />
+						</StackPanel>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 	</TabControl>
 </UserControl>

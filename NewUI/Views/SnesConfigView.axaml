@@ -21,35 +21,41 @@
 
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblRegion}" Margin="5 0" />
-					<c:EnumComboBox
-						Grid.Column="1"
-						Width="130"
-						SelectedItem="{CompiledBinding Config.Region}"
-						AvailableValues="{CompiledBinding AvailableRegions}"
-					/>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRegion}" Margin="5 0" />
+						<c:EnumComboBox
+							Grid.Column="1"
+							Width="130"
+							SelectedItem="{CompiledBinding Config.Region}"
+							AvailableValues="{CompiledBinding AvailableRegions}"
+						/>
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgAudio}">
-			<StackPanel>
-				<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
-			</StackPanel>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 		
 		<TabItem Header="{l:Translate tpgEmulation}">
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-					<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
-				</StackPanel>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+					</StackPanel>
 
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
-			</StackPanel>
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgInput}">
@@ -57,74 +63,80 @@
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgOverclocking}">
-			<StackPanel>
-				<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
-					<Panel>
-						<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
-						<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
-					</Panel>
-				</Border>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<Border BorderThickness="1" BorderBrush="Gray" Padding="3" Width="370" HorizontalAlignment="Left">
+						<Panel>
+							<Image Source="/Assets/Help.png" Margin="0" Width="16" Height="16" HorizontalAlignment="Left" />
+							<TextBlock Text="{l:Translate lblOverclockHint}" TextWrapping="Wrap" Margin="25 0 0 0" />
+						</Panel>
+					</Border>
 
-				<c:OptionSection Header="{l:Translate grpPpuTiming}">
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
-						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
-						<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
-						<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
-					</Grid>
-				</c:OptionSection>
+					<c:OptionSection Header="{l:Translate grpPpuTiming}">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblExtraScanlinesBeforeNmi}" />
+							<NumericUpDown Grid.Column="1" Grid.Row="0" Value="{CompiledBinding Config.PpuExtraScanlinesBeforeNmi}" Minimum="0" Maximum="1000" />
+							<TextBlock Grid.Column="0" Grid.Row="1" Text="{l:Translate lblExtraScanlinesAfterNmi}" />
+							<NumericUpDown Grid.Column="1" Grid.Row="1" Value="{CompiledBinding Config.PpuExtraScanlinesAfterNmi}" Minimum="0" Maximum="1000" />
+						</Grid>
+					</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblChipSpecificOc}">
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
-						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
-						<NumericUpDown
-							Grid.Column="1"
-							Grid.Row="0"
-							Value="{CompiledBinding Config.GsuClockSpeed}"
-							Minimum="100"
-							Maximum="1000"
-							Increment="100"
-							LostFocus="nudGsuSpeed_LostFocus"
-						/>
-					</Grid>
-				</c:OptionSection>
-			</StackPanel>
+					<c:OptionSection Header="{l:Translate lblChipSpecificOc}">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="10 0">
+							<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblSuperFxClockSpeed}" />
+							<NumericUpDown
+								Grid.Column="1"
+								Grid.Row="0"
+								Value="{CompiledBinding Config.GsuClockSpeed}"
+								Minimum="100"
+								Maximum="1000"
+								Increment="100"
+								LostFocus="nudGsuSpeed_LostFocus"
+							/>
+						</Grid>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgVideo}">
-			<StackPanel>
-				<CheckBox IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
-				<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<CheckBox IsChecked="{CompiledBinding Config.BlendHighResolutionModes}" Content="{l:Translate chkBlendHighResolutionModes}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer1}" Text="{l:Translate chkHideBgLayer1}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer2}" Text="{l:Translate chkHideBgLayer2}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 
-				<c:OptionSection Header="{l:Translate lblOverscan}">
-					<c:OverscanConfig
-						OverscanTop="{CompiledBinding Config.OverscanTop}"
-						OverscanBottom="{CompiledBinding Config.OverscanBottom}"
-						OverscanLeft="{CompiledBinding Config.OverscanLeft}"
-						OverscanRight="{CompiledBinding Config.OverscanRight}"
-					/>
-				</c:OptionSection>
-			</StackPanel>
+					<c:OptionSection Header="{l:Translate lblOverscan}">
+						<c:OverscanConfig
+							OverscanTop="{CompiledBinding Config.OverscanTop}"
+							OverscanBottom="{CompiledBinding Config.OverscanBottom}"
+							OverscanLeft="{CompiledBinding Config.OverscanLeft}"
+							OverscanRight="{CompiledBinding Config.OverscanRight}"
+						/>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 
 		<TabItem Header="{l:Translate tpgBsx}">
-			<StackPanel>
-				<c:OptionSection Header="{l:Translate lblBsxDateTime}" Margin="0">
-					<RadioButton GroupName="BsxDateTime" Content="{l:Translate lblCurrentDate}" IsChecked="{CompiledBinding !Config.BsxUseCustomTime}" />
-					<RadioButton VerticalAlignment="Center" GroupName="BsxDateTime" Content="{l:Translate lblCustomDate}" IsChecked="{CompiledBinding Config.BsxUseCustomTime}" />
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="35 0 0 0">
-						<TextBlock Text="{l:Translate lblDate}" />
-						<DatePicker Grid.Column="1" MonthFormat="MMM" SelectedDate="{CompiledBinding Config.BsxCustomDate}" />
-						<TextBlock Text="{l:Translate lblTime}" Grid.Row="1" />
-						<TimePicker Grid.Column="1" Grid.Row="1" SelectedTime="{CompiledBinding Config.BsxCustomTime}" />
-					</Grid>
-				</c:OptionSection>
-			</StackPanel>
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblBsxDateTime}" Margin="0">
+						<RadioButton GroupName="BsxDateTime" Content="{l:Translate lblCurrentDate}" IsChecked="{CompiledBinding !Config.BsxUseCustomTime}" />
+						<RadioButton VerticalAlignment="Center" GroupName="BsxDateTime" Content="{l:Translate lblCustomDate}" IsChecked="{CompiledBinding Config.BsxUseCustomTime}" />
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="35 0 0 0">
+							<TextBlock Text="{l:Translate lblDate}" />
+							<DatePicker Grid.Column="1" MonthFormat="MMM" SelectedDate="{CompiledBinding Config.BsxCustomDate}" />
+							<TextBlock Text="{l:Translate lblTime}" Grid.Row="1" />
+							<TimePicker Grid.Column="1" Grid.Row="1" SelectedTime="{CompiledBinding Config.BsxCustomTime}" />
+						</Grid>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
 		</TabItem>
 	</TabControl>
 </UserControl>

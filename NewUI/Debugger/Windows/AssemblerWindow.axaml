@@ -44,8 +44,8 @@
 					Name="Editor"
 					ShowLineNumbers="True"
 					TextBinding="{CompiledBinding Code}"
-					FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
-					FontSize="{CompiledBinding Font.FontSize}"
+					FontFamily="{DynamicResource MesenAssemblerFont}"
+					FontSize="{DynamicResource MesenAssemblerFontSize}"
 				/>
 			</Border>
 		
@@ -54,8 +54,8 @@
 					Name="HexView"
 					IsReadOnly="True"
 					ShowLineNumbers="True"
-					FontFamily="{CompiledBinding Font.FontFamily, Converter={StaticResource FontNameConverter}}"
-					FontSize="{CompiledBinding Font.FontSize}"
+					FontFamily="{DynamicResource MesenAssemblerFont}"
+					FontSize="{DynamicResource MesenAssemblerFontSize}"
 					TextBinding="{CompiledBinding ByteCodeView}"
 				/>
 			</Border>

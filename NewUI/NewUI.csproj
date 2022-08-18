@@ -187,7 +187,7 @@
     <Compile Update="Debugger\Views\RefreshTimingView.axaml.cs">
       <DependentUpon>RefreshTimingView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Debugger\Views\FontOptionsView.axaml.cs">
+    <Compile Update="Views\FontOptionsView.axaml.cs">
       <DependentUpon>FontOptionsView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\MemoryToolsDisplayOptionsView.axaml.cs">
