@@ -255,14 +255,14 @@ namespace Mesen.Debugger.ViewModels
 
 			MemoryType memType = CpuType.GetVramMemoryType(sprite.UseExtendedVram);
 			if(memType.IsRelativeMemory()) {
-				entries.AddEntry("Tile address (" + memType.GetShortName() + ")", "$" + sprite.TileAddress.ToString("X4"));
+				entries.AddEntry("Tile address (" + memType.GetShortName() + ")", FormatAddress(sprite.TileAddress, memType));
 
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = sprite.TileAddress, Type = memType });
 				if(absAddress.Address >= 0) {
-					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
+					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", FormatAddress(absAddress.Address, absAddress.Type));
 				}
 			} else {
-				entries.AddEntry("Tile address", "$" + sprite.TileAddress.ToString("X4"));
+				entries.AddEntry("Tile address", FormatAddress(sprite.TileAddress, memType));
 			}
 			entries.AddEntry("Palette index", sprite.Palette.ToString());
 			entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
@@ -279,6 +279,15 @@ namespace Mesen.Debugger.ViewModels
 				return existingTooltip;
 			} else {
 				return new DynamicTooltip() { Items = entries };
+			}
+		}
+
+		private string FormatAddress(int address, MemoryType memType)
+		{
+			if(memType.IsWordAddressing()) {
+				return $"${address / 2:X4}.w";
+			} else {
+				return $"${address:X4}";
 			}
 		}
 

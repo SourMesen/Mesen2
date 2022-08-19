@@ -64,11 +64,22 @@ namespace Mesen.Debugger.ViewModels
 			UpdateAvailableMemoryTypes();
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
+				string text;
 				if(o.length <= 1) {
-					StatusBarText = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
+					text = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
 				} else {
-					StatusBarText = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"), o.length);
+					text = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"), o.length);
 				}
+
+				if(Config.MemoryType.IsWordAddressing()) {
+					if(o.length <= 1) {
+						text += $" (${o.start / 2:X2}.w)";
+					} else {
+						text += $" (${o.start / 2:X2}.w - ${(o.start + o.length - 1)/2:X2}.w)";
+					}
+				}
+
+				StatusBarText = text;
 			}));
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => UpdateDataProvider()));

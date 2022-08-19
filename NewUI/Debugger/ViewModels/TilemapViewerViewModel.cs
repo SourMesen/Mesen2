@@ -469,8 +469,8 @@ namespace Mesen.Debugger.ViewModels
 			entries.StartUpdate();
 			entries.AddEntry("Size", info.ColumnCount + "x" + info.RowCount);
 			entries.AddEntry("Size (px)", info.ColumnCount* info.TileWidth + "x" + info.RowCount* info.TileHeight);
-			entries.AddEntry("Tilemap Address", "$" + info.TilemapAddress.ToString("X4"));
-			entries.AddEntry("Tileset Address", "$" + info.TilesetAddress.ToString("X4"));
+			entries.AddEntry("Tilemap Address", "$" + FormatAddress((int)info.TilemapAddress));
+			entries.AddEntry("Tileset Address", "$" + FormatAddress((int)info.TilesetAddress));
 			entries.AddEntry("Tile Format", info.Format);
 			if(info.Mirroring != TilemapMirroring.None) {
 				entries.AddEntry("Mirroring", info.Mirroring);
@@ -505,11 +505,11 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, _rgbPalette, _rawPalette, _rawFormat));
 			}
 
-			entries.AddEntry("Column, Row", tileInfo.Column + ", " + tileInfo.Row);
+			entries.AddEntry("Column, Row", $"{tileInfo.Column}, {tileInfo.Row} ({tileInfo.Column*tileInfo.Width}, {tileInfo.Row*tileInfo.Height})");
 			entries.AddEntry("Size", tileInfo.Width + "x" + tileInfo.Height);
 
 			if(tileInfo.TileMapAddress >= 0) {
-				entries.AddEntry("Tilemap address", "$" + tileInfo.TileMapAddress.ToString("X4"));
+				entries.AddEntry("Tilemap address", FormatAddress(tileInfo.TileMapAddress));
 			}
 			if(tileInfo.TileIndex >= 0) {
 				entries.AddEntry("Tile index", "$" + tileInfo.TileIndex.ToString("X2"));
@@ -524,7 +524,7 @@ namespace Mesen.Debugger.ViewModels
 						entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
 					}
 				} else {
-					entries.AddEntry("Tile address", "$" + tileInfo.TileAddress.ToString("X4"));
+					entries.AddEntry("Tile address", FormatAddress(tileInfo.TileAddress));
 				}
 			}
 			if(tileInfo.PaletteIndex >= 0) {
@@ -552,6 +552,15 @@ namespace Mesen.Debugger.ViewModels
 				return tooltipToUpdate;
 			} else {
 				return new DynamicTooltip() { Items = entries };
+			}
+		}
+
+		private string FormatAddress(int address)
+		{
+			if(GetVramMemoryType().IsWordAddressing()) {
+				return $"${address / 2:X4}.w";
+			} else {
+				return $"${address:X4}";
 			}
 		}
 

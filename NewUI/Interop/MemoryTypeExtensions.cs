@@ -342,5 +342,19 @@ namespace Mesen.Interop
 				_ => "X" + (DebugApi.GetMemorySize(memType) - 1).ToString("X").Length
 			};
 		}
+
+		public static bool IsWordAddressing(this MemoryType memType)
+		{
+			return memType switch {
+				MemoryType.SnesVideoRam => true,
+				MemoryType.SnesSpriteRam => true,
+				MemoryType.SnesCgRam => true,
+				MemoryType.PceVideoRam => true,
+				MemoryType.PceSpriteRam => true,
+				MemoryType.PceVideoRamVdc2 => true,
+				MemoryType.PceSpriteRamVdc2 => true,
+				_ => false
+			};
+		}
 	}
 }

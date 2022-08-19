@@ -465,14 +465,14 @@ namespace Mesen.Debugger.ViewModels
 
 			int address = GetTileAddress(cropRect.TopLeft);
 			if(Config.Source.IsRelativeMemory()) {
-				entries.AddEntry("Tile address (" + Config.Source.GetShortName() + ")", "$" + address.ToString("X4"));
+				entries.AddEntry("Tile address (" + Config.Source.GetShortName() + ")", FormatAddress(address, Config.Source));
 
 				AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = Config.Source });
 				if(absAddress.Address >= 0) {
-					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", "$" + absAddress.Address.ToString("X4"));
+					entries.AddEntry("Tile address (" + absAddress.Type.GetShortName() + ")", FormatAddress(absAddress.Address, absAddress.Type));
 				}
 			} else {
-				entries.AddEntry("Tile address", "$" + address.ToString("X4"));
+				entries.AddEntry("Tile address", FormatAddress(address, Config.Source));
 			}
 
 			if(IsNesChrModeEnabled) {
@@ -485,6 +485,15 @@ namespace Mesen.Debugger.ViewModels
 				return tooltipToUpdate;
 			} else {
 				return new DynamicTooltip() { Items = entries };
+			}
+		}
+
+		private string FormatAddress(int address, MemoryType memType)
+		{
+			if(memType.IsWordAddressing()) {
+				return $"${address / 2:X4}.w";
+			} else {
+				return $"${address:X4}";
 			}
 		}
 
