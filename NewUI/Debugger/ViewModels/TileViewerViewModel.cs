@@ -58,6 +58,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowFormatDropdown { get; set; }
 		[Reactive] public bool ShowFilterDropdown { get; set; }
 
+		[Reactive] public List<List<ConfigPreset>> ConfigPresetRows { get; set; } = new() { new(), new(), new() };
 		[Reactive] public List<ConfigPreset> ConfigPresets { get; set; } = new List<ConfigPreset>();
 
 		public List<object> FileMenuActions { get; } = new();
@@ -250,6 +251,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			ConfigPresets = GetConfigPresets();
+			ConfigPresetRows = new(ConfigPresetRows); //Force UI update
 
 			if(AvailableFormats.Contains(Config.Format)) {
 				Config.Format = (TileFormat)AvailableFormats[0];
@@ -612,9 +614,9 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private ConfigPreset CreatePreset(string name, Func<PresetValues?> getPresetValues)
+		private ConfigPreset CreatePreset(int row, string name, Func<PresetValues?> getPresetValues)
 		{
-			return new ConfigPreset(name, getPresetValues, () => {
+			ConfigPreset preset = new ConfigPreset(name, getPresetValues, () => {
 				PresetValues? preset = getPresetValues();
 				if(preset == null) {
 					return;
@@ -631,65 +633,70 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			});
+
+			ConfigPresetRows[row].Add(preset);
+			return preset;
 		}
 
 		private List<ConfigPreset> GetConfigPresets()
 		{
+			ConfigPresetRows = new() { new(), new(), new() };
+
 			switch(CpuType) {
 				case CpuType.Snes:
 					return new() {
-						CreatePreset("BG1", () => ApplyBgPreset(0)),
-						CreatePreset("BG2", () => ApplyBgPreset(1)),
-						CreatePreset("BG3", () => ApplyBgPreset(2)),
-						CreatePreset("BG4", () => ApplyBgPreset(3)),
-						CreatePreset("OAM1", () => ApplySpritePreset(0)),
-						CreatePreset("OAM2", () => ApplySpritePreset(1)),
-						CreatePreset("PPU", () => ApplyPpuPreset()),
-						CreatePreset("ROM", () => ApplyPrgPreset()),
+						CreatePreset(0, "PPU", () => ApplyPpuPreset()),
+						CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+						CreatePreset(1, "BG1", () => ApplyBgPreset(0)),
+						CreatePreset(1, "BG2", () => ApplyBgPreset(1)),
+						CreatePreset(1, "BG3", () => ApplyBgPreset(2)),
+						CreatePreset(1, "BG4", () => ApplyBgPreset(3)),
+						CreatePreset(2, "OAM1", () => ApplySpritePreset(0)),
+						CreatePreset(2, "OAM2", () => ApplySpritePreset(1)),
 					};
 
 				case CpuType.Nes:
 					return new() {
-						CreatePreset("PPU", () => ApplyPpuPreset()),
-						CreatePreset("BG", () => ApplyBgPreset(0)),
-						CreatePreset("OAM", () => ApplySpritePreset(0)),
-						CreatePreset("CHR", () => ApplyChrPreset()),
-						CreatePreset("ROM", () => ApplyPrgPreset()),
+						CreatePreset(0, "PPU", () => ApplyPpuPreset()),
+						CreatePreset(0, "CHR", () => ApplyChrPreset()),
+						CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+						CreatePreset(1, "BG", () => ApplyBgPreset(0)),
+						CreatePreset(1, "OAM", () => ApplySpritePreset(0)),
 					};
 
 				case CpuType.Gameboy:
 					if(DebugApi.GetPpuState<GbPpuState>(CpuType.Gameboy).CgbEnabled) {
 						return new() {
-							CreatePreset("BG1", () => ApplyBgPreset(0)),
-							CreatePreset("BG2", () => ApplyBgPreset(1)),
-							CreatePreset("OAM1", () => ApplySpritePreset(0)),
-							CreatePreset("OAM2", () => ApplySpritePreset(1)),
-							CreatePreset("PPU", () => ApplyPpuPreset()),
-							CreatePreset("ROM", () => ApplyPrgPreset()),
+							CreatePreset(0, "PPU", () => ApplyPpuPreset()),
+							CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+							CreatePreset(1, "BG1", () => ApplyBgPreset(0)),
+							CreatePreset(1, "BG2", () => ApplyBgPreset(1)),
+							CreatePreset(2, "OAM1", () => ApplySpritePreset(0)),
+							CreatePreset(2, "OAM2", () => ApplySpritePreset(1)),
 						};
 					} else {
 						return new() {
-							CreatePreset("BG", () => ApplyBgPreset(0)),
-							CreatePreset("OAM", () => ApplySpritePreset(0)),
-							CreatePreset("PPU", () => ApplyPpuPreset()),
-							CreatePreset("ROM", () => ApplyPrgPreset()),
+							CreatePreset(0, "PPU", () => ApplyPpuPreset()),
+							CreatePreset(0, "ROM", () => ApplyPrgPreset()),
+							CreatePreset(1, "BG", () => ApplyBgPreset(0)),
+							CreatePreset(1, "OAM", () => ApplySpritePreset(0)),
 						};
 					}
 
 				case CpuType.Pce:
 					if(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).IsSuperGrafx) {
 						return new() {
-							CreatePreset("BG1", () => ApplyBgPreset(0)),
-							CreatePreset("SPR1", () => ApplySpritePreset(0)),
-							CreatePreset("BG2", () => ApplyBgPreset(1)),
-							CreatePreset("SPR2", () => ApplySpritePreset(1)),
-							CreatePreset("ROM", () => ApplyPrgPreset()),
+							CreatePreset(0, "BG1", () => ApplyBgPreset(0)),
+							CreatePreset(0, "SPR1", () => ApplySpritePreset(0)),
+							CreatePreset(1, "BG2", () => ApplyBgPreset(1)),
+							CreatePreset(1, "SPR2", () => ApplySpritePreset(1)),
+							CreatePreset(2, "ROM", () => ApplyPrgPreset()),
 						};
 					} else {
 						return new() {
-							CreatePreset("BG", () => ApplyBgPreset(0)),
-							CreatePreset("Sprites", () => ApplySpritePreset(0)),
-							CreatePreset("ROM", () => ApplyPrgPreset()),
+							CreatePreset(0, "BG", () => ApplyBgPreset(0)),
+							CreatePreset(0, "Sprites", () => ApplySpritePreset(0)),
+							CreatePreset(0, "ROM", () => ApplyPrgPreset()),
 						};
 					}
 
