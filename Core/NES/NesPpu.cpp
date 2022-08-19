@@ -1386,7 +1386,7 @@ template<class T> uint8_t* NesPpu<T>::GetSpriteRam()
 template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)
 {
 	//Used by Zapper, gives a rough approximation of the brightness level of the specific pixel
-	uint16_t pixelData = _currentOutputBuffer[y << 8 | x];
+	uint16_t pixelData = (_currentOutputBuffer[y << 8 | x] & _paletteRamMask) | _intensifyColorBits;
 	return NesDefaultVideoFilter::GetDefaultPixelBrightness(pixelData, GetPpuModel());
 }
 
