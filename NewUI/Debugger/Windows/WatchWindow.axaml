@@ -25,6 +25,12 @@
 		<vm:WatchWindowViewModel />
 	</Design.DataContext>
 
+	<Window.Styles>
+		<Style Selector="TabControl:singleitem > TabItem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+	</Window.Styles>
+	
 	<Panel>
 		<TabControl Items="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
 			<TabControl.ItemTemplate>
@@ -44,7 +50,7 @@
 		<Image
 			Source="/Assets/Help.png"
 			Stretch="None"
-			Margin="5 7"
+			Margin="4 4"
 			VerticalAlignment="Top"
 			HorizontalAlignment="Right"
 			ToolTip.Tip="{CompiledBinding SelectedTab.WatchList.HelpTooltip}"
