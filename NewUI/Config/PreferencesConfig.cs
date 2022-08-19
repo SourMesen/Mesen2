@@ -172,6 +172,7 @@ namespace Mesen.Config
 			FileAssociationHelper.UpdateFileAssociation("gbs", AssociateGbMusicFiles);
 			
 			FileAssociationHelper.UpdateFileAssociation("pce", AssociatePceRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("sgx", AssociatePceRomFiles);
 		}
 
 		public void ApplyFontOptions()

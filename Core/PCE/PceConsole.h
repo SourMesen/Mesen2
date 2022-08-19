@@ -38,7 +38,7 @@ private:
 public:
 	PceConsole(Emulator* emu);
 	
-	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue" }; }
+	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue", ".sgx" }; }
 	
 	void Serialize(Serializer& s) override;
 
