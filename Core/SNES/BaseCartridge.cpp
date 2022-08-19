@@ -643,6 +643,8 @@ void BaseCartridge::SetupCpuHalt()
 	_prgRom[1] = 0x00;
 	_prgRom[2] = 0x80;
 	_prgRom[3] = 0x00;
+
+	_emu->RegisterMemory(MemoryType::SnesPrgRom, _prgRom, _prgRomSize);
 }
 
 void BaseCartridge::Serialize(Serializer &s)
