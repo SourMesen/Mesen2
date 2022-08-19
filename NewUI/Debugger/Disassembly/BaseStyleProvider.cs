@@ -79,7 +79,7 @@ namespace Mesen.Debugger.Disassembly
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
 			LineProperties props = new LineProperties();
 
-			if((lineData.HasAddress || lineData.AbsoluteAddress.Address >= 0) && !lineData.Flags.HasFlag(LineFlags.Empty) && !lineData.Flags.HasFlag(LineFlags.Label)) {
+			if((lineData.HasAddress || lineData.AbsoluteAddress.Address >= 0) && !lineData.IsAddressHidden) {
 				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType, lineData.AbsoluteAddress);
 			}
 

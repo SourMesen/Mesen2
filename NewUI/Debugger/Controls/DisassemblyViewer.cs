@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
@@ -169,6 +170,17 @@ namespace Mesen.Debugger.Controls
 
 		public override void Render(DrawingContext context)
 		{
+			try {
+				InternalRender(context);
+			} catch(Exception ex) {
+				Dispatcher.UIThread.Post(() => {
+					MesenMsgBox.ShowException(ex);
+				});
+			}
+		}
+
+		private void InternalRender(DrawingContext context)
+		{
 			CodeLineData[] lines = Lines;
 			if(lines.Length == 0) {
 				return;
@@ -333,6 +345,10 @@ namespace Mesen.Debugger.Controls
 		private string GetHighlightedText(CodeLineData line, List<CodeColor> lineParts, out double leftMargin)
 		{
 			leftMargin = 0;
+			if(line.Text.Length == 0) {
+				return string.Empty;
+			}
+
 			int skipCharCount = 0;
 			int highlightCharCount = 0;
 			bool foundOpCode = false;
@@ -348,6 +364,10 @@ namespace Mesen.Debugger.Controls
 					}
 					highlightCharCount += part.Text.Length;
 				}
+			}
+
+			if(skipCharCount + highlightCharCount > line.Text.Length) {
+				return string.Empty;
 			}
 
 			return line.Text.Substring(skipCharCount, highlightCharCount).Trim();

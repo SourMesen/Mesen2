@@ -88,9 +88,9 @@ namespace Mesen.Debugger
 			get
 			{
 				return (
-					Flags.HasFlag(LineFlags.Empty) ||
-					(Flags.HasFlag(LineFlags.Comment) && Text.Length == 0) ||
-					Flags.HasFlag(LineFlags.Label)
+					Flags.HasFlag(LineFlags.Empty) || //block start/end, etc.
+					(Flags.HasFlag(LineFlags.Comment) && Text.Length == 0) || //multi-line comment
+					Flags.HasFlag(LineFlags.Label) //label definition
 				);
 			}
 		}
