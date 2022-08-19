@@ -38,47 +38,49 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<Panel Background="Black">
-		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
-			<Button Click="OnToggleShuffleClick" Height="26" Classes="Toggle" ToolTip.Tip="{l:Translate btnToggleShuffle}">
-				<Panel>
-					<Image Stretch="None" Source="/Assets/ShuffleEnabled.png" IsVisible="{CompiledBinding Config.Shuffle}" />
-					<Image Stretch="None" Source="/Assets/Shuffle.png" IsVisible="{CompiledBinding !Config.Shuffle}" />				
-				</Panel>
-			</Button>
-			<Button Click="OnToggleRepeatClick" Height="26" Classes="Toggle" ToolTip.Tip="{l:Translate btnToggleRepeat}">
-				<Panel>
-					<Image Stretch="None" Source="/Assets/RepeatEnabled.png" IsVisible="{CompiledBinding Config.Repeat}" />
-					<Image Stretch="None" Source="/Assets/Repeat.png" IsVisible="{CompiledBinding !Config.Repeat}" />
-				</Panel>
-			</Button>
-		</StackPanel>
-		
-		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Click="OnPrevTrackClick" ToolTip.Tip="{l:Translate btnPrevTrack}">
-				<Image Width="23" Height="16" Source="/Assets/PrevTrack.png" />
-			</Button>
-			<Button Click="OnPlayClick" Height="30" Width="40" ToolTip.Tip="{l:Translate btnPlayPause}">
-				<Panel>
-					<Image Height="16" Width="16" Source="/Assets/MediaPlay.png" IsVisible="{CompiledBinding IsPaused}" />
-					<Image Height="16" Width="16" Source="/Assets/MediaPause.png" IsVisible="{CompiledBinding !IsPaused}" />
-				</Panel>
-			</Button>
-			<Button Click="OnNextTrackClick" ToolTip.Tip="{l:Translate btnNextTrack}">
-				<Image Width="23" Height="16" Source="/Assets/NextTrack.png" />
-			</Button>
-		</StackPanel>
+	<Panel Background="#000">
+		<Panel Margin="0 0 0 3">
+			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
+				<Button Click="OnToggleShuffleClick" Height="26" Classes="Toggle" ToolTip.Tip="{l:Translate btnToggleShuffle}" Cursor="Hand">
+					<Panel>
+						<Image Stretch="None" Source="/Assets/ShuffleEnabled.png" IsVisible="{CompiledBinding Config.Shuffle}" />
+						<Image Stretch="None" Source="/Assets/Shuffle.png" IsVisible="{CompiledBinding !Config.Shuffle}" />
+					</Panel>
+				</Button>
+				<Button Click="OnToggleRepeatClick" Height="26" Classes="Toggle" ToolTip.Tip="{l:Translate btnToggleRepeat}" Cursor="Hand">
+					<Panel>
+						<Image Stretch="None" Source="/Assets/RepeatEnabled.png" IsVisible="{CompiledBinding Config.Repeat}" />
+						<Image Stretch="None" Source="/Assets/Repeat.png" IsVisible="{CompiledBinding !Config.Repeat}" />
+					</Panel>
+				</Button>
+			</StackPanel>
 
-		<Panel VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 10 5 0">
-			<c:MesenSlider
-				Width="100"
-				Height="30"
-				HideValue="True"
-				TickFrequency="10"
-				Minimum="0"
-				Maximum="100"
-				Value="{CompiledBinding Config.Volume}"
+			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button Click="OnPrevTrackClick" ToolTip.Tip="{l:Translate btnPrevTrack}">
+					<Image Width="23" Height="16" Source="/Assets/PrevTrack.png" />
+				</Button>
+				<Button Click="OnPlayClick" Height="30" Width="40" ToolTip.Tip="{l:Translate btnPlayPause}">
+					<Panel>
+						<Image Height="16" Width="16" Source="/Assets/MediaPlay.png" IsVisible="{CompiledBinding IsPaused}" />
+						<Image Height="16" Width="16" Source="/Assets/MediaPause.png" IsVisible="{CompiledBinding !IsPaused}" />
+					</Panel>
+				</Button>
+				<Button Click="OnNextTrackClick" ToolTip.Tip="{l:Translate btnNextTrack}">
+					<Image Width="23" Height="16" Source="/Assets/NextTrack.png" />
+				</Button>
+			</StackPanel>
+
+			<Panel VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">
+				<c:MesenSlider
+					Width="100"
+					Height="30"
+					HideValue="True"
+					TickFrequency="10"
+					Minimum="0"
+					Maximum="100"
+					Value="{CompiledBinding Config.Volume}"
 			/>
+			</Panel>
 		</Panel>
 	</Panel>
 

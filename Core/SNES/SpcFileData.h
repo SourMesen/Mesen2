@@ -47,9 +47,19 @@ public:
 			}
 		}
 
+		TrackLength = 0;
+		FadeLength = 0;
+
 		if(isStringValue) {
-			TrackLength = std::stoi(strTrackLength);
-			FadeLength = std::stoi(strFadeLength);
+			try {
+				if(strTrackLength.size()) {
+					TrackLength = std::stoi(strTrackLength);
+				}
+				if(strFadeLength.size()) {
+					FadeLength = std::stoi(strFadeLength);
+				}
+			} catch(std::exception&) {
+			}
 		}
 
 		memcpy(SpcRam, spcData + 0x100, 0xFFC0);
