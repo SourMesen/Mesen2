@@ -203,6 +203,15 @@ private:
 		}
 	}
 
+	__forceinline void CheckDuplicateKey(string& key)
+	{
+#ifndef MESENRELEASE
+		if(!_usedKeys.emplace(key).second) {
+			throw std::runtime_error("Duplicate key");
+		}
+#endif
+	}
+
 public:
 	Serializer(uint32_t version, bool forSave, SerializeFormat format = SerializeFormat::Binary);
 
@@ -229,9 +238,8 @@ public:
 			Stream((ISerializable&)value, name, index);
 		} else {
 			string key = GetKey(name, index);
-			if(!_usedKeys.emplace(key).second) {
-				throw std::runtime_error("Duplicate key");
-			}
+
+			CheckDuplicateKey(key);
 
 			if(_saving) {
 				switch(_format) {
@@ -331,10 +339,11 @@ public:
 		}
 
 		string key = GetKey(name, -1);
-		if(!_usedKeys.emplace(key).second) {
-			throw std::runtime_error("Duplicate key");
-		}
 
+		CheckDuplicateKey(key);
+
+		//TODO detect big vs little endian
+		constexpr bool isBigEndian = false;
 		if(_saving) {
 			//Write key
 			_data.insert(_data.end(), key.begin(), key.end());
@@ -344,8 +353,8 @@ public:
 			WriteValue((uint32_t)(elementCount * sizeof(T)));
 
 			//Write array content
-			if constexpr(sizeof(T) == 1) {
-				_data.insert(_data.end(), arrayValues, arrayValues + elementCount);
+			if constexpr(sizeof(T) == 1 || !isBigEndian) {
+				_data.insert(_data.end(), (uint8_t*)arrayValues, (uint8_t*)(arrayValues + elementCount));
 			} else {
 				for(uint32_t i = 0; i < elementCount; i++) {
 					WriteValue(arrayValues[i]);
@@ -356,8 +365,8 @@ public:
 			if(result != _values.end()) {
 				SerializeValue& savedValue = result->second;
 				if(savedValue.Size >= elementCount * sizeof(T)) {
-					if constexpr(sizeof(T) == 1) {
-						memcpy(arrayValues, savedValue.DataPtr, elementCount);
+					if constexpr(sizeof(T) == 1 || !isBigEndian) {
+						memcpy(arrayValues, savedValue.DataPtr, sizeof(T) * elementCount);
 					} else {
 						uint8_t* src = savedValue.DataPtr;
 						for(uint32_t i = 0; i < elementCount; i++) {
@@ -381,9 +390,8 @@ public:
 		}
 
 		string key = GetKey(name, index);
-		if(!_usedKeys.emplace(key).second) {
-			throw std::runtime_error("Duplicate key");
-		}
+
+		CheckDuplicateKey(key);
 
 		if(_saving) {
 			//Write key
@@ -419,9 +427,8 @@ public:
 	template<> void Stream(string& value, const char* name, int index)
 	{
 		string key = GetKey(name, index);
-		if(!_usedKeys.emplace(key).second) {
-			throw std::runtime_error("Duplicate key");
-		}
+
+		CheckDuplicateKey(key);
 
 		if(_format == SerializeFormat::Map) {
 			if(_saving) {

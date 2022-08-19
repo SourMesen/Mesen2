@@ -1233,11 +1233,7 @@ void PceVdc::Serialize(Serializer& s)
 		SV(_rowHasSprite0);
 		SV(_loadSpriteStart);
 
-		for(int i = 0; i < 64; i++) {
-			SVI(_sprites[i].TileData[0]);
-			SVI(_sprites[i].TileData[1]);
-			SVI(_sprites[i].TileData[2]);
-			SVI(_sprites[i].TileData[3]);
+		for(int i = 0; i < _spriteCount; i++) {
 			SVI(_sprites[i].X);
 			SVI(_sprites[i].TileAddress);
 			SVI(_sprites[i].Index);
@@ -1247,21 +1243,19 @@ void PceVdc::Serialize(Serializer& s)
 			SVI(_sprites[i].LoadSp23);
 		}
 
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < _totalSpriteCount; i++) {
 			SVI(_drawSprites[i].TileData[0]);
 			SVI(_drawSprites[i].TileData[1]);
 			SVI(_drawSprites[i].TileData[2]);
 			SVI(_drawSprites[i].TileData[3]);
 			SVI(_drawSprites[i].X);
-			SVI(_drawSprites[i].TileAddress);
 			SVI(_drawSprites[i].Index);
 			SVI(_drawSprites[i].Palette);
 			SVI(_drawSprites[i].HorizontalMirroring);
 			SVI(_drawSprites[i].ForegroundPriority);
-			SVI(_drawSprites[i].LoadSp23);
 		}
 
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < _tileCount; i++) {
 			SVI(_tiles[i].TileData[0]);
 			SVI(_tiles[i].TileData[1]);
 			SVI(_tiles[i].Palette);
