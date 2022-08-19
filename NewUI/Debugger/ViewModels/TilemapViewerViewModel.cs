@@ -35,8 +35,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
 		[Reactive] public DynamicTooltip TilemapInfoPanel { get; private set; } = new DynamicTooltip();
+		[Reactive] public bool IsTilemapInfoVisible { get; private set; }
+
 		[Reactive] public DynamicTooltip? PreviewPanel { get; private set; }
-		
 		[Reactive] public DynamicTooltip? ViewerTooltip { get; set; }
 		[Reactive] public PixelPoint? ViewerMousePos { get; set; }
 
@@ -277,6 +278,8 @@ namespace Mesen.Debugger.ViewModels
 						new() { Title = "Layer 2", Layer = 1 },
 						new() { Title = "Layer 3", Layer = 2 },
 						new() { Title = "Layer 4", Layer = 3 },
+						new() { Title = "Main", Layer = 4 },
+						new() { Title = "Sub", Layer = 5 },
 					};
 					break;
 
@@ -426,8 +429,16 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				if(_tilemapInfo.Bpp == 0) {
+					GridSizeX = 8;
+					GridSizeY = 8;
+					ScrollOverlayRect = Rect.Empty;
+					OverlayLines = null;
+					PreviewPanel = null;
+					IsTilemapInfoVisible = false;
 					return;
 				}
+
+				IsTilemapInfoVisible = true;
 
 				GridSizeX = (int)_tilemapInfo.TileWidth;
 				GridSizeY = (int)_tilemapInfo.TileHeight;

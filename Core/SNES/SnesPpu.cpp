@@ -1244,6 +1244,10 @@ void SnesPpu::DrawSubPixel(uint8_t x, uint16_t color, uint8_t priority)
 
 void SnesPpu::ApplyColorMath()
 {
+	if(!_skipRender && _emu->IsDebugging()) {
+		DebugProcessMainSubScreenViews();
+	}
+
 	uint8_t activeWindowCount = (uint8_t)_state.Window[0].ActiveLayers[SnesPpu::ColorWindowIndex] + (uint8_t)_state.Window[1].ActiveLayers[SnesPpu::ColorWindowIndex];
 	bool hiResMode = _state.HiResMode || _state.BgMode == 5 || _state.BgMode == 6;
 
@@ -1527,6 +1531,18 @@ void SnesPpu::DebugProcessMode7Overlay()
 		}
 	}
 	_debugMode7StartX = _debugMode7StartY = _debugMode7EndX = _debugMode7EndY = 0;
+}
+
+void SnesPpu::DebugProcessMainSubScreenViews()
+{
+	//Store main/sub screen buffers in ppu tools to allow display main/sub screen view in tilemap viewer
+	SnesPpuTools* ppuTools = ((SnesPpuTools*)_emu->InternalGetDebugger()->GetPpuTools(CpuType::Snes));
+	ppuTools->SetPpuRowBuffers(_scanline - 1, _drawStartX, _drawEndX, _mainScreenBuffer, _subScreenBuffer);
+	if(_scanline == _vblankStartScanline - 1) {
+		for(int i = _scanline; i < 239; i++) {
+			ppuTools->SetPpuRowBuffers(i, _drawStartX, _drawEndX, nullptr, nullptr);
+		}
+	}
 }
 
 bool SnesPpu::IsHighResOutput()

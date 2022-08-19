@@ -66,7 +66,7 @@
 					</Grid>
 				</c:GroupBox>
 
-				<c:GroupBox Header="{l:Translate lblTilemap}" Margin="0 5 0 0">
+				<c:GroupBox Header="{l:Translate lblTilemap}" Margin="0 5 0 0" IsVisible="{CompiledBinding IsTilemapInfoVisible}">
 					<ContentControl Content="{CompiledBinding TilemapInfoPanel}" />
 				</c:GroupBox>
 				

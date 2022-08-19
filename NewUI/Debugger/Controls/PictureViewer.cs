@@ -340,10 +340,10 @@ namespace Mesen.Debugger.Controls
 
 				Pen pen = new Pen(color.ToUint32(), 1);
 				double offset = 0.5;
-				for(int i = 1; i < width / gridSizeX; i++) {
+				for(int i = 1; i <= width / gridSizeX; i++) {
 					context.DrawLine(pen, new Point(i * gridSizeX + offset, 0), new Point(i * gridSizeX + offset, height));
 				}
-				for(int i = 1; i < height / gridSizeY; i++) {
+				for(int i = 1; i <= height / gridSizeY; i++) {
 					context.DrawLine(pen, new Point(0, i * gridSizeY + offset), new Point(width, i * gridSizeY + offset));
 				}
 			}

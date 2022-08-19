@@ -28,6 +28,18 @@ void SnesPpuTools::SetPpuScanlineState(uint16_t scanline, uint8_t mode, int32_t 
 	_state.Mode7EndY[scanline] = mode7endY;
 }
 
+void SnesPpuTools::SetPpuRowBuffers(uint16_t scanline, uint16_t xStart, uint16_t xEnd, uint16_t mainScreenRowBuffer[256], uint16_t subScreenRowBuffer[256])
+{
+	uint16_t len = xEnd - xStart + 1;
+	if(mainScreenRowBuffer && subScreenRowBuffer) {
+		memcpy(_mainScreenBuffer + scanline * 256 + xStart, mainScreenRowBuffer + xStart, len * sizeof(uint16_t));
+		memcpy(_subScreenBuffer + scanline * 256 + xStart, subScreenRowBuffer + xStart, len * sizeof(uint16_t));
+	} else {
+		memset(_mainScreenBuffer + scanline * 256 + xStart, 0, len * sizeof(uint16_t));
+		memset(_subScreenBuffer + scanline * 256 + xStart, 0, len * sizeof(uint16_t));
+	}
+}
+
 DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& baseState, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
@@ -38,6 +50,10 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 	uint16_t basePaletteOffset = 0;
 	if(state.BgMode == 0) {
 		basePaletteOffset = options.Layer * 32;
+	}
+
+	if(options.Layer == SnesPpuTools::MainScreenViewLayer || options.Layer == SnesPpuTools::SubScreenViewLayer) {
+		return RenderScreenView(options.Layer, outBuffer);
 	}
 
 	LayerConfig layer = state.Layers[options.Layer];
@@ -176,6 +192,15 @@ void SnesPpuTools::RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32
 			}
 		}
 	}
+}
+
+DebugTilemapInfo SnesPpuTools::RenderScreenView(uint8_t layer, uint32_t* outBuffer)
+{
+	uint16_t* src = layer == SnesPpuTools::MainScreenViewLayer ? _mainScreenBuffer : _subScreenBuffer;
+	for(int i = 0; i < 256 * 239; i++) {
+		outBuffer[i] = Rgb555ToArgb(src[i]);
+	}
+	return {};
 }
 
 static constexpr uint8_t _oamSizes[8][2][2] = {
@@ -353,6 +378,10 @@ FrameInfo SnesPpuTools::GetTilemapSize(GetTilemapOptions options, BaseState& bas
 {
 	SnesPpuState& state = (SnesPpuState&)baseState;
 
+	if(options.Layer == SnesPpuTools::MainScreenViewLayer || options.Layer == SnesPpuTools::SubScreenViewLayer) {
+		return { 256, 239 };
+	}
+
 	uint8_t bpp = layerBpp[state.BgMode][options.Layer];
 	if(bpp == 0) {
 		return {};
@@ -391,6 +420,9 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 
 	FrameInfo size = GetTilemapSize(options, baseState);
 	if(x >= size.Width || y >= size.Height) {
+		return result;
+	} else if(options.Layer == SnesPpuTools::MainScreenViewLayer || options.Layer == SnesPpuTools::SubScreenViewLayer) {
+		//No actual tiles to display for these views
 		return result;
 	}
 

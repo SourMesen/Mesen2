@@ -210,6 +210,7 @@ private:
 	void RandomizeState();
 
 	__noinline void DebugProcessMode7Overlay();
+	__noinline void DebugProcessMainSubScreenViews();
 
 public:
 	SnesPpu(Emulator* emu, SnesConsole* console);

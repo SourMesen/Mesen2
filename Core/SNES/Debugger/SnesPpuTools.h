@@ -21,18 +21,27 @@ struct SnesPpuToolsState
 class SnesPpuTools final : public PpuTools
 {
 private:
+	static constexpr int MainScreenViewLayer = 4;
+	static constexpr int SubScreenViewLayer = 5;
+
 	SnesPpuToolsState _state = {};
+	uint16_t _mainScreenBuffer[256 * 239] = {};
+	uint16_t _subScreenBuffer[256 * 239] = {};
 
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, SnesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 	
 	template<TileFormat format> void RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32_t* palette);
 	template<TileFormat format> void RenderTilemap(int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, const uint8_t& bpp, uint32_t* outBuffer, FrameInfo& outputSize, uint32_t* palette, const uint16_t& basePaletteOffset);
+	
+	DebugTilemapInfo RenderScreenView(uint8_t layer, uint32_t* outBuffer);
 
 public:
 	SnesPpuTools(Debugger* debugger, Emulator *emu);
 
 	void GetPpuToolsState(BaseState& state) override;
+
 	void SetPpuScanlineState(uint16_t scanline, uint8_t mode, int32_t mode7startX, int32_t mode7startY, int32_t mode7endX, int32_t mode7endY);
+	void SetPpuRowBuffers(uint16_t scanline, uint16_t xStart, uint16_t xEnd, uint16_t mainScreenRowBuffer[256], uint16_t subScreenRowBuffer[256]);
 
 	DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) override;
 	FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) override;
