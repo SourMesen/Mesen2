@@ -3,6 +3,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Mesen.Config;
 using Mesen.Utilities;
 using SkiaSharp;
 using System;
@@ -32,7 +33,10 @@ namespace Mesen.Debugger.Controls
 			private Color _selectedColor = ColorHelper.GetColor(Colors.LightSkyBlue);
 			private bool _highDensityMode;
 
-			public HexViewDrawOperation(HexEditor he, List<ByteInfo> dataToDraw, HashSet<Color> fgColors)
+			private SKFontEdging _skiaEdging;
+			private bool _skiaSubpixelSmoothing;
+
+			public HexViewDrawOperation(HexEditor he, List<ByteInfo> dataToDraw, HashSet<Color> fgColors, FontAntialiasing fontAntialiasing)
 			{
 				_he = he;
 				Bounds = _he.Bounds;
@@ -48,6 +52,13 @@ namespace Mesen.Debugger.Controls
 				_showStringView = _he.ShowStringView;
 				_stringViewPosition = _he.RowWidth + _he.StringViewMargin;
 				_highDensityMode = _he.HighDensityMode;
+
+				_skiaEdging = fontAntialiasing switch {
+					FontAntialiasing.Disabled => SKFontEdging.Alias,
+					FontAntialiasing.Antialias => SKFontEdging.Antialias,
+					FontAntialiasing.SubPixelAntialias or _ => SKFontEdging.SubpixelAntialias
+				};
+				_skiaSubpixelSmoothing = fontAntialiasing == FontAntialiasing.SubPixelAntialias;
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
 					if(!_skFillPaints.ContainsKey(byteInfo.BackColor)) {
@@ -102,6 +113,8 @@ namespace Mesen.Debugger.Controls
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont font = new SKFont(typeface, _fontSize);
+				font.Edging = _skiaEdging;
+				font.Subpixel = _skiaSubpixelSmoothing;
 
 				using var builder = new SKTextBlobBuilder();
 
@@ -142,6 +155,8 @@ namespace Mesen.Debugger.Controls
 			private void PrepareStringView()
 			{
 				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
+				altFont.Edging = _skiaEdging;
+				altFont.Subpixel = _skiaSubpixelSmoothing;
 
 				int pos = 0;
 
@@ -208,7 +223,12 @@ namespace Mesen.Debugger.Controls
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont monoFont = new SKFont(typeface, _fontSize);
+				monoFont.Edging = _skiaEdging;
+				monoFont.Subpixel = _skiaSubpixelSmoothing;
+
 				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
+				altFont.Edging = _skiaEdging;
+				altFont.Subpixel = _skiaSubpixelSmoothing;
 
 				using var builder = new SKTextBlobBuilder();
 
@@ -390,7 +410,10 @@ namespace Mesen.Debugger.Controls
 			private int _firstByte;
 			private bool _highDensityMode;
 
-			public HexViewDrawRowHeaderOperation(HexEditor he)
+			private SKFontEdging _skiaEdging;
+			private bool _skiaSubpixelSmoothing;
+
+			public HexViewDrawRowHeaderOperation(HexEditor he, FontAntialiasing fontAntialiasing)
 			{
 				_he = he;
 				Bounds = _he.Bounds;
@@ -406,6 +429,13 @@ namespace Mesen.Debugger.Controls
 				_dataProvider = _he.DataProvider;
 				_letterSize = _he.LetterSize;
 				_firstByte = _he.TopRow * _bytesPerRow;
+
+				_skiaEdging = fontAntialiasing switch {
+					FontAntialiasing.Disabled => SKFontEdging.Alias,
+					FontAntialiasing.Antialias => SKFontEdging.Antialias,
+					FontAntialiasing.SubPixelAntialias or _ => SKFontEdging.SubpixelAntialias
+				};
+				_skiaSubpixelSmoothing = fontAntialiasing == FontAntialiasing.SubPixelAntialias;
 			}
 
 			public Rect Bounds { get; private set; }
@@ -434,6 +464,8 @@ namespace Mesen.Debugger.Controls
 
 					SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 					SKFont font = new SKFont(typeface, _fontSize);
+					font.Edging = _skiaEdging;
+					font.Subpixel = _skiaSubpixelSmoothing;
 
 					using var builder = new SKTextBlobBuilder();
 

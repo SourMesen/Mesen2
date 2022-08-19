@@ -130,7 +130,8 @@ namespace Mesen.Debugger.Controls
 		private double RowHeight => HighDensityMode ? LetterSize.Height * 0.8 : LetterSize.Height;
 
 		private int HeaderCharLength => DataProvider.Length > 0 ? (DataProvider.Length - 1).ToString(HexFormat).Length : 0;
-		private double RowHeaderWidth => HeaderCharLength * LetterSize.Width + 5;
+		private double RowHeaderWidth => HeaderCharLength * LetterSize.Width + 10;
+		private double ContentLeftPadding => 5;
 		private double RowWidth => LetterSize.Width * (3 * BytesPerRow - 1);
 		private double StringViewMargin => 20;
 		private double ColumnHeaderHeight => LetterSize.Height + 5;
@@ -143,6 +144,7 @@ namespace Mesen.Debugger.Controls
 		private bool _inStringView = false;
 		private float[] _startPositionByByte = Array.Empty<float>();
 		private float[] _endPositionByByte = Array.Empty<float>();
+		private FontAntialiasing _fontAntialiasing;
 
 		static HexEditor()
 		{
@@ -166,6 +168,8 @@ namespace Mesen.Debugger.Controls
 		{
 			Focusable = true;
 			InitFontAndLetterSize();
+
+			_fontAntialiasing = ConfigManager.Config.Preferences.FontAntialiasing;
 		}
 
 		protected override void OnPointerEntered(PointerEventArgs e)
@@ -596,7 +600,7 @@ namespace Mesen.Debugger.Controls
 
 			//Draw row headers
 			DrawRowHeaders(context);
-			using var rowHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(RowHeaderWidth, 0));
+			using var rowHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(RowHeaderWidth + ContentLeftPadding, 0));
 
 			//Precalculate some values for data draw
 			int bytesPerRow = this.BytesPerRow;
@@ -657,7 +661,7 @@ namespace Mesen.Debugger.Controls
 				position++;
 			}
 
-			context.Custom(new HexViewDrawOperation(this, dataToDraw, fgColors));
+			context.Custom(new HexViewDrawOperation(this, dataToDraw, fgColors, _fontAntialiasing));
 
 			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
 				//Draw selected character/byte cursor
@@ -687,7 +691,7 @@ namespace Mesen.Debugger.Controls
 			context.DrawRectangle(ColorHelper.GetBrush(HeaderBackground), null, new Rect(0, 0, RowHeaderWidth, Bounds.Height));
 
 			//Draw row addresses
-			context.Custom(new HexViewDrawRowHeaderOperation(this));
+			context.Custom(new HexViewDrawRowHeaderOperation(this, _fontAntialiasing));
 		}
 
 		private void DrawColumnHeaders(DrawingContext context)
@@ -700,7 +704,7 @@ namespace Mesen.Debugger.Controls
 			}
 
 			var text = new FormattedText(sb.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, Font, FontSize, ColorHelper.GetBrush(HeaderForeground));
-			context.DrawText(text, new Point(RowHeaderWidth, (this.ColumnHeaderHeight - this.LetterSize.Height) / 2));
+			context.DrawText(text, new Point(RowHeaderWidth + ContentLeftPadding, (this.ColumnHeaderHeight - this.LetterSize.Height) / 2));
 		}
 	}
 
