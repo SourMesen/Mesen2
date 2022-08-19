@@ -81,6 +81,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			ConfigManager.Config.Debug.ApplyConfig();
+			ConfigManager.Config.Debug.Fonts.ApplyConfig();
 		}
 
 		public void RevertChanges()

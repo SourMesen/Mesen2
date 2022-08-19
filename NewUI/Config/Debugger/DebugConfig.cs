@@ -40,8 +40,6 @@ namespace Mesen.Config
 
 		public void ApplyConfig()
 		{
-			Fonts.ApplyConfig();
-
 			ConfigApi.SetDebugConfig(new InteropDebugConfig() {
 				BreakOnUninitRead = Debugger.BreakOnUninitRead,
 				ShowJumpLabels = Debugger.ShowJumpLabels,
