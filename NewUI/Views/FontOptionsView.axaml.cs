@@ -62,6 +62,9 @@ namespace Mesen.Views
 				if(cfg.FontFamily == InternalFontFamily) {
 					//don't validate if this is the currently selected font
 					return;
+				} else if(InternalFontFamily == null) {
+					//configured font doesn't exist - keep dropdown blank (FontFamily will crash if given a null)
+					return;
 				}
 
 				Typeface typeface = new Typeface(new FontFamily(InternalFontFamily));
