@@ -69,10 +69,6 @@ public:
 		//Disable boot room
 		_memoryManager->WriteRegister(0xFF50, 0x01);
 
-		//Turn on PPU for vblank interrupts
-		//TODO test and support timer IRQs properly
-		_memoryManager->WriteRegister(0xFF40, 0x80);
-
 		//Enable all IRQs
 		_memoryManager->WriteRegister(0xFFFF, 0xFF);
 
@@ -82,6 +78,23 @@ public:
 
 		//Clear all IRQ requests (needed when switching tracks)
 		_memoryManager->ClearIrqRequest(0xFF);
+
+		if((_header.TimerControl & 0x04) == 0) {
+			//Turn on PPU for vblank interrupts, since timer is disabled
+			_memoryManager->WriteRegister(0xFF40, 0x80);
+		} else {
+			//Turn off PPU (timer is used instead of vblank irqs)
+			_memoryManager->WriteRegister(0xFF40, 0x00);
+
+			//Use timer for IRQs
+			if(_header.TimerControl & 0x80) {
+				//2x clock rate (CGB)
+				_memoryManager->ToggleSpeed();
+			}
+
+			_memoryManager->WriteRegister(0xFF06, _header.TimerModulo);
+			_memoryManager->WriteRegister(0xFF07, _header.TimerControl & 0x07);
+		}
 
 		_startClock = _gameboy->GetMasterClock();
 		_prgBank = 1;
