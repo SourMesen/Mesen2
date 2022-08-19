@@ -16,7 +16,7 @@
 			Text="{Binding DisabledPath}"
 		/>
 		<DockPanel IsVisible="{Binding Editable}">
-			<Button DockPanel.Dock="Right" Content="..." Click="btnBrowse_OnClick" />
+			<Button MinWidth="30" DockPanel.Dock="Right" Content="..." Click="btnBrowse_OnClick" />
 			<TextBox Text="{Binding Path}" />
 		</DockPanel>
 	</Panel>

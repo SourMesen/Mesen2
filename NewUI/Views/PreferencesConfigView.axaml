@@ -128,7 +128,7 @@
 								Grid.Row="5"
 								Grid.Column="1"
 								Editable="{CompiledBinding Config.OverrideScreenshotFolder}"
-								Path="{CompiledBinding Config.OverrideScreenshotFolder}"
+								Path="{CompiledBinding Config.ScreenshotFolder}"
 								DisabledPath="{x:Static cfg:ConfigManager.DefaultScreenshotFolder}"
 							/>
 
