@@ -27,6 +27,7 @@ namespace Mesen.Debugger.Windows
 
 		public CpuType CpuType => _model.CpuType;
 		private int? _scrollToAddress = null;
+		private bool _suppressBringToFront = false;
 
 		[Obsolete("For designer only")]
 		public DebuggerWindow() : this(null, null) { }
@@ -134,9 +135,10 @@ namespace Mesen.Debugger.Windows
 					BreakEvent evt = Marshal.PtrToStructure<BreakEvent>(e.Parameter);
 					Dispatcher.UIThread.Post(() => {
 						_model.UpdateDebugger(true, evt);
-						if(_model.Config.BringToFrontOnBreak && evt.SourceCpu == _model.CpuType && evt.Source != BreakSource.PpuStep) {
+						if(!_suppressBringToFront && _model.Config.BringToFrontOnBreak && evt.SourceCpu == _model.CpuType && evt.Source != BreakSource.PpuStep) {
 							Activate();
 						}
+						_suppressBringToFront = false;
 					});
 					break;
 
@@ -208,6 +210,13 @@ namespace Mesen.Debugger.Windows
 				Activate();
 				DebugWorkspaceManager.LoadSupportedFile(filename, true);
 			}
+		}
+
+		public void SuppressBringToFront()
+		{
+			//Used to prevent debugger from stealing focus when emulation is
+			//paused by the "Pause in menus and config windows" option
+			_suppressBringToFront = true;
 		}
 	}
 }

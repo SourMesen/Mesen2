@@ -18,6 +18,7 @@ using Avalonia.Layout;
 using Mesen.Debugger.Utilities;
 using System.ComponentModel;
 using System.Threading;
+using Mesen.Debugger.Windows;
 
 namespace Mesen.Windows
 {
@@ -396,7 +397,7 @@ namespace Mesen.Windows
 
 			bool needPause = activeWindow == null && cfg.PauseWhenInBackground;
 			if(activeWindow != null) {
-				bool isConfigWindow = (activeWindow != this);
+				bool isConfigWindow = (activeWindow != this) && !DebugWindowManager.IsDebugWindow(activeWindow);
 				needPause |= cfg.PauseWhenInMenusAndConfig && !isConfigWindow && _mainMenu.MainMenu.IsOpen; //in main menu
 				needPause |= cfg.PauseWhenInMenusAndConfig && isConfigWindow; //in a window that's neither the main window nor a debug tool
 			}
@@ -404,6 +405,13 @@ namespace Mesen.Windows
 			if(needPause) {
 				if(!EmuApi.IsPaused()) {
 					_needResume = true;
+
+					DebuggerWindow? wnd = DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == _model.RomInfo.ConsoleType.GetMainCpuType());
+					if(wnd != null) {
+						//If the debugger window for the main cpu is opened, suppress the "bring to front on break" behavior
+						wnd.SuppressBringToFront();
+					}
+
 					EmuApi.Pause();
 				}
 			} else if(_needResume) {

@@ -140,5 +140,10 @@ namespace Mesen.Debugger.Utilities
 					break;
 			}
 		}
+
+		public static bool IsDebugWindow(Window wnd)
+		{
+			return _openedWindows.ContainsKey(wnd);
+		}
 	}
 }
