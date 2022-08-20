@@ -54,6 +54,7 @@
 			<ScrollViewer MinWidth="190">
 				<StackPanel Margin="3">
 					<CheckBox Content="{l:Translate chkShowOutline}" IsChecked="{CompiledBinding Config.ShowOutline}" />
+					<CheckBox Content="{l:Translate chkShowOffscreenRegions}" IsChecked="{CompiledBinding Config.ShowOffscreenRegions}" />
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ListView.ShowListView}" />
 
 					<c:OptionSection Header="{l:Translate lblDataSource}">
@@ -115,6 +116,10 @@
 				SelectionRect="{CompiledBinding SelectionRect}"
 				MouseOverRect="{CompiledBinding MouseOverRect}"
 				HighlightRects="{CompiledBinding SpriteRects}"
+				LeftClipSize="{CompiledBinding LeftClipSize}"
+				RightClipSize="{CompiledBinding RightClipSize}"
+				TopClipSize="{CompiledBinding TopClipSize}"
+				BottomClipSize="{CompiledBinding BottomClipSize}"
 				ShowMousePosition="False"
 			/>
 

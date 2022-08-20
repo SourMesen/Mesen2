@@ -847,6 +847,7 @@
 
 			<Control ID="chkShowOutline">Show outline around sprites</Control>
 			<Control ID="chkShowListView">Show list view</Control>
+			<Control ID="chkShowOffscreenRegions">Show offscreen regions</Control>
 			<Control ID="lblDataSource">Data Source</Control>
 			<Control ID="lblSource">Source:</Control>
 			<Control ID="lblSourceOffset">Offset:</Control>

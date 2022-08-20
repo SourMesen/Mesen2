@@ -23,6 +23,11 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowGrid), false);
 
+		public static readonly StyledProperty<int> LeftClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(LeftClipSize), 0);
+		public static readonly StyledProperty<int> RightClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(RightClipSize), 0);
+		public static readonly StyledProperty<int> TopClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(TopClipSize), 0);
+		public static readonly StyledProperty<int> BottomClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(BottomClipSize), 0);
+
 		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeX), 8);
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
@@ -85,6 +90,30 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(GridSizeYProperty); }
 			set { SetValue(GridSizeYProperty, value); }
+		}
+
+		public int TopClipSize
+		{
+			get { return GetValue(TopClipSizeProperty); }
+			set { SetValue(TopClipSizeProperty, value); }
+		}
+
+		public int BottomClipSize
+		{
+			get { return GetValue(BottomClipSizeProperty); }
+			set { SetValue(BottomClipSizeProperty, value); }
+		}
+
+		public int LeftClipSize
+		{
+			get { return GetValue(LeftClipSizeProperty); }
+			set { SetValue(LeftClipSizeProperty, value); }
+		}
+
+		public int RightClipSize
+		{
+			get { return GetValue(RightClipSizeProperty); }
+			set { SetValue(RightClipSizeProperty, value); }
 		}
 
 		public bool ShowGrid
@@ -153,7 +182,8 @@ namespace Mesen.Debugger.Controls
 				SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty,
 				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
 				HighlightRectsProperty, MouseOverRectProperty, GridHighlightProperty,
-				OverlayLinesProperty
+				OverlayLinesProperty, TopClipSizeProperty, LeftClipSizeProperty,
+				BottomClipSizeProperty, RightClipSizeProperty
 			);
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
@@ -171,6 +201,11 @@ namespace Mesen.Debugger.Controls
 			ZoomProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {
 				x.UpdateSize();
 			});
+
+			LeftClipSizeProperty.Changed.AddClassHandler<PictureViewer>((x, e) => x.UpdateSize());
+			RightClipSizeProperty.Changed.AddClassHandler<PictureViewer>((x, e) => x.UpdateSize());
+			TopClipSizeProperty.Changed.AddClassHandler<PictureViewer>((x, e) => x.UpdateSize());
+			BottomClipSizeProperty.Changed.AddClassHandler<PictureViewer>((x, e) => x.UpdateSize());
 		}
 
 		public PictureViewer()
@@ -248,8 +283,8 @@ namespace Mesen.Debugger.Controls
 				MinHeight = 0;
 			} else {
 				double dpiScale = LayoutHelper.GetLayoutScale(this);
-				MinWidth = (int)Source.Size.Width * Zoom / dpiScale;
-				MinHeight = (int)Source.Size.Height * Zoom / dpiScale;
+				MinWidth = (int)(Source.Size.Width - LeftClipSize - RightClipSize) * Zoom / dpiScale;
+				MinHeight = (int)(Source.Size.Height - TopClipSize - BottomClipSize) * Zoom / dpiScale;
 			}
 		}
 
@@ -302,7 +337,9 @@ namespace Mesen.Debugger.Controls
 
 		public PixelPoint? GetGridPointFromMousePoint(Point p)
 		{
-			if(p.X >= MinWidth || p.Y >= MinHeight) {
+			p = new Point(p.X + LeftClipSize * Zoom, p.Y + TopClipSize * Zoom);
+
+			if(p.X >= MinWidth + LeftClipSize * Zoom || p.Y >= MinHeight + TopClipSize * Zoom) {
 				return null;
 			}
 
@@ -361,6 +398,7 @@ namespace Mesen.Debugger.Controls
 			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
 			using var scale = context.PushPostTransform(Matrix.CreateScale(dpiScale, dpiScale));
 
+			using var translation = context.PushPostTransform(Matrix.CreateTranslation(-LeftClipSize * Zoom, -TopClipSize * Zoom));
 			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
 			context.DrawImage(

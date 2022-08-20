@@ -355,6 +355,12 @@ DebugSpritePreviewInfo NesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions
 	info.SpriteCount = 64;
 	info.CoordOffsetX = 0;
 	info.CoordOffsetY = 1;
+
+	info.VisibleX = 0;
+	info.VisibleY = 0;
+	info.VisibleWidth = 256;
+	info.VisibleHeight = 240;
+
 	return info;
 }
 

@@ -42,6 +42,11 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 		[Reactive] public Rect SelectionRect { get; set; }
 		[Reactive] public Rect? MouseOverRect { get; set; }
+		
+		[Reactive] public int TopClipSize { get; set; }
+		[Reactive] public int BottomClipSize { get; set; }
+		[Reactive] public int LeftClipSize { get; set; }
+		[Reactive] public int RightClipSize { get; set; }
 
 		[Reactive] public List<SpritePreviewModel> SpritePreviews { get; set; } = new();
 		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
@@ -148,6 +153,8 @@ namespace Mesen.Debugger.ViewModels
 			AddDisposable(this.WhenAnyValue(x => x.ViewerMousePos, x => x.PreviewPanelSprite).Subscribe(x => UpdateMouseOverRect()));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source, x => x.Config.SourceOffset).Subscribe(x => RefreshData()));
+			
+			AddDisposable(this.WhenAnyValue(x => x.Config.ShowOffscreenRegions).Subscribe(x => RefreshTab()));
 
 			ListView.InitListViewObservers();
 
@@ -450,6 +457,11 @@ namespace Mesen.Debugger.ViewModels
 				byte[] vram = _vram;
 				byte[] spriteRam = _spriteRam;
 				UInt32[] palette = _palette.Get().GetRgbPalette();
+
+				LeftClipSize = Config.ShowOffscreenRegions ? 0 : (int)previewInfo.VisibleX;
+				RightClipSize = Config.ShowOffscreenRegions ? 0 : (int)(previewInfo.Width - (previewInfo.VisibleWidth + previewInfo.VisibleX));
+				TopClipSize = Config.ShowOffscreenRegions ? 0 : (int)previewInfo.VisibleY;
+				BottomClipSize = Config.ShowOffscreenRegions ? 0 : (int)(previewInfo.Height - (previewInfo.VisibleHeight + previewInfo.VisibleY));
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
 					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);

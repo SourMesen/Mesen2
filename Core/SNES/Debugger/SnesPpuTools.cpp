@@ -484,14 +484,22 @@ DebugTilemapTileInfo SnesPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, ui
 	return result;
 }
 
-DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
 {
+	SnesPpuState& state = (SnesPpuState&)baseState;
+
 	DebugSpritePreviewInfo info = {};
 	info.Height = 256;
 	info.Width = 512;
 	info.SpriteCount = 128;
 	info.CoordOffsetX = 256;
 	info.CoordOffsetY = 0;
+	
+	info.VisibleX = 256;
+	info.VisibleY = 0;
+	info.VisibleWidth = 256;
+	info.VisibleHeight = state.OverscanMode ? 239 : 224;
+
 	return info;
 }
 

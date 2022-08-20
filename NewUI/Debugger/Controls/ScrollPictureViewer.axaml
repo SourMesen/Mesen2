@@ -38,6 +38,10 @@
 					HighlightRects="{CompiledBinding HighlightRects, ElementName=root}"
 					OverlayLines="{CompiledBinding OverlayLines, ElementName=root}"
 					GridHighlight="{CompiledBinding GridHighlight, ElementName=root}"
+					TopClipSize="{CompiledBinding TopClipSize, ElementName=root}"
+					BottomClipSize="{CompiledBinding BottomClipSize, ElementName=root}"
+					LeftClipSize="{CompiledBinding LeftClipSize, ElementName=root}"
+					RightClipSize="{CompiledBinding RightClipSize, ElementName=root}"			 
 				/>
 			</Border>
 		</ScrollViewer>

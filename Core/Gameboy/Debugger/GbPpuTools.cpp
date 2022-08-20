@@ -162,6 +162,12 @@ DebugSpritePreviewInfo GbPpuTools::GetSpritePreviewInfo(GetSpritePreviewOptions 
 	info.SpriteCount = 40;
 	info.CoordOffsetX = 0;
 	info.CoordOffsetY = 0;
+
+	info.VisibleX = 8;
+	info.VisibleY = 16;
+	info.VisibleWidth = 160;
+	info.VisibleHeight = 144;
+
 	return info;
 }
 

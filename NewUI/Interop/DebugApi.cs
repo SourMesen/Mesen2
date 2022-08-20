@@ -957,6 +957,11 @@ namespace Mesen.Interop
 		public UInt32 SpriteCount;
 		public Int32 CoordOffsetX;
 		public Int32 CoordOffsetY;
+
+		public UInt32 VisibleX;
+		public UInt32 VisibleY;
+		public UInt32 VisibleWidth;
+		public UInt32 VisibleHeight;
 	}
 
 	public enum DebugSpritePriority

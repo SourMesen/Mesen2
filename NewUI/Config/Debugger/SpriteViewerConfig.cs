@@ -7,6 +7,7 @@ namespace Mesen.Config
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
 		[Reactive] public bool ShowOutline { get; set; } = false;
+		[Reactive] public bool ShowOffscreenRegions { get; set; } = false;
 
 		[Reactive] public SpriteViewerSource Source { get; set; } = SpriteViewerSource.SpriteRam;
 		[Reactive] public int SourceOffset { get; set; } = 0;

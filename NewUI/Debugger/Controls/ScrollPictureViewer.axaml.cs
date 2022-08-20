@@ -21,6 +21,11 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> GridSizeYProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(GridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowGridProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowGrid), false);
 
+		public static readonly StyledProperty<int> LeftClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(LeftClipSize), 0);
+		public static readonly StyledProperty<int> RightClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(RightClipSize), 0);
+		public static readonly StyledProperty<int> TopClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(TopClipSize), 0);
+		public static readonly StyledProperty<int> BottomClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(BottomClipSize), 0);
+
 		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeX), 8);
 		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeY), 8);
 		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowAltGrid), false);
@@ -144,6 +149,30 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(GridHighlightProperty); }
 			set { SetValue(GridHighlightProperty, value); }
+		}
+
+		public int TopClipSize
+		{
+			get { return GetValue(TopClipSizeProperty); }
+			set { SetValue(TopClipSizeProperty, value); }
+		}
+
+		public int BottomClipSize
+		{
+			get { return GetValue(BottomClipSizeProperty); }
+			set { SetValue(BottomClipSizeProperty, value); }
+		}
+
+		public int LeftClipSize
+		{
+			get { return GetValue(LeftClipSizeProperty); }
+			set { SetValue(LeftClipSizeProperty, value); }
+		}
+
+		public int RightClipSize
+		{
+			get { return GetValue(RightClipSizeProperty); }
+			set { SetValue(RightClipSizeProperty, value); }
 		}
 
 		private Point _lastPosition;

@@ -263,14 +263,22 @@ void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& base
 	}
 }
 
-DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& state)
+DebugSpritePreviewInfo PceVdcTools::GetSpritePreviewInfo(GetSpritePreviewOptions options, BaseState& baseState)
 {
+	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
+	
 	DebugSpritePreviewInfo info = {};
 	info.Height = 1024;
 	info.Width = 1024; 
 	info.SpriteCount = _console->IsSuperGrafx() ? 128 : 64;
 	info.CoordOffsetX = 0;
 	info.CoordOffsetY = 0;
+
+	info.VisibleX = 32;
+	info.VisibleY = 64;
+	info.VisibleWidth = (state.HvLatch.HorizDisplayWidth + 1) * 8;
+	info.VisibleHeight = state.HvLatch.VertDisplayWidth;
+
 	return info;
 }
 

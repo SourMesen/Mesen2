@@ -144,6 +144,11 @@ struct DebugSpritePreviewInfo
 	uint32_t SpriteCount;
 	int32_t CoordOffsetX;
 	int32_t CoordOffsetY;
+
+	uint32_t VisibleX;
+	uint32_t VisibleY;
+	uint32_t VisibleWidth;
+	uint32_t VisibleHeight;
 };
 
 enum class RawPaletteFormat
