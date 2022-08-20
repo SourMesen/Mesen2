@@ -8,6 +8,7 @@ using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -52,6 +53,18 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(SubTitleProperty); }
 			set { SetValue(SubTitleProperty, value); }
+		}
+
+		static StateGridEntry()
+		{
+			//Make empty image black
+			using var imgLock = EmptyImage.Lock();
+			unsafe {
+				UInt32* buffer = (UInt32*)imgLock.Address;
+				for(int i = 0; i < 256*240; i++) {
+					buffer[i] = 0xFF000000;
+				}
+			}
 		}
 
 		public StateGridEntry()
@@ -105,6 +118,7 @@ namespace Mesen.Controls
 				SubTitle = ResourceHelper.GetMessage("EmptyState");
 			}
 			Enabled = fileExists || game.SaveMode;
+			Image = StateGridEntry.EmptyImage;
 
 			if(fileExists) {
 				Task.Run(() => {
@@ -133,8 +147,6 @@ namespace Mesen.Controls
 						Image = img ?? StateGridEntry.EmptyImage;
 					});
 				});
-			} else {
-				Image = StateGridEntry.EmptyImage;
 			}
 		}
 	}
