@@ -85,6 +85,7 @@ namespace Mesen.Windows
 				e.Cancel = true;
 				ValidateExit();
 			} else {
+				DebugWindowManager.CloseAllWindows();
 				_timerBackgroundFlag.Stop();
 				EmuApi.Stop();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
