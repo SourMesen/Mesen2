@@ -1,14 +1,8 @@
 #Welcome to what must be the most terrible makefile ever (but hey, it works)
 #Both clang & gcc work fine - clang seems to output faster code
-#The only external dependency is SDL2 - everything else is pretty standard.
+#.NET 6 (and its dev tools) must be installed to compiled the UI.
+#The emulation core also requires SDL2.
 #Run "make" to build, "make run" to run
-
-#-----------------------
-# Link Time Optimization
-#-----------------------
-#LTO is supported for clang and gcc (but only seems to help for clang?)
-#LTO gives a 25-30% performance boost, so use it whenever you can
-#Usage: LTO=true make
 
 MESENFLAGS=
 
@@ -39,7 +33,7 @@ else
 	CFLAGS += -m64
 endif
 
-ifeq ($(LTO),true)
+ifneq ($(LTO),false)
 	CFLAGS += -flto
 	CXXFLAGS += -flto
 endif
@@ -54,7 +48,7 @@ ifeq ($(PGO),optimize)
 	CXXFLAGS += ${PROFILE_USE_FLAG}
 endif
 
-ifeq ($(STATICLINK),true)
+ifneq ($(STATICLINK),false)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
@@ -99,7 +93,7 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/x64/Release/$(SHAREDLIB)
-	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" --no-self-contained true -p:PublishSingleFile=true
+	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
 	rm $(RELEASEFOLDER)/linux-x64/publish/lib*
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
