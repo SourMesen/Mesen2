@@ -496,6 +496,14 @@ namespace Mesen.Debugger.ViewModels
 				GetWorkspaceActionMenu(wnd),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
+					ActionType = ActionType.ResetLayout,
+					OnClick = () => {
+						DockLayout = DockFactory.GetDefaultLayout();
+						DockFactory.InitLayout(DockLayout);
+					}
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd.Close()
 				}

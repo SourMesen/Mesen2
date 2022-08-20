@@ -2969,6 +2969,7 @@
 			
 			<Value ID="SaveRomAs">Save ROM as...</Value>
 			<Value ID="SaveEditsAsIps">Save edits as IPS patch...</Value>
+			<Value ID="ResetLayout">Reset to default layout</Value>
 
 			<Value ID="ToggleBreakpoint">Toggle Breakpoint</Value>
 			<Value ID="EditSelectedCode">Edit Selected Code</Value>

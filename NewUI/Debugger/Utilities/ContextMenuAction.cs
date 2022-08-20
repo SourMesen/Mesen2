@@ -622,6 +622,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("CheatCode")]
 		SaveEditsAsIps,
 
+		[IconFile("Refresh")]
+		ResetLayout,
+
 		[IconFile("Breakpoint")]
 		ToggleBreakpoint,
 
