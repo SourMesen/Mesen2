@@ -69,6 +69,16 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
+			private void SetFontProperties(SKFont font)
+			{
+				font.Edging = _skiaEdging;
+				font.Subpixel = _skiaSubpixelSmoothing;
+
+				//Fixes layout issues (on Linux)
+				font.Hinting = SKFontHinting.Full;
+				font.LinearMetrics = true;
+			}
+
 			public Rect Bounds { get; private set; }
 
 			public void Dispose()
@@ -113,8 +123,7 @@ namespace Mesen.Debugger.Controls
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont font = new SKFont(typeface, _fontSize);
-				font.Edging = _skiaEdging;
-				font.Subpixel = _skiaSubpixelSmoothing;
+				SetFontProperties(font);
 
 				using var builder = new SKTextBlobBuilder();
 
@@ -155,8 +164,7 @@ namespace Mesen.Debugger.Controls
 			private void PrepareStringView()
 			{
 				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
-				altFont.Edging = _skiaEdging;
-				altFont.Subpixel = _skiaSubpixelSmoothing;
+				SetFontProperties(altFont);
 
 				int pos = 0;
 
@@ -223,12 +231,10 @@ namespace Mesen.Debugger.Controls
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont monoFont = new SKFont(typeface, _fontSize);
-				monoFont.Edging = _skiaEdging;
-				monoFont.Subpixel = _skiaSubpixelSmoothing;
+				SetFontProperties(monoFont);
 
 				SKFont altFont = new SKFont(SKFontManager.Default.MatchCharacter('あ'), _fontSize);
-				altFont.Edging = _skiaEdging;
-				altFont.Subpixel = _skiaSubpixelSmoothing;
+				SetFontProperties(altFont);
 
 				using var builder = new SKTextBlobBuilder();
 
@@ -466,6 +472,10 @@ namespace Mesen.Debugger.Controls
 					SKFont font = new SKFont(typeface, _fontSize);
 					font.Edging = _skiaEdging;
 					font.Subpixel = _skiaSubpixelSmoothing;
+
+					//Fixes layout issues (on Linux)
+					font.Hinting = SKFontHinting.Full;
+					font.LinearMetrics = true;
 
 					using var builder = new SKTextBlobBuilder();
 
