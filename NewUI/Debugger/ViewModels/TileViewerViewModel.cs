@@ -787,7 +787,7 @@ namespace Mesen.Debugger.ViewModels
 					SnesPpuState ppu = (SnesPpuState)state;
 					preset.Source = MemoryType.SnesVideoRam;
 					preset.ColumnCount = 16;
-					preset.RowCount = 16;
+					preset.RowCount = 64;
 					preset.Layout = TileLayout.Normal;
 					if(ppu.BgMode == 7) {
 						preset.Format = ppu.ExtBgEnabled ? TileFormat.Mode7ExtBg : (ppu.DirectColorMode ? TileFormat.Mode7DirectColor : TileFormat.Mode7);
