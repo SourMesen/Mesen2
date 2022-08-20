@@ -151,28 +151,7 @@ namespace Mesen.Config
 
 		public void UpdateFileAssociations()
 		{
-			FileAssociationHelper.UpdateFileAssociation("sfc", AssociateSnesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("smc", AssociateSnesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("swc", AssociateSnesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("fig", AssociateSnesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("bs", AssociateSnesRomFiles);
-
-			FileAssociationHelper.UpdateFileAssociation("spc", AssociateSnesMusicFiles);
-
-			FileAssociationHelper.UpdateFileAssociation("nes", AssociateNesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("fds", AssociateNesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("unf", AssociateNesRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("studybox", AssociateNesRomFiles);
-
-			FileAssociationHelper.UpdateFileAssociation("nsf", AssociateNesMusicFiles);
-			FileAssociationHelper.UpdateFileAssociation("nsfe", AssociateNesMusicFiles);
-
-			FileAssociationHelper.UpdateFileAssociation("gb", AssociateGbRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("gbc", AssociateGbRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("gbs", AssociateGbMusicFiles);
-			
-			FileAssociationHelper.UpdateFileAssociation("pce", AssociatePceRomFiles);
-			FileAssociationHelper.UpdateFileAssociation("sgx", AssociatePceRomFiles);
+			FileAssociationHelper.UpdateFileAssociations();
 		}
 
 		public void ApplyFontOptions()

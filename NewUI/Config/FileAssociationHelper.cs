@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
@@ -42,7 +44,7 @@ namespace Mesen.Config
 			return mimeType;
 		}
 
-		static public void ConfigureLinuxMimeTypes()
+		static public void UpdateLinuxFileAssociations()
 		{
 			PreferencesConfig cfg = ConfigManager.Config.Preferences;
 
@@ -58,20 +60,6 @@ namespace Mesen.Config
 			}
 			if(!Directory.Exists(desktopFolder)) {
 				Directory.CreateDirectory(desktopFolder);
-			}
-
-
-			//Use a GUID to get a unique filename and then delete old files to force a reset of file associations
-			//Otherwise they are sometimes not refreshed properly
-			string desktopFilename = "mesen." + Guid.NewGuid().ToString() + ".desktop";
-			string desktopFile = Path.Combine(desktopFolder, desktopFilename);
-
-			foreach(string file in Directory.GetFiles(desktopFolder, "mesen.*.desktop")) {
-				if(File.Exists(file)) {
-					try {
-						File.Delete(file);
-					} catch { }
-				}
 			}
 
 			List<string> mimeTypes = new List<string>();
@@ -98,22 +86,45 @@ namespace Mesen.Config
 			CreateMimeType("x-mesen-sgx", "sgx", "PC Engine SuperGrafx ROM", mimeTypes, cfg.AssociatePceRomFiles);
 
 			//Icon used for shortcuts
-			//TOOD
-			//Mesen.GUI.Properties.Resources.MesenIcon.Save(Path.Combine(iconFolder, "MesenSIcon.png"), ImageFormat.Png);
+			ImageUtilities.BitmapFromAsset("Assets/MesenIcon.png").Save(Path.Combine(iconFolder, "MesenIcon.png"));
 
-			CreateLinuxShortcutFile(desktopFile, mimeTypes);
+			string desktopFile = Path.Combine(desktopFolder, "mesen.desktop");
+			if(!File.Exists(desktopFile)) {
+				CreateLinuxShortcutFile(desktopFile, mimeTypes);
+			} else {
+				UpdateLinuxShortcutFileMimeTypes(desktopFile, mimeTypes);
+			}
 
 			//Update databases
 			try {
-				System.Diagnostics.Process.Start("update-mime-database", mimeFolder).WaitForExit();
-				System.Diagnostics.Process.Start("update-desktop-database", desktopFolder);
+				Process.Start("update-mime-database", mimeFolder).WaitForExit();
+				Process.Start("update-desktop-database", desktopFolder);
 			} catch {
 				try {
 					EmuApi.WriteLogEntry("An error occurred while updating file associations");
-				} catch {
-					//For some reason, Mono crashes when trying to call this if libMesenCore.dll was not already next to the .exe before the process starts?
-					//This causes a "MesenCore.dll not found" popup, so catch it here and ignore it.
+				} catch { }
+			}
+		}
+
+		private static void UpdateLinuxShortcutFileMimeTypes(string desktopFile, List<string> mimeTypes)
+		{
+			string? content = FileHelper.ReadAllText(desktopFile);
+
+			if(content != null) {
+				List<string> lines = new List<string>(content.Split(Environment.NewLine));
+				bool replaced = false;
+				for(int i = 0; i < lines.Count; i++) {
+					if(lines[i].Trim().StartsWith("MimeType=")) {
+						lines[i] = "MimeType=" + string.Join(";", mimeTypes.Select(type => "application/" + type));
+						replaced = true;
+					}
 				}
+
+				if(!replaced) {
+					lines.Add("MimeType=" + string.Join(";", mimeTypes.Select(type => "application/" + type)));
+				}
+
+				FileHelper.WriteAllText(desktopFile, string.Join(Environment.NewLine, lines), new UTF8Encoding(false));
 			}
 		}
 
@@ -130,20 +141,62 @@ namespace Mesen.Config
 				"Name=Mesen" + Environment.NewLine +
 				"Comment=Emulator" + Environment.NewLine +
 				"Keywords=game;emulator;emu" + Environment.NewLine +
-				"Categories=GNOME;GTK;Game;Emulator;" + Environment.NewLine;
+				"Categories=GNOME;GTK;Game;Emulator;" + Environment.NewLine +
+				"Exec=" + mainModule.FileName + " %f" + Environment.NewLine +
+				"NoDisplay=false" + Environment.NewLine +
+				"StartupNotify=true" + Environment.NewLine +
+				"Icon=MesenIcon" + Environment.NewLine;
+			
 			if(mimeTypes != null) {
 				content += "MimeType=" + string.Join(";", mimeTypes.Select(type => "application/" + type)) + Environment.NewLine;
 			}
-			content +=
-				"Exec=mono " + mainModule.FileName + " %f" + Environment.NewLine +
-				"NoDisplay=false" + Environment.NewLine +
-				"StartupNotify=true" + Environment.NewLine +
-				"Icon=MesenSIcon" + Environment.NewLine;
 
-			FileHelper.WriteAllText(filename, content);
+			FileHelper.WriteAllText(filename, content, new UTF8Encoding(false));
 		}
 
-		static public void UpdateFileAssociation(string extension, bool associate)
+		static public void UpdateFileAssociations()
+		{
+			try {
+				if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+					FileAssociationHelper.UpdateWindowsFileAssociations();
+				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+					FileAssociationHelper.UpdateLinuxFileAssociations();
+				}
+			} catch(Exception ex) {
+				Dispatcher.UIThread.Post(() => {
+					MesenMsgBox.ShowException(ex);
+				});
+			}
+		}
+
+		static public void UpdateWindowsFileAssociations()
+		{
+			PreferencesConfig cfg = ConfigManager.Config.Preferences;
+			FileAssociationHelper.UpdateFileAssociation("sfc", cfg.AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("smc", cfg.AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("swc", cfg.AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("fig", cfg.AssociateSnesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("bs", cfg.AssociateSnesRomFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("spc", cfg.AssociateSnesMusicFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("nes", cfg.AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("fds", cfg.AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("unf", cfg.AssociateNesRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("studybox", cfg.AssociateNesRomFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("nsf", cfg.AssociateNesMusicFiles);
+			FileAssociationHelper.UpdateFileAssociation("nsfe", cfg.AssociateNesMusicFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("gb", cfg.AssociateGbRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("gbc", cfg.AssociateGbRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("gbs", cfg.AssociateGbMusicFiles);
+
+			FileAssociationHelper.UpdateFileAssociation("pce", cfg.AssociatePceRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("sgx", cfg.AssociatePceRomFiles);
+		}
+
+		static private void UpdateFileAssociation(string extension, bool associate)
 		{
 			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return;
