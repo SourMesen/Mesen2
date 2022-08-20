@@ -23,7 +23,7 @@ namespace Mesen.Utilities
 
 		public void Init(string[] args)
 		{
-			_mutex = new Mutex(true, _identifier.ToString(), out _firstInstance);
+			_mutex = new Mutex(true, "Global\\" + _identifier.ToString(), out _firstInstance);
 
 			if(_firstInstance || !ConfigManager.Config.Preferences.SingleInstance) {
 				_firstInstance = true;
@@ -46,7 +46,9 @@ namespace Mesen.Utilities
 					}
 				}
 				return true;
-			} catch { }
+			} catch(Exception ex) {
+				Console.WriteLine("Error: " + ex.ToString());
+			}
 
 			return false;
 		}
@@ -62,8 +64,11 @@ namespace Mesen.Utilities
 					List<string> args = new List<string>();
 					while(server.IsConnected) {
 						string? arg = reader.ReadLine();
-						if(arg != null) {
+						if(!string.IsNullOrWhiteSpace(arg)) {
 							args.Add(arg);
+						} else {
+							server.Disconnect();
+							break;
 						}
 					}
 
@@ -71,8 +76,8 @@ namespace Mesen.Utilities
 						ArgumentsReceived?.Invoke(this, new ArgumentsReceivedEventArgs(args.ToArray()));
 					});
 				}
-			} catch(IOException) {
-				//Pipe was broken
+			} catch(Exception ex) {
+				Console.WriteLine("ListenForArguments error: " + ex.ToString());
 			} finally {
 				Thread.Sleep(10000);
 				Task.Run(() => ListenForArguments());
