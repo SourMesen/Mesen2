@@ -70,7 +70,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public TilemapViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
 		{
-			Config = ConfigManager.Config.Debug.TilemapViewer;
+			Config = ConfigManager.Config.Debug.TilemapViewer.Clone();
 			CpuType = cpuType;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
 			

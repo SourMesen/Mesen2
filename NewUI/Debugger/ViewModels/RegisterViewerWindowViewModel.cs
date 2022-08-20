@@ -39,7 +39,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public RegisterViewerWindowViewModel()
 		{
-			Config = ConfigManager.Config.Debug.RegisterViewer;
+			Config = ConfigManager.Config.Debug.RegisterViewer.Clone();
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, CpuType);
 
 			if(Design.IsDesignMode) {

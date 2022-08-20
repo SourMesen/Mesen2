@@ -63,6 +63,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
+			ConfigManager.Config.Debug.HexEditor = _model.Config;
 		}
 
 		protected override void OnOpened(EventArgs e)

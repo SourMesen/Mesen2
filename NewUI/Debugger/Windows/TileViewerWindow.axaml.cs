@@ -8,6 +8,7 @@ using Mesen.Interop;
 using System.ComponentModel;
 using Avalonia.Interactivity;
 using Mesen.Debugger.Utilities;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
@@ -63,6 +64,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
+			ConfigManager.Config.Debug.TileViewer = _model.Config;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)

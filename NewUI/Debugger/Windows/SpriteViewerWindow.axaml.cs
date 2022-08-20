@@ -9,6 +9,7 @@ using System.ComponentModel;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Mesen.Debugger.Utilities;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
@@ -60,6 +61,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
+			ConfigManager.Config.Debug.SpriteViewer = _model.Config;
 		}
 
 		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)

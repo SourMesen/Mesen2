@@ -69,7 +69,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public SpriteViewerViewModel(CpuType cpuType, PictureViewer picViewer, Grid spriteGrid, Control listView, Window? wnd)
 		{
-			Config = ConfigManager.Config.Debug.SpriteViewer;
+			Config = ConfigManager.Config.Debug.SpriteViewer.Clone();
 
 			ListView = AddDisposable(new SpriteViewerListViewModel(this));
 

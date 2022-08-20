@@ -50,7 +50,7 @@ namespace Mesen.Debugger.ViewModels
 			_editor = editor;
 
 			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel(this));
-			Config = ConfigManager.Config.Debug.HexEditor;
+			Config = ConfigManager.Config.Debug.HexEditor.Clone();
 			ScrollPosition = 0;
 
 			if(Design.IsDesignMode) {

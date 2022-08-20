@@ -46,7 +46,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public PaletteViewerViewModel(CpuType cpuType)
 		{
-			Config = ConfigManager.Config.Debug.PaletteViewer;
+			Config = ConfigManager.Config.Debug.PaletteViewer.Clone();
 			CpuType = cpuType;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
 

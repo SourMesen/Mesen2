@@ -9,6 +9,7 @@ using System.ComponentModel;
 using Avalonia.Interactivity;
 using Mesen.Debugger.Utilities;
 using Avalonia.Input;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
@@ -107,6 +108,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
+			ConfigManager.Config.Debug.PaletteViewer = _model.Config;
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)

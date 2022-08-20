@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
@@ -39,6 +40,7 @@ namespace Mesen.Debugger.Windows
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
+			ConfigManager.Config.Debug.RegisterViewer = _model.Config;
 		}
 
 		public void ProcessNotification(NotificationEventArgs e)
