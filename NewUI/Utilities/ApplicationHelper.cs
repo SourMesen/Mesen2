@@ -23,13 +23,22 @@ namespace Mesen.Utilities
 			throw new Exception("Window could not be found");
 		}
 
-		public static Window GetActiveWindow()
+		public static Window GetActiveOrMainWindow()
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				return desktop.Windows.Where(w => w.IsActive).FirstOrDefault() ?? GetMainWindow();
 			}
 
 			return GetMainWindow();
+		}
+
+		public static Window? GetActiveWindow()
+		{
+			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+				return desktop.Windows.Where(w => w.IsActive).FirstOrDefault();
+			}
+
+			return null;
 		}
 
 		public static T? GetExistingWindow<T>() where T : Window
