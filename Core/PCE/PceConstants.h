@@ -12,6 +12,9 @@ public:
 	static constexpr uint32_t MaxScreenWidth = PceConstants::ClockPerScanline / 2;
 	static constexpr uint32_t ScreenHeight = 242;
 
+	static constexpr uint32_t InternalOutputWidth = 1024;
+	static constexpr uint32_t InternalOutputHeight = ScreenHeight * 4;
+
 	static constexpr uint32_t GetLeftOverscan(uint8_t vceClockDivider)
 	{
 		switch(vceClockDivider) {
@@ -19,7 +22,7 @@ public:
 				return 240 / 2;
 
 			case 3:
-				return 192 / 3;
+				return 216 / 3;
 
 			default:
 			case 4:
@@ -31,7 +34,7 @@ public:
 	{
 		switch(vceClockDivider) {
 			case 2: return 64 * 8;
-			case 3: return 44 * 8;
+			case 3: return 43 * 8 - 3;
 
 			default:
 			case 4: return 32 * 8;

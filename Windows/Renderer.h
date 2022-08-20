@@ -79,7 +79,7 @@ private:
 	HRESULT CreateRenderTargetView();
 	void ReleaseRenderTargetView();
 	HRESULT CreateEmuTextureBuffers();
-	void ResetNesBuffers();
+	void ResetTextureBuffers();
 
 public:
 	Renderer(Emulator* emu, HWND hWnd);

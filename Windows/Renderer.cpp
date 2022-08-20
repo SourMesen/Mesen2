@@ -91,10 +91,10 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 				Reset();
 			} else {
 				if(fullscreenResizeMode) {
-					ResetNesBuffers();
+					ResetTextureBuffers();
 					CreateEmuTextureBuffers();
 				} else {
-					ResetNesBuffers();
+					ResetTextureBuffers();
 					ReleaseRenderTargetView();
 					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, 0);
 					CreateRenderTargetView();
@@ -118,7 +118,7 @@ void Renderer::Reset()
 
 void Renderer::CleanupDevice()
 {
-	ResetNesBuffers();
+	ResetTextureBuffers();
 	ReleaseRenderTargetView();
 	if(_pSwapChain) {
 		_pSwapChain->SetFullscreenState(false, nullptr);
@@ -151,7 +151,7 @@ void Renderer::CleanupDevice()
 	}
 }
 
-void Renderer::ResetNesBuffers()
+void Renderer::ResetTextureBuffers()
 {
 	if(_pTexture) {
 		_pTexture->Release();
