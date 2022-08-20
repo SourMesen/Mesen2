@@ -170,7 +170,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 					trk.StartPosition = DiscPosition::FromLba(idx.Position.ToLba() + totalPregapLbaLength + sectorsInPrevFiles);
 					startPos = idx.Position;
 				} else {
-					MessageManager::Log("[CUE] Unsupported index number: " + idx.Number);
+					MessageManager::Log("[CUE] Unsupported index number: " + std::to_string(idx.Number));
 					return false;
 				}
 			}

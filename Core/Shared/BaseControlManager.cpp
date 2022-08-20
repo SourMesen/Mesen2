@@ -74,7 +74,6 @@ shared_ptr<BaseControlDevice> BaseControlManager::GetControlDevice(uint8_t port,
 {
 	auto lock = _deviceLock.AcquireSafe();
 
-	auto result = std::find_if(_controlDevices.begin(), _controlDevices.end(), [port](const shared_ptr<BaseControlDevice> control) { return control->GetPort() == port; });
 	for(size_t i = 0; i < _controlDevices.size(); i++) {
 		if(_controlDevices[i] && _controlDevices[i]->GetPort() == port) {
 			shared_ptr<IControllerHub> hub = std::dynamic_pointer_cast<IControllerHub>(_controlDevices[i]);

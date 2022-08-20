@@ -11,13 +11,9 @@ Serializer::Serializer(uint32_t version, bool forSave, SerializeFormat format)
 	_format = format;
 	if(forSave) {
 		switch(format) {
-			case SerializeFormat::Binary:
-				_data.reserve(0x50000);
-				break;
-
-			case SerializeFormat::Map:
-				_mapValues.reserve(500);
-				break;
+			case SerializeFormat::Binary: _data.reserve(0x50000); break;
+			case SerializeFormat::Map: _mapValues.reserve(500); break;
+			case SerializeFormat::Text: _values.reserve(500); break;
 		}
 	}
 }
