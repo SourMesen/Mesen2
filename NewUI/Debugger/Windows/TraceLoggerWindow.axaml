@@ -107,6 +107,8 @@
 					<dc:DisassemblyViewer
 						Name="disViewer"
 						Lines="{CompiledBinding TraceLogLines}"
+						FontFamily="{DynamicResource MesenDisassemblyFont}"
+						FontSize="{DynamicResource MesenDisassemblyFontSize}"
 						StyleProvider="{CompiledBinding StyleProvider}"
 						SearchString="{CompiledBinding QuickSearch.SearchString}"
 					/>
