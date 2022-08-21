@@ -81,6 +81,7 @@ namespace Mesen
 				foreach(ZipArchiveEntry entry in zip.Entries) {
 					try {
 						string path = Path.Combine(dest, entry.Name);
+						entry.ExternalAttributes = 0;
 						if(File.Exists(path)) {
 							FileInfo fileInfo = new(path);
 							if(fileInfo.LastWriteTime != entry.LastWriteTime || fileInfo.Length != entry.Length) {
