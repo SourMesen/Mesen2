@@ -29,7 +29,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public MemoryToolsDisplayOptionsViewModel(MemoryToolsViewModel memoryTools)
 		{
-			Config = ConfigManager.Config.Debug.HexEditor;
+			Config = memoryTools.Config;
 			MemoryTools = memoryTools;
 
 			if(Design.IsDesignMode) {

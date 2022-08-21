@@ -46,11 +46,12 @@ namespace Mesen.Debugger.ViewModels
 
 		public MemoryToolsViewModel(HexEditor editor)
 		{
+			Config = ConfigManager.Config.Debug.HexEditor.Clone();
+
 			Search = new(this);
 			_editor = editor;
 
 			Options = AddDisposable(new MemoryToolsDisplayOptionsViewModel(this));
-			Config = ConfigManager.Config.Debug.HexEditor.Clone();
 			ScrollPosition = 0;
 
 			if(Design.IsDesignMode) {
