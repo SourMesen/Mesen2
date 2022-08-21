@@ -20,7 +20,6 @@
 							<Style Selector="NumericUpDown.picker">
 								<Setter Property="ClipValueToMinMax" Value="True"/>
 								<Setter Property="Width" Value="90"/>
-								<Setter Property="CultureInfo" Value="en-US"/>
 							</Style>
 							<Style Selector="TextBlock">
 								<Setter Property="Margin" Value="0 0 2 0"/>

@@ -58,13 +58,13 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0023173-beta" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.999-cibuild0023173-beta" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0023173-beta" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0023173-beta" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="0.10.999-cibuild0023173-beta" />
+    <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview1" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
    </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
