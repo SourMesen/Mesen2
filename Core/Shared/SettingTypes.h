@@ -607,6 +607,7 @@ struct DebugConfig
 
 	bool PceBreakOnBrk = false;
 	bool PceBreakOnUnofficialOpCode = false;
+	bool PceBreakOnInvalidVramAddress = false;
 
 	bool ScriptAllowIoOsAccess = false;
 	bool ScriptAllowNetworkAccess = false;

@@ -13,5 +13,6 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool BreakOnBrk { get; set; } = false;
 		[Reactive] public bool BreakOnUnofficialOpCode { get; set; } = false;
+		[Reactive] public bool BreakOnInvalidVramAddress { get; set; } = false;		
 	}
 }

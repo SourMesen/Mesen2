@@ -1205,30 +1205,32 @@ namespace Mesen.Interop
 	{
 		Unspecified = -1,
 		Breakpoint = 0,
-		CpuStep = 1,
-		PpuStep = 2,
-		BreakOnBrk = 3,
-		BreakOnCop = 4,
-		BreakOnWdm = 5,
-		BreakOnStp = 6,
-		BreakOnUninitMemoryRead = 7,
-		
-		GbInvalidOamAccess = 8,
-		GbInvalidVramAccess = 9,
-		GbDisableLcdOutsideVblank = 10,
-		GbInvalidOpCode = 11,
-		GbNopLoad = 12,
-		GbOamCorruption = 13,
+		CpuStep,
+		PpuStep,
+		BreakOnBrk,
+		BreakOnCop,
+		BreakOnWdm,
+		BreakOnStp,
+		BreakOnUninitMemoryRead,
 
-		Irq = 15,
-		Nmi = 16,
+		Irq,
+		Nmi,
 
-		NesBreakOnDecayedOamRead = 100,
-		NesBreakOnPpu2000ScrollGlitch = 101,
-		NesBreakOnPpu2006ScrollGlitch = 102,
-		BreakOnUnofficialOpCode = 103,
-		NesBusConflict = 104,
-		NesBreakOnCpuCrash = 105,
+		GbInvalidOamAccess,
+		GbInvalidVramAccess,
+		GbDisableLcdOutsideVblank,
+		GbInvalidOpCode,
+		GbNopLoad,
+		GbOamCorruption,
+
+		NesBreakOnDecayedOamRead,
+		NesBreakOnPpu2000ScrollGlitch,
+		NesBreakOnPpu2006ScrollGlitch,
+		BreakOnUnofficialOpCode,
+		NesBusConflict,
+		NesBreakOnCpuCrash,
+
+		PceBreakOnInvalidVramAddress
 	}
 
 	public struct BreakEvent

@@ -290,30 +290,32 @@ enum class BreakSource
 {
 	Unspecified = -1,
 	Breakpoint = 0,
-	CpuStep = 1,
-	PpuStep = 2,
-	BreakOnBrk = 3,
-	BreakOnCop = 4,
-	BreakOnWdm = 5,
-	BreakOnStp = 6,
-	BreakOnUninitMemoryRead = 7,
+	CpuStep,
+	PpuStep,
+	BreakOnBrk,
+	BreakOnCop,
+	BreakOnWdm,
+	BreakOnStp,
+	BreakOnUninitMemoryRead,
+
+	Irq,
+	Nmi,
 	
-	GbInvalidOamAccess = 8,
-	GbInvalidVramAccess = 9,
-	GbDisableLcdOutsideVblank = 10,
-	GbInvalidOpCode = 11,
-	GbNopLoad = 12,
-	GbOamCorruption = 13,
+	GbInvalidOamAccess,
+	GbInvalidVramAccess,
+	GbDisableLcdOutsideVblank,
+	GbInvalidOpCode,
+	GbNopLoad,
+	GbOamCorruption,
 
-	Irq = 15,
-	Nmi = 16,
+	NesBreakOnDecayedOamRead,
+	NesBreakOnPpu2000ScrollGlitch,
+	NesBreakOnPpu2006ScrollGlitch,
+	BreakOnUnofficialOpCode,
+	NesBusConflict,
+	NesBreakOnCpuCrash,
 
-	NesBreakOnDecayedOamRead = 100,
-	NesBreakOnPpu2000ScrollGlitch = 101,
-	NesBreakOnPpu2006ScrollGlitch = 102,
-	BreakOnUnofficialOpCode = 103,
-	NesBusConflict = 104,
-	NesBreakOnCpuCrash = 105,
+	PceBreakOnInvalidVramAddress
 };
 
 struct BreakEvent

@@ -79,6 +79,7 @@ namespace Mesen.Config
 
 				PceBreakOnBrk = Debugger.Pce.BreakOnBrk,
 				PceBreakOnUnofficialOpCode = Debugger.Pce.BreakOnUnofficialOpCode,
+				PceBreakOnInvalidVramAddress = Debugger.Pce.BreakOnInvalidVramAddress,
 
 				ScriptAllowIoOsAccess = ScriptWindow.AllowIoOsAccess,
 				ScriptAllowNetworkAccess = ScriptWindow.AllowNetworkAccess,
@@ -130,6 +131,7 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnBrk;
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnUnofficialOpCode;
+		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnInvalidVramAddress;		
 
 		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowIoOsAccess;
 		[MarshalAs(UnmanagedType.I1)] public bool ScriptAllowNetworkAccess;

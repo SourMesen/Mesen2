@@ -150,6 +150,10 @@
 					IsChecked="{CompiledBinding Config.Pce.BreakOnUnofficialOpCode}"
 					Content="{l:Translate chkBreakOnUnofficialOpCode}"
 				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Pce.BreakOnInvalidVramAddress}"
+					Content="{l:Translate chkPceBreakOnInvalidVramAddress}"
+				/>
 			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox

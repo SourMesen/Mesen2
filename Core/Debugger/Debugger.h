@@ -128,7 +128,7 @@ public:
 	void ResetSuspendCounter();
 	void SuspendDebugger(bool release);
 
-	void BreakImmediately(CpuType sourceCpu, BreakSource source);
+	__noinline void BreakImmediately(CpuType sourceCpu, BreakSource source);
 
 	void ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);
 	void ProcessBreakConditions(CpuType sourceCpu, StepRequest& step, BreakpointManager* bpManager, MemoryOperationInfo& operation, AddressInfo& addressInfo);

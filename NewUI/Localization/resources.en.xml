@@ -1067,6 +1067,8 @@
 			<Control ID="chkGbBreakOnNopLoad">Break on LD B,B (nop)</Control>
 			<Control ID="chkGbBreakOnOamCorruption">Break on OAM corruption</Control>
 
+			<Control ID="chkPceBreakOnInvalidVramAddress">Break on invalid VRAM address</Control>
+
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
 			<Control ID="chkRefreshWhileRunning">Refresh while running</Control>
@@ -2445,6 +2447,8 @@
 			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
 			<Value ID="NesBusConflict">Bus conflict</Value>
 			<Value ID="NesBreakOnCpuCrash">CPU crashed</Value>
+			
+			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>

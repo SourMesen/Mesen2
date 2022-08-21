@@ -472,9 +472,14 @@ void PceVdc::LoadTileDataCg1(uint16_t row)
 
 uint16_t PceVdc::ReadVram(uint16_t addr)
 {
-	//Camp California expects an empty sprite if tile index is out of bounds (>= $200) - this is probably caused by open bus behavior
+	if(addr < 0x8000) {
+		return _vramOpenBus = _vram[addr];
+	}
+
+	//Camp California expects an empty sprite if tile index is out of bounds (>= $200) - this is probably caused by open bus behavior?
 	//Return last word of the previously loaded VRAM data
-	return addr >= 0x8000 ? _vramOpenBus : _vramOpenBus = _vram[addr];
+	_emu->BreakIfDebugging(CpuType::Pce, BreakSource::PceBreakOnInvalidVramAddress);
+	return _vramOpenBus;
 }
 
 void PceVdc::LoadSpriteTiles()
