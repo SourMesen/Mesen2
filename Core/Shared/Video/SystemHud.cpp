@@ -135,19 +135,21 @@ void SystemHud::DrawCounters()
 	int lineNumber = 0;
 	PreferencesConfig cfg = _emu->GetSettings()->GetPreferences();
 
-	if(cfg.ShowFps) {
-		ShowFpsCounter(lineNumber++);
+	if(_emu->IsRunning()) {
+		if(cfg.ShowFps) {
+			ShowFpsCounter(lineNumber++);
+		}
+		if(cfg.ShowGameTimer) {
+			ShowGameTimer(lineNumber++);
+		}
+		if(cfg.ShowFrameCounter) {
+			ShowFrameCounter(lineNumber++);
+		}
+		if(cfg.ShowLagCounter) {
+			ShowLagCounter(lineNumber++);
+		}
+		_renderedFrameCount++;
 	}
-	if(cfg.ShowGameTimer) {
-		ShowGameTimer(lineNumber++);
-	}
-	if(cfg.ShowFrameCounter) {
-		ShowFrameCounter(lineNumber++);
-	}
-	if(cfg.ShowLagCounter) {
-		ShowLagCounter(lineNumber++);
-	}
-	_renderedFrameCount++;
 }
 
 void SystemHud::DisplayMessage(string title, string message)

@@ -289,7 +289,6 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 
 	_movieManager->Stop();
 	_videoDecoder->StopThread();
-	_videoRenderer->StopThread();
 	_rewindManager.reset();
 
 	if(_console) {
