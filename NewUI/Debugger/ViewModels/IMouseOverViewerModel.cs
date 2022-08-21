@@ -34,10 +34,6 @@ namespace Mesen.Debugger.ViewModels
 		private void PicViewer_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				if(_wnd.IsActive) {
-					viewer.Focus();
-				}
-
 				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
 				if(point == _model.ViewerMousePos) {
 					return;

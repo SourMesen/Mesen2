@@ -330,7 +330,7 @@ namespace Mesen.Debugger.ViewModels
 
 					preview.DataContext = SpritePreviews[i];
 					preview.PointerPressed += SpritePreview_PointerPressed;
-					preview.PointerEntered += SpritePreview_PointerEntered;
+					preview.PointerMoved += SpritePreview_PointerMoved;
 					preview.PointerExited += SpritePreview_PointerExited;
 					_spriteGrid.Children.Add(preview);
 				}
@@ -347,13 +347,15 @@ namespace Mesen.Debugger.ViewModels
 			PreviewPanelSprite = null;
 		}
 
-		private void SpritePreview_PointerEntered(object? sender, PointerEventArgs e)
+		private void SpritePreview_PointerMoved(object? sender, PointerEventArgs e)
 		{
 			if(sender is Control ctrl && ctrl.DataContext is SpritePreviewModel sprite) {
 				PreviewPanelTooltip = GetPreviewPanel(sprite, PreviewPanelTooltip);
 				PreviewPanelSprite = sprite;
 
 				ToolTip.SetTip(ctrl, PreviewPanelTooltip);
+				//Force tooltip to update its position
+				ToolTip.SetHorizontalOffset(ctrl, 14);
 				ToolTip.SetHorizontalOffset(ctrl, 15);
 				ToolTip.SetIsOpen(ctrl, true);
 			}
