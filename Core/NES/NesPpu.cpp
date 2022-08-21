@@ -471,6 +471,7 @@ template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr
 	if(_cycle == 257 && _console->GetNesConfig().EnablePpu2000ScrollGlitch && _scanline < 240 && IsRenderingEnabled()) {
 		//Use open bus to set some parts of V (glitch that occurs when writing to $2000/$2005/$2006 on cycle 257)
 		_videoRamAddr = (_videoRamAddr & ~mask) | (value & mask);
+		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2000ScrollGlitch);
 	}
 }
 
@@ -1017,10 +1018,8 @@ template<class T> uint8_t NesPpu<T>::ReadSpriteRam(uint8_t addr)
 			return _spriteRam[addr];
 		} else {
 			if(_mask.SpritesEnabled) {
-				if(_settings->GetDebugConfig().NesBreakOnDecayedOamRead) {
-					//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
-					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnDecayedOamRead);
-				}
+				//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
+				_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnDecayedOamRead);
 			}
 			//If this 8-byte row hasn't been read/written to in over 3000 cpu cycles (~1.7ms), return 0x10 to simulate decay
 			return 0x10;
@@ -1322,14 +1321,10 @@ template<class T> void NesPpu<T>::UpdateState()
 				//When a $2006 address update lands on the Y or X increment, the written value is bugged and is ANDed with the incremented value
 				if(_cycle == 257) {
 					_videoRamAddr &= _updateVramAddr;
-					if(_settings->GetDebugConfig().NesBreakOnPpu2006ScrollGlitch) {
-						_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
-					}
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
 				} else if(_cycle > 0 && (_cycle & 0x07) == 0 && (_cycle <= 256 || _cycle > 320)) {
 					_videoRamAddr = (_updateVramAddr & ~0x41F) | (_videoRamAddr & _updateVramAddr & 0x41F);
-					if(_settings->GetDebugConfig().NesBreakOnPpu2006ScrollGlitch) {
-						_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
-					}
+					_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnPpu2006ScrollGlitch);
 				} else {
 					_videoRamAddr = _updateVramAddr;
 				}

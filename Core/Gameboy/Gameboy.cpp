@@ -533,8 +533,7 @@ uint64_t Gameboy::GetMasterClock()
 
 uint32_t Gameboy::GetMasterClockRate()
 {
-	//TODO GBC
-	return 4194304;
+	return _memoryManager->IsHighSpeed() ? 4194304*2 : 4194304;
 }
 
 BaseVideoFilter* Gameboy::GetVideoFilter()

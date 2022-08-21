@@ -133,6 +133,10 @@
 					Content="{l:Translate chkBreakOnDecayedOamRead}"
 				/>
 				<CheckBox
+					IsChecked="{CompiledBinding Config.Nes.BreakOnPpu2000ScrollGlitch}"
+					Content="{l:Translate chkBreakOnPpu2000ScrollGlitch}"
+				/>
+				<CheckBox
 					IsChecked="{CompiledBinding Config.Nes.BreakOnPpu2006ScrollGlitch}"
 					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
 				/>

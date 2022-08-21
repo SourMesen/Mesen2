@@ -543,21 +543,43 @@ void Debugger::SuspendDebugger(bool release)
 	}
 }
 
+bool Debugger::IsDebugWindowOpened(CpuType cpuType)
+{
+	switch(cpuType) {
+		case CpuType::Snes: return _settings->CheckDebuggerFlag(DebuggerFlags::SnesDebuggerEnabled);
+		case CpuType::Spc: return _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
+		case CpuType::NecDsp: return _settings->CheckDebuggerFlag(DebuggerFlags::NecDspDebuggerEnabled);
+		case CpuType::Sa1: return _settings->CheckDebuggerFlag(DebuggerFlags::Sa1DebuggerEnabled);
+		case CpuType::Gsu: return _settings->CheckDebuggerFlag(DebuggerFlags::GsuDebuggerEnabled);
+		case CpuType::Cx4: return _settings->CheckDebuggerFlag(DebuggerFlags::Cx4DebuggerEnabled);
+		case CpuType::Gameboy: return _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
+		case CpuType::Nes: return _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
+		case CpuType::Pce: return _settings->CheckDebuggerFlag(DebuggerFlags::PceDebuggerEnabled);
+	}
+
+	return false;
+}
+
+bool Debugger::IsBreakOptionEnabled(BreakSource src)
+{
+	switch(src) {
+		case BreakSource::GbDisableLcdOutsideVblank: return _settings->GetDebugConfig().GbBreakOnDisableLcdOutsideVblank;
+		case BreakSource::GbInvalidVramAccess: return _settings->GetDebugConfig().GbBreakOnInvalidVramAccess;
+		case BreakSource::GbInvalidOamAccess: return _settings->GetDebugConfig().GbBreakOnInvalidOamAccess;
+		case BreakSource::NesBreakOnDecayedOamRead: return _settings->GetDebugConfig().NesBreakOnDecayedOamRead;
+		case BreakSource::NesBreakOnPpu2000ScrollGlitch: return _settings->GetDebugConfig().NesBreakOnPpu2000ScrollGlitch;
+		case BreakSource::NesBreakOnPpu2006ScrollGlitch: return _settings->GetDebugConfig().NesBreakOnPpu2006ScrollGlitch;
+		case BreakSource::NesBusConflict: return _settings->GetDebugConfig().NesBreakOnBusConflict;
+		case BreakSource::NesBreakOnCpuCrash: return _settings->GetDebugConfig().NesBreakOnCpuCrash;
+	}
+	return false;
+}
+
 void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 {
-	//TODO
-	bool gbDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled);
-	bool nesDebugger = _settings->CheckDebuggerFlag(DebuggerFlags::NesDebuggerEnabled);
-	if(source == BreakSource::GbDisableLcdOutsideVblank && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnDisableLcdOutsideVblank)) {
-		return;
-	} else if(source == BreakSource::GbInvalidVramAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidVramAccess)) {
-		return;
-	} else if(source == BreakSource::GbInvalidOamAccess && (!gbDebugger || !_settings->GetDebugConfig().GbBreakOnInvalidOamAccess)) {
-		return;
-	} else if(source == BreakSource::NesBusConflict && (!nesDebugger || !_settings->GetDebugConfig().NesBreakOnBusConflict)) {
-		return;
+	if(IsDebugWindowOpened(sourceCpu) && IsBreakOptionEnabled(source)) {
+		SleepUntilResume(sourceCpu, source);
 	}
-	SleepUntilResume(sourceCpu, source);
 }
 
 void Debugger::GetCpuState(BaseState &dstState, CpuType cpuType)

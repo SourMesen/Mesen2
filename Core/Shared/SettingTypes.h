@@ -602,6 +602,7 @@ struct DebugConfig
 	bool NesBreakOnCpuCrash = false;
 	bool NesBreakOnBusConflict = false;
 	bool NesBreakOnDecayedOamRead = false;
+	bool NesBreakOnPpu2000ScrollGlitch = false;
 	bool NesBreakOnPpu2006ScrollGlitch = false;
 
 	bool PceBreakOnBrk = false;

@@ -1057,6 +1057,7 @@
 			<Control ID="chkBreakOnCpuCrash">CPU crash</Control>
 			<Control ID="chkBreakOnBusConflict">Bus conflict</Control>
 			<Control ID="chkBreakOnDecayedOamRead">Decayed OAM read</Control>
+			<Control ID="chkBreakOnPpu2000ScrollGlitch">PPU $2000/5/6 scroll glitch</Control>
 			<Control ID="chkBreakOnPpu2006ScrollGlitch">PPU $2006 scroll glitch</Control>
 
 			<Control ID="chkGbBreakOnInvalidOamAccess">Break on invalid OAM access</Control>
@@ -2435,14 +2436,15 @@
 			<Value ID="GbNopLoad">LD B,B (NOP)</Value>
 			<Value ID="GbOamCorruption">OAM corruption bug triggered</Value>
 
-			<Value ID="BreakOnCpuCrash">CPU crashed</Value>
 			<Value ID="Irq">IRQ</Value>
 			<Value ID="Nmi">NMI</Value>
 			
 			<Value ID="NesBreakOnDecayedOamRead">Decayed OAM read</Value>
+			<Value ID="NesBreakOnPpu2000ScrollGlitch">$2000/5/6 scroll glitch</Value>
 			<Value ID="NesBreakOnPpu2006ScrollGlitch">$2006 scroll glitch</Value>
 			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
 			<Value ID="NesBusConflict">Bus conflict</Value>
+			<Value ID="NesBreakOnCpuCrash">CPU crashed</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>

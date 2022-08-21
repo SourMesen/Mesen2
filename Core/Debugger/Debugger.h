@@ -91,6 +91,9 @@ private:
 	template<CpuType type> uint64_t GetCpuCycleCount();
 	template<CpuType type, typename T> void ProcessScripts(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type, typename T> void ProcessScripts(uint32_t addr, T& value, MemoryType memType, MemoryOperationType opType);
+	
+	bool IsDebugWindowOpened(CpuType cpuType);
+	bool IsBreakOptionEnabled(BreakSource src);
 
 public:
 	Debugger(Emulator* emu, IConsole* console);

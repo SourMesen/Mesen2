@@ -305,14 +305,15 @@ enum class BreakSource
 	GbNopLoad = 12,
 	GbOamCorruption = 13,
 
-	BreakOnCpuCrash = 14,
 	Irq = 15,
 	Nmi = 16,
 
 	NesBreakOnDecayedOamRead = 100,
-	NesBreakOnPpu2006ScrollGlitch = 101,
-	BreakOnUnofficialOpCode = 102,
-	NesBusConflict = 103,
+	NesBreakOnPpu2000ScrollGlitch = 101,
+	NesBreakOnPpu2006ScrollGlitch = 102,
+	BreakOnUnofficialOpCode = 103,
+	NesBusConflict = 104,
+	NesBreakOnCpuCrash = 105,
 };
 
 struct BreakEvent

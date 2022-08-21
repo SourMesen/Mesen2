@@ -286,19 +286,14 @@ uint16_t NesCpu::FetchOperand()
 		_lastCrashWarning = _state.CycleCount;
 	}
 
-	if(_console->GetNesConfig().BreakOnCrash) {
-		//When "Break on Crash" is enabled, open the debugger and break immediately if a crash occurs
-		_emu->InitDebugger();
-		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::BreakOnCpuCrash);
+	_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnCpuCrash);
+	
+	if(!_emu->IsDebugging() && _console->GetRomFormat() == RomFormat::Nsf) {
+		//For NSF files, reset cpu if it ever crashes
+		_emu->Reset();
 	}
 	
-	if(_console->GetRomFormat() == RomFormat::Nsf) {
-		//Don't stop emulation on CPU crash when playing NSFs, reset cpu instead
-		_emu->Reset();
-		return 0;
-	} else {
-		return 0;
-	}
+	return 0;
 #else 
 	return 0;
 #endif

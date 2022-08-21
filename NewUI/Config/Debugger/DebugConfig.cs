@@ -74,6 +74,7 @@ namespace Mesen.Config
 				NesBreakOnCpuCrash = Debugger.Nes.BreakOnCpuCrash,
 				NesBreakOnBusConflict = Debugger.Nes.BreakOnBusConflict,
 				NesBreakOnDecayedOamRead = Debugger.Nes.BreakOnDecayedOamRead,
+				NesBreakOnPpu2000ScrollGlitch = Debugger.Nes.BreakOnPpu2000ScrollGlitch,
 				NesBreakOnPpu2006ScrollGlitch = Debugger.Nes.BreakOnPpu2006ScrollGlitch,
 
 				PceBreakOnBrk = Debugger.Pce.BreakOnBrk,
@@ -124,6 +125,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnCpuCrash;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnBusConflict;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnDecayedOamRead;
+		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnPpu2000ScrollGlitch;
 		[MarshalAs(UnmanagedType.I1)] public bool NesBreakOnPpu2006ScrollGlitch;
 
 		[MarshalAs(UnmanagedType.I1)] public bool PceBreakOnBrk;
