@@ -170,7 +170,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->Log(state, disInfo, operation);
 		}
 
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetState().CycleCount);
 		if(_step->ProcessCpuCycle()) {
 			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::CpuStep, &operation);
 		}
@@ -183,7 +183,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetState().CycleCount);
+		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetState().CycleCount);
 		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
@@ -195,7 +195,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 			_traceLogger->LogNonExec(operation);
 		}
 
-		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetState().CycleCount);
+		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetState().CycleCount);
 		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
@@ -229,7 +229,7 @@ void PceDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 		_traceLogger->LogNonExec(operation);
 	}
 
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetState().CycleCount);
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetState().CycleCount);
 	_step->ProcessCpuCycle();
 	_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
