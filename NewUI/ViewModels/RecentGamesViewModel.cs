@@ -103,5 +103,30 @@ namespace Mesen.ViewModels
 		public string FileName { get; set; } = "";
 		public string Name { get; set; } = "";
 		public bool SaveMode { get; set; } = false;
+
+		public bool IsEnabled()
+		{
+			return SaveMode || File.Exists(FileName);
+		}
+
+		public void Load()
+		{
+			if(Path.GetExtension(FileName) == "." + FileDialogHelper.MesenSaveStateExt) {
+				Task.Run(() => {
+					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+					if(SaveMode) {
+						EmuApi.SaveStateFile(FileName);
+					} else {
+						EmuApi.LoadStateFile(FileName);
+					}
+					EmuApi.Resume();
+				});
+			} else {
+				Task.Run(() => {
+					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+					EmuApi.LoadRecentGame(FileName, false);
+				});
+			}
+		}
 	}
 }

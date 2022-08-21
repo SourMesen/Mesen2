@@ -24,6 +24,7 @@ namespace Mesen.Controls
 		public static readonly StyledProperty<string> TitleProperty = AvaloniaProperty.Register<StateGridEntry, string>(nameof(Title));
 		public static readonly StyledProperty<string> SubTitleProperty = AvaloniaProperty.Register<StateGridEntry, string>(nameof(SubTitle));
 		public static readonly StyledProperty<bool> EnabledProperty = AvaloniaProperty.Register<StateGridEntry, bool>(nameof(Enabled));
+		public static readonly StyledProperty<bool> IsActiveEntryProperty = AvaloniaProperty.Register<StateGridEntry, bool>(nameof(IsActiveEntry));
 
 		public RecentGameInfo Entry
 		{
@@ -41,6 +42,12 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(EnabledProperty); }
 			set { SetValue(EnabledProperty, value); }
+		}
+
+		public bool IsActiveEntry
+		{
+			get { return GetValue(IsActiveEntryProperty); }
+			set { SetValue(IsActiveEntryProperty, value); }
 		}
 
 		public string Title
@@ -83,23 +90,7 @@ namespace Mesen.Controls
 				return;
 			}
 
-			RecentGameInfo game = Entry;
-			if(Path.GetExtension(game.FileName) == ".mss") {
-				Task.Run(() => {
-					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
-					if(game.SaveMode) {
-						EmuApi.SaveStateFile(game.FileName);
-					} else {
-						EmuApi.LoadStateFile(game.FileName);
-					}
-					EmuApi.Resume();
-				});
-			} else {
-				Task.Run(() => {
-					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
-					EmuApi.LoadRecentGame(game.FileName, false);
-				});
-			}
+			Entry.Load();
 		}
 
 		public void Init()

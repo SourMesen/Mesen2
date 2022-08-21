@@ -11,6 +11,7 @@
 >
 	<UserControl.Resources>
 		<Color x:Key="ButtonBorderBrushDisabled">Gray</Color>
+		<Color x:Key="ButtonBorderBrushPointerOver">#00C0FF</Color>
 	</UserControl.Resources>
 	<UserControl.Styles>
 		<Style Selector="TextBlock">
@@ -19,35 +20,41 @@
 		<Style Selector="TextBlock:disabled">
 			<Setter Property="Foreground" Value="Gray" />
 		</Style>
+		<Style Selector="Button">
+			<Setter Property="BorderBrush" Value="SlateGray" />
+		</Style>
+		<Style Selector="Button.activeEntry">
+			<Setter Property="BorderBrush" Value="#0078D7" />
+		</Style>
 	</UserControl.Styles>
 	
-	<DockPanel Margin="2 2 2 7" DataContext="{Binding ElementName=root}">
+	<DockPanel Margin="2 2 2 7">
 		<TextBlock
 			DockPanel.Dock="Bottom"
-			Text="{Binding SubTitle}"
+			Text="{CompiledBinding SubTitle, ElementName=root}"
 			TextAlignment="Center"
 			TextWrapping="Wrap"
-			IsEnabled="{Binding Enabled}"
+			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
 		/>
 		<TextBlock
 			DockPanel.Dock="Bottom"
-			Text="{Binding Title}"
+			Text="{CompiledBinding Title, ElementName=root}"
 			TextAlignment="Center"
 			TextWrapping="Wrap"
-			IsEnabled="{Binding Enabled}"
+			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
 		/>
 		<Button
-			BorderBrush="SlateGray"
+			Classes.activeEntry="{CompiledBinding IsActiveEntry, ElementName=root}"
 			BorderThickness="2"
 			Height="NaN"
 			Background="Transparent"
 			Click="OnImageClick"
-			IsEnabled="{Binding Enabled}"
+			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Stretch"
 			Padding="0"
 		>
-			<Image Source="{Binding Image}" Stretch="Uniform" StretchDirection="Both" VerticalAlignment="Center" />
+			<Image Source="{CompiledBinding Image, ElementName=root}" Stretch="Uniform" StretchDirection="Both" VerticalAlignment="Center" />
 		</Button>
 	</DockPanel>
 </UserControl>

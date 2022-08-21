@@ -10,6 +10,7 @@
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
+  Background="Transparent"
 	Name="root"
 	x:Class="Mesen.Controls.StateGrid"
 >
