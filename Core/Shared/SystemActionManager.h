@@ -31,14 +31,23 @@ public:
 	{
 	}
 
+	void ResetState()
+	{
+		//Only reset these flags once the reset/power cycle is done
+		//Called by emu class after reloading/resetting the game
+		//This is needed to avoid a reset/power cycle command from
+		//being queue while a reset/power cycle is in progress (which can
+		//break things when the debugger is opened, etc.)
+		_needPowerCycle = false;
+		_needReset = false;
+	}
+
 	void OnAfterSetState() override
 	{
 		if(_needReset) {
-			_needReset = false;
 			SetBit(SystemActionManager::Buttons::ResetButton);
 		}
 		if(_needPowerCycle) {
-			_needPowerCycle = false;
 			SetBit(SystemActionManager::Buttons::PowerButton);
 		}
 	}

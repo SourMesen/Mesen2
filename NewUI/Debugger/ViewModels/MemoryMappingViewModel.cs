@@ -36,15 +36,17 @@ namespace Mesen.Debugger.ViewModels
 
 		public void Refresh()
 		{
-			if(_cpuType == CpuType.Nes) {
-				NesCartridgeState state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes).Cartridge;
-				CpuMappings = UpdateMappings(CpuMappings, GetNesCpuMappings(state));
-				PpuMappings = UpdateMappings(PpuMappings, GetNesPpuMappings(state));
-			} else if(_cpuType == CpuType.Gameboy) {
-				CpuMappings = UpdateMappings(CpuMappings, GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy)));
-			} else if(_cpuType == CpuType.Pce) {
-				CpuMappings = UpdateMappings(CpuMappings, GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager));
-			}
+			try {
+				if(_cpuType == CpuType.Nes) {
+					NesCartridgeState state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes).Cartridge;
+					CpuMappings = UpdateMappings(CpuMappings, GetNesCpuMappings(state));
+					PpuMappings = UpdateMappings(PpuMappings, GetNesPpuMappings(state));
+				} else if(_cpuType == CpuType.Gameboy) {
+					CpuMappings = UpdateMappings(CpuMappings, GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy)));
+				} else if(_cpuType == CpuType.Pce) {
+					CpuMappings = UpdateMappings(CpuMappings, GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager));
+				}
+			} catch { }
 		}
 
 		private List<MemoryMappingBlock> UpdateMappings(List<MemoryMappingBlock>? oldMappings, List<MemoryMappingBlock> newMappings)

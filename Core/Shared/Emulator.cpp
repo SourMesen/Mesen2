@@ -181,15 +181,17 @@ bool Emulator::ProcessSystemActions()
 {
 	if(_systemActionManager->IsResetPressed()) {
 		Reset();
-		
+
 		shared_ptr<Debugger> debugger = _debugger.lock();
 		if(debugger) {
 			debugger->ResetSuspendCounter();
 		}
 
+		_systemActionManager->ResetState();
 		return true;
 	} else if(_systemActionManager->IsPowerCyclePressed()) {
 		PowerCycle();
+		_systemActionManager->ResetState();
 		return true;
 	}
 	return false;
@@ -936,6 +938,11 @@ void Emulator::BlockDebuggerRequests()
 	//Block all new debugger calls
 	auto lock = _debuggerLock.AcquireSafe();
 	_allowDebuggerRequest = false;
+	if(_debugger) {
+		//Ensure any thread waiting on DebugBreakHelper is allowed to resume/finish (prevent deadlock)
+		_debugger->ResetSuspendCounter();
+	}
+
 	while(_debugRequestCount > 0) {
 		//Wait until debugger calls are all done
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
