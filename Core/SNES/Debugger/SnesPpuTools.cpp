@@ -237,7 +237,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 		for(int y = 0; y < sprite.Height; y++) {
 			int yPos = sprite.Y + y;
 			if(yPos >= (int)size.Height) {
-				break;
+				yPos -= size.Height;
 			}
 
 			/*int yGap = (scanline - sprite.Y);
@@ -499,6 +499,8 @@ DebugSpritePreviewInfo SnesPpuTools::GetSpritePreviewInfo(GetSpritePreviewOption
 	info.VisibleY = 0;
 	info.VisibleWidth = 256;
 	info.VisibleHeight = state.OverscanMode ? 239 : 224;
+
+	info.WrapBottomToTop = true;
 
 	return info;
 }

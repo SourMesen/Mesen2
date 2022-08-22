@@ -149,6 +149,8 @@ struct DebugSpritePreviewInfo
 	uint32_t VisibleY;
 	uint32_t VisibleWidth;
 	uint32_t VisibleHeight;
+
+	bool WrapBottomToTop;
 };
 
 enum class RawPaletteFormat

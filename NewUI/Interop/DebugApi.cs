@@ -962,6 +962,8 @@ namespace Mesen.Interop
 		public UInt32 VisibleY;
 		public UInt32 VisibleWidth;
 		public UInt32 VisibleHeight;
+
+		[MarshalAs(UnmanagedType.I1)] public bool WrapBottomToTop;
 	}
 
 	public enum DebugSpritePriority

@@ -230,7 +230,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public DynamicTooltip? GetPreviewPanel(PixelPoint p, DynamicTooltip? tooltipToUpdate)
 		{
-			SpritePreviewModel? sprite = GetMatchingSprite(p);
+			SpritePreviewModel? sprite = GetMatchingSprite(p, out _);
 			return sprite == null ? null : GetPreviewPanel(sprite, tooltipToUpdate);
 		}
 
@@ -475,7 +475,11 @@ namespace Mesen.Debugger.ViewModels
 				if(Config.ShowOutline) {
 					List<Rect> spriteRects = new List<Rect>();
 					foreach(SpritePreviewModel sprite in SpritePreviews) {
-						spriteRects.Add(sprite.GetPreviewRect());
+						(Rect mainRect, Rect altRect) = sprite.GetPreviewRect();
+						spriteRects.Add(mainRect);
+						if(!altRect.IsEmpty) {
+							spriteRects.Add(altRect);
+						}
 					}
 					SpriteRects = spriteRects;
 				} else {
@@ -511,9 +515,9 @@ namespace Mesen.Debugger.ViewModels
 		private void UpdateMouseOverRect()
 		{
 			if(PreviewPanelSprite != null) {
-				MouseOverRect = PreviewPanelSprite.GetPreviewRect();
-			} else if(ViewerMousePos != null && GetMatchingSprite(ViewerMousePos.Value) is SpritePreviewModel sprite) {
-				MouseOverRect = sprite.GetPreviewRect();
+				MouseOverRect = PreviewPanelSprite.GetPreviewRect().Item1;
+			} else if(ViewerMousePos != null && GetMatchingSprite(ViewerMousePos.Value, out Rect matchingRect) is SpritePreviewModel sprite) {
+				MouseOverRect = matchingRect;
 			} else {
 				MouseOverRect = null;
 			}
@@ -524,7 +528,7 @@ namespace Mesen.Debugger.ViewModels
 			if(PreviewPanelSprite != null && PreviewPanelTooltip != null) {
 				GetPreviewPanel(PreviewPanelSprite, PreviewPanelTooltip);
 			} else if(ViewerMousePos != null && ViewerTooltip != null) {
-				SpritePreviewModel? sprite = GetMatchingSprite(ViewerMousePos.Value);
+				SpritePreviewModel? sprite = GetMatchingSprite(ViewerMousePos.Value, out _);
 				if(sprite != null) {
 					GetPreviewPanel(sprite, ViewerTooltip);
 				}
@@ -534,22 +538,28 @@ namespace Mesen.Debugger.ViewModels
 		public void UpdateSelection(SpritePreviewModel? sprite)
 		{
 			if(sprite != null) {
-				SelectionRect = sprite.GetPreviewRect();
+				SelectionRect = sprite.GetPreviewRect().Item1;
 			} else {
 				SelectionRect = Rect.Empty;
 			}
 		}
 
-		public SpritePreviewModel? GetMatchingSprite(PixelPoint p)
+		public SpritePreviewModel? GetMatchingSprite(PixelPoint p, out Rect matchingRect)
 		{
 			Point point = p.ToPoint(1);
 			for(int i = SpritePreviews.Count - 1; i >= 0; i--) {
 				SpritePreviewModel sprite = SpritePreviews[i];
-				if(sprite.GetPreviewRect().Contains(point)) {
+				(Rect mainRect, Rect altRect) = sprite.GetPreviewRect();
+				if(mainRect.Contains(point)) {
+					matchingRect = mainRect;
+					return sprite;
+				} else if(altRect.Contains(point)) {
+					matchingRect = altRect;
 					return sprite;
 				}
 			}
 
+			matchingRect = Rect.Empty;
 			return null;
 		}
 

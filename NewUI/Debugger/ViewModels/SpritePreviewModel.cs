@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Platform;
 using Mesen.Interop;
 using Mesen.Utilities;
@@ -34,6 +35,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool UseExtendedVram { get; set; }
 		
 		public UInt32 TileCount { get; set; }
+		public UInt32 WrapHeight { get; set; }
 		public UInt32[] TileAddresses { get; set; } = Array.Empty<UInt32>();
 
 		[Reactive] public NullableBoolean UseSecondTable { get; set; }
@@ -63,6 +65,8 @@ namespace Mesen.Debugger.ViewModels
 			PaletteAddress = sprite.PaletteAddress;
 			UseSecondTable = sprite.UseSecondTable;
 			UseExtendedVram = sprite.UseExtendedVram;
+
+			WrapHeight = previewInfo.WrapBottomToTop ? previewInfo.Height : 0;
 
 			TileCount = sprite.TileCount;
 			fixed(UInt32* p = sprite.TileAddresses) {
@@ -98,9 +102,18 @@ namespace Mesen.Debugger.ViewModels
 			Flags = flags;
 		}
 
-		public Rect GetPreviewRect()
+		public ValueTuple<Rect,Rect> GetPreviewRect()
 		{
-			return new Rect(PreviewX, PreviewY, Width, Height);
+			if(WrapHeight > 0 && PreviewY + Height > WrapHeight) {
+				//Generate a 2nd rect for the portion of the sprite that wraps
+				//around to the top of the screen when it goes past the screen's
+				//bottom, when the WrapBottomToTop flag is set (used by SNES)
+				return (
+					new Rect(PreviewX, PreviewY, Width, Height),
+					new Rect(PreviewX, PreviewY - WrapHeight, Width, Height)
+				);
+			}
+			return (new Rect(PreviewX, PreviewY, Width, Height), Rect.Empty);
 		}
 
 		public SpritePreviewModel Clone()

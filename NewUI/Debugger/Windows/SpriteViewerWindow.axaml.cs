@@ -67,7 +67,7 @@ namespace Mesen.Debugger.Windows
 		private void PicViewer_PositionClicked(object? sender, PositionClickedEventArgs e)
 		{
 			PixelPoint p = e.Position;
-			SpritePreviewModel? sprite = _model.GetMatchingSprite(p);
+			SpritePreviewModel? sprite = _model.GetMatchingSprite(p, out _);
 			_model.SelectedSprite = sprite;
 			_model.UpdateSelection(sprite);
 			e.Handled = true;
