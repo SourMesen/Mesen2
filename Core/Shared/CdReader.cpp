@@ -214,7 +214,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 
 		//Set end position for last track to be the end of the current file
 		TrackInfo& lastTrk = disc.Tracks[disc.Tracks.size() - 1];
-		lastTrk.Size = (disc.Files[lastTrk.FileIndex].GetSize() - lastTrk.FileOffset) / lastTrk.GetSectorSize() * lastTrk.GetSectorSize();
+		lastTrk.Size = (uint32_t)((disc.Files[lastTrk.FileIndex].GetSize() - lastTrk.FileOffset) / lastTrk.GetSectorSize() * lastTrk.GetSectorSize());
 		lastTrk.SectorCount = lastTrk.Size / lastTrk.GetSectorSize();
 		lastTrk.EndPosition = DiscPosition::FromLba(lastTrk.FirstSector + lastTrk.SectorCount - 1);
 		lastTrk.LastSector = lastTrk.EndPosition.ToLba();

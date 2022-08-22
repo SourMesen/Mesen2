@@ -108,7 +108,7 @@ public:
 
 		uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
 
-		int verticalScale = baseFrameInfo.Height / PceConstants::ScreenHeight;
+		uint32_t verticalScale = baseFrameInfo.Height / PceConstants::ScreenHeight;
 		
 		if(verticalScale != PceConstants::InternalResMultipler) {
 			//Invalid data

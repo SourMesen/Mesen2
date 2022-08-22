@@ -50,7 +50,6 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	FrameInfo baseFrameInfo = _baseFrameInfo;
 	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
 
-	uint32_t baseWidth = SNES_NTSC_OUT_WIDTH(512);
 	PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
 
 	constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
