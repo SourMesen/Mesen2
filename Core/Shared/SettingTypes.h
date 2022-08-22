@@ -415,6 +415,11 @@ struct PcEngineConfig
 	bool DisableBackground = false;
 	bool DisableBackgroundVdc2 = false;
 
+	uint32_t OverscanLeft = 0;
+	uint32_t OverscanRight = 0;
+	uint32_t OverscanTop = 0;
+	uint32_t OverscanBottom = 0;
+
 	uint32_t Palette[512] = { };
 };
 

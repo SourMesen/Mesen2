@@ -383,7 +383,7 @@
 							OverscanBottom="{CompiledBinding Config.OverscanBottom}"
 							OverscanLeft="{CompiledBinding Config.OverscanLeft}"
 							OverscanRight="{CompiledBinding Config.OverscanRight}"
-					/>
+						/>
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

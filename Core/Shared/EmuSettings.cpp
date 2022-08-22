@@ -331,6 +331,13 @@ OverscanDimensions EmuSettings::GetOverscan()
 			overscan.Bottom = _nes.OverscanBottom;
 			break;
 
+		case ConsoleType::PcEngine:
+			overscan.Left = _pce.OverscanLeft;
+			overscan.Right = _pce.OverscanRight;
+			overscan.Top = _pce.OverscanTop;
+			overscan.Bottom = _pce.OverscanBottom;
+			break;
+
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:
 			break;

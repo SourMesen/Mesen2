@@ -18,6 +18,16 @@ protected:
 		return _calculatedPalette[ppuFrame[offset] & 0x3FF];
 	}
 
+	OverscanDimensions GetOverscan() override
+	{
+		OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
+		overscan.Top *= PceConstants::InternalResMultipler;
+		overscan.Bottom *= PceConstants::InternalResMultipler;
+		overscan.Left *= PceConstants::InternalResMultipler;
+		overscan.Right *= PceConstants::InternalResMultipler;
+		return overscan;
+	}
+
 	void InitLookupTable()
 	{
 		VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
@@ -90,28 +100,37 @@ public:
 	{
 		uint32_t* out = GetOutputBuffer();
 		FrameInfo frameInfo = _frameInfo;
-		OverscanDimensions overscan = GetOverscan();
+		FrameInfo baseFrameInfo = _baseFrameInfo;
+		OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
 
 		uint32_t yOffset = overscan.Top * PceConstants::MaxScreenWidth;
 		constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 
-		int verticalScale = frameInfo.Height / PceConstants::ScreenHeight;
+		uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
 
-		for(uint32_t i = 0; i < PceConstants::ScreenHeight; i++) {
-			uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i];
-			uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider);
+		int verticalScale = baseFrameInfo.Height / PceConstants::ScreenHeight;
+		
+		if(verticalScale != PceConstants::InternalResMultipler) {
+			//Invalid data
+			return;
+		}
+
+		for(uint32_t i = 0; i < rowCount; i++) {
+			uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
+			uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / clockDivider);
 			uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 
 			//Interpolate row data across the whole screen
-			double ratio = (double)rowWidth / frameInfo.Width;
-			uint32_t baseOffset = i * verticalScale * frameInfo.Width;
+			double ratio = (double)rowWidth / baseFrameInfo.Width;
+
+			uint32_t baseDstOffset = i * verticalScale * frameInfo.Width;
+			uint32_t baseSrcOffset = i * PceConstants::MaxScreenWidth + yOffset + xOffset;
 			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				double pos = (j * ratio);
-				out[baseOffset + j] = GetPixel(ppuOutputBuffer, i * PceConstants::MaxScreenWidth + (int)pos + yOffset + xOffset);
+				out[baseDstOffset + j] = GetPixel(ppuOutputBuffer, baseSrcOffset + (int)(j * ratio));
 			}
 
 			for(uint32_t j = 1; j < verticalScale; j++) {
-				memcpy(out + baseOffset + (j * frameInfo.Width), out + baseOffset, frameInfo.Width * sizeof(uint32_t));
+				memcpy(out + baseDstOffset + (j * frameInfo.Width), out + baseDstOffset, frameInfo.Width * sizeof(uint32_t));
 			}
 		}
 	}

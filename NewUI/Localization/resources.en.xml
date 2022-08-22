@@ -386,6 +386,7 @@
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkDisableSpritesVdc2">Disable sprites (VDC2 - SuperGrafx)</Control>
 
+			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblPalette">Palette</Control>
 		</Form>
 

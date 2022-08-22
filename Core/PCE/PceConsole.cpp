@@ -219,8 +219,8 @@ PpuFrameInfo PceConsole::GetPpuFrame()
 
 	frame.FrameBuffer = (uint8_t*)_vpc->GetScreenBuffer();
 	//TODO - height/width/scanlinecount vary based on VDC settings
-	frame.Height = PceConstants::ScreenHeight * 2;
-	frame.Width = 512;
+	frame.Height = PceConstants::InternalOutputHeight;
+	frame.Width = PceConstants::InternalOutputWidth;
 	frame.FrameBufferSize = PceConstants::MaxScreenWidth * (PceConstants::ScreenHeight + 1) * sizeof(uint16_t);
 	return frame;
 }

@@ -9,18 +9,19 @@ class Emulator;
 class PceNtscFilter : public BaseVideoFilter
 {
 private:
-	snes_ntsc_setup_t _ntscSetup;
-	snes_ntsc_t _ntscData;
-	uint32_t* _ntscBuffer;
-	uint16_t* _rgb555Buffer;
+	snes_ntsc_setup_t _ntscSetup = {};
+	snes_ntsc_t _ntscData = {};
+	uint32_t* _ntscBuffer = nullptr;
+	uint16_t* _rgb555Buffer = nullptr;
 
 protected:
-	void OnBeforeApplyFilter();
+	void OnBeforeApplyFilter() override;
 
 public:
 	PceNtscFilter(Emulator* emu);
 	virtual ~PceNtscFilter();
-
-	virtual void ApplyFilter(uint16_t *ppuOutputBuffer);
-	virtual FrameInfo GetFrameInfo();
+	
+	OverscanDimensions GetOverscan() override;
+	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
+	FrameInfo GetFrameInfo() override;
 };
