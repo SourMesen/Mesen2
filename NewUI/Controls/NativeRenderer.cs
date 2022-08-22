@@ -50,10 +50,15 @@ namespace Mesen
 					}
 				}
 
-				EmuApi.SetRendererSize((uint)(width * LayoutHelper.GetLayoutScale(this)), (uint)(height * LayoutHelper.GetLayoutScale(this)));
-				model.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
+				width = Math.Round(width * LayoutHelper.GetLayoutScale(this));
+				height = Math.Round(height * LayoutHelper.GetLayoutScale(this));
+
+				EmuApi.SetRendererSize((uint)width, (uint)height);
+				model.RendererSize = new Size(width, height);
 			} else if(DataContext is HistoryViewerViewModel historyViewer) {
-				historyViewer.RendererSize = new Size(width * LayoutHelper.GetLayoutScale(this), height * LayoutHelper.GetLayoutScale(this));
+				width = Math.Round(width * LayoutHelper.GetLayoutScale(this));
+				height = Math.Round(height * LayoutHelper.GetLayoutScale(this));
+				historyViewer.RendererSize = new Size(width, height);
 			}
 
 			return new Size(width, height);
