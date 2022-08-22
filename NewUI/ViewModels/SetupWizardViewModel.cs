@@ -122,7 +122,7 @@ namespace Mesen.ViewModels
 			} else {
 				string shortcutFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "mesen.desktop");
 				FileAssociationHelper.CreateLinuxShortcutFile(shortcutFile);
-				Process.Start("chmod", "775 " + shortcutFile);
+				Process.Start("chmod", "744 " + shortcutFile);
 			}
 		}
 	}

@@ -4,7 +4,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Mesen.ViewModels;
+using System;
 
 namespace Mesen.Windows
 {
@@ -22,6 +24,22 @@ namespace Mesen.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+
+			//Manually center the window (Avalonia on Linux doesn't seem to
+			//work with "CenterScreen" as startup location
+			Screen? screen = Screens.ScreenFromVisual(this);
+			if(screen != null) {
+				PixelPoint pos = new PixelPoint(
+					(int)((screen.Bounds.Width - Bounds.Width) / 2),
+					(int)((screen.Bounds.Height - Bounds.Height) / 2)
+				);
+				Position = pos;
+			}
 		}
 
 		private void btnOk_OnClick(object? sender, RoutedEventArgs e)
