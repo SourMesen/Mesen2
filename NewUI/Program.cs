@@ -127,7 +127,7 @@ namespace Mesen
 					.UseReactiveUI()
 					.UsePlatformDetect()
 					.With(new Win32PlatformOptions { AllowEglInitialization = true, UseWgl = useWgl })
-					.With(new X11PlatformOptions { UseGpu = false, UseEGL = false })
+					.With(new X11PlatformOptions { UseGpu = true, UseEGL = false })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();
 	}
