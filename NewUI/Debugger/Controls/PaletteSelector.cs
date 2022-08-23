@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -301,23 +302,16 @@ namespace Mesen.Debugger.Controls
 			_tooltipPos = pos;
 
 			if(_tooltip != null) {
-				ToolTip.SetTip(this, _tooltip);
-
-				//Force tooltip to update its position
-				ToolTip.SetHorizontalOffset(this, 14);
-				ToolTip.SetHorizontalOffset(this, 15);
-				ToolTip.SetIsOpen(this, true);
+				TooltipHelper.ShowTooltip(this, _tooltip, 15);
 			} else {
-				ToolTip.SetTip(this, null);
-				ToolTip.SetIsOpen(this, false);
+				TooltipHelper.HideTooltip(this);
 			}
 		}
 
 		protected override void OnPointerExited(PointerEventArgs e)
 		{
 			base.OnPointerExited(e);
-			ToolTip.SetTip(this, null);
-			ToolTip.SetIsOpen(this, false);
+			TooltipHelper.HideTooltip(this);
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

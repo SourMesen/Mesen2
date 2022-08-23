@@ -114,16 +114,10 @@ namespace Mesen.Debugger.Controls
 					entries.AddEntry("Access", "Open bus (unmapped)");
 				}
 				dynTooltip.Items = entries;
-				ToolTip.SetTip(this, dynTooltip);
 
-				//Force tooltip to update its position
-				ToolTip.SetPlacement(this, PlacementMode.Pointer);
-				ToolTip.SetHorizontalOffset(this, 0);
-				ToolTip.SetHorizontalOffset(this, 1);
-				ToolTip.SetIsOpen(this, true);
+				TooltipHelper.ShowTooltip(this, dynTooltip, 1);
 			} else {
-				ToolTip.SetTip(this, null);
-				ToolTip.SetIsOpen(this, false);
+				TooltipHelper.HideTooltip(this);
 			}
 		}
 
@@ -131,8 +125,7 @@ namespace Mesen.Debugger.Controls
 		{
 			base.OnPointerExited(e);
 			_prevTooltipMapping = null;
-			ToolTip.SetTip(this, null);
-			ToolTip.SetIsOpen(this, false);
+			TooltipHelper.HideTooltip(this);
 		}
 
 		private FormattedText GetFormattedText(string text, Typeface typeface, double size)

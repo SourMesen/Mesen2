@@ -124,6 +124,14 @@
 		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
 		<Setter Property="Icon" Value="/Assets/Icon.ico" />
 	</Style>
+
+	<Style Selector="ToolTip">
+		<Setter Property="Transitions">
+			<Transitions>
+				<DoubleTransition Property="Opacity" Duration="0:0:0.075" />
+			</Transitions>
+		</Setter>
+	</Style>
 	
 	<Style Selector="ItemsRepeater,ItemsPresenter">
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />

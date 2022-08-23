@@ -103,6 +103,7 @@
 					Name="spriteGrid"
 					VerticalAlignment="Top"
 					HorizontalAlignment="Left"
+					Background="Transparent"
 					Margin="1"
 				/>
 			</ScrollViewer>

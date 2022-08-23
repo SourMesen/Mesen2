@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Mesen.Debugger.Controls;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -43,16 +44,10 @@ namespace Mesen.Debugger.ViewModels
 				_model.ViewerTooltip = point == null ? null : _model.GetPreviewPanel(point.Value, _model.ViewerTooltip);
 
 				if(_model.ViewerTooltip != null) {
-					ToolTip.SetTip(viewer, _model.ViewerTooltip);
-
-					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 14);
-					ToolTip.SetHorizontalOffset(viewer, 15);
-					ToolTip.SetIsOpen(viewer, true);
+					TooltipHelper.ShowTooltip(viewer, _model.ViewerTooltip, 15);
 				} else {
 					_model.ViewerTooltip = null;
-					ToolTip.SetTip(viewer, null);
-					ToolTip.SetIsOpen(viewer, false);
+					TooltipHelper.HideTooltip(viewer);
 				}
 			}
 		}
@@ -60,8 +55,7 @@ namespace Mesen.Debugger.ViewModels
 		private void PicViewer_PointerExited(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				ToolTip.SetTip(viewer, null);
-				ToolTip.SetIsOpen(viewer, false);
+				TooltipHelper.HideTooltip(viewer);
 			}
 			_model.ViewerTooltip = null;
 			_model.ViewerMousePos = null;

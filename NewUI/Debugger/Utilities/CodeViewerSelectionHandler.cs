@@ -4,6 +4,7 @@ using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 
 namespace Mesen.Debugger.Utilities
@@ -105,18 +106,14 @@ namespace Mesen.Debugger.Utilities
 				_mouseOverCodeLocation = CodeTooltipHelper.GetLocation(e.Data.CpuType, e.CodeSegment);
 				tooltip = CodeTooltipHelper.GetTooltip(e.Data.CpuType, e.CodeSegment);
 				if(tooltip != null) {
-					ToolTip.SetTip(_viewer, tooltip);
-					ToolTip.SetHorizontalOffset(_viewer, 14);
-					ToolTip.SetHorizontalOffset(_viewer, 15);
-					ToolTip.SetIsOpen(_viewer, true);
+					TooltipHelper.ShowTooltip(_viewer, tooltip, 15);
 				}
 			} else {
 				_mouseOverCodeLocation = null;
 			}
 
 			if(tooltip == null) {
-				ToolTip.SetIsOpen(_viewer, false);
-				ToolTip.SetTip(_viewer, null);
+				TooltipHelper.HideTooltip(_viewer);
 			}
 
 			if(!_marginClicked && GetAddress(e) >= 0 && e.PointerEvent.GetCurrentPoint(null).Properties.IsLeftButtonPressed) {

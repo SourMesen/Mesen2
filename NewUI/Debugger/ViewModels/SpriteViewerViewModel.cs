@@ -76,6 +76,7 @@ namespace Mesen.Debugger.ViewModels
 			CpuType = cpuType;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
 			_spriteGrid = spriteGrid;
+			_spriteGrid.PointerExited += SpriteGrid_PointerExited;
 
 			InitBitmap(256, 256);
 
@@ -331,18 +332,14 @@ namespace Mesen.Debugger.ViewModels
 					preview.DataContext = SpritePreviews[i];
 					preview.PointerPressed += SpritePreview_PointerPressed;
 					preview.PointerMoved += SpritePreview_PointerMoved;
-					preview.PointerExited += SpritePreview_PointerExited;
 					_spriteGrid.Children.Add(preview);
 				}
 			}
 		}
 
-		private void SpritePreview_PointerExited(object? sender, PointerEventArgs e)
+		private void SpriteGrid_PointerExited(object? sender, PointerEventArgs e)
 		{
-			if(sender is SpritePreviewPanel ctrl) {
-				ToolTip.SetTip(ctrl, null);
-				ToolTip.SetIsOpen(ctrl, false);
-			}
+			TooltipHelper.HideTooltip(_spriteGrid);
 			PreviewPanelTooltip = null;
 			PreviewPanelSprite = null;
 		}
@@ -353,11 +350,7 @@ namespace Mesen.Debugger.ViewModels
 				PreviewPanelTooltip = GetPreviewPanel(sprite, PreviewPanelTooltip);
 				PreviewPanelSprite = sprite;
 
-				ToolTip.SetTip(ctrl, PreviewPanelTooltip);
-				//Force tooltip to update its position
-				ToolTip.SetHorizontalOffset(ctrl, 14);
-				ToolTip.SetHorizontalOffset(ctrl, 15);
-				ToolTip.SetIsOpen(ctrl, true);
+				TooltipHelper.ShowTooltip(_spriteGrid, PreviewPanelTooltip, 15);
 			}
 		}
 

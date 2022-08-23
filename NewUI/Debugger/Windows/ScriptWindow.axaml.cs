@@ -165,12 +165,9 @@ namespace Mesen.Debugger.Windows
 				DocEntryViewModel? entry = GetTooltipEntry(offset);
 				if(_prevTooltipEntry != entry) {
 					if(entry != null) {
-						ToolTip.SetTip(this, new ScriptCodeCompletionView() { DataContext = entry });
-						ToolTip.SetHorizontalOffset(this, 10);
-						ToolTip.SetIsOpen(this, true);
+						TooltipHelper.ShowTooltip(this, new ScriptCodeCompletionView() { DataContext = entry }, 10);
 					} else {
-						ToolTip.SetTip(this, null);
-						ToolTip.SetIsOpen(this, false);
+						TooltipHelper.HideTooltip(this);
 					}
 					_prevTooltipEntry = entry;
 				}

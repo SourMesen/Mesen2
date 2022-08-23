@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Mesen.Debugger.Utilities;
 using Avalonia.Input;
 using Mesen.Config;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
@@ -58,8 +59,7 @@ namespace Mesen.Debugger.Windows
 		private void PalSelector_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
 		{
 			if(sender is PaletteSelector viewer) {
-				ToolTip.SetTip(viewer, null);
-				ToolTip.SetIsOpen(viewer, false);
+				TooltipHelper.HideTooltip(viewer);
 			}
 			_model.ViewerTooltip = null;
 			_model.ViewerMouseOverPalette = -1;
@@ -77,15 +77,9 @@ namespace Mesen.Debugger.Windows
 				_model.ViewerMouseOverPalette = index;
 
 				if(_model.ViewerTooltip != null) {
-					ToolTip.SetTip(viewer, _model.ViewerTooltip);
-					
-					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 14);
-					ToolTip.SetHorizontalOffset(viewer, 15);
-					ToolTip.SetIsOpen(viewer, true);
+					TooltipHelper.ShowTooltip(viewer, _model.ViewerTooltip, 15);
 				} else {
-					ToolTip.SetTip(viewer, null);
-					ToolTip.SetIsOpen(viewer, false);
+					TooltipHelper.HideTooltip(viewer);
 				}
 			}
 		}

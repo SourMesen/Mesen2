@@ -65,8 +65,7 @@ namespace Mesen.Debugger.Windows
 		private void Viewer_PointerExited(object? sender, PointerEventArgs e)
 		{
 			if(sender is PictureViewer viewer) {
-				ToolTip.SetTip(viewer, null);
-				ToolTip.SetIsOpen(viewer, false);
+				TooltipHelper.HideTooltip(viewer);
 			}
 			_prevMousePos = null;
 			_model.GridHighlightPoint = null;
@@ -91,15 +90,9 @@ namespace Mesen.Debugger.Windows
 				}
 
 				if(point != null && evt != null) {
-					//Force tooltip to update its position
-					ToolTip.SetHorizontalOffset(viewer, 14);
-					ToolTip.SetHorizontalOffset(viewer, 15);
-
-					ToolTip.SetTip(viewer, new DynamicTooltip() { Items = GetTooltipData(evt.Value) });
-					ToolTip.SetIsOpen(viewer, true);
+					TooltipHelper.ShowTooltip(viewer, new DynamicTooltip() { Items = GetTooltipData(evt.Value) }, 15);
 				} else {
-					ToolTip.SetTip(viewer, null);
-					ToolTip.SetIsOpen(viewer, false);
+					TooltipHelper.HideTooltip(viewer);
 				}
 			}
 		}
