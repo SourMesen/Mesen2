@@ -472,13 +472,13 @@
 	<StyleInclude Source="/Styles/AvaloniaEditStyles.xaml" />
 
 	<!-- Make dock title and tabs smaller -->
-	<Style Selector="DockControl TabStripItem">
+	<Style Selector="DockControl ToolTabStripItem">
 		<Setter Property="MinHeight" Value="0" />
 	</Style>
-	<Style Selector="DockControl TabStripItem ContentPresenter#PART_ContentPresenter">
+	<Style Selector="DockControl ToolTabStripItem ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Padding" Value="4 0 4 0" />
 	</Style>
-	<Style Selector="DockControl TabStripItem StackPanel#DragTool">
+	<Style Selector="DockControl ToolTabStripItem StackPanel#DragTool">
 		<Setter Property="Margin" Value="-2 -2 -2 -2" />
 	</Style>
 	<Style Selector="ToolChromeControl Grid#PART_Grip TextBlock#PART_Title">
