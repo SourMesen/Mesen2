@@ -400,7 +400,7 @@ namespace Mesen.Debugger.ViewModels
 			var paletteColors = palette.GetRgbPalette();
 			var rawPalette = palette.GetRawPalette();
 			var rawFormat = palette.RawFormat;
-			var paletteColumnCount = PaletteColors.Length > 16 ? 16 : 4;
+			var paletteColumnCount = paletteColors.Length > 16 ? 16 : 4;
 
 			Dispatcher.UIThread.Post(() => {
 				PaletteColors = paletteColors;
