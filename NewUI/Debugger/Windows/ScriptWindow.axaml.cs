@@ -64,7 +64,7 @@ namespace Mesen.Debugger.Windows
 			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
 			_textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
-			_textEditor.TextArea.PointerMoved += TextArea_PointerMoved;
+			_textEditor.TextArea.TextView.PointerMoved += TextView_PointerMoved;
 
 			_txtScriptLog = this.GetControl<TextBox>("txtScriptLog");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
@@ -157,17 +157,17 @@ namespace Mesen.Debugger.Windows
 		private bool _ctrlPressed;
 		private DocEntryViewModel? _prevTooltipEntry;
 
-		private void TextArea_PointerMoved(object? sender, PointerEventArgs e)
+		private void TextView_PointerMoved(object? sender, PointerEventArgs e)
 		{
-			TextViewPosition? posResult = _textEditor.TextArea.TextView.GetPosition(e.GetCurrentPoint(_textEditor.TextArea).Position + _textEditor.TextArea.TextView.ScrollOffset);
+			TextViewPosition? posResult = _textEditor.TextArea.TextView.GetPosition(e.GetCurrentPoint(_textEditor.TextArea.TextView).Position + _textEditor.TextArea.TextView.ScrollOffset);
 			if(posResult is TextViewPosition pos) {
 				int offset = _textEditor.TextArea.Document.GetOffset(pos.Location.Line, pos.Location.Column);
 				DocEntryViewModel? entry = GetTooltipEntry(offset);
 				if(_prevTooltipEntry != entry) {
 					if(entry != null) {
-						TooltipHelper.ShowTooltip(this, new ScriptCodeCompletionView() { DataContext = entry }, 10);
+						TooltipHelper.ShowTooltip(_textEditor.TextArea.TextView, new ScriptCodeCompletionView() { DataContext = entry }, 10);
 					} else {
-						TooltipHelper.HideTooltip(this);
+						TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
 					}
 					_prevTooltipEntry = entry;
 				}

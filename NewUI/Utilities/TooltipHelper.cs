@@ -15,6 +15,7 @@ namespace Mesen.Utilities
 	{
 		public static void ShowTooltip(Control target, object? tooltipContent, int horizontalOffset)
 		{
+			ToolTip.SetShowDelay(target, 0);
 			ToolTip.SetTip(target, tooltipContent);
 
 			//Force tooltip to update its position
