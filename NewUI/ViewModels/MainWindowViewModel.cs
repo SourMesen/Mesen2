@@ -78,18 +78,16 @@ namespace Mesen.ViewModels
 			string romName = RomInfo.GetRomName();
 			if(!string.IsNullOrWhiteSpace(romName)) {
 				title += " - " + romName;
+				if(ConfigManager.Config.Preferences.ShowTitleBarInfo) {
+					FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+					double scale = (double)RendererSize.Width / baseSize.Width;
+					title += string.Format(" - {0}x{1} ({2:0.#}x, {3})",
+						Math.Round(RendererSize.Width),
+						Math.Round(RendererSize.Height),
+						scale,
+						ResourceHelper.GetEnumText(ConfigManager.Config.Video.VideoFilter));
+				}
 			}
-
-			if(ConfigManager.Config.Preferences.ShowTitleBarInfo) {
-				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
-				double scale = (double)RendererSize.Width / baseSize.Width;
-				title += string.Format(" - {0}x{1} ({2:0.#}x, {3})",
-					Math.Round(RendererSize.Width),
-					Math.Round(RendererSize.Height),
-					scale,
-					ResourceHelper.GetEnumText(ConfigManager.Config.Video.VideoFilter));
-			}
-
 			WindowTitle = title;
 		}
 	}
