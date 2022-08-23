@@ -12,8 +12,8 @@ namespace Mesen.Debugger.Controls
 {
 	public class EventViewerCategoryControl : UserControl
 	{
-		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<EventViewerCategoryControl, string>(nameof(Text), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
-		public static readonly StyledProperty<EventViewerCategoryCfg> ConfigProperty = AvaloniaProperty.Register<EventViewerCategoryControl, EventViewerCategoryCfg>(nameof(Config), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<EventViewerCategoryControl, string>(nameof(Text), "", defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<EventViewerCategoryCfg> ConfigProperty = AvaloniaProperty.Register<EventViewerCategoryControl, EventViewerCategoryCfg>(nameof(Config), new EventViewerCategoryCfg(), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
 		public string Text
 		{

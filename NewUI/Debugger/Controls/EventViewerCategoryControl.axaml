@@ -15,7 +15,7 @@
 		<u:ArgbColorToBrushConverter x:Key="BrushConverter" />
 	</UserControl.Resources>
 
-	<StackPanel Orientation="Horizontal" DataContext="{Binding ElementName=root}">
+	<StackPanel Orientation="Horizontal">
 		<Button
 			MinWidth="0"
 			Padding="0"
@@ -27,14 +27,14 @@
 			<Border
 				BorderBrush="Black"
 				BorderThickness="1"
-				Background="{Binding Config.Color, Converter={StaticResource BrushConverter}}"
+				Background="{CompiledBinding Config.Color, ElementName=root, Converter={StaticResource BrushConverter}}"
 				Width="16"
 				Height="16"
 			/>
 		</Button>
 		<CheckBox
-			Content="{Binding Text}"
-			IsChecked="{Binding Config.Visible}"
+			Content="{CompiledBinding Text, ElementName=root}"
+			IsChecked="{CompiledBinding Config.Visible, ElementName=root}"
 			MinWidth="0"
 		/>
 	</StackPanel>
