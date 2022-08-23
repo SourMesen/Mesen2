@@ -38,33 +38,25 @@ namespace Mesen.Debugger.ViewModels
 			});
 		}
 
+		private Dictionary<string, Func<DebugEventInfo, DebugEventInfo, int>> _comparers = new() {
+			{ "ProgramCounter", (a, b) => a.ProgramCounter.CompareTo(b.ProgramCounter) },
+			{ "Scanline", (a, b) => a.Scanline.CompareTo(b.Scanline) },
+			{ "Cycle", (a, b) => a.Cycle.CompareTo(b.Cycle) },
+			{ "Type", (a, b) => a.Type.CompareTo(b.Type) },
+			{ "Address", (a, b) => a.Operation.Address.CompareTo(b.Operation.Address) },
+			{ "Value", (a, b) => a.Operation.Value.CompareTo(b.Operation.Value)},
+			{ "Default", (a, b) => {
+				int result = a.Scanline.CompareTo(b.Scanline);
+				return result != 0 ? result : a.Cycle.CompareTo(b.Cycle);
+			} }
+		};
+
 		public void RefreshList()
 		{
 			_debugEvents = DebugApi.GetDebugEvents(EventViewer.CpuType);
 
-			Dictionary<string, Func<DebugEventInfo, DebugEventInfo, int>> comparers = new() {
-				{ "ProgramCounter", (a, b) => a.ProgramCounter.CompareTo(b.ProgramCounter) },
-				{ "Scanline", (a, b) => a.Scanline.CompareTo(b.Scanline) },
-				{ "Cycle", (a, b) => a.Cycle.CompareTo(b.Cycle) },
-				{ "Type", (a, b) => a.Type.CompareTo(b.Type) },
-				{ "Address", (a, b) => a.Operation.Address.CompareTo(b.Operation.Address) },
-				{ "Value", (a, b) => a.Operation.Value.CompareTo(b.Operation.Value)},
-			};
-
-			Array.Sort(_debugEvents, (a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-
-				int compResult = a.Scanline.CompareTo(b.Scanline);
-				if(compResult == 0) {
-					compResult = a.Cycle.CompareTo(b.Cycle);
-				}				
-				return compResult;
-			});
+			//TODO cycle
+			SortHelper.SortArray(_debugEvents, SortState.SortOrder, _comparers, "Default");
 
 			if(DebugEvents.Count < _debugEvents.Length) {
 				for(int i = 0; i < DebugEvents.Count; i++) {

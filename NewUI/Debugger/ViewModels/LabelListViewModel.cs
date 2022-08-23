@@ -46,29 +46,20 @@ namespace Mesen.Debugger.ViewModels
 			UpdateLabelList();
 		}
 
+		private Dictionary<string, Func<LabelViewModel, LabelViewModel, int>> _comparers = new() {
+			{ "Label", (a, b) => string.Compare(a.Label.Label, b.Label.Label, StringComparison.OrdinalIgnoreCase) },
+			{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
+			{ "AbsAddr", (a, b) => a.Label.Address.CompareTo(b.Label.Address) },
+			{ "Comment", (a, b) => string.Compare(a.Label.Comment, b.Label.Comment, StringComparison.OrdinalIgnoreCase) },
+		};
+
 		public void UpdateLabelList()
 		{
 			int selection = Selection.SelectedIndex;
 
 			List<LabelViewModel> sortedLabels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
 
-			Dictionary<string, Func<LabelViewModel, LabelViewModel, int>> comparers = new() {
-				{ "Label", (a, b) => string.Compare(a.Label.Label, b.Label.Label, StringComparison.OrdinalIgnoreCase) },
-				{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
-				{ "AbsAddr", (a, b) => a.Label.Address.CompareTo(b.Label.Address) },
-				{ "Comment", (a, b) => string.Compare(a.Label.Comment, b.Label.Comment, StringComparison.OrdinalIgnoreCase) },
-			};
-
-			sortedLabels.Sort((a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-
-				return comparers["Label"](a, b);
-			});
+			SortHelper.SortList(sortedLabels, SortState.SortOrder, _comparers, "Label");
 
 			Labels.Replace(sortedLabels);
 

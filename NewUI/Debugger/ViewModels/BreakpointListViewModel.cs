@@ -43,29 +43,21 @@ namespace Mesen.Debugger.ViewModels
 			UpdateBreakpoints();
 		}
 
+		private Dictionary<string, Func<BreakpointViewModel, BreakpointViewModel, int>> _comparers = new() {
+			{ "Enabled", (a, b) => a.Breakpoint.Enabled.CompareTo(b.Breakpoint.Enabled) },
+			{ "Marked", (a, b) => a.Breakpoint.MarkEvent.CompareTo(b.Breakpoint.MarkEvent) },
+			{ "Type", (a, b) => string.Compare(a.Breakpoint.ToReadableType(), b.Breakpoint.ToReadableType(), StringComparison.OrdinalIgnoreCase) },
+			{ "Address", (a, b) => string.Compare(a.Breakpoint.GetAddressString(true), b.Breakpoint.GetAddressString(true), StringComparison.OrdinalIgnoreCase) },
+			{ "Condition", (a, b) => string.Compare(a.Breakpoint.Condition, b.Breakpoint.Condition, StringComparison.OrdinalIgnoreCase) },
+		};
+
 		public void UpdateBreakpoints()
 		{
 			int selection = Selection.SelectedIndex;
 
 			List<BreakpointViewModel> sortedBreakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
 
-			Dictionary<string, Func<BreakpointViewModel, BreakpointViewModel, int>> comparers = new() {
-				{ "Enabled", (a, b) => a.Breakpoint.Enabled.CompareTo(b.Breakpoint.Enabled) },
-				{ "Marked", (a, b) => a.Breakpoint.MarkEvent.CompareTo(b.Breakpoint.MarkEvent) },
-				{ "Type", (a, b) => string.Compare(a.Breakpoint.ToReadableType(), b.Breakpoint.ToReadableType(), StringComparison.OrdinalIgnoreCase) },
-				{ "Address", (a, b) => string.Compare(a.Breakpoint.GetAddressString(true), b.Breakpoint.GetAddressString(true), StringComparison.OrdinalIgnoreCase) },
-				{ "Condition", (a, b) => string.Compare(a.Breakpoint.Condition, b.Breakpoint.Condition, StringComparison.OrdinalIgnoreCase) },
-			};
-
-			sortedBreakpoints.Sort((a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-				return comparers["Address"](a, b);
-			});
+			SortHelper.SortList(sortedBreakpoints, SortState.SortOrder, _comparers, "Address");
 
 			Breakpoints.Replace(sortedBreakpoints);
 

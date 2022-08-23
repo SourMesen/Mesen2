@@ -59,26 +59,18 @@ public class FindResultListViewModel : ViewModelBase
 		Debugger.OpenTool(Debugger.DockFactory.FindResultListTool);
 	}
 
+	private Dictionary<string, Func<FindResultViewModel, FindResultViewModel, int>> _comparers = new() {
+		{ "Address", (a, b) => string.Compare(a.Address, b.Address, StringComparison.OrdinalIgnoreCase) },
+		{ "Result", (a, b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase) },
+	};
+
 	private void UpdateResults(IEnumerable<FindResultViewModel> results)
 	{
 		int selection = Selection.SelectedIndex;
 
 		List<FindResultViewModel> sortedResults = results.ToList();
 
-		Dictionary<string, Func<FindResultViewModel, FindResultViewModel, int>> comparers = new() {
-			{ "Address", (a, b) => string.Compare(a.Address, b.Address, StringComparison.OrdinalIgnoreCase) },
-			{ "Text", (a, b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase) },
-		};
-
-		sortedResults.Sort((a, b) => {
-			foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-				int result = comparers[column](a, b);
-				if(result != 0) {
-					return result * (order == ListSortDirection.Ascending ? 1 : -1);
-				}
-			}
-			return comparers["Address"](a, b);
-		});
+		SortHelper.SortList(sortedResults, SortState.SortOrder, _comparers, "Address");
 
 		FindResults.Replace(sortedResults);
 

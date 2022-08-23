@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls.Selection;
 using DataBoxControl;
 using Mesen.Config;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -57,6 +58,23 @@ namespace Mesen.Debugger.ViewModels
 			_lastRefresh = DateTime.MinValue;
 		}
 
+		private Dictionary<string, Func<SpritePreviewModel, SpritePreviewModel, int>> _comparers = new() {
+			{ "SpriteIndex", (a, b) => a.SpriteIndex.CompareTo(b.SpriteIndex) },
+			{ "X", (a, b) => a.X.CompareTo(b.X) },
+			{ "Y", (a, b) => a.Y.CompareTo(b.Y) },
+			{ "TileIndex", (a, b) => a.TileIndex.CompareTo(b.TileIndex) },
+			{ "Size", (a, b) => {
+				int result = a.Width.CompareTo(b.Width);
+				if(result == 0) {
+					return a.Height.CompareTo(b.Height);
+				}
+				return result;
+			} },
+			{ "Palette", (a, b) => a.Palette.CompareTo(b.Palette) },
+			{ "Priority", (a, b) => a.Priority.CompareTo(b.Priority) },
+			{ "Flags", (a, b) => string.Compare(a.Flags, b.Flags, StringComparison.OrdinalIgnoreCase) }
+		};
+
 		public void RefreshList(bool force = false)
 		{
 			if(!force && (DateTime.Now - _lastRefresh).TotalMilliseconds < 70) {
@@ -77,34 +95,7 @@ namespace Mesen.Debugger.ViewModels
 			int? selectedIndex = Selection.SelectedItem?.SpriteIndex;
 
 			List<SpritePreviewModel> newList = new(SpriteViewer.SpritePreviews.Select(x => x.Clone()).ToList());
-
-			Dictionary<string, Func<SpritePreviewModel, SpritePreviewModel, int>> comparers = new() {
-				{ "SpriteIndex", (a, b) => a.SpriteIndex.CompareTo(b.SpriteIndex) },
-				{ "X", (a, b) => a.X.CompareTo(b.X) },
-				{ "Y", (a, b) => a.Y.CompareTo(b.Y) },
-				{ "TileIndex", (a, b) => a.TileIndex.CompareTo(b.TileIndex) },
-				{ "Size", (a, b) => {
-					int result = a.Width.CompareTo(b.Width);
-					if(result == 0) {
-						return a.Height.CompareTo(b.Height);
-					}
-					return result;
-				} },
-				{ "Palette", (a, b) => a.Palette.CompareTo(b.Palette) },
-				{ "Priority", (a, b) => a.Priority.CompareTo(b.Priority) },
-				{ "Flags", (a, b) => string.Compare(a.Flags, b.Flags, StringComparison.OrdinalIgnoreCase) }
-			};
-
-			newList.Sort((a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-
-				return a.SpriteIndex.CompareTo(b.SpriteIndex);
-			});
+			SortHelper.SortList(newList, SortState.SortOrder, _comparers, "SpriteIndex");
 
 			for(int i = 0; i < newList.Count; i++) {
 				newList[i].CopyTo(SpritePreviews[i]);

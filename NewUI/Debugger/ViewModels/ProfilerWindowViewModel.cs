@@ -147,16 +147,7 @@ namespace Mesen.Debugger.ViewModels
 				{ "MaxCycles", (a, b) => a.MaxCycles.CompareTo(b.MaxCycles) },
 			};
 
-			Array.Sort(_profilerData, (a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-
-				return a.InclusiveCycles.CompareTo(b.InclusiveCycles);
-			});
+			SortHelper.SortArray(_profilerData, SortState.SortOrder, comparers, "InclusiveTime");
 		}
 	}
 

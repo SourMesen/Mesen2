@@ -47,6 +47,12 @@ namespace Mesen.Debugger.ViewModels
 			UpdateFunctionList();
 		}
 
+		private Dictionary<string, Func<FunctionViewModel, FunctionViewModel, int>> _comparers = new() {
+			{ "Function", (a, b) => string.Compare(a.LabelName, b.LabelName, StringComparison.OrdinalIgnoreCase) },
+			{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
+			{ "AbsAddr", (a, b) => a.AbsAddress.CompareTo(b.AbsAddress) },
+		};
+
 		public void UpdateFunctionList()
 		{
 			int selection = Selection.SelectedIndex;
@@ -54,21 +60,7 @@ namespace Mesen.Debugger.ViewModels
 			MemoryType prgMemType = CpuType.GetPrgRomMemoryType();
 			List<FunctionViewModel> sortedFunctions = DebugApi.GetCdlFunctions(CpuType.GetPrgRomMemoryType()).Select(f => new FunctionViewModel(new AddressInfo() { Address = (int)f, Type = prgMemType }, CpuType)).ToList();
 
-			Dictionary<string, Func<FunctionViewModel, FunctionViewModel, int>> comparers = new() {
-				{ "Function", (a, b) => string.Compare(a.LabelName, b.LabelName, StringComparison.OrdinalIgnoreCase) },
-				{ "RelAddr", (a, b) => a.RelAddress.CompareTo(b.RelAddress) },
-				{ "AbsAddr", (a, b) => a.AbsAddress.CompareTo(b.AbsAddress) },
-			};
-
-			sortedFunctions.Sort((a, b) => {
-				foreach((string column, ListSortDirection order) in SortState.SortOrder) {
-					int result = comparers[column](a, b);
-					if(result != 0) {
-						return result * (order == ListSortDirection.Ascending ? 1 : -1);
-					}
-				}
-				return a.AbsAddress.CompareTo(b.AbsAddress);
-			});
+			SortHelper.SortList(sortedFunctions, SortState.SortOrder, _comparers, "AbsAddr");
 
 			Functions.Replace(sortedFunctions);
 
