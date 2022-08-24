@@ -22,9 +22,15 @@ namespace Mesen
 		// SynchronizationContext-reliant code before AppMain is called: things aren't initialized
 		// yet and stuff might break.
 
+		public static string OriginalFolder { get; private set; }
 		public static string[] CommandLineArgs { get; private set; } = Array.Empty<string>();
 
 		public static string ExePath => Process.GetCurrentProcess().MainModule?.FileName ?? Path.Join(Path.GetDirectoryName(AppContext.BaseDirectory), "Mesen.exe");
+
+		static Program()
+		{
+			Program.OriginalFolder = Environment.CurrentDirectory;
+		}
 
 		[STAThread]
 		public static void Main(string[] args)

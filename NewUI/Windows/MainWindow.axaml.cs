@@ -198,8 +198,15 @@ namespace Mesen.Windows
 		private bool ProcessCommandLineArgs(string[] args)
 		{
 			foreach(string arg in args) {
-				if(File.Exists(arg)) {
-					LoadRomHelper.LoadFile(arg);
+				string absPath;
+				if(Path.IsPathRooted(arg)) {
+					absPath = arg;
+				} else {
+					absPath = Path.GetFullPath(arg, Program.OriginalFolder);
+				}
+
+				if(File.Exists(absPath)) {
+					LoadRomHelper.LoadFile(absPath);
 					return true;
 				}
 			}
