@@ -123,8 +123,6 @@ void PceConsole::RunFrame()
 	while(frameCount == _vdc->GetFrameCount()) {
 		_cpu->Exec();
 	}
-
-	_psg->Run();
 }
 
 void PceConsole::SaveBattery()
@@ -170,6 +168,11 @@ PceVce* PceConsole::GetVce()
 PceVpc* PceConsole::GetVpc()
 {
 	return _vpc.get();
+}
+
+PcePsg* PceConsole::GetPsg()
+{
+	return _psg.get();
 }
 
 PceMemoryManager* PceConsole::GetMemoryManager()

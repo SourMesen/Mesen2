@@ -61,6 +61,7 @@ public:
 	PceVdc* GetVdc();
 	PceVce* GetVce();
 	PceVpc* GetVpc();
+	PcePsg* GetPsg();
 	PceMemoryManager* GetMemoryManager();
 
 	bool IsSuperGrafx() { return _vdc2 != nullptr; }

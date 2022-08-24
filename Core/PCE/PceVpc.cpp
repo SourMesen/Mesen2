@@ -2,6 +2,7 @@
 #include "PCE/PceVpc.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
+#include "PCE/PcePsg.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/PceConsole.h"
@@ -246,6 +247,7 @@ void PceVpc::SendFrame(PceVdc* vdc)
 	RenderedFrame frame(_currentOutBuffer, PceConstants::InternalOutputWidth, PceConstants::InternalOutputHeight, 1.0 / PceConstants::InternalResMultipler, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
 
+	_console->GetPsg()->Run();
 	_emu->ProcessEndOfFrame();
 
 	_console->GetControlManager()->UpdateInputState();

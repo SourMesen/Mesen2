@@ -35,7 +35,7 @@ private:
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
 	PceCdRom* _cdrom = nullptr;
-	IPceMapper* _mapper;
+	IPceMapper* _mapper = nullptr;
 	unique_ptr<PceTimer> _timer;
 
 	PceMemoryManagerState _state = {};
