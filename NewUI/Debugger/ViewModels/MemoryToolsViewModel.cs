@@ -108,7 +108,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => t.SupportsMemoryViewer() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Config.MemoryType)) {
-				Config.MemoryType = (MemoryType)AvailableMemoryTypes.First();
+				Config.MemoryType = (MemoryType)(AvailableMemoryTypes.FirstOrDefault() ?? MemoryType.SnesMemory);
 			}
 
 			Options.UpdateAvailableOptions();

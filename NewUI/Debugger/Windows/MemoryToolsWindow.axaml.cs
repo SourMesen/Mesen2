@@ -518,9 +518,11 @@ namespace Mesen.Debugger.Windows
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.PpuFrameDone:
 				case ConsoleNotificationType.CodeBreak:
-					Dispatcher.UIThread.Post(() => {
-						_editor.InvalidateVisual();
-					});
+					if(!ToolRefreshHelper.LimitFps(this, 80)) {
+						Dispatcher.UIThread.Post(() => {
+							_editor.InvalidateVisual();
+						});
+					}
 					break;
 
 				case ConsoleNotificationType.GameLoaded:

@@ -167,20 +167,14 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.CodeBreak: {
 					if(_model.Config.RefreshOnBreakPause) {
-						Dispatcher.UIThread.Post(() => {
-							_model.UpdateLog();
-							_model.ScrollToBottom();
-						});
+						_model.UpdateLog(true);
 					}
 					break;
 				}
 
 				case ConsoleNotificationType.PpuFrameDone: {
 					if(_model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, 10)) {
-						Dispatcher.UIThread.Post(() => {
-							_model.UpdateLog();
-							_model.ScrollToBottom();
-						});
+						_model.UpdateLog(true);
 					}
 					break;
 				}

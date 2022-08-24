@@ -153,14 +153,15 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.EventViewerRefresh:
 					CpuType cpuType = (CpuType)e.Parameter;
-					if(_model.CpuType == cpuType && _model.Config.AutoRefresh) {
-						_model.RefreshData(false);
+					int fps = _model.SelectedTab == EventViewerViewModel.EventViewerTab.PpuView ? 80 : 15;
+					if(_model.CpuType == cpuType && _model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, fps)) {
+						_model.RefreshData();
 					}
 					break;
 
 				case ConsoleNotificationType.CodeBreak:
 					if(_model.Config.RefreshOnBreakPause) {
-						_model.RefreshData(true);
+						_model.RefreshData();
 					}
 					break;
 			}

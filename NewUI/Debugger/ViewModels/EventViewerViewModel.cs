@@ -72,7 +72,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.Refresh,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Refresh),
-					OnClick = () => RefreshData(true)
+					OnClick = () => RefreshData()
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
@@ -109,7 +109,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			UpdateConfig();
-			RefreshData(true);
+			RefreshData();
 
 			DebugMenuItems = AddDisposables(DebugSharedActions.GetStepActions(wnd, () => CpuType));
 			ToolbarItems = AddDisposables(DebugSharedActions.GetStepActions(wnd, () => CpuType));
@@ -117,14 +117,14 @@ namespace Mesen.Debugger.ViewModels
 			AddDisposable(this.WhenAnyValue(x => x.CpuType).Subscribe(_ => {
 				InitForCpuType();
 				UpdateConfig();
-				RefreshData(true);
+				RefreshData();
 			}));
 
-			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab(true)));
+			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
 			
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(ConsoleConfig, (s, e) => {
 				UpdateConfig();
-				RefreshTab(true);
+				RefreshTab();
 			}));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
@@ -157,13 +157,13 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void RefreshData(bool forceRefresh)
+		public void RefreshData()
 		{
 			DebugApi.TakeEventSnapshot(CpuType);
-			RefreshTab(forceRefresh);
+			RefreshTab();
 		}
 
-		public void RefreshTab(bool forceRefresh)
+		public void RefreshTab()
 		{
 			Dispatcher.UIThread.Post(() => {
 				if(SelectedTab == EventViewerTab.PpuView) {
@@ -174,10 +174,6 @@ namespace Mesen.Debugger.ViewModels
 						DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
 					}
 				} else {
-					if(!forceRefresh && ToolRefreshHelper.LimitFps(this, 15)) {
-						return;
-					}
-
 					ShowViewer = false;
 					ListHeight = double.NaN;
 					ListView.RefreshList();

@@ -20,10 +20,19 @@ namespace Mesen.Debugger.Utilities
 {
 	public abstract class BaseMenuAction : ViewModelBase, IDisposable
 	{
+		private static Dictionary<ActionType, string?> _iconCache = new();
+
 		public ActionType ActionType;
 		public string? CustomText { get; set; }
 		public Func<string>? DynamicText { get; set; }
 		public Func<string>? DynamicIcon { get; set; }
+
+		static BaseMenuAction()
+		{
+			foreach(ActionType value in Enum.GetValues<ActionType>()) {
+				_iconCache[value] = value.GetAttribute<IconFileAttribute>()?.Icon;
+			}
+		}
 
 		public virtual string Name
 		{
@@ -52,9 +61,9 @@ namespace Mesen.Debugger.Utilities
 
 		private string? GetIconFile()
 		{
-			IconFileAttribute? attr = ActionType.GetAttribute<IconFileAttribute>();
-			if(!string.IsNullOrEmpty(attr?.Icon)) {
-				return  attr.Icon;
+			string? actionIcon = _iconCache[ActionType];
+			if(!string.IsNullOrEmpty(actionIcon)) {
+				return actionIcon;
 			} else if(DynamicIcon != null) {
 				return "Assets/" + DynamicIcon() + ".png";
 			} else if(IsSelected?.Invoke() == true) {

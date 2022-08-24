@@ -7,6 +7,7 @@ using System.Threading;
 using Avalonia.Threading;
 using System.Linq;
 using Mesen.Debugger.ViewModels;
+using Mesen.Debugger.Windows;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -21,10 +22,10 @@ namespace Mesen.Debugger.Utilities
 
 		public class LastRefreshInfo
 		{
-			public WeakReference<object> Host;
+			public WeakReference<Window> Host;
 			public DateTime Stamp;
 
-			public LastRefreshInfo(object host)
+			public LastRefreshInfo(Window host)
 			{
 				Host = new(host);
 			}
@@ -105,12 +106,23 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
-		public static bool LimitFps(object host, int maxFps)
+		public static bool LimitFps(Window wnd, int maxFps)
 		{
+			if(_lastRefreshStamp.Count > 5) {
+				//Reduce FPS by 10% for each active tool above 5 (down to 30% refresh speed)
+				maxFps = Math.Max(5, (int)(maxFps * Math.Max(0.3, 1.0 - (_lastRefreshStamp.Count - 5) * 0.1)));
+			}
+
 			DateTime now = DateTime.Now;
 			for(int i = _lastRefreshStamp.Count - 1; i >= 0; i--) {
-				if(_lastRefreshStamp[i].Host.TryGetTarget(out object? target)) {
-					if(object.ReferenceEquals(target, host)) {
+				if(_lastRefreshStamp[i].Host.TryGetTarget(out Window? target)) {
+					if(!DebugWindowManager.IsDebugWindow(target)) {
+						//Window was closed, remove from list
+						_lastRefreshStamp.RemoveAt(i);
+						continue;
+					}
+
+					if(target == wnd) {
 						if((now - _lastRefreshStamp[i].Stamp).TotalMilliseconds < 1000.0 / maxFps) {
 							return true;
 						} else {
@@ -123,7 +135,7 @@ namespace Mesen.Debugger.Utilities
 				}
 			}
 
-			_lastRefreshStamp.Add(new LastRefreshInfo(host) { Stamp = now });
+			_lastRefreshStamp.Add(new LastRefreshInfo(wnd) { Stamp = now });
 			return false;
 		}
 	}

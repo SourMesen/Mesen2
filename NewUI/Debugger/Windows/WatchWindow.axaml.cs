@@ -58,7 +58,7 @@ namespace Mesen.Debugger.Windows
 						return;
 					}
 
-					if(!ToolRefreshHelper.LimitFps(this, 30)) {
+					if(!ToolRefreshHelper.LimitFps(this, 20)) {
 						_model.RefreshData();
 					}
 					break;

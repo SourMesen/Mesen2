@@ -10,6 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using static Mesen.Debugger.ViewModels.RegEntry;
 
 namespace Mesen.Debugger.ViewModels
@@ -229,10 +230,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF4B", "Window X (WX)", ppu.WindowX, Format.X8),
 			});
 
-			return new RegisterViewerTab() {
-				TabName = tabPrefix + "LCD",
-				Data = entries
-			};
+			return new RegisterViewerTab(tabPrefix + "LCD", entries);
 		}
 
 		private RegisterViewerTab GetGbMiscTab(ref GbState gb, string tabPrefix = "")
@@ -283,10 +281,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),
 			});
 
-			return new RegisterViewerTab() {
-				TabName = tabPrefix + "Timer/DMA/IRQ",
-				Data = entries
-			};
+			return new RegisterViewerTab(tabPrefix + "Timer/DMA/IRQ", entries);
 		}
 
 		private RegisterViewerTab GetGbApuTab(ref GbState gb, string tabPrefix = "")
@@ -402,10 +397,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Output", wave.Output),
 			});
 
-			return new RegisterViewerTab() {
-				TabName = tabPrefix + "APU",
-				Data = entries
-			};
+			return new RegisterViewerTab(tabPrefix + "APU", entries);
 		}
 
 		private RegisterViewerTab GetSnesSa1Tab(ref SnesState state)
@@ -534,10 +526,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$230B.7", "Math Overflow", sa1.MathOverflow)
 			});
 
-			return new RegisterViewerTab() {
-				TabName = "SA-1",
-				Data = entries
-			};
+			return new RegisterViewerTab("SA-1", entries);
 		}
 
 		private RegisterViewerTab GetSnesPpuTab(ref SnesState state)
@@ -734,10 +723,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2133.4", "Ext. BG Enabled", ppu.ExtBgEnabled),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "PPU",
-				Data = entries
-			};
+			return new RegisterViewerTab("PPU", entries);
 		}
 
 		private RegisterViewerTab GetSnesDspTab(ref SnesState state)
@@ -793,10 +779,7 @@ namespace Mesen.Debugger.ViewModels
 				AddReg(voice | 0x09, "OUTX");
 			}
 
-			return new RegisterViewerTab() {
-				TabName = "DSP",
-				Data = entries
-			};
+			return new RegisterViewerTab("DSP", entries);
 		}
 
 		private RegisterViewerTab GetSnesSpcTab(ref SnesState state)
@@ -851,10 +834,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF", "Timer 2 Output", spc.Timer2.Output, Format.X8),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "SPC",
-				Data = entries
-			};
+			return new RegisterViewerTab("SPC", entries);
 		}
 
 		private RegisterViewerTab GetSnesDmaTab(ref SnesState state)
@@ -883,10 +863,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "B", "Unused register", ch.UnusedRegister, Format.X8));
 			}
 
-			return new RegisterViewerTab() {
-				TabName = "DMA",
-				Data = entries
-			};
+			return new RegisterViewerTab("DMA", entries);
 		}
 
 		private RegisterViewerTab GetSnesCpuTab(ref SnesState state)
@@ -934,10 +911,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$421E/F", "P4 Data", regs.ControllerData[3], Format.X16),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "CPU",
-				Data = entries
-			};
+			return new RegisterViewerTab("CPU", entries);
 		}
 
 		private RegisterViewerTab GetNesPpuTab(ref NesState state)
@@ -985,10 +959,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Write Toggle", ppu.WriteToggle)
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "PPU",
-				Data = entries
-			};
+			return new RegisterViewerTab("PPU", entries);
 		}
 
 		private RegisterViewerTab GetNesApuTab(ref NesState state)
@@ -1126,10 +1097,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Sequence Position", frameCounter.SequencePosition),
 			});
 
-			return new RegisterViewerTab() {
-				TabName = "APU",
-				Data = entries
-			};
+			return new RegisterViewerTab("APU", entries);
 		}
 
 		private RegisterViewerTab GetNesCartTab(ref NesState state)
@@ -1153,10 +1121,7 @@ namespace Mesen.Debugger.ViewModels
 				));
 			}
 
-			return new RegisterViewerTab() {
-				TabName = "Cart",
-				Data = entries
-			};
+			return new RegisterViewerTab("Cart", entries);
 		}
 
 		private RegisterViewerTab GetPceVceTab(ref PceState state)
@@ -1170,10 +1135,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$01.0-8", "CTA - Color Table Address", vce.PalAddr, Format.X16),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "VCE",
-				Data = entries
-			};
+			return new RegisterViewerTab("VCE", entries);
 		}
 
 		private RegisterViewerTab GetPceVpcTab(ref PceState state)
@@ -1209,10 +1171,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$0E", "STn writes to VDC2", vpc.StToVdc2Mode),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "VPC",
-				Data = entries
-			};
+			return new RegisterViewerTab("VPC", entries);
 		}
 
 		private RegisterViewerTab GetPceVdcTab(ref PceVdcState vdc, string suffix = "")
@@ -1286,10 +1245,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", vdc.SatbBlockSrc, Format.X16)
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "VDC" + suffix,
-				Data = entries
-			};
+			return new RegisterViewerTab("VDC" + suffix, entries);
 		}
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)
@@ -1319,10 +1275,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "MPR #7", mem.Mpr[7], Format.X8),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "CPU",
-				Data = entries
-			};
+			return new RegisterViewerTab("CPU", entries);
 		}
 
 		private RegisterViewerTab GetPcePsgTab(ref PceState pceState)
@@ -1354,10 +1307,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
-			return new RegisterViewerTab() {
-				TabName = "PSG",
-				Data = entries
-			};
+			return new RegisterViewerTab("PSG", entries);
 		}
 
 		private RegisterViewerTab GetPceCdRomTab(ref PceState pceState)
@@ -1428,10 +1378,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "End Behavior", player.EndBehavior),
 			};
 
-			return new RegisterViewerTab() {
-				TabName = "CD-ROM",
-				Data = entries
-			};
+			return new RegisterViewerTab("CD-ROM", entries);
 		}
 
 		private RegisterViewerTab GetPceArcadeCardTab(ref PceState pceState)
@@ -1461,10 +1408,7 @@ namespace Mesen.Debugger.ViewModels
 				});
 			}
 
-			return new RegisterViewerTab() {
-				TabName = "Arcade Card",
-				Data = entries
-			};
+			return new RegisterViewerTab("Arcade Card", entries);
 		}
 
 		public void OnGameLoaded()
@@ -1476,11 +1420,16 @@ namespace Mesen.Debugger.ViewModels
 
 	public class RegisterViewerTab : ReactiveObject
 	{
-		[Reactive] public string TabName { get; set; } = "";
-		[Reactive] public List<RegEntry> Data { get; set; } = new List<RegEntry>();
+		private string _name;
+		private List<RegEntry> _data;
+
+		public string TabName { get => _name; set => this.RaiseAndSetIfChanged(ref _name, value); }
+		public List<RegEntry> Data { get => _data; set => this.RaiseAndSetIfChanged(ref _data, value); }
 		
-		public RegisterViewerTab()
+		public RegisterViewerTab(string name, List<RegEntry> data)
 		{
+			_name = name;
+			_data = data;
 		}
 
 		public void SetData(List<RegEntry> rows)
@@ -1496,7 +1445,7 @@ namespace Mesen.Debugger.ViewModels
 		}
 	}
 
-	public class RegEntry : ReactiveObject
+	public class RegEntry : INotifyPropertyChanged
 	{
 		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0x40B0B0B0);
 
@@ -1505,22 +1454,47 @@ namespace Mesen.Debugger.ViewModels
 		public bool IsEnabled { get; }
 		public IBrush Background { get; }
 
-		[Reactive] public string Value { get; set; }
-		[Reactive] public string ValueHex { get; set; }
+		private string _value;
+		private string _valueHex;
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public string Value
+		{ 
+			get => _value;
+			set {
+				if(_value != value) {
+					_value = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+				}
+			}
+		}
+
+		public string ValueHex
+		{
+			get => _valueHex;
+			set
+			{
+				if(_valueHex != value) {
+					_valueHex = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ValueHex)));
+				}
+			}
+		}
 
 		public RegEntry(string reg, string name, object? value, Format format = Format.None)
 		{
 			Address = reg;
 			Name = name;
 
-			Value = GetValue(value);
-			ValueHex = GetHexValue(value, format);
+			_value = GetValue(value);
+			_valueHex = GetHexValue(value, format);
 
 			Background = value == null ? RegEntry.HeaderBgBrush : Brushes.Transparent;
 			IsEnabled = value != null;
 		}
 
-		public string GetValue(object? value)
+		private string GetValue(object? value)
 		{
 			if(value is string str) {
 				return str;
@@ -1534,7 +1508,7 @@ namespace Mesen.Debugger.ViewModels
 			throw new Exception("Unsupported type");
 		}
 
-		public string GetHexValue(object? value, Format format)
+		private string GetHexValue(object? value, Format format)
 		{
 			if(value == null) {
 				return "";

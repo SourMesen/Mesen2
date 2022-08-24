@@ -30,7 +30,6 @@ namespace Mesen.Debugger.Utilities
 					if(window.DataContext is IDisposable disposable) {
 						disposable.Dispose();
 					}
-					window.DataContext = null;
 					CloseDebugWindow(window);
 					ConfigManager.Config.Save();
 				}

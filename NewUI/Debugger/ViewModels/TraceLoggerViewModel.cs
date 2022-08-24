@@ -15,6 +15,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -237,10 +238,19 @@ namespace Mesen.Debugger.ViewModels
 			UpdateLog();
 		}
 
-		public void UpdateLog()
+		public void UpdateLog(bool scrollToBottom = false)
 		{
-			MinScrollPosition = Math.Min(MaxScrollPosition, DebugApi.TraceLogBufferSize - (int)DebugApi.GetExecutionTraceSize());
-			TraceLogLines = GetCodeLines(ScrollPosition, VisibleRowCount);
+			int traceSize = (int)DebugApi.GetExecutionTraceSize();
+			CodeLineData[] lines = GetCodeLines(ScrollPosition, VisibleRowCount);
+
+			Dispatcher.UIThread.Post(() => {
+				MinScrollPosition = Math.Min(MaxScrollPosition, DebugApi.TraceLogBufferSize - traceSize);
+				TraceLogLines = lines;
+
+				if(scrollToBottom) {
+					ScrollToBottom();
+				}
+			});
 		}
 
 		public void SetSelectedRow(int rowNumber)
