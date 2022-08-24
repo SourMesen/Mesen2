@@ -40,6 +40,10 @@ public:
 		//break things when the debugger is opened, etc.)
 		_needPowerCycle = false;
 		_needReset = false;
+
+		//TODO review this - prevents NES from power cycling 2x in a row
+		ClearBit(SystemActionManager::Buttons::ResetButton);
+		ClearBit(SystemActionManager::Buttons::PowerButton);
 	}
 
 	void OnAfterSetState() override
