@@ -16,9 +16,11 @@ namespace Mesen.Views
 	public class FontOptionsView : UserControl
 	{
 		public static readonly StyledProperty<bool> PreferMonospaceProperty = AvaloniaProperty.Register<FontOptionsView, bool>(nameof(PreferMonospace), false);
-		public static readonly StyledProperty<string> InternalFontFamilyProperty = AvaloniaProperty.Register<FontOptionsView, string>(nameof(InternalFontFamily), "", defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+		public static readonly StyledProperty<bool> ShowWarningProperty = AvaloniaProperty.Register<FontOptionsView, bool>(nameof(ShowWarning), false);
+		public static readonly StyledProperty<bool> ShowErrorProperty = AvaloniaProperty.Register<FontOptionsView, bool>(nameof(ShowError), false);
+		public static readonly StyledProperty<string?> InternalFontFamilyProperty = AvaloniaProperty.Register<FontOptionsView, string?>(nameof(InternalFontFamily), null, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
-		public string InternalFontFamily
+		public string? InternalFontFamily
 		{
 			get { return GetValue(InternalFontFamilyProperty); }
 			set { SetValue(InternalFontFamilyProperty, value); }
@@ -28,6 +30,18 @@ namespace Mesen.Views
 		{
 			get { return GetValue(PreferMonospaceProperty); }
 			set { SetValue(PreferMonospaceProperty, value); }
+		}
+
+		public bool ShowWarning
+		{
+			get { return GetValue(ShowWarningProperty); }
+			set { SetValue(ShowWarningProperty, value); }
+		}
+
+		public bool ShowError
+		{
+			get { return GetValue(ShowErrorProperty); }
+			set { SetValue(ShowErrorProperty, value); }
 		}
 
 		static FontOptionsView()
@@ -56,32 +70,30 @@ namespace Mesen.Views
 			}
 		}
 
-		private async void ValidateFont()
+		private void ValidateFont()
 		{
 			if(DataContext is FontConfig cfg) {
-				if(cfg.FontFamily == InternalFontFamily) {
-					//don't validate if this is the currently selected font
-					return;
-				} else if(InternalFontFamily == null) {
+				if(InternalFontFamily == null) {
 					//configured font doesn't exist - keep dropdown blank (FontFamily will crash if given a null)
+					ShowWarning = true;
 					return;
 				}
 
 				Typeface typeface = new Typeface(new FontFamily(InternalFontFamily));
 				if(PreferMonospace && !typeface.GlyphTypeface.IsFixedPitch) {
-					if(await MesenMsgBox.Show(VisualRoot, "NonMonospaceFontWarning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, InternalFontFamily) != Mesen.Windows.DialogResult.Yes) {
-						InternalFontFamily = cfg.FontFamily;
-						return;
-					}
+					ShowWarning = true;
+				} else {
+					ShowWarning = false;
 				}
 
 				FormattedText text = new FormattedText("W", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, null);
 				if(text.Width < 2 || text.Height < 2 || !double.IsFinite(text.Width) || !double.IsFinite(text.Height)) {
-					await MesenMsgBox.Show(VisualRoot, "InvalidFont", MessageBoxButtons.OK, MessageBoxIcon.Error, InternalFontFamily);
-					InternalFontFamily = cfg.FontFamily;
+					ShowWarning = false;
+					ShowError = true;
 					return;
 				}
 
+				ShowError = false;
 				cfg.FontFamily = InternalFontFamily;
 			}
 		}

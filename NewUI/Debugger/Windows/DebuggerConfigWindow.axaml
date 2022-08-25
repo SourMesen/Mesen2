@@ -134,16 +134,16 @@
 					<c:OptionSection Header="{l:Translate lblFontSettings}" Margin="0">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 							<TextBlock Text="{l:Translate lblDisassemblyFont}" />
-							<v:FontOptionsView Grid.Column="1" Grid.Row="0" DataContext="{CompiledBinding Fonts.DisassemblyFont}" PreferMonospace="True" />
+							<v:FontOptionsView Grid.Column="1" Grid.Row="0" DataContext="{CompiledBinding Fonts.DisassemblyFont}" />
 
 							<TextBlock Text="{l:Translate lblMemoryViewerFont}" Grid.Row="1" />
 							<v:FontOptionsView Grid.Column="1" Grid.Row="1" DataContext="{CompiledBinding Fonts.MemoryViewerFont}" PreferMonospace="True" />
 
 							<TextBlock Text="{l:Translate lblAssemblerFont}" Grid.Row="2" />
-							<v:FontOptionsView Grid.Column="1" Grid.Row="2" DataContext="{CompiledBinding Fonts.AssemblerFont}" PreferMonospace="True" />
+							<v:FontOptionsView Grid.Column="1" Grid.Row="2" DataContext="{CompiledBinding Fonts.AssemblerFont}" />
 							
 							<TextBlock Text="{l:Translate lblScriptWindowFont}" Grid.Row="3" />
-							<v:FontOptionsView Grid.Column="1" Grid.Row="3" DataContext="{CompiledBinding Fonts.ScriptWindowFont}" PreferMonospace="True" />
+							<v:FontOptionsView Grid.Column="1" Grid.Row="3" DataContext="{CompiledBinding Fonts.ScriptWindowFont}" />
 
 							<TextBlock Text="{l:Translate lblOtherMonoFont}" Grid.Row="4" />
 							<v:FontOptionsView Grid.Column="1" Grid.Row="4" DataContext="{CompiledBinding Fonts.OtherMonoFont}" PreferMonospace="True" />
