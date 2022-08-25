@@ -24,7 +24,7 @@
 			IsVisible="{CompiledBinding ShowWarning, ElementName=root}"
 			ToolTip.Tip="{l:Translate lblWarningMono}"
 			Stretch="None"
-			Margin="4"
+			Margin="4 0"
 			ToolTip.ShowDelay="0"
 			ToolTip.HorizontalOffset="10"
 		/>
@@ -33,7 +33,7 @@
 			IsVisible="{CompiledBinding ShowError, ElementName=root}"
 			ToolTip.Tip="{l:Translate lblError}"
 			Stretch="None"
-			Margin="4"
+			Margin="4 0"
 			ToolTip.ShowDelay="0"
 			ToolTip.HorizontalOffset="10"
 		/>
