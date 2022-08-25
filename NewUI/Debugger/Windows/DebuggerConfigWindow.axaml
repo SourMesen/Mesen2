@@ -134,7 +134,7 @@
 					<c:OptionSection Header="{l:Translate lblFontSettings}" Margin="0">
 						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 							<TextBlock Text="{l:Translate lblDisassemblyFont}" />
-							<v:FontOptionsView Grid.Column="1" Grid.Row="0" DataContext="{CompiledBinding Fonts.DisassemblyFont}" />
+							<v:FontOptionsView Grid.Column="1" Grid.Row="0" DataContext="{CompiledBinding Fonts.DisassemblyFont}" PreferMonospace="True" />
 
 							<TextBlock Text="{l:Translate lblMemoryViewerFont}" Grid.Row="1" />
 							<v:FontOptionsView Grid.Column="1" Grid.Row="1" DataContext="{CompiledBinding Fonts.MemoryViewerFont}" PreferMonospace="True" />
