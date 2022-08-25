@@ -145,9 +145,12 @@ public:
 		//MPR 7 is set to 0 on power on
 		_state.Mpr[7] = 0;
 
-		//Other MPR registers are random
-		for(int i = 0; i < 7; i++) {
-			_state.Mpr[i] = RandomHelper::GetValue(0, 255);
+		if(_emu->GetSettings()->GetPcEngineConfig().EnableRandomPowerOnState) {
+			//Other MPR registers are random
+			//Note this appears to break some games?
+			for(int i = 0; i < 7; i++) {
+				_state.Mpr[i] = RandomHelper::GetValue(0, 255);
+			}
 		}
 
 		//Map ROM to all 128 banks

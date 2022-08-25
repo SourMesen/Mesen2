@@ -397,13 +397,15 @@ struct PcEngineConfig
 	ControllerConfig Port1;
 	ControllerConfig Port1SubPorts[5];
 
+	bool PreventSelectRunReset = false;
+
 	PceConsoleType ConsoleType = PceConsoleType::Auto;
 	PceCdRomType CdRomType = PceCdRomType::Arcade;
 	bool EnableCdRomForHuCardGames = false;
 	bool DisableCdRomSaveRamForHuCardGames = false;
 
 	RamState RamPowerOnState = RamState::Random;
-	bool PreventSelectRunReset = false;
+	bool EnableRandomPowerOnState = false;
 
 	uint32_t ChannelVol[6] = { 100, 100, 100, 100, 100, 100 };
 	uint32_t CdAudioVolume = 100;

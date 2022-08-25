@@ -60,30 +60,32 @@ PceCpu::PceCpu(Emulator* emu, PceMemoryManager* memoryManager)
 
 	_state.PC = _memoryManager->Read(PceCpu::ResetVector) | _memoryManager->Read(PceCpu::ResetVector + 1) << 8;
 
-	//A, X, Y, S are random on power on
-	_state.A = RandomHelper::GetValue(0, 255);
-	_state.X = RandomHelper::GetValue(0, 255);
-	_state.Y = RandomHelper::GetValue(0, 255);
-	_state.SP = RandomHelper::GetValue(0, 255);
-
 	//I is set on power on
 	SetFlags(PceCpuFlags::Interrupt);
 
 	//T & M are always cleared on power on
 	ClearFlags(PceCpuFlags::Decimal | PceCpuFlags::Memory);
 
-	//Other flags are random
-	if(RandomHelper::GetBool()) {
-		SetFlags(PceCpuFlags::Zero);
-	}
-	if(RandomHelper::GetBool()) {
-		SetFlags(PceCpuFlags::Negative);
-	}
-	if(RandomHelper::GetBool()) {
-		SetFlags(PceCpuFlags::Overflow);
-	}
-	if(RandomHelper::GetBool()) {
-		SetFlags(PceCpuFlags::Carry);
+	if(_emu->GetSettings()->GetPcEngineConfig().EnableRandomPowerOnState) {
+		//A, X, Y, S are random on power on
+		_state.A = RandomHelper::GetValue(0, 255);
+		_state.X = RandomHelper::GetValue(0, 255);
+		_state.Y = RandomHelper::GetValue(0, 255);
+		_state.SP = RandomHelper::GetValue(0, 255);
+
+		//Other flags are random
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Zero);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Negative);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Overflow);
+		}
+		if(RandomHelper::GetBool()) {
+			SetFlags(PceCpuFlags::Carry);
+		}
 	}
 }
 #endif

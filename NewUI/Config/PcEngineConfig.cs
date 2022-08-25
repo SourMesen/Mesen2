@@ -22,13 +22,15 @@ namespace Mesen.Config
 		[Reactive] public ControllerConfig Port1D { get; set; } = new();
 		[Reactive] public ControllerConfig Port1E { get; set; } = new();
 
+		[Reactive] public bool PreventSelectRunReset { get; set; } = true;
+		
 		[Reactive] public PceConsoleType ConsoleType { get; set; } = PceConsoleType.Auto;
 		[Reactive] public PceCdRomType CdRomType { get; set; } = PceCdRomType.Arcade;
 		[Reactive] public bool EnableCdRomForHuCardGames { get; set; } = false;
 		[Reactive] public bool DisableCdRomSaveRamForHuCardGames { get; set; } = false;
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
-		[Reactive] public bool PreventSelectRunReset { get; set; } = true;
+		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
 
 		[Reactive] public UInt32 Channel1Vol { get; set; } = 100;
 		[Reactive] public UInt32 Channel2Vol { get; set; } = 100;
@@ -62,12 +64,14 @@ namespace Mesen.Config
 				Port1D = Port1D.ToInterop(),
 				Port1E = Port1E.ToInterop(),
 
+				PreventSelectRunReset = PreventSelectRunReset,
+
 				ConsoleType = ConsoleType,
 				CdRomType = CdRomType,
 				EnableCdRomForHuCardGames = EnableCdRomForHuCardGames,
 
 				RamPowerOnState = RamPowerOnState,
-				PreventSelectRunReset = PreventSelectRunReset,
+				EnableRandomPowerOnState = EnableRandomPowerOnState,
 
 				Channel1Vol = Channel1Vol,
 				Channel2Vol = Channel2Vol,
@@ -145,13 +149,15 @@ namespace Mesen.Config
 		public InteropControllerConfig Port1D;
 		public InteropControllerConfig Port1E;
 
+		[MarshalAs(UnmanagedType.I1)] public bool PreventSelectRunReset;
+
 		public PceConsoleType ConsoleType;
 		public PceCdRomType CdRomType;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableCdRomForHuCardGames;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableCdRomSaveRamForHuCardGames;
 
 		public RamState RamPowerOnState;
-		[MarshalAs(UnmanagedType.I1)] public bool PreventSelectRunReset;
+		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState;
 
 		public UInt32 Channel1Vol;
 		public UInt32 Channel2Vol;
