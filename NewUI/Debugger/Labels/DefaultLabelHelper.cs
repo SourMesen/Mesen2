@@ -20,6 +20,8 @@ namespace Mesen.Debugger.Labels
 				SetDefaultNesLabels();
 			} else if(cpuTypes.Contains(CpuType.Snes)) {
 				SetSnesDefaultLabels();
+			} else if(cpuTypes.Contains(CpuType.Pce)) {
+				SetPceDefaultLabels();
 			}
 		}
 
@@ -319,8 +321,39 @@ namespace Mesen.Debugger.Labels
 				LabelManager.SetLabel(0x0B13, MemoryType.NesPrgRom, "ReadKeyboard", "Input: " + Environment.NewLine + "Output: " + Environment.NewLine + "Affects: " + Environment.NewLine + "Desc: Read Family Basic Keyboard expansion (detail is under analysis)");
 				LabelManager.SetLabel(0x0B66, MemoryType.NesPrgRom, "LoadTileset", "Input: A = Low VRAM Address & Flags, Y = Hi VRAM Address, X = # of tiles to transfer to/from VRAM " + Environment.NewLine + "Output: " + Environment.NewLine + "Affects: A, X, Y, $00, $01, $02, $03, $04 " + Environment.NewLine + "Desc: This routine can read and write 2BP and 1BP tilesets to/from VRAM. See appendix below about the flags.");
 				LabelManager.SetLabel(0x0C22, MemoryType.NesPrgRom, "unk_EC22", "Some kind of logic that some games use. (detail is under analysis)");
-
 			}
+		}
+
+		private static void SetPceDefaultLabels()
+		{
+			LabelManager.SetLabel(0x000, MemoryType.PceMemory, "VDC_AR_0000", "Address Register (W) / Status Register (R)");
+			LabelManager.SetLabel(0x002, MemoryType.PceMemory, "VDC_DATA_LO_0002", "Data (low byte)");
+			LabelManager.SetLabel(0x003, MemoryType.PceMemory, "VDC_DATA_HI_0003", "Data (high byte) + Latch");
+			
+			LabelManager.SetLabel(0x400, MemoryType.PceMemory, "VCE_CONTROL_0400", "VCE Control Register");
+			LabelManager.SetLabel(0x402, MemoryType.PceMemory, "VCE_ADDR_LO_0402", "Color Table Address Register (LSB)");
+			LabelManager.SetLabel(0x403, MemoryType.PceMemory, "VCE_ADDR_HI_0403", "Color Table Address Register (MSB)");
+			LabelManager.SetLabel(0x404, MemoryType.PceMemory, "VCE_DATA_LO_0404", "Color Table Data Register (LSB)");
+			LabelManager.SetLabel(0x405, MemoryType.PceMemory, "VCE_DATA_HI_0405", "Color Table Data Register (MSB)");
+
+			LabelManager.SetLabel(0x800, MemoryType.PceMemory, "PSG_CHANSELECT_0800", "PSG channel select ($00-$05)");
+			LabelManager.SetLabel(0x801, MemoryType.PceMemory, "PSG_GLOBALVOL_0801", "Global Sound Volume (top 4 bits: Left; bottom 4 bits: Right)");
+			LabelManager.SetLabel(0x802, MemoryType.PceMemory, "PSG_FREQLO_0802", "Frequency (LSB)");
+			LabelManager.SetLabel(0x803, MemoryType.PceMemory, "PSG_FREQHI_0803", "Frequency (MSB - 4 bits)");
+			LabelManager.SetLabel(0x804, MemoryType.PceMemory, "PSG_CHANCTRL_0804", "Channel on/off, DDA on/off, Channel volume");
+			LabelManager.SetLabel(0x805, MemoryType.PceMemory, "PSG_CHANPAN_0805", "Channel sound balance/panning (Left/Right)");
+			LabelManager.SetLabel(0x806, MemoryType.PceMemory, "PSG_CHANDATA_0806", "Channel sound data (5 bits)");
+			LabelManager.SetLabel(0x807, MemoryType.PceMemory, "PSG_NOISE_0807", "Noise enable, Noise frequency");
+			LabelManager.SetLabel(0x808, MemoryType.PceMemory, "PSG_LFOFREQ_0808", "LFO frequency");
+			LabelManager.SetLabel(0x809, MemoryType.PceMemory, "PSG_LFOCONTROL_0809", "LFO trigger, LFO control");
+
+			LabelManager.SetLabel(0xC00, MemoryType.PceMemory, "TIMER_COUNTER_0C00", "Timer Counter (read)/latch (write)");
+			LabelManager.SetLabel(0xC01, MemoryType.PceMemory, "TIMER_CONTROL_0C01", "Timer Control");
+
+			LabelManager.SetLabel(0x1000, MemoryType.PceMemory, "JOYPAD_1000", "Joypad I/O");
+
+			LabelManager.SetLabel(0x1402, MemoryType.PceMemory, "IRQ_DISABLE_1402", "IRQ Disable toggle");
+			LabelManager.SetLabel(0x1403, MemoryType.PceMemory, "IRQ_STATUS_1403", "IRQ Status (Read); Acknowledge Timer interrupt (write)");
 		}
 	}
 }
