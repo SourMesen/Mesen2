@@ -23,6 +23,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(FontSize), 12);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
+		
+		public static readonly StyledProperty<int> VisibleRowCountProperty = AvaloniaProperty.Register<DisassemblyViewer, int>(nameof(VisibleRowCount), 0);
 
 		private static readonly PolylineGeometry ArrowShape = new PolylineGeometry(new List<Point> {
 			new Point(0, 5), new Point(8, 5), new Point(8, 0), new Point(15, 7), new Point(15, 8), new Point(8, 15), new Point(8, 10), new Point(0, 10),
@@ -38,6 +40,12 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(SearchStringProperty); }
 			set { SetValue(SearchStringProperty, value); }
+		}
+
+		public int VisibleRowCount
+		{
+			get { return GetValue(VisibleRowCountProperty); }
+			set { SetValue(VisibleRowCountProperty, value); }
 		}
 
 		public ILineStyleProvider StyleProvider
@@ -86,6 +94,10 @@ namespace Mesen.Debugger.Controls
 		static DisassemblyViewer()
 		{
 			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty, AddressDisplayTypeProperty);
+
+			FontSizeProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
+			FontFamilyProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
+			BoundsProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
 		}
 
 		public DisassemblyViewer()
@@ -150,17 +162,12 @@ namespace Mesen.Debugger.Controls
 			CodePointerMoved?.Invoke(this, new CodePointerMovedEventArgs(-1, e, null, null));
 		}
 
-		public int GetVisibleRowCount()
-		{
-			InitFontAndLetterSize();
-			return (int)Math.Ceiling(Bounds.Height / RowHeight);
-		}
-
 		private void InitFontAndLetterSize()
 		{
 			this.Font = new Typeface(FontFamily);
 			var text = FormatText("A");
 			this.LetterSize = new Size(text.Width, text.Height);
+			this.VisibleRowCount = (int)Math.Ceiling(Bounds.Height / RowHeight);
 		}
 
 		private FormattedText FormatText(string text, IBrush? foreground = null, int fontSizeOffset = 0)
@@ -185,8 +192,6 @@ namespace Mesen.Debugger.Controls
 			if(lines.Length == 0) {
 				return;
 			}
-
-			InitFontAndLetterSize();
 
 			double y = 0;
 			FormattedText text;
@@ -226,7 +231,7 @@ namespace Mesen.Debugger.Controls
 			_visibleCodeSegments.Clear();
 
 			//Draw code
-			int lineCount = Math.Min(GetVisibleRowCount(), lines.Length);
+			int lineCount = Math.Min(VisibleRowCount, lines.Length);
 			for(int i = 0; i < lineCount; i++) {
 				CodeLineData line = lines[i];
 				string addrFormat = "X" + line.CpuType.GetAddressSize();

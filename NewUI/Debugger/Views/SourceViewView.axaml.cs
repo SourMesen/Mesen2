@@ -34,24 +34,20 @@ namespace Mesen.Debugger.Views
 		private DisassemblyViewer _viewer;
 		private BaseToolContainerViewModel? _parentModel;
 
-		static SourceViewView()
-		{
-			BoundsProperty.Changed.AddClassHandler<SourceViewView>((x, e) => {
-				int rowCount = x._viewer.GetVisibleRowCount();
-				int prevCount = x.Model.VisibleRowCount;
-				if(prevCount != rowCount) {
-					int pos = x.Model.ScrollPosition + (prevCount / 2);
-					x.Model.VisibleRowCount = rowCount;
-					x.Model.ScrollToRowNumber(pos);
-					x.Model.Refresh();
-				}
-			});
-		}
-
 		public SourceViewView()
 		{
 			InitializeComponent();
 			_viewer = this.GetControl<DisassemblyViewer>("disViewer");
+			_viewer.GetPropertyChangedObservable(DisassemblyViewer.VisibleRowCountProperty).Subscribe(x => {
+				int rowCount = _viewer.VisibleRowCount;
+				int prevCount = Model.VisibleRowCount;
+				if(prevCount != rowCount) {
+					int pos = Model.ScrollPosition + (prevCount / 2);
+					Model.VisibleRowCount = rowCount;
+					Model.ScrollToRowNumber(pos);
+					Model.Refresh();
+				}
+			});
 
 			InitBreakpointContextMenu();
 			InitMainContextMenu();
