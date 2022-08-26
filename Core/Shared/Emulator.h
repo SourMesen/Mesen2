@@ -179,7 +179,7 @@ public:
 	bool IsPaused();
 
 	bool LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom = true, bool forPowerCycle = false);
-	RomInfo& GetRomInfo();
+	RomInfo& GetRomInfo() { return _rom; }
 	string GetHash(HashType type);
 	uint32_t GetCrc32();
 	PpuFrameInfo GetPpuFrame();
@@ -201,23 +201,23 @@ public:
 	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);
 	bool Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings);
 
-	SoundMixer* GetSoundMixer();
-	VideoRenderer* GetVideoRenderer();
-	VideoDecoder* GetVideoDecoder();
-	ShortcutKeyHandler* GetShortcutKeyHandler();
-	NotificationManager* GetNotificationManager();
-	EmuSettings* GetSettings();
-	SaveStateManager* GetSaveStateManager();
-	RewindManager* GetRewindManager();
-	DebugHud* GetDebugHud();
-	DebugHud* GetScriptHud();
-	BatteryManager* GetBatteryManager();
-	CheatManager* GetCheatManager();
-	MovieManager* GetMovieManager();
-	HistoryViewer* GetHistoryViewer();
-	GameServer* GetGameServer();
-	GameClient* GetGameClient();
-	shared_ptr<SystemActionManager> GetSystemActionManager();
+	SoundMixer* GetSoundMixer() { return _soundMixer.get(); }
+	VideoRenderer* GetVideoRenderer() { return _videoRenderer.get(); }
+	VideoDecoder* GetVideoDecoder() { return _videoDecoder.get(); }
+	ShortcutKeyHandler* GetShortcutKeyHandler() { return _shortcutKeyHandler.get(); }
+	NotificationManager* GetNotificationManager() { return _notificationManager.get(); }
+	EmuSettings* GetSettings() { return _settings.get(); }
+	SaveStateManager* GetSaveStateManager() { return _saveStateManager.get(); }
+	RewindManager* GetRewindManager() { return _rewindManager.get(); }
+	DebugHud* GetDebugHud() { return _debugHud.get(); }
+	DebugHud* GetScriptHud() { return _scriptHud.get(); }
+	BatteryManager* GetBatteryManager() { return _batteryManager.get(); }
+	CheatManager* GetCheatManager() { return _cheatManager.get(); }
+	MovieManager* GetMovieManager() { return _movieManager.get(); }
+	HistoryViewer* GetHistoryViewer() { return _historyViewer.get(); }
+	GameServer* GetGameServer() { return _gameServer.get(); }
+	GameClient* GetGameClient() { return _gameClient.get(); }
+	shared_ptr<SystemActionManager> GetSystemActionManager() { return _systemActionManager; }
 
 	BaseVideoFilter* GetVideoFilter();
 
@@ -230,10 +230,10 @@ public:
 	void InitDebugger();
 	void StopDebugger();
 	DebuggerRequest GetDebugger(bool autoInit = false);
-	bool IsDebugging();
+	bool IsDebugging() { return !!_debugger; }
 	Debugger* InternalGetDebugger() { return _debugger.get(); }
 
-	thread::id GetEmulationThreadId();
+	thread::id GetEmulationThreadId() { return _emulationThreadId; }
 	bool IsEmulationThread();
 
 	void RegisterMemory(MemoryType type, void* memory, uint32_t size);
@@ -241,10 +241,10 @@ public:
 
 	AudioTrackInfo GetAudioTrackInfo();
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p);
-	AudioPlayerHud* GetAudioPlayerHud();
+	AudioPlayerHud* GetAudioPlayerHud() { return _audioPlayerHud.get(); }
 
-	bool IsRunning();
-	bool IsRunAheadFrame();
+	bool IsRunning() { return _console != nullptr; }
+	bool IsRunAheadFrame() { return _isRunAheadFrame; }
 
 	TimingInfo GetTimingInfo(CpuType cpuType);
 	uint32_t GetFrameCount();

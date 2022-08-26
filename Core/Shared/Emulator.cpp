@@ -511,11 +511,6 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 	}
 }
 
-RomInfo& Emulator::GetRomInfo()
-{
-	return _rom;
-}
-
 string Emulator::GetHash(HashType type)
 {
 	//TODO
@@ -844,91 +839,6 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 	return true;
 }
 
-SoundMixer* Emulator::GetSoundMixer()
-{
-	return _soundMixer.get();
-}
-
-VideoRenderer* Emulator::GetVideoRenderer()
-{
-	return _videoRenderer.get();
-}
-
-VideoDecoder* Emulator::GetVideoDecoder()
-{
-	return _videoDecoder.get();
-}
-
-ShortcutKeyHandler* Emulator::GetShortcutKeyHandler()
-{
-	return _shortcutKeyHandler.get();
-}
-
-NotificationManager* Emulator::GetNotificationManager()
-{
-	return _notificationManager.get();
-}
-
-EmuSettings* Emulator::GetSettings()
-{
-	return _settings.get();
-}
-
-SaveStateManager* Emulator::GetSaveStateManager()
-{
-	return _saveStateManager.get();
-}
-
-RewindManager* Emulator::GetRewindManager()
-{
-	return _rewindManager.get();
-}
-
-DebugHud* Emulator::GetDebugHud()
-{
-	return _debugHud.get();
-}
-
-DebugHud* Emulator::GetScriptHud()
-{
-	return _scriptHud.get();
-}
-
-BatteryManager* Emulator::GetBatteryManager()
-{
-	return _batteryManager.get();
-}
-
-CheatManager* Emulator::GetCheatManager()
-{
-	return _cheatManager.get();
-}
-
-MovieManager* Emulator::GetMovieManager()
-{
-	return _movieManager.get();
-}
-
-HistoryViewer* Emulator::GetHistoryViewer()
-{
-	return _historyViewer.get();
-}
-
-GameServer* Emulator::GetGameServer()
-{
-	return _gameServer.get();
-}
-
-GameClient* Emulator::GetGameClient()
-{
-	return _gameClient.get();
-}
-
-shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
-{
-	return _systemActionManager;
-}
-
 BaseVideoFilter* Emulator::GetVideoFilter()
 {
 	shared_ptr<IConsole> console = GetConsole();
@@ -1043,16 +953,6 @@ void Emulator::StopDebugger()
 	}
 }
 
-bool Emulator::IsDebugging()
-{
-	return !!_debugger;
-}
-
-thread::id Emulator::GetEmulationThreadId()
-{
-	return _emulationThreadId;
-}
-
 bool Emulator::IsEmulationThread()
 {
 	return _emulationThreadId == std::this_thread::get_id();
@@ -1090,21 +990,6 @@ void Emulator::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	if(console) {
 		console->ProcessAudioPlayerAction(p);
 	}
-}
-
-AudioPlayerHud* Emulator::GetAudioPlayerHud()
-{
-	return _audioPlayerHud.get();
-}
-
-bool Emulator::IsRunning()
-{
-	return _console != nullptr;
-}
-
-bool Emulator::IsRunAheadFrame()
-{
-	return _isRunAheadFrame;
 }
 
 template<CpuType type>
