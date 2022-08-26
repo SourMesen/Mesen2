@@ -51,7 +51,6 @@ class SnesDebugger final : public IDebugger
 	unique_ptr<SnesAssembler> _assembler;
 	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<SnesCpuTraceLogger> _traceLogger;
 	unique_ptr<SnesPpuTools> _ppuTools;
 	unique_ptr<DummySnesCpu> _dummyCpu;

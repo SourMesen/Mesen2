@@ -1073,6 +1073,7 @@
 
 			<Control ID="lblMiscSettings">Misc. settings</Control>
 			<Control ID="chkBringToFrontOnBreak">Bring to front on break</Control>
+			<Control ID="chkBringToFrontOnPause">Bring to front on pause</Control>
 			<Control ID="chkRefreshWhileRunning">Refresh while running</Control>
 			<Control ID="chkDrawPartialFrame">Draw partial frame</Control>
 			<Control ID="chkUsePredictiveBreakpoints">Use predictive breakpoints</Control>
@@ -2424,6 +2425,7 @@
 			<Value ID="CompactText">Text (Active only)</Value>
 		</Enum>
 		<Enum ID="BreakSource">
+			<Value ID="Pause">Pause</Value>
 			<Value ID="Breakpoint">Breakpoint</Value>
 			<Value ID="CpuStep">CPU Step</Value>
 			<Value ID="PpuStep">PPU Step</Value>

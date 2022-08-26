@@ -119,7 +119,8 @@ public:
 	int32_t EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache);
 
 	void Run();
-	void Step(CpuType cpuType, int32_t stepCount, StepType type);
+	void PauseOnNextFrame();
+	void Step(CpuType cpuType, int32_t stepCount, StepType type, BreakSource source = BreakSource::Unspecified);
 	bool IsPaused();
 	bool IsExecutionStopped();
 

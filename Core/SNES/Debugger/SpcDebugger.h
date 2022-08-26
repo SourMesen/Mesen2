@@ -28,7 +28,6 @@ class SpcDebugger final : public IDebugger
 	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<SpcTraceLogger> _traceLogger;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<DummySpc> _dummyCpu;
 
 	uint8_t _prevOpCode = 0xFF;

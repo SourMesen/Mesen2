@@ -38,7 +38,6 @@ class GbDebugger final : public IDebugger
 	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<CodeDataLogger> _codeDataLogger;
 	unique_ptr<BreakpointManager> _breakpointManager;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<GbAssembler> _assembler;
 	unique_ptr<GbTraceLogger> _traceLogger;
 	unique_ptr<GbPpuTools> _ppuTools;

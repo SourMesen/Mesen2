@@ -175,7 +175,12 @@
 				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
-
+			
+			<CheckBox
+				IsChecked="{CompiledBinding Config.BringToFrontOnPause}"
+				Content="{l:Translate chkBringToFrontOnPause}"
+			/>
+			
 			<CheckBox
 				IsChecked="{CompiledBinding Config.RefreshWhileRunning}"
 				Content="{l:Translate chkRefreshWhileRunning}"

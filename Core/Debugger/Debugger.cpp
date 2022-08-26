@@ -481,13 +481,25 @@ void Debugger::Run()
 	_waitForBreakResume = false;
 }
 
-void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type)
+void Debugger::PauseOnNextFrame()
+{
+	//Use BreakSource::PpuStep to prevent "Run single frame" from triggering the "bring to front on pause" feature
+	switch(_mainCpuType) {
+		case CpuType::Snes: Step(CpuType::Snes, 240, StepType::SpecificScanline, BreakSource::PpuStep); break;
+		case CpuType::Gameboy: Step(CpuType::Gameboy, 144, StepType::SpecificScanline, BreakSource::PpuStep); break;
+		case CpuType::Nes: Step(CpuType::Nes, 240, StepType::SpecificScanline, BreakSource::PpuStep); break;
+		case CpuType::Pce: Step(CpuType::Pce, 243, StepType::SpecificScanline, BreakSource::PpuStep); break;
+	}
+}
+
+void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type, BreakSource source)
 {
 	DebugBreakHelper helper(this);
 	IDebugger* debugger = _debuggers[(int)cpuType].Debugger.get();
 
 	if(debugger) {
 		debugger->Step(stepCount, type);
+		debugger->GetStepRequest()->SetBreakSource(source);
 	}
 
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {

@@ -49,6 +49,7 @@ namespace Mesen.Config
 		[Reactive] public bool RefreshWhileRunning { get; set; } = false;
 
 		[Reactive] public bool BringToFrontOnBreak { get; set; } = true;
+		[Reactive] public bool BringToFrontOnPause { get; set; } = false;
 
 		[Reactive] public CodeDisplayMode UnidentifiedBlockDisplay { get; set; } = CodeDisplayMode.Hide;
 		[Reactive] public CodeDisplayMode VerifiedDataDisplay { get; set; } = CodeDisplayMode.Hide;

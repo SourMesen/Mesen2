@@ -290,6 +290,7 @@ enum class BreakSource
 {
 	Unspecified = -1,
 	Breakpoint = 0,
+	Pause,
 	CpuStep,
 	PpuStep,
 	BreakOnBrk,
@@ -374,10 +375,27 @@ struct StepRequest
 		HasRequest = (StepCount != -1 || PpuStepCount != -1 || BreakAddress != -1 || BreakScanline != INT32_MIN || CpuCycleStepCount != -1);
 	}
 
+	__forceinline void SetBreakSource(BreakSource source)
+	{
+		if(Source == BreakSource::Unspecified) {
+			Source = source;
+		}
+	}
+
+	BreakSource GetBreakSource()
+	{
+		if(Source == BreakSource::Unspecified) {
+			if(BreakScanline != INT32_MIN || PpuStepCount >= 0) {
+				return BreakSource::PpuStep;
+			}
+		}
+		return Source;		
+	}
+
 	__forceinline void Break(BreakSource src)
 	{
 		BreakNeeded = true;
-		Source = src;
+		SetBreakSource(src);
 	}
 
 	__forceinline void ProcessCpuExec()
@@ -386,7 +404,7 @@ struct StepRequest
 			StepCount--;
 			if(StepCount == 0) {
 				BreakNeeded = true;
-				Source = BreakSource::CpuStep;
+				SetBreakSource(BreakSource::CpuStep);
 			}
 		}
 	}
@@ -397,7 +415,7 @@ struct StepRequest
 			CpuCycleStepCount--;
 			if(CpuCycleStepCount == 0) {
 				BreakNeeded = true;
-				Source = BreakSource::CpuStep;
+				SetBreakSource(BreakSource::CpuStep);
 				return true;
 			}
 		}
@@ -409,12 +427,12 @@ struct StepRequest
 		if(forNmi) {
 			if(Type == StepType::RunToNmi) {
 				BreakNeeded = true;
-				Source = BreakSource::Nmi;
+				SetBreakSource(BreakSource::Nmi);
 			}
 		} else {
 			if(Type == StepType::RunToIrq) {
 				BreakNeeded = true;
-				Source = BreakSource::Irq;
+				SetBreakSource(BreakSource::Irq);
 			}
 		}
 	}

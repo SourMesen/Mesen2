@@ -17,12 +17,17 @@ enum class MemoryOperationType;
 
 class IDebugger
 {
+protected:
+	unique_ptr<StepRequest> _step;
+
 public:
 	bool IgnoreBreakpoints = false;
 	bool AllowChangeProgramCounter = false;
 	CpuInstructionProgress InstructionProgress = {};
 
 	virtual ~IDebugger() = default;
+
+	StepRequest* GetStepRequest() { return _step.get(); }
 
 	virtual void Step(int32_t stepCount, StepType type) = 0;
 	virtual void Reset() = 0;

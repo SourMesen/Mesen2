@@ -48,7 +48,6 @@ class PceDebugger final : public IDebugger
 	unique_ptr<CallstackManager> _callstackManager;
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<PceTraceLogger> _traceLogger;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<PceVdcTools> _ppuTools;
 
 	bool _enableBreakOnUninitRead = false;

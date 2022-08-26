@@ -1207,6 +1207,7 @@ namespace Mesen.Interop
 	{
 		Unspecified = -1,
 		Breakpoint = 0,
+		Pause,
 		CpuStep,
 		PpuStep,
 		BreakOnBrk,

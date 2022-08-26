@@ -347,11 +347,11 @@ void NesDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _ppu->GetCurrentCycle() == 0 && _ppu->GetCurrentScanline() == _step->BreakScanline) {
-			_debugger->SleepUntilResume(CpuType::Nes, BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Nes, _step->GetBreakSource());
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
 			if(_step->PpuStepCount == 0) {
-				_debugger->SleepUntilResume(CpuType::Nes, BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Nes, _step->GetBreakSource());
 			}
 		}
 	}

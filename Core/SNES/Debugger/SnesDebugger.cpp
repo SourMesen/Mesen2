@@ -377,11 +377,11 @@ void SnesDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _ppu->GetScanline() == _step->BreakScanline && _memoryManager->GetHClock() == 0) {
-			_debugger->SleepUntilResume(CpuType::Snes, BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Snes, _step->GetBreakSource());
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
 			if(_step->PpuStepCount == 0) {
-				_debugger->SleepUntilResume(CpuType::Snes, BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Snes, _step->GetBreakSource());
 			}
 		}
 	}

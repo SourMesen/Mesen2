@@ -28,7 +28,6 @@ class Cx4Debugger final : public IDebugger
 
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<CallstackManager> _callstackManager;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<Cx4TraceLogger> _traceLogger;
 
 	uint32_t _prevProgramCounter = 0;

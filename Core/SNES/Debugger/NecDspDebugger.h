@@ -23,7 +23,6 @@ class NecDspDebugger final : public IDebugger
 	EmuSettings* _settings;
 
 	unique_ptr<BreakpointManager> _breakpointManager;
-	unique_ptr<StepRequest> _step;
 	unique_ptr<NecDspTraceLogger> _traceLogger;
 	unique_ptr<CallstackManager> _callstackManager;
 

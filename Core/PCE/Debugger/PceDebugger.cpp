@@ -317,12 +317,12 @@ void PceDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _vdc->GetHClock() == 0 && _vdc->GetScanline() == _step->BreakScanline) {
-			_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Pce, _step->GetBreakSource());
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount -= 3;
 			if(_step->PpuStepCount <= 0) {
 				_step->PpuStepCount = 0;
-				_debugger->SleepUntilResume(CpuType::Pce, BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Pce, _step->GetBreakSource());
 			}
 		}
 	}

@@ -665,27 +665,10 @@ double Emulator::GetFrameDelay()
 
 void Emulator::PauseOnNextFrame()
 {
+	//Used by "Run single frame" shortcut
 	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
-		//TODO move this logic to console classes?
-		switch(GetConsoleType()) {
-			case ConsoleType::Snes:
-				debugger->Step(CpuType::Snes, 240, StepType::SpecificScanline);
-				break;
-
-			case ConsoleType::Gameboy:
-			case ConsoleType::GameboyColor:
-				debugger->Step(CpuType::Gameboy, 144, StepType::SpecificScanline);
-				break;
-
-			case ConsoleType::Nes:
-				debugger->Step(CpuType::Nes, 240, StepType::SpecificScanline);
-				break;
-
-			case ConsoleType::PcEngine:
-				debugger->Step(CpuType::Pce, 243, StepType::SpecificScanline);
-				break;
-		}
+		debugger->PauseOnNextFrame();
 	} else {
 		_pauseOnNextFrame = true;
 		_paused = false;
@@ -696,7 +679,7 @@ void Emulator::Pause()
 {
 	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
-		debugger->Step(GetCpuTypes()[0], 1, StepType::Step);
+		debugger->Step(GetCpuTypes()[0], 1, StepType::Step, BreakSource::Pause);
 	} else {
 		_paused = true;
 	}

@@ -309,11 +309,11 @@ void GbDebugger::ProcessPpuCycle()
 
 	if(_step->HasRequest) {
 		if(_step->HasScanlineBreakRequest() && _ppu->GetCycle() == 0 && _ppu->GetScanline() == _step->BreakScanline) {
-			_debugger->SleepUntilResume(CpuType::Gameboy, BreakSource::PpuStep);
+			_debugger->SleepUntilResume(CpuType::Gameboy, _step->GetBreakSource());
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
 			if(_step->PpuStepCount == 0) {
-				_debugger->SleepUntilResume(CpuType::Gameboy, BreakSource::PpuStep);
+				_debugger->SleepUntilResume(CpuType::Gameboy, _step->GetBreakSource());
 			}
 		}
 	}
