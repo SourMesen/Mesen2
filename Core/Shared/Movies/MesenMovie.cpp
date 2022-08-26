@@ -92,7 +92,10 @@ void MesenMovie::ProcessNotification(ConsoleNotificationType type, void* paramet
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
 		_emu->RegisterInputProvider(this);
-		_controlManager->SetPollCounter(_lastPollCounter);
+		shared_ptr<IConsole> console = _emu->GetConsole();
+		if(console) {
+			console->GetControlManager()->SetPollCounter(_lastPollCounter);
+		}
 	}
 }
 
