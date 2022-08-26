@@ -344,7 +344,8 @@ namespace Mesen.Debugger.ViewModels
 			CodeLineData[] lines = GetCodeLines(SelectionStart, len);
 
 			for(int i = 0; i < len; i++) {
-				sb.AppendLine(lines[i].Text);
+				string addrFormat = "X" + lines[i].CpuType.GetAddressSize();
+				sb.AppendLine(lines[i].GetAddressText(AddressDisplayType.CpuAddress, addrFormat).PadRight(6) + " " + lines[i].Text);
 			}
 			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
 		}
