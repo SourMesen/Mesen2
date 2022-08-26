@@ -260,7 +260,7 @@ void Emulator::ProcessEndOfFrame()
 			_frameLimiter->SetDelay(_frameDelay);
 		}
 
-		GetControlManager()->ProcessEndOfFrame();
+		_console->GetControlManager()->ProcessEndOfFrame();
 	}
 	_frameRunning = false;
 }
@@ -313,7 +313,7 @@ void Emulator::Reset()
 	Lock();
 
 	_console->Reset();
-	GetControlManager()->UpdateInputState();
+	_console->GetControlManager()->UpdateInputState();
 
 	_videoRenderer->ClearFrame();
 
@@ -427,15 +427,15 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_cheatManager->ClearCheats(false);
 
 	uint32_t pollCounter = 0;
-	if(forPowerCycle && GetControlManager()) {
+	if(forPowerCycle && console->GetControlManager()) {
 		//When power cycling, poll counter must be preserved to allow movies to playback properly
-		pollCounter = GetControlManager()->GetPollCounter();
+		pollCounter = console->GetControlManager()->GetPollCounter();
 	}
 
 	_console.reset(console);
 
 	//Restore pollcounter (used by movies when a power cycle is in the movie)
-	GetControlManager()->SetPollCounter(pollCounter);
+	_console->GetControlManager()->SetPollCounter(pollCounter);
 
 	if(debuggerActive) {
 		InitDebugger();
@@ -446,8 +446,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	_notificationManager->RegisterNotificationListener(_rewindManager);
 
-	GetControlManager()->UpdateControlDevices();
-	GetControlManager()->UpdateInputState();
+	_console->GetControlManager()->UpdateControlDevices();
+	_console->GetControlManager()->UpdateInputState();
 
 	_autoSaveStateFrameCounter = 0;
 
@@ -532,36 +532,46 @@ uint32_t Emulator::GetCrc32()
 
 PpuFrameInfo Emulator::GetPpuFrame()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetPpuFrame() : PpuFrameInfo {};
 }
 
 ConsoleRegion Emulator::GetRegion()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetRegion() : ConsoleRegion::Ntsc;
 }
 
-IConsole* Emulator::GetConsole()
+shared_ptr<IConsole> Emulator::GetConsole()
 {
+	return _console.lock();
+}
+
+IConsole* Emulator::GetConsoleUnsafe()
+{
+#ifdef _DEBUG
+	if(!IsEmulationThread()) {
+		throw std::runtime_error("GetConsoleUnsafe should only be called from the emulation thread");
+	}
+#endif
 	return _console.get();
 }
 
 ConsoleType Emulator::GetConsoleType()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetConsoleType() : ConsoleType::Snes;
 }
 
 vector<CpuType> Emulator::GetCpuTypes()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetCpuTypes() : vector<CpuType>{};
 }
 
 TimingInfo Emulator::GetTimingInfo(CpuType cpuType)
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetTimingInfo(cpuType) : TimingInfo {};
 }
 
@@ -585,27 +595,59 @@ uint32_t Emulator::GetFrameCount()
 
 uint32_t Emulator::GetLagCounter()
 {
-	BaseControlManager* controlManager = GetControlManager();
-	return controlManager ? controlManager->GetLagCounter() : 0;
+	shared_ptr<IConsole> console = GetConsole();
+	return console ? console->GetControlManager()->GetLagCounter() : 0;
 }
 
 void Emulator::ResetLagCounter()
 {
-	BaseControlManager* controlManager = GetControlManager();
-	if(controlManager) {
-		controlManager->ResetLagCounter();
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetControlManager()->ResetLagCounter();
 	}
 }
 
 bool Emulator::HasControlDevice(ControllerType type)
 {
-	BaseControlManager* controlManager = GetControlManager();
-	return controlManager ? controlManager->HasControlDevice(type) : false;
+	shared_ptr<IConsole> console = GetConsole();
+	return console ? console->GetControlManager()->HasControlDevice(type) : false;
+}
+
+void Emulator::RegisterInputRecorder(IInputRecorder* recorder)
+{
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetControlManager()->RegisterInputRecorder(recorder);
+	}
+}
+
+void Emulator::UnregisterInputRecorder(IInputRecorder* recorder)
+{
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetControlManager()->UnregisterInputRecorder(recorder);
+	}
+}
+
+void Emulator::RegisterInputProvider(IInputProvider* provider)
+{
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetControlManager()->RegisterInputProvider(provider);
+	}
+}
+
+void Emulator::UnregisterInputProvider(IInputProvider* provider)
+{
+	shared_ptr<IConsole> console = GetConsole();
+	if(console) {
+		console->GetControlManager()->UnregisterInputProvider(provider);
+	}
 }
 
 double Emulator::GetFps()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetFps() : 60.0;
 }
 
@@ -630,6 +672,7 @@ void Emulator::PauseOnNextFrame()
 {
 	shared_ptr<Debugger> debugger = _debugger.lock();
 	if(debugger) {
+		//TODO move this logic to console classes?
 		switch(GetConsoleType()) {
 			case ConsoleType::Snes:
 				debugger->Step(CpuType::Snes, 240, StepType::SpecificScanline);
@@ -886,22 +929,15 @@ shared_ptr<SystemActionManager> Emulator::GetSystemActionManager()
 	return _systemActionManager;
 }
 
-BaseControlManager* Emulator::GetControlManager()
-{
-	//TODO calling this is not completely safe - console might be deleted and the controlmanager along with it
-	shared_ptr<IConsole> console = _console.lock();
-	return console ? console->GetControlManager() : nullptr;
-}
-
 BaseVideoFilter* Emulator::GetVideoFilter()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetVideoFilter() : new SnesDefaultVideoFilter(this);
 }
 
 void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	if(console) {
 		shared_ptr<IBarcodeReader> reader = console->GetControlManager()->GetControlDevice<IBarcodeReader>();
 		if(reader) {
@@ -912,7 +948,7 @@ void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)
 
 void Emulator::ProcessTapeRecorderAction(TapeRecorderAction action, string filename)
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	if(console) {
 		shared_ptr<ITapeRecorder> recorder = console->GetControlManager()->GetControlDevice<ITapeRecorder>();
 		if(recorder) {
@@ -923,13 +959,13 @@ void Emulator::ProcessTapeRecorderAction(TapeRecorderAction action, string filen
 
 ShortcutState Emulator::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t shortcutParam)
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->IsShortcutAllowed(shortcut, shortcutParam) : ShortcutState::Default;
 }
 
 bool Emulator::IsKeyboardConnected()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	return console ? console->GetControlManager()->IsKeyboardConnected() : false;
 }
 
@@ -1034,7 +1070,7 @@ ConsoleMemoryInfo Emulator::GetMemory(MemoryType type)
 
 AudioTrackInfo Emulator::GetAudioTrackInfo()
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	if(!console) {
 		return {};
 	}
@@ -1050,7 +1086,7 @@ AudioTrackInfo Emulator::GetAudioTrackInfo()
 
 void Emulator::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 {
-	shared_ptr<IConsole> console = _console.lock();
+	shared_ptr<IConsole> console = GetConsole();
 	if(console) {
 		console->ProcessAudioPlayerAction(p);
 	}

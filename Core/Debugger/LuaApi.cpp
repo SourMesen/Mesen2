@@ -788,7 +788,7 @@ int LuaApi::GetInput(lua_State *lua)
 	errorCond(port < 0 || port > 5, "Invalid port number - must be between 0 to 4");
 	errorCond(subport < 0 || subport > IControllerHub::MaxSubPorts, "Invalid subport number");
 
-	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->GetControlDevice(port, subport);
+	shared_ptr<BaseControlDevice> controller = _emu->GetConsoleUnsafe()->GetControlManager()->GetControlDevice(port, subport);
 
 	lua_newtable(lua);
 
@@ -824,7 +824,7 @@ int LuaApi::SetInput(lua_State* lua)
 	errorCond(port < 0 || port > 5, "Invalid port number - must be between 0 to 4");
 	errorCond(subport < 0 || subport > IControllerHub::MaxSubPorts, "Invalid subport number");
 
-	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->GetControlDevice(port, subport);
+	shared_ptr<BaseControlDevice> controller = _emu->GetConsoleUnsafe()->GetControlManager()->GetControlDevice(port, subport);
 	if(!controller) {
 		return 0;
 	}
@@ -1001,7 +1001,7 @@ int LuaApi::GetState(lua_State *lua)
 	checkparams();
 
 	Serializer s(0, true, SerializeFormat::Map);
-	s.Stream(*_emu->GetConsole(), "", -1);
+	s.Stream(*_emu->GetConsole().get(), "", -1);
 	
 	//Add some more Lua-specific values
 	uint32_t frameCount = _emu->GetFrameCount();
@@ -1072,7 +1072,7 @@ int LuaApi::SetState(lua_State* lua)
 	Serializer s(0, false, SerializeFormat::Map);
 	s.LoadFromMap(map);
 
-	s.Stream(*_emu->GetConsole(), "", -1);
+	s.Stream(*_emu->GetConsole().get(), "", -1);
 	unordered_map<string, SerializeMapValue>& values = s.GetMapValues();
 
 	lua_newtable(lua);

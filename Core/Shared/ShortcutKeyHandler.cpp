@@ -169,19 +169,28 @@ bool ShortcutKeyHandler::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t s
 			return isRunning && !isNetplayClient && !isMovieActive;
 
 		case EmulatorShortcut::InputBarcode:
-			return isRunning && !isNetplayClient && !isMoviePlaying && _emu->GetControlManager()->GetControlDevice<IBarcodeReader>() != nullptr;
+			if(isRunning && !isNetplayClient && !isMoviePlaying) {
+				shared_ptr<IConsole> console = _emu->GetConsole();
+				if(console) {
+					return console->GetControlManager()->GetControlDevice<IBarcodeReader>() != nullptr;
+				}
+			}
+			return false;
 
 		case EmulatorShortcut::RecordTape:
 		case EmulatorShortcut::StopRecordTape:
 		case EmulatorShortcut::LoadTape: {
 			if(isRunning && !isNetplayClient && !isMoviePlaying) {
-				shared_ptr<ITapeRecorder> recorder = _emu->GetControlManager()->GetControlDevice<ITapeRecorder>();
-				if(recorder) {
-					bool recording = recorder->IsRecording();
-					if(recording) {
-						return shortcut == EmulatorShortcut::StopRecordTape;
-					} else {
-						return shortcut != EmulatorShortcut::StopRecordTape;
+				shared_ptr<IConsole> console = _emu->GetConsole();
+				if(console) {
+					shared_ptr<ITapeRecorder> recorder = console->GetControlManager()->GetControlDevice<ITapeRecorder>();
+					if(recorder) {
+						bool recording = recorder->IsRecording();
+						if(recording) {
+							return shortcut == EmulatorShortcut::StopRecordTape;
+						} else {
+							return shortcut != EmulatorShortcut::StopRecordTape;
+						}
 					}
 				}
 			}

@@ -34,6 +34,9 @@ class AudioPlayerHud;
 class GameServer;
 class GameClient;
 
+class IInputRecorder;
+class IInputProvider;
+
 struct RomInfo;
 struct TimingInfo;
 
@@ -181,7 +184,8 @@ public:
 	uint32_t GetCrc32();
 	PpuFrameInfo GetPpuFrame();
 	ConsoleRegion GetRegion();
-	IConsole* GetConsole();
+	shared_ptr<IConsole> GetConsole();
+	IConsole* GetConsoleUnsafe();
 	ConsoleType GetConsoleType();
 	vector<CpuType> GetCpuTypes();
 	uint64_t GetMasterClock();
@@ -215,8 +219,6 @@ public:
 	GameClient* GetGameClient();
 	shared_ptr<SystemActionManager> GetSystemActionManager();
 
-	BaseControlManager* GetControlManager();
-	
 	BaseVideoFilter* GetVideoFilter();
 
 	void InputBarcode(uint64_t barcode, uint32_t digitCount);
@@ -246,10 +248,14 @@ public:
 
 	TimingInfo GetTimingInfo(CpuType cpuType);
 	uint32_t GetFrameCount();
+
 	uint32_t GetLagCounter();
-	void ResetLagCounter();
-	
+	void ResetLagCounter();	
 	bool HasControlDevice(ControllerType type);
+	void RegisterInputRecorder(IInputRecorder* recorder);
+	void UnregisterInputRecorder(IInputRecorder* recorder);
+	void RegisterInputProvider(IInputProvider* provider);
+	void UnregisterInputProvider(IInputProvider* provider);
 
 	double GetFps();
 	

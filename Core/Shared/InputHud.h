@@ -6,12 +6,13 @@
 
 class Emulator;
 class DebugHud;
+class BaseControlManager;
 
 class InputHud
 {
 private:
-	Emulator* _emu;
-	DebugHud* _hud;
+	Emulator* _emu = nullptr;
+	DebugHud* _hud = nullptr;
 
 	int _xOffset = 0;
 	int _yOffset = 0;
@@ -19,7 +20,7 @@ private:
 	int _outlineHeight = 0;
 	int _controllerIndex = 0;
 
-	void DrawController(ControllerData& data);
+	void DrawController(ControllerData& data, BaseControlManager* controlManager);
 
 public:
 	InputHud(Emulator *emu, DebugHud* hud);

@@ -39,8 +39,8 @@ bool HistoryViewer::Initialize(Emulator* mainEmu)
 	
 	_history = mainEmu->GetRewindManager()->GetHistory();
 	
-	_emu->GetControlManager()->UnregisterInputProvider(this);
-	_emu->GetControlManager()->RegisterInputProvider(this);
+	_emu->UnregisterInputProvider(this);
+	_emu->RegisterInputProvider(this);
 	
 	SeekTo(0);
 

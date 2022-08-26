@@ -11,6 +11,7 @@ struct NesPpuState;
 class NesPpuTools final : public PpuTools
 {
 private:
+	NesConsole* _console = nullptr;
 	BaseMapper* _mapper = nullptr;
 	void GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t spriteIndex, GetSpritePreviewOptions& options, NesPpuState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 

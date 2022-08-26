@@ -52,14 +52,13 @@ void MesenMovie::Stop()
 		_playing = false;
 	}
 
-	if(_emu->GetControlManager()) {
-		_emu->GetControlManager()->UnregisterInputProvider(this);
-	}
+	_emu->UnregisterInputProvider(this);
+	_controlManager = nullptr;
 }
 
 bool MesenMovie::SetInput(BaseControlDevice *device)
 {
-	uint32_t inputRowIndex = _emu->GetControlManager()->GetPollCounter();
+	uint32_t inputRowIndex = _controlManager->GetPollCounter();
 	_lastPollCounter = inputRowIndex;
 
 	if(_inputData.size() > inputRowIndex && _inputData[inputRowIndex].size() > _deviceIndex) {
@@ -92,8 +91,8 @@ vector<uint8_t> MesenMovie::LoadBattery(string extension)
 void MesenMovie::ProcessNotification(ConsoleNotificationType type, void* parameter)
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
-		_emu->GetControlManager()->RegisterInputProvider(this);
-		_emu->GetControlManager()->SetPollCounter(_lastPollCounter);
+		_emu->RegisterInputProvider(this);
+		_controlManager->SetPollCounter(_lastPollCounter);
 	}
 }
 
@@ -150,11 +149,11 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	_originalCheats = _emu->GetCheatManager()->GetCheats();
 
-	BaseControlManager *controlManager = _emu->GetControlManager();
+	_controlManager = _emu->GetConsole()->GetControlManager();
 
 	if(_forTest) {
 		//TODO to validate test behavior
-		controlManager->RegisterInputProvider(this);
+		_controlManager->RegisterInputProvider(this);
 	}
 
 	LoadCheats();	
@@ -166,8 +165,8 @@ bool MesenMovie::Play(VirtualFile &file)
 		}
 	}
 
-	controlManager->UpdateControlDevices();
-	controlManager->SetPollCounter(0);
+	_controlManager->UpdateControlDevices();
+	_controlManager->SetPollCounter(0);
 	_playing = true;
 
 	return true;

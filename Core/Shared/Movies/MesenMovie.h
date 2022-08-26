@@ -8,12 +8,15 @@
 
 class ZipReader;
 class Emulator;
+class BaseControlManager;
 struct CheatCode;
 
 class MesenMovie final : public IMovie, public INotificationListener, public IBatteryProvider, public std::enable_shared_from_this<MesenMovie>
 {
 private:
 	Emulator* _emu = nullptr;
+
+	BaseControlManager* _controlManager = nullptr;
 
 	VirtualFile _movieFile;
 	unique_ptr<ZipReader> _reader;

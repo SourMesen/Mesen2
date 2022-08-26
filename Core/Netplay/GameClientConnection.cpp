@@ -39,12 +39,7 @@ void GameClientConnection::Shutdown()
 		_shutdown = true;
 		DisableControllers();
 
-		if(_emu->IsRunning()) {
-			BaseControlManager* controlManager = _emu->GetControlManager();
-			if(controlManager) {
-				controlManager->UnregisterInputProvider(this);
-			}
-		}
+		_emu->UnregisterInputProvider(this);
 
 		MessageManager::DisplayMessage("NetPlay", "ConnectionLost");
 		_emu->GetSettings()->ClearFlag(EmulationFlags::MaximumSpeed);
@@ -124,8 +119,8 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 			if(!_gameLoaded) {
 				_emu->Stop(true);
 			} else {
-				_emu->GetControlManager()->UnregisterInputProvider(this);
-				_emu->GetControlManager()->RegisterInputProvider(this);
+				_emu->UnregisterInputProvider(this);
+				_emu->RegisterInputProvider(this);
 				if(gameInfo->IsPaused()) {
 					_emu->Pause();
 				} else {
@@ -212,7 +207,12 @@ bool GameClientConnection::SetInput(BaseControlDevice *device)
 
 void GameClientConnection::InitControlDevice()
 {
-	BaseControlManager* controlManager = _emu->GetControlManager();
+	shared_ptr<IConsole> console = _emu->GetConsole();
+	if(!console) {
+		return;
+	}
+
+	BaseControlManager* controlManager = console->GetControlManager();
 	shared_ptr<BaseControlDevice> device = controlManager->GetControlDevice(_controllerPort.Port, _controllerPort.SubPort);
 	if(device) {
 		_controllerType = device->GetControllerType();
@@ -226,7 +226,7 @@ void GameClientConnection::ProcessNotification(ConsoleNotificationType type, voi
 	if(type == ConsoleNotificationType::ConfigChanged) {
 		InitControlDevice();
 	} else if(type == ConsoleNotificationType::GameLoaded) {
-		_emu->GetControlManager()->RegisterInputProvider(this);
+		_emu->RegisterInputProvider(this);
 	}
 }
 
@@ -235,7 +235,11 @@ void GameClientConnection::SendInput()
 	if(_gameLoaded) {
 		if(!_controlDevice || _controllerType != _controlDevice->GetControllerType()) {
 			//Pretend we are using port 0 (to use player 1's keybindings during netplay)
-			_controlDevice = _emu->GetControlManager()->CreateControllerDevice(_controllerType, 0);
+			shared_ptr<IConsole> console = _emu->GetConsole();
+			if(!console) {
+				return;
+			}
+			_controlDevice = console->GetControlManager()->CreateControllerDevice(_controllerType, 0);
 		}
 
 		ControlDeviceState inputState;

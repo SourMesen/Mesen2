@@ -18,14 +18,14 @@ RewindManager::RewindManager(Emulator* emu)
 	_hasHistory = false;
 	AddHistoryBlock();
 
-	_emu->GetControlManager()->RegisterInputProvider(this);
-	_emu->GetControlManager()->RegisterInputRecorder(this);
+	_emu->RegisterInputProvider(this);
+	_emu->RegisterInputRecorder(this);
 }
 
 RewindManager::~RewindManager()
 {
-	_emu->GetControlManager()->UnregisterInputProvider(this);
-	_emu->GetControlManager()->UnregisterInputRecorder(this);
+	_emu->UnregisterInputProvider(this);
+	_emu->UnregisterInputRecorder(this);
 }
 
 void RewindManager::ClearBuffer()

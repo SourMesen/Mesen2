@@ -145,7 +145,8 @@ void NesDefaultVideoFilter::OnBeforeApplyFilter()
 	VideoConfig& config = _emu->GetSettings()->GetVideoConfig();
 	NesConfig& nesConfig = _emu->GetSettings()->GetNesConfig();
 
-	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
+	shared_ptr<IConsole> console = _emu->GetConsole();
+	PpuModel model = ((NesConsole*)console.get())->GetPpu()->GetPpuModel();
 
 	bool optionsChanged = (
 		_ppuModel != model ||

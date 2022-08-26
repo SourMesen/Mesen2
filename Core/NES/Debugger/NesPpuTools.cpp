@@ -11,6 +11,7 @@
 
 NesPpuTools::NesPpuTools(Debugger* debugger, Emulator *emu, NesConsole* console) : PpuTools(debugger, emu)
 {
+	_console = console;
 	_mapper = console->GetMapper();
 }
 
@@ -376,9 +377,8 @@ DebugPaletteInfo NesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	info.SpriteColorCount = 4 * 4;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
-	NesConsole* console = ((NesConsole*)_emu->GetConsole());
 	uint32_t rgbPalette[512];
-	NesDefaultVideoFilter::GetFullPalette(rgbPalette, console->GetNesConfig(), console->GetPpu()->GetPpuModel());
+	NesDefaultVideoFilter::GetFullPalette(rgbPalette, _console->GetNesConfig(), _console->GetPpu()->GetPpuModel());
 
 	uint8_t* paletteRam = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::NesPaletteRam);
 	for(int i = 0; i < 32; i++) {

@@ -418,7 +418,7 @@ void CheatManager::ApplyCheat(uint32_t addr, uint8_t& value)
 		if(result != _cheatsByAddress[(int)cpuType].end()) {
 			if(result->second.Compare == -1 || result->second.Compare == value) {
 				value = result->second.Value;
-				_emu->GetConsole()->ProcessCheatCode(result->second, addr, value);
+				_emu->GetConsoleUnsafe()->ProcessCheatCode(result->second, addr, value);
 			}
 		}
 	}

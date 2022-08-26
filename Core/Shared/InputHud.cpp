@@ -120,9 +120,9 @@ void InputHud::DrawOutline(int width, int height)
 	_outlineHeight = height;
 }
 
-void InputHud::DrawController(ControllerData& data)
+void InputHud::DrawController(ControllerData& data, BaseControlManager* controlManager)
 {
-	shared_ptr<BaseControlDevice> controller = _emu->GetControlManager()->CreateControllerDevice(data.Type, data.Port);
+	shared_ptr<BaseControlDevice> controller = controlManager->CreateControllerDevice(data.Type, data.Port);
 	if(!controller) {
 		return;
 	}
@@ -183,6 +183,11 @@ void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controller
 		return;
 	}
 
+	shared_ptr<IConsole> console = _emu->GetConsole();
+	if(!console) {
+		return;
+	}
+
 	InputConfig& cfg = _emu->GetSettings()->GetInputConfig();
 	
 	bool hasVisiblePort = false;
@@ -216,6 +221,6 @@ void InputHud::DrawControllers(FrameInfo size, vector<ControllerData> controller
 	
 	_controllerIndex = 0;
 	for(ControllerData& portData : controllerData) {
-		DrawController(portData);
+		DrawController(portData, console->GetControlManager());
 	}
 }

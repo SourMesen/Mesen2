@@ -38,7 +38,9 @@ FrameInfo NesNtscFilter::GetFrameInfo()
 void NesNtscFilter::OnBeforeApplyFilter()
 {
 	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
-	PpuModel model = ((NesConsole*)_emu->GetConsole())->GetPpu()->GetPpuModel();
+
+	shared_ptr<IConsole> console = _emu->GetConsole();
+	PpuModel model = ((NesConsole*)console.get())->GetPpu()->GetPpuModel();
 
 	if(NtscFilterOptionsChanged(_ntscSetup) || model != _ppuModel || memcmp(_nesConfig.UserPalette, nesCfg.UserPalette, sizeof(nesCfg.UserPalette)) != 0) {
 		InitNtscFilter(_ntscSetup);

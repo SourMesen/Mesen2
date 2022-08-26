@@ -23,13 +23,8 @@ GameServer::~GameServer()
 
 void GameServer::RegisterServerInput()
 {
-	if(_emu->IsRunning()) {
-		BaseControlManager* controlManager = _emu->GetControlManager();
-		if(controlManager) {
-			controlManager->RegisterInputRecorder(this);
-			controlManager->RegisterInputProvider(this);
-		}
-	}
+	_emu->RegisterInputProvider(this);
+	_emu->RegisterInputRecorder(this);
 }
 
 void GameServer::AcceptConnections()
@@ -159,13 +154,8 @@ void GameServer::StopServer()
 	_listener.reset();
 	MessageManager::DisplayMessage("NetPlay", "ServerStopped");
 
-	if(_emu->IsRunning()) {
-		BaseControlManager* controlManager = _emu->GetControlManager();
-		if(controlManager) {
-			controlManager->UnregisterInputRecorder(this);
-			controlManager->UnregisterInputProvider(this);
-		}
-	}
+	_emu->UnregisterInputRecorder(this);
+	_emu->UnregisterInputProvider(this);
 }
 
 bool GameServer::Started()
@@ -207,30 +197,32 @@ vector<NetplayControllerUsageInfo> GameServer::GetControllerList()
 vector<NetplayControllerUsageInfo> GameServer::GetControllerList(Emulator* emu, vector<PlayerInfo>& players)
 {
 	vector<NetplayControllerUsageInfo> controllers;
-	auto lock = emu->AcquireLock();
-	if(emu->GetControlManager()) {
-		for(uint8_t i = 0; i < BaseControlDevice::PortCount; i++) {
-			for(uint8_t j = 0; j < IControllerHub::MaxSubPorts; j++) {
-				shared_ptr<BaseControlDevice> controller = emu->GetControlManager()->GetControlDevice(i, j);
-				if(controller) {
-					NetplayControllerUsageInfo result = {};
-					result.Port.Port = i;
-					result.Port.SubPort = j;
-					result.Type = controller->GetControllerType();
-					result.InUse = false;
+	shared_ptr<IConsole> console = emu->GetConsole();
+	if(!console) {
+		return controllers;
+	}
 
-					for(PlayerInfo& player : players) {
-						if(player.ControllerPort.Port == i && player.ControllerPort.SubPort == j) {
-							result.InUse = true;
-							break;
-						}
+	for(uint8_t i = 0; i < BaseControlDevice::PortCount; i++) {
+		for(uint8_t j = 0; j < IControllerHub::MaxSubPorts; j++) {
+			shared_ptr<BaseControlDevice> controller = console->GetControlManager()->GetControlDevice(i, j);
+			if(controller) {
+				NetplayControllerUsageInfo result = {};
+				result.Port.Port = i;
+				result.Port.SubPort = j;
+				result.Type = controller->GetControllerType();
+				result.InUse = false;
+
+				for(PlayerInfo& player : players) {
+					if(player.ControllerPort.Port == i && player.ControllerPort.SubPort == j) {
+						result.InUse = true;
+						break;
 					}
-
-					controllers.push_back(result);
 				}
+
+				controllers.push_back(result);
 			}
 		}
-	}	
+	}
 	return controllers;
 }
 

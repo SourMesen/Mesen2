@@ -58,7 +58,7 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 			_emu->PowerCycle();
 		} else if(options.RecordFrom == RecordMovieFrom::CurrentState) {
 			//Record from current state, store a save state in the movie file
-			_emu->GetControlManager()->RegisterInputRecorder(this);
+			_emu->RegisterInputRecorder(this);
 			_emu->GetSaveStateManager()->SaveState(_saveStateData);
 			_hasSaveState = true;
 		}
@@ -124,7 +124,7 @@ void MovieRecorder::WriteBool(stringstream &out, string name, bool enabled)
 bool MovieRecorder::Stop()
 {
 	if(_writer) {
-		_emu->GetControlManager()->UnregisterInputRecorder(this);
+		_emu->UnregisterInputRecorder(this);
 
 		_writer->AddFile(_inputData, "Input.txt");
 
@@ -184,16 +184,22 @@ vector<uint8_t> MovieRecorder::LoadBattery(string extension)
 void MovieRecorder::ProcessNotification(ConsoleNotificationType type, void *parameter)
 {
 	if(type == ConsoleNotificationType::GameLoaded) {
-		_emu->GetControlManager()->RegisterInputRecorder(this);
+		_emu->RegisterInputRecorder(this);
 	}
 }
 
 bool MovieRecorder::CreateMovie(string movieFile, deque<RewindData> &data, uint32_t startPosition, uint32_t endPosition, bool hasBattery)
 {
+	shared_ptr<IConsole> console = _emu->GetConsole();
+	if(!console) {
+		return false;
+	}
+
 	_filename = movieFile;
 	_writer.reset(new ZipWriter());
 	if(startPosition < data.size() && endPosition <= data.size() && _writer->Initialize(_filename)) {
-		vector<shared_ptr<BaseControlDevice>> devices = _emu->GetControlManager()->GetControlDevices();
+
+		vector<shared_ptr<BaseControlDevice>> devices = console->GetControlManager()->GetControlDevices();
 		
 		if(startPosition > 0 || hasBattery || _emu->GetSettings()->GetDefaultRamPowerOnState(_emu->GetConsoleType()) == RamState::Random) {
 			//Create a movie from a savestate if we don't start from the beginning (or if the game has save ram, or if the power on ram state is random)
