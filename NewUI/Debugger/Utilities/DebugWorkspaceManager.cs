@@ -42,7 +42,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			_romInfo = EmuApi.GetRomInfo();
-			_path = Path.Combine(ConfigManager.DebuggerFolder, Path.ChangeExtension(_romInfo.GetRomName(), ".json"));
+			_path = Path.Combine(ConfigManager.DebuggerFolder, _romInfo.GetRomName() + ".json");
 			_workspace = DebugWorkspace.Load(_path);
 
 			SymbolProvider = null;

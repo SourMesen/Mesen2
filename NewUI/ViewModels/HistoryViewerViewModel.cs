@@ -155,7 +155,7 @@ namespace Mesen.ViewModels
 
 		private async void ExportMovie(HistoryViewerWindow wnd, UInt32 segStart, UInt32 segEnd)
 		{
-			string initialFile = Path.ChangeExtension(MainWindowViewModel.Instance.RomInfo.GetRomName(), FileDialogHelper.MesenMovieExt);
+			string initialFile = MainWindowViewModel.Instance.RomInfo.GetRomName();
 			string? file = await FileDialogHelper.SaveFile(ConfigManager.MovieFolder, initialFile, wnd, FileDialogHelper.MesenMovieExt);
 			if(file != null) {
 				if(!HistoryApi.HistoryViewerSaveMovie(file, segStart, segEnd)) {
@@ -167,7 +167,7 @@ namespace Mesen.ViewModels
 		private async void CreateSaveState(HistoryViewerWindow wnd)
 		{
 			uint position = CurrentPosition;
-			string initialFile = Path.ChangeExtension(MainWindowViewModel.Instance.RomInfo.GetRomName(), FileDialogHelper.MesenSaveStateExt);
+			string initialFile = MainWindowViewModel.Instance.RomInfo.GetRomName();
 			string? file = await FileDialogHelper.SaveFile(ConfigManager.SaveStateFolder, initialFile, wnd, FileDialogHelper.MesenSaveStateExt);
 			if(file != null) {
 				if(!HistoryApi.HistoryViewerCreateSaveState(file, position)) {
