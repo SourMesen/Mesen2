@@ -530,9 +530,11 @@ void Fds::Serialize(Serializer& s)
 			IpsPatcher::PatchBuffer(ipsData, _orgDiskSides[i], _fdsDiskSides[i]);
 		}
 
-		//Make sure we disable fast forwarding when loading a state
-		//Otherwise it's possible to get stuck in fast forward mode
-		_gameStarted = true;
+		if(!_emu->IsRunAheadFrame()) {
+			//Make sure we disable fast forwarding when loading a state
+			//Otherwise it's possible to get stuck in fast forward mode
+			_gameStarted = true;
+		}
 	}
 }
 
