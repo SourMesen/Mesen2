@@ -122,22 +122,7 @@ void NesDebugger::ProcessInstruction()
 		}
 	}
 
-	if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
-		//JSR
-		uint8_t opSize = NesDisUtils::GetOpSize(_prevOpCode);
-		uint32_t returnPc = (_prevProgramCounter + opSize) & 0xFFFF;
-		AddressInfo srcAddress = _mapper->GetAbsoluteAddress(_prevProgramCounter);
-		AddressInfo retAddress = _mapper->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-	} else if(NesDisUtils::IsReturnInstruction(_prevOpCode)) {
-		//RTS, RTI
-		_callstackManager->Pop(addressInfo, pc);
-	}
-
-	if(_step->BreakAddress == (int32_t)pc && NesDisUtils::IsReturnInstruction(_prevOpCode)) {
-		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-		_step->Break(BreakSource::CpuStep);
-	}
+	ProcessCallStackUpdates(addressInfo, pc);
 
 	_prevOpCode = opCode;
 	_prevProgramCounter = pc;
@@ -290,6 +275,25 @@ void NesDebugger::DrawPartialFrame()
 	_ppu->DebugSendFrame();
 }
 
+void NesDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
+{
+	if(NesDisUtils::IsJumpToSub(_prevOpCode)) {
+		//JSR
+		uint8_t opSize = NesDisUtils::GetOpSize(_prevOpCode);
+		uint32_t returnPc = (_prevProgramCounter + opSize) & 0xFFFF;
+		AddressInfo srcAddress = _mapper->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo retAddress = _mapper->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, destAddr, destPc, retAddress, returnPc, StackFrameFlags::None);
+	} else if(NesDisUtils::IsReturnInstruction(_prevOpCode)) {
+		//RTS, RTI
+		_callstackManager->Pop(destAddr, destPc);
+		if(_step->BreakAddress == (int32_t)destPc) {
+			//RTS/RTI - if we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
+	}
+}
+
 void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _mapper->GetAbsoluteAddress(_prevProgramCounter);
@@ -299,6 +303,10 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	if(dest.Type == MemoryType::NesPrgRom && dest.Address >= 0) {
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
+
+	//If a call/return occurred just before IRQ, it needs to be processed now
+	ProcessCallStackUpdates(ret, originalPc);
+	_prevOpCode = 0xFF;
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Nes, *this, *_step.get(),

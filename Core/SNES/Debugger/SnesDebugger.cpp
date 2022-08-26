@@ -149,17 +149,7 @@ void SnesDebugger::ProcessInstruction()
 		}
 	}
 
-	if(SnesDisUtils::IsJumpToSub(_prevOpCode)) {
-		//JSR, JSL
-		uint8_t opSize = SnesDisUtils::GetOpSize(_prevOpCode, state.PS);
-		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
-		AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
-		AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-	} else if(SnesDisUtils::IsReturnInstruction(_prevOpCode)) {
-		//RTS, RTL, RTI
-		_callstackManager->Pop(addressInfo, pc);
-	}
+	ProcessCallStackUpdates(addressInfo, pc, state.PS);
 
 	if(_step->BreakAddress == (int32_t)pc && (SnesDisUtils::IsReturnInstruction(_prevOpCode) || _prevOpCode == 0x44 || _prevOpCode == 0x54)) {
 		//RTS/RTL/RTI found, if we're on the expected return address, break immediately (for step over/step out)
@@ -328,6 +318,21 @@ void SnesDebugger::DrawPartialFrame()
 	_ppu->DebugSendFrame();
 }
 
+void SnesDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint32_t destPc, uint8_t cpuFlags)
+{
+	if(SnesDisUtils::IsJumpToSub(_prevOpCode)) {
+		//JSR, JSL
+		uint8_t opSize = SnesDisUtils::GetOpSize(_prevOpCode, cpuFlags);
+		uint32_t returnPc = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + opSize) & 0xFFFF);
+		AddressInfo srcAddress = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo retAddress = _memoryMappings->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, destAddr, destPc, retAddress, returnPc, StackFrameFlags::None);
+	} else if(SnesDisUtils::IsReturnInstruction(_prevOpCode)) {
+		//RTS, RTL, RTI
+		_callstackManager->Pop(destAddr, destPc);
+	}
+}
+
 void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _memoryMappings->GetAbsoluteAddress(_prevProgramCounter);
@@ -337,6 +342,10 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 	if(dest.Type == MemoryType::SnesPrgRom && dest.Address >= 0) {
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
+
+	//If a call/return occurred just before IRQ, it needs to be processed now
+	ProcessCallStackUpdates(ret, originalPc, GetCpuState().PS);
+	_prevOpCode = 0xFF;
 
 	_debugger->InternalProcessInterrupt(
 		_cpuType, *this, *_step.get(),

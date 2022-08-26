@@ -50,6 +50,8 @@ class GbDebugger final : public IDebugger
 
 	string _cdlFile;
 
+	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc);
+
 public:
 	GbDebugger(Debugger* debugger);
 	~GbDebugger();

@@ -97,24 +97,7 @@ void GbDebugger::ProcessInstruction()
 		_disassembler->BuildCache(addressInfo, 0, CpuType::Gameboy);
 	}
 
-	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
-		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
-		uint8_t opSize = GameboyDisUtils::GetOpSize(_prevOpCode);
-		uint16_t returnPc = _prevProgramCounter + opSize;
-		AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
-		AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(src, _prevProgramCounter, addressInfo, pc, ret, returnPc, StackFrameFlags::None);
-	} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
-		if(pc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
-			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
-			_callstackManager->Pop(addressInfo, pc);
-		}
-
-		if(_step->BreakAddress == (int32_t)pc) {
-			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
-			_step->Break(BreakSource::CpuStep);
-		}
-	}
+	ProcessCallStackUpdates(addressInfo, pc);
 
 	if(_settings->CheckDebuggerFlag(DebuggerFlags::GbDebuggerEnabled)) {
 		switch(value) {
@@ -260,6 +243,28 @@ void GbDebugger::DrawPartialFrame()
 	_ppu->DebugSendFrame();
 }
 
+void GbDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
+{
+	if(GameboyDisUtils::IsJumpToSub(_prevOpCode) && destPc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+		//CALL and RST, and PC doesn't match the next instruction, so the call was (probably) done
+		uint8_t opSize = GameboyDisUtils::GetOpSize(_prevOpCode);
+		uint16_t returnPc = _prevProgramCounter + opSize;
+		AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo ret = _gameboy->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(src, _prevProgramCounter, destAddr, destPc, ret, returnPc, StackFrameFlags::None);
+	} else if(GameboyDisUtils::IsReturnInstruction(_prevOpCode)) {
+		if(destPc != _prevProgramCounter + GameboyDisUtils::GetOpSize(_prevOpCode)) {
+			//RET used, and PC doesn't match the next instruction, so the ret was (probably) taken
+			_callstackManager->Pop(destAddr, destPc);
+		}
+
+		if(_step->BreakAddress == (int32_t)destPc) {
+			//RET/RETI - if we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
+	}
+}
+
 void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _gameboy->GetAbsoluteAddress(_prevProgramCounter);
@@ -269,6 +274,10 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 	if(dest.Type == MemoryType::GbPrgRom && dest.Address >= 0) {
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
+
+	//If a call/return occurred just before IRQ, it needs to be processed now
+	ProcessCallStackUpdates(ret, originalPc);
+	_prevOpCode = 0;
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Gameboy, *this, *_step.get(), 

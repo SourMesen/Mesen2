@@ -108,22 +108,7 @@ void PceDebugger::ProcessInstruction()
 		}
 	}
 
-	if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
-		//JSR
-		uint8_t opSize = PceDisUtils::GetOpSize(_prevOpCode);
-		uint32_t returnPc = (_prevProgramCounter + opSize) & 0xFFFF;
-		AddressInfo srcAddress = _memoryManager->GetAbsoluteAddress(_prevProgramCounter);
-		AddressInfo retAddress = _memoryManager->GetAbsoluteAddress(returnPc);
-		_callstackManager->Push(srcAddress, _prevProgramCounter, addressInfo, pc, retAddress, returnPc, StackFrameFlags::None);
-	} else if(PceDisUtils::IsReturnInstruction(_prevOpCode)) {
-		//RTS, RTI
-		_callstackManager->Pop(addressInfo, pc);
-	}
-
-	if(_step->BreakAddress == (int32_t)pc && PceDisUtils::IsReturnInstruction(_prevOpCode)) {
-		//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
-		_step->Break(BreakSource::CpuStep);
-	}
+	ProcessCallStackUpdates(addressInfo, pc);
 
 	_prevOpCode = opCode;
 	_prevProgramCounter = pc;
@@ -268,6 +253,26 @@ void PceDebugger::DrawPartialFrame()
 	_vpc->DebugSendFrame();
 }
 
+void PceDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
+{
+	if(PceDisUtils::IsJumpToSub(_prevOpCode)) {
+		//JSR
+		uint8_t opSize = PceDisUtils::GetOpSize(_prevOpCode);
+		uint32_t returnPc = (_prevProgramCounter + opSize) & 0xFFFF;
+		AddressInfo srcAddress = _memoryManager->GetAbsoluteAddress(_prevProgramCounter);
+		AddressInfo retAddress = _memoryManager->GetAbsoluteAddress(returnPc);
+		_callstackManager->Push(srcAddress, _prevProgramCounter, destAddr, destPc, retAddress, returnPc, StackFrameFlags::None);
+	} else if(PceDisUtils::IsReturnInstruction(_prevOpCode)) {
+		//RTS, RTI
+		_callstackManager->Pop(destAddr, destPc);
+
+		if(_step->BreakAddress == (int32_t)destPc) {
+			//RTS/RTI found, if we're on the expected return address, break immediately (for step over/step out)
+			_step->Break(BreakSource::CpuStep);
+		}
+	}
+}
+
 void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
 	AddressInfo src = _memoryManager->GetAbsoluteAddress(_prevProgramCounter);
@@ -277,6 +282,10 @@ void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 	if(dest.Type == MemoryType::PcePrgRom && dest.Address >= 0) {
 		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
+
+	//If a call/return occurred just before IRQ, it needs to be processed now
+	ProcessCallStackUpdates(ret, originalPc);
+	_prevOpCode = 0x01;
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Pce, *this, *_step.get(),

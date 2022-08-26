@@ -59,6 +59,7 @@ class NesDebugger final : public IDebugger
 	string _cdlFile;
 
 	bool IsRegister(MemoryOperationInfo& op);
+	__forceinline void ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc);
 
 public:
 	NesDebugger(Debugger* debugger);
