@@ -145,7 +145,9 @@ namespace Mesen.Config
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.LoadStateFromFile, KeyCombination = new KeyCombination() { Key1 = ctrl, Key2 = InputApi.GetKeyCode("L") } });
 
 			foreach(EmulatorShortcut value in Enum.GetValues<EmulatorShortcut>()) {
-				AddShortcut(new ShortcutKeyInfo { Shortcut = value });
+				if(value < EmulatorShortcut.LastValidValue) {
+					AddShortcut(new ShortcutKeyInfo { Shortcut = value });
+				}
 			}
 		}
 

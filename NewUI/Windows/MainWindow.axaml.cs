@@ -164,6 +164,8 @@ namespace Mesen.Windows
 				_listener.OnNotification += OnNotification;
 
 				_model.Init(this);
+
+				ConfigManager.Config.RemoveObsoleteConfig();
 				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 

@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -108,6 +109,16 @@ namespace Mesen.Config
 				}
 			} catch {
 				//This can sometime fail due to the file being used by another Mesen instance, etc.
+			}
+		}
+
+		public void RemoveObsoleteConfig()
+		{
+			//Clean up configuration to remove any obsolete values that existed in older versions
+			for(int i = Preferences.ShortcutKeys.Count - 1; i >= 0; i--) {
+				if(Preferences.ShortcutKeys[i].Shortcut >= EmulatorShortcut.LastValidValue) {
+					Preferences.ShortcutKeys.RemoveAt(i);
+				}
 			}
 		}
 	}

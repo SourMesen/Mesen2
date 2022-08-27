@@ -760,7 +760,6 @@ enum class EmulatorShortcut
 	LoadLastSession,
 
 	OpenFile,
-	LoadRandomGame,
 
 	InputBarcode,
 	LoadTape,

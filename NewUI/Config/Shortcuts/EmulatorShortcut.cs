@@ -110,7 +110,6 @@ namespace Mesen.Config.Shortcuts
 		LoadLastSession,
 
 		OpenFile,
-		LoadRandomGame,
 
 		InputBarcode,
 		LoadTape,
@@ -128,6 +127,9 @@ namespace Mesen.Config.Shortcuts
 		VsInsertCoin2,
 		VsInsertCoin3,
 		VsInsertCoin4,
+
+		LastValidValue,
+		[Obsolete] LoadRandomGame,
 	}
 
 	public static class EmulatorShortcutExtensions

@@ -55,7 +55,6 @@ namespace Mesen.Debugger.ViewModels
 		{
 			_debugEvents = DebugApi.GetDebugEvents(EventViewer.CpuType);
 
-			//TODO cycle
 			SortHelper.SortArray(_debugEvents, SortState.SortOrder, _comparers, "Default");
 
 			if(DebugEvents.Count < _debugEvents.Length) {

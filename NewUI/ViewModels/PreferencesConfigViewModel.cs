@@ -76,7 +76,6 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.DecreaseSpeed,
 
 				EmulatorShortcut.OpenFile,
-				EmulatorShortcut.LoadRandomGame,
 				
 				EmulatorShortcut.InputBarcode,
 				EmulatorShortcut.LoadTape,

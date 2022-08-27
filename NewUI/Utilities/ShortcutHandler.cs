@@ -63,9 +63,6 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.IncreaseSpeed: IncreaseEmulationSpeed(); break;
 				case EmulatorShortcut.DecreaseSpeed: DecreaseEmulationSpeed(); break;
 
-				//TODO
-				//case EmulatorShortcut.LoadRandomGame: RandomGameHelper.LoadRandomGame(); break;
-
 				case EmulatorShortcut.SetScale1x: _mainWindow.SetScale(1); break;
 				case EmulatorShortcut.SetScale2x: _mainWindow.SetScale(2); break;
 				case EmulatorShortcut.SetScale3x: _mainWindow.SetScale(3); break;

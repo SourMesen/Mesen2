@@ -1554,7 +1554,6 @@
 			<Value ID="ToggleRecordMovie">Start/Stop Recording Movie</Value>
 
 			<Value ID="MaxSpeed">Toggle Maximum Speed</Value>
-			<Value ID="LoadRandomGame">Load Random Game</Value>
 			<Value ID="SaveStateSlot1">Save State - Slot 1</Value>
 			<Value ID="SaveStateSlot2">Save State - Slot 2</Value>
 			<Value ID="SaveStateSlot3">Save State - Slot 3</Value>
