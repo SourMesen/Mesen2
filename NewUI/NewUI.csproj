@@ -71,6 +71,9 @@
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
       <DependentUpon>ButtonWithIcon.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\EnumComboBox.axaml.cs">
+      <DependentUpon>EnumComboBox.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\ControllerButton.axaml.cs">
       <DependentUpon>ControllerButton.axaml</DependentUpon>
     </Compile>
