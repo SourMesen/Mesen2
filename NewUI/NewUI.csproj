@@ -59,6 +59,7 @@
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview1" />
@@ -497,9 +498,6 @@
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AvaloniaEdit">
-      <HintPath>..\..\AvaloniaEdit\src\AvaloniaEdit\bin\Release\netstandard2.0\AvaloniaEdit.dll</HintPath>
-    </Reference>
     <Reference Include="Dock.Avalonia">
       <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.Avalonia.dll</HintPath>
     </Reference>
