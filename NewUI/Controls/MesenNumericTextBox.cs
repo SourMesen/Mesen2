@@ -14,12 +14,14 @@ namespace Mesen.Controls
 		Type IStyleable.StyleKey => typeof(TextBox);
 
 		private static HexConverter _hexConverter = new HexConverter();
-
+		
 		public static readonly StyledProperty<bool> TrimProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Trim));
 		public static readonly StyledProperty<bool> HexProperty = AvaloniaProperty.Register<MesenNumericTextBox, bool>(nameof(Hex));
 		public static readonly StyledProperty<IComparable> ValueProperty = AvaloniaProperty.Register<MesenNumericTextBox, IComparable>(nameof(Value), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<string?> MinProperty = AvaloniaProperty.Register<MesenNumericTextBox, string?>(nameof(Min), null);
 		public static readonly StyledProperty<string?> MaxProperty = AvaloniaProperty.Register<MesenNumericTextBox, string?>(nameof(Max), null);
+
+		private bool _preventTextUpdate;
 
 		public bool Hex
 		{
@@ -68,13 +70,17 @@ namespace Mesen.Controls
 				x.UpdateText(true);
 			});
 
+
 			TextProperty.Changed.AddClassHandler<MesenNumericTextBox>((x, e) => {
 				if(!x.IsInitialized) {
 					return;
 				}
 
+				//Only update internal value while user is actively editing the text
+				//Text will be update to its "standard" representation when focus is lost
+				x._preventTextUpdate = true;
 				x.UpdateValueFromText();
-				x.UpdateText();
+				x._preventTextUpdate = false;
 			});
 		}
 
@@ -230,7 +236,7 @@ namespace Mesen.Controls
 
 		private void UpdateText(bool force = false)
 		{
-			if(Value == null) {
+			if(Value == null || _preventTextUpdate) {
 				return;
 			}
 
