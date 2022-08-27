@@ -11,12 +11,12 @@ class MMC5 : public BaseMapper
 {
 private:
 	static constexpr int ExRamSize = 0x400;
-	static constexpr uint8_t NtWorkRamIndex = 4;
-	static constexpr uint8_t NtEmptyIndex = 2;
-	static constexpr uint8_t NtFillModeIndex = 3;
 
 	unique_ptr<Mmc5Audio> _audio;
 	unique_ptr<Mmc5MemoryHandler> _mmc5MemoryHandler;
+
+	uint8_t* _fillNametable;
+	uint8_t* _emptyNametable;
 
 	uint8_t _prgRamProtect1 = 0;
 	uint8_t _prgRamProtect2 = 0;
@@ -245,20 +245,19 @@ private:
 	{
 		_nametableMapping = value;
 
-		uint8_t nametables[4] = {
-			0,  //"0 - On-board VRAM page 0"
-			1,  //"1 - On-board VRAM page 1"
-			_extendedRamMode <= 1 ? NtWorkRamIndex : NtEmptyIndex, //"2 - Internal Expansion RAM, only if the Extended RAM mode allows it ($5104 is 00/01); otherwise, the nametable will read as all zeros,"
-			NtFillModeIndex //"3 - Fill-mode data"
-		};
-
 		for(int i = 0; i < 4; i++) {
-			uint8_t nametableId = nametables[(value >> (i * 2)) & 0x03];
-			if(nametableId == NtWorkRamIndex) {
-				uint8_t* source = HasBattery() ? (_saveRam + (_saveRamSize - MMC5::ExRamSize)) : (_workRam + (_workRamSize - MMC5::ExRamSize));
-				SetPpuMemoryMapping(0x2000+i*0x400, 0x2000+i*0x400+0x3FF, source, MemoryAccessType::ReadWrite);
-			} else {
+			uint8_t nametableId = (value >> (i * 2)) & 0x03;
+			if(nametableId <= 1) {
 				SetNametable(i, nametableId);
+			} else if(nametableId == 2) {
+				if(_extendedRamMode <= 1) {
+					uint8_t* source = HasBattery() ? (_saveRam + (_saveRamSize - MMC5::ExRamSize)) : (_workRam + (_workRamSize - MMC5::ExRamSize));
+					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, source, MemoryAccessType::ReadWrite);
+				} else {
+					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _emptyNametable, MemoryAccessType::Read);
+				}
+			} else {
+				SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _fillNametable, MemoryAccessType::Read);
 			}
 		}
 	}
@@ -292,14 +291,14 @@ private:
 	void SetFillModeTile(uint8_t tile)
 	{
 		_fillModeTile = tile;
-		memset(GetNametable(NtFillModeIndex), tile, 32 * 30); //32 tiles per row, 30 rows
+		memset(_fillNametable, tile, 32 * 30); //32 tiles per row, 30 rows
 	}
 
 	void SetFillModeColor(uint8_t color)
 	{
 		_fillModeColor = color;
 		uint8_t attributeByte = color | color << 2 | color << 4 | color << 6;
-		memset(GetNametable(NtFillModeIndex) + 32 * 30, attributeByte, 64); //Attribute table is 64 bytes
+		memset(_fillNametable + 32 * 30, attributeByte, 64); //Attribute table is 64 bytes
 	}
 
 protected:
@@ -363,7 +362,11 @@ protected:
 
 		_splitTileNumber = -1;
 
-		memset(GetNametable(NtEmptyIndex), 0, BaseMapper::NametableSize);
+		_emptyNametable = new uint8_t[BaseMapper::NametableSize];
+		memset(_emptyNametable, 0, BaseMapper::NametableSize);
+
+		_fillNametable = new uint8_t[BaseMapper::NametableSize];
+		memset(_fillNametable, 0, BaseMapper::NametableSize);
 
 		SetExtendedRamMode(0);
 
@@ -374,6 +377,12 @@ protected:
 		WriteRegister(0x5117, 0xFF);
 
 		UpdateChrBanks(true);
+	}
+
+	virtual ~MMC5()
+	{
+		delete[] _fillNametable;
+		delete[] _emptyNametable;
 	}
 
 	void Reset(bool softReset) override
@@ -397,6 +406,8 @@ protected:
 
 		if(!s.IsSaving()) {
 			UpdatePrgBanks();
+			SetFillModeTile(_fillModeTile);
+			SetFillModeColor(_fillModeColor);
 			SetNametableMapping(_nametableMapping);
 		}
 	}

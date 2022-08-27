@@ -28,6 +28,7 @@ private:
 
 	uint8_t *_nametableRam = nullptr;
 	uint8_t _nametableCount = 2;
+	uint32_t _ntRamSize = 0;
 
 	bool _hasBusConflicts = false;
 	
@@ -98,6 +99,7 @@ protected:
 	virtual bool AllowRegisterRead() { return false; }
 
 	virtual uint32_t GetDipSwitchCount() { return 0; }
+	virtual uint32_t GetNametableCount() { return 0; }
 	
 	virtual bool HasBusConflicts() { return false; }
 
@@ -155,7 +157,6 @@ protected:
 	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }
 
 public:
-	static constexpr uint32_t NametableCount = 0x10;
 	static constexpr uint32_t NametableSize = 0x400;
 	
 	void Initialize(NesConsole* console, RomData &romData);

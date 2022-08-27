@@ -222,7 +222,7 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 
 		case ChrMemoryType::NametableRam:
 			pageSize = BaseMapper::NametableSize;
-			pageCount = BaseMapper::NametableCount;
+			pageCount = _nametableCount;
 			defaultAccessType |= MemoryAccessType::Write;
 			break;
 	}
@@ -618,10 +618,15 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	_console->InitializeRam(_saveRam, _saveRamSize);
 	_console->InitializeRam(_workRam, _workRamSize);
 
-	_nametableCount = 2;
-	_nametableRam = new uint8_t[BaseMapper::NametableSize*BaseMapper::NametableCount];
-	_emu->RegisterMemory(MemoryType::NesNametableRam, _nametableRam, _nametableCount * BaseMapper::NametableSize);
-	_console->InitializeRam(_nametableRam, BaseMapper::NametableSize*BaseMapper::NametableCount);
+	_nametableCount = GetNametableCount();
+	if(_nametableCount == 0) {
+		_nametableCount = romData.Info.Mirroring == MirroringType::FourScreens ? 4 : 2;
+	}
+	
+	_ntRamSize = _nametableCount * BaseMapper::NametableSize;
+	_nametableRam = new uint8_t[_ntRamSize];
+	_console->InitializeRam(_nametableRam, _ntRamSize);
+	_emu->RegisterMemory(MemoryType::NesNametableRam, _nametableRam, _ntRamSize);
 
 	for(int i = 0; i < 0x100; i++) {
 		//Allow us to map a different page every 256 bytes
@@ -696,28 +701,24 @@ void BaseMapper::GetMemoryRanges(MemoryRanges &ranges)
 
 uint8_t* BaseMapper::GetNametable(uint8_t nametableIndex)
 {
-	if(nametableIndex >= BaseMapper::NametableCount) {
+	if(nametableIndex >= _nametableCount) {
 		#ifdef _DEBUG
 		MessageManager::Log("Invalid nametable index");
 		#endif
 		return _nametableRam;
 	}
-	_nametableCount = std::max<uint8_t>(_nametableCount, nametableIndex + 1);
-	_emu->RegisterMemory(MemoryType::NesNametableRam, _nametableRam, _nametableCount* BaseMapper::NametableSize);
 
 	return _nametableRam + (nametableIndex * BaseMapper::NametableSize);
 }
 
 void BaseMapper::SetNametable(uint8_t index, uint8_t nametableIndex)
 {
-	if(nametableIndex >= BaseMapper::NametableCount) {
+	if(nametableIndex >= _nametableCount) {
 		#ifdef _DEBUG
 		MessageManager::Log("Invalid nametable index");
 		#endif
 		return;
 	}
-	_nametableCount = std::max<uint8_t>(_nametableCount, nametableIndex + 1);
-	_emu->RegisterMemory(MemoryType::NesNametableRam, _nametableRam, _nametableCount* BaseMapper::NametableSize);
 
 	SetPpuMemoryMapping(0x2000 + index * 0x400, 0x2000 + (index + 1) * 0x400 - 1, nametableIndex, ChrMemoryType::NametableRam);
 	
@@ -947,7 +948,7 @@ void BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info)
 		} else if(addr >= _chrRam && addr < _chrRam + _chrRamSize) {
 			info.Address = (uint32_t)(addr - _chrRam);
 			info.Type = MemoryType::NesChrRam;
-		} else if(addr >= _nametableRam && addr < _nametableRam + BaseMapper::NametableSize * BaseMapper::NametableCount) {
+		} else if(addr >= _nametableRam && addr < _nametableRam + _nametableCount * BaseMapper::NametableSize) {
 			info.Address = (uint32_t)(addr - _nametableRam);
 			info.Type = MemoryType::NesNametableRam;
 		} else {

@@ -1940,9 +1940,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\ResetTxrom.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h">
-      <Filter>NES\Mappers\Mmc3Variants</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl158B.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>

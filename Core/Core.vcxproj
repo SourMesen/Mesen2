@@ -212,7 +212,6 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\MMC3_StreetHeroes.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\ResetTxrom.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h" />
-    <ClInclude Include="NES\Mappers\Mmc3Variants\TxSRom.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl158B.h" />
     <ClInclude Include="NES\Mappers\Mmc3Variants\Unl8237A.h" />
     <ClInclude Include="NES\Mappers\Homebrew\NsfCart31.h" />

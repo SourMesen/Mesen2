@@ -21,6 +21,7 @@ protected:
 	uint16_t RegisterStartAddress() override { return 0x5000; }
 	uint16_t RegisterEndAddress() override { return 0x5FFF; }
 	uint32_t GetChrRamSize() override { return 0x4000; }
+	uint32_t GetNametableCount() override { return 16; }
 	bool AllowRegisterRead() override { return true; }
 
 	void InitMapper() override
