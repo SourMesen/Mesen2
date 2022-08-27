@@ -249,6 +249,10 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 
 		case TileFormat::Bpp4:
 		case TileFormat::PceSpriteBpp4:
+		case TileFormat::PceSpriteBpp2Sp01:
+		case TileFormat::PceSpriteBpp2Sp23:
+		case TileFormat::PceBackgroundBpp2Cg0:
+		case TileFormat::PceBackgroundBpp2Cg1:
 			return colors[palette * 16 + colorIndex];
 
 		case TileFormat::Bpp8:
@@ -270,18 +274,43 @@ template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* r
 	uint8_t color;
 	switch(format) {
 		case TileFormat::PceSpriteBpp4:
-		{
+		case TileFormat::PceSpriteBpp2Sp01:
+		case TileFormat::PceSpriteBpp2Sp23:
 			shift = 15 - pixelIndex;
 			if(shift >= 8) {
 				shift -= 8;
 				rowStart++;
 			}
+			break;
+	}
+
+	switch(format) {
+		case TileFormat::PceSpriteBpp4:
 			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
 			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 1);
 			color |= (((ram[(rowStart + 64) & ramMask] >> shift) & 0x01) << 2);
 			color |= (((ram[(rowStart + 96) & ramMask] >> shift) & 0x01) << 3);
 			return color;
-		}
+	
+		case TileFormat::PceSpriteBpp2Sp01:
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 32) & ramMask] >> shift) & 0x01) << 1);
+			return color;
+
+		case TileFormat::PceSpriteBpp2Sp23:
+			color = (((ram[(rowStart + 64) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 96) & ramMask] >> shift) & 0x01) << 1);
+			return color;
+
+		case TileFormat::PceBackgroundBpp2Cg0:
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			return color;
+
+		case TileFormat::PceBackgroundBpp2Cg1:
+			color = (((ram[(rowStart + 16) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 17) & ramMask] >> shift) & 0x01) << 1);
+			return color;
 
 		case TileFormat::Bpp2:
 			color = (((ram[rowStart & ramMask] >> shift) & 0x01) << 0);

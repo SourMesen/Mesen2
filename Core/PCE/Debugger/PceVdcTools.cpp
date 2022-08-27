@@ -65,9 +65,24 @@ DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& b
 {
 	PceVdcState& state = options.Layer == 0 ? ((PceVideoState&)baseState).Vdc : ((PceVideoState&)baseState).Vdc2;
 
+	if(state.VramAccessMode == 3) {
+		//2BPP modes
+		if(state.CgMode) {
+			return InternalGetTilemap<TileFormat::PceBackgroundBpp2Cg1>(options, state, vram, palette, outBuffer);
+		} else {
+			return InternalGetTilemap<TileFormat::PceBackgroundBpp2Cg0>(options, state, vram, palette, outBuffer);
+		}
+	} else {
+		return InternalGetTilemap<TileFormat::Bpp4>(options, state, vram, palette, outBuffer);
+	}
+}
+
+template<TileFormat format>
+DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceVdcState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer)
+{
 	DebugTilemapInfo result = {};
-	result.Bpp = 4;
-	result.Format = TileFormat::Bpp4;
+	result.Bpp = 4; //Report 2bpp modes as 4bpp to display the right palette in UI
+	result.Format = format;
 	result.TileWidth = 8;
 	result.TileHeight = 8;
 	result.ColumnCount = state.ColumnCount;
@@ -89,7 +104,7 @@ DebugTilemapInfo PceVdcTools::GetTilemap(GetTilemapOptions options, BaseState& b
 			for(int y = 0; y < 8; y++) {
 				uint16_t tileAddr = tileIndex * 32 + y * 2;
 				for(int x = 0; x < 8; x++) {
-					uint8_t color = GetTilePixelColor<TileFormat::Bpp4>(vram, 0xFFFF, tileAddr, x);
+					uint8_t color = GetTilePixelColor<format>(vram, 0xFFFF, tileAddr, x);
 					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
 					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
 					outBuffer[outPos] = palette[palAddr];
@@ -115,7 +130,7 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 
 	DebugSpriteInfo sprite;
 	for(int i = spriteCount - 1; i >= 0; i--) {
-		GetSpriteInfo(sprite, i, options, vram, oamRam, palette);
+		GetSpriteInfo(state, sprite, i, options, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			if(sprite.Y + y >= 1024) {
@@ -136,7 +151,22 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	}
 }
 
-void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+void PceVdcTools::GetSpriteInfo(PceVdcState& state, DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
+{
+	if(state.SpriteAccessMode == 1) {
+		uint16_t loadSp23 = oamRam[spriteIndex * 8 + 4] & 0x01;
+		if(loadSp23) {
+			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp23>(sprite, spriteIndex, options, vram, oamRam, palette);
+		} else {
+			InternalGetSpriteInfo<TileFormat::PceSpriteBpp2Sp01>(sprite, spriteIndex, options, vram, oamRam, palette);
+		}
+	} else {
+		InternalGetSpriteInfo<TileFormat::PceSpriteBpp4>(sprite, spriteIndex, options, vram, oamRam, palette);
+	}
+}
+
+template<TileFormat format>
+void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette)
 {
 	uint16_t addr = (spriteIndex * 8);
 
@@ -164,8 +194,8 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 		((spriteY + height) > 64 && (spriteY < 242 + 64))
 	);
 
-	sprite.Bpp = 4;
-	sprite.Format = TileFormat::PceSpriteBpp4;
+	sprite.Bpp = 4; //Report 2bpp modes as 4bpp to display the right palette in UI
+	sprite.Format = format;
 	sprite.SpriteIndex = spriteIndex;
 	sprite.UseExtendedVram = spriteIndex >= 64;
 	sprite.X = spriteX;
@@ -243,7 +273,7 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 				//Display specific pattern when open bus, to make problem obvious in sprite viewer
 				color = xOffset;
 			} else {
-				color = GetTilePixelColor<TileFormat::PceSpriteBpp4>(vram, 0xFFFF, pixelStart * 2, xOffset);
+				color = GetTilePixelColor<format>(vram, 0xFFFF, pixelStart * 2, xOffset);
 			}			
 
 			if(color != 0) {
@@ -257,9 +287,10 @@ void PceVdcTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, G
 
 void PceVdcTools::GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[])
 {
+	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 	for(int i = 0, len = _console->IsSuperGrafx() ? 128 : 64; i < len; i++) {
 		outBuffer[i].Init();
-		GetSpriteInfo(outBuffer[i], i, options, vram, oamRam, palette);
+		GetSpriteInfo(state, outBuffer[i], i, options, vram, oamRam, palette);
 	}
 }
 

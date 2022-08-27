@@ -12,7 +12,13 @@ class PceVdcTools final : public PpuTools
 private:
 	PceConsole* _console = nullptr;
 
-	void GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+	void GetSpriteInfo(PceVdcState& state, DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
+
+	template<TileFormat format>
+	DebugTilemapInfo InternalGetTilemap(GetTilemapOptions options, PceVdcState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer);
+
+	template<TileFormat format>
+	void InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, GetSpritePreviewOptions& options, uint8_t* vram, uint8_t* oamRam, uint32_t* palette);
 
 public:
 	PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console);

@@ -505,7 +505,8 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, _rgbPalette, _rawPalette, _rawFormat));
 			}
 
-			entries.AddEntry("Column, Row", $"{tileInfo.Column}, {tileInfo.Row} ({tileInfo.Column*tileInfo.Width}, {tileInfo.Row*tileInfo.Height})");
+			entries.AddEntry("Column, Row", $"{tileInfo.Column}, {tileInfo.Row}");
+			entries.AddEntry("X, Y", $"{tileInfo.Column*tileInfo.Width}, {tileInfo.Row*tileInfo.Height}");
 			entries.AddEntry("Size", tileInfo.Width + "x" + tileInfo.Height);
 
 			if(tileInfo.TileMapAddress >= 0) {

@@ -246,7 +246,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Snes => new Enum[] { TileFormat.Bpp2, TileFormat.Bpp4, TileFormat.Bpp8, TileFormat.DirectColor, TileFormat.Mode7, TileFormat.Mode7ExtBg, TileFormat.Mode7DirectColor },
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
-				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4 }, //TODO
+				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4, TileFormat.PceSpriteBpp2Sp01, TileFormat.PceSpriteBpp2Sp23, TileFormat.PceBackgroundBpp2Cg0, TileFormat.PceBackgroundBpp2Cg1 },
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -513,7 +513,6 @@ namespace Mesen.Debugger.ViewModels
 
 		private void DrawNesChrPageDelimiters()
 		{
-			double rowsPerPage = 256 / Config.ColumnCount;
 			double pageHeight = ((double)256 / Config.ColumnCount) * 8;
 			double y = pageHeight;
 			List<PictureViewerLine> delimiters = new List<PictureViewerLine>();

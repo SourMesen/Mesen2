@@ -1062,7 +1062,11 @@ namespace Mesen.Interop
 		Mode7DirectColor,
 		Mode7ExtBg,
 		NesBpp2,
-		PceSpriteBpp4
+		PceSpriteBpp4,
+		PceSpriteBpp2Sp01,
+		PceSpriteBpp2Sp23,
+		PceBackgroundBpp2Cg0,
+		PceBackgroundBpp2Cg1,
 	}
 
 	public static class TileFormatExtensions
@@ -1071,6 +1075,8 @@ namespace Mesen.Interop
 		{
 			return format switch {
 				TileFormat.PceSpriteBpp4 => new PixelSize(16, 16),
+				TileFormat.PceSpriteBpp2Sp01 => new PixelSize(16, 16),
+				TileFormat.PceSpriteBpp2Sp23 => new PixelSize(16, 16),
 				_ => new PixelSize(8, 8),
 			};
 		}
@@ -1084,7 +1090,15 @@ namespace Mesen.Interop
 				TileFormat.Mode7 => 16,
 				TileFormat.Mode7DirectColor => 16,
 				TileFormat.NesBpp2 => 2,
+
 				TileFormat.PceSpriteBpp4 => 4,
+				//Treat all PCE 2BPP modes as 4bpp because the tile data still
+				//covers the same amount of space in RAM as the 4bpp tiles
+				TileFormat.PceSpriteBpp2Sp01 => 4,
+				TileFormat.PceSpriteBpp2Sp23 => 4,
+				TileFormat.PceBackgroundBpp2Cg0 => 4,
+				TileFormat.PceBackgroundBpp2Cg1 => 4,
+
 				_ => 8,
 			};
 		}

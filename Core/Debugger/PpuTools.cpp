@@ -34,8 +34,14 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t* source, uint32_t
 		case TileFormat::Mode7: InternalGetTileView<TileFormat::Mode7>(options, source, srcSize, colors, outBuffer); break;
 		case TileFormat::Mode7DirectColor: InternalGetTileView<TileFormat::Mode7DirectColor>(options, source, srcSize, colors, outBuffer); break;
 		case TileFormat::Mode7ExtBg: InternalGetTileView<TileFormat::Mode7ExtBg>(options, source, srcSize, colors, outBuffer); break;
+		
 		case TileFormat::NesBpp2: InternalGetTileView<TileFormat::NesBpp2>(options, source, srcSize, colors, outBuffer); break;
+		
 		case TileFormat::PceSpriteBpp4: InternalGetTileView<TileFormat::PceSpriteBpp4>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::PceBackgroundBpp2Cg0: InternalGetTileView<TileFormat::PceBackgroundBpp2Cg0>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::PceBackgroundBpp2Cg1: InternalGetTileView<TileFormat::PceBackgroundBpp2Cg1>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::PceSpriteBpp2Sp01: InternalGetTileView<TileFormat::PceSpriteBpp2Sp01>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::PceSpriteBpp2Sp23: InternalGetTileView<TileFormat::PceSpriteBpp2Sp23>(options, source, srcSize, colors, outBuffer); break;
 	}
 }
 
@@ -69,7 +75,15 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 			break;
 
 		case TileFormat::NesBpp2: bpp = 2; rowOffset = 1; break;
+		
 		case TileFormat::PceSpriteBpp4: bpp = 4; rowOffset = 2; tileWidth = 16; tileHeight = 16; options.Width /= 2; options.Height /= 2; break;
+		case TileFormat::PceSpriteBpp2Sp01: bpp = 4; rowOffset = 2; tileWidth = 16; tileHeight = 16; options.Width /= 2; options.Height /= 2; break;
+		case TileFormat::PceSpriteBpp2Sp23: bpp = 4; rowOffset = 2; tileWidth = 16; tileHeight = 16; options.Width /= 2; options.Height /= 2; break;
+		
+		//2BPP, but use BPP=4 because tiles are arranged in the regular 4BPP layout
+		case TileFormat::PceBackgroundBpp2Cg0: bpp = 4; break;
+		case TileFormat::PceBackgroundBpp2Cg1: bpp = 4; break;
+
 		default: bpp = 8; break;
 	}
 
@@ -203,21 +217,6 @@ void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t 
 	};
 
 	switch(format) {
-		case TileFormat::PceSpriteBpp4:
-		{
-			shift = 15 - x;
-			if(shift >= 8) {
-				shift -= 8;
-				rowStart++;
-			}
-			
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 32, shift, (color & 0x02) >> 1);
-			setBit(rowStart + 64, shift, (color & 0x04) >> 2);
-			setBit(rowStart + 96, shift, (color & 0x08) >> 3);
-			break;
-		}
-
 		case TileFormat::Bpp2:
 			setBit(rowStart, shift, color & 0x01);
 			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
@@ -254,6 +253,47 @@ void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t 
 
 		case TileFormat::Mode7ExtBg:
 			ram[(rowStart + x * 2 + 1) & ramMask] = color;
+			break;
+
+		case TileFormat::PceSpriteBpp4:
+		case TileFormat::PceSpriteBpp2Sp01:
+		case TileFormat::PceSpriteBpp2Sp23:
+		{
+			shift = 15 - x;
+			if(shift >= 8) {
+				shift -= 8;
+				rowStart++;
+			}
+
+			switch(format) {
+				case TileFormat::PceSpriteBpp4:
+					setBit(rowStart, shift, color & 0x01);
+					setBit(rowStart + 32, shift, (color & 0x02) >> 1);
+					setBit(rowStart + 64, shift, (color & 0x04) >> 2);
+					setBit(rowStart + 96, shift, (color & 0x08) >> 3);
+					break;
+
+				case TileFormat::PceSpriteBpp2Sp01:
+					setBit(rowStart, shift, color & 0x01);
+					setBit(rowStart + 32, shift, (color & 0x02) >> 1);
+					break;
+
+				case TileFormat::PceSpriteBpp2Sp23:
+					setBit(rowStart + 64, shift, (color & 0x04) >> 2);
+					setBit(rowStart + 96, shift, (color & 0x08) >> 3);
+					break;
+			}
+			break;
+		}
+
+		case TileFormat::PceBackgroundBpp2Cg0:
+			setBit(rowStart, shift, color & 0x01);
+			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			break;
+
+		case TileFormat::PceBackgroundBpp2Cg1:
+			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
+			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
 			break;
 
 		default:

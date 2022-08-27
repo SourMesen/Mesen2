@@ -2382,6 +2382,10 @@
 			<Value ID="Mode7DirectColor">Mode 7 - Direct Color</Value>
 			<Value ID="Mode7ExtBg">Mode 7 - ExtBG</Value>
 			<Valid ID="PceSpriteBpp4">4 bpp (sprites)</Valid>
+			<Valid ID="PceSpriteBpp2Sp01">2 bpp (sprites - SP01)</Valid>
+			<Valid ID="PceSpriteBpp2Sp23">2 bpp (sprites - SP23)</Valid>
+			<Valid ID="PceBackgroundBpp2Cg0">2 bpp (background - CG0)</Valid>
+			<Valid ID="PceBackgroundBpp2Cg1">2 bpp (background - CG1)</Valid>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>

@@ -207,6 +207,10 @@ enum class TileFormat
 	Mode7ExtBg,
 	NesBpp2,
 	PceSpriteBpp4,
+	PceSpriteBpp2Sp01,
+	PceSpriteBpp2Sp23,
+	PceBackgroundBpp2Cg0,
+	PceBackgroundBpp2Cg1,
 };
 
 enum class TileLayout
