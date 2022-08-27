@@ -34,6 +34,9 @@
 			<Setter Property="Margin" Value="0 0 0 2" />
 			<Setter Property="HorizontalAlignment" Value="Left" />
 		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock.visibleText">
+			<Setter Property="Margin" Value="0 0 0 5" />
+		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal]">
 			<Setter Property="Height" Value="34" />
 		</Style>
@@ -42,26 +45,29 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<Panel DataContext="{Binding ElementName=root}" HorizontalAlignment="Stretch">
+	<Panel HorizontalAlignment="Stretch">
 		<DockPanel>
-			<TextBlock Text="{Binding Text}" />
+			<TextBlock
+				Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}"
+				Text="{CompiledBinding Text, ElementName=root}"
+		  />
 
 			<c:MesenNumericTextBox
-				Min="{Binding Minimum}"
-				Max="{Binding Maximum}"
-				Value="{Binding Value}"
+				Min="{CompiledBinding Minimum, ElementName=root}"
+				Max="{CompiledBinding Maximum, ElementName=root}"
+				Value="{CompiledBinding Value, ElementName=root}"
 				VerticalAlignment="Center"
 				HorizontalContentAlignment="Center"
-				IsVisible="{Binding !HideValue}"
+				IsVisible="{CompiledBinding !HideValue, ElementName=root}"
 			/>
 
 			<Slider
-				Minimum="{Binding Minimum}"
-				Maximum="{Binding Maximum}"
-				Orientation="{Binding Orientation}"
-				Value="{Binding Value, Mode=TwoWay}"
+				Minimum="{CompiledBinding Minimum, ElementName=root}"
+				Maximum="{CompiledBinding Maximum, ElementName=root}"
+				Orientation="{CompiledBinding Orientation, ElementName=root}"
+				Value="{CompiledBinding Value, ElementName=root, Mode=TwoWay}"
 				TickPlacement="BottomRight"
-				TickFrequency="{Binding TickFrequency}"
+				TickFrequency="{CompiledBinding TickFrequency, ElementName=root}"
 				PropertyChanged="Slider_OnPropertyChanged"
 				LargeChange="5"
 				SmallChange="1"
