@@ -104,18 +104,22 @@ void HistoryViewer::SeekTo(uint32_t seekPosition)
 
 bool HistoryViewer::CreateSaveState(string outputFile, uint32_t position)
 {
-	position /= RewindManager::BufferSize;
-	if(position < _history.size()) {
-		std::stringstream stateData;
-		_emu->GetSaveStateManager()->GetSaveStateHeader(stateData);
-		_history[position].GetStateData(stateData);
+	if(_history.empty()) {
+		return false;
+	}
 
-		ofstream output(outputFile, ios::binary);
-		if(output) {
-			output << stateData.rdbuf();
-			output.close();
-			return true;
-		}
+	position /= RewindManager::BufferSize;
+	position = std::min(position, (uint32_t)_history.size() - 1);
+
+	std::stringstream stateData;
+	_emu->GetSaveStateManager()->GetSaveStateHeader(stateData);
+	_history[position].GetStateData(stateData);
+
+	ofstream output(outputFile, ios::binary);
+	if(output) {
+		output << stateData.rdbuf();
+		output.close();
+		return true;
 	}
 	return false;
 }
