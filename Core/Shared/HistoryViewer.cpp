@@ -6,6 +6,7 @@
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/RewindManager.h"
+#include "Shared/CheatManager.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/NotificationManager.h"
@@ -33,6 +34,9 @@ bool HistoryViewer::Initialize(Emulator* mainEmu)
 	}
 
 	_mainEmu = mainEmu;
+
+	vector<CheatCode> cheats = _mainEmu->GetCheatManager()->GetCheats();
+	_emu->GetCheatManager()->SetCheats(cheats);
 
 	//Disable battery saving for this instance
 	_emu->GetBatteryManager()->Initialize("");
