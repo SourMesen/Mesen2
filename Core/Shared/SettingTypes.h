@@ -558,7 +558,6 @@ struct NesConfig
 	bool SwapDutyCycles = false;
 
 	bool BreakOnCrash = false;
-	uint32_t DipSwitches = 0;
 
 	int32_t InputScanline = 241;
 

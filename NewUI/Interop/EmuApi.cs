@@ -166,6 +166,12 @@ namespace Mesen.Interop
 		PcEngine = 4
 	}
 
+	public struct InteropDipSwitchInfo
+	{
+		public UInt32 DatabaseId;
+		public UInt32 DipSwitchCount;
+	}
+
 	public struct InteropRomInfo
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2000)]
@@ -175,6 +181,7 @@ namespace Mesen.Interop
 
 		public RomFormat Format;
 		public ConsoleType ConsoleType;
+		public InteropDipSwitchInfo DipSwitches;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
 		public CpuType[] CpuTypes;
@@ -187,6 +194,7 @@ namespace Mesen.Interop
 		public string PatchPath = "";
 		public RomFormat Format = RomFormat.Unknown;
 		public ConsoleType ConsoleType = ConsoleType.Snes;
+		public InteropDipSwitchInfo DipSwitches;
 		public HashSet<CpuType> CpuTypes = new HashSet<CpuType>();
 
 		public RomInfo() { }
@@ -197,6 +205,7 @@ namespace Mesen.Interop
 			PatchPath = (ResourcePath)Utf8Utilities.GetStringFromArray(romInfo.PatchPath);
 			Format = romInfo.Format;
 			ConsoleType = romInfo.ConsoleType;
+			DipSwitches = romInfo.DipSwitches;
 
 			for(int i = 0; i < romInfo.CpuTypeCount; i++) {
 				CpuTypes.Add(romInfo.CpuTypes[i]);

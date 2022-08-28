@@ -417,6 +417,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_rom.RomFile = (string)romFile;
 	_rom.PatchFile = (string)patchFile;
 	_rom.Format = console->GetRomFormat();
+	_rom.DipSwitches = console->GetDipSwitchInfo();
 
 	if(_rom.Format == RomFormat::Spc || _rom.Format == RomFormat::Nsf || _rom.Format == RomFormat::Gbs) {
 		_audioPlayerHud.reset(new AudioPlayerHud(this));

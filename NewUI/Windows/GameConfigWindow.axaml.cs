@@ -31,7 +31,7 @@ public class GameConfigWindow : Window
 
 	protected override void OnClosing(CancelEventArgs e)
 	{
-		GameConfig.LoadGameConfig(MainWindowViewModel.Instance.RomInfo.GetRomName()).ApplyConfig();
+		GameConfig.LoadGameConfig(MainWindowViewModel.Instance.RomInfo).ApplyConfig();
 		_model?.Dispose();
 		base.OnClosing(e);
 	}

@@ -24,9 +24,16 @@ enum class RomFormat
 	PceCdRom,
 };
 
+struct DipSwitchInfo
+{
+	uint32_t DatabaseId = 0;
+	uint32_t DipSwitchCount = 0;
+};
+
 struct RomInfo
 {
 	VirtualFile RomFile;
 	VirtualFile PatchFile;
 	RomFormat Format = RomFormat::Unknown;
+	DipSwitchInfo DipSwitches = {};
 };

@@ -69,6 +69,12 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		chrSize = header.GetChrSize();
 	}
 
+	if(prgSize == 0) {
+		MessageManager::Log("[iNes] Invalid file (PRG size is 0) - load operation cancelled.");
+		romData.Error = true;
+		return;
+	}
+
 	if(prgSize + chrSize > dataSize) {
 		//Invalid rom file
 		MessageManager::Log("[iNes] Invalid file (file length does not match header information) - load operation cancelled.");

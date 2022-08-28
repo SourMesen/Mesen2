@@ -40,10 +40,11 @@ void EmuSettings::Serialize(Serializer& s)
 	//TODO: These should probably not be loaded except for movie playback and netplay clients
 	SV(_video.IntegerFpsMode);
 	SV(_emulation.RunAheadFrames);
+	SV(_game.DipSwitches);
 
 	switch(_emu->GetConsoleType()) {
 		case ConsoleType::Nes:
-			SV(_nes.ConsoleType); SV(_nes.DipSwitches);
+			SV(_nes.ConsoleType);
 			SV(_nes.DisableOamAddrBug); SV(_nes.DisablePaletteRead); SV(_nes.DisablePpu2004Reads);
 			SV(_nes.DisableGameGenieBusConflicts); SV(_nes.DisablePpuReset); SV(_nes.EnableOamDecay);
 			SV(_nes.EnablePpu2000ScrollGlitch); SV(_nes.EnablePpu2006ScrollGlitch); SV(_nes.EnablePpuOamRowCorruption);

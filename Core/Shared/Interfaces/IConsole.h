@@ -59,6 +59,7 @@ public:
 
 	virtual BaseControlManager* GetControlManager() = 0;
 
+	virtual DipSwitchInfo GetDipSwitchInfo() { return {}; }
 	virtual ConsoleRegion GetRegion() = 0;
 	virtual ConsoleType GetConsoleType() = 0;
 	virtual vector<CpuType> GetCpuTypes() = 0;

@@ -56,6 +56,7 @@
 	  <None Remove="Styles\DockStyles.xaml" />
 	  <None Remove="Styles\MesenStyles.Light.xaml" />
 	  <None Remove="Styles\StartupStyles.xaml" />
+	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
@@ -502,6 +503,7 @@
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\ReverseMode.lua" />
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
+    <EmbeddedResource Include="Utilities\DipSwitchDefinitions.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Dock.Avalonia">

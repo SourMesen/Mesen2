@@ -120,7 +120,7 @@ uint8_t VsControlManager::ReadRam(uint16_t addr)
 
 	switch(addr) {
 		case 0x4016: {
-			uint32_t dipSwitches = _emu->GetSettings()->GetNesConfig().DipSwitches;
+			uint32_t dipSwitches = _emu->GetSettings()->GetGameConfig().DipSwitches;
 			if(!_console->IsVsMainConsole()) {
 				dipSwitches >>= 8;
 			}
@@ -135,7 +135,7 @@ uint8_t VsControlManager::ReadRam(uint16_t addr)
 		case 0x4017: {
 			value = NesControlManager::ReadRam(addr) & 0x01;
 
-			uint32_t dipSwitches = _emu->GetSettings()->GetNesConfig().DipSwitches;
+			uint32_t dipSwitches = _emu->GetSettings()->GetGameConfig().DipSwitches;
 			if(!_console->IsVsMainConsole()) {
 				dipSwitches >>= 8;
 			}

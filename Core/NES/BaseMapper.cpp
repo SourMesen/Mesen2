@@ -402,7 +402,7 @@ uint8_t BaseMapper::GetPowerOnByte(uint8_t defaultValue)
 uint32_t BaseMapper::GetDipSwitches()
 {
 	uint32_t mask = (1 << GetDipSwitchCount()) - 1;
-	return _console->GetNesConfig().DipSwitches & mask;
+	return _emu->GetSettings()->GetGameConfig().DipSwitches & mask;
 }
 		
 bool BaseMapper::HasBattery()

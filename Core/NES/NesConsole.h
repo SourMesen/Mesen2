@@ -112,4 +112,5 @@ public:
 
 	void ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value) override;
 	void InitializeRam(void* data, uint32_t length);
+	DipSwitchInfo GetDipSwitchInfo() override;
 };

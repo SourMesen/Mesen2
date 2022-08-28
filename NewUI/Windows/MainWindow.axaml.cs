@@ -223,7 +223,7 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameLoaded:
 					CheatCodes.ApplyCheats();
 					RomInfo romInfo = EmuApi.GetRomInfo();
-					GameConfig.LoadGameConfig(romInfo.GetRomName()).ApplyConfig();
+					GameConfig.LoadGameConfig(romInfo).ApplyConfig();
 
 					Dispatcher.UIThread.Post(() => {
 						_model.RecentGames.Visible = false;

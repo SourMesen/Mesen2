@@ -44,6 +44,7 @@ struct InteropRomInfo
 	char PatchPath[2000];
 	RomFormat Format;
 	ConsoleType Console;
+	DipSwitchInfo DipSwitches;
 	CpuType CpuTypes[5];
 	uint32_t CpuTypeCount;
 };
@@ -127,6 +128,7 @@ extern "C" {
 		memcpy(info.PatchPath, patchPath.c_str(), patchPath.size());
 		info.Format = romInfo.Format;
 		info.Console = _emu->GetConsoleType();
+		info.DipSwitches = romInfo.DipSwitches;
 
 		vector<CpuType> cpuTypes = _emu->GetCpuTypes();
 		info.CpuTypeCount = std::min<uint32_t>((uint32_t)cpuTypes.size(), 5);

@@ -36,18 +36,25 @@ namespace Mesen.Config
 			});
 		}
 
-		public static GameConfig LoadGameConfig(string romName)
+		public static GameConfig LoadGameConfig(RomInfo romInfo)
 		{
-			string path = Path.Combine(ConfigManager.GameConfigFolder, romName + ".json");
+			string path = Path.Combine(ConfigManager.GameConfigFolder, romInfo.GetRomName() + ".json");
+			GameConfig? cfg;
 			if(File.Exists(path)) {
 				string? fileData = FileHelper.ReadAllText(path);
 				if(fileData != null) {
 					try {
-						return JsonSerializer.Deserialize<GameConfig>(fileData, JsonHelper.Options) ?? new();
+						cfg = JsonSerializer.Deserialize<GameConfig>(fileData, JsonHelper.Options);
+						if(cfg != null) {
+							return cfg;
+						}
 					} catch { }
 				}
 			}
-			return new();
+			
+			cfg = new GameConfig();
+			cfg.DipSwitches = DipSwitchDatabase.GetGameDipswitches(romInfo.DipSwitches).DefaultDipSwitches;
+			return cfg;
 		}
 
 		public void Save()

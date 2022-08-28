@@ -44,7 +44,25 @@
 					/>
 				</c:GroupBox>
 			</TabItem>
-			<TabItem Header="{l:Translate tabDipSwitches}" />
+			<TabItem Header="{l:Translate tabDipSwitches}" IsVisible="{CompiledBinding DipSwitches.DipSwitches.Count}">
+				<ScrollViewer>
+					<ItemsRepeater Items="{CompiledBinding DipSwitches.DipSwitches}">
+						<ItemsRepeater.ItemTemplate>
+							<DataTemplate>
+								<Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto">
+									<TextBlock Text="{Binding Name}" />
+									<ComboBox
+										Items="{Binding Options}"
+										SelectedIndex="{Binding SelectedOption}"
+										Grid.Column="2"
+										HorizontalAlignment="Stretch"
+									/>
+								</Grid>
+							</DataTemplate>
+						</ItemsRepeater.ItemTemplate>
+					</ItemsRepeater>
+				</ScrollViewer>
+			</TabItem>
 		</TabControl>
 	</DockPanel>
 </Window>

@@ -604,3 +604,11 @@ void NesConsole::InitializeRam(void* data, uint32_t length)
 	EmuSettings* settings = _emu->GetSettings();
 	settings->InitializeRam(settings->GetNesConfig().RamPowerOnState, data, length);
 }
+
+DipSwitchInfo NesConsole::GetDipSwitchInfo()
+{
+	DipSwitchInfo info = {};
+	info.DipSwitchCount = _mapper->GetMapperDipSwitchCount();
+	info.DatabaseId = _mapper->GetRomInfo().Hash.PrgCrc32;
+	return info;
+}

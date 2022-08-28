@@ -1,0 +1,979 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DipSwitchDefinitions>
+	<Game Name="(Dual) VS Balloon Fight" PrgCrc32="9213A19E">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Lives">
+			<Option>3 lives</Option>
+			<Option>5 lives</Option>
+			<Option>4 lives</Option>
+			<Option>6 lives</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Easy</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Enemy Regeneration">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Life">
+			<Option>None</Option>
+			<Option>Every 20,000 points</Option>
+			<Option>Every 40,000 points</Option>
+			<Option>Every 10,000 points</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="(Dual) VS Baseball" PrgCrc32="44691677">
+		<DipSwitch Localization="Player Defense Strength">
+			<Option>Weak</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Strong</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Player Offense Strength">
+			<Option>Weak</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Strong</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Computer Defense Strength">
+			<Option>Weak</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Strong</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Computer Offense Strength">
+			<Option>Weak</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Strong</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch Localization="Coins">
+			<Option>1 Coin = 1 Credit</Option>
+			<Option>2 Coins = 1 Credit</Option>
+			<Option>1 Coin = 2 Credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Starting Points">
+			<Option>80</Option>
+			<Option>250</Option>
+			<Option>150</Option>
+			<Option>350</Option>
+			<Option>100</Option>
+			<Option>300</Option>
+			<Option>200</Option>
+			<Option>400</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Play">
+			<Option>On</Option>
+			<Option>Off</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="(Dual) VS Mahjong" PrgCrc32="5734B934,91D1B01B">
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Time">
+			<Option>90</Option>
+			<Option>45</Option>
+			<Option>60</Option>
+			<Option>30</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+
+		<DipSwitch />
+		<DipSwitch Localization="Coinage">
+			<Option>1 Coin = 1 Credit</Option>
+			<Option>2 Coins = 1 Credit</Option>
+			<Option>1 Coin = 2 Credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Starting Points">
+			<Option>30000</Option>
+			<Option>20000</Option>
+			<Option>25000</Option>
+			<Option>15000</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="(Dual) VS Raid on Bungeling Bay" PrgCrc32="99FB3B3B,E07AF8EA">
+		<DipSwitch Localization="Coins">
+			<Option>1 Coin = 1 Credit</Option>
+			<Option>2 Coins = 1 Credit</Option>
+			<Option>1 Coin = 3 Credits</Option>
+			<Option>4 Coins = 1 Credit</Option>
+			<Option>1 Coin = 2 Credits</Option>
+			<Option>3 Coins = 1 Credit</Option>
+			<Option>1 Coin = 4 Credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>2</Option>
+			<Option>3</Option>
+		</DipSwitch>>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="(Dual) VS Tennis" PrgCrc32="2AF7E14E">
+		<DipSwitch Localization="Difficulty Vs Computer">
+			<Option>Easy</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty Vs Player">
+			<Option>Easy</Option>
+			<Option>Medium</Option>
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Racket Size">
+			<Option>Large</Option>
+			<Option>Small</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Extra Score">
+			<Option>1 Set</Option>
+			<Option>1 Game</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Court Color">
+			<Option>Green</Option>
+			<Option>Blue</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Copyright">
+			<Option>Japan</Option>
+			<Option>USA</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch Localization="Coins">
+			<Option>1 Coin = 1 Credit</Option>
+			<Option>2 Coins = 1 Credit</Option>
+			<Option>1 Coin = 2 Credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Game Mode Credits">
+			<Option>1/1/1/1</Option>
+			<Option>2/2/2/2</Option>
+			<Option>1/2/1/2</Option>
+			<Option>2/2/4/4</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Rackets per Game">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="(Dual) VS Wrecking Crew" PrgCrc32="12B36F73">
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>6</Option>
+		</DipSwitch>
+		<DipSwitch Localization="1st Bonus Life">
+			<Option>20000 points</Option>
+			<Option>70000 points</Option>
+			<Option>40000 points</Option>
+			<Option>100000 points</Option>
+			<Option>30000 points</Option>
+			<Option>80000 points</Option>
+			<Option>50000 points</Option>
+			<Option>None</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Additional Bonus Lives">
+			<Option>20000 points</Option>
+			<Option>70000 points</Option>
+			<Option>40000 points</Option>
+			<Option>100000 points</Option>
+			<Option>30000 points</Option>
+			<Option>80000 points</Option>
+			<Option>50000 points</Option>
+			<Option>None</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Coins">
+			<Option>Free Play</Option>
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Easy</Option>
+			<Option>Normal</Option>
+			<Option>Medium</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Copyright">
+			<Option>Japan</Option>
+			<Option>USA</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Battle City" PrgCrc32="70433F2C">
+		<DipSwitch Localization="Credits for 2 Players">
+			<Option>1</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>5</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>On</Option>
+			<Option>Off</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C04-0002</Option>
+			<Option>RP2C04-0003</Option>
+			<Option>RP2C04-0004</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Castlevania" PrgCrc32="FFBEF374">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus">
+			<Option>100k</Option>
+			<Option>300k</Option>
+			<Option>200k</Option>
+			<Option>400k</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Clu Clu Land" PrgCrc32="07138C06">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch />
+	</Game>
+	<Game Name="Dr. Mario" PrgCrc32="D5D7EAC4">
+		<DipSwitch Localization="Drop Rate Increases After">
+			<Option>7 Pills</Option>
+			<Option>8 Pills</Option>
+			<Option>9 Pills</Option>
+			<Option>10 Pills</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Virus Level">
+			<Option>1</Option>
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>7</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Drop Speed">
+			<Option>Slow</Option>
+			<Option>Normal</Option>
+			<Option>Fast</Option>
+			<Option>Faster</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Free Play">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Duck Hunt" PrgCrc32="ED588F00">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Very Easy</Option>
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+			<Option>Very Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Misses per Game">
+			<Option>3</Option>
+			<Option>5</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Life">
+			<Option>30000</Option>
+			<Option>50000</Option>
+			<Option>80000</Option>
+			<Option>100000</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Excitebike" PrgCrc32="29155E0C,CBE85490">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus">
+			<Option>100k and Every 50k</Option>
+			<Option>100k Only</Option>
+			<Option>Every 100k</Option>
+			<Option>None</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Part 1 Qualifying Time">
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Part 2 Qualifying Time">
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Freedom Force" PrgCrc32="17AE56BE">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Golf" PrgCrc32="A93A5AEE,86167220,CC2C4B5D">
+		<DipSwitch Localization="Coins">
+			<Option>Free Play</Option>
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Hole Size">
+			<Option>Large</Option>
+			<Option>Small</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Points per Stroke">
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Starting Points">
+			<Option>10</Option>
+			<Option>16</Option>
+			<Option>13</Option>
+			<Option>20</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty Vs. Computer">
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Goonies" PrgCrc32="1E438D52">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Timer">
+			<Option>Normal</Option>
+			<Option>Fast</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Gradius" PrgCrc32="D99A2087">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>4</Option>
+			<Option>3</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus">
+			<Option>100k</Option>
+			<Option>300k</Option>
+			<Option>200k</Option>
+			<Option>400k</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Gumshoe" PrgCrc32="FE446787">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Easy</Option>
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+			<Option>Very Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>5</Option>
+			<Option>3</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bullets per Balloon">
+			<Option>3</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Life">
+			<Option>80000</Option>
+			<Option>100000</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Hogan's Alley" PrgCrc32="FF5135A3">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Easy</Option>
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+			<Option>Very Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Misses per Game">
+			<Option>3</Option>
+			<Option>5</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Life">
+			<Option>30000</Option>
+			<Option>50000</Option>
+			<Option>80000</Option>
+			<Option>100000</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Ice Climber" PrgCrc32="43A357EF,D4EB5923">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>7</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Normal</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Time before the bear">
+			<Option>Long</Option>
+			<Option>Short</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Mach Rider" PrgCrc32="0B65A917,8A6A9848">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Time">
+			<Option>280</Option>
+			<Option>220</Option>
+			<Option>250</Option>
+			<Option>200</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Mach Rider - Fighting Course" PrgCrc32="AE8063EF">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="1st Race Length (km)">
+			<Option>12</Option>
+			<Option>15</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Mighty Bomb Jack" PrgCrc32="CA85E56D">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>4</Option>
+			<Option>2</Option>
+			<Option>5</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Ninja Jajamaru Kun" PrgCrc32="16D3F469">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>Unused</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Pinball" PrgCrc32="E528F651,EC461DB9">
+		<DipSwitch Localization="Coins">
+			<Option>Free Play</Option>
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Balls">
+			<Option>3</Option>
+			<Option>5</Option>
+			<Option>4</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Ball Speed">
+			<Option>Normal</Option>
+			<Option>Fast</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Platoon" PrgCrc32="E2C0A2BE">
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="RBI Baseball" PrgCrc32="135ADF7C">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="1p/inn, 2p/inn, Time/Min">
+			<Option>3, 2, 6</Option>
+			<Option>2, 1, 3</Option>
+			<Option>4, 3, 7</Option>
+			<Option>2, 2, 4</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0002</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0003</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0004</Option>
+			<Option>RP2C03</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Raid on Bungeling Bay" PrgCrc32="C99EC059">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>2</Option>
+			<Option>3</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Slalom" PrgCrc32="70901B25">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Freestyle Points">
+			<Option>Left / Right</Option>
+			<Option>Hold Time</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Very Easy</Option>
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+			<Option>Very Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Allow Continue">
+			<Option>Yes</Option>
+			<Option>No</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Inverted Input">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Soccer" PrgCrc32="46914E3E">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Points Timer">
+			<Option>600 Pts</Option>
+			<Option>1000 Pts</Option>
+			<Option>800 Pts</Option>
+			<Option>1200 Pts</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Very Easy</Option>
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+			<Option>Very Hard</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Star Luster" PrgCrc32="E1AA8214">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="PPU">
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0002</Option>
+		</DipSwitch>
+		<DipSwitch />
+	</Game>
+	<Game Name="Super Mario Bros" PrgCrc32="8192C804,8B60CC58,4BF3972D,737DD1BF">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 5 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 4 credits</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3</Option>
+			<Option>2</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus Life">
+			<Option>100</Option>
+			<Option>200</Option>
+			<Option>150</Option>
+			<Option>250</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Timer">
+			<Option>Normal</Option>
+			<Option>Fast</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Continue Lives">
+			<Option>4</Option>
+			<Option>3</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Super Sky Kid" PrgCrc32="CF36261E">
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Lives">
+			<Option>2</Option>
+			<Option>3</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0002</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0003</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0004</Option>
+			<Option>RP2C03</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Super Xevious" PrgCrc32="F9D3B0A3,66BB838F,9924980A">
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C04-0002</Option>
+			<Option>RP2C04-0003</Option>
+			<Option>RP2C04-0004</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="Tetris" PrgCrc32="8850924B" DefaultDip="32">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0002</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0003</Option>
+			<Option>RP2C03</Option>
+			<Option>RP2C04-0004</Option>
+			<Option>RP2C03</Option>
+		</DipSwitch>
+	</Game>
+	<Game Name="TKO Boxing" PrgCrc32="98CFE016,EB2DBA63">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch />
+		<DipSwitch Localization="PPU">
+			<Option>RP2C04-0001</Option>
+			<Option>RP2C03</Option>
+		</DipSwitch>
+		<DipSwitch />
+		<DipSwitch />
+	</Game>
+	<Game Name="Top Gun" PrgCrc32="8C0C2DF5">
+		<DipSwitch Localization="Coins">
+			<Option>1 coin = 1 credit</Option>
+			<Option>3 coins = 1 credit</Option>
+			<Option>1 coin = 3 credits</Option>
+			<Option>5 coins = 1 credit</Option>
+			<Option>1 coin = 2 credits</Option>
+			<Option>4 coins = 1 credit</Option>
+			<Option>2 coins = 1 credit</Option>
+			<Option>Free Play</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Lives">
+			<Option>3 per coin - 12 maximum</Option>
+			<Option>2 per coin - 9 maximum</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Bonus">
+			<Option>30k and every 50k</Option>
+			<Option>100k and every 150k</Option>
+			<Option>50k and every 100k</Option>
+			<Option>200k and every 200k</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Difficulty">
+			<Option>Easy</Option>
+			<Option>Hard</Option>
+		</DipSwitch>
+		<DipSwitch Localization="Demo Sounds">
+			<Option>Off</Option>
+			<Option>On</Option>
+		</DipSwitch>
+	</Game>
+</DipSwitchDefinitions>
