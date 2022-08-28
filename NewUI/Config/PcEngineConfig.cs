@@ -47,10 +47,7 @@ namespace Mesen.Config
 		[Reactive] public bool DisableBackground { get; set; } = false;
 		[Reactive] public bool DisableBackgroundVdc2 { get; set; } = false;
 
-		[Reactive][MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 18;
-		[Reactive][MinMax(0, 100)] public UInt32 OverscanRight { get; set; } = 18;
-		[Reactive][MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 3;
-		[Reactive][MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 0;
+		[Reactive] public OverscanConfig Overscan { get; set; } = new() { Top = 3, Left = 18, Right = 18 };
 
 		[Reactive] public UInt32[] Palette { get; set; } = PcEngineConfig.DefaultPalette.ToArray();
 
@@ -88,10 +85,7 @@ namespace Mesen.Config
 				DisableSprites = DisableSprites,
 				DisableSpritesVdc2 = DisableSpritesVdc2,
 
-				OverscanLeft = OverscanLeft,
-				OverscanRight = OverscanRight,
-				OverscanTop = OverscanTop,
-				OverscanBottom = OverscanBottom,
+				Overscan = Overscan.ToInterop(),
 
 				Palette = Palette,
 			});
@@ -174,10 +168,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBackgroundVdc2;
 
-		public UInt32 OverscanLeft;
-		public UInt32 OverscanRight;
-		public UInt32 OverscanTop;
-		public UInt32 OverscanBottom;
+		public InteropOverscanDimensions Overscan;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 512)]
 		public UInt32[] Palette;

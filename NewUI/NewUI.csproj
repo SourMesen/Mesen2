@@ -93,8 +93,8 @@
     <Compile Update="Controls\SystemSpecificSettings.axaml.cs">
       <DependentUpon>SystemSpecificSettings.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\OverscanConfig.axaml.cs">
-      <DependentUpon>OverscanConfig.axaml</DependentUpon>
+    <Compile Update="Controls\OverscanInput.axaml.cs">
+      <DependentUpon>OverscanInput.axaml</DependentUpon>
     </Compile>
     <Compile Update="Controls\PathSelector.axaml.cs">
       <DependentUpon>PathSelector.axaml</DependentUpon>

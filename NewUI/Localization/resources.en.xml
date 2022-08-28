@@ -129,7 +129,7 @@
 		<Form ID="InputComboBox">
 			<Control ID="btnSetup">Setup</Control>
 		</Form>
-		<Form ID="OverscanConfig">
+		<Form ID="OverscanInput">
 			<Control ID="lblLeft">Left</Control>
 			<Control ID="lblTop">Top</Control>
 			<Control ID="lblBottom">Bottom</Control>
@@ -285,6 +285,8 @@
 			<Control ID="chkForceSpritesFirstColumn">Force sprite display in first column</Control>
 
 			<Control ID="lblOverscan">Overscan</Control>
+			<Control ID="lblOverscanNtsc">NTSC</Control>
+			<Control ID="lblOverscanPal">PAL</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpGeneral">General</Control>

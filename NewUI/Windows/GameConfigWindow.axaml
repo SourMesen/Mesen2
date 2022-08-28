@@ -32,15 +32,12 @@
 					<c:GroupBox.Header>
 						<CheckBox Content="{l:Translate chkOverrideOverscan}" IsChecked="{CompiledBinding Config.OverrideOverscan}" Margin="0 -3 0 0" />
 					</c:GroupBox.Header>
-					
-					<c:OverscanConfig
+
+					<c:OverscanInput
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
 						IsEnabled="{CompiledBinding Config.OverrideOverscan}"
-						OverscanTop="{CompiledBinding Config.OverscanTop}"
-						OverscanBottom="{CompiledBinding Config.OverscanBottom}"
-						OverscanLeft="{CompiledBinding Config.OverscanLeft}"
-						OverscanRight="{CompiledBinding Config.OverscanRight}"
+						Overscan="{CompiledBinding Config.Overscan}"
 					/>
 				</c:GroupBox>
 			</TabItem>

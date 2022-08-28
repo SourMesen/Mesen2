@@ -111,12 +111,7 @@
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 
 					<c:OptionSection Header="{l:Translate lblOverscan}">
-						<c:OverscanConfig
-							OverscanTop="{CompiledBinding Config.OverscanTop}"
-							OverscanBottom="{CompiledBinding Config.OverscanBottom}"
-							OverscanLeft="{CompiledBinding Config.OverscanLeft}"
-							OverscanRight="{CompiledBinding Config.OverscanRight}"
-						/>
+						<c:OverscanInput Overscan="{CompiledBinding Config.Overscan}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

@@ -377,13 +377,17 @@
 						<CheckBox IsChecked="{CompiledBinding Config.UseCustomVsPalette}" Content="{l:Translate chkUseCustomVsPalette}" />
 					</c:OptionSection>
 					
-					<c:OptionSection Header="{l:Translate lblOverscan}">
-						<c:OverscanConfig
-							OverscanTop="{CompiledBinding Config.OverscanTop}"
-							OverscanBottom="{CompiledBinding Config.OverscanBottom}"
-							OverscanLeft="{CompiledBinding Config.OverscanLeft}"
-							OverscanRight="{CompiledBinding Config.OverscanRight}"
-						/>
+					<c:OptionSection Header="{l:Translate lblOverscan}" HorizontalAlignment="Left">
+						<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 0 0 5">
+							<TabControl>
+								<TabItem Header="{l:Translate lblOverscanNtsc}">
+									<c:OverscanInput Overscan="{CompiledBinding Config.NtscOverscan}" Margin="5" />
+								</TabItem>
+								<TabItem Header="{l:Translate lblOverscanPal}">
+									<c:OverscanInput Overscan="{CompiledBinding Config.PalOverscan}" Margin="5" />
+								</TabItem>
+							</TabControl>
+						</Border>
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

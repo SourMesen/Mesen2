@@ -50,13 +50,11 @@ namespace Mesen.Config
 		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 		[Reactive] public bool AdaptiveSpriteLimit { get; set; } = false;
 
-		[Reactive] public bool UseCustomVsPalette { get; set; } = false;		
+		[Reactive] public bool UseCustomVsPalette { get; set; } = false;
 
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanLeft { get; set; } = 0;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanRight { get; set; } = 0;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanTop { get; set; } = 0;
-		[Reactive] [MinMax(0, 100)] public UInt32 OverscanBottom { get; set; } = 0;
-
+		[Reactive] public OverscanConfig NtscOverscan { get; set; } = new();
+		[Reactive] public OverscanConfig PalOverscan { get; set; } = new();
+		
 		//Emulation
 		[Reactive] public bool EnableOamDecay { get; set; } = false;
 		[Reactive] public bool EnablePpuOamRowCorruption { get; set; } = false;
@@ -164,10 +162,8 @@ namespace Mesen.Config
 
 				UseCustomVsPalette = UseCustomVsPalette,
 
-				OverscanLeft = OverscanLeft,
-				OverscanRight = OverscanRight,
-				OverscanTop = OverscanTop,
-				OverscanBottom = OverscanBottom,
+				NtscOverscan = NtscOverscan.ToInterop(),
+				PalOverscan = PalOverscan.ToInterop(),
 
 				ConsoleType = ConsoleType,
 				DisablePpuReset = DisablePpuReset,
@@ -329,10 +325,8 @@ namespace Mesen.Config
 		
 		[MarshalAs(UnmanagedType.I1)] public bool UseCustomVsPalette;
 
-		public UInt32 OverscanLeft;
-		public UInt32 OverscanRight;
-		public UInt32 OverscanTop;
-		public UInt32 OverscanBottom;
+		public InteropOverscanDimensions NtscOverscan;
+		public InteropOverscanDimensions PalOverscan;
 
 		public NesConsoleType ConsoleType;
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;

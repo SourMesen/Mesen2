@@ -352,15 +352,20 @@ struct EmulationConfig
 	uint32_t RunAheadFrames = 0;
 };
 
+struct OverscanDimensions
+{
+	uint32_t Left = 0;
+	uint32_t Right = 0;
+	uint32_t Top = 0;
+	uint32_t Bottom = 0;
+};
+
 struct GameConfig
 {
 	uint32_t DipSwitches = 0;
 
 	bool OverrideOverscan = false;
-	uint32_t OverscanLeft = 0;
-	uint32_t OverscanRight = 0;
-	uint32_t OverscanTop = 0;
-	uint32_t OverscanBottom = 0;
+	OverscanDimensions Overscan = {};
 };
 
 struct GameboyConfig
@@ -428,10 +433,7 @@ struct PcEngineConfig
 	bool DisableBackground = false;
 	bool DisableBackgroundVdc2 = false;
 
-	uint32_t OverscanLeft = 0;
-	uint32_t OverscanRight = 0;
-	uint32_t OverscanTop = 0;
-	uint32_t OverscanBottom = 0;
+	OverscanDimensions Overscan = {};
 
 	uint32_t Palette[512] = { };
 };
@@ -454,10 +456,7 @@ struct SnesConfig
 	bool HideSprites = false;
 	bool DisableFrameSkipping = false;
 
-	uint32_t OverscanLeft = 0;
-	uint32_t OverscanRight = 0;
-	uint32_t OverscanTop = 7;
-	uint32_t OverscanBottom = 8;
+	OverscanDimensions Overscan = {};
 
 	bool EnableCubicInterpolation = true;
 
@@ -527,11 +526,9 @@ struct NesConfig
 	
 	bool UseCustomVsPalette = false;
 	
-	uint32_t OverscanLeft = 0;
-	uint32_t OverscanRight = 0;
-	uint32_t OverscanTop = 0;
-	uint32_t OverscanBottom = 0;
-	
+	OverscanDimensions NtscOverscan = {};
+	OverscanDimensions PalOverscan = {};
+
 	NesConsoleType ConsoleType = NesConsoleType::Nes001;
 	bool DisablePpuReset = false;
 	bool AllowInvalidInput = false;
@@ -650,14 +647,6 @@ struct PreferencesConfig
 	const char* SaveFolderOverride = nullptr;
 	const char* SaveStateFolderOverride = nullptr;
 	const char* ScreenshotFolderOverride = nullptr;
-};
-
-struct OverscanDimensions
-{
-	uint32_t Left = 0;
-	uint32_t Right = 0;
-	uint32_t Top = 0;
-	uint32_t Bottom = 0;
 };
 
 struct FrameInfo

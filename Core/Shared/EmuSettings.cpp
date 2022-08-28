@@ -318,52 +318,29 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 
 OverscanDimensions EmuSettings::GetOverscan()
 {
-	OverscanDimensions overscan = {};
-
 	switch(_emu->GetRomInfo().Format) {
 		case RomFormat::Spc:
 		case RomFormat::Gbs:
 		case RomFormat::Nsf:
 			//No overscan for music players
-			return overscan;
+			return OverscanDimensions {};
 	}
 
 	if(_game.OverrideOverscan) {
-		overscan.Left = _game.OverscanLeft;
-		overscan.Right = _game.OverscanRight;
-		overscan.Top = _game.OverscanTop;
-		overscan.Bottom = _game.OverscanBottom;
-		return overscan;
+		return _game.Overscan;
 	}
 
 	switch(_emu->GetConsoleType()) {
-		case ConsoleType::Snes: 
-			overscan.Left = _snes.OverscanLeft;
-			overscan.Right = _snes.OverscanRight;
-			overscan.Top = _snes.OverscanTop;
-			overscan.Bottom = _snes.OverscanBottom;
-			break;
-
-		case ConsoleType::Nes:
-			overscan.Left = _nes.OverscanLeft;
-			overscan.Right = _nes.OverscanRight;
-			overscan.Top = _nes.OverscanTop;
-			overscan.Bottom = _nes.OverscanBottom;
-			break;
-
-		case ConsoleType::PcEngine:
-			overscan.Left = _pce.OverscanLeft;
-			overscan.Right = _pce.OverscanRight;
-			overscan.Top = _pce.OverscanTop;
-			overscan.Bottom = _pce.OverscanBottom;
-			break;
+		case ConsoleType::Snes: return _snes.Overscan;
+		case ConsoleType::Nes: return _emu->GetRegion() == ConsoleRegion::Ntsc ? _nes.NtscOverscan : _nes.PalOverscan;
+		case ConsoleType::PcEngine: return _pce.Overscan;
 
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:
 			break;
 	}
 
-	return overscan;
+	return OverscanDimensions {};
 }
 
 uint32_t EmuSettings::GetRewindBufferSize()

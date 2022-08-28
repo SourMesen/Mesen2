@@ -14,25 +14,19 @@ using System.Threading.Tasks;
 
 namespace Mesen.Config
 {
-	public class GameConfig : BaseConfig<AudioPlayerConfig>
+	public class GameConfig : BaseConfig<GameConfig>
 	{
 		[Reactive] public UInt32 DipSwitches { get; set; } = 0;
 
 		[Reactive] public bool OverrideOverscan { get; set; } = false;
-		[Reactive] public UInt32 OverscanLeft { get; set; } = 0;
-		[Reactive] public UInt32 OverscanRight { get; set; } = 0;
-		[Reactive] public UInt32 OverscanTop { get; set; } = 0;
-		[Reactive] public UInt32 OverscanBottom { get; set; } = 0;
+		[Reactive] public OverscanConfig Overscan { get; set; } = new();
 
 		public void ApplyConfig()
 		{
 			ConfigApi.SetGameConfig(new InteropGameConfig() {
 				DipSwitches = DipSwitches,
 				OverrideOverscan = OverrideOverscan,
-				OverscanLeft = OverscanLeft,
-				OverscanRight = OverscanRight,
-				OverscanTop = OverscanTop,
-				OverscanBottom = OverscanBottom,
+				Overscan = Overscan.ToInterop()
 			});
 		}
 
@@ -70,9 +64,6 @@ namespace Mesen.Config
 		public UInt32 DipSwitches;
 		
 		[MarshalAs(UnmanagedType.I1)] public bool OverrideOverscan;
-		public UInt32 OverscanLeft;
-		public UInt32 OverscanRight;
-		public UInt32 OverscanTop;
-		public UInt32 OverscanBottom;
+		public InteropOverscanDimensions Overscan;
 	}
 }
