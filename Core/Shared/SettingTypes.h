@@ -352,6 +352,17 @@ struct EmulationConfig
 	uint32_t RunAheadFrames = 0;
 };
 
+struct GameConfig
+{
+	uint32_t DipSwitches = 0;
+
+	bool OverrideOverscan = false;
+	uint32_t OverscanLeft = 0;
+	uint32_t OverscanRight = 0;
+	uint32_t OverscanTop = 0;
+	uint32_t OverscanBottom = 0;
+};
+
 struct GameboyConfig
 {
 	ControllerConfig Controller;

@@ -54,18 +54,10 @@ namespace Mesen.Debugger.ViewModels
 
 			InitShortcutLists();
 
-			ReactiveHelper.RegisterRecursiveObserver(Debugger, Config_PropertyChanged);
-			ReactiveHelper.RegisterRecursiveObserver(Fonts, Config_PropertyChanged);
-			ReactiveHelper.RegisterRecursiveObserver(Script, Config_PropertyChanged);
-			ReactiveHelper.RegisterRecursiveObserver(Integration, Config_PropertyChanged);
-		}
-
-		protected override void DisposeView()
-		{
-			ReactiveHelper.UnregisterRecursiveObserver(Debugger, Config_PropertyChanged);
-			ReactiveHelper.UnregisterRecursiveObserver(Fonts, Config_PropertyChanged);
-			ReactiveHelper.UnregisterRecursiveObserver(Script, Config_PropertyChanged);
-			ReactiveHelper.UnregisterRecursiveObserver(Integration, Config_PropertyChanged);
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Debugger, Config_PropertyChanged));
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Fonts, Config_PropertyChanged));
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Script, Config_PropertyChanged));
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Integration, Config_PropertyChanged));
 		}
 
 		private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)

@@ -704,6 +704,18 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 
+		<Form ID="GameConfigWindow">
+			<Control ID="wndTitle">Game Settings</Control>
+
+			<Control ID="tabOverscan">Overscan</Control>
+			<Control ID="chkOverrideOverscan">Use game-specific overscan settings</Control>
+			
+			<Control ID="tabDipSwitches">DIP Switches</Control>
+			
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="SelectRomWindow">
 			<Control ID="wndTitle">Select rom...</Control>
 			<Control ID="lblSearch">Search:</Control>
@@ -3044,6 +3056,8 @@
 			<Value ID="ExportMovie">Export Movie</Value>
 			<Value ID="CreateSaveState">Create Save State</Value>
 			<Value ID="ResumeGameplay">Resume Gameplay</Value>
+			
+			<Value ID="GameConfig">Game Settings</Value>
 		</Enum>
 	</Enums>
 </Resources>

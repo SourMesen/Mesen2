@@ -220,6 +220,16 @@ namespace Mesen.ViewModels
 				new MainMenuAction(EmulatorShortcut.PowerCycle) { ActionType = ActionType.PowerCycle },
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.PowerOff) { ActionType = ActionType.PowerOff },
+				
+				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.ConsoleType != ConsoleType.GameboyColor },
+				new MainMenuAction() { 
+					ActionType = ActionType.GameConfig,
+					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.ConsoleType != ConsoleType.GameboyColor,
+					IsEnabled = () => IsGameRunning,
+					OnClick = () => {
+						new GameConfigWindow().ShowCenteredDialog((Control)wnd);
+					}
+				},
 
 				new ContextMenuSeparator() { IsVisible = () => IsFdsGame },
 

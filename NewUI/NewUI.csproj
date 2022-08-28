@@ -359,6 +359,9 @@
     <Compile Update="Windows\HistoryViewerWindow.axaml.cs">
       <DependentUpon>HistoryViewerWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\GameConfigWindow.axaml.cs">
+      <DependentUpon>GameConfigWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\UpdatePromptWindow.axaml.cs">
       <DependentUpon>UpdatePromptWindow.axaml</DependentUpon>
     </Compile>

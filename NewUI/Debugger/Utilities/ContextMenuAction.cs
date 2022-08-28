@@ -750,5 +750,8 @@ namespace Mesen.Debugger.Utilities
 		CreateSaveState,
 		[IconFile("MediaPlay")]
 		ResumeGameplay,
+
+		[IconFile("DipSwitches")]
+		GameConfig,
 	}
 }

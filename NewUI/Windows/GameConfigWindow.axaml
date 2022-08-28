@@ -1,0 +1,50 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:v="using:Mesen.Views"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="Mesen.Windows.GameConfigWindow"
+	x:DataType="vm:GameConfigViewModel"
+	Width="350" Height="300"
+	Name="root"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:GameConfigViewModel />
+	</Design.DataContext>
+	
+	<DockPanel Margin="3">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Width="70" HorizontalContentAlignment="Center" IsDefault="true" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<TabControl>
+			<TabItem Header="{l:Translate tabOverscan}">
+				<c:GroupBox>
+					<c:GroupBox.Header>
+						<CheckBox Content="{l:Translate chkOverrideOverscan}" IsChecked="{CompiledBinding Config.OverrideOverscan}" Margin="0 -3 0 0" />
+					</c:GroupBox.Header>
+					
+					<c:OverscanConfig
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						IsEnabled="{CompiledBinding Config.OverrideOverscan}"
+						OverscanTop="{CompiledBinding Config.OverscanTop}"
+						OverscanBottom="{CompiledBinding Config.OverscanBottom}"
+						OverscanLeft="{CompiledBinding Config.OverscanLeft}"
+						OverscanRight="{CompiledBinding Config.OverscanRight}"
+					/>
+				</c:GroupBox>
+			</TabItem>
+			<TabItem Header="{l:Translate tabDipSwitches}" />
+		</TabControl>
+	</DockPanel>
+</Window>

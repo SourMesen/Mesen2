@@ -51,6 +51,11 @@ extern "C" {
 		_emu->GetSettings()->SetSnesConfig(config);
 	}
 
+	DllExport void __stdcall SetGameConfig(GameConfig config)
+	{
+		_emu->GetSettings()->SetGameConfig(config);
+	}
+
 	DllExport void __stdcall SetPreferences(PreferencesConfig config)
 	{
 		_emu->GetSettings()->SetPreferences(config);

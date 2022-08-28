@@ -21,6 +21,8 @@ private:
 	AudioPlayerConfig _audioPlayer;
 	DebugConfig _debug;
 
+	GameConfig _game;
+
 	SnesConfig _snes;
 	GameboyConfig _gameboy;
 	NesConfig _nes;
@@ -77,6 +79,9 @@ public:
 
 	void SetPcEngineConfig(PcEngineConfig& config);
 	PcEngineConfig& GetPcEngineConfig();
+
+	void SetGameConfig(GameConfig& config);
+	GameConfig& GetGameConfig();
 
 	void SetPreferences(PreferencesConfig& config);
 	PreferencesConfig& GetPreferences();

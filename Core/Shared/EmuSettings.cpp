@@ -27,6 +27,7 @@ void EmuSettings::CopySettings(EmuSettings& src)
 	SetPreferences(src._preferences);
 	SetAudioPlayerConfig(src._audioPlayer);
 	SetDebugConfig(src._debug);
+	SetGameConfig(src._game);
 	SetSnesConfig(src._snes);
 	SetGameboyConfig(src._gameboy);
 	SetNesConfig(src._nes);
@@ -195,6 +196,16 @@ PcEngineConfig& EmuSettings::GetPcEngineConfig()
 	return _pce;
 }
 
+void EmuSettings::SetGameConfig(GameConfig& config)
+{
+	_game = config;
+}
+
+GameConfig& EmuSettings::GetGameConfig()
+{
+	return _game;
+}
+
 void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
 	MessageManager::SetOsdState(!config.DisableOsd);
@@ -314,6 +325,14 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Nsf:
 			//No overscan for music players
 			return overscan;
+	}
+
+	if(_game.OverrideOverscan) {
+		overscan.Left = _game.OverscanLeft;
+		overscan.Right = _game.OverscanRight;
+		overscan.Top = _game.OverscanTop;
+		overscan.Bottom = _game.OverscanBottom;
+		return overscan;
 	}
 
 	switch(_emu->GetConsoleType()) {
