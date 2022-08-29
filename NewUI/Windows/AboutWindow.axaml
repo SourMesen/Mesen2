@@ -10,7 +10,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.AboutWindow"
-	Width="350" Height="465"
+	Width="350" Height="485"
 	Title="{l:Translate wndTitle}"
 	CanResize="False"
 	Name="root"

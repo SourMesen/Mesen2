@@ -41,6 +41,8 @@ namespace Mesen.Windows
 
 			LibraryList = new List<AboutListEntry>() {
 				new("Avalonia", "", "MIT", "https://github.com/AvaloniaUI/Avalonia"),
+				new("AvaloniaEdit", "", "MIT", "https://github.com/AvaloniaUI/AvaloniaEdit"),
+				new("ColorPicker", "", "MIT", "https://github.com/wieslawsoltes/ThemeEditor/tree/master/src/ThemeEditor.Controls.ColorPicker"),
 				new("Dock.Avalonia", "", "MIT", "https://github.com/wieslawsoltes/Dock"),
 				new("DataBox", "", "MIT", "https://github.com/wieslawsoltes/DataBox"),
 				new("ReactiveUI", "", "MIT", "https://github.com/reactiveui/ReactiveUI"),
@@ -72,10 +74,12 @@ namespace Mesen.Windows
 
 			AcknowledgeList = new List<AboutListEntry>() {
 				new("ares (Near)", "Near", "ISC", "https://github.com/ares-emulator/ares"),
-				new("Mighty Mo (Cheat database)", "", "", ""),
 				new("NesDev Wiki/Forums Contributors", "", "", "https://www.nesdev.org/"),
 				new("SameBoy (LIJI32)", "LIJI32", "MIT", "https://github.com/LIJI32/SameBoy"),
+				new("BizHawk (PCEHawk)", "", "MIT", "https://github.com/TASEmulators/BizHawk"),
+				new("FrankenGraphics", "", "Mesen icon", "https://www.patreon.com/frankengraphics"),
 			};
+			AcknowledgeList.Sort((a, b) => a.Name.CompareTo(b.Name));
 
 			InitializeComponent();
 		}
