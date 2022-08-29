@@ -32,7 +32,7 @@ enum class ReadResult
 class MemoryAccessCounter
 {
 private:
-	vector<AddressCounters> _counters[(int)MemoryType::Register];
+	vector<AddressCounters> _counters[(int)MemoryType::Register + 1];
 
 	Debugger* _debugger;
 

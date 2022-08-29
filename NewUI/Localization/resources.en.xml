@@ -1359,7 +1359,7 @@
 			<Control ID="chkBreakOnWrite">Write</Control>
 			<Control ID="chkBreakOnExec">Execution</Control>
 
-			<Control ID="lblBreakpointType">Breakpoint type:</Control>
+			<Control ID="lblBreakpointType">Memory type:</Control>
 			<Control ID="lblBreakOn">Break on:</Control>
 			
 			<Control ID="lblAddress">Address:</Control>

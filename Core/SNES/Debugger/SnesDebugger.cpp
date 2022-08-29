@@ -133,7 +133,7 @@ void SnesDebugger::ProcessInstruction()
 {
 	SnesCpuState& state = GetCpuState();
 	uint32_t pc = (state.K << 16) | state.PC;
-	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(pc);
+	AddressInfo addressInfo = GetAbsoluteAddress(pc);
 	uint8_t opCode = _memoryManager->Peek(pc);
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, _cpuMemType);
 	InstructionProgress.LastMemOperation = operation;
@@ -178,7 +178,7 @@ void SnesDebugger::ProcessInstruction()
 		for(uint32_t i = 1; i < _dummyCpu->GetOperationCount(); i++) {
 			MemoryOperationInfo memOp = _dummyCpu->GetOperationInfo(i);
 			if(_breakpointManager->HasBreakpointForType(memOp.Type)) {
-				AddressInfo absAddr = _memoryMappings->GetAbsoluteAddress(memOp.Address);
+				AddressInfo absAddr = GetAbsoluteAddress(memOp.Address);
 				_debugger->ProcessPredictiveBreakpoint(_cpuType, _breakpointManager.get(), memOp, absAddr);
 			}
 		}
@@ -189,7 +189,7 @@ void SnesDebugger::ProcessInstruction()
 
 void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
+	AddressInfo addressInfo = GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, _cpuMemType);
 	InstructionProgress.LastMemOperation = operation;
 	SnesCpuState& state = GetCpuState();
@@ -248,7 +248,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 
 void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = _memoryMappings->GetAbsoluteAddress(addr);
+	AddressInfo addressInfo = GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, _cpuMemType);
 	InstructionProgress.LastMemOperation = operation;
 	if(addressInfo.Address >= 0 && (addressInfo.Type == MemoryType::SnesWorkRam || addressInfo.Type == MemoryType::SnesSaveRam)) {
@@ -275,6 +275,15 @@ void SnesDebugger::ProcessIdleCycle()
 {
 	if(_step->ProcessCpuCycle()) {
 		_debugger->SleepUntilResume(_cpuType, BreakSource::CpuStep);
+	}
+}
+
+AddressInfo SnesDebugger::GetAbsoluteAddress(uint32_t addr)
+{
+	if(IsRegister(addr)) {
+		return { (int32_t)(addr & 0xFFFF), MemoryType::Register };
+	} else {
+		return _memoryMappings->GetAbsoluteAddress(addr);
 	}
 }
 

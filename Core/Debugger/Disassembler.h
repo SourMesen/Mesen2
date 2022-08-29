@@ -31,7 +31,7 @@ private:
 	LabelManager* _labelManager;
 	MemoryDumper *_memoryDumper;
 
-	DisassemblerSource _sources[(int)MemoryType::Register] = {};
+	DisassemblerSource _sources[(int)MemoryType::Register + 1] = {};
 	
 	void InitSource(MemoryType type);
 	DisassemblerSource& GetSource(MemoryType type);

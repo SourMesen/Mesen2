@@ -16,7 +16,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 {
 	_debugger = debugger;
 
-	for(int i = (int)MemoryType::SnesPrgRom; i < (int)MemoryType::Register; i++) {
+	for(int i = (int)MemoryType::SnesPrgRom; i <= (int)MemoryType::Register; i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
 		_counters[i].reserve(memSize);
 		for(uint32_t j = 0; j < memSize; j++) {

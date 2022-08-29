@@ -29,7 +29,7 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	_memoryDumper = _debugger->GetMemoryDumper();
 
-	for(int i = (int)MemoryType::SnesPrgRom; i < (int)MemoryType::Register; i++) {
+	for(int i = (int)MemoryType::SnesPrgRom; i <= (int)MemoryType::Register; i++) {
 		InitSource((MemoryType)i);
 	}
 }
