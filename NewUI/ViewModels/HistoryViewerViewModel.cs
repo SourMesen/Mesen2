@@ -147,7 +147,9 @@ namespace Mesen.ViewModels
 
 					itemCount++;
 				}
-				segmentStart = _segments[i] + 1;
+
+				//Next segment starts 60 "frames" after the end of the current one
+				segmentStart = _segments[i] + 60;
 			}
 
 			return actions;

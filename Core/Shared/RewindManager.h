@@ -35,22 +35,21 @@ public:
 	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
 
 private:
-
-	Emulator* _emu;
-	EmuSettings* _settings;
+	Emulator* _emu = nullptr;
+	EmuSettings* _settings = nullptr;
 	
-	bool _hasHistory;
+	bool _hasHistory = false;
 
-	std::deque<RewindData> _history;
-	std::deque<RewindData> _historyBackup;
-	RewindData _currentHistory;
+	deque<RewindData> _history;
+	deque<RewindData> _historyBackup;
+	RewindData _currentHistory = {};
 
-	RewindState _rewindState;
-	int32_t _framesToFastForward;
+	RewindState _rewindState = {};
+	int32_t _framesToFastForward = 0;
 
-	std::deque<VideoFrame> _videoHistory;
+	deque<VideoFrame> _videoHistory;
 	vector<VideoFrame> _videoHistoryBuilder;
-	std::deque<int16_t> _audioHistory;
+	deque<int16_t> _audioHistory;
 	vector<int16_t> _audioHistoryBuilder;
 
 	void AddHistoryBlock();
