@@ -70,19 +70,19 @@ namespace Mesen.Config
 			m.Right = InputApi.GetKeyCode("Right Arrow");
 		}
 
-		public static void ApplyXboxLayout(KeyMapping m, int player, ControllerType type)
+		public static void ApplyXboxLayout(KeyMapping m, int player, ControllerType type, bool altLayout = false)
 		{
 			string prefix = "Pad" + (player + 1).ToString() + " ";
-			m.A = InputApi.GetKeyCode(prefix + "B");
-			m.B = InputApi.GetKeyCode(prefix + "A");
+			m.A = InputApi.GetKeyCode(prefix + (altLayout ? "A" : "B"));
+			m.B = InputApi.GetKeyCode(prefix + (altLayout ? "X" : "A"));
 			if(type == ControllerType.SnesController || type == ControllerType.PceAvenuePad6) {
 				m.X = InputApi.GetKeyCode(prefix + "Y");
 				m.Y = InputApi.GetKeyCode(prefix + "X");
 				m.L = InputApi.GetKeyCode(prefix + "L1");
 				m.R = InputApi.GetKeyCode(prefix + "R1");
 			} else {
-				m.TurboA = InputApi.GetKeyCode(prefix + "Y");
-				m.TurboB = InputApi.GetKeyCode(prefix + "X");
+				m.TurboA = InputApi.GetKeyCode(prefix + (altLayout ? "B" : "Y"));
+				m.TurboB = InputApi.GetKeyCode(prefix + (altLayout ? "Y" : "X"));
 			}
 			m.Select = InputApi.GetKeyCode(prefix + "Back");
 			m.Start = InputApi.GetKeyCode(prefix + "Start");
@@ -92,19 +92,19 @@ namespace Mesen.Config
 			m.Right = InputApi.GetKeyCode(prefix + "Right");
 		}
 
-		public static void ApplyPs4Layout(KeyMapping m, int player, ControllerType type)
+		public static void ApplyPs4Layout(KeyMapping m, int player, ControllerType type, bool altLayout = false)
 		{
 			string prefix = "Joy" + (player + 1).ToString() + " ";
-			m.A = InputApi.GetKeyCode(prefix + "But3");
-			m.B = InputApi.GetKeyCode(prefix + "But2");
+			m.A = InputApi.GetKeyCode(prefix + (altLayout ? "But2" : "But3"));
+			m.B = InputApi.GetKeyCode(prefix + (altLayout ? "But1" : "But2"));
 			if(type == ControllerType.SnesController || type == ControllerType.PceAvenuePad6) {
 				m.X = InputApi.GetKeyCode(prefix + "But4");
 				m.Y = InputApi.GetKeyCode(prefix + "But1");
 				m.L = InputApi.GetKeyCode(prefix + "But5");
 				m.R = InputApi.GetKeyCode(prefix + "But6");
 			} else {
-				m.TurboA = InputApi.GetKeyCode(prefix + "But4");
-				m.TurboB = InputApi.GetKeyCode(prefix + "But1");
+				m.TurboA = InputApi.GetKeyCode(prefix + (altLayout ? "But3" : "But4"));
+				m.TurboB = InputApi.GetKeyCode(prefix + (altLayout ? "But4" : "But1"));
 			}
 			m.Select = InputApi.GetKeyCode(prefix + "But9");
 			m.Start = InputApi.GetKeyCode(prefix + "But10");

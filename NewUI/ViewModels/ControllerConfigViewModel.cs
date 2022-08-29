@@ -21,6 +21,7 @@ namespace Mesen.ViewModels
 		[Reactive] public KeyMappingViewModel KeyMapping4 { get; set; }
 
 		[Reactive] public bool ShowPresets { get; set; } = false;
+		[Reactive] public bool IsTwoButtonController { get; set; } = false;
 		[Reactive] public bool ShowTurbo { get; set; } = false;
 
 		[Obsolete("For designer only")]
@@ -37,6 +38,7 @@ namespace Mesen.ViewModels
 			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4, 3);
 
 			ShowPresets = type.HasPresets();
+			IsTwoButtonController = type.IsTwoButtonController();
 			ShowTurbo = type.HasTurbo();
 		}
 	}

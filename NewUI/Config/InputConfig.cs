@@ -136,10 +136,14 @@ namespace Mesen.Config
 				switch(preset) {
 					case KeyPresetType.WasdKeys: KeyPresets.ApplyWasdLayout(this, type); break;
 					case KeyPresetType.ArrowKeys: KeyPresets.ApplyArrowLayout(this, type); break;
-					case KeyPresetType.XboxP1: KeyPresets.ApplyXboxLayout(this, 0, type); break;
-					case KeyPresetType.XboxP2: KeyPresets.ApplyXboxLayout(this, 1, type); break;
-					case KeyPresetType.Ps4P1: KeyPresets.ApplyPs4Layout(this, 0, type); break;
-					case KeyPresetType.Ps4P2: KeyPresets.ApplyPs4Layout(this, 1, type); break;
+					case KeyPresetType.XboxP1: KeyPresets.ApplyXboxLayout(this, 0, type, false); break;
+					case KeyPresetType.XboxP1Alt: KeyPresets.ApplyXboxLayout(this, 0, type, true); break;
+					case KeyPresetType.XboxP2: KeyPresets.ApplyXboxLayout(this, 1, type, false); break;
+					case KeyPresetType.XboxP2Alt: KeyPresets.ApplyXboxLayout(this, 1, type, true); break;
+					case KeyPresetType.Ps4P1: KeyPresets.ApplyPs4Layout(this, 0, type, false); break;
+					case KeyPresetType.Ps4P1Alt: KeyPresets.ApplyPs4Layout(this, 0, type, true); break;
+					case KeyPresetType.Ps4P2: KeyPresets.ApplyPs4Layout(this, 1, type, false); break;
+					case KeyPresetType.Ps4P2Alt: KeyPresets.ApplyPs4Layout(this, 1, type, true); break;
 				}
 			}
 		}
@@ -172,9 +176,13 @@ namespace Mesen.Config
 	public enum KeyPresetType
 	{
 		XboxP1,
+		XboxP1Alt,
 		XboxP2,
+		XboxP2Alt,
 		Ps4P1,
+		Ps4P1Alt,
 		Ps4P2,
+		Ps4P2Alt,
 		WasdKeys,
 		ArrowKeys
 	}
@@ -400,6 +408,22 @@ namespace Mesen.Config
 				case ControllerType.NesArkanoidController:
 				case ControllerType.SuperScope:
 				case ControllerType.BandaiMicrophone:
+					return true;
+			}
+
+			return false;
+		}
+
+		public static bool IsTwoButtonController(this ControllerType type)
+		{
+			switch(type) {
+				case ControllerType.NesController:
+				case ControllerType.FamicomController:
+				case ControllerType.FamicomControllerP2:
+				case ControllerType.GameboyController:
+				case ControllerType.PceController:
+				case ControllerType.HoriTrack:
+				case ControllerType.BandaiHyperShot:
 					return true;
 			}
 

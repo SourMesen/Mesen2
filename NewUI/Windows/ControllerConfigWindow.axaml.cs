@@ -74,9 +74,19 @@ namespace Mesen.Windows
 			SetDefaultMappings(KeyPresetType.XboxP1);
 		}
 
+		private void mnuXboxLayout1Alt_OnClick(object sender, RoutedEventArgs e)
+		{
+			SetDefaultMappings(KeyPresetType.XboxP1Alt);
+		}
+
 		private void mnuXboxLayout2_OnClick(object sender, RoutedEventArgs e)
 		{
 			SetDefaultMappings(KeyPresetType.XboxP2);
+		}
+
+		private void mnuXboxLayout2Alt_OnClick(object sender, RoutedEventArgs e)
+		{
+			SetDefaultMappings(KeyPresetType.XboxP2Alt);
 		}
 
 		private void mnuPs4Layout1_OnClick(object sender, RoutedEventArgs e)
@@ -84,9 +94,19 @@ namespace Mesen.Windows
 			SetDefaultMappings(KeyPresetType.Ps4P1);
 		}
 
+		private void mnuPs4Layout1Alt_OnClick(object sender, RoutedEventArgs e)
+		{
+			SetDefaultMappings(KeyPresetType.Ps4P1Alt);
+		}
+
 		private void mnuPs4Layout2_OnClick(object sender, RoutedEventArgs e)
 		{
 			SetDefaultMappings(KeyPresetType.Ps4P2);
+		}
+
+		private void mnuPs4Layout2Alt_OnClick(object sender, RoutedEventArgs e)
+		{
+			SetDefaultMappings(KeyPresetType.Ps4P2Alt);
 		}
 
 		private void btnSetDefaultBindings_OnClick(object sender, RoutedEventArgs e)

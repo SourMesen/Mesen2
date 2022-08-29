@@ -56,12 +56,24 @@
 						</MenuItem>
 						<Separator />
 						<MenuItem Header="{l:Translate mnuXboxController}">
-							<MenuItem Header="{l:Translate mnuXboxLayout1}" Click="mnuXboxLayout1_OnClick" />
-							<MenuItem Header="{l:Translate mnuXboxLayout2}" Click="mnuXboxLayout2_OnClick" />
+							<MenuItem Header="{l:Translate mnuXboxLayout1}" Click="mnuXboxLayout1_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2}" Click="mnuXboxLayout2_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+
+							<MenuItem Header="{l:Translate mnuXboxLayout1AltA}" Click="mnuXboxLayout1_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout1AltB}" Click="mnuXboxLayout1Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<Separator IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2AltA}" Click="mnuXboxLayout2_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuXboxLayout2AltB}" Click="mnuXboxLayout2Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
 						</MenuItem>
 						<MenuItem Header="{l:Translate mnuPs4Controller}">
-							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" />
-							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" />
+							<MenuItem Header="{l:Translate mnuPs4Layout1}" Click="mnuPs4Layout1_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2}" Click="mnuPs4Layout2_OnClick" IsVisible="{CompiledBinding !IsTwoButtonController}" />
+
+							<MenuItem Header="{l:Translate mnuPs4Layout1AltA}" Click="mnuPs4Layout1_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout1AltB}" Click="mnuPs4Layout1Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<Separator IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2AltA}" Click="mnuPs4Layout2_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
+							<MenuItem Header="{l:Translate mnuPs4Layout2AltB}" Click="mnuPs4Layout2Alt_OnClick" IsVisible="{CompiledBinding IsTwoButtonController}" />
 						</MenuItem>
 					</ContextMenu>
 				</Button.ContextMenu>

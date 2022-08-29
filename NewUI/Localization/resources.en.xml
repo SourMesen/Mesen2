@@ -748,15 +748,22 @@
 			<Control ID="mnuKeyboard">Keyboard</Control>
 			<Control ID="mnuWasdLayout">WASD Layout</Control>
 			<Control ID="mnuArrowLayout">Arrow Keys Layout</Control>
+			
 			<Control ID="mnuXboxController">Xbox Controller</Control>
 			<Control ID="mnuXboxLayout1">Controller #1</Control>
+			<Control ID="mnuXboxLayout1AltA">Controller #1 - A+B layout</Control>
+			<Control ID="mnuXboxLayout1AltB">Controller #1 - X+A layout</Control>
 			<Control ID="mnuXboxLayout2">Controller #2</Control>
+			<Control ID="mnuXboxLayout2AltA">Controller #2 - A+B layout</Control>
+			<Control ID="mnuXboxLayout2AltB">Controller #2 - X+A layout</Control>
+
 			<Control ID="mnuPs4Controller">PS4 Controller</Control>
 			<Control ID="mnuPs4Layout1">Controller #1</Control>
+			<Control ID="mnuPs4Layout1AltA">Controller #1 - X+O layout</Control>
+			<Control ID="mnuPs4Layout1AltB">Controller #1 - X+Square layout</Control>
 			<Control ID="mnuPs4Layout2">Controller #2</Control>
-			<Control ID="mnuSnes30Controller">SNES30 Controller</Control>
-			<Control ID="mnuSnes30Layout1">Controller #1</Control>
-			<Control ID="mnuSnes30Layout2">Controller #2</Control>
+			<Control ID="mnuPs4Layout2AltA">Controller #2 - X+O layout</Control>
+			<Control ID="mnuPs4Layout2AltB">Controller #2 - X+Square layout</Control>
 
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
