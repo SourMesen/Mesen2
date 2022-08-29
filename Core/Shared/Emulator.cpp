@@ -187,11 +187,9 @@ bool Emulator::ProcessSystemActions()
 			debugger->ResetSuspendCounter();
 		}
 
-		_systemActionManager->ResetState();
 		return true;
 	} else if(_systemActionManager->IsPowerCyclePressed()) {
 		PowerCycle();
-		_systemActionManager->ResetState();
 		return true;
 	}
 	return false;
@@ -313,6 +311,10 @@ void Emulator::Reset()
 	Lock();
 
 	_console->Reset();
+
+	//Ensure reset button flag is off before recording input for first frame
+	_systemActionManager->ResetState();
+
 	_console->GetControlManager()->UpdateInputState();
 
 	_videoRenderer->ClearFrame();
@@ -446,6 +448,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_rewindManager.reset(new RewindManager(this));
 
 	_notificationManager->RegisterNotificationListener(_rewindManager);
+
+	//Ensure power cycle flag is off before recording input for first frame
+	_systemActionManager->ResetState();
 
 	_console->GetControlManager()->UpdateControlDevices();
 	_console->GetControlManager()->UpdateInputState();
