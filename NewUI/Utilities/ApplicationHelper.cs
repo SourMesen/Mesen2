@@ -71,6 +71,15 @@ namespace Mesen.Utilities
 			throw new NotSupportedException();
 		}
 
+		public static List<Window> GetOpenedWindows()
+		{
+			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+				return new List<Window>(desktop.Windows);
+			}
+
+			return new List<Window>();
+		}
+
 		//Taken from Avalonia's code (MIT): https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Dialogs/AboutAvaloniaDialog.xaml.cs
 		public static void OpenBrowser(string url)
 		{

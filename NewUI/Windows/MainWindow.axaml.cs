@@ -86,7 +86,14 @@ namespace Mesen.Windows
 				e.Cancel = true;
 				ValidateExit();
 			} else {
+				//Close all other windows first
 				DebugWindowManager.CloseAllWindows();
+				foreach(Window wnd in ApplicationHelper.GetOpenedWindows()) {
+					if(wnd != this) {
+						wnd.Close();
+					}
+				}
+
 				_timerBackgroundFlag.Stop();
 				EmuApi.Stop();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
