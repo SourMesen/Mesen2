@@ -94,12 +94,7 @@ namespace Mesen.Utilities
 
 				case EmulatorShortcut.LoadLastSession:
 					string filename = Path.Combine(ConfigManager.RecentGamesFolder, MainWindowModel.RomInfo.GetRomName() + ".rgd");
-					Task.Run(() => {
-						//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
-						if(File.Exists(filename)) {
-							EmuApi.LoadRecentGame(filename, false);
-						}
-					});
+					LoadRomHelper.LoadRecentGame(filename);
 					break;
 
 				case EmulatorShortcut.LoadStateDialog:

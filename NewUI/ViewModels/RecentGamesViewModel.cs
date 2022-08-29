@@ -122,10 +122,7 @@ namespace Mesen.ViewModels
 					EmuApi.Resume();
 				});
 			} else {
-				Task.Run(() => {
-					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
-					EmuApi.LoadRecentGame(FileName, false);
-				});
+				LoadRomHelper.LoadRecentGame(FileName);
 			}
 		}
 	}

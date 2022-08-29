@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.ViewModels;
 using Mesen.Windows;
 using System;
 using System.Collections.Generic;
@@ -40,13 +42,45 @@ namespace Mesen.Utilities
 
 		private static void InternalLoadRom(ResourcePath romPath, ResourcePath? patchPath)
 		{
-			//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+			//Temporarily hide selection screen to allow displaying error messages
+			MainWindowViewModel.Instance.RecentGames.Visible = false;
+
 			Task.Run(() => {
+				//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
 				if(EmuApi.LoadRom(romPath, patchPath)) {
 					ConfigManager.Config.RecentFiles.AddRecentFile(romPath, patchPath);
 					ConfigManager.Config.Save();
 				}
+				ShowSelectionOnScreenAfterError();
 			});
+		}
+
+		public static void LoadRecentGame(string filename)
+		{
+			//Temporarily hide selection screen to allow displaying error messages
+			MainWindowViewModel.Instance.RecentGames.Visible = false;
+
+			Task.Run(() => {
+				//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
+				if(File.Exists(filename)) {
+					EmuApi.LoadRecentGame(filename, false);
+				}
+				ShowSelectionOnScreenAfterError();
+			});
+		}
+
+		private static void ShowSelectionOnScreenAfterError()
+		{
+			if(!ConfigManager.Config.Preferences.DisableGameSelectionScreen) {
+				Thread.Sleep(3100);
+				if(!EmuApi.IsRunning()) {
+					//No game was loaded, show game selection screen again after ~3 seconds
+					//This allows error messages to be visible to the user
+					Dispatcher.UIThread.Post(() => {
+						MainWindowViewModel.Instance.RecentGames.Visible = true;
+					});
+				}
+			}
 		}
 
 		public static async void LoadPatchFile(string patchFile)
@@ -81,11 +115,6 @@ namespace Mesen.Utilities
 					LoadRom(EmuApi.GetRomInfo().RomPath, patchFile);
 				}
 			}
-		}
-
-		public static void LoadRecentGame(string recentGameArchivePath)
-		{
-			EmuApi.LoadRecentGame(recentGameArchivePath, false /* TODO , ConfigManager.Config.Preferences.GameSelectionScreenResetGame */);
 		}
 
 		private static bool IsPatchFile(string filename)
