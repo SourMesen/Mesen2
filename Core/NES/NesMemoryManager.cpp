@@ -15,14 +15,13 @@ NesMemoryManager::NesMemoryManager(NesConsole* console, BaseMapper* mapper)
 	_cheatManager = _emu->GetCheatManager();
 	_mapper = mapper;
 
-	uint32_t internalRamSize = mapper->GetInternalRamSize();
-
-	_internalRam = new uint8_t[internalRamSize];
-	_emu->RegisterMemory(MemoryType::NesInternalRam, _internalRam, internalRamSize);
-	if(internalRamSize == NesMemoryManager::NesInternalRamSize) {
+	_internalRamSize = mapper->GetInternalRamSize();
+	_internalRam = new uint8_t[_internalRamSize];
+	_emu->RegisterMemory(MemoryType::NesInternalRam, _internalRam, _internalRamSize);
+	if(_internalRamSize == NesMemoryManager::NesInternalRamSize) {
 		_internalRamHandler.reset(new InternalRamHandler<0x7FF>());
 		((InternalRamHandler<0x7FF>*)_internalRamHandler.get())->SetInternalRam(_internalRam);
-	} else if(internalRamSize == NesMemoryManager::FamicomBoxInternalRamSize) {
+	} else if(_internalRamSize == NesMemoryManager::FamicomBoxInternalRamSize) {
 		_internalRamHandler.reset(new InternalRamHandler<0x1FFF>());
 		((InternalRamHandler<0x1FFF>*)_internalRamHandler.get())->SetInternalRam(_internalRam);
 	} else {
@@ -100,11 +99,6 @@ void NesMemoryManager::UnregisterIODevice(INesMemoryHandler*handler)
 uint8_t* NesMemoryManager::GetInternalRam()
 {
 	return _internalRam;
-}
-
-uint32_t NesMemoryManager::GetInternalRamSize()
-{
-	return _internalRamSize;
 }
 
 uint8_t NesMemoryManager::DebugRead(uint16_t addr)

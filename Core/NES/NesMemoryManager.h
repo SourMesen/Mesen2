@@ -52,7 +52,6 @@ public:
 	void DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects = true);
 
 	uint8_t* GetInternalRam();
-	uint32_t GetInternalRamSize();
 
 	uint8_t Read(uint16_t addr, MemoryOperationType operationType = MemoryOperationType::Read);
 	void Write(uint16_t addr, uint8_t value, MemoryOperationType operationType);
