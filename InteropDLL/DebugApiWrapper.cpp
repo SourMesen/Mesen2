@@ -164,6 +164,7 @@ extern "C"
 	DllExport void __stdcall SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color) { WithToolVoid(GetPpuTools(DebugUtilities::ToCpuType(tileAddress.Type)), SetTilePixel(tileAddress, format, x, y, color)); }
 
 	DllExport void __stdcall SetViewerUpdateTiming(uint32_t viewerId, uint16_t scanline, uint16_t cycle, CpuType cpuType) { WithToolVoid(GetPpuTools(cpuType), SetViewerUpdateTiming(viewerId, scanline, cycle)); }
+	DllExport void __stdcall RemoveViewerId(uint32_t viewerId, CpuType cpuType) { WithToolVoid(GetPpuTools(cpuType), RemoveViewer(viewerId)); }
 
 	DllExport void __stdcall SetEventViewerConfig(CpuType cpuType, BaseEventViewerConfig& config) { WithToolVoid(GetEventManager(cpuType), SetConfiguration(config)); }
 	DllExport void __stdcall GetDebugEvents(CpuType cpuType, DebugEventInfo* infoArray, uint32_t& maxEventCount) { WithToolVoid(GetEventManager(cpuType), GetEvents(infoArray, maxEventCount)); }

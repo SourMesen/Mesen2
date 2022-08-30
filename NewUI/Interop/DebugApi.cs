@@ -341,6 +341,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetTilePixel(AddressInfo tileAddress, TileFormat format, int x, int y, int color);
 
 		[DllImport(DllPath)] public static extern void SetViewerUpdateTiming(Int32 viewerId, Int32 scanline, Int32 cycle, CpuType cpuType);
+		[DllImport(DllPath)] public static extern void RemoveViewerId(int viewerId, CpuType cpuType);
 
 		[DllImport(DllPath)] private static extern UInt32 GetDebugEventCount(CpuType cpuType);
 		[DllImport(DllPath, EntryPoint = "GetDebugEvents")] private static extern void GetDebugEventsWrapper(CpuType cpuType, [In, Out] DebugEventInfo[] eventArray, ref UInt32 maxEventCount);

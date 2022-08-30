@@ -18,6 +18,7 @@ namespace Mesen.Debugger.Utilities
 			internal int ViewerId { get; set; } = 0;
 			internal int Scanline { get; set; } = 0;
 			internal int Cycle { get; set; } = 0;
+			internal CpuType CpuType { get; set; }
 		}
 
 		public class LastRefreshInfo
@@ -44,7 +45,7 @@ namespace Mesen.Debugger.Utilities
 			int newId = Interlocked.Increment(ref _nextId);
 			wnd.Closed += OnWindowClosedHandler;
 
-			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle });
+			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle, CpuType = cpuType });
 
 			DebugApi.SetViewerUpdateTiming(newId, cfg.RefreshScanline, cfg.RefreshCycle, cpuType);
 
@@ -54,6 +55,9 @@ namespace Mesen.Debugger.Utilities
 		private static void OnWindowClosedHandler(object? sender, EventArgs e)
 		{
 			if(sender is Window wnd) {
+				if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
+					DebugApi.RemoveViewerId(toolInfo.ViewerId, toolInfo.CpuType);
+				}
 				_activeWindows.Remove(wnd);
 				wnd.Closed -= OnWindowClosedHandler;
 			}
@@ -65,6 +69,7 @@ namespace Mesen.Debugger.Utilities
 				if(cfg.RefreshScanline != toolInfo.Scanline || cfg.RefreshCycle != toolInfo.Cycle) {
 					toolInfo.Scanline = cfg.RefreshScanline;
 					toolInfo.Cycle = cfg.RefreshCycle;
+					toolInfo.CpuType = cpuType;
 					DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.RefreshScanline, cfg.RefreshCycle, cpuType);
 				}
 				return toolInfo.ViewerId;
@@ -100,6 +105,7 @@ namespace Mesen.Debugger.Utilities
 					cfg.UpdateMinMaxValues(model.CpuType);
 
 					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
+						toolInfo.CpuType = model.CpuType;
 						DebugApi.SetViewerUpdateTiming(toolInfo.ViewerId, cfg.Config.RefreshScanline, cfg.Config.RefreshCycle, model.CpuType);
 					}
 					break;
