@@ -1245,7 +1245,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", vdc.SatbBlockSrc, Format.X16)
 			};
 
-			return new RegisterViewerTab("VDC" + suffix, entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("VDC" + suffix, entries);
 		}
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)

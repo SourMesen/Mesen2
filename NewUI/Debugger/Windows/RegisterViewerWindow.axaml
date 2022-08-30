@@ -28,9 +28,6 @@
 		<Style Selector="DataBoxRow > Grid Rectangle#BackgroundRectangle">
 			<Setter Property="Fill" Value="{Binding Path=Background}"/>
 		</Style>
-		<Style Selector="DataBoxRow">
-			<Setter Property="IsEnabled" Value="{Binding Path=IsEnabled}"/>
-		</Style>
 	</Window.Styles>
 
 	<DockPanel>

@@ -29,7 +29,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.AddBreakpoint,
 					IsEnabled = () => Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry && entry.StartAddress >= 0,
 					HintText = () => {
-						if(Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry) {
+						if(Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry && entry.StartAddress >= 0) {
 							string hint = $"${entry.StartAddress:X4}";
 							if(entry.EndAddress > entry.StartAddress) {
 								hint += $" - ${entry.EndAddress:X4}";
