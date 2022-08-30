@@ -56,10 +56,8 @@ namespace Mesen.Debugger.Windows
 			bool result = await wnd.ShowCenteredDialog<bool>(parent);
 			if(result) {
 				model.Commit();
-				if(copy != null) {
-					label.CopyFrom(copy);
-				}
-				LabelManager.SetLabel(label, true);
+				LabelManager.DeleteLabel(label, false);
+				LabelManager.SetLabel(copy ?? label, true);
 			}
 
 			model.Dispose();

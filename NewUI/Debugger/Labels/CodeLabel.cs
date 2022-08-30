@@ -137,15 +137,5 @@ namespace Mesen.Debugger.Labels
 		{
 			return JsonHelper.Clone(this);
 		}
-
-		public void CopyFrom(CodeLabel copy)
-		{
-			Address = copy.Address;
-			MemoryType = copy.MemoryType;
-			Label = copy.Label;
-			Comment = copy.Comment;
-			Flags = copy.Flags;
-			Length = copy.Length;
-		}
 	}
 }
