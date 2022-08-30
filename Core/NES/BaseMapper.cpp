@@ -555,6 +555,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	_emu = console->GetEmulator();
 
 	_romInfo = romData.Info;
+	_internalRamMask = GetInternalRamSize() - 1;
 
 	_batteryFilename = GetBatteryFilename();
 
@@ -914,7 +915,7 @@ AddressInfo BaseMapper::GetAbsoluteAddress(uint32_t relativeAddr)
 {
 	AddressInfo info;
 	if(relativeAddr < 0x2000) {
-		info.Address = relativeAddr & 0x7FF;
+		info.Address = relativeAddr & _internalRamMask;
 		info.Type = MemoryType::NesInternalRam;
 	} else {
 		uint8_t *prgAddr = _prgPages[relativeAddr >> 8] + (uint8_t)relativeAddr;
@@ -973,7 +974,7 @@ AddressInfo BaseMapper::GetRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesPrgRom: ptrAddress = _prgRom; break;
 		case MemoryType::NesWorkRam: ptrAddress = _workRam; break;
 		case MemoryType::NesSaveRam: ptrAddress = _saveRam; break;
-		case MemoryType::NesInternalRam: return { (addr.Address) & 0x7FF, MemoryType::NesMemory }; //todo mask (for e.g famicombox)
+		case MemoryType::NesInternalRam: return { (int32_t)(addr.Address & _internalRamMask), MemoryType::NesMemory };
 		default: return { GetPpuRelativeAddress(addr), MemoryType::NesPpuMemory };
 	}
 	ptrAddress += addr.Address;

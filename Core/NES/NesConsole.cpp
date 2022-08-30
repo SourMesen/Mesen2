@@ -143,7 +143,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 
 		_mapper.swap(mapper);
 		_mixer.reset(new NesSoundMixer(this));
-		_memoryManager.reset(new NesMemoryManager(this));
+		_memoryManager.reset(new NesMemoryManager(this, _mapper.get()));
 		_cpu.reset(new NesCpu(this));
 		_apu.reset(new NesApu(this));
 
@@ -164,7 +164,6 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 
 		_mapper->InitSpecificMapper(romData);
 
-		_memoryManager->SetMapper(_mapper.get());
 		_memoryManager->RegisterIODevice(_ppu.get());
 		_memoryManager->RegisterIODevice(_apu.get());
 		_memoryManager->RegisterIODevice(_controlManager.get());

@@ -11,8 +11,6 @@ class FamicomBox : public BaseMapper
 {
 private:
 	uint8_t _regs[8] = {};
-	uint8_t _extInternalRam[0x2000] = {};
-	InternalRamHandler<0x1FFF> _extendedRamHandler;
 
 protected:
 	uint32_t GetDipSwitchCount() override { return 8; }
@@ -21,6 +19,7 @@ protected:
 	uint16_t GetPrgPageSize() override { return 0x4000; }
 	uint16_t GetChrPageSize() override { return 0x2000; }
 	bool AllowRegisterRead() override { return true; }
+	uint32_t GetInternalRamSize() override { return 0x2000; }
 
 	void InitMapper() override
 	{
@@ -30,15 +29,12 @@ protected:
 		SelectPrgPage(1, 1);
 
 		SelectChrPage(0, 0);
-
-		_extendedRamHandler.SetInternalRam(_extInternalRam);
 	}
 
 	void Serialize(Serializer& s) override
 	{
 		BaseMapper::Serialize(s);
 		SVArray(_regs, 8);
-		SVArray(_extInternalRam, 0x2000);
 	}
 
 	void Reset(bool softReset) override
@@ -46,7 +42,6 @@ protected:
 		for(int i = 0; i < 6; i++) {
 			_regs[i] = 0;
 		}
-		_console->GetMemoryManager()->RegisterIODevice(&_extendedRamHandler);
 	}
 
 	uint8_t ReadRegister(uint16_t addr) override

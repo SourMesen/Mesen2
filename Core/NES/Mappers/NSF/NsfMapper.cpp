@@ -93,7 +93,7 @@ void NsfMapper::Reset(bool softReset)
 	NesMemoryManager* mm = _console->GetMemoryManager();
 
 	//Clear internal + work RAM
-	memset(mm->GetInternalRam(), 0, NesMemoryManager::InternalRamSize);
+	memset(mm->GetInternalRam(), 0, mm->GetInternalRamSize());
 	memset(_workRam, 0, _workRamSize);
 
 	//Reset APU

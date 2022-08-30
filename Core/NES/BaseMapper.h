@@ -30,6 +30,8 @@ private:
 	uint8_t _nametableCount = 2;
 	uint32_t _ntRamSize = 0;
 
+	uint32_t _internalRamMask = 0x7FF;
+
 	bool _hasBusConflicts = false;
 	
 	bool _allowRegisterRead = false;
@@ -172,7 +174,8 @@ public:
 	virtual void ProcessCpuClock() { }
 	virtual void NotifyVramAddressChange(uint16_t addr);
 	virtual void GetMemoryRanges(MemoryRanges &ranges) override;
-	
+	virtual uint32_t GetInternalRamSize() { return 0x800; }
+
 	virtual void SaveBattery();
 
 	NesRomInfo GetRomInfo();
