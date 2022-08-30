@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Media;
 using Avalonia.Threading;
 using DataBoxControl;
@@ -230,7 +231,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF4B", "Window X (WX)", ppu.WindowX, Format.X8),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "LCD", entries);
+			return new RegisterViewerTab(tabPrefix + "LCD", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetGbMiscTab(ref GbState gb, string tabPrefix = "")
@@ -281,7 +282,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "Timer/DMA/IRQ", entries);
+			return new RegisterViewerTab(tabPrefix + "Timer/DMA/IRQ", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetGbApuTab(ref GbState gb, string tabPrefix = "")
@@ -321,7 +322,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF12.3", "Envelope Increase Volume", sq1.EnvRaiseVolume),
 				new RegEntry("$FF12.4-7", "Envelope Volume", sq1.EnvVolume),
 
-				new RegEntry("$FF13+$FF14.0-2", "Frequency", sq1.Frequency),
+				new RegEntry("$FF13-$FF14.0-2", "Frequency", sq1.Frequency),
 				new RegEntry("$FF14.6", "Length Counter Enabled", sq1.LengthEnabled),
 				new RegEntry("$FF14.7", "Channel Enabled", sq1.Enabled),
 
@@ -344,7 +345,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF17.3", "Envelope Increase Volume", sq2.EnvRaiseVolume),
 				new RegEntry("$FF17.4-7", "Envelope Volume", sq2.EnvVolume),
 
-				new RegEntry("$FF18+$FF19.0-2", "Frequency", sq2.Frequency),
+				new RegEntry("$FF18-$FF19.0-2", "Frequency", sq2.Frequency),
 				new RegEntry("$FF19.6", "Length Counter Enabled", sq2.LengthEnabled),
 				new RegEntry("$FF19.7", "Channel Enabled", sq2.Enabled),
 
@@ -386,7 +387,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("$FF1C.5-6", "Volume", wave.Volume),
 
-				new RegEntry("$FF1D+$FF1E.0-2", "Frequency", wave.Frequency),
+				new RegEntry("$FF1D-$FF1E.0-2", "Frequency", wave.Frequency),
 
 				new RegEntry("$FF1E.6", "Length Counter Enabled", wave.LengthEnabled),
 				new RegEntry("$FF1E.7", "Channel Enabled", wave.Enabled),
@@ -397,7 +398,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Output", wave.Output),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "APU", entries);
+			return new RegisterViewerTab(tabPrefix + "APU", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetSnesSa1Tab(ref SnesState state)
@@ -723,7 +724,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2133.4", "Ext. BG Enabled", ppu.ExtBgEnabled),
 			};
 
-			return new RegisterViewerTab("PPU", entries);
+			return new RegisterViewerTab("PPU", entries, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetSnesDspTab(ref SnesState state)
@@ -834,7 +835,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF", "Timer 2 Output", spc.Timer2.Output, Format.X8),
 			};
 
-			return new RegisterViewerTab("SPC", entries);
+			return new RegisterViewerTab("SPC", entries, CpuType.Spc, MemoryType.SpcMemory);
 		}
 
 		private RegisterViewerTab GetSnesDmaTab(ref SnesState state)
@@ -863,7 +864,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "B", "Unused register", ch.UnusedRegister, Format.X8));
 			}
 
-			return new RegisterViewerTab("DMA", entries);
+			return new RegisterViewerTab("DMA", entries, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetSnesCpuTab(ref SnesState state)
@@ -911,7 +912,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$421E/F", "P4 Data", regs.ControllerData[3], Format.X16),
 			};
 
-			return new RegisterViewerTab("CPU", entries);
+			return new RegisterViewerTab("CPU", entries, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetNesPpuTab(ref NesState state)
@@ -927,7 +928,6 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "PPU Register Buffer", ppu.MemoryReadBuffer, Format.X8),
 
 				new RegEntry("$2000", "Control", null),
-				//new RegEntry("$2000.0-1", "Nametable Select", ppu.ControlReg & 0x03),
 				new RegEntry("$2000.2", "Increment Mode", ppu.Control.VerticalWrite ? "32 bytes" : "1 byte"),
 				new RegEntry("$2000.3", "Sprite Table Address", ppu.Control.SpritePatternAddr == 0 ? "$0000" : "$1000"),
 				new RegEntry("$2000.4", "BG Table Address", ppu.Control.BackgroundPatternAddr == 0 ? "$0000" : "$1000"),
@@ -959,7 +959,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Write Toggle", ppu.WriteToggle)
 			};
 
-			return new RegisterViewerTab("PPU", entries);
+			return new RegisterViewerTab("PPU", entries, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetNesApuTab(ref NesState state)
@@ -1097,7 +1097,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Sequence Position", frameCounter.SequencePosition),
 			});
 
-			return new RegisterViewerTab("APU", entries);
+			return new RegisterViewerTab("APU", entries, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetNesCartTab(ref NesState state)
@@ -1121,7 +1121,7 @@ namespace Mesen.Debugger.ViewModels
 				));
 			}
 
-			return new RegisterViewerTab("Cart", entries);
+			return new RegisterViewerTab("Cart", entries, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetPceVceTab(ref PceState state)
@@ -1135,7 +1135,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$01.0-8", "CTA - Color Table Address", vce.PalAddr, Format.X16),
 			};
 
-			return new RegisterViewerTab("VCE", entries);
+			return new RegisterViewerTab("VCE", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceVpcTab(ref PceState state)
@@ -1171,7 +1171,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$0E", "STn writes to VDC2", vpc.StToVdc2Mode),
 			};
 
-			return new RegisterViewerTab("VPC", entries);
+			return new RegisterViewerTab("VPC", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceVdcTab(ref PceVdcState vdc, string suffix = "")
@@ -1245,7 +1245,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", vdc.SatbBlockSrc, Format.X16)
 			};
 
-			return new RegisterViewerTab("VDC" + suffix, entries);
+			return new RegisterViewerTab("VDC" + suffix, entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)
@@ -1275,7 +1275,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "MPR #7", mem.Mpr[7], Format.X8),
 			};
 
-			return new RegisterViewerTab("CPU", entries);
+			return new RegisterViewerTab("CPU", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPcePsgTab(ref PceState pceState)
@@ -1307,7 +1307,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
-			return new RegisterViewerTab("PSG", entries);
+			return new RegisterViewerTab("PSG", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceCdRomTab(ref PceState pceState)
@@ -1378,7 +1378,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "End Behavior", player.EndBehavior),
 			};
 
-			return new RegisterViewerTab("CD-ROM", entries);
+			return new RegisterViewerTab("CD-ROM", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceArcadeCardTab(ref PceState pceState)
@@ -1408,7 +1408,7 @@ namespace Mesen.Debugger.ViewModels
 				});
 			}
 
-			return new RegisterViewerTab("Arcade Card", entries);
+			return new RegisterViewerTab("Arcade Card", entries, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		public void OnGameLoaded()
@@ -1425,11 +1425,17 @@ namespace Mesen.Debugger.ViewModels
 
 		public string TabName { get => _name; set => this.RaiseAndSetIfChanged(ref _name, value); }
 		public List<RegEntry> Data { get => _data; set => this.RaiseAndSetIfChanged(ref _data, value); }
-		
-		public RegisterViewerTab(string name, List<RegEntry> data)
+		public SelectionModel<RegEntry?> Selection { get; set; } = new();
+
+		public CpuType? CpuType { get; }
+		public MemoryType? MemoryType { get; }
+
+		public RegisterViewerTab(string name, List<RegEntry> data, CpuType? cpuType = null, MemoryType? memoryType = null)
 		{
 			_name = name;
 			_data = data;
+			CpuType = cpuType;
+			MemoryType = memoryType;
 		}
 
 		public void SetData(List<RegEntry> rows)
@@ -1520,6 +1526,69 @@ namespace Mesen.Debugger.ViewModels
 				case Format.X16: return "$" + ((IFormattable)value).ToString("X4", null);
 				case Format.X24: return "$" + ((IFormattable)value).ToString("X6", null);
 				case Format.X32: return "$" + ((IFormattable)value).ToString("X8", null);
+			}
+		}
+
+		public int StartAddress
+		{
+			get
+			{
+				string addr = Address;
+				if(addr.StartsWith("$")) {
+					addr = addr.Substring(1);
+				}
+				int separator = addr.IndexOfAny(new char[] { '.', '-', '/' });
+				if(separator >= 0) {
+					addr = addr.Substring(0, separator);
+				}
+
+				if(Int32.TryParse(addr.Trim(), System.Globalization.NumberStyles.HexNumber, null, out int startAddress)) {
+					return startAddress;
+				}
+
+				return -1;
+			}
+		}
+
+		public int EndAddress
+		{
+			get
+			{
+				string addr = Address;
+				int separator = addr.IndexOfAny(new char[] { '.', '-', '/' });
+				if(separator >= 0) {
+					if(addr[separator] == '.') {
+						//First separator is a dot for bits, assume there is no end address
+						return StartAddress;
+					}
+					addr = addr.Substring(separator + 1).Trim();
+				} else {
+					return StartAddress;
+				}
+
+				int lastRangeAddr = addr.LastIndexOf('/');
+				if(lastRangeAddr >= 0) {
+					addr = addr.Substring(lastRangeAddr + 1);
+				}
+
+				if(addr.StartsWith("$")) {
+					addr = addr.Substring(1);
+				}
+
+				separator = addr.IndexOfAny(new char[] { '.', '-', '/' });
+				if(separator >= 0) {
+					addr = addr.Substring(0, separator);
+				}
+
+				if(Int32.TryParse(addr.Trim(), System.Globalization.NumberStyles.HexNumber, null, out int endAddress)) {
+					if(addr.Length == 1) {
+						return (StartAddress & ~0xF) | endAddress;
+					} else {
+						return endAddress;
+					}
+				}
+
+				return StartAddress;
 			}
 		}
 

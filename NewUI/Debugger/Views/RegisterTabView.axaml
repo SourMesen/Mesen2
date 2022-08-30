@@ -1,0 +1,36 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:c="using:Mesen.Debugger.Controls"
+	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="110"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	Focusable="True"
+	x:DataType="vm:RegisterViewerTab"
+	x:Class="Mesen.Debugger.Views.RegisterTabView"
+>
+	<Design.DataContext>
+		<vm:RegisterViewerTab />
+	</Design.DataContext>
+
+	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
+		<DataBox
+			Name="lstRegisterTab"
+			Items="{CompiledBinding Data}"
+			Selection="{CompiledBinding Selection}"
+			GridLinesVisibility="All"
+		>
+			<DataBox.Columns>
+				<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="2*" CanUserResize="True" />
+				<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="1*" CanUserResize="True" />
+			</DataBox.Columns>
+		</DataBox>
+	</Border>
+</UserControl>

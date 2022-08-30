@@ -1346,7 +1346,9 @@
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
-
+		</Form>
+		
+		<Form ID="RegisterTabView">
 			<Control ID="colAddress">Address</Control>
 			<Control ID="colName">Name</Control>
 			<Control ID="colValue">Value</Control>

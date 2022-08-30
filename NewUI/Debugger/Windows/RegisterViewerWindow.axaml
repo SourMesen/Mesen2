@@ -5,7 +5,6 @@
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.Debugger.ViewModels"
 	xmlns:sys="using:System"
-	xmlns:v="using:Mesen.Views"
 	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:dbg="using:Mesen.Debugger"
 	xmlns:c="using:Mesen.Controls"
@@ -51,19 +50,7 @@
 		
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
-						<DataBox
-							Items="{Binding Data}"
-							GridLinesVisibility="All"
-						>
-							<DataBox.Columns>
-								<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="1*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="2*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="1*" CanUserResize="True" />
-								<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="1*" CanUserResize="True" />
-							</DataBox.Columns>
-						</DataBox>
-					</Border>
+					<dv:RegisterTabView DataContext="{Binding}" />
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
