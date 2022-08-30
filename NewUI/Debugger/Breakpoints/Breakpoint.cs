@@ -104,7 +104,7 @@ namespace Mesen.Debugger
 		public string GetAddressString(bool showLabel)
 		{
 			string addr = "";
-			string format = "X" + CpuType.GetAddressSize();
+			string format = MemoryType.GetFormatString();
 			if(StartAddress == EndAddress) {
 				addr += $"${StartAddress.ToString(format)}";
 			} else {

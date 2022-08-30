@@ -223,7 +223,7 @@ namespace Mesen.Debugger.ViewModels
 				if(Label.MemoryType.IsRelativeMemory()) {
 					AbsAddressDisplay = "";
 				} else {
-					AbsAddressDisplay = "$" + label.Address.ToString(_format) + " [" + label.MemoryType.GetShortName() + "]";
+					AbsAddressDisplay = "$" + label.Address.ToString(label.MemoryType.GetFormatString()) + " [" + label.MemoryType.GetShortName() + "]";
 				}
 			}
 		}
