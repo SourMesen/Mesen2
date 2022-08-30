@@ -74,7 +74,7 @@ struct PceVdcHvLatches
 	uint8_t VertEndPosVcr;
 };
 
-struct PceVdcState : public BaseState
+struct PceVdcState
 {
 	uint32_t FrameCount;
 	
