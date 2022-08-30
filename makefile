@@ -22,16 +22,9 @@ CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(real
 CFLAGS=-fPIC -Wall -O3 $(MESENFLAGS)
 LINKOPTIONS=
 
-ifeq ($(MESENPLATFORM),x86)
-	MESENPLATFORM=x86
-
-	CXXFLAGS += -m32
-	CFLAGS += -m32
-else
-	MESENPLATFORM=x64
-	CXXFLAGS += -m64
-	CFLAGS += -m64
-endif
+MESENPLATFORM=x64
+CXXFLAGS += -m64
+CFLAGS += -m64
 
 ifneq ($(LTO),false)
 	CFLAGS += -flto

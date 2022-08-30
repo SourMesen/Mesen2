@@ -74,7 +74,8 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 	_traceLogSaver.reset(new TraceLogFileSaver());
 	_cdlManager.reset(new CdlManager(this, _disassembler.get()));
 
-	for(CpuType type : _cpuTypes) {
+	//Use cpuTypes for iteration (ordered), not _cpuTypes (order is important for coprocessors, etc.)
+	for(CpuType type : cpuTypes) {
 		unique_ptr<IDebugger> &debugger = _debuggers[(int)type].Debugger;
 		switch(type) {
 			case CpuType::Snes: debugger.reset(new SnesDebugger(this, CpuType::Snes)); break;
