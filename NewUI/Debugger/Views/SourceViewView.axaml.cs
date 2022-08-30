@@ -39,13 +39,18 @@ namespace Mesen.Debugger.Views
 			InitializeComponent();
 			_viewer = this.GetControl<DisassemblyViewer>("disViewer");
 			_viewer.GetPropertyChangedObservable(DisassemblyViewer.VisibleRowCountProperty).Subscribe(x => {
+				SourceViewViewModel? model = Model;
+				if(model == null) {
+					return;
+				}
+
 				int rowCount = _viewer.VisibleRowCount;
-				int prevCount = Model.VisibleRowCount;
+				int prevCount = model.VisibleRowCount;
 				if(prevCount != rowCount) {
-					int pos = Model.ScrollPosition + (prevCount / 2);
-					Model.VisibleRowCount = rowCount;
-					Model.ScrollToRowNumber(pos);
-					Model.Refresh();
+					int pos = model.ScrollPosition + (prevCount / 2);
+					model.VisibleRowCount = rowCount;
+					model.ScrollToRowNumber(pos);
+					model.Refresh();
 				}
 			});
 
@@ -79,10 +84,11 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
-						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
-						} else if(ActionLocation.RelAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.RelAddress.Value, CpuType);
+						LocationInfo loc = ActionLocation;
+						if(loc.AbsAddress != null) {
+							BreakpointManager.ToggleBreakpoint(loc.AbsAddress.Value, CpuType);
+						} else if(loc.RelAddress != null) {
+							BreakpointManager.ToggleBreakpoint(loc.RelAddress.Value, CpuType);
 						}
 					}
 				},
@@ -92,10 +98,15 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
 					OnClick = () => {
-						if(ActionLocation.Label != null) {
-							WatchManager.GetWatchManager(CpuType).AddWatch("[" + ActionLocation.Label.Label + "]");
-						} else if(ActionLocation.RelAddress != null) {
-							WatchManager.GetWatchManager(CpuType).AddWatch("[$" + ActionLocation.RelAddress.Value.Address.ToString(GetFormatString()) + "]");
+						LocationInfo loc = ActionLocation;
+						if(loc.Label != null) {
+							if(loc.LabelAddressOffset != null) {
+								WatchManager.GetWatchManager(CpuType).AddWatch($"[{loc.Label.Label}+{loc.LabelAddressOffset}]");
+							} else {
+								WatchManager.GetWatchManager(CpuType).AddWatch("[" + loc.Label.Label + "]");
+							}
+						} else if(loc.RelAddress != null) {
+							WatchManager.GetWatchManager(CpuType).AddWatch("[$" + loc.RelAddress.Value.Address.ToString(GetFormatString()) + "]");
 						}
 					}
 				},
@@ -105,11 +116,12 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
-						CodeLabel? label = ActionLocation.Label ?? (ActionLocation.AbsAddress.HasValue ? LabelManager.GetLabel(ActionLocation.AbsAddress.Value) : null);
+						LocationInfo loc = ActionLocation;
+						CodeLabel? label = loc.Label ?? (loc.AbsAddress.HasValue ? LabelManager.GetLabel(loc.AbsAddress.Value) : null);
 						if(label != null) {
 							LabelEditWindow.EditLabel(CpuType, this, label);
-						} else if(ActionLocation.AbsAddress != null) {
-							LabelEditWindow.EditLabel(CpuType, this, new CodeLabel(ActionLocation.AbsAddress.Value));
+						} else if(loc.AbsAddress != null) {
+							LabelEditWindow.EditLabel(CpuType, this, new CodeLabel(loc.AbsAddress.Value));
 						}
 					}
 				},
@@ -119,10 +131,11 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
-						if(ActionLocation.RelAddress != null) {
-							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.RelAddress.Value.Type, ActionLocation.RelAddress.Value.Address);
-						} else if(ActionLocation.AbsAddress != null) {
-							MemoryToolsWindow.ShowInMemoryTools(ActionLocation.AbsAddress.Value.Type, ActionLocation.AbsAddress.Value.Address);
+						LocationInfo loc = ActionLocation;
+						if(loc.RelAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(loc.RelAddress.Value.Type, loc.RelAddress.Value.Address);
+						} else if(loc.AbsAddress != null) {
+							MemoryToolsWindow.ShowInMemoryTools(loc.AbsAddress.Value.Type, loc.AbsAddress.Value.Address);
 						}
 					}
 				},
@@ -148,9 +161,10 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.RelAddress != null && DebugApi.GetDebuggerFeatures(CpuType).ChangeProgramCounter,
 					OnClick = () => {
-						if(ActionLocation.RelAddress != null) {
+						LocationInfo loc = ActionLocation;
+						if(loc.RelAddress != null) {
 							Model.Debugger.UpdateConsoleState();
-							DebugApi.SetProgramCounter(CpuType, (uint)ActionLocation.RelAddress.Value.Address);
+							DebugApi.SetProgramCounter(CpuType, (uint)loc.RelAddress.Value.Address);
 							Model.Debugger.ConsoleStatus?.UpdateUiState();
 							Model.Debugger.UpdateDisassembly(true);
 						}
@@ -163,16 +177,17 @@ namespace Mesen.Debugger.Views
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.Symbol != null || ActionLocation.RelAddress != null,
 					OnClick = () => {
-						if(ActionLocation.Symbol != null) {
-							AddressInfo? addr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(ActionLocation.Symbol.Value);
+						LocationInfo loc = ActionLocation;
+						if(loc.Symbol != null) {
+							AddressInfo? addr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(loc.Symbol.Value);
 							if(addr?.Address > 0) {
-								SourceCodeLocation? loc = DebugWorkspaceManager.SymbolProvider?.GetSourceCodeLineInfo(addr.Value);
-								if(loc != null) {
-									_model?.ScrollToLocation(loc.Value);
+								SourceCodeLocation? srcLoc = DebugWorkspaceManager.SymbolProvider?.GetSourceCodeLineInfo(addr.Value);
+								if(srcLoc != null) {
+									_model?.ScrollToLocation(srcLoc.Value);
 								}
 							}
-						} else if(ActionLocation.RelAddress != null) {
-							_model?.GoToRelativeAddress(ActionLocation.RelAddress.Value.Address);
+						} else if(loc.RelAddress != null) {
+							_model?.GoToRelativeAddress(loc.RelAddress.Value.Address);
 						}
 					}
 				},
@@ -183,9 +198,10 @@ namespace Mesen.Debugger.Views
 		{
 			CodeSegmentInfo? segment = _selectionHandler?.MouseOverSegment;
 			if(segment == null || !AllowSearch(segment.Type)) {
-				if(ActionLocation.RelAddress?.Address >= 0) {
-					CodeLabel? label = LabelManager.GetLabel(ActionLocation.RelAddress.Value);
-					return label?.Label ?? ("$" + ActionLocation.RelAddress.Value.Address.ToString("X" + CpuType.GetAddressSize()));
+				LocationInfo loc = ActionLocation;
+				if(loc.RelAddress?.Address >= 0) {
+					CodeLabel? label = LabelManager.GetLabel(loc.RelAddress.Value);
+					return label?.Label ?? ("$" + loc.RelAddress.Value.Address.ToString("X" + CpuType.GetAddressSize()));
 				}
 				return null;
 			}
@@ -281,18 +297,18 @@ namespace Mesen.Debugger.Views
 			return CpuType.ToMemoryType().GetFormatString();
 		}
 
-		private string GetHint(LocationInfo? codeLoc)
+		private string GetHint(LocationInfo? loc)
 		{
-			if(codeLoc == null) {
+			if(loc == null) {
 				return string.Empty;
 			}
 
-			if(codeLoc?.Symbol != null) {
-				return codeLoc.Symbol.Value.Name;
-			} else if(codeLoc?.RelAddress != null) {
-				return "$" + codeLoc.RelAddress.Value.Address.ToString(GetFormatString());
-			} else if(codeLoc?.AbsAddress != null) {
-				return "[$" + codeLoc.AbsAddress.Value.Address.ToString(GetFormatString()) + "]";
+			if(loc?.Symbol != null) {
+				return loc.Symbol.Value.Name + (loc.LabelAddressOffset > 0 ? ("+" + loc.LabelAddressOffset) : "");
+			} else if(loc?.RelAddress != null) {
+				return "$" + loc.RelAddress.Value.Address.ToString(GetFormatString());
+			} else if(loc?.AbsAddress != null) {
+				return "[$" + loc.AbsAddress.Value.Address.ToString(GetFormatString()) + "]";
 			}
 
 			return string.Empty;

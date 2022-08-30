@@ -29,28 +29,37 @@ namespace Mesen.Debugger.Utilities
 				}
 			} else if(seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 				string labelText = seg.Text.Trim(' ', ',', ':', ']', '[');
+				int addressOffset = GetAddressOffset(seg);
 
-				int absAddress = seg.Data.AbsoluteAddress.Address;
-				SourceSymbol? symbol = absAddress >= 0 ? DebugWorkspaceManager.SymbolProvider?.GetSymbol(labelText, absAddress, absAddress + seg.Data.OpSize) : null;
+				int lineAbsAddress = seg.Data.AbsoluteAddress.Address;
+				SourceSymbol? symbol = lineAbsAddress >= 0 ? DebugWorkspaceManager.SymbolProvider?.GetSymbol(labelText, lineAbsAddress, lineAbsAddress + seg.Data.OpSize) : null;
 				if(symbol != null) {
-					AddressInfo? absAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(symbol.Value);
+					AddressInfo absAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(symbol.Value) ?? new AddressInfo() { Address = -1 };
 					AddressInfo? relAddr = null;
-					if(absAddr?.Address >= 0) {
-						relAddr = DebugApi.GetRelativeAddress(absAddr.Value, cpuType);
+					CodeLabel? label = null;
+					if(absAddr.Address >= 0) {
+						absAddr.Address += addressOffset;
+						relAddr = DebugApi.GetRelativeAddress(absAddr, cpuType);
+						label = LabelManager.GetLabel((uint)absAddr.Address, absAddr.Type);
 					}
 					return new LocationInfo {
 						Symbol = symbol,
+						Label = label,
+						LabelAddressOffset = addressOffset > 0 ? addressOffset : null,
 						RelAddress = relAddr?.Address >= 0 ? relAddr : null,
-						AbsAddress = absAddr?.Address >= 0 ? absAddr : null
+						AbsAddress = absAddr.Address >= 0 ? absAddr : null
 					};
 				} else {
 					CodeLabel? label = LabelManager.GetLabel(labelText);
 					if(label != null) {
-						AddressInfo relAddress = label.GetRelativeAddress(cpuType);
+						AddressInfo absAddr = label.GetAbsoluteAddress();
+						absAddr.Address += addressOffset;
+						AddressInfo relAddr = DebugApi.GetRelativeAddress(absAddr, cpuType);
 						return new LocationInfo {
 							Label = label,
-							RelAddress = relAddress.Address >= 0 ? relAddress : null,
-							AbsAddress = label.GetAbsoluteAddress()
+							LabelAddressOffset = addressOffset > 0 ? addressOffset : null,
+							RelAddress = relAddr.Address >= 0 ? relAddr : null,
+							AbsAddress = absAddr
 						};
 					}
 				}
@@ -69,6 +78,29 @@ namespace Mesen.Debugger.Utilities
 			return null;
 		}
 
+		private static int GetAddressOffset(CodeSegmentInfo seg)
+		{
+			int addressOffset = 0;
+			string labelText = seg.Text;
+			if(seg.OriginalTextIndex > 0 && seg.Data.Text.Length > seg.OriginalTextIndex) {
+				string originalText = seg.Data.Text.Substring(seg.OriginalTextIndex);
+				if(originalText.StartsWith(labelText + "+")) {
+					int start = labelText.Length + 1;
+					int i = start;
+					while(i < originalText.Length && char.IsDigit(originalText[i])) {
+						i++;
+					}
+
+					if(i > start) {
+						Int32.TryParse(originalText.Substring(start, i - start), out addressOffset);
+					}
+					return addressOffset;
+				}
+			}
+
+			return 0;
+		}
+
 		public static DynamicTooltip? GetTooltip(CpuType cpuType, CodeSegmentInfo seg)
 		{
 			if(seg.Type == CodeSegmentType.OpCode) {
@@ -81,7 +113,7 @@ namespace Mesen.Debugger.Utilities
 				if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 					LocationInfo? codeLoc = GetLocation(cpuType, seg);
 					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.Symbol != null)) {
-						return GetCodeAddressTooltip(cpuType, codeLoc.RelAddress?.Address ?? -1, codeLoc.Label, codeLoc.Symbol);
+						return GetCodeAddressTooltip(cpuType, codeLoc);
 					}
 				}
 			}
@@ -130,16 +162,17 @@ namespace Mesen.Debugger.Utilities
 			return new DynamicTooltip() { Items = items };
 		}
 
-		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, int address, CodeLabel? label, SourceSymbol? symbol)
+		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, LocationInfo codeLoc)
 		{
+			int address = codeLoc.RelAddress?.Address ?? -1;
 			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 			TooltipEntries items = new();
 
-			if(symbol != null) {
-				items.AddEntry("Symbol", symbol.Value.Name, monoFont);
-			} else if(label != null) {
-				items.AddEntry("Label", label.Label, monoFont);
+			if(codeLoc.Symbol != null) {
+				items.AddEntry("Symbol", codeLoc.Symbol.Value.Name + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), monoFont);
+			} else if(codeLoc.Label != null) {
+				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), monoFont);
 			}
 
 			if(address >= 0) {
@@ -152,10 +185,10 @@ namespace Mesen.Debugger.Utilities
 
 				items.AddEntry("Address", GetAddressField(cpuType, address, memType), monoFont);
 				items.AddEntry("Value", mainPanel);
-			} else if(symbol?.Address != null) {
-				AddressInfo? symbolAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(symbol.Value);
+			} else if(codeLoc.Symbol?.Address != null) {
+				AddressInfo? symbolAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(codeLoc.Symbol.Value);
 				if(symbolAddr == null) {
-					items.AddEntry("Constant", "$" + symbol.Value.Address.Value.ToString("X" + cpuType.GetAddressSize()));
+					items.AddEntry("Constant", "$" + codeLoc.Symbol.Value.Address.Value.ToString("X" + cpuType.GetAddressSize()));
 				} else {
 					int byteValue = DebugApi.GetMemoryValue(symbolAddr.Value.Type, (uint)symbolAddr.Value.Address);
 					int wordValue = (DebugApi.GetMemoryValue(symbolAddr.Value.Type, (uint)symbolAddr.Value.Address + 1) << 8) | byteValue;
@@ -168,8 +201,8 @@ namespace Mesen.Debugger.Utilities
 				}
 			}
 
-			if(label?.Comment.Length > 0) {
-				items.AddEntry("Comment", label.Comment, monoFont);
+			if(codeLoc.Label?.Comment.Length > 0) {
+				items.AddEntry("Comment", codeLoc.Label.Comment, monoFont);
 			}
 
 			if(address >= 0) {

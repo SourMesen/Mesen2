@@ -9,6 +9,7 @@ namespace Mesen.Debugger.Disassembly
 		public AddressInfo? RelAddress;
 		public AddressInfo? AbsAddress;
 		public CodeLabel? Label;
+		public int? LabelAddressOffset;
 		public SourceSymbol? Symbol;
 		public SourceCodeLocation? SourceLocation;
 
