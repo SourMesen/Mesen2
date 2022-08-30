@@ -54,7 +54,8 @@ namespace Mesen.Debugger.Utilities
 					if(label != null) {
 						AddressInfo absAddr = label.GetAbsoluteAddress();
 						absAddr.Address += addressOffset;
-						AddressInfo relAddr = DebugApi.GetRelativeAddress(absAddr, cpuType);
+						//absAddr can be cpu memory for register labels (e.g on nes/pce/gb)
+						AddressInfo relAddr = absAddr.Type.IsRelativeMemory() ? absAddr : DebugApi.GetRelativeAddress(absAddr, cpuType);
 						return new LocationInfo {
 							Label = label,
 							LabelAddressOffset = addressOffset > 0 ? addressOffset : null,
@@ -112,7 +113,7 @@ namespace Mesen.Debugger.Utilities
 			} else {
 				if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 					LocationInfo? codeLoc = GetLocation(cpuType, seg);
-					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.Symbol != null)) {
+					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.Label != null || codeLoc.Symbol != null)) {
 						return GetCodeAddressTooltip(cpuType, codeLoc);
 					}
 				}
