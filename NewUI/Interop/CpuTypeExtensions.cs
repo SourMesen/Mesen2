@@ -205,6 +205,9 @@ namespace Mesen.Interop
 		public static bool CanAccessMemoryType(this CpuType cpuType, MemoryType memType)
 		{
 			switch(memType) {
+				case MemoryType.None:
+					return false;
+
 				case MemoryType.SnesPrgRom:
 					return cpuType == CpuType.Snes || cpuType == CpuType.Sa1 || cpuType == CpuType.Gsu || cpuType == CpuType.Cx4;
 				

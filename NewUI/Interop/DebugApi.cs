@@ -539,6 +539,7 @@ namespace Mesen.Interop
 		SnesVideoRam,
 		SnesSpriteRam,
 		SnesCgRam,
+		SnesRegister,
 		SpcRam,
 		SpcRom,
 		DspProgramRom,
@@ -582,7 +583,7 @@ namespace Mesen.Interop
 		PceSpriteRamVdc2,
 		PcePaletteRam,
 
-		Register
+		None,
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

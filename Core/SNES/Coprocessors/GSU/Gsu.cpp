@@ -15,13 +15,12 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize) : BaseCoprocessor(MemoryType::Register)
+Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize)
 {
 	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
 	_cpu = console->GetCpu();
-	_memoryType = MemoryType::Register;
 	_settings = _emu->GetSettings();
 
 	_clockMultiplier = std::max(1u, _settings->GetSnesConfig().GsuClockSpeed / 100);
@@ -602,7 +601,7 @@ void Gsu::PeekBlock(uint32_t addr, uint8_t *output)
 
 AddressInfo Gsu::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 void Gsu::Serialize(Serializer &s)

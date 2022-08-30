@@ -53,7 +53,7 @@ public:
 			case MemoryType::SnesWorkRam:
 			case MemoryType::BsxMemoryPack:
 			case MemoryType::BsxPsRam:
-			case MemoryType::Register:
+			case MemoryType::SnesRegister:
 				return CpuType::Snes;
 
 			case MemoryType::SpcMemory:
@@ -125,12 +125,11 @@ public:
 
 	static constexpr bool IsRelativeMemory(MemoryType memType)
 	{
-		return memType <= GetLastCpuMemoryType();
+		return memType <= MemoryType::PceMemory;
 	}
 
 	static constexpr MemoryType GetLastCpuMemoryType()
 	{
-		//TODO refactor to "IsRelativeMemory"?
 		return MemoryType::PceMemory;
 	}
 
@@ -200,5 +199,10 @@ public:
 		} else {
 			return HexUtilities::ToHex(address);
 		}
+	}
+
+	static constexpr int GetMemoryTypeCount()
+	{
+		return (int)MemoryType::None + 1;
 	}
 };

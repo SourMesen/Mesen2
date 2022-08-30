@@ -29,7 +29,7 @@ Disassembler::Disassembler(IConsole* console, Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	_memoryDumper = _debugger->GetMemoryDumper();
 
-	for(int i = (int)MemoryType::SnesPrgRom; i <= (int)MemoryType::Register; i++) {
+	for(int i = (int)MemoryType::SnesPrgRom; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		InitSource((MemoryType)i);
 	}
 }
@@ -164,7 +164,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 		relAddress.Address = i;
 		addrInfo = _console->GetAbsoluteAddress(relAddress);
 
-		if(addrInfo.Address < 0 || addrInfo.Type == MemoryType::Register) {
+		if(addrInfo.Address < 0 || addrInfo.Type == MemoryType::SnesRegister) {
 			pushEndBlock();
 			inUnmappedBlock = true;
 			continue;

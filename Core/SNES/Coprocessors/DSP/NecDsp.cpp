@@ -15,13 +15,12 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
 
-NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom) : BaseCoprocessor(MemoryType::Register)
+NecDsp::NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom)
 {
 	_console = console;
 	_emu = console->GetEmulator();
 	_type = type;
 	_memoryManager = console->GetMemoryManager();
-	_memoryType = MemoryType::Register;
 	MemoryMappings *mm = _memoryManager->GetMemoryMappings();
 	
 	if(type == CoprocessorType::ST010 || type == CoprocessorType::ST011) {
@@ -265,7 +264,7 @@ void NecDsp::PeekBlock(uint32_t addr, uint8_t *output)
 
 AddressInfo NecDsp::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)

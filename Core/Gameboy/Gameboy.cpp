@@ -245,7 +245,7 @@ void Gameboy::GetSoundSamples(int16_t* &samples, uint32_t& sampleCount)
 
 AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)
 {
-	AddressInfo addrInfo = { -1, MemoryType::Register };
+	AddressInfo addrInfo = { -1, MemoryType::None };
 
 	if(addr >= 0xFF80 && addr <= 0xFFFE) {
 		addrInfo.Address = addr & 0x7F;

@@ -32,7 +32,7 @@ namespace Mesen.Debugger
 		}
 
 		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
-		public bool IsCpuBreakpoint { get { return Breakpoint.IsTypeCpuBreakpoint(MemoryType); } }
+		public bool IsCpuBreakpoint { get { return !MemoryType.IsPpuMemory(); } }
 
 		public BreakpointTypeFlags Type
 		{
@@ -50,11 +50,6 @@ namespace Mesen.Debugger
 				}
 				return type;
 			}
-		}
-
-		public static bool IsTypeCpuBreakpoint(MemoryType type)
-		{
-			return type != MemoryType.Register && !type.IsPpuMemory();
 		}
 
 		public bool Matches(UInt32 address, MemoryType type, CpuType? cpuType)

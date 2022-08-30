@@ -63,7 +63,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesCgRam:
 				case MemoryType.BsxPsRam:
 				case MemoryType.BsxMemoryPack:
-				case MemoryType.Register:
+				case MemoryType.SnesRegister:
 					return CpuType.Snes;
 
 				case MemoryType.PceMemory:
@@ -119,7 +119,7 @@ namespace Mesen.Interop
 		public static bool SupportsMemoryViewer(this MemoryType memType)
 		{
 			switch(memType) {
-				case MemoryType.Register:
+				case MemoryType.SnesRegister:
 					return false;
 			}
 			return true;
@@ -132,7 +132,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesCgRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SpcRom:
-				case MemoryType.Register:
+				case MemoryType.SnesRegister:
 
 				case MemoryType.GbSpriteRam:
 
@@ -176,7 +176,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesPrgRom:
 				case MemoryType.SnesWorkRam:
 				case MemoryType.SnesSaveRam:
-				case MemoryType.Register:
+				case MemoryType.SnesRegister:
 				case MemoryType.SpcRam:
 				case MemoryType.SpcRom:
 				case MemoryType.Sa1InternalRam:
@@ -195,7 +195,6 @@ namespace Mesen.Interop
 				case MemoryType.NesSaveRam:
 				case MemoryType.NesInternalRam:
 				case MemoryType.NesMemory:
-					return true;
 
 				//PC Engine
 				case MemoryType.PceMemory:
@@ -279,6 +278,7 @@ namespace Mesen.Interop
 				MemoryType.SnesVideoRam => "VRAM",
 				MemoryType.SnesSpriteRam => "OAM",
 				MemoryType.SnesCgRam => "CGRAM",
+				MemoryType.SnesRegister => "REG",
 
 				MemoryType.SpcRam => "RAM",
 				MemoryType.SpcRom => "ROM",
@@ -328,7 +328,7 @@ namespace Mesen.Interop
 				MemoryType.PceSpriteRam => "SPR",
 				MemoryType.PceSpriteRamVdc2 => "SPR2",
 
-				MemoryType.Register => "REG",
+				MemoryType.None => "n/a",
 
 				_ => throw new Exception("invalid type"),
 			};

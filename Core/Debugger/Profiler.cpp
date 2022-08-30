@@ -115,7 +115,7 @@ void Profiler::InternalReset()
 	
 	_functions.clear();
 	_functions[ResetFunctionIndex] = ProfiledFunction();
-	_functions[ResetFunctionIndex].Address = { ResetFunctionIndex, MemoryType::Register };
+	_functions[ResetFunctionIndex].Address = { ResetFunctionIndex, MemoryType::None };
 }
 
 void Profiler::GetProfilerData(ProfiledFunction* profilerData, uint32_t& functionCount)

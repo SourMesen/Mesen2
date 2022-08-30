@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Core/Debugger/Debugger.h"
+#include "Core/Debugger/DebugUtilities.h"
 #include "Core/Shared/EmulatorLock.h"
 #include "Core/Shared/Interfaces/IConsole.h"
 #include "Core/Shared/Audio/AudioPlayerTypes.h"
@@ -102,7 +103,7 @@ private:
 
 	RomInfo _rom;
 
-	ConsoleMemoryInfo _consoleMemory[(int)MemoryType::Register + 1] = {};
+	ConsoleMemoryInfo _consoleMemory[DebugUtilities::GetMemoryTypeCount()] = {};
 
 	unique_ptr<DebugStats> _stats;
 	unique_ptr<FrameLimiter> _frameLimiter;

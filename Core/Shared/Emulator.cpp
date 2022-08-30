@@ -38,6 +38,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/Timer.h"
 #include "Utilities/VirtualFile.h"
@@ -495,7 +496,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 		vector<string> extensions = T::GetSupportedExtensions();
 		if(std::find(extensions.begin(), extensions.end(), romExt) != extensions.end()) {
 			//Keep a copy of the current state of _consoleMemory
-			ConsoleMemoryInfo consoleMemory[(int)MemoryType::Register + 1] = {};
+			ConsoleMemoryInfo consoleMemory[DebugUtilities::GetMemoryTypeCount()] = {};
 			memcpy(consoleMemory, _consoleMemory, sizeof(_consoleMemory));
 
 			//Attempt to load rom with specified core

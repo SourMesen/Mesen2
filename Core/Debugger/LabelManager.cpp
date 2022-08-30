@@ -55,7 +55,7 @@ MemoryType LabelManager::GetKeyMemoryType(uint64_t key)
 string LabelManager::GetLabel(AddressInfo address, bool checkRegisterLabels)
 {
 	string label;
-	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(DebugUtilities::IsRelativeMemory(address.Type)) {
 		if(checkRegisterLabels && InternalGetLabel(address, label)) {
 			//Labels for registers
 			return label;
@@ -99,7 +99,7 @@ string LabelManager::GetComment(AddressInfo absAddress)
 
 bool LabelManager::GetLabelAndComment(AddressInfo address, LabelInfo &labelInfo)
 {
-	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(DebugUtilities::IsRelativeMemory(address.Type)) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 
@@ -124,7 +124,7 @@ bool LabelManager::ContainsLabel(string &label)
 
 AddressInfo LabelManager::GetLabelAbsoluteAddress(string& label)
 {
-	AddressInfo addr = { -1, MemoryType::Register };
+	AddressInfo addr = { -1, MemoryType::None };
 	auto result = _codeLabelReverseLookup.find(label);
 	if(result != _codeLabelReverseLookup.end()) {
 		uint64_t key = result->second;
@@ -141,7 +141,7 @@ int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 		uint64_t key = result->second;
 		MemoryType type = GetKeyMemoryType(key);
 		AddressInfo addr { (int32_t)(key & 0xFFFFFFFF), type };
-		if(type <= DebugUtilities::GetLastCpuMemoryType()) {
+		if(DebugUtilities::IsRelativeMemory(type)) {
 			return addr.Address;
 		}
 		return _debugger->GetRelativeAddress(addr, cpuType).Address;
@@ -152,7 +152,7 @@ int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 
 bool LabelManager::HasLabelOrComment(AddressInfo address)
 {
-	if(address.Type <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(DebugUtilities::IsRelativeMemory(address.Type)) {
 		address = _debugger->GetAbsoluteAddress(address);
 	}
 

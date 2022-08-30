@@ -19,6 +19,7 @@ enum class MemoryType
 	SnesVideoRam,
 	SnesSpriteRam,
 	SnesCgRam,
+	SnesRegister,
 	SpcRam,
 	SpcRom,
 	DspProgramRom,
@@ -62,5 +63,5 @@ enum class MemoryType
 	PceSpriteRamVdc2,
 	PcePaletteRam,
 
-	Register
+	None
 };

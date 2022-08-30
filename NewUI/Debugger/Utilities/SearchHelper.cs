@@ -253,8 +253,6 @@ namespace Mesen.Debugger.Utilities
 						img = "Assets/Function.png";
 					} else if(SearchResultType == SearchResultType.JumpTarget) {
 						img = "Assets/JumpTarget.png";
-					} else if(AbsoluteAddress.Value.Type == MemoryType.Register) {
-						img = "Assets/RegisterIcon.png";
 					} else {
 						img = "Assets/CheatCode.png";
 					}
@@ -305,7 +303,7 @@ namespace Mesen.Debugger.Utilities
 			get
 			{
 				if(AbsoluteAddress?.Address >= 0) {
-					MemoryType memType = AbsoluteAddress?.Type ?? MemoryType.Register;
+					MemoryType memType = AbsoluteAddress.Value.Type;
 					return ResourceHelper.GetEnumText(memType);
 				} else if(SearchResultType == SearchResultType.File) {
 					return "File";

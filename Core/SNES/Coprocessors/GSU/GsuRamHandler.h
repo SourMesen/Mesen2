@@ -51,7 +51,7 @@ public:
 		if(!_state->SFR.Running || !_state->GsuRamAccess) {
 			return _handler->GetAbsoluteAddress(address);
 		} else {
-			return { -1, MemoryType::Register };
+			return { -1, MemoryType::None };
 		}
 	}
 };

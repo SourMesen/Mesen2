@@ -11,7 +11,7 @@
 #include "SNES/MemoryMappings.h"
 #include "Utilities/Serializer.h"
 
-BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack) : BaseCoprocessor(MemoryType::Register)
+BsxCart::BsxCart(SnesConsole* console, BsxMemoryPack* memPack)
 {
 	_console = console;
 	_memoryManager = _console->GetMemoryManager();
@@ -210,7 +210,7 @@ void BsxCart::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo BsxCart::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 uint8_t* BsxCart::DebugGetPsRam()

@@ -100,7 +100,7 @@ void Sa1Cpu::IdleTakeBranch()
 
 bool Sa1Cpu::IsAccessConflict()
 {
-	return _sa1->GetSnesCpuMemoryType() == _sa1->GetSa1MemoryType() && _sa1->GetSa1MemoryType() != MemoryType::Register;
+	return _sa1->GetSnesCpuMemoryType() == _sa1->GetSa1MemoryType() && _sa1->GetSa1MemoryType() != MemoryType::SnesRegister;
 }
 
 void Sa1Cpu::ProcessCpuCycle(uint32_t addr)

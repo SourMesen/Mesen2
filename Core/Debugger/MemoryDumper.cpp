@@ -21,6 +21,7 @@
 #include "Shared/Video/VideoDecoder.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
+#include "Debugger/DebugUtilities.h"
 #include "Debugger/Disassembler.h"
 
 MemoryDumper::MemoryDumper(Debugger* debugger)
@@ -45,8 +46,11 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 		_pceConsole = pce;
 	}
 
-	for(int i = 0; i <= (int)MemoryType::Register; i++) {
-		_memorySize[i] = InternalGetMemorySize((MemoryType)i);
+	for(int i = 0; i < DebugUtilities::GetMemoryTypeCount(); i++) {
+		MemoryType memType = (MemoryType)i;
+		if(memType != MemoryType::None) {
+			_isMemorySupported[i] = _emu->GetMemory(memType).Memory != nullptr || _debugger->HasCpuType(DebugUtilities::ToCpuType(memType));
+		}
 	}
 }
 
@@ -69,16 +73,7 @@ uint8_t* MemoryDumper::GetMemoryBuffer(MemoryType type)
 
 uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 {
-	if(type <= DebugUtilities::GetLastCpuMemoryType() || type >= MemoryType::Register) {
-		return _memorySize[(int)type];
-	} else {
-		return _emu->GetMemory(type).Size;
-	}
-}
-
-uint32_t MemoryDumper::InternalGetMemorySize(MemoryType type)
-{
-	if(!_debugger->HasCpuType(DebugUtilities::ToCpuType(type))) {
+	if(!_isMemorySupported[(int)type]) {
 		return 0;
 	}
 
@@ -93,7 +88,7 @@ uint32_t MemoryDumper::InternalGetMemorySize(MemoryType type)
 		case MemoryType::NesMemory: return 0x10000;
 		case MemoryType::NesPpuMemory: return 0x4000;
 		case MemoryType::PceMemory: return 0x10000;
-		case MemoryType::Register: return 0x10000;
+		case MemoryType::SnesRegister: return 0x10000;
 		default: return _emu->GetMemory(type).Size;
 	}
 }
@@ -206,7 +201,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		return;
 	}
 
-	if(disableSideEffects && memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(disableSideEffects && DebugUtilities::IsRelativeMemory(memoryType)) {
 		AddressInfo addr = { (int32_t)address, memoryType };
 		addr = _debugger->GetAbsoluteAddress(addr);
 		if(addr.Address >= 0) {

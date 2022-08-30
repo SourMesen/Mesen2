@@ -216,7 +216,7 @@ public:
 		for(int i = 0x80; i <= 0xFF; i++) {
 			//80 - FF
 			_readBanks[i] = _unmappedBank;
-			_bankMemType[i] = MemoryType::Register;
+			_bankMemType[i] = MemoryType::None;
 		}
 
 		for(int i = 0; i < 4; i++) {
@@ -488,7 +488,7 @@ public:
 			case MemoryType::PceSaveRam: absAddr = (uint32_t)(_readBanks[bank] - _saveRam) + (relAddr & 0x1FFF); break;
 			case MemoryType::PceCdromRam: absAddr = (uint32_t)(_readBanks[bank] - _cdromRam) + (relAddr & 0x1FFF); break;
 			case MemoryType::PceCardRam: absAddr = (uint32_t)(_readBanks[bank] - _cardRam) + (relAddr & 0x1FFF); break;
-			default: return { -1, MemoryType::Register };
+			default: return { -1, MemoryType::None };
 		}
 		return { (int32_t)absAddr, _bankMemType[bank] };
 	}
@@ -502,7 +502,7 @@ public:
 			}
 		}
 
-		return { -1, MemoryType::Register };
+		return { -1, MemoryType::None };
 	}
 
 	void SetIrqSource(PceIrqSource source)

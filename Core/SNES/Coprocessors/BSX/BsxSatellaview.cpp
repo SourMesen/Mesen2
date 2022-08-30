@@ -6,7 +6,7 @@
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
-BsxSatellaview::BsxSatellaview(SnesConsole* console, IMemoryHandler* bBusHandler) : IMemoryHandler(MemoryType::Register)
+BsxSatellaview::BsxSatellaview(SnesConsole* console, IMemoryHandler* bBusHandler) : IMemoryHandler(MemoryType::SnesRegister)
 {
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
@@ -129,7 +129,7 @@ void BsxSatellaview::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo BsxSatellaview::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 void BsxSatellaview::Serialize(Serializer& s)

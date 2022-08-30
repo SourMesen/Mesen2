@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "MemoryAccessCounter.h"
-#include "DebugBreakHelper.h"
-#include "Debugger.h"
-#include "MemoryDumper.h"
+#include "Debugger/MemoryAccessCounter.h"
+#include "Debugger/DebugBreakHelper.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/DebugUtilities.h"
+#include "Debugger/MemoryDumper.h"
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/Spc.h"
@@ -16,7 +17,7 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 {
 	_debugger = debugger;
 
-	for(int i = (int)MemoryType::SnesPrgRom; i <= (int)MemoryType::Register; i++) {
+	for(int i = (int)DebugUtilities::GetLastCpuMemoryType() + 1; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
 		_counters[i].reserve(memSize);
 		for(uint32_t j = 0; j < memSize; j++) {
@@ -77,20 +78,20 @@ void MemoryAccessCounter::ProcessMemoryExec(AddressInfo& addressInfo, uint64_t m
 void MemoryAccessCounter::ResetCounts()
 {
 	DebugBreakHelper helper(_debugger);
-	for(int i = 0; i < (int)MemoryType::Register; i++) {
+	for(int i = 0; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		memset(_counters[i].data(), 0, _counters[i].size() * sizeof(AddressCounters));
 	}
 }
 
 void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters counts[])
 {
-	if(memoryType <= DebugUtilities::GetLastCpuMemoryType()) {
+	if(DebugUtilities::IsRelativeMemory(memoryType)) {
 		AddressInfo addr = {};
 		addr.Type = memoryType;
 		for(uint32_t i = 0; i < length; i++) {
 			addr.Address = offset + i;
 			AddressInfo info = _debugger->GetAbsoluteAddress(addr);
-			if(info.Address >= 0 && info.Type != MemoryType::Register) {
+			if(info.Address >= 0) {
 				counts[i] = _counters[(int)info.Type][info.Address];
 			}
 		}

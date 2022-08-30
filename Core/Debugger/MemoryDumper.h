@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <unordered_map>
 #include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 #include "MemoryType.h"
 
 class SnesMemoryManager;
@@ -28,9 +29,8 @@ private:
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
 	Disassembler* _disassembler = nullptr;
-	uint32_t _memorySize[(int)MemoryType::Register + 1] = {};
+	bool _isMemorySupported[DebugUtilities::GetMemoryTypeCount()] = {};
 
-	uint32_t InternalGetMemorySize(MemoryType type);
 	uint8_t InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects = true);
 
 public:

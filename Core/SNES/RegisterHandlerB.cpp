@@ -10,7 +10,7 @@
 #include "Shared/CheatManager.h"
 #include "Utilities/Serializer.h"
 
-RegisterHandlerB::RegisterHandlerB(SnesConsole *console, SnesPpu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(MemoryType::Register)
+RegisterHandlerB::RegisterHandlerB(SnesConsole *console, SnesPpu * ppu, Spc * spc, uint8_t * workRam) : IMemoryHandler(MemoryType::SnesRegister)
 {
 	_console = console;
 	_emu = console->GetEmulator();

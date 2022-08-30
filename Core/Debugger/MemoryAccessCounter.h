@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 #include "MemoryType.h"
 
 class Debugger;
@@ -32,7 +33,7 @@ enum class ReadResult
 class MemoryAccessCounter
 {
 private:
-	vector<AddressCounters> _counters[(int)MemoryType::Register + 1];
+	vector<AddressCounters> _counters[DebugUtilities::GetMemoryTypeCount()];
 
 	Debugger* _debugger;
 

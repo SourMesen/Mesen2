@@ -2335,6 +2335,7 @@
 			<Value ID="SnesVideoRam">Video RAM</Value>
 			<Value ID="SnesSpriteRam">OAM (Sprites)</Value>
 			<Value ID="SnesCgRam">CG RAM (Palette)</Value>
+			<Value ID="SnesRegister">Register</Value>
 			<Value ID="SpcRam">SPC RAM</Value>
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
 			<Value ID="DspProgramRom">DSP-n Program ROM</Value>
@@ -2382,7 +2383,7 @@
 			<Value ID="PceSpriteRam">Sprite RAM</Value>
 			<Value ID="PceSpriteRamVdc2">Sprite RAM (VDC2)</Value>
 
-			<Value ID="Register">Register</Value>
+			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
 			<Value ID="AutoFavorGbc">Auto (prefer Game Boy Color)</Value>

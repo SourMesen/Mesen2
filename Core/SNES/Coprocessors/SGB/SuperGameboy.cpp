@@ -14,7 +14,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Audio/HermiteResampler.h"
 
-SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy) : BaseCoprocessor(MemoryType::Register)
+SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy)
 {
 	_console = console;
 	_emu = console->GetEmulator();
@@ -339,7 +339,7 @@ void SuperGameboy::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo SuperGameboy::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 void SuperGameboy::Serialize(Serializer& s)

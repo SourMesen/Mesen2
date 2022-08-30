@@ -2,11 +2,12 @@
 #include "stdafx.h"
 #include "Utilities/ISerializable.h"
 #include "SNES/IMemoryHandler.h"
+#include "MemoryType.h"
 
 class BaseCoprocessor : public ISerializable, public IMemoryHandler
 {
 public:
-	using IMemoryHandler::IMemoryHandler;
+	BaseCoprocessor() : IMemoryHandler(MemoryType::SnesRegister) {}
 
 	virtual void Reset() = 0;
 

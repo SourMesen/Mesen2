@@ -15,11 +15,10 @@
 //TODO: CPU shouldn't have access to PRG ROM while the CX4 is loading from PRG ROM
 //TODO: Timings are apparently not perfect (desync in MMX2 intro)
 
-Cx4::Cx4(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
+Cx4::Cx4(SnesConsole* console)
 {
 	_emu = console->GetEmulator();
 	_console = console;
-	_memoryType = MemoryType::Register;
 	_memoryManager = console->GetMemoryManager();
 	_cpu = console->GetCpu();
 	
@@ -460,7 +459,7 @@ void Cx4::PeekBlock(uint32_t addr, uint8_t* output)
 
 AddressInfo Cx4::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 MemoryMappings* Cx4::GetMemoryMappings()

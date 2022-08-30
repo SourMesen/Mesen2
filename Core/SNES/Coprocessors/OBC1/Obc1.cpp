@@ -4,7 +4,7 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/MemoryMappings.h"
 
-Obc1::Obc1(SnesConsole* console, uint8_t* saveRam, uint32_t saveRamSize) : BaseCoprocessor(MemoryType::Register)
+Obc1::Obc1(SnesConsole* console, uint8_t* saveRam, uint32_t saveRamSize)
 {
 	MemoryMappings *mappings = console->GetMemoryManager()->GetMemoryMappings();	
 	mappings->RegisterHandler(0x00, 0x3F, 0x6000, 0x7FFF, this);
@@ -94,5 +94,5 @@ void Obc1::PeekBlock(uint32_t addr, uint8_t *output)
 
 AddressInfo Obc1::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }

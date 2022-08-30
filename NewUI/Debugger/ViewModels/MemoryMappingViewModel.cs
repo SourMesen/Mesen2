@@ -354,7 +354,7 @@ namespace Mesen.Debugger.ViewModels
 			List<MemoryMappingBlock> mappings = new();
 
 			Dictionary<MemoryType, Color> mainColors = new() {
-				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
 				{ MemoryType.PceWorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
 				{ MemoryType.PceSaveRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
 				{ MemoryType.PceCdromRam, Color.FromRgb(0xFA, 0xDC, 0xCD) },
@@ -363,7 +363,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			Dictionary<MemoryType, Color> altColors = new() {
-				{ MemoryType.Register, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
 				{ MemoryType.PceWorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
 				{ MemoryType.PceSaveRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
 				{ MemoryType.PceCdromRam, Color.FromRgb(0xEA, 0xCC, 0xBD) },
@@ -372,7 +372,7 @@ namespace Mesen.Debugger.ViewModels
 			};
 
 			Dictionary<MemoryType, string> accessNotes = new() {
-				{ MemoryType.Register, "RW" },
+				{ MemoryType.None, "RW" },
 				{ MemoryType.PceWorkRam, "RW" },
 				{ MemoryType.PceSaveRam, "RW" },
 				{ MemoryType.PceCdromRam, "RW" },
@@ -396,10 +396,10 @@ namespace Mesen.Debugger.ViewModels
 						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]
 					});
 				} else if(state.Mpr[i] == 0xFF) {
-					MemoryType memType = MemoryType.Register;
+					MemoryType memType = MemoryType.None;
 					mappings.Add(new MemoryMappingBlock() {
 						Length = 0x2000,
-						Name = memType.GetShortName(),
+						Name = "REG",
 						Page = state.Mpr[i],
 						Note = accessNotes[memType],
 						Color = (i % 2 == 0) ? mainColors[memType] : altColors[memType]

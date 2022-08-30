@@ -19,12 +19,11 @@
 #include "Utilities/Serializer.h"
 #include "MemoryOperationType.h"
 
-Sa1::Sa1(SnesConsole* console) : BaseCoprocessor(MemoryType::Register)
+Sa1::Sa1(SnesConsole* console)
 {
 	_console = console;
 	_emu = console->GetEmulator();
 	_memoryManager = console->GetMemoryManager();
-	_memoryType = MemoryType::Register;
 	_lastAccessMemType = MemoryType::SnesPrgRom;
 	_openBus = 0;
 	_cart = _console->GetCartridge();
@@ -492,7 +491,7 @@ void Sa1::Write(uint32_t addr, uint8_t value)
 
 AddressInfo Sa1::GetAbsoluteAddress(uint32_t address)
 {
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 void Sa1::Run()

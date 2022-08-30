@@ -60,7 +60,7 @@ public:
 		if(!_state->SFR.Running || !_state->GsuRomAccess) {
 			return _romHandler->GetAbsoluteAddress(address);
 		} else {
-			return { -1, MemoryType::Register };
+			return { -1, MemoryType::None };
 		}
 	}
 };

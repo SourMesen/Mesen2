@@ -248,7 +248,7 @@ AddressInfo PceConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 	if(relAddress.Type == MemoryType::PceMemory) {
 		return _memoryManager->GetAbsoluteAddress(relAddress.Address);
 	}
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 AddressInfo PceConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)

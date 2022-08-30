@@ -314,7 +314,6 @@ int LuaApi::ConvertAddress(lua_State *lua)
 	AddressInfo result;
 	if(DebugUtilities::IsRelativeMemory(memType)) {
 		result = _debugger->GetAbsoluteAddress(src);
-		//todo result when MemoryType::Register?
 	} else {
 		result = _debugger->GetRelativeAddress(src, cpuType);
 	}
@@ -865,7 +864,6 @@ int LuaApi::GetAccessCounters(lua_State *lua)
 	LuaCallHelper l(lua);
 	AccessCounterType counterType = (AccessCounterType)l.ReadInteger();
 	MemoryType memoryType = (MemoryType)l.ReadInteger();
-	errorCond(memoryType == MemoryType::Register, "Invalid memory type");
 	checkEnum(MemoryType, memoryType, "Invalid memory type");
 	checkEnum(AccessCounterType, counterType, "Invalid counter type");
 	checkparams();

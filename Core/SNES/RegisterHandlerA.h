@@ -13,7 +13,7 @@ private:
 	SnesControlManager *_controlManager;
 
 public:
-	RegisterHandlerA(SnesDmaController *dmaController, InternalRegisters *regs, SnesControlManager *controlManager) : IMemoryHandler(MemoryType::Register)
+	RegisterHandlerA(SnesDmaController *dmaController, InternalRegisters *regs, SnesControlManager *controlManager) : IMemoryHandler(MemoryType::SnesRegister)
 	{
 		_regs = regs;
 		_dmaController = dmaController;

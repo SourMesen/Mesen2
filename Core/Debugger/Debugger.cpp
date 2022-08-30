@@ -459,7 +459,7 @@ void Debugger::GetTokenList(CpuType cpuType, char* tokenList)
 
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
-	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::Register };
+	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::None };
 	if(useCache && _debuggers[(int)cpuType].Evaluator) {
 		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, resultType, operationInfo);
 	} else if(_debuggers[(int)cpuType].Debugger) {

@@ -281,7 +281,7 @@ void SnesDebugger::ProcessIdleCycle()
 AddressInfo SnesDebugger::GetAbsoluteAddress(uint32_t addr)
 {
 	if(IsRegister(addr)) {
-		return { (int32_t)(addr & 0xFFFF), MemoryType::Register };
+		return { (int32_t)(addr & 0xFFFF), MemoryType::SnesRegister };
 	} else {
 		return _memoryMappings->GetAbsoluteAddress(addr);
 	}

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "MemoryType.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 
 class CodeDataLogger;
 class Debugger;
@@ -10,7 +11,7 @@ class Disassembler;
 class CdlManager
 {
 private:
-	CodeDataLogger* _codeDataLoggers[(int)MemoryType::Register + 1] = {};
+	CodeDataLogger* _codeDataLoggers[DebugUtilities::GetMemoryTypeCount()] = {};
 	Debugger* _debugger = nullptr;
 	Disassembler* _disassembler = nullptr;
 

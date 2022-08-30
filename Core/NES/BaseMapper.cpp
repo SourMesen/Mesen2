@@ -973,8 +973,7 @@ AddressInfo BaseMapper::GetRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesPrgRom: ptrAddress = _prgRom; break;
 		case MemoryType::NesWorkRam: ptrAddress = _workRam; break;
 		case MemoryType::NesSaveRam: ptrAddress = _saveRam; break;
-		case MemoryType::Register: return { (addr.Address) & 0xFFFF, MemoryType::NesMemory };
-		case MemoryType::NesInternalRam: return { (addr.Address) & 0x1FFF, MemoryType::NesMemory };
+		case MemoryType::NesInternalRam: return { (addr.Address) & 0x7FF, MemoryType::NesMemory }; //todo mask (for e.g famicombox)
 		default: return { GetPpuRelativeAddress(addr), MemoryType::NesPpuMemory };
 	}
 	ptrAddress += addr.Address;
@@ -987,7 +986,7 @@ AddressInfo BaseMapper::GetRelativeAddress(AddressInfo& addr)
 	}
 
 	//Address is currently not mapped
-	return { -1, MemoryType::Register };
+	return { -1, MemoryType::None };
 }
 
 int32_t BaseMapper::GetPpuRelativeAddress(AddressInfo& addr)

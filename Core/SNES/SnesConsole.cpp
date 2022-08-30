@@ -378,12 +378,12 @@ bool SnesConsole::IsRunning()
 
 AddressInfo SnesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 {
-	static AddressInfo unmapped = { -1, MemoryType::Register };
+	static AddressInfo unmapped = { -1, MemoryType::None };
 
 	switch(relAddress.Type) {
 		case MemoryType::SnesMemory:
 			if(_memoryManager->IsRegister(relAddress.Address)) {
-				return { relAddress.Address & 0xFFFF, MemoryType::Register };
+				return { relAddress.Address & 0xFFFF, MemoryType::SnesRegister };
 			} else {
 				return _memoryManager->GetMemoryMappings()->GetAbsoluteAddress(relAddress.Address);
 			}
@@ -400,7 +400,7 @@ AddressInfo SnesConsole::GetAbsoluteAddress(AddressInfo& relAddress)
 
 AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType)
 {
-	static AddressInfo unmapped = { -1, MemoryType::Register };
+	static AddressInfo unmapped = { -1, MemoryType::None };
 
 	MemoryMappings* mappings = nullptr;
 	switch(cpuType) {
@@ -411,7 +411,7 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 		case CpuType::Gsu: mappings = _cart->GetGsu() ? _cart->GetGsu()->GetMemoryMappings() : nullptr; break;
 		case CpuType::Cx4: mappings = _cart->GetCx4() ? _cart->GetCx4()->GetMemoryMappings() : nullptr; break;
 		case CpuType::Gameboy: break;
-		default: return { -1, MemoryType::Register };
+		default: return unmapped;
 	}
 
 	switch(absAddress.Type) {
@@ -454,11 +454,11 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 		case MemoryType::DspProgramRom:
 			return { absAddress.Address, MemoryType::NecDspMemory };
 
-		case MemoryType::Register:
-			return { absAddress.Address & 0xFFFF, MemoryType::Register };
+		case MemoryType::SnesRegister:
+			return { absAddress.Address & 0xFFFF, MemoryType::SnesMemory };
 
 		default:
-			return { -1, MemoryType::Register };
+			return unmapped;
 	}
 }
 

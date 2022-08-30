@@ -130,7 +130,10 @@ namespace Mesen.Debugger.Utilities
 			DebugWorkspace dbgWorkspace = new();
 			if(File.Exists(path)) {
 				try {
-					dbgWorkspace = JsonSerializer.Deserialize<DebugWorkspace>(File.ReadAllText(path), JsonHelper.Options) ?? new DebugWorkspace();
+					string fileData = File.ReadAllText(path);
+					//TODO temporary patch to preserve data, to remove
+					fileData = fileData.Replace("\"MemoryType\": \"Register\"", "\"MemoryType\": \"SnesRegister\"");
+					dbgWorkspace = JsonSerializer.Deserialize<DebugWorkspace>(fileData, JsonHelper.Options) ?? new DebugWorkspace();
 				} catch {
 				}
 			}

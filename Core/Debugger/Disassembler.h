@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "DisassemblyInfo.h"
-#include "DebugTypes.h"
-#include "DebugUtilities.h"
+#include "Debugger/DisassemblyInfo.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 
 class IConsole;
 class Debugger;
@@ -31,7 +31,7 @@ private:
 	LabelManager* _labelManager;
 	MemoryDumper *_memoryDumper;
 
-	DisassemblerSource _sources[(int)MemoryType::Register + 1] = {};
+	DisassemblerSource _sources[DebugUtilities::GetMemoryTypeCount()] = {};
 	
 	void InitSource(MemoryType type);
 	DisassemblerSource& GetSource(MemoryType type);
