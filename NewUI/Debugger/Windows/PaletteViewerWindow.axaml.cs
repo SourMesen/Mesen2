@@ -91,6 +91,7 @@ namespace Mesen.Debugger.Windows
 
 		protected override void OnOpened(EventArgs e)
 		{
+			base.OnOpened(e);
 			if(Design.IsDesignMode) {
 				return;
 			}
