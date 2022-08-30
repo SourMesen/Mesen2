@@ -38,7 +38,7 @@ void DummyNesCpu::LogMemoryOperation(uint32_t addr, uint8_t value, MemoryOperati
 		addr,
 		(int32_t)value,
 		type,
-		MemoryType::SnesMemory
+		MemoryType::NesMemory
 	};
 	_memOpCounter++;
 }
