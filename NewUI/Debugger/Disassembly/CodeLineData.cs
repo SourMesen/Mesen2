@@ -53,7 +53,7 @@ namespace Mesen.Debugger
 			if(EffectiveAddress >= 0) {
 				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = CpuType.ToMemoryType() };
 				CodeLabel? label = LabelManager.GetLabel(relAddress);
-				if(label != null) {
+				if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
 					segmentType = CodeSegmentType.Label;
 					if(label.Length > 1) {
 						int gap = DebugApi.GetAbsoluteAddress(relAddress).Address - label.GetAbsoluteAddress().Address;
