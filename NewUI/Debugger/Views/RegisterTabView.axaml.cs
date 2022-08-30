@@ -12,6 +12,7 @@ using Mesen.Debugger.Utilities;
 using System.Collections.Generic;
 using AvaloniaEdit.Editing;
 using Mesen.Interop;
+using Mesen.Config;
 
 namespace Mesen.Debugger.Views
 {
@@ -26,8 +27,9 @@ namespace Mesen.Debugger.Views
 			DataBox dataBox = this.GetControl<DataBox>("lstRegisterTab");
 			DebugShortcutManager.CreateContextMenu(dataBox, new List<ContextMenuAction>() {
 				new ContextMenuAction() {
-					ActionType = ActionType.AddBreakpoint,
+					ActionType = ActionType.EditBreakpoint,
 					IsEnabled = () => Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry && entry.StartAddress >= 0,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.RegisterViewer_EditBreakpoint),
 					HintText = () => {
 						if(Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry && entry.StartAddress >= 0) {
 							string hint = $"${entry.StartAddress:X4}";
@@ -40,14 +42,20 @@ namespace Mesen.Debugger.Views
 					},
 					OnClick = async () => {
 						if(Model.CpuType.HasValue && Model.MemoryType.HasValue && Model.Selection.SelectedItem is RegEntry entry) {
-							Breakpoint bp = new Breakpoint() {
-								BreakOnRead = true,
-								BreakOnWrite = true,
-								CpuType = Model.CpuType.Value,
-								StartAddress = (uint)entry.StartAddress,
-								EndAddress = (uint)entry.EndAddress,
-								MemoryType = Model.MemoryType.Value
-							};
+							uint startAddress = (uint)entry.StartAddress;
+							uint endAddress = (uint)entry.EndAddress;
+
+							Breakpoint? bp = BreakpointManager.GetMatchingBreakpoint(startAddress, endAddress, Model.MemoryType.Value);
+							if(bp == null) {
+								bp = new Breakpoint() {
+									BreakOnRead = true,
+									BreakOnWrite = true,
+									CpuType = Model.CpuType.Value,
+									StartAddress = (uint)entry.StartAddress,
+									EndAddress = (uint)entry.EndAddress,
+									MemoryType = Model.MemoryType.Value
+								};
+							}
 
 							bool result = await BreakpointEditWindow.EditBreakpointAsync(bp, this);
 							if(result && DebugWindowManager.GetDebugWindow<DebuggerWindow>(x => x.CpuType == Model.CpuType) == null) {

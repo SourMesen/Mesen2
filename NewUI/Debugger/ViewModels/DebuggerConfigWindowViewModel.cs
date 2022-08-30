@@ -204,6 +204,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.TraceLogger_EditLabel,
 				DebuggerShortcut.TraceLogger_ViewInDebugger,
 				DebuggerShortcut.TraceLogger_ViewInMemoryViewer,
+
+				DebuggerShortcut.RegisterViewer_EditBreakpoint,
 			});
 
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {

@@ -270,6 +270,9 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_SaveScript, KeyBinding = new(KeyModifiers.Control, Key.S) });
 			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_RunScript, KeyBinding = new(Key.F5) });
 			Add(new() { Shortcut = DebuggerShortcut.ScriptWindow_StopScript, KeyBinding = new(Key.Escape) });
+
+			//Register viewer
+			Add(new() { Shortcut = DebuggerShortcut.RegisterViewer_EditBreakpoint, KeyBinding = new(Key.F2) });
 		}
 	}
 
@@ -435,6 +438,7 @@ namespace Mesen.Config
 		TraceLogger_EditLabel,
 		TraceLogger_ViewInDebugger,
 		TraceLogger_ViewInMemoryViewer,
+		RegisterViewer_EditBreakpoint,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase
