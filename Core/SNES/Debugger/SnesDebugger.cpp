@@ -134,7 +134,7 @@ void SnesDebugger::ProcessInstruction()
 	SnesCpuState& state = GetCpuState();
 	uint32_t pc = (state.K << 16) | state.PC;
 	AddressInfo addressInfo = GetAbsoluteAddress(pc);
-	uint8_t opCode = _memoryManager->Peek(pc);
+	uint8_t opCode = _memoryMappings->Peek(pc);
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, _cpuMemType);
 	InstructionProgress.LastMemOperation = operation;
 	InstructionProgress.StartCycle = state.CycleCount;
@@ -449,7 +449,7 @@ void SnesDebugger::SetProgramCounter(uint32_t addr)
 	GetCpuState().PC = (uint16_t)addr;
 	GetCpuState().K = (uint8_t)(addr >> 16);
 	
-	_prevOpCode = _memoryManager->Peek(addr);
+	_prevOpCode = _memoryMappings->Peek(addr);
 	_prevProgramCounter = addr;
 }
 
