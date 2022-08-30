@@ -67,6 +67,11 @@ namespace Mesen.Debugger.ViewModels
 				} else {
 					Selection.SelectedIndex = Breakpoints.Count - 1;
 				}
+			} else if(Breakpoints.Count > 0) {
+				//TODO - fixes databox refresh issue that causes invisible scrollbar to toggle
+				//on/off when adding an element to the list while no selection is active
+				Selection.SelectedIndex = 0;
+				Selection.SelectedIndex = -1;
 			}
 		}
 
