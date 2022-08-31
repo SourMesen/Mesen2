@@ -369,8 +369,6 @@ struct PceScsiBusState
 	uint8_t MessageData;
 	uint8_t DataPort;
 
-	bool DiscReading;
-	bool DataTransfer;
 	bool DataTransferDone;
 	uint32_t Sector;
 	uint8_t SectorsToRead;

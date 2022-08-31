@@ -43,13 +43,17 @@ enum class ScsiCommand
 class PceScsiBus : public ISerializable
 {
 private:
+	constexpr static int ReadBytesPerSecond = 153600; //75 frames/sectors of 2048 bytes per second, like audio
+
 	DiscInfo* _disc = nullptr;
 	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
 
 	PceScsiBusState _state = {};
 	bool _stateChanged = false;
-	uint64_t _readStartClock = 0;
+	
+	int64_t _readSectorCounter = 0;
+	int32_t _ackClearCounter = 0;
 
 	vector<uint8_t> _cmdBuffer;
 	deque<uint8_t> _dataBuffer;
@@ -84,6 +88,8 @@ private:
 	uint8_t GetCommandSize(ScsiCommand cmd);
 	void ExecCommand(ScsiCommand cmd);
 	void ProcessCommandPhase();
+	
+	int64_t GetSeekTime(uint32_t startLba, uint32_t targetLba);
 	void CmdRead();
 	
 	uint32_t GetAudioLbaPos();
@@ -102,7 +108,7 @@ public:
 	PceScsiBusState& GetState() { return _state; }
 
 	uint8_t GetStatus();
-	bool IsDataTransferInProgress() { return _state.DataTransfer; }
+	bool IsDataTransferInProgress() { return _readSectorCounter > 0 || _state.DataTransferDone; }
 	
 	void SetDataPort(uint8_t data);
 	uint8_t GetDataPort();
@@ -110,6 +116,9 @@ public:
 	bool CheckSignal(::ScsiSignal::ScsiSignal signal);
 	void SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val);
 
+	void SetAckWithAutoClear();
+
+	void UpdateState();
 	void Exec();
 
 	void Serialize(Serializer& s) override;

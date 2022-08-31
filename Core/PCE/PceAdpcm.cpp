@@ -141,8 +141,7 @@ void PceAdpcm::ProcessDmaRequest()
 	if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
 		_state.WriteClockCounter = 24;
 		_state.WriteBuffer = _scsi->GetDataPort();
-		_scsi->SetSignalValue(Ack, false);
-		_scsi->SetSignalValue(Req, false);
+		_scsi->SetAckWithAutoClear();
 	}
 
 	if(!_scsi->IsDataTransferInProgress()) {

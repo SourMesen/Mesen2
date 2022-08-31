@@ -29,7 +29,7 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 	_state.Phase = phase;
 	ClearSignals(Bsy, Cd, Io, Msg, Req);
 	
-	//LogDebug("[SCSI] Phase changed: " + HexUtilities::ToHex((int)phase));
+	//LogDebug("[SCSI] Phase changed: " + string(magic_enum::enum_name(phase)));
 
 	switch(_state.Phase) {
 		case ScsiPhase::BusFree: _cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferDone); break;
@@ -47,9 +47,8 @@ void PceScsiBus::Reset()
 	ClearSignals(Ack, Atn, Cd, Io, Msg, Req);
 	_state.Phase = ScsiPhase::BusFree;
 	_state.DataPort = 0;
-	_state.DiscReading = false;
-	_state.DataTransfer = false;
 	_state.DataTransferDone = false;
+	_readSectorCounter = 0;
 	_cmdBuffer.clear();
 	_dataBuffer.clear();
 	_cdrom->GetAudioPlayer().Stop();
@@ -100,11 +99,10 @@ void PceScsiBus::ProcessDataInPhase()
 		} else {
 			_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
 			if(_state.DataTransferDone) {
-				_state.DataTransfer = false;
 				_state.DataTransferDone = false;
 				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+				SetStatusMessage(ScsiStatus::Good, 0);
 			}
-			SetStatusMessage(ScsiStatus::Good, 0);
 		}
 	}
 }
@@ -165,18 +163,30 @@ void PceScsiBus::ProcessCommandPhase()
 	}
 }
 
+int64_t PceScsiBus::GetSeekTime(uint32_t startLba, uint32_t targetLba)
+{
+	//This should yield the same seek times as the code in ares?
+	int gap = std::abs((int)startLba - (int)targetLba);
+	int frameCount = 17 + std::pow(std::sqrt(gap), 0.99) * 0.3;
+	return _console->GetMasterClockRate() * frameCount / 75;
+}
+
 void PceScsiBus::CmdRead()
 {
 	uint32_t sector = _cmdBuffer[3] | (_cmdBuffer[2] << 8) | ((_cmdBuffer[1] & 0x1F) << 16);
 	uint8_t sectorsToRead = _cmdBuffer[4];
 
-	_state.DiscReading = true;
-	_state.DataTransfer = true;
+	if(sectorsToRead == 0) {
+		SetStatusMessage(ScsiStatus::Good, 0);
+		return;
+	}
+
+	_readSectorCounter = GetSeekTime(_state.Sector, sector);
 	_state.Sector = sector;
 	_state.SectorsToRead = sectorsToRead;
-	_readStartClock = _console->GetMasterClock();
+
 	_cdrom->GetAudioPlayer().Stop();
-	LogDebug("[SCSI] Read sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead));
+	LogDebug("[SCSI] Read sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1));
 }
 
 uint32_t PceScsiBus::GetAudioLbaPos()
@@ -274,6 +284,7 @@ void PceScsiBus::CmdReadSubCodeQ()
 	_dataBuffer.push_back(CdReader::ToBcd(absPos.Seconds));
 	_dataBuffer.push_back(CdReader::ToBcd(absPos.Frames));
 
+	_state.DataTransferDone = true;
 	SetPhase(ScsiPhase::DataIn);
 }
 
@@ -286,6 +297,7 @@ void PceScsiBus::CmdReadToc()
 			_dataBuffer.clear();
 			_dataBuffer.push_back(1);
 			_dataBuffer.push_back(CdReader::ToBcd((uint8_t)_disc->Tracks.size()));
+			_state.DataTransferDone = true;
 			SetPhase(ScsiPhase::DataIn);
 			break;
 
@@ -295,6 +307,7 @@ void PceScsiBus::CmdReadToc()
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Minutes));
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Seconds));
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Frames));
+			_state.DataTransferDone = true;
 			SetPhase(ScsiPhase::DataIn);
 			break;
 		}
@@ -322,6 +335,7 @@ void PceScsiBus::CmdReadToc()
 				_dataBuffer.push_back(4);
 			}
 
+			_state.DataTransferDone = true;
 			SetPhase(ScsiPhase::DataIn);
 			break;
 		}
@@ -334,22 +348,42 @@ void PceScsiBus::CmdReadToc()
 
 void PceScsiBus::ProcessDiscRead()
 {
-	if(_state.DiscReading && _dataBuffer.empty() && _console->GetMasterClock() - _readStartClock > 175000) {
-		//read disc data
-		_dataBuffer.clear();
-		_disc->ReadDataSector(_state.Sector, _dataBuffer);
+	if(_readSectorCounter > 0) {
+		_readSectorCounter -= 3;
 
-		_state.Sector = (_state.Sector + 1) & 0x1FFFFF;
-		_state.SectorsToRead--;
+		if(_readSectorCounter <= 0) {
+			if(_dataBuffer.empty()) {
+				//read disc data
+				_dataBuffer.clear();
+				_disc->ReadDataSector(_state.Sector, _dataBuffer);
 
-		_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
+				LogDebug("[SCSI] Sector #" + std::to_string(_state.Sector) + " finished reading.");
 
-		if(_state.SectorsToRead == 0) {
-			_state.DiscReading = false;
-			_state.DataTransferDone = true;
+				_state.Sector = (_state.Sector + 1) & 0x1FFFFF;
+				_state.SectorsToRead--;
+
+				//Mark state as changed because this will cause the Req signal
+				//to be set on the next run of ProcessDataInPhase()
+				//Otherwise bios code will wait on Req in an infinite loop
+				_stateChanged = true;
+
+				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
+
+				if(_state.SectorsToRead == 0) {
+					_state.DataTransferDone = true;
+					_readSectorCounter = 0;
+					LogDebug("[SCSI] Read operation done");
+				} else {
+					_state.DataTransferDone = false;
+					_readSectorCounter = (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
+				}
+
+				SetPhase(ScsiPhase::DataIn);
+			} else {
+				LogDebug("[SCSI] Read sector done but buffer not empty, delay");
+				_readSectorCounter = (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
+			}
 		}
-
-		SetPhase(ScsiPhase::DataIn);
 	}
 }
 
@@ -389,10 +423,16 @@ void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 	}
 }
 
-void PceScsiBus::Exec()
+void PceScsiBus::SetAckWithAutoClear()
 {
-	ProcessDiscRead();
+	//Set the Ack signal for 60 master clocks (and then clear it again)
+	//Used after manually reading a byte of data (or after ADPCM DMA reads one)
+	SetSignals(Ack);
+	_ackClearCounter = 20*3;
+}
 
+void PceScsiBus::UpdateState()
+{
 	if(!_stateChanged) {
 		return;
 	}
@@ -419,8 +459,25 @@ void PceScsiBus::Exec()
 				case ScsiPhase::Status: ProcessStatusPhase(); break;
 			}
 		}
-
 	} while(_stateChanged);
+}
+
+void PceScsiBus::Exec()
+{
+	if(_ackClearCounter > 0) {
+		_ackClearCounter -= 3;
+		if(_ackClearCounter == 0) {
+			SetSignalValue(Ack, false);
+		}
+	}
+
+	if(_readSectorCounter > 0) {
+		ProcessDiscRead();
+	}
+
+	if(_stateChanged) {
+		UpdateState();
+	}
 }
 
 void PceScsiBus::Serialize(Serializer& s)
@@ -434,14 +491,13 @@ void PceScsiBus::Serialize(Serializer& s)
 	SV(_state.MessageDone);
 	SV(_state.MessageData);
 	SV(_state.DataPort);
-	SV(_state.DiscReading);
-	SV(_state.DataTransfer);
 	SV(_state.DataTransferDone);
 	SV(_state.Sector);
 	SV(_state.SectorsToRead);
 	
 	SV(_stateChanged);
-	SV(_readStartClock);
+	SV(_readSectorCounter);
+	SV(_ackClearCounter);
 	SV(_cmdBuffer);
 
 	if(s.IsSaving()) {

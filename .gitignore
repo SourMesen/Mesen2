@@ -168,6 +168,7 @@ $RECYCLE.BIN/
 *.trt
 *.rar
 *.pce
+PGOHelper/PGOGames/*
 
 *.VC.opendb
 *.VC.db

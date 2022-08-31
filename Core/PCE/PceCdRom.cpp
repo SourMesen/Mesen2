@@ -66,19 +66,19 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 	switch(addr & 0x3FF) {
 		case 0x00: //SCSI Control
 			_scsi.SetSignalValue(Sel, true);
-			_scsi.Exec();
+			_scsi.UpdateState();
 			_scsi.SetSignalValue(Sel, false);
-			_scsi.Exec();
+			_scsi.UpdateState();
 			break;
 
 		case 0x01: //CDC/SCSI Command
 			_scsi.SetDataPort(value);
-			_scsi.Exec();
+			_scsi.UpdateState();
 			break;
 
 		case 0x02: //ACK
 			_scsi.SetSignalValue(Ack, (value & 0x80) != 0);
-			_scsi.Exec();
+			_scsi.UpdateState();
 
 			_state.EnabledIrqs = value & 0x7C;
 			UpdateIrqState();
@@ -90,7 +90,7 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			//Reset
 			bool reset = (value & 0x02) != 0;
 			_scsi.SetSignalValue(Rst, reset);
-			_scsi.Exec();
+			_scsi.UpdateState();
 			if(reset) {
 				//Clear enabled IRQs flags for SCSI drive (SubChannel + DataTransferDone + DataTransferReady)
 				_state.EnabledIrqs &= 0x8F;
@@ -144,9 +144,8 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x08: {
 			uint8_t val = _scsi.GetDataPort();
 			if(_scsi.CheckSignal(Req) && _scsi.CheckSignal(Io) && !_scsi.CheckSignal(Cd)) {
-				_scsi.SetSignalValue(Ack, false);
-				_scsi.SetSignalValue(Req, false);
-				_scsi.Exec();
+				_scsi.SetAckWithAutoClear();
+				_scsi.UpdateState();
 			}
 			return val;
 		}
