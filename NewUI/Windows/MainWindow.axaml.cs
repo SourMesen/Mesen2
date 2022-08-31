@@ -233,6 +233,7 @@ namespace Mesen.Windows
 					GameConfig.LoadGameConfig(romInfo).ApplyConfig();
 
 					Dispatcher.UIThread.Post(() => {
+						ProcessResolutionChange();
 						_model.RecentGames.Visible = false;
 						_model.RomInfo = romInfo;
 					});
@@ -258,10 +259,7 @@ namespace Mesen.Windows
 
 				case ConsoleNotificationType.ResolutionChanged:
 					Dispatcher.UIThread.Post(() => {
-						double dpiScale = LayoutHelper.GetLayoutScale(this);
-						double scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
-						SetScale(scale);
-						_baseScreenSize = EmuApi.GetBaseScreenSize();
+						ProcessResolutionChange();
 					});
 					break;
 
@@ -293,6 +291,14 @@ namespace Mesen.Windows
 		private void InitializeComponent()
 		{
 			AvaloniaXamlLoader.Load(this);
+		}
+
+		private void ProcessResolutionChange()
+		{
+			double dpiScale = LayoutHelper.GetLayoutScale(this);
+			double scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
+			SetScale(scale);
+			_baseScreenSize = EmuApi.GetBaseScreenSize();
 		}
 
 		public void SetScale(double scale)
