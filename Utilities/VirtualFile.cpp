@@ -174,17 +174,28 @@ size_t VirtualFile::GetSize()
 	if(_data.size() > 0) {
 		return _data.size();
 	} else {
-		if(IsArchive()) {
+		if(_fileSize >= 0) {
+			return _fileSize;
+		} else if(IsArchive()) {
 			LoadFile();
 			return _data.size();
 		} else {
 			ifstream input(_path, std::ios::in | std::ios::binary);
 			if(input) {
 				input.seekg(0, std::ios::end);
-				return (uint32_t)input.tellg();
+				_fileSize = (int64_t)input.tellg();
+				return _fileSize;
 			}
 		}
 		return 0;
+	}
+}
+
+void VirtualFile::InitChunks()
+{
+	if(!_useChunks) {
+		_useChunks = true;
+		_chunks.resize(GetSize() / VirtualFile::ChunkSize + 1);
 	}
 }
 
@@ -221,8 +232,22 @@ bool VirtualFile::ReadFile(uint8_t* out, uint32_t expectedSize)
 
 uint8_t VirtualFile::ReadByte(uint32_t offset)
 {
-	LoadFile();
-	return _data[offset];
+	InitChunks();
+	if(offset < 0 || offset > GetSize()) {
+		//Out of bounds
+		return 0;
+	}
+
+	uint32_t chunkId = offset / VirtualFile::ChunkSize;
+	uint32_t chunkStart = chunkId * VirtualFile::ChunkSize;
+	if(_chunks[chunkId].size() == 0) {
+		ifstream input(_path, std::ios::in | std::ios::binary);
+		input.seekg(chunkStart, std::ios::beg);
+
+		_chunks[chunkId].resize(VirtualFile::ChunkSize);
+		input.read((char*)_chunks[chunkId].data(), VirtualFile::ChunkSize);
+	}
+	return _chunks[chunkId][offset - chunkStart];
 }
 
 bool VirtualFile::ApplyPatch(VirtualFile& patch)

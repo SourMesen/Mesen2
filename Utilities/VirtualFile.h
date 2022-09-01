@@ -5,10 +5,16 @@
 class VirtualFile
 {
 private:
+	constexpr static int ChunkSize = 256 * 1024;
+
 	string _path = "";
 	string _innerFile = "";
 	int32_t _innerFileIndex = -1;
 	vector<uint8_t> _data;
+	int64_t _fileSize = -1;
+
+	vector<vector<uint8_t>> _chunks;
+	bool _useChunks = false;
 
 	void FromStream(std::istream &input, vector<uint8_t> &output);
 
@@ -35,6 +41,7 @@ public:
 	uint32_t GetCrc32();
 
 	size_t GetSize();
+	void InitChunks();
 
 	bool ReadFile(vector<uint8_t> &out);
 	bool ReadFile(std::stringstream &out);
@@ -47,15 +54,16 @@ public:
 	template<typename T>
 	bool ReadChunk(T& container, int start, int length)
 	{
-		LoadFile();
-
-		if(start < 0 || start >= _data.size()) {
-			return false;
-		} else if(start + length > _data.size()) {
+		InitChunks();
+		if(start < 0 || start + length > GetSize()) {
+			//Out of bounds
 			return false;
 		}
 
-		container.insert(container.end(), _data.begin() + start, _data.begin() + start + length);
+		for(int i = start, end = start + length; i < end; i++) {
+			container.push_back(ReadByte(i));
+		}
+
 		return true;
 	}
 };
