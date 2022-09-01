@@ -747,14 +747,10 @@ void PceVdc::ProcessEndOfVisibleFrame()
 	_needVertBlankIrq = false;
 }
 
-uint8_t PceVdc::GetTilePixelColor(const uint16_t chrData[2], const uint8_t shift)
+uint8_t PceVdc::GetTilePixelColor(const uint16_t chr0, const uint16_t chr1, const uint8_t shift)
 {
-	return (
-		((chrData[0] >> shift) & 0x01) |
-		((chrData[0] >> (7 + shift)) & 0x02) |
-		(((chrData[1] >> shift) & 0x01) << 2) |
-		(((chrData[1] >> (7 + shift)) & 0x02) << 2)
-	);
+	uint16_t color = ((chr0 >> shift) & 0x101) | (((chr1 >> shift) & 0x101) << 2);
+	return (uint8_t)(color | ((color & 0x500) >> 7));
 }
 
 uint8_t PceVdc::GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift)
@@ -797,7 +793,7 @@ void PceVdc::DrawScanline()
 			if(bgEnabled) {
 				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
 				uint16_t column = screenX >> 3;
-				bgColor = GetTilePixelColor(_tiles[column].TileData, 7 - (screenX & 0x07));
+				bgColor = GetTilePixelColor(_tiles[column].TileData[0], _tiles[column].TileData[1], 7 - (screenX & 0x07));
 				if(bgColor != 0) {
 					outColor = _vce->GetPalette(_tiles[column].Palette * 16 + bgColor);
 				}
