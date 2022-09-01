@@ -50,6 +50,7 @@ public:
 	__forceinline void ExecSuperGrafx() { _vdc2->Exec(); _vdc1->Exec(); }
 
 	void DrawScanline();
+	void ProcessStartFrame();
 	void ProcessScanlineStart(PceVdc* vdc, uint16_t scanline);
 	void ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer);
 	void SendFrame(PceVdc* vdc);

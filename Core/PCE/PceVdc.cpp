@@ -694,6 +694,7 @@ void PceVdc::ProcessEndOfScanline()
 		_state.SpritesEnabled = _state.NextSpritesEnabled;
 
 		if(!_isVdc2) {
+			_vpc->ProcessStartFrame();
 			_emu->ProcessEvent(EventType::StartFrame);
 		}
 	}

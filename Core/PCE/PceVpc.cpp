@@ -142,6 +142,25 @@ void PceVpc::DrawScanline()
 	_vdc1->DrawScanline();
 }
 
+void PceVpc::ProcessStartFrame()
+{
+	if(!_skipRender) {
+		_frameSkipTimer.Reset();
+	}
+
+	if(_emu->IsRunAheadFrame()) {
+		_skipRender = true;
+	} else {
+		_skipRender = (
+			!_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping &&
+			!_emu->GetRewindManager()->IsRewinding() &&
+			!_emu->GetVideoRenderer()->IsRecording() &&
+			(_emu->GetSettings()->GetEmulationSpeed() == 0 || _emu->GetSettings()->GetEmulationSpeed() > 150) &&
+			_frameSkipTimer.GetElapsedMS() < 10
+		);
+	}
+}
+
 void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 {
 	if(vdc == _vdc2 || _skipRender) {
@@ -247,22 +266,6 @@ void PceVpc::SendFrame(PceVdc* vdc)
 
 	_console->GetControlManager()->UpdateInputState();
 	_console->GetControlManager()->UpdateControlDevices();
-
-	if(!_skipRender) {
-		_frameSkipTimer.Reset();
-	}
-
-	_skipRender = (
-		!_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping &&
-		!_emu->GetRewindManager()->IsRewinding() &&
-		!_emu->GetVideoRenderer()->IsRecording() &&
-		(_emu->GetSettings()->GetEmulationSpeed() == 0 || _emu->GetSettings()->GetEmulationSpeed() > 150) &&
-		_frameSkipTimer.GetElapsedMS() < 10
-	);
-
-	if(_emu->IsRunAheadFrame()) {
-		_skipRender = true;
-	}
 }
 
 void PceVpc::DebugSendFrame()
