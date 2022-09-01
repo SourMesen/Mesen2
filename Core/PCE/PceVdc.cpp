@@ -509,7 +509,7 @@ void PceVdc::LoadSpriteTiles()
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
-			memset(_xPosHasSprite + spr.X, 1, 16);
+			memset(_xPosHasSprite + spr.X + 32, 1, 16);
 			uint16_t addr = spr.TileAddress;
 			spr.TileData[0] = ReadVram(addr);
 			spr.TileData[1] = ReadVram(addr + 16);
@@ -524,7 +524,7 @@ void PceVdc::LoadSpriteTiles()
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
-			memset(_xPosHasSprite + spr.X, 1, 16);
+			memset(_xPosHasSprite + spr.X + 32, 1, 16);
 			//Load SP0/SP1 or SP2/SP3 based on flag
 			uint16_t addr = spr.TileAddress + (spr.LoadSp23 ? 32 : 0);
 			spr.TileData[0] = ReadVram(addr);
@@ -816,7 +816,7 @@ void PceVdc::InternalDrawScanline()
 			}
 
 			if constexpr(hasSprites) {
-				if(_state.SpritesEnabled && _xPosHasSprite[_screenOffsetX]) {
+				if(_state.SpritesEnabled && _xPosHasSprite[_screenOffsetX + 32]) {
 					uint8_t sprColor;
 					bool checkSprite0Hit = false;
 					for(uint16_t i = 0; i < _totalSpriteCount; i++) {
