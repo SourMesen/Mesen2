@@ -186,6 +186,7 @@
 			<Control ID="mnuPresetMonochrome">Monochrome</Control>
 
 			<Control ID="tpgAdvanced">Advanced</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
 		</Form>
 		<Form ID="EmulationConfigView">
@@ -252,7 +253,6 @@
 			<Control ID="chkHideBgLayer3">Hide background layer 3</Control>
 			<Control ID="chkHideBgLayer4">Hide background layer 4</Control>
 			<Control ID="chkHideSprites">Hide sprites</Control>
-			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 			<Control ID="lblOverscan">Overscan</Control>
 		</Form>
 		<Form ID="NesConfigView">

@@ -486,7 +486,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			_emu->ProcessEvent(EventType::StartFrame);
 
 			_skipRender = (
-				!_settings->GetSnesConfig().DisableFrameSkipping &&
+				!_settings->GetVideoConfig().DisableFrameSkipping &&
 				!_emu->GetRewindManager()->IsRewinding() &&
 				!_emu->GetVideoRenderer()->IsRecording() &&
 				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&

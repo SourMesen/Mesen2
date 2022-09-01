@@ -377,6 +377,7 @@ void PceVdc::ProcessSpriteEvaluation()
 	_evalLastCycle = end;
 }
 
+template<bool skipRender>
 void PceVdc::LoadBackgroundTiles()
 {
 	if(_state.HClock < _loadBgStart || _state.BurstModeEnabled) {
@@ -397,14 +398,18 @@ void PceVdc::LoadBackgroundTiles()
 
 	if(_state.VramAccessMode == 0) {
 		for(uint16_t i = _loadBgLastCycle; i < end; i++) {
-			switch(i & 0x07) {
-				//CPU can access VRAM
-				case 0: case 2: case 4: case 6: _allowVramAccess = true; break;
+			if constexpr(skipRender) {
+				_allowVramAccess = (i & 0x01) == 0;
+			} else {
+				switch(i & 0x07) {
+					//CPU can access VRAM
+					case 0: case 2: case 4: case 6: _allowVramAccess = true; break;
 
-				case 1: LoadBatEntry(scrollOffset, columnMask, row); break;
-				case 3: _allowVramAccess = false; break; //Unused BAT read?
-				case 5: LoadTileDataCg0(row); break;
-				case 7: LoadTileDataCg1(row); break;
+					case 1: LoadBatEntry(scrollOffset, columnMask, row); break;
+					case 3: _allowVramAccess = false; break; //Unused BAT read?
+					case 5: LoadTileDataCg0(row); break;
+					case 7: LoadTileDataCg1(row); break;
+				}
 			}
 		}
 	} else if(_state.VramAccessMode == 3) {
@@ -773,20 +778,30 @@ void PceVdc::DrawScanline()
 	}
 
 	ProcessSpriteEvaluation();
-	LoadBackgroundTiles();
+
+	bool skipRender = _vpc->IsSkipRenderEnabled();
+	if(skipRender) {
+		LoadBackgroundTiles<true>();
+	} else {
+		LoadBackgroundTiles<false>();
+	}
 
 	if(_totalSpriteCount > 0) {
 		if(_rowHasSprite0) {
-			InternalDrawScanline<true, true>();
-		} else {
-			InternalDrawScanline<true, false>();
+			if(skipRender) {
+				InternalDrawScanline<true, true, true>();
+			} else {
+				InternalDrawScanline<true, true, false>();
+			}
+		} else if(!skipRender) {
+			InternalDrawScanline<true, false, false>();
 		}
-	} else {
-		InternalDrawScanline<false, false>();
+	} else if(!skipRender) {
+		InternalDrawScanline<false, false, false>();
 	}
 }
 
-template<bool hasSprites, bool hasSprite0>
+template<bool hasSprites, bool hasSprite0, bool skipRender>
 void PceVdc::InternalDrawScanline()
 {
 	uint16_t* out = _rowBuffer;
@@ -803,15 +818,19 @@ void PceVdc::InternalDrawScanline()
 		bool sprEnabled = _state.SpritesEnabled && !(_isVdc2 ? cfg.DisableSpritesVdc2 : cfg.DisableSprites);
 		uint16_t grayscaleBit = _vce->IsGrayscale() ? 0x200 : 0;
 
+		uint16_t outColor = 0;
+		uint8_t bgColor = 0;
 		for(; xStart < xMax; xStart++) {
-			uint8_t bgColor = 0;
-			uint16_t outColor = PceVpc::TransparentPixelFlag | _vce->GetPalette(0);
-			if(bgEnabled) {
-				uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
-				uint16_t column = screenX >> 3;
-				bgColor = GetTilePixelColor(_tiles[column].TileData[0], _tiles[column].TileData[1], 7 - (screenX & 0x07));
-				if(bgColor != 0) {
-					outColor = _vce->GetPalette(_tiles[column].Palette * 16 + bgColor);
+			if constexpr(!skipRender) {
+				outColor = PceVpc::TransparentPixelFlag | _vce->GetPalette(0);
+				bgColor = 0;
+				if(bgEnabled) {
+					uint16_t screenX = (_state.HvLatch.BgScrollX & 0x07) + _screenOffsetX;
+					uint16_t column = screenX >> 3;
+					bgColor = GetTilePixelColor(_tiles[column].TileData[0], _tiles[column].TileData[1], 7 - (screenX & 0x07));
+					if(bgColor != 0) {
+						outColor = _vce->GetPalette(_tiles[column].Palette * 16 + bgColor);
+					}
 				}
 			}
 
@@ -859,20 +878,26 @@ void PceVdc::InternalDrawScanline()
 				}
 			}
 
-			out[xStart] = outColor | grayscaleBit;
+			if constexpr(!skipRender) {
+				out[xStart] = outColor | grayscaleBit;
+			}
 			_screenOffsetX++;
 		}
 	} else if(inPicture) {
-		uint16_t color = _vce->GetPalette(0);
-		for(; xStart < xMax; xStart++) {
-			//In picture, but BG is not enabled, draw bg color
-			out[xStart] = color;
+		if constexpr(!skipRender) {
+			uint16_t color = _vce->GetPalette(0);
+			for(; xStart < xMax; xStart++) {
+				//In picture, but BG is not enabled, draw bg color
+				out[xStart] = color;
+			}
 		}
 	} else {
-		uint16_t color = _vce->GetPalette(16 * 16);
-		for(; xStart < xMax; xStart++) {
-			//Output hasn't started yet, display overscan color
-			out[xStart] = color;
+		if constexpr(!skipRender) {
+			uint16_t color = _vce->GetPalette(16 * 16);
+			for(; xStart < xMax; xStart++) {
+				//Output hasn't started yet, display overscan color
+				out[xStart] = color;
+			}
 		}
 	}
 

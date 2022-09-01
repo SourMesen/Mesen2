@@ -108,7 +108,6 @@
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer3}" Text="{l:Translate chkHideBgLayer3}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideBgLayer4}" Text="{l:Translate chkHideBgLayer4}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.HideSprites}" Text="{l:Translate chkHideSprites}" />
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 
 					<c:OptionSection Header="{l:Translate lblOverscan}">
 						<c:OverscanInput Overscan="{CompiledBinding Config.Overscan}" />

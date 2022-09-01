@@ -27,6 +27,9 @@ private:
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;
 
+	Timer _frameSkipTimer;
+	bool _skipRender = false;
+
 	PceVpcState _state = {};
 
 	void SetPriorityConfig(PceVpcPixelWindow wnd, uint8_t value);
@@ -55,6 +58,8 @@ public:
 
 	void SetIrq(PceVdc* vdc);
 	void ClearIrq(PceVdc* vdc);
+	
+	bool IsSkipRenderEnabled() { return _skipRender; }
 
 	PceVpcState GetState() { return _state; }
 

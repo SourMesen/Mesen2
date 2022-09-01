@@ -108,6 +108,7 @@ struct VideoConfig
 	uint32_t FullscreenResHeight = 0;
 
 	uint32_t ScreenRotation = 0;
+	bool DisableFrameSkipping = false;
 };
 
 struct AudioConfig
@@ -454,7 +455,6 @@ struct SnesConfig
 	bool HideBgLayer3 = false;
 	bool HideBgLayer4 = false;
 	bool HideSprites = false;
-	bool DisableFrameSkipping = false;
 
 	OverscanDimensions Overscan = {};
 

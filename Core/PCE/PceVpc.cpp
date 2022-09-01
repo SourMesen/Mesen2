@@ -8,6 +8,7 @@
 #include "PCE/PceConsole.h"
 #include "Shared/RewindManager.h"
 #include "Shared/Video/VideoDecoder.h"
+#include "Shared/Video/VideoRenderer.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/Serializer.h"
 #include "EventType.h"
@@ -143,7 +144,7 @@ void PceVpc::DrawScanline()
 
 void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 {
-	if(vdc == _vdc2) {
+	if(vdc == _vdc2 || _skipRender) {
 		return;
 	}
 
@@ -160,7 +161,7 @@ void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 
 void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer)
 {
-	if(vdc == _vdc2) {
+	if(vdc == _vdc2 || _skipRender) {
 		return;
 	}
 
@@ -236,14 +237,32 @@ void PceVpc::SendFrame(PceVdc* vdc)
 
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
-	RenderedFrame frame(_currentOutBuffer, PceConstants::InternalOutputWidth, PceConstants::InternalOutputHeight, 1.0 / PceConstants::InternalResMultipler, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
-	_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
+	if(!_skipRender) {
+		RenderedFrame frame(_currentOutBuffer, PceConstants::InternalOutputWidth, PceConstants::InternalOutputHeight, 1.0 / PceConstants::InternalResMultipler, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
+		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
+	}
 
 	_console->GetPsg()->Run();
 	_emu->ProcessEndOfFrame();
 
 	_console->GetControlManager()->UpdateInputState();
 	_console->GetControlManager()->UpdateControlDevices();
+
+	if(!_skipRender) {
+		_frameSkipTimer.Reset();
+	}
+
+	_skipRender = (
+		!_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping &&
+		!_emu->GetRewindManager()->IsRewinding() &&
+		!_emu->GetVideoRenderer()->IsRecording() &&
+		(_emu->GetSettings()->GetEmulationSpeed() == 0 || _emu->GetSettings()->GetEmulationSpeed() > 150) &&
+		_frameSkipTimer.GetElapsedMS() < 10
+	);
+
+	if(_emu->IsRunAheadFrame()) {
+		_skipRender = true;
+	}
 }
 
 void PceVpc::DebugSendFrame()

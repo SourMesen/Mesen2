@@ -159,7 +159,9 @@ private:
 	__forceinline void ProcessSpriteEvaluation();
 	__noinline void LoadSpriteTiles();
 	
+	template<bool skipRender>
 	__forceinline void LoadBackgroundTiles();
+
 	__noinline void LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	__noinline void LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	
@@ -172,7 +174,7 @@ private:
 	void WaitForVramAccess();
 	bool IsVramAccessBlocked();
 	
-	template<bool hasSprites, bool hasSprite0> __forceinline void InternalDrawScanline();
+	template<bool hasSprites, bool hasSprite0, bool skipRender> __forceinline void InternalDrawScanline();
 
 public:
 	PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2);
