@@ -111,6 +111,7 @@ private:
 	MemoryType _vramType = MemoryType::PceVideoRam;
 	MemoryType _spriteRamType = MemoryType::PceSpriteRam;
 
+	bool _xPosHasSprite[1024 + 16] = {};
 	uint8_t _drawSpriteCount = 0;
 	uint8_t _totalSpriteCount = 0;
 	bool _rowHasSprite0 = false;

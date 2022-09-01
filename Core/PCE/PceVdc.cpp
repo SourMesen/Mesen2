@@ -494,6 +494,7 @@ void PceVdc::LoadSpriteTiles()
 	bool removeSpriteLimit = _emu->GetSettings()->GetPcEngineConfig().RemoveSpriteLimit;
 	uint16_t clockCount = _loadSpriteStart > _loadBgStart ? (PceConstants::ClockPerScanline - _loadSpriteStart) + _loadBgStart : (_loadBgStart - _loadSpriteStart);
 	bool hasSprite0 = false;
+	memset(_xPosHasSprite, 0, sizeof(_xPosHasSprite));
 	if(_state.SpriteAccessMode != 1) {
 		//Modes 0/2/3 load 4 words over 4, 8 or 16 VDC clocks
 		uint16_t clocksPerSprite;
@@ -508,6 +509,7 @@ void PceVdc::LoadSpriteTiles()
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
+			memset(_xPosHasSprite + spr.X, 1, 16);
 			uint16_t addr = spr.TileAddress;
 			spr.TileData[0] = ReadVram(addr);
 			spr.TileData[1] = ReadVram(addr + 16);
@@ -522,7 +524,7 @@ void PceVdc::LoadSpriteTiles()
 		for(int i = 0; i < _totalSpriteCount; i++) {
 			PceSpriteInfo& spr = _drawSprites[i];
 			spr = _sprites[i];
-			
+			memset(_xPosHasSprite + spr.X, 1, 16);
 			//Load SP0/SP1 or SP2/SP3 based on flag
 			uint16_t addr = spr.TileAddress + (spr.LoadSp23 ? 32 : 0);
 			spr.TileData[0] = ReadVram(addr);
@@ -534,7 +536,7 @@ void PceVdc::LoadSpriteTiles()
 	}
 
 	if(hasSprite0 && _drawSpriteCount > 1) {
-		//Force VDC emulation to run on each CPU cycle, to ensure any sprite 0 hit IRQ is triggerd at the correct time
+		//Force VDC emulation to run on each CPU cycle, to ensure any sprite 0 hit IRQ is triggered at the correct time
 		_rowHasSprite0 = true;
 	}
 }
@@ -799,7 +801,7 @@ void PceVdc::DrawScanline()
 				}
 			}
 
-			if(_state.SpritesEnabled) {
+			if(_state.SpritesEnabled && _xPosHasSprite[_screenOffsetX]) {
 				uint8_t sprColor;
 				bool checkSprite0Hit = false;
 				for(uint16_t i = 0; i < _totalSpriteCount; i++) {
@@ -1233,6 +1235,8 @@ void PceVdc::Serialize(Serializer& s)
 		SV(_totalSpriteCount);
 		SV(_rowHasSprite0);
 		SV(_loadSpriteStart);
+
+		SVArray(_xPosHasSprite, sizeof(_xPosHasSprite));
 
 		for(int i = 0; i < _spriteCount; i++) {
 			SVI(_sprites[i].X);
