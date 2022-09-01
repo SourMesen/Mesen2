@@ -253,7 +253,7 @@ namespace Mesen.Debugger.ViewModels
 			ConfigPresets = GetConfigPresets();
 			ConfigPresetRows = new(ConfigPresetRows); //Force UI update
 
-			if(AvailableFormats.Contains(Config.Format)) {
+			if(!AvailableFormats.Contains(Config.Format)) {
 				Config.Format = (TileFormat)AvailableFormats[0];
 			}
 			ShowFormatDropdown = AvailableFormats.Length > 1;
