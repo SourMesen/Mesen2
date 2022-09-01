@@ -257,18 +257,52 @@ extern "C" {
 	DllExport void __stdcall LoadRecentGame(char* filepath, bool resetGame) { _emu->GetSaveStateManager()->LoadRecentGame(filepath, resetGame); }
 	DllExport int32_t __stdcall GetSaveStatePreview(char* saveStatePath, uint8_t* pngData) { return _emu->GetSaveStateManager()->GetSaveStatePreview(saveStatePath, pngData); }
 
+	class PgoKeyManager : public IKeyManager
+	{
+	public:
+		void RefreshState() {}
+		void UpdateDevices() {}
+		bool IsMouseButtonPressed(MouseButton button) { return false; }
+		bool IsKeyPressed(uint16_t keyCode) { return keyCode == 10 && (_emu->GetFrameCount() % 7) <= 3; }
+
+		vector<uint16_t> GetPressedKeys() { return {}; }
+		string GetKeyName(uint16_t keyCode) { return ""; }
+		uint16_t GetKeyCode(string keyName) { return 0; }
+
+		void SetKeyState(uint16_t scanCode, bool state) {}
+		void ResetKeyState() {}
+		void SetDisabled(bool disabled) {}
+	};
+
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)
 	{
 		FolderUtilities::SetHomeFolder("../PGOMesenHome");
+		PgoKeyManager pgoKeyManager;
+		KeyManager::RegisterKeyManager(&pgoKeyManager);
 
 		for(size_t i = 0; i < testRoms.size(); i++) {
 			std::cout << "Running: " << testRoms[i] << std::endl;
 
 			KeyManager::SetSettings(_emu->GetSettings());
 			_emu->Initialize();
-			GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
-			cfg.Model = GameboyModel::GameboyColor;
-			_emu->GetSettings()->SetGameboyConfig(cfg);
+
+			//Map key #10 to the start button for all consoles - this key is toggled on/off every 4 frames
+			NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
+			nesCfg.Port1.Type = ControllerType::NesController;
+			nesCfg.Port1.Keys.Mapping1.Start = 10;
+
+			SnesConfig& snesCfg = _emu->GetSettings()->GetSnesConfig();
+			snesCfg.Port1.Type = ControllerType::SnesController;
+			snesCfg.Port1.Keys.Mapping1.Start = 10;
+
+			GameboyConfig& gbCfg = _emu->GetSettings()->GetGameboyConfig();
+			gbCfg.Model = GameboyModel::GameboyColor;
+			gbCfg.Controller.Keys.Mapping1.Start = 10;
+
+			PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
+			pceCfg.Port1.Type = ControllerType::PceController;
+			pceCfg.Port1.Keys.Mapping1.Start = 10;
+
 			_emu->GetSettings()->SetFlag(EmulationFlags::MaximumSpeed);
 			_emu->LoadRom((VirtualFile)testRoms[i], VirtualFile());
 
@@ -278,6 +312,8 @@ extern "C" {
 			}
 				
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
+			std::cout << "Ran for " << _emu->GetFrameCount() << " frames" << std::endl;
+
 			_emu->Stop(false);
 			_emu->Release();
 		}
