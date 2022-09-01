@@ -11,6 +11,12 @@ PceArcadeCard::PceArcadeCard(PceConsole* console, Emulator* emu)
 	_isRamUsed = false;
 	console->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
 	emu->RegisterMemory(MemoryType::PceArcadeCardRam, _ram, PceArcadeCard::ArcadeRamMemSize);
+
+	_mappedBanks[0x40] = true;
+	_mappedBanks[0x41] = true;
+	_mappedBanks[0x42] = true;
+	_mappedBanks[0x43] = true;
+	_mappedBanks[0xFF] = true;
 }
 
 PceArcadeCard::~PceArcadeCard()

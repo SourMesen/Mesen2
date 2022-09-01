@@ -7,6 +7,7 @@
 PceSf2RomMapper::PceSf2RomMapper(PceConsole* console)
 {
 	_console = console;
+	_mappedBanks[0] = true;
 }
 
 void PceSf2RomMapper::Write(uint8_t bank, uint16_t addr, uint8_t value)

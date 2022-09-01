@@ -383,7 +383,7 @@ public:
 			value = ReadRegister(addr & 0x1FFF);
 		}
 
-		if(_mapper) {
+		if(_mapper && _mapper->IsBankMapped(bank)) {
 			value = _mapper->Read(bank, addr, value);
 		}
 
@@ -423,7 +423,7 @@ public:
 		_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);
 		
 		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
-		if(_mapper) {
+		if(_mapper && _mapper->IsBankMapped(bank)) {
 			_mapper->Write(bank, addr, value);
 		}
 
