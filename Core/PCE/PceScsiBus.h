@@ -54,6 +54,7 @@ private:
 	
 	int64_t _readSectorCounter = 0;
 	int32_t _ackClearCounter = 0;
+	bool _needExec = true;
 
 	vector<uint8_t> _cmdBuffer;
 	deque<uint8_t> _dataBuffer;
@@ -119,7 +120,9 @@ public:
 	void SetAckWithAutoClear();
 
 	void UpdateState();
-	void Exec();
+	__noinline void Exec();
+	
+	bool NeedExec() { return _needExec; }
 
 	void Serialize(Serializer& s) override;
 };

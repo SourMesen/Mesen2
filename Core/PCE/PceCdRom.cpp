@@ -27,13 +27,6 @@ PceCdRom::~PceCdRom()
 	_emu->GetSoundMixer()->UnregisterAudioProvider(&_adpcm);
 }
 
-void PceCdRom::Exec()
-{
-	_scsi.Exec();
-	_adpcm.Exec();
-	_audioPlayer.Exec();
-}
-
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
 {
 	//LogDebug("Set IRQ source: " + HexUtilities::ToHex((uint8_t)src));

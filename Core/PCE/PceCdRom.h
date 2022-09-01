@@ -34,7 +34,16 @@ public:
 	PceAdpcmState& GetAdpcmState() { return _adpcm.GetState(); }
 	PceCdAudioPlayerState& GetCdPlayerState() { return _audioPlayer.GetState(); }
 
-	void Exec();
+	__forceinline void Exec()
+	{
+		if(_scsi.NeedExec()) {
+			_scsi.Exec();
+		}
+		if(_adpcm.NeedExec()) {
+			_adpcm.Exec();
+		}
+		_audioPlayer.Exec();
+	}
 
 	PceCdAudioPlayer& GetAudioPlayer() { return _audioPlayer; }
 

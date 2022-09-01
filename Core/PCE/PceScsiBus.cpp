@@ -26,6 +26,7 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 	}
 
 	_stateChanged = true;
+	_needExec = true;
 	_state.Phase = phase;
 	ClearSignals(Bsy, Cd, Io, Msg, Req);
 	
@@ -182,6 +183,7 @@ void PceScsiBus::CmdRead()
 	}
 
 	_readSectorCounter = GetSeekTime(_state.Sector, sector);
+	_needExec = true;
 	_state.Sector = sector;
 	_state.SectorsToRead = sectorsToRead;
 
@@ -366,6 +368,7 @@ void PceScsiBus::ProcessDiscRead()
 				//to be set on the next run of ProcessDataInPhase()
 				//Otherwise bios code will wait on Req in an infinite loop
 				_stateChanged = true;
+				_needExec = true;
 
 				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
 
@@ -382,6 +385,7 @@ void PceScsiBus::ProcessDiscRead()
 			} else {
 				LogDebug("[SCSI] Read sector done but buffer not empty, delay");
 				_readSectorCounter = (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
+				_needExec = true;
 			}
 		}
 	}
@@ -420,6 +424,7 @@ void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 	if(_state.Signals[signal] != val) {
 		_state.Signals[signal] = val;
 		_stateChanged = true;
+		_needExec = true;
 	}
 }
 
@@ -429,6 +434,7 @@ void PceScsiBus::SetAckWithAutoClear()
 	//Used after manually reading a byte of data (or after ADPCM DMA reads one)
 	SetSignals(Ack);
 	_ackClearCounter = 20*3;
+	_needExec = true;
 }
 
 void PceScsiBus::UpdateState()
@@ -478,6 +484,8 @@ void PceScsiBus::Exec()
 	if(_stateChanged) {
 		UpdateState();
 	}
+
+	_needExec = _stateChanged || _readSectorCounter > 0 || _ackClearCounter > 0;
 }
 
 void PceScsiBus::Serialize(Serializer& s)
@@ -508,5 +516,7 @@ void PceScsiBus::Serialize(Serializer& s)
 		SV(dataBuffer);		
 		_dataBuffer.clear();
 		_dataBuffer.insert(_dataBuffer.end(), dataBuffer.begin(), dataBuffer.end());
+
+		_needExec = true;
 	}
 }

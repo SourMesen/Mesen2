@@ -992,7 +992,7 @@ void PceVdc::WaitForVramAccess()
 		//TODO timing, this is probably not quite right. CPU will be stalled until
 		//a VDC cycle that allows VRAM access is reached. This isn't always going to
 		//be a multiple of 3 master clocks like this currently assumes
-		_console->GetMemoryManager()->ExecFast();
+		_console->GetMemoryManager()->ExecFastCycle();
 		DrawScanline();
 	}
 }

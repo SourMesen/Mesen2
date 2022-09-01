@@ -2,9 +2,9 @@
 #include "stdafx.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
+#include "PCE/PceVdc.h"
 #include "Utilities/ISerializable.h"
 
-class PceVdc;
 class PceVce;
 class PceConsole;
 class Emulator;
@@ -43,7 +43,9 @@ public:
 
 	void StVdcWrite(uint16_t addr, uint8_t value);
 
-	void Exec();
+	__forceinline void Exec() { _vdc1->Exec(); }
+	__forceinline void ExecSuperGrafx() { _vdc2->Exec(); _vdc1->Exec(); }
+
 	void DrawScanline();
 	void ProcessScanlineStart(PceVdc* vdc, uint16_t scanline);
 	void ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer);

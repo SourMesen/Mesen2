@@ -133,14 +133,6 @@ void PceVpc::StVdcWrite(uint16_t addr, uint8_t value)
 	}
 }
 
-void PceVpc::Exec()
-{
-	if(_vdc2) {
-		_vdc2->Exec();
-	}
-	_vdc1->Exec();
-}
-
 void PceVpc::DrawScanline()
 {
 	if(_vdc2) {

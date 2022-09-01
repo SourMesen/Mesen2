@@ -38,6 +38,10 @@ private:
 	IPceMapper* _mapper = nullptr;
 	unique_ptr<PceTimer> _timer;
 
+	typedef void(PceMemoryManager::*Func)();
+	Func _exec = nullptr;
+	Func _fastExec = nullptr;
+
 	PceMemoryManagerState _state = {};
 	uint8_t* _prgRom = nullptr;
 	uint32_t _prgRomSize = 0;
@@ -138,6 +142,7 @@ public:
 
 		//CPU boots up in slow speed
 		_state.FastCpuSpeed = false;
+		UpdateExecCallback();
 
 		//Set to 0 on power on
 		_state.DisabledIrqs = 0;
@@ -201,6 +206,7 @@ public:
 	void SetSpeed(bool slow)
 	{
 		_state.FastCpuSpeed = !slow;
+		UpdateExecCallback();
 	}
 
 	void UpdateMappings(uint32_t bankOffsets[8])
@@ -252,29 +258,60 @@ public:
 		}
 	}
 
-	__forceinline void Exec()
+	void UpdateExecCallback()
 	{
-		if(_state.FastCpuSpeed) {
-			ExecFast();
+		if(_cdrom) {
+			if(_console->IsSuperGrafx()) {
+				_exec = &PceMemoryManager::ExecTemplate<true, true>;
+			} else {
+				_exec = &PceMemoryManager::ExecTemplate<true, false>;
+			}
 		} else {
-			ExecSlow();
+			if(_console->IsSuperGrafx()) {
+				_exec = &PceMemoryManager::ExecTemplate<false, true>;
+			} else {
+				_exec = &PceMemoryManager::ExecTemplate<false, false>;
+			}
+		}
+
+		if(!_state.FastCpuSpeed) {
+			_fastExec = _exec;
+			_exec = &PceMemoryManager::ExecSlow;
 		}
 	}
 
-	__forceinline void ExecFast()
+	void ExecSlow()
+	{
+		(this->*_fastExec)();
+		(this->*_fastExec)();
+		(this->*_fastExec)();
+		(this->*_fastExec)();
+	}
+
+	__forceinline void Exec()
+	{
+		(this->*_exec)();
+	}
+
+	__forceinline void ExecFastCycle()
+	{
+		(this->*_fastExec)();
+	}
+
+	template<bool hasCdRom, bool isSuperGrafx>
+	void ExecTemplate()
 	{
 		_state.CycleCount += 3;
 		_timer->Exec();
-		_vpc->Exec();
-		if(_cdrom) {
-			_cdrom->Exec();
+		
+		if constexpr(isSuperGrafx) {
+			_vpc->ExecSuperGrafx();
+		} else {
+			_vpc->Exec();
 		}
-	}
 
-	__noinline void ExecSlow()
-	{
-		for(int i = 0; i < 4; i++) {
-			ExecFast();
+		if constexpr(hasCdRom) {
+			_cdrom->Exec();
 		}
 	}
 
@@ -543,5 +580,9 @@ public:
 		SV(_state.MprReadBuffer);
 
 		SV(_timer);
+
+		if(!s.IsSaving()) {
+			UpdateExecCallback();
+		}
 	}
 };

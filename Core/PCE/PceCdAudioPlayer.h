@@ -36,7 +36,15 @@ public:
 	bool IsPlaying() { return _state.Playing; }
 	uint32_t GetCurrentSector() { return _state.CurrentSector; }
 
-	void Exec();
+	__forceinline void Exec()
+	{
+		_clockCounter += 3;
+		if(_clockCounter > 487) {
+			//Output one sample every 487 master clocks (~44101.1hz)
+			PlaySample();
+			_clockCounter -= 487;
+		}
+	}
 
 	int16_t GetLeftSample() { return _state.LeftSample; }
 	int16_t GetRightSample() { return _state.RightSample; }

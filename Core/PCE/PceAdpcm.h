@@ -24,6 +24,7 @@ private:
 	vector<int16_t> _samplesToPlay;
 	int16_t _currentOutput = 0;
 	uint8_t _magnitude = 0;
+	bool _needExec = true;
 	
 	double _clocksPerSample = PceConstants::MasterClockRate / 32000.0;
 	double _nextSampleCounter = 0;
@@ -96,7 +97,8 @@ public:
 	PceAdpcm(PceConsole* console, Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi);
 	~PceAdpcm();
 
-	void Exec();
+	bool NeedExec() { return _needExec; }
+	__noinline void Exec();
 
 	PceAdpcmState& GetState() { return _state; }
 

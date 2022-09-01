@@ -77,16 +77,6 @@ void PceCdAudioPlayer::PlaySample()
 	}
 }
 
-void PceCdAudioPlayer::Exec()
-{
-	_clockCounter += 3;
-	if(_clockCounter > 487) {
-		//Output one sample every 487 master clocks (~44101.1hz)
-		PlaySample();
-		_clockCounter -= 487;
-	}
-}
-
 void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().CdAudioVolume / 100.0);

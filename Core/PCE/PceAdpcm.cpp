@@ -95,6 +95,7 @@ void PceAdpcm::SetControl(uint8_t value)
 		LogDebug("[ADPCM] Play");
 		_state.Playing = true;
 		_currentOutput = 2048;
+		_needExec = true;
 	}
 
 	if(value & 0x80) {
@@ -139,6 +140,7 @@ void PceAdpcm::ProcessWriteOperation()
 void PceAdpcm::ProcessDmaRequest()
 {
 	if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
+		_needExec = true;
 		_state.WriteClockCounter = 24;
 		_state.WriteBuffer = _scsi->GetDataPort();
 		_scsi->SetAckWithAutoClear();
@@ -172,6 +174,8 @@ void PceAdpcm::Exec()
 	if(dmaRequested && !_state.WriteClockCounter) {
 		ProcessDmaRequest();
 	}
+
+	_needExec = _state.Playing || _state.ReadClockCounter > 0 || _state.WriteClockCounter > 0 || dmaRequested;
 }
 
 void PceAdpcm::Write(uint16_t addr, uint8_t value)
@@ -185,10 +189,12 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 		case 0x0A:
 			_state.WriteClockCounter = 24;
 			_state.WriteBuffer = value;
+			_needExec = true;
 			break;
 
 		case 0x0B:
 			_state.DmaControl = value;
+			_needExec = true;
 			LogDebugIf((value & 0x03), "[ADPCM] DMA");
 			break;
 
@@ -216,6 +222,7 @@ uint8_t PceAdpcm::Read(uint16_t addr)
 	switch(addr & 0x3FF) {
 		case 0x0A:
 			_state.ReadClockCounter = 24;
+			_needExec = true;
 			return _state.ReadBuffer;
 
 		case 0x0B: return _state.DmaControl;
@@ -304,4 +311,8 @@ void PceAdpcm::Serialize(Serializer& s)
 	SV(_magnitude);
 	SV(_clocksPerSample);
 	SV(_nextSampleCounter);
+
+	if(!s.IsSaving()) {
+		_needExec = true;
+	}
 }
