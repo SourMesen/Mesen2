@@ -775,6 +775,20 @@ void PceVdc::DrawScanline()
 	ProcessSpriteEvaluation();
 	LoadBackgroundTiles();
 
+	if(_totalSpriteCount > 0) {
+		if(_rowHasSprite0) {
+			InternalDrawScanline<true, true>();
+		} else {
+			InternalDrawScanline<true, false>();
+		}
+	} else {
+		InternalDrawScanline<false, false>();
+	}
+}
+
+template<bool hasSprites, bool hasSprite0>
+void PceVdc::InternalDrawScanline()
+{
 	uint16_t* out = _rowBuffer;
 
 	uint16_t pixelsToDraw = (_state.HClock - _lastDrawHClock) / GetClockDivider();
@@ -801,35 +815,44 @@ void PceVdc::DrawScanline()
 				}
 			}
 
-			if(_state.SpritesEnabled && _xPosHasSprite[_screenOffsetX]) {
-				uint8_t sprColor;
-				bool checkSprite0Hit = false;
-				for(uint16_t i = 0; i < _totalSpriteCount; i++) {
-					int16_t xOffset = _screenOffsetX - _drawSprites[i].X;
-					if(xOffset >= 0 && xOffset < 16) {
-						if(!_drawSprites[i].HorizontalMirroring) {
-							xOffset = 15 - xOffset;
-						}
-
-						sprColor = GetSpritePixelColor(_drawSprites[i].TileData, xOffset);
-
-						if(sprColor != 0) {
-							if(checkSprite0Hit) {
-								//Note: don't trigger sprite 0 hit for sprites that are drawn because of the "remove sprite limit" option
-								if(_state.EnableCollisionIrq && i < _drawSpriteCount) {
-									_state.Sprite0Hit = true;
-									_vpc->SetIrq(this);
-								}
-							} else {
-								if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
-									outColor = PceVpc::SpritePixelFlag | _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
-								}
+			if constexpr(hasSprites) {
+				if(_state.SpritesEnabled && _xPosHasSprite[_screenOffsetX]) {
+					uint8_t sprColor;
+					bool checkSprite0Hit = false;
+					for(uint16_t i = 0; i < _totalSpriteCount; i++) {
+						int16_t xOffset = _screenOffsetX - _drawSprites[i].X;
+						if(xOffset >= 0 && xOffset < 16) {
+							if(!_drawSprites[i].HorizontalMirroring) {
+								xOffset = 15 - xOffset;
 							}
 
-							if(_drawSprites[i].Index == 0) {
-								checkSprite0Hit = true;
-							} else {
-								break;
+							sprColor = GetSpritePixelColor(_drawSprites[i].TileData, xOffset);
+
+							if(sprColor != 0) {
+								if constexpr(hasSprite0) {
+									if(checkSprite0Hit) {
+										//Note: don't trigger sprite 0 hit for sprites that are drawn because of the "remove sprite limit" option
+										if(_state.EnableCollisionIrq && i < _drawSpriteCount) {
+											_state.Sprite0Hit = true;
+											_vpc->SetIrq(this);
+										}
+									} else {
+										if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
+											outColor = PceVpc::SpritePixelFlag | _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
+										}
+									}
+								
+									if(_drawSprites[i].Index == 0) {
+										checkSprite0Hit = true;
+									} else {
+										break;
+									}
+								} else {
+									if(sprEnabled && (bgColor == 0 || _drawSprites[i].ForegroundPriority)) {
+										outColor = PceVpc::SpritePixelFlag | _vce->GetPalette(256 + _drawSprites[i].Palette * 16 + sprColor);
+									}
+									break;
+								}
 							}
 						}
 					}
