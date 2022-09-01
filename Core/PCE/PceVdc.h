@@ -156,10 +156,10 @@ private:
 	__forceinline uint8_t GetTilePixelColor(const uint16_t chr0, const uint16_t chr1, const uint8_t shift);
 	__forceinline uint8_t GetSpritePixelColor(const uint16_t chrData[4], const uint8_t shift);
 
-	__noinline void ProcessSpriteEvaluation();
-	__noinline void LoadSpriteTiles();
+	__forceinline void ProcessSpriteEvaluation();
+	__forceinline void LoadSpriteTiles();
 	
-	__noinline void LoadBackgroundTiles();
+	__forceinline void LoadBackgroundTiles();
 	__noinline void LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	__noinline void LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row);
 	
