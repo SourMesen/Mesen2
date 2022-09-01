@@ -59,7 +59,7 @@ void LinuxKeyManager::RefreshState()
 
 bool LinuxKeyManager::IsKeyPressed(uint16_t key)
 {
-	if(_disableAllKeys) {
+	if(_disableAllKeys || key == 0) {
 		return false;
 	}
 

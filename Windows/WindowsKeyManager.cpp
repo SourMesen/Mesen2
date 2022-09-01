@@ -75,7 +75,7 @@ void WindowsKeyManager::RefreshState()
 
 bool WindowsKeyManager::IsKeyPressed(uint16_t key)
 {
-	if(_disableAllKeys) {
+	if(_disableAllKeys || key == 0) {
 		return false;
 	}
 

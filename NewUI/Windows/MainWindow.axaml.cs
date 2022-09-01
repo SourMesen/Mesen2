@@ -392,7 +392,10 @@ namespace Mesen.Windows
 
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((UInt16)e.Key, true);
+			if(e.Key != Key.None) {
+				InputApi.SetKeyState((UInt16)e.Key, true);
+			}
+
 			if(e.Key == Key.Tab || e.Key == Key.F10) {
 				//Prevent menu/window from handling these keys to avoid issue with custom shortcuts
 				e.Handled = true;
