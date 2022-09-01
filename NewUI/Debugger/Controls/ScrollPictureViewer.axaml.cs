@@ -1,11 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Metadata;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 
@@ -39,6 +41,8 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
+		
+		public static readonly StyledProperty<ScrollBarVisibility> ScrollBarVisibilityProperty = AvaloniaProperty.Register<ScrollPictureViewer, ScrollBarVisibility>(nameof(ScrollBarVisibility), ScrollBarVisibility.Auto);
 
 		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<ScrollPictureViewer, List<Rect>?>(nameof(HighlightRects), null);
 		public static readonly StyledProperty<List<PictureViewerLine>?> OverlayLinesProperty = AvaloniaProperty.Register<PictureViewer, List<PictureViewerLine>?>(nameof(OverlayLines), null);
@@ -175,10 +179,17 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(RightClipSizeProperty, value); }
 		}
 
+		public ScrollBarVisibility ScrollBarVisibility
+		{
+			get { return GetValue(ScrollBarVisibilityProperty); }
+			set { SetValue(ScrollBarVisibilityProperty, value); }
+		}
+
 		private Point _lastPosition;
 
 		static ScrollPictureViewer()
 		{
+			BoundsProperty.Changed.AddClassHandler<ScrollPictureViewer>((x, e) => x.UpdateScrollBarVisibility());
 		}
 
 		public ScrollPictureViewer()
@@ -197,6 +208,21 @@ namespace Mesen.Debugger.Controls
 		private void Viewer_PointerPressed(object? sender, PointerPressedEventArgs e)
 		{
 			_lastPosition = e.GetCurrentPoint(this).Position;
+		}
+
+		private void UpdateScrollBarVisibility()
+		{
+			Size scrollViewerSize = this.GetControl<ScrollViewer>("scrollViewer").Bounds.Size;
+			Size pictureViewerSize = InnerViewer.Bounds.Size;
+
+			if(pictureViewerSize.Width <= scrollViewerSize.Width && pictureViewerSize.Height <= scrollViewerSize.Height) {
+				//If picture is supposed to fit without a scrollbar, toggle scrollbar visibility to force Avalonia to hide the
+				//scrollbar properly when the scrollbars themselves are preventing the scrollbars from being hidden
+				ScrollBarVisibility = ScrollBarVisibility.Hidden;
+				Dispatcher.UIThread.Post(() => {
+					ScrollBarVisibility = ScrollBarVisibility.Auto;
+				});
+			}
 		}
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

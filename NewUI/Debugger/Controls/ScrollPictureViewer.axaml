@@ -12,8 +12,8 @@
 	<Border BorderBrush="Gray" BorderThickness="1">
 		<ScrollViewer
 			Name="scrollViewer"
-			VerticalScrollBarVisibility="Auto"
-			HorizontalScrollBarVisibility="Auto"
+			VerticalScrollBarVisibility="{CompiledBinding ScrollBarVisibility, ElementName=root}"
+			HorizontalScrollBarVisibility="{CompiledBinding ScrollBarVisibility, ElementName=root}"
 			AllowAutoHide="False"
 			Offset="{CompiledBinding ScrollOffset, ElementName=root, Mode=TwoWay}"
 		>
