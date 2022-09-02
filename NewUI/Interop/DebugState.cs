@@ -1608,9 +1608,17 @@ namespace Mesen.Interop
 		Irq
 	}
 
+	public enum CdAudioStatus : byte
+	{
+		Playing = 0,
+		Inactive = 1,
+		Paused = 2,
+		Stopped = 3
+	}
+
 	public struct PceCdAudioPlayerState
 	{
-		[MarshalAs(UnmanagedType.I1)] public bool Playing;
+		public CdAudioStatus Status;
 
 		public UInt32 StartSector;
 		public UInt32 EndSector;

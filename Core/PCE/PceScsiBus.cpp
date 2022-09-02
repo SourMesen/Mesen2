@@ -187,7 +187,7 @@ void PceScsiBus::CmdRead()
 	_state.Sector = sector;
 	_state.SectorsToRead = sectorsToRead;
 
-	_cdrom->GetAudioPlayer().Stop();
+	_cdrom->GetAudioPlayer().SetIdle();
 	LogDebug("[SCSI] Read sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1));
 }
 
@@ -218,16 +218,15 @@ uint32_t PceScsiBus::GetAudioLbaPos()
 
 void PceScsiBus::CmdAudioStartPos()
 {
-	LogDebug("[SCSI] CMD: Audio start pos");
-
 	uint32_t startSector = GetAudioLbaPos();
+
+	LogDebug("[SCSI] CMD: Audio start pos: " + std::to_string(startSector));
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	if(_cmdBuffer[1] == 0) {
-		player.Play(startSector);
-		player.Stop();
+		player.Play(startSector, true);
 	} else {
-		player.Play(startSector);
+		player.Play(startSector, false);
 	}
 
 	SetStatusMessage(ScsiStatus::Good, 0);
@@ -236,9 +235,9 @@ void PceScsiBus::CmdAudioStartPos()
 
 void PceScsiBus::CmdAudioEndPos()
 {
-	LogDebug("[SCSI] CMD: Audio end pos");
-
 	uint32_t endSector = GetAudioLbaPos();
+
+	LogDebug("[SCSI] CMD: Audio end pos: " + std::to_string(endSector));
 	
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	switch(_cmdBuffer[1]) {
@@ -254,7 +253,7 @@ void PceScsiBus::CmdAudioEndPos()
 void PceScsiBus::CmdPause()
 {
 	LogDebug("[SCSI] CMD: Audio pause");
-	_cdrom->GetAudioPlayer().Stop();
+	_cdrom->GetAudioPlayer().Pause();
 	SetStatusMessage(ScsiStatus::Good, 0);
 }
 
@@ -262,21 +261,27 @@ void PceScsiBus::CmdReadSubCodeQ()
 {
 	LogDebug("[SCSI] CMD: Read Sub Code Q");
 	
-	//TODO, improve
 	_dataBuffer.clear();
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	
-	uint32_t sector = player.IsPlaying() ? player.GetCurrentSector() : _state.Sector;
+	CdAudioStatus audioStatus = player.GetStatus();
+	uint32_t sector = audioStatus != CdAudioStatus::Inactive ? player.GetCurrentSector() : _state.Sector;
 	uint32_t track = _disc->GetTrack(sector);
+
+	bool isData = _disc->Tracks[track].Format != TrackFormat::Audio;
+	uint8_t adrControl = (
+		0x01 | //ADR - 1 = "sub-channel Q encodes current position data"
+		(isData ? 0x40 : 0x00) //Control field - Bit 2: clear = audio track, set = data track
+	);
 
 	uint32_t sectorGap = _disc->Tracks[track].FirstSector - sector;
 	DiscPosition relPos = DiscPosition::FromLba(sectorGap);
 	DiscPosition absPos = DiscPosition::FromLba(sector);
 
-	_dataBuffer.push_back(_cdrom->GetAudioPlayer().IsPlaying() ? 0 : 3);
+	_dataBuffer.push_back((uint8_t)audioStatus);
 
-	_dataBuffer.push_back(0); //??
+	_dataBuffer.push_back(adrControl); //ADR + Control 
 	_dataBuffer.push_back(CdReader::ToBcd(track + 1)); //track number
 	_dataBuffer.push_back(1); //index number
 	_dataBuffer.push_back(CdReader::ToBcd(relPos.Minutes));

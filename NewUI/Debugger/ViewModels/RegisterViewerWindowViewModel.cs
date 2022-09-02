@@ -1370,7 +1370,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "SEL", scsi.Signals[8] != 0),
 
 				new RegEntry("", "CD Audio Player", null),
-				new RegEntry("", "CD Audio Playing", player.Playing),
+				new RegEntry("", "CD Audio Status", player.Status),
 				new RegEntry("", "Current Sector", player.CurrentSector, Format.X16),
 				new RegEntry("", "Current Sample", player.CurrentSample, Format.X16),
 				new RegEntry("", "Start Sector", player.StartSector, Format.X16),

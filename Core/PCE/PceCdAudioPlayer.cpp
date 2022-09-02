@@ -12,14 +12,15 @@ PceCdAudioPlayer::PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& dis
 	_emu = emu;
 	_cdrom = cdrom;
 	_disc = &disc;
+	_state.Status = CdAudioStatus::Inactive;
 }
 
-void PceCdAudioPlayer::Play(uint32_t startSector)
+void PceCdAudioPlayer::Play(uint32_t startSector, bool pause)
 {
 	int32_t track = _disc->GetTrack(startSector);
 	if(track >= 0) {
 		_state.StartSector = startSector;
-		_state.Playing = true;
+		_state.Status = pause ? CdAudioStatus::Paused : CdAudioStatus::Playing;
 
 		_state.EndSector = _disc->GetTrackLastSector(track);
 		_state.EndBehavior = CdPlayEndBehavior::Stop;
@@ -35,17 +36,12 @@ void PceCdAudioPlayer::SetEndPosition(uint32_t endSector, CdPlayEndBehavior endB
 {
 	_state.EndSector = endSector;
 	_state.EndBehavior = endBehavior;
-	_state.Playing = true;
-}
-
-void PceCdAudioPlayer::Stop()
-{
-	_state.Playing = false;
+	_state.Status = CdAudioStatus::Playing;
 }
 
 void PceCdAudioPlayer::PlaySample()
 {
-	if(_state.Playing) {
+	if(_state.Status == CdAudioStatus::Playing) {
 		_state.LeftSample = _disc->ReadLeftSample(_state.CurrentSector, _state.CurrentSample);
 		_state.RightSample = _disc->ReadRightSample(_state.CurrentSector, _state.CurrentSample);
 		_samplesToPlay.push_back(_state.LeftSample);
@@ -58,11 +54,11 @@ void PceCdAudioPlayer::PlaySample()
 
 			if(_state.CurrentSector > _state.EndSector) {
 				switch(_state.EndBehavior) {
-					case CdPlayEndBehavior::Stop: _state.Playing = false; break;
+					case CdPlayEndBehavior::Stop: _state.Status = CdAudioStatus::Stopped; break;
 					case CdPlayEndBehavior::Loop: _state.CurrentSector = _state.StartSector; break;
 
 					case CdPlayEndBehavior::Irq:
-						_state.Playing = false;
+						_state.Status = CdAudioStatus::Stopped;
 						_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
 						_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
 						break;
@@ -87,7 +83,7 @@ void PceCdAudioPlayer::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sam
 
 void PceCdAudioPlayer::Serialize(Serializer& s)
 {
-	SV(_state.Playing);
+	SV(_state.Status);
 	SV(_state.StartSector);
 	SV(_state.EndSector);
 	SV(_state.EndBehavior);

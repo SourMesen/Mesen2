@@ -27,13 +27,15 @@ class PceCdAudioPlayer final : public IAudioProvider, public ISerializable
 public:
 	PceCdAudioPlayer(Emulator* emu, PceCdRom* cdrom, DiscInfo& disc);
 
-	void Play(uint32_t startSector);
+	void Play(uint32_t startSector, bool pause);
 	void SetEndPosition(uint32_t endSector, CdPlayEndBehavior endBehavior);
-	void Stop();
+	void Stop() { _state.Status = CdAudioStatus::Stopped; }
+	void Pause() { _state.Status = CdAudioStatus::Paused; }
+	void SetIdle() { _state.Status = CdAudioStatus::Inactive; }
 	
 	PceCdAudioPlayerState& GetState() { return _state; }
 
-	bool IsPlaying() { return _state.Playing; }
+	CdAudioStatus GetStatus() { return _state.Status; }
 	uint32_t GetCurrentSector() { return _state.CurrentSector; }
 
 	__forceinline void Exec()

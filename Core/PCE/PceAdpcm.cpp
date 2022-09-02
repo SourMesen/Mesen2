@@ -180,8 +180,6 @@ void PceAdpcm::Exec()
 
 void PceAdpcm::Write(uint16_t addr, uint8_t value)
 {
-	LogDebug("Write ADPCM register: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
-
 	switch(addr & 0x3FF) {
 		case 0x08: _state.AddressPort = (_state.AddressPort & 0xFF00) | value; break;
 		case 0x09: _state.AddressPort = (_state.AddressPort & 0xFF) | (value << 8); break;
@@ -206,8 +204,11 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 			break;
 		}
 
-		//TODO: Fade is not implemented
-		case 0x0F: _state.FadeTimer = value; break;
+		case 0x0F:
+			//TODO: Fade is not implemented
+			LogDebug("Write ADPCM fade register: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+			_state.FadeTimer = value;
+			break;
 
 		default:
 			LogDebug("Write unimplemented ADPCM register: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
@@ -217,8 +218,6 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 
 uint8_t PceAdpcm::Read(uint16_t addr)
 {
-	LogDebug("Read ADPCM register: " + HexUtilities::ToHex(addr));
-
 	switch(addr & 0x3FF) {
 		case 0x0A:
 			_state.ReadClockCounter = 24;

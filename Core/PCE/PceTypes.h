@@ -333,9 +333,17 @@ enum class CdPlayEndBehavior
 	Irq
 };
 
+enum class CdAudioStatus : uint8_t
+{
+	Playing = 0,
+	Inactive = 1,
+	Paused = 2,
+	Stopped = 3
+};
+
 struct PceCdAudioPlayerState
 {
-	bool Playing;
+	CdAudioStatus Status;
 
 	uint32_t StartSector;
 	uint32_t EndSector;
