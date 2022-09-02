@@ -499,7 +499,7 @@ namespace Mesen.Debugger.Windows
 			return MarkSelectionHelper.GetAction(
 				() => _model.Config.MemoryType,
 				() => _model.SelectionStart,
-				() => _model.SelectionStart + _model.SelectionLength - 1,
+				() => _model.SelectionStart + Math.Max(0, _model.SelectionLength - 1),
 				() => { }
 			);
 		}
