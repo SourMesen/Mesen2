@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using System.Linq;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
+using System.ComponentModel;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -43,7 +44,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			int newId = Interlocked.Increment(ref _nextId);
-			wnd.Closed += OnWindowClosedHandler;
+			wnd.Closing += OnWindowClosingHandler;
 
 			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle, CpuType = cpuType });
 
@@ -52,14 +53,16 @@ namespace Mesen.Debugger.Utilities
 			return newId;
 		}
 
-		private static void OnWindowClosedHandler(object? sender, EventArgs e)
+		private static void OnWindowClosingHandler(object? sender, CancelEventArgs e)
 		{
 			if(sender is Window wnd) {
+				//Do this in OnClosing (before OnClosed), to call RemoveViewerId before the debugger gets
+				//shut down by DebugWindowManager when closing the last debug tool window
 				if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
 					DebugApi.RemoveViewerId(toolInfo.ViewerId, toolInfo.CpuType);
 				}
 				_activeWindows.Remove(wnd);
-				wnd.Closed -= OnWindowClosedHandler;
+				wnd.Closing -= OnWindowClosingHandler;
 			}
 		}
 
