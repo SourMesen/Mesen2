@@ -19,12 +19,66 @@ PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(d
 
 	_emu->GetSoundMixer()->RegisterAudioProvider(&_audioPlayer);
 	_emu->GetSoundMixer()->RegisterAudioProvider(&_adpcm);
+
+	//Initialize save ram
+	_saveRamSize = 0x2000;
+	_saveRam = new uint8_t[_saveRamSize];
+	_console->InitializeRam(_saveRam, _saveRamSize);
+	_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
+
+	_saveRam[0] = 0x48;
+	_saveRam[1] = 0x55;
+	_saveRam[2] = 0x42;
+	_saveRam[3] = 0x4D;
+	_saveRam[4] = 0x00;
+	_saveRam[5] = 0xA0;
+	_saveRam[6] = 0x10;
+	_saveRam[7] = 0x80;
+
+	_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
+
+	//Initialize cdrom work ram
+	_cdromRamSize = 0x10000;
+	_cdromRam = new uint8_t[_cdromRamSize];
+	_console->InitializeRam(_cdromRam, _cdromRamSize);
+	_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
 }
 
 PceCdRom::~PceCdRom()
 {
 	_emu->GetSoundMixer()->UnregisterAudioProvider(&_audioPlayer);
 	_emu->GetSoundMixer()->UnregisterAudioProvider(&_adpcm);
+
+	delete[] _saveRam;
+	delete[] _cdromRam;
+}
+
+void PceCdRom::SaveBattery()
+{
+	if(_saveRamSize > 0) {
+		_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
+	}
+}
+
+void PceCdRom::InitMemoryBanks(uint8_t* readBanks[0x100], uint8_t* writeBanks[0x100], MemoryType bankMemType[0x100], uint8_t* unmappedBank)
+{
+	for(int i = 0; i < 8; i++) {
+		//80 - 87
+		readBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
+		writeBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
+		bankMemType[0x80 + i] = MemoryType::PceCdromRam;
+	}
+
+	//F7 - BRAM
+	if(_state.BramLocked) {
+		readBanks[0xF7] = unmappedBank;
+		writeBanks[0xF7] = unmappedBank;
+		bankMemType[0xF7] = MemoryType::None;
+	} else {
+		readBanks[0xF7] = _saveRam;
+		writeBanks[0xF7] = _saveRam;
+		bankMemType[0xF7] = MemoryType::PceSaveRam;
+	}
 }
 
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
@@ -77,7 +131,7 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			UpdateIrqState();
 			break;
 
-		case 0x03: break; //BRAM lock, CD Status (readonly)
+		case 0x03: break; //Readonly
 
 		case 0x04: {
 			//Reset
@@ -94,13 +148,14 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 
 		case 0x05:
 		case 0x06:
-			//Latch CD data
+			//Readonly
 			break;
 
 		case 0x07:
 			//BRAM unlock
 			if((value & 0x80) != 0) {
 				_state.BramLocked = false;
+				_console->GetMemoryManager()->UpdateCdRomBanks();
 			}
 			break;
 
@@ -122,8 +177,8 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x01: return _scsi.GetDataPort();
 		case 0x02: return _state.EnabledIrqs | (_scsi.CheckSignal(Ack) ? 0x80 : 0);
 		case 0x03:
-			//TODO BramLocked doesn't do anything
 			_state.BramLocked = true;
+			_console->GetMemoryManager()->UpdateCdRomBanks();
 			_state.ReadRightChannel = !_state.ReadRightChannel;
 
 			return (
@@ -173,6 +228,9 @@ void PceCdRom::Serialize(Serializer& s)
 	SV(_state.BramLocked);
 	SV(_state.EnabledIrqs);
 	SV(_state.ReadRightChannel);
+
+	SVArray(_saveRam, _saveRamSize);
+	SVArray(_cdromRam, _cdromRamSize);
 
 	SV(_scsi);
 	SV(_adpcm);

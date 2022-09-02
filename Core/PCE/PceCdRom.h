@@ -5,6 +5,7 @@
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceAudioFader.h"
+#include "MemoryType.h"
 #include "Shared/CdReader.h"
 #include "Utilities/ISerializable.h"
 
@@ -25,11 +26,19 @@ private:
 	PceCdAudioPlayer _audioPlayer;
 	PceCdRomState _state = {};
 	
+	uint8_t* _cdromRam = nullptr;
+	uint32_t _cdromRamSize = 0;
+	uint8_t* _saveRam = nullptr;
+	uint32_t _saveRamSize = 0;
+
 	void UpdateIrqState();
 
 public:
 	PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc);
 	~PceCdRom();
+
+	void SaveBattery();
+	void InitMemoryBanks(uint8_t* readBanks[0x100], uint8_t* writeBanks[0x100], MemoryType bankMemType[0x100], uint8_t* unmappedBank);
 
 	PceCdRomState& GetState() { return _state; }
 	PceScsiBusState& GetScsiState() { return _scsi.GetState(); }

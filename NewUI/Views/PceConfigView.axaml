@@ -74,7 +74,8 @@
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableCdRomForHuCardGames}" Text="{l:Translate chkEnableCdRomForHuCardGames}" />
-						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableCdRomSaveRamForHuCardGames}" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsEnabled="{CompiledBinding !Config.EnableCdRomForHuCardGames}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableCdRomSaveRamForHuCardGames}" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsVisible="{CompiledBinding !Config.EnableCdRomForHuCardGames}" />
+						<c:CheckBoxWarning IsChecked="False" Text="{l:Translate chkDisableCdRomSaveRamForHuCardGames}" IsEnabled="False" IsVisible="{CompiledBinding Config.EnableCdRomForHuCardGames}" />
 					</c:OptionSection>
 				</StackPanel>
 			</ScrollViewer>

@@ -32,16 +32,19 @@ PceAdpcm::~PceAdpcm()
 
 void PceAdpcm::Reset()
 {
+	_state.WriteClockCounter = 0;
+	_state.ReadClockCounter = 0;
 	_state.ReadAddress = 0;
 	_state.WriteAddress = 0;
 	_state.AddressPort = 0;
 	_state.Playing = false;
+	_state.Control = 0;
 	SetEndReached(false);
 	SetHalfReached(false);
+	_state.AdpcmLength = 0;
 	_state.Nibble = false;
 	_currentOutput = 0;
 	_magnitude = 0;
-	//TODO
 }
 
 void PceAdpcm::SetHalfReached(bool value)

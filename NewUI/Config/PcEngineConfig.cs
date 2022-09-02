@@ -66,6 +66,7 @@ namespace Mesen.Config
 				ConsoleType = ConsoleType,
 				CdRomType = CdRomType,
 				EnableCdRomForHuCardGames = EnableCdRomForHuCardGames,
+				DisableCdRomSaveRamForHuCardGames = DisableCdRomSaveRamForHuCardGames,
 
 				RamPowerOnState = RamPowerOnState,
 				EnableRandomPowerOnState = EnableRandomPowerOnState,

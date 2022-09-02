@@ -38,6 +38,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	vector<uint8_t> romData;
 	uint32_t crc32 = 0;
 
+	bool cdromUnitEnabled = false;
 	if(romFile.GetFileExtension() == ".cue") {
 		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
 			return LoadRomResult::Failure;
@@ -50,6 +51,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 		_cdrom.reset(new PceCdRom(_emu, this, disc));
 		_romFormat = RomFormat::PceCdRom;
+		cdromUnitEnabled = true;
 	} else {
 		romFile.ReadFile(romData);
 		crc32 = CRC32::GetCRC(romData);
@@ -62,10 +64,14 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			consoleType = PceConsoleType::SuperGrafx;
 		}
 
-		if(cfg.EnableCdRomForHuCardGames) {
+		cdromUnitEnabled = cfg.EnableCdRomForHuCardGames;
+		
+		if(cdromUnitEnabled || !cfg.DisableCdRomSaveRamForHuCardGames) {
+			//CD-ROM is used for save ram for non-cd-rom games
 			DiscInfo emptyDisc = {};
 			_cdrom.reset(new PceCdRom(_emu, this, emptyDisc));
 		}
+
 		_romFormat = RomFormat::Pce;
 	}
 
@@ -96,7 +102,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	_vpc->ConnectVdc(_vdc.get(), _vdc2.get());
 
 	_psg.reset(new PcePsg(_emu, this));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize, cdromUnitEnabled));
 	_cpu.reset(new PceCpu(_emu, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -127,7 +133,9 @@ void PceConsole::RunFrame()
 
 void PceConsole::SaveBattery()
 {
-	_memoryManager->SaveBattery();
+	if(_cdrom) {
+		_cdrom->SaveBattery();
+	}
 }
 
 BaseControlManager* PceConsole::GetControlManager()

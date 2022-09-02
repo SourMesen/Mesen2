@@ -20,7 +20,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
-//TODO refactor into .cpp file, move timer to pceconsole, move cdrom ram/etc somewhere else?
+//TODO refactor into .cpp file, move timer to pceconsole
 
 class Emulator;
 
@@ -53,21 +53,19 @@ private:
 	uint8_t* _workRam = nullptr;
 	uint32_t _workRamSize = 0;
 
-	uint8_t* _cdromRam = nullptr;
-	uint32_t _cdromRamSize = 0;
-
 	uint8_t* _cardRam = nullptr;
 	uint32_t _cardRamSize = 0;
 	uint32_t _cardRamStartBank = 0;
 	uint32_t _cardRamEndBank = 0;
-	
-	uint8_t* _saveRam = nullptr;
-	uint32_t _saveRamSize = 0;
 
 	uint8_t* _unmappedBank = nullptr;
+	uint8_t* _saveRam = nullptr;
+	uint8_t* _cdromRam = nullptr;
+	
+	bool _cdromUnitEnabled = false;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, IPceMapper* mapper, PceCdRom* cdrom, vector<uint8_t>& romData, uint32_t cardRamSize)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, IPceMapper* mapper, PceCdRom* cdrom, vector<uint8_t>& romData, uint32_t cardRamSize, bool cdromUnitEnabled)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
@@ -92,31 +90,7 @@ public:
 
 		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 
-		if(_cdrom || !cfg.DisableCdRomSaveRamForHuCardGames) {
-			//Save RAM is enabled, initialize it
-			_saveRamSize = 0x2000;
-			_saveRam = new uint8_t[_saveRamSize];
-			_console->InitializeRam(_saveRam, _saveRamSize);
-			_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
-
-			_saveRam[0] = 0x48;
-			_saveRam[1] = 0x55;
-			_saveRam[2] = 0x42;
-			_saveRam[3] = 0x4D;
-			_saveRam[4] = 0x00;
-			_saveRam[5] = 0xA0;
-			_saveRam[6] = 0x10;
-			_saveRam[7] = 0x80;
-
-			_emu->GetBatteryManager()->LoadBattery(".sav", _saveRam, _saveRamSize);
-		}
-
-		if(_cdrom) {
-			_cdromRamSize = 0x10000;
-			_cdromRam = new uint8_t[_cdromRamSize];
-			_console->InitializeRam(_cdromRam, _cdromRamSize);
-			_emu->RegisterMemory(MemoryType::PceCdromRam, _cdromRam, _cdromRamSize);
-		}
+		_cdromUnitEnabled = cdromUnitEnabled;
 
 		if(cardRamSize > 0) {
 			if(cardRamSize == 0x30000) {
@@ -137,6 +111,9 @@ public:
 
 		_emu->RegisterMemory(MemoryType::PcePrgRom, _prgRom, _prgRomSize);
 		_emu->RegisterMemory(MemoryType::PceWorkRam, _workRam, _workRamSize);
+
+		_cdromRam = (uint8_t*)_emu->GetMemory(MemoryType::PceCdromRam).Memory;
+		_saveRam = (uint8_t*)_emu->GetMemory(MemoryType::PceSaveRam).Memory;
 
 		_timer.reset(new PceTimer(this));
 
@@ -185,8 +162,6 @@ public:
 	{
 		delete[] _prgRom;
 		delete[] _workRam;
-		delete[] _saveRam;
-		delete[] _cdromRam;
 		delete[] _cardRam;
 		delete[] _unmappedBank;
 	}
@@ -194,13 +169,6 @@ public:
 	PceMemoryManagerState& GetState()
 	{
 		return _state;
-	}
-
-	void SaveBattery()
-	{
-		if(_saveRamSize > 0) {
-			_emu->GetBatteryManager()->SaveBattery(".sav", _saveRam, _saveRamSize);
-		}
 	}
 
 	void SetSpeed(bool slow)
@@ -232,15 +200,6 @@ public:
 			_bankMemType[0xF8 + i] = MemoryType::PceWorkRam;
 		}
 
-		if(_cdromRam) {
-			for(int i = 0; i < 8; i++) {
-				//80 - 87
-				_readBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
-				_writeBanks[0x80 + i] = _cdromRam + ((i * 0x2000) % _cdromRamSize);
-				_bankMemType[0x80 + i] = MemoryType::PceCdromRam;
-			}
-		}
-
 		if(_cardRam) {
 			for(uint32_t i = _cardRamStartBank; i <= _cardRamEndBank; i++) {
 				//68-7F (cdrom) or 40-5F (populous)
@@ -250,17 +209,19 @@ public:
 			}
 		}
 
-		if(_saveRamSize > 0) {
-			//F7 - BRAM
-			_readBanks[0xF7] = _saveRam;
-			_writeBanks[0xF7] = _saveRam;
-			_bankMemType[0xF7] = MemoryType::PceSaveRam;
+		UpdateCdRomBanks();
+	}
+
+	void UpdateCdRomBanks()
+	{
+		if(_cdrom) {
+			_cdrom->InitMemoryBanks(_readBanks, _writeBanks, _bankMemType, _unmappedBank);
 		}
 	}
 
 	void UpdateExecCallback()
 	{
-		if(_cdrom) {
+		if(_cdromUnitEnabled) {
 			if(_console->IsSuperGrafx()) {
 				_exec = &PceMemoryManager::ExecTemplate<true, true>;
 			} else {
@@ -344,7 +305,7 @@ public:
 
 			//Some games use the CDROM addon's save ram to save data and will check bit 7 for presence of the CDROM
 			//Unless the UI option to disable the save ram for hucard games is enabled, always report that the CDROM is connected
-			bool cdromConnected = _saveRamSize > 0;
+			bool cdromConnected = _cdrom != nullptr;
 
 			_state.IoBuffer = (
 				(cdromConnected ? 0 : 0x80) |
@@ -565,8 +526,6 @@ public:
 	void Serialize(Serializer& s)
 	{
 		SVArray(_workRam, _workRamSize);
-		SVArray(_saveRam, _saveRamSize);
-		SVArray(_cdromRam, _cdromRamSize);
 		SVArray(_cardRam, _cardRamSize);
 
 		SV(_state.ActiveIrqs);
