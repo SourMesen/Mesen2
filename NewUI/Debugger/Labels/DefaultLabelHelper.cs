@@ -156,10 +156,10 @@ namespace Mesen.Debugger.Labels
 			LabelManager.SetLabel(0xF1, MemoryType.SpcRam, "CONTROL", "I/O and Timer Control");
 			LabelManager.SetLabel(0xF2, MemoryType.SpcRam, "DSPADDR", "DSP Address");
 			LabelManager.SetLabel(0xF3, MemoryType.SpcRam, "DSPDATA", "DSP Data");
-			LabelManager.SetLabel(0xF4, MemoryType.SpcRam, "CPUIO1", "CPU I/O 1");
-			LabelManager.SetLabel(0xF5, MemoryType.SpcRam, "CPUIO2", "CPU I/O 1");
-			LabelManager.SetLabel(0xF6, MemoryType.SpcRam, "CPUIO3", "CPU I/O 1");
-			LabelManager.SetLabel(0xF7, MemoryType.SpcRam, "CPUIO4", "CPU I/O 1");
+			LabelManager.SetLabel(0xF4, MemoryType.SpcRam, "CPUIO0", "CPU I/O 0");
+			LabelManager.SetLabel(0xF5, MemoryType.SpcRam, "CPUIO1", "CPU I/O 1");
+			LabelManager.SetLabel(0xF6, MemoryType.SpcRam, "CPUIO2", "CPU I/O 2");
+			LabelManager.SetLabel(0xF7, MemoryType.SpcRam, "CPUIO3", "CPU I/O 3");
 			LabelManager.SetLabel(0xF8, MemoryType.SpcRam, "RAMREG1", "Memory Register 1");
 			LabelManager.SetLabel(0xF9, MemoryType.SpcRam, "RAMREG2", "Memory Register 2");
 			LabelManager.SetLabel(0xFA, MemoryType.SpcRam, "T0TARGET", "Timer 0 scaling target");

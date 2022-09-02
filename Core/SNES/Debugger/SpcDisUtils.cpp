@@ -39,12 +39,12 @@ constexpr const char* _altOpTemplate[256] = {
 	"BVS r",	"JST7",	"CLR1 d.3",	"BBC d.3,q",	"CMP d,X",	"CMP a,X",	"CMP a,Y",	"CMP [d],Y",	"CMP e,#i",	"CMP (X),(Y)",	"ADW d",			"ROR d,X",	"ROR A",	"TXA",	"CPY d",			"RTI",
 	"SEC",	"JST8",	"SET1 d.4",	"BBS d.4,q",	"ADC d",		"ADC a",		"ADC (X)",	"ADC [d,X]",	"ADC #i",	"ADC t,s",		"EORC m.b",		"DEC d",		"DEC a",	"LDY #i","PLP",			"MOV e,#i",
 	"BCC r",	"JST9",	"CLR1 d.4",	"BBC d.4,q",	"ADC d,X",	"ADC a,X",	"ADC a,Y",	"ADC [d],Y",	"ADC e,#i",	"ADC (X),(Y)",	"SBW d",			"DEC d,X",	"DEC A",	"TSX",	"DIV YA,X",		"XCN A",
-	"CLI",	"JSTA",	"SET1 d.5",	"BBS d.5,q",	"SBC d",		"SBC a",		"SBC (X)",	"SBC [d,X]",	"SBC #i",	"SBC t,s",		"LDC m.b",		"INC d",		"INC a",	"CMY #i","PLA",			"STA (X)+,A",
+	"CLI",	"JSTA",	"SET1 d.5",	"BBS d.5,q",	"SBC d",		"SBC a",		"SBC (X)",	"SBC [d,X]",	"SBC #i",	"SBC t,s",		"LDC m.b",		"INC d",		"INC a",	"CPY #i","PLA",			"STA (X)+",
 	"BCS r",	"JSTB",	"CLR1 d.5",	"BBC d.5,q",	"SBC d,X",	"SBC a,X",	"SBC a,Y",	"SBC [d],Y",	"SBC e,#i",	"SBC (X),(Y)",	"LDW d",			"INC d,X",	"INC A",	"TXS",	"DAS A",			"LDA (X)+",
 	"SEI",	"JSTC",	"SET1 d.6",	"BBS d.6,q",	"STA d",		"STA a",		"STA (X)",	"STA [d,X]",	"CPX #i",	"STX a",			"STC m.b",		"STY d",		"STY a",	"LDX #i","PLX",			"MUL YA",
 	"BNE r",	"JSTD",	"CLR1 d.6",	"BBC d.6,q",	"STA d,X",	"STA a,X",	"STA a,Y",	"STA [d],Y",	"STX d",		"STX d,Y",		"STW d",			"STY d,X",	"DEY",	"TYA",	"CBNE d,X, q",	"DAA A",
 	"CLV",	"JSTE",	"SET1 d.7",	"BBS d.7,q",	"LDA d",		"LDA a",		"LDA (X)",	"LDA [d,X]",	"LDA #i",	"LDX a",			"NOT m.b",		"LDY d",		"LDY a",	"NOTC",	"PLY",			"WAI",
-	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7,q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",		"LDX d,Y",		"MOV t,s",		"LDY d,X",	"INC Y",	"TAY",	"DBNZ Y,r",		"STP"
+	"BEQ r",	"JSTF",	"CLR1 d.7",	"BBC d.7,q",	"LDA d,X",	"LDA a,X",	"LDA a,Y",	"LDA [d],Y",	"LDX d",		"LDX d,Y",		"MOV t,s",		"LDY d,X",	"INY",	"TAY",	"DBNZ Y,r",		"STP"
 };
 
 constexpr const uint8_t _opSize[256] = {
