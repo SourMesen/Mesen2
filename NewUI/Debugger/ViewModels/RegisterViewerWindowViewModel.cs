@@ -1314,6 +1314,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ref PceCdRomState cdrom = ref pceState.CdRom;
 			ref PceCdAudioPlayerState player = ref pceState.CdPlayer;
+			ref PceAudioFaderState fader = ref pceState.AudioFader;
 			ref PceAdpcmState adpcm = ref pceState.Adpcm;
 			ref PceScsiBusState scsi = ref pceState.ScsiDrive;
 
@@ -1331,7 +1332,6 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$180D", "DMA Control", adpcm.DmaControl, Format.X8),
 				new RegEntry("$180D", "DMA Requested", (adpcm.DmaControl & 0x03) > 0),
 				new RegEntry("$180E", "Playback Rate", Math.Round(32000.0 / (16 - adpcm.PlaybackRate)) + " Hz"),
-				new RegEntry("$180F", "Fade Timer", adpcm.FadeTimer, Format.X8),
 				new RegEntry("", "Half Reached", adpcm.HalfReached),
 				new RegEntry("", "ADPCM Length", adpcm.AdpcmLength, Format.X16),
 				new RegEntry("", "Write Address", adpcm.WriteAddress, Format.X16),
@@ -1376,6 +1376,12 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Start Sector", player.StartSector, Format.X16),
 				new RegEntry("", "End Sector", player.EndSector, Format.X16),
 				new RegEntry("", "End Behavior", player.EndBehavior),
+
+				new RegEntry("$180F", "Audio Fader", null),
+				new RegEntry("$180F.1", "Target", fader.Target),
+				new RegEntry("$180F.2", "Fade speed", fader.FastFade ? "2.5 secs" : "6 secs"),
+				new RegEntry("$180F.3", "Enabled", fader.Enabled),
+				new RegEntry("", "Effective Volume", fader.Enabled ? (int)Math.Max(0.0, 100 - ((pceState.MemoryManager.CycleCount - fader.StartClock) / ((fader.FastFade ? 0.025 : 0.06) * 21477270))) : 100)
 			};
 
 			return new RegisterViewerTab("CD-ROM", entries, CpuType.Pce, MemoryType.PceMemory);

@@ -2631,6 +2631,9 @@
     <ClInclude Include="Shared\HistoryViewer.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\PceAudioFader.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2740,6 +2743,9 @@
     </ClCompile>
     <ClCompile Include="Shared\HistoryViewer.cpp">
       <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceAudioFader.cpp">
+      <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

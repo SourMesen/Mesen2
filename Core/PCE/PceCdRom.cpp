@@ -12,7 +12,7 @@
 
 using namespace ScsiSignal;
 
-PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(disc), _scsi(console, this, _disc), _adpcm(console, emu, this, &_scsi), _audioPlayer(emu, this, _disc)
+PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(disc), _scsi(console, this, _disc), _adpcm(console, emu, this, &_scsi), _audioPlayer(emu, this, _disc), _audioFader(console)
 {
 	_emu = emu;
 	_console = console;
@@ -105,8 +105,12 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 0x08: case 0x09: case 0x0A: case 0x0B:
-		case 0x0C: case 0x0D: case 0x0E: case 0x0F:
+		case 0x0C: case 0x0D: case 0x0E:
 			_adpcm.Write(addr, value);
+			break;
+
+		case 0x0F:
+			_audioFader.Write(value);
 			break;
 	}
 }
@@ -144,7 +148,7 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		}
 
 		case 0x09: case 0x0A: case 0x0B:
-		case 0x0C: case 0x0D: case 0x0E: case 0x0F:
+		case 0x0C: case 0x0D: case 0x0E:
 			return _adpcm.Read(addr);
 
 		case 0xC0: case 0xC1: case 0xC2: case 0xC3: 
@@ -173,4 +177,5 @@ void PceCdRom::Serialize(Serializer& s)
 	SV(_scsi);
 	SV(_adpcm);
 	SV(_audioPlayer);
+	SV(_audioFader);
 }

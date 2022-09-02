@@ -1586,7 +1586,6 @@ namespace Mesen.Interop
 		public byte DmaControl;
 		public byte Control;
 		public byte PlaybackRate;
-		public byte FadeTimer;
 
 		public UInt16 AdpcmLength;
 		[MarshalAs(UnmanagedType.I1)] public bool EndReached;
@@ -1662,6 +1661,20 @@ namespace Mesen.Interop
 		public byte SectorsToRead;
 	}
 
+	public enum PceAudioFaderTarget
+	{
+		Adpcm,
+		CdAudio,
+	}
+
+	public struct PceAudioFaderState
+	{
+		public UInt64 StartClock;
+		public PceAudioFaderTarget Target;
+		[MarshalAs(UnmanagedType.I1)] public bool FastFade;
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
+	}
+
 	public struct PceState : BaseState
 	{
 		public PceCpuState Cpu;
@@ -1676,6 +1689,7 @@ namespace Mesen.Interop
 		public PceCdRomState CdRom;
 		public PceCdAudioPlayerState CdPlayer;
 		public PceAdpcmState Adpcm;
+		public PceAudioFaderState AudioFader;
 		public PceScsiBusState ScsiDrive;
 		public PceArcadeCardState ArcadeCard;
 

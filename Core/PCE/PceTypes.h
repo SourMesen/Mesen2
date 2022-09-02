@@ -311,7 +311,6 @@ struct PceAdpcmState
 	uint8_t DmaControl;
 	uint8_t Control;
 	uint8_t PlaybackRate;
-	uint8_t FadeTimer;
 
 	uint16_t AdpcmLength;
 	bool EndReached;
@@ -382,6 +381,20 @@ struct PceScsiBusState
 	uint8_t SectorsToRead;
 };
 
+enum class PceAudioFaderTarget
+{
+	Adpcm,
+	CdAudio,
+};
+
+struct PceAudioFaderState
+{
+	uint64_t StartClock;
+	PceAudioFaderTarget Target;
+	bool FastFade;
+	bool Enabled;
+};
+
 struct PceState
 {
 	PceCpuState Cpu;
@@ -393,6 +406,7 @@ struct PceState
 	PceCdRomState CdRom;
 	PceCdAudioPlayerState CdPlayer;
 	PceAdpcmState Adpcm;
+	PceAudioFaderState AudioFader;
 	PceScsiBusState ScsiDrive;
 	PceArcadeCardState ArcadeCard;
 

@@ -204,12 +204,6 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 			break;
 		}
 
-		case 0x0F:
-			//TODO: Fade is not implemented
-			LogDebug("Write ADPCM fade register: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
-			_state.FadeTimer = value;
-			break;
-
 		default:
 			LogDebug("Write unimplemented ADPCM register: " + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 			break;
@@ -279,7 +273,8 @@ void PceAdpcm::PlaySample()
 void PceAdpcm::MixAudio(int16_t* out, uint32_t sampleCount, uint32_t sampleRate)
 {
 	double freq = 32000.0 / (16 - _state.PlaybackRate);
-	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().AdpcmVolume / 100.0);
+	double volume = _cdrom->GetAudioFader().GetVolume(PceAudioFaderTarget::Adpcm);
+	_resampler.SetVolume(_emu->GetSettings()->GetPcEngineConfig().AdpcmVolume / 100.0 * volume);
 	_resampler.SetSampleRates(freq, sampleRate);
 	_resampler.Resample<true>(_samplesToPlay.data(), (uint32_t)_samplesToPlay.size() / 2, out, sampleCount);
 	_samplesToPlay.clear();
@@ -296,7 +291,6 @@ void PceAdpcm::Serialize(Serializer& s)
 	SV(_state.DmaControl);
 	SV(_state.Control);
 	SV(_state.PlaybackRate);
-	SV(_state.FadeTimer);
 	SV(_state.AdpcmLength);
 	SV(_state.EndReached);
 	SV(_state.HalfReached);

@@ -4,6 +4,7 @@
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceTypes.h"
+#include "PCE/PceAudioFader.h"
 #include "Shared/CdReader.h"
 #include "Utilities/ISerializable.h"
 
@@ -20,6 +21,7 @@ private:
 	DiscInfo _disc;
 	PceScsiBus _scsi;
 	PceAdpcm _adpcm;
+	PceAudioFader _audioFader;
 	PceCdAudioPlayer _audioPlayer;
 	PceCdRomState _state = {};
 	
@@ -32,6 +34,7 @@ public:
 	PceCdRomState& GetState() { return _state; }
 	PceScsiBusState& GetScsiState() { return _scsi.GetState(); }
 	PceAdpcmState& GetAdpcmState() { return _adpcm.GetState(); }
+	PceAudioFaderState& GetAudioFaderState() { return _audioFader.GetState(); }
 	PceCdAudioPlayerState& GetCdPlayerState() { return _audioPlayer.GetState(); }
 
 	__forceinline void Exec()
@@ -46,6 +49,7 @@ public:
 	}
 
 	PceCdAudioPlayer& GetAudioPlayer() { return _audioPlayer; }
+	PceAudioFader& GetAudioFader() { return _audioFader; }
 
 	void SetIrqSource(PceCdRomIrqSource src);
 	void ClearIrqSource(PceCdRomIrqSource src);

@@ -291,6 +291,7 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	if(_cdrom) {
 		state.CdRom = _cdrom->GetState();
 		state.Adpcm = _cdrom->GetAdpcmState();
+		state.AudioFader = _cdrom->GetAudioFaderState();
 		state.CdPlayer = _cdrom->GetCdPlayerState();
 		state.ScsiDrive = _cdrom->GetScsiState();
 	}
