@@ -3,6 +3,8 @@
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
+#include "PCE/PceVce.h"
+#include "PCE/PceVpc.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceDefaultVideoFilter.h"
@@ -20,6 +22,7 @@ PceEventManager::PceEventManager(Debugger *debugger, PceConsole *console)
 	_cpu = console->GetCpu();
 	_vdc = console->GetVdc();
 	_vpc = console->GetVpc();
+	_vce = console->GetVce();
 	_memoryManager = console->GetMemoryManager();
 
 	_ppuBuffer = new uint16_t[PceConstants::MaxScreenWidth * PceConstants::ScreenHeight];
@@ -153,15 +156,15 @@ uint32_t PceEventManager::TakeEventSnapshot()
 	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
-	return PceConstants::ScanlineCount;
+	_scanlineCount = _vce->GetScanlineCount();
+	return _scanlineCount;
 }
 
 FrameInfo PceEventManager::GetDisplayBufferSize()
 {
 	FrameInfo size;
 	size.Width = PceConstants::ClockPerScanline;
-	//todo, this should change based on VCE setting
-	size.Height = PceConstants::ScanlineCount * 2;
+	size.Height = _scanlineCount * 2;
 	return size;
 }
 

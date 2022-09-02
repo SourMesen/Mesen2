@@ -11,6 +11,7 @@ class Emulator;
 class PceConsole;
 class PceCpu;
 class PceVdc;
+class PceVce;
 class PceVpc;
 class Debugger;
 class PceMemoryManager;
@@ -42,10 +43,13 @@ private:
 	PceCpu* _cpu;
 	PceVdc* _vdc;
 	PceVpc* _vpc;
+	PceVce* _vce;
 	PceMemoryManager* _memoryManager;
 	Debugger* _debugger;
 
+	uint32_t _scanlineCount = 262;
 	uint16_t* _ppuBuffer = nullptr;
+
 	uint16_t _rowClockDividers[PceConstants::ScreenHeight] = {};
 
 protected:
