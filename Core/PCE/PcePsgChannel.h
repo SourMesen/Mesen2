@@ -12,9 +12,8 @@ private:
 	PcePsgChannelState _state = {};
 	PcePsg* _psg = nullptr;
 	uint8_t _chIndex = 0;
-	uint8_t _noiseData[0x1000];
-	uint16_t _noiseAddr = 0;
 
+	uint32_t GetNoisePeriod();
 	uint32_t GetPeriod();
 
 public:

@@ -208,7 +208,10 @@ struct PcePsgChannelState
 	int8_t CurrentOutput;
 
 	//Channel 5 & 6 only
+	uint32_t NoiseLfsr;
+	uint32_t NoiseTimer;
 	bool NoiseEnabled;
+	int8_t NoiseOutput;
 	uint8_t NoiseFrequency;
 };
 

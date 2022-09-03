@@ -1481,7 +1481,10 @@ namespace Mesen.Interop
 		public byte CurrentOutput;
 
 		//Channel 5 & 6 only
+		public UInt32 NoiseLfsr;
+		public UInt32 NoiseTimer;
 		[MarshalAs(UnmanagedType.I1)] public bool NoiseEnabled;
+		public sbyte NoiseOutput;
 		public byte NoiseFrequency;
 	}
 

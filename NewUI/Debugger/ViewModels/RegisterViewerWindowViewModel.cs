@@ -1299,11 +1299,16 @@ namespace Mesen.Debugger.ViewModels
 					new RegEntry("$804.7", "Channel Enabled", ch.Enabled),
 					new RegEntry("$805.0-3", "Right Amplitude", ch.RightVolume, Format.X8),
 					new RegEntry("$805.4-7", "Left Amplitude", ch.LeftVolume, Format.X8),
+					new RegEntry("", "Timer", ch.Timer),
 				});
 
 				if(i >= 4) {
 					entries.Add(new RegEntry("$806.7", "Noise Enabled", ch.NoiseEnabled));
 					entries.Add(new RegEntry("$806.0-4", "Noise Frequency", ch.NoiseFrequency, Format.X8));
+					entries.Add(new RegEntry("", "Noise Timer", ch.NoiseTimer));
+					entries.Add(new RegEntry("", "Noise Output", ch.NoiseOutput == 0x0F ? 1 : 0));
+					entries.Add(new RegEntry("", "Noise LSFR", ch.NoiseLfsr, Format.X24));
+					entries.Add(new RegEntry("", "Noise Output", ch.NoiseLfsr, Format.X24));
 				}
 			}
 
