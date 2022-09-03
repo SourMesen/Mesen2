@@ -322,6 +322,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Spc:
 		case RomFormat::Gbs:
 		case RomFormat::Nsf:
+		case RomFormat::PceHes:
 			//No overscan for music players
 			return OverscanDimensions {};
 	}

@@ -299,6 +299,7 @@
     <ClInclude Include="NES\Mappers\Whirlwind\Smb2j.h" />
     <ClInclude Include="Netplay\NetplayTypes.h" />
     <ClInclude Include="PCE\Debugger\PceAssembler.h" />
+    <ClInclude Include="PCE\HesFileData.h" />
     <ClInclude Include="PCE\IPceMapper.h" />
     <ClInclude Include="PCE\PceArcadeCard.h" />
     <ClInclude Include="PCE\PceAudioFader.h" />
@@ -1103,7 +1104,7 @@
       <PreprocessorDefinitions>MESENOPTIMIZE;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>false</OmitFramePointers>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>

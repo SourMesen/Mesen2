@@ -490,8 +490,7 @@
 			<Control ID="chkGbRomFiles">Game Boy roms: .gb, .gbc</Control>
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
 			<Control ID="chkPceRomFiles">PC Engine roms: .pce, .sgx</Control>
-			<Control ID="chkMovieFiles">Mesen movies: .msm</Control>
-			<Control ID="chkSaveStateFiles">Mesen save states: .mss</Control>
+			<Control ID="chkPceMusicFiles">PC Engine music: .hes</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Folder</Control>
 			<Control ID="btnChangeStorageFolder">Change folder...</Control>

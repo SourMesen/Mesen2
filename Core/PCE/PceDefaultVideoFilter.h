@@ -13,6 +13,19 @@ private:
 	PcEngineConfig _pceConfig = {};
 
 protected:
+	FrameInfo GetFrameInfo()
+	{
+		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
+			//Give a fixed 256x240 of space to PCE player to match the other players
+			FrameInfo frame;
+			frame.Width = 256;
+			frame.Height = 240;
+			return frame;
+		} else {
+			return BaseVideoFilter::GetFrameInfo();
+		}
+	}
+
 	uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset)
 	{
 		return _calculatedPalette[ppuFrame[offset] & 0x3FF];
@@ -98,6 +111,10 @@ public:
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
 	{
+		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
+			return;
+		}
+
 		uint32_t* out = GetOutputBuffer();
 		FrameInfo frameInfo = _frameInfo;
 		FrameInfo baseFrameInfo = _baseFrameInfo;

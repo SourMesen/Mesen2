@@ -16,6 +16,7 @@
 #include "PCE/IPceMapper.h"
 #include "PCE/PceArcadeCard.h"
 #include "PCE/PceSf2RomMapper.h"
+#include "PCE/HesFileData.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/CRC32.h"
 #include "MemoryType.h"
@@ -41,7 +42,13 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	uint32_t crc32 = 0;
 
 	bool cdromUnitEnabled = false;
-	if(romFile.GetFileExtension() == ".cue") {
+	if(romFile.GetFileExtension() == ".hes") {
+		_romFormat = RomFormat::PceHes;
+		if(!LoadHesFile(romFile)) {
+			return LoadRomResult::Failure;
+		}
+		romData = _hesData->RomData;
+	} else if(romFile.GetFileExtension() == ".cue") {
 		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
 			return LoadRomResult::Failure;
 		}
@@ -107,6 +114,10 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	_psg.reset(new PcePsg(_emu, this));
 	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _timer.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize, cdromUnitEnabled));
 	_cpu.reset(new PceCpu(_emu, _memoryManager.get()));
+
+	if(_hesData) {
+		InitHesPlayback(_hesData->CurrentTrack);
+	}
 
 	MessageManager::Log("-----------------");
 	MessageManager::Log("Loaded: " + romFile.GetFileName());
@@ -209,6 +220,10 @@ double PceConsole::GetFps()
 
 BaseVideoFilter* PceConsole::GetVideoFilter()
 {
+	if(_romFormat == RomFormat::PceHes) {
+		return new PceDefaultVideoFilter(_emu);
+	}
+
 	VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
 
 	switch(filterType) {
@@ -244,14 +259,42 @@ RomFormat PceConsole::GetRomFormat()
 	return _romFormat;
 }
 
+bool PceConsole::LoadHesFile(VirtualFile& hesFile)
+{
+	unique_ptr<HesFileData> hesData(new HesFileData());
+	if(!hesData->LoadFile(hesFile)) {
+		return false;
+	}
+	_hesData.swap(hesData);
+	return true;
+}
+
+void PceConsole::InitHesPlayback(uint8_t selectedTrack)
+{
+	_hesData->CurrentTrack = selectedTrack;
+	_cpu->GetState().A = _hesData->CurrentTrack;
+	_cpu->GetState().PC = _hesData->RequestAddress;
+
+	for(int i = 0; i < 8; i++) {
+		_memoryManager->SetMprValue(1 << i, _hesData->InitialMpr[i]);
+	}
+
+	//Setup stack to return to 0x1C00 on RTS, 0x1C00 is setup to cause an infinite loop with BRA
+	_cpu->GetState().SP = 0xFD;
+	_memoryManager->DebugWrite(0x21FE, 0xFF);
+	_memoryManager->DebugWrite(0x21FF, 0x1B);
+}
+
 AudioTrackInfo PceConsole::GetAudioTrackInfo()
 {
-	//TODO HES file support
-	return {};
+	return _hesData ? _hesData->GetAudioTrackInfo(_emu) : AudioTrackInfo {};
 }
 
 void PceConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 {
+	if(_hesData) {
+		_hesData->ProcessAudioPlayerAction(p, _emu);
+	}
 }
 
 AddressInfo PceConsole::GetAbsoluteAddress(AddressInfo& relAddress)

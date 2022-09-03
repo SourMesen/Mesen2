@@ -51,7 +51,7 @@ namespace Mesen.ViewModels
 			RecentGames.Init(GameScreenMode.RecentGames);
 
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {
-				bool showAudioPlayer = x.Format == RomFormat.Nsf || x.Format == RomFormat.Spc || x.Format == RomFormat.Gbs;
+				bool showAudioPlayer = x.Format == RomFormat.Nsf || x.Format == RomFormat.Spc || x.Format == RomFormat.Gbs || x.Format == RomFormat.PceHes;
 				if(AudioPlayer == null && showAudioPlayer) {
 					AudioPlayer = new AudioPlayerViewModel();
 				} else if(!showAudioPlayer) {

@@ -40,6 +40,7 @@ namespace Mesen.Config
 		[Reactive] public bool AssociateGbRomFiles { get; set; } = false;
 		[Reactive] public bool AssociateGbMusicFiles { get; set; } = false;
 		[Reactive] public bool AssociatePceRomFiles { get; set; } = false;
+		[Reactive] public bool AssociatePceMusicFiles { get; set; } = false;
 
 		[Reactive] public bool EnableAutoSaveState { get; set; } = true;
 		[Reactive] public UInt32 AutoSaveStateDelay { get; set; } = 5;

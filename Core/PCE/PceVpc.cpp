@@ -258,8 +258,13 @@ void PceVpc::SendFrame(PceVdc* vdc)
 	bool forRewind = _emu->GetRewindManager()->IsRewinding();
 
 	if(!_skipRender) {
-		RenderedFrame frame(_currentOutBuffer, PceConstants::InternalOutputWidth, PceConstants::InternalOutputHeight, 1.0 / PceConstants::InternalResMultipler, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
-		_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
+		if(_console->GetRomFormat() == RomFormat::PceHes) {
+			RenderedFrame frame(_currentOutBuffer, 256, 240, 1.0, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
+			_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
+		} else {
+			RenderedFrame frame(_currentOutBuffer, PceConstants::InternalOutputWidth, PceConstants::InternalOutputHeight, 1.0 / PceConstants::InternalResMultipler, _vdc1->GetState().FrameCount, _console->GetControlManager()->GetPortStates());
+			_emu->GetVideoDecoder()->UpdateFrame(frame, forRewind, forRewind);
+		}
 	}
 
 	_console->GetPsg()->Run();

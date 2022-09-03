@@ -256,6 +256,9 @@ uint8_t PceMemoryManager::ReadRegister(uint16_t addr)
 		return _state.IoBuffer;
 	} else if(addr <= 0x1BFF) {
 		return _cdrom ? _cdrom->Read(addr) : 0xFF;
+	} else if(_console->GetRomFormat() == RomFormat::PceHes && addr <= 0x1C01) {
+		//Infinite BRA loop
+		return addr & 0x01 ? 0xFE : 0x80;
 	}
 
 	LogDebug("[Debug] Read - missing handler: $" + HexUtilities::ToHex(addr));

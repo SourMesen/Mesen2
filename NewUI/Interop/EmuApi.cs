@@ -154,7 +154,8 @@ namespace Mesen.Interop
 		StudyBox,
 
 		Pce,
-		PceCdRom
+		PceCdRom,
+		PceHes,
 	}
 
 	public enum ConsoleType

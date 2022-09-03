@@ -84,6 +84,7 @@ namespace Mesen.Config
 
 			CreateMimeType("x-mesen-pce", "pce", "PC Engine ROM", mimeTypes, cfg.AssociatePceRomFiles);
 			CreateMimeType("x-mesen-sgx", "sgx", "PC Engine SuperGrafx ROM", mimeTypes, cfg.AssociatePceRomFiles);
+			CreateMimeType("x-mesen-hes", "hes", "PC Engine Sound File", mimeTypes, cfg.AssociatePceMusicFiles);
 
 			//Icon used for shortcuts
 			ImageUtilities.BitmapFromAsset("Assets/MesenIcon.png").Save(Path.Combine(iconFolder, "MesenIcon.png"));
@@ -194,6 +195,7 @@ namespace Mesen.Config
 
 			FileAssociationHelper.UpdateFileAssociation("pce", cfg.AssociatePceRomFiles);
 			FileAssociationHelper.UpdateFileAssociation("sgx", cfg.AssociatePceRomFiles);
+			FileAssociationHelper.UpdateFileAssociation("hes", cfg.AssociatePceMusicFiles);
 		}
 
 		static private void UpdateFileAssociation(string extension, bool associate)

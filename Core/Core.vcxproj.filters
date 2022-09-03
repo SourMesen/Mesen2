@@ -2636,6 +2636,9 @@
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\HesFileData.h">
+      <Filter>PCE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

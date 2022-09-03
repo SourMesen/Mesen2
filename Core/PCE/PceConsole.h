@@ -14,6 +14,7 @@ class PceControlManager;
 class IPceMapper;
 class Emulator;
 struct PceVideoState;
+struct HesFileData;
 enum class PceConsoleType;
 
 class PceConsole final: public IConsole
@@ -32,15 +33,18 @@ private:
 	unique_ptr<PceControlManager> _controlManager;
 	unique_ptr<PceCdRom> _cdrom;
 	unique_ptr<IPceMapper> _mapper;
+	unique_ptr<HesFileData> _hesData;
 	RomFormat _romFormat = RomFormat::Pce;
-	
+
 	static bool IsPopulousCard(uint32_t crc32);
 	static bool IsSuperGrafxCard(uint32_t crc32);
+
+	bool LoadHesFile(VirtualFile& hesFile);
 
 public:
 	PceConsole(Emulator* emu);
 	
-	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue", ".sgx" }; }
+	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue", ".sgx", ".hes" }; }
 	
 	void Serialize(Serializer& s) override;
 
@@ -77,8 +81,8 @@ public:
 	PpuFrameInfo GetPpuFrame() override;
 	RomFormat GetRomFormat() override;
 
+	void InitHesPlayback(uint8_t selectedTrack);
 	AudioTrackInfo GetAudioTrackInfo() override;
-
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
 
 	AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) override;
