@@ -6,6 +6,7 @@
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/PceConsole.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/RewindManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Video/VideoRenderer.h"

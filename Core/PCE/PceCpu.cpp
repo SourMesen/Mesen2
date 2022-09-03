@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PceCpu.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConsole.h"
 #include "Utilities/Serializer.h"

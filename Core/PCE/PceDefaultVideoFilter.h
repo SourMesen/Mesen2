@@ -1,6 +1,6 @@
 #pragma once
-
 #include "stdafx.h"
+#include "PCE/PceConstants.h"
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"

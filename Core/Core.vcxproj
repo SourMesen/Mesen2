@@ -745,6 +745,7 @@
     <ClCompile Include="PCE\PceControlManager.cpp" />
     <ClCompile Include="PCE\PceCpu.cpp" />
     <ClCompile Include="PCE\PceCpu.Instructions.cpp" />
+    <ClCompile Include="PCE\PceMemoryManager.cpp" />
     <ClCompile Include="PCE\PceNtscFilter.cpp" />
     <ClCompile Include="PCE\PceVdc.cpp" />
     <ClCompile Include="PCE\PcePsg.cpp" />

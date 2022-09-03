@@ -11,6 +11,7 @@
 #include "PCE/PceVpc.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceTimer.h"
+#include "PCE/PceCdRom.h"
 #include "PCE/PceConstants.h"
 #include "PCE/IPceMapper.h"
 #include "PCE/PceArcadeCard.h"

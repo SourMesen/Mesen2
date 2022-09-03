@@ -2462,7 +2462,6 @@
     <ClInclude Include="NES\Mappers\Sachen\Sachen9602.h">
       <Filter>NES\Mappers\Sachen</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h" />
     <ClInclude Include="NES\Mappers\Codemasters\BF909x.h">
       <Filter>NES\Mappers\Codemasters</Filter>
     </ClInclude>
@@ -2634,6 +2633,9 @@
     <ClInclude Include="PCE\PceAudioFader.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
+      <Filter>NES\Mappers\Mmc3Variants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2745,6 +2747,9 @@
       <Filter>Shared</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceAudioFader.cpp">
+      <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\PceMemoryManager.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
   </ItemGroup>

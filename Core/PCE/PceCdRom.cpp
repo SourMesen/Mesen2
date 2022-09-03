@@ -5,6 +5,8 @@
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceTypes.h"
 #include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/BatteryManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/HexUtilities.h"

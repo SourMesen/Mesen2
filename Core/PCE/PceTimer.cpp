@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PCE/PceTimer.h"
+#include "PCE/PceConsole.h"
 #include "PCE/PceMemoryManager.h"
 
 PceTimer::PceTimer(PceConsole* console)
