@@ -7,6 +7,7 @@ class PceVdc;
 class PceVpc;
 class PceVce;
 class PcePsg;
+class PceTimer;
 class PceCdRom;
 class PceMemoryManager;
 class PceControlManager;
@@ -26,6 +27,7 @@ private:
 	unique_ptr<PceVpc> _vpc;
 	unique_ptr<PceVce> _vce;
 	unique_ptr<PcePsg> _psg;
+	unique_ptr<PceTimer> _timer;
 	unique_ptr<PceMemoryManager> _memoryManager;
 	unique_ptr<PceControlManager> _controlManager;
 	unique_ptr<PceCdRom> _cdrom;

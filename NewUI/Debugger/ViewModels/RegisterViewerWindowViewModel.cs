@@ -1250,10 +1250,17 @@ namespace Mesen.Debugger.ViewModels
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)
 		{
-			ref PceMemoryManager mem = ref state.MemoryManager;
+			ref PceMemoryManagerState mem = ref state.MemoryManager;
+			ref PceTimerState timer = ref state.Timer;
 
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz"),
+
+				new RegEntry("", "Timer", null),
+				new RegEntry("$C00.0-6", "Reload Value", timer.ReloadValue, Format.X8),
+				new RegEntry("$C01.0", "Enabled", timer.Enabled),
+				new RegEntry("", "Counter", timer.Counter, Format.X8),
+
 				new RegEntry("", "IRQ", null),
 				new RegEntry("$1402", "Disabled IRQs", null),
 				new RegEntry("$1402.0", "IRQ2 (CDROM) Disabled", (mem.DisabledIrqs & 0x01) != 0),

@@ -348,7 +348,7 @@ namespace Mesen.Debugger.ViewModels
 			return mappings;
 		}
 
-		private List<MemoryMappingBlock> GetPceCpuMappings(PceMemoryManager state)
+		private List<MemoryMappingBlock> GetPceCpuMappings(PceMemoryManagerState state)
 		{
 			//TODO improve/complete logic for save ram, etc.
 			List<MemoryMappingBlock> mappings = new();

@@ -10,6 +10,7 @@
 #include "PCE/PceVce.h"
 #include "PCE/PceVpc.h"
 #include "PCE/PcePsg.h"
+#include "PCE/PceTimer.h"
 #include "PCE/PceConstants.h"
 #include "PCE/IPceMapper.h"
 #include "PCE/PceArcadeCard.h"
@@ -101,8 +102,9 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 
 	_vpc->ConnectVdc(_vdc.get(), _vdc2.get());
 
+	_timer.reset(new PceTimer(this));
 	_psg.reset(new PcePsg(_emu, this));
-	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize, cdromUnitEnabled));
+	_memoryManager.reset(new PceMemoryManager(_emu, this, _vpc.get(), _vce.get(), _controlManager.get(), _psg.get(), _timer.get(), _mapper.get(), _cdrom.get(), romData, cardRamSize, cdromUnitEnabled));
 	_cpu.reset(new PceCpu(_emu, _memoryManager.get()));
 
 	MessageManager::Log("-----------------");
@@ -285,6 +287,7 @@ void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 	state.Cpu = _cpu->GetState();
 	state.Video = GetVideoState();
 	state.MemoryManager = _memoryManager->GetState();
+	state.Timer = _timer->GetState();
 	state.Psg = _psg->GetState();
 	for(int i = 0; i < 6; i++) {
 		state.PsgChannels[i] = _psg->GetChannelState(i);
@@ -320,6 +323,7 @@ void PceConsole::Serialize(Serializer& s)
 	SV(_psg);
 	SV(_memoryManager);
 	SV(_controlManager);
+	SV(_timer);
 
 	if(_cdrom) {
 		SV(_cdrom);

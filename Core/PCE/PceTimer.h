@@ -1,20 +1,20 @@
 #pragma once
 #include "stdafx.h"
+#include "PCE/PceTypes.h"
 #include "Utilities/ISerializable.h"
 
-class PceMemoryManager;
+class PceConsole;
 
 class PceTimer final : public ISerializable
 {
 private:
-	uint8_t _reloadValue = 0;
-	uint8_t _counter = 0;
-	uint16_t _scaler = 1024 * 3;
-	bool _enabled = false;
-	PceMemoryManager* _memoryManager = nullptr;
+	PceTimerState _state = {};
+	PceConsole* _console = nullptr;
 
 public:
-	PceTimer(PceMemoryManager* memoryManager);
+	PceTimer(PceConsole* console);
+
+	PceTimerState& GetState() { return _state; }
 
 	void Exec();
 

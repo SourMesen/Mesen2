@@ -1438,7 +1438,7 @@ namespace Mesen.Interop
 		public byte VertEndPosVcr;
 	}
 
-	public struct PceMemoryManager : BaseState
+	public struct PceMemoryManagerState : BaseState
 	{
 		public UInt64 CycleCount;
 
@@ -1450,6 +1450,14 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool FastCpuSpeed;
 		public byte MprReadBuffer;
 		public byte IoBuffer;
+	}
+
+	public struct PceTimerState
+	{
+		public byte ReloadValue;
+		public byte Counter;
+		public UInt16 Scaler;
+		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
 	}
 
 	public struct PcePsgState
@@ -1683,7 +1691,9 @@ namespace Mesen.Interop
 		public PceCpuState Cpu;
 		public PceVideoState Video;
 
-		public PceMemoryManager MemoryManager;
+		public PceMemoryManagerState MemoryManager;
+		public PceTimerState Timer;
+
 		public PcePsgState Psg;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]

@@ -20,7 +20,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
-//TODO refactor into .cpp file, move timer to pceconsole
+//TODO refactor into .cpp file
 
 class Emulator;
 
@@ -35,8 +35,8 @@ private:
 	PcePsg* _psg = nullptr;
 	PceControlManager* _controlManager = nullptr;
 	PceCdRom* _cdrom = nullptr;
+	PceTimer* _timer = nullptr;
 	IPceMapper* _mapper = nullptr;
-	unique_ptr<PceTimer> _timer;
 
 	typedef void(PceMemoryManager::*Func)();
 	Func _exec = nullptr;
@@ -65,7 +65,7 @@ private:
 	bool _cdromUnitEnabled = false;
 
 public:
-	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, IPceMapper* mapper, PceCdRom* cdrom, vector<uint8_t>& romData, uint32_t cardRamSize, bool cdromUnitEnabled)
+	PceMemoryManager(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, PceControlManager* controlManager, PcePsg* psg, PceTimer* timer, IPceMapper* mapper, PceCdRom* cdrom, vector<uint8_t>& romData, uint32_t cardRamSize, bool cdromUnitEnabled)
 	{
 		_emu = emu;
 		_cheatManager = _emu->GetCheatManager();
@@ -73,6 +73,7 @@ public:
 		_vpc = vpc;
 		_vce = vce;
 		_psg = psg;
+		_timer = timer;
 		_mapper = mapper;
 		_cdrom = cdrom;
 		_controlManager = controlManager;
@@ -87,8 +88,6 @@ public:
 		memcpy(_prgRom, romData.data(), _prgRomSize);
 		
 		_console->InitializeRam(_workRam, _workRamSize);
-
-		PcEngineConfig& cfg = _emu->GetSettings()->GetPcEngineConfig();
 
 		_cdromUnitEnabled = cdromUnitEnabled;
 
@@ -114,8 +113,6 @@ public:
 
 		_cdromRam = (uint8_t*)_emu->GetMemory(MemoryType::PceCdromRam).Memory;
 		_saveRam = (uint8_t*)_emu->GetMemory(MemoryType::PceSaveRam).Memory;
-
-		_timer.reset(new PceTimer(this));
 
 		//CPU boots up in slow speed
 		_state.FastCpuSpeed = false;
@@ -537,8 +534,6 @@ public:
 			SVI(_state.Mpr[i]);
 		}
 		SV(_state.MprReadBuffer);
-
-		SV(_timer);
 
 		if(!s.IsSaving()) {
 			UpdateExecCallback();

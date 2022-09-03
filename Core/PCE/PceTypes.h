@@ -181,6 +181,14 @@ struct PceControlManagerState
 
 };
 
+struct PceTimerState
+{
+	uint8_t ReloadValue;
+	uint8_t Counter;
+	uint16_t Scaler;
+	bool Enabled;
+};
+
 struct PcePsgState
 {
 	uint8_t ChannelSelect;
@@ -403,6 +411,7 @@ struct PceState
 	PceCpuState Cpu;
 	PceVideoState Video;
 	PceMemoryManagerState MemoryManager;
+	PceTimerState Timer;
 	PcePsgState Psg;
 	PcePsgChannelState PsgChannels[6];
 
