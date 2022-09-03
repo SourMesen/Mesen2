@@ -21,8 +21,19 @@ struct PceEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg Irq;
 	EventViewerCategoryCfg MarkedBreakpoints;
 
-	EventViewerCategoryCfg VdcWrites;
-	EventViewerCategoryCfg VdcReads;
+	EventViewerCategoryCfg VdcStatusReads;
+
+	EventViewerCategoryCfg VdcVramWrites;
+	EventViewerCategoryCfg VdcVramReads;
+
+	EventViewerCategoryCfg VdcRegSelectWrites;
+	EventViewerCategoryCfg VdcControlWrites;
+	EventViewerCategoryCfg VdcRcrWrites;
+	EventViewerCategoryCfg VdcHvConfigWrites;
+	EventViewerCategoryCfg VdcMemoryWidthWrites;
+	EventViewerCategoryCfg VdcScrollWrites;
+	EventViewerCategoryCfg VdcDmaWrites;
+
 	EventViewerCategoryCfg VceWrites;
 	EventViewerCategoryCfg VceReads;
 	EventViewerCategoryCfg PsgWrites;
@@ -31,6 +42,13 @@ struct PceEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg TimerReads;
 	EventViewerCategoryCfg IoWrites;
 	EventViewerCategoryCfg IoReads;
+	EventViewerCategoryCfg IrqControlWrites;
+	EventViewerCategoryCfg IrqControlReads;
+
+	EventViewerCategoryCfg CdRomWrites;
+	EventViewerCategoryCfg CdRomReads;
+	EventViewerCategoryCfg AdpcmWrites;
+	EventViewerCategoryCfg AdpcmReads;
 
 	bool ShowPreviousFrameEvents;
 };

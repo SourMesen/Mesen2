@@ -683,6 +683,7 @@ namespace Mesen.Interop
 		public sbyte DmaChannel;
 		public DmaChannelConfig DmaChannelInfo;
 		public EventFlags Flags;
+		public Int32 RegisterId;
 		public MemoryOperationInfo TargetMemory;
 	};
 
@@ -786,8 +787,19 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg Irq;
 		public InteropEventViewerCategoryCfg MarkedBreakpoints;
 
-		public InteropEventViewerCategoryCfg VdcWrites;
-		public InteropEventViewerCategoryCfg VdcReads;
+		public InteropEventViewerCategoryCfg VdcStatusReads;
+
+		public InteropEventViewerCategoryCfg VdcVramWrites;
+		public InteropEventViewerCategoryCfg VdcVramReads;
+
+		public InteropEventViewerCategoryCfg VdcRegSelectWrites;
+		public InteropEventViewerCategoryCfg VdcControlWrites;
+		public InteropEventViewerCategoryCfg VdcRcrWrites;
+		public InteropEventViewerCategoryCfg VdcHvConfigWrites;
+		public InteropEventViewerCategoryCfg VdcMemoryWidthWrites;
+		public InteropEventViewerCategoryCfg VdcScrollWrites;
+		public InteropEventViewerCategoryCfg VdcDmaWrites;
+
 		public InteropEventViewerCategoryCfg VceWrites;
 		public InteropEventViewerCategoryCfg VceReads;
 		public InteropEventViewerCategoryCfg PsgWrites;
@@ -796,6 +808,13 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg TimerReads;
 		public InteropEventViewerCategoryCfg IoWrites;
 		public InteropEventViewerCategoryCfg IoReads;
+		public InteropEventViewerCategoryCfg IrqControlWrites;
+		public InteropEventViewerCategoryCfg IrqControlReads;
+
+		public InteropEventViewerCategoryCfg CdRomWrites;
+		public InteropEventViewerCategoryCfg CdRomReads;
+		public InteropEventViewerCategoryCfg AdpcmWrites;
+		public InteropEventViewerCategoryCfg AdpcmReads;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}

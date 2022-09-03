@@ -19,10 +19,11 @@ struct DebugEventInfo
 	uint32_t ProgramCounter;
 	int16_t Scanline;
 	uint16_t Cycle;
-	int16_t BreakpointId;
-	int8_t DmaChannel;
+	int16_t BreakpointId = -1;
+	int8_t DmaChannel = -1;
 	DmaChannelConfig DmaChannelInfo;
 	uint32_t Flags;
+	int32_t RegisterId = -1;
 	MemoryOperationInfo TargetMemory;
 };
 

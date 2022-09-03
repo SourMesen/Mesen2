@@ -376,11 +376,18 @@ namespace Mesen.Debugger.ViewModels
 			_programCounter = "$" + evt.ProgramCounter.ToString("X4");
 			Scanline = evt.Scanline.ToString();
 			Cycle = evt.Cycle.ToString();
-			Address = evt.Type == DebugEventType.Register ? "$" + evt.Operation.Address.ToString("X4") : "";
+			string address = "";
+			if(evt.Type == DebugEventType.Register) {
+				address += "$" + evt.Operation.Address.ToString("X4");
+				if(evt.RegisterId >= 0) {
+					address += $" ({evt.GetRegisterName()} - ${evt.RegisterId:X2})";
+				}
+			}
+			Address = address;
 			Value = evt.Type == DebugEventType.Register ? "$" + evt.Operation.Value.ToString("X2") : "";
 			Type = ResourceHelper.GetEnumText(evt.Type);
 			if(evt.Type == DebugEventType.Register) {
-				Type += evt.Operation.Type == MemoryOperationType.Write || evt.Operation.Type == MemoryOperationType.DmaWrite ? " (W)" : " (R)";
+				Type += evt.Operation.Type.IsWrite() ? " (W)" : " (R)";
 			}
 			Details = EventViewerViewModel.GetEventDetails(evt, true);
 		}

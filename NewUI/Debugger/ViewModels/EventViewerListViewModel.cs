@@ -43,7 +43,10 @@ namespace Mesen.Debugger.ViewModels
 			{ "Scanline", (a, b) => a.Scanline.CompareTo(b.Scanline) },
 			{ "Cycle", (a, b) => a.Cycle.CompareTo(b.Cycle) },
 			{ "Type", (a, b) => a.Type.CompareTo(b.Type) },
-			{ "Address", (a, b) => a.Operation.Address.CompareTo(b.Operation.Address) },
+			{ "Address", (a, b) => {
+				int result = a.Operation.Address.CompareTo(b.Operation.Address);
+				return result != 0 ? result : a.RegisterId.CompareTo(b.RegisterId);
+			} },
 			{ "Value", (a, b) => a.Operation.Value.CompareTo(b.Operation.Value)},
 			{ "Default", (a, b) => {
 				int result = a.Scanline.CompareTo(b.Scanline);

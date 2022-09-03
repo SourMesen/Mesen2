@@ -7,6 +7,8 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
+  Design.Width="200"
+  Design.Height="600"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	x:DataType="cfg:PceEventViewerConfig"
@@ -18,21 +20,44 @@
 
 	<StackPanel>
 		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+			<c:OptionSection Header="VDC writes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
+			<c:OptionSection Header="VDC reads" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"  Margin="10 0 0 0" />
+			<StackPanel Grid.Column="1" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Reg. Select" Config="{CompiledBinding VdcRegSelectWrites}" />
+				<dc:EventViewerCategoryControl Text="VRAM" Config="{CompiledBinding VdcVramWrites}" />
+				<dc:EventViewerCategoryControl Text="Control" Config="{CompiledBinding VdcControlWrites}" />
+				<dc:EventViewerCategoryControl Text="RCR" Config="{CompiledBinding VdcRcrWrites}" />
+				<dc:EventViewerCategoryControl Text="X/Y Scroll" Config="{CompiledBinding VdcScrollWrites}" />
+				<dc:EventViewerCategoryControl Text="Memory Width" Config="{CompiledBinding VdcMemoryWidthWrites}" />
+				<dc:EventViewerCategoryControl Text="H/V Display" Config="{CompiledBinding VdcHvConfigWrites}" />
+				<dc:EventViewerCategoryControl Text="DMA Control" Config="{CompiledBinding VdcDmaWrites}" />
+			</StackPanel>
+			<StackPanel Grid.Column="3" Grid.Row="1">
+				<dc:EventViewerCategoryControl Text="Status" Config="{CompiledBinding VdcStatusReads}" />
+				<dc:EventViewerCategoryControl Text="VRAM" Config="{CompiledBinding VdcVramReads}" />
+			</StackPanel>
+		</Grid>
+		
+		<Grid ColumnDefinitions="10, 1*, 10, 1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0 15 0 0">
 			<c:OptionSection Header="Register writes" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0" />
 			<c:OptionSection Header="Register reads" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"  Margin="10 0 0 0" />
 			<StackPanel Grid.Column="1" Grid.Row="1">
-				<dc:EventViewerCategoryControl Text="VDC" Config="{CompiledBinding VdcWrites}" />
 				<dc:EventViewerCategoryControl Text="VCE" Config="{CompiledBinding VceWrites}" />
 				<dc:EventViewerCategoryControl Text="PSG" Config="{CompiledBinding PsgWrites}" />
 				<dc:EventViewerCategoryControl Text="Timer" Config="{CompiledBinding TimerWrites}" />
 				<dc:EventViewerCategoryControl Text="I/O" Config="{CompiledBinding IoWrites}" />
+				<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding IrqControlWrites}" />
+				<dc:EventViewerCategoryControl Text="CD-ROM" Config="{CompiledBinding CdRomWrites}" />
+				<dc:EventViewerCategoryControl Text="ADPCM" Config="{CompiledBinding AdpcmWrites}" />
 			</StackPanel>
-			<StackPanel Grid.Column="3"  Grid.Row="1">
-				<dc:EventViewerCategoryControl Text="VDC" Config="{CompiledBinding VdcReads}" />
+			<StackPanel Grid.Column="3" Grid.Row="1">
 				<dc:EventViewerCategoryControl Text="VCE" Config="{CompiledBinding VceReads}" />
 				<dc:EventViewerCategoryControl Text="PSG" Config="{CompiledBinding PsgReads}" />
 				<dc:EventViewerCategoryControl Text="Timer" Config="{CompiledBinding TimerReads}" />
 				<dc:EventViewerCategoryControl Text="I/O" Config="{CompiledBinding IoReads}" />
+				<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding IrqControlReads}" />
+				<dc:EventViewerCategoryControl Text="CD-ROM" Config="{CompiledBinding CdRomReads}" />
+				<dc:EventViewerCategoryControl Text="ADPCM" Config="{CompiledBinding AdpcmReads}" />
 			</StackPanel>
 		</Grid>
 

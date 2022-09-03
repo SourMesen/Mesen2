@@ -115,6 +115,9 @@ namespace Mesen.Debugger.Windows
 					if(label != null) {
 						registerText = label.Label + " (" + registerText + ")";
 					}
+					if(evt.RegisterId >= 0) {
+						registerText += $" ({evt.GetRegisterName()} - ${evt.RegisterId:X2})";
+					}
 
 					entries.AddEntry("Register", registerText + (isWrite ? " (Write)" : " (Read)") + (isDma ? " (DMA)" : ""));
 					entries.AddEntry("Value", "$" + evt.Operation.Value.ToString("X2"));

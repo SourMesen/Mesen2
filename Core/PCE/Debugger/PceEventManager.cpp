@@ -44,6 +44,11 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 	evt.BreakpointId = breakpointId;
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _cpu->GetState().PC;
+
+	if(operation.Type == MemoryOperationType::Write && (operation.Address & 0x1FFF) < 0x400 && (operation.Address & 0x03) >= 2) {
+		evt.RegisterId = _vdc->GetState().CurrentReg; //VDC reg
+	}
+
 	_debugEvents.push_back(evt);
 }
 
@@ -69,7 +74,7 @@ DebugEventInfo PceEventManager::GetEvent(uint16_t y, uint16_t x)
 	//Search without including larger background color first
 	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
 		DebugEventInfo& evt = _sentEvents[i];
-		if(evt.Cycle == cycle && evt.Scanline == scanline) {
+		if((evt.Cycle == cycle || evt.Cycle == cycle + 1) && evt.Scanline == scanline) {
 			return evt;
 		}
 	}
@@ -77,7 +82,7 @@ DebugEventInfo PceEventManager::GetEvent(uint16_t y, uint16_t x)
 	//If no exact match, extend to the background color
 	for(int i = (int)_sentEvents.size() - 1; i >= 0; i--) {
 		DebugEventInfo& evt = _sentEvents[i];
-		if(std::abs((int)evt.Cycle - cycle) <= 1 && std::abs((int)evt.Scanline - scanline) <= 1) {
+		if(cycle >= evt.Cycle - 2 && cycle <= evt.Cycle + 3 && std::abs((int)evt.Scanline - scanline) <= 1) {
 			return evt;
 		}
 	}
@@ -108,7 +113,33 @@ EventViewerCategoryCfg PceEventManager::GetEventConfig(DebugEventInfo& evt)
 			bool isWrite = evt.Operation.Type == MemoryOperationType::Write;
 
 			if(reg <= 0x3FF) {
-				return isWrite ? _config.VdcWrites : _config.VdcReads;
+				if(isWrite) {
+					switch(evt.RegisterId) {
+						case -1: return _config.VdcRegSelectWrites;
+						case 0: return _config.VdcVramWrites;
+						case 1: return _config.VdcVramReads;
+						case 2: return _config.VdcVramWrites;
+						case 5: return _config.VdcControlWrites;
+						case 6: return _config.VdcRcrWrites;
+						
+						case 7: case 8:
+							return _config.VdcScrollWrites;
+
+						case 9: return _config.VdcMemoryWidthWrites;
+						
+						case 0xA: case 0xB: case 0xC: case 0xD: case 0xE:
+							return _config.VdcHvConfigWrites;
+
+						case 0xF: case 0x10: case 0x11: case 0x12: case 0x13:
+							return _config.VdcDmaWrites;
+					}
+				} else {
+					if((reg & 0x03) == 0) {
+						return _config.VdcStatusReads;
+					} else if((reg & 0x03) >= 2) {
+						return _config.VdcVramReads;
+					}
+				}
 			} else if(reg <= 0x7FF) {
 				return isWrite ? _config.VceWrites : _config.VceReads;
 			} else if(reg <= 0xBFF) {
@@ -118,7 +149,18 @@ EventViewerCategoryCfg PceEventManager::GetEventConfig(DebugEventInfo& evt)
 			} else if(reg <= 0x13FF) {
 				return isWrite ? _config.IoWrites : _config.IoReads;
 			} else if(reg <= 0x17FF) {
-				//TODO, cdrom, etc.
+				return isWrite ? _config.IrqControlWrites : _config.IrqControlReads;
+			} else if(reg <= 0x1BFF) {
+				switch(reg & 0x0F) {
+					case 8:
+						return isWrite ? _config.AdpcmWrites : _config.CdRomReads;
+
+					case 9: case 0xA: case 0xB: case 0xC: case 0xD: case 0xE:
+						return isWrite ? _config.AdpcmWrites : _config.AdpcmReads;
+					
+					default:
+						return isWrite ? _config.CdRomWrites : _config.CdRomReads;
+				}
 			}
 
 			return {};
