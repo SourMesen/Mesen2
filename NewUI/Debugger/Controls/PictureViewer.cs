@@ -258,12 +258,20 @@ namespace Mesen.Debugger.Controls
 
 		public void ZoomIn()
 		{
-			Zoom = Math.Min(40, Math.Max(1, Zoom + 1));
+			if(Zoom < 1) {
+				Zoom = 1;
+			} else {
+				Zoom = Math.Min(40, Math.Max(1, Zoom + 1));
+			}
 		}
 
 		public void ZoomOut()
 		{
-			Zoom = Math.Min(40, Math.Max(1, Zoom - 1));
+			if(Zoom <= 1) {
+				Zoom = 0.5;
+			} else {
+				Zoom = Math.Min(40, Math.Max(1, Zoom - 1));
+			}
 		}
 
 		public async void ExportToPng()

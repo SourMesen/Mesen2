@@ -6,7 +6,7 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
-		[Reactive] public int ImageScale { get; set; } = 1;
+		[Reactive] public double ImageScale { get; set; } = 1;
 
 		[Reactive] public bool RefreshOnBreakPause { get; set; } = true;
 		[Reactive] public bool AutoRefresh { get; set; } = true;

@@ -7,7 +7,7 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
-		[Reactive] public int ImageScale { get; set; } = 1;
+		[Reactive] public double ImageScale { get; set; } = 1;
 
 		[Reactive] public bool ShowGrid { get; set; }
 		[Reactive] public bool ShowAltGrid { get; set; }
