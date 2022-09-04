@@ -650,7 +650,11 @@ void Emulator::UnregisterInputProvider(IInputProvider* provider)
 double Emulator::GetFps()
 {
 	shared_ptr<IConsole> console = GetConsole();
-	return console ? console->GetFps() : 60.0;
+	double fps = console ? console->GetFps() : 60.0;
+	if(_settings->GetVideoConfig().IntegerFpsMode) {
+		fps = std::round(fps);
+	}
+	return fps;
 }
 
 double Emulator::GetFrameDelay()
@@ -660,11 +664,7 @@ double Emulator::GetFrameDelay()
 	if(emulationSpeed == 0) {
 		frameDelay = 0;
 	} else {
-		double fps = GetFps();
-		if(_settings->GetVideoConfig().IntegerFpsMode) {
-			fps = std::round(fps);
-		}
-		frameDelay = 1000 / fps;
+		frameDelay = 1000 / GetFps();
 		frameDelay /= (emulationSpeed / 100.0);
 	}
 	return frameDelay;
