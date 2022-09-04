@@ -269,7 +269,7 @@ extern "C" {
 		string GetKeyName(uint16_t keyCode) { return ""; }
 		uint16_t GetKeyCode(string keyName) { return 0; }
 
-		void SetKeyState(uint16_t scanCode, bool state) {}
+		bool SetKeyState(uint16_t scanCode, bool state) { return false; }
 		void ResetKeyState() {}
 		void SetDisabled(bool disabled) {}
 	};

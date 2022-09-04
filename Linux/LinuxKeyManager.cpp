@@ -184,11 +184,13 @@ void LinuxKeyManager::StartUpdateDeviceThread()
 	});
 }	
 
-void LinuxKeyManager::SetKeyState(uint16_t scanCode, bool state)
+bool LinuxKeyManager::SetKeyState(uint16_t scanCode, bool state)
 {
-	if(scanCode < 0x205) {
+	if(scanCode < 0x205 && _keyState[scanCode] != state) {
 		_keyState[scanCode] = state;
+		return true;
 	}
+	return false;
 }
 
 void LinuxKeyManager::ResetKeyState()

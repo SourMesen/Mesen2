@@ -43,7 +43,7 @@ public:
 	uint16_t GetKeyCode(string keyName);
 
 	void UpdateDevices();
-	void SetKeyState(uint16_t scanCode, bool state);
+	bool SetKeyState(uint16_t scanCode, bool state);
 	void ResetKeyState();
 
 	void SetDisabled(bool disabled);

@@ -167,11 +167,13 @@ void WindowsKeyManager::UpdateDevices()
 	_directInput->UpdateDeviceList();
 }
 
-void WindowsKeyManager::SetKeyState(uint16_t scanCode, bool state)
+bool WindowsKeyManager::SetKeyState(uint16_t scanCode, bool state)
 {
-	if(scanCode < 0x205) {
+	if(scanCode < 0x205 && _keyState[scanCode] != state) {
 		_keyState[scanCode] = state;
+		return true;
 	}
+	return false;
 }
 
 void WindowsKeyManager::SetDisabled(bool disabled)

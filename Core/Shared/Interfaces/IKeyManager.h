@@ -37,7 +37,7 @@ public:
 	virtual string GetKeyName(uint16_t keyCode) = 0;
 	virtual uint16_t GetKeyCode(string keyName) = 0;
 
-	virtual void SetKeyState(uint16_t scanCode, bool state) = 0;
+	virtual bool SetKeyState(uint16_t scanCode, bool state) = 0;
 	virtual void ResetKeyState() = 0;
 	virtual void SetDisabled(bool disabled) = 0;
 };

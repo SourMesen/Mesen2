@@ -23,7 +23,7 @@ extern "C"
 	DllExport void __stdcall UpdateInputDevices()
 	{ 
 		if(_keyManager) {
-			_keyManager->UpdateDevices(); 
+			_keyManager->UpdateDevices();
 		} 
 	}
 
@@ -45,8 +45,9 @@ extern "C"
 	DllExport void __stdcall SetKeyState(uint16_t scanCode, bool state)
 	{
 		if(_keyManager) {
-			_keyManager->SetKeyState(scanCode, state);
-			_emu->GetShortcutKeyHandler()->ProcessKeys();
+			if(_keyManager->SetKeyState(scanCode, state)) {
+				_emu->GetShortcutKeyHandler()->ProcessKeys();
+			}
 		}
 	}
 	

@@ -47,7 +47,7 @@ public:
 	string GetKeyName(uint16_t key);
 	uint16_t GetKeyCode(string keyName);
 
-	void SetKeyState(uint16_t scanCode, bool state);
+	bool SetKeyState(uint16_t scanCode, bool state);
 	void ResetKeyState();
 	void SetDisabled(bool disabled);
 
