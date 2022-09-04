@@ -325,6 +325,17 @@ PceVideoState PceConsole::GetVideoState()
 	return state;
 }
 
+void PceConsole::SetVideoState(PceVideoState& state)
+{
+	_vdc->GetState() = state.Vdc;
+	_vce->GetState() = state.Vce;
+	_vpc->GetState() = state.Vpc;
+
+	if(_vdc2) {
+		_vdc2->GetState() = state.Vdc2;
+	}
+}
+
 void PceConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 {
 	PceState& state = (PceState&)baseState;

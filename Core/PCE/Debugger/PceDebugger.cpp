@@ -399,8 +399,7 @@ void PceDebugger::GetPpuState(BaseState& state)
 
 void PceDebugger::SetPpuState(BaseState& state)
 {
-	//todo
-	//_ppu->SetState((PceVdcState&)state);
+	_console->SetVideoState((PceVideoState&)state);
 }
 
 ITraceLogger* PceDebugger::GetTraceLogger()

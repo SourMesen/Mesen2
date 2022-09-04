@@ -89,5 +89,6 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) override;
 
 	PceVideoState GetVideoState();
+	void SetVideoState(PceVideoState& state);
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;
 };
