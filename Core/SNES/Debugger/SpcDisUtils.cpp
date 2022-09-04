@@ -101,7 +101,7 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	};
 
 	uint8_t* byteCode = info.GetByteCode();
-	const char* op = settings->GetDebugConfig().UseAltSpcOpNames ? _altOpTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
+	const char* op = settings->GetDebugConfig().SnesUseAltSpcOpNames ? _altOpTemplate[byteCode[0]] : _opTemplate[byteCode[0]];
 	int i = 0;
 	while(op[i]) {
 		switch(op[i]) {

@@ -60,6 +60,11 @@
 				IsChecked="{CompiledBinding Config.UseLowerCaseDisassembly}"
 				Content="{l:Translate chkUseLowerCaseDisassembly}"
 			/>
+			<CheckBox
+				IsVisible="{CompiledBinding IsSpc}"
+				IsChecked="{CompiledBinding Config.Snes.UseAltSpcOpNames}"
+				Content="{l:Translate chkSnesUseAltSpcOpNames}"
+			/>
 		</c:OptionSection>
 
 		<c:OptionSection Header="{l:Translate lblBreakOptions}">

@@ -16,7 +16,6 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnWdm { get; set; } = false;
 		[Reactive] public bool BreakOnStp { get; set; } = false;
 
-		//TODO remove?
 		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
 	}
 }

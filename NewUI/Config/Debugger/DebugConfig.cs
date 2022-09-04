@@ -60,7 +60,7 @@ namespace Mesen.Config
 				SnesBreakOnCop = Debugger.Snes.BreakOnCop,
 				SnesBreakOnWdm = Debugger.Snes.BreakOnWdm,
 				SnesBreakOnStp = Debugger.Snes.BreakOnStp,
-				UseAltSpcOpNames = Debugger.Snes.UseAltSpcOpNames,
+				SnesUseAltSpcOpNames = Debugger.Snes.UseAltSpcOpNames,
 
 				GbBreakOnInvalidOamAccess = Debugger.Gameboy.GbBreakOnInvalidOamAccess,
 				GbBreakOnInvalidVramAccess = Debugger.Gameboy.GbBreakOnInvalidVramAccess,
@@ -112,7 +112,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnCop;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnWdm;
 		[MarshalAs(UnmanagedType.I1)] public bool SnesBreakOnStp;
-		[MarshalAs(UnmanagedType.I1)] public bool UseAltSpcOpNames;
+		[MarshalAs(UnmanagedType.I1)] public bool SnesUseAltSpcOpNames;
 
 		[MarshalAs(UnmanagedType.I1)] public bool GbBreakOnInvalidOamAccess;
 		[MarshalAs(UnmanagedType.I1)] public bool GbBreakOnInvalidVramAccess;

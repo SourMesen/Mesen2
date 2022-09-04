@@ -9,6 +9,7 @@ namespace Mesen.Debugger.ViewModels
 		public DebuggerConfig Config { get; }
 
 		public bool IsSnes { get; }
+		public bool IsSpc { get; }
 		public bool IsNes { get; }
 		public bool IsGameboy { get; }
 		public bool IsPce { get; }
@@ -19,6 +20,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Config = config;
 			IsSnes = cpuType == CpuType.Snes;
+			IsSpc = cpuType == CpuType.Spc;
 			IsNes = cpuType == CpuType.Nes;
 			IsGameboy = cpuType == CpuType.Gameboy;
 			IsPce = cpuType == CpuType.Pce;

@@ -602,7 +602,7 @@ struct DebugConfig
 	bool SnesBreakOnCop = false;
 	bool SnesBreakOnWdm = false;
 	bool SnesBreakOnStp = false;
-	bool UseAltSpcOpNames = false;
+	bool SnesUseAltSpcOpNames = false;
 
 	bool GbBreakOnInvalidOamAccess = false;
 	bool GbBreakOnInvalidVramAccess = false;
