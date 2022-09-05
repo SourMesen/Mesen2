@@ -85,7 +85,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	}
 
 	uint32_t cardRamSize = 0;
-	if(_cdrom) {
+	if(_romFormat == RomFormat::PceCdRom) {
 		if(cfg.CdRomType == PceCdRomType::Arcade) {
 			_mapper.reset(new PceArcadeCard(this, _emu));
 		}
