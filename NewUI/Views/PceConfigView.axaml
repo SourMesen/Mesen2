@@ -47,14 +47,14 @@
 								</Style>
 							</StackPanel.Styles>
 
-							<c:MesenSlider Text="Channel 1" Value="{CompiledBinding Config.Channel1Vol}" />
-							<c:MesenSlider Text="Channel 2" Value="{CompiledBinding Config.Channel2Vol}" />
-							<c:MesenSlider Text="Channel 3" Value="{CompiledBinding Config.Channel3Vol}" />
-							<c:MesenSlider Text="Channel 4" Value="{CompiledBinding Config.Channel4Vol}" />
-							<c:MesenSlider Text="Channel 5" Value="{CompiledBinding Config.Channel5Vol}" />
-							<c:MesenSlider Text="Channel 6" Value="{CompiledBinding Config.Channel6Vol}" />
-							<c:MesenSlider Text="CD Audio" Value="{CompiledBinding Config.CdAudioVolume}" />
-							<c:MesenSlider Text="ADPCM" Value="{CompiledBinding Config.AdpcmVolume}" />
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{CompiledBinding Config.Channel1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{CompiledBinding Config.Channel2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{CompiledBinding Config.Channel3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{CompiledBinding Config.Channel4Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel5}" Value="{CompiledBinding Config.Channel5Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel6}" Value="{CompiledBinding Config.Channel6Vol}" />
+							<c:MesenSlider Text="{l:Translate lblCdAudio}" Value="{CompiledBinding Config.CdAudioVolume}" />
+							<c:MesenSlider Text="{l:Translate lblAdpcm}" Value="{CompiledBinding Config.AdpcmVolume}" />
 						</StackPanel>
 					</c:GroupBox>
 				</StackPanel>

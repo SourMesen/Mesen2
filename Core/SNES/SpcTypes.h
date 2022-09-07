@@ -32,11 +32,6 @@ struct SpcState : BaseState
 	SpcTimer<16> Timer2;
 };
 
-struct DspState
-{
-	uint8_t Regs[128];
-};
-
 namespace SpcFlags {
 	enum SpcFlags : uint8_t
 	{

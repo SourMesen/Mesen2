@@ -268,6 +268,51 @@ namespace Mesen.Interop
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
 		public byte[] Regs;
+
+		public Int32 NoiseLfsr;
+		public UInt16 Counter;
+		public byte Step;
+		public byte OutRegBuffer;
+		public byte EnvRegBuffer;
+		public byte VoiceEndBuffer;
+
+		public Int32 VoiceOutput;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public Int32[] OutSamples;
+
+		public Int32 Pitch;
+		public UInt16 SampleAddress;
+		public UInt16 BrrNextAddress;
+		public byte DirSampleTableAddress;
+		public byte NoiseOn;
+		public byte PitchModulationOn;
+		public byte KeyOn;
+		public byte NewKeyOn;
+		public byte KeyOff;
+		public byte EveryOtherSample;
+		public byte SourceNumber;
+		public byte BrrHeader;
+		public byte BrrData;
+		public byte Looped;
+		public byte Adsr1;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public Int32[] EchoIn;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+		public Int32[] EchoOut;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8*2)]
+		public UInt16[] EchoHistory;
+
+		public UInt16 EchoPointer;
+		public UInt16 EchoLength;
+		public UInt16 EchoOffset;
+		public byte EchoHistoryPos;
+		public byte EchoRingBufferAddress;
+		public byte EchoOn;
+		[MarshalAs(UnmanagedType.I1)] public bool EchoEnabled;
 	}
 
 	public struct NecDspAccFlags

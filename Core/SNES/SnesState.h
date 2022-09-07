@@ -3,6 +3,7 @@
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesPpuTypes.h"
 #include "SNES/SpcTypes.h"
+#include "SNES/DSP/DspTypes.h"
 #include "SNES/Coprocessors/DSP/NecDspTypes.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"

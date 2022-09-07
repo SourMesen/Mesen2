@@ -39,6 +39,27 @@
 		<TabItem Header="{l:Translate tpgAudio}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
+					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left" Margin="0 0 0 5">
+						<StackPanel Orientation="Horizontal" Height="150">
+							<StackPanel.Styles>
+								<Style Selector="c|MesenSlider">
+									<Setter Property="Minimum" Value="0" />
+									<Setter Property="Maximum" Value="100" />
+									<Setter Property="Orientation" Value="Vertical" />
+									<Setter Property="Margin" Value="4 0" />
+								</Style>
+							</StackPanel.Styles>
+
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{CompiledBinding Config.Channel1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{CompiledBinding Config.Channel2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{CompiledBinding Config.Channel3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{CompiledBinding Config.Channel4Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel5}" Value="{CompiledBinding Config.Channel5Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel6}" Value="{CompiledBinding Config.Channel6Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel7}" Value="{CompiledBinding Config.Channel7Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel8}" Value="{CompiledBinding Config.Channel8Vol}" />
+						</StackPanel>
+					</c:GroupBox>
 					<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
 				</StackPanel>
 			</ScrollViewer>

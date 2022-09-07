@@ -39,6 +39,14 @@ namespace Mesen.Config
 
 		//Audio
 		[Reactive] public bool EnableCubicInterpolation { get; set; } = false;
+		[Reactive] public UInt32 Channel1Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel2Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel3Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel4Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel5Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel6Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel7Vol { get; set; } = 100;
+		[Reactive] public UInt32 Channel8Vol { get; set; } = 100;
 
 		//Emulation
 		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
@@ -82,6 +90,15 @@ namespace Mesen.Config
 				Overscan = Overscan.ToInterop(),
 
 				EnableCubicInterpolation = this.EnableCubicInterpolation,
+
+				Channel1Vol = Channel1Vol,
+				Channel2Vol = Channel2Vol,
+				Channel3Vol = Channel3Vol,
+				Channel4Vol = Channel4Vol,
+				Channel5Vol = Channel5Vol,
+				Channel6Vol = Channel6Vol,
+				Channel7Vol = Channel7Vol,
+				Channel8Vol = Channel8Vol,
 
 				EnableRandomPowerOnState = this.EnableRandomPowerOnState,
 				EnableStrictBoardMappings = this.EnableStrictBoardMappings,
@@ -162,6 +179,14 @@ namespace Mesen.Config
 		public InteropOverscanDimensions Overscan;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation;
+		public UInt32 Channel1Vol;
+		public UInt32 Channel2Vol;
+		public UInt32 Channel3Vol;
+		public UInt32 Channel4Vol;
+		public UInt32 Channel5Vol;
+		public UInt32 Channel6Vol;
+		public UInt32 Channel7Vol;
+		public UInt32 Channel8Vol;
 
 		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableStrictBoardMappings;

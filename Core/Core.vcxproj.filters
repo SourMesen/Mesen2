@@ -1269,30 +1269,6 @@
     <ClInclude Include="SNES\Debugger\SpcDisUtils.h">
       <Filter>SNES\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="SNES\DSP\blargg_common.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
-    <ClInclude Include="SNES\DSP\blargg_config.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
-    <ClInclude Include="SNES\DSP\blargg_endian.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
-    <ClInclude Include="SNES\DSP\blargg_source.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
-    <ClCompile Include="SNES\DSP\SPC_DSP.cpp">
-      <Filter>SNES\DSP</Filter>
-    </ClCompile>
-    <ClInclude Include="SNES\DSP\SPC_DSP.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
-    <ClCompile Include="SNES\DSP\SPC_Filter.cpp">
-      <Filter>SNES\DSP</Filter>
-    </ClCompile>
-    <ClInclude Include="SNES\DSP\SPC_Filter.h">
-      <Filter>SNES\DSP</Filter>
-    </ClInclude>
     <ClCompile Include="SNES\Input\Multitap.cpp">
       <Filter>SNES\Input</Filter>
     </ClCompile>
@@ -2639,6 +2615,18 @@
     <ClInclude Include="PCE\HesFileData.h">
       <Filter>PCE</Filter>
     </ClInclude>
+    <ClInclude Include="SNES\DSP\Dsp.h">
+      <Filter>SNES\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\DSP\DspVoice.h">
+      <Filter>SNES\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\DSP\DspInterpolation.h">
+      <Filter>SNES\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="SNES\DSP\DspTypes.h">
+      <Filter>SNES\DSP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2754,6 +2742,12 @@
     </ClCompile>
     <ClCompile Include="PCE\PceMemoryManager.cpp">
       <Filter>PCE</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\DSP\Dsp.cpp">
+      <Filter>SNES\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="SNES\DSP\DspVoice.cpp">
+      <Filter>SNES\DSP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

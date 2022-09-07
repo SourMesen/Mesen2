@@ -59,7 +59,6 @@ namespace Mesen.Windows
 				new("Super Eagle + 2xSai", "", "GPL3", "https://vdnoort.home.xs4all.nl/emulation/2xsai/"),
 				new("xBRZ", "","GPL3", "https://sourceforge.net/projects/xbrz/"),
 				new("blip_buf", "blargg", "LGPL", "http://slack.net/~ant/"),
-				new("SPC_DSP", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("nes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("snes_ntsc", "blargg", "LGPL", "http://slack.net/~ant/"),
 				new("stb_vorbis", "", "Public domain", "https://github.com/nothings/stb"),

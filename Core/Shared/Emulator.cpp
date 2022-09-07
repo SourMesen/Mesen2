@@ -354,6 +354,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
 	
 	if(!romFile.IsValid()) {
+		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
 		return false;
 	}
 

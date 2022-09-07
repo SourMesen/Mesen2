@@ -7,6 +7,7 @@
 
 #include "stdafx.h"
 #include "SNES/SpcTypes.h"
+#include "SNES/DSP/DspTypes.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTimer.h"
 #include "MemoryOperationType.h"
@@ -16,7 +17,7 @@ class SnesConsole;
 class Emulator;
 class SnesMemoryManager;
 class SpcFileData;
-class SPC_DSP;
+class Dsp;
 struct AddressInfo;
 
 class Spc : public ISerializable
@@ -33,7 +34,7 @@ private:
 	Emulator* _emu = nullptr;
 	SnesConsole* _console = nullptr;
 	SnesMemoryManager* _memoryManager = nullptr;
-	unique_ptr<SPC_DSP> _dsp;
+	unique_ptr<Dsp> _dsp;
 
 	double _clockRatio = 0.0;
 
@@ -61,8 +62,6 @@ private:
 		0xF6, 0xDA, 0x00, 0xBA, 0xF4, 0xC4, 0xF4, 0xDD,
 		0x5D, 0xD0, 0xDB, 0x1F, 0x00, 0x00, 0xC0, 0xFF
 	};
-
-	int16_t *_soundBuffer = nullptr;
 
 	//Store operations
 	void STA();
@@ -307,7 +306,7 @@ public:
 	void ProcessEndFrame();
 
 	SpcState& GetState();
-	DspState GetDspState();
+	DspState& GetDspState();
 
 	bool IsMuted();
 	AddressInfo GetAbsoluteAddress(uint16_t addr);

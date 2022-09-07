@@ -52,10 +52,10 @@
 								</Style>
 							</StackPanel.Styles>
 
-							<c:MesenSlider Text="Square 1" Value="{CompiledBinding Config.Square1Vol}" />
-							<c:MesenSlider Text="Square 2" Value="{CompiledBinding Config.Square2Vol}" />
-							<c:MesenSlider Text="Wave" Value="{CompiledBinding Config.WaveVol}" />
-							<c:MesenSlider Text="Noise" Value="{CompiledBinding Config.NoiseVol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare1}" Value="{CompiledBinding Config.Square1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblSquare2}" Value="{CompiledBinding Config.Square2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblWave}" Value="{CompiledBinding Config.WaveVol}" />
+							<c:MesenSlider Text="{l:Translate lblNoise}" Value="{CompiledBinding Config.NoiseVol}" />
 						</StackPanel>
 					</c:GroupBox>
 				</StackPanel>

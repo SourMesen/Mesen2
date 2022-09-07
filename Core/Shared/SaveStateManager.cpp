@@ -269,6 +269,12 @@ void SaveStateManager::SaveRecentGame(string romName, string romPath, string pat
 
 void SaveStateManager::LoadRecentGame(string filename, bool resetGame)
 {
+	VirtualFile file(filename);
+	if(!file.IsValid()) {
+		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", file.GetFileName());
+		return;
+	}
+
 	ZipReader reader;
 	reader.LoadArchive(filename);
 

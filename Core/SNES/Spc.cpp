@@ -4,11 +4,13 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SpcFileData.h"
 #ifndef DUMMYSPC
-#include "SNES/DSP/SPC_DSP.h"
+#include "SNES/DSP/Dsp.h"
 #else
 #undef Spc
-#include "SNES/DSP/SPC_DSP.h"
+#undef DUMMYSPC
+#include "SNES/DSP/Dsp.h"
 #define Spc DummySpc
+#define DUMMYSPC
 #endif
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -21,7 +23,6 @@ Spc::Spc(SnesConsole* console)
 	_emu = console->GetEmulator();
 	_console = console;
 	_memoryManager = console->GetMemoryManager();
-	_soundBuffer = new int16_t[Spc::SampleBufferSize];
 
 	_ram = new uint8_t[Spc::SpcRamSize];
 	_emu->RegisterMemory(MemoryType::SpcRam, _ram, Spc::SpcRamSize);
@@ -29,12 +30,9 @@ Spc::Spc(SnesConsole* console)
 
 	_emu->RegisterMemory(MemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
 
-	_dsp.reset(new SPC_DSP());
-	#ifndef DUMMYSPC
-	_dsp->init(this, _emu->GetSettings(), _ram);
-	#endif
-	_dsp->reset();
-	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+#ifndef DUMMYSPC
+	_dsp.reset(new Dsp(_emu, this));
+#endif
 
 	_state = {};
 	_state.WriteEnabled = true;
@@ -60,7 +58,6 @@ Spc::Spc(SnesConsole* console)
 #ifndef DUMMYSPC
 Spc::~Spc()
 {
-	delete[] _soundBuffer;
 	delete[] _ram;
 }
 #endif
@@ -92,8 +89,7 @@ void Spc::Reset()
 	_operandA = 0;
 	_operandB = 0;
 
-	_dsp->soft_reset();
-	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+	_dsp->Reset();
 }
 
 void Spc::SetSpcState(bool enabled)
@@ -154,7 +150,7 @@ void Spc::IncCycleCount(int32_t addr)
 
 	_state.Cycle += cpuWait[speedSelect];
 #ifndef DUMMYSPC
-	_dsp->run();
+	_dsp->Exec();
 #endif
 
 	uint8_t timerInc = timerMultiplier[speedSelect];
@@ -174,7 +170,7 @@ uint8_t Spc::DebugRead(uint16_t addr)
 		case 0xF1: return 0;
 
 		case 0xF2: return _state.DspReg;
-		case 0xF3: return _dsp->read(_state.DspReg & 0x7F);
+		case 0xF3: return _dsp->Read(_state.DspReg & 0x7F);
 
 		case 0xF4: return _state.CpuRegs[0];
 		case 0xF5: return _state.CpuRegs[1];
@@ -216,7 +212,7 @@ uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 			case 0xF2: value = _state.DspReg; break;
 			case 0xF3: 
 				#ifndef DUMMYSPC
-				value = _dsp->read(_state.DspReg & 0x7F);
+				value = _dsp->Read(_state.DspReg & 0x7F);
 				#else
 				value = 0;
 				#endif
@@ -299,7 +295,7 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 		case 0xF2: _state.DspReg = value; break;
 		case 0xF3: 
 			if(_state.DspReg < 128) {
-				_dsp->write(_state.DspReg, value);
+				_dsp->Write(_state.DspReg, value);
 			}
 			break;
 
@@ -385,11 +381,11 @@ void Spc::ProcessEndFrame()
 
 	UpdateClockRatio();
 
-	int sampleCount = _dsp->sample_count();
+	uint16_t sampleCount = _dsp->GetSampleCount();
 	if(sampleCount != 0) {
-		_emu->GetSoundMixer()->PlayAudioBuffer(_soundBuffer, sampleCount / 2, Spc::SpcSampleRate);
+		_emu->GetSoundMixer()->PlayAudioBuffer(_dsp->GetSamples(), sampleCount / 2, Spc::SpcSampleRate);
 	}
-	_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
+	_dsp->ResetOutput();
 }
 
 SpcState& Spc::GetState()
@@ -397,16 +393,14 @@ SpcState& Spc::GetState()
 	return _state;
 }
 
-DspState Spc::GetDspState()
+DspState& Spc::GetDspState()
 {
-	DspState state;
-	_dsp->copyRegs(state.Regs);
-	return state;
+	return _dsp->GetState();
 }
 
 bool Spc::IsMuted()
 {
-	return _dsp->isMuted();
+	return _dsp->IsMuted();
 }
 
 AddressInfo Spc::GetAbsoluteAddress(uint16_t addr)
@@ -464,28 +458,10 @@ void Spc::Serialize(Serializer &s)
 
 	SVArray(_ram, Spc::SpcRamSize);
 
-	uint8_t dspState[SPC_DSP::state_size];
-	memset(dspState, 0, SPC_DSP::state_size);
-	if(s.IsSaving()) {
-		uint8_t *out = dspState;
-		_dsp->copy_state(&out, [](uint8_t** output, void* in, size_t size) {
-			memcpy(*output, in, size);
-			*output += size;
-		});
+	SV(_dsp);
 
-		SVArray(dspState, SPC_DSP::state_size);
-	} else {
-		SVArray(dspState, SPC_DSP::state_size);
-
+	if(!s.IsSaving()) {
 		UpdateClockRatio();
-
-		uint8_t *in = dspState;
-		_dsp->copy_state(&in, [](uint8_t** input, void* output, size_t size) {
-			memcpy(output, *input, size);
-			*input += size;
-		});
-
-		_dsp->set_output(_soundBuffer, Spc::SampleBufferSize >> 1);
 	}
 
 	if(s.GetFormat() != SerializeFormat::Map) {
@@ -575,7 +551,7 @@ void Spc::LoadSpcFile(SpcFileData* data)
 {
 	memcpy(_ram, data->SpcRam, Spc::SpcRamSize);
 
-	_dsp->load(data->DspRegs);
+	memcpy(_dsp->GetState().Regs, data->DspRegs, sizeof(data->DspRegs));
 
 	_state.PC = data->PC;
 	_state.A = data->A;

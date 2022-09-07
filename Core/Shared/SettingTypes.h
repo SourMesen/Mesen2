@@ -459,6 +459,7 @@ struct SnesConfig
 	OverscanDimensions Overscan = {};
 
 	bool EnableCubicInterpolation = true;
+	uint32_t ChannelVolumes[8] = { 100, 100, 100, 100, 100, 100, 100, 100 };
 
 	bool EnableRandomPowerOnState = false;
 	bool EnableStrictBoardMappings = false;

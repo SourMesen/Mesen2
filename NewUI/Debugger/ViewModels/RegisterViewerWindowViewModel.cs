@@ -732,15 +732,15 @@ namespace Mesen.Debugger.ViewModels
 			DspState dsp = state.Dsp;
 			List<RegEntry> entries = new List<RegEntry>();
 
-			void AddReg(int i, string name)
+			void AddReg(int i, string name, bool signed = false)
 			{
-				entries.Add(new RegEntry("$" + i.ToString("X2"), name, dsp.Regs[i], Format.X8));
+				entries.Add(new RegEntry("$" + i.ToString("X2"), name, signed ? (sbyte)dsp.Regs[i] : dsp.Regs[i], Format.X8));
 			}
 
-			AddReg(0x0C, "Main Volume (MVOL) - Left");
-			AddReg(0x1C, "Main Volume (MVOL) - Right");
-			AddReg(0x2C, "Echo Volume (EVOL) - Left");
-			AddReg(0x3C, "Echo Volume (EVOL) - Right");
+			AddReg(0x0C, "Main Volume (MVOL) - Left", true);
+			AddReg(0x1C, "Main Volume (MVOL) - Right", true);
+			AddReg(0x2C, "Echo Volume (EVOL) - Left", true);
+			AddReg(0x3C, "Echo Volume (EVOL) - Right", true);
 
 			AddReg(0x4C, "Key On (KON)");
 			AddReg(0x5C, "Key Off (KOF)");
@@ -769,8 +769,8 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("Voice #" + i.ToString(), "", null));
 
 				int voice = i << 4;
-				AddReg(voice | 0x00, "Left Volume (VOL)");
-				AddReg(voice | 0x01, "Right Volume (VOL)");
+				AddReg(voice | 0x00, "Left Volume (VOL)", true);
+				AddReg(voice | 0x01, "Right Volume (VOL)", true);
 				entries.Add(new RegEntry("$" + i + "2 + $" + i + "3", "Pitch (P)", dsp.Regs[voice | 0x02] | (dsp.Regs[voice | 0x03] << 8), Format.X16));
 				AddReg(voice | 0x04, "Source (SRCN)");
 				AddReg(voice | 0x05, "ADSR1");

@@ -223,6 +223,15 @@
 			
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
+			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannel1">Channel 1</Control>
+			<Control ID="lblChannel2">Channel 2</Control>
+			<Control ID="lblChannel3">Channel 3</Control>
+			<Control ID="lblChannel4">Channel 4</Control>
+			<Control ID="lblChannel5">Channel 5</Control>
+			<Control ID="lblChannel6">Channel 6</Control>
+			<Control ID="lblChannel7">Channel 7</Control>
+			<Control ID="lblChannel8">Channel 8</Control>
 
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
@@ -357,7 +366,11 @@
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
-
+			<Control ID="lblSquare1">Square 1</Control>
+			<Control ID="lblSquare2">Square 2</Control>
+			<Control ID="lblWave">Wave</Control>
+			<Control ID="lblNoise">Noise</Control>
+			
 			<Control ID="tpgInput">Input</Control>
 			<Control ID="grpControllers">Controllers</Control>
 			<Control ID="lblPlayer1">Player 1</Control>
@@ -371,6 +384,14 @@
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannel1">Channel 1</Control>
+			<Control ID="lblChannel2">Channel 2</Control>
+			<Control ID="lblChannel3">Channel 3</Control>
+			<Control ID="lblChannel4">Channel 4</Control>
+			<Control ID="lblChannel5">Channel 5</Control>
+			<Control ID="lblChannel6">Channel 6</Control>
+			<Control ID="lblCdAudio">CD Audio</Control>
+			<Control ID="lblAdpcm">ADPCM</Control>
 			
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
