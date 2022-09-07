@@ -125,9 +125,9 @@ run:
 	./NewUI/bin/x64/Release/linux-x64/publish/Mesen
 
 clean:
-	rm -r $(COREOBJ)
-	rm -r $(UTILOBJ)
-	rm -r $(LINUXOBJ)
-	rm -r $(SEVENZIPOBJ)
-	rm -r $(LUAOBJ)
-	rm -r $(DLLOBJ)
+	rm -r -f $(COREOBJ)
+	rm -r -f $(UTILOBJ)
+	rm -r -f $(LINUXOBJ)
+	rm -r -f $(SEVENZIPOBJ)
+	rm -r -f $(LUAOBJ)
+	rm -r -f $(DLLOBJ)

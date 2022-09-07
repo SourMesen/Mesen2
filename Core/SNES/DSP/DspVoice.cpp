@@ -24,10 +24,10 @@ void DspVoice::DecodeBrrSample()
 
 	//Sign-extend all four 4-bit samples encoded in these 2 bytes
 	int16_t samples[4] = {
-		(int16_t)((_shared->BrrData & 0xF0) << 8) >> 12,
-		(int16_t)((_shared->BrrData & 0xF) << 12) >> 12,
-		(int16_t)((nextBrrData & 0xF0) << 8) >> 12,
-		(int16_t)((nextBrrData & 0xF) << 12) >> 12
+		(int16_t)((int16_t)((_shared->BrrData & 0xF0) << 8) >> 12),
+		(int16_t)((int16_t)((_shared->BrrData & 0xF) << 12) >> 12),
+		(int16_t)((int16_t)((nextBrrData & 0xF0) << 8) >> 12),
+		(int16_t)((int16_t)((nextBrrData & 0xF) << 12) >> 12)
 	};
 
 	int shift = _shared->BrrHeader >> 4;

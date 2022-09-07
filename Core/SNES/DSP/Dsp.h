@@ -7,7 +7,7 @@
 class Emulator;
 class Spc;
 
-class Dsp : public ISerializable
+class Dsp final : public ISerializable
 {
 private:
 	//KOF ($5C) must be initialized to $00, some games (Chester Cheetah, King of Dragons) do not initialize its value

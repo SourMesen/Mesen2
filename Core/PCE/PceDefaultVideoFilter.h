@@ -13,7 +13,7 @@ private:
 	PcEngineConfig _pceConfig = {};
 
 protected:
-	FrameInfo GetFrameInfo()
+	FrameInfo GetFrameInfo() override
 	{
 		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
 			//Give a fixed 256x240 of space to PCE player to match the other players
