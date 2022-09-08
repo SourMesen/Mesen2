@@ -165,7 +165,11 @@ namespace Mesen.Debugger
 				if(dock.VisibleDockables != null) {
 					if(dock is IProportionalDock propDock && dock.VisibleDockables.Count == 1) {
 						//Remove empty proportional docks (these seem to get created when moving things around)
-						return ToDockDefinition(dock.VisibleDockables[0]);
+						DockEntryDefinition innerEntry = ToDockDefinition(dock.VisibleDockables[0]);
+
+						//Keep the outer layer's proportion (inner will be set to 1, which will cause issues)
+						innerEntry.Proportion = entry.Proportion;
+						return innerEntry;
 					}
 
 					if(dock.ActiveDockable != null) {
