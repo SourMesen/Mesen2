@@ -1,6 +1,6 @@
 #Welcome to what must be the most terrible makefile ever (but hey, it works)
 #Both clang & gcc work fine - clang seems to output faster code
-#.NET 6 (and its dev tools) must be installed to compiled the UI.
+#.NET 6 (and its dev tools) must be installed to compile the UI.
 #The emulation core also requires SDL2.
 #Run "make" to build, "make run" to run
 
