@@ -469,8 +469,8 @@ namespace Mesen.Debugger.ViewModels
 			entries.StartUpdate();
 			entries.AddEntry("Size", info.ColumnCount + "x" + info.RowCount);
 			entries.AddEntry("Size (px)", info.ColumnCount* info.TileWidth + "x" + info.RowCount* info.TileHeight);
-			entries.AddEntry("Tilemap Address", "$" + FormatAddress((int)info.TilemapAddress));
-			entries.AddEntry("Tileset Address", "$" + FormatAddress((int)info.TilesetAddress));
+			entries.AddEntry("Tilemap Address", FormatAddress((int)info.TilemapAddress));
+			entries.AddEntry("Tileset Address", FormatAddress((int)info.TilesetAddress));
 			entries.AddEntry("Tile Format", info.Format);
 			if(info.Mirroring != TilemapMirroring.None) {
 				entries.AddEntry("Mirroring", info.Mirroring);
