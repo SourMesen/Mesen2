@@ -53,14 +53,15 @@ namespace Mesen.Debugger.Controls
 
 		private void ComputeColumnWidth()
 		{
-			int maxWidth = 0;
-			double fontSize = ConfigManager.Config.Preferences.MesenFont.FontSize;
-			Typeface typeface = new Typeface(ConfigManager.Config.Preferences.MesenFont.FontFamily, FontStyle.Normal, FontWeight.Bold);
-			foreach(var item in Items) {
-				var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, null);
-				maxWidth = Math.Max(maxWidth, (int)text.Width + 5);
+			if(Application.Current?.Resources["MesenFont"] is FontFamily mesenFont && Application.Current?.Resources["MesenFontSize"] is double fontSize) {
+				int maxWidth = 0;
+				Typeface typeface = new Typeface(mesenFont, FontStyle.Normal, FontWeight.Bold);
+				foreach(var item in Items) {
+					var text = new FormattedText(item.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, fontSize, null);
+					maxWidth = Math.Max(maxWidth, (int)text.Width + 5);
+				}
+				FirstColumnWidth = maxWidth;
 			}
-			FirstColumnWidth = maxWidth;
 		}
 
 		private void TextBox_Tapped(object? sender, TappedEventArgs e)
@@ -89,19 +90,19 @@ namespace Mesen.Debugger.Controls
 	{
 		[Reactive] public string Name { get; set; } = "";
 		[Reactive] public object Value { get; set; } = "";
-		[Reactive] public FontFamily Font { get; set; }
+		[Reactive] public bool UseMonoFont { get; set; } = false;
 
-		public TooltipEntry(string name, object value, FontFamily? font = null)
+		public TooltipEntry(string name, object value, bool useMonoFont = false)
 		{
 			Name = name;
 			Value = value;
-			Font = font ?? FontFamily.Default;
+			UseMonoFont = useMonoFont;
 		}
 	}
 
 	public class CustomTooltipEntry : TooltipEntry
 	{
-		public CustomTooltipEntry(string name, object value, FontFamily? font = null) : base(name, value, font)
+		public CustomTooltipEntry(string name, object value, bool useMonoFont = false) : base(name, value, useMonoFont)
 		{
 		}
 	}
@@ -159,7 +160,7 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		public void AddEntry(string name, object value, FontFamily? font = null)
+		public void AddEntry(string name, object value, bool useMonoFont = false)
 		{
 			_updatedKeys.Add(name);
 
@@ -170,7 +171,7 @@ namespace Mesen.Debugger.Controls
 			if(_entries.TryGetValue(name, out TooltipEntry? entry)) {
 				entry.Value = value;
 			} else {
-				entry = new TooltipEntry(name, value, font);
+				entry = new TooltipEntry(name, value, useMonoFont);
 				_entries[entry.Name] = entry;
 				base.Insert(_updatedKeys.Count - 1, entry);
 				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));

@@ -47,7 +47,7 @@
 				<c:GroupBox
 					Header="{l:Translate lblSelectedColor}"
 					Margin="0 5 0 0"
-					MinWidth="195"
+					MinWidth="200"
 				>
 					<ContentControl Content="{CompiledBinding PreviewPanel}" />
 				</c:GroupBox>

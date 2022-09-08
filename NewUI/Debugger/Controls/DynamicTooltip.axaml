@@ -17,6 +17,14 @@
 		<Style Selector="TextBox">
 			<Setter Property="Background" Value="Transparent" />
 		</Style>
+		<Style Selector="TextBox.mono">
+			<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
+			<Setter Property="FontSize" Value="{DynamicResource MesenMonospaceFontSize}" />
+		</Style>
+		<Style Selector="TextBox.regular">
+			<Setter Property="FontFamily" Value="{DynamicResource MesenFont}" />
+			<Setter Property="FontSize" Value="{DynamicResource MesenFontSize}" />
+		</Style>
 	</UserControl.Styles>
 
 	<UserControl.DataTemplates>
@@ -38,8 +46,8 @@
 						<DataTemplate DataType="x:String">
 							<TextBox
 								Text="{Binding}"
-								FontFamily="{Binding $parent[StackPanel].DataContext.Font}"
-								FontSize="12"
+								Classes.mono="{Binding $parent[StackPanel].DataContext.UseMonoFont}"
+								Classes.regular="{Binding !$parent[StackPanel].DataContext.UseMonoFont}"
 								Margin="0"
 								MinHeight="0"
 								MinWidth="0"

@@ -124,7 +124,6 @@ namespace Mesen.Debugger.Utilities
 
 		private static DynamicTooltip GetMarginAddressTooltip(CpuType cpuType, CodeSegmentInfo seg)
 		{
-			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
 			MemoryType memType = cpuType.ToMemoryType();
 
 			TooltipEntries items = new();
@@ -147,7 +146,7 @@ namespace Mesen.Debugger.Utilities
 				addressField += "$" + absAddr.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + absAddr.Type.GetShortName() + ")";
 			}
 
-			items.AddEntry("Address", addressField, monoFont);
+			items.AddEntry("Address", addressField, true);
 
 			bool isCode = false;
 			if(address >= 0) {
@@ -157,7 +156,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			if(isCode) {
-				items.AddEntry("Byte code", seg.Data.ByteCodeStr, monoFont);
+				items.AddEntry("Byte code", seg.Data.ByteCodeStr, true);
 			}
 
 			return new DynamicTooltip() { Items = items };
@@ -171,9 +170,9 @@ namespace Mesen.Debugger.Utilities
 			TooltipEntries items = new();
 
 			if(codeLoc.Symbol != null) {
-				items.AddEntry("Symbol", codeLoc.Symbol.Value.Name + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), monoFont);
+				items.AddEntry("Symbol", codeLoc.Symbol.Value.Name + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), true);
 			} else if(codeLoc.Label != null) {
-				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), monoFont);
+				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), true);
 			}
 
 			if(address >= 0) {
@@ -181,10 +180,10 @@ namespace Mesen.Debugger.Utilities
 				int wordValue = (DebugApi.GetMemoryValue(memType, (uint)address + 1) << 8) | byteValue;
 
 				StackPanel mainPanel = new StackPanel() { Spacing = -4 };
-				mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont));
-				mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont));
+				mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
+				mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
 
-				items.AddEntry("Address", GetAddressField(cpuType, address, memType), monoFont);
+				items.AddEntry("Address", GetAddressField(cpuType, address, memType), true);
 				items.AddEntry("Value", mainPanel);
 			} else if(codeLoc.Symbol?.Address != null) {
 				AddressInfo? symbolAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(codeLoc.Symbol.Value);
@@ -195,15 +194,15 @@ namespace Mesen.Debugger.Utilities
 					int wordValue = (DebugApi.GetMemoryValue(symbolAddr.Value.Type, (uint)symbolAddr.Value.Address + 1) << 8) | byteValue;
 
 					StackPanel mainPanel = new StackPanel() { Spacing = -4 };
-					mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont));
-					mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont));
-					items.AddEntry("Address", "$" + symbolAddr.Value.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + symbolAddr.Value.Type.GetShortName() + ")", monoFont);
+					mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
+					mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
+					items.AddEntry("Address", "$" + symbolAddr.Value.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + symbolAddr.Value.Type.GetShortName() + ")", true);
 					items.AddEntry("Value", mainPanel);
 				}
 			}
 
 			if(codeLoc.Label?.Comment.Length > 0) {
-				items.AddEntry("Comment", codeLoc.Label.Comment, monoFont);
+				items.AddEntry("Comment", codeLoc.Label.Comment, true);
 			}
 
 			if(address >= 0) {
@@ -236,14 +235,12 @@ namespace Mesen.Debugger.Utilities
 			CpuInstructionProgress progress = seg.Progress.CpuProgress;
 			MemoryOperationInfo operation = progress.LastMemOperation;
 
-			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
-
 			TooltipEntries items = new();
-			items.AddEntry("Type", ResourceHelper.GetEnumText(operation.Type), monoFont);
-			items.AddEntry("Cycle", seg.Progress.Current.ToString(), monoFont);
+			items.AddEntry("Type", ResourceHelper.GetEnumText(operation.Type), true);
+			items.AddEntry("Cycle", seg.Progress.Current.ToString(), true);
 			if(operation.Type != MemoryOperationType.Idle) {
-				items.AddEntry("Address", "$" + operation.Address.ToString("X" + cpuType.GetAddressSize()), monoFont);
-				items.AddEntry("Value", "$" + operation.Value.ToString("X2"), monoFont);
+				items.AddEntry("Address", "$" + operation.Address.ToString("X" + cpuType.GetAddressSize()), true);
+				items.AddEntry("Value", "$" + operation.Value.ToString("X2"), true);
 			}
 
 			return new DynamicTooltip() { Items = items };
@@ -260,11 +257,11 @@ namespace Mesen.Debugger.Utilities
 			return addressField;
 		}
 
-		private static StackPanel GetHexDecPanel(int value, string format, FontFamily font)
+		private static StackPanel GetHexDecPanel(int value, string format, FontFamily font, double fontSize)
 		{
 			StackPanel panel = new StackPanel() { Orientation = Avalonia.Layout.Orientation.Horizontal };
-			panel.Children.Add(new TextBlock() { Text = "$" + value.ToString(format), FontFamily = font, FontSize = 12 });
-			panel.Children.Add(new TextBlock() { Text = "  (" + value.ToString() + ")", FontFamily = font, FontSize = 12, Foreground = Brushes.DimGray, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+			panel.Children.Add(new TextBlock() { Text = "$" + value.ToString(format), FontFamily = font, FontSize = fontSize });
+			panel.Children.Add(new TextBlock() { Text = "  (" + value.ToString() + ")", FontFamily = font, FontSize = fontSize, Foreground = Brushes.DimGray, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
 			return panel;
 		}
 	}
