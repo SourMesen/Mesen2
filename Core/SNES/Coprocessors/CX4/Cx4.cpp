@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/CX4/Cx4.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/SnesCpu.h"

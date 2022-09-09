@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/SimpleLock.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Video/DrawCommand.h"

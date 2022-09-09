@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Netplay/NetMessage.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

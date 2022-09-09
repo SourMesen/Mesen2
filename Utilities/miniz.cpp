@@ -156,7 +156,7 @@
      (i.e. 32-bit stat() fails for me on files > 0x7FFFFFFF bytes).
 */
 
-#include "stdafx.h"
+#include "pch.h"
 #include "miniz.h"
 
 typedef unsigned char mz_validate_uint16[sizeof(mz_uint16)==2 ? 1 : -1];

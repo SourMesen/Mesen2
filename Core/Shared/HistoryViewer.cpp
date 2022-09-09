@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/HistoryViewer.h"
 #include "Shared/RewindData.h"
 #include "Shared/Emulator.h"

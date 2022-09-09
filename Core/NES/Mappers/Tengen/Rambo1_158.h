@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Tengen/Rambo1.h"
 
 class Rambo1_158 : public Rambo1

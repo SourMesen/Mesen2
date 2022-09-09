@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesCpu.h"
 #include "NES/Debugger/DummyNesCpu.h"
 

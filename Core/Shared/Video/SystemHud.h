@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <chrono>
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"

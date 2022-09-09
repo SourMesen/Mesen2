@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/VsSystem/VsControlManager.h"
 #include "NES/Mappers/VsSystem/VsSystem.h"
 #include "NES/Mappers/VsSystem/VsInputButtons.h"

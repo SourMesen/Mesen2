@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "BatteryManager.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"

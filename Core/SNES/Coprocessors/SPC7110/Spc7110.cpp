@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/SPC7110/Spc7110.h"
 #include "SNES/Coprocessors/SPC7110/Spc7110Decomp.h"
 #include "SNES/MemoryMappings.h"

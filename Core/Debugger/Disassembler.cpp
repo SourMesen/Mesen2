@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include "Debugger/Disassembler.h"
 #include "Debugger/DisassemblyInfo.h"

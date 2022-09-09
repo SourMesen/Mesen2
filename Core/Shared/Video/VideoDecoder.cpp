@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Interfaces/IRenderingDevice.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Shared/Video/VideoRenderer.h"

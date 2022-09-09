@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Core/Shared/Interfaces/INotificationListener.h"
 #include "Core/Shared/NotificationManager.h"
 

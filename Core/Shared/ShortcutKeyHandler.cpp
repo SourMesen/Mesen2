@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/ShortcutKeyHandler.h"
 #include "Shared/SystemActionManager.h"
 #include "Shared/EmuSettings.h"

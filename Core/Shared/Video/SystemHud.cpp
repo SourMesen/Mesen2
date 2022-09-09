@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Video/SystemHud.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Movies/MovieManager.h"

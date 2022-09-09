@@ -35,7 +35,7 @@
  * compile-time configuration.
  */
 
-#include "stdafx.h"
+#include "pch.h"
 #include <string.h>
 #include <sstream>
 #include <iomanip>

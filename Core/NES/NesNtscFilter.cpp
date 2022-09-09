@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesNtscFilter.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesConsole.h"

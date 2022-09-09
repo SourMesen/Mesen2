@@ -1,6 +1,6 @@
 /* blip_buf 1.1.0. http://www.slack.net/~ant/ */
 
-#include "stdafx.h"
+#include "pch.h"
 #include "blip_buf.h"
 
 #include <assert.h>

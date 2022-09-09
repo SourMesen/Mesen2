@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Namco/Namco108.h"
 
 class Namco108_95 : public Namco108

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/ScriptManager.h"
 #include "Debugger/ScriptHost.h"
 #include "Debugger/DebugBreakHelper.h"

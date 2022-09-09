@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/GSU/Gsu.h"
 #include "SNES/Coprocessors/GSU/GsuRomHandler.h"
 #include "SNES/Coprocessors/GSU/GsuRamHandler.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Txc/Txc22211A.h"
 
 class Txc22211C : public Txc22211A

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <regex>
 #include <unordered_map>
 #include "Utilities/HexUtilities.h"

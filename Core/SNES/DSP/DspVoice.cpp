@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/DSP/DspVoice.h"
 #include "SNES/DSP/Dsp.h"
 #include "SNES/DSP/DspTypes.h"

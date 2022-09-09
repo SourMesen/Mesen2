@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Audio/WaveRecorder.h"
 #include "Shared/MessageManager.h"
 

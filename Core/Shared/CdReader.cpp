@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "CdReader.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/StringUtilities.h"

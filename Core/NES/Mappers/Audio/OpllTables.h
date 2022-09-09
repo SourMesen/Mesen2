@@ -44,7 +44,7 @@ YM2143 data sheet
 **************************************************************************************/
 
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/Serializer.h"
 
 namespace Vrc7Opll {

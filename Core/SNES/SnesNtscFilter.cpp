@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/SnesNtscFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"

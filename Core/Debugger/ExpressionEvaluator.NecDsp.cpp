@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ExpressionEvaluator.h"
 #include "SNES/Coprocessors/DSP/NecDspTypes.h"
 #include "SNES/Debugger/NecDspDebugger.h"

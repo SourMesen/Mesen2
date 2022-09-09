@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 #include "GbTypes.h"

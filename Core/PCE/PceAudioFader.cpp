@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceAudioFader.h"
 #include "PCE/PceConsole.h"
 #include "Utilities/Serializer.h"

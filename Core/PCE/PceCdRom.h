@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceScsiBus.h"
 #include "PCE/PceAdpcm.h"
 #include "PCE/PceCdAudioPlayer.h"

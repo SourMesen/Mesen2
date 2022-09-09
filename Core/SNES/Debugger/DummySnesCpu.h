@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/DebugTypes.h"
 #include "SNES/MemoryMappings.h"
 #include "SNES/BaseCartridge.h"

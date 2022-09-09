@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 #include "Spc7110Decomp.h"
 #include "Rtc4513.h"

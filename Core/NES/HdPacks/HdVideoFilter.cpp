@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/HdPacks/HdNesPack.h"
 #include "NES/HdPacks/HdVideoFilter.h"
 #include "NES/NesConsole.h"

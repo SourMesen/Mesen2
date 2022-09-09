@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Debugger/NesPpuTools.h"
 #include "NES/Mappers/Nintendo/MMC5.h"
 #include "NES/NesConsole.h"

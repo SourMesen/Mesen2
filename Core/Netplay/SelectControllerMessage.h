@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NetMessage.h"
 
 class SelectControllerMessage : public NetMessage

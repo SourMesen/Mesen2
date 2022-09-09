@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PlatformUtilities.h"
 
 #ifdef _WIN32

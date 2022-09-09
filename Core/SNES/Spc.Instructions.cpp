@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Spc.h"
 #include "Utilities/HexUtilities.h"
 

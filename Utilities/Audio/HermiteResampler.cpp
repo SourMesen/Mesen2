@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "HermiteResampler.h"
 
 //Adapted from http://paulbourke.net/miscellaneous/interpolation/

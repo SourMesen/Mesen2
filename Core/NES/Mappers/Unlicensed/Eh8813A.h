@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/BaseMapper.h"
 
 class Eh8813A : public BaseMapper

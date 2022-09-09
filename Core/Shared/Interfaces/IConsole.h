@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Shared/Audio/AudioPlayerTypes.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/SnesConsole.h"

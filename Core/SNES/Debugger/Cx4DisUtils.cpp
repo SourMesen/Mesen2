@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Debugger/Cx4DisUtils.h"
 #include "SNES/Coprocessors/CX4/Cx4Types.h"
 #include "Debugger/DisassemblyInfo.h"

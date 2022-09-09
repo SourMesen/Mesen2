@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <thread>
 #include "Shared/SettingTypes.h"
 #include "Shared/RenderedFrame.h"

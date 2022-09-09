@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/InputHud.h"
 #include "Shared/IControllerHub.h"

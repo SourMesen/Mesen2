@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Bandai/BaseEeprom24C0X.h"
 #include "NES/NesConsole.h"
 #include "Shared/Emulator.h"

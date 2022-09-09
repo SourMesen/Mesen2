@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PcePsgChannel.h"
 #include "PCE/PcePsg.h"
 #include "Utilities/Serializer.h"

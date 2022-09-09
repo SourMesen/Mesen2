@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/KeyManager.h"
 #include "SNES/SnesPpu.h"

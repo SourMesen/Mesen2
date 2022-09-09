@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <unordered_map>
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"

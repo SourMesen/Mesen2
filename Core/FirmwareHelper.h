@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"

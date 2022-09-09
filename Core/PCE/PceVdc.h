@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Emulator.h"
 #include "MemoryType.h"
 #include "PCE/PceTypes.h"

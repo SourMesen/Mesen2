@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Input/SnesController.h"
 #include "Shared/Emulator.h"
 #include "Shared/InputHud.h"

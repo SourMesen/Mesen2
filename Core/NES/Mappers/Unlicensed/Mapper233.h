@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Unlicensed/Mapper226.h"
 
 class Mapper233 : public Mapper226

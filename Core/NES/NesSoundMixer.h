@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Audio/blip_buf.h"
 #include "Utilities/Audio/StereoDelayFilter.h"

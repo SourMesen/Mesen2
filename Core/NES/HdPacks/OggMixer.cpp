@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include "NES/HdPacks/OggReader.h"
 #include "NES/HdPacks/OggMixer.h"

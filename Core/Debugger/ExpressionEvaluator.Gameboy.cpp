@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Gameboy/Debugger/GbDebugger.h"
 #include "Gameboy/GbTypes.h"

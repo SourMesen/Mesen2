@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PceTurboTap.h"
 
 PceTurboTap::PceTurboTap(Emulator* emu, uint8_t port, ControllerConfig controllers[]) : ControllerHub(emu, ControllerType::PceTurboTap, port, controllers)

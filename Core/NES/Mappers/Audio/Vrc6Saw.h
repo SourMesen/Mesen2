@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/Serializer.h"
 
 class Vrc6Saw : public ISerializable

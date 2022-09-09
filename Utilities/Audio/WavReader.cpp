@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/Audio/WavReader.h"
 
 unique_ptr<WavReader> WavReader::Create(uint8_t* wavData, uint32_t length)

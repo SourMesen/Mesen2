@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceConstants.h"
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Shared/EmuSettings.h"

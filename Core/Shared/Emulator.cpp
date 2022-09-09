@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <assert.h>
 #include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"

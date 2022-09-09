@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/BaseMapper.h"
 #include "NES/NesCpu.h"
 #include "NES/Mappers/Audio/Sunsoft5bAudio.h"

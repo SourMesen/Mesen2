@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Gameboy/Debugger/GbEventManager.h"
 #include "Gameboy/GbCpu.h"
 #include "Gameboy/GbPpu.h"

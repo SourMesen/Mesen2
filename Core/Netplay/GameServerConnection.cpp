@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <random>
 #include "Netplay/GameServerConnection.h"
 #include "Netplay/HandShakeMessage.h"

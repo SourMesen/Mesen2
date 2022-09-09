@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/InputHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/BaseControlManager.h"

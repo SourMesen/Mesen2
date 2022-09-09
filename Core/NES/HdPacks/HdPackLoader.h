@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/HdPacks/HdData.h"
 #include "Utilities/ZipReader.h"
 #include "Utilities/VirtualFile.h"

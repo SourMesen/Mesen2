@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Carts/GbCart.h"
 #include "Carts/GbMbc1.h"
 #include "Carts/GbMbc2.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "RewindData.h"
 #include "Emulator.h"
 #include "SaveStateManager.h"

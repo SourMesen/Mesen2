@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/HdPacks/OggReader.h"
 #include "Utilities/Audio/stb_vorbis.h"
 

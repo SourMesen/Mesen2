@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesHeader.h"
 #include "NES/RomData.h"
 #include "Shared/MessageManager.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/SnesDefaultVideoFilter.h"
 #include "Gameboy/Debugger/GbPpuTools.h"
 #include "Debugger/DebugTypes.h"

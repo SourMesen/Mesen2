@@ -5,7 +5,7 @@
 #define __SPC__H
 #endif
 
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/DSP/DspTypes.h"
 #include "SNES/SnesCpuTypes.h"

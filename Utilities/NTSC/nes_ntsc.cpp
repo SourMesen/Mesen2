@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 /* nes_ntsc 0.2.2. http://www.slack.net/~ant/ */
 

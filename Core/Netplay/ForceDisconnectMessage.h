@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Netplay/NetMessage.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/FolderUtilities.h"

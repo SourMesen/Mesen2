@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
 

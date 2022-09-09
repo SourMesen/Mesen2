@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Breakpoint.h"
 #include "DebugTypes.h"
 #include "DebugUtilities.h"

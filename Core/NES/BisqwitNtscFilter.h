@@ -2,7 +2,7 @@
 //As described here:
 //http://forums.nesdev.com/viewtopic.php?p=172329
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Video/BaseVideoFilter.h"
 #include "Utilities/AutoResetEvent.h"
 

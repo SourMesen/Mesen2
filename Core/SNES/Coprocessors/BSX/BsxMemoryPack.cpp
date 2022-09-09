@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/BSX/BsxMemoryPack.h"
 #include "SNES/SnesConsole.h"
 #include "Shared/Emulator.h"

@@ -16,7 +16,7 @@
 *  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../stdafx.h"
+#include "../pch.h"
 
 #define supertwoxsai_interpolate_xrgb8888(A, B) ((((A) & 0xFEFEFEFE) >> 1) + (((B) & 0xFEFEFEFE) >> 1) + ((A) & (B) & 0x01010101))
 

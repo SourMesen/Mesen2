@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/RewindManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Emulator.h"

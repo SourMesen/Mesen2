@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Mmc3Variants/MMC3_215.h"
 
 class Unl8237A : public MMC3_215

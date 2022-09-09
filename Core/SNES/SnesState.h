@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/BaseState.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesPpuTypes.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "LuaApi.h"
 #include "Lua/lua.hpp"
 #include "Debugger/LuaCallHelper.h"

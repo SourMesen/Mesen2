@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Core/Shared/Interfaces/IAudioDevice.h"
 #include "Utilities/safe_ptr.h"
 

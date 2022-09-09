@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <complex>
 #include "Utilities/kissfft.h"
 #include "Utilities/Timer.h"

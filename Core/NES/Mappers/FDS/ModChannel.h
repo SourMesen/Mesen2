@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/FDS/BaseFdsChannel.h"
 
 class ModChannel : public BaseFdsChannel

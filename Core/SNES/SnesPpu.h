@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/SnesPpuTypes.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Timer.h"

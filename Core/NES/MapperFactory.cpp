@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/MapperFactory.h"
 #include "NES/NesConsole.h"
 #include "NES/Loaders/RomLoader.h"

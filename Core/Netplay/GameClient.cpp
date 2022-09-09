@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Netplay/GameClient.h"
 #include "Netplay/ClientConnectionData.h"
 #include "Netplay/GameClientConnection.h"

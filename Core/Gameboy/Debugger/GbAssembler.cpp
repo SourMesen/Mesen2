@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <regex>
 #include "Debugger/LabelManager.h"
 #include "Gameboy/Debugger/GbAssembler.h"

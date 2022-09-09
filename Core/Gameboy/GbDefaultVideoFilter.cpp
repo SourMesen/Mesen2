@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Gameboy/GbDefaultVideoFilter.h"
 #include "Gameboy/GbConstants.h"
 #include "Shared/Video/DebugHud.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NetMessage.h"
 #include "Utilities/sha1.h"
 

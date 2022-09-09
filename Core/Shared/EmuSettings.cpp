@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <random>
 #include "EmuSettings.h"
 #include "KeyManager.h"

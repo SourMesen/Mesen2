@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <deque>
 #include <unordered_map>
 #include "Shared/Interfaces/IInputRecorder.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 
 //Embedded copies of LIJI32's open source boot roms
 //The original source for these is here: https://github.com/LIJI32/SameBoy/tree/master/BootROMs

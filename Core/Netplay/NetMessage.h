@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Netplay/MessageType.h"
 #include "Shared/SaveStateManager.h"
 #include "Utilities/Socket.h"

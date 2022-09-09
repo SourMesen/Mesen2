@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Equalizer.h"
 #include "orfanidis_eq.h"
 

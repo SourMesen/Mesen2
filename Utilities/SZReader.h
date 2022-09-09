@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "ArchiveReader.h"
 #include "../SevenZip/7z.h"
 #include "../SevenZip/7zAlloc.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/INesMemoryHandler.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/SettingTypes.h"

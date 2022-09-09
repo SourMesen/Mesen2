@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/BaseCartridge.h"
 #include "SNES/RamHandler.h"
 #include "SNES/RomHandler.h"

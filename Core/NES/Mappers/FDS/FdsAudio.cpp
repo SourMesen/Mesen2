@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/FDS/FdsAudio.h"
 #include "NES/Mappers/FDS/ModChannel.h"
 #include "NES/Mappers/FDS/BaseFdsChannel.h"

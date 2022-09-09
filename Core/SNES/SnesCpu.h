@@ -5,7 +5,7 @@
 #define __CPU__H
 #endif
 
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/SnesCpuTypes.h"
 #include "Utilities/ISerializable.h"
 #include "MemoryOperationType.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/BaseTraceLogger.h"
 #include "SNES/Coprocessors/DSP/NecDspTypes.h"
 

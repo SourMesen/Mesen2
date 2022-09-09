@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "CrossFeedFilter.h"
 
 void CrossFeedFilter::ApplyFilter(int16_t *stereoBuffer, size_t sampleCount, int ratio)

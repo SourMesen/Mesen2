@@ -1,7 +1,7 @@
 //NTSC filter based on Bisqwit's code/algorithm
 //As described here:
 //http://forums.nesdev.com/viewtopic.php?p=172329
-#include "stdafx.h"
+#include "pch.h"
 #include <cmath>
 #include "NES/BisqwitNtscFilter.h"
 #include "NES/NesPpu.h"

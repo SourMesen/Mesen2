@@ -1,6 +1,6 @@
 #pragma once
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/BaseMapper.h"
 
 class Bmc8157 : public BaseMapper

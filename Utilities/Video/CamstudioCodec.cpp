@@ -1,6 +1,6 @@
 //This is based on the code in lsnes' cscd.cpp file
 //A few modifications were done to improve compression speed
-#include "stdafx.h"
+#include "pch.h"
 #include <cstring>
 #include "CamstudioCodec.h"
 #include "miniz.h"

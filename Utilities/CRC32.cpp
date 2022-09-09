@@ -1,7 +1,7 @@
 //Adapted from https://github.com/stbrumme/crc32/blob/master/Crc32.cpp
 //zlib license
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "CRC32.h"
 

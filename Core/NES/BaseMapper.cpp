@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <random>
 #include <assert.h>
 #include "NES/BaseMapper.h"

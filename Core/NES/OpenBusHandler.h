@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "INesMemoryHandler.h"
 
 class OpenBusHandler : public INesMemoryHandler

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "../Lua/lua.hpp"
 
 template<typename T>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "DeltaModulationChannel.h"
 #include "NES/APU/NesApu.h"

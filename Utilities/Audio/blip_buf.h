@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 
 /** \file
 Sample buffer that resamples from input clock rate to output sample rate */

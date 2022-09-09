@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Nintendo/MMC3.h"
 
 class MMC3_123 : public MMC3

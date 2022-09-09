@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "RotateFilter.h"
 
 RotateFilter::RotateFilter(uint32_t angle)

@@ -2,7 +2,7 @@
 // It is a heavily modified version of the hardware.h/cpp file found in DOSBox's code.
 
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Video/BaseCodec.h"
 

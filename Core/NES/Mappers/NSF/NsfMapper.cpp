@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <random>
 #include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/NesConstants.h"

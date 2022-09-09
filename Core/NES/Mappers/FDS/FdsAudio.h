@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include "Utilities/ISerializable.h"
 #include "NES/Mappers/FDS/ModChannel.h"

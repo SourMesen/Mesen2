@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/APU/BaseExpansionAudio.h"
 #include "NES/APU/NesApu.h"
 #include "NES/NesConsole.h"

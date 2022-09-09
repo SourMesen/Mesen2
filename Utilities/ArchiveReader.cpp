@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ArchiveReader.h"
 #include <string.h>
 #include <sstream>

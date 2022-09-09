@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Video/DrawCommand.h"

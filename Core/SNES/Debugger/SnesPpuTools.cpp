@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Debugger/SnesPpuTools.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/MemoryDumper.h"

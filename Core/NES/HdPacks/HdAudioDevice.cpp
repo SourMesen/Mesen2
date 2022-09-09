@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/HdPacks/HdAudioDevice.h"
 #include "NES/HdPacks/HdData.h"
 #include "NES/HdPacks/OggMixer.h"

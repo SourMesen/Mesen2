@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/ScriptingContext.h"
 #include "EventType.h"

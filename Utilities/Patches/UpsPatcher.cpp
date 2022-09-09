@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <assert.h>
 #include <cstring>
 #include "UpsPatcher.h"

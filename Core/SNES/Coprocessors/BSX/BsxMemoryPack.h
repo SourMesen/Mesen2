@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/RamHandler.h"
 #include "SNES/IMemoryHandler.h"
 #include "Utilities/ISerializable.h"

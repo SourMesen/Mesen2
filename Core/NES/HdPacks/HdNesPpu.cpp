@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/HdPacks/HdNesPpu.h"
 #include "NES/NesConsole.h"
 #include "NES/HdPacks/HdPackConditions.h"

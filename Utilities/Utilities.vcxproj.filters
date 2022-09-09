@@ -163,7 +163,6 @@
     <ClInclude Include="SimpleLock.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="spng.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringUtilities.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="UPnPPortMapper.h" />
@@ -173,6 +172,7 @@
     <ClInclude Include="md5.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">
@@ -284,7 +284,7 @@
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="SimpleLock.cpp" />
     <ClCompile Include="Socket.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UPnPPortMapper.cpp" />
     <ClCompile Include="UTF8Util.cpp" />

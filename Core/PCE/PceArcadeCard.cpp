@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceArcadeCard.h"
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"

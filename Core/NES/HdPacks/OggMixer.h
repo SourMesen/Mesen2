@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/Interfaces/IAudioProvider.h"
 
 class OggReader;

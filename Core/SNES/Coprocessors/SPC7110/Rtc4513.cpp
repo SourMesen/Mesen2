@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <time.h>
 #include "SNES/Coprocessors/SPC7110/Rtc4513.h"
 #include "Shared/Emulator.h"

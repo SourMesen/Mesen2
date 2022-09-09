@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Sdd1Mmc.h"
 #include "Sdd1Types.h"
 #include "SNES/BaseCartridge.h"

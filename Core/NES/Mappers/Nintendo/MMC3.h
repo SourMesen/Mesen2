@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/BaseMapper.h"
 #include "NES/Mappers/A12Watcher.h"
 #include "NES/NesConsole.h"

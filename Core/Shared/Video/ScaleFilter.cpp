@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ScaleFilter.h"
 #include "Utilities/xBRZ/xbrz.h"
 #include "Utilities/HQX/hqx.h"

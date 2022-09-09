@@ -5,7 +5,7 @@
 #define __CPU__H
 #endif
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "NesTypes.h"
 #include "MemoryOperationType.h"

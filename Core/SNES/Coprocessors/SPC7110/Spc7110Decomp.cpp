@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Spc7110Decomp.h"
 #include "Spc7110.h"
 #include "Utilities/Serializer.h"

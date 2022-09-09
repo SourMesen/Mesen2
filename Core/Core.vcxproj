@@ -664,7 +664,7 @@
     <ClInclude Include="SNES\SpcFileData.h" />
     <ClInclude Include="SNES\SpcTimer.h" />
     <ClInclude Include="SNES\SpcTypes.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="SNES\Coprocessors\SGB\SuperGameboy.h" />
     <ClInclude Include="SNES\Input\SuperScope.h" />
     <ClInclude Include="Shared\SystemActionManager.h" />
@@ -888,7 +888,7 @@
     <ClCompile Include="SNES\Debugger\SpcDebugger.cpp" />
     <ClCompile Include="SNES\Debugger\SpcDisUtils.cpp" />
     <ClCompile Include="Shared\Audio\AudioPlayerHud.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -1008,6 +1008,7 @@
       <ShowIncludes>
       </ShowIncludes>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1043,6 +1044,7 @@
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1074,6 +1076,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ControlFlowGuard>false</ControlFlowGuard>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1105,6 +1108,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ControlFlowGuard>false</ControlFlowGuard>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

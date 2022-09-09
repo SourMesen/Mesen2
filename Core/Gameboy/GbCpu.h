@@ -6,7 +6,7 @@
 #endif
 
 
-#include "stdafx.h"
+#include "pch.h"
 #include "GbTypes.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/ISerializable.h"

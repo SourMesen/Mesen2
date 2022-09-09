@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "MessageManager.h"
 
 std::unordered_map<string, string> MessageManager::_enResources = {

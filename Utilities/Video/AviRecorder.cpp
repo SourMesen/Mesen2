@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "AviRecorder.h"
 
 AviRecorder::AviRecorder(VideoCodec codec, uint32_t compressionLevel)

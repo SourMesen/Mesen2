@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceConsole.h"
 #include "Shared/Emulator.h"

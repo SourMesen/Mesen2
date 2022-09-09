@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ExpressionEvaluator.h"
 #include "PCE/PceTypes.h"
 #include "PCE/Debugger/PceDebugger.h"

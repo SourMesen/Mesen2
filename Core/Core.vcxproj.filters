@@ -7,8 +7,8 @@
     <ClInclude Include="MemoryOperationType.h" />
     <ClInclude Include="MemoryType.h" />
     <ClInclude Include="RomFinder.h" />
-    <ClCompile Include="stdafx.cpp" />
-    <ClInclude Include="stdafx.h" />
+    <ClCompile Include="pch.cpp" />
+    <ClInclude Include="pch.h" />
     <ClCompile Include="Debugger\BaseEventManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>

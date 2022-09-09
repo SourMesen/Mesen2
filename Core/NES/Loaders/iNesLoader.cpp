@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Loaders/iNesLoader.h"
 #include "Utilities/CRC32.h"
 #include "Utilities/HexUtilities.h"

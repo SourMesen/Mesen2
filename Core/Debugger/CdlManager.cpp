@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/CdlManager.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/DebugBreakHelper.h"

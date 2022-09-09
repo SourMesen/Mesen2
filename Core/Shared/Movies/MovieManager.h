@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Movies/MovieTypes.h"

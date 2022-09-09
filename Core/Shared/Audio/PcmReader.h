@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/Audio/stb_vorbis.h"
 #include "Utilities/Audio/HermiteResampler.h"
 

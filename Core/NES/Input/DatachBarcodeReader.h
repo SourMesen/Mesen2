@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Interfaces/IBarcodeReader.h"
 #include "NES/NesConsole.h"

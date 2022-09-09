@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 #include "Shared/Interfaces/IAudioProvider.h"
 #include "Utilities/Audio/HermiteResampler.h"

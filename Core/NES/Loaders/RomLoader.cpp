@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include <unordered_set>
 #include "Utilities/FolderUtilities.h"

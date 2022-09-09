@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Shared/CpuType.h"
 #include "Shared/SettingTypes.h"
 #include "MemoryType.h"

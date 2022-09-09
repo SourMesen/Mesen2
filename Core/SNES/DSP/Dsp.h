@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/DSP/DspVoice.h"
 #include "SNES/DSP/DspTypes.h"
 #include "Utilities/ISerializable.h"

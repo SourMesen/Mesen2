@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "GbSquareChannel.h"
 #include "GbWaveChannel.h"
 #include "GbNoiseChannel.h"

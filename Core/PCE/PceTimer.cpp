@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceMemoryManager.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/GbTypes.h"
 #include "Debugger/DisassemblyInfo.h"

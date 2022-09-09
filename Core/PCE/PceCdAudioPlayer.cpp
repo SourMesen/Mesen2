@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceCdRom.h"
 #include "PCE/PceTypes.h"

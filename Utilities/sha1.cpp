@@ -17,7 +17,7 @@
 		  -- Eugene Hopkinson <slowriot at voxelstorm dot com>
 */
 
-#include "stdafx.h"
+#include "pch.h"
 #include "sha1.h"
 #include <sstream>
 #include <iomanip>

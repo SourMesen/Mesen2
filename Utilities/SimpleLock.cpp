@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <assert.h>
 #include "SimpleLock.h"
 #include <Timer.h>

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <deque>
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/RewindData.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "MemoryType.h"
 #include "Shared/BaseState.h"
 

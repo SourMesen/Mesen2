@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Coprocessors/SA1/Sa1Cpu.h"
 #include "SNES/Coprocessors/SA1/Sa1Types.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"

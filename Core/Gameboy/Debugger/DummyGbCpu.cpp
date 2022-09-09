@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Gameboy/Debugger/DummyGbCpu.h"
 
 #define DUMMYCPU

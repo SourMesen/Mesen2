@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include <iterator>
 #include "VirtualFile.h"

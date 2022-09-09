@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "LuaCallHelper.h"
 
 LuaCallHelper::LuaCallHelper(lua_State *lua) : _lua(lua)

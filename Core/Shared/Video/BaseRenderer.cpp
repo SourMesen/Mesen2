@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <cmath>
 #include "Shared/Video/BaseRenderer.h"
 

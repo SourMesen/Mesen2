@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ExpressionEvaluator.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesPpuTypes.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "DrawStringCommand.h"
 
 unordered_map<int, char const*> DrawStringCommand::_jpFont = {

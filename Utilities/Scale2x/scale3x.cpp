@@ -22,7 +22,7 @@
  * http://www.scale2x.it/
  */
 
-#include "../stdafx.h"
+#include "../pch.h"
 
 #if HAVE_CONFIG_H
 #include <config.h>

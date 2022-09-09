@@ -29,7 +29,7 @@ The implementation is obvious when the algorithm is
 understood.
 
 ************************************************************************/
-#include "stdafx.h"
+#include "pch.h"
 #include "Sdd1Decomp.h"
 #include "Sdd1Mmc.h"
 #include "Utilities/Serializer.h"

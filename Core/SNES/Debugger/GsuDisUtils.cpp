@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Debugger/GsuDisUtils.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
 #include "Debugger/DisassemblyInfo.h"

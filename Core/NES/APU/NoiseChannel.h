@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/APU/NesApu.h"
 #include "NES/APU/ApuTimer.h"
 #include "NES/APU/ApuEnvelope.h"

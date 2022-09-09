@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Gameboy/GameboyHeader.h"
 #include "Gameboy/GbTypes.h"
 #include "Debugger/DebugTypes.h"

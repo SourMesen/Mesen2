@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesPpu.h"
 #include "NES/NesConsole.h"
 #include "NES/HdPacks/HdPackConditions.h"

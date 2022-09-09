@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/Debugger/PceDisUtils.h"
 #include "PCE/Debugger/DummyPceCpu.h"
 #include "PCE/PceConsole.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/ZipWriter.h"
 #include "Utilities/ZipReader.h"

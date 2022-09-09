@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "HexUtilities.h"
 
 const vector<string> HexUtilities::_hexCache = { {

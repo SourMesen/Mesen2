@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include <deque>
 #include "Netplay/GameConnection.h"
 #include "Netplay/NetplayTypes.h"

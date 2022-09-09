@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "Utilities/Serializer.h"
 #include "Shared/Emulator.h"
 #include "Shared/CheatManager.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <regex>
 #include "Shared/CheatManager.h"
 #include "Shared/MessageManager.h"

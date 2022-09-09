@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Nintendo/MMC3.h"
 
 //iNES Mapper 224 is used for the èªâ»ë◊ (Jncota) KT-008 PCB. It's an MMC3 clone that supports 1024 KiB of PRG-ROM

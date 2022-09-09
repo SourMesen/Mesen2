@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/CodeDataLogger.h"
 
 class NesCodeDataLogger : public CodeDataLogger

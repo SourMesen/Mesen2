@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceNtscFilter.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"

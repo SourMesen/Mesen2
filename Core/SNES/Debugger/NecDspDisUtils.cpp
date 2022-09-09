@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Debugger/NecDspDisUtils.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"

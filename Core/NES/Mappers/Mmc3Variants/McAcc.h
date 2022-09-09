@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Mappers/Nintendo/MMC3.h"
 
 //Based on krikzz's research: https://forums.nesdev.com/viewtopic.php?p=242427#p242427

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceConstants.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PcePsgChannel.h"

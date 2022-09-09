@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "GbDmaController.h"
 #include "GbMemoryManager.h"
 #include "GbPpu.h"

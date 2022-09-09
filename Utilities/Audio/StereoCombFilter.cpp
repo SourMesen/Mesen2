@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "StereoCombFilter.h"
 
 void StereoCombFilter::ApplyFilter(int16_t * stereoBuffer, size_t sampleCount, uint32_t sampleRate, int32_t delay, uint32_t strength)

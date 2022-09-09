@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <algorithm>
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/MemoryDumper.h"

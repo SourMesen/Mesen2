@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesPpu.h"
 
 class NsfPpu final : public NesPpu<NsfPpu>

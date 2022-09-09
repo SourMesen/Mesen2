@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <deque>
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"

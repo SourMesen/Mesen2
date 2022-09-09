@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/NesSoundMixer.h"
 #include "NES/NesConsole.h"
 #include "NES/NesConstants.h"

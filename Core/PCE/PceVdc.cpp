@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PCE/PceVdc.h"
 #include "PCE/PceVce.h"
 #include "PCE/PceVpc.h"

@@ -44,7 +44,7 @@ YM2143 data sheet
 **************************************************************************************/
 
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "OpllTables.h"
 #include "OpllChannel.h"
 #include "Utilities/Serializer.h"

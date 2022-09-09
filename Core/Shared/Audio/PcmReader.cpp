@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "PcmReader.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Audio/HermiteResampler.h"

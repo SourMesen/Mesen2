@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <sstream>
 #include "PNGHelper.h"
 #include "miniz.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "MemoryMappings.h"
 #include "IMemoryHandler.h"
 #include "MemoryType.h"

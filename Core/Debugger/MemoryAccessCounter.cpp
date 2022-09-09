@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/Debugger.h"

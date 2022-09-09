@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Input/Multitap.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/InternalRegisters.h"

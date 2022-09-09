@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/Input/NesController.h"
 #include "NES/Input/Zapper.h"
 #include "NES/NesConsole.h"

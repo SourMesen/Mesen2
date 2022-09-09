@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "GifRecorder.h"
 #include "gif.h"
 

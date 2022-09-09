@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "SNES/Debugger/TraceLogger/SnesCpuTraceLogger.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesPpu.h"

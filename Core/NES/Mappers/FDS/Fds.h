@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "pch.h"
 #include "NES/BaseMapper.h"
 #include "NES/Loaders/FdsLoader.h"
 #include "NES/Mappers/FDS/FdsInputButtons.h"
