@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "WindowsKeyManager.h"
 #include "Shared/KeyDefinitions.h"
 

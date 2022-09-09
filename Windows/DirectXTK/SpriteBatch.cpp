@@ -7,7 +7,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "common.h"
 
 #include "SpriteBatch.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/BaseControlManager.h"
 #include "Core/Shared/KeyManager.h"

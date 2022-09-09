@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <thread>

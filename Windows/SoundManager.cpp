@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "SoundManager.h"
 #include "Core/Shared/Audio/SoundMixer.h"
 #include "Core/Shared/Emulator.h"

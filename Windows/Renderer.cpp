@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "Renderer.h"
 #include "DirectXTK/SpriteBatch.h"
 #include "Core/Shared/Emulator.h"

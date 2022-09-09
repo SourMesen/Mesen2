@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "XInputManager.h"
 #include "Core/Shared/Emulator.h"
 #include "Core/Shared/EmuSettings.h"

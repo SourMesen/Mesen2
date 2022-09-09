@@ -168,9 +168,6 @@
     <ClInclude Include="Debugger\ScriptManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="Debugger\stdafx.h">
-      <Filter>Debugger</Filter>
-    </ClInclude>
     <ClInclude Include="Debugger\TraceLogFileSaver.h">
       <Filter>Debugger</Filter>
     </ClInclude>
@@ -262,9 +259,6 @@
       <Filter>Gameboy</Filter>
     </ClCompile>
     <ClInclude Include="Gameboy\GbWaveChannel.h">
-      <Filter>Gameboy</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameboy\stdafx.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClCompile Include="NES\BaseMapper.cpp">
@@ -369,9 +363,6 @@
     <ClInclude Include="NES\RomData.h">
       <Filter>NES</Filter>
     </ClInclude>
-    <ClInclude Include="NES\stdafx.h">
-      <Filter>NES</Filter>
-    </ClInclude>
     <ClInclude Include="Netplay\ClientConnectionData.h">
       <Filter>Netplay</Filter>
     </ClInclude>
@@ -436,9 +427,6 @@
       <Filter>Netplay</Filter>
     </ClInclude>
     <ClInclude Include="Netplay\ServerInformationMessage.h">
-      <Filter>Netplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Netplay\stdafx.h">
       <Filter>Netplay</Filter>
     </ClInclude>
     <ClCompile Include="Shared\BaseControlDevice.cpp">
@@ -559,9 +547,6 @@
       <Filter>Shared</Filter>
     </ClCompile>
     <ClInclude Include="Shared\ShortcutKeyHandler.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\stdafx.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="Shared\SystemActionManager.h">
@@ -700,9 +685,6 @@
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="SNES\SpcTypes.h">
-      <Filter>SNES</Filter>
-    </ClInclude>
-    <ClInclude Include="SNES\stdafx.h">
       <Filter>SNES</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\Carts\GbCart.h">
@@ -1038,9 +1020,6 @@
     <ClInclude Include="Shared\Audio\SoundResampler.h">
       <Filter>Shared\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\Audio\stdafx.h">
-      <Filter>Shared\Audio</Filter>
-    </ClInclude>
     <ClCompile Include="Shared\Audio\WaveRecorder.cpp">
       <Filter>Shared\Audio</Filter>
     </ClCompile>
@@ -1077,9 +1056,6 @@
     <ClInclude Include="Shared\Interfaces\IRenderingDevice.h">
       <Filter>Shared\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Shared\Interfaces\stdafx.h">
-      <Filter>Shared\Interfaces</Filter>
-    </ClInclude>
     <ClCompile Include="Shared\Movies\MesenMovie.cpp">
       <Filter>Shared\Movies</Filter>
     </ClCompile>
@@ -1099,9 +1075,6 @@
       <Filter>Shared\Movies</Filter>
     </ClInclude>
     <ClInclude Include="Shared\Movies\MovieTypes.h">
-      <Filter>Shared\Movies</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Movies\stdafx.h">
       <Filter>Shared\Movies</Filter>
     </ClInclude>
     <ClCompile Include="Shared\Video\BaseRenderer.cpp">
@@ -1153,9 +1126,6 @@
       <Filter>Shared\Video</Filter>
     </ClCompile>
     <ClInclude Include="Shared\Video\ScaleFilter.h">
-      <Filter>Shared\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Video\stdafx.h">
       <Filter>Shared\Video</Filter>
     </ClInclude>
     <ClCompile Include="Shared\Video\SystemHud.cpp">

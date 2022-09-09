@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "Common.h"
 #include <dinput.h>
 #include "../Utilities/SimpleLock.h"
 

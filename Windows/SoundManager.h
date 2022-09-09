@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "Common.h"
 #include "Core/Shared/Audio/BaseSoundManager.h"
 
 class Emulator;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Common.h"
 #include "Core/Shared/RecordedRomTest.h"
 #include "Core/Shared/Emulator.h"
 

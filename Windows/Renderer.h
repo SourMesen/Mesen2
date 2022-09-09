@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "Common.h"
 #include "Core/Shared/Interfaces/IRenderingDevice.h"
 #include "Core/Shared/Interfaces/IMessageManager.h"
 #include "Utilities/FolderUtilities.h"
