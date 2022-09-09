@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Gameboy/GbNoiseChannel.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbNoiseChannel.h"
+#include "Gameboy/APU/GbApu.h"
 
 GbNoiseChannel::GbNoiseChannel(GbApu* apu)
 {

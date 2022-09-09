@@ -2,7 +2,7 @@
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/GbPpu.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbApu.h"
 #include "Gameboy/GbTimer.h"
 #include "Gameboy/GbTypes.h"
 #include "Gameboy/Carts/GbCart.h"

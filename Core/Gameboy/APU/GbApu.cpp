@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbApu.h"
 #include "Gameboy/Gameboy.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

@@ -5,7 +5,7 @@
 #include "SNES/BaseCartridge.h"
 #include "SNES/Spc.h"
 #include "Gameboy/Gameboy.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbApu.h"
 #include "Gameboy/GbPpu.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

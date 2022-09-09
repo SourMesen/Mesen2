@@ -6,7 +6,7 @@
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
 #include "PCE/PceControlManager.h"
-#include "PCE/PceCdRom.h"
+#include "PCE/CdRom/PceCdRom.h"
 #include "Shared/MessageManager.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"

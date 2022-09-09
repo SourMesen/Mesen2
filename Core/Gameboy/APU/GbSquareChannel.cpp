@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Gameboy/GbSquareChannel.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbSquareChannel.h"
+#include "Gameboy/APU/GbApu.h"
 
 GbSquareChannel::GbSquareChannel(GbApu* apu)
 {

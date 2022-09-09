@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "PCE/PceCdAudioPlayer.h"
-#include "PCE/PceCdRom.h"
+#include "PCE/CdRom/PceCdAudioPlayer.h"
+#include "PCE/CdRom/PceCdRom.h"
 #include "PCE/PceTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"

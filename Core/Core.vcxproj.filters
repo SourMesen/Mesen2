@@ -180,10 +180,10 @@
     <ClInclude Include="Gameboy\GameboyHeader.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\GbApu.cpp">
+    <ClCompile Include="Gameboy\APU\GbApu.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
-    <ClInclude Include="Gameboy\GbApu.h">
+    <ClInclude Include="Gameboy\APU\GbApu.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbBootRom.h">
@@ -225,10 +225,10 @@
     <ClInclude Include="Gameboy\GbMemoryManager.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\GbNoiseChannel.cpp">
+    <ClCompile Include="Gameboy\APU\GbNoiseChannel.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
-    <ClInclude Include="Gameboy\GbNoiseChannel.h">
+    <ClInclude Include="Gameboy\APU\GbNoiseChannel.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClCompile Include="Gameboy\GbPpu.cpp">
@@ -240,10 +240,10 @@
     <ClInclude Include="Gameboy\GbsHeader.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\GbSquareChannel.cpp">
+    <ClCompile Include="Gameboy\APU\GbSquareChannel.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
-    <ClInclude Include="Gameboy\GbSquareChannel.h">
+    <ClInclude Include="Gameboy\APU\GbSquareChannel.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClCompile Include="Gameboy\GbTimer.cpp">
@@ -255,10 +255,10 @@
     <ClInclude Include="Gameboy\GbTypes.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\GbWaveChannel.cpp">
+    <ClCompile Include="Gameboy\APU\GbWaveChannel.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
-    <ClInclude Include="Gameboy\GbWaveChannel.h">
+    <ClInclude Include="Gameboy\APU\GbWaveChannel.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClCompile Include="NES\BaseMapper.cpp">
@@ -1679,19 +1679,19 @@
     <ClInclude Include="PCE\PcePsgChannel.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceCdRom.h">
+    <ClInclude Include="PCE\CdRom\PceCdRom.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceScsiBus.h">
+    <ClInclude Include="PCE\CdRom\PceScsiBus.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceAdpcm.h">
+    <ClInclude Include="PCE\CdRom\PceAdpcm.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="Shared\CdReader.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceCdAudioPlayer.h">
+    <ClInclude Include="PCE\CdRom\PceCdAudioPlayer.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\Input\PceController.h">
@@ -1718,7 +1718,7 @@
     <ClInclude Include="PCE\IPceMapper.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceArcadeCard.h">
+    <ClInclude Include="PCE\CdRom\PceArcadeCard.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\Debugger\PceAssembler.h">
@@ -2576,7 +2576,7 @@
     <ClInclude Include="Shared\HistoryViewer.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\PceAudioFader.h">
+    <ClInclude Include="PCE\CdRom\PceAudioFader.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
@@ -2653,19 +2653,19 @@
     <ClCompile Include="PCE\PcePsgChannel.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceCdRom.cpp">
+    <ClCompile Include="PCE\CdRom\PceCdRom.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceScsiBus.cpp">
+    <ClCompile Include="PCE\CdRom\PceScsiBus.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceAdpcm.cpp">
+    <ClCompile Include="PCE\CdRom\PceAdpcm.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="Shared\CdReader.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceCdAudioPlayer.cpp">
+    <ClCompile Include="PCE\CdRom\PceCdAudioPlayer.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\Input\PceTurboTap.cpp">
@@ -2677,7 +2677,7 @@
     <ClCompile Include="PCE\PceVce.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceArcadeCard.cpp">
+    <ClCompile Include="PCE\CdRom\PceArcadeCard.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\Debugger\PceAssembler.cpp">
@@ -2707,7 +2707,7 @@
     <ClCompile Include="Shared\HistoryViewer.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\PceAudioFader.cpp">
+    <ClCompile Include="PCE\CdRom\PceAudioFader.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceMemoryManager.cpp">

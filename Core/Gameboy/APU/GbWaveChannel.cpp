@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Gameboy/GbWaveChannel.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbWaveChannel.h"
+#include "Gameboy/APU/GbApu.h"
 
 GbWaveChannel::GbWaveChannel(GbApu* apu)
 {

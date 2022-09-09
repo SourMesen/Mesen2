@@ -2,7 +2,7 @@
 #include "Gameboy/GbTimer.h"
 #include "Gameboy/GbTypes.h"
 #include "Gameboy/GbMemoryManager.h"
-#include "Gameboy/GbApu.h"
+#include "Gameboy/APU/GbApu.h"
 
 void GbTimer::Init(GbMemoryManager* memoryManager, GbApu* apu)
 {

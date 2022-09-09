@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PCE/PceArcadeCard.h"
+#include "PCE/CdRom/PceArcadeCard.h"
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
