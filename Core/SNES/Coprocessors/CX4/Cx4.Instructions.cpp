@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Cx4.h"
+#include "SNES/Coprocessors/CX4/Cx4.h"
 #include "SNES/SnesCpu.h"
 #include "SNES/Debugger/Cx4DisUtils.h"
 #include "Utilities/HexUtilities.h"

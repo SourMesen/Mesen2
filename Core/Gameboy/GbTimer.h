@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
-#include "GbTypes.h"
+#include "Gameboy/GbTypes.h"
 
 class GbMemoryManager;
 class GbApu;

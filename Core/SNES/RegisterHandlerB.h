@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "IMemoryHandler.h"
+#include "SNES/IMemoryHandler.h"
 #include "Utilities/ISerializable.h"
 
 class SnesConsole;

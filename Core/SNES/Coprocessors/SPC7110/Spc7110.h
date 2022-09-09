@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
-#include "Spc7110Decomp.h"
-#include "Rtc4513.h"
+#include "SNES/Coprocessors/SPC7110/Spc7110Decomp.h"
+#include "SNES/Coprocessors/SPC7110/Rtc4513.h"
 
 class SnesConsole;
 class Emulator;

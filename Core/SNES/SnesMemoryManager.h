@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
+#include "SNES/MemoryMappings.h"
 #include "Debugger/DebugTypes.h"
-#include "MemoryMappings.h"
 #include "Utilities/ISerializable.h"
 #include "Shared/MemoryType.h"
 

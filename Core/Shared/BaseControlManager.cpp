@@ -7,10 +7,10 @@
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
-#include "SystemActionManager.h"
+#include "Shared/SystemActionManager.h"
 #include "Shared/EventType.h"
-#include "Utilities/Serializer.h"
 #include "Shared/MessageManager.h"
+#include "Utilities/Serializer.h"
 
 BaseControlManager::BaseControlManager(Emulator* emu)
 {

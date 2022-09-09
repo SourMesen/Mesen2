@@ -2,7 +2,7 @@
 #include "pch.h"
 #include <unordered_map>
 #include <functional>
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 
 class Debugger;
 

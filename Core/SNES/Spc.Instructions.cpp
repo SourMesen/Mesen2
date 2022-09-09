@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Spc.h"
+#include "SNES/Spc.h"
 #include "Utilities/HexUtilities.h"
 
 void Spc::EndOp()

@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "MessageManager.h"
+#include "Shared/MessageManager.h"
 
 std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "Cheats", u8"Cheats" },

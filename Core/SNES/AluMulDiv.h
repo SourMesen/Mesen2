@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "InternalRegisterTypes.h"
+#include "SNES/InternalRegisterTypes.h"
 #include "Utilities/ISerializable.h"
 
 class SnesCpu;

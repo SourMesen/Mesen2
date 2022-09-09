@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "GbTimer.h"
-#include "GbTypes.h"
-#include "GbMemoryManager.h"
-#include "GbApu.h"
+#include "Gameboy/GbTimer.h"
+#include "Gameboy/GbTypes.h"
+#include "Gameboy/GbMemoryManager.h"
+#include "Gameboy/GbApu.h"
 
 void GbTimer::Init(GbMemoryManager* memoryManager, GbApu* apu)
 {

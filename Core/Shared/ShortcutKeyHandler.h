@@ -1,9 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "Shared/Interfaces/INotificationListener.h"
+#include "Shared/SettingTypes.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Timer.h"
-#include "SettingTypes.h"
 
 class Emulator;
 

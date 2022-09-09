@@ -30,8 +30,8 @@ understood.
 
 ************************************************************************/
 #include "pch.h"
-#include "Sdd1Decomp.h"
-#include "Sdd1Mmc.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Decomp.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Mmc.h"
 #include "Utilities/Serializer.h"
 
 void SDD1_IM::prepareDecomp(Sdd1Mmc *mmc, uint32_t readAddr)

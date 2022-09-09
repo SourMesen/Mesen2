@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "CdReader.h"
+#include "Shared/CdReader.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/StringUtilities.h"
 #include "Utilities/FolderUtilities.h"

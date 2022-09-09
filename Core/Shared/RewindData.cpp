@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "RewindData.h"
-#include "Emulator.h"
-#include "SaveStateManager.h"
+#include "Shared/RewindData.h"
+#include "Shared/Emulator.h"
+#include "Shared/SaveStateManager.h"
 #include "Utilities/miniz.h"
 
 void RewindData::GetStateData(stringstream &stateData)

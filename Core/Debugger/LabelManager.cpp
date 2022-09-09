@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "LabelManager.h"
-#include "Debugger.h"
-#include "DebugUtilities.h"
-#include "DebugBreakHelper.h"
+#include "Debugger/LabelManager.h"
+#include "Debugger/Debugger.h"
+#include "Debugger/DebugUtilities.h"
+#include "Debugger/DebugBreakHelper.h"
 
 LabelManager::LabelManager(Debugger *debugger)
 {

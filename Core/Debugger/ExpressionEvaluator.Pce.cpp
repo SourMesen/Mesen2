@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ExpressionEvaluator.h"
+#include "Debugger/ExpressionEvaluator.h"
 #include "PCE/PceTypes.h"
 #include "PCE/Debugger/PceDebugger.h"
 

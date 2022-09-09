@@ -1,10 +1,10 @@
 #pragma once
 #include "pch.h"
-#include "Carts/GbCart.h"
-#include "Carts/GbMbc1.h"
-#include "Carts/GbMbc2.h"
-#include "Carts/GbMbc3.h"
-#include "Carts/GbMbc5.h"
+#include "Gameboy/Carts/GbCart.h"
+#include "Gameboy/Carts/GbMbc1.h"
+#include "Gameboy/Carts/GbMbc2.h"
+#include "Gameboy/Carts/GbMbc3.h"
+#include "Gameboy/Carts/GbMbc5.h"
 
 class GbCartFactory
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "SettingTypes.h"
+#include "Shared/SettingTypes.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/ISerializable.h"
 #include <random>

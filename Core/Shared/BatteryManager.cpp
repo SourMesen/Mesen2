@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BatteryManager.h"
+#include "Shared/BatteryManager.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
 

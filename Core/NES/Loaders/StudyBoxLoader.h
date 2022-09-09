@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "BaseLoader.h"
+#include "NES/Loaders/BaseLoader.h"
 
 struct StudyBoxData;
 struct RomData;
@@ -13,7 +13,6 @@ private:
 	vector<uint8_t> ReadArray(uint8_t*& data, uint32_t length);
 
 	bool LoadStudyBoxTape(vector<uint8_t>& studyBoxFile, StudyBoxData& studyBoxData);
-	vector<uint8_t> LoadBios();
 
 public:
 	using BaseLoader::BaseLoader;

@@ -4,7 +4,7 @@
 #include <deque>
 #include <unordered_map>
 #include <unordered_set>
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 #include "Utilities/SimpleLock.h"
 
 class Debugger;

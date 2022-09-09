@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "DebugTypes.h"
+#include "Debugger/DebugTypes.h"
 
 class Disassembler;
 class Debugger;

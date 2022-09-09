@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "NetMessage.h"
+#include "Netplay/NetMessage.h"
 #include "Utilities/sha1.h"
 
 class HandShakeMessage : public NetMessage

@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "GbDmaController.h"
-#include "GbMemoryManager.h"
-#include "GbPpu.h"
-#include "GbCpu.h"
+#include "Gameboy/GbDmaController.h"
+#include "Gameboy/GbMemoryManager.h"
+#include "Gameboy/GbPpu.h"
+#include "Gameboy/GbCpu.h"
 #include "Utilities/Serializer.h"
 
 void GbDmaController::Init(GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu)

@@ -45,7 +45,7 @@ YM2143 data sheet
 
 #pragma once
 #include "pch.h"
-#include "OpllTables.h"
+#include "NES/Mappers/Audio/OpllTables.h"
 #include "Utilities/Serializer.h"
 
 namespace Vrc7Opll 

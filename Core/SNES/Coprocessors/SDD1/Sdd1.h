@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
-#include "Sdd1Types.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Types.h"
 
 class SnesConsole;
 class Sdd1Mmc;

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "StudyBoxLoader.h"
+#include "NES/Loaders/StudyBoxLoader.h"
 #include "NES/RomData.h"
 #include "NES/MapperFactory.h"
 #include "Utilities/FolderUtilities.h"

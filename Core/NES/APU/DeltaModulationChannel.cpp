@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "DeltaModulationChannel.h"
+#include "NES/APU/DeltaModulationChannel.h"
 #include "NES/APU/NesApu.h"
 #include "NES/NesCpu.h"
 #include "NES/NesConstants.h"

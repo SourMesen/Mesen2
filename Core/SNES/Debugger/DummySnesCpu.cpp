@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "DummySnesCpu.h"
+#include "SNES/Debugger/DummySnesCpu.h"
 
 #define DUMMYCPU
 #define SnesCpu DummySnesCpu

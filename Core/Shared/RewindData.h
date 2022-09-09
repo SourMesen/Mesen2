@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include <deque>
-#include "BaseControlDevice.h"
+#include "Shared/BaseControlDevice.h"
 
 class Emulator;
 

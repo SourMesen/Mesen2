@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "RamHandler.h"
+#include "SNES/RamHandler.h"
 
 class RomHandler : public RamHandler
 {

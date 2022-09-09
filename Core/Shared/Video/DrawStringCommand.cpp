@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "DrawStringCommand.h"
+#include "Shared/Video/DrawStringCommand.h"
 
 unordered_map<int, char const*> DrawStringCommand::_jpFont = {
 { 0x8080E3, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" },

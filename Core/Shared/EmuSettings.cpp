@@ -1,10 +1,10 @@
 #include "pch.h"
 #include <random>
-#include "EmuSettings.h"
-#include "KeyManager.h"
-#include "MessageManager.h"
-#include "Emulator.h"
-#include "NotificationManager.h"
+#include "Shared/EmuSettings.h"
+#include "Shared/KeyManager.h"
+#include "Shared/MessageManager.h"
+#include "Shared/Emulator.h"
+#include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
 

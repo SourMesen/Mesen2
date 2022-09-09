@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <algorithm>
-#include "NotificationManager.h"
+#include "Shared/NotificationManager.h"
 
 void NotificationManager::RegisterNotificationListener(shared_ptr<INotificationListener> notificationListener)
 {

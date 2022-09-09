@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "INesMemoryHandler.h"
+#include "NES/INesMemoryHandler.h"
 
 template<size_t Mask>
 class InternalRamHandler : public INesMemoryHandler

@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "DrawCommand.h"
+#include "Shared/Video/DrawCommand.h"
 
 class DrawPixelCommand : public DrawCommand
 {

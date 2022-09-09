@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "NetMessage.h"
+#include "Netplay/NetMessage.h"
 
 class PlayerListMessage : public NetMessage
 {

@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Sdd1Mmc.h"
-#include "Sdd1Types.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Mmc.h"
+#include "SNES/Coprocessors/SDD1/Sdd1Types.h"
 #include "SNES/BaseCartridge.h"
 #include "Utilities/Serializer.h"
 #include "Shared/MemoryType.h"

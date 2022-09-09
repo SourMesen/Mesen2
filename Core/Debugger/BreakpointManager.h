@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-#include "Breakpoint.h"
-#include "DebugTypes.h"
-#include "DebugUtilities.h"
+#include "Debugger/Breakpoint.h"
+#include "Debugger/DebugTypes.h"
+#include "Debugger/DebugUtilities.h"
 
 class ExpressionEvaluator;
 class Debugger;

@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include <cstring>
-#include "SettingTypes.h"
+#include "Shared/SettingTypes.h"
 
 struct ControlDeviceState
 {

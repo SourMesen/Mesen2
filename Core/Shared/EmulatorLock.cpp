@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "EmulatorLock.h"
-#include "Emulator.h"
+#include "Shared/EmulatorLock.h"
+#include "Shared/Emulator.h"
 
 EmulatorLock::EmulatorLock(Emulator *emu)
 {

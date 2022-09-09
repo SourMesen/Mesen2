@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-#include "IMemoryHandler.h"
-#include "CartTypes.h"
-#include "Coprocessors/BaseCoprocessor.h"
+#include "SNES/IMemoryHandler.h"
+#include "SNES/CartTypes.h"
+#include "SNES/Coprocessors/BaseCoprocessor.h"
 #include "Utilities/ISerializable.h"
 #include "Shared/RomInfo.h"
 

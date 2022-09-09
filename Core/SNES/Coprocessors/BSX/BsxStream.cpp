@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BsxStream.h"
+#include "SNES/Coprocessors/BSX/BsxStream.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/SnesMemoryManager.h"
 #include "Utilities/FolderUtilities.h"

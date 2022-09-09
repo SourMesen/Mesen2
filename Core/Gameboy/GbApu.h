@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-#include "GbSquareChannel.h"
-#include "GbWaveChannel.h"
-#include "GbNoiseChannel.h"
+#include "Gameboy/GbSquareChannel.h"
+#include "Gameboy/GbWaveChannel.h"
+#include "Gameboy/GbNoiseChannel.h"
 #include "Utilities/Audio/blip_buf.h"
 #include "Utilities/ISerializable.h"
 

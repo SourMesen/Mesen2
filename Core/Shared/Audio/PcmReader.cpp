@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PcmReader.h"
+#include "Shared/Audio/PcmReader.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Audio/HermiteResampler.h"
 

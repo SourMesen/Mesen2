@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include <unordered_map>
-#include "RomData.h"
+#include "NES/RomData.h"
 
 struct NesHeader;
 

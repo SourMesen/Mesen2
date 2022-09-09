@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "NecDspTypes.h"
+#include "SNES/Coprocessors/DSP/NecDspTypes.h"
 #include "SNES/Coprocessors/BaseCoprocessor.h"
 
 class SnesConsole;

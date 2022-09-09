@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <limits>
-#include "Profiler.h"
+#include "Debugger/Profiler.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryDumper.h"

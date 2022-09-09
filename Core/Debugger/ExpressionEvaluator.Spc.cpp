@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ExpressionEvaluator.h"
+#include "Debugger/ExpressionEvaluator.h"
 #include "SNES/SpcTypes.h"
 #include "SNES/Debugger/SpcDebugger.h"
 

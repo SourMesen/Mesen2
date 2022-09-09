@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BaseSoundManager.h"
+#include "Shared/Audio/BaseSoundManager.h"
 
 void BaseSoundManager::ProcessLatency(uint32_t readPosition, uint32_t writePosition)
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "GbTypes.h"
+#include "Gameboy/GbTypes.h"
 #include "Utilities/ISerializable.h"
 
 class Emulator;

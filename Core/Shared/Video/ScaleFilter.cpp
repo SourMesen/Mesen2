@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ScaleFilter.h"
+#include "Shared/Video/ScaleFilter.h"
 #include "Utilities/xBRZ/xbrz.h"
 #include "Utilities/HQX/hqx.h"
 #include "Utilities/Scale2x/scalebit.h"

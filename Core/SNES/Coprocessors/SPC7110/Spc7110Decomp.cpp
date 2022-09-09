@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "Spc7110Decomp.h"
-#include "Spc7110.h"
+#include "SNES/Coprocessors/SPC7110/Spc7110Decomp.h"
+#include "SNES/Coprocessors/SPC7110/Spc7110.h"
 #include "Utilities/Serializer.h"
 
 //Based on bsnes' code (by byuu)
