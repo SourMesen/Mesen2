@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-#include "Core/MemoryOperationType.h"
-#include "Core/Shared/CpuType.h"
-#include "Core/Debugger/DisassemblyInfo.h"
+#include "Shared/MemoryOperationType.h"
+#include "Shared/CpuType.h"
+#include "Debugger/DisassemblyInfo.h"
 
 enum class MemoryType;
 enum class CpuType : uint8_t;

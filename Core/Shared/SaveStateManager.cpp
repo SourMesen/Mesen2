@@ -9,7 +9,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/RenderedFrame.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 #include "Debugger/Debugger.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Video/VideoDecoder.h"

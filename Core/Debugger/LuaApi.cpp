@@ -27,7 +27,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/magic_enum.hpp"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 #ifdef _MSC_VER
 //TODO MSVC seems to trigger this by mistake because of the macros?

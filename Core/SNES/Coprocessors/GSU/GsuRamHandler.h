@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "SNES/IMemoryHandler.h"
 #include "SNES/Coprocessors/GSU/GsuTypes.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class GsuRamHandler : public IMemoryHandler
 {

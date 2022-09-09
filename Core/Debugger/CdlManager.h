@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"
 

@@ -12,7 +12,7 @@
 #include "Shared/BaseControlManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/NotificationManager.h"
-#include "FirmwareHelper.h"
+#include "Shared/FirmwareHelper.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
 

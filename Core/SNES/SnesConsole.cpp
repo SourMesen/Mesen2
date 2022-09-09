@@ -32,7 +32,7 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
 

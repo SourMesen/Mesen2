@@ -3,7 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/ScriptHost.h"
 #include "Utilities/SimpleLock.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 class Debugger;
 enum class MemoryOperationType;

@@ -44,8 +44,8 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/PlatformUtilities.h"
 #include "Utilities/FolderUtilities.h"
-#include "MemoryOperationType.h"
-#include "EventType.h"
+#include "Shared/MemoryOperationType.h"
+#include "Shared/EventType.h"
 
 Emulator::Emulator() :
 	_settings(new EmuSettings(this)),

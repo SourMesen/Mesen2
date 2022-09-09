@@ -19,8 +19,8 @@
 #include "PCE/HesFileData.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/CRC32.h"
-#include "MemoryType.h"
-#include "FirmwareHelper.h"
+#include "Shared/MemoryType.h"
+#include "Shared/FirmwareHelper.h"
 
 PceConsole::PceConsole(Emulator* emu)
 {

@@ -12,7 +12,7 @@
 #include "Utilities/StringUtilities.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
-#include "FirmwareHelper.h"
+#include "Shared/FirmwareHelper.h"
 
 class StudyBox : public BaseMapper, IAudioProvider
 {

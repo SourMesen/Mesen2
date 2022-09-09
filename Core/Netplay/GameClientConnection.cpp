@@ -15,7 +15,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/NotificationManager.h"
-#include "RomFinder.h"
+#include "Shared/RomFinder.h"
 
 GameClientConnection::GameClientConnection(Emulator* emu, unique_ptr<Socket> socket, ClientConnectionData &connectionData) : GameConnection(emu, std::move(socket))
 {

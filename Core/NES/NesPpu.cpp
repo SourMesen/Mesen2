@@ -22,9 +22,9 @@
 #include "Shared/RewindManager.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/RenderedFrame.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 {

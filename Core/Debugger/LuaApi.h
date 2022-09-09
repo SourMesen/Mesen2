@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Shared/CpuType.h"
 #include "Shared/SettingTypes.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 struct lua_State;
 class ScriptingContext;

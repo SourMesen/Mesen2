@@ -28,7 +28,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
 #include "Shared/BaseControlManager.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 GbDebugger::GbDebugger(Debugger* debugger)
 {

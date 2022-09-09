@@ -3,7 +3,6 @@
 #include "Shared/Emulator.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
-#include "SNES/CartTypes.h"
 
 enum class FirmwareType
 {

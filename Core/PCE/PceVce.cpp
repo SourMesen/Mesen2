@@ -5,7 +5,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/CpuType.h"
 #include "Utilities/Serializer.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 PceVce::PceVce(Emulator* emu, PceConsole* console)
 {

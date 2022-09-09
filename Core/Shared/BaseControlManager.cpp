@@ -8,7 +8,7 @@
 #include "Shared/Interfaces/IInputProvider.h"
 #include "Shared/Interfaces/IInputRecorder.h"
 #include "SystemActionManager.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 #include "Utilities/Serializer.h"
 #include "Shared/MessageManager.h"
 

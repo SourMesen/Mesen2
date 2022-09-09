@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "Core/Debugger/DebugTypes.h"
-#include "Core/MemoryType.h"
+#include "Debugger/DebugTypes.h"
+#include "Shared/MemoryType.h"
 #include "Utilities/HexUtilities.h"
 
 class DebugUtilities

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../pch.h"
-#include "../../Utilities/ISerializable.h"
+#include "pch.h"
 
-#include "INesMemoryHandler.h"
-#include "OpenBusHandler.h"
-#include "InternalRamHandler.h"
-#include "MemoryOperationType.h"
+#include "NES/INesMemoryHandler.h"
+#include "NES/OpenBusHandler.h"
+#include "NES/InternalRamHandler.h"
+#include "Shared/MemoryOperationType.h"
+#include "Utilities/ISerializable.h"
 
 class BaseMapper;
 class CheatManager;

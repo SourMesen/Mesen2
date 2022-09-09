@@ -34,7 +34,7 @@
 #include "Shared/SettingTypes.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 NesDebugger::NesDebugger(Debugger* debugger)
 {

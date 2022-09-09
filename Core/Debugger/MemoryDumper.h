@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class SnesMemoryManager;
 class NesConsole;

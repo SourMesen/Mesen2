@@ -7,7 +7,7 @@
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2)
 {

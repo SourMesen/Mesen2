@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "MemoryMappings.h"
 #include "IMemoryHandler.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 void MemoryMappings::RegisterHandler(uint8_t startBank, uint8_t endBank, uint16_t startPage, uint16_t endPage, vector<unique_ptr<IMemoryHandler>> &handlers, uint16_t pageIncrement, uint16_t startPageNumber)
 {

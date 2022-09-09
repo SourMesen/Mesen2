@@ -3,7 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "MemoryMappings.h"
 #include "Utilities/ISerializable.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class IMemoryHandler;
 class RegisterHandlerA;

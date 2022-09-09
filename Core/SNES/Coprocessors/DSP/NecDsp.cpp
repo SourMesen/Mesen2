@@ -11,7 +11,7 @@
 #include "Shared/MessageManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/BatteryManager.h"
-#include "FirmwareHelper.h"
+#include "Shared/FirmwareHelper.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
 

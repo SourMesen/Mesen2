@@ -11,7 +11,7 @@
 #include "Shared/MessageManager.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 NesCpu::NesCpu(NesConsole* console)
 {

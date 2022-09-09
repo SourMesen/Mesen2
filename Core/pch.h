@@ -33,7 +33,7 @@
 #include <deque>
 #include <algorithm>
 
-#include "../Utilities/UTF8Util.h"
+#include "Utilities/UTF8Util.h"
 
 #ifdef _MSC_VER
 	#define __noinline __declspec(noinline)

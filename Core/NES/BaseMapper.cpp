@@ -15,8 +15,8 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/Serializer.h"
-#include "MemoryType.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryType.h"
+#include "Shared/MemoryOperationType.h"
 
 void BaseMapper::WriteRegister(uint16_t addr, uint8_t value) { }
 uint8_t BaseMapper::ReadRegister(uint16_t addr) { return 0; }

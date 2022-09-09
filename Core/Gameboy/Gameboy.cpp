@@ -24,7 +24,7 @@
 #include "Shared/MessageManager.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
-#include "FirmwareHelper.h"
+#include "Shared/FirmwareHelper.h"
 
 Gameboy::Gameboy(Emulator* emu, bool allowSgb)
 {

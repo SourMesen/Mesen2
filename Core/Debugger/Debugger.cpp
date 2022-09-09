@@ -46,8 +46,8 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
-#include "MemoryOperationType.h"
-#include "EventType.h"
+#include "Shared/MemoryOperationType.h"
+#include "Shared/EventType.h"
 
 uint64_t ITraceLogger::NextRowId = 0;
 

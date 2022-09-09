@@ -6,7 +6,7 @@
 #include "Shared/CheatManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/ISerializable.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 class PceConsole;
 class PceVpc;

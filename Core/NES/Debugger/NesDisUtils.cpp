@@ -8,7 +8,7 @@
 #include "Debugger/MemoryDumper.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 static constexpr uint8_t _opSize[17] = {
 	1, 1, 1, 2, 2,

@@ -2,8 +2,8 @@
 #include "Debugger/ScriptHost.h"
 #include "Debugger/ScriptingContext.h"
 #include "Debugger/ScriptingContext.h"
-#include "EventType.h"
-#include "MemoryOperationType.h"
+#include "Shared/EventType.h"
+#include "Shared/MemoryOperationType.h"
 
 ScriptHost::ScriptHost(int scriptId)
 {

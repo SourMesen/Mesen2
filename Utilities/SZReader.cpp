@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <cstring>
 #include "SZReader.h"
-#include "UTF8Util.h"
-#include "../SevenZip/7zMemBuffer.h"
+#include "Utilities/UTF8Util.h"
+#include "SevenZip/7zMemBuffer.h"
 
 SZReader::SZReader()
 {

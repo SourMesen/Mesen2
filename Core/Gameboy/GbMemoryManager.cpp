@@ -18,7 +18,7 @@
 #include "Utilities/VirtualFile.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController)
 {

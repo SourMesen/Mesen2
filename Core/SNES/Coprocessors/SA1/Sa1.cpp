@@ -17,7 +17,7 @@
 #include "Shared/BatteryManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 Sa1::Sa1(SnesConsole* console)
 {

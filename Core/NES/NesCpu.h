@@ -8,7 +8,7 @@
 #include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "NesTypes.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 enum class ConsoleRegion;
 class NesConsole;

@@ -7,7 +7,7 @@
 #include "NES/BaseMapper.h"
 #include "NES/NesTypes.h"
 #include "NES/INesMemoryHandler.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 enum class ConsoleRegion;
 

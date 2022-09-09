@@ -13,7 +13,7 @@
 #include "Shared/BatteryManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 Gsu::Gsu(SnesConsole *console, uint32_t gsuRamSize)
 {

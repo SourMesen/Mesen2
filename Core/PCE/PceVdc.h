@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Shared/Emulator.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceConstants.h"
 #include "Utilities/ISerializable.h"

@@ -15,7 +15,7 @@
 #include "Shared/CheatManager.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 void SnesMemoryManager::Initialize(SnesConsole *console)
 {

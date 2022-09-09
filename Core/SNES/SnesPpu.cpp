@@ -16,7 +16,7 @@
 #include "Shared/NotificationManager.h"
 #include "Shared/RenderedFrame.h"
 #include "Shared/MessageManager.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 #include "Shared/RewindManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"

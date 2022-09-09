@@ -6,7 +6,7 @@
 #include "Shared/EmuSettings.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/FastString.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager *labelManager, EmuSettings* settings)
 {

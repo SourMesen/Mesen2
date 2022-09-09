@@ -5,7 +5,7 @@
 #include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
 #include "Shared/Video/DebugHud.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 ScriptManager::ScriptManager(Debugger* debugger)
 {

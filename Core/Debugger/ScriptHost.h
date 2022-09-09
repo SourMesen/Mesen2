@@ -2,8 +2,8 @@
 #include "pch.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/ScriptingContext.h"
-#include "EventType.h"
-#include "MemoryOperationType.h"
+#include "Shared/EventType.h"
+#include "Shared/MemoryOperationType.h"
 #include "Utilities/safe_ptr.h"
 
 class Debugger;

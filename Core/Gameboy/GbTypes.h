@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 #include "Shared/BaseState.h"
 
 struct GbCpuState : BaseState

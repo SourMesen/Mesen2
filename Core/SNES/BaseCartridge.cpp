@@ -30,7 +30,7 @@
 #include "Utilities/Serializer.h"
 #include "Utilities/sha1.h"
 #include "Utilities/CRC32.h"
-#include "FirmwareHelper.h"
+#include "Shared/FirmwareHelper.h"
 
 BaseCartridge::~BaseCartridge()
 {

@@ -9,8 +9,8 @@
 #include "SNES/SnesDmaController.h"
 #include "SNES/SnesCpu.Instructions.h"
 #include "SNES/SnesCpu.Shared.h"
-#include "EventType.h"
-#include "MemoryOperationType.h"
+#include "Shared/EventType.h"
+#include "Shared/MemoryOperationType.h"
 
 #ifndef DUMMYCPU
 SnesCpu::SnesCpu(SnesConsole *console)

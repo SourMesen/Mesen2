@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "../Utilities/CRC32.h"
+#include "Utilities/CRC32.h"
 #include "NES/BaseMapper.h"
 
 class Supervision : public BaseMapper

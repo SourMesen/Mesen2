@@ -16,7 +16,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
 #include "Utilities/Serializer.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 Spc::Spc(SnesConsole* console)
 {

@@ -6,8 +6,8 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
 #include "SNES/MemoryMappings.h"
-#include "MemoryOperationType.h"
-#include "EventType.h"
+#include "Shared/MemoryOperationType.h"
+#include "Shared/EventType.h"
 
 #define SnesCpu Sa1Cpu
 #include "SNES/SnesCpu.Instructions.h"

@@ -12,7 +12,7 @@
 #include "Shared/Video/VideoRenderer.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/Serializer.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 PceVpc::PceVpc(Emulator* emu, PceConsole* console, PceVce* vce)
 {

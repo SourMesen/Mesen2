@@ -31,7 +31,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 PceDebugger::PceDebugger(Debugger* debugger)
 {

@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "SNES/IMemoryHandler.h"
 #include "Debugger/DebugTypes.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class Sa1IRamHandler : public IMemoryHandler
 {

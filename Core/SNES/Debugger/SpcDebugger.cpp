@@ -15,7 +15,7 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 SpcDebugger::SpcDebugger(Debugger* debugger)
 {

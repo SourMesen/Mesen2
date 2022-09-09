@@ -10,7 +10,7 @@
 #include "SNES/DSP/DspTypes.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SpcTimer.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 #include "Utilities/ISerializable.h"
 
 class SnesConsole;

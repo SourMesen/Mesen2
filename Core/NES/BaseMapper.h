@@ -6,7 +6,7 @@
 #include "NES/RomData.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/Emulator.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 #include "Utilities/ISerializable.h"
 
 class NesConsole;

@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "../Lua/lua.hpp"
+#include "Lua/lua.hpp"
 
 template<typename T>
 struct Nullable

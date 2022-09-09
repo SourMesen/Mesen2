@@ -15,7 +15,7 @@
 #include "Debugger/ExpressionEvaluator.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 NecDspDebugger::NecDspDebugger(Debugger* debugger)
 {

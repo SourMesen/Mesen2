@@ -16,7 +16,7 @@
 #include "SNES/Coprocessors/SGB/SuperGameboy.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 constexpr uint16_t evtColors[6] = { 0x18C6, 0x294A, 0x108C, 0x4210, 0x3084, 0x1184 };
 

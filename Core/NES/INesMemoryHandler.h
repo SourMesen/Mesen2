@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../pch.h"
-#include "NesTypes.h"
+#include "pch.h"
+#include "NES/NesTypes.h"
 
 class MemoryRanges
 {

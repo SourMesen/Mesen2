@@ -12,7 +12,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SaveStateManager.h"
 #include "Utilities/magic_enum.hpp"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 ScriptingContext* ScriptingContext::_context = nullptr;
 

@@ -5,7 +5,7 @@
 #include "PCE/PceCdAudioPlayer.h"
 #include "PCE/PceTypes.h"
 #include "PCE/PceAudioFader.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 #include "Shared/CdReader.h"
 #include "Utilities/ISerializable.h"
 

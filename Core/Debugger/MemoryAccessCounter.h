@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugUtilities.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class Debugger;
 class SnesMemoryManager;

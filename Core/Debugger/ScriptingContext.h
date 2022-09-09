@@ -4,7 +4,7 @@
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Timer.h"
 #include "Debugger/DebugTypes.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 
 class Debugger;
 struct lua_State;

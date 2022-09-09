@@ -1,8 +1,8 @@
 #pragma once
-#include "../pch.h"
+#include "pch.h"
 
-#include "NesTypes.h"
-#include "NesHeader.h"
+#include "NES/NesTypes.h"
+#include "NES/NesHeader.h"
 #include "Shared/RomInfo.h"
 
 enum class RomHeaderVersion

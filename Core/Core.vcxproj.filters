@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="Core.ruleset" />
-    <ClInclude Include="EventType.h" />
-    <ClInclude Include="FirmwareHelper.h" />
-    <ClInclude Include="MemoryOperationType.h" />
-    <ClInclude Include="MemoryType.h" />
-    <ClInclude Include="RomFinder.h" />
+    <ClInclude Include="Shared\EventType.h" />
+    <ClInclude Include="Shared\FirmwareHelper.h" />
+    <ClInclude Include="Shared\MemoryOperationType.h" />
+    <ClInclude Include="Shared\MemoryType.h" />
+    <ClInclude Include="Shared\RomFinder.h" />
     <ClCompile Include="pch.cpp" />
     <ClInclude Include="pch.h" />
     <ClCompile Include="Debugger\BaseEventManager.cpp">

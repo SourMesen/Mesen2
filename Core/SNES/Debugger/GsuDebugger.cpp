@@ -15,7 +15,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/CodeDataLogger.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 

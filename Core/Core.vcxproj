@@ -429,7 +429,7 @@
     <ClInclude Include="Shared\ControllerHub.h" />
     <ClInclude Include="Shared\Interfaces\IAudioProvider.h" />
     <ClInclude Include="Shared\Interfaces\IBattery.h" />
-    <ClInclude Include="MemoryOperationType.h" />
+    <ClInclude Include="Shared\MemoryOperationType.h" />
     <ClInclude Include="Shared\Interfaces\ITapeRecorder.h" />
     <ClInclude Include="Shared\KeyDefinitions.h" />
     <ClInclude Include="Shared\RenderedFrame.h" />
@@ -546,7 +546,7 @@
     <ClInclude Include="Shared\Video\BaseRenderer.h" />
     <ClInclude Include="Shared\Audio\BaseSoundManager.h" />
     <ClInclude Include="Shared\Video\BaseVideoFilter.h" />
-    <ClInclude Include="FirmwareHelper.h" />
+    <ClInclude Include="Shared\FirmwareHelper.h" />
     <ClInclude Include="Debugger\Breakpoint.h" />
     <ClInclude Include="Debugger\BreakpointManager.h" />
     <ClInclude Include="Debugger\CallstackManager.h" />
@@ -565,7 +565,7 @@
     <ClInclude Include="SNES\Debugger\DummySpc.h" />
     <ClInclude Include="Shared\EmuSettings.h" />
     <ClInclude Include="SNES\Debugger\SnesEventManager.h" />
-    <ClInclude Include="EventType.h" />
+    <ClInclude Include="Shared\EventType.h" />
     <ClInclude Include="Debugger\ExpressionEvaluator.h" />
     <ClInclude Include="Debugger\LabelManager.h" />
     <ClInclude Include="Debugger\LuaApi.h" />
@@ -626,7 +626,7 @@
     <ClInclude Include="SNES\RegisterHandlerA.h" />
     <ClInclude Include="Shared\RewindData.h" />
     <ClInclude Include="Shared\RewindManager.h" />
-    <ClInclude Include="RomFinder.h" />
+    <ClInclude Include="Shared\RomFinder.h" />
     <ClInclude Include="SNES\RomHandler.h" />
     <ClInclude Include="SNES\Coprocessors\SPC7110\Rtc4513.h" />
     <ClInclude Include="SNES\Coprocessors\SA1\Sa1.h" />
@@ -650,7 +650,7 @@
     <ClInclude Include="Shared\SettingTypes.h" />
     <ClInclude Include="Shared\ShortcutKeyHandler.h" />
     <ClInclude Include="SNES\Input\SnesController.h" />
-    <ClInclude Include="MemoryType.h" />
+    <ClInclude Include="Shared\MemoryType.h" />
     <ClInclude Include="SNES\Input\SnesMouse.h" />
     <ClInclude Include="Shared\Audio\SoundMixer.h" />
     <ClInclude Include="Shared\Audio\SoundResampler.h" />

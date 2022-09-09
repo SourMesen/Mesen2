@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "SNES/SnesCpuTypes.h"
 #include "Utilities/ISerializable.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 class Sa1;
 class Emulator;

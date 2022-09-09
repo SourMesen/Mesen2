@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Utilities/ISerializable.h"
 #include "SNES/IMemoryHandler.h"
-#include "MemoryType.h"
+#include "Shared/MemoryType.h"
 
 class BaseCoprocessor : public ISerializable, public IMemoryHandler
 {

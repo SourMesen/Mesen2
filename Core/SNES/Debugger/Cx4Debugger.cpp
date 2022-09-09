@@ -18,7 +18,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "SNES/MemoryMappings.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 Cx4Debugger::Cx4Debugger(Debugger* debugger)
 {

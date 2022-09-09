@@ -6,7 +6,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 NesMemoryManager::NesMemoryManager(NesConsole* console, BaseMapper* mapper)
 {

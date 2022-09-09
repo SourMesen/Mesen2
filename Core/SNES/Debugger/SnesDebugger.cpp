@@ -36,7 +36,7 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/CRC32.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 {

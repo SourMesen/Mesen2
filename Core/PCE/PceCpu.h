@@ -8,7 +8,7 @@
 #include "pch.h"
 #include "PCE/PceTypes.h"
 #include "Utilities/ISerializable.h"
-#include "MemoryOperationType.h"
+#include "Shared/MemoryOperationType.h"
 
 class Emulator;
 class PceMemoryManager;

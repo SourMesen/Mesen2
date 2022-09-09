@@ -12,7 +12,7 @@
 #include "SNES/Input/SnesMouse.h"
 #include "SNES/Input/Multitap.h"
 #include "SNES/Input/SuperScope.h"
-#include "EventType.h"
+#include "Shared/EventType.h"
 #include "Utilities/Serializer.h"
 #include "Shared/SystemActionManager.h"
 

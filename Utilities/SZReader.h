@@ -1,11 +1,11 @@
 #pragma once
 #include "pch.h"
-#include "ArchiveReader.h"
-#include "../SevenZip/7z.h"
-#include "../SevenZip/7zAlloc.h"
-#include "../SevenZip/7zCrc.h"
-#include "../SevenZip/7zTypes.h"
-#include "../SevenZip/7zMemBuffer.h"
+#include "Utilities/ArchiveReader.h"
+#include "SevenZip/7z.h"
+#include "SevenZip/7zAlloc.h"
+#include "SevenZip/7zCrc.h"
+#include "SevenZip/7zTypes.h"
+#include "SevenZip/7zMemBuffer.h"
 
 class SZReader : public ArchiveReader
 {
