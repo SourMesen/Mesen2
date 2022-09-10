@@ -177,10 +177,10 @@ double NesSoundMixer::GetChannelOutput(AudioChannel channel, bool forRightChanne
 int16_t NesSoundMixer::GetOutputVolume(bool forRightChannel)
 {
 	double squareOutput = GetChannelOutput(AudioChannel::Square1, forRightChannel) + GetChannelOutput(AudioChannel::Square2, forRightChannel);
-	double tndOutput = 3 * GetChannelOutput(AudioChannel::Triangle, forRightChannel) + 2 * GetChannelOutput(AudioChannel::Noise, forRightChannel) + GetChannelOutput(AudioChannel::DMC, forRightChannel);
+	double tndOutput = GetChannelOutput(AudioChannel::DMC, forRightChannel) + 2.7516713261 * GetChannelOutput(AudioChannel::Triangle, forRightChannel) + 1.8493587125 * GetChannelOutput(AudioChannel::Noise, forRightChannel);
 
-	uint16_t squareVolume = (uint16_t)(477600 / (8128.0 / squareOutput + 100.0));
-	uint16_t tndVolume = (uint16_t)(818350 / (24329.0 / tndOutput + 100.0));
+	uint16_t squareVolume = (uint16_t)((95.88*5000.0) / (8128.0 / squareOutput + 100.0));
+	uint16_t tndVolume = (uint16_t)((159.79*5000.0) / (22638.0 / tndOutput + 100.0));
 
 	return (int16_t)(squareVolume + tndVolume +
 		GetChannelOutput(AudioChannel::FDS, forRightChannel) * 20 +
