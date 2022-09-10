@@ -79,6 +79,13 @@ void Spc::Reset()
 	_state.RomEnabled = true;
 	_state.Cycle = 0;
 	_state.PC = ReadWord(Spc::ResetVector);
+	_state.A = 0;
+	_state.X = 0;
+	_state.Y = 0;
+	_state.SP = 0xFF;
+
+	//Clear P (and other flags) - if P is set after reset, the IPL ROM doesn't work properly
+	_state.PS = 0;
 	
 	_opCode = 0;
 	_opStep = SpcOpStep::ReadOpCode;
