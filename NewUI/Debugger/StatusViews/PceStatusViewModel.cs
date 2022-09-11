@@ -55,7 +55,7 @@ namespace Mesen.Debugger.StatusViews
 			});
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			PceCpuState cpu = DebugApi.GetCpuState<PceCpuState>(CpuType.Pce);
 			PceVideoState video = DebugApi.GetPpuState<PceVideoState>(CpuType.Pce);
@@ -80,7 +80,7 @@ namespace Mesen.Debugger.StatusViews
 			FrameCount = video.Vdc.FrameCount;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			PceCpuState cpu = DebugApi.GetCpuState<PceCpuState>(CpuType.Pce);
 

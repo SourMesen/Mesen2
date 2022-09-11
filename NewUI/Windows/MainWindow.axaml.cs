@@ -19,6 +19,8 @@ using Mesen.Debugger.Utilities;
 using System.ComponentModel;
 using System.Threading;
 using Mesen.Debugger.Windows;
+using Avalonia.Input.Platform;
+using System.Collections.Generic;
 
 namespace Mesen.Windows
 {
@@ -45,6 +47,14 @@ namespace Mesen.Windows
 		public MainWindow()
 		{
 			DataContext = new MainWindowViewModel();
+
+			List<KeyGesture> gestures = AvaloniaLocator.Current.GetRequiredService<PlatformHotkeyConfiguration>().OpenContextMenu;
+			for(int i = gestures.Count - 1; i >= 0; i--) {
+				if(gestures[i].Key == Key.F10 && gestures[i].KeyModifiers == KeyModifiers.Shift) {
+					//Disable Shift-F10 shortcut to open context menu - interferes with default shortcut for step back
+					gestures.RemoveAt(i);
+				}
+			}
 
 			EmuApi.InitDll();
 

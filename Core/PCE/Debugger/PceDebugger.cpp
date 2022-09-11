@@ -10,6 +10,7 @@
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "Debugger/CodeDataLogger.h"
+#include "Debugger/StepBackManager.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceCpu.h"
 #include "PCE/PceVdc.h"
@@ -59,6 +60,7 @@ PceDebugger::PceDebugger(Debugger* debugger)
 	_cdlFile = _codeDataLogger->GetCdlFilePath(_console->GetRomFormat() == RomFormat::PceCdRom ? "PceCdromBios.cdl" : _emu->GetRomInfo().RomFile.GetFileName());
 	_codeDataLogger->LoadCdlFile(_cdlFile, _settings->GetDebugConfig().AutoResetCdl);
 
+	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new PceEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
@@ -80,12 +82,17 @@ void PceDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
 	_callstackManager->Clear();
-	_prevOpCode = 0x01;
+	ResetPrevOpCode();
 }
 
 uint64_t PceDebugger::GetCpuCycleCount()
 {
 	return _cpu->GetState().CycleCount;
+}
+
+void PceDebugger::ResetPrevOpCode()
+{
+	_prevOpCode = 0x01;
 }
 
 void PceDebugger::ProcessInstruction()
@@ -285,7 +292,7 @@ void PceDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 
 	//If a call/return occurred just before IRQ, it needs to be processed now
 	ProcessCallStackUpdates(ret, originalPc);
-	_prevOpCode = 0x01;
+	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Pce, *this, *_step.get(),
@@ -341,6 +348,7 @@ DebuggerFeatures PceDebugger::GetSupportedFeatures()
 	features.RunToNmi = false;
 	features.StepOver = true;
 	features.StepOut = true;
+	features.StepBack = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
 	features.CpuCycleStep = true;

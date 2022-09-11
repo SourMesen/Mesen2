@@ -28,6 +28,7 @@
 #include "Debugger/ScriptManager.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/CodeDataLogger.h"
+#include "Debugger/StepBackManager.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/BaseControlManager.h"
 #include "Shared/EmuSettings.h"
@@ -75,7 +76,8 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
 	} else {
 		_cdl = (SnesCodeDataLogger*)_debugger->GetCdlManager()->GetCodeDataLogger(MemoryType::SnesPrgRom);
 	}
-
+	
+	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new SnesEventManager(debugger, _cpu, console->GetPpu(), _memoryManager, console->GetDmaController()));
 	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, cpuType, _eventManager.get()));
@@ -107,7 +109,7 @@ void SnesDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
 	_callstackManager->Clear();
-	_prevOpCode = 0xFF;
+	ResetPrevOpCode();
 }
 
 void SnesDebugger::ProcessConfigChange()
@@ -127,6 +129,11 @@ void SnesDebugger::ProcessConfigChange()
 uint64_t SnesDebugger::GetCpuCycleCount()
 {
 	return GetCpuState().CycleCount;
+}
+
+void SnesDebugger::ResetPrevOpCode()
+{
+	_prevOpCode = 0xFF;
 }
 
 void SnesDebugger::ProcessInstruction()
@@ -354,7 +361,7 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 
 	//If a call/return occurred just before IRQ, it needs to be processed now
 	ProcessCallStackUpdates(ret, originalPc, GetCpuState().PS);
-	_prevOpCode = 0xFF;
+	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		_cpuType, *this, *_step.get(),
@@ -427,6 +434,7 @@ DebuggerFeatures SnesDebugger::GetSupportedFeatures()
 	features.RunToNmi = true;
 	features.StepOver = true;
 	features.StepOut = true;
+	features.StepBack = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
 	features.CpuCycleStep = true;

@@ -2,11 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="Core.ruleset" />
-    <ClInclude Include="Shared\EventType.h" />
-    <ClInclude Include="Shared\FirmwareHelper.h" />
-    <ClInclude Include="Shared\MemoryOperationType.h" />
-    <ClInclude Include="Shared\MemoryType.h" />
-    <ClInclude Include="Shared\RomFinder.h" />
     <ClCompile Include="pch.cpp" />
     <ClInclude Include="pch.h" />
     <ClCompile Include="Debugger\BaseEventManager.cpp">
@@ -2597,6 +2592,24 @@
     <ClInclude Include="SNES\DSP\DspTypes.h">
       <Filter>SNES\DSP</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger\StepBackManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\RomFinder.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\MemoryType.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\MemoryOperationType.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\FirmwareHelper.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\EventType.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2718,6 +2731,9 @@
     </ClCompile>
     <ClCompile Include="SNES\DSP\DspVoice.cpp">
       <Filter>SNES\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\StepBackManager.cpp">
+      <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

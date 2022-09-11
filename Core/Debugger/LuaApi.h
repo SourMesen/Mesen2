@@ -97,5 +97,5 @@ private:
 	static ScriptingContext* _context;
 	
 	static std::pair<unique_ptr<BaseVideoFilter>, FrameInfo> GetRenderedFrame();
-	template<typename T> static void GenerateEnumDefinition(lua_State* lua, string enumName);
+	template<typename T> static void GenerateEnumDefinition(lua_State* lua, string enumName, unordered_set<T> excludedValues = {});
 };

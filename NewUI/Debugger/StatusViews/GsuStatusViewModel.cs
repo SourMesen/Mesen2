@@ -75,7 +75,7 @@ namespace Mesen.Debugger.StatusViews
 			);
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			GsuState cpu = DebugApi.GetCpuState<GsuState>(CpuType.Gsu);
 
@@ -118,7 +118,7 @@ namespace Mesen.Debugger.StatusViews
 			FlagIrq = cpu.SFR.Irq;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			GsuState cpu = DebugApi.GetCpuState<GsuState>(CpuType.Gsu);
 

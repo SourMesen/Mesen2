@@ -6,6 +6,7 @@
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/ScriptManager.h"
 #include "Debugger/Debugger.h"
+#include "Debugger/StepBackManager.h"
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/MemoryAccessCounter.h"
 #include "Debugger/ExpressionEvaluator.h"
@@ -73,6 +74,7 @@ NesDebugger::NesDebugger(Debugger* debugger)
 
 	_ppuTools.reset(new NesPpuTools(debugger, debugger->GetEmulator(), console));
 
+	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new NesEventManager(debugger, console));
 	_callstackManager.reset(new CallstackManager(debugger, console));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Nes, _eventManager.get()));
@@ -94,12 +96,17 @@ void NesDebugger::Reset()
 {
 	_enableBreakOnUninitRead = true;
 	_callstackManager->Clear();
-	_prevOpCode = 0xFF;
+	ResetPrevOpCode();
 }
 
 uint64_t NesDebugger::GetCpuCycleCount()
 {
 	return _cpu->GetState().CycleCount;
+}
+
+void NesDebugger::ResetPrevOpCode()
+{
+	_prevOpCode = 0xFF;
 }
 
 void NesDebugger::ProcessInstruction()
@@ -306,7 +313,7 @@ void NesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool
 
 	//If a call/return occurred just before IRQ, it needs to be processed now
 	ProcessCallStackUpdates(ret, originalPc);
-	_prevOpCode = 0xFF;
+	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Nes, *this, *_step.get(),
@@ -378,6 +385,7 @@ DebuggerFeatures NesDebugger::GetSupportedFeatures()
 	features.RunToNmi = true;
 	features.StepOver = true;
 	features.StepOut = true;
+	features.StepBack = true;
 	features.CallStack = true;
 	features.CpuCycleStep = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;

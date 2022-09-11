@@ -76,6 +76,8 @@ public:
 
 	void SetProgramCounter(uint32_t addr) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
+	uint64_t GetCpuCycleCount() override;
+	void ResetPrevOpCode();
 
 	DebuggerFeatures GetSupportedFeatures() override;
 

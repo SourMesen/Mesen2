@@ -58,7 +58,7 @@ namespace Mesen.Debugger.StatusViews
 			);
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			SpcState cpu = DebugApi.GetCpuState<SpcState>(CpuType.Spc);
 
@@ -78,7 +78,7 @@ namespace Mesen.Debugger.StatusViews
 			StackPreview = sb.ToString();
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			SpcState cpu = DebugApi.GetCpuState<SpcState>(CpuType.Spc);
 

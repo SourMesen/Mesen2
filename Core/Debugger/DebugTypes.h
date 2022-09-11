@@ -343,6 +343,7 @@ enum class StepType
 	SpecificScanline,
 	RunToNmi,
 	RunToIrq,
+	StepBack
 };
 
 struct StepRequest

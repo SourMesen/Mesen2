@@ -51,7 +51,7 @@ namespace Mesen.Debugger.StatusViews
 		{
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			Cx4State cpu = DebugApi.GetCpuState<Cx4State>(CpuType.Cx4);
 
@@ -95,7 +95,7 @@ namespace Mesen.Debugger.StatusViews
 			FlagIrq = cpu.IrqFlag;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			Cx4State cpu = DebugApi.GetCpuState<Cx4State>(CpuType.Cx4);
 

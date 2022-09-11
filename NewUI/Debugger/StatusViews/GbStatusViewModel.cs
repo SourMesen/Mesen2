@@ -58,7 +58,7 @@ namespace Mesen.Debugger.StatusViews
 			);
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			GbState state = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
 
@@ -94,7 +94,7 @@ namespace Mesen.Debugger.StatusViews
 			StackPreview = sb.ToString();
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			GbCpuState cpu = DebugApi.GetCpuState<GbCpuState>(CpuType.Gameboy);
 

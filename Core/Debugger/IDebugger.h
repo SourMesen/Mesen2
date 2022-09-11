@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Debugger/DebuggerFeatures.h"
 #include "Debugger/DebugTypes.h"
+#include "Debugger/StepBackManager.h"
 
 enum class StepType;
 class BreakpointManager;
@@ -15,10 +16,12 @@ struct BaseState;
 enum class EventType;
 enum class MemoryOperationType;
 
+//TODO rename/refactor to BaseDebugger
 class IDebugger
 {
 protected:
 	unique_ptr<StepRequest> _step;
+	unique_ptr<StepBackManager> _stepBackManager = unique_ptr<StepBackManager>(new StepBackManager(nullptr, nullptr));
 
 public:
 	bool IgnoreBreakpoints = false;
@@ -28,6 +31,12 @@ public:
 	virtual ~IDebugger() = default;
 
 	StepRequest* GetStepRequest() { return _step.get(); }
+	bool CheckStepBack() { return _stepBackManager->CheckStepBack(); }
+	bool IsStepBack() { return _stepBackManager->IsRewinding(); }
+	void ResetStepBackCache() { return _stepBackManager->ResetCache(); }
+	void StepBack() { return _stepBackManager->StepBack(); }
+
+	virtual void ResetPrevOpCode() {}
 
 	virtual void Step(int32_t stepCount, StepType type) = 0;
 	virtual void Reset() = 0;

@@ -174,21 +174,23 @@ int LuaApi::GetLibrary(lua_State *lua)
 	GenerateEnumDefinition<AccessCounterType>(lua, "counterType");
 	GenerateEnumDefinition<CpuType>(lua, "cpuType");
 	GenerateEnumDefinition<ScriptDrawSurface>(lua, "drawSurface");
-	GenerateEnumDefinition<EventType>(lua, "eventType");
-	GenerateEnumDefinition<StepType>(lua, "stepType");
+	GenerateEnumDefinition<EventType>(lua, "eventType", { EventType::LastValue });
+	GenerateEnumDefinition<StepType>(lua, "stepType", { StepType::StepBack });
 
 	return 1;
 }
 
 template<typename T>
-void LuaApi::GenerateEnumDefinition(lua_State* lua, string enumName)
+void LuaApi::GenerateEnumDefinition(lua_State* lua, string enumName, unordered_set<T> excludedValues)
 {
 	lua_pushstring(lua, enumName.c_str());
 	lua_newtable(lua);
 	for(auto& entry : magic_enum::enum_entries<T>()) {
-		string name = string(entry.second);
-		name[0] = ::tolower(name[0]);
-		LuaPushIntValue(lua, name, (int)entry.first);
+		if(excludedValues.find(entry.first) == excludedValues.end()) {
+			string name = string(entry.second);
+			name[0] = ::tolower(name[0]);
+			LuaPushIntValue(lua, name, (int)entry.first);
+		}
 	}
 	lua_settable(lua, -3);
 }

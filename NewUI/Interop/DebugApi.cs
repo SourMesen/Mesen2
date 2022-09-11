@@ -1236,6 +1236,7 @@ namespace Mesen.Interop
 		SpecificScanline,
 		RunToNmi,
 		RunToIrq,
+		StepBack
 	}
 
 	public enum BreakSource

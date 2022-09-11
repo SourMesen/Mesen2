@@ -18,6 +18,7 @@
 #include "Debugger/MemoryDumper.h"
 #include "Debugger/CodeDataLogger.h"
 #include "Debugger/BaseEventManager.h"
+#include "Debugger/StepBackManager.h"
 #include "Utilities/Patches/IpsPatcher.h"
 #include "Utilities/HexUtilities.h"
 #include "Gameboy/Debugger/GbAssembler.h"
@@ -56,6 +57,7 @@ GbDebugger::GbDebugger(Debugger* debugger)
 	_traceLogger.reset(new GbTraceLogger(debugger, this, _ppu));
 	_ppuTools.reset(new GbPpuTools(debugger, debugger->GetEmulator()));
 
+	_stepBackManager.reset(new StepBackManager(_emu, this));
 	_eventManager.reset(new GbEventManager(debugger, _gameboy->GetCpu(), _ppu));
 	_callstackManager.reset(new CallstackManager(debugger, _gameboy));
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Gameboy, _eventManager.get()));
@@ -79,7 +81,7 @@ GbDebugger::~GbDebugger()
 void GbDebugger::Reset()
 {
 	_callstackManager->Clear();
-	_prevOpCode = 0;
+	ResetPrevOpCode();
 }
 
 void GbDebugger::ProcessInstruction()
@@ -277,7 +279,7 @@ void GbDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool 
 
 	//If a call/return occurred just before IRQ, it needs to be processed now
 	ProcessCallStackUpdates(ret, originalPc);
-	_prevOpCode = 0;
+	ResetPrevOpCode();
 
 	_debugger->InternalProcessInterrupt(
 		CpuType::Gameboy, *this, *_step.get(), 
@@ -326,6 +328,7 @@ DebuggerFeatures GbDebugger::GetSupportedFeatures()
 	features.RunToNmi = false;
 	features.StepOver = true;
 	features.StepOut = true;
+	features.StepBack = true;
 	features.CallStack = true;
 	features.ChangeProgramCounter = AllowChangeProgramCounter;
 
@@ -349,6 +352,16 @@ void GbDebugger::SetProgramCounter(uint32_t addr)
 uint32_t GbDebugger::GetProgramCounter(bool getInstPc)
 {
 	return getInstPc ? _prevProgramCounter : _cpu->GetState().PC;
+}
+
+uint64_t GbDebugger::GetCpuCycleCount()
+{
+	return _gameboy->GetCycleCount();
+}
+
+void GbDebugger::ResetPrevOpCode()
+{
+	_prevOpCode = 0;
 }
 
 BaseEventManager* GbDebugger::GetEventManager()

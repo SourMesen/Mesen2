@@ -85,7 +85,7 @@ void RewindManager::ProcessNotification(ConsoleNotificationType type, void * par
 			ClearBuffer();
 		}
 	} else if(type == ConsoleNotificationType::StateLoaded) {
-		if(_rewindState == RewindState::Stopped) {
+		if(_rewindState == RewindState::Stopped && !_ignoreLoadState) {
 			//A save state was loaded by the user, mark as the end of the current "segment" (for history viewer)
 			_currentHistory.EndOfSegment = true;
 			AddHistoryBlock();
@@ -111,10 +111,10 @@ void RewindManager::AddHistoryBlock()
 
 void RewindManager::PopHistory()
 {
-	if(_history.empty() && _currentHistory.FrameCount <= 0) {
+	if(_history.empty() && _currentHistory.FrameCount <= 0 && !IsStepBack()) {
 		StopRewinding();
 	} else {
-		if(_currentHistory.FrameCount <= 0) {
+		if(_currentHistory.FrameCount <= 0 && !IsStepBack()) {
 			_currentHistory = _history.back();
 			_history.pop_back();
 		}
@@ -131,20 +131,28 @@ void RewindManager::PopHistory()
 void RewindManager::Start(bool forDebugger)
 {
 	if(_rewindState == RewindState::Stopped && _settings->GetRewindBufferSize() > 0) {
-		auto lock = _emu->AcquireLock();
-
-		_rewindState = forDebugger ? RewindState::Debugging : RewindState::Starting;
-		_videoHistoryBuilder.clear();
-		_videoHistory.clear();
-		_audioHistoryBuilder.clear();
-		_audioHistory.clear();
-		_historyBackup.clear();
-		
-		PopHistory();
-		_emu->GetSoundMixer()->StopAudio(true);
-		_settings->SetFlag(EmulationFlags::MaximumSpeed);
-		_settings->SetFlag(EmulationFlags::Rewind);
+		if(forDebugger) {
+			InternalStart(forDebugger);
+		} else {
+			auto lock = _emu->AcquireLock();
+			InternalStart(forDebugger);
+		}		
 	}
+}
+
+void RewindManager::InternalStart(bool forDebugger)
+{
+	_rewindState = forDebugger ? RewindState::Debugging : RewindState::Starting;
+	_videoHistoryBuilder.clear();
+	_videoHistory.clear();
+	_audioHistoryBuilder.clear();
+	_audioHistory.clear();
+	_historyBackup.clear();
+
+	PopHistory();
+	_emu->GetSoundMixer()->StopAudio(true);
+	_settings->SetFlag(EmulationFlags::MaximumSpeed);
+	_settings->SetFlag(EmulationFlags::Rewind);
 }
 
 void RewindManager::ForceStop()
@@ -373,4 +381,9 @@ void RewindManager::SendFrame(RenderedFrame& frame, bool forRewind)
 bool RewindManager::SendAudio(int16_t* soundBuffer, uint32_t sampleCount)
 {
 	return ProcessAudio(soundBuffer, sampleCount);
+}
+
+void RewindManager::SetIgnoreLoadState(bool ignore)
+{
+	_ignoreLoadState = ignore;
 }

@@ -84,7 +84,7 @@ namespace Mesen.Debugger.StatusViews
 			});
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			NesCpuState cpu = DebugApi.GetCpuState<NesCpuState>(CpuType.Nes);
 			NesPpuState ppu = DebugApi.GetPpuState<NesPpuState>(CpuType.Nes);
@@ -139,7 +139,7 @@ namespace Mesen.Debugger.StatusViews
 			IntensifyBlue = ppu.Mask.IntensifyBlue;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			NesCpuState cpu = DebugApi.GetCpuState<NesCpuState>(CpuType.Nes);
 			NesPpuState ppu = DebugApi.GetPpuState<NesPpuState>(CpuType.Nes);

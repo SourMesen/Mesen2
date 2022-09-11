@@ -42,7 +42,7 @@ namespace Mesen.Debugger.StatusViews
 		{
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			NecDspState cpu = DebugApi.GetCpuState<NecDspState>(CpuType.NecDsp);
 
@@ -80,7 +80,7 @@ namespace Mesen.Debugger.StatusViews
 			RegB_S1 = cpu.FlagsB.Sign1;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			NecDspState cpu = DebugApi.GetCpuState<NecDspState>(CpuType.NecDsp);
 

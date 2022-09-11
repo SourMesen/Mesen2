@@ -80,7 +80,7 @@ namespace Mesen.Debugger.StatusViews
 			);
 		}
 
-		public override void UpdateUiState()
+		protected override void InternalUpdateUiState()
 		{
 			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(_cpuType);
 			SnesPpuState ppu = DebugApi.GetPpuState<SnesPpuState>(CpuType.Snes);
@@ -115,7 +115,7 @@ namespace Mesen.Debugger.StatusViews
 			Scanline = ppu.Scanline;
 		}
 
-		public override void UpdateConsoleState()
+		protected override void InternalUpdateConsoleState()
 		{
 			SnesCpuState cpu = DebugApi.GetCpuState<SnesCpuState>(_cpuType);
 

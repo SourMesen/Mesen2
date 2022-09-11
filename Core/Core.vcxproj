@@ -22,6 +22,7 @@
     <ClInclude Include="Debugger\Base6502Assembler.h" />
     <ClInclude Include="Debugger\CdlManager.h" />
     <ClInclude Include="Debugger\DisassemblySearch.h" />
+    <ClInclude Include="Debugger\StepBackManager.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
@@ -685,6 +686,7 @@
     <ClCompile Include="Debugger\ExpressionEvaluator.Pce.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
+    <ClCompile Include="Debugger\StepBackManager.cpp" />
     <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbPpuTools.cpp" />

@@ -66,8 +66,7 @@ namespace Mesen.Debugger.Utilities
 					ActionType = ActionType.StepBack,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBack),
 					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).StepBack,
-					IsEnabled = () => false,
-					OnClick = () => { } //TODO
+					OnClick = () => Step(getCpuType(), StepType.StepBack, 1)
 				},
 
 				new ContextMenuSeparator() { IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).CpuCycleStep },

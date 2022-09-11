@@ -166,8 +166,21 @@ uint64_t Debugger::GetCpuCycleCount()
 template<CpuType type>
 void Debugger::ProcessInstruction()
 {
-	_debuggers[(int)type].Debugger->IgnoreBreakpoints = false;
-	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = true;
+	IDebugger* debugger = _debuggers[(int)type].Debugger.get();
+	if(debugger->CheckStepBack()) {
+		//Step back target reached, break at the current instruction
+		debugger->GetStepRequest()->Break(BreakSource::CpuStep);
+
+		//Reset prev op code flag to prevent debugger code from incorrectly flagging
+		//an instruction as the start of a function, etc. after loading the state
+		debugger->ResetPrevOpCode();
+	} else if(debugger->IsStepBack()) {
+		//While step back is running, don't process instructions
+		return;
+	}
+
+	debugger->IgnoreBreakpoints = false;
+	debugger->AllowChangeProgramCounter = true;
 
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessInstruction(); break;
@@ -181,10 +194,10 @@ void Debugger::ProcessInstruction()
 		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessInstruction(); break;
 	}
 
-	_debuggers[(int)type].Debugger->AllowChangeProgramCounter = false;
+	debugger->AllowChangeProgramCounter = false;
 	
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
-		MemoryOperationInfo memOp = _debuggers[(int)type].Debugger->InstructionProgress.LastMemOperation;
+		MemoryOperationInfo memOp = debugger->InstructionProgress.LastMemOperation;
 		AddressInfo relAddr = { (int32_t)memOp.Address, memOp.MemType };
 		uint8_t value = (uint8_t)memOp.Value;
 		_scriptManager->ProcessMemoryOperation(relAddr, value, MemoryOperationType::ExecOpCode, type, true);
@@ -194,6 +207,10 @@ void Debugger::ProcessInstruction()
 template<CpuType type, typename T>
 void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead(addr, value, opType); break;
@@ -214,6 +231,10 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 template<CpuType type, typename T>
 void Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite(addr, value, opType); break;
@@ -234,6 +255,10 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 template<CpuType type>
 void Debugger::ProcessIdleCycle()
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	_debuggers[(int)type].Debugger->InstructionProgress.LastMemOperation.Type = MemoryOperationType::Idle;
 
 	switch(type) {
@@ -245,6 +270,10 @@ void Debugger::ProcessIdleCycle()
 template<CpuType type, typename T>
 void Debugger::ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType)
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuRead(addr, value, memoryType); break;
@@ -261,6 +290,10 @@ void Debugger::ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, Me
 template<CpuType type, typename T>
 void Debugger::ProcessPpuWrite(uint16_t addr, T& value, MemoryType memoryType)
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuWrite(addr, value, memoryType); break;
@@ -277,6 +310,10 @@ void Debugger::ProcessPpuWrite(uint16_t addr, T& value, MemoryType memoryType)
 template<CpuType type>
 void Debugger::ProcessPpuCycle()
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessPpuCycle(); break;
 		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessPpuCycle(); break;
@@ -359,6 +396,10 @@ void Debugger::ProcessPredictiveBreakpoint(CpuType sourceCpu, BreakpointManager*
 template<CpuType type>
 void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
 {
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
 	_debuggers[(int)type].Debugger->ProcessInterrupt(originalPc, currentPc, forNmi);
 	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq);
 }
@@ -476,6 +517,7 @@ void Debugger::Run()
 {
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
 		if(_debuggers[i].Debugger) {
+			_debuggers[i].Debugger->ResetStepBackCache();
 			_debuggers[i].Debugger->Run();
 		}
 	}
@@ -499,12 +541,19 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type, BreakSour
 	IDebugger* debugger = _debuggers[(int)cpuType].Debugger.get();
 
 	if(debugger) {
+		if(type != StepType::StepBack) {
+			debugger->ResetStepBackCache();
+		} else {
+			debugger->StepBack();
+		}
+
 		debugger->Step(stepCount, type);
 		debugger->GetStepRequest()->SetBreakSource(source);
 	}
 
 	for(int i = 0; i <= (int)DebugUtilities::GetLastCpuType(); i++) {
 		if(_debuggers[i].Debugger && _debuggers[i].Debugger.get() != debugger) {
+			_debuggers[i].Debugger->ResetStepBackCache();
 			_debuggers[i].Debugger->Run();
 		}
 	}
