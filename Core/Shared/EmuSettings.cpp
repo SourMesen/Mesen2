@@ -45,6 +45,8 @@ void EmuSettings::Serialize(Serializer& s)
 	switch(_emu->GetConsoleType()) {
 		case ConsoleType::Nes:
 			SV(_nes.ConsoleType);
+			SV(_nes.RamPowerOnState);
+			SV(_nes.RandomizeMapperPowerOnState);
 			SV(_nes.DisableOamAddrBug); SV(_nes.DisablePaletteRead); SV(_nes.DisablePpu2004Reads);
 			SV(_nes.DisableGameGenieBusConflicts); SV(_nes.DisablePpuReset); SV(_nes.EnableOamDecay);
 			SV(_nes.EnablePpu2000ScrollGlitch); SV(_nes.EnablePpu2006ScrollGlitch); SV(_nes.EnablePpuOamRowCorruption);
@@ -57,6 +59,8 @@ void EmuSettings::Serialize(Serializer& s)
 			break;
 
 		case ConsoleType::Snes:
+			SV(_snes.RamPowerOnState);
+			SV(_snes.EnableRandomPowerOnState);
 			SV(_snes.GsuClockSpeed);
 			SV(_snes.PpuExtraScanlinesAfterNmi); SV(_snes.PpuExtraScanlinesBeforeNmi);
 			SV(_snes.Region);
@@ -67,12 +71,15 @@ void EmuSettings::Serialize(Serializer& s)
 
 		case ConsoleType::Gameboy:
 		case ConsoleType::GameboyColor:
+			SV(_gameboy.RamPowerOnState);
 			SV(_gameboy.Controller.Type);
 			SV(_gameboy.Model);
 			SV(_gameboy.UseSgb2);
 			break;
 
 		case ConsoleType::PcEngine:
+			SV(_pce.RamPowerOnState);
+			SV(_pce.EnableRandomPowerOnState);
 			SV(_pce.CdRomType);
 			SV(_pce.ConsoleType);
 			SV(_pce.DisableCdRomSaveRamForHuCardGames);
