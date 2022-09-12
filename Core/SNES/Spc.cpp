@@ -118,11 +118,11 @@ void Spc::UpdateClockRatio()
 {
 	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
 
-	//If the target cycle is off by more than 10 cycles, reset the counter to match what was expected
+	//If the target cycle is off by more than 20 cycles, reset the counter to match what was expected
 	//This can happen due to overclocking (which disables the SPC for some scanlines) or if the SPC's 
 	//internal sample rate is changed between versions (e.g 32000hz -> 32040hz)
 	uint64_t targetCycle = (uint64_t)(_memoryManager->GetMasterClock() * _clockRatio);
-	if(std::abs((int64_t)targetCycle - (int64_t)_state.Cycle) > 10) {
+	if(std::abs((int64_t)targetCycle - (int64_t)_state.Cycle) > 20) {
 		_state.Cycle = targetCycle;
 	}
 }
@@ -444,12 +444,17 @@ uint8_t* Spc::GetSpcRom()
 
 void Spc::Serialize(Serializer &s)
 {
+	if(s.IsSaving()) {
+		//Catch up SPC to main CPU before creating the state
+		Run();
+	}
+
 	SV(_state.A); SV(_state.Cycle); SV(_state.PC); SV(_state.PS); SV(_state.SP); SV(_state.X); SV(_state.Y);
 	SV(_state.CpuRegs[0]); SV(_state.CpuRegs[1]); SV(_state.CpuRegs[2]); SV(_state.CpuRegs[3]);
 	SV(_state.OutputReg[0]); SV(_state.OutputReg[1]); SV(_state.OutputReg[2]); SV(_state.OutputReg[3]);
 	SV(_state.RamReg[0]); SV(_state.RamReg[1]);
 	SV(_state.ExternalSpeed); SV(_state.InternalSpeed); SV(_state.WriteEnabled); SV(_state.TimersEnabled);
-	SV(_state.DspReg); SV(_state.RomEnabled); SV(_clockRatio);
+	SV(_state.DspReg); SV(_state.RomEnabled); SV(_clockRatio); SV(_state.TimersDisabled);
 
 	s.PushNamePrefix("timer0", -1);
 	_state.Timer0.Serialize(s);
@@ -472,7 +477,7 @@ void Spc::Serialize(Serializer &s)
 	}
 
 	if(s.GetFormat() != SerializeFormat::Map) {
-		SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled); SV(_state.TimersDisabled);
+		SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled);
 	}
 }
 
