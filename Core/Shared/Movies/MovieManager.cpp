@@ -15,6 +15,9 @@ MovieManager::MovieManager(Emulator* emu)
 
 void MovieManager::Record(RecordMovieOptions options)
 {
+	//Stop any active recording/playback before starting playback for this movie
+	Stop();
+
 	shared_ptr<MovieRecorder> recorder(new MovieRecorder(_emu));
 	if(recorder->Record(options)) {
 		_recorder.reset(recorder);
@@ -36,6 +39,9 @@ void MovieManager::Play(VirtualFile file, bool forTest)
 				player.reset(new MesenMovie(_emu, forTest));
 			}
 		}
+
+		//Stop any active recording/playback before starting playback for this movie
+		Stop();
 
 		if(player && player->Play(file)) {
 			_player.reset(player);
