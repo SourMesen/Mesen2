@@ -267,10 +267,12 @@ public:
 							if(savedValue.Size >= sizeof(T)) {
 								ReadValue(value, savedValue.DataPtr);
 							} else {
-								value = (T)0;
+								//TODO review this - is it better to keep the state as-is if the data can't be found?
+								//Setting to 0 can break compatibility with old save states - maybe keeping the current state is safer?
+								//value = (T)0;
 							}
 						} else {
-							value = (T)0;
+							//value = (T)0;
 						}
 						break;
 					}
@@ -280,7 +282,7 @@ public:
 						if(result != _values.end()) {
 							ReadTextFormat(result->second, value);
 						} else {
-							value = (T)0;
+							//value = (T)0;
 						}
 						break;
 					}
@@ -375,10 +377,10 @@ public:
 						}
 					}
 				} else {
-					memset(arrayValues, 0, sizeof(T) * elementCount);
+					//memset(arrayValues, 0, sizeof(T) * elementCount);
 				}
 			} else {
-				memset(arrayValues, 0, sizeof(T) * elementCount);
+				//memset(arrayValues, 0, sizeof(T) * elementCount);
 			}
 		}
 	}
