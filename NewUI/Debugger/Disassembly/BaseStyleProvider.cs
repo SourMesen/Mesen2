@@ -80,7 +80,7 @@ namespace Mesen.Debugger.Disassembly
 			LineProperties props = new LineProperties();
 
 			if((lineData.HasAddress || lineData.AbsoluteAddress.Address >= 0) && !lineData.IsAddressHidden) {
-				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType, lineData.AbsoluteAddress);
+				GetBreakpointLineProperties(props, lineData.Address, lineData.CpuType, lineData.AbsoluteAddress, lineData.Flags.HasFlag(LineFlags.ShowAsData));
 			}
 
 			if(IsLineActive(lineData, lineIndex)) {
@@ -109,7 +109,7 @@ namespace Mesen.Debugger.Disassembly
 			return props;
 		}
 
-		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress, CpuType cpuType, AddressInfo absAddress)
+		public void GetBreakpointLineProperties(LineProperties props, int cpuAddress, CpuType cpuType, AddressInfo absAddress, bool showSymbolOnly)
 		{
 			MemoryType relMemoryType = cpuType.ToMemoryType();
 			if(absAddress.Address < 0) {
@@ -117,12 +117,12 @@ namespace Mesen.Debugger.Disassembly
 			}
 			foreach(Breakpoint breakpoint in BreakpointManager.Breakpoints) {
 				if(breakpoint.Matches((uint)cpuAddress, relMemoryType, cpuType) || (absAddress.Address >= 0 && breakpoint.Matches((uint)absAddress.Address, absAddress.Type, cpuType))) {
-					SetBreakpointLineProperties(props, breakpoint);
+					SetBreakpointLineProperties(props, breakpoint, showSymbolOnly);
 				}
 			}
 		}
 
-		protected void SetBreakpointLineProperties(LineProperties props, Breakpoint breakpoint)
+		protected void SetBreakpointLineProperties(LineProperties props, Breakpoint breakpoint, bool showSymbolOnly)
 		{
 			Color? bgColor = null;
 			Color bpColor = breakpoint.GetColor();
@@ -143,8 +143,10 @@ namespace Mesen.Debugger.Disassembly
 				symbol |= LineSymbol.Plus;
 			}
 
-			props.TextBgColor = bgColor;
-			props.FgColor = bgColor != null ? ColorHelper.GetContrastTextColor(bgColor.Value) : null;
+			if(!showSymbolOnly) {
+				props.TextBgColor = bgColor;
+				props.FgColor = bgColor != null ? ColorHelper.GetContrastTextColor(bgColor.Value) : null;
+			}
 			props.OutlineColor = outlineColor;
 			props.Symbol = symbol;
 		}

@@ -421,7 +421,7 @@ namespace Mesen.Debugger.Controls
 					EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
 					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
 					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
-					context.DrawGeometry(b!, p!, geometry);
+					context.DrawGeometry(b, p, geometry);
 
 					if(lineStyle.Symbol.HasFlag(LineSymbol.Plus)) {
 						Color c = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? lineStyle.OutlineColor.Value : Colors.White;
