@@ -72,8 +72,7 @@ struct HesFileData
 		//because this is called from the emulation thread, which may cause infinite recursion
 		thread switchTrackTask([emu, selectedTrack]() {
 			auto lock = emu->AcquireLock();
-			string file = emu->GetRomInfo().RomFile;
-			emu->LoadRom(file, {}, false, true);
+			emu->ReloadRom(false);
 			((PceConsole*)emu->GetConsole().get())->InitHesPlayback(selectedTrack);
 		});
 		switchTrackTask.detach();
