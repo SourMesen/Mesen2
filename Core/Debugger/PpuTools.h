@@ -178,6 +178,12 @@ struct DebugPaletteInfo
 class PpuTools
 {
 protected:
+	static constexpr uint32_t _grayscaleColorsBpp2[4] = { 0xFF000000, 0xFF666666, 0xFFBBBBBB, 0xFFFFFFFF };
+	static constexpr uint32_t _grayscaleColorsBpp4[16] = {
+		0xFF000000, 0xFF303030, 0xFF404040, 0xFF505050, 0xFF606060, 0xFF707070, 0xFF808080, 0xFF909090,
+		0xFF989898, 0xFFA0A0A0, 0xFFAAAAAA, 0xFFBBBBBB, 0xFFCCCCCC, 0xFFDDDDDD, 0xFFEEEEEE, 0xFFFFFFFF
+	};
+
 	Emulator* _emu;
 	Debugger* _debugger;
 	unordered_map<uint32_t, ViewerRefreshConfig> _updateTimings;

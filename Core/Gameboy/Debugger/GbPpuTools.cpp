@@ -22,6 +22,12 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 
 	uint16_t vramMask = isCgb ? 0x3FFF : 0x1FFF;
 
+	uint8_t colorMask = 0xFF;
+	if(options.DisplayMode == TilemapDisplayMode::Grayscale) {
+		palette = (uint32_t*)_grayscaleColorsBpp2;
+		colorMask = 0x03;
+	}
+
 	for(int row = 0; row < 32; row++) {
 		uint16_t baseOffset = offset + ((row & 0x1F) << 5);
 
@@ -46,7 +52,7 @@ DebugTilemapInfo GbPpuTools::GetTilemap(GetTilemapOptions options, BaseState& ba
 					uint8_t pixelIndex = hMirror ? (7 - x) : x;
 					uint8_t color = GetTilePixelColor<TileFormat::Bpp2>(vram, vramMask, pixelStart, pixelIndex);
 
-					outBuffer[((row * 8) + y) * 256 + column * 8 + x] = palette[bgPalette + color];
+					outBuffer[((row * 8) + y) * 256 + column * 8 + x] = palette[(bgPalette + color) & colorMask];
 				}
 			}
 		}

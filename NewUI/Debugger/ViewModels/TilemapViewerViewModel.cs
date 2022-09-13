@@ -47,7 +47,9 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public Rect ScrollOverlayRect { get; private set; } = Rect.Empty;
 		[Reactive] public List<PictureViewerLine>? OverlayLines { get; private set; } = null;
-		
+
+		[Reactive] public Enum[] AvailableDisplayModes { get; set; } = Array.Empty<Enum>();
+
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 		
@@ -270,6 +272,13 @@ namespace Mesen.Debugger.ViewModels
 		private void InitForCpuType()
 		{
 			IsNes = CpuType == CpuType.Nes;
+
+			if(IsNes) {
+				AvailableDisplayModes = new Enum[] { TilemapDisplayMode.Default, TilemapDisplayMode.Grayscale, TilemapDisplayMode.AttributeView };
+			} else {
+				AvailableDisplayModes = new Enum[] { TilemapDisplayMode.Default, TilemapDisplayMode.Grayscale };
+			}
+
 			_refreshDataOnTabChange = false;
 			switch(CpuType) {
 				case CpuType.Snes:

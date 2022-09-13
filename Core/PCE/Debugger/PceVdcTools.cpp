@@ -94,6 +94,17 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 	result.ScrollWidth = (state.HvLatch.HorizDisplayWidth + 1) * 8;
 	result.ScrollHeight = std::min<uint32_t>(242, state.HvLatch.VertDisplayWidth);
 
+	uint8_t colorMask = 0xFF;
+	if(options.DisplayMode == TilemapDisplayMode::Grayscale) {
+		if constexpr(format == TileFormat::Bpp4 || format == TileFormat::PceSpriteBpp4) {
+			palette = (uint32_t*)_grayscaleColorsBpp4;
+			colorMask = 0x0F;
+		} else {
+			palette = (uint32_t*)_grayscaleColorsBpp2;
+			colorMask = 0x03;
+		}
+	}
+
 	for(uint8_t row = 0; row < state.RowCount; row++) {
 		for(uint8_t column = 0; column < state.ColumnCount; column++) {
 			uint16_t entryAddr = (row * state.ColumnCount + column) * 2;
@@ -107,7 +118,7 @@ DebugTilemapInfo PceVdcTools::InternalGetTilemap(GetTilemapOptions options, PceV
 					uint8_t color = GetTilePixelColor<format>(vram, 0xFFFF, tileAddr, x);
 					uint16_t palAddr = color == 0 ? 0 : (palIndex * 16 + color);
 					uint32_t outPos = (row * 8 + y) * state.ColumnCount * 8 + column * 8 + x;
-					outBuffer[outPos] = palette[palAddr];
+					outBuffer[outPos] = palette[palAddr & colorMask];
 				}
 			}
 		}

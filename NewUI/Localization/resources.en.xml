@@ -2450,8 +2450,8 @@
 			<Value ID="Transparent">Transparent</Value>
 		</Enum>
 		<Enum ID="TilemapDisplayMode">
-			<Value ID="Default">Tilemap</Value>
-			<Value ID="Grayscale">Tilemap (grayscale)</Value>
+			<Value ID="Default">Default</Value>
+			<Value ID="Grayscale">Grayscale</Value>
 			<Value ID="AttributeView">Attribute view</Value>
 		</Enum>
 		<Enum ID="TilemapMirroring">

@@ -80,34 +80,34 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 		rowCount = 128;
 		if(options.Layer == 1) {
 			format = TileFormat::Mode7ExtBg;
-			RenderMode7Tilemap<TileFormat::Mode7ExtBg>(vram, outBuffer, palette);
+			RenderMode7Tilemap<TileFormat::Mode7ExtBg>(options, vram, outBuffer, palette);
 		} else if(directColor) {
 			format = TileFormat::Mode7DirectColor;
-			RenderMode7Tilemap<TileFormat::Mode7DirectColor>(vram, outBuffer, palette);
+			RenderMode7Tilemap<TileFormat::Mode7DirectColor>(options, vram, outBuffer, palette);
 		} else {
 			format = TileFormat::Mode7;
-			RenderMode7Tilemap<TileFormat::Mode7>(vram, outBuffer, palette);
+			RenderMode7Tilemap<TileFormat::Mode7>(options, vram, outBuffer, palette);
 		}
 	} else {
 		if(directColor) {
 			format = TileFormat::DirectColor;
-			RenderTilemap<TileFormat::DirectColor>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+			RenderTilemap<TileFormat::DirectColor>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
 		} else {
 			switch(bpp) {
 				default:
 				case 2:
 					format = TileFormat::Bpp2;
-					RenderTilemap<TileFormat::Bpp2>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					RenderTilemap<TileFormat::Bpp2>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
 					break;
 
 				case 4:
 					format = TileFormat::Bpp4;
-					RenderTilemap<TileFormat::Bpp4>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					RenderTilemap<TileFormat::Bpp4>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
 					break;
 
 				case 8:
 					format = TileFormat::Bpp8;
-					RenderTilemap<TileFormat::Bpp8>(rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
+					RenderTilemap<TileFormat::Bpp8>(options, rowCount, layer, columnCount, vram, tileHeight, tileWidth, largeTileHeight, largeTileWidth, bpp, outBuffer, outputSize, palette, basePaletteOffset);
 					break;
 			}
 		}
@@ -137,8 +137,15 @@ DebugTilemapInfo SnesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& 
 }
 
 template<TileFormat format>
-void SnesPpuTools::RenderTilemap(int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, const uint8_t& bpp, uint32_t* outBuffer, FrameInfo& outputSize, uint32_t* palette, const uint16_t& basePaletteOffset)
+void SnesPpuTools::RenderTilemap(GetTilemapOptions& options, int rowCount, LayerConfig& layer, int columnCount, uint8_t* vram, int tileHeight, int tileWidth, bool largeTileHeight, bool largeTileWidth, uint8_t bpp, uint32_t* outBuffer, FrameInfo outputSize, const uint32_t* palette, uint16_t basePaletteOffset)
 {
+	uint8_t colorMask = 0xFF;
+	bool grayscale = options.DisplayMode == TilemapDisplayMode::Grayscale;
+	if(grayscale) {
+		palette = bpp == 2 ? _grayscaleColorsBpp2 : _grayscaleColorsBpp4;
+		colorMask = bpp == 2 ? 0x03 : 0x0F;
+	}
+
 	for(int row = 0; row < rowCount; row++) {
 		uint16_t addrVerticalScrollingOffset = layer.DoubleHeight ? ((row & 0x20) << (layer.DoubleWidth ? 6 : 5)) : 0;
 		uint16_t baseOffset = layer.TilemapAddress + addrVerticalScrollingOffset + ((row & 0x1F) << 5);
@@ -166,7 +173,8 @@ void SnesPpuTools::RenderTilemap(int rowCount, LayerConfig& layer, int columnCou
 					uint8_t color = GetTilePixelColor<format>(vram, SnesPpu::VideoRamSize - 1, pixelStart, pixelIndex);
 					if(color != 0) {
 						uint8_t paletteIndex = bpp == 8 ? 0 : (vram[addr + 1] >> 2) & 0x07;
-						outBuffer[((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x] = GetRgbPixelColor<format>(palette + basePaletteOffset, color, paletteIndex);
+						int pos = ((row * tileHeight) + y) * outputSize.Width + column * tileWidth + x;
+						outBuffer[pos] = grayscale ? palette[color & colorMask] : GetRgbPixelColor<format>(palette + basePaletteOffset, color, paletteIndex);
 					}
 				}
 			}
@@ -175,8 +183,15 @@ void SnesPpuTools::RenderTilemap(int rowCount, LayerConfig& layer, int columnCou
 }
 
 template<TileFormat format>
-void SnesPpuTools::RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32_t* palette)
+void SnesPpuTools::RenderMode7Tilemap(GetTilemapOptions& options, uint8_t* vram, uint32_t* outBuffer, const uint32_t* palette)
 {
+	uint8_t colorMask = 0xFF;
+	bool grayscale = options.DisplayMode == TilemapDisplayMode::Grayscale;
+	if(grayscale) {
+		palette = _grayscaleColorsBpp4;
+		colorMask = 0x0F;
+	}
+
 	for(int row = 0; row < 1024; row++) {
 		for(int column = 0; column < 128; column++) {
 			uint32_t tileIndex = vram[(row>>3) * 256 + column * 2];
@@ -187,7 +202,7 @@ void SnesPpuTools::RenderMode7Tilemap(uint8_t* vram, uint32_t* outBuffer, uint32
 				uint8_t color = GetTilePixelColor<format>(vram, SnesPpu::VideoRamSize - 1, pixelStart, x);
 
 				if(color != 0) {
-					outBuffer[row * 1024 + column * 8 + x] = GetRgbPixelColor<format>(palette, color, 0);
+					outBuffer[row * 1024 + column * 8 + x] = grayscale ? palette[color & colorMask] : GetRgbPixelColor<format>(palette, color, 0);
 				}
 			}
 		}
