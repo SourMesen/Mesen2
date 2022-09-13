@@ -1084,6 +1084,7 @@
 			<Control ID="lblUnidentifiedBlock">Unidentified:</Control>
 			<Control ID="lblAddressDisplay">Margin:</Control>
 			<Control ID="chkShowByteCode">Show byte code</Control>
+			<Control ID="chkShowMemoryValues">Show memory values</Control>
 			<Control ID="chkUseLowerCaseDisassembly">Use lower case</Control>
 			<Control ID="chkShowJumpLabels">Show jump/sub labels</Control>
 			<Control ID="chkSnesUseAltSpcOpNames">Use 6502-like mnemonics</Control>

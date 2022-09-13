@@ -15,6 +15,7 @@ namespace Mesen.Config
 		[Reactive] public bool ShowSettingsPanel { get; set; } = true;
 
 		[Reactive] public bool ShowByteCode { get; set; } = false;
+		[Reactive] public bool ShowMemoryValues { get; set; } = true;
 		[Reactive] public bool UseLowerCaseDisassembly { get; set; } = false;
 		
 		[Reactive] public bool ShowJumpLabels { get; set; } = false;

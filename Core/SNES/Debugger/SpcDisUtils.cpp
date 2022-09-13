@@ -85,6 +85,25 @@ constexpr bool _needAddress[256] = {
 	false, true, true, true, true, true,  true, true, true,  true,  false, true,  false, false, false, false
 };
 
+constexpr bool _showValue[256] = {
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, true,  false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, true,  false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, true,  false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, true,  false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, false, true,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, false, false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, false, true,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, false, true,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, false, false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false,
+	false, false, true, true, true, true, true, true, false, true, true, true, true,  false, false, false,
+	false, false, true, true, true, true, true, true, true,  true, true, true, false, false, true,  false
+};
+
 void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
 {
 	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
@@ -131,30 +150,37 @@ void SpcDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 
 EffectiveAddressInfo SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SpcState &state)
 {
-	if(_needAddress[info.GetOpCode()]) {
-		Spc* spc = console->GetSpc();
-		DummySpc dummySpc(spc->GetSpcRam());
-		dummySpc.SetDummyState(state);
-		dummySpc.Step();
+	if(SpcDisUtils::IsConditionalJump(info.GetOpCode()) || SpcDisUtils::IsUnconditionalJump(info.GetOpCode())) {
+		//Show nothing for jumps
+		return {};
+	} else if(!_showValue[info.GetOpCode()]) {
+		return {};
+	}
 
-		uint32_t count = dummySpc.GetOperationCount();
-		for(int i = count - 1; i > 0; i--) {
-			MemoryOperationInfo opInfo = dummySpc.GetOperationInfo(i);
-			if(opInfo.Type != MemoryOperationType::ExecOperand) {
-				MemoryOperationInfo prevOpInfo = dummySpc.GetOperationInfo(i - 1);
-				EffectiveAddressInfo result;
-				if(prevOpInfo.Type == opInfo.Type) {
-					//For 16-bit read/writes, return the first address
-					result.Address = prevOpInfo.Address;
-					result.ValueSize = 2;
-				} else {
-					result.Address = opInfo.Address;
-					result.ValueSize = 1;
-				}
-				return result;
+	Spc* spc = console->GetSpc();
+	DummySpc dummySpc(spc->GetSpcRam());
+	dummySpc.SetDummyState(state);
+	dummySpc.Step();
+
+	uint32_t count = dummySpc.GetOperationCount();
+	for(int i = count - 1; i > 0; i--) {
+		MemoryOperationInfo opInfo = dummySpc.GetOperationInfo(i);
+		if(opInfo.Type != MemoryOperationType::ExecOperand && opInfo.Type != MemoryOperationType::DummyRead) {
+			MemoryOperationInfo prevOpInfo = dummySpc.GetOperationInfo(i - 1);
+			EffectiveAddressInfo result;
+			if(prevOpInfo.Type == opInfo.Type) {
+				//For 16-bit read/writes, return the first address
+				result.Address = prevOpInfo.Address;
+				result.ValueSize = 2;
+			} else {
+				result.Address = opInfo.Address;
+				result.ValueSize = 1;
 			}
+			result.ShowAddress = _needAddress[info.GetOpCode()];
+			return result;
 		}
 	}
+
 	return {};
 }
 

@@ -176,15 +176,24 @@ void PceDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 
 EffectiveAddressInfo PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, PceConsole* console, PceCpuState& state)
 {
+	bool isJump = PceDisUtils::IsUnconditionalJump(info.GetOpCode()) || PceDisUtils::IsConditionalJump(info.GetOpCode());
+	if(isJump) {
+		//For jumps, show no address/value
+		return { };
+	}
+
+	bool showEffectiveAddress = false;
 	switch(_opMode[info.GetOpCode()]) {
-		default: break;
+		case PceAddrMode::Imp:
+			//Show no address/value for stack operations, etc.
+			return {};
 
 		case PceAddrMode::Zero:
 		case PceAddrMode::ZeroX:
 		case PceAddrMode::ZeroY:
 		case PceAddrMode::IndX:
 		case PceAddrMode::IndY:
-		case PceAddrMode::Ind:	
+		case PceAddrMode::Ind:
 		case PceAddrMode::AbsX:
 		case PceAddrMode::AbsXInd:
 		case PceAddrMode::AbsY:
@@ -194,18 +203,24 @@ EffectiveAddressInfo PceDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Pce
 		case PceAddrMode::ImZeroX:
 		case PceAddrMode::ImAbs:
 		case PceAddrMode::ImAbsX:
-			DummyPceCpu pceCpu(nullptr, console->GetMemoryManager());
-			pceCpu.SetDummyState(state);
-			pceCpu.Exec();
-
-			uint32_t count = pceCpu.GetOperationCount();
-			for(int i = count - 1; i > 0; i--) {
-				MemoryOperationInfo opInfo = pceCpu.GetOperationInfo(i);
-				if(opInfo.Type != MemoryOperationType::ExecOperand) {
-					return { (int32_t)opInfo.Address, 1 };
-				}
-			}
+			showEffectiveAddress = true;
 			break;
+
+		default:
+			showEffectiveAddress = false;
+			break;
+	}
+
+	DummyPceCpu pceCpu(nullptr, console->GetMemoryManager());
+	pceCpu.SetDummyState(state);
+	pceCpu.Exec();
+
+	uint32_t count = pceCpu.GetOperationCount();
+	for(int i = count - 1; i > 0; i--) {
+		MemoryOperationInfo opInfo = pceCpu.GetOperationInfo(i);
+		if(opInfo.Type != MemoryOperationType::ExecOperand && opInfo.Type != MemoryOperationType::DummyRead) {
+			return { (int32_t)opInfo.Address, 1, showEffectiveAddress };
+		}
 	}
 
 	return {};

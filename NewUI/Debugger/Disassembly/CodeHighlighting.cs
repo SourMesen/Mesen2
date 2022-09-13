@@ -23,7 +23,7 @@ namespace Mesen.Debugger.Disassembly
 		public static List<CodeColor> GetCpuHighlights(CodeLineData lineData, bool highlightCode, string addressFormat, Color? textColor, bool showMemoryValues)
 		{
 			DebuggerConfig cfg = ConfigManager.Config.Debug.Debugger;
-			string codeString = lineData.Text;
+			string codeString = lineData.Text.TrimEnd();
 			Color defaultColor = Color.FromRgb(60, 60, 60);
 
 			List<CodeColor> colors = new List<CodeColor>();
@@ -88,7 +88,7 @@ namespace Mesen.Debugger.Disassembly
 					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None, pos));
 				}
 
-				if(lineData.EffectiveAddress >= 0) {
+				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress >= 0) {
 					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);
 					colors.Add(new CodeColor(" " + effAddress, cfg.CodeEffectiveAddressColor, type));
 				}

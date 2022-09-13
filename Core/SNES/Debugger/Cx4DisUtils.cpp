@@ -231,9 +231,9 @@ EffectiveAddressInfo Cx4DisUtils::GetEffectiveAddress(DisassemblyInfo& info, Cx4
 		case 0x38:
 			//Show destination address for branches & JSR
 			if(param1) {
-				return { (state.P << 9) | (param2 * 2), 1 };
+				return { (state.P << 9) | (param2 * 2), 0, true };
 			} else {
-				return { (int32_t)(state.Cache.Address[state.Cache.Page] | (param2 * 2)), 1 };
+				return { (int32_t)(state.Cache.Address[state.Cache.Page] | (param2 * 2)), 0, true };
 			}
 	}
 }

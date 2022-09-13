@@ -322,7 +322,8 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 			data.Flags |= (uint8_t)LineFlags::SaveRam;
 			break;
 	}
-
+	
+	bool showMemoryValues = _settings->GetDebugConfig().ShowMemoryValues;
 	bool isBlockStartEnd = (data.Flags & (LineFlags::BlockStart | LineFlags::BlockEnd | LineFlags::Empty)) != 0;
 	if(!isBlockStartEnd && row.Address.Address >= 0) {
 		if((data.Flags & LineFlags::ShowAsData)) {
@@ -375,7 +376,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -394,7 +395,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -414,7 +415,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -441,7 +442,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -461,7 +462,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -481,7 +482,7 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
@@ -501,11 +502,15 @@ void Disassembler::GetLineData(DisassemblyResult& row, CpuType type, MemoryType 
 
 					data.OpSize = disInfo.GetOpSize();
 					data.EffectiveAddress = disInfo.GetEffectiveAddress(_debugger, &state, lineCpuType);
-					if(data.EffectiveAddress.Address >= 0) {
+					if(showMemoryValues && data.EffectiveAddress.ValueSize >= 0) {
 						data.Value = disInfo.GetMemoryValue(data.EffectiveAddress, _memoryDumper, memType);
 					}
 					break;
 				}
+			}
+
+			if(!showMemoryValues) {
+				data.EffectiveAddress.ValueSize = 0;
 			}
 
 			string text;

@@ -172,7 +172,7 @@ protected:
 	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
 	{
 		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress.Address >= 0) {
+		if(effectiveAddress.ShowAddress && effectiveAddress.Address >= 0) {
 			if(_options.UseLabels) {
 				AddressInfo addr { effectiveAddress.Address, cpuMemoryType };
 				string label = _labelManager->GetLabel(addr);

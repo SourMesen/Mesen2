@@ -53,6 +53,10 @@
 				Content="{l:Translate chkShowByteCode}"
 			/>
 			<CheckBox
+				IsChecked="{CompiledBinding Config.ShowMemoryValues}"
+				Content="{l:Translate chkShowMemoryValues}"
+			/>
+			<CheckBox
 				IsChecked="{CompiledBinding Config.ShowJumpLabels}"
 				Content="{l:Translate chkShowJumpLabels}"
 			/>

@@ -14,6 +14,7 @@ struct EffectiveAddressInfo
 {
 	int32_t Address = -1;
 	uint8_t ValueSize = 0;
+	bool ShowAddress = false;
 };
 
 class DisassemblyInfo

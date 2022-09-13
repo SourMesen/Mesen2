@@ -105,39 +105,52 @@ uint32_t SnesDisUtils::GetOperandAddress(DisassemblyInfo &info, uint32_t memoryA
 
 EffectiveAddressInfo SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, SnesConsole *console, SnesCpuState &state, CpuType type)
 {
-	if(HasEffectiveAddress(SnesDisUtils::OpMode[info.GetOpCode()])) {
-		DummySnesCpu dummyCpu(console, type);
-		state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
-		state.PS |= info.GetFlags();
-		dummyCpu.SetDummyState(state);
-		dummyCpu.Exec();
+	SnesAddrMode opMode = SnesDisUtils::OpMode[info.GetOpCode()];
+	if(opMode == SnesAddrMode::Stk) {
+		//Show nothing for stack operations (push/pull)
+		return {};
+	}
 
-		bool isJump = SnesDisUtils::IsUnconditionalJump(info.GetOpCode()) || SnesDisUtils::IsUnconditionalJump(info.GetOpCode());
-		if(isJump) {
-			//For jumps, return the target address, and show no value
-			return { dummyCpu.GetLastOperand(), 0 };
-		}
+	bool showEffectiveAddress = HasEffectiveAddress(opMode);
 
-		//For everything else, return the last read/write address
-		uint32_t count = dummyCpu.GetOperationCount();
-		for(int i = count - 1; i > 0; i--) {
-			MemoryOperationInfo opInfo = dummyCpu.GetOperationInfo(i);
+	DummySnesCpu dummyCpu(console, type);
+	state.PS &= ~(ProcFlags::IndexMode8 | ProcFlags::MemoryMode8);
+	state.PS |= info.GetFlags();
+	dummyCpu.SetDummyState(state);
+	dummyCpu.Exec();
 
-			if(opInfo.Type != MemoryOperationType::ExecOperand) {
-				MemoryOperationInfo prevOpInfo = dummyCpu.GetOperationInfo(i - 1);
-				EffectiveAddressInfo result;
-				if(prevOpInfo.Type == opInfo.Type) {
-					//For 16-bit read/writes, return the first address
-					result.Address = prevOpInfo.Address;
-					result.ValueSize = 2;
-				} else {
-					result.Address = opInfo.Address;
-					result.ValueSize = 1;
-				}
-				return result;
-			}
+	bool isJump = SnesDisUtils::IsUnconditionalJump(info.GetOpCode()) || SnesDisUtils::IsConditionalJump(info.GetOpCode());
+	if(isJump) {
+		if(info.GetOpSize() == 3) {
+			//For 3-byte jumps, return the target address, and show no value
+			return { dummyCpu.GetLastOperand(), 0, true };
+		} else {
+			//Relative or long jumps already show the final address in the disassembly, show nothing
+			return {};
 		}
 	}
+
+	//For everything else, return the last read/write address
+	uint32_t count = dummyCpu.GetOperationCount();
+	for(int i = count - 1; i > 0; i--) {
+		MemoryOperationInfo opInfo = dummyCpu.GetOperationInfo(i);
+
+		if(opInfo.Type != MemoryOperationType::ExecOperand) {
+			MemoryOperationInfo prevOpInfo = dummyCpu.GetOperationInfo(i - 1);
+			EffectiveAddressInfo result;
+			if(prevOpInfo.Type == opInfo.Type) {
+				//For 16-bit read/writes, return the first address
+				result.Address = prevOpInfo.Address;
+				result.ValueSize = 2;
+			} else {
+				result.Address = opInfo.Address;
+				result.ValueSize = 1;
+			}
+			result.ShowAddress = showEffectiveAddress;
+			return result;
+		}
+	}
+
 	return {};
 }
 

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Gameboy/Debugger/GameboyDisUtils.h"
 #include "Gameboy/GbTypes.h"
+#include "Gameboy/Debugger/DummyGbCpu.h"
+#include "Gameboy/Gameboy.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 #include "Shared/EmuSettings.h"
@@ -68,10 +70,11 @@ enum class AddrType : uint8_t
 {
 	None,
 	BC,
-	DE, 
+	DE,
 	HL,
 	C,
-	Suff
+	Suff,
+	Stk
 };
 
 static constexpr const AddrType _gbEffAddrType[256] = {
@@ -87,10 +90,10 @@ static constexpr const AddrType _gbEffAddrType[256] = {
 	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
 	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
 	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::HL,	AddrType::None,
-	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::Suff,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
-	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
-	AddrType::None,AddrType::None,AddrType::C,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
-	AddrType::None,AddrType::None,AddrType::C,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None
+	AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::Suff,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::Stk,	AddrType::C,	AddrType::None,AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,
+	AddrType::None,AddrType::Stk,	AddrType::C,	AddrType::None,AddrType::None,AddrType::Stk,	AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None,AddrType::None
 };
 
 void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t memoryAddr, LabelManager* labelManager, EmuSettings* settings)
@@ -136,22 +139,44 @@ void GameboyDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_
 	out += str.ToString();
 }
 
-EffectiveAddressInfo GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, GbCpuState& state)
+EffectiveAddressInfo GameboyDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Gameboy* console, GbCpuState& state)
 {
-	switch(_gbEffAddrType[info.GetOpCode()]) {
-		default:
-		case AddrType::None: return {};
+	bool isJump = GameboyDisUtils::IsUnconditionalJump(info.GetOpCode()) || GameboyDisUtils::IsConditionalJump(info.GetOpCode());
+	if(isJump) {
+		//For jumps, show no address/value
+		return { };
+	}
 
-		case AddrType::BC: return { (state.B << 8) | state.C, 1 };
-		case AddrType::DE: return { (state.D << 8) | state.E, 1 };
-		case AddrType::HL: return { (state.H << 8) | state.L, 1 };
-		case AddrType::C: return { 0xFF00 + state.C, 1 };
+	switch(_gbEffAddrType[info.GetOpCode()]) {
+		default: break;
+
+		case AddrType::BC: return { (state.B << 8) | state.C, 1, true };
+		case AddrType::DE: return { (state.D << 8) | state.E, 1, true };
+		case AddrType::HL: return { (state.H << 8) | state.L, 1, true };
+		case AddrType::C: return { 0xFF00 + state.C, 1, true };
 		case AddrType::Suff:
 			if((info.GetByteCode()[1] & 0x07) == 0x06) {
-				return { (state.H << 8) | state.L, 1 };
+				return { (state.H << 8) | state.L, 1, true };
 			}
-			return {};
+			break;
+
+		case AddrType::Stk: return {};
 	}
+
+	DummyGbCpu dummyCpu;
+	dummyCpu.Init(console->GetEmulator(), console, console->GetMemoryManager());
+	dummyCpu.SetDummyState(state);
+	dummyCpu.Exec();
+
+	uint32_t count = dummyCpu.GetOperationCount();
+	for(int i = count - 1; i > 0; i--) {
+		MemoryOperationInfo opInfo = dummyCpu.GetOperationInfo(i);
+		if(opInfo.Type != MemoryOperationType::ExecOperand) {
+			return { (int32_t)opInfo.Address, 1, false };
+		}
+	}
+	
+	return {};
 }
 
 uint8_t GameboyDisUtils::GetOpSize(uint8_t opCode)

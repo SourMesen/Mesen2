@@ -593,6 +593,7 @@ struct DebugConfig
 	bool DisassembleUnidentifiedData = false;
 
 	bool UseLowerCaseDisassembly = false;
+	bool ShowMemoryValues = false;
 
 	bool AutoResetCdl = false;
 

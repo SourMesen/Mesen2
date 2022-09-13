@@ -44,13 +44,14 @@ namespace Mesen.Debugger
 
 		public string Comment = "";
 
+		public bool ShowEffectiveAddress = false;
 		public Int32 EffectiveAddress = -1;
 		public UInt16 Value = 0;
 		public byte ValueSize = 0;
 
 		public string GetEffectiveAddressString(string format, out CodeSegmentType segmentType)
 		{
-			if(EffectiveAddress >= 0) {
+			if(ShowEffectiveAddress && EffectiveAddress >= 0) {
 				AddressInfo relAddress = new AddressInfo() { Address = EffectiveAddress, Type = CpuType.ToMemoryType() };
 				CodeLabel? label = LabelManager.GetLabel(relAddress);
 				if(label != null && !string.IsNullOrWhiteSpace(label.Label)) {
@@ -113,6 +114,7 @@ namespace Mesen.Debugger
 
 			this.Address = data.Address;
 			this.AbsoluteAddress = data.AbsoluteAddress;
+			this.ShowEffectiveAddress = data.EffectiveAddress.ShowAddress;
 			this.EffectiveAddress = data.EffectiveAddress.Address;
 			this.Flags = (LineFlags)data.Flags;
 			this.Value = data.Value;
@@ -163,6 +165,7 @@ namespace Mesen.Debugger
 	{
 		public Int32 Address;
 		public byte ValueSize;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowAddress;
 	}
 
 	public struct InteropCodeLineData

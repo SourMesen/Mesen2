@@ -50,6 +50,7 @@ namespace Mesen.Config
 				DisassembleUnidentifiedData = Debugger.UnidentifiedBlockDisplay == CodeDisplayMode.Disassemble,
 
 				UseLowerCaseDisassembly = Debugger.UseLowerCaseDisassembly,
+				ShowMemoryValues = Debugger.ShowMemoryValues,
 
 				AutoResetCdl = Debugger.AutoResetCdl,
 
@@ -102,6 +103,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisassembleUnidentifiedData;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UseLowerCaseDisassembly;
+		[MarshalAs(UnmanagedType.I1)] public bool ShowMemoryValues;
 
 		[MarshalAs(UnmanagedType.I1)] public bool AutoResetCdl;
 
