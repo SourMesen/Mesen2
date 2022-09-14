@@ -53,7 +53,6 @@
 				<dc:MesenTextEditor
 					Name="HexView"
 					IsReadOnly="True"
-					ShowLineNumbers="True"
 					FontFamily="{DynamicResource MesenAssemblerFont}"
 					FontSize="{DynamicResource MesenAssemblerFontSize}"
 					TextBinding="{CompiledBinding ByteCodeView}"
