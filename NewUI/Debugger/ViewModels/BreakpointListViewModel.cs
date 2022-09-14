@@ -56,8 +56,10 @@ namespace Mesen.Debugger.ViewModels
 			int selection = Selection.SelectedIndex;
 
 			List<BreakpointViewModel> sortedBreakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
-
-			SortHelper.SortList(sortedBreakpoints, SortState.SortOrder, _comparers, "Address");
+			
+			if(SortState.SortOrder.Count > 0) {
+				SortHelper.SortList(sortedBreakpoints, SortState.SortOrder, _comparers, "Address");
+			}
 
 			Breakpoints.Replace(sortedBreakpoints);
 
