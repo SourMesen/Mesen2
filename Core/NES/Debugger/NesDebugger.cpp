@@ -192,7 +192,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
-		if(operation.Type == MemoryOperationType::DmaRead) {
+		if(operation.Type == MemoryOperationType::DmaRead && _cpu->IsDmcDma()) {
 			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
 		}
 

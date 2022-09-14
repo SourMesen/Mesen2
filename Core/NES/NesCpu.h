@@ -788,6 +788,7 @@ public:
 	void StartDmcTransfer();
 
 	bool IsCpuWrite() { return _cpuWrite; }
+	bool IsDmcDma() { return _dmcDmaRunning; }
 
 	void Reset(bool softReset, ConsoleRegion region);
 	void Exec();
