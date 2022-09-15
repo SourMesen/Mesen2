@@ -1,0 +1,374 @@
+{
+	"instructions": [
+		{
+			"op": "adc",
+			"name": "ADC - Add with Carry",
+			"description": "Add the value at the specified memory address to the accumulator + the carry bit. On overflow, the carry bit is set.",
+			"flags": ["Carry", "Zero", "Overflow", "Negative"]
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": "Perform an AND operation between the accumulator and the value at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "asl",
+			"name": "ASL - Arithmetic Shift Left",
+			"description": "Shifts all the bits of the accumulator (or the byte at the specified memory address) by 1 bit to the left. Bit 0 will be set to 0 and the carry flag (C) will take the value of bit 7 (before the shift).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "bcc",
+			"name": "BCC - Branch if Carry Clear",
+			"description": "If the carry flag (C) is clear, jump to location specified."
+		},
+		{
+			"op": "bcs",
+			"name": "BCS - Branch if Carry Set",
+			"description": "If the carry flag (C) is set, jump to the location specified."
+		},
+		{
+			"op": "beq",
+			"name": "BEQ - Branch if Equal",
+			"description": "If the zero flag (Z) is set, jump to the location specified."
+		},
+		{
+			"op": "bit",
+			"name": "BIT - Bit Test",
+			"description": "Bits 6 and 7 of the byte at the specified memory address are copied to the negative (N) and overflow (V) flags. If the accumulator's value ANDed with that byte is 0, the zero flag (Z) is set (otherwise it is cleared).",
+			"flags": ["Zero", "Overflow", "Negative"]
+		},
+		{
+			"op": "bmi",
+			"name": "BMI - Branch if Minus",
+			"description": "If the negative flag (N) is set, jump to the location specified."
+		},
+		{
+			"op": "bne",
+			"name": "BNE - Branch if Not Equal",
+			"description": "If the zero flag (Z) is clear, jump to the location specified."
+		},
+		{
+			"op": "bpl",
+			"name": "BPL - Branch if Positive",
+			"description": "If the negative flag (N) is clear, jump to the location specified."
+		},
+		{
+			"op": "brk",
+			"name": "BRK - Break",
+			"description": "The BRK instruction causes the CPU to jump to its IRQ vector, as if an interrupt had occurred. The PC and status flags are pushed on the stack."
+		},
+		{
+			"op": "bvc",
+			"name": "BVC - Branch if Overflow Clear",
+			"description": "If the overflow flag (V) is clear, jump to the location specified."
+		},
+		{
+			"op": "bvs",
+			"name": "BVS - Branch if Overflow Set",
+			"description": "If the overflow flag (V) is set then, jump to the location specified."
+		},
+		{
+			"op": "clc",
+			"name": "CLC - Clear carry flag (C)",
+			"description": "Clears the carry flag (C).",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "cld",
+			"name": "CLD - Clear Decimal Mode",
+			"description": "Clears the decimal mode flag (D).",
+			"flags": ["Decimal"]
+		},
+		{
+			"op": "cli",
+			"name": "CLI - Clear Interrupt Disable",
+			"description": "Clears the interrupt disable flag (I).",
+			"flags": ["Interrupt"]
+		},
+		{
+			"op": "clv",
+			"name": "CLV - Clear overflow flag (V)",
+			"description": "Clears the overflow flag (V).",
+			"flags": ["Overflow"]
+		},
+		{
+			"op": "cmp",
+			"name": "CMP - Compare",
+			"description": "Compares the accumulator with the byte at the specified memory address..",
+			"flags":["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "cpx",
+			"name": "CPX - Compare X Register",
+			"description": "Compares the X register with the byte at the specified memory address.",
+			"flags":[ "Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "cpy",
+			"name": "CPY - Compare Y Register",
+			"description": "Compares the Y register with the byte at the specified memory address.",
+			"flags": ["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "dec",
+			"name": "DEC - Decrement Memory",
+			"description": "Subtracts one from the byte at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "dex",
+			"name": "DEX - Decrement X Register",
+			"description": "Subtracts one from the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "dey",
+			"name": "DEY - Decrement Y Register",
+			"description": "Subtracts one from the Y register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "eor",
+			"name": "EOR - Exclusive OR",
+			"description": "Performs an exclusive OR operation between the accumulator and the byte at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "inc",
+			"name": "INC - Increment Memory",
+			"description": "Adds one to the the byte at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "inx",
+			"name": "INX - Increment X Register",
+			"description": "Adds one to the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "iny",
+			"name": "INY - Increment Y Register",
+			"description": "Adds one to the Y register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "jmp",
+			"name": "JMP - Jump",
+			"description": "Jumps to the specified location (alters the program counter)"
+		},
+		{
+			"op": "jsr",
+			"name": "JSR - Jump to Subroutine",
+			"description": "Pushes the address (minus one) of the next instruction to the stack and then jumps to the target address."
+		},
+		{
+			"op": "lda",
+			"name": "LDA - Load Accumulator",
+			"description": "Loads a byte from the specified memory address into the accumulator.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "ldx",
+			"name": "LDX - Load X Register",
+			"description": "Loads a byte from the specified memory address into the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "ldy",
+			"name": "LDY - Load Y Register",
+			"description": "Loads a byte from the specified memory address into the Y register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "lsr",
+			"name": "LSR - Logical Shift Right",
+			"description": "Shifts all the bits of the accumulator (or the byte at the specified memory address) by 1 bit to the right. Bit 7 will be set to 0 and the carry flag (C) will take the value of bit 0 (before the shift).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "nop",
+			"name": "NOP - No Operation",
+			"description": "Performs no operation other than delaying execution of the next instruction by 2 cycles."
+		},
+		{
+			"op": "ora",
+			"name": "ORA - Inclusive OR",
+			"description": "Performs an inclusive OR operation between the accumulator and the byte at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "pha",
+			"name": "PHA - Push Accumulator",
+			"description": "Pushes the value of the accumulator to the stack."
+		},
+		{
+			"op": "php",
+			"name": "PHP - Push Processor Status",
+			"description": "Pushes the value of the status flags to the stack."
+		},
+		{
+			"op": "pla",
+			"name": "PLA - Pull Accumulator",
+			"description": "Pulls a byte from the stack and stores it into the accumulator.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "plp",
+			"name": "PLP - Pull Processor Status",
+			"description": "Pulls a byte from the stack and stores it into the processor flags.  The flags will be modified based on the value pulled.",
+			"flags": ["Carry", "Decimal", "Interrupt", "Negative", "Overflow", "Zero"]
+		},
+		{
+			"op": "rol",
+			"name": "ROL - Rotate Left",
+			"description": "Shifts all bits 1 position to the left. The right-most bit takes the current value of the carry flag (C). The left-most bit is stored into the carry flag (C).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "ror",
+			"name": "ROR - Rotate Right",
+			"description": "Shifts all bits 1 position to the right. The left-most bit takes the current value of the carry flag (C). The right-most bit is stored into the carry flag (C).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "rti",
+			"name": "RTI - Return from Interrupt",
+			"description": "The RTI instruction is used at the end of the interrupt handler to return execution to its original location.  It pulls the status flags and program counter from the stack."
+		},
+		{
+			"op": "rts",
+			"name": "RTS - Return from Subroutine",
+			"description": "The RTS instruction is used at the end of a subroutine to return execution to the calling function. It pulls the status flags and program counter (minus 1) from the stack."
+		},
+		{
+			"op": "sbc",
+			"name": "SBC - Subtract with Carry",
+			"description": "Substracts the byte at the specified memory address from the value of the accumulator (affected by the carry flag (C)).",
+			"flags": ["Carry", "Zero", "Overflow", "Negative"]
+		},
+		{
+			"op": "sec",
+			"name": "SEC - Set carry flag (C)",
+			"description": "Sets the carry flag (C).",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "sed",
+			"name": "SED - Set Decimal Flag",
+			"description": "Sets the decimal mode flag (D).",
+			"flags": ["Decimal"]
+		},
+		{
+			"op": "sei",
+			"name": "SEI - Set Interrupt Disable",
+			"description": "Sets the interrupt disable flag (I).",
+			"flags": ["Interrupt"]
+		},
+		{
+			"op": "sta",
+			"name": "STA - Store Accumulator",
+			"description": "Stores the value of the accumulator into memory."
+		},
+		{
+			"op": "stx",
+			"name": "STX - Store X Register",
+			"description": "Stores the value of the X register into memory."
+		},
+		{
+			"op": "sty",
+			"name": "STY - Store Y Register",
+			"description": "Stores the value of the Y register into memory."
+		},
+		{
+			"op": "tax",
+			"name": "TAX - Transfer A to X",
+			"description": "Copies the accumulator into the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tay",
+			"name": "TAY - Transfer A to Y",
+			"description": "Copies the accumulator into the Y register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tsx",
+			"name": "TSX - Transfer SP to X",
+			"description": "Copies the stack pointer into the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "txa",
+			"name": "TXA - Transfer X to A",
+			"description": "Copies the X register into the accumulator.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "txs",
+			"name": "TXS - Transfer X to SP",
+			"description": "Copies the X register into the stack pointer."
+		},
+		{
+			"op": "tya",
+			"name": "TYA - Transfer Y to A",
+			"description": "Copies the Y register into the accumulator.",
+			"flags": ["Zero", "Negative"]
+		}
+	],
+	"addressingModes": [
+		"Imp", "IndX", "None", "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Acc", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX",
+		"Abs", "IndX", "None", "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Acc", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX",
+		"Imp", "IndX", "None", "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Acc", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX",
+		"Imp", "IndX", "None", "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Acc", "Imm",  "Ind",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX",
+		"Imm", "IndX", "Imm",  "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Imp", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroY", "ZeroY", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsY", "AbsY",
+		"Imm", "IndX", "Imm",  "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Imp", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroY", "ZeroY", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsY", "AbsY",
+		"Imm", "IndX", "Imm",  "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Imp", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX",
+		"Imm", "IndX", "Imm",  "IndX", "Zero",  "Zero",  "Zero",  "Zero",  "Imp", "Imm",  "Imp", "Imm",  "Abs",  "Abs",  "Abs",  "Abs",
+		"Rel", "IndY", "None", "IndY", "ZeroX", "ZeroX", "ZeroX", "ZeroX", "Imp", "AbsY", "Imp", "AbsY", "AbsX", "AbsX", "AbsX", "AbsX"
+	],
+	"minCycles": [
+		7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+		2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+		2, 6, 2, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
+		2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+		2, 5, 2, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,
+		2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+		2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+		2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7
+	],
+	"maxCycles": [
+		7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7,
+		6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7,
+		2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+		3, 6, 2, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
+		2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+		3, 6, 2, 5, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
+		2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7,
+		2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+		3, 6, 2, 8, 4, 4, 6, 6, 2, 5, 2, 7, 5, 5, 7, 7
+	]
+}

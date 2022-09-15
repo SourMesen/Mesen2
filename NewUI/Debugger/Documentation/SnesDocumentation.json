@@ -1,0 +1,221 @@
+{
+	"instructions": [
+		{
+			"op": "cop",
+			"name": "COP - Coprocessor",
+			"description": "Jump to the address in the COP vector."
+		},
+		{
+			"op": "jml",
+			"name": "JML - Jump Long",
+			"description": "Jumps to the specified 24-bit address"
+		},
+		{
+			"op": "jsl",
+			"name": "JSL - Jump Subroutine Long",
+			"description": "Jumps to the specified subroutine (24-bit address)"
+		},
+		{
+			"op": "mvn",
+			"name": "MVN - Block Move Negative",
+			"description": ""
+		},
+		{
+			"op": "mvp",
+			"name": "MVP - Block Move Positive",
+			"description": ""
+		},
+		{
+			"op": "pea",
+			"name": "PEA - Push Absolute Address",
+			"description": "Pushes the specified 16-bit immediate value to the stack."
+		},
+		{
+			"op": "pei",
+			"name": "PEI - Push Indirect Address",
+			"description": "Pushes the 16-bit value contained at the specified address to the stack."
+		},
+		{
+			"op": "per",
+			"name": "PER - Push PC Relative Address",
+			"description": "Pushes the relative address based on the current PC plus the specified relative value to the stack."
+		},
+		{
+			"op": "rep",
+			"name": "REP - Reset Status Bits",
+			"description": "Clears the specified status bits."
+		},
+		{
+			"op": "sep",
+			"name": "SEP - Set Status Bits",
+			"description": "Sets the specified status bits"
+		},
+		{
+			"op": "rtl",
+			"name": "RTL - Return from Subroutine Long",
+			"description": "Returns from a subroutine (used with JSL)"
+		},
+		{
+			"op": "stp",
+			"name": "STP - Stop",
+			"description": "Stops the CPU until reset."
+		},
+		{
+			"op": "wai",
+			"name": "WAI - Wait for Interrupt",
+			"description": "Stops the CPU until an IRQ occurs."
+		},
+		{
+			"op": "wdm",
+			"name": "WDM - Reserved (NOP)",
+			"description": ""
+		},
+		{
+			"op": "tcd",
+			"name": "TCD - Transfer C Accumulator to Direct Register",
+			"description": "",
+			"flags":  ["Zero", "Negative"]
+		},
+		{
+			"op": "tcs",
+			"name": "TCS - Transfer C Accumulator to Stack Register",
+			"description": ""
+		},
+		{
+			"op": "tdc",
+			"name": "TDC - Transfer Direct register to C accumulator",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tsc",
+			"name": "TSC - Transfer Stack register to C accumulator",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tsx",
+			"name": "TSX - Transfer Stack register to X",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "txy",
+			"name": "TXY - Transfer X to Y",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tyx",
+			"name": "TYX - Transfer Y to X",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "xba",
+			"name": "XBA - Exchange B and A accumulators",
+			"description": "",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "xce",
+			"name": "XCE - Exchange Carry and Emulation flags",
+			"description": "",
+			"flags": ["Carry", "Emulation"]
+		},
+		{
+			"op": "tsb",
+			"name": "TSB - Test and Set Bit",
+			"description": "The memory value is ORed with the content of A and the flags are updated based on the result.",
+			"flags": ["Zero", "Negative", "Overflow"]
+		},
+		{
+			"op": "trb",
+			"name": "TRB - Test and Reset Bit",
+			"description": "The memory value is ANDed with the complement of A (~A) and the flags are updated based on the result.",
+			"flags": ["Zero", "Negative", "Overflow"]
+		},
+		{
+			"op": "bra",
+			"name": "BRA - Branch Always",
+			"description": "Branch to the specified address."
+		},
+		{
+			"op": "brl",
+			"name": "BRL - Branch Always Long",
+			"description": "Branch to the specified address."
+		},
+		{
+			"op": "stz",
+			"name": "STZ - Store Zero",
+			"description": "Stores the value 0 into memory."
+		},
+		{
+			"op": "phx",
+			"name": "PHX - Push X register",
+			"description": "Pushes the value of the X register to the stack."
+		},
+		{
+			"op": "plx",
+			"name": "PLX - Pull X register",
+			"description": "Pulls a byte from the stack and stores it into the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "phy",
+			"name": "PHY - Push Y register",
+			"description": "Pushes the value of the Y register to the stack."
+		},
+		{
+			"op": "ply",
+			"name": "PLY - Pull Y register",
+			"description": "Pulls a byte from the stack and stores it into the Y register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "phb",
+			"name": "PHB - Push Data Bank Register",
+			"description": "Pushes the value of the Data Bank (B) register to the stack."
+		},
+		{
+			"op": "phd",
+			"name": "PHD - Push Direct Register",
+			"description": "Pushes the value of the Direct (D) register to the stack."
+		},
+		{
+			"op": "phk",
+			"name": "PHK - Push Program Bank Register",
+			"description": "Pushes the value of the Program Bank (K) register to the stack."
+		},
+		{
+			"op": "plb",
+			"name": "PLB - Pull Data Bank Register",
+			"description": "Pulls from the stack and stores the value into the Data Bank (B) register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "pld",
+			"name": "PLD - Pull Direct Register",
+			"description": "Pulls from the stack and stores the value into the Direct (D) register.",
+			"flags": ["Zero", "Negative"]
+		}
+	],
+	"addressingModes": [
+		"Imm8",  "DirIdxIndX", "Imm8",     "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Stk", "ImmM",    "Acc", "Stk", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "Dir",     "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Acc", "Imp", "Abs",        "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"Abs",   "DirIdxIndX", "AbsLng",   "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Stk", "ImmM",    "Acc", "Stk", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "DirIdxX", "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Acc", "Imp", "AbsIdxX",    "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"Stk",   "DirIdxIndX", "Imm8",     "StkRel",        "BlkMov",  "Dir",     "Dir",     "DirIndLng",     "Stk", "ImmM",    "Acc", "Stk", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "BlkMov",  "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Stk", "Imp", "AbsLng",     "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"Stk",   "DirIdxIndX", "RelLng",   "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Stk", "ImmM",    "Acc", "Stk", "AbsInd",     "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "DirIdxX", "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Stk", "Imp", "AbsIdxXInd", "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"Rel",   "DirIdxIndX", "RelLng",   "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Imp", "ImmM",    "Imp", "Stk", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "DirIdxX", "DirIdxX", "DirIdxY", "DirIndLngIdxY", "Imp", "AbsIdxY", "Imp", "Imp", "Abs",        "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"ImmX",  "DirIdxIndX", "ImmX",     "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Imp", "ImmM",    "Imp", "Stk", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "DirIdxX", "DirIdxX", "DirIdxY", "DirIndLngIdxY", "Imp", "AbsIdxY", "Imp", "Imp", "AbsIdxX",    "AbsIdxX", "AbsIdxY", "AbsLngIdxX",
+		"ImmX",  "DirIdxIndX", "Imm8",     "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Imp", "ImmM",    "Imp", "Imp", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "Dir",     "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Stk", "Imp", "AbsIndLng",  "AbsIdxX", "AbsIdxX", "AbsLngIdxX",
+		"ImmX",  "DirIdxIndX", "Imm8",     "StkRel",        "Dir",     "Dir",     "Dir",     "DirIndLng",     "Imp", "ImmM",    "Imp", "Imp", "Abs",        "Abs",     "Abs",     "AbsLng",
+		"Rel",   "DirIndIdxY", "DirInd",   "StkRelIndIdxY", "Imm16",   "DirIdxX", "DirIdxX", "DirIndLngIdxY", "Imp", "AbsIdxY", "Stk", "Imp", "AbsIdxXInd", "AbsIdxX", "AbsIdxX", "AbsLngIdxX"
+	]
+}

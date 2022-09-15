@@ -1,0 +1,193 @@
+{
+	"instructions": [
+		{
+			"op": "sxy",
+			"name": "SXY - Swap X and Y",
+			"description": "The contents of the X and Y registers are swapped."
+		},
+		{
+			"op": "sax",
+			"name": "SAX - Swap A and X",
+			"description": "The contents of the A and X registers are swapped."
+		},
+		{
+			"op": "say",
+			"name": "SAY - Swap A and Y",
+			"description": "The contents of the X and Y registers are swapped."
+		},
+		{
+			"op": "cla",
+			"name": "CLA - Clear A",
+			"description": "Clears the accumulator."
+		},
+		{
+			"op": "clx",
+			"name": "CLX - Clear X",
+			"description": "Clears the X register."
+		},
+		{
+			"op": "cly",
+			"name": "CLY - Clear Y",
+			"description": "Clears the Y register."
+		},
+		{
+			"op": "st0",
+			"name": "ST0 - Store VDC 0",
+			"description": "Writes the immediate value to the VDC's address register (AR)"
+		},
+		{
+			"op": "st1",
+			"name": "ST1 - Store VDC 1",
+			"description": "Writes the immediate value to the VDC's selected register (LSB)"
+		},
+		{
+			"op": "st2",
+			"name": "ST2 - Store VDC 2",
+			"description": "Writes the immediate value to the VDC's selected register (MSB)"
+		},
+		{
+			"op": "tma",
+			"name": "TMA - Transfer MPR to A",
+			"description": "Transfers the value of the selected MPR register (immediate value) to A."
+		},
+		{
+			"op": "tam",
+			"name": "TMA - Transfer A to MPR",
+			"description": "The accumulator's content is copied to the selected MPR registers (based on set bits in immediate value)"
+		},
+		{
+			"op": "tst",
+			"name": "TST - Test memory",
+			"description": "The content of the memory address is ANDed with the immediate value. Flags are updated based on result.",
+			"flags": ["Overflow", "Negative", "Zero"]
+		},
+		{
+			"op": "tii",
+			"name": "TII - Transfer Block Data",
+			"description": "Transfers block data based on the source, destination and length operands. Source and destination address are incremented after each byte."
+		},
+		{
+			"op": "tdd",
+			"name": "TDD - Transfer Block Data",
+			"description": "Transfers block data based on the source, destination and length operands. Source and destination address are decremented after each byte."
+		},
+		{
+			"op": "tin",
+			"name": "TIN - Transfer Block Data",
+			"description": "Transfers block data based on the source, destination and length operands. Source is incremented after each byte. Destination is fixed."
+		},
+		{
+			"op": "tia",
+			"name": "TIA - Transfer Block Data",
+			"description": "Transfers block data based on the source, destination and length operands. Source is incremented after each byte. Destination is incremented and then decremented (alternates between 2 addresses.)"
+		},
+		{
+			"op": "tai",
+			"name": "TAI - Transfer Block Data",
+			"description": "Transfers block data based on the source, destination and length operands. Source is incremented and then decremented (alternates between 2 addresses). Destination is incremented after each byte. "
+		},
+		{
+			"op": "tsb",
+			"name": "TSB - Test and Set Bit",
+			"description": "The memory value is ORed with the content of A and the flags are updated based on the result.",
+			"flags": ["Zero", "Negative", "Overflow"]
+		},
+		{
+			"op": "trb",
+			"name": "TRB - Test and Reset Bit",
+			"description": "The memory value is ANDed with the complement of A (~A) and the flags are updated based on the result.",
+			"flags": ["Zero", "Negative", "Overflow"]
+		},
+		{
+			"op": "bsr",
+			"name": "BSR - Branch Subroutine",
+			"description": "Branch to the specified address. PC is pushed onto the stack."
+		},
+		{
+			"op": "bra",
+			"name": "BRA - Branch Always",
+			"description": "Branch to the specified address."
+		},
+		{
+			"op": "csl",
+			"name": "CSL - Clock Speed Low",
+			"description": "Sets the CPU's clock speed to ~1.79MHz."
+		},
+		{
+			"op": "csh",
+			"name": "CSH - Clock Speed High",
+			"description": "Sets the CPU's clock speed to ~7.16MHz."
+		},
+		{
+			"op": "set",
+			"name": "SET - Set T",
+			"description": "Sets the memory flag (T).",
+			"flags": ["Memory"]
+		},
+		{
+			"op": "rmb",
+			"name": "RMBi - Reset Memory Bit",
+			"description": "Clears the specified bit at the zero page address."
+		},
+		{
+			"op": "smb",
+			"name": "SMBi - Set Memory Bit",
+			"description": "Sets the specified bit at the zero page address."
+		},
+		{
+			"op": "bbr",
+			"name": "BBRi - Branch on Bit Reset",
+			"description": "Branch if the specified bit at the zero page address is clear."
+		},
+		{
+			"op": "bbs",
+			"name": "BBSi - Branch on Bit Set",
+			"description": "Branch if the specified bit at the zero page address is set."
+		},
+		{
+			"op": "stz",
+			"name": "STZ - Store Zero",
+			"description": "Stores the value 0 into memory."
+		},
+		{
+			"op": "phx",
+			"name": "PHX - Push X register",
+			"description": "Pushes the value of the X register to the stack."
+		},
+		{
+			"op": "plx",
+			"name": "PLX - Pull X register",
+			"description": "Pulls a byte from the stack and stores it into the X register.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "phy",
+			"name": "PHY - Push Y register",
+			"description": "Pushes the value of the Y register to the stack."
+		},
+		{
+			"op": "ply",
+			"name": "PLY - Pull Y register",
+			"description": "Pulls a byte from the stack and stores it into the Y register.",
+			"flags": ["Zero", "Negative"]
+		}
+	],
+	"addressingModes": [
+		"Imm",	"IndX",	"Imp",	"Imm",		"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Acc",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Imm",		"Zero",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"Abs",		"AbsX",	"AbsX",	"ZeroRel",
+		"Abs",	"IndX",	"Imp",	"Imm",		"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Acc",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Imp",		"ZeroX",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"AbsX",		"AbsX",	"AbsX",	"ZeroRel",
+		"Imp",	"IndX",	"Imp",	"Imm",		"Rel",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Acc",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Imm",		"Imp",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"Imp",		"AbsX",	"AbsX",	"ZeroRel",
+		"Imp",	"IndX",	"Imp",	"Imp",		"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Acc",	"Imp",	"Ind",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Block",		"ZeroX",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"AbsXInd",	"AbsX",	"AbsX",	"ZeroRel",
+		"Rel",	"IndX",	"Imp",	"ImZero",	"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Imp",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"ImAbs",		"ZeroX",	"ZeroX",	"ZeroY",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"Abs",		"AbsX",	"AbsX",	"ZeroRel",
+		"Imm",	"IndX",	"Imm",	"ImZeroX",	"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Imp",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"ImAbsX",	"ZeroX",	"ZeroX",	"ZeroY",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"AbsX",		"AbsX",	"AbsY",	"ZeroRel",
+		"Imm",	"IndX",	"Imp",	"Block",		"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Imp",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Block",		"Imp",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"Imp",		"AbsX",	"AbsX",	"ZeroRel",
+		"Imm",	"IndX",	"Imp",	"Block",		"Zero",	"Zero",	"Zero",	"Zero",	"Imp",	"Imm",	"Imp",	"Imp",	"Abs",		"Abs",	"Abs",	"ZeroRel",
+		"Rel",	"IndY",	"ZInd",	"Block",		"Imp",	"ZeroX",	"ZeroX",	"Zero",	"Imp",	"AbsY",	"Imp",	"Imp",	"Imp",		"AbsX",	"AbsX",	"ZeroRel"
+	]
+}
