@@ -150,7 +150,7 @@ DebugTilemapInfo NesPpuTools::GetTilemap(GetTilemapOptions options, BaseState& b
 		result.ScrollX = ((t & 0x1F) << 3) | ((t & 0x400) ? 256 : 0) | state.ScrollX;
 		result.ScrollY = (((t & 0x3E0) >> 2) | ((t & 0x7000) >> 12)) + ((t & 0x800) ? 240 : 0);
 	} else {
-		//During rendering, use V and substract according to the current scanline/cycle
+		//During rendering, use V and subtract according to the current scanline/cycle
 		uint16_t v = state.VideoRamAddr;
 		int32_t scrollX = ((v & 0x1F) << 3) | ((v & 0x400) ? 256 : 0);
 		if(state.Cycle <= 256) {

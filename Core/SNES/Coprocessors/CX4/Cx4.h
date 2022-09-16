@@ -57,7 +57,7 @@ private:
 	void SetZeroNegativeFlags();
 
 	uint32_t AddValues(uint32_t a, uint32_t b);
-	uint32_t Substract(uint32_t a, uint32_t b);
+	uint32_t Subtract(uint32_t a, uint32_t b);
 
 	void CMPR(uint8_t shift, uint8_t src);
 	void CMPR_Imm(uint8_t shift, uint8_t imm);

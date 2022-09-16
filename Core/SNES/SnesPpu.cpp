@@ -1337,7 +1337,7 @@ void SnesPpu::ApplyColorMathToPixel(uint16_t &pixelA, uint16_t pixelB, int x, bo
 	}
 
 	constexpr unsigned int mask = 0x1F;
-	if(_state.ColorMathSubstractMode) {
+	if(_state.ColorMathSubtractMode) {
 		uint16_t r = std::max((int)((pixelA & mask) - (otherPixel & mask)), 0) >> halfShift;
 		uint16_t g = std::max((int)(((pixelA >> 5U) & mask) - ((otherPixel >> 5U) & mask)), 0) >> halfShift;
 		uint16_t b = std::max((int)(((pixelA >> 10U) & mask) - ((otherPixel >> 10U) & mask)), 0) >> halfShift;
@@ -2142,7 +2142,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 		case 0x2131:
 			//CGADSUB - Color math designation
 			_state.ColorMathEnabled = value & 0x3F;
-			_state.ColorMathSubstractMode = (value & 0x80) != 0;
+			_state.ColorMathSubtractMode = (value & 0x80) != 0;
 			_state.ColorMathHalveResult = (value & 0x40) != 0;
 			break;
 
@@ -2193,7 +2193,7 @@ void SnesPpu::Serialize(Serializer &s)
 	SV(_state.OamMode); SV(_state.OamBaseAddress); SV(_state.OamAddressOffset); SV(_state.OamRamAddress); SV(_state.EnableOamPriority);
 	SV(_oamWriteBuffer); SV(_timeOver); SV(_rangeOver); SV(_state.HiResMode); SV(_state.ScreenInterlace); SV(_state.ObjInterlace);
 	SV(_state.OverscanMode); SV(_state.DirectColorMode); SV(_state.ColorMathClipMode); SV(_state.ColorMathPreventMode); SV(_state.ColorMathAddSubscreen); SV(_state.ColorMathEnabled);
-	SV(_state.ColorMathSubstractMode); SV(_state.ColorMathHalveResult); SV(_state.FixedColor); SV(_hvScrollLatchValue); SV(_hScrollLatchValue); 
+	SV(_state.ColorMathSubtractMode); SV(_state.ColorMathHalveResult); SV(_state.FixedColor); SV(_hvScrollLatchValue); SV(_hScrollLatchValue); 
 	SV(_state.MaskLogic[0]); SV(_state.MaskLogic[1]); SV(_state.MaskLogic[2]); SV(_state.MaskLogic[3]); SV(_state.MaskLogic[4]); SV(_state.MaskLogic[5]);
 	SV(_state.WindowMaskMain[0]); SV(_state.WindowMaskMain[1]); SV(_state.WindowMaskMain[2]); SV(_state.WindowMaskMain[3]); SV(_state.WindowMaskMain[4]);
 	SV(_state.WindowMaskSub[0]); SV(_state.WindowMaskSub[1]); SV(_state.WindowMaskSub[2]); SV(_state.WindowMaskSub[3]); SV(_state.WindowMaskSub[4]);
@@ -2332,7 +2332,7 @@ void SnesPpu::RandomizeState()
 	_state.ColorMathPreventMode = (ColorWindowMode)_settings->GetRandomValue(3);
 	_state.ColorMathAddSubscreen = _settings->GetRandomBool();
 	_state.ColorMathEnabled = _settings->GetRandomValue(0x3F);
-	_state.ColorMathSubstractMode = _settings->GetRandomBool();
+	_state.ColorMathSubtractMode = _settings->GetRandomBool();
 	_state.ColorMathHalveResult = _settings->GetRandomBool();
 	_state.FixedColor = _settings->GetRandomValue(0x7FFF);
 }

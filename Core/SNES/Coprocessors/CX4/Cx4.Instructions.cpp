@@ -314,7 +314,7 @@ uint32_t Cx4::AddValues(uint32_t a, uint32_t b)
 	return result & 0xFFFFFF;
 }
 
-uint32_t Cx4::Substract(uint32_t a, uint32_t b)
+uint32_t Cx4::Subtract(uint32_t a, uint32_t b)
 {
 	int32_t result = a - b;
 
@@ -328,22 +328,22 @@ uint32_t Cx4::Substract(uint32_t a, uint32_t b)
 
 void Cx4::CMPR(uint8_t shift, uint8_t src)
 {
-	Substract(GetSourceValue(src), _state.A << shiftLut[shift]);
+	Subtract(GetSourceValue(src), _state.A << shiftLut[shift]);
 }
 
 void Cx4::CMPR_Imm(uint8_t shift, uint8_t imm)
 {
-	Substract(imm, _state.A << shiftLut[shift]);
+	Subtract(imm, _state.A << shiftLut[shift]);
 }
 
 void Cx4::CMP(uint8_t shift, uint8_t src)
 {
-	Substract(_state.A << shiftLut[shift], GetSourceValue(src));
+	Subtract(_state.A << shiftLut[shift], GetSourceValue(src));
 }
 
 void Cx4::CMP_Imm(uint8_t shift, uint8_t imm)
 {
-	Substract(_state.A << shiftLut[shift], imm);
+	Subtract(_state.A << shiftLut[shift], imm);
 }
 
 void Cx4::SignExtend(uint8_t mode)
@@ -391,22 +391,22 @@ void Cx4::ADD_Imm(uint8_t shift, uint8_t imm)
 
 void Cx4::SUB(uint8_t shift, uint8_t src)
 {
-	_state.A = Substract(_state.A << shiftLut[shift], GetSourceValue(src));
+	_state.A = Subtract(_state.A << shiftLut[shift], GetSourceValue(src));
 }
 
 void Cx4::SUB_Imm(uint8_t shift, uint8_t imm)
 {
-	_state.A = Substract(_state.A << shiftLut[shift], imm);
+	_state.A = Subtract(_state.A << shiftLut[shift], imm);
 }
 
 void Cx4::SUBR(uint8_t shift, uint8_t src)
 {
-	_state.A = Substract(GetSourceValue(src), _state.A << shiftLut[shift]);
+	_state.A = Subtract(GetSourceValue(src), _state.A << shiftLut[shift]);
 }
 
 void Cx4::SUBR_Imm(uint8_t shift, uint8_t imm)
 {
-	_state.A = Substract(imm, _state.A << shiftLut[shift]);
+	_state.A = Subtract(imm, _state.A << shiftLut[shift]);
 }
 
 void Cx4::SMUL(uint8_t src)

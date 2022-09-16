@@ -712,7 +712,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2131.4", "CM - OAM Enabled", (ppu.ColorMathEnabled & 0x10) != 0),
 				new RegEntry("$2131.5", "CM - Background Enabled", (ppu.ColorMathEnabled & 0x20) != 0),
 				new RegEntry("$2131.6", "CM - Half Mode", ppu.ColorMathHalveResult),
-				new RegEntry("$2131.7", "CM - Substract Mode", ppu.ColorMathSubstractMode),
+				new RegEntry("$2131.7", "CM - Subtract Mode", ppu.ColorMathSubtractMode),
 
 				new RegEntry("$2132 - $2133", "Misc.", null),
 				new RegEntry("$2132", "Fixed Color - BGR", ppu.FixedColor, Format.X16),

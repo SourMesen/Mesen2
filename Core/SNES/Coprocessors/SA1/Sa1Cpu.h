@@ -95,7 +95,7 @@ private:
 	void PushWord(uint16_t value);
 	uint16_t PopWord();
 
-	//Add/substract instructions
+	//Add/subtract instructions
 	void Add8(uint8_t value);
 	void Add16(uint16_t value);
 	void ADC();

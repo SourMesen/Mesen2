@@ -71,7 +71,7 @@
 		{
 			"op": "daa",
 			"name": "DAA - Decimal Adjust Accumulator",
-			"description": "Adjusts the value of the accumulator for BCD addition and substraction operations.",
+			"description": "Adjusts the value of the accumulator for BCD addition and subtraction operations.",
 			"flags": ["Zero", "HalfCarry", "Carry"]
 		},
 		{

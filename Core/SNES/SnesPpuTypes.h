@@ -182,7 +182,7 @@ struct SnesPpuState : public BaseState
 	ColorWindowMode ColorMathPreventMode = ColorWindowMode::Never;
 	bool ColorMathAddSubscreen = false;
 	uint8_t ColorMathEnabled = 0;
-	bool ColorMathSubstractMode = false;
+	bool ColorMathSubtractMode = false;
 	bool ColorMathHalveResult = false;
 	uint16_t FixedColor = 0;
 };

@@ -150,7 +150,7 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathAddSubscreen;
 		public byte ColorMathEnabled;
-		[MarshalAs(UnmanagedType.I1)] public bool ColorMathSubstractMode;
+		[MarshalAs(UnmanagedType.I1)] public bool ColorMathSubtractMode;
 		[MarshalAs(UnmanagedType.I1)] public bool ColorMathHalveResult;
 		public UInt16 FixedColor;
 	}
