@@ -21,17 +21,17 @@
 		{
 			"op": "bcc",
 			"name": "BCC - Branch if Carry Clear",
-			"description": "If the carry flag (C) is clear, jump to location specified."
+			"description": "If the carry flag (C) is clear, jumps to the specified location."
 		},
 		{
 			"op": "bcs",
 			"name": "BCS - Branch if Carry Set",
-			"description": "If the carry flag (C) is set, jump to the location specified."
+			"description": "If the carry flag (C) is set, jumps to the specified location."
 		},
 		{
 			"op": "beq",
 			"name": "BEQ - Branch if Equal",
-			"description": "If the zero flag (Z) is set, jump to the location specified."
+			"description": "If the zero flag (Z) is set, jumps to the specified location."
 		},
 		{
 			"op": "bit",
@@ -42,17 +42,17 @@
 		{
 			"op": "bmi",
 			"name": "BMI - Branch if Minus",
-			"description": "If the negative flag (N) is set, jump to the location specified."
+			"description": "If the negative flag (N) is set, jumps to the specified location."
 		},
 		{
 			"op": "bne",
 			"name": "BNE - Branch if Not Equal",
-			"description": "If the zero flag (Z) is clear, jump to the location specified."
+			"description": "If the zero flag (Z) is clear, jumps to the specified location."
 		},
 		{
 			"op": "bpl",
 			"name": "BPL - Branch if Positive",
-			"description": "If the negative flag (N) is clear, jump to the location specified."
+			"description": "If the negative flag (N) is clear, jumps to the specified location."
 		},
 		{
 			"op": "brk",
@@ -62,12 +62,12 @@
 		{
 			"op": "bvc",
 			"name": "BVC - Branch if Overflow Clear",
-			"description": "If the overflow flag (V) is clear, jump to the location specified."
+			"description": "If the overflow flag (V) is clear, jumps to the specified location."
 		},
 		{
 			"op": "bvs",
 			"name": "BVS - Branch if Overflow Set",
-			"description": "If the overflow flag (V) is set then, jump to the location specified."
+			"description": "If the overflow flag (V) is set then, jumps to the specified location."
 		},
 		{
 			"op": "clc",
@@ -96,7 +96,7 @@
 		{
 			"op": "cmp",
 			"name": "CMP - Compare",
-			"description": "Compares the accumulator with the byte at the specified memory address..",
+			"description": "Compares the accumulator with the byte at the specified memory address.",
 			"flags":["Zero", "Carry", "Negative"]
 		},
 		{
@@ -138,7 +138,7 @@
 		{
 			"op": "inc",
 			"name": "INC - Increment Memory",
-			"description": "Adds one to the the byte at the specified memory address.",
+			"description": "Adds one to the byte at the specified memory address.",
 			"flags": ["Zero", "Negative"]
 		},
 		{

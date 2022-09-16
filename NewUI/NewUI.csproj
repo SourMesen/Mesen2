@@ -35,6 +35,7 @@
 	  <None Remove="Debugger\Documentation\NesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\PceDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SnesDocumentation.json" />
+	  <None Remove="Debugger\Documentation\SpcDocumentation.json" />
 	  <None Remove="Debugger\HighlightAssembly.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
 	  <None Remove="Debugger\Utilities\LuaDocumentation.json" />
@@ -495,6 +496,7 @@
     <AvaloniaResource Include="Assets\NesIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Debugger\Documentation\SpcDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\PceDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\GbDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SnesDocumentation.json" />

@@ -1,0 +1,375 @@
+{
+	"instructions": [
+		{
+			"op": "adc",
+			"name": "ADC - Add with Carry",
+			"description": "Add the value at the specified memory address to the accumulator + the carry bit. On overflow, the carry bit is set.",
+			"flags": ["Carry", "Zero", "Overflow", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "addw",
+			"name": "ADDW - Add (16-bit)",
+			"description": "Adds both operands together and stores the result in YA.",
+			"flags": ["Carry", "Zero", "Overflow", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": "Perform an AND operation between the accumulator and the value at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "and1",
+			"name": "AND1 - Bitwise AND with Carry",
+			"description": "Perform an AND operation on the carry flag and the specified bit at the specified memory address. Stores the result in carry flag.",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "asl",
+			"name": "ASL - Arithmetic Shift Left",
+			"description": "Shifts all the bits of the accumulator (or the byte at the specified memory address) by 1 bit to the left. Bit 0 will be set to 0 and the carry flag (C) will take the value of bit 7 (before the shift).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "bbc",
+			"name": "BBC - Branch if Bit Clear",
+			"description": "Branches to the relative address if the specified bit of specified memory address is 0."
+		},
+		{
+			"op": "bbs",
+			"name": "BBS - Branch if Bit Set",
+			"description": "Branches to the relative address if the specified bit of specified memory address is 1."
+		},
+		{
+			"op": "bcc",
+			"name": "BCC - Branch if Carry Clear",
+			"description": "If the carry flag (C) is clear, jumps to the specified location."
+		},
+		{
+			"op": "bcs",
+			"name": "BCS - Branch if Carry Set",
+			"description": "If the carry flag (C) is set, jumps to the specified location."
+		},
+		{
+			"op": "beq",
+			"name": "BEQ - Branch if Equal",
+			"description": "If the zero flag (Z) is set, jumps to the specified location."
+		},
+		{
+			"op": "bmi",
+			"name": "BMI - Branch if Minus",
+			"description": "If the negative flag (N) is set, jumps to the specified location."
+		},
+		{
+			"op": "bne",
+			"name": "BNE - Branch if Not Equal",
+			"description": "If the zero flag (Z) is clear, jumps to the specified location."
+		},
+		{
+			"op": "bpl",
+			"name": "BPL - Branch if Positive",
+			"description": "If the negative flag (N) is clear, jumps to the specified location."
+		},
+		{
+			"op": "bra",
+			"name": "BRA - Branch Always",
+			"description": "Jumps to the specified location."
+		},
+		{
+			"op": "brk",
+			"name": "BRK - Break",
+			"description": "The BRK instruction causes the CPU to jump to its IRQ vector, as if an interrupt had occurred. The PC and status flags are pushed on the stack."
+		},
+		{
+			"op": "bvc",
+			"name": "BVC - Branch if Overflow Clear",
+			"description": "If the overflow flag (V) is clear, jumps to the specified location."
+		},
+		{
+			"op": "bvs",
+			"name": "BVS - Branch if Overflow Set",
+			"description": "If the overflow flag (V) is set then, jumps to the specified location."
+		},
+		{
+			"op": "call",
+			"name": "CALL - Jump to Subroutine",
+			"description": "Pushes the address (minus one) of the next instruction to the stack and then jumps to the target address."
+		},
+		{
+			"op": "cbne",
+			"name": "CBNE - Compare and branch if not equal",
+			"description": "Compares the accumulator with the value at the first operand, and then jumps to the address specified in the second operand if the values are not equal."
+		},
+		{
+			"op": "clr1",
+			"name": "CLR1 - Clear bit",
+			"description": "Clears the specified bit at the specified address."
+		},
+		{
+			"op": "clrc",
+			"name": "CLRC - Clear carry flag",
+			"description": "Clears the carry flag (C).",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "clrp",
+			"name": "CLRP - Clear direct page flag",
+			"description": "Clears the direct page (P) flag.",
+			"flags": ["DirectPage"]
+		},
+		{
+			"op": "clrv",
+			"name": "CLRV - Clear overflow flag",
+			"description": "Clears the overflow (V) and half-carry (H) flags.",
+			"flags": ["Overflow", "HalfCarry"]
+		},
+		{
+			"op": "cmp",
+			"name": "CMP - Compare",
+			"description": "Compares the operand with the byte at the specified memory address.",
+			"flags":["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "cmpw",
+			"name": "CMPW - Compare (16-bit)",
+			"description": "Compares the content of YA with the specified memory address.",
+			"flags":["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "daa",
+			"name": "DAA - Decimal Adjust for Addition",
+			"description": "Adjusts the value of the accumulator for BCD addition.",
+			"flags":["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "das",
+			"name": "DAS - Decimal Adjust for Subtraction",
+			"description": "Adjusts the value of the accumulator for BCD subtraction.",
+			"flags":["Zero", "Carry", "Negative"]
+		},
+		{
+			"op": "dbnz",
+			"name": "DBNZ - Decrement and branch if not zero",
+			"description": "Decrements the first operand and jumps to the destination if the zero flag is set."
+		},
+		{
+			"op": "dec",
+			"name": "DEC - Decrement",
+			"description": "Decrements the operand.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "decw",
+			"name": "DECW - Decrement (16-bit)",
+			"description": "Decrements the 16-bit value at the specified address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "di",
+			"name": "DI - Disable Interrupts",
+			"description": "Sets the interrupt disable flag (I).",
+			"flags": ["Interrupt"]
+		},
+		{
+			"op": "div",
+			"name": "DIV - Divide",
+			"description": "Divides YA by X and stores the result in A, and the remainder in Y",
+			"flags": ["Zero", "Negative", "HalfCarry", "Overflow"]
+		},
+		{
+			"op": "ei",
+			"name": "EI - Enable interrupts",
+			"description": "Clears the interrupt disable flag (I).",
+			"flags": ["Interrupt"]
+		},
+		{
+			"op": "eor",
+			"name": "EOR - Exclusive OR",
+			"description": "Performs an exclusive OR operation between the accumulator and the byte at the specified memory address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "eor1",
+			"name": "EOR1 - Exclusive OR with Carry",
+			"description": "Performs an exclusive OR operation between the carry flag and the specified bit at the specified memory address. Stores the result in carry flag.",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "inc",
+			"name": "INC - Increment",
+			"description": "Increments the operand.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "incw",
+			"name": "INCW - Increment (16-bit)",
+			"description": "Increments the 16-bit value at the specified address.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "jmp",
+			"name": "JMP - Jump",
+			"description": "Jumps to the specified location (alters the program counter)"
+		},
+		{
+			"op": "lsr",
+			"name": "LSR - Logical Shift Right",
+			"description": "Shifts all the bits of the accumulator (or the byte at the specified memory address) by 1 bit to the right. Bit 7 will be set to 0 and the carry flag (C) will take the value of bit 0 (before the shift).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "mov",
+			"name": "MOV - Move",
+			"description": "Moves the value from the source (second operand) to the destination (first operand).  When used to load a value into a register, the zero and negative flags are updated."
+		},
+		{
+			"op": "mov1",
+			"name": "MOV1 - Move 1-bit ",
+			"description": "Moves the bit from the source to the destination. One of the operands must be the carry flag.",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "movw",
+			"name": "MOVW - Move (16-bit)",
+			"description": "Moves the specified 16-bit values between YA and the specified address."
+		},
+		{
+			"op": "mul",
+			"name": "MUL - Multiply",
+			"description": "Multiples Y and A, stores the result in YA.",
+			"flags": ["Negative", "Zero"]
+		},
+		{
+			"op": "nop",
+			"name": "NOP - No Operation",
+			"description": "Performs no operation other than delaying execution of the next instruction by 2 cycles."
+		},
+		{
+			"op": "not1",
+			"name": "NOT1 - Inverts 1 bit",
+			"description": "Inverts the value of the specified bit at the specified address."
+		},
+		{
+			"op": "notc",
+			"name": "NOTC - Inverts the carry flag",
+			"description": "Inverts the value of the carry flag.",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "or",
+			"name": "OR - Inclusive OR",
+			"description": "Performs an inclusive OR operation between the operands and stores the result in the first operand.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "or1",
+			"name": "OR1 - Inclusive OR with Carry",
+			"description": "Perform an inclusive OR operation on the carry flag and the specified bit at the specified memory address. Stores the result in carry flag.",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "pcall",
+			"name": "PCALL",
+			"description": "Jumps to the specified subroutine ($FFxx)"
+		},
+		{
+			"op": "pop",
+			"name": "POP - Pop",
+			"description": "Pops a value from the stack and stores it in the specified register."
+		},
+		{
+			"op": "push",
+			"name": "PUSH - Push",
+			"description": "Pushes the value of the specified register to the stack."
+		},
+		{
+			"op": "pull",
+			"name": "PULL - Pull",
+			"description": "Pulls a byte from the stack and stores it in the operand.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "ret",
+			"name": "RET - Return from Subroutine",
+			"description": "The RET instruction is used at the end of a subroutine to return execution to the calling function. It pulls the status flags and program counter (minus 1) from the stack."
+		},
+		{
+			"op": "ret1",
+			"name": "RET1 - Return from Interrupt",
+			"description": "Returns from an interrupt handler."
+		},
+		{
+			"op": "rol",
+			"name": "ROL - Rotate Left",
+			"description": "Shifts all bits 1 position to the left. The right-most bit takes the current value of the carry flag (C). The left-most bit is stored into the carry flag (C).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "ror",
+			"name": "ROR - Rotate Right",
+			"description": "Shifts all bits 1 position to the right. The left-most bit takes the current value of the carry flag (C). The right-most bit is stored into the carry flag (C).",
+			"flags": ["Carry", "Zero", "Negative"]
+		},
+		{
+			"op": "sbc",
+			"name": "SBC - Subtract with Carry",
+			"description": "Subtracts the byte at the specified memory address from the value of the accumulator (affected by the carry flag (C)).",
+			"flags": ["Carry", "Zero", "Overflow", "Negative"]
+		},
+		{
+			"op": "set1",
+			"name": "SET1 - Set bit",
+			"description": "Sets the specified bit at the specified address."
+		},
+		{
+			"op": "setc",
+			"name": "SETC - Set carry flag",
+			"description": "Sets the carry flag (C).",
+			"flags": ["Carry"]
+		},
+		{
+			"op": "setp",
+			"name": "SETP - Set direct page flag",
+			"description": "Sets the direct page flag (P)."
+		},
+		{
+			"op": "sleep",
+			"name": "SLEEP - Sleep",
+			"description": "Halts the processor."
+		},
+		{
+			"op": "stop",
+			"name": "STOP - Stop",
+			"description": "Halts the processor."
+		},
+		{
+			"op": "subw",
+			"name": "SUBW - Subtract (16-bit)",
+			"description": "Subtract the 16-bit value at the specified address from YA and store the result in YA.",
+			"flags": ["Carry", "Zero", "Overflow", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "tcall",
+			"name": "TCALL",
+			"description": "Jumps to the specified subroutine at [$FFC0+2*operand]"
+		},
+		{
+			"op": "tclr1",
+			"name": "TCLR1 - Test and clear bits",
+			"description": "Compares accumulator and operand value. Clears bits that are set in A from the value and writes it back to memory.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "tset1",
+			"name": "TSET1 - Test and set bits",
+			"description": "Compares accumulator and operand value. Sets bits that are set in A in the value and writes it back to memory.",
+			"flags": ["Zero", "Negative"]
+		},
+		{
+			"op": "xcn",
+			"name": "XCH - Exchange",
+			"description": "Swaps the upper and lower nibbles of the accumulator.",
+			"flags": ["Zero", "Negative"]
+		}
+	]
+}

@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Mesen.Debugger.Controls;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -40,9 +42,9 @@ public static class OpCodeHelper
 
 		byte opcode = seg.Data.ByteCode[0];
 
-		StackPanel panel = new StackPanel() { MaxWidth = 250 };
-		panel.Children.Add(new TextBlock() { Text = desc.Name, FontSize = 14, Margin = new(2), TextWrapping = Avalonia.Media.TextWrapping.Wrap, FontWeight = Avalonia.Media.FontWeight.Bold });
-		panel.Children.Add(new TextBlock() { Text = desc.Description, Margin = new(2), TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+		StackPanel panel = new StackPanel() { MaxWidth = 250, HorizontalAlignment = HorizontalAlignment.Left };
+		panel.Children.Add(new TextBlock() { Text = desc.Name, FontSize = 14, Margin = new(0, 2), TextWrapping = TextWrapping.Wrap, FontWeight = FontWeight.Bold });
+		panel.Children.Add(new TextBlock() { Text = desc.Description, Margin = new(0, 3, 0, 5),  TextWrapping = TextWrapping.Wrap });
 
 		TooltipEntries items = new();
 		items.AddCustomEntry("OP", panel);
@@ -97,6 +99,7 @@ public static class OpCodeHelper
 	{
 		Dictionary<string, OpCodeDesc> baseDesc = new(_data[CpuType.Nes].OpDesc);
 		InitDocumentation(CpuType.Snes, ReadDocumentationFile("SnesDocumentation.json"), baseDesc);
+		InitDocumentation(CpuType.Spc, ReadDocumentationFile("SpcDocumentation.json"));
 	}
 
 	private static void InitPceDocumentation()
@@ -154,7 +157,8 @@ public static class OpCodeHelper
 		Memory,
 		Index,
 		Emulation,
-		HalfCarry
+		HalfCarry,
+		DirectPage
 	}
 
 	private class DocFileFormat
