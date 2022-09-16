@@ -38,6 +38,10 @@ namespace Mesen.Windows
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
 
+		//Used to suppress key-repeat keyup events on Linux
+		private Dictionary<Key, IDisposable> _pendingKeyUpEvents = new();
+		private bool _isLinux = false;
+
 		static MainWindow()
 		{
 			WindowStateProperty.Changed.AddClassHandler<MainWindow>((x, e) => x.OnWindowStateChanged());
@@ -46,6 +50,8 @@ namespace Mesen.Windows
 
 		public MainWindow()
 		{
+			_isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
 			DataContext = new MainWindowViewModel();
 
 			List<KeyGesture> gestures = AvaloniaLocator.Current.GetRequiredService<PlatformHotkeyConfiguration>().OpenContextMenu;
@@ -403,6 +409,12 @@ namespace Mesen.Windows
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			if(e.Key != Key.None) {
+				if(_isLinux && _pendingKeyUpEvents.TryGetValue(e.Key, out IDisposable? cancelTimer)) {
+					//Cancel any pending key up event
+					cancelTimer.Dispose();
+					_pendingKeyUpEvents.Remove(e.Key);
+				}
+
 				InputApi.SetKeyState((UInt16)e.Key, true);
 			}
 
@@ -414,7 +426,15 @@ namespace Mesen.Windows
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
-			InputApi.SetKeyState((UInt16)e.Key, false);
+			if(e.Key != Key.None) {
+				if(_isLinux) {
+					//Process keyup events after 1ms on Linux to prevent key repeat from triggering key up/down repeatedly
+					IDisposable cancelTimer = DispatcherTimer.RunOnce(() => InputApi.SetKeyState((UInt16)e.Key, false), TimeSpan.FromMilliseconds(1), DispatcherPriority.MaxValue);
+					_pendingKeyUpEvents[e.Key] = cancelTimer;
+				} else {
+					InputApi.SetKeyState((UInt16)e.Key, false);
+				}
+			}
 		}
 
 		private void OnActiveChanged()
