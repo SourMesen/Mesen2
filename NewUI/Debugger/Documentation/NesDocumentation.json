@@ -245,7 +245,7 @@
 		{
 			"op": "sbc",
 			"name": "SBC - Subtract with Carry",
-			"description": "Substracts the byte at the specified memory address from the value of the accumulator (affected by the carry flag (C)).",
+			"description": "Subtracts the byte at the specified memory address from the value of the accumulator (affected by the carry flag (C)).",
 			"flags": ["Carry", "Zero", "Overflow", "Negative"]
 		},
 		{

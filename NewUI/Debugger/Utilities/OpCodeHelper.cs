@@ -20,6 +20,7 @@ public static class OpCodeHelper
 		InitNesDocumentation();
 		InitSnesDocumentation();
 		InitPceDocumentation();
+		InitGbDocumentation();
 	}
 
 	public static DynamicTooltip? GetTooltip(CodeSegmentInfo seg)
@@ -48,7 +49,9 @@ public static class OpCodeHelper
 		if(!string.IsNullOrEmpty(seg.Data.ByteCodeStr)) {
 			items.AddEntry("Byte Code", seg.Data.ByteCodeStr);
 		}
-		items.AddEntry("Mode", doc.OpMode[opcode]);
+		if(doc.OpMode != null) {
+			items.AddEntry("Mode", doc.OpMode[opcode]);
+		}
 		if(doc.OpCycleCount != null) {
 			items.AddEntry("Cycle Count", doc.OpCycleCount[opcode]);
 		}
@@ -69,7 +72,9 @@ public static class OpCodeHelper
 		Dictionary<int, string> mode = new();
 		Dictionary<int, string> cycleCount = new();
 		for(int i = 0; i < 256; i++) {
-			mode[i] = ResourceHelper.GetEnumText(doc.AddressingModes[i]);
+			if(doc.AddressingModes != null) {
+				mode[i] = ResourceHelper.GetEnumText(doc.AddressingModes[i]);
+			}
 
 			if(doc.MinCycles != null) {
 				string cycles = doc.MinCycles[i].ToString();
@@ -80,17 +85,12 @@ public static class OpCodeHelper
 			}
 		}
 
-		_data[cpuType] = new CpuDocumentationData(desc, mode, doc.MinCycles != null ? cycleCount : null);
-	}
-
-	private static DocFileFormat Get6502Documentation()
-	{
-		return ReadDocumentationFile("NesDocumentation.json");
+		_data[cpuType] = new CpuDocumentationData(desc, doc.AddressingModes != null ? mode : null, doc.MinCycles != null ? cycleCount : null);
 	}
 
 	private static void InitNesDocumentation()
 	{
-		InitDocumentation(CpuType.Nes, Get6502Documentation());
+		InitDocumentation(CpuType.Nes, ReadDocumentationFile("NesDocumentation.json"));
 	}
 
 	private static void InitSnesDocumentation()
@@ -104,6 +104,11 @@ public static class OpCodeHelper
 		Dictionary<string, OpCodeDesc> baseDesc = new(_data[CpuType.Nes].OpDesc);
 		InitDocumentation(CpuType.Pce, ReadDocumentationFile("PceDocumentation.json"), baseDesc);
 		_data[CpuType.Pce].OpComparer = x => x.Substring(0, 3);
+	}
+
+	private static void InitGbDocumentation()
+	{
+		InitDocumentation(CpuType.Gameboy, ReadDocumentationFile("GbDocumentation.json"));
 	}
 
 	private static DocFileFormat ReadDocumentationFile(string filename)
@@ -138,13 +143,24 @@ public static class OpCodeHelper
 		ZInd, ZeroRel,
 	}
 
-	[Flags]
-	private enum CpuFlag { None = 0, Carry = 1, Decimal = 2, Interrupt = 4, Negative = 8, Overflow = 16, Zero = 32, Memory = 64, Index = 128, Emulation = 256 }
+	private enum CpuFlag
+	{
+		Carry,
+		Decimal,
+		Interrupt,
+		Negative,
+		Overflow,
+		Zero,
+		Memory,
+		Index,
+		Emulation,
+		HalfCarry
+	}
 
 	private class DocFileFormat
 	{
 		public OpCodeDesc[] Instructions { get; set; } = Array.Empty<OpCodeDesc>();
-		public AddrMode[] AddressingModes { get; set; } = Array.Empty<AddrMode>();
+		public AddrMode[]? AddressingModes { get; set; } = null;
 		public int[]? MinCycles { get; set; }
 		public int[]? MaxCycles { get; set; }
 	}
@@ -160,11 +176,11 @@ public static class OpCodeHelper
 	private class CpuDocumentationData
 	{
 		public Dictionary<string, OpCodeDesc> OpDesc { get; }
-		public Dictionary<int, string> OpMode { get; }
+		public Dictionary<int, string>? OpMode { get; }
 		public Dictionary<int, string>? OpCycleCount { get; }
 		public Func<string, string>? OpComparer { get; set; }
 
-		public CpuDocumentationData(Dictionary<string, OpCodeDesc> opDesc, Dictionary<int, string> opMode, Dictionary<int, string>? opCycleCount = null)
+		public CpuDocumentationData(Dictionary<string, OpCodeDesc> opDesc, Dictionary<int, string>? opMode, Dictionary<int, string>? opCycleCount)
 		{
 			OpDesc = opDesc;
 			OpMode = opMode;

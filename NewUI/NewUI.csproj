@@ -31,6 +31,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Assets\MsgBoxInfo.png" />
+	  <None Remove="Debugger\Documentation\GbDocumentation.json" />
 	  <None Remove="Debugger\Documentation\NesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\PceDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SnesDocumentation.json" />
@@ -495,6 +496,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Debugger\Documentation\PceDocumentation.json" />
+    <EmbeddedResource Include="Debugger\Documentation\GbDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SnesDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\NesDocumentation.json" />
     <EmbeddedResource Include="Debugger\HighlightLua.xshd" />

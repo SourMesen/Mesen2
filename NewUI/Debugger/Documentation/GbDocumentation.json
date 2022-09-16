@@ -1,0 +1,251 @@
+{
+	"instructions": [
+		{
+			"op": "nop",
+			"name": "NOP - No operation",
+			"description": ""
+		},
+		{
+			"op": "stop",
+			"name": "STOP - Stop",
+			"description": "Suspends the CPU and LCD until a button is pressed."
+		},
+		{
+			"op": "ld",
+			"name": "LD - Load",
+			"description": "LD destination, source\nLoads the destination with the value specified by the source."
+		},
+		{
+			"op": "inc",
+			"name": "INC - Increment",
+			"description": "Increments the specified value",
+			"flags": ["Zero", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "dec",
+			"name": "DEC - Decrement",
+			"description": "Decrements the specified value",
+			"flags": ["Zero", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "rlca",
+			"name": "RLCA - Rotate Left Circular Accumulator",
+			"description": "Rotates the accumulator's bits to the left. MSB is moved to the LSB, and also set as the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rla",
+			"name": "RLA - Rotate Left Accumulator",
+			"description": "Rotates the accumulator's bits to the left. MSB is moved to the carry flag, and the LSB is set to the value of the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rrca",
+			"name": "RRCA - Rotate Right Circular Accumulator",
+			"description": "Rotates the accumulator's bits to the right. LSB is moved to the MSB, and also set as the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rra",
+			"name": "RRA - Rotate Right Accumulator",
+			"description": "Rotates the accumulator's bits to the right. LSB is moved to the carry flag, and the MSB is set to the value of the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "add",
+			"name": "ADD - Add",
+			"description": "Adds the value of both operands together and stores the result in the first operand.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "adc",
+			"name": "ADC - Add With Carry",
+			"description": "Adds the accumulator, carry flag and the second operand together. Stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "jr",
+			"name": "JR - Jump Relative",
+			"description": "Jumps to the relative address specified. When a condition is specified, only jumps if the condition is true."
+		},
+		{
+			"op": "daa",
+			"name": "DAA - Decimal Adjust Accumulator",
+			"description": "Adjusts the value of the accumulator for BCD addition and substraction operations.",
+			"flags": ["Zero", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "scf",
+			"name": "SCF - Set Carry Flag",
+			"description": "Sets the carry flag, clears negative and half-carry flags.",
+			"flags": ["Carry", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "ccf",
+			"name": "CCF - Complement Carry Flag",
+			"description": "Inverts the value of the carry flag. Clears negative and half-carry flags.",
+			"flags": ["Carry", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "cpl",
+			"name": "CPL - Complement (Accumulator)",
+			"description": "Inverts all bits in the accumulator.",
+			"flags": ["Negative", "HalfCarry"]
+		},
+		{
+			"op": "halt",
+			"name": "HALT - Halt",
+			"description": "Halts the CPU until the next interrupt or until reset."
+		},
+		{
+			"op": "sub",
+			"name": "SUB - Subtract",
+			"description": "Subtract the value of the second operand from the accumulator and stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "sbc",
+			"name": "SBC - Subtract With Carry",
+			"description": "Subtract the value of the second operand and the carry flag from the accumulator and stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": "Performs a bitwise AND operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "or",
+			"name": "OR - Bitwise OR",
+			"description": "Performs a bitwise OR operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "xor",
+			"name": "XOR - Bitwise XOR",
+			"description": "Performs a bitwise XOR operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "cp",
+			"name": "CP - Compare",
+			"description": "The content of the operand is compared with the accumulator (A - operand) and flags are updated.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "ret",
+			"name": "RET - Return",
+			"description": "Returns from a routine called by CALL. When a condition is specified, only returns if the condition is true."
+		},
+		{
+			"op": "pop",
+			"name": "POP - Pop",
+			"description": "Pops 2 bytes from the stack, stores them in the operand."
+		},
+		{
+			"op": "jp",
+			"name": "JP - Jump",
+			"description": "Jumps to the specified address. When a condition is specified, only jumps if the condition is true."
+		},
+		{
+			"op": "call",
+			"name": "CALL - Call",
+			"description": "Calls a routine. When a condition is specified, only jumps to the routine if the condition is true."
+		},
+		{
+			"op": "push",
+			"name": "PUSH - Push",
+			"description": "Pushes the value of the operand (2 bytes) to the stack."
+		},
+		{
+			"op": "rst",
+			"name": "RST - Restart",
+			"description": "Calls the routine defined at the predefined address (operand)."
+		},
+		{
+			"op": "reti",
+			"name": "RETI - Return from Interrupt",
+			"description": "Returns from an interrupt handler."
+		},
+		{
+			"op": "ei",
+			"name": "EI - Enable Interrupts",
+			"description": "Enables interrupts."
+		},
+		{
+			"op": "di",
+			"name": "DI - Disable Interrupts",
+			"description": "Disables interrupts."
+		},
+		{
+			"op": "ldh",
+			"name": "LDH - Load High",
+			"description": "Reads (or writes) value from \"high RAM\" at $FFxx, based on the operands."
+		},
+		{
+			"op": "rlc",
+			"name": "RLC - Rotate Left Carry",
+			"description": "Rotates the operand's bits to the left. MSB is moved to the LSB, and also set as the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rrc",
+			"name": "RRC - Rotate Right Carry",
+			"description": "Rotates the operand's bits to the right. LSB is moved to the MSB, and also set as the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rl",
+			"name": "RL - Rotate Left",
+			"description": "Rotates the operand's bits to the left. MSB is moved to the carry flag, and the LSB is set to the value of the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "rr",
+			"name": "RR - Rotate Right",
+			"description": "Rotates the operand's bits to the right. LSB is moved to the carry flag, and the MSB is set to the value of the carry flag.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "sla",
+			"name": "SLA - Shift Left Arithmetic",
+			"description": "Shifts content of operand to the left. MSB is moved to the carry flag, LSB is set to 0.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "sra",
+			"name": "SRA - Shift Right Arithmetic",
+			"description": "Shifts content of operand to the right. LSB is moved to the carry flag, MSB does not change.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "srl",
+			"name": "SRL - Shift Right Logical",
+			"description": "Shifts content of operand to the right. MSB is moved to the carry flag, MSB is set to 0.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "swap",
+			"name": "SWAP - Swap",
+			"description": "Swaps the upper and lower nibbles of the operand.",
+			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
+		},
+		{
+			"op": "bit",
+			"name": "BIT - Test Bit",
+			"description": "Tests the specified bit of the specified value. Sets zero flag if bit is clear, clears it if set.",
+			"flags": ["Zero", "Negative", "HalfCarry"]
+		},
+		{
+			"op": "res",
+			"name": "RES - Reset Bit",
+			"description": "Clears the specified bit of the operand value."
+		},
+		{
+			"op": "set",
+			"name": "SET - Set Bit",
+			"description": "Sets the specified bit of the operand value."
+		}
+	]
+}
