@@ -53,14 +53,7 @@ namespace Mesen.Windows
 			_isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
 			DataContext = new MainWindowViewModel();
-
-			List<KeyGesture> gestures = AvaloniaLocator.Current.GetRequiredService<PlatformHotkeyConfiguration>().OpenContextMenu;
-			for(int i = gestures.Count - 1; i >= 0; i--) {
-				if(gestures[i].Key == Key.F10 && gestures[i].KeyModifiers == KeyModifiers.Shift) {
-					//Disable Shift-F10 shortcut to open context menu - interferes with default shortcut for step back
-					gestures.RemoveAt(i);
-				}
-			}
+			InitGlobalShortcuts();
 
 			EmuApi.InitDll();
 
@@ -86,6 +79,21 @@ namespace Mesen.Windows
 #if DEBUG
 			this.AttachDevTools();
 #endif
+		}
+
+		private static void InitGlobalShortcuts()
+		{
+			PlatformHotkeyConfiguration hotkeyConfig = AvaloniaLocator.Current.GetRequiredService<PlatformHotkeyConfiguration>();
+			List<KeyGesture> gestures = hotkeyConfig.OpenContextMenu;
+			for(int i = gestures.Count - 1; i >= 0; i--) {
+				if(gestures[i].Key == Key.F10 && gestures[i].KeyModifiers == KeyModifiers.Shift) {
+					//Disable Shift-F10 shortcut to open context menu - interferes with default shortcut for step back
+					gestures.RemoveAt(i);
+				}
+			}
+			hotkeyConfig.Copy.Add(new KeyGesture(Key.Insert, KeyModifiers.Control));
+			hotkeyConfig.Paste.Add(new KeyGesture(Key.Insert, KeyModifiers.Shift));
+			hotkeyConfig.Cut.Add(new KeyGesture(Key.Delete, KeyModifiers.Shift));
 		}
 
 		protected override void ArrangeCore(Rect finalRect)
