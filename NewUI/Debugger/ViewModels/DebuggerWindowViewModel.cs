@@ -618,12 +618,10 @@ namespace Mesen.Debugger.ViewModels
 				},
 			});
 
-			Dispatcher.UIThread.Post(() => {
-				DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
-				DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
-				DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
-				DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
-			});
+			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, SearchMenuItems);
+			DebugShortcutManager.RegisterActions(wnd, OptionMenuItems);
 		}
 
 		private void InitGoToCpuVectorActions()

@@ -43,10 +43,7 @@ namespace Mesen.Debugger.Windows
 			_scrollToAddress = scrollToAddress;
 			DataContext = _model;
 
-			Task.Run(() => {
-				//Init menu and toolbar in a separate thread to allow window to open a bit faster
-				_model.InitializeMenu(this);
-			});
+			_model.InitializeMenu(this);
 
 			if(Design.IsDesignMode) {
 				return;
