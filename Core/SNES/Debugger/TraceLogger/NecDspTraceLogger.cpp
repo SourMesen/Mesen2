@@ -44,18 +44,6 @@ RowDataType NecDspTraceLogger::GetFormatTagType(string& tag)
 		return RowDataType::TR;
 	} else if(tag == "TRB") {
 		return RowDataType::TRB;
-	} else if(tag == "R12") {
-		return RowDataType::R12;
-	} else if(tag == "R13") {
-		return RowDataType::R13;
-	} else if(tag == "R14") {
-		return RowDataType::R14;
-	} else if(tag == "R15") {
-		return RowDataType::R15;
-	} else if(tag == "SRC") {
-		return RowDataType::Src;
-	} else if(tag == "DST") {
-		return RowDataType::Dst;
 	} else {
 		return RowDataType::Text;
 	}

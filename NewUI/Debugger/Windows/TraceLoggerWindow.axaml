@@ -116,9 +116,10 @@
 								<CheckBox VerticalAlignment="Center" Content="{l:Translate chkCustomFormat}" IsChecked="{Binding Options.UseCustomFormat}" />
 								<TextBox Grid.Column="1" Text="{Binding Format}" IsReadOnly="True" IsVisible="{Binding !Options.UseCustomFormat}" Classes="readonlyFormat" />
 								<TextBox Grid.Column="1" Text="{Binding Options.Format}" IsVisible="{Binding Options.UseCustomFormat}" MaxLength="1000" />
+								<Image Grid.Row="0" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding FormatTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="0" />
 								<TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{l:Translate lblCondition}" />
 								<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Options.Condition}" MaxLength="1000" />
-								<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+								<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="0" />
 							</Grid>
 						</StackPanel>
 					</c:GroupBox>

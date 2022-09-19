@@ -16,6 +16,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -429,7 +430,8 @@ namespace Mesen.Debugger.ViewModels
 	public class TraceLoggerOptionTab : DisposableViewModel
 	{
 		public string TabName { get; set; } = "";
-		public Control? HelpTooltip => ExpressionTooltipHelper.GetHelpTooltip(CpuType, false);
+		public Control HelpTooltip => ExpressionTooltipHelper.GetHelpTooltip(CpuType, false);
+		public Control FormatTooltip => GetFormatTooltip();
 
 		public CpuType CpuType { get; set; } = CpuType.Snes;
 
@@ -557,6 +559,76 @@ namespace Mesen.Debugger.ViewModels
 
 				Format = format.Trim();
 			}
+		}
+
+		private Control GetFormatTooltip()
+		{
+			StackPanel panel = new();
+
+			void addRow(string text) { panel.Children.Add(new TextBlock() { Text = text }); }
+			void addBoldRow(string text) { panel.Children.Add(new TextBlock() { Text = text, FontWeight = Avalonia.Media.FontWeight.Bold }); }
+
+			addBoldRow("Notes");
+			addRow("You can customize the output by enabling the 'Use custom format' option and manually editing the format.");
+			addRow(" ");
+			addRow("Tags can have their display format configured by using a comma and specifying the format options. e.g:");
+			addRow("  [Scanline,3] - display scanline in decimal, pad to always be 3 characters wide");
+			addRow("  [Scanline,h] - display scanline in hexadecimal");
+			addRow("  [Scanline,3h] - display scanline in decimal, pad to always be 3 characters wide");
+			addRow(" ");
+			addBoldRow("Common tags (all CPUs)");
+			addRow("  [ByteCode] - byte code for the instruction (1 to 3 bytes)");
+			addRow("  [Disassembly] - disassembly for the current instruction");
+			addRow("  [EffectiveAddress] - effective address used for indirect addressing modes");
+			addRow("  [MemoryValue] - value stored at the memory location referred to by the instruction");
+			addRow("  [PC] - program counter");
+			addRow("  [Cycle] - current horizontal cycle (H)");
+			addRow("  [HClock] - current horizontal cycle (H, in master clocks)");
+			addRow("  [Scanline] - current scanline (V)");
+			addRow("  [FrameCount] - current frame number");
+			addRow("  [CycleCount] - current CPU cycle (64-bit unsigned value)");
+			addRow("  [Align,X] - add spaces to ensure the line is X characters long");
+			addRow(" ");
+
+			addBoldRow("CPU-specific tags (" + ResourceHelper.GetEnumText(CpuType) + ")");
+
+			string[] tokens = CpuType switch {
+				CpuType.Snes or CpuType.Sa1 => new string[] { "A", "X", "Y", "D", "DB", "P", "SP" },
+				CpuType.Spc => new string[] { "A", "X", "Y", "P", "SP" },
+				CpuType.NecDsp => new string[] { "A", "B", "FlagsA", "FlagsB", "K", "L", "M", "N", "RP", "DP", "DR", "SR", "TR", "TRB" },
+				CpuType.Gsu => new string[] { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "SRC", "DST", "SFR" },
+				CpuType.Cx4 => new string[] { "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "MAR", "MDR", "DPR", "ML", "MH", "PB", "P", "PS", "A" },
+				CpuType.Gameboy => new string[] { "A", "B", "C", "D", "E", "F", "H", "L", "PS", "SP" },
+				CpuType.Nes => new string[] { "A", "X", "Y", "P", "SP" },
+				CpuType.Pce => new string[] { "A", "X", "Y", "P", "SP" },
+				_ => throw new Exception("unsupported cpu type")
+			};
+
+			Array.Sort(tokens);
+
+			Grid tokenGrid = new Grid() {
+				ColumnDefinitions = new("40, 40, 40, 40"),
+				RowDefinitions = new(string.Join(",", Enumerable.Repeat("Auto", (tokens.Length / 4) + 1))),
+				Margin = new Thickness(5, 0, 0, 0)
+			};
+
+			int col = 0;
+			int row = 0;
+			foreach(string token in tokens) {
+				TextBlock txt = new() { Text = $"[{token}]", Padding = new Thickness(0, 0, 5, 0) };
+				tokenGrid.Children.Add(txt);
+				Grid.SetColumn(txt, col);
+				Grid.SetRow(txt, row);
+				col++;
+				if(col == 4) {
+					col = 0;
+					row++;
+				}
+			}
+
+			panel.Children.Add(tokenGrid);
+
+			return panel;
 		}
 	}
 
