@@ -151,7 +151,7 @@ void Gameboy::PowerOn(SuperGameboy *sgb)
 
 void Gameboy::Run(uint64_t runUntilClock)
 {
-	while(_memoryManager->GetCycleCount() < runUntilClock) {
+	while(_cpu->GetCycleCount() < runUntilClock) {
 		_cpu->Exec();
 	}
 }
@@ -325,7 +325,7 @@ SuperGameboy* Gameboy::GetSgb()
 
 uint64_t Gameboy::GetCycleCount()
 {
-	return _memoryManager->GetCycleCount();
+	return _cpu->GetCycleCount();
 }
 
 uint64_t Gameboy::GetApuCycleCount()
@@ -528,7 +528,7 @@ AddressInfo Gameboy::GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType
 
 uint64_t Gameboy::GetMasterClock()
 {
-	return _memoryManager->GetCycleCount();
+	return _cpu->GetCycleCount();
 }
 
 uint32_t Gameboy::GetMasterClockRate()

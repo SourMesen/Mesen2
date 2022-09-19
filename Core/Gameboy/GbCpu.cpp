@@ -15,6 +15,7 @@ void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 	_state.PC = 0;
 	_state.SP = 0xFFFF;
+	_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
 }
 
 GbCpu::~GbCpu()
@@ -1419,4 +1420,5 @@ void GbCpu::Serialize(Serializer& s)
 	SV(_state.PC); SV(_state.SP); SV(_state.A); SV(_state.Flags); SV(_state.B);
 	SV(_state.C); SV(_state.D); SV(_state.E); SV(_state.H); SV(_state.L); SV(_state.IME); SV(_state.Halted);
 	SV(_state.EiPending);
+	SV(_state.CycleCount);
 }

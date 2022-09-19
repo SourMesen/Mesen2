@@ -2,6 +2,7 @@
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/GbPpu.h"
+#include "Gameboy/GbCpu.h"
 #include "Gameboy/APU/GbApu.h"
 #include "Gameboy/GbTimer.h"
 #include "Gameboy/GbTypes.h"
@@ -25,6 +26,7 @@ void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu*
 	_highRam = gameboy->DebugGetMemory(MemoryType::GbHighRam);
 
 	_emu = emu;
+	_cpu = gameboy->GetCpu();
 	_apu = apu;
 	_ppu = ppu;
 	_gameboy = gameboy;
@@ -40,7 +42,6 @@ void GbMemoryManager::Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu*
 	_state = {};
 	_state.CgbWorkRamBank = 1;
 	_state.DisableBootRom = false;
-	_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
 
 	MapRegisters(0x8000, 0x9FFF, RegisterAccess::ReadWrite);
 	MapRegisters(0xFE00, 0xFFFF, RegisterAccess::ReadWrite);
@@ -78,15 +79,16 @@ void GbMemoryManager::RefreshMappings()
 
 void GbMemoryManager::Exec()
 {
-	_state.CycleCount += 2;
+	uint64_t& cycleCount = _cpu->GetState().CycleCount;
+	cycleCount += 2;
 	_state.ApuCycleCount += _state.CgbHighSpeed ? 1 : 2;
 	_timer->Exec();
 	_ppu->Exec();
-	if((_state.CycleCount & 0x03) == 0) {
+	if((cycleCount & 0x03) == 0) {
 		_dmaController->Exec();
 	}
 
-	if(_state.SerialBitCount && (_state.CycleCount & 0x1FF) == 0) {
+	if(_state.SerialBitCount && (cycleCount & 0x1FF) == 0) {
 		_state.SerialData = (_state.SerialData << 1) | 0x01;
 		if(--_state.SerialBitCount == 0) {
 			//"It will be notified that the transfer is complete in two ways:
@@ -469,11 +471,6 @@ bool GbMemoryManager::IsBootRomDisabled()
 	return _state.DisableBootRom;
 }
 
-uint64_t GbMemoryManager::GetCycleCount()
-{
-	return _state.CycleCount;
-}
-
 uint64_t GbMemoryManager::GetApuCycleCount()
 {
 	return _state.ApuCycleCount;
@@ -483,7 +480,7 @@ void GbMemoryManager::Serialize(Serializer& s)
 {
 	SV(_state.DisableBootRom); SV(_state.IrqEnabled); SV(_state.IrqRequests);
 	SV(_state.ApuCycleCount); SV(_state.CgbHighSpeed); SV(_state.CgbSwitchSpeedRequest); SV(_state.CgbWorkRamBank);
-	SV(_state.SerialData); SV(_state.SerialControl); SV(_state.SerialBitCount); SV(_state.CycleCount);
+	SV(_state.SerialData); SV(_state.SerialControl); SV(_state.SerialBitCount);
 	SV(_state.CgbRegFF72); SV(_state.CgbRegFF73); SV(_state.CgbRegFF74); SV(_state.CgbRegFF75);
 
 	SVArray(_state.MemoryType, 0x100);

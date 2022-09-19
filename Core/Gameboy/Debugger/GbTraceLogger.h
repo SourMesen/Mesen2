@@ -22,6 +22,6 @@ public:
 	void LogPpuState();
 
 	__forceinline uint32_t GetProgramCounter(GbCpuState& state) { return state.PC; }
-	__forceinline uint64_t GetCycleCount(GbCpuState& state) { return 0; } //TODO
+	__forceinline uint64_t GetCycleCount(GbCpuState& state) { return state.CycleCount; }
 	__forceinline uint8_t GetStackPointer(GbCpuState& state) { return (uint8_t)state.SP; }
 };

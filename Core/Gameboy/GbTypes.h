@@ -5,6 +5,7 @@
 
 struct GbCpuState : BaseState
 {
+	uint64_t CycleCount;
 	uint16_t PC;
 	uint16_t SP;
 
@@ -347,7 +348,6 @@ enum class GbMemoryType
 
 struct GbMemoryManagerState
 {
-	uint64_t CycleCount;
 	uint64_t ApuCycleCount;
 	
 	uint8_t CgbWorkRamBank;

@@ -7,6 +7,7 @@ class Gameboy;
 class GbCart;
 class GbPpu;
 class GbApu;
+class GbCpu;
 class GbTimer;
 class GbDmaController;
 
@@ -25,6 +26,7 @@ private:
 
 	Gameboy* _gameboy = nullptr;
 	GbCart* _cart = nullptr;
+	GbCpu* _cpu = nullptr;
 	GbApu* _apu = nullptr;
 	GbPpu* _ppu = nullptr;
 	GbTimer* _timer = nullptr;
@@ -72,7 +74,6 @@ public:
 	bool IsHighSpeed();
 	bool IsBootRomDisabled();
 
-	uint64_t GetCycleCount();
 	uint64_t GetApuCycleCount();
 	
 	uint8_t DebugRead(uint16_t addr);

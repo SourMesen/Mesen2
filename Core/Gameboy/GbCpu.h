@@ -158,6 +158,8 @@ public:
 	GbCpuState& GetState();
 	bool IsHalted();
 
+	uint64_t GetCycleCount() { return _state.CycleCount; }
+
 	void Exec();
 	
 	void Serialize(Serializer& s) override;
