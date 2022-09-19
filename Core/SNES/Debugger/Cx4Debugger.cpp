@@ -86,6 +86,15 @@ void Cx4Debugger::ProcessInstruction()
 
 	_step->ProcessCpuExec();
 	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+
+	if(_traceLogger->IsEnabled()) {
+		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, pc, 0, CpuType::Cx4);
+		_traceLogger->Log(state, disInfo, operation);
+	}
+
+	AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(pc + 1);
+	_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+	_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
 }
 
 void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
@@ -96,26 +105,15 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
 
-	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsEnabled()) {
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Cx4);
-			_traceLogger->Log(state, disInfo, operation);
-		}
-
-		AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr + 1);
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
-		_memoryAccessCounter->ProcessMemoryExec(opCodeHighAddr, _memoryManager->GetMasterClock());
-	} else {
-		if(addressInfo.Type == MemoryType::SnesPrgRom) {
-			_codeDataLogger->SetData<SnesCdlFlags::Cx4>(addressInfo.Address);
-		}
-		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
-		}
-		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
-
-		_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+	if(addressInfo.Type == MemoryType::SnesPrgRom) {
+		_codeDataLogger->SetData<SnesCdlFlags::Cx4>(addressInfo.Address);
 	}
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation);
+	}
+	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+
+	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
 void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
