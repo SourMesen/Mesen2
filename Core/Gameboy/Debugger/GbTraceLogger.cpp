@@ -41,8 +41,8 @@ RowDataType GbTraceLogger::GetFormatTagType(string& tag)
 
 void GbTraceLogger::GetTraceRow(string &output, GbCpuState &cpuState, TraceLogPpuState &ppuState, DisassemblyInfo &disassemblyInfo)
 {
-	constexpr char activeStatusLetters[8] = { 'Z', 'N', 'H', 'C' };
-	constexpr char inactiveStatusLetters[8] = { 'z', 'n', 'h', 'c' };
+	constexpr char activeStatusLetters[4] = { 'Z', 'N', 'H', 'C' };
+	constexpr char inactiveStatusLetters[4] = { 'z', 'n', 'h', 'c' };
 
 	for(RowPart& rowPart : _rowParts) {
 		switch(rowPart.DataType) {
@@ -55,7 +55,7 @@ void GbTraceLogger::GetTraceRow(string &output, GbCpuState &cpuState, TraceLogPp
 			case RowDataType::H: WriteIntValue(output, cpuState.H, rowPart); break;
 			case RowDataType::L: WriteIntValue(output, cpuState.L, rowPart); break;
 			case RowDataType::SP: WriteIntValue(output, cpuState.SP, rowPart); break;
-			case RowDataType::PS: GetStatusFlag(activeStatusLetters, inactiveStatusLetters, output, cpuState.Flags, rowPart, 4); break;
+			case RowDataType::PS: GetStatusFlag(activeStatusLetters, inactiveStatusLetters, output, cpuState.Flags >> 4, rowPart, 4); break;
 			default: ProcessSharedTag(rowPart, output, cpuState, ppuState, disassemblyInfo); break;
 		}
 	}

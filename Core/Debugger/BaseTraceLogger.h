@@ -72,6 +72,8 @@ enum class RowDataType
 	R15,
 	Src,
 	Dst,
+	
+	SFR,
 
 	MAR,
 	MDR,
@@ -158,7 +160,7 @@ protected:
 
 		if(_options.IndentCode) {
 			indentLevel = 0xFF - (sp & 0xFF);
-			output += std::string(indentLevel, ' ');
+			output += std::string(indentLevel / 2, ' ');
 		}
 
 		LabelManager* labelManager = _options.UseLabels ? _labelManager : nullptr;
@@ -204,14 +206,14 @@ protected:
 		}
 	}
 
-	void GetStatusFlag(const char* activeStatusLetters, const char* inactiveStatusLetters, string& output, uint8_t ps, RowPart& part, int length = 8)
+	void GetStatusFlag(const char* activeStatusLetters, const char* inactiveStatusLetters, string& output, uint32_t ps, RowPart& part, int length = 8)
 	{
 		if(part.DisplayInHex) {
 			WriteIntValue(output, ps, part);
 		} else {
 			string flags;
 			for(int i = 0; i < length; i++) {
-				if(ps & 0x80) {
+				if(ps & (1 << (length - 1))) {
 					flags += activeStatusLetters[i];
 				} else if(part.MinWidth >= length) {
 					flags += inactiveStatusLetters[i];

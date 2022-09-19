@@ -124,7 +124,7 @@ void NecDspDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t
 		str.Write(' ');
 
 		AddressInfo absAddress = { (int32_t)target*3, MemoryType::DspProgramRom };
-		string label = labelManager->GetLabel(absAddress);
+		string label = labelManager ? labelManager->GetLabel(absAddress) : "";
 		if(label.empty()) {
 			str.WriteAll('$', HexUtilities::ToHex(target * 3));
 		} else {

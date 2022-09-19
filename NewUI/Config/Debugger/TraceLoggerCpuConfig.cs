@@ -4,24 +4,24 @@ namespace Mesen.Config
 {
 	public class TraceLoggerCpuConfig : BaseConfig<TraceLoggerCpuConfig>
 	{
-		[Reactive] public bool Enabled { get; set; }
+		[Reactive] public bool Enabled { get; set; } = true;
 
-		[Reactive] public bool ShowByteCode { get; set; }
-		[Reactive] public bool ShowRegisters { get; set; }
-		[Reactive] public bool ShowCpuCycles { get; set; }
+		[Reactive] public bool ShowRegisters { get; set; } = true;
+		[Reactive] public bool ShowStatusFlags { get; set; } = true;
+		[Reactive] public StatusFlagFormat StatusFormat { get; set; } = StatusFlagFormat.Text;
 
-		[Reactive] public bool ShowPpuCycles { get; set; }
-		[Reactive] public bool ShowPpuScanline { get; set; }
-		[Reactive] public bool ShowPpuFrames { get; set; }
+		[Reactive] public bool ShowEffectiveAddresses { get; set; } = true; 
+		[Reactive] public bool ShowMemoryValues { get; set; } = true;
+		[Reactive] public bool ShowByteCode { get; set; } = false;
 
-		[Reactive] public bool IndentCode { get; set; }
-		[Reactive] public bool ShowEffectiveAddresses { get; set; }
-		[Reactive] public bool ShowMemoryValues { get; set; }
-		[Reactive] public bool UseLabels { get; set; }
+		[Reactive] public bool ShowClockCounter { get; set; } = false;
+		[Reactive] public bool ShowFrameCounter { get; set; } = false;
+		[Reactive] public bool ShowFramePosition { get; set; } = true;
 
-		[Reactive] public StatusFlagFormat StatusFormat { get; set; }
+		[Reactive] public bool UseLabels { get; set; } = true;
+		[Reactive] public bool IndentCode { get; set; } = false;
 
-		[Reactive] public bool OverrideFormat { get; set; }
+		[Reactive] public bool UseCustomFormat { get; set; } = false;
 		[Reactive] public string Format { get; set; } = "";
 		[Reactive] public string Condition { get; set; } = "";
 	}

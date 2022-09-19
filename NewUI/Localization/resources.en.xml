@@ -983,9 +983,26 @@
 		
 		<Form ID="TraceLoggerWindow">
 			<Control ID="wndTitle">Trace Logger</Control>
-			<Control ID="lblFormat">Format: </Control>
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
+			
+			<Control ID="grpLogOptions">{0} - Log options</Control>
+
+			<Control ID="chkCustomFormat">Use custom format:</Control>
+
+			<Control ID="chkRegisters">Show registers</Control>
+			<Control ID="chkStatusFlags">Show status flags</Control>
+			<Control ID="lblFlagFormat">Flag format:</Control>
+			<Control ID="chkByteCode">Show byte code</Control>
+			<Control ID="chkEffectiveAddress">Show effective address</Control>
+			<Control ID="chkMemoryValue">Show memory value</Control>
+
+			<Control ID="chkClockCounter">Show clock counter</Control>
+			<Control ID="chkFrameCounter">Show frame counter</Control>
+			<Control ID="chkFramePosition">Show frame position</Control>
+
+			<Control ID="chkUseLabels">Use labels</Control>
+			<Control ID="chkIndentCode">Indent based on stack pointer</Control>
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuDebug">_Debug</Control>

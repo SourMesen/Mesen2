@@ -52,6 +52,8 @@ RowDataType GsuTraceLogger::GetFormatTagType(string& tag)
 		return RowDataType::Src;
 	} else if(tag == "DST") {
 		return RowDataType::Dst;
+	} else if(tag == "SFR") {
+		return RowDataType::SFR;
 	} else {
 		return RowDataType::Text;
 	}
@@ -80,6 +82,13 @@ void GsuTraceLogger::GetTraceRow(string &output, GsuState &cpuState, TraceLogPpu
 
 			case RowDataType::Src: WriteIntValue(output, cpuState.SrcReg, rowPart); break;
 			case RowDataType::Dst: WriteIntValue(output, cpuState.DestReg, rowPart); break;
+
+			case RowDataType::SFR: {
+				constexpr char activeStatusLetters[16] = { 'I', '-', '-', 'P', 'J', 'I', '2', '1', '-', 'P', 'R', 'V', 'S', 'C', 'Z', '-' };
+				constexpr char inactiveStatusLetters[16] = { 'i', '-', '-', 'p', 'j', 'i', '-', '-', '-', 'p', 'r', 'V', 's', 'c', 'z', '-' };
+				GetStatusFlag(activeStatusLetters, inactiveStatusLetters, output, (cpuState.SFR.GetFlagsHigh() << 8) | cpuState.SFR.GetFlagsLow(), rowPart, 16);
+				break;
+			}
 
 			default: ProcessSharedTag(rowPart, output, cpuState, ppuState, disassemblyInfo); break;
 		}

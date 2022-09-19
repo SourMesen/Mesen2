@@ -14,7 +14,7 @@
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:dv="using:Mesen.Debugger.Views"
-	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
 	x:Class="Mesen.Debugger.Windows.TraceLoggerWindow"
 	Icon="/Assets/LogWindow.png"
 	Width="700" Height="500"
@@ -24,6 +24,15 @@
 	<Design.DataContext>
 		<vm:TraceLoggerViewModel />
 	</Design.DataContext>
+
+	<Window.Styles>
+		<Style Selector="TextBox.readonlyFormat">
+			<Setter Property="Background" Value="#28808080" />
+		</Style>
+		<Style Selector="TabControl:singleitem > TabItem">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+	</Window.Styles>
 
 	<DockPanel Margin="2">
 		<Menu DockPanel.Dock="Top">
@@ -37,24 +46,25 @@
 			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 		</StackPanel>
 
-		<Grid ColumnDefinitions="Auto,Auto,*,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
+		<Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto" DockPanel.Dock="Bottom">
 			<c:ButtonWithIcon
 				Grid.Column="0"
+				Click="OnClearClick"
+				Icon="Assets/Close.png"
+				Text="{l:Translate btnClear}"
+			/>
+
+			<c:ButtonWithIcon
+				Grid.Column="2"
 				Click="OnOpenTraceFile"
 				IsEnabled="{CompiledBinding AllowOpenTraceFile}"
 				Icon="Assets/Folder.png"
 				Text="{l:Translate btnOpenTraceFile}"
 			/>
 			<c:ButtonWithIcon
-				Grid.Column="1"
-				Click="OnClearClick"
-				Icon="Assets/Close.png"
-				Text="{l:Translate btnClear}"
-			/>
-			
-			<c:ButtonWithIcon
 				Grid.Column="3"
 				Click="OnStartLoggingClick"
+				IsEnabled="{CompiledBinding IsStartLoggingEnabled}"
 				IsVisible="{CompiledBinding !IsLoggingToFile}"
 				Icon="Assets/Record.png"
 				Text="{l:Translate btnStart}"
@@ -71,22 +81,47 @@
 		<TabControl Items="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1" DockPanel.Dock="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding TabName}" />
+					<StackPanel Orientation="Horizontal">
+						<CheckBox IsChecked="{Binding Options.Enabled}" IsVisible="{Binding ShowEnableButton}" />
+						<TextBlock Text="{Binding TabName}" />
+					</StackPanel>
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<StackPanel>
-						<CheckBox Content="{l:Translate chkEnabled}" IsChecked="{Binding Options.Enabled}" />
-						<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
-							<TextBlock VerticalAlignment="Center" Text="{l:Translate lblFormat}" />
-							<TextBox Grid.Column="1" Text="{Binding Options.Format}" />
-							<TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{l:Translate lblCondition}" />
-							<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Options.Condition}" />
-							<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
-						</Grid>
-					</StackPanel>
+					<c:GroupBox Header="{Binding LogOptionsTitle}">
+						<StackPanel>
+							<Grid ColumnDefinitions="Auto,3,Auto,10,Auto,10,Auto" RowDefinitions="Auto,Auto,Auto" Margin="0 0 0 5">
+								<CheckBox Content="{l:Translate chkRegisters}" IsChecked="{Binding Options.ShowRegisters}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<CheckBox Grid.Row="1" Content="{l:Translate chkStatusFlags}" IsChecked="{Binding Options.ShowStatusFlags}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<StackPanel Grid.Row="2" Orientation="Horizontal" IsVisible="{Binding ShowStatusFormat}" Margin="0 -1 0 0" IsEnabled="{Binding !Options.UseCustomFormat}">
+									<TextBlock Text="{l:Translate lblFlagFormat}" />
+									<c:EnumComboBox SelectedItem="{Binding Options.StatusFormat}" Width="105" />
+								</StackPanel>
+
+								<CheckBox Grid.Column="2" Grid.Row="0" Content="{l:Translate chkEffectiveAddress}" IsChecked="{Binding Options.ShowEffectiveAddresses}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<CheckBox Grid.Column="2" Grid.Row="1" Content="{l:Translate chkMemoryValue}" IsChecked="{Binding Options.ShowMemoryValues}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<CheckBox Grid.Column="2" Grid.Row="3" Content="{l:Translate chkByteCode}" IsChecked="{Binding Options.ShowByteCode}" VerticalAlignment="Top" IsEnabled="{Binding !Options.UseCustomFormat}" />
+
+								<CheckBox Grid.Column="4" Grid.Row="0" Content="{l:Translate chkClockCounter}" IsChecked="{Binding Options.ShowClockCounter}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<CheckBox Grid.Column="4" Grid.Row="1" Content="{l:Translate chkFrameCounter}" IsChecked="{Binding Options.ShowFrameCounter}" IsEnabled="{Binding !Options.UseCustomFormat}" />
+								<CheckBox Grid.Column="4" Grid.Row="2" Content="{l:Translate chkFramePosition}" IsChecked="{Binding Options.ShowFramePosition}" VerticalAlignment="Top" IsEnabled="{Binding !Options.UseCustomFormat}" />
+
+								<CheckBox Grid.Column="6" Grid.Row="0" Content="{l:Translate chkUseLabels}" IsChecked="{Binding Options.UseLabels}" />
+								<CheckBox Grid.Column="6" Grid.Row="1" Content="{l:Translate chkIndentCode}" IsChecked="{Binding Options.IndentCode}" IsVisible="{Binding ShowIndentCode}" />
+							</Grid>
+
+							<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+								<CheckBox VerticalAlignment="Center" Content="{l:Translate chkCustomFormat}" IsChecked="{Binding Options.UseCustomFormat}" />
+								<TextBox Grid.Column="1" Text="{Binding Format}" IsReadOnly="True" IsVisible="{Binding !Options.UseCustomFormat}" Classes="readonlyFormat" />
+								<TextBox Grid.Column="1" Text="{Binding Options.Format}" IsVisible="{Binding Options.UseCustomFormat}" MaxLength="1000" />
+								<TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{l:Translate lblCondition}" />
+								<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Options.Condition}" MaxLength="1000" />
+								<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+							</Grid>
+						</StackPanel>
+					</c:GroupBox>
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
@@ -111,6 +146,7 @@
 						FontSize="{DynamicResource MesenDisassemblyFontSize}"
 						StyleProvider="{CompiledBinding StyleProvider}"
 						SearchString="{CompiledBinding QuickSearch.SearchString}"
+						ShowByteCode="{CompiledBinding ShowByteCode}"
 					/>
 
 					<dv:QuickSearchView
