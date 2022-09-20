@@ -4,7 +4,14 @@
 	xmlns:sys="clr-namespace:System;assembly=netstandard"	
 	xmlns:cc="using:AvaloniaEdit.CodeCompletion"
 	xmlns:search="using:AvaloniaEdit.Search"
+	xmlns:ae="using:AvaloniaEdit"
+	xmlns:aee="using:AvaloniaEdit.Editing"  
 >
+	<Style Selector="ae|TextEditor aee|TextArea">
+		<Setter Property="SelectionBrush" Value="#600078D7" />
+		<Setter Property="SelectionCornerRadius" Value="0" />
+	</Style>
+	
 	<Style Selector="search|SearchPanel">
 		<Setter Property="BorderBrush" Value="{StaticResource MesenGrayBorderColor}" />
 		<Setter Property="BorderThickness" Value="1 0 0 1" />

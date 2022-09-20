@@ -4,6 +4,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:m="clr-namespace:Mesen"
 	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:v="using:Mesen.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,14 +19,17 @@
 		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="2">
 			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Ok_OnClick" Content="{l:Translate btnClose}" />
 		</StackPanel>
-		
-		<TextBox
-			Name="txtLog"
-			Height="NaN"
-			IsReadOnly="True"
-			AcceptsReturn="True"
-			ScrollViewer.VerticalScrollBarVisibility="Auto"
-			Text="{CompiledBinding LogContent, ElementName=root}"
-		/>
+
+		<Border BorderThickness="1" BorderBrush="Gray">
+			<dc:MesenTextEditor
+				Name="txtLog"
+				Height="NaN"
+				IsReadOnly="True"
+				Padding="3"
+				FontFamily="{DynamicResource MesenFont}"
+				FontSize="{DynamicResource MesenFontSize}"
+				TextBinding="{CompiledBinding LogContent, ElementName=root}"
+			/>
+		</Border>
 	</DockPanel>
 </Window>

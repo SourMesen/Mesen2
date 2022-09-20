@@ -7,6 +7,8 @@ using System;
 using System.ComponentModel;
 using Avalonia.Data;
 using Mesen.Interop;
+using Mesen.Debugger.Controls;
+using Avalonia.Input;
 
 namespace Mesen.Windows
 {
@@ -26,6 +28,7 @@ namespace Mesen.Windows
 		{
 			InitializeComponent();
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(100), DispatcherPriority.Normal, (s, e) => UpdateLog());
+			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 		}
 
 		private void InitializeComponent()
@@ -38,7 +41,17 @@ namespace Mesen.Windows
 			string newLog = EmuApi.GetLog();
 			if(newLog != LogContent) {
 				LogContent = newLog;
-				this.GetControl<TextBox>("txtLog").CaretIndex = Int32.MaxValue;
+				Dispatcher.UIThread.Post(() => {
+					this.GetControl<MesenTextEditor>("txtLog").ScrollToEnd();
+				});
+			}
+		}
+
+		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Escape) {
+				Close();
+				e.Handled = true;
 			}
 		}
 
