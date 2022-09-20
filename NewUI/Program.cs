@@ -86,15 +86,25 @@ namespace Mesen
 				using ZipArchive zip = new(depStream);
 				foreach(ZipArchiveEntry entry in zip.Entries) {
 					try {
-						string path = Path.Combine(dest, entry.Name);
+						string path = Path.Combine(dest, entry.FullName);
 						entry.ExternalAttributes = 0;
 						if(File.Exists(path)) {
+							if(Path.GetExtension(path)?.ToLower() == ".bin") {
+								//Don't overwrite BS-X bin files if they already exist on the disk
+								continue;
+							}
+
 							FileInfo fileInfo = new(path);
 							if(fileInfo.LastWriteTime != entry.LastWriteTime || fileInfo.Length != entry.Length) {
-								entry.ExtractToFile(Path.Combine(dest, entry.Name), true);
+								entry.ExtractToFile(path, true);
 							}
 						} else {
-							entry.ExtractToFile(Path.Combine(dest, entry.Name), true);
+							string? folderName = Path.GetDirectoryName(path);
+							if(folderName != null && !Directory.Exists(folderName)) {
+								//Create any missing directory (e.g Satellaview)
+								Directory.CreateDirectory(folderName);
+							}
+							entry.ExtractToFile(path, true);
 						}
 					} catch {
 
