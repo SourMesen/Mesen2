@@ -83,6 +83,13 @@ namespace Mesen.Debugger.Windows
 			DebugWindowManager.OpenDebugWindow(() => new AssemblerWindow(model));
 		}
 
+		protected override void OnOpened(EventArgs e)
+		{
+			base.OnOpened(e);
+			_textEditor.Focus();
+			_textEditor.TextArea.Focus();
+		}
+
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
