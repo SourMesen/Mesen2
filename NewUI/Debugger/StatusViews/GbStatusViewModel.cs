@@ -65,7 +65,7 @@ namespace Mesen.Debugger.StatusViews
 			GbCpuState cpu = state.Cpu;
 			GbPpuState ppu = DebugApi.GetPpuState<GbPpuState>(CpuType.Gameboy);
 
-			UpdateCycleCount(state.MemoryManager.CycleCount);
+			UpdateCycleCount(state.Cpu.CycleCount);
 
 			RegA = cpu.A;
 			RegB = cpu.B;

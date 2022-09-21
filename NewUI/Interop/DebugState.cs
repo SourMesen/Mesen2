@@ -681,7 +681,6 @@ namespace Mesen.Interop
 
 	public struct GbMemoryManagerState
 	{
-		public UInt64 CycleCount;
 		public UInt64 ApuCycleCount;
 
 		public byte CgbWorkRamBank;
@@ -781,6 +780,7 @@ namespace Mesen.Interop
 
 	public struct GbCpuState : BaseState
 	{
+		public UInt64 CycleCount;
 		public UInt16 PC;
 		public UInt16 SP;
 
