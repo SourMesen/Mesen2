@@ -41,12 +41,16 @@ void SnesCpu::Exec()
 
 		case SnesCpuStopState::Stopped:
 			//STP was executed, CPU no longer executes any code
-		#ifndef DUMMYCPU
+#ifndef DUMMYCPU
+			_emu->ProcessHaltedCpu<CpuType::Snes>();
 			_memoryManager->IncMasterClock4();
-		#endif
+#endif
 			return;
 
 		case SnesCpuStopState::WaitingForIrq:
+#ifndef DUMMYCPU
+			_emu->ProcessHaltedCpu<CpuType::Snes>();
+#endif
 			//WAI
 			Idle();
 			if(_state.IrqSource || _state.NeedNmi) {

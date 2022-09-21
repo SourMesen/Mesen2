@@ -288,6 +288,13 @@ public:
 		}
 	}
 
+	template<CpuType type> __forceinline void ProcessHaltedCpu()
+	{
+		if(_debugger) {
+			_debugger->ProcessHaltedCpu<type>();
+		}
+	}
+
 	template<CpuType type, typename T> __forceinline void ProcessPpuRead(uint32_t addr, T& value, MemoryType memoryType, MemoryOperationType opType = MemoryOperationType::Read)
 	{
 		if(_debugger) {

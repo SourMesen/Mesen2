@@ -104,6 +104,7 @@ public:
 	template<CpuType type, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type, typename T> void ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type> void ProcessIdleCycle();
+	template<CpuType type> void ProcessHaltedCpu();
 	template<CpuType type, typename T> void ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType);
 	template<CpuType type, typename T> void ProcessPpuWrite(uint16_t addr, T& value, MemoryType memoryType);
 	template<CpuType type> void ProcessPpuCycle();

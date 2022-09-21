@@ -81,6 +81,9 @@ void GbCpu::Exec()
 	}
 
 	if(_state.Halted) {
+#ifndef DUMMYCPU
+		_emu->ProcessHaltedCpu<CpuType::Gameboy>();
+#endif
 		IncCycleCount();
 		return;
 	}

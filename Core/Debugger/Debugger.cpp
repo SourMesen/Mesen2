@@ -267,6 +267,18 @@ void Debugger::ProcessIdleCycle()
 	}
 }
 
+template<CpuType type>
+void Debugger::ProcessHaltedCpu()
+{
+	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		return;
+	}
+
+	if(_breakRequestCount) {
+		SleepUntilResume(type, BreakSource::Unspecified);
+	}
+}
+
 template<CpuType type, typename T>
 void Debugger::ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType)
 {
@@ -985,6 +997,9 @@ template void Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t&
 
 template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();
+
+template void Debugger::ProcessHaltedCpu<CpuType::Snes>();
+template void Debugger::ProcessHaltedCpu<CpuType::Gameboy>();
 
 template void Debugger::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 template void Debugger::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
