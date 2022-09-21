@@ -1274,9 +1274,11 @@
 			<Control ID="lblIntegrationSettings">Integration settings</Control>
 			<Control ID="chkResetLabelsOnImport">Reset workspace labels to their default state before importing label/symbol files</Control>
 			<Control ID="lblAutoLoadSettings">Auto-load settings</Control>
-			<Control ID="lblAutoLoadHint">Automatically load the following file types when a matching file is found in ROM's folder:</Control>
+			<Control ID="lblAutoLoadHint">Automatically load the following file types when a matching file is found in the ROM's folder:</Control>
 			<Control ID="chkAutoLoadDbgFiles">.DBG files (CA65 debug symbols)</Control>
+			<Control ID="chkAutoLoadSymFiles">.SYM files (bass, RGBDS, WLA DX)</Control>
 			<Control ID="chkAutoLoadMlbFiles">.MLB files (Mesen label file)</Control>
+			<Control ID="chkAutoLoadFnsFiles">.FNS files (NESASM)</Control>
 			<Control ID="chkAutoLoadCdlFiles">.CDL files (Code/data log)</Control>
 			
 			<Control ID="tabShortcuts">Shortcuts</Control>

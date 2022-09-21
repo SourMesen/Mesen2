@@ -49,11 +49,21 @@ namespace Mesen.Debugger.Utilities
 			if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
 				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.DbgFileExt);
 				LoadDbgSymbolFile(dbgPath, false);
-			} 
-			
+			}
+
+			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadSymFiles) {
+				string symPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.SymFileExt);
+				LoadSymFile(symPath, false);
+			}
+
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadMlbFiles) {
 				string mlbPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.MesenLabelExt);
 				LoadMesenLabelFile(mlbPath, false);
+			}
+
+			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadFnsFiles) {
+				string fnsPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.NesAsmLabelExt);
+				LoadNesAsmLabelFile(fnsPath, false);
 			}
 
 			if(ConfigManager.Config.Debug.Integration.AutoLoadCdlFiles) {
@@ -80,11 +90,46 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
+		public static void LoadSymFile(string path, bool showResult)
+		{
+			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.SymFileExt) {
+				ResetLabels();
+
+				string symContent = File.ReadAllText(path);
+				if(symContent.Contains("[labels]")) {
+					//Assume WLA-DX symbol files
+					if(_romInfo.ConsoleType == ConsoleType.Snes || _romInfo.CpuTypes.Contains(CpuType.Gameboy)) {
+						WlaDxImporter importer = new();
+						importer.Import(path, showResult);
+						SymbolProvider = importer;
+					}
+				} else {
+					if(_romInfo.CpuTypes.Contains(CpuType.Gameboy)) {
+						if(RgbdsSymbolFile.IsValidFile(path)) {
+							RgbdsSymbolFile.Import(path, showResult);
+						} else {
+							BassLabelFile.Import(path, showResult, CpuType.Gameboy);
+						}
+					} else {
+						BassLabelFile.Import(path, showResult, _romInfo.ConsoleType.GetMainCpuType());
+					}
+				}
+			}
+		}
+
 		public static void LoadMesenLabelFile(string path, bool showResult)
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.MesenLabelExt) {
 				ResetLabels();
 				MesenLabelFile.Import(path, showResult);
+			}
+		}
+
+		public static void LoadNesAsmLabelFile(string path, bool showResult)
+		{
+			if(_romInfo.ConsoleType == ConsoleType.Nes && File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.NesAsmLabelExt) {
+				ResetLabels();
+				NesasmFnsImporter.Import(path, showResult);
 			}
 		}
 
@@ -99,7 +144,9 @@ namespace Mesen.Debugger.Utilities
 		{
 			switch(Path.GetExtension(filename).ToLower().Substring(1)) {
 				case FileDialogHelper.DbgFileExt: LoadDbgSymbolFile(filename, showResult); break;
+				case FileDialogHelper.SymFileExt: LoadSymFile(filename, showResult); break;
 				case FileDialogHelper.MesenLabelExt: LoadMesenLabelFile(filename, showResult); break;
+				case FileDialogHelper.NesAsmLabelExt: LoadNesAsmLabelFile(filename, showResult); break;
 				case FileDialogHelper.CdlExt: LoadCdlFile(filename); break;
 			}
 		}

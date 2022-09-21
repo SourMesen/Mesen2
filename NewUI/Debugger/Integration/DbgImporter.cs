@@ -35,7 +35,6 @@ namespace Mesen.Debugger.Integration
 		private Dictionary<int, SymbolInfo> _symbols = new Dictionary<int, SymbolInfo>();
 		private Dictionary<int, CSymbolInfo> _cSymbols = new Dictionary<int, CSymbolInfo>();
 		
-		private List<SourceSymbol> _sourceSymbols = new List<SourceSymbol>();
 		private List<SourceFileInfo> _sourceFiles = new List<SourceFileInfo>();
 
 		private HashSet<int> _usedFileIds = new HashSet<int>();

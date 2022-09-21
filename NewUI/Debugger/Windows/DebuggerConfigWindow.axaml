@@ -204,8 +204,16 @@
 								Content="{l:Translate chkAutoLoadDbgFiles}"
 							/>
 							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadSymFiles}"
+								Content="{l:Translate chkAutoLoadSymFiles}"
+							/>
+							<CheckBox
 								IsChecked="{CompiledBinding Integration.AutoLoadMlbFiles}"
 								Content="{l:Translate chkAutoLoadMlbFiles}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.AutoLoadFnsFiles}"
+								Content="{l:Translate chkAutoLoadFnsFiles}"
 							/>
 							<CheckBox
 								IsChecked="{CompiledBinding Integration.AutoLoadCdlFiles}"
