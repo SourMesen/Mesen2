@@ -162,11 +162,13 @@ namespace Mesen.Debugger.Utilities
 			return new DynamicTooltip() { Items = items };
 		}
 
-		private static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, LocationInfo codeLoc)
+		public static DynamicTooltip GetCodeAddressTooltip(CpuType cpuType, LocationInfo codeLoc, bool useAbsAddress = false)
 		{
-			int address = codeLoc.RelAddress?.Address ?? -1;
+			int relAddress = codeLoc.RelAddress?.Address ?? -1;
+			AddressInfo? absAddress = codeLoc.AbsAddress ?? (codeLoc.RelAddress.HasValue ? DebugApi.GetAbsoluteAddress(codeLoc.RelAddress.Value) : null);
 			FontFamily monoFont = new FontFamily(ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily);
-			MemoryType memType = cpuType.ToMemoryType();
+			double fontSize = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize;
+			MemoryType cpuMemType = cpuType.ToMemoryType();
 			TooltipEntries items = new();
 
 			if(codeLoc.Symbol != null) {
@@ -175,16 +177,45 @@ namespace Mesen.Debugger.Utilities
 				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), true);
 			}
 
-			if(address >= 0) {
-				int byteValue = DebugApi.GetMemoryValue(memType, (uint)address);
-				int wordValue = (DebugApi.GetMemoryValue(memType, (uint)address + 1) << 8) | byteValue;
+			bool showPreview = false;
+			if(relAddress >= 0 || absAddress?.Address >= 0) {
+				uint valueAddress = (uint)(absAddress?.Address >= 0 ? absAddress.Value.Address : relAddress);
+				MemoryType valueMemType = absAddress?.Address >= 0 ? absAddress.Value.Type : cpuMemType;
+				
+				AddressCounters counters = DebugApi.GetMemoryAccessCounts(valueAddress, 1, valueMemType)[0];
+				if(counters.ExecStamp > 0) {
+					showPreview = true;
+				} else if(valueMemType.SupportsCdl()) {
+					showPreview = DebugApi.GetCdlData(valueAddress, 1, valueMemType)[0].HasFlag(CdlFlags.Code);
+				}
 
-				StackPanel mainPanel = new StackPanel() { Spacing = -4 };
-				mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
-				mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont, ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize));
+				int byteValue = DebugApi.GetMemoryValue(valueMemType, valueAddress);
+				int wordValue;
+				if(useAbsAddress && absAddress != null) {
+					wordValue = (DebugApi.GetMemoryValue(absAddress.Value.Type, (uint)absAddress.Value.Address + 1) << 8) | byteValue;
+				} else {
+					wordValue = (DebugApi.GetMemoryValue(cpuMemType, (uint)relAddress + 1) << 8) | byteValue;
+				}
 
-				items.AddEntry("Address", GetAddressField(cpuType, address, memType), true);
+				StackPanel mainPanel = new StackPanel() { Spacing = -4, Margin = new Avalonia.Thickness(0, -1, 0, 0) };
+				mainPanel.Children.Add(GetHexDecPanel(byteValue, "X2", monoFont, fontSize));
+				mainPanel.Children.Add(GetHexDecPanel(wordValue, "X4", monoFont, fontSize));
+
+				items.AddEntry("Address", GetAddressField(relAddress, absAddress, cpuType, monoFont, fontSize), true);
 				items.AddEntry("Value", mainPanel);
+
+				if(counters.ReadCounter > 0 || counters.WriteCounter > 0 || counters.ExecCounter > 0) {
+					TimingInfo timing = EmuApi.GetTimingInfo(cpuType);
+					double clocksPerFrame = timing.MasterClockRate / timing.Fps;
+
+					string accessData = (
+						(counters.ReadCounter > 0 ? ($"R: {FormatCount(counters.ReadCounter)} - {FormatFrameCount(counters.ReadStamp, timing.MasterClock, clocksPerFrame)}" + Environment.NewLine) : "") +
+						(counters.WriteCounter > 0 ? ($"W: {FormatCount(counters.WriteCounter)} - {FormatFrameCount(counters.WriteStamp, timing.MasterClock, clocksPerFrame)}" + Environment.NewLine) : "") +
+						(counters.ExecCounter > 0 ? ($"X: {FormatCount(counters.ExecCounter)} - {FormatFrameCount(counters.ExecStamp, timing.MasterClock, clocksPerFrame)}") : "")
+					).Trim('\n', '\r');
+
+					items.AddEntry("Stats", accessData);
+				}
 			} else if(codeLoc.Symbol?.Address != null) {
 				AddressInfo? symbolAddr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(codeLoc.Symbol.Value);
 				if(symbolAddr == null) {
@@ -205,22 +236,19 @@ namespace Mesen.Debugger.Utilities
 				items.AddEntry("Comment", codeLoc.Label.Comment, true);
 			}
 
-			if(address >= 0) {
-				bool showPreview = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
-				if(showPreview) {
-					items.AddEntry("", new Border() {
-						BorderBrush = Brushes.Gray,
-						BorderThickness = new(1),
-						Child = new DisassemblyViewer() {
-							Width = 300,
-							Height = 150,
-							Lines = new CodeDataProvider(cpuType).GetCodeLines(address, 40),
-							StyleProvider = new BaseStyleProvider(cpuType),
-							FontFamily = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily,
-							FontSize = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize
-						}
-					});
-				}
+			if(relAddress >= 0 && showPreview) {
+				items.AddEntry("", new Border() {
+					BorderBrush = Brushes.Gray,
+					BorderThickness = new(1),
+					Child = new DisassemblyViewer() {
+						Width = 300,
+						Height = 150,
+						Lines = new CodeDataProvider(cpuType).GetCodeLines(relAddress, 40),
+						StyleProvider = new BaseStyleProvider(cpuType),
+						FontFamily = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontFamily,
+						FontSize = ConfigManager.Config.Debug.Fonts.OtherMonoFont.FontSize
+					}
+				});
 			}
 
 			return new DynamicTooltip() { Items = items };
@@ -246,15 +274,16 @@ namespace Mesen.Debugger.Utilities
 			return new DynamicTooltip() { Items = items };
 		}
 
-		private static string GetAddressField(CpuType cpuType, int address, MemoryType memType)
+		private static StackPanel GetAddressField(int relAddress, AddressInfo? absAddr, CpuType cpuType, FontFamily font, double fontSize)
 		{
-			string addressField = "$" + address.ToString("X" + cpuType.GetAddressSize()) + " (CPU)";
-			AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = memType });
-			if(absAddr.Address >= 0) {
-				addressField += Environment.NewLine + "$" + absAddr.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + absAddr.Type.GetShortName() + ")";
+			StackPanel panel = new StackPanel() { Spacing = -4, Margin = new Avalonia.Thickness(0, -1, 0, 0) };
+			if(relAddress >= 0) {
+				panel.Children.Add(new TextBlock() { Text = "$" + relAddress.ToString("X" + cpuType.GetAddressSize()) + " (CPU)", FontFamily = font, FontSize = fontSize });
 			}
-
-			return addressField;
+			if(absAddr?.Address >= 0) {
+				panel.Children.Add(new TextBlock() { Text = "$" + absAddr.Value.Address.ToString("X" + cpuType.GetAddressSize()) + " (" + absAddr.Value.Type.GetShortName() + ")", FontFamily = font, FontSize = fontSize });
+			}
+			return panel;
 		}
 
 		private static StackPanel GetHexDecPanel(int value, string format, FontFamily font, double fontSize)
@@ -263,6 +292,38 @@ namespace Mesen.Debugger.Utilities
 			panel.Children.Add(new TextBlock() { Text = "$" + value.ToString(format), FontFamily = font, FontSize = fontSize });
 			panel.Children.Add(new TextBlock() { Text = "  (" + value.ToString() + ")", FontFamily = font, FontSize = fontSize, Foreground = Brushes.DimGray, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
 			return panel;
+		}
+
+		public static string FormatCount(UInt64 value, UInt64 stamp = UInt64.MaxValue)
+		{
+			if(stamp == 0) {
+				return "n/a";
+			}
+
+			return FormatValue(value);
+		}
+
+		private static string FormatValue(double value)
+		{
+			if(value >= 1000000000000) {
+				return (value / 1000000000000).ToString("0.00") + " T";
+			} else if(value >= 1000000000) {
+				return (value / 1000000000).ToString("0.00") + " G";
+			} else if(value >= 1000000) {
+				return (value / 1000000).ToString("0.00") + " M";
+			} else if(value >= 1000) {
+				return (value / 1000).ToString("0.00") + " K";
+			}
+			return value.ToString("0.##");
+		}
+
+		private static string FormatFrameCount(UInt64 stamp, UInt64 masterClock, double clocksPerFrame)
+		{
+			if(stamp == 0 || stamp > masterClock) {
+				return "n/a";
+			}
+
+			return FormatValue((masterClock - stamp) / clocksPerFrame) + " frames";
 		}
 	}
 }

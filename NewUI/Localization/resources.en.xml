@@ -1165,6 +1165,7 @@
 			<Control ID="chkHighlightBreakpoints">Breakpoints</Control>
 			<Control ID="chkHighDensityTextMode">Use high-density text</Control>
 			<Control ID="chkShowCharacters">Show characters</Control>
+			<Control ID="chkShowTooltips">Show tooltips</Control>
 		</Form>
 		<Form ID="MemoryViewerFindWindow">
 			<Control ID="wndTitle">Find...</Control>

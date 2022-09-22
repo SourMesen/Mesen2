@@ -39,7 +39,7 @@
 					Text="{Binding Name}"
 					MinWidth="{Binding FirstColumnWidth, ElementName=root}"
 					IsVisible="{Binding Name.Length}"
-					Margin="0 3 10 2"
+					Margin="0 0 10 2"
 				/>
 				<ContentControl Content="{Binding Value}">
 					<ContentControl.DataTemplates>
@@ -49,6 +49,7 @@
 								Classes.mono="{Binding $parent[StackPanel].DataContext.UseMonoFont}"
 								Classes.regular="{Binding !$parent[StackPanel].DataContext.UseMonoFont}"
 								Margin="0"
+								Padding="0"
 								MinHeight="0"
 								MinWidth="0"
 								Height="NaN"

@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using DataBoxControl;
 using DynamicData;
 using Mesen.Config;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -461,33 +462,15 @@ public class MemorySearchViewModel : DisposableViewModel
 			AddressCounters counters = DebugApi.GetMemoryAccessCounts((uint)address, 1, _search.MemoryType)[0];
 			UInt64 masterClock = EmuApi.GetTimingInfo(_search.MemoryType.ToCpuType()).MasterClock;
 
-			ReadCount = FormatCount(counters.ReadCounter);
-			WriteCount = FormatCount(counters.WriteCounter);
-			ExecCount = FormatCount(counters.ExecCounter);
+			ReadCount = CodeTooltipHelper.FormatCount(counters.ReadCounter);
+			WriteCount = CodeTooltipHelper.FormatCount(counters.WriteCounter);
+			ExecCount = CodeTooltipHelper.FormatCount(counters.ExecCounter);
 
-			LastRead = FormatCount(masterClock - counters.ReadStamp, counters.ReadStamp);
-			LastWrite = FormatCount(masterClock - counters.WriteStamp, counters.WriteStamp);
-			LastExec = FormatCount(masterClock - counters.ExecStamp, counters.ExecStamp);
+			LastRead = CodeTooltipHelper.FormatCount(masterClock - counters.ReadStamp, counters.ReadStamp);
+			LastWrite = CodeTooltipHelper.FormatCount(masterClock - counters.WriteStamp, counters.WriteStamp);
+			LastExec = CodeTooltipHelper.FormatCount(masterClock - counters.ExecStamp, counters.ExecStamp);
 
 			IsMatch = _search.IsMatch(address);
-		}
-
-		private string FormatCount(UInt64 value, UInt64 stamp = UInt64.MaxValue)
-		{
-			if(stamp == 0) {
-				return "n/a";
-			}
-
-			if(value >= 1000000000000) {
-				return ((double)value / 1000000000000).ToString("0.00") + " T";
-			} else if(value >= 1000000000) {
-				return ((double)value / 1000000000).ToString("0.00") + " G";
-			} else if(value >= 1000000) {
-				return ((double)value / 1000000).ToString("0.00") + " M";
-			} else if(value >= 1000) {
-				return ((double)value / 1000).ToString("0.00") + " K";
-			}
-			return value.ToString();
 		}
 	}
 	

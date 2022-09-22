@@ -131,6 +131,10 @@
 				IsChecked="{CompiledBinding Config.ShowCharacters}"
 				Content="{l:Translate chkShowCharacters}"
 			/>
+			<CheckBox
+				IsChecked="{CompiledBinding Config.ShowTooltips}"
+				Content="{l:Translate chkShowTooltips}"
+			/>
 		</c:OptionSection>
 	</StackPanel>
 </UserControl>

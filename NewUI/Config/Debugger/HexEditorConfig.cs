@@ -26,6 +26,7 @@ namespace Mesen.Config
 		[Reactive] public bool HighDensityTextMode { get; set; } = false;
 
 		[Reactive] public bool ShowCharacters { get; set; } = true;
+		[Reactive] public bool ShowTooltips { get; set; } = true;
 
 		[Reactive] public bool HideUnusedBytes { get; set; } = false;
 		[Reactive] public bool HideReadBytes { get; set; } = false;

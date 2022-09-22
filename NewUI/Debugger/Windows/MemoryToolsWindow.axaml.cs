@@ -16,6 +16,8 @@ using Mesen.Debugger.Labels;
 using System.Linq;
 using System.Collections.Generic;
 using Mesen.Localization;
+using Avalonia.Input;
+using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.Windows
 {
@@ -24,6 +26,9 @@ namespace Mesen.Debugger.Windows
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;
 		private MemoryViewerFindWindow? _searchWnd;
+		private Point _prevMousePos;
+		private int _prevByteOffset;
+		private DynamicTooltip? _prevTooltip;
 
 		public MemoryToolsWindow()
 		{
@@ -42,6 +47,7 @@ namespace Mesen.Debugger.Windows
 
 			_model.Config.LoadWindowSettings(this);
 			_editor.ByteUpdated += editor_ByteUpdated;
+			_editor.PointerMoved += editor_PointerMoved;
 		}
 
 		public static void ShowInMemoryTools(MemoryType memType, int address)
@@ -81,6 +87,50 @@ namespace Mesen.Debugger.Windows
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel;
+		}
+
+		private void editor_PointerMoved(object? sender, PointerEventArgs e)
+		{
+			Point point = e.GetPosition(_editor);
+			if(point == _prevMousePos) {
+				return;
+			}
+			_prevMousePos = point;
+
+			int byteOffset = _model.Config.ShowTooltips ? _editor.GetByteOffset(point) : -1;
+			if(byteOffset >= 0) {
+				if(byteOffset != _prevByteOffset) {
+					CpuType cpuType = _model.Config.MemoryType.ToCpuType();
+					
+					AddressInfo addr = new AddressInfo() { Address = byteOffset, Type = _model.Config.MemoryType };
+					AddressInfo relAddr;
+					AddressInfo absAddr;
+					if(addr.Type.IsRelativeMemory()) {
+						relAddr = addr;
+						absAddr = DebugApi.GetAbsoluteAddress(relAddr);
+					} else {
+						absAddr = addr;
+						relAddr = DebugApi.GetRelativeAddress(absAddr, cpuType);
+					}
+
+					CodeLabel? label = LabelManager.GetLabel(addr);
+					LocationInfo locInfo = new() {
+						RelAddress = relAddr.Address >= 0 ? relAddr : null,
+						AbsAddress = absAddr.Address >= 0 ? absAddr : null,
+						Label = label
+					};
+
+					_prevTooltip = CodeTooltipHelper.GetCodeAddressTooltip(cpuType, locInfo, !addr.Type.IsRelativeMemory());
+					TooltipHelper.ShowTooltip(_editor, _prevTooltip, 15);
+				} else {
+					TooltipHelper.ShowTooltip(_editor, _prevTooltip, 15);
+				}
+			} else {
+				_prevTooltip = null;
+				TooltipHelper.HideTooltip(_editor);
+			}
+
+			_prevByteOffset = byteOffset;
 		}
 
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
