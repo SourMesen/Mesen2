@@ -1141,7 +1141,7 @@
 		</Form>
 
 		<Form ID="MemoryToolsWindow">
-			<Control ID="wndTitle">Memory Tools</Control>
+			<Control ID="wndTitle">Memory Viewer</Control>
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuSearch">_Search</Control>
 		</Form>
@@ -1284,7 +1284,7 @@
 			
 			<Control ID="tabShortcuts">Shortcuts</Control>
 			<Control ID="tabShared">Shared</Control>
-			<Control ID="tabMemoryTools">Memory Tools</Control>
+			<Control ID="tabMemoryTools">Memory Viewer</Control>
 			<Control ID="tabMisc">Misc.</Control>
 		</Form>
 
@@ -2708,7 +2708,7 @@
 			<Value ID="OpenCx4Debugger">Open CX4 Debugger</Value>
 			<Value ID="OpenGameboyDebugger">Open Game Boy Debugger</Value>
 			<Value ID="OpenEventViewer">Open Event Viewer</Value>
-			<Value ID="OpenMemoryTools">Open Memory Tools</Value>
+			<Value ID="OpenMemoryTools">Open Memory Viewer</Value>
 			<Value ID="OpenProfiler">Open Profiler</Value>
 			<Value ID="OpenScriptWindow">Open Script Window</Value>
 			<Value ID="OpenWatchWindow">Open Watch Window</Value>
@@ -2958,7 +2958,7 @@
 			<Value ID="OpenCx4Debugger">CX4 Debugger</Value>
 			<Value ID="OpenGameboyDebugger">Game Boy Debugger</Value>
 			<Value ID="OpenEventViewer">Event Viewer</Value>
-			<Value ID="OpenMemoryTools">Memory Tools</Value>
+			<Value ID="OpenMemoryTools">Memory Viewer</Value>
 			<Value ID="OpenProfiler">Profiler</Value>
 			<Value ID="OpenScriptWindow">Script Window</Value>
 			<Value ID="OpenWatchWindow">Watch Window</Value>
