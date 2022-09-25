@@ -317,6 +317,7 @@ private:
 	void AddrMode_StkRelIndIdxY();
 	
 	void RunOp();
+	__noinline void ProcessHaltedState();
 
 public:
 #ifndef DUMMYCPU

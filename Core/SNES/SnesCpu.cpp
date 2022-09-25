@@ -30,35 +30,14 @@ void SnesCpu::Exec()
 {
 	_immediateMode = false;
 
-	switch(_state.StopState) {
-		case SnesCpuStopState::Running:
+	if(_state.StopState == SnesCpuStopState::Running) {
 #ifndef DUMMYCPU
-			_emu->ProcessInstruction<CpuType::Snes>();
+		_emu->ProcessInstruction<CpuType::Snes>();
 #endif
 
-			RunOp();
-			break;
-
-		case SnesCpuStopState::Stopped:
-			//STP was executed, CPU no longer executes any code
-#ifndef DUMMYCPU
-			_emu->ProcessHaltedCpu<CpuType::Snes>();
-			_memoryManager->IncMasterClock4();
-#endif
-			return;
-
-		case SnesCpuStopState::WaitingForIrq:
-#ifndef DUMMYCPU
-			_emu->ProcessHaltedCpu<CpuType::Snes>();
-#endif
-			//WAI
-			Idle();
-			if(_state.IrqSource || _state.NeedNmi) {
-				Idle();
-				Idle();
-				_state.StopState = SnesCpuStopState::Running;
-			}
-			break;
+		RunOp();
+	} else {
+		ProcessHaltedState();
 	}
 
 #ifndef DUMMYCPU
@@ -75,6 +54,28 @@ void SnesCpu::Exec()
 		_emu->ProcessInterrupt<CpuType::Snes>(originalPc, GetProgramAddress(_state.PC), false);
 	}
 #endif
+}
+
+void SnesCpu::ProcessHaltedState()
+{
+#ifndef DUMMYCPU
+	_emu->ProcessHaltedCpu<CpuType::Snes>();
+#endif
+
+	if(_state.StopState == SnesCpuStopState::Stopped) {
+		//STP was executed, CPU no longer executes any code
+#ifndef DUMMYCPU
+		_memoryManager->IncMasterClock4();
+#endif
+	} else {
+		//WAI
+		Idle();
+		if(_state.IrqSource || _state.NeedNmi) {
+			Idle();
+			Idle();
+			_state.StopState = SnesCpuStopState::Running;
+		}
+	}
 }
 
 void SnesCpu::Idle()
