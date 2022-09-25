@@ -288,6 +288,9 @@ template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* r
 				rowStart++;
 			}
 			break;
+
+		default:
+			break;
 	}
 
 	switch(format) {
