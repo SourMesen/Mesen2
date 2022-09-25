@@ -151,6 +151,9 @@ namespace Mesen.Debugger.Windows
 				new ContextMenuSeparator(),
 				GetViewInDebuggerAction(),
 				GetViewInMemoryAction(),
+				new ContextMenuSeparator() { IsVisible = () => _model.Config.MemoryType.SupportsFreezeAddress() },
+				GetFreezeAction(ActionType.FreezeMemory, DebuggerShortcut.MemoryViewer_Freeze),
+				GetFreezeAction(ActionType.UnfreezeMemory, DebuggerShortcut.MemoryViewer_Unfreeze),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
@@ -318,7 +321,7 @@ namespace Mesen.Debugger.Windows
 				}
 			});
 
-			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() { 
+			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				GetImportAction(),
 				GetExportAction(),
 			});
@@ -541,6 +544,22 @@ namespace Mesen.Debugger.Windows
 						DebuggerWindow.GetOrOpenWindow(cpuType);
 					}
 				}
+			};
+		}
+
+		private ContextMenuAction GetFreezeAction(ActionType action, DebuggerShortcut shortcut)
+		{
+			DebugConfig cfg = ConfigManager.Config.Debug;
+			return new ContextMenuAction() {
+				ActionType = action,
+				HintText = () => GetAddressRange(),
+				IsVisible = () => _model.Config.MemoryType.SupportsFreezeAddress(),
+				OnClick = () => {
+					UInt32 start = (UInt32)_editor.SelectionStart;
+					UInt32 end = (UInt32)(_editor.SelectionStart + Math.Max(1, _editor.SelectionLength) - 1);
+					DebugApi.UpdateFrozenAddresses(_model.Config.MemoryType.ToCpuType(), start, end, action == ActionType.FreezeMemory);
+				},
+				Shortcut = () => cfg.Shortcuts.Get(shortcut)
 			};
 		}
 

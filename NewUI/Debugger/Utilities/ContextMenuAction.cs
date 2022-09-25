@@ -753,5 +753,10 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Settings")]
 		GameConfig,
+		
+		[IconFile("MediaStop")]
+		FreezeMemory,
+		[IconFile("MediaPlay")]
+		UnfreezeMemory,
 	}
 }

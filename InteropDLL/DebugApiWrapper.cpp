@@ -19,6 +19,7 @@
 #include "Core/Debugger/BaseEventManager.h"
 #include "Core/Debugger/ITraceLogger.h"
 #include "Core/Debugger/TraceLogFileSaver.h"
+#include "Core/Debugger/FrozenAddressManager.h"
 #include "Core/Gameboy/GbTypes.h"
 #include "Utilities/StringUtilities.h"
 
@@ -121,6 +122,9 @@ extern "C"
 		string logString = WithDebugger(string, GetLog());
 		StringUtilities::CopyToBuffer(logString, outBuffer, maxLength);
 	}
+	
+	DllExport void __stdcall UpdateFrozenAddresses(CpuType cpuType, uint32_t start, uint32_t end, bool freeze) { return WithDebugger(void, GetFrozenAddressManager(cpuType)->UpdateFrozenAddresses(start, end, freeze)); }
+	DllExport void __stdcall GetFrozenState(CpuType cpuType, uint32_t start, uint32_t end, bool* outState) { return WithDebugger(void, GetFrozenAddressManager(cpuType)->GetFrozenState(start, end, outState)); }
 
 	DllExport void __stdcall SetMemoryState(MemoryType type, uint8_t* buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
 	DllExport uint32_t __stdcall GetMemorySize(MemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }

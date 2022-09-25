@@ -196,11 +196,12 @@ uint8_t GbMemoryManager::ReadDma(uint16_t addr)
 template<MemoryOperationType type>
 void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 {
-	_emu->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type);
-	if(_state.IsWriteRegister[addr >> 8]) {
-		WriteRegister(addr, value);
-	} else if(_writes[addr >> 8]) {
-		_writes[addr >> 8][(uint8_t)addr] = value;
+	if(_emu->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type)) {
+		if(_state.IsWriteRegister[addr >> 8]) {
+			WriteRegister(addr, value);
+		} else if(_writes[addr >> 8]) {
+			_writes[addr >> 8][(uint8_t)addr] = value;
+		}
 	}
 }
 

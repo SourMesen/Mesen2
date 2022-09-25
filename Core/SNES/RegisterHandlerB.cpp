@@ -65,9 +65,10 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 	} if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:
-				_emu->ProcessMemoryWrite<CpuType::Snes>(0x7E0000 | _wramPosition, value, MemoryOperationType::Write);
-				_workRam[_wramPosition] = value;
-				_wramPosition = (_wramPosition + 1) & 0x1FFFF;
+				if(_emu->ProcessMemoryWrite<CpuType::Snes>(0x7E0000 | _wramPosition, value, MemoryOperationType::Write)) {
+					_workRam[_wramPosition] = value;
+					_wramPosition = (_wramPosition + 1) & 0x1FFFF;
+				}
 				break;
 
 			case 0x2181: _wramPosition = (_wramPosition & 0x1FF00) | value; break;

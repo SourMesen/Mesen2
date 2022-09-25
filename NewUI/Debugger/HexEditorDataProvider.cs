@@ -26,6 +26,7 @@ namespace Mesen.Debugger
 		private byte[] _data = Array.Empty<byte>();
 		private long _firstByteIndex = 0;
 		private TblByteCharConverter? _tblConverter = null;
+		private byte[]? _frozenAddresses = null;
 
 		public HexEditorDataProvider(MemoryType memoryType, HexEditorConfig cfg, TblByteCharConverter? tblConverter)
 		{
@@ -73,6 +74,12 @@ namespace Mesen.Debugger
 			}
 
 			_counters = DebugApi.GetMemoryAccessCounts((UInt32)firstByteIndex, (UInt32)visibleByteCount, _memoryType);
+
+			if(_cfg.FrozenHighlight.Highlight && _memoryType.IsRelativeMemory() && !_memoryType.IsPpuMemory()) {
+				_frozenAddresses = DebugApi.GetFrozenState(_cpuType, (UInt32)firstByteIndex, (UInt32)(firstByteIndex + visibleByteCount));
+			} else {
+				_frozenAddresses = null;
+			}
 
 			_cdlData = null;
 			if(_memoryType.SupportsCdl()) {
@@ -183,6 +190,10 @@ namespace Mesen.Debugger
 				_byteInfo.ForeColor = DarkerColor(alpha, _cfg.ReadHighlight.Color, (framesToFade - framesSinceRead) / framesToFade);
 			} else {
 				_byteInfo.ForeColor = Color.FromArgb(alpha, 0, 0, 0);
+			}
+
+			if(_frozenAddresses != null && _frozenAddresses[index] != 0) {
+				_byteInfo.ForeColor = _cfg.FrozenHighlight.Color;
 			}
 
 			_byteInfo.Value = _data[index];

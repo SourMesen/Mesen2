@@ -262,6 +262,11 @@ namespace Mesen.Interop
 			return true;
 		}
 
+		public static bool SupportsFreezeAddress(this MemoryType memType)
+		{
+			return memType.IsRelativeMemory() && !memType.IsPpuMemory();
+		}
+
 		public static string GetShortName(this MemoryType memType)
 		{
 			return memType switch {

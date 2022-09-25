@@ -441,14 +441,15 @@ void Sa1::ProcessInterrupts()
 
 void Sa1::WriteSa1(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	IMemoryHandler *handler = _mappings.GetHandler(addr);
-	_emu->ProcessMemoryWrite<CpuType::Sa1>(addr, value, type);
-	if(handler) {
-		_lastAccessMemType = handler->GetMemoryType();
-		_openBus = value;
-		handler->Write(addr, value);
-	} else {
-		LogDebug("[Debug] Write SA1 - missing handler: $" + HexUtilities::ToHex(addr));
+	if(_emu->ProcessMemoryWrite<CpuType::Sa1>(addr, value, type)) {
+		IMemoryHandler *handler = _mappings.GetHandler(addr);
+		if(handler) {
+			_lastAccessMemType = handler->GetMemoryType();
+			_openBus = value;
+			handler->Write(addr, value);
+		} else {
+			LogDebug("[Debug] Write SA1 - missing handler: $" + HexUtilities::ToHex(addr));
+		}
 	}
 }
 

@@ -35,6 +35,7 @@ class IAssembler;
 class IDebugger;
 class ITraceLogger;
 class TraceLogFileSaver;
+class FrozenAddressManager;
 
 struct TraceRow;
 struct BaseState;
@@ -104,7 +105,7 @@ public:
 
 	template<CpuType type> void ProcessInstruction();
 	template<CpuType type, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
-	template<CpuType type, typename T> void ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
+	template<CpuType type, typename T> bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type> void ProcessIdleCycle();
 	template<CpuType type> void ProcessHaltedCpu();
 	template<CpuType type, typename T> void ProcessPpuRead(uint16_t addr, T& value, MemoryType memoryType, MemoryOperationType opType);
@@ -158,7 +159,7 @@ public:
 	bool HasCpuType(CpuType cpuType);
 
 	void SetBreakpoints(Breakpoint breakpoints[], uint32_t length);
-	
+
 	void SetInputOverrides(uint32_t index, DebugControllerState state);
 	void GetAvailableInputOverrides(uint8_t* availableIndexes);
 	
@@ -181,6 +182,7 @@ public:
 	IConsole* GetConsole() { return _console; }
 	Emulator* GetEmulator() { return _emu; }
 
+	FrozenAddressManager* GetFrozenAddressManager(CpuType cpuType);
 	ITraceLogger* GetTraceLogger(CpuType cpuType);
 	PpuTools* GetPpuTools(CpuType cpuType);
 	BaseEventManager* GetEventManager(CpuType cpuType);

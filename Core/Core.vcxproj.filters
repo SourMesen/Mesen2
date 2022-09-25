@@ -2610,6 +2610,9 @@
     <ClInclude Include="Shared\EventType.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger\FrozenAddressManager.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

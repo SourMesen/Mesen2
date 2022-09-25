@@ -3,6 +3,7 @@
 #include "Debugger/DebuggerFeatures.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/StepBackManager.h"
+#include "Debugger/FrozenAddressManager.h"
 
 enum class StepType;
 class BreakpointManager;
@@ -23,6 +24,8 @@ protected:
 	unique_ptr<StepRequest> _step;
 	unique_ptr<StepBackManager> _stepBackManager = unique_ptr<StepBackManager>(new StepBackManager(nullptr, nullptr));
 
+	FrozenAddressManager _frozenAddressManager;
+
 public:
 	bool IgnoreBreakpoints = false;
 	bool AllowChangeProgramCounter = false;
@@ -35,6 +38,8 @@ public:
 	bool IsStepBack() { return _stepBackManager->IsRewinding(); }
 	void ResetStepBackCache() { return _stepBackManager->ResetCache(); }
 	void StepBack() { return _stepBackManager->StepBack(); }
+
+	FrozenAddressManager& GetFrozenAddressManager() { return _frozenAddressManager; }
 
 	virtual void ResetPrevOpCode() {}
 

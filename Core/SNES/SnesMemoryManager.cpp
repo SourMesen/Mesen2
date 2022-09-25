@@ -315,14 +315,14 @@ void SnesMemoryManager::PeekBlock(uint32_t addr, uint8_t *dest)
 void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
 	IncrementMasterClockValue(_cpuSpeed);
-	_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, type);
-
-	IMemoryHandler* handler = _mappings.GetHandler(addr);
-	if(handler) {
-		handler->Write(addr, value);
-		_memTypeBusA = handler->GetMemoryType();
-	} else {
-		LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+	if(_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, type)) {
+		IMemoryHandler* handler = _mappings.GetHandler(addr);
+		if(handler) {
+			handler->Write(addr, value);
+			_memTypeBusA = handler->GetMemoryType();
+		} else {
+			LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
+		}
 	}
 }
 
@@ -330,27 +330,27 @@ void SnesMemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 {
 	_cpu->DetectNmiSignalEdge();
 	IncMasterClock4();
-	_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, MemoryOperationType::DmaWrite);
-
-	IMemoryHandler* handler = _mappings.GetHandler(addr);
-	if(handler) {
-		if(forBusA && handler == _registerHandlerB.get() && (addr & 0xFF00) == 0x2100) {
-			//Trying to write to bus B using bus A does nothing
-		} else if(handler == _registerHandlerA.get()) {
-			uint16_t regAddr = addr & 0xFFFF;
-			if(regAddr == 0x420B || regAddr == 0x420C || (regAddr >= 0x4300 && regAddr <= 0x437F)) {
-				//Trying to write to the DMA controller with DMA does nothing
+	if(_emu->ProcessMemoryWrite<CpuType::Snes>(addr, value, MemoryOperationType::DmaWrite)) {
+		IMemoryHandler* handler = _mappings.GetHandler(addr);
+		if(handler) {
+			if(forBusA && handler == _registerHandlerB.get() && (addr & 0xFF00) == 0x2100) {
+				//Trying to write to bus B using bus A does nothing
+			} else if(handler == _registerHandlerA.get()) {
+				uint16_t regAddr = addr & 0xFFFF;
+				if(regAddr == 0x420B || regAddr == 0x420C || (regAddr >= 0x4300 && regAddr <= 0x437F)) {
+					//Trying to write to the DMA controller with DMA does nothing
+				} else {
+					handler->Write(addr, value);
+				}
 			} else {
 				handler->Write(addr, value);
+				if(handler != _registerHandlerB.get()) {
+					_memTypeBusA = handler->GetMemoryType();
+				}
 			}
 		} else {
-			handler->Write(addr, value);
-			if(handler != _registerHandlerB.get()) {
-				_memTypeBusA = handler->GetMemoryType();
-			}
+			LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 		}
-	} else {
-		LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 	}
 }
 

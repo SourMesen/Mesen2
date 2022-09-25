@@ -122,19 +122,19 @@ __forceinline uint8_t PceMemoryManager::Read(uint16_t addr, MemoryOperationType 
 
 __forceinline void PceMemoryManager::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 {
-	_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type);
-
-	uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
-	if(_mapper && _mapper->IsBankMapped(bank)) {
-		_mapper->Write(bank, addr, value);
-	}
-
-	addr &= 0x1FFF;
-	if(bank != 0xFF) {
-		if(_writeBanks[bank]) {
-			_writeBanks[bank][addr] = value;
+	if(_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, type)) {
+		uint8_t bank = _state.Mpr[(addr & 0xE000) >> 13];
+		if(_mapper && _mapper->IsBankMapped(bank)) {
+			_mapper->Write(bank, addr, value);
 		}
-	} else {
-		WriteRegister(addr, value);
+
+		addr &= 0x1FFF;
+		if(bank != 0xFF) {
+			if(_writeBanks[bank]) {
+				_writeBanks[bank][addr] = value;
+			}
+		} else {
+			WriteRegister(addr, value);
+		}
 	}
 }

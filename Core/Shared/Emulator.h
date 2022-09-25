@@ -274,11 +274,12 @@ public:
 		}
 	}
 
-	template<CpuType type, typename T> __forceinline void ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
+	template<CpuType type, typename T> __forceinline bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 	{
 		if(_debugger) {
-			_debugger->ProcessMemoryWrite<type>(addr, value, opType);
+			return _debugger->ProcessMemoryWrite<type>(addr, value, opType);
 		}
+		return true;
 	}
 
 	template<CpuType type> __forceinline void ProcessIdleCycle()

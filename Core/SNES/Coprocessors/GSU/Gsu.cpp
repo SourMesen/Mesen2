@@ -258,13 +258,14 @@ uint8_t Gsu::ReadGsu(uint32_t addr, MemoryOperationType opType)
 
 void Gsu::WriteGsu(uint32_t addr, uint8_t value, MemoryOperationType opType)
 {
-	IMemoryHandler *handler = _mappings.GetHandler(addr);
-	if(handler) {
-		handler->Write(addr, value);
-	} else {
-		LogDebug("[Debug] GSU - Missing write handler: " + HexUtilities::ToHex(addr));
+	if(_emu->ProcessMemoryWrite<CpuType::Gsu>(addr, value, opType)) {
+		IMemoryHandler* handler = _mappings.GetHandler(addr);
+		if(handler) {
+			handler->Write(addr, value);
+		} else {
+			LogDebug("[Debug] GSU - Missing write handler: " + HexUtilities::ToHex(addr));
+		}
 	}
-	_emu->ProcessMemoryWrite<CpuType::Gsu>(addr, value, opType);
 }
 
 void Gsu::InitProgramCache(uint16_t cacheAddr)

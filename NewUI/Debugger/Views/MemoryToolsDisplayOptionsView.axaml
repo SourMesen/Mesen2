@@ -97,6 +97,12 @@
 				Color="{CompiledBinding Config.LabelHighlight.Color}"
 			/>
 			<dc:ColorCheckbox
+				Text="{l:Translate chkHighlightFrozenAddresses}"
+				Checked="{CompiledBinding Config.FrozenHighlight.Highlight}"
+				Color="{CompiledBinding Config.FrozenHighlight.Color}"
+				IsVisible="{CompiledBinding ShowFrozenAddressesOption}"
+			/>			
+			<dc:ColorCheckbox
 				Text="{l:Translate chkHighlightNesPcmData}"
 				Checked="{CompiledBinding Config.NesPcmDataHighlight.Highlight}"
 				Color="{CompiledBinding Config.NesPcmDataHighlight.Color}"

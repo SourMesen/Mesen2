@@ -264,8 +264,9 @@ void Spc::Write(uint16_t addr, uint8_t value, MemoryOperationType type)
 
 	//Writes always affect the underlying RAM
 	if(_state.WriteEnabled) {
-		_emu->ProcessMemoryWrite<CpuType::Spc>(addr, value, type);
-		_ram[addr] = value;
+		if(_emu->ProcessMemoryWrite<CpuType::Spc>(addr, value, type)) {
+			_ram[addr] = value;
+		}
 	}
 
 	switch(addr) {

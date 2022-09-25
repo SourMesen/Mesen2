@@ -1160,6 +1160,7 @@
 			<Control ID="chkHighlightData">Data</Control>
 			<Control ID="lblUnidentified">Unidentified</Control>
 			<Control ID="chkHighlightLabel">Labels</Control>
+			<Control ID="chkHighlightFrozenAddresses">Frozen addresses</Control>
 			<Control ID="chkHighlightNesPcmData">DPCM Data</Control>
 			<Control ID="chkHighlightNesDrawnChrRom">Drawn tiles (PPU)</Control>
 			<Control ID="chkHighlightBreakpoints">Breakpoints</Control>
@@ -3112,8 +3113,11 @@
 			<Value ID="ExportMovie">Export Movie</Value>
 			<Value ID="CreateSaveState">Create Save State</Value>
 			<Value ID="ResumeGameplay">Resume Gameplay</Value>
-			
+
 			<Value ID="GameConfig">Game Settings</Value>
+			
+			<Value ID="FreezeMemory">Freeze</Value>
+			<Value ID="UnfreezeMemory">Unfreeze</Value>
 		</Enum>
 	</Enums>
 </Resources>

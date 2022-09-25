@@ -271,10 +271,11 @@ uint8_t Cx4::ReadCx4(uint32_t addr)
 
 void Cx4::WriteCx4(uint32_t addr, uint8_t value)
 {
-	IMemoryHandler* handler = _mappings.GetHandler(addr);
-	if(handler) {
-		_emu->ProcessMemoryWrite<CpuType::Cx4>(addr, value, MemoryOperationType::Write);
-		handler->Write(addr, value);
+	if(_emu->ProcessMemoryWrite<CpuType::Cx4>(addr, value, MemoryOperationType::Write)) {
+		IMemoryHandler* handler = _mappings.GetHandler(addr);
+		if(handler) {
+			handler->Write(addr, value);
+		}
 	}
 }
 

@@ -237,10 +237,12 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 }
 
 template<CpuType type, typename T>
-void Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
+bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
-		return;
+		return true;
+	} else if(_debuggers[(int)type].Debugger->GetFrozenAddressManager().IsFrozenAddress(addr)) {
+		return false;
 	}
 
 	switch(type) {
@@ -258,6 +260,8 @@ void Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
 		ProcessScripts<type>(addr, value, opType);
 	}
+
+	return true;
 }
 
 template<CpuType type>
@@ -879,6 +883,11 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 	}
 }
 
+FrozenAddressManager* Debugger::GetFrozenAddressManager(CpuType cpuType)
+{
+	return &_debuggers[(int)cpuType].Debugger->GetFrozenAddressManager();
+}
+
 ITraceLogger* Debugger::GetTraceLogger(CpuType cpuType)
 {
 	if(_debuggers[(int)cpuType].Debugger) {
@@ -993,15 +1002,15 @@ template void Debugger::ProcessMemoryRead<CpuType::Gameboy>(uint32_t addr, uint8
 template void Debugger::ProcessMemoryRead<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 
-template void Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
-template void Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 
 template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();

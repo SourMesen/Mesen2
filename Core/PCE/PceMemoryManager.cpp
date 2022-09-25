@@ -309,9 +309,10 @@ void PceMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 
 void PceMemoryManager::WriteVdc(uint16_t addr, uint8_t value)
 {
-	_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write);
-	_vpc->StVdcWrite(addr, value);
-	Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
+	if(_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write)) {
+		_vpc->StVdcWrite(addr, value);
+		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
+	}
 }
 
 uint8_t PceMemoryManager::DebugRead(uint16_t addr)
