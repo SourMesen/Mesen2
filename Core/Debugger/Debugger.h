@@ -87,6 +87,8 @@ private:
 	
 	void Reset();
 
+	__noinline bool ProcessStepBack(IDebugger* debugger);
+
 	template<CpuType type, typename DebuggerType> DebuggerType* GetDebugger();
 	template<CpuType type> uint64_t GetCpuCycleCount();
 	template<CpuType type, typename T> void ProcessScripts(uint32_t addr, T& value, MemoryOperationType opType);

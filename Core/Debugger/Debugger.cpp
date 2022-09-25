@@ -163,10 +163,8 @@ uint64_t Debugger::GetCpuCycleCount()
 	}
 }
 
-template<CpuType type>
-void Debugger::ProcessInstruction()
+bool Debugger::ProcessStepBack(IDebugger* debugger)
 {
-	IDebugger* debugger = _debuggers[(int)type].Debugger.get();
 	if(debugger->CheckStepBack()) {
 		//Step back target reached, break at the current instruction
 		debugger->GetStepRequest()->Break(BreakSource::CpuStep);
@@ -174,8 +172,18 @@ void Debugger::ProcessInstruction()
 		//Reset prev op code flag to prevent debugger code from incorrectly flagging
 		//an instruction as the start of a function, etc. after loading the state
 		debugger->ResetPrevOpCode();
-	} else if(debugger->IsStepBack()) {
+		return false;
+	} else {
 		//While step back is running, don't process instructions
+		return true;
+	}
+}
+
+template<CpuType type>
+void Debugger::ProcessInstruction()
+{
+	IDebugger* debugger = _debuggers[(int)type].Debugger.get();
+	if(debugger->IsStepBack() && ProcessStepBack(debugger)) {
 		return;
 	}
 
