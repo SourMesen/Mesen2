@@ -524,11 +524,15 @@ namespace Mesen.Debugger.ViewModels
 			double y = pageHeight;
 			List<PictureViewerLine> delimiters = new List<PictureViewerLine>();
 			int yMax = RowCount * 8;
+
 			while(y < yMax) {
-				Point start = new Point(0, y);
-				Point end = new Point(ColumnCount * 8 - 1, y);
-				delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.Black });
-				delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.White, DashStyle = new DashStyle(DashStyle.Dash.Dashes, 0) });
+				//Hide delimiter if the selected tile is right above or below it
+				if(Math.Abs(SelectionRect.Top - y) >= 5 && Math.Abs(SelectionRect.Bottom - y) >= 5) {
+					Point start = new Point(0, y);
+					Point end = new Point(ColumnCount * 8 - 1, y);
+					delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.Black });
+					delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.White, DashStyle = new DashStyle(DashStyle.Dash.Dashes, 0) });
+				}
 				y += pageHeight;
 			}
 			PageDelimiters = delimiters;
