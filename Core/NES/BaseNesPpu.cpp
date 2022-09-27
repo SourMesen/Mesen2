@@ -87,6 +87,7 @@ void BaseNesPpu::WritePaletteRam(uint16_t addr, uint8_t value)
 	if(addr == 0x00 || addr == 0x10) {
 		_paletteRam[0x00] = value;
 		_paletteRam[0x10] = value;
+		_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 	} else if(addr == 0x04 || addr == 0x14) {
 		_paletteRam[0x04] = value;
 		_paletteRam[0x14] = value;

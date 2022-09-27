@@ -1278,6 +1278,7 @@ template<class T> void NesPpu<T>::UpdateState()
 
 	//Rendering enabled flag is apparently set with a 1 cycle delay (i.e setting it at cycle 5 will render cycle 6 like cycle 5 and then take the new settings for cycle 7)
 	if(_prevRenderingEnabled != _renderingEnabled) {
+		_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 		_prevRenderingEnabled = _renderingEnabled;
 		if(_scanline < 240) {
 			if(_prevRenderingEnabled) {
@@ -1289,8 +1290,7 @@ template<class T> void NesPpu<T>::UpdateState()
 
 				//When rendering is disabled midscreen, set the vram bus back to the value of 'v'
 				SetBusAddress(_videoRamAddr & 0x3FFF);
-				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
-
+				
 				if(_cycle >= 65 && _cycle <= 256) {
 					//Disabling rendering during OAM evaluation will trigger a glitch causing the current address to be incremented by 1
 					//The increment can be "delayed" by 1 PPU cycle depending on whether or not rendering is disabled on an even/odd cycle
@@ -1313,7 +1313,7 @@ template<class T> void NesPpu<T>::UpdateState()
 		_renderingEnabled = _mask.BackgroundEnabled | _mask.SpritesEnabled;
 		_needStateUpdate = true;
 	}
-
+	
 	if(_updateVramAddrDelay > 0) {
 		_updateVramAddrDelay--;
 		if(_updateVramAddrDelay == 0) {
@@ -1341,8 +1341,9 @@ template<class T> void NesPpu<T>::UpdateState()
 				//Trigger bus address change when setting the vram address - needed by MMC3 IRQ counter
 				//"4) Should be clocked when A12 changes to 1 via $2006 write"
 				SetBusAddress(_videoRamAddr & 0x3FFF);
-				_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 			}
+
+			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
 		} else {
 			_needStateUpdate = true;
 		}

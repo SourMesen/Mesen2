@@ -257,7 +257,9 @@ namespace Mesen.Debugger.ViewModels
 				details.Add("Previous frame");
 			}
 			if(evt.Flags.HasFlag(EventFlags.NesPpuSecondWrite)) {
-				details.Add("2nd register write");
+				details.Add("Second register write");
+			} else if(evt.Flags.HasFlag(EventFlags.NesPpuFirstWrite)) {
+				details.Add("First register write");
 			}
 			if(evt.Flags.HasFlag(EventFlags.HasTargetMemory)) {
 				details.Add("Target: " + evt.TargetMemory.MemType.GetShortName() + " $" + evt.TargetMemory.Address.ToString(evt.TargetMemory.MemType.GetFormatString()));

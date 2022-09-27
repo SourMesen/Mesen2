@@ -43,7 +43,8 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	evt.DmaChannel = -1;
 
 	uint32_t addr = operation.Address;
-	if(operation.Type == MemoryOperationType::Write && (addr & 0xE000) == 0x2000) {
+	bool isWrite = operation.Type == MemoryOperationType::Write || operation.Type == MemoryOperationType::DmaWrite || operation.Type == MemoryOperationType::DummyWrite;
+	if(isWrite && (addr & 0xE000) == 0x2000) {
 		NesPpuState state;
 		_ppu->GetState(state);
 		switch(addr & 0x07) {
@@ -61,6 +62,8 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 				//2005/2006 PPU register writes, mark as 2nd write when needed
 				if(state.WriteToggle) {
 					evt.Flags = (uint32_t)EventFlags::NesPpuSecondWrite;
+				} else {
+					evt.Flags = (uint32_t)EventFlags::NesPpuFirstWrite;
 				}
 				break;
 
@@ -141,7 +144,8 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 		case DebugEventType::Breakpoint: return _config.MarkedBreakpoints;
 		case DebugEventType::Register:
 			uint16_t addr = (uint16_t)evt.Operation.Address;
-			if(evt.Operation.Type == MemoryOperationType::Write) {
+			bool isWrite = evt.Operation.Type == MemoryOperationType::Write || evt.Operation.Type == MemoryOperationType::DmaWrite || evt.Operation.Type == MemoryOperationType::DummyWrite;
+			if(isWrite) {
 				if(addr >= 0x2000 && addr <= 0x3FFF) {
 					switch(addr & 0x200F) {
 						case 0x2000: return _config.Ppu2000Write;
@@ -167,7 +171,7 @@ EventViewerCategoryCfg NesEventManager::GetEventConfig(DebugEventInfo& evt)
 						case 0x2007: return _config.Ppu2007Read;
 					}
 				} else if(addr >= 0x4018 && _mapper->IsReadRegister(addr)) {
-					return _config.MapperRegisterWrites;
+					return _config.MapperRegisterReads;
 				} else if(addr >= 0x4000 && addr <= 0x4015) {
 					return _config.ApuRegisterReads;
 				} else if(addr == 0x4016 || addr == 0x4017) {

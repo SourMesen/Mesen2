@@ -677,8 +677,9 @@ namespace Mesen.Interop
 	public enum EventFlags
 	{
 		PreviousFrame = 1,
-		NesPpuSecondWrite = 2,
-		HasTargetMemory = 4,
+		NesPpuFirstWrite = 2,
+		NesPpuSecondWrite = 4,
+		HasTargetMemory = 8,
 	}
 
 	public struct DebugEventInfo
