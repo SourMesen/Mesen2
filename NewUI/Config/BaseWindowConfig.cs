@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
+using System;
 
 namespace Mesen.Config
 {
@@ -9,16 +10,25 @@ namespace Mesen.Config
 		public PixelSize WindowSize { get; set; } = new PixelSize(0, 0);
 		public PixelPoint WindowLocation { get; set; } = new PixelPoint(0, 0);
 
+		private PixelRect _restoreBounds = PixelRect.Empty;
+
 		public void SaveWindowSettings(Window wnd)
 		{
 			if(wnd.WindowState == WindowState.Normal) {
 				WindowLocation = wnd.Position;
 				WindowSize = new PixelSize((int)wnd.ClientSize.Width, (int)wnd.ClientSize.Height);
+			} else if(!_restoreBounds.IsEmpty) {
+				WindowLocation = _restoreBounds.Position;
+				WindowSize = _restoreBounds.Size;
 			}
 		}
 
 		public void LoadWindowSettings(Window wnd)
 		{
+			//Update _restoreBounds when size/position changes
+			wnd.GetPropertyChangedObservable(Window.ClientSizeProperty).Subscribe(x => UpdateRestoreBounds(wnd));
+			wnd.PositionChanged += (s, e) => UpdateRestoreBounds(wnd);
+
 			if(WindowSize.Width != 0 && WindowSize.Height != 0) {
 				if(WindowSize.Width * WindowSize.Height < 400) {
 					//Window is too small, reset to a default size
@@ -56,6 +66,14 @@ namespace Mesen.Config
 				//Set position again after opening
 				//Fixes KDE (or X11?) not showing the window in the specified position
 				wnd.Opened += (s, e) => { wnd.Position = WindowLocation; };
+			}
+		}
+
+		private void UpdateRestoreBounds(Window wnd)
+		{
+			if(wnd.WindowState == WindowState.Normal && (wnd.Position.X > 0 || wnd.Position.Y > 0) && wnd.PlatformImpl != null && wnd.Width != wnd.Screens.ScreenFromWindow(wnd.PlatformImpl)?.Bounds.Width) {
+				//If window is not maximized/minimized, save current position+size
+				_restoreBounds = new PixelRect(wnd.Position.X, wnd.Position.Y, (int)wnd.Width, (int)wnd.Height);
 			}
 		}
 	}
