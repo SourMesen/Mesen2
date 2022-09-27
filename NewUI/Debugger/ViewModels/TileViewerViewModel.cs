@@ -64,6 +64,9 @@ namespace Mesen.Debugger.ViewModels
 		public List<object> FileMenuActions { get; } = new();
 		public List<object> ViewMenuActions { get; } = new();
 
+		public int ColumnCount => Math.Clamp(Config.ColumnCount, 4, 256); 
+		public int RowCount => Math.Clamp(Config.RowCount, 4, 256);
+
 		private BaseState? _ppuState;
 		private byte[] _sourceData = Array.Empty<byte>();
 
@@ -203,8 +206,12 @@ namespace Mesen.Debugger.ViewModels
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.ColumnCount, x => x.Config.RowCount, x => x.Config.Format).Subscribe(x => {
+				//Enforce min/max values for column/row counts
+				Config.ColumnCount = ColumnCount;
+				Config.RowCount = RowCount;
+
 				ApplyColumnRowCountRestrictions();
-				AddressIncrement = Config.ColumnCount * Config.RowCount * 8 * 8 * Config.Format.GetBitsPerPixel() / 8;
+				AddressIncrement = ColumnCount * RowCount * 8 * 8 * Config.Format.GetBitsPerPixel() / 8;
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Source).Subscribe(memType => {
@@ -301,7 +308,7 @@ namespace Mesen.Debugger.ViewModels
 
 			int gap = address - Config.StartAddress;
 			int tileNumber = gap / bytesPerTile;
-			int tilesPerRow = Config.ColumnCount * 8 / tileSize.Width;
+			int tilesPerRow = ColumnCount * 8 / tileSize.Width;
 
 			PixelPoint pos = new PixelPoint(tileNumber % tilesPerRow, tileNumber / tilesPerRow);
 			pos = ToLayoutCoordinates(Config.Layout, pos);
@@ -315,13 +322,13 @@ namespace Mesen.Debugger.ViewModels
 
 			switch(layout) {
 				case TileLayout.SingleLine8x16: {
-					int displayColumn = column / 2 + ((row & 0x01) != 0 ? Config.ColumnCount / 2 : 0);
+					int displayColumn = column / 2 + ((row & 0x01) != 0 ? ColumnCount / 2 : 0);
 					int displayRow = (row & ~0x01) + ((column & 0x01) != 0 ? 1 : 0);
 					return new PixelPoint(displayColumn, displayRow);
 				}
 
 				case TileLayout.SingleLine16x16: {
-					int displayColumn = (column / 2) + (column & 0x01) + ((row & 0x01) != 0 ? Config.ColumnCount / 2 : 0) + ((column & 0x02) != 0 ? -1 : 0);
+					int displayColumn = (column / 2) + (column & 0x01) + ((row & 0x01) != 0 ? ColumnCount / 2 : 0) + ((column & 0x02) != 0 ? -1 : 0);
 					int displayRow = (row & ~0x01) + ((column & 0x02) != 0 ? 1 : 0);
 					return new PixelPoint(displayColumn, displayRow);
 				}
@@ -343,8 +350,8 @@ namespace Mesen.Debugger.ViewModels
 				case TileLayout.SingleLine8x16: {
 					//A0 B0 C0 D0 -> A0 A1 B0 B1
 					//A1 B1 C1 D1    C0 C1 D0 D1
-					int displayColumn = (column * 2) % Config.ColumnCount + (row & 0x01);
-					int displayRow = (row & ~0x01) + ((column >= Config.ColumnCount / 2) ? 1 : 0);
+					int displayColumn = (column * 2) % ColumnCount + (row & 0x01);
+					int displayRow = (row & ~0x01) + ((column >= ColumnCount / 2) ? 1 : 0);
 					return new PixelPoint(displayColumn, displayRow);
 				}
 
@@ -353,8 +360,8 @@ namespace Mesen.Debugger.ViewModels
 					//A2 A3 B2 B3 C2 C3 D2 D3    C0 C1 C2 C3 D0 D1 D2 D3
 					//E0 E1 F0 F1 G0 G1 H0 H1 -> E0 E1 E2 E3 F0 F1 F2 F3
 					//E2 E3 F2 F3 G2 G3 H2 H3    G0 G1 G2 G3 H0 H1 H2 H3
-					int displayColumn = ((column & ~0x01) * 2 + ((row & 0x01) != 0 ? 2 : 0) + (column & 0x01)) % Config.ColumnCount;
-					int displayRow = (row & ~0x01) + ((column >= Config.ColumnCount / 2) ? 1 : 0);
+					int displayColumn = ((column & ~0x01) * 2 + ((row & 0x01) != 0 ? 2 : 0) + (column & 0x01)) % ColumnCount;
+					int displayRow = (row & ~0x01) + ((column >= ColumnCount / 2) ? 1 : 0);
 					return new PixelPoint(displayColumn, displayRow);
 				}
 
@@ -436,7 +443,7 @@ namespace Mesen.Debugger.ViewModels
 			PixelSize tileSize = Config.Format.GetTileSize();
 			int bytesPerTile = tileSize.Width * tileSize.Height * bitsPerPixel / 8;
 			PixelPoint pos = FromLayoutCoordinates(Config.Layout, new PixelPoint(pixelPosition.X / tileSize.Width, pixelPosition.Y / tileSize.Height));
-			int offset = (pos.Y * Config.ColumnCount * 8 / tileSize.Width + pos.X) * bytesPerTile;
+			int offset = (pos.Y * ColumnCount * 8 / tileSize.Width + pos.X) * bytesPerTile;
 			return (Config.StartAddress + offset) % (MaximumAddress + 1);
 		}
 
@@ -477,7 +484,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Tile address", FormatAddress(address, Config.Source));
 			}
 
-			if(IsNesChrModeEnabled) {
+			if(ShowNesTileIndex) {
 				entries.AddEntry("Tile index", "$" + ((address >> 4) & 0xFF).ToString("X2"));
 			}
 
@@ -513,12 +520,13 @@ namespace Mesen.Debugger.ViewModels
 
 		private void DrawNesChrPageDelimiters()
 		{
-			double pageHeight = ((double)256 / Config.ColumnCount) * 8;
+			double pageHeight = ((double)256 / ColumnCount) * 8;
 			double y = pageHeight;
 			List<PictureViewerLine> delimiters = new List<PictureViewerLine>();
-			while(y < Config.RowCount * 8) {
+			int yMax = RowCount * 8;
+			while(y < yMax) {
 				Point start = new Point(0, y);
-				Point end = new Point(Config.ColumnCount * 8 - 1, y);
+				Point end = new Point(ColumnCount * 8 - 1, y);
 				delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.Black });
 				delimiters.Add(new PictureViewerLine() { Start = start, End = end, Color = Colors.White, DashStyle = new DashStyle(DashStyle.Dash.Dashes, 0) });
 				y += pageHeight;
@@ -526,12 +534,17 @@ namespace Mesen.Debugger.ViewModels
 			PageDelimiters = delimiters;
 		}
 
+		private bool ShowNesTileIndex
+		{
+			get { return Config.Source.IsPpuMemory() && Config.Source.ToCpuType() == CpuType.Nes && (Config.StartAddress & 0xFFF) == 0; }
+		}
+
 		private bool IsNesChrModeEnabled
 		{
 			get
 			{
-				if(Config.Source.IsPpuMemory() && Config.Source.ToCpuType() == CpuType.Nes && (Config.StartAddress & 0xFFF) == 0) {
-					double rowsPerPage = (double)256 / Config.ColumnCount;
+				if(ShowNesTileIndex) {
+					double rowsPerPage = (double)256 / ColumnCount;
 					return rowsPerPage == Math.Floor(rowsPerPage);
 				}
 				return false;
@@ -543,8 +556,8 @@ namespace Mesen.Debugger.ViewModels
 			return new GetTileViewOptions() {
 				MemType = Config.Source,
 				Format = Config.Format,
-				Width = Config.ColumnCount,
-				Height = Config.RowCount,
+				Width = ColumnCount,
+				Height = RowCount,
 				Palette = SelectedPalette,
 				Layout = Config.Layout,
 				Filter = ShowFilterDropdown ? Config.Filter : TileFilter.None,
@@ -557,8 +570,8 @@ namespace Mesen.Debugger.ViewModels
 		[MemberNotNull(nameof(ViewerBitmap))]
 		private void InitBitmap()
 		{
-			int width = Config.ColumnCount * 8;
-			int height = Config.RowCount * 8;
+			int width = ColumnCount * 8;
+			int height = RowCount * 8;
 			if(ViewerBitmap == null || ViewerBitmap.PixelSize.Width != width || ViewerBitmap.PixelSize.Height != height) {
 				ViewerBitmap = new DynamicBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
 			}
