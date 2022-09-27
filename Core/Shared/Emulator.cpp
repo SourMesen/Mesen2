@@ -925,6 +925,9 @@ void Emulator::InitDebugger()
 			BlockDebuggerRequests();
 			ResetDebugger(true);
 			_allowDebuggerRequest = true;
+
+			//_paused should be false while debugger is enabled
+			_paused = false;
 		}
 	}
 }
