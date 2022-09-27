@@ -9,6 +9,7 @@ namespace Mesen.Config
 	{
 		public PixelSize WindowSize { get; set; } = new PixelSize(0, 0);
 		public PixelPoint WindowLocation { get; set; } = new PixelPoint(0, 0);
+		public bool WindowIsMaximized { get; set; } = false;
 
 		private PixelRect _restoreBounds = PixelRect.Empty;
 
@@ -21,6 +22,8 @@ namespace Mesen.Config
 				WindowLocation = _restoreBounds.Position;
 				WindowSize = _restoreBounds.Size;
 			}
+
+			WindowIsMaximized = wnd.WindowState == WindowState.Maximized;
 		}
 
 		public void LoadWindowSettings(Window wnd)
@@ -63,9 +66,15 @@ namespace Mesen.Config
 				wnd.Width = WindowSize.Width;
 				wnd.Height = WindowSize.Height;
 
-				//Set position again after opening
-				//Fixes KDE (or X11?) not showing the window in the specified position
-				wnd.Opened += (s, e) => { wnd.Position = WindowLocation; };
+				wnd.Opened += (s, e) => {
+					//Set position again after opening
+					//Fixes KDE (or X11?) not showing the window in the specified position
+					wnd.Position = WindowLocation;
+					
+					if(WindowIsMaximized) {
+						wnd.WindowState = WindowState.Maximized;
+					}
+				};
 			}
 		}
 
