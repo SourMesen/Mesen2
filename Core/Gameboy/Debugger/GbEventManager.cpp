@@ -33,7 +33,7 @@ void GbEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operatio
 	evt.Cycle = _ppu->GetState().Cycle;
 	evt.BreakpointId = breakpointId;
 	evt.DmaChannel = -1;
-	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Gameboy, true);
 	_debugEvents.push_back(evt);
 }
 
@@ -45,7 +45,7 @@ void GbEventManager::AddEvent(DebugEventType type)
 	evt.Cycle = _ppu->GetState().Cycle;
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
-	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Gameboy, true);
 	_debugEvents.push_back(evt);
 }
 

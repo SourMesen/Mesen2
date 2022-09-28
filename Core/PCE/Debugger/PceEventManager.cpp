@@ -43,7 +43,7 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 	evt.Cycle = _vdc->GetHClock();
 	evt.BreakpointId = breakpointId;
 	evt.DmaChannel = -1;
-	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Pce, true);
 
 	if(operation.Type == MemoryOperationType::Write && (operation.Address & 0x1FFF) < 0x400 && (operation.Address & 0x03) >= 2) {
 		evt.RegisterId = _vdc->GetState().CurrentReg; //VDC reg
@@ -60,7 +60,7 @@ void PceEventManager::AddEvent(DebugEventType type)
 	evt.Cycle = _vdc->GetHClock();
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
-	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Pce, true);
 	_debugEvents.push_back(evt);
 }
 

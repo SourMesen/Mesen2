@@ -44,7 +44,7 @@ void SnesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operat
 	}
 
 	SnesCpuState state = _cpu->GetState();
-	evt.ProgramCounter = (state.K << 16) | state.PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Snes, true);
 
 	_debugEvents.push_back(evt);
 }
@@ -59,7 +59,7 @@ void SnesEventManager::AddEvent(DebugEventType type)
 	evt.DmaChannel = -1;
 	
 	SnesCpuState state = _cpu->GetState();
-	evt.ProgramCounter = (state.K << 16) | state.PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Snes, true);
 
 	_debugEvents.push_back(evt);
 }

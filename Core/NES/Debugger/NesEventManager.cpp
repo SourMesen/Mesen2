@@ -39,7 +39,7 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	evt.Scanline = (int16_t)_ppu->GetCurrentScanline();
 	evt.Cycle = (uint16_t)_ppu->GetCurrentCycle();
 	evt.BreakpointId = breakpointId;
-	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Nes, true);
 	evt.DmaChannel = -1;
 
 	uint32_t addr = operation.Address;
