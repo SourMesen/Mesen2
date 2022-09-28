@@ -651,6 +651,8 @@ namespace Mesen.Interop
 		public UInt16 SrcAddress;
 		public UInt16 TransferSize;
 		public UInt16 HdmaTableAddress;
+		public byte SrcBank;
+		public byte DestAddress;
 
 		[MarshalAs(UnmanagedType.I1)] public bool DmaActive;
 
@@ -660,9 +662,6 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool HdmaIndirectAddressing;
 
 		public byte TransferMode;
-
-		public byte SrcBank;
-		public byte DestAddress;
 
 		public byte HdmaBank;
 		public byte HdmaLineCounterAndRepeat;

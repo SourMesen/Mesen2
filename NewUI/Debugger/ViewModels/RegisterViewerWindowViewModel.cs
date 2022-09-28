@@ -855,7 +855,8 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.7", "Direction", ch.InvertDirection ? "B -> A" : "A -> B"));
 
 				entries.Add(new RegEntry("$43" + i.ToString() + "1", "B Bus Address", ch.DestAddress, Format.X8));
-				entries.Add(new RegEntry("$43" + i.ToString() + "2/3/4", "A Bus Address", ((ch.SrcBank << 16) | ch.SrcAddress), Format.X24));
+				entries.Add(new RegEntry("$43" + i.ToString() + "2/3", "A Bus Address", ch.SrcAddress, Format.X16));
+				entries.Add(new RegEntry("$43" + i.ToString() + "4", "A Bus Bank", ch.SrcBank, Format.X8));
 				entries.Add(new RegEntry("$43" + i.ToString() + "5/6", "Size", ch.TransferSize, Format.X16));
 
 				entries.Add(new RegEntry("$43" + i.ToString() + "7", "HDMA Bank", ch.HdmaBank, Format.X8));
