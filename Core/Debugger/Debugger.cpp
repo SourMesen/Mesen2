@@ -526,11 +526,12 @@ void Debugger::GetTokenList(CpuType cpuType, char* tokenList)
 int32_t Debugger::EvaluateExpression(string expression, CpuType cpuType, EvalResultType &resultType, bool useCache)
 {
 	MemoryOperationInfo operationInfo { 0, 0, MemoryOperationType::Read, MemoryType::None };
+	AddressInfo addressInfo = { 0, MemoryType::None };
 	if(useCache && _debuggers[(int)cpuType].Evaluator) {
-		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, resultType, operationInfo);
+		return _debuggers[(int)cpuType].Evaluator->Evaluate(expression, resultType, operationInfo, addressInfo);
 	} else if(_debuggers[(int)cpuType].Debugger) {
 		ExpressionEvaluator expEval(this, _debuggers[(int)cpuType].Debugger.get(), cpuType);
-		return expEval.Evaluate(expression, resultType, operationInfo);
+		return expEval.Evaluate(expression, resultType, operationInfo, addressInfo);
 	}
 
 	resultType = EvalResultType::Invalid;

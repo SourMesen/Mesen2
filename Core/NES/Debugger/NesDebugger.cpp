@@ -173,7 +173,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_traceLogger->IsEnabled()) {
 			NesCpuState& state = _cpu->GetState();
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, CpuType::Nes);
-			_traceLogger->Log(state, disInfo, operation);
+			_traceLogger->Log(state, disInfo, operation, addressInfo);
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
@@ -186,7 +186,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _cpu->GetCycleCount());
 		_step->ProcessCpuCycle();
@@ -205,7 +205,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 		
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount());
@@ -239,7 +239,7 @@ void NesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	}
 
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _cpu->GetCycleCount());

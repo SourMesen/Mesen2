@@ -89,7 +89,7 @@ void Cx4Debugger::ProcessInstruction()
 
 	if(_traceLogger->IsEnabled()) {
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, pc, 0, CpuType::Cx4);
-		_traceLogger->Log(state, disInfo, operation);
+		_traceLogger->Log(state, disInfo, operation, addressInfo);
 	}
 
 	AddressInfo opCodeHighAddr = _cx4->GetMemoryMappings()->GetAbsoluteAddress(pc + 1);
@@ -109,7 +109,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_codeDataLogger->SetData<SnesCdlFlags::Cx4>(addressInfo.Address);
 	}
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 	_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 
@@ -123,7 +123,7 @@ void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 }
 

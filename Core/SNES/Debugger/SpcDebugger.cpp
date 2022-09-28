@@ -114,19 +114,19 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		if(_traceLogger->IsEnabled()) {
 			SpcState& state = _spc->GetState();
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-			_traceLogger->Log(state, disInfo, operation);
+			_traceLogger->Log(state, disInfo, operation, addressInfo);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
@@ -143,7 +143,7 @@ void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 }
 

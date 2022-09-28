@@ -145,7 +145,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled()) {
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Gameboy);
-			_traceLogger->Log(_cpu->GetState(), disInfo, operation);
+			_traceLogger->Log(_cpu->GetState(), disInfo, operation, addressInfo);
 		}
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _gameboy->GetMasterClock());
 	} else if(type == MemoryOperationType::ExecOperand) {
@@ -154,7 +154,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _gameboy->GetMasterClock());
@@ -165,7 +165,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 		}
 
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
@@ -200,7 +200,7 @@ void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType 
 	}
 
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 
 	if(addr == 0xFFFF || (addr >= 0xFE00 && addr < 0xFF80) || (addr >= 0x8000 && addr <= 0x9FFF)) {

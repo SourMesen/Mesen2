@@ -208,7 +208,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled()) {
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, state.PS, _cpuType);
-			_traceLogger->Log(state, disInfo, operation);
+			_traceLogger->Log(state, disInfo, operation, addressInfo);
 		}
 		
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
@@ -220,7 +220,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 			_cdl->SetCode(addressInfo.Address, (state.PS & (SnesCdlFlags::IndexMode8 | SnesCdlFlags::MemoryMode8)));
 		}
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
 		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
@@ -231,7 +231,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 			_cdl->SetData(addressInfo.Address);
 		}
 		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation);
+			_traceLogger->LogNonExec(operation, addressInfo);
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
@@ -267,7 +267,7 @@ void SnesDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationTyp
 	}
 
 	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation);
+		_traceLogger->LogNonExec(operation, addressInfo);
 	}
 
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());

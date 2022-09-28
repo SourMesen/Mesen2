@@ -414,7 +414,7 @@ public:
 		memset(_rowIds, 0, sizeof(uint64_t) * BaseTraceLogger::ExecutionLogSize);
 	}
 
-	void LogNonExec(MemoryOperationInfo& operation)
+	void LogNonExec(MemoryOperationInfo& operation, AddressInfo& addressInfo)
 	{
 		if(_pendingLog) {
 			int pos = _currentPos - 1;
@@ -422,18 +422,18 @@ public:
 				pos = BaseTraceLogger::ExecutionLogSize - 1;
 			}
 
-			if(ConditionMatches(_lastDisassemblyInfo, operation)) {
+			if(ConditionMatches(_lastDisassemblyInfo, operation, addressInfo)) {
 				AddRow(_lastState, _lastDisassemblyInfo);
 				_pendingLog = false;
 			}
 		}
 	}
 
-	void Log(CpuStateType& cpuState, DisassemblyInfo& disassemblyInfo, MemoryOperationInfo& operation)
+	void Log(CpuStateType& cpuState, DisassemblyInfo& disassemblyInfo, MemoryOperationInfo& operation, AddressInfo& addressInfo)
 	{
 		if(_enabled) {
 			//For the sake of performance, only log data for the CPUs we're actively displaying/logging
-			if(ConditionMatches(disassemblyInfo, operation)) {
+			if(ConditionMatches(disassemblyInfo, operation, addressInfo)) {
 				AddRow(cpuState, disassemblyInfo);
 			} else {
 				_pendingLog = true;
@@ -477,11 +477,11 @@ public:
 		return _rowIds[i];
 	}
 
-	bool ConditionMatches(DisassemblyInfo &disassemblyInfo, MemoryOperationInfo &operationInfo)
+	bool ConditionMatches(DisassemblyInfo &disassemblyInfo, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo)
 	{
 		if(!_conditionData.RpnQueue.empty()) {
 			EvalResultType type;
-			if(!_expEvaluator->Evaluate(_conditionData, type, operationInfo)) {
+			if(!_expEvaluator->Evaluate(_conditionData, type, operationInfo, addressInfo)) {
 				return false;
 			}
 		}

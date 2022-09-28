@@ -85,7 +85,7 @@ int BreakpointManager::InternalCheckBreakpoint(MemoryOperationInfo operationInfo
 	vector<Breakpoint> &breakpoints = _breakpoints[(int)operationInfo.Type];
 	for(size_t i = 0, len = breakpoints.size(); i < len; i++) {
 		if(breakpoints[i].Matches(operationInfo, address)) {
-			if(breakpoints[i].HasCondition() && !_bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], resultType, operationInfo)) {
+			if(breakpoints[i].HasCondition() && !_bpExpEval->Evaluate(_rpnList[(int)operationInfo.Type][i], resultType, operationInfo, address)) {
 				continue;
 			}
 

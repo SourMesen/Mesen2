@@ -54,6 +54,7 @@ namespace Mesen.Debugger.Utilities
 				addBoldRow("Other values");
 				addRow("  OpPc: Program counter of the first byte of the current instruction");
 				addRow("  Address: CPU memory address being read/written");
+				addRow("  MemAddress: RAM or ROM address (byte offset) being read/written (-1 if not mapped to RAM/ROM)");
 				addRow("  Value: Value being read/written");
 				addRow("  IsRead: True if the CPU is reading data");
 				addRow("  IsWrite: True if the CPU is writing data");

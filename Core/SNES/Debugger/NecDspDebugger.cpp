@@ -77,7 +77,7 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 
 	if(_traceLogger->IsEnabled()) {
 		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-		_traceLogger->Log(_dsp->GetState(), disInfo, operation);
+		_traceLogger->Log(_dsp->GetState(), disInfo, operation, addressInfo);
 	}
 }
 

@@ -133,6 +133,8 @@ int64_t ExpressionEvaluator::ProcessSharedTokens(string token)
 		return EvalValues::Value;
 	} else if(token == "address") {
 		return EvalValues::Address;
+	} else if(token == "memaddress") {
+		return EvalValues::MemoryAddress;
 	} else if(token == "iswrite") {
 		return EvalValues::IsWrite;
 	} else if(token == "isread") {
@@ -352,7 +354,7 @@ bool ExpressionEvaluator::ToRpn(string expression, ExpressionData &data)
 	return true;
 }
 
-int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
+int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo)
 {
 	if(data.RpnQueue.empty()) {
 		resultType = EvalResultType::Invalid;
@@ -391,6 +393,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 				switch(token) {
 					case EvalValues::Value: token = operationInfo.Value; break;
 					case EvalValues::Address: token = operationInfo.Address; break;
+					case EvalValues::MemoryAddress: token = addressInfo.Address; break;
 					case EvalValues::IsWrite: token = operationInfo.Type == MemoryOperationType::Write || operationInfo.Type == MemoryOperationType::DmaWrite || operationInfo.Type == MemoryOperationType::DummyWrite; break;
 					case EvalValues::IsRead: token = operationInfo.Type != MemoryOperationType::Write && operationInfo.Type != MemoryOperationType::DmaWrite && operationInfo.Type != MemoryOperationType::DummyWrite; break;
 					case EvalValues::IsDma: token = operationInfo.Type == MemoryOperationType::DmaRead || operationInfo.Type == MemoryOperationType::DmaWrite; break;
@@ -565,7 +568,7 @@ ExpressionData* ExpressionEvaluator::PrivateGetRpnList(string expression, bool& 
 	return cachedData;
 }
 
-int32_t ExpressionEvaluator::PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool& success)
+int32_t ExpressionEvaluator::PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo, bool& success)
 {
 	success = true;
 	ExpressionData *cachedData = PrivateGetRpnList(expression, success);
@@ -575,14 +578,14 @@ int32_t ExpressionEvaluator::PrivateEvaluate(string expression, EvalResultType &
 		return 0;
 	}
 
-	return Evaluate(*cachedData, resultType, operationInfo);	
+	return Evaluate(*cachedData, resultType, operationInfo, addressInfo);	
 }
 
-int32_t ExpressionEvaluator::Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo)
+int32_t ExpressionEvaluator::Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo)
 {
 	try {
 		bool success;
-		int32_t result = PrivateEvaluate(expression, resultType, operationInfo, success);
+		int32_t result = PrivateEvaluate(expression, resultType, operationInfo, addressInfo, success);
 		if(success) {
 			return result;
 		}
@@ -596,9 +599,10 @@ bool ExpressionEvaluator::Validate(string expression)
 {
 	try {
 		EvalResultType type;
-		MemoryOperationInfo operationInfo;
+		MemoryOperationInfo operationInfo = {};
+		AddressInfo addressInfo = {};
 		bool success;
-		PrivateEvaluate(expression, type, operationInfo, success);
+		PrivateEvaluate(expression, type, operationInfo, addressInfo, success);
 		return success;
 	} catch(std::exception&) {
 		return false;

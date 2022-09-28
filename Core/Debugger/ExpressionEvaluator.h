@@ -75,6 +75,7 @@ enum EvalValues : int64_t
 	Irq,
 	Value,
 	Address,
+	MemoryAddress,
 	IsWrite,
 	IsRead,
 	IsDma,
@@ -220,7 +221,7 @@ private:
 	string GetNextToken(string expression, size_t &pos, ExpressionData &data, bool &success, bool previousTokenIsOp);
 	bool ProcessSpecialOperator(EvalOperators evalOp, std::stack<EvalOperators> &opStack, std::stack<int> &precedenceStack, vector<int64_t> &outputQueue);
 	bool ToRpn(string expression, ExpressionData &data);
-	int32_t PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, bool &success);
+	int32_t PrivateEvaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo, bool &success);
 	ExpressionData* PrivateGetRpnList(string expression, bool& success);
 
 protected:
@@ -228,8 +229,8 @@ protected:
 public:
 	ExpressionEvaluator(Debugger* debugger, IDebugger* cpuDebugger, CpuType cpuType);
 
-	int32_t Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
-	int32_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo);
+	int32_t Evaluate(ExpressionData &data, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
+	int32_t Evaluate(string expression, EvalResultType &resultType, MemoryOperationInfo &operationInfo, AddressInfo& addressInfo);
 	ExpressionData GetRpnList(string expression, bool &success);
 
 	void GetTokenList(char* tokenList);
