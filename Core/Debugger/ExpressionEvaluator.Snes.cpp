@@ -13,6 +13,8 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetSnesTokens()
 		{ "ps", EvalValues::RegPS },
 		{ "sp", EvalValues::RegSP },
 		{ "pc", EvalValues::RegPC },
+		{ "db", EvalValues::RegDB },
+		{ "d", EvalValues::RegD },
 		{ "irq", EvalValues::Irq },
 		{ "nmi", EvalValues::Nmi },
 		{ "frame", EvalValues::PpuFrameCount },
@@ -47,6 +49,8 @@ int64_t ExpressionEvaluator::GetSnesTokenValue(int64_t token, EvalResultType& re
 		case EvalValues::RegY: return s.Y;
 		case EvalValues::RegSP: return s.SP;
 		case EvalValues::RegPS: return s.PS;
+		case EvalValues::RegDB: return s.DBR;
+		case EvalValues::RegD: return s.D;
 		case EvalValues::RegPC: return (s.K << 16) | s.PC;
 		case EvalValues::Nmi: return ReturnBool(s.NmiFlag, resultType);
 		case EvalValues::Irq: return ReturnBool(s.IrqSource, resultType);

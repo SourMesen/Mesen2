@@ -54,6 +54,7 @@ enum EvalValues : int64_t
 	RegX,
 	RegY,
 	RegSP,
+	RegDB,
 
 	RegPS,
 	RegPS_Carry,
