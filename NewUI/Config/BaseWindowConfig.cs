@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Platform;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Mesen.Config
 {
@@ -12,6 +13,7 @@ namespace Mesen.Config
 		public bool WindowIsMaximized { get; set; } = false;
 
 		private PixelRect _restoreBounds = PixelRect.Empty;
+		private bool _needPositionCheck = false;
 
 		public void SaveWindowSettings(Window wnd)
 		{
@@ -67,11 +69,17 @@ namespace Mesen.Config
 				wnd.Height = WindowSize.Height;
 
 				wnd.Opened += (s, e) => {
-					//Set position again after opening
-					//Fixes KDE (or X11?) not showing the window in the specified position
-					wnd.Position = WindowLocation;
-					
-					if(WindowIsMaximized) {
+					if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+						//Set position again after opening
+						//Fixes KDE (or X11?) not showing the window in the specified position
+						_needPositionCheck = true;
+						wnd.Position = WindowLocation;
+					} else {
+						//Also needed for Windows, otherwise window slightly shifts to the right
+						wnd.Position = WindowLocation;
+					}
+
+					if(!_needPositionCheck && WindowIsMaximized) {
 						wnd.WindowState = WindowState.Maximized;
 					}
 				};
@@ -80,6 +88,23 @@ namespace Mesen.Config
 
 		private void UpdateRestoreBounds(Window wnd)
 		{
+			if(_needPositionCheck) {
+				//Linux doesn't set the position correctly (because of title bar, etc.), adjust it to what it should be
+				//See Avalonia bug: github.com/AvaloniaUI/Avalonia/issues/8161
+				_needPositionCheck = false;
+				if(wnd.Position.Y >= WindowLocation.Y && wnd.Position.X >= WindowLocation.X) {
+					wnd.Position = new PixelPoint(
+						WindowLocation.X - (wnd.Position.X - WindowLocation.X),
+						WindowLocation.Y - (wnd.Position.Y - WindowLocation.Y)
+					);
+				}
+				
+				if(WindowIsMaximized) {
+					//Maximize after the position is fixed, otherwise when the state goes back to normal, window position will be offset
+					wnd.WindowState = WindowState.Maximized;
+				}
+			}
+
 			if(wnd.WindowState == WindowState.Normal && (wnd.Position.X > 0 || wnd.Position.Y > 0) && wnd.PlatformImpl != null && wnd.Width != wnd.Screens.ScreenFromWindow(wnd.PlatformImpl)?.Bounds.Width) {
 				//If window is not maximized/minimized, save current position+size
 				_restoreBounds = new PixelRect(wnd.Position.X, wnd.Position.Y, (int)wnd.Width, (int)wnd.Height);
