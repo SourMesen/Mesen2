@@ -71,6 +71,10 @@ enum EvalValues : int64_t
 	PpuCycle,
 	PpuHClock,
 	PpuScanline,
+	
+	PpuVramAddress,
+	PpuTmpVramAddress,
+
 	Nmi,
 	Irq,
 	Value,

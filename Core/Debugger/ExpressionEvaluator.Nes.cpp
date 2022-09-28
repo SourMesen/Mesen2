@@ -17,6 +17,8 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetNesTokens()
 		{ "frame", EvalValues::PpuFrameCount },
 		{ "cycle", EvalValues::PpuCycle },
 		{ "scanline", EvalValues::PpuScanline },
+		{ "v", EvalValues::PpuVramAddress },
+		{ "t", EvalValues::PpuTmpVramAddress },
 		{ "sprite0hit", EvalValues::Sprite0Hit },
 		{ "verticalblank", EvalValues::VerticalBlank },
 		{ "spriteoverflow", EvalValues::SpriteOverflow },
@@ -53,6 +55,9 @@ int64_t ExpressionEvaluator::GetNesTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::PpuFrameCount: return ppu().FrameCount;
 		case EvalValues::PpuCycle: return ppu().Cycle;
 		case EvalValues::PpuScanline: return ppu().Scanline;
+		
+		case EvalValues::PpuVramAddress: return ppu().VideoRamAddr;
+		case EvalValues::PpuTmpVramAddress: return ppu().TmpVideoRamAddr;
 
 		case EvalValues::Sprite0Hit: return ReturnBool(ppu().StatusFlags.Sprite0Hit, resultType);
 		case EvalValues::SpriteOverflow: return ReturnBool(ppu().StatusFlags.SpriteOverflow, resultType);
