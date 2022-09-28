@@ -76,6 +76,7 @@
 			<Grid ColumnDefinitions="*, Auto, Auto" Grid.Column="1" Grid.Row="3">
 				<TextBox
 					AcceptsReturn="True"
+					TextWrapping="Wrap"
 					Text="{CompiledBinding Breakpoint.Condition}"
 				/>
 
