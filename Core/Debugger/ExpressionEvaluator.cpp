@@ -618,8 +618,9 @@ void ExpressionEvaluator::RunTests()
 	//Some basic unit tests to run in debug mode
 	auto test = [=](string expr, EvalResultType expectedType, int expectedResult) {
 		MemoryOperationInfo opInfo = {};
+		AddressInfo addrInfo = {};
 		EvalResultType type;
-		int32_t result = Evaluate(expr, type, opInfo);
+		int32_t result = Evaluate(expr, type, opInfo, addrInfo);
 
 		assert(type == expectedType);
 		assert(result == expectedResult);
