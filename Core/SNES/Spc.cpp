@@ -445,7 +445,7 @@ uint8_t* Spc::GetSpcRom()
 
 void Spc::Serialize(Serializer &s)
 {
-	if(s.IsSaving()) {
+	if(s.IsSaving() && s.GetFormat() != SerializeFormat::Map) {
 		//Catch up SPC to main CPU before creating the state
 		Run();
 	}
@@ -473,11 +473,11 @@ void Spc::Serialize(Serializer &s)
 
 	SV(_dsp);
 
-	if(!s.IsSaving()) {
-		UpdateClockRatio();
-	}
-
 	if(s.GetFormat() != SerializeFormat::Map) {
+		if(!s.IsSaving()) {
+			UpdateClockRatio();
+		}
+
 		SV(_operandA); SV(_operandB); SV(_tmp1); SV(_tmp2); SV(_tmp3); SV(_opCode); SV(_opStep); SV(_opSubStep); SV(_enabled);
 	}
 }
