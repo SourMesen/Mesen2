@@ -188,7 +188,7 @@ namespace Mesen.ViewModels
 			return new MainMenuAction(shortcut) {
 				ActionType = ActionType.Custom,
 				DynamicText = () => {
-					string statePath = Path.Combine(ConfigManager.SaveStateFolder, EmuApi.GetRomInfo().GetRomName() + "_" + slot + ".mss");
+					string statePath = Path.Combine(ConfigManager.SaveStateFolder, EmuApi.GetRomInfo().GetRomName() + "_" + slot + "." + FileDialogHelper.MesenSaveStateExt);
 					string slotName = isAutoSaveSlot ? "Auto" : slot.ToString();
 
 					string header;

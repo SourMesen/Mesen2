@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Mesen.Interop;
 using Mesen.Localization;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -104,7 +105,12 @@ namespace Mesen.Controls
 
 			bool fileExists = File.Exists(game.FileName);
 			if(fileExists) {
-				SubTitle = new FileInfo(game.FileName).LastWriteTime.ToString();
+				if(Path.GetExtension(game.FileName) == "." + FileDialogHelper.MesenSaveStateExt) {
+					SubTitle = new FileInfo(game.FileName).LastWriteTime.ToString();
+				} else {
+					DateTime writeTime = new FileInfo(game.FileName).LastWriteTime;
+					SubTitle = writeTime.ToShortDateString() + " " + writeTime.ToShortTimeString();
+				}
 			} else {
 				SubTitle = ResourceHelper.GetMessage("EmptyState");
 			}
@@ -115,7 +121,7 @@ namespace Mesen.Controls
 				Task.Run(() => {
 					Bitmap? img = null;
 					try {
-						if(Path.GetExtension(game.FileName) == ".mss") {
+						if(Path.GetExtension(game.FileName) == "." + FileDialogHelper.MesenSaveStateExt) {
 							img = EmuApi.GetSaveStatePreview(game.FileName);
 						} else {
 							using FileStream fs = File.Open(game.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);

@@ -64,7 +64,7 @@ namespace Mesen.ViewModels
 				string romName = EmuApi.GetRomInfo().GetRomName();
 				for(int i = 0; i < (mode == GameScreenMode.LoadState ? 11 : 10); i++) {
 					entries.Add(new RecentGameInfo() {
-						FileName = Path.Combine(ConfigManager.SaveStateFolder, romName + "_" + (i + 1) + ".mss"),
+						FileName = Path.Combine(ConfigManager.SaveStateFolder, romName + "_" + (i + 1) + "." + FileDialogHelper.MesenSaveStateExt),
 						Name = i == 10 ? ResourceHelper.GetMessage("AutoSave") : ResourceHelper.GetMessage("SlotNumber", i + 1),
 						SaveMode = mode == GameScreenMode.SaveState
 					});

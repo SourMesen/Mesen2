@@ -40,7 +40,8 @@
 			DockPanel.Dock="Bottom"
 			Text="{CompiledBinding Title, ElementName=root}"
 			TextAlignment="Center"
-			TextWrapping="Wrap"
+			TextWrapping="NoWrap"
+			TextTrimming="CharacterEllipsis"
 			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
 		/>
 		<Button

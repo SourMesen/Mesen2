@@ -136,9 +136,9 @@ namespace Mesen.Utilities
 			if(File.Exists(filename)) {
 				if(IsPatchFile(filename)) {
 					LoadPatchFile(filename);
-				} else if(Path.GetExtension(filename).ToLowerInvariant() == ".mss") {
+				} else if(Path.GetExtension(filename).ToLowerInvariant() == "." + FileDialogHelper.MesenSaveStateExt) {
 					EmuApi.LoadStateFile(filename);
-				} else if(EmuApi.IsRunning() && Path.GetExtension(filename).ToLowerInvariant() == ".msm") {
+				} else if(EmuApi.IsRunning() && Path.GetExtension(filename).ToLowerInvariant() == "." + FileDialogHelper.MesenMovieExt) {
 					RecordApi.MoviePlay(filename);
 				} else {
 					LoadRom(filename);

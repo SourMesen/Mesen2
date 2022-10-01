@@ -1,5 +1,6 @@
 ﻿using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -17,7 +18,7 @@ namespace Mesen.ViewModels
 		{
 			Config = ConfigManager.Config.MovieRecord.Clone();
 
-			SavePath = Path.Join(ConfigManager.MovieFolder, EmuApi.GetRomInfo().GetRomName() + ".msm");
+			SavePath = Path.Join(ConfigManager.MovieFolder, EmuApi.GetRomInfo().GetRomName() + "." + FileDialogHelper.MesenMovieExt);
 		}
 
 		public void SaveConfig()

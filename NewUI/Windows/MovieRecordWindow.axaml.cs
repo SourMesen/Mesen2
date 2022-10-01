@@ -29,7 +29,7 @@ namespace Mesen.Windows
 		{
 			MovieRecordConfigViewModel model = (MovieRecordConfigViewModel)DataContext!;
 
-			string? filename = await FileDialogHelper.SaveFile(ConfigManager.MovieFolder, EmuApi.GetRomInfo().GetRomName() + ".msm", VisualRoot, FileDialogHelper.MesenMovieExt);
+			string? filename = await FileDialogHelper.SaveFile(ConfigManager.MovieFolder, EmuApi.GetRomInfo().GetRomName() + "." + FileDialogHelper.MesenMovieExt, VisualRoot, FileDialogHelper.MesenMovieExt);
 			if(filename != null) {
 				model.SavePath = filename;
 			}

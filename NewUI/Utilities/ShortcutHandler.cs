@@ -192,7 +192,7 @@ namespace Mesen.Utilities
 					RecordApi.MovieStop();
 				} else {
 					RecordMovieOptions options = new RecordMovieOptions(
-						GetOutputFilename(ConfigManager.MovieFolder, ".msm"),
+						GetOutputFilename(ConfigManager.MovieFolder, "." + FileDialogHelper.MesenMovieExt),
 						ConfigManager.Config.MovieRecord.Author,
 						ConfigManager.Config.MovieRecord.Description,
 						ConfigManager.Config.MovieRecord.RecordFrom
