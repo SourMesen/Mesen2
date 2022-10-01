@@ -118,7 +118,7 @@ void Gsu::Exec()
 		case 0x0B: BMI(); break;
 		case 0x0C: BCC(); break;
 		case 0x0D: BCS(); break;
-		case 0x0E: BCV(); break;
+		case 0x0E: BVC(); break;
 		case 0x0F: BVS(); break;
 
 		case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:

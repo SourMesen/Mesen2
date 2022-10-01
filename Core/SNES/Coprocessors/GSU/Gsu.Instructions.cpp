@@ -83,7 +83,7 @@ void Gsu::BCS()
 	Branch(_state.SFR.Carry);
 }
 
-void Gsu::BCV()
+void Gsu::BVC()
 {
 	Branch(!_state.SFR.Overflow);
 }

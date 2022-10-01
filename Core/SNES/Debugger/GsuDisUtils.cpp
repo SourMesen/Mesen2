@@ -48,7 +48,7 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0x0B: str.WriteAll("BMI "); getJumpTarget(); break;
 		case 0x0C: str.WriteAll("BCC "); getJumpTarget(); break;
 		case 0x0D: str.WriteAll("BCS "); getJumpTarget(); break;
-		case 0x0E: str.WriteAll("BCV "); getJumpTarget(); break;
+		case 0x0E: str.WriteAll("BVC "); getJumpTarget(); break;
 		case 0x0F: str.WriteAll("BVS "); getJumpTarget(); break;
 
 		case 0x10: case 0x11: case 0x12: case 0x13: case 0x14: case 0x15: case 0x16: case 0x17:

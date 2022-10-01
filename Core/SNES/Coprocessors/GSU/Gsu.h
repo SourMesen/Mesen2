@@ -83,7 +83,7 @@ private:
 	void BMI();
 	void BCC();
 	void BCS();
-	void BCV();
+	void BVC();
 	void BVS();
 	void JMP(uint8_t reg);
 
