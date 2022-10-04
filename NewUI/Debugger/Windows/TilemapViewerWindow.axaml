@@ -99,7 +99,7 @@
 				<DataTemplate></DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
-		
+
 		<dc:ScrollPictureViewer
 			x:Name="picViewer"
 			Source="{CompiledBinding ViewerBitmap}"
@@ -111,8 +111,16 @@
 			GridSizeY="{CompiledBinding GridSizeY}"
 			AltGridSizeX="16"
 			AltGridSizeY="16"
-			ShowAltGrid="{CompiledBinding Config.ShowAltGrid}"
 			OverlayLines="{CompiledBinding OverlayLines}"
-		/>
+		>
+			<dc:ScrollPictureViewer.ShowAltGrid>
+				<MultiBinding Converter="{x:Static BoolConverters.And}">
+					<MultiBinding.Bindings>
+						<Binding Path="IsNes" />
+						<Binding Path="Config.ShowAltGrid" />
+					</MultiBinding.Bindings>
+				</MultiBinding>
+			</dc:ScrollPictureViewer.ShowAltGrid>
+		</dc:ScrollPictureViewer>
 	</DockPanel>
 </Window>
