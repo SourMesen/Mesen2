@@ -35,6 +35,8 @@ namespace Mesen.Config
 		public static string DefaultScreenshotFolder { get { return Path.Combine(HomeFolder, "Screenshots"); } }
 		public static string DefaultWaveFolder { get { return Path.Combine(HomeFolder, "Wave"); } }
 
+		public static bool DisableSaveSettings { get; internal set; }
+
 		public static string GetConfigFile()
 		{
 			return Path.Combine(HomeFolder, "settings.json");
@@ -73,73 +75,80 @@ namespace Mesen.Config
 
 		public static MesenTheme ActiveTheme { get; private set; }
 
-		private static void ApplySetting(Type type, object instance, string name, string value)
+		private static void ApplySetting(object instance, PropertyInfo property, string value)
 		{
-			FieldInfo[] fields = type.GetFields();
-			foreach(FieldInfo info in fields) {
-				if(string.Compare(info.Name, name, true) == 0) {
-					try {
-						if(info.FieldType == typeof(int) || info.FieldType == typeof(uint) || info.FieldType == typeof(double)) {
-							if(info.GetCustomAttribute<MinMaxAttribute>() is MinMaxAttribute minMaxAttribute) {
-								if(info.FieldType == typeof(int)) {
-									if(int.TryParse(value, out int result)) {
-										if(result >= (int)minMaxAttribute.Min && result <= (int)minMaxAttribute.Max) {
-											info.SetValue(instance, result);
-										}
-									}
-								} else if(info.FieldType == typeof(uint)) {
-									if(uint.TryParse(value, out uint result)) {
-										if(result >= (uint)(int)minMaxAttribute.Min && result <= (uint)(int)minMaxAttribute.Max) {
-											info.SetValue(instance, result);
-										}
-									}
-								} else if(info.FieldType == typeof(double)) {
-									if(double.TryParse(value, out double result)) {
-										if(result >= (double)minMaxAttribute.Min && result <= (double)minMaxAttribute.Max) {
-											info.SetValue(instance, result);
-										}
-									}
-								}
-							} else {
-								if(info.GetCustomAttribute<ValidValuesAttribute>() is ValidValuesAttribute validValuesAttribute) {
-									if(uint.TryParse(value, out uint result)) {
-										if(validValuesAttribute.ValidValues.Contains(result)) {
-											info.SetValue(instance, result);
-										}
-									}
+			Type t = property.PropertyType;
+			try {
+				if(t == typeof(int) || t == typeof(uint) || t == typeof(double)) {
+					if(property.GetCustomAttribute<MinMaxAttribute>() is MinMaxAttribute minMaxAttribute) {
+						if(t == typeof(int)) {
+							if(int.TryParse(value, out int result)) {
+								if(result >= (int)minMaxAttribute.Min && result <= (int)minMaxAttribute.Max) {
+									property.SetValue(instance, result);
 								}
 							}
-						} else if(info.FieldType == typeof(bool)) {
-							if(string.Compare(value, "false", true) == 0) {
-								info.SetValue(instance, false);
-							} else if(string.Compare(value, "true", true) == 0) {
-								info.SetValue(instance, true);
+						} else if(t == typeof(uint)) {
+							if(uint.TryParse(value, out uint result)) {
+								if(result >= (uint)(int)minMaxAttribute.Min && result <= (uint)(int)minMaxAttribute.Max) {
+									property.SetValue(instance, result);
+								}
 							}
-						} else if(info.FieldType.IsEnum) {
-							int indexOf = Enum.GetNames(info.FieldType).Select((enumValue) => enumValue.ToLower()).ToList().IndexOf(value.ToLower());
-							if(indexOf >= 0) {
-								info.SetValue(instance, indexOf);
+						} else if(t == typeof(double)) {
+							if(double.TryParse(value, out double result)) {
+								if(result >= (double)minMaxAttribute.Min && result <= (double)minMaxAttribute.Max) {
+									property.SetValue(instance, result);
+								}
 							}
 						}
-					} catch {
+					} else {
+						if(property.GetCustomAttribute<ValidValuesAttribute>() is ValidValuesAttribute validValuesAttribute) {
+							if(uint.TryParse(value, out uint result)) {
+								if(validValuesAttribute.ValidValues.Contains(result)) {
+									property.SetValue(instance, result);
+								}
+							}
+						}
 					}
-					break;
+				} else if(t == typeof(bool)) {
+					if(bool.TryParse(value, out bool boolValue)) {
+						property.SetValue(instance, boolValue);
+					}
+				} else if(t.IsEnum) {
+					int indexOf = Enum.GetNames(t).Select((enumValue) => enumValue.ToLower()).ToList().IndexOf(value.ToLower());
+					if(indexOf >= 0) {
+						property.SetValue(instance, indexOf);
+					}
 				}
+			} catch {
 			}
 		}
 
-		public static void ProcessSwitches(List<string> switches)
+		public static void ProcessSwitch(string switchArg)
 		{
-			Regex regex = new Regex("/([a-z0-9_A-Z.]+)=([a-z0-9_A-Z.\\-]+)");
-			foreach(string param in switches) {
-				Match match = regex.Match(param);
-				if(match.Success) {
-					string switchName = match.Groups[1].Value;
-					string switchValue = match.Groups[2].Value;
+			Regex regex = new Regex("([a-z0-9_A-Z.]+)=([a-z0-9_A-Z.\\-]+)");
+			Match match = regex.Match(switchArg);
+			if(match.Success) {
+				string[] switchPath = match.Groups[1].Value.Split(".");
+				string switchValue = match.Groups[2].Value;
 
-					ApplySetting(typeof(VideoConfig), Config.Video, switchName, switchValue);
-					ApplySetting(typeof(AudioConfig), Config.Audio, switchName, switchValue);
-					ApplySetting(typeof(EmulationConfig), Config.Emulation, switchName, switchValue);
+				object? cfg = ConfigManager.Config;
+				PropertyInfo? property;
+				for(int i = 0; i < switchPath.Length; i++) {
+					property = cfg.GetType().GetProperty(switchPath[i], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+					if(property == null) {
+						//Invalid switch name
+						return;
+					}
+
+					if(i < switchPath.Length - 1) {
+						cfg = property.GetValue(cfg);
+						if(cfg == null) {
+							//Invalid
+							return;
+						}
+					} else {
+						ApplySetting(cfg, property, switchValue);
+					}
 				}
 			}
 		}

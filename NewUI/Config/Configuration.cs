@@ -54,6 +54,11 @@ namespace Mesen.Config
 
 		public void Save()
 		{
+			if(ConfigManager.DisableSaveSettings) {
+				//Don't save to disk if command line option to disable setting updates was set
+				return;
+			}
+
 			Serialize(ConfigManager.ConfigFile);
 		}
 

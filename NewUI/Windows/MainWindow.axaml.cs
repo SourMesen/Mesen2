@@ -37,6 +37,7 @@ namespace Mesen.Windows
 		private NativeRenderer _renderer;
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
+		private CommandLineHelper? _cmdLine;
 
 		//Used to suppress key-repeat keyup events on Linux
 		private Dictionary<Key, IDisposable> _pendingKeyUpEvents = new();
@@ -189,15 +190,18 @@ namespace Mesen.Windows
 			});
 			
 			Task.Run(() => {
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, false, false, false);
+				ConfigManager.Config.RemoveObsoleteConfig();
+				ConfigManager.Config.InitializeDefaults();
+
+				_cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
+
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, _cmdLine.NoAudio, _cmdLine.NoVideo, _cmdLine.NoInput);
 				_baseScreenSize = EmuApi.GetBaseScreenSize();
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
 
 				_model.Init(this);
 
-				ConfigManager.Config.RemoveObsoleteConfig();
-				ConfigManager.Config.InitializeDefaults();
 				ConfigManager.Config.ApplyConfig();
 
 				if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
@@ -207,12 +211,14 @@ namespace Mesen.Windows
 					EmuApi.AddKnownGameFolder(recentItem.RomFile.Folder);
 				}
 
-				ProcessCommandLineArgs(Program.CommandLineArgs);
+				_cmdLine.LoadFiles();
 
 				ConfigManager.Config.Preferences.UpdateFileAssociations();
 				SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
 
 				Dispatcher.UIThread.Post(() => {
+					_cmdLine?.OnAfterInit(this);
+
 					//Load the debugger window styles once everything else is done
 					StyleHelper.LoadDebuggerStyles();
 
@@ -225,25 +231,8 @@ namespace Mesen.Windows
 
 		private void Instance_ArgumentsReceived(object? sender, ArgumentsReceivedEventArgs e)
 		{
-			ProcessCommandLineArgs(e.Args);
-		}
-
-		private bool ProcessCommandLineArgs(string[] args)
-		{
-			foreach(string arg in args) {
-				string absPath;
-				if(Path.IsPathRooted(arg)) {
-					absPath = arg;
-				} else {
-					absPath = Path.GetFullPath(arg, Program.OriginalFolder);
-				}
-
-				if(File.Exists(absPath)) {
-					LoadRomHelper.LoadFile(absPath);
-					return true;
-				}
-			}
-			return false;
+			CommandLineHelper cmdLine = new(e.Args, false);
+			cmdLine.LoadFiles();
 		}
 
 		private void OnNotification(NotificationEventArgs e)
@@ -257,9 +246,16 @@ namespace Mesen.Windows
 					GameConfig.LoadGameConfig(romInfo).ApplyConfig();
 
 					Dispatcher.UIThread.Post(() => {
-						ProcessResolutionChange();
 						_model.RecentGames.Visible = false;
 						_model.RomInfo = romInfo;
+
+						DispatcherTimer.RunOnce(() => {
+							if(_cmdLine != null) {
+								_cmdLine?.ProcessPostLoadCommandSwitches(this);
+								_cmdLine = null;
+							}
+							ProcessResolutionChange();
+						}, TimeSpan.FromMilliseconds(50));
 					});
 					break;
 
@@ -320,8 +316,9 @@ namespace Mesen.Windows
 		private void ProcessResolutionChange()
 		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
-			double scale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
-			SetScale(scale);
+			double xScale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
+			double yScale = ClientSize.Height * dpiScale / _baseScreenSize.Height;
+			SetScale(Math.Min(xScale, yScale));
 			_baseScreenSize = EmuApi.GetBaseScreenSize();
 		}
 
@@ -396,15 +393,15 @@ namespace Mesen.Windows
 				Thread.Sleep(30);
 				Dispatcher.UIThread.Post(() => {
 					if(WindowState == WindowState.Normal) {
-					ClientSize = _originalSize;
-					Position = _originalPos;
+						ClientSize = _originalSize;
+						Position = _originalPos;
 					}
 				});
 				Thread.Sleep(100);
 				Dispatcher.UIThread.Post(() => {
 					if(WindowState == WindowState.Normal) {
-					ClientSize = _originalSize;
-					Position = _originalPos;
+						ClientSize = _originalSize;
+						Position = _originalPos;
 					}
 				});
 			});

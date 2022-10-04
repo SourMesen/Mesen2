@@ -260,7 +260,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private void LoadScript(string filename)
+		public void LoadScript(string filename)
 		{
 			if(File.Exists(filename)) {
 				string? code = FileHelper.ReadAllText(filename);
