@@ -146,10 +146,10 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					bool wasRunning = _model.ScriptId >= 0;
-					_model.StopScript();
-					if(wasRunning && _model.Config.AutoRestartScriptAfterPowerCycle) {
-						_model.RunScript();
+					if(_model.ScriptId >= 0 && _model.Config.AutoRestartScriptAfterPowerCycle) {
+						_model.RestartScript();
+					} else {
+						_model.StopScript();
 					}
 					break;
 			}

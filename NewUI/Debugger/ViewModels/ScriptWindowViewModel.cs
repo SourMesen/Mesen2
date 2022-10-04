@@ -181,7 +181,16 @@ namespace Mesen.Debugger.ViewModels
 				await SaveScript();
 			}
 
-			ScriptId = DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, ScriptId);
+			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, ScriptId));
+		}
+
+		private void UpdateScriptId(int scriptId)
+		{
+			if(Dispatcher.UIThread.CheckAccess()) {
+				ScriptId = scriptId;
+			} else {
+				Dispatcher.UIThread.Post(() => ScriptId = scriptId);
+			}
 		}
 
 		private List<ContextMenuAction> GetScriptMenuActions()
@@ -209,7 +218,13 @@ namespace Mesen.Debugger.ViewModels
 		public void StopScript()
 		{
 			DebugApi.RemoveScript(ScriptId);
-			ScriptId = -1;
+			UpdateScriptId(-1);
+		}
+
+		public void RestartScript()
+		{
+			DebugApi.RemoveScript(ScriptId);
+			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, -1));
 		}
 
 		private string? InitialFolder
