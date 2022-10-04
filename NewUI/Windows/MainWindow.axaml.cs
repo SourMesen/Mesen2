@@ -395,13 +395,17 @@ namespace Mesen.Windows
 			Task.Run(() => {
 				Thread.Sleep(30);
 				Dispatcher.UIThread.Post(() => {
+					if(WindowState == WindowState.Normal) {
 					ClientSize = _originalSize;
 					Position = _originalPos;
+					}
 				});
 				Thread.Sleep(100);
 				Dispatcher.UIThread.Post(() => {
+					if(WindowState == WindowState.Normal) {
 					ClientSize = _originalSize;
 					Position = _originalPos;
+					}
 				});
 			});
 		}
