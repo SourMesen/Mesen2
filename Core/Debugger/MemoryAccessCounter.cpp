@@ -26,14 +26,6 @@ MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 	}
 }
 
-bool MemoryAccessCounter::IsAddressUninitialized(AddressInfo& addressInfo)
-{
-	if(DebugUtilities::IsVolatileRam(addressInfo.Type)) {
-		return _counters[(int)addressInfo.Type][addressInfo.Address].WriteStamp == 0;
-	}
-	return false;
-}
-
 ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint64_t masterClock)
 {
 	if(addressInfo.Address < 0) {
@@ -41,7 +33,7 @@ ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint
 	}
 
 	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	if(counts.WriteStamp == 0 && IsAddressUninitialized(addressInfo)) {
+	if(counts.WriteStamp == 0 && DebugUtilities::IsVolatileRam(addressInfo.Type)) {
 		ReadResult result = counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead;
 		counts.ReadStamp = masterClock;
 		counts.ReadCounter++;

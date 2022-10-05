@@ -382,6 +382,10 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		_movieManager->Stop();
 	}
 
+	//Keep copy of current memory types, to allow keeping ROM changes when power cycling
+	ConsoleMemoryInfo originalConsoleMemory[DebugUtilities::GetMemoryTypeCount()] = {};
+	memcpy(originalConsoleMemory, _consoleMemory, sizeof(_consoleMemory));
+
 	unique_ptr<IConsole> console;
 	LoadRomResult result = LoadRomResult::UnknownType;
 	TryLoadRom<NesConsole>(romFile, result, console);
@@ -437,7 +441,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		pollCounter = console->GetControlManager()->GetPollCounter();
 	}
 
-	_console.reset(console);
+	InitConsole(console, originalConsoleMemory, forPowerCycle);
 
 	//Restore pollcounter (used by movies when a power cycle is in the movie)
 	_console->GetControlManager()->SetPollCounter(pollCounter);
@@ -487,6 +491,23 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	}
 
 	return true;
+}
+
+void Emulator::InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo originalConsoleMemory[], bool preserveRom)
+{
+	if(preserveRom && _console) {
+		//When power cycling, copy over the content of any ROM memory from the previous instance
+		magic_enum::enum_for_each<MemoryType>([&](MemoryType memType) {
+			if(DebugUtilities::IsRom(memType)) {
+				uint32_t orgSize = originalConsoleMemory[(int)memType].Size;
+				if(orgSize > 0 && GetMemory(memType).Size == orgSize) {
+					memcpy(_consoleMemory[(int)memType].Memory, originalConsoleMemory[(int)memType].Memory, orgSize);
+				}
+			}
+		});
+	}
+
+	_console.reset(newConsole);
 }
 
 template<typename T>

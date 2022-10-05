@@ -377,7 +377,7 @@ namespace Mesen.Debugger.Windows
 						SetCursorPosition(addr.Type, addr.Address);
 					}
 				},
-				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ViewInDebugger)
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ViewInMemoryType)
 			};
 		}
 

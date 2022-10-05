@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
 using System;
@@ -17,6 +18,7 @@ namespace Mesen.Debugger.Utilities
 			return new ContextMenuAction() {
 				ActionType = ActionType.SaveRomAs,
 				IsEnabled = () => IsSaveRomSupported(),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveRomAs),
 				OnClick = () => SaveRom(wnd, false)
 			};
 		}
@@ -26,6 +28,7 @@ namespace Mesen.Debugger.Utilities
 			return new ContextMenuAction() {
 				ActionType = ActionType.SaveEditsAsIps,
 				IsEnabled = () => IsSaveRomSupported(),
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveEditAsIps),
 				OnClick = () => SaveRom(wnd, true)
 			};
 		}

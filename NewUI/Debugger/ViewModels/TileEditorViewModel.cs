@@ -79,6 +79,7 @@ public class TileEditorViewModel : DisposableViewModel
 		FileMenuActions = AddDisposables(new List<object>() {
 			new ContextMenuAction() {
 				ActionType = ActionType.ExportToPng,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
 				OnClick = () => picViewer.ExportToPng()
 			},
 			new ContextMenuSeparator(),

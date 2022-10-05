@@ -37,8 +37,6 @@ private:
 
 	Debugger* _debugger;
 
-	bool IsAddressUninitialized(AddressInfo &addressInfo);
-
 public:
 	MemoryAccessCounter(Debugger *debugger);
 

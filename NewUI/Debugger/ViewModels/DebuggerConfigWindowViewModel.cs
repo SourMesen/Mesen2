@@ -106,9 +106,9 @@ namespace Mesen.Debugger.ViewModels
 		private void InitShortcutLists()
 		{
 			SharedShortcuts = CreateShortcutList(new DebuggerShortcut[] {
-				DebuggerShortcut.IncreaseFontSize,
-				DebuggerShortcut.DecreaseFontSize,
-				DebuggerShortcut.ResetFontSize,
+				//DebuggerShortcut.IncreaseFontSize,
+				//DebuggerShortcut.DecreaseFontSize,
+				//DebuggerShortcut.ResetFontSize,
 				DebuggerShortcut.ZoomIn,
 				DebuggerShortcut.ZoomOut,
 				DebuggerShortcut.SaveAsPng,
@@ -116,8 +116,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.Find,
 				DebuggerShortcut.FindNext,
 				DebuggerShortcut.FindPrev,
-				DebuggerShortcut.Undo,
-				DebuggerShortcut.Cut,
+				//DebuggerShortcut.Undo,
+				//DebuggerShortcut.Cut,
 				DebuggerShortcut.Copy,
 				DebuggerShortcut.Paste,
 				DebuggerShortcut.SelectAll,
@@ -154,8 +154,8 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			MemoryToolsShortcuts = CreateShortcutList(new DebuggerShortcut[] {
-				//DebuggerShortcut.MemoryViewer_Freeze,
-				//DebuggerShortcut.MemoryViewer_Unfreeze,
+				DebuggerShortcut.MemoryViewer_Freeze,
+				DebuggerShortcut.MemoryViewer_Unfreeze,
 				DebuggerShortcut.MemoryViewer_AddToWatch,
 				DebuggerShortcut.MemoryViewer_EditBreakpoint,
 				DebuggerShortcut.MemoryViewer_EditLabel,
@@ -211,6 +211,7 @@ namespace Mesen.Debugger.ViewModels
 			DebuggerShortcuts = CreateShortcutList(new DebuggerShortcut[] {
 				DebuggerShortcut.Reset,
 				DebuggerShortcut.PowerCycle,
+				DebuggerShortcut.ReloadRom,
 				DebuggerShortcut.ToggleBreakContinue,
 				DebuggerShortcut.Continue,
 				DebuggerShortcut.Break,
@@ -241,7 +242,7 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.CodeWindow_NavigateBack,
 				//DebuggerShortcut.CodeWindow_NavigateForward,
 				DebuggerShortcut.CodeWindow_ToggleBreakpoint,
-				DebuggerShortcut.CodeWindow_DisableEnableBreakpoint,
+				//DebuggerShortcut.CodeWindow_DisableEnableBreakpoint,
 				DebuggerShortcut.CodeWindow_MoveProgramCounter,
 				DebuggerShortcut.CodeWindow_GoToLocation,
 				DebuggerShortcut.LabelList_Add,
@@ -261,8 +262,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.BreakpointList_Edit,
 				DebuggerShortcut.BreakpointList_GoToLocation,
 				DebuggerShortcut.BreakpointList_Delete,
-				DebuggerShortcut.WatchList_Add,
-				DebuggerShortcut.WatchList_Edit,
+				//DebuggerShortcut.WatchList_Add,
+				//DebuggerShortcut.WatchList_Edit,
 				DebuggerShortcut.WatchList_Delete,
 				DebuggerShortcut.WatchList_MoveUp,
 				DebuggerShortcut.WatchList_MoveDown,

@@ -125,6 +125,7 @@ private:
 	double GetFrameDelay();
 
 	template<typename T> void TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console);
+	void InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo originalConsoleMemory[], bool preserveRom);
 
 public:
 	class DebuggerRequest

@@ -1534,6 +1534,7 @@
 
 		<Message ID="ConfirmReset">Are you sure you want to reset?</Message>
 		<Message ID="ConfirmPowerCycle">Are you sure you want to power cycle?</Message>
+		<Message ID="ConfirmReloadRom">Are you sure you want to reload the ROM from the disk?</Message>
 		<Message ID="ConfirmPowerOff">Are you sure you want to power off?</Message>
 		<Message ID="ConfirmExit">Are you sure you want to exit?</Message>
 
@@ -1578,6 +1579,7 @@
 			<Value ID="Pause">Pause</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="PowerOff">Power Off</Value>
 			<Value ID="Exit">Exit</Value>
 			<Value ID="TakeScreenshot">Take Screenshot</Value>
@@ -2724,6 +2726,7 @@
 			<Value ID="OpenPaletteViewer">Open Palette Viewer</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="ToggleBreakContinue">Toggle break/continue</Value>
 			<Value ID="Continue">Continue</Value>
 			<Value ID="Break">Break</Value>
@@ -2904,6 +2907,7 @@
 			<Value ID="Break">Break</Value>
 			<Value ID="Reset">Reset</Value>
 			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="StepInto">Step Into</Value>
 			<Value ID="StepOut">Step Out</Value>
 			<Value ID="StepOver">Step Over</Value>

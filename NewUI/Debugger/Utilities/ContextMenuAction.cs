@@ -386,6 +386,9 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("PowerCycle")]
 		PowerCycle,
 
+		[IconFile("Reload")]
+		ReloadRom,
+
 		[IconFile("Script")]
 		NewScript,
 

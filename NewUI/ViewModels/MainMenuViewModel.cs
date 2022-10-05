@@ -218,6 +218,7 @@ namespace Mesen.ViewModels
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.Reset) { ActionType = ActionType.Reset },
 				new MainMenuAction(EmulatorShortcut.PowerCycle) { ActionType = ActionType.PowerCycle },
+				new MainMenuAction(EmulatorShortcut.ReloadRom) { ActionType = ActionType.ReloadRom },
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.PowerOff) { ActionType = ActionType.PowerOff },
 				

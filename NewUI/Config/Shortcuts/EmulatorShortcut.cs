@@ -47,11 +47,13 @@ namespace Mesen.Config.Shortcuts
 		Pause,
 		Reset,
 		PowerCycle,
+		ReloadRom,
 		PowerOff,
 		Exit,
 
 		ExecReset,
 		ExecPowerCycle,
+		ExecReloadRom,
 		ExecPowerOff,
 
 		SetScale1x,

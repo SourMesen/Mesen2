@@ -38,6 +38,7 @@ namespace Mesen.Utilities
 			switch(shortcut) {
 				case EmulatorShortcut.Reset: Reset(); break;
 				case EmulatorShortcut.PowerCycle: PowerCycle(); break;
+				case EmulatorShortcut.ReloadRom: ReloadRom(); break;
 				case EmulatorShortcut.PowerOff: PowerOff(); break;
 				case EmulatorShortcut.Exit: _mainWindow.Close(); break;
 
@@ -443,6 +444,13 @@ namespace Mesen.Utilities
 		{
 			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmPowerCycle", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 				EmuApi.PowerCycle();
+			}
+		}
+
+		public static async void ReloadRom()
+		{
+			if(!ConfigManager.Config.Preferences.ConfirmExitResetPower || await MesenMsgBox.Show(null, "ConfirmReloadRom", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				EmuApi.ReloadRom();
 			}
 		}
 

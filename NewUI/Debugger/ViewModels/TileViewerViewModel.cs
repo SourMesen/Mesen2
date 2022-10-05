@@ -174,6 +174,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ExportToPng,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
 					OnClick = () => picViewer.ExportToPng()
 				}
 			});

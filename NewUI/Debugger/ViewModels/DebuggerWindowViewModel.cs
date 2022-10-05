@@ -687,6 +687,11 @@ namespace Mesen.Debugger.ViewModels
 						ActionType = ActionType.PowerCycle,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PowerCycle),
 						OnClick = () => ShortcutHandler.PowerCycle()
+					},
+					new ContextMenuAction() {
+						ActionType = ActionType.ReloadRom,
+						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ReloadRom),
+						OnClick = () => ShortcutHandler.ReloadRom()
 					}
 				});
 			};

@@ -698,11 +698,13 @@ enum class EmulatorShortcut
 	Pause,
 	Reset,
 	PowerCycle,
+	ReloadRom,
 	PowerOff,
 	Exit,
 
 	ExecReset,
 	ExecPowerCycle,
+	ExecReloadRom,
 	ExecPowerOff,
 
 	SetScale1x,
