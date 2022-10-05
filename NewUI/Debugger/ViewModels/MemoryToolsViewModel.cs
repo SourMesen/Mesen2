@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -78,6 +79,11 @@ namespace Mesen.Debugger.ViewModels
 					} else {
 						text += $" (${o.start / 2:X2}.w - ${(o.start + o.length - 1)/2:X2}.w)";
 					}
+				}
+
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = o.start, Type = Config.MemoryType });
+				if(label != null && (o.length <= 1 || o.length == label.Length)) {
+					text += $" ({label.Label})";
 				}
 
 				StatusBarText = text;
