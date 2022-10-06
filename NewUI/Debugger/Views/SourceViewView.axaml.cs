@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -176,22 +177,24 @@ namespace Mesen.Debugger.Views
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_GoToLocation),
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.Symbol != null || ActionLocation.RelAddress != null,
-					OnClick = () => {
-						LocationInfo loc = ActionLocation;
-						if(loc.Symbol != null) {
-							AddressInfo? addr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(loc.Symbol.Value);
-							if(addr?.Address > 0) {
-								SourceCodeLocation? srcLoc = DebugWorkspaceManager.SymbolProvider?.GetSourceCodeLineInfo(addr.Value);
-								if(srcLoc != null) {
-									_model?.ScrollToLocation(srcLoc.Value);
-								}
-							}
-						} else if(loc.RelAddress != null) {
-							_model?.GoToRelativeAddress(loc.RelAddress.Value.Address);
-						}
-					}
+					OnClick = () => GoToLocation(ActionLocation)
 				},
 			});
+		}
+
+		private void GoToLocation(LocationInfo loc)
+		{
+			if(loc.Symbol != null) {
+				AddressInfo? addr = DebugWorkspaceManager.SymbolProvider?.GetSymbolAddressInfo(loc.Symbol.Value);
+				if(addr?.Address > 0) {
+					SourceCodeLocation? srcLoc = DebugWorkspaceManager.SymbolProvider?.GetSourceCodeLineInfo(addr.Value);
+					if(srcLoc != null) {
+						_model?.ScrollToLocation(srcLoc.Value);
+					}
+				}
+			} else if(loc.RelAddress != null) {
+				_model?.GoToRelativeAddress(loc.RelAddress.Value.Address);
+			}
 		}
 
 		private string? GetSearchString()
@@ -338,6 +341,16 @@ namespace Mesen.Debugger.Views
 			}
 
 			_model?.SetViewer(null);
+		}
+
+		protected override void OnPointerPressed(PointerPressedEventArgs e)
+		{
+			base.OnPointerPressed(e);
+
+			//Navigate on double-click left click
+			if(e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
+				GoToLocation(ActionLocation);
+			}
 		}
 
 		private void Parent_Selected(object? sender, EventArgs e)
