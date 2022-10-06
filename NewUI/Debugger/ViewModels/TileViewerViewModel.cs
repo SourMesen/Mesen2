@@ -87,6 +87,12 @@ namespace Mesen.Debugger.ViewModels
 
 			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
+					ActionType = ActionType.ExportToPng,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
+					OnClick = () => picViewer.ExportToPng()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
@@ -170,12 +176,6 @@ namespace Mesen.Debugger.ViewModels
 							MemoryToolsWindow.ShowInMemoryTools(Config.Source, address);
 						}
 					}
-				},
-				new ContextMenuSeparator(),
-				new ContextMenuAction() {
-					ActionType = ActionType.ExportToPng,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
-					OnClick = () => picViewer.ExportToPng()
 				}
 			});
 

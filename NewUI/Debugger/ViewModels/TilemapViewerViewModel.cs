@@ -85,6 +85,12 @@ namespace Mesen.Debugger.ViewModels
 
 			FileMenuActions = AddDisposables(new List<object>() {
 				new ContextMenuAction() {
+					ActionType = ActionType.ExportToPng,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
+					OnClick = () => _picViewer.ExportToPng()
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.Exit,
 					OnClick = () => wnd?.Close()
 				}
@@ -209,12 +215,6 @@ namespace Mesen.Debugger.ViewModels
 							EditBreakpoint(wnd, tile.Value.AttributeAddress);
 						}
 					}
-				},
-				new ContextMenuSeparator(),
-				new ContextMenuAction() {
-					ActionType = ActionType.ExportToPng,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
-					OnClick = () => _picViewer.ExportToPng()
 				}
 			});
 
