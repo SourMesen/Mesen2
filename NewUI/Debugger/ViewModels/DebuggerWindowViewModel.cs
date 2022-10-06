@@ -578,7 +578,10 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = async () => {
 						GoToDestination? dest = await GoToAllWindow.Open(wnd, CpuType, GoToAllOptions.ShowFilesAndConstants, DebugWorkspaceManager.SymbolProvider);
 						if(dest != null) {
-							if(dest.SourceLocation != null) {
+							if(GetActiveCodeTool() != DockFactory.SourceViewTool && dest.RelativeAddress?.Type == CpuType.ToMemoryType()) {
+								//Try to stay in disassembly view if it was the last view used
+								ScrollToAddress(dest.RelativeAddress.Value.Address);
+							} else if(dest.SourceLocation != null) {
 								OpenTool(DockFactory.SourceViewTool);
 								SourceView?.ScrollToLocation(dest.SourceLocation.Value);
 							} else if(dest.RelativeAddress?.Type == CpuType.ToMemoryType()) {
