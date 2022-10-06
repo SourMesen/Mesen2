@@ -12,14 +12,14 @@ Dsp::Dsp(Emulator* emu, Spc* spc)
 	_emu = emu;
 	_spc = spc;
 
+	memcpy(_state.Regs, _initialValues, 0x80);
+
 	for(int i = 0; i < 8; i++) {
 		_voices[i].Init(i, spc, this, _state.Regs + (i * 0x10), &_emu->GetSettings()->GetSnesConfig());
 	}
 	_state.NewKeyOn = ReadReg(DspGlobalRegs::KeyOn);
 	_state.DirSampleTableAddress = ReadReg(DspGlobalRegs::DirSampleTableAddress);
 	_state.EchoRingBufferAddress = ReadReg(DspGlobalRegs::EchoRingBufferAddress);
-
-	memcpy(_state.Regs, _initialValues, 0x80);
 
 	Reset();
 }
@@ -87,6 +87,9 @@ void Dsp::UpdateCounter()
 
 void Dsp::Write(uint8_t reg, uint8_t value)
 {
+	if(reg == 0x5C) {
+		std::cout << "TesT";
+	}
 	_state.Regs[reg] = value;
 	switch(reg & 0x0F) {
 		case (int)DspVoiceRegs::Envelope: _state.EnvRegBuffer = value; break;
