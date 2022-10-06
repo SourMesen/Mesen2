@@ -28,6 +28,9 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowNesPcmDataOption { get; set; }
 		[Reactive] public bool ShowNesDrawnChrRomOption { get; set; }
 
+		[Obsolete("For designer only")]
+		public MemoryToolsDisplayOptionsViewModel() : this(new()) { }
+
 		public MemoryToolsDisplayOptionsViewModel(MemoryToolsViewModel memoryTools)
 		{
 			Config = memoryTools.Config;

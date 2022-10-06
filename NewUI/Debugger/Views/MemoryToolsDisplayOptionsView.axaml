@@ -9,7 +9,7 @@
 	xmlns:dv="using:Mesen.Debugger.Views"
 	xmlns:dvm="using:Mesen.Debugger.ViewModels"
 	xmlns:l="using:Mesen.Localization"
-	mc:Ignorable="d" d:DesignHeight="410"
+	mc:Ignorable="d" d:DesignHeight="410" d:DesignWidth="200"
 	VerticalAlignment="Stretch"
 	HorizontalAlignment="Stretch"
 	Name="root"

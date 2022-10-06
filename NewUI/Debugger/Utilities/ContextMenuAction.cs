@@ -761,5 +761,8 @@ namespace Mesen.Debugger.Utilities
 		FreezeMemory,
 		[IconFile("MediaPlay")]
 		UnfreezeMemory,
+
+		[IconFile("Refresh")]
+		ResetAccessCounters,
 	}
 }

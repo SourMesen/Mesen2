@@ -1314,7 +1314,7 @@
 			<Control ID="btnReset">Reset</Control>
 			<Control ID="btnUndo">Undo</Control>
 
-			<Control ID="btnResetCounters">Reset counters</Control>
+			<Control ID="btnResetCounters">Reset access stats</Control>
 
 			<Control ID="lblMemType">Memory type:</Control>
 			<Control ID="lblFormat">Format:</Control>
@@ -2819,6 +2819,7 @@
 			<Value ID="MemoryViewer_EditLabel">Edit Label</Value>
 			<Value ID="MemoryViewer_Import">Import</Value>
 			<Value ID="MemoryViewer_Export">Export</Value>
+			<Value ID="MemoryViewer_ResetAccessCounters">Reset access stats</Value>
 			<Value ID="MemoryViewer_ViewInMemoryType">View in [memory type]</Value>
 			<Value ID="MemoryViewer_ViewInDebugger">View in Debugger</Value>
 
@@ -3122,6 +3123,8 @@
 			
 			<Value ID="FreezeMemory">Freeze</Value>
 			<Value ID="UnfreezeMemory">Unfreeze</Value>
+			
+			<Value ID="ResetAccessCounters">Reset access stats</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -242,6 +242,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_EditLabel, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Import, KeyBinding = new(KeyModifiers.Control, Key.O) });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_Export, KeyBinding = new(KeyModifiers.Control, Key.S) });
+			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ResetAccessCounters, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInMemoryType, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.MemoryViewer_ViewInDebugger, KeyBinding = new() });
 
@@ -391,6 +392,7 @@ namespace Mesen.Config
 		MemoryViewer_EditLabel,
 		MemoryViewer_Import,
 		MemoryViewer_Export,
+		MemoryViewer_ResetAccessCounters,
 		MemoryViewer_ViewInMemoryType,
 
 		MemoryViewer_GoToPrevCode,

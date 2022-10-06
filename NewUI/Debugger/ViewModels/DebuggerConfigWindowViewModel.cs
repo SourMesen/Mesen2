@@ -161,6 +161,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.MemoryViewer_EditLabel,
 				DebuggerShortcut.MemoryViewer_Import,
 				DebuggerShortcut.MemoryViewer_Export,
+				DebuggerShortcut.MemoryViewer_ResetAccessCounters,
 				DebuggerShortcut.MemoryViewer_ViewInDebugger,
 				DebuggerShortcut.MemoryViewer_ViewInMemoryType,
 

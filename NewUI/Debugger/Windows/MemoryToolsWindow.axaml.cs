@@ -181,6 +181,8 @@ namespace Mesen.Debugger.Windows
 				SaveRomActionHelper.GetSaveRomAction(this),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(this),
 				new ContextMenuSeparator(),
+				GetResetAccessCountersAction(),
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.LoadTblFile,
 					OnClick = async () => {
@@ -324,6 +326,8 @@ namespace Mesen.Debugger.Windows
 			_model.ToolbarItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				GetImportAction(),
 				GetExportAction(),
+				new ContextMenuSeparator(),
+				GetResetAccessCountersAction()
 			});
 
 			DebugShortcutManager.RegisterActions(this, _model.FileMenuItems);
@@ -409,6 +413,18 @@ namespace Mesen.Debugger.Windows
 						CpuType cpuType = relAddr.Value.Type.ToCpuType();
 						DebuggerWindow.OpenWindowAtAddress(cpuType, relAddr.Value.Address);
 					}
+				}
+			};
+		}
+
+		private ContextMenuAction GetResetAccessCountersAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.ResetAccessCounters,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.MemoryViewer_ResetAccessCounters),
+				OnClick = () => {
+					DebugApi.ResetMemoryAccessCounts();
+					_editor.InvalidateVisual();
 				}
 			};
 		}
