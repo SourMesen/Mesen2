@@ -43,7 +43,6 @@ void SnesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operat
 		evt.DmaChannel = -1;
 	}
 
-	SnesCpuState state = _cpu->GetState();
 	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Snes, true);
 
 	_debugEvents.push_back(evt);
@@ -58,7 +57,6 @@ void SnesEventManager::AddEvent(DebugEventType type)
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
 	
-	SnesCpuState state = _cpu->GetState();
 	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Snes, true);
 
 	_debugEvents.push_back(evt);
