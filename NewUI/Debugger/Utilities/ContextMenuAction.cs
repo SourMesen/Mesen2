@@ -53,6 +53,13 @@ namespace Mesen.Debugger.Utilities
 						label += " (" + hint + ")";
 					}
 				}
+
+				if(!label.StartsWith("_")) {
+					//Escape underscores to prevent them from getting removed
+					//(underscore is used to highlight the next letter when alt is pressed)
+					label = label.Replace("_", "__");
+				}
+
 				return label;
 			}
 		}
