@@ -123,9 +123,6 @@ public:
 						_counter = 0;
 						_mode = Mode::SendAck;
 						_nextMode = Mode::Write;
-						if(_address == 0) {
-							std::cout << "test";
-						}
 						_romData[_address] = _data;
 						_address = (_address + 1) & 0xFF;
 					}

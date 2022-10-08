@@ -87,9 +87,6 @@ void Dsp::UpdateCounter()
 
 void Dsp::Write(uint8_t reg, uint8_t value)
 {
-	if(reg == 0x5C) {
-		std::cout << "TesT";
-	}
 	_state.Regs[reg] = value;
 	switch(reg & 0x0F) {
 		case (int)DspVoiceRegs::Envelope: _state.EnvRegBuffer = value; break;
