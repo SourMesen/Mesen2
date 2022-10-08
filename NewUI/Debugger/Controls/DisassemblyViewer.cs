@@ -402,12 +402,12 @@ namespace Mesen.Debugger.Controls
 				FormattedText formattedText;
 				if(result > 0) {
 					formattedText = FormatText(hay.Substring(0, result));
-					highlightPos += formattedText.Width;
+					highlightPos += formattedText.WidthIncludingTrailingWhitespace;
 				}
 				formattedText = FormatText(hay.Substring(result, needle.Length), ColorHelper.GetBrush(Colors.White));
 				Point p = new Point(highlightPos, y);
 				SolidColorBrush selectBgBrush = new(Colors.CornflowerBlue);
-				context.FillRectangle(selectBgBrush, new Rect(p, new Size(formattedText.Width, formattedText.Height)));
+				context.FillRectangle(selectBgBrush, new Rect(p, new Size(formattedText.WidthIncludingTrailingWhitespace, formattedText.Height)));
 				context.DrawText(formattedText, p);
 			}
 		}
