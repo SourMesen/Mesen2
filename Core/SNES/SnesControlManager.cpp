@@ -26,6 +26,11 @@ SnesControlManager::~SnesControlManager()
 {
 }
 
+void SnesControlManager::Reset(bool softReset)
+{
+	_lastWriteValue = 0;
+}
+
 shared_ptr<BaseControlDevice> SnesControlManager::CreateControllerDevice(ControllerType type, uint8_t port)
 {
 	shared_ptr<BaseControlDevice> device;
@@ -95,6 +100,8 @@ uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 
 void SnesControlManager::Write(uint16_t addr, uint8_t value)
 {
+	_lastWriteValue = value;
+
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->WriteRam(addr, value);
 	}
@@ -109,4 +116,6 @@ void SnesControlManager::Serialize(Serializer &s)
 	for(int i = 0; i < (int)_controlDevices.size(); i++) {
 		SVI(_controlDevices[i]);
 	}
+
+	SV(_lastWriteValue);
 }

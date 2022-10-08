@@ -21,13 +21,17 @@ private:
 	SnesConfig _prevConfig = {};
 
 protected:
-	SnesConsole* _console;
+	SnesConsole* _console = nullptr;
+	uint8_t _lastWriteValue = 0;
 
 public:
 	SnesControlManager(SnesConsole* console);
 	virtual ~SnesControlManager();
 
+	void Reset(bool softReset) override;
 	void UpdateControlDevices() override;
+	
+	uint8_t GetLastWriteValue() { return _lastWriteValue; }
 
 	shared_ptr<BaseControlDevice> CreateControllerDevice(ControllerType type, uint8_t port) override;
 

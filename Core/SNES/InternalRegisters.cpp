@@ -50,8 +50,13 @@ void InternalRegisters::ProcessAutoJoypadRead()
 	}
 
 	//TODO timing
-	_controlManager->Write(0x4016, 1);
-	_controlManager->Write(0x4016, 0);
+
+	//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
+	//causing the controllers to continuously report the value of the B button
+	if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
+		_controlManager->Write(0x4016, 1);
+		_controlManager->Write(0x4016, 0);
+	}
 
 	for(int i = 0; i < 4; i++) {
 		_state.ControllerData[i] = 0;
