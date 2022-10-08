@@ -132,6 +132,7 @@ namespace Mesen.Interop
 		public byte MosaicEnabled;
 
 		public UInt16 OamRamAddress;
+		public UInt16 InternalOamRamAddress;
 
 		public byte OamMode;
 		public UInt16 OamBaseAddress;

@@ -38,6 +38,10 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public int Cycle { get; private set; }
 		[Reactive] public int Scanline { get; private set; }
 		[Reactive] public int HClock { get; private set; }
+		
+		[Reactive] public int VramAddress { get; private set; }
+		[Reactive] public int OamAddress { get; private set; }
+		[Reactive] public int CgRamAddress { get; private set; }
 
 		[Reactive] public string StackPreview { get; set; } = "";
 
@@ -113,6 +117,10 @@ namespace Mesen.Debugger.StatusViews
 			Cycle = ppu.Cycle;
 			HClock = ppu.HClock;
 			Scanline = ppu.Scanline;
+			
+			VramAddress = ppu.VramAddress;
+			OamAddress = ppu.InternalOamRamAddress;
+			CgRamAddress = ppu.CgramAddress;
 		}
 
 		protected override void InternalUpdateConsoleState()

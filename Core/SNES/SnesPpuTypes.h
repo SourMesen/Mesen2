@@ -165,6 +165,7 @@ struct SnesPpuState : public BaseState
 	uint8_t MosaicEnabled = 0;
 
 	uint16_t OamRamAddress = 0;
+	uint16_t InternalOamAddress = 0;
 
 	uint8_t OamMode = 0;
 	uint16_t OamBaseAddress = 0;

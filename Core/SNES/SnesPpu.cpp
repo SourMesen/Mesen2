@@ -462,7 +462,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 			//Reset OAM address at the start of vblank?
 			if(!_state.ForcedBlank) {
 				//TODO, the timing of this may be slightly off? should happen at H=10 based on anomie's docs
-				_internalOamAddress = (_state.OamRamAddress << 1);
+				_state.InternalOamAddress = (_state.OamRamAddress << 1);
 			}
 
 			SnesConfig& cfg = _settings->GetSnesConfig();
@@ -584,7 +584,7 @@ void SnesPpu::EvaluateNextLineSprites()
 {
 	if(_spriteEvalStart == 0) {
 		_spriteCount = 0;
-		_oamEvaluationIndex = _state.EnableOamPriority ? ((_internalOamAddress & 0x1FC) >> 2) : 0;
+		_oamEvaluationIndex = _state.EnableOamPriority ? ((_state.InternalOamAddress & 0x1FC) >> 2) : 0;
 	}
 
 	if(_state.ForcedBlank) {
@@ -1617,13 +1617,13 @@ void SnesPpu::LatchLocationValues()
 
 void SnesPpu::UpdateOamAddress()
 {
-	_internalOamAddress = (_state.OamRamAddress << 1);
+	_state.InternalOamAddress = (_state.OamRamAddress << 1);
 }
 
 uint16_t SnesPpu::GetOamAddress()
 {
 	if(_state.ForcedBlank || _scanline >= _vblankStartScanline) {
-		return _internalOamAddress;
+		return _state.InternalOamAddress;
 	} else {
 		if(_memoryManager->GetHClock() <= 255 * 4) {
 			return _oamEvaluationIndex << 2;
@@ -1692,7 +1692,7 @@ uint8_t SnesPpu::Read(uint16_t addr)
 				_emu->ProcessPpuRead<CpuType::Snes>(0x200 | (oamAddr & 0x1F), value, MemoryType::SnesSpriteRam);
 			}
 			
-			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
+			_state.InternalOamAddress = (_state.InternalOamAddress + 1) & 0x3FF;
 			_state.Ppu1OpenBus = value;
 			return value;
 		}
@@ -1883,7 +1883,7 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 				_emu->ProcessPpuWrite<CpuType::Snes>(address, value, MemoryType::SnesSpriteRam);
 				_oamRam[address] = value;
 			}
-			_internalOamAddress = (_internalOamAddress + 1) & 0x3FF;
+			_state.InternalOamAddress = (_state.InternalOamAddress + 1) & 0x3FF;
 			break;
 		}
 
@@ -2201,6 +2201,7 @@ void SnesPpu::Serialize(Serializer &s)
 	SV(_state.Mode7.HScroll); SV(_state.Mode7.LargeMap); SV(_state.Mode7.Matrix[0]); SV(_state.Mode7.Matrix[1]); SV(_state.Mode7.Matrix[2]); SV(_state.Mode7.Matrix[3]);
 	SV(_state.Mode7.ValueLatch); SV(_state.Mode7.VerticalMirroring); SV(_state.Mode7.VScroll);
 	SV(_state.CgramAddressLatch); SV(_state.CgramWriteBuffer);
+	SV(_state.InternalOamAddress);
 
 	for(int i = 0; i < 4; i++) {
 		SVI(_state.Layers[i].ChrAddress); SVI(_state.Layers[i].DoubleHeight); SVI(_state.Layers[i].DoubleWidth); SVI(_state.Layers[i].HScroll);
@@ -2226,7 +2227,6 @@ void SnesPpu::Serialize(Serializer &s)
 
 		SV(_drawStartX); SV(_drawEndX);
 		SV(_mosaicScanlineCounter);
-		SV(_internalOamAddress);
 
 		for(int i = 0; i < 33; i++) {
 			SVI(_layerData[0].Tiles[i].ChrData[0]); SVI(_layerData[0].Tiles[i].ChrData[1]); SVI(_layerData[0].Tiles[i].ChrData[2]); SVI(_layerData[0].Tiles[i].ChrData[3]);

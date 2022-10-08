@@ -91,6 +91,7 @@ namespace Mesen.Controls
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
+			MaxLength = GetMaxLength();
 			UpdateText(true);
 		}
 

@@ -555,6 +555,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2101.5-7", "OAM Size Mode", ppu.OamMode),
 				new RegEntry("$2102-2103", "OAM Base Address", ppu.OamRamAddress),
 				new RegEntry("$2103.7", "OAM Priority", ppu.EnableOamPriority),
+				new RegEntry("", "OAM Address", ppu.InternalOamRamAddress),
 
 				new RegEntry("$2105", "BG Mode/Size", null),
 				new RegEntry("$2105.0-2", "BG Mode", ppu.BgMode),
@@ -619,6 +620,10 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("$211F", "Mode 7 - Center X", ppu.Mode7.CenterX, Format.X16),
 				new RegEntry("$2120", "Mode 7 - Center Y", ppu.Mode7.CenterY, Format.X16),
+
+				new RegEntry("$2121", "CGRAM", null),
+				new RegEntry("$2121", "CGRAM Address", ppu.CgramAddress, Format.X16),
+				new RegEntry("", "CGRAM next write to MSB", ppu.CgramAddressLatch),
 
 				new RegEntry("$2123 - $212B", "Windows", null),
 				new RegEntry("", "BG1 Windows", null),

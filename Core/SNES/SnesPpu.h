@@ -87,7 +87,6 @@ private:
 	uint32_t _mosaicPriority[4] = {};
 	uint16_t _mosaicScanlineCounter = 0;
 	
-	uint16_t _internalOamAddress = 0;
 	uint8_t _oamWriteBuffer = 0;
 
 	bool _timeOver = false;

@@ -120,13 +120,22 @@
 				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 4" />
 
 				<WrapPanel>
-					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="0 0 5 0">
 						<TextBlock>H Clock:</TextBlock>
 						<c:MesenNumericTextBox Grid.Column="1" Value="{CompiledBinding HClock}" IsEnabled="False" Max="1364" MinWidth="40" />
 						<TextBlock Grid.Row="1">Cycle:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" Value="{CompiledBinding Cycle}" IsEnabled="False" Max="340" />
 						<TextBlock Grid.Row="2">Scanline:</TextBlock>
 						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" Value="{CompiledBinding Scanline}" IsEnabled="False" Max="261" Min="-1" />
+					</Grid>
+					
+					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+						<TextBlock>VRAM Addr.:</TextBlock>
+						<c:MesenNumericTextBox Grid.Column="1" IsEnabled="False" Hex="True" Max="0xFFFF" Value="{CompiledBinding VramAddress}" />
+						<TextBlock Grid.Row="1">OAM Addr.:</TextBlock>
+						<c:MesenNumericTextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Max="0xFFF" Hex="True" Value="{CompiledBinding OamAddress}" />
+						<TextBlock Grid.Row="2">CGRAM Addr.:</TextBlock>
+						<c:MesenNumericTextBox Grid.Row="2" Grid.Column="1" IsEnabled="False" Max="0xFFF" Hex="True" Value="{CompiledBinding CgRamAddress}" />
 					</Grid>
 				</WrapPanel>
 			</StackPanel>
