@@ -43,6 +43,11 @@ namespace Mesen.Debugger.Views
 				Breakpoint bp = vm.Breakpoint;
 				string? header = cell.Column?.Header?.ToString() ?? "";
 				if(header == "E" || header == "M") {
+					if(DataContext is BreakpointListViewModel model) {
+						//When clicking on checkbox, select the corresponding breakpoint in the list
+						//Otherwise the list will scroll up/down to whatever breakpoint is currently selected after refreshing
+						model.Selection.SelectedItem = vm;
+					}
 					BreakpointManager.RefreshBreakpoints(bp);
 				}
 			}
