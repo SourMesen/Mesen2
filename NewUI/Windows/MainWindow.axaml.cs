@@ -254,7 +254,14 @@ namespace Mesen.Windows
 								_cmdLine?.ProcessPostLoadCommandSwitches(this);
 								_cmdLine = null;
 							}
-							ProcessResolutionChange();
+
+							if(WindowState == WindowState.FullScreen) {
+								//Force resize of renderer when loading a game while in fullscreen
+								//Prevents some issues when fullscreen was turned on before loading a game, etc.
+								_renderer.Width = double.NaN;
+								_renderer.Height = double.NaN;
+								ResizeRenderer();
+							}
 						}, TimeSpan.FromMilliseconds(50));
 					});
 					break;
@@ -318,7 +325,7 @@ namespace Mesen.Windows
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
 			double xScale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
 			double yScale = ClientSize.Height * dpiScale / _baseScreenSize.Height;
-			SetScale(Math.Min(xScale, yScale));
+			SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
 			_baseScreenSize = EmuApi.GetBaseScreenSize();
 		}
 
@@ -346,8 +353,8 @@ namespace Mesen.Windows
 				//When menu is set to auto-hide, don't count its height when calculating the window's final size
 				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
 
-				double width = Math.Round(screenSize.Width * scale);
-				double height = Math.Round(screenSize.Width * scale / aspectRatio);
+				double width = Math.Round(screenSize.Height * scale * aspectRatio);
+				double height = Math.Round(screenSize.Height * scale);
 				ClientSize = new Size(width, height + menuHeight + _audioPlayer.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {

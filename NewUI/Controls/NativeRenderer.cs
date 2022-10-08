@@ -33,11 +33,11 @@ namespace Mesen
 		{
 			double aspectRatio = EmuApi.GetAspectRatio();
 
-			double width = finalSize.Width;
-			double height = width / aspectRatio;
-			if(height > finalSize.Height) {
-				height = finalSize.Height;
-				width = height * aspectRatio;
+			double height = finalSize.Height;
+			double width = finalSize.Height * aspectRatio;
+			if(width > finalSize.Width) {
+				width = finalSize.Width;
+				height = width / aspectRatio;
 			}
 
 			if(DataContext is MainWindowViewModel model) {
