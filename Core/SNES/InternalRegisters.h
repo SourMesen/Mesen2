@@ -26,8 +26,15 @@ private:
 	bool _irqLevel = false;
 	uint8_t _needIrq = 0;
 	bool _irqFlag = false;
-	
+
+	uint64_t _autoReadClockStart = 0;
+	uint16_t _newControllerData[4] = {};
+	bool _newControllerDataPending = false;
+
 	void SetIrqFlag(bool irqFlag);
+	
+	bool IsAutoReadActive();
+	uint8_t ReadControllerData(uint8_t port, bool getMsb);
 
 public:
 	InternalRegisters();

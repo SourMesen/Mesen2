@@ -45,11 +45,23 @@ void InternalRegisters::Reset()
 
 void InternalRegisters::ProcessAutoJoypadRead()
 {
+	if(_autoReadClockStart == 0) {
+		//"[..] Specifically, it begins at dot 74.5 on the first frame" (74.5*4 = 298)
+		_autoReadClockStart = _console->GetMasterClock() + 298;
+	} else {
+		//"This begins between dots 32.5 and 95.5 of the first V-Blank scanline" (32.5*4 = 130)
+		//"and thereafter some multiple of 256 cycles after the start of the previous read that falls within the observed range."
+		uint64_t rangeStart = (_console->GetMasterClock() + 130);
+		uint64_t elapsed = rangeStart - _autoReadClockStart;
+		uint64_t gap = elapsed % 256;
+		_autoReadClockStart = rangeStart + gap;
+	}
+
 	if(!_state.EnableAutoJoypadRead) {
 		return;
 	}
 
-	//TODO timing
+	//TODO what happens if CPU reads or writes to 4016/4017 while this is running?
 
 	//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
 	//causing the controllers to continuously report the value of the B button
@@ -59,22 +71,65 @@ void InternalRegisters::ProcessAutoJoypadRead()
 	}
 
 	for(int i = 0; i < 4; i++) {
-		_state.ControllerData[i] = 0;
+		_state.ControllerData[i] = _newControllerData[i];
+		_newControllerData[i] = 0;
 	}
 
 	for(int i = 0; i < 16; i++) {
 		uint8_t port1 = _controlManager->Read(0x4016, true);
 		uint8_t port2 = _controlManager->Read(0x4017, true);
 
-		_state.ControllerData[0] <<= 1;
-		_state.ControllerData[1] <<= 1;
-		_state.ControllerData[2] <<= 1;
-		_state.ControllerData[3] <<= 1;
+		_newControllerData[0] <<= 1;
+		_newControllerData[1] <<= 1;
+		_newControllerData[2] <<= 1;
+		_newControllerData[3] <<= 1;
 
-		_state.ControllerData[0] |= (port1 & 0x01);
-		_state.ControllerData[1] |= (port2 & 0x01);
-		_state.ControllerData[2] |= (port1 & 0x02) >> 1;
-		_state.ControllerData[3] |= (port2 & 0x02) >> 1;
+		_newControllerData[0] |= (port1 & 0x01);
+		_newControllerData[1] |= (port2 & 0x01);
+		_newControllerData[2] |= (port1 & 0x02) >> 1;
+		_newControllerData[3] |= (port2 & 0x02) >> 1;
+	}
+
+	_newControllerDataPending = true;
+}
+
+bool InternalRegisters::IsAutoReadActive()
+{
+	//Auto-read is active for 4224 master cycles
+	return _state.EnableAutoJoypadRead && _console->GetMasterClock() >= _autoReadClockStart && _console->GetMasterClock() < _autoReadClockStart + 4224;
+}
+
+uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
+{
+	if(_newControllerDataPending && _console->GetMasterClock() > _autoReadClockStart + 4224) {
+		for(int i = 0; i < 4; i++) {
+			_state.ControllerData[i] = _newControllerData[i];
+		}
+		_newControllerDataPending = false;
+	}
+
+	//When auto-poll registers are read, don't count frame as a lag frame
+	_controlManager->SetInputReadFlag();
+
+	uint8_t value;
+	if(getMsb) {
+		value = (uint8_t)(_state.ControllerData[port] >> 8);
+	} else {
+		value = (uint8_t)_state.ControllerData[port];
+	}
+
+	if(IsAutoReadActive()) {
+		if(value == 0) {
+			//"The only reliable value is that no buttons pressed will return 0"
+			return 0;
+		} else {
+			//TODO not accurate
+			//"Reading $4218-f during this time will read back incorrect values."
+			//Return bad data when reading during auto-read while buttons are pressed
+			return (value ^ 0xFF) >> 2;
+		}
+	} else {
+		return value;
 	}
 }
 
@@ -151,7 +206,7 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 			return (
 				(scanline >= nmiScanline ? 0x80 : 0) |
 				((hClock >= 1*4 && hClock <= 274*4) ? 0 : 0x40) |
-				((_state.EnableAutoJoypadRead && scanline >= nmiScanline && scanline <= nmiScanline + 2) ? 0x01 : 0) | //Auto joypad read in progress
+				(IsAutoReadActive() ? 0x01 : 0) | //Auto joypad read in progress
 				(_memoryManager->GetOpenBus() & 0x3E)
 			);
 		}
@@ -166,22 +221,14 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 		case 0x4217: 
 			return _aluMulDiv.Read(addr);
 
-		case 0x4218:
-			//When P1 auto-poll registers are read, don't count frame as a lag frame
-			_controlManager->SetInputReadFlag();
-			return (uint8_t)_state.ControllerData[0];
-
-		case 0x4219:
-			//When P1 auto-poll registers are read, don't count frame as a lag frame
-			_controlManager->SetInputReadFlag();
-			return (uint8_t)(_state.ControllerData[0] >> 8);
-
-		case 0x421A: return (uint8_t)_state.ControllerData[1];
-		case 0x421B: return (uint8_t)(_state.ControllerData[1] >> 8);
-		case 0x421C: return (uint8_t)_state.ControllerData[2];
-		case 0x421D: return (uint8_t)(_state.ControllerData[2] >> 8);
-		case 0x421E: return (uint8_t)_state.ControllerData[3];
-		case 0x421F: return (uint8_t)(_state.ControllerData[3] >> 8);
+		case 0x4218: return ReadControllerData(0, false);
+		case 0x4219: return ReadControllerData(0, true);
+		case 0x421A: return ReadControllerData(1, false);
+		case 0x421B: return ReadControllerData(1, true);
+		case 0x421C: return ReadControllerData(2, false);
+		case 0x421D: return ReadControllerData(2, true);
+		case 0x421E: return ReadControllerData(3, false);
+		case 0x421F: return ReadControllerData(3, true);
 		
 		default:
 			LogDebug("[Debug] Unimplemented register read: " + HexUtilities::ToHex(addr));
@@ -267,4 +314,8 @@ void InternalRegisters::Serialize(Serializer &s)
 	SV(_irqLevel); SV(_needIrq); SV(_state.EnableAutoJoypadRead); SV(_irqFlag);
 
 	SV(_aluMulDiv);
+
+	SV(_autoReadClockStart);
+	SV(_newControllerData[0]); SV(_newControllerData[1]); SV(_newControllerData[2]); SV(_newControllerData[3]);
+	SV(_newControllerDataPending);
 }
