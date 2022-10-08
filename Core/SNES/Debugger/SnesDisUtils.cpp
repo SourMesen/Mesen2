@@ -138,7 +138,7 @@ EffectiveAddressInfo SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Sn
 		if(opInfo.Type != MemoryOperationType::ExecOperand) {
 			MemoryOperationInfo prevOpInfo = dummyCpu.GetOperationInfo(i - 1);
 			EffectiveAddressInfo result;
-			if(prevOpInfo.Type == opInfo.Type) {
+			if(prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 1) {
 				//For 16-bit read/writes, return the first address
 				result.Address = prevOpInfo.Address;
 				result.ValueSize = 2;

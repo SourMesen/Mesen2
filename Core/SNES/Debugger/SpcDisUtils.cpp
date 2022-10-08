@@ -168,7 +168,7 @@ EffectiveAddressInfo SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Sne
 		if(opInfo.Type != MemoryOperationType::ExecOperand && opInfo.Type != MemoryOperationType::DummyRead) {
 			MemoryOperationInfo prevOpInfo = dummySpc.GetOperationInfo(i - 1);
 			EffectiveAddressInfo result;
-			if(prevOpInfo.Type == opInfo.Type) {
+			if(prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 1) {
 				//For 16-bit read/writes, return the first address
 				result.Address = prevOpInfo.Address;
 				result.ValueSize = 2;
