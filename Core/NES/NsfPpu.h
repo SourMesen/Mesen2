@@ -47,6 +47,7 @@ public:
 				ProcessScanlineFirstCycle();
 			}
 			_masterClock += _masterClockDivider;
+			_emu->ProcessPpuCycle<CpuType::Nes>();
 		} while(_masterClock + _masterClockDivider <= runTo);
 	}
 };
