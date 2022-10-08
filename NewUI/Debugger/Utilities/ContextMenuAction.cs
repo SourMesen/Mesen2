@@ -641,7 +641,7 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("CheatCode")]
 		SaveEditsAsIps,
 
-		[IconFile("Refresh")]
+		[IconFile("ResetSettings")]
 		ResetLayout,
 
 		[IconFile("Breakpoint")]
@@ -669,7 +669,7 @@ namespace Mesen.Debugger.Utilities
 		CodeWindowEditBreakpoint,
 		
 		CodeDataLogger,
-		[IconFile("Refresh")]
+		[IconFile("ResetSettings")]
 		ResetCdl,
 		[IconFile("Folder")]
 		LoadCdl,
@@ -679,7 +679,7 @@ namespace Mesen.Debugger.Utilities
 		MoveProgramCounter,
 		ShowToolbar,
 
-		[IconFile("Refresh")]
+		[IconFile("ResetSettings")]
 		ResetWorkspace,
 		[IconFile("TabContent")]
 		Workspace,
@@ -769,7 +769,7 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("MediaPlay")]
 		UnfreezeMemory,
 
-		[IconFile("Refresh")]
+		[IconFile("ResetSettings")]
 		ResetAccessCounters,
 	}
 }

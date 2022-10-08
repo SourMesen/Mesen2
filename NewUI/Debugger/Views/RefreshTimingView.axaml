@@ -35,7 +35,7 @@
 		/>
 		<c:IconButton
 			ToolTip.Tip="{l:Translate lblResetToDefault}"
-			Icon="Assets/Refresh.png"
+			Icon="Assets/ResetSettings.png"
 			Command="{CompiledBinding ResetCommand}"
 		/>
 		
