@@ -168,6 +168,23 @@ namespace Mesen.Interop
 			}
 			return false;
 		}
+		
+		public static bool IsRomMemory(this MemoryType memType)
+		{
+			switch(memType) {
+				case MemoryType.SnesPrgRom:
+				case MemoryType.GbPrgRom:
+				case MemoryType.GbBootRom:
+				case MemoryType.NesPrgRom:
+				case MemoryType.NesChrRom:
+				case MemoryType.PcePrgRom:
+				case MemoryType.DspDataRom:
+				case MemoryType.DspProgramRom:
+				case MemoryType.SpcRom:
+					return true;
+			}
+			return false;
+		}
 
 		public static bool SupportsLabels(this MemoryType memType)
 		{

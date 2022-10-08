@@ -132,7 +132,7 @@ namespace Mesen.Debugger
 			return false;
 		}
 
-		public static void ToggleBreakpoint(AddressInfo info, CpuType cpuType)
+		public static void ToggleBreakpoint(AddressInfo info, CpuType cpuType, bool forceExecBreakpoint = true)
 		{
 			if(info.Address < 0) {
 				return;
@@ -142,10 +142,13 @@ namespace Mesen.Debugger
 			if(breakpoint != null) {
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
+				bool execBreakpoint = forceExecBreakpoint || info.Type.IsRomMemory();
 				breakpoint = new Breakpoint() {
 					CpuType = cpuType,
 					Enabled = true,
-					BreakOnExec = true,
+					BreakOnExec = execBreakpoint,
+					BreakOnRead = !execBreakpoint,
+					BreakOnWrite = !execBreakpoint,
 					StartAddress = (UInt32)info.Address,
 					EndAddress = (UInt32)info.Address
 				};
