@@ -1258,15 +1258,6 @@
     <ClInclude Include="NES\Mappers\Audio\Namco163Audio.h">
       <Filter>NES\Mappers\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Audio\OpllChannel.h">
-      <Filter>NES\Mappers\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\Audio\OpllEmulator.h">
-      <Filter>NES\Mappers\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="NES\Mappers\Audio\OpllTables.h">
-      <Filter>NES\Mappers\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Audio\Sunsoft5bAudio.h">
       <Filter>NES\Mappers\Audio</Filter>
     </ClInclude>
@@ -2613,6 +2604,7 @@
     <ClInclude Include="Debugger\FrozenAddressManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2738,6 +2730,7 @@
     <ClCompile Include="Debugger\StepBackManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
+    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">

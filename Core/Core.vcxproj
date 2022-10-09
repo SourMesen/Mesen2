@@ -24,6 +24,7 @@
     <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="Debugger\FrozenAddressManager.h" />
     <ClInclude Include="Debugger\StepBackManager.h" />
+    <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
@@ -402,9 +403,6 @@
     <ClInclude Include="NES\Mappers\A12Watcher.h" />
     <ClInclude Include="NES\Mappers\Audio\Mmc5Audio.h" />
     <ClInclude Include="NES\Mappers\Audio\Namco163Audio.h" />
-    <ClInclude Include="NES\Mappers\Audio\OpllChannel.h" />
-    <ClInclude Include="NES\Mappers\Audio\OpllEmulator.h" />
-    <ClInclude Include="NES\Mappers\Audio\OpllTables.h" />
     <ClInclude Include="NES\Mappers\Audio\Sunsoft5bAudio.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc6Audio.h" />
     <ClInclude Include="NES\Mappers\Audio\Vrc6Pulse.h" />
@@ -714,6 +712,12 @@
     <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp" />
     <ClCompile Include="NES\Loaders\UnifLoader.cpp" />
+    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="NES\Mappers\FDS\Fds.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsAudio.cpp" />
     <ClCompile Include="NES\Mappers\FDS\FdsInputButtons.cpp" />

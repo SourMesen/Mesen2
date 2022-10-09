@@ -39,6 +39,11 @@ protected:
 		
 		UpdateState(); //disable wram, set mirroring mode
 	}
+
+	void Reset(bool softReset) override
+	{
+		_audio->Reset();
+	}
 	
 	void Serialize(Serializer& s) override
 	{
