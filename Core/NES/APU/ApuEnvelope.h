@@ -49,6 +49,7 @@ public:
 
 	void Reset(bool softReset)
 	{
+		LengthCounter.Reset(softReset);
 		_constantVolume = false;
 		_volume = 0;
 		_start = false;

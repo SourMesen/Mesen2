@@ -51,7 +51,7 @@ public:
 				_counter = 0;
 				_newHaltValue = false;
 				_reloadValue = 0;
-				_previousValue = 0;			
+				_previousValue = 0;
 			}
 		} else {
 			_enabled = false;
@@ -59,7 +59,7 @@ public:
 			_counter = 0;
 			_newHaltValue = false;
 			_reloadValue = 0;
-			_previousValue = 0;		
+			_previousValue = 0;
 		}
 	}
 
