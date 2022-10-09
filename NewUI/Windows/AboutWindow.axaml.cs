@@ -55,7 +55,7 @@ namespace Mesen.Windows
 				new("Lua", "","MIT", "https://www.lua.org"),
 				new("7-Zip", "","Public domain", "https://www.7-zip.org/"),
 				new("DirectXTK", "", "MIT", "https://github.com/microsoft/DirectXTK"),
-				new("scale2x", "","GPL2", "https://github.com/amadvance/scale2x/"),
+				new("scale2x", "","GPL2+", "https://github.com/amadvance/scale2x/"),
 				new("Super Eagle + 2xSai", "", "GPL3", "https://vdnoort.home.xs4all.nl/emulation/2xsai/"),
 				new("xBRZ", "","GPL3", "https://sourceforge.net/projects/xbrz/"),
 				new("blip_buf", "blargg", "LGPL", "http://slack.net/~ant/"),
@@ -66,7 +66,9 @@ namespace Mesen.Windows
 				new("SDD-1 Decomp. (Andreas Naive)", "Andreas Naive", "Public domain", ""),
 				new("LED Icons", "", "CC BY 4.0", "http://led24.de"),
 				new("SDL2", "", "zlib", "https://www.libsdl.org/"),
-				new("magic_enum", "", "MIT", "https://github.com/Neargye/magic_enum")
+				new("magic_enum", "", "MIT", "https://github.com/Neargye/magic_enum"),
+				new("ZMBV Codec (DOSBox)", "", "GPL2+", "https://www.dosbox.com/"),
+				new("CSCD Codec (lsnes)", "", "GPL2+", "https://repo.or.cz/lsnes.git")
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));
