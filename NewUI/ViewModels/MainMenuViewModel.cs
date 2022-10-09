@@ -71,9 +71,9 @@ namespace Mesen.ViewModels
 		private void cfgWindow_Closed(object? sender, EventArgs e)
 		{
 			_cfgWindow = null;
-			if(ConfigManager.Config.Preferences.DisableGameSelectionScreen && MainWindow.RecentGames.Visible) {
+			if(ConfigManager.Config.Preferences.GameSelectionScreenMode == GameSelectionMode.Disabled && MainWindow.RecentGames.Visible) {
 				MainWindow.RecentGames.Visible = false;
-			} else if(!ConfigManager.Config.Preferences.DisableGameSelectionScreen && !IsGameRunning) {
+			} else if(ConfigManager.Config.Preferences.GameSelectionScreenMode != GameSelectionMode.Disabled && !IsGameRunning) {
 				MainWindow.RecentGames.Init(GameScreenMode.RecentGames);
 			}
 		}

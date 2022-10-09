@@ -156,7 +156,6 @@
 
 					<c:OptionSection Header="{l:Translate lblUiDisplaySettings}">
 						<CheckBox Content="{l:Translate chkDisableOsd}" IsChecked="{CompiledBinding Config.DisableOsd}" />
-						<CheckBox Content="{l:Translate chkDisableGameSelectionScreen}" IsChecked="{CompiledBinding Config.DisableGameSelectionScreen}" />
 						<CheckBox Content="{l:Translate chkDisplayTitleBarInfo}" IsChecked="{CompiledBinding Config.ShowTitleBarInfo}" />
 						<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
 						<CheckBox Content="{l:Translate chkShowFrameCounter}" IsChecked="{CompiledBinding Config.ShowFrameCounter}" />
@@ -189,6 +188,10 @@
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+							<TextBlock Text="{l:Translate lblGameSelectionScreen}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.GameSelectionScreenMode}" MinWidth="250" />
+						</StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
 							<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{CompiledBinding Config.EnableAutoSaveState}" />
 							<NumericUpDown Value="{CompiledBinding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{CompiledBinding Config.EnableAutoSaveState}" />

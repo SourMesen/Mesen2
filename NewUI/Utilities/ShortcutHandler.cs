@@ -95,7 +95,7 @@ namespace Mesen.Utilities
 
 				case EmulatorShortcut.LoadLastSession:
 					string filename = Path.Combine(ConfigManager.RecentGamesFolder, MainWindowModel.RomInfo.GetRomName() + ".rgd");
-					LoadRomHelper.LoadRecentGame(filename);
+					LoadRomHelper.LoadRecentGame(filename, true);
 					break;
 
 				case EmulatorShortcut.LoadStateDialog:

@@ -201,21 +201,6 @@
 			<Control ID="lblRunAheadFrames">frames (reduces input lag, increases CPU usage)</Control>
 
 			<Control ID="lblRegion">Region:</Control>
-			
-			<Control ID="tpgOverclocking">Overclocking</Control>
-			<Control ID="grpOverclocking">Overclocking</Control>
-			<Control ID="lblOverclockHint">Overclocking can help reduce or remove slowdowns in games (but it can also cause issues). To overclock, try setting the "before NMI" value to a few hundred lines (e.g 300+). If this breaks the game, try lowering the value or using the "after NMI" field instead.</Control>
-			<Control ID="lblClockRate">Clock Rate Multiplier:</Control>
-			<Control ID="lblClockRatePercent">% (Default: 100%)</Control>
-
-			<Control ID="lblEffectiveClockRate">Effective Clock Rate (NTSC):</Control>
-			<Control ID="lblEffectiveClockRatePal">Effective Clock Rate (PAL):</Control>
-			<Control ID="lblEffectiveClockRateDendy">Effective Clock Rate (Dendy):</Control>
-
-			<Control ID="chkOverclockAdjustApu">Do not overclock APU (prevents sound pitch changes caused by overclocking)</Control>
-
-			<Control ID="chkShowLagCounter">Show Lag Counter</Control>
-			<Control ID="btnResetLagCounter">Reset Counter</Control>
 		</Form>
 		<Form ID="SnesConfigView">
 			<Control ID="tpgGeneral">General</Control>
@@ -552,7 +537,7 @@
 			<Control ID="chkDisableMouseResize">Do not allow the main window to be resized using the mouse</Control>
 			<Control ID="lblGameSelectionScreenSettings">Game Selection Screen Settings</Control>
 			<Control ID="chkGameSelectionScreenResetGame">Start game from power-on instead of resuming the previous gameplay session</Control>
-			<Control ID="chkDisableGameSelectionScreen">Disable game selection screen</Control>
+			<Control ID="lblGameSelectionScreen">Game selection screen:</Control>
 
 			<Control ID="chkDisableGameDatabase">Disable built-in game database</Control>
 			<Control ID="chkDisableHighResolutionTimer">Disable high resolution timer</Control>
@@ -2020,6 +2005,11 @@
 			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
 			<Value ID="Hvc001">Famicom (HVC-001)</Value>
 			<Value ID="Hvc101">AV Famicom (HVC-101)</Value>
+		</Enum>
+		<Enum ID="GameSelectionMode">
+			<Value ID="Disabled">Disabled</Value>
+			<Value ID="ResumeState">Enabled (resume from save state)</Value>
+			<Value ID="PowerOn">Enabled (restart from power on)</Value>
 		</Enum>
 		<Enum ID="ConsoleRegion">
 			<Value ID="Auto">Auto</Value>

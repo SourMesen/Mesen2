@@ -25,12 +25,12 @@ namespace Mesen.ViewModels
 		
 		public RecentGamesViewModel()
 		{
-			Visible = !ConfigManager.Config.Preferences.DisableGameSelectionScreen;
+			Visible = ConfigManager.Config.Preferences.GameSelectionScreenMode != GameSelectionMode.Disabled;
 		}
 
 		public void Init(GameScreenMode mode)
 		{
-			if(mode == GameScreenMode.RecentGames && ConfigManager.Config.Preferences.DisableGameSelectionScreen) {
+			if(mode == GameScreenMode.RecentGames && ConfigManager.Config.Preferences.GameSelectionScreenMode == GameSelectionMode.Disabled) {
 				Visible = false;
 				GameEntries = new List<RecentGameInfo>();
 				return;
@@ -122,7 +122,7 @@ namespace Mesen.ViewModels
 					EmuApi.Resume();
 				});
 			} else {
-				LoadRomHelper.LoadRecentGame(FileName);
+				LoadRomHelper.LoadRecentGame(FileName, false);
 			}
 		}
 	}

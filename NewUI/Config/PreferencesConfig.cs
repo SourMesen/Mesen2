@@ -15,6 +15,7 @@ using System.Reflection;
 using Mesen.Utilities;
 using Avalonia.Threading;
 using Avalonia.Media;
+using Mesen.ViewModels;
 
 namespace Mesen.Config
 {
@@ -59,7 +60,7 @@ namespace Mesen.Config
 		[Reactive] public bool ShowTitleBarInfo { get; set; } = false;
 		[Reactive] public bool ShowDebugInfo { get; set; } = false;
 		[Reactive] public bool DisableOsd { get; set; } = false;
-		[Reactive] public bool DisableGameSelectionScreen { get; set; } = false;
+		[Reactive] public GameSelectionMode GameSelectionScreenMode { get; set; } = GameSelectionMode.ResumeState;
 
 		[Reactive] public FontAntialiasing FontAntialiasing { get; set; } = FontAntialiasing.SubPixelAntialias;
 		[Reactive] public FontConfig MesenFont { get; set; } = new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
@@ -219,7 +220,7 @@ namespace Mesen.Config
 				AllowBackgroundInput = AllowBackgroundInput,
 				PauseOnMovieEnd = PauseOnMovieEnd,
 				ShowMovieIcons = ShowMovieIcons,
-				DisableGameSelectionScreen = DisableGameSelectionScreen,
+				DisableGameSelectionScreen = GameSelectionScreenMode == GameSelectionMode.Disabled,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
@@ -240,6 +241,13 @@ namespace Mesen.Config
 		Disabled,
 		Antialias,
 		SubPixelAntialias
+	}
+
+	public enum GameSelectionMode
+	{
+		Disabled,
+		ResumeState,
+		PowerOn
 	}
 
 	public struct InteropPreferencesConfig
