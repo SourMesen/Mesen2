@@ -59,6 +59,11 @@ namespace Mesen.Debugger.Windows
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);
 			DebugApi.StopLogTraceToFile();
+			
+			//Disable trace logging for all cpus
+			foreach(CpuType cpuType in Enum.GetValues<CpuType>()) {
+				DebugApi.SetTraceOptions(cpuType, new());
+			}
 		}
 
 		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();

@@ -76,7 +76,7 @@ extern "C"
 	DllExport int32_t __stdcall SearchDisassembly(CpuType type, const char* searchString, int32_t startPosition, DisassemblySearchOptions options) { return WithDebugger(int32_t, GetDisassemblySearch()->SearchDisassembly(type, searchString, startPosition, options)); }
 	DllExport uint32_t __stdcall FindOccurrences(CpuType type, const char* searchString, DisassemblySearchOptions options, CodeLineData results[], uint32_t maxResultCount) { return WithDebugger(uint32_t, GetDisassemblySearch()->FindOccurrences(type, searchString, options, results, maxResultCount)); }
 
-	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { WithDebugger(void, GetTraceLogger(type)->SetOptions(options)); }
+	DllExport void __stdcall SetTraceOptions(CpuType type, TraceLoggerOptions options) { WithToolVoid(GetTraceLogger(type), SetOptions(options)); }
 	DllExport uint32_t __stdcall GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t lineCount) { return WithDebugger(uint32_t, GetExecutionTrace(output, startOffset, lineCount)); }
 	DllExport void __stdcall ClearExecutionTrace() { WithDebugger(void, ClearExecutionTrace()); }
 
