@@ -3,6 +3,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:sys="clr-namespace:System;assembly=netstandard"
 >
+	<Style Selector="MenuItem:disabled /template/ TextBlock">
+		<Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemKeyboardAcceleratorTextForegroundDisabled}" />
+	</Style>
+	
 	<Style Selector="MenuItem">
 		<Setter Property="Template">
 			<ControlTemplate>
