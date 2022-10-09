@@ -109,6 +109,7 @@ namespace Mesen.Debugger.ViewModels
 				//DebuggerShortcut.IncreaseFontSize,
 				//DebuggerShortcut.DecreaseFontSize,
 				//DebuggerShortcut.ResetFontSize,
+				DebuggerShortcut.ToggleSettingsPanel,
 				DebuggerShortcut.ZoomIn,
 				DebuggerShortcut.ZoomOut,
 				DebuggerShortcut.SaveAsPng,

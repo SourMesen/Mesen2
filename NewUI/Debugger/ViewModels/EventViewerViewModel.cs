@@ -87,6 +87,12 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
+					ActionType = ActionType.ShowSettingsPanel,
+					Shortcut =  () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleSettingsPanel),
+					IsSelected = () => Config.ShowSettingsPanel,
+					OnClick = () => Config.ShowSettingsPanel = !Config.ShowSettingsPanel
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.ShowToolbar,
 					IsSelected = () => Config.ShowToolbar,
 					OnClick = () => Config.ShowToolbar = !Config.ShowToolbar

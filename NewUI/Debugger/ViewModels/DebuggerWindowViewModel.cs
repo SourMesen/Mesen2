@@ -513,6 +513,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ShowSettingsPanel,
 					IsSelected = () => cfg.ShowSettingsPanel,
+					Shortcut =  () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleSettingsPanel),
 					OnClick = () => cfg.ShowSettingsPanel = !cfg.ShowSettingsPanel
 				},
 				new ContextMenuAction() {

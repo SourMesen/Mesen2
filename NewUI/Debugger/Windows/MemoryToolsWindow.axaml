@@ -33,11 +33,12 @@
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuItems}" />
 			<MenuItem Header="{l:Translate mnuSearch}" Classes="ActionMenu" Items="{CompiledBinding SearchMenuItems}" />
 		</Menu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-				<TextBlock VerticalAlignment="Center">Memory type: </TextBlock>
+				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblMemoryType}" />
 				<c:EnumComboBox
 					SelectedItem="{CompiledBinding Config.MemoryType}"
 					AvailableValues="{CompiledBinding AvailableMemoryTypes}"
@@ -48,7 +49,7 @@
 			<c:IconButton
 				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
-				ToolTip.Tip="Toggle settings panel"
+				ToolTip.Tip="{l:Translate btnToggleSettings}"
 				Click="OnSettingsClick"
 				Icon="Assets/Settings.png"
 			/>

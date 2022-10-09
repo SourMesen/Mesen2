@@ -208,6 +208,15 @@ namespace Mesen.Debugger.Windows
 				}
 			});
 
+			_model.ViewMenuItems = _model.AddDisposables(new List<ContextMenuAction>() {
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowSettingsPanel,
+					Shortcut =  () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleSettingsPanel),
+					IsSelected = () => _model.Config.ShowOptionPanel,
+					OnClick = () => _model.Config.ShowOptionPanel = !_model.Config.ShowOptionPanel
+				},
+			});
+
 			_model.SearchMenuItems = _model.AddDisposables(new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToAddress,
@@ -331,6 +340,7 @@ namespace Mesen.Debugger.Windows
 			});
 
 			DebugShortcutManager.RegisterActions(this, _model.FileMenuItems);
+			DebugShortcutManager.RegisterActions(this, _model.ViewMenuItems);
 			DebugShortcutManager.RegisterActions(this, _model.SearchMenuItems);
 		}
 

@@ -800,6 +800,8 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
 
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
+
 			<Control ID="lblDisplayMode">Display mode: </Control>
 			<Control ID="lblSelectedTile">Selected Tile</Control>
 			<Control ID="lblTilemap">Tilemap</Control>
@@ -860,6 +862,8 @@
 			<Control ID="wndTitle">Sprite Viewer</Control>
 
 			<Control ID="lblSelectedSprite">Selected Sprite</Control>
+
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
@@ -1006,7 +1010,9 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuDebug">_Debug</Control>
 			<Control ID="mnuView">_View</Control>
-			
+
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
+
 			<Control ID="mnuRefresh">Refresh</Control>
 			<Control ID="mnuAutoRefresh">Auto-refresh</Control>
 			<Control ID="mnuAutoRefreshOff">Off</Control>
@@ -1128,7 +1134,11 @@
 		<Form ID="MemoryToolsWindow">
 			<Control ID="wndTitle">Memory Viewer</Control>
 			<Control ID="mnuFile">_File</Control>
+			<Control ID="mnuView">_View</Control>
 			<Control ID="mnuSearch">_Search</Control>
+			
+			<Control ID="lblMemoryType">Memory Type:</Control>
+			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 		</Form>
 		
 		<Form ID="MemoryToolsDisplayOptionsView">
@@ -2692,6 +2702,7 @@
 			<Value ID="ZoomIn">Zoom In</Value>
 			<Value ID="ZoomOut">Zoom Out</Value>
 			<Value ID="SaveAsPng">Save As PNG</Value>
+			<Value ID="ToggleSettingsPanel">Toggle Settings Panel</Value>
 			<Value ID="OpenAssembler">Open Assembler</Value>
 			<Value ID="OpenDebugger">Open Debugger</Value>
 			<Value ID="OpenSpcDebugger">Open SPC Debugger</Value>
@@ -2715,21 +2726,21 @@
 			<Value ID="OpenSpriteViewer">Open Sprite Viewer</Value>
 			<Value ID="OpenPaletteViewer">Open Palette Viewer</Value>
 			<Value ID="Reset">Reset</Value>
-			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="PowerCycle">Power cycle</Value>
 			<Value ID="ReloadRom">Reload ROM</Value>
 			<Value ID="ToggleBreakContinue">Toggle break/continue</Value>
 			<Value ID="Continue">Continue</Value>
 			<Value ID="Break">Break</Value>
-			<Value ID="StepInto">Step Into</Value>
-			<Value ID="StepOver">Step Over</Value>
-			<Value ID="StepOut">Step Out</Value>
-			<Value ID="StepBack">Step Back</Value>
+			<Value ID="StepInto">Step into</Value>
+			<Value ID="StepOver">Step over</Value>
+			<Value ID="StepOut">Step out</Value>
+			<Value ID="StepBack">Step back</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU Cycle</Value>
 			<Value ID="RunPpuScanline">Run one PPU Scanline</Value>
 			<Value ID="RunPpuFrame">Run one PPU Frame</Value>
-			<Value ID="BreakIn">Break In...</Value>
-			<Value ID="BreakOn">Break On...</Value>
+			<Value ID="BreakIn">Break in...</Value>
+			<Value ID="BreakOn">Break on...</Value>
 			<Value ID="RunToNmi">Run to NMI</Value>
 			<Value ID="RunToIrq">Run to IRQ</Value>
 			<Value ID="ImportLabels">Import labels</Value>
@@ -2737,9 +2748,9 @@
 			<Value ID="ImportWatchEntries">Import watch entries</Value>
 			<Value ID="ExportWatchEntries">Export watch entries</Value>
 			<Value ID="ResetWorkspace">Reset workspace</Value>
-			<Value ID="FindOccurrences">Find Occurrences</Value>
-			<Value ID="GoToProgramCounter">Go to Program Counter</Value>
-			<Value ID="GoToAddress">Go to Address...</Value>
+			<Value ID="FindOccurrences">Find all occurrences</Value>
+			<Value ID="GoToProgramCounter">Go to program counter</Value>
+			<Value ID="GoToAddress">Go to address...</Value>
 			<Value ID="GoToCpuVector1">Go to [CPU vector 1]</Value>
 			<Value ID="GoToCpuVector2">Go to [CPU vector 2]</Value>
 			<Value ID="GoToCpuVector3">Go to [CPU vector 3]</Value>
@@ -2881,28 +2892,28 @@
 			<Value ID="Import">Import...</Value>
 			<Value ID="Export">Export...</Value>
 
-			<Value ID="ShowBreakpointList">Show Breakpoint List</Value>
-			<Value ID="ShowLabelList">Show Label List</Value>
-			<Value ID="ShowFunctionList">Show Function List</Value>
-			<Value ID="ShowWatchList">Show Watch List</Value>
-			<Value ID="ShowCallStack">Show Call Stack</Value>
-			<Value ID="ShowConsoleStatus">Show Console Status</Value>
-			<Value ID="ShowControllers">Show Controllers</Value>
+			<Value ID="ShowBreakpointList">Show breakpoint list</Value>
+			<Value ID="ShowLabelList">Show label list</Value>
+			<Value ID="ShowFunctionList">Show function list</Value>
+			<Value ID="ShowWatchList">Show watch list</Value>
+			<Value ID="ShowCallStack">Show call stack</Value>
+			<Value ID="ShowConsoleStatus">Show console status</Value>
+			<Value ID="ShowControllers">Show controllers</Value>
 			
-			<Value ID="ShowSettingsPanel">Show Settings Panel</Value>
-			<Value ID="ShowMemoryMappings">Show Memory Mappings</Value>
+			<Value ID="ShowSettingsPanel">Show settings panel</Value>
+			<Value ID="ShowMemoryMappings">Show memory mappings</Value>
 
 			<Value ID="Preferences">Preferences</Value>
 
 			<Value ID="Continue">Continue</Value>
 			<Value ID="Break">Break</Value>
 			<Value ID="Reset">Reset</Value>
-			<Value ID="PowerCycle">Power Cycle</Value>
+			<Value ID="PowerCycle">Power cycle</Value>
 			<Value ID="ReloadRom">Reload ROM</Value>
-			<Value ID="StepInto">Step Into</Value>
-			<Value ID="StepOut">Step Out</Value>
-			<Value ID="StepOver">Step Over</Value>
-			<Value ID="StepBack">Step Back</Value>
+			<Value ID="StepInto">Step into</Value>
+			<Value ID="StepOut">Step out</Value>
+			<Value ID="StepOver">Step over</Value>
+			<Value ID="StepBack">Step back</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
 			<Value ID="RunPpuScanline">Run one scanline</Value>
@@ -2923,8 +2934,8 @@
 			<Value ID="Exit">Exit</Value>
 
 			<Value ID="Refresh">Refresh</Value>
-			<Value ID="ZoomIn">Zoom In</Value>
-			<Value ID="ZoomOut">Zoom Out</Value>
+			<Value ID="ZoomIn">Zoom in</Value>
+			<Value ID="ZoomOut">Zoom out</Value>
 			<Value ID="EnableAutoRefresh">Auto-refresh</Value>
 			<Value ID="RefreshOnBreakPause">Refresh on break/pause</Value>
 
@@ -2942,7 +2953,7 @@
 
 			<Value ID="GoTo">Go to...</Value>
 			<Value ID="GoToAddress">Go to address...</Value>
-			<Value ID="GoToProgramCounter">Program Counter</Value>
+			<Value ID="GoToProgramCounter">Program counter</Value>
 			<Value ID="GoToAll">Go to all...</Value>
 
 			<Value ID="OpenAssembler">Assembler</Value>

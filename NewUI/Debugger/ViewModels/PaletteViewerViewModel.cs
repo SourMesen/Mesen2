@@ -86,6 +86,13 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
+					ActionType = ActionType.ShowSettingsPanel,
+					Shortcut =  () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ToggleSettingsPanel),
+					IsSelected = () => Config.ShowSettingsPanel,
+					OnClick = () => Config.ShowSettingsPanel = !Config.ShowSettingsPanel
+				},
+				new ContextMenuSeparator(),
+				new ContextMenuAction() {
 					ActionType = ActionType.ZoomIn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomIn),
 					OnClick = ZoomIn

@@ -33,6 +33,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public string StatusBarText { get; private set; } = "";
 
 		[Reactive] public List<ContextMenuAction> FileMenuItems { get; set; } = new();
+		[Reactive] public List<ContextMenuAction> ViewMenuItems { get; set; } = new();
 		[Reactive] public List<ContextMenuAction> SearchMenuItems { get; set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarItems { get; set; } = new();
 

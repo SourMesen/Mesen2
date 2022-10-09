@@ -98,6 +98,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.ZoomOut, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
 
 			Add(new() { Shortcut = DebuggerShortcut.SaveAsPng, KeyBinding = new(KeyModifiers.Control, Key.S) });
+			Add(new() { Shortcut = DebuggerShortcut.ToggleSettingsPanel, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 
 			Add(new() { Shortcut = DebuggerShortcut.OpenAssembler, KeyBinding = new(KeyModifiers.Control, Key.U) });
 			Add(new() { Shortcut = DebuggerShortcut.OpenDebugger, KeyBinding = new(KeyModifiers.Control, Key.D) });
@@ -299,6 +300,7 @@ namespace Mesen.Config
 		ZoomIn,
 		ZoomOut,
 		SaveAsPng,
+		ToggleSettingsPanel,
 		CodeWindow_ViewInMemoryViewer,
 		MemoryViewer_ViewInDebugger,
 		OpenAssembler,

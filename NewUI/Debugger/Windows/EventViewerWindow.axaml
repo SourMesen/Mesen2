@@ -49,7 +49,7 @@
 			<c:IconButton
 				HorizontalAlignment="Right"
 				DockPanel.Dock="Right"
-				ToolTip.Tip="Toggle settings panel"
+				ToolTip.Tip="{l:Translate btnToggleSettings}"
 				Click="OnSettingsClick"
 				Icon="Assets/Settings.png"
 			/>
