@@ -58,7 +58,10 @@ namespace Mesen.Utilities
 								}
 							}
 
-							File.Copy(selectedFile, Path.Combine(ConfigManager.FirmwareFolder, filename), true);
+							string destination = Path.Combine(ConfigManager.FirmwareFolder, filename);
+							if(selectedFile != destination) {
+								File.Copy(selectedFile, destination, true);
+							}
 						} catch(Exception ex) {
 							await MesenMsgBox.ShowException(ex);
 						}
