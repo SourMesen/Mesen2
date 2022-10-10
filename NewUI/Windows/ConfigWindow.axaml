@@ -56,7 +56,7 @@
 				<c:ButtonWithIcon Grid.Column="1" Click="ResetAllSettings" Icon="Assets/ResetSettings.png" Text="{l:Translate btnResetSettings}" />
 
 				<Button Grid.Column="3" Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
-				<Button Grid.Column="4" Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+				<Button Grid.Column="4" Width="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 			</Grid>
 		</Panel>
 		

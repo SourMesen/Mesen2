@@ -13,6 +13,7 @@ namespace Mesen.ViewModels
 	public class ControllerConfigViewModel : ViewModelBase
 	{
 		public ControllerConfig Config { get; }
+		public ControllerConfig OriginalConfig { get; }
 		public ControllerType Type { get; }
 
 		[Reactive] public KeyMappingViewModel KeyMapping1 { get; set; }
@@ -25,11 +26,12 @@ namespace Mesen.ViewModels
 		[Reactive] public bool ShowTurbo { get; set; } = false;
 
 		[Obsolete("For designer only")]
-		public ControllerConfigViewModel() : this(ControllerType.SnesController, new ControllerConfig()) { }
+		public ControllerConfigViewModel() : this(ControllerType.SnesController, new ControllerConfig(), new ControllerConfig()) { }
 
-		public ControllerConfigViewModel(ControllerType type, ControllerConfig config)
+		public ControllerConfigViewModel(ControllerType type, ControllerConfig config, ControllerConfig originalConfig)
 		{
 			Config = config;
+			OriginalConfig = originalConfig;
 			Type = type;
 
 			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1, 0);

@@ -1444,7 +1444,10 @@
 		<Message ID="VideoLayerDisabled">{0} disabled.</Message>
 		<Message ID="VideoLayerEnabled">{0} enabled.</Message>
 		<Message ID="AllLayersEnabled">All BG/sprite layers enabled.</Message>
-		
+
+		<Message ID="PromptSaveChanges">Save changes?</Message>
+		<Message ID="PromptKeepChanges">Keep changes?</Message>
+
 		<Message ID="MovieSegment">Segment #{0}</Message>
 		<Message ID="MovieExportEntireSegment">Export entire segment</Message>
 		<Message ID="MovieExportSpecificRange">Export specific range...</Message>

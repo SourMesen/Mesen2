@@ -67,8 +67,8 @@ namespace Mesen.Controls
 			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Height));
 			
 			ControllerConfigWindow wnd = new ControllerConfigWindow();
-			ControllerConfig cfg = JsonHelper.Clone(Config);
-			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg);
+			ControllerConfig cfg = Config.Clone();
+			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg, Config);
 			
 			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.VisualRoot, startPosition)) {
 				Config = cfg;

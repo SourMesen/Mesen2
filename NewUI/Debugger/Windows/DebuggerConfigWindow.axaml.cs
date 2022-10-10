@@ -10,12 +10,15 @@ using Mesen.Config;
 using Mesen.Debugger.ViewModels;
 using Mesen.Utilities;
 using Avalonia.Rendering;
+using Mesen.Windows;
+using Avalonia.Input;
 
 namespace Mesen.Debugger.Windows
 {
 	public class DebuggerConfigWindow : Window
 	{
 		private DebuggerConfigWindowViewModel _model;
+		private bool _promptToSave = true;
 
 		[Obsolete("For designer only")]
 		public DebuggerConfigWindow() : this(new())
@@ -51,15 +54,49 @@ namespace Mesen.Debugger.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			ConfigManager.Config.ApplyConfig();
+			_promptToSave = false;
 			Close();
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
+			_promptToSave = false;
 			_model.RevertChanges();
-			ConfigManager.Config.ApplyConfig();
 			Close();
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if(e.Key == Key.Escape) {
+				Close();
+			}
+		}
+
+		private async void DisplaySaveChangesPrompt()
+		{
+			DialogResult result = await MesenMsgBox.Show(this, "PromptSaveChanges", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+			switch(result) {
+				case DialogResult.Yes: _promptToSave = false; Close(); break;
+				case DialogResult.No: _promptToSave = false; _model.RevertChanges(); Close(); break;
+				default: break;
+			}
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			if(_promptToSave && _model.IsDirty()) {
+				e.Cancel = true;
+				DisplaySaveChangesPrompt();
+				return;
+			}
+
+			ConfigManager.Config.ApplyConfig();
 		}
 	}
 }

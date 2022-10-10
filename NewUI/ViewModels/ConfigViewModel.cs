@@ -77,6 +77,21 @@ namespace Mesen.ViewModels
 
 			ConfigManager.Config.Preferences.UpdateFileAssociations();
 		}
+
+		public bool IsDirty()
+		{
+			return (
+				Audio?.Config.IsIdentical(ConfigManager.Config.Audio) == false ||
+				Input?.Config.IsIdentical(ConfigManager.Config.Input) == false ||
+				Video?.Config.IsIdentical(ConfigManager.Config.Video) == false ||
+				Preferences?.Config.IsIdentical(ConfigManager.Config.Preferences) == false ||
+				Emulation?.Config.IsIdentical(ConfigManager.Config.Emulation) == false ||
+				Nes?.Config.IsIdentical(ConfigManager.Config.Nes) == false ||
+				Snes?.Config.IsIdentical(ConfigManager.Config.Snes) == false ||
+				Gameboy?.Config.IsIdentical(ConfigManager.Config.Gameboy) == false ||
+				PcEngine?.Config.IsIdentical(ConfigManager.Config.PcEngine) == false
+			);
+		}
    }
 
 	public enum ConfigWindowTab

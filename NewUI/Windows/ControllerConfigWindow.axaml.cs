@@ -3,12 +3,16 @@ using Avalonia.Markup.Xaml;
 using Mesen.Config;
 using Avalonia.Interactivity;
 using Mesen.ViewModels;
+using Mesen.Utilities;
+using Avalonia.Input;
+using System.ComponentModel;
 
 namespace Mesen.Windows
 {
 	public class ControllerConfigWindow : Window
 	{
 		private ControllerConfigViewModel Model => (ControllerConfigViewModel)DataContext!;
+		private bool _promptToSave = true;
 
 		public ControllerConfigWindow()
 		{
@@ -20,13 +24,47 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if(e.Key == Key.Escape) {
+				Close();
+			}
+		}
+
+		private async void DisplaySaveChangesPrompt()
+		{
+			DialogResult result = await MesenMsgBox.Show(this, "PromptKeepChanges", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+			switch(result) {
+				case DialogResult.Yes: _promptToSave = false; Close(true); break;
+				case DialogResult.No: _promptToSave = false; Close(false); break;
+				default: break;
+			}
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			if(Design.IsDesignMode) {
+				return;
+			}
+
+			if(_promptToSave && !Model.Config.IsIdentical(Model.OriginalConfig)) {
+				e.Cancel = true;
+				DisplaySaveChangesPrompt();
+				return;
+			}
+		}
+
 		private void btnOk_OnClick(object sender, RoutedEventArgs e)
 		{
+			_promptToSave = false;
 			Close(true);
 		}
 
 		private void btnCancel_OnClick(object sender, RoutedEventArgs e)
 		{
+			_promptToSave = false;
 			Close(false);
 		}
 

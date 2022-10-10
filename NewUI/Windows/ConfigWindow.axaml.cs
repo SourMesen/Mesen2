@@ -9,12 +9,14 @@ using System.ComponentModel;
 using Mesen.Config;
 using Mesen.Utilities;
 using System.IO;
+using Avalonia.Input;
 
 namespace Mesen.Windows
 {
 	public class ConfigWindow : Window
 	{
 		private ConfigViewModel _model;
+		private bool _promptToSave = true;
 
 		[Obsolete("For designer only")]
 		public ConfigWindow() : this(ConfigWindowTab.Audio) { }
@@ -37,13 +39,23 @@ namespace Mesen.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
+			_promptToSave = false;
 			_model.SaveConfig();
 			Close();
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
+			_promptToSave = false;
 			Close();
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if(e.Key == Key.Escape) {
+				Close();
+			}
 		}
 
 		private void OpenMesenFolder(object sender, RoutedEventArgs e)
@@ -63,10 +75,26 @@ namespace Mesen.Windows
 			}
 		}
 
+		private async void DisplaySaveChangesPrompt()
+		{
+			DialogResult result = await MesenMsgBox.Show(this, "PromptSaveChanges", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+			switch(result) {
+				case DialogResult.Yes: _promptToSave = false; _model.SaveConfig(); Close(); break;
+				case DialogResult.No: _promptToSave = false; Close(); break;
+				default: break;
+			}
+		}
+
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			if(Design.IsDesignMode) {
+				return;
+			}
+
+			if(_promptToSave && _model.IsDirty()) {
+				e.Cancel = true;
+				DisplaySaveChangesPrompt();
 				return;
 			}
 

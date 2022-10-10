@@ -187,7 +187,7 @@ namespace Mesen.Config
 		ArrowKeys
 	}
 
-	public class ControllerConfig : ReactiveObject
+	public class ControllerConfig : BaseConfig<ControllerConfig>
 	{
 		protected KeyMapping _mapping1 = new();
 		protected KeyMapping _mapping2 = new();

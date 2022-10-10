@@ -91,6 +91,16 @@ namespace Mesen.Debugger.ViewModels
 			ConfigManager.Config.Debug.Shortcuts = _backupShortcuts;
 		}
 
+		public bool IsDirty()
+		{
+			return (
+				!Debugger.IsIdentical(_backupDebugger) ||
+				!Script.IsIdentical(_backupScript) ||
+				!Integration.IsIdentical(_backupIntegration) ||
+				!Fonts.IsIdentical(_backupFont)
+			);
+		}
+
 		private void RevertChanges<T>(T current, T original) where T : ReactiveObject
 		{
 			if(_changes.TryGetValue(current, out HashSet<string>? changes)) {
