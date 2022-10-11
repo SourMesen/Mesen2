@@ -71,6 +71,7 @@ namespace Mesen.Windows
 		{
 			if(await MesenMsgBox.Show(VisualRoot, "ResetSettingsConfirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK) {
 				ConfigManager.ResetSettings();
+				_promptToSave = false;
 				Close();
 			}
 		}
