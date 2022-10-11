@@ -68,7 +68,7 @@ protected:
 		
 		SVArray(_opll->patch_number, 9);
 		
-		for(int i = 0; i < 18; i++) {
+		for(int i = 0; i < 12; i++) {
 			SVI(_opll->slot[i].number);
 			SVI(_opll->slot[i].type);
 

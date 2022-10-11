@@ -1,3 +1,4 @@
+#define VRC7AUDIO
 //Disable warnings
 #if defined(_MSC_VER)
 	#pragma warning(push, 0)
@@ -998,7 +999,9 @@ static void update_output(OPLL *opll) {
   int i;
 
   update_ampm(opll);
+#ifndef VRC7AUDIO
   update_short_noise(opll);
+#endif
   update_slots(opll);
 
   out = opll->ch_out;
@@ -1010,6 +1013,7 @@ static void update_output(OPLL *opll) {
     }
   }
 
+#ifndef VRC7AUDIO
   /* CH7 */
   if (!opll->rhythm_mode) {
     if (!(opll->mask & OPLL_MASK_CH(6))) {
@@ -1051,12 +1055,17 @@ static void update_output(OPLL *opll) {
     }
   }
   update_noise(opll, 2);
+#endif
 }
 
 INLINE static void mix_output(OPLL *opll) {
   int16_t out = 0;
   int i;
+#ifdef VRC7AUDIO
+  for (i = 0; i < 6; i++) {
+#else
   for (i = 0; i < 14; i++) {
+#endif
     out += opll->ch_out[i];
   }
   if (opll->conv) {
@@ -1330,9 +1339,11 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x13:
   case 0x14:
   case 0x15:
+#ifndef VRC7AUDIO
   case 0x16:
   case 0x17:
   case 0x18:
+#endif
     ch = reg - 0x10;
     set_fnumber(opll, ch, data + ((opll->reg[0x20 + ch] & 1) << 8));
     break;
@@ -1343,9 +1354,11 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x23:
   case 0x24:
   case 0x25:
+#ifndef VRC7AUDIO
   case 0x26:
   case 0x27:
   case 0x28:
+#endif
     ch = reg - 0x20;
     set_fnumber(opll, ch, ((data & 1) << 8) + opll->reg[0x10 + ch]);
     set_block(opll, ch, (data >> 1) & 7);
@@ -1359,9 +1372,11 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x33:
   case 0x34:
   case 0x35:
+#ifndef VRC7AUDIO
   case 0x36:
   case 0x37:
   case 0x38:
+#endif
     if ((opll->reg[0x0e] & 32) && (reg >= 0x36)) {
       switch (reg) {
       case 0x37:
