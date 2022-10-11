@@ -11,6 +11,7 @@ namespace Mesen.Debugger
 		public static event EventHandler? BreakpointsChanged;
 
 		private static List<Breakpoint> _breakpoints = new List<Breakpoint>();
+		private static List<Breakpoint> _temporaryBreakpoints = new List<Breakpoint>();
 		private static HashSet<CpuType> _activeCpuTypes = new HashSet<CpuType>();
 
 		public static ReadOnlyCollection<Breakpoint> Breakpoints
@@ -92,6 +93,20 @@ namespace Mesen.Debugger
 			}
 		}
 
+		public static void AddTemporaryBreakpoint(Breakpoint bp)
+		{
+			_temporaryBreakpoints.Add(bp);
+			SetBreakpoints();
+		}
+
+		public static void ClearTemporaryBreakpoints()
+		{
+			if(_temporaryBreakpoints.Count > 0) {
+				_temporaryBreakpoints.Clear();
+				SetBreakpoints();
+			}
+		}
+
 		public static Breakpoint? GetMatchingBreakpoint(AddressInfo info, CpuType cpuType)
 		{
 			Breakpoint? bp = Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
@@ -162,19 +177,18 @@ namespace Mesen.Debugger
 		{
 			List<InteropBreakpoint> breakpoints = new List<InteropBreakpoint>();
 
-			ReadOnlyCollection<Breakpoint> userBreakpoints = BreakpointManager.Breakpoints;
-			for(int i = 0; i < userBreakpoints.Count; i++) {
-				if(_activeCpuTypes.Contains(userBreakpoints[i].CpuType)) {
-					breakpoints.Add(userBreakpoints[i].ToInteropBreakpoint(breakpoints.Count));
+			void toInteropBreakpoints(IEnumerable<Breakpoint> bpList)
+			{
+				foreach(Breakpoint bp in bpList) {
+					if(_activeCpuTypes.Contains(bp.CpuType)) {
+						breakpoints.Add(bp.ToInteropBreakpoint(breakpoints.Count));
+					}
 				}
 			}
 
-			List<Breakpoint> assertBreakpoints = BreakpointManager.Asserts;
-			for(int i = 0; i < assertBreakpoints.Count; i++) {
-				if(_activeCpuTypes.Contains(assertBreakpoints[i].CpuType)) {
-					breakpoints.Add(assertBreakpoints[i].ToInteropBreakpoint(breakpoints.Count));
-				}
-			}
+			toInteropBreakpoints(BreakpointManager.Breakpoints);
+			toInteropBreakpoints(BreakpointManager.Asserts);
+			toInteropBreakpoints(BreakpointManager._temporaryBreakpoints);
 
 			DebugApi.SetBreakpoints(breakpoints.ToArray(), (UInt32)breakpoints.Count);
 		}

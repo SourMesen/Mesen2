@@ -171,6 +171,15 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
+				new ContextMenuAction() {
+					ActionType = ActionType.RunToLocation,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_RunToLocation),
+					HintText = () => GetHint(ActionLocation),
+					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
+					OnClick = () => {
+						Model.Debugger.RunToLocation(ActionLocation);
+					}
+				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,

@@ -256,6 +256,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.CodeWindow_ToggleBreakpoint,
 				//DebuggerShortcut.CodeWindow_DisableEnableBreakpoint,
 				DebuggerShortcut.CodeWindow_MoveProgramCounter,
+				DebuggerShortcut.CodeWindow_RunToLocation,
 				DebuggerShortcut.CodeWindow_GoToLocation,
 				DebuggerShortcut.LabelList_Add,
 				DebuggerShortcut.LabelList_Edit,

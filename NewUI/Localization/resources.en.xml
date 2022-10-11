@@ -2763,6 +2763,7 @@
 			<Value ID="CodeWindow_AddToWatch">Code Window: Add to Watch</Value>
 			<Value ID="CodeWindow_GoToLocation">Code Window: Go to Location</Value>
 			<Value ID="CodeWindow_MoveProgramCounter">Code Window: Move Program Counter</Value>
+			<Value ID="CodeWindow_RunToLocation">Code Window: Run to Location</Value>
 			<Value ID="CodeWindow_EditSelectedCode">Code Window: Edit Selected Code</Value>
 			<Value ID="CodeWindow_EditSourceFile">Code Window: Edit Source File (Source View)</Value>
 			<Value ID="CodeWindow_EditLabel">Code Window: Edit Label</Value>
@@ -3077,6 +3078,7 @@
 			<Value ID="SaveCdl">Save CDL data as...</Value>
 
 			<Value ID="MoveProgramCounter">Move Program Counter</Value>
+			<Value ID="RunToLocation">Run to Location</Value>
 
 			<Value ID="ShowToolbar">Show toolbar</Value>
 

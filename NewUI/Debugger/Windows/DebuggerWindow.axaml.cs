@@ -131,6 +131,8 @@ namespace Mesen.Debugger.Windows
 				case ConsoleNotificationType.CodeBreak:
 					BreakEvent evt = Marshal.PtrToStructure<BreakEvent>(e.Parameter);
 					Dispatcher.UIThread.Post(() => {
+						BreakpointManager.ClearTemporaryBreakpoints();
+
 						_model.UpdateDebugger(true, evt);
 						if(!_suppressBringToFront) {
 							bool isPause = evt.Source == BreakSource.Pause;

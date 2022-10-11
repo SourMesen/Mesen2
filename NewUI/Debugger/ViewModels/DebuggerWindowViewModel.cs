@@ -879,5 +879,26 @@ namespace Mesen.Debugger.ViewModels
 				FindResultList.SetResults(results.Select(x => new FindResultViewModel(x)));
 			}
 		}
+
+		public void RunToLocation(LocationInfo actionLocation)
+		{
+			AddressInfo? addr = actionLocation.AbsAddress ?? actionLocation.RelAddress;
+			if(addr == null) {
+				return;
+			}
+
+			BreakpointManager.AddTemporaryBreakpoint(new Breakpoint() {
+				CpuType = CpuType,
+				MemoryType = addr.Value.Type,
+				BreakOnExec = true,
+				Enabled = true,
+				StartAddress = (uint)addr.Value.Address,
+				EndAddress = (uint)addr.Value.Address
+			});
+
+			if(EmuApi.IsPaused()) {
+				DebugApi.ResumeExecution();
+			}
+		}
 	}
 }

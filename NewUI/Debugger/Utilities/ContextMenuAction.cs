@@ -677,6 +677,8 @@ namespace Mesen.Debugger.Utilities
 		SaveCdl,
 
 		MoveProgramCounter,
+		RunToLocation,
+
 		ShowToolbar,
 
 		[IconFile("ResetSettings")]

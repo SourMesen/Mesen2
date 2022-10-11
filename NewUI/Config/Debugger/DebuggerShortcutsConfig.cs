@@ -162,6 +162,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_AddToWatch, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_GoToLocation, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_MoveProgramCounter, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_RunToLocation, KeyBinding = new(KeyModifiers.Control, Key.F11) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSelectedCode, KeyBinding = new() });
 			//Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSourceFile, KeyBinding = new(Key.F4) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditLabel, KeyBinding = new(Key.F2) });
@@ -350,6 +351,7 @@ namespace Mesen.Config
 		GoToCpuVector4,
 		GoToCpuVector5,
 		CodeWindow_MoveProgramCounter,
+		CodeWindow_RunToLocation,
 		CodeWindow_EditSelectedCode,
 		CodeWindow_EditSourceFile,
 		CodeWindow_EditLabel,
