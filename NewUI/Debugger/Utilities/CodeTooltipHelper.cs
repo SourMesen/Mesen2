@@ -303,7 +303,7 @@ namespace Mesen.Debugger.Utilities
 			return FormatValue(value);
 		}
 
-		private static string FormatValue(double value)
+		public static string FormatValue(double value)
 		{
 			if(value >= 1000000000000) {
 				return (value / 1000000000000).ToString("0.00") + " T";
