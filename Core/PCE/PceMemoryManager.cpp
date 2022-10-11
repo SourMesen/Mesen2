@@ -322,6 +322,10 @@ uint8_t PceMemoryManager::DebugRead(uint16_t addr)
 		return _readBanks[bank][addr & 0x1FFF];
 	} else {
 		//TODO read registers without side effects
+		if(_console->GetRomFormat() == RomFormat::PceHes && addr >= 0x1C00 && addr <= 0x1C01) {
+			//Patch to fix trace logger for HES files
+			return addr & 0x01 ? 0xFE : 0x80;
+		}
 	}
 	return 0xFF;
 }

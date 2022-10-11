@@ -279,7 +279,12 @@ void PceConsole::InitHesPlayback(uint8_t selectedTrack)
 		_memoryManager->SetMprValue(1 << i, _hesData->InitialMpr[i]);
 	}
 
-	//Setup stack to return to 0x1C00 on RTS, 0x1C00 is setup to cause an infinite loop with BRA
+	//Force all RAM to 0, otherwise most HES files don't play properly
+	for(int i = 0; i < 0x2000; i++) {
+		_memoryManager->DebugWrite(0x2000 | i, 0);
+	}
+
+	//Setup stack to return to 0x1C00 on RTS, 0x1C00 is setup to cause an infinite loop with BRA	
 	_cpu->GetState().SP = 0xFD;
 	_memoryManager->DebugWrite(0x21FE, 0xFF);
 	_memoryManager->DebugWrite(0x21FF, 0x1B);
