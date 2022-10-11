@@ -17,11 +17,11 @@
 		<Style Selector="TextBox">
 			<Setter Property="Background" Value="Transparent" />
 		</Style>
-		<Style Selector="TextBox.mono">
+		<Style Selector="StackPanel.mono TextBox">
 			<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />
 			<Setter Property="FontSize" Value="{DynamicResource MesenMonospaceFontSize}" />
 		</Style>
-		<Style Selector="TextBox.regular">
+		<Style Selector="StackPanel.regular TextBox">
 			<Setter Property="FontFamily" Value="{DynamicResource MesenFont}" />
 			<Setter Property="FontSize" Value="{DynamicResource MesenFontSize}" />
 		</Style>
@@ -33,7 +33,11 @@
 		</DataTemplate>
 		
 		<DataTemplate DataType="dc:TooltipEntry">
-			<StackPanel Orientation="Horizontal">
+			<StackPanel
+				Orientation="Horizontal"
+				Classes.mono="{Binding UseMonoFont}"
+				Classes.regular="{Binding UseMonoFont}"
+		  >
 				<TextBlock
 					Name="Header"
 					Text="{Binding Name}"
@@ -46,8 +50,6 @@
 						<DataTemplate DataType="x:String">
 							<TextBox
 								Text="{Binding}"
-								Classes.mono="{Binding $parent[StackPanel].DataContext.UseMonoFont}"
-								Classes.regular="{Binding !$parent[StackPanel].DataContext.UseMonoFont}"
 								Margin="0"
 								Padding="0"
 								MinHeight="0"
