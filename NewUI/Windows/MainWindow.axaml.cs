@@ -211,12 +211,12 @@ namespace Mesen.Windows
 					EmuApi.AddKnownGameFolder(recentItem.RomFile.Folder);
 				}
 
-				_cmdLine.LoadFiles();
-
 				ConfigManager.Config.Preferences.UpdateFileAssociations();
 				SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
 
 				Dispatcher.UIThread.Post(() => {
+					_cmdLine.LoadFiles();
+
 					_cmdLine?.OnAfterInit(this);
 
 					//Load the debugger window styles once everything else is done
@@ -231,8 +231,10 @@ namespace Mesen.Windows
 
 		private void Instance_ArgumentsReceived(object? sender, ArgumentsReceivedEventArgs e)
 		{
-			CommandLineHelper cmdLine = new(e.Args, false);
-			cmdLine.LoadFiles();
+			Dispatcher.UIThread.Post(() => {
+				CommandLineHelper cmdLine = new(e.Args, false);
+				cmdLine.LoadFiles();
+			});
 		}
 
 		private void OnNotification(NotificationEventArgs e)
