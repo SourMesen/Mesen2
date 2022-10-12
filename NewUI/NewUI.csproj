@@ -70,6 +70,9 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview2" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview2" />
+    <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview2" />
+    <PackageReference Include="Dock.Model.Avalonia" Version="11.0.0-preview2" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview2" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
    </ItemGroup>
@@ -517,23 +520,6 @@
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
     <EmbeddedResource Include="Utilities\DipSwitchDefinitions.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Dock.Avalonia">
-      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.Avalonia.dll</HintPath>
-    </Reference>
-    <Reference Include="Dock.Model">
-      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Dock.Model.Avalonia">
-      <HintPath>..\..\Dock\src\Dock.Model.Avalonia\bin\Release\net6.0\Dock.Model.Avalonia.dll</HintPath>
-    </Reference>
-    <Reference Include="Dock.Model.ReactiveUI">
-      <HintPath>..\..\Dock\src\Dock.Model.ReactiveUI\bin\Release\net6.0\Dock.Model.ReactiveUI.dll</HintPath>
-    </Reference>
-    <Reference Include="Dock.ProportionalStackPanel">
-      <HintPath>..\..\Dock\src\Dock.Avalonia\bin\Release\net6.0\Dock.ProportionalStackPanel.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Target Name="PreBuildWindows" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'!='linux-x64'">
     <Exec Command="cd $(OutDir)&#xD;&#xA;rd Dependencies /s /q&#xD;&#xA;md Dependencies&#xD;&#xA;xcopy /s $(ProjectDir)Dependencies\* Dependencies&#xD;&#xA;copy libHarfBuzzSharp.dll Dependencies&#xD;&#xA;copy libSkiaSharp.dll Dependencies&#xD;&#xA;copy MesenSCore.dll Dependencies&#xD;&#xA;DependencyPacker.exe&#xD;&#xA;copy Dependencies.zip $(ProjectDir)" />
