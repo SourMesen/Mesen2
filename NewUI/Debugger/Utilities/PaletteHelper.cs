@@ -10,13 +10,18 @@ namespace Mesen.Debugger.Utilities
 {
 	public class PaletteHelper
 	{
-		public static DynamicTooltip? GetPreviewPanel(UInt32[] rgbPalette, UInt32[] rawPalette, RawPaletteFormat format, int index, DynamicTooltip? tooltipToUpdate)
+		public static DynamicTooltip GetPreviewPanel(UInt32[] rgbPalette, UInt32[] rawPalette, RawPaletteFormat format, int index, DynamicTooltip? tooltipToUpdate, int colorsPerPalette = 0)
 		{
 			TooltipEntries entries = tooltipToUpdate?.Items ?? new();
 			entries.StartUpdate();
 
 			entries.AddEntry("Color", new TooltipColorEntry(rgbPalette[index]));
-			entries.AddEntry("Index", "$" + index.ToString("X2"));
+			if(colorsPerPalette > 0) {
+				entries.AddEntry("Index", "$" + (index % colorsPerPalette).ToString("X2"));
+			} else {
+				entries.AddEntry("Index", "$" + index.ToString("X2"));
+			}
+
 			if(format == RawPaletteFormat.Rgb555) {
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X4"));
 				entries.AddEntry("R", "$" + (rawPalette[index] & 0x1F).ToString("X2"));

@@ -53,6 +53,8 @@
 					<TextBlock Text="{l:Translate lblHint1}" />
 					<TextBlock Text="{l:Translate lblHint2}" />
 					<TextBlock Text="{l:Translate lblHint3}" />
+					<TextBlock Text="{l:Translate lblHint4}" />
+					<TextBlock Text="{l:Translate lblHint5}" />
 				</StackPanel>
 				<c:GroupBox Header="{l:Translate lblPreview}">
 					<Border BorderBrush="Gray" Background="{StaticResource ViewerBgBrush}" BorderThickness="1" HorizontalAlignment="Left">

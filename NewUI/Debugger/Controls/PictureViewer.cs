@@ -312,7 +312,7 @@ namespace Mesen.Debugger.Controls
 
 			PointerPointProperties props = e.GetCurrentPoint(this).Properties;
 			if(props.IsLeftButtonPressed || props.IsRightButtonPressed) {
-				PositionClickedEventArgs args = new(p.Value, props, PositionClickedEvent);
+				PositionClickedEventArgs args = new(p.Value, props, e, PositionClickedEvent);
 				RaiseEvent(args);
 
 				if(!args.Handled && AllowSelection) {
@@ -335,7 +335,7 @@ namespace Mesen.Debugger.Controls
 				return;
 			}
 
-			PositionClickedEventArgs args = new(p.Value, e.GetCurrentPoint(this).Properties, PositionClickedEvent);
+			PositionClickedEventArgs args = new(p.Value, e.GetCurrentPoint(this).Properties, e, PositionClickedEvent);
 			RaiseEvent(args);
 
 			if(!args.Handled && AllowSelection) {
@@ -515,15 +515,18 @@ namespace Mesen.Debugger.Controls
 
 	public class PositionClickedEventArgs : RoutedEventArgs
 	{
-		public PixelPoint Position;
-		public PointerPointProperties Properties;
+		public PixelPoint Position { get; }
+		public PointerPointProperties Properties { get; }
+		public PointerEventArgs OriginalEvent { get; }
 
-		public PositionClickedEventArgs(PixelPoint position, PointerPointProperties properties, RoutedEvent evt)
+		public PositionClickedEventArgs(PixelPoint position, PointerPointProperties properties, PointerEventArgs originalEvent, RoutedEvent evt)
 		{
 			Position = position;
 			Properties = properties;
+			OriginalEvent = originalEvent;
 			RoutedEvent = evt;
 		}
+
 	}
 
 	public class GridRowColumn

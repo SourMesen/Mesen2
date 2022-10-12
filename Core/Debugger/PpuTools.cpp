@@ -179,7 +179,19 @@ void PpuTools::RemoveViewer(uint32_t viewerId)
 	_updateTimings.erase(viewerId);
 }
 
+int32_t PpuTools::GetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y)
+{
+	int32_t color = 0;
+	GetSetTilePixel(tileAddress, format, x, y, color, true);
+	return color;
+}
+
 void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color)
+{
+	GetSetTilePixel(tileAddress, format, x, y, color, false);
+}
+
+void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t& color, bool forGet)
 {
 	ConsoleMemoryInfo memInfo = _emu->GetMemory(tileAddress.Type);
 	if(!memInfo.Memory || memInfo.Size == 0) {
@@ -205,48 +217,55 @@ void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t 
 
 	uint8_t shift = (7 - x);
 
-	auto setBit = [&](uint32_t addr, uint8_t bitNumber, uint8_t bitValue) {
-		ram[addr & ramMask] &= ~(1 << bitNumber);
-		ram[addr & ramMask] |= (bitValue & 0x01) << bitNumber;
+	auto setBit = [&](uint32_t addr, uint8_t pixelNumber, uint8_t bitNumber) {
+		if(forGet) {
+			uint8_t bitValue = ((ram[addr & ramMask] >> pixelNumber) & 0x01);
+			color |= bitValue << bitNumber;
+		} else {
+			uint8_t bitValue = (color >> bitNumber) & 0x01;
+			ram[addr & ramMask] &= ~(1 << pixelNumber);
+			ram[addr & ramMask] |= (bitValue & 0x01) << pixelNumber;
+		}
 	};
 
 	switch(format) {
 		case TileFormat::Bpp2:
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 1, shift, 1);
 			break;
 
 		case TileFormat::NesBpp2:
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 8, shift, (color & 0x02) >> 1);
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 8, shift, 1);
 			break;
 
 		case TileFormat::Bpp4:
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
-			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
-			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 1, shift, 1);
+			setBit(rowStart + 16, shift, 2);
+			setBit(rowStart + 17, shift, 3);
 			break;
 
 		case TileFormat::Bpp8:
 		case TileFormat::DirectColor:
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
-			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
-			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
-			setBit(rowStart + 32, shift, (color & 0x10) >> 4);
-			setBit(rowStart + 33, shift, (color & 0x20) >> 5);
-			setBit(rowStart + 48, shift, (color & 0x40) >> 6);
-			setBit(rowStart + 49, shift, (color & 0x80) >> 7);
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 1, shift, 1);
+			setBit(rowStart + 16, shift, 2);
+			setBit(rowStart + 17, shift, 3);
+			setBit(rowStart + 32, shift, 4);
+			setBit(rowStart + 33, shift, 5);
+			setBit(rowStart + 48, shift, 6);
+			setBit(rowStart + 49, shift, 7);
 			break;
 
 		case TileFormat::Mode7:
 		case TileFormat::Mode7DirectColor:
-			ram[(rowStart + x * 2 + 1) & ramMask] = color;
-			break;
-
 		case TileFormat::Mode7ExtBg:
-			ram[(rowStart + x * 2 + 1) & ramMask] = color;
+			if(forGet) {
+				color = ram[(rowStart + x * 2 + 1) & ramMask];
+			} else {
+				ram[(rowStart + x * 2 + 1) & ramMask] = color;
+			}
 			break;
 
 		case TileFormat::PceSpriteBpp4:
@@ -261,33 +280,33 @@ void PpuTools::SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t 
 
 			switch(format) {
 				case TileFormat::PceSpriteBpp4:
-					setBit(rowStart, shift, color & 0x01);
-					setBit(rowStart + 32, shift, (color & 0x02) >> 1);
-					setBit(rowStart + 64, shift, (color & 0x04) >> 2);
-					setBit(rowStart + 96, shift, (color & 0x08) >> 3);
+					setBit(rowStart, shift, 0);
+					setBit(rowStart + 32, shift, 1);
+					setBit(rowStart + 64, shift, 2);
+					setBit(rowStart + 96, shift, 3);
 					break;
 
 				case TileFormat::PceSpriteBpp2Sp01:
-					setBit(rowStart, shift, color & 0x01);
-					setBit(rowStart + 32, shift, (color & 0x02) >> 1);
+					setBit(rowStart, shift, 0);
+					setBit(rowStart + 32, shift, 1);
 					break;
 
 				case TileFormat::PceSpriteBpp2Sp23:
-					setBit(rowStart + 64, shift, (color & 0x04) >> 2);
-					setBit(rowStart + 96, shift, (color & 0x08) >> 3);
+					setBit(rowStart + 64, shift, 2);
+					setBit(rowStart + 96, shift, 3);
 					break;
 			}
 			break;
 		}
 
 		case TileFormat::PceBackgroundBpp2Cg0:
-			setBit(rowStart, shift, color & 0x01);
-			setBit(rowStart + 1, shift, (color & 0x02) >> 1);
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 1, shift, 1);
 			break;
 
 		case TileFormat::PceBackgroundBpp2Cg1:
-			setBit(rowStart + 16, shift, (color & 0x04) >> 2);
-			setBit(rowStart + 17, shift, (color & 0x08) >> 3);
+			setBit(rowStart + 16, shift, 2);
+			setBit(rowStart + 17, shift, 3);
 			break;
 
 		default:

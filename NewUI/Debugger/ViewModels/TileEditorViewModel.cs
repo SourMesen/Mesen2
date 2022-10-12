@@ -106,16 +106,35 @@ public class TileEditorViewModel : DisposableViewModel
 		DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
 	}
 
-	public void UpdatePixel(PixelPoint position, bool clearPixel)
+	private record TilePixelPositionInfo(int Column, int Row, int TileX, int TileY);
+	private TilePixelPositionInfo GetPositionInfo(PixelPoint position)
 	{
-		int pixelColor = clearPixel ? 0 : SelectedColor % GetColorsPerPalette(_tileFormat);
 		PixelSize tileSize = _tileFormat.GetTileSize();
-		
+
 		int column = position.X / tileSize.Width;
 		int row = position.Y / tileSize.Height;
 		int tileX = position.X % tileSize.Width;
 		int tileY = position.Y % tileSize.Height;
-		DebugApi.SetTilePixel(_tileAddresses[column+row*_columnCount], _tileFormat, tileX, tileY, pixelColor);
+		return new(column, row, tileX, tileY);
+	}
+
+	public int GetColorAtPosition(PixelPoint position)
+	{
+		TilePixelPositionInfo pos = GetPositionInfo(position);
+		int paletteColorIndex = DebugApi.GetTilePixel(_tileAddresses[pos.Column + pos.Row * _columnCount], _tileFormat, pos.TileX, pos.TileY);
+		return SelectedColor - (SelectedColor % GetColorsPerPalette(_tileFormat)) + paletteColorIndex;
+	}
+
+	public void SelectColor(PixelPoint position)
+	{
+		SelectedColor = GetColorAtPosition(position);
+	}
+
+	public void UpdatePixel(PixelPoint position, bool clearPixel)
+	{
+		int pixelColor = clearPixel ? 0 : SelectedColor % GetColorsPerPalette(_tileFormat);
+		TilePixelPositionInfo pos = GetPositionInfo(position);
+		DebugApi.SetTilePixel(_tileAddresses[pos.Column+pos.Row*_columnCount], _tileFormat, pos.TileX, pos.TileY, pixelColor);
 		RefreshViewer();
 	}
 
@@ -149,6 +168,11 @@ public class TileEditorViewModel : DisposableViewModel
 				}
 			}
 		}));
+	}
+
+	public int GetColorsPerPalette()
+	{
+		return GetColorsPerPalette(_tileFormat);
 	}
 
 	private int GetColorsPerPalette(TileFormat format)

@@ -824,6 +824,8 @@
 			<Control ID="lblHint1">Select color by clicking above.</Control>
 			<Control ID="lblHint2">Left-click: Draw selected color</Control>
 			<Control ID="lblHint3">Right-click: Make pixel transparent</Control>
+			<Control ID="lblHint4">Shift-click: Select color under cursor</Control>
+			<Control ID="lblHint5">Hold shift: Details on pixel under cursor</Control>
 		</Form>
 		
 		<Form ID="TileViewerWindow">

@@ -195,6 +195,8 @@ protected:
 	
 	bool IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOptions& options);
 
+	void GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t& color, bool forGet);
+
 	uint8_t Rgb555to8Bit(uint8_t color) { return (color << 3) + (color >> 2); }
 
 	uint32_t Rgb555ToArgb(uint16_t rgb555)
@@ -223,6 +225,7 @@ public:
 	virtual void GetSpritePreview(GetSpritePreviewOptions options, BaseState& state, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, uint32_t* outBuffer) = 0;
 	virtual void GetSpriteList(GetSpritePreviewOptions options, BaseState& baseState, uint8_t* vram, uint8_t* oamRam, uint32_t* palette, DebugSpriteInfo outBuffer[]) = 0;
 
+	int32_t GetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y);
 	void SetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t color);
 	virtual void SetPaletteColor(int32_t colorIndex, uint32_t color) = 0;
 
