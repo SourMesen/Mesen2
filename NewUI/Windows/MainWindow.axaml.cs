@@ -190,12 +190,15 @@ namespace Mesen.Windows
 			});
 			
 			Task.Run(() => {
-				ConfigManager.Config.RemoveObsoleteConfig();
-				ConfigManager.Config.InitializeDefaults();
-
 				_cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
 
 				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, _cmdLine.NoAudio, _cmdLine.NoVideo, _cmdLine.NoInput);
+
+				ConfigManager.Config.RemoveObsoleteConfig();
+				
+				//InitializeDefaults must be after InitializeEmu, otherwise keybindings will be empty
+				ConfigManager.Config.InitializeDefaults();
+
 				_baseScreenSize = EmuApi.GetBaseScreenSize();
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
