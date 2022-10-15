@@ -17,7 +17,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/MemoryOperationType.h"
 
-NecDspDebugger::NecDspDebugger(Debugger* debugger)
+NecDspDebugger::NecDspDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 

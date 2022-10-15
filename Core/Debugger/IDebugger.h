@@ -13,6 +13,7 @@ class BaseEventManager;
 class CodeDataLogger;
 class ITraceLogger;
 class PpuTools;
+class Emulator;
 struct BaseState;
 enum class EventType;
 enum class MemoryOperationType;
@@ -22,7 +23,7 @@ class IDebugger
 {
 protected:
 	unique_ptr<StepRequest> _step;
-	unique_ptr<StepBackManager> _stepBackManager = unique_ptr<StepBackManager>(new StepBackManager(nullptr, nullptr));
+	unique_ptr<StepBackManager> _stepBackManager;
 
 	FrozenAddressManager _frozenAddressManager;
 
@@ -31,6 +32,7 @@ public:
 	bool AllowChangeProgramCounter = false;
 	CpuInstructionProgress InstructionProgress = {};
 
+	IDebugger(Emulator* emu) : _stepBackManager(new StepBackManager(emu, this)) {}
 	virtual ~IDebugger() = default;
 
 	StepRequest* GetStepRequest() { return _step.get(); }

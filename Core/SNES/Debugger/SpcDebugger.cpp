@@ -17,7 +17,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/MemoryOperationType.h"
 
-SpcDebugger::SpcDebugger(Debugger* debugger)
+SpcDebugger::SpcDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	_debugger = debugger;
 	_disassembler = debugger->GetDisassembler();

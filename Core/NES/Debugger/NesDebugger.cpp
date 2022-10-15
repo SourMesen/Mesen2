@@ -37,7 +37,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/MemoryOperationType.h"
 
-NesDebugger::NesDebugger(Debugger* debugger)
+NesDebugger::NesDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();

@@ -39,7 +39,7 @@
 #include "Utilities/CRC32.h"
 #include "Shared/MemoryOperationType.h"
 
-SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType)
+SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType) : IDebugger(debugger->GetEmulator())
 {
 	_cpuType = cpuType;
 	_cpuMemType = _cpuType == CpuType::Snes ? MemoryType::SnesMemory : MemoryType::Sa1Memory;

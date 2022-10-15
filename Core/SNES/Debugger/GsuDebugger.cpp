@@ -19,7 +19,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 
-GsuDebugger::GsuDebugger(Debugger* debugger)
+GsuDebugger::GsuDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 

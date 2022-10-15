@@ -31,7 +31,7 @@
 #include "Shared/BaseControlManager.h"
 #include "Shared/MemoryOperationType.h"
 
-GbDebugger::GbDebugger(Debugger* debugger)
+GbDebugger::GbDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();

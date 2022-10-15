@@ -20,7 +20,7 @@
 #include "SNES/MemoryMappings.h"
 #include "Shared/MemoryOperationType.h"
 
-Cx4Debugger::Cx4Debugger(Debugger* debugger)
+Cx4Debugger::Cx4Debugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	SnesConsole* console = (SnesConsole*)debugger->GetConsole();
 

@@ -446,12 +446,12 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//Restore pollcounter (used by movies when a power cycle is in the movie)
 	_console->GetControlManager()->SetPollCounter(pollCounter);
 
+	//TODO reset RewindManager state instead of instance
+	_rewindManager.reset(new RewindManager(this));
+
 	if(debuggerActive) {
 		InitDebugger();
 	}
-
-	//TODO reset RewindManager state instead of instance
-	_rewindManager.reset(new RewindManager(this));
 
 	_notificationManager->RegisterNotificationListener(_rewindManager);
 

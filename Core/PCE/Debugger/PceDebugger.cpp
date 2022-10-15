@@ -34,7 +34,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/MemoryOperationType.h"
 
-PceDebugger::PceDebugger(Debugger* debugger)
+PceDebugger::PceDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
