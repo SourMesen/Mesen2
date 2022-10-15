@@ -24,6 +24,8 @@ RewindManager::RewindManager(Emulator* emu)
 
 RewindManager::~RewindManager()
 {
+	_settings->ClearFlag(EmulationFlags::MaximumSpeed);
+	_settings->ClearFlag(EmulationFlags::Rewind);
 	_emu->UnregisterInputProvider(this);
 	_emu->UnregisterInputRecorder(this);
 }
