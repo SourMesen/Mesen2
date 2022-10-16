@@ -105,7 +105,7 @@ Debugger::Debugger(Emulator* emu, IConsole* console)
 
 	if(_emu->IsPaused()) {
 		//Break on the current instruction if emulation was already paused
-		Step(_mainCpuType, 1, StepType::Step);
+		Step(_mainCpuType, 1, StepType::Step, BreakSource::Pause);
 	}
 
 	_executionStopped = false;

@@ -472,7 +472,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	if(wasPaused && _debugger) {
 		//Break on the current instruction if emulation was already paused
 		//(must be done after setting _threadPaused to true)
-		_debugger->Step(GetCpuTypes()[0], 1, StepType::Step);
+		_debugger->Step(GetCpuTypes()[0], 1, StepType::Step, BreakSource::Pause);
 	}
 	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
 	_threadPaused = false;
