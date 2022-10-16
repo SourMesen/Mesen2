@@ -28,6 +28,7 @@ namespace Mesen.Debugger.Windows
 		public CpuType CpuType => _model.CpuType;
 		private int? _scrollToAddress = null;
 		private bool _suppressBringToFront = false;
+		private bool _autoResumePending = false;
 
 		[Obsolete("For designer only")]
 		public DebuggerWindow() : this(null, null) { }
@@ -143,6 +144,11 @@ namespace Mesen.Debugger.Windows
 							}
 						}
 						_suppressBringToFront = false;
+
+						if(_autoResumePending) {
+							EmuApi.Resume();
+							_autoResumePending = false;
+						}
 					});
 					break;
 
@@ -182,8 +188,15 @@ namespace Mesen.Debugger.Windows
 						}
 					}
 
-					if(_model.Config.BreakOnPowerCycleReset) {
+					bool isPaused = (int)e.Parameter != 0;
+					if(!isPaused) {
+						//If not already paused, pause on load to ensure UI can load labels, breakpoints, etc.
 						EmuApi.Pause();
+
+						if(!_model.Config.BreakOnPowerCycleReset) {
+							//If the option to break on power cycle is turned off, auto-resume after the first break is processed
+							_autoResumePending = true;
+						}
 					}
 					break;
 

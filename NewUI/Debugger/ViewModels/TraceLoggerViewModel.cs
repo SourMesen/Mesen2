@@ -225,36 +225,46 @@ namespace Mesen.Debugger.ViewModels
 			Tabs = tabs;
 			SelectedTab = tabs[0];
 
-			UpdateCoreOptions();
+			UpdateOptions();
 		}
 
-		public void UpdateCoreOptions()
+		public void UpdateOptions()
 		{
 			bool forceEnable = Tabs.Count == 1;
 			bool isStartLoggingEnabled = forceEnable;
 			bool showByteCode = false;
-			foreach(TraceLoggerOptionTab tab in Tabs) {
-				InteropTraceLoggerOptions options = new InteropTraceLoggerOptions() {
-					Enabled = forceEnable || tab.Options.Enabled,
-					UseLabels = tab.Options.UseLabels,
-					IndentCode = tab.Options.IndentCode,
-					Format = Encoding.UTF8.GetBytes(tab.Options.UseCustomFormat ? tab.Options.Format : tab.Format),
-					Condition = Encoding.UTF8.GetBytes(tab.Options.Condition)
-				};
 
-				showByteCode |= tab.Options.ShowByteCode;
-
-				Array.Resize(ref options.Condition, 1000);
-				Array.Resize(ref options.Format, 1000);
-
-				DebugApi.SetTraceOptions(tab.CpuType, options);
-
-				isStartLoggingEnabled |= tab.Options.Enabled;
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			foreach(CpuType cpuType in romInfo.CpuTypes) {
+				showByteCode |= Config.GetCpuConfig(cpuType).ShowByteCode;
+				isStartLoggingEnabled |= Config.GetCpuConfig(cpuType).Enabled;
 			}
+
+			UpdateCoreOptions();
 
 			IsStartLoggingEnabled = isStartLoggingEnabled;
 			ShowByteCode = showByteCode;
 			UpdateLog();
+		}
+
+		public void UpdateCoreOptions()
+		{
+			RomInfo romInfo = EmuApi.GetRomInfo();
+			foreach(CpuType cpuType in romInfo.CpuTypes) {
+				TraceLoggerCpuConfig cfg = Config.GetCpuConfig(cpuType);
+				InteropTraceLoggerOptions options = new InteropTraceLoggerOptions() {
+					Enabled = romInfo.CpuTypes.Count == 1 || cfg.Enabled,
+					UseLabels = cfg.UseLabels,
+					IndentCode = cfg.IndentCode,
+					Format = Encoding.UTF8.GetBytes(cfg.UseCustomFormat ? cfg.Format : TraceLoggerOptionTab.GetAutoFormat(cfg, cpuType)),
+					Condition = Encoding.UTF8.GetBytes(cfg.Condition)
+				};
+
+				Array.Resize(ref options.Condition, 1000);
+				Array.Resize(ref options.Format, 1000);
+
+				DebugApi.SetTraceOptions(cpuType, options);
+			}
 		}
 
 		public void UpdateLog(bool scrollToBottom = false)
@@ -475,90 +485,99 @@ namespace Mesen.Debugger.ViewModels
 				_traceLogger.SelectedTab = this;
 			}
 
-			_traceLogger.UpdateCoreOptions();
+			_traceLogger.UpdateOptions();
 		}
 
 		private void UpdateFormat()
 		{
 			if(!Options.UseCustomFormat) {
-				string format = "";
-				int alignValue = 24;
-
-				void addTag(bool condition, string formatText, int align = 0)
-				{
-					if(condition) {
-						format += formatText;
-						alignValue += align;
-					}
-				}
-
-				format += "[Disassembly]";
-				addTag(Options.ShowEffectiveAddresses, "[EffectiveAddress]", 8);
-				addTag(Options.ShowMemoryValues, " [MemoryValue,h]", 6);
-				format += "[Align," + alignValue.ToString() + "] ";
-
-				switch(CpuType) {
-					case CpuType.Snes:
-					case CpuType.Sa1:
-						addTag(Options.ShowRegisters, "A:[A,4h] X:[X,4h] Y:[Y,4h] S:[SP,4h] D:[D,4h] DB:[DB,2h] ");
-						addTag(Options.ShowStatusFlags, Options.StatusFormat switch {
-							StatusFlagFormat.Hexadecimal => "P:[P,h] ",
-							StatusFlagFormat.CompactText => "P:[P] ",
-							StatusFlagFormat.Text or _ => "P:[P,8] "
-						});
-						break;
-
-					case CpuType.Spc:
-					case CpuType.Nes:
-					case CpuType.Pce:
-						addTag(Options.ShowRegisters, "A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] ");
-						addTag(Options.ShowStatusFlags, Options.StatusFormat switch {
-							StatusFlagFormat.Hexadecimal => "P:[P,h] ",
-							StatusFlagFormat.CompactText => "P:[P] ",
-							StatusFlagFormat.Text or _ => "P:[P,8] "
-						});
-						break;
-
-					case CpuType.Gsu:
-						addTag(Options.ShowRegisters, "SRC:[SRC,2h] DST:[DST,2h] R0:[R0,4h] R1:[R1,4h] R2:[R2,4h] R3:[R3,4h] R4:[R4,4h] R5:[R5,4h] R6:[R6,4h] R7:[R7,4h] R8:[R8,4h] R9:[R9,4h] R10:[R10,4h] R11:[R11,4h] R12:[R12,4h] R13:[R13,4h] R14:[R14,4h] R15:[R15,4h] ");
-						addTag(Options.ShowStatusFlags, Options.StatusFormat switch {
-							StatusFlagFormat.Hexadecimal => "SFR:[SFR,h] ",
-							StatusFlagFormat.CompactText => "SFR:[SFR] ",
-							StatusFlagFormat.Text or _ => "SFR:[SFR,16] "
-						});
-						break;
-
-					case CpuType.Cx4:
-						addTag(Options.ShowRegisters, "A:[A,6h] MAR:[MAR,6h] MDR:[MDR,6h] DPR:[DPR,6h] ML:[ML,6h] MH:[MH,6h] P:[P,4h] PB:[PB,4h] R0:[R0,6h] R1:[R1,6h] R2:[R2,6h] R3:[R3,6h] R4:[R4,6h] R5:[R5,6h] R6:[R6,6h] R7:[R7,6h] R8:[R8,6h] R9:[R9,6h] R10:[R10,6h] R11:[R11,6h] R12:[R12,6h] R13:[R13,6h] R14:[R14,6h] R15:[R15,6h] ");
-						addTag(Options.ShowStatusFlags, "PS:[PS] ");
-						break;
-
-					case CpuType.NecDsp:
-						addTag(Options.ShowRegisters, "A:[A,4h] ");
-						addTag(Options.ShowStatusFlags, "[FlagsA] ");
-						addTag(Options.ShowRegisters, "B:[B,4h] ");
-						addTag(Options.ShowStatusFlags, "[FlagsB] ");
-						addTag(Options.ShowRegisters, "K:[K,4h] L:[L,4h] M:[M,4h] N:[N,4h] RP:[RP,4h] DP:[DP,4h] DR:[DR,4h] SR:[SR,4h] TR:[TR,4h] TRB:[TRB,4h] ");
-						break;
-
-					case CpuType.Gameboy:
-						addTag(Options.ShowRegisters, "A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] ");
-						addTag(Options.ShowStatusFlags, Options.StatusFormat switch {
-							StatusFlagFormat.Hexadecimal => "F:[PS,h] ",
-							StatusFlagFormat.CompactText => "F:[PS] ",
-							StatusFlagFormat.Text or _ => "F:[PS,4] "
-						});
-						addTag(Options.ShowRegisters, "HL:[H,2h][L,2h] S:[SP,4h] ");
-						break;
-				}
-
-				addTag(Options.ShowFramePosition, "V:[Scanline,3] H:[Cycle,3] ");
-				addTag(Options.ShowFrameCounter, "Fr:[FrameCount] ");
-				addTag(Options.ShowClockCounter, "Cycle:[CycleCount] ");
-				addTag(Options.ShowByteCode, "BC:[ByteCode]");
-
-				Format = format.Trim();
+				Format = GetAutoFormat(Options, CpuType);
 			}
+		}
+
+		public static string GetAutoFormat(TraceLoggerCpuConfig cfg, CpuType cpuType)
+		{
+			if(cfg.UseCustomFormat) {
+				return "";
+			}
+
+			string format = "";
+			int alignValue = 24;
+
+			void addTag(bool condition, string formatText, int align = 0)
+			{
+				if(condition) {
+					format += formatText;
+					alignValue += align;
+				}
+			}
+
+			format += "[Disassembly]";
+			addTag(cfg.ShowEffectiveAddresses, "[EffectiveAddress]", 8);
+			addTag(cfg.ShowMemoryValues, " [MemoryValue,h]", 6);
+			format += "[Align," + alignValue.ToString() + "] ";
+
+			switch(cpuType) {
+				case CpuType.Snes:
+				case CpuType.Sa1:
+					addTag(cfg.ShowRegisters, "A:[A,4h] X:[X,4h] Y:[Y,4h] S:[SP,4h] D:[D,4h] DB:[DB,2h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "P:[P,h] ",
+						StatusFlagFormat.CompactText => "P:[P] ",
+						StatusFlagFormat.Text or _ => "P:[P,8] "
+					});
+					break;
+
+				case CpuType.Spc:
+				case CpuType.Nes:
+				case CpuType.Pce:
+					addTag(cfg.ShowRegisters, "A:[A,2h] X:[X,2h] Y:[Y,2h] S:[SP,2h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "P:[P,h] ",
+						StatusFlagFormat.CompactText => "P:[P] ",
+						StatusFlagFormat.Text or _ => "P:[P,8] "
+					});
+					break;
+
+				case CpuType.Gsu:
+					addTag(cfg.ShowRegisters, "SRC:[SRC,2h] DST:[DST,2h] R0:[R0,4h] R1:[R1,4h] R2:[R2,4h] R3:[R3,4h] R4:[R4,4h] R5:[R5,4h] R6:[R6,4h] R7:[R7,4h] R8:[R8,4h] R9:[R9,4h] R10:[R10,4h] R11:[R11,4h] R12:[R12,4h] R13:[R13,4h] R14:[R14,4h] R15:[R15,4h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "SFR:[SFR,h] ",
+						StatusFlagFormat.CompactText => "SFR:[SFR] ",
+						StatusFlagFormat.Text or _ => "SFR:[SFR,16] "
+					});
+					break;
+
+				case CpuType.Cx4:
+					addTag(cfg.ShowRegisters, "A:[A,6h] MAR:[MAR,6h] MDR:[MDR,6h] DPR:[DPR,6h] ML:[ML,6h] MH:[MH,6h] P:[P,4h] PB:[PB,4h] R0:[R0,6h] R1:[R1,6h] R2:[R2,6h] R3:[R3,6h] R4:[R4,6h] R5:[R5,6h] R6:[R6,6h] R7:[R7,6h] R8:[R8,6h] R9:[R9,6h] R10:[R10,6h] R11:[R11,6h] R12:[R12,6h] R13:[R13,6h] R14:[R14,6h] R15:[R15,6h] ");
+					addTag(cfg.ShowStatusFlags, "PS:[PS] ");
+					break;
+
+				case CpuType.NecDsp:
+					addTag(cfg.ShowRegisters, "A:[A,4h] ");
+					addTag(cfg.ShowStatusFlags, "[FlagsA] ");
+					addTag(cfg.ShowRegisters, "B:[B,4h] ");
+					addTag(cfg.ShowStatusFlags, "[FlagsB] ");
+					addTag(cfg.ShowRegisters, "K:[K,4h] L:[L,4h] M:[M,4h] N:[N,4h] RP:[RP,4h] DP:[DP,4h] DR:[DR,4h] SR:[SR,4h] TR:[TR,4h] TRB:[TRB,4h] ");
+					break;
+
+				case CpuType.Gameboy:
+					addTag(cfg.ShowRegisters, "A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "F:[PS,h] ",
+						StatusFlagFormat.CompactText => "F:[PS] ",
+						StatusFlagFormat.Text or _ => "F:[PS,4] "
+					});
+					addTag(cfg.ShowRegisters, "HL:[H,2h][L,2h] S:[SP,4h] ");
+					break;
+			}
+
+			addTag(cfg.ShowFramePosition, "V:[Scanline,3] H:[Cycle,3] ");
+			addTag(cfg.ShowFrameCounter, "Fr:[FrameCount] ");
+			addTag(cfg.ShowClockCounter, "Cycle:[CycleCount] ");
+			addTag(cfg.ShowByteCode, "BC:[ByteCode]");
+
+			return format.Trim();
 		}
 
 		private Control GetFormatTooltip()

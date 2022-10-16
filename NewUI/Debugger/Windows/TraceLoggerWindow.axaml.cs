@@ -161,6 +161,8 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
+					_model.UpdateCoreOptions();
+
 					Dispatcher.UIThread.Post(() => {
 						_model.UpdateAvailableTabs();
 					});

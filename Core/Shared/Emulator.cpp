@@ -469,12 +469,13 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	dbgLock.Release();
 	
 	_threadPaused = true;
-	if(wasPaused && _debugger) {
+	bool needPause = wasPaused && _debugger;
+	if(needPause) {
 		//Break on the current instruction if emulation was already paused
 		//(must be done after setting _threadPaused to true)
 		_debugger->Step(GetCpuTypes()[0], 1, StepType::Step, BreakSource::Pause);
 	}
-	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)forPowerCycle);
+	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)needPause);
 	_threadPaused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {
