@@ -152,6 +152,7 @@ namespace Mesen.Debugger.Controls
 		private float[] _startPositionByByte = Array.Empty<float>();
 		private float[] _endPositionByByte = Array.Empty<float>();
 		private FontAntialiasing _fontAntialiasing;
+		private Point _pointerPressedPos;
 
 		static HexEditor()
 		{
@@ -516,6 +517,7 @@ namespace Mesen.Debugger.Controls
 			PointerPointProperties props = e.GetCurrentPoint(this).Properties;
 
 			Point p = e.GetPosition(this);
+			_pointerPressedPos = p;
 			GridPoint? gridPos = GetGridPosition(p);
 
 			if(gridPos == null) {
@@ -579,6 +581,11 @@ namespace Mesen.Debugger.Controls
 			}
 
 			Point p = e.GetPosition(this);
+			if(Math.Abs(p.X - _pointerPressedPos.X) < 3 && Math.Abs(p.Y - _pointerPressedPos.Y) < 3) {
+				//Mouse didn't move more than 3 pixels in any direction, ignore movement
+				return;
+			}
+
 			if(p.Y < ColumnHeaderHeight) {
 				//Allow auto-scroll up when mouse goes over header
 				this.TopRow = Math.Max(0, this.TopRow - 1);
