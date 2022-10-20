@@ -526,7 +526,7 @@ namespace Mesen.Debugger.Controls
 
 			if(props.IsLeftButtonPressed) {
 				_inStringView = gridPos.Value.InStringView;
-				LastNibble = gridPos.Value.LastNibble;
+				LastNibble = e.KeyModifiers.HasFlag(KeyModifiers.Control) ? gridPos.Value.LastNibble : false;
 
 				if(e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
 					MoveSelectionWithMouse(gridPos.Value);
