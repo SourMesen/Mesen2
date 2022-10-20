@@ -307,7 +307,7 @@ namespace Mesen.Debugger.Controls
 				}
 			} else {
 				switch(e.Key) {
-					case Key.Left: MoveCursor(-1, ctrl); break;
+					case Key.Left: MoveCursor(-1, ctrl || LastNibble); break;
 					case Key.Right: MoveCursor(1, ctrl); break;
 					case Key.Up: MoveCursor(-BytesPerRow, keepNibble: true); break;
 					case Key.Down: MoveCursor(BytesPerRow, keepNibble: true); break;
