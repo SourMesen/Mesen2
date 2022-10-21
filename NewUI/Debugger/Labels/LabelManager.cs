@@ -173,10 +173,10 @@ namespace Mesen.Debugger.Labels
 			ProcessLabelUpdate();
 		}
 
-		public static void RefreshLabels()
+		public static void RefreshLabels(bool raiseEvent)
 		{
 			DebugApi.ClearLabels();
-			LabelManager.SetLabels(new List<CodeLabel>(_labels), true);
+			LabelManager.SetLabels(new List<CodeLabel>(_labels), raiseEvent);
 		}
 
 		private static void ProcessLabelUpdate()

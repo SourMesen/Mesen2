@@ -29,6 +29,12 @@ enum class ConsoleNotificationType
 	RequestConfigChange
 };
 
+struct GameLoadedEventParams
+{
+	bool IsPaused;
+	bool IsPowerCycle;
+};
+
 class INotificationListener
 {
 public:

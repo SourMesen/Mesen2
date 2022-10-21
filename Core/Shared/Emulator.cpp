@@ -477,7 +477,9 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//(must be done after setting _threadPaused to true)
 		_debugger->Step(GetCpuTypes()[0], 1, StepType::Step, BreakSource::Pause);
 	}
-	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, (void*)needPause);
+	
+	GameLoadedEventParams params = { needPause, forPowerCycle };
+	_notificationManager->SendNotification(ConsoleNotificationType::GameLoaded, &params);
 	_threadPaused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {

@@ -188,8 +188,8 @@ namespace Mesen.Debugger.Windows
 						}
 					}
 
-					bool isPaused = (int)e.Parameter != 0;
-					if(!isPaused) {
+					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);
+					if(!evtParams.IsPaused) {
 						//If not already paused, pause on load to ensure UI can load labels, breakpoints, etc.
 						EmuApi.Pause();
 

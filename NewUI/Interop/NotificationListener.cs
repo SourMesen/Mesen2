@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Mesen.Interop
 {
@@ -77,5 +78,11 @@ namespace Mesen.Interop
 		GameLoadFailed,
 		CheatsChanged,
 		RequestConfigChange
+	}
+
+	public struct GameLoadedEventParams
+	{
+		[MarshalAs(UnmanagedType.I1)] public bool IsPaused;
+		[MarshalAs(UnmanagedType.I1)] public bool IsPowerCycle;
 	}
 }

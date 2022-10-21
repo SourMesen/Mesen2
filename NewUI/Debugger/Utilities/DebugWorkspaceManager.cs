@@ -225,7 +225,7 @@ namespace Mesen.Debugger.Utilities
 			BreakpointManager.ClearBreakpoints();
 			LabelManager.ResetLabels();
 			DefaultLabelHelper.SetDefaultLabels();
-			LabelManager.RefreshLabels();
+			LabelManager.RefreshLabels(true);
 		}
 	}
 }

@@ -1,11 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Utilities;
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Mesen.Debugger.Utilities
@@ -131,7 +133,18 @@ namespace Mesen.Debugger.Utilities
 
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.GameLoaded:
-					Dispatcher.UIThread.Post(() => DebugWorkspaceManager.Load());
+					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);
+					if(!evtParams.IsPowerCycle) {
+						//When reloading or loading another rom, reload workspace
+						Dispatcher.UIThread.Post(() => DebugWorkspaceManager.Load());
+					} else {
+						//On power cycle, send the active breakpoints & labels to
+						//the core, without reloading the workspace from the disk
+						Dispatcher.UIThread.Post(() => {
+							BreakpointManager.SetBreakpoints();
+							LabelManager.RefreshLabels(false);
+						});
+					}
 					break;
 
 				case ConsoleNotificationType.EmulationStopped:
