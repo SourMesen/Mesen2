@@ -9,6 +9,7 @@ using System.Linq;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -99,15 +100,20 @@ namespace Mesen.Debugger.Utilities
 					break;
 
 				case ConsoleNotificationType.GameLoaded:
-					RomInfo romInfo = EmuApi.GetRomInfo();
-					if(!romInfo.CpuTypes.Contains(model.CpuType)) {
-						model.CpuType = romInfo.ConsoleType.GetMainCpuType();
-					}
-					model.OnGameLoaded();
+					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);
 
-					Dispatcher.UIThread.Post(() => {
-						cfg.UpdateMinMaxValues(model.CpuType);
-					});
+					if(!evtParams.IsPowerCycle) {
+						//When loading a game from disk, tools need to be updated (cpu type, etc.)
+						RomInfo romInfo = EmuApi.GetRomInfo();
+						if(!romInfo.CpuTypes.Contains(model.CpuType)) {
+							model.CpuType = romInfo.ConsoleType.GetMainCpuType();
+						}
+						model.OnGameLoaded();
+
+						Dispatcher.UIThread.Post(() => {
+							cfg.UpdateMinMaxValues(model.CpuType);
+						});
+					}
 
 					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
 						toolInfo.CpuType = model.CpuType;
