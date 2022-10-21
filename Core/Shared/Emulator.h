@@ -96,7 +96,7 @@ private:
 	atomic<bool> _threadPaused;
 
 	atomic<int> _debugRequestCount;
-	atomic<bool> _allowDebuggerRequest;
+	atomic<int> _blockDebuggerRequestCount;
 
 	atomic<bool> _isRunAheadFrame;
 	bool _frameRunning = false;

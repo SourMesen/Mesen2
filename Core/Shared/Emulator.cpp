@@ -71,7 +71,7 @@ Emulator::Emulator() :
 	_threadPaused = false;
 
 	_debugRequestCount = 0;
-	_allowDebuggerRequest = true;
+	_blockDebuggerRequestCount = 0;
 
 	_videoDecoder->Init();
 }
@@ -305,6 +305,8 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 	if(sendNotification) {
 		_notificationManager->SendNotification(ConsoleNotificationType::EmulationStopped);
 	}
+
+	_blockDebuggerRequestCount--;
 }
 
 void Emulator::Reset()
@@ -400,7 +402,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 			_debugger.reset(debugger);
 			debugger->ResetSuspendCounter();
 		}
-		_allowDebuggerRequest = true;
+		_blockDebuggerRequestCount--;
 		return false;
 	}
 
@@ -465,7 +467,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 
 	//Mark the thread as paused, and release the debugger lock to avoid
 	//deadlocks with DebugBreakHelper if GameLoaded event starts the debugger
-	_allowDebuggerRequest = true;
+	_blockDebuggerRequestCount--;
 	dbgLock.Release();
 	
 	_threadPaused = true;
@@ -896,7 +898,7 @@ void Emulator::BlockDebuggerRequests()
 {
 	//Block all new debugger calls
 	auto lock = _debuggerLock.AcquireSafe();
-	_allowDebuggerRequest = false;
+	_blockDebuggerRequestCount++;
 	if(_debugger) {
 		//Ensure any thread waiting on DebugBreakHelper is allowed to resume/finish (prevent deadlock)
 		_debugger->ResetSuspendCounter();
@@ -910,9 +912,9 @@ void Emulator::BlockDebuggerRequests()
 
 Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
 {
-	if(IsRunning() && _allowDebuggerRequest) {
+	if(IsRunning() && _blockDebuggerRequestCount == 0) {
 		auto lock = _debuggerLock.AcquireSafe();
-		if(IsRunning() && _allowDebuggerRequest) {
+		if(IsRunning() && _blockDebuggerRequestCount == 0) {
 			if(!_debugger && autoInit) {
 				InitDebugger();
 			}
@@ -946,7 +948,7 @@ void Emulator::InitDebugger()
 		if(!_debugger) {
 			BlockDebuggerRequests();
 			ResetDebugger(true);
-			_allowDebuggerRequest = true;
+			_blockDebuggerRequestCount--;
 
 			//_paused should be false while debugger is enabled
 			_paused = false;
@@ -964,7 +966,7 @@ void Emulator::StopDebugger()
 		if(_debugger) {
 			BlockDebuggerRequests();
 			ResetDebugger();
-			_allowDebuggerRequest = true;
+			_blockDebuggerRequestCount--;
 		}
 	}
 }
