@@ -886,7 +886,10 @@ void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 
 FrozenAddressManager* Debugger::GetFrozenAddressManager(CpuType cpuType)
 {
-	return &_debuggers[(int)cpuType].Debugger->GetFrozenAddressManager();
+	if(_debuggers[(int)cpuType].Debugger) {
+		return &_debuggers[(int)cpuType].Debugger->GetFrozenAddressManager();
+	}
+	return nullptr;
 }
 
 ITraceLogger* Debugger::GetTraceLogger(CpuType cpuType)

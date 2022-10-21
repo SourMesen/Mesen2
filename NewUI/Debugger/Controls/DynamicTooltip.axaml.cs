@@ -247,10 +247,14 @@ namespace Mesen.Debugger.Controls
 		public TooltipPaletteEntry(int paletteIndex, int paletteSize, UInt32[] rgbPalette, UInt32[] rawPalette, RawPaletteFormat rawFormat)
 		{
 			RgbPalette = new UInt32[paletteSize];
-			Array.Copy(rgbPalette, paletteIndex * paletteSize, RgbPalette, 0, paletteSize);
+			if(rgbPalette.Length >= paletteIndex * paletteSize + paletteSize) {
+				Array.Copy(rgbPalette, paletteIndex * paletteSize, RgbPalette, 0, paletteSize);
+			}
 
 			RawPalette = new UInt32[paletteSize];
-			Array.Copy(rawPalette, paletteIndex * paletteSize, RawPalette, 0, paletteSize);
+			if(rawPalette.Length >= paletteIndex * paletteSize + paletteSize) {
+				Array.Copy(rawPalette, paletteIndex * paletteSize, RawPalette, 0, paletteSize);
+			}
 
 			RawFormat = rawFormat;
 		}

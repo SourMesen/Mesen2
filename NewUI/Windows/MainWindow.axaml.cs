@@ -279,7 +279,9 @@ namespace Mesen.Windows
 					break;
 
 				case ConsoleNotificationType.RequestConfigChange:
-					UpdateInputConfiguration();
+					Dispatcher.UIThread.Post(() => {
+						UpdateInputConfiguration();
+					});
 					break;
 
 				case ConsoleNotificationType.EmulationStopped:

@@ -123,8 +123,8 @@ extern "C"
 		StringUtilities::CopyToBuffer(logString, outBuffer, maxLength);
 	}
 	
-	DllExport void __stdcall UpdateFrozenAddresses(CpuType cpuType, uint32_t start, uint32_t end, bool freeze) { return WithDebugger(void, GetFrozenAddressManager(cpuType)->UpdateFrozenAddresses(start, end, freeze)); }
-	DllExport void __stdcall GetFrozenState(CpuType cpuType, uint32_t start, uint32_t end, bool* outState) { return WithDebugger(void, GetFrozenAddressManager(cpuType)->GetFrozenState(start, end, outState)); }
+	DllExport void __stdcall UpdateFrozenAddresses(CpuType cpuType, uint32_t start, uint32_t end, bool freeze) { return WithToolVoid(GetFrozenAddressManager(cpuType), UpdateFrozenAddresses(start, end, freeze)); }
+	DllExport void __stdcall GetFrozenState(CpuType cpuType, uint32_t start, uint32_t end, bool* outState) { return WithToolVoid(GetFrozenAddressManager(cpuType), GetFrozenState(start, end, outState)); }
 
 	DllExport void __stdcall SetMemoryState(MemoryType type, uint8_t* buffer, int32_t length) { WithDebugger(void, GetMemoryDumper()->SetMemoryState(type, buffer, length)); }
 	DllExport uint32_t __stdcall GetMemorySize(MemoryType type) { return WithDebugger(uint32_t, GetMemoryDumper()->GetMemorySize(type)); }
