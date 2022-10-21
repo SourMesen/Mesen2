@@ -20,8 +20,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class PaletteViewerViewModel : DisposableViewModel, ICpuTypeModel
 	{
-		[Reactive] public CpuType CpuType { get; set; }
-
+		public CpuType CpuType { get; set; }
 		public PaletteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
 

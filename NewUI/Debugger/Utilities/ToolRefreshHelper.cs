@@ -105,7 +105,9 @@ namespace Mesen.Debugger.Utilities
 					}
 					model.OnGameLoaded();
 
-					cfg.UpdateMinMaxValues(model.CpuType);
+					Dispatcher.UIThread.Post(() => {
+						cfg.UpdateMinMaxValues(model.CpuType);
+					});
 
 					if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
 						toolInfo.CpuType = model.CpuType;

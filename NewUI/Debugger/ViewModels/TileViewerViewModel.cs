@@ -24,7 +24,7 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class TileViewerViewModel : DisposableViewModel, ICpuTypeModel, IMouseOverViewerModel
 	{
-		[Reactive] public CpuType CpuType { get; set; }
+		public CpuType CpuType { get; set; }
 
 		public TileViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
@@ -591,8 +591,10 @@ namespace Mesen.Debugger.ViewModels
 
 		public void OnGameLoaded()
 		{
-			InitForCpuType();
-			RefreshData();
+			Dispatcher.UIThread.Post(() => {
+				InitForCpuType();
+				RefreshData();
+			});
 		}
 
 		private void ApplyPresetValues(PresetValues preset, bool keepUserConfig)

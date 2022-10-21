@@ -659,10 +659,12 @@ namespace Mesen.Debugger.ViewModels
 
 		public void OnGameLoaded()
 		{
-			_inGameLoaded = true;
-			InitForCpuType();
-			RefreshData();
-			_inGameLoaded = false;
+			Dispatcher.UIThread.Post(() => {
+				_inGameLoaded = true;
+				InitForCpuType();
+				RefreshData();
+				_inGameLoaded = false;
+			});
 		}
 	}
 

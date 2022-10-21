@@ -28,7 +28,7 @@ namespace Mesen.Debugger.ViewModels
 		public SpriteViewerConfig Config { get; }
 		public RefreshTimingViewModel RefreshTiming { get; }
 		
-		[Reactive] public CpuType CpuType { get; set; }
+		public CpuType CpuType { get; set; }
 
 		[Reactive] public SpritePreviewModel? SelectedSprite { get; set; }
 		[Reactive] public DynamicTooltip? SelectedPreviewPanel { get; set; }
