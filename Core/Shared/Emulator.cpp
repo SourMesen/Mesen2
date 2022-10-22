@@ -750,7 +750,7 @@ void Emulator::WaitForPauseEnd()
 	PlatformUtilities::EnableScreensaver();
 	PlatformUtilities::RestoreTimerResolution();
 
-	while(_paused && !_stopFlag && !_debugger) {
+	while(_paused && !_rewindManager->IsRewinding() && !_stopFlag && !_debugger) {
 		//Sleep until emulation is resumed
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(30));
 
