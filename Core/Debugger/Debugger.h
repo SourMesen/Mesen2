@@ -97,6 +97,7 @@ private:
 	
 	bool IsDebugWindowOpened(CpuType cpuType);
 	bool IsBreakOptionEnabled(BreakSource src);
+	template<CpuType type> void SleepOnBreakRequest();
 
 public:
 	Debugger(Emulator* emu, IConsole* console);

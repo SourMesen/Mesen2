@@ -184,6 +184,7 @@ void Debugger::ProcessInstruction()
 {
 	IDebugger* debugger = _debuggers[(int)type].Debugger.get();
 	if(debugger->IsStepBack() && ProcessStepBack(debugger)) {
+		SleepOnBreakRequest<type>();
 		return;
 	}
 
@@ -216,6 +217,7 @@ template<CpuType type, typename T>
 void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		SleepOnBreakRequest<type>();
 		return;
 	}
 
@@ -240,9 +242,8 @@ template<CpuType type, typename T>
 bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		SleepOnBreakRequest<type>();
 		return true;
-	} else if(_debuggers[(int)type].Debugger->GetFrozenAddressManager().IsFrozenAddress(addr)) {
-		return false;
 	}
 
 	switch(type) {
@@ -260,14 +261,15 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
 		ProcessScripts<type>(addr, value, opType);
 	}
-
-	return true;
+	
+	return !_debuggers[(int)type].Debugger->GetFrozenAddressManager().IsFrozenAddress(addr);
 }
 
 template<CpuType type>
 void Debugger::ProcessIdleCycle()
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
+		SleepOnBreakRequest<type>();
 		return;
 	}
 
@@ -282,10 +284,12 @@ void Debugger::ProcessIdleCycle()
 template<CpuType type>
 void Debugger::ProcessHaltedCpu()
 {
-	if(_debuggers[(int)type].Debugger->IsStepBack()) {
-		return;
-	}
+	SleepOnBreakRequest<type>();
+}
 
+template<CpuType type>
+void Debugger::SleepOnBreakRequest()
+{
 	if(_breakRequestCount) {
 		SleepUntilResume(type, BreakSource::Unspecified);
 	}
