@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.VisualTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +14,19 @@ namespace Mesen.Utilities
 		private static bool IsPointerInItem(MenuItem item)
 		{
 			if(item.IsSubMenuOpen) {
+				bool checkPopup = true;
 				foreach(var container in item.ItemContainerGenerator.Containers) {
-					if(container.ContainerControl is MenuItem subItem && IsPointerInItem(subItem)) {
-						return true;
+					if(container.ContainerControl is MenuItem subItem) {
+						if(IsPointerInItem(subItem)) {
+							return true;
+						} else if(checkPopup) {
+							if(subItem.GetVisualRoot() is PopupRoot root) {
+								if(root.IsPointerOver) {
+									return true;
+								}
+							}
+							checkPopup = false;
+						}
 					} else if(container.ContainerControl.IsPointerOver) {
 						return true;
 					}

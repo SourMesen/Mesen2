@@ -254,6 +254,11 @@ namespace Mesen.Debugger.Utilities
 	public class ContextMenuSeparator : ContextMenuAction
 	{
 		public override string Name => "-";
+
+		public ContextMenuSeparator()
+		{
+			IsEnabled = () => false;
+		}
 	}
 
 	public enum ActionType
