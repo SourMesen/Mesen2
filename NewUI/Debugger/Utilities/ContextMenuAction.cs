@@ -124,6 +124,8 @@ namespace Mesen.Debugger.Utilities
 		[Reactive] public Image? ActionIcon { get; set; }
 		[Reactive] public bool Enabled { get; set; }
 		[Reactive] public bool Visible { get; set; }
+		
+		[Reactive] public string TooltipText { get; set; } = "";
 
 		private static ReactiveCommand<Unit, Unit> _emptyCommand = ReactiveCommand.Create(() => { });
 
@@ -165,6 +167,12 @@ namespace Mesen.Debugger.Utilities
 		public void Update()
 		{
 			ActionName = Name;
+
+			if(ShortcutText.Length > 0) {
+				TooltipText = $"{Name} ({ShortcutText})";
+			} else {
+				TooltipText = Name;
+			}
 
 			string? iconFile = GetIconFile();
 			if(_currentIcon != iconFile) {

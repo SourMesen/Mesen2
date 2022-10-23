@@ -55,7 +55,7 @@
 			
 			<DataTemplate DataType="{x:Type du:ContextMenuAction}">
 				<Button
-					ToolTip.Tip="{Binding ActionName}"
+					ToolTip.Tip="{Binding TooltipText}"
 					Command="{Binding ClickCommand}"
 					Click="Button_OnClick"
 					IsEnabled="{Binding Enabled}"
