@@ -11,20 +11,20 @@
 	x:Class="Mesen.Debugger.Controls.SpritePreviewPanel"
 >
 	<Border
-		Background="#666"
+		Background="#333"
 		BorderThickness="1"
 		BorderBrush="Gray"
 		HorizontalAlignment="Stretch"
 		VerticalAlignment="Stretch"
 		Margin="0 0 1 1"
 	>
-		<dc:PictureViewer
-			Source="{CompiledBinding SpritePreview}"
-			Zoom="{CompiledBinding SpritePreviewZoom}"
-			ShowMousePosition="False"
-			AllowSelection="False"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-		/>
+		<Panel Background="#666" HorizontalAlignment="Center" VerticalAlignment="Center">
+			<dc:PictureViewer
+				Source="{CompiledBinding SpritePreview}"
+				Zoom="{CompiledBinding SpritePreviewZoom}"
+				ShowMousePosition="False"
+				AllowSelection="False"
+			/>
+		</Panel>
 	</Border>
 </UserControl>
