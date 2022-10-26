@@ -110,8 +110,8 @@ void Gsu::Exec()
 		case 0x03: LSR(); break;
 		case 0x04: ROL(); break;
 		case 0x05: BRA(); break;
-		case 0x06: BLT(); break;
-		case 0x07: BGE(); break;
+		case 0x06: BGE(); break;
+		case 0x07: BLT(); break;
 		case 0x08: BNE(); break;
 		case 0x09: BEQ(); break;
 		case 0x0A: BPL(); break;

@@ -45,12 +45,12 @@ void Gsu::BRA()
 
 void Gsu::BLT()
 {
-	Branch(_state.SFR.Sign == _state.SFR.Overflow);
+	Branch(_state.SFR.Sign != _state.SFR.Overflow);
 }
 
 void Gsu::BGE()
 {
-	Branch(_state.SFR.Sign != _state.SFR.Overflow);
+	Branch(_state.SFR.Sign == _state.SFR.Overflow);
 }
 
 void Gsu::BNE()

@@ -40,8 +40,8 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 		case 0x04: str.Write("ROL"); break;
 		
 		case 0x05: str.WriteAll("BRA "); getJumpTarget(); break;
-		case 0x06: str.WriteAll("BLT "); getJumpTarget(); break;
-		case 0x07: str.WriteAll("BGE "); getJumpTarget(); break;
+		case 0x06: str.WriteAll("BGE "); getJumpTarget(); break;
+		case 0x07: str.WriteAll("BLT "); getJumpTarget(); break;
 		case 0x08: str.WriteAll("BNE "); getJumpTarget(); break;
 		case 0x09: str.WriteAll("BEQ "); getJumpTarget(); break;
 		case 0x0A: str.WriteAll("BPL "); getJumpTarget(); break;
