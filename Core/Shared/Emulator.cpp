@@ -341,6 +341,11 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	if(!romFile.IsValid()) {
+		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
+		return false;
+	}
+
 	if(IsEmulationThread()) {
 		_threadPaused = true;
 	}
@@ -355,11 +360,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//This allows the UI to finish processing pending calls to the debug tools, etc.
 	_notificationManager->SendNotification(ConsoleNotificationType::BeforeGameLoad);
 	
-	if(!romFile.IsValid()) {
-		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
-		return false;
-	}
-
 	bool wasPaused = IsPaused();
 
 	//Keep a reference to the original debugger
