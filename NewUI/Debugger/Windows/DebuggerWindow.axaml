@@ -103,12 +103,18 @@
 						VerticalAlignment="Center"
 					/>
 				</StackPanel>
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+				<StackPanel
+					Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					Grid.Column="2"
+					ToolTip.Tip="{CompiledBinding BreakElapsedCyclesTooltip}"
+					ToolTip.ShowDelay="100"
+					IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
+				>
 					<Image
 						Source="/Assets/Speed.png"
 						VerticalAlignment="Center"
 						Stretch="None"
-						IsVisible="{CompiledBinding BreakElapsedCycles.Length}"
 					/>
 					<TextBlock
 						Text="{CompiledBinding BreakElapsedCycles}"

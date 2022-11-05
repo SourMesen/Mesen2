@@ -56,6 +56,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public string BreakReason { get; private set; } = "";
 		[Reactive] public string BreakElapsedCycles { get; private set; } = "";
+		[Reactive] public string BreakElapsedCyclesTooltip { get; private set; } = "";
 		[Reactive] public string CdlStats { get; private set; } = "";
 
 		[Reactive] public List<ContextMenuAction> ToolbarItems { get; private set; } = new();
@@ -283,17 +284,21 @@ namespace Mesen.Debugger.ViewModels
 		{
 			if(ConsoleStatus?.ElapsedCycles > 0) {
 				string elapsedCycles = $"{CodeTooltipHelper.FormatValue(ConsoleStatus.ElapsedCycles)} cycles elapsed";
+				string tooltip = $"{ConsoleStatus.ElapsedCycles:N0} cycles elapsed";
 
 				if(CpuType == CpuType.Snes) {
 					UInt64 prevMasterClock = _masterClock;
 					_masterClock = EmuApi.GetTimingInfo(CpuType).MasterClock;
 					if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
 						elapsedCycles += $" ({CodeTooltipHelper.FormatValue(_masterClock - prevMasterClock)} master clocks)";
+						tooltip += $" ({_masterClock - prevMasterClock:N0} master clocks)";
 					}
 				}
 				BreakElapsedCycles = elapsedCycles;
+				BreakElapsedCyclesTooltip = tooltip;
 			} else {
 				BreakElapsedCycles = "";
+				BreakElapsedCyclesTooltip = "";
 			}
 
 			UpdateCdlStats();
