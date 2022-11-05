@@ -262,7 +262,7 @@ namespace Mesen.Debugger.ViewModels
 
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
 			entries.AddEntry("X, Y", 
-				"$" + sprite.RawY.ToString("X2") + ", $" + sprite.RawY.ToString("X2") + Environment.NewLine +
+				"$" + sprite.RawX.ToString("X2") + ", $" + sprite.RawY.ToString("X2") + Environment.NewLine +
 				sprite.X + ", " + sprite.Y
 			);
 			entries.AddEntry("Size", sprite.Width + "x" + sprite.Height);
