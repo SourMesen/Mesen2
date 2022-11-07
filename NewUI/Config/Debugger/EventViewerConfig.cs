@@ -14,9 +14,9 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowToolbar { get; set; } = true;
 
-		public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
-		public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();
-		public GbEventViewerConfig GbConfig { get; set; } = new GbEventViewerConfig();
-		public PceEventViewerConfig PceConfig { get; set; } = new PceEventViewerConfig();
+		[Reactive] public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
+		[Reactive] public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();
+		[Reactive] public GbEventViewerConfig GbConfig { get; set; } = new GbEventViewerConfig();
+		[Reactive] public PceEventViewerConfig PceConfig { get; set; } = new PceEventViewerConfig();
 	}
 }

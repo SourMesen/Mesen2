@@ -129,7 +129,7 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
 			
-			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(ConsoleConfig, (s, e) => {
+			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => {
 				UpdateConfig();
 				RefreshTab();
 			}));
