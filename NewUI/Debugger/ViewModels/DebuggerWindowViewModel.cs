@@ -283,14 +283,14 @@ namespace Mesen.Debugger.ViewModels
 		private void UpdateStatusBar(BreakEvent? evt)
 		{
 			if(ConsoleStatus?.ElapsedCycles > 0) {
-				string elapsedCycles = $"{CodeTooltipHelper.FormatValue(ConsoleStatus.ElapsedCycles)} cycles elapsed";
+				string elapsedCycles = $"{CodeTooltipHelper.FormatValue(ConsoleStatus.ElapsedCycles, 999999)} cycles elapsed";
 				string tooltip = $"{ConsoleStatus.ElapsedCycles:N0} cycles elapsed";
 
 				if(CpuType == CpuType.Snes) {
 					UInt64 prevMasterClock = _masterClock;
 					_masterClock = EmuApi.GetTimingInfo(CpuType).MasterClock;
 					if(prevMasterClock > 0 && prevMasterClock < _masterClock) {
-						elapsedCycles += $" ({CodeTooltipHelper.FormatValue(_masterClock - prevMasterClock)} master clocks)";
+						elapsedCycles += $" ({CodeTooltipHelper.FormatValue(_masterClock - prevMasterClock, 999999)} master clocks)";
 						tooltip += $" ({_masterClock - prevMasterClock:N0} master clocks)";
 					}
 				}

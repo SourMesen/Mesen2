@@ -303,16 +303,18 @@ namespace Mesen.Debugger.Utilities
 			return FormatValue(value);
 		}
 
-		public static string FormatValue(double value)
+		public static string FormatValue(double value, double minimum = 0)
 		{
-			if(value >= 1000000000000) {
-				return (value / 1000000000000).ToString("0.00") + " T";
-			} else if(value >= 1000000000) {
-				return (value / 1000000000).ToString("0.00") + " G";
-			} else if(value >= 1000000) {
-				return (value / 1000000).ToString("0.00") + " M";
-			} else if(value >= 1000) {
-				return (value / 1000).ToString("0.00") + " K";
+			if(value > minimum) {
+				if(value >= 1000000000000) {
+					return (value / 1000000000000).ToString("0.00") + " T";
+				} else if(value >= 1000000000) {
+					return (value / 1000000000).ToString("0.00") + " G";
+				} else if(value >= 1000000) {
+					return (value / 1000000).ToString("0.00") + " M";
+				} else if(value >= 1000) {
+					return (value / 1000).ToString("0.00") + " K";
+				}
 			}
 			return value.ToString("0.##");
 		}
