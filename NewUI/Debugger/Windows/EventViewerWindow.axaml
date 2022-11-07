@@ -59,12 +59,9 @@
 			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 		</StackPanel>
 
-		<ScrollViewer DockPanel.Dock="Right" Margin="3" VerticalAlignment="Top">
+		<ScrollViewer DockPanel.Dock="Right" Margin="3" VerticalAlignment="Top" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
 			<StackPanel>
-				<ContentControl
-					IsVisible="{CompiledBinding Config.ShowSettingsPanel}"
-					Content="{CompiledBinding ConsoleConfig}"
-				/>
+				<ContentControl Content="{CompiledBinding ConsoleConfig}" />
 				<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
 					<Button Command="{CompiledBinding EnableAllEventTypes}" Content="{l:Translate btnSelectAll}" />
 					<Button Command="{CompiledBinding DisableAllEventTypes}" Content="{l:Translate btnDeselectAll}" />
