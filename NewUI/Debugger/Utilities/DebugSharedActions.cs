@@ -113,18 +113,18 @@ namespace Mesen.Debugger.Utilities
 					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).RunToIrq,
 					OnClick = () => Step(getCpuType(), StepType.RunToIrq)
 				},
-				
+				new ContextMenuAction() {
+					ActionType = ActionType.BreakOn,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakOn),
+					OnClick = () => new BreakOnWindow(getCpuType()).ShowCenteredDialog(wnd)
+				},
+
 				new ContextMenuSeparator(),
 
 				new ContextMenuAction() {
 					ActionType = ActionType.BreakIn,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakIn),
 					OnClick = () => new BreakInWindow(getCpuType()).ShowCenteredDialog(wnd)
-				},
-				new ContextMenuAction() {
-					ActionType = ActionType.BreakOn,
-					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakOn),
-					OnClick = () => new BreakOnWindow(getCpuType()).ShowCenteredDialog(wnd)
 				}
 			};
 		}

@@ -398,6 +398,8 @@ namespace Mesen.Debugger.Utilities
 		RunToIrq,
 
 		BreakIn,
+
+		[IconFile("GoToScanline")]
 		BreakOn,
 
 		[IconFile("Refresh")]

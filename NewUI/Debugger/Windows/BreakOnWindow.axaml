@@ -15,7 +15,7 @@
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	mc:Ignorable="d"
 	x:Class="Mesen.Debugger.Windows.BreakOnWindow"
-	Width="225"
+	Width="275"
 	Height="60"
 	Name="root"
 	ShowInTaskbar="False"

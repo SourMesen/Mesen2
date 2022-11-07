@@ -1362,8 +1362,8 @@
 		</Form>
 
 		<Form ID="BreakOnWindow">
-			<Control ID="wndTitle">Break On...</Control>
-			<Control ID="lblBreakOn">Break on scanline:</Control>
+			<Control ID="wndTitle">Run to scanline...</Control>
+			<Control ID="lblBreakOn">Scanline #:</Control>
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
@@ -2745,7 +2745,7 @@
 			<Value ID="RunPpuScanline">Run one PPU Scanline</Value>
 			<Value ID="RunPpuFrame">Run one PPU Frame</Value>
 			<Value ID="BreakIn">Break in...</Value>
-			<Value ID="BreakOn">Break on...</Value>
+			<Value ID="BreakOn">Run to scanline...</Value>
 			<Value ID="RunToNmi">Run to NMI</Value>
 			<Value ID="RunToIrq">Run to IRQ</Value>
 			<Value ID="ImportLabels">Import labels</Value>
@@ -2927,7 +2927,7 @@
 			<Value ID="RunToIrq">Run to IRQ</Value>
 			<Value ID="RunToNmi">Run to NMI</Value>
 			<Value ID="BreakIn">Break in...</Value>
-			<Value ID="BreakOn">Break on...</Value>
+			<Value ID="BreakOn">Run to scanline...</Value>
 
 			<Value ID="RunScript">Run Script</Value>
 			<Value ID="StopScript">Stop Script</Value>
