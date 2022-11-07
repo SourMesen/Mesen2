@@ -1015,14 +1015,9 @@
 
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 
-			<Control ID="mnuRefresh">Refresh</Control>
-			<Control ID="mnuAutoRefresh">Auto-refresh</Control>
-			<Control ID="mnuAutoRefreshOff">Off</Control>
-			<Control ID="mnuAutoRefreshLow">Low (15 FPS)</Control>
-			<Control ID="mnuAutoRefreshNormal">Normal (30 FPS)</Control>
-			<Control ID="mnuAutoRefreshHigh">High (60 FPS)</Control>
-			<Control ID="mnuRefreshOnPause">Refresh on break/pause</Control>
-
+			<Control ID="btnSelectAll">Select all</Control>
+			<Control ID="btnDeselectAll">Deselect all</Control>
+			
 			<Control ID="tabPpuView">PPU View</Control>
 			<Control ID="tabListView">List View</Control>
 

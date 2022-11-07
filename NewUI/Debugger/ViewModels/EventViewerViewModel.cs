@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
+using System.Reflection;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -245,6 +246,24 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetEventViewerConfig(CpuType, gbCfg.ToInterop());
 			} else if(ConsoleConfig is PceEventViewerConfig pceCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, pceCfg.ToInterop());
+			}
+		}
+
+		public void EnableAllEventTypes()
+		{
+			foreach(PropertyInfo prop in ConsoleConfig.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
+				if(prop.PropertyType == typeof(EventViewerCategoryCfg)) {
+					((EventViewerCategoryCfg)prop.GetValue(ConsoleConfig)!).Visible = true;
+				}
+			}
+		}
+
+		public void DisableAllEventTypes()
+		{
+			foreach(PropertyInfo prop in ConsoleConfig.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
+				if(prop.PropertyType == typeof(EventViewerCategoryCfg)) {
+					((EventViewerCategoryCfg)prop.GetValue(ConsoleConfig)!).Visible = false;
+				}
 			}
 		}
 
