@@ -80,7 +80,7 @@ namespace Mesen.Views
 				}
 
 				Typeface typeface = new Typeface(new FontFamily(InternalFontFamily));
-				if(PreferMonospace && !typeface.GlyphTypeface.IsFixedPitch) {
+				if(PreferMonospace && !typeface.GlyphTypeface.Metrics.IsFixedPitch) {
 					ShowWarning = true;
 				} else {
 					ShowWarning = false;
