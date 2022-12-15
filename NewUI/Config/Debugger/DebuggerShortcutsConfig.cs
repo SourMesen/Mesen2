@@ -4,6 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Mesen.Config
 {
@@ -456,6 +457,8 @@ namespace Mesen.Config
 
 	public class DbgShortKeys
 	{
+		private static Regex _numberKeyRegex = new Regex("D[0-9]", RegexOptions.Compiled);
+
 		public KeyModifiers Modifiers { get; set; }
 		public Key ShortcutKey { get; set; }
 
@@ -471,7 +474,16 @@ namespace Mesen.Config
 
 		public override string ToString()
 		{
-			return ShortcutKey != Key.None ? new KeyGesture(ShortcutKey, Modifiers).ToString().Replace("Oem", "") : "";
+			if(ShortcutKey != Key.None) {
+				string shortcut = new KeyGesture(ShortcutKey, Modifiers).ToString();
+				shortcut = shortcut.Replace("Oem", "");
+				
+				//Rename D0-D9 to 0-9
+				shortcut = _numberKeyRegex.Replace(shortcut, (Match match) => match.Value.Substring(1));
+
+				return shortcut;
+			}
+			return "";
 		}
 	}
 }
