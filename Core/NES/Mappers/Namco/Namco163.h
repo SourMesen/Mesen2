@@ -98,6 +98,14 @@ protected:
 
 		SelectPrgPage(3, -1);
 		UpdateSaveRamAccess();
+
+		if(HasBattery()) {
+			vector<uint8_t> batteryContent(_saveRamSize + Namco163Audio::AudioRamSize, 0);
+			_emu->GetBatteryManager()->LoadBattery(".sav", batteryContent.data(), (uint32_t)batteryContent.size());
+
+			memcpy(_saveRam, batteryContent.data(), _saveRamSize);
+			memcpy(_audio->GetInternalRam(), batteryContent.data() + _saveRamSize, Namco163Audio::AudioRamSize);
+		}
 	}
 	
 	void Serialize(Serializer& s) override
@@ -115,17 +123,6 @@ protected:
 
 		if(!s.IsSaving()) {
 			UpdateSaveRamAccess();
-		}
-	}
-
-	void LoadBattery() override
-	{
-		if(HasBattery()) {
-			vector<uint8_t> batteryContent(_saveRamSize + Namco163Audio::AudioRamSize, 0);
-			_emu->GetBatteryManager()->LoadBattery(".sav", batteryContent.data(), (uint32_t)batteryContent.size());
-
-			memcpy(_saveRam, batteryContent.data(), _saveRamSize);
-			memcpy(_audio->GetInternalRam(), batteryContent.data()+_saveRamSize, Namco163Audio::AudioRamSize);
 		}
 	}
 

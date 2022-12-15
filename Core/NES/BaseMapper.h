@@ -128,7 +128,7 @@ protected:
 	void RemovePpuMemoryMapping(uint16_t startAddr, uint16_t endAddr);
 
 	bool HasBattery();
-	virtual void LoadBattery();
+	void LoadBattery();
 	string GetBatteryFilename();
 
 	uint32_t GetPrgPageCount();
