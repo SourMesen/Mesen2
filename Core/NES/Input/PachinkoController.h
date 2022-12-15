@@ -45,7 +45,7 @@ public:
 
 	void RefreshStateBuffer() override
 	{
-		if(_analogData < 63 && IsPressed(PachinkoController::PachinkoButtons::Press)) {
+		if(_analogData < 0x63 && IsPressed(PachinkoController::PachinkoButtons::Press)) {
 			_analogData++;
 		} else if(_analogData > 0 && IsPressed(PachinkoController::PachinkoButtons::Release)) {
 			_analogData--;
