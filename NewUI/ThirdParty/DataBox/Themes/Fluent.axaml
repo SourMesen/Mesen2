@@ -134,7 +134,9 @@
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="VerticalAlignment" Value="Top" />
     <Setter Property="Background" Value="Transparent" />
-	  <Setter Property="Margin" Value="-1 0 0 0" />
+
+    <!-- Right margin to fix issue when h-scrolling all the way to the right -->
+    <Setter Property="Margin" Value="-1 0 30 0" />
   </Style>
 
   <Style Selector="DataBoxColumnHeader">

@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Styling;
 using DataBoxControl;
+using DataBoxControl.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Mesen.Controls
 		
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			if(this.FindLogicalAncestorOfType<DataBox>() != null) {
+			if(this.FindLogicalAncestorOfType<DataBoxRowsPresenter>() != null) {
 				//When inside a DataBox, use availableSize directly without
 				//calling MeasureOverride on the ScrollContentPresenter
 				//Otherwise, the DataBox tries to resize with the height set
