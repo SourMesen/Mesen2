@@ -43,14 +43,14 @@
 				SortMode="Multiple"
 				SortCommand="{Binding Sort}"
 				SortState="{CompiledBinding SortState}"
-				GridLinesVisibility="All"		  
+				GridLinesVisibility="All"
 			>
 				<DataBox.Columns>
-					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled}" Width="21" />
-					<DataBoxTextColumn ColumnName="Description" Header="{l:Translate colDescription}" Binding="{Binding Description}" Width="1*" CanUserResize="True" />
-					<DataBoxTemplateColumn ColumnName="Codes" Header="{l:Translate colCodes}" Width="1*" CanUserResize="True">
+					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled}" InitialWidth="22" />
+					<DataBoxTextColumn ColumnName="Description" Header="{l:Translate colDescription}" Binding="{Binding Description}" CanUserResize="True" InitialWidth="150" />
+					<DataBoxTemplateColumn ColumnName="Codes" Header="{l:Translate colCodes}" CanUserResize="True" InitialWidth="150">
 						<DataTemplate>
-							<TextBlock Text="{Binding Codes, Converter={StaticResource CodeConverter}}" />
+							<TextBlock Text="{Binding Codes, Converter={StaticResource CodeConverter}}" VerticalAlignment="Center" />
 						</DataTemplate>
 					</DataBoxTemplateColumn>
 				</DataBox.Columns>

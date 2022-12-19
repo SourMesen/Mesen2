@@ -26,6 +26,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public MesenList<WatchValueInfo> WatchEntries { get; private set; } = new();
 		[Reactive] public SelectionModel<WatchValueInfo> Selection { get; set; } = new() { SingleSelect = false };
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Debugger.WatchListColumnWidths;
 
 		public WatchManager Manager { get; }
 		public CpuType CpuType { get; }

@@ -75,6 +75,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public MesenList<ProfiledFunctionViewModel> GridData { get; private set; } = new();
 		[Reactive] public SelectionModel<ProfiledFunctionViewModel> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Profiler.ColumnWidths;
 
 		private ProfiledFunction[] _profilerData = Array.Empty<ProfiledFunction>();
 		private UInt64 _totalCycles;

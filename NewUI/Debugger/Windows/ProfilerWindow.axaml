@@ -56,17 +56,18 @@
 							SortMode="Multiple"
 							SortCommand="{Binding SortCommand}"
 							GridLinesVisibility="All"
+							ColumnWidths="{Binding ColumnWidths}"
 						>
 							<DataBox.Columns>
-								<DataBoxTextColumn ColumnName="FunctionName" Header="{l:Translate colFunction}" Binding="{Binding FunctionName}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="CallCount" Header="{l:Translate colCallCount}" Binding="{Binding CallCount}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="InclusiveTime" Header="{l:Translate colInclusiveTime}" Binding="{Binding InclusiveCycles}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="InclusiveTimePercent" Header="{l:Translate colInclusiveTimePercent}" Binding="{Binding InclusivePercent}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="ExclusiveTime" Header="{l:Translate colExclusiveTime}" Binding="{Binding ExclusiveCycles}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="ExclusiveTimePercent" Header="{l:Translate colExclusiveTimePercent}" Binding="{Binding ExclusivePercent}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="AvgCycles" Header="{l:Translate colAvgCycles}" Binding="{Binding AvgCycles}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="MinCycles" Header="{l:Translate colMinCycles}" Binding="{Binding MinCycles}" Width="*" CanUserResize="True" />
-								<DataBoxTextColumn ColumnName="MaxCycles" Header="{l:Translate colMaxCycles}" Binding="{Binding MaxCycles}" Width="*" CanUserResize="True" />
+								<DataBoxTextColumn ColumnName="FunctionName" Header="{l:Translate colFunction}" Binding="{Binding FunctionName}" CanUserResize="True" InitialWidth="151" />
+								<DataBoxTextColumn ColumnName="CallCount" Header="{l:Translate colCallCount}" Binding="{Binding CallCount}" CanUserResize="True" InitialWidth="77" />
+								<DataBoxTextColumn ColumnName="InclusiveTime" Header="{l:Translate colInclusiveTime}" Binding="{Binding InclusiveCycles}" CanUserResize="True" InitialWidth="93" />
+								<DataBoxTextColumn ColumnName="InclusiveTimePercent" Header="{l:Translate colInclusiveTimePercent}" Binding="{Binding InclusivePercent}" CanUserResize="True" InitialWidth="52" />
+								<DataBoxTextColumn ColumnName="ExclusiveTime" Header="{l:Translate colExclusiveTime}" Binding="{Binding ExclusiveCycles}" CanUserResize="True" InitialWidth="81" />
+								<DataBoxTextColumn ColumnName="ExclusiveTimePercent" Header="{l:Translate colExclusiveTimePercent}" Binding="{Binding ExclusivePercent}" CanUserResize="True" InitialWidth="60" />
+								<DataBoxTextColumn ColumnName="AvgCycles" Header="{l:Translate colAvgCycles}" Binding="{Binding AvgCycles}" CanUserResize="True" InitialWidth="53" />
+								<DataBoxTextColumn ColumnName="MinCycles" Header="{l:Translate colMinCycles}" Binding="{Binding MinCycles}" CanUserResize="True" InitialWidth="53" />
+								<DataBoxTextColumn ColumnName="MaxCycles" Header="{l:Translate colMaxCycles}" Binding="{Binding MaxCycles}" CanUserResize="True" InitialWidth="61" />
 							</DataBox.Columns>
 						</DataBox>
 					</Border>

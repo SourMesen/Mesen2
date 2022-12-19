@@ -28,13 +28,14 @@
 			SortCommand="{Binding Sort}"
 			SortState="{CompiledBinding SortState}"
 			GridLinesVisibility="All"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="{l:Translate colEnabled}" Binding="{Binding Breakpoint.Enabled}" Width="21" />
-				<DataBoxCheckBoxColumn ColumnName="Marked" Header="{l:Translate colMarked}" Binding="{Binding Breakpoint.MarkEvent}" Width="21" />
-				<DataBoxTextColumn ColumnName="Type" Header="{l:Translate colType}" Binding="{Binding TypeDisplay}" Width="3*" CanUserResize="True"  />
-				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressDisplay}" Width="3*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="Condition" Header="{l:Translate colCondition}" Binding="{Binding Breakpoint.Condition}" Width="3*" CanUserResize="True" />
+				<DataBoxCheckBoxColumn ColumnName="Enabled" Header="{l:Translate colEnabled}" Binding="{Binding Breakpoint.Enabled}" InitialWidth="22" />
+				<DataBoxCheckBoxColumn ColumnName="Marked" Header="{l:Translate colMarked}" Binding="{Binding Breakpoint.MarkEvent}" InitialWidth="22" />
+				<DataBoxTextColumn ColumnName="Type" Header="{l:Translate colType}" Binding="{Binding TypeDisplay}" CanUserResize="True" InitialWidth="65" />
+				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressDisplay}" CanUserResize="True" InitialWidth="65" />
+				<DataBoxTextColumn ColumnName="Condition" Header="{l:Translate colCondition}" Binding="{Binding Breakpoint.Condition}" CanUserResize="True" InitialWidth="150" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

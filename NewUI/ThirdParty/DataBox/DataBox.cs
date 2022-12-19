@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Collections;
@@ -53,7 +54,10 @@ public class DataBox : TemplatedControl
 		 AvaloniaProperty.Register<DataBoxColumn, ICommand?>(nameof(SortCommand));
 
 	public static readonly StyledProperty<SortState> SortStateProperty =
-		 AvaloniaProperty.Register<DataBoxColumn, SortState>(nameof(SortState), new SortState());
+		 AvaloniaProperty.Register<DataBoxColumn, SortState>(nameof(SortState));
+
+	public static readonly StyledProperty<List<int>> ColumnWidthsProperty =
+		 AvaloniaProperty.Register<DataBoxColumn, List<int>>(nameof(ColumnWidths));
 
 	public static readonly StyledProperty<bool> CanUserResizeColumnsProperty = 
         AvaloniaProperty.Register<DataBox, bool>(nameof(CanUserResizeColumns));
@@ -124,6 +128,12 @@ public class DataBox : TemplatedControl
 		set => SetValue(SortStateProperty, value);
 	}
 
+	public List<int> ColumnWidths
+	{
+		get => GetValue(ColumnWidthsProperty);
+		set => SetValue(ColumnWidthsProperty, value);
+	}
+
 	public bool CanUserResizeColumns
     {
         get => GetValue(CanUserResizeColumnsProperty);
@@ -169,6 +179,8 @@ public class DataBox : TemplatedControl
 	public DataBox()
     {
         _columns = new AvaloniaList<DataBoxColumn>();
+        SortState = new();
+        ColumnWidths = new();
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -179,7 +191,11 @@ public class DataBox : TemplatedControl
         _headersPresenter = e.NameScope.Find<DataBoxColumnHeadersPresenter>("PART_HeadersPresenter");
         _rowsPresenter = e.NameScope.Get<DataBoxRowsPresenter>("PART_RowsPresenter");
         _rowsPresenter.AutoScrollToSelectedItem = true;
-
+        if(_columns.Count > ColumnWidths.Count) {
+            for(int i = ColumnWidths.Count; i < _columns.Count; i++) {
+                ColumnWidths.Add(_columns[i].InitialWidth);
+            }
+        }
 		  Attach();
     }
 
@@ -191,6 +207,12 @@ public class DataBox : TemplatedControl
 			}
 			if(change.NewValue is ISelectionModel newModel) {
 				newModel.SelectionChanged += Selection_SelectionChanged;
+			}
+		} else if(change.Property == ColumnsProperty) {
+			if(change.NewValue is AvaloniaList<DataBoxColumn> columns && columns.Count > ColumnWidths.Count) {
+				 for(int i = ColumnWidths.Count; i < columns.Count; i++) {
+                ColumnWidths.Add(columns[i].InitialWidth);
+            }
 			}
 		}
 		base.OnPropertyChanged(change);

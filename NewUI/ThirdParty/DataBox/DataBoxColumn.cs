@@ -18,15 +18,15 @@ public abstract class DataBoxColumn : AvaloniaObject
 	
 	public static readonly StyledProperty<string> ColumnNameProperty =
 		 AvaloniaProperty.Register<DataBoxColumn, string>(nameof(ColumnName), "");
+	
+    public static readonly StyledProperty<int> InitialWidthProperty = 
+        AvaloniaProperty.Register<DataBoxColumn, int>(nameof(InitialWidth), 50);
 
-	public static readonly StyledProperty<GridLength> WidthProperty = 
-        AvaloniaProperty.Register<DataBoxColumn, GridLength>(nameof(Width), new GridLength(0, GridUnitType.Auto));
+    public static readonly StyledProperty<int> MinWidthProperty = 
+        AvaloniaProperty.Register<DataBoxColumn, int>(nameof(MinWidth), 22);
 
-    public static readonly StyledProperty<double> MinWidthProperty = 
-        AvaloniaProperty.Register<DataBoxColumn, double>(nameof(MinWidth), 0.0);
-
-    public static readonly StyledProperty<double> MaxWidthProperty = 
-        AvaloniaProperty.Register<DataBoxColumn, double>(nameof(MaxWidth), double.PositiveInfinity);
+    public static readonly StyledProperty<int> MaxWidthProperty = 
+        AvaloniaProperty.Register<DataBoxColumn, int>(nameof(MaxWidth), int.MaxValue);
 
     public static readonly StyledProperty<bool> CanUserSortProperty = 
         AvaloniaProperty.Register<DataBoxColumn, bool>(nameof(CanUserSort), true);
@@ -52,20 +52,20 @@ public abstract class DataBoxColumn : AvaloniaObject
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
     }
-
-    public GridLength Width
-    {
-        get => GetValue(WidthProperty);
-        set => SetValue(WidthProperty, value);
+	
+    public int InitialWidth
+	{
+        get => GetValue(InitialWidthProperty);
+        set => SetValue(InitialWidthProperty, value);
     }
 
-    public double MinWidth
+    public int MinWidth
     {
         get => GetValue(MinWidthProperty);
         set => SetValue(MinWidthProperty, value);
     }
 
-    public double MaxWidth
+    public int MaxWidth
     {
         get => GetValue(MaxWidthProperty);
         set => SetValue(MaxWidthProperty, value);

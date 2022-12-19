@@ -1,5 +1,6 @@
 ﻿using Avalonia.Collections;
 using DataBoxControl;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -22,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		public EventViewerViewModel EventViewer { get; }
 
 		[Reactive] public SortState SortState { get; set; } = new();
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.EventViewer.ColumnWidths;
 
 		public ICommand SortCommand { get; }
 

@@ -29,6 +29,7 @@ public class FindResultListViewModel : ViewModelBase
 	[Reactive] public MesenList<FindResultViewModel> FindResults { get; private set; } = new();
 	[Reactive] public SelectionModel<FindResultViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 	[Reactive] public SortState SortState { get; set; } = new();
+	public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Debugger.FindResultColumnWidths;
 
 	public DebuggerWindowViewModel Debugger { get; }
 

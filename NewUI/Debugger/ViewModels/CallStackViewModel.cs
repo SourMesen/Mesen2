@@ -25,6 +25,7 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public MesenList<StackInfo> CallStackContent { get; private set; } = new();
 		[Reactive] public SelectionModel<StackInfo?> Selection { get; set; } = new();
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Debugger.CallStackColumnWidths;
 
 		private StackFrameInfo[] _stackFrames = Array.Empty<StackFrameInfo>();
 

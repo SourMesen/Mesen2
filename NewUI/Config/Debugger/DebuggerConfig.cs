@@ -5,6 +5,7 @@ using Mesen.Interop;
 using ReactiveUI.Fody.Helpers;
 using System.Reactive.Linq;
 using System.Reactive;
+using System.Collections.Generic;
 
 namespace Mesen.Config
 {
@@ -79,6 +80,13 @@ namespace Mesen.Config
 		
 		[Reactive] public Color CodeActiveStatementColor { get; set; } = Colors.Yellow;
 		[Reactive] public Color CodeActiveMidInstructionColor { get; set; } = Color.FromRgb(255, 220, 40);
+
+		[Reactive] public List<int> LabelListColumnWidths { get; set; } = new();
+		[Reactive] public List<int> FunctionListColumnWidths { get; set; } = new();
+		[Reactive] public List<int> BreakpointListColumnWidths { get; set; } = new();
+		[Reactive] public List<int> WatchListColumnWidths { get; set; } = new();
+		[Reactive] public List<int> CallStackColumnWidths { get; set; } = new();
+		[Reactive] public List<int> FindResultColumnWidths { get; set; } = new();
 
 		public DebuggerConfig()
 		{

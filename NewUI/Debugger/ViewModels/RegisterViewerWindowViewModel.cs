@@ -231,7 +231,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF4B", "Window X (WX)", ppu.WindowX, Format.X8),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "LCD", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
+			return new RegisterViewerTab(tabPrefix + "LCD", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetGbMiscTab(ref GbState gb, string tabPrefix = "")
@@ -282,7 +282,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Serial Bit Count", memManager.SerialBitCount),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "Timer/DMA/IRQ", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
+			return new RegisterViewerTab(tabPrefix + "Timer/DMA/IRQ", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetGbApuTab(ref GbState gb, string tabPrefix = "")
@@ -398,7 +398,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Output", wave.Output),
 			});
 
-			return new RegisterViewerTab(tabPrefix + "APU", entries, CpuType.Gameboy, MemoryType.GameboyMemory);
+			return new RegisterViewerTab(tabPrefix + "APU", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
 
 		private RegisterViewerTab GetSnesSa1Tab(ref SnesState state)
@@ -527,7 +527,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$230B.7", "Math Overflow", sa1.MathOverflow)
 			});
 
-			return new RegisterViewerTab("SA-1", entries);
+			return new RegisterViewerTab("SA-1", entries, Config);
 		}
 
 		private RegisterViewerTab GetSnesPpuTab(ref SnesState state)
@@ -729,7 +729,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2133.4", "Ext. BG Enabled", ppu.ExtBgEnabled),
 			};
 
-			return new RegisterViewerTab("PPU", entries, CpuType.Snes, MemoryType.SnesRegister);
+			return new RegisterViewerTab("PPU", entries, Config, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetSnesDspTab(ref SnesState state)
@@ -785,7 +785,7 @@ namespace Mesen.Debugger.ViewModels
 				AddReg(voice | 0x09, "OUTX");
 			}
 
-			return new RegisterViewerTab("DSP", entries);
+			return new RegisterViewerTab("DSP", entries, Config);
 		}
 
 		private RegisterViewerTab GetSnesSpcTab(ref SnesState state)
@@ -840,7 +840,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF", "Timer 2 Output", spc.Timer2.Output, Format.X8),
 			};
 
-			return new RegisterViewerTab("SPC", entries, CpuType.Spc, MemoryType.SpcMemory);
+			return new RegisterViewerTab("SPC", entries, Config, CpuType.Spc, MemoryType.SpcMemory);
 		}
 
 		private RegisterViewerTab GetSnesDmaTab(ref SnesState state)
@@ -870,7 +870,7 @@ namespace Mesen.Debugger.ViewModels
 				entries.Add(new RegEntry("$43" + i.ToString() + "B", "Unused register", ch.UnusedRegister, Format.X8));
 			}
 
-			return new RegisterViewerTab("DMA", entries, CpuType.Snes, MemoryType.SnesRegister);
+			return new RegisterViewerTab("DMA", entries, Config, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetSnesCpuTab(ref SnesState state)
@@ -918,7 +918,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$421E/F", "P4 Data", regs.ControllerData[3], Format.X16),
 			};
 
-			return new RegisterViewerTab("CPU", entries, CpuType.Snes, MemoryType.SnesRegister);
+			return new RegisterViewerTab("CPU", entries, Config, CpuType.Snes, MemoryType.SnesRegister);
 		}
 
 		private RegisterViewerTab GetNesPpuTab(ref NesState state)
@@ -965,7 +965,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Write Toggle", ppu.WriteToggle)
 			};
 
-			return new RegisterViewerTab("PPU", entries, CpuType.Nes, MemoryType.NesMemory);
+			return new RegisterViewerTab("PPU", entries, Config, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetNesApuTab(ref NesState state)
@@ -1103,7 +1103,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Sequence Position", frameCounter.SequencePosition),
 			});
 
-			return new RegisterViewerTab("APU", entries, CpuType.Nes, MemoryType.NesMemory);
+			return new RegisterViewerTab("APU", entries, Config, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetNesCartTab(ref NesState state)
@@ -1127,7 +1127,7 @@ namespace Mesen.Debugger.ViewModels
 				));
 			}
 
-			return new RegisterViewerTab("Cart", entries, CpuType.Nes, MemoryType.NesMemory);
+			return new RegisterViewerTab("Cart", entries, Config, CpuType.Nes, MemoryType.NesMemory);
 		}
 
 		private RegisterViewerTab GetPceVceTab(ref PceState state)
@@ -1141,7 +1141,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$01.0-8", "CTA - Color Table Address", vce.PalAddr, Format.X16),
 			};
 
-			return new RegisterViewerTab("VCE", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("VCE", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceVpcTab(ref PceState state)
@@ -1177,7 +1177,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$0E", "STn writes to VDC2", vpc.StToVdc2Mode),
 			};
 
-			return new RegisterViewerTab("VPC", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("VPC", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceVdcTab(ref PceVdcState vdc, string suffix = "")
@@ -1251,7 +1251,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$13", "DVSSR - VRAM-SATB Transfer Source Address", vdc.SatbBlockSrc, Format.X16)
 			};
 
-			return new RegisterViewerTab("VDC" + suffix, entries);
+			return new RegisterViewerTab("VDC" + suffix, entries, Config);
 		}
 
 		private RegisterViewerTab GetPceCpuTab(ref PceState state)
@@ -1288,7 +1288,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "MPR #7", mem.Mpr[7], Format.X8),
 			};
 
-			return new RegisterViewerTab("CPU", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("CPU", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPcePsgTab(ref PceState pceState)
@@ -1325,7 +1325,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
-			return new RegisterViewerTab("PSG", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("PSG", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceCdRomTab(ref PceState pceState)
@@ -1402,7 +1402,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Effective Volume", fader.Enabled ? (int)Math.Max(0.0, 100 - ((pceState.MemoryManager.CycleCount - fader.StartClock) / ((fader.FastFade ? 0.025 : 0.06) * 21477270))) : 100)
 			};
 
-			return new RegisterViewerTab("CD-ROM", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("CD-ROM", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		private RegisterViewerTab GetPceArcadeCardTab(ref PceState pceState)
@@ -1432,7 +1432,7 @@ namespace Mesen.Debugger.ViewModels
 				});
 			}
 
-			return new RegisterViewerTab("Arcade Card", entries, CpuType.Pce, MemoryType.PceMemory);
+			return new RegisterViewerTab("Arcade Card", entries, Config, CpuType.Pce, MemoryType.PceMemory);
 		}
 
 		public void OnGameLoaded()
@@ -1450,14 +1450,16 @@ namespace Mesen.Debugger.ViewModels
 		public string TabName { get => _name; set => this.RaiseAndSetIfChanged(ref _name, value); }
 		public List<RegEntry> Data { get => _data; set => this.RaiseAndSetIfChanged(ref _data, value); }
 		public SelectionModel<RegEntry?> Selection { get; set; } = new();
+		public List<int> ColumnWidths { get; }
 
 		public CpuType? CpuType { get; }
 		public MemoryType? MemoryType { get; }
 
-		public RegisterViewerTab(string name, List<RegEntry> data, CpuType? cpuType = null, MemoryType? memoryType = null)
+		public RegisterViewerTab(string name, List<RegEntry> data, RegisterViewerConfig config, CpuType? cpuType = null, MemoryType? memoryType = null)
 		{
 			_name = name;
 			_data = data;
+			ColumnWidths = config.ColumnWidths;
 			CpuType = cpuType;
 			MemoryType = memoryType;
 		}

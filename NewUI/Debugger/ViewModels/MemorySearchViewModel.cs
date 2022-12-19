@@ -37,6 +37,7 @@ public class MemorySearchViewModel : DisposableViewModel
 	[Reactive] public MesenList<MemoryAddressViewModel> ListData { get; private set; } = new();
 	[Reactive] public SelectionModel<MemoryAddressViewModel> Selection { get; set; } = new();
 	[Reactive] public SortState SortState { get; set; } = new();
+	public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.MemorySearch.ColumnWidths;
 
 	[Reactive] public int SpecificAddress { get; set; } = 0;
 	[Reactive] public int SpecificValue { get; set; } = 0;

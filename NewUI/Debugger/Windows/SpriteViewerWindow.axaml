@@ -141,6 +141,7 @@
 					SortState="{CompiledBinding ListView.SortState}"
 					SortCommand="{CompiledBinding ListView.SortCommand}"
 					GridLinesVisibility="All"
+					ColumnWidths="{CompiledBinding ListView.ColumnWidths}"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
@@ -163,12 +164,12 @@
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" InitialWidth="50">
 							<DataTemplate>
 								<TextBlock Text="{Binding SpriteIndex}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="X" Header="{l:Translate colX}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="X" Header="{l:Translate colX}" InitialWidth="82">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -179,7 +180,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Y" Header="{l:Translate colY}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Y" Header="{l:Translate colY}" InitialWidth="78">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -190,7 +191,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Size" Header="{l:Translate colSize}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Size" Header="{l:Translate colSize}" InitialWidth="64">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="{Binding Width}" />
@@ -199,7 +200,7 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="TileIndex" Header="{l:Translate colTileIndex}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="TileIndex" Header="{l:Translate colTileIndex}" InitialWidth="60">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Text="$" />
@@ -207,17 +208,17 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Palette" Header="{l:Translate colPalette}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67">
 							<DataTemplate>
 								<TextBlock Text="{Binding Palette}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Priority" Header="{l:Translate colPriority}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83">
 							<DataTemplate>
 								<TextBlock Text="{Binding Priority, Converter={StaticResource Enum}}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Flags" Header="{l:Translate colFlags}" Width="1*">
+						<DataBoxTemplateColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68">
 							<DataTemplate>
 								<TextBlock Text="{Binding Flags}" />
 							</DataTemplate>

@@ -138,7 +138,15 @@
     <!-- Right margin to fix issue when h-scrolling all the way to the right -->
     <Setter Property="Margin" Value="-1 0 30 0" />
   </Style>
+	
+	<Style Selector="DataBoxColumnHeader Panel#PanelResize Rectangle">
+		<Setter Property="IsVisible" Value="False" />
+	</Style>
 
+	<Style Selector="DataBoxColumnHeader:nth-last-child(1) Panel#PanelResize Rectangle">
+		<Setter Property="IsVisible" Value="True" />
+	</Style>
+	
   <Style Selector="DataBoxColumnHeader">
     <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForegroundBrush}" />
     <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackgroundBrush}" />
@@ -153,12 +161,23 @@
       <ControlTemplate>
         <DockPanel Name="PART_ColumnHeaderRoot" 
                    Background="{TemplateBinding Background}">
-          <Rectangle Name="VerticalSeparator"
-                     DockPanel.Dock="Left"
-                     Width="1"
-                     VerticalAlignment="Stretch"
-                     Fill="{TemplateBinding SeparatorBrush}"
-                     IsVisible="{TemplateBinding AreSeparatorsVisible}" />
+          <Panel Name="PanelResize" DockPanel.Dock="Right" Cursor="SizeWestEast" Background="Transparent" Width="4" Margin="0">
+            <Rectangle Name="VerticalSeparator"
+                Width="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
+                Fill="{TemplateBinding SeparatorBrush}"
+            />
+          </Panel>
+          <Panel Name="PanelResizeRight" DockPanel.Dock="Left" Cursor="SizeWestEast" Width="4" Margin="0" VerticalAlignment="Stretch" Background="Transparent">
+            <Rectangle Name="VerticalSeparatorRight"
+                Width="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                Fill="{TemplateBinding SeparatorBrush}"
+                IsVisible="{TemplateBinding AreSeparatorsVisible}"
+            />
+          </Panel>
           <Path Name="SortIcon"
                 DockPanel.Dock="Right"
                 Fill="{TemplateBinding Foreground}"
@@ -216,10 +235,11 @@
     <Setter Property="TextBlock.FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
     <Setter Property="Template">
       <ControlTemplate>
-        <Grid Name="PART_Root" RowDefinitions="*,Auto">
-          <Rectangle Grid.Row="0" Name="BackgroundRectangle" />
-          <DataBoxCellsPresenter Grid.Row="0" Name="PART_CellsPresenter"/>
-          <Rectangle Grid.Row="1" Name="PART_BottomGridLine"/>
+        <Grid Name="PART_Root" RowDefinitions="*,Auto" ColumnDefinitions="*,Auto">
+          <Rectangle Grid.Row="0" Grid.ColumnSpan="2" Name="BackgroundRectangle" />
+          <DataBoxCellsPresenter Grid.Row="0" Grid.ColumnSpan="2" Name="PART_CellsPresenter"/>
+          <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Name="PART_BottomGridLine"/>
+          <Rectangle Grid.Column="1" Name="RightBorder" VerticalAlignment="Stretch" Width="1" Fill="{DynamicResource DataGridGridLinesBrush}" />
         </Grid>
       </ControlTemplate>
     </Setter>

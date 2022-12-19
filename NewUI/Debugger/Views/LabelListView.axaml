@@ -39,14 +39,15 @@
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"		
+			SortState="{CompiledBinding SortState}"
 			CellDoubleClick="OnCellDoubleClick"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Label" Header="{l:Translate colLabel}" Binding="{Binding LabelText}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="{l:Translate colComment}" Binding="{Binding LabelComment}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Label" Header="{l:Translate colLabel}" Binding="{Binding LabelText}" CanUserResize="True" InitialWidth="100" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn ColumnName="Comment" ShowToolTip="True" Header="{l:Translate colComment}" Binding="{Binding LabelComment}" CanUserResize="True" InitialWidth="100" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

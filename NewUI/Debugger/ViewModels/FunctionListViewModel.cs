@@ -27,6 +27,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public MesenList<FunctionViewModel> Functions { get; private set; } = new();
 		[Reactive] public SelectionModel<FunctionViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 		[Reactive] public SortState SortState { get; set; } = new();
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Debugger.FunctionListColumnWidths;
 
 		public CpuType CpuType { get; }
 		public DebuggerWindowViewModel Debugger { get; }

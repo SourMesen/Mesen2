@@ -30,22 +30,23 @@
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			CellDoubleClick="OnCellDoubleClick"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
 				<DataBoxTextColumn
 					Header="{l:Translate colFunction}"
 					Binding="{Binding EntryPoint}"
-					Width="1*" 
+					InitialWidth="100"
 				/>
 				<DataBoxTextColumn
 					Header="{l:Translate colPcAddress}"
 					Binding="{Binding PcAddress}"
-					Width="1*"
+					InitialWidth="90"
 				/>
 				<DataBoxTextColumn
 					Header="{l:Translate colRomAddress}"
 					Binding="{Binding AbsAddress}"
-					Width="1*"
+					InitialWidth="90"
 				/>
 			</DataBox.Columns>
 		</DataBox>

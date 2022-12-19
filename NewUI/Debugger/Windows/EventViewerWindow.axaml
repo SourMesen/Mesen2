@@ -92,6 +92,7 @@
 					SortCommand="{CompiledBinding ListView.SortCommand}"
 					SortState="{CompiledBinding ListView.SortState}"
 					GridLinesVisibility="All"
+					ColumnWidths="{CompiledBinding ListView.ColumnWidths}"
 				>
 					<DataBox.Styles>
 						<Style Selector="TextBlock">
@@ -100,37 +101,37 @@
 					</DataBox.Styles>
 
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="{l:Translate colPc}" Width="1*" ColumnName="ProgramCounter">
+						<DataBoxTemplateColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colScanline}" Width="1*" ColumnName="Scanline">
+						<DataBoxTemplateColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colCycle}" Width="1*" ColumnName="Cycle">
+						<DataBoxTemplateColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colType}" Width="1*" ColumnName="Type">
+						<DataBoxTemplateColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colAddress}" Width="1*" ColumnName="Address">
+						<DataBoxTemplateColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colValue}" Width="1*" ColumnName="Value">
+						<DataBoxTemplateColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colDetails}" Width="4*" CanUserSort="False">
+						<DataBoxTemplateColumn Header="{l:Translate colDetails}" CanUserSort="False" InitialWidth="416">
 							<DataTemplate>
 								<TextBlock VerticalAlignment="Center" Text="{Binding Details}" />
 							</DataTemplate>

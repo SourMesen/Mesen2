@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -26,11 +28,12 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
 
     internal static readonly StyledProperty<bool> IsPressedProperty =
         AvaloniaProperty.Register<DataBoxColumnHeader, bool>(nameof(IsPressed));
+    internal static readonly StyledProperty<bool> IsResizingProperty =
+        AvaloniaProperty.Register<DataBoxColumnHeader, bool>(nameof(IsResizingProperty));
+   internal static readonly StyledProperty<string> SortNumberProperty =
+       AvaloniaProperty.Register<DataBoxColumnHeader, string>(nameof(SortNumber));
 
-	internal static readonly StyledProperty<string> SortNumberProperty =
-		 AvaloniaProperty.Register<DataBoxColumnHeader, string>(nameof(SortNumber));
-
-	public DataBoxColumnHeader()
+   public DataBoxColumnHeader()
     {
         UpdatePseudoClassesIsPressed(IsPressed);
     }
@@ -57,13 +60,21 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
         private set => SetValue(IsPressedProperty, value);
     }
 
-	public string SortNumber
-	{
-		get => GetValue(SortNumberProperty);
-		set => SetValue(SortNumberProperty, value);
-	}
+    internal bool IsResizing
+    {
+        get => GetValue(IsResizingProperty);
+        private set => SetValue(IsResizingProperty, value);
+    }
 
-	internal DataBoxColumn? Column { get; set; }
+   public string SortNumber
+   {
+      get => GetValue(SortNumberProperty);
+      set => SetValue(SortNumberProperty, value);
+   }
+
+   internal bool ResizePreviousColumn { get; set; }
+   internal double ResizePositionX { get; set; }
+   internal DataBoxColumn? Column { get; set; }
 
     internal IReadOnlyList<DataBoxColumnHeader>? ColumnHeaders { get; set; }
 
@@ -75,10 +86,20 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-            
+
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
-            IsPressed = true;
+            if((e.Source is Panel p && p.Name == "PanelResize") || (e.Source is Rectangle r && r.Name == "VerticalSeparator")) {
+               IsResizing = true;
+               ResizePreviousColumn = false;
+               ResizePositionX = e.GetCurrentPoint(DataBox).Position.X;
+            } else if((e.Source is Panel pRight && pRight.Name == "PanelResizeRight") || (e.Source is Rectangle rRight && rRight.Name == "VerticalSeparatorRight")) {
+               IsResizing = true;
+               ResizePreviousColumn = true;
+               ResizePositionX = e.GetCurrentPoint(DataBox).Position.X;
+            }else {
+               IsPressed = true;
+            }
             e.Handled = true;
         }
     }
@@ -87,7 +108,12 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
     {
         base.OnPointerReleased(e);
 
-        if (IsPressed && e.InitialPressMouseButton == MouseButton.Left)
+        if (IsResizing && e.InitialPressMouseButton == MouseButton.Left)
+        {
+            IsResizing = false;
+            e.Handled = true;
+        }
+        else if (IsPressed && e.InitialPressMouseButton == MouseButton.Left)
         {
             IsPressed = false;
             e.Handled = true;
@@ -96,6 +122,28 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
             {
                 OnClick(e.KeyModifiers);
             }
+        }
+    }
+
+    protected override void OnPointerMoved(PointerEventArgs e)
+    {
+        base.OnPointerMoved(e);
+        if(IsResizing && Column != null && DataBox != null) {
+            double x = e.GetCurrentPoint(DataBox).Position.X;
+            DataBoxColumn column;
+
+            int index = DataBox.Columns.IndexOf(Column);
+            if(ResizePreviousColumn) {
+                index--;
+            }
+            column = DataBox.Columns[index];
+
+            DataBox.ColumnWidths[index] += (int)(x - ResizePositionX);
+            DataBox.ColumnWidths[index] = Math.Min(column.MaxWidth, Math.Max(column.MinWidth, DataBox.ColumnWidths[index]));
+
+            ResizePositionX = x;
+            DataBox.InvalidateMeasure();
+            DataBox.InvalidateVisual();
         }
     }
 
@@ -114,35 +162,35 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
         }
     }
 
-	private void OnClick(KeyModifiers keyModifiers)
-	{
-		if(DataBox is null || DataBox.SortMode == SortMode.None || DataBox.SortCommand is null) {
-			return;
-		}
+   private void OnClick(KeyModifiers keyModifiers)
+   {
+      if(DataBox is null || DataBox.SortMode == SortMode.None || DataBox.SortCommand is null) {
+         return;
+      }
 
-		if(Column is null || ColumnHeaders is null || !Column.CanUserSort || string.IsNullOrEmpty(Column.ColumnName)) {
-			return;
-		}
+      if(Column is null || ColumnHeaders is null || !Column.CanUserSort || string.IsNullOrEmpty(Column.ColumnName)) {
+         return;
+      }
 
-		var ctrl = (keyModifiers & KeyModifiers.Control) == KeyModifiers.Control;
-		var shift = (keyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift;
+      var ctrl = (keyModifiers & KeyModifiers.Control) == KeyModifiers.Control;
+      var shift = (keyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift;
 
-		SortState sortState = DataBox.SortState;
+      SortState sortState = DataBox.SortState;
 
-		if(ctrl) {
-			sortState.Remove(Column.ColumnName);
-		} else if(shift && DataBox.SortMode == SortMode.Multiple) {
-			sortState.ToggleSortOrder(Column.ColumnName, false);
-		} else {
-			sortState.ToggleSortOrder(Column.ColumnName, true);
-		}
+      if(ctrl) {
+         sortState.Remove(Column.ColumnName);
+      } else if(shift && DataBox.SortMode == SortMode.Multiple) {
+         sortState.ToggleSortOrder(Column.ColumnName, false);
+      } else {
+         sortState.ToggleSortOrder(Column.ColumnName, true);
+      }
 
-		sortState.UpdateColumnHeaders(ColumnHeaders);
+      sortState.UpdateColumnHeaders(ColumnHeaders);
 
-		if(DataBox.SortCommand.CanExecute(null)) {
-			DataBox.SortCommand.Execute(null);
-		}
-	}
+      if(DataBox.SortCommand.CanExecute(null)) {
+         DataBox.SortCommand.Execute(null);
+      }
+   }
 
     private void UpdatePseudoClassesIsPressed(bool isPressed)
     {

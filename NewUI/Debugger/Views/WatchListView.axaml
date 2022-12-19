@@ -56,23 +56,24 @@
 			Selection="{CompiledBinding Selection}"
 			SelectionMode="Multiple"
 			GridLinesVisibility="All"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTemplateColumn Header="{l:Translate colName}" Width="1*" CanUserResize="True">
+				<DataBoxTemplateColumn Header="{l:Translate colName}" CanUserResize="True" InitialWidth="200">
 					<DataTemplate>
 						<v:WatchListTextBox
 							Classes="PreventShortcuts"
-						  Name="WatchTextBox"
-						  ContextFlyout="{x:Null}"
+							Name="WatchTextBox"
+							ContextFlyout="{x:Null}"
 							ContextRequested="OnEntryContextRequested"
-						  Text="{Binding Expression}"
-						  LostFocus="OnEntryLostFocus"
-						  KeyDown="OnEntryKeyDown"
-						  Watermark="Click to add..."
+							Text="{Binding Expression}"
+							LostFocus="OnEntryLostFocus"
+							KeyDown="OnEntryKeyDown"
+							Watermark="Click to add..."
 						/>
 					</DataTemplate>
 				</DataBoxTemplateColumn>
-				<DataBoxTemplateColumn Header="{l:Translate colValue}" Width="1*" CanUserResize="True">
+				<DataBoxTemplateColumn Header="{l:Translate colValue}" CanUserResize="True" InitialWidth="100">
 					<DataTemplate>
 						<TextBlock
 							Padding="3 0 0 0"

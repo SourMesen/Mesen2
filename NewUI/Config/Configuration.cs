@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -108,7 +109,7 @@ namespace Mesen.Config
 		{
 			try {
 				string cfgData = JsonSerializer.Serialize(this, typeof(Configuration), JsonHelper.Options);
-				if(_fileData != cfgData) {
+				if(_fileData != cfgData && !Design.IsDesignMode) {
 					FileHelper.WriteAllText(configFile, cfgData);
 					_fileData = cfgData;
 				}

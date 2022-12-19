@@ -33,13 +33,14 @@
 			SelectionMode="Multiple"
 			SortMode="Multiple"
 			SortCommand="{Binding Sort}"
-			SortState="{CompiledBinding SortState}"		
+			SortState="{CompiledBinding SortState}"
 			CellDoubleClick="OnCellDoubleClick"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Function" Header="{l:Translate colFunction}" Binding="{Binding LabelName}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn ColumnName="Function" Header="{l:Translate colFunction}" Binding="{Binding LabelName}" CanUserResize="True" InitialWidth="100" />
+				<DataBoxTextColumn ColumnName="RelAddr" Header="{l:Translate colCpuAddr}" Binding="{Binding RelAddressDisplay}" CanUserResize="True" InitialWidth="80" />
+				<DataBoxTextColumn ColumnName="AbsAddr" Header="{l:Translate colRomAddr}" Binding="{Binding AbsAddressDisplay}" CanUserResize="True" InitialWidth="80" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

@@ -24,12 +24,13 @@
 			Items="{CompiledBinding Data}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" Width="2*" CanUserResize="True" />
-				<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" Width="1*" CanUserResize="True" />
-				<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" Width="1*" CanUserResize="True" />
+				<DataBoxTextColumn Header="{l:Translate colAddress}" Binding="{Binding Address}" CanUserResize="True" InitialWidth="92" />
+				<DataBoxTextColumn Header="{l:Translate colName}" Binding="{Binding Name}" CanUserResize="True" InitialWidth="173" />
+				<DataBoxTextColumn Header="{l:Translate colValue}" Binding="{Binding Value}" CanUserResize="True" InitialWidth="63" />
+				<DataBoxTextColumn Header="{l:Translate colValueHex}" Binding="{Binding ValueHex}" CanUserResize="True" InitialWidth="67" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>

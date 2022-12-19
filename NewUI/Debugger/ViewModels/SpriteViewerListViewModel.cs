@@ -21,6 +21,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public List<SpritePreviewModel>? SpritePreviews { get; set; } = null;
 		[Reactive] public SelectionModel<SpritePreviewModel?> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
+		public List<int> ColumnWidths => SpriteViewer.Config.ColumnWidths;
 
 		public ICommand SortCommand { get; }
 		public SpriteViewerViewModel SpriteViewer { get; }

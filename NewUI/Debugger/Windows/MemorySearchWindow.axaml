@@ -34,7 +34,7 @@
 		<DockPanel DockPanel.Dock="Right" Margin="3">
 			<c:ButtonWithIcon
 				Icon="Assets/Refresh.png"
-			  DockPanel.Dock="Bottom"
+				DockPanel.Dock="Bottom"
 				HorizontalAlignment="Right"
 				Text="{l:Translate btnResetCounters}"
 				Command="{Binding ResetCounters}"
@@ -169,22 +169,23 @@
 				SortMode="Multiple"
 				SortCommand="{Binding SortCommand}"
 				GridLinesVisibility="All"
+				ColumnWidths="{Binding ColumnWidths}"
 			>
 				<DataBox.Columns>
-					<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressString}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="Value" Header="{l:Translate colValue}" Binding="{Binding Value}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="PrevValue" Header="{l:Translate colPrevValue}" Binding="{Binding PrevValue}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="ReadCount" Header="{l:Translate colReadCount}" Binding="{Binding ReadCount}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastRead" Header="{l:Translate colLastRead}" Binding="{Binding LastRead}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="WriteCount" Header="{l:Translate colWriteCount}" Binding="{Binding WriteCount}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastWrite" Header="{l:Translate colLastWrite}" Binding="{Binding LastWrite}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="ExecCount" Header="{l:Translate colExecCount}" Binding="{Binding ExecCount}" Width="*" CanUserResize="True" />
-					<DataBoxTextColumn ColumnName="LastExec" Header="{l:Translate colLastExec}" Binding="{Binding LastExec}" Width="*" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding AddressString}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="Value" Header="{l:Translate colValue}" Binding="{Binding Value}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="PrevValue" Header="{l:Translate colPrevValue}" Binding="{Binding PrevValue}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ReadCount" Header="{l:Translate colReadCount}" Binding="{Binding ReadCount}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastRead" Header="{l:Translate colLastRead}" Binding="{Binding LastRead}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="WriteCount" Header="{l:Translate colWriteCount}" Binding="{Binding WriteCount}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastWrite" Header="{l:Translate colLastWrite}" Binding="{Binding LastWrite}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="ExecCount" Header="{l:Translate colExecCount}" Binding="{Binding ExecCount}" CanUserResize="True" />
+					<DataBoxTextColumn ColumnName="LastExec" Header="{l:Translate colLastExec}" Binding="{Binding LastExec}" CanUserResize="True" />
 					<DataBoxTemplateColumn
 						ColumnName="Match"
 						CanUserSort="False"
 						Header="{l:Translate colMatch}"
-						Width="*"
+						InitialWidth="22"
 					>
 						<DataTemplate>
 							<CheckBox IsChecked="{Binding IsMatch}" IsHitTestVisible="False" Classes.isNotMatch="{Binding !IsMatch}" />

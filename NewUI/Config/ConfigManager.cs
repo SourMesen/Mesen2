@@ -10,6 +10,7 @@ using System.Reflection;
 using Mesen.Interop;
 using System.Diagnostics;
 using Mesen.Utilities;
+using Avalonia.Controls;
 
 namespace Mesen.Config
 {
@@ -60,7 +61,7 @@ namespace Mesen.Config
 			if(_config == null) {
 				lock(_initLock) {
 					if(_config == null) {
-						if(File.Exists(ConfigFile)) {
+						if(File.Exists(ConfigFile) && !Design.IsDesignMode) {
 							_config = Configuration.Deserialize(ConfigFile);
 						} else {
 							//Create new config file and save it to disk

@@ -26,6 +26,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public MesenList<LabelViewModel> Labels { get; private set; } = new();
 		[Reactive] public SelectionModel<LabelViewModel?> Selection { get; set; } = new() { SingleSelect = false };
 		[Reactive] public SortState SortState { get; set; } = new();
+		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Debugger.LabelListColumnWidths;
 
 		public CpuType CpuType { get; }
 		public DebuggerWindowViewModel Debugger { get; }

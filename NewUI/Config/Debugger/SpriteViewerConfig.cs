@@ -1,4 +1,5 @@
 ﻿using ReactiveUI.Fody.Helpers;
+using System.Collections.Generic;
 
 namespace Mesen.Config
 {
@@ -14,6 +15,7 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowListView { get; set; } = false;
 		[Reactive] public double ListViewHeight { get; set; } = 100;
+		[Reactive] public List<int> ColumnWidths { get; set; } = new();
 
 		[Reactive] public double ImageScale { get; set; } = 2;
 		[Reactive] public RefreshTimingConfig RefreshTiming { get; set; } = new();

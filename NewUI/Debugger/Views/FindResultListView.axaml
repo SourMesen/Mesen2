@@ -27,10 +27,11 @@
 			SortCommand="{Binding Sort}"
 			SortState="{CompiledBinding SortState}"
 			GridLinesVisibility="All"
+			ColumnWidths="{CompiledBinding ColumnWidths}"
 		>
 			<DataBox.Columns>
-				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding Address}" Width="1*" />
-				<DataBoxTextColumn ColumnName="Result" Header="{l:Translate colResult}" Binding="{Binding Text}" Width="2*" />
+				<DataBoxTextColumn ColumnName="Address" Header="{l:Translate colAddress}" Binding="{Binding Address}" InitialWidth="100" />
+				<DataBoxTextColumn ColumnName="Result" Header="{l:Translate colResult}" Binding="{Binding Text}" InitialWidth="300" />
 			</DataBox.Columns>
 		</DataBox>
 	</Border>
