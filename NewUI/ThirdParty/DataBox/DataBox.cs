@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using Avalonia;
@@ -16,6 +17,7 @@ using Avalonia.Media;
 using Avalonia.Metadata;
 using DataBoxControl.Controls;
 using DataBoxControl.Primitives;
+using ReactiveUI;
 
 namespace DataBoxControl;
 
@@ -181,6 +183,8 @@ public class DataBox : TemplatedControl
         _columns = new AvaloniaList<DataBoxColumn>();
         SortState = new();
         ColumnWidths = new();
+
+        this.AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -281,6 +285,101 @@ public class DataBox : TemplatedControl
 			}
 		}
 		_isDoubleTap = false;
+	}
+
+	protected override void OnPointerPressed(PointerPressedEventArgs e)
+	{
+		base.OnPointerPressed(e);
+		_searchString = "";
+		_resetTimer.Restart();
+	}
+
+	private Stopwatch _resetTimer = Stopwatch.StartNew();
+	private string _searchString = "";
+	private string _searchStringHex = "";
+
+	protected override void OnTextInput(TextInputEventArgs e)
+	{
+		base.OnTextInput(e);
+
+		if(e.Text == null) {
+			return;
+		}
+
+		ProcessKeyPress(e.Text);
+	}
+
+	private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
+	{
+		if(e.Key == Key.Space) {
+			ProcessKeyPress(" ");
+			e.Handled = true;
+		}
+	}
+
+	private void ProcessKeyPress(string keyText)
+	{
+		if(Items == null || _rowsPresenter == null) {
+			return;
+		}
+
+		if(_resetTimer.ElapsedMilliseconds > 1000) {
+			_searchString = "";
+		}
+
+		_searchString += keyText;
+		_searchStringHex = "$" + _searchString; //allow searching for hex values without typing leading $ sign
+		_resetTimer.Restart();
+
+		foreach(var sort in SortState.SortOrder) {
+			DataBoxColumn column = _columns.First(c => sort.Item1 == c.ColumnName);
+			if(SearchColumn(column)) {
+				return;
+			}
+		}
+
+		for(int i = 0; i < _columns.Count; i++) {
+			if(SearchColumn(_columns[i])) {
+				return;
+			}
+		}
+	}
+
+	private bool SearchColumn(DataBoxColumn column)
+	{
+		if(Items == null || _rowsPresenter == null) {
+			return false;
+		}
+
+		if(column is DataBoxTextColumn textColumn && textColumn.Binding is Binding columnBinding) {
+			Binding binding = new Binding(columnBinding.Path, BindingMode.OneTime);
+			foreach(object item in Items) {
+				binding.Source = item;
+				ValueGetter getter = new ValueGetter();
+				getter.Bind(ValueGetter.ValueProperty, binding);
+
+				string value = getter.Value;
+				if(value.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase) || value.StartsWith(_searchStringHex, StringComparison.OrdinalIgnoreCase)) {
+					_rowsPresenter.SelectedItem = item;
+					_rowsPresenter.ScrollIntoView(item);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+}
+
+public class ValueGetter : AvaloniaObject
+{
+	public static readonly StyledProperty<string> ValueProperty =
+	 AvaloniaProperty.Register<ValueGetter, string>(nameof(Value));
+
+	public string Value
+	{
+		get => GetValue(ValueProperty);
+		set => SetValue(ValueProperty, value);
 	}
 }
 

@@ -101,41 +101,13 @@
 					</DataBox.Styles>
 
 					<DataBox.Columns>
-						<DataBoxTemplateColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding ProgramCounter}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Scanline}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Cycle}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Type}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Address}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Value}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn Header="{l:Translate colDetails}" CanUserSort="False" InitialWidth="416">
-							<DataTemplate>
-								<TextBlock VerticalAlignment="Center" Text="{Binding Details}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
+						<DataBoxTextColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62" Binding="{Binding ProgramCounter}" />
+						<DataBoxTextColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88" Binding="{Binding Scanline}" />
+						<DataBoxTextColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77" Binding="{Binding Cycle}" />
+						<DataBoxTextColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77" Binding="{Binding Type}" />
+						<DataBoxTextColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68" Binding="{Binding Address}" />
+						<DataBoxTextColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50" Binding="{Binding Value}" />
+						<DataBoxTextColumn Header="{l:Translate colDetails}" CanUserSort="False" InitialWidth="416" Binding="{Binding Details}" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>

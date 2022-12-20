@@ -164,11 +164,7 @@
 					</DataBox.Styles>
 						
 					<DataBox.Columns>
-						<DataBoxTemplateColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" InitialWidth="50">
-							<DataTemplate>
-								<TextBlock Text="{Binding SpriteIndex}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
+						<DataBoxTextColumn ColumnName="SpriteIndex" Header="{l:Translate colSpriteIndex}" InitialWidth="50" Binding="{Binding SpriteIndex}" />
 						<DataBoxTemplateColumn ColumnName="X" Header="{l:Translate colX}" InitialWidth="82">
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal">
@@ -208,21 +204,9 @@
 								</StackPanel>
 							</DataTemplate>
 						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67">
-							<DataTemplate>
-								<TextBlock Text="{Binding Palette}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83">
-							<DataTemplate>
-								<TextBlock Text="{Binding Priority, Converter={StaticResource Enum}}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
-						<DataBoxTemplateColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68">
-							<DataTemplate>
-								<TextBlock Text="{Binding Flags}" />
-							</DataTemplate>
-						</DataBoxTemplateColumn>
+						<DataBoxTextColumn ColumnName="Palette" Header="{l:Translate colPalette}" InitialWidth="67" Binding="{Binding Palette}" />
+						<DataBoxTextColumn ColumnName="Priority" Header="{l:Translate colPriority}" InitialWidth="83" Binding="{Binding Priority, Converter={StaticResource Enum}}" />
+						<DataBoxTextColumn ColumnName="Flags" Header="{l:Translate colFlags}" InitialWidth="68" Binding="{Binding Flags}" />
 					</DataBox.Columns>
 				</DataBox>
 			</Border>
