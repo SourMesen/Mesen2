@@ -136,14 +136,16 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
             if(ResizePreviousColumn) {
                 index--;
             }
-            column = DataBox.Columns[index];
+            if(index >= 0) {
+                column = DataBox.Columns[index];
 
-            DataBox.ColumnWidths[index] += (int)(x - ResizePositionX);
-            DataBox.ColumnWidths[index] = Math.Min(column.MaxWidth, Math.Max(column.MinWidth, DataBox.ColumnWidths[index]));
+                DataBox.ColumnWidths[index] += (int)(x - ResizePositionX);
+                DataBox.ColumnWidths[index] = Math.Min(column.MaxWidth, Math.Max(column.MinWidth, DataBox.ColumnWidths[index]));
 
-            ResizePositionX = x;
-            DataBox.InvalidateMeasure();
-            DataBox.InvalidateVisual();
+                ResizePositionX = x;
+                DataBox.InvalidateMeasure();
+                DataBox.InvalidateVisual();
+            }
         }
     }
 

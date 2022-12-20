@@ -146,6 +146,14 @@
 	<Style Selector="DataBoxColumnHeader:nth-last-child(1) Panel#PanelResize Rectangle">
 		<Setter Property="IsVisible" Value="True" />
 	</Style>
+
+	<Style Selector="DataBoxColumnHeader Panel#PanelResizeRight">
+		<Setter Property="Cursor" Value="SizeWestEast" />
+	</Style>
+
+	<Style Selector="DataBoxColumnHeader:nth-child(1) Panel#PanelResizeRight">
+		<Setter Property="Cursor" Value="Arrow" />
+	</Style>
 	
   <Style Selector="DataBoxColumnHeader">
     <Setter Property="Foreground" Value="{DynamicResource DataGridColumnHeaderForegroundBrush}" />
@@ -169,13 +177,12 @@
                 Fill="{TemplateBinding SeparatorBrush}"
             />
           </Panel>
-          <Panel Name="PanelResizeRight" DockPanel.Dock="Left" Cursor="SizeWestEast" Width="4" Margin="0" VerticalAlignment="Stretch" Background="Transparent">
+          <Panel Name="PanelResizeRight" DockPanel.Dock="Left" Width="4" Margin="0" VerticalAlignment="Stretch" Background="Transparent">
             <Rectangle Name="VerticalSeparatorRight"
                 Width="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Stretch"
                 Fill="{TemplateBinding SeparatorBrush}"
-                IsVisible="{TemplateBinding AreSeparatorsVisible}"
             />
           </Panel>
           <Path Name="SortIcon"
