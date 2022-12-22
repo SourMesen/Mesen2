@@ -24,6 +24,7 @@ namespace Mesen.Debugger.Utilities
 		private ContextMenu? _marginContextMenu;
 		
 		public CodeSegmentInfo? MouseOverSegment { get; private set; }
+		public bool IsMarginClick => _marginClicked;
 
 		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, Func<int, int, int> getRowAddress, ContextMenu? mainContextMenu = null, ContextMenu? marginContextMenu = null)
 		{
