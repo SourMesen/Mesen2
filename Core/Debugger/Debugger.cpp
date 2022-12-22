@@ -559,7 +559,7 @@ void Debugger::PauseOnNextFrame()
 	switch(_mainCpuType) {
 		case CpuType::Snes: Step(CpuType::Snes, 240, StepType::SpecificScanline, BreakSource::PpuStep); break;
 		case CpuType::Gameboy: Step(CpuType::Gameboy, 144, StepType::SpecificScanline, BreakSource::PpuStep); break;
-		case CpuType::Nes: Step(CpuType::Nes, 240, StepType::SpecificScanline, BreakSource::PpuStep); break;
+		case CpuType::Nes: Step(CpuType::Nes, 241, StepType::SpecificScanline, BreakSource::PpuStep); break;
 		case CpuType::Pce: Step(CpuType::Pce, 243, StepType::SpecificScanline, BreakSource::PpuStep); break;
 	}
 }
