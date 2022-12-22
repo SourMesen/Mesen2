@@ -243,7 +243,7 @@ namespace Mesen.Debugger.Views
 		{
 			Breakpoint? GetBreakpoint()
 			{
-				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, CpuType) : null;
+				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, CpuType, true) : null;
 			}
 
 			_bpMarginContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {

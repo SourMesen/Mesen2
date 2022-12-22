@@ -107,9 +107,9 @@ namespace Mesen.Debugger
 			}
 		}
 
-		public static Breakpoint? GetMatchingBreakpoint(AddressInfo info, CpuType cpuType)
+		public static Breakpoint? GetMatchingBreakpoint(AddressInfo info, CpuType cpuType, bool ignoreRangedRwBp = false)
 		{
-			Breakpoint? bp = Breakpoints.Where((bp) => bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
+			Breakpoint? bp = Breakpoints.Where((bp) => (!ignoreRangedRwBp || bp.IsSingleAddress || bp.BreakOnExec) && bp.Matches((UInt32)info.Address, info.Type, cpuType)).FirstOrDefault();
 
 			if(bp == null) {
 				AddressInfo altAddr;
@@ -120,7 +120,7 @@ namespace Mesen.Debugger
 				}
 
 				if(altAddr.Address >= 0) {
-					bp = Breakpoints.Where((bp) => bp.Matches((UInt32)altAddr.Address, altAddr.Type, cpuType)).FirstOrDefault();
+					bp = Breakpoints.Where((bp) => (!ignoreRangedRwBp || bp.IsSingleAddress || bp.BreakOnExec) && bp.Matches((UInt32)altAddr.Address, altAddr.Type, cpuType)).FirstOrDefault();
 				}
 			}
 
@@ -153,7 +153,7 @@ namespace Mesen.Debugger
 				return;
 			}
 
-			Breakpoint? breakpoint = BreakpointManager.GetMatchingBreakpoint(info, cpuType);
+			Breakpoint? breakpoint = BreakpointManager.GetMatchingBreakpoint(info, cpuType, forceExecBreakpoint);
 			if(breakpoint != null) {
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
