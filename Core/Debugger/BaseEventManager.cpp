@@ -6,7 +6,7 @@ void BaseEventManager::FilterEvents()
 	auto lock = _lock.AcquireSafe();
 	_sentEvents.clear();
 
-	if(ShowPreviousFrameEvents() && (_snapshotScanline != 0 || _snapshotCycle != 0)) {
+	if(ShowPreviousFrameEvents() && !_forAutoRefresh) {
 		int offset = GetScanlineOffset();
 		uint32_t key = (_snapshotScanline << 16) + _snapshotCycle;
 		for(DebugEventInfo& evt : _snapshotPrevFrame) {
@@ -123,7 +123,7 @@ void BaseEventManager::DrawEvent(DebugEventInfo& evt, bool drawBackground, uint3
 
 void BaseEventManager::DrawEvents(uint32_t* buffer, FrameInfo size)
 {
-	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
+	if(!_forAutoRefresh) {
 		DrawLine(buffer, size, 0xFFFFFF55, _snapshotScanline);
 	}
 
@@ -136,7 +136,7 @@ void BaseEventManager::DrawEvents(uint32_t* buffer, FrameInfo size)
 	}
 	
 	//Draw dot over current pixel
-	if(_snapshotScanline != 0 || _snapshotCycle != 0) {
+	if(!_forAutoRefresh) {
 		int32_t y = _snapshotScanline + _snapshotScanlineOffset;
 		int32_t x = _snapshotCycle;
 		ConvertScanlineCycleToRowColumn(x, y);

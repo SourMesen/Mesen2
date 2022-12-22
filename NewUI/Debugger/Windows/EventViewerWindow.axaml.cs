@@ -158,7 +158,7 @@ namespace Mesen.Debugger.Windows
 					CpuType cpuType = (CpuType)e.Parameter;
 					int fps = _model.SelectedTab == EventViewerViewModel.EventViewerTab.PpuView ? 80 : 15;
 					if(_model.CpuType == cpuType && _model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, fps)) {
-						_model.RefreshData();
+						_model.RefreshData(true);
 					}
 					break;
 

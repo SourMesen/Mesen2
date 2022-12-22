@@ -191,7 +191,7 @@ void NesEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 	x = x * 2;
 }
 
-uint32_t NesEventManager::TakeEventSnapshot()
+uint32_t NesEventManager::TakeEventSnapshot(bool forAutoRefresh)
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -211,6 +211,7 @@ uint32_t NesEventManager::TakeEventSnapshot()
 	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
+	_forAutoRefresh = forAutoRefresh;
 	_scanlineCount = _ppu->GetScanlineCount();
 	return _scanlineCount;
 }

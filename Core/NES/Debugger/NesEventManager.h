@@ -80,7 +80,7 @@ public:
 
 	EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt) override;
 
-	uint32_t TakeEventSnapshot() override;
+	uint32_t TakeEventSnapshot(bool forAutoRefresh) override;
 
 	FrameInfo GetDisplayBufferSize() override;
 

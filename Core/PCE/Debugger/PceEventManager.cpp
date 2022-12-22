@@ -172,7 +172,7 @@ void PceEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 	y *= 2;
 }
 
-uint32_t PceEventManager::TakeEventSnapshot()
+uint32_t PceEventManager::TakeEventSnapshot(bool forAutoRefresh)
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -198,6 +198,7 @@ uint32_t PceEventManager::TakeEventSnapshot()
 	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
+	_forAutoRefresh = forAutoRefresh;
 	_scanlineCount = _vce->GetScanlineCount();
 	return _scanlineCount;
 }

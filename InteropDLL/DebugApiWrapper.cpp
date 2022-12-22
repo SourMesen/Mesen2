@@ -178,7 +178,7 @@ extern "C"
 	DllExport FrameInfo __stdcall GetEventViewerDisplaySize(CpuType cpuType) { return WithTool(FrameInfo, GetEventManager(cpuType), GetDisplayBufferSize()); }
 	DllExport void __stdcall GetEventViewerOutput(CpuType cpuType, uint32_t* buffer, uint32_t bufferSize) { WithToolVoid(GetEventManager(cpuType), GetDisplayBuffer(buffer, bufferSize)); }
 	DllExport DebugEventInfo __stdcall GetEventViewerEvent(CpuType cpuType, uint16_t scanline, uint16_t cycle) { return WithTool(DebugEventInfo, GetEventManager(cpuType), GetEvent(scanline, cycle)); }
-	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType) { return WithTool(uint32_t, GetEventManager(cpuType), TakeEventSnapshot()); }
+	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType, bool forAutoRefresh) { return WithTool(uint32_t, GetEventManager(cpuType), TakeEventSnapshot(forAutoRefresh)); }
 
 	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return WithTool(int32_t, GetScriptManager(), LoadScript(name, content, scriptId)); }
 	DllExport void __stdcall RemoveScript(int32_t scriptId) { WithToolVoid(GetScriptManager(), RemoveScript(scriptId)); }

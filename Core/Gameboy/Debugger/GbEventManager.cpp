@@ -121,7 +121,7 @@ void GbEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 	x *= 2;
 }
 
-uint32_t GbEventManager::TakeEventSnapshot()
+uint32_t GbEventManager::TakeEventSnapshot(bool forAutoRefresh)
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -142,6 +142,7 @@ uint32_t GbEventManager::TakeEventSnapshot()
 	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
+	_forAutoRefresh = forAutoRefresh;
 	_scanlineCount = GbEventManager::ScreenHeight;
 	return _scanlineCount;
 }

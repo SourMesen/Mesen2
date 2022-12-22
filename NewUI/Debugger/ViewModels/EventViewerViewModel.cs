@@ -164,9 +164,9 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public void RefreshData()
+		public void RefreshData(bool forAutoRefresh = false)
 		{
-			DebugApi.TakeEventSnapshot(CpuType);
+			DebugApi.TakeEventSnapshot(CpuType, forAutoRefresh);
 			RefreshTab();
 		}
 

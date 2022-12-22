@@ -155,7 +155,7 @@ void SnesEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 	x /= 2;
 }
 
-uint32_t SnesEventManager::TakeEventSnapshot()
+uint32_t SnesEventManager::TakeEventSnapshot(bool forAutoRefresh)
 {
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
@@ -180,6 +180,7 @@ uint32_t SnesEventManager::TakeEventSnapshot()
 	_snapshotPrevFrame = _prevDebugEvents;
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
+	_forAutoRefresh = forAutoRefresh;
 	_scanlineCount = _ppu->GetVblankEndScanline() + 1;
 	return _scanlineCount;
 }

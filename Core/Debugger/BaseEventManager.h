@@ -50,6 +50,7 @@ protected:
 	int16_t _snapshotScanline = -1;
 	int16_t _snapshotScanlineOffset = 0;
 	uint16_t _snapshotCycle = 0;
+	bool _forAutoRefresh = false;
 	SimpleLock _lock;
 
 	virtual bool ShowPreviousFrameEvents() = 0;
@@ -79,7 +80,7 @@ public:
 
 	virtual EventViewerCategoryCfg GetEventConfig(DebugEventInfo& evt) = 0;
 
-	virtual uint32_t TakeEventSnapshot() = 0;
+	virtual uint32_t TakeEventSnapshot(bool forAutoRefresh) = 0;
 	virtual FrameInfo GetDisplayBufferSize() = 0;
 	virtual DebugEventInfo GetEvent(uint16_t scanline, uint16_t cycle) = 0;
 	
