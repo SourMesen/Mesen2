@@ -62,7 +62,7 @@ namespace Mesen.Debugger.Controls
 
 				foreach(Breakpoint bp in BreakpointManager.GetBreakpoints(disModel.CpuType)) {
 					int address = bp.GetRelativeAddress();
-					if(address >= 0) {
+					if(address >= 0 && (bp.IsSingleAddress || bp.BreakOnExec)) {
 						int position = (int)(((double)address / maxAddress) * height) - 2;
 						if(bp.Enabled) {
 							SolidColorBrush brush = new(bp.GetColor());

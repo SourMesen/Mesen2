@@ -33,6 +33,9 @@ namespace Mesen.Debugger
 
 		public bool IsAbsoluteAddress { get { return !MemoryType.IsRelativeMemory(); } }
 		public bool IsCpuBreakpoint { get { return !MemoryType.IsPpuMemory(); } }
+		
+		public bool IsSingleAddress { get { return StartAddress == EndAddress; } }
+		public bool IsAddressRange { get { return StartAddress != EndAddress; } }
 
 		public BreakpointTypeFlags Type
 		{
