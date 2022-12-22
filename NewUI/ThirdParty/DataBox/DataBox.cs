@@ -274,7 +274,12 @@ public class DataBox : TemplatedControl
 	bool _isDoubleTap = false;
 	internal void OnCellDoubleTapped(object? sender, RoutedEventArgs e)
 	{
-		_isDoubleTap = true;
+		if(sender is DataBoxCell cell && cell.Column is DataBoxCheckBoxColumn) {
+			//Process double clicks on checkboxes as single clicks
+			CellClick?.Invoke(cell);
+		} else {
+			_isDoubleTap = true;
+		}
 	}
 
 	internal void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)
