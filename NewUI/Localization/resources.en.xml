@@ -994,6 +994,8 @@
 
 			<Control ID="chkUseLabels">Use labels</Control>
 			<Control ID="chkIndentCode">Indent based on stack pointer</Control>
+			
+			<Control ID="lblConditionError">Condition contains invalid syntax or symbols.</Control>
 
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuDebug">_Debug</Control>

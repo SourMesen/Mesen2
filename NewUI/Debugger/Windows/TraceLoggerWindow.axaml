@@ -117,9 +117,28 @@
 								<TextBox Grid.Column="1" Text="{Binding Format}" IsReadOnly="True" IsVisible="{Binding !Options.UseCustomFormat}" Classes="readonlyFormat" />
 								<TextBox Grid.Column="1" Text="{Binding Options.Format}" IsVisible="{Binding Options.UseCustomFormat}" MaxLength="1000" />
 								<Image Grid.Row="0" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding FormatTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="0" />
+								
 								<TextBlock VerticalAlignment="Center" Grid.Row="1" Text="{l:Translate lblCondition}" />
-								<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Options.Condition}" MaxLength="1000" />
-								<Image Grid.Row="1" Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{Binding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="0" />
+								<DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+									<Image
+										DockPanel.Dock="Right"
+										Stretch="None"
+										Source="/Assets/Help.png"
+										ToolTip.Tip="{Binding HelpTooltip}"
+										ToolTip.Placement="Right"
+										ToolTip.ShowDelay="0"
+									/>
+									<Image
+										IsVisible="{Binding !IsConditionValid}"
+										DockPanel.Dock="Right"
+										Stretch="None"
+										Source="/Assets/Error.png"
+										ToolTip.Tip="{l:Translate lblConditionError}"
+										ToolTip.Placement="Right"
+										ToolTip.ShowDelay="0"
+									/>
+									<TextBox Text="{Binding Options.Condition}" MaxLength="1000" />
+								</DockPanel>
 							</Grid>
 						</StackPanel>
 					</c:GroupBox>

@@ -452,6 +452,7 @@ namespace Mesen.Debugger.ViewModels
 		public TraceLoggerCpuConfig Options { get; }
 
 		[Reactive] public string Format { get; set; } = "";
+		[Reactive] public bool IsConditionValid { get; set; } = true;
 
 		private TraceLoggerViewModel _traceLogger;
 
@@ -483,6 +484,13 @@ namespace Mesen.Debugger.ViewModels
 			if(Options.Enabled) {
 				//Auto-select current tab when enabled
 				_traceLogger.SelectedTab = this;
+			}
+
+			if(!string.IsNullOrWhiteSpace(Options.Condition)) {
+				DebugApi.EvaluateExpression(Options.Condition, CpuType, out EvalResultType result, false);
+				IsConditionValid = result == EvalResultType.Numeric || result == EvalResultType.Boolean;
+			} else {
+				IsConditionValid = true;
 			}
 
 			_traceLogger.UpdateOptions();
