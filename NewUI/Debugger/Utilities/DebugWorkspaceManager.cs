@@ -88,7 +88,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.DbgFileExt) {
 				ResetLabels();
-				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, true, showResult);
+				SymbolProvider = DbgImporter.Import(_romInfo.Format, path, ConfigManager.Config.Debug.Integration.ImportComments, showResult);
 			}
 		}
 

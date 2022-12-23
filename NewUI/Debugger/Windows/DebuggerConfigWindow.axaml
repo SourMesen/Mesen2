@@ -221,6 +221,33 @@
 							/>
 						</StackPanel>
 					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblImportFilters}">
+						<TextBlock Text="{l:Translate lblImportFiltersHint}" TextWrapping="Wrap" Margin="0 5 0 0" />
+						<StackPanel Margin="10 5 0 0">
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.ImportPrgRomLabels}"
+								Content="{l:Translate chkImportPrgRomLabels}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.ImportWorkRamLabels}"
+								Content="{l:Translate chkImportWorkRamLabels}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.ImportSaveRamLabels}"
+								Content="{l:Translate chkImportSaveRamLabels}"
+							/>
+							<CheckBox
+								IsChecked="{CompiledBinding Integration.ImportOtherLabels}"
+								Content="{l:Translate chkImportOtherLabels}"
+							/>
+						</StackPanel>
+						<CheckBox
+							IsChecked="{CompiledBinding Integration.ImportComments}"
+							Content="{l:Translate chkImportComments}"
+							Margin="0 5 0 0"
+						/>
+					</c:OptionSection>
+
 				</StackPanel>
 			</TabItem>
 

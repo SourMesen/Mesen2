@@ -1276,6 +1276,14 @@
 			<Control ID="chkAutoLoadMlbFiles">.MLB files (Mesen label file)</Control>
 			<Control ID="chkAutoLoadFnsFiles">.FNS files (NESASM)</Control>
 			<Control ID="chkAutoLoadCdlFiles">.CDL files (Code/data log)</Control>
+
+			<Control ID="lblImportFilters">Import filters</Control>
+			<Control ID="lblImportFiltersHint">Import the following types of labels:</Control>
+			<Control ID="chkImportPrgRomLabels">ROM labels</Control>
+			<Control ID="chkImportSaveRamLabels">Save RAM labels</Control>
+			<Control ID="chkImportWorkRamLabels">Work RAM labels</Control>
+			<Control ID="chkImportOtherLabels">Other labels</Control>
+			<Control ID="chkImportComments">Import comments (restricted to the label types selected above)</Control>
 			
 			<Control ID="tabShortcuts">Shortcuts</Control>
 			<Control ID="tabShared">Shared</Control>

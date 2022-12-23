@@ -20,6 +20,8 @@ namespace Mesen.Debugger.ViewModels
 		public ScriptWindowConfig Script { get; set; }
 		public IntegrationConfig Integration { get; set; }
 
+		public List<object> CpuTypeList { get; set; } = new();
+
 		[Reactive] public DebugConfigWindowTab SelectedIndex { get; set; }
 
 		public List<DebuggerShortcutInfo> SharedShortcuts { get; set; } = new();

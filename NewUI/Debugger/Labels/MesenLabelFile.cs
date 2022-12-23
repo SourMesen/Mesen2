@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Labels;
+﻿using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Utilities;
 using Mesen.Windows;
 using System;
@@ -23,7 +24,11 @@ namespace Mesen.Debugger.Labels
 				if(label == null) {
 					errorCount++;
 				} else {
-					labels.Add(label);
+					if(ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(label.MemoryType)) {
+						if(label.Label.Length > 0 || ConfigManager.Config.Debug.Integration.ImportComments) {
+							labels.Add(label);
+						}
+					}
 				}
 			}
 

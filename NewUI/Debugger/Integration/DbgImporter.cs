@@ -973,7 +973,7 @@ namespace Mesen.Debugger.Integration
 			
 			List<CodeLabel> labelsToImport = new List<CodeLabel>();
 			foreach(MemoryType memType in _memTypesToImport) {
-				if(_labelsByType.TryGetValue(memType, out var labels)) {
+				if(_labelsByType.TryGetValue(memType, out var labels) && ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(memType)) {
 					labelsToImport.AddRange(labels.Values);
 				}
 			}

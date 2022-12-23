@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Labels;
+﻿using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.Windows;
@@ -139,14 +140,16 @@ public class WlaDxImporter : ISymbolProvider
 								j++;
 							}
 
-							labels[label] = new CodeLabel() {
-								Label = label,
-								Address = (UInt32)absAddr.Address,
-								MemoryType = absAddr.Type,
-								Comment = "",
-								Flags = CodeLabelFlags.None,
-								Length = 1
-							};
+							if(ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(absAddr.Type)) {
+								labels[label] = new CodeLabel() {
+									Label = label,
+									Address = (UInt32)absAddr.Address,
+									MemoryType = absAddr.Type,
+									Comment = "",
+									Flags = CodeLabelFlags.None,
+									Length = 1
+								};
+							}
 						}
 					} else {
 						break;

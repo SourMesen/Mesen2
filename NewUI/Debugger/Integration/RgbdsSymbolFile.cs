@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Labels;
+﻿using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.Windows;
@@ -114,7 +115,9 @@ public class RgbdsSymbolFile
 				label.MemoryType = absAddress.Type;
 				label.Comment = "";
 				label.Label = labelName;
-				labels.Add(label);
+				if(ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(label.MemoryType)) {
+					labels.Add(label);
+				}
 			} else {
 				errorCount++;
 			}

@@ -1,4 +1,5 @@
-﻿using Mesen.Debugger.Labels;
+﻿using Mesen.Config;
+using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Mesen.Windows;
@@ -46,7 +47,9 @@ public class NesasmFnsImporter
 					codeLabel.MemoryType = hasLargePrg ? MemoryType.NesMemory : MemoryType.NesPrgRom;
 					codeLabel.Label = "";
 					codeLabel.Comment = "";
-					labels[address] = codeLabel;
+					if(ConfigManager.Config.Debug.Integration.IsMemoryTypeImportEnabled(codeLabel.MemoryType)) {
+						labels[address] = codeLabel;
+					}
 				}
 
 				codeLabel.Label = labelName;
