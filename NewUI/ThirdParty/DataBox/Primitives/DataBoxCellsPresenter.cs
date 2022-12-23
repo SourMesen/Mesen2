@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -22,6 +23,7 @@ public class DataBoxCellsPresenter : Panel, IStyleable
             return;
         }
 
+        List<DataBoxCell> cells = new();
         foreach (var column in DataBox.Columns)
         {
             var cell = new DataBoxCell
@@ -37,9 +39,9 @@ public class DataBoxCellsPresenter : Panel, IStyleable
 				cell.Tapped += DataBox.OnCellTapped;
 				cell.DoubleTapped += DataBox.OnCellDoubleTapped;
 				cell.PointerReleased += DataBox.OnCellPointerReleased;
-
-			Children.Add(cell);
+				cells.Add(cell);
         }
+        Children.AddRange(cells);
     }
 
     protected override Size MeasureOverride(Size availableSize)

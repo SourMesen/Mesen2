@@ -307,7 +307,7 @@
                      Grid.Column="0"
                      VerticalAlignment="Stretch"
                      Width="1"
-                     Fill="{DynamicResource DataGridFillerColumnGridLinesBrush}" />
+                     Fill="{DynamicResource DataGridGridLinesBrush}" />
         </Grid>
       </ControlTemplate>
     </Setter>

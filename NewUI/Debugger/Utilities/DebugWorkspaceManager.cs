@@ -43,6 +43,8 @@ namespace Mesen.Debugger.Utilities
 
 			_romInfo = EmuApi.GetRomInfo();
 			_path = Path.Combine(ConfigManager.DebuggerFolder, _romInfo.GetRomName() + ".json");
+
+			LabelManager.SuspendEvents();
 			_workspace = DebugWorkspace.Load(_path);
 
 			SymbolProvider = null;
@@ -70,7 +72,7 @@ namespace Mesen.Debugger.Utilities
 				string cdlPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.CdlExt);
 				LoadCdlFile(cdlPath);
 			}
-
+			LabelManager.ResumeEvents();
 			SymbolProviderChanged?.Invoke(null, EventArgs.Empty);
 		}
 

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Labels
@@ -23,6 +24,10 @@ namespace Mesen.Debugger.Labels
 
 		public static event EventHandler? OnLabelUpdated;
 
+		private static int _suspendEvents = 0;
+		public static void SuspendEvents() { Interlocked.Increment(ref _suspendEvents); }
+		public static void ResumeEvents() { Interlocked.Decrement(ref _suspendEvents); ProcessLabelUpdate(); }
+
 		public static void ResetLabels()
 		{
 			DebugApi.ClearLabels();
@@ -30,7 +35,7 @@ namespace Mesen.Debugger.Labels
 			_labelsByKey.Clear();
 			_reverseLookup.Clear();
 
-			OnLabelUpdated?.Invoke(null, EventArgs.Empty);
+			ProcessLabelUpdate();
 		}
 
 		public static CodeLabel? GetLabel(UInt32 address, MemoryType type)
@@ -181,8 +186,10 @@ namespace Mesen.Debugger.Labels
 
 		private static void ProcessLabelUpdate()
 		{
-			OnLabelUpdated?.Invoke(null, EventArgs.Empty);
-			UpdateAssertBreakpoints();
+			if(_suspendEvents == 0) {
+				OnLabelUpdated?.Invoke(null, EventArgs.Empty);
+				UpdateAssertBreakpoints();
+			}
 		}
 
 		private static void UpdateAssertBreakpoints()
