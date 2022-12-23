@@ -238,7 +238,7 @@
 		<Setter Property="Height" Value="21" />
 		<Setter Property="SelectionForegroundBrush" Value="#FFF" />
 		
-		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
 	</Style>
 
