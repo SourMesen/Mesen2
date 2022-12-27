@@ -16,6 +16,7 @@
 #include "Shared/RewindManager.h"
 #include "Shared/ShortcutKeyHandler.h"
 #include "Shared/EmulatorLock.h"
+#include "Shared/DebuggerRequest.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BatteryManager.h"
 #include "Shared/CheatManager.h"
@@ -912,7 +913,7 @@ void Emulator::BlockDebuggerRequests()
 	}
 }
 
-Emulator::DebuggerRequest Emulator::GetDebugger(bool autoInit)
+DebuggerRequest Emulator::GetDebugger(bool autoInit)
 {
 	if(IsRunning() && _blockDebuggerRequestCount == 0) {
 		auto lock = _debuggerLock.AcquireSafe();

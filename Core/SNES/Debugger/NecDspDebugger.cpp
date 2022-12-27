@@ -126,9 +126,11 @@ DebuggerFeatures NecDspDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void NecDspDebugger::SetProgramCounter(uint32_t addr)
+void NecDspDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_dsp->GetState().PC = addr / 3;
+	if(!updateDebuggerOnly) {
+		_dsp->GetState().PC = addr / 3;
+	}
 	_prevProgramCounter = addr;
 }
 

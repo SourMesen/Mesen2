@@ -452,10 +452,12 @@ DebuggerFeatures SnesDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void SnesDebugger::SetProgramCounter(uint32_t addr)
+void SnesDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	GetCpuState().PC = (uint16_t)addr;
-	GetCpuState().K = (uint8_t)(addr >> 16);
+	if(!updateDebuggerOnly) {
+		GetCpuState().PC = (uint16_t)addr;
+		GetCpuState().K = (uint8_t)(addr >> 16);
+	}
 	
 	_prevOpCode = _memoryMappings->Peek(addr);
 	_prevProgramCounter = addr;

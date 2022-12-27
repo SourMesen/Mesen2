@@ -130,9 +130,11 @@ void GsuDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-void GsuDebugger::SetProgramCounter(uint32_t addr)
+void GsuDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_gsu->DebugSetProgramCounter(addr);
+	if(!updateDebuggerOnly) {
+		_gsu->DebugSetProgramCounter(addr);
+	}
 
 	GsuState& state = _gsu->GetState();
 	_prevOpCode = state.ProgramReadBuffer;

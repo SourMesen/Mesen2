@@ -81,12 +81,12 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 		case MessageType::SaveState:
 			if(_gameLoaded) {
 				DisableControllers();
-				_emu->Lock();
+
+				auto lock = _emu->AcquireLock();
 				ClearInputData();
 				((SaveStateMessage*)message)->LoadState(_emu);
 				_enableControllers = true;
 				InitControlDevice();
-				_emu->Unlock();
 			}
 			break;
 
@@ -106,14 +106,16 @@ void GameClientConnection::ProcessMessage(NetMessage* message)
 
 		case MessageType::GameInformation:
 			DisableControllers();
-			_emu->Lock();
-			gameInfo = (GameInformationMessage*)message;
-			if(gameInfo->GetPort().Port != _controllerPort.Port || gameInfo->GetPort().SubPort != _controllerPort.SubPort) {
-				_controllerPort = gameInfo->GetPort();
-			}
 
-			ClearInputData();
-			_emu->Unlock();
+			{
+				auto lock = _emu->AcquireLock();
+				gameInfo = (GameInformationMessage*)message;
+				if(gameInfo->GetPort().Port != _controllerPort.Port || gameInfo->GetPort().SubPort != _controllerPort.SubPort) {
+					_controllerPort = gameInfo->GetPort();
+				}
+
+				ClearInputData();
+			}
 
 			_gameLoaded = AttemptLoadGame(gameInfo->GetRomFilename(), gameInfo->GetCrc32());
 			if(!_gameLoaded) {

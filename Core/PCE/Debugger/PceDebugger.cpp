@@ -363,9 +363,11 @@ DebuggerFeatures PceDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void PceDebugger::SetProgramCounter(uint32_t addr)
+void PceDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_cpu->GetState().PC = (uint16_t)addr;
+	if(!updateDebuggerOnly) {
+		_cpu->GetState().PC = (uint16_t)addr;
+	}
 	_prevOpCode = _memoryManager->DebugRead(addr);
 	_prevProgramCounter = (uint16_t)addr;
 }

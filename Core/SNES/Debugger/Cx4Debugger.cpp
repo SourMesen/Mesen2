@@ -158,7 +158,7 @@ void Cx4Debugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
-void Cx4Debugger::SetProgramCounter(uint32_t addr)
+void Cx4Debugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
 	Cx4State& state = _cx4->GetState();
 	if(addr >= state.Cache.Base) {
@@ -168,8 +168,10 @@ void Cx4Debugger::SetProgramCounter(uint32_t addr)
 		_prevOpCode = (opCode >> 8) & 0xFC;
 
 		addr -= state.Cache.Base;
-		state.PB = (addr & 0xFFFE00) >> 9;
-		state.PC = (addr & 0x1FF) >> 1;
+		if(!updateDebuggerOnly) {
+			state.PB = (addr & 0xFFFE00) >> 9;
+			state.PC = (addr & 0x1FF) >> 1;
+		}
 	}
 }
 

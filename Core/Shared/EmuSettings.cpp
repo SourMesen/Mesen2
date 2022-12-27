@@ -4,6 +4,7 @@
 #include "Shared/KeyManager.h"
 #include "Shared/MessageManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/DebuggerRequest.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/Serializer.h"
@@ -250,7 +251,7 @@ void EmuSettings::SetDebugConfig(DebugConfig& config)
 {
 	_debug = config;
 	
-	Emulator::DebuggerRequest req = _emu->GetDebugger(false);
+	DebuggerRequest req = _emu->GetDebugger(false);
 	Debugger* dbg = req.GetDebugger();
 	if(dbg) {
 		dbg->ProcessConfigChange();
@@ -428,7 +429,7 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 		}
 	}
 
-	Emulator::DebuggerRequest req = _emu->GetDebugger(false);
+	DebuggerRequest req = _emu->GetDebugger(false);
 	Debugger* dbg = req.GetDebugger();
 	if(dbg) {
 		dbg->ProcessConfigChange();

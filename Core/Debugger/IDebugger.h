@@ -60,7 +60,7 @@ public:
 	virtual DebuggerFeatures GetSupportedFeatures() { return {}; }
 	virtual uint64_t GetCpuCycleCount() { return 0; }
 	virtual uint32_t GetProgramCounter(bool getInstPc) = 0;
-	virtual void SetProgramCounter(uint32_t addr) = 0;
+	virtual void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) = 0;
 
 	virtual BreakpointManager* GetBreakpointManager() = 0;
 	virtual CallstackManager* GetCallstackManager() = 0;

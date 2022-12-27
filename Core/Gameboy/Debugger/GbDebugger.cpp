@@ -347,9 +347,11 @@ DebuggerFeatures GbDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void GbDebugger::SetProgramCounter(uint32_t addr)
+void GbDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_cpu->GetState().PC = (uint16_t)addr;
+	if(!updateDebuggerOnly) {
+		_cpu->GetState().PC = (uint16_t)addr;
+	}
 	_prevOpCode = _gameboy->GetMemoryManager()->DebugRead((uint16_t)addr);
 	_prevProgramCounter = (uint16_t)addr;
 }

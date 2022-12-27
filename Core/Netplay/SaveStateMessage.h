@@ -25,12 +25,12 @@ public:
 	SaveStateMessage(Emulator* emu) : NetMessage(MessageType::SaveState)
 	{
 		//Used when sending state to clients
-		emu->Lock();
-		_activeCheats = emu->GetCheatManager()->GetCheats();
 		stringstream state;
-		emu->Serialize(state, true);
-
-		emu->Unlock();
+		{
+			auto lock = emu->AcquireLock();
+			_activeCheats = emu->GetCheatManager()->GetCheats();
+			emu->Serialize(state, true);
+		}
 
 		uint32_t dataSize = (uint32_t)state.tellp();
 		_stateData.resize(dataSize);

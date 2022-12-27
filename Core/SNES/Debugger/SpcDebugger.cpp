@@ -189,9 +189,11 @@ DebuggerFeatures SpcDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void SpcDebugger::SetProgramCounter(uint32_t addr)
+void SpcDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_spc->GetState().PC = (uint16_t)addr;
+	if(!updateDebuggerOnly) {
+		_spc->GetState().PC = (uint16_t)addr;
+	}
 	_prevOpCode = _spc->DebugRead(addr);
 	_prevProgramCounter = (uint16_t)addr;
 }

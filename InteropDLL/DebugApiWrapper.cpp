@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Core/Shared/Emulator.h"
+#include "Core/Shared/DebuggerRequest.h"
 #include "Core/Debugger/Debugger.h"
 #include "Core/Debugger/MemoryDumper.h"
 #include "Core/Debugger/MemoryAccessCounter.h"
@@ -28,7 +29,7 @@ extern unique_ptr<Emulator> _emu;
 template<typename T>
 T WrapDebuggerCall(std::function<T(Debugger* debugger)> func)
 {
-	Emulator::DebuggerRequest dbgRequest = _emu->GetDebugger(true);
+	DebuggerRequest dbgRequest = _emu->GetDebugger(true);
 	if(dbgRequest.GetDebugger()) {
 		return func(dbgRequest.GetDebugger());
 	} else {
@@ -39,7 +40,7 @@ T WrapDebuggerCall(std::function<T(Debugger* debugger)> func)
 template<>
 void WrapDebuggerCall(std::function<void(Debugger* debugger)> func)
 {
-	Emulator::DebuggerRequest dbgRequest = _emu->GetDebugger(true);
+	DebuggerRequest dbgRequest = _emu->GetDebugger(true);
 	if(dbgRequest.GetDebugger()) {
 		func(dbgRequest.GetDebugger());
 	}

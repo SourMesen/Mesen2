@@ -184,7 +184,9 @@ void Debugger::ProcessInstruction()
 {
 	IDebugger* debugger = _debuggers[(int)type].Debugger.get();
 	if(debugger->IsStepBack() && ProcessStepBack(debugger)) {
+		debugger->AllowChangeProgramCounter = true; //set to true temporarily to allow debugger to pause on break requests when rewinding/step back is active
 		SleepOnBreakRequest<type>();
+		debugger->AllowChangeProgramCounter = false;
 		return;
 	}
 
@@ -355,6 +357,11 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 {
 	if(_suspendRequestCount) {
 		return;
+	} else if(_breakRequestCount > 0 && (sourceCpu != _mainCpuType || !_debuggers[(int)sourceCpu].Debugger->AllowChangeProgramCounter)) {
+		//When a break is requested by e.g a debugger call, load/save state, etc. always
+		//break in-between 2 instructions of the main CPU, ensuring the state can be saved/loaded safely
+		//If SleepUntilResume was called outside of ProcessInstruction, keep running
+		return;
 	}
 
 	_executionStopped = true;
@@ -481,6 +488,17 @@ void Debugger::ProcessEvent(EventType type)
 
 		case EventType::StateLoaded:
 			_memoryAccessCounter->ResetCounts();
+
+			//Update the state for each cpu/debugger
+			for(CpuType cpuType : _cpuTypes) {
+				uint32_t pc = _debuggers[(int)cpuType].Debugger->GetProgramCounter(false);
+				_debuggers[(int)cpuType].Debugger->SetProgramCounter(pc, true);
+
+				CallstackManager* callstackManager = _debuggers[(int)cpuType].Debugger->GetCallstackManager();
+				if(callstackManager) {
+					callstackManager->Clear();
+				}
+			}
 			break;
 	}
 }

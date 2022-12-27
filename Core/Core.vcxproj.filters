@@ -2604,7 +2604,12 @@
     <ClInclude Include="Debugger\FrozenAddressManager.h">
       <Filter>Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
+    <ClInclude Include="Shared\DebuggerRequest.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Audio\emu2413.h">
+      <Filter>NES\Mappers\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2730,7 +2735,12 @@
     <ClCompile Include="Debugger\StepBackManager.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
-    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp" />
+    <ClCompile Include="Shared\DebuggerRequest.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp">
+      <Filter>NES\Mappers\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">

@@ -74,7 +74,7 @@ public:
 
 	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 
-	void SetProgramCounter(uint32_t addr) override;
+	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
 	uint64_t GetCpuCycleCount() override;
 	void ResetPrevOpCode() override;

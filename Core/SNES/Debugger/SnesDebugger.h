@@ -104,7 +104,7 @@ public:
 	void DrawPartialFrame() override;
 	
 	DebuggerFeatures GetSupportedFeatures() override;
-	void SetProgramCounter(uint32_t addr) override;
+	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
 
 	ITraceLogger* GetTraceLogger() override;

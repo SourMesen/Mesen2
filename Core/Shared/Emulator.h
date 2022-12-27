@@ -58,6 +58,8 @@ struct ConsoleMemoryInfo
 class Emulator
 {
 private:
+	friend class DebuggerRequest;
+
 	unique_ptr<thread> _emuThread;
 	unique_ptr<AudioPlayerHud> _audioPlayerHud;
 	safe_ptr<IConsole> _console;
@@ -127,37 +129,8 @@ private:
 	template<typename T> void TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console);
 	void InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo originalConsoleMemory[], bool preserveRom);
 
+
 public:
-	class DebuggerRequest
-	{
-	private:
-		shared_ptr<Debugger> _debugger;
-		Emulator* _emu = nullptr;
-
-	public:
-		DebuggerRequest(Emulator* emu)
-		{
-			if(emu) {
-				_emu = emu;
-				_debugger = _emu->_debugger.lock();
-				_emu->_debugRequestCount++;
-			}
-		}
-
-		~DebuggerRequest()
-		{
-			if(_emu) {
-				_emu->_debugRequestCount--;
-			}
-		}
-
-		Debugger* GetDebugger()
-		{
-			return _debugger.get();
-		}
-	};
-
-
 	Emulator();
 	~Emulator();
 

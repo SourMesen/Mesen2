@@ -11,6 +11,7 @@
 #include "Core/Shared/ShortcutKeyHandler.h"
 #include "Core/Shared/TimingInfo.h"
 #include "Core/Shared/CheatManager.h"
+#include "Core/Shared/DebuggerRequest.h"
 #include "Core/Netplay/GameClient.h"
 #include "Core/Netplay/GameServer.h"
 #include "Utilities/ArchiveReader.h"

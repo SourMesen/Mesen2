@@ -405,9 +405,11 @@ DebuggerFeatures NesDebugger::GetSupportedFeatures()
 	return features;
 }
 
-void NesDebugger::SetProgramCounter(uint32_t addr)
+void NesDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 {
-	_cpu->GetState().PC = (uint16_t)addr;
+	if(!updateDebuggerOnly) {
+		_cpu->GetState().PC = (uint16_t)addr;
+	}
 	_prevOpCode = _memoryManager->DebugRead(addr);
 	_prevProgramCounter = (uint16_t)addr;
 }

@@ -42,7 +42,7 @@ public:
 	void Step(int32_t stepCount, StepType type) override;
 
 	DebuggerFeatures GetSupportedFeatures() override;
-	void SetProgramCounter(uint32_t addr) override;
+	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
 
 	CallstackManager* GetCallstackManager() override;

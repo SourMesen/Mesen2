@@ -212,6 +212,13 @@ namespace Mesen.Debugger.Windows
 						});
 					}
 					break;
+
+				case ConsoleNotificationType.StateLoaded:
+					Dispatcher.UIThread.Post(() => {
+						//Update UI after loading a state (to update highlighted statement, etc.)
+						_model.UpdateDebugger(true, null);
+					});
+					break;
 			}
 		}
 

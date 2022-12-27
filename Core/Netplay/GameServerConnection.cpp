@@ -52,13 +52,12 @@ void GameServerConnection::SendServerInformation()
 
 void GameServerConnection::SendGameInformation()
 {
-	_emu->Lock();
+	auto lock = _emu->AcquireLock();
 	RomInfo romInfo = _emu->GetRomInfo();
 	GameInformationMessage gameInfo(romInfo.RomFile.GetFileName(), _emu->GetCrc32(), _controllerPort, _emu->IsPaused());
 	SendNetMessage(gameInfo);
 	SaveStateMessage saveState(_emu);
 	SendNetMessage(saveState);
-	_emu->Unlock();
 }
 
 void GameServerConnection::SendMovieData(uint8_t port, ControlDeviceState state)
@@ -97,7 +96,7 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 	//Send the game's current state to the client and register the controller
 	if(message->IsValid(_emu->GetSettings()->GetVersion())) {
 		if(message->CheckPassword(_serverPassword, _connectionHash)) {
-			_emu->Lock();
+			auto lock = _emu->AcquireLock();
 
 			_controllerPort = message->IsSpectator() ? NetplayControllerInfo { GameConnection::SpectatorPort, 0 } : _server->GetFirstFreeControllerPort();
 
@@ -110,7 +109,6 @@ void GameServerConnection::ProcessHandshakeResponse(HandShakeMessage* message)
 			_handshakeCompleted = true;
 			_server->RegisterNetPlayDevice(this, _controllerPort);
 			_server->SendPlayerList();
-			_emu->Unlock();
 		} else {
 			SendForceDisconnectMessage("The password you provided did not match - you have been disconnected.");
 		}
@@ -150,7 +148,7 @@ void GameServerConnection::ProcessMessage(NetMessage* message)
 
 void GameServerConnection::SelectControllerPort(NetplayControllerInfo controller)
 {
-	_emu->Lock();
+	auto lock = _emu->AcquireLock();
 	if(controller.Port == GameConnection::SpectatorPort) {
 		//Client wants to be a spectator, make sure we are not using any controller
 		_server->UnregisterNetPlayDevice(this);
@@ -170,7 +168,6 @@ void GameServerConnection::SelectControllerPort(NetplayControllerInfo controller
 	}
 	SendGameInformation();
 	_server->SendPlayerList();
-	_emu->Unlock();
 }
 
 void GameServerConnection::ProcessNotification(ConsoleNotificationType type, void* parameter)

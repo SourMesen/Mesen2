@@ -91,9 +91,10 @@ bool SaveStateManager::SaveState(string filepath)
 	ofstream file(filepath, ios::out | ios::binary);
 
 	if(file) {
-		_emu->Lock();
-		SaveState(file);
-		_emu->Unlock();
+		{
+			auto lock = _emu->AcquireLock();
+			SaveState(file);
+		}
 		file.close();
 
 		_emu->ProcessEvent(EventType::StateSaved);
@@ -220,9 +221,10 @@ bool SaveStateManager::LoadState(string filepath)
 	bool result = false;
 
 	if(file.good()) {
-		_emu->Lock();
-		result = LoadState(file);
-		_emu->Unlock();
+		{
+			auto lock = _emu->AcquireLock();
+			result = LoadState(file);
+		}
 		file.close();
 
 		if(result) {
