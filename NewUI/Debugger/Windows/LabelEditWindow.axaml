@@ -18,6 +18,8 @@
 	x:DataType="vm:LabelEditViewModel"
 	Icon="/Assets/EditLabel.png"
 	Width="350" Height="250"
+	MinWidth="350" MinHeight="250"
+	ShowInTaskbar="False"
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>

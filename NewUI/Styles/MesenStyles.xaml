@@ -123,6 +123,8 @@
 		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
 		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
 		<Setter Property="Icon" Value="/Assets/Icon.ico" />
+		<Setter Property="MinWidth" Value="200" />
+		<Setter Property="MinHeight" Value="55" />
 	</Style>
 
 	<Style Selector="ToolTip">

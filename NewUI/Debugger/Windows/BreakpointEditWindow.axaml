@@ -17,7 +17,9 @@
 	x:Class="Mesen.Debugger.Windows.BreakpointEditWindow"
 	x:DataType="vm:BreakpointEditViewModel"
 	Icon="/Assets/Edit.png"
-	Width="320" Height="180"	
+	Width="320" Height="180"
+	MinWidth="320" MinHeight="180"
+	ShowInTaskbar="False"
 	Title="{l:Translate wndTitle}"
 >
 	<Design.DataContext>

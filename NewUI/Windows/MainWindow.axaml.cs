@@ -363,8 +363,8 @@ namespace Mesen.Windows
 				//When menu is set to auto-hide, don't count its height when calculating the window's final size
 				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
 
-				double width = Math.Round(screenSize.Height * scale * aspectRatio);
-				double height = Math.Round(screenSize.Height * scale);
+				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * scale * aspectRatio));
+				double height = Math.Max(MinHeight, Math.Round(screenSize.Height * scale));
 				ClientSize = new Size(width, height + menuHeight + _audioPlayer.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
