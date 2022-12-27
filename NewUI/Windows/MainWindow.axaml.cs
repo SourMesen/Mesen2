@@ -250,25 +250,28 @@ namespace Mesen.Windows
 					RomInfo romInfo = EmuApi.GetRomInfo();
 					GameConfig.LoadGameConfig(romInfo).ApplyConfig();
 
-					Dispatcher.UIThread.Post(() => {
-						_model.RecentGames.Visible = false;
-						_model.RomInfo = romInfo;
+					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);
+					if(!evtParams.IsPowerCycle) {
+						Dispatcher.UIThread.Post(() => {
+							_model.RecentGames.Visible = false;
+							_model.RomInfo = romInfo;
 
-						DispatcherTimer.RunOnce(() => {
-							if(_cmdLine != null) {
-								_cmdLine?.ProcessPostLoadCommandSwitches(this);
-								_cmdLine = null;
-							}
+							DispatcherTimer.RunOnce(() => {
+								if(_cmdLine != null) {
+									_cmdLine?.ProcessPostLoadCommandSwitches(this);
+									_cmdLine = null;
+								}
 
-							if(WindowState == WindowState.FullScreen) {
-								//Force resize of renderer when loading a game while in fullscreen
-								//Prevents some issues when fullscreen was turned on before loading a game, etc.
-								_renderer.Width = double.NaN;
-								_renderer.Height = double.NaN;
-								ResizeRenderer();
-							}
-						}, TimeSpan.FromMilliseconds(50));
-					});
+								if(WindowState == WindowState.FullScreen || WindowState == WindowState.Maximized) {
+									//Force resize of renderer when loading a game while in fullscreen
+									//Prevents some issues when fullscreen was turned on before loading a game, etc.
+									_renderer.Width = double.NaN;
+									_renderer.Height = double.NaN;
+									ResizeRenderer();
+								}
+							}, TimeSpan.FromMilliseconds(50));
+						});
+					}
 					break;
 
 				case ConsoleNotificationType.DebuggerResumed:
