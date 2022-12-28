@@ -249,6 +249,11 @@ bool SaveStateManager::LoadState(int stateIndex)
 
 void SaveStateManager::SaveRecentGame(string romName, string romPath, string patchPath)
 {
+	if(_emu->GetSettings()->CheckFlag(EmulationFlags::ConsoleMode)) {
+		//Skip saving the recent game file when running in testrunner/CLI console mode
+		return;
+	}
+
 	string filename = FolderUtilities::GetFilename(_emu->GetRomInfo().RomFile.GetFileName(), false) + ".rgd";
 	ZipWriter writer;
 	writer.Initialize(FolderUtilities::CombinePath(FolderUtilities::GetRecentGamesFolder(), filename));

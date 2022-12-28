@@ -88,7 +88,11 @@ namespace Mesen.Windows
 			SelectRomWindow wnd = new SelectRomWindow() { DataContext = model };
 
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowDialog(ApplicationHelper.GetMainWindow());
+			Window? parent = ApplicationHelper.GetMainWindow();
+			if(parent == null) {
+				return null;
+			}
+			await wnd.ShowDialog(parent);
 
 			if(model.Cancelled || model.SelectedEntry == null) {
 				return null;

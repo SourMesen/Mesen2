@@ -979,6 +979,17 @@ bool Emulator::IsEmulationThread()
 	return _emulationThreadId == std::this_thread::get_id();
 }
 
+void Emulator::SetStopCode(int32_t stopCode)
+{
+	_stopCode = stopCode;
+	if(!_stopFlag) {
+		thread stopEmuTask([this]() {
+			Stop(true);
+		});
+		stopEmuTask.detach();
+	}
+}
+
 void Emulator::RegisterMemory(MemoryType type, void* memory, uint32_t size)
 {
 	_consoleMemory[(int)type] = { memory, size };

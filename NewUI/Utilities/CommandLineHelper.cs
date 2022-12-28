@@ -25,6 +25,7 @@ public class CommandLineHelper
 	public bool Fullscreen { get; private set; }
 	public bool LoadLastSessionRequested { get; private set; }
 	public string? MovieToRecord { get; private set; } = null;
+	public int TestRunnerTimeout { get; private set; } = 100;
 	public List<string> LuaScriptsToLoad { get; private set; } = new();
 	public List<string> FilesToLoad { get; private set; } = new();
 
@@ -79,6 +80,15 @@ public class CommandLineHelper
 								moviePath += "." + FileDialogHelper.MesenMovieExt;
 							}
 							MovieToRecord = moviePath;
+						} else if(switchArg.StartsWith("timeout=")) {
+							string[] values = switchArg.Split('=');
+							if(values.Length <= 1) {
+								//invalid
+								continue;
+							}
+							if(int.TryParse(values[1], out int timeout)) {
+								TestRunnerTimeout = timeout;
+							}
 						} else {
 							ConfigManager.ProcessSwitch(switchArg);
 						}
@@ -105,6 +115,11 @@ public class CommandLineHelper
 			arg = arg.Substring(1);
 		}
 		return arg;
+	}
+
+	public static bool IsTestRunner(string[] args)
+	{
+		return args.Any(arg => CommandLineHelper.ConvertArg(arg).ToLowerInvariant() == "testrunner");
 	}
 
 	public void ProcessPostLoadCommandSwitches(MainWindow wnd)

@@ -113,6 +113,7 @@ private:
 	double _frameDelay = 0;
 	
 	uint32_t _autoSaveStateFrameCounter = 0;
+	int32_t _stopCode = 0;
 
 	void WaitForLock();
 	void WaitForPauseEnd();
@@ -210,6 +211,9 @@ public:
 
 	thread::id GetEmulationThreadId() { return _emulationThreadId; }
 	bool IsEmulationThread();
+
+	int32_t GetStopCode() { return _stopCode; }
+	void SetStopCode(int32_t stopCode);
 
 	void RegisterMemory(MemoryType type, void* memory, uint32_t size);
 	ConsoleMemoryInfo GetMemory(MemoryType type);

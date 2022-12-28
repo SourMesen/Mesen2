@@ -48,10 +48,11 @@ namespace Mesen.Interop
 
 	public enum EmulationFlags : UInt32
 	{
-		Turbo = 1,
-		Rewind = 2,
-		MaximumSpeed = 4,
-		InBackground = 8,
+		Turbo = 0x01,
+		Rewind = 0x02,
+		MaximumSpeed = 0x04,
+		InBackground = 0x08,
+		ConsoleMode = 0x10,
 	}
 
 	public enum DebuggerFlags : UInt32

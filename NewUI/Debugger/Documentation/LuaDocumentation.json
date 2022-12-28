@@ -316,6 +316,13 @@
 	]
 },
 {
+	"name": "stop",
+	"description": "Stops the emulation and returns the specified exit code (when used with the --testRunner command line option).",
+	"parameters": [
+		{ "name": "exitCode", "type": "Int", "description": "The exit code that the Mesen process will return." }
+	]
+},
+{
 	"name": "takeScreenshot",
 	"description": "Takes a screenshot and returns a PNG file as a string. The screenshot is not saved to the disk.",
 	"returnValue": { "type": "String", "description": "A binary string containing a PNG image." }

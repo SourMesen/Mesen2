@@ -164,6 +164,11 @@ extern "C" {
 		return _emu->IsRunning();
 	}
 
+	DllExport int32_t __stdcall GetStopCode()
+	{
+		return _emu->GetStopCode();
+	}
+
 	DllExport void __stdcall Stop()
 	{
 		_emu->GetGameClient()->Disconnect();

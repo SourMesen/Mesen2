@@ -121,6 +121,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		{ "displayMessage", LuaApi::DisplayMessage },
 
 		{ "reset", LuaApi::Reset },
+		{ "stop", LuaApi::Stop },
 		{ "breakExecution", LuaApi::BreakExecution },
 		{ "resume", LuaApi::Resume },
 		{ "step", LuaApi::Step },
@@ -706,6 +707,15 @@ int LuaApi::Reset(lua_State *lua)
 	checkparams();
 	checkinitdone();
 	_emu->GetSystemActionManager()->Reset();
+	return l.ReturnCount();
+}
+
+int LuaApi::Stop(lua_State* lua)
+{
+	LuaCallHelper l(lua);
+	int32_t stopCode = l.ReadInteger(0);
+	checkminparams(0);
+	_emu->SetStopCode(stopCode);
 	return l.ReturnCount();
 }
 

@@ -14,16 +14,16 @@ namespace Mesen.Utilities
 {
 	public static class ApplicationHelper
 	{
-		public static Window GetMainWindow()
+		public static Window? GetMainWindow()
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is Window wnd) {
 				return wnd;
 			}
 
-			throw new Exception("Window could not be found");
+			return null;
 		}
 
-		public static Window GetActiveOrMainWindow()
+		public static Window? GetActiveOrMainWindow()
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				return desktop.Windows.Where(w => w.IsActive).FirstOrDefault() ?? GetMainWindow();

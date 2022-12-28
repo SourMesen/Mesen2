@@ -33,7 +33,7 @@ namespace Mesen
 		}
 
 		[STAThread]
-		public static void Main(string[] args)
+		public static int Main(string[] args)
 		{
 			if(!System.Diagnostics.Debugger.IsAttached) {
 				NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
@@ -43,7 +43,7 @@ namespace Mesen
 
 			if(args.Length >= 4 && args[0] == "--update") {
 				UpdateHelper.AttemptUpdate(args[1], args[2], args[3], args.Contains("admin"));
-				return;
+				return 0;
 			}
 
 			Environment.CurrentDirectory = ConfigManager.HomeFolder;
@@ -57,7 +57,7 @@ namespace Mesen
 					//Configuration done, restart process
 					Process.Start(Program.ExePath);
 				}
-				return;
+				return 0;
 			}
 
 			//Start loading config file in a separate thread
@@ -65,6 +65,10 @@ namespace Mesen
 
 			//Extract core dll & other native dependencies
 			ExtractNativeDependencies(ConfigManager.HomeFolder);
+
+			if(CommandLineHelper.IsTestRunner(args)) {
+				return TestRunner.Run(args);
+			}
 
 			using SingleInstance instance = SingleInstance.Instance;
 			instance.Init(args);
@@ -74,6 +78,8 @@ namespace Mesen
 				BuildAvaloniaApp(useWgl).StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 				EmuApi.Release();
 			}
+
+			return 0;
 		}
 
 		public static void ExtractNativeDependencies(string dest)
