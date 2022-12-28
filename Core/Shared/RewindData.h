@@ -15,7 +15,8 @@ public:
 	int32_t FrameCount = 0;
 	bool EndOfSegment = false;
 
-	void GetStateData(stringstream &stateData);
+	void GetStateData(stringstream& stateData);
+	uint32_t GetStateSize() { return (uint32_t)SaveStateData.size(); }
 
 	void LoadState(Emulator* emu);
 	void SaveState(Emulator* emu);

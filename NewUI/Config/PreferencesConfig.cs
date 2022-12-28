@@ -47,7 +47,7 @@ namespace Mesen.Config
 		[Reactive] public UInt32 AutoSaveStateDelay { get; set; } = 5;
 
 		[Reactive] public bool EnableRewind { get; set; } = true;
-		[Reactive] public UInt32 RewindBufferSize { get; set; } = 30;
+		[Reactive] public UInt32 RewindBufferSize { get; set; } = 300;
 
 		[Reactive] public bool AlwaysOnTop { get; set; } = false;
 

@@ -53,7 +53,7 @@ void RewindManager::ProcessNotification(ConsoleNotificationType type, void * par
 
 	if(type == ConsoleNotificationType::PpuFrameDone) {
 		_hasHistory = _history.size() >= 2;
-		if(_settings->GetRewindBufferSize() > 0) {
+		if(_settings->GetPreferences().RewindBufferSize > 0) {
 			switch(_rewindState) {
 				case RewindState::Starting:
 				case RewindState::Started:
@@ -97,10 +97,18 @@ void RewindManager::ProcessNotification(ConsoleNotificationType type, void * par
 
 void RewindManager::AddHistoryBlock()
 {
-	uint32_t maxHistorySize = _settings->GetRewindBufferSize() * 60 * RewindManager::BufferSize / 60;
+	uint32_t maxHistorySize = _settings->GetPreferences().RewindBufferSize;
 	if(maxHistorySize > 0) {
-		while(_history.size() > maxHistorySize) {
-			_history.pop_front();
+		uint32_t memoryUsage = 0;
+		for(int i = (int)_history.size() - 1; i >= 0; i--) {
+			memoryUsage += _history[i].GetStateSize();
+			if((memoryUsage >> 20) > maxHistorySize) {
+				//Remove all old state data above the memory limit
+				for(int j = 0; j < i; j++) {
+					_history.pop_front();
+				}
+				break;
+			}
 		}
 
 		if(_currentHistory.FrameCount > 0) {
@@ -132,7 +140,7 @@ void RewindManager::PopHistory()
 
 void RewindManager::Start(bool forDebugger)
 {
-	if(_rewindState == RewindState::Stopped && _settings->GetRewindBufferSize() > 0) {
+	if(_rewindState == RewindState::Stopped && _settings->GetPreferences().RewindBufferSize > 0) {
 		if(forDebugger) {
 			InternalStart(forDebugger);
 		} else {
@@ -301,7 +309,7 @@ bool RewindManager::ProcessAudio(int16_t * soundBuffer, uint32_t sampleCount)
 
 void RewindManager::RecordInput(vector<shared_ptr<BaseControlDevice>> devices)
 {
-	if(_settings->GetRewindBufferSize() > 0 && _rewindState == RewindState::Stopped) {
+	if(_settings->GetPreferences().RewindBufferSize > 0 && _rewindState == RewindState::Stopped) {
 		for(shared_ptr<BaseControlDevice> &device : devices) {
 			_currentHistory.InputLogs[device->GetPort()].push_back(device->GetRawState());
 		}

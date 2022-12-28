@@ -645,7 +645,7 @@ struct PreferencesConfig
 	bool DisableGameSelectionScreen = false;
 
 	uint32_t AutoSaveStateDelay = 5;
-	uint32_t RewindBufferSize = 30;
+	uint32_t RewindBufferSize = 300;
 
 	const char* SaveFolderOverride = nullptr;
 	const char* SaveStateFolderOverride = nullptr;

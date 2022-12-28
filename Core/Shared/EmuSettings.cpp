@@ -352,11 +352,6 @@ OverscanDimensions EmuSettings::GetOverscan()
 	return OverscanDimensions {};
 }
 
-uint32_t EmuSettings::GetRewindBufferSize()
-{
-	return _preferences.RewindBufferSize;
-}
-
 uint32_t EmuSettings::GetEmulationSpeed()
 {
 	if(CheckFlag(EmulationFlags::MaximumSpeed)) {
