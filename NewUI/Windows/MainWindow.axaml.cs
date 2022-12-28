@@ -119,6 +119,11 @@ namespace Mesen.Windows
 					}
 				}
 
+				if(ApplicationHelper.GetOpenedWindows().Count > 1) {
+					e.Cancel = true;
+					return;
+				}
+
 				_timerBackgroundFlag.Stop();
 				EmuApi.Stop();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
