@@ -318,7 +318,8 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 	stream.read(header, 3);
 	if(memcmp(header, "MSS", 3) == 0) {
 		uint32_t emuVersion = ReadValue(stream);
-		if(emuVersion > _emu->GetSettings()->GetVersion()) {
+		if(emuVersion > _emu->GetSettings()->GetVersion() || emuVersion <= 0x10000) {
+			//Prevent loading files created with a newer version of Mesen or with Mesen 0.9.x or lower.
 			return -1;
 		}
 

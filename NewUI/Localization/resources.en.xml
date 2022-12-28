@@ -1426,19 +1426,6 @@
 	<UserControls>
 	</UserControls>
 	<Messages>
-		<Message ID="FilterAll">All Files (*.*)|*.*</Message>
-		<Message ID="FilterZipFiles">Zip files (*.zip)|*.zip</Message>
-		<Message ID="FilterMovie">Movie files (*.msm)|*.msm|All Files (*.*)|*.*</Message>
-		<Message ID="FilterWave">Wave files (*.wav)|*.wav|All Files (*.*)|*.*</Message>
-		<Message ID="FilterAvi">Avi files (*.avi)|*.avi|All Files (*.*)|*.*</Message>
-		<Message ID="FilterGif">GIF files (*.gif)|*.gif|All Files (*.*)|*.*</Message>
-		<Message ID="FilterPalette">Palette Files (*.pal)|*.pal|All Files (*.*)|*.*</Message>
-		<Message ID="FilterRom">All supported formats (*.sfc, *.gb, *.gbc, *.bs, *.spc, *.zip, *.7z)|*.SFC;*.SMC;*.SWC;*.FIG;*.ZIP;*.7Z;*.SPC;*.BS;*.GB;*.GBC|SNES Roms (*.sfc)|*.SFC;*.SMC;*.SWC;*.FIG;*.BS|Gameboy Roms (*.gb, *.gbc)|*.GB;*.GBC|SPC Sound Files (*.spc)|*.SPC|ZIP Archives (*.zip)|*.ZIP|7-Zip Archives (*.7z)|*.7z|All (*.*)|*.*</Message>
-		<Message ID="FilterTest">Test files (*.mtp)|*.mtp|All (*.*)|*.*</Message>
-		<Message ID="FilterCheat">All supported formats (*.cht, *.xml)|*.cht;*.xml</Message>
-		<Message ID="FilterSavestate">Mesen Savestates (*.mss)|*.mss|All files (*.*)|*.*</Message>
-		<Message ID="FilterTapeFiles">Family Basic Tape files (*.fbt)|*.fbt|All Files (*.*)|*.*</Message>
-
 		<Message ID="LastSession">Last Session</Message>
 		<Message ID="AutoSave">Auto-save</Message>
 		<Message ID="SlotNumber">Slot #{0}</Message>
@@ -1476,7 +1463,7 @@
 
 		<Message ID="HelpFullscreen">/fullscreen - Start Mesen in fullscreen mode</Message>
 		<Message ID="HelpDoNotSaveSettings">/DoNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)</Message>
-		<Message ID="HelpRecordMovie">/RecordMovie="filename.msm" - Start recording a movie after the specified game is loaded.</Message>
+		<Message ID="HelpRecordMovie">/RecordMovie="filename.mmo" - Start recording a movie after the specified game is loaded.</Message>
 		<Message ID="HelpLoadLastSession">/LoadLastSession - Resumes the game in the state it was left in when it was last played.</Message>
 
 		<Message ID="Resume">Resume</Message>
@@ -1525,8 +1512,8 @@
 		<Message ID="PatchAndReset">Patch and reset the current game?</Message>
 		<Message ID="SelectRomIps">Please select a ROM for this patch file.</Message>
 		<Message ID="UnableToDownload">Unable to download file. Check your internet connection and try again.&#xA;&#xA;Details:&#xA;{0}</Message>
-		<Message ID="UnableToStartMissingDependencies">Mesen could not launch because it was unable to load MesenSCore.dll due to missing dependencies.</Message>
-		<Message ID="UnableToStartMissingFiles">Mesen was unable to start due to missing files.&#xA;&#xA;Error: MesenSCore.dll is missing.</Message>
+		<Message ID="UnableToStartMissingDependencies">Mesen could not launch because it was unable to load MesenCore.dll due to missing dependencies.</Message>
+		<Message ID="UnableToStartMissingFiles">Mesen was unable to start due to missing files.&#xA;&#xA;Error: MesenCore.dll is missing.</Message>
 		<Message ID="UnexpectedError">An unexpected error has occurred.&#xA;&#xA;Error details:&#xA;{0}</Message>
 		<Message ID="UpdateDownloadFailed">Download failed - the file appears to be corrupted. Please visit the Mesen website to download the latest version manually.</Message>
 		<Message ID="UpgradeSuccess">Upgrade completed successfully.</Message>

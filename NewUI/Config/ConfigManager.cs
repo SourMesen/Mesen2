@@ -25,7 +25,7 @@ namespace Mesen.Config
 		{
 			get
 			{
-				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mesen-SCore");
+				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mesen2");
 			}
 		}
 

@@ -10,7 +10,7 @@ namespace Mesen.Interop
 {
 	public class HistoryApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 
 		[DllImport(DllPath)] public static extern void HistoryViewerInitialize(IntPtr windowHandle, IntPtr viewerHandle);
 		[DllImport(DllPath)] public static extern void HistoryViewerRelease();

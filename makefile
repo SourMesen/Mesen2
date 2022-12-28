@@ -46,7 +46,7 @@ ifneq ($(STATICLINK),false)
 endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
-SHAREDLIB=libMesenSCore.dll
+SHAREDLIB=libMesenCore.dll
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
 CORESRC := $(shell find Core -name '*.cpp')

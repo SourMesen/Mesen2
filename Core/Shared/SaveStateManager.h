@@ -12,7 +12,7 @@ private:
 	atomic<uint32_t> _lastIndex;
 	Emulator* _emu;
 
-	string GetStateFilepath(int stateIndex);	
+	string GetStateFilepath(int stateIndex);
 	void SaveVideoData(ostream& stream);
 	bool GetVideoData(vector<uint8_t>& out, RenderedFrame& frame, istream& stream);
 

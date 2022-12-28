@@ -7,7 +7,7 @@ namespace Mesen.Interop
 {
 	public class NetplayApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 
 		[DllImport(DllPath)] public static extern void StartServer(UInt16 port, [MarshalAs(UnmanagedType.LPUTF8Str)]string password);
 		[DllImport(DllPath)] public static extern void StopServer();

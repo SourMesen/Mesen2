@@ -15,7 +15,7 @@ namespace Mesen.Interop
 {
 	public class DebugApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 		[DllImport(DllPath)] public static extern void InitializeDebugger();
 		[DllImport(DllPath)] public static extern void ReleaseDebugger();
 

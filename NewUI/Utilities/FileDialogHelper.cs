@@ -15,7 +15,7 @@ namespace Mesen.Utilities
 	{
 		public const string RomExt = "[[ROMFILES]]";
 		public const string FirmwareExt = "[[FIRMWAREFILES]]";
-		public const string MesenMovieExt = "msm";
+		public const string MesenMovieExt = "mmo";
 		public const string TblExt = "tbl";
 		public const string PaletteExt = "pal";
 		public const string TraceExt = "txt";
@@ -46,13 +46,13 @@ namespace Mesen.Utilities
 			List<FilePickerFileType> filter = new List<FilePickerFileType>();
 			foreach(string ext in extensions) {
 				if(ext == FileDialogHelper.RomExt) {
-					filter.Add(new FilePickerFileType("All ROM Files") { Patterns = new List<string>() { "*.sfc", "*.fig", "*.smc", "*.spc", "*.nes", "*.fds", "*.unif", "*.unf", "*.studybox", "*.nsf", "*.nsfe", "*.gb", "*.gbc", "*.gbs", "*.pce", "*.sgx", "*.cue", "*.hes", "*.zip", "*.7z" } });
-					filter.Add(new FilePickerFileType("SNES ROM Files") { Patterns = new List<string>() { "*.sfc", "*.fig", "*.smc", "*.spc" } });
-					filter.Add(new FilePickerFileType("NES ROM Files") { Patterns = new List<string>() { "*.nes", "*.fds", "*.unif", "*.unf", "*.studybox", "*.nsf", "*.nsfe" } });
-					filter.Add(new FilePickerFileType("GB ROM Files") { Patterns = new List<string>() { "*.gb", "*.gbc", "*.gbs" } });
-					filter.Add(new FilePickerFileType("PC Engine ROM Files") { Patterns = new List<string>() { "*.pce", "*.sgx", "*.cue", ".hes" } });
+					filter.Add(new FilePickerFileType("All ROM files") { Patterns = new List<string>() { "*.sfc", "*.fig", "*.smc", "*.spc", "*.nes", "*.fds", "*.unif", "*.unf", "*.studybox", "*.nsf", "*.nsfe", "*.gb", "*.gbc", "*.gbs", "*.pce", "*.sgx", "*.cue", "*.hes", "*.zip", "*.7z" } });
+					filter.Add(new FilePickerFileType("SNES ROM files") { Patterns = new List<string>() { "*.sfc", "*.fig", "*.smc", "*.spc" } });
+					filter.Add(new FilePickerFileType("NES ROM files") { Patterns = new List<string>() { "*.nes", "*.fds", "*.unif", "*.unf", "*.studybox", "*.nsf", "*.nsfe" } });
+					filter.Add(new FilePickerFileType("GB ROM files") { Patterns = new List<string>() { "*.gb", "*.gbc", "*.gbs" } });
+					filter.Add(new FilePickerFileType("PC Engine ROM files") { Patterns = new List<string>() { "*.pce", "*.sgx", "*.cue", ".hes" } });
 				} else if(ext == FileDialogHelper.FirmwareExt) {
-					filter.Add(new FilePickerFileType("All firmware Files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom" } });
+					filter.Add(new FilePickerFileType("All firmware files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom" } });
 				} else {
 					filter.Add(new FilePickerFileType(ext.ToUpper() + " files") { Patterns = new List<string>() { "*." + ext } });
 				}

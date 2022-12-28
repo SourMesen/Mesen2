@@ -14,7 +14,7 @@ namespace Mesen.Interop
 {
 	public class ConfigApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 
 		[DllImport(DllPath)] public static extern void SetVideoConfig(InteropVideoConfig config);
 		[DllImport(DllPath)] public static extern void SetAudioConfig(InteropAudioConfig config);

@@ -8,7 +8,7 @@ namespace Mesen.Interop
 {
 	public class InputApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 		
 		[DllImport(DllPath)] public static extern void SetKeyState(UInt16 scanCode, [MarshalAs(UnmanagedType.I1)]bool pressed);
 		[DllImport(DllPath)] public static extern void ResetKeyState();

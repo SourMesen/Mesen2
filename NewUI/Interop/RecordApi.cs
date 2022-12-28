@@ -10,7 +10,7 @@ namespace Mesen.Interop
 {
 	class RecordApi
 	{
-		private const string DllPath = "MesenSCore.dll";
+		private const string DllPath = EmuApi.DllName;
 
 		[DllImport(DllPath)] public static extern void AviRecord([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, VideoCodec codec, UInt32 compressionLevel);
 		[DllImport(DllPath)] public static extern void AviStop();
