@@ -1,0 +1,62 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:m="clr-namespace:Mesen"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:i="using:Mesen.Interop"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="230"
+	x:Class="Mesen.Windows.HdPackBuilderWindow"
+	Width="450" Height="230"
+	CanResize="False"
+	x:DataType="vm:HdPackBuilderViewModel"
+	Title="{l:Translate wndTitle}"
+	Icon="/Assets/HdPack.png"
+>
+	<DockPanel Margin="5">
+		<Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+			<c:ButtonWithIcon Icon="Assets/Folder.png" Command="{Binding OpenFolder}" Text="{l:Translate btnOpenFolder}" IsEnabled="{CompiledBinding IsOpenFolderEnabled}" />
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+				<c:ButtonWithIcon Icon="Assets/Record.png" Command="{Binding StartRecording}" Text="{l:Translate btnStartRecording}" IsVisible="{CompiledBinding !IsRecording}" />
+				<c:ButtonWithIcon Icon="Assets/MediaStop.png" Command="{Binding StopRecording}" Text="{l:Translate btnStopRecording}" IsVisible="{CompiledBinding IsRecording}" />
+			</StackPanel>
+		</Grid>
+
+		<Grid ColumnDefinitions="Auto,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+			<TextBlock Text="{l:Translate lblSaveTo}" />
+			<c:PathSelector Grid.Column="1" Path="{CompiledBinding SaveFolder}" Editable="True" />
+
+			<c:OptionSection Grid.Row="1" Grid.ColumnSpan="2" Header="{l:Translate grpOptions}">
+				<Grid ColumnDefinitions="Auto,150,Auto" RowDefinitions="Auto,Auto">
+					<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScale}" />
+					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" Items="{CompiledBinding Filters}" SelectedItem="{CompiledBinding SelectedFilter}" />
+					<Image Grid.Column="2" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblScaleHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+
+					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
+					<ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Items="{CompiledBinding BankSizes}" SelectedItem="{CompiledBinding SelectedBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
+					<Image Grid.Column="2" Grid.Row="1" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblBankSizeHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" IsVisible="{CompiledBinding IsBankSizeVisible}" />
+				</Grid>
+				<WrapPanel>
+					<CheckBox Content="{l:Translate chkGroupBlankTiles}" IsChecked="{CompiledBinding Config.GroupBlankTiles}" />
+					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblGroupBlankTilesHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				</WrapPanel>
+				<WrapPanel>
+					<CheckBox Content="{l:Translate chkSortByUsageFrequency}" IsChecked="{CompiledBinding Config.SortByUsageFrequency}" />
+					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblSortByUsageFrequencyHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				</WrapPanel>
+				<WrapPanel>
+					<CheckBox Content="{l:Translate chkUseLargeSprites}" IsChecked="{CompiledBinding Config.UseLargeSprites}" />
+					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblUseLargeSpritesHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				</WrapPanel>
+				<WrapPanel>
+					<CheckBox Content="{l:Translate chkIgnoreOverscan}" IsChecked="{CompiledBinding Config.IgnoreOverscan}" />
+					<Image Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblIgnoreOverscanHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				</WrapPanel>
+			</c:OptionSection>
+		</Grid>
+	</DockPanel>
+</Window>

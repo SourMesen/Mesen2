@@ -374,6 +374,9 @@
     <Compile Update="Windows\GameConfigWindow.axaml.cs">
       <DependentUpon>GameConfigWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\HdPackBuilderWindow.axaml.cs">
+      <DependentUpon>HdPackBuilderWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\UpdatePromptWindow.axaml.cs">
       <DependentUpon>UpdatePromptWindow.axaml</DependentUpon>
     </Compile>

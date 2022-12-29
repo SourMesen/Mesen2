@@ -703,7 +703,30 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+		<Form ID="HdPackBuilderWindow">
+			<Control ID="wndTitle">HD Pack Builder</Control>
+			
+			<Control ID="grpOptions">Recording Options</Control>
+			<Control ID="lblBankSize">CHR Bank Size:</Control>
+			<Control ID="lblScale">Scale/Filter:</Control>
+			<Control ID="chkSortByUsageFrequency">Sort pages by usage frequency</Control>
+			<Control ID="chkUseLargeSprites">Use 8x16 sprite display mode</Control>
+			<Control ID="chkGroupBlankTiles">Group blank tiles</Control>
+			<Control ID="chkIgnoreOverscan">Ignore tiles at the edges of the screen (overscan)</Control>
+
+			<Message ID="lblScaleHelp">Selects the scale and video filter to use when generating the PNG files&#xA;for the HD Pack. Use the "Prescale" filters to generate the tiles&#xA;at a larger scale without applying any transformation to the pixels.</Message>
+			<Message ID="lblBankSizeHelp">This option is only available for CHR RAM games.  CHR RAM games have no&#xA;fixed "banks" - they are dynamically created by the game's code.&#xA;This option alters the HD Pack Builder's behavior when grouping the tiles into &#xA;the PNG files - a smaller bank size will usually result in less PNG &#xA;files (but depending on the game's code, larger values may produce &#xA;better results).</Message>
+			<Message ID="lblSortByUsageFrequencyHelp">When this option is enabled, the tiles in PNG files are sorted by the&#xA;frequency at which they are shown on the screen while recording (more &#xA;common palettes will be grouped together in the first PNG for a specific bank &#xA;number. If this option is unchecked, the PNGs will be sorted by palette - &#xA;each PNG will only contain up to 4 different colors in this case.</Message>
+			<Message ID="lblGroupBlankTilesHelp">This option groups all the blank tiles sequentially into the same PNG&#xA;files - this helps reduce the number of PNG files produced by removing &#xA;almost-empty PNG files containing only blank tiles.</Message>
+			<Message ID="lblUseLargeSpritesHelp">When enabled, this option will alter the display order of CHR banks&#xA;that contain only sprites to make the sprites easier to edit in the PNG file.</Message>
+			<Message ID="lblIgnoreOverscanHelp">When enabled, this will make the builder ignore any pixels in the overscan area.&#xA;This is useful in games that contain glitches on the outer edge of the screen.&#xA;Incorrect palette combinations due to these glitches will be ignored and won't be shown in the PNG files.</Message>
+
+			<Control ID="btnStartRecording">Start Recording</Control>
+			<Control ID="btnStopRecording">Stop Recording</Control>
+			<Control ID="btnOpenFolder">Open Save Folder</Control>
+			
+			<Control ID="lblSaveTo">Save to:</Control>
+		</Form>
 		<Form ID="InputBarcodeWindow">
 			<Control ID="wndTitle">Input barcode...</Control>
 			<Control ID="lblBarcode">Barcode:</Control>

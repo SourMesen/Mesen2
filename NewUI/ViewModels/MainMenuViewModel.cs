@@ -19,6 +19,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -600,8 +601,9 @@ namespace Mesen.ViewModels
 						},
 						new MainMenuAction() {
 							ActionType = ActionType.HdPackBuilder,
-							IsEnabled = () => false,
-							OnClick = () => { } //TODO
+							OnClick = () => {
+								ApplicationHelper.GetOrCreateUniqueWindow(wnd, () => new HdPackBuilderWindow());
+							}
 						}
 					}
 				},

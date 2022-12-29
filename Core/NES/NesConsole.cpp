@@ -13,6 +13,8 @@
 #include "NES/HdPacks/HdData.h"
 #include "NES/HdPacks/HdNesPpu.h"
 #include "NES/HdPacks/HdPackLoader.h"
+#include "NES/HdPacks/HdPackBuilder.h"
+#include "NES/HdPacks/HdBuilderPpu.h"
 #include "NES/HdPacks/HdVideoFilter.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "NES/NesNtscFilter.h"
@@ -22,6 +24,8 @@
 #include "NES/Mappers/NSF/NsfMapper.h"
 #include "NES/Mappers/FDS/Fds.h"
 #include "Shared/Emulator.h"
+#include "Shared/Audio/SoundMixer.h"
+#include "Shared/SaveStateManager.h"
 #include "Shared/CheatManager.h"
 #include "Shared/Movies/MovieManager.h"
 #include "Shared/BaseControlManager.h"
@@ -400,7 +404,7 @@ ShortcutState NesConsole::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t 
 
 BaseVideoFilter* NesConsole::GetVideoFilter()
 {
-	if(_hdData) {
+	if(_hdData && !_hdPackBuilder) {
 		return new HdVideoFilter(_emu, _hdData.get());
 	} else if(GetRomFormat() == RomFormat::Nsf) {
 		return new NesDefaultVideoFilter(_emu);
@@ -610,4 +614,59 @@ DipSwitchInfo NesConsole::GetDipSwitchInfo()
 	info.DipSwitchCount = _mapper->GetMapperDipSwitchCount();
 	info.DatabaseId = _mapper->GetRomInfo().Hash.PrgCrc32;
 	return info;
+}
+
+void NesConsole::ProcessNotification(ConsoleNotificationType type, void* parameter)
+{
+	if(type == ConsoleNotificationType::ExecuteShortcut) {
+		ExecuteShortcutParams* params = (ExecuteShortcutParams*)parameter;
+		switch(params->Shortcut) {
+			default: break;
+			case EmulatorShortcut::StartRecordHdPack: StartRecordingHdPack(*(HdPackBuilderOptions*)params->ParamPtr); break;
+			case EmulatorShortcut::StopRecordHdPack: StopRecordingHdPack(); break;
+		}
+	}
+}
+
+void NesConsole::StartRecordingHdPack(HdPackBuilderOptions options)
+{
+	auto lock = _emu->AcquireLock();
+
+	std::stringstream saveState;
+	_emu->Serialize(saveState, false, 0);
+
+	_hdPackBuilder.reset();
+	_hdPackBuilder.reset(new HdPackBuilder(_emu, _ppu->GetPpuModel(), !_mapper->HasChrRom(), options));
+
+	_memoryManager->UnregisterIODevice(_ppu.get());
+	_ppu.reset(new HdBuilderPpu(this, _hdPackBuilder.get(), options.ChrRamBankSize));
+	_memoryManager->RegisterIODevice(_ppu.get());
+
+	_emu->Deserialize(saveState, SaveStateManager::FileFormatVersion, false);
+	_emu->GetSoundMixer()->StopAudio();
+
+	_emu->GetVideoDecoder()->ForceFilterUpdate();
+}
+
+void NesConsole::StopRecordingHdPack()
+{
+	if(_hdPackBuilder) {
+		auto lock = _emu->AcquireLock();
+
+		std::stringstream saveState;
+		_emu->Serialize(saveState, false, 0);
+
+		_memoryManager->UnregisterIODevice(_ppu.get());
+		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
+			_ppu.reset(new HdNesPpu(this, _hdData.get()));
+		} else {
+			_ppu.reset(new DefaultNesPpu(this));
+		}
+		_memoryManager->RegisterIODevice(_ppu.get());
+		_hdPackBuilder.reset();
+
+		_emu->Deserialize(saveState, SaveStateManager::FileFormatVersion, false);
+		_emu->GetSoundMixer()->StopAudio();
+		_emu->GetVideoDecoder()->ForceFilterUpdate();
+	}
 }

@@ -79,6 +79,8 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern double GetAspectRatio();
 		[DllImport(DllPath)] public static extern FrameInfo GetBaseScreenSize();
+		[DllImport(DllPath)] public static extern Int32 GetGameMemorySize(MemoryType type);
+
 		[DllImport(DllPath)] public static extern void SetRendererSize(UInt32 width, UInt32 height);
 
 		[DllImport(DllPath)] public static extern void ExecuteShortcut(ExecuteShortcutParams p);
@@ -272,6 +274,7 @@ namespace Mesen.Interop
 	{
 		public EmulatorShortcut Shortcut;
 		public UInt32 Param;
+		public IntPtr ParamPtr;
 	};
 
 	public enum AudioPlayerAction
@@ -349,4 +352,5 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool IsRamCode;
 		[MarshalAs(UnmanagedType.I1)] public bool IsAbsoluteAddress;
 	}
+
 }

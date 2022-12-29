@@ -2610,6 +2610,12 @@
     <ClInclude Include="NES\Mappers\Audio\emu2413.h">
       <Filter>NES\Mappers\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="NES\HdPacks\HdBuilderPpu.h">
+      <Filter>NES\HdPacks</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\HdPacks\HdPackBuilder.h">
+      <Filter>NES\HdPacks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2740,6 +2746,9 @@
     </ClCompile>
     <ClCompile Include="NES\Mappers\Audio\emu2413.cpp">
       <Filter>NES\Mappers\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\HdPacks\HdPackBuilder.cpp">
+      <Filter>NES\HdPacks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,16 @@
 #include "pch.h"
 #include "NES/Debugger/NesTraceLogger.h"
-#include "NES/NesPpu.h"
+#include "NES/NesConsole.h"
+#include "NES/BaseNesPpu.h"
 #include "NES/NesTypes.h"
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/HexUtilities.h"
 
-NesTraceLogger::NesTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, BaseNesPpu* ppu) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Nes)
+NesTraceLogger::NesTraceLogger(Debugger* debugger, IDebugger* cpuDebugger, NesConsole* console) : BaseTraceLogger(debugger, cpuDebugger, CpuType::Nes)
 {
-	_ppu = ppu;
+	_console = console;
 }
 
 RowDataType NesTraceLogger::GetFormatTagType(string& tag)
@@ -48,10 +49,11 @@ void NesTraceLogger::GetTraceRow(string &output, NesCpuState &cpuState, TraceLog
 
 void NesTraceLogger::LogPpuState()
 {
+	BaseNesPpu* ppu = _console->GetPpu();
 	_ppuState[_currentPos] = {
-		_ppu->GetCurrentCycle(),
-		_ppu->GetCurrentCycle(),
-		_ppu->GetCurrentScanline(),
-		_ppu->GetFrameCount()
+		ppu->GetCurrentCycle(),
+		ppu->GetCurrentCycle(),
+		ppu->GetCurrentScanline(),
+		ppu->GetFrameCount()
 	};
 }

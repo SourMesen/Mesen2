@@ -277,6 +277,10 @@ namespace Mesen.Windows
 							}, TimeSpan.FromMilliseconds(50));
 						});
 					}
+
+					Dispatcher.UIThread.Post(() => {
+						ApplicationHelper.GetExistingWindow<HdPackBuilderWindow>()?.Close();
+					});
 					break;
 
 				case ConsoleNotificationType.DebuggerResumed:
@@ -320,6 +324,12 @@ namespace Mesen.Windows
 						tcs.SetResult();
 					});
 					tcs.Task.Wait();
+					break;
+
+				case ConsoleNotificationType.BeforeGameLoad:
+					Dispatcher.UIThread.Post(() => {
+						ApplicationHelper.GetExistingWindow<HdPackBuilderWindow>()?.Close();
+					});
 					break;
 			}
 		}

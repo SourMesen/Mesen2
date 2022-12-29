@@ -244,6 +244,8 @@ extern "C" {
 		return { 256, 240 };
 	}
 	
+	DllExport uint32_t __stdcall GetGameMemorySize(MemoryType type) { return _emu->GetMemory(type).Size; }
+
 	DllExport void __stdcall ClearCheats() { _emu->GetCheatManager()->ClearCheats(); }
 	DllExport void __stdcall SetCheats(CheatCode codes[], uint32_t length) { _emu->GetCheatManager()->SetCheats(codes, length); }
 	DllExport bool __stdcall GetConvertedCheat(CheatCode input, InternalCheatCode& output) { return _emu->GetCheatManager()->GetConvertedCheat(input, output); }

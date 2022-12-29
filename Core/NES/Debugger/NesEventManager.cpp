@@ -15,12 +15,12 @@
 NesEventManager::NesEventManager(Debugger *debugger, NesConsole* console)
 {
 	_debugger = debugger;
+	_console = console;
 	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
 	_mapper = console->GetMapper();
 	_snapshotScanlineOffset = -1;
 
-	NesDefaultVideoFilter::GetFullPalette(_palette, console->GetNesConfig(), _ppu->GetPpuModel());
+	NesDefaultVideoFilter::GetFullPalette(_palette, console->GetNesConfig(), console->GetPpu()->GetPpuModel());
 
 	_ppuBuffer = new uint16_t[NesConstants::ScreenPixelCount];
 	memset(_ppuBuffer, 0, NesConstants::ScreenPixelCount * sizeof(uint16_t));
@@ -33,11 +33,12 @@ NesEventManager::~NesEventManager()
 
 void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operation, int32_t breakpointId)
 {
+	BaseNesPpu* ppu = _console->GetPpu();
 	DebugEventInfo evt = {};
 	evt.Type = type;
 	evt.Operation = operation;
-	evt.Scanline = (int16_t)_ppu->GetCurrentScanline();
-	evt.Cycle = (uint16_t)_ppu->GetCurrentCycle();
+	evt.Scanline = (int16_t)ppu->GetCurrentScanline();
+	evt.Cycle = (uint16_t)ppu->GetCurrentCycle();
 	evt.BreakpointId = breakpointId;
 	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Nes, true);
 	evt.DmaChannel = -1;
@@ -46,7 +47,7 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 	bool isWrite = operation.Type == MemoryOperationType::Write || operation.Type == MemoryOperationType::DmaWrite || operation.Type == MemoryOperationType::DummyWrite;
 	if(isWrite && (addr & 0xE000) == 0x2000) {
 		NesPpuState state;
-		_ppu->GetState(state);
+		ppu->GetState(state);
 		switch(addr & 0x07) {
 			case 4:
 				//OAM write
@@ -85,7 +86,7 @@ void NesEventManager::AddEvent(DebugEventType type)
 {
 	MemoryOperationInfo op = {};
 	if(type == DebugEventType::BgColorChange) {
-		op.Address = _ppu->GetCurrentBgColor();
+		op.Address = _console->GetPpu()->GetCurrentBgColor();
 	}
 	AddEvent(type, op, -1);
 }
@@ -193,18 +194,19 @@ void NesEventManager::ConvertScanlineCycleToRowColumn(int32_t& x, int32_t& y)
 
 uint32_t NesEventManager::TakeEventSnapshot(bool forAutoRefresh)
 {
+	BaseNesPpu* ppu = _console->GetPpu();
 	DebugBreakHelper breakHelper(_debugger);
 	auto lock = _lock.AcquireSafe();
 
-	uint16_t cycle = _ppu->GetCurrentCycle();
-	uint16_t scanline = _ppu->GetCurrentScanline() + 1;
+	uint16_t cycle = _console->GetPpu()->GetCurrentCycle();
+	uint16_t scanline = ppu->GetCurrentScanline() + 1;
 
 	if(scanline >= 240 || (scanline == 0 && cycle == 0)) {
-		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(false), NesConstants::ScreenPixelCount * sizeof(uint16_t));
+		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false), NesConstants::ScreenPixelCount * sizeof(uint16_t));
 	} else {
 		uint32_t offset = (NesConstants::ScreenWidth * scanline);
-		memcpy(_ppuBuffer, _ppu->GetScreenBuffer(false), offset * sizeof(uint16_t));
-		memcpy(_ppuBuffer + offset, _ppu->GetScreenBuffer(true) + offset, (NesConstants::ScreenPixelCount - offset) * sizeof(uint16_t));
+		memcpy(_ppuBuffer, ppu->GetScreenBuffer(false), offset * sizeof(uint16_t));
+		memcpy(_ppuBuffer + offset, ppu->GetScreenBuffer(true) + offset, (NesConstants::ScreenPixelCount - offset) * sizeof(uint16_t));
 	}
 
 	_snapshotCurrentFrame = _debugEvents;
@@ -212,7 +214,7 @@ uint32_t NesEventManager::TakeEventSnapshot(bool forAutoRefresh)
 	_snapshotScanline = scanline;
 	_snapshotCycle = cycle;
 	_forAutoRefresh = forAutoRefresh;
-	_scanlineCount = _ppu->GetScanlineCount();
+	_scanlineCount = ppu->GetScanlineCount();
 	return _scanlineCount;
 }
 

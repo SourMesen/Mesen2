@@ -24,6 +24,8 @@
     <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="Debugger\FrozenAddressManager.h" />
     <ClInclude Include="Debugger\StepBackManager.h" />
+    <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
+    <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
@@ -702,6 +704,7 @@
     <ClCompile Include="NES\HdPacks\HdAudioDevice.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPack.cpp" />
     <ClCompile Include="NES\HdPacks\HdNesPpu.cpp" />
+    <ClCompile Include="NES\HdPacks\HdPackBuilder.cpp" />
     <ClCompile Include="NES\HdPacks\HdPackLoader.cpp" />
     <ClCompile Include="NES\HdPacks\HdVideoFilter.cpp" />
     <ClCompile Include="NES\HdPacks\OggMixer.cpp" />

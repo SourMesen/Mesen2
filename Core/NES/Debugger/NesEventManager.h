@@ -50,7 +50,7 @@ private:
 	NesEventViewerConfig _config = {};
 
 	NesCpu* _cpu = nullptr;
-	BaseNesPpu* _ppu = nullptr;
+	NesConsole* _console = nullptr;
 	BaseMapper* _mapper = nullptr;
 	Debugger* _debugger = nullptr;
 

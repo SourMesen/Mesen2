@@ -3,6 +3,7 @@
 #include "Utilities/ISerializable.h"
 #include "Core/Debugger/DebugTypes.h"
 #include "Shared/Audio/AudioPlayerTypes.h"
+#include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/RomInfo.h"
 #include "Shared/TimingInfo.h"
 
@@ -42,7 +43,7 @@ enum class ShortcutState
 	Default = 2
 };
 
-class IConsole : public ISerializable
+class IConsole : public ISerializable, public INotificationListener
 {
 public:
 	virtual ~IConsole() {}
@@ -97,5 +98,7 @@ public:
 	virtual void GetConsoleState(BaseState& state, ConsoleType consoleType) = 0;
 
 	virtual void ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value) {}
+
+	virtual void ProcessNotification(ConsoleNotificationType type, void* parameter) {}
 };
 

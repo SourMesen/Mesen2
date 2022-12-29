@@ -17,7 +17,9 @@ class NesSoundMixer;
 class BaseVideoFilter;
 class BaseControlManager;
 class HdAudioDevice;
+class HdPackBuilder;
 struct HdPackData;
+struct HdPackBuilderOptions;
 
 enum class DebugEventType;
 enum class EventType;
@@ -43,6 +45,7 @@ private:
 
 	unique_ptr<HdPackData> _hdData;
 	unique_ptr<HdAudioDevice> _hdAudioDevice;
+	unique_ptr<HdPackBuilder> _hdPackBuilder;
 
 	ConsoleRegion _region = ConsoleRegion::Auto;
 
@@ -52,6 +55,9 @@ private:
 	void LoadHdPack(VirtualFile& romFile);
 	
 	void InitializeInputDevices(GameInputType inputType, GameSystem system);
+
+	void StartRecordingHdPack(HdPackBuilderOptions options);
+	void StopRecordingHdPack();
 
 public:
 	NesConsole(Emulator* emulator);
@@ -113,4 +119,6 @@ public:
 	void ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value) override;
 	void InitializeRam(void* data, uint32_t length);
 	DipSwitchInfo GetDipSwitchInfo() override;
+
+	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 };

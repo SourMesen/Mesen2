@@ -26,6 +26,7 @@ private:
 	atomic<bool> _frameChanged;
 	atomic<bool> _stopFlag;
 	uint32_t _frameCount = 0;
+	bool _forceFilterUpdate = false;
 
 	double _lastAspectRatio = 0.0;
 
@@ -51,6 +52,8 @@ public:
 	void DecodeFrame(bool synchronous = false);
 	void TakeScreenshot();
 	void TakeScreenshot(std::stringstream &stream);
+	
+	void ForceFilterUpdate() { _forceFilterUpdate = true; }
 
 	uint32_t GetFrameCount();
 	FrameInfo GetBaseFrameInfo(bool removeOverscan);

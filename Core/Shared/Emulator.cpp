@@ -514,6 +514,7 @@ void Emulator::InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo o
 	}
 
 	_console.reset(newConsole);
+	_notificationManager->RegisterNotificationListener(_console.lock());
 }
 
 template<typename T>

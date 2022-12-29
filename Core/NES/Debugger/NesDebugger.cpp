@@ -45,11 +45,10 @@ NesDebugger::NesDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 	
 	_console = console;
 	_cpu = console->GetCpu();
-	_ppu = console->GetPpu();
 	_mapper = console->GetMapper();
 	_memoryManager = console->GetMemoryManager();
 
-	_traceLogger.reset(new NesTraceLogger(debugger, this, _ppu));
+	_traceLogger.reset(new NesTraceLogger(debugger, this, console));
 	_disassembler = debugger->GetDisassembler();
 	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_settings = debugger->GetEmulator()->GetSettings();
@@ -271,7 +270,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
-		case StepType::PpuFrame: step.PpuStepCount = 341 * _ppu->GetScanlineCount() * stepCount; break;
+		case StepType::PpuFrame: step.PpuStepCount = 341 * _console->GetPpu()->GetScanlineCount() * stepCount; break;
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));
@@ -279,7 +278,7 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 
 void NesDebugger::DrawPartialFrame()
 {
-	_ppu->DebugSendFrame();
+	_console->GetPpu()->DebugSendFrame();
 }
 
 void NesDebugger::ProcessCallStackUpdates(AddressInfo& destAddr, uint16_t destPc)
@@ -349,11 +348,11 @@ void NesDebugger::ProcessPpuWrite(uint16_t addr, uint8_t value, MemoryType memor
 void NesDebugger::ProcessPpuCycle()
 {
 	if(_ppuTools->HasOpenedViewer()) {
-		_ppuTools->UpdateViewers(_ppu->GetCurrentScanline(), _ppu->GetCurrentCycle());
+		_ppuTools->UpdateViewers(_console->GetPpu()->GetCurrentScanline(), _console->GetPpu()->GetCurrentCycle());
 	}
 
 	if(_step->HasRequest) {
-		if(_step->HasScanlineBreakRequest() && _ppu->GetCurrentCycle() == 0 && _ppu->GetCurrentScanline() == _step->BreakScanline) {
+		if(_step->HasScanlineBreakRequest() && _console->GetPpu()->GetCurrentCycle() == 0 && _console->GetPpu()->GetCurrentScanline() == _step->BreakScanline) {
 			_debugger->SleepUntilResume(CpuType::Nes, _step->GetBreakSource());
 		} else if(_step->PpuStepCount > 0) {
 			_step->PpuStepCount--;
@@ -446,12 +445,12 @@ BaseState& NesDebugger::GetState()
 
 void NesDebugger::GetPpuState(BaseState& state)
 {
-	_ppu->GetState((NesPpuState&)state);
+	_console->GetPpu()->GetState((NesPpuState&)state);
 }
 
 void NesDebugger::SetPpuState(BaseState& state)
 {
-	_ppu->SetState((NesPpuState&)state);
+	_console->GetPpu()->SetState((NesPpuState&)state);
 }
 
 ITraceLogger* NesDebugger::GetTraceLogger()

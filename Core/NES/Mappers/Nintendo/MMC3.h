@@ -11,7 +11,6 @@ class MMC3 : public BaseMapper
 {
 private:
 	NesCpu* _cpu = nullptr;
-	BaseNesPpu* _ppu = nullptr;
 
 	uint8_t _currentRegister = 0;
 
@@ -197,7 +196,6 @@ protected:
 	void InitMapper() override
 	{
 		_cpu = _console->GetCpu();
-		_ppu = _console->GetPpu();
 
 		//Force MMC3A irqs for boards that are known to use the A revision.
 		//Some MMC3B boards also have the A behavior, but currently no way to tell them apart.
@@ -305,7 +303,7 @@ protected:
 public:
 	void NotifyVramAddressChange(uint16_t addr) override
 	{
-		if(_a12Watcher.UpdateVramAddress(addr, _ppu->GetFrameCycle()) == A12StateChange::Rise) {
+		if(_a12Watcher.UpdateVramAddress(addr, _console->GetPpu()->GetFrameCycle()) == A12StateChange::Rise) {
 			uint32_t count = _irqCounter;
 			if(_irqCounter == 0 || _irqReload) {
 				_irqCounter = _irqReloadValue;

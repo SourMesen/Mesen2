@@ -71,12 +71,13 @@ void VideoDecoder::UpdateVideoFilter()
 	VideoFilterType newFilter = _emu->GetSettings()->GetVideoConfig().VideoFilter;
 	ConsoleType consoleType = _emu->GetConsoleType();
 
-	if(_videoFilterType != newFilter || _videoFilter == nullptr || _consoleType != consoleType) {
+	if(_videoFilterType != newFilter || _videoFilter == nullptr || _consoleType != consoleType || _forceFilterUpdate) {
 		_videoFilterType = newFilter;
 		_consoleType = consoleType;
 
 		_videoFilter.reset(_emu->GetVideoFilter());
 		_scaleFilter = ScaleFilter::GetScaleFilter(_videoFilterType);
+		_forceFilterUpdate = false;
 	}
 
 	uint32_t screenRotation = _emu->GetSettings()->GetVideoConfig().ScreenRotation;

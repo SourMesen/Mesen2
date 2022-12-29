@@ -7,22 +7,23 @@
 #include "NES/BaseMapper.h"
 #include "NES/HdPacks/HdData.h"
 
+struct NesSpriteInfoEx
+{
+	uint32_t AbsoluteTileAddr;
+	uint16_t TileAddr;
+	bool VerticalMirror;
+	uint8_t OffsetY;
+};
+
+struct NesTileInfoEx
+{
+	uint32_t AbsoluteTileAddr;
+	uint16_t TileAddr;
+	uint8_t OffsetY;
+};
+
 class HdNesPpu final : public NesPpu<HdNesPpu>
 {
-	struct NesSpriteInfoEx
-	{
-		uint32_t AbsoluteTileAddr;
-		uint16_t TileAddr;
-		bool VerticalMirror;
-		uint8_t OffsetY;
-	};
-
-	struct NesTileInfoEx
-	{
-		uint32_t AbsoluteTileAddr;
-		uint8_t OffsetY;
-	};
-
 	HdScreenInfo* _screenInfo[2] = {};
 	HdScreenInfo* _info = nullptr;
 	uint32_t _version = 0;

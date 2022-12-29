@@ -45,4 +45,5 @@ struct ExecuteShortcutParams
 {
 	EmulatorShortcut Shortcut;
 	uint32_t Param;
+	void* ParamPtr;
 };

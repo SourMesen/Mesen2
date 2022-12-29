@@ -129,6 +129,8 @@ namespace Mesen.Config.Shortcuts
 		VsInsertCoin2,
 		VsInsertCoin3,
 		VsInsertCoin4,
+		StartRecordHdPack,
+		StopRecordHdPack,
 
 		LastValidValue,
 		[Obsolete] LoadRandomGame,

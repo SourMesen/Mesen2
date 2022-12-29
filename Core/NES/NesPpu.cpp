@@ -15,6 +15,7 @@
 #include "NES/DefaultNesPpu.h"
 #include "NES/NsfPpu.h"
 #include "NES/HdPacks/HdNesPpu.h"
+#include "NES/HdPacks/HdBuilderPpu.h"
 
 #include "Debugger/Debugger.h"
 #include "Shared/EmuSettings.h"
@@ -1473,3 +1474,8 @@ template NesPpu<HdNesPpu>::NesPpu(NesConsole* console);
 template uint16_t* NesPpu<HdNesPpu>::GetScreenBuffer(bool previousBuffer);
 template void NesPpu<HdNesPpu>::Exec();
 template uint32_t NesPpu<HdNesPpu>::GetPixelBrightness(uint8_t x, uint8_t y);
+
+template NesPpu<HdBuilderPpu>::NesPpu(NesConsole* console);
+template uint16_t* NesPpu<HdBuilderPpu>::GetScreenBuffer(bool previousBuffer);
+template void NesPpu<HdBuilderPpu>::Exec();
+template uint32_t NesPpu<HdBuilderPpu>::GetPixelBrightness(uint8_t x, uint8_t y);

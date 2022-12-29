@@ -36,7 +36,6 @@ class NesDebugger final : public IDebugger
 
 	NesConsole* _console;
 	NesCpu* _cpu;
-	BaseNesPpu* _ppu;
 	BaseMapper* _mapper;
 	NesMemoryManager* _memoryManager;
 

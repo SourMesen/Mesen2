@@ -781,6 +781,8 @@ enum class EmulatorShortcut
 	VsInsertCoin2,
 	VsInsertCoin3,
 	VsInsertCoin4,
+	StartRecordHdPack,
+	StopRecordHdPack,
 
 	ShortcutCount,
 };
