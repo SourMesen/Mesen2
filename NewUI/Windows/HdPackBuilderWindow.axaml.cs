@@ -28,6 +28,7 @@ namespace Mesen.Windows
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
+			_model.StopRecording();
 			_model.Dispose();
 		}
 

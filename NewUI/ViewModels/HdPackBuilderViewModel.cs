@@ -86,6 +86,10 @@ namespace Mesen.ViewModels
 
 		public void StartRecording()
 		{
+			if(IsRecording) {
+				return;
+			}
+
 			IsRecording = true;
 
 			Task.Run(() => {
@@ -109,6 +113,10 @@ namespace Mesen.ViewModels
 
 		public void StopRecording()
 		{
+			if(!IsRecording) {
+				return;
+			}
+
 			IsRecording = false;
 
 			Task.Run(() => {
