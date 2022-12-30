@@ -28,10 +28,10 @@ namespace Mesen.Config
 		[Reactive] public UInt32[] Obj0Colors { get; set; } = new UInt32[] { 0xFFFFFFFF, 0xFFB0B0B0, 0xFF686868, 0xFF000000 };
 		[Reactive] public UInt32[] Obj1Colors { get; set; } = new UInt32[] { 0xFFFFFFFF, 0xFFB0B0B0, 0xFF686868, 0xFF000000 };
 
-		[Reactive] public UInt32 Square1Vol { get; set; } = 100;
-		[Reactive] public UInt32 Square2Vol { get; set; } = 100;
-		[Reactive] public UInt32 NoiseVol { get; set; } = 100;
-		[Reactive] public UInt32 WaveVol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Square1Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Square2Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 NoiseVol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 WaveVol { get; set; } = 100;
 
 		public void ApplyConfig()
 		{

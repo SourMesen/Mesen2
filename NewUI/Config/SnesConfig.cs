@@ -39,14 +39,14 @@ namespace Mesen.Config
 
 		//Audio
 		[Reactive] public bool EnableCubicInterpolation { get; set; } = false;
-		[Reactive] public UInt32 Channel1Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel2Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel3Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel4Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel5Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel6Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel7Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel8Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel1Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel2Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel3Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel4Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel5Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel6Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel7Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel8Vol { get; set; } = 100;
 
 		//Emulation
 		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;

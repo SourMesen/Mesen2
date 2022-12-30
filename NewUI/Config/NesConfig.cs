@@ -29,7 +29,7 @@ namespace Mesen.Config
 		
 		[Reactive] public NesControllerConfig MapperInput { get; set; } = new();
 
-		[Reactive] public UInt32 LightDetectionRadius { get; set; } = 0;
+		[Reactive][MinMax(0, 3)] public UInt32 LightDetectionRadius { get; set; } = 0;
 		[Reactive] public bool AutoConfigureInput { get; set; } = true;
 
 		//General
@@ -73,8 +73,8 @@ namespace Mesen.Config
 		[Reactive] public bool RandomizeCpuPpuAlignment { get; set; } = false;
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.AllZeros;
 
-		[Reactive] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
-		[Reactive] public UInt32 PpuExtraScanlinesAfterNmi { get; set; } = 0;
+		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
+		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesAfterNmi { get; set; } = 0;
 
 		//Audio
 		[Reactive] public bool DisableNoiseModeFlag { get; set; } = false;

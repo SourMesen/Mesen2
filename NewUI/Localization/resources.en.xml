@@ -621,6 +621,10 @@
 
 			<Control ID="btnOk">OK</Control>
 		</Form>
+		<Form ID="CommandLineHelpWindow">
+			<Control ID="wndTitle">Command-line options</Control>
+			<Control ID="btnOk">Close</Control>
+		</Form>
 		<Form ID="GetKeyWindow">
 			<Control ID="Title">Set key binding...</Control>
 		</Form>
@@ -3023,6 +3027,7 @@
 			<Value ID="TakeScreenshot">Take Screenshot</Value>
 
 			<Value ID="OnlineHelp">Online Help</Value>
+			<Value ID="CommandLineHelp">Command-line options</Value>
 			<Value ID="CheckForUpdates">Check for updates</Value>
 			<Value ID="ReportBug">Report a bug</Value>
 			<Value ID="About">About</Value>

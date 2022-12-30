@@ -55,9 +55,9 @@ namespace Mesen.Config
 		[Reactive] [MinMax(-20.0, 20.0)] public double Band20Gain { get; set; } = 0;
 
 		[Reactive] public bool AudioPlayerEnableTrackLength { get; set; } = true;
-		[Reactive] public UInt32 AudioPlayerTrackLength { get; set; } = 120;
+		[Reactive][MinMax(0, 9999)] public UInt32 AudioPlayerTrackLength { get; set; } = 120;
 		[Reactive] public bool AudioPlayerAutoDetectSilence { get; set; } = true;
-		[Reactive] public UInt32 AudioPlayerSilenceDelay { get; set; } = 3;
+		[Reactive][MinMax(0, 999999)] public UInt32 AudioPlayerSilenceDelay { get; set; } = 3;
 
 		public void ApplyConfig()
 		{

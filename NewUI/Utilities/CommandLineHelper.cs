@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Mesen.Utilities;
 
@@ -156,5 +158,65 @@ public class CommandLineHelper
 		foreach(string file in FilesToLoad) {
 			LoadRomHelper.LoadFile(file);
 		}
+	}
+
+	public static Dictionary<string, string> GetAvailableSwitches()
+	{
+		Dictionary<string, string> result = new();
+
+		string general = @"--fullscreen - Start in fullscreen mode
+--doNotSaveSettings - Prevent settings from being saved to the disk (useful to prevent command line options from becoming the default settings)
+--recordMovie=""filename.mmo"" - Start recording a movie after the specified game is loaded.
+--loadLastSession - Resumes the game in the state it was left in when it was last played.";
+
+		result["General"] = general;
+		result["Audio"] = GetSwichesForObject("audio.", typeof(AudioConfig));
+		result["Emulation"] = GetSwichesForObject("emulation.", typeof(EmulationConfig));
+		result["Input"] = GetSwichesForObject("input.", typeof(InputConfig));
+		result["Video"] = GetSwichesForObject("video.", typeof(VideoConfig));
+		result["Preferences"] = GetSwichesForObject("preferences.", typeof(PreferencesConfig));
+		result["Nes"] = GetSwichesForObject("nes.", typeof(NesConfig));
+		result["Snes"] = GetSwichesForObject("snes.", typeof(SnesConfig));
+		result["Game Boy"] = GetSwichesForObject("gameBoy.", typeof(GameboyConfig));
+		result["PC Engine"] = GetSwichesForObject("pcEngine.", typeof(PcEngineConfig));
+
+		return result;
+	}
+
+	private static string GetSwichesForObject(string prefix, Type type)
+	{
+		StringBuilder sb = new();
+
+		foreach(PropertyInfo info in type.GetProperties()) {
+			if(!info.CanWrite) {
+				continue;
+			}
+
+			string name = char.ToLowerInvariant(info.Name[0]) + info.Name.Substring(1);
+			if(info.PropertyType == typeof(int) || info.PropertyType == typeof(uint) || info.PropertyType == typeof(double)) {
+				MinMaxAttribute? minMaxAttribute = info.GetCustomAttribute(typeof(MinMaxAttribute)) as MinMaxAttribute;
+				if(minMaxAttribute != null) {
+					sb.AppendLine("--" + prefix + name + "=[" + minMaxAttribute.Min.ToString() + " - " + minMaxAttribute.Max.ToString() + "]");
+				} else {
+					ValidValuesAttribute? validValuesAttribute = info.GetCustomAttribute(typeof(ValidValuesAttribute)) as ValidValuesAttribute;
+					if(validValuesAttribute != null) {
+						sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", validValuesAttribute.ValidValues) + "]");
+					}
+				}
+			} else if(info.PropertyType == typeof(bool)) {
+				sb.AppendLine("--" + prefix + name + "=[true | false]");
+			} else if(info.PropertyType.IsEnum) {
+				if(info.PropertyType != typeof(ControllerType)) {
+					sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", Enum.GetNames(info.PropertyType)) + "]");
+				}
+			} else if(info.PropertyType.IsClass && !info.PropertyType.IsGenericType) {
+				string content = GetSwichesForObject(prefix + name + ".", info.PropertyType);
+				if(content.Length > 0) {
+					sb.Append(content);
+				}
+			}
+		}
+
+		return sb.ToString();
 	}
 }

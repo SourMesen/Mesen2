@@ -359,6 +359,9 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\CommandLineHelpWindow.axaml.cs">
+      <DependentUpon>CommandLineHelpWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\AboutWindow.axaml.cs">
       <DependentUpon>AboutWindow.axaml</DependentUpon>
     </Compile>

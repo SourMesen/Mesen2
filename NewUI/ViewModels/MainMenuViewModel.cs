@@ -938,6 +938,10 @@ namespace Mesen.ViewModels
 					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/docs/")
 				},
 				new MainMenuAction() {
+					ActionType = ActionType.CommandLineHelp,
+					OnClick = () => { new CommandLineHelpWindow().ShowCenteredDialog((Control)wnd); }
+				},
+				new MainMenuAction() {
 					ActionType = ActionType.CheckForUpdates,
 					OnClick = () => CheckForUpdate(wnd, false)
 				},

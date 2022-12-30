@@ -80,6 +80,10 @@ namespace Mesen.Config
 		{
 			Type t = property.PropertyType;
 			try {
+				if(!property.CanWrite) {
+					return;
+				}
+
 				if(t == typeof(int) || t == typeof(uint) || t == typeof(double)) {
 					if(property.GetCustomAttribute<MinMaxAttribute>() is MinMaxAttribute minMaxAttribute) {
 						if(t == typeof(int)) {

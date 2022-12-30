@@ -572,6 +572,8 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Help")]
 		OnlineHelp,
+		[IconFile("CommandLine")]
+		CommandLineHelp,
 		[IconFile("Update")]
 		CheckForUpdates,
 		[IconFile("Exclamation")]

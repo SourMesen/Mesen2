@@ -32,14 +32,14 @@ namespace Mesen.Config
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
 
-		[Reactive] public UInt32 Channel1Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel2Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel3Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel4Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel5Vol { get; set; } = 100;
-		[Reactive] public UInt32 Channel6Vol { get; set; } = 100;
-		[Reactive] public UInt32 CdAudioVolume { get; set; } = 100;
-		[Reactive] public UInt32 AdpcmVolume { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel1Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel2Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel3Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel4Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel5Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 Channel6Vol { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 CdAudioVolume { get; set; } = 100;
+		[Reactive][MinMax(0, 100)] public UInt32 AdpcmVolume { get; set; } = 100;
 
 		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 		[Reactive] public bool DisableSprites { get; set; } = false;
