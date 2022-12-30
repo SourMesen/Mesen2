@@ -59,6 +59,7 @@ class Emulator
 {
 private:
 	friend class DebuggerRequest;
+	friend class EmulatorLock;
 
 	unique_ptr<thread> _emuThread;
 	unique_ptr<AudioPlayerHud> _audioPlayerHud;
