@@ -26,7 +26,7 @@ namespace Mesen
 				StyleHelper.ApplyTheme(MesenTheme.Light);
 				StyleHelper.LoadDebuggerStyles();
 			}
-			ResourceHelper.LoadResources(Language.English);
+			ResourceHelper.LoadResources();
 		}
 
 		public override void OnFrameworkInitializationCompleted()

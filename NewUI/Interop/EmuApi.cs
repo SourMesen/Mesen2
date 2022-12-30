@@ -72,7 +72,6 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void AddKnownGameFolder([MarshalAs(UnmanagedType.LPUTF8Str)]string folder);
 
-		[DllImport(DllPath)] public static extern void SetDisplayLanguage(Language lang);
 		[DllImport(DllPath)] public static extern void SetExclusiveFullscreenMode([MarshalAs(UnmanagedType.I1)]bool fullscreen, IntPtr windowHandle);
 
 		[DllImport(DllPath)] public static extern TimingInfo GetTimingInfo(CpuType cpuType);
