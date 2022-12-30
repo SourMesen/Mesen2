@@ -183,6 +183,18 @@ namespace Mesen.Debugger.ViewModels
 							MemoryToolsWindow.ShowInMemoryTools(Config.Source, address);
 						}
 					}
+				},
+				new ContextMenuSeparator() { IsVisible = () => CpuType == CpuType.Nes },
+				new ContextMenuAction() {
+					ActionType = ActionType.CopyToHdPackFormat,
+					IsVisible = () => CpuType == CpuType.Nes,
+					IsEnabled = () => GetSelectedTileAddress() >= 0 && HdPackCopyHelper.IsActionAllowed(Config.Source),
+					OnClick = () => {
+						int address = GetSelectedTileAddress();
+						if(address >= 0) {
+							HdPackCopyHelper.CopyToHdPackFormat(address, Config.Source, RawPalette, SelectedPalette, false);
+						}
+					}
 				}
 			});
 

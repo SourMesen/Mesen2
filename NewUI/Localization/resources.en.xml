@@ -3146,8 +3146,10 @@
 			
 			<Value ID="FreezeMemory">Freeze</Value>
 			<Value ID="UnfreezeMemory">Unfreeze</Value>
-			
+
 			<Value ID="ResetAccessCounters">Reset access stats</Value>
+
+			<Value ID="CopyToHdPackFormat">Copy tile (HD pack format)</Value>
 		</Enum>
 	</Enums>
 </Resources>

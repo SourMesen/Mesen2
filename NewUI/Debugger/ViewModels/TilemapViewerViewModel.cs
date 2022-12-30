@@ -222,6 +222,18 @@ namespace Mesen.Debugger.ViewModels
 							EditBreakpoint(wnd, tile.Value.AttributeAddress);
 						}
 					}
+				},
+				new ContextMenuSeparator() { IsVisible = () => CpuType == CpuType.Nes },
+				new ContextMenuAction() {
+					ActionType = ActionType.CopyToHdPackFormat,
+					IsVisible = () => CpuType == CpuType.Nes,
+					IsEnabled = () => HdPackCopyHelper.IsActionAllowed(GetVramMemoryType()),
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile?.TileAddress >= 0) {
+							HdPackCopyHelper.CopyToHdPackFormat(tile.Value.TileAddress, GetVramMemoryType(), _rawPalette, tile.Value.PaletteIndex, false);
+						}
+					}
 				}
 			});
 

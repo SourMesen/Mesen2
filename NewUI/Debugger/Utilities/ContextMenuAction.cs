@@ -788,5 +788,8 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("ResetSettings")]
 		ResetAccessCounters,
+		
+		[IconFile("HdPack")]
+		CopyToHdPackFormat,
 	}
 }

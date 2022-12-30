@@ -137,19 +137,25 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
-				GetViewInTileViewerAction()
+				GetViewInTileViewerAction(),
+				GetCopyHdPackFormatActionSeparator(),
+				GetCopyHdPackFormatAction()
 			});
 
 			DebugShortcutManager.CreateContextMenu(_spriteGrid, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
-				GetViewInTileViewerAction()
+				GetViewInTileViewerAction(),
+				GetCopyHdPackFormatActionSeparator(),
+				GetCopyHdPackFormatAction()
 			});
 
 			DebugShortcutManager.CreateContextMenu(listView, new List<object> {
 				GetEditTileAction(wnd),
 				GetViewInMemoryViewerAction(),
-				GetViewInTileViewerAction()
+				GetViewInTileViewerAction(),
+				GetCopyHdPackFormatActionSeparator(),
+				GetCopyHdPackFormatAction()
 			});
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectedSprite).Subscribe(x => {
@@ -222,6 +228,30 @@ namespace Mesen.Debugger.ViewModels
 						DebugPaletteInfo pal = _palette.Get();
 						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
 						TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(sprite.UseExtendedVram), sprite.TileAddress, sprite.Format, TileLayout.Normal, sprite.Palette + paletteOffset);
+					}
+				}
+			};
+		}
+
+		private ContextMenuAction GetCopyHdPackFormatActionSeparator()
+		{
+			return new ContextMenuSeparator() { IsVisible = () => CpuType == CpuType.Nes };
+		}
+
+		private ContextMenuAction GetCopyHdPackFormatAction()
+		{
+			return new ContextMenuAction() {
+				ActionType = ActionType.CopyToHdPackFormat,
+				IsVisible = () => CpuType == CpuType.Nes,
+				IsEnabled = () => {
+					SpritePreviewModel? sprite = GetSelectedSprite();
+					return sprite != null && HdPackCopyHelper.IsActionAllowed(CpuType.GetVramMemoryType(sprite.UseExtendedVram));
+				},
+				OnClick = () => {
+					SpritePreviewModel? sprite = GetSelectedSprite();
+					DebugPaletteInfo? palette = _palette?.Get();
+					if(sprite != null && sprite.TileAddress >= 0 && palette != null) {
+						HdPackCopyHelper.CopyToHdPackFormat(sprite.TileAddress, CpuType.GetVramMemoryType(sprite.UseExtendedVram), palette.Value.GetRawPalette(), sprite.Palette, true, sprite.Height > 8);
 					}
 				}
 			};
