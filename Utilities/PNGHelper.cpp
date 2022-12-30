@@ -10,16 +10,28 @@ bool PNGHelper::WritePNG(std::stringstream &stream, uint32_t* buffer, uint32_t x
 {
 	size_t pngSize = 0;
 
-	//ARGB -> BGR
-	uint32_t size = xSize * ySize * bitsPerPixel / 8 / 4;
-	vector<uint8_t> convertedData(size * 3, 0);
-	for(uint32_t i = 0; i < size; i++) {
-		convertedData[i * 3] = (buffer[i] & 0xFF0000) >> 16;
-		convertedData[i * 3 + 1] = (buffer[i] & 0xFF00) >> 8;
-		convertedData[i * 3 + 2] = (buffer[i] & 0xFF);
+	uint32_t size = xSize * ySize * bitsPerPixel / 8;
+	vector<uint8_t> convertedData(size, 0);
+	if(bitsPerPixel == 32) {
+		//ARGB -> ABGR
+		for(uint32_t i = 0; i < size / 4; i++) {
+			convertedData[i * 4] = (buffer[i] & 0xFF0000) >> 16;
+			convertedData[i * 4 + 1] = (buffer[i] & 0xFF00) >> 8;
+			convertedData[i * 4 + 2] = (buffer[i] & 0xFF);
+			convertedData[i * 4 + 3] = (buffer[i] & 0xFF000000) >> 24;
+		}
+	} else if(bitsPerPixel == 24) {
+		//ARGB -> BGR
+		for(uint32_t i = 0; i < size / 3; i++) {
+			convertedData[i * 3] = (buffer[i] & 0xFF0000) >> 16;
+			convertedData[i * 3 + 1] = (buffer[i] & 0xFF00) >> 8;
+			convertedData[i * 3 + 2] = (buffer[i] & 0xFF);
+		}
+	} else {
+		return false;
 	}
 
-	void* pngData = tdefl_write_image_to_png_file_in_memory_ex(convertedData.data(), xSize, ySize, 3, &pngSize, MZ_DEFAULT_LEVEL, MZ_FALSE);
+	void* pngData = tdefl_write_image_to_png_file_in_memory_ex(convertedData.data(), xSize, ySize, bitsPerPixel / 8, &pngSize, MZ_DEFAULT_LEVEL, MZ_FALSE);
 	if(!pngData) {
 		std::cout << "tdefl_write_image_to_png_file_in_memory_ex() failed!" << std::endl;
 		return false;
