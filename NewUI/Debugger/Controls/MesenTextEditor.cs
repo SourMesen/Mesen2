@@ -64,6 +64,7 @@ namespace Mesen.Debugger.Controls
 
 		public MesenTextEditor()
 		{
+			Options.AllowScrollBelowDocument = false;
 		}
 
 		protected override void OnTextChanged(EventArgs e)
