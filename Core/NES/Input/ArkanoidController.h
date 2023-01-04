@@ -38,14 +38,15 @@ protected:
 	{
 		MouseMovement mov = GetMovement();
 
-		_currentValue += mov.dx;
-		if(_currentValue < 0x54) {
-			_currentValue = 0x54;
-		} else if(_currentValue > 0xF4) {
-			_currentValue = 0xF4;
+		int32_t newValue = (int32_t)_currentValue + mov.dx;
+		if(newValue < 0x54) {
+			newValue = 0x54;
+		} else if(newValue > 0xF4) {
+			newValue = 0xF4;
 		}
 
-		_stateBuffer = _currentValue;
+		_currentValue = (uint32_t)newValue;
+		_stateBuffer = (uint32_t)newValue;
 	}
 
 public:
