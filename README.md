@@ -1,9 +1,10 @@
-# Mesen-S
+# Mesen
 
-Mesen-S is a cross-platform SNES emulator for Windows & Linux built in C++ and C#.  
-If you want to support this project, please consider making a donation:
+Mesen is a multi-system emulator (NES, SNES, Game Boy and PC Engine) for Windows & Linux built in C++ and C#.  
 
-[![Donate](https://www.mesen.ca/images/donate.png)](https://www.mesen.ca/Donate.php)
+## Releases
+
+The latest stable release is available from the [releases tab on GitHub](https://github.com/SourMesen/Mesen/releases).  
 
 ## Development Builds
 
@@ -15,16 +16,6 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/cjk97u1yvw
 
 Linux: [![Build status](https://ci.appveyor.com/api/projects/status/arkaatgy94f23ll3/branch/master?svg=true)](https://ci.appveyor.com/project/Sour/mesen-s-hayo4/build/artifacts)
 
-## Releases
-
-### Windows / Ubuntu
-
-The latest version is available from the [releases tab on GitHub](https://github.com/SourMesen/Mesen-S/releases).  
-
-### Arch Linux
-
-Packages are available here: <https://aur.archlinux.org/packages/mesen-s-git/>
-
 ## Compiling
 
 See [COMPILING.md](COMPILING.md)
@@ -33,7 +24,7 @@ See [COMPILING.md](COMPILING.md)
 
 Mesen is available under the GPL V3 license.  Full text here: <http://www.gnu.org/licenses/gpl-3.0.en.html>
 
-Copyright (C) 2019 M. Bibaud
+Copyright (C) 2023 Sour
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
