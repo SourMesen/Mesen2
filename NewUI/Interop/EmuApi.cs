@@ -91,6 +91,11 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void WriteLogEntry([MarshalAs(UnmanagedType.LPUTF8Str)]string message);
 		[DllImport(DllPath)] public static extern void DisplayMessage([MarshalAs(UnmanagedType.LPUTF8Str)]string title, [MarshalAs(UnmanagedType.LPUTF8Str)]string message, [MarshalAs(UnmanagedType.LPUTF8Str)]string? param1 = null);
 
+		[DllImport(DllPath, EntryPoint = "GetRomHash")] private static extern void GetRomHashWrapper(HashType hashType, IntPtr outLog, Int32 maxLength);
+		public static string GetRomHash(HashType hashType) { return Utf8Utilities.CallStringApi((IntPtr outLog, Int32 maxLength) => {
+			GetRomHashWrapper(hashType, outLog, maxLength);
+		}, 1000000); }
+
 		[DllImport(DllPath)] public static extern IntPtr GetArchiveRomList([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, IntPtr outFileList, Int32 maxLength);
 
 		[DllImport(DllPath)] public static extern void SaveState(UInt32 stateIndex);
@@ -352,4 +357,10 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool IsAbsoluteAddress;
 	}
 
+	public enum HashType
+	{
+		Crc32,
+		Sha1,
+		Sha1Cheat
+	}
 }

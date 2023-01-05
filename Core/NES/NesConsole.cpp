@@ -35,6 +35,7 @@
 #include "Netplay/GameClient.h"
 #include "Debugger/DebugTypes.h"
 #include "Utilities/Serializer.h"
+#include "Utilities/sha1.h"
 
 NesConsole::NesConsole(Emulator* emu)
 {
@@ -417,6 +418,18 @@ BaseVideoFilter* NesConsole::GetVideoFilter()
 			default: return new NesDefaultVideoFilter(_emu);
 		}
 	}
+}
+
+string NesConsole::GetHash(HashType hashType)
+{
+	if(hashType == HashType::Sha1Cheat) {
+		ConsoleMemoryInfo prgRom = _emu->GetMemory(MemoryType::NesPrgRom);
+		if(prgRom.Size && prgRom.Memory) {
+			return SHA1::GetHash((uint8_t*)prgRom.Memory, prgRom.Size);
+		}
+	}
+
+	return "";
 }
 
 RomFormat NesConsole::GetRomFormat()

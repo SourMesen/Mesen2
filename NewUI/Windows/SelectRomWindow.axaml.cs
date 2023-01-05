@@ -135,9 +135,15 @@ namespace Mesen.Windows
 		{
 			_isDoubleTap = true;
 		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+			((SelectRomViewModel)DataContext!).Dispose();
+		}
 	}
 
-	public class SelectRomViewModel : ViewModelBase
+	public class SelectRomViewModel : DisposableViewModel
 	{
 		private readonly List<ArchiveRomEntry> _entries;
 		[Reactive] public IEnumerable<ArchiveRomEntry> FilteredEntries { get; set; }
@@ -149,7 +155,7 @@ namespace Mesen.Windows
 		{
 			_entries = entries;
 			FilteredEntries = entries;
-			this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.SearchString).Subscribe(x => {
 				if(string.IsNullOrWhiteSpace(x)) {
 					FilteredEntries = _entries;
 				} else {
@@ -157,7 +163,7 @@ namespace Mesen.Windows
 				}
 
 				SelectedEntry = FilteredEntries.FirstOrDefault();
-			});
+			}));
 		}
 	}
 }

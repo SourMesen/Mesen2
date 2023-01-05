@@ -550,7 +550,13 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 string Emulator::GetHash(HashType type)
 {
 	//TODO
-	if(type == HashType::Sha1) {
+	shared_ptr<IConsole> console = _console.lock();
+	string hash = console->GetHash(type);
+	if(hash.size()) {
+		return hash;
+	} else if(type == HashType::Sha1) {
+		return _rom.RomFile.GetSha1Hash();
+	} else if(type == HashType::Sha1Cheat) {
 		return _rom.RomFile.GetSha1Hash();
 	}
 	return "";

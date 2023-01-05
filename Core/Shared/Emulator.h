@@ -312,5 +312,6 @@ public:
 enum class HashType
 {
 	Crc32,
-	Sha1
+	Sha1,
+	Sha1Cheat
 };

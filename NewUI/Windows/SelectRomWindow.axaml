@@ -36,10 +36,11 @@
 			SelectedItem="{CompiledBinding SelectedEntry}"
 			DoubleTapped="OnDoubleTapped"
 			PointerReleased="OnPointerReleased"
+			ScrollViewer.AllowAutoHide="False"
 		>
 			<ListBox.Styles>
-				<Style Selector="ScrollViewer">
-					<Setter Property="AllowAutoHide" Value="False" />
+				<Style Selector="ListBoxItem">
+					<Setter Property="Padding" Value="2" />
 				</Style>
 			</ListBox.Styles>
 		</ListBox>

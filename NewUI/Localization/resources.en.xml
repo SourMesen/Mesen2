@@ -756,6 +756,14 @@
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
+		
+		<Form ID="CheatDatabaseWindow">
+			<Control ID="wndTitle">Import cheats from cheat database...</Control>
+			<Control ID="lblSearch">Search:</Control>
+			<Control ID="btnOK">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+		
 		<Form ID="BaseInputConfigForm">
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
@@ -3155,6 +3163,7 @@
 			<Value ID="ResetAccessCounters">Reset access stats</Value>
 
 			<Value ID="CopyToHdPackFormat">Copy tile (HD pack format)</Value>
+			<Value ID="CheatDatabase">Cheat database</Value>
 		</Enum>
 	</Enums>
 </Resources>

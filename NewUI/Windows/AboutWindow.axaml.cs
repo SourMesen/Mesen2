@@ -79,6 +79,7 @@ namespace Mesen.Windows
 				new("SameBoy (LIJI32)", "LIJI32", "MIT", "https://github.com/LIJI32/SameBoy"),
 				new("BizHawk (PCEHawk)", "", "MIT", "https://github.com/TASEmulators/BizHawk"),
 				new("FrankenGraphics", "", "Mesen icon", "https://www.patreon.com/frankengraphics"),
+				new("Mighty Mo", "", "Cheat DB", ""),
 			};
 			AcknowledgeList.Sort((a, b) => a.Name.CompareTo(b.Name));
 

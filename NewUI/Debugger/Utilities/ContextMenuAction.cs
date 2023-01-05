@@ -793,5 +793,8 @@ namespace Mesen.Debugger.Utilities
 		
 		[IconFile("HdPack")]
 		CopyToHdPackFormat,
+
+		[IconFile("Find")]
+		CheatDatabase,
 	}
 }

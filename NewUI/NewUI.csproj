@@ -359,6 +359,9 @@
     <Compile Update="Controls\StateGrid.axaml.cs">
       <DependentUpon>StateGrid.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Windows\CheatDatabaseWindow.axaml.cs">
+      <DependentUpon>CheatDatabaseWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\CommandLineHelpWindow.axaml.cs">
       <DependentUpon>CommandLineHelpWindow.axaml</DependentUpon>
     </Compile>

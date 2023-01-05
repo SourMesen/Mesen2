@@ -14,6 +14,7 @@ using Avalonia.Controls.Selection;
 using DataBoxControl;
 using System.ComponentModel;
 using Mesen.Utilities;
+using Avalonia.VisualTree;
 
 namespace Mesen.ViewModels
 {
@@ -22,16 +23,21 @@ namespace Mesen.ViewModels
 		[Reactive] public MesenList<CheatCode> Cheats { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 		[Reactive] public bool DisableAllCheats { get; set; } = false;
-		
+
 		[Reactive] public SelectionModel<CheatCode> Selection { get; set; } = new();
 		[Reactive] public SortState SortState { get; set; } = new();
+
+		public CheatWindowConfig Config { get; }
 
 		private CheatCodes _cheatCodes = new();
 
 		public CheatListWindowViewModel()
 		{
+			Config = ConfigManager.Config.Cheats;
+			Selection.SingleSelect = false;
+
 			LoadCheats();
-			DisableAllCheats = ConfigManager.Config.Cheats.DisableAllCheats;
+			DisableAllCheats = Config.DisableAllCheats;
 
 			SortState.SetColumnSort("Description", ListSortDirection.Ascending, true);
 			Sort();
@@ -74,8 +80,52 @@ namespace Mesen.ViewModels
 
 		public void InitActions(Control parent)
 		{
-			ToolbarActions = GetActions(parent);
+			List<ContextMenuAction> toolbarActions = GetActions(parent);
+			toolbarActions.Add(new ContextMenuSeparator());
+			toolbarActions.Add(new ContextMenuAction() {
+				ActionType = ActionType.CheatDatabase,
+				AlwaysShowLabel = true,
+				IsEnabled = () => MainWindowViewModel.Instance.RomInfo.ConsoleType switch {
+					ConsoleType.Nes => true,
+					ConsoleType.Snes => true,
+					_ => false
+				},
+				OnClick = async () => {
+					ConsoleType consoleType = MainWindowViewModel.Instance.RomInfo.ConsoleType;
+					CheatDbGameEntry? dbEntry = await CheatDatabaseWindow.Show(consoleType, parent);
+					if(dbEntry != null && consoleType == MainWindowViewModel.Instance.RomInfo.ConsoleType) {
+						List<CheatCode> newCheats = new();
+						foreach(CheatDbCheatEntry cheatEntry in dbEntry.Cheats) {
+							CheatCode newCheat = new CheatCode();
+							newCheat.Description = cheatEntry.Desc;
+							newCheat.Enabled = false;
+							newCheat.Type = GetCheatType(consoleType, cheatEntry.Code);
+							newCheat.Codes = string.Join(Environment.NewLine, cheatEntry.Code.Split(";", StringSplitOptions.RemoveEmptyEntries));
+							newCheats.Add(newCheat);
+						}
+						Cheats.AddRange(newCheats);
+						Sort();
+						ApplyCheats();
+					}
+				}
+			});
+			ToolbarActions = toolbarActions;
+
 			DebugShortcutManager.CreateContextMenu(parent, GetActions(parent));
+		}
+
+		private CheatType GetCheatType(ConsoleType consoleType, string code)
+		{
+			switch(consoleType) {
+				case ConsoleType.Snes:
+					return code.Contains("-") ? CheatType.SnesGameGenie : CheatType.SnesProActionReplay;
+
+				case ConsoleType.Nes:
+					return code.Contains(":") ? CheatType.NesCustom : CheatType.NesGameGenie;
+
+				default:
+					throw new Exception("Unsupported cheat type");
+			}
 		}
 
 		private List<ContextMenuAction> GetActions(Control parent)

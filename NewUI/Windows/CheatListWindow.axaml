@@ -44,6 +44,7 @@
 				SortCommand="{Binding Sort}"
 				SortState="{CompiledBinding SortState}"
 				GridLinesVisibility="All"
+				ColumnWidths="{CompiledBinding Config.ColumnWidths}"
 			>
 				<DataBox.Columns>
 					<DataBoxCheckBoxColumn ColumnName="Enabled" Header="" Binding="{Binding Enabled}" InitialWidth="22" />

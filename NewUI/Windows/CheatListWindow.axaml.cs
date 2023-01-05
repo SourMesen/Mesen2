@@ -82,6 +82,7 @@ namespace Mesen.Windows
 		public void OnNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
+				case ConsoleNotificationType.BeforeGameLoad:
 				case ConsoleNotificationType.BeforeGameUnload:
 					_model.SaveCheats();
 					break;

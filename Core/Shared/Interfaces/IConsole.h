@@ -16,6 +16,7 @@ enum class ConsoleType;
 enum class ConsoleRegion;
 enum class CpuType : uint8_t;
 enum class EmulatorShortcut;
+enum class HashType;
 
 enum class LoadRomResult
 {
@@ -88,6 +89,8 @@ public:
 	virtual BaseVideoFilter* GetVideoFilter() = 0;
 
 	virtual PpuFrameInfo GetPpuFrame() = 0;
+	
+	virtual string GetHash(HashType hashType) { return {}; }
 
 	virtual RomFormat GetRomFormat() = 0;
 	virtual AudioTrackInfo GetAudioTrackInfo() = 0;

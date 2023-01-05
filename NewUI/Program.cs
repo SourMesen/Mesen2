@@ -92,6 +92,10 @@ namespace Mesen
 				using ZipArchive zip = new(depStream);
 				foreach(ZipArchiveEntry entry in zip.Entries) {
 					try {
+						if(entry.FullName.StartsWith("Internal")) {
+							continue;
+						}
+
 						string path = Path.Combine(dest, entry.FullName);
 						entry.ExternalAttributes = 0;
 						if(File.Exists(path)) {
