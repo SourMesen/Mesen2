@@ -336,16 +336,28 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 		return;
 	}
 
+	//On PAL, the dummy/idle reads done by the DMA don't appear to be done on the
+	//address that the CPU was about to read. This prevents the 2+x reads on registers issues.
+	//The exact specifics of where the CPU reads instead aren't known yet - so just disable read side-effects entirely on PAL
+	bool allowReadSideEffects = _console->GetRegion() != ConsoleRegion::Pal;
+
 	//"If this cycle is a read, hijack the read, discard the value, and prevent all other actions that occur on this cycle (PC not incremented, etc)"
 	StartCpuCycle(true);
-	_memoryManager->Read(readAddress, MemoryOperationType::DummyRead);
+	if(allowReadSideEffects) {
+		_memoryManager->Read(readAddress, MemoryOperationType::DummyRead);
+	}
 	EndCpuCycle(true);
 	_needHalt = false;
 
 	uint16_t spriteDmaCounter = 0;
 	uint8_t spriteReadAddr = 0;
 	uint8_t readValue = 0;
-	bool skipDummyReads = (readAddress == 0x4016 || readAddress == 0x4017);
+
+	//On Famicom, each dummy/idle read to 4016/4017 is intepreted as a read of the joypad registers
+	//On NES (or AV Famicom), only the first dummy/idle read causes side effects (e.g only a single bit is lost)
+	NesConsoleType type = _console->GetNesConfig().ConsoleType;
+	bool isNesBehavior = type != NesConsoleType::Hvc001;
+	bool skipDummyReads = !allowReadSideEffects || (isNesBehavior && (readAddress == 0x4016 || readAddress == 0x4017));
 
 	auto processCycle = [this] {
 		//Sprite DMA cycles count as halt/dummy cycles for the DMC DMA when both run at the same time
