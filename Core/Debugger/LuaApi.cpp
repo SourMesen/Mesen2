@@ -341,7 +341,7 @@ int LuaApi::GetLabelAddress(lua_State* lua)
 	LabelManager* labelManager = _debugger->GetLabelManager();
 	AddressInfo addr = labelManager->GetLabelAbsoluteAddress(label);
 	if(addr.Address < 0) {
-		//TODO multibyte label review?
+		//TODOv2 multibyte label review?
 		//Check to see if the label is a multi-byte label instead
 		string mbLabel = label + "+0";
 		addr = labelManager->GetLabelAbsoluteAddress(mbLabel);

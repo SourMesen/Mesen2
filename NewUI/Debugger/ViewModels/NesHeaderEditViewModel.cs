@@ -36,7 +36,7 @@ public class NesHeaderEditViewModel : DisposableViewModel
 		_romInfo = EmuApi.GetRomInfo();
 		string romPath = _romInfo.RomPath;
 		try {
-			//TODO, get header from core (to support for patches, etc.)
+			//TODOv2, get header from core (to support for patches, etc.)
 			using(FileStream fileStream = File.OpenRead(romPath)) {
 				fileStream.Read(headerBytes, 0, 16);
 			}

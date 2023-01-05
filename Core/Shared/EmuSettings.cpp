@@ -38,7 +38,7 @@ void EmuSettings::CopySettings(EmuSettings& src)
 void EmuSettings::Serialize(Serializer& s)
 {
 	//Save/load settings that have an impact on emulation (for movies), netplay, etc.)
-	//TODO: These should probably not be loaded except for movie playback and netplay clients
+	//TODOv2: These should probably not be loaded except for movie playback and netplay clients
 	SV(_video.IntegerFpsMode);
 	SV(_emulation.RunAheadFrames);
 	SV(_game.DipSwitches);

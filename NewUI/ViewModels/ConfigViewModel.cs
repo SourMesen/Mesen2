@@ -46,7 +46,7 @@ namespace Mesen.ViewModels
 				case ConfigWindowTab.Video: Video ??= AddDisposable(new VideoConfigViewModel()); break;
 
 				case ConfigWindowTab.Nes:
-					//TODO fix this patch
+					//TODOv2 fix this patch
 					Preferences ??= AddDisposable(new PreferencesConfigViewModel());
 					Nes ??= AddDisposable(new NesConfigViewModel(Preferences.Config));
 					break;

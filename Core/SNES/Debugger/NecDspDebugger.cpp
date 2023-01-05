@@ -83,7 +83,7 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	//TODO
+	//TODOv2
 }
 
 void NecDspDebugger::Run()

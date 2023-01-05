@@ -1,4 +1,4 @@
-<cheats MesenCheatFile="true" version="1.0">
+<cheats>
   <game name="2020 Super Baseball (USA)" sha1="F285D6B3717A571002A5E9E0B732F08F100D2514">
     <cheat description="Have lots of money - P1">
       <code>7F80CA63</code>

@@ -201,7 +201,7 @@ void SnesMemoryManager::ProcessEvent()
 
 		case SnesEventType::DramRefresh:
 			IncMasterClock40();
-			//TODO?
+			//TODOv2?
 			//_cpu->IncreaseCycleCount<5>();
 
 			if(_ppu->GetScanline() < _ppu->GetVblankStart()) {

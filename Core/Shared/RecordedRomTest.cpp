@@ -121,7 +121,7 @@ void RecordedRomTest::Record(string filename, bool reset)
 
 		_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping = true;
 
-		//TODO - remove snes-specific code
+		//TODOv2 - remove snes-specific code
 		SnesConfig& snesCfg = _emu->GetSettings()->GetSnesConfig();
 		snesCfg.RamPowerOnState = RamState::AllZeros;
 		_emu->GetSettings()->SetSnesConfig(snesCfg);
@@ -182,7 +182,7 @@ int32_t RecordedRomTest::Run(string filename)
 
 		_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping = true;
 
-		//TODO - remove snes-specific code
+		//TODOv2 - remove snes-specific code
 		SnesConfig& snesCfg = _emu->GetSettings()->GetSnesConfig();
 		snesCfg.RamPowerOnState = RamState::AllZeros;
 		_emu->GetSettings()->SetSnesConfig(snesCfg);

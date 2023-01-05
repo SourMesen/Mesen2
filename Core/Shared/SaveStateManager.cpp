@@ -65,7 +65,7 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	WriteValue(stream, emuVersion);
 	WriteValue(stream, formatVersion);
 
-	//TODO, performance
+	//TODOv2, performance
 	//string sha1Hash = _emu->GetHash(HashType::Sha1);
 	string sha1Hash = "0000000000000000000000000000000000000000";
 	stream.write(sha1Hash.c_str(), sha1Hash.size());

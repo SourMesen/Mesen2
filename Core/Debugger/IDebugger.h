@@ -18,7 +18,7 @@ struct BaseState;
 enum class EventType;
 enum class MemoryOperationType;
 
-//TODO rename/refactor to BaseDebugger
+//TODOv2 rename/refactor to BaseDebugger
 class IDebugger
 {
 protected:

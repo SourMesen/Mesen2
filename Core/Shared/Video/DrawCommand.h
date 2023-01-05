@@ -119,7 +119,7 @@ public:
 			_overscan = overscan;
 
 			if(autoScale && !_disableAutoScale) {
-				//TODO review
+				//TODOv2 review
 				float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
 				_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;
 				_xScale = (float)scale;

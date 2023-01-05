@@ -417,7 +417,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//Only update the recent game entry if the game that was loaded is a different game
 		bool gameChanged = (string)_rom.RomFile != (string)romFile || (string)_rom.PatchFile != (string)patchFile;
 		Stop(false, !gameChanged, false);
-		//TODO PERF
+		//TODOv2 PERF
 		//KeyManager::UpdateDevices();
 	}
 
@@ -449,7 +449,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//Restore pollcounter (used by movies when a power cycle is in the movie)
 	_console->GetControlManager()->SetPollCounter(pollCounter);
 
-	//TODO reset RewindManager state instead of instance
+	//TODOv2 reset RewindManager state instead of instance
 	_rewindManager.reset(new RewindManager(this));
 
 	if(debuggerActive) {
@@ -549,7 +549,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 
 string Emulator::GetHash(HashType type)
 {
-	//TODO
+	//TODOv2
 	shared_ptr<IConsole> console = _console.lock();
 	string hash = console->GetHash(type);
 	if(hash.size()) {
@@ -614,14 +614,14 @@ TimingInfo Emulator::GetTimingInfo(CpuType cpuType)
 
 uint64_t Emulator::GetMasterClock()
 {
-	//TODO _console.lock()? performance concerns
+	//TODOv2 _console.lock()? performance concerns
 	return _console->GetMasterClock();
 }
 
 uint32_t Emulator::GetMasterClockRate()
 {
-	//TODO _console.lock()? performance concerns
-	//TODO this is not accurate when overclocking options are turned on
+	//TODOv2 _console.lock()? performance concerns
+	//TODOv2 this is not accurate when overclocking options are turned on
 	return _console->GetMasterClockRate();
 }
 
@@ -855,7 +855,7 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 	}
 	s.Stream(_console, "");
 	
-	//TODO
+	//TODOv2
 	//Lua doc says this event only triggers for manual load/save
 	//This is triggered 2x by manual save
 	//Also: StateSaved missing from Serialize()

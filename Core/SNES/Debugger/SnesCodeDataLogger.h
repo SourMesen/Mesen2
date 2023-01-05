@@ -36,7 +36,7 @@ public:
 
 	void RebuildPrgCache(Disassembler* dis) override
 	{
-		//TODO GSU flags
+		//TODOv2 GSU flags
 		AddressInfo addrInfo;
 		addrInfo.Type = _memType;
 		for(uint32_t i = 0; i < _memSize; i++) {

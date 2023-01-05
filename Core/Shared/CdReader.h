@@ -116,7 +116,7 @@ struct DiscInfo
 
 		int32_t track = GetTrack(sector);
 		if(track < 0) {
-			//TODO support reading pregap when it's ava
+			//TODO support reading pregap when it's available
 			LogDebug("Invalid sector/track (or inside pregap)");
 			outData.insert(outData.end(), 2048, 0);
 		} else {

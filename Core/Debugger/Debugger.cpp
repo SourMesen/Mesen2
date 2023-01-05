@@ -466,7 +466,7 @@ void Debugger::ProcessEvent(EventType type)
 			break;
 		}
 
-		//TODO (need a better solution)
+		//TODOv2 (need a better solution)
 		case EventType::GbStartFrame:
 			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::StartFrame);
@@ -475,7 +475,7 @@ void Debugger::ProcessEvent(EventType type)
 			GetEventManager(CpuType::Gameboy)->ClearFrameEvents();
 			break;
 		
-		//TODO (need a better solution)
+		//TODOv2 (need a better solution)
 		case EventType::GbEndFrame:
 			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
 				_scriptManager->ProcessEvent(EventType::EndFrame);
@@ -511,7 +511,7 @@ void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryOperationType opTyp
 	if constexpr(std::is_same<T, uint8_t>::value) {
 		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type, false);
 	} else {
-		//TODO NEC DSP
+		//TODOv2 NEC DSP
 		uint8_t val = (uint8_t)value;
 		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type, false);
 	}
@@ -524,7 +524,7 @@ void Debugger::ProcessScripts(uint32_t addr, T& value, MemoryType memType, Memor
 	if constexpr(std::is_same<T, uint8_t>::value) {
 		_scriptManager->ProcessMemoryOperation(relAddr, value, opType, type, false);
 	} else {
-		//TODO NEC DSP and PCE VDC
+		//TODOv2 NEC DSP and PCE VDC
 		uint8_t val = (uint8_t)value;
 		_scriptManager->ProcessMemoryOperation(relAddr, val, opType, type, false);
 	}

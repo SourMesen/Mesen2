@@ -74,7 +74,7 @@ namespace Mesen.Windows
 
 			if(parent != null) {
 				if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-					//TODO - This fixes Avalonia apparently not working properly with CenterOwner on X11 with SizeToContent="WidthAndHeight"
+					//TODOv2 - This fixes Avalonia apparently not working properly with CenterOwner on X11 with SizeToContent="WidthAndHeight"
 					msgbox.Opened += (_, _) => { WindowExtensions.CenterWindow(msgbox, parent); };
 				}
 

@@ -69,7 +69,7 @@ namespace Mesen.Config
 
 		private void Init()
 		{
-			//TODO cleanup old shortcut definitions and DebuggerShortcut enum 
+			//TODOv2 cleanup old shortcut definitions and DebuggerShortcut enum 
 			//Shared
 			//Add(new() { Shortcut = DebuggerShortcut.IncreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) });
 			//Add(new() { Shortcut = DebuggerShortcut.DecreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });

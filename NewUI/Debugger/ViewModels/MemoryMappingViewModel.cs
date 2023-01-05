@@ -350,7 +350,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private List<MemoryMappingBlock> GetPceCpuMappings(PceMemoryManagerState state)
 		{
-			//TODO improve/complete logic for save ram, etc.
+			//TODOv2 improve/complete logic for save ram, etc.
 			List<MemoryMappingBlock> mappings = new();
 
 			Dictionary<MemoryType, Color> mainColors = new() {

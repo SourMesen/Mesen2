@@ -947,7 +947,7 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
-					OnClick = () => { } //TODO
+					OnClick = () => { } //TODOv2
 				},
 				new ContextMenuSeparator(),
 				new MainMenuAction() {
@@ -1006,7 +1006,7 @@ namespace Mesen.ViewModels
 					Regex supportedRomRegex = new Regex("<supportedRom>([^\\n]*)");
 					Match match = supportedRomRegex.Match(hiresData);
 					if(match.Success) {
-						//TODO
+						//TODOv2
 						/*if(!match.Groups[1].Value.ToUpper().Contains(romInfo.Sha1.ToUpper())) {
 							await MesenMsgBox.Show(wnd, "InstallHdPackWrongRom", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							return;

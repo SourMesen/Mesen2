@@ -21,7 +21,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-//TODO remove
+//TODOv2 remove
 #ifdef _MSC_VER
 #pragma warning ( disable : 4127 ) //conditional expression is constant
 #endif

@@ -341,7 +341,7 @@ uint8_t Spc::DspReadRam(uint16_t addr)
 {
 	uint8_t value = _ram[addr];
 #ifndef DUMMYSPC
-	//TODO
+	//TODOv2
 	//_emu->ProcessMemoryRead<CpuType::Spc>(addr, value, MemoryOperationType::Read);
 #endif
 	return value;
@@ -350,7 +350,7 @@ uint8_t Spc::DspReadRam(uint16_t addr)
 void Spc::DspWriteRam(uint16_t addr, uint8_t value)
 {
 #ifndef DUMMYSPC
-	//TODO
+	//TODOv2
 	//_emu->ProcessMemoryWrite<CpuType::Spc>(addr, value, MemoryOperationType::Write);
 #endif
 	_ram[addr] = value;

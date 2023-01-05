@@ -85,7 +85,7 @@ IMessageManager* MessageManager::_messageManager = nullptr;
 void MessageManager::RegisterMessageManager(IMessageManager* messageManager)
 {
 	auto lock = _messageLock.AcquireSafe();
-	//TODO temp fix (history viewer)
+	//TODOv2 temp fix (history viewer)
 	if(MessageManager::_messageManager == nullptr) {
 		MessageManager::_messageManager = messageManager;
 	}

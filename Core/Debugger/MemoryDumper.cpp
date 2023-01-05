@@ -31,7 +31,7 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 	_disassembler = debugger->GetDisassembler();
 
 	IConsole* console = _debugger->GetConsole();
-	//TODO - generic code? (or at least rename SNES-specific members)
+	//TODOv2 - generic code? (or at least rename SNES-specific members)
 	if(SnesConsole* snes = dynamic_cast<SnesConsole*>(console)) {
 		_ppu = snes->GetPpu();
 		_spc = snes->GetSpc();
@@ -258,7 +258,7 @@ uint8_t MemoryDumper::GetMemoryValue(MemoryType memoryType, uint32_t address, bo
 uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects)
 {
 	switch(memoryType) {
-		//TODO
+		//TODOv2
 		case MemoryType::SnesMemory: return _memoryManager->Peek(address);
 		case MemoryType::SpcMemory: return _spc->DebugRead(address);
 		case MemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);

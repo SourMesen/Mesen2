@@ -48,7 +48,7 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::RegSP: return s.SP;
 		case EvalValues::RegPS: return s.PS;
 		case EvalValues::RegPC: return s.PC;
-		//TODO
+		//TODOv2
 		/*case EvalValues::Nmi: return ReturnBool(s.NMIFlag, resultType);
 		case EvalValues::Irq:  return ReturnBool(s.IRQFlag, resultType);*/
 

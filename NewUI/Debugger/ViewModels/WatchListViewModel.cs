@@ -68,7 +68,7 @@ namespace Mesen.Debugger.ViewModels
 						Selection.SelectedIndex = WatchEntries.Count - 1;
 					}
 				} else if(WatchEntries.Count > 0) {
-					//TODO - fixes databox refresh issue that causes invisible scrollbar to toggle
+					//TODOv2 - fixes databox refresh issue that causes invisible scrollbar to toggle
 					//on/off when adding an element to the list while no selection is active
 					Selection.SelectedIndex = 0;
 					Selection.SelectedIndex = -1;

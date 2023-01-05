@@ -5,7 +5,7 @@
 
 class Emulator;
 
-//TODO remove?
+//TODOv2 remove?
 class BaseRenderer
 {
 protected:

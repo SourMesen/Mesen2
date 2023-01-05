@@ -99,7 +99,7 @@ namespace Mesen.Windows
 
 		protected override void ArrangeCore(Rect finalRect)
 		{
-			//TODO why is this needed to make resizing the window by setting ClientSize work?
+			//TODOv2 why is this needed to make resizing the window by setting ClientSize work?
 			base.ArrangeCore(new Rect(ClientSize));
 		}
 
@@ -356,7 +356,7 @@ namespace Mesen.Windows
 
 		public void SetScale(double scale)
 		{
-			//TODO - Calling this twice seems to fix what might be an issue in Avalonia?
+			//TODOv2 - Calling this twice seems to fix what might be an issue in Avalonia?
 			//On the first call, when DPI > 100%, sometimes the "finalSize" received by
 			//ArrangeOverride in NativeRenderer does not match what was given here
 			InternalSetScale(scale);

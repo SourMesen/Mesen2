@@ -319,7 +319,7 @@ namespace Mesen.Debugger.Integration
 					isRam = false;
 
 					if(row.Contains("type=rw")) {
-						//TODO fix this
+						//TODOv2 fix this
 						//Assume a RW segment inside the .sfc file is SPC code
 						isRam = true;
 						memType = MemoryType.SpcRam;
