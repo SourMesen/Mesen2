@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Config.Shortcuts;
 using Mesen.Controls;
@@ -947,7 +948,7 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
-					OnClick = () => { } //TODOv2
+					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/ReportBug.php") //TODOv2
 				},
 				new ContextMenuSeparator(),
 				new MainMenuAction() {
@@ -959,17 +960,32 @@ namespace Mesen.ViewModels
 			};
 		}
 
-		public async void CheckForUpdate(Window wnd, bool silent)
+		public void CheckForUpdate(Window mainWindow, bool silent)
 		{
-			UpdatePromptViewModel updateInfo = await UpdatePromptViewModel.GetUpdateInformation();
-			if(updateInfo.LatestVersion > updateInfo.InstalledVersion) {
-				UpdatePromptWindow updatePrompt = new UpdatePromptWindow(updateInfo);
-				if(await updatePrompt.ShowCenteredDialog<bool>(wnd) == true) {
-					wnd.Close();
+			Task.Run(async () => {
+				UpdatePromptViewModel? updateInfo = await UpdatePromptViewModel.GetUpdateInformation();
+				if(updateInfo == null) {
+					if(!silent) {
+						Dispatcher.UIThread.Post(() => {
+							MesenMsgBox.Show(null, "UpdateDownloadFailed", MessageBoxButtons.OK, MessageBoxIcon.Info);
+						});
+					}
+					return;
 				}
-			} else if(!silent) {
-				await MesenMsgBox.Show(null, "MesenUpToDate", MessageBoxButtons.OK, MessageBoxIcon.Info);
-			}
+
+				if(updateInfo.LatestVersion > updateInfo.InstalledVersion) {
+					Dispatcher.UIThread.Post(async () => {
+						UpdatePromptWindow updatePrompt = new UpdatePromptWindow(updateInfo);
+						if(await updatePrompt.ShowCenteredDialog<bool>(mainWindow) == true) {
+							mainWindow.Close();
+						}
+					});
+				} else if(!silent) {
+					Dispatcher.UIThread.Post(() => {
+						 MesenMsgBox.Show(null, "MesenUpToDate", MessageBoxButtons.OK, MessageBoxIcon.Info);
+					});
+				}
+			});
 		}
 
 		private async void InstallHdPack(Window wnd)

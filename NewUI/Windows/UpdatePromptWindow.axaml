@@ -5,40 +5,47 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
 	mc:Ignorable="d"
 	Width="500"
 	Height="300"
-  CanResize="False"
+	Padding="3 0"
+	CanResize="False"
 	x:Class="Mesen.Windows.UpdatePromptWindow"
 	Title="{l:Translate wndTitle}"
 	x:DataType="vm:UpdatePromptViewModel"
 >
 	<DockPanel HorizontalAlignment="Stretch">
-		<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" DockPanel.Dock="Top">
-			<TextBlock Margin="2" Text="{l:Translate lblLatestVersion}" />
-			<TextBlock Margin="2" Grid.Column="1" Text="{CompiledBinding LatestVersion}" />
-			<TextBlock Margin="2" Grid.Row="1" Text="{l:Translate lblInstalledVersion}" />
-			<TextBlock Margin="2" Grid.Column="1" Grid.Row="1" Text="{CompiledBinding InstalledVersion}" />
-		</Grid>
+		<c:OptionSection Header="{l:Translate lblNewVersionAvailable}" DockPanel.Dock="Top" Margin="0 5 0 0">
+			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" DockPanel.Dock="Top">
+				<TextBlock Margin="2" Text="{l:Translate lblLatestVersion}" />
+				<TextBlock Margin="2" Grid.Column="1" Text="{CompiledBinding LatestVersion}" />
+				<TextBlock Margin="2" Grid.Row="1" Text="{l:Translate lblInstalledVersion}" />
+				<TextBlock Margin="2" Grid.Column="1" Grid.Row="1" Text="{CompiledBinding InstalledVersion}" />
+			</Grid>
+		</c:OptionSection>
 		
-		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
-			<StackPanel.Styles>
+		<Grid VerticalAlignment="Center" RowDefinitions="Auto" ColumnDefinitions="*,Auto,Auto" DockPanel.Dock="Bottom">
+			<Grid.Styles>
 				<Style Selector="Button">
 					<Setter Property="Margin" Value="3"/>
 					<Setter Property="Width" Value="73"/>
 					<Setter Property="HorizontalContentAlignment" Value="Center"/>
 				</Style>
-			</StackPanel.Styles>
-			<Button Content="{l:Translate btnUpdate}" Click="OnUpdateClick" />
-			<Button Content="{l:Translate btnCancel}" IsCancel="True" Click="OnCancelClick" />
-		</StackPanel>
+			</Grid.Styles>
+			<ProgressBar Margin="2" Maximum="100" Value="{CompiledBinding Progress}" ShowProgressText="True" IsVisible="{CompiledBinding IsUpdating}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+			<Button Grid.Column="1" Content="{l:Translate btnUpdate}" Click="OnUpdateClick" IsEnabled="{CompiledBinding !IsUpdating}" />
+			<Button Grid.Column="2" Content="{l:Translate btnCancel}" IsCancel="True" Click="OnCancelClick" IsEnabled="{CompiledBinding !IsUpdating}" />
+		</Grid>
 
+		<c:OptionSection Header="{l:Translate lblReleaseNotes}" DockPanel.Dock="Top" />
 		<TextBox
 			Text="{CompiledBinding Changelog}"
 			IsReadOnly="True"
 			TextWrapping="Wrap"
 			AcceptsReturn="True"
-			Height="NaN"		
+			Height="NaN"
+			Margin="10 2"
 			ScrollViewer.VerticalScrollBarVisibility="Visible"
 		/>
 	</DockPanel>

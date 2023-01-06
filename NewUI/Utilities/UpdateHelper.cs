@@ -1,4 +1,5 @@
-﻿using Mesen.Config;
+﻿using Avalonia.Threading;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Windows;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,25 +19,26 @@ namespace Mesen.Utilities
 		{
 			string destFile = Program.ExePath;
 			Version installedVersion = EmuApi.GetMesenVersion();
-			string backupFilePath = Path.Combine(ConfigManager.BackupFolder, "Mesen." + installedVersion.ToString(3) + ".exe");
-
-			string exeName = Path.GetFileName(Program.ExePath);
-			string updateHelper = Path.Combine(ConfigManager.BackupFolder, exeName);
+			string backupFilePath = Path.Combine(ConfigManager.BackupFolder, "Mesen." + installedVersion.ToString(3));
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				backupFilePath += ".exe";
+			}
 
 			try {
-				//Create a copy of the current .exe to use as an updater
-				File.Copy(Program.ExePath, updateHelper, true);
-
-				FileInfo fileInfo = new FileInfo(srcFile);
-				if(fileInfo.Length > 0) {
-					Process.Start(updateHelper, string.Format("--update \"{0}\" \"{1}\" \"{2}\"", srcFile, destFile, backupFilePath));
+				//Use the downloaded .exe as an updater
+				if(File.Exists(srcFile) && new FileInfo(srcFile).Length > 0) {
+					Process.Start(srcFile, string.Format("--update \"{0}\" \"{1}\" \"{2}\"", srcFile, destFile, backupFilePath));
 					return true;
 				} else {
 					//Download failed, mismatching hashes
-					MesenMsgBox.Show(null, "UpdateDownloadFailed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Dispatcher.UIThread.Post(() => {
+						MesenMsgBox.Show(null, "UpdateDownloadFailed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					});
 				}
 			} catch(Exception ex) {
-				MesenMsgBox.ShowException(ex);
+				Dispatcher.UIThread.Post(() => {
+					MesenMsgBox.ShowException(ex);
+				});
 			}
 			return false;
 		}

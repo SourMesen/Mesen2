@@ -643,6 +643,8 @@
 			<Control ID="wndTitle">Mesen Updater</Control>
 			<Control ID="lblLatestVersion">Latest version:</Control>
 			<Control ID="lblInstalledVersion">Installed version:</Control>
+			<Control ID="lblNewVersionAvailable">A new version of Mesen is available</Control>
+			<Control ID="lblReleaseNotes">Release notes</Control>
 			<Control ID="btnUpdate">Update</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
