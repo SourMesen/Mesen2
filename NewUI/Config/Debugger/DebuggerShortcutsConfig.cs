@@ -69,21 +69,14 @@ namespace Mesen.Config
 
 		private void Init()
 		{
-			//TODOv2 cleanup old shortcut definitions and DebuggerShortcut enum 
 			//Shared
-			//Add(new() { Shortcut = DebuggerShortcut.IncreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemPlus) });
-			//Add(new() { Shortcut = DebuggerShortcut.DecreaseFontSize, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
-			//Add(new() { Shortcut = DebuggerShortcut.ResetFontSize, KeyBinding = new(KeyModifiers.Control, Key.D0) });
-
 			Add(new() { Shortcut = DebuggerShortcut.GoToAddress, KeyBinding = new(KeyModifiers.Control, Key.G) });
 
 			Add(new() { Shortcut = DebuggerShortcut.Find, KeyBinding = new(KeyModifiers.Control, Key.F) });
 			Add(new() { Shortcut = DebuggerShortcut.FindNext, KeyBinding = new(Key.F3) });
 			Add(new() { Shortcut = DebuggerShortcut.FindPrev, KeyBinding = new(KeyModifiers.Shift, Key.F3) });
 
-			//Add(new() { Shortcut = DebuggerShortcut.Undo, KeyBinding = new(KeyModifiers.Control, Key.Z) });
 			Add(new() { Shortcut = DebuggerShortcut.Copy, KeyBinding = new(KeyModifiers.Control, Key.C) });
-			//Add(new() { Shortcut = DebuggerShortcut.Cut, KeyBinding = new(KeyModifiers.Control, Key.X) });
 			Add(new() { Shortcut = DebuggerShortcut.Paste, KeyBinding = new(KeyModifiers.Control, Key.V) });
 			Add(new() { Shortcut = DebuggerShortcut.SelectAll, KeyBinding = new(KeyModifiers.Control, Key.A) });
 
@@ -129,7 +122,7 @@ namespace Mesen.Config
 			//Debugger window
 			Add(new() { Shortcut = DebuggerShortcut.Reset, KeyBinding = new(KeyModifiers.Control, Key.R) });
 			Add(new() { Shortcut = DebuggerShortcut.PowerCycle, KeyBinding = new(KeyModifiers.Control, Key.T) });
-			Add(new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.ReloadRom, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.R) });
 
 			Add(new() { Shortcut = DebuggerShortcut.ToggleBreakContinue, KeyBinding = new(Key.Escape) });
 			Add(new() { Shortcut = DebuggerShortcut.Continue, KeyBinding = new(Key.F5) });
@@ -165,12 +158,8 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_MoveProgramCounter, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.F10) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_RunToLocation, KeyBinding = new(KeyModifiers.Control, Key.F11) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSelectedCode, KeyBinding = new() });
-			//Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditSourceFile, KeyBinding = new(Key.F4) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditLabel, KeyBinding = new(Key.F2) });
-			//Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateBack, KeyBinding = new(KeyModifiers.Alt, Key.Left) });
-			//Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateForward, KeyBinding = new(KeyModifiers.Alt, Key.Right) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_ToggleBreakpoint, KeyBinding = new(Key.F9) });
-			//Add(new() { Shortcut = DebuggerShortcut.CodeWindow_DisableEnableBreakpoint, KeyBinding = new(KeyModifiers.Control, Key.F9) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_SwitchView, KeyBinding = new(KeyModifiers.Control, Key.Q) });
 
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Add, KeyBinding = new(Key.Insert) });
@@ -282,16 +271,11 @@ namespace Mesen.Config
 
 	public enum DebuggerShortcut
 	{
-		IncreaseFontSize,
-		DecreaseFontSize,
-		ResetFontSize,
 		GoToAddress,
 		Find,
 		FindNext,
 		FindPrev,
-		Undo,
 		Copy,
-		Cut,
 		Paste,
 		SelectAll,
 		Refresh,
@@ -354,12 +338,9 @@ namespace Mesen.Config
 		CodeWindow_MoveProgramCounter,
 		CodeWindow_RunToLocation,
 		CodeWindow_EditSelectedCode,
-		CodeWindow_EditSourceFile,
 		CodeWindow_EditLabel,
 		CodeWindow_NavigateBack,
-		CodeWindow_NavigateForward,
 		CodeWindow_ToggleBreakpoint,
-		CodeWindow_DisableEnableBreakpoint,
 		CodeWindow_SwitchView,
 		LabelList_Add,
 		LabelList_Edit,

@@ -20,7 +20,7 @@ private:
 	uint32_t ReadValue(istream& stream);
 
 public:
-	static constexpr uint32_t FileFormatVersion = 3;
+	static constexpr uint32_t FileFormatVersion = 4;
 	static constexpr uint32_t MinimumSupportedVersion = 3;
 	static constexpr uint32_t AutoSaveStateIndex = 11;
 

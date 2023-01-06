@@ -8,19 +8,16 @@
 class SnesMemoryManager;
 class NesConsole;
 class BaseCartridge;
-class SnesPpu;
 class Spc;
 class Gameboy;
 class PceConsole;
 class Emulator;
 class Debugger;
-class Disassembler;
 
 class MemoryDumper
 {
 private:
 	Emulator* _emu = nullptr;
-	SnesPpu* _ppu = nullptr;
 	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
 	SnesMemoryManager* _memoryManager = nullptr;
@@ -28,7 +25,6 @@ private:
 	PceConsole* _pceConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
-	Disassembler* _disassembler = nullptr;
 	bool _isMemorySupported[DebugUtilities::GetMemoryTypeCount()] = {};
 
 	uint8_t InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects = true);

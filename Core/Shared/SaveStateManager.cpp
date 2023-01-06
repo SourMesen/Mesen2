@@ -65,11 +65,6 @@ void SaveStateManager::GetSaveStateHeader(ostream &stream)
 	WriteValue(stream, emuVersion);
 	WriteValue(stream, formatVersion);
 
-	//TODOv2, performance
-	//string sha1Hash = _emu->GetHash(HashType::Sha1);
-	string sha1Hash = "0000000000000000000000000000000000000000";
-	stream.write(sha1Hash.c_str(), sha1Hash.size());
-
 	WriteValue(stream, (uint32_t)_emu->GetConsoleType());
 
 	SaveVideoData(stream);
@@ -178,8 +173,10 @@ bool SaveStateManager::LoadState(istream &stream)
 			return false;
 		}
 		
-		char hash[41] = {};
-		stream.read(hash, 40);
+		if(fileFormatVersion <= 3) {
+			//Skip over old SHA1 field
+			stream.seekg(40, ios::cur);
+		}
 
 		ConsoleType consoleType = (ConsoleType)ReadValue(stream);
 		if(consoleType != _emu->GetConsoleType()) {

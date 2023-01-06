@@ -164,12 +164,12 @@ void SnesMemoryManager::IncMasterClockStartup()
 void SnesMemoryManager::IncrementMasterClockValue(uint16_t cyclesToRun)
 {
 	switch(cyclesToRun) {
-		case 12: Exec();
-		case 10: Exec();
-		case 8: Exec();
-		case 6: Exec();
-		case 4: Exec();
-		case 2: Exec();
+		case 12: Exec(); [[fallthrough]];
+		case 10: Exec(); [[fallthrough]];
+		case 8: Exec(); [[fallthrough]];
+		case 6: Exec(); [[fallthrough]];
+		case 4: Exec(); [[fallthrough]];
+		case 2: Exec(); break;
 	}
 }
 

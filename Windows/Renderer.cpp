@@ -11,8 +11,9 @@
 
 using namespace DirectX;
 
-Renderer::Renderer(Emulator* emu, HWND hWnd) : BaseRenderer(emu)
+Renderer::Renderer(Emulator* emu, HWND hWnd)
 {
+	_emu = emu;
 	_hWnd = hWnd;
 
 	SetScreenSize(256, 224);

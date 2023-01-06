@@ -1072,12 +1072,6 @@
     <ClInclude Include="Shared\Movies\MovieTypes.h">
       <Filter>Shared\Movies</Filter>
     </ClInclude>
-    <ClCompile Include="Shared\Video\BaseRenderer.cpp">
-      <Filter>Shared\Video</Filter>
-    </ClCompile>
-    <ClInclude Include="Shared\Video\BaseRenderer.h">
-      <Filter>Shared\Video</Filter>
-    </ClInclude>
     <ClCompile Include="Shared\Video\BaseVideoFilter.cpp">
       <Filter>Shared\Video</Filter>
     </ClCompile>

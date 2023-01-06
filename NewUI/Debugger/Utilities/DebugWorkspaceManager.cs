@@ -180,8 +180,6 @@ namespace Mesen.Debugger.Utilities
 			if(File.Exists(path)) {
 				try {
 					string fileData = File.ReadAllText(path);
-					//TODOv2 temporary patch to preserve data, to remove
-					fileData = fileData.Replace("\"MemoryType\": \"Register\"", "\"MemoryType\": \"SnesRegister\"");
 					dbgWorkspace = JsonSerializer.Deserialize<DebugWorkspace>(fileData, JsonHelper.Options) ?? new DebugWorkspace();
 				} catch {
 				}

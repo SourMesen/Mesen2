@@ -21,11 +21,6 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-//TODOv2 remove
-#ifdef _MSC_VER
-#pragma warning ( disable : 4127 ) //conditional expression is constant
-#endif
-
 SnesPpu::SnesPpu(Emulator* emu, SnesConsole* console)
 {
 	_emu = emu;
@@ -194,9 +189,11 @@ void SnesPpu::GetTilemapData(uint8_t layerIndex, uint8_t columnIndex)
 
 	/* The current column index (in terms of 8x8 or 16x16 tiles) */
 	uint16_t column = columnIndex + (hScroll >> 3);
-	if(!hiResMode && config.LargeTiles) {
-		//For 16x16 tiles, need to return the same tile for 2 columns 8 pixel columns in a row
-		column >>= 1;
+	if constexpr(!hiResMode) {
+		if(config.LargeTiles) {
+			//For 16x16 tiles, need to return the same tile for 2 columns 8 pixel columns in a row
+			column >>= 1;
+		}
 	}
 
 	/* The tilemap address to read the tile data from */
@@ -228,9 +225,11 @@ void SnesPpu::GetChrData(uint8_t layerIndex, uint8_t column, uint8_t plane)
 	}
 
 	bool useSecondTile = secondTile;
-	if(!hiResMode && config.LargeTiles) {
-		//For 16x16 tiles, need to return the 2nd part of the tile every other column
-		useSecondTile = (((column << 3) + config.HScroll) & 0x08) == 0x08;
+	if constexpr(!hiResMode) {
+		if(config.LargeTiles) {
+			//For 16x16 tiles, need to return the 2nd part of the tile every other column
+			useSecondTile = (((column << 3) + config.HScroll) & 0x08) == 0x08;
+		}
 	}
 
 	uint16_t tileIndex = tilemapData & 0x3FF;
@@ -970,7 +969,7 @@ void SnesPpu::RenderTilemap()
 	uint8_t pixelFlags = (((_state.ColorMathEnabled >> layerIndex) & 0x01) ? PixelFlags::AllowColorMath : 0);
 
 	for(int x = _drawStartX; x <= _drawEndX; x++) {
-		if(hiResMode) {
+		if constexpr(hiResMode) {
 			lookupIndex = (x + (hScrollOriginal & 0x07)) >> 2;
 			chrDataOffset = (lookupIndex & 0x01) * bpp / 2;
 			lookupIndex >>= 1;
@@ -983,7 +982,7 @@ void SnesPpu::RenderTilemap()
 		bool hMirror = (tilemapData & 0x4000) != 0;
 
 		uint8_t color;
-		if(hiResMode) {
+		if constexpr(hiResMode) {
 			uint8_t xOffset = ((x << 1) + 1 + hScroll) & 0x07;
 			uint8_t shift = hMirror ? xOffset : (7 - xOffset);
 			color = GetTilePixelColor<bpp>(chrData + chrDataOffset, shift);
@@ -1000,9 +999,9 @@ void SnesPpu::RenderTilemap()
 		uint8_t paletteIndex = (tilemapData >> 10) & 0x07;
 		uint8_t priority = (tilemapData & 0x2000) ? highPriority : normalPriority;
 
-		if(applyMosaic) {
+		if constexpr(applyMosaic) {
 			if(mosaicCounter == 0) {
-				if(hiResMode) {
+				if constexpr(hiResMode) {
 					color = hiresSubColor;
 				}
 				_mosaicColor[layerIndex] = (paletteIndex << 8) | color;
@@ -1011,7 +1010,7 @@ void SnesPpu::RenderTilemap()
 				color = _mosaicColor[layerIndex] & 0xFF;
 				paletteIndex = _mosaicColor[layerIndex] >> 8;
 				priority = _mosaicPriority[layerIndex];
-				if(hiResMode) {
+				if constexpr(hiResMode) {
 					hiresSubColor = color;
 				}
 			}
@@ -1026,12 +1025,14 @@ void SnesPpu::RenderTilemap()
 			if(drawMain && (_mainScreenFlags[x] & 0x0F) < priority && !ProcessMaskWindow<layerIndex>(mainWindowCount, x)) {
 				DrawMainPixel(x, rgbColor, priority | pixelFlags);
 			}
-			if(!hiResMode && drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
-				DrawSubPixel(x, rgbColor, priority);
+			if constexpr(!hiResMode) {
+				if(drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
+					DrawSubPixel(x, rgbColor, priority);
+				}
 			}
 		}
 
-		if(hiResMode) {
+		if constexpr(hiResMode) {
 			if(hiresSubColor > 0 && drawSub && _subScreenPriority[x] < priority && !ProcessMaskWindow<layerIndex>(subWindowCount, x)) {
 				uint16_t hiresSubRgbColor = GetRgbColor<bpp, directColorMode, basePaletteOffset>(paletteIndex, hiresSubColor);
 				DrawSubPixel(x, hiresSubRgbColor, priority);
@@ -1043,13 +1044,13 @@ void SnesPpu::RenderTilemap()
 template<uint8_t bpp, bool directColorMode, uint8_t basePaletteOffset>
 uint16_t SnesPpu::GetRgbColor(uint8_t paletteIndex, uint8_t colorIndex)
 {
-	if(bpp == 8 && directColorMode) {
+	if constexpr(bpp == 8 && directColorMode) {
 		return (
 			((((colorIndex & 0x07) << 1) | (paletteIndex & 0x01)) << 1) |
 			(((colorIndex & 0x38) | ((paletteIndex & 0x02) << 1)) << 4) |
 			(((colorIndex & 0xC0) | ((paletteIndex & 0x04) << 3)) << 7)
 		);
-	} else if(bpp == 8) {
+	} else if constexpr(bpp == 8) {
 		//Ignore palette bits for 256-color layers
 		return _cgram[basePaletteOffset + colorIndex];
 	} else {
@@ -1073,15 +1074,15 @@ template<uint8_t bpp>
 uint8_t SnesPpu::GetTilePixelColor(const uint16_t chrData[4], const uint8_t shift)
 {
 	uint8_t color;
-	if(bpp == 2) {
+	if constexpr(bpp == 2) {
 		color = (chrData[0] >> shift) & 0x01;
 		color |= (chrData[0] >> (7 + shift)) & 0x02;
-	} else if(bpp == 4) {
+	} else if constexpr(bpp == 4) {
 		color = (chrData[0] >> shift) & 0x01;
 		color |= (chrData[0] >> (7 + shift)) & 0x02;
 		color |= ((chrData[1] >> shift) & 0x01) << 2;
 		color |= ((chrData[1] >> (7 + shift)) & 0x02) << 2;
-	} else if(bpp == 8) {
+	} else if constexpr(bpp == 8) {
 		color = (chrData[0] >> shift) & 0x01;
 		color |= (chrData[0] >> (7 + shift)) & 0x02;
 		color |= ((chrData[1] >> shift) & 0x01) << 2;
@@ -1188,7 +1189,7 @@ void SnesPpu::RenderTilemapMode7()
 
 		uint16_t colorIndex;
 		uint8_t priority;
-		if(layerIndex == 1) {
+		if constexpr(layerIndex == 1) {
 			uint8_t color = _vram[((tileIndex << 6) + ((yOffset & 0x07) << 3) + (xOffset & 0x07))] >> 8;
 			priority = (color & 0x80) ? highPriority : normalPriority;
 			colorIndex = (color & 0x7F);
@@ -1934,7 +1935,9 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//BG1HOFS - BG1 Horizontal Scroll
 			_state.Mode7.HScroll = ((value << 8) | (_state.Mode7.ValueLatch)) & 0x1FFF;
 			_state.Mode7.ValueLatch = value;
+			
 			//no break, keep executing to set the matching BG1 HScroll register, too
+			[[fallthrough]];
 
 		case 0x210F: case 0x2111: case 0x2113:
 			//BGXHOFS - BG1/2/3/4 Horizontal Scroll
@@ -1948,7 +1951,9 @@ void SnesPpu::Write(uint32_t addr, uint8_t value)
 			//BG1VOFS - BG1 Vertical Scroll
 			_state.Mode7.VScroll = ((value << 8) | (_state.Mode7.ValueLatch)) & 0x1FFF;
 			_state.Mode7.ValueLatch = value;
+			
 			//no break, keep executing to set the matching BG1 HScroll register, too
+			[[fallthrough]];
 
 		case 0x2110: case 0x2112: case 0x2114:
 			//BGXVOFS - BG1/2/3/4 Vertical Scroll

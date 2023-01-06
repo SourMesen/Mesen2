@@ -3,7 +3,6 @@
 #include "Core/Shared/Interfaces/IRenderingDevice.h"
 #include "Utilities/SimpleLock.h"
 #include "Core/Shared/Video/VideoRenderer.h"
-#include "Core/Shared/Video/BaseRenderer.h"
 #include "Core/Shared/RenderedFrame.h"
 
 class Emulator;
@@ -15,9 +14,11 @@ struct HudRenderInfo
 	uint32_t Height = 0;
 };
 
-class SdlRenderer : public IRenderingDevice, public BaseRenderer
+class SdlRenderer : public IRenderingDevice
 {
 private:
+	Emulator* _emu;
+
 	void* _windowHandle;
 	SDL_Window* _sdlWindow = nullptr;
 	SDL_Renderer *_sdlRenderer = nullptr;
@@ -35,6 +36,9 @@ private:
 	uint32_t _screenBufferSize = 0;
 
 	bool _frameChanged = true;
+
+	uint32_t _screenWidth = 0;
+	uint32_t _screenHeight = 0;
 
 	uint32_t _requiredHeight = 0;
 	uint32_t _requiredWidth = 0;

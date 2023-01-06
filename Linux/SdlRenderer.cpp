@@ -9,8 +9,9 @@
 
 SimpleLock SdlRenderer::_frameLock;
 
-SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : BaseRenderer(emu), _windowHandle(windowHandle)
+SdlRenderer::SdlRenderer(Emulator* emu, void* windowHandle) : _windowHandle(windowHandle)
 {
+	_emu = emu;
 	_frameBuffer = nullptr;
 	_requiredWidth = 256;
 	_requiredHeight = 240;

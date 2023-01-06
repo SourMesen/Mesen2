@@ -6,7 +6,6 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Timer.h"
-#include "Core/Shared/Video/BaseRenderer.h"
 
 using namespace DirectX;
 
@@ -24,27 +23,29 @@ struct HudRenderInfo
 	uint32_t Height = 0;
 };
 
-class Renderer final : public BaseRenderer, public IRenderingDevice
+class Renderer final : public IRenderingDevice
 {
 private:
-	HWND                    _hWnd = nullptr;
+	Emulator* _emu;
 
-	ID3D11Device*           _pd3dDevice = nullptr;
-	ID3D11DeviceContext*    _pDeviceContext = nullptr;
-	IDXGISwapChain*         _pSwapChain = nullptr;
+	HWND _hWnd = nullptr;
+
+	ID3D11Device* _pd3dDevice = nullptr;
+	ID3D11DeviceContext* _pDeviceContext = nullptr;
+	IDXGISwapChain* _pSwapChain = nullptr;
 	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
 
-	atomic<bool>				_needFlip = false;
-	uint8_t*						_textureBuffer[2] = { nullptr, nullptr };
-	ID3D11Texture2D*			_pTexture = nullptr;
-	ID3D11ShaderResourceView*	_pTextureSrv = nullptr;
+	atomic<bool> _needFlip = false;
+	uint8_t* _textureBuffer[2] = { nullptr, nullptr };
+	ID3D11Texture2D* _pTexture = nullptr;
+	ID3D11ShaderResourceView* _pTextureSrv = nullptr;
 
 	HudRenderInfo _emuHud = {};
 	HudRenderInfo _scriptHud = {};
 
-	bool							_frameChanged = true;
-	SimpleLock					_frameLock;
-	SimpleLock					_textureLock;
+	bool _frameChanged = true;
+	SimpleLock _frameLock;
+	SimpleLock _textureLock;
 
 	unique_ptr<SpriteBatch> _spriteBatch;
 
@@ -53,6 +54,9 @@ private:
 
 	bool _newFullscreen = false;
 	bool _fullscreen = false;
+
+	uint32_t _screenWidth = 0;
+	uint32_t _screenHeight = 0;
 
 	uint32_t _realScreenHeight = 240;
 	uint32_t _realScreenWidth = 256;

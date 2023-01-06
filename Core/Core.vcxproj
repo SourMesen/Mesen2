@@ -546,7 +546,6 @@
     <ClInclude Include="Shared\InputHud.h" />
     <ClInclude Include="SNES\InternalRegisterTypes.h" />
     <ClInclude Include="SNES\MemoryMappings.h" />
-    <ClInclude Include="Shared\Video\BaseRenderer.h" />
     <ClInclude Include="Shared\Audio\BaseSoundManager.h" />
     <ClInclude Include="Shared\Video\BaseVideoFilter.h" />
     <ClInclude Include="Shared\FirmwareHelper.h" />
@@ -784,7 +783,6 @@
     <ClCompile Include="SNES\Debugger\SnesAssembler.cpp" />
     <ClCompile Include="SNES\BaseCartridge.cpp" />
     <ClCompile Include="Shared\BaseControlDevice.cpp" />
-    <ClCompile Include="Shared\Video\BaseRenderer.cpp" />
     <ClCompile Include="Shared\Audio\BaseSoundManager.cpp" />
     <ClCompile Include="Shared\Video\BaseVideoFilter.cpp" />
     <ClCompile Include="Shared\BatteryManager.cpp" />

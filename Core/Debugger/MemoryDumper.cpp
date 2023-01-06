@@ -2,7 +2,6 @@
 #include "Debugger/Debugger.h"
 #include "Shared/Emulator.h"
 #include "SNES/SnesMemoryManager.h"
-#include "SNES/SnesPpu.h"
 #include "SNES/Spc.h"
 #include "SNES/Coprocessors/DSP/NecDsp.h"
 #include "SNES/Coprocessors/SA1/Sa1.h"
@@ -28,12 +27,10 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
-	_disassembler = debugger->GetDisassembler();
 
 	IConsole* console = _debugger->GetConsole();
 	//TODOv2 - generic code? (or at least rename SNES-specific members)
 	if(SnesConsole* snes = dynamic_cast<SnesConsole*>(console)) {
-		_ppu = snes->GetPpu();
 		_spc = snes->GetSpc();
 		_memoryManager = snes->GetMemoryManager();
 		_cartridge = snes->GetCartridge();
