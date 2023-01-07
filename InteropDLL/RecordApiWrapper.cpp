@@ -21,9 +21,5 @@ extern "C"
 	DllExport void __stdcall MovieStop() { _emu->GetMovieManager()->Stop(); }
 	DllExport bool __stdcall MoviePlaying() { return _emu->GetMovieManager()->Playing(); }
 	DllExport bool __stdcall MovieRecording() { return _emu->GetMovieManager()->Recording(); }
-	DllExport void __stdcall MovieRecord(RecordMovieOptions *options)
-	{
-		RecordMovieOptions opt = *options;
-		_emu->GetMovieManager()->Record(opt);
-	}
+	DllExport void __stdcall MovieRecord(RecordMovieOptions options) { _emu->GetMovieManager()->Record(options); }
 }
