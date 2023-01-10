@@ -140,7 +140,7 @@ protected:
 public:
 	Namco163Audio(NesConsole* console) : BaseExpansionAudio(console)
 	{
-		memset(_internalRam, 0, sizeof(_internalRam));
+		console->InitializeRam(_internalRam, Namco163Audio::AudioRamSize);
 		memset(_channelOutput, 0, sizeof(_channelOutput));
 		_ramPosition = 0;
 		_autoIncrement = false;
