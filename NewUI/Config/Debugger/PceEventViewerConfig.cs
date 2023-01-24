@@ -37,9 +37,9 @@ namespace Mesen.Config
 		[Reactive] public EventViewerCategoryCfg IrqControlWrites { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xFF, 0x5E, 0xDD));
 		[Reactive] public EventViewerCategoryCfg IrqControlReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xE2, 0x98, 0xE4));
 
-		[Reactive] public EventViewerCategoryCfg Irq { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xFF, 0xAD, 0xAC));
+		[Reactive] public EventViewerCategoryCfg Irq { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xC4, 0xF4, 0x7A));
 
-		[Reactive] public EventViewerCategoryCfg MarkedBreakpoints { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xAF, 0xFF, 0xAF));
+		[Reactive] public EventViewerCategoryCfg MarkedBreakpoints { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x18, 0x98, 0xE4));
 
 		[Reactive] public bool ShowPreviousFrameEvents { get; set; } = true;
 
