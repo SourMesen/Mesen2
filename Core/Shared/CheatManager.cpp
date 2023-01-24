@@ -216,15 +216,19 @@ optional<InternalCheatCode> CheatManager::ConvertFromNesCustomCode(string code)
 
 optional<InternalCheatCode> CheatManager::ConvertFromGbGameGenie(string code)
 {
-	static regex _validator = regex("^[a-f0-9]{3}-[a-f0-9]{3}-[a-f0-9]{3}$", std::regex_constants::icase);
+	static regex _validator = regex("^[a-f0-9]{3}-[a-f0-9]{3}(-[a-f0-9]{3}){0,1}$", std::regex_constants::icase);
 	if(!std::regex_match(code, _validator)) {
 		return std::nullopt;
 	}
 
 	uint8_t value = (uint8_t)HexUtilities::FromHex(code.substr(0, 2));
 
-	uint8_t compare = (uint8_t)HexUtilities::FromHex(code.substr(8, 1) + code[10]);
-	compare = (uint8_t)(((compare >> 2) | ((compare & 0x03) << 6)) ^ 0xBA);
+	int16_t compare = -1;
+	if(code.length() > 7) {
+		compare = (uint8_t)HexUtilities::FromHex(code.substr(8, 1) + code[10]);
+		compare = (uint8_t)(((compare >> 2) | ((compare & 0x03) << 6)) ^ 0xBA);
+	}
+
 	uint16_t address = (uint16_t)(HexUtilities::FromHex(code.substr(6, 1) + code[2] + code[4] + code[5]) ^ 0xF000);
 
 	InternalCheatCode cheat = {};
