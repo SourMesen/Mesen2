@@ -38,6 +38,7 @@ public:
 	
 	ApuLengthCounter(AudioChannel channel, NesConsole* console)
 	{
+		_channel = channel;
 		_console = console;
 	}
 	
