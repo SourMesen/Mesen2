@@ -314,6 +314,7 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 		sprite.TileCount = 2;
 	} else {
 		tileStart = (sprite.TileIndex * 16) | sprAddr;
+		sprite.TileAddresses[0] = tileStart;
 		sprite.TileCount = 1;
 	}
 	sprite.TileAddress = tileStart;
