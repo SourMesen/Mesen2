@@ -936,7 +936,7 @@ namespace Mesen.ViewModels
 			HelpMenuItems = new List<object>() {
 				new MainMenuAction() {
 					ActionType = ActionType.OnlineHelp,
-					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/docs/")
+					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/documentation/")
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.CommandLineHelp,
@@ -948,7 +948,7 @@ namespace Mesen.ViewModels
 				},
 				new MainMenuAction() {
 					ActionType = ActionType.ReportBug,
-					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/ReportBug.php") //TODOv2
+					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/reportbug/")
 				},
 				new ContextMenuSeparator(),
 				new MainMenuAction() {

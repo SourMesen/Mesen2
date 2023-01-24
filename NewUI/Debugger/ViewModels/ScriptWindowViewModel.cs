@@ -97,7 +97,7 @@ namespace Mesen.Debugger.ViewModels
 			HelpMenuActions = new() {
 				new ContextMenuAction() {
 					ActionType = ActionType.HelpApiReference,
-					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/docs/api") //TODOv2 website
+					OnClick = () => ApplicationHelper.OpenBrowser("https://www.mesen.ca/apireference/")
 				}
 			};
 
