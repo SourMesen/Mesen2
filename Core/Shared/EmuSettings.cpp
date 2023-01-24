@@ -219,17 +219,18 @@ void EmuSettings::SetPreferences(PreferencesConfig& config)
 {
 	MessageManager::SetOsdState(!config.DisableOsd);
 
+	_preferences = config;
+
+	ProcessString(_saveFolder, &_preferences.SaveFolderOverride);
+	ProcessString(_saveStateFolder, &_preferences.SaveStateFolderOverride);
+	ProcessString(_screenshotFolder, &_preferences.ScreenshotFolderOverride);
+
 	FolderUtilities::SetFolderOverrides(
 		_saveFolder,
 		_saveStateFolder,
 		_screenshotFolder,
 		""
 	);
-
-	_preferences = config;
-	ProcessString(_saveFolder, &_preferences.SaveFolderOverride);
-	ProcessString(_saveStateFolder, &_preferences.SaveStateFolderOverride);
-	ProcessString(_screenshotFolder, &_preferences.ScreenshotFolderOverride);
 }
 
 PreferencesConfig& EmuSettings::GetPreferences()
