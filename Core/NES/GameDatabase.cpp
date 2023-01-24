@@ -11,6 +11,8 @@
 
 std::unordered_map<uint32_t, GameInfo> GameDatabase::_gameDatabase;
 bool GameDatabase::_enabled = true;
+bool GameDatabase::_initialized = false;
+SimpleLock GameDatabase::_loadLock;
 
 template<typename T> 
 T GameDatabase::ToInt(string value)
@@ -77,10 +79,14 @@ void GameDatabase::LoadGameDb(std::istream &db)
 
 void GameDatabase::InitDatabase()
 {
-	if(_gameDatabase.size() == 0) {
-		string dbPath = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "MesenNesDB.txt");
-		ifstream db(dbPath, ios::in | ios::binary);
-		LoadGameDb(db);
+	if(!_initialized) {
+		auto lock = _loadLock.AcquireSafe();
+		if(!_initialized) {
+			string dbPath = FolderUtilities::CombinePath(FolderUtilities::GetHomeFolder(), "MesenNesDB.txt");
+			ifstream db(dbPath, ios::in | ios::binary);
+			LoadGameDb(db);
+			_initialized = true;
+		}
 	}
 }
 

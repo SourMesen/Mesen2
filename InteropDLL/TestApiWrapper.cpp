@@ -7,22 +7,22 @@ shared_ptr<RecordedRomTest> _recordedRomTest;
 
 extern "C"
 {
-	DllExport int32_t __stdcall RunRecordedTest(char* filename, bool inBackground)
+	DllExport RomTestResult __stdcall RunRecordedTest(char* filename, bool inBackground)
 	{
 		if(inBackground) {
 			unique_ptr<Emulator> emu(new Emulator());
 			emu->Initialize();
-			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(emu.get()));
+			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(emu.get(), true));
 			return romTest->Run(filename);
 		} else {
-			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(_emu.get()));
+			shared_ptr<RecordedRomTest> romTest(new RecordedRomTest(_emu.get(), false));
 			return romTest->Run(filename);
 		}
 	}
 
 	DllExport void __stdcall RomTestRecord(char* filename, bool reset)
 	{
-		_recordedRomTest.reset(new RecordedRomTest(_emu.get()));
+		_recordedRomTest.reset(new RecordedRomTest(_emu.get(), false));
 		_recordedRomTest->Record(filename, reset);
 	}
 	

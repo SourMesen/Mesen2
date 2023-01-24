@@ -13,9 +13,10 @@
 #include "Utilities/ZipReader.h"
 #include "Utilities/ArchiveReader.h"
 
-RecordedRomTest::RecordedRomTest(Emulator* emu)
+RecordedRomTest::RecordedRomTest(Emulator* emu, bool inBackground)
 {
 	_emu = emu;
+	_inBackground = inBackground;
 	Reset();
 }
 
@@ -64,8 +65,11 @@ void RecordedRomTest::ValidateFrame()
 
 	if(memcmp(_screenshotHashes.front(), md5Hash, 16) != 0) {
 		_badFrameCount++;
+		_isLastFrameGood = false;
 		//_console->BreakIfDebugging();
-	} 
+	} else {
+		_isLastFrameGood = true;
+	}
 	
 	if(_currentCount == 0 && _repetitionCount.empty()) {
 		//End of test
@@ -121,10 +125,10 @@ void RecordedRomTest::Record(string filename, bool reset)
 
 		_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping = true;
 
-		//TODOv2 - remove snes-specific code
-		SnesConfig& snesCfg = _emu->GetSettings()->GetSnesConfig();
-		snesCfg.RamPowerOnState = RamState::AllZeros;
-		_emu->GetSettings()->SetSnesConfig(snesCfg);
+		_emu->GetSettings()->GetSnesConfig().RamPowerOnState = RamState::AllZeros;
+		_emu->GetSettings()->GetNesConfig().RamPowerOnState = RamState::AllZeros;
+		_emu->GetSettings()->GetGameboyConfig().RamPowerOnState = RamState::AllZeros;
+		_emu->GetSettings()->GetPcEngineConfig().RamPowerOnState = RamState::AllZeros;
 				
 		//Start recording movie alongside with screenshots
 		RecordMovieOptions options;
@@ -138,19 +142,32 @@ void RecordedRomTest::Record(string filename, bool reset)
 	}
 }
 
-int32_t RecordedRomTest::Run(string filename)
+RomTestResult RecordedRomTest::Run(string filename)
 {
+	RomTestResult result = {};
 	_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 
 	EmuSettings* settings = _emu->GetSettings();
 	string testName = FolderUtilities::GetFilename(filename, false);
 	
-	VirtualFile testMovie(filename, "TestMovie.msm");
-	VirtualFile testRom(filename, "TestRom.sfc");
-
 	ZipReader zipReader;
 	zipReader.LoadArchive(filename);
-	
+	vector<string> files = zipReader.GetFileList();
+	string romFile = "";
+	for(string& file : files) {
+		if(file.length() > 7 && file.substr(0, 7) == "TestRom") {
+			romFile = file;
+		}
+	}
+
+	if(romFile.empty()) {
+		result.ErrorCode = -4;
+		return result;
+	}
+
+	VirtualFile testMovie(filename, "TestMovie.mmo");
+	VirtualFile testRom(filename, romFile);
+
 	stringstream testData;
 	zipReader.GetStream("TestData.mrt", testData);
 
@@ -159,7 +176,8 @@ int32_t RecordedRomTest::Run(string filename)
 		testData.read((char*)&header, 3);
 		if(memcmp((char*)&header, "MRT", 3) != 0) {
 			//Invalid test file
-			return false;
+			result.ErrorCode = -3;
+			return result;
 		}
 		
 		Reset();
@@ -180,36 +198,47 @@ int32_t RecordedRomTest::Run(string filename)
 		_currentCount = _repetitionCount.front();
 		_repetitionCount.pop_front();
 
-		_emu->GetSettings()->GetVideoConfig().DisableFrameSkipping = true;
+		if(testName.compare("demo_pal") == 0 || testName.substr(0, 4).compare("pal_") == 0) {
+			settings->GetNesConfig().Region = ConsoleRegion::Pal;
+		} else {
+			settings->GetNesConfig().Region = ConsoleRegion::Auto;
+		}
 
-		//TODOv2 - remove snes-specific code
-		SnesConfig& snesCfg = _emu->GetSettings()->GetSnesConfig();
-		snesCfg.RamPowerOnState = RamState::AllZeros;
-		_emu->GetSettings()->SetSnesConfig(snesCfg);
+		settings->GetVideoConfig().DisableFrameSkipping = true;
+
+		settings->GetSnesConfig().RamPowerOnState = RamState::AllZeros;
+		settings->GetNesConfig().RamPowerOnState = RamState::AllZeros;
+		settings->GetGameboyConfig().RamPowerOnState = RamState::AllZeros;
+		settings->GetPcEngineConfig().RamPowerOnState = RamState::AllZeros;
 
 		_emu->Lock();
 		//Start playing movie
 		if(_emu->LoadRom(testRom, VirtualFile(""))) {
-			settings->SetFlag(EmulationFlags::MaximumSpeed);
 			_emu->GetMovieManager()->Play(testMovie, true);
+			settings->SetFlag(EmulationFlags::MaximumSpeed);
 
 			_runningTest = true;
 			_emu->Unlock();
 			_signal.Wait();
-			_emu->Stop(false);
+			_emu->Stop(!_inBackground);
 			_runningTest = false;
 		} else {
 			//Something went wrong when loading the rom
 			_emu->Unlock();
-			return -2;
+			result.ErrorCode = -2;
+			return result;
 		}
 
 		settings->ClearFlag(EmulationFlags::MaximumSpeed);
 
-		return _badFrameCount;
+		result.ErrorCode = _badFrameCount;
+		result.State = _badFrameCount == 0 ? RomTestState::Passed : (_isLastFrameGood ? RomTestState::PassedWithWarnings : RomTestState::Failed);
+
+		return result;
 	}
 
-	return -1;
+	result.ErrorCode = -1;
+	return result;
 }
 
 void RecordedRomTest::Stop()
@@ -250,10 +279,10 @@ void RecordedRomTest::Save()
 	std::remove(mrtFilename.c_str());
 
 	string mmoFilename = FolderUtilities::CombinePath(FolderUtilities::GetFolderName(_filename), FolderUtilities::GetFilename(_filename, false) + ".mmo");
-	writer.AddFile(mmoFilename, "TestMovie.msm");
+	writer.AddFile(mmoFilename, "TestMovie.mmo");
 	std::remove(mmoFilename.c_str());
 
-	writer.AddFile(_emu->GetRomInfo().RomFile.GetFilePath(), "TestRom.sfc");
+	writer.AddFile(_emu->GetRomInfo().RomFile.GetFilePath(), "TestRom" + _emu->GetRomInfo().RomFile.GetFileExtension());
 	
 	writer.Save();
 

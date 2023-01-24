@@ -161,11 +161,6 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	_controlManager = _emu->GetConsole()->GetControlManager();
 
-	if(_forTest) {
-		//TODOv2 to validate test behavior
-		_controlManager->RegisterInputProvider(this);
-	}
-
 	LoadCheats();	
 
 	stringstream saveStateData;

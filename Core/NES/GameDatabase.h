@@ -2,6 +2,7 @@
 #include "pch.h"
 #include <unordered_map>
 #include "NES/RomData.h"
+#include "Utilities/SimpleLock.h"
 
 struct NesHeader;
 
@@ -10,6 +11,8 @@ class GameDatabase
 private:
 	static std::unordered_map<uint32_t, GameInfo> _gameDatabase;
 	static bool _enabled;
+	static bool _initialized;
+	static SimpleLock _loadLock;
 
 	template<typename T> static T ToInt(string value);
 

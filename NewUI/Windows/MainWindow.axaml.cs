@@ -39,6 +39,8 @@ namespace Mesen.Windows
 		private MainMenuView _mainMenu;
 		private CommandLineHelper? _cmdLine;
 
+		private bool _testModeEnabled;
+
 		//Used to suppress key-repeat keyup events on Linux
 		private Dictionary<Key, IDisposable> _pendingKeyUpEvents = new();
 		private bool _isLinux = false;
@@ -51,6 +53,7 @@ namespace Mesen.Windows
 
 		public MainWindow()
 		{
+			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
 			DataContext = new MainWindowViewModel();
@@ -447,8 +450,31 @@ namespace Mesen.Windows
 			}
 		}
 
+		private bool ProcessTestModeShortcuts(Key key)
+		{
+			if(key == Key.F1) {
+				if(TestApi.RomTestRecording()) {
+					TestApi.RomTestStop();
+				} else {
+					RomTestHelper.RecordTest();
+				}
+				return true;
+			} else if(key == Key.F2) {
+				RomTestHelper.RunTest();
+				return true;
+			} else if(key == Key.F3) {
+				RomTestHelper.RunAllTests();
+				return true;
+			}
+			return false;
+		}
+
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
+			if(_testModeEnabled && e.KeyModifiers == KeyModifiers.Alt && ProcessTestModeShortcuts(e.Key)) {
+				return;
+			}
+
 			if(e.Key != Key.None) {
 				if(_isLinux && _pendingKeyUpEvents.TryGetValue(e.Key, out IDisposable? cancelTimer)) {
 					//Cancel any pending key up event
