@@ -417,8 +417,6 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//Only update the recent game entry if the game that was loaded is a different game
 		bool gameChanged = (string)_rom.RomFile != (string)romFile || (string)_rom.PatchFile != (string)patchFile;
 		Stop(false, !gameChanged, false);
-		//TODOv2 PERF
-		//KeyManager::UpdateDevices();
 	}
 
 	_videoDecoder->StopThread();
@@ -549,7 +547,6 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 
 string Emulator::GetHash(HashType type)
 {
-	//TODOv2
 	shared_ptr<IConsole> console = _console.lock();
 	string hash = console->GetHash(type);
 	if(hash.size()) {
@@ -614,13 +611,23 @@ TimingInfo Emulator::GetTimingInfo(CpuType cpuType)
 
 uint64_t Emulator::GetMasterClock()
 {
-	//TODOv2 _console.lock()? performance concerns
+#if DEBUG
+	if(!IsEmulationThread()) {
+		throw std::runtime_error("called on wrong thread");
+	}
+#endif
+
 	return _console->GetMasterClock();
 }
 
 uint32_t Emulator::GetMasterClockRate()
 {
-	//TODOv2 _console.lock()? performance concerns
+#if DEBUG
+	if(!IsEmulationThread()) {
+		throw std::runtime_error("called on wrong thread");
+	}
+#endif
+
 	//TODOv2 this is not accurate when overclocking options are turned on
 	return _console->GetMasterClockRate();
 }

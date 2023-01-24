@@ -292,7 +292,7 @@ void PceConsole::InitHesPlayback(uint8_t selectedTrack)
 
 AudioTrackInfo PceConsole::GetAudioTrackInfo()
 {
-	return _hesData ? _hesData->GetAudioTrackInfo(_emu) : AudioTrackInfo {};
+	return _hesData ? _hesData->GetAudioTrackInfo((double)GetMasterClock() / GetMasterClockRate()) : AudioTrackInfo {};
 }
 
 void PceConsole::ProcessAudioPlayerAction(AudioPlayerActionParams p)

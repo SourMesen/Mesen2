@@ -255,7 +255,6 @@ uint8_t MemoryDumper::GetMemoryValue(MemoryType memoryType, uint32_t address, bo
 uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t address, bool disableSideEffects)
 {
 	switch(memoryType) {
-		//TODOv2
 		case MemoryType::SnesMemory: return _memoryManager->Peek(address);
 		case MemoryType::SpcMemory: return _spc->DebugRead(address);
 		case MemoryType::Sa1Memory: return _cartridge->GetSa1()->GetMemoryMappings()->Peek(address);

@@ -143,6 +143,11 @@ enum EvalValues : int64_t
 	VerticalBlank,
 	SpriteOverflow,
 
+	PceVramTransferDone,
+	PceSatbTransferDone,
+	PceScanlineDetected,
+	PceIrqVdc2,
+
 	FirstLabelIndex,
 };
 

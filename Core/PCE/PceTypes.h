@@ -253,6 +253,8 @@ struct PceVpcState
 	uint16_t Window1;
 	uint16_t Window2;
 	bool StToVdc2Mode;
+	bool HasIrqVdc1;
+	bool HasIrqVdc2;
 };
 
 struct PceVideoState : BaseState

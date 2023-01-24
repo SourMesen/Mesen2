@@ -1573,6 +1573,8 @@ namespace Mesen.Interop
 		public UInt16 Window1;
 		public UInt16 Window2;
 		[MarshalAs(UnmanagedType.I1)] public bool StToVdc2Mode;
+		[MarshalAs(UnmanagedType.I1)] public bool HasIrqVdc1;
+		[MarshalAs(UnmanagedType.I1)] public bool HasIrqVdc2;
 	}
 
 	public struct PceVideoState : BaseState

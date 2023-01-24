@@ -21,8 +21,6 @@ private:
 	PceVce* _vce = nullptr;
 	Emulator* _emu = nullptr;
 	PceConsole* _console = nullptr;
-	bool _hasIrqVdc1 = false;
-	bool _hasIrqVdc2 = false;
 
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;

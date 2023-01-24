@@ -295,7 +295,7 @@ void PceVpc::DebugSendFrame()
 
 void PceVpc::UpdateIrqState()
 {
-	if(_hasIrqVdc1 || _hasIrqVdc2) {
+	if(_state.HasIrqVdc1 || _state.HasIrqVdc2) {
 		_console->GetMemoryManager()->SetIrqSource(PceIrqSource::Irq1);
 	} else {
 		_console->GetMemoryManager()->ClearIrqSource(PceIrqSource::Irq1);
@@ -305,9 +305,9 @@ void PceVpc::UpdateIrqState()
 void PceVpc::SetIrq(PceVdc* vdc)
 {
 	if(vdc == _vdc1) {
-		_hasIrqVdc1 = true;
+		_state.HasIrqVdc1 = true;
 	} else {
-		_hasIrqVdc2 = true;
+		_state.HasIrqVdc2 = true;
 	}
 	UpdateIrqState();
 }
@@ -315,9 +315,9 @@ void PceVpc::SetIrq(PceVdc* vdc)
 void PceVpc::ClearIrq(PceVdc* vdc)
 {
 	if(vdc == _vdc1) {
-		_hasIrqVdc1 = false;
+		_state.HasIrqVdc1 = false;
 	} else {
-		_hasIrqVdc2 = false;
+		_state.HasIrqVdc2 = false;
 	}
 	UpdateIrqState();
 }
@@ -337,8 +337,8 @@ void PceVpc::SetPriorityConfig(PceVpcPixelWindow wnd, uint8_t value)
 
 void PceVpc::Serialize(Serializer& s)
 {
-	SV(_hasIrqVdc1);
-	SV(_hasIrqVdc2);
+	SV(_state.HasIrqVdc1);
+	SV(_state.HasIrqVdc2);
 	SV(_state.Priority1);
 	SV(_state.Priority2);
 	SV(_state.StToVdc2Mode);

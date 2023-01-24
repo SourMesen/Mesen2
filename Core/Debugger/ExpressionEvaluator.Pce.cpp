@@ -12,8 +12,7 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 		{ "ps", EvalValues::RegPS },
 		{ "sp", EvalValues::RegSP },
 		{ "pc", EvalValues::RegPC },
-		/*{ "irq", EvalValues::Irq },
-		{ "nmi", EvalValues::Nmi },*/
+		{ "irq", EvalValues::Irq },
 		{ "frame", EvalValues::PpuFrameCount },
 		{ "cycle", EvalValues::PpuCycle },
 		{ "scanline", EvalValues::PpuScanline },
@@ -27,6 +26,10 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 		{ "psmemory", EvalValues::RegPS_Memory },
 		{ "psoverflow", EvalValues::RegPS_Overflow },
 		{ "psnegative", EvalValues::RegPS_Negative },
+		{ "vramTransferDone", EvalValues::PceVramTransferDone },
+		{ "satbTransferDone", EvalValues::PceSatbTransferDone },
+		{ "scanlineDetected", EvalValues::PceScanlineDetected },
+		{ "irqVdc2", EvalValues::PceIrqVdc2 },
 	};
 
 	return supportedTokens;
@@ -48,9 +51,9 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::RegSP: return s.SP;
 		case EvalValues::RegPS: return s.PS;
 		case EvalValues::RegPC: return s.PC;
-		//TODOv2
-		/*case EvalValues::Nmi: return ReturnBool(s.NMIFlag, resultType);
-		case EvalValues::Irq:  return ReturnBool(s.IRQFlag, resultType);*/
+
+		case EvalValues::Irq: return ReturnBool(ppu().Vpc.HasIrqVdc1, resultType);
+		case EvalValues::PceIrqVdc2: return ReturnBool(ppu().Vpc.HasIrqVdc2, resultType);
 
 		case EvalValues::PpuFrameCount: return ppu().Vdc.FrameCount;
 		case EvalValues::PpuCycle: return ppu().Vdc.HClock;
@@ -59,6 +62,9 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::Sprite0Hit: return ReturnBool(ppu().Vdc.Sprite0Hit, resultType);
 		case EvalValues::SpriteOverflow: return ReturnBool(ppu().Vdc.SpriteOverflow, resultType);
 		case EvalValues::VerticalBlank: return ReturnBool(ppu().Vdc.VerticalBlank, resultType);
+		case EvalValues::PceVramTransferDone: return ReturnBool(ppu().Vdc.VramTransferDone, resultType);
+		case EvalValues::PceSatbTransferDone: return ReturnBool(ppu().Vdc.SatbTransferDone, resultType);
+		case EvalValues::PceScanlineDetected: return ReturnBool(ppu().Vdc.ScanlineDetected, resultType);
 
 		case EvalValues::RegPS_Carry: return ReturnBool(s.PS & PceCpuFlags::Carry, resultType);
 		case EvalValues::RegPS_Zero: return ReturnBool(s.PS & PceCpuFlags::Zero, resultType);

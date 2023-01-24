@@ -92,9 +92,7 @@ void Disassembler::InvalidateCache(AddressInfo addrInfo, CpuType type)
 		DisassemblerSource& src = GetSource(addrInfo.Type);
 		for(int i = 0; i < 4; i++) {
 			if(addrInfo.Address >= i) {
-				if(src.Cache[addrInfo.Address - i].IsInitialized()) {
-					src.Cache[addrInfo.Address - i].Reset();
-				}
+				src.Cache[addrInfo.Address - i].Reset();
 			}
 		}
 	}

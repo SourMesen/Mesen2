@@ -18,7 +18,7 @@ class SnesCodeDataLogger final : public CodeDataLogger
 private:
 	uint8_t GetCpuFlags(uint32_t absoluteAddr)
 	{
-		return _cdlData[absoluteAddr] & (SnesCdlFlags::MemoryMode8 | SnesCdlFlags::IndexMode8);
+		return _cdlData[absoluteAddr] & (SnesCdlFlags::MemoryMode8 | SnesCdlFlags::IndexMode8 | SnesCdlFlags::Gsu | SnesCdlFlags::Cx4);
 	}
 
 	CpuType GetCpuType(uint32_t absoluteAddr)
@@ -36,7 +36,6 @@ public:
 
 	void RebuildPrgCache(Disassembler* dis) override
 	{
-		//TODOv2 GSU flags
 		AddressInfo addrInfo;
 		addrInfo.Type = _memType;
 		for(uint32_t i = 0; i < _memSize; i++) {

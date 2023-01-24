@@ -78,12 +78,12 @@ struct HesFileData
 		switchTrackTask.detach();
 	}
 
-	AudioTrackInfo GetAudioTrackInfo(Emulator* emu)
+	AudioTrackInfo GetAudioTrackInfo(double position)
 	{
 		AudioTrackInfo info = {};
 		info.TrackNumber = CurrentTrack + 1;
 		info.TrackCount = 256;
-		info.Position = (double)emu->GetMasterClock() / emu->GetMasterClockRate();
+		info.Position = position;
 		info.Length = 0;
 		info.FadeLength = 0;
 		return info;
