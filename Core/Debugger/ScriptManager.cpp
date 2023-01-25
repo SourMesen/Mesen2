@@ -38,7 +38,7 @@ int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
 		});
 		if(result != _scripts.end()) {
 			//Send a ScriptEnded event before reloading the code
-			(*result)->ProcessEvent(EventType::ScriptEnded);
+			(*result)->ProcessEvent(EventType::ScriptEnded, _debugger->GetMainCpuType());
 
 			(*result)->LoadScript(name, content, _debugger);
 			RefreshMemoryCallbackFlags();
@@ -56,7 +56,7 @@ void ScriptManager::RemoveScript(int32_t scriptId)
 	_scripts.erase(std::remove_if(_scripts.begin(), _scripts.end(), [=](const unique_ptr<ScriptHost>& script) {
 		if(script->GetScriptId() == scriptId) {
 			//Send a ScriptEnded event before unloading the script
-			script->ProcessEvent(EventType::ScriptEnded);
+			script->ProcessEvent(EventType::ScriptEnded, _debugger->GetMainCpuType());
 			_debugger->GetEmulator()->GetDebugHud()->ClearScreen();
 			_debugger->GetEmulator()->GetScriptHud()->ClearScreen();
 			return true;
@@ -89,9 +89,9 @@ string ScriptManager::GetScriptLog(int32_t scriptId)
 	return "";
 }
 
-void ScriptManager::ProcessEvent(EventType type)
+void ScriptManager::ProcessEvent(EventType type, CpuType cpuType)
 {
 	for(unique_ptr<ScriptHost> &script : _scripts) {
-		script->ProcessEvent(type);
+		script->ProcessEvent(type, cpuType);
 	}
 }

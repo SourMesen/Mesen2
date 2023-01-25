@@ -8,6 +8,7 @@ class BaseControlDevice;
 class IInputRecorder;
 class IInputProvider;
 class Emulator;
+enum class CpuType : uint8_t;
 struct ControllerData;
 enum class ControllerType;
 
@@ -19,6 +20,7 @@ private:
 
 protected:
 	Emulator* _emu = nullptr;
+	CpuType _cpuType = {};
 	SimpleLock _deviceLock;
 	vector<shared_ptr<BaseControlDevice>> _systemDevices;
 	vector<shared_ptr<BaseControlDevice>> _controlDevices;
@@ -31,7 +33,7 @@ protected:
 	void ClearDevices();
 
 public:
-	BaseControlManager(Emulator* emu);
+	BaseControlManager(Emulator* emu, CpuType cpuType);
 	virtual ~BaseControlManager();
 
 	void AddSystemControlDevice(shared_ptr<BaseControlDevice> device);

@@ -304,7 +304,7 @@ public:
 	}
 
 	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-	void ProcessEvent(EventType type);
+	void ProcessEvent(EventType type, std::optional<CpuType> cpuType = std::nullopt);
 	template<CpuType cpuType> void AddDebugEvent(DebugEventType evtType);
 	void BreakIfDebugging(CpuType sourceCpu, BreakSource source);
 };

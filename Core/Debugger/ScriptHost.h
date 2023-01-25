@@ -23,7 +23,7 @@ public:
 	bool LoadScript(string scriptName, string scriptContent, Debugger* debugger);
 	void RefreshMemoryCallbackFlags() { _context->RefreshMemoryCallbackFlags(); }
 
-	void ProcessEvent(EventType eventType);
+	void ProcessEvent(EventType eventType, CpuType cpuType);
 
 	template<typename T>
 	__forceinline void CallMemoryCallback(AddressInfo relAddr, T& value, CallbackType callbackType, CpuType cpuType)

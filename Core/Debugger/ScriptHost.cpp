@@ -30,7 +30,7 @@ bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* d
 	return true;
 }
 
-void ScriptHost::ProcessEvent(EventType eventType)
+void ScriptHost::ProcessEvent(EventType eventType, CpuType cpuType)
 {
-	_context->CallEventCallback(eventType);
+	_context->CallEventCallback(eventType, cpuType);
 }

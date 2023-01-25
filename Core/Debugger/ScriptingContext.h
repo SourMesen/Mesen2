@@ -78,7 +78,7 @@ public:
 	ScriptDrawSurface GetDrawSurface() { return _drawSurface; }
 
 	template<typename T> void CallMemoryCallback(AddressInfo relAddr, T& value, CallbackType type, CpuType cpuType);
-	int CallEventCallback(EventType type);
+	int CallEventCallback(EventType type, CpuType cpuType);
 	bool CheckInitDone();
 	bool IsSaveStateAllowed();
 

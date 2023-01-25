@@ -389,7 +389,7 @@ void Debugger::SleepUntilResume(CpuType sourceCpu, BreakSource source, MemoryOpe
 
 		_waitForBreakResume = true;
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::CodeBreak, &evt);
-		ProcessEvent(EventType::CodeBreak);
+		ProcessEvent(EventType::CodeBreak, sourceCpu);
 		notificationSent = true;
 	}
 
@@ -436,7 +436,7 @@ void Debugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 	}
 
 	_debuggers[(int)type].Debugger->ProcessInterrupt(originalPc, currentPc, forNmi);
-	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq);
+	ProcessEvent(forNmi ? EventType::Nmi : EventType::Irq, type);
 }
 
 void Debugger::InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepRequest& stepRequest, AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t retAddr, bool forNmi)
@@ -446,41 +446,26 @@ void Debugger::InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepReq
 	stepRequest.ProcessNmiIrq(forNmi);
 }
 
-void Debugger::ProcessEvent(EventType type)
+void Debugger::ProcessEvent(EventType type, std::optional<CpuType> cpuTypeOpt)
 {
-	_scriptManager->ProcessEvent(type);
+	CpuType evtCpuType = cpuTypeOpt.value_or(_mainCpuType);
+	_scriptManager->ProcessEvent(type, evtCpuType);
 
 	switch(type) {
 		default: break;
 
 		case EventType::InputPolled:
-			_debuggers[(int)_mainCpuType].Debugger->ProcessInputOverrides(_inputOverrides);
+			_debuggers[(int)evtCpuType].Debugger->ProcessInputOverrides(_inputOverrides);
 			break;
 
 		case EventType::StartFrame: {
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)_mainCpuType);
-			BaseEventManager* evtMgr = GetEventManager(_mainCpuType);
+			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)evtCpuType);
+			BaseEventManager* evtMgr = GetEventManager(evtCpuType);
 			if(evtMgr) {
 				evtMgr->ClearFrameEvents();
 			}
 			break;
 		}
-
-		//TODOv2 (need a better solution)
-		case EventType::GbStartFrame:
-			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
-				_scriptManager->ProcessEvent(EventType::StartFrame);
-			}
-			_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::EventViewerRefresh, (void*)CpuType::Gameboy);
-			GetEventManager(CpuType::Gameboy)->ClearFrameEvents();
-			break;
-		
-		//TODOv2 (need a better solution)
-		case EventType::GbEndFrame:
-			if(_consoleType == ConsoleType::Gameboy || _consoleType == ConsoleType::GameboyColor) {
-				_scriptManager->ProcessEvent(EventType::EndFrame);
-			}
-			break;
 
 		case EventType::Reset:
 			Reset();

@@ -11,8 +11,6 @@ enum class EventType
 	InputPolled,
 	StateLoaded,
 	StateSaved,
-	GbStartFrame,
-	GbEndFrame,
 	CodeBreak,
 
 	LastValue

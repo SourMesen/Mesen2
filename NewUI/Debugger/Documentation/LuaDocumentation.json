@@ -9,7 +9,7 @@
 },
 {
 	"name": "addEventCallback",
-	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives no parameters.",
+	"description": "Registers a callback function to be called whenever the specified event occurs.\nThe callback function receives 1 parameter (\"cpuType\") which is an enum value (emu.cpuType) which indicates which CPU triggered the event (useful to distinguish between identical events triggered by different CPUs, e.g Super Game Boy).",
 	"parameters": [
 		{ "name": "callback", "type": "Function", "description": "Lua function to call when the event occurs" },
 		{ "name": "eventType", "type": "Enum", "enumName": "eventType", "description": "Event type" }

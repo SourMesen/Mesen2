@@ -308,7 +308,7 @@ void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, T& value,
 	}
 }
 
-int ScriptingContext::CallEventCallback(EventType type)
+int ScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 {
 	if(_eventCallbacks[(int)type].empty()) {
 		return 0;
@@ -321,7 +321,8 @@ int ScriptingContext::CallEventCallback(EventType type)
 	LuaCallHelper l(_lua);
 	for(int& ref : _eventCallbacks[(int)type]) {
 		lua_rawgeti(_lua, LUA_REGISTRYINDEX, ref);
-		if(lua_pcall(_lua, 0, 0, 0) != 0) {
+		lua_pushinteger(_lua, (int)cpuType);
+		if(lua_pcall(_lua, 1, 0, 0) != 0) {
 			Log(lua_tostring(_lua, -1));
 		}
 	}

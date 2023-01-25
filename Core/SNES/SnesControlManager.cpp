@@ -16,7 +16,7 @@
 #include "Utilities/Serializer.h"
 #include "Shared/SystemActionManager.h"
 
-SnesControlManager::SnesControlManager(SnesConsole* console) : BaseControlManager(console->GetEmulator())
+SnesControlManager::SnesControlManager(SnesConsole* console) : BaseControlManager(console->GetEmulator(), CpuType::Snes)
 {
 	_console = console;
 	UpdateControlDevices();

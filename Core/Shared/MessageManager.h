@@ -14,7 +14,6 @@
 	#define LogDebugIf(cond, msg)
 #endif
 
-//TODOv2 this should be a member in Emulator instead of being global data
 class MessageManager
 {
 private:

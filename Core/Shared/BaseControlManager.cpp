@@ -12,9 +12,10 @@
 #include "Shared/MessageManager.h"
 #include "Utilities/Serializer.h"
 
-BaseControlManager::BaseControlManager(Emulator* emu)
+BaseControlManager::BaseControlManager(Emulator* emu, CpuType cpuType)
 {
 	_emu = emu;
+	_cpuType = cpuType;
 	_pollCounter = 0;
 	AddSystemControlDevice(_emu->GetSystemActionManager());
 	UpdateControlDevices();
@@ -171,7 +172,7 @@ void BaseControlManager::UpdateInputState()
 		//log += "|" + device->GetTextState();
 	}
 
-	_emu->ProcessEvent(EventType::InputPolled);
+	_emu->ProcessEvent(EventType::InputPolled, _cpuType);
 
 	if(!_emu->IsRunAheadFrame()) {
 		for(IInputRecorder* recorder : _inputRecorders) {

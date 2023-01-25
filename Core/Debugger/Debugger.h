@@ -116,7 +116,7 @@ public:
 
 	void InternalProcessInterrupt(CpuType cpuType, IDebugger& dbg, StepRequest& stepRequest, AddressInfo& src, uint32_t srcAddr, AddressInfo& dest, uint32_t destAddr, AddressInfo& ret, uint32_t retAddr, bool forNmi);
 
-	void ProcessEvent(EventType type);
+	void ProcessEvent(EventType type, std::optional<CpuType> cpuType);
 
 	void ProcessConfigChange();
 

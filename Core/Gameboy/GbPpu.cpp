@@ -197,7 +197,7 @@ void GbPpu::ProcessVblankScanline()
 				_state.LyForCompare = 0;
 
 				if(_emu->IsDebugging()) {
-					_emu->ProcessEvent(EventType::GbStartFrame);
+					_emu->ProcessEvent(EventType::StartFrame, CpuType::Gameboy);
 					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 				}
 			} else {
@@ -644,7 +644,7 @@ PpuMode GbPpu::GetMode()
 
 void GbPpu::SendFrame()
 {
-	_emu->ProcessEvent(EventType::GbEndFrame);
+	_emu->ProcessEvent(EventType::EndFrame, CpuType::Gameboy);
 	_state.FrameCount++;
 
 	if(_gameboy->IsSgb()) {
@@ -777,7 +777,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					UpdateStatIrq();
 					
 					if(_emu->IsDebugging()) {
-						_emu->ProcessEvent(EventType::GbStartFrame);
+						_emu->ProcessEvent(EventType::StartFrame, CpuType::Gameboy);
 
 						_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 						for(int i = 0; i < 456 * 154; i++) {

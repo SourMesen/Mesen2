@@ -7,7 +7,7 @@
 #include "Shared/BaseControlDevice.h"
 #include "Shared/Emulator.h"
 
-PceControlManager::PceControlManager(Emulator* emu) : BaseControlManager(emu)
+PceControlManager::PceControlManager(Emulator* emu) : BaseControlManager(emu, CpuType::Pce)
 {
 }
 

@@ -1046,10 +1046,10 @@ void Emulator::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool fo
 	}
 }
 
-void Emulator::ProcessEvent(EventType type)
+void Emulator::ProcessEvent(EventType type, std::optional<CpuType> cpuType)
 {
 	if(_debugger) {
-		_debugger->ProcessEvent(type);
+		_debugger->ProcessEvent(type, cpuType);
 	}
 }
 

@@ -39,7 +39,7 @@
 #include "NES/Input/BattleBox.h"
 #include "NES/Input/VirtualBoyController.h"
 
-NesControlManager::NesControlManager(NesConsole* console) : BaseControlManager(console->GetEmulator())
+NesControlManager::NesControlManager(NesConsole* console) : BaseControlManager(console->GetEmulator(), CpuType::Nes)
 {
 	_console = console;
 }

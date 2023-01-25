@@ -15,13 +15,13 @@
 #include <string.h>
 #include <stdint.h>
 #include <memory>
+#include <optional>
 
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <string>
 #include <cctype>
-#include <memory>
 #include <cmath>
 #include <vector>
 #include <unordered_map>

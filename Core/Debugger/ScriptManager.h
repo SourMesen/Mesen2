@@ -29,7 +29,7 @@ public:
 	int32_t LoadScript(string name, string content, int32_t scriptId);
 	void RemoveScript(int32_t scriptId);
 	string GetScriptLog(int32_t scriptId);
-	void ProcessEvent(EventType type);
+	void ProcessEvent(EventType type, CpuType cpuType);
 
 	void EnableCpuMemoryCallbacks() { _isCpuMemoryCallbackEnabled = true; }
 	bool HasCpuMemoryCallbacks() { return _scripts.size() && _isCpuMemoryCallbackEnabled; }
