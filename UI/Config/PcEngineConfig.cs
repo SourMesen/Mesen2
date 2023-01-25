@@ -46,6 +46,7 @@ namespace Mesen.Config
 		[Reactive] public bool DisableSpritesVdc2 { get; set; } = false;
 		[Reactive] public bool DisableBackground { get; set; } = false;
 		[Reactive] public bool DisableBackgroundVdc2 { get; set; } = false;
+		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
 		[Reactive] public OverscanConfig Overscan { get; set; } = new() { Top = 3, Left = 18, Right = 18 };
 
@@ -87,6 +88,8 @@ namespace Mesen.Config
 				DisableSpritesVdc2 = DisableSpritesVdc2,
 
 				Overscan = Overscan.ToInterop(),
+
+				DisableFrameSkipping = DisableFrameSkipping,
 
 				Palette = Palette,
 			});
@@ -168,6 +171,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisableSpritesVdc2;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBackgroundVdc2;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
 
 		public InteropOverscanDimensions Overscan;
 

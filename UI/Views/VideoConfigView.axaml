@@ -138,7 +138,6 @@
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 					<StackPanel Orientation="Horizontal" Margin="0 5 0 0">
 						<TextBlock Text="{l:Translate lblScreenRotation}" VerticalAlignment="Center" />
 						<c:EnumComboBox SelectedItem="{CompiledBinding Config.ScreenRotation}" />

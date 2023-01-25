@@ -46,7 +46,6 @@ namespace Mesen.Config
 		[Reactive] public FullscreenResolution ExclusiveFullscreenResolution { get; set; } = 0;
 
 		[Reactive] public ScreenRotation ScreenRotation { get; set; } = ScreenRotation.None;
-		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
 
 		public VideoConfig()
 		{
@@ -88,8 +87,7 @@ namespace Mesen.Config
 				FullscreenResWidth = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary?.Bounds.Width ?? 1920) : ExclusiveFullscreenResolution.GetWidth()),
 				FullscreenResHeight = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary?.Bounds.Height ?? 1080) : ExclusiveFullscreenResolution.GetHeight()),
 
-				ScreenRotation = (uint)ScreenRotation,
-				DisableFrameSkipping = DisableFrameSkipping
+				ScreenRotation = (uint)ScreenRotation
 			});
 		}
 	}
@@ -131,7 +129,6 @@ namespace Mesen.Config
 		public UInt32 FullscreenResHeight;
 
 		public UInt32 ScreenRotation;
-		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
 	}
 
 	public enum VideoFilterType

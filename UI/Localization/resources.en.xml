@@ -186,7 +186,6 @@
 			<Control ID="mnuPresetMonochrome">Monochrome</Control>
 
 			<Control ID="tpgAdvanced">Advanced</Control>
-			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
 		</Form>
 		<Form ID="EmulationConfigView">
@@ -248,6 +247,7 @@
 			<Control ID="chkHideBgLayer4">Hide background layer 4</Control>
 			<Control ID="chkHideSprites">Hide sprites</Control>
 			<Control ID="lblOverscan">Overscan</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 		</Form>
 		<Form ID="NesConfigView">
 			<Control ID="tpgGeneral">General</Control>
@@ -394,6 +394,7 @@
 			<Control ID="chkDisableBackgroundVdc2">Disable background (VDC2 - SuperGrafx)</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkDisableSpritesVdc2">Disable sprites (VDC2 - SuperGrafx)</Control>
+			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
 
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblPalette">Palette</Control>
