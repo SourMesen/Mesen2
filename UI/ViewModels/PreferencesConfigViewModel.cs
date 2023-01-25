@@ -135,7 +135,9 @@ namespace Mesen.ViewModels
 
 			ShortcutKeys = new List<ShortcutKeyInfo>();
 			for(int i = 0; i < displayOrder.Length; i++) {
-				ShortcutKeys.Add(shortcuts[displayOrder[i]]);
+				if(shortcuts.ContainsKey(displayOrder[i])) {
+					ShortcutKeys.Add(shortcuts[displayOrder[i]]);
+				}
 			}
 
 			if(Design.IsDesignMode) {
