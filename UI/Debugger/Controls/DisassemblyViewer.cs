@@ -230,11 +230,14 @@ namespace Mesen.Debugger.Controls
 
 			_visibleCodeSegments.Clear();
 
+			bool useLowerCase = ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly;
+			string baseFormat = useLowerCase ? "x" : "X";
+
 			//Draw code
 			int lineCount = Math.Min(VisibleRowCount, lines.Length);
 			for(int i = 0; i < lineCount; i++) {
 				CodeLineData line = lines[i];
-				string addrFormat = "X" + line.CpuType.GetAddressSize();
+				string addrFormat = baseFormat + line.CpuType.GetAddressSize();
 				LineProperties lineStyle = styleProvider.GetLineStyle(line, i);
 				List<CodeColor> lineParts = styleProvider.GetCodeColors(line, true, addrFormat, lineStyle.FgColor != null ? lineStyle.FgColor.Value : null, true);
 

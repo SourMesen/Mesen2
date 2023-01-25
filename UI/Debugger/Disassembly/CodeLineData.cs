@@ -76,9 +76,9 @@ namespace Mesen.Debugger
 		public string GetValueString()
 		{
 			if(ValueSize == 1) {
-				return " = $" + Value.ToString("X2");
+				return " = $" + Value.ToString(ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x2" : "X2");
 			} else if(ValueSize == 2) {
-				return " = $" + Value.ToString("X4");
+				return " = $" + Value.ToString(ConfigManager.Config.Debug.Debugger.UseLowerCaseDisassembly ? "x4" : "X4");
 			} else {
 				return "";
 			}
