@@ -66,7 +66,6 @@ private:
 	safe_ptr<IConsole> _console;
 
 	shared_ptr<ShortcutKeyHandler> _shortcutKeyHandler;
-	shared_ptr<RewindManager> _rewindManager;
 	safe_ptr<Debugger> _debugger;
 	shared_ptr<SystemActionManager> _systemActionManager;
 
@@ -85,6 +84,7 @@ private:
 	
 	const shared_ptr<GameServer> _gameServer;
 	const shared_ptr<GameClient> _gameClient;
+	const shared_ptr<RewindManager> _rewindManager;
 
 	thread::id _emulationThreadId;
 

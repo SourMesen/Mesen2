@@ -13,10 +13,6 @@ RewindManager::RewindManager(Emulator* emu)
 {
 	_emu = emu;
 	_settings = emu->GetSettings();
-	_rewindState = RewindState::Stopped;
-	_framesToFastForward = 0;
-	_hasHistory = false;
-	AddHistoryBlock();
 
 	_emu->RegisterInputProvider(this);
 	_emu->RegisterInputRecorder(this);
@@ -30,19 +26,30 @@ RewindManager::~RewindManager()
 	_emu->UnregisterInputRecorder(this);
 }
 
+void RewindManager::InitHistory()
+{
+	ClearBuffer();
+	AddHistoryBlock();
+}
+
+void RewindManager::Reset()
+{
+	ClearBuffer();
+}
+
 void RewindManager::ClearBuffer()
 {
 	_hasHistory = false;
+	_ignoreLoadState = false;
 	_history.clear();
 	_historyBackup.clear();
-	_currentHistory = RewindData();
 	_framesToFastForward = 0;
 	_videoHistory.clear();
 	_videoHistoryBuilder.clear();
 	_audioHistory.clear();
 	_audioHistoryBuilder.clear();
 	_rewindState = RewindState::Stopped;
-	_currentHistory = RewindData();
+	_currentHistory = {};
 }
 
 void RewindManager::ProcessNotification(ConsoleNotificationType type, void * parameter)

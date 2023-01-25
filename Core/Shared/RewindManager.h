@@ -45,7 +45,7 @@ private:
 	deque<RewindData> _historyBackup;
 	RewindData _currentHistory = {};
 
-	RewindState _rewindState = {};
+	RewindState _rewindState = RewindState::Stopped;
 	int32_t _framesToFastForward = 0;
 
 	deque<VideoFrame> _videoHistory;
@@ -69,6 +69,9 @@ private:
 public:
 	RewindManager(Emulator* emu);
 	virtual ~RewindManager();
+
+	void InitHistory();
+	void Reset();
 
 	void ProcessNotification(ConsoleNotificationType type, void* parameter) override;
 	void ProcessEndOfFrame();

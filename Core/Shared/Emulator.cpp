@@ -62,7 +62,8 @@ Emulator::Emulator() :
 	_movieManager(new MovieManager(this)),
 	_historyViewer(new HistoryViewer(this)),
 	_gameServer(new GameServer(this)),
-	_gameClient(new GameClient(this))
+	_gameClient(new GameClient(this)),
+	_rewindManager(new RewindManager(this))
 {
 	_paused = false;
 	_pauseOnNextFrame = false;
@@ -291,7 +292,7 @@ void Emulator::Stop(bool sendNotification, bool preventRecentGameSave, bool save
 
 	_movieManager->Stop();
 	_videoDecoder->StopThread();
-	_rewindManager.reset();
+	_rewindManager->Reset();
 
 	if(_console) {
 		if(saveBattery) {
@@ -447,8 +448,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	//Restore pollcounter (used by movies when a power cycle is in the movie)
 	_console->GetControlManager()->SetPollCounter(pollCounter);
 
-	//TODOv2 reset RewindManager state instead of instance
-	_rewindManager.reset(new RewindManager(this));
+	_rewindManager->InitHistory();
 
 	if(debuggerActive) {
 		InitDebugger();
