@@ -283,7 +283,7 @@ void NesEventManager::DrawNtscBorders(uint32_t *buffer)
 	for(uint32_t y = 1; y < 241; y++) {
 		//Pulse
 		uint32_t basePos = y * NesConstants::CyclesPerLine;
-		DrawPixel(buffer, -15, y, _palette[bgColor[basePos - 16] & 0x30]);
+		DrawPixel(buffer, -15, y, _palette[bgColor[basePos - 16] & 0x1F0]);
 
 		//Left border
 		for(int32_t x = 0; x < 15; x++) {
@@ -299,7 +299,7 @@ void NesEventManager::DrawNtscBorders(uint32_t *buffer)
 	for(uint32_t y = 240; y < 242; y++) {
 		//Bottom border
 		uint32_t basePos = y * NesConstants::CyclesPerLine;
-		DrawPixel(buffer, 326, y, _palette[bgColor[basePos + 326] & 0x30]);
+		DrawPixel(buffer, 326, y, _palette[bgColor[basePos + 326] & 0x1F0]);
 		for(int32_t x = 0; x < 282; x++) {
 			DrawPixel(buffer, 327 + x, y, _palette[bgColor[basePos + 327 + x]]);
 		}
