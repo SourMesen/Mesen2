@@ -862,11 +862,6 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 	}
 	s.Stream(_console, "");
 	
-	//TODOv2
-	//Lua doc says this event only triggers for manual load/save
-	//This is triggered 2x by manual save
-	//Also: StateSaved missing from Serialize()
-	//Rewindmanager/netplay expect this to be fired on all loads (manual or not)
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
 	return true;
 }

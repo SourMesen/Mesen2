@@ -1164,7 +1164,10 @@
 			<Control ID="chkRefreshWhileRunning">Refresh while running</Control>
 			<Control ID="chkDrawPartialFrame">Draw partial frame</Control>
 			<Control ID="chkUsePredictiveBreakpoints">Use predictive breakpoints</Control>
+			<Control ID="chkUsePredictiveBreakpointsHint">When enabled, the debugger attempts to predict breakpoints before the corresponding read/write occurs,&#xA;allowing execution to be stopped before the instruction starts executing.</Control>
 			<Control ID="chkSingleBreakpointPerInstruction">Break once per instruction</Control>
+			<Control ID="chkSnesIgnoreDspReadWrites">Ignore DSP reads/writes</Control>
+			<Control ID="chkSnesIgnoreDspReadWritesHint">DSP reads/writes to SPC RAM will be ignored by the debugger.&#xA;Reads/writes done by the DSP won't trigger breakpoints, nor be counted as accesses, etc.&#xA;(This slightly improves performance when debugging)</Control>
 		</Form>
 
 		<Form ID="MemoryToolsWindow">

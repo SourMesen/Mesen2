@@ -606,6 +606,7 @@ struct DebugConfig
 	bool SnesBreakOnWdm = false;
 	bool SnesBreakOnStp = false;
 	bool SnesUseAltSpcOpNames = false;
+	bool SnesIgnoreDspReadWrites = false;
 
 	bool GbBreakOnInvalidOamAccess = false;
 	bool GbBreakOnInvalidVramAccess = false;

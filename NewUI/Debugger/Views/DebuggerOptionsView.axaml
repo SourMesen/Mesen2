@@ -181,6 +181,21 @@
 
 		<c:OptionSection Header="{l:Translate lblMiscSettings}">
 			<CheckBox
+				IsChecked="{CompiledBinding Config.Snes.IgnoreDspReadWrites}"
+				Content="{l:Translate chkSnesIgnoreDspReadWrites}"
+				ToolTip.Tip="{l:Translate chkSnesIgnoreDspReadWritesHint}"
+			>
+				<CheckBox.IsVisible>
+					<MultiBinding Converter="{x:Static BoolConverters.Or}">
+						<MultiBinding.Bindings>
+							<Binding Path="IsSpc" />
+							<Binding Path="IsSnes" />
+						</MultiBinding.Bindings>
+					</MultiBinding>
+				</CheckBox.IsVisible>
+			</CheckBox>
+			
+			<CheckBox
 				IsChecked="{CompiledBinding Config.BringToFrontOnBreak}"
 				Content="{l:Translate chkBringToFrontOnBreak}"
 			/>
@@ -203,6 +218,7 @@
 			<CheckBox
 				IsChecked="{CompiledBinding Config.UsePredictiveBreakpoints}"
 				Content="{l:Translate chkUsePredictiveBreakpoints}"
+				ToolTip.Tip="{l:Translate chkUsePredictiveBreakpointsHint}"
 			/>
 			<CheckBox
 				IsChecked="{CompiledBinding Config.SingleBreakpointPerInstruction}"

@@ -17,5 +17,6 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnStp { get; set; } = false;
 
 		[Reactive] public bool UseAltSpcOpNames { get; set; } = false;
+		[Reactive] public bool IgnoreDspReadWrites { get; set; } = true;
 	}
 }
