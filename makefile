@@ -86,7 +86,7 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/x64/Release/$(SHAREDLIB)
-	cd NewUI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
+	cd UI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
 	rm $(RELEASEFOLDER)/linux-x64/publish/lib*
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
@@ -122,7 +122,7 @@ official:
 	./build.sh
 
 run:
-	./NewUI/bin/x64/Release/linux-x64/publish/Mesen
+	./UI/bin/x64/Release/linux-x64/publish/Mesen
 
 clean:
 	rm -r -f $(COREOBJ)
