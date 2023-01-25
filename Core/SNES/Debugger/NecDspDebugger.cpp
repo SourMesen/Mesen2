@@ -23,9 +23,11 @@ NecDspDebugger::NecDspDebugger(Debugger* debugger) : IDebugger(debugger->GetEmul
 
 	_debugger = debugger;
 	_disassembler = debugger->GetDisassembler();
+	_memoryAccessCounter = debugger->GetMemoryAccessCounter();
 	_dsp = console->GetCartridge()->GetDsp();
 	_settings = debugger->GetEmulator()->GetSettings();
-	
+	_memoryManager = console->GetMemoryManager();
+
 	_traceLogger.reset(new NecDspTraceLogger(debugger, this, console->GetPpu(), console->GetMemoryManager()));
 	_callstackManager.reset(new CallstackManager(debugger, console));
 
@@ -72,18 +74,37 @@ void NecDspDebugger::ProcessInstruction()
 
 void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
-	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
+	if(type == MemoryOperationType::ExecOpCode) {
+		AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
+		MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
 
-	if(_traceLogger->IsEnabled()) {
-		DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
-		_traceLogger->Log(_dsp->GetState(), disInfo, operation, addressInfo);
+		if(_traceLogger->IsEnabled()) {
+			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
+			_traceLogger->Log(_dsp->GetState(), disInfo, operation, addressInfo);
+		}
+	} else {
+		MemoryType memType = (addr & NecDsp::DataRomReadFlag) ? MemoryType::DspDataRom : MemoryType::DspDataRam;
+		addr &= ~NecDsp::DataRomReadFlag;
+
+		AddressInfo addressInfo = { (int32_t)addr, memType };
+		MemoryOperationInfo operation(addr, value, type, memType);
+		_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation, addressInfo);
+		}
 	}
 }
 
 void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	//TODOv2
+	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspDataRam };
+	MemoryOperationInfo operation(addr, value, type, MemoryType::DspDataRam);
+	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+	if(_traceLogger->IsEnabled()) {
+		_traceLogger->LogNonExec(operation, addressInfo);
+	}
 }
 
 void NecDspDebugger::Run()

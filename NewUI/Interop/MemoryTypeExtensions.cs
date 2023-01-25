@@ -305,7 +305,10 @@ namespace Mesen.Interop
 				MemoryType.SpcRam => "RAM",
 				MemoryType.SpcRom => "ROM",
 
-				MemoryType.DspProgramRom => "DSP",
+				MemoryType.DspProgramRom => "PRG",
+				MemoryType.DspDataRam => "RAM",
+				MemoryType.DspDataRom => "ROM",
+
 				MemoryType.Sa1InternalRam => "IRAM",
 				MemoryType.Cx4DataRam => "DATA",
 				MemoryType.GsuWorkRam => "GWRAM",

@@ -21,6 +21,8 @@ class NecDspDebugger final : public IDebugger
 	Disassembler* _disassembler;
 	NecDsp* _dsp;
 	EmuSettings* _settings;
+	MemoryAccessCounter* _memoryAccessCounter;
+	SnesMemoryManager* _memoryManager;
 
 	unique_ptr<BreakpointManager> _breakpointManager;
 	unique_ptr<NecDspTraceLogger> _traceLogger;

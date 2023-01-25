@@ -165,7 +165,8 @@ string ScriptingContext::GetScriptName()
 	return _scriptName;
 }
 
-void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType)
+template<typename T>
+void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, T &value, CallbackType type, CpuType cpuType)
 {
 	_allowSaveState = type == CallbackType::Exec && cpuType == _defaultCpuType;
 	InternalCallMemoryCallback(relAddr, value, type, cpuType);
@@ -259,7 +260,8 @@ bool ScriptingContext::IsAddressMatch(MemoryCallback& callback, AddressInfo addr
 	return addr.Type == callback.MemType && addr.Address >= (int32_t)callback.StartAddress && addr.Address <= (int32_t)callback.EndAddress;
 }
 
-void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType)
+template<typename T>
+void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, T& value, CallbackType type, CpuType cpuType)
 {
 	if(_callbacks[(int)type].empty()) {
 		return;
@@ -299,7 +301,7 @@ void ScriptingContext::InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& 
 			int returnParamCount = lua_gettop(_lua) - top;
 			if(returnParamCount && lua_isinteger(_lua, -1)) {
 				int newValue = (int)lua_tointeger(_lua, -1);
-				value = (uint8_t)newValue;
+				value = (T)newValue;
 			}
 			lua_settop(_lua, top);
 		}
@@ -325,3 +327,7 @@ int ScriptingContext::CallEventCallback(EventType type)
 	}
 	return l.ReturnCount();
 }
+
+template void ScriptingContext::CallMemoryCallback<uint8_t>(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType);
+template void ScriptingContext::CallMemoryCallback<uint16_t>(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType);
+template void ScriptingContext::CallMemoryCallback<uint32_t>(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType);

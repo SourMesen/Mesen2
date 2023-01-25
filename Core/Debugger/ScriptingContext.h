@@ -59,7 +59,8 @@ protected:
 	vector<MemoryCallback> _callbacks[3];
 	vector<int> _eventCallbacks[(int)EventType::LastValue + 1];
 
-	void InternalCallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType);
+	template<typename T> void InternalCallMemoryCallback(AddressInfo relAddr, T& value, CallbackType type, CpuType cpuType);
+
 	bool IsAddressMatch(MemoryCallback& callback, AddressInfo addr);
 
 public:
@@ -76,7 +77,7 @@ public:
 	void SetDrawSurface(ScriptDrawSurface surface) { _drawSurface = surface; }
 	ScriptDrawSurface GetDrawSurface() { return _drawSurface; }
 
-	void CallMemoryCallback(AddressInfo relAddr, uint8_t &value, CallbackType type, CpuType cpuType);
+	template<typename T> void CallMemoryCallback(AddressInfo relAddr, T& value, CallbackType type, CpuType cpuType);
 	int CallEventCallback(EventType type);
 	bool CheckInitDone();
 	bool IsSaveStateAllowed();

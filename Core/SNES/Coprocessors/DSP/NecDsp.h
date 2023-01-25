@@ -11,6 +11,9 @@ enum class CoprocessorType;
 
 class NecDsp final : public BaseCoprocessor
 {
+public:
+	static constexpr uint32_t DataRomReadFlag = 0x80000000;
+
 private:
 	SnesConsole* _console = nullptr;
 	Emulator* _emu = nullptr;
@@ -51,6 +54,11 @@ private:
 	void Jump();
 	void Load(uint8_t dest, uint16_t value);
 	uint16_t GetSourceValue(uint8_t source);
+
+	uint16_t ReadRom(uint32_t addr);
+	
+	uint16_t ReadRam(uint32_t addr);
+	void WriteRam(uint32_t addr, uint16_t value);
 
 	NecDsp(CoprocessorType type, SnesConsole* console, vector<uint8_t> &programRom, vector<uint8_t> &dataRom);
 

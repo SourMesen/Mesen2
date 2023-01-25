@@ -37,7 +37,8 @@ public:
 	void EnablePpuMemoryCallbacks() { _isPpuMemoryCallbackEnabled = true; }
 	bool HasPpuMemoryCallbacks() { return _scripts.size() && _isPpuMemoryCallbackEnabled; }
 	
-	__forceinline void ProcessMemoryOperation(AddressInfo relAddr, uint8_t& value, MemoryOperationType type, CpuType cpuType, bool processExec)
+	template<typename T>
+	__forceinline void ProcessMemoryOperation(AddressInfo relAddr, T& value, MemoryOperationType type, CpuType cpuType, bool processExec)
 	{
 		switch(type) {
 			case MemoryOperationType::Read:

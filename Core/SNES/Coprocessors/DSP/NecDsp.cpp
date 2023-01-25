@@ -179,13 +179,36 @@ void NecDsp::Run()
 	}
 }
 
+uint16_t NecDsp::ReadRom(uint32_t addr)
+{
+	uint16_t value = _dataRom[addr & _dataMask];
+	_emu->ProcessMemoryRead<CpuType::NecDsp>(NecDsp::DataRomReadFlag | (addr << 1), value, MemoryOperationType::Read);
+	_emu->ProcessMemoryRead<CpuType::NecDsp>(NecDsp::DataRomReadFlag | (addr << 1) + 1, value, MemoryOperationType::Read);
+	return value;
+}
+
+uint16_t NecDsp::ReadRam(uint32_t addr)
+{
+	uint16_t value = _ram[addr & _ramMask];
+	_emu->ProcessMemoryRead<CpuType::NecDsp>(addr << 1, value, MemoryOperationType::Read);
+	_emu->ProcessMemoryRead<CpuType::NecDsp>((addr << 1) + 1, value, MemoryOperationType::Read);
+	return value;
+}
+
+void NecDsp::WriteRam(uint32_t addr, uint16_t value)
+{
+	_emu->ProcessMemoryWrite<CpuType::NecDsp>(addr << 1, value, MemoryOperationType::Write);
+	_emu->ProcessMemoryWrite<CpuType::NecDsp>((addr << 1) + 1, value, MemoryOperationType::Write);
+	_ram[addr & _ramMask] = value;
+}
+
 uint8_t NecDsp::Read(uint32_t addr)
 {
 	Run();
 
 	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x080000) {
 		//RAM (Banks $68-$6F)
-		uint16_t value = _ram[(addr >> 1) & _ramMask];
+		uint16_t value = ReadRam(addr >> 1);
 		return (addr & 0x01) ? (uint8_t)(value >> 8) : (uint8_t)value;
 	} else if(addr & _registerMask) {
 		//SR
@@ -218,11 +241,11 @@ void NecDsp::Write(uint32_t addr, uint8_t value)
 
 	if((_type == CoprocessorType::ST010 || _type == CoprocessorType::ST011) && (addr & 0x0F0000) >= 0x080000) {
 		//RAM (Banks $68-$6F)
-		uint16_t ramAddr = (addr >> 1) & _ramMask;
+		uint16_t ramAddr = (addr >> 1);
 		if(addr & 0x01) {
-			_ram[ramAddr] = (_ram[ramAddr] & 0xFF) | (value << 8);
+			WriteRam(ramAddr, (ReadRam(ramAddr) & 0xFF) | (value << 8));
 		} else {
-			_ram[ramAddr] = (_ram[ramAddr] & 0xFF00) | value;
+			WriteRam(ramAddr, (ReadRam(ramAddr) & 0xFF00) | value);
 		}
 	} else if(!(addr & _registerMask)) {
 		//DR
@@ -281,7 +304,7 @@ void NecDsp::RunApuOp(uint8_t aluOperation, uint16_t source)
 	uint8_t pSelect = (_opCode >> 20) & 0x03;
 	uint16_t p = 0;
 	switch(pSelect) {
-		case 0: p = _ram[_state.DP & _ramMask]; break;
+		case 0: p = ReadRam(_state.DP); break;
 		case 1: p = source; break;
 		case 2: p = _state.M; break;
 		case 3: p = _state.N; break;
@@ -505,17 +528,17 @@ void NecDsp::Load(uint8_t dest, uint16_t value)
 
 		case 0x0B:
 			_state.K = value;
-			_state.L = _dataRom[_state.RP & _dataMask];
+			_state.L = ReadRom(_state.RP);
 			break;
 
 		case 0x0C:
 			_state.L = value;
-			_state.K = _ram[(_state.DP | 0x40) & _ramMask];
+			_state.K = ReadRam(_state.DP | 0x40);
 			break;
 
 		case 0x0D: _state.L = value; break;
 		case 0x0E: _state.TRB = value; break;
-		case 0x0F: _ram[_state.DP & _ramMask] = value; break;
+		case 0x0F: WriteRam(_state.DP, value); break;
 
 		default:
 			throw std::runtime_error("DSP-1: invalid destination");
@@ -531,7 +554,7 @@ uint16_t NecDsp::GetSourceValue(uint8_t source)
 		case 0x03: return _state.TR;
 		case 0x04: return _state.DP;
 		case 0x05: return _state.RP;
-		case 0x06: return _dataRom[_state.RP & _dataMask];
+		case 0x06: return ReadRom(_state.RP);
 		case 0x07: return 0x8000 - _state.FlagsA.Sign1;
 
 		case 0x08:
@@ -544,7 +567,7 @@ uint16_t NecDsp::GetSourceValue(uint8_t source)
 		case 0x0C: return _state.SerialIn;
 		case 0x0D: return _state.K;
 		case 0x0E: return _state.L;
-		case 0x0F: return _ram[_state.DP & _ramMask];
+		case 0x0F: return ReadRam(_state.DP);
 	}
 	throw std::runtime_error("DSP-1: invalid source");
 }
