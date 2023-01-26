@@ -48,6 +48,7 @@ namespace Mesen.ViewModels
 	{
 		General,
 		Audio,
+		Emulation,
 		Input,
 		Video
 	}

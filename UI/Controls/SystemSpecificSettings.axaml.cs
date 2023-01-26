@@ -86,7 +86,7 @@ namespace Mesen.Controls
 						if(cfg.Gameboy != null) {
 							cfg.Gameboy.SelectedTab = ConfigType switch {
 								ConfigType.Audio => GameboyConfigTab.Audio,
-								ConfigType.Emulation => GameboyConfigTab.General,
+								ConfigType.Emulation => GameboyConfigTab.Emulation,
 								ConfigType.Input => GameboyConfigTab.Input,
 								_ or ConfigType.Video => GameboyConfigTab.Video,
 							};
