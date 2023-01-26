@@ -69,7 +69,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 			romData.erase(romData.begin(), romData.begin() + 512);
 		}
 
-		if(consoleType == PceConsoleType::Auto && IsSuperGrafxCard(crc32)) {
+		if(consoleType == PceConsoleType::Auto && (romFile.GetFileExtension() == ".sgx" || IsSuperGrafxCard(crc32))) {
 			consoleType = PceConsoleType::SuperGrafx;
 		}
 
