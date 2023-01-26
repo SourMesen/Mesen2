@@ -359,7 +359,6 @@ namespace Mesen.Interop
 
 	public enum HashType
 	{
-		Crc32,
 		Sha1,
 		Sha1Cheat
 	}
