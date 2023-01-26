@@ -356,7 +356,7 @@ void SnesDebugger::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, boo
 	AddressInfo dest = _memoryMappings->GetAbsoluteAddress(currentPc);
 
 	if(dest.Type == MemoryType::SnesPrgRom && dest.Address >= 0) {
-		_codeDataLogger->SetCode(dest.Address, CdlFlags::SubEntryPoint);
+		_cdl->SetCode(dest.Address, CdlFlags::SubEntryPoint);
 	}
 
 	//If a call/return occurred just before IRQ, it needs to be processed now
@@ -529,7 +529,7 @@ void SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption
 		output = IpsPatcher::CreatePatch(originalRom, rom);
 	} else {
 		if(stripOption != CdlStripOption::StripNone) {
-			_codeDataLogger->StripData(rom.data(), stripOption);
+			_cdl->StripData(rom.data(), stripOption);
 
 			//Preserve rom header regardless of CDL file contents
 			SnesCartInformation header = _cart->GetHeader();
