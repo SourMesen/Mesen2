@@ -22,6 +22,11 @@ public class BassLabelFile
 		foreach(string row in File.ReadAllLines(path, Encoding.UTF8)) {
 			string lineData = row.Trim();
 			int splitIndex = lineData.IndexOf(' ');
+			if(splitIndex < 0) {
+				errorCount++;
+				continue;
+			}
+
 			UInt32 address;
 			
 			if(!UInt32.TryParse(lineData.Substring(0, splitIndex), NumberStyles.HexNumber, null, out address)) {
