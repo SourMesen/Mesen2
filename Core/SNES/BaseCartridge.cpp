@@ -210,6 +210,11 @@ void BaseCartridge::LoadRom()
 	_hasBattery = (_cartInfo.RomType & 0x0F) == 0x02 || (_cartInfo.RomType & 0x0F) == 0x05 || (_cartInfo.RomType & 0x0F) == 0x06 || (_cartInfo.RomType & 0x0F) == 0x09 || (_cartInfo.RomType & 0x0F) == 0x0A;
 	_coprocessorType = GetCoprocessorType();
 
+	if(_coprocessorType == CoprocessorType::SGB && !_gameboy) {
+		//Only allow SGB when a game boy rom is loaded
+		_coprocessorType = CoprocessorType::None;
+	}
+
 	if(_coprocessorType != CoprocessorType::None && _cartInfo.ExpansionRamSize > 0 && _cartInfo.ExpansionRamSize <= 7) {
 		_coprocessorRamSize = _cartInfo.ExpansionRamSize > 0 ? 1024 * (1 << _cartInfo.ExpansionRamSize) : 0;
 	}
