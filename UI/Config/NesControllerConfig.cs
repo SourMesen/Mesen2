@@ -43,6 +43,13 @@ namespace Mesen.Config
 
 		public UInt16 Microphone { get; set; } = 0;
 
+		public override InteropKeyMapping ToInterop(ControllerType type, int mappingIndex)
+		{
+			InteropKeyMapping mappings = base.ToInterop(type, mappingIndex);
+			mappings.Microphone = Microphone;
+			return mappings;
+		}
+
 		protected override UInt16[]? GetCustomButtons(ControllerType type)
 		{
 			return type switch {

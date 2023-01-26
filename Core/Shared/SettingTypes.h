@@ -247,7 +247,7 @@ struct KeyMapping
 
 	bool HasKeySet()
 	{
-		if(A || B || X || Y || L || R || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect) {
+		if(A || B || X || Y || L || R || Up || Down || Left || Right || Start || Select || TurboA || TurboB || TurboX || TurboY || TurboL || TurboR || TurboStart || TurboSelect || Microphone) {
 			return true;
 		}
 		for(uint32_t i = 0; i < 100; i++) {
