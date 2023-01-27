@@ -286,7 +286,23 @@ void Debugger::ProcessIdleCycle()
 template<CpuType type>
 void Debugger::ProcessHaltedCpu()
 {
-	SleepOnBreakRequest<type>();
+	IDebugger* dbg = _debuggers[(int)type].Debugger.get();
+
+	//Set AllowChangeProgramCounter to allow SleepUntilResume to break properly
+	dbg->AllowChangeProgramCounter = true;
+	dbg->InstructionProgress.CurrentCycle = 0;
+	
+	//Process cpu step requests as if each call to ProcessHaltedCpu is an instruction
+	StepRequest* req = dbg->GetStepRequest();
+	req->ProcessCpuExec();
+	if(req->BreakNeeded) {
+		SleepUntilResume(type, req->GetBreakSource());
+	} else {
+		//Also check if a debugger break request is pending
+		SleepOnBreakRequest<type>();
+	}
+
+	dbg->AllowChangeProgramCounter = false;
 }
 
 template<CpuType type>

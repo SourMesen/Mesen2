@@ -394,7 +394,7 @@ struct StepRequest
 				return BreakSource::PpuStep;
 			}
 		}
-		return Source;		
+		return Source;
 	}
 
 	__forceinline void Break(BreakSource src)

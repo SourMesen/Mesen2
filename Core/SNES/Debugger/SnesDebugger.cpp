@@ -302,29 +302,24 @@ void SnesDebugger::Run()
 void SnesDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step(type);
-	if((type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step) && GetCpuState().StopState == SnesCpuStopState::Stopped) {
-		//If STP was called, the CPU isn't running anymore - use the PPU to break execution instead (useful for test roms that end with STP)
-		step.PpuStepCount = 1;
-	} else {
-		switch(type) {
-			case StepType::Step: step.StepCount = stepCount; break;
-			case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
-			case StepType::StepOver:
-				if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
-					//JSR, JSL, BRK, COP, MVP, MVN
-					step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + SnesDisUtils::GetOpSize(_prevOpCode, 0)) & 0xFFFF);
-				} else {
-					//For any other instruction, step over is the same as step into
-					step.StepCount = 1;
-				}
-				break;
+	switch(type) {
+		case StepType::Step: step.StepCount = stepCount; break;
+		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
+		case StepType::StepOver:
+			if(_prevOpCode == 0x20 || _prevOpCode == 0x22 || _prevOpCode == 0xFC || _prevOpCode == 0x00 || _prevOpCode == 0x02 || _prevOpCode == 0x44 || _prevOpCode == 0x54) {
+				//JSR, JSL, BRK, COP, MVP, MVN
+				step.BreakAddress = (_prevProgramCounter & 0xFF0000) | (((_prevProgramCounter & 0xFFFF) + SnesDisUtils::GetOpSize(_prevOpCode, 0)) & 0xFFFF);
+			} else {
+				//For any other instruction, step over is the same as step into
+				step.StepCount = 1;
+			}
+			break;
 
-			case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
-			case StepType::PpuStep: step.PpuStepCount = stepCount; break;
-			case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
-			case StepType::PpuFrame: step.PpuStepCount = 341 * (_ppu->GetVblankEndScanline() + 1) * stepCount; break;
-			case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
-		}
+		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
+		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
+		case StepType::PpuScanline: step.PpuStepCount = 341 * stepCount; break;
+		case StepType::PpuFrame: step.PpuStepCount = 341 * (_ppu->GetVblankEndScanline() + 1) * stepCount; break;
+		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 	_step.reset(new StepRequest(step));
 }

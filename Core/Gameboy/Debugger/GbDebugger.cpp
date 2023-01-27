@@ -219,11 +219,6 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 {
 	StepRequest step(type);
 
-	if(_cpu->GetState().Halted && (type == StepType::StepOver || type == StepType::StepOut || type == StepType::Step)) {
-		//If CPU is halted, use the PPU to break execution instead
-		step.PpuStepCount = 1;
-	}
-
 	switch(type) {
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
