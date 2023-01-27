@@ -13,6 +13,7 @@
 #include "Debugger/Debugger.h"
 #include "Netplay/GameClient.h"
 #include "Shared/Video/VideoDecoder.h"
+#include "Shared/Video/VideoRenderer.h"
 #include "Shared/Video/BaseVideoFilter.h"
 
 SaveStateManager::SaveStateManager(Emulator* emu)
@@ -203,7 +204,13 @@ bool SaveStateManager::LoadState(istream &stream)
 			//Stop any movie that might have been playing/recording if a state is loaded
 			//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
 			_emu->GetMovieManager()->Stop();
-			_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
+
+			if(_emu->IsPaused() && !_emu->GetVideoRenderer()->IsRecording()) {
+				//Only send the saved frame if the emulation is paused and no avi recording is in progress
+				//Otherwise the avi recorder will receive an extra frame that has no sound, which will
+				//create a video vs audio desync in the avi file.
+				_emu->GetVideoDecoder()->UpdateFrame(frame, true, false);
+			}
 			return true;
 		}
 	}
