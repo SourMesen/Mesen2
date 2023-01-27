@@ -13,9 +13,6 @@ RewindManager::RewindManager(Emulator* emu)
 {
 	_emu = emu;
 	_settings = emu->GetSettings();
-
-	_emu->RegisterInputProvider(this);
-	_emu->RegisterInputRecorder(this);
 }
 
 RewindManager::~RewindManager()
@@ -28,12 +25,18 @@ RewindManager::~RewindManager()
 
 void RewindManager::InitHistory()
 {
-	ClearBuffer();
+	Reset();
+	_emu->RegisterInputProvider(this);
+	_emu->RegisterInputRecorder(this);
 	AddHistoryBlock();
 }
 
 void RewindManager::Reset()
 {
+	_emu->UnregisterInputProvider(this);
+	_emu->UnregisterInputRecorder(this);
+	_settings->ClearFlag(EmulationFlags::MaximumSpeed);
+	_settings->ClearFlag(EmulationFlags::Rewind);
 	ClearBuffer();
 }
 
