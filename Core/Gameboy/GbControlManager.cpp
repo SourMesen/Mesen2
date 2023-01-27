@@ -8,6 +8,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
 #include "Shared/SystemActionManager.h"
+#include <functional>
 
 GbControlManager::GbControlManager(Emulator* emu, Gameboy* console) : BaseControlManager(emu, CpuType::Gameboy)
 {
@@ -60,8 +61,6 @@ void GbControlManager::UpdateControlDevices()
 
 uint8_t GbControlManager::ReadInputPort()
 {
-	SetInputReadFlag();
-
 	//Bit 7 - Not used
 	//Bit 6 - Not used
 	//Bit 5 - P15 Select Button Keys      (0=Select)
@@ -115,14 +114,19 @@ void GbControlManager::WriteInputPort(uint8_t value)
 	}
 }
 
-void GbControlManager::UpdateInputState()
+void GbControlManager::ProcessInputChange(std::function<void()> inputUpdateCallback)
 {
 	uint8_t prevInput = ReadInputPort();
-	BaseControlManager::UpdateInputState();
+	inputUpdateCallback();
 	uint8_t newInput = ReadInputPort();
 	if(prevInput != newInput) {
 		_console->GetMemoryManager()->RequestIrq(GbIrqSource::Joypad);
 	}
+}
+
+void GbControlManager::UpdateInputState()
+{
+	ProcessInputChange([this]() { BaseControlManager::UpdateInputState(); });
 }
 
 void GbControlManager::Serialize(Serializer& s)

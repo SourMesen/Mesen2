@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include <functional>
 #include "Shared/BaseControlManager.h"
 #include "Shared/SettingTypes.h"
 
@@ -24,6 +25,8 @@ public:
 	void UpdateControlDevices() override;
 	uint8_t ReadInputPort();
 	void WriteInputPort(uint8_t value);
+
+	void ProcessInputChange(std::function<void()> inputUpdateCallback);
 
 	void UpdateInputState() override;
 

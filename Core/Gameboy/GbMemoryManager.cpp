@@ -305,7 +305,9 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 		} else {
 			//00-0F
 			switch(addr) {
-				case 0xFF00: return _controlManager->ReadInputPort(); break;
+				case 0xFF00:
+					_controlManager->SetInputReadFlag();
+					return _controlManager->ReadInputPort();
 				
 				case 0xFF01: return _state.SerialData; //SB - Serial transfer data (R/W)
 				case 0xFF02: return _state.SerialControl | 0x7E; //SC - Serial Transfer Control (R/W)
@@ -313,7 +315,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
 
-				case 0xFF0F: return _state.IrqRequests | 0xE0; break; //IF - Interrupt flags (R/W)
+				case 0xFF0F: return _state.IrqRequests | 0xE0; //IF - Interrupt flags (R/W)
 
 				default: return 0xFF; //Open bus
 			}

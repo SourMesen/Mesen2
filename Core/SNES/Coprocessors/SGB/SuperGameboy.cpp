@@ -5,6 +5,7 @@
 #include "SNES/BaseCartridge.h"
 #include "SNES/Spc.h"
 #include "Gameboy/Gameboy.h"
+#include "Gameboy/GbControlManager.h"
 #include "Gameboy/APU/GbApu.h"
 #include "Gameboy/GbPpu.h"
 #include "Shared/Emulator.h"
@@ -23,6 +24,7 @@ SuperGameboy::SuperGameboy(SnesConsole* console, Gameboy* gameboy)
 	_spc = _console->GetSpc();
 	
 	_gameboy = gameboy;
+	_controlManager = (GbControlManager*)gameboy->GetControlManager();
 	_ppu = gameboy->GetPpu();
 
 	_control = 0x01; //Divider = 5, gameboy = not running
@@ -118,16 +120,16 @@ void SuperGameboy::Write(uint32_t addr, uint8_t value)
 				_ppu = _gameboy->GetPpu();
 			}
 			_control = value;
-			_inputIndex %= GetPlayerCount();
+			SetInputIndex(_inputIndex % GetPlayerCount());
 
 			UpdateClockRatio();
 			break;
 		}
 
-		case 0x6004: _input[0] = value; break;
-		case 0x6005: _input[1] = value; break;
-		case 0x6006: _input[2] = value; break;
-		case 0x6007: _input[3] = value; break;
+		case 0x6004: SetInputValue(0, value); break;
+		case 0x6005: SetInputValue(1, value); break;
+		case 0x6006: SetInputValue(2, value); break;
+		case 0x6007: SetInputValue(3, value); break;
 	}
 }
 
@@ -185,7 +187,7 @@ void SuperGameboy::ProcessInputPortWrite(uint8_t value)
 		}
 		_waitForHigh = _listeningForPacket;
 	} else if(!(_inputValue & 0x20) && (value & 0x20)) {
-		_inputIndex = (_inputIndex + 1) % GetPlayerCount();
+		SetInputIndex((_inputIndex + 1) % GetPlayerCount());
 	}
 
 	_inputValue = value;
@@ -325,6 +327,20 @@ uint8_t SuperGameboy::GetInputIndex()
 uint8_t SuperGameboy::GetInput()
 {
 	return _input[_inputIndex];
+}
+
+void SuperGameboy::SetInputIndex(uint8_t index)
+{
+	_controlManager->ProcessInputChange([=]() { _inputIndex = index; });
+}
+
+void SuperGameboy::SetInputValue(uint8_t index, uint8_t value)
+{
+	if(_inputIndex == index) {
+		_controlManager->ProcessInputChange([=]() { _input[index] = value; });
+	} else {
+		_input[index] = value;
+	}
 }
 
 uint8_t SuperGameboy::Peek(uint32_t addr)

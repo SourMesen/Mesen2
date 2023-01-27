@@ -8,6 +8,7 @@ class SnesConsole;
 class Emulator;
 class SnesMemoryManager;
 class BaseCartridge;
+class GbControlManager;
 class Spc;
 class Gameboy;
 class GbPpu;
@@ -18,6 +19,7 @@ private:
 	SnesConsole* _console = nullptr;
 	Emulator* _emu = nullptr;
 	SnesMemoryManager* _memoryManager = nullptr;
+	GbControlManager* _controlManager = nullptr;
 	BaseCartridge* _cart = nullptr;
 	Spc* _spc = nullptr;
 	Gameboy* _gameboy = nullptr;
@@ -50,6 +52,9 @@ private:
 	uint8_t GetLcdRow();
 	uint8_t GetLcdBufferRow();
 	uint8_t GetPlayerCount();
+
+	void SetInputIndex(uint8_t index);
+	void SetInputValue(uint8_t index, uint8_t value);
 
 public:
 	SuperGameboy(SnesConsole* console, Gameboy* gameboy);
