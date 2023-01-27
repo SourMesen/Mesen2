@@ -65,8 +65,7 @@ void SoundMixer::StopAudio(bool clearBuffer)
 
 void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_t sourceRate)
 {
-	if(_emu->IsPaused()) {
-		//Prevent audio from played if emulation is paused
+	if(sampleCount == 0) {
 		return;
 	}
 
@@ -137,7 +136,9 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 			_emu->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
 
-		if(_audioDevice) {
+		//Only send the audio to the device if the emulation is running
+		//(this is to prevent playing an audio blip when loading a save state)
+		if(!_emu->IsPaused() && _audioDevice) {
 			if(cfg.EnableAudio) {
 				_audioDevice->PlayBuffer(out, count, cfg.SampleRate, true);
 				_audioDevice->ProcessEndOfFrame();

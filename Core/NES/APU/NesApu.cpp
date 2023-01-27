@@ -222,14 +222,8 @@ void NesApu::Reset(bool softReset)
 void NesApu::Serialize(Serializer& s)
 {
 	if(s.GetFormat() != SerializeFormat::Map) {
-		if(s.IsSaving()) {
-			//End the Apu frame - makes it simpler to restore sound after a state reload
-			EndFrame();
-		} else {
-			EndFrame();
-			_previousCycle = 0;
-			_currentCycle = 0;
-		}
+		//End the Apu frame - makes it simpler to restore sound after a state reload
+		EndFrame();
 	}
 
 	SV(_square1);
