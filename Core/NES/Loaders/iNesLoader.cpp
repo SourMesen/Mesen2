@@ -35,7 +35,7 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 	romData.Info.VsPpuModel = header.GetVsSystemPpuModel();
 	romData.Info.InputType = header.GetInputType();
 	romData.Info.HasTrainer = header.HasTrainer();
-	romData.Info.NesHeader = header;
+	romData.Info.Header = header;
 
 	romData.ChrRamSize = header.GetChrRamSize();
 	romData.SaveChrRamSize = header.GetSaveChrRamSize();

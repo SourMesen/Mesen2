@@ -898,7 +898,7 @@ void BaseMapper::WriteVram(uint16_t addr, uint8_t value)
 
 bool BaseMapper::IsNes20()
 {
-	return _romInfo.NesHeader.GetRomHeaderVersion() == RomHeaderVersion::Nes2_0;
+	return _romInfo.Header.GetRomHeaderVersion() == RomHeaderVersion::Nes2_0;
 }
 
 //Debugger Helper Functions
@@ -1077,7 +1077,7 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 		}
 	} else {
 		vector<uint8_t> newFile;
-		newFile.insert(newFile.end(), (uint8_t*)&_romInfo.NesHeader, ((uint8_t*)&_romInfo.NesHeader) + sizeof(NesHeader));
+		newFile.insert(newFile.end(), (uint8_t*)&_romInfo.Header, ((uint8_t*)&_romInfo.Header) + sizeof(NesHeader));
 		newFile.insert(newFile.end(), _prgRom, _prgRom + _prgSize);
 		if(HasChrRom()) {
 			newFile.insert(newFile.end(), _chrRom, _chrRom + _chrRomSize);

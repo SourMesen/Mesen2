@@ -12,7 +12,7 @@ protected:
 		SelectPrgPage(0, 0);
 
 		if(GetMirroringType() == MirroringType::FourScreens) {
-			SetMirroringType(_romInfo.NesHeader.Byte6 & 0x01 ? MirroringType::ScreenBOnly : MirroringType::ScreenAOnly);
+			SetMirroringType(_romInfo.Header.Byte6 & 0x01 ? MirroringType::ScreenBOnly : MirroringType::ScreenAOnly);
 		}
 
 		uint16_t mask = 0;

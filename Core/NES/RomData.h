@@ -88,7 +88,7 @@ struct NesRomInfo
 
 	HashInfo Hash = {};
 
-	NesHeader NesHeader = {};
+	NesHeader Header = {};
 	NsfHeader NsfInfo = {};
 	GameInfo DatabaseInfo = {};
 };
