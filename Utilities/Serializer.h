@@ -426,44 +426,44 @@ public:
 		}
 	}
 
-	template<> void Stream(string& value, const char* name, int index)
-	{
-		string key = GetKey(name, index);
-
-		CheckDuplicateKey(key);
-
-		if(_format == SerializeFormat::Map) {
-			if(_saving) {
-				WriteMapFormat(key, value);
-			} else {
-				ReadMapFormat(key, value);
-			}
-		} else {
-			if(_saving) {
-				//Write key
-				_data.insert(_data.end(), key.begin(), key.end());
-				_data.push_back(0);
-
-				//Write string size
-				WriteValue((uint32_t)value.size());
-
-				//Write string content
-				_data.insert(_data.end(), value.begin(), value.end());
-			} else {
-				auto result = _values.find(key);
-				if(result != _values.end()) {
-					SerializeValue& savedValue = result->second;
-					value = string(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
-				} else {
-					value = "";
-				}
-			}
-		}
-	}
-
 	void PushNamePrefix(const char* name, int index = -1);
 	void PopNamePrefix();
 	void SaveTo(ostream &file, int compressionLevel = 1);
 	bool LoadFrom(istream& file);
 	void LoadFromMap(unordered_map<string, SerializeMapValue>& map);
 };
+
+template<> inline void Serializer::Stream(string& value, const char* name, int index)
+{
+	string key = GetKey(name, index);
+
+	CheckDuplicateKey(key);
+
+	if(_format == SerializeFormat::Map) {
+		if(_saving) {
+			WriteMapFormat(key, value);
+		} else {
+			ReadMapFormat(key, value);
+		}
+	} else {
+		if(_saving) {
+			//Write key
+			_data.insert(_data.end(), key.begin(), key.end());
+			_data.push_back(0);
+
+			//Write string size
+			WriteValue((uint32_t)value.size());
+
+			//Write string content
+			_data.insert(_data.end(), value.begin(), value.end());
+		} else {
+			auto result = _values.find(key);
+			if(result != _values.end()) {
+				SerializeValue& savedValue = result->second;
+				value = string(savedValue.DataPtr, savedValue.DataPtr + savedValue.Size);
+			} else {
+				value = "";
+			}
+		}
+	}
+}
