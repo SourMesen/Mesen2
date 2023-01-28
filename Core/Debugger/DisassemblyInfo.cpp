@@ -7,6 +7,7 @@
 #include "Utilities/FastString.h"
 #include "SNES/SnesCpuTypes.h"
 #include "SNES/SnesConsole.h"
+#include "SNES/BaseCartridge.h"
 #include "SNES/Debugger/SnesDisUtils.h"
 #include "SNES/Debugger/SpcDisUtils.h"
 #include "SNES/Debugger/GsuDisUtils.h"
@@ -93,7 +94,14 @@ EffectiveAddressInfo DisassemblyInfo::GetEffectiveAddress(Debugger *debugger, vo
 		case CpuType::NecDsp:
 			return {};
 
-		case CpuType::Gameboy: return GameboyDisUtils::GetEffectiveAddress(*this, (Gameboy*)debugger->GetConsole(), *(GbCpuState*)cpuState);
+		case CpuType::Gameboy: {
+			if(debugger->GetMainCpuType() == CpuType::Snes) {
+				Gameboy* gb = ((SnesConsole*)debugger->GetConsole())->GetCartridge()->GetGameboy();
+				return GameboyDisUtils::GetEffectiveAddress(*this, gb, *(GbCpuState*)cpuState);
+			} else {
+				return GameboyDisUtils::GetEffectiveAddress(*this, (Gameboy*)debugger->GetConsole(), *(GbCpuState*)cpuState);
+			}
+		}
 
 		case CpuType::Nes: return NesDisUtils::GetEffectiveAddress(*this, *(NesCpuState*)cpuState, debugger->GetMemoryDumper());
 		case CpuType::Pce: return PceDisUtils::GetEffectiveAddress(*this, (PceConsole*)debugger->GetConsole(), *(PceCpuState*)cpuState);
