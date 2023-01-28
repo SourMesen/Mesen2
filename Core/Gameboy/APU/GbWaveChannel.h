@@ -11,6 +11,7 @@ class GbWaveChannel final : public ISerializable
 private:
 	GbWaveState _state = {};
 	GbApu* _apu = nullptr;
+	bool _allowRamAccess = false;
 
 public:
 	GbWaveChannel(GbApu* apu);

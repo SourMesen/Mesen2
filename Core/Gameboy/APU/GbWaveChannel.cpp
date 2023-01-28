@@ -46,6 +46,7 @@ uint8_t GbWaveChannel::GetOutput()
 void GbWaveChannel::Exec(uint32_t clocksToRun)
 {
 	_state.Timer -= clocksToRun;
+	_allowRamAccess = false;
 
 	//The DAC receives the current value from the upper/lower nibble of the sample buffer, shifted right by the volume control. 
 	if(_state.Volume && _state.Enabled) {
@@ -68,6 +69,7 @@ void GbWaveChannel::Exec(uint32_t clocksToRun)
 		} else {
 			_state.SampleBuffer = _state.Ram[_state.Position >> 1] >> 4;
 		}
+		_allowRamAccess = true;
 	}
 }
 
@@ -115,7 +117,7 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 				_state.Enabled = _state.DacEnabled;
 
 				//Frequency timer is reloaded with period.
-				_state.Timer = (2048 - _state.Frequency) * 2;
+				_state.Timer = (2048 - _state.Frequency) * 2 + 6;
 
 				//If length counter is zero, it is set to 64 (256 for wave channel).
 				if(_state.Length == 0) {
@@ -135,12 +137,24 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 
 void GbWaveChannel::WriteRam(uint16_t addr, uint8_t value)
 {
-	_state.Ram[addr & 0x0F] = value;
+	//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
+	if(!_state.Enabled) {
+		_state.Ram[addr & 0x0F] = value;
+	} else if(_allowRamAccess) {
+		_state.Ram[_state.Position >> 1] = value;
+	}
 }
 
 uint8_t GbWaveChannel::ReadRam(uint16_t addr)
 {
-	return _state.Ram[addr & 0x0F];
+	//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
+	if(!_state.Enabled) {
+		return _state.Ram[addr & 0x0F];
+	} else if(_allowRamAccess){
+		return _state.Ram[_state.Position >> 1];
+	} else {
+		return 0xFF;
+	}
 }
 
 void GbWaveChannel::Serialize(Serializer& s)

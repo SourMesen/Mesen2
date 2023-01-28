@@ -213,6 +213,7 @@ uint8_t GbApu::InternalRead(uint16_t addr)
 
 		case 0xFF30: case 0xFF31: case 0xFF32: case 0xFF33: case 0xFF34: case 0xFF35: case 0xFF36: case 0xFF37:
 		case 0xFF38: case 0xFF39: case 0xFF3A: case 0xFF3B: case 0xFF3C: case 0xFF3D: case 0xFF3E: case 0xFF3F:
+			Run();
 			return _wave->ReadRam(addr);
 	}
 
