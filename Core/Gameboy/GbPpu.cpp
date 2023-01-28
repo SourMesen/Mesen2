@@ -648,6 +648,7 @@ void GbPpu::SendFrame()
 	_state.FrameCount++;
 
 	if(_gameboy->IsSgb()) {
+		_isFirstFrame = false;
 		return;
 	}
 
