@@ -471,7 +471,7 @@ void NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 	uint32_t prgRomSize = _debugger->GetMemoryDumper()->GetMemorySize(MemoryType::NesPrgRom);
 	vector<uint8_t> rom = vector<uint8_t>(prgRom, prgRom + prgRomSize);
 	
-	NesHeader header = _mapper->GetRomInfo().NesHeader;
+	NesHeader header = _mapper->GetRomInfo().Header;
 	rom.insert(rom.begin(), (uint8_t*)&header, (uint8_t*)&header + sizeof(NesHeader));
 	
 	if(saveAsIps) {

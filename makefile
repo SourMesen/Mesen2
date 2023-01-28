@@ -127,7 +127,7 @@ run:
 clean:
 	rm -r -f $(COREOBJ)
 	rm -r -f $(UTILOBJ)
-	rm -r -f $(LINUXOBJ)
+	rm -r -f $(LINUXOBJ) $(LIBEVDEVOBJ)
 	rm -r -f $(SEVENZIPOBJ)
 	rm -r -f $(LUAOBJ)
 	rm -r -f $(DLLOBJ)

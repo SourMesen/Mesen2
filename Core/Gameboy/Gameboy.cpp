@@ -400,10 +400,10 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		MessageManager::Log("File: " + romFile.GetFileName());
 		MessageManager::Log("Game: " + header.GetCartName());
 		MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
-		switch((CgbFlag)((int)header.CgbFlag & 0xC0)) {
-			case CgbFlag::Gameboy: MessageManager::Log("Supports: Game Boy"); break;
-			case CgbFlag::GameboyColorSupport: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
-			case CgbFlag::GameboyColorExclusive: MessageManager::Log("Supports: Game Boy Color only"); break;
+		switch((CgbCompat)((int)header.CgbFlag & 0xC0)) {
+			case CgbCompat::Gameboy: MessageManager::Log("Supports: Game Boy"); break;
+			case CgbCompat::GameboyColorSupport: MessageManager::Log("Supports: Game Boy Color (compatible with GB)"); break;
+			case CgbCompat::GameboyColorExclusive: MessageManager::Log("Supports: Game Boy Color only"); break;
 		}
 		if(header.SgbFlag == 0x03) {
 			MessageManager::Log("Supports: Super Game Boy");
@@ -432,11 +432,11 @@ GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
 	EmuSettings* settings = _emu->GetSettings();
 	GameboyConfig cfg = settings->GetGameboyConfig();
 	GameboyModel model = cfg.Model;
-	CgbFlag cgbFlag = (CgbFlag)((int)header.CgbFlag & 0xC0);
+	CgbCompat cgbFlag = (CgbCompat)((int)header.CgbFlag & 0xC0);
 	bool supportsSgb = header.SgbFlag == 0x03;
 	switch(model) {
 		case GameboyModel::AutoFavorGb:
-			if(cgbFlag == CgbFlag::GameboyColorExclusive) {
+			if(cgbFlag == CgbCompat::GameboyColorExclusive) {
 				model = GameboyModel::GameboyColor;
 			} else {
 				model = GameboyModel::Gameboy;
@@ -444,7 +444,7 @@ GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
 			break;
 
 		case GameboyModel::AutoFavorSgb:
-			if(cgbFlag == CgbFlag::GameboyColorExclusive) {
+			if(cgbFlag == CgbCompat::GameboyColorExclusive) {
 				model = GameboyModel::GameboyColor;
 			} else {
 				model = GameboyModel::SuperGameboy;
@@ -452,7 +452,7 @@ GameboyModel Gameboy::GetEffectiveModel(GameboyHeader& header)
 			break;
 
 		case GameboyModel::AutoFavorGbc:
-			if(supportsSgb && cgbFlag == CgbFlag::Gameboy) {
+			if(supportsSgb && cgbFlag == CgbCompat::Gameboy) {
 				model = GameboyModel::SuperGameboy;
 			} else {
 				model = GameboyModel::GameboyColor;

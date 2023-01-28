@@ -51,7 +51,7 @@ protected:
 			//"It contains an internal 256-byte serial EEPROM (24C02) that is shared among all Datach games."
 			//"One game, Battle Rush: Build up Robot Tournament, has an additional external 128-byte serial EEPROM (24C01) on the game cartridge."
 			//"The NES 2.0 header's PRG-NVRAM field will only denote whether the game cartridge has an additional 128-byte serial EEPROM"
-			if(!IsNes20() || _romInfo.NesHeader.GetSaveRamSize() == 128) {
+			if(!IsNes20() || _romInfo.Header.GetSaveRamSize() == 128) {
 				_extraEeprom.reset(new Eeprom24C01(_console));
 			}
 			
@@ -65,7 +65,7 @@ protected:
 			//"INES Mapper 016 submapper 5: LZ93D50 ASIC and no or 256-byte serial EEPROM, banked CHR-ROM"
 			
 			//Add a 256 byte serial EEPROM (24C02)
-			if(!IsNes20() || (_romInfo.SubMapperID == 5 && _romInfo.NesHeader.GetSaveRamSize() == 256)) {
+			if(!IsNes20() || (_romInfo.SubMapperID == 5 && _romInfo.Header.GetSaveRamSize() == 256)) {
 				//Connect a 256-byte EEPROM for iNES roms, and when submapper 5 + 256 bytes of save ram in header
 				_standardEeprom.reset(new Eeprom24C02(_console));
 			}

@@ -315,7 +315,7 @@ protected:
 	{
 		uint32_t size;
 		if(IsNes20()) {
-			size = _romInfo.NesHeader.GetSaveRamSize();
+			size = _romInfo.Header.GetSaveRamSize();
 		} else if(_romInfo.IsInDatabase) {
 			size = _romInfo.DatabaseInfo.SaveRamSize;
 		} else {
@@ -335,7 +335,7 @@ protected:
 	{
 		uint32_t size;
 		if(IsNes20()) {
-			size = _romInfo.NesHeader.GetWorkRamSize();
+			size = _romInfo.Header.GetWorkRamSize();
 		} else if(_romInfo.IsInDatabase) {
 			size = _romInfo.DatabaseInfo.WorkRamSize;
 		} else {

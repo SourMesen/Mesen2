@@ -36,7 +36,7 @@ protected:
 			SetMirroringType(MirroringType::ScreenAOnly);
 			_enableMirroringBit = true;
 		} else {
-			switch(_romInfo.NesHeader.Byte6 & 0x09) {
+			switch(_romInfo.Header.Byte6 & 0x09) {
 				case 0: SetMirroringType(MirroringType::Horizontal); break;
 				case 1: SetMirroringType(MirroringType::Vertical); break;
 				case 8: SetMirroringType(MirroringType::ScreenAOnly); _enableMirroringBit = true; break;
