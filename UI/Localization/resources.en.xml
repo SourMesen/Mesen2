@@ -2066,8 +2066,8 @@
 			<Value ID="Dendy">Dendy (50 FPS)</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
-			<Value ID="NoStretching">Default (No Stretching)</Value>
-			<Value ID="Auto">Auto (NTSC or PAL based on game)</Value>
+			<Value ID="NoStretching">No Stretching (default)</Value>
+			<Value ID="Auto">Auto (NTSC/PAL)</Value>
 			<Value ID="NTSC">NTSC (8:7 PAR)</Value>
 			<Value ID="PAL">PAL (11:8 PAR)</Value>
 			<Value ID="Standard">Standard (4:3)</Value>
@@ -3058,6 +3058,7 @@
 			<Value ID="ShowFps">Show FPS</Value>
 
 			<Value ID="VideoScale">Video Size</Value>
+			<Value ID="AspectRatio">Aspect Ratio</Value>
 			<Value ID="Fullscreen">Fullscreen</Value>
 			<Value ID="VideoFilter">Video Filter</Value>
 			<Value ID="Region">Region</Value>

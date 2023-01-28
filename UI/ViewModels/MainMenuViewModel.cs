@@ -379,6 +379,22 @@ namespace Mesen.ViewModels
 				},
 
 				new MainMenuAction() {
+					ActionType = ActionType.AspectRatio,
+					SubActions = new List<object>() {
+						GetAspectRatioMenuItem(VideoAspectRatio.NoStretching),
+						new ContextMenuSeparator(),
+						GetAspectRatioMenuItem(VideoAspectRatio.Auto),
+						new ContextMenuSeparator(),
+						GetAspectRatioMenuItem(VideoAspectRatio.NTSC),
+						GetAspectRatioMenuItem(VideoAspectRatio.PAL),
+						GetAspectRatioMenuItem(VideoAspectRatio.Standard),
+						GetAspectRatioMenuItem(VideoAspectRatio.Widescreen),
+						new ContextMenuSeparator(),
+						GetAspectRatioMenuItem(VideoAspectRatio.Custom),
+					}
+				},
+
+				new MainMenuAction() {
 					ActionType = ActionType.Region,
 					IsEnabled = () => {
 						return (
@@ -439,6 +455,19 @@ namespace Mesen.ViewModels
 				new MainMenuAction() {
 					ActionType = ActionType.Preferences,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Preferences)
+				}
+			};
+		}
+
+		private MainMenuAction GetAspectRatioMenuItem(VideoAspectRatio aspectRatio)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(aspectRatio),
+				IsSelected = () => aspectRatio == ConfigManager.Config.Video.AspectRatio,
+				OnClick = () => {
+					ConfigManager.Config.Video.AspectRatio = aspectRatio;
+					ConfigManager.Config.Video.ApplyConfig();
 				}
 			};
 		}
