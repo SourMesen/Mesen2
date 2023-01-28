@@ -30,28 +30,29 @@ void GbSquareChannel::ClockSweepUnit()
 		return;
 	}
 
-	if(_state.SweepTimer > 0 && _state.SweepPeriod > 0) {
-		_state.SweepTimer--;
-		if(_state.SweepTimer == 0) {
-			_state.SweepTimer = _state.SweepPeriod;
+	if(--_state.SweepTimer == 0) {
+		_state.SweepTimer = _state.SweepPeriod ? _state.SweepPeriod : 8;
 
-			//"When it generates a clock and the sweep's internal enabled flag is set and the sweep period is not zero, a new frequency is calculated and the overflow"
-			uint16_t newFreq = GetSweepTargetFrequency();
+		if(_state.SweepPeriod == 0) {
+			return;
+		}
 
-			if(_state.SweepShift > 0 && newFreq < 2048) {
-				//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
-				_state.Frequency = _state.SweepFreq;
+		//"When it generates a clock and the sweep's internal enabled flag is set and the sweep period is not zero, a new frequency is calculated and the overflow"
+		uint16_t newFreq = GetSweepTargetFrequency();
+
+		if(newFreq >= 2048) {
+			_state.Enabled = false;
+		} else {
+			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
+			if(_state.SweepShift) {
+				_state.Frequency = newFreq;
 				_state.SweepFreq = newFreq;
 
 				newFreq = GetSweepTargetFrequency();
 				if(newFreq >= 2048) {
 					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
-					_state.SweepEnabled = false;
 					_state.Enabled = false;
 				}
-			} else {
-				_state.SweepEnabled = false;
-				_state.Enabled = false;
 			}
 		}
 	}
@@ -129,7 +130,7 @@ uint8_t GbSquareChannel::Read(uint16_t addr)
 				(_state.SweepPeriod << 4) |
 				(_state.SweepNegate ? 0x08 : 0) |
 				_state.SweepShift
-				);
+			);
 			break;
 
 		case 1: value = _state.Duty << 6; break;
@@ -139,7 +140,7 @@ uint8_t GbSquareChannel::Read(uint16_t addr)
 				(_state.EnvVolume << 4) |
 				(_state.EnvRaiseVolume ? 0x08 : 0) |
 				_state.EnvPeriod
-				);
+			);
 			break;
 
 		case 4: value = _state.LengthEnabled ? 0x40 : 0; break;
@@ -221,19 +222,21 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				_state.Volume = _state.EnvVolume;
 
 				//Sweep-related
-				//"During a trigger event, several things occur:
-				//Square 1's frequency is copied to the shadow register.
-				//The sweep timer is reloaded.
-				//The internal enabled flag is set if either the sweep period or shift are non-zero, cleared otherwise.
-				//If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
+				//"During a trigger event, several things occur:"
+				//"Square 1's frequency is copied to the shadow register."
 				_state.SweepFreq = _state.Frequency;
-				_state.SweepTimer = _state.SweepPeriod;
+
+				//"The sweep timer is reloaded."
+				//"The volume envelope and sweep timers treat a period of 0 as 8."
+				_state.SweepTimer = _state.SweepPeriod ? _state.SweepPeriod : 8;
+
+				//"The internal enabled flag is set if either the sweep period or shift are non-zero, cleared otherwise.
 				_state.SweepEnabled = _state.SweepPeriod > 0 || _state.SweepShift > 0;
 
+				//"If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
 				if(_state.SweepShift > 0) {
 					_state.SweepFreq = GetSweepTargetFrequency();
 					if(_state.SweepFreq > 2047) {
-						_state.SweepEnabled = false;
 						_state.Enabled = false;
 					}
 				}
