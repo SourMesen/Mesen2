@@ -261,6 +261,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Signed,
 					OnClick = () => {
 						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Signed;
+						UpdateWatch();
 					}
 				},
 
@@ -269,6 +270,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Hex,
 					OnClick = () => {
 						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Hex;
+						UpdateWatch();
 					}
 				},
 
@@ -277,6 +279,7 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => ConfigManager.Config.Debug.Debugger.WatchFormat == WatchFormatStyle.Binary,
 					OnClick = () => {
 						ConfigManager.Config.Debug.Debugger.WatchFormat = WatchFormatStyle.Binary;
+						UpdateWatch();
 					}
 				},
 
