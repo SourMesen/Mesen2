@@ -42,7 +42,7 @@
 			<Border Grid.Column="0">
 				<dc:MesenTextEditor
 					Name="Editor"
-					ShowLineNumbers="True"
+					ShowLineNumbers="False"
 					TextBinding="{CompiledBinding Code}"
 					FontFamily="{DynamicResource MesenAssemblerFont}"
 					FontSize="{DynamicResource MesenAssemblerFontSize}"
