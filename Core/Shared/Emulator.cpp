@@ -482,7 +482,8 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 	_threadPaused = false;
 
 	if(!forPowerCycle && !_audioPlayerHud) {
-		string modelName = _console->GetRegion() == ConsoleRegion::Pal ? "PAL" : "NTSC";
+		ConsoleRegion region = _console->GetRegion();
+		string modelName = region == ConsoleRegion::Pal ? "PAL" : (region == ConsoleRegion::Dendy ? "Dendy" : "NTSC");
 		MessageManager::DisplayMessage(modelName, FolderUtilities::GetFilename(GetRomInfo().RomFile.GetFileName(), false));
 	}
 
