@@ -374,7 +374,16 @@ namespace Mesen.ViewModels
 						GetVideoFilterMenuItem(VideoFilterType.Prescale4x),
 						GetVideoFilterMenuItem(VideoFilterType.Prescale6x),
 						GetVideoFilterMenuItem(VideoFilterType.Prescale8x),
-						GetVideoFilterMenuItem(VideoFilterType.Prescale10x)
+						GetVideoFilterMenuItem(VideoFilterType.Prescale10x),
+						new ContextMenuSeparator(),
+						new MainMenuAction() {
+							ActionType = ActionType.ToggleBilinearInterpolation,
+							IsSelected = () => ConfigManager.Config.Video.UseBilinearInterpolation,
+							OnClick = () => {
+								ConfigManager.Config.Video.UseBilinearInterpolation = !ConfigManager.Config.Video.UseBilinearInterpolation;
+								ConfigManager.Config.Video.ApplyConfig();
+							}
+						}
 					}
 				},
 

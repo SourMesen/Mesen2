@@ -799,5 +799,7 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("Find")]
 		CheatDatabase,
+
+		ToggleBilinearInterpolation,
 	}
 }

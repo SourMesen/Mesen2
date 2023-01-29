@@ -3172,6 +3172,7 @@
 
 			<Value ID="CopyToHdPackFormat">Copy tile (HD pack format)</Value>
 			<Value ID="CheatDatabase">Cheat database</Value>
+			<Value ID="ToggleBilinearInterpolation">Use bilinear interpolation</Value>
 		</Enum>
 	</Enums>
 </Resources>
