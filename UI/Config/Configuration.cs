@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using ReactiveUI;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,7 +21,7 @@ namespace Mesen.Config
 	{
 		private string _fileData = "";
 
-		public string Version { get; set; } = "0.4.0";
+		public string Version { get; set; } = "2.0.0";
 		
 		[Reactive] public VideoConfig Video { get; set; } = new();
 		[Reactive] public AudioConfig Audio { get; set; } = new();
@@ -82,6 +84,14 @@ namespace Mesen.Config
 		public void InitializeDefaults()
 		{
 			if(FirstRun) {
+				Preferences.MesenFont = GetDefaultFont();
+				Preferences.MesenMenuFont = GetDefaultMenuFont();
+				Debug.Fonts.DisassemblyFont = GetDefaultMonospaceFont();
+				Debug.Fonts.MemoryViewerFont = GetDefaultMonospaceFont();
+				Debug.Fonts.AssemblerFont = GetDefaultMonospaceFont();
+				Debug.Fonts.ScriptWindowFont = GetDefaultMonospaceFont();
+				Debug.Fonts.OtherMonoFont = GetDefaultMonospaceFont(true);
+
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
 				Gameboy.InitializeDefaults(DefaultKeyMappings);
@@ -89,6 +99,50 @@ namespace Mesen.Config
 				FirstRun = false;
 			}
 			Preferences.InitializeDefaultShortcuts();
+		}
+
+		private HashSet<string>? _installedFonts = null;
+
+		private string FindMatchingFont(string defaultFont, params string[] fontNames)
+		{
+			if(_installedFonts == null) {
+				_installedFonts = new(FontManager.Current.GetInstalledFontFamilyNames());
+			}
+
+			foreach(string name in fontNames) {
+				if(_installedFonts.Contains(name)) {
+					return name;
+				}
+			}
+
+			return defaultFont;
+		}
+
+		private FontConfig GetDefaultFont()
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 11 };
+			}
+		}
+
+		private FontConfig GetDefaultMenuFont()
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 12 };
+			}
+		}
+
+		private FontConfig GetDefaultMonospaceFont(bool useSmallFont = false)
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Consolas", FontSize = useSmallFont ? 12 : 14 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "DejaVu Sans Mono", "Noto Sans Mono"), FontSize = 12 };
+			}
 		}
 
 		public static Configuration Deserialize(string configFile)
