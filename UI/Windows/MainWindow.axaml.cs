@@ -244,6 +244,7 @@ namespace Mesen.Windows
 		{
 			Dispatcher.UIThread.Post(() => {
 				CommandLineHelper cmdLine = new(e.Args, false);
+				ConfigManager.Config.ApplyConfig();
 				cmdLine.LoadFiles();
 			});
 		}

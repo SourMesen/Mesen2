@@ -52,10 +52,6 @@ public class CommandLineHelper
 					default: FilesToLoad.Add(absPath); break;
 				}
 			} else {
-				if(!forStartup) {
-					continue;
-				}
-
 				string switchArg = ConvertArg(arg).ToLowerInvariant();
 				switch(switchArg) {
 					case "novideo": NoVideo = true; break;
