@@ -11,6 +11,7 @@ using Mesen.Interop;
 using System.Diagnostics;
 using Mesen.Utilities;
 using Avalonia.Controls;
+using System.Runtime.InteropServices;
 
 namespace Mesen.Config
 {
@@ -25,7 +26,8 @@ namespace Mesen.Config
 		{
 			get
 			{
-				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mesen2");
+				Environment.SpecialFolder folder = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? Environment.SpecialFolder.MyDocuments : Environment.SpecialFolder.ApplicationData;
+				return Path.Combine(Environment.GetFolderPath(folder, Environment.SpecialFolderOption.Create), "Mesen2");
 			}
 		}
 
@@ -222,7 +224,6 @@ namespace Mesen.Config
 		public static string TestFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "Tests"), null, false); } }
 		public static string HdPackFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "HdPacks"), null, false); } }
 		public static string RecentGamesFolder { get { return GetFolder(Path.Combine(ConfigManager.HomeFolder, "RecentGames"), null, false); } }
-		public static string FontFolder { get { return GetFolder(Environment.GetFolderPath(Environment.SpecialFolder.Fonts, Environment.SpecialFolderOption.Create), null, false); } }
 
 		public static string ConfigFile
 		{

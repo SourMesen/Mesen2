@@ -17,7 +17,7 @@ namespace Mesen.Config
 	{
 		static private string CreateMimeType(string mimeType, string extension, string description, List<string> mimeTypes, bool addType)
 		{
-			string baseFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".local", "share", "mime", "packages");
+			string baseFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "mime", "packages");
 			if(!Directory.Exists(baseFolder)) {
 				Directory.CreateDirectory(baseFolder);
 			}
@@ -48,7 +48,7 @@ namespace Mesen.Config
 		{
 			PreferencesConfig cfg = ConfigManager.Config.Preferences;
 
-			string baseFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ".local", "share");
+			string baseFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 			string desktopFolder = Path.Combine(baseFolder, "applications");
 			string mimeFolder = Path.Combine(baseFolder, "mime");
 			string iconFolder = Path.Combine(baseFolder, "icons");
