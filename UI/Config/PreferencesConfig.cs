@@ -62,8 +62,8 @@ namespace Mesen.Config
 		[Reactive] public GameSelectionMode GameSelectionScreenMode { get; set; } = GameSelectionMode.ResumeState;
 
 		[Reactive] public FontAntialiasing FontAntialiasing { get; set; } = FontAntialiasing.SubPixelAntialias;
-		[Reactive] public FontConfig MesenFont { get; set; } = new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
-		[Reactive] public FontConfig MesenMenuFont { get; set; } = new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
+		[Reactive] public FontConfig MesenFont { get; set; } = PreferencesConfig.GetDefaultFont();
+		[Reactive] public FontConfig MesenMenuFont { get; set; } = PreferencesConfig.GetDefaultMenuFont();
 
 		[Reactive] public List<ShortcutKeyInfo> ShortcutKeys { get; set; } = new List<ShortcutKeyInfo>();
 
@@ -156,6 +156,50 @@ namespace Mesen.Config
 		public void UpdateFileAssociations()
 		{
 			FileAssociationHelper.UpdateFileAssociations();
+		}
+
+		private static HashSet<string>? _installedFonts = null;
+
+		public static string FindMatchingFont(string defaultFont, params string[] fontNames)
+		{
+			if(_installedFonts == null) {
+				_installedFonts = new(FontManager.Current.GetInstalledFontFamilyNames());
+			}
+
+			foreach(string name in fontNames) {
+				if(_installedFonts.Contains(name)) {
+					return name;
+				}
+			}
+
+			return defaultFont;
+		}
+
+		public static FontConfig GetDefaultFont()
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 11 };
+			}
+		}
+
+		public static FontConfig GetDefaultMenuFont()
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 12 };
+			}
+		}
+
+		public static FontConfig GetDefaultMonospaceFont(bool useSmallFont = false)
+		{
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				return new FontConfig() { FontFamily = "Consolas", FontSize = useSmallFont ? 12 : 14 };
+			} else {
+				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "DejaVu Sans Mono", "Noto Sans Mono"), FontSize = 12 };
+			}
 		}
 
 		public void ApplyFontOptions()

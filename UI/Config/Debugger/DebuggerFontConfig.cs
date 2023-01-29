@@ -7,11 +7,11 @@ namespace Mesen.Config
 {
 	public class DebuggerFontConfig : BaseConfig<DebuggerFontConfig>
 	{
-		[Reactive] public FontConfig DisassemblyFont { get; set; } = new() { FontFamily = "Consolas", FontSize = 14 };
-		[Reactive] public FontConfig MemoryViewerFont { get; set; } = new() { FontFamily = "Consolas", FontSize = 14 };
-		[Reactive] public FontConfig AssemblerFont { get; set; } = new() { FontFamily = "Consolas", FontSize = 14 };
-		[Reactive] public FontConfig ScriptWindowFont { get; set; } = new() { FontFamily = "Consolas", FontSize = 14 };
-		[Reactive] public FontConfig OtherMonoFont { get; set; } = new() { FontFamily = "Consolas", FontSize = 12 };
+		[Reactive] public FontConfig DisassemblyFont { get; set; } = PreferencesConfig.GetDefaultMonospaceFont();
+		[Reactive] public FontConfig MemoryViewerFont { get; set; } = PreferencesConfig.GetDefaultMonospaceFont();
+		[Reactive] public FontConfig AssemblerFont { get; set; } = PreferencesConfig.GetDefaultMonospaceFont();
+		[Reactive] public FontConfig ScriptWindowFont { get; set; } = PreferencesConfig.GetDefaultMonospaceFont();
+		[Reactive] public FontConfig OtherMonoFont { get; set; } = PreferencesConfig.GetDefaultMonospaceFont(true);
 
 		public void ApplyConfig()
 		{
