@@ -35,6 +35,7 @@ class SpcDebugger final : public IDebugger
 
 	bool _debuggerEnabled = false;
 	bool _predictiveBreakpoints = false;
+	bool _ignoreDspReadWrites = false;
 	
 public:
 	SpcDebugger(Debugger* debugger);
@@ -44,7 +45,11 @@ public:
 	void ProcessConfigChange() override;
 
 	void ProcessInstruction();
+
+	template<MemoryAccessFlags flags>
 	void ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type);
+	
+	template<MemoryAccessFlags flags>
 	void ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type);
 	
 	void Run() override;

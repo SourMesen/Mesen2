@@ -13,3 +13,9 @@ enum class MemoryOperationType
 	PpuRenderingRead = 8,
 	Idle = 9
 };
+
+enum class MemoryAccessFlags
+{
+	None = 0,
+	DspAccess = 1,
+};

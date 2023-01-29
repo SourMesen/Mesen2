@@ -215,7 +215,7 @@ void Debugger::ProcessInstruction()
 	}
 }
 
-template<CpuType type, typename T>
+template<CpuType type, MemoryAccessFlags flags, typename T>
 void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
@@ -225,7 +225,7 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead<flags>(addr, value, opType); break;
 		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessRead(addr, value, opType); break;
@@ -240,7 +240,7 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 	}
 }
 
-template<CpuType type, typename T>
+template<CpuType type, MemoryAccessFlags flags, typename T>
 bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType)
 {
 	if(_debuggers[(int)type].Debugger->IsStepBack()) {
@@ -250,7 +250,7 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 
 	switch(type) {
 		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite<flags>(addr, value, opType); break;
 		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
 		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessWrite(addr, value, opType); break;
@@ -1010,6 +1010,7 @@ template void Debugger::ProcessInstruction<CpuType::Pce>();
 template void Debugger::ProcessMemoryRead<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template void Debugger::ProcessMemoryRead<CpuType::Spc, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint32_t& value, MemoryOperationType opType);
 template void Debugger::ProcessMemoryRead<CpuType::NecDsp>(uint32_t addr, uint16_t& value, MemoryOperationType opType);
@@ -1021,6 +1022,7 @@ template void Debugger::ProcessMemoryRead<CpuType::Pce>(uint32_t addr, uint8_t& 
 template bool Debugger::ProcessMemoryWrite<CpuType::Snes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Sa1>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Spc>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+template bool Debugger::ProcessMemoryWrite<CpuType::Spc, MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Gsu>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::NecDsp>(uint32_t addr, uint16_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t& value, MemoryOperationType opType);

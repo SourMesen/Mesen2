@@ -47,6 +47,7 @@ void SpcDebugger::ProcessConfigChange()
 {
 	_debuggerEnabled = _settings->CheckDebuggerFlag(DebuggerFlags::SpcDebuggerEnabled);
 	_predictiveBreakpoints = _settings->GetDebugConfig().UsePredictiveBreakpoints;
+	_ignoreDspReadWrites = _settings->GetDebugConfig().SnesIgnoreDspReadWrites;
 }
 
 void SpcDebugger::ProcessInstruction()
@@ -105,45 +106,69 @@ void SpcDebugger::ProcessInstruction()
 	_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 }
 
+template<MemoryAccessFlags flags>
 void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
-	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
+	if constexpr(flags == MemoryAccessFlags::None) {
+		//SPC read
+		AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
+		MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 
-	if(type == MemoryOperationType::ExecOpCode) {
-		if(_traceLogger->IsEnabled()) {
-			SpcState& state = _spc->GetState();
-			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
-			_traceLogger->Log(state, disInfo, operation, addressInfo);
+		if(type == MemoryOperationType::ExecOpCode) {
+			if(_traceLogger->IsEnabled()) {
+				SpcState& state = _spc->GetState();
+				DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::Spc);
+				_traceLogger->Log(state, disInfo, operation, addressInfo);
+			}
+			_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+		} else if(type == MemoryOperationType::ExecOperand) {
+			_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
+			if(_traceLogger->IsEnabled()) {
+				_traceLogger->LogNonExec(operation, addressInfo);
+			}
+			_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+		} else {
+			_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+			if(_traceLogger->IsEnabled()) {
+				_traceLogger->LogNonExec(operation, addressInfo);
+			}
+			_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 		}
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
-	} else if(type == MemoryOperationType::ExecOperand) {
-		_memoryAccessCounter->ProcessMemoryExec(addressInfo, _memoryManager->GetMasterClock());
-		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation, addressInfo);
-		}
-		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
-		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
-		if(_traceLogger->IsEnabled()) {
-			_traceLogger->LogNonExec(operation, addressInfo);
+		//DSP read
+		if(!_ignoreDspReadWrites) {
+			AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //DSP reads never read from the IPL ROM
+			MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
+
+			_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
+			_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 		}
-		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	}
 }
 
+template<MemoryAccessFlags flags>
 void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
-	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the SPC ROM
+	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the IPL ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
-	_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
+	//Always invalidate cache, even if DSP writes are ignored
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
-
-	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	
-	if(_traceLogger->IsEnabled()) {
-		_traceLogger->LogNonExec(operation, addressInfo);
+	if constexpr(flags == MemoryAccessFlags::None) {
+		//SPC write
+		_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+		_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+
+		if(_traceLogger->IsEnabled()) {
+			_traceLogger->LogNonExec(operation, addressInfo);
+		}
+	} else {
+		//DSP write
+		if(!_ignoreDspReadWrites) {
+			_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
+			_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
+		}
 	}
 }
 
@@ -232,3 +257,9 @@ ITraceLogger* SpcDebugger::GetTraceLogger()
 {
 	return _traceLogger.get();
 }
+
+template void SpcDebugger::ProcessRead<MemoryAccessFlags::None>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void SpcDebugger::ProcessRead<MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+
+template void SpcDebugger::ProcessWrite<MemoryAccessFlags::None>(uint32_t addr, uint8_t value, MemoryOperationType opType);
+template void SpcDebugger::ProcessWrite<MemoryAccessFlags::DspAccess>(uint32_t addr, uint8_t value, MemoryOperationType opType);
