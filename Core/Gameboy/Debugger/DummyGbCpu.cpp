@@ -4,7 +4,7 @@
 #define DUMMYCPU
 #define GbCpu DummyGbCpu
 #include "Gameboy/GbCpu.cpp"
-#undef NesCpu
+#undef GbCpu
 #undef DUMMYCPU
 
 void DummyGbCpu::SetDummyState(GbCpuState& state)

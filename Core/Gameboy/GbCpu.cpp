@@ -56,7 +56,9 @@ void GbCpu::Exec()
 					break;
 
 				case GbIrqSource::VerticalBlank:
+#ifndef DUMMYCPU
 					_gameboy->RefreshRamCheats();
+#endif
 					_state.PC = 0x40;
 					break;
 
@@ -746,8 +748,10 @@ void GbCpu::NOP()
 
 void GbCpu::InvalidOp()
 {
+#ifndef DUMMYCPU
 	//Disable all IRQs
 	_memoryManager->Write(0xFFFF, 0);
+#endif
 
 	//Halt CPU to lock it up permanently
 	_state.Halted = true;
@@ -756,7 +760,9 @@ void GbCpu::InvalidOp()
 void GbCpu::STOP()
 {
 	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
+#ifndef DUMMYCPU
 		_memoryManager->ToggleSpeed();
+#endif
 	} else {
 		_state.Halted = true;
 	}
