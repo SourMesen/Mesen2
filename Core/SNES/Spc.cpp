@@ -127,6 +127,13 @@ void Spc::UpdateClockRatio()
 	}
 }
 
+void Spc::ExitExecLoop()
+{
+#ifndef DUMMYSPC
+	_state.Cycle = _memoryManager->GetMasterClock() * _clockRatio;
+#endif
+}
+
 void Spc::Idle()
 {
 	IncCycleCount(-1);

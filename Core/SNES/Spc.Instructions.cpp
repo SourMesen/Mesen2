@@ -2107,6 +2107,7 @@ void Spc::SLEEP()
 	//WAI
 	_state.StopState = SnesCpuStopState::WaitingForIrq;
 	EndOp();
+	ExitExecLoop();
 }
 
 void Spc::STOP()
@@ -2114,4 +2115,5 @@ void Spc::STOP()
 	//STP
 	_state.StopState = SnesCpuStopState::Stopped;
 	EndOp();
+	ExitExecLoop();
 }

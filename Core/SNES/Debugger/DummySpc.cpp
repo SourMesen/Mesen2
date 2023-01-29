@@ -30,6 +30,7 @@ DummySpc::~DummySpc()
 void DummySpc::SetDummyState(SpcState& state)
 {
 	_state = state;
+	_state.StopState = SnesCpuStopState::Running;
 	_memOpCounter = 0;
 }
 

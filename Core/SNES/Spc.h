@@ -284,6 +284,7 @@ private:
 	void Exec();
 	
 	void UpdateClockRatio();
+	void ExitExecLoop();
 
 public:
 	Spc(SnesConsole* console);
