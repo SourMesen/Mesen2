@@ -142,6 +142,7 @@
 			<Control ID="lblDisplayRatio">Aspect Ratio:</Control>
 			<Control ID="lblCustomRatio">Custom Ratio: </Control>
 			<Control ID="chkBilinearInterpolation">Use bilinear interpolation when scaling</Control>
+			<Control ID="chkUseSrgbTextureFormat">Use sRGB when applying interpolation</Control>
 			<Control ID="lblFullscreenResolution">Fullscreen Resolution:</Control>
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
 			<Control ID="chkUseExclusiveFullscreen">Use exclusive fullscreen mode</Control>

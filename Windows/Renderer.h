@@ -54,6 +54,7 @@ private:
 
 	bool _newFullscreen = false;
 	bool _fullscreen = false;
+	bool _useSrgbTextureFormat = false;
 
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
@@ -84,6 +85,8 @@ private:
 	void ReleaseRenderTargetView();
 	HRESULT CreateEmuTextureBuffers();
 	void ResetTextureBuffers();
+	
+	DXGI_FORMAT GetTextureFormat();
 
 public:
 	Renderer(Emulator* emu, HWND hWnd);

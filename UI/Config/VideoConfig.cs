@@ -18,6 +18,7 @@ namespace Mesen.Config
 		[Reactive] public VideoAspectRatio AspectRatio { get; set; } = VideoAspectRatio.NoStretching;
 
 		[Reactive] public bool UseBilinearInterpolation { get; set; } = false;
+		[Reactive] public bool UseSrgbTextureFormat { get; set; } = false;
 		[Reactive] public bool VerticalSync { get; set; } = false;
 		[Reactive] public bool IntegerFpsMode { get; set; } = false;
 
@@ -59,6 +60,7 @@ namespace Mesen.Config
 				AspectRatio = this.AspectRatio,
 
 				UseBilinearInterpolation = this.UseBilinearInterpolation,
+				UseSrgbTextureFormat = this.UseSrgbTextureFormat,
 				VerticalSync = this.VerticalSync,
 				IntegerFpsMode = this.IntegerFpsMode,
 
@@ -100,6 +102,7 @@ namespace Mesen.Config
 		public VideoAspectRatio AspectRatio;
 
 		[MarshalAs(UnmanagedType.I1)] public bool UseBilinearInterpolation;
+		[MarshalAs(UnmanagedType.I1)] public bool UseSrgbTextureFormat;
 		[MarshalAs(UnmanagedType.I1)] public bool VerticalSync;
 		[MarshalAs(UnmanagedType.I1)] public bool IntegerFpsMode;
 

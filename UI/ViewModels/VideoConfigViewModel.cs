@@ -16,7 +16,7 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool ShowCustomRatio { get; }
 		[ObservableAsProperty] public bool ShowNtscBlarggSettings { get; }
 		[ObservableAsProperty] public bool ShowNtscBisqwitSettings { get; }
-		public bool ShowExclusiveFullscreenSettings { get; }
+		public bool IsWindows { get; }
 
 		public ReactiveCommand<Unit, Unit> PresetCompositeCommand { get; }
 		public ReactiveCommand<Unit, Unit> PresetSVideoCommand { get; }
@@ -42,7 +42,7 @@ namespace Mesen.ViewModels
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBisqwit).ToPropertyEx(this, _ => _.ShowNtscBisqwitSettings));
 
 			//Exclusive fullscreen is only supported on Windows currently
-			ShowExclusiveFullscreenSettings = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+			IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
 			if(Design.IsDesignMode) {
 				return;

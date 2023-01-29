@@ -80,6 +80,7 @@ struct VideoConfig
 	VideoFilterType VideoFilter = VideoFilterType::None;
 	VideoAspectRatio AspectRatio = VideoAspectRatio::NoStretching;
 	bool UseBilinearInterpolation = false;
+	bool UseSrgbTextureFormat = false;
 	bool VerticalSync = false;
 	bool IntegerFpsMode = false;
 

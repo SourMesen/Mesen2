@@ -44,7 +44,7 @@
 						<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{CompiledBinding Config.IntegerFpsMode}" />
 						<CheckBox Content="{l:Translate chkVerticalSync}" IsChecked="{CompiledBinding Config.VerticalSync}" />
 
-						<StackPanel IsVisible="{CompiledBinding ShowExclusiveFullscreenSettings}">
+						<StackPanel IsVisible="{CompiledBinding IsWindows}">
 							<CheckBox Content="{l:Translate chkUseExclusiveFullscreen}" IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}" />
 							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
 								<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -85,6 +85,13 @@
 							<c:MesenSlider Value="{CompiledBinding Config.Saturation}" Text="{l:Translate trkSaturation}" Margin="5" Minimum="-100" Maximum="100" />
 							<c:MesenSlider Value="{CompiledBinding Config.ScanlineIntensity}" Text="{l:Translate trkScanlines}" Margin="5" Minimum="0" Maximum="100" />
 							<CheckBox IsChecked="{CompiledBinding Config.UseBilinearInterpolation}" Content="{l:Translate chkBilinearInterpolation}" />
+							<CheckBox
+								Margin="15 0 0 0"
+								IsEnabled="{CompiledBinding Config.UseBilinearInterpolation}"
+								IsVisible="{CompiledBinding IsWindows}"
+								IsChecked="{CompiledBinding Config.UseSrgbTextureFormat}"
+								Content="{l:Translate chkUseSrgbTextureFormat}"
+							/>
 						</StackPanel>
 					</c:GroupBox>
 

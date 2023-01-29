@@ -38,14 +38,31 @@ void Renderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle)
 	}
 }
 
+DXGI_FORMAT Renderer::GetTextureFormat()
+{
+	return _useSrgbTextureFormat ? DXGI_FORMAT_B8G8R8A8_UNORM_SRGB : DXGI_FORMAT_B8G8R8A8_UNORM;
+}
+
 void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
-	if(_emuFrameHeight != height || _emuFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
+
+	auto needUpdate = [=] {
+		return (
+			_emuFrameHeight != height ||
+			_emuFrameWidth != width ||
+			_screenHeight != rendererSize.Height ||
+			_screenWidth != rendererSize.Width ||
+			_newFullscreen != _fullscreen ||
+			_useSrgbTextureFormat != cfg.UseSrgbTextureFormat
+		);
+	};
+
+	if(needUpdate()) {
 		auto frameLock = _frameLock.AcquireSafe();
 		auto textureLock = _textureLock.AcquireSafe();
-		if(_emuFrameHeight != height || _emuFrameWidth != width || _screenHeight != rendererSize.Height || _screenWidth != rendererSize.Width || _newFullscreen != _fullscreen) {
+		if(needUpdate()) {
 			_emuFrameHeight = height;
 			_emuFrameWidth = width;
 
@@ -57,6 +74,11 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 				if(FAILED(hr)) {
 					MessageManager::Log("SetFullscreenState(FALSE) failed - Error:" + std::to_string(hr));
 				}
+			}
+			
+			if(_useSrgbTextureFormat != cfg.UseSrgbTextureFormat) {
+				_useSrgbTextureFormat = cfg.UseSrgbTextureFormat;
+				needReset = true;
 			}
 
 			_fullscreen = _newFullscreen;
@@ -97,7 +119,7 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 				} else {
 					ResetTextureBuffers();
 					ReleaseRenderTargetView();
-					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, 0);
+					_pSwapChain->ResizeBuffers(1, _realScreenWidth, _realScreenHeight, GetTextureFormat(), 0);
 					CreateRenderTargetView();
 					CreateEmuTextureBuffers();
 				}
@@ -265,7 +287,7 @@ HRESULT Renderer::InitDevice()
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = _realScreenWidth;
 	sd.BufferDesc.Height = _realScreenHeight;
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	sd.BufferDesc.Format = GetTextureFormat();
 	sd.BufferDesc.RefreshRate.Numerator = _emu->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -336,7 +358,7 @@ ID3D11Texture2D* Renderer::CreateTexture(uint32_t width, uint32_t height)
 	desc.ArraySize = 1;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	desc.Format = GetTextureFormat();
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;
 	desc.SampleDesc.Count = 1;
