@@ -132,6 +132,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesCgRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SpcRom:
+				case MemoryType.SpcMemory:
 				case MemoryType.SnesRegister:
 
 				case MemoryType.GbSpriteRam:
