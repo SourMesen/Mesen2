@@ -224,15 +224,15 @@ void Debugger::ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType op
 	}
 
 	switch(type) {
-		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessRead<flags>(addr, value, opType); break;
-		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessRead(addr, value, opType); break;
-		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Snes: GetDebugger<CpuType::Snes, SnesDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<CpuType::Spc, SpcDebugger>()->ProcessRead<flags>(addr, value, opType); break;
+		case CpuType::NecDsp: GetDebugger<CpuType::NecDsp, NecDspDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<CpuType::Sa1, SnesDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Gsu: GetDebugger<CpuType::Gsu, GsuDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Cx4: GetDebugger<CpuType::Cx4, Cx4Debugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Gameboy: GetDebugger<CpuType::Gameboy, GbDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Nes: GetDebugger<CpuType::Nes, NesDebugger>()->ProcessRead(addr, value, opType); break;
+		case CpuType::Pce: GetDebugger<CpuType::Pce, PceDebugger>()->ProcessRead(addr, value, opType); break;
 	}
 
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
@@ -249,15 +249,15 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 	}
 
 	switch(type) {
-		case CpuType::Snes: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Spc: GetDebugger<type, SpcDebugger>()->ProcessWrite<flags>(addr, value, opType); break;
-		case CpuType::NecDsp: GetDebugger<type, NecDspDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Sa1: GetDebugger<type, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Gsu: GetDebugger<type, GsuDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Cx4: GetDebugger<type, Cx4Debugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Gameboy: GetDebugger<type, GbDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Nes: GetDebugger<type, NesDebugger>()->ProcessWrite(addr, value, opType); break;
-		case CpuType::Pce: GetDebugger<type, PceDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Snes: GetDebugger<CpuType::Snes, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Spc: GetDebugger<CpuType::Spc, SpcDebugger>()->ProcessWrite<flags>(addr, value, opType); break;
+		case CpuType::NecDsp: GetDebugger<CpuType::NecDsp, NecDspDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Sa1: GetDebugger<CpuType::Sa1, SnesDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gsu: GetDebugger<CpuType::Gsu, GsuDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Cx4: GetDebugger<CpuType::Cx4, Cx4Debugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Gameboy: GetDebugger<CpuType::Gameboy, GbDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Nes: GetDebugger<CpuType::Nes, NesDebugger>()->ProcessWrite(addr, value, opType); break;
+		case CpuType::Pce: GetDebugger<CpuType::Pce, PceDebugger>()->ProcessWrite(addr, value, opType); break;
 	}
 	
 	if(_scriptManager->HasCpuMemoryCallbacks()) {
