@@ -363,8 +363,12 @@ void Spc::DspWriteRam(uint16_t addr, uint8_t value)
 
 void Spc::Run()
 {
-	if(!_enabled || _state.StopState != SnesCpuStopState::Running) {
+	if(!_enabled) {
+		//Used to temporarily disable the SPC when overclocking is enabled
+		return;
+	} else if(_state.StopState != SnesCpuStopState::Running) {
 		//STOP or SLEEP were executed - execution is stopped forever.
+		_emu->ProcessHaltedCpu<CpuType::Spc>();
 		return;
 	}
 

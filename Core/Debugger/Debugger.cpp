@@ -1034,6 +1034,7 @@ template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();
 
 template void Debugger::ProcessHaltedCpu<CpuType::Snes>();
+template void Debugger::ProcessHaltedCpu<CpuType::Spc>();
 template void Debugger::ProcessHaltedCpu<CpuType::Gameboy>();
 
 template void Debugger::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
