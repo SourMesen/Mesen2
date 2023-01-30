@@ -99,7 +99,7 @@ namespace Mesen.Debugger.ViewModels
 				_state = DebugApi.GetConsoleState<SnesState>(ConsoleType.Snes);
 			} else if(_romInfo.ConsoleType == ConsoleType.Nes) {
 				_state = DebugApi.GetConsoleState<NesState>(ConsoleType.Nes);
-			} else if(_romInfo.ConsoleType == ConsoleType.Gameboy || _romInfo.ConsoleType == ConsoleType.GameboyColor) {
+			} else if(_romInfo.ConsoleType == ConsoleType.Gameboy) {
 				_state = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
 			} else if(_romInfo.ConsoleType == ConsoleType.PcEngine) {
 				_state = DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine);

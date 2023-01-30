@@ -172,9 +172,8 @@ namespace Mesen.Interop
 	{
 		Snes = 0,
 		Gameboy = 1,
-		GameboyColor = 2,
-		Nes = 3,
-		PcEngine = 4
+		Nes = 2,
+		PcEngine = 3
 	}
 
 	public struct InteropDipSwitchInfo

@@ -464,7 +464,7 @@ AddressInfo SnesConsole::GetRelativeAddress(AddressInfo& absAddress, CpuType cpu
 
 void SnesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 {
-	if(consoleType == ConsoleType::Gameboy || consoleType == ConsoleType::GameboyColor) {
+	if(consoleType == ConsoleType::Gameboy) {
 		_cart->GetGameboy()->GetConsoleState(baseState, consoleType);
 		return;
 	}

@@ -71,7 +71,6 @@ void EmuSettings::Serialize(Serializer& s)
 			break;
 
 		case ConsoleType::Gameboy:
-		case ConsoleType::GameboyColor:
 			SV(_gameboy.RamPowerOnState);
 			SV(_gameboy.Controller.Type);
 			SV(_gameboy.Model);
@@ -346,7 +345,6 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case ConsoleType::PcEngine: return _pce.Overscan;
 
 		case ConsoleType::Gameboy:
-		case ConsoleType::GameboyColor:
 			break;
 	}
 
@@ -442,7 +440,6 @@ RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)
 	switch(consoleType) {
 		case ConsoleType::Snes: return _snes.RamPowerOnState;
 		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState;
-		case ConsoleType::GameboyColor: return _gameboy.RamPowerOnState;
 		case ConsoleType::Nes: return _nes.RamPowerOnState;
 		case ConsoleType::PcEngine: return _pce.RamPowerOnState;
 	}

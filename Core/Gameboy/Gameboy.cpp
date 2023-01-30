@@ -489,7 +489,7 @@ BaseControlManager* Gameboy::GetControlManager()
 
 ConsoleType Gameboy::GetConsoleType()
 {
-	return _model == GameboyModel::GameboyColor ? ConsoleType::GameboyColor : ConsoleType::Gameboy;
+	return ConsoleType::Gameboy;
 }
 
 double Gameboy::GetFps()

@@ -260,7 +260,6 @@ namespace Mesen.Utilities
 					break;
 
 				case ConsoleType.Gameboy:
-				case ConsoleType.GameboyColor:
 					switch(layer) {
 						case VideoLayer.Bg1: return (() => ConfigManager.Config.Gameboy.DisableBackground, (val) => ConfigManager.Config.Gameboy.DisableBackground = val);
 						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Gameboy.DisableSprites, (val) => ConfigManager.Config.Gameboy.DisableSprites = val);
