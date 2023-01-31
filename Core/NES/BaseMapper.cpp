@@ -998,6 +998,7 @@ int32_t BaseMapper::GetPpuRelativeAddress(AddressInfo& addr)
 		case MemoryType::NesChrRom: ptrAddress = _chrRom; break;
 		case MemoryType::NesChrRam: ptrAddress = _chrRam; break;
 		case MemoryType::NesNametableRam: ptrAddress = _nametableRam; break;
+		case MemoryType::NesPaletteRam: return 0x3F00 | (addr.Address & 0x1F); break;
 		default: return -1;
 	}
 	ptrAddress += addr.Address;
