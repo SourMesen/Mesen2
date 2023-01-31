@@ -105,6 +105,7 @@ private:
 	bool _frameRunning = false;
 
 	RomInfo _rom;
+	ConsoleType _consoleType = {};
 
 	ConsoleMemoryInfo _consoleMemory[DebugUtilities::GetMemoryTypeCount()] = {};
 

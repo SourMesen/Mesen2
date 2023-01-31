@@ -513,6 +513,7 @@ void Emulator::InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo o
 	}
 
 	_console.reset(newConsole);
+	_consoleType = _console->GetConsoleType();
 	_notificationManager->RegisterNotificationListener(_console.lock());
 }
 
@@ -594,8 +595,7 @@ IConsole* Emulator::GetConsoleUnsafe()
 
 ConsoleType Emulator::GetConsoleType()
 {
-	shared_ptr<IConsole> console = GetConsole();
-	return console ? console->GetConsoleType() : ConsoleType::Snes;
+	return _consoleType;
 }
 
 vector<CpuType> Emulator::GetCpuTypes()
