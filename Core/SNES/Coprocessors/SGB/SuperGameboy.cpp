@@ -117,7 +117,6 @@ void SuperGameboy::Write(uint32_t addr, uint8_t value)
 				_clockOffset = 0;
 				_resetClock = _memoryManager->GetMasterClock();
 				_gameboy->PowerOn(this);
-				_ppu = _gameboy->GetPpu();
 			}
 			_control = value;
 			SetInputIndex(_inputIndex % GetPlayerCount());

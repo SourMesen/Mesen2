@@ -331,6 +331,14 @@ void GbApu::ProcessLengthEnableFlag(uint8_t value, T &length, bool &lengthEnable
 
 void GbApu::Serialize(Serializer& s)
 {
+	if(s.IsSaving()) {
+		Run();
+	} else {
+		_clockCounter = 0;
+		blip_clear(_leftChannel);
+		blip_clear(_rightChannel);
+	}
+
 	SV(_state.ApuEnabled); SV(_state.FrameSequenceStep);
 	SV(_state.EnableLeftSq1); SV(_state.EnableLeftSq2); SV(_state.EnableLeftWave); SV(_state.EnableLeftNoise);
 	SV(_state.EnableRightSq1); SV(_state.EnableRightSq2); SV(_state.EnableRightWave); SV(_state.EnableRightNoise);

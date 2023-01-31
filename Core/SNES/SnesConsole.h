@@ -90,6 +90,7 @@ public:
 	ConsoleType GetConsoleType() override;
 
 	void Serialize(Serializer& s) override;
+	SaveStateCompatInfo ValidateSaveStateCompatibility(ConsoleType stateConsoleType);
 
 	SnesCpu* GetCpu();
 	SnesPpu* GetPpu();

@@ -104,6 +104,7 @@ public:
 	void ProcessEndOfFrame();
 
 	void Serialize(Serializer& s) override;
+	SaveStateCompatInfo ValidateSaveStateCompatibility(ConsoleType stateConsoleType);
 
 	// Inherited via IConsole
 	void Reset() override;

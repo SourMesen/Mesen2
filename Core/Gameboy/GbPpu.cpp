@@ -1018,8 +1018,13 @@ void GbPpu::Serialize(Serializer& s)
 	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
 	SV(_state.StatIrqFlag);
 
-	SVArray(_state.CgbBgPalettes, 4 * 8);
-	SVArray(_state.CgbObjPalettes, 4 * 8);
+	if(_gameboy->IsCgb()) {
+		//Only save the palettes for GBC states
+		//This makes the process of loading a GB state onto a GBC 
+		//instance better since the GBC colors will be preserved
+		SVArray(_state.CgbBgPalettes, 4 * 8);
+		SVArray(_state.CgbObjPalettes, 4 * 8);
+	}
 
 	if(s.GetFormat() != SerializeFormat::Map) {
 		//Hide these entries from the Lua API

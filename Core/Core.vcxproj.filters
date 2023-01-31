@@ -2610,6 +2610,9 @@
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h">
       <Filter>NES\HdPacks</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\SaveStateCompatInfo.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">

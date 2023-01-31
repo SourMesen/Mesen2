@@ -851,7 +851,7 @@ void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLeve
 	s.SaveTo(out, compressionLevel);
 }
 
-bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings)
+bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> srcConsoleType)
 {
 	Serializer s(fileFormatVersion, false);
 	if(!s.LoadFrom(in)) {
@@ -861,6 +861,29 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 	if(includeSettings) {
 		SV(_settings);
 	}
+
+	if(srcConsoleType.has_value() && srcConsoleType.value() != _console->GetConsoleType()) {
+		//Used to allow save states taken on GB/GBC/SGB to be loaded on any of the 3 systems
+		SaveStateCompatInfo compatInfo = _console->ValidateSaveStateCompatibility(srcConsoleType.value());
+		if(!compatInfo.IsCompatible) {
+			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
+			return false;
+		}
+
+		s.RemoveKeys(compatInfo.FieldsToRemove);
+
+		if(!compatInfo.PrefixToAdd.empty()) {
+			s.AddKeyPrefix(compatInfo.PrefixToAdd);
+		} else if(!compatInfo.PrefixToRemove.empty()) {
+			s.RemoveKeyPrefix(compatInfo.PrefixToRemove);
+		}
+
+		if(!s.IsValid()) {
+			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
+			return false;
+		}
+	}
+
 	s.Stream(_console, "");
 	
 	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);

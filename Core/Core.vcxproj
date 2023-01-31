@@ -27,6 +27,7 @@
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
+    <ClInclude Include="Shared\SaveStateCompatInfo.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />

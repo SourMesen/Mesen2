@@ -18,6 +18,49 @@ Serializer::Serializer(uint32_t version, bool forSave, SerializeFormat format)
 	}
 }
 
+void Serializer::AddKeyPrefix(string prefix)
+{
+	vector<string> keys;
+	for(auto& kvp : _values) {
+		keys.push_back(kvp.first);
+	}
+
+	for(string& key : keys) {
+		_values[prefix + key] = _values[key];
+		_values.erase(key);
+	}
+}
+
+void Serializer::RemoveKeyPrefix(string prefix)
+{
+	vector<string> keys;
+	vector<string> keysToRemove;
+
+	for(auto& kvp : _values) {
+		if(kvp.first.size() > prefix.size() && kvp.first.substr(0, prefix.size()) == prefix) {
+			keys.push_back(kvp.first);
+		} else {
+			keysToRemove.push_back(kvp.first);
+		}
+	}
+
+	for(string& key : keysToRemove) {
+		_values.erase(key);
+	}
+
+	for(string& key : keys) {
+		_values[key.substr(prefix.length())] = _values[key];
+		_values.erase(key);
+	}
+}
+
+void Serializer::RemoveKeys(vector<string>& keysToRemove)
+{
+	for(string& key : keysToRemove) {
+		_values.erase(key);
+	}
+}
+
 bool Serializer::LoadFrom(istream &file)
 {
 	if(_saving) {

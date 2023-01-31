@@ -221,6 +221,11 @@ public:
 	SerializeFormat GetFormat() { return _format; }
 	unordered_map<string, SerializeMapValue>& GetMapValues() { return _mapValues; }
 
+	bool IsValid() { return _values.size() > 0; }
+	void AddKeyPrefix(string prefix);
+	void RemoveKeyPrefix(string prefix);
+	void RemoveKeys(vector<string>& keys);
+
 	template <class T> struct is_unique_ptr : std::false_type {};
 	template <class T, class D> struct is_unique_ptr<std::unique_ptr<T, D>> : std::true_type {};
 	template <class T> struct is_shared_ptr : std::false_type {};
@@ -366,18 +371,16 @@ public:
 			auto result = _values.find(key);
 			if(result != _values.end()) {
 				SerializeValue& savedValue = result->second;
-				if(savedValue.Size >= elementCount * sizeof(T)) {
-					if constexpr(sizeof(T) == 1 || !isBigEndian) {
-						memcpy(arrayValues, savedValue.DataPtr, sizeof(T) * elementCount);
-					} else {
-						uint8_t* src = savedValue.DataPtr;
-						for(uint32_t i = 0; i < elementCount; i++) {
-							ReadValue(arrayValues[i], src);
-							src += sizeof(T);
-						}
-					}
+				//Copy as much data as possible (up to the size of whichever is smaller - savedValue or arrayValues)
+				if constexpr(sizeof(T) == 1 || !isBigEndian) {
+					memcpy(arrayValues, savedValue.DataPtr, std::min<int>(savedValue.Size, sizeof(T) * elementCount));
 				} else {
-					//memset(arrayValues, 0, sizeof(T) * elementCount);
+					uint8_t* src = savedValue.DataPtr;
+					uint32_t maxCount = std::min<int>(elementCount, savedValue.Size / sizeof(T));
+					for(uint32_t i = 0; i < maxCount; i++) {
+						ReadValue(arrayValues[i], src);
+						src += sizeof(T);
+					}
 				}
 			} else {
 				//memset(arrayValues, 0, sizeof(T) * elementCount);

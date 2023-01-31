@@ -179,12 +179,8 @@ bool SaveStateManager::LoadState(istream &stream)
 			stream.seekg(40, ios::cur);
 		}
 
-		ConsoleType consoleType = (ConsoleType)ReadValue(stream);
-		if(consoleType != _emu->GetConsoleType()) {
-			MessageManager::DisplayMessage("SaveStates", "SaveStateWrongSystem");
-			return false;
-		}
-			
+		ConsoleType stateConsoleType = (ConsoleType)ReadValue(stream);
+
 		RenderedFrame frame;
 		vector<uint8_t> frameData;
 		if(GetVideoData(frameData, frame, stream)) {
@@ -200,7 +196,7 @@ bool SaveStateManager::LoadState(istream &stream)
 		stream.read(nameBuffer.data(), nameBuffer.size());
 		string romName(nameBuffer.data(), nameLength);
 
-		if(_emu->Deserialize(stream, fileFormatVersion, false)) {
+		if(_emu->Deserialize(stream, fileFormatVersion, false, stateConsoleType)) {
 			//Stop any movie that might have been playing/recording if a state is loaded
 			//(Note: Loading a state is disabled in the UI while a movie is playing/recording)
 			_emu->GetMovieManager()->Stop();

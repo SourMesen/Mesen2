@@ -352,6 +352,15 @@ void Gameboy::Serialize(Serializer& s)
 	SVArray(_highRam, Gameboy::HighRamSize);
 }
 
+SaveStateCompatInfo Gameboy::ValidateSaveStateCompatibility(ConsoleType stateConsoleType)
+{
+	if(stateConsoleType == ConsoleType::Snes) {
+		return { true, "", "cart.gameboy." };
+	}
+
+	return {};
+}
+
 void Gameboy::Reset()
 {
 	//The GB has no reset button, behave like power cycle

@@ -321,6 +321,22 @@ void SnesConsole::Serialize(Serializer& s)
 	}
 }
 
+SaveStateCompatInfo SnesConsole::ValidateSaveStateCompatibility(ConsoleType stateConsoleType)
+{
+	if(stateConsoleType == ConsoleType::Gameboy) {
+		return { true, "cart.gameboy.", "", {
+			//Keep all clock counters as-is when loading a GB/GBC state
+			//in a SGB core - this allows it to keep running in sync with
+			//the SNES core properly.
+			"apu.clockCounter", "apu.prevClockCount",
+			"cpu.cycleCount",
+			"memoryManager.apuCycleCount"
+		} };
+	}
+
+	return {};
+}
+
 SnesCpu* SnesConsole::GetCpu()
 {
 	return _cpu.get();

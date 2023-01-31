@@ -6,6 +6,7 @@
 #include "Shared/Interfaces/INotificationListener.h"
 #include "Shared/RomInfo.h"
 #include "Shared/TimingInfo.h"
+#include "Shared/SaveStateCompatInfo.h"
 
 class BaseControlManager;
 class VirtualFile;
@@ -99,6 +100,8 @@ public:
 	virtual AddressInfo GetAbsoluteAddress(AddressInfo& relAddress) = 0;
 	virtual AddressInfo GetRelativeAddress(AddressInfo& absAddress, CpuType cpuType) = 0;
 	virtual void GetConsoleState(BaseState& state, ConsoleType consoleType) = 0;
+	
+	virtual SaveStateCompatInfo ValidateSaveStateCompatibility(ConsoleType stateConsoleType) { return {}; }
 
 	virtual void ProcessCheatCode(InternalCheatCode& code, uint32_t addr, uint8_t& value) {}
 
