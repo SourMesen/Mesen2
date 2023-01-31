@@ -258,13 +258,16 @@ namespace Mesen.Interop
 				case MemoryType.GbPrgRom:
 
 				case MemoryType.NesMemory:
-				case MemoryType.NesPpuMemory:
 				case MemoryType.NesPrgRom:
 				case MemoryType.NesChrRom:
 
 				case MemoryType.PceMemory:
 				case MemoryType.PcePrgRom:
 					return true;
+
+				case MemoryType.NesPpuMemory:
+					//NES PPU memory contains no logged data unless game uses CHR ROM
+					return DebugApi.GetMemorySize(MemoryType.NesChrRom) > 0;
 			}
 
 			return false;

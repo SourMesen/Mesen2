@@ -290,6 +290,7 @@ namespace Mesen.Debugger.ViewModels
 				//Switched to another console, or game doesn't support the same memory type, etc.
 				ResetToDefaultView();
 			}
+			ShowFilterDropdown = Config.Source.SupportsCdl();
 
 			Dispatcher.UIThread.Post(() => {
 				Config.SelectedPreset = selectedPreset;
