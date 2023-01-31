@@ -190,6 +190,7 @@ namespace Mesen.Debugger.Controls
 		static ScrollPictureViewer()
 		{
 			BoundsProperty.Changed.AddClassHandler<ScrollPictureViewer>((x, e) => x.UpdateScrollBarVisibility());
+			SelectionRectProperty.Changed.AddClassHandler<ScrollPictureViewer>((x, e) => x.ScrollToSelection());
 		}
 
 		public ScrollPictureViewer()
@@ -268,7 +269,13 @@ namespace Mesen.Debugger.Controls
 
 		public void ScrollToSelection()
 		{
-			Size viewport = this.GetControl<ScrollViewer>("scrollViewer").Viewport;
+			if(SelectionRect.IsEmpty) {
+				return;
+			}
+
+			ScrollViewer viewer = this.GetControl<ScrollViewer>("scrollViewer");
+
+			Size viewport = viewer.Viewport;
 			Vector offset = ScrollOffset;
 
 			Rect rect = SelectionRect * Zoom;
@@ -276,12 +283,22 @@ namespace Mesen.Debugger.Controls
 			Rect visibleWindow = new Rect(new Point(offset.X, offset.Y), viewport);
 
 			if(!visibleWindow.Contains(rect)) {
-				Size extent = this.GetControl<ScrollViewer>("scrollViewer").Extent;
+				Size extent = viewer.Extent;
 				Size maxOffsets = extent - viewport;
 
+				double xLeftGap = rect.Left - visibleWindow.Left;
+				double xRightGap = rect.Right - visibleWindow.Right;
+				double yTopGap = rect.Top - visibleWindow.Top;
+				double yBottomGap = rect.Bottom - visibleWindow.Bottom;
+
+				double xPadding = GridSizeX / 2 * Zoom;
+				double yPadding = GridSizeY / 2 * Zoom;
+				double x = offset.X + (xRightGap > 0 ? (xRightGap + xPadding): 0) + (xLeftGap < 0 ? (xLeftGap - xPadding) : 0);
+				double y = offset.Y + (yBottomGap > 0 ? (yBottomGap + yPadding): 0) + (yTopGap < 0 ? (yTopGap - yPadding) : 0);
+
 				ScrollOffset = new Vector(
-					Math.Max(0, Math.Min(rect.Left - 8, maxOffsets.Width)),
-					Math.Max(0, Math.Min(rect.Top - 8, maxOffsets.Height))
+					Math.Max(0, Math.Min(x, maxOffsets.Width)),
+					Math.Max(0, Math.Min(y, maxOffsets.Height))
 				);
 			}
 		}

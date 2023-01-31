@@ -122,6 +122,7 @@
 				TopClipSize="{CompiledBinding TopClipSize}"
 				BottomClipSize="{CompiledBinding BottomClipSize}"
 				ShowMousePosition="False"
+				AllowSelection="False"
 			/>
 
 			<GridSplitter

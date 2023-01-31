@@ -296,6 +296,32 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+
+			if(!AllowSelection) {
+				return;
+			}
+
+			double GetMaxX() => Source.Size.Width - GridSizeX;
+			double GetMaxY() => Source.Size.Height - GridSizeY;
+
+			if(e.Key == Key.Left) {
+				SelectionRect = SelectionRect.WithX(SelectionRect.X <= 0 ? GetMaxX() : (SelectionRect.X - GridSizeX));
+				e.Handled = true;
+			} else if(e.Key == Key.Right) {
+				SelectionRect = SelectionRect.WithX(SelectionRect.X >= GetMaxX() ? 0 : (SelectionRect.X + GridSizeX));
+				e.Handled = true;
+			} else if(e.Key == Key.Up) {
+				SelectionRect = SelectionRect.WithY(SelectionRect.Y <= 0 ? GetMaxY() : (SelectionRect.Y - GridSizeY));
+				e.Handled = true;
+			} else if(e.Key == Key.Down) {
+				SelectionRect = SelectionRect.WithY(SelectionRect.Y >= GetMaxY() ? 0 : (SelectionRect.Y + GridSizeY));
+				e.Handled = true;
+			}
+		}
+
 		protected override void OnPointerMoved(PointerEventArgs e)
 		{
 			base.OnPointerMoved(e);
@@ -314,10 +340,6 @@ namespace Mesen.Debugger.Controls
 			if(props.IsLeftButtonPressed || props.IsRightButtonPressed) {
 				PositionClickedEventArgs args = new(p.Value, props, e, PositionClickedEvent);
 				RaiseEvent(args);
-
-				if(!args.Handled && AllowSelection) {
-					SelectionRect = GetTileRect(p.Value);
-				}
 			}
 		}
 
