@@ -945,6 +945,7 @@ namespace Mesen.Interop
 		public Int32 PaletteAddress;
 
 		public Int32 AttributeAddress;
+		public Int16 AttributeData;
 
 		public NullableBoolean HorizontalMirroring;
 		public NullableBoolean VerticalMirroring;

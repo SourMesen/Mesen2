@@ -566,6 +566,9 @@ namespace Mesen.Debugger.ViewModels
 			if(tileInfo.AttributeAddress >= 0) {
 				entries.AddEntry("Attribute address", "$" + tileInfo.AttributeAddress.ToString("X4"));
 			}
+			if(tileInfo.AttributeData >= 0) {
+				entries.AddEntry("Attribute data", "$" + tileInfo.AttributeData.ToString("X2"));
+			}
 			if(tileInfo.HorizontalMirroring != NullableBoolean.Undefined) {
 				entries.AddEntry("Horizontal mirror", tileInfo.HorizontalMirroring == NullableBoolean.True);
 			}
