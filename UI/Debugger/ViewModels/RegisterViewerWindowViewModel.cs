@@ -154,8 +154,11 @@ namespace Mesen.Debugger.ViewModels
 				tabs = new List<RegisterViewerTab>() {
 					GetGbLcdTab(ref gbState),
 					GetGbApuTab(ref gbState),
-					GetGbMiscTab(ref gbState)
+					GetGbMiscTab(ref gbState),
 				};
+				if(gbState.Type == GbType.Cgb) {
+					tabs.Add(GetGbCgbTab(ref gbState));
+				}
 			} else if(lastState is PceState pceState) {
 				tabs = new List<RegisterViewerTab>() {
 					GetPceCpuTab(ref pceState)
@@ -233,7 +236,40 @@ namespace Mesen.Debugger.ViewModels
 
 			return new RegisterViewerTab(tabPrefix + "LCD", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
 		}
+		private RegisterViewerTab GetGbCgbTab(ref GbState gb)
+		{
+			List<RegEntry> entries = new List<RegEntry>();
 
+			GbPpuState ppu = gb.Ppu;
+			GbDmaControllerState dma = gb.Dma;
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("$FF4F.0", "Video RAM Bank", ppu.CgbVramBank),
+
+				new RegEntry("", "DMA registers", null),
+				new RegEntry("$FF51-52", "DMA Source", dma.CgbDmaSource, Format.X16),
+				new RegEntry("$FF53-54", "DMA Destination", dma.CgbDmaDest, Format.X16),
+				new RegEntry("$FF55.0-6", "DMA Length", dma.CgbDmaLength, Format.X8),
+				new RegEntry("$FF55.7", "HDMA Done", dma.CgbHdmaDone),
+				new RegEntry("", "HDMA Running", dma.CgbHdmaRunning),
+
+				new RegEntry("", "Palette registers", null),
+				new RegEntry("$FF68", "BGPI - Background Palette Index", null),
+				new RegEntry("$FF68.0-5", "BG Palette Address", ppu.CgbBgPalPosition, Format.X8),
+				new RegEntry("$FF68.7", "BG Palette Auto-increment", ppu.CgbBgPalAutoInc),
+				new RegEntry("$FF6A", "OBPI - OBJ Palette Index", null),
+				new RegEntry("$FF6A.0-5", "OBJ Palette Address", ppu.CgbObjPalPosition, Format.X8),
+				new RegEntry("$FF6A.7", "OBJ Palette Auto-increment", ppu.CgbObjPalAutoInc),
+
+				new RegEntry("", "Misc. registers", null),
+				new RegEntry("$FF70.0-2", "Work RAM Bank", gb.MemoryManager.CgbWorkRamBank, Format.X8),
+				new RegEntry("$FF72", "Undocumented", gb.MemoryManager.CgbRegFF72, Format.X8),
+				new RegEntry("$FF73", "Undocumented", gb.MemoryManager.CgbRegFF73, Format.X8),
+				new RegEntry("$FF74", "Undocumented", gb.MemoryManager.CgbRegFF74, Format.X8),
+				new RegEntry("$FF75", "Undocumented", gb.MemoryManager.CgbRegFF75, Format.X8),
+			});
+
+			return new RegisterViewerTab("CGB", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
+		}
 		private RegisterViewerTab GetGbMiscTab(ref GbState gb, string tabPrefix = "")
 		{
 			List<RegEntry> entries = new List<RegEntry>();
@@ -251,11 +287,6 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("", "DMA", null),
 				new RegEntry("$FF46", "OAM DMA - Source", (dma.OamDmaSource << 8), Format.X16),
-				new RegEntry("$FF51-2", "CGB - Source", dma.CgbDmaSource, Format.X16),
-				new RegEntry("$FF53-4", "CGB - Destination", dma.CgbDmaDest, Format.X16),
-				new RegEntry("$FF55.0-6", "CGB - Length", dma.CgbDmaLength, Format.X8),
-				new RegEntry("$FF55.7", "CGB - HDMA Done", dma.CgbHdmaDone),
-				new RegEntry("", "CGB - HDMA Running", dma.CgbHdmaRunning),
 			});
 
 			GbMemoryManagerState memManager = gb.MemoryManager;
