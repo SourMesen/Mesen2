@@ -66,9 +66,14 @@ bool SdlRenderer::Init()
 		if(!_sdlRenderer) {
 			LogSdlError("[SDL] Failed to create software renderer.");
 			return false;
-		}		
+		}
 	}
 
+	return true;
+}
+
+bool SdlRenderer::InitTexture()
+{
 	_sdlTexture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, _frameWidth, _frameHeight);
 	if(!_sdlTexture) {
 		string msg = "[SDL] Failed to create texture: " + std::to_string(_frameWidth) + "x" + std::to_string(_frameHeight);
@@ -76,7 +81,9 @@ bool SdlRenderer::Init()
 		return false;
 	}
 
+#ifndef __APPLE__
 	SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
+#endif
 
 	return true;
 }
@@ -85,7 +92,7 @@ void SdlRenderer::Cleanup()
 {
 	if(_sdlTexture) {
 		SDL_DestroyTexture(_sdlTexture);
-		_sdlTexture = nullptr;		
+		_sdlTexture = nullptr;
 	}
 	if(_emuHud.Texture) {
 		SDL_DestroyTexture(_emuHud.Texture);
@@ -103,11 +110,19 @@ void SdlRenderer::Cleanup()
 
 void SdlRenderer::Reset()
 {
-	Cleanup();
-	if(Init()) {
-		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
+	if(_sdlTexture) {
+		//Only reset the texture when screen size changes
+		SDL_DestroyTexture(_sdlTexture);
+		_sdlTexture = nullptr;
+		InitTexture();
 	} else {
 		Cleanup();
+		if(Init()) {
+			InitTexture();
+			_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
+		} else {
+			Cleanup();
+		}
 	}
 }
 

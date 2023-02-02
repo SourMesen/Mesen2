@@ -50,6 +50,7 @@ private:
 	bool _vsyncEnabled = false;
 
 	bool Init();
+	bool InitTexture();
 	void Cleanup();
 	void LogSdlError(const char* msg);
 	void SetScreenSize(uint32_t width, uint32_t height);
