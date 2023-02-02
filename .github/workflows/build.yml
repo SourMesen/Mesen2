@@ -125,7 +125,7 @@ jobs:
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
         run: |
-          make -j$(nproc) -O MESENFLAGS="-fdiagnostics-color=always"
+          make -j$(nproc)
 
       - name: Upload Mesen
         uses: actions/upload-artifact@v3
