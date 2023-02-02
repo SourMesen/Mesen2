@@ -20,9 +20,38 @@ endif
 
 CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
 CFLAGS=-fPIC -Wall -O3 $(MESENFLAGS)
-LINKOPTIONS=
 
-MESENPLATFORM=x64
+LINKCHECKUNRESOLVED=-Wl,-z,defs 
+
+LINKOPTIONS=
+MESENOS=
+
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+	MESENOS=linux
+	SHAREDLIB=MesenCore.so
+endif
+
+ifeq ($(UNAME_S),Darwin)
+	MESENOS=osx
+	SHAREDLIB=MesenCore.dylib
+	LTO=false
+	STATICLINK := false
+	LINKCHECKUNRESOLVED=
+endif
+
+UNAME_P := $(shell uname -p)
+ifeq ($(UNAME_P),x86_64)
+	MESENPLATFORM=$(MESENOS)-x64
+endif
+ifneq ($(filter %86,$(UNAME_P)),)
+	MESENPLATFORM=$(MESENOS)-x64
+endif
+ifneq ($(filter arm%,$(UNAME_P)),)
+	MESENPLATFORM=$(MESENOS)-arm64
+endif
+
 CXXFLAGS += -m64
 CFLAGS += -m64
 
@@ -46,7 +75,6 @@ ifneq ($(STATICLINK),false)
 endif
 
 OBJFOLDER=obj.$(MESENPLATFORM)
-SHAREDLIB=libMesenCore.dll
 RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
 
 CORESRC := $(shell find Core -name '*.cpp')
@@ -80,27 +108,27 @@ SDL2LIB=$(shell sdl2-config --libs)
 SDL2INC=$(shell sdl2-config --cflags)
 FSLIB=-lstdc++fs
 
+ifeq ($(MESENOS),osx)
+	LIBEVDEVOBJ := 
+	LIBEVDEVINC := 
+	LIBEVDEVSRC := 
+	FSLIB := 
+endif
+
 all: ui
 
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	mkdir -p $(RELEASEFOLDER)/Dependencies
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
-	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/x64/Release/$(SHAREDLIB)
-	cd UI && dotnet publish -c Release -r linux-x64 -p:Platform="$(MESENPLATFORM)" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
-	rm $(RELEASEFOLDER)/linux-x64/publish/lib*
+	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/$(MESENPLATFORM)/Release/$(SHAREDLIB)
+	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
+	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:Platform="x64" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
+	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:Platform="x64" -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
-runtests:
-	cd TestHelper/$(OBJFOLDER) && ./testhelper
-
-testhelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
-	mkdir -p TestHelper/$(OBJFOLDER)
-	$(CXX) $(CXXFLAGS) -Wl,-z,defs -o testhelper TestHelper/*.cpp InteropDLL/ConsoleWrapper.cpp $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
-	mv testhelper TestHelper/$(OBJFOLDER)
-
 pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
-	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CXX) $(CXXFLAGS) -Wl,-z,defs -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	mkdir -p PGOHelper/$(OBJFOLDER) && cd PGOHelper/$(OBJFOLDER) && $(CXX) $(CXXFLAGS) $(LINKCHECKUNRESOLVED) -o pgohelper ../PGOHelper.cpp ../../bin/pgohelperlib.so -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -111,18 +139,15 @@ pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) -Wl,-z,defs -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) $(LINKCHECKUNRESOLVED) -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 
 pgo:
 	./buildPGO.sh
-	
-official:
-	./build.sh
 
 run:
-	./UI/bin/x64/Release/linux-x64/publish/Mesen
+	./UI/bin/$(MESENPLATFORM)/Release/$(MESENPLATFORM)/publish/Mesen
 
 clean:
 	rm -r -f $(COREOBJ)

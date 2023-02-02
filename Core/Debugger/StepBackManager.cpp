@@ -62,7 +62,7 @@ bool StepBackManager::CheckStepBack()
 
 	if(clock < _targetClock && _targetClock - clock < _stateClockLimit) {
 		//Create a save state every instruction for the last X clocks
-		_cache.push_back({});
+		_cache.push_back(StepBackCacheEntry());
 		_cache.back().Clock = clock;
 		_emu->Serialize(_cache.back().SaveState, true, 0);
 	}

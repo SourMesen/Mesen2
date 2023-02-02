@@ -5,7 +5,7 @@
 # ROM files must be copied to the PGOHelper/PGOGames folder beforehand - all supported rom files in that folder will be executed as part of the profiling process.
 # Using a variety of roms is recommended (e.g different consoles/mappers, etc.)
 #
-# This will produce the following binary: bin/x64/Release/linux-x64/publish/Mesen
+# This will produce the following binary: bin/linux-x64/Release/linux-x64/publish/Mesen
 PLAT="x64"
 TARG="core"
 

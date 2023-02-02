@@ -9,6 +9,8 @@ public:
 	{
 	}
 
+	virtual ~NsfPpu() { }
+
 	void UpdateTimings(ConsoleRegion region, bool overclockAllowed) override
 	{
 		NesPpu<NsfPpu>::UpdateTimings(region, false);

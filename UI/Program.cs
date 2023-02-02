@@ -126,16 +126,22 @@ namespace Mesen
 		private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
 		{
 			if(libraryName.Contains("Mesen") || libraryName.Contains("SkiaSharp") || libraryName.Contains("HarfBuzz")) {
+				if(libraryName.EndsWith(".dll")) {
+					libraryName = libraryName.Substring(0, libraryName.Length - 4);
+				}
+
 				if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-					if(!libraryName.StartsWith("lib")) {
-						libraryName = "lib" + libraryName;
-					}
-					if(!libraryName.EndsWith(".so") && !libraryName.EndsWith(".dll")) {
+					if(!libraryName.EndsWith(".so")) {
 						libraryName = libraryName + ".so";
 					}
-				}
-				if(!libraryName.EndsWith("dll") && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-					libraryName = libraryName + ".dll";
+				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+					if(!libraryName.EndsWith(".dll")) {
+						libraryName = libraryName + ".dll";
+					}
+				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+					if(!libraryName.EndsWith(".dylib")) {
+						libraryName = libraryName + ".dylib";
+					}
 				}
 				return NativeLibrary.Load(Path.Combine(ConfigManager.HomeFolder, libraryName));
 			}

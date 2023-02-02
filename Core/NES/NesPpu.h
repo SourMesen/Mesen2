@@ -151,3 +151,9 @@ void NesPpu<T>::Run(uint64_t runTo)
 		_masterClock += _masterClockDivider;
 	} while(_masterClock + _masterClockDivider <= runTo);
 }
+
+template<class T> NesPpu<T>::~NesPpu()
+{
+	delete[] _outputBuffers[0];
+	delete[] _outputBuffers[1];
+}

@@ -5,6 +5,7 @@
 	xmlns:l="using:Mesen.Localization"
 	xmlns:u="using:Mesen.Utilities"
 	x:Class="Mesen.App"
+	Name="Mesen"
 >
 	<Application.Resources>
 		<FontFamily x:Key="MesenFont">Microsoft Sans Serif</FontFamily>
@@ -50,4 +51,9 @@
 
 	<Application.Styles>
 	</Application.Styles>
+
+	<NativeMenu.Menu>
+		<NativeMenu>
+		</NativeMenu>
+	</NativeMenu.Menu>
 </Application>

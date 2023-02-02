@@ -84,7 +84,7 @@
 					</Grid>
 				</c:OptionSection>
 
-				<c:OptionSection Header="{l:Translate lblMiscOptions}" Margin="0 25 0 0">
+				<c:OptionSection Header="{l:Translate lblMiscOptions}" Margin="0 25 0 0" IsVisible="{CompiledBinding !IsOsx}">
 					<CheckBox Content="{l:Translate chkCreateShortcut}" IsChecked="{CompiledBinding CreateShortcut}" />
 				</c:OptionSection>
 			</StackPanel>

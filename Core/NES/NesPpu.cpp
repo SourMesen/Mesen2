@@ -62,12 +62,6 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 	Reset();
 }
 
-template<class T> NesPpu<T>::~NesPpu()
-{
-	delete[] _outputBuffers[0];
-	delete[] _outputBuffers[1];
-}
-
 template<class T> void NesPpu<T>::Reset()
 {
 	_masterClock = 0;
