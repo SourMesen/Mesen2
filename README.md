@@ -11,8 +11,8 @@ The latest release is available from the [releases](https://github.com/SourMesen
 [![Mesen](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml/badge.svg)](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml)
 
 Latest development builds:  
-[Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/CiTest/Mesen%20%28Windows%29.zip)  
-[Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/CiTest/Mesen%20%28Linux%20-%20Ubuntu%2020.04%20-%20clang%29.zip)  
+[Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%29.zip)  
+[Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
 
 ## Requirements
 
