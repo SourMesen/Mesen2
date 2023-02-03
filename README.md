@@ -14,10 +14,13 @@ Latest development builds:
 [Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%29.zip)  
 [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
 
+**macOS**: Dev builds aren't available for ARM Macs. It's recommended to build it yourself by running `make`. The macOS build is still **experimental** and a number of issues/bugs/limitations remain, but it seems to be usable for the most part.
+
 ## Requirements
 
-On Windows, .NET 6 is required.  
-On Linux, .NET 6 and SDL2 are required.
+**Windows**: .NET 6  
+**Linux**: .NET 6, SDL2  
+**macOS**: .NET 6, SDL2
 
 ## Compiling
 
