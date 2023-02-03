@@ -64,11 +64,12 @@ namespace Mesen.Debugger.Utilities
 			bool showFilesAndConstants = options.HasFlag(GoToAllOptions.ShowFilesAndConstants);
 			bool showOutOfScope = options.HasFlag(GoToAllOptions.ShowOutOfScope);
 
-			MemoryType prgMemType = cpuType.GetPrgRomMemoryType();
+			MemoryType? prgMemType = null;
 			CdlFlags[]? cdlData = null;
 			if(cpuType.ToMemoryType().SupportsCdl()) {
-				int size = DebugApi.GetMemorySize(prgMemType);
-				cdlData = DebugApi.GetCdlData(0, (uint)size, prgMemType);
+				prgMemType = cpuType.GetPrgRomMemoryType();
+				int size = DebugApi.GetMemorySize(prgMemType.Value);
+				cdlData = DebugApi.GetCdlData(0, (uint)size, prgMemType.Value);
 			}
 
 			List<SearchResultInfo> results = new List<SearchResultInfo>();
