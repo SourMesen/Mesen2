@@ -40,6 +40,7 @@ void SoftwareRenderer::UpdateFrame(RenderedFrame& frame)
 
 	auto lock = _textureLock.AcquireSafe();
 	memcpy(_textureBuffer[0], frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint32_t));
+	_needSwap = true;
 }
 
 void SoftwareRenderer::ClearFrame()
@@ -47,6 +48,7 @@ void SoftwareRenderer::ClearFrame()
 	//Clear current output and display black frame
 	auto lock = _textureLock.AcquireSafe();
 	memset(_textureBuffer[0], 0, _frameWidth * _frameHeight * sizeof(uint32_t));
+	_needSwap = true;
 }
 
 struct SoftwareRendererSurface
@@ -67,7 +69,8 @@ void SoftwareRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scri
 {
 	auto lock = _frameLock.AcquireSafe();
 	
-	{
+	if(_needSwap) {
+		_needSwap = false;
 		auto textureLock = _textureLock.AcquireSafe();
 		std::swap(_textureBuffer[0], _textureBuffer[1]);
 	}
@@ -83,7 +86,6 @@ void SoftwareRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scri
 
 void SoftwareRenderer::Reset()
 {
-
 }
 
 void SoftwareRenderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle)

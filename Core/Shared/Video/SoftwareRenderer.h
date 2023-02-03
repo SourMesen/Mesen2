@@ -17,6 +17,8 @@ private:
 	
 	uint32_t* _textureBuffer[2] = { nullptr, nullptr };
 
+	atomic<bool> _needSwap = false;
+
 	void SetScreenSize(uint32_t width, uint32_t height);
 
 public:
