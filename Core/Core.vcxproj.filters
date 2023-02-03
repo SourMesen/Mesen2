@@ -2613,6 +2613,9 @@
     <ClInclude Include="Shared\SaveStateCompatInfo.h">
       <Filter>Shared</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\Video\SoftwareRenderer.h">
+      <Filter>Shared\Video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2746,6 +2749,9 @@
     </ClCompile>
     <ClCompile Include="NES\HdPacks\HdPackBuilder.cpp">
       <Filter>NES\HdPacks</Filter>
+    </ClCompile>
+    <ClCompile Include="Shared\Video\SoftwareRenderer.cpp">
+      <Filter>Shared\Video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

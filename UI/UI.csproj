@@ -89,6 +89,9 @@
     <Compile Update="Controls\ControllerButton.axaml.cs">
       <DependentUpon>ControllerButton.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\SoftwareRendererView.axaml.cs">
+      <DependentUpon>SoftwareRendererView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\PaletteConfig.axaml.cs">
       <DependentUpon>PaletteConfig.axaml</DependentUpon>
     </Compile>

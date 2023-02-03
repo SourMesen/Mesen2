@@ -41,7 +41,22 @@
 
 		<Panel Background="Black">
 			<ContentControl Background="#181818" Content="{CompiledBinding RecentGames}" IsVisible="{CompiledBinding RecentGames.Visible}" />
-			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{CompiledBinding !RecentGames.Visible}" />
+
+			<m:NativeRenderer
+				Name="Renderer"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				IsVisible="{CompiledBinding IsNativeRendererVisible}"
+			/>
+
+			<Panel IsVisible="{CompiledBinding IsSoftwareRendererVisible}">
+				<c:SoftwareRendererView
+					Name="SoftwareRenderer"
+					DataContext="{CompiledBinding SoftwareRenderer}"
+					Width="{CompiledBinding Width}"
+					Height="{CompiledBinding Height}"
+			  />
+			</Panel>
 		</Panel>
 	</DockPanel>
 </Window>

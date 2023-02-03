@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Mesen.Config;
+using Mesen.Controls;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -30,6 +31,11 @@ namespace Mesen.ViewModels
 		[Reactive] public Size RendererSize { get; set; }
 
 		[Reactive] public bool IsMenuVisible { get; set; }
+		
+		[Reactive] public bool IsNativeRendererVisible { get; set; }
+		[Reactive] public bool IsSoftwareRendererVisible { get; set; }
+
+		public SoftwareRendererViewModel SoftwareRenderer { get; } = new();
 
 		public Configuration Config { get; }
 
@@ -50,6 +56,11 @@ namespace Mesen.ViewModels
 			MainMenu.Initialize(wnd);
 			RecentGames.Init(GameScreenMode.RecentGames);
 
+			this.WhenAnyValue(x => x.RecentGames.Visible, x => x.SoftwareRenderer.FrameSurface).Subscribe(x => {
+				IsNativeRendererVisible = !RecentGames.Visible && SoftwareRenderer.FrameSurface == null;
+				IsSoftwareRendererVisible = !RecentGames.Visible && SoftwareRenderer.FrameSurface != null;
+			});
+			
 			this.WhenAnyValue(x => x.RomInfo).Subscribe(x => {
 				bool showAudioPlayer = x.Format == RomFormat.Nsf || x.Format == RomFormat.Spc || x.Format == RomFormat.Gbs || x.Format == RomFormat.PceHes;
 				if(AudioPlayer == null && showAudioPlayer) {

@@ -361,4 +361,18 @@ namespace Mesen.Interop
 		Sha1,
 		Sha1Cheat
 	}
+
+	public struct SoftwareRendererSurface
+	{
+		public IntPtr FrameBuffer;
+		public UInt32 Width;
+		public UInt32 Height;
+	}
+
+	public struct SoftwareRendererFrame
+	{
+		public SoftwareRendererSurface Frame;
+		public SoftwareRendererSurface EmuHud;
+		public SoftwareRendererSurface ScriptHud;
+	}
 }

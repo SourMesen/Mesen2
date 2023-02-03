@@ -21,6 +21,7 @@ using System.Threading;
 using Mesen.Debugger.Windows;
 using Avalonia.Input.Platform;
 using System.Collections.Generic;
+using Mesen.Controls;
 
 namespace Mesen.Windows
 {
@@ -35,6 +36,7 @@ namespace Mesen.Windows
 		private FrameInfo _baseScreenSize;
 		private MouseManager _mouseManager;
 		private NativeRenderer _renderer;
+		private SoftwareRendererView _softwareRenderer;
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
 		private CommandLineHelper? _cmdLine;
@@ -75,6 +77,7 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
 			_renderer = this.GetControl<NativeRenderer>("Renderer");
+			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
 			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
@@ -337,6 +340,11 @@ namespace Mesen.Windows
 						ApplicationHelper.GetExistingWindow<HdPackBuilderWindow>()?.Close();
 					});
 					break;
+
+				case ConsoleNotificationType.RefreshSoftwareRenderer:
+					SoftwareRendererFrame frame = Marshal.PtrToStructure<SoftwareRendererFrame>(e.Parameter);
+					_softwareRenderer.UpdateSoftwareRenderer(frame);
+					break;
 			}
 		}
 
@@ -387,10 +395,14 @@ namespace Mesen.Windows
 				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * scale * aspectRatio));
 				double height = Math.Max(MinHeight, Math.Round(screenSize.Height * scale));
 				ClientSize = new Size(width, height + menuHeight + _audioPlayer.Bounds.Height);
+				_model.SoftwareRenderer.Width = width;
+				_model.SoftwareRenderer.Height = height;
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
 				_renderer.Width = Math.Round(screenSize.Width * scale);
 				_renderer.Height = Math.Round(screenSize.Height * scale);
+				_model.SoftwareRenderer.Width = screenSize.Width * scale;
+				_model.SoftwareRenderer.Height = screenSize.Height * scale;
 			}
 		}
 
@@ -400,6 +412,22 @@ namespace Mesen.Windows
 				_renderer.Width = double.NaN;
 				_renderer.Height = double.NaN;
 				ResizeRenderer();
+			}
+
+			UpdateSoftwareRendererSize();
+		}
+
+		private void UpdateSoftwareRendererSize()
+		{
+			if(_model.SoftwareRenderer.FrameSurface != null) {
+				FrameInfo screenSize = EmuApi.GetBaseScreenSize();
+				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
+				double height = Height - menuHeight - _audioPlayer.Bounds.Height;
+				double scale = height / screenSize.Height;
+				if(ConfigManager.Config.Video.FullscreenForceIntegerScale) {
+					scale = Math.Floor(scale);
+				}
+				SetScale(scale);
 			}
 		}
 

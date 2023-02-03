@@ -29,6 +29,8 @@
 	#include "Linux/LinuxKeyManager.h"
 #endif
 
+#include "Shared/Video/SoftwareRenderer.h"
+
 unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
@@ -75,7 +77,9 @@ extern "C" {
 			if(!noVideo) {
 				#ifdef _WIN32
 					_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle));
-				#else 
+				#elif __APPLE__
+					_renderer.reset(new SoftwareRenderer(_emu.get()));
+				#else
 					_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle));
 				#endif
 			} 
@@ -93,7 +97,7 @@ extern "C" {
 					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
-				#endif				
+				#endif
 					
 				KeyManager::RegisterKeyManager(_keyManager.get());
 			}
