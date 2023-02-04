@@ -86,11 +86,14 @@ namespace Mesen.Config
 			if(FirstRun) {
 				Preferences.MesenFont = GetDefaultFont();
 				Preferences.MesenMenuFont = GetDefaultMenuFont();
+				Preferences.ApplyFontOptions();
+				
 				Debug.Fonts.DisassemblyFont = GetDefaultMonospaceFont();
 				Debug.Fonts.MemoryViewerFont = GetDefaultMonospaceFont();
 				Debug.Fonts.AssemblerFont = GetDefaultMonospaceFont();
 				Debug.Fonts.ScriptWindowFont = GetDefaultMonospaceFont();
 				Debug.Fonts.OtherMonoFont = GetDefaultMonospaceFont(true);
+				Debug.Fonts.ApplyConfig();
 
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
