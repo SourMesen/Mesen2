@@ -42,6 +42,11 @@ namespace Mesen.Windows
 		private CommandLineHelper? _cmdLine;
 
 		private bool _testModeEnabled;
+		private bool _needResume = false;
+
+		private Size _originalSize;
+		private PixelPoint _originalPos;
+		private WindowState _prevWindowState;
 
 		//Used to suppress key-repeat keyup events on Linux
 		private Dictionary<Key, IDisposable> _pendingKeyUpEvents = new();
@@ -408,12 +413,10 @@ namespace Mesen.Windows
 
 		private void OnWindowStateChanged()
 		{
-			if(WindowState == WindowState.Normal) {
-				_renderer.Width = double.NaN;
-				_renderer.Height = double.NaN;
-				ResizeRenderer();
-			}
-
+			_renderer.Width = double.NaN;
+			_renderer.Height = double.NaN;
+			ResizeRenderer();
+	
 			UpdateSoftwareRendererSize();
 		}
 
@@ -421,10 +424,11 @@ namespace Mesen.Windows
 		{
 			if(_model.SoftwareRenderer.FrameSurface != null) {
 				FrameInfo screenSize = EmuApi.GetBaseScreenSize();
-				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
+				bool isFullscreen = WindowState == WindowState.FullScreen;
+				double menuHeight = (isFullscreen || ConfigManager.Config.Preferences.AutoHideMenu) ? 0 : _mainMenu.Bounds.Height;
 				double height = Height - menuHeight - _audioPlayer.Bounds.Height;
 				double scale = height / screenSize.Height;
-				if(ConfigManager.Config.Video.FullscreenForceIntegerScale) {
+				if(ConfigManager.Config.Video.FullscreenForceIntegerScale && (WindowState == WindowState.Maximized || isFullscreen)) {
 					scale = Math.Floor(scale);
 				}
 				SetScale(scale);
@@ -434,7 +438,7 @@ namespace Mesen.Windows
 		public void ToggleFullscreen()
 		{
 			if(WindowState == WindowState.FullScreen) {
-				WindowState = WindowState.Normal;
+				WindowState = _prevWindowState;
 				if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
 					EmuApi.SetExclusiveFullscreenMode(false, _renderer.Handle);
 				}
@@ -449,6 +453,7 @@ namespace Mesen.Windows
 					}
 					EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
 				}
+				_prevWindowState = WindowState;
 				WindowState = WindowState.FullScreen;
 			}
 		}
@@ -540,10 +545,6 @@ namespace Mesen.Windows
 			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
 			InputApi.ResetKeyState();
 		}
-
-		private bool _needResume = false;
-		private Size _originalSize;
-		private PixelPoint _originalPos;
 
 		private void timerUpdateBackgroundFlag(object? sender, EventArgs e)
 		{

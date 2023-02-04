@@ -41,7 +41,7 @@ namespace Mesen
 			}
 
 			if(DataContext is MainWindowViewModel model) {
-				if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && wnd.WindowState == WindowState.FullScreen) {
+				if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && (wnd.WindowState == WindowState.FullScreen || wnd.WindowState == WindowState.Maximized)) {
 					FrameInfo baseSize = EmuApi.GetBaseScreenSize();
 					double scale = (height * LayoutHelper.GetLayoutScale(this)) / baseSize.Height;
 					if(scale != Math.Floor(scale)) {
