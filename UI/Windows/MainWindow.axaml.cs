@@ -201,9 +201,10 @@ namespace Mesen.Windows
 			});
 			
 			Task.Run(() => {
-				_cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
+				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
+				_cmdLine = cmdLine;
 
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, _cmdLine.NoAudio, _cmdLine.NoVideo, _cmdLine.NoInput);
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
 
 				ConfigManager.Config.RemoveObsoleteConfig();
 				
@@ -229,9 +230,8 @@ namespace Mesen.Windows
 				SingleInstance.Instance.ArgumentsReceived += Instance_ArgumentsReceived;
 
 				Dispatcher.UIThread.Post(() => {
-					_cmdLine.LoadFiles();
-
-					_cmdLine?.OnAfterInit(this);
+					cmdLine.LoadFiles();
+					cmdLine.OnAfterInit(this);
 
 					//Load the debugger window styles once everything else is done
 					StyleHelper.LoadDebuggerStyles();
