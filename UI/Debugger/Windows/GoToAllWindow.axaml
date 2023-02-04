@@ -74,6 +74,7 @@
 				Background="Transparent"
 				Items="{CompiledBinding SearchResults}"
 				Selection="{CompiledBinding SelectionModel}"
+				ScrollViewer.AllowAutoHide="False"
 			>
 				<ListBox.Styles>
 					<Style Selector="ListBoxItem">
