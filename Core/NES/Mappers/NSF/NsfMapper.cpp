@@ -88,6 +88,11 @@ void NsfMapper::Reset(bool softReset)
 	if(!softReset) {
 		_songNumber = _nsfHeader.StartingSong - 1;
 	}
+}
+
+void NsfMapper::OnAfterResetPowerOn()
+{
+	//Do this after reset/power on sequence is over, otherwise cpu reset will reset all these values
 
 	//INIT logic
 	NesMemoryManager* mm = _console->GetMemoryManager();
@@ -137,7 +142,9 @@ void NsfMapper::Reset(bool softReset)
 	state.A = _songNumber;
 	state.X = (_nsfHeader.Flags & 0x01) ? 1 : 0; //PAL = 1, NTSC = 0
 	state.Y = 0;
+	state.SP = 0xFD;
 
+	//Disable Frame Counter & DMC interrupts
 	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
 	_irqCounter = 0;
 

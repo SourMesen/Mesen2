@@ -82,6 +82,7 @@ protected:
 	void InitMapper() override;
 	void InitMapper(RomData& romData) override;
 	void Reset(bool softReset) override;
+	void OnAfterResetPowerOn() override;
 	void GetMemoryRanges(MemoryRanges &ranges) override;
 
 	uint32_t GetIrqReloadValue();

@@ -166,6 +166,7 @@ public:
 
 	virtual ~BaseMapper();
 	virtual void Reset(bool softReset);
+	virtual void OnAfterResetPowerOn() {}
 
 	GameSystem GetGameSystem();
 	PpuModel GetPpuModel();

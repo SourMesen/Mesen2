@@ -120,6 +120,7 @@ void NesConsole::Reset()
 	if(_vsSubConsole) {
 		_vsSubConsole->Reset();
 	}
+	_mapper->OnAfterResetPowerOn();
 }
 
 LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
@@ -190,6 +191,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		_memoryManager->Reset(false);
 		_controlManager->Reset(false);
 		_cpu->Reset(false, _region);
+		_mapper->OnAfterResetPowerOn();
 	}
     return result;
 }
