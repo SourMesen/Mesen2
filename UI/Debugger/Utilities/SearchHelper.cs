@@ -114,7 +114,7 @@ namespace Mesen.Debugger.Utilities
 							SearchResultType resultType = SearchResultType.Data;
 							if(isConstant) {
 								resultType = SearchResultType.Constant;
-							} else if(cdlData != null && absAddr?.Type == prgMemType && absAddr.Value.Address < cdlData.Length) {
+							} else if(cdlData != null && prgMemType != null && absAddr?.Type == prgMemType && absAddr.Value.Address < cdlData.Length) {
 								CdlFlags flags = cdlData[absAddr.Value.Address];
 								if(flags.HasFlag(CdlFlags.SubEntryPoint)) {
 									resultType = SearchResultType.Function;
