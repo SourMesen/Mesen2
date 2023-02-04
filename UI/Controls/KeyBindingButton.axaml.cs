@@ -38,6 +38,18 @@ namespace Mesen.Controls
 			SetKeyName(this.KeyBinding);
 		}
 
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			if(e.Key == Key.Space) {
+				//Prevent using space to open up the configuration dialog
+				//Otherwise the dialog opens up again when the user is trying
+				//to bind the space key to a button
+				e.Handled = true;
+			} else {
+				base.OnKeyUp(e);
+			}
+		}
+
 		protected override async void OnClick()
 		{
 			GetKeyWindow wnd = new GetKeyWindow(true);
