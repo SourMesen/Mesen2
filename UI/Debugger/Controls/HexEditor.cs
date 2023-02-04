@@ -170,6 +170,12 @@ namespace Mesen.Debugger.Controls
 			FontSizeProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
 				x.InitFontAndLetterSize();
 			});
+
+			DataProviderProperty.Changed.AddClassHandler<HexEditor>((x, e) => {
+				if(x.DataProvider != null) {
+					x.TopRow = Math.Min((x.DataProvider.Length / x.BytesPerRow) - 1, Math.Max(0, x.TopRow));
+				}
+			});
 		}
 
 		public HexEditor()

@@ -109,6 +109,8 @@ namespace Mesen.Debugger.ViewModels
 				Config,
 				TblConverter
 			);
+
+			MaxScrollValue = (DataProvider.Length / Config.BytesPerRow) - 1;
 		}
 
 		public void UpdateAvailableMemoryTypes()
@@ -119,6 +121,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Options.UpdateAvailableOptions();
+			UpdateDataProvider();
 		}
 
 		public void NavigateTo(NavType nav)
