@@ -311,7 +311,9 @@ namespace Mesen.Debugger.ViewModels
 				entries.AddEntry("Tile address", FormatAddress(sprite.TileAddress, memType));
 			}
 			entries.AddEntry("Palette index", sprite.Palette.ToString());
-			entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
+			if(sprite.PaletteAddress >= 0) {
+				entries.AddEntry("Palette address", "$" + sprite.PaletteAddress.ToString("X2"));
+			}
 			entries.AddEntry("Visible", sprite.Visible);
 			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
 			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
