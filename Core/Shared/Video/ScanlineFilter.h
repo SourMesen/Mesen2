@@ -20,18 +20,17 @@ public:
 			return;
 		}
 
-		scale = std::max<uint8_t>(1, scale);
+		scale = std::max<uint8_t>(2, scale);
+		int linesToSkip = scale - 1;
 
 		uint8_t intensity = (uint8_t)((1.0 - scanlineIntensity) * 255);
 
 		for(uint32_t i = 0, len = height / scale; i < len; i++) {
-			if(i & 0x01) {
-				for(uint32_t j = 0; j < width; j++) {
-					*buffer = ApplyScanlineEffect(*buffer, intensity);
-					buffer++;
-				}
-			} else {
-				buffer += width * scale;
+			buffer += width * linesToSkip;
+			
+			for(uint32_t j = 0; j < width; j++) {
+				*buffer = ApplyScanlineEffect(*buffer, intensity);
+				buffer++;
 			}
 		}
 	}

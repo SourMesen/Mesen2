@@ -125,14 +125,10 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	if(_scaleFilter && !isAudioPlayer) {
 		outputBuffer = _scaleFilter->ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height);
 		frameSize = _scaleFilter->GetFrameInfo(frameSize);
-		overscan.Left *= _scaleFilter->GetScale();
-		overscan.Right *= _scaleFilter->GetScale();
-		overscan.Top *= _scaleFilter->GetScale();
-		overscan.Bottom *= _scaleFilter->GetScale();
 	}
 
 	if(!isAudioPlayer) {
-		uint8_t scale = (uint8_t)((double)frameSize.Height / _frame.Height);
+		uint8_t scale = std::max<uint8_t>(1, (uint8_t)((double)frameSize.Height / (_frame.Height - overscan.Top - overscan.Bottom)));
 		ScanlineFilter::ApplyFilter(outputBuffer, frameSize.Width, frameSize.Height, _emu->GetSettings()->GetVideoConfig().ScanlineIntensity, scale);
 	}
 
