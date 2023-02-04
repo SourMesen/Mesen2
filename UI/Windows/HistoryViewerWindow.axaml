@@ -58,7 +58,7 @@
 			</DockPanel>
 		</Border>
 
-		<Panel Background="Black">
+		<Panel Name="RendererPanel" Background="Black">
 			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
 		</Panel>
 	</DockPanel>

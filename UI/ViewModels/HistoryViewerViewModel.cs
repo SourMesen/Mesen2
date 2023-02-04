@@ -60,7 +60,7 @@ namespace Mesen.ViewModels
 			HistoryApi.HistoryViewerSetOptions(new HistoryViewerOptions() {
 				IsPaused = IsPaused,
 				Volume = (uint)Volume,
-				Width = (uint)RendererSize.Width,
+				Width = (uint)RendererSize.Width ,
 				Height = (uint)RendererSize.Height
 			});
 		}

@@ -35,14 +35,18 @@ namespace Mesen.Windows
 
 		private FrameInfo _baseScreenSize;
 		private MouseManager _mouseManager;
-		private NativeRenderer _renderer;
-		private SoftwareRendererView _softwareRenderer;
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
 		private CommandLineHelper? _cmdLine;
 
 		private bool _testModeEnabled;
 		private bool _needResume = false;
+		private bool _needCloseValidation = true;
+
+		private Panel _rendererPanel;
+		private NativeRenderer _renderer;
+		private SoftwareRendererView _softwareRenderer;
+		private Size _rendererSize;
 
 		private Size _originalSize;
 		private PixelPoint _originalPos;
@@ -81,6 +85,9 @@ namespace Mesen.Windows
 			AddHandler(InputElement.KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel, true);
 			AddHandler(InputElement.KeyUpEvent, OnPreviewKeyUp, RoutingStrategies.Tunnel, true);
 
+			_rendererPanel = this.GetControl<Panel>("RendererPanel");
+			_rendererPanel.LayoutUpdated += RendererPanel_LayoutUpdated;
+
 			_renderer = this.GetControl<NativeRenderer>("Renderer");
 			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_audioPlayer = this.GetControl<ContentControl>("AudioPlayer");
@@ -114,7 +121,6 @@ namespace Mesen.Windows
 			base.ArrangeCore(new Rect(ClientSize));
 		}
 
-		private bool _needCloseValidation = true;
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -162,13 +168,7 @@ namespace Mesen.Windows
 				_model = model;
 			}
 		}
-
-		private void ResizeRenderer()
-		{
-			_renderer.InvalidateMeasure();
-			_renderer.InvalidateArrange();
-		}
-
+		
 		private void OnDrop(object? sender, DragEventArgs e)
 		{
 			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
@@ -284,8 +284,7 @@ namespace Mesen.Windows
 								if(WindowState == WindowState.FullScreen || WindowState == WindowState.Maximized) {
 									//Force resize of renderer when loading a game while in fullscreen
 									//Prevents some issues when fullscreen was turned on before loading a game, etc.
-									_renderer.Width = double.NaN;
-									_renderer.Height = double.NaN;
+									_rendererSize = Size.Empty;
 									ResizeRenderer();
 								}
 							}, TimeSpan.FromMilliseconds(50));
@@ -376,8 +375,7 @@ namespace Mesen.Windows
 		public void SetScale(double scale)
 		{
 			//TODOv2 - Calling this twice seems to fix what might be an issue in Avalonia?
-			//On the first call, when DPI > 100%, sometimes the "finalSize" received by
-			//ArrangeOverride in NativeRenderer does not match what was given here
+			//On the first call, when DPI > 100%, sometimes _rendererPanel's bounds are incorrect
 			InternalSetScale(scale);
 			InternalSetScale(scale);
 		}
@@ -389,50 +387,63 @@ namespace Mesen.Windows
 
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
-				_renderer.Width = double.NaN;
-				_renderer.Height = double.NaN;
+				_rendererSize = Size.Empty;
 
 				double aspectRatio = EmuApi.GetAspectRatio();
 
 				//When menu is set to auto-hide, don't count its height when calculating the window's final size
 				double menuHeight = ConfigManager.Config.Preferences.AutoHideMenu ? 0 : _mainMenu.Bounds.Height;
 
-				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * scale * aspectRatio));
-				double height = Math.Max(MinHeight, Math.Round(screenSize.Height * scale));
+				double width = Math.Max(MinWidth, screenSize.Height * scale * aspectRatio);
+				double height = Math.Max(MinHeight, screenSize.Height * scale);
 				ClientSize = new Size(width, height + menuHeight + _audioPlayer.Bounds.Height);
-				_model.SoftwareRenderer.Width = width;
-				_model.SoftwareRenderer.Height = height;
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
-				_renderer.Width = Math.Round(screenSize.Width * scale);
-				_renderer.Height = Math.Round(screenSize.Height * scale);
-				_model.SoftwareRenderer.Width = screenSize.Width * scale;
-				_model.SoftwareRenderer.Height = screenSize.Height * scale;
+				_rendererSize = new Size(Math.Floor(screenSize.Width * scale), Math.Floor(screenSize.Height * scale));
+				ResizeRenderer();
 			}
+		}
+
+		private void ResizeRenderer()
+		{
+			_rendererPanel.InvalidateMeasure();
+			_rendererPanel.InvalidateArrange();
+		}
+
+		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
+		{
+			double aspectRatio = EmuApi.GetAspectRatio();
+
+			Size finalSize = _rendererSize.IsDefault ? _rendererPanel.Bounds.Size : _rendererSize;
+			double height = finalSize.Height;
+			double width = finalSize.Height * aspectRatio;
+			if(width > finalSize.Width) {
+				width = finalSize.Width;
+				height = width / aspectRatio;
+			}
+
+			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && (wnd.WindowState == WindowState.FullScreen || wnd.WindowState == WindowState.Maximized)) {
+				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+				double scale = height * LayoutHelper.GetLayoutScale(this) / baseSize.Height;
+				if(scale != Math.Floor(scale)) {
+					height = baseSize.Height * Math.Max(1, Math.Floor(scale / LayoutHelper.GetLayoutScale(this)));
+					width = height * aspectRatio;
+				}
+			}
+
+			EmuApi.SetRendererSize((uint)width, (uint)height);
+			_model.RendererSize = new Size(width, height);
+
+			_renderer.Width = width;
+			_renderer.Height = height;
+			_model.SoftwareRenderer.Width = width;
+			_model.SoftwareRenderer.Height = height;
 		}
 
 		private void OnWindowStateChanged()
 		{
-			_renderer.Width = double.NaN;
-			_renderer.Height = double.NaN;
+			_rendererSize = Size.Empty;
 			ResizeRenderer();
-	
-			UpdateSoftwareRendererSize();
-		}
-
-		private void UpdateSoftwareRendererSize()
-		{
-			if(_model.SoftwareRenderer.FrameSurface != null) {
-				FrameInfo screenSize = EmuApi.GetBaseScreenSize();
-				bool isFullscreen = WindowState == WindowState.FullScreen;
-				double menuHeight = (isFullscreen || ConfigManager.Config.Preferences.AutoHideMenu) ? 0 : _mainMenu.Bounds.Height;
-				double height = Height - menuHeight - _audioPlayer.Bounds.Height;
-				double scale = height / screenSize.Height;
-				if(ConfigManager.Config.Video.FullscreenForceIntegerScale && (WindowState == WindowState.Maximized || isFullscreen)) {
-					scale = Math.Floor(scale);
-				}
-				SetScale(scale);
-			}
 		}
 
 		public void ToggleFullscreen()

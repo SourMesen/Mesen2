@@ -19,7 +19,11 @@ namespace Mesen.Windows
 	{
 		private HistoryViewerViewModel _model;
 		private DispatcherTimer _timer;
+		
 		private NativeRenderer _renderer;
+		private Panel _rendererPanel;
+		private Size _rendererSize;
+
 		private Border _controlBar;
 		private Menu _mainMenu;
 		private bool _prevLeftPressed;
@@ -40,6 +44,9 @@ namespace Mesen.Windows
 #endif
 
 			_renderer = this.GetControl<NativeRenderer>("Renderer");
+			_rendererPanel = this.GetControl<Panel>("RendererPanel");
+			_rendererPanel.LayoutUpdated += RendererPanel_LayoutUpdated;
+
 			_controlBar = this.GetControl<Border>("ControlBar");
 			_mainMenu = this.GetControl<Menu>("MainMenu");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(50), DispatcherPriority.Normal, (s, e) => {
@@ -111,33 +118,68 @@ namespace Mesen.Windows
 
 		public void SetScale(double scale)
 		{
-			ConfigManager.Config.HistoryViewer.Scale = (int)scale;
+			//TODOv2 - Calling this twice seems to fix what might be an issue in Avalonia?
+			//On the first call, when DPI > 100%, sometimes _rendererPanel's bounds are incorrect
+			InternalSetScale(scale);
+			InternalSetScale(scale);
+		}
 
+		private void InternalSetScale(double scale)
+		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
 			scale /= dpiScale;
 
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
-				_renderer.Width = double.NaN;
-				_renderer.Height = double.NaN;
+				_rendererSize = Size.Empty;
 
 				double aspectRatio = EmuApi.GetAspectRatio();
-
-				//When menu is set to auto-hide, don't count its height when calculating the window's final size
 				double menuHeight = _mainMenu.Bounds.Height;
 
-				ClientSize = new Size(screenSize.Width * scale, screenSize.Width * scale / aspectRatio + menuHeight + _controlBar.Bounds.Height);
+				double width = Math.Max(MinWidth, screenSize.Height * scale * aspectRatio);
+				double height = Math.Max(MinHeight, screenSize.Height * scale);
+				ClientSize = new Size(width, height + menuHeight + _controlBar.Bounds.Height);
 				ResizeRenderer();
 			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
-				_renderer.Width = screenSize.Width * scale;
-				_renderer.Height = screenSize.Height * scale;
+				_rendererSize = new Size(Math.Floor(screenSize.Width * scale), Math.Floor(screenSize.Height * scale));
+				ResizeRenderer();
 			}
 		}
 
 		private void ResizeRenderer()
 		{
-			_renderer.InvalidateMeasure();
-			_renderer.InvalidateArrange();
+			_rendererPanel.InvalidateMeasure();
+			_rendererPanel.InvalidateArrange();
+		}
+
+		private void RendererPanel_LayoutUpdated(object? sender, EventArgs e)
+		{
+			double aspectRatio = EmuApi.GetAspectRatio();
+
+			Size finalSize = _rendererSize.IsDefault ? _rendererPanel.Bounds.Size : _rendererSize;
+			double height = finalSize.Height;
+			double width = finalSize.Height * aspectRatio;
+			if(width > finalSize.Width) {
+				width = finalSize.Width;
+				height = width / aspectRatio;
+			}
+
+			if(ConfigManager.Config.Video.FullscreenForceIntegerScale && VisualRoot is Window wnd && (wnd.WindowState == WindowState.FullScreen || wnd.WindowState == WindowState.Maximized)) {
+				FrameInfo baseSize = EmuApi.GetBaseScreenSize();
+				double scale = height * LayoutHelper.GetLayoutScale(this) / baseSize.Height;
+				if(scale != Math.Floor(scale)) {
+					height = baseSize.Height * Math.Max(1, Math.Floor(scale / LayoutHelper.GetLayoutScale(this)));
+					width = height * aspectRatio;
+				}
+			}
+
+			_model.RendererSize = new Size(
+				Math.Round(width * LayoutHelper.GetLayoutScale(this)),
+				Math.Round(height * LayoutHelper.GetLayoutScale(this))
+			);
+
+			_renderer.Width = width;
+			_renderer.Height = height;
 		}
 
 		protected override void ArrangeCore(Rect finalRect)
@@ -149,8 +191,7 @@ namespace Mesen.Windows
 		private void OnWindowStateChanged()
 		{
 			if(WindowState == WindowState.Normal) {
-				_renderer.Width = double.NaN;
-				_renderer.Height = double.NaN;
+				_rendererSize = Size.Empty;
 				ResizeRenderer();
 			}
 		}
