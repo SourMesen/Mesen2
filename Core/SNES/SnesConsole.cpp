@@ -35,6 +35,7 @@
 #include "Shared/EventType.h"
 #include "SNES/RegisterHandlerA.h"
 #include "SNES/RegisterHandlerB.h"
+#include "Utilities/ArchiveReader.h"
 
 SnesConsole::SnesConsole(Emulator* emu)
 {
@@ -116,11 +117,9 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 		_msu1.reset(Msu1::Init(_emu, romFile, _spc.get()));
 
 		if(_cart->GetSpcData()) {
-			_spc->LoadSpcFile(_cart->GetSpcData());
-			_spcPlaylist = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".spc" }, false);
-			std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
-			auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), romFile.GetFilePath());
-			_spcTrackNumber = (uint32_t)std::distance(_spcPlaylist.begin(), result);
+			if(!LoadSpcFile(romFile)) {
+				return LoadRomResult::Failure;
+			}
 		}
 
 		_cpu.reset(new SnesCpu(this));
@@ -139,6 +138,32 @@ LoadRomResult SnesConsole::LoadRom(VirtualFile& romFile)
 	//Loading a cartridge can alter the SNES ram init settings - restore their original values here
 	_settings->SetSnesConfig(config);
 	return loadResult;
+}
+
+bool SnesConsole::LoadSpcFile(VirtualFile& romFile)
+{
+	_spc->LoadSpcFile(_cart->GetSpcData());
+	if(romFile.IsArchive()) {
+		string archivePath = romFile.GetFilePath();
+		unique_ptr<ArchiveReader> reader = ArchiveReader::GetReader(archivePath);
+		if(reader) {
+			for(string& spcFile : reader->GetFileList({ ".spc" })) {
+				_spcPlaylist.push_back((string)VirtualFile(archivePath, spcFile));
+			}
+		} else {
+			return false;
+		}
+	} else {
+		_spcPlaylist = FolderUtilities::GetFilesInFolder(romFile.GetFolderPath(), { ".spc" }, false);
+	}
+
+	std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
+	auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), (string)romFile);
+	if(result == _spcPlaylist.end()) {
+		return false;
+	}
+	_spcTrackNumber = (uint32_t)std::distance(_spcPlaylist.begin(), result);
+	return true;
 }
 
 uint64_t SnesConsole::GetMasterClock()

@@ -66,6 +66,7 @@ private:
 	bool _frameRunning = false;
 
 	void UpdateRegion();
+	bool LoadSpcFile(VirtualFile& romFile);
 
 public:
 	SnesConsole(Emulator* emu);
