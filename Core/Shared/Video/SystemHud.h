@@ -20,6 +20,7 @@ private:
 	list<unique_ptr<MessageInfo>> _messages;
 
 	Timer _fpsTimer;
+	Timer _animationTimer;
 	uint32_t _lastFrameCount = 0;
 	uint32_t _lastRenderedFrameCount = 0;
 	uint32_t _currentFPS = 0;
@@ -29,12 +30,12 @@ private:
 	uint32_t _screenWidth = 0;
 	uint32_t _screenHeight = 0;
 
-
 	void DrawMessages();
 	void DrawBar(int x, int y, int width, int height);
 	void DrawPauseIcon();
 	void DrawPlayIcon();
 	void DrawRecordIcon();
+	void DrawTurboRewindIcon(bool forRewind, int xOffset);
 	void DrawMessage(MessageInfo& msg, int& lastHeight);
 	void DrawString(string msg, int x, int y, uint8_t opacity = 255);
 	void DisplayMessage(string title, string message) override;

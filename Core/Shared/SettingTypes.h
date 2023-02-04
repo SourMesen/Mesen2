@@ -644,6 +644,7 @@ struct PreferencesConfig
 	bool AllowBackgroundInput = false;
 	bool PauseOnMovieEnd = false;
 	bool ShowMovieIcons = false;
+	bool ShowTurboRewindIcons = false;
 	bool DisableGameSelectionScreen = false;
 
 	uint32_t AutoSaveStateDelay = 5;

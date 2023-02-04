@@ -27,13 +27,26 @@ void SystemHud::Draw(uint32_t width, uint32_t height)
 	DrawMessages();
 
 	if(_emu->IsRunning()) {
-		bool showMovieIcons = _emu->GetSettings()->GetPreferences().ShowMovieIcons;
+		EmuSettings* settings = _emu->GetSettings();
+		bool showMovieIcons = settings->GetPreferences().ShowMovieIcons;
+		int xOffset = 0;
 		if(_emu->IsPaused()) {
 			DrawPauseIcon();
 		} else if(showMovieIcons && _emu->GetMovieManager()->Playing()) {
 			DrawPlayIcon();
+			xOffset += 12;
 		} else if(showMovieIcons && _emu->GetMovieManager()->Recording()) {
 			DrawRecordIcon();
+			xOffset += 12;
+		}
+
+		bool showTurboRewindIcons = settings->GetPreferences().ShowTurboRewindIcons;
+		if(!_emu->IsPaused() && showTurboRewindIcons) {
+			if(settings->CheckFlag(EmulationFlags::Rewind)) {
+				DrawTurboRewindIcon(true, xOffset);
+			} else if(settings->CheckFlag(EmulationFlags::Turbo)) {
+				DrawTurboRewindIcon(false, xOffset);
+			}
 		}
 	}
 }
@@ -203,7 +216,7 @@ void SystemHud::DrawPauseIcon()
 void SystemHud::DrawPlayIcon()
 {
 	int x = 12;
-	int y = 9;
+	int y = 12;
 	int width = 5;
 	int height = 8;
 	int borderColor = 0x00000;
@@ -228,7 +241,7 @@ void SystemHud::DrawPlayIcon()
 void SystemHud::DrawRecordIcon()
 {
 	int x = 12;
-	int y = 8;
+	int y = 11;
 	int borderColor = 0x00000;
 	int color = 0xFF0000;
 
@@ -240,4 +253,50 @@ void SystemHud::DrawRecordIcon()
 	_hud->DrawRectangle(x + 3, y + 1, 4, 8, color, true, 1);
 	_hud->DrawRectangle(x + 2, y + 2, 6, 6, color, true, 1);
 	_hud->DrawRectangle(x + 1, y + 3, 8, 4, color, true, 1);
+}
+
+void SystemHud::DrawTurboRewindIcon(bool forRewind, int xOffset)
+{
+	int x = 12 + xOffset;
+	int y = 12;
+	int width = 3;
+	int height = 8;
+
+	int frameId = (int)(_animationTimer.GetElapsedMS() / 75) % 16;
+	if(frameId >= 8) {
+		frameId = (~frameId & 0x07);
+	}
+	
+	static constexpr uint32_t rewindColors[8] = { 0xFF8080, 0xFF9080, 0xFFA080, 0xFFB080, 0xFFC080, 0xFFD080, 0xFFE080, 0xFFF080 };
+	static constexpr uint32_t turboColors[8] = { 0x80FF80, 0x90FF80, 0xA0FF80, 0xB0FF80, 0xC0FF80, 0xD0FF80, 0xE0FF80, 0xF0FF80 };
+
+	int color;
+	if(forRewind) {
+		color = rewindColors[frameId];
+		x += 5;
+	} else {
+		color = turboColors[frameId];
+	}
+	
+	int borderColor = 0x333333;
+	int sign = forRewind ? -1 : 1;
+
+	for(int j = 0; j < 2; j++) {
+		for(int i = 0; i < width; i++) {
+			int left = x + i*sign * 2;
+			int top = y + i * 2;
+			_hud->DrawLine(left, top - 2, left, y + height - i*2 + 2, borderColor, 1);
+			_hud->DrawLine(left + 1 * sign, top - 1, left + 1 * sign, y + height - i*2 + 1, borderColor, 1);
+
+			if(i > 0) {
+				_hud->DrawLine(left, top - 1, left, y + height + 1 - i*2, color, 1);
+			}
+
+			if(i < width - 1) {
+				_hud->DrawLine(left + 1 * sign, top, left + 1 * sign, y + height - i*2, color, 1);
+			}
+		}
+
+		x += 6;
+	}
 }

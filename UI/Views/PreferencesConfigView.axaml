@@ -42,6 +42,7 @@
 						<CheckBox Content="{l:Translate chkAutoLoadIps}" IsChecked="{CompiledBinding Config.AutoLoadPatches}" />
 						<CheckBox Content="{l:Translate chkAutoHideMenu}" IsChecked="{CompiledBinding Config.AutoHideMenu}" />
 						<CheckBox Content="{l:Translate chkShowMovieIcons}" IsChecked="{CompiledBinding Config.ShowMovieIcons}" />
+						<CheckBox Content="{l:Translate chkShowTurboRewindIcons}" IsChecked="{CompiledBinding Config.ShowTurboRewindIcons}" />
 						<CheckBox Content="{l:Translate chkPauseOnMovieEnd}" IsChecked="{CompiledBinding Config.PauseOnMovieEnd}" />
 						<CheckBox Content="{l:Translate chkConfirmExitResetPower}" IsChecked="{CompiledBinding Config.ConfirmExitResetPower}" />
 					</c:OptionSection>
