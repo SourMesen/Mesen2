@@ -57,7 +57,7 @@
 		<TabItem Header="{l:Translate tpgFiles}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0">
+					<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0" IsVisible="{CompiledBinding !IsOsx}">
 						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
 							<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
 							<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />

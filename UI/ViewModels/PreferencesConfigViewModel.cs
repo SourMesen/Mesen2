@@ -4,6 +4,7 @@ using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Mesen.ViewModels
 {
@@ -12,6 +13,7 @@ namespace Mesen.ViewModels
 		[Reactive] public PreferencesConfig Config { get; set; }
 
 		public string DataStorageLocation { get; }
+		public bool IsOsx { get; }
 
 		public List<ShortcutKeyInfo> ShortcutKeys { get; set; }
 
@@ -19,6 +21,7 @@ namespace Mesen.ViewModels
 		{
 			Config = ConfigManager.Config.Preferences.Clone();
 
+			IsOsx = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 			DataStorageLocation = ConfigManager.HomeFolder;
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {

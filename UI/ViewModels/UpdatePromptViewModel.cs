@@ -46,7 +46,17 @@ namespace Mesen.ViewModels
 			UpdateInfo? updateInfo = null;
 			try {
 				using(var client = new HttpClient()) {
-					string platform = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
+					string platform;
+					if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+						platform = "win";
+					} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+						platform = "linux-" + (RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64");
+					} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+						platform = "osx-" + (RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64");
+					} else {
+						return null;
+					}
+					 
 					string updateData = await client.GetStringAsync("https://www.mesen.ca/Services/v2/latestversion." + platform + ".json");
 					updateInfo = JsonSerializer.Deserialize<UpdateInfo>(updateData);
 

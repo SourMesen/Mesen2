@@ -122,6 +122,8 @@ namespace Mesen.Config
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
+			} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "Microsoft Sans Serif"), FontSize = 11 };
 			} else {
 				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 11 };
 			}
@@ -131,6 +133,8 @@ namespace Mesen.Config
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
+			} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "Microsoft Sans Serif"), FontSize = 12 };
 			} else {
 				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 12 };
 			}
@@ -140,6 +144,8 @@ namespace Mesen.Config
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Consolas", FontSize = useSmallFont ? 12 : 14 };
+			} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "PT Mono"), FontSize = useSmallFont ? 11 : 12 };
 			} else {
 				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "DejaVu Sans Mono", "Noto Sans Mono"), FontSize = 12 };
 			}
