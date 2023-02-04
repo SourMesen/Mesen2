@@ -72,26 +72,26 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 			}
 
 			cart->_prgRomSize = (uint32_t)romData.size();
-			if((cart->_prgRomSize & 0xFFF) != 0) {
-				//Round up to the next 4kb size, to ensure we have access to all the rom's data
-				cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
-			}
 			cart->_prgRom = new uint8_t[cart->_prgRomSize];
-			cart->_emu->RegisterMemory(MemoryType::SnesPrgRom, cart->_prgRom, cart->_prgRomSize);
-
-			memset(cart->_prgRom, 0, cart->_prgRomSize);
 			memcpy(cart->_prgRom, romData.data(), romData.size());
-		}
 
-		if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
-			if(cart->_prgRomSize >= 0x10200) {
-				//SPC files must be 0x10200 bytes long at minimum
-				cart->LoadSpc();
+			if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
+				if(cart->_prgRomSize >= 0x10200) {
+					//SPC files must be 0x10200 bytes long at minimum
+					cart->LoadSpc();
+				} else {
+					return nullptr;
+				}
 			} else {
-				return nullptr;
+				cart->LoadRom();
+
+				if((cart->_prgRomSize & 0xFFF) != 0) {
+					//Round up to the next 4kb size, to ensure we have access to all the rom's data
+					cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
+				}
 			}
-		} else {
-			cart->LoadRom();
+
+			cart->_emu->RegisterMemory(MemoryType::SnesPrgRom, cart->_prgRom, cart->_prgRomSize);
 		}
 
 		return cart;
