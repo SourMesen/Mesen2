@@ -26,13 +26,15 @@ void SystemHud::Draw(uint32_t width, uint32_t height)
 	DrawCounters();
 	DrawMessages();
 
-	bool showMovieIcons = _emu->GetSettings()->GetPreferences().ShowMovieIcons;
-	if(_emu->IsPaused()) {
-		DrawPauseIcon();
-	} else if(showMovieIcons && _emu->GetMovieManager()->Playing()) {
-		DrawPlayIcon();
-	} else if(showMovieIcons && _emu->GetMovieManager()->Recording()) {
-		DrawRecordIcon();
+	if(_emu->IsRunning()) {
+		bool showMovieIcons = _emu->GetSettings()->GetPreferences().ShowMovieIcons;
+		if(_emu->IsPaused()) {
+			DrawPauseIcon();
+		} else if(showMovieIcons && _emu->GetMovieManager()->Playing()) {
+			DrawPlayIcon();
+		} else if(showMovieIcons && _emu->GetMovieManager()->Recording()) {
+			DrawRecordIcon();
+		}
 	}
 }
 
