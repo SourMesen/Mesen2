@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Mesen.Config;
+using Mesen.Controls;
 using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -33,6 +34,9 @@ namespace Mesen.ViewModels
 
 		[Reactive] public List<ContextMenuAction> FileMenuItems { get; private set; } = new();
 		[Reactive] public List<ContextMenuAction> OptionsMenuItems { get; private set; } = new();
+		
+		public SoftwareRendererViewModel SoftwareRenderer { get; } = new();
+		[Reactive] public bool IsSoftwareRendererVisible { get; set; } = false;
 
 		private bool _blockCoreUpdates = false;
 		private uint[] _segments = Array.Empty<uint>();
@@ -52,6 +56,11 @@ namespace Mesen.ViewModels
 					SetCoreOptions();
 				}
 			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.SoftwareRenderer.FrameSurface).Subscribe(x => {
+				IsSoftwareRendererVisible = SoftwareRenderer.FrameSurface != null;
+			}));
+
 			_blockCoreUpdates = false;
 		}
 

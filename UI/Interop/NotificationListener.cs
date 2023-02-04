@@ -11,11 +11,14 @@ namespace Mesen.Interop
 		public event NotificationEventHandler? OnNotification;
 
 		//Need to keep a reference to this callback, or it will get garbage collected (since the only reference to it is on the native side)
-		NotificationCallback _callback;
-		IntPtr _notificationListener;
+		private NotificationCallback _callback;
+		private IntPtr _notificationListener;
 
-		public NotificationListener()
+		private bool _forHistoryViewer;
+
+		public NotificationListener(bool forHistoryViewer = false)
 		{
+			_forHistoryViewer = forHistoryViewer;
 			_callback = (int type, IntPtr parameter) => {
 				this.ProcessNotification(type, parameter);
 			};
@@ -24,7 +27,7 @@ namespace Mesen.Interop
 				return;
 			}
 
-			_notificationListener = EmuApi.RegisterNotificationCallback(_callback);
+			_notificationListener = _forHistoryViewer ? HistoryApi.HistoryViewerRegisterNotificationCallback(_callback) : EmuApi.RegisterNotificationCallback(_callback);
 		}
 
 		public void Dispose()
@@ -34,7 +37,11 @@ namespace Mesen.Interop
 			}
 
 			if(_notificationListener != IntPtr.Zero) {
-				EmuApi.UnregisterNotificationCallback(_notificationListener);
+				if(_forHistoryViewer) {
+					HistoryApi.HistoryViewerUnregisterNotificationCallback(_notificationListener);
+				} else {
+					EmuApi.UnregisterNotificationCallback(_notificationListener);
+				}
 				_notificationListener = IntPtr.Zero;
 			}
 		}

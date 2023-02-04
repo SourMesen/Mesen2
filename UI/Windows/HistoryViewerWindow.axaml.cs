@@ -12,6 +12,8 @@ using Avalonia.Layout;
 using Mesen.Utilities.GlobalMouseLib;
 using Mesen.Utilities;
 using Mesen.Config;
+using System.Runtime.InteropServices;
+using Mesen.Controls;
 
 namespace Mesen.Windows
 {
@@ -21,12 +23,14 @@ namespace Mesen.Windows
 		private DispatcherTimer _timer;
 		
 		private NativeRenderer _renderer;
+		private SoftwareRendererView _softwareRenderer;
 		private Panel _rendererPanel;
 		private Size _rendererSize;
 
 		private Border _controlBar;
 		private Menu _mainMenu;
 		private bool _prevLeftPressed;
+		private NotificationListener? _listener;
 
 		static HistoryViewerWindow()
 		{
@@ -44,6 +48,7 @@ namespace Mesen.Windows
 #endif
 
 			_renderer = this.GetControl<NativeRenderer>("Renderer");
+			_softwareRenderer = this.GetControl<SoftwareRendererView>("SoftwareRenderer");
 			_rendererPanel = this.GetControl<Panel>("RendererPanel");
 			_rendererPanel.LayoutUpdated += RendererPanel_LayoutUpdated;
 
@@ -101,6 +106,9 @@ namespace Mesen.Windows
 			_model.SetCoreOptions();
 			_model.InitActions(this);
 			_timer.Start();
+			
+			_listener = new NotificationListener(forHistoryViewer: true);
+			_listener.OnNotification += OnNotification;
 
 			SetScale(ConfigManager.Config.HistoryViewer.Scale);
 		}
@@ -112,6 +120,7 @@ namespace Mesen.Windows
 				return;
 			}
 			_timer.Stop();
+			_listener?.Dispose();
 			HistoryApi.HistoryViewerRelease();
 			ConfigManager.Config.HistoryViewer.SaveWindowSettings(this);
 		}
@@ -180,6 +189,8 @@ namespace Mesen.Windows
 
 			_renderer.Width = width;
 			_renderer.Height = height;
+			_model.SoftwareRenderer.Width = width;
+			_model.SoftwareRenderer.Height = height;
 		}
 
 		protected override void ArrangeCore(Rect finalRect)
@@ -190,9 +201,17 @@ namespace Mesen.Windows
 
 		private void OnWindowStateChanged()
 		{
-			if(WindowState == WindowState.Normal) {
-				_rendererSize = Size.Empty;
-				ResizeRenderer();
+			_rendererSize = Size.Empty;
+			ResizeRenderer();
+		}
+
+		private void OnNotification(NotificationEventArgs e)
+		{
+			switch(e.NotificationType) {
+				case ConsoleNotificationType.RefreshSoftwareRenderer:
+					SoftwareRendererFrame frame = Marshal.PtrToStructure<SoftwareRendererFrame>(e.Parameter);
+					_softwareRenderer.UpdateSoftwareRenderer(frame);
+					break;
 			}
 		}
 	}

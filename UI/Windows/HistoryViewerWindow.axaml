@@ -59,7 +59,16 @@
 		</Border>
 
 		<Panel Name="RendererPanel" Background="Black">
-			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" />
+			<m:NativeRenderer Name="Renderer" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{CompiledBinding !IsSoftwareRendererVisible}" />
+			
+			<Panel IsVisible="{CompiledBinding IsSoftwareRendererVisible}">
+				<c:SoftwareRendererView
+					Name="SoftwareRenderer"
+					DataContext="{CompiledBinding SoftwareRenderer}"
+					Width="{CompiledBinding Width}"
+					Height="{CompiledBinding Height}"
+			  />
+			</Panel>
 		</Panel>
 	</DockPanel>
 </Window>

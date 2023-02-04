@@ -8,6 +8,8 @@
 #include "Core/Shared/Video/VideoRenderer.h"
 #include "Core/Shared/Audio/SoundMixer.h"
 #include "Core/Shared/Movies/MovieManager.h"
+#include "Shared/Video/SoftwareRenderer.h"
+#include "InteropNotificationListeners.h"
 
 #ifdef _WIN32
 	#include "Windows/Renderer.h"
@@ -26,6 +28,8 @@ unique_ptr<IRenderingDevice> _historyRenderer;
 unique_ptr<IAudioDevice> _historySoundManager;
 
 HistoryViewer* _historyViewer = nullptr;
+
+static InteropNotificationListeners _listeners;
 
 extern "C"
 {
@@ -60,7 +64,10 @@ extern "C"
 #ifdef _WIN32
 		_historyRenderer.reset(new Renderer(_historyPlayer.get(), (HWND)viewerHandle));
 		_historySoundManager.reset(new SoundManager(_historyPlayer.get(), (HWND)windowHandle));
-#else 
+#elif __APPLE__
+		_historyRenderer.reset(new SoftwareRenderer(_historyPlayer.get()));
+		_historySoundManager.reset(new SdlSoundManager(_historyPlayer.get()));
+#else
 		_historyRenderer.reset(new SdlRenderer(_historyPlayer.get(), viewerHandle));
 		_historySoundManager.reset(new SdlSoundManager(_historyPlayer.get()));
 #endif
@@ -100,5 +107,15 @@ extern "C"
 		if(_historyViewer) {
 			_historyViewer->SeekTo(seekPosition);
 		}
+	}
+
+	DllExport INotificationListener* __stdcall HistoryViewerRegisterNotificationCallback(NotificationListenerCallback callback)
+	{
+		return _listeners.RegisterNotificationCallback(callback, _historyPlayer.get());
+	}
+
+	DllExport void __stdcall HistoryViewerUnregisterNotificationCallback(INotificationListener* listener)
+	{
+		_listeners.UnregisterNotificationCallback(listener);
 	}
 }

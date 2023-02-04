@@ -24,6 +24,9 @@ namespace Mesen.Interop
 		
 		[DllImport(DllPath)] public static extern HistoryViewerState HistoryViewerGetState();
 		[DllImport(DllPath)] public static extern void HistoryViewerSetOptions(HistoryViewerOptions options);
+
+		[DllImport(DllPath)] public static extern IntPtr HistoryViewerRegisterNotificationCallback(NotificationListener.NotificationCallback callback);
+		[DllImport(DllPath)] public static extern void HistoryViewerUnregisterNotificationCallback(IntPtr notificationListener);
 	}
 
 	public struct HistoryViewerState

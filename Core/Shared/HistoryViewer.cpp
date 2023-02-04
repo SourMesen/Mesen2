@@ -198,6 +198,7 @@ void HistoryViewer::ProcessEndOfFrame()
 
 		if(_position >= _history.size()) {
 			//Reached the end of history data
+			SeekTo(0);
 			_emu->Pause();
 			return;
 		}

@@ -143,6 +143,7 @@ namespace Mesen.Windows
 
 				_timerBackgroundFlag.Stop();
 				EmuApi.Stop();
+				_listener?.Dispose();
 				ConfigManager.Config.MainWindow.SaveWindowSettings(this);
 				ConfigManager.Config.Save();
 			}
