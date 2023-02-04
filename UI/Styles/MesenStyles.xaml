@@ -249,7 +249,8 @@
 		<Setter Property="VerticalContentAlignment" Value="Top" />
 		<Setter Property="MinHeight" Value="44" />
 		<Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
-		
+
+		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
 	</Style>
 	

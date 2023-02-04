@@ -64,6 +64,7 @@
 			<TextBox
 				Grid.Column="1" Grid.Row="3"
 				AcceptsReturn="True"
+				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				Height="100"
 				VerticalContentAlignment="Top"
 				Text="{CompiledBinding Label.Comment}"

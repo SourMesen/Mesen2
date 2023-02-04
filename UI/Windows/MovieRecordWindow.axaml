@@ -51,6 +51,7 @@
 				AcceptsReturn="True"
 				Height="70"
 				VerticalContentAlignment="Top"
+				ScrollViewer.HorizontalScrollBarVisibility="Auto"
 				ScrollViewer.VerticalScrollBarVisibility="Auto"
 				Text="{CompiledBinding Config.Description}"
 			/>

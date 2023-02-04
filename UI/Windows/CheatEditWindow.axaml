@@ -45,6 +45,7 @@
 					Grid.Row="1"
 					Name="txtCodes"
 					AcceptsReturn="True"
+					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					Height="NaN"
 					Text="{CompiledBinding Cheat.Codes}"
 				/>
@@ -52,6 +53,7 @@
 				<TextBox
 					Grid.Row="1"
 					Grid.Column="1"
+					ScrollViewer.HorizontalScrollBarVisibility="Auto"
 					AcceptsReturn="True"
 					IsReadOnly="True"
 					Background="{StaticResource MesenGrayBackgroundColor}"

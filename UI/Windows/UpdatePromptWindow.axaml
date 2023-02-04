@@ -46,6 +46,7 @@
 			AcceptsReturn="True"
 			Height="NaN"
 			Margin="10 2"
+			ScrollViewer.HorizontalScrollBarVisibility="Auto"
 			ScrollViewer.VerticalScrollBarVisibility="Visible"
 		/>
 	</DockPanel>
