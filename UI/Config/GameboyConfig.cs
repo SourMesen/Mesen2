@@ -21,6 +21,7 @@ namespace Mesen.Config
 		
 		[Reactive] public bool DisableBackground { get; set; } = false;
 		[Reactive] public bool DisableSprites { get; set; } = false;
+		[Reactive] public bool HideSgbBorders { get; set; } = false;
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 
@@ -44,6 +45,7 @@ namespace Mesen.Config
 				GbcAdjustColors = GbcAdjustColors,
 				DisableBackground = DisableBackground,
 				DisableSprites = DisableSprites,
+				HideSgbBorders = HideSgbBorders,
 
 				RamPowerOnState = RamPowerOnState,
 
@@ -112,6 +114,7 @@ namespace Mesen.Config
 		
 		[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableSprites;
+		[MarshalAs(UnmanagedType.I1)] public bool HideSgbBorders;
 
 		public RamState RamPowerOnState;
 

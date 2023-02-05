@@ -326,13 +326,26 @@ vector<KeyCombination> EmuSettings::GetShortcutSupersets(EmulatorShortcut shortc
 
 OverscanDimensions EmuSettings::GetOverscan()
 {
-	switch(_emu->GetRomInfo().Format) {
+	RomFormat romFormat = _emu->GetRomInfo().Format;
+	switch(romFormat) {
 		case RomFormat::Spc:
 		case RomFormat::Gbs:
 		case RomFormat::Nsf:
 		case RomFormat::PceHes:
 			//No overscan for music players
 			return OverscanDimensions {};
+
+		case RomFormat::Gb:
+			if(_emu->GetConsoleType() == ConsoleType::Snes && _emu->GetSettings()->GetGameboyConfig().HideSgbBorders) {
+				//Override overscan dimensions to hide SGB borders
+				OverscanDimensions overscan = {};
+				bool isNtscFilter = (_video.VideoFilter == VideoFilterType::NtscBlargg || _video.VideoFilter == VideoFilterType::NtscBisqwit);
+				overscan.Top =  46;
+				overscan.Bottom = 49;
+				overscan.Left = 48;
+				overscan.Right = 48;
+				return overscan;
+			}
 	}
 
 	if(_game.OverrideOverscan) {

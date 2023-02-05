@@ -349,6 +349,9 @@
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
+			
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+			<Control ID="chkHideSgbBorders">Hide Super Game Boy borders</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
