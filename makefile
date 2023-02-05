@@ -18,7 +18,10 @@ else
 	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) -I/usr/include/SDL2 -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+SDL2LIB=$(shell sdl2-config --libs)
+SDL2INC=$(shell sdl2-config --cflags)
+
+CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
 CFLAGS=-fPIC -Wall -O3 $(MESENFLAGS)
 
 LINKCHECKUNRESOLVED=-Wl,-z,defs 
@@ -104,8 +107,6 @@ else
 	LIBEVDEVINC=-I../
 endif
 
-SDL2LIB=$(shell sdl2-config --libs)
-SDL2INC=$(shell sdl2-config --cflags)
 FSLIB=-lstdc++fs
 
 ifeq ($(MESENOS),osx)

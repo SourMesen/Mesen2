@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "Core/Shared/Interfaces/IRenderingDevice.h"
 #include "Utilities/SimpleLock.h"
 #include "Core/Shared/Video/VideoRenderer.h"

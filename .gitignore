@@ -17,6 +17,8 @@ build/
 [Oo]bj/
 [Oo]bj.x86/
 [Oo]bj.x64/
+[Oo]bj.linux-*/
+[Oo]bj.osx-*/
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
