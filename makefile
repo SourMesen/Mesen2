@@ -148,7 +148,7 @@ pgo:
 	./buildPGO.sh
 
 run:
-	./UI/bin/$(MESENPLATFORM)/Release/$(MESENPLATFORM)/publish/Mesen
+	./bin/$(MESENPLATFORM)/Release/$(MESENPLATFORM)/publish/Mesen
 
 clean:
 	rm -r -f $(COREOBJ)

@@ -1,15 +1,22 @@
-### Windows
+## Windows
 
 1) Open the solution in Visual Studio 2022
-2) Compile as Release/x64
-3) Set the startup project to the "UI" project and run
+2) Compile as `Release`/`x64`
+3) Set the startup project to the `UI` project and run
 
-### Linux
+## Linux
 
-To compile Mesen under Linux you will need a version of clang or gcc which supports C++17.  
+To build under Linux you need a version of Clang or GCC that supports C++17.  
 
-Additionally, the [.NET 6 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/linux) must also be installed.
+Additionally, SDL2 and the [.NET 6 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/linux) must also be installed.
 
-Examples:  
-`LTO=true make` will compile with clang and LTO.  
-`USE_GCC=true LTO=true make` will compile with gcc and LTO.  
+Once SDL2 and the .NET 6 SDK are installed, run `make` to compile with Clang.  
+To compile with GCC instead, use `USE_GCC=true make`.  
+**Note:** Mesen usually runs faster when built with Clang instead of GCC.
+
+
+## macOS
+
+To build macOS, install SDL2 (i.e via Homebrew) and the [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).  
+
+Once SDL2 and the .NET 6 SDK are installed, run `make`.

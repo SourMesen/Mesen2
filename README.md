@@ -1,6 +1,6 @@
 # Mesen
 
-Mesen is a multi-system emulator (NES, SNES, Game Boy and PC Engine) for Windows & Linux built in C++ and C#.  
+Mesen is a multi-system emulator (NES, SNES, Game Boy and PC Engine) for Windows, Linux and macOS built in C++ and C#.  
 
 ## Releases
 
@@ -18,9 +18,11 @@ Latest development builds:
 
 ## Requirements
 
-**Windows**: .NET 6  
-**Linux**: .NET 6, SDL2  
-**macOS**: .NET 6, SDL2
+To run Mesen, the following prerequisites must be installed:  
+
+**Windows**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
+**Linux**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), SDL2  
+**macOS**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), SDL2  
 
 ## Compiling
 
