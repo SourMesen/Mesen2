@@ -78,6 +78,8 @@
     <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview3" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />
+	 <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" ExcludeAssets="all"/>
+	 <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
    </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
