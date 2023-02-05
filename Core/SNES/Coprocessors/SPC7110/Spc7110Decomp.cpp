@@ -164,11 +164,11 @@ void Spc7110Decomp::Serialize(Serializer& s)
 {
 	SV(_bpp); SV(_offset); SV(_bits); SV(_range); SV(_input); SV(_output); SV(_pixels); SV(_colormap); SV(_result);
 	for(int i = 0; i < 15; i++) {
-		SV(_context[0][i].swap); SV(_context[0][i].prediction);
-		SV(_context[1][i].swap); SV(_context[1][i].prediction);
-		SV(_context[2][i].swap); SV(_context[2][i].prediction);
-		SV(_context[3][i].swap); SV(_context[3][i].prediction);
-		SV(_context[4][i].swap); SV(_context[4][i].prediction);
+		SVI(_context[0][i].swap); SVI(_context[0][i].prediction);
+		SVI(_context[1][i].swap); SVI(_context[1][i].prediction);
+		SVI(_context[2][i].swap); SVI(_context[2][i].prediction);
+		SVI(_context[3][i].swap); SVI(_context[3][i].prediction);
+		SVI(_context[4][i].swap); SVI(_context[4][i].prediction);
 	}
 }
 
