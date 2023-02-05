@@ -7,52 +7,52 @@
 MESENFLAGS=
 
 ifeq ($(USE_GCC),true)
-	CXX=g++
-	CC=gcc
-	PROFILE_GEN_FLAG=-fprofile-generate
-	PROFILE_USE_FLAG=-fprofile-use
+	CXX := g++
+	CC := gcc
+	PROFILE_GEN_FLAG := -fprofile-generate
+	PROFILE_USE_FLAG := -fprofile-use
 else
-	CXX=clang++
-	CC=clang
-	PROFILE_GEN_FLAG = -fprofile-instr-generate=$(CURDIR)/PGOHelper/pgo.profraw
-	PROFILE_USE_FLAG = -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
+	CXX := clang++
+	CC := clang
+	PROFILE_GEN_FLAG := -fprofile-instr-generate=$(CURDIR)/PGOHelper/pgo.profraw
+	PROFILE_USE_FLAG := -fprofile-instr-use=$(CURDIR)/PGOHelper/pgo.profdata
 endif
 
-SDL2LIB=$(shell sdl2-config --libs)
-SDL2INC=$(shell sdl2-config --cflags)
+SDL2LIB := $(shell sdl2-config --libs)
+SDL2INC := $(shell sdl2-config --cflags)
 
-CXXFLAGS=-fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
-CFLAGS=-fPIC -Wall -O3 $(MESENFLAGS)
+CXXFLAGS := -fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+CFLAGS := -fPIC -Wall -O3 $(MESENFLAGS)
 
-LINKCHECKUNRESOLVED=-Wl,-z,defs 
+LINKCHECKUNRESOLVED := -Wl,-z,defs
 
-LINKOPTIONS=
-MESENOS=
+LINKOPTIONS :=
+MESENOS :=
 
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-	MESENOS=linux
-	SHAREDLIB=MesenCore.so
+	MESENOS := linux
+	SHAREDLIB := MesenCore.so
 endif
 
 ifeq ($(UNAME_S),Darwin)
-	MESENOS=osx
-	SHAREDLIB=MesenCore.dylib
-	LTO=false
+	MESENOS := osx
+	SHAREDLIB := MesenCore.dylib
+	LTO := false
 	STATICLINK := false
-	LINKCHECKUNRESOLVED=
+	LINKCHECKUNRESOLVED :=
 endif
 
 UNAME_P := $(shell uname -p)
 ifeq ($(UNAME_P),x86_64)
-	MESENPLATFORM=$(MESENOS)-x64
+	MESENPLATFORM := $(MESENOS)-x64
 endif
 ifneq ($(filter %86,$(UNAME_P)),)
-	MESENPLATFORM=$(MESENOS)-x64
+	MESENPLATFORM := $(MESENOS)-x64
 endif
 ifneq ($(filter arm%,$(UNAME_P)),)
-	MESENPLATFORM=$(MESENOS)-arm64
+	MESENPLATFORM := $(MESENOS)-arm64
 endif
 
 CXXFLAGS += -m64
@@ -77,8 +77,8 @@ ifneq ($(STATICLINK),false)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
-OBJFOLDER=obj.$(MESENPLATFORM)
-RELEASEFOLDER=bin/$(MESENPLATFORM)/Release
+OBJFOLDER := obj.$(MESENPLATFORM)
+RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
 
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)
@@ -99,15 +99,15 @@ DLLSRC := $(shell find InteropDLL -name '*.cpp')
 DLLOBJ := $(DLLSRC:.cpp=.o)
 
 ifeq ($(SYSTEM_LIBEVDEV), true)
-	LIBEVDEVLIB=$(shell pkg-config --libs libevdev)
-	LIBEVDEVINC=$(shell pkg-config --cflags libevdev)
+	LIBEVDEVLIB := $(shell pkg-config --libs libevdev)
+	LIBEVDEVINC := $(shell pkg-config --cflags libevdev)
 else
 	LIBEVDEVSRC := $(shell find Linux/libevdev -name '*.c')
 	LIBEVDEVOBJ := $(LIBEVDEVSRC:.c=.o)
-	LIBEVDEVINC=-I../
+	LIBEVDEVINC := -I../
 endif
 
-FSLIB=-lstdc++fs
+FSLIB := -lstdc++fs
 
 ifeq ($(MESENOS),osx)
 	LIBEVDEVOBJ := 
