@@ -29,8 +29,8 @@ OverscanDimensions SnesNtscFilter::GetOverscan()
 	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
 	overscan.Top *= 2;
 	overscan.Bottom *= 2;
-	overscan.Left *= 2;
-	overscan.Right *= 2;
+	overscan.Left = (uint32_t)(overscan.Left * 2 * 1.2);
+	overscan.Right = (uint32_t)(overscan.Right * 2 * 1.2);
 	return overscan;
 }
 
