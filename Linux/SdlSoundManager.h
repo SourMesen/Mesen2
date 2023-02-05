@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include "Core/Shared/Audio/BaseSoundManager.h"
 
 class Emulator;
