@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
+using Avalonia.Media;
 using Mesen.Config;
 using Mesen.Utilities;
 using System;
@@ -159,6 +160,7 @@ namespace Mesen
 					.UseReactiveUI()
 					.UsePlatformDetect()
 					.With(new Win32PlatformOptions { AllowEglInitialization = true, UseWgl = useWgl })
+					.With(new FontManagerOptions() { DefaultFamilyName = "Liberation Mono" })
 					.With(new X11PlatformOptions { UseGpu = true, UseEGL = false })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();
