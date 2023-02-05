@@ -73,8 +73,18 @@ namespace Mesen.Debugger.Labels
 
 		public static void SetLabels(IEnumerable<CodeLabel> labels, bool raiseEvents = true)
 		{
+			Dictionary<MemoryType, bool> isAvailable = new();
+
 			foreach(CodeLabel label in labels) {
-				SetLabel(label, false);
+				//Check if label memory type is valid before adding it to the list
+				if(!isAvailable.TryGetValue(label.MemoryType, out bool available)) {
+					available = DebugApi.GetMemorySize(label.MemoryType) > 0;
+					isAvailable[label.MemoryType] = available;
+				}
+
+				if(available) {
+					SetLabel(label, false);
+				}
 			}
 			if(raiseEvents) {
 				ProcessLabelUpdate();

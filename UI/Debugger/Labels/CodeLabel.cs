@@ -58,8 +58,10 @@ namespace Mesen.Debugger.Labels
 			}
 
 			if(!Enum.TryParse(rowData[0], out MemoryType type)) {
-				//Invalid memory type
-				return null;
+				if(!GetLegacyMemoryType(rowData[0], out type)) {
+					//Invalid memory type
+					return null;
+				}
 			}
 
 			string addressString = rowData[1];
@@ -136,6 +138,40 @@ namespace Mesen.Debugger.Labels
 		public CodeLabel Clone()
 		{
 			return JsonHelper.Clone(this);
+		}
+
+		private static bool GetLegacyMemoryType(string name, out MemoryType type)
+		{
+			//For Mesen v1 & Mesen-S compatibility
+			type = MemoryType.SnesMemory;
+			switch(name) {
+				case "REG": type = MemoryType.SnesRegister; break;
+				case "PRG": type = MemoryType.SnesPrgRom; break;
+				case "SAVE": type = MemoryType.SnesSaveRam; break;
+				case "WORK": type = MemoryType.SnesWorkRam; break;
+				case "IRAM": type = MemoryType.Sa1InternalRam; break;
+				case "SPCRAM": type = MemoryType.SpcRam; break;
+				case "SPCROM": type = MemoryType.SpcRom; break;
+				case "PSRAM": type = MemoryType.BsxPsRam; break;
+				case "MPACK": type = MemoryType.BsxMemoryPack; break;
+				case "DSPPRG": type = MemoryType.DspProgramRom; break;
+				case "GBPRG": type = MemoryType.GbPrgRom; break;
+				case "GBWRAM": type = MemoryType.GbWorkRam; break;
+				case "GBSRAM": type = MemoryType.GbCartRam; break;
+				case "GBHRAM": type = MemoryType.GbHighRam; break;
+				case "GBBOOT": type = MemoryType.GbBootRom; break;
+				case "GBREG": type = MemoryType.GameboyMemory; break;
+
+				case "G": type = MemoryType.NesMemory; break;
+				case "R": type = MemoryType.NesInternalRam; break;
+				case "P": type = MemoryType.NesPrgRom; break;
+				case "S": type = MemoryType.NesSaveRam; break;
+				case "W": type = MemoryType.NesWorkRam; break;
+
+				default: return false;
+			}
+
+			return true;
 		}
 	}
 }
