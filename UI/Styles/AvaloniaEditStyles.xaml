@@ -77,4 +77,9 @@
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="Height" Value="20"/>
 	</Style>
+
+	<Style Selector="ContentControl.ToolTip">
+		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+	</Style>
 </Styles>
