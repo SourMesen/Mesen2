@@ -74,7 +74,7 @@ void SnesCpu::RunOp()
 		case 0x1F: AddrMode_AbsLngIdxX(); ORA(); break;
 		case 0x20: AddrMode_AbsJmp(); Idle(); JSR(); break;
 		case 0x21: AddrMode_DirIdxIndX(); AND(); break;
-		case 0x22: AddrMode_AbsLngJmp(); JSL(); break;
+		case 0x22: JSL(); break;
 		case 0x23: AddrMode_StkRel(); AND(); break;
 		case 0x24: AddrMode_Dir(); BIT(); break;
 		case 0x25: AddrMode_Dir(); AND(); break;
@@ -164,7 +164,7 @@ void SnesCpu::RunOp()
 		case 0x79: AddrMode_AbsIdxY(false); ADC(); break;
 		case 0x7A: PLY(); break;
 		case 0x7B: AddrMode_Imp(); TDC(); break;
-		case 0x7C: AddrMode_AbsIdxXInd(); JMP(); break;
+		case 0x7C: JMP_AbsIdxXInd(); break;
 		case 0x7D: AddrMode_AbsIdxX(false); ADC(); break;
 		case 0x7E: AddrMode_AbsIdxX(true); ROR(); break;
 		case 0x7F: AddrMode_AbsLngIdxX(); ADC(); break;
@@ -292,7 +292,7 @@ void SnesCpu::RunOp()
 		case 0xF9: AddrMode_AbsIdxY(false); SBC(); break;
 		case 0xFA: PLX(); break;
 		case 0xFB: AddrMode_Imp(); XCE(); break;
-		case 0xFC: AddrMode_AbsIdxXInd(); JSR(); break;
+		case 0xFC: JSR_AbsIdxXInd(); break;
 		case 0xFD: AddrMode_AbsIdxX(false); SBC(); break;
 		case 0xFE: AddrMode_AbsIdxX(true); INC(); break;
 		case 0xFF: AddrMode_AbsLngIdxX(); SBC(); break;
@@ -417,7 +417,7 @@ uint16_t SnesCpu::ReadCodeWord(uint16_t addr, MemoryOperationType type)
 
 uint8_t SnesCpu::ReadData(uint32_t addr, MemoryOperationType type)
 {
-	return Read(addr & 0xFFFFFF, type);
+	return Read(addr & _readWriteMask, type);
 }
 
 uint16_t SnesCpu::ReadDataWord(uint32_t addr, MemoryOperationType type)
@@ -438,7 +438,14 @@ uint32_t SnesCpu::ReadDataLong(uint32_t addr, MemoryOperationType type)
 void SnesCpu::WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type)
 {
 	Write(addr, (uint8_t)value);
-	Write((addr + 1) & 0xFFFFFF, (uint8_t)(value >> 8));
+	Write((addr + 1) & _readWriteMask, (uint8_t)(value >> 8));
+}
+
+void SnesCpu::WriteWordRmw(uint32_t addr, uint16_t value, MemoryOperationType type)
+{
+	//Read-modify-write instructions write the MSB first
+	Write((addr + 1) & _readWriteMask, (uint8_t)(value >> 8));
+	Write(addr, (uint8_t)value);
 }
 
 uint8_t SnesCpu::GetByteValue()
@@ -528,13 +535,13 @@ void SnesCpu::SetPS(uint8_t ps)
 	}
 }
 
-void SnesCpu::SetRegister(uint8_t &reg, uint8_t value)
+void SnesCpu::SetRegister(uint8_t& reg, uint8_t value)
 {
 	SetZeroNegativeFlags(value);
 	reg = value;
 }
 
-void SnesCpu::SetRegister(uint16_t &reg, uint16_t value, bool eightBitMode)
+void SnesCpu::SetRegister(uint16_t& reg, uint16_t value, bool eightBitMode)
 {
 	if(eightBitMode) {
 		SetZeroNegativeFlags((uint8_t)value);

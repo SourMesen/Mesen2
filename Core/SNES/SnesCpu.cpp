@@ -29,6 +29,7 @@ SnesCpu::~SnesCpu()
 void SnesCpu::Exec()
 {
 	_immediateMode = false;
+	_readWriteMask = 0xFFFFFF;
 
 	if(_state.StopState == SnesCpuStopState::Running) {
 #ifndef DUMMYCPU

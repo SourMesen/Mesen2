@@ -38,6 +38,7 @@ private:
 	SnesConsole *_console = nullptr;
 
 	bool _immediateMode = false;
+	uint32_t _readWriteMask = 0xFFFFFF;
 
 	SnesCpuState _state = {};
 	uint32_t _operand = 0;
@@ -92,6 +93,7 @@ private:
 
 	void Write(uint32_t addr, uint8_t value, MemoryOperationType type = MemoryOperationType::Write);
 	void WriteWord(uint32_t addr, uint16_t value, MemoryOperationType type = MemoryOperationType::Write);
+	void WriteWordRmw(uint32_t addr, uint16_t value, MemoryOperationType type = MemoryOperationType::Write);
 
 	uint8_t GetByteValue();
 
@@ -165,6 +167,9 @@ private:
 	void RTI();
 	void RTL();
 	void RTS();
+
+	void JMP_AbsIdxXInd();
+	void JSR_AbsIdxXInd();
 
 	//Interrupts
 	void ProcessInterrupt(uint16_t vector, bool forHardwareInterrupt);
@@ -275,7 +280,6 @@ private:
 
 	void AddrMode_AbsJmp();
 	void AddrMode_AbsLngJmp();
-	void AddrMode_AbsIdxXInd(); //JMP/JSR
 	void AddrMode_AbsInd(); //JMP only
 	void AddrMode_AbsIndLng(); //JML only
 
