@@ -21,8 +21,8 @@ endif
 SDL2LIB := $(shell sdl2-config --libs)
 SDL2INC := $(shell sdl2-config --cflags)
 
-CXXFLAGS := -fPIC -Wall --std=c++17 -O3 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
-CFLAGS := -fPIC -Wall -O3 $(MESENFLAGS)
+CXXFLAGS := -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+CFLAGS := -fPIC -Wall $(MESENFLAGS)
 
 LINKCHECKUNRESOLVED := -Wl,-z,defs
 
@@ -59,9 +59,24 @@ endif
 CXXFLAGS += -m64
 CFLAGS += -m64
 
-ifneq ($(LTO),false)
-	CFLAGS += -flto
-	CXXFLAGS += -flto
+ifeq ($(DEBUG),)
+	CFLAGS += -O3
+	CXXFLAGS += -O3
+	ifneq ($(LTO),false)
+		CFLAGS += -flto
+		CXXFLAGS += -flto
+	endif
+else
+	CFLAGS += -O0 -g
+	CXXFLAGS += -O0 -g
+	# Note: if compiling with a sanitizer, you will likely need to `LD_PRELOAD` the library `libMesenCore.so` will be linked against.
+	ifeq ($(SANITIZER),address)
+		# Currently, `-fsanitize=address` is not supported together with `-fsanitize=thread`
+		# `-Wl,-z,defs` is incompatible with the sanitizers in a shared lib, unless the sanitizer libs are linked dynamically; hence `-shared-libsan` (not the default for Clang).
+		# It seems impossible to link dynamically against two sanitizers at the same time, but that might be a Clang limitation.
+		CFLAGS += -shared-libsan -fsanitize=address
+		CXXFLAGS += -shared-libsan -fsanitize=address
+	endif
 endif
 
 ifeq ($(PGO),profile)
