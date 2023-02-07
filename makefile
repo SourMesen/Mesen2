@@ -139,8 +139,8 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/$(MESENPLATFORM)/Release/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && UI dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
-	cd UI && UI dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
+	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
+	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
