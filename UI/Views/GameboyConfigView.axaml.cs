@@ -12,6 +12,7 @@ using System;
 using Avalonia.Media;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 
 namespace Mesen.Views
 {
@@ -41,7 +42,7 @@ namespace Mesen.Views
 			ColorPickerViewModel model = new ColorPickerViewModel() { Color = color };
 			ColorPickerWindow wnd = new ColorPickerWindow() { DataContext = model };
 
-			bool success = await wnd.ShowCenteredDialog<bool>(VisualRoot);
+			bool success = await wnd.ShowCenteredDialog<bool>(this.GetVisualRoot() as Visual);
 			if(success) {
 				return model.Color;
 			}

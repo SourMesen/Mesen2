@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.VisualTree;
 using Mesen.Config;
 using Mesen.Utilities;
 using Mesen.Windows;
@@ -38,7 +39,7 @@ namespace Mesen.ViewModels
 			ControllerConfig cfg = Config.Controller.Clone();
 			wnd.DataContext = new ControllerConfigViewModel(ControllerType.GameboyController, cfg, Config.Controller);
 
-			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.VisualRoot, startPosition)) {
+			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.GetVisualRoot() as Visual, startPosition)) {
 				Config.Controller = cfg;
 			}
 		}

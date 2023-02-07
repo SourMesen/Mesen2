@@ -7,7 +7,7 @@ namespace DataBoxControl.Primitives.Layout;
 
 internal static class DataBoxRowsLayout
 {
-    private static double SetColumnsActualWidth(AvaloniaList<IControl> rows, DataBox dataBox, bool measureStarAsAuto)
+    private static double SetColumnsActualWidth(DataBox dataBox)
     {
         var accumulatedWidth = 0.0;
         var actualWidths = new double[dataBox.Columns.Count];
@@ -39,19 +39,15 @@ internal static class DataBoxRowsLayout
         return accumulatedWidth < availableWidth ? availableWidth : accumulatedWidth;
     }
 
-    public static Size Measure(Size availableSize, DataBox dataBox, Func<Size, Size> measureOverride, Action invalidateMeasure, AvaloniaList<IControl> rows)
+    public static Size Measure(Size availableSize, DataBox dataBox, Func<Size, Size> measureOverride, AvaloniaList<Control> rows)
     {
         var availableSizeWidth = availableSize.Width;
-        var measureStarAsAuto = double.IsPositiveInfinity(availableSize.Width);
 
         dataBox.AvailableWidth = availableSize.Width;
         dataBox.AvailableHeight = availableSize.Height;
 
-        var accumulatedWidth = SetColumnsActualWidth(rows, dataBox, measureStarAsAuto);
+        var accumulatedWidth = SetColumnsActualWidth(dataBox);
         var panelSize = availableSize.WithWidth(accumulatedWidth);
-
-        // TODO: Optimize measure performance.
-        invalidateMeasure();
 
         panelSize = measureOverride(panelSize);
         panelSize = panelSize.WithWidth(AdjustAccumulatedWidth(accumulatedWidth, availableSizeWidth));
@@ -59,13 +55,13 @@ internal static class DataBoxRowsLayout
         return panelSize;
     }
 
-    public static Size Arrange(Size finalSize, DataBox dataBox, Func<Size, Size> arrangeOverride, AvaloniaList<IControl> rows)
+    public static Size Arrange(Size finalSize, DataBox dataBox, Func<Size, Size> arrangeOverride, AvaloniaList<Control> rows)
     {
         var finalSizeWidth = finalSize.Width;
 
         dataBox.AvailableWidth = finalSize.Width;
         dataBox.AvailableHeight = finalSize.Height;
-        dataBox.AccumulatedWidth = SetColumnsActualWidth(rows, dataBox, false);
+        dataBox.AccumulatedWidth = SetColumnsActualWidth(dataBox);
         var panelSize = finalSize.WithWidth(dataBox.AccumulatedWidth);
 
         panelSize = arrangeOverride(panelSize);

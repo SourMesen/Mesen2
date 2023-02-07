@@ -31,7 +31,7 @@ namespace Mesen.Windows
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			if(_model.IsCopying) {
 				e.Cancel = true;

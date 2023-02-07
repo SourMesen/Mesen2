@@ -113,7 +113,7 @@ namespace Mesen.Debugger.ViewModels
 					new Rect(PreviewX, PreviewY - WrapHeight, Width, Height)
 				);
 			}
-			return (new Rect(PreviewX, PreviewY, Width, Height), Rect.Empty);
+			return (new Rect(PreviewX, PreviewY, Width, Height), default);
 		}
 
 		public SpritePreviewModel Clone()

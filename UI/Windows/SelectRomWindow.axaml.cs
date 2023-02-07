@@ -59,10 +59,10 @@ namespace Mesen.Windows
 					if(_searchBox.IsKeyboardFocusWithin) {
 						if(model.FilteredEntries.Count() > 1) {
 							model.SelectedEntry = model.FilteredEntries.ElementAt(1);
-							_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
+							_listBox.ContainerFromIndex(1)?.Focus();
 						} else {
 							model.SelectedEntry = model.FilteredEntries.ElementAt(0);
-							_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
+							_listBox.ContainerFromIndex(1)?.Focus();
 						}
 					}
 				} else if(e.Key == Key.Enter && model.SelectedEntry != null) {

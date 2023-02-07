@@ -16,7 +16,7 @@ namespace Mesen.Utilities
 			//Application.Current?.Styles.Clear();
 
 			var styles = new List<IStyle> {
-				new FluentTheme(new Uri("avares://Mesen/App.axaml")) { Mode = (theme == MesenTheme.Light) ? FluentThemeMode.Light : FluentThemeMode.Dark },
+				new FluentTheme(),
 			};
 
 			if(theme == MesenTheme.Dark) {

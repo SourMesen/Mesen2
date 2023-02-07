@@ -58,7 +58,7 @@ namespace Mesen.Debugger.Controls
 		protected override Size MeasureOverride(Size availableSize)
 		{
 			if(Mappings == null) {
-				return Size.Empty;
+				return new Size();
 			}
 			return new Size(availableSize.Width, BlockHeight);
 		}

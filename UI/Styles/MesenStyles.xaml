@@ -139,7 +139,7 @@
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
 	</Style>
 
-	<Style Selector=".ActionMenu MenuItem">
+	<Style Selector="Menu MenuItem MenuItem, ContextMenu MenuItem">
 		<Setter Property="Header" Value="{Binding ActionName}" />
 		<Setter Property="Icon" Value="{Binding ActionIcon}" />
 		<Setter Property="IsVisible" Value="{Binding Visible}" />
@@ -443,10 +443,7 @@
 							>
 							<ItemsPresenter
 								 Name="PART_ItemsPresenter"
-								 Items="{TemplateBinding Items}"
-								 ItemsPanel="{TemplateBinding ItemsPanel}"
-								 ItemTemplate="{TemplateBinding ItemTemplate}">
-							</ItemsPresenter>
+								 ItemsPanel="{TemplateBinding ItemsPanel}"/>
 						</ScrollViewer>
 
 						<Rectangle
@@ -505,9 +502,7 @@
 					<DockPanel>
 						<Panel Background="#10888888" DockPanel.Dock="{TemplateBinding TabStripPlacement}">
 							<ItemsPresenter Name="PART_ItemsPresenter"
-												 Items="{TemplateBinding Items}"
-												 ItemsPanel="{TemplateBinding ItemsPanel}"
-												 ItemTemplate="{TemplateBinding ItemTemplate}" />
+												 ItemsPanel="{TemplateBinding ItemsPanel}" />
 						</Panel>
 						
 						<Rectangle

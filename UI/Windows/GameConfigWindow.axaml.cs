@@ -29,7 +29,7 @@ public class GameConfigWindow : Window
 		AvaloniaXamlLoader.Load(this);
 	}
 
-	protected override void OnClosing(CancelEventArgs e)
+	protected override void OnClosing(WindowClosingEventArgs e)
 	{
 		GameConfig.LoadGameConfig(MainWindowViewModel.Instance.RomInfo).ApplyConfig();
 		_model?.Dispose();

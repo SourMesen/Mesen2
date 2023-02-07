@@ -39,8 +39,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowMousePosition), true);
 		public static readonly StyledProperty<Rect?> MouseOverRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect?>(nameof(MouseOverRect), null, defaultBindingMode: BindingMode.OneWay);
 
-		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(SelectionRect), Rect.Empty, defaultBindingMode: BindingMode.TwoWay);
-		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(OverlayRect), Rect.Empty);
+		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(SelectionRect), default, defaultBindingMode: BindingMode.TwoWay);
+		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<ScrollPictureViewer, Rect>(nameof(OverlayRect), default);
 		
 		public static readonly StyledProperty<ScrollBarVisibility> ScrollBarVisibilityProperty = AvaloniaProperty.Register<ScrollPictureViewer, ScrollBarVisibility>(nameof(ScrollBarVisibility), ScrollBarVisibility.Auto);
 
@@ -269,7 +269,7 @@ namespace Mesen.Debugger.Controls
 
 		public void ScrollToSelection()
 		{
-			if(SelectionRect.IsEmpty) {
+			if(SelectionRect.IsDefault) {
 				return;
 			}
 

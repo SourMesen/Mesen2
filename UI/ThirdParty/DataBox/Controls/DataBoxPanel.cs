@@ -10,34 +10,32 @@ namespace DataBoxControl.Controls;
 
 public class DataBoxPanel : VirtualizingStackPanel, IStyleable
 {
-    Type IStyleable.StyleKey => typeof(DataBoxPanel);
+	Type IStyleable.StyleKey => typeof(DataBoxPanel);
 
-    internal DataBox? DataBox { get; set; }
+	internal DataBox? DataBox { get; set; }
+	
+	public override void ApplyTemplate()
+	{
+		base.ApplyTemplate();
 
-    public override void ApplyTemplate()
-    {
-        base.ApplyTemplate();
+		DataBox = this.GetLogicalAncestors().FirstOrDefault(x => x is DataBox) as DataBox;
+	}
 
-        DataBox = this.GetLogicalAncestors().FirstOrDefault(x => x is DataBox) as DataBox;
-    }
+	protected override Size MeasureOverride(Size availableSize)
+	{
+		if(DataBox is null) {
+			return availableSize;
+		}
 
-    protected override Size MeasureOverride(Size availableSize)
-    {
-        if (DataBox is null)
-        {
-            return availableSize;
-        }
+		return DataBoxRowsLayout.Measure(availableSize, DataBox, base.MeasureOverride, Children);
+	}
 
-        return DataBoxRowsLayout.Measure(availableSize, DataBox, base.MeasureOverride, base.InvalidateMeasure, Children);
-    }
+	protected override Size ArrangeOverride(Size finalSize)
+	{
+		if(DataBox is null) {
+			return finalSize;
+		}
 
-    protected override Size ArrangeOverride(Size finalSize)
-    {
-        if (DataBox is null)
-        {
-            return finalSize;
-        }
-
-        return DataBoxRowsLayout.Arrange(finalSize, DataBox, base.ArrangeOverride, Children);
-    }
+		return DataBoxRowsLayout.Arrange(finalSize, DataBox, base.ArrangeOverride, Children);
+	}
 }

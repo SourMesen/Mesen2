@@ -12,6 +12,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
+using DataBoxControl.Controls;
 
 namespace DataBoxControl;
 
@@ -143,6 +144,10 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
                 DataBox.ColumnWidths[index] = Math.Min(column.MaxWidth, Math.Max(column.MinWidth, DataBox.ColumnWidths[index]));
 
                 ResizePositionX = x;
+
+                DataBoxPanel? panel = DataBox.FindDescendantOfType<DataBoxPanel>();
+                panel?.InvalidateMeasure();
+                panel?.InvalidateVisual();
                 DataBox.InvalidateMeasure();
                 DataBox.InvalidateVisual();
             }

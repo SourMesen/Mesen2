@@ -12,7 +12,7 @@ namespace Mesen.Utilities
 {
 	static class WindowExtensions
 	{
-		public static void CenterWindow(Window child, IVisual parent)
+		public static void CenterWindow(Window child, Visual parent)
 		{
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
 			Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
@@ -26,7 +26,7 @@ namespace Mesen.Utilities
 			child.Opened += (s,e) => { child.Position = startPosition; };
 		}
 
-		public static void ShowCentered(this Window child, IVisual? parent)
+		public static void ShowCentered(this Window child, Visual? parent)
 		{
 			if(parent != null) {
 				CenterWindow(child, parent);
@@ -40,12 +40,12 @@ namespace Mesen.Utilities
 			child.Show(parent);
 		}
 
-		public static Task ShowCenteredDialog(this Window child, IVisual? parent)
+		public static Task ShowCenteredDialog(this Window child, Visual? parent)
 		{
 			return ShowCenteredDialog<object>(child, parent);
 		}
 
-		public static Task<TResult> ShowCenteredDialog<TResult>(this Window child, IVisual? parent)
+		public static Task<TResult> ShowCenteredDialog<TResult>(this Window child, Visual? parent)
 		{
 			if(parent != null) {
 				CenterWindow(child, parent);
@@ -53,7 +53,7 @@ namespace Mesen.Utilities
 			return InternalShowDialog<TResult>(child, parent);
 		}
 
-		public static Task<TResult> ShowDialogAtPosition<TResult>(this Window child, IVisual? parent, PixelPoint startPosition)
+		public static Task<TResult> ShowDialogAtPosition<TResult>(this Window child, Visual? parent, PixelPoint startPosition)
 		{
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
 			child.Position = startPosition;
@@ -65,11 +65,11 @@ namespace Mesen.Utilities
 			return InternalShowDialog<TResult>(child, parent);
 		}
 
-		private static Task<TResult> InternalShowDialog<TResult>(Window child, IVisual? parent)
+		private static Task<TResult> InternalShowDialog<TResult>(Window child, Visual? parent)
 		{
-			IVisual? parentWnd = parent;
+			Visual? parentWnd = parent;
 			while(!(parentWnd is Window) && parentWnd != null) {
-				parentWnd = parentWnd.VisualParent;
+				parentWnd = parentWnd.GetVisualParent();
 			}
 
 			if(!(parentWnd is Window wnd)) {

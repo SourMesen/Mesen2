@@ -90,7 +90,7 @@ namespace Mesen.Windows
 			InputApi.DisableAllKeys(true);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			InputApi.DisableAllKeys(false);

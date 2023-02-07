@@ -1,8 +1,10 @@
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using Mesen.Config;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
@@ -25,7 +27,7 @@ namespace Mesen.Debugger.Controls
 
 		static DebuggerKeyBindingButton()
 		{
-			KeyBindingProperty.Changed.AddClassHandler<DebuggerKeyBindingButton>((x, e) => x.Content = x.KeyBinding.ToString());
+			KeyBindingProperty.Changed.AddClassHandler<DebuggerKeyBindingButton>((x, e) => x.SetKeyName(x.KeyBinding.ToString()));
 		}
 
 		public DebuggerKeyBindingButton()
@@ -35,7 +37,7 @@ namespace Mesen.Debugger.Controls
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			this.Content = this.KeyBinding.ToString();
+			SetKeyName(this.KeyBinding.ToString());
 		}
 
 		protected override async void OnClick()
@@ -43,7 +45,7 @@ namespace Mesen.Debugger.Controls
 			GetKeyWindow wnd = new GetKeyWindow(false);
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowCenteredDialog(VisualRoot);
+			await wnd.ShowCenteredDialog(this.GetVisualRoot() as Visual);
 			this.KeyBinding = wnd.DbgShortcutKey;
 		}
 
@@ -55,6 +57,12 @@ namespace Mesen.Debugger.Controls
 			if(e.InitialPressMouseButton == MouseButton.Right) {
 				this.KeyBinding = new DbgShortKeys();
 			}
+		}
+
+		private void SetKeyName(string keyname)
+		{
+			this.Content = keyname;
+			ToolTip.SetTip(this, string.IsNullOrWhiteSpace(keyname) ? null : keyname);
 		}
 	}
 }

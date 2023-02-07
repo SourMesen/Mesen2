@@ -16,6 +16,7 @@
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(RuntimeIdentifier)'=='osx-x64' Or '$(RuntimeIdentifier)'=='osx-arm64' Or '$(RuntimeIdentifier)'=='linux-x64'">
 		<SolutionDir>..</SolutionDir>
@@ -67,19 +68,20 @@
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview3" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview2" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview3" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview3" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview3" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview3" />
-    <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview3" />
-    <PackageReference Include="Dock.Model.Avalonia" Version="11.0.0-preview3" />
-    <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview3" />
+    <PackageReference Include="Avalonia" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.999-cibuild0029610-beta" />
+    <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview5" />
+    <PackageReference Include="Dock.Model.Avalonia" Version="11.0.0-preview5" />
+    <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview5" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />
-	 <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" ExcludeAssets="all"/>
-	 <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" ExcludeAssets="all" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
    </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">

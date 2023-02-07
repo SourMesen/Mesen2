@@ -6,7 +6,6 @@
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
 	xmlns:c="using:Mesen.Controls"
 	x:Name="root"
-	HorizontalAlignment="Stretch"
 	Margin="0 15 0 0"
 	x:Class="Mesen.Controls.OptionSection"
 >
@@ -23,7 +22,7 @@
 					<ContentControl Content="{Binding Button, ElementName=root}" />
 				</StackPanel>
 				<StackPanel Margin="10 0 0 0">
-					<ItemsPresenter Items="{Binding Items, ElementName=root}" />
+					<ItemsControl Items="{Binding Items, ElementName=root}" />
 				</StackPanel>
 			</StackPanel>
 		</ControlTemplate>

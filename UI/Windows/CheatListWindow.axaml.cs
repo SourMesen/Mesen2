@@ -43,7 +43,7 @@ namespace Mesen.Windows
 			ConfigManager.Config.Cheats.LoadWindowSettings(this);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			_listener.Dispose();
 			ConfigManager.Config.Cheats.SaveWindowSettings(this);

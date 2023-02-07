@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Mesen.Debugger.ViewModels;
 using System;
 
@@ -39,7 +40,12 @@ namespace Mesen.Debugger.Views
 			base.OnKeyDown(e);
 			if(_model?.IsSearchBoxVisible == true && e.Key == Key.Escape) {
 				e.Handled = true;
-				e.Key = Key.None; //Prevent other shortcuts from being triggered
+				if(e.Source is Control ctrl) {
+					//Prevent ESC (used to close "popup") from triggering a shortcut
+					ctrl.Classes.Add("PreventShortcuts");
+					//Re-enable shortcuts once the keydown event is processed
+					Dispatcher.UIThread.Post(() => ctrl.Classes.Remove("PreventShortcuts"));
+				}
 				_model?.Close();
 			}
 		}

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using Mesen.Windows;
@@ -50,7 +51,7 @@ namespace Mesen.Controls
 			GetKeyWindow wnd = new GetKeyWindow(true);
 			wnd.SingleKeyMode = false;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-			await wnd.ShowCenteredDialog(VisualRoot);
+			await wnd.ShowCenteredDialog(this.GetVisualRoot() as Visual);
 			this.KeyBinding = wnd.ShortcutKey;
 		}
 

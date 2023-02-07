@@ -60,15 +60,13 @@ namespace Mesen.Utilities
 			filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
 			IReadOnlyList<IStorageFile> files = await wnd.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions() {
-				SuggestedStartLocation = initialFolder != null ? new BclStorageFolder(new DirectoryInfo(initialFolder)) : null,
+				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPath(initialFolder) : null,
 				AllowMultiple = false,
 				FileTypeFilter = filter
 			});
 
 			if(files.Count > 0) {
-				if(files[0].TryGetUri(out Uri? filePath)) {
-					return filePath.LocalPath;
-				}
+				return files[0].Path.ToString();
 			}
 			return null;
 		}
@@ -86,7 +84,7 @@ namespace Mesen.Utilities
 			filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
 			IStorageFile? file = await wnd.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions() {
-				SuggestedStartLocation = initialFolder != null ? new BclStorageFolder(new DirectoryInfo(initialFolder)) : null,
+				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPath(initialFolder) : null,
 				DefaultExtension = extensions[0],
 				ShowOverwritePrompt = true,
 				SuggestedFileName = initialFile,
@@ -94,9 +92,7 @@ namespace Mesen.Utilities
 			});
 
 			if(file != null) {
-				if(file.TryGetUri(out Uri? filePath)) {
-					return filePath.LocalPath;
-				}
+				return file.Path.ToString();
 			}
 			return null;
 		}
@@ -112,9 +108,7 @@ namespace Mesen.Utilities
 			});
 
 			if(folders.Count > 0) {
-				if(folders[0].TryGetUri(out Uri? folderPath)) {
-					return folderPath.LocalPath;
-				}
+				return folders[0].Path.ToString();
 			}
 			return null;
 		}

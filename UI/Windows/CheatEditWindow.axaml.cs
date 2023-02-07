@@ -51,7 +51,7 @@ namespace Mesen.Windows
 			Close(false);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			_model.Dispose();

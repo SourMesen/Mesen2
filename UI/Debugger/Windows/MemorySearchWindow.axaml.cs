@@ -35,7 +35,7 @@ namespace Mesen.Debugger.Windows
 			_model.Config.LoadWindowSettings(this);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			_model.Config.SaveWindowSettings(this);

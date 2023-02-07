@@ -52,9 +52,9 @@ namespace Mesen.Controls
 			}
 		}
 
-		protected override void OnChecked(RoutedEventArgs e)
+		protected override void OnIsCheckedChanged(RoutedEventArgs e)
 		{
-			base.OnChecked(e);
+			base.OnIsCheckedChanged(e);
 			Value = CheckedWhen;
 		}
 	}

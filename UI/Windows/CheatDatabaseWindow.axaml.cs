@@ -65,10 +65,10 @@ namespace Mesen.Windows
 				if(_searchBox.IsKeyboardFocusWithin) {
 					if(_model.FilteredEntries.Count() > 1) {
 						_model.SelectionModel.SelectedItem = _model.FilteredEntries.ElementAt(1);
-						_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
+						_listBox.ContainerFromIndex(1)?.Focus();
 					} else {
 						_model.SelectionModel.SelectedItem = _model.FilteredEntries.ElementAt(0);
-						_listBox.ItemContainerGenerator.ContainerFromIndex(1)?.Focus();
+						_listBox.ContainerFromIndex(1)?.Focus();
 					}
 				}
 			} else if(e.Key == Key.Enter && _model.SelectionModel.SelectedItem != null) {
@@ -108,7 +108,7 @@ namespace Mesen.Windows
 			_isDoubleTap = true;
 		}
 
-		public static async Task<CheatDbGameEntry?> Show(ConsoleType consoleType, IVisual? parent)
+		public static async Task<CheatDbGameEntry?> Show(ConsoleType consoleType, Visual? parent)
 		{
 			CheatDatabaseWindow wnd = new CheatDatabaseWindow(consoleType);
 			await wnd.ShowCenteredDialog(parent);

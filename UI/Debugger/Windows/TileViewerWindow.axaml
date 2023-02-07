@@ -67,18 +67,18 @@
 						<ItemsRepeater Items="{CompiledBinding ConfigPresetRows}">
 							<ItemsRepeater.ItemTemplate>
 								<DataTemplate>
-									<ItemsPresenter Items="{Binding}">
-										<ItemsPresenter.ItemsPanel>
+									<ItemsControl Items="{Binding}">
+										<ItemsControl.ItemsPanel>
 											<ItemsPanelTemplate>
 												<WrapPanel />
 											</ItemsPanelTemplate>
-										</ItemsPresenter.ItemsPanel>
-										<ItemsPresenter.ItemTemplate>
+										</ItemsControl.ItemsPanel>
+										<ItemsControl.ItemTemplate>
 											<DataTemplate>
 												<Button Classes.selected="{Binding Selected}"  Content="{Binding Name}" MinWidth="25" Command="{Binding ClickCommand}" />
 											</DataTemplate>
-										</ItemsPresenter.ItemTemplate>
-									</ItemsPresenter>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
 								</DataTemplate>
 							</ItemsRepeater.ItemTemplate>
 						</ItemsRepeater>

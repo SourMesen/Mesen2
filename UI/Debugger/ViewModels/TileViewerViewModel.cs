@@ -214,7 +214,7 @@ namespace Mesen.Debugger.ViewModels
 				if(GridSizeX != tileSize.Width || GridSizeY != tileSize.Height) {
 					GridSizeX = tileSize.Width;
 					GridSizeY = tileSize.Height;
-					SelectionRect = Rect.Empty;
+					SelectionRect = default;
 					PreviewPanel = null;
 				}
 
@@ -396,7 +396,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdatePreviewPanel()
 		{
-			if(SelectionRect.IsEmpty) {
+			if(SelectionRect.IsDefault) {
 				PreviewPanel = null;
 			} else {
 				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
@@ -474,7 +474,7 @@ namespace Mesen.Debugger.ViewModels
 			if(ViewerMousePos.HasValue) {
 				p = ViewerMousePos.Value;
 			} else {
-				if(SelectionRect.IsEmpty) {
+				if(SelectionRect.IsDefault) {
 					return -1;
 				}
 				p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);

@@ -113,7 +113,7 @@ namespace Mesen.Windows
 			SetScale(ConfigManager.Config.HistoryViewer.Scale);
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			if(Design.IsDesignMode) {
@@ -140,7 +140,7 @@ namespace Mesen.Windows
 
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
-				_rendererSize = Size.Empty;
+				_rendererSize = new Size();
 
 				double aspectRatio = EmuApi.GetAspectRatio();
 				double menuHeight = _mainMenu.Bounds.Height;
@@ -201,7 +201,7 @@ namespace Mesen.Windows
 
 		private void OnWindowStateChanged()
 		{
-			_rendererSize = Size.Empty;
+			_rendererSize = new Size();
 			ResizeRenderer();
 		}
 

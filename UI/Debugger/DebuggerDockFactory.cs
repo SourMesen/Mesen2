@@ -133,10 +133,10 @@ namespace Mesen.Debugger
 
 		public override void InitLayout(IDockable layout)
 		{
-			this.ContextLocator = new Dictionary<string, Func<object>> {
+			this.ContextLocator = new Dictionary<string, Func<object?>> {
 			};
 
-			this.HostWindowLocator = new Dictionary<string, Func<IHostWindow>> {
+			this.HostWindowLocator = new Dictionary<string, Func<IHostWindow?>> {
 				[nameof(IDockWindow)] = () => new HostWindow()
 			};
 

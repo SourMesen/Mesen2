@@ -12,7 +12,7 @@ namespace Mesen.Config
 		public PixelPoint WindowLocation { get; set; } = new PixelPoint(0, 0);
 		public bool WindowIsMaximized { get; set; } = false;
 
-		private PixelRect _restoreBounds = PixelRect.Empty;
+		private PixelRect _restoreBounds;
 		private bool _needPositionCheck = false;
 
 		public void SaveWindowSettings(Window wnd)
@@ -20,7 +20,7 @@ namespace Mesen.Config
 			if(wnd.WindowState == WindowState.Normal) {
 				WindowLocation = wnd.Position;
 				WindowSize = new PixelSize((int)wnd.ClientSize.Width, (int)wnd.ClientSize.Height);
-			} else if(!_restoreBounds.IsEmpty) {
+			} else if(!_restoreBounds.IsDefault) {
 				WindowLocation = _restoreBounds.Position;
 				WindowSize = _restoreBounds.Size;
 			}

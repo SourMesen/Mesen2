@@ -91,9 +91,8 @@
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />        
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
     <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
-	  <Setter Property="VirtualizationMode" Value="Simple" />
     <Setter Property="HorizontalAlignment" Value="Stretch" /> 
     <Setter Property="Template">
       <ControlTemplate>
@@ -107,11 +106,8 @@
                         VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
                         AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}">
             <ItemsPresenter Name="PART_ItemsPresenter"
-                            Items="{TemplateBinding Items}"
                             ItemsPanel="{TemplateBinding ItemsPanel}"
-                            ItemTemplate="{TemplateBinding ItemTemplate}"
-                            Margin="{TemplateBinding Padding}"
-                            VirtualizationMode="{TemplateBinding VirtualizationMode}"/>
+                            Margin="{TemplateBinding Padding}" />
           </ScrollViewer>
         </Border>
       </ControlTemplate>

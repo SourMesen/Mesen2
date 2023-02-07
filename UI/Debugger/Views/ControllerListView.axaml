@@ -18,17 +18,17 @@
 	</Design.DataContext>
 
 	<ScrollViewer AllowAutoHide="False">
-		<ItemsPresenter Items="{CompiledBinding Controllers}" VerticalAlignment="Center">
-			<ItemsPresenter.ItemsPanel>
+		<ItemsControl Items="{CompiledBinding Controllers}" VerticalAlignment="Center">
+			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel />
 				</ItemsPanelTemplate>
-			</ItemsPresenter.ItemsPanel>
-			<ItemsPresenter.ItemTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<dv:ControllerInputView DataContext="{Binding}" Margin="1 1" />
 				</DataTemplate>
-			</ItemsPresenter.ItemTemplate>
-		</ItemsPresenter>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 	</ScrollViewer>
 </UserControl>

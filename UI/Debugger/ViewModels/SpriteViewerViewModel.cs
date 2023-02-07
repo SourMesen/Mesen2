@@ -510,7 +510,7 @@ namespace Mesen.Debugger.ViewModels
 					foreach(SpritePreviewModel sprite in SpritePreviews) {
 						(Rect mainRect, Rect altRect) = sprite.GetPreviewRect();
 						spriteRects.Add(mainRect);
-						if(!altRect.IsEmpty) {
+						if(!altRect.IsDefault) {
 							spriteRects.Add(altRect);
 						}
 					}
@@ -573,7 +573,7 @@ namespace Mesen.Debugger.ViewModels
 			if(sprite != null) {
 				SelectionRect = sprite.GetPreviewRect().Item1;
 			} else {
-				SelectionRect = Rect.Empty;
+				SelectionRect = default;
 			}
 		}
 
@@ -592,7 +592,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 			}
 
-			matchingRect = Rect.Empty;
+			matchingRect = default;
 			return null;
 		}
 

@@ -38,7 +38,7 @@ namespace Mesen.Debugger.Windows
 
 		public static void Open(DebugConfigWindowTab tab, IRenderRoot? parent)
 		{
-			new DebuggerConfigWindow(new DebuggerConfigWindowViewModel(tab)).ShowCenteredDialog(parent);
+			new DebuggerConfigWindow(new DebuggerConfigWindowViewModel(tab)).ShowCenteredDialog(parent as Visual);
 		}
 
 		private void InitializeComponent()
@@ -83,7 +83,7 @@ namespace Mesen.Debugger.Windows
 			}
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			if(Design.IsDesignMode) {

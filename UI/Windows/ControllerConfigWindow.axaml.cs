@@ -42,7 +42,7 @@ namespace Mesen.Windows
 			}
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			if(Design.IsDesignMode) {

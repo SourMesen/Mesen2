@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using System;
 using System.Collections.Generic;
@@ -15,8 +17,8 @@ namespace Mesen.Utilities
 		{
 			if(item.IsSubMenuOpen) {
 				bool checkPopup = true;
-				foreach(var container in item.ItemContainerGenerator.Containers) {
-					if(container.ContainerControl is MenuItem subItem) {
+				foreach(var child in item.GetLogicalChildren()) {
+					if(child is MenuItem subItem) {
 						if(IsPointerInItem(subItem)) {
 							return true;
 						} else if(checkPopup) {
@@ -27,7 +29,7 @@ namespace Mesen.Utilities
 							}
 							checkPopup = false;
 						}
-					} else if(container.ContainerControl.IsPointerOver) {
+					} else if(child is InputElement inputElem && inputElem.IsPointerOver) {
 						return true;
 					}
 				}

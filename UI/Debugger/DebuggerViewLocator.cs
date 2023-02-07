@@ -9,7 +9,7 @@ namespace Mesen.Debugger
 {
 	class DebuggerViewLocator : IDataTemplate
 	{
-		public IControl Build(object? data)
+		public Control Build(object? data)
 		{
 			string? name = data?.GetType().FullName?.Replace("ViewModel", "View");
 			if(name == null) {

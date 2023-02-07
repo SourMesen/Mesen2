@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using Mesen.Config;
 using Mesen.Utilities;
 using Mesen.ViewModels;
@@ -70,7 +71,7 @@ namespace Mesen.Controls
 			ControllerConfig cfg = Config.Clone();
 			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg, Config);
 			
-			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.VisualRoot, startPosition)) {
+			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.GetVisualRoot() as Visual, startPosition)) {
 				Config = cfg;
 			}
 		}

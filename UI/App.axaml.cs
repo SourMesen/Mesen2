@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Localization;
@@ -24,6 +25,7 @@ namespace Mesen
 			StyleHelper.LoadStartupStyles();
 			if(Design.IsDesignMode) {
 				StyleHelper.ApplyTheme(MesenTheme.Light);
+				RequestedThemeVariant = ThemeVariant.Light;
 				StyleHelper.LoadDebuggerStyles();
 			}
 			ResourceHelper.LoadResources();
@@ -34,8 +36,10 @@ namespace Mesen
 			if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				if(ShowConfigWindow) {
 					StyleHelper.ApplyTheme(MesenTheme.Light);
+					RequestedThemeVariant = ThemeVariant.Light;
 					desktop.MainWindow = new SetupWizardWindow();
 				} else {
+					RequestedThemeVariant = ConfigManager.Config.Preferences.Theme == MesenTheme.Dark ? ThemeVariant.Dark : ThemeVariant.Light;
 					desktop.MainWindow = new MainWindow();
 				}
 			}

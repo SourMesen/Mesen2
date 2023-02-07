@@ -12,7 +12,7 @@ namespace Mesen.Views
 {
 	public class ControllerConfigViewLocator : IDataTemplate
 	{
-		public IControl Build(object? data)
+		public Control Build(object? data)
 		{
 			KeyMappingViewModel? mappings = data as KeyMappingViewModel;
 

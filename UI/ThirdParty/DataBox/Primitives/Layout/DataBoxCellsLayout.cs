@@ -7,7 +7,7 @@ namespace DataBoxControl.Primitives.Layout;
 
 internal static class DataBoxCellsLayout
 {
-    public static Size Measure(Size availableSize, DataBox? dataBox, AvaloniaList<IControl> children)
+    public static Size Measure(Size availableSize, DataBox? dataBox, AvaloniaList<Control> children)
     {
         if (dataBox is null || children.Count == 0)
         {
@@ -40,7 +40,7 @@ internal static class DataBoxCellsLayout
         return new Size(parentWidth, parentHeight);
     }
 
-    public static Size Arrange(Size arrangeSize, DataBox? dataBox, AvaloniaList<IControl> children)
+    public static Size Arrange(Size arrangeSize, DataBox? dataBox, AvaloniaList<Control> children)
     {
         if (dataBox is null || children.Count == 0)
         {

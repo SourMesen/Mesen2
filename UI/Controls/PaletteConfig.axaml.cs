@@ -16,6 +16,7 @@ using Mesen.Windows;
 using Mesen.Utilities;
 using ReactiveUI;
 using System.Reactive;
+using Avalonia.VisualTree;
 
 namespace Mesen.Controls
 {
@@ -91,7 +92,7 @@ namespace Mesen.Controls
 			ColorPickerViewModel model = new ColorPickerViewModel() { Color = e.Color };
 			ColorPickerWindow wnd = new ColorPickerWindow() { DataContext = model };
 
-			bool success = await wnd.ShowCenteredDialog<bool>(VisualRoot );
+			bool success = await wnd.ShowCenteredDialog<bool>(this.GetVisualRoot() as Visual);
 			if(success) {
 				UInt32[] colors = (UInt32[])Palette.Clone();
 				colors[e.ColorIndex] = model.Color.ToUint32();
@@ -101,7 +102,7 @@ namespace Mesen.Controls
 
 		private async void btnLoadPalFile_OnClick(object sender, RoutedEventArgs e)
 		{
-			string? filename = await FileDialogHelper.OpenFile(null, VisualRoot, FileDialogHelper.PaletteExt);
+			string? filename = await FileDialogHelper.OpenFile(null, this.GetVisualRoot(), FileDialogHelper.PaletteExt);
 			if(filename != null) {
 				LoadPaletteFile(filename);
 			}
@@ -109,7 +110,7 @@ namespace Mesen.Controls
 
 		private async void btnExportPalette_OnClick(object sender, RoutedEventArgs e)
 		{
-			string? filename = await FileDialogHelper.SaveFile(null, null, VisualRoot, FileDialogHelper.PaletteExt);
+			string? filename = await FileDialogHelper.SaveFile(null, null, this.GetVisualRoot(), FileDialogHelper.PaletteExt);
 			if(filename != null) {
 				ExportPalette(filename);
 			}

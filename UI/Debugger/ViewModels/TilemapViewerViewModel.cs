@@ -45,7 +45,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool ShowTabs { get; private set; }
 		[Reactive] public TilemapViewerTab SelectedTab { get; set; }
 
-		[Reactive] public Rect ScrollOverlayRect { get; private set; } = Rect.Empty;
+		[Reactive] public Rect ScrollOverlayRect { get; private set; }
 		[Reactive] public List<PictureViewerLine>? OverlayLines { get; private set; } = null;
 
 		[Reactive] public Enum[] AvailableDisplayModes { get; set; } = Array.Empty<Enum>();
@@ -350,7 +350,7 @@ namespace Mesen.Debugger.ViewModels
 				if(ViewerMousePos.HasValue) {
 					p = ViewerMousePos.Value;
 				} else {
-					if(SelectionRect.IsEmpty) {
+					if(SelectionRect.IsDefault) {
 						return null;
 					}
 					p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);
@@ -361,7 +361,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdatePreviewPanel()
 		{
-			if(SelectionRect.IsEmpty) {
+			if(SelectionRect.IsDefault) {
 				PreviewPanel = null;
 			} else {
 				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
@@ -460,7 +460,7 @@ namespace Mesen.Debugger.ViewModels
 				if(_tilemapInfo.Bpp == 0) {
 					GridSizeX = 8;
 					GridSizeY = 8;
-					ScrollOverlayRect = Rect.Empty;
+					ScrollOverlayRect = default;
 					OverlayLines = null;
 					PreviewPanel = null;
 					IsTilemapInfoVisible = false;
@@ -485,7 +485,7 @@ namespace Mesen.Debugger.ViewModels
 
 					DrawMode7Overlay();
 				} else {
-					ScrollOverlayRect = Rect.Empty;
+					ScrollOverlayRect = default;
 					OverlayLines = null;
 				}
 			});

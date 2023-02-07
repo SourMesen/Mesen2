@@ -35,13 +35,13 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<ItemsPresenter DataContext="{Binding ElementName=root}" Items="{Binding Items}">
-		<ItemsPresenter.ItemsPanel>
+	<ItemsControl DataContext="{Binding ElementName=root}" Items="{Binding Items}">
+		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
 				<StackPanel Orientation="Horizontal" />
 			</ItemsPanelTemplate>
-		</ItemsPresenter.ItemsPanel>
-		<ItemsPresenter.DataTemplates>
+		</ItemsControl.ItemsPanel>
+		<ItemsControl.DataTemplates>
 			<DataTemplate DataType="{x:Type du:ContextMenuSeparator}">
 				<StackPanel Width="2" Height="16" Margin="2 0" IsVisible="{Binding Visible}">
 					<Rectangle
@@ -87,6 +87,6 @@
 					</Button.ContextMenu>
 				</Button>
 			</DataTemplate>
-		</ItemsPresenter.DataTemplates>
-	</ItemsPresenter>
+		</ItemsControl.DataTemplates>
+	</ItemsControl>
 </UserControl>

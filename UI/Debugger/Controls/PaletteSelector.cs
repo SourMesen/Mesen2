@@ -156,7 +156,7 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		private static int CoerceSelectedPalette(IAvaloniaObject o, int value)
+		private static int CoerceSelectedPalette(AvaloniaObject o, int value)
 		{
 			if(o is PaletteSelector selector) {
 				int maxPalette = 0;
@@ -245,7 +245,7 @@ namespace Mesen.Debugger.Controls
 
 			if(IsEnabled) {
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, (double)(_stopWatch.ElapsedMilliseconds / 50) % 100 / 5);
-				Rect selectionRect = Rect.Empty;
+				Rect selectionRect = default;
 				if(SelectionMode == PaletteSelectionMode.SingleColor) {
 					int selectedRow = SelectedPalette / columnCount;
 					selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
@@ -257,7 +257,7 @@ namespace Mesen.Debugger.Controls
 					selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
 				}
 
-				if(!selectionRect.IsEmpty) {
+				if(!selectionRect.IsDefault) {
 					context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
 					context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
 				}

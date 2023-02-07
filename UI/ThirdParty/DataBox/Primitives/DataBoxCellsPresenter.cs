@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using DataBoxControl.Primitives.Layout;
 
 namespace DataBoxControl.Primitives;
@@ -56,6 +57,6 @@ public class DataBoxCellsPresenter : Panel, IStyleable
 
 	public T? GetControl<T>(int index) where T : class
 	{
-		return ((Control)VisualChildren[0].VisualChildren[0]).GetLogicalDescendants().Where(x => x is T).ElementAtOrDefault(index) as T;
+		return ((Control)VisualChildren[0].GetVisualChildren().First()).GetLogicalDescendants().Where(x => x is T).ElementAtOrDefault(index) as T;
 	}
 }

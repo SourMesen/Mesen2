@@ -11,6 +11,7 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Interactivity;
 using Mesen.Windows;
 using Mesen.Interop;
+using Avalonia.VisualTree;
 
 namespace Mesen.Views
 {
@@ -39,8 +40,8 @@ namespace Mesen.Views
 		private async void ShowSelectFolderWindow()
 		{
 			SelectStorageFolderWindow wnd = new();
-			if(await wnd.ShowCenteredDialog<bool>(VisualRoot)) {
-				(VisualRoot as Window)?.Close();
+			if(await wnd.ShowCenteredDialog<bool>(this.GetVisualRoot() as Visual)) {
+				(this.GetVisualRoot() as Window)?.Close();
 				ApplicationHelper.GetMainWindow()?.Close();
 				ConfigManager.RestartMesen();
 			}

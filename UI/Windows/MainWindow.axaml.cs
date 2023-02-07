@@ -121,7 +121,7 @@ namespace Mesen.Windows
 			base.ArrangeCore(new Rect(ClientSize));
 		}
 
-		protected override void OnClosing(CancelEventArgs e)
+		protected override void OnClosing(WindowClosingEventArgs e)
 		{
 			base.OnClosing(e);
 			if(_needCloseValidation) {
@@ -285,7 +285,7 @@ namespace Mesen.Windows
 								if(WindowState == WindowState.FullScreen || WindowState == WindowState.Maximized) {
 									//Force resize of renderer when loading a game while in fullscreen
 									//Prevents some issues when fullscreen was turned on before loading a game, etc.
-									_rendererSize = Size.Empty;
+									_rendererSize = new Size();
 									ResizeRenderer();
 								}
 							}, TimeSpan.FromMilliseconds(50));
@@ -388,7 +388,7 @@ namespace Mesen.Windows
 
 			FrameInfo screenSize = EmuApi.GetBaseScreenSize();
 			if(WindowState == WindowState.Normal) {
-				_rendererSize = Size.Empty;
+				_rendererSize = new Size();
 
 				double aspectRatio = EmuApi.GetAspectRatio();
 
@@ -443,7 +443,7 @@ namespace Mesen.Windows
 
 		private void OnWindowStateChanged()
 		{
-			_rendererSize = Size.Empty;
+			_rendererSize = new Size();
 			ResizeRenderer();
 		}
 
