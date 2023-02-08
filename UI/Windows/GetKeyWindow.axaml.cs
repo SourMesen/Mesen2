@@ -14,6 +14,8 @@ using Mesen.Config;
 using Mesen.Utilities.GlobalMouseLib;
 using Mesen.Utilities;
 using Mesen.Localization;
+using Avalonia.Remote.Protocol.Input;
+using DynamicData;
 
 namespace Mesen.Windows
 {
@@ -23,7 +25,7 @@ namespace Mesen.Windows
 		
 		private List<UInt16> _prevScanCodes = new List<UInt16>();
 		private TextBlock lblCurrentKey;
-		private bool _allowMouseButtons;
+		private bool _allowKeyboardOnly;
 
 		public string HintLabel { get; }
 		public bool SingleKeyMode { get; set; } = false;
@@ -32,12 +34,12 @@ namespace Mesen.Windows
 		public KeyCombination ShortcutKey { get; set; } = new KeyCombination();
 
 		[Obsolete("For designer only")]
-		public GetKeyWindow() : this(true) { }
+		public GetKeyWindow() : this(false) { }
 
-		public GetKeyWindow(bool allowMouseButtons)
+		public GetKeyWindow(bool allowKeyboardOnly)
 		{
-			_allowMouseButtons = allowMouseButtons;
-			HintLabel = ResourceHelper.GetMessage(_allowMouseButtons ? "SetKeyMouseHint" : "SetKeyHint");
+			_allowKeyboardOnly = allowKeyboardOnly;
+			HintLabel = ResourceHelper.GetMessage(_allowKeyboardOnly ? "SetKeyHint" : "SetKeyMouseHint");
 
 			InitializeComponent();
 
@@ -72,6 +74,9 @@ namespace Mesen.Windows
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
 			InputApi.SetKeyState((UInt16)e.Key, false);
+			if(_allowKeyboardOnly) {
+				this.Close();
+			}
 			e.Handled = true;
 		}
 
@@ -107,7 +112,7 @@ namespace Mesen.Windows
 
 		private void UpdateKeyDisplay()
 		{
-			if(_allowMouseButtons) {
+			if(!_allowKeyboardOnly) {
 				MousePosition p = GlobalMouse.GetMousePosition();
 				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, 1.0));
@@ -117,26 +122,28 @@ namespace Mesen.Windows
 				InputApi.SetKeyState(MouseManager.MiddleMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle));
 				InputApi.SetKeyState(MouseManager.MouseButton4KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4));
 				InputApi.SetKeyState(MouseManager.MouseButton5KeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5));
-			}
 
-			List<UInt16> scanCodes = InputApi.GetPressedKeys();
+				List<UInt16> scanCodes = InputApi.GetPressedKeys();
 
-			if(this.SingleKeyMode) {
-				if(scanCodes.Count >= 1) {
-					//Always use the largest scancode (when multiple buttons are pressed at once)
-					scanCodes = new List<UInt16> { scanCodes.OrderBy(code => -code).First() };
-					this.SelectKeyCombination(new KeyCombination(scanCodes));
+				if(this.SingleKeyMode) {
+					if(scanCodes.Count >= 1) {
+						//Always use the largest scancode (when multiple buttons are pressed at once)
+						scanCodes = new List<UInt16> { scanCodes.OrderBy(code => -code).First() };
+						this.SelectKeyCombination(new KeyCombination(scanCodes));
+					}
+				} else {
+					KeyCombination key = new KeyCombination(_prevScanCodes);
+					this.GetControl<TextBlock>("lblCurrentKey").Text = key.ToString();
+
+					if(scanCodes.Count < _prevScanCodes.Count) {
+						//Confirm key selection when the user releases a key
+						this.SelectKeyCombination(key);
+					}
+
+					_prevScanCodes = scanCodes;
 				}
 			} else {
-				KeyCombination key = new KeyCombination(_prevScanCodes);
-				this.GetControl<TextBlock>("lblCurrentKey").Text = key.ToString();
-
-				if(scanCodes.Count < _prevScanCodes.Count) {
-					//Confirm key selection when the user releases a key
-					this.SelectKeyCombination(key);
-				}
-
-				_prevScanCodes = scanCodes;
+				this.GetControl<TextBlock>("lblCurrentKey").Text = DbgShortcutKey.ToString();
 			}
 		}
 	}

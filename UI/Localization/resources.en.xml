@@ -1494,7 +1494,7 @@
 		<Message ID="MovieSaveError">An error occurred while trying to save the movie file.</Message>
 		<Message ID="FileSaveError">An error occurred while trying to save the file.</Message>
 
-		<Message ID="SetKeyHint">Press any key on your keyboard or controller to set a new binding.</Message>
+		<Message ID="SetKeyHint">Press any key on your keyboard to set a new binding.</Message>
 		<Message ID="SetKeyMouseHint">Press any key on your keyboard, controller or mouse to set a new binding.</Message>
 
 		<Message ID="ClearHistory">Clear History</Message>

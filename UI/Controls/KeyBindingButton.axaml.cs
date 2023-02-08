@@ -53,7 +53,7 @@ namespace Mesen.Controls
 
 		protected override async void OnClick()
 		{
-			GetKeyWindow wnd = new GetKeyWindow(true);
+			GetKeyWindow wnd = new GetKeyWindow(false);
 			wnd.SingleKeyMode = true;
 			wnd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			await wnd.ShowCenteredDialog(this.GetVisualRoot() as Visual);
