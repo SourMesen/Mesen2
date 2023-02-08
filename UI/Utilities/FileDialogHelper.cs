@@ -66,7 +66,7 @@ namespace Mesen.Utilities
 			});
 
 			if(files.Count > 0) {
-				return files[0].Path.ToString();
+				return files[0].Path.LocalPath;
 			}
 			return null;
 		}
@@ -92,7 +92,7 @@ namespace Mesen.Utilities
 			});
 
 			if(file != null) {
-				return file.Path.ToString();
+				return file.Path.LocalPath;
 			}
 			return null;
 		}
@@ -108,7 +108,7 @@ namespace Mesen.Utilities
 			});
 
 			if(folders.Count > 0) {
-				return folders[0].Path.ToString();
+				return folders[0].Path.LocalPath;
 			}
 			return null;
 		}
