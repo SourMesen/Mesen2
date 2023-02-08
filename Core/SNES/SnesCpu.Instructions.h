@@ -267,6 +267,9 @@ void SnesCpu::REP()
 {
 	Idle();
 	ClearFlags((uint8_t)_operand);
+	if(_state.EmulationMode) {
+		SetFlags(ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
+	}
 }
 
 void SnesCpu::SEP()
@@ -331,14 +334,16 @@ void SnesCpu::IncDecReg(uint16_t& reg, int8_t offset)
 void SnesCpu::IncDec(int8_t offset)
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
-		uint8_t value = GetByteValue() + offset;
+		uint8_t value = GetByteValue();
+		IdleOrDummyWrite(_operand, value);
+		value += offset;
 		SetZeroNegativeFlags(value);
-		Idle();
 		Write(_operand, value);
 	} else {
-		uint16_t value = GetWordValue() + offset;
-		SetZeroNegativeFlags(value);
+		uint16_t value = GetWordValue();
 		Idle();
+		value += offset;
+		SetZeroNegativeFlags(value);
 		WriteWordRmw(_operand, value);
 	}
 }
@@ -459,7 +464,7 @@ void SnesCpu::RTI()
 	Idle();
 
 	if(_state.EmulationMode) {
-		SetPS(PopByte());
+		SetPS(PopByte() | ProcFlags::MemoryMode8 | ProcFlags::IndexMode8);
 		_state.PC = PopWord();
 	} else {
 		SetPS(PopByte());
@@ -628,7 +633,7 @@ void SnesCpu::ASL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
-		Idle();
+		IdleOrDummyWrite(_operand, value);
 		Write(_operand, ShiftLeft<uint8_t>(value));
 	} else {
 		uint16_t value = GetWordValue();
@@ -650,7 +655,7 @@ void SnesCpu::LSR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
-		Idle();
+		IdleOrDummyWrite(_operand, value);
 		Write(_operand, ShiftRight<uint8_t>(value));
 	} else {
 		uint16_t value = GetWordValue();
@@ -672,7 +677,7 @@ void SnesCpu::ROL()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
-		Idle();
+		IdleOrDummyWrite(_operand, value);
 		Write(_operand, RollLeft<uint8_t>(value));
 	} else {
 		uint16_t value = GetWordValue();
@@ -694,7 +699,7 @@ void SnesCpu::ROR()
 {
 	if(CheckFlag(ProcFlags::MemoryMode8)) {
 		uint8_t value = GetByteValue();
-		Idle();
+		IdleOrDummyWrite(_operand, value);
 		Write(_operand, RollRight<uint8_t>(value));
 	} else {
 		uint16_t value = GetWordValue();
@@ -1002,16 +1007,16 @@ void SnesCpu::TRB()
 		uint8_t value = GetByteValue();
 		TestBits<uint8_t>(value, true);
 
+		IdleOrDummyWrite(_operand, value);
 		value &= ~_state.A;
-		Idle();
 
 		Write(_operand, value);
 	} else {
 		uint16_t value = GetWordValue();
 		TestBits<uint16_t>(value, true);
 
-		value &= ~_state.A;
 		Idle();
+		value &= ~_state.A;
 
 		WriteWordRmw(_operand, value);
 	}
@@ -1023,16 +1028,16 @@ void SnesCpu::TSB()
 		uint8_t value = GetByteValue();
 		TestBits<uint8_t>(value, true);
 
+		IdleOrDummyWrite(_operand, value);
 		value |= _state.A;
-		Idle();
 
 		Write(_operand, value);
 	} else {
 		uint16_t value = GetWordValue();
 		TestBits<uint16_t>(value, true);
 
-		value |= _state.A;
 		Idle();
+		value |= _state.A;
 
 		WriteWordRmw(_operand, value);
 	}
@@ -1281,7 +1286,7 @@ void SnesCpu::AddrMode_DirIndIdxY(bool isWrite)
 
 void SnesCpu::AddrMode_DirIndLng()
 {
-	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte());
+	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte(), false);
 }
 
 void SnesCpu::AddrMode_DirIndLngIdxY()

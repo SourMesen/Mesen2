@@ -510,9 +510,9 @@ uint16_t SnesCpu::GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulat
 
 uint32_t SnesCpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode)
 {
-	uint8_t b1 = ReadData(GetDirectAddress(offset + 0));
-	uint8_t b2 = ReadData(GetDirectAddress(offset + 1));
-	uint8_t b3 = ReadData(GetDirectAddress(offset + 2));
+	uint8_t b1 = ReadData(GetDirectAddress(offset + 0, allowEmulationMode));
+	uint8_t b2 = ReadData(GetDirectAddress(offset + 1, allowEmulationMode));
+	uint8_t b3 = ReadData(GetDirectAddress(offset + 2, allowEmulationMode));
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 

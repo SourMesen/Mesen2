@@ -78,6 +78,19 @@ void Sa1Cpu::Idle()
 	_emu->ProcessIdleCycle<CpuType::Sa1>();
 }
 
+void Sa1Cpu::IdleOrDummyWrite(uint32_t addr, uint8_t value)
+{
+	if(_state.EmulationMode) {
+		Write(addr, value, MemoryOperationType::DummyWrite);
+	} else {
+		_state.CycleCount++;
+		_emu->ProcessIdleCycle<CpuType::Snes>();
+	}
+
+	DetectNmiSignalEdge();
+	UpdateIrqNmiFlags();
+}
+
 void Sa1Cpu::IdleEndJump()
 {
 	IMemoryHandler* handler = _sa1->GetMemoryMappings()->GetHandler(_state.PC);

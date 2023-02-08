@@ -49,6 +49,7 @@ private:
 
 	void Idle();
 	void IdleOrRead();
+	void IdleOrDummyWrite(uint32_t addr, uint8_t value);
 	void IdleEndJump();
 	void IdleTakeBranch();
 

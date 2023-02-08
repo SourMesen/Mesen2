@@ -95,6 +95,23 @@ void SnesCpu::Idle()
 #endif
 }
 
+void SnesCpu::IdleOrDummyWrite(uint32_t addr, uint8_t value)
+{
+#ifndef DUMMYCPU
+	_memoryManager->SetCpuSpeed(6);
+	ProcessCpuCycle();
+
+	if(_state.EmulationMode) {
+		Write(addr, value, MemoryOperationType::DummyWrite);
+	} else {
+		_memoryManager->IncMasterClock6();
+		_emu->ProcessIdleCycle<CpuType::Snes>();
+	}
+
+	UpdateIrqNmiFlags();
+#endif
+}
+
 void SnesCpu::IdleEndJump()
 {
 	//Used by SA1
