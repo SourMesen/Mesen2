@@ -84,11 +84,7 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 				}
 			} else {
 				cart->LoadRom();
-
-				if((cart->_prgRomSize & 0xFFF) != 0) {
-					//Round up to the next 4kb size, to ensure we have access to all the rom's data
-					cart->_prgRomSize = (cart->_prgRomSize & ~0xFFF) + 0x1000;
-				}
+				cart->EnsureValidPrgRomSize();
 			}
 
 			cart->_emu->RegisterMemory(MemoryType::SnesPrgRom, cart->_prgRom, cart->_prgRomSize);
@@ -97,6 +93,21 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 		return cart;
 	} else {
 		return nullptr;
+	}
+}
+
+void BaseCartridge::EnsureValidPrgRomSize()
+{
+	if((_prgRomSize & 0xFFF) != 0) {
+		//Round up to the next 4kb size, to ensure we have access to all the rom's data
+		//Memory mappings expect a multiple of 4kb to work properly
+		uint32_t orgPrgSize = _prgRomSize;
+		_prgRomSize = (_prgRomSize & ~0xFFF) + 0x1000;
+		uint8_t* expandedPrgRom = new uint8_t[_prgRomSize];
+		memset(expandedPrgRom, 0, _prgRomSize);
+		memcpy(expandedPrgRom, _prgRom, orgPrgSize);
+		delete[] _prgRom;
+		_prgRom = expandedPrgRom;
 	}
 }
 

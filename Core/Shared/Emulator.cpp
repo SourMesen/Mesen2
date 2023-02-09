@@ -418,6 +418,7 @@ bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom,
 		//Only update the recent game entry if the game that was loaded is a different game
 		bool gameChanged = (string)_rom.RomFile != (string)romFile || (string)_rom.PatchFile != (string)patchFile;
 		Stop(false, !gameChanged, false);
+		memset(originalConsoleMemory, 0, sizeof(originalConsoleMemory));
 	}
 
 	_videoDecoder->StopThread();

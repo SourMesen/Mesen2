@@ -79,6 +79,8 @@ private:
 	void InitRamPowerOnState();
 
 	void LoadRom();
+	void EnsureValidPrgRomSize();
+
 	void LoadSpc();
 	bool LoadGameboy(VirtualFile& romFile);
 	void SetupCpuHalt();
