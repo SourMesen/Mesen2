@@ -120,11 +120,13 @@ public:
 	{
 		switch(addr & 0xE000) {
 			case 0xC000:
-				_currentRegister = value & 0x0F;
+				_currentRegister = value;
 				break;
 
 			case 0xE000:
-				_registers[_currentRegister] = value;
+				if(_currentRegister <= 0x0F) {
+					_registers[_currentRegister] = value;
+				}
 				break;
 		}
 	}

@@ -79,7 +79,7 @@ protected:
 	{
 		switch(addr & 0xE000) {
 			case 0x8000:
-				_command = value;
+				_command = value & 0x0F;
 				break;
 			case 0xA000:
 				switch(_command) {
