@@ -252,12 +252,12 @@ private:
 			} else if(nametableId == 2) {
 				if(_extendedRamMode <= 1) {
 					uint8_t* source = HasBattery() ? (_saveRam + (_saveRamSize - MMC5::ExRamSize)) : (_workRam + (_workRamSize - MMC5::ExRamSize));
-					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, source, MemoryAccessType::ReadWrite);
+					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, source, 0, MMC5::ExRamSize, MemoryAccessType::ReadWrite);
 				} else {
-					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _emptyNametable, MemoryAccessType::Read);
+					SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _emptyNametable, 0, BaseMapper::NametableSize, MemoryAccessType::Read);
 				}
 			} else {
-				SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _fillNametable, MemoryAccessType::Read);
+				SetPpuMemoryMapping(0x2000 + i * 0x400, 0x2000 + i * 0x400 + 0x3FF, _fillNametable, 0, BaseMapper::NametableSize, MemoryAccessType::Read);
 			}
 		}
 	}

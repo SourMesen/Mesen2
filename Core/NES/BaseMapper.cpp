@@ -130,11 +130,12 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, PrgMemoryType type, uint32_t sourceOffset, int8_t accessType)
 {
 	uint8_t* source = nullptr;
+	uint32_t sourceSize = 0;
 	switch(type) {
 		default:
-		case PrgMemoryType::PrgRom: source = _prgRom; break;
-		case PrgMemoryType::SaveRam: source = _saveRam; break;
-		case PrgMemoryType::WorkRam: source = _workRam; break;
+		case PrgMemoryType::PrgRom: source = _prgRom; sourceSize = _prgSize; break;
+		case PrgMemoryType::SaveRam: source = _saveRam; sourceSize = _saveRamSize; break;
+		case PrgMemoryType::WorkRam: source = _workRam; sourceSize = _workRamSize; break;
 	}
 
 	int firstSlot = startAddr >> 8;
@@ -145,10 +146,10 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, PrgMe
 		_prgMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
 	}
 
-	SetCpuMemoryMapping(startAddr, endAddr, source+sourceOffset, accessType);
+	SetCpuMemoryMapping(startAddr, endAddr, source, sourceOffset, sourceSize, accessType);
 }
 
-void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t *source, int8_t accessType)
+void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t *source, uint32_t sourceOffset, uint32_t sourceSize, int8_t accessType)
 {
 	if(!ValidateAddressRange(startAddr, endAddr)) {
 		return;
@@ -157,10 +158,15 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8
 	startAddr >>= 8;
 	endAddr >>= 8;
 	for(uint16_t i = startAddr; i <= endAddr; i++) {
-		_prgPages[i] = source;
-		_prgMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::Read;
+		if(source && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
+			_prgPages[i] = source + sourceOffset;
+			_prgMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::ReadWrite;
+		} else {
+			_prgPages[i] = nullptr;
+			_prgMemoryAccess[i] = MemoryAccessType::NoAccess;
+		}
 
-		source += 0x100;
+		sourceOffset += 0x100;
 	}
 }
 
@@ -175,7 +181,7 @@ void BaseMapper::RemoveCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr)
 		_prgMemoryAccess[firstSlot + i] = MemoryAccessType::NoAccess;
 	}
 
-	SetCpuMemoryMapping(startAddr, endAddr, nullptr, MemoryAccessType::NoAccess);
+	SetCpuMemoryMapping(startAddr, endAddr, nullptr, 0, 0, MemoryAccessType::NoAccess);
 }
 
 void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint16_t pageNumber, ChrMemoryType type, int8_t accessType)
@@ -260,14 +266,23 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMe
 		type = _chrRomSize > 0 ? ChrMemoryType::ChrRom : ChrMemoryType::ChrRam;
 	}
 
+	uint32_t sourceSize = 0;
 	switch(type) {
 		case ChrMemoryType::Default: 
 		case ChrMemoryType::ChrRom:
 			sourceMemory = _chrRom;
+			sourceSize = _chrRomSize;
 			break;
 
-		case ChrMemoryType::ChrRam: sourceMemory = _chrRam; break;
-		case ChrMemoryType::NametableRam: sourceMemory = _nametableRam; break;
+		case ChrMemoryType::ChrRam:
+			sourceMemory = _chrRam;
+			sourceSize = _chrRamSize;
+			break;
+
+		case ChrMemoryType::NametableRam:
+			sourceMemory = _nametableRam;
+			sourceSize = _ntRamSize;
+			break;
 	}
 
 	int firstSlot = startAddr >> 8;
@@ -278,10 +293,10 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMe
 		_chrMemoryAccess[firstSlot + i] = (MemoryAccessType)accessType;
 	}
 
-	SetPpuMemoryMapping(startAddr, endAddr, sourceMemory + sourceOffset, accessType);
+	SetPpuMemoryMapping(startAddr, endAddr, sourceMemory, sourceOffset, sourceSize, accessType);
 }
 
-void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t* sourceMemory, int8_t accessType)
+void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t* sourceMemory, uint32_t sourceOffset, uint32_t sourceSize, int8_t accessType)
 {
 	if(!ValidateAddressRange(startAddr, endAddr)) {
 		return;
@@ -290,12 +305,15 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8
 	startAddr >>= 8;
 	endAddr >>= 8;
 	for(uint16_t i = startAddr; i <= endAddr; i++) {
-		_chrPages[i] = sourceMemory;
-		_chrMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::ReadWrite;
-
-		if(sourceMemory != nullptr) {
-			sourceMemory += 0x100;
+		if(sourceMemory && sourceSize > 0 && sourceOffset <= sourceSize - 0x100) {
+			_chrPages[i] = sourceMemory + sourceOffset;
+			_chrMemoryAccess[i] = accessType != -1 ? (MemoryAccessType)accessType : MemoryAccessType::ReadWrite;
+		} else {
+			_chrPages[i] = nullptr;
+			_chrMemoryAccess[i] = MemoryAccessType::NoAccess;
 		}
+
+		sourceOffset += 0x100;
 	}
 }
 
@@ -310,7 +328,7 @@ void BaseMapper::RemovePpuMemoryMapping(uint16_t startAddr, uint16_t endAddr)
 		_chrMemoryAccess[firstSlot + i] = MemoryAccessType::NoAccess;
 	}
 
-	SetPpuMemoryMapping(startAddr, endAddr, nullptr, MemoryAccessType::NoAccess);
+	SetPpuMemoryMapping(startAddr, endAddr, nullptr, 0, 0, MemoryAccessType::NoAccess);
 }
 
 uint8_t BaseMapper::InternalReadRam(uint16_t addr)
@@ -506,13 +524,10 @@ void BaseMapper::RemoveRegisterRange(uint16_t startAddr, uint16_t endAddr, Memor
 
 void BaseMapper::Serialize(Serializer& s)
 {
-	//Need to get the number of nametables in the state first), before we try to stream the nametable ram array
-	SV(_nametableCount);
-
 	SVArray(_chrRam, _chrRamSize);
 	SVArray(_workRam, _workRamSize);
 	SVArray(_saveRam, _saveRamSize);
-	SVArray(_nametableRam, _nametableCount * BaseMapper::NametableSize);
+	SVArray(_nametableRam, _ntRamSize);
 
 	SVArray(_prgMemoryOffset, 0x100);
 	SVArray(_chrMemoryOffset, 0x40);
@@ -1149,6 +1164,7 @@ void BaseMapper::SwapMemoryAccess(BaseMapper* sub, bool mainHasAccess)
 	}
 
 	uint8_t* memory = HasBattery() ? _saveRam : _workRam;
-	SetCpuMemoryMapping(0x6000, 0x7FFF, memory, mainHasAccess ? MemoryAccessType::ReadWrite : MemoryAccessType::NoAccess);
-	sub->SetCpuMemoryMapping(0x6000, 0x7FFF, memory, mainHasAccess ? MemoryAccessType::NoAccess : MemoryAccessType::ReadWrite);
+	uint32_t size = HasBattery() ? _saveRamSize : _workRamSize;
+	SetCpuMemoryMapping(0x6000, 0x7FFF, memory, 0, size, mainHasAccess ? MemoryAccessType::ReadWrite : MemoryAccessType::NoAccess);
+	sub->SetCpuMemoryMapping(0x6000, 0x7FFF, memory, 0, size, mainHasAccess ? MemoryAccessType::NoAccess : MemoryAccessType::ReadWrite);
 }
