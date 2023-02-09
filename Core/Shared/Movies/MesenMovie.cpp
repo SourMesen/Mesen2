@@ -26,6 +26,7 @@ MesenMovie::MesenMovie(Emulator* emu, bool forTest)
 
 MesenMovie::~MesenMovie()
 {
+	_emu->UnregisterInputProvider(this);
 }
 
 void MesenMovie::Stop()
