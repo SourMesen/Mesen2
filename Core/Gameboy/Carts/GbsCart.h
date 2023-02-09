@@ -138,7 +138,7 @@ public:
 		//Can't do this in the current thread in some contexts (e.g when track reaches end)
 		//because this is called from the emulation thread, which may cause infinite recursion
 		thread switchTrackTask([this, selectedTrack]() {
-			auto lock = _gameboy->GetEmulator()->AcquireLock();
+			auto lock = _gameboy->GetEmulator()->AcquireLock(false);
 			InitPlayback(selectedTrack);
 		});
 		switchTrackTask.detach();

@@ -786,9 +786,16 @@ void Emulator::WaitForPauseEnd()
 	}
 }
 
-EmulatorLock Emulator::AcquireLock()
+EmulatorLock Emulator::AcquireLock(bool allowDebuggerLock)
 {
-	return EmulatorLock(this);
+	//When allowDebuggerLock is true, the debugger is allowed to pause the emulation thread
+	//instead of using the emulator's lock to pause the emulation at the end of the next frame
+	//This is to allow, for example, loading or save a save state while the debugger tools are
+	//opened without forcing the emulation to run for an entire frame each time.
+	//However, sometimes this causes issues, e.g calling AcquireLock and then LoadRom from the
+	//same thread while the debugger is active will cause a deadlock. This is why this behavior
+	//can be disabled, as required.
+	return EmulatorLock(this, allowDebuggerLock);
 }
 
 void Emulator::Lock()

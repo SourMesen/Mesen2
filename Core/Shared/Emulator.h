@@ -169,7 +169,7 @@ public:
 	uint64_t GetMasterClock();
 	uint32_t GetMasterClockRate();
 
-	EmulatorLock AcquireLock();
+	EmulatorLock AcquireLock(bool allowDebuggerLock = true);
 	void Lock();
 	void Unlock();
 	bool IsThreadPaused();

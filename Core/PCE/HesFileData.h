@@ -71,7 +71,7 @@ struct HesFileData
 		//Can't do this in the current thread in some contexts (e.g when track reaches end)
 		//because this is called from the emulation thread, which may cause infinite recursion
 		thread switchTrackTask([emu, selectedTrack]() {
-			auto lock = emu->AcquireLock();
+			auto lock = emu->AcquireLock(false);
 			emu->ReloadRom(false);
 			((PceConsole*)emu->GetConsole().get())->InitHesPlayback(selectedTrack);
 		});

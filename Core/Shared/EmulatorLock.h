@@ -13,6 +13,6 @@ private:
 	unique_ptr<DebugBreakHelper> _breakHelper;
 
 public:
-	EmulatorLock(Emulator* emulator);
+	EmulatorLock(Emulator* emulator, bool allowDebuggerLock);
 	~EmulatorLock();
 };

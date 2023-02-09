@@ -130,8 +130,6 @@ bool MesenMovie::Play(VirtualFile &file)
 
 	_deviceIndex = 0;
 
-	auto emuLock = _emu->AcquireLock();
-	
 	ParseSettings(settingsData);
 	
 	string version = LoadString(_settings, MovieKeys::MesenVersion);
@@ -145,6 +143,8 @@ bool MesenMovie::Play(VirtualFile &file)
 		MessageManager::DisplayMessage("Movies", "MovieIncompatibleVersion");
 		return false;
 	}
+
+	auto emuLock = _emu->AcquireLock(false);
 
 	if(!ApplySettings(settingsData)) {
 		return false;
