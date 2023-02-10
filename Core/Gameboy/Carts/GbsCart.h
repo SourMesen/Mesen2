@@ -87,7 +87,7 @@ public:
 			_memoryManager->WriteRegister(0xFF40, 0x00);
 
 			//Use timer for IRQs
-			if(_header.TimerControl & 0x80) {
+			if((_header.TimerControl & 0x80) && !_memoryManager->IsHighSpeed()) {
 				//2x clock rate (CGB)
 				_memoryManager->ToggleSpeed();
 			}
