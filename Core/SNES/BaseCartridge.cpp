@@ -187,16 +187,16 @@ void BaseCartridge::LoadRom()
 		}
 	}
 
+	bool corruptedHeader = IsCorruptedHeader();
+
 	uint32_t flags = 0;
+	if(hasHeader) {
+		flags |= CartFlags::CopierHeader;
+	}
+
 	if(isLoRom) {
-		if(hasHeader) {
-			flags |= CartFlags::CopierHeader;
-		}
 		flags |= CartFlags::LoRom;
 	} else {
-		if(hasHeader) {
-			flags |= CartFlags::CopierHeader;
-		}
 		flags |= isExRom ? CartFlags::ExHiRom : CartFlags::HiRom;
 	}
 
@@ -219,23 +219,28 @@ void BaseCartridge::LoadRom()
 	_flags = (CartFlags::CartFlags)flags;
 
 	_hasBattery = (_cartInfo.RomType & 0x0F) == 0x02 || (_cartInfo.RomType & 0x0F) == 0x05 || (_cartInfo.RomType & 0x0F) == 0x06 || (_cartInfo.RomType & 0x0F) == 0x09 || (_cartInfo.RomType & 0x0F) == 0x0A;
-	_coprocessorType = GetCoprocessorType();
 
-	if(_coprocessorType == CoprocessorType::SGB && !_gameboy) {
-		//Only allow SGB when a game boy rom is loaded
+	if(corruptedHeader) {
 		_coprocessorType = CoprocessorType::None;
-	}
+	} else {
+		_coprocessorType = GetCoprocessorType();
 
-	if(_coprocessorType != CoprocessorType::None && _cartInfo.ExpansionRamSize > 0 && _cartInfo.ExpansionRamSize <= 7) {
-		_coprocessorRamSize = _cartInfo.ExpansionRamSize > 0 ? 1024 * (1 << _cartInfo.ExpansionRamSize) : 0;
-	}
+		if(_coprocessorType == CoprocessorType::SGB && !_gameboy) {
+			//Only allow SGB when a game boy rom is loaded
+			_coprocessorType = CoprocessorType::None;
+		}
 
-	if(_coprocessorType == CoprocessorType::GSU && _coprocessorRamSize == 0) {
-		//Use a min of 64kb by default for GSU games
-		_coprocessorRamSize = 0x10000;
-	}
+		if(_coprocessorType != CoprocessorType::None && _cartInfo.ExpansionRamSize > 0 && _cartInfo.ExpansionRamSize <= 7) {
+			_coprocessorRamSize = _cartInfo.ExpansionRamSize > 0 ? 1024 * (1 << _cartInfo.ExpansionRamSize) : 0;
+		}
 
-	LoadEmbeddedFirmware();
+		if(_coprocessorType == CoprocessorType::GSU && _coprocessorRamSize == 0) {
+			//Use a min of 64kb by default for GSU games
+			_coprocessorRamSize = 0x10000;
+		}
+
+		LoadEmbeddedFirmware();
+	}
 
 	InitRamPowerOnState();
 
@@ -245,7 +250,7 @@ void BaseCartridge::LoadRom()
 	_emu->RegisterMemory(MemoryType::SnesSaveRam, _saveRam, _saveRamSize);
 	_emu->GetSettings()->InitializeRam(GetRamPowerOnState(), _saveRam, _saveRamSize);
 
-	DisplayCartInfo();
+	DisplayCartInfo(corruptedHeader);
 }
 
 CoprocessorType BaseCartridge::GetCoprocessorType()
@@ -723,10 +728,16 @@ ConsoleRegion BaseCartridge::GetRegion()
 	return ConsoleRegion::Ntsc;
 }
 
-void BaseCartridge::DisplayCartInfo()
+void BaseCartridge::DisplayCartInfo(bool showCorruptedHeaderWarning)
 {
 	MessageManager::Log("-----------------------------");
 	MessageManager::Log("File: " + VirtualFile(_romPath).GetFileName());
+	if(showCorruptedHeaderWarning) {
+		MessageManager::Log("--------");
+		MessageManager::Log("WARNING: ROM header is most likely invalid.");
+		MessageManager::Log("--------");
+	}
+
 	MessageManager::Log("Game: " + GetCartName());
 	string gameCode = GetGameCode();
 	if(!gameCode.empty()) {
@@ -790,6 +801,30 @@ void BaseCartridge::DisplayCartInfo()
 		MessageManager::Log("Battery: yes");
 	}
 	MessageManager::Log("-----------------------------");
+}
+
+bool BaseCartridge::IsCorruptedHeader()
+{
+	int badHeaderCounter = 0;
+	if(_cartInfo.SramSize & 0xF0) {
+		badHeaderCounter++;
+	}
+	if(_cartInfo.RomType == 0xFF) {
+		badHeaderCounter++;
+	}
+	if(_cartInfo.DestinationCode == 0xFF) {
+		badHeaderCounter++;
+	}
+	if(_cartInfo.DeveloperId == 0xFF) {
+		badHeaderCounter++;
+	}
+	if(_cartInfo.RomSize == 0xFF) {
+		badHeaderCounter++;
+	}
+	if(_cartInfo.MapMode == 0xFF) {
+		badHeaderCounter++;
+	}
+	return badHeaderCounter > 2;
 }
 
 NecDsp* BaseCartridge::GetDsp()

@@ -44,9 +44,9 @@ Spc7110::Spc7110(SnesConsole* console, bool useRtc)
 	uint32_t romSize = _cart->DebugGetPrgRomSize();
 	if(!enableStrictBoardMappings && _cart->DebugGetPrgRomSize() >= 0x600000) {
 		mappings->RegisterHandler(0x40, 0x4F, 0x0000, 0xFFFF, prgRomHandlers, 0, 0x600);
-		_realDataRomSize = romSize - 0x200000;
+		_realDataRomSize = romSize > 0x200000 ? romSize - 0x200000 : 0;
 	} else {
-		_realDataRomSize = romSize - 0x100000;
+		_realDataRomSize = romSize > 0x100000 ? romSize - 0x100000 : 0;
 	}
 	mappings->RegisterHandler(0xC0, 0xCF, 0x0000, 0xFFFF, prgRomHandlers);
 
@@ -268,8 +268,10 @@ void Spc7110::UpdateMappings()
 	vector<unique_ptr<IMemoryHandler>>& prgRomHandlers = _cart->GetPrgRomHandlers();
 
 	uint32_t dataRomSize = _realDataRomSize >> 12;
-	for(int i = 0; i < 3; i++) {
-		mappings->RegisterHandler(0xD0 + (i * 0x10), 0xDF + (i * 0x10), 0x0000, 0xFFFF, prgRomHandlers, 0, 0x100 + ((_dataRomBanks[i] * 0x100) % dataRomSize));
+	if(dataRomSize > 0) {
+		for(int i = 0; i < 3; i++) {
+			mappings->RegisterHandler(0xD0 + (i * 0x10), 0xDF + (i * 0x10), 0x0000, 0xFFFF, prgRomHandlers, 0, 0x100 + ((_dataRomBanks[i] * 0x100) % dataRomSize));
+		}
 	}
 }
 

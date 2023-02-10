@@ -67,7 +67,9 @@ private:
 	void LoadBattery();
 
 	int32_t GetHeaderScore(uint32_t addr);
-	void DisplayCartInfo();
+	void DisplayCartInfo(bool showCorruptedHeaderWarning);
+
+	bool IsCorruptedHeader();
 
 	CoprocessorType GetCoprocessorType();
 	CoprocessorType GetSt01xVersion();
