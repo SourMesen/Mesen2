@@ -12,7 +12,7 @@ enum class CpuType : uint8_t;
 struct ControllerData;
 enum class ControllerType;
 
-class BaseControlManager
+class BaseControlManager : public ISerializable
 {
 private:
 	vector<IInputRecorder*> _inputRecorders;
@@ -35,6 +35,8 @@ protected:
 public:
 	BaseControlManager(Emulator* emu, CpuType cpuType);
 	virtual ~BaseControlManager();
+	
+	void Serialize(Serializer& s) override;
 
 	void AddSystemControlDevice(shared_ptr<BaseControlDevice> device);
 
@@ -83,4 +85,5 @@ public:
 		}
 		return nullptr;
 	}
+
 };

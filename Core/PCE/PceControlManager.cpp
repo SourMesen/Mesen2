@@ -86,6 +86,7 @@ void PceControlManager::Serialize(Serializer& s)
 		UpdateControlDevices();
 	}
 
+	BaseControlManager::Serialize(s);
 	for(int i = 0; i < (int)_controlDevices.size(); i++) {
 		SVI(_controlDevices[i]);
 	}

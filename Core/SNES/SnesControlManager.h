@@ -15,7 +15,7 @@ class SystemActionManager;
 struct ControllerData;
 enum class ControllerType;
 
-class SnesControlManager : public ISerializable, public BaseControlManager
+class SnesControlManager final : public BaseControlManager
 {
 private:
 	SnesConfig _prevConfig = {};

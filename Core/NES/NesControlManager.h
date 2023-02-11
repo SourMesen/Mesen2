@@ -15,7 +15,7 @@ class Emulator;
 class NesConsole;
 enum class ControllerType;
 
-class NesControlManager : public ISerializable, public INesMemoryHandler, public BaseControlManager
+class NesControlManager : public INesMemoryHandler, public BaseControlManager
 {
 private:
 	NesConfig _prevConfig = {};

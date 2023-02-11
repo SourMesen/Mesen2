@@ -8,7 +8,7 @@ class Emulator;
 class Gameboy;
 class BaseControlDevice;
 
-class GbControlManager final : public BaseControlManager, public ISerializable
+class GbControlManager final : public BaseControlManager
 {
 private:
 	Emulator* _emu = nullptr;

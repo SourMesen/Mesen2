@@ -7,7 +7,7 @@
 
 class Emulator;
 
-class PceControlManager : public BaseControlManager, public ISerializable
+class PceControlManager final : public BaseControlManager
 {
 private:
 	PceControlManagerState _state = {};

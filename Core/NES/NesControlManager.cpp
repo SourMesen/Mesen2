@@ -262,8 +262,8 @@ void NesControlManager::Reset(bool softReset)
 
 void NesControlManager::Serialize(Serializer& s)
 {
+	BaseControlManager::Serialize(s);
 	SV(_lagCounter);
-	SV(_pollCounter);
 
 	if(!s.IsSaving()) {
 		UpdateControlDevices();

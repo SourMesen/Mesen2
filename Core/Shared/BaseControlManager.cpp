@@ -135,6 +135,11 @@ vector<shared_ptr<BaseControlDevice>> BaseControlManager::GetControlDevices()
 	return _controlDevices;
 }
 
+void BaseControlManager::Serialize(Serializer& s)
+{
+	SV(_pollCounter);
+}
+
 void BaseControlManager::RegisterControlDevice(shared_ptr<BaseControlDevice> controlDevice)
 {
 	controlDevice->Init();
@@ -223,7 +228,7 @@ bool BaseControlManager::HasControlDevice(ControllerType type)
 
 uint32_t BaseControlManager::GetPollCounter()
 {
-	return BaseControlManager::_pollCounter;
+	return _pollCounter;
 }
 
 void BaseControlManager::SetPollCounter(uint32_t value)
