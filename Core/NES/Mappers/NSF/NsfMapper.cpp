@@ -88,6 +88,13 @@ void NsfMapper::Reset(bool softReset)
 	if(!softReset) {
 		_songNumber = _nsfHeader.StartingSong - 1;
 	}
+
+	_mmc5Audio.reset(new Mmc5Audio(_console));
+	_vrc6Audio.reset(new Vrc6Audio(_console));
+	_vrc7Audio.reset(new Vrc7Audio(_console));
+	_fdsAudio.reset(new FdsAudio(_console));
+	_namcoAudio.reset(new Namco163Audio(_console));
+	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
 }
 
 void NsfMapper::OnAfterResetPowerOn()
@@ -147,13 +154,6 @@ void NsfMapper::OnAfterResetPowerOn()
 	//Disable Frame Counter & DMC interrupts
 	_console->GetCpu()->SetIrqMask((uint8_t)IRQSource::External);
 	_irqCounter = 0;
-
-	_mmc5Audio.reset(new Mmc5Audio(_console));
-	_vrc6Audio.reset(new Vrc6Audio(_console));
-	_vrc7Audio.reset(new Vrc7Audio(_console));
-	_fdsAudio.reset(new FdsAudio(_console));
-	_namcoAudio.reset(new Namco163Audio(_console));
-	_sunsoftAudio.reset(new Sunsoft5bAudio(_console));
 }
 
 void NsfMapper::GetMemoryRanges(MemoryRanges& ranges)
