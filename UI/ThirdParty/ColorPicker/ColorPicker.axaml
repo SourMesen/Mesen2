@@ -17,7 +17,7 @@
 				<DockPanel x:Name="PART_DockPanel">
 					<Grid x:Name="PART_PropertiesGrid">
 						<Grid.Styles>
-							<Style Selector="NumericUpDown.picker">
+							<Style Selector="NumericUpDown">
 								<Setter Property="ClipValueToMinMax" Value="True"/>
 								<Setter Property="Width" Value="90"/>
 							</Style>
@@ -40,11 +40,11 @@
 									<cp:RgbProperties ColorPicker="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
 								</Grid.DataContext>
 								<TextBlock Text="R:" ToolTip.Tip="Red" Classes="picker" Grid.Row="0" Grid.Column="0"/>
-								<NumericUpDown Value="{Binding Red, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Classes="picker" Grid.Row="0" Grid.Column="1"/>
+								<NumericUpDown Value="{Binding Red, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Grid.Row="0" Grid.Column="1"/>
 								<TextBlock Text="G:" ToolTip.Tip="Green" Classes="picker" Grid.Row="1" Grid.Column="0"/>
-								<NumericUpDown Value="{Binding Green, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Classes="picker" Grid.Row="1" Grid.Column="1"/>
+								<NumericUpDown Value="{Binding Green, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Grid.Row="1" Grid.Column="1"/>
 								<TextBlock Text="B:" ToolTip.Tip="Blue" Classes="picker" Grid.Row="2" Grid.Column="0"/>
-								<NumericUpDown Value="{Binding Blue, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Classes="picker" Grid.Row="2" Grid.Column="1"/>
+								<NumericUpDown Value="{Binding Blue, Mode=TwoWay}" Minimum="0" Maximum="255" Increment="1" FormatString="G" Grid.Row="2" Grid.Column="1"/>
 							</Grid>
 						</StackPanel>
 					</Grid>
