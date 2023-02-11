@@ -435,8 +435,7 @@ namespace Mesen.Windows
 			uint realWidth = (uint)Math.Round(width * LayoutHelper.GetLayoutScale(this));
 			uint realHeight = (uint)Math.Round(height * LayoutHelper.GetLayoutScale(this));
 			EmuApi.SetRendererSize(realWidth, realHeight);
-
-			_model.RendererSize = new Size(width, height);
+			_model.RendererSize = new Size(realWidth, realHeight);
 
 			_renderer.Width = width;
 			_renderer.Height = height;
