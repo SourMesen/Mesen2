@@ -260,7 +260,12 @@ void DspVoice::Step3c()
 		_shared->Pitch = 0;
 	}
 
-	int32_t output = _cfg->EnableCubicInterpolation ? DspInterpolation::Cubic(_interpolationPos, _sampleBuffer, _bufferPos) : DspInterpolation::Gauss(_interpolationPos, _sampleBuffer, _bufferPos);
+	int32_t output;
+	switch(_cfg->InterpolationType) {
+		case DspInterpolationType::Gauss: output = DspInterpolation::Gauss(_interpolationPos, _sampleBuffer, _bufferPos); break;
+		case DspInterpolationType::Cubic: output = DspInterpolation::Cubic(_interpolationPos, _sampleBuffer, _bufferPos); break;
+		case DspInterpolationType::None: output = _sampleBuffer[((_interpolationPos >> 12) + _bufferPos) % 12]; break;
+	}
 
 	//"If applicable, replace the current sample with the noise sample."
 	if(_shared->NoiseOn & _voiceBit) {

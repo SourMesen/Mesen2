@@ -39,7 +39,7 @@ namespace Mesen.Config
 		[Reactive] public OverscanConfig Overscan { get; set; } = new() { Top = 7, Bottom = 8 };
 
 		//Audio
-		[Reactive] public bool EnableCubicInterpolation { get; set; } = false;
+		[Reactive] public DspInterpolationType InterpolationType { get; set; } = DspInterpolationType.Gauss;
 		[Reactive][MinMax(0, 100)] public UInt32 Channel1Vol { get; set; } = 100;
 		[Reactive][MinMax(0, 100)] public UInt32 Channel2Vol { get; set; } = 100;
 		[Reactive][MinMax(0, 100)] public UInt32 Channel3Vol { get; set; } = 100;
@@ -92,7 +92,7 @@ namespace Mesen.Config
 
 				Overscan = Overscan.ToInterop(),
 
-				EnableCubicInterpolation = this.EnableCubicInterpolation,
+				InterpolationType = InterpolationType,
 
 				Channel1Vol = Channel1Vol,
 				Channel2Vol = Channel2Vol,
@@ -182,7 +182,7 @@ namespace Mesen.Config
 
 		public InteropOverscanDimensions Overscan;
 
-		[MarshalAs(UnmanagedType.I1)] public bool EnableCubicInterpolation;
+		public DspInterpolationType InterpolationType;
 		public UInt32 Channel1Vol;
 		public UInt32 Channel2Vol;
 		public UInt32 Channel3Vol;
@@ -201,5 +201,12 @@ namespace Mesen.Config
 		public UInt32 GsuClockSpeed;
 
 		public long BsxCustomDate;
+	}
+
+	public enum DspInterpolationType
+	{
+		Gauss,
+		Cubic,
+		None
 	}
 }

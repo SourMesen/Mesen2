@@ -60,7 +60,13 @@
 							<c:MesenSlider Text="{l:Translate lblChannel8}" Value="{CompiledBinding Config.Channel8Vol}" />
 						</StackPanel>
 					</c:GroupBox>
-					<CheckBox Content="{l:Translate chkEnableCubicInterpolation}" IsChecked="{CompiledBinding Config.EnableCubicInterpolation}" />
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{l:Translate lblAudioInterpolation}" Margin="5 0" />
+						<c:EnumComboBox
+							Width="180"
+							SelectedItem="{CompiledBinding Config.InterpolationType}"
+						/>
+					</StackPanel>
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

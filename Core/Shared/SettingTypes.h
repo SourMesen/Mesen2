@@ -441,6 +441,13 @@ struct PcEngineConfig
 	uint32_t Palette[512] = { };
 };
 
+enum class DspInterpolationType
+{
+	Gauss,
+	Cubic,
+	None
+};
+
 struct SnesConfig
 {
 	ControllerConfig Port1;
@@ -461,7 +468,7 @@ struct SnesConfig
 
 	OverscanDimensions Overscan = {};
 
-	bool EnableCubicInterpolation = true;
+	DspInterpolationType InterpolationType = DspInterpolationType::Gauss;
 	uint32_t ChannelVolumes[8] = { 100, 100, 100, 100, 100, 100, 100, 100 };
 
 	bool EnableRandomPowerOnState = false;

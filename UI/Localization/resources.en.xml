@@ -207,7 +207,7 @@
 			<Control ID="lblRegion">Region:</Control>
 			
 			<Control ID="tpgAudio">Audio</Control>
-			<Control ID="chkEnableCubicInterpolation">Enable cubic interpolation</Control>
+			<Control ID="lblAudioInterpolation">Audio interpolation type:</Control>
 			<Control ID="grpVolume">Volume</Control>
 			<Control ID="lblChannel1">Channel 1</Control>
 			<Control ID="lblChannel2">Channel 2</Control>
@@ -1810,6 +1810,11 @@
 		<Enum ID="GenericMouseButtons">
 			<Value ID="LeftButton">Left Button</Value>
 			<Value ID="RightButton">Right Button</Value>
+		</Enum>
+		<Enum ID="DspInterpolationType">
+			<Value ID="Gauss">Gauss (default, accurate)</Value>
+			<Value ID="Cubic">Cubic</Value>
+			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="SnesSuperScopeButtons">
 			<Value ID="Fire">Fire</Value>
