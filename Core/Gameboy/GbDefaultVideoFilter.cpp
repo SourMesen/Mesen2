@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/GbDefaultVideoFilter.h"
 #include "Gameboy/GbConstants.h"
+#include "Gameboy/Gameboy.h"
 #include "Shared/Video/DebugHud.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -72,7 +73,7 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 	VideoConfig config = _emu->GetSettings()->GetVideoConfig();
 	GameboyConfig gbConfig = _emu->GetSettings()->GetGameboyConfig();
 
-	bool adjustColors = gbConfig.GbcAdjustColors;
+	bool adjustColors = gbConfig.GbcAdjustColors && ((Gameboy*)_emu->GetConsole().get())->IsCgb();
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness || _gbcAdjustColors != adjustColors) {
 		_gbcAdjustColors = adjustColors;
 		InitLookupTable();
