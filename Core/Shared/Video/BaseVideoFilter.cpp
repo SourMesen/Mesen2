@@ -114,6 +114,24 @@ void BaseVideoFilter::InitConversionMatrix(double hueShift, double saturationShi
 	}
 }
 
+void BaseVideoFilter::ApplyColorOptions(uint8_t& r, uint8_t& g, uint8_t& b, double brightness, double contrast)
+{
+	double redChannel = r / 255.0;
+	double greenChannel = g / 255.0;
+	double blueChannel = b / 255.0;
+
+	//Apply brightness, contrast, hue & saturation
+	double y, i, q;
+	RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
+	y *= contrast * 0.5f + 1;
+	y += brightness * 0.5f;
+	YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
+
+	r = (uint8_t)std::min(255, (int)std::round(redChannel * 255));
+	g = (uint8_t)std::min(255, (int)std::round(greenChannel * 255));
+	b = (uint8_t)std::min(255, (int)std::round(blueChannel * 255));
+}
+
 void BaseVideoFilter::RgbToYiq(double r, double g, double b, double& y, double& i, double& q)
 {
 	y = r * 0.299f + g * 0.587f + b * 0.114f;

@@ -56,19 +56,7 @@ protected:
 			uint8_t b = color & 0xFF;
 
 			if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
-				double redChannel = r / 255.0;
-				double greenChannel = g / 255.0;
-				double blueChannel = b / 255.0;
-
-				//Apply brightness, contrast, hue & saturation
-				RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
-				y *= config.Contrast * 0.5f + 1;
-				y += config.Brightness * 0.5f;
-				YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
-
-				r = (uint8_t)std::min(255, (int)(redChannel * 255));
-				g = (uint8_t)std::min(255, (int)(greenChannel * 255));
-				b = (uint8_t)std::min(255, (int)(blueChannel * 255));
+				ApplyColorOptions(r, g, b, config.Brightness, config.Contrast);
 			}
 
 			//Convert RGB to grayscale color

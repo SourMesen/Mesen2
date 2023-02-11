@@ -24,6 +24,7 @@ protected:
 	void* _frameData = nullptr;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
+	void ApplyColorOptions(uint8_t& r, uint8_t& g, uint8_t& b, double brightness, double contrast);
 	void RgbToYiq(double r, double g, double b, double& y, double& i, double& q);
 	void YiqToRgb(double y, double i, double q, double& r, double& g, double& b);
 

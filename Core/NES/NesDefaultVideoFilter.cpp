@@ -114,29 +114,22 @@ void NesDefaultVideoFilter::InitLookupTable()
 	VideoConfig& videoCfg = _emu->GetSettings()->GetVideoConfig();
 	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();
 
-	InitConversionMatrix(videoCfg.Hue, videoCfg.Saturation);
+	if(videoCfg.Brightness != 0 || videoCfg.Contrast != 0 || videoCfg.Hue != 0 || videoCfg.Saturation != 0) {
+		uint32_t palette[512];
+		GetFullPalette(palette, nesCfg, _ppuModel);
 
-	double y, i, q;
-	uint32_t palette[512];
-	GetFullPalette(palette, nesCfg, _ppuModel);
+		InitConversionMatrix(videoCfg.Hue, videoCfg.Saturation);
+		for(int pal = 0; pal < 512; pal++) {
+			uint32_t pixelOutput = palette[pal];
+			uint8_t r = (pixelOutput & 0xFF0000) >> 16;
+			uint8_t g = (pixelOutput & 0xFF00) >> 8;
+			uint8_t b = pixelOutput & 0xFF;
+			ApplyColorOptions(r, g, b, videoCfg.Brightness, videoCfg.Contrast);
 
-	for(int pal = 0; pal < 512; pal++) {
-		uint32_t pixelOutput = palette[pal];
-		double redChannel = ((pixelOutput & 0xFF0000) >> 16) / 255.0;
-		double greenChannel = ((pixelOutput & 0xFF00) >> 8) / 255.0;
-		double blueChannel = (pixelOutput & 0xFF) / 255.0;
-
-		//Apply brightness, contrast, hue & saturation
-		RgbToYiq(redChannel, greenChannel, blueChannel, y, i, q);
-		y *= _videoConfig.Contrast * 0.5f + 1;
-		y += _videoConfig.Brightness * 0.5f;
-		YiqToRgb(y, i, q, redChannel, greenChannel, blueChannel);
-
-		int r = std::min(255, (int)(redChannel * 255));
-		int g = std::min(255, (int)(greenChannel * 255));
-		int b = std::min(255, (int)(blueChannel * 255));
-
-		_calculatedPalette[pal] = 0xFF000000 | (r << 16) | (g << 8) | b;
+			_calculatedPalette[pal] = 0xFF000000 | (r << 16) | (g << 8) | b;
+		}
+	} else {
+		GetFullPalette(_calculatedPalette, nesCfg, _ppuModel);
 	}
 }
 
