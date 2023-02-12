@@ -69,8 +69,9 @@ public:
 		//Disable boot room
 		_memoryManager->WriteRegister(0xFF50, 0x01);
 
-		//Enable all IRQs
-		_memoryManager->WriteRegister(0xFFFF, 0xFF);
+		//Enable timer, vblank and scanline IRQs
+		//(enabling joypad irq seems to break some (most?) GBS files because no joypad irq handler is defined)
+		_memoryManager->WriteRegister(0xFFFF, GbIrqSource::Timer | GbIrqSource::LcdStat | GbIrqSource::VerticalBlank);
 
 		//Enable APU
 		_memoryManager->WriteRegister(0xFF26, 0x80);
