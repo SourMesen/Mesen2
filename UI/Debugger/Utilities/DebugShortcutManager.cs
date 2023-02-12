@@ -66,6 +66,7 @@ namespace Mesen.Debugger.Utilities
 
 								if(act.IsEnabled == null || act.IsEnabled()) {
 									act.OnClick();
+									e.Handled = true;
 								}
 							}
 						}
