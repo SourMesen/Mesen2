@@ -80,6 +80,8 @@ public class RgbdsSymbolFile
 
 		List<CodeLabel> labels = new List<CodeLabel>(1000);
 
+		Dictionary<MemoryType, int> sizeByMemoryType = new();
+
 		int errorCount = 0;
 		foreach(string row in File.ReadAllLines(path, Encoding.UTF8)) {
 			UInt32 address;
@@ -92,6 +94,9 @@ public class RgbdsSymbolFile
 			} else if(labelName == null) {
 				//Empty line/comment
 				continue;
+			} else if(address > 0xFFFF) {
+				errorCount++;
+				continue;
 			}
 
 			UInt32 fullAddress = 0;
@@ -99,7 +104,7 @@ public class RgbdsSymbolFile
 			if(address <= 0x7FFF) {
 				fullAddress = bank * prgBankSize + (address & (prgBankSize - 1));
 				absAddress = new AddressInfo() { Address = (int)fullAddress, Type = MemoryType.GbPrgRom };
-			} else if(address >= 0xA000 && address <= 0xCFFF) {
+			} else if(address >= 0xA000 && address <= 0xBFFF) {
 				fullAddress = bank * sramBankSize + (address & (sramBankSize - 1));
 				absAddress = new AddressInfo() { Address = (int)fullAddress, Type = MemoryType.GbCartRam };
 			} else if(address >= 0xC000 && address <= 0xDFFF) {
@@ -110,6 +115,15 @@ public class RgbdsSymbolFile
 			}
 
 			if(absAddress.Address >= 0) {
+				if(!sizeByMemoryType.TryGetValue(absAddress.Type, out int size)) {
+					sizeByMemoryType[absAddress.Type] = size = DebugApi.GetMemorySize(absAddress.Type);
+				}
+
+				if(absAddress.Address >= size) {
+					errorCount++;
+					continue;
+				}
+
 				CodeLabel label = new CodeLabel();
 				label.Address = (UInt32)absAddress.Address;
 				label.MemoryType = absAddress.Type;
