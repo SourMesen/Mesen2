@@ -21,7 +21,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			ctrl.ContextMenu = new ContextMenu();
-			ctrl.ContextMenu.Classes.Add("ActionMenu");
+			ctrl.ContextMenu.Name = "ActionMenu";
 			ctrl.ContextMenu.Items = actions;
 			RegisterActions(ctrl, actions);
 

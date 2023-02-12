@@ -81,7 +81,7 @@
 					<Button.ContextMenu>
 						<ContextMenu
 							IsEnabled="{Binding SubActions, Converter={x:Static ObjectConverters.IsNotNull}}"
-							Classes="ActionMenu"
+							Name="ActionMenu"
 						  Items="{Binding SubActions}"
 						/>
 					</Button.ContextMenu>

@@ -21,9 +21,9 @@
 	</Design.DataContext>
 	
 	<DockPanel>
-		<Menu DockPanel.Dock="Top" Name="MainMenu">
-			<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuOptions}" Classes="ActionMenu" Items="{CompiledBinding OptionsMenuItems}" />
+		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuOptions}" Items="{CompiledBinding OptionsMenuItems}" />
 		</Menu>
 
 		<Border Name="ControlBar" BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="0 1 0 0" DockPanel.Dock="Bottom">

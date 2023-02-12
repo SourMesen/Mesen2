@@ -13,7 +13,7 @@ namespace Mesen.Views
 		public MainMenuView()
 		{
 			InitializeComponent();
-			MainMenu = this.GetControl<Menu>("MainMenu");
+			MainMenu = this.GetControl<Menu>("ActionMenu");
 			
 			MainMenu.MenuClosed += (s, e) => {
 				//When an option is selected in the menu (e.g with enter or mouse click)

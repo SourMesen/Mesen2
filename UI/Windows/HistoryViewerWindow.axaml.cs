@@ -53,7 +53,7 @@ namespace Mesen.Windows
 			_rendererPanel.LayoutUpdated += RendererPanel_LayoutUpdated;
 
 			_controlBar = this.GetControl<Border>("ControlBar");
-			_mainMenu = this.GetControl<Menu>("MainMenu");
+			_mainMenu = this.GetControl<Menu>("ActionMenu");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(50), DispatcherPriority.Normal, (s, e) => {
 				_model.Update();
 				UpdateMouse();

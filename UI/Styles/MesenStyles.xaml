@@ -139,7 +139,7 @@
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
 	</Style>
 
-	<Style Selector="Menu MenuItem MenuItem, ContextMenu MenuItem">
+	<Style Selector="Menu#ActionMenu MenuItem MenuItem, ContextMenu#ActionMenu MenuItem">
 		<Setter Property="Header" Value="{Binding ActionName}" />
 		<Setter Property="Icon" Value="{Binding ActionIcon}" />
 		<Setter Property="IsVisible" Value="{Binding Visible}" />

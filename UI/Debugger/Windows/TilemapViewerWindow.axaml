@@ -32,9 +32,9 @@
 
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
-				<MenuItem Classes="ActionMenu" Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
+			<Menu DockPanel.Dock="Top" Name="ActionMenu">
+				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
 			</Menu>
 			<c:IconButton
 				HorizontalAlignment="Right"

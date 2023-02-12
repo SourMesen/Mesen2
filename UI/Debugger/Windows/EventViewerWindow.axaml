@@ -41,10 +41,10 @@
 	
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="{l:Translate mnuFile}" Classes="ActionMenu" Items="{CompiledBinding FileMenuItems}" />
-				<MenuItem Header="{l:Translate mnuDebug}" Classes="ActionMenu" Items="{CompiledBinding DebugMenuItems}" />
-				<MenuItem Header="{l:Translate mnuView}" Classes="ActionMenu" Items="{CompiledBinding ViewMenuItems}" />
+			<Menu DockPanel.Dock="Top" Name="ActionMenu">
+				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
+				<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
+				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuItems}" />
 			</Menu>
 			<c:IconButton
 				HorizontalAlignment="Right"
