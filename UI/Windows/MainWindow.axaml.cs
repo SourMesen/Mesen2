@@ -519,6 +519,11 @@ namespace Mesen.Windows
 			return false;
 		}
 
+		private static bool IsModifierKey(Key key)
+		{
+			return key == Key.LeftShift || key == Key.LeftCtrl || key == Key.LeftAlt || key == Key.RightShift || key == Key.RightCtrl || key == Key.RightAlt;
+		}
+
 		private void OnPreviewKeyDown(object? sender, KeyEventArgs e)
 		{
 			if(_testModeEnabled && e.KeyModifiers == KeyModifiers.Alt && ProcessTestModeShortcuts(e.Key)) {
@@ -537,6 +542,11 @@ namespace Mesen.Windows
 
 			if(e.Key == Key.Tab || e.Key == Key.F10) {
 				//Prevent menu/window from handling these keys to avoid issue with custom shortcuts
+				e.Handled = true;
+			}
+
+			if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && !IsModifierKey(e.Key) && e.KeyModifiers != KeyModifiers.Meta) {
+				//Prevent alert sound on macOS
 				e.Handled = true;
 			}
 		}
