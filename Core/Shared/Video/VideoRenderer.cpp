@@ -135,7 +135,9 @@ void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
-		recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps());
+		if(!recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps())) {
+			StopRecording();
+		}
 	}
 
 	{
@@ -191,7 +193,9 @@ void VideoRenderer::AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
-		recorder->AddSound(soundBuffer, sampleCount, sampleRate);
+		if(!recorder->AddSound(soundBuffer, sampleCount, sampleRate)) {
+			StopRecording();
+		}
 	}
 }
 

@@ -56,7 +56,6 @@ bool WaveRecorder::WriteSamples(int16_t * samples, uint32_t sampleCount, uint32_
 {
 	if(_sampleRate != sampleRate || _isStereo != isStereo) {
 		//Format changed, stop recording
-		CloseFile();
 		return false;
 	} else {
 		uint32_t sampleBytes = sampleCount * (isStereo ? 4 : 2);

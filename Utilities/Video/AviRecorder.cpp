@@ -72,29 +72,30 @@ void AviRecorder::StopRecording()
 	}
 }
 
-void AviRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps)
+bool AviRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps)
 {
 	if(_recording) {
 		if(_width != width || _height != height || _fps != fps) {
-			StopRecording();
+			return false;
 		} else {
 			auto lock = _lock.AcquireSafe();
 			memcpy(_frameBuffer, frameBuffer, _frameBufferLength);
 			_waitFrame.Signal();
 		}
 	}
+	return true;
 }
 
-void AviRecorder::AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
+bool AviRecorder::AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
 {
 	if(_recording) {
 		if(_sampleRate != sampleRate) {
-			auto lock = _lock.AcquireSafe();
-			StopRecording();
+			return false;
 		} else {
 			_aviWriter->AddSound(soundBuffer, sampleCount);
 		}
 	}
+	return true;
 }
 
 bool AviRecorder::IsRecording()

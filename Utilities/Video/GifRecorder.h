@@ -18,8 +18,8 @@ public:
 
 	bool StartRecording(string filename, uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps) override;
 	void StopRecording() override;
-	void AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps) override;
-	void AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate) override;
+	bool AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps) override;
+	bool AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate) override;
 	bool IsRecording() override;
 	string GetOutputFile() override;
 };

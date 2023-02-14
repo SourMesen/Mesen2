@@ -27,7 +27,7 @@ void GifRecorder::StopRecording()
 	}
 }
 
-void GifRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps)
+bool GifRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps)
 {
 	_frameCounter++;
 	
@@ -35,10 +35,13 @@ void GifRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, d
 		//At 60 FPS, skip 1 of every 6 frames (max FPS for GIFs is 50fps)
 		GifWriteFrame(_gif.get(), (uint8_t*)frameBuffer, width, height, 2, 8, false);
 	}
+
+	return true;
 }
 
-void GifRecorder::AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
+bool GifRecorder::AddSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate)
 {
+	return true;
 }
 
 bool GifRecorder::IsRecording()

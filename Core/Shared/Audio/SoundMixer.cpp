@@ -131,7 +131,9 @@ void SoundMixer::PlayAudioBuffer(int16_t* samples, uint32_t sampleCount, uint32_
 		if(isRecording) {
 			shared_ptr<WaveRecorder> recorder = _waveRecorder.lock();
 			if(recorder) {
-				recorder->WriteSamples(out, count, cfg.SampleRate, true);
+				if(!recorder->WriteSamples(out, count, cfg.SampleRate, true)) {
+					StopRecording();
+				}
 			}
 			_emu->GetVideoRenderer()->AddRecordingSound(out, count, cfg.SampleRate);
 		}
