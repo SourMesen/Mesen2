@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Debugger/ExpressionEvaluator.h"
 #include "PCE/PceTypes.h"
+#include "PCE/PceConsole.h"
+#include "PCE/PcePsg.h"
 #include "PCE/Debugger/PceDebugger.h"
 
 unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
@@ -26,10 +28,12 @@ unordered_map<string, int64_t>& ExpressionEvaluator::GetPceTokens()
 		{ "psmemory", EvalValues::RegPS_Memory },
 		{ "psoverflow", EvalValues::RegPS_Overflow },
 		{ "psnegative", EvalValues::RegPS_Negative },
-		{ "vramTransferDone", EvalValues::PceVramTransferDone },
-		{ "satbTransferDone", EvalValues::PceSatbTransferDone },
-		{ "scanlineDetected", EvalValues::PceScanlineDetected },
-		{ "irqVdc2", EvalValues::PceIrqVdc2 },
+		{ "vramtransferdone", EvalValues::PceVramTransferDone },
+		{ "satbtransferdone", EvalValues::PceSatbTransferDone },
+		{ "scanlinedetected", EvalValues::PceScanlineDetected },
+		{ "irqvdc2", EvalValues::PceIrqVdc2 },
+		{ "psgchannel", EvalValues::PceSelectedPsgChannel },
+		{ "vdcreg", EvalValues::PceSelectedVdcRegister }
 	};
 
 	return supportedTokens;
@@ -41,6 +45,10 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		PceVideoState ppu;
 		((PceDebugger*)_cpuDebugger)->GetPpuState(ppu);
 		return ppu;
+	};
+
+	auto psg = [this]() -> PcePsgState& {
+		return ((PceDebugger*)_cpuDebugger)->GetConsole()->GetPsg()->GetState();
 	};
 
 	PceCpuState& s = (PceCpuState&)((PceDebugger*)_cpuDebugger)->GetState();
@@ -65,6 +73,8 @@ int64_t ExpressionEvaluator::GetPceTokenValue(int64_t token, EvalResultType& res
 		case EvalValues::PceVramTransferDone: return ReturnBool(ppu().Vdc.VramTransferDone, resultType);
 		case EvalValues::PceSatbTransferDone: return ReturnBool(ppu().Vdc.SatbTransferDone, resultType);
 		case EvalValues::PceScanlineDetected: return ReturnBool(ppu().Vdc.ScanlineDetected, resultType);
+		case EvalValues::PceSelectedPsgChannel: return psg().ChannelSelect;
+		case EvalValues::PceSelectedVdcRegister: return ppu().Vdc.CurrentReg;
 
 		case EvalValues::RegPS_Carry: return ReturnBool(s.PS & PceCpuFlags::Carry, resultType);
 		case EvalValues::RegPS_Zero: return ReturnBool(s.PS & PceCpuFlags::Zero, resultType);

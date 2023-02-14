@@ -147,6 +147,8 @@ enum EvalValues : int64_t
 	PceSatbTransferDone,
 	PceScanlineDetected,
 	PceIrqVdc2,
+	PceSelectedPsgChannel,
+	PceSelectedVdcRegister,
 
 	FirstLabelIndex,
 };
