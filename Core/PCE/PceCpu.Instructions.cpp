@@ -584,8 +584,8 @@ void PceCpu::CLY()
 void PceCpu::ST0()
 {
 	DummyRead(); //1 dummy read
-	ProcessCpuCycle(); //1 write cycle
 #ifndef DUMMYCPU
+	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(0, _operand);
 #endif
 }
@@ -593,8 +593,8 @@ void PceCpu::ST0()
 void PceCpu::ST1()
 {
 	DummyRead(); //1 dummy read
-	ProcessCpuCycle(); //1 write cycle
 #ifndef DUMMYCPU
+	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(2, _operand);
 #endif
 }
@@ -602,8 +602,8 @@ void PceCpu::ST1()
 void PceCpu::ST2()
 {
 	DummyRead(); //1 dummy read
-	ProcessCpuCycle(); //1 write cycle
 #ifndef DUMMYCPU
+	ProcessCpuCycle(); //1 write cycle
 	_memoryManager->WriteVdc(3, _operand);
 #endif
 }
