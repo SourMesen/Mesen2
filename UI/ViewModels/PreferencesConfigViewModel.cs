@@ -59,9 +59,9 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.ToggleGameTimer,
 				EmulatorShortcut.ToggleFrameCounter,
 				EmulatorShortcut.ToggleLagCounter,
-				EmulatorShortcut.ToggleOsd,
 				EmulatorShortcut.ToggleAlwaysOnTop,
 				EmulatorShortcut.ToggleCheats,
+				EmulatorShortcut.ToggleOsd,
 
 				EmulatorShortcut.ToggleBgLayer1,
 				EmulatorShortcut.ToggleBgLayer2,

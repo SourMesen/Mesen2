@@ -1643,7 +1643,7 @@
 			<Value ID="ToggleGameTimer">Toggle Game Timer</Value>
 			<Value ID="ToggleFrameCounter">Toggle Frame Counter</Value>
 			<Value ID="ToggleLagCounter">Toggle Lag Counter</Value>
-			<Value ID="ToggleOsd">Toggle OSD (On-Screen Display)</Value>
+			<Value ID="ToggleOsd">Show/Hide on-screen messages</Value>
 			<Value ID="ToggleAlwaysOnTop">Toggle Display on Top</Value>
 			<Value ID="ToggleKeyboardMode">Toggle Keyboard Mode</Value>
 
