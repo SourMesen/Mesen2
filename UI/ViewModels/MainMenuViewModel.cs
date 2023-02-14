@@ -543,7 +543,7 @@ namespace Mesen.ViewModels
 			return new MainMenuAction(shortcut) {
 				ActionType = ActionType.Custom,
 				CustomText = scale + "x",
-				IsSelected = () => (int)((double)MainWindow.RendererSize.Width / EmuApi.GetBaseScreenSize().Width) == scale
+				IsSelected = () => (int)((double)MainWindow.RendererSize.Height / EmuApi.GetBaseScreenSize().Height) == scale
 			};
 		}
 

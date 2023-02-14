@@ -194,7 +194,7 @@ namespace Mesen.ViewModels
 				CustomText = scale + "x",
 				Shortcut = () => new DbgShortKeys(KeyModifiers.Alt, Key.D0 + scale),
 				OnClick = () => wnd.SetScale(scale),
-				IsSelected = () => (int)((double)RendererSize.Width / EmuApi.GetBaseScreenSize().Width) == scale
+				IsSelected = () => (int)((double)RendererSize.Height / EmuApi.GetBaseScreenSize().Height) == scale
 			};
 		}
 
