@@ -614,7 +614,6 @@
 		<Form ID="AboutWindow">
 			<Control ID="wndTitle">About - Mesen</Control>
 			<Control ID="lblName">Mesen</Control>
-			<Control ID="lblCopyright">© 2014-2022 Sour</Control>
 			<Control ID="lblWebsite">Website:</Control>
 			<Control ID="lblLink">www.mesen.ca</Control>
 			<Control ID="lblVersion">Version:</Control>

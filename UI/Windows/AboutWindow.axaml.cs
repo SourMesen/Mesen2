@@ -84,6 +84,8 @@ namespace Mesen.Windows
 			AcknowledgeList.Sort((a, b) => a.Name.CompareTo(b.Name));
 
 			InitializeComponent();
+
+			this.GetControl<TextBlock>("lblCopyright").Text = $"© 2014-{DateTime.Now.Year} Sour";
 		}
 
 		private void InitializeComponent()
