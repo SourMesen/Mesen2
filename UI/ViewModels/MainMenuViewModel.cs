@@ -66,7 +66,7 @@ namespace Mesen.ViewModels
 				_cfgWindow.ShowCentered((Control)wnd);
 			} else {
 				(_cfgWindow.DataContext as ConfigViewModel)!.SelectTab(tab);
-				_cfgWindow.Activate();
+				_cfgWindow.BringToFront();
 			}
 		}
 
