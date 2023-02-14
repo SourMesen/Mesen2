@@ -55,7 +55,9 @@ namespace Mesen.Controls
 		protected override void OnIsCheckedChanged(RoutedEventArgs e)
 		{
 			base.OnIsCheckedChanged(e);
-			Value = CheckedWhen;
+			if(IsChecked == true) {
+				Value = CheckedWhen;
+			}
 		}
 	}
 }
