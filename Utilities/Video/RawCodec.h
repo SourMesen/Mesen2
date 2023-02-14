@@ -17,7 +17,11 @@ public:
 		_height = height;
 		_width = width;
 
-		_bufferSize = width * height * 3;
+		//Output width must be a multiple of 4 bytes to be a valid AVI file when uncompressed
+		//Increase buffer size to account for the padding that needs to be added
+		uint32_t rowWidth = width * 3;
+		uint32_t paddingLength = rowWidth % 4 ? (4 - rowWidth % 4) : 0;
+		_bufferSize = (width + paddingLength) * height * 3;
 		_buffer = new uint8_t[(_bufferSize + 1) & ~1];
 		memset(_buffer, 0, (_bufferSize + 1) & ~1);
 
@@ -27,6 +31,10 @@ public:
 	virtual int CompressFrame(bool isKeyFrame, uint8_t *frameData, uint8_t** compressedData) override
 	{
 		*compressedData = _buffer;
+
+		//Data must be padded to be a multiple of 4 bytes for the AVI file to be valid
+		uint32_t rowWidth = _width * 3;
+		uint32_t paddingLength = rowWidth % 4 ? (4 - rowWidth % 4) : 0;
 
 		//Convert raw frame to BMP/DIB format (row order is reversed)
 		uint8_t* buffer = _buffer;
@@ -39,6 +47,12 @@ public:
 				frameData += 4;
 				buffer += 3;
 			}
+
+			if(paddingLength) {
+				memset(buffer, 0, paddingLength);
+				buffer += paddingLength;
+			}
+
 			frameData -= _width * 2 * 4;
 		}
 		return _bufferSize;
