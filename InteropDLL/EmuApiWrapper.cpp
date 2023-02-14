@@ -39,6 +39,8 @@ unique_ptr<Emulator> _emu(new Emulator());
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
 
+static constexpr char* _buildDateTime = __DATE__ ", " __TIME__;
+
 static InteropNotificationListeners _listeners;
 
 struct InteropRomInfo
@@ -59,6 +61,7 @@ extern "C" {
 	}
 
 	DllExport uint32_t __stdcall GetMesenVersion() { return _emu->GetSettings()->GetVersion(); }
+	DllExport char* __stdcall GetMesenBuildDate() { return _buildDateTime; }
 
 	DllExport void __stdcall InitDll()
 	{

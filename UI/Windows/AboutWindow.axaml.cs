@@ -32,12 +32,14 @@ namespace Mesen.Windows
 		}
 
 		public string Version { get; }
+		public string BuildDate { get; }
 		public List<AboutListEntry> LibraryList { get; }
 		public List<AboutListEntry> AcknowledgeList { get; }
 
 		public AboutWindow()
 		{
 			Version = EmuApi.GetMesenVersion().ToString();
+			BuildDate = EmuApi.GetMesenBuildDate();
 
 			LibraryList = new List<AboutListEntry>() {
 				new("Avalonia", "", "MIT", "https://github.com/AvaloniaUI/Avalonia"),

@@ -31,6 +31,12 @@ namespace Mesen.Interop
 			return new Version((int)major, (int)minor, (int)revision);
 		}
 
+		[DllImport(DllPath, EntryPoint = "GetMesenBuildDate")] private static extern IntPtr GetMesenBuildDateWrapper();
+		public static string GetMesenBuildDate()
+		{
+			return Utf8Utilities.PtrToStringUtf8(GetMesenBuildDateWrapper());
+		}
+
 		[DllImport(DllPath)] public static extern IntPtr RegisterNotificationCallback(NotificationListener.NotificationCallback callback);
 		[DllImport(DllPath)] public static extern void UnregisterNotificationCallback(IntPtr notificationListener);
 

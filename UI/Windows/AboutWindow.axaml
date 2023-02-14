@@ -10,7 +10,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="Mesen.Windows.AboutWindow"
-	Width="350" Height="500"
+	Width="350" Height="525"
 	Title="{l:Translate wndTitle}"
 	CanResize="False"
 	Name="root"
@@ -60,6 +60,10 @@
 					<TextBlock Text="{l:Translate lblVersion}" Margin="0 0 5 0" />
 					<TextBlock Text="{CompiledBinding Version, ElementName=root}" />
 				</StackPanel>
+				<StackPanel Orientation="Horizontal" Margin="3">
+					<TextBlock Text="{l:Translate lblBuildDate}" Margin="0 0 5 0" />
+					<TextBlock Text="{CompiledBinding BuildDate, ElementName=root}" />
+				</StackPanel>
 				<TextBlock Name="lblCopyright" Margin="3" />
 				<StackPanel Orientation="Horizontal" Margin="3">
 					<TextBlock Text="{l:Translate lblWebsite}" Margin="0 0 5 0" />
@@ -79,28 +83,30 @@
 		</StackPanel>
 
 		<c:GroupBox Header="{l:Translate grpAcknowledgements}" Margin="5 5 5 0">
-			<StackPanel>
-				<TextBlock Text="{l:Translate lblAcknowledgeList}" Margin="0 5 0 5" TextWrapping="Wrap" />
-				<Border BorderBrush="Gray" BorderThickness="1">
-					<ListBox
-						Items="{CompiledBinding AcknowledgeList, ElementName=root}"
-						Background="Transparent"
-						ScrollViewer.AllowAutoHide="False"
-					/>
-				</Border>
+			<ScrollViewer AllowAutoHide="True">
+				<StackPanel>
+					<TextBlock Text="{l:Translate lblAcknowledgeList}" Margin="0 5 0 5" TextWrapping="Wrap" />
+					<Border BorderBrush="Gray" BorderThickness="1">
+						<ListBox
+							Items="{CompiledBinding AcknowledgeList, ElementName=root}"
+							Background="Transparent"
+							ScrollViewer.AllowAutoHide="False"
+						/>
+					</Border>
 
-				<TextBlock Text="{l:Translate lblSpecialThanks}" Margin="0 5 0 5" TextWrapping="Wrap" />
+					<TextBlock Text="{l:Translate lblSpecialThanks}" Margin="0 5 0 5" TextWrapping="Wrap" />
 
-				<TextBlock Text="{l:Translate lblUsedSoftware}" Margin="0 15 0 5" />
-				<Border BorderBrush="Gray" BorderThickness="1">
-					<ListBox
-						Items="{CompiledBinding LibraryList, ElementName=root}"
-						Height="130"
-						Background="Transparent"
-						ScrollViewer.AllowAutoHide="False"
-					/>
-				</Border>
-			</StackPanel>
+					<TextBlock Text="{l:Translate lblUsedSoftware}" Margin="0 15 0 5" />
+					<Border BorderBrush="Gray" BorderThickness="1">
+						<ListBox
+							Items="{CompiledBinding LibraryList, ElementName=root}"
+							Height="130"
+							Background="Transparent"
+							ScrollViewer.AllowAutoHide="False"
+						/>
+					</Border>
+				</StackPanel>
+			</ScrollViewer>
 		</c:GroupBox>
 		
 	</DockPanel>
