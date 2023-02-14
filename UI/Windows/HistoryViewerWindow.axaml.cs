@@ -145,7 +145,7 @@ namespace Mesen.Windows
 				double aspectRatio = EmuApi.GetAspectRatio();
 				double menuHeight = _mainMenu.Bounds.Height;
 
-				double width = Math.Max(MinWidth, screenSize.Height * scale * aspectRatio);
+				double width = Math.Max(MinWidth, Math.Round(screenSize.Height * aspectRatio) * scale);
 				double height = Math.Max(MinHeight, screenSize.Height * scale);
 				ClientSize = new Size(width, height + menuHeight + _controlBar.Bounds.Height);
 				ResizeRenderer();
