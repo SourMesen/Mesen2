@@ -70,6 +70,10 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.SetScale4x: _mainWindow.SetScale(4); break;
 				case EmulatorShortcut.SetScale5x: _mainWindow.SetScale(5); break;
 				case EmulatorShortcut.SetScale6x: _mainWindow.SetScale(6); break;
+				case EmulatorShortcut.SetScale7x: _mainWindow.SetScale(7); break;
+				case EmulatorShortcut.SetScale8x: _mainWindow.SetScale(8); break;
+				case EmulatorShortcut.SetScale9x: _mainWindow.SetScale(9); break;
+				case EmulatorShortcut.SetScale10x: _mainWindow.SetScale(10); break;
 
 				case EmulatorShortcut.ToggleBgLayer1: ToggleVideoLayer(VideoLayer.Bg1); break;
 				case EmulatorShortcut.ToggleBgLayer2: ToggleVideoLayer(VideoLayer.Bg2); break;

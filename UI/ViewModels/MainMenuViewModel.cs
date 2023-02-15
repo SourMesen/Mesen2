@@ -336,6 +336,10 @@ namespace Mesen.ViewModels
 						GetScaleMenuItem(4, EmulatorShortcut.SetScale4x),
 						GetScaleMenuItem(5, EmulatorShortcut.SetScale5x),
 						GetScaleMenuItem(6, EmulatorShortcut.SetScale6x),
+						GetScaleMenuItem(7, EmulatorShortcut.SetScale7x),
+						GetScaleMenuItem(8, EmulatorShortcut.SetScale8x),
+						GetScaleMenuItem(9, EmulatorShortcut.SetScale9x),
+						GetScaleMenuItem(10, EmulatorShortcut.SetScale10x),
 						new ContextMenuSeparator(),
 						new MainMenuAction(EmulatorShortcut.ToggleFullscreen) {
 							ActionType = ActionType.Fullscreen

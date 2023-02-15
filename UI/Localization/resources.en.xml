@@ -1636,6 +1636,10 @@
 			<Value ID="SetScale4x">Set Scale 4x</Value>
 			<Value ID="SetScale5x">Set Scale 5x</Value>
 			<Value ID="SetScale6x">Set Scale 6x</Value>
+			<Value ID="SetScale7x">Set Scale 7x</Value>
+			<Value ID="SetScale8x">Set Scale 8x</Value>
+			<Value ID="SetScale9x">Set Scale 9x</Value>
+			<Value ID="SetScale10x">Set Scale 10x</Value>
 			<Value ID="ToggleFullscreen">Toggle Fullscreen Mode</Value>
 			<Value ID="ToggleFps">Toggle FPS Counter</Value>
 			<Value ID="ToggleDebugInfo">Toggle Debug Information</Value>

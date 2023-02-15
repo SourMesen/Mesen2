@@ -52,6 +52,10 @@ namespace Mesen.ViewModels
 				EmulatorShortcut.SetScale4x,
 				EmulatorShortcut.SetScale5x,
 				EmulatorShortcut.SetScale6x,
+				EmulatorShortcut.SetScale7x,
+				EmulatorShortcut.SetScale8x,
+				EmulatorShortcut.SetScale9x,
+				EmulatorShortcut.SetScale10x,
 				EmulatorShortcut.ToggleFullscreen,
 
 				EmulatorShortcut.ToggleDebugInfo,
