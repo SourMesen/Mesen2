@@ -95,8 +95,6 @@ namespace Mesen.Debugger.Windows
 				DisplaySaveChangesPrompt();
 				return;
 			}
-
-			ConfigManager.Config.ApplyConfig();
 		}
 	}
 }
