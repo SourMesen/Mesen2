@@ -640,6 +640,10 @@
 			<Control ID="lblCompressionLevel">Compression Level:</Control>
 			<Control ID="lblLowCompression">low&#13;(fast)</Control>
 			<Control ID="lblHighCompression">high&#13;(slow)</Control>
+
+			<Control ID="lblRecordSystemHud">Record system HUD (game timer, on-screen messages, etc.)</Control>
+			<Control ID="lblRecordInputHud">Record input HUD</Control>
+			
 			<Control ID="btnBrowse">Browse...</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>

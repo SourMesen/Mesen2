@@ -12,7 +12,7 @@ namespace Mesen.Interop
 	{
 		private const string DllPath = EmuApi.DllName;
 
-		[DllImport(DllPath)] public static extern void AviRecord([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, VideoCodec codec, UInt32 compressionLevel);
+		[DllImport(DllPath)] public static extern void AviRecord([MarshalAs(UnmanagedType.LPUTF8Str)]string filename, RecordAviOptions options);
 		[DllImport(DllPath)] public static extern void AviStop();
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool AviIsRecording();
 
@@ -68,4 +68,13 @@ namespace Mesen.Interop
 
 		public RecordMovieFrom RecordFrom;
 	}
+
+	public struct RecordAviOptions
+	{
+		public VideoCodec Codec;
+		public UInt32 CompressionLevel;
+		[MarshalAs(UnmanagedType.I1)] public bool RecordSystemHud;
+		[MarshalAs(UnmanagedType.I1)] public bool RecordInputHud;
+	};
+
 }

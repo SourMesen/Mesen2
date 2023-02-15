@@ -7,10 +7,9 @@
 #include "Shared/Video/DrawStringCommand.h"
 #include "Shared/Interfaces/IMessageManager.h"
 
-SystemHud::SystemHud(Emulator* emu, DebugHud* hud)
+SystemHud::SystemHud(Emulator* emu)
 {
 	_emu = emu;
-	_hud = hud;
 	MessageManager::RegisterMessageManager(this);
 }
 
@@ -19,39 +18,37 @@ SystemHud::~SystemHud()
 	MessageManager::UnregisterMessageManager(this);
 }
 
-void SystemHud::Draw(uint32_t width, uint32_t height)
+void SystemHud::Draw(DebugHud* hud, uint32_t width, uint32_t height) const
 {
-	_screenWidth = width;
-	_screenHeight = height;
-	DrawCounters();
-	DrawMessages();
+	DrawCounters(hud, width);
+	DrawMessages(hud, width, height);
 
 	if(_emu->IsRunning()) {
 		EmuSettings* settings = _emu->GetSettings();
 		bool showMovieIcons = settings->GetPreferences().ShowMovieIcons;
 		int xOffset = 0;
 		if(_emu->IsPaused()) {
-			DrawPauseIcon();
+			DrawPauseIcon(hud);
 		} else if(showMovieIcons && _emu->GetMovieManager()->Playing()) {
-			DrawPlayIcon();
+			DrawPlayIcon(hud);
 			xOffset += 12;
 		} else if(showMovieIcons && _emu->GetMovieManager()->Recording()) {
-			DrawRecordIcon();
+			DrawRecordIcon(hud);
 			xOffset += 12;
 		}
 
 		bool showTurboRewindIcons = settings->GetPreferences().ShowTurboRewindIcons;
 		if(!_emu->IsPaused() && showTurboRewindIcons) {
 			if(settings->CheckFlag(EmulationFlags::Rewind)) {
-				DrawTurboRewindIcon(true, xOffset);
+				DrawTurboRewindIcon(hud, true, xOffset);
 			} else if(settings->CheckFlag(EmulationFlags::Turbo)) {
-				DrawTurboRewindIcon(false, xOffset);
+				DrawTurboRewindIcon(hud, false, xOffset);
 			}
 		}
 	}
 }
-
-void SystemHud::DrawMessage(MessageInfo &msg, int& lastHeight)
+ 
+void SystemHud::DrawMessage(DebugHud* hud, MessageInfo &msg, uint32_t screenWidth, uint32_t screenHeight, int& lastHeight) const
 {
 	//Get opacity for fade in/out effect
 	uint8_t opacity = (uint8_t)(msg.GetOpacity() * 255);
@@ -59,54 +56,34 @@ void SystemHud::DrawMessage(MessageInfo &msg, int& lastHeight)
 
 	string text = "[" + msg.GetTitle() + "] " + msg.GetMessage();
 
-	int maxWidth = _screenWidth - textLeftMargin;
+	int maxWidth = screenWidth - textLeftMargin;
 	TextSize size = DrawStringCommand::MeasureString(text, maxWidth);
 	lastHeight += size.Y;
-	DrawString(text, textLeftMargin, _screenHeight - lastHeight, opacity);
+	DrawString(hud, screenWidth, text, textLeftMargin, screenHeight - lastHeight, opacity);
 }
 
-void SystemHud::DrawString(string text, int x, int y, uint8_t opacity)
+void SystemHud::DrawString(DebugHud* hud, uint32_t screenWidth, string text, int x, int y, uint8_t opacity) const
 {
-	int maxWidth = _screenWidth - x;
+	int maxWidth = screenWidth - x;
 	opacity = 255 - opacity;
 	for(int i = -1; i <= 1; i++) {
 		for(int j = -1; j <= 1; j++) {
-			_hud->DrawString(x + i, y + j, text, 0 | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
+			hud->DrawString(x + i, y + j, text, 0 | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
 		}
 	}
-	_hud->DrawString(x, y, text, 0xFFFFFF | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
+	hud->DrawString(x, y, text, 0xFFFFFF | (opacity << 24), 0xFF000000, 1, -1, maxWidth);
 }
 
-void SystemHud::ShowFpsCounter(int lineNumber)
+void SystemHud::ShowFpsCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const
 {
 	int yPos = 10 + 10 * lineNumber;
-	if(_fpsTimer.GetElapsedMS() > 1000) {
-		//Update fps every sec
-		uint32_t frameCount = _emu->GetFrameCount();
-		if(_lastFrameCount > frameCount) {
-			_currentFPS = 0;
-		} else {
-			_currentFPS = (int)(std::round((double)(frameCount - _lastFrameCount) / (_fpsTimer.GetElapsedMS() / 1000)));
-			_currentRenderedFPS = (int)(std::round((double)(_renderedFrameCount - _lastRenderedFrameCount) / (_fpsTimer.GetElapsedMS() / 1000)));
-		}
-		_lastFrameCount = frameCount;
-		_lastRenderedFrameCount = _renderedFrameCount;
-		_fpsTimer.Reset();
-	}
-
-	if(_currentFPS > 5000) {
-		_currentFPS = 0;
-	}
-	if(_currentRenderedFPS > 5000) {
-		_currentRenderedFPS = 0;
-	}
 
 	string fpsString = string("FPS: ") + std::to_string(_currentFPS); // +" / " + std::to_string(_currentRenderedFPS);
 	uint32_t length = DrawStringCommand::MeasureString(fpsString).X;
-	DrawString(fpsString, _screenWidth - 8 - length, yPos);
+	DrawString(hud, screenWidth, fpsString, screenWidth - 8 - length, yPos);
 }
 
-void SystemHud::ShowGameTimer(int lineNumber)
+void SystemHud::ShowGameTimer(DebugHud* hud, uint32_t screenWidth, int lineNumber) const
 {
 	int yPos = 10 + 10 * lineNumber;
 	uint32_t frameCount = _emu->GetFrameCount();
@@ -122,48 +99,47 @@ void SystemHud::ShowGameTimer(int lineNumber)
 
 	string text = ss.str();
 	uint32_t length = DrawStringCommand::MeasureString(text).X;
-	DrawString(ss.str(), _screenWidth - 8 - length, yPos);
+	DrawString(hud, screenWidth, ss.str(), screenWidth - 8 - length, yPos);
 }
 
-void SystemHud::ShowFrameCounter(int lineNumber)
+void SystemHud::ShowFrameCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const
 {
 	int yPos = 10 + 10 * lineNumber;
 	uint32_t frameCount = _emu->GetFrameCount();
 
 	string frameCounter = MessageManager::Localize("Frame") + ": " + std::to_string(frameCount);
 	uint32_t length = DrawStringCommand::MeasureString(frameCounter).X;
-	DrawString(frameCounter, _screenWidth - 8 - length, yPos);
+	DrawString(hud, screenWidth, frameCounter, screenWidth - 8 - length, yPos);
 }
 
-void SystemHud::ShowLagCounter(int lineNumber)
+void SystemHud::ShowLagCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const
 {
 	int yPos = 10 + 10 * lineNumber;
 	uint32_t count = _emu->GetLagCounter();
 
 	string lagCounter = MessageManager::Localize("Lag") + ": " + std::to_string(count);
 	uint32_t length = DrawStringCommand::MeasureString(lagCounter).X;
-	DrawString(lagCounter, _screenWidth - 8 - length, yPos);
+	DrawString(hud, screenWidth, lagCounter, screenWidth - 8 - length, yPos);
 }
 
-void SystemHud::DrawCounters()
+void SystemHud::DrawCounters(DebugHud* hud, uint32_t screenWidth) const
 {
 	int lineNumber = 0;
 	PreferencesConfig cfg = _emu->GetSettings()->GetPreferences();
 
 	if(_emu->IsRunning()) {
 		if(cfg.ShowFps) {
-			ShowFpsCounter(lineNumber++);
+			ShowFpsCounter(hud, screenWidth, lineNumber++);
 		}
 		if(cfg.ShowGameTimer) {
-			ShowGameTimer(lineNumber++);
+			ShowGameTimer(hud, screenWidth, lineNumber++);
 		}
 		if(cfg.ShowFrameCounter) {
-			ShowFrameCounter(lineNumber++);
+			ShowFrameCounter(hud, screenWidth, lineNumber++);
 		}
 		if(cfg.ShowLagCounter) {
-			ShowLagCounter(lineNumber++);
+			ShowLagCounter(hud, screenWidth, lineNumber++);
 		}
-		_renderedFrameCount++;
 	}
 }
 
@@ -173,17 +149,13 @@ void SystemHud::DisplayMessage(string title, string message)
 	_messages.push_front(std::make_unique<MessageInfo>(title, message, 3000));
 }
 
-void SystemHud::DrawMessages()
+void SystemHud::DrawMessages(DebugHud* hud, uint32_t screenWidth, uint32_t screenHeight) const
 {
-	auto lock = _msgLock.AcquireSafe();
-
-	_messages.remove_if([](unique_ptr<MessageInfo>& msg) { return msg->IsExpired(); });
-
 	int counter = 0;
 	int lastHeight = 3;
-	for(unique_ptr<MessageInfo>& msg : _messages) {
+	for(auto& msg : _messages) {
 		if(counter < 4) {
-			DrawMessage(*msg.get(), lastHeight);
+			DrawMessage(hud, *msg.get(), screenWidth, screenHeight, lastHeight);
 		} else {
 			break;
 		}
@@ -191,29 +163,29 @@ void SystemHud::DrawMessages()
 	}
 }
 
-void SystemHud::DrawBar(int x, int y, int width, int height)
+void SystemHud::DrawBar(DebugHud* hud, int x, int y, int width, int height) const
 {
-	_hud->DrawRectangle(x, y, width, height, 0xFFFFFF, true, 1);
-	_hud->DrawLine(x, y + 1, x + width, y + 1, 0x4FBECE, 1);
-	_hud->DrawLine(x+1, y, x+1, y + height, 0x4FBECE, 1);
+	hud->DrawRectangle(x, y, width, height, 0xFFFFFF, true, 1);
+	hud->DrawLine(x, y + 1, x + width, y + 1, 0x4FBECE, 1);
+	hud->DrawLine(x+1, y, x+1, y + height, 0x4FBECE, 1);
 
-	_hud->DrawLine(x + width - 1, y, x + width - 1, y + height, 0xCC9E22, 1);
-	_hud->DrawLine(x, y + height - 1, x + width, y + height - 1, 0xCC9E22, 1);
+	hud->DrawLine(x + width - 1, y, x + width - 1, y + height, 0xCC9E22, 1);
+	hud->DrawLine(x, y + height - 1, x + width, y + height - 1, 0xCC9E22, 1);
 
-	_hud->DrawLine(x, y, x + width, y, 0x303030, 1);
-	_hud->DrawLine(x, y, x, y + height, 0x303030, 1);
+	hud->DrawLine(x, y, x + width, y, 0x303030, 1);
+	hud->DrawLine(x, y, x, y + height, 0x303030, 1);
 
-	_hud->DrawLine(x + width, y, x + width, y + height, 0x303030, 1);
-	_hud->DrawLine(x, y + height, x + width, y + height, 0x303030, 1);
+	hud->DrawLine(x + width, y, x + width, y + height, 0x303030, 1);
+	hud->DrawLine(x, y + height, x + width, y + height, 0x303030, 1);
 }
 
-void SystemHud::DrawPauseIcon()
+void SystemHud::DrawPauseIcon(DebugHud* hud) const
 {
-	DrawBar(10, 7, 5, 12);
-	DrawBar(17, 7, 5, 12);
+	DrawBar(hud, 10, 7, 5, 12);
+	DrawBar(hud, 17, 7, 5, 12);
 }
 
-void SystemHud::DrawPlayIcon()
+void SystemHud::DrawPlayIcon(DebugHud* hud) const
 {
 	int x = 12;
 	int y = 12;
@@ -225,37 +197,37 @@ void SystemHud::DrawPlayIcon()
 	for(int i = 0; i < width; i++) {
 		int left = x + i * 2;
 		int top = y + i;
-		_hud->DrawLine(left, top - 1, left, y + height - i + 1, borderColor, 1);
-		_hud->DrawLine(left + 1, top - 1, left + 1, y + height - i + 1, borderColor, 1);
+		hud->DrawLine(left, top - 1, left, y + height - i + 1, borderColor, 1);
+		hud->DrawLine(left + 1, top - 1, left + 1, y + height - i + 1, borderColor, 1);
 
 		if(i > 0) {
-			_hud->DrawLine(left, top, left, y + height - i, color, 1);
+			hud->DrawLine(left, top, left, y + height - i, color, 1);
 		}
 
 		if(i < width - 1) {
-			_hud->DrawLine(left + 1, top, left + 1, y + height - i, color, 1);
+			hud->DrawLine(left + 1, top, left + 1, y + height - i, color, 1);
 		}
 	}
 }
 
-void SystemHud::DrawRecordIcon()
+void SystemHud::DrawRecordIcon(DebugHud* hud) const
 {
 	int x = 12;
 	int y = 11;
 	int borderColor = 0x00000;
 	int color = 0xFF0000;
 
-	_hud->DrawRectangle(x + 3, y, 4, 10, borderColor, true, 1);
-	_hud->DrawRectangle(x, y + 3, 10, 4, borderColor, true, 1);
-	_hud->DrawRectangle(x + 2, y + 1, 6, 8, borderColor, true, 1);
-	_hud->DrawRectangle(x + 1, y + 2, 8, 6, borderColor, true, 1);
+	hud->DrawRectangle(x + 3, y, 4, 10, borderColor, true, 1);
+	hud->DrawRectangle(x, y + 3, 10, 4, borderColor, true, 1);
+	hud->DrawRectangle(x + 2, y + 1, 6, 8, borderColor, true, 1);
+	hud->DrawRectangle(x + 1, y + 2, 8, 6, borderColor, true, 1);
 
-	_hud->DrawRectangle(x + 3, y + 1, 4, 8, color, true, 1);
-	_hud->DrawRectangle(x + 2, y + 2, 6, 6, color, true, 1);
-	_hud->DrawRectangle(x + 1, y + 3, 8, 4, color, true, 1);
+	hud->DrawRectangle(x + 3, y + 1, 4, 8, color, true, 1);
+	hud->DrawRectangle(x + 2, y + 2, 6, 6, color, true, 1);
+	hud->DrawRectangle(x + 1, y + 3, 8, 4, color, true, 1);
 }
 
-void SystemHud::DrawTurboRewindIcon(bool forRewind, int xOffset)
+void SystemHud::DrawTurboRewindIcon(DebugHud* hud, bool forRewind, int xOffset) const
 {
 	int x = 12 + xOffset;
 	int y = 12;
@@ -285,18 +257,51 @@ void SystemHud::DrawTurboRewindIcon(bool forRewind, int xOffset)
 		for(int i = 0; i < width; i++) {
 			int left = x + i*sign * 2;
 			int top = y + i * 2;
-			_hud->DrawLine(left, top - 2, left, y + height - i*2 + 2, borderColor, 1);
-			_hud->DrawLine(left + 1 * sign, top - 1, left + 1 * sign, y + height - i*2 + 1, borderColor, 1);
+			hud->DrawLine(left, top - 2, left, y + height - i*2 + 2, borderColor, 1);
+			hud->DrawLine(left + 1 * sign, top - 1, left + 1 * sign, y + height - i*2 + 1, borderColor, 1);
 
 			if(i > 0) {
-				_hud->DrawLine(left, top - 1, left, y + height + 1 - i*2, color, 1);
+				hud->DrawLine(left, top - 1, left, y + height + 1 - i*2, color, 1);
 			}
 
 			if(i < width - 1) {
-				_hud->DrawLine(left + 1 * sign, top, left + 1 * sign, y + height - i*2, color, 1);
+				hud->DrawLine(left + 1 * sign, top, left + 1 * sign, y + height - i*2, color, 1);
 			}
 		}
 
 		x += 6;
+	}
+}
+
+void SystemHud::UpdateHud()
+{
+	{
+		auto lock = _msgLock.AcquireSafe();
+		_messages.remove_if([](unique_ptr<MessageInfo>& msg) { return msg->IsExpired(); });
+	}
+
+	if(_emu->IsRunning()) {
+		if(_fpsTimer.GetElapsedMS() > 1000) {
+			//Update fps every sec
+			uint32_t frameCount = _emu->GetFrameCount();
+			if(_lastFrameCount > frameCount) {
+				_currentFPS = 0;
+			} else {
+				_currentFPS = (int)(std::round((double)(frameCount - _lastFrameCount) / (_fpsTimer.GetElapsedMS() / 1000)));
+				_currentRenderedFPS = (int)(std::round((double)(_renderedFrameCount - _lastRenderedFrameCount) / (_fpsTimer.GetElapsedMS() / 1000)));
+			}
+			_lastFrameCount = frameCount;
+			_lastRenderedFrameCount = _renderedFrameCount;
+			_fpsTimer.Reset();
+		}
+
+		if(_currentFPS > 5000) {
+			_currentFPS = 0;
+		}
+		if(_currentRenderedFPS > 5000) {
+			_currentRenderedFPS = 0;
+		}
+
+		_renderedFrameCount++;
 	}
 }

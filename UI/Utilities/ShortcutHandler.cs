@@ -168,7 +168,12 @@ namespace Mesen.Utilities
 				RecordApi.AviStop();
 			} else {
 				string filename = GetOutputFilename(ConfigManager.AviFolder, ConfigManager.Config.VideoRecord.Codec == VideoCodec.GIF ? ".gif" : ".avi");
-				RecordApi.AviRecord(filename, ConfigManager.Config.VideoRecord.Codec, ConfigManager.Config.VideoRecord.CompressionLevel);
+				RecordApi.AviRecord(filename, new RecordAviOptions() {
+					Codec = ConfigManager.Config.VideoRecord.Codec,
+					CompressionLevel = ConfigManager.Config.VideoRecord.CompressionLevel,
+					RecordSystemHud = ConfigManager.Config.VideoRecord.RecordSystemHud,
+					RecordInputHud = ConfigManager.Config.VideoRecord.RecordInputHud
+				});
 			}
 		}
 

@@ -18,7 +18,7 @@ VideoRenderer::VideoRenderer(Emulator* emu)
 	_stopFlag = false;
 
 	_rendererHud.reset(new DebugHud());
-	_systemHud.reset(new SystemHud(_emu, _rendererHud.get()));
+	_systemHud.reset(new SystemHud(_emu));
 	_inputHud.reset(new InputHud(emu, _rendererHud.get()));
 }
 
@@ -90,7 +90,10 @@ void VideoRenderer::RenderThread()
 
 			_emuHudSurface.Clear();
 			_inputHud->DrawControllers(size, frame.InputData);
-			_systemHud->Draw(size.Width, size.Height);
+			{
+				auto lock = _hudLock.AcquireSafe();
+				_systemHud->Draw(_rendererHud.get(), size.Width, size.Height);
+			}
 			_rendererHud->Draw(_emuHudSurface.Buffer, size, {}, 0, false);
 
 			DrawScriptHud(frame);
@@ -133,12 +136,12 @@ std::pair<FrameInfo, OverscanDimensions> VideoRenderer::GetScriptHudSize()
 
 void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 {
-	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
-	if(recorder) {
-		if(!recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps())) {
-			StopRecording();
-		}
+	{
+		auto lock = _hudLock.AcquireSafe();
+		_systemHud->UpdateHud();
 	}
+
+	ProcessAviRecording(frame);
 
 	{
 		auto lock = _frameLock.AcquireSafe();
@@ -172,15 +175,58 @@ void VideoRenderer::UnregisterRenderingDevice(IRenderingDevice *renderer)
 	}
 }
 
-void VideoRenderer::StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel)
+void VideoRenderer::ProcessAviRecording(RenderedFrame& frame)
 {
+	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
+	if(recorder) {
+		if(_recorderOptions.RecordInputHud || _recorderOptions.RecordSystemHud) {
+			//Calculate the scale needed for the HUD elements
+			FrameInfo originalSize = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
+			double scale = (double)frame.Height / originalSize.Height;
+			FrameInfo scaledFrameSize = { (uint32_t)(frame.Width / scale), (uint32_t)(frame.Height / scale) };
+
+			//Update the surface to match the frame's size
+			_aviRecorderSurface.UpdateSize(frame.Width, frame.Height);
+			
+			//Copy the game screen
+			memcpy(_aviRecorderSurface.Buffer, frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint32_t));
+
+			//Draw the system/input HUDs
+			DebugHud hud;
+			InputHud inputHud(_emu, &hud);
+			if(_recorderOptions.RecordSystemHud) {
+				_systemHud->Draw(&hud, scaledFrameSize.Width, scaledFrameSize.Height);
+			}
+			if(_recorderOptions.RecordInputHud) {
+				inputHud.DrawControllers(scaledFrameSize, frame.InputData);
+			}
+
+			FrameInfo frameSize = { frame.Width, frame.Height };
+			hud.Draw((uint32_t*)_aviRecorderSurface.Buffer, frameSize, {}, frame.FrameNumber, false, scale);
+
+			//Record the final result
+			if(!recorder->AddFrame(_aviRecorderSurface.Buffer, frame.Width, frame.Height, _emu->GetFps())) {
+				StopRecording();
+			}
+		} else {
+			//Only record the game screen
+			if(!recorder->AddFrame(frame.FrameBuffer, frame.Width, frame.Height, _emu->GetFps())) {
+				StopRecording();
+			}
+		}
+	}
+}
+
+void VideoRenderer::StartRecording(string filename, RecordAviOptions options)
+{
+	_recorderOptions = options;
 	FrameInfo frameInfo = _emu->GetVideoDecoder()->GetFrameInfo();
 
 	shared_ptr<IVideoRecorder> recorder;
-	if(codec == VideoCodec::GIF) {
+	if(options.Codec == VideoCodec::GIF) {
 		recorder.reset(new GifRecorder());
 	} else {
-		recorder.reset(new AviRecorder(codec, compressionLevel));
+		recorder.reset(new AviRecorder(options.Codec, options.CompressionLevel));
 	}
 
 	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps())) {
@@ -205,6 +251,7 @@ void VideoRenderer::StopRecording()
 	if(recorder) {
 		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStopped", recorder->GetOutputFile());
 	}
+	_aviRecorderSurface.UpdateSize(0, 0);
 	_recorder.reset();
 }
 

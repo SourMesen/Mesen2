@@ -25,11 +25,11 @@ void DebugHud::ClearScreen()
 	_commands.clear();
 }
 
-void DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale)
+void DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale, float forcedScale)
 {
 	auto lock = _commandLock.AcquireSafe();
 	for(unique_ptr<DrawCommand> &command : _commands) {
-		command->Draw(argbBuffer, frameInfo, overscan, frameNumber, autoScale);
+		command->Draw(argbBuffer, frameInfo, overscan, frameNumber, autoScale, forcedScale);
 	}
 	_commands.erase(std::remove_if(_commands.begin(), _commands.end(), [](const unique_ptr<DrawCommand>& c) { return c->Expired(); }), _commands.end());
 	_commandCount = (uint32_t)_commands.size();

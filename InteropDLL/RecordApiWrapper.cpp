@@ -5,11 +5,10 @@
 #include "Core/Shared/Movies/MovieManager.h"
 
 extern unique_ptr<Emulator> _emu;
-enum class VideoCodec;
 
 extern "C"
 {
-	DllExport void __stdcall AviRecord(char* filename, VideoCodec codec, uint32_t compressionLevel) { _emu->GetVideoRenderer()->StartRecording(filename, codec, compressionLevel); }
+	DllExport void __stdcall AviRecord(char* filename, RecordAviOptions options) { _emu->GetVideoRenderer()->StartRecording(filename, options); }
 	DllExport void __stdcall AviStop() { _emu->GetVideoRenderer()->StopRecording(); }
 	DllExport bool __stdcall AviIsRecording() { return _emu->GetVideoRenderer()->IsRecording(); }
 

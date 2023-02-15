@@ -14,7 +14,6 @@ class SystemHud final : public IMessageManager
 {
 private:
 	Emulator* _emu = nullptr;
-	DebugHud* _hud = nullptr;
 
 	SimpleLock _msgLock;
 	list<unique_ptr<MessageInfo>> _messages;
@@ -27,31 +26,29 @@ private:
 	uint32_t _currentRenderedFPS = 0;
 	uint32_t _renderedFrameCount = 0;
 	
-	uint32_t _screenWidth = 0;
-	uint32_t _screenHeight = 0;
-
-	void DrawMessages();
-	void DrawBar(int x, int y, int width, int height);
-	void DrawPauseIcon();
-	void DrawPlayIcon();
-	void DrawRecordIcon();
-	void DrawTurboRewindIcon(bool forRewind, int xOffset);
-	void DrawMessage(MessageInfo& msg, int& lastHeight);
-	void DrawString(string msg, int x, int y, uint8_t opacity = 255);
+	void DrawMessages(DebugHud* hud, uint32_t screenWidth, uint32_t screenHeight) const;
+	void DrawBar(DebugHud* hud, int x, int y, int width, int height) const;
+	void DrawPauseIcon(DebugHud* hud) const;
+	void DrawPlayIcon(DebugHud* hud) const;
+	void DrawRecordIcon(DebugHud* hud) const;
+	void DrawTurboRewindIcon(DebugHud* hud, bool forRewind, int xOffset) const;
+	void DrawMessage(DebugHud* hud, MessageInfo& msg, uint32_t screenWidth, uint32_t screenHeight, int& lastHeight) const;
+	void DrawString(DebugHud* hud, uint32_t screenWidth, string msg, int x, int y, uint8_t opacity = 255) const;
 	void DisplayMessage(string title, string message) override;
 
-	void ShowFpsCounter(int lineNumber);
-	void ShowFrameCounter(int lineNumber);
-	void ShowLagCounter(int lineNumber);
-	void ShowGameTimer(int lineNumber);
+	void ShowFpsCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const;
+	void ShowFrameCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const;
+	void ShowLagCounter(DebugHud* hud, uint32_t screenWidth, int lineNumber) const;
+	void ShowGameTimer(DebugHud* hud, uint32_t screenWidth, int lineNumber) const;
 
-	void DrawCounters();
+	void DrawCounters(DebugHud* hud, uint32_t screenWidth) const;
 
 public:
-	SystemHud(Emulator* emu, DebugHud* hud);
+	SystemHud(Emulator* emu);
 	~SystemHud();
 
-	void Draw(uint32_t width, uint32_t height);
+	void Draw(DebugHud* hud, uint32_t width, uint32_t height) const;
+	void UpdateHud();
 };
 
 

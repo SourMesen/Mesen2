@@ -16,14 +16,14 @@ void Timer::Reset()
 	_start = high_resolution_clock::now();
 }
 
-double Timer::GetElapsedMS()
+double Timer::GetElapsedMS() const
 {
 	high_resolution_clock::time_point end = high_resolution_clock::now();
 	duration<double> span = duration_cast<duration<double>>(end - _start);
 	return span.count() * 1000.0;
 }
 
-void Timer::WaitUntil(double targetMillisecond)
+void Timer::WaitUntil(double targetMillisecond) const
 {
 	if(targetMillisecond > 0) {
 		double elapsedTime = GetElapsedMS();

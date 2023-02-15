@@ -18,7 +18,7 @@ public:
 
 	bool HasCommands() { return _commandCount > 0; }
 
-	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale);
+	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale, float forcedScale = 0);
 	void ClearScreen();
 
 	void DrawPixel(int x, int y, int color, int frameCount, int startFrame = -1);

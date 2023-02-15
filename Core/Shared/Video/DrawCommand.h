@@ -106,7 +106,7 @@ public:
 	{
 	}
 
-	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, bool autoScale)
+	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, bool autoScale, float forcedScale = 0)
 	{
 		if(_startFrame < 0) {
 			//When no start frame was specified, start on the next drawn frame
@@ -118,7 +118,10 @@ public:
 			_frameInfo = frameInfo;
 			_overscan = overscan;
 
-			if(autoScale && !_disableAutoScale) {
+			if(forcedScale != 0) {
+				_xScale = forcedScale;
+				_yScale = forcedScale;
+			} else if(autoScale && !_disableAutoScale) {
 				//TODOv2 review
 				float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
 				_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;

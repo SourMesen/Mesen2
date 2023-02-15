@@ -45,7 +45,12 @@ namespace Mesen.Windows
 			VideoRecordConfigViewModel model = (VideoRecordConfigViewModel)DataContext!;
 			model.SaveConfig();
 
-			RecordApi.AviRecord(model.SavePath, model.Config.Codec, model.Config.CompressionLevel);
+			RecordApi.AviRecord(model.SavePath, new RecordAviOptions() {
+				Codec = model.Config.Codec,
+				CompressionLevel = model.Config.CompressionLevel,
+				RecordSystemHud = model.Config.RecordSystemHud,
+				RecordInputHud = model.Config.RecordInputHud
+			});
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

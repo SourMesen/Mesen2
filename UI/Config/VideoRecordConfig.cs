@@ -11,6 +11,8 @@ namespace Mesen.Config
 	{
 		[Reactive] public VideoCodec Codec { get; set; } = VideoCodec.CSCD;
 		[Reactive] public UInt32 CompressionLevel { get; set; } = 6;
+		[Reactive] public bool RecordSystemHud { get; set; } = false;
+		[Reactive] public bool RecordInputHud { get; set; } = false;
 	}
 
 	public enum VideoCodec

@@ -17,6 +17,14 @@ class InputHud;
 class IVideoRecorder;
 enum class VideoCodec;
 
+struct RecordAviOptions
+{
+	VideoCodec Codec;
+	uint32_t CompressionLevel;
+	bool RecordSystemHud;
+	bool RecordInputHud;
+};
+
 class VideoRenderer
 {
 private:
@@ -34,7 +42,11 @@ private:
 	unique_ptr<DebugHud> _rendererHud;
 	unique_ptr<SystemHud> _systemHud;
 	unique_ptr<InputHud> _inputHud;
-	
+	SimpleLock _hudLock;
+
+	RenderSurfaceInfo _aviRecorderSurface = {};
+	RecordAviOptions _recorderOptions = {};
+
 	RenderSurfaceInfo _emuHudSurface = {};
 	RenderSurfaceInfo _scriptHudSurface = {};
 	bool _needScriptHudClear = false;
@@ -48,6 +60,8 @@ private:
 
 	void RenderThread();
 	void DrawScriptHud(RenderedFrame& frame);
+	
+	void ProcessAviRecording(RenderedFrame& frame);
 
 public:
 	VideoRenderer(Emulator* emu);
@@ -67,7 +81,7 @@ public:
 	void RegisterRenderingDevice(IRenderingDevice *renderer);
 	void UnregisterRenderingDevice(IRenderingDevice *renderer);
 
-	void StartRecording(string filename, VideoCodec codec, uint32_t compressionLevel);
+	void StartRecording(string filename, RecordAviOptions options);
 	void AddRecordingSound(int16_t* soundBuffer, uint32_t sampleCount, uint32_t sampleRate);
 	void StopRecording();
 	bool IsRecording();

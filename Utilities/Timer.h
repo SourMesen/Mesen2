@@ -11,6 +11,6 @@ class Timer
 public:
 		Timer();
 		void Reset();
-		double GetElapsedMS();
-		void WaitUntil(double targetMillisecond);
+		double GetElapsedMS() const;
+		void WaitUntil(double targetMillisecond) const;
 };
