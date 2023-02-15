@@ -84,7 +84,7 @@ void VideoRenderer::RenderThread()
 
 			RenderedFrame frame;
 			{
-				_frameLock.AcquireSafe();
+				auto lock = _frameLock.AcquireSafe();
 				frame = _lastFrame;
 			}
 
@@ -141,7 +141,7 @@ void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 	}
 
 	{
-		_frameLock.AcquireSafe();
+		auto lock = _frameLock.AcquireSafe();
 		_lastFrame = frame;
 	}
 
