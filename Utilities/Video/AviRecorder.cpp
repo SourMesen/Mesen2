@@ -5,6 +5,7 @@ AviRecorder::AviRecorder(VideoCodec codec, uint32_t compressionLevel)
 {
 	_recording = false;
 	_stopFlag = false;
+	_framePending = false;
 	_frameBuffer = nullptr;
 	_frameBufferLength = 0;
 	_sampleRate = 0;
@@ -50,6 +51,7 @@ bool AviRecorder::StartRecording(string filename, uint32_t width, uint32_t heigh
 
 				auto lock = _lock.AcquireSafe();
 				_aviWriter->AddFrame(_frameBuffer);
+				_framePending = false;
 			}
 		});
 
@@ -78,7 +80,13 @@ bool AviRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, d
 		if(_width != width || _height != height || _fps != fps) {
 			return false;
 		} else {
+			while(_framePending) {
+				//Previous frame isn't done processing yet, wait
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+			}
+
 			auto lock = _lock.AcquireSafe();
+			_framePending = true;
 			memcpy(_frameBuffer, frameBuffer, _frameBufferLength);
 			_waitFrame.Signal();
 		}

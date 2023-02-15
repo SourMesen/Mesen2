@@ -17,7 +17,9 @@ private:
 	SimpleLock _lock;
 	AutoResetEvent _waitFrame;
 
-	atomic<bool> _stopFlag;	
+	atomic<bool> _stopFlag;
+	atomic<bool> _framePending;
+
 	bool _recording;
 	uint8_t* _frameBuffer;
 	uint32_t _frameBufferLength;
