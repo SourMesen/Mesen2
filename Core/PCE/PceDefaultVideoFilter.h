@@ -48,7 +48,6 @@ protected:
 
 		InitConversionMatrix(config.Hue, config.Saturation);
 
-		double y, i, q;
 		for(int rgb333 = 0; rgb333 < 0x0200; rgb333++) {
 			uint32_t color = pceCfg.Palette[rgb333];
 			uint8_t r = (color >> 16) & 0xFF;

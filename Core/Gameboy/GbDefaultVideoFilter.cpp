@@ -39,7 +39,6 @@ void GbDefaultVideoFilter::InitLookupTable()
 
 	InitConversionMatrix(config.Hue, config.Saturation);
 
-	double y, i, q;
 	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
 		uint8_t r = rgb555 & 0x1F;
 		uint8_t g = (rgb555 >> 5) & 0x1F;

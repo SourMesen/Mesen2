@@ -41,7 +41,6 @@ void SnesDefaultVideoFilter::InitLookupTable()
 
 	InitConversionMatrix(config.Hue, config.Saturation);
 
-	double y, i, q;
 	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
 		uint8_t r = To8Bit(rgb555 & 0x1F);
 		uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
