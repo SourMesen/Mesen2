@@ -231,7 +231,11 @@ void VideoRenderer::StartRecording(string filename, RecordAviOptions options)
 
 	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps())) {
 		_recorder.reset(recorder);
-		MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
+		
+		if(!options.RecordSystemHud) {
+			//Only display message if not recording the system HUD (otherwise the message is always visible on the recording, which isn't ideal)
+			MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
+		}
 	}
 }
 
