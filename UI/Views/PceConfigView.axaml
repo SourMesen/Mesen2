@@ -90,6 +90,7 @@
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
 						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.ForceFixedResolution}" Text="{l:Translate chkForceFixedResolution}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFrameSkipping}" Text="{l:Translate chkDisableFrameSkipping}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />

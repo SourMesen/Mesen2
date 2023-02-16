@@ -10,7 +10,8 @@ private:
 	uint32_t _calculatedPalette[0x8000] = {};
 	VideoConfig _videoConfig = {};
 
-	bool _snesBlendHighRes = false;
+	bool _blendHighRes = false;
+	bool _forceFixedRes = false;
 
 	void InitLookupTable();
 

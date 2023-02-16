@@ -435,6 +435,7 @@ struct PcEngineConfig
 	bool DisableBackground = false;
 	bool DisableBackgroundVdc2 = false;
 	bool DisableFrameSkipping = false;
+	bool ForceFixedResolution = false;
 
 	OverscanDimensions Overscan = {};
 
@@ -465,6 +466,7 @@ struct SnesConfig
 	bool HideBgLayer4 = false;
 	bool HideSprites = false;
 	bool DisableFrameSkipping = false;
+	bool ForceFixedResolution = false;
 
 	OverscanDimensions Overscan = {};
 

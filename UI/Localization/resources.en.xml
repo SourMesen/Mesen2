@@ -249,6 +249,7 @@
 			<Control ID="chkHideSprites">Hide sprites</Control>
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
+			<Control ID="chkForceFixedResolution">Use fixed output resolution (2x scale, ≈512x478)</Control>
 		</Form>
 		<Form ID="NesConfigView">
 			<Control ID="tpgGeneral">General</Control>
@@ -399,6 +400,7 @@
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkDisableSpritesVdc2">Disable sprites (VDC2 - SuperGrafx)</Control>
 			<Control ID="chkDisableFrameSkipping">Disable frame skipping when fast forwarding</Control>
+			<Control ID="chkForceFixedResolution">Use fixed output resolution (4x scale, ≈1024x956)</Control>
 
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblPalette">Palette</Control>

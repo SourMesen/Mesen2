@@ -35,6 +35,7 @@ namespace Mesen.Config
 		[Reactive] public bool HideBgLayer4 { get; set; } = false;
 		[Reactive] public bool HideSprites { get; set; } = false;
 		[Reactive] public bool DisableFrameSkipping { get; set; } = false;
+		[Reactive] public bool ForceFixedResolution { get; set; } = false;
 
 		[Reactive] public OverscanConfig Overscan { get; set; } = new() { Top = 7, Bottom = 8 };
 
@@ -89,6 +90,7 @@ namespace Mesen.Config
 				HideSprites = this.HideSprites,
 				
 				DisableFrameSkipping = DisableFrameSkipping,
+				ForceFixedResolution = ForceFixedResolution,
 
 				Overscan = Overscan.ToInterop(),
 
@@ -179,6 +181,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool HideBgLayer4;
 		[MarshalAs(UnmanagedType.I1)] public bool HideSprites;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableFrameSkipping;
+		[MarshalAs(UnmanagedType.I1)] public bool ForceFixedResolution;
 
 		public InteropOverscanDimensions Overscan;
 

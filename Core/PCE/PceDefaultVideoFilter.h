@@ -11,18 +11,20 @@ private:
 	uint32_t _calculatedPalette[0x400] = {};
 	VideoConfig _videoConfig = {};
 	PcEngineConfig _pceConfig = {};
+	FrameInfo _pceFrameSize = { 256, 242 };
+	uint8_t _frameDivider = 0;
 
 protected:
 	FrameInfo GetFrameInfo() override
 	{
 		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
-			//Give a fixed 256x240 of space to PCE player to match the other players
+			//Give a fixed 256x240 of space to HES player to match the other players
 			FrameInfo frame;
 			frame.Width = 256;
 			frame.Height = 240;
 			return frame;
 		} else {
-			return BaseVideoFilter::GetFrameInfo();
+			return _pceFrameSize;
 		}
 	}
 
@@ -88,12 +90,48 @@ protected:
 
 		_videoConfig = config;
 		_pceConfig = pceConfig;
+
+		PceDefaultVideoFilter::GetPceFrameSize(pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
 	}
 
 public:
 	PceDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 	{
 		InitLookupTable();
+	}
+
+	static void GetPceFrameSize(PcEngineConfig& cfg, FrameInfo baseFrameInfo, uint16_t* ppuOutputBuffer, OverscanDimensions overscan, FrameInfo& outPceFrameSize, uint8_t& outFrameDivider)
+	{
+		if(!cfg.ForceFixedResolution) {
+			//Try to use an output resolution that matches the core's output (instead of forcing 4x scale)
+			constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
+			uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
+
+			uint8_t frameDivider = 0;
+			for(uint32_t i = 0; i < rowCount; i++) {
+				uint8_t rowDivider = (uint8_t)ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
+				if(frameDivider == 0) {
+					frameDivider = rowDivider;
+				} else if(frameDivider != rowDivider) {
+					//Picture has multiple resolutions at once, use 4x scale
+					frameDivider = 0;
+					break;
+				}
+			}
+
+			outFrameDivider = frameDivider;
+
+			if(outFrameDivider) {
+				outPceFrameSize.Width = PceConstants::GetRowWidth(frameDivider) - (overscan.Left + overscan.Right) * 4 / frameDivider;
+				outPceFrameSize.Height = PceConstants::ScreenHeight - (overscan.Top + overscan.Bottom);
+			} else {
+				outPceFrameSize = baseFrameInfo;
+			}
+		} else {
+			//Always output at 4x scale (allows recording movies properly, etc.)
+			outFrameDivider = 0;
+			outPceFrameSize = baseFrameInfo;
+		}
 	}
 
 	void ApplyFilter(uint16_t* ppuOutputBuffer) override
@@ -119,22 +157,36 @@ public:
 			return;
 		}
 
-		for(uint32_t i = 0; i < rowCount; i++) {
-			uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
-			uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / clockDivider);
-			uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
-
-			//Interpolate row data across the whole screen
-			double ratio = (double)rowWidth / baseFrameInfo.Width;
-
-			uint32_t baseDstOffset = i * verticalScale * frameInfo.Width;
-			uint32_t baseSrcOffset = i * PceConstants::MaxScreenWidth + yOffset + xOffset;
-			for(uint32_t j = 0; j < frameInfo.Width; j++) {
-				out[baseDstOffset + j] = GetPixel(ppuOutputBuffer, baseSrcOffset + (int)(j * ratio));
+		if(_frameDivider != 0) {
+			//Use dynamic resolution (changes based on the screen content)
+			//Makes video filters work properly
+			for(uint32_t i = 0; i < rowCount; i++) {
+				uint32_t xOffset = PceConstants::GetLeftOverscan(_frameDivider) + (overscan.Left * 4 / _frameDivider);
+				uint32_t baseDstOffset = i * frameInfo.Width;
+				uint32_t baseSrcOffset = i * PceConstants::MaxScreenWidth + yOffset + xOffset;
+				for(uint32_t j = 0; j < frameInfo.Width; j++) {
+					out[baseDstOffset + j] = GetPixel(ppuOutputBuffer, baseSrcOffset + j);
+				}
 			}
+		} else {
+			//Always output at 4x scale
+			for(uint32_t i = 0; i < rowCount; i++) {
+				uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
+				uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / clockDivider);
+				uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 
-			for(uint32_t j = 1; j < verticalScale; j++) {
-				memcpy(out + baseDstOffset + (j * frameInfo.Width), out + baseDstOffset, frameInfo.Width * sizeof(uint32_t));
+				//Interpolate row data across the whole screen
+				double ratio = (double)rowWidth / baseFrameInfo.Width;
+
+				uint32_t baseDstOffset = i * verticalScale * frameInfo.Width;
+				uint32_t baseSrcOffset = i * PceConstants::MaxScreenWidth + yOffset + xOffset;
+				for(uint32_t j = 0; j < frameInfo.Width; j++) {
+					out[baseDstOffset + j] = GetPixel(ppuOutputBuffer, baseSrcOffset + (int)(j * ratio));
+				}
+
+				for(uint32_t j = 1; j < verticalScale; j++) {
+					memcpy(out + baseDstOffset + (j * frameInfo.Width), out + baseDstOffset, frameInfo.Width * sizeof(uint32_t));
+				}
 			}
 		}
 	}

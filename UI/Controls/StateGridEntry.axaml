@@ -55,7 +55,7 @@
 			VerticalAlignment="Stretch"
 			Padding="0"
 		>
-			<Image Source="{CompiledBinding Image, ElementName=root}" Stretch="Uniform" StretchDirection="Both" VerticalAlignment="Center" />
+			<Image Source="{CompiledBinding Image, ElementName=root}" RenderOptions.BitmapInterpolationMode="LowQuality" Stretch="Fill" StretchDirection="Both" VerticalAlignment="Center" />
 		</Button>
 	</DockPanel>
 </UserControl>

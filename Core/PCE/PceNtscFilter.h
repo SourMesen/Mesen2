@@ -13,6 +13,8 @@ private:
 	snes_ntsc_t _ntscData = {};
 	uint32_t* _ntscBuffer = nullptr;
 	uint16_t* _rgb555Buffer = nullptr;
+	FrameInfo _pceFrameSize = { 256, 242 };
+	uint8_t _frameDivider = 0;
 
 protected:
 	void OnBeforeApplyFilter() override;

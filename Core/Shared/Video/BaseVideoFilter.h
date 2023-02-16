@@ -22,6 +22,7 @@ protected:
 	FrameInfo _baseFrameInfo = {};
 	FrameInfo _frameInfo = {};
 	void* _frameData = nullptr;
+	uint16_t* _ppuOutputBuffer = nullptr;
 
 	void InitConversionMatrix(double hueShift, double saturationShift);
 	void ApplyColorOptions(uint8_t& r, uint8_t& g, uint8_t& b, double brightness, double contrast);

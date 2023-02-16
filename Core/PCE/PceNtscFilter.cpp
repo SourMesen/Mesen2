@@ -3,6 +3,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 #include "Shared/Emulator.h"
+#include "PCE/PceDefaultVideoFilter.h"
 
 PceNtscFilter::PceNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
@@ -21,8 +22,12 @@ PceNtscFilter::~PceNtscFilter()
 
 FrameInfo PceNtscFilter::GetFrameInfo()
 {
-	FrameInfo frameInfo = BaseVideoFilter::GetFrameInfo();
-	frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width/2);
+	FrameInfo frameInfo = _pceFrameSize;
+	if(_frameDivider == 0) {
+		frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width / 2);
+	} else {
+		frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width);
+	}
 	return frameInfo;
 }
 
@@ -38,10 +43,13 @@ OverscanDimensions PceNtscFilter::GetOverscan()
 
 void PceNtscFilter::OnBeforeApplyFilter()
 {
-	if(NtscFilterOptionsChanged(_ntscSetup)) {		
+	if(NtscFilterOptionsChanged(_ntscSetup)) {
 		InitNtscFilter(_ntscSetup);
 		snes_ntsc_init(&_ntscData, &_ntscSetup);
 	}
+
+	PcEngineConfig& pceConfig = _emu->GetSettings()->GetPcEngineConfig();
+	PceDefaultVideoFilter::GetPceFrameSize(pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
 }
 
 void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
@@ -56,7 +64,9 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
 	uint32_t yOffset = overscan.Top * PceConstants::MaxScreenWidth;
 
-	uint32_t frameWidth = _baseFrameInfo.Width - (overscan.Left + overscan.Right) * PceConstants::InternalResMultipler;
+	uint32_t frameWidth = _frameDivider ?
+		(PceConstants::GetRowWidth(_frameDivider) - (overscan.Left + overscan.Right) * 4 / _frameDivider) :
+		(_baseFrameInfo.Width - (overscan.Left + overscan.Right) * PceConstants::InternalResMultipler);
 
 	uint8_t verticalScale = baseFrameInfo.Height / PceConstants::ScreenHeight;
 	if(verticalScale != PceConstants::InternalResMultipler) {
@@ -66,11 +76,11 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 
 	//Convert RGB333 to RGB555 since this is what blargg's SNES NTSC filter expects
 	for(uint32_t i = 0; i < rowCount; i++) {
-		uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
+		uint8_t clockDivider = _frameDivider ? _frameDivider : ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
 		uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / clockDivider);
 		uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 
-		double ratio = (double)rowWidth / baseFrameInfo.Width;
+		double ratio = _frameDivider ? 1.0 : ((double)rowWidth / baseFrameInfo.Width);
 		uint32_t baseOffset = i * frameWidth;
 		for(uint32_t j = 0; j < frameWidth; j++) {
 			int pos = (int)(j * ratio);
@@ -84,13 +94,17 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		}
 	}
 
-	snes_ntsc_blit_hires(&_ntscData, _rgb555Buffer, frameWidth, IsOddFrame() ? 0 : 1, frameWidth, rowCount, _ntscBuffer, frameInfo.Width * sizeof(uint32_t));
-	
-	for(uint32_t i = 0; i < rowCount; i++) {
-		uint32_t* src = _ntscBuffer + i * frameInfo.Width;
-		for(uint32_t j = 0; j < verticalScale; j++) {
-			uint32_t* dst = GetOutputBuffer() + (i * verticalScale + j) * frameInfo.Width;
-			memcpy(dst, src, frameInfo.Width * sizeof(uint32_t));
+	if(_frameDivider) {
+		snes_ntsc_blit(&_ntscData, _rgb555Buffer, frameWidth, IsOddFrame() ? 0 : 1, frameWidth, rowCount, GetOutputBuffer(), frameInfo.Width * sizeof(uint32_t));
+	} else {
+		snes_ntsc_blit_hires(&_ntscData, _rgb555Buffer, frameWidth, IsOddFrame() ? 0 : 1, frameWidth, rowCount, _ntscBuffer, frameInfo.Width * sizeof(uint32_t));
+
+		for(uint32_t i = 0; i < rowCount; i++) {
+			uint32_t* src = _ntscBuffer + i * frameInfo.Width;
+			for(uint32_t j = 0; j < verticalScale; j++) {
+				uint32_t* dst = GetOutputBuffer() + (i * verticalScale + j) * frameInfo.Width;
+				memcpy(dst, src, frameInfo.Width * sizeof(uint32_t));
+			}
 		}
 	}
 }

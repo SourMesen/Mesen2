@@ -20,7 +20,12 @@ FrameInfo SnesDefaultVideoFilter::GetFrameInfo()
 		frame.Height = 240;
 		return frame;
 	} else {
-		return BaseVideoFilter::GetFrameInfo();
+		if(_forceFixedRes && _baseFrameInfo.Width == 256) {
+			OverscanDimensions overscan = GetOverscan();
+			return FrameInfo { 512 - (overscan.Left + overscan.Right) * 2, 478 - (overscan.Top + overscan.Bottom) * 2 };
+		} else {
+			return BaseVideoFilter::GetFrameInfo();
+		}
 	}
 }
 
@@ -65,7 +70,8 @@ void SnesDefaultVideoFilter::OnBeforeApplyFilter()
 	if(_videoConfig.Hue != config.Hue || _videoConfig.Saturation != config.Saturation || _videoConfig.Contrast != config.Contrast || _videoConfig.Brightness != config.Brightness) {
 		InitLookupTable();
 	}
-	_snesBlendHighRes = snesConfig.BlendHighResolutionModes;
+	_forceFixedRes = snesConfig.ForceFixedResolution;
+	_blendHighRes = snesConfig.BlendHighResolutionModes;
 	_videoConfig = config;
 }
 
@@ -97,13 +103,21 @@ void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t xOffset = overscan.Left;
 	uint32_t yOffset = overscan.Top * width;
 
-	for(uint32_t i = 0; i < frameInfo.Height; i++) {
-		for(uint32_t j = 0; j < frameInfo.Width; j++) {
-			out[i*frameInfo.Width+j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
+	if(_baseFrameInfo.Width == 256 && _forceFixedRes) {
+		for(uint32_t i = 0; i < frameInfo.Height; i++) {
+			for(uint32_t j = 0; j < frameInfo.Width; j++) {
+				out[i * frameInfo.Width + j] = GetPixel(ppuOutputBuffer, i / 2 * width + j / 2 + yOffset + xOffset);
+			}
+		}
+	} else {
+		for(uint32_t i = 0; i < frameInfo.Height; i++) {
+			for(uint32_t j = 0; j < frameInfo.Width; j++) {
+				out[i*frameInfo.Width+j] = GetPixel(ppuOutputBuffer, i * width + j + yOffset + xOffset);
+			}
 		}
 	}
 
-	if(_baseFrameInfo.Width == 512 && _snesBlendHighRes) {
+	if(_baseFrameInfo.Width == 512 && _blendHighRes) {
 		//Very basic blend effect for high resolution modes
 		for(uint32_t i = 0; i < frameInfo.Height; i++) {
 			for(uint32_t j = 0; j < frameInfo.Width; j++) {

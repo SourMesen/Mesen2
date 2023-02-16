@@ -81,11 +81,13 @@ FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNu
 	_overscan = enableOverscan ? _emu->GetSettings()->GetOverscan() : OverscanDimensions{};
 	_isOddFrame = frameNumber % 2;
 	_frameData = frameData;
+	_ppuOutputBuffer = ppuOutputBuffer;
+	OnBeforeApplyFilter();
 	FrameInfo frameInfo = GetFrameInfo();
 	_frameInfo = frameInfo;
 	UpdateBufferSize();
-	OnBeforeApplyFilter();
 	ApplyFilter(ppuOutputBuffer);
+	_ppuOutputBuffer = nullptr;
 	return frameInfo;
 }
 
