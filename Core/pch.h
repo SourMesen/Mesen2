@@ -37,18 +37,18 @@
 
 #ifdef _MSC_VER
 	#define __noinline __declspec(noinline)
-#endif
-
-#ifndef __MINGW32__
-	#ifdef __clang__
+#elif !defined(__MINGW32__) && (defined(__clang__) || defined(__GNUC__))
+	#define __noinline __attribute__((noinline))
+	// Some headers have functions marked as `__forceinline` but don't provide the bodies;
+	// it fails to compile when LTO is not enabled.
+	#ifdef HAVE_LTO
 		#define __forceinline __attribute__((always_inline)) inline
-		#define __noinline __attribute__((noinline))
 	#else
-		#ifdef __GNUC__
-			#define __forceinline __attribute__((always_inline)) inline
-			#define __noinline __attribute__((noinline))
-		#endif
+		#define __forceinline inline
 	#endif
+#else
+	#define __forceinline inline
+	#define __noinline
 #endif
 
 using std::vector;

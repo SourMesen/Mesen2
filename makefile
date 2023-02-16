@@ -21,8 +21,8 @@ endif
 SDL2LIB := $(shell sdl2-config --libs)
 SDL2INC := $(shell sdl2-config --cflags)
 
-CXXFLAGS := -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
-CFLAGS := -fPIC -Wall $(MESENFLAGS)
+CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 LINKCHECKUNRESOLVED := -Wl,-z,defs
 
@@ -56,37 +56,33 @@ ifneq ($(filter arm%,$(MACHINE)),)
 	MESENPLATFORM := $(MESENOS)-arm64
 endif
 
-CXXFLAGS += -m64
-CFLAGS += -m64
+MESENFLAGS += -m64
 
 ifeq ($(DEBUG),)
-	CFLAGS += -O3
-	CXXFLAGS += -O3
+	MESENFLAGS += -O3
 	ifneq ($(LTO),false)
-		CFLAGS += -flto
-		CXXFLAGS += -flto
+		MESENFLAGS += -flto -DHAVE_LTO
 	endif
 else
-	CFLAGS += -O0 -g
-	CXXFLAGS += -O0 -g
+	MESENFLAGS += -O0 -g
 	# Note: if compiling with a sanitizer, you will likely need to `LD_PRELOAD` the library `libMesenCore.so` will be linked against.
 	ifeq ($(SANITIZER),address)
 		# Currently, `-fsanitize=address` is not supported together with `-fsanitize=thread`
+		MESENFLAGS += -fsanitize=address
 		# `-Wl,-z,defs` is incompatible with the sanitizers in a shared lib, unless the sanitizer libs are linked dynamically; hence `-shared-libsan` (not the default for Clang).
 		# It seems impossible to link dynamically against two sanitizers at the same time, but that might be a Clang limitation.
-		CFLAGS += -shared-libsan -fsanitize=address
-		CXXFLAGS += -shared-libsan -fsanitize=address
+		ifneq ($(USE_GCC),true)
+			MESENFLAGS += -shared-libsan
+		endif
 	endif
 endif
 
 ifeq ($(PGO),profile)
-	CFLAGS += ${PROFILE_GEN_FLAG}
-	CXXFLAGS += ${PROFILE_GEN_FLAG}
+	MESENFLAGS += ${PROFILE_GEN_FLAG}
 endif
 
 ifeq ($(PGO),optimize)
-	CFLAGS += ${PROFILE_USE_FLAG}
-	CXXFLAGS += ${PROFILE_USE_FLAG}
+	MESENFLAGS += ${PROFILE_USE_FLAG}
 endif
 
 ifneq ($(STATICLINK),false)
