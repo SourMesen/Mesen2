@@ -173,6 +173,7 @@
     <ClInclude Include="sha1.h" />
     <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="CompressionHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xBRZ\xbrz.cpp">

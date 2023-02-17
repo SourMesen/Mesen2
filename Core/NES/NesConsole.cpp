@@ -83,7 +83,6 @@ void NesConsole::Serialize(Serializer& s)
 	SV(_ppu);
 	SV(_memoryManager);
 	SV(_apu);
-	SV(_controlManager);
 	SV(_mapper);
 
 	if(s.GetFormat() != SerializeFormat::Map) {
@@ -99,6 +98,8 @@ void NesConsole::Serialize(Serializer& s)
 		//For VS Dualsystem, the sub console's savestate is appended to the end of the file
 		SV(_vsSubConsole);
 	}
+	
+	SV(_controlManager);
 
 	if(!s.IsSaving()) {
 		UpdateRegion(true);

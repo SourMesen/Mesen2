@@ -382,7 +382,6 @@ void PceConsole::Serialize(Serializer& s)
 	SV(_vce);
 	SV(_psg);
 	SV(_memoryManager);
-	SV(_controlManager);
 	SV(_timer);
 
 	if(_cdrom) {
@@ -392,6 +391,8 @@ void PceConsole::Serialize(Serializer& s)
 	if(_mapper) {
 		SV(_mapper);
 	}
+
+	SV(_controlManager);
 }
 
 void PceConsole::InitializeRam(void* data, uint32_t length)

@@ -339,11 +339,11 @@ void SnesConsole::Serialize(Serializer& s)
 	SV(_dmaController);
 	SV(_internalRegisters);
 	SV(_cart);
-	SV(_controlManager);
 	SV(_spc);
 	if(_msu1) {
 		SV(_msu1);
 	}
+	SV(_controlManager);
 }
 
 SaveStateCompatInfo SnesConsole::ValidateSaveStateCompatibility(ConsoleType stateConsoleType)

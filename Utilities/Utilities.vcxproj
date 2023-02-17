@@ -197,6 +197,7 @@
     <ClInclude Include="Audio\StereoPanningFilter.h" />
     <ClInclude Include="Audio\WavReader.h" />
     <ClInclude Include="Base64.h" />
+    <ClInclude Include="CompressionHelper.h" />
     <ClInclude Include="CRC32.h" />
     <ClInclude Include="FastString.h" />
     <ClInclude Include="kissfft.h" />

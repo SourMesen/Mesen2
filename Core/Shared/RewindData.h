@@ -8,16 +8,20 @@ class Emulator;
 class RewindData
 {
 private:
-	vector<uint8_t> SaveStateData;
+	vector<uint8_t> _saveStateData;
+
+	template<typename T>
+	void ProcessXorState(T& data, deque<RewindData>& prevStates, int32_t position);
 
 public:
 	std::deque<ControlDeviceState> InputLogs[BaseControlDevice::PortCount];
 	int32_t FrameCount = 0;
 	bool EndOfSegment = false;
+	bool IsFullState;
 
 	void GetStateData(stringstream& stateData);
-	uint32_t GetStateSize() { return (uint32_t)SaveStateData.size(); }
+	uint32_t GetStateSize() { return (uint32_t)_saveStateData.size(); }
 
-	void LoadState(Emulator* emu);
-	void SaveState(Emulator* emu);
+	void LoadState(Emulator* emu, deque<RewindData>& prevStates, int32_t position = -1);
+	void SaveState(Emulator* emu, deque<RewindData>& prevStates, int32_t position = -1);
 };

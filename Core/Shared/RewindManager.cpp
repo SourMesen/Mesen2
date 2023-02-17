@@ -105,6 +105,20 @@ void RewindManager::ProcessNotification(ConsoleNotificationType type, void * par
 	}
 }
 
+RewindStats RewindManager::GetStats()
+{
+	uint32_t memoryUsage = 0;
+	for(int i = (int)_history.size() - 1; i >= 0; i--) {
+		memoryUsage += _history[i].GetStateSize();
+	}
+	
+	RewindStats stats = {};
+	stats.MemoryUsage = memoryUsage;
+	stats.HistorySize = (uint32_t)_history.size();
+	stats.HistoryDuration = stats.HistorySize * RewindManager::BufferSize;
+	return stats;
+}
+
 void RewindManager::AddHistoryBlock()
 {
 	uint32_t maxHistorySize = _settings->GetPreferences().RewindBufferSize;
@@ -112,9 +126,14 @@ void RewindManager::AddHistoryBlock()
 		uint32_t memoryUsage = 0;
 		for(int i = (int)_history.size() - 1; i >= 0; i--) {
 			memoryUsage += _history[i].GetStateSize();
-			if((memoryUsage >> 20) > maxHistorySize) {
+			if((memoryUsage >> 20) >= maxHistorySize) {
 				//Remove all old state data above the memory limit
 				for(int j = 0; j < i; j++) {
+					_history.pop_front();
+				}
+
+				while(_history.size() > 0 && !_history.front().IsFullState) {
+					//Remove everything until the next full state
 					_history.pop_front();
 				}
 				break;
@@ -125,7 +144,7 @@ void RewindManager::AddHistoryBlock()
 			_history.push_back(_currentHistory);
 		}
 		_currentHistory = RewindData();
-		_currentHistory.SaveState(_emu);
+		_currentHistory.SaveState(_emu, _history);
 	}
 }
 
@@ -140,7 +159,7 @@ void RewindManager::PopHistory()
 		}
 
 		_historyBackup.push_front(_currentHistory);
-		_currentHistory.LoadState(_emu);
+		_currentHistory.LoadState(_emu, _history);
 		if(!_audioHistoryBuilder.empty()) {
 			_audioHistory.insert(_audioHistory.begin(), _audioHistoryBuilder.begin(), _audioHistoryBuilder.end());
 			_audioHistoryBuilder.clear();
@@ -218,7 +237,7 @@ void RewindManager::Stop()
 			_framesToFastForward = _historyBackup.front().FrameCount;
 		}
 
-		_currentHistory.LoadState(_emu);
+		_currentHistory.LoadState(_emu, _history);
 		if(_framesToFastForward > 0) {
 			_rewindState = RewindState::Stopping;
 			_currentHistory.FrameCount = 0;
@@ -377,7 +396,7 @@ void RewindManager::RewindSeconds(uint32_t seconds)
 				break;
 			}
 		}
-		_currentHistory.LoadState(_emu);
+		_currentHistory.LoadState(_emu, _history);
 	}
 }
 

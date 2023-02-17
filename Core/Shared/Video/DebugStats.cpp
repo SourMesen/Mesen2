@@ -4,6 +4,7 @@
 #include "Shared/Audio/SoundMixer.h"
 #include "Shared/Interfaces/IAudioDevice.h"
 #include "Shared/Emulator.h"
+#include "Shared/RewindManager.h"
 #include "Shared/EmuSettings.h"
 
 void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
@@ -84,5 +85,22 @@ void DebugStats::DisplayStats(Emulator *emu, double lastFrameTime)
 			lineColor = 0xFFA500;
 		}
 		hud->DrawLine(130 + i*2, 60 + 50 - duration*2, 130 + i*2 + 2, 60 + 50 - nextDuration*2, lineColor, 1, startFrame);
+	}
+
+	hud->DrawRectangle(8, 60, 115, 34, 0x40000000, true, 1, startFrame);
+	hud->DrawRectangle(8, 60, 115, 34, 0xFFFFFF, false, 1, startFrame);
+
+	hud->DrawString(10, 62, "Misc. Stats", 0xFFFFFF, 0xFF000000, 1, startFrame);
+
+	RewindStats rewindStats = emu->GetRewindManager()->GetStats();
+	double memUsage = (double)rewindStats.MemoryUsage / (1024 * 1024);
+	ss = std::stringstream();
+	ss << "Rewind mem.: " << std::fixed << std::setprecision(2) << memUsage << " MB";
+	hud->DrawString(10, 73, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
+
+	if(rewindStats.HistoryDuration > 0) {
+		ss = std::stringstream();
+		ss << "   Per min.: " << std::fixed << std::setprecision(2) << (memUsage * 60 * 60 / rewindStats.HistoryDuration) << " MB";
+		hud->DrawString(9, 82, ss.str(), 0xFFFFFF, 0xFF000000, 1, startFrame);
 	}
 }

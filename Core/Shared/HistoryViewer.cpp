@@ -99,7 +99,7 @@ void HistoryViewer::SeekTo(uint32_t seekPosition)
 		
 		_position = seekPosition;
 		RewindData rewindData = _history[_position];
-		rewindData.LoadState(_emu);
+		rewindData.LoadState(_emu, _history, _position);
 
 		_emu->GetSoundMixer()->StopAudio(true);
 		_pollCounter = 0;
@@ -164,9 +164,9 @@ void HistoryViewer::ResumeGameplay(uint32_t resumePosition)
 	}
 
 	if(resumePosition < _history.size()) {
-		_history[resumePosition].LoadState(_mainEmu);
+		_history[resumePosition].LoadState(_mainEmu, _history, resumePosition);
 	} else {
-		_history[_history.size() - 1].LoadState(_mainEmu);
+		_history[_history.size() - 1].LoadState(_mainEmu, _history, (int32_t)_history.size() - 1);
 	}
 }
 
@@ -204,6 +204,6 @@ void HistoryViewer::ProcessEndOfFrame()
 		}
 
 		RewindData rewindData = _history[_position];
-		rewindData.LoadState(_emu);
+		rewindData.LoadState(_emu, _history, _position);
 	}
 }

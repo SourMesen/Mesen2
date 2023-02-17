@@ -29,10 +29,17 @@ struct VideoFrame
 	vector<ControllerData> InputData;
 };
 
+struct RewindStats
+{
+	uint32_t MemoryUsage;
+	uint32_t HistorySize;
+	uint32_t HistoryDuration;
+};
+
 class RewindManager : public INotificationListener, public IInputProvider, public IInputRecorder
 {
 public:
-	static constexpr int32_t BufferSize = 60; //Number of frames between each save state
+	static constexpr int32_t BufferSize = 30; //Number of frames between each save state
 
 private:
 	Emulator* _emu = nullptr;
@@ -87,6 +94,7 @@ public:
 
 	bool HasHistory();
 	deque<RewindData> GetHistory();
+	RewindStats GetStats();
 
 	void SendFrame(RenderedFrame& frame, bool forRewind);
 	bool SendAudio(int16_t *soundBuffer, uint32_t sampleCount);

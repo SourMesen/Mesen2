@@ -342,7 +342,6 @@ void Gameboy::Serialize(Serializer& s)
 	SV(_memoryManager);
 	SV(_timer);
 	SV(_dmaController);
-	SV(_controlManager);
 	SV(_hasBattery);
 
 	SVArray(_cartRam, _cartRamSize);
@@ -350,6 +349,8 @@ void Gameboy::Serialize(Serializer& s)
 	SVArray(_videoRam, _videoRamSize);
 	SVArray(_spriteRam, Gameboy::SpriteRamSize);
 	SVArray(_highRam, Gameboy::HighRamSize);
+
+	SV(_controlManager);
 }
 
 SaveStateCompatInfo Gameboy::ValidateSaveStateCompatibility(ConsoleType stateConsoleType)
