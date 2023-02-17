@@ -24,8 +24,8 @@ namespace Mesen.ViewModels
 		[Reactive] public int Volume { get; set; }
 		[Reactive] public bool IsPaused { get; set; }
 
-		[Reactive] public string TotalTimeText { get; set; } = "";
-		[Reactive] public string CurrentTimeText { get; set; } = "";
+		[Reactive] public string TotalTimeText { get; set; } = "00:00";
+		[Reactive] public string CurrentTimeText { get; set; } = "00:00";
 		
 		[Reactive] public uint MaxPosition { get; set; }
 		[Reactive] public uint CurrentPosition { get; set; }

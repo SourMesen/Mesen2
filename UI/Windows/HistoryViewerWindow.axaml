@@ -44,9 +44,9 @@
 					<TextBlock Text="{l:Translate lblVolume}" HorizontalAlignment="Center" Margin="15 -3 0 0" />
 				</StackPanel>
 			
-				<TextBlock Text="{CompiledBinding TotalTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="5 0 10 0" />
+				<TextBlock MinWidth="30" Text="{CompiledBinding TotalTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="5 0 10 0" />
 				<TextBlock Text=" / " DockPanel.Dock="Right" VerticalAlignment="Center" />
-				<TextBlock Text="{CompiledBinding CurrentTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="20 0 5 0" />
+				<TextBlock MinWidth="30" Text="{CompiledBinding CurrentTimeText}" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="20 0 5 0" />
 
 				<Slider
 					Minimum="0"
