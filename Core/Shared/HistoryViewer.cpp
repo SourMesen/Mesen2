@@ -38,6 +38,9 @@ bool HistoryViewer::Initialize(Emulator* mainEmu)
 	vector<CheatCode> cheats = _mainEmu->GetCheatManager()->GetCheats();
 	_emu->GetCheatManager()->SetCheats(cheats);
 
+	//Disable rewind history to reduce memory usage
+	_emu->GetSettings()->GetPreferences().RewindBufferSize = 0;
+
 	//Disable battery saving for this instance
 	_emu->GetBatteryManager()->Initialize("");
 	
