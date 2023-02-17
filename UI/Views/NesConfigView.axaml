@@ -317,6 +317,7 @@
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePaletteRead}" Text="{l:Translate chkDisablePaletteRead}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisablePpu2004Reads}" Text="{l:Translate chkDisablePpu2004Reads}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableGameGenieBusConflicts}" Text="{l:Translate chkDisableGameGenieBusConflicts}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableFlashSaves}" Text="{l:Translate chkDisableFlashSaves}" />
 
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 					</c:OptionSection>

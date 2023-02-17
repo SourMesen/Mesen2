@@ -546,6 +546,7 @@ struct NesConfig
 	bool DisablePpuReset = false;
 	bool AllowInvalidInput = false;
 	bool DisableGameGenieBusConflicts = false;
+	bool DisableFlashSaves = false;
 
 	bool EnableOamDecay = false;
 	bool EnablePpuOamRowCorruption = false;

@@ -47,6 +47,10 @@ protected:
 
 	void ApplySaveData()
 	{
+		if(_console->GetNesConfig().DisableFlashSaves) {
+			return;
+		}
+
 		//Apply save data (saved as an IPS file), if found
 		vector<uint8_t> ipsData = _emu->GetBatteryManager()->LoadBattery(".ips");
 		if(!ipsData.empty()) {
@@ -59,6 +63,10 @@ protected:
 
 	void SaveBattery() override
 	{
+		if(_console->GetNesConfig().DisableFlashSaves) {
+			return;
+		}
+
 		vector<uint8_t> prgRom = vector<uint8_t>(_prgRom, _prgRom + _prgSize);
 		vector<uint8_t> ipsData = IpsPatcher::CreatePatch(_orgPrgRom, prgRom);
 		if(ipsData.size() > 8) {

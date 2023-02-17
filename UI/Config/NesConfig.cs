@@ -68,6 +68,7 @@ namespace Mesen.Config
 		[Reactive] public bool DisablePpuReset { get; set; } = false;
 		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 		[Reactive] public bool DisableGameGenieBusConflicts { get; set; } = false;
+		[Reactive] public bool DisableFlashSaves { get; set; } = false;
 
 		[Reactive] public bool RandomizeMapperPowerOnState { get; set; } = false;
 		[Reactive] public bool RandomizeCpuPpuAlignment { get; set; } = false;
@@ -169,6 +170,7 @@ namespace Mesen.Config
 				DisablePpuReset = DisablePpuReset,
 				AllowInvalidInput = AllowInvalidInput,
 				DisableGameGenieBusConflicts = DisableGameGenieBusConflicts,
+				DisableFlashSaves = DisableFlashSaves,
 
 				EnableOamDecay = EnableOamDecay,
 				EnablePpuOamRowCorruption = EnablePpuOamRowCorruption,
@@ -332,6 +334,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool DisablePpuReset;
 		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameGenieBusConflicts;
+		[MarshalAs(UnmanagedType.I1)] public bool DisableFlashSaves;
 		
 		[MarshalAs(UnmanagedType.I1)] public bool EnableOamDecay;
 		[MarshalAs(UnmanagedType.I1)] public bool EnablePpuOamRowCorruption;
