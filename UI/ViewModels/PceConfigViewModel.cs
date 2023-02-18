@@ -20,7 +20,9 @@ namespace Mesen.ViewModels
 		public PceInputConfigViewModel Input { get; private set; }
 
 		public List<PalettePreset> PalettePresets { get; } = new List<PalettePreset>() {
-			new() { Name = "Default Palette", Palette = PcEngineConfig.DefaultPalette.ToArray() },
+			//The default palette is generated from Kitrinx's palette generator which
+			//is meant to produce a more accurate palette for the PCE: https://github.com/Kitrinx/TG16_Palette
+			new() { Name = "Default (by Kitrinx)", Palette = PcEngineConfig.DefaultPalette.ToArray() },
 		};
 
 		public PceConfigViewModel()
@@ -32,8 +34,22 @@ namespace Mesen.ViewModels
 				return;
 			}
 
+			UInt32[] linearPalette = new UInt32[512];
+			for(UInt32 i = 0; i < 0x200; i++) {
+				UInt32 g = To8Bit(i >> 6);
+				UInt32 r = To8Bit((i >> 3) & 0x07);
+				UInt32 b = To8Bit(i & 0x07);
+				linearPalette[i] = (0xFF000000 | (r << 16) | (g << 8) | b);
+			}
+			PalettePresets.Add(new() { Name = "Linear RGB333", Palette = linearPalette });
+
 			AddDisposable(Input);
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
+		}
+
+		UInt32 To8Bit(UInt32 color)
+		{
+			return (color << 5) | (color << 2) | (color >> 1);
 		}
 	}
 
