@@ -5,6 +5,7 @@
 GifRecorder::GifRecorder()
 {
 	_gif.reset(new GifWriter());
+	_frameCounter = 0;
 }
 
 GifRecorder::~GifRecorder()
@@ -12,10 +13,23 @@ GifRecorder::~GifRecorder()
 	StopRecording();
 }
 
-bool GifRecorder::StartRecording(string filename, uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps)
+bool GifRecorder::Init(string filename)
 {
 	_outputFile = filename;
-	_recording = GifBegin(_gif.get(), filename.c_str(), width, height, 2, 8, false);
+	ofstream fileTest(filename, std::ios::out | std::ios::binary);
+	if(!fileTest) {
+		return false;
+	}
+	return true;
+}
+
+bool GifRecorder::StartRecording(uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps)
+{
+	_width = width;
+	_height = height;
+	_fps = fps;
+
+	_recording = GifBegin(_gif.get(), _outputFile.c_str(), width, height, 2, 8, false);
 	_frameCounter = 0;
 	return _recording;
 }
@@ -29,6 +43,10 @@ void GifRecorder::StopRecording()
 
 bool GifRecorder::AddFrame(void* frameBuffer, uint32_t width, uint32_t height, double fps)
 {
+	if(_width != width || _height != height || _fps != fps) {
+		return false;
+	}
+
 	_frameCounter++;
 	
 	if(fps < 55 || (_frameCounter % 6) != 0) {

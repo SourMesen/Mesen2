@@ -179,6 +179,10 @@ void VideoRenderer::ProcessAviRecording(RenderedFrame& frame)
 {
 	shared_ptr<IVideoRecorder> recorder = _recorder.lock();
 	if(recorder) {
+		if(!recorder->IsRecording()) {
+			recorder->StartRecording(frame.Width, frame.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps());
+		}
+
 		if(_recorderOptions.RecordInputHud || _recorderOptions.RecordSystemHud) {
 			//Calculate the scale needed for the HUD elements
 			FrameInfo originalSize = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
@@ -229,13 +233,15 @@ void VideoRenderer::StartRecording(string filename, RecordAviOptions options)
 		recorder.reset(new AviRecorder(options.Codec, options.CompressionLevel));
 	}
 
-	if(recorder->StartRecording(filename, frameInfo.Width, frameInfo.Height, 4, _emu->GetSettings()->GetAudioConfig().SampleRate, _emu->GetFps())) {
+	if(recorder->Init(filename)) {
 		_recorder.reset(recorder);
 		
 		if(!options.RecordSystemHud) {
 			//Only display message if not recording the system HUD (otherwise the message is always visible on the recording, which isn't ideal)
 			MessageManager::DisplayMessage("VideoRecorder", "VideoRecorderStarted", filename);
 		}
+	} else {
+		MessageManager::DisplayMessage("VideoRecorder", "CouldNotWriteToFile", filename);
 	}
 }
 

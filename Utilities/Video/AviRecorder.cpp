@@ -25,10 +25,21 @@ AviRecorder::~AviRecorder()
 	}
 }
 
-bool AviRecorder::StartRecording(string filename, uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps)
+bool AviRecorder::Init(string filename)
+{
+	_outputFile = filename;
+	
+	ofstream fileTest(filename, std::ios::out | std::ios::binary);
+	if(!fileTest) {
+		return false;
+	}
+
+	return true;
+}
+
+bool AviRecorder::StartRecording(uint32_t width, uint32_t height, uint32_t bpp, uint32_t audioSampleRate, double fps)
 {
 	if(!_recording) {
-		_outputFile = filename;
 		_sampleRate = audioSampleRate;
 		_width = width;
 		_height = height;
@@ -37,7 +48,7 @@ bool AviRecorder::StartRecording(string filename, uint32_t width, uint32_t heigh
 		_frameBuffer = new uint8_t[_frameBufferLength];
 
 		_aviWriter.reset(new AviWriter());
-		if(!_aviWriter->StartWrite(filename, _codec, width, height, bpp, (uint32_t)(_fps * 1000000), audioSampleRate, _compressionLevel)) {
+		if(!_aviWriter->StartWrite(_outputFile, _codec, width, height, bpp, (uint32_t)(_fps * 1000000), audioSampleRate, _compressionLevel)) {
 			_aviWriter.reset();
 			return false;
 		}
