@@ -66,9 +66,16 @@ ifeq ($(DEBUG),)
 else
 	MESENFLAGS += -O0 -g
 	# Note: if compiling with a sanitizer, you will likely need to `LD_PRELOAD` the library `libMesenCore.so` will be linked against.
-	ifeq ($(SANITIZER),address)
-		# Currently, `-fsanitize=address` is not supported together with `-fsanitize=thread`
-		MESENFLAGS += -fsanitize=address
+	ifneq ($(SANITIZER),)
+		ifeq ($(SANITIZER),address)
+			# Currently, `-fsanitize=address` is not supported together with `-fsanitize=thread`
+			MESENFLAGS += -fsanitize=address
+		else ifeq ($(SANITIZER),thread)
+			# Currently, `-fsanitize=address` is not supported together with `-fsanitize=thread`
+			MESENFLAGS += -fsanitize=thread
+		else
+$(warning Unrecognised $$(SANITIZER) value: $(SANITIZER))
+		endif
 		# `-Wl,-z,defs` is incompatible with the sanitizers in a shared lib, unless the sanitizer libs are linked dynamically; hence `-shared-libsan` (not the default for Clang).
 		# It seems impossible to link dynamically against two sanitizers at the same time, but that might be a Clang limitation.
 		ifneq ($(USE_GCC),true)
