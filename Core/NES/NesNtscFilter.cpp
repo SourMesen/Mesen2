@@ -70,6 +70,10 @@ void NesNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	uint32_t xOffset = overscan.Left;
 	uint32_t yOffset = overscan.Top/2 * baseWidth;
 
+	if(_nesConfig.EnablePalBorders && _emu->GetRegion() != ConsoleRegion::Ntsc) {
+		NesDefaultVideoFilter::ApplyPalBorder(ppuOutputBuffer);
+	}
+
 	nes_ntsc_blit(&_ntscData, ppuOutputBuffer, _baseFrameInfo.Width, IsOddFrame() ? 0 : 1, _baseFrameInfo.Width, _baseFrameInfo.Height, _ntscBuffer, NES_NTSC_OUT_WIDTH(_baseFrameInfo.Width) * 4);
 
 	for(uint32_t i = 0; i < frameInfo.Height; i+=2) {

@@ -536,6 +536,7 @@ struct NesConfig
 	bool ForceSpritesFirstColumn = false;
 	bool RemoveSpriteLimit = false;
 	bool AdaptiveSpriteLimit = false;
+	bool EnablePalBorders = false;
 	
 	bool UseCustomVsPalette = false;
 	

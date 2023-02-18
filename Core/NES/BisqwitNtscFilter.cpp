@@ -6,6 +6,7 @@
 #include "NES/BisqwitNtscFilter.h"
 #include "NES/NesPpu.h"
 #include "NES/NesConsole.h"
+#include "NES/NesDefaultVideoFilter.h"
 #include "Shared/EmuSettings.h"
 
 BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
@@ -63,6 +64,10 @@ BisqwitNtscFilter::~BisqwitNtscFilter()
 void BisqwitNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 {
 	_ppuOutputBuffer = ppuOutputBuffer;
+
+	if(_emu->GetSettings()->GetNesConfig().EnablePalBorders && _emu->GetRegion() != ConsoleRegion::Ntsc) {
+		NesDefaultVideoFilter::ApplyPalBorder(ppuOutputBuffer);
+	}
 
 	_workDone = false;
 	_waitWork.Signal();

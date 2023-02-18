@@ -49,6 +49,7 @@ namespace Mesen.Config
 		[Reactive] public bool ForceSpritesFirstColumn { get; set; } = false;
 		[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 		[Reactive] public bool AdaptiveSpriteLimit { get; set; } = false;
+		[Reactive] public bool EnablePalBorders { get; set; } = false;
 
 		[Reactive] public bool UseCustomVsPalette { get; set; } = false;
 
@@ -160,6 +161,7 @@ namespace Mesen.Config
 				ForceSpritesFirstColumn = ForceSpritesFirstColumn,
 				RemoveSpriteLimit = RemoveSpriteLimit,
 				AdaptiveSpriteLimit = AdaptiveSpriteLimit,
+				EnablePalBorders = EnablePalBorders,
 
 				UseCustomVsPalette = UseCustomVsPalette,
 
@@ -324,6 +326,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ForceSpritesFirstColumn;
 		[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
 		[MarshalAs(UnmanagedType.I1)] public bool AdaptiveSpriteLimit;
+		[MarshalAs(UnmanagedType.I1)] public bool EnablePalBorders;
 		
 		[MarshalAs(UnmanagedType.I1)] public bool UseCustomVsPalette;
 

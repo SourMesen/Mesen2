@@ -23,6 +23,8 @@ protected:
 public:
 	NesDefaultVideoFilter(Emulator* emu);
 
+	static void ApplyPalBorder(uint16_t* ppuOutputBuffer);
+
 	static void GenerateFullColorPalette(uint32_t paletteBuffer[512]);
 	static void GetFullPalette(uint32_t palette[512], NesConfig& nesCfg, PpuModel model);
 

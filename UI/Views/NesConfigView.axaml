@@ -357,6 +357,7 @@
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
 						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
 						<CheckBox Margin="10 0 0 0" IsChecked="{CompiledBinding Config.AdaptiveSpriteLimit}" Content="{l:Translate chkAdaptiveSpriteLimit}" IsEnabled="{CompiledBinding Config.RemoveSpriteLimit}" />
+						<CheckBox IsChecked="{CompiledBinding Config.EnablePalBorders}" Content="{l:Translate chkEnablePalBorders}" />
 
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />

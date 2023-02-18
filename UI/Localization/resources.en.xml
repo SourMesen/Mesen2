@@ -275,6 +275,7 @@
 
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit (Reduces flickering)</Control>
 			<Control ID="chkAdaptiveSpriteLimit">Automatically re-enable sprite limit as needed to prevent graphical glitches when possible</Control>
+			<Control ID="chkEnablePalBorders">Enable PAL black borders</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
 			<Control ID="chkForceBackgroundFirstColumn">Force background display in first column</Control>
