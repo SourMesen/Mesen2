@@ -112,6 +112,9 @@ void PcePsg::Run()
 			rightOutput += (int32_t)ch.GetOutput(false, _state.RightVolume) * (int32_t)cfg.ChannelVol[i] / 100;
 		}
 
+		_clockCounter += minTimer;
+		clocksToRun -= minTimer * 6;
+
 		if(_prevLeftOutput != leftOutput) {
 			blip_add_delta(_leftChannel, _clockCounter, leftOutput - _prevLeftOutput);
 			_prevLeftOutput = leftOutput;
@@ -121,9 +124,6 @@ void PcePsg::Run()
 			blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
 			_prevRightOutput = rightOutput;
 		}
-
-		_clockCounter += minTimer;
-		clocksToRun -= minTimer * 6;
 	}
 
 	if(_clockCounter >= 20000) {

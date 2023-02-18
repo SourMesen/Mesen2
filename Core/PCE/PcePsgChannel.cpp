@@ -55,7 +55,6 @@ void PcePsgChannel::Run(uint32_t clocks)
 		//If the channel is turned on or off, noise is turned on or off, or if any other setting is adjusted, the LFSR always runs at 
 		//the specified noise frequency. Apart from a reset, the LFSR state can't be changed."
 		if(_state.NoiseTimer <= clocks) {
-			clocks -= _state.NoiseTimer;
 			_state.NoiseTimer = GetNoisePeriod();
 
 			//Clock noise LSFR
