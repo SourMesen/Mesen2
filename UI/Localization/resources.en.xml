@@ -1165,6 +1165,7 @@
 			<Control ID="chkBreakOnDecayedOamRead">Decayed OAM read</Control>
 			<Control ID="chkBreakOnPpu2000ScrollGlitch">PPU $2000/5/6 scroll glitch</Control>
 			<Control ID="chkBreakOnPpu2006ScrollGlitch">PPU $2006 scroll glitch</Control>
+			<Control ID="chkNesBreakOnExtOutputMode">PPU EXT output mode</Control>
 
 			<Control ID="chkGbBreakOnInvalidOamAccess">Break on invalid OAM access</Control>
 			<Control ID="chkGbBreakOnInvalidVramAccess">Break on invalid VRAM access</Control>
@@ -2585,6 +2586,7 @@
 			<Value ID="BreakOnUnofficialOpCode">Unofficial OP</Value>
 			<Value ID="NesBusConflict">Bus conflict</Value>
 			<Value ID="NesBreakOnCpuCrash">CPU crashed</Value>
+			<Value ID="NesBreakOnExtOutputMode">PPU EXT output mode</Value>
 			
 			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
 		</Enum>

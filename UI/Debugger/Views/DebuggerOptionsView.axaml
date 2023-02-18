@@ -148,6 +148,10 @@
 					IsChecked="{CompiledBinding Config.Nes.BreakOnPpu2006ScrollGlitch}"
 					Content="{l:Translate chkBreakOnPpu2006ScrollGlitch}"
 				/>
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Nes.NesBreakOnExtOutputMode}"
+					Content="{l:Translate chkNesBreakOnExtOutputMode}"
+				/>
 			</StackPanel>
 			<StackPanel IsVisible="{CompiledBinding IsPce}">
 				<CheckBox

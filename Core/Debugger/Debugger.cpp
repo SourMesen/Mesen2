@@ -669,6 +669,7 @@ bool Debugger::IsBreakOptionEnabled(BreakSource src)
 		case BreakSource::NesBreakOnPpu2006ScrollGlitch: return _settings->GetDebugConfig().NesBreakOnPpu2006ScrollGlitch;
 		case BreakSource::NesBusConflict: return _settings->GetDebugConfig().NesBreakOnBusConflict;
 		case BreakSource::NesBreakOnCpuCrash: return _settings->GetDebugConfig().NesBreakOnCpuCrash;
+		case BreakSource::NesBreakOnExtOutputMode: return _settings->GetDebugConfig().NesBreakOnExtOutputMode;
 		case BreakSource::PceBreakOnInvalidVramAddress: return _settings->GetDebugConfig().PceBreakOnInvalidVramAddress;
 	}
 	return false;

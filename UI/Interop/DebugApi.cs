@@ -1280,6 +1280,7 @@ namespace Mesen.Interop
 		BreakOnUnofficialOpCode,
 		NesBusConflict,
 		NesBreakOnCpuCrash,
+		NesBreakOnExtOutputMode,
 
 		PceBreakOnInvalidVramAddress
 	}

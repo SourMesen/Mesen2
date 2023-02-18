@@ -319,6 +319,7 @@ enum class BreakSource
 	BreakOnUnofficialOpCode,
 	NesBusConflict,
 	NesBreakOnCpuCrash,
+	NesBreakOnExtOutputMode,
 
 	PceBreakOnInvalidVramAddress
 };

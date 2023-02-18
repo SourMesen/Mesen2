@@ -483,6 +483,9 @@ template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 	_control.LargeSprites = (value & 0x20) == 0x20;
 
 	_control.SecondaryPpu = (value & 0x40) == 0x40;
+	if(_control.SecondaryPpu) {
+		_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnExtOutputMode);
+	}
 	_control.NmiOnVerticalBlank = (value & 0x80) == 0x80;
 	
 	//"By toggling NMI_output ($2000 bit 7) during vertical blank without reading $2002, a program can cause /NMI to be pulled low multiple times, causing multiple NMIs to be generated."

@@ -19,5 +19,6 @@ namespace Mesen.Config
 		[Reactive] public bool BreakOnDecayedOamRead { get; set; } = false;
 		[Reactive] public bool BreakOnPpu2000ScrollGlitch { get; set; } = false;
 		[Reactive] public bool BreakOnPpu2006ScrollGlitch { get; set; } = false;
+		[Reactive] public bool NesBreakOnExtOutputMode { get; set; } = false;
 	}
 }
