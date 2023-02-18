@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -28,11 +29,10 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> TopClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(TopClipSize), 0);
 		public static readonly StyledProperty<int> BottomClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(BottomClipSize), 0);
 
-		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeX), 8);
-		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(AltGridSizeY), 8);
-		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowAltGrid), false);
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(AllowSelection), true);
-		
+
+		public static readonly StyledProperty<List<GridDefinition>?> CustomGridsProperty = AvaloniaProperty.Register<PictureViewer, List<GridDefinition>?>(nameof(CustomGrids), null);
+
 		public static readonly StyledProperty<GridRowColumn?> GridHighlightProperty = AvaloniaProperty.Register<PictureViewer, GridRowColumn?>(nameof(GridHighlight), null);
 
 		public static readonly StyledProperty<bool> ShowMousePositionProperty = AvaloniaProperty.Register<PictureViewer, bool>(nameof(ShowMousePosition), true);
@@ -122,22 +122,10 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowGridProperty, value); }
 		}
 
-		public int AltGridSizeX
+		public List<GridDefinition>? CustomGrids
 		{
-			get { return GetValue(AltGridSizeXProperty); }
-			set { SetValue(AltGridSizeXProperty, value); }
-		}
-
-		public int AltGridSizeY
-		{
-			get { return GetValue(AltGridSizeYProperty); }
-			set { SetValue(AltGridSizeYProperty, value); }
-		}
-
-		public bool ShowAltGrid
-		{
-			get { return GetValue(ShowAltGridProperty); }
-			set { SetValue(ShowAltGridProperty, value); }
+			get { return GetValue(CustomGridsProperty); }
+			set { SetValue(CustomGridsProperty, value); }
 		}
 
 		public Rect SelectionRect
@@ -397,21 +385,30 @@ namespace Mesen.Debugger.Controls
 			);
 		}
 
-		private void DrawGrid(DrawingContext context, bool show, int gridX, int gridY, Color color)
+		private void DrawGrid(DrawingContext context, bool show, GridDefinition gridDef)
 		{
 			if(show) {
 				int width = (int)(Source.Size.Width * Zoom);
 				int height = (int)(Source.Size.Height * Zoom);
-				int gridSizeX = (int)(gridX * Zoom);
-				int gridSizeY = (int)(gridY * Zoom);
+				int gridSizeX = (int)(gridDef.SizeX * Zoom);
+				int gridSizeY = (int)(gridDef.SizeY * Zoom);
+				double gridRestartY = (int)(gridDef.RestartY * Zoom) + 0.5;
 
-				Pen pen = new Pen(color.ToUint32(), 1);
+				Pen pen = new Pen(gridDef.Color.ToUint32(), 1);
 				double offset = 0.5;
 				for(int i = 1; i <= width / gridSizeX; i++) {
-					context.DrawLine(pen, new Point(i * gridSizeX + offset, 0), new Point(i * gridSizeX + offset, height));
+					double x = i * gridSizeX + offset;
+					context.DrawLine(pen, new Point(x, 0), new Point(x, height));
 				}
 				for(int i = 1; i <= height / gridSizeY; i++) {
-					context.DrawLine(pen, new Point(0, i * gridSizeY + offset), new Point(width, i * gridSizeY + offset));
+					double y = i * gridSizeY + offset;
+					if(gridRestartY > 0.5 && y >= gridRestartY) {
+						context.DrawLine(pen, new Point(0, gridRestartY), new Point(width, gridRestartY));
+						offset += (y - gridRestartY);
+						y += (y - gridRestartY);
+						gridRestartY = 0;
+					}
+					context.DrawLine(pen, new Point(0, y), new Point(width, y));
 				}
 			}
 		}
@@ -438,8 +435,13 @@ namespace Mesen.Debugger.Controls
 				BitmapInterpolationMode.Default
 			);
 
-			DrawGrid(context, ShowGrid, GridSizeX, GridSizeY, Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B));
-			DrawGrid(context, ShowAltGrid, AltGridSizeX, AltGridSizeY, Color.FromArgb(192, Colors.Red.R, Colors.Red.G, Colors.Red.B));
+			DrawGrid(context, ShowGrid, new GridDefinition() { SizeX = GridSizeX, SizeY = GridSizeY, Color = Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B) });
+
+			if(CustomGrids != null) {
+				foreach(GridDefinition gridDef in CustomGrids) {
+					DrawGrid(context, true, gridDef);
+				}
+			}
 
 			if(!OverlayRect.IsDefault) {
 				Rect rect = ToDrawRect(OverlayRect);
@@ -558,6 +560,14 @@ namespace Mesen.Debugger.Controls
 		public int Width;
 		public int Height;
 		public string DisplayValue = "";
+	}
+
+	public struct GridDefinition
+	{
+		public int SizeX;
+		public int SizeY;
+		public Color Color;
+		public int RestartY;
 	}
 
 	public struct PictureViewerLine

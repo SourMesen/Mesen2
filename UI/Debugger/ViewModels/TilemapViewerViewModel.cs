@@ -32,6 +32,8 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int GridSizeX { get; set; } = 8;
 		[Reactive] public int GridSizeY { get; set; } = 8;
 
+		[Reactive] public List<GridDefinition>? CustomGrids { get; set; } = null;
+
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
 
 		[Reactive] public DynamicTooltip TilemapInfoPanel { get; private set; } = new DynamicTooltip();
@@ -75,7 +77,7 @@ namespace Mesen.Debugger.ViewModels
 			Config = ConfigManager.Config.Debug.TilemapViewer.Clone();
 			CpuType = cpuType;
 			RefreshTiming = new RefreshTimingViewModel(Config.RefreshTiming, cpuType);
-			
+
 			_picViewer = picViewer;
 			InitForCpuType();
 
@@ -253,9 +255,32 @@ namespace Mesen.Debugger.ViewModels
 			}));
 			AddDisposable(this.WhenAnyValue(x => x.SelectionRect).Subscribe(x => UpdatePreviewPanel()));
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, Config_PropertyChanged));
+			
+			InitNesGridOptions();
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		}
+
+		private void InitNesGridOptions()
+		{
+			AddDisposable(this.WhenAnyValue(x => x.Config.NesShowAttributeGrid, x => x.Config.NesShowAttributeByteGrid, x => x.Config.NesShowTilemapGrid, x => x.CpuType).Subscribe(x => {
+				if(CpuType == CpuType.Nes) {
+					List<GridDefinition> grids = new();
+					if(Config.NesShowAttributeGrid) {
+						grids.Add(new() { SizeX = 16, SizeY = 16, Color = Colors.Red });
+					}
+					if(Config.NesShowAttributeByteGrid) {
+						grids.Add(new() { SizeX = 32, SizeY = 32, Color = Colors.LightGreen, RestartY = 240 });
+					}
+					if(Config.NesShowTilemapGrid) {
+						grids.Add(new() { SizeX = 256, SizeY = 240, Color = Colors.LightGray });
+					}
+					CustomGrids = grids;
+				} else {
+					CustomGrids = null;
+				}
+			}));
 		}
 
 		private async void EditBreakpoint(Window wnd, int address)

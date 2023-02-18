@@ -28,9 +28,8 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> TopClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(TopClipSize), 0);
 		public static readonly StyledProperty<int> BottomClipSizeProperty = AvaloniaProperty.Register<PictureViewer, int>(nameof(BottomClipSize), 0);
 
-		public static readonly StyledProperty<int> AltGridSizeXProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeX), 8);
-		public static readonly StyledProperty<int> AltGridSizeYProperty = AvaloniaProperty.Register<ScrollPictureViewer, int>(nameof(AltGridSizeY), 8);
-		public static readonly StyledProperty<bool> ShowAltGridProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(ShowAltGrid), false);
+		public static readonly StyledProperty<List<GridDefinition>?> CustomGridsProperty = AvaloniaProperty.Register<PictureViewer, List<GridDefinition>?>(nameof(CustomGrids), null);
+
 		public static readonly StyledProperty<bool> AllowSelectionProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(AllowSelection), true);
 		public static readonly StyledProperty<bool> AllowClickDragProperty = AvaloniaProperty.Register<ScrollPictureViewer, bool>(nameof(AllowClickDrag), true);
 		
@@ -95,22 +94,10 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(ShowGridProperty, value); }
 		}
 
-		public int AltGridSizeX
+		public List<GridDefinition>? CustomGrids
 		{
-			get { return GetValue(AltGridSizeXProperty); }
-			set { SetValue(AltGridSizeXProperty, value); }
-		}
-
-		public int AltGridSizeY
-		{
-			get { return GetValue(AltGridSizeYProperty); }
-			set { SetValue(AltGridSizeYProperty, value); }
-		}
-
-		public bool ShowAltGrid
-		{
-			get { return GetValue(ShowAltGridProperty); }
-			set { SetValue(ShowAltGridProperty, value); }
+			get { return GetValue(CustomGridsProperty); }
+			set { SetValue(CustomGridsProperty, value); }
 		}
 
 		public bool AllowClickDrag

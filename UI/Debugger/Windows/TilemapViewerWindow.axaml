@@ -58,7 +58,9 @@
 					/>
 				</StackPanel>
 				<CheckBox Content="{l:Translate chkShowGrid}" IsChecked="{CompiledBinding Config.ShowGrid}" />
-				<CheckBox Content="{l:Translate chkShowAltGrid}" IsChecked="{CompiledBinding Config.ShowAltGrid}" IsVisible="{CompiledBinding IsNes}" />
+				<CheckBox Content="{l:Translate chkNesShowAttributeGrid}" IsChecked="{CompiledBinding Config.NesShowAttributeGrid}" IsVisible="{CompiledBinding IsNes}" />
+				<CheckBox Content="{l:Translate chkNesShowAttributeByteGrid}" IsChecked="{CompiledBinding Config.NesShowAttributeByteGrid}" IsVisible="{CompiledBinding IsNes}" />
+				<CheckBox Content="{l:Translate chkNesShowTilemapGrid}" IsChecked="{CompiledBinding Config.NesShowTilemapGrid}" IsVisible="{CompiledBinding IsNes}" />
 				<CheckBox Content="{l:Translate chkShowScrollOverlay}" IsChecked="{CompiledBinding Config.ShowScrollOverlay}" />
 
 				<c:GroupBox Header="{l:Translate lblHighlightOptions}" Margin="0" IsVisible="{CompiledBinding IsNes}">
@@ -106,21 +108,11 @@
 			Zoom="{CompiledBinding Config.ImageScale}"
 			ShowGrid="{CompiledBinding Config.ShowGrid}"
 			SelectionRect="{CompiledBinding SelectionRect}"
+			CustomGrids="{CompiledBinding CustomGrids}"
 			OverlayRect="{CompiledBinding ScrollOverlayRect}"
 			GridSizeX="{CompiledBinding GridSizeX}"
 			GridSizeY="{CompiledBinding GridSizeY}"
-			AltGridSizeX="16"
-			AltGridSizeY="16"
 			OverlayLines="{CompiledBinding OverlayLines}"
-		>
-			<dc:ScrollPictureViewer.ShowAltGrid>
-				<MultiBinding Converter="{x:Static BoolConverters.And}">
-					<MultiBinding.Bindings>
-						<Binding Path="IsNes" />
-						<Binding Path="Config.ShowAltGrid" />
-					</MultiBinding.Bindings>
-				</MultiBinding>
-			</dc:ScrollPictureViewer.ShowAltGrid>
-		</dc:ScrollPictureViewer>
+		/>
 	</DockPanel>
 </Window>

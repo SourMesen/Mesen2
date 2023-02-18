@@ -855,7 +855,11 @@
 			<Control ID="lblSelectedTile">Selected Tile</Control>
 			<Control ID="lblTilemap">Tilemap</Control>
 			<Control ID="chkShowGrid">Show tile grid</Control>
-			<Control ID="chkShowAltGrid">Show attribute grid</Control>
+
+			<Control ID="chkNesShowAttributeGrid">Show attribute grid (16x16)</Control>
+			<Control ID="chkNesShowAttributeByteGrid">Show attribute grid (32x32)</Control>
+			<Control ID="chkNesShowTilemapGrid">Show nametable delimiters</Control>
+			
 			<Control ID="lblHighlightOptions">Highlight options</Control>
 			<Control ID="lblTileHighlightMode">Tiles:</Control>
 			<Control ID="lblAttributeHighlightMode">Attributes:</Control>
