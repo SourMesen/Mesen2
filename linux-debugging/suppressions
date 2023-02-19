@@ -1,0 +1,2 @@
+called_from_lib:libcoreclr.so
+called_from_lib:libclrjit.so

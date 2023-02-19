@@ -26,12 +26,10 @@ using std::atomic_flag;
 using std::unordered_map;
 using std::unordered_set;
 
-#ifndef __MINGW32__
-	#ifdef __clang__
-		#define __forceinline __attribute__((always_inline)) inline
-	#else
-		#ifdef __GNUC__
-			#define __forceinline __attribute__((always_inline)) inline
-		#endif
-	#endif
+// Some headers have functions marked as `__forceinline` but don't provide the bodies;
+// it fails to compile when LTO is not enabled.
+#if !defined(__MINGW32__) && (defined(__clang__) || defined(__GNUC__)) && defined(HAVE_LTO)
+	#define __forceinline __attribute__((always_inline)) inline
+#else
+	#define __forceinline inline
 #endif
