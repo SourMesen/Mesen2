@@ -10,11 +10,13 @@ namespace Mesen.ViewModels
 	public class AudioConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public AudioConfig Config { get; set; }
+		[Reactive] public AudioConfig OriginalConfig { get; set; }
 		[Reactive] public List<string> AudioDevices { get; set; } = new();
 		
 		public AudioConfigViewModel()
 		{
-			Config = ConfigManager.Config.Audio.Clone();
+			Config = ConfigManager.Config.Audio;
+			OriginalConfig = Config.Clone();
 
 			if(Design.IsDesignMode) {
 				return;

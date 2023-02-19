@@ -47,6 +47,7 @@ namespace Mesen.Windows
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)
 		{
 			_promptToSave = false;
+			_model.RevertConfig();
 			Close();
 		}
 
@@ -81,7 +82,7 @@ namespace Mesen.Windows
 			DialogResult result = await MesenMsgBox.Show(this, "PromptSaveChanges", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 			switch(result) {
 				case DialogResult.Yes: _promptToSave = false; _model.SaveConfig(); Close(); break;
-				case DialogResult.No: _promptToSave = false; Close(); break;
+				case DialogResult.No: _promptToSave = false; _model.RevertConfig(); Close(); break;
 				default: break;
 			}
 		}
@@ -101,6 +102,11 @@ namespace Mesen.Windows
 
 			ConfigManager.Config.ApplyConfig();
 			_model.Dispose();
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
 			DataContext = null;
 		}
 	}

@@ -11,6 +11,7 @@ namespace Mesen.ViewModels
 	public class PreferencesConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public PreferencesConfig Config { get; set; }
+		[Reactive] public PreferencesConfig OriginalConfig { get; set; }
 
 		public string DataStorageLocation { get; }
 		public bool IsOsx { get; }
@@ -19,7 +20,8 @@ namespace Mesen.ViewModels
 
 		public PreferencesConfigViewModel()
 		{
-			Config = ConfigManager.Config.Preferences.Clone();
+			Config = ConfigManager.Config.Preferences;
+			OriginalConfig = Config.Clone();
 
 			IsOsx = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 			DataStorageLocation = ConfigManager.HomeFolder;

@@ -99,7 +99,6 @@ namespace Mesen.Windows
 		{
 			base.OnClosing(e);
 			InputApi.DisableAllKeys(false);
-			DataContext = null;
 		}
 
 		private void SelectKeyCombination(KeyCombination key)

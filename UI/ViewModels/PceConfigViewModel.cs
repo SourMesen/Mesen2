@@ -15,6 +15,7 @@ namespace Mesen.ViewModels
 	public class PceConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public PcEngineConfig Config { get; set; }
+		[Reactive] public PcEngineConfig OriginalConfig { get; set; }
 		[Reactive] public PceConfigTab SelectedTab { get; set; } = 0;
 
 		public PceInputConfigViewModel Input { get; private set; }
@@ -27,7 +28,8 @@ namespace Mesen.ViewModels
 
 		public PceConfigViewModel()
 		{
-			Config = ConfigManager.Config.PcEngine.Clone();
+			Config = ConfigManager.Config.PcEngine;
+			OriginalConfig = Config.Clone();
 			Input = new PceInputConfigViewModel(Config);
 
 			if(Design.IsDesignMode) {

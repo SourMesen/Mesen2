@@ -78,7 +78,6 @@ namespace Mesen.Windows
 				return;
 			}
 			_timer.Stop();
-			DataContext = null;
 		}
 	}
 }

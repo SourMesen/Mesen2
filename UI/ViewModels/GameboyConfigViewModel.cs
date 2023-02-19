@@ -14,14 +14,16 @@ namespace Mesen.ViewModels
 	public class GameboyConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public GameboyConfig Config { get; set; }
+		[Reactive] public GameboyConfig OriginalConfig { get; set; }
 		[Reactive] public GameboyConfigTab SelectedTab { get; set; } = 0;
 
 		public ReactiveCommand<Button, Unit> SetupPlayer { get; }
 
 		public GameboyConfigViewModel()
 		{
-			Config = ConfigManager.Config.Gameboy.Clone();
-			
+			Config = ConfigManager.Config.Gameboy;
+			OriginalConfig = Config.Clone();
+
 			IObservable<bool> button1Enabled = this.WhenAnyValue(x => x.Config.Controller.Type, x => x.CanConfigure());
 			SetupPlayer = ReactiveCommand.Create<Button>(btn => this.OpenSetup(btn, 0), button1Enabled);
 

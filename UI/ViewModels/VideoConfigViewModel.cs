@@ -25,11 +25,13 @@ namespace Mesen.ViewModels
 		public ReactiveCommand<Unit, Unit> ResetPictureSettingsCommand { get; }
 
 		[Reactive] public VideoConfig Config { get; set; }
+		[Reactive] public VideoConfig OriginalConfig { get; set; }
 		public UInt32[] AvailableRefreshRates { get; } = new UInt32[] { 50, 60, 75, 100, 120, 144, 200, 240, 360 };
 
 		public VideoConfigViewModel()
 		{
-			Config = ConfigManager.Config.Video.Clone();
+			Config = ConfigManager.Config.Video;
+			OriginalConfig = Config.Clone();
 
 			PresetCompositeCommand = ReactiveCommand.Create(() => SetNtscPreset(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, false));
 			PresetSVideoCommand = ReactiveCommand.Create(()=> SetNtscPreset(0, 0, 0, 0, 20, 0, 20, -100, -100, 0, 15, false));

@@ -63,33 +63,38 @@ namespace Mesen.ViewModels
 
 		public void SaveConfig()
 		{
-			ConfigManager.Config.Audio = Audio?.Config.Clone() ?? ConfigManager.Config.Audio;
-			ConfigManager.Config.Input = Input?.Config.Clone() ?? ConfigManager.Config.Input;
-			ConfigManager.Config.Video = Video?.Config.Clone() ?? ConfigManager.Config.Video;
-			ConfigManager.Config.Preferences = Preferences?.Config.Clone() ?? ConfigManager.Config.Preferences;
-			ConfigManager.Config.Emulation = Emulation?.Config.Clone() ?? ConfigManager.Config.Emulation;
-			ConfigManager.Config.Nes = Nes?.Config.Clone() ?? ConfigManager.Config.Nes;
-			ConfigManager.Config.Snes = Snes?.Config.Clone() ?? ConfigManager.Config.Snes;
-			ConfigManager.Config.Gameboy = Gameboy?.Config.Clone() ?? ConfigManager.Config.Gameboy;
-			ConfigManager.Config.PcEngine = PcEngine?.Config.Clone() ?? ConfigManager.Config.PcEngine;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.Config.Save();
-
 			ConfigManager.Config.Preferences.UpdateFileAssociations();
+		}
+
+		public void RevertConfig()
+		{
+			ConfigManager.Config.Audio = Audio?.OriginalConfig ?? ConfigManager.Config.Audio;
+			ConfigManager.Config.Input = Input?.OriginalConfig ?? ConfigManager.Config.Input;
+			ConfigManager.Config.Video = Video?.OriginalConfig ?? ConfigManager.Config.Video;
+			ConfigManager.Config.Preferences = Preferences?.OriginalConfig ?? ConfigManager.Config.Preferences;
+			ConfigManager.Config.Emulation = Emulation?.OriginalConfig ?? ConfigManager.Config.Emulation;
+			ConfigManager.Config.Nes = Nes?.OriginalConfig ?? ConfigManager.Config.Nes;
+			ConfigManager.Config.Snes = Snes?.OriginalConfig ?? ConfigManager.Config.Snes;
+			ConfigManager.Config.Gameboy = Gameboy?.OriginalConfig ?? ConfigManager.Config.Gameboy;
+			ConfigManager.Config.PcEngine = PcEngine?.OriginalConfig ?? ConfigManager.Config.PcEngine;
+			ConfigManager.Config.ApplyConfig();
+			ConfigManager.Config.Save();
 		}
 
 		public bool IsDirty()
 		{
 			return (
-				Audio?.Config.IsIdentical(ConfigManager.Config.Audio) == false ||
-				Input?.Config.IsIdentical(ConfigManager.Config.Input) == false ||
-				Video?.Config.IsIdentical(ConfigManager.Config.Video) == false ||
-				Preferences?.Config.IsIdentical(ConfigManager.Config.Preferences) == false ||
-				Emulation?.Config.IsIdentical(ConfigManager.Config.Emulation) == false ||
-				Nes?.Config.IsIdentical(ConfigManager.Config.Nes) == false ||
-				Snes?.Config.IsIdentical(ConfigManager.Config.Snes) == false ||
-				Gameboy?.Config.IsIdentical(ConfigManager.Config.Gameboy) == false ||
-				PcEngine?.Config.IsIdentical(ConfigManager.Config.PcEngine) == false
+				Audio?.OriginalConfig.IsIdentical(ConfigManager.Config.Audio) == false ||
+				Input?.OriginalConfig.IsIdentical(ConfigManager.Config.Input) == false ||
+				Video?.OriginalConfig.IsIdentical(ConfigManager.Config.Video) == false ||
+				Preferences?.OriginalConfig.IsIdentical(ConfigManager.Config.Preferences) == false ||
+				Emulation?.OriginalConfig.IsIdentical(ConfigManager.Config.Emulation) == false ||
+				Nes?.OriginalConfig.IsIdentical(ConfigManager.Config.Nes) == false ||
+				Snes?.OriginalConfig.IsIdentical(ConfigManager.Config.Snes) == false ||
+				Gameboy?.OriginalConfig.IsIdentical(ConfigManager.Config.Gameboy) == false ||
+				PcEngine?.OriginalConfig.IsIdentical(ConfigManager.Config.PcEngine) == false
 			);
 		}
    }

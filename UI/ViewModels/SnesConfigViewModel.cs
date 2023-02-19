@@ -9,6 +9,7 @@ namespace Mesen.ViewModels
 	public class SnesConfigViewModel : DisposableViewModel
 	{
 		[Reactive] public SnesConfig Config { get; set; }
+		[Reactive] public SnesConfig OriginalConfig { get; set; }
 		[Reactive] public SnesConfigTab SelectedTab { get; set; } = 0;
 
 		public SnesInputConfigViewModel Input { get; private set; }
@@ -21,7 +22,8 @@ namespace Mesen.ViewModels
 
 		public SnesConfigViewModel()
 		{
-			Config = ConfigManager.Config.Snes.Clone();
+			Config = ConfigManager.Config.Snes;
+			OriginalConfig = Config.Clone();
 			Input = new SnesInputConfigViewModel(Config);
 
 			if(Design.IsDesignMode) {

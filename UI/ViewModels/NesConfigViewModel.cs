@@ -19,6 +19,7 @@ namespace Mesen.ViewModels
 		private NotificationListener? _listener = null;
 
 		[Reactive] public NesConfig Config { get; set; }
+		[Reactive] public NesConfig OriginalConfig { get; set; }
 
 		[Reactive] public bool ShowExpansionVolume { get; set; }
 		[Reactive] public bool ShowColorIndexes { get; set; }
@@ -47,7 +48,8 @@ namespace Mesen.ViewModels
 
 		public NesConfigViewModel(PreferencesConfig preferences)
 		{
-			Config = ConfigManager.Config.Nes.Clone();
+			Config = ConfigManager.Config.Nes;
+			OriginalConfig = Config.Clone();
 			Input = new NesInputConfigViewModel(Config, preferences);
 
 			if(Design.IsDesignMode) {

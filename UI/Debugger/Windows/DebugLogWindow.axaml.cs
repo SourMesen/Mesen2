@@ -82,7 +82,6 @@ namespace Mesen.Debugger.Windows
 			}
 			_timer.Stop();
 			ConfigManager.Config.Debug.DebugLog.SaveWindowSettings(this);
-			DataContext = null;
 		}
 	}
 }
