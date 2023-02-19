@@ -49,7 +49,6 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int RightClipSize { get; set; }
 
 		[Reactive] public List<SpritePreviewModel> SpritePreviews { get; set; } = new();
-		[Reactive] public List<Rect>? SpriteRects { get; set; } = null;
 
 		public SpriteViewerListViewModel ListView { get; }
 		
@@ -463,7 +462,7 @@ namespace Mesen.Debugger.ViewModels
 			} else {
 				MemoryType cpuMemory = CpuType.ToMemoryType();
 				_spriteRam = DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1));
-				
+
 				Dispatcher.UIThread.Post(() => {
 					MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
 				});
@@ -498,10 +497,6 @@ namespace Mesen.Debugger.ViewModels
 				TopClipSize = Config.ShowOffscreenRegions ? 0 : (int)previewInfo.VisibleY;
 				BottomClipSize = Config.ShowOffscreenRegions ? 0 : (int)(previewInfo.Height - (previewInfo.VisibleHeight + previewInfo.VisibleY));
 
-				using(var framebuffer = ViewerBitmap.Lock()) {
-					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);
-				}
-
 				DebugSpriteInfo[] sprites = DebugApi.GetSpriteList(CpuType, options, ppuState, vram, spriteRam, palette);
 				InitPreviews(sprites, previewInfo);
 
@@ -514,9 +509,13 @@ namespace Mesen.Debugger.ViewModels
 							spriteRects.Add(altRect);
 						}
 					}
-					SpriteRects = spriteRects;
+					ViewerBitmap.HighlightRects = spriteRects;
 				} else {
-					SpriteRects = null;
+					ViewerBitmap.HighlightRects = null;
+				}
+
+				using(var framebuffer = ViewerBitmap.Lock()) {
+					DebugApi.GetSpritePreview(CpuType, options, ppuState, vram, spriteRam, palette, framebuffer.FrameBuffer.Address);
 				}
 
 				int selectedIndex = SelectedSprite?.SpriteIndex ?? -1;

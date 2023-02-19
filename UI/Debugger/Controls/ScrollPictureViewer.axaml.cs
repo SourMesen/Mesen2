@@ -43,7 +43,6 @@ namespace Mesen.Debugger.Controls
 		
 		public static readonly StyledProperty<ScrollBarVisibility> ScrollBarVisibilityProperty = AvaloniaProperty.Register<ScrollPictureViewer, ScrollBarVisibility>(nameof(ScrollBarVisibility), ScrollBarVisibility.Auto);
 
-		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<ScrollPictureViewer, List<Rect>?>(nameof(HighlightRects), null);
 		public static readonly StyledProperty<List<PictureViewerLine>?> OverlayLinesProperty = AvaloniaProperty.Register<PictureViewer, List<PictureViewerLine>?>(nameof(OverlayLines), null);
 
 		public Vector ScrollOffset
@@ -122,12 +121,6 @@ namespace Mesen.Debugger.Controls
 		{
 			get { return GetValue(MouseOverRectProperty); }
 			set { SetValue(MouseOverRectProperty, value); }
-		}
-
-		public List<Rect>? HighlightRects
-		{
-			get { return GetValue(HighlightRectsProperty); }
-			set { SetValue(HighlightRectsProperty, value); }
 		}
 
 		public List<PictureViewerLine>? OverlayLines

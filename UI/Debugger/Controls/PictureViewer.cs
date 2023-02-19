@@ -7,8 +7,12 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Rendering.SceneGraph;
+using Avalonia.Skia;
 using Avalonia.Threading;
 using Mesen.Utilities;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,7 +45,6 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<Rect> SelectionRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(SelectionRect), default, defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<Rect> OverlayRectProperty = AvaloniaProperty.Register<PictureViewer, Rect>(nameof(OverlayRect), default);
 
-		public static readonly StyledProperty<List<Rect>?> HighlightRectsProperty = AvaloniaProperty.Register<PictureViewer, List<Rect>?>(nameof(HighlightRects), null);
 		public static readonly StyledProperty<List<PictureViewerLine>?> OverlayLinesProperty = AvaloniaProperty.Register<PictureViewer, List<PictureViewerLine>?>(nameof(OverlayLines), null);
 
 		public static readonly RoutedEvent<PositionClickedEventArgs> PositionClickedEvent = RoutedEvent.Register<PictureViewer, PositionClickedEventArgs>(nameof(PositionClicked), RoutingStrategies.Bubble);
@@ -146,12 +149,6 @@ namespace Mesen.Debugger.Controls
 			set { SetValue(MouseOverRectProperty, value); }
 		}
 
-		public List<Rect>? HighlightRects
-		{
-			get { return GetValue(HighlightRectsProperty); }
-			set { SetValue(HighlightRectsProperty, value); }
-		}
-
 		public List<PictureViewerLine>? OverlayLines
 		{
 			get { return GetValue(OverlayLinesProperty); }
@@ -169,7 +166,7 @@ namespace Mesen.Debugger.Controls
 			AffectsRender<PictureViewer>(
 				SourceProperty, ZoomProperty, GridSizeXProperty, GridSizeYProperty,
 				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
-				HighlightRectsProperty, MouseOverRectProperty, GridHighlightProperty,
+				MouseOverRectProperty, GridHighlightProperty,
 				OverlayLinesProperty, TopClipSizeProperty, LeftClipSizeProperty,
 				BottomClipSizeProperty, RightClipSizeProperty
 			);
@@ -418,7 +415,7 @@ namespace Mesen.Debugger.Controls
 			if(Source == null) {
 				return;
 			}
-
+			
 			int width = (int)(Source.Size.Width * Zoom);
 			int height = (int)(Source.Size.Height * Zoom);
 
@@ -428,12 +425,16 @@ namespace Mesen.Debugger.Controls
 			using var translation = context.PushPostTransform(Matrix.CreateTranslation(-LeftClipSize * Zoom, -TopClipSize * Zoom));
 			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
-			context.DrawImage(
-				Source,
-				new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
-				new Rect(0, 0, width, height),
-				BitmapInterpolationMode.Default
-			);
+			if(Source is DynamicBitmap dynBmp) {
+				context.Custom(new PictureViewerDrawOperation(this));
+			} else {
+				context.DrawImage(
+					Source,
+					new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
+					new Rect(0, 0, width, height),
+					BitmapInterpolationMode.Default
+				);
+			}
 
 			DrawGrid(context, ShowGrid, new GridDefinition() { SizeX = GridSizeX, SizeY = GridSizeY, Color = Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B) });
 
@@ -467,14 +468,6 @@ namespace Mesen.Debugger.Controls
 						context.FillRectangle(brush, offsetRect);
 						context.DrawRectangle(pen, offsetRect.Inflate(0.5));
 					}
-				}
-			}
-
-			if(HighlightRects?.Count > 0) {
-				Pen pen = new Pen(Brushes.LightSteelBlue, 1);
-				foreach(Rect highlightRect in HighlightRects) {
-					Rect rect = ToDrawRect(highlightRect);
-					context.DrawRectangle(pen, rect);
 				}
 			}
 
@@ -537,6 +530,79 @@ namespace Mesen.Debugger.Controls
 		}
 	}
 
+	class PictureViewerDrawOperation : ICustomDrawOperation
+	{
+		public Rect Bounds { get; private set; }
+
+		private DynamicBitmap _source;
+		private double _zoom;
+		private SKBitmap _bitmap;
+		private SKPaint _highlightPaint;
+
+		public PictureViewerDrawOperation(PictureViewer viewer)
+		{
+			Bounds = viewer.Bounds;
+			_source = (DynamicBitmap)viewer.Source;
+			_zoom = viewer.Zoom;
+			using(var lockedBuffer = ((WriteableBitmap)_source).Lock()) {
+				var info = new SKImageInfo(
+					lockedBuffer.Size.Width,
+					lockedBuffer.Size.Height,
+					lockedBuffer.Format.ToSkColorType(),
+					SKAlphaType.Premul
+				);
+				_bitmap = new SKBitmap();
+				_bitmap.InstallPixels(info, lockedBuffer.Address);
+			}
+			_highlightPaint = new SKPaint() { IsStroke = true, Color = new SKColor(Colors.LightSteelBlue.R, Colors.LightSteelBlue.G, Colors.LightSteelBlue.B) };
+		}
+
+		public void Dispose()
+		{
+		}
+
+		public bool Equals(ICustomDrawOperation? other) => false;
+		public bool HitTest(Point p) => true;
+
+		private SKRect ToDrawRect(Rect r)
+		{
+			return new SKRect(
+				(float)(r.X * _zoom - 0.5),
+				(float)(r.Y * _zoom - 0.5),
+				(float)((r.X + r.Width) * _zoom),
+				(float)((r.Y + r.Height) * _zoom)
+			);
+		}
+
+		public void Render(IDrawingContextImpl context)
+		{
+			var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+			if(leaseFeature != null) {
+				using var lease = leaseFeature.Lease();
+				var canvas = lease.SkCanvas;
+				canvas.Save();
+
+				int width = (int)(_source.Size.Width * _zoom);
+				int height = (int)(_source.Size.Height * _zoom);
+
+				_source.Draw(canvas, _bitmap,
+					new SKRect(0, 0, (int)_source.Size.Width, (int)_source.Size.Height),
+					new SKRect(0, 0, width, height)
+				);
+
+				List<Rect>? highlightRects = _source.HighlightRects;
+				if(highlightRects?.Count > 0) {
+					foreach(Rect highlightRect in highlightRects) {
+						SKRect rect = ToDrawRect(highlightRect);
+						canvas.DrawRect(rect, _highlightPaint);
+					}
+				}
+
+				canvas.Restore();
+			}
+		}
+	}
+	
 	public class PositionClickedEventArgs : RoutedEventArgs
 	{
 		public PixelPoint Position { get; }
@@ -550,7 +616,6 @@ namespace Mesen.Debugger.Controls
 			OriginalEvent = originalEvent;
 			RoutedEvent = evt;
 		}
-
 	}
 
 	public class GridRowColumn

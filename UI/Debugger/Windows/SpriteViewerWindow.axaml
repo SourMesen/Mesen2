@@ -116,7 +116,6 @@
 				Zoom="{CompiledBinding Config.ImageScale}"
 				SelectionRect="{CompiledBinding SelectionRect}"
 				MouseOverRect="{CompiledBinding MouseOverRect}"
-				HighlightRects="{CompiledBinding SpriteRects}"
 				LeftClipSize="{CompiledBinding LeftClipSize}"
 				RightClipSize="{CompiledBinding RightClipSize}"
 				TopClipSize="{CompiledBinding TopClipSize}"
