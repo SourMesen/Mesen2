@@ -574,14 +574,14 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="NetplayStartServerWindow">
-			<Control ID="wndTitle">Server Configuration</Control>
+			<Control ID="wndTitle">Start server...</Control>
 			<Control ID="lblPort">Port:</Control>
 			<Control ID="lblPassword">Password:</Control>
 			<Control ID="btnOK">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="NetplayConnectWindow">
-			<Control ID="wndTitle">Connect...</Control>
+			<Control ID="wndTitle">Connect to server...</Control>
 			<Control ID="lblHost">Host:</Control>
 			<Control ID="lblPort">Port:</Control>
 			<Control ID="lblPassword">Password:</Control>

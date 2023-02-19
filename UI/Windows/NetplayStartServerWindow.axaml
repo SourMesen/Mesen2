@@ -11,7 +11,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="150"
 	x:Class="Mesen.Windows.NetplayStartServerWindow"
-	Width="250" Height="150"
+	Width="300" Height="150"
 	x:DataType="cfg:NetplayConfig"
 	Title="{l:Translate wndTitle}"
 >
