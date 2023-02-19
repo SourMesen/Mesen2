@@ -66,6 +66,13 @@
 									Value="{CompiledBinding Config.AudioLatency}"
 								/>
 								<TextBlock Text="{l:Translate lblLatencyMs}" VerticalAlignment="Center" Margin="5" />
+								<TextBlock
+									Text="{l:Translate lblLatencyWarning}"
+									IsVisible="{CompiledBinding ShowLatencyWarning}"
+									Foreground="{DynamicResource ErrorBrush}"
+									VerticalAlignment="Center"
+									Margin="5"
+								/>
 							</StackPanel>
 
 							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" />
