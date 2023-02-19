@@ -99,10 +99,12 @@ enum class MapperStateValueType
 struct MapperStateEntry
 {
 	static constexpr int MaxLength = 40;
+	
+	int64_t RawValue = INT64_MIN;
+	MapperStateValueType Type = MapperStateValueType::Number8;
 	uint8_t Address[MapperStateEntry::MaxLength] = {};
 	uint8_t Name[MapperStateEntry::MaxLength] = {};
 	uint8_t Value[MapperStateEntry::MaxLength] = {};
-	MapperStateValueType Type = MapperStateValueType::Number8;
 
 	MapperStateEntry() {}
 
@@ -113,9 +115,10 @@ struct MapperStateEntry
 		Type = MapperStateValueType::None;
 	}
 
-	MapperStateEntry(string address, string name, string value) : MapperStateEntry(address, name)
+	MapperStateEntry(string address, string name, string value, int64_t rawValue = INT64_MIN) : MapperStateEntry(address, name)
 	{
 		memcpy(Value, value.c_str(), std::min<size_t>(MapperStateEntry::MaxLength - 1, value.size()));
+		RawValue = rawValue;
 		Type = MapperStateValueType::String;
 	}
 

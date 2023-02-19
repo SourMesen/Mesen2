@@ -93,13 +93,14 @@ protected:
 	{
 		vector<MapperStateEntry> entries;
 		string mirroringType;
+		int64_t mirValue = 0;
 		switch(GetMirroringType()) {
-			case MirroringType::Horizontal: mirroringType = "Horizontal ($03)"; break;
-			case MirroringType::Vertical: mirroringType = "Vertical ($02)"; break;
-			case MirroringType::ScreenBOnly: mirroringType = "Screen B ($01)"; break;
-			case MirroringType::ScreenAOnly: mirroringType = "Screen A ($00)"; break;
+			case MirroringType::Horizontal: mirroringType = "Horizontal"; mirValue = 3; break;
+			case MirroringType::Vertical: mirroringType = "Vertical"; mirValue = 2; break;
+			case MirroringType::ScreenBOnly: mirroringType = "Screen B"; mirValue = 1; break;
+			case MirroringType::ScreenAOnly: mirroringType = "Screen A"; mirValue = 0; break;
 		}
-		entries.push_back(MapperStateEntry("$8000.0-1", "Mirroring", mirroringType));
+		entries.push_back(MapperStateEntry("$8000.0-1", "Mirroring", mirroringType, mirValue));
 		entries.push_back(MapperStateEntry("$8000.2-3", "PRG Mode", ((uint8_t)_prgMode << 1) | (uint8_t)_slotSelect, MapperStateValueType::Number8));
 		entries.push_back(MapperStateEntry("$8000.4", "CHR Mode", _chrMode, MapperStateValueType::Number8));
 

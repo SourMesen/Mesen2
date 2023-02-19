@@ -1141,10 +1141,11 @@ namespace Mesen.Interop
 
 	public struct MapperStateEntry
 	{
+		public Int64 RawValue;
+		public MapperStateValueType Type;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Address;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Name;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)] public byte[] Value;
-		public MapperStateValueType Type;
 
 		public string GetAddress() { return ConvertString(Address); }
 		public string GetName() { return ConvertString(Name); }

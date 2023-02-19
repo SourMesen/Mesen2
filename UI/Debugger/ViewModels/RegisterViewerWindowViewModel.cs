@@ -12,6 +12,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using static Mesen.Debugger.ViewModels.RegEntry;
 
 namespace Mesen.Debugger.ViewModels
@@ -199,22 +200,22 @@ namespace Mesen.Debugger.ViewModels
 
 			GbPpuState ppu = gb.Ppu;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("", "State", null),
+				new RegEntry("", "State"),
 				new RegEntry("", "Cycle (H)", ppu.Cycle),
 				new RegEntry("", "Scanline (V)", ppu.Scanline),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 
-				new RegEntry("$FF40", "LCD Control (LCDC)", null),
+				new RegEntry("$FF40", "LCD Control (LCDC)"),
 				new RegEntry("$FF40.0", "Background Enabled", ppu.BgEnabled),
 				new RegEntry("$FF40.1", "Sprites Enabled", ppu.BgEnabled),
-				new RegEntry("$FF40.2", "Sprite size", ppu.LargeSprites ? "8x16" : "8x8"),
+				new RegEntry("$FF40.2", "Sprite size", ppu.LargeSprites ? "8x16" : "8x8", ppu.LargeSprites),
 				new RegEntry("$FF40.3", "BG Tilemap Select", ppu.BgTilemapSelect ? 0x9C00 : 0x9800, Format.X16),
-				new RegEntry("$FF40.4", "BG Tile Select", ppu.BgTileSelect ? "$8000-$8FFF" : "$8800-$97FF"),
+				new RegEntry("$FF40.4", "BG Tile Select", ppu.BgTileSelect ? "$8000-$8FFF" : "$8800-$97FF", ppu.BgTileSelect),
 				new RegEntry("$FF40.5", "Window Enabled", ppu.WindowEnabled),
 				new RegEntry("$FF40.6", "Window Tilemap Select", ppu.WindowTilemapSelect ? 0x9C00 : 0x9800, Format.X16),
 				new RegEntry("$FF40.7", "LCD Enabled", ppu.LcdEnabled),
 
-				new RegEntry("$FF41", "LCD Status (STAT)", null),
+				new RegEntry("$FF41", "LCD Status (STAT)"),
 				new RegEntry("$FF41.0-1", "Mode", (int)ppu.Mode),
 				new RegEntry("$FF41.2", "Coincidence Flag", ppu.LyCoincidenceFlag),
 				new RegEntry("$FF41.3", "Mode 0 H-Blank IRQ", (ppu.Status & 0x08) != 0),
@@ -222,7 +223,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF41.5", "Mode 2 OAM IRQ", (ppu.Status & 0x20) != 0),
 				new RegEntry("$FF41.6", "LYC=LY Coincidence IRQ", (ppu.Status & 0x40) != 0),
 
-				new RegEntry("", "LCD Registers", null),
+				new RegEntry("", "LCD Registers"),
 				new RegEntry("$FF42", "Scroll Y (SCY)", ppu.ScrollY, Format.X8),
 				new RegEntry("$FF43", "Scroll X (SCX)", ppu.ScrollX, Format.X8),
 				new RegEntry("$FF44", "Y-Coordinate (LY)", ppu.Ly, Format.X8),
@@ -245,22 +246,22 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("$FF4F.0", "Video RAM Bank", ppu.CgbVramBank),
 
-				new RegEntry("", "DMA registers", null),
+				new RegEntry("", "DMA registers"),
 				new RegEntry("$FF51-52", "DMA Source", dma.CgbDmaSource, Format.X16),
 				new RegEntry("$FF53-54", "DMA Destination", dma.CgbDmaDest, Format.X16),
 				new RegEntry("$FF55.0-6", "DMA Length", dma.CgbDmaLength, Format.X8),
 				new RegEntry("$FF55.7", "HDMA Done", dma.CgbHdmaDone),
 				new RegEntry("", "HDMA Running", dma.CgbHdmaRunning),
 
-				new RegEntry("", "Palette registers", null),
-				new RegEntry("$FF68", "BGPI - Background Palette Index", null),
+				new RegEntry("", "Palette registers"),
+				new RegEntry("$FF68", "BGPI - Background Palette Index"),
 				new RegEntry("$FF68.0-5", "BG Palette Address", ppu.CgbBgPalPosition, Format.X8),
 				new RegEntry("$FF68.7", "BG Palette Auto-increment", ppu.CgbBgPalAutoInc),
-				new RegEntry("$FF6A", "OBPI - OBJ Palette Index", null),
+				new RegEntry("$FF6A", "OBPI - OBJ Palette Index"),
 				new RegEntry("$FF6A.0-5", "OBJ Palette Address", ppu.CgbObjPalPosition, Format.X8),
 				new RegEntry("$FF6A.7", "OBJ Palette Auto-increment", ppu.CgbObjPalAutoInc),
 
-				new RegEntry("", "Misc. registers", null),
+				new RegEntry("", "Misc. registers"),
 				new RegEntry("$FF70.0-2", "Work RAM Bank", gb.MemoryManager.CgbWorkRamBank, Format.X8),
 				new RegEntry("$FF72", "Undocumented", gb.MemoryManager.CgbRegFF72, Format.X8),
 				new RegEntry("$FF73", "Undocumented", gb.MemoryManager.CgbRegFF73, Format.X8),
@@ -276,7 +277,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbTimerState timer = gb.Timer;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF04-7", "Timer", null),
+				new RegEntry("$FF04-7", "Timer"),
 				new RegEntry("$FF04", "DIV - Divider", timer.Divider, Format.X16),
 				new RegEntry("$FF05", "TIMA - Counter", timer.Counter, Format.X8),
 				new RegEntry("$FF06", "TMA - Modulo", timer.Modulo, Format.X8),
@@ -285,13 +286,13 @@ namespace Mesen.Debugger.ViewModels
 
 			GbDmaControllerState dma = gb.Dma;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("", "DMA", null),
+				new RegEntry("", "DMA"),
 				new RegEntry("$FF46", "OAM DMA - Source", (dma.OamDmaSource << 8), Format.X16),
 			});
 
 			GbMemoryManagerState memManager = gb.MemoryManager;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("", "IRQ", null),
+				new RegEntry("", "IRQ"),
 				new RegEntry("$FF0F", "IF - IRQ Flags", memManager.IrqRequests, Format.X8),
 				new RegEntry("$FF0F.0", "IF - Vertical Blank IRQ", (memManager.IrqRequests & 0x01) != 0),
 				new RegEntry("$FF0F.1", "IF - STAT IRQ", (memManager.IrqRequests & 0x02) != 0),
@@ -306,7 +307,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FFFF.3", "IE - Serial IRQ Enabled", (memManager.IrqEnabled & 0x08) != 0),
 				new RegEntry("$FFFF.4", "IE - Joypad IRQ Enabled", (memManager.IrqEnabled & 0x10) != 0),
 
-				new RegEntry("", "Misc", null),
+				new RegEntry("", "Misc"),
 				new RegEntry("$FF00", "Input Select", gb.ControlManager.InputSelect, Format.X8),
 				new RegEntry("$FF01", "Serial Data", memManager.SerialData, Format.X8),
 				new RegEntry("$FF02", "Serial Control", memManager.SerialControl, Format.X8),
@@ -322,7 +323,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbApuState apu = gb.Apu.Common;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("", "APU", null),
+				new RegEntry("", "APU"),
 				new RegEntry("$FF24.0-2", "Volume Right", apu.RightVolume),
 				new RegEntry("$FF24.3", "External Audio Right Enabled", apu.ExtAudioRightEnabled),
 				new RegEntry("$FF24.4-6", "Volume Left", apu.LeftVolume),
@@ -341,7 +342,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbSquareState sq1 = gb.Apu.Square1;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF10-$FF14", "Square 1", null),
+				new RegEntry("$FF10-$FF14", "Square 1"),
 				new RegEntry("$FF10.0-2", "Sweep Shift", sq1.SweepShift),
 				new RegEntry("$FF10.3", "Sweep Negate", sq1.SweepNegate),
 				new RegEntry("$FF10.4-7", "Sweep Period", sq1.SweepPeriod),
@@ -368,7 +369,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbSquareState sq2 = gb.Apu.Square2;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF16-$FF19", "Square 2", null),
+				new RegEntry("$FF16-$FF19", "Square 2"),
 				new RegEntry("$FF16.0-5", "Length", sq2.Length),
 				new RegEntry("$FF16.6-7", "Duty", sq2.Duty),
 
@@ -388,7 +389,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbNoiseState noise = gb.Apu.Noise;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF20-$FF23", "Noise", null),
+				new RegEntry("$FF20-$FF23", "Noise"),
 				new RegEntry("$FF20.0-5", "Length", noise.Length),
 
 				new RegEntry("$FF21.0-2", "Envelope Period", noise.EnvPeriod),
@@ -411,7 +412,7 @@ namespace Mesen.Debugger.ViewModels
 
 			GbWaveState wave = gb.Apu.Wave;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF1A-$FF1E", "Wave", null),
+				new RegEntry("$FF1A-$FF1E", "Wave"),
 				new RegEntry("$FF1A.7", "Sound Enabled", wave.DacEnabled),
 
 				new RegEntry("$FF1B", "Length", wave.Length),
@@ -437,18 +438,18 @@ namespace Mesen.Debugger.ViewModels
 			Sa1State sa1 = state.Sa1.Sa1;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("$2200", "SA-1 CPU Control", null),
+				new RegEntry("$2200", "SA-1 CPU Control"),
 				new RegEntry("$2200.0-3", "Message", sa1.Sa1MessageReceived, Format.X8),
 				new RegEntry("$2200.4", "NMI Requested", sa1.Sa1NmiRequested),
 				new RegEntry("$2200.5", "Reset", sa1.Sa1Reset),
 				new RegEntry("$2200.6", "Wait", sa1.Sa1Wait),
 				new RegEntry("$2200.7", "IRQ Requested", sa1.Sa1IrqRequested),
 
-				new RegEntry("$2201", "S-CPU Interrupt Enable", null),
+				new RegEntry("$2201", "S-CPU Interrupt Enable"),
 				new RegEntry("$2201.5", "Character Conversion IRQ Enable", sa1.CharConvIrqEnabled),
 				new RegEntry("$2201.7", "IRQ Enabled", sa1.CpuIrqEnabled),
 
-				new RegEntry("$2202", "S-CPU Interrupt Clear", null),
+				new RegEntry("$2202", "S-CPU Interrupt Clear"),
 				new RegEntry("$2202.5", "Character IRQ Flag", sa1.CharConvIrqFlag),
 				new RegEntry("$2202.7", "IRQ Flag", sa1.CpuIrqRequested),
 
@@ -456,19 +457,19 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2205/6", "SA-1 NMI Vector", sa1.Sa1ResetVector, Format.X16),
 				new RegEntry("$2207/8", "SA-1 IRQ Vector", sa1.Sa1ResetVector, Format.X16),
 
-				new RegEntry("$2209", "S-CPU Control", null),
+				new RegEntry("$2209", "S-CPU Control"),
 				new RegEntry("$2209.0-3", "Message", sa1.CpuMessageReceived, Format.X8),
 				new RegEntry("$2209.4", "Use NMI Vector", sa1.UseCpuNmiVector),
 				new RegEntry("$2209.6", "Use IRQ Vector", sa1.UseCpuIrqVector),
 				new RegEntry("$2209.7", "IRQ Requested", sa1.CpuIrqRequested),
 
-				new RegEntry("$220A", "SA-1 CPU Interrupt Enable", null),
+				new RegEntry("$220A", "SA-1 CPU Interrupt Enable"),
 				new RegEntry("$220A.4", "SA-1 NMI Enabled", sa1.Sa1NmiEnabled),
 				new RegEntry("$220A.5", "DMA IRQ Enabled", sa1.DmaIrqEnabled),
 				new RegEntry("$220A.6", "Timer IRQ Enabled", sa1.TimerIrqEnabled),
 				new RegEntry("$220A.7", "SA-1 IRQ Enabled", sa1.Sa1IrqEnabled),
 
-				new RegEntry("$220B", "S-CPU Interrupt Clear", null),
+				new RegEntry("$220B", "S-CPU Interrupt Clear"),
 				new RegEntry("$220B.4", "SA-1 NMI Requested", sa1.Sa1NmiRequested),
 				new RegEntry("$220B.5", "DMA IRQ Flag", sa1.DmaIrqFlag),
 				new RegEntry("$220B.7", "SA-1 IRQ Requested", sa1.Sa1IrqRequested),
@@ -476,7 +477,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$220C/D", "S-CPU NMI Vector", sa1.CpuNmiVector, Format.X16),
 				new RegEntry("$220E/F", "S-CPU IRQ Vector", sa1.CpuIrqVector, Format.X16),
 
-				new RegEntry("$2210", "H/V Timer Control", null),
+				new RegEntry("$2210", "H/V Timer Control"),
 				new RegEntry("$2210.0", "Horizontal Timer Enabled", sa1.HorizontalTimerEnabled),
 				new RegEntry("$2210.1", "Vertical Timer Enabled", sa1.VerticalTimerEnabled),
 				new RegEntry("$2210.7", "Linear Timer", sa1.UseLinearTimer),
@@ -484,7 +485,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2212/3", "H-Timer", sa1.HTimer, Format.X16),
 				new RegEntry("$2214/5", "V-Timer", sa1.VTimer, Format.X16),
 
-				new RegEntry("", "ROM/BWRAM/IRAM Mappings", null),
+				new RegEntry("", "ROM/BWRAM/IRAM Mappings"),
 				new RegEntry("$2220", "MMC Bank C", sa1.Banks[0], Format.X8),
 				new RegEntry("$2221", "MMC Bank D", sa1.Banks[1], Format.X8),
 				new RegEntry("$2222", "MMC Bank E", sa1.Banks[2], Format.X8),
@@ -499,15 +500,15 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2229", "S-CPU I-RAM Write Protection", sa1.CpuIRamWriteProtect, Format.X8),
 				new RegEntry("$222A", "SA-1 CPU I-RAM Write Protection", sa1.Sa1IRamWriteProtect, Format.X8),
 
-				new RegEntry("$2230", "DMA Control", null),
-				new RegEntry("$2230.0-1", "DMA Source Device", sa1.DmaSrcDevice.ToString()),
-				new RegEntry("$2230.2-3", "DMA Destination Device", sa1.DmaDestDevice.ToString()),
+				new RegEntry("$2230", "DMA Control"),
+				new RegEntry("$2230.0-1", "DMA Source Device", sa1.DmaSrcDevice),
+				new RegEntry("$2230.2-3", "DMA Destination Device", sa1.DmaDestDevice),
 				new RegEntry("$2230.4", "Automatic DMA Character Conversion", sa1.DmaCharConvAuto),
 				new RegEntry("$2230.5", "DMA Character Conversion", sa1.DmaCharConv),
 				new RegEntry("$2230.6", "DMA Priority", sa1.DmaPriority),
 				new RegEntry("$2230.7", "DMA Enabled", sa1.DmaEnabled),
 
-				new RegEntry("$2231.0-1", "Character Format (BPP)", sa1.CharConvBpp, Format.D),
+				new RegEntry("$2231.0-1", "Character Format (BPP)", sa1.CharConvBpp),
 				new RegEntry("$2231.2-5", "Character Conversion Width", sa1.CharConvWidth, Format.X8),
 				new RegEntry("$2231.7", "Character DMA Active", sa1.CharConvDmaActive),
 
@@ -518,7 +519,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$223F.7", "BW-RAM 2 bpp mode", sa1.BwRam2BppMode)
 			};
 
-			entries.Add(new RegEntry("", "Bitmap Register File", null));
+			entries.Add(new RegEntry("", "Bitmap Register File"));
 			for(int i = 0; i < 8; i++) {
 				entries.Add(new RegEntry("$224" + i, "BRF #" + i, sa1.BitmapRegister1[i]));
 			}
@@ -527,25 +528,25 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("", "Math Registers", null),
-				new RegEntry("$2250.0-1", "Math Operation", sa1.MathOp.ToString()),
+				new RegEntry("", "Math Registers"),
+				new RegEntry("$2250.0-1", "Math Operation", sa1.MathOp),
 				new RegEntry("$2251/2", "Multiplicand/Dividend", sa1.MultiplicandDividend, Format.X16),
 				new RegEntry("$2253/4", "Multiplier/Divisor", sa1.MultiplierDivisor, Format.X16),
 
-				new RegEntry("", "Variable Length Registers", null),
-				new RegEntry("$2258", "Variable Length Bit Processing", null),
+				new RegEntry("", "Variable Length Registers"),
+				new RegEntry("$2258", "Variable Length Bit Processing"),
 				new RegEntry("$2258.0-3", "Variable Length Bit Count", sa1.VarLenBitCount, Format.X8),
 				new RegEntry("$2258.7", "Variable Length Auto-Increment", sa1.VarLenAutoInc),
 				new RegEntry("$2259/A/B", "Variable Length Address", sa1.VarLenAddress, Format.X24),
 
-				new RegEntry("$2300", "S-CPU Status Flags", null),
+				new RegEntry("$2300", "S-CPU Status Flags"),
 				new RegEntry("$2300.0-3", "Message Received", sa1.CpuMessageReceived, Format.X8),
 				new RegEntry("$2300.4", "Use NMI Vector", sa1.UseCpuNmiVector),
 				new RegEntry("$2300.5", "Character Conversion IRQ Flag", sa1.CharConvIrqFlag),
 				new RegEntry("$2300.6", "Use IRQ Vector", sa1.UseCpuIrqVector),
 				new RegEntry("$2300.7", "IRQ Requested", sa1.CpuIrqRequested),
 
-				new RegEntry("$2301", "SA-1 Status Flags", null),
+				new RegEntry("$2301", "SA-1 Status Flags"),
 				new RegEntry("$2301.0-3", "Message Received", sa1.Sa1MessageReceived, Format.X8),
 				new RegEntry("$2301.4", "NMI Requested", sa1.Sa1NmiRequested),
 				new RegEntry("$2301.5", "DMA IRQ Flag", sa1.DmaIrqFlag),
@@ -571,16 +572,16 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("", "State", null),
+				new RegEntry("", "State"),
 				new RegEntry("", "Cycle (H)", ppu.Cycle),
 				new RegEntry("", "HClock", ppu.HClock),
 				new RegEntry("", "Scanline (V)", ppu.Scanline),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 
-				new RegEntry("$2100", "Brightness", null),
+				new RegEntry("$2100", "Brightness"),
 				new RegEntry("$2100.0-3", "Brightness", ppu.ScreenBrightness),
 				new RegEntry("$2100.7", "Forced Blank", ppu.ForcedBlank),
-				new RegEntry("$2101", "OAM Settings", null),
+				new RegEntry("$2101", "OAM Settings"),
 				new RegEntry("$2100.0-2", "OAM Table Address", ppu.OamBaseAddress, Format.X16),
 				new RegEntry("$2100.3-4", "OAM Second Table Address", (ppu.OamBaseAddress + ppu.OamAddressOffset) & 0x7FFF, Format.X16),
 				new RegEntry("$2101.5-7", "OAM Size Mode", ppu.OamMode),
@@ -588,7 +589,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2103.7", "OAM Priority", ppu.EnableOamPriority),
 				new RegEntry("", "OAM Address", ppu.InternalOamRamAddress),
 
-				new RegEntry("$2105", "BG Mode/Size", null),
+				new RegEntry("$2105", "BG Mode/Size"),
 				new RegEntry("$2105.0-2", "BG Mode", ppu.BgMode),
 				new RegEntry("$2105.3", "Mode 1 BG3 Priority", ppu.Mode1Bg3Priority),
 				new RegEntry("$2105.4", "BG1 16x16 Tiles", ppu.Layers[0].LargeTiles),
@@ -596,30 +597,30 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2105.6", "BG3 16x16 Tiles", ppu.Layers[2].LargeTiles),
 				new RegEntry("$2105.7", "BG4 16x16 Tiles", ppu.Layers[3].LargeTiles),
 
-				new RegEntry("$2106", "Mosaic", null),
+				new RegEntry("$2106", "Mosaic"),
 				new RegEntry("$2106.0", "BG1 Mosaic Enabled", (ppu.MosaicEnabled & 0x01) != 0),
 				new RegEntry("$2106.1", "BG2 Mosaic Enabled", (ppu.MosaicEnabled & 0x02) != 0),
 				new RegEntry("$2106.2", "BG3 Mosaic Enabled", (ppu.MosaicEnabled & 0x04) != 0),
 				new RegEntry("$2106.3", "BG4 Mosaic Enabled", (ppu.MosaicEnabled & 0x08) != 0),
-				new RegEntry("$2106.4-7", "Mosaic Size", (ppu.MosaicSize - 1).ToString() + " (" + ppu.MosaicSize.ToString() + "x" + ppu.MosaicSize.ToString() + ")"),
+				new RegEntry("$2106.4-7", "Mosaic Size", (ppu.MosaicSize - 1).ToString() + " (" + ppu.MosaicSize.ToString() + "x" + ppu.MosaicSize.ToString() + ")", ppu.MosaicSize - 1),
 
-				new RegEntry("$2107 - $210A", "Tilemap Addresses/Sizes", null),
-				new RegEntry("$2107.0-1", "BG1 Size", GetLayerSize(ppu.Layers[0])),
+				new RegEntry("$2107 - $210A", "Tilemap Addresses/Sizes"),
+				new RegEntry("$2107.0-1", "BG1 Size", GetLayerSize(ppu.Layers[0]), (ppu.Layers[0].DoubleWidth ? 0x01 : 0) | (ppu.Layers[0].DoubleHeight ? 0x02 : 0)),
 				new RegEntry("$2107.2-6", "BG1 Address", ppu.Layers[0].TilemapAddress, Format.X16),
-				new RegEntry("$2108.0-1", "BG2 Size", GetLayerSize(ppu.Layers[1])),
+				new RegEntry("$2108.0-1", "BG2 Size", GetLayerSize(ppu.Layers[1]), (ppu.Layers[1].DoubleWidth ? 0x01 : 0) | (ppu.Layers[1].DoubleHeight ? 0x02 : 0)),
 				new RegEntry("$2108.2-6", "BG2 Address", ppu.Layers[1].TilemapAddress, Format.X16),
-				new RegEntry("$2109.0-1", "BG3 Size", GetLayerSize(ppu.Layers[2])),
+				new RegEntry("$2109.0-1", "BG3 Size", GetLayerSize(ppu.Layers[2]), (ppu.Layers[2].DoubleWidth ? 0x01 : 0) | (ppu.Layers[2].DoubleHeight ? 0x02 : 0)),
 				new RegEntry("$2109.2-6", "BG3 Address", ppu.Layers[2].TilemapAddress, Format.X16),
-				new RegEntry("$210A.0-1", "BG4 Size", GetLayerSize(ppu.Layers[3])),
+				new RegEntry("$210A.0-1", "BG4 Size", GetLayerSize(ppu.Layers[3]), (ppu.Layers[3].DoubleWidth ? 0x01 : 0) | (ppu.Layers[3].DoubleHeight ? 0x02 : 0)),
 				new RegEntry("$210A.2-6", "BG4 Address", ppu.Layers[3].TilemapAddress, Format.X16),
 
-				new RegEntry("$210B - $210C", "Tile Addresses", null),
+				new RegEntry("$210B - $210C", "Tile Addresses"),
 				new RegEntry("$210B.0-2", "BG1 Tile Address", ppu.Layers[0].ChrAddress, Format.X16),
 				new RegEntry("$210B.4-6", "BG2 Tile Address", ppu.Layers[1].ChrAddress, Format.X16),
 				new RegEntry("$210C.0-2", "BG3 Tile Address", ppu.Layers[2].ChrAddress, Format.X16),
 				new RegEntry("$210C.4-6", "BG4 Tile Address", ppu.Layers[3].ChrAddress, Format.X16),
 
-				new RegEntry("$210D - $2114", "H/V Scroll Offsets", null),
+				new RegEntry("$210D - $2114", "H/V Scroll Offsets"),
 				new RegEntry("$210D", "BG1 H Offset", ppu.Layers[0].HScroll, Format.X16),
 				new RegEntry("$210D", "Mode7 H Offset", ppu.Mode7.HScroll, Format.X16),
 				new RegEntry("$210E", "BG1 V Offset", ppu.Layers[0].VScroll, Format.X16),
@@ -632,13 +633,13 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2113", "BG4 H Offset", ppu.Layers[3].HScroll, Format.X16),
 				new RegEntry("$2114", "BG4 V Offset", ppu.Layers[3].VScroll, Format.X16),
 
-				new RegEntry("$2115 - $2117", "VRAM", null),
+				new RegEntry("$2115 - $2117", "VRAM"),
 				new RegEntry("$2115.0-1", "Increment Value", ppu.VramIncrementValue),
 				new RegEntry("$2115.2-3", "Address Mapping", ppu.VramAddressRemapping),
 				new RegEntry("$2115.7", "Increment on $2119", ppu.VramAddrIncrementOnSecondReg),
 				new RegEntry("$2116/7", "VRAM Address", ppu.VramAddress, Format.X16),
 
-				new RegEntry("$211A - $2120", "Mode 7", null),
+				new RegEntry("$211A - $2120", "Mode 7"),
 				new RegEntry("$211A.0", "Mode 7 - Hor. Mirroring", ppu.Mode7.HorizontalMirroring),
 				new RegEntry("$211A.1", "Mode 7 - Vert. Mirroring", ppu.Mode7.VerticalMirroring),
 				new RegEntry("$211A.6", "Mode 7 - Fill w/ Tile 0", ppu.Mode7.FillWithTile0),
@@ -652,94 +653,94 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$211F", "Mode 7 - Center X", ppu.Mode7.CenterX, Format.X16),
 				new RegEntry("$2120", "Mode 7 - Center Y", ppu.Mode7.CenterY, Format.X16),
 
-				new RegEntry("$2121", "CGRAM", null),
+				new RegEntry("$2121", "CGRAM"),
 				new RegEntry("$2121", "CGRAM Address", ppu.CgramAddress, Format.X16),
 				new RegEntry("", "CGRAM next write to MSB", ppu.CgramAddressLatch),
 
-				new RegEntry("$2123 - $212B", "Windows", null),
-				new RegEntry("", "BG1 Windows", null),
+				new RegEntry("$2123 - $212B", "Windows"),
+				new RegEntry("", "BG1 Windows"),
 				new RegEntry("$2123.0", "BG1 Window 1 Inverted", ppu.Window[0].InvertedLayers[0] != 0),
 				new RegEntry("$2123.1", "BG1 Window 1 Active", ppu.Window[0].ActiveLayers[0] != 0),
 				new RegEntry("$2123.2", "BG1 Window 2 Inverted", ppu.Window[1].InvertedLayers[0] != 0),
 				new RegEntry("$2123.3", "BG1 Window 2 Active", ppu.Window[1].ActiveLayers[0] != 0),
 
-				new RegEntry("", "BG2 Windows", null),
+				new RegEntry("", "BG2 Windows"),
 				new RegEntry("$2123.4", "BG2 Window 1 Inverted", ppu.Window[0].InvertedLayers[1] != 0),
 				new RegEntry("$2123.5", "BG2 Window 1 Active", ppu.Window[0].ActiveLayers[1] != 0),
 				new RegEntry("$2123.6", "BG2 Window 2 Inverted", ppu.Window[1].InvertedLayers[1] != 0),
 				new RegEntry("$2123.7", "BG2 Window 2 Active", ppu.Window[1].ActiveLayers[1] != 0),
 
-				new RegEntry("", "BG3 Windows", null),
+				new RegEntry("", "BG3 Windows"),
 				new RegEntry("$2124.0", "BG3 Window 1 Inverted", ppu.Window[0].InvertedLayers[2] != 0),
 				new RegEntry("$2124.1", "BG3 Window 1 Active", ppu.Window[0].ActiveLayers[2] != 0),
 				new RegEntry("$2124.2", "BG3 Window 2 Inverted", ppu.Window[1].InvertedLayers[2] != 0),
 				new RegEntry("$2124.3", "BG3 Window 2 Active", ppu.Window[1].ActiveLayers[2] != 0),
 
-				new RegEntry("", "BG4 Windows", null),
+				new RegEntry("", "BG4 Windows"),
 				new RegEntry("$2124.4", "BG4 Window 1 Inverted", ppu.Window[0].InvertedLayers[3] != 0),
 				new RegEntry("$2124.5", "BG4 Window 1 Active", ppu.Window[0].ActiveLayers[3] != 0),
 				new RegEntry("$2124.6", "BG4 Window 2 Inverted", ppu.Window[1].InvertedLayers[3] != 0),
 				new RegEntry("$2124.7", "BG4 Window 2 Active", ppu.Window[1].ActiveLayers[3] != 0),
 
-				new RegEntry("", "OAM Windows", null),
+				new RegEntry("", "OAM Windows"),
 				new RegEntry("$2125.0", "OAM Window 1 Inverted", ppu.Window[0].InvertedLayers[4] != 0),
 				new RegEntry("$2125.1", "OAM Window 1 Active", ppu.Window[0].ActiveLayers[4] != 0),
 				new RegEntry("$2125.2", "OAM Window 2 Inverted", ppu.Window[1].InvertedLayers[4] != 0),
 				new RegEntry("$2125.3", "OAM Window 2 Active", ppu.Window[1].ActiveLayers[4] != 0),
 
-				new RegEntry("", "Color Windows", null),
+				new RegEntry("", "Color Windows"),
 				new RegEntry("$2125.4", "Color Window 1 Inverted", ppu.Window[0].InvertedLayers[5] != 0),
 				new RegEntry("$2125.5", "Color Window 1 Active", ppu.Window[0].ActiveLayers[5] != 0),
 				new RegEntry("$2125.6", "Color Window 2 Inverted", ppu.Window[1].InvertedLayers[5] != 0),
 				new RegEntry("$2125.7", "Color Window 2 Active", ppu.Window[1].ActiveLayers[5] != 0),
 
-				new RegEntry("", "Window Position", null),
+				new RegEntry("", "Window Position"),
 				new RegEntry("$2126", "Window 1 Left", ppu.Window[0].Left),
 				new RegEntry("$2127", "Window 1 Right", ppu.Window[0].Right),
 				new RegEntry("$2128", "Window 2 Left", ppu.Window[1].Left),
 				new RegEntry("$2129", "Window 2 Right", ppu.Window[1].Right),
 
-				new RegEntry("", "Window Masks", null),
-				new RegEntry("$212A.0-1", "BG1 Window Mask", ppu.MaskLogic[0].ToString().ToUpper()),
-				new RegEntry("$212A.2-3", "BG2 Window Mask", ppu.MaskLogic[1].ToString().ToUpper()),
-				new RegEntry("$212A.4-5", "BG3 Window Mask", ppu.MaskLogic[2].ToString().ToUpper()),
-				new RegEntry("$212A.6-7", "BG4 Window Mask", ppu.MaskLogic[3].ToString().ToUpper()),
-				new RegEntry("$212B.6-7", "OAM Window Mask", ppu.MaskLogic[4].ToString().ToUpper()),
-				new RegEntry("$212B.6-7", "Color Window Mask", ppu.MaskLogic[5].ToString().ToUpper()),
+				new RegEntry("", "Window Masks"),
+				new RegEntry("$212A.0-1", "BG1 Window Mask", ppu.MaskLogic[0]),
+				new RegEntry("$212A.2-3", "BG2 Window Mask", ppu.MaskLogic[1]),
+				new RegEntry("$212A.4-5", "BG3 Window Mask", ppu.MaskLogic[2]),
+				new RegEntry("$212A.6-7", "BG4 Window Mask", ppu.MaskLogic[3]),
+				new RegEntry("$212B.6-7", "OAM Window Mask", ppu.MaskLogic[4]),
+				new RegEntry("$212B.6-7", "Color Window Mask", ppu.MaskLogic[5]),
 
-				new RegEntry("$212C", "Main Screen Layers", null),
+				new RegEntry("$212C", "Main Screen Layers"),
 				new RegEntry("$212C.0", "BG1 Enabled", (ppu.MainScreenLayers & 0x01) != 0),
 				new RegEntry("$212C.1", "BG2 Enabled", (ppu.MainScreenLayers & 0x02) != 0),
 				new RegEntry("$212C.2", "BG3 Enabled", (ppu.MainScreenLayers & 0x04) != 0),
 				new RegEntry("$212C.3", "BG4 Enabled", (ppu.MainScreenLayers & 0x08) != 0),
 				new RegEntry("$212C.4", "OAM Enabled", (ppu.MainScreenLayers & 0x10) != 0),
 
-				new RegEntry("$212D", "Sub Screen Layers", null),
+				new RegEntry("$212D", "Sub Screen Layers"),
 				new RegEntry("$212D.0", "BG1 Enabled", (ppu.SubScreenLayers & 0x01) != 0),
 				new RegEntry("$212D.1", "BG2 Enabled", (ppu.SubScreenLayers & 0x02) != 0),
 				new RegEntry("$212D.2", "BG3 Enabled", (ppu.SubScreenLayers & 0x04) != 0),
 				new RegEntry("$212D.3", "BG4 Enabled", (ppu.SubScreenLayers & 0x08) != 0),
 				new RegEntry("$212D.4", "OAM Enabled", (ppu.SubScreenLayers & 0x10) != 0),
 
-				new RegEntry("$212E", "Main Screen Windows", null),
+				new RegEntry("$212E", "Main Screen Windows"),
 				new RegEntry("$212E.0", "BG1 Mainscreen Window Enabled", ppu.WindowMaskMain[0] != 0),
 				new RegEntry("$212E.1", "BG2 Mainscreen Window Enabled", ppu.WindowMaskMain[1] != 0),
 				new RegEntry("$212E.2", "BG3 Mainscreen Window Enabled", ppu.WindowMaskMain[2] != 0),
 				new RegEntry("$212E.3", "BG4 Mainscreen Window Enabled", ppu.WindowMaskMain[3] != 0),
 				new RegEntry("$212E.4", "OAM Mainscreen Window Enabled", ppu.WindowMaskMain[4] != 0),
 
-				new RegEntry("$212F", "Sub Screen Windows", null),
+				new RegEntry("$212F", "Sub Screen Windows"),
 				new RegEntry("$212F.0", "BG1 Subscreen Window Enabled", ppu.WindowMaskSub[0] != 0),
 				new RegEntry("$212F.1", "BG2 Subscreen Window Enabled", ppu.WindowMaskSub[1] != 0),
 				new RegEntry("$212F.2", "BG3 Subscreen Window Enabled", ppu.WindowMaskSub[2] != 0),
 				new RegEntry("$212F.3", "BG4 Subscreen Window Enabled", ppu.WindowMaskSub[3] != 0),
 				new RegEntry("$212F.4", "OAM Subscreen Window Enabled", ppu.WindowMaskSub[4] != 0),
 
-				new RegEntry("$2130 - $2131", "Color Math", null),
+				new RegEntry("$2130 - $2131", "Color Math"),
 				new RegEntry("$2130.0", "Direct Color Mode", ppu.DirectColorMode),
 				new RegEntry("$2130.1", "CM - Add Subscreen", ppu.ColorMathAddSubscreen),
-				new RegEntry("$2130.4-5", "CM - Prevent Mode", ppu.ColorMathPreventMode.ToString()),
-				new RegEntry("$2130.6-7", "CM - Clip Mode", ppu.ColorMathClipMode.ToString()),
+				new RegEntry("$2130.4-5", "CM - Prevent Mode", ppu.ColorMathPreventMode),
+				new RegEntry("$2130.6-7", "CM - Clip Mode", ppu.ColorMathClipMode),
 
 				new RegEntry("$2131.0", "CM - BG1 Enabled", (ppu.ColorMathEnabled & 0x01) != 0),
 				new RegEntry("$2131.1", "CM - BG2 Enabled", (ppu.ColorMathEnabled & 0x02) != 0),
@@ -750,7 +751,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2131.6", "CM - Half Mode", ppu.ColorMathHalveResult),
 				new RegEntry("$2131.7", "CM - Subtract Mode", ppu.ColorMathSubtractMode),
 
-				new RegEntry("$2132 - $2133", "Misc.", null),
+				new RegEntry("$2132 - $2133", "Misc."),
 				new RegEntry("$2132", "Fixed Color - BGR", ppu.FixedColor, Format.X16),
 
 				new RegEntry("$2133.0", "Screen Interlace", ppu.ScreenInterlace),
@@ -790,19 +791,19 @@ namespace Mesen.Debugger.ViewModels
 			AddReg(0x6D, "Echo Buffer (Offset) (ESA)");
 			AddReg(0x7D, "Echo Delay (EDL)");
 
-			entries.Add(new RegEntry("$6C", "Flags (FLG)", null));
+			entries.Add(new RegEntry("$6C", "Flags (FLG)"));
 			entries.Add(new RegEntry("$6C.0-4", "Noise Clock", dsp.Regs[0x6C] & 0x1F, Format.X8));
 			entries.Add(new RegEntry("$6C.5", "Echo Disabled", (dsp.Regs[0x6C] & 0x20) != 0));
 			entries.Add(new RegEntry("$6C.6", "Mute", (dsp.Regs[0x6C] & 0x40) != 0));
 			entries.Add(new RegEntry("$6C.7", "Reset", (dsp.Regs[0x6C] & 0x80) != 0));
 
-			entries.Add(new RegEntry("$xF", "Coefficients", null));
+			entries.Add(new RegEntry("$xF", "Coefficients"));
 			for(int i = 0; i < 8; i++) {
 				AddReg((i << 4) | 0x0F, "Coefficient " + i);
 			}
 
 			for(int i = 0; i < 8; i++) {
-				entries.Add(new RegEntry("Voice #" + i.ToString(), "", null));
+				entries.Add(new RegEntry("Voice #" + i.ToString(), ""));
 
 				int voice = i << 4;
 				AddReg(voice | 0x00, "Left Volume (VOL)", true);
@@ -828,23 +829,23 @@ namespace Mesen.Debugger.ViewModels
 
 			SpcState spc = state.Spc;
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("$F0", "Test", null),
+				new RegEntry("$F0", "Test"),
 				new RegEntry("$F0.0", "Timers Disabled", spc.TimersDisabled),
 				new RegEntry("$F0.1", "RAM Write Enabled", spc.WriteEnabled),
 				new RegEntry("$F0.3", "Timers Enabled", spc.TimersEnabled),
-				new RegEntry("$F0.4-5", "External Speed", spc.ExternalSpeed, Format.D),
-				new RegEntry("$F0.6-7", "Internal Speed", spc.InternalSpeed, Format.D),
+				new RegEntry("$F0.4-5", "External Speed", spc.ExternalSpeed),
+				new RegEntry("$F0.6-7", "Internal Speed", spc.InternalSpeed),
 
-				new RegEntry("$F1", "Control", null),
+				new RegEntry("$F1", "Control"),
 				new RegEntry("$F1.0", "Timer 0 Enabled", spc.Timer0.Enabled),
 				new RegEntry("$F1.1", "Timer 1 Enabled", spc.Timer1.Enabled),
 				new RegEntry("$F1.2", "Timer 2 Enabled", spc.Timer2.Enabled),
 				new RegEntry("$F1.7", "IPL ROM Enabled", spc.RomEnabled),
 
-				new RegEntry("$F2", "DSP", null),
+				new RegEntry("$F2", "DSP"),
 				new RegEntry("$F2", "DSP Register", spc.DspReg, Format.X8),
 
-				new RegEntry("$F4 - $F7", "CPU<->SPC Ports", null),
+				new RegEntry("$F4 - $F7", "CPU<->SPC Ports"),
 				new RegEntry("$F4", "Port 0 (CPU read)", spc.OutputReg[0], Format.X8),
 				new RegEntry("$F4", "Port 0 (SPC read)", spc.CpuRegs[0], Format.X8),
 				new RegEntry("$F5", "Port 1 (CPU read)", spc.OutputReg[1], Format.X8),
@@ -854,17 +855,17 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$F7", "Port 3 (CPU read)", spc.OutputReg[3], Format.X8),
 				new RegEntry("$F7", "Port 3 (SPC read)", spc.CpuRegs[3], Format.X8),
 
-				new RegEntry("$F8 - $F9", "RAM Registers", null),
+				new RegEntry("$F8 - $F9", "RAM Registers"),
 				new RegEntry("$F8", "RAM Reg 0", spc.RamReg[0], Format.X8),
 				new RegEntry("$F9", "RAM Reg 1", spc.RamReg[1], Format.X8),
 
-				new RegEntry("$FA - $FF", "Timers", null),
+				new RegEntry("$FA - $FF", "Timers"),
 				new RegEntry("$FA", "Timer 0 Divider", spc.Timer0.Target, Format.X8),
-				new RegEntry("$FA", "Timer 0 Frequency", GetTimerFrequency(8000, spc.Timer0.Target)),
+				new RegEntry("$FA", "Timer 0 Frequency", GetTimerFrequency(8000, spc.Timer0.Target), spc.Timer0.Target),
 				new RegEntry("$FB", "Timer 1 Divider", spc.Timer1.Target, Format.X8),
-				new RegEntry("$FB", "Timer 1 Frequency", GetTimerFrequency(8000, spc.Timer1.Target)),
+				new RegEntry("$FB", "Timer 1 Frequency", GetTimerFrequency(8000, spc.Timer1.Target), spc.Timer1.Target),
 				new RegEntry("$FC", "Timer 2 Divider", spc.Timer2.Target, Format.X8),
-				new RegEntry("$FC", "Timer 2 Frequency", GetTimerFrequency(64000, spc.Timer2.Target)),
+				new RegEntry("$FC", "Timer 2 Frequency", GetTimerFrequency(64000, spc.Timer2.Target), spc.Timer2.Target),
 
 				new RegEntry("$FD", "Timer 0 Output", spc.Timer0.Output, Format.X8),
 				new RegEntry("$FE", "Timer 1 Output", spc.Timer1.Output, Format.X8),
@@ -880,15 +881,15 @@ namespace Mesen.Debugger.ViewModels
 
 			for(int i = 0; i < 8; i++) {
 				DmaChannelConfig ch = state.Dma.Channels[i];
-				entries.Add(new RegEntry("DMA Channel " + i.ToString(), "", null));
+				entries.Add(new RegEntry("DMA Channel " + i.ToString(), ""));
 				entries.Add(new RegEntry("$420B." + i.ToString(), "Channel Enabled", ch.DmaActive));
 				entries.Add(new RegEntry("$420C." + i.ToString(), "HDMA Enabled", (state.Dma.HdmaChannels & (1 << i)) != 0));
 
-				entries.Add(new RegEntry("$43" + i.ToString() + "0.0-2", "Transfer Mode", ch.TransferMode, Format.D));
+				entries.Add(new RegEntry("$43" + i.ToString() + "0.0-2", "Transfer Mode", ch.TransferMode));
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.3", "Fixed", ch.FixedTransfer));
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.4", "Decrement", ch.Decrement));
 				entries.Add(new RegEntry("$43" + i.ToString() + "0.6", "Indirect HDMA", ch.HdmaIndirectAddressing));
-				entries.Add(new RegEntry("$43" + i.ToString() + "0.7", "Direction", ch.InvertDirection ? "B -> A" : "A -> B"));
+				entries.Add(new RegEntry("$43" + i.ToString() + "0.7", "Direction", ch.InvertDirection ? "B -> A" : "A -> B", ch.InvertDirection));
 
 				entries.Add(new RegEntry("$43" + i.ToString() + "1", "B Bus Address", ch.DestAddress, Format.X8));
 				entries.Add(new RegEntry("$43" + i.ToString() + "2/3", "A Bus Address", ch.SrcAddress, Format.X16));
@@ -910,7 +911,7 @@ namespace Mesen.Debugger.ViewModels
 			AluState alu = state.Alu;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("$4200 - $4201", "IRQ/NMI/Autopoll Enabled", null),
+				new RegEntry("$4200 - $4201", "IRQ/NMI/Autopoll Enabled"),
 				new RegEntry("$4200.0", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
 				new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableHorizontalIrq),
 				new RegEntry("$4200.5", "V IRQ Enabled", regs.EnableVerticalIrq),
@@ -918,17 +919,17 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("$4201", "IO Port", regs.IoPortOutput, Format.X8),
 
-				new RegEntry("$4202 - $4206", "Mult/Div Registers (Input)", null),
+				new RegEntry("$4202 - $4206", "Mult/Div Registers (Input)"),
 				new RegEntry("$4202", "Multiplicand", alu.MultOperand1, Format.X8),
 				new RegEntry("$4203", "Multiplier", alu.MultOperand2, Format.X8),
 				new RegEntry("$4204/5", "Dividend", alu.Dividend, Format.X16),
 				new RegEntry("$4206", "Divisor", alu.Divisor, Format.X8),
 
-				new RegEntry("$4207 - $420A", "H/V IRQ Timers", null),
+				new RegEntry("$4207 - $420A", "H/V IRQ Timers"),
 				new RegEntry("$4207/8", "H Timer", regs.HorizontalTimer, Format.X16),
 				new RegEntry("$4209/A", "V Timer", regs.VerticalTimer, Format.X16),
 
-				new RegEntry("$420D - $4212", "Misc. Flags", null),
+				new RegEntry("$420D - $4212", "Misc. Flags"),
 
 				new RegEntry("$420D.0", "FastROM Enabled", regs.EnableFastRom),
 				new RegEntry("$4210.7", "NMI Flag", (_snesReg4210 & 0x80) != 0),
@@ -938,11 +939,11 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$4212.6", "H-Blank Flag", (_snesReg4212 & 0x40) != 0),
 				new RegEntry("$4212.7", "V-Blank Flag", (_snesReg4212 & 0x80) != 0),
 
-				new RegEntry("$4214 - $4217", "Mult/Div Registers (Result)", null),
+				new RegEntry("$4214 - $4217", "Mult/Div Registers (Result)"),
 				new RegEntry("$4214/5", "Quotient", alu.DivResult, Format.X16),
 				new RegEntry("$4216/7", "Product / Remainder", alu.MultOrRemainderResult, Format.X16),
 
-				new RegEntry("$4218 - $421F", "Input Data", null),
+				new RegEntry("$4218 - $421F", "Input Data"),
 				new RegEntry("$4218/9", "P1 Data", regs.ControllerData[0], Format.X16),
 				new RegEntry("$421A/B", "P2 Data", regs.ControllerData[1], Format.X16),
 				new RegEntry("$421C/D", "P3 Data", regs.ControllerData[2], Format.X16),
@@ -957,22 +958,22 @@ namespace Mesen.Debugger.ViewModels
 			NesPpuState ppu = state.Ppu;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("", "State", null),
+				new RegEntry("", "State"),
 				new RegEntry("", "Cycle (H)", ppu.Cycle),
 				new RegEntry("", "Scanline (V)", ppu.Scanline),
 				new RegEntry("", "Frame Number", ppu.FrameCount),
 				new RegEntry("", "PPU Bus Address", ppu.BusAddress, Format.X16),
 				new RegEntry("", "PPU Register Buffer", ppu.MemoryReadBuffer, Format.X8),
 
-				new RegEntry("$2000", "Control", null),
-				new RegEntry("$2000.2", "Increment Mode", ppu.Control.VerticalWrite ? "32 bytes" : "1 byte"),
-				new RegEntry("$2000.3", "Sprite Table Address", ppu.Control.SpritePatternAddr == 0 ? "$0000" : "$1000"),
-				new RegEntry("$2000.4", "BG Table Address", ppu.Control.BackgroundPatternAddr == 0 ? "$0000" : "$1000"),
-				new RegEntry("$2000.5", "Sprite Size", ppu.Control.LargeSprites ? "8x16" : "8x8"),
-				new RegEntry("$2000.6", "Main/secondary PPU select", ppu.Control.SecondaryPpu ? "Secondary" : "Main"),
+				new RegEntry("$2000", "Control"),
+				new RegEntry("$2000.2", "Increment Mode", ppu.Control.VerticalWrite ? "32 bytes" : "1 byte", ppu.Control.VerticalWrite),
+				new RegEntry("$2000.3", "Sprite Table Address", ppu.Control.SpritePatternAddr == 0 ? "$0000" : "$1000", ppu.Control.SpritePatternAddr),
+				new RegEntry("$2000.4", "BG Table Address", ppu.Control.BackgroundPatternAddr == 0 ? "$0000" : "$1000", ppu.Control.BackgroundPatternAddr),
+				new RegEntry("$2000.5", "Sprite Size", ppu.Control.LargeSprites ? "8x16" : "8x8", ppu.Control.LargeSprites),
+				new RegEntry("$2000.6", "Main/secondary PPU select", ppu.Control.SecondaryPpu ? "Secondary" : "Main", ppu.Control.SecondaryPpu),
 				new RegEntry("$2000.7", "NMI enabled", ppu.Control.NmiOnVerticalBlank),
 
-				new RegEntry("$2001", "Mask", null),
+				new RegEntry("$2001", "Mask"),
 				new RegEntry("$2001.0", "Grayscale", ppu.Mask.Grayscale),
 				new RegEntry("$2001.1", "BG - Show leftmost 8 pixels", ppu.Mask.BackgroundMask),
 				new RegEntry("$2001.2", "Sprites - Show leftmost 8 pixels", ppu.Mask.SpriteMask),
@@ -982,14 +983,14 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2001.6", "Green emphasis", ppu.Mask.IntensifyGreen),
 				new RegEntry("$2001.7", "Blue emphasis", ppu.Mask.IntensifyBlue),
 
-				new RegEntry("$2002", "Status", null),
+				new RegEntry("$2002", "Status"),
 				new RegEntry("$2002.5", "Sprite overflow", ppu.StatusFlags.SpriteOverflow),
 				new RegEntry("$2002.6", "Sprite 0 hit", ppu.StatusFlags.Sprite0Hit),
 				new RegEntry("$2002.7", "Vertical blank", ppu.StatusFlags.VerticalBlank),
 				
 				new RegEntry("$2003", "OAM address", ppu.SpriteRamAddr, Format.X8),
 				
-				new RegEntry("$2005-2006", "VRAM Address / Scrolling", null),
+				new RegEntry("$2005-2006", "VRAM Address / Scrolling"),
 				new RegEntry("", "VRAM Address", ppu.VideoRamAddr, Format.X16),
 				new RegEntry("", "T", ppu.TmpVideoRamAddr, Format.X16),
 				new RegEntry("", "X Scroll", ppu.ScrollX),
@@ -1006,7 +1007,7 @@ namespace Mesen.Debugger.ViewModels
 			
 			NesApuSquareState sq1 = apu.Square1;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$4000-$4003", "Square 1", null),
+				new RegEntry("$4000-$4003", "Square 1"),
 				new RegEntry("$4000.0-3", "Envelope Volume", sq1.Envelope.Volume, Format.X8),
 				new RegEntry("$4000.4", "Envelope - Constant Volume", sq1.Envelope.ConstantVolume),
 				new RegEntry("$4000.5", "Length Counter - Halted", sq1.LengthCounter.Halt),
@@ -1022,7 +1023,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("--", "Enabled", sq1.Enabled),
 				new RegEntry("--", "Timer", sq1.Timer, Format.X16),
-				new RegEntry("--", "Frequency", Math.Round(sq1.Frequency).ToString("0.") + " Hz"),
+				new RegEntry("--", "Frequency", Math.Round(sq1.Frequency).ToString("0.") + " Hz", null),
 				new RegEntry("--", "Duty Position", sq1.DutyPosition),
 
 				new RegEntry("--", "Length Counter - Counter", sq1.LengthCounter.Counter, Format.X8),
@@ -1035,7 +1036,7 @@ namespace Mesen.Debugger.ViewModels
 
 			NesApuSquareState sq2 = apu.Square2;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$4004-$4007", "Square 2", null),
+				new RegEntry("$4004-$4007", "Square 2"),
 				new RegEntry("$4004.0-3", "Envelope Volume", sq2.Envelope.Volume, Format.X8),
 				new RegEntry("$4004.4", "Envelope - Constant Volume", sq2.Envelope.ConstantVolume),
 				new RegEntry("$4004.5", "Length Counter - Halted", sq2.LengthCounter.Halt),
@@ -1051,7 +1052,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("--", "Enabled", sq2.Enabled),
 				new RegEntry("--", "Timer", sq2.Timer, Format.X16),
-				new RegEntry("--", "Frequency", Math.Round(sq2.Frequency).ToString("0.") + " Hz"),
+				new RegEntry("--", "Frequency", Math.Round(sq2.Frequency).ToString("0.") + " Hz", null),
 				new RegEntry("--", "Duty Position", sq2.DutyPosition),
 
 				new RegEntry("--", "Length Counter - Counter", sq2.LengthCounter.Counter, Format.X8),
@@ -1064,7 +1065,7 @@ namespace Mesen.Debugger.ViewModels
 
 			NesApuTriangleState trg = apu.Triangle;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$4008-$400B", "Triangle", null),
+				new RegEntry("$4008-$400B", "Triangle"),
 				new RegEntry("$4008.0-6", "Linear Counter - Reload", trg.LinearCounterReload, Format.X8),
 				new RegEntry("$4008.1", "Length Counter - Halted", trg.LengthCounter.Halt),
 
@@ -1073,7 +1074,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("--", "Enabled", trg.Enabled),
 				new RegEntry("--", "Timer", trg.Timer),
-				new RegEntry("--", "Frequency", Math.Round(trg.Frequency).ToString("0.") + " Hz"),
+				new RegEntry("--", "Frequency", Math.Round(trg.Frequency).ToString("0.") + " Hz", null),
 				new RegEntry("--", "Sequence Position", trg.SequencePosition),
 
 				new RegEntry("--", "Length Counter - Counter", trg.LengthCounter.Counter),
@@ -1086,7 +1087,7 @@ namespace Mesen.Debugger.ViewModels
 
 			NesApuNoiseState noise = apu.Noise;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$400C-$400F", "Triangle", null),
+				new RegEntry("$400C-$400F", "Triangle"),
 				new RegEntry("$400C.0-3", "Envelope Volume", noise.Envelope.Volume, Format.X8),
 				new RegEntry("$400C.4", "Envelope - Constant Volume", noise.Envelope.ConstantVolume),
 				new RegEntry("$400C.5", "Length Counter - Halted", noise.LengthCounter.Halt),
@@ -1098,7 +1099,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("--", "Enabled", noise.Enabled),
 				new RegEntry("--", "Timer", noise.Timer),
-				new RegEntry("--", "Frequency", Math.Round(noise.Frequency).ToString("0.") + " Hz"),
+				new RegEntry("--", "Frequency", Math.Round(noise.Frequency).ToString("0.") + " Hz", null),
 				new RegEntry("--", "Shift Register", noise.ShiftRegister),
 
 				new RegEntry("--", "Envelope - Counter", noise.Envelope.Counter, Format.X8),
@@ -1111,7 +1112,7 @@ namespace Mesen.Debugger.ViewModels
 
 			NesApuDmcState dmc = apu.Dmc;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$4010-4013", "DMC", null),
+				new RegEntry("$4010-4013", "DMC"),
 				new RegEntry("$4010.0-3", "Period", dmc.Period, Format.X16),
 				new RegEntry("$4010.6", "Loop Flag", dmc.Loop),
 				new RegEntry("$4010.7", "IRQ Enabled", dmc.IrqEnabled),
@@ -1122,13 +1123,13 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$4013", "Sample Length", dmc.SampleLength, Format.X16),
 
 				new RegEntry("--", "Timer", dmc.Timer),
-				new RegEntry("--", "Frequency", Math.Round(dmc.SampleRate).ToString("0.")),
+				new RegEntry("--", "Frequency", Math.Round(dmc.SampleRate).ToString("0."), null),
 				new RegEntry("--", "Bytes Remaining", dmc.BytesRemaining),
 			});
 
 			NesApuFrameCounterState frameCounter = apu.FrameCounter;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$4017", "Frame Counter", null),
+				new RegEntry("$4017", "Frame Counter"),
 				new RegEntry("$4017.6", "IRQ Enabled", frameCounter.IrqEnabled),
 				new RegEntry("$4017.7", "5-step Mode", frameCounter.FiveStepMode),
 				new RegEntry("--", "Sequence Position", frameCounter.SequencePosition),
@@ -1143,19 +1144,27 @@ namespace Mesen.Debugger.ViewModels
 
 			List<RegEntry> entries = new List<RegEntry>();
 			for(int i = 0; i < cart.CustomEntryCount; i++) {
-				Format format = cart.CustomEntries[i].Type switch {
+				ref MapperStateEntry entry = ref cart.CustomEntries[i];
+				Format format = entry.Type switch {
 					MapperStateValueType.Number8 => Format.X8,
 					MapperStateValueType.Number16 => Format.X16,
 					MapperStateValueType.Number32 => Format.X32,
 					_ => Format.None
 				};
 
-				entries.Add(new RegEntry(
-					cart.CustomEntries[i].GetAddress(),
-					cart.CustomEntries[i].GetName(),
-					cart.CustomEntries[i].GetValue(),
-					format
-				));
+				object? value = entry.GetValue();
+				string addr = entry.GetAddress();
+				string name = entry.GetName();
+
+				if(value is ISpanFormattable) {
+					entries.Add(new RegEntry(addr, name, (ISpanFormattable)value, format));
+				} else if(value is bool) {
+					entries.Add(new RegEntry(addr, name, (bool)value));
+				} else if(value is string) {
+					entries.Add(new RegEntry(addr, name, (string)value, entry.RawValue != Int64.MinValue ? entry.RawValue : null));
+				} else {
+					entries.Add(new RegEntry(addr, name));
+				}
 			}
 
 			return new RegisterViewerTab("Cart", entries, Config, CpuType.Nes, MemoryType.NesMemory);
@@ -1166,7 +1175,7 @@ namespace Mesen.Debugger.ViewModels
 			ref PceVceState vce = ref state.Video.Vce;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("$00.0-1", "CR - Clock Speed", vce.ClockDivider == 4 ? "5.37 MHz" : vce.ClockDivider == 3 ? "7.16 MHz" : "10.74 MHz"),
+				new RegEntry("$00.0-1", "CR - Clock Speed", vce.ClockDivider == 4 ? "5.37 MHz" : vce.ClockDivider == 3 ? "7.16 MHz" : "10.74 MHz", vce.ClockDivider),
 				new RegEntry("$00.2", "CR - Number of Scanlines", vce.ScanlineCount),
 				new RegEntry("$00.7", "CR - Grayscale", vce.Grayscale),
 				new RegEntry("$01.0-8", "CTA - Color Table Address", vce.PalAddr, Format.X16),
@@ -1180,31 +1189,31 @@ namespace Mesen.Debugger.ViewModels
 			ref PceVpcState vpc = ref state.Video.Vpc;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("$08.0-3", "Priority Config (Both windows)", null),
+				new RegEntry("$08.0-3", "Priority Config (Both windows)"),
 				new RegEntry("$08.0", "VDC1 Enabled", vpc.WindowCfg[3].Vdc1Enabled),
 				new RegEntry("$08.1", "VDC2 Enabled", vpc.WindowCfg[3].Vdc2Enabled),
 				new RegEntry("$08.2-3", "Priority Mode", (vpc.Priority1 >> 2) & 0x03),
 
-				new RegEntry("$08.4-7", "Priority Config (Window 2 only)", null),
+				new RegEntry("$08.4-7", "Priority Config (Window 2 only)"),
 				new RegEntry("$08.4", "VDC1 Enabled", vpc.WindowCfg[2].Vdc1Enabled),
 				new RegEntry("$08.5", "VDC2 Enabled", vpc.WindowCfg[2].Vdc2Enabled),
 				new RegEntry("$08.6-7", "Priority Mode", (vpc.Priority1 >> 6) & 0x03),
 
-				new RegEntry("$09.0-3", "Priority Config (Window 1 only)", null),
+				new RegEntry("$09.0-3", "Priority Config (Window 1 only)"),
 				new RegEntry("$09.0", "VDC1 Enabled", vpc.WindowCfg[1].Vdc1Enabled),
 				new RegEntry("$09.1", "VDC2 Enabled", vpc.WindowCfg[1].Vdc2Enabled),
 				new RegEntry("$09.2-3", "Priority Mode", (vpc.Priority2 >> 2) & 0x03),
 
-				new RegEntry("$09.4-7", "Priority Config (No window)", null),
+				new RegEntry("$09.4-7", "Priority Config (No window)"),
 				new RegEntry("$09.4", "VDC1 Enabled", vpc.WindowCfg[0].Vdc1Enabled),
 				new RegEntry("$09.5", "VDC2 Enabled", vpc.WindowCfg[0].Vdc2Enabled),
 				new RegEntry("$09.6-7", "Priority Mode", (vpc.Priority2 >> 6) & 0x03),
 
-				new RegEntry("$0A-0D", "Windows", null),
+				new RegEntry("$0A-0D", "Windows"),
 				new RegEntry("$0A-0B", "Window 1", vpc.Window1, Format.X16),
 				new RegEntry("$0C-0D", "Window 2", vpc.Window2, Format.X16),
 
-				new RegEntry("$0E", "", null),
+				new RegEntry("$0E", ""),
 				new RegEntry("$0E", "STn writes to VDC2", vpc.StToVdc2Mode),
 			};
 
@@ -1214,20 +1223,20 @@ namespace Mesen.Debugger.ViewModels
 		private RegisterViewerTab GetPceVdcTab(ref PceVdcState vdc, string suffix = "")
 		{
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("", "State", null),
+				new RegEntry("", "State"),
 				new RegEntry("", "HClock (H)", vdc.HClock, Format.X16),
 				new RegEntry("", "Scanline (V)", vdc.Scanline, Format.X16),
 				new RegEntry("", "Frame Number", vdc.FrameCount),
 
 				new RegEntry("", "Selected Register", vdc.CurrentReg, Format.X8),
 
-				new RegEntry("", "VDC Registers", null),
+				new RegEntry("", "VDC Registers"),
 
 				new RegEntry("$00", "MAWR - Memory Write Address", vdc.MemAddrWrite, Format.X16),
 				new RegEntry("$01", "MARR - Memory Read Address", vdc.MemAddrRead, Format.X16),
 				new RegEntry("$02", "VWR - VRAM Write Data", vdc.VramData, Format.X16),
 
-				new RegEntry("$05", "CR - Control", null),
+				new RegEntry("$05", "CR - Control"),
 				new RegEntry("$05.0", "Sprite 0 Hit IRQ Enabled", vdc.EnableCollisionIrq),
 				new RegEntry("$05.1", "Overflow IRQ Enabled", vdc.EnableOverflowIrq),
 				new RegEntry("$05.2", "Scanline Detect (RCR) IRQ Enabled", vdc.EnableScanlineIrq),
@@ -1235,7 +1244,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$05.4-5", "External Sync", 
 					(vdc.OutputHorizontalSync ? "HSYNC Out" : "HSYNC In") + ", " + 
 					(vdc.OutputVerticalSync ? "VSYNC Out" : "VSYNC In")
-				),
+				, null),
 				new RegEntry("$05.6", "Sprites Enabled", vdc.NextSpritesEnabled),
 				new RegEntry("$05.7", "Background Enabled", vdc.NextBackgroundEnabled),
 				new RegEntry("$05.11-12", "VRAM Address Increment", vdc.VramAddrIncrement),
@@ -1244,32 +1253,32 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$07", "BXR - BG Scroll X", vdc.HvReg.BgScrollX, Format.X16),
 				new RegEntry("$08", "BYR - BG Scroll Y", vdc.HvReg.BgScrollY, Format.X16),
 				
-				new RegEntry("$09", "MWR - Memory Width", null),
+				new RegEntry("$09", "MWR - Memory Width"),
 				new RegEntry("$09.0-1", "VRAM Access Mode", vdc.VramAccessMode),
 				new RegEntry("$09.2-3", "Sprite Access Mode", vdc.SpriteAccessMode),
 				new RegEntry("$09.4-5", "Column Count", vdc.ColumnCount),
 				new RegEntry("$09.6", "Row Count", vdc.RowCount),
 				new RegEntry("$09.7", "CG Mode", vdc.CgMode),
 
-				new RegEntry("$0A", "HSR - Horizontal Sync", null),
+				new RegEntry("$0A", "HSR - Horizontal Sync"),
 				new RegEntry("$0A.0-4", "HSW - Horizontal Sync Width", vdc.HvReg.HorizSyncWidth, Format.X8),
 				new RegEntry("$0A.8-14", "HDS - Horizontal Display Start Position", vdc.HvReg.HorizDisplayStart, Format.X8),
 				
-				new RegEntry("$0B", "HDR - Horizontal Display", null),
+				new RegEntry("$0B", "HDR - Horizontal Display"),
 				new RegEntry("$0B.0-6", "HDW - Horizontal Display Width", vdc.HvReg.HorizDisplayWidth, Format.X8),
 				new RegEntry("$0B.8-14", "HDE - Horizontal Display End Position", vdc.HvReg.HorizDisplayEnd, Format.X8),
 
-				new RegEntry("$0C", "VPR - Vertical Sync", null),
+				new RegEntry("$0C", "VPR - Vertical Sync"),
 				new RegEntry("$0C.0-4", "VSW - Vertical Sync Width", vdc.HvReg.VertSyncWidth, Format.X8),
 				new RegEntry("$0C.8-15", "VDS - Vertical Display Start Position", vdc.HvReg.VertDisplayStart, Format.X8),
 
-				new RegEntry("$0D", "VDR - Vertical Display", null),
+				new RegEntry("$0D", "VDR - Vertical Display"),
 				new RegEntry("$0D.0-8", "VDW - Vertical Display Width", vdc.HvReg.VertDisplayWidth, Format.X16),
 
-				new RegEntry("$0E", "VCR - Vertical Display End", null),
+				new RegEntry("$0E", "VCR - Vertical Display End"),
 				new RegEntry("$0E.0-7", "VCR - Vertical Display End Position", vdc.HvReg.VertEndPosVcr, Format.X8),
 
-				new RegEntry("$0F", "DCR - Block Transfer Control", null),
+				new RegEntry("$0F", "DCR - Block Transfer Control"),
 				new RegEntry("$0F.0", "VRAM-SATB Transfer Complete IRQ Enabled", vdc.VramSatbIrqEnabled),
 				new RegEntry("$0F.1", "VRAM-VRAM Transfer Complete IRQ Enabled", vdc.VramVramIrqEnabled),
 				new RegEntry("$0F.2", "Decrement Source Address", vdc.DecrementSrc),
@@ -1291,24 +1300,24 @@ namespace Mesen.Debugger.ViewModels
 			ref PceTimerState timer = ref state.Timer;
 
 			List<RegEntry> entries = new List<RegEntry>() {
-				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz"),
+				new RegEntry("", "CPU Speed", mem.FastCpuSpeed ? "7.16 MHz" : "1.79 MHz", mem.FastCpuSpeed),
 
-				new RegEntry("", "Timer", null),
+				new RegEntry("", "Timer"),
 				new RegEntry("$C00.0-6", "Reload Value", timer.ReloadValue, Format.X8),
 				new RegEntry("$C01.0", "Enabled", timer.Enabled),
 				new RegEntry("", "Counter", timer.Counter, Format.X8),
 
-				new RegEntry("", "IRQ", null),
-				new RegEntry("$1402", "Disabled IRQs", null),
+				new RegEntry("", "IRQ"),
+				new RegEntry("$1402", "Disabled IRQs"),
 				new RegEntry("$1402.0", "IRQ2 (CDROM) Disabled", (mem.DisabledIrqs & 0x01) != 0),
 				new RegEntry("$1402.1", "IRQ1 (VDC) Disabled", (mem.DisabledIrqs & 0x02) != 0),
 				new RegEntry("$1402.2", "Timer IRQ Disabled", (mem.DisabledIrqs & 0x04) != 0),
-				new RegEntry("$1403", "Active IRQs", null),
+				new RegEntry("$1403", "Active IRQs"),
 				new RegEntry("$1403.0", "IRQ2 (CDROM)", (mem.ActiveIrqs & 0x01) != 0),
 				new RegEntry("$1403.1", "IRQ1 (VDC)", (mem.ActiveIrqs & 0x02) != 0),
 				new RegEntry("$1403.2", "Timer IRQ", (mem.ActiveIrqs & 0x04) != 0),
 
-				new RegEntry("", "MPR", null),
+				new RegEntry("", "MPR"),
 				new RegEntry("", "MPR #0", mem.Mpr[0], Format.X8),
 				new RegEntry("", "MPR #1", mem.Mpr[1], Format.X8),
 				new RegEntry("", "MPR #2", mem.Mpr[2], Format.X8),
@@ -1336,7 +1345,7 @@ namespace Mesen.Debugger.ViewModels
 				ref PcePsgChannelState ch = ref pceState.PsgChannels[i];
 
 				entries.AddRange(new List<RegEntry>() {
-					new RegEntry("", "Channel " + (i + 1), null),
+					new RegEntry("", "Channel " + (i + 1)),
 					new RegEntry("$802-$803", "Frequency", ch.Frequency, Format.X16),
 					new RegEntry("$804.0-4", "Amplitude", ch.Amplitude, Format.X8),
 					new RegEntry("$804.6", "DDA Enabled", ch.DdaEnabled),
@@ -1370,7 +1379,7 @@ namespace Mesen.Debugger.ViewModels
 			List<RegEntry> entries = new List<RegEntry>() {
 				new RegEntry("$1807.7", "BRAM Enabled", !cdrom.BramLocked),
 
-				new RegEntry("", "ADPCM", null),
+				new RegEntry("", "ADPCM"),
 				new RegEntry("$1808-$1809", "Address", adpcm.AddressPort, Format.X16),
 				new RegEntry("$180A", "Write Buffer", adpcm.WriteBuffer, Format.X8),
 				new RegEntry("$180B", "Read Buffer", adpcm.ReadBuffer, Format.X8),
@@ -1380,26 +1389,26 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$180C.7", "Read Pending", adpcm.ReadClockCounter > 0),
 				new RegEntry("$180D", "DMA Control", adpcm.DmaControl, Format.X8),
 				new RegEntry("$180D", "DMA Requested", (adpcm.DmaControl & 0x03) > 0),
-				new RegEntry("$180E", "Playback Rate", Math.Round(32000.0 / (16 - adpcm.PlaybackRate)) + " Hz"),
+				new RegEntry("$180E", "Playback Rate", Math.Round(32000.0 / (16 - adpcm.PlaybackRate)) + " Hz", adpcm.PlaybackRate),
 				new RegEntry("", "Half Reached", adpcm.HalfReached),
 				new RegEntry("", "ADPCM Length", adpcm.AdpcmLength, Format.X16),
 				new RegEntry("", "Write Address", adpcm.WriteAddress, Format.X16),
 
-				new RegEntry("$1802.2-6", "Enabled IRQs", null),
+				new RegEntry("$1802.2-6", "Enabled IRQs"),
 				new RegEntry("$1802.2", "ADPCM - Half Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
 				new RegEntry("$1802.3", "ADPCM - End Reached IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.Stop) != 0),
 				new RegEntry("$1802.4", "Sub-channel IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.SubChannel) != 0),
 				new RegEntry("$1802.5", "Transfer Done IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
 				new RegEntry("$1802.6", "Transfer Ready IRQ Enabled", (cdrom.EnabledIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
 
-				new RegEntry("", "Active IRQs", null),
+				new RegEntry("", "Active IRQs"),
 				new RegEntry("", "ADPCM - Half Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Adpcm) != 0),
 				new RegEntry("", "ADPCM - End Reached IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.Stop) != 0),
 				new RegEntry("", "Subchannel IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.SubChannel) != 0),
 				new RegEntry("", "Transfer Done IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferDone) != 0),
 				new RegEntry("", "Transfer Ready IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
 
-				new RegEntry("", "SCSI Drive", null),
+				new RegEntry("", "SCSI Drive"),
 				new RegEntry("", "Transfering Data", scsi.DataTransfer),
 				new RegEntry("", "Data Transfer Completed", scsi.DataTransferDone),
 				new RegEntry("", "Disc Reading", scsi.DiscReading),
@@ -1407,7 +1416,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Read Until Sector", scsi.Sector + scsi.SectorsToRead),
 				new RegEntry("$1801", "Data Port", scsi.DataPort),
 				new RegEntry("", "SCSI Phase", scsi.Phase),
-				new RegEntry("", "SCSI Signals", null),
+				new RegEntry("", "SCSI Signals"),
 				new RegEntry("", "ACK", scsi.Signals[0] != 0),
 				new RegEntry("", "ATN", scsi.Signals[1] != 0),
 				new RegEntry("$1800.7", "BSY", scsi.Signals[2] != 0),
@@ -1418,7 +1427,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$1804.1", "RST", scsi.Signals[7] != 0),
 				new RegEntry("", "SEL", scsi.Signals[8] != 0),
 
-				new RegEntry("", "CD Audio Player", null),
+				new RegEntry("", "CD Audio Player"),
 				new RegEntry("", "CD Audio Status", player.Status),
 				new RegEntry("", "Current Sector", player.CurrentSector, Format.X16),
 				new RegEntry("", "Current Sample", player.CurrentSample, Format.X16),
@@ -1426,9 +1435,9 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "End Sector", player.EndSector, Format.X16),
 				new RegEntry("", "End Behavior", player.EndBehavior),
 
-				new RegEntry("$180F", "Audio Fader", null),
+				new RegEntry("$180F", "Audio Fader"),
 				new RegEntry("$180F.1", "Target", fader.Target),
-				new RegEntry("$180F.2", "Fade speed", fader.FastFade ? "2.5 secs" : "6 secs"),
+				new RegEntry("$180F.2", "Fade speed", fader.FastFade ? "2.5 secs" : "6 secs", fader.FastFade),
 				new RegEntry("$180F.3", "Enabled", fader.Enabled),
 				new RegEntry("", "Effective Volume", fader.Enabled ? (int)Math.Max(0.0, 100 - ((pceState.MemoryManager.CycleCount - fader.StartClock) / ((fader.FastFade ? 0.025 : 0.06) * 21477270))) : 100)
 			};
@@ -1450,7 +1459,7 @@ namespace Mesen.Debugger.ViewModels
 				ref PceArcadeCardPortConfig port = ref state.Port[i];
 
 				entries.AddRange(new List<RegEntry>() {
-					new RegEntry("", "Port " + (i + 1), null),
+					new RegEntry("", "Port " + (i + 1)),
 					new RegEntry("$1A" + i + "2-4", "Base Address", port.BaseAddress, Format.X24),
 					new RegEntry("$1A" + i + "5-6", "Offset", port.Offset, Format.X16),
 					new RegEntry("$1A" + i + "7-8", "Increment Value", port.Offset, Format.X16),
@@ -1512,10 +1521,10 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private static ISolidColorBrush HeaderBgBrush = new SolidColorBrush(0x40B0B0B0);
 
-		public string Address { get; }
-		public string Name { get; }
-		public bool IsEnabled { get; }
-		public IBrush Background { get; }
+		public string Address { get; private set; }
+		public string Name { get; private set; }
+		public bool IsEnabled { get; private set; }
+		public IBrush Background { get; private set; }
 
 		private string _value;
 		private string _valueHex;
@@ -1545,13 +1554,52 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		public RegEntry(string reg, string name, object? value, Format format = Format.None)
+		public RegEntry(string reg, string name, ISpanFormattable? value, Format format = Format.None)
 		{
+			Init(reg, name, value, format);
+		}
+
+		public RegEntry(string reg, string name, bool value)
+		{
+			Init(reg, name, value, Format.None);
+		}
+
+		public RegEntry(string reg, string name, Enum value)
+		{
+			Init(reg, name, value, Format.X8);
+		}
+
+		public RegEntry(string reg, string name)
+		{
+			Init(reg, name, null, Format.None);
+		}
+
+		public RegEntry(string reg, string name, string textValue, IConvertible? rawValue)
+		{
+			Init(reg, name, textValue, Format.None);
+			if(rawValue != null) {
+				_valueHex = GetHexValue(rawValue, Format.X8);
+			}
+		}
+
+		[MemberNotNull(nameof(Address), nameof(Name), nameof(Background), nameof(_value), nameof(_valueHex))]
+		private void Init(string reg, string name, object? value, Format format)
+		{
+			if(format == Format.None && !(value is bool)) {
+				//Display hex values for everything except booleans
+				format = Format.X8;
+			}
+
 			Address = reg;
 			Name = name;
 
 			_value = GetValue(value);
-			_valueHex = GetHexValue(value, format);
+
+			if(value is Enum) {
+				_valueHex = GetHexValue(Convert.ToInt64(value), Format.X8);
+			} else {
+				_valueHex = GetHexValue(value, format);
+			}
 
 			Background = value == null ? RegEntry.HeaderBgBrush : Brushes.Transparent;
 			IsEnabled = value != null;
@@ -1573,8 +1621,12 @@ namespace Mesen.Debugger.ViewModels
 
 		private string GetHexValue(object? value, Format format)
 		{
-			if(value == null) {
+			if(value == null || value is string) {
 				return "";
+			}
+
+			if(value is bool boolValue && format != Format.None) {
+				return boolValue ? "$01" : "$00";
 			}
 
 			switch(format) {
@@ -1652,7 +1704,6 @@ namespace Mesen.Debugger.ViewModels
 		public enum Format
 		{
 			None,
-			D,
 			X8,
 			X16,
 			X24,
