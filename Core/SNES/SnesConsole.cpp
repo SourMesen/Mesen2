@@ -57,6 +57,8 @@ void SnesConsole::Release()
 
 void SnesConsole::RunFrame()
 {
+	UpdateRegion();
+
 	_frameRunning = true;
 
 	while(_frameRunning) {
@@ -201,7 +203,6 @@ void SnesConsole::UpdateRegion()
 
 double SnesConsole::GetFps()
 {
-	UpdateRegion();
 	if(_region == ConsoleRegion::Ntsc) {
 		return 60.0988118623484;
 	} else {

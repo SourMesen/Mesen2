@@ -146,7 +146,8 @@
 			<Control ID="lblFullscreenResolution">Fullscreen Resolution:</Control>
 			<Control ID="chkFullscreenForceIntegerScale">Use integer scale values when entering fullscreen mode</Control>
 			<Control ID="chkUseExclusiveFullscreen">Use exclusive fullscreen mode</Control>
-			<Control ID="lblRequestedRefreshRate">Requested Refresh Rate:</Control>
+			<Control ID="lblRequestedRefreshRateNtsc">Refresh Rate (NTSC / 60 Hz):</Control>
+			<Control ID="lblRequestedRefreshRatePal">Refresh Rate (PAL / 50 Hz):</Control>
 			<Control ID="chkEnableGameSpecificOverscan">Enable game-specific overscan settings</Control>
 
 			<Control ID="tpgPicture">Picture</Control>
@@ -2223,16 +2224,16 @@
 		</Enum>
 		<Enum ID="RecordMovieFrom">
 			<Value ID="StartWithoutSaveData">Power on</Value>
-			<Value ID="StartWithSaveData">Power <Value ID="on">on</Value>, with save data</Value>
+			<Value ID="StartWithSaveData">Power on, with save data</Value>
 			<Value ID="CurrentState">Current state</Value>
 		</Enum>
 		<Enum ID="AudioSampleRate">
-			<Value ID="_11025"><Value ID="11">11</Value>,025 Hz</Value>
-			<Value ID="_22050"><Value ID="22">22</Value>,050 Hz</Value>
-			<Value ID="_32000"><Value ID="32">32</Value>,000 Hz</Value>
-			<Value ID="_44100"><Value ID="44">44</Value>,100 Hz</Value>
-			<Value ID="_48000"><Value ID="48">48</Value>,000 Hz</Value>
-			<Value ID="_96000"><Value ID="96">96</Value>,000 Hz</Value>
+			<Value ID="_11025">11,025 Hz</Value>
+			<Value ID="_22050">>22,050 Hz</Value>
+			<Value ID="_32000">32,000 Hz</Value>
+			<Value ID="_44100">44,100 Hz</Value>
+			<Value ID="_48000">48,000 Hz</Value>
+			<Value ID="_96000">96,000 Hz</Value>
 		</Enum>
 		<Enum ID="StereoFilter">
 			<Value ID="None">None</Value>

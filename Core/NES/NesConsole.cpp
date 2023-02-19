@@ -237,6 +237,8 @@ void NesConsole::UpdateRegion(bool forceUpdate)
 
 void NesConsole::RunFrame()
 {
+	UpdateRegion();
+
 	uint32_t frame = _ppu->GetFrameCount();
 
 	if(_nextFrameOverclockDisabled) {

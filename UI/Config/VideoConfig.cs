@@ -43,7 +43,8 @@ namespace Mesen.Config
 
 		[Reactive] public bool FullscreenForceIntegerScale { get; set; } = false;
 		[Reactive] public bool UseExclusiveFullscreen { get; set; } = false;
-		[Reactive] public UInt32 ExclusiveFullscreenRefreshRate { get; set; } = 60;
+		[Reactive] public UInt32 ExclusiveFullscreenRefreshRateNtsc { get; set; } = 60;
+		[Reactive] public UInt32 ExclusiveFullscreenRefreshRatePal { get; set; } = 50;
 		[Reactive] public FullscreenResolution ExclusiveFullscreenResolution { get; set; } = 0;
 
 		[Reactive] public ScreenRotation ScreenRotation { get; set; } = ScreenRotation.None;
@@ -85,7 +86,8 @@ namespace Mesen.Config
 
 				FullscreenForceIntegerScale = this.FullscreenForceIntegerScale,
 				UseExclusiveFullscreen = this.UseExclusiveFullscreen,
-				ExclusiveFullscreenRefreshRate = this.ExclusiveFullscreenRefreshRate,
+				ExclusiveFullscreenRefreshRateNtsc = this.ExclusiveFullscreenRefreshRateNtsc,
+				ExclusiveFullscreenRefreshRatePal = this.ExclusiveFullscreenRefreshRatePal,
 				FullscreenResWidth = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary?.Bounds.Width ?? 1920) : ExclusiveFullscreenResolution.GetWidth()),
 				FullscreenResHeight = (uint)(ExclusiveFullscreenResolution == FullscreenResolution.Default ? (ApplicationHelper.GetMainWindow()?.Screens.Primary?.Bounds.Height ?? 1080) : ExclusiveFullscreenResolution.GetHeight()),
 
@@ -127,7 +129,8 @@ namespace Mesen.Config
 
 		[MarshalAs(UnmanagedType.I1)] public bool FullscreenForceIntegerScale;
 		[MarshalAs(UnmanagedType.I1)] public bool UseExclusiveFullscreen;
-		public UInt32 ExclusiveFullscreenRefreshRate;
+		public UInt32 ExclusiveFullscreenRefreshRateNtsc;
+		public UInt32 ExclusiveFullscreenRefreshRatePal;
 		public UInt32 FullscreenResWidth;
 		public UInt32 FullscreenResHeight;
 

@@ -47,6 +47,7 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 {
 	VideoConfig cfg = _emu->GetSettings()->GetVideoConfig();
 	FrameInfo rendererSize = _emu->GetVideoRenderer()->GetRendererSize();
+	uint32_t refreshRate = _emu->GetFps() < 55 ? cfg.ExclusiveFullscreenRefreshRatePal : cfg.ExclusiveFullscreenRefreshRateNtsc;
 
 	auto needUpdate = [=] {
 		return (
@@ -55,7 +56,8 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			_screenHeight != rendererSize.Height ||
 			_screenWidth != rendererSize.Width ||
 			_newFullscreen != _fullscreen ||
-			_useSrgbTextureFormat != cfg.UseSrgbTextureFormat
+			_useSrgbTextureFormat != cfg.UseSrgbTextureFormat ||
+			(_fullscreen && _fullscreenRefreshRate != refreshRate)
 		);
 	};
 
@@ -82,6 +84,10 @@ void Renderer::SetScreenSize(uint32_t width, uint32_t height)
 			}
 
 			_fullscreen = _newFullscreen;
+			if(_fullscreenRefreshRate != refreshRate) {
+				_fullscreenRefreshRate = refreshRate;
+				needReset = true;
+			}
 
 			_screenHeight = rendererSize.Height;
 			_screenWidth = rendererSize.Width;
@@ -288,7 +294,7 @@ HRESULT Renderer::InitDevice()
 	sd.BufferDesc.Width = _realScreenWidth;
 	sd.BufferDesc.Height = _realScreenHeight;
 	sd.BufferDesc.Format = GetTextureFormat();
-	sd.BufferDesc.RefreshRate.Numerator = _emu->GetSettings()->GetVideoConfig().ExclusiveFullscreenRefreshRate;
+	sd.BufferDesc.RefreshRate.Numerator = _fullscreenRefreshRate;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.Flags = _fullscreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;

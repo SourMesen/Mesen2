@@ -17,6 +17,15 @@
 		<vm:VideoConfigViewModel />
 	</Design.DataContext>
 
+	<UserControl.DataTemplates>
+		<DataTemplate DataType="{x:Type x:UInt32}">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="{Binding}" />
+				<TextBlock Text=" Hz" />
+			</StackPanel>
+		</DataTemplate>
+	</UserControl.DataTemplates>
+
 	<TabControl TabStripPlacement="Top" SelectedIndex="0">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
@@ -51,21 +60,19 @@
 									<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
 									<c:EnumComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{CompiledBinding Config.ExclusiveFullscreenResolution}" />
 
-									<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRate}" />
+									<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRateNtsc}" />
 									<ComboBox
 										Grid.Row="1" Grid.Column="1"
-										SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRate}"
+										SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRateNtsc}"
 										Items="{CompiledBinding AvailableRefreshRates}"
-									>
-										<ComboBox.DataTemplates>
-											<DataTemplate DataType="{x:Type x:UInt32}">
-												<StackPanel Orientation="Horizontal">
-													<TextBlock Text="{Binding}" />
-													<TextBlock Text=" Hz" />
-												</StackPanel>
-											</DataTemplate>
-										</ComboBox.DataTemplates>
-									</ComboBox>
+									/>
+
+									<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRatePal}" />
+									<ComboBox
+										Grid.Row="2" Grid.Column="1"
+										SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRatePal}"
+										Items="{CompiledBinding AvailableRefreshRates}"
+									/>
 								</Grid>
 							</StackPanel>
 						</StackPanel>

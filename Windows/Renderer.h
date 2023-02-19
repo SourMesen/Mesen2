@@ -54,6 +54,7 @@ private:
 
 	bool _newFullscreen = false;
 	bool _fullscreen = false;
+	uint32_t _fullscreenRefreshRate = 60;
 	bool _useSrgbTextureFormat = false;
 
 	uint32_t _screenWidth = 0;
