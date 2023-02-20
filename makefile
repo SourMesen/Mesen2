@@ -21,9 +21,6 @@ endif
 SDL2LIB := $(shell sdl2-config --libs)
 SDL2INC := $(shell sdl2-config --cflags)
 
-CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
-CFLAGS = -fPIC -Wall $(MESENFLAGS)
-
 LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
@@ -95,6 +92,9 @@ endif
 ifneq ($(STATICLINK),false)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
+
+CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 OBJFOLDER := obj.$(MESENPLATFORM)
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
