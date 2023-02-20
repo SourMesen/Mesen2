@@ -224,7 +224,6 @@ void VideoRenderer::ProcessAviRecording(RenderedFrame& frame)
 void VideoRenderer::StartRecording(string filename, RecordAviOptions options)
 {
 	_recorderOptions = options;
-	FrameInfo frameInfo = _emu->GetVideoDecoder()->GetFrameInfo();
 
 	shared_ptr<IVideoRecorder> recorder;
 	if(options.Codec == VideoCodec::GIF) {

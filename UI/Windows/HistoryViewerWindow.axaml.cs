@@ -109,8 +109,6 @@ namespace Mesen.Windows
 			
 			_listener = new NotificationListener(forHistoryViewer: true);
 			_listener.OnNotification += OnNotification;
-
-			SetScale(ConfigManager.Config.HistoryViewer.Scale);
 		}
 
 		protected override void OnClosing(WindowClosingEventArgs e)
