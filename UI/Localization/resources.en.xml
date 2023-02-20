@@ -2229,7 +2229,7 @@
 		</Enum>
 		<Enum ID="AudioSampleRate">
 			<Value ID="_11025">11,025 Hz</Value>
-			<Value ID="_22050">>22,050 Hz</Value>
+			<Value ID="_22050">22,050 Hz</Value>
 			<Value ID="_32000">32,000 Hz</Value>
 			<Value ID="_44100">44,100 Hz</Value>
 			<Value ID="_48000">48,000 Hz</Value>
