@@ -73,7 +73,6 @@
 			<Panel VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 0 5 0">
 				<c:MesenSlider
 					Width="100"
-					Height="30"
 					HideValue="True"
 					TickFrequency="10"
 					Minimum="0"

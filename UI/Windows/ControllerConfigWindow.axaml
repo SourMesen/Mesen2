@@ -97,9 +97,9 @@
 			/>
 
 			<StackPanel Orientation="Horizontal" Margin="0 3 3 0" Grid.Column="2" IsVisible="{CompiledBinding ShowTurbo}">
-				<TextBlock Text="{l:Translate lblTurboSpeed}" Margin="0 -16 0 0" />
-				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
-					<c:MesenSlider Value="{CompiledBinding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0" HideValue="True" TickFrequency="1" />
+				<TextBlock Text="{l:Translate lblTurboSpeed}" VerticalAlignment="Top" Margin="0 5 0 0" />
+				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" Margin="0 -10 0 0">
+					<c:MesenSlider Value="{CompiledBinding Config.TurboSpeed}" Grid.ColumnSpan="2" Minimum="0" Maximum="3" Width="150" Margin="10 0 10 0" HideValue="True" TickFrequency="1" />
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblTurboSlow}" Margin="5" />
 					<TextBlock Grid.Row="1" Grid.Column="1" Text="{l:Translate lblTurboFast}" HorizontalAlignment="Right" Margin="5" />
 				</Grid>

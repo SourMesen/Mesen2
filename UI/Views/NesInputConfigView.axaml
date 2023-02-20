@@ -163,7 +163,7 @@
 				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 					<TextBlock Grid.Row="0" Text="{l:Translate lblLightDetectionRadius}" VerticalAlignment="Top" Margin="0 15 5 0" />
 					<c:MesenSlider
-						Margin="12 5 10 0"
+						Margin="12 0 10 0"
 						HorizontalAlignment="Left"
 						Grid.Row="0"
 						Grid.Column="1"

@@ -4,10 +4,11 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:c="using:Mesen.Controls"
-	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="34"
+	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
 	x:Name="root"
-	HorizontalAlignment="Stretch"
 	x:Class="Mesen.Controls.MesenSlider"
+  HorizontalAlignment="Stretch"
+  Background="Transparent"
 >
 	<UserControl.Styles>
 		<Style Selector="c|MesenSlider[Orientation=Vertical] DockPanel TextBox">
@@ -16,47 +17,62 @@
 		<Style Selector="c|MesenSlider[Orientation=Vertical] > Panel > Panel">
 			<Setter Property="IsVisible" Value="False" />
 		</Style>
-		
-		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel TextBox">
-			<Setter Property="DockPanel.Dock" Value="Right" />
-			<Setter Property="Margin" Value="2 -15 2 0" />
-			<Setter Property="MinWidth" Value="26" />
-			<Setter Property="MinHeight" Value="17" />
-			<Setter Property="Height" Value="17" />
+
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] > Panel > DockPanel">
+			<Setter Property="Margin" Value="0 11 0 0" />
 		</Style>
-		<Style Selector="c|MesenSlider DockPanel > TextBlock">
-			<Setter Property="DockPanel.Dock" Value="Bottom" />
-			<Setter Property="Margin" Value="0" />
+		
+		<Style Selector="c|MesenSlider[Orientation=Vertical] DockPanel > Slider">
+			<Setter Property="Margin" Value="12 0 0 0" />
 			<Setter Property="HorizontalAlignment" Value="Center" />
 		</Style>
-		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock">
-			<Setter Property="DockPanel.Dock" Value="Top" />
-			<Setter Property="Margin" Value="0 0 0 2" />
+		
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] > Panel">
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Vertical] > Panel">
+			<Setter Property="VerticalAlignment" Value="Stretch" />
 			<Setter Property="HorizontalAlignment" Value="Left" />
 		</Style>
-		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBlock.visibleText">
-			<Setter Property="Margin" Value="0 0 0 5" />
+		
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] DockPanel > TextBox">
+			<Setter Property="DockPanel.Dock" Value="Right" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="Margin" Value="2 0 2 0" />
+			<Setter Property="MinWidth" Value="32" />
+			<Setter Property="MinHeight" Value="18" />
+			<Setter Property="Height" Value="18" />
+		</Style>
+		<Style Selector="c|MesenSlider TextBlock.HorizontalText, c|MesenSlider TextBlock.VerticalText">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Horizontal] TextBlock.HorizontalText">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="c|MesenSlider[Orientation=Vertical] TextBlock.VerticalText">
+			<Setter Property="IsVisible" Value="True" />
+			<Setter Property="TextAlignment" Value="Center" />
 		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal]">
-			<Setter Property="Height" Value="34" />
 		</Style>
 		<Style Selector="c|MesenSlider[Orientation=Horizontal] Slider">
-			<Setter Property="Margin" Value="0 -25 0 0" />
+			<Setter Property="Margin" Value="0 0 0 0" />
 		</Style>
 	</UserControl.Styles>
 	
-	<Panel HorizontalAlignment="Stretch">
-		<DockPanel>
+	<Panel Background="Transparent">
+		<DockPanel Background="Transparent" Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}">
 			<TextBlock
-				Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}"
+				DockPanel.Dock="Bottom"
+				Classes="VerticalText"
 				Text="{CompiledBinding Text, ElementName=root}"
-		  />
-
+			/>
+			
 			<c:MesenNumericTextBox
 				Min="{CompiledBinding Minimum, ElementName=root}"
 				Max="{CompiledBinding Maximum, ElementName=root}"
 				Value="{CompiledBinding Value, ElementName=root}"
-				VerticalAlignment="Center"
 				HorizontalContentAlignment="Center"
 				IsVisible="{CompiledBinding !HideValue, ElementName=root}"
 			/>
@@ -73,5 +89,9 @@
 				SmallChange="1"
 			/>
 		</DockPanel>
+		<TextBlock
+			Classes="HorizontalText"
+			Text="{CompiledBinding Text, ElementName=root}"
+		/>
 	</Panel>
 </UserControl>

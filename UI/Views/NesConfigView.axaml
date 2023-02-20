@@ -30,6 +30,7 @@
 		</Style>
 		<Style Selector="Grid.Panning c|MesenSlider">
 			<Setter Property="Grid.Column" Value="1" />
+			<Setter Property="Margin" Value="0 -8 0 0" />
 			<Setter Property="Minimum" Value="-100" />
 			<Setter Property="Maximum" Value="100" />
 			<Setter Property="HideValue" Value="True" />
@@ -46,6 +47,7 @@
 		</Style>
 		<Style Selector="Grid.Volume c|MesenSlider">
 			<Setter Property="Grid.Column" Value="1" />
+			<Setter Property="Margin" Value="0 -8 0 0" />
 			<Setter Property="Minimum" Value="0" />
 			<Setter Property="Maximum" Value="100" />
 			<Setter Property="HideValue" Value="True" />

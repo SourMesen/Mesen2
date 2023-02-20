@@ -75,8 +75,9 @@
 								/>
 							</StackPanel>
 
-							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" />
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="{l:Translate lblVolume}" Margin="0 -8 0 0" />
 							<c:MesenSlider
+								Margin="0 -8 0 0"
 								Grid.Row="3"
 								Grid.Column="1"
 								Minimum="0"
@@ -88,14 +89,15 @@
 						</Grid>
 					</c:OptionSection>
 
-					<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}">
+					<c:OptionSection Header="{l:Translate lblVolumeReductionSettings}" Margin="0 10 0 0">
 						<CheckBox Content="{l:Translate chkMuteSoundInBackground}" IsChecked="{CompiledBinding Config.MuteSoundInBackground}" />
 						<CheckBox Content="{l:Translate chkReduceSoundInBackground}" IsChecked="{CompiledBinding Config.ReduceSoundInBackground}" />
 						<CheckBox Content="{l:Translate chkReduceSoundInFastForward}" IsChecked="{CompiledBinding Config.ReduceSoundInFastForward}" />
 
 						<StackPanel Orientation="Horizontal">
-							<TextBlock VerticalAlignment="Center" Margin="0 0 10 0" Text="{l:Translate lblVolumeReduction}" />
+							<TextBlock VerticalAlignment="Center" Margin="0 -8 10 0" Text="{l:Translate lblVolumeReduction}" />
 							<c:MesenSlider
+								Margin="0 -8 0 0"
 								Minimum="0"
 								Maximum="100"
 								Width="150"
@@ -105,7 +107,7 @@
 						</StackPanel>
 					</c:OptionSection>
 
-					<c:OptionSection Header="{l:Translate lblAudioPlayerSettings}">
+					<c:OptionSection Header="{l:Translate lblAudioPlayerSettings}" Margin="0 8 0 0">
 						<TextBlock Text="{l:Translate lblAudioPlayerHint}" />
 						<StackPanel Margin="10 5 0 0">
 							<StackPanel Orientation="Horizontal">

@@ -80,6 +80,8 @@
 
 		<Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
 
+		<GridLength x:Key="SliderPreContentMargin">0</GridLength>
+
 		<CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
 

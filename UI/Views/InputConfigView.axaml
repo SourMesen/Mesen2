@@ -27,7 +27,7 @@
 						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 							<TextBlock Grid.Row="0" Text="{l:Translate lblDeadzone}" VerticalAlignment="Top" Margin="0 15 5 0" />
 							<c:MesenSlider
-								Margin="12 5 10 0"
+								Margin="12 2 10 0"
 								HorizontalAlignment="Left"
 								Grid.Row="0"
 								Grid.Column="1"
@@ -46,7 +46,7 @@
 
 							<TextBlock Grid.Row="2" Text="{l:Translate lblSensitivity}" VerticalAlignment="Top" Margin="0 15 5 0" />
 							<c:MesenSlider
-								Margin="12 5 10 0"
+								Margin="12 2 10 0"
 								HorizontalAlignment="Left"
 								Grid.Row="2"
 								Grid.Column="1"
