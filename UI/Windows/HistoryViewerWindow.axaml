@@ -38,9 +38,9 @@
 					  Value="{CompiledBinding Volume}"
 						Width="100"
 						TickFrequency="10"
-						Margin="0 -15 0 0"
-						TickPlacement="BottomRight"			 
-					/>				
+						Margin="0 0 0 0"
+						TickPlacement="BottomRight"
+					/>
 					<TextBlock Text="{l:Translate lblVolume}" HorizontalAlignment="Center" Margin="15 -3 0 0" />
 				</StackPanel>
 			
@@ -52,7 +52,7 @@
 					Minimum="0"
 					Maximum="{CompiledBinding MaxPosition}"
 					Value="{CompiledBinding CurrentPosition}"
-					Margin="0 -3 0 0"
+					Margin="0 10 0 0"
 					VerticalAlignment="Center"
 				/>
 			</DockPanel>
