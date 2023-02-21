@@ -52,8 +52,12 @@ namespace Mesen.ViewModels
 		public void Sort(object? param = null)
 		{
 			List<CheatCode> sortedCheats = new List<CheatCode>(Cheats);
+			CheatCode? selectedItem = Selection.SelectedItem;
 			SortHelper.SortList(sortedCheats, SortState.SortOrder, _comparers, "Codes");
 			Cheats.Replace(sortedCheats);
+			if(selectedItem != null) {
+				Selection.SelectedItem = selectedItem;
+			}
 		}
 
 		public void LoadCheats()

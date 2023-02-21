@@ -205,14 +205,7 @@ public class DataBox : TemplatedControl
 
 	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 	{
-		if(change.Property == SelectionProperty) {
-			if(change.OldValue is ISelectionModel oldModel) {
-				oldModel.SelectionChanged -= Selection_SelectionChanged;
-			}
-			if(change.NewValue is ISelectionModel newModel) {
-				newModel.SelectionChanged += Selection_SelectionChanged;
-			}
-		} else if(change.Property == ColumnsProperty) {
+		if(change.Property == ColumnsProperty) {
 			if(change.NewValue is AvaloniaList<DataBoxColumn> columns && columns.Count > ColumnWidths.Count) {
 				 for(int i = ColumnWidths.Count; i < columns.Count; i++) {
                 ColumnWidths.Add(columns[i].InitialWidth);
@@ -220,15 +213,6 @@ public class DataBox : TemplatedControl
 			}
 		}
 		base.OnPropertyChanged(change);
-	}
-
-	private void Selection_SelectionChanged(object? sender, SelectionModelSelectionChangedEventArgs e)
-	{
-		if(IsKeyboardFocusWithin && Selection?.SelectedIndex >= 0 && Selection.SelectedItems.Count == 1) {
-			//When selection is changed and only 1 row is selected, move keyboard focus to that row
-			//Only do this if the DataBox already contained the keyboard focus
-			_rowsPresenter?.ContainerFromIndex(Selection.SelectedIndex)?.Focus();
-		}
 	}
 
 	internal void Attach()
@@ -319,6 +303,9 @@ public class DataBox : TemplatedControl
 		if(e.Key == Key.Space) {
 			ProcessKeyPress(" ");
 			e.Handled = true;
+		} else if(IsKeyboardFocusWithin && FocusManager.Instance?.Current is CheckBox) {
+			//Allow up/down arrow keys to work properly when focus is on a checkbox column
+			_rowsPresenter?.ContainerFromIndex(Selection.SelectedIndex)?.Focus();
 		}
 	}
 

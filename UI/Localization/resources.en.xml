@@ -662,39 +662,6 @@
 			<Control ID="btnUpdate">Update</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		<Form ID="frmHdPackEditor" Title="HD Pack Builder">
-			<Control ID="grpPreview">CHR Bank Preview</Control>
-			<Control ID="lblChrBank">CHR Bank:</Control>
-			<Control ID="grpOptions">Recording Options</Control>
-			<Control ID="lblBankSize">CHR Bank Size:</Control>
-			<Control ID="lblScale">Scale/Filter:</Control>
-			<Control ID="chkSortByFrequency">Sort pages by usage frequency</Control>
-			<Control ID="chkLargeSprites">Use 8x16 sprite display mode</Control>
-			<Control ID="chkGroupBlankTiles">Group blank tiles</Control>
-			<Control ID="chkIgnoreOverscan">Ignore tiles at the edges of the screen (overscan)</Control>
-			<Control ID="lblFolder">Save Folder:</Control>
-			<Control ID="btnSelectFolder">Browse...</Control>
-			<Control ID="btnStartRecording">Start Recording</Control>
-			<Control ID="btnStopRecording">Stop Recording</Control>
-			<Control ID="btnOpenFolder">Open Save Folder</Control>
-		</Form>
-		<Form ID="frmSelectExportRange" Title="Export specific range...">
-			<Control ID="lblStartTime">Start time:</Control>
-			<Control ID="lblEndTime">End time:</Control>
-			<Control ID="btnOK">OK</Control>
-			<Control ID="btnCancel">Cancel</Control>
-		</Form>
-		<Form ID="frmHelp" Title="Command-line options">
-			<Control ID="grpExample">Usage Example</Control>
-			<Control ID="tpgGeneralOptions">General</Control>
-			<Control ID="tpgVideoOptions">Video Options</Control>
-			<Control ID="tpgAudioOptions">Audio Options</Control>
-			<Control ID="tpgEmulationOptions">Emulation Options</Control>
-			<Control ID="lblExplanation">This will start Mesen in fullscreen mode with the "MyGame.nes" rom loaded.  It will also use the NTSC filter, set at a 2x scale and configure the Overscan settings.  The "DoNotSaveSettings" flag is used to prevent the command line switches from pernanently altering Mesen's settings.</Control>
-		</Form>
-		<Form ID="frmCopyFiles" Title="Please wait...">
-			<Control ID="lblCopying">Copying:</Control>
-		</Form>
 		<Form ID="SetupWizardWindow">
 			<Control ID="wndTitle">Mesen</Control>
 			<Control ID="lblMesen">Mesen - Emulator</Control>
