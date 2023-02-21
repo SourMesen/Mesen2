@@ -106,8 +106,8 @@ namespace Mesen.Windows
 			}
 
 			HistoryApi.HistoryViewerInitialize(PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle);
-			_model.Update();
 			_model.SetCoreOptions();
+			_model.Update();
 			_model.InitActions(this);
 			_timer.Start();
 			_mouseTimer.Start();

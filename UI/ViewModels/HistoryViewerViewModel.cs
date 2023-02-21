@@ -21,7 +21,8 @@ namespace Mesen.ViewModels
 {
 	public class HistoryViewerViewModel : DisposableViewModel
 	{
-		[Reactive] public int Volume { get; set; }
+		public HistoryViewerConfig Config { get; init; }
+
 		[Reactive] public bool IsPaused { get; set; }
 
 		[Reactive] public string TotalTimeText { get; set; } = "00:00";
@@ -44,6 +45,8 @@ namespace Mesen.ViewModels
 
 		public HistoryViewerViewModel()
 		{
+			Config = ConfigManager.Config.HistoryViewer;
+
 			_blockCoreUpdates = true;
 			AddDisposable(this.WhenAnyValue(x => x.CurrentPosition).Subscribe(x => {
 				if(!_blockCoreUpdates) {
@@ -51,7 +54,7 @@ namespace Mesen.ViewModels
 				}
 			}));
 
-			AddDisposable(this.WhenAnyValue(x => x.Volume, x => x.IsPaused, x => x.RendererSize).Subscribe(x => {
+			AddDisposable(this.WhenAnyValue(x => x.Config.Volume, x => x.IsPaused, x => x.RendererSize).Subscribe(x => {
 				if(!_blockCoreUpdates) {
 					SetCoreOptions();
 				}
@@ -68,7 +71,7 @@ namespace Mesen.ViewModels
 		{
 			HistoryApi.HistoryViewerSetOptions(new HistoryViewerOptions() {
 				IsPaused = IsPaused,
-				Volume = (uint)Volume,
+				Volume = (uint)Config.Volume,
 				Width = (uint)RendererSize.Width ,
 				Height = (uint)RendererSize.Height
 			});
@@ -207,7 +210,7 @@ namespace Mesen.ViewModels
 			_fps = state.Fps;
 
 			IsPaused = state.IsPaused;
-			Volume = (int)state.Volume;
+			Config.Volume = (int)state.Volume;
 			CurrentPosition = state.Position;
 			MaxPosition = state.Length;
 
