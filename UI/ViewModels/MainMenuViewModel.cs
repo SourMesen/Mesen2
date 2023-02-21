@@ -215,8 +215,8 @@ namespace Mesen.ViewModels
 		private void InitGameMenu(MainWindow wnd)
 		{
 			GameMenuItems = new List<object>() {
-				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Pause, IsVisible = () => !EmuApi.IsPaused() },
-				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Resume, IsVisible = () => EmuApi.IsPaused() },
+				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Pause, IsVisible = () => !EmuApi.IsPaused() && (!ConfigManager.Config.Preferences.PauseWhenInMenusAndConfig || !EmuApi.IsRunning()) },
+				new MainMenuAction(EmulatorShortcut.Pause) { ActionType = ActionType.Resume, IsVisible = () => EmuApi.IsPaused() || (ConfigManager.Config.Preferences.PauseWhenInMenusAndConfig && EmuApi.IsRunning()) },
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.Reset) { ActionType = ActionType.Reset },
 				new MainMenuAction(EmulatorShortcut.PowerCycle) { ActionType = ActionType.PowerCycle },
