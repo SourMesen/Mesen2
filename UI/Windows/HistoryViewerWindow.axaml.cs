@@ -56,7 +56,7 @@ namespace Mesen.Windows
 			_controlBar = this.GetControl<Border>("ControlBar");
 			_mainMenu = this.GetControl<Menu>("ActionMenu");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(50), DispatcherPriority.Normal, (s, e) => {
-				UpdateMouse();
+				_model.Update();
 			});
 
 			_mouseTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(15), DispatcherPriority.Normal, (s, e) => {
