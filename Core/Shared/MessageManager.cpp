@@ -61,6 +61,8 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "SaveStateInvalidFile", u8"Invalid save state file." },
 	{ "SaveStateWrongSystem", u8"Error: State cannot be loaded (wrong console type)" },
 	{ "SaveStateLoaded", u8"State #%1 loaded." },
+	{ "SaveStateLoadedFile", u8"State loaded: %1" },
+	{ "SaveStateSavedFile", u8"State saved: %1" },
 	{ "SaveStateMissingRom", u8"Missing ROM required (%1) to load save state." },
 	{ "SaveStateNewerVersion", u8"Cannot load save states created by a more recent version of Mesen. Please download the latest version." },
 	{ "SaveStateSaved", u8"State #%1 saved." },

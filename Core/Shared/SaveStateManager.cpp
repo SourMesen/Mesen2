@@ -82,7 +82,7 @@ void SaveStateManager::SaveState(ostream &stream)
 	_emu->Serialize(stream, false);
 }
 
-bool SaveStateManager::SaveState(string filepath)
+bool SaveStateManager::SaveState(string filepath, bool showSuccessMessage)
 {
 	ofstream file(filepath, ios::out | ios::binary);
 
@@ -94,6 +94,9 @@ bool SaveStateManager::SaveState(string filepath)
 		file.close();
 
 		_emu->ProcessEvent(EventType::StateSaved);
+		if(showSuccessMessage) {
+			MessageManager::DisplayMessage("SaveStates", "SaveStateSavedFile", filepath);
+		}
 		return true;
 	}
 	return false;
@@ -102,7 +105,7 @@ bool SaveStateManager::SaveState(string filepath)
 void SaveStateManager::SaveState(int stateIndex, bool displayMessage)
 {
 	string filepath = SaveStateManager::GetStateFilepath(stateIndex);
-	if(SaveState(filepath)) {
+	if(SaveState(filepath, false)) {
 		if(displayMessage) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateSaved", std::to_string(stateIndex));
 		}
@@ -215,7 +218,7 @@ bool SaveStateManager::LoadState(istream &stream)
 	return false;
 }
 
-bool SaveStateManager::LoadState(string filepath)
+bool SaveStateManager::LoadState(string filepath, bool showSuccessMessage)
 {
 	ifstream file(filepath, ios::in | ios::binary);
 	bool result = false;
@@ -229,6 +232,9 @@ bool SaveStateManager::LoadState(string filepath)
 
 		if(result) {
 			_emu->ProcessEvent(EventType::StateLoaded);
+			if(showSuccessMessage) {
+				MessageManager::DisplayMessage("SaveStates", "SaveStateLoadedFile", filepath);
+			}
 		}
 	} else {
 		MessageManager::DisplayMessage("SaveStates", "SaveStateEmpty");
@@ -240,7 +246,7 @@ bool SaveStateManager::LoadState(string filepath)
 bool SaveStateManager::LoadState(int stateIndex)
 {
 	string filepath = SaveStateManager::GetStateFilepath(stateIndex);
-	if(LoadState(filepath)) {
+	if(LoadState(filepath, false)) {
 		MessageManager::DisplayMessage("SaveStates", "SaveStateLoaded", std::to_string(stateIndex));
 		return true;
 	}

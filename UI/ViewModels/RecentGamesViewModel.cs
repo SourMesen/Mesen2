@@ -65,6 +65,7 @@ namespace Mesen.ViewModels
 				for(int i = 0; i < (mode == GameScreenMode.LoadState ? 11 : 10); i++) {
 					entries.Add(new RecentGameInfo() {
 						FileName = Path.Combine(ConfigManager.SaveStateFolder, romName + "_" + (i + 1) + "." + FileDialogHelper.MesenSaveStateExt),
+						StateIndex = i + 1,
 						Name = i == 10 ? ResourceHelper.GetMessage("AutoSave") : ResourceHelper.GetMessage("SlotNumber", i + 1),
 						SaveMode = mode == GameScreenMode.SaveState
 					});
@@ -101,6 +102,7 @@ namespace Mesen.ViewModels
 	public class RecentGameInfo
 	{
 		public string FileName { get; set; } = "";
+		public int StateIndex { get; set; } = -1;
 		public string Name { get; set; } = "";
 		public bool SaveMode { get; set; } = false;
 
@@ -111,18 +113,19 @@ namespace Mesen.ViewModels
 
 		public void Load()
 		{
-			if(Path.GetExtension(FileName) == "." + FileDialogHelper.MesenSaveStateExt) {
+			if(StateIndex > 0) {
 				Task.Run(() => {
 					//Run in another thread to prevent deadlocks etc. when emulator notifications are processed UI-side
 					if(SaveMode) {
-						EmuApi.SaveStateFile(FileName);
+						EmuApi.SaveState((uint)StateIndex);
 					} else {
-						EmuApi.LoadStateFile(FileName);
+						EmuApi.LoadState((uint)StateIndex);
 					}
 					EmuApi.Resume();
 				});
 			} else {
 				LoadRomHelper.LoadRecentGame(FileName, false);
+				EmuApi.Resume();
 			}
 		}
 	}

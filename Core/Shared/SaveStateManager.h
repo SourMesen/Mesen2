@@ -32,10 +32,10 @@ public:
 	void GetSaveStateHeader(ostream & stream);
 
 	void SaveState(ostream &stream);
-	bool SaveState(string filepath);
+	bool SaveState(string filepath, bool showSuccessMessage = true);
 	void SaveState(int stateIndex, bool displayMessage = true);
 	bool LoadState(istream &stream);
-	bool LoadState(string filepath);
+	bool LoadState(string filepath, bool showSuccessMessage = true);
 	bool LoadState(int stateIndex);
 
 	void SaveRecentGame(string romName, string romPath, string patchPath);
