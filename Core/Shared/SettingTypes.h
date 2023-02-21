@@ -756,6 +756,8 @@ enum class EmulatorShortcut
 	ToggleSprites2,
 	EnableAllLayers,
 
+	ResetLagCounter,
+
 	SaveStateSlot1,
 	SaveStateSlot2,
 	SaveStateSlot3,

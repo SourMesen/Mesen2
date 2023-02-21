@@ -83,6 +83,8 @@ namespace Mesen.Utilities
 				case EmulatorShortcut.ToggleSprites2: ToggleVideoLayer(VideoLayer.Sprite2); break;
 				case EmulatorShortcut.EnableAllLayers: EnableAllLayers(); break;
 
+				case EmulatorShortcut.ResetLagCounter: InputApi.ResetLagCounter(); break;
+
 				case EmulatorShortcut.ToggleRecordVideo: ToggleRecordVideo(); break;
 				case EmulatorShortcut.ToggleRecordAudio: ToggleRecordAudio(); break;
 				case EmulatorShortcut.ToggleRecordMovie: ToggleRecordMovie(); break;
