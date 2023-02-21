@@ -596,8 +596,11 @@ namespace Mesen.Windows
 					EmuApi.Pause();
 				}
 			} else if(_needResume) {
-				EmuApi.Resume();
-				_needResume = false;
+				//Don't resume if the load/save state dialog is opened
+				if(!_model.RecentGames.Visible) {
+					EmuApi.Resume();
+					_needResume = false;
+				}
 			}
 		}
 	}
