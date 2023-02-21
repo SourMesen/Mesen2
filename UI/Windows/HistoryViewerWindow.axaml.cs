@@ -21,7 +21,8 @@ namespace Mesen.Windows
 	{
 		private HistoryViewerViewModel _model;
 		private DispatcherTimer _timer;
-		
+		private DispatcherTimer _mouseTimer;
+
 		private NativeRenderer _renderer;
 		private SoftwareRendererView _softwareRenderer;
 		private Panel _rendererPanel;
@@ -55,7 +56,10 @@ namespace Mesen.Windows
 			_controlBar = this.GetControl<Border>("ControlBar");
 			_mainMenu = this.GetControl<Menu>("ActionMenu");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(50), DispatcherPriority.Normal, (s, e) => {
-				_model.Update();
+				UpdateMouse();
+			});
+
+			_mouseTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(15), DispatcherPriority.Normal, (s, e) => {
 				UpdateMouse();
 			});
 
@@ -106,6 +110,7 @@ namespace Mesen.Windows
 			_model.SetCoreOptions();
 			_model.InitActions(this);
 			_timer.Start();
+			_mouseTimer.Start();
 			
 			_listener = new NotificationListener(forHistoryViewer: true);
 			_listener.OnNotification += OnNotification;
@@ -118,6 +123,7 @@ namespace Mesen.Windows
 				return;
 			}
 			_timer.Stop();
+			_mouseTimer.Stop();
 			_listener?.Dispose();
 			HistoryApi.HistoryViewerRelease();
 			ConfigManager.Config.HistoryViewer.SaveWindowSettings(this);
