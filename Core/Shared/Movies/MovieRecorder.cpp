@@ -198,7 +198,6 @@ bool MovieRecorder::CreateMovie(string movieFile, deque<RewindData> &data, uint3
 	_filename = movieFile;
 	_writer.reset(new ZipWriter());
 	if(startPosition < data.size() && endPosition <= data.size() && _writer->Initialize(_filename)) {
-
 		vector<shared_ptr<BaseControlDevice>> devices = console->GetControlManager()->GetControlDevices();
 		
 		if(startPosition > 0 || hasBattery || _emu->GetSettings()->GetDefaultRamPowerOnState(_emu->GetConsoleType()) == RamState::Random) {
@@ -206,7 +205,7 @@ bool MovieRecorder::CreateMovie(string movieFile, deque<RewindData> &data, uint3
 			_hasSaveState = true;
 			_saveStateData = stringstream();
 			_emu->GetSaveStateManager()->GetSaveStateHeader(_saveStateData);
-			data[startPosition].GetStateData(_saveStateData);
+			data[startPosition].GetStateData(_saveStateData, data, startPosition);
 		}
 
 		_inputData = stringstream();

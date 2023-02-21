@@ -120,7 +120,7 @@ bool HistoryViewer::CreateSaveState(string outputFile, uint32_t position)
 
 	std::stringstream stateData;
 	_emu->GetSaveStateManager()->GetSaveStateHeader(stateData);
-	_history[position].GetStateData(stateData);
+	_history[position].GetStateData(stateData, _history, position);
 
 	ofstream output(outputFile, ios::binary);
 	if(output) {

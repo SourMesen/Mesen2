@@ -4,9 +4,17 @@
 #include "Shared/SaveStateManager.h"
 #include "Utilities/CompressionHelper.h"
 
-void RewindData::GetStateData(stringstream &stateData)
+void RewindData::GetStateData(stringstream &stateData, deque<RewindData>& prevStates, int32_t position)
 {
-	stateData.write((char*)_saveStateData.data(), _saveStateData.size());
+	vector<uint8_t> data;
+	CompressionHelper::Decompress(_saveStateData, data);
+
+	if(!IsFullState) {
+		position = (position > 0 ? position : (int32_t)prevStates.size()) - 1;
+		ProcessXorState(data, prevStates, position);
+	}
+
+	stateData.write((char*)data.data(), data.size());
 }
 
 template<typename T>

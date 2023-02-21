@@ -19,7 +19,7 @@ public:
 	bool EndOfSegment = false;
 	bool IsFullState;
 
-	void GetStateData(stringstream& stateData);
+	void GetStateData(stringstream& stateData, deque<RewindData>& prevStates, int32_t position);
 	uint32_t GetStateSize() { return (uint32_t)_saveStateData.size(); }
 
 	void LoadState(Emulator* emu, deque<RewindData>& prevStates, int32_t position = -1);
