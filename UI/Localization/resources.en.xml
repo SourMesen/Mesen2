@@ -1492,6 +1492,8 @@
 		<Message ID="HelpRecordMovie">/RecordMovie="filename.mmo" - Start recording a movie after the specified game is loaded.</Message>
 		<Message ID="HelpLoadLastSession">/LoadLastSession - Resumes the game in the state it was left in when it was last played.</Message>
 
+		<Message ID="RightClickToClearBinding">Right-click to clear binding</Message>
+
 		<Message ID="Resume">Resume</Message>
 		<Message ID="Pause">Pause</Message>
 		<Message ID="StartServer">Start Server</Message>

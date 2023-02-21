@@ -2,9 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.Windows;
 using System;
@@ -84,7 +86,19 @@ namespace Mesen.Controls
 		{
 			string keyname = InputApi.GetKeyName(value);
 			this.Content = keyname;
-			ToolTip.SetTip(this, string.IsNullOrWhiteSpace(keyname) ? null : keyname);
+			KeyBindingButton.SetBindingButtonTooltip(this, keyname);
+		}
+
+		public static void SetBindingButtonTooltip(Button btn, string keyname)
+		{
+			if(string.IsNullOrWhiteSpace(keyname)) {
+				ToolTip.SetTip(btn, null);
+			} else {
+				StackPanel pnl = new();
+				pnl.Children.Add(new TextBlock() { Text = keyname });
+				pnl.Children.Add(new TextBlock() { Text = ResourceHelper.GetMessage("RightClickToClearBinding"), FontStyle = FontStyle.Italic, Margin = new(0, 10, 0, 0) });
+				ToolTip.SetTip(btn, pnl);
+			}
 		}
 	}
 }

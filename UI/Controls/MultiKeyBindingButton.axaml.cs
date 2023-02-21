@@ -69,7 +69,7 @@ namespace Mesen.Controls
 		{
 			string keyname = KeyBinding.ToString();
 			this.Content = keyname;
-			ToolTip.SetTip(this, string.IsNullOrWhiteSpace(keyname) ? null : keyname);
+			KeyBindingButton.SetBindingButtonTooltip(this, keyname);
 		}
 	}
 }
