@@ -57,7 +57,7 @@ namespace Mesen.Utilities
 			}
 			
 			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
-			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && (EmuApi.IsRunning() || ConfigManager.Config.Preferences.GameSelectionScreenMode == GameSelectionMode.Disabled)) {
+			if(_wnd.IsActive && leftPressed && !IsPointerInMenu() && (EmuApi.IsRunning() || !MainWindowViewModel.Instance.RecentGames.Visible)) {
 				//Close menu when renderer is clicked
 				_mainMenu.MainMenu.Close();
 				if(MainWindowViewModel.Instance.AudioPlayer == null) {
