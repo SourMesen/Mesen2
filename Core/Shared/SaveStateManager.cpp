@@ -328,8 +328,8 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 			return -1;
 		}
 
-		//Skip some header fields
-		stream.seekg(44, ios::cur);
+		//Skip console type field
+		stream.seekg(4, ios::cur);
 
 		vector<uint8_t> frameData;
 		RenderedFrame frame;
