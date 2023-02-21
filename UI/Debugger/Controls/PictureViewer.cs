@@ -354,7 +354,7 @@ namespace Mesen.Debugger.Controls
 		{
 			p = new Point(p.X + LeftClipSize * Zoom, p.Y + TopClipSize * Zoom);
 
-			if(p.X >= MinWidth + LeftClipSize * Zoom || p.Y >= MinHeight + TopClipSize * Zoom) {
+			if(p.X < 0 || p.Y < 0 || p.X >= MinWidth + LeftClipSize * Zoom || p.Y >= MinHeight + TopClipSize * Zoom) {
 				return null;
 			}
 
