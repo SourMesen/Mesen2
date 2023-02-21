@@ -8,7 +8,6 @@
 	x:Name="root"
 	x:Class="Mesen.Controls.MesenSlider"
   HorizontalAlignment="Stretch"
-  Background="Transparent"
 >
 	<UserControl.Styles>
 		<Style Selector="c|MesenSlider[Orientation=Vertical] DockPanel TextBox">
@@ -61,8 +60,8 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<Panel Background="Transparent">
-		<DockPanel Background="Transparent" Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}">
+	<Panel>
+		<DockPanel Classes.visibleText="{CompiledBinding Text.Length, ElementName=root}">
 			<TextBlock
 				DockPanel.Dock="Bottom"
 				Classes="VerticalText"
