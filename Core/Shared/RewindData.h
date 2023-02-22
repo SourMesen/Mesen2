@@ -17,7 +17,7 @@ public:
 	std::deque<ControlDeviceState> InputLogs[BaseControlDevice::PortCount];
 	int32_t FrameCount = 0;
 	bool EndOfSegment = false;
-	bool IsFullState;
+	bool IsFullState = false;
 
 	void GetStateData(stringstream& stateData, deque<RewindData>& prevStates, int32_t position);
 	uint32_t GetStateSize() { return (uint32_t)_saveStateData.size(); }
