@@ -4,7 +4,7 @@
 		<Form ID="MainMenuView">
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuGame">_Game</Control>
-			<Control ID="mnuOptions">_Options</Control>
+			<Control ID="mnuOptions">_Settings</Control>
 			<Control ID="mnuTools">_Tools</Control>
 			<Control ID="mnuDebug">_Debug</Control>
 			<Control ID="mnuHelp">_Help</Control>
@@ -639,7 +639,7 @@
 			<Control ID="Title">Set key binding...</Control>
 		</Form>
 		<Form ID="VideoRecordWindow">
-			<Control ID="wndTitle">Video Recording Options</Control>
+			<Control ID="wndTitle">Video Recording Settings</Control>
 			<Control ID="lblAviFile">Save to:</Control>
 			<Control ID="lblCodec">Video Codec:</Control>
 			<Control ID="lblCompressionLevel">Compression Level:</Control>
@@ -680,7 +680,7 @@
 			<Control ID="lblCancel">Cancel</Control>
 		</Form>
 		<Form ID="MovieRecordWindow">
-			<Control ID="wndTitle">Movie Recording Options</Control>
+			<Control ID="wndTitle">Movie Recording Settings</Control>
 			<Control ID="lblSaveTo">Save to:</Control>
 			<Control ID="lblRecordFrom">Record from:</Control>
 			<Control ID="lblMovieInformation">Movie Information (Optional)</Control>
@@ -693,7 +693,7 @@
 		<Form ID="HdPackBuilderWindow">
 			<Control ID="wndTitle">HD Pack Builder</Control>
 			
-			<Control ID="grpOptions">Recording Options</Control>
+			<Control ID="grpOptions">Recording Settings</Control>
 			<Control ID="lblBankSize">CHR Bank Size:</Control>
 			<Control ID="lblScale">Scale/Filter:</Control>
 			<Control ID="chkSortByUsageFrequency">Sort pages by usage frequency</Control>
@@ -829,7 +829,7 @@
 			<Control ID="chkNesShowAttributeByteGrid">Show attribute grid (32x32)</Control>
 			<Control ID="chkNesShowTilemapGrid">Show nametable delimiters</Control>
 			
-			<Control ID="lblHighlightOptions">Highlight options</Control>
+			<Control ID="lblHighlightOptions">Highlight settings</Control>
 			<Control ID="lblTileHighlightMode">Tiles:</Control>
 			<Control ID="lblAttributeHighlightMode">Attributes:</Control>
 			<Control ID="chkShowScrollOverlay">Show scroll overlay</Control>
@@ -913,7 +913,7 @@
 			<Control ID="wndTitle">Assembler</Control>
 
 			<Control ID="mnuFile">_File</Control>
-			<Control ID="mnuOptions">_Options</Control>
+			<Control ID="mnuOptions">_Settings</Control>
 			
 			<Control ID="lblStartAddress">Start address: $</Control>
 			<Control ID="lblBytesUsed">Bytes used: </Control>
@@ -954,7 +954,7 @@
 			<Control ID="lblVolume">Volume</Control>
 
 			<Control ID="mnuFile">File</Control>
-			<Control ID="mnuOptions">Options</Control>
+			<Control ID="mnuOptions">Settings</Control>
 		</Form>
 
 		<Form ID="HistoryViewerRangePickerWindow">
@@ -999,7 +999,7 @@
 			<Control ID="lblCondition">Condition: </Control>
 			<Control ID="chkEnabled">Enabled</Control>
 			
-			<Control ID="grpLogOptions">{0} - Log options</Control>
+			<Control ID="grpLogOptions">{0} - Log settings</Control>
 
 			<Control ID="chkCustomFormat">Use custom format:</Control>
 
@@ -1058,7 +1058,7 @@
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuDebug">_Debug</Control>
 			<Control ID="mnuSearch">_Search</Control>
-			<Control ID="mnuOptions">_Options</Control>
+			<Control ID="mnuOptions">_Settings</Control>
 			<Control ID="btnToggleSettingsPanel">Toggle settings panel</Control>
 		</Form>
 
@@ -1108,7 +1108,7 @@
 		</Form>
 
 		<Form ID="DebuggerOptionsView">
-			<Control ID="lblDisassemblyOptions">Disassembly options</Control>
+			<Control ID="lblDisassemblyOptions">Disassembly settings</Control>
 			<Control ID="lblVerifiedData">Data:</Control>
 			<Control ID="lblUnidentifiedBlock">Unidentified:</Control>
 			<Control ID="lblAddressDisplay">Margin:</Control>
