@@ -333,7 +333,7 @@ void Emulator::Reset()
 void Emulator::ReloadRom(bool forPowerCycle)
 {
 	RomInfo info = GetRomInfo();
-	LoadRom(info.RomFile, info.PatchFile, false, forPowerCycle);
+	LoadRom(info.RomFile, info.PatchFile, !forPowerCycle, forPowerCycle);
 }
 
 void Emulator::PowerCycle()
