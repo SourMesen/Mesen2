@@ -60,6 +60,7 @@ namespace Mesen.Config
 		[Reactive] public bool ShowTitleBarInfo { get; set; } = false;
 		[Reactive] public bool ShowDebugInfo { get; set; } = false;
 		[Reactive] public bool DisableOsd { get; set; } = false;
+		[Reactive] public HudDisplaySize HudSize { get; set; } = HudDisplaySize.Fixed;
 		[Reactive] public GameSelectionMode GameSelectionScreenMode { get; set; } = GameSelectionMode.ResumeState;
 
 		[Reactive] public FontAntialiasing FontAntialiasing { get; set; } = FontAntialiasing.SubPixelAntialias;
@@ -227,6 +228,7 @@ namespace Mesen.Config
 				ShowMovieIcons = ShowMovieIcons,
 				ShowTurboRewindIcons = ShowTurboRewindIcons,
 				DisableGameSelectionScreen = GameSelectionScreenMode == GameSelectionMode.Disabled,
+				HudSize = HudSize,
 				SaveFolderOverride = OverrideSaveDataFolder ? SaveDataFolder : "",
 				SaveStateFolderOverride = OverrideSaveStateFolder ? SaveStateFolder : "",
 				ScreenshotFolderOverride = OverrideScreenshotFolder ? ScreenshotFolder : "",
@@ -256,6 +258,12 @@ namespace Mesen.Config
 		PowerOn
 	}
 
+	public enum HudDisplaySize
+	{
+		Fixed,
+		Scaled,
+	}
+
 	public struct InteropPreferencesConfig
 	{
 		[MarshalAs(UnmanagedType.I1)] public bool ShowFps;
@@ -269,6 +277,8 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool ShowMovieIcons;
 		[MarshalAs(UnmanagedType.I1)] public bool ShowTurboRewindIcons;
 		[MarshalAs(UnmanagedType.I1)] public bool DisableGameSelectionScreen;
+
+		public HudDisplaySize HudSize;
 
 		public UInt32 AutoSaveStateDelay;
 		public UInt32 RewindBufferSize;

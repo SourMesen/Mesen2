@@ -556,6 +556,7 @@
 
 			<Control ID="chkAlwaysOnTop">Always display on top of other windows</Control>
 			<Control ID="chkShowFps">Show FPS</Control>
+			<Control ID="lblHudDisplaySize">HUD display size:</Control>
 			<Control ID="chkShowDebugInformation">Show debug information</Control>
 
 			<Control ID="lblLastFolderUsed">Last Folder Used</Control>
@@ -2474,6 +2475,10 @@
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="GameboyColor">Game Boy Color</Value>
 			<Value ID="SuperGameboy">Super Game Boy</Value>
+		</Enum>
+		<Enum ID="HudDisplaySize">
+			<Value ID="Fixed">Fixed size</Value>
+			<Value ID="Scaled">Scaled with game</Value>
 		</Enum>
 		<Enum ID="TileFormat">
 			<Value ID="NesBpp2">2 bpp</Value>

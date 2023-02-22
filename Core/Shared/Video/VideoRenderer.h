@@ -61,6 +61,8 @@ private:
 	void RenderThread();
 	void DrawScriptHud(RenderedFrame& frame);
 	
+	FrameInfo GetEmuHudSize(FrameInfo baseFrameSize);
+
 	void ProcessAviRecording(RenderedFrame& frame);
 
 public:

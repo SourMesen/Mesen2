@@ -647,6 +647,12 @@ struct DebugConfig
 	uint32_t ScriptTimeout = 1;
 };
 
+enum class HudDisplaySize
+{
+	Fixed,
+	Scaled,
+};
+
 struct PreferencesConfig
 {
 	bool ShowFps = false;
@@ -660,6 +666,8 @@ struct PreferencesConfig
 	bool ShowMovieIcons = false;
 	bool ShowTurboRewindIcons = false;
 	bool DisableGameSelectionScreen = false;
+
+	HudDisplaySize HudSize;
 
 	uint32_t AutoSaveStateDelay = 5;
 	uint32_t RewindBufferSize = 300;

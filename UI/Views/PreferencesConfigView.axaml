@@ -151,11 +151,11 @@
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<c:OptionSection Header="{l:Translate lblWindowSettings}" Margin="0">
-						<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
-					</c:OptionSection>
-
-					<c:OptionSection Header="{l:Translate lblUiDisplaySettings}">
+					<c:OptionSection Header="{l:Translate lblUiDisplaySettings}" Margin="0">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblHudDisplaySize}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.HudSize}" MinWidth="125" />
+						</StackPanel>
 						<CheckBox Content="{l:Translate chkDisableOsd}" IsChecked="{CompiledBinding Config.DisableOsd}" />
 						<CheckBox Content="{l:Translate chkDisplayTitleBarInfo}" IsChecked="{CompiledBinding Config.ShowTitleBarInfo}" />
 						<CheckBox Content="{l:Translate chkShowFps}" IsChecked="{CompiledBinding Config.ShowFps}" />
@@ -193,6 +193,7 @@
 							<TextBlock Text="{l:Translate lblGameSelectionScreen}" />
 							<c:EnumComboBox SelectedItem="{CompiledBinding Config.GameSelectionScreenMode}" MinWidth="250" />
 						</StackPanel>
+						<CheckBox Content="{l:Translate chkAlwaysOnTop}" IsChecked="{CompiledBinding Config.AlwaysOnTop}" />
 						<StackPanel Orientation="Horizontal" Margin="0 0 0 5">
 							<CheckBox Content="{l:Translate chkEnableAutoSaveState}" IsChecked="{CompiledBinding Config.EnableAutoSaveState}" />
 							<NumericUpDown Value="{CompiledBinding Config.AutoSaveStateDelay}" Margin="5 0" Minimum="1" Maximum="60" IsEnabled="{CompiledBinding Config.EnableAutoSaveState}" />

@@ -76,10 +76,7 @@ void VideoRenderer::RenderThread()
 			FrameInfo size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
 			_scriptHudSurface.UpdateSize(size.Width * _scriptHudScale, size.Height * _scriptHudScale);
 
-			//Adjust the system HUD's width to match the aspect ratio to allow text to be unstretched
-			//(The Lua HUD is not adjusted to allow scripts that need to match positions on the game screen to work correctly.)
-			double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), size);
-			size.Width = (uint32_t)std::round(size.Height * aspectRatio);
+			size = GetEmuHudSize(size);
 			_emuHudSurface.UpdateSize(size.Width, size.Height);
 
 			RenderedFrame frame;
@@ -101,6 +98,22 @@ void VideoRenderer::RenderThread()
 			_renderer->Render(_emuHudSurface, _scriptHudSurface);
 		}
 	}
+}
+
+FrameInfo VideoRenderer::GetEmuHudSize(FrameInfo baseFrameSize)
+{
+	FrameInfo size = {};
+	if(_emu->GetSettings()->GetPreferences().HudSize == HudDisplaySize::Scaled) {
+		//Adjust the system HUD's width to match the aspect ratio to allow text to be unstretched
+		//(The Lua HUD is not adjusted to allow scripts that need to match positions on the game screen to work correctly.)
+		double aspectRatio = _emu->GetSettings()->GetAspectRatio(_emu->GetRegion(), baseFrameSize);
+		size.Width = (uint32_t)std::round(baseFrameSize.Height * aspectRatio);
+		size.Height = baseFrameSize.Height;
+	} else {
+		size.Width = _rendererWidth / 2;
+		size.Height = _rendererHeight / 2;
+	}
+	return size;
 }
 
 void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
