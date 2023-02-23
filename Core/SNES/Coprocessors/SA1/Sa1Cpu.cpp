@@ -28,27 +28,17 @@ void Sa1Cpu::Exec()
 {
 	_immediateMode = false;
 
-	switch(_state.StopState) {
-		case SnesCpuStopState::Running:
-			_emu->ProcessInstruction<CpuType::Sa1>();
-			RunOp();
-			break;
-
-		case SnesCpuStopState::Stopped:
-			//STP was executed, CPU no longer executes any code
-			_state.CycleCount++;
-			return;
-
-		case SnesCpuStopState::WaitingForIrq:
-			//WAI
-			Idle();
-			if(_state.IrqSource || _state.NeedNmi) {
-				Idle();
-				_state.StopState = SnesCpuStopState::Running;
-			}
-			break;
+	if(_state.StopState == SnesCpuStopState::Running) {
+		_emu->ProcessInstruction<CpuType::Sa1>();
+		RunOp();
+		CheckForInterrupts();
+	} else {
+		ProcessHaltedState();
 	}
+}
 
+void Sa1Cpu::CheckForInterrupts()
+{
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
 	if(_state.PrevNeedNmi) {
 		_state.NeedNmi = false;
@@ -59,6 +49,23 @@ void Sa1Cpu::Exec()
 		uint32_t originalPc = GetProgramAddress(_state.PC);
 		ProcessInterrupt(_state.EmulationMode ? Sa1Cpu::LegacyIrqVector : Sa1Cpu::IrqVector, true);
 		_emu->ProcessInterrupt<CpuType::Sa1>(originalPc, GetProgramAddress(_state.PC), false);
+	}
+}
+
+void Sa1Cpu::ProcessHaltedState()
+{
+	if(_state.StopState == SnesCpuStopState::Stopped) {
+		//STP was executed, CPU no longer executes any code
+		_state.CycleCount++;
+	} else {
+		//WAI
+		Idle();
+		if(_state.IrqSource || _state.NeedNmi) {
+			Idle();
+			Idle();
+			_state.StopState = SnesCpuStopState::Running;
+			CheckForInterrupts();
+		}
 	}
 }
 

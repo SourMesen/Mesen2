@@ -318,6 +318,7 @@ private:
 	
 	void RunOp();
 	__noinline void ProcessHaltedState();
+	__forceinline void CheckForInterrupts();
 
 public:
 #ifndef DUMMYCPU

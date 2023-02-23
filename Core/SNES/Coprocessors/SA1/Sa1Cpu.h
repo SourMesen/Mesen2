@@ -310,6 +310,9 @@ private:
 
 	void RunOp();
 
+	__forceinline void CheckForInterrupts();
+	__noinline void ProcessHaltedState();
+
 public:
 	Sa1Cpu(Sa1 *sa1, Emulator* emu);
 	virtual ~Sa1Cpu();

@@ -36,10 +36,14 @@ void SnesCpu::Exec()
 #endif
 
 		RunOp();
+		CheckForInterrupts();
 	} else {
 		ProcessHaltedState();
 	}
+}
 
+void SnesCpu::CheckForInterrupts()
+{
 #ifndef DUMMYCPU
 	//Use the state of the IRQ/NMI flags on the previous cycle to determine if an IRQ is processed or not
 	if(_state.PrevNeedNmi) {
@@ -74,6 +78,7 @@ void SnesCpu::ProcessHaltedState()
 			Idle();
 			Idle();
 			_state.StopState = SnesCpuStopState::Running;
+			CheckForInterrupts();
 		}
 	}
 }
