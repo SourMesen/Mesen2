@@ -126,6 +126,16 @@ public:
 
 	int32_t GetOutput()
 	{
-		return IsEnabled() ? _output : 0;
+		return _output;
+	}
+
+	int8_t GetCounter()
+	{
+		return _counter;
+	}
+
+	bool IsModulationDisabled()
+	{
+		return _modulationDisabled;
 	}
 };

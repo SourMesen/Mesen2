@@ -575,3 +575,26 @@ bool Fds::IsAutoInsertDiskEnabled()
 {
 	return !_disableAutoInsertDisk && _settings->FdsAutoInsertDisk && !_emu->GetMovieManager()->Playing() && !_emu->GetMovieManager()->Recording();
 }
+
+vector<MapperStateEntry> Fds::GetMapperStateEntries()
+{
+	vector<MapperStateEntry> entries;
+
+	entries.push_back(MapperStateEntry("$4020/1", "IRQ Reload Value", _irqReloadValue, MapperStateValueType::Number16));
+	entries.push_back(MapperStateEntry("$4022.0", "IRQ Repeat", _irqRepeatEnabled, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4022.1", "IRQ Enabled", _irqEnabled, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("", "IRQ Counter", _irqCounter, MapperStateValueType::Number16));
+
+	entries.push_back(MapperStateEntry("$4023.0", "Disk Registers Enabled", _diskRegEnabled, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4023.1", "Sound Registers Enabled", _soundRegEnabled, MapperStateValueType::Bool));
+
+	entries.push_back(MapperStateEntry("$4025.0", "Motor Enabled", _motorOn, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4025.1", "Reset Transfer", _resetTransfer, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4025.2", "Read Mode", _readMode, MapperStateValueType::Bool));
+	entries.push_back(MapperStateEntry("$4025.3", "Mirroring", GetMirroringType() == MirroringType::Horizontal ? "Horizontal" : "Vertical", GetMirroringType() == MirroringType::Horizontal ? 1 : 0));
+	entries.push_back(MapperStateEntry("$4025.7", "Disk IRQ Enabled", _diskIrqEnabled, MapperStateValueType::Bool));
+
+	_audio->GetMapperStateEntries(entries);
+
+	return entries;
+}

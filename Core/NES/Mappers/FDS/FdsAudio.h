@@ -7,6 +7,7 @@
 #include "NES/APU/BaseExpansionAudio.h"
 
 class NesConsole;
+struct MapperStateEntry;
 
 class FdsAudio : public BaseExpansionAudio
 {
@@ -43,4 +44,6 @@ public:
 
 	uint8_t ReadRegister(uint16_t addr);
 	void WriteRegister(uint16_t addr, uint8_t value);
+	
+	void GetMapperStateEntries(vector<MapperStateEntry>& entries);
 };

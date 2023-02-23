@@ -14,8 +14,8 @@ protected:
 
 	uint32_t _timer = 0;
 
-	//"Few FDS NSFs write to this register. The BIOS initializes this to $FF."
-	uint8_t _masterSpeed = 0xFF;
+	//"Few FDS NSFs write to this register. The BIOS initializes this to $E8."
+	uint8_t _masterSpeed = 0xE8;
 
 	void Serialize(Serializer& s) override
 	{
@@ -73,14 +73,34 @@ public:
 		return false;
 	}
 
+	uint8_t GetSpeed()
+	{
+		return _speed;
+	}
+
 	uint8_t GetGain()
 	{
 		return _gain;
+	}
+	
+	uint8_t GetMasterSpeed()
+	{
+		return _masterSpeed;
 	}
 
 	uint16_t GetFrequency()
 	{
 		return _frequency;
+	}
+
+	bool GetVolumeIncreaseFlag()
+	{
+		return _volumeIncrease;
+	}
+
+	bool IsEnvelopeDisabled()
+	{
+		return _envelopeOff;
 	}
 
 	void ResetTimer()

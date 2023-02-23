@@ -111,6 +111,7 @@ protected:
 	uint8_t ReadRam(uint16_t addr) override;
 
 	void Serialize(Serializer& s) override;
+	vector<MapperStateEntry> GetMapperStateEntries() override;
 
 public:
 	~Fds();
