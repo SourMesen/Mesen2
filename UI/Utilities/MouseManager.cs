@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
@@ -68,7 +69,7 @@ namespace Mesen.Utilities
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
-			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, 1.0));
+			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
 
 			MousePosition p = GlobalMouse.GetMousePosition();
 			if(_prevPosition.X != p.X || _prevPosition.Y != p.Y) {
@@ -93,7 +94,7 @@ namespace Mesen.Utilities
 
 			if(_wnd.IsActive && rendererScreenRect.Contains(mousePos)) {
 				//Send mouse state to emulation core
-				Point rendererPos = _renderer.PointToClient(mousePos);
+				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd);
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
 
 				InputApi.SetKeyState(LeftMouseButtonKeyCode, leftPressed);

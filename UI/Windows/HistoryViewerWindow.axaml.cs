@@ -76,7 +76,7 @@ namespace Mesen.Windows
 			MousePosition p = GlobalMouse.GetMousePosition();
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
-			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, 1.0));
+			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this)));
 
 			if(rendererScreenRect.Contains(mousePos)) {
 				GlobalMouse.SetCursorIcon(CursorIcon.Arrow);

@@ -16,6 +16,7 @@ using Mesen.Utilities;
 using Mesen.Localization;
 using Avalonia.Remote.Protocol.Input;
 using DynamicData;
+using Avalonia.Layout;
 
 namespace Mesen.Windows
 {
@@ -114,7 +115,7 @@ namespace Mesen.Windows
 			if(!_allowKeyboardOnly) {
 				MousePosition p = GlobalMouse.GetMousePosition();
 				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
-				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, 1.0));
+				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this)));
 				bool mouseInsideWindow = clientBounds.Contains(mousePos);
 				InputApi.SetKeyState(MouseManager.LeftMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Left));
 				InputApi.SetKeyState(MouseManager.RightMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));
