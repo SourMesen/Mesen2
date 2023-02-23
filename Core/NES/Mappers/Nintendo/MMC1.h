@@ -200,7 +200,8 @@ protected:
 		uint64_t currentCycle = _console->GetMasterClock();
 
 		//Ignore write if within 2 cycles of another write (i.e the real write after a dummy write)
-		if(currentCycle - _lastWriteCycle >= 2) {
+		//If the reset bit is set, process the write even if another write just occurred (fixes bug in Shinsenden)
+		if((value & 0x80) || currentCycle - _lastWriteCycle >= 2) {
 			ProcessBitWrite(addr, value);
 		}
 		_lastWriteCycle = currentCycle;
