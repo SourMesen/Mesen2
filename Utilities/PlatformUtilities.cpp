@@ -5,8 +5,6 @@
 #include <Windows.h>
 #endif
 
-bool PlatformUtilities::_highResTimerEnabled = false;
-
 void PlatformUtilities::DisableScreensaver()
 {
 	//Prevent screensaver/etc from starting while using the emulator
@@ -27,19 +25,13 @@ void PlatformUtilities::EnableHighResolutionTimer()
 {
 	#ifdef _WIN32
 	//Request a 1ms timer resolution on Windows while a game is running
-	if(!_highResTimerEnabled) {
-		timeBeginPeriod(1);
-		_highResTimerEnabled = true;
-	}
+	timeBeginPeriod(1);
 	#endif
 }
 
 void PlatformUtilities::RestoreTimerResolution()
 {
 	#ifdef _WIN32
-	if(_highResTimerEnabled) {
-		timeEndPeriod(1);
-		_highResTimerEnabled = false;
-	}
+	timeEndPeriod(1);
 	#endif
 }
