@@ -53,6 +53,8 @@ namespace Mesen.Utilities
 
 		private void tmrProcessMouse(object? sender, EventArgs e)
 		{
+			UpdateMainMenuVisibility();
+
 			if(MainWindowViewModel.Instance.RecentGames.Visible) {
 				return;
 			}
@@ -79,8 +81,6 @@ namespace Mesen.Utilities
 				_lastMouseMove = DateTime.Now;
 			}
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
-
-			UpdateMainMenuVisibility(mousePos);
 
 			if(_wnd.IsActive && (_mainMenu.IsPointerOver || _mainMenu.IsKeyboardFocusWithin || _mainMenu.MainMenu.IsOpen)) {
 				//When mouse or keyboard focus is in menu, release mouse and keep arrow cursor
@@ -127,8 +127,12 @@ namespace Mesen.Utilities
 			}
 		}
 
-		private void UpdateMainMenuVisibility(PixelPoint mousePos)
+		private void UpdateMainMenuVisibility()
 		{
+			//Get global mouse position without restrictions - need to know if mouse is over menu or not
+			MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
+			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
+
 			bool autoHideMenu = _wnd.WindowState == WindowState.FullScreen || ConfigManager.Config.Preferences.AutoHideMenu;
 			if(autoHideMenu) {
 				if(_mainMenu.MainMenu.IsOpen) {
