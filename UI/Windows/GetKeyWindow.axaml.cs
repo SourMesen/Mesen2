@@ -113,7 +113,7 @@ namespace Mesen.Windows
 		private void UpdateKeyDisplay()
 		{
 			if(!_allowKeyboardOnly) {
-				MousePosition p = GlobalMouse.GetMousePosition();
+				MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
 				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this)));
 				bool mouseInsideWindow = clientBounds.Contains(mousePos);

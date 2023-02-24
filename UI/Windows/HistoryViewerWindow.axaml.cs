@@ -68,12 +68,12 @@ namespace Mesen.Windows
 
 		private void UpdateMouse()
 		{
-			if(!IsActive || MenuHelper.IsPointerInMenu(_mainMenu)) {
+			if(MenuHelper.IsPointerInMenu(_mainMenu)) {
 				return;
 			}
 
 			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
-			MousePosition p = GlobalMouse.GetMousePosition();
+			MousePosition p = GlobalMouse.GetMousePosition(_renderer.Handle);
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
 			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this)));

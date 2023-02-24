@@ -15,7 +15,7 @@ public class GlobalMouseX11Impl : IGlobalMouseImpl
 		_x11 = new X11Info();
 	}
 
-	public MousePosition GetMousePosition()
+	public MousePosition GetMousePosition(IntPtr windowFilter)
 	{
 		(int x, int y) = GetCursorPos(_x11, null, out _);
 		return new MousePosition(x, y);

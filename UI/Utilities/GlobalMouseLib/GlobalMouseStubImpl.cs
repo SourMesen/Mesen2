@@ -4,7 +4,7 @@ namespace Mesen.Utilities.GlobalMouseLib
 {
 	public class GlobalMouseStubImpl : IGlobalMouseImpl
 	{
-		public MousePosition GetMousePosition()
+		public MousePosition GetMousePosition(IntPtr windowFilter)
 		{
 			return new MousePosition(0, 0);
 		}

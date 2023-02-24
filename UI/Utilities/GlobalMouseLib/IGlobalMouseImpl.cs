@@ -4,7 +4,7 @@ namespace Mesen.Utilities.GlobalMouseLib
 {
 	public interface IGlobalMouseImpl
 	{
-		MousePosition GetMousePosition();
+		MousePosition GetMousePosition(IntPtr windowFilter);
 		bool IsMouseButtonPressed(MouseButtons button);
 		void SetCursorIcon(CursorIcon icon);
 		void SetMousePosition(uint x, uint y);

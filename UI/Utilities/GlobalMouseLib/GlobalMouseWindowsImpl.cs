@@ -21,9 +21,13 @@ namespace Mesen.Utilities.GlobalMouseLib
 			return false;
 		}
 
-		public MousePosition GetMousePosition()
+		public MousePosition GetMousePosition(IntPtr windowFilter)
 		{
 			GetCursorPos(out CursorPoint p);
+			if(windowFilter != IntPtr.Zero && WindowFromPoint(p) != windowFilter) {
+				//Mouse is over another window
+				return new MousePosition(-1, -1);
+			}
 			return new MousePosition(p.X, p.Y);
 		}
 
@@ -87,6 +91,8 @@ namespace Mesen.Utilities.GlobalMouseLib
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool ClipCursor(WinRect? rect);
 
+		[DllImport("user32.dll")]
+		private static extern IntPtr WindowFromPoint(CursorPoint p);
 
 		private enum WindowsMouseButton
 		{

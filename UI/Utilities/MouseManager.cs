@@ -71,7 +71,7 @@ namespace Mesen.Utilities
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
 			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
 
-			MousePosition p = GlobalMouse.GetMousePosition();
+			MousePosition p = GlobalMouse.GetMousePosition(_renderer.Handle);
 			if(_prevPosition.X != p.X || _prevPosition.Y != p.Y) {
 				//Send mouse movement x/y values to core
 				InputApi.SetMouseMovement((Int16)(p.X - _prevPosition.X), (Int16)(p.Y - _prevPosition.Y));
@@ -92,7 +92,7 @@ namespace Mesen.Utilities
 				return;
 			}
 
-			if(_wnd.IsActive && rendererScreenRect.Contains(mousePos)) {
+			if(rendererScreenRect.Contains(mousePos)) {
 				//Send mouse state to emulation core
 				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd);
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
@@ -150,10 +150,11 @@ namespace Mesen.Utilities
 		{
 			//Send mouse state to emulation core (mouse is set as off the screen)
 			InputApi.SetMousePosition(-1, -1);
-
 			InputApi.SetKeyState(LeftMouseButtonKeyCode, false);
 			InputApi.SetKeyState(RightMouseButtonKeyCode, false);
 			InputApi.SetKeyState(MiddleMouseButtonKeyCode, false);
+			InputApi.SetKeyState(MouseButton4KeyCode, false);
+			InputApi.SetKeyState(MouseButton5KeyCode, false);
 		}
 
 		private bool AllowMouseCapture

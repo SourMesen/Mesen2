@@ -27,9 +27,9 @@ namespace Mesen.Utilities.GlobalMouseLib
 			return _impl.IsMouseButtonPressed(button);
 		}
 
-		public static MousePosition GetMousePosition()
+		public static MousePosition GetMousePosition(IntPtr windowFilter)
 		{
-			return _impl.GetMousePosition();
+			return _impl.GetMousePosition(windowFilter);
 		}
 
 		public static void SetMousePosition(uint x, uint y)
