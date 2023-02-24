@@ -113,7 +113,7 @@ namespace Mesen.Utilities
 						GlobalMouse.SetCursorIcon(CursorIcon.Hidden);
 						PixelPoint rendererCenter = _renderer.PointToScreen(_renderer.Bounds.Center);
 						GlobalMouse.SetMousePosition((uint)rendererCenter.X, (uint)rendererCenter.Y);
-						_prevPosition = new MousePosition(rendererCenter.X, rendererCenter.Y);
+						_prevPosition = GlobalMouse.GetMousePosition(_renderer.Handle);
 					} else {
 						ReleaseMouse();
 					}
@@ -221,8 +221,9 @@ namespace Mesen.Utilities
 				_mouseCaptured = true;
 				
 				PixelPoint topLeft = _renderer.PointToScreen(new Point(0, 0));
+				PixelPoint bottomRight = _renderer.PointToScreen(_renderer.Bounds.BottomRight);
 
-				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, (int)_renderer.Bounds.Width, (int)_renderer.Bounds.Height, _renderer.Handle);
+				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y, _renderer.Handle);
 			}
 		}
 
