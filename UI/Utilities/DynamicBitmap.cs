@@ -35,7 +35,7 @@ namespace Mesen.Utilities
 
 		public new DynamicBitmapLock Lock()
 		{
-			return new DynamicBitmapLock(this, _dynBitmapLock, base.Lock());
+			return new DynamicBitmapLock(this, _dynBitmapLock, () => base.Lock());
 		}
 	}
 
@@ -51,12 +51,17 @@ namespace Mesen.Utilities
 		private DynamicBitmap _bitmap;
 		private object _dynBitmapLock;
 
-		public DynamicBitmapLock(DynamicBitmap bitmap, object dynBitmapLock, ILockedFramebuffer lockedFramebuffer)
+		public DynamicBitmapLock(DynamicBitmap bitmap, object dynBitmapLock, Func<ILockedFramebuffer> lockWriteableBitmap)
 		{
 			Monitor.Enter(dynBitmapLock);
 			_bitmap = bitmap;
 			_dynBitmapLock = dynBitmapLock;
-			FrameBuffer = lockedFramebuffer;
+
+			//Lock this after taking the lock on dynBitmapLock, otherwise a deadlock
+			//can occur because Monitor.Enter will cause windows messages to be processed,
+			//which in turn cause Avalonia to render, and the render will wait on the WriteableBitmap's lock
+			//If we call Monitor.Enter after locking the WriteableBitmap, this can cause a deadlock
+			FrameBuffer = lockWriteableBitmap();
 		}
 
 		public void Dispose()
