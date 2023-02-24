@@ -333,7 +333,11 @@ void Emulator::Reset()
 void Emulator::ReloadRom(bool forPowerCycle)
 {
 	RomInfo info = GetRomInfo();
-	LoadRom(info.RomFile, info.PatchFile, !forPowerCycle, forPowerCycle);
+	
+	//Cast RomFile/PatchFile to string to make sure the file is reloaded from the disk
+	//In some scenarios, the file might be in memory already, which will prevent the reload
+	//from actually reloading the rom from the disk.
+	LoadRom((string)info.RomFile, (string)info.PatchFile, !forPowerCycle, forPowerCycle);
 }
 
 void Emulator::PowerCycle()
