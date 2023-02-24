@@ -418,14 +418,14 @@ namespace Mesen.Debugger.Controls
 			
 			int width = (int)(Source.Size.Width * Zoom);
 			int height = (int)(Source.Size.Height * Zoom);
-
+			
 			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
 			using var scale = context.PushPostTransform(Matrix.CreateScale(dpiScale, dpiScale));
 
 			using var translation = context.PushPostTransform(Matrix.CreateTranslation(-LeftClipSize * Zoom, -TopClipSize * Zoom));
 			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
-			if(Source is DynamicBitmap dynBmp) {
+			if(Source is DynamicBitmap) {
 				context.Custom(new PictureViewerDrawOperation(this));
 			} else {
 				context.DrawImage(
@@ -522,11 +522,12 @@ namespace Mesen.Debugger.Controls
 
 		private void DrawHighlightLines(DrawingContext context, GridRowColumn point, PixelPoint p, Pen pen)
 		{
-			context.DrawLine(pen, new Point(p.X - pen.Thickness / 2, 0), new Point(p.X - pen.Thickness / 2, Bounds.Height));
-			context.DrawLine(pen, new Point(p.X + point.Width * Zoom + pen.Thickness / 2, 0), new Point(p.X + point.Height * Zoom + pen.Thickness / 2, Bounds.Height));
+			Rect bounds = Bounds * LayoutHelper.GetLayoutScale(this);
+			context.DrawLine(pen, new Point(p.X - pen.Thickness / 2, 0), new Point(p.X - pen.Thickness / 2, bounds.Height));
+			context.DrawLine(pen, new Point(p.X + point.Width * Zoom + pen.Thickness / 2, 0), new Point(p.X + point.Height * Zoom + pen.Thickness / 2, bounds.Height));
 
-			context.DrawLine(pen, new Point(0, p.Y - pen.Thickness / 2), new Point(Bounds.Width, p.Y - pen.Thickness / 2));
-			context.DrawLine(pen, new Point(0, p.Y + point.Height * Zoom + pen.Thickness / 2), new Point(Bounds.Width, p.Y + point.Height * Zoom + pen.Thickness / 2));
+			context.DrawLine(pen, new Point(0, p.Y - pen.Thickness / 2), new Point(bounds.Width, p.Y - pen.Thickness / 2));
+			context.DrawLine(pen, new Point(0, p.Y + point.Height * Zoom + pen.Thickness / 2), new Point(bounds.Width, p.Y + point.Height * Zoom + pen.Thickness / 2));
 		}
 	}
 
@@ -541,7 +542,7 @@ namespace Mesen.Debugger.Controls
 
 		public PictureViewerDrawOperation(PictureViewer viewer)
 		{
-			Bounds = viewer.Bounds;
+			Bounds = viewer.Bounds * LayoutHelper.GetLayoutScale(viewer);
 			_source = (DynamicBitmap)viewer.Source;
 			_zoom = viewer.Zoom;
 			using(var lockedBuffer = ((WriteableBitmap)_source).Lock()) {
