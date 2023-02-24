@@ -139,9 +139,10 @@ namespace Mesen.Utilities
 					MainWindowViewModel.Instance.IsMenuVisible = true;
 				} else {
 					PixelPoint wndTopLeft = _wnd.PointToScreen(new Point(0, 0));
+					double scale = LayoutHelper.GetLayoutScale(_wnd);
 					bool showMenu = (
-						mousePos.Y >= wndTopLeft.Y - 15 && mousePos.Y <= wndTopLeft.Y + Math.Max(_mainMenu.Bounds.Height + 10, 35) &&
-						mousePos.X >= wndTopLeft.X && mousePos.X <= wndTopLeft.X + _wnd.Bounds.Width
+						mousePos.Y >= wndTopLeft.Y - 15 && mousePos.Y <= wndTopLeft.Y + Math.Max(_mainMenu.Bounds.Height * scale + 10, 35 * scale) &&
+						mousePos.X >= wndTopLeft.X && mousePos.X <= wndTopLeft.X + _wnd.Bounds.Width * scale
 					);
 					MainWindowViewModel.Instance.IsMenuVisible = showMenu;
 				}
