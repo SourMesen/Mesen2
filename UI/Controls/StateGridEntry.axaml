@@ -48,14 +48,20 @@
 			Classes.activeEntry="{CompiledBinding IsActiveEntry, ElementName=root}"
 			BorderThickness="2"
 			Height="NaN"
-			Background="Transparent"
+			Background="Black"
 			Click="OnImageClick"
 			IsEnabled="{CompiledBinding Enabled, ElementName=root}"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Stretch"
 			Padding="0"
 		>
-			<Image Source="{CompiledBinding Image, ElementName=root}" RenderOptions.BitmapInterpolationMode="LowQuality" Stretch="Fill" StretchDirection="Both" VerticalAlignment="Center" />
+			<c:ImageAspectRatio
+				Source="{CompiledBinding Image, ElementName=root}"
+				RenderOptions.BitmapInterpolationMode="LowQuality"
+				Stretch="Fill"
+				StretchDirection="Both"
+				VerticalAlignment="Center"
+			/>
 		</Button>
 	</DockPanel>
 </UserControl>
