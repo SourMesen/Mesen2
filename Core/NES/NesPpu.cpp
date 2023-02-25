@@ -880,7 +880,7 @@ template<class T> void NesPpu<T>::ProcessScanlineImpl()
 		}
 	} else if(_cycle == 337 || _cycle == 339) {
 		if(IsRenderingEnabled()) {
-			ReadVram(GetNameTableAddr());
+			_tile.TileAddr = ReadVram(GetNameTableAddr());
 
 			if(_scanline == -1 && _cycle == 339 && (_frameCount & 0x01) && _region == ConsoleRegion::Ntsc && GetPpuModel() == PpuModel::Ppu2C02) {
 				//This behavior is NTSC-specific - PAL frames are always the same number of cycles
@@ -1252,14 +1252,21 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 	}
 
 	//Cycle = 0
-	if(_scanline == -1) {
-		_statusFlags.SpriteOverflow = false;
-		_statusFlags.Sprite0Hit = false;
+	if(_scanline < 240) {
+		if(_scanline == -1) {
+			_statusFlags.SpriteOverflow = false;
+			_statusFlags.Sprite0Hit = false;
 
-		//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
-		_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];
-
-		_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
+			//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
+			_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];
+			_emu->AddDebugEvent<CpuType::Nes>(DebugEventType::BgColorChange);
+		} else if(_prevRenderingEnabled) {
+			if(_scanline > 0 || (!(_frameCount & 0x01) || _region != ConsoleRegion::Ntsc || GetPpuModel() != PpuModel::Ppu2C02)) {
+				//Set bus address to the tile address calculated from the unused NT fetches at the end of the previous scanline
+				//This doesn't happen on scanline 0 if the last dot of the previous frame was skipped
+				SetBusAddress((_tile.TileAddr << 4) | (_videoRamAddr >> 12) | _control.BackgroundPatternAddr);
+			}
+		}
 	} else if(_scanline == 240) {
 		//At the start of vblank, the bus address is set back to VideoRamAddr.
 		//According to Visual NES, this occurs on scanline 240, cycle 1, but is done here on cycle 0 for performance reasons

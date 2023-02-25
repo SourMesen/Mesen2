@@ -17,7 +17,7 @@ private:
 	bool _wramEnabled = false;
 	bool _wramWriteProtected = false;
 
-	A12Watcher _a12Watcher;
+	uint64_t _a12LowClock = 0;
 
 	bool _forceMmc3RevAIrqs = false;
 
@@ -183,7 +183,7 @@ protected:
 	{
 		BaseMapper::Serialize(s);
 		SVArray(_registers, 8);
-		SV(_a12Watcher);
+		SV(_a12LowClock);
 		SV(_state.Reg8000); SV(_state.RegA000); SV(_state.RegA001); SV(_currentRegister); SV(_chrMode); SV(_prgMode);
 		SV(_irqReloadValue); SV(_irqCounter); SV(_irqReload); SV(_irqEnabled); SV(_wramEnabled); SV(_wramWriteProtected);
 	}
@@ -300,10 +300,22 @@ protected:
 		return entries;
 	}
 
+	bool IsA12RisingEdge(uint16_t addr)
+	{
+		if(addr & 0x1000) {
+			bool isRisingEdge = _a12LowClock > 0 && (_console->GetMasterClock() - _a12LowClock) >= 3;
+			_a12LowClock = 0;
+			return isRisingEdge;
+		} else if(_a12LowClock == 0) {
+			_a12LowClock = _console->GetMasterClock();
+		}
+		return false;
+	}
+
 public:
 	void NotifyVramAddressChange(uint16_t addr) override
 	{
-		if(_a12Watcher.UpdateVramAddress(addr, _console->GetPpu()->GetFrameCycle()) == A12StateChange::Rise) {
+		if(IsA12RisingEdge(addr)) {
 			uint32_t count = _irqCounter;
 			if(_irqCounter == 0 || _irqReload) {
 				_irqCounter = _irqReloadValue;
