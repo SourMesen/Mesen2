@@ -424,28 +424,28 @@ protected:
 
 	void DetectScanlineStart(uint16_t addr)
 	{
-		if(addr >= 0x2000 && addr <= 0x2FFF) {
+		if(_ntReadCounter >= 2) {
+			//After 3 identical NT reads, trigger IRQ when the following attribute byte is read
+			if(!_ppuInFrame && !_needInFrame) {
+				_needInFrame = true;
+				_scanlineCounter = 0;
+			} else {
+				_scanlineCounter++;
+				if(_irqCounterTarget == _scanlineCounter) {
+					_irqPending = true;
+					if(_irqEnabled) {
+						_console->GetCpu()->SetIrqSource(IRQSource::External);
+					}
+				}
+			}
+			_splitTileNumber = 0;
+			_ntReadCounter = 0;
+		} else if(addr >= 0x2000 && addr <= 0x2FFF) {
 			if(_lastPpuReadAddr == addr) {
 				//Count consecutive identical reads
 				_ntReadCounter++;
 			} else {
 				_ntReadCounter = 0;
-			}
-
-			if(_ntReadCounter >= 2) {
-				if(!_ppuInFrame && !_needInFrame) {
-					_needInFrame = true;
-					_scanlineCounter = 0;
-				} else {
-					_scanlineCounter++;
-					if(_irqCounterTarget == _scanlineCounter) {
-						_irqPending = true;
-						if(_irqEnabled) {
-							_console->GetCpu()->SetIrqSource(IRQSource::External);
-						}
-					}
-				}
-				_splitTileNumber = 0;
 			}
 		} else {
 			_ntReadCounter = 0;
