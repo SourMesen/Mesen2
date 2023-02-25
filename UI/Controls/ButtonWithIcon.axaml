@@ -6,10 +6,10 @@
 	mc:Ignorable="d"
 	x:Class="Mesen.Controls.ButtonWithIcon"
 	Name="root"
-	Padding="0"
+  Classes="ButtonWithIcon"
 >
 	<StackPanel Orientation="Horizontal">
 		<Image Name="IconImage" Margin="2 -1 0 0" Stretch="None" IsVisible="{CompiledBinding ShowIcon, ElementName=root}" />
-		<TextBlock Text="{CompiledBinding Text, ElementName=root}" Margin="4 -1 4 0" />
+		<TextBlock HorizontalAlignment="Center" Text="{CompiledBinding Text, ElementName=root}" Margin="4 0 4 0" />
 	</StackPanel>
 </Button>

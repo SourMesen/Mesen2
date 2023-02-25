@@ -47,7 +47,7 @@
 					Tapped="lblCancel_Tapped"
 				/>
 				<Button
-					Width="70"
+					MinWidth="70"
 					HorizontalAlignment="Right"
 					HorizontalContentAlignment="Center"
 					Click="btnOk_OnClick"

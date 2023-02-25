@@ -77,7 +77,7 @@
 					<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
 						<TextBlock Text="{l:Translate lblCodeMatchesOriginal}" Padding="5 0" FontStyle="Italic" IsVisible="{CompiledBinding IsIdentical}" />
 						<c:ButtonWithIcon
-							Width="70"
+							MinWidth="70"
 							HorizontalContentAlignment="Center"
 							Click="Ok_OnClick"
 							Icon="Assets/Warning.png"
@@ -85,7 +85,7 @@
 							Text="{l:Translate btnOk}"
 							IsEnabled="{CompiledBinding OkEnabled}"
 						/>
-						<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+						<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 					</StackPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 						<TextBlock Text="{l:Translate lblStartAddress}" />

@@ -17,7 +17,7 @@
 >
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="2">
-			<Button Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Ok_OnClick" Content="{l:Translate btnClose}" />
+			<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Ok_OnClick" Content="{l:Translate btnClose}" />
 		</StackPanel>
 
 		<Border BorderThickness="1" BorderBrush="Gray">

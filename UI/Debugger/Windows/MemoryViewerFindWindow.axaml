@@ -34,7 +34,7 @@
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 				<c:ButtonWithIcon
 					Icon="Assets/PreviousArrow.png"
-					Width="70"
+					MinWidth="70"
 					HorizontalContentAlignment="Center"
 					Click="FindPrev_OnClick"
 					Text="{l:Translate btnFindPrev}"
@@ -42,7 +42,7 @@
 				/>
 				<c:ButtonWithIcon
 					Icon="Assets/NextArrow.png"
-					Width="70"
+					MinWidth="70"
 					HorizontalContentAlignment="Center"
 					IsDefault="True"
 					Click="FindNext_OnClick"
@@ -50,7 +50,7 @@
 					IsEnabled="{CompiledBinding IsValid}"
 				/>
 				<Button
-					Width="70"
+					MinWidth="70"
 					HorizontalContentAlignment="Center"
 					IsCancel="True"
 					Click="Close_OnClick"

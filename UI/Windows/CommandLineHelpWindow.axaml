@@ -22,7 +22,7 @@
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5 3">
 			<Button
-				Width="70"
+				MinWidth="70"
 				HorizontalContentAlignment="Center"
 				IsCancel="True"
 				Click="btnOk_OnClick"

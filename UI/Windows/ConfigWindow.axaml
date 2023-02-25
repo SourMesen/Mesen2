@@ -55,8 +55,8 @@
 				<c:ButtonWithIcon Grid.Column="0" Click="OpenMesenFolder" Icon="Assets/Folder.png" Text="{l:Translate btnOpenMesenFolder}" />
 				<c:ButtonWithIcon Grid.Column="1" Click="ResetAllSettings" Icon="Assets/ResetSettings.png" Text="{l:Translate btnResetSettings}" />
 
-				<Button Grid.Column="3" Width="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
-				<Button Grid.Column="4" Width="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+				<Button Grid.Column="3" MinWidth="70" HorizontalContentAlignment="Center" Click="Ok_OnClick" Content="{l:Translate btnOK}" />
+				<Button Grid.Column="4" MinWidth="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 			</Grid>
 		</Panel>
 		

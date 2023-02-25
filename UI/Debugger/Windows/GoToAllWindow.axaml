@@ -36,15 +36,15 @@
 			
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 				<Button
-					Width="70"
+					MinWidth="70"
 					HorizontalContentAlignment="Center"
 					IsDefault="True"
 					IsEnabled="{CompiledBinding CanSelect}"
 					Click="Select_OnClick"
 					Content="{l:Translate btnSelect}"
-				/>				
+				/>
 				<Button
-					Width="70"
+					MinWidth="70"
 					HorizontalContentAlignment="Center"
 					IsCancel="True"
 					Click="Close_OnClick"

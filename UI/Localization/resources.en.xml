@@ -8,22 +8,10 @@
 			<Control ID="mnuTools">_Tools</Control>
 			<Control ID="mnuDebug">_Debug</Control>
 			<Control ID="mnuHelp">_Help</Control>
-
-			<Control ID="mnuGameConfig">Game Configuration</Control>
-			
-			<Control ID="mnuTests">Tests</Control>
-			<Control ID="mnuTestRun">Run...</Control>
-			<Control ID="mnuTestRecordFrom">Record from...</Control>
-			<Control ID="mnuTestRecordStart">Start</Control>
-			<Control ID="mnuTestRecordNow">Now</Control>
-			<Control ID="mnuTestRecordMovie">Movie</Control>
-			<Control ID="mnuTestRecordTest">Test</Control>
-			<Control ID="mnuTestStopRecording">Stop recording</Control>
-			<Control ID="mnuRunAllTests">Run all tests</Control>
 		</Form>
 		<Form ID="AudioConfigView">
 			<Control ID="tpgGeneral">General</Control>
-					
+
 			<Control ID="chkMuteSoundInBackground">Mute sound when in background</Control>
 			<Control ID="chkReduceSoundInBackground">Reduce volume when in background</Control>
 			<Control ID="chkReduceSoundInFastForward">Reduce volume during fast forward/rewind</Control>
@@ -651,7 +639,7 @@
 			<Control ID="lblRecordInputHud">Record input HUD</Control>
 			
 			<Control ID="btnBrowse">Browse...</Control>
-			<Control ID="btnOK">OK</Control>
+			<Control ID="btnOK">Record</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="UpdatePromptWindow">
@@ -688,7 +676,7 @@
 			<Control ID="lblAuthor">Author:</Control>
 			<Control ID="lblDescription">Description:</Control>
 			<Control ID="btnBrowse">Browse...</Control>
-			<Control ID="btnOK">OK</Control>
+			<Control ID="btnOK">Record</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		<Form ID="HdPackBuilderWindow">
@@ -1450,8 +1438,6 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 	</Forms>
-	<UserControls>
-	</UserControls>
 	<Messages>
 		<Message ID="LastSession">Last Session</Message>
 		<Message ID="AutoSave">Auto-save</Message>

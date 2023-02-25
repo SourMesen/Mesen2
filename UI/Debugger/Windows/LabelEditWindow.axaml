@@ -28,8 +28,8 @@
 
 	<DockPanel>
 		<DockPanel DockPanel.Dock="Bottom">
-			<Button DockPanel.Dock="Right" Width="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
-			<Button DockPanel.Dock="Right" Width="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
+			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+			<Button DockPanel.Dock="Right" MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" IsEnabled="{CompiledBinding OkEnabled}" />
 			<c:ButtonWithIcon Icon="Assets/Close.png" Text="{l:Translate btnDelete}" Click="Delete_OnClick" IsVisible="{CompiledBinding AllowDelete}" />
 		</DockPanel>
 

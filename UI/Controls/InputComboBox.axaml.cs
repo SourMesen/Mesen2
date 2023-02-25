@@ -65,7 +65,7 @@ namespace Mesen.Controls
 		{
 			Button btn = (Button)sender;
 
-			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Height));
+			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Bounds.Height));
 			
 			ControllerConfigWindow wnd = new ControllerConfigWindow();
 			ControllerConfig cfg = Config.Clone();

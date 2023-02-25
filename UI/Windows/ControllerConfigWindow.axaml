@@ -106,8 +106,8 @@
 			</StackPanel>
 
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5 10 5 3" Grid.Column="2" Grid.Row="1">
-				<Button Width="70" HorizontalContentAlignment="Center" Click="btnOk_OnClick" Content="{l:Translate btnOK}" />
-				<Button Width="70" HorizontalContentAlignment="Center" Click="btnCancel_OnClick" Content="{l:Translate btnCancel}" />
+				<Button MinWidth="70" HorizontalContentAlignment="Center" Click="btnOk_OnClick" Content="{l:Translate btnOK}" />
+				<Button MinWidth="70" HorizontalContentAlignment="Center" Click="btnCancel_OnClick" Content="{l:Translate btnCancel}" />
 			</StackPanel>
 		</Grid>
 

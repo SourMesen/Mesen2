@@ -75,7 +75,7 @@
 		
 		<StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button
-				Width="70"
+				MinWidth="70"
 				HorizontalContentAlignment="Center"
 				IsDefault="True"
 				Click="Ok_OnClick"
@@ -84,7 +84,7 @@
 			/>
 			
 			<Button
-				Width="70"
+				MinWidth="70"
 				HorizontalContentAlignment="Center"
 				IsCancel="True"
 				Click="Cancel_OnClick"

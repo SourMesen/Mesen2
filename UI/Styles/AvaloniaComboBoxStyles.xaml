@@ -85,7 +85,7 @@
 						<Popup Name="PART_Popup"
 								 WindowManagerAddShadowHint="False"
 								 IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
-							   HorizontalOffset="-1"
+							   HorizontalOffset="0"
 								 MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
 								 MaxHeight="{TemplateBinding MaxDropDownHeight}"
 								 PlacementTarget="Background"

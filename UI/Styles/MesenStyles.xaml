@@ -52,6 +52,7 @@
 				<Button Content="Disabled" IsEnabled="False" />
 				<RepeatButton Content="Repeat" />
 				<RepeatButton Content="Disabled" IsEnabled="False" />
+				<c:ButtonWithIcon Icon="Assets/MediaPlay.png" Text="Testgpq" />
 				<RadioButton Content="Test"/>
 				<RadioButton Content="Test" IsChecked="True"/>
 				<DatePicker />
@@ -208,14 +209,28 @@
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 	
-	<Style Selector="Button, NumericUpDown RepeatButton">
-		<Setter Property="Height" Value="21" />
-		<Setter Property="Margin" Value="1" />
+	<Style Selector="Button, RepeatButton">
+		<Setter Property="Height" Value="NaN" />
 		<Setter Property="Padding" Value="4 3" />
+		<Setter Property="Margin" Value="1" />
 		<Setter Property="MinWidth" Value="60" />
 		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
 	</Style>
 
+	<Style Selector="Slider RepeatButton">
+		<!-- fix horizontal sliders background bug caused by the minwidth above -->
+		<Setter Property="MinWidth" Value="0" />
+	</Style>
+	
+	<Style Selector="Button.ButtonWithIcon">
+		<Setter Property="Padding" Value="4 2" />
+	</Style>
+	
+	<Style Selector="TimePicker Button">
+		<Setter Property="Height" Value="21" />
+	</Style>
+	
 	<Style Selector="DatePicker, TimePicker, TextBox, NumericUpDown">
 		<Setter Property="FontSize" Value="{DynamicResource MesenFontSize}" />
 		<Setter Property="FontFamily" Value="{DynamicResource MesenFont}" />
@@ -327,6 +342,7 @@
 	<Style Selector="NumericUpDown">
 		<Setter Property="FormatString" Value="0" />
 		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="HorizontalAlignment" Value="Left" />
 		<Setter Property="MinWidth" Value="50" />
 		<Setter Property="MinHeight" Value="0" />
@@ -339,13 +355,6 @@
 		<Setter Property="Margin" Value="0" />
 	</Style>
 	
-	<Style Selector="NumericUpDown TextBox Border">
-		<Setter Property="Padding" Value="0 2 0 0" />
-	</Style>
-	<Style Selector="NumericUpDown TextBox Border">
-		<Setter Property="BorderThickness" Value="0" />
-	</Style>
-
 	<Style Selector="NumericUpDown TextBox /template/ Border#PART_BorderElement">
 		<Setter Property="IsVisible" Value="True" />
 	</Style>

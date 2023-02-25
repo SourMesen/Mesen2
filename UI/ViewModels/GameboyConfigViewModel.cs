@@ -36,7 +36,7 @@ namespace Mesen.ViewModels
 
 		private async void OpenSetup(Button btn, int port)
 		{
-			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Height));
+			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Bounds.Height));
 			ControllerConfigWindow wnd = new ControllerConfigWindow();
 			ControllerConfig cfg = Config.Controller.Clone();
 			wnd.DataContext = new ControllerConfigViewModel(ControllerType.GameboyController, cfg, Config.Controller);
