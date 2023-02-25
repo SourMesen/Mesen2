@@ -490,6 +490,7 @@ void Gameboy::ProcessEndOfFrame()
 {
 	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
+	_apu->Run();
 }
 
 BaseControlManager* Gameboy::GetControlManager()
