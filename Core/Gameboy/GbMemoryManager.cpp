@@ -65,7 +65,7 @@ void GbMemoryManager::RefreshMappings()
 	Map(0xC000, 0xCFFF, GbMemoryType::WorkRam, 0, false);
 	Map(0xD000, 0xDFFF, GbMemoryType::WorkRam, wramBank * 0x1000, false);
 	Map(0xE000, 0xEFFF, GbMemoryType::WorkRam, 0, false);
-	Map(0xF000, 0xFDFF, GbMemoryType::WorkRam, wramBank * 0x1000, false);
+	Map(0xF000, 0xFFFF, GbMemoryType::WorkRam, wramBank * 0x1000, false);
 
 	_cart->RefreshMappings();
 
