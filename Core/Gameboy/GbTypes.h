@@ -205,6 +205,7 @@ struct GbDmaControllerState
 	uint8_t InternalDest;
 	uint8_t DmaCounter;
 	uint8_t DmaReadBuffer;
+	bool OamDmaRunning;
 
 	uint16_t CgbDmaSource;
 	uint16_t CgbDmaDest;

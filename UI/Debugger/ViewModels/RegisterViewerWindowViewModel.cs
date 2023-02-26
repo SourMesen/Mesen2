@@ -287,7 +287,8 @@ namespace Mesen.Debugger.ViewModels
 			GbDmaControllerState dma = gb.Dma;
 			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("", "DMA"),
-				new RegEntry("$FF46", "OAM DMA - Source", (dma.OamDmaSource << 8), Format.X16),
+				new RegEntry("$FF46", "OAM DMA - Source", dma.OamDmaSource << 8, Format.X16),
+				new RegEntry("", "OAM DMA - Running", dma.OamDmaRunning)
 			});
 
 			GbMemoryManagerState memManager = gb.MemoryManager;

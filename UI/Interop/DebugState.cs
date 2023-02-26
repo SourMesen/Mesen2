@@ -729,6 +729,7 @@ namespace Mesen.Interop
 		public byte InternalDest;
 		public byte DmaCounter;
 		public byte DmaReadBuffer;
+		[MarshalAs(UnmanagedType.I1)] public bool OamDmaRunning;
 
 		public UInt16 CgbDmaSource;
 		public UInt16 CgbDmaDest;

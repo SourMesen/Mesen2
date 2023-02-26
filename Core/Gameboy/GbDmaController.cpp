@@ -27,12 +27,14 @@ void GbDmaController::Exec()
 		return;
 	}
 
-	if(_state.DmaCounter > 0) {
+	bool isRunning = _state.DmaCounter > 0;
+	if(isRunning) {
 		if(_state.DmaCounter <= 160) {
 			_memoryManager->WriteDma(0xFE00 + (160 - _state.DmaCounter), _state.DmaReadBuffer);
 		}
 
 		_state.DmaCounter--;
+		_state.OamDmaRunning = _state.DmaCounter > 0;
 		_state.DmaReadBuffer = _memoryManager->ReadDma(GetOamReadAddress());
 	}
 
@@ -40,6 +42,7 @@ void GbDmaController::Exec()
 		if(--_state.DmaStartDelay == 0) {
 			_state.InternalDest = _state.OamDmaSource;
 			_state.DmaCounter = 161;
+			_state.OamDmaRunning = isRunning;
 		}
 	}
 }
@@ -73,12 +76,12 @@ uint16_t GbDmaController::ProcessOamDmaReadConflict(uint16_t addr)
 
 bool GbDmaController::IsOamDmaRunning()
 {
-	return _state.DmaCounter > 0 && _state.DmaCounter < 161;
+	return _state.OamDmaRunning;
 }
 
 uint16_t GbDmaController::GetOamReadAddress()
 {
-	return (_state.OamDmaSource << 8) + (160 - _state.DmaCounter);
+	return (_state.InternalDest << 8) + (160 - _state.DmaCounter);
 }
 
 uint8_t GbDmaController::Read()
@@ -186,4 +189,5 @@ void GbDmaController::Serialize(Serializer& s)
 {
 	SV(_state.OamDmaSource); SV(_state.DmaStartDelay); SV(_state.InternalDest); SV(_state.DmaCounter); SV(_state.DmaReadBuffer);
 	SV(_state.CgbDmaDest); SV(_state.CgbDmaLength); SV(_state.CgbDmaSource); SV(_state.CgbHdmaDone); SV(_state.CgbHdmaRunning);
+	SV(_state.OamDmaRunning);
 }
