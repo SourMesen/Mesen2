@@ -158,6 +158,10 @@ template<MemoryOperationType opType>
 uint8_t GbMemoryManager::Read(uint16_t addr)
 {
 	uint8_t value = 0;
+	if(_dmaController->IsOamDmaRunning()) {
+		addr = _dmaController->ProcessOamDmaReadConflict(addr);
+	}
+	
 	if(_state.IsReadRegister[addr >> 8]) {
 		value = ReadRegister(addr);
 	} else if(_reads[addr >> 8]) {
@@ -197,6 +201,11 @@ template<MemoryOperationType type>
 void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 {
 	if(_emu->ProcessMemoryWrite<CpuType::Gameboy>(addr, value, type)) {
+		if(_dmaController->IsOamDmaRunning() && _dmaController->IsOamDmaConflict(addr)) {
+			//DMA conflict, can't write
+			return;
+		}
+
 		if(_state.IsWriteRegister[addr >> 8]) {
 			WriteRegister(addr, value);
 		} else if(_writes[addr >> 8]) {

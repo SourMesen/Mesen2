@@ -2,11 +2,13 @@
 #include "Gameboy/GbDmaController.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Gameboy/GbPpu.h"
+#include "Gameboy/Gameboy.h"
 #include "Gameboy/GbCpu.h"
 #include "Utilities/Serializer.h"
 
-void GbDmaController::Init(GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu)
+void GbDmaController::Init(Gameboy* gameboy, GbMemoryManager* memoryManager, GbPpu* ppu, GbCpu* cpu)
 {
+	_gameboy = gameboy;
 	_memoryManager = memoryManager;
 	_ppu = ppu;
 	_cpu = cpu;
@@ -31,7 +33,7 @@ void GbDmaController::Exec()
 		}
 
 		_state.DmaCounter--;
-		_state.DmaReadBuffer = _memoryManager->ReadDma((_state.OamDmaSource << 8) + (160 - _state.DmaCounter));
+		_state.DmaReadBuffer = _memoryManager->ReadDma(GetOamReadAddress());
 	}
 
 	if(_state.DmaStartDelay > 0) {
@@ -42,9 +44,41 @@ void GbDmaController::Exec()
 	}
 }
 
+bool GbDmaController::IsOamDmaConflict(uint16_t addr)
+{
+	uint8_t src = _state.OamDmaSource;
+	if(_gameboy->IsCgb()) {
+		return (
+			(src < 0x80 && addr < 0x8000) ||
+			(src >= 0x80 && src <= 0x9F && addr >= 0x8000 && addr <= 0x9FFF) ||
+			(src >= 0xA0 && src <= 0xFD && addr >= 0xA000 && addr <= 0xFDFF)
+		);
+	} else {
+		return (
+			((src < 0x80 || (src >= 0xA0 && src <= 0xFD)) && (addr < 0x8000 || (addr >= 0xA000 && addr <= 0xFDFF))) ||
+			(src >= 0x80 && src <= 0x9F && addr >= 0x8000 && addr <= 0x9FFF)
+		);
+	}
+}
+
+uint16_t GbDmaController::ProcessOamDmaReadConflict(uint16_t addr)
+{
+	if(IsOamDmaConflict(addr)) {
+		//Conflict - DMA is reading from the rom/ram bus (0000-7FFF, A000-FDFF) at the same time as the CPU
+		//The CPU will read the value that the DMA is currently reading
+		return GetOamReadAddress();
+	}
+	return addr;
+}
+
 bool GbDmaController::IsOamDmaRunning()
 {
 	return _state.DmaCounter > 0 && _state.DmaCounter < 161;
+}
+
+uint16_t GbDmaController::GetOamReadAddress()
+{
+	return (_state.OamDmaSource << 8) + (160 - _state.DmaCounter);
 }
 
 uint8_t GbDmaController::Read()
