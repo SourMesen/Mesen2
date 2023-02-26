@@ -35,7 +35,10 @@ void GbDmaController::Exec()
 
 		_state.DmaCounter--;
 		_state.OamDmaRunning = _state.DmaCounter > 0;
-		_state.DmaReadBuffer = _memoryManager->ReadDma(GetOamReadAddress());
+
+		if(_state.OamDmaRunning) {
+			_state.DmaReadBuffer = _memoryManager->ReadDma(GetOamReadAddress());
+		}
 	}
 
 	if(_state.DmaStartDelay > 0) {
@@ -117,7 +120,7 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 
 			if(!hdmaMode) {
 				if(_state.CgbHdmaRunning) {
-					//"If HDMA5 is written during a HDMA copy, the behaviour depends on the written bit 7. 
+					//"If HDMA5 is written during a HDMA copy, the behaviour depends on the written bit 7.
 					//  - New bit 7 is 0: Stop copy. HDMA5 new value is ( 80h OR written_value ).
 					//  - New bit 7 is 1: Restart copy. New size is the value of written_value bits 0-6.
 					//This means that HDMA can't switch to GDMA with only one write. It must be stopped first."
