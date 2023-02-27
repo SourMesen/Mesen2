@@ -209,18 +209,13 @@
 		<Setter Property="BorderThickness" Value="1" />
 	</Style>
 	
-	<Style Selector="Button, RepeatButton">
+	<Style Selector="Button, NumericUpDown RepeatButton">
 		<Setter Property="Height" Value="NaN" />
 		<Setter Property="Padding" Value="4 3" />
 		<Setter Property="Margin" Value="1" />
 		<Setter Property="MinWidth" Value="60" />
 		<Setter Property="HorizontalContentAlignment" Value="Center" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
-	</Style>
-
-	<Style Selector="Slider RepeatButton">
-		<!-- fix horizontal sliders background bug caused by the minwidth above -->
-		<Setter Property="MinWidth" Value="0" />
 	</Style>
 	
 	<Style Selector="Button.ButtonWithIcon">
