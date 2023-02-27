@@ -5,7 +5,6 @@
 #define __GBCPU__H
 #endif
 
-
 #include "pch.h"
 #include "Gameboy/GbTypes.h"
 #include "Debugger/DebugTypes.h"
@@ -13,6 +12,7 @@
 
 class GbMemoryManager;
 class Gameboy;
+class GbPpu;
 class Emulator;
 
 class GbCpu : public ISerializable
@@ -27,6 +27,7 @@ private:
 	GbMemoryManager* _memoryManager = nullptr;
 	Emulator* _emu = nullptr;
 	Gameboy* _gameboy = nullptr;
+	GbPpu* _ppu = nullptr;
 
 	void ExecOpCode(uint8_t opCode);
 
@@ -35,7 +36,10 @@ private:
 	__forceinline uint8_t ReadOpCode();
 	__forceinline uint8_t ReadCode();
 	__forceinline uint16_t ReadCodeWord();
+
+	template<GbOamCorruptionType oamCorruptionType = GbOamCorruptionType::Read>
 	__forceinline uint8_t Read(uint16_t addr);
+
 	__forceinline void Write(uint16_t addr, uint8_t value);
 
 	bool CheckFlag(uint8_t flag);
@@ -45,7 +49,6 @@ private:
 
 	void PushByte(uint8_t value);
 	void PushWord(uint16_t value);
-	uint8_t PopByte();
 	uint16_t PopWord();
 
 	void LD(uint8_t& dst, uint8_t value);
@@ -106,7 +109,7 @@ private:
 	void SWAP(uint8_t& dst);
 	void SWAP_Indirect(uint16_t addr);
 
-	template<MemoryOperationType type>
+	template<MemoryOperationType type, GbOamCorruptionType oamCorruptionType>
 	uint8_t ReadMemory(uint16_t addr);
 
 	template<uint8_t bit>

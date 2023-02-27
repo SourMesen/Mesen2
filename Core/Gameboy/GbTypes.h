@@ -52,7 +52,7 @@ class Register16
 {
 	uint8_t* _low;
 	uint8_t* _high;
-	
+
 public:
 	Register16(uint8_t* high, uint8_t* low)
 	{
@@ -91,6 +91,13 @@ enum class PpuMode
 	OamEvaluation,
 	Drawing,
 	NoIrq,
+};
+
+enum class GbOamCorruptionType
+{
+	Read,
+	Write,
+	ReadIncDec
 };
 
 namespace GbPpuStatusFlags

@@ -111,6 +111,11 @@ public:
 	uint8_t PeekOam(uint8_t addr);
 	void WriteOam(uint8_t addr, uint8_t value, bool forDma);
 
+	template<GbOamCorruptionType oamCorruptionType>
+	void ProcessOamCorruption(uint16_t addr);
+
+	void ProcessOamIncDecCorruption(int row);
+
 	uint8_t ReadCgbRegister(uint16_t addr);
 	void WriteCgbRegister(uint16_t addr, uint8_t value);
 

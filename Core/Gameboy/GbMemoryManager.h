@@ -52,7 +52,7 @@ public:
 
 	void Exec();
 
-	template<MemoryOperationType type = MemoryOperationType::Read>
+	template<MemoryOperationType type, GbOamCorruptionType oamCorruptionType = GbOamCorruptionType::Read>
 	uint8_t Read(uint16_t addr);
 
 	bool IsOamDmaRunning();

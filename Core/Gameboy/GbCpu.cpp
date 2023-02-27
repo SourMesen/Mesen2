@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Gameboy/GbCpu.h"
+#include "Gameboy/GbPpu.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Shared/Emulator.h"
@@ -9,6 +10,8 @@ void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 {
 	_emu = emu;
 	_gameboy = gameboy;
+
+	_ppu = gameboy->GetPpu();
 	_memoryManager = memoryManager;
 	
 	_state = {};
@@ -146,7 +149,7 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 		case 0x27: DAA(); break;
 		case 0x28: JR((_state.Flags & GbCpuFlags::Zero) != 0, ReadCode()); break;
 		case 0x29: ADD(_regHL, _regHL); break;
-		case 0x2A: LD(_state.A, Read(_regHL)); _regHL.Inc(); break;
+		case 0x2A: LD(_state.A, Read<GbOamCorruptionType::ReadIncDec>(_regHL)); _regHL.Inc(); break;
 		case 0x2B: DEC(_regHL); break;
 		case 0x2C: INC(_state.L); break;
 		case 0x2D: DEC(_state.L); break;
@@ -162,7 +165,7 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 		case 0x37: SCF(); break;
 		case 0x38: JR((_state.Flags & GbCpuFlags::Carry) != 0, ReadCode()); break;
 		case 0x39: ADD(_regHL, _state.SP); break;
-		case 0x3A: LD(_state.A, Read(_regHL)); _regHL.Dec(); break;
+		case 0x3A: LD(_state.A, Read<GbOamCorruptionType::ReadIncDec>(_regHL)); _regHL.Dec(); break;
 		case 0x3B: DEC_SP(); break;
 		case 0x3C: INC(_state.A); break;
 		case 0x3D: DEC(_state.A); break;
@@ -381,7 +384,7 @@ void GbCpu::HalfCycle()
 uint8_t GbCpu::ReadOpCode()
 {
 	HalfCycle();
-	uint8_t value = ReadMemory<MemoryOperationType::ExecOpCode>(_state.PC);
+	uint8_t value = ReadMemory<MemoryOperationType::ExecOpCode, GbOamCorruptionType::ReadIncDec>(_state.PC);
 	HalfCycle();
 	_state.PC++;
 	return value;
@@ -390,7 +393,7 @@ uint8_t GbCpu::ReadOpCode()
 uint8_t GbCpu::ReadCode()
 {
 	HalfCycle();
-	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand>(_state.PC);
+	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand, GbOamCorruptionType::ReadIncDec>(_state.PC);
 	HalfCycle();
 	_state.PC++;
 	return value;
@@ -403,15 +406,16 @@ uint16_t GbCpu::ReadCodeWord()
 	return (high << 8) | low;
 }
 
+template<GbOamCorruptionType oamCorruptionType>
 uint8_t GbCpu::Read(uint16_t addr)
 {
 	HalfCycle();
-	uint8_t value = ReadMemory<MemoryOperationType::Read>(addr);
+	uint8_t value = ReadMemory<MemoryOperationType::Read, oamCorruptionType>(addr);
 	HalfCycle();
 	return value;
 }
 
-template<MemoryOperationType type>
+template<MemoryOperationType type, GbOamCorruptionType oamCorruptionType>
 uint8_t GbCpu::ReadMemory(uint16_t addr)
 {
 #ifdef DUMMYCPU
@@ -419,7 +423,7 @@ uint8_t GbCpu::ReadMemory(uint16_t addr)
 	LogMemoryOperation(addr, value, type);
 	return value;
 #else
-	return _memoryManager->Read<type>(addr);
+	return _memoryManager->Read<type, oamCorruptionType>(addr);
 #endif
 }
 
@@ -460,6 +464,9 @@ void GbCpu::SetFlagState(uint8_t flag, bool state)
 
 void GbCpu::PushByte(uint8_t value)
 {
+#ifndef DUMMYCPU
+	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(_state.SP);
+#endif
 	_state.SP--;
 	Write(_state.SP, value);
 }
@@ -470,17 +477,12 @@ void GbCpu::PushWord(uint16_t value)
 	PushByte((uint8_t)value);
 }
 
-uint8_t GbCpu::PopByte()
-{
-	uint8_t val = Read(_state.SP);
-	_state.SP++;
-	return val;
-}
-
 uint16_t GbCpu::PopWord()
 {
-	uint8_t low = PopByte();
-	uint8_t high = PopByte();
+	uint8_t low = Read<GbOamCorruptionType::ReadIncDec>(_state.SP);
+	_state.SP++;
+	uint8_t high = Read<GbOamCorruptionType::Read>(_state.SP);
+	_state.SP++;
 	return (high << 8) | low;
 }
 
@@ -542,13 +544,19 @@ void GbCpu::INC(Register16& dst)
 {
 	//16-bit inc does not alter flags
 	IncCycleCount();
-	dst.Write(dst.Read() + 1);
+#ifndef DUMMYCPU
+	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(dst.Read());
+#endif
+	dst.Inc();
 }
 
 // inc  rr        x3           8 ---- rr = rr+1      ;rr may be BC,DE,HL,SP
 void GbCpu::INC_SP()
 {
 	IncCycleCount();
+#ifndef DUMMYCPU
+	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(_state.SP);
+#endif
 	_state.SP++;
 }
 
@@ -575,7 +583,10 @@ void GbCpu::DEC(Register16& dst)
 {
 	//16-bit dec does not alter flags
 	IncCycleCount();
-	dst.Write(dst.Read() - 1);
+#ifndef DUMMYCPU
+	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(dst.Read());
+#endif
+	dst.Dec();
 }
 
 // dec  (HL)        35        12 z1h- (HL)=(HL)-1
@@ -589,6 +600,9 @@ void GbCpu::DEC_Indirect(uint16_t addr)
 // dec  rr        xB           8 ---- rr = rr-1      ;rr may be BC,DE,HL,SP
 void GbCpu::DEC_SP()
 {
+#ifndef DUMMYCPU
+	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(_state.SP);
+#endif
 	_state.SP--;
 	IncCycleCount();
 }
@@ -775,7 +789,7 @@ void GbCpu::HALT()
 	} else {
 		//HALT bug, execution continues, but PC isn't incremented for the first byte
 		HalfCycle();
-		uint8_t opCode = ReadMemory<MemoryOperationType::ExecOpCode>(_state.PC);
+		uint8_t opCode = ReadMemory<MemoryOperationType::ExecOpCode, GbOamCorruptionType::Read>(_state.PC);
 		HalfCycle();
 		ExecOpCode(opCode);
 	}

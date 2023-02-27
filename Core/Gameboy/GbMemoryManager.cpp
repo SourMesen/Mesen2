@@ -154,7 +154,7 @@ void GbMemoryManager::Unmap(uint16_t start, uint16_t end)
 	}
 }
 
-template<MemoryOperationType opType>
+template<MemoryOperationType opType, GbOamCorruptionType oamCorruptionType>
 uint8_t GbMemoryManager::Read(uint16_t addr)
 {
 	uint8_t value = 0;
@@ -163,10 +163,12 @@ uint8_t GbMemoryManager::Read(uint16_t addr)
 	}
 	
 	if(_state.IsReadRegister[addr >> 8]) {
+		_ppu->ProcessOamCorruption<oamCorruptionType>(addr);
 		value = ReadRegister(addr);
 	} else if(_reads[addr >> 8]) {
 		value = _reads[addr >> 8][(uint8_t)addr];
 	}
+
 	if(_emu->GetCheatManager()->HasCheats<CpuType::Gameboy>()) {
 		_emu->GetCheatManager()->ApplyCheat<CpuType::Gameboy>(addr, value);
 	}
@@ -207,6 +209,7 @@ void GbMemoryManager::Write(uint16_t addr, uint8_t value)
 		}
 
 		if(_state.IsWriteRegister[addr >> 8]) {
+			_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(addr);
 			WriteRegister(addr, value);
 		} else if(_writes[addr >> 8]) {
 			_writes[addr >> 8][(uint8_t)addr] = value;
@@ -510,9 +513,11 @@ void GbMemoryManager::Serialize(Serializer& s)
 	}
 }
 
-template uint8_t GbMemoryManager::Read<MemoryOperationType::Read>(uint16_t addr);
-template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOpCode>(uint16_t addr);
-template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOperand>(uint16_t addr);
-template uint8_t GbMemoryManager::Read<MemoryOperationType::DmaRead>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::Read, GbOamCorruptionType::Read>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::Read, GbOamCorruptionType::ReadIncDec>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOpCode, GbOamCorruptionType::Read>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOpCode, GbOamCorruptionType::ReadIncDec>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::ExecOperand, GbOamCorruptionType::ReadIncDec>(uint16_t addr);
+template uint8_t GbMemoryManager::Read<MemoryOperationType::DmaRead, GbOamCorruptionType::Read>(uint16_t addr);
 template void GbMemoryManager::Write<MemoryOperationType::Write>(uint16_t addr, uint8_t value);
 template void GbMemoryManager::Write<MemoryOperationType::DmaWrite>(uint16_t addr, uint8_t value);

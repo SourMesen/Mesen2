@@ -935,6 +935,76 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 	}
 }
 
+template<GbOamCorruptionType oamCorruptionType>
+void GbPpu::ProcessOamCorruption(uint16_t addr)
+{
+	if(_gameboy->IsCgb() || _state.Mode != PpuMode::OamEvaluation || (addr & 0xFF00) != 0xFE00) {
+		return;
+	}
+
+	int row = (_state.Cycle - 2) >> 2;
+
+	//Quotes from: https://gbdev.io/pandocs/OAM_Corruption_Bug.html
+	//"Sprites 1 & 2 ($FE00 & $FE04) are not affected by this bug"
+	if(row == 0) {
+		return;
+	}
+
+	//"If a register is increased or decreased in the same M cycle of a write, this will effectively trigger both
+	//a read and a write in a single M-cycle, resulting in a more complex corruption pattern:"
+	if constexpr(oamCorruptionType == GbOamCorruptionType::ReadIncDec) {
+		ProcessOamIncDecCorruption(row);
+		//"Regardless of whether the previous corruption occurred or not, a normal read corruption is then applied."
+	}
+
+	int prevRow = row - 1;
+	uint16_t a = _oam[row * 8] | (_oam[row * 8 + 1] << 8);
+	uint16_t b = _oam[prevRow * 8] | (_oam[prevRow * 8 + 1] << 8);
+	uint16_t c = _oam[prevRow * 8 + 4] | (_oam[prevRow * 8 + 5] << 8);
+
+	uint16_t result;
+	if constexpr(oamCorruptionType == GbOamCorruptionType::Write) {
+		//"The first word in the row is replaced with this bitwise expression: ((a ^ c) & (b ^ c)) ^ c,
+		//where a is the original value of that word, b is the first word in the preceding row, and c 
+		//is the third word in the preceding row.
+		result = ((a ^ c) & (b ^ c)) ^ c;
+	} else {
+		//"A "read corruption" works similarly to a write corruption, except the bitwise expression is b | (a & c)."
+		result = b | (a & c);
+	}
+
+	_oam[row * 8] = (uint8_t)result;
+	_oam[row * 8 + 1] = result >> 8;
+
+	//"The last three words are copied from the last three words in the preceding row."
+	memcpy(_oam + row * 8 + 2, _oam + prevRow * 8 + 2, 3 * sizeof(uint16_t));
+}
+
+void GbPpu::ProcessOamIncDecCorruption(int row)
+{
+	//"This corruption will not happen if the accessed row is one of the first four, as well as if it's the last row"
+	if(row >= 4 && row < 19) {
+		int prevRow = row - 1;
+		//"The first word in the row preceding the currently accessed row is replaced with the following bitwise expression:
+		//(b & (a | c | d)) | (a & c & d) where a is the first word two rows before the currently accessed row, b is the first
+		//word in the preceding row (the word being corrupted), c is the first word in the currently accessed row, and d is 
+		//the third word in the preceding row."
+		uint16_t a = _oam[(row - 2) * 8] | (_oam[(row - 2) * 8 + 1] << 8);
+		uint16_t b = _oam[prevRow * 8] | (_oam[prevRow * 8 + 1] << 8);
+		uint16_t c = _oam[row * 8] | (_oam[row * 8 + 1] << 8);
+		uint16_t d = _oam[prevRow * 8 + 4] | (_oam[prevRow * 8 + 5] << 8);
+
+		uint16_t result = (b & (a | c | d)) | (a & c & d);
+		_oam[prevRow * 8] = (uint8_t)result;
+		_oam[prevRow * 8 + 1] = result >> 8;
+
+		//"The contents of the preceding row is copied (after the corruption of the first word in it) both to the
+		//currently accessed row and to two rows before the currently accessed row"
+		memcpy(_oam + row * 8, _oam + prevRow * 8, 4 * sizeof(uint16_t));
+		memcpy(_oam + (row - 2) * 8, _oam + prevRow * 8, 4 * sizeof(uint16_t));
+	}
+}
+
 uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 {
 	if(!_state.CgbEnabled) {
@@ -1042,3 +1112,7 @@ void GbPpu::Serialize(Serializer& s)
 		SVArray(_spriteIndexes, 10);
 	}
 }
+
+template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Read>(uint16_t addr);
+template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::ReadIncDec>(uint16_t addr);
+template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Write>(uint16_t addr);
