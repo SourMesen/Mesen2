@@ -112,6 +112,10 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 
 			if(value & 0x80) {
 				//Start playback
+				if(_state.Enabled && _state.Timer <= 2) {
+					//Triggering the wave channel on DMG while the channel is reading a sample will corrupt the wave ram
+					TriggerWaveRamCorruption();
+				}
 
 				//Channel is enabled, if DAC is enabled
 				_state.Enabled = _state.DacEnabled;
@@ -154,6 +158,18 @@ uint8_t GbWaveChannel::ReadRam(uint16_t addr)
 		return _state.Ram[_state.Position >> 1];
 	} else {
 		return 0xFF;
+	}
+}
+
+void GbWaveChannel::TriggerWaveRamCorruption()
+{
+	uint8_t pos = ((_state.Position + 1) & 0x1F) >> 1;
+	if(pos < 4) {
+		//"If the channel was reading one of the first four bytes, the only first byte will be rewritten with the byte being read."
+		_state.Ram[0] = _state.Ram[pos];
+	} else {
+		//Otherwise, "the first FOUR bytes of wave RAM will be rewritten with the four aligned bytes that the read was from"
+		memcpy(_state.Ram, _state.Ram + (pos & 0x0C), 4);
 	}
 }
 

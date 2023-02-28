@@ -12,6 +12,7 @@ private:
 	GbWaveState _state = {};
 	GbApu* _apu = nullptr;
 	bool _allowRamAccess = false;
+	void TriggerWaveRamCorruption();
 
 public:
 	GbWaveChannel(GbApu* apu);
