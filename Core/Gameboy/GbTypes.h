@@ -237,13 +237,17 @@ struct GbTimerState
 
 struct GbSquareState
 {
+	uint16_t Frequency;
+	uint16_t Timer;
+
+	uint16_t SweepTimer;
+	uint16_t SweepFreq;
 	uint16_t SweepPeriod;
 	bool SweepNegate;
 	uint8_t SweepShift;
 
-	uint16_t SweepTimer;
 	bool SweepEnabled;
-	uint16_t SweepFreq;
+	bool SweepNegateCalcDone;
 
 	uint8_t Volume;
 	uint8_t EnvVolume;
@@ -253,13 +257,11 @@ struct GbSquareState
 	bool EnvStopped;
 
 	uint8_t Duty;
-	uint16_t Frequency;
 
 	uint8_t Length;
 	bool LengthEnabled;
 
 	bool Enabled;
-	uint16_t Timer;
 	uint8_t DutyPos;
 	uint8_t Output;
 };

@@ -39,9 +39,13 @@ void GbSquareChannel::ClockSweepUnit()
 
 		//"When it generates a clock and the sweep's internal enabled flag is set and the sweep period is not zero, a new frequency is calculated and the overflow"
 		uint16_t newFreq = GetSweepTargetFrequency();
+		if(_state.SweepNegate) {
+			_state.SweepNegateCalcDone = true;
+		}
 
 		if(newFreq >= 2048) {
 			_state.Enabled = false;
+			_state.SweepEnabled = false;
 		} else {
 			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
 			if(_state.SweepShift) {
@@ -52,6 +56,7 @@ void GbSquareChannel::ClockSweepUnit()
 				if(newFreq >= 2048) {
 					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
 					_state.Enabled = false;
+					_state.SweepEnabled = false;
 				}
 			}
 		}
@@ -156,6 +161,13 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			_state.SweepShift = value & 0x07;
 			_state.SweepNegate = (value & 0x08) != 0;
 			_state.SweepPeriod = (value & 0x70) >> 4;
+
+			if(!_state.SweepNegate && _state.SweepNegateCalcDone) {
+				//Disabling negate mode after a sweep freq calculation was performed
+				//while negate mode was enabled will disable the channel
+				//Required for sweep-details tests 4, 5 and 6
+				_state.Enabled = false;
+			}
 			break;
 
 		case 1:
@@ -206,7 +218,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
 				//Frequency timer is reloaded with period.
-				_state.Timer = (2048 - _state.Frequency) * 4;
+				_state.Timer = (2048 - _state.Frequency) * 4 | (_state.Timer & 0x03);
 
 				//"If length counter is zero, it is set to 64 (256 for wave channel)."
 				if(_state.Length == 0) {
@@ -215,7 +227,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				}
 
 				//"Volume envelope timer is reloaded with period."
-				_state.EnvTimer = _state.EnvPeriod;
+				_state.EnvTimer = _state.EnvPeriod ? _state.EnvPeriod : 8;
 				_state.EnvStopped = false;
 
 				//"Channel volume is reloaded from NRx2."
@@ -229,15 +241,21 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//"The sweep timer is reloaded."
 				//"The volume envelope and sweep timers treat a period of 0 as 8."
 				_state.SweepTimer = _state.SweepPeriod ? _state.SweepPeriod : 8;
+				_state.SweepNegateCalcDone = false;
 
 				//"The internal enabled flag is set if either the sweep period or shift are non-zero, cleared otherwise.
 				_state.SweepEnabled = _state.SweepPeriod > 0 || _state.SweepShift > 0;
 
 				//"If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
 				if(_state.SweepShift > 0) {
-					_state.SweepFreq = GetSweepTargetFrequency();
-					if(_state.SweepFreq > 2047) {
+					//Calculcate new frequency and disable channel as needed (but don't save it in SweepFreq - otherwise sweep-details #2 fails)
+					if(GetSweepTargetFrequency() > 2047) {
 						_state.Enabled = false;
+						_state.SweepEnabled = false;
+					}
+
+					if(_state.SweepNegate) {
+						_state.SweepNegateCalcDone = true;
 					}
 				}
 			}
@@ -253,4 +271,5 @@ void GbSquareChannel::Serialize(Serializer& s)
 	SV(_state.SweepPeriod); SV(_state.SweepNegate); SV(_state.SweepShift); SV(_state.SweepTimer); SV(_state.SweepEnabled); SV(_state.SweepFreq);
 	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.Duty); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
+	SV(_state.SweepNegateCalcDone);
 }

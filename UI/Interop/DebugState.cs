@@ -864,13 +864,17 @@ namespace Mesen.Interop
 
 	public struct GbSquareState
 	{
+		public UInt16 Frequency;
+		public UInt16 Timer;
+		
+		public UInt16 SweepTimer;
+		public UInt16 SweepFreq;
 		public UInt16 SweepPeriod;
 		[MarshalAs(UnmanagedType.I1)] public bool SweepNegate;
 		public byte SweepShift;
 
-		public UInt16 SweepTimer;
 		[MarshalAs(UnmanagedType.I1)] public bool SweepEnabled;
-		public UInt16 SweepFreq;
+		[MarshalAs(UnmanagedType.I1)] public bool SweepNegateCalcDone;
 
 		public byte Volume;
 		public byte EnvVolume;
@@ -880,13 +884,11 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool EnvStopped;
 
 		public byte Duty;
-		public UInt16 Frequency;
 
 		public byte Length;
 		[MarshalAs(UnmanagedType.I1)] public bool LengthEnabled;
 
 		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
-		public UInt16 Timer;
 		public byte DutyPos;
 		public byte Output;
 	}
