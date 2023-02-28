@@ -24,6 +24,11 @@ void GbNoiseChannel::Disable()
 	_state.Length = len;
 }
 
+void GbNoiseChannel::ResetLengthCounter()
+{
+	_state.Length = 0;
+}
+
 void GbNoiseChannel::ClockLengthCounter()
 {
 	if(_state.LengthEnabled && _state.Length > 0) {

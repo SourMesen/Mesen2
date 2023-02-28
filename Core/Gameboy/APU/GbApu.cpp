@@ -19,7 +19,7 @@ void GbApu::Init(Emulator* emu, Gameboy* gameboy)
 {
 	_square1.reset(new GbSquareChannel(this));
 	_square2.reset(new GbSquareChannel(this));
-	_wave.reset(new GbWaveChannel(this));
+	_wave.reset(new GbWaveChannel(this, gameboy));
 	_noise.reset(new GbNoiseChannel(this));
 
 	_prevLeftOutput = 0;
@@ -284,6 +284,14 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 					//When powered on, the frame sequencer is reset so that the next step will be 0,
 					//the square duty units are reset to the first step of the waveform, and the wave channel's sample buffer is reset to 0. 
 					_state.FrameSequenceStep = 0;
+
+					if(_gameboy->IsCgb()) {
+						//Length counters are reset to 0 at power on
+						_square1->ResetLengthCounter();
+						_square2->ResetLengthCounter();
+						_wave->ResetLengthCounter();
+						_noise->ResetLengthCounter();
+					}
 				}
 				_state.ApuEnabled = apuEnabled;
 			}

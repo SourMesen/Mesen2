@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "Gameboy/APU/GbWaveChannel.h"
 #include "Gameboy/APU/GbApu.h"
+#include "Gameboy/Gameboy.h"
 
-GbWaveChannel::GbWaveChannel(GbApu* apu)
+GbWaveChannel::GbWaveChannel(GbApu* apu, Gameboy* gameboy)
 {
+	_gameboy = gameboy;
 	_apu = apu;
 }
 
@@ -25,6 +27,11 @@ void GbWaveChannel::Disable()
 	_state = {};
 	_state.Length = len;
 	memcpy(_state.Ram, ram, sizeof(ram));
+}
+
+void GbWaveChannel::ResetLengthCounter()
+{
+	_state.Length = 0;
 }
 
 void GbWaveChannel::ClockLengthCounter()
@@ -141,20 +148,22 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 
 void GbWaveChannel::WriteRam(uint16_t addr, uint8_t value)
 {
-	//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
 	if(!_state.Enabled) {
 		_state.Ram[addr & 0x0F] = value;
-	} else if(_allowRamAccess) {
+	} else if(_allowRamAccess || _gameboy->IsCgb()) {
+		//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
+		//On CGB, the wave RAM can be accessed at any time, but will read/write the value the channel is currently accessing
 		_state.Ram[_state.Position >> 1] = value;
 	}
 }
 
 uint8_t GbWaveChannel::ReadRam(uint16_t addr)
 {
-	//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
 	if(!_state.Enabled) {
 		return _state.Ram[addr & 0x0F];
-	} else if(_allowRamAccess){
+	} else if(_allowRamAccess || _gameboy->IsCgb()) {
+		//"On monochrome consoles, wave RAM can only be accessed on the same cycle that CH3 does. Otherwise, reads return $FF, and writes are ignored."
+		//On CGB, the wave RAM can be accessed at any time, but will read/write the value the channel is currently accessing
 		return _state.Ram[_state.Position >> 1];
 	} else {
 		return 0xFF;
@@ -163,6 +172,10 @@ uint8_t GbWaveChannel::ReadRam(uint16_t addr)
 
 void GbWaveChannel::TriggerWaveRamCorruption()
 {
+	if(_gameboy->IsCgb()) {
+		return;
+	}
+
 	uint8_t pos = ((_state.Position + 1) & 0x1F) >> 1;
 	if(pos < 4) {
 		//"If the channel was reading one of the first four bytes, the only first byte will be rewritten with the byte being read."

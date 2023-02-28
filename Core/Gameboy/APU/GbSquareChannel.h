@@ -26,6 +26,7 @@ public:
 
 	bool Enabled();
 	void Disable();
+	void ResetLengthCounter();
 
 	void ClockSweepUnit();	
 	uint16_t GetSweepTargetFrequency();

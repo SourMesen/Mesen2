@@ -24,6 +24,11 @@ void GbSquareChannel::Disable()
 	_state.Length = len;
 }
 
+void GbSquareChannel::ResetLengthCounter()
+{
+	_state.Length = 0;
+}
+
 void GbSquareChannel::ClockSweepUnit()
 {
 	if(!_state.SweepEnabled) {

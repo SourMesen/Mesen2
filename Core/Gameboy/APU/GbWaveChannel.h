@@ -5,21 +5,24 @@
 #include "Utilities/Serializer.h"
 
 class GbApu;
+class Gameboy;
 
 class GbWaveChannel final : public ISerializable
 {
 private:
 	GbWaveState _state = {};
 	GbApu* _apu = nullptr;
+	Gameboy* _gameboy = nullptr;
 	bool _allowRamAccess = false;
 	void TriggerWaveRamCorruption();
 
 public:
-	GbWaveChannel(GbApu* apu);
+	GbWaveChannel(GbApu* apu, Gameboy* gameboy);
 
 	GbWaveState GetState();
 	bool Enabled();
 	void Disable();
+	void ResetLengthCounter();
 	uint8_t GetOutput();
 
 	void ClockLengthCounter();

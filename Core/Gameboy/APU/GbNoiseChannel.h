@@ -18,6 +18,7 @@ public:
 
 	bool Enabled();
 	void Disable();
+	void ResetLengthCounter();
 
 	void ClockLengthCounter();
 	void ClockEnvelope();
