@@ -25,11 +25,12 @@ protected:
 
 	virtual void Serialize(Serializer& s) override;
 	virtual void RemapControllerButtons();
-	virtual uint8_t GetOpenBusMask(uint8_t port);
 
 public:
 	NesControlManager(NesConsole* console);
 	virtual ~NesControlManager();
+
+	virtual uint8_t GetOpenBusMask(uint8_t port);
 
 	void UpdateControlDevices() override;
 	void UpdateInputState() override;
