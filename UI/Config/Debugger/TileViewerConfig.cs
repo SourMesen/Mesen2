@@ -10,7 +10,7 @@ namespace Mesen.Config
 		[Reactive] public double ImageScale { get; set; } = 3;
 		[Reactive] public bool ShowTileGrid { get; set; } = false;
 
-		[Reactive] public string SelectedPreset { get; set; } = "";
+		[Reactive] public string SelectedPreset { get; set; } = "PPU";
 		
 		[Reactive] public MemoryType Source { get; set; }
 		[Reactive] public TileFormat Format { get; set; } = TileFormat.Bpp4;
