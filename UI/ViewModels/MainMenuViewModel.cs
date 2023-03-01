@@ -1086,7 +1086,12 @@ namespace Mesen.ViewModels
 						foreach(ZipArchiveEntry entry in zip.Entries) {
 							//Extract only the files in the same subfolder as the hires.txt file (and only if they have a name & size > 0)
 							if(!string.IsNullOrWhiteSpace(entry.Name) && entry.Length > 0 && entry.FullName.StartsWith(hiresFileFolder)) {
-								entry.ExtractToFile(Path.Combine(targetFolder, entry.Name), true);
+								string filePath = Path.Combine(targetFolder, entry.FullName.Substring(hiresFileFolder.Length));
+								string? fileFolder = Path.GetDirectoryName(filePath);
+								if(fileFolder != null) {
+									Directory.CreateDirectory(fileFolder);
+								}
+								entry.ExtractToFile(filePath, true);
 							}
 						}
 					} catch(Exception ex) {
