@@ -309,6 +309,7 @@ struct ApuDmcState
 {
 	double SampleRate;
 	uint16_t SampleAddr;
+	uint16_t NextSampleAddr;
 	uint16_t SampleLength;
 
 	bool Loop;

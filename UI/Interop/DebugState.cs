@@ -1317,6 +1317,7 @@ namespace Mesen.Interop
 	{
 		public double SampleRate;
 		public UInt16 SampleAddr;
+		public UInt16 NextSampleAddr;
 		public UInt16 SampleLength;
 
 		[MarshalAs(UnmanagedType.I1)]

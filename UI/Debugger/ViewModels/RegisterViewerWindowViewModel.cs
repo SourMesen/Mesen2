@@ -1126,6 +1126,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Timer", dmc.Timer),
 				new RegEntry("--", "Frequency", Math.Round(dmc.SampleRate).ToString("0."), null),
 				new RegEntry("--", "Bytes Remaining", dmc.BytesRemaining),
+				new RegEntry("--", "Next sample address", dmc.NextSampleAddr, Format.X16),
 			});
 
 			NesApuFrameCounterState frameCounter = apu.FrameCounter;

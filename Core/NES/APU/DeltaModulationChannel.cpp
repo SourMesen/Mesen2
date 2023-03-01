@@ -252,6 +252,7 @@ ApuDmcState DeltaModulationChannel::GetState()
 	state.Timer = _timer.GetTimer();
 	state.SampleRate = (double)NesConstants::GetClockRate(NesApu::GetApuRegion(_console)) / (_timer.GetPeriod() + 1);
 	state.SampleAddr = _sampleAddr;
+	state.NextSampleAddr = _currentAddr;
 	state.SampleLength = _sampleLength;
 	return state;
 }
