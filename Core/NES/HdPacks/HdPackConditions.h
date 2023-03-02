@@ -300,3 +300,16 @@ struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 		return false;
 	}
 };
+
+template<int paletteId>
+struct HdPackSpritePaletteCondition : public HdPackCondition
+{
+	string GetConditionName() override { return "sppalette"; }
+	string ToString() override { return ""; }
+	bool IsExcludedFromFile() override { return true; }
+
+	bool InternalCheckCondition(HdScreenInfo* screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	{
+		return tile && (tile->PaletteOffset == (0x10 + (paletteId << 2)));
+	}
+};

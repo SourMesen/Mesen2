@@ -94,6 +94,7 @@ public:
 			tileInfo.EmphasisBits = _intensifyColorBits >> 6;
 			tileInfo.Tile.PpuBackgroundColor = ReadPaletteRam(0);
 			tileInfo.Tile.BgColorIndex = backgroundColor;
+			tileInfo.Tile.PaletteOffset = tileInfo.Tile.PaletteOffset;
 			if(backgroundColor == 0) {
 				tileInfo.Tile.BgColor = tileInfo.Tile.PpuBackgroundColor;
 			} else {
@@ -129,6 +130,7 @@ public:
 						tileInfo.Sprite[j].HorizontalMirroring = sprite.HorizontalMirror;
 						tileInfo.Sprite[j].VerticalMirroring = spriteEx.VerticalMirror;
 						tileInfo.Sprite[j].BackgroundPriority = sprite.BackgroundPriority;
+						tileInfo.Sprite[j].PaletteOffset = sprite.PaletteOffset;
 
 						if(sprite.HorizontalMirror) {
 							tileInfo.Sprite[j].SpriteColorIndex = ((sprite.LowByte >> shift) & 0x01) | ((sprite.HighByte >> shift) & 0x01) << 1;

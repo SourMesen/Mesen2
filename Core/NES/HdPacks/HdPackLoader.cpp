@@ -243,31 +243,29 @@ void HdPackLoader::PremultiplyAlpha(vector<uint32_t> &pixelData)
 	}
 }
 
+template<typename T>
+void HdPackLoader::AddGlobalCondition(string name) {
+	T* cond = new T();
+	cond->Name = name;
+	_data->Conditions.push_back(unique_ptr<HdPackCondition>(cond));
+	_conditionsByName[name] = cond;
+
+	name = "!" + name;
+	cond = new T();
+	cond->Name = name;
+	_data->Conditions.push_back(unique_ptr<HdPackCondition>(cond));
+	_conditionsByName[name] = cond;
+}
+
 void HdPackLoader::InitializeGlobalConditions()
 {
-	HdPackCondition* hmirror = new HdPackHorizontalMirroringCondition();
-	hmirror->Name = "hmirror";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(hmirror));
-
-	HdPackCondition* invHmirror = new HdPackHorizontalMirroringCondition();
-	invHmirror->Name = "!hmirror";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(invHmirror));
-
-	HdPackCondition* vmirror = new HdPackVerticalMirroringCondition();
-	vmirror->Name = "vmirror";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(vmirror));
-
-	HdPackCondition* invVmirror = new HdPackVerticalMirroringCondition();
-	invVmirror->Name = "!vmirror";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(invVmirror));
-
-	HdPackCondition* bgpriority = new HdPackBgPriorityCondition();
-	bgpriority->Name = "bgpriority";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(bgpriority));
-
-	HdPackCondition* invBgpriority = new HdPackBgPriorityCondition();
-	invBgpriority->Name = "!bgpriority";
-	_data->Conditions.push_back(unique_ptr<HdPackCondition>(invBgpriority));
+	AddGlobalCondition<HdPackHorizontalMirroringCondition>("hmirror");
+	AddGlobalCondition<HdPackVerticalMirroringCondition>("vmirror");
+	AddGlobalCondition<HdPackBgPriorityCondition>("bgpriority");
+	AddGlobalCondition<HdPackSpritePaletteCondition<0>>("sppalette0");
+	AddGlobalCondition<HdPackSpritePaletteCondition<1>>("sppalette1");
+	AddGlobalCondition<HdPackSpritePaletteCondition<2>>("sppalette2");
+	AddGlobalCondition<HdPackSpritePaletteCondition<3>>("sppalette3");
 }
 
 void HdPackLoader::ProcessOverscanTag(vector<string> &tokens)

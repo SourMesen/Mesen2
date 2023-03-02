@@ -29,6 +29,7 @@ private:
 	void InitializeHdPack();
 	void LoadCustomPalette();
 
+	template<typename T> void AddGlobalCondition(string name);
 	void InitializeGlobalConditions();
 
 	//Video
