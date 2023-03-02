@@ -101,22 +101,26 @@ bool PNGHelper::ReadPNG(string filename, vector<uint8_t> &pngData, uint32_t &png
 int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, size_t in_size, bool convert_to_rgba32)
 {
 	int r = 0;
-	unique_ptr<spng_ctx> ctx = unique_ptr<spng_ctx>(spng_ctx_new(0));
-	if((r = spng_set_crc_action(ctx.get(), SPNG_CRC_USE, SPNG_CRC_USE))) {
+	spng_ctx* ctx = spng_ctx_new(0);
+	if((r = spng_set_crc_action(ctx, SPNG_CRC_USE, SPNG_CRC_USE))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 
 	size_t limit = 1024 * 1024 * 64;
-	if((r = spng_set_chunk_limits(ctx.get(), limit, limit))) {
+	if((r = spng_set_chunk_limits(ctx, limit, limit))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 
-	if((r = spng_set_png_buffer(ctx.get(), in_png, in_size))) {
+	if((r = spng_set_png_buffer(ctx, in_png, in_size))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 	
 	struct spng_ihdr ihdr;
-	if((r = spng_get_ihdr(ctx.get(), &ihdr))) {
+	if((r = spng_get_ihdr(ctx, &ihdr))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 
@@ -125,15 +129,18 @@ int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_
 
 	int fmt = SPNG_FMT_RGBA8;
 	size_t out_size = 0;
-	if((r = spng_decoded_image_size(ctx.get(), fmt, &out_size))) {
+	if((r = spng_decoded_image_size(ctx, fmt, &out_size))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 
 	out_image.resize(out_size);
 	
-	if((r = spng_decode_image(ctx.get(), out_image.data(), out_image.size(), fmt, 0))) {
+	if((r = spng_decode_image(ctx, out_image.data(), out_image.size(), fmt, 0))) {
+		spng_ctx_free(ctx);
 		return r;
 	}
 
+	spng_ctx_free(ctx);
 	return 0;
 }
