@@ -157,6 +157,8 @@ void HdNesPack::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 		for(int i = 0; i < _activeBgCount[layer]; i++) {
 			HdBgConfig& cfg = _bgConfig[layer * HdNesPack::PriorityLevelsPerLayer + i];
 			HdBackgroundInfo& bgInfo = _hdData->Backgrounds[cfg.BackgroundIndex];
+			bgInfo.Data->Init();
+
 			cfg.BgScrollX = (int32_t)(_scrollX * bgInfo.HorizontalScrollRatio);
 			cfg.BgScrollY = (int32_t)(scrollY * bgInfo.VerticalScrollRatio);
 			if(y >= -cfg.BgScrollY && (y + bgInfo.Top + cfg.BgScrollY + 1) * _hdData->Scale <= bgInfo.Data->Height) {
@@ -268,6 +270,7 @@ bool HdNesPack::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, ui
 	HdBgConfig bgConfig = _bgConfig[(int)priority];
 	if((int32_t)x >= bgConfig.BgMinX && (int32_t)x <= bgConfig.BgMaxX) {
 		HdBackgroundInfo& bgInfo = _hdData->Backgrounds[bgConfig.BackgroundIndex];
+		bgInfo.Data->Init();
 		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, _hdData->Scale, screenWidth);
 		return true;
 	}

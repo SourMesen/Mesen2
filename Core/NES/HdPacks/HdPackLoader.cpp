@@ -214,31 +214,17 @@ bool HdPackLoader::ProcessImgTag(string src)
 	_hdNesBitmaps.push_back({});
 	HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
 
-	vector<uint8_t> fileData;
-	LoadFile(src, fileData);
+	LoadFile(src, bitmapInfo.FileData);
 	uint32_t width, height;
-	if(PNGHelper::ReadPNG(fileData, bitmapInfo.PixelData, width, height)) {
+	if(PNGHelper::ReadPNG(bitmapInfo.FileData, bitmapInfo.PixelData, width, height)) {
 		bitmapInfo.Width = width;
 		bitmapInfo.Height = height;
-		PremultiplyAlpha(bitmapInfo.PixelData);
+		bitmapInfo.PremultiplyAlpha();
 		return true;
 	} else {
 		_hdNesBitmaps.pop_back();
 		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
-	}
-}
-
-void HdPackLoader::PremultiplyAlpha(vector<uint32_t> &pixelData)
-{
-	for(size_t i = 0; i < pixelData.size(); i++) {
-		if(pixelData[i] < 0xFF000000) {
-			uint8_t* output = (uint8_t*)(pixelData.data() + i);
-			uint8_t alpha = output[3] + 1;
-			output[0] = (uint8_t)((alpha * output[0]) >> 8);
-			output[1] = (uint8_t)((alpha * output[1]) >> 8);
-			output[2] = (uint8_t)((alpha * output[2]) >> 8);
-		}
 	}
 }
 
@@ -546,32 +532,22 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions)
 {
 	checkConstraint(tokens.size() >= 2, "[HDPack] Background tag should contain at least 2 parameters");
-	HdBackgroundFileData* bgFileData = nullptr;
-	for(unique_ptr<HdBackgroundFileData> &bgData : _data->BackgroundFileData) {
-		if(bgData->PngName == tokens[0]) {
-			bgFileData = bgData.get();
-		}
-	}
+	HdPackBitmapInfo* bgFileData = nullptr;
 
-	if(!bgFileData) {
-		_data->BackgroundFileData.push_back(unique_ptr<HdBackgroundFileData>(new HdBackgroundFileData()));
+	auto result = _backgroundsByName.find(tokens[0]);
+	if(result == _backgroundsByName.end()) {
+		_data->BackgroundFileData.push_back(unique_ptr<HdPackBitmapInfo>(new HdPackBitmapInfo()));
 		bgFileData = _data->BackgroundFileData.back().get();
+		bgFileData->PngName = tokens[0];
 
-		vector<uint8_t> pixelData;
-		uint32_t width, height;
-		vector<uint8_t> fileContent;
-		if(LoadFile(tokens[0], fileContent)) {
-			if(PNGHelper::ReadPNG(fileContent, bgFileData->PixelData, width, height)) {
-				PremultiplyAlpha(bgFileData->PixelData);
-
-				bgFileData->Width = width;
-				bgFileData->Height = height;
-				bgFileData->PngName = tokens[0];
-			} else {
-				_data->BackgroundFileData.pop_back();
-				bgFileData = nullptr;
-			}
+		if(!LoadFile(bgFileData->PngName, bgFileData->FileData)) {
+			bgFileData = nullptr;
+			_data->BackgroundFileData.pop_back();
+		} else {
+			_backgroundsByName[tokens[0]] = bgFileData;
 		}
+	} else {
+		bgFileData = result->second;
 	}
 
 	HdBackgroundInfo backgroundInfo;

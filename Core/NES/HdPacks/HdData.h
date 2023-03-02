@@ -1,7 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "NES/NesConstants.h"
+#include "Utilities/PNGHelper.h"
 #include "Utilities/HexUtilities.h"
+#include "Shared/MessageManager.h"
 
 struct HdTileKey
 {
@@ -285,23 +287,48 @@ struct HdPackTileInfo : public HdTileKey
 
 struct HdPackBitmapInfo
 {
-	vector<uint32_t> PixelData;
-	uint32_t Width;
-	uint32_t Height;
-};
+private:
+	bool _initDone = false;
 
-struct HdBackgroundFileData
-{
+public:
 	string PngName;
+	vector<uint8_t> FileData;
+	vector<uint32_t> PixelData;
 	uint32_t Width;
 	uint32_t Height;
 
-	vector<uint32_t> PixelData;
+	void Init()
+	{
+		if(_initDone) {
+			return;
+		}
+		
+		_initDone = true;
+		if(PNGHelper::ReadPNG(FileData, PixelData, Width, Height)) {
+			PremultiplyAlpha();
+		} else {
+			MessageManager::Log("[HDPack] PNG file " + PngName + " is invalid.");
+		}
+		FileData = {};
+	}
+
+	void PremultiplyAlpha()
+	{
+		for(size_t i = 0; i < PixelData.size(); i++) {
+			if(PixelData[i] < 0xFF000000) {
+				uint8_t* output = (uint8_t*)(PixelData.data() + i);
+				uint8_t alpha = output[3] + 1;
+				output[0] = (uint8_t)((alpha * output[0]) >> 8);
+				output[1] = (uint8_t)((alpha * output[1]) >> 8);
+				output[2] = (uint8_t)((alpha * output[2]) >> 8);
+			}
+		}
+	}
 };
 
 struct HdBackgroundInfo
 {
-	HdBackgroundFileData* Data;
+	HdPackBitmapInfo* Data;
 	int Brightness;
 	vector<HdPackCondition*> Conditions;
 	float HorizontalScrollRatio;
@@ -342,7 +369,7 @@ struct HdBackgroundInfo
 struct HdPackData
 {
 	vector<HdBackgroundInfo> Backgrounds;
-	vector<unique_ptr<HdBackgroundFileData>> BackgroundFileData;
+	vector<unique_ptr<HdPackBitmapInfo>> BackgroundFileData;
 	vector<unique_ptr<HdPackTileInfo>> Tiles;
 	vector<unique_ptr<HdPackCondition>> Conditions;
 	unordered_set<uint32_t> WatchedMemoryAddresses;
