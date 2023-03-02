@@ -56,7 +56,8 @@ bool PNGHelper::WritePNG(string filename, uint32_t* buffer, uint32_t xSize, uint
 	return false;
 }
 
-bool PNGHelper::ReadPNG(vector<uint8_t> input, vector<uint8_t> &output, uint32_t &pngWidth, uint32_t &pngHeight)
+template<typename T>
+bool PNGHelper::ReadPNG(vector<uint8_t> input, vector<T> &output, uint32_t &pngWidth, uint32_t &pngHeight)
 {
 	unsigned long width = 0;
 	unsigned long height = 0;
@@ -66,7 +67,7 @@ bool PNGHelper::ReadPNG(vector<uint8_t> input, vector<uint8_t> &output, uint32_t
 
 	if(DecodePNG(output, width, height, input.data(), input.size()) == 0) {
 		uint32_t *pngDataPtr = (uint32_t*)output.data();
-		for(size_t i = 0, len = output.size() / 4; i < len; i++) {
+		for(size_t i = 0, len = output.size() * sizeof(T) / 4; i < len; i++) {
 			//ABGR to ARGB
 			pngDataPtr[i] = (pngDataPtr[i] & 0xFF00FF00) | ((pngDataPtr[i] & 0xFF0000) >> 16) | ((pngDataPtr[i] & 0xFF) << 16);
 		}
@@ -98,7 +99,8 @@ bool PNGHelper::ReadPNG(string filename, vector<uint8_t> &pngData, uint32_t &png
 	return false;
 }
 
-int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, size_t in_size, bool convert_to_rgba32)
+template<typename T>
+int PNGHelper::DecodePNG(vector<T>& out_image, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, size_t in_size, bool convert_to_rgba32)
 {
 	int r = 0;
 	spng_ctx* ctx = spng_ctx_new(0);
@@ -134,9 +136,9 @@ int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_
 		return r;
 	}
 
-	out_image.resize(out_size);
+	out_image.resize(out_size / sizeof(T));
 	
-	if((r = spng_decode_image(ctx, out_image.data(), out_image.size(), fmt, 0))) {
+	if((r = spng_decode_image(ctx, (unsigned char*)out_image.data(), out_size, fmt, 0))) {
 		spng_ctx_free(ctx);
 		return r;
 	}
@@ -144,3 +146,9 @@ int PNGHelper::DecodePNG(vector<unsigned char>& out_image, unsigned long& image_
 	spng_ctx_free(ctx);
 	return 0;
 }
+
+template int PNGHelper::DecodePNG<uint8_t>(vector<uint8_t>& out_image, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, size_t in_size, bool convert_to_rgba32);
+template int PNGHelper::DecodePNG<uint32_t>(vector<uint32_t>& out_image, unsigned long& image_width, unsigned long& image_height, const unsigned char* in_png, size_t in_size, bool convert_to_rgba32);
+
+template bool PNGHelper::ReadPNG<uint8_t>(vector<uint8_t> input, vector<uint8_t>& output, uint32_t& pngWidth, uint32_t& pngHeight);
+template bool PNGHelper::ReadPNG<uint32_t>(vector<uint8_t> input, vector<uint32_t>& output, uint32_t& pngWidth, uint32_t& pngHeight);

@@ -211,20 +211,19 @@ bool HdPackLoader::LoadPack()
 
 bool HdPackLoader::ProcessImgTag(string src)
 {
+	_hdNesBitmaps.push_back({});
+	HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
+
 	vector<uint8_t> fileData;
-	vector<uint8_t> pixelData;
 	LoadFile(src, fileData);
 	uint32_t width, height;
-	if(PNGHelper::ReadPNG(fileData, pixelData, width, height)) {
-		_hdNesBitmaps.push_back({});
-		HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
+	if(PNGHelper::ReadPNG(fileData, bitmapInfo.PixelData, width, height)) {
 		bitmapInfo.Width = width;
 		bitmapInfo.Height = height;
-		bitmapInfo.PixelData.resize(pixelData.size() / 4);
-		memcpy(bitmapInfo.PixelData.data(), pixelData.data(), bitmapInfo.PixelData.size() * sizeof(bitmapInfo.PixelData[0]));
 		PremultiplyAlpha(bitmapInfo.PixelData);
 		return true;
 	} else {
+		_hdNesBitmaps.pop_back();
 		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
 	}
@@ -555,20 +554,22 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 	}
 
 	if(!bgFileData) {
+		_data->BackgroundFileData.push_back(unique_ptr<HdBackgroundFileData>(new HdBackgroundFileData()));
+		bgFileData = _data->BackgroundFileData.back().get();
+
 		vector<uint8_t> pixelData;
 		uint32_t width, height;
 		vector<uint8_t> fileContent;
 		if(LoadFile(tokens[0], fileContent)) {
-			if(PNGHelper::ReadPNG(fileContent, pixelData, width, height)) {
-				_data->BackgroundFileData.push_back(unique_ptr<HdBackgroundFileData>(new HdBackgroundFileData()));
-				bgFileData = _data->BackgroundFileData.back().get();
-				bgFileData->PixelData.resize(pixelData.size() / 4);
-				memcpy(bgFileData->PixelData.data(), pixelData.data(), bgFileData->PixelData.size() * sizeof(bgFileData->PixelData[0]));
+			if(PNGHelper::ReadPNG(fileContent, bgFileData->PixelData, width, height)) {
 				PremultiplyAlpha(bgFileData->PixelData);
 
 				bgFileData->Width = width;
 				bgFileData->Height = height;
 				bgFileData->PngName = tokens[0];
+			} else {
+				_data->BackgroundFileData.pop_back();
+				bgFileData = nullptr;
 			}
 		}
 	}
