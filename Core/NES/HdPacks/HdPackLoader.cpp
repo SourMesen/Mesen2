@@ -211,21 +211,15 @@ bool HdPackLoader::LoadPack()
 
 bool HdPackLoader::ProcessImgTag(string src)
 {
-	_hdNesBitmaps.push_back({});
-	HdPackBitmapInfo& bitmapInfo = _hdNesBitmaps.back();
+	_data->ImageFileData.push_back(unique_ptr<HdPackBitmapInfo>(new HdPackBitmapInfo()));
+	HdPackBitmapInfo& bitmapInfo = *_data->ImageFileData.back().get();
 
-	LoadFile(src, bitmapInfo.FileData);
-	uint32_t width, height;
-	if(PNGHelper::ReadPNG(bitmapInfo.FileData, bitmapInfo.PixelData, width, height)) {
-		bitmapInfo.Width = width;
-		bitmapInfo.Height = height;
-		bitmapInfo.PremultiplyAlpha();
-		return true;
-	} else {
-		_hdNesBitmaps.pop_back();
+	if(!LoadFile(src, bitmapInfo.FileData)) {
+		_data->ImageFileData.pop_back();
 		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
 	}
+	return true;
 }
 
 template<typename T>
@@ -360,19 +354,11 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 		}
 	}
 
-	checkConstraint(tileInfo->BitmapIndex < _hdNesBitmaps.size(), "[HDPack] Invalid bitmap index: " + std::to_string(tileInfo->BitmapIndex));
+	checkConstraint(tileInfo->BitmapIndex < _data->ImageFileData.size(), "[HDPack] Invalid bitmap index: " + std::to_string(tileInfo->BitmapIndex));
 
-	HdPackBitmapInfo &bitmapInfo = _hdNesBitmaps[tileInfo->BitmapIndex];
-	uint32_t bitmapOffset = tileInfo->Y * bitmapInfo.Width + tileInfo->X;
-	uint32_t* pngData = (uint32_t*)bitmapInfo.PixelData.data();
-	
-	tileInfo->HdTileData.resize(64 * _data->Scale * _data->Scale);
-	for(uint32_t y = 0; y < 8 * _data->Scale; y++) {
-		memcpy(tileInfo->HdTileData.data() + (y * 8 * _data->Scale), pngData + bitmapOffset, 8 * _data->Scale * sizeof(uint32_t));
-		bitmapOffset += bitmapInfo.Width;
-	}
-
-	tileInfo->UpdateFlags();
+	tileInfo->Bitmap = _data->ImageFileData[tileInfo->BitmapIndex].get();
+	tileInfo->Width = 8 * _data->Scale;
+	tileInfo->Height = 8 * _data->Scale;
 
 	_data->Tiles.push_back(unique_ptr<HdPackTileInfo>(tileInfo));
 }

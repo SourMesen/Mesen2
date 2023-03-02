@@ -16,7 +16,6 @@ private:
 	ZipReader _reader;
 	string _hdPackDefinitionFile;
 	string _hdPackFolder;
-	vector<HdPackBitmapInfo> _hdNesBitmaps;
 	unordered_map<string, HdPackCondition*> _conditionsByName;
 	unordered_map<string, HdPackBitmapInfo*> _backgroundsByName;
 

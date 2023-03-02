@@ -175,11 +175,59 @@ protected:
 	virtual bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) = 0;
 };
 
+struct HdPackBitmapInfo
+{
+private:
+	bool _initDone = false;
+
+public:
+	string PngName;
+	vector<uint8_t> FileData;
+	vector<uint32_t> PixelData;
+	uint32_t Width;
+	uint32_t Height;
+
+	void Init()
+	{
+		if(_initDone) {
+			return;
+		}
+
+		_initDone = true;
+		if(PNGHelper::ReadPNG(FileData, PixelData, Width, Height)) {
+			PremultiplyAlpha();
+		} else {
+			MessageManager::Log("[HDPack] PNG file " + PngName + " is invalid.");
+		}
+		FileData = {};
+	}
+
+	void PremultiplyAlpha()
+	{
+		for(size_t i = 0; i < PixelData.size(); i++) {
+			if(PixelData[i] < 0xFF000000) {
+				uint8_t* output = (uint8_t*)(PixelData.data() + i);
+				uint8_t alpha = output[3] + 1;
+				output[0] = (uint8_t)((alpha * output[0]) >> 8);
+				output[1] = (uint8_t)((alpha * output[1]) >> 8);
+				output[2] = (uint8_t)((alpha * output[2]) >> 8);
+			}
+		}
+	}
+};
+
 struct HdPackTileInfo : public HdTileKey
 {
+private:
+	bool _initialized = false;
+
+public:
 	uint32_t X;
 	uint32_t Y;
+	uint32_t Width;
+	uint32_t Height;
 	uint32_t BitmapIndex;
+	HdPackBitmapInfo* Bitmap;
 	int Brightness;
 	bool DefaultTile;
 	bool Blank;
@@ -241,6 +289,29 @@ struct HdPackTileInfo : public HdTileKey
 		}
 	}
 
+	void Init()
+	{
+		if(_initialized) {
+			return;
+		}
+
+		_initialized = true;
+		Bitmap->Init();
+
+		uint32_t bitmapOffset = Y * Bitmap->Width + X;
+		uint32_t* pngData = Bitmap->PixelData.data();
+
+		HdTileData.resize(Width * Height);
+		if(Bitmap->PixelData.size() >= bitmapOffset + (Height * Bitmap->Width) + Width) {
+			for(uint32_t y = 0; y < Height; y++) {
+				memcpy(HdTileData.data() + (y * Width), pngData + bitmapOffset, Width * sizeof(uint32_t));
+				bitmapOffset += Bitmap->Width;
+			}
+		}
+
+		UpdateFlags();
+	}
+
 	string ToString(int pngIndex)
 	{
 		stringstream out;
@@ -282,47 +353,6 @@ struct HdPackTileInfo : public HdTileKey
 		}
 
 		return out.str();
-	}
-};
-
-struct HdPackBitmapInfo
-{
-private:
-	bool _initDone = false;
-
-public:
-	string PngName;
-	vector<uint8_t> FileData;
-	vector<uint32_t> PixelData;
-	uint32_t Width;
-	uint32_t Height;
-
-	void Init()
-	{
-		if(_initDone) {
-			return;
-		}
-		
-		_initDone = true;
-		if(PNGHelper::ReadPNG(FileData, PixelData, Width, Height)) {
-			PremultiplyAlpha();
-		} else {
-			MessageManager::Log("[HDPack] PNG file " + PngName + " is invalid.");
-		}
-		FileData = {};
-	}
-
-	void PremultiplyAlpha()
-	{
-		for(size_t i = 0; i < PixelData.size(); i++) {
-			if(PixelData[i] < 0xFF000000) {
-				uint8_t* output = (uint8_t*)(PixelData.data() + i);
-				uint8_t alpha = output[3] + 1;
-				output[0] = (uint8_t)((alpha * output[0]) >> 8);
-				output[1] = (uint8_t)((alpha * output[1]) >> 8);
-				output[2] = (uint8_t)((alpha * output[2]) >> 8);
-			}
-		}
 	}
 };
 
@@ -370,6 +400,7 @@ struct HdPackData
 {
 	vector<HdBackgroundInfo> Backgrounds;
 	vector<unique_ptr<HdPackBitmapInfo>> BackgroundFileData;
+	vector<unique_ptr<HdPackBitmapInfo>> ImageFileData;
 	vector<unique_ptr<HdPackTileInfo>> Tiles;
 	vector<unique_ptr<HdPackCondition>> Conditions;
 	unordered_set<uint32_t> WatchedMemoryAddresses;

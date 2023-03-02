@@ -257,6 +257,7 @@ HdPackTileInfo* HdNesPack::GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo
 			}
 
 			if(hdPackTile->MatchesCondition(_hdScreenInfo, x, y, tile)) {
+				hdPackTile->Init();
 				return hdPackTile;
 			}
 		}
