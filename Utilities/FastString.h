@@ -15,6 +15,13 @@ public:
 	FastString(const char* str, int size) { Write(str, size); }
 	FastString(string &str) { Write(str); }
 
+	void WriteSafe(char c)
+	{
+		if(_pos < 999) {
+			_buffer[_pos++] = c;
+		}
+	}
+
 	void Write(char c)
 	{
 		if(_lowerCase) {
@@ -75,6 +82,11 @@ public:
 	uint16_t GetSize()
 	{
 		return _pos;
+	}
+
+	void Reset()
+	{
+		_pos = 0;
 	}
 
 	template<typename T, typename... Args>

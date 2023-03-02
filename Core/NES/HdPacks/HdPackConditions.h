@@ -102,6 +102,7 @@ struct HdPackBaseMemoryCondition : public HdPackCondition
 
 struct HdPackHorizontalMirroringCondition : public HdPackCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::HMirror; }
 	string GetConditionName() override { return "hmirror"; }
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
@@ -114,6 +115,7 @@ struct HdPackHorizontalMirroringCondition : public HdPackCondition
 
 struct HdPackVerticalMirroringCondition : public HdPackCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::VMirror; }
 	string GetConditionName() override { return "vmirror"; }
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
@@ -126,6 +128,7 @@ struct HdPackVerticalMirroringCondition : public HdPackCondition
 
 struct HdPackBgPriorityCondition : public HdPackCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::BgPriority; }
 	string GetConditionName() override { return "bgpriority"; }
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
@@ -138,6 +141,7 @@ struct HdPackBgPriorityCondition : public HdPackCondition
 
 struct HdPackMemoryCheckCondition : public HdPackBaseMemoryCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::MemoryCheck; }
 	HdPackMemoryCheckCondition() { _useCache = true; }
 	string GetConditionName() override { return IsPpuCondition() ? "ppuMemoryCheck" : "memoryCheck"; }
 
@@ -160,6 +164,7 @@ struct HdPackMemoryCheckCondition : public HdPackBaseMemoryCondition
 
 struct HdPackMemoryCheckConstantCondition : public HdPackBaseMemoryCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::MemoryCheckConstant; }
 	HdPackMemoryCheckConstantCondition() { _useCache = true; }
 	string GetConditionName() override { return IsPpuCondition() ? "ppuMemoryCheckConstant" : "memoryCheckConstant"; }
 
@@ -187,6 +192,7 @@ struct HdPackFrameRangeCondition : public HdPackCondition
 
 	HdPackFrameRangeCondition() { _useCache = true; }
 
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::FrameRange; }
 	string GetConditionName() override { return "frameRange"; }
 
 	void Initialize(uint32_t operandA, uint32_t operandB)
@@ -214,6 +220,7 @@ struct HdPackFrameRangeCondition : public HdPackCondition
 struct HdPackTileAtPositionCondition : public HdPackBaseTileCondition
 {
 	HdPackTileAtPositionCondition() { _useCache = true; }
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::TileAtPos; }
 	string GetConditionName() override { return "tileAtPosition"; }
 
 	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
@@ -230,6 +237,7 @@ struct HdPackTileAtPositionCondition : public HdPackBaseTileCondition
 struct HdPackSpriteAtPositionCondition : public HdPackBaseTileCondition
 {
 	HdPackSpriteAtPositionCondition() { _useCache = true; }	
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::SpriteAtPos; }
 	string GetConditionName() override { return "spriteAtPosition"; }
 
 	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
@@ -252,6 +260,7 @@ struct HdPackSpriteAtPositionCondition : public HdPackBaseTileCondition
 
 struct HdPackTileNearbyCondition : public HdPackBaseTileCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::TileNearby; }
 	string GetConditionName() override { return "tileNearby"; }
 
 	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
@@ -272,6 +281,7 @@ struct HdPackTileNearbyCondition : public HdPackBaseTileCondition
 
 struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::SpriteNearby; }
 	string GetConditionName() override { return "spriteNearby"; }
 
 	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
@@ -304,6 +314,7 @@ struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 template<int paletteId>
 struct HdPackSpritePaletteCondition : public HdPackCondition
 {
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::SpritePalette; }
 	string GetConditionName() override { return "sppalette"; }
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }

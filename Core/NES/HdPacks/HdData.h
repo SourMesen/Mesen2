@@ -136,10 +136,26 @@ struct HdScreenInfo
 	}
 };
 
+enum class HdPackConditionType
+{
+	HMirror,
+	VMirror,
+	BgPriority,
+	FrameRange,
+	MemoryCheck,
+	MemoryCheckConstant,
+	TileNearby,
+	TileAtPos,
+	SpriteAtPos,
+	SpriteNearby,
+	SpritePalette,
+};
+
 struct HdPackCondition
 {
 	string Name;
 
+	virtual HdPackConditionType GetConditionType() = 0;
 	virtual string GetConditionName() = 0;
 	virtual bool IsExcludedFromFile() { return Name.size() > 0 && Name[0] == '!'; }
 	virtual string ToString() = 0;

@@ -11,6 +11,7 @@
 #include "Utilities/StringUtilities.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/PNGHelper.h"
+#include "Utilities/FastString.h"
 
 #define checkConstraint(x, y) if(!(x)) { MessageManager::Log(y); return; }
 
@@ -118,7 +119,7 @@ bool HdPackLoader::LoadFile(string filename, vector<uint8_t> &fileData)
 			uint32_t fileSize = (uint32_t)file.tellg();
 			file.seekg(0, ios::beg);
 
-			fileData = vector<uint8_t>(fileSize, 0);
+			fileData.resize(fileSize);
 			file.read((char*)fileData.data(), fileSize);
 			
 			return true;
@@ -130,7 +131,7 @@ bool HdPackLoader::LoadFile(string filename, vector<uint8_t> &fileData)
 
 bool HdPackLoader::LoadPack()
 {
-	string currentLine;
+	string lineContent;
 	try {
 		vector<uint8_t> hdDefinition;
 		if(!LoadFile("hires.txt", hdDefinition)) {
@@ -139,7 +140,21 @@ bool HdPackLoader::LoadPack()
 
 		InitializeGlobalConditions();
 
-		for(string lineContent : StringUtilities::Split(string(hdDefinition.data(), hdDefinition.data() + hdDefinition.size()), '\n')) {
+		size_t len = hdDefinition.size();
+		size_t pos = 0;
+		while(pos < len) {
+			lineContent.clear();
+
+			size_t start = pos;
+			for(; pos < len; pos++) {
+				if(hdDefinition[pos] == '\n') {
+					pos++;
+					break;
+				}
+			}
+
+			lineContent.insert(0, (char*)hdDefinition.data() + start, pos < len ? (pos - start - 1) : (len - start));
+
 			if(lineContent.empty()) {
 				continue;
 			}
@@ -147,17 +162,41 @@ bool HdPackLoader::LoadPack()
 			if(lineContent[lineContent.size() - 1] == '\r') {
 				lineContent = lineContent.substr(0, lineContent.size() - 1);
 			}
-			currentLine = lineContent;			
 
 			vector<HdPackCondition*> conditions;
 			if(lineContent.substr(0, 1) == "[") {
 				size_t endOfCondition = lineContent.find_first_of(']', 1);
+				if(endOfCondition == string::npos) {
+					MessageManager::Log("[HDPack] Invalid condition tag: " + lineContent);
+					continue;
+				}
 				conditions = ParseConditionString(lineContent.substr(1, endOfCondition - 1));
 				lineContent = lineContent.substr(endOfCondition + 1);
 			}
 
 			vector<string> tokens;
-			if(lineContent.substr(0, 5) == "<ver>") {
+			if(lineContent.substr(0, 6) == "<tile>") {
+				tokens = StringUtilities::Split(lineContent.substr(6), ',');
+				ProcessTileTag(tokens, conditions);
+			} else if(lineContent.substr(0, 12) == "<background>") {
+				tokens = StringUtilities::Split(lineContent.substr(12), ',');
+				ProcessBackgroundTag(tokens, conditions);
+			} else if(lineContent.substr(0, 11) == "<condition>") {
+				tokens = StringUtilities::Split(lineContent.substr(11), ',');
+				ProcessConditionTag(tokens, false);
+				ProcessConditionTag(tokens, true);
+			} else if(lineContent.substr(0, 5) == "<img>") {
+				lineContent = lineContent.substr(5);
+				if(!ProcessImgTag(lineContent)) {
+					return false;
+				}
+			} else if(lineContent.substr(0, 5) == "<bgm>") {
+				tokens = StringUtilities::Split(lineContent.substr(5), ',');
+				ProcessBgmTag(tokens);
+			} else if(lineContent.substr(0, 5) == "<sfx>") {
+				tokens = StringUtilities::Split(lineContent.substr(5), ',');
+				ProcessSfxTag(tokens);
+			} else if(lineContent.substr(0, 5) == "<ver>") {
 				_data->Version = stoi(lineContent.substr(5));
 				if(_data->Version > HdNesPack::CurrentVersion) {
 					MessageManager::Log("[HDPack] This HD Pack was built with a more recent version of Mesen - update Mesen to the latest version and try again.");
@@ -169,33 +208,12 @@ bool HdPackLoader::LoadPack()
 			} else if(lineContent.substr(0, 10) == "<overscan>") {
 				tokens = StringUtilities::Split(lineContent.substr(10), ',');
 				ProcessOverscanTag(tokens);
-			} else if(lineContent.substr(0, 5) == "<img>") {
-				lineContent = lineContent.substr(5);
-				if(!ProcessImgTag(lineContent)) {
-					return false;
-				}
 			} else if(lineContent.substr(0, 7) == "<patch>") {
 				tokens = StringUtilities::Split(lineContent.substr(7), ',');
 				ProcessPatchTag(tokens);
-			} else if(lineContent.substr(0, 12) == "<background>") {
-				tokens = StringUtilities::Split(lineContent.substr(12), ',');
-				ProcessBackgroundTag(tokens, conditions);
-			} else if(lineContent.substr(0, 11) == "<condition>") {
-				tokens = StringUtilities::Split(lineContent.substr(11), ',');
-				ProcessConditionTag(tokens, false);
-				ProcessConditionTag(tokens, true);
-			} else if(lineContent.substr(0, 6) == "<tile>") {
-				tokens = StringUtilities::Split(lineContent.substr(6), ',');
-				ProcessTileTag(tokens, conditions);
 			} else if(lineContent.substr(0, 9) == "<options>") {
 				tokens = StringUtilities::Split(lineContent.substr(9), ',');
 				ProcessOptionTag(tokens);
-			} else if(lineContent.substr(0, 5) == "<bgm>") {
-				tokens = StringUtilities::Split(lineContent.substr(5), ',');
-				ProcessBgmTag(tokens);
-			} else if(lineContent.substr(0, 5) == "<sfx>") {
-				tokens = StringUtilities::Split(lineContent.substr(5), ',');
-				ProcessSfxTag(tokens);
 			}
 		}
 
@@ -204,7 +222,7 @@ bool HdPackLoader::LoadPack()
 
 		return true;
 	} catch(std::exception &ex) {
-		MessageManager::Log(string("[HDPack] Error loading HDPack: ") + ex.what() + " on line: " + currentLine);
+		MessageManager::Log(string("[HDPack] Error loading HDPack: ") + ex.what() + " on line: " + lineContent);
 		return false;
 	}
 }
@@ -311,15 +329,15 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 	tileInfo->Conditions = conditions;
 	tileInfo->ForceDisableCache = false;
 	for(HdPackCondition* condition : conditions) {
-		if(dynamic_cast<HdPackSpriteNearbyCondition*>(condition)) {
-			tileInfo->ForceDisableCache = true;
-			break;
-		} else if(dynamic_cast<HdPackTileNearbyCondition*>(condition)) {
-			HdPackTileNearbyCondition* tileNearby = dynamic_cast<HdPackTileNearbyCondition*>(condition);
-			if(tileNearby->TileX % 8 > 0 || tileNearby->TileY % 8 > 0) {
-				tileInfo->ForceDisableCache = true;
+		HdPackConditionType type = condition->GetConditionType();
+		switch(type){
+			case HdPackConditionType::SpriteNearby: tileInfo->ForceDisableCache = true; break;
+			case HdPackConditionType::TileNearby:
+				HdPackTileNearbyCondition* tileNearby = (HdPackTileNearbyCondition*)condition;
+				if(tileNearby->TileX % 8 > 0 || tileNearby->TileY % 8 > 0) {
+					tileInfo->ForceDisableCache = true;
+				}
 				break;
-			}
 		}
 	}
 
@@ -415,98 +433,116 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 	}
 
 	int index = 2;
-	if(dynamic_cast<HdPackBaseTileCondition*>(condition.get())) {
-		checkConstraint(tokens.size() >= 6, "[HDPack] Condition tag should contain at least 6 parameters");
+	switch(condition->GetConditionType()) {
+		case HdPackConditionType::TileNearby:
+		case HdPackConditionType::TileAtPos:
+		case HdPackConditionType::SpriteNearby:
+		case HdPackConditionType::SpriteAtPos: {
+			checkConstraint(tokens.size() >= 6, "[HDPack] Condition tag should contain at least 6 parameters");
 
-		int x = std::stoi(tokens[index++]);
-		int y = std::stoi(tokens[index++]);
-		string token = tokens[index++];
-		int32_t tileIndex = -1;
-		string tileData;
-		if(token.size() == 32) {
-			tileData = token;
-		} else {
-			if(_data->Version < 104) {
-				tileIndex = std::stoi(token);
+			int x = std::stoi(tokens[index++]);
+			int y = std::stoi(tokens[index++]);
+			string token = tokens[index++];
+			int32_t tileIndex = -1;
+			string tileData;
+			if(token.size() == 32) {
+				tileData = token;
 			} else {
-				//Tile indexes are stored as hex starting from version 104+
-				tileIndex = HexUtilities::FromHex(token);
+				if(_data->Version < 104) {
+					tileIndex = std::stoi(token);
+				} else {
+					//Tile indexes are stored as hex starting from version 104+
+					tileIndex = HexUtilities::FromHex(token);
+				}
 			}
-		}
-		uint32_t palette = HexUtilities::FromHex(tokens[index++]);
+			uint32_t palette = HexUtilities::FromHex(tokens[index++]);
 
-		((HdPackBaseTileCondition*)condition.get())->Initialize(x, y, palette, tileIndex, tileData);
-	} else if(dynamic_cast<HdPackBaseMemoryCondition*>(condition.get())) {
-		checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
-		checkConstraint(tokens.size() >= 5, "[HDPack] Condition tag should contain at least 5 parameters");
+			((HdPackBaseTileCondition*)condition.get())->Initialize(x, y, palette, tileIndex, tileData);
+			break;
+		}
+
+		case HdPackConditionType::MemoryCheck:
+		case HdPackConditionType::MemoryCheckConstant: {
+			checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
+			checkConstraint(tokens.size() >= 5, "[HDPack] Condition tag should contain at least 5 parameters");
 		
-		bool usePpuMemory = tokens[1].substr(0, 3) == "ppu";
-		uint32_t operandA = HexUtilities::FromHex(tokens[index++]);
+			bool usePpuMemory = tokens[1].substr(0, 3) == "ppu";
+			uint32_t operandA = HexUtilities::FromHex(tokens[index++]);
 
-		if(usePpuMemory) {
-			checkConstraint(operandA <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
-			operandA |= HdPackBaseMemoryCondition::PpuMemoryMarker;
-		} else {
-			checkConstraint(operandA <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
-		}
-
-		HdPackConditionOperator op;
-		string opString = tokens[index++];
-		if(opString == "==") {
-			op = HdPackConditionOperator::Equal;
-		} else if(opString == "!=") {
-			op = HdPackConditionOperator::NotEqual;
-		} else if(opString == ">") {
-			op = HdPackConditionOperator::GreaterThan;
-		} else if(opString == "<") {
-			op = HdPackConditionOperator::LowerThan;
-		} else if(opString == "<=") {
-			op = HdPackConditionOperator::LowerThanOrEqual;
-		} else if(opString == ">=") {
-			op = HdPackConditionOperator::GreaterThanOrEqual;
-		} else {
-			checkConstraint(false, "[HDPack] Invalid operator.");
-		}
-
-		uint32_t operandB = HexUtilities::FromHex(tokens[index++]);
-		uint32_t mask = 0xFF;
-		if(tokens.size() > 5 && _data->Version >= 103) {
-			checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheck mask");
-			mask = HexUtilities::FromHex(tokens[index++]);
-		}
-
-		if(dynamic_cast<HdPackMemoryCheckCondition*>(condition.get())) {
 			if(usePpuMemory) {
-				checkConstraint(operandB <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
-				operandB |= HdPackBaseMemoryCondition::PpuMemoryMarker;
+				checkConstraint(operandA <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
+				operandA |= HdPackBaseMemoryCondition::PpuMemoryMarker;
 			} else {
-				checkConstraint(operandB <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
+				checkConstraint(operandA <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
 			}
-			_data->WatchedMemoryAddresses.emplace(operandB);
-		} else if(dynamic_cast<HdPackMemoryCheckConstantCondition*>(condition.get())) {
-			checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheckConstant operand");
+
+			HdPackConditionOperator op;
+			string opString = tokens[index++];
+			if(opString == "==") {
+				op = HdPackConditionOperator::Equal;
+			} else if(opString == "!=") {
+				op = HdPackConditionOperator::NotEqual;
+			} else if(opString == ">") {
+				op = HdPackConditionOperator::GreaterThan;
+			} else if(opString == "<") {
+				op = HdPackConditionOperator::LowerThan;
+			} else if(opString == "<=") {
+				op = HdPackConditionOperator::LowerThanOrEqual;
+			} else if(opString == ">=") {
+				op = HdPackConditionOperator::GreaterThanOrEqual;
+			} else {
+				checkConstraint(false, "[HDPack] Invalid operator.");
+			}
+
+			uint32_t operandB = HexUtilities::FromHex(tokens[index++]);
+			uint32_t mask = 0xFF;
+			if(tokens.size() > 5 && _data->Version >= 103) {
+				checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheck mask");
+				mask = HexUtilities::FromHex(tokens[index++]);
+			}
+
+			switch(condition->GetConditionType()) {
+				case HdPackConditionType::MemoryCheck:
+					if(usePpuMemory) {
+						checkConstraint(operandB <= 0x3FFF, "[HDPack] Out of range memoryCheck operand");
+						operandB |= HdPackBaseMemoryCondition::PpuMemoryMarker;
+					} else {
+						checkConstraint(operandB <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
+					}
+					_data->WatchedMemoryAddresses.emplace(operandB);
+					break;
+
+				case HdPackConditionType::MemoryCheckConstant:
+					checkConstraint(operandB <= 0xFF, "[HDPack] Out of range memoryCheckConstant operand");
+					break;
+			}
+
+			_data->WatchedMemoryAddresses.emplace(operandA);
+			((HdPackBaseMemoryCondition*)condition.get())->Initialize(operandA, op, operandB, (uint8_t)mask);
+			break;
 		}
-		_data->WatchedMemoryAddresses.emplace(operandA);
-		((HdPackBaseMemoryCondition*)condition.get())->Initialize(operandA, op, operandB, (uint8_t)mask);
-	} else if(dynamic_cast<HdPackFrameRangeCondition*>(condition.get())) {
-		checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
-		checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
 
-		int32_t operandA;
-		int32_t operandB;
-		if(_data->Version == 101) {
-			operandA = HexUtilities::FromHex(tokens[index++]);
-			operandB = HexUtilities::FromHex(tokens[index++]);
-		} else {
-			//Version 102+
-			operandA = std::stoi(tokens[index++]);
-			operandB = std::stoi(tokens[index++]);
+		case HdPackConditionType::FrameRange: {
+			checkConstraint(_data->Version >= 101, "[HDPack] This feature requires version 101+ of HD Packs");
+			checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
+
+			int32_t operandA;
+			int32_t operandB;
+			if(_data->Version == 101) {
+				operandA = HexUtilities::FromHex(tokens[index++]);
+				operandB = HexUtilities::FromHex(tokens[index++]);
+			} else {
+				//Version 102+
+				operandA = std::stoi(tokens[index++]);
+				operandB = std::stoi(tokens[index++]);
+			}
+
+			checkConstraint(operandA >= 0 && operandA <= 0xFFFF, "[HDPack] Out of range frameRange operand");
+			checkConstraint(operandB >= 0 && operandB <= 0xFFFF, "[HDPack] Out of range frameRange operand");
+
+			((HdPackFrameRangeCondition*)condition.get())->Initialize(operandA, operandB);
+			break;
 		}
-
-		checkConstraint(operandA >= 0 && operandA <= 0xFFFF, "[HDPack] Out of range frameRange operand");
-		checkConstraint(operandB >= 0 && operandB <= 0xFFFF, "[HDPack] Out of range frameRange operand");
-
-		((HdPackFrameRangeCondition*)condition.get())->Initialize(operandA, operandB);
 	}
 	
 	HdPackCondition *cond = condition.get();
@@ -549,19 +585,21 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 		backgroundInfo.Priority = 10;
 		backgroundInfo.Left = 0;
 		backgroundInfo.Top = 0;
+		backgroundInfo.Conditions.reserve(conditions.size());
 
 		for(HdPackCondition* condition : conditions) {
-			if(
-				!dynamic_cast<HdPackTileAtPositionCondition*>(condition) &&
-				!dynamic_cast<HdPackSpriteAtPositionCondition*>(condition) &&
-				!dynamic_cast<HdPackMemoryCheckCondition*>(condition) &&
-				!dynamic_cast<HdPackMemoryCheckConstantCondition*>(condition) &&
-				!dynamic_cast<HdPackFrameRangeCondition*>(condition)
-			) {
-				MessageManager::Log("[HDPack] Invalid condition type for background: " + tokens[0]);
-				return;
-			} else {
-				backgroundInfo.Conditions.push_back(condition);
+			switch(condition->GetConditionType()) {
+				case HdPackConditionType::TileAtPos:
+				case HdPackConditionType::SpriteAtPos:
+				case HdPackConditionType::MemoryCheck:
+				case HdPackConditionType::MemoryCheckConstant:
+				case HdPackConditionType::FrameRange:
+					backgroundInfo.Conditions.push_back(condition);
+					break;
+
+				default:
+					MessageManager::Log("[HDPack] Invalid condition type for background: " + tokens[0]);
+					return;
 			}
 		}
 
@@ -644,19 +682,32 @@ void HdPackLoader::ProcessSfxTag(vector<string> &tokens)
 
 vector<HdPackCondition*> HdPackLoader::ParseConditionString(string conditionString)
 {
-	vector<string> conditionNames = StringUtilities::Split(conditionString, '&');
-
+	FastString conditionName;
 	vector<HdPackCondition*> conditions;
-	for(string conditionName : conditionNames) {
-		conditionName.erase(conditionName.find_last_not_of(" \n\r\t") + 1);
+	conditions.reserve(3);
 
-		auto result = _conditionsByName.find(conditionName);
+	auto processCondition = [&] {
+		auto result = _conditionsByName.find(conditionName.ToString());
 		if(result != _conditionsByName.end()) {
 			conditions.push_back(result->second);
-		} else { 
-			MessageManager::Log("[HDPack] Condition not found: " + conditionName);
+		} else {
+			MessageManager::Log("[HDPack] Condition not found: " + string(conditionName.ToString()));
+		}
+		conditionName.Reset();
+	};
+
+	for(size_t i = 0, len = conditionString.size(); i < len; i++) {
+		char c = conditionString[i];
+		if(c == ' ' || c == '\n' || c == '\r' || c == '\t') {
+			continue;
+		} else if(c == '&') {
+			processCondition();
+		} else {
+			conditionName.WriteSafe(c);
 		}
 	}
+
+	processCondition();
 
 	return conditions;
 }
