@@ -214,13 +214,15 @@ void NesConsole::LoadHdPack(VirtualFile& romFile)
 				VirtualFile patchFile = result->second;
 				romFile.ApplyPatch(patchFile);
 			}
-		}
 
-		shared_ptr<HdPackData> data = _hdData.lock();
-		thread asyncLoadData([data]() {
-			data->LoadAsync();
-		});
-		asyncLoadData.detach();
+			shared_ptr<HdPackData> data = _hdData.lock();
+			if(data) {
+				thread asyncLoadData([data]() {
+					data->LoadAsync();
+				});
+				asyncLoadData.detach();
+			}
+		}
 	}
 }
 
