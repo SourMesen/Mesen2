@@ -237,6 +237,7 @@ bool HdPackLoader::ProcessImgTag(string src)
 		MessageManager::Log("[HDPack] Error loading HDPack: PNG file " + src + " could not be read.");
 		return false;
 	}
+	bitmapInfo.PngName = src;
 	return true;
 }
 

@@ -138,7 +138,7 @@ int PNGHelper::DecodePNG(vector<T>& out_image, unsigned long& image_width, unsig
 
 	out_image.resize(out_size / sizeof(T));
 	
-	if((r = spng_decode_image(ctx, (unsigned char*)out_image.data(), out_size, fmt, 0))) {
+	if((r = spng_decode_image(ctx, (unsigned char*)out_image.data(), out_size, fmt, SPNG_DECODE_TRNS))) {
 		spng_ctx_free(ctx);
 		return r;
 	}

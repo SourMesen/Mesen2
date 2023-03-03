@@ -156,6 +156,10 @@ void HdNesPack::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 	for(int layer = 0; layer < 4; layer++) {
 		for(int i = 0; i < _activeBgCount[layer]; i++) {
 			HdBgConfig& cfg = _bgConfig[layer * HdNesPack::PriorityLevelsPerLayer + i];
+			if(cfg.BackgroundIndex < 0) {
+				continue;
+			}
+
 			HdBackgroundInfo& bgInfo = _hdData->Backgrounds[cfg.BackgroundIndex];
 			bgInfo.Data->Init();
 

@@ -318,7 +318,7 @@ public:
 		uint32_t* pngData = Bitmap->PixelData.data();
 
 		HdTileData.resize(Width * Height);
-		if(Bitmap->PixelData.size() >= bitmapOffset + (Height * Bitmap->Width) + Width) {
+		if(Bitmap->PixelData.size() >= bitmapOffset + ((Height - 1) * Bitmap->Width) + Width) {
 			for(uint32_t y = 0; y < Height; y++) {
 				memcpy(HdTileData.data() + (y * Width), pngData + bitmapOffset, Width * sizeof(uint32_t));
 				bitmapOffset += Bitmap->Width;
