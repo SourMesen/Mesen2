@@ -198,13 +198,17 @@ bool HdPackLoader::LoadPack()
 				ProcessSfxTag(tokens);
 			} else if(lineContent.substr(0, 5) == "<ver>") {
 				_data->Version = stoi(lineContent.substr(5));
-				if(_data->Version > HdNesPack::CurrentVersion) {
+				if(_data->Version > BaseHdNesPack::CurrentVersion) {
 					MessageManager::Log("[HDPack] This HD Pack was built with a more recent version of Mesen - update Mesen to the latest version and try again.");
 					return false;
 				}
 			} else if(lineContent.substr(0, 7) == "<scale>") {
 				lineContent = lineContent.substr(7);
 				_data->Scale = std::stoi(lineContent);
+				if(_data->Scale > 10) {
+					MessageManager::Log("[HDPack] Scale ratios higher than 10 are not supported.");
+					return false;
+				}
 			} else if(lineContent.substr(0, 10) == "<overscan>") {
 				tokens = StringUtilities::Split(lineContent.substr(10), ',');
 				ProcessOverscanTag(tokens);

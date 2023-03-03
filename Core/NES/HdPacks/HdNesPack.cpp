@@ -10,17 +10,17 @@
 #include "Utilities/FolderUtilities.h"
 #include "Utilities/PNGHelper.h"
 
-HdNesPack::HdNesPack(EmuSettings* settings, HdPackData* hdData)
+template<uint32_t scale> HdNesPack<scale>::HdNesPack(EmuSettings* settings, HdPackData* hdData)
 {
 	_settings = settings;
 	_hdData = hdData;
 }
 
-HdNesPack::~HdNesPack()
+template<uint32_t scale> HdNesPack<scale>::~HdNesPack()
 {
 }
 
-void HdNesPack::BlendColors(uint8_t output[4], uint8_t input[4])
+template<uint32_t scale> void HdNesPack<scale>::BlendColors(uint8_t output[4], uint8_t input[4])
 {
 	uint8_t invertedAlpha = 256 - input[3];
 	output[0] = input[0] + (uint8_t)((invertedAlpha * output[0]) >> 8);
@@ -29,7 +29,7 @@ void HdNesPack::BlendColors(uint8_t output[4], uint8_t input[4])
 	output[3] = 0xFF;
 }
 
-uint32_t HdNesPack::AdjustBrightness(uint8_t input[4], int brightness)
+template<uint32_t scale> uint32_t HdNesPack<scale>::AdjustBrightness(uint8_t input[4], int brightness)
 {
 	return (
 		std::min(255, (brightness * ((int)input[0] + 1)) >> 8) |
@@ -39,10 +39,15 @@ uint32_t HdNesPack::AdjustBrightness(uint8_t input[4], int brightness)
 	);
 }
 
-void HdNesPack::DrawColor(uint32_t color, uint32_t *outputBuffer, uint32_t scale, uint32_t screenWidth)
+template<uint32_t scale> void HdNesPack<scale>::DrawColor(uint32_t color, uint32_t *outputBuffer, uint32_t screenWidth)
 {
-	if(scale == 1) {
+	if constexpr(scale == 1) {
 		*outputBuffer = color;
+	} else if constexpr(scale == 2) {
+		outputBuffer[0] = color;
+		outputBuffer[1] = color;
+		outputBuffer[screenWidth] = color;
+		outputBuffer[screenWidth+1] = color;
 	} else {
 		for(uint32_t i = 0; i < scale; i++) {
 			std::fill(outputBuffer, outputBuffer + scale, color);
@@ -51,44 +56,46 @@ void HdNesPack::DrawColor(uint32_t color, uint32_t *outputBuffer, uint32_t scale
 	}
 }
 
-void HdNesPack::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t scale, uint32_t screenWidth)
+template<uint32_t scale> void HdNesPack<scale>::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t screenWidth)
 {
-	int brightness = bgInfo.Brightness;
-	uint32_t left = bgInfo.Left;
-	uint32_t top = bgInfo.Top;
 	uint32_t width = bgInfo.Data->Width;
-	uint32_t *pngData = bgInfo.data() + ((top + y) * _hdData->Scale * width) + ((left + x) * _hdData->Scale);
-	uint32_t pixelColor;
+	uint32_t *pngData = bgInfo.data() + ((bgInfo.Top + y) * scale * width) + ((bgInfo.Left + x) * scale);
 
-	for(uint32_t i = 0; i < scale; i++) {
-		for(uint32_t j = 0; j < scale; j++) {
-			if(brightness == 255) {
-				pixelColor = *pngData;
-			} else {
-				pixelColor = AdjustBrightness((uint8_t*)pngData, brightness);
+	if(bgInfo.Brightness == 255) {
+		for(uint32_t i = 0; i < scale; i++) {
+			for(uint32_t j = 0; j < scale; j++) {
+				uint32_t pixelColor = pngData[j];
+				if(pixelColor >= 0xFF000000) {
+					outputBuffer[j] = pixelColor;
+				} else if(pixelColor >= 0x01000000) {
+					BlendColors((uint8_t*)outputBuffer+j, (uint8_t*)(&pixelColor));
+				}
 			}
-
-			if(((uint8_t*)pngData)[3] == 0xFF) {
-				*outputBuffer = pixelColor;
-			} else if(((uint8_t*)pngData)[3]) {
-				BlendColors((uint8_t*)outputBuffer, (uint8_t*)(&pixelColor));
-			}
-
-			outputBuffer++;
-			pngData++;
+			outputBuffer += screenWidth;
+			pngData += width;
 		}
-		outputBuffer += screenWidth - scale;
-		pngData += width - scale;
+	} else {
+		for(uint32_t i = 0; i < scale; i++) {
+			for(uint32_t j = 0; j < scale; j++) {
+				uint32_t pixelColor = AdjustBrightness((uint8_t*)pngData+j, bgInfo.Brightness);
+				if(pixelColor >= 0xFF000000) {
+					outputBuffer[j] = pixelColor;
+				} else if(pixelColor >= 0x01000000) {
+					BlendColors((uint8_t*)outputBuffer+j, (uint8_t*)(&pixelColor));
+				}
+			}
+			outputBuffer += screenWidth;
+			pngData += width;
+		}
 	}
 }
 
-void HdNesPack::DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackTileInfo, uint32_t *outputBuffer, uint32_t screenWidth)
+template<uint32_t scale> void HdNesPack<scale>::DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackTileInfo, uint32_t *outputBuffer, uint32_t screenWidth)
 {
 	if(hdPackTileInfo.IsFullyTransparent) {
 		return;
 	}
 
-	uint32_t scale = GetScale();
 	uint32_t *bitmapData = hdPackTileInfo.HdTileData.data();
 	uint32_t tileWidth = 8 * scale;
 	uint8_t tileOffsetX = tileInfo.HorizontalMirroring ? 7 - tileInfo.OffsetX : tileInfo.OffsetX;
@@ -141,12 +148,7 @@ void HdNesPack::DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackTileInfo
 	}
 }
 
-uint32_t HdNesPack::GetScale()
-{
-	return _hdData->Scale;
-}
-
-void HdNesPack::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
+template<uint32_t scale> void HdNesPack<scale>::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 {
 	_scrollX = ((lineFirstPixel.TmpVideoRamAddr & 0x1F) << 3) | lineFirstPixel.XScroll | ((lineFirstPixel.TmpVideoRamAddr & 0x400) ? 0x100 : 0);
 	_useCachedTile = false;
@@ -165,9 +167,9 @@ void HdNesPack::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 
 			cfg.BgScrollX = (int32_t)(_scrollX * bgInfo.HorizontalScrollRatio);
 			cfg.BgScrollY = (int32_t)(scrollY * bgInfo.VerticalScrollRatio);
-			if(y >= -cfg.BgScrollY && (y + bgInfo.Top + cfg.BgScrollY + 1) * _hdData->Scale <= bgInfo.Data->Height) {
+			if(y >= -cfg.BgScrollY && (y + bgInfo.Top + cfg.BgScrollY + 1) * scale <= bgInfo.Data->Height) {
 				cfg.BgMinX = -cfg.BgScrollX;
-				cfg.BgMaxX = bgInfo.Data->Width / _hdData->Scale - bgInfo.Left - cfg.BgScrollX - 1;
+				cfg.BgMaxX = bgInfo.Data->Width / scale - bgInfo.Left - cfg.BgScrollX - 1;
 			} else {
 				cfg.BgMinX = -1;
 				cfg.BgMaxX = -1;
@@ -176,7 +178,7 @@ void HdNesPack::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 	}
 }
 
-int32_t HdNesPack::GetLayerIndex(uint8_t priority)
+template<uint32_t scale> int32_t HdNesPack<scale>::GetLayerIndex(uint8_t priority)
 {
 	for(size_t i = 0; i < _hdData->Backgrounds.size(); i++) {
 		if(_hdData->Backgrounds[i].Priority != priority) {
@@ -198,7 +200,7 @@ int32_t HdNesPack::GetLayerIndex(uint8_t priority)
 	return -1;
 }
 
-void HdNesPack::OnBeforeApplyFilter()
+template<uint32_t scale> void HdNesPack<scale>::OnBeforeApplyFilter()
 {
 	if(_hdData->Palette.size() == 0x40) {
 		memcpy(_palette, _hdData->Palette.data(), 0x40 * sizeof(uint32_t));
@@ -224,7 +226,7 @@ void HdNesPack::OnBeforeApplyFilter()
 	}
 }
 
-HdPackTileInfo* HdNesPack::GetCachedMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile)
+template<uint32_t scale> HdPackTileInfo* HdNesPack<scale>::GetCachedMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile)
 {
 	if(((_scrollX + x) & 0x07) == 0) {
 		_useCachedTile = false;
@@ -247,7 +249,7 @@ HdPackTileInfo* HdNesPack::GetCachedMatchingTile(uint32_t x, uint32_t y, HdPpuTi
 	return hdPackTileInfo;
 }
 
-HdPackTileInfo* HdNesPack::GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile, bool* disableCache)
+template<uint32_t scale> HdPackTileInfo* HdNesPack<scale>::GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile, bool* disableCache)
 {
 	auto hdTile = _hdData->TileByKey.find(*tile);
 	if(hdTile == _hdData->TileByKey.end()) {
@@ -261,7 +263,9 @@ HdPackTileInfo* HdNesPack::GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo
 			}
 
 			if(hdPackTile->MatchesCondition(_hdScreenInfo, x, y, tile)) {
-				hdPackTile->Init();
+				if(hdPackTile->NeedInit()) {
+					hdPackTile->Init();
+				}
 				return hdPackTile;
 			}
 		}
@@ -270,18 +274,18 @@ HdPackTileInfo* HdNesPack::GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo
 	return nullptr;
 }
 
-bool HdNesPack::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth)
+template<uint32_t scale> bool HdNesPack<scale>::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth)
 {
 	HdBgConfig bgConfig = _bgConfig[(int)priority];
 	if((int32_t)x >= bgConfig.BgMinX && (int32_t)x <= bgConfig.BgMaxX) {
 		HdBackgroundInfo& bgInfo = _hdData->Backgrounds[bgConfig.BackgroundIndex];
-		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, _hdData->Scale, screenWidth);
+		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth);
 		return true;
 	}
 	return false;
 }
 
-void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uint32_t *outputBuffer, uint32_t screenWidth)
+template<uint32_t scale> void HdNesPack<scale>::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uint32_t *outputBuffer, uint32_t screenWidth)
 {
 	HdPackTileInfo *hdPackTileInfo = nullptr;
 	HdPackTileInfo *hdPackSpriteInfo = nullptr;
@@ -294,7 +298,7 @@ void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uin
 
 	int lowestBgSprite = 999;
 	
-	DrawColor(_palette[pixelInfo.Tile.PpuBackgroundColor], outputBuffer, _hdData->Scale, screenWidth);
+	DrawColor(_palette[pixelInfo.Tile.PpuBackgroundColor], outputBuffer, screenWidth);
 
 	bool hasBackground = false;
 	for(int i = 0; i < _activeBgCount[0]; i++) {
@@ -312,7 +316,7 @@ void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uin
 				if(hdPackSpriteInfo) {
 					DrawTile(pixelInfo.Sprite[k], *hdPackSpriteInfo, outputBuffer, screenWidth);
 				} else if(pixelInfo.Sprite[k].SpriteColorIndex != 0) {
-					DrawColor(_palette[pixelInfo.Sprite[k].SpriteColor], outputBuffer, _hdData->Scale, screenWidth);
+					DrawColor(_palette[pixelInfo.Sprite[k].SpriteColor], outputBuffer, screenWidth);
 				}
 			}
 		}
@@ -327,7 +331,7 @@ void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uin
 	} else if(renderOriginalTiles) {
 		//Draw regular SD background tile
 		if(!hasBackground || pixelInfo.Tile.BgColorIndex != 0) {
-			DrawColor(_palette[pixelInfo.Tile.BgColor], outputBuffer, _hdData->Scale, screenWidth);
+			DrawColor(_palette[pixelInfo.Tile.BgColor], outputBuffer, screenWidth);
 		}
 	}
 
@@ -342,7 +346,7 @@ void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uin
 				if(hdPackSpriteInfo) {
 					DrawTile(pixelInfo.Sprite[k], *hdPackSpriteInfo, outputBuffer, screenWidth);
 				} else if(pixelInfo.Sprite[k].SpriteColorIndex != 0) {
-					DrawColor(_palette[pixelInfo.Sprite[k].SpriteColor], outputBuffer, _hdData->Scale, screenWidth);
+					DrawColor(_palette[pixelInfo.Sprite[k].SpriteColor], outputBuffer, screenWidth);
 				}
 			}
 		}
@@ -353,7 +357,7 @@ void HdNesPack::GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uin
 	}
 }
 
-void HdNesPack::Process(HdScreenInfo *hdScreenInfo, uint32_t* outputBuffer, OverscanDimensions &overscan)
+template<uint32_t scale> void HdNesPack<scale>::Process(HdScreenInfo *hdScreenInfo, uint32_t* outputBuffer, OverscanDimensions &overscan)
 {
 	_hdScreenInfo = hdScreenInfo;
 	uint32_t hdScale = GetScale();
@@ -373,10 +377,9 @@ void HdNesPack::Process(HdScreenInfo *hdScreenInfo, uint32_t* outputBuffer, Over
 	}
 }
 
-void HdNesPack::ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t* outputBuffer, uint32_t hdScreenWidth)
+template<uint32_t scale> void HdNesPack<scale>::ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t* outputBuffer, uint32_t hdScreenWidth)
 {
 	//Apply grayscale/emphasis bits on a scanline level (less accurate, but shouldn't cause issues and simpler to implement)
-	uint32_t scale = GetScale();
 	if(pixelInfo.Grayscale) {
 		uint32_t* out = outputBuffer;
 		for(uint32_t y = 0; y < scale; y++) {
@@ -425,3 +428,14 @@ void HdNesPack::ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t*
 		}
 	}
 }
+
+template HdNesPack<1>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<2>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<3>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<4>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<5>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<6>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<7>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<8>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<9>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<10>::HdNesPack(EmuSettings* settings, HdPackData* hdData);

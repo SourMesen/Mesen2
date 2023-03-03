@@ -245,7 +245,7 @@ public:
 struct HdPackTileInfo : public HdTileKey
 {
 private:
-	bool _initialized = false;
+	bool _needInit = true;
 
 public:
 	uint32_t X;
@@ -315,13 +315,14 @@ public:
 		}
 	}
 
-	void Init()
+	__forceinline bool NeedInit()
 	{
-		if(_initialized) {
-			return;
-		}
+		return _needInit;
+	}
 
-		_initialized = true;
+	__noinline void Init()
+	{
+		_needInit = false;
 		Bitmap->Init();
 
 		uint32_t bitmapOffset = Y * Bitmap->Width + X;

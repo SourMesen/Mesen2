@@ -232,7 +232,7 @@ void HdPackBuilder::SaveHdPack()
 	stringstream tileRows;
 	stringstream ss;
 	int pngIndex = 0;
-	ss << "<ver>" << std::to_string(HdNesPack::CurrentVersion) << std::endl;
+	ss << "<ver>" << std::to_string(BaseHdNesPack::CurrentVersion) << std::endl;
 	ss << "<scale>" << _hdData.Scale << std::endl;
 	ss << "<supportedRom>" << _emu->GetRomInfo().RomFile.GetSha1Hash() << std::endl;
 	if(_options.IgnoreOverscan) {

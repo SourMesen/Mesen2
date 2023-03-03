@@ -10,7 +10,7 @@ class HdVideoFilter : public BaseVideoFilter
 {
 private:
 	HdPackData* _hdData;
-	unique_ptr<HdNesPack> _hdNesPack = nullptr;
+	unique_ptr<BaseHdNesPack> _hdNesPack = nullptr;
 
 public:
 	HdVideoFilter(Emulator* emu, HdPackData* hdData);

@@ -4,7 +4,19 @@
 
 class EmuSettings;
 
-class HdNesPack
+class BaseHdNesPack
+{
+public:
+	static constexpr uint32_t CurrentVersion = 106;
+
+	virtual uint32_t GetScale() = 0;
+	virtual void Process(HdScreenInfo* hdScreenInfo, uint32_t* outputBuffer, OverscanDimensions& overscan) = 0;
+
+	virtual ~BaseHdNesPack() {}
+};
+
+template<uint32_t scale>
+class HdNesPack final : public BaseHdNesPack
 {
 private:
 	struct HdBgConfig
@@ -37,14 +49,14 @@ private:
 
 	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4]);
 	__forceinline uint32_t AdjustBrightness(uint8_t input[4], int brightness);
-	__forceinline void DrawColor(uint32_t color, uint32_t* outputBuffer, uint32_t scale, uint32_t screenWidth);
+	__forceinline void DrawColor(uint32_t color, uint32_t* outputBuffer, uint32_t screenWidth);
 	__forceinline void DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackTileInfo, uint32_t* outputBuffer, uint32_t screenWidth);
 	
 	__forceinline HdPackTileInfo* GetCachedMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile);
 	__forceinline HdPackTileInfo* GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile, bool* disableCache = nullptr);
 
 	__forceinline bool DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth);
-	__forceinline void DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t scale, uint32_t screenWidth);
+	__forceinline void DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t screenWidth);
 
 	void OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y);
 	int32_t GetLayerIndex(uint8_t priority);
@@ -53,12 +65,10 @@ private:
 	__forceinline void ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t* outputBuffer, uint32_t hdScreenWidth);
 
 public:
-	static constexpr uint32_t CurrentVersion = 106;
-
 	HdNesPack(EmuSettings* settings, HdPackData* hdData);
-	~HdNesPack();
+	virtual ~HdNesPack();
 
-	uint32_t GetScale();
+	uint32_t GetScale() { return scale; }
 	
-	void Process(HdScreenInfo *hdScreenInfo, uint32_t *outputBuffer, OverscanDimensions &overscan);
+	void Process(HdScreenInfo *hdScreenInfo, uint32_t *outputBuffer, OverscanDimensions &overscan) override;
 };
