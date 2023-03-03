@@ -4,6 +4,7 @@
 #include "Shared/SettingTypes.h"
 #include "Shared/Interfaces/IConsole.h"
 #include "Debugger/DebugTypes.h"
+#include "Utilities/safe_ptr.h"
 
 class Emulator;
 class NesCpu;
@@ -43,7 +44,7 @@ private:
 	unique_ptr<NesControlManager> _controlManager;
 	unique_ptr<NesSoundMixer> _mixer;
 
-	unique_ptr<HdPackData> _hdData;
+	safe_ptr<HdPackData> _hdData;
 	unique_ptr<HdAudioDevice> _hdAudioDevice;
 	unique_ptr<HdPackBuilder> _hdPackBuilder;
 

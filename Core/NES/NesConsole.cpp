@@ -44,6 +44,10 @@ NesConsole::NesConsole(Emulator* emu)
 
 NesConsole::~NesConsole()
 {
+	shared_ptr<HdPackData> hdData = _hdData.lock();
+	if(hdData) {
+		hdData->CancelLoad();
+	}
 }
 
 Emulator* NesConsole::GetEmulator()
@@ -211,6 +215,12 @@ void NesConsole::LoadHdPack(VirtualFile& romFile)
 				romFile.ApplyPatch(patchFile);
 			}
 		}
+
+		shared_ptr<HdPackData> data = _hdData.lock();
+		thread asyncLoadData([data]() {
+			data->LoadAsync();
+		});
+		asyncLoadData.detach();
 	}
 }
 

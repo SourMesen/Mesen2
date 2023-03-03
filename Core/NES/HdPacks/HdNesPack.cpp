@@ -275,7 +275,6 @@ bool HdNesPack::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, ui
 	HdBgConfig bgConfig = _bgConfig[(int)priority];
 	if((int32_t)x >= bgConfig.BgMinX && (int32_t)x <= bgConfig.BgMaxX) {
 		HdBackgroundInfo& bgInfo = _hdData->Backgrounds[bgConfig.BackgroundIndex];
-		bgInfo.Data->Init();
 		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, _hdData->Scale, screenWidth);
 		return true;
 	}

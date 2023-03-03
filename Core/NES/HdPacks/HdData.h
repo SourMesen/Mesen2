@@ -1,9 +1,11 @@
 #pragma once
 #include "pch.h"
 #include "NES/NesConstants.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/PNGHelper.h"
 #include "Utilities/HexUtilities.h"
-#include "Shared/MessageManager.h"
+#include "Utilities/SimpleLock.h"
+#include "Utilities/Timer.h"
 
 struct HdTileKey
 {
@@ -195,6 +197,7 @@ struct HdPackBitmapInfo
 {
 private:
 	bool _initDone = false;
+	SimpleLock _lock;
 
 public:
 	string PngName;
@@ -209,13 +212,20 @@ public:
 			return;
 		}
 
-		_initDone = true;
+		auto lock = _lock.AcquireSafe();
+		if(_initDone) {
+			return;
+		}
+
+		//Timer tmr;
 		if(PNGHelper::ReadPNG(FileData, PixelData, Width, Height)) {
+			//MessageManager::Log("[HDPack] PNG file loaded: " + PngName + " (" + std::to_string(tmr.GetElapsedMS()) + ")");
 			PremultiplyAlpha();
 		} else {
 			MessageManager::Log("[HDPack] PNG file " + PngName + " is invalid.");
 		}
 		FileData = {};
+		_initDone = true;
 	}
 
 	void PremultiplyAlpha()
@@ -414,6 +424,10 @@ struct HdBackgroundInfo
 
 struct HdPackData
 {
+private:
+	bool _cancelLoad = false;
+
+public:
 	vector<HdBackgroundInfo> Backgrounds;
 	vector<unique_ptr<HdPackBitmapInfo>> BackgroundFileData;
 	vector<unique_ptr<HdPackBitmapInfo>> ImageFileData;
@@ -438,6 +452,27 @@ struct HdPackData
 
 	HdPackData(const HdPackData&) = delete;
 	HdPackData& operator=(const HdPackData&) = delete;
+
+	void LoadAsync()
+	{
+		for(auto& bitmap : BackgroundFileData) {
+			bitmap->Init();
+			if(_cancelLoad) {
+				return;
+			}
+		}
+		for(auto& bitmap : ImageFileData) {
+			bitmap->Init();
+			if(_cancelLoad) {
+				return;
+			}
+		}
+	}
+
+	void CancelLoad()
+	{
+		_cancelLoad = true;
+	}
 };
 
 enum class HdPackOptions
