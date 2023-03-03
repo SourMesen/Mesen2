@@ -784,8 +784,9 @@ void Emulator::WaitForPauseEnd()
 	PlatformUtilities::DisableScreensaver();
 	PlatformUtilities::EnableHighResolutionTimer();
 
+	while(!_stopFlag && !_runLock.TryAcquire(50)) { }
+
 	if(!_stopFlag) {
-		_runLock.Acquire();
 		_notificationManager->SendNotification(ConsoleNotificationType::GameResumed);
 	}
 }
