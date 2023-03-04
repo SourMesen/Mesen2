@@ -305,9 +305,10 @@
 			<Control ID="chkEnablePpuOamRowCorruption">Enable PPU OAM row corruption emulation</Control>
 			<Control ID="chkEnablePpu2006ScrollGlitch">Enable PPU $2006 scroll glitch emulation</Control>
 			<Control ID="chkEnablePpu2000ScrollGlitch">Enable PPU $2000/$2005/$2006 first-write scroll glitch emulation</Control>
+			<Control ID="chkRestrictPpuAccessOnFirstFrame">Clear PPU $2000/1/5/6/7 throughout first frame after reset/power on</Control>
 
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
-			<Control ID="chkDisableOamAddrBug">Disable PPU OAMADDR bug emulation</Control>			
+			<Control ID="chkDisableOamAddrBug">Disable PPU OAMADDR bug emulation</Control>
 			<Control ID="chkDisablePaletteRead">Disable PPU palette reads</Control>
 			<Control ID="chkDisablePpu2004Reads">Disable PPU $2004 reads (Famicom behavior)</Control>
 			<Control ID="chkDisablePpuReset">Do not reset PPU when resetting console (Famicom behavior)</Control>

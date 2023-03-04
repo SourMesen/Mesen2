@@ -306,6 +306,7 @@
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpuOamRowCorruption}" Text="{l:Translate chkEnablePpuOamRowCorruption}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2000ScrollGlitch}" Text="{l:Translate chkEnablePpu2000ScrollGlitch}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnablePpu2006ScrollGlitch}" Text="{l:Translate chkEnablePpu2006ScrollGlitch}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.RestrictPpuAccessOnFirstFrame}" Text="{l:Translate chkRestrictPpuAccessOnFirstFrame}" />
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblMiscSettings}">

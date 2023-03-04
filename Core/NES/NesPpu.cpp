@@ -130,6 +130,8 @@ template<class T> void NesPpu<T>::Reset()
 
 	memset(_oamDecayCycles, 0, sizeof(_oamDecayCycles));
 	_enableOamDecay = _console->GetNesConfig().EnableOamDecay;
+	
+	_allowFullPpuAccess = false;
 
 	UpdateMinimumDrawCycles();
 }
@@ -344,7 +346,10 @@ template<class T> uint8_t NesPpu<T>::ReadRam(uint16_t addr)
 			break;
 
 		case PpuRegisters::VideoMemoryData:
-			if(_ignoreVramRead) {
+			if(!_allowFullPpuAccess && _settings->GetNesConfig().RestrictPpuAccessOnFirstFrame) {
+				openBusMask = 0x00;
+				returnValue = 0;
+			} else if(_ignoreVramRead) {
 				//2 reads to $2007 in quick succession (2 consecutive CPU cycles) causes the 2nd read to be ignored (normally depends on PPU/CPU timing, but this is the simplest solution)
 				//Return open bus in this case? (which will match the last value read)
 				openBusMask = 0xFF;
@@ -387,6 +392,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				SetControlRegister(value);
 			}
 			break;
+
 		case PpuRegisters::Mask:
 			if(GetPpuModel() >= PpuModel::Ppu2C05A && GetPpuModel() <= PpuModel::Ppu2C05E) {
 				SetControlRegister(value);
@@ -394,9 +400,11 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				SetMaskRegister(value);
 			}
 			break;
+
 		case PpuRegisters::SpriteAddr:
 			_spriteRamAddr = value;
 			break;
+
 		case PpuRegisters::SpriteData:
 			if((_scanline >= 240 && (_region != ConsoleRegion::Pal || _scanline < _palSpriteEvalScanline)) || !IsRenderingEnabled()) {
 				if((_spriteRamAddr & 0x03) == 0x02) {
@@ -412,7 +420,12 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 				_spriteRamAddr = (_spriteRamAddr + 4) & 0xFF;
 			}
 			break;
+
 		case PpuRegisters::ScrollOffsets:
+			if(!_allowFullPpuAccess && _settings->GetNesConfig().RestrictPpuAccessOnFirstFrame) {
+				return;
+			}
+
 			if(_writeToggle) {
 				_tmpVideoRamAddr = (_tmpVideoRamAddr & ~0x73E0) | ((value & 0xF8) << 2) | ((value & 0x07) << 12);
 			} else {
@@ -423,7 +436,12 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			}
 			_writeToggle = !_writeToggle;
 			break;
+
 		case PpuRegisters::VideoMemoryAddr:
+			if(!_allowFullPpuAccess && _settings->GetNesConfig().RestrictPpuAccessOnFirstFrame) {
+				return;
+			}
+
 			if(_writeToggle) {
 				_tmpVideoRamAddr = (_tmpVideoRamAddr & ~0x00FF) | value;
 
@@ -437,6 +455,7 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			}
 			_writeToggle = !_writeToggle;
 			break;
+
 		case PpuRegisters::VideoMemoryData:
 			if((_ppuBusAddress & 0x3FFF) >= 0x3F00) {
 				WritePaletteRam(_ppuBusAddress, value);
@@ -452,9 +471,11 @@ template<class T> void NesPpu<T>::WriteRam(uint16_t addr, uint8_t value)
 			_needStateUpdate = true;
 			_needVideoRamIncrement = true;
 			break;
+
 		case PpuRegisters::SpriteDMA:
 			_console->GetCpu()->RunDMATransfer(value);
 			break;
+
 		default:
 			break;
 	}
@@ -472,6 +493,10 @@ template<class T> void NesPpu<T>::ProcessTmpAddrScrollGlitch(uint16_t normalAddr
 
 template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 {
+	if(!_allowFullPpuAccess && _settings->GetNesConfig().RestrictPpuAccessOnFirstFrame) {
+		return;
+	}
+
 	uint8_t nameTable = (value & 0x03);
 
 	uint16_t normalAddr = (_tmpVideoRamAddr & ~0x0C00) | (nameTable << 10);
@@ -498,6 +523,10 @@ template<class T> void NesPpu<T>::SetControlRegister(uint8_t value)
 
 template<class T> void NesPpu<T>::SetMaskRegister(uint8_t value)
 {
+	if(!_allowFullPpuAccess && _settings->GetNesConfig().RestrictPpuAccessOnFirstFrame) {
+		return;
+	}
+
 	_mask.Grayscale = (value & 0x01) == 0x01;
 	_mask.BackgroundMask = (value & 0x02) == 0x02;
 	_mask.SpriteMask = (value & 0x04) == 0x04;
@@ -1256,6 +1285,7 @@ template<class T> void NesPpu<T>::ProcessScanlineFirstCycle()
 		if(_scanline == -1) {
 			_statusFlags.SpriteOverflow = false;
 			_statusFlags.Sprite0Hit = false;
+			_allowFullPpuAccess = true;
 
 			//Switch to alternate output buffer (VideoDecoder may still be decoding the last frame buffer)
 			_currentOutputBuffer = (_currentOutputBuffer == _outputBuffers[0]) ? _outputBuffers[1] : _outputBuffers[0];

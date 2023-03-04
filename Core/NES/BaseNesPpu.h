@@ -101,6 +101,7 @@ protected:
 	uint16_t _palSpriteEvalScanline = 0;
 
 	bool _needVideoRamIncrement = false;
+	bool _allowFullPpuAccess = false;
 
 	uint8_t _memoryReadBuffer = 0;
 	PPUStatusFlags _statusFlags = {};
