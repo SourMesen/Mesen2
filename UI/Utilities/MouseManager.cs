@@ -76,7 +76,9 @@ namespace Mesen.Utilities
 			MousePosition p = GlobalMouse.GetMousePosition(_renderer.Handle);
 			if(_prevPosition.X != p.X || _prevPosition.Y != p.Y) {
 				//Send mouse movement x/y values to core
-				InputApi.SetMouseMovement((Int16)(p.X - _prevPosition.X), (Int16)(p.Y - _prevPosition.Y));
+				if(_mouseCaptured) {
+					InputApi.SetMouseMovement((Int16)(p.X - _prevPosition.X), (Int16)(p.Y - _prevPosition.Y));
+				}
 				_prevPosition = p;
 				_lastMouseMove = DateTime.Now;
 			}
@@ -97,13 +99,19 @@ namespace Mesen.Utilities
 				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd);
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
 
-				InputApi.SetKeyState(LeftMouseButtonKeyCode, leftPressed);
-				InputApi.SetKeyState(RightMouseButtonKeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));
-				InputApi.SetKeyState(MiddleMouseButtonKeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle));
-				InputApi.SetKeyState(MouseButton4KeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4));
-				InputApi.SetKeyState(MouseButton5KeyCode, GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5));
+				bool rightPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Right);
+				bool middlePressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Middle);
+				bool button4Pressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Button4);
+				bool button5Pressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Button5);
+				bool buttonPressed = (leftPressed || rightPressed || middlePressed || button4Pressed || button5Pressed);
 
-				if(!_mouseCaptured && AllowMouseCapture && leftPressed) {
+				InputApi.SetKeyState(LeftMouseButtonKeyCode, leftPressed);
+				InputApi.SetKeyState(RightMouseButtonKeyCode, rightPressed);
+				InputApi.SetKeyState(MiddleMouseButtonKeyCode, middlePressed);
+				InputApi.SetKeyState(MouseButton4KeyCode, button4Pressed);
+				InputApi.SetKeyState(MouseButton5KeyCode, button5Pressed);
+
+				if(!_mouseCaptured && AllowMouseCapture && buttonPressed) {
 					//If the mouse button is clicked and mouse isn't captured but can be, turn on mouse capture
 					CaptureMouse();
 				}
