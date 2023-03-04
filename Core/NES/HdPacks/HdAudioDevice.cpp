@@ -49,9 +49,8 @@ void HdAudioDevice::Serialize(Serializer& s)
 	}
 }
 
-bool HdAudioDevice::PlayBgmTrack(uint8_t track, uint32_t startOffset)
+bool HdAudioDevice::PlayBgmTrack(int trackId, uint32_t startOffset)
 {
-	int trackId = _album * 256 + track;
 	auto result = _hdData->BgmFilesById.find(trackId);
 	if(result != _hdData->BgmFilesById.end()) {
 		if(_oggMixer->Play(result->second, false, startOffset)) {
@@ -59,7 +58,7 @@ bool HdAudioDevice::PlayBgmTrack(uint8_t track, uint32_t startOffset)
 			return true;
 		}
 	} else {
-		MessageManager::Log("[HDPack] Invalid album+track combination: " + std::to_string(_album) + ":" + std::to_string(track));
+		MessageManager::Log("[HDPack] Invalid album+track combination: " + std::to_string(_album) + ":" + std::to_string(trackId & 0xFF));
 	}
 	return false;
 }
@@ -149,7 +148,7 @@ void HdAudioDevice::WriteRam(uint16_t addr, uint8_t value)
 
 		//Play BGM track (0-255 = track number)
 		//Stop the current BGM and starts a new track
-		case 5: _trackError = PlayBgmTrack(value, 0); break;
+		case 5: _trackError = PlayBgmTrack(_album * 256 + value, 0); break;
 
 		//Play sound effect (0-255 = sfx number)
 		//Plays a new sound effect (no limit to the number of simultaneous sound effects)
