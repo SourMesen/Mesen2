@@ -1043,10 +1043,25 @@ namespace Mesen.ViewModels
 
 					//Find the hires.txt file
 					ZipArchiveEntry? hiresEntry = null;
+
+					//Find the most top-level hires.txt file in the zip
+					int minDepth = int.MaxValue;
 					foreach(ZipArchiveEntry entry in zip.Entries) {
 						if(entry.Name == "hires.txt") {
-							hiresEntry = entry;
-							break;
+							string? folder = Path.GetDirectoryName(entry.FullName);
+							int depth = 0;
+							if(folder != null) {
+								do {
+									depth++;
+								} while((folder = Path.GetDirectoryName(folder)) != null);
+							}
+							if(depth < minDepth) {
+								minDepth = depth;
+								hiresEntry = entry;
+								if(depth == 0) {
+									break;
+								}
+							}
 						}
 					}
 
