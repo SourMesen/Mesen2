@@ -26,7 +26,7 @@ protected:
 		Comma, Dot, SemiColon, Apostrophe,
 		Slash, Backslash,
 		Equal, Minus, Grave,
-		LeftBracket, RightBracket, 		
+		LeftBracket, RightBracket,
 		CapsLock, Pause,
 		Ctrl, Shift, Alt,
 		Space, Backspace, Tab, Esc, Enter,
@@ -34,7 +34,7 @@ protected:
 		Ins, Delete,
 		PageUp, PageDown,
 		Up, Down, Left, Right,
-		Unknown1, Unknown2, Unknown3,
+		Unknown1, Unknown2, Unknown3, None
 	};
 
 	Buttons _keyboardMatrix[104] = {
@@ -47,7 +47,7 @@ protected:
 		Num7, Y, K, M, F4, U, Num8, J,
 		Minus, SemiColon, Apostrophe, Slash, F6, P, Equal, Shift,
 		T, H, N, Space, F3, R, Num6, B,
-		Numpad6, NumpadEnter, Numpad4, Numpad8, Numpad2, Unknown1, Unknown2, Unknown3,
+		Numpad6, NumpadEnter, Numpad4, Numpad8, None, Unknown1, Unknown2, Unknown3,
 		Alt, Numpad4, Numpad7, F11, F12, Numpad1, Numpad2, Numpad8,
 		NumpadMinus, NumpadPlus, NumpadMultiply, Numpad9, F10, Numpad5, NumpadDivide, NumLock,
 		Grave, Numpad6, Pause, Space, F9, Numpad3, NumpadDot, Numpad0
@@ -68,10 +68,17 @@ protected:
 		uint32_t baseIndex = row * 8 + (column ? 4 : 0);
 		for(int i = 0; i < 4; i++) {
 			if(IsPressed(_keyboardMatrix[baseIndex + i])) {
-				result |= 0x10;
+				result |= (1 << i);
 			}
-			result >>= 1;
 		}
+
+		if(row == 9 && column) {
+			//This bit is used to indicate that this is an "extended" version of
+			//the keyboard which has four more rows to read from (numpad, etc.)
+			//Corresponds to row 9, bit 4
+			result |= 0x01;
+		}
+
 		return result;
 	}
 
