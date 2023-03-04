@@ -163,6 +163,14 @@ namespace Mesen.Config
 				config = JsonSerializer.Deserialize<Configuration>(fileData, JsonHelper.Options) ?? new Configuration();
 				config._fileData = fileData;
 			} catch {
+				try {
+					//File exists but couldn't be loaded, make a backup of the old settings before we overwrite them
+					string? folder = Path.GetDirectoryName(configFile);
+					if(folder != null) {
+						File.Copy(configFile, Path.Combine(folder, "settings." + DateTime.Now.ToString("yyyy-M-dd_HH-mm-ss") + ".bak"), true);
+					}
+				} catch { }
+
 				config = new Configuration();
 			}
 
