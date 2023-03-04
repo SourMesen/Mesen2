@@ -232,6 +232,8 @@ namespace Mesen.Utilities
 			string? initialFolder = null;
 			if(ConfigManager.Config.Preferences.OverrideGameFolder && Directory.Exists(ConfigManager.Config.Preferences.GameFolder)) {
 				initialFolder = ConfigManager.Config.Preferences.GameFolder;
+			} else {
+				initialFolder = ConfigManager.Config.RecentFiles.Items.Count > 0 ? ConfigManager.Config.RecentFiles.Items[0].RomFile.Folder : null;
 			}
 
 			string? filename = await FileDialogHelper.OpenFile(initialFolder, _mainWindow, FileDialogHelper.RomExt);
