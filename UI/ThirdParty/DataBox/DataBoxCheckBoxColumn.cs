@@ -17,7 +17,9 @@ public class DataBoxCheckBoxColumn : DataBoxBoundColumn
                 var checkBox = new CheckBox()
                 {
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
+                    IsHitTestVisible = false,
+                    Focusable = false
                 };
 
                 if (Binding is { })

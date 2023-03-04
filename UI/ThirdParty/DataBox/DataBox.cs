@@ -15,6 +15,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Metadata;
+using Avalonia.Threading;
 using DataBoxControl.Controls;
 using DataBoxControl.Primitives;
 using ReactiveUI;
@@ -248,32 +249,31 @@ public class DataBox : TemplatedControl
         }
     }
 
-	internal void OnCellTapped(object? sender, RoutedEventArgs e)
+	internal void OnCellDoubleTapped(object? sender, RoutedEventArgs e)
 	{
-		if(sender is DataBoxCell cell) {
-			CellClick?.Invoke(cell);
+		if(sender is DataBoxCell cell && !(cell.Column is DataBoxCheckBoxColumn)) {
+			Dispatcher.UIThread.Post(() => {
+				CellDoubleClick?.Invoke(cell);
+			});
 		}
 	}
 
-	bool _isDoubleTap = false;
-	internal void OnCellDoubleTapped(object? sender, RoutedEventArgs e)
+	private DataBoxCell? _pressedCell = null;
+	internal void OnCellPointerPressed(object? sender, RoutedEventArgs e)
 	{
-		if(sender is DataBoxCell cell && cell.Column is DataBoxCheckBoxColumn) {
-			//Process double clicks on checkboxes as single clicks
-			CellClick?.Invoke(cell);
-		} else {
-			_isDoubleTap = true;
+		if(sender is DataBoxCell cell) {
+			_pressedCell = cell;
 		}
 	}
 
 	internal void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)
 	{
-		if(sender is DataBoxCell cell) {
-			if(_isDoubleTap) {
-				CellDoubleClick?.Invoke(cell);
-			}
+		if(sender is DataBoxCell cell && _pressedCell == cell) {
+			Dispatcher.UIThread.Post(() => {
+				CellClick?.Invoke(cell);
+			});
 		}
-		_isDoubleTap = false;
+		_pressedCell = null;
 	}
 
 	protected override void OnPointerPressed(PointerPressedEventArgs e)

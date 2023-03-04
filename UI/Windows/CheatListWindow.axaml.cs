@@ -64,7 +64,8 @@ namespace Mesen.Windows
 
 		private void OnCellClick(DataBoxCell cell)
 		{
-			if(cell.Column?.ColumnName == "Enabled") {
+			if(cell.DataContext is CheatCode cheat && cell.Column?.ColumnName == "Enabled") {
+				cheat.Enabled = !cheat.Enabled;
 				_model.Sort();
 				_model.ApplyCheats();
 			}

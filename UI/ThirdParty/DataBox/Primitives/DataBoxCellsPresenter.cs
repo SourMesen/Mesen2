@@ -36,11 +36,11 @@ public class DataBoxCellsPresenter : Panel, IStyleable
                 DataBox = DataBox,
 					 Column = column
             };
-			
-				cell.Tapped += DataBox.OnCellTapped;
-				cell.DoubleTapped += DataBox.OnCellDoubleTapped;
-				cell.PointerReleased += DataBox.OnCellPointerReleased;
-				cells.Add(cell);
+
+			cell.AddHandler(DataBoxCell.PointerPressedEvent, DataBox.OnCellPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+			cell.AddHandler(DataBoxCell.PointerReleasedEvent, DataBox.OnCellPointerReleased, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+			cell.DoubleTapped += DataBox.OnCellDoubleTapped;
+			cells.Add(cell);
         }
         Children.AddRange(cells);
     }

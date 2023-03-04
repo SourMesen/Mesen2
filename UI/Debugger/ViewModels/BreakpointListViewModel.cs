@@ -113,11 +113,8 @@ namespace Mesen.Debugger.ViewModels
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_Delete),
 					IsEnabled = () => Selection.SelectedItems.Count > 0,
 					OnClick = () => {
-						foreach(object item in Selection.SelectedItems.Cast<object>().ToList()) {
-							if(item is BreakpointViewModel vm) {
-								BreakpointManager.RemoveBreakpoint(vm.Breakpoint);
-							}
-						}
+						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
+						BreakpointManager.RemoveBreakpoints(selectedBps);
 					}
 				},
 

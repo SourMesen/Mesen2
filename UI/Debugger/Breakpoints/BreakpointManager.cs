@@ -68,6 +68,14 @@ namespace Mesen.Debugger
 			RefreshBreakpoints(bp);
 		}
 
+		public static void RemoveBreakpoints(IEnumerable<Breakpoint> breakpoints)
+		{
+			foreach(Breakpoint bp in breakpoints) {
+				_breakpoints.Remove(bp);
+			}
+			RefreshBreakpoints(null);
+		}
+
 		public static void AddBreakpoint(Breakpoint bp)
 		{
 			if(!_breakpoints.Contains(bp)) {
