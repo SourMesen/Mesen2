@@ -103,7 +103,7 @@ public:
 	NesPpu(NesConsole* console);
 	virtual ~NesPpu();
 
-	void Reset() override;
+	void Reset(bool softReset) override;
 
 	uint16_t* GetScreenBuffer(bool previousBuffer) override;
 	void DebugCopyOutputBuffer(uint16_t* target);

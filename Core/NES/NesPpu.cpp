@@ -49,6 +49,9 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 
 	//This should (presumably) persist across resets
 	memset(_corruptOamRow, 0, sizeof(_corruptOamRow));
+	
+	//'v' is not cleared on reset, but it set to 0 on power on
+	_videoRamAddr = 0;
 
 	_emu->RegisterMemory(MemoryType::NesSpriteRam, _spriteRam, sizeof(_spriteRam));
 	_emu->RegisterMemory(MemoryType::NesSecondarySpriteRam, _secondarySpriteRam, sizeof(_secondarySpriteRam));
@@ -59,12 +62,21 @@ template<class T> NesPpu<T>::NesPpu(NesConsole* console)
 
 	UpdateTimings(ConsoleRegion::Ntsc);
 
-	Reset();
+	Reset(false);
 }
 
-template<class T> void NesPpu<T>::Reset()
+template<class T> void NesPpu<T>::Reset(bool softReset)
 {
 	_masterClock = 0;
+
+	//Reset OAM decay timestamps regardless of the reset PPU option
+	memset(_oamDecayCycles, 0, sizeof(_oamDecayCycles));
+	_enableOamDecay = _console->GetNesConfig().EnableOamDecay;
+
+	if(softReset && _settings->GetNesConfig().DisablePpuReset) {
+		return;
+	}
+
 	_preventVblFlag = false;
 
 	_needStateUpdate = false;
@@ -75,7 +87,6 @@ template<class T> void NesPpu<T>::Reset()
 	_openBus = 0;
 	memset(_openBusDecayStamp, 0, sizeof(_openBusDecayStamp));
 
-	_videoRamAddr = 0;
 	_tmpVideoRamAddr = 0;
 	_highBitShift = 0;
 	_lowBitShift = 0;
@@ -85,7 +96,12 @@ template<class T> void NesPpu<T>::Reset()
 
 	_control = {};
 	_mask = {};
-	_statusFlags = {};
+	
+	if(!softReset) {
+		//"The VBL flag (PPUSTATUS bit 7) is random at power, and unchanged by reset."
+		_statusFlags = {};
+		_statusFlags.VerticalBlank = _settings->GetNesConfig().RandomizeMapperPowerOnState ? _settings->GetRandomBool() : false;
+	}
 
 	_tile = {};
 	_currentTilePalette = 0;
@@ -109,9 +125,6 @@ template<class T> void NesPpu<T>::Reset()
 	_secondaryOamAddr = 0;
 	_sprite0Visible = false;
 	_spriteIndex = 0;
-	_openBus = 0;
-	memset(_openBusDecayStamp, 0, sizeof(_openBusDecayStamp));
-	_ignoreVramRead = 0;
 
 	//First execution will be cycle 0, scanline 0
 	_scanline = -1;
@@ -127,9 +140,6 @@ template<class T> void NesPpu<T>::Reset()
 
 	_firstVisibleSpriteAddr = 0;
 	_lastVisibleSpriteAddr = 0;
-
-	memset(_oamDecayCycles, 0, sizeof(_oamDecayCycles));
-	_enableOamDecay = _console->GetNesConfig().EnableOamDecay;
 	
 	_allowFullPpuAccess = false;
 

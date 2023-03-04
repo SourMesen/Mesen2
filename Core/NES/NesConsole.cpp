@@ -114,10 +114,7 @@ void NesConsole::Reset()
 {
 	_memoryManager->Reset(true);
 	
-	if(!GetNesConfig().DisablePpuReset) {
-		_ppu->Reset();
-	}
-
+	_ppu->Reset(true);
 	_apu->Reset(true);
 	_cpu->Reset(true, _region);
 	_controlManager->Reset(true);
@@ -191,7 +188,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 
 		_mixer->Reset();
 		
-		_ppu->Reset();
+		_ppu->Reset(false);
 		_apu->Reset(false);
 		_memoryManager->Reset(false);
 		_controlManager->Reset(false);

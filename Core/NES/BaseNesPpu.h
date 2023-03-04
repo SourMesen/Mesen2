@@ -121,7 +121,7 @@ protected:
 	void UpdateMinimumDrawCycles();
 
 public:
-	virtual void Reset() = 0;
+	virtual void Reset(bool softReset) = 0;
 	virtual void Run(uint64_t runTo) = 0;
 
 	uint32_t GetFrameCount() { return _frameCount; }
