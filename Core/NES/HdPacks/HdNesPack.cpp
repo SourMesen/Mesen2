@@ -68,7 +68,7 @@ template<uint32_t scale> void HdNesPack<scale>::DrawCustomBackground(HdBackgroun
 				if(pixelColor >= 0xFF000000) {
 					outputBuffer[j] = pixelColor;
 				} else if(pixelColor >= 0x01000000) {
-					BlendColors((uint8_t*)outputBuffer+j, (uint8_t*)(&pixelColor));
+					BlendColors((uint8_t*)(outputBuffer+j), (uint8_t*)(&pixelColor));
 				}
 			}
 			outputBuffer += screenWidth;
@@ -81,7 +81,7 @@ template<uint32_t scale> void HdNesPack<scale>::DrawCustomBackground(HdBackgroun
 				if(pixelColor >= 0xFF000000) {
 					outputBuffer[j] = pixelColor;
 				} else if(pixelColor >= 0x01000000) {
-					BlendColors((uint8_t*)outputBuffer+j, (uint8_t*)(&pixelColor));
+					BlendColors((uint8_t*)(outputBuffer+j), (uint8_t*)(&pixelColor));
 				}
 			}
 			outputBuffer += screenWidth;
