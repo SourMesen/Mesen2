@@ -42,6 +42,7 @@ private:
 	void ProcessTileTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
 	void ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
 	void ProcessAdditionTag(vector<string>& tokens);
+	void ProcessFallbackTag(vector<string>& tokens);
 	void ProcessOptionTag(vector<string>& tokens);
 
 	//Audio

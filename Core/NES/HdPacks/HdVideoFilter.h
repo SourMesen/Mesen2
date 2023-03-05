@@ -4,6 +4,7 @@
 #include "NES/HdPacks/HdNesPack.h"
 
 class Emulator;
+class NesConsole;
 struct HdPackData;
 
 class HdVideoFilter : public BaseVideoFilter
@@ -13,7 +14,7 @@ private:
 	unique_ptr<BaseHdNesPack> _hdNesPack = nullptr;
 
 public:
-	HdVideoFilter(Emulator* emu, HdPackData* hdData);
+	HdVideoFilter(NesConsole* console, Emulator* emu, HdPackData* hdData);
 	virtual ~HdVideoFilter() = default;
 
 	void ApplyFilter(uint16_t *ppuOutputBuffer) override;

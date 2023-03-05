@@ -7,12 +7,16 @@
 #include "Utilities/SimpleLock.h"
 #include "Utilities/Timer.h"
 
+class BaseHdNesPack;
+
 struct HdTileKey
 {
 	static constexpr int32_t NoTile = -1;
 
+	//Code depends on these 2 fields being one after the other
 	uint32_t PaletteColors = 0;
 	uint8_t TileData[16] = {};
+
 	int32_t TileIndex = 0;
 	bool IsChrRamTile = false;
 
@@ -30,7 +34,7 @@ struct HdTileKey
 	uint32_t GetHashCode() const
 	{
 		if(IsChrRamTile) {
-			return CalculateHash((uint8_t*)&PaletteColors, 20);
+			return CalculateHash((uint8_t*)&PaletteColors, sizeof(PaletteColors) + sizeof(TileData));
 		} else {
 			uint64_t key = TileIndex | ((uint64_t)PaletteColors << 32);
 			return CalculateHash((uint8_t*)&key, sizeof(key));
@@ -44,7 +48,7 @@ struct HdTileKey
 	bool operator==(const HdTileKey &other) const
 	{
 		if(IsChrRamTile) {
-			return memcmp((uint8_t*)&PaletteColors, (uint8_t*)&other.PaletteColors, 20) == 0;
+			return memcmp((uint8_t*)&PaletteColors, (uint8_t*)&other.PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
 		} else {
 			return TileIndex == other.TileIndex && PaletteColors == other.PaletteColors;
 		}
@@ -155,6 +159,11 @@ enum class HdPackConditionType
 
 struct HdPackCondition
 {
+protected:
+	HdScreenInfo* _screenInfo = nullptr;
+	BaseHdNesPack* _hdPack = nullptr;
+
+public:
 	string Name;
 
 	virtual HdPackConditionType GetConditionType() = 0;
@@ -164,33 +173,36 @@ struct HdPackCondition
 
 	virtual ~HdPackCondition() { }
 
-	void ClearCache()
+	void Initialize(HdScreenInfo* screenInfo, BaseHdNesPack* hdPack)
 	{
+		_screenInfo = screenInfo;
+		_hdPack = hdPack;
 		_resultCache = -1;
 	}
 
-	bool CheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile)
+	bool CheckCondition(int x, int y, HdPpuTileInfo* tile)
 	{
-		if(_resultCache == -1) {
-			bool result = InternalCheckCondition(screenInfo, x, y, tile);
-			if(Name[0] == '!') {
-				result = !result;
-			}
-
-			if(_useCache) {
-				_resultCache = result ? 1 : 0;
-			}
-			return result;
-		} else {
+		if(_resultCache >= 0) {
 			return (bool)_resultCache;
 		}
+
+		bool result = InternalCheckCondition(x, y, tile);
+		if(Name[0] == '!') {
+			result = !result;
+		}
+
+		if(_useCache) {
+			_resultCache = result ? 1 : 0;
+		}
+		return result;
+		
 	}
 
 protected:
 	int8_t _resultCache = -1;
 	bool _useCache = false;
 
-	virtual bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) = 0;
+	virtual bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) = 0;
 };
 
 struct HdPackBitmapInfo
@@ -266,10 +278,10 @@ public:
 	vector<HdPackCondition*> Conditions;
 	bool ForceDisableCache;
 
-	bool MatchesCondition(HdScreenInfo *hdScreenInfo, int x, int y, HdPpuTileInfo* tile)
+	bool MatchesCondition(int x, int y, HdPpuTileInfo* tile)
 	{
 		for(HdPackCondition* condition : Conditions) {
-			if(!condition->CheckCondition(hdScreenInfo, x, y, tile)) {
+			if(!condition->CheckCondition(x, y, tile)) {
 				return false;
 			}
 		}
@@ -432,6 +444,12 @@ struct HdPackAdditionalSpriteInfo
 	int32_t OffsetY;
 };
 
+struct FallbackTileInfo
+{
+	int32_t TileIndex;
+	int32_t FallbackTileIndex;
+};
+
 struct HdPackData
 {
 private:
@@ -444,6 +462,7 @@ public:
 	vector<unique_ptr<HdPackTileInfo>> Tiles;
 	vector<unique_ptr<HdPackCondition>> Conditions;
 	vector<HdPackAdditionalSpriteInfo> AdditionalSprites;
+	vector<FallbackTileInfo> FallbackTiles;
 	unordered_set<uint32_t> WatchedMemoryAddresses;
 	unordered_map<HdTileKey, vector<HdPackTileInfo*>> TileByKey;
 	unordered_map<string, string> PatchesByHash;
@@ -492,5 +511,6 @@ enum class HdPackOptions
 	NoSpriteLimit = 1,
 	AlternateRegisterRange = 2,
 	DisableCache = 8,
-	DontRenderOriginalTiles = 16
+	DontRenderOriginalTiles = 16,
+	AutomaticFallbackTiles = 32
 };

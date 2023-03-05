@@ -193,6 +193,9 @@ bool HdPackLoader::LoadPack()
 			} else if(lineContent.substr(0, 10) == "<addition>") {
 				tokens = StringUtilities::Split(lineContent.substr(10), ',');
 				ProcessAdditionTag(tokens);
+			} else if(lineContent.substr(0, 10) == "<fallback>") {
+				tokens = StringUtilities::Split(lineContent.substr(10), ',');
+				ProcessFallbackTag(tokens);
 			} else if(lineContent.substr(0, 5) == "<bgm>") {
 				tokens = StringUtilities::Split(lineContent.substr(5), ',');
 				ProcessBgmTag(tokens);
@@ -411,6 +414,8 @@ void HdPackLoader::ProcessOptionTag(vector<string> &tokens)
 			_data->OptionFlags |= (int)HdPackOptions::DisableCache;
 		} else if(token == "disableOriginalTiles") {
 			_data->OptionFlags |= (int)HdPackOptions::DontRenderOriginalTiles;
+		} else if(token == "automaticFallbackTiles") {
+			_data->OptionFlags |= (int)HdPackOptions::AutomaticFallbackTiles;
 		} else {
 			MessageManager::Log("[HDPack] Invalid option: " + token);
 		}
@@ -662,6 +667,12 @@ void HdPackLoader::ProcessAdditionTag(vector<string>& tokens)
 	info.OffsetX = std::stoi(tokens[2]);
 	info.OffsetY = std::stoi(tokens[3]);
 	ReadTileData(info.AdditionalTile, tokens[4], tokens[5]);
+}
+
+void HdPackLoader::ProcessFallbackTag(vector<string>& tokens)
+{
+	checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+	_data->FallbackTiles.push_back({ HexUtilities::FromHex(tokens[0]), HexUtilities::FromHex(tokens[1]) });
 }
 
 int HdPackLoader::ProcessSoundTrack(string albumString, string trackString, string filename)

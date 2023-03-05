@@ -2,14 +2,31 @@
 #include "pch.h"
 #include "NES/HdPacks/HdData.h"
 
+class NesConsole;
 class EmuSettings;
 
 class BaseHdNesPack
 {
+protected:
+	unordered_map<int32_t, int32_t> _fallbackTiles;
+	HdScreenInfo* _hdScreenInfo = nullptr;
+
 public:
 	static constexpr uint32_t CurrentVersion = 107;
 
 	virtual uint32_t GetScale() = 0;
+
+	HdScreenInfo* GetScreenInfo() { return _hdScreenInfo; }
+
+	int32_t GetFallbackTile(int32_t tileIndex) 
+	{
+		auto result = _fallbackTiles.find(tileIndex);
+		if(result != _fallbackTiles.end()) {
+			return result->second;
+		}
+		return -1;
+	}
+
 	virtual void Process(HdScreenInfo* hdScreenInfo, uint32_t* outputBuffer, OverscanDimensions& overscan) = 0;
 
 	virtual ~BaseHdNesPack() {}
@@ -34,18 +51,19 @@ private:
 	static constexpr uint8_t BehindFgSpritesPriority = 2 * PriorityLevelsPerLayer;
 	static constexpr uint8_t ForegroundPriority = 3 * PriorityLevelsPerLayer;
 
+	NesConsole* _console = nullptr;
 	EmuSettings* _settings = nullptr;
 	HdPackData* _hdData = nullptr;
 
 	uint8_t _activeBgCount[4] = {};
 	HdBgConfig _bgConfig[40] = {};
 
-	HdScreenInfo *_hdScreenInfo = nullptr;
 	uint32_t _palette[512] = {};
 	HdPackTileInfo* _cachedTile = nullptr;
 	bool _cacheEnabled = false;
 	bool _useCachedTile = false;
 	int32_t _scrollX = 0;
+
 
 	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4]);
 	__forceinline uint32_t AdjustBrightness(uint8_t input[4], int brightness);
@@ -67,9 +85,11 @@ private:
 
 	__forceinline void GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uint32_t *outputBuffer, uint32_t screenWidth);
 	__forceinline void ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t* outputBuffer, uint32_t hdScreenWidth);
+	
+	void InitializeFallbackTiles();
 
 public:
-	HdNesPack(EmuSettings* settings, HdPackData* hdData);
+	HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
 	virtual ~HdNesPack();
 
 	uint32_t GetScale() { return scale; }

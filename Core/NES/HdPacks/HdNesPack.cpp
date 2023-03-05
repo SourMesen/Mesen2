@@ -4,6 +4,7 @@
 #include "NES/HdPacks/HdNesPack.h"
 #include "NES/HdPacks/HdPackLoader.h"
 #include "NES/NesConsole.h"
+#include "NES/BaseMapper.h"
 #include "NES/NesDefaultVideoFilter.h"
 #include "Shared/MessageManager.h"
 #include "Shared/EmuSettings.h"
@@ -11,15 +12,58 @@
 #include "Utilities/PNGHelper.h"
 
 template<uint32_t scale>
-HdNesPack<scale>::HdNesPack(EmuSettings* settings, HdPackData* hdData)
+HdNesPack<scale>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData)
 {
+	_console = console;
 	_settings = settings;
 	_hdData = hdData;
+
+	InitializeFallbackTiles();
 }
 
 template<uint32_t scale>
 HdNesPack<scale>::~HdNesPack()
 {
+}
+
+template<uint32_t scale>
+void HdNesPack<scale>::InitializeFallbackTiles()
+{
+	BaseMapper* mapper = _console->GetMapper();
+	uint8_t blankTile[16] = {};
+	if(mapper->HasChrRom()) {
+		if(_hdData->OptionFlags & (int)HdPackOptions::AutomaticFallbackTiles) {
+			int32_t chrRomSize = (int32_t)mapper->GetChrRomSize();
+			int32_t tileCount = chrRomSize / 16;
+
+			HdTileKey tileKey = {};
+			tileKey.IsChrRamTile = true;
+			unordered_set<HdTileKey> usedTiles;
+			for(auto& tile : _hdData->Tiles) {
+				tileKey.TileIndex = tile->TileIndex;
+				mapper->CopyChrTile(tile->TileIndex * 16, tileKey.TileData);
+
+				usedTiles.emplace(tileKey);
+			}
+
+			for(int32_t i = 0; i < tileCount; i++) {
+				mapper->CopyChrTile(i * 16, tileKey.TileData);
+				if(memcmp(tileKey.TileData, blankTile, sizeof(blankTile)) == 0) {
+					//Skip processing for blank/transparent tiles
+					continue;
+				}
+
+				auto result = usedTiles.find(tileKey);
+				if(result != usedTiles.end() && result->TileIndex != i) {
+					_fallbackTiles[i] = result->TileIndex;
+				}
+			}
+		}
+
+		for(auto def : _hdData->FallbackTiles) {
+			_fallbackTiles[def.TileIndex] = def.FallbackTileIndex;
+		}
+	}
 }
 
 template<uint32_t scale>
@@ -196,7 +240,7 @@ int32_t HdNesPack<scale>::GetLayerIndex(uint8_t priority)
 
 		bool isMatch = true;
 		for(HdPackCondition* condition : _hdData->Backgrounds[i].Conditions) {
-			if(!condition->CheckCondition(_hdScreenInfo, 0, 0, nullptr)) {
+			if(!condition->CheckCondition(0, 0, nullptr)) {
 				isMatch = false;
 				break;
 			}
@@ -212,6 +256,10 @@ int32_t HdNesPack<scale>::GetLayerIndex(uint8_t priority)
 template<uint32_t scale>
 void HdNesPack<scale>::OnBeforeApplyFilter()
 {
+	for(unique_ptr<HdPackCondition>& condition : _hdData->Conditions) {
+		condition->Initialize(_hdScreenInfo, this);
+	}
+
 	if(_hdData->Palette.size() == 0x40) {
 		memcpy(_palette, _hdData->Palette.data(), 0x40 * sizeof(uint32_t));
 	} else {
@@ -232,10 +280,6 @@ void HdNesPack<scale>::OnBeforeApplyFilter()
 	}
 
 	ProcessAdditionalSprites();
-
-	for(unique_ptr<HdPackCondition> &condition : _hdData->Conditions) {
-		condition->ClearCache();
-	}
 }
 
 template<uint32_t scale>
@@ -245,12 +289,20 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 		return;
 	}
 
+	bool checkFallbackTiles = _console->GetMapper()->HasChrRom();
+
 	for(int32_t j = 0; j < NesConstants::ScreenPixelCount; j++) {
 		HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[j];
 		for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
 			for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
 				if(pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
 					InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+				} else if(checkFallbackTiles) {
+					if(pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
+						if(GetFallbackTile(pixelInfo.Sprite[i].TileIndex) == additionalSprite.OriginalTile.TileIndex) {
+							InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+						}
+					}
 				}
 			}
 		}
@@ -306,7 +358,19 @@ HdPackTileInfo* HdNesPack<scale>::GetMatchingTile(uint32_t x, uint32_t y, HdPpuT
 {
 	auto hdTile = _hdData->TileByKey.find(*tile);
 	if(hdTile == _hdData->TileByKey.end()) {
-		hdTile = _hdData->TileByKey.find(tile->GetKey(true));
+		int32_t fallbackTileIndex = GetFallbackTile(tile->TileIndex);
+		if(fallbackTileIndex >= 0) {
+			int32_t orgIndex = tile->TileIndex;
+			tile->TileIndex = fallbackTileIndex;
+			hdTile = _hdData->TileByKey.find(*tile);
+			if(hdTile == _hdData->TileByKey.end()) {
+				tile->TileIndex = orgIndex;
+			}
+		}
+	
+		if(hdTile == _hdData->TileByKey.end()) {
+			hdTile = _hdData->TileByKey.find(tile->GetKey(true));
+		}
 	}
 
 	if(hdTile != _hdData->TileByKey.end()) {
@@ -315,7 +379,7 @@ HdPackTileInfo* HdNesPack<scale>::GetMatchingTile(uint32_t x, uint32_t y, HdPpuT
 				*disableCache = true;
 			}
 
-			if(hdPackTile->MatchesCondition(_hdScreenInfo, x, y, tile)) {
+			if(hdPackTile->MatchesCondition(x, y, tile)) {
 				if(hdPackTile->NeedInit()) {
 					hdPackTile->Init();
 				}
@@ -485,13 +549,13 @@ void HdNesPack<scale>::ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, ui
 	}
 }
 
-template HdNesPack<1>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<2>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<3>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<4>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<5>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<6>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<7>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<8>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<9>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
-template HdNesPack<10>::HdNesPack(EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<1>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<2>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<3>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<4>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<5>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<6>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<7>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<8>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<9>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
+template HdNesPack<10>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);

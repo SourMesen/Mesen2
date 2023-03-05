@@ -208,6 +208,7 @@ public:
 	//Debugger Helper Functions
 	bool HasChrRam();
 	bool HasChrRom();
+	uint32_t GetChrRomSize() { return _chrRomSize; }
 
 	CartridgeState GetState();
 	

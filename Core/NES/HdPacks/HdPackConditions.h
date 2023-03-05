@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "NES/HdPacks/HdData.h"
+#include "NES/HdPacks/HdNesPack.h"
 #include "NES/NesConstants.h"
 #include "Utilities/HexUtilities.h"
 
@@ -107,7 +108,7 @@ struct HdPackHorizontalMirroringCondition : public HdPackCondition
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		return tile && tile->HorizontalMirroring;
 	}
@@ -120,7 +121,7 @@ struct HdPackVerticalMirroringCondition : public HdPackCondition
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		return tile && tile->VerticalMirroring;
 	}
@@ -133,7 +134,7 @@ struct HdPackBgPriorityCondition : public HdPackCondition
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		return tile && tile->BackgroundPriority;
 	}
@@ -145,10 +146,10 @@ struct HdPackMemoryCheckCondition : public HdPackBaseMemoryCondition
 	HdPackMemoryCheckCondition() { _useCache = true; }
 	string GetConditionName() override { return IsPpuCondition() ? "ppuMemoryCheck" : "memoryCheck"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		uint8_t a = (uint8_t)(screenInfo->WatchedAddressValues[OperandA] & Mask);
-		uint8_t b = (uint8_t)(screenInfo->WatchedAddressValues[OperandB] & Mask);
+		uint8_t a = (uint8_t)(_screenInfo->WatchedAddressValues[OperandA] & Mask);
+		uint8_t b = (uint8_t)(_screenInfo->WatchedAddressValues[OperandB] & Mask);
 
 		switch(Operator) {
 			case HdPackConditionOperator::Equal: return a == b;
@@ -168,9 +169,9 @@ struct HdPackMemoryCheckConstantCondition : public HdPackBaseMemoryCondition
 	HdPackMemoryCheckConstantCondition() { _useCache = true; }
 	string GetConditionName() override { return IsPpuCondition() ? "ppuMemoryCheckConstant" : "memoryCheckConstant"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		uint8_t a = (uint8_t)(screenInfo->WatchedAddressValues[OperandA] & Mask);
+		uint8_t a = (uint8_t)(_screenInfo->WatchedAddressValues[OperandA] & Mask);
 		uint8_t b = OperandB;
 
 		switch(Operator) {
@@ -211,9 +212,9 @@ struct HdPackFrameRangeCondition : public HdPackCondition
 		return out.str();
 	}
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		return screenInfo->FrameNumber % OperandA >= OperandB;
+		return _screenInfo->FrameNumber % OperandA >= OperandB;
 	}
 };
 
@@ -223,13 +224,13 @@ struct HdPackTileAtPositionCondition : public HdPackBaseTileCondition
 	HdPackConditionType GetConditionType() override { return HdPackConditionType::TileAtPos; }
 	string GetConditionName() override { return "tileAtPosition"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		HdPpuTileInfo &targetTile = screenInfo->ScreenTiles[PixelOffset].Tile;
+		HdPpuTileInfo& target = _screenInfo->ScreenTiles[PixelOffset].Tile;
 		if(TileIndex >= 0) {
-			return targetTile.PaletteColors == PaletteColors && targetTile.TileIndex == TileIndex;
+			return target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
 		} else {
-			return memcmp(&targetTile.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
 		}
 	}
 };
@@ -240,16 +241,16 @@ struct HdPackSpriteAtPositionCondition : public HdPackBaseTileCondition
 	HdPackConditionType GetConditionType() override { return HdPackConditionType::SpriteAtPos; }
 	string GetConditionName() override { return "spriteAtPosition"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		for(int i = 0, len = screenInfo->ScreenTiles[PixelOffset].SpriteCount; i < len;  i++) {
-			HdPpuTileInfo &targetTile = screenInfo->ScreenTiles[PixelOffset].Sprite[i];
+		for(int i = 0, len = _screenInfo->ScreenTiles[PixelOffset].SpriteCount; i < len;  i++) {
+			HdPpuTileInfo& target = _screenInfo->ScreenTiles[PixelOffset].Sprite[i];
 			if(TileIndex >= 0) {
-				if(targetTile.PaletteColors == PaletteColors && targetTile.TileIndex == TileIndex) {
+				if(target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
 					return true;
 				}
 			} else {
-				if(memcmp(&targetTile.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
+				if(memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
 					return true;
 				}
 			}
@@ -263,18 +264,18 @@ struct HdPackTileNearbyCondition : public HdPackBaseTileCondition
 	HdPackConditionType GetConditionType() override { return HdPackConditionType::TileNearby; }
 	string GetConditionName() override { return "tileNearby"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		int pixelIndex = PixelOffset + (y * 256) + x;
 		if(pixelIndex < 0 || pixelIndex > NesConstants::ScreenPixelCount) {
 			return false;
 		}
 
-		HdPpuTileInfo &targetTile = screenInfo->ScreenTiles[pixelIndex].Tile;
+		HdPpuTileInfo& target = _screenInfo->ScreenTiles[pixelIndex].Tile;
 		if(TileIndex >= 0) {
-			return targetTile.PaletteColors == PaletteColors && targetTile.TileIndex == TileIndex;
+			return target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
 		} else {
-			return memcmp(&targetTile.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
 		}
 	}
 };
@@ -284,7 +285,7 @@ struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 	HdPackConditionType GetConditionType() override { return HdPackConditionType::SpriteNearby; }
 	string GetConditionName() override { return "spriteNearby"; }
 
-	bool InternalCheckCondition(HdScreenInfo *screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		int xSign = tile && tile->HorizontalMirroring ? -1 : 1;
 		int ySign = tile && tile->VerticalMirroring ? -1 : 1;
@@ -294,14 +295,14 @@ struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 			return false;
 		}
 
-		for(int i = 0, len = screenInfo->ScreenTiles[pixelIndex].SpriteCount; i < len;  i++) {
-			HdPpuTileInfo &targetTile = screenInfo->ScreenTiles[pixelIndex].Sprite[i];
+		for(int i = 0, len = _screenInfo->ScreenTiles[pixelIndex].SpriteCount; i < len;  i++) {
+			HdPpuTileInfo& target = _screenInfo->ScreenTiles[pixelIndex].Sprite[i];
 			if(TileIndex >= 0) {
-				if(targetTile.PaletteColors == PaletteColors && targetTile.TileIndex == TileIndex) {
+				if(target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
 					return true;
 				}
 			} else {
-				if(memcmp(&targetTile.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
+				if(memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
 					return true;
 				}
 			}
@@ -319,7 +320,7 @@ struct HdPackSpritePaletteCondition : public HdPackCondition
 	string ToString() override { return ""; }
 	bool IsExcludedFromFile() override { return true; }
 
-	bool InternalCheckCondition(HdScreenInfo* screenInfo, int x, int y, HdPpuTileInfo* tile) override
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
 		return tile && (tile->PaletteOffset == (0x10 + (paletteId << 2)));
 	}

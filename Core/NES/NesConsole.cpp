@@ -420,7 +420,7 @@ ShortcutState NesConsole::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t 
 BaseVideoFilter* NesConsole::GetVideoFilter()
 {
 	if(_hdData && !_hdPackBuilder) {
-		return new HdVideoFilter(_emu, _hdData.get());
+		return new HdVideoFilter(this, _emu, _hdData.get());
 	} else if(GetRomFormat() == RomFormat::Nsf) {
 		return new NesDefaultVideoFilter(_emu);
 	} else {
