@@ -263,7 +263,7 @@ void HdNesPack<scale>::InsertAdditionalSprite(int32_t sourceX, int32_t sourceY, 
 	int32_t targetX = sourceX + (sprite.HorizontalMirroring ? -additionalSprite.OffsetX : additionalSprite.OffsetX);
 	int32_t targetY = sourceY + (sprite.VerticalMirroring ? -additionalSprite.OffsetY : additionalSprite.OffsetY);
 
-	if(targetX >= 0 && targetX <= NesConstants::ScreenWidth && targetY >= 0 && targetY <= NesConstants::ScreenHeight) {
+	if(targetX >= 0 && targetX < NesConstants::ScreenWidth && targetY >= 0 && targetY < NesConstants::ScreenHeight) {
 		HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[(targetY << 8) | targetX];
 		if(pixelInfo.SpriteCount < 4) {
 			HdPpuTileInfo& newSprite = pixelInfo.Sprite[pixelInfo.SpriteCount];
