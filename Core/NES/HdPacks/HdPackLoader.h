@@ -28,6 +28,8 @@ private:
 	bool LoadPack();
 	void InitializeHdPack();
 	void LoadCustomPalette();
+	
+	void ReadTileData(HdTileKey& key, string& tileData, string& palData);
 
 	template<typename T> void AddGlobalCondition(string name);
 	void InitializeGlobalConditions();
@@ -39,6 +41,7 @@ private:
 	void ProcessConditionTag(vector<string> &tokens, bool createInvertedCondition);
 	void ProcessTileTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
 	void ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
+	void ProcessAdditionTag(vector<string>& tokens);
 	void ProcessOptionTag(vector<string>& tokens);
 
 	//Audio

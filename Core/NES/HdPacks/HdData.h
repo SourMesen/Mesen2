@@ -423,6 +423,15 @@ struct HdBackgroundInfo
 	}
 };
 
+struct HdPackAdditionalSpriteInfo
+{
+	HdTileKey OriginalTile;
+	HdTileKey AdditionalTile;
+
+	int32_t OffsetX;
+	int32_t OffsetY;
+};
+
 struct HdPackData
 {
 private:
@@ -434,6 +443,7 @@ public:
 	vector<unique_ptr<HdPackBitmapInfo>> ImageFileData;
 	vector<unique_ptr<HdPackTileInfo>> Tiles;
 	vector<unique_ptr<HdPackCondition>> Conditions;
+	vector<HdPackAdditionalSpriteInfo> AdditionalSprites;
 	unordered_set<uint32_t> WatchedMemoryAddresses;
 	unordered_map<HdTileKey, vector<HdPackTileInfo*>> TileByKey;
 	unordered_map<string, string> PatchesByHash;

@@ -7,7 +7,7 @@ class EmuSettings;
 class BaseHdNesPack
 {
 public:
-	static constexpr uint32_t CurrentVersion = 106;
+	static constexpr uint32_t CurrentVersion = 107;
 
 	virtual uint32_t GetScale() = 0;
 	virtual void Process(HdScreenInfo* hdScreenInfo, uint32_t* outputBuffer, OverscanDimensions& overscan) = 0;
@@ -61,6 +61,10 @@ private:
 	void OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y);
 	int32_t GetLayerIndex(uint8_t priority);
 	void OnBeforeApplyFilter();
+
+	void ProcessAdditionalSprites();
+	void InsertAdditionalSprite(int32_t x, int32_t y, HdPpuTileInfo& sprite, HdPackAdditionalSpriteInfo& additionalSprite);
+
 	__forceinline void GetPixels(uint32_t x, uint32_t y, HdPpuPixelInfo &pixelInfo, uint32_t *outputBuffer, uint32_t screenWidth);
 	__forceinline void ProcessGrayscaleAndEmphasis(HdPpuPixelInfo &pixelInfo, uint32_t* outputBuffer, uint32_t hdScreenWidth);
 

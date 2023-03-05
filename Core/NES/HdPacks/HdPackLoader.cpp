@@ -190,6 +190,9 @@ bool HdPackLoader::LoadPack()
 				if(!ProcessImgTag(lineContent)) {
 					return false;
 				}
+			} else if(lineContent.substr(0, 10) == "<addition>") {
+				tokens = StringUtilities::Split(lineContent.substr(10), ',');
+				ProcessAdditionTag(tokens);
 			} else if(lineContent.substr(0, 5) == "<bgm>") {
 				tokens = StringUtilities::Split(lineContent.substr(5), ',');
 				ProcessBgmTag(tokens);
@@ -264,10 +267,34 @@ void HdPackLoader::InitializeGlobalConditions()
 	AddGlobalCondition<HdPackHorizontalMirroringCondition>("hmirror");
 	AddGlobalCondition<HdPackVerticalMirroringCondition>("vmirror");
 	AddGlobalCondition<HdPackBgPriorityCondition>("bgpriority");
-	AddGlobalCondition<HdPackSpritePaletteCondition<0>>("sppalette0");
-	AddGlobalCondition<HdPackSpritePaletteCondition<1>>("sppalette1");
-	AddGlobalCondition<HdPackSpritePaletteCondition<2>>("sppalette2");
-	AddGlobalCondition<HdPackSpritePaletteCondition<3>>("sppalette3");
+	
+	if(_data->Version >= 107) {
+		AddGlobalCondition<HdPackSpritePaletteCondition<0>>("sppalette0");
+		AddGlobalCondition<HdPackSpritePaletteCondition<1>>("sppalette1");
+		AddGlobalCondition<HdPackSpritePaletteCondition<2>>("sppalette2");
+		AddGlobalCondition<HdPackSpritePaletteCondition<3>>("sppalette3");
+	}
+}
+
+void HdPackLoader::ReadTileData(HdTileKey& key, string& tileData, string& palData)
+{
+	if(tileData.size() >= 32) {
+		//CHR RAM tile, read the tile data
+		for(int i = 0; i < 16; i++) {
+			key.TileData[i] = HexUtilities::FromHex(tileData.substr(i * 2, 2));
+		}
+		key.TileIndex = -1;
+		key.IsChrRamTile = true;
+	} else {
+		if(_data->Version <= 102) {
+			key.TileIndex = std::stoi(tileData);
+		} else {
+			key.TileIndex = HexUtilities::FromHex(tileData);
+		}
+		key.IsChrRamTile = false;
+	}
+
+	key.PaletteColors = HexUtilities::FromHex(palData);
 }
 
 void HdPackLoader::ProcessOverscanTag(vector<string> &tokens)
@@ -311,23 +338,10 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 		index += 3;
 	} else {
 		tileInfo->BitmapIndex = std::stoi(tokens[index++]);
+
 		string tileData = tokens[index++];
-		if(tileData.size() >= 32) {
-			//CHR RAM tile, read the tile data
-			for(int i = 0; i < 16; i++) {
-				tileInfo->TileData[i] = HexUtilities::FromHex(tileData.substr(i * 2, 2));
-			}
-			tileInfo->IsChrRamTile = true;
-			tileInfo->TileIndex = -1;
-		} else {
-			if(_data->Version <= 102) {
-				tileInfo->TileIndex = std::stoi(tileData);
-			} else {
-				tileInfo->TileIndex = HexUtilities::FromHex(tileData);
-			}
-			tileInfo->IsChrRamTile = false;
-		}
-		tileInfo->PaletteColors = HexUtilities::FromHex(tokens[index++]);
+		string palData = tokens[index++];
+		ReadTileData(*tileInfo, tileData, palData);
 	}
 	tileInfo->X = std::stoi(tokens[index++]);
 	tileInfo->Y = std::stoi(tokens[index++]);
@@ -635,6 +649,19 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 	} else {
 		MessageManager::Log("[HDPack] Error while loading background: " + tokens[0]);
 	}
+}
+
+void HdPackLoader::ProcessAdditionTag(vector<string>& tokens)
+{
+	checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+
+	_data->AdditionalSprites.push_back({});
+
+	HdPackAdditionalSpriteInfo& info = _data->AdditionalSprites.back();
+	ReadTileData(info.OriginalTile, tokens[0], tokens[1]);
+	info.OffsetX = std::stoi(tokens[2]);
+	info.OffsetY = std::stoi(tokens[3]);
+	ReadTileData(info.AdditionalTile, tokens[4], tokens[5]);
 }
 
 int HdPackLoader::ProcessSoundTrack(string albumString, string trackString, string filename)
