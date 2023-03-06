@@ -19,6 +19,10 @@ namespace Mesen.Windows
 			_model = new SetupWizardViewModel();
 			DataContext = _model;
 			InitializeComponent();
+
+#if DEBUG
+			this.AttachDevTools();
+#endif
 		}
 
 		private void InitializeComponent()

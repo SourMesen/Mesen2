@@ -191,6 +191,7 @@ namespace Mesen.Windows
 				return;
 			}
 
+			ConfigManager.Config.InitializeFontDefaults();
 			ConfigManager.Config.Preferences.ApplyFontOptions();
 			ConfigManager.Config.Debug.Fonts.ApplyConfig();
 

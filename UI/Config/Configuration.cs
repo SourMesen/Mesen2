@@ -81,20 +81,23 @@ namespace Mesen.Config
 			Debug.ApplyConfig();
 		}
 
-		public void InitializeDefaults()
+		public void InitializeFontDefaults()
 		{
 			if(FirstRun) {
-				Preferences.MesenFont = GetDefaultFont();
-				Preferences.MesenMenuFont = GetDefaultMenuFont();
-				Preferences.ApplyFontOptions();
-				
+				Preferences.InitializeFontDefaults();
+
 				Debug.Fonts.DisassemblyFont = GetDefaultMonospaceFont();
 				Debug.Fonts.MemoryViewerFont = GetDefaultMonospaceFont();
 				Debug.Fonts.AssemblerFont = GetDefaultMonospaceFont();
 				Debug.Fonts.ScriptWindowFont = GetDefaultMonospaceFont();
 				Debug.Fonts.OtherMonoFont = GetDefaultMonospaceFont(true);
 				Debug.Fonts.ApplyConfig();
+			}
+		}
 
+		public void InitializeDefaults()
+		{
+			if(FirstRun) {
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
 				Gameboy.InitializeDefaults(DefaultKeyMappings);
@@ -104,9 +107,9 @@ namespace Mesen.Config
 			Preferences.InitializeDefaultShortcuts();
 		}
 
-		private HashSet<string>? _installedFonts = null;
+		private static HashSet<string>? _installedFonts = null;
 
-		private string FindMatchingFont(string defaultFont, params string[] fontNames)
+		private static string FindMatchingFont(string defaultFont, params string[] fontNames)
 		{
 			if(_installedFonts == null) {
 				_installedFonts = new(FontManager.Current.GetInstalledFontFamilyNames());
@@ -121,7 +124,7 @@ namespace Mesen.Config
 			return defaultFont;
 		}
 
-		private FontConfig GetDefaultFont()
+		public static FontConfig GetDefaultFont()
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
@@ -132,7 +135,7 @@ namespace Mesen.Config
 			}
 		}
 
-		private FontConfig GetDefaultMenuFont()
+		public static FontConfig GetDefaultMenuFont()
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
@@ -143,7 +146,7 @@ namespace Mesen.Config
 			}
 		}
 
-		private FontConfig GetDefaultMonospaceFont(bool useSmallFont = false)
+		public static FontConfig GetDefaultMonospaceFont(bool useSmallFont = false)
 		{
 			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 				return new FontConfig() { FontFamily = "Consolas", FontSize = useSmallFont ? 12 : 14 };

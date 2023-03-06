@@ -36,6 +36,7 @@ namespace Mesen
 			if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				if(ShowConfigWindow) {
 					StyleHelper.ApplyTheme(MesenTheme.Light);
+					new PreferencesConfig().InitializeFontDefaults();
 					RequestedThemeVariant = ThemeVariant.Light;
 					desktop.MainWindow = new SetupWizardWindow();
 				} else {

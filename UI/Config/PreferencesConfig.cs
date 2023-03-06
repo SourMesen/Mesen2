@@ -201,6 +201,13 @@ namespace Mesen.Config
 			}
 		}
 
+		public void InitializeFontDefaults()
+		{
+			MesenFont = Configuration.GetDefaultFont();
+			MesenMenuFont = Configuration.GetDefaultMenuFont();
+			ApplyFontOptions();
+		}
+
 		public void ApplyConfig()
 		{
 			UpdateFonts();
