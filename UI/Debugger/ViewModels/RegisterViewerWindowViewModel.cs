@@ -1088,7 +1088,7 @@ namespace Mesen.Debugger.ViewModels
 
 			NesApuNoiseState noise = apu.Noise;
 			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$400C-$400F", "Triangle"),
+				new RegEntry("$400C-$400F", "Noise"),
 				new RegEntry("$400C.0-3", "Envelope Volume", noise.Envelope.Volume, Format.X8),
 				new RegEntry("$400C.4", "Envelope - Constant Volume", noise.Envelope.ConstantVolume),
 				new RegEntry("$400C.5", "Length Counter - Halted", noise.LengthCounter.Halt),
