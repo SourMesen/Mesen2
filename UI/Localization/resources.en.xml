@@ -3051,7 +3051,7 @@
 			<Value ID="AspectRatio">Aspect Ratio</Value>
 			<Value ID="Fullscreen">Fullscreen</Value>
 			<Value ID="VideoFilter">Video Filter</Value>
-			<Value ID="Region">Region</Value>
+			<Value ID="Region">Region / Model</Value>
 
 			<Value ID="Audio">Audio</Value>
 			<Value ID="Emulation">Emulation</Value>

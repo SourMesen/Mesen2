@@ -409,19 +409,33 @@ namespace Mesen.ViewModels
 
 				new MainMenuAction() {
 					ActionType = ActionType.Region,
-					IsEnabled = () => {
-						return (
-							IsGameRunning &&
-							MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy &&
-							MainWindow.RomInfo.ConsoleType != ConsoleType.PcEngine
-						);
-					},
+					IsEnabled = () => IsGameRunning,
+					IsVisible = () => !IsGameRunning || MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
 					SubActions = new List<object>() {
 						GetRegionMenuItem(ConsoleRegion.Auto),
+						GetPcEngineModelMenuItem(PceConsoleType.Auto),
 						new ContextMenuSeparator(),
 						GetRegionMenuItem(ConsoleRegion.Ntsc),
 						GetRegionMenuItem(ConsoleRegion.Pal),
 						GetRegionMenuItem(ConsoleRegion.Dendy),
+						GetPcEngineModelMenuItem(PceConsoleType.PcEngine),
+						GetPcEngineModelMenuItem(PceConsoleType.SuperGrafx),
+						GetPcEngineModelMenuItem(PceConsoleType.TurboGrafx)
+					}
+				},
+
+				new MainMenuAction() {
+					ActionType = ActionType.Region,
+					DynamicText = () => ResourceHelper.GetEnumText(ActionType.Region) + (MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy ? " (GB)" : ""),
+					IsVisible = () => IsGameRunning && MainWindow.RomInfo.CpuTypes.Contains(CpuType.Gameboy),
+					SubActions = new List<object>() {
+						GetGameboyModelMenuItem(GameboyModel.AutoFavorGbc),
+						GetGameboyModelMenuItem(GameboyModel.AutoFavorSgb),
+						GetGameboyModelMenuItem(GameboyModel.AutoFavorGb),
+						new ContextMenuSeparator(),
+						GetGameboyModelMenuItem(GameboyModel.Gameboy),
+						GetGameboyModelMenuItem(GameboyModel.GameboyColor),
+						GetGameboyModelMenuItem(GameboyModel.SuperGameboy),
 					}
 				},
 
@@ -490,11 +504,17 @@ namespace Mesen.ViewModels
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
 				CustomText = ResourceHelper.GetEnumText(region),
-				IsVisible = () => region switch {
-					ConsoleRegion.Ntsc => MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
-					ConsoleRegion.Pal => MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
-					ConsoleRegion.Dendy => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes,
-					ConsoleRegion.Auto or _ => true,
+				IsVisible = () => {
+					if(MainWindow.RomInfo.ConsoleType == ConsoleType.PcEngine || MainWindow.RomInfo.ConsoleType == ConsoleType.Gameboy) {
+						return false;
+					}
+
+					return region switch {
+						ConsoleRegion.Ntsc => true,
+						ConsoleRegion.Pal => true,
+						ConsoleRegion.Dendy => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes,
+						ConsoleRegion.Auto or _ => true
+					};
 				},
 				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
 					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
@@ -516,6 +536,33 @@ namespace Mesen.ViewModels
 						default:
 							break;
 					}
+				}
+			};
+		}
+
+		private MainMenuAction GetPcEngineModelMenuItem(PceConsoleType model)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(model),
+				IsVisible = () => MainWindow.RomInfo.ConsoleType == ConsoleType.PcEngine,
+				IsSelected = () => ConfigManager.Config.PcEngine.ConsoleType == model,
+				OnClick = () => {
+					ConfigManager.Config.PcEngine.ConsoleType = model;
+					ConfigManager.Config.PcEngine.ApplyConfig();
+				}
+			};
+		}
+
+		private MainMenuAction GetGameboyModelMenuItem(GameboyModel model)
+		{
+			return new MainMenuAction() {
+				ActionType = ActionType.Custom,
+				CustomText = ResourceHelper.GetEnumText(model),
+				IsSelected = () => ConfigManager.Config.Gameboy.Model == model,
+				OnClick = () => {
+					ConfigManager.Config.Gameboy.Model = model;
+					ConfigManager.Config.Gameboy.ApplyConfig();
 				}
 			};
 		}
