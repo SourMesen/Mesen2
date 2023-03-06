@@ -39,6 +39,7 @@ void EmuSettings::Serialize(Serializer& s)
 {
 	//Save/load settings that have an impact on emulation (for movies), netplay, etc.)
 	//TODOv2: These should probably not be loaded except for movie playback and netplay clients
+	//TODOv2: Desyncs are possible when random state options are turned on
 	SV(_video.IntegerFpsMode);
 	SV(_emulation.RunAheadFrames);
 	SV(_game.DipSwitches);
@@ -48,9 +49,11 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_nes.ConsoleType);
 			SV(_nes.RamPowerOnState);
 			SV(_nes.RandomizeMapperPowerOnState);
+			SV(_nes.RandomizeCpuPpuAlignment);
 			SV(_nes.DisableOamAddrBug); SV(_nes.DisablePaletteRead); SV(_nes.DisablePpu2004Reads);
 			SV(_nes.DisableGameGenieBusConflicts); SV(_nes.DisablePpuReset); SV(_nes.EnableOamDecay);
 			SV(_nes.EnablePpu2000ScrollGlitch); SV(_nes.EnablePpu2006ScrollGlitch); SV(_nes.EnablePpuOamRowCorruption);
+			SV(_nes.RestrictPpuAccessOnFirstFrame); SV(_nes.DisableGameGenieBusConflicts);
 			SV(_nes.PpuExtraScanlinesAfterNmi); SV(_nes.PpuExtraScanlinesBeforeNmi);
 			SV(_nes.Region);
 			SV(_nes.LightDetectionRadius);
@@ -68,6 +71,13 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_snes.Port1.Type); SV(_snes.Port1SubPorts[0].Type); SV(_snes.Port1SubPorts[1].Type); SV(_snes.Port1SubPorts[2].Type); SV(_snes.Port1SubPorts[3].Type);
 			SV(_snes.Port2.Type); SV(_snes.Port2SubPorts[0].Type); SV(_snes.Port2SubPorts[1].Type); SV(_snes.Port2SubPorts[2].Type); SV(_snes.Port2SubPorts[3].Type);
 			SV(_snes.BsxCustomDate);
+			
+			if(_emu->GetRomInfo().Format == RomFormat::Gb) {
+				SV(_gameboy.RamPowerOnState);
+				SV(_gameboy.Controller.Type);
+				SV(_gameboy.Model);
+				SV(_gameboy.UseSgb2);
+			}
 			break;
 
 		case ConsoleType::Gameboy:
@@ -93,7 +103,7 @@ void EmuSettings::Serialize(Serializer& s)
 			break;
 
 		default:
-			throw std::runtime_error("unsupport console type");
+			throw std::runtime_error("unsupported console type");
 	}
 }
 
