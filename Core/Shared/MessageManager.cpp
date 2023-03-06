@@ -73,6 +73,7 @@ std::unordered_map<string, string> MessageManager::_enResources = {
 	{ "SoundRecorderStarted", u8"Recording to: %1" },
 	{ "SoundRecorderStopped", u8"Recording saved to: %1" },
 	{ "TestFileSavedTo", u8"Test file saved to: %1" },
+	{ "UnexpectedError", u8"Unexpected error: %1" },
 	{ "UnsupportedMapper", u8"Unsupported mapper (%1), cannot load game." },
 	{ "VideoRecorderStarted", u8"Recording to: %1" },
 	{ "VideoRecorderStopped", u8"Recording saved to: %1" },

@@ -347,6 +347,20 @@ void Emulator::PowerCycle()
 
 bool Emulator::LoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
 {
+	try {
+		return InternalLoadRom(romFile, patchFile, stopRom, forPowerCycle);
+	} catch(std::exception& ex) {
+		_videoDecoder->StartThread();
+		_videoRenderer->StartThread();
+
+		MessageManager::DisplayMessage("Error", "UnexpectedError", ex.what());
+		Stop(false, true, false);
+		return false;
+	}
+}
+
+bool Emulator::InternalLoadRom(VirtualFile romFile, VirtualFile patchFile, bool stopRom, bool forPowerCycle)
+{
 	if(!romFile.IsValid()) {
 		MessageManager::DisplayMessage("Error", "CouldNotLoadFile", romFile.GetFileName());
 		return false;

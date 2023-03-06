@@ -53,7 +53,7 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_nes.DisableOamAddrBug); SV(_nes.DisablePaletteRead); SV(_nes.DisablePpu2004Reads);
 			SV(_nes.DisableGameGenieBusConflicts); SV(_nes.DisablePpuReset); SV(_nes.EnableOamDecay);
 			SV(_nes.EnablePpu2000ScrollGlitch); SV(_nes.EnablePpu2006ScrollGlitch); SV(_nes.EnablePpuOamRowCorruption);
-			SV(_nes.RestrictPpuAccessOnFirstFrame); SV(_nes.DisableGameGenieBusConflicts);
+			SV(_nes.RestrictPpuAccessOnFirstFrame);
 			SV(_nes.PpuExtraScanlinesAfterNmi); SV(_nes.PpuExtraScanlinesBeforeNmi);
 			SV(_nes.Region);
 			SV(_nes.LightDetectionRadius);
