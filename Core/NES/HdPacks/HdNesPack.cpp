@@ -127,7 +127,7 @@ void HdNesPack<scale>::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *
 	} else {
 		for(uint32_t i = 0; i < scale; i++) {
 			for(uint32_t j = 0; j < scale; j++) {
-				uint32_t pixelColor = AdjustBrightness((uint8_t*)pngData+j, bgInfo.Brightness);
+				uint32_t pixelColor = AdjustBrightness((uint8_t*)(pngData+j), bgInfo.Brightness);
 				if(pixelColor >= 0xFF000000) {
 					outputBuffer[j] = pixelColor;
 				} else if(pixelColor >= 0x01000000) {
