@@ -25,8 +25,6 @@ LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
 MESENOS :=
-PUBLISHFLAGS :=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
-
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
@@ -99,6 +97,8 @@ CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 OBJFOLDER := obj.$(MESENPLATFORM)
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
+
+PUBLISHFLAGS :=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
 
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)
