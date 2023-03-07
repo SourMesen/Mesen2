@@ -542,7 +542,9 @@ namespace Mesen.Debugger.Controls
 
 		public PictureViewerDrawOperation(PictureViewer viewer)
 		{
-			Bounds = viewer.Bounds * LayoutHelper.GetLayoutScale(viewer);
+			//TODOv2 Inflate(1) fixes a refresh issue in tooltips in the sprite viewer
+			//(first pixel in the preview image keeps the same data as the tooltip that was active before it)
+			Bounds = viewer.Bounds.Inflate(1) * LayoutHelper.GetLayoutScale(viewer);
 			_source = (DynamicBitmap)viewer.Source;
 			_zoom = viewer.Zoom;
 			using(var lockedBuffer = ((WriteableBitmap)_source).Lock()) {
