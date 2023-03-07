@@ -42,6 +42,8 @@ namespace Mesen.Windows
 		private bool _testModeEnabled;
 		private bool _needResume = false;
 		private bool _needCloseValidation = true;
+		
+		private bool _preventFullscreenToggle = false;
 
 		private Panel _rendererPanel;
 		private NativeRenderer _renderer;
@@ -452,45 +454,49 @@ namespace Mesen.Windows
 
 		public void ToggleFullscreen()
 		{
+			if(_preventFullscreenToggle) {
+				return;
+			}
+
+			_preventFullscreenToggle = true;
 			if(WindowState == WindowState.FullScreen) {
-				WindowState = _prevWindowState;
-				if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
-					EmuApi.SetExclusiveFullscreenMode(false, _renderer.Handle);
-				}
-				RestoreOriginalWindowSize();
+				Task.Run(() => {
+					if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
+						EmuApi.SetExclusiveFullscreenMode(false, _renderer.Handle);
+					}
+
+					Dispatcher.UIThread.Post(() => {
+						WindowState = _prevWindowState;
+						if(_prevWindowState == WindowState.Normal) {
+							ClientSize = _originalSize;
+							Position = _originalPos;
+						}
+						_preventFullscreenToggle = false;
+					});
+				});
 			} else {
 				_originalSize = ClientSize;
 				_originalPos = Position;
+				_prevWindowState = WindowState;
+
 				if(ConfigManager.Config.Video.UseExclusiveFullscreen) {
 					if(!EmuApi.IsRunning()) {
 						//Prevent entering fullscreen mode until a game is loaded
+						_preventFullscreenToggle = false;
 						return;
 					}
-					EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
-				}
-				_prevWindowState = WindowState;
-				WindowState = WindowState.FullScreen;
-			}
-		}
 
-		private void RestoreOriginalWindowSize()
-		{
-			Task.Run(() => {
-				Thread.Sleep(30);
-				Dispatcher.UIThread.Post(() => {
-					if(WindowState == WindowState.Normal) {
-						ClientSize = _originalSize;
-						Position = _originalPos;
-					}
-				});
-				Thread.Sleep(100);
-				Dispatcher.UIThread.Post(() => {
-					if(WindowState == WindowState.Normal) {
-						ClientSize = _originalSize;
-						Position = _originalPos;
-					}
-				});
-			});
+					WindowState = WindowState.FullScreen;
+
+					Task.Run(() => {
+						EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
+						_preventFullscreenToggle = false;
+					});
+				} else {
+					WindowState = WindowState.FullScreen;
+					_preventFullscreenToggle = false;
+				}
+			}
 		}
 
 		protected override void OnLostFocus(RoutedEventArgs e)

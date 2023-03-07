@@ -31,10 +31,17 @@ Renderer::~Renderer()
 void Renderer::SetExclusiveFullscreenMode(bool fullscreen, void* windowHandle)
 {
 	if(fullscreen != _fullscreen || _hWnd != (HWND)windowHandle) {
+		int counter = _resetCounter;
+
 		_hWnd = (HWND)windowHandle;
 		_monitorWidth = _emu->GetSettings()->GetVideoConfig().FullscreenResWidth;
 		_monitorHeight = _emu->GetSettings()->GetVideoConfig().FullscreenResHeight;
+
 		_newFullscreen = fullscreen;
+
+		while(_resetCounter <= counter) {
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+		}
 	}
 }
 
@@ -143,6 +150,8 @@ void Renderer::Reset()
 	} else {
 		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 	}
+
+	_resetCounter++;
 }
 
 void Renderer::CleanupDevice()

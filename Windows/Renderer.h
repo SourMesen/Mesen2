@@ -70,6 +70,8 @@ private:
 	uint32_t _emuFrameHeight = 0;
 	uint32_t _emuFrameWidth = 0;
 
+	atomic<int> _resetCounter = 0;
+
 	HRESULT InitDevice();
 	void CleanupDevice();
 
