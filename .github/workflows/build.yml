@@ -127,8 +127,12 @@ jobs:
         run: |
           make -j$(nproc)
 
+      - name: Zip Mesen.app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent bin/osx-x64/Release/osx-x64/publish/Mesen.app bin/osx-x64/Release/Mesen.app.zip
+
       - name: Upload Mesen
         uses: actions/upload-artifact@v3
         with:
           name: Mesen (macOS - ${{ matrix.os }})
-          path: bin/osx-x64/Release/osx-x64/publish/Mesen
+          path: bin/osx-x64/Release/Mesen.app.zip

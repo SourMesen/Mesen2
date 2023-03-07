@@ -33,6 +33,19 @@
 		<Optimize>true</Optimize>
 		<DefineConstants></DefineConstants>
 	</PropertyGroup>
+	<PropertyGroup>
+		<CFBundleName>Mesen</CFBundleName> <!-- Also defines .app file name -->
+		<CFBundleDisplayName>Mesen</CFBundleDisplayName>
+		<CFBundleIdentifier>ca.mesen</CFBundleIdentifier>
+		<CFBundleVersion>1.0.0</CFBundleVersion>
+		<CFBundleShortVersionString>1.0</CFBundleShortVersionString>
+		<CFBundlePackageType>APPL</CFBundlePackageType>
+		<CFBundleSignature>????</CFBundleSignature>
+		<CFBundleExecutable>Mesen</CFBundleExecutable>
+		<CFBundleIconFile>MesenIcon.icns</CFBundleIconFile> <!-- Will be copied from output directory -->
+		<NSPrincipalClass>NSApplication</NSPrincipalClass>
+		<NSHighResolutionCapable>true</NSHighResolutionCapable>
+	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Assets\MsgBoxInfo.png" />
 	  <None Remove="Debugger\Documentation\GbDocumentation.json" />
@@ -78,6 +91,7 @@
     <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview5" />
     <PackageReference Include="Dock.Model.Avalonia" Version="11.0.0-preview5" />
     <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview5" />
+    <PackageReference Include="Dotnet.Bundle" Version="*" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" ExcludeAssets="all" />
@@ -550,6 +564,7 @@
   </Target>
   
 	<Target Name="PreBuildOsx" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'=='osx-x64' Or '$(RuntimeIdentifier)'=='osx-arm64'">
-    <Exec Command="cd $(OutDir)&#xD;&#xA;rm -R Dependencies&#xD;&#xA;mkdir Dependencies&#xD;&#xA;cp -R $(ProjectDir)/Dependencies/* Dependencies&#xD;&#xA;cp libHarfBuzzSharp.dylib Dependencies&#xD;&#xA;cp libSkiaSharp.dylib Dependencies&#xD;&#xA;cp MesenCore.dylib Dependencies&#xD;&#xA;cd Dependencies&#xD;&#xA;rm ../Dependencies.zip&#xD;&#xA;zip -r ../Dependencies.zip *&#xD;&#xA;cp ../Dependencies.zip $(ProjectDir)" />
+    <Exec Command="cp ./Assets/MesenIcon.icns $(OutDir)&#xD;&#xA;cd $(OutDir)&#xD;&#xA;rm -R Dependencies&#xD;&#xA;mkdir Dependencies&#xD;&#xA;cp -R $(ProjectDir)/Dependencies/* Dependencies&#xD;&#xA;cp libHarfBuzzSharp.dylib Dependencies&#xD;&#xA;cp libSkiaSharp.dylib Dependencies&#xD;&#xA;cp MesenCore.dylib Dependencies&#xD;&#xA;cd Dependencies&#xD;&#xA;rm ../Dependencies.zip&#xD;&#xA;zip -r ../Dependencies.zip *&#xD;&#xA;cp ../Dependencies.zip $(ProjectDir)" />
   </Target>
+
 </Project>
