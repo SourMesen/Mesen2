@@ -126,6 +126,7 @@ struct GbFifoEntry
 {
 	uint8_t Color;
 	uint8_t Attributes;
+	uint8_t Index;
 };
 
 struct GbPpuFifo
