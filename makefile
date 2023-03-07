@@ -25,6 +25,7 @@ LINKCHECKUNRESOLVED := -Wl,-z,defs
 
 LINKOPTIONS :=
 MESENOS :=
+PUBLISHFLAGS :=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
 
 UNAME_S := $(shell uname -s)
 
@@ -133,6 +134,7 @@ ifeq ($(MESENOS),osx)
 	LIBEVDEVINC := 
 	LIBEVDEVSRC := 
 	FSLIB := 
+	PUBLISHFLAGS := -t:BundleApp -p:UseAppHost=true -p:RuntimeIdentifier=$(MESENPLATFORM) -p:SelfContained=true -p:PublishSingleFile=false -p:PublishReadyToRun=false
 endif
 
 all: ui
@@ -142,8 +144,8 @@ ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 	rm -fr $(RELEASEFOLDER)/Dependencies/*
 	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/$(MESENPLATFORM)/Release/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
-	cd UI && dotnet publish -c Release -r $(MESENPLATFORM) -p:OptimizeUi="true" --no-self-contained true -p:PublishSingleFile=true
+	cd UI && dotnet publish -c Release -p:OptimizeUi="true" $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c Release -p:OptimizeUi="true" $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
