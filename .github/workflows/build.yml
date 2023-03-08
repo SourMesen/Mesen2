@@ -127,6 +127,31 @@ jobs:
         run: |
           make -j$(nproc)
 
+      - name: Sign binary
+        env:
+          APP_NAME: bin/osx-x64/Release/osx-x64/publish/Mesen.app
+          CERT_DATA: ${{ secrets.MACOS_CERTIFICATE }}
+          CERT_PASS: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          ENTITLEMENTS: UI/Mesen.entitlements
+          SIGNING_IDENTITY: TestSign
+        run: |
+          # Export certs
+          echo "$CERT_DATA" | base64 --decode > /tmp/certs.p12
+          # Create keychain
+          security create-keychain -p actions macos-build.keychain
+          security default-keychain -s macos-build.keychain
+          security unlock-keychain -p actions macos-build.keychain
+          security set-keychain-settings -t 3600 -u macos-build.keychain
+          # Import certs to keychain
+          security import /tmp/certs.p12 -k ~/Library/Keychains/macos-build.keychain -P "$CERT_PASS" -T /usr/bin/codesign -T /usr/bin/productsign
+          # Key signing
+          security set-key-partition-list -S apple-tool:,apple: -s -k actions macos-build.keychain
+          # print identities
+          security find-identity -v macos-build.keychain
+
+          echo "[INFO] Signing app file"
+          codesign --force --deep --timestamp --keychain macos-build.keychain --options=runtime --entitlements "$ENTITLEMENTS" --sign "$SIGNING_IDENTITY" "$APP_NAME"
+
       - name: Zip Mesen.app
         run: |
           ditto -c -k --sequesterRsrc --keepParent bin/osx-x64/Release/osx-x64/publish/Mesen.app bin/osx-x64/Release/Mesen.app.zip
