@@ -36,7 +36,7 @@
 			<StackPanel
 				Orientation="Horizontal"
 				Classes.mono="{Binding UseMonoFont}"
-				Classes.regular="{Binding UseMonoFont}"
+				Classes.regular="{Binding !UseMonoFont}"
 		  >
 				<TextBlock
 					Name="Header"
