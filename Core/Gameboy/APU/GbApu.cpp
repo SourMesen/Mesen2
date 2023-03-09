@@ -313,7 +313,7 @@ uint8_t GbApu::ReadCgbRegister(uint16_t addr)
 
 	switch(addr) {
 		case 0xFF76: return _square1->GetOutput() | (_square2->GetOutput() << 4);
-		case 0xFF77: return _noise->GetOutput() | (_wave->GetOutput() << 4);
+		case 0xFF77: return _wave->GetOutput() | (_noise->GetOutput() << 4);
 	}
 
 	//Should not be called
