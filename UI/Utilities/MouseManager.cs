@@ -141,7 +141,8 @@ namespace Mesen.Utilities
 			MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
 
-			bool autoHideMenu = _wnd.WindowState == WindowState.FullScreen || ConfigManager.Config.Preferences.AutoHideMenu;
+			bool inExclusiveFullscreen = _wnd.WindowState == WindowState.FullScreen && ConfigManager.Config.Video.UseExclusiveFullscreen;
+			bool autoHideMenu = !inExclusiveFullscreen && (_wnd.WindowState == WindowState.FullScreen || ConfigManager.Config.Preferences.AutoHideMenu);
 			if(autoHideMenu) {
 				if(_mainMenu.MainMenu.IsOpen) {
 					MainWindowViewModel.Instance.IsMenuVisible = true;
