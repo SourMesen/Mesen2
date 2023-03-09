@@ -281,9 +281,12 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 					Write(0xFF24, 0);
 					Write(0xFF25, 0);
 				} else {
-					//When powered on, the frame sequencer is reset so that the next step will be 0,
-					//the square duty units are reset to the first step of the waveform, and the wave channel's sample buffer is reset to 0. 
+					//"When powered on, the frame sequencer is reset so that the next step will be 0,
+					//the square duty units are reset to the first step of the waveform, and the wave channel's sample buffer is reset to 0."
 					_state.FrameSequenceStep = 0;
+
+					_square1->Disable();
+					_square2->Disable();
 
 					if(_gameboy->IsCgb()) {
 						//Length counters are reset to 0 at power on
@@ -306,6 +309,8 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 
 uint8_t GbApu::ReadCgbRegister(uint16_t addr)
 {
+	Run();
+
 	switch(addr) {
 		case 0xFF76: return _square1->GetOutput() | (_square2->GetOutput() << 4);
 		case 0xFF77: return _noise->GetOutput() | (_wave->GetOutput() << 4);

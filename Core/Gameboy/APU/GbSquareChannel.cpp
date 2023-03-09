@@ -21,7 +21,7 @@ void GbSquareChannel::Disable()
 {
 	uint8_t len = _state.Length;
 	_state = {};
-	_state.Length = len;
+	_state.Timer = 2048 * 4;
 }
 
 void GbSquareChannel::ResetLengthCounter()
@@ -116,15 +116,16 @@ uint8_t GbSquareChannel::GetOutput()
 void GbSquareChannel::Exec(uint32_t clocksToRun)
 {
 	_state.Timer -= clocksToRun;
-	if(_state.Enabled) {
-		_state.Output = _dutySequences[_state.Duty][_state.DutyPos] * _state.Volume;
-	} else {
-		_state.Output = 0;
-	}
-
 
 	if(_state.Timer == 0) {
 		_state.Timer = (2048 - _state.Frequency) * 4;
+
+		if(_state.Enabled) {
+			_state.Output = _dutySequences[_state.Duty][_state.DutyPos] * _state.Volume;
+		} else {
+			_state.Output = 0;
+		}
+		
 		_state.DutyPos = (_state.DutyPos + 1) & 0x07;
 	}
 }
@@ -223,7 +224,8 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
 				//Frequency timer is reloaded with period.
-				_state.Timer = (2048 - _state.Frequency) * 4 | (_state.Timer & 0x03);
+				//"When triggering a square channel, the low two bits of the frequency timer are NOT modified."
+				_state.Timer = (((2048 - _state.Frequency) * 4) + 8) | (_state.Timer & 0x03);
 
 				//"If length counter is zero, it is set to 64 (256 for wave channel)."
 				if(_state.Length == 0) {
