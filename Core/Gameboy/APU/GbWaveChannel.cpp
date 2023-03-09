@@ -27,6 +27,7 @@ void GbWaveChannel::Disable()
 	_state = {};
 	_state.Length = len;
 	memcpy(_state.Ram, ram, sizeof(ram));
+	_state.Timer = 2048 * 2;
 }
 
 void GbWaveChannel::ResetLengthCounter()
@@ -55,13 +56,6 @@ void GbWaveChannel::Exec(uint32_t clocksToRun)
 	_state.Timer -= clocksToRun;
 	_allowRamAccess = false;
 
-	//The DAC receives the current value from the upper/lower nibble of the sample buffer, shifted right by the volume control. 
-	if(_state.Volume && _state.Enabled) {
-		_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
-	} else {
-		_state.Output = 0;
-	}
-
 	if(_state.Timer == 0) {
 		//The wave channel's frequency timer period is set to (2048-frequency)*2.
 		_state.Timer = (2048 - _state.Frequency) * 2;
@@ -76,6 +70,14 @@ void GbWaveChannel::Exec(uint32_t clocksToRun)
 		} else {
 			_state.SampleBuffer = _state.Ram[_state.Position >> 1] >> 4;
 		}
+
+		//The DAC receives the current value from the upper/lower nibble of the sample buffer, shifted right by the volume control. 
+		if(_state.Volume && _state.Enabled) {
+			_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
+		} else {
+			_state.Output = 0;
+		}
+
 		_allowRamAccess = true;
 	}
 }
@@ -190,5 +192,5 @@ void GbWaveChannel::Serialize(Serializer& s)
 {
 	SV(_state.DacEnabled); SV(_state.SampleBuffer); SV(_state.Position); SV(_state.Volume); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.Output);
-	SVArray(_state.Ram, 0x10);
+	SVArray(_state.Ram, 0x10); SV(_allowRamAccess);
 }

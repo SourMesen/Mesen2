@@ -22,6 +22,7 @@ void GbNoiseChannel::Disable()
 	uint8_t len = _state.Length;
 	_state = {};
 	_state.Length = len;
+	_state.Timer = GetPeriod();
 }
 
 void GbNoiseChannel::ResetLengthCounter()
@@ -80,12 +81,6 @@ void GbNoiseChannel::Exec(uint32_t clocksToRun)
 
 	_state.Timer -= clocksToRun;
 
-	if(_state.Enabled) {
-		_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
-	} else {
-		_state.Output = 0;
-	}
-
 	if(_state.Timer == 0) {
 		_state.Timer = GetPeriod();
 
@@ -94,6 +89,12 @@ void GbNoiseChannel::Exec(uint32_t clocksToRun)
 		uint16_t shiftedValue = _state.ShiftRegister >> 1;
 		uint8_t xorResult = (_state.ShiftRegister & 0x01) ^ (shiftedValue & 0x01);
 		_state.ShiftRegister = (xorResult << 14) | shiftedValue;
+
+		if(_state.Enabled) {
+			_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
+		} else {
+			_state.Output = 0;
+		}
 
 		if(_state.ShortWidthMode) {
 			//If width mode is 1 (NR43), the XOR result is ALSO put into bit 6 AFTER the shift, resulting in a 7-bit LFSR.
@@ -114,7 +115,7 @@ uint8_t GbNoiseChannel::Read(uint16_t addr)
 				(_state.EnvVolume << 4) |
 				(_state.EnvRaiseVolume ? 0x08 : 0) |
 				_state.EnvPeriod
-				);
+			);
 			break;
 
 		case 3:
@@ -122,7 +123,7 @@ uint8_t GbNoiseChannel::Read(uint16_t addr)
 				(_state.PeriodShift << 4) |
 				(_state.ShortWidthMode ? 0x08 : 0) |
 				_state.Divisor
-				);
+			);
 			break;
 
 		case 4: value = _state.LengthEnabled ? 0x40 : 0; break;
@@ -159,11 +160,16 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 			if(value & 0x80) {
 				//Writing a value to NRx4 with bit 7 set causes the following things to occur :
 
+				//Frequency timer is reloaded with period.
+				_state.Timer = (GetPeriod() + 4) | (_state.Timer & 0x03);
+				if(_state.Enabled) {
+					//SameSuite's channel_4_lfsr_restart and channel_4_lfsr_restart_fast tests seem to
+					//expect the channel to take an extra tick when restarted while it's still running
+					_state.Timer += 4;
+				}
+
 				//Channel is enabled, if volume is not 0 or raise volume flag is set
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
-
-				//Frequency timer is reloaded with period.
-				_state.Timer = GetPeriod();
 
 				//Noise channel's LFSR bits are all set to 1.
 				_state.ShiftRegister = 0x7FFF;

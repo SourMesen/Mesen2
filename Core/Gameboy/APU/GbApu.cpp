@@ -287,6 +287,8 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 
 					_square1->Disable();
 					_square2->Disable();
+					_noise->Disable();
+					_wave->Disable();
 
 					if(_gameboy->IsCgb()) {
 						//Length counters are reset to 0 at power on

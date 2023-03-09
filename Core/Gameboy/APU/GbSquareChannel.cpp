@@ -21,6 +21,7 @@ void GbSquareChannel::Disable()
 {
 	uint8_t len = _state.Length;
 	_state = {};
+	_state.Length = len;
 	_state.Timer = 2048 * 4;
 }
 
@@ -220,12 +221,17 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			if(value & 0x80) {
 				//"Writing a value to NRx4 with bit 7 set causes the following things to occur :"
 
-				//"Channel is enabled, if volume is not 0 or raise volume flag is set"
-				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
-
 				//Frequency timer is reloaded with period.
 				//"When triggering a square channel, the low two bits of the frequency timer are NOT modified."
 				_state.Timer = (((2048 - _state.Frequency) * 4) + 8) | (_state.Timer & 0x03);
+				if(_state.Enabled) {
+					//Contrary to the noise channel, it looks like SameSuite's channel_1_restart test expects
+					//the channel to take one tick *less* when restarted while it's still running?
+					_state.Timer -= 4;
+				}
+
+				//"Channel is enabled, if volume is not 0 or raise volume flag is set"
+				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
 				//"If length counter is zero, it is set to 64 (256 for wave channel)."
 				if(_state.Length == 0) {
