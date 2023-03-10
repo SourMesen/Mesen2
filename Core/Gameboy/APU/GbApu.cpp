@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/APU/GbApu.h"
 #include "Gameboy/Gameboy.h"
+#include "Gameboy/GbTimer.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/Audio/SoundMixer.h"
@@ -134,6 +135,10 @@ void GbApu::ClockFrameSequencer()
 	Run();
 
 	if(!_state.ApuEnabled) {
+		return;
+	}
+
+	if(_skipFirstEventCounter && --_skipFirstEventCounter) {
 		return;
 	}
 
@@ -281,6 +286,12 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 					Write(0xFF24, 0);
 					Write(0xFF25, 0);
 				} else {
+					//"starting the APU while bit 4 of the DIV register is set causes the APU to skip the first DIV-APU event"
+					//Based on the results of the div_*_10 tests in SameSuite, when the first event is skipped, the 
+					//"length enable" glitch will be trigerred until the event after the skipped one occurs.
+					//This uses a counter to reproduce this behavior
+					_skipFirstEventCounter = _gameboy->GetTimer()->IsFrameSequencerBitSet() ? 2 : 0;
+
 					//"When powered on, the frame sequencer is reset so that the next step will be 0,
 					//the square duty units are reset to the first step of the waveform, and the wave channel's sample buffer is reset to 0."
 					_state.FrameSequenceStep = 0;
@@ -326,7 +337,7 @@ template<typename T>
 void GbApu::ProcessLengthEnableFlag(uint8_t value, T &length, bool &lengthEnabled, bool &enabled)
 {
 	bool newLengthEnabled = (value & 0x40) != 0;
-	if(newLengthEnabled && !lengthEnabled && (_state.FrameSequenceStep & 0x01) == 1) {
+	if(newLengthEnabled && !lengthEnabled && ((_state.FrameSequenceStep & 0x01) == 1 || _skipFirstEventCounter)) {
 		//"Extra length clocking occurs when writing to NRx4 when the frame sequencer's next step is one that doesn't clock
 		//the length counter. In this case, if the length counter was PREVIOUSLY disabled and now enabled and the length counter
 		//is not zero, it is decremented. If this decrement makes it zero and trigger is clear, the channel is disabled."
@@ -358,7 +369,7 @@ void GbApu::Serialize(Serializer& s)
 	SV(_state.EnableLeftSq1); SV(_state.EnableLeftSq2); SV(_state.EnableLeftWave); SV(_state.EnableLeftNoise);
 	SV(_state.EnableRightSq1); SV(_state.EnableRightSq2); SV(_state.EnableRightWave); SV(_state.EnableRightNoise);
 	SV(_state.LeftVolume); SV(_state.RightVolume); SV(_state.ExtAudioLeftEnabled); SV(_state.ExtAudioRightEnabled);
-	SV(_prevLeftOutput); SV(_prevRightOutput); SV(_clockCounter); SV(_prevClockCount);
+	SV(_prevLeftOutput); SV(_prevRightOutput); SV(_clockCounter); SV(_prevClockCount); SV(_skipFirstEventCounter);
 
 	SV(_square1);
 	SV(_square2);

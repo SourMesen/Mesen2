@@ -83,6 +83,7 @@ public:
 
 	GbPpu* GetPpu();
 	GbCpu* GetCpu();
+	GbTimer* GetTimer();
 	void GetSoundSamples(int16_t* &samples, uint32_t& sampleCount);
 	GbState GetState();
 	void GetConsoleState(BaseState& state, ConsoleType consoleType) override;

@@ -62,6 +62,12 @@ void GbTimer::SetDivider(uint16_t newValue)
 	_state.Divider = newValue;
 }
 
+bool GbTimer::IsFrameSequencerBitSet()
+{
+	uint16_t frameSeqBit = _memoryManager->IsHighSpeed() ? 0x2000 : 0x1000;
+	return _state.Divider & frameSeqBit;
+}
+
 uint8_t GbTimer::Read(uint16_t addr)
 {
 	switch(addr) {

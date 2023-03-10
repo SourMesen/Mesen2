@@ -238,6 +238,11 @@ GbCpu* Gameboy::GetCpu()
 	return _cpu.get();
 }
 
+GbTimer* Gameboy::GetTimer()
+{
+	return _timer.get();
+}
+
 void Gameboy::GetSoundSamples(int16_t* &samples, uint32_t& sampleCount)
 {
 	_apu->GetSoundSamples(samples, sampleCount);

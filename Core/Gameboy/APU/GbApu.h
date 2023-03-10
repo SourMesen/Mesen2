@@ -38,6 +38,8 @@ private:
 	uint32_t _clockCounter = 0;
 	uint64_t _prevClockCount = 0;
 
+	uint32_t _skipFirstEventCounter = 0;
+
 	GbApuState _state = {};
 
 	uint8_t InternalRead(uint16_t addr);

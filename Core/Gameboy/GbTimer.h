@@ -25,6 +25,8 @@ public:
 	GbTimerState GetState();
 
 	void Exec();
+	
+	bool IsFrameSequencerBitSet();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

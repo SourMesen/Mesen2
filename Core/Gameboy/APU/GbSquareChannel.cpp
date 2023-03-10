@@ -104,6 +104,11 @@ void GbSquareChannel::ClockEnvelope()
 				_state.EnvStopped = true;
 			}
 
+			//Clocking envelope should update output immediately (based on div_trigger_volume test)
+			if(_state.Enabled) {
+				_state.Output = _dutySequences[(_state.Duty - 1) & 0x07][_state.DutyPos] * _state.Volume;
+			}
+
 			_state.EnvTimer = _state.EnvPeriod;
 		}
 	}
