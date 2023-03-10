@@ -90,6 +90,15 @@ void GbSquareChannel::ClockLengthCounter()
 	}
 }
 
+void GbSquareChannel::UpdateOutput()
+{
+	if(_state.Enabled) {
+		_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
+	} else {
+		_state.Output = 0;
+	}
+}
+
 void GbSquareChannel::ClockEnvelope()
 {
 	if(_state.EnvTimer > 0 && !_state.EnvStopped) {
@@ -105,9 +114,7 @@ void GbSquareChannel::ClockEnvelope()
 			}
 
 			//Clocking envelope should update output immediately (based on div_trigger_volume test)
-			if(_state.Enabled) {
-				_state.Output = _dutySequences[(_state.Duty - 1) & 0x07][_state.DutyPos] * _state.Volume;
-			}
+			UpdateOutput();
 
 			_state.EnvTimer = _state.EnvPeriod;
 		}
@@ -125,14 +132,8 @@ void GbSquareChannel::Exec(uint32_t clocksToRun)
 
 	if(_state.Timer == 0) {
 		_state.Timer = (2048 - _state.Frequency) * 4;
-
-		if(_state.Enabled) {
-			_state.Output = _dutySequences[_state.Duty][_state.DutyPos] * _state.Volume;
-		} else {
-			_state.Output = 0;
-		}
-		
 		_state.DutyPos = (_state.DutyPos + 1) & 0x07;
+		UpdateOutput();
 	}
 }
 

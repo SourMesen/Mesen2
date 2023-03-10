@@ -18,7 +18,9 @@ private:
 
 	GbSquareState _state = {};
 	GbApu* _apu = nullptr;
-	
+
+	void UpdateOutput();
+
 public:
 	GbSquareChannel(GbApu* apu);
 
