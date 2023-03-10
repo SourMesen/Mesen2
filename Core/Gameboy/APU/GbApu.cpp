@@ -59,6 +59,11 @@ GbApuDebugState GbApu::GetState()
 	return state;
 }
 
+bool GbApu::IsOddApuCycle()
+{
+	return ((_gameboy->GetApuCycleCount() - _powerOnCycle) & 0x02) != 0;
+}
+
 void GbApu::Run()
 {
 	uint64_t clockCount = _gameboy->GetApuCycleCount();
@@ -295,6 +300,8 @@ void GbApu::Write(uint16_t addr, uint8_t value)
 					//"When powered on, the frame sequencer is reset so that the next step will be 0,
 					//the square duty units are reset to the first step of the waveform, and the wave channel's sample buffer is reset to 0."
 					_state.FrameSequenceStep = 0;
+
+					_powerOnCycle = _gameboy->GetApuCycleCount();
 
 					_square1->Disable();
 					_square2->Disable();

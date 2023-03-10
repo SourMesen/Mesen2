@@ -39,6 +39,7 @@ private:
 	uint64_t _prevClockCount = 0;
 
 	uint32_t _skipFirstEventCounter = 0;
+	uint64_t _powerOnCycle = 0;
 
 	GbApuState _state = {};
 
@@ -51,6 +52,8 @@ public:
 	void Init(Emulator* emu, Gameboy* gameboy);
 
 	GbApuDebugState GetState();
+
+	bool IsOddApuCycle();
 
 	void Run();
 

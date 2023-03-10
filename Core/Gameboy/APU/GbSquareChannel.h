@@ -24,7 +24,7 @@ private:
 public:
 	GbSquareChannel(GbApu* apu);
 
-	GbSquareState GetState();
+	GbSquareState& GetState();
 
 	bool Enabled();
 	void Disable();

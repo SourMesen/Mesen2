@@ -9,7 +9,7 @@ GbWaveChannel::GbWaveChannel(GbApu* apu, Gameboy* gameboy)
 	_apu = apu;
 }
 
-GbWaveState GbWaveChannel::GetState()
+GbWaveState& GbWaveChannel::GetState()
 {
 	return _state;
 }
@@ -53,6 +53,10 @@ uint8_t GbWaveChannel::GetOutput()
 
 void GbWaveChannel::Exec(uint32_t clocksToRun)
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	_state.Timer -= clocksToRun;
 	_allowRamAccess = false;
 

@@ -16,7 +16,7 @@ private:
 
 public:
 	GbNoiseChannel(GbApu* apu);
-	GbNoiseState GetState();
+	GbNoiseState& GetState();
 
 	bool Enabled();
 	void Disable();

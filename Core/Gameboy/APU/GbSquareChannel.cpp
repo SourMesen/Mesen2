@@ -7,7 +7,7 @@ GbSquareChannel::GbSquareChannel(GbApu* apu)
 	_apu = apu;
 }
 
-GbSquareState GbSquareChannel::GetState()
+GbSquareState& GbSquareChannel::GetState()
 {
 	return _state;
 }
@@ -128,6 +128,10 @@ uint8_t GbSquareChannel::GetOutput()
 
 void GbSquareChannel::Exec(uint32_t clocksToRun)
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	_state.Timer -= clocksToRun;
 
 	if(_state.Timer == 0) {
@@ -229,7 +233,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 				//Frequency timer is reloaded with period.
 				//"When triggering a square channel, the low two bits of the frequency timer are NOT modified."
-				_state.Timer = (((2048 - _state.Frequency) * 4) + 8) | (_state.Timer & 0x03);
+				_state.Timer = (((2048 - _state.Frequency) * 4) + 8) + (_apu->IsOddApuCycle() ? 2 : 0);
 				if(_state.Enabled) {
 					//Contrary to the noise channel, it looks like SameSuite's channel_1_restart test expects
 					//the channel to take one tick *less* when restarted while it's still running?

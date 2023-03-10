@@ -19,7 +19,7 @@ private:
 public:
 	GbWaveChannel(GbApu* apu, Gameboy* gameboy);
 
-	GbWaveState GetState();
+	GbWaveState& GetState();
 	bool Enabled();
 	void Disable();
 	void ResetLengthCounter();

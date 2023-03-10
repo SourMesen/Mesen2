@@ -7,7 +7,7 @@ GbNoiseChannel::GbNoiseChannel(GbApu* apu)
 	_apu = apu;
 }
 
-GbNoiseState GbNoiseChannel::GetState()
+GbNoiseState& GbNoiseChannel::GetState()
 {
 	return _state;
 }
@@ -86,6 +86,10 @@ uint32_t GbNoiseChannel::GetPeriod()
 
 void GbNoiseChannel::Exec(uint32_t clocksToRun)
 {
+	if(!_state.Enabled) {
+		return;
+	}
+
 	if(_state.PeriodShift >= 14) {
 		//Using a noise channel clock shift of 14 or 15 results in the LFSR receiving no clocks.
 		return;
@@ -169,7 +173,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 				//Writing a value to NRx4 with bit 7 set causes the following things to occur :
 
 				//Frequency timer is reloaded with period.
-				_state.Timer = (GetPeriod() + 4) | (_state.Timer & 0x03);
+				_state.Timer = (GetPeriod() + 4) + (_apu->IsOddApuCycle() ? 2 : 0);
 				if(_state.Enabled) {
 					//SameSuite's channel_4_lfsr_restart and channel_4_lfsr_restart_fast tests seem to
 					//expect the channel to take an extra tick when restarted while it's still running
