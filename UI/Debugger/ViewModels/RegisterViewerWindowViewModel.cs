@@ -388,6 +388,26 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Output", sq2.Output)
 			});
 
+			GbWaveState wave = gb.Apu.Wave;
+			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("$FF1A-$FF1E", "Wave"),
+				new RegEntry("$FF1A.7", "Sound Enabled", wave.DacEnabled),
+
+				new RegEntry("$FF1B", "Length", wave.Length),
+
+				new RegEntry("$FF1C.5-6", "Volume", wave.Volume),
+
+				new RegEntry("$FF1D-$FF1E.0-2", "Frequency", wave.Frequency),
+
+				new RegEntry("$FF1E.6", "Length Counter Enabled", wave.LengthEnabled),
+				new RegEntry("$FF1E.7", "Channel Enabled", wave.Enabled),
+
+				new RegEntry("--", "Timer", wave.Timer),
+				new RegEntry("--", "Sample Buffer", wave.SampleBuffer),
+				new RegEntry("--", "Position", wave.Position),
+				new RegEntry("--", "Output", wave.Output),
+			});
+
 			GbNoiseState noise = gb.Apu.Noise;
 			entries.AddRange(new List<RegEntry>() {
 				new RegEntry("$FF20-$FF23", "Noise"),
@@ -408,27 +428,6 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("--", "Envelope Timer", noise.EnvTimer),
 				new RegEntry("--", "Shift Register", noise.ShiftRegister, Format.X16),
 				new RegEntry("--", "Output", noise.Output)
-			});
-
-
-			GbWaveState wave = gb.Apu.Wave;
-			entries.AddRange(new List<RegEntry>() {
-				new RegEntry("$FF1A-$FF1E", "Wave"),
-				new RegEntry("$FF1A.7", "Sound Enabled", wave.DacEnabled),
-
-				new RegEntry("$FF1B", "Length", wave.Length),
-
-				new RegEntry("$FF1C.5-6", "Volume", wave.Volume),
-
-				new RegEntry("$FF1D-$FF1E.0-2", "Frequency", wave.Frequency),
-
-				new RegEntry("$FF1E.6", "Length Counter Enabled", wave.LengthEnabled),
-				new RegEntry("$FF1E.7", "Channel Enabled", wave.Enabled),
-
-				new RegEntry("--", "Timer", wave.Timer),
-				new RegEntry("--", "Sample Buffer", wave.SampleBuffer),
-				new RegEntry("--", "Position", wave.Position),
-				new RegEntry("--", "Output", wave.Output),
 			});
 
 			return new RegisterViewerTab(tabPrefix + "APU", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
