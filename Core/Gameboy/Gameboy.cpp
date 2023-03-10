@@ -436,6 +436,9 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		if(cart) {
 			Init(cart, romData, header.GetCartRamSize(), header.HasBattery());
 			return LoadRomResult::Success;
+		} else {
+			MessageManager::DisplayMessage("Error", "Unsupported cart type: " + std::to_string(header.CartType));
+			return LoadRomResult::Failure;
 		}
 	}
 
