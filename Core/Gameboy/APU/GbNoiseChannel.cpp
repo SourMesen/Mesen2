@@ -62,7 +62,7 @@ void GbNoiseChannel::ClockEnvelope()
 				_state.Volume--;
 			}
 
-			_state.EnvTimer = _state.EnvPeriod;
+			_state.EnvTimer = _state.EnvPeriod ? _state.EnvPeriod : 8;
 
 			//Based on the channel_4_volume_div test, clocking the envelope updates the output immediately
 			UpdateOutput();
@@ -189,7 +189,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 				}
 
 				//Volume envelope timer is reloaded with period.
-				_state.EnvTimer = _state.EnvPeriod;
+				_state.EnvTimer = _state.EnvPeriod ? _state.EnvPeriod : 8;
 
 				//Channel volume is reloaded from NRx2.
 				_state.Volume = _state.EnvVolume;
