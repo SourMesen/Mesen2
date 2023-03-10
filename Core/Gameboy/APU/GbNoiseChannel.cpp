@@ -41,6 +41,15 @@ void GbNoiseChannel::ClockLengthCounter()
 	}
 }
 
+void GbNoiseChannel::UpdateOutput()
+{
+	if(_state.Enabled) {
+		_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
+	} else {
+		_state.Output = 0;
+	}
+}
+
 void GbNoiseChannel::ClockEnvelope()
 {
 	if(_state.EnvTimer > 0) {
@@ -54,6 +63,9 @@ void GbNoiseChannel::ClockEnvelope()
 			}
 
 			_state.EnvTimer = _state.EnvPeriod;
+
+			//Based on the channel_4_volume_div test, clocking the envelope updates the output immediately
+			UpdateOutput();
 		}
 	}
 }
@@ -89,18 +101,14 @@ void GbNoiseChannel::Exec(uint32_t clocksToRun)
 		uint16_t shiftedValue = _state.ShiftRegister >> 1;
 		uint8_t xorResult = (_state.ShiftRegister & 0x01) ^ (shiftedValue & 0x01);
 		_state.ShiftRegister = (xorResult << 14) | shiftedValue;
-
-		if(_state.Enabled) {
-			_state.Output = ((_state.ShiftRegister & 0x01) ^ 0x01) * _state.Volume;
-		} else {
-			_state.Output = 0;
-		}
-
+		
 		if(_state.ShortWidthMode) {
 			//If width mode is 1 (NR43), the XOR result is ALSO put into bit 6 AFTER the shift, resulting in a 7-bit LFSR.
 			_state.ShiftRegister &= ~0x40;
 			_state.ShiftRegister |= (xorResult << 6);
 		}
+
+		UpdateOutput();
 	}
 }
 

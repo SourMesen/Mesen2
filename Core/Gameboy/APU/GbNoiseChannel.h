@@ -11,6 +11,8 @@ class GbNoiseChannel final : public ISerializable
 private:
 	GbNoiseState _state = {};
 	GbApu* _apu = nullptr;
+	
+	void UpdateOutput();
 
 public:
 	GbNoiseChannel(GbApu* apu);
