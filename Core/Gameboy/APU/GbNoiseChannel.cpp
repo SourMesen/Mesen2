@@ -173,12 +173,32 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 			if(value & 0x80) {
 				//Writing a value to NRx4 with bit 7 set causes the following things to occur :
 
-				//Frequency timer is reloaded with period.
-				_state.Timer = (GetPeriod() + 4) + (_apu->IsOddApuCycle() ? 2 : 0);
+				//Based on SameSuite's channel_4_delay results:
+				// -When period =  8, 15 cpu cycles (60 clocks) (for the output to change)
+				//       period = 16, 28 cpu cycles (112 clocks)
+				//       period = 32, 54 cpu cycles (216 clocks)
+				// -It takes 7 ticks for the first 0 to appear on bit 0 of the LFSR (in 7-bit mode)
+				//    => Which would give the following clock counts: 7 * 8 = 56, 7 * 16 = 112, 7 * 32 = 224
+				//    => This doesn't match (small periods are too fast, long period are too slow)
+				//    => If the first period duration is halved and a constant 8 is added (like square channel timing), this becomes:
+				//       8+4+6*8=60, 8+8+6*16=112, 8+16+6*32=216, which matches the results and passes
+				_state.Timer = (GetPeriod() / 2 + 8) + (_apu->IsOddApuCycle() ? 2 : 0);
 				if(_state.Enabled) {
 					//SameSuite's channel_4_lfsr_restart and channel_4_lfsr_restart_fast tests seem to
 					//expect the channel to take an extra tick when restarted while it's still running
 					_state.Timer += 4;
+				}
+
+				if(_state.Divisor && !(_apu->GetElapsedApuCycles() & 0x04)) {
+					//Based on SameSuite's channel_4_frequency_alignment:
+					// -When divisor isn't 0, the timing sometimes changes (+/- 1 cpu cycle)
+					//   -> But, when the write to NR44 is done 1 cpu cycle later, the timing is always "normal"
+					//      So this can only happen every other CPU cycle?
+					// -When divisor is 2, 3 or 4, the clock happens earlier
+					// -When divisor is 1, the clock happens later
+					//   -> So it seems like only divisor 1 occurs later and 2/3/4 occur earlier (5/6/7 are unused by the tests)
+					// -channel_4_equivalent_frequencies test shows the same pattern (2/4 later, 1 earlier, 0 in the middle)
+					_state.Timer += (_state.Divisor == 1) ? 4 : -4;
 				}
 
 				//Channel is enabled, if volume is not 0 or raise volume flag is set

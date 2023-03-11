@@ -54,6 +54,7 @@ public:
 	GbApuDebugState GetState();
 
 	bool IsOddApuCycle();
+	uint64_t GetElapsedApuCycles();
 
 	void Run();
 

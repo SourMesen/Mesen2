@@ -64,6 +64,11 @@ bool GbApu::IsOddApuCycle()
 	return ((_gameboy->GetApuCycleCount() - _powerOnCycle) & 0x02) != 0;
 }
 
+uint64_t GbApu::GetElapsedApuCycles()
+{
+	return _gameboy->GetApuCycleCount() - _powerOnCycle;
+}
+
 void GbApu::Run()
 {
 	uint64_t clockCount = _gameboy->GetApuCycleCount();
