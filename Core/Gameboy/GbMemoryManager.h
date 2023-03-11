@@ -42,7 +42,7 @@ private:
 public:
 	virtual ~GbMemoryManager();
 
-	GbMemoryManagerState GetState();
+	GbMemoryManagerState& GetState();
 
 	void Init(Emulator* emu, Gameboy* gameboy, GbCart* cart, GbPpu* ppu, GbApu* apu, GbTimer* timer, GbDmaController* dmaController);
 	void MapRegisters(uint16_t start, uint16_t end, RegisterAccess access);

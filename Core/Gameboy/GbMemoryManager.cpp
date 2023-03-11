@@ -54,7 +54,7 @@ GbMemoryManager::~GbMemoryManager()
 {
 }
 
-GbMemoryManagerState GbMemoryManager::GetState()
+GbMemoryManagerState& GbMemoryManager::GetState()
 {
 	return _state;
 }
@@ -472,9 +472,6 @@ uint8_t GbMemoryManager::ProcessIrqRequests()
 
 void GbMemoryManager::ToggleSpeed()
 {
-	//Reset DIV register when speed is toggled (speed_switch_timing_div test)
-	_timer->Write(0xFF04, 0);
-
 	_state.CgbSwitchSpeedRequest = false;
 	_state.CgbHighSpeed = !_state.CgbHighSpeed;
 }

@@ -31,6 +31,8 @@ private:
 
 	void ExecOpCode(uint8_t opCode);
 
+	void ProcessCgbSpeedSwitch();
+
 	__forceinline void IncCycleCount();
 	__forceinline void HalfCycle();
 	__forceinline uint8_t ReadOpCode();

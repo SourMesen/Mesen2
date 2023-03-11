@@ -785,6 +785,7 @@ namespace Mesen.Interop
 		public UInt64 CycleCount;
 		public UInt16 PC;
 		public UInt16 SP;
+		public UInt16 HaltCounter;
 
 		public byte A;
 		public byte Flags;
@@ -799,7 +800,6 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)] public bool EiPending;
 		[MarshalAs(UnmanagedType.I1)] public bool IME;
-		[MarshalAs(UnmanagedType.I1)] public bool Halted;
 	}
 
 	public enum PpuMode

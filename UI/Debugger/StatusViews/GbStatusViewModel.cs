@@ -81,7 +81,7 @@ namespace Mesen.Debugger.StatusViews
 			RegSP = cpu.SP;
 
 			FlagEiPending = cpu.EiPending;
-			FlagHalted = cpu.Halted;
+			FlagHalted = cpu.HaltCounter > 0;
 			FlagIme = cpu.IME;
 
 			Scanline = ppu.Scanline;
@@ -112,7 +112,11 @@ namespace Mesen.Debugger.StatusViews
 			cpu.SP = RegSP;
 
 			cpu.EiPending = FlagEiPending;
-			cpu.Halted = FlagHalted;
+			if(cpu.HaltCounter == 0 && FlagHalted) {
+				cpu.HaltCounter = 1;
+			} else if(!FlagHalted) {
+				cpu.HaltCounter = 0;
+			}
 			cpu.IME = FlagIme;
 
 			DebugApi.SetCpuState(cpu, CpuType.Gameboy);

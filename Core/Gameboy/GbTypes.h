@@ -8,6 +8,7 @@ struct GbCpuState : BaseState
 	uint64_t CycleCount;
 	uint16_t PC;
 	uint16_t SP;
+	uint16_t HaltCounter;
 
 	uint8_t A;
 	uint8_t Flags;
@@ -22,7 +23,6 @@ struct GbCpuState : BaseState
 
 	bool EiPending;
 	bool IME;
-	bool Halted;
 };
 
 namespace GbCpuFlags

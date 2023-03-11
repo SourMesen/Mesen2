@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/GbCpu.h"
 #include "Gameboy/GbPpu.h"
+#include "Gameboy/GbTimer.h"
 #include "Gameboy/Gameboy.h"
 #include "Gameboy/GbMemoryManager.h"
 #include "Shared/Emulator.h"
@@ -32,7 +33,7 @@ GbCpuState& GbCpu::GetState()
 
 bool GbCpu::IsHalted()
 {
-	return _state.Halted;
+	return _state.HaltCounter > 0;
 }
 
 void GbCpu::Exec()
@@ -82,14 +83,18 @@ void GbCpu::Exec()
 			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
 #endif
 		}
-		_state.Halted = false;
+		_state.HaltCounter = 0;
 	}
 
-	if(_state.Halted) {
+	if(_state.HaltCounter) {
 #ifndef DUMMYCPU
 		_emu->ProcessHaltedCpu<CpuType::Gameboy>();
 #endif
 		IncCycleCount();
+
+		if(_state.HaltCounter > 1) {
+			ProcessCgbSpeedSwitch();
+		}
 		return;
 	}
 
@@ -363,6 +368,20 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 		case 0xFD: InvalidOp(); break;
 		case 0xFE: CP(ReadCode()); break;
 		case 0xFF: RST(0x38); break;
+	}
+}
+
+void GbCpu::ProcessCgbSpeedSwitch()
+{
+	//Process CGB switch speed
+	_state.HaltCounter--;
+
+	//Prevent DIV from ticking while switching speed
+	_gameboy->GetTimer()->Write(0xFF04, 0);
+
+	if(_state.HaltCounter == 1 && _memoryManager->GetState().CgbSwitchSpeedRequest) {
+		_memoryManager->ToggleSpeed();
+		_state.HaltCounter = 0;
 	}
 }
 
@@ -768,24 +787,25 @@ void GbCpu::InvalidOp()
 #endif
 
 	//Halt CPU to lock it up permanently
-	_state.Halted = true;
+	_state.HaltCounter = 1;
 }
 
 void GbCpu::STOP()
 {
 	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
 #ifndef DUMMYCPU
-		_memoryManager->ToggleSpeed();
+		//Stop for ~33942 cycles - most likely not accurate, but matches speed_switch_timing_stat test rom
+		_state.HaltCounter = 33943;
 #endif
 	} else {
-		_state.Halted = true;
+		_state.HaltCounter = 1;
 	}
 }
 
 void GbCpu::HALT()
 {
 	if(_state.IME || _memoryManager->ProcessIrqRequests() == 0) {
-		_state.Halted = true;
+		_state.HaltCounter = 1;
 	} else {
 		//HALT bug, execution continues, but PC isn't incremented for the first byte
 		HalfCycle();
@@ -1441,7 +1461,7 @@ void GbCpu::PREFIX()
 void GbCpu::Serialize(Serializer& s)
 {
 	SV(_state.PC); SV(_state.SP); SV(_state.A); SV(_state.Flags); SV(_state.B);
-	SV(_state.C); SV(_state.D); SV(_state.E); SV(_state.H); SV(_state.L); SV(_state.IME); SV(_state.Halted);
+	SV(_state.C); SV(_state.D); SV(_state.E); SV(_state.H); SV(_state.L); SV(_state.IME); SV(_state.HaltCounter);
 	SV(_state.EiPending);
 	SV(_state.CycleCount);
 }
