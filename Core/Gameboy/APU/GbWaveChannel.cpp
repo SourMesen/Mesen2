@@ -42,6 +42,7 @@ void GbWaveChannel::ClockLengthCounter()
 		if(_state.Length == 0) {
 			//"Length becoming 0 should clear status"
 			_state.Enabled = false;
+			UpdateOutput();
 		}
 	}
 }
