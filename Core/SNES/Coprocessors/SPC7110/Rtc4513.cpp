@@ -181,6 +181,7 @@ void Rtc4513::Write(uint16_t addr, uint8_t value)
 				_index = (_index + 1) & 0x0F;
 				_regs[index] = value & 0x0F;
 			}
+			break;
 		
 		case 0x4842: break;
 	}

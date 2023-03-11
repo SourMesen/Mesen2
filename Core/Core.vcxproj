@@ -24,6 +24,7 @@
     <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="Debugger\FrozenAddressManager.h" />
     <ClInclude Include="Debugger\StepBackManager.h" />
+    <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="NES\Mappers\Audio\emu2413.h" />

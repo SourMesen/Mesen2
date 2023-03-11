@@ -9,7 +9,7 @@
 class GbCartFactory
 {
 public:
-	static GbCart* CreateCart(uint8_t cartType)
+	static GbCart* CreateCart(Emulator* emu, uint8_t cartType)
 	{
 		switch(cartType) {
 			case 0:
@@ -22,10 +22,10 @@ public:
 				return new GbMbc2();
 
 			case 15: case 16:
-				return new GbMbc3(true);
+				return new GbMbc3(emu, true);
 
 			case 17: case 18: case 19:
-				return new GbMbc3(false);
+				return new GbMbc3(emu, false);
 
 			case 25: case 26: case 27: case 28: case 29: case 30:
 				return new GbMbc5();
