@@ -63,20 +63,6 @@ namespace Mesen.ViewModels
 
 		public void SaveConfig()
 		{
-			//Create a new copy of all settings to avoid some changes that can occur
-			//while the window is closing (styles that are applied at the view/control level
-			//get removed before the control itself is removed, which can affect min/max values
-			//set via styles, etc.)
-			ConfigManager.Config.Audio = ConfigManager.Config.Audio.Clone();
-			ConfigManager.Config.Input = ConfigManager.Config.Input.Clone();
-			ConfigManager.Config.Video = ConfigManager.Config.Video.Clone();
-			ConfigManager.Config.Preferences = ConfigManager.Config.Preferences.Clone();
-			ConfigManager.Config.Emulation = ConfigManager.Config.Emulation.Clone();
-			ConfigManager.Config.Nes = ConfigManager.Config.Nes.Clone();
-			ConfigManager.Config.Snes = ConfigManager.Config.Snes.Clone();
-			ConfigManager.Config.Gameboy = ConfigManager.Config.Gameboy.Clone();
-			ConfigManager.Config.PcEngine = ConfigManager.Config.PcEngine.Clone();
-
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.Config.Save();
 			ConfigManager.Config.Preferences.UpdateFileAssociations();

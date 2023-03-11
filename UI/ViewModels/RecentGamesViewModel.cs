@@ -42,6 +42,12 @@ namespace Mesen.ViewModels
 				return;
 			}
 
+			if(Mode == mode && Visible && GameEntries.Count > 0) {
+				//Prevent flickering when closing the config window while no game is running
+				//No need to update anything if the game selection screen is already visible
+				return;
+			}
+
 			Mode = mode;
 
 			List<RecentGameInfo> entries = new();

@@ -102,11 +102,8 @@ namespace Mesen.Windows
 
 			ConfigManager.Config.ApplyConfig();
 			_model.Dispose();
-		}
 
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
+			//Ensure config isn't modified by the UI while closing
 			DataContext = null;
 		}
 	}
