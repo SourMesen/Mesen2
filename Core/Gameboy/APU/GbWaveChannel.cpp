@@ -111,6 +111,11 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 		case 0:
 			_state.DacEnabled = (value & 0x80) != 0;
 			_state.Enabled &= _state.DacEnabled;
+
+			if(!_state.Enabled) {
+				//"Stopping channel 3 manually using the NR30 register affects PCM34 instantly" (SameSuite's channel_3_stop_delay test)
+				UpdateOutput();
+			}
 			break;
 
 		case 1:
