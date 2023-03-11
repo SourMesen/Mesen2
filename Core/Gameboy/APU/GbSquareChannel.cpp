@@ -271,7 +271,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 				//"If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
 				if(_state.SweepShift > 0) {
-					//Calculcate new frequency and disable channel as needed (but don't save it in SweepFreq - otherwise sweep-details #2 fails)
+					//Calculate new frequency and disable channel as needed (but don't save it in SweepFreq - otherwise sweep-details #2 fails)
 					if(GetSweepTargetFrequency() > 2047) {
 						_state.Enabled = false;
 						_state.SweepEnabled = false;

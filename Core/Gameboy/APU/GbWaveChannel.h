@@ -15,6 +15,7 @@ private:
 	Gameboy* _gameboy = nullptr;
 	bool _allowRamAccess = false;
 	void TriggerWaveRamCorruption();
+	void UpdateOutput();
 
 public:
 	GbWaveChannel(GbApu* apu, Gameboy* gameboy);

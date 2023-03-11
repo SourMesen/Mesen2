@@ -51,6 +51,15 @@ uint8_t GbWaveChannel::GetOutput()
 	return _state.Output;
 }
 
+void GbWaveChannel::UpdateOutput()
+{
+	if(_state.Volume && _state.Enabled) {
+		_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
+	} else {
+		_state.Output = 0;
+	}
+}
+
 void GbWaveChannel::Exec(uint32_t clocksToRun)
 {
 	if(!_state.Enabled) {
@@ -76,11 +85,7 @@ void GbWaveChannel::Exec(uint32_t clocksToRun)
 		}
 
 		//The DAC receives the current value from the upper/lower nibble of the sample buffer, shifted right by the volume control. 
-		if(_state.Volume && _state.Enabled) {
-			_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
-		} else {
-			_state.Output = 0;
-		}
+		UpdateOutput();
 
 		_allowRamAccess = true;
 	}
@@ -114,6 +119,9 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 
 		case 2:
 			_state.Volume = (value & 0x60) >> 5;
+
+			//"Modifying the channel 3 shift while the channel is playing affects PCM34 instantly" (SameSuite's channel_3_shift_delay test)
+			UpdateOutput();
 			break;
 
 		case 3:
