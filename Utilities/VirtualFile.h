@@ -41,6 +41,7 @@ public:
 	uint32_t GetCrc32();
 
 	size_t GetSize();
+	bool CheckFileSignature(vector<string> signatures, bool loadArchives = false);
 	void InitChunks();
 
 	bool ReadFile(vector<uint8_t> &out);

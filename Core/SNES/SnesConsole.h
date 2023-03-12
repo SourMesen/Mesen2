@@ -73,6 +73,7 @@ public:
 	~SnesConsole();
 	
 	static vector<string> GetSupportedExtensions() { return { ".sfc", ".swc", ".fig", ".smc", ".bs", ".gb", ".gbc", ".spc" }; }
+	static vector<string> GetSupportedSignatures() { return { "SNES-SPC700 Sound File Data" }; }
 
 	void Initialize();
 	void Release();

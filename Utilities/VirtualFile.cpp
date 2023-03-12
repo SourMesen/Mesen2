@@ -191,6 +191,39 @@ size_t VirtualFile::GetSize()
 	}
 }
 
+bool VirtualFile::CheckFileSignature(vector<string> signatures, bool loadArchives)
+{
+	vector<uint8_t> partialData;
+
+	if(_data.empty()) {
+		if(loadArchives) {
+			LoadFile();
+		} else {
+			if(!_innerFile.empty()) {
+				//Don't check/load archives
+				return false;
+			}
+
+			ifstream input(_path, std::ios::in | std::ios::binary);
+			if(input.good()) {
+				//Only load the first 512 bytes of the file
+				partialData.resize(512, 0);
+				input.read((char*)partialData.data(), 512);
+			}
+		}
+	}
+
+	vector<uint8_t>& data = _data.empty() ? partialData : _data;
+	for(const string& signature : signatures) {
+		if(data.size() >= signature.size()) {
+			if(memcmp(data.data(), signature.c_str(), signature.size()) == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void VirtualFile::InitChunks()
 {
 	if(!_useChunks) {

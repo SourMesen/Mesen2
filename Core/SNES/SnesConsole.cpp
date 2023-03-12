@@ -162,7 +162,7 @@ bool SnesConsole::LoadSpcFile(VirtualFile& romFile)
 	std::sort(_spcPlaylist.begin(), _spcPlaylist.end());
 	auto result = std::find(_spcPlaylist.begin(), _spcPlaylist.end(), (string)romFile);
 	if(result == _spcPlaylist.end()) {
-		return false;
+		_spcPlaylist.push_back((string)romFile);
 	}
 	_spcTrackNumber = (uint32_t)std::distance(_spcPlaylist.begin(), result);
 	return true;

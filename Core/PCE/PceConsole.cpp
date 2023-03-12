@@ -42,7 +42,7 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	uint32_t crc32 = 0;
 
 	bool cdromUnitEnabled = false;
-	if(romFile.GetFileExtension() == ".hes") {
+	if(romFile.CheckFileSignature({ "HESM" })) {
 		_romFormat = RomFormat::PceHes;
 		if(!LoadHesFile(romFile)) {
 			return LoadRomResult::Failure;

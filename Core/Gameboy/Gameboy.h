@@ -71,6 +71,7 @@ public:
 	virtual ~Gameboy();
 	
 	static vector<string> GetSupportedExtensions() { return { ".gb", ".gbc", ".gbs" }; }
+	static vector<string> GetSupportedSignatures() { return { "GBS" }; }
 
 	void PowerOn(SuperGameboy* sgb);
 

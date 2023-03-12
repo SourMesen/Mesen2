@@ -410,10 +410,10 @@ bool Emulator::InternalLoadRom(VirtualFile romFile, VirtualFile patchFile, bool 
 
 	unique_ptr<IConsole> console;
 	LoadRomResult result = LoadRomResult::UnknownType;
-	TryLoadRom<NesConsole>(romFile, result, console);
-	TryLoadRom<SnesConsole>(romFile, result, console);
-	TryLoadRom<Gameboy>(romFile, result, console);
-	TryLoadRom<PceConsole>(romFile, result, console);
+
+	//Try loading the rom, give priority to file extension, then trying to check for file signatures if extension is unknown
+	TryLoadRom(romFile, result, console, false);
+	TryLoadRom(romFile, result, console, true);
 	
 	if(result != LoadRomResult::Success) {
 		_notificationManager->SendNotification(ConsoleNotificationType::GameLoadFailed);
@@ -536,13 +536,21 @@ void Emulator::InitConsole(unique_ptr<IConsole>& newConsole, ConsoleMemoryInfo o
 	_notificationManager->RegisterNotificationListener(_console.lock());
 }
 
+void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console, bool useFileSignature)
+{
+	TryLoadRom<NesConsole>(romFile, result, console, useFileSignature);
+	TryLoadRom<SnesConsole>(romFile, result, console, useFileSignature);
+	TryLoadRom<Gameboy>(romFile, result, console, useFileSignature);
+	TryLoadRom<PceConsole>(romFile, result, console, useFileSignature);
+}
+
 template<typename T>
-void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console)
+void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_ptr<IConsole>& console, bool useFileSignature)
 {
 	if(result == LoadRomResult::UnknownType) {
 		string romExt = romFile.GetFileExtension();
 		vector<string> extensions = T::GetSupportedExtensions();
-		if(std::find(extensions.begin(), extensions.end(), romExt) != extensions.end()) {
+		if(std::find(extensions.begin(), extensions.end(), romExt) != extensions.end() || (useFileSignature && romFile.CheckFileSignature(T::GetSupportedSignatures()))) {
 			//Keep a copy of the current state of _consoleMemory
 			ConsoleMemoryInfo consoleMemory[DebugUtilities::GetMemoryTypeCount()] = {};
 			memcpy(consoleMemory, _consoleMemory, sizeof(_consoleMemory));

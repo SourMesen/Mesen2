@@ -45,7 +45,8 @@ public:
 	PceConsole(Emulator* emu);
 	
 	static vector<string> GetSupportedExtensions() { return { ".pce", ".cue", ".sgx", ".hes" }; }
-	
+	static vector<string> GetSupportedSignatures() { return { "HESM" }; }
+
 	void Serialize(Serializer& s) override;
 
 	void InitializeRam(void* data, uint32_t length);
