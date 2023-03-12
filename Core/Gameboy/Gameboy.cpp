@@ -260,6 +260,9 @@ AddressInfo Gameboy::GetAbsoluteAddress(uint16_t addr)
 		addrInfo.Address = addr & 0x7F;
 		addrInfo.Type = MemoryType::GbSpriteRam;
 		return addrInfo;
+	} else if(addr >= 0xFF00) {
+		//Return empty for registers at >= $FF00 (needed to prevent UI from showing work ram addresses)
+		return addrInfo;
 	} else if(addr >= 0x8000 && addr <= 0x9FFF) {
 		addrInfo.Address = (addr & 0x1FFF) | (_ppu->GetStateRef().CgbVramBank << 13);
 		addrInfo.Type = MemoryType::GbVideoRam;
