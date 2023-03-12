@@ -1485,6 +1485,10 @@ void SnesPpu::SendFrame()
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
+	if(isRewinding && _needFullFrame) {
+		FillInterlacedFrame();
+	}
+	_needFullFrame = false;
 
 	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
 	_emu->GetVideoDecoder()->UpdateFrame(frame, isRewinding, isRewinding);
@@ -1536,6 +1540,14 @@ void SnesPpu::DebugProcessMainSubScreenViews()
 		for(int i = _scanline; i < 239; i++) {
 			ppuTools->SetPpuRowBuffers(i, _drawStartX, _drawEndX, nullptr, nullptr);
 		}
+	}
+}
+
+void SnesPpu::FillInterlacedFrame()
+{
+	//Patch to make rewinding interlaced games look less glitchy (otherwise a half a frame's rows are wrong every 30 frames)
+	for(int i = 0; i < 478 / 2; i++) {
+		memcpy(_currentBuffer+(i*2+(_oddFrame^1))*512, _currentBuffer+(i*2+(_oddFrame))*512, 512*sizeof(uint16_t));
 	}
 }
 
@@ -2237,6 +2249,10 @@ void SnesPpu::Serialize(Serializer &s)
 			SVI(_layerData[3].Tiles[i].TilemapData); SVI(_layerData[3].Tiles[i].VScroll);
 		}
 		SV(_hOffset); SV(_vOffset); SV(_fetchBgStart); SV(_fetchBgEnd); SV(_fetchSpriteStart); SV(_fetchSpriteEnd);
+	}
+
+	if(!s.IsSaving() && _interlacedFrame && _emu->GetRewindManager()->IsRewinding()) {
+		_needFullFrame = true;
 	}
 }
 

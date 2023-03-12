@@ -120,6 +120,8 @@ private:
 	int32_t _debugMode7EndX = 0;
 	int32_t _debugMode7EndY = 0;
 
+	bool _needFullFrame = false;
+
 	void RenderSprites(const uint8_t priorities[4]);
 
 	template<bool hiResMode>
@@ -210,6 +212,8 @@ private:
 
 	__noinline void DebugProcessMode7Overlay();
 	__noinline void DebugProcessMainSubScreenViews();
+
+	__noinline void FillInterlacedFrame();
 
 public:
 	SnesPpu(Emulator* emu, SnesConsole* console);
