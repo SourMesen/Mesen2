@@ -403,8 +403,9 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 				UpdateNmiScanline();
 
 				if(!_skipRender) {
-					if(!_interlacedFrame) {
-						_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+					_currentBuffer = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
+					if(_interlacedFrame) {
+						memcpy(_currentBuffer, GetPreviousScreenBuffer(), 512 * 478 * sizeof(uint16_t));
 					}
 					
 					//If we're not skipping this frame, reset the high resolution/interlace flags
@@ -486,6 +487,7 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 
 			_skipRender = (
 				!_settings->GetSnesConfig().DisableFrameSkipping &&
+				(!_interlacedFrame || (_frameCount & 0x02)) &&
 				!_emu->GetRewindManager()->IsRewinding() &&
 				!_emu->GetVideoRenderer()->IsRecording() &&
 				(_settings->GetEmulationSpeed() == 0 || _settings->GetEmulationSpeed() > 150) &&
@@ -1485,11 +1487,7 @@ void SnesPpu::SendFrame()
 	bool isRewinding = _emu->GetRewindManager()->IsRewinding();
 
 	RenderedFrame frame(_currentBuffer, width, height, _useHighResOutput ? 0.5 : 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
-	if(isRewinding || _interlacedFrame) {
-		_emu->GetVideoDecoder()->UpdateFrame(frame, true, isRewinding);
-	} else {
-		_emu->GetVideoDecoder()->UpdateFrame(frame, false, false);
-	}
+	_emu->GetVideoDecoder()->UpdateFrame(frame, isRewinding, isRewinding);
 
 	if(!_skipRender) {
 		_frameSkipTimer.Reset();
@@ -1498,11 +1496,6 @@ void SnesPpu::SendFrame()
 
 void SnesPpu::DebugSendFrame()
 {
-	if(_interlacedFrame) {
-		//Not supported
-		return;
-	}
-	
 	RenderScanline();
 
 	uint16_t width = _useHighResOutput ? 512 : 256;
