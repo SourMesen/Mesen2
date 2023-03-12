@@ -76,6 +76,12 @@ void Spc::Reset()
 	_state.OutputReg[2] = 0;
 	_state.OutputReg[3] = 0;
 
+	//Reset the values the SPC can read from the port, too (not doing this freezes Ranma Chounai Gekitou Hen on reset)
+	_state.CpuRegs[0] = 0;
+	_state.CpuRegs[1] = 0;
+	_state.CpuRegs[2] = 0;
+	_state.CpuRegs[3] = 0;
+
 	_state.RomEnabled = true;
 	_state.Cycle = 0;
 	_state.PC = ReadWord(Spc::ResetVector);
