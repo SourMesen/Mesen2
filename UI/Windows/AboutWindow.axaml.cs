@@ -70,7 +70,9 @@ namespace Mesen.Windows
 				new("SDL2", "", "zlib", "https://www.libsdl.org/"),
 				new("magic_enum", "", "MIT", "https://github.com/Neargye/magic_enum"),
 				new("ZMBV Codec (DOSBox)", "", "GPL2+", "https://www.dosbox.com/"),
-				new("CSCD Codec (lsnes)", "", "GPL2+", "https://repo.or.cz/lsnes.git")
+				new("CSCD Codec (lsnes)", "", "GPL2+", "https://repo.or.cz/lsnes.git"),
+				new("kissfft", "", "BSD 3-clause", "https://github.com/mborgerding/kissfft"),
+				new("orfanidis_eq", "", "MIT", "https://github.com/thedrgreenthumb/orfanidis_eq")
 			};
 
 			LibraryList.Sort((a, b) => a.Name.CompareTo(b.Name));
