@@ -76,7 +76,7 @@ void OggReader::ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume
 	
 	uint32_t samplesToProcess = (uint32_t)samplesRead * 2;
 	for(uint32_t i = 0; i < samplesToProcess; i++) {
-		buffer[i] += (int16_t)((int32_t)_outputBuffer[i] * volume / 255);
+		buffer[i] = std::clamp<int32_t>((int32_t)(_outputBuffer[i] * volume / 255) + buffer[i], INT16_MIN, INT16_MAX);
 	}
 }
 
