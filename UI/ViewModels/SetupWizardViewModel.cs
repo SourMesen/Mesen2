@@ -24,6 +24,7 @@ namespace Mesen.ViewModels
 		[Reactive] public string InstallLocation { get; set; }
 
 		[Reactive] public bool CreateShortcut { get; set; } = true;
+		[Reactive] public bool CheckForUpdates { get; set; } = true;
 		[Reactive] public bool IsOsx { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
 		public SetupWizardViewModel()
@@ -91,6 +92,7 @@ namespace Mesen.ViewModels
 			}
 
 			ConfigManager.Config.DefaultKeyMappings = mappingType;
+			ConfigManager.Config.Preferences.AutomaticallyCheckForUpdates = CheckForUpdates;
 			ConfigManager.Config.Save();
 		}
 

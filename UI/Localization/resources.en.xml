@@ -666,6 +666,7 @@
 			<Control ID="lblInputHint">Select your preferred input methods:</Control>
 			<Control ID="lblMiscOptions">Other Options</Control>
 			<Control ID="chkCreateShortcut">Create a shortcut on my desktop</Control>
+			<Control ID="chkCheckForUpdates">Automatically check for updates when launched</Control>
 			<Control ID="btnOk">CONFIRM</Control>
 			<Control ID="lblCancel">Cancel</Control>
 		</Form>
