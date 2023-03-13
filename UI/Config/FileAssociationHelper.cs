@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using Avalonia.Threading;
-using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
 using Microsoft.Win32;
@@ -158,9 +156,9 @@ namespace Mesen.Config
 		static public void UpdateFileAssociations()
 		{
 			try {
-				if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				if(OperatingSystem.IsWindows()) {
 					FileAssociationHelper.UpdateWindowsFileAssociations();
-				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+				} else if(OperatingSystem.IsLinux()) {
 					FileAssociationHelper.UpdateLinuxFileAssociations();
 				}
 			} catch(Exception ex) {
@@ -200,7 +198,7 @@ namespace Mesen.Config
 
 		static private void UpdateFileAssociation(string extension, bool associate)
 		{
-			if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			if(!OperatingSystem.IsWindows()) {
 				return;
 			}
 

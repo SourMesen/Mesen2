@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using Mesen.Interop;
 using System.Diagnostics;
 using Mesen.Utilities;
 using Avalonia.Controls;
-using System.Runtime.InteropServices;
 
 namespace Mesen.Config
 {
@@ -26,7 +24,7 @@ namespace Mesen.Config
 		{
 			get
 			{
-				Environment.SpecialFolder folder = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? Environment.SpecialFolder.MyDocuments : Environment.SpecialFolder.ApplicationData;
+				Environment.SpecialFolder folder = OperatingSystem.IsWindows() ? Environment.SpecialFolder.MyDocuments : Environment.SpecialFolder.ApplicationData;
 				return Path.Combine(Environment.GetFolderPath(folder, Environment.SpecialFolderOption.Create), "Mesen2");
 			}
 		}

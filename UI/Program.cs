@@ -131,15 +131,15 @@ namespace Mesen
 					libraryName = libraryName.Substring(0, libraryName.Length - 4);
 				}
 
-				if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+				if(OperatingSystem.IsLinux()) {
 					if(!libraryName.EndsWith(".so")) {
 						libraryName = libraryName + ".so";
 					}
-				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				} else if(OperatingSystem.IsWindows()) {
 					if(!libraryName.EndsWith(".dll")) {
 						libraryName = libraryName + ".dll";
 					}
-				} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+				} else if(OperatingSystem.IsMacOS()) {
 					if(!libraryName.EndsWith(".dylib")) {
 						libraryName = libraryName + ".dylib";
 					}

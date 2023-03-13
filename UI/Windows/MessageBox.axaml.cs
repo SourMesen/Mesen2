@@ -4,7 +4,6 @@ using Avalonia.Markup.Xaml;
 using Mesen.Localization;
 using Mesen.Utilities;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Mesen.Windows
@@ -73,7 +72,7 @@ namespace Mesen.Windows
 			parent ??= ApplicationHelper.GetActiveOrMainWindow();
 
 			if(parent != null) {
-				if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+				if(!OperatingSystem.IsWindows()) {
 					//TODOv2 - This fixes Avalonia apparently not working properly with CenterOwner on X11 with SizeToContent="WidthAndHeight"
 					msgbox.Opened += (_, _) => { WindowExtensions.CenterWindow(msgbox, parent); };
 				}

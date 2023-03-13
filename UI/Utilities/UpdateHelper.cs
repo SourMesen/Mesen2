@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace Mesen.Utilities
 			string destFile = Program.ExePath;
 			Version installedVersion = EmuApi.GetMesenVersion();
 			string backupFilePath = Path.Combine(ConfigManager.BackupFolder, "Mesen." + installedVersion.ToString(3));
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			if(OperatingSystem.IsWindows()) {
 				backupFilePath += ".exe";
 			}
 

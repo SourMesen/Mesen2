@@ -3,8 +3,8 @@ using Mesen.Config;
 using Mesen.Config.Shortcuts;
 using Mesen.Utilities;
 using ReactiveUI.Fody.Helpers;
+using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace Mesen.ViewModels
 {
@@ -23,7 +23,7 @@ namespace Mesen.ViewModels
 			Config = ConfigManager.Config.Preferences;
 			OriginalConfig = Config.Clone();
 
-			IsOsx = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+			IsOsx = OperatingSystem.IsMacOS();
 			DataStorageLocation = ConfigManager.HomeFolder;
 
 			EmulatorShortcut[] displayOrder = new EmulatorShortcut[] {

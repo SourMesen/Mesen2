@@ -1,23 +1,16 @@
-﻿using Avalonia.Media;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
-using Mesen.Localization;
 using Mesen.Utilities;
-using Mesen.Windows;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Security.Cryptography;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Runtime.Intrinsics.Arm;
 
 namespace Mesen.ViewModels
 {
@@ -47,11 +40,11 @@ namespace Mesen.ViewModels
 			try {
 				using(var client = new HttpClient()) {
 					string platform;
-					if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+					if(OperatingSystem.IsWindows()) {
 						platform = "win";
-					} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+					} else if(OperatingSystem.IsLinux()) {
 						platform = "linux-" + (RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64");
-					} else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+					} else if(OperatingSystem.IsMacOS()) {
 						platform = "osx-" + (RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64");
 					} else {
 						return null;

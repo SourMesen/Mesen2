@@ -25,7 +25,7 @@ namespace Mesen.ViewModels
 
 		[Reactive] public bool CreateShortcut { get; set; } = true;
 		[Reactive] public bool CheckForUpdates { get; set; } = true;
-		[Reactive] public bool IsOsx { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+		[Reactive] public bool IsOsx { get; set; } = OperatingSystem.IsMacOS();
 
 		public SetupWizardViewModel()
 		{
@@ -98,12 +98,12 @@ namespace Mesen.ViewModels
 
 		private void CreateShortcutFile()
 		{
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+			if(OperatingSystem.IsMacOS()) {
 				//TODO OSX
 				return;
 			}
 			
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			if(OperatingSystem.IsWindows()) {
 				Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8"));
 				if(t == null) {
 					return;

@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 
 namespace Mesen.ViewModels
 {
@@ -44,7 +43,7 @@ namespace Mesen.ViewModels
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBisqwit).ToPropertyEx(this, _ => _.ShowNtscBisqwitSettings));
 
 			//Exclusive fullscreen is only supported on Windows currently
-			IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+			IsWindows = OperatingSystem.IsWindows();
 
 			if(Design.IsDesignMode) {
 				return;

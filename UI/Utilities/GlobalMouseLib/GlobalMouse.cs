@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +12,9 @@ namespace Mesen.Utilities.GlobalMouseLib
 
 		static GlobalMouse()
 		{
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			if(OperatingSystem.IsWindows()) {
 				_impl = new GlobalMouseWindowsImpl();
-			} else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+			} else if(OperatingSystem.IsLinux()) {
 				_impl = new GlobalMouseX11Impl();
 			} else {
 				_impl = new GlobalMouseStubImpl();

@@ -16,7 +16,6 @@ using Mesen.Interop;
 using Mesen.Views;
 using Avalonia.Layout;
 using Mesen.Debugger.Utilities;
-using System.ComponentModel;
 using System.Threading;
 using Mesen.Debugger.Windows;
 using Avalonia.Input.Platform;
@@ -67,7 +66,7 @@ namespace Mesen.Windows
 		public MainWindow()
 		{
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
-			_isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+			_isLinux = OperatingSystem.IsLinux();
 
 			DataContext = new MainWindowViewModel();
 			InitGlobalShortcuts();
@@ -552,7 +551,7 @@ namespace Mesen.Windows
 				e.Handled = true;
 			}
 
-			if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && !IsModifierKey(e.Key) && e.KeyModifiers != KeyModifiers.Meta) {
+			if(OperatingSystem.IsMacOS() && !IsModifierKey(e.Key) && e.KeyModifiers != KeyModifiers.Meta) {
 				//Prevent alert sound on macOS
 				e.Handled = true;
 			}

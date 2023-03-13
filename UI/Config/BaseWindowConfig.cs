@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Platform;
 using System;
-using System.Runtime.InteropServices;
 
 namespace Mesen.Config
 {
@@ -68,7 +67,7 @@ namespace Mesen.Config
 				wnd.Height = WindowSize.Height;
 
 				wnd.Opened += (s, e) => {
-					if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+					if(OperatingSystem.IsLinux()) {
 						//Set position again after opening
 						//Fixes KDE (or X11?) not showing the window in the specified position
 						_needPositionCheck = true;
