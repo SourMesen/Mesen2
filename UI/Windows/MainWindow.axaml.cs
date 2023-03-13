@@ -32,7 +32,6 @@ namespace Mesen.Windows
 		private NotificationListener? _listener = null;
 		private ShortcutHandler _shortcutHandler;
 
-		private FrameInfo _baseScreenSize;
 		private MouseManager _mouseManager;
 		private ContentControl _audioPlayer;
 		private MainMenuView _mainMenu;
@@ -219,7 +218,6 @@ namespace Mesen.Windows
 				//InitializeDefaults must be after InitializeEmu, otherwise keybindings will be empty
 				ConfigManager.Config.InitializeDefaults();
 
-				_baseScreenSize = EmuApi.GetBaseScreenSize();
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;
 
@@ -369,10 +367,10 @@ namespace Mesen.Windows
 		private void ProcessResolutionChange()
 		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
-			double xScale = ClientSize.Width * dpiScale / _baseScreenSize.Width;
-			double yScale = ClientSize.Height * dpiScale / _baseScreenSize.Height;
+			FrameInfo baseScreenSize = EmuApi.GetBaseScreenSize();
+			double xScale = ClientSize.Width * dpiScale / baseScreenSize.Width;
+			double yScale = ClientSize.Height * dpiScale / baseScreenSize.Height;
 			SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
-			_baseScreenSize = EmuApi.GetBaseScreenSize();
 		}
 
 		public void SetScale(double scale)
