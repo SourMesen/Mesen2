@@ -26,14 +26,14 @@ bool UPnPPortMapper::AddNATPortMapping(uint16_t internalPort, uint16_t externalP
 			if(spm != nullptr) {
 				//An identical mapping already exists, remove it
 				if(RemoveNATPortMapping(externalPort, protocol)) {
-					std::cout << "Removed existing UPnP mapping." << std::endl;
+					//std::cout << "Removed existing UPnP mapping." << std::endl;
 					spm->Release();
 					spm = nullptr;
 				}
 			}
 
 			if(!SUCCEEDED(hResult) || spm == nullptr) {
-				std::cout << "Attempting to automatically forward port via UPnP..." << std::endl;
+				//std::cout << "Attempting to automatically forward port via UPnP..." << std::endl;
 
 				vector<wstring> localIPs = GetLocalIPs();
 				BSTR desc = SysAllocString(L"Mesen NetPlay");
@@ -47,10 +47,10 @@ bool UPnPPortMapper::AddNATPortMapping(uint16_t internalPort, uint16_t externalP
 
 					if(SUCCEEDED(hResult) && spm) {
 						//Successfully added a new port mapping
-						std::cout << std::dec << "Forwarded port " << externalPort << " to IP " << utf8::utf8::encode(localIPs[i]) << std::endl;
+						//std::cout << std::dec << "Forwarded port " << externalPort << " to IP " << utf8::utf8::encode(localIPs[i]) << std::endl;
 						result = true;
 					} else {
-						std::cout << "Unable to add UPnP port mapping. IP: " << utf8::utf8::encode(localIPs[i]) << " HRESULT: 0x" << std::hex << hResult << std::endl;
+						//std::cout << "Unable to add UPnP port mapping. IP: " << utf8::utf8::encode(localIPs[i]) << " HRESULT: 0x" << std::hex << hResult << std::endl;
 					}
 
 					if(spm) {
@@ -58,7 +58,7 @@ bool UPnPPortMapper::AddNATPortMapping(uint16_t internalPort, uint16_t externalP
 					}
 				}
 			} else {
-				std::cout << "Unable to add UPnP port mapping." << std::endl;
+				//std::cout << "Unable to add UPnP port mapping." << std::endl;
 			}
 			spmc->Release();
 		}
