@@ -82,6 +82,7 @@
 		<SolidColorBrush x:Key="MesenDockTabPointerOverBrush" Color="#40808080" />
 		
 		<!-- DataBox colors -->
+		<SolidColorBrush x:Key="DataGridColumnHeaderForegroundBrush" Color="#FFDEDEDE" />
 		<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="#FF303030" />
 		
 		<!-- Avalonia colors -->
