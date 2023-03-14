@@ -31,7 +31,7 @@ Spc::Spc(SnesConsole* console)
 	_emu->RegisterMemory(MemoryType::SpcRom, _spcBios, Spc::SpcRomSize);
 
 #ifndef DUMMYSPC
-	_dsp.reset(new Dsp(_emu, this));
+	_dsp.reset(new Dsp(_emu, console, this));
 #endif
 
 	_state = {};
@@ -579,7 +579,7 @@ void Spc::LoadSpcFile(SpcFileData* data)
 {
 	memcpy(_ram, data->SpcRam, Spc::SpcRamSize);
 
-	memcpy(_dsp->GetState().Regs, data->DspRegs, sizeof(data->DspRegs));
+	_dsp->LoadSpcFileRegs(data->DspRegs);
 
 	_state.PC = data->PC;
 	_state.A = data->A;

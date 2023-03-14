@@ -268,6 +268,9 @@ namespace Mesen.Interop
 	public struct DspState
 	{
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+		public byte[] ExternalRegs;
+
+		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
 		public byte[] Regs;
 
 		public Int32 NoiseLfsr;

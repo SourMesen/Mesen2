@@ -359,7 +359,7 @@ void DspVoice::Step6()
 void DspVoice::Step7()
 {
 	//"The new ENDX.x value may now be read."
-	_dsp->WriteReg(DspGlobalRegs::VoiceEnd, _shared->VoiceEndBuffer);
+	_dsp->WriteGlobalReg(DspGlobalRegs::VoiceEnd, _shared->VoiceEndBuffer);
 
 	//"The new VxENVX value is prepared, and can be overwritten. Reads will not see it yet."
 	_shared->EnvRegBuffer = _envOut;
@@ -368,13 +368,13 @@ void DspVoice::Step7()
 void DspVoice::Step8()
 {
 	//"The new VxOUTX value may now be read."
-	WriteReg(DspVoiceRegs::Out, _shared->OutRegBuffer);
+	_dsp->WriteVoiceReg(_voiceIndex, DspVoiceRegs::Out, _shared->OutRegBuffer);
 }
 
 void DspVoice::Step9()
 {
 	//"The new VxENVX value may now be read."
-	WriteReg(DspVoiceRegs::Envelope, _shared->EnvRegBuffer);
+	_dsp->WriteVoiceReg(_voiceIndex, DspVoiceRegs::Envelope, _shared->EnvRegBuffer);
 }
 
 void DspVoice::Serialize(Serializer& s)

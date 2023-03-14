@@ -1,18 +1,20 @@
 #include "pch.h"
 #include "SNES/DSP/Dsp.h"
 #include "SNES/Spc.h"
+#include "SNES/SnesConsole.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Utilities/Serializer.h"
 
 //Quoted comments are from anomie's DSP document (with modifications by jwdonal)
 
-Dsp::Dsp(Emulator* emu, Spc* spc)
+Dsp::Dsp(Emulator* emu, SnesConsole* console, Spc* spc)
 {
 	_emu = emu;
 	_spc = spc;
 
-	memcpy(_state.Regs, _initialValues, 0x80);
+	memset(_state.Regs, 0, 0x80);
+	console->InitializeRam(_state.ExternalRegs, 0x80);
 
 	for(int i = 0; i < 8; i++) {
 		_voices[i].Init(i, spc, this, _state.Regs + (i * 0x10), &_emu->GetSettings()->GetSnesConfig());
@@ -24,9 +26,22 @@ Dsp::Dsp(Emulator* emu, Spc* spc)
 	Reset();
 }
 
+void Dsp::LoadSpcFileRegs(uint8_t* regs)
+{
+	for(uint8_t i = 0; i < 0x80; i++) {
+		Write(i, regs[i]);
+	}
+
+	_state.NewKeyOn = ReadReg(DspGlobalRegs::KeyOn);
+	_state.DirSampleTableAddress = ReadReg(DspGlobalRegs::DirSampleTableAddress);
+	_state.EchoRingBufferAddress = ReadReg(DspGlobalRegs::EchoRingBufferAddress);
+}
+
 void Dsp::Reset()
 {
-	WriteReg(DspGlobalRegs::Flags, 0xE0);
+	//"FLG will always act as if set to 0xE0 after power on or reset, even if the value read back indicates otherwise"
+	_state.Regs[(int)DspGlobalRegs::Flags] = 0xE0;
+
 	_state.Counter = 0;
 	_state.EchoHistoryPos = 0;
 	_state.EchoOffset = 0;
@@ -88,6 +103,7 @@ void Dsp::UpdateCounter()
 void Dsp::Write(uint8_t reg, uint8_t value)
 {
 	_state.Regs[reg] = value;
+	_state.ExternalRegs[reg] = value;
 	switch(reg & 0x0F) {
 		case (int)DspVoiceRegs::Envelope: _state.EnvRegBuffer = value; break;
 		case (int)DspVoiceRegs::Out: _state.OutRegBuffer = value; break;
@@ -98,7 +114,7 @@ void Dsp::Write(uint8_t reg, uint8_t value)
 
 				case (int)DspGlobalRegs::VoiceEnd:
 					_state.VoiceEndBuffer = 0;
-					_state.Regs[(int)DspGlobalRegs::VoiceEnd] = 0;
+					WriteGlobalReg(DspGlobalRegs::VoiceEnd, 0);
 					break;
 			}
 			break;
@@ -356,6 +372,7 @@ void Dsp::Exec()
 void Dsp::Serialize(Serializer& s)
 {
 	SVArray(_state.Regs, 128);
+	SVArray(_state.ExternalRegs, 128);
 
 	for(int i = 0; i < 8; i++) {
 		SVI(_voices[i]);

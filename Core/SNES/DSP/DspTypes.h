@@ -3,6 +3,7 @@
 
 struct DspState
 {
+	uint8_t ExternalRegs[128];
 	uint8_t Regs[128];
 
 	int32_t NoiseLfsr = 0x4000;

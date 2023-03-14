@@ -143,6 +143,8 @@ enum EvalValues : int64_t
 	VerticalBlank,
 	SpriteOverflow,
 
+	SpcDspReg,
+
 	PceVramTransferDone,
 	PceSatbTransferDone,
 	PceScanlineDetected,
