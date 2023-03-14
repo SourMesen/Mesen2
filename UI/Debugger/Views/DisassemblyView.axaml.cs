@@ -355,7 +355,7 @@ namespace Mesen.Debugger.Views
 			base.OnPointerPressed(e);
 
 			//Navigate on double-click left click
-			if(_selectionHandler?.IsMarginClick == false && ActionLocation.RelAddress != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
+			if(e.Source is DisassemblyViewer && _selectionHandler?.IsMarginClick == false && ActionLocation.RelAddress != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
 				Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true);
 			}
 		}

@@ -357,7 +357,7 @@ namespace Mesen.Debugger.Views
 			base.OnPointerPressed(e);
 
 			//Navigate on double-click left click
-			if(e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
+			if(e.Source is DisassemblyViewer && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
 				GoToLocation(ActionLocation);
 			}
 		}
