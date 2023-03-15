@@ -2526,10 +2526,11 @@
 			<Value ID="CompactText">Text (Active only)</Value>
 		</Enum>
 		<Enum ID="BreakSource">
-			<Value ID="Pause">Pause</Value>
 			<Value ID="Breakpoint">Breakpoint</Value>
+			<Value ID="Pause">Pause</Value>
 			<Value ID="CpuStep">CPU Step</Value>
 			<Value ID="PpuStep">PPU Step</Value>
+			<Value ID="InternalOperation">Pause</Value>
 			<Value ID="BreakOnBrk">BRK</Value>
 			<Value ID="BreakOnCop">COP</Value>
 			<Value ID="BreakOnWdm">WDM</Value>

@@ -1259,6 +1259,8 @@ namespace Mesen.Interop
 		Pause,
 		CpuStep,
 		PpuStep,
+		InternalOperation,
+
 		BreakOnBrk,
 		BreakOnCop,
 		BreakOnWdm,

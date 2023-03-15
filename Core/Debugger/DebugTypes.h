@@ -297,6 +297,10 @@ enum class BreakSource
 	Pause,
 	CpuStep,
 	PpuStep,
+
+	//Used by DebugBreakHelper, prevents debugger getting focus
+	InternalOperation,
+
 	BreakOnBrk,
 	BreakOnCop,
 	BreakOnWdm,

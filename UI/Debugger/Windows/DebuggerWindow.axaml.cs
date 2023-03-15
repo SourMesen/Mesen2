@@ -137,9 +137,10 @@ namespace Mesen.Debugger.Windows
 						_model.UpdateDebugger(true, evt);
 						if(!_suppressBringToFront) {
 							bool isPause = evt.Source == BreakSource.Pause;
+							bool isBreak = !isPause && evt.Source != BreakSource.PpuStep && evt.Source != BreakSource.InternalOperation;
 							if(isPause && _model.Config.BringToFrontOnPause && evt.SourceCpu == _model.CpuType) {
 								Activate();
-							} else if(!isPause && _model.Config.BringToFrontOnBreak && evt.SourceCpu == _model.CpuType && evt.Source != BreakSource.PpuStep) {
+							} else if(isBreak && _model.Config.BringToFrontOnBreak && evt.SourceCpu == _model.CpuType) {
 								Activate();
 							}
 						}
