@@ -217,6 +217,11 @@ void Spc::DebugWrite(uint16_t addr, uint8_t value)
 	_ram[addr] = value;
 }
 
+void Spc::DebugWriteDspReg(uint8_t addr, uint8_t value)
+{
+	_dsp->Write(addr, value);
+}
+
 uint8_t Spc::Read(uint16_t addr, MemoryOperationType type)
 {
 	IncCycleCount(addr);

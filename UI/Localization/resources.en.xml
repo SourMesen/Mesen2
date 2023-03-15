@@ -2409,6 +2409,7 @@
 			<Value ID="SnesRegister">Register</Value>
 			<Value ID="SpcRam">SPC RAM</Value>
 			<Value ID="SpcRom">SPC ROM (IPL)</Value>
+			<Value ID="SpcDspRegisters">SPC DSP Registers</Value>
 			<Value ID="DspProgramRom">DSP-n Program ROM</Value>
 			<Value ID="DspDataRom">DSP-n Data ROM</Value>
 			<Value ID="DspDataRam">DSP-n Data RAM</Value>

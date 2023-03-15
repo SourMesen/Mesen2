@@ -10,6 +10,7 @@ namespace Mesen.Interop
 				case MemoryType.SpcMemory:
 				case MemoryType.SpcRam:
 				case MemoryType.SpcRom:
+				case MemoryType.SpcDspRegisters:
 					return CpuType.Spc;
 
 				case MemoryType.GsuMemory:
@@ -132,6 +133,7 @@ namespace Mesen.Interop
 				case MemoryType.SnesCgRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SpcRom:
+				case MemoryType.SpcDspRegisters:
 				case MemoryType.SpcMemory:
 				case MemoryType.SnesRegister:
 
@@ -277,6 +279,7 @@ namespace Mesen.Interop
 		{
 			switch(memType) {
 				case MemoryType.NesSecondarySpriteRam:
+				case MemoryType.SpcDspRegisters:
 					return false;
 			}
 
@@ -308,6 +311,7 @@ namespace Mesen.Interop
 
 				MemoryType.SpcRam => "RAM",
 				MemoryType.SpcRom => "ROM",
+				MemoryType.SpcDspRegisters => "DSP",
 
 				MemoryType.DspProgramRom => "PRG",
 				MemoryType.DspDataRam => "RAM",

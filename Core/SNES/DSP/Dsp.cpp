@@ -15,6 +15,7 @@ Dsp::Dsp(Emulator* emu, SnesConsole* console, Spc* spc)
 
 	memset(_state.Regs, 0, 0x80);
 	console->InitializeRam(_state.ExternalRegs, 0x80);
+	_emu->RegisterMemory(MemoryType::SpcDspRegisters, _state.ExternalRegs, 0x80);
 
 	for(int i = 0; i < 8; i++) {
 		_voices[i].Init(i, spc, this, _state.Regs + (i * 0x10), &_emu->GetSettings()->GetSnesConfig());

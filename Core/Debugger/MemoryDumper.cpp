@@ -223,6 +223,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
 		case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
+		case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

@@ -59,6 +59,7 @@ public:
 			case MemoryType::SpcMemory:
 			case MemoryType::SpcRam:
 			case MemoryType::SpcRom:
+			case MemoryType::SpcDspRegisters:
 				return CpuType::Spc;
 
 			case MemoryType::GsuMemory:

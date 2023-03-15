@@ -554,6 +554,7 @@ namespace Mesen.Interop
 		SnesRegister,
 		SpcRam,
 		SpcRom,
+		SpcDspRegisters,
 		DspProgramRom,
 		DspDataRom,
 		DspDataRam,

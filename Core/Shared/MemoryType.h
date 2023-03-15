@@ -22,6 +22,7 @@ enum class MemoryType
 	SnesRegister,
 	SpcRam,
 	SpcRom,
+	SpcDspRegisters,
 	DspProgramRom,
 	DspDataRom,
 	DspDataRam,

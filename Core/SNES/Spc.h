@@ -298,6 +298,8 @@ public:
 	uint8_t DebugRead(uint16_t addr);
 	void DebugWrite(uint16_t addr, uint8_t value);
 
+	void DebugWriteDspReg(uint8_t addr, uint8_t value);
+
 	uint8_t CpuReadRegister(uint16_t addr);
 	void CpuWriteRegister(uint32_t addr, uint8_t value);
 
