@@ -124,6 +124,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new ContextMenuAction() {
 					ActionType = ActionType.EnableBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_EnableBreakpoint),
 					IsEnabled = () => Selection.SelectedItems.Any(bp => bp?.Breakpoint.Enabled == false),
 					OnClick = () => {
 						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
@@ -136,6 +137,7 @@ namespace Mesen.Debugger.ViewModels
 
 				new ContextMenuAction() {
 					ActionType = ActionType.DisableBreakpoint,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.BreakpointList_DisableBreakpoint),
 					IsEnabled = () => Selection.SelectedItems.Any(bp => bp?.Breakpoint.Enabled == true),
 					OnClick = () => {
 						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
