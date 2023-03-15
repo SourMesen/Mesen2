@@ -679,10 +679,10 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("Close")]
 		RemoveBreakpoint,
 		
-		[IconFile("BreakpointEnableDisable")]
+		[IconFile("Breakpoint")]
 		EnableBreakpoint,
 
-		[IconFile("BreakpointEnableDisable")]
+		[IconFile("BreakpointDisabled")]
 		DisableBreakpoint,
 
 		[IconFile("Edit")]

@@ -39,14 +39,20 @@ namespace Mesen.Debugger.Views
 
 		private void OnCellClick(DataBoxCell cell)
 		{
-			if(cell.DataContext is BreakpointViewModel vm) {
-				Breakpoint bp = vm.Breakpoint;
+			if(DataContext is BreakpointListViewModel bpList && cell.DataContext is BreakpointViewModel) {
 				string? header = cell.Column?.Header?.ToString() ?? "";
 				if(header == "E" || header == "M") {
-					if(header == "E") {
-						bp.Enabled = !bp.Enabled;
-					} else {
-						bp.MarkEvent = !bp.MarkEvent;
+					bool isEnabledColumn = header == "E";
+					bool newValue = !bpList.Selection.SelectedItems.Any(bp => (isEnabledColumn ? bp?.Breakpoint.Enabled : bp?.Breakpoint.MarkEvent) == true);
+
+					foreach(BreakpointViewModel? bp in bpList.Selection.SelectedItems) {
+						if(bp != null) {
+							if(isEnabledColumn) {
+								bp.Breakpoint.Enabled = newValue;
+							} else {
+								bp.Breakpoint.MarkEvent = newValue;
+							}
+						}
 					}
 
 					BreakpointManager.RefreshBreakpoints();

@@ -54,7 +54,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateBreakpoints()
 		{
-			int selection = Selection.SelectedIndex;
+			List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 
 			List<BreakpointViewModel> sortedBreakpoints = BreakpointManager.GetBreakpoints(CpuType).Select(bp => new BreakpointViewModel(bp)).ToList();
 			
@@ -64,11 +64,13 @@ namespace Mesen.Debugger.ViewModels
 
 			Breakpoints.Replace(sortedBreakpoints);
 
-			if(selection >= 0) {
-				if(selection < Breakpoints.Count) {
-					Selection.SelectedIndex = selection;
-				} else {
-					Selection.SelectedIndex = Breakpoints.Count - 1;
+			if(selectedIndexes.Count >= 0) {
+				foreach(int index in selectedIndexes) {
+					if(index < Breakpoints.Count) {
+						Selection.Select(index);
+					} else {
+						Selection.SelectedIndex = Breakpoints.Count - 1;
+					}
 				}
 			} else if(Breakpoints.Count > 0) {
 				//TODOv2 - fixes databox refresh issue that causes invisible scrollbar to toggle
@@ -115,6 +117,32 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => {
 						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
 						BreakpointManager.RemoveBreakpoints(selectedBps);
+					}
+				},
+
+				new ContextMenuSeparator(),
+
+				new ContextMenuAction() {
+					ActionType = ActionType.EnableBreakpoint,
+					IsEnabled = () => Selection.SelectedItems.Any(bp => bp?.Breakpoint.Enabled == false),
+					OnClick = () => {
+						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
+						foreach(Breakpoint bp in selectedBps) {
+							bp.Enabled = true;
+						}
+						BreakpointManager.RefreshBreakpoints();
+					}
+				},
+
+				new ContextMenuAction() {
+					ActionType = ActionType.DisableBreakpoint,
+					IsEnabled = () => Selection.SelectedItems.Any(bp => bp?.Breakpoint.Enabled == true),
+					OnClick = () => {
+						List<Breakpoint> selectedBps = Selection.SelectedItems.Cast<BreakpointViewModel>().Select(vm => vm.Breakpoint).ToList();
+						foreach(Breakpoint bp in selectedBps) {
+							bp.Enabled = false;
+						}
+						BreakpointManager.RefreshBreakpoints();
 					}
 				},
 

@@ -18,6 +18,7 @@ using Avalonia.Metadata;
 using Avalonia.Threading;
 using DataBoxControl.Controls;
 using DataBoxControl.Primitives;
+using DynamicData;
 using ReactiveUI;
 
 namespace DataBoxControl;
@@ -262,6 +263,11 @@ public class DataBox : TemplatedControl
 	internal void OnCellPointerPressed(object? sender, RoutedEventArgs e)
 	{
 		if(sender is DataBoxCell cell) {
+			if(cell.Column is DataBoxCheckBoxColumn && Selection.SelectedItems.IndexOf(cell.DataContext) >= 0) {
+				//Prevent selection change when clicking checkbox column when multiple items are selected
+				e.Handled = true;
+			}
+
 			_pressedCell = cell;
 		}
 	}

@@ -15,6 +15,7 @@ using DataBoxControl;
 using System.ComponentModel;
 using Mesen.Utilities;
 using Avalonia.VisualTree;
+using Mesen.Debugger;
 
 namespace Mesen.ViewModels
 {
@@ -51,12 +52,18 @@ namespace Mesen.ViewModels
 
 		public void Sort(object? param = null)
 		{
+			List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 			List<CheatCode> sortedCheats = new List<CheatCode>(Cheats);
-			CheatCode? selectedItem = Selection.SelectedItem;
 			SortHelper.SortList(sortedCheats, SortState.SortOrder, _comparers, "Codes");
 			Cheats.Replace(sortedCheats);
-			if(selectedItem != null) {
-				Selection.SelectedItem = selectedItem;
+			if(selectedIndexes.Count >= 0) {
+				foreach(int index in selectedIndexes) {
+					if(index < Cheats.Count) {
+						Selection.Select(index);
+					} else {
+						Selection.SelectedIndex = Cheats.Count - 1;
+					}
+				}
 			}
 		}
 

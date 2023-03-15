@@ -12,6 +12,7 @@ using Avalonia.Input;
 using Mesen.ViewModels;
 using Avalonia.Data.Converters;
 using DataBoxControl;
+using System.Linq;
 
 namespace Mesen.Windows
 {
@@ -64,8 +65,11 @@ namespace Mesen.Windows
 
 		private void OnCellClick(DataBoxCell cell)
 		{
-			if(cell.DataContext is CheatCode cheat && cell.Column?.ColumnName == "Enabled") {
-				cheat.Enabled = !cheat.Enabled;
+			if(cell.DataContext is CheatCode && cell.Column?.ColumnName == "Enabled") {
+				bool newValue = !_model.Selection.SelectedItems.Any(cheat => cheat.Enabled);
+				foreach(CheatCode cheat in _model.Selection.SelectedItems) {
+					cheat.Enabled = newValue;
+				}
 				_model.Sort();
 				_model.ApplyCheats();
 			}
