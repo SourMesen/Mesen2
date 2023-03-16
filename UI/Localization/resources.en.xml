@@ -830,6 +830,7 @@
 			<Control ID="wndTitle">Tile Editor</Control>
 			<Control ID="mnuFile">_File</Control>
 			<Control ID="mnuView">_View</Control>
+			<Control ID="mnuTools">_Tools</Control>
 
 			<Control ID="lblBackground">Background:</Control>
 			<Control ID="lblPreview">Preview</Control>
@@ -2883,6 +2884,17 @@
 			<Value ID="TraceLogger_ViewInMemoryViewer">Trace Logger - View in Memory Viewer</Value>
 
 			<Value ID="RegisterViewer_EditBreakpoint">Register Viewer - Edit Breakpoint</Value>
+
+			<Value ID="TileEditor_RotateLeft">Tile Editor - Rotate left</Value>
+			<Value ID="TileEditor_RotateRight">Tile Editor - Rotate right</Value>
+
+			<Value ID="TileEditor_FlipHorizontal">Tile Editor - Flip horizontal</Value>
+			<Value ID="TileEditor_FlipVertical">Tile Editor - Flip vertical</Value>
+
+			<Value ID="TileEditor_TranslateLeft">Tile Editor - Translate left</Value>
+			<Value ID="TileEditor_TranslateRight">Tile Editor - Translate right</Value>
+			<Value ID="TileEditor_TranslateUp">Tile Editor - Translate up</Value>
+			<Value ID="TileEditor_TranslateDown">Tile Editor - Translate down</Value>
 		</Enum>
 		<Enum ID="ActionType">
 			<Value ID="Copy">Copy</Value>
@@ -3167,6 +3179,17 @@
 			<Value ID="CopyToHdPackFormat">Copy tile (HD pack format)</Value>
 			<Value ID="CheatDatabase">Cheat database</Value>
 			<Value ID="ToggleBilinearInterpolation">Use bilinear interpolation</Value>
+
+			<Value ID="RotateLeft">Rotate left</Value>
+			<Value ID="RotateRight">Rotate right</Value>
+
+			<Value ID="FlipHorizontal">Flip horizontal</Value>
+			<Value ID="FlipVertical">Flip vertical</Value>
+			
+			<Value ID="TranslateLeft">Translate left</Value>
+			<Value ID="TranslateRight">Translate right</Value>
+			<Value ID="TranslateUp">Translate up</Value>
+			<Value ID="TranslateDown">Translate down</Value>
 		</Enum>
 	</Enums>
 </Resources>

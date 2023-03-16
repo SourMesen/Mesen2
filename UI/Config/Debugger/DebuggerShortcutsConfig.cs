@@ -268,6 +268,16 @@ namespace Mesen.Config
 
 			//Register viewer
 			Add(new() { Shortcut = DebuggerShortcut.RegisterViewer_EditBreakpoint, KeyBinding = new(Key.F2) });
+
+			//Tile editor
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_RotateLeft, KeyBinding = new(KeyModifiers.Control, Key.Left) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_RotateRight, KeyBinding = new(KeyModifiers.Control, Key.Right) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_FlipHorizontal, KeyBinding = new(KeyModifiers.Control, Key.Up) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_FlipVertical, KeyBinding = new(KeyModifiers.Control, Key.Down) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_TranslateLeft, KeyBinding = new(KeyModifiers.Shift, Key.Left) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_TranslateRight, KeyBinding = new(KeyModifiers.Shift, Key.Right) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_TranslateUp, KeyBinding = new(KeyModifiers.Shift, Key.Up) });
+			Add(new() { Shortcut = DebuggerShortcut.TileEditor_TranslateDown, KeyBinding = new(KeyModifiers.Shift, Key.Down) });
 		}
 	}
 
@@ -432,6 +442,14 @@ namespace Mesen.Config
 		TraceLogger_ViewInDebugger,
 		TraceLogger_ViewInMemoryViewer,
 		RegisterViewer_EditBreakpoint,
+		TileEditor_RotateRight,
+		TileEditor_RotateLeft,
+		TileEditor_FlipHorizontal,
+		TileEditor_FlipVertical,
+		TileEditor_TranslateLeft,
+		TileEditor_TranslateRight,
+		TileEditor_TranslateUp,
+		TileEditor_TranslateDown,
 	}
 
 	public class DebuggerShortcutInfo : ViewModelBase

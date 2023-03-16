@@ -801,5 +801,23 @@ namespace Mesen.Debugger.Utilities
 		CheatDatabase,
 
 		ToggleBilinearInterpolation,
+
+		[IconFile("RotateLeft")]
+		RotateLeft,
+		[IconFile("RotateRight")]
+		RotateRight,
+		[IconFile("FlipHorizontal")]
+		FlipHorizontal,
+		[IconFile("FlipVertical")]
+		FlipVertical,
+		
+		[IconFile("TranslateLeft")]
+		TranslateLeft,
+		[IconFile("TranslateRight")]
+		TranslateRight,
+		[IconFile("TranslateUp")]
+		TranslateUp,
+		[IconFile("TranslateDown")]
+		TranslateDown
 	}
 }

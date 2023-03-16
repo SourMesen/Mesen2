@@ -31,8 +31,10 @@ public class TileEditorViewModel : DisposableViewModel
 
 	public TileEditorConfig Config { get; }
 
-	public List<object> FileMenuActions { get; private set; } = new();
-	public List<object> ViewMenuActions { get; private set; } = new();
+	public List<ContextMenuAction> FileMenuActions { get; private set; } = new();
+	public List<ContextMenuAction> ViewMenuActions { get; private set; } = new();
+	public List<ContextMenuAction> ToolsMenuActions { get; private set; } = new();
+	public List<ContextMenuAction> ToolbarActions { get; private set; } = new();
 
 	private CpuType _cpuType;
 	private List<AddressInfo> _tileAddresses;
@@ -76,7 +78,7 @@ public class TileEditorViewModel : DisposableViewModel
 
 	public void InitActions(PictureViewer picViewer, Window wnd)
 	{
-		FileMenuActions = AddDisposables(new List<object>() {
+		FileMenuActions = AddDisposables(new List<ContextMenuAction>() {
 			new ContextMenuAction() {
 				ActionType = ActionType.ExportToPng,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveAsPng),
@@ -89,7 +91,7 @@ public class TileEditorViewModel : DisposableViewModel
 			}
 		});
 
-		ViewMenuActions = AddDisposables(new List<object>() {
+		ViewMenuActions = AddDisposables(new List<ContextMenuAction>() {
 			new ContextMenuAction() {
 				ActionType = ActionType.ZoomIn,
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ZoomIn),
@@ -102,8 +104,122 @@ public class TileEditorViewModel : DisposableViewModel
 			},
 		});
 
+		ToolsMenuActions = AddDisposables(GetTools());
+		ToolbarActions = AddDisposables(GetTools());
+
 		DebugShortcutManager.RegisterActions(wnd, FileMenuActions);
 		DebugShortcutManager.RegisterActions(wnd, ViewMenuActions);
+		DebugShortcutManager.RegisterActions(wnd, ToolsMenuActions);
+	}
+
+	private List<ContextMenuAction> GetTools()
+	{
+		return new List<ContextMenuAction>() {
+			new ContextMenuAction() {
+				ActionType = ActionType.FlipHorizontal,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_FlipHorizontal),
+				OnClick = () => Transform(TransformType.FlipHorizontal)
+			},
+			new ContextMenuAction() {
+				ActionType = ActionType.FlipVertical,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_FlipVertical),
+				OnClick = () => Transform(TransformType.FlipVertical)
+			},
+
+			new ContextMenuSeparator(),
+
+			new ContextMenuAction() {
+				ActionType = ActionType.RotateLeft,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_RotateLeft),
+				IsEnabled = () => _columnCount == _rowCount,
+				OnClick = () => Transform(TransformType.RotateLeft)
+			},
+			new ContextMenuAction() {
+				ActionType = ActionType.RotateRight,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_RotateRight),
+				IsEnabled = () => _columnCount == _rowCount,
+				OnClick = () => Transform(TransformType.RotateRight)
+			},
+
+			new ContextMenuSeparator(),
+
+			new ContextMenuAction() {
+				ActionType = ActionType.TranslateLeft,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_TranslateLeft),
+				OnClick = () => Transform(TransformType.TranslateLeft)
+			},
+			new ContextMenuAction() {
+				ActionType = ActionType.TranslateRight,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_TranslateRight),
+				OnClick = () => Transform(TransformType.TranslateRight)
+			},
+			new ContextMenuAction() {
+				ActionType = ActionType.TranslateUp,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_TranslateUp),
+				OnClick = () => Transform(TransformType.TranslateUp)
+			},
+			new ContextMenuAction() {
+				ActionType = ActionType.TranslateDown,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.TileEditor_TranslateDown),
+				OnClick = () => Transform(TransformType.TranslateDown)
+			},
+		};
+	}
+
+	private List<int> GetTileData()
+	{
+		PixelSize tileSize = _tileFormat.GetTileSize();
+		int width = tileSize.Width * _columnCount;
+		int height = tileSize.Height * _rowCount;
+
+		List<int> data = new List<int>(width * height);
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				data.Add(GetColorAtPosition(new PixelPoint(x, y)));
+			}
+		}
+
+		return data;
+	}
+
+	private void Transform(TransformType type)
+	{
+		List<int> data = GetTileData();
+
+		PixelSize tileSize = _tileFormat.GetTileSize();
+		int width = tileSize.Width * _columnCount;
+		int height = tileSize.Height * _rowCount;
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				int newY = type switch {
+					TransformType.FlipVertical => height - y - 1,
+					TransformType.FlipHorizontal => y,
+					TransformType.RotateLeft => x,
+					TransformType.RotateRight => height - x - 1,
+					TransformType.TranslateLeft => y,
+					TransformType.TranslateRight => y,
+					TransformType.TranslateUp => y < height - 1 ? (y + 1) : 0,
+					TransformType.TranslateDown => y > 0 ? (y - 1) : height - 1,
+					_ => y
+				};
+
+				int newX = type switch {
+					TransformType.FlipVertical => x,
+					TransformType.FlipHorizontal => width - x - 1,
+					TransformType.RotateLeft => width - y - 1,
+					TransformType.RotateRight => y,
+					TransformType.TranslateLeft => x < width - 1 ? (x + 1) : 0,
+					TransformType.TranslateRight => x > 0 ? (x - 1) : width - 1,
+					TransformType.TranslateUp => x,
+					TransformType.TranslateDown => x, 
+					_ => x
+				};
+
+				SetPixelColor(new PixelPoint(x, y), data[newY * width + newX]);
+			}
+		}
+
+		RefreshViewer();
 	}
 
 	private record TilePixelPositionInfo(int Column, int Row, int TileX, int TileY);
@@ -130,11 +246,16 @@ public class TileEditorViewModel : DisposableViewModel
 		SelectedColor = GetColorAtPosition(position);
 	}
 
+	private void SetPixelColor(PixelPoint position, int color)
+	{
+		TilePixelPositionInfo pos = GetPositionInfo(position);
+		DebugApi.SetTilePixel(_tileAddresses[pos.Column + pos.Row * _columnCount], _tileFormat, pos.TileX, pos.TileY, color);
+	}
+
 	public void UpdatePixel(PixelPoint position, bool clearPixel)
 	{
 		int pixelColor = clearPixel ? 0 : SelectedColor % GetColorsPerPalette(_tileFormat);
-		TilePixelPositionInfo pos = GetPositionInfo(position);
-		DebugApi.SetTilePixel(_tileAddresses[pos.Column+pos.Row*_columnCount], _tileFormat, pos.TileX, pos.TileY, pixelColor);
+		SetPixelColor(position, pixelColor);
 		RefreshViewer();
 	}
 
@@ -200,5 +321,17 @@ public class TileEditorViewModel : DisposableViewModel
 			Background = Config.Background,
 			UseGrayscalePalette = false
 		};
+	}
+
+	public enum TransformType
+	{
+		FlipHorizontal,
+		FlipVertical,
+		RotateLeft,
+		RotateRight,
+		TranslateLeft,
+		TranslateRight,
+		TranslateUp,
+		TranslateDown,
 	}
 }
