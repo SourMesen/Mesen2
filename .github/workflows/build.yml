@@ -133,7 +133,7 @@ jobs:
           CERT_DATA: ${{ secrets.MACOS_CERTIFICATE }}
           CERT_PASS: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           ENTITLEMENTS: UI/Mesen.entitlements
-          SIGNING_IDENTITY: TestSign
+          SIGNING_IDENTITY: Mesen
         run: |
           # Export certs
           echo "$CERT_DATA" | base64 --decode > /tmp/certs.p12
