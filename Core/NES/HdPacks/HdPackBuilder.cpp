@@ -347,8 +347,10 @@ void HdPackBuilder::SaveHdPack()
 		}
 	}
 
-	for(HdBackgroundInfo &bgInfo : _hdData.Backgrounds) {
-		ss << bgInfo.ToString() << std::endl;
+	for(int i = 0; i < HdPackData::BgLayerCount; i++) {
+		for(HdBackgroundInfo& bgInfo : _hdData.BackgroundsByPriority[i]) {
+			ss << bgInfo.ToString() << std::endl;
+		}
 	}
 
 	for(auto &bgmInfo : _hdData.BgmFilesById) {

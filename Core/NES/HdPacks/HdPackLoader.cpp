@@ -650,7 +650,7 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 			}
 		}
 
-		_data->Backgrounds.push_back(backgroundInfo);
+		_data->BackgroundsByPriority[backgroundInfo.Priority].push_back(backgroundInfo);
 	} else {
 		MessageManager::Log("[HDPack] Error while loading background: " + tokens[0]);
 	}

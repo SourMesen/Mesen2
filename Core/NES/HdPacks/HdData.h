@@ -456,7 +456,9 @@ private:
 	bool _cancelLoad = false;
 
 public:
-	vector<HdBackgroundInfo> Backgrounds;
+	static constexpr int BgLayerCount = 40;
+
+	vector<HdBackgroundInfo> BackgroundsByPriority[HdPackData::BgLayerCount];
 	vector<unique_ptr<HdPackBitmapInfo>> BackgroundFileData;
 	vector<unique_ptr<HdPackBitmapInfo>> ImageFileData;
 	vector<unique_ptr<HdPackTileInfo>> Tiles;

@@ -161,7 +161,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_controlManager.reset(new NesControlManager(this));
 		}
 
-		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
+		if(_hdData && !_hdData->Tiles.empty()) {
 			_ppu.reset(new HdNesPpu(this, _hdData.get()));
 		} else if(dynamic_cast<NsfMapper*>(_mapper.get())) {
 			//Disable most of the PPU for NSFs
@@ -684,7 +684,7 @@ void NesConsole::StopRecordingHdPack()
 		_emu->Serialize(saveState, false, 0);
 
 		_memoryManager->UnregisterIODevice(_ppu.get());
-		if(_hdData && (!_hdData->Tiles.empty() || !_hdData->Backgrounds.empty())) {
+		if(_hdData && !_hdData->Tiles.empty()) {
 			_ppu.reset(new HdNesPpu(this, _hdData.get()));
 		} else {
 			_ppu.reset(new DefaultNesPpu(this));

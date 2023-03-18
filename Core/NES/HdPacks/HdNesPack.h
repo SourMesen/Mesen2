@@ -39,6 +39,7 @@ private:
 	struct HdBgConfig
 	{
 		int32_t BackgroundIndex = -1;
+		int32_t BgPriority = -1;
 		int32_t BgScrollX = 0;
 		int32_t BgScrollY = 0;
 		int16_t BgMinX = -1;

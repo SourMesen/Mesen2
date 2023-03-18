@@ -214,7 +214,7 @@ void HdNesPack<scale>::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 				continue;
 			}
 
-			HdBackgroundInfo& bgInfo = _hdData->Backgrounds[cfg.BackgroundIndex];
+			HdBackgroundInfo& bgInfo = _hdData->BackgroundsByPriority[cfg.BgPriority][cfg.BackgroundIndex];
 			bgInfo.Data->Init();
 
 			cfg.BgScrollX = (int32_t)(_scrollX * bgInfo.HorizontalScrollRatio);
@@ -233,13 +233,9 @@ void HdNesPack<scale>::OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y)
 template<uint32_t scale>
 int32_t HdNesPack<scale>::GetLayerIndex(uint8_t priority)
 {
-	for(size_t i = 0; i < _hdData->Backgrounds.size(); i++) {
-		if(_hdData->Backgrounds[i].Priority != priority) {
-			continue;
-		}
-
+	for(size_t i = 0; i < _hdData->BackgroundsByPriority[priority].size(); i++) {
 		bool isMatch = true;
-		for(HdPackCondition* condition : _hdData->Backgrounds[i].Conditions) {
+		for(HdPackCondition* condition : _hdData->BackgroundsByPriority[priority][i].Conditions) {
 			if(!condition->CheckCondition(0, 0, nullptr)) {
 				isMatch = false;
 				break;
@@ -272,6 +268,7 @@ void HdNesPack<scale>::OnBeforeApplyFilter()
 		for(int i = 0; i < HdNesPack::PriorityLevelsPerLayer; i++) {
 			int32_t index = GetLayerIndex(layer * HdNesPack::PriorityLevelsPerLayer + i);
 			if(index >= 0) {
+				_bgConfig[layer*10+activeCount].BgPriority = layer * HdNesPack::PriorityLevelsPerLayer + i;
 				_bgConfig[layer*10+activeCount].BackgroundIndex = index;
 				activeCount++;
 			}
@@ -396,7 +393,7 @@ bool HdNesPack<scale>::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_
 {
 	HdBgConfig bgConfig = _bgConfig[(int)priority];
 	if((int32_t)x >= bgConfig.BgMinX && (int32_t)x <= bgConfig.BgMaxX) {
-		HdBackgroundInfo& bgInfo = _hdData->Backgrounds[bgConfig.BackgroundIndex];
+		HdBackgroundInfo& bgInfo = _hdData->BackgroundsByPriority[bgConfig.BgPriority][bgConfig.BackgroundIndex];
 		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth);
 		return true;
 	}
