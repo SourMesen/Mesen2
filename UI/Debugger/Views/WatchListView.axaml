@@ -32,14 +32,14 @@
 			<Setter Property="Background" Value="Transparent" />
 		</Style>
 		<Style Selector="DataBoxRow TextBox:pointerover:focus Border#PART_BorderElement">
-			<Setter Property="Background" Value="White" />
+			<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
 		</Style>
 		<Style Selector="DataBoxRow:selected TextBox">
 			<Setter Property="Foreground" Value="White" />
 		</Style>
 		<Style Selector="DataBoxRow:selected TextBox:focus">
-			<Setter Property="Background" Value="White" />
-			<Setter Property="Foreground" Value="Black" />
+			<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
 		</Style>
 		<Style Selector="TextBlock.changed">
 			<Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />

@@ -19,14 +19,14 @@
 		<Button
 			MinWidth="0"
 			Padding="0"
-			Margin="0"
+			Margin="1"
 			BorderThickness="0"
 			Background="Transparent"
 			Click="OnColorClick"
 		>
 			<WrapPanel>
 				<Border
-					BorderBrush="Black"
+					BorderBrush="{DynamicResource MesenBlackBorderColor}"
 					BorderThickness="1"
 					Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
 					Width="20"

@@ -61,12 +61,18 @@
 	</Design.PreviewWith>
 
 	<Styles.Resources>
+		<Color x:Key="ThemeBackgroundColor">#FFFFFFFF</Color>
+		<Color x:Key="ThemeForegroundColor">#FF000000</Color>
+		<SolidColorBrush x:Key="ThemeForegroundBrush" Color="{DynamicResource ThemeForegroundColor}"></SolidColorBrush>
+		<SolidColorBrush x:Key="ThemeBackgroundBrush" Color="{DynamicResource ThemeBackgroundColor}"></SolidColorBrush>
+
+		<Color x:Key="MesenBlackBorderColor">#FF000000</Color>
+
 		<Color x:Key="ErrorColor">#FFFF0000</Color>
 		<SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource ErrorColor}"></SolidColorBrush>
 		<SolidColorBrush x:Key="ThemeControlHighlightLowBrush" Color="Gray" />
 
 		<SolidColorBrush x:Key="MesenNotRecommendedInactiveBrush">DarkGray</SolidColorBrush>
-		<SolidColorBrush x:Key="ThemeBackgroundBrush" Color="#FFF"></SolidColorBrush>
 		
 		<SolidColorBrush x:Key="MesenDockTabPointerOverBrush" Color="#40808080" />
 		

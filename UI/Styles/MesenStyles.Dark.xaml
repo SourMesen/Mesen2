@@ -59,6 +59,8 @@
 	</Design.PreviewWith>
 
 	<Style.Resources>
+		<Color x:Key="MesenBlackBorderColor">#FFFFFFFF</Color>
+		
 		<Color x:Key="MesenGridBackground">#00000000</Color>
 		<Color x:Key="MesenMenuBackground">#00000000</Color>
 		<Color x:Key="MesenMenuBackgroundHighlight">#40808080</Color>

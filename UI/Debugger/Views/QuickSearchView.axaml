@@ -20,15 +20,15 @@
 
 	<UserControl.Styles>
 		<Style Selector="TextBox.highlight Border#PART_BorderElement">
-			<Setter Property="BorderBrush" Value="Red" />
+			<Setter Property="BorderBrush" Value="{DynamicResource ErrorColor}" />
 		</Style>
 	</UserControl.Styles>
 
 	<Border 
 		IsVisible="{CompiledBinding IsSearchBoxVisible}"
-		BorderBrush="Gray"
+		BorderBrush="{DynamicResource MesenGrayBorderColor}"
 		BorderThickness="1"
-		Background="White"
+		Background="{DynamicResource ThemeBackgroundBrush}"
 		Padding="2 1"
 	>
 		<DockPanel>

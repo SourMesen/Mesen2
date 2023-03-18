@@ -15,10 +15,10 @@
 	<Style Selector="ToolControl /template/ DockPanel#PART_DockPanel">
 		<Setter Property="Margin" Value="0 0 0 1" />
 	</Style>
-	<Style Selector="ToolControl /template/ TabStrip#PART_TabStrip TabStripItem:pointerover">
+	<Style Selector="ToolControl /template/ ToolTabStrip#PART_TabStrip ToolTabStripItem:pointerover">
 		<Setter Property="Background" Value="{DynamicResource MesenDockTabPointerOverBrush}" />
 	</Style>
-	<Style Selector="ToolControl /template/ TabStrip#PART_TabStrip TabStripItem:selected:pointerover">
+	<Style Selector="ToolControl /template/ ToolTabStrip#PART_TabStrip ToolTabStripItem:selected:pointerover">
 		<Setter Property="Background" Value="{DynamicResource DockThemeBackgroundBrush}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource DockThemeBorderLowBrush}" />
 	</Style>
