@@ -609,6 +609,10 @@ void BaseCartridge::InitRamPowerOnState()
 	} else if(name == "SUPER KEIBA 2") {
 		//Super Keiba 2 behaves incorrectly if save ram is filled with 0s
 		_ramPowerOnState = RamState::Random;
+	} else if(name == "S.F.S.95 della SerieA") {
+		//"Super Formation Soccer 95 della Serie A" can use an invalid volume setting
+		//when save ram is random, causing the music in-game to be too quiet or inaudible.
+		_ramPowerOnState = RamState::AllZeros;
 	} else {
 		_ramPowerOnState = _emu->GetSettings()->GetSnesConfig().RamPowerOnState;
 	}
