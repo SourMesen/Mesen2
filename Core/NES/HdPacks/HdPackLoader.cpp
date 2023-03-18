@@ -12,6 +12,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/PNGHelper.h"
 #include "Utilities/FastString.h"
+#include "Utilities/magic_enum.hpp"
 
 #define checkConstraint(x, y) if(!(x)) { MessageManager::Log(y); return; }
 
@@ -610,6 +611,7 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 		backgroundInfo.Left = 0;
 		backgroundInfo.Top = 0;
 		backgroundInfo.Conditions.reserve(conditions.size());
+		backgroundInfo.BlendMode = HdPackBlendMode::Alpha;
 
 		for(HdPackCondition* condition : conditions) {
 			switch(condition->GetConditionType()) {
@@ -647,6 +649,16 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 				checkConstraint(_data->Version >= 105, "[HDPack] This feature requires version 105+ of HD Packs");
 				backgroundInfo.Left = std::max(0, std::stoi(tokens[5]));
 				backgroundInfo.Top = std::max(0, std::stoi(tokens[6]));
+			}
+
+			if(tokens.size() > 7) {
+				checkConstraint(_data->Version >= 107, "[HDPack] This feature requires version 107+ of HD Packs");
+				auto blendMode  = magic_enum::enum_cast<HdPackBlendMode>(tokens[7]);
+				if(blendMode.has_value()) {
+					backgroundInfo.BlendMode = blendMode.value();
+				} else {
+					MessageManager::Log("[HDPack] Invalid blend mode: " + tokens[7]);
+				}
 			}
 		}
 

@@ -65,8 +65,9 @@ private:
 	bool _useCachedTile = false;
 	int32_t _scrollX = 0;
 
-
+	template<HdPackBlendMode blendMode>
 	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4]);
+
 	__forceinline uint32_t AdjustBrightness(uint8_t input[4], int brightness);
 	__forceinline void DrawColor(uint32_t color, uint32_t* outputBuffer, uint32_t screenWidth);
 	__forceinline void DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackTileInfo, uint32_t* outputBuffer, uint32_t screenWidth);
@@ -74,7 +75,9 @@ private:
 	__forceinline HdPackTileInfo* GetCachedMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile);
 	__forceinline HdPackTileInfo* GetMatchingTile(uint32_t x, uint32_t y, HdPpuTileInfo* tile, bool* disableCache = nullptr);
 
-	__forceinline bool DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth);
+	__forceinline void DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth);
+
+	template<HdPackBlendMode blendMode>
 	__forceinline void DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t screenWidth);
 
 	void OnLineStart(HdPpuPixelInfo &lineFirstPixel, uint8_t y);

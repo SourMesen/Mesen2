@@ -67,13 +67,26 @@ void HdNesPack<scale>::InitializeFallbackTiles()
 }
 
 template<uint32_t scale>
+template<HdPackBlendMode blendMode>
 void HdNesPack<scale>::BlendColors(uint8_t output[4], uint8_t input[4])
 {
-	uint8_t invertedAlpha = 256 - input[3];
-	output[0] = input[0] + (uint8_t)((invertedAlpha * output[0]) >> 8);
-	output[1] = input[1] + (uint8_t)((invertedAlpha * output[1]) >> 8);
-	output[2] = input[2] + (uint8_t)((invertedAlpha * output[2]) >> 8);
-	output[3] = 0xFF;
+	if constexpr(blendMode == HdPackBlendMode::Alpha) {
+		uint8_t invertedAlpha = 256 - input[3];
+		output[0] = input[0] + (uint8_t)((invertedAlpha * output[0]) >> 8);
+		output[1] = input[1] + (uint8_t)((invertedAlpha * output[1]) >> 8);
+		output[2] = input[2] + (uint8_t)((invertedAlpha * output[2]) >> 8);
+		output[3] = 0xFF;
+	} else if constexpr(blendMode == HdPackBlendMode::Add) {
+		output[0] = (uint8_t)std::min(255, (int)input[0] + (int)output[0]);
+		output[1] = (uint8_t)std::min(255, (int)input[1] + (int)output[1]);
+		output[2] = (uint8_t)std::min(255, (int)input[2] + (int)output[2]);
+		output[3] = 0xFF;
+	} else if constexpr(blendMode == HdPackBlendMode::Subtract) {
+		output[0] = (uint8_t)std::max(0, (int)output[0] - (int)input[0]);
+		output[1] = (uint8_t)std::max(0, (int)output[1] - (int)input[1]);
+		output[2] = (uint8_t)std::max(0, (int)output[2] - (int)input[2]);
+		output[3] = 0xFF;
+	}
 }
 
 template<uint32_t scale>
@@ -106,6 +119,7 @@ void HdNesPack<scale>::DrawColor(uint32_t color, uint32_t *outputBuffer, uint32_
 }
 
 template<uint32_t scale>
+template<HdPackBlendMode blendMode>
 void HdNesPack<scale>::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *outputBuffer, uint32_t x, uint32_t y, uint32_t screenWidth)
 {
 	uint32_t width = bgInfo.Data->Width;
@@ -115,10 +129,14 @@ void HdNesPack<scale>::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *
 		for(uint32_t i = 0; i < scale; i++) {
 			for(uint32_t j = 0; j < scale; j++) {
 				uint32_t pixelColor = pngData[j];
-				if(pixelColor >= 0xFF000000) {
-					outputBuffer[j] = pixelColor;
-				} else if(pixelColor >= 0x01000000) {
-					BlendColors((uint8_t*)(outputBuffer+j), (uint8_t*)(&pixelColor));
+				if constexpr(blendMode == HdPackBlendMode::Alpha) {
+					if(pixelColor >= 0xFF000000) {
+						outputBuffer[j] = pixelColor;
+					} else if(pixelColor >= 0x01000000) {
+						BlendColors<blendMode>((uint8_t*)(outputBuffer + j), (uint8_t*)(&pixelColor));
+					}
+				} else {
+					BlendColors<blendMode>((uint8_t*)(outputBuffer + j), (uint8_t*)(&pixelColor));
 				}
 			}
 			outputBuffer += screenWidth;
@@ -127,11 +145,15 @@ void HdNesPack<scale>::DrawCustomBackground(HdBackgroundInfo& bgInfo, uint32_t *
 	} else {
 		for(uint32_t i = 0; i < scale; i++) {
 			for(uint32_t j = 0; j < scale; j++) {
-				uint32_t pixelColor = AdjustBrightness((uint8_t*)(pngData+j), bgInfo.Brightness);
-				if(pixelColor >= 0xFF000000) {
-					outputBuffer[j] = pixelColor;
-				} else if(pixelColor >= 0x01000000) {
-					BlendColors((uint8_t*)(outputBuffer+j), (uint8_t*)(&pixelColor));
+				uint32_t pixelColor = AdjustBrightness((uint8_t*)(pngData + j), bgInfo.Brightness);
+				if constexpr(blendMode == HdPackBlendMode::Alpha) {
+					if(pixelColor >= 0xFF000000) {
+						outputBuffer[j] = pixelColor;
+					} else if(pixelColor >= 0x01000000) {
+						BlendColors<blendMode>((uint8_t*)(outputBuffer + j), (uint8_t*)(&pixelColor));
+					}
+				} else {
+					BlendColors<blendMode>((uint8_t*)(outputBuffer + j), (uint8_t*)(&pixelColor));
 				}
 			}
 			outputBuffer += screenWidth;
@@ -177,7 +199,7 @@ void HdNesPack<scale>::DrawTile(HdPpuTileInfo &tileInfo, HdPackTileInfo &hdPackT
 					*outputBuffer = rgbValue;
 				} else {
 					if(bitmapData[bitmapOffset] & 0xFF000000) {
-						BlendColors((uint8_t*)outputBuffer, (uint8_t*)&rgbValue);
+						BlendColors<HdPackBlendMode::Alpha>((uint8_t*)outputBuffer, (uint8_t*)&rgbValue);
 					}
 				}
 				outputBuffer++;
@@ -389,15 +411,17 @@ HdPackTileInfo* HdNesPack<scale>::GetMatchingTile(uint32_t x, uint32_t y, HdPpuT
 }
 
 template<uint32_t scale>
-bool HdNesPack<scale>::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth)
+void HdNesPack<scale>::DrawBackgroundLayer(uint8_t priority, uint32_t x, uint32_t y, uint32_t* outputBuffer, uint32_t screenWidth)
 {
 	HdBgConfig bgConfig = _bgConfig[(int)priority];
 	if((int32_t)x >= bgConfig.BgMinX && (int32_t)x <= bgConfig.BgMaxX) {
 		HdBackgroundInfo& bgInfo = _hdData->BackgroundsByPriority[bgConfig.BgPriority][bgConfig.BackgroundIndex];
-		DrawCustomBackground(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth);
-		return true;
+		switch(bgInfo.BlendMode) {
+			case HdPackBlendMode::Alpha: DrawCustomBackground<HdPackBlendMode::Alpha>(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth); break;
+			case HdPackBlendMode::Add: DrawCustomBackground<HdPackBlendMode::Add>(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth); break;
+			case HdPackBlendMode::Subtract: DrawCustomBackground<HdPackBlendMode::Subtract>(bgInfo, outputBuffer, x + bgConfig.BgScrollX, y + bgConfig.BgScrollY, screenWidth); break;
+		}
 	}
-	return false;
 }
 
 template<uint32_t scale>

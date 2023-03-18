@@ -395,6 +395,13 @@ public:
 	}
 };
 
+enum class HdPackBlendMode
+{
+	Alpha,
+	Add,
+	Subtract
+};
+
 struct HdBackgroundInfo
 {
 	HdPackBitmapInfo* Data;
@@ -406,6 +413,8 @@ struct HdBackgroundInfo
 
 	uint32_t Left;
 	uint32_t Top;
+
+	HdPackBlendMode BlendMode;
 
 	uint32_t* data()
 	{
