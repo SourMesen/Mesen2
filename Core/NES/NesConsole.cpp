@@ -161,7 +161,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 			_controlManager.reset(new NesControlManager(this));
 		}
 
-		if(_hdData && !_hdData->Tiles.empty()) {
+		if(_hdData) {
 			_ppu.reset(new HdNesPpu(this, _hdData.get()));
 		} else if(dynamic_cast<NsfMapper*>(_mapper.get())) {
 			//Disable most of the PPU for NSFs
@@ -177,7 +177,7 @@ LoadRomResult NesConsole::LoadRom(VirtualFile& romFile)
 		_memoryManager->RegisterIODevice(_controlManager.get());
 		_memoryManager->RegisterIODevice(_mapper.get());
 
-		if(_hdData && (!_hdData->BgmFilesById.empty() || !_hdData->SfxFilesById.empty())) {
+		if(_hdData) {
 			_hdAudioDevice.reset(new HdAudioDevice(_emu, _hdData.get()));
 			_memoryManager->RegisterIODevice(_hdAudioDevice.get());
 		} else {
@@ -684,7 +684,7 @@ void NesConsole::StopRecordingHdPack()
 		_emu->Serialize(saveState, false, 0);
 
 		_memoryManager->UnregisterIODevice(_ppu.get());
-		if(_hdData && !_hdData->Tiles.empty()) {
+		if(_hdData) {
 			_ppu.reset(new HdNesPpu(this, _hdData.get()));
 		} else {
 			_ppu.reset(new DefaultNesPpu(this));
