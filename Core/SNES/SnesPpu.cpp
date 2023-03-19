@@ -1371,6 +1371,10 @@ void SnesPpu::ApplyBrightness()
 
 void SnesPpu::ConvertToHiRes()
 {
+	if(_skipRender) {
+		return;
+	}
+
 	bool useHighResOutput = _useHighResOutput || IsDoubleWidth() || _state.ScreenInterlace;
 	if(!useHighResOutput || _useHighResOutput == useHighResOutput || _scanline >= _vblankStartScanline || _scanline == 0) {
 		return;
