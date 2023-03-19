@@ -19,7 +19,7 @@ OggReader::~OggReader()
 	}
 }
 
-bool OggReader::Init(string filename, bool loop, uint32_t sampleRate, uint32_t startOffset)
+bool OggReader::Init(string filename, bool loop, uint32_t sampleRate, uint32_t startOffset, uint32_t loopPosition)
 {
 	int error;
 	VirtualFile file = filename;
@@ -28,6 +28,12 @@ bool OggReader::Init(string filename, bool loop, uint32_t sampleRate, uint32_t s
 		_vorbis = stb_vorbis_open_memory(_fileData.data(), (int)_fileData.size(), &error, nullptr);
 		if(_vorbis) {
 			_loop = loop;
+			if(loopPosition > 0) {
+				unsigned int sampleCount = stb_vorbis_stream_length_in_samples(_vorbis);
+				_loopPosition = loopPosition < sampleCount ? loopPosition : 0;
+			} else {
+				_loopPosition = 0;
+			}
 			_oggSampleRate = stb_vorbis_get_info(_vorbis).sample_rate;
 			if(startOffset > 0) {
 				stb_vorbis_seek(_vorbis, startOffset);
@@ -64,7 +70,7 @@ void OggReader::ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume
 		uint32_t samplesLoaded = (uint32_t)stb_vorbis_get_samples_short_interleaved(_vorbis, 2, _oggBuffer, samplesToLoad * 2);
 		if(samplesLoaded < samplesToLoad) {
 			if(_loop) {
-				stb_vorbis_seek_start(_vorbis);
+				stb_vorbis_seek(_vorbis, _loopPosition);
 				samplesLoaded += stb_vorbis_get_samples_short_interleaved(_vorbis, 2, _oggBuffer + samplesLoaded * 2, samplesToLoad - samplesLoaded);
 			} else {
 				_done = true;

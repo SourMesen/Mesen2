@@ -713,12 +713,17 @@ void HdPackLoader::ProcessBgmTag(vector<string> &tokens)
 {
 	int trackId = ProcessSoundTrack(tokens[0], tokens[1], tokens[2]);
 	if(trackId >= 0) {
-		if(_loadFromZip) {
-			VirtualFile file(_hdPackFolder, tokens[2]);
-			_data->BgmFilesById[trackId] = file;
-		} else {
-			_data->BgmFilesById[trackId] = FolderUtilities::CombinePath(_hdPackFolder, tokens[2]);
+		BgmTrackInfo track = {};
+		if(tokens.size() > 3) {
+			track.LoopPosition = (uint32_t)std::stoul(tokens[3]);
 		}
+
+		if(_loadFromZip) {
+			track.Filename = 	VirtualFile(_hdPackFolder, tokens[2]);
+		} else {
+			track.Filename = FolderUtilities::CombinePath(_hdPackFolder, tokens[2]);
+		}
+		_data->BgmFilesById[trackId] = track;
 	}
 }
 

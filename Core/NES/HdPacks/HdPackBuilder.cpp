@@ -354,7 +354,11 @@ void HdPackBuilder::SaveHdPack()
 	}
 
 	for(auto &bgmInfo : _hdData.BgmFilesById) {
-		ss << "<bgm>" << std::to_string(bgmInfo.first >> 8) << "," << std::to_string(bgmInfo.first & 0xFF) << "," << VirtualFile(bgmInfo.second).GetFileName() << std::endl;
+		ss << "<bgm>" << std::to_string(bgmInfo.first >> 8) << "," << std::to_string(bgmInfo.first & 0xFF) << "," << VirtualFile(bgmInfo.second.Filename).GetFileName();
+		if(bgmInfo.second.LoopPosition > 0) {
+			ss << "," << std::to_string(bgmInfo.second.LoopPosition);
+		}
+		ss << std::endl;
 	}
 
 	for(auto &sfxInfo : _hdData.SfxFilesById) {
@@ -375,6 +379,12 @@ void HdPackBuilder::SaveHdPack()
 		}
 		if(_hdData.OptionFlags & (int)HdPackOptions::DisableCache) {
 			ss << "disableCache,";
+		}
+		if(_hdData.OptionFlags & (int)HdPackOptions::DontRenderOriginalTiles) {
+			ss << "disableOriginalTiles,";
+		}
+		if(_hdData.OptionFlags & (int)HdPackOptions::AutomaticFallbackTiles) {
+			ss << "automaticFallbackTiles,";
 		}
 	}
 

@@ -459,6 +459,12 @@ struct FallbackTileInfo
 	int32_t FallbackTileIndex;
 };
 
+struct BgmTrackInfo
+{
+	string Filename;
+	uint32_t LoopPosition = 0;
+};
+
 struct HdPackData
 {
 private:
@@ -477,7 +483,7 @@ public:
 	unordered_set<uint32_t> WatchedMemoryAddresses;
 	unordered_map<HdTileKey, vector<HdPackTileInfo*>> TileByKey;
 	unordered_map<string, string> PatchesByHash;
-	unordered_map<int, string> BgmFilesById;
+	unordered_map<int, BgmTrackInfo> BgmFilesById;
 	unordered_map<int, string> SfxFilesById;
 	vector<uint32_t> Palette;
 

@@ -23,7 +23,7 @@ public:
 	void SetSampleRate(int sampleRate);
 	
 	void Reset(uint32_t sampleRate);
-	bool Play(string filename, bool isSfx, uint32_t startOffset);
+	bool Play(string filename, bool isSfx, uint32_t startOffset, uint32_t loopPosition);
 	void SetPlaybackOptions(uint8_t options);
 	void SetPausedFlag(bool paused);
 	void StopBgm();
