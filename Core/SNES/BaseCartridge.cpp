@@ -614,7 +614,13 @@ void BaseCartridge::InitRamPowerOnState()
 		//when save ram is random, causing the music in-game to be too quiet or inaudible.
 		_ramPowerOnState = RamState::AllZeros;
 	} else {
-		_ramPowerOnState = _emu->GetSettings()->GetSnesConfig().RamPowerOnState;
+		string gameCode = GetGameCode();
+		if(gameCode == "AACJ") {
+			//"Nichibutsu Arcade Classics" sometimes freezes during Frisky Tom's attract sequence when ram is random
+			_ramPowerOnState = RamState::AllZeros;
+		} else {
+			_ramPowerOnState = _emu->GetSettings()->GetSnesConfig().RamPowerOnState;
+		}
 	}
 }
 
