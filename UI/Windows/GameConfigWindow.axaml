@@ -43,8 +43,8 @@
 			</TabItem>
 			<TabItem Header="{l:Translate tabDipSwitches}" IsVisible="{CompiledBinding DipSwitches.DipSwitches.Count}">
 				<ScrollViewer>
-					<ItemsRepeater Items="{CompiledBinding DipSwitches.DipSwitches}">
-						<ItemsRepeater.ItemTemplate>
+					<ItemsControl Items="{CompiledBinding DipSwitches.DipSwitches}">
+						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto">
 									<TextBlock Text="{Binding Name}" />
@@ -56,8 +56,8 @@
 									/>
 								</Grid>
 							</DataTemplate>
-						</ItemsRepeater.ItemTemplate>
-					</ItemsRepeater>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
 				</ScrollViewer>
 			</TabItem>
 		</TabControl>

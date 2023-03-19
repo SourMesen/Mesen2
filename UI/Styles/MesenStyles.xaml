@@ -138,7 +138,7 @@
 		</Setter>
 	</Style>
 	
-	<Style Selector="ItemsRepeater,ItemsPresenter">
+	<Style Selector="ItemsControl,ItemsPresenter">
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
 	</Style>
 

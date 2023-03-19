@@ -64,8 +64,8 @@
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Text="{l:Translate lblPresets}" Margin="0 5 0 0 " VerticalAlignment="Top" />
 					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
-						<ItemsRepeater Items="{CompiledBinding ConfigPresetRows}">
-							<ItemsRepeater.ItemTemplate>
+						<ItemsControl Items="{CompiledBinding ConfigPresetRows}">
+							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 									<ItemsControl Items="{Binding}">
 										<ItemsControl.ItemsPanel>
@@ -80,8 +80,8 @@
 										</ItemsControl.ItemTemplate>
 									</ItemsControl>
 								</DataTemplate>
-							</ItemsRepeater.ItemTemplate>
-						</ItemsRepeater>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
 					</Panel>
 
 					<Rectangle Grid.Row="1" Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="0 5" DockPanel.Dock="Top" Grid.ColumnSpan="2" />

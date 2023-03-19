@@ -31,8 +31,8 @@
 		</Border>
 		
 		<ScrollViewer AllowAutoHide="False">
-			<ItemsRepeater Items="{Binding ShortcutKeys}">
-				<ItemsRepeater.ItemTemplate>
+			<ItemsControl Items="{Binding ShortcutKeys}">
+				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>
 							<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 -1 0 0">
@@ -44,8 +44,8 @@
 							</Border>
 						</StackPanel>
 					</DataTemplate>
-				</ItemsRepeater.ItemTemplate>
-			</ItemsRepeater>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 		</ScrollViewer>
 	</DockPanel>
 </UserControl>
