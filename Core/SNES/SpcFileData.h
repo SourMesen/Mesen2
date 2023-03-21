@@ -30,7 +30,7 @@ public:
 	uint32_t TrackLength;
 	uint32_t FadeLength;
 
-	SpcFileData(uint8_t* spcData)
+	SpcFileData(uint8_t* spcData, uint32_t size)
 	{
 		SongTitle = string(spcData + 0x2E, spcData + 0x2E + 0x20);
 		GameTitle = string(spcData + 0x4E, spcData + 0x4E + 0x20);
@@ -52,18 +52,21 @@ public:
 
 		if(isStringValue) {
 			try {
-				if(strTrackLength.size()) {
+				if(strTrackLength.size() && strTrackLength[0] != 0) {
 					TrackLength = std::stoi(strTrackLength);
 				}
-				if(strFadeLength.size()) {
+				if(strFadeLength.size() && strFadeLength[0] != 0) {
 					FadeLength = std::stoi(strFadeLength);
 				}
 			} catch(std::exception&) {
 			}
 		}
 
-		memcpy(SpcRam, spcData + 0x100, 0xFFC0);
-		memcpy(SpcRam + 0xFFC0, spcData + 0x101C0, 0x40);
+		memcpy(SpcRam, spcData + 0x100, 0x10000);
+		if(size >= 0x10200) {
+			//Some SPC files don't have this data (0x10180 bytes instead of 0x10200 bytes)
+			memcpy(SpcRam + 0xFFC0, spcData + 0x101C0, 0x40);
+		}
 
 		memcpy(DspRegs, spcData + 0x10100, 128);
 

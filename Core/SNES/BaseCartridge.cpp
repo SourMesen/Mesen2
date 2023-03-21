@@ -76,8 +76,8 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 			memcpy(cart->_prgRom, romData.data(), romData.size());
 
 			if(memcmp(cart->_prgRom, "SNES-SPC700 Sound File Data", 27) == 0) {
-				if(cart->_prgRomSize >= 0x10200) {
-					//SPC files must be 0x10200 bytes long at minimum
+				if(cart->_prgRomSize >= 0x10180) {
+					//SPC files must be 0x10180 bytes long at minimum
 					cart->LoadSpc();
 				} else {
 					return nullptr;
@@ -631,7 +631,7 @@ RamState BaseCartridge::GetRamPowerOnState()
 
 void BaseCartridge::LoadSpc()
 {
-	_spcData.reset(new SpcFileData(_prgRom));
+	_spcData.reset(new SpcFileData(_prgRom, _prgRomSize));
 	SetupCpuHalt();
 }
 
