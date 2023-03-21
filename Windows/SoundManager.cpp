@@ -236,7 +236,7 @@ void SoundManager::Pause()
 
 void SoundManager::Stop()
 {
-	if(!_playing) {
+	if(!_playing && _lastWriteOffset == 0 && _averageLatency == 0) {
 		return;
 	}
 
@@ -260,9 +260,7 @@ void SoundManager::Play()
 void SoundManager::ValidateWriteCursor(DWORD safeWriteCursor)
 {
 	int32_t writeGap = _lastWriteOffset - safeWriteCursor;
-	if(writeGap < -10000) {
-		writeGap += _bufferSize;
-	} else if(writeGap < 0) {
+	if(writeGap < 0 && writeGap >= -10000) {
 		_bufferUnderrunEventCount++;
 		_lastWriteOffset = safeWriteCursor;
 	}
