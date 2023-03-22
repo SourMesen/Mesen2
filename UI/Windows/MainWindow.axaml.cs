@@ -67,7 +67,8 @@ namespace Mesen.Windows
 			_testModeEnabled = System.Diagnostics.Debugger.IsAttached;
 			_isLinux = OperatingSystem.IsLinux();
 
-			DataContext = new MainWindowViewModel();
+			_model = new MainWindowViewModel();
+			DataContext = _model;
 			InitGlobalShortcuts();
 
 			EmuApi.InitDll();
@@ -163,13 +164,6 @@ namespace Mesen.Windows
 			_mouseManager.Dispose();
 		}
 
-		protected override void OnDataContextChanged(EventArgs e)
-		{
-			if(DataContext is MainWindowViewModel model) {
-				_model = model;
-			}
-		}
-		
 		private void OnDrop(object? sender, DragEventArgs e)
 		{
 			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
@@ -266,9 +260,19 @@ namespace Mesen.Windows
 				case ConsoleNotificationType.GameLoaded:
 					CheatCodes.ApplyCheats();
 					RomInfo romInfo = EmuApi.GetRomInfo();
+					
 					Dispatcher.UIThread.Post(() => {
+						bool wasAudioFile = _model.AudioPlayer != null;
 						_model.RomInfo = romInfo;
+						bool isAudioFile = _model.AudioPlayer != null;
+						if(wasAudioFile != isAudioFile) {
+							//Force window size update when switching between an audio file and a regular rom
+							Dispatcher.UIThread.Post(() => {
+								ProcessResolutionChange();
+							});
+						}
 					});
+
 					GameConfig.LoadGameConfig(romInfo).ApplyConfig();
 
 					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);
