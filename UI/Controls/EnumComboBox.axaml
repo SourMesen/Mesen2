@@ -10,6 +10,7 @@
 	x:Class="Mesen.Controls.EnumComboBox"
 >
 	<ComboBox
+		Name="Dropdown"
 		HorizontalAlignment="Stretch"
 		Items="{CompiledBinding InternalItems, ElementName=root}"
 		SelectedItem="{CompiledBinding InternalSelectedItem, ElementName=root}"

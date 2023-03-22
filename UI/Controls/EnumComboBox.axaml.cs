@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -57,6 +59,10 @@ namespace Mesen.Controls
 		public EnumComboBox()
 		{
 			InitializeComponent();
+
+			ComboBox dropdown = this.GetControl<ComboBox>("Dropdown");
+			dropdown.AddHandler(ComboBox.PointerPressedEvent, this.PointerPressedHandler, RoutingStrategies.Tunnel);
+			dropdown.AddHandler(ComboBox.PointerReleasedEvent, this.PointerReleasedHandler, RoutingStrategies.Tunnel);
 		}
 
 		private void InitializeComponent()
@@ -101,6 +107,22 @@ namespace Mesen.Controls
 
 				InternalSelectedItem = SelectedItem;
 			});
+		}
+
+		private bool _isPressed = false;
+		private void PointerPressedHandler(object? sender, RoutedEventArgs e)
+		{
+			_isPressed = true;
+		}
+
+		private void PointerReleasedHandler(object? sender, PointerReleasedEventArgs e)
+		{
+			if(!_isPressed) {
+				//Prevent combobox from opening when it only receives a "pointer released" event without
+				//a "pointer pressed" event. This can occur when a click event opens a window under the cursor.
+				e.Handled = true;
+			}
+			_isPressed = false;
 		}
 	}
 }
