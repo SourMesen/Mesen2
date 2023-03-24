@@ -46,6 +46,7 @@ namespace Mesen.Debugger.Utilities
 
 			int newId = Interlocked.Increment(ref _nextId);
 			wnd.Closing += OnWindowClosingHandler;
+			wnd.Closed += OnWindowClosedHandler;
 
 			_activeWindows.Add(wnd, new ToolInfo() { ViewerId = newId, Scanline = cfg.RefreshScanline, Cycle = cfg.RefreshCycle, CpuType = cpuType });
 
@@ -62,8 +63,17 @@ namespace Mesen.Debugger.Utilities
 				if(_activeWindows.TryGetValue(wnd, out ToolInfo? toolInfo)) {
 					DebugApi.RemoveViewerId(toolInfo.ViewerId, toolInfo.CpuType);
 				}
-				_activeWindows.Remove(wnd);
 				wnd.Closing -= OnWindowClosingHandler;
+			}
+		}
+
+		private static void OnWindowClosedHandler(object? sender, EventArgs e)
+		{
+			if(sender is Window wnd) {
+				//Do this in OnClosed to ensure the window doesn't get re-registered by a
+				//notification received between the Closing and Closed events
+				_activeWindows.Remove(wnd);
+				wnd.Closed -= OnWindowClosedHandler;
 			}
 		}
 
