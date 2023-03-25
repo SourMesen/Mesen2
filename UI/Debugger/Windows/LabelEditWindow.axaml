@@ -36,7 +36,7 @@
 		<Grid
 			DockPanel.Dock="Right"
 			ColumnDefinitions="Auto,*"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+			RowDefinitions="Auto,Auto,Auto,*,Auto,Auto"
 			Margin="5 0 5 0"
 		>
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblMemoryType}" />
@@ -65,7 +65,8 @@
 				Grid.Column="1" Grid.Row="3"
 				AcceptsReturn="True"
 				ScrollViewer.HorizontalScrollBarVisibility="Auto"
-				Height="100"
+				Height="NaN"
+				MinHeight="100"
 				VerticalContentAlignment="Top"
 				Text="{CompiledBinding Label.Comment}"
 			/>
@@ -80,7 +81,7 @@
 				<TextBlock Text="{l:Translate lblBytes}" Margin="3 0" />
 			</StackPanel>
 
-			<Grid Grid.Row="5" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto" IsVisible="{CompiledBinding ErrorMessage.Length}" >
+			<Grid Grid.Row="5" Margin="0 5" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto" IsVisible="{CompiledBinding ErrorMessage.Length}" >
 				<Image Source="/Assets/Warning.png" Stretch="None" />
 				<TextBlock Grid.Column="1" Text="{CompiledBinding ErrorMessage}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="3 0 0 0" />
 			</Grid>

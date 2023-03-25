@@ -40,7 +40,7 @@
 		<Grid
 			DockPanel.Dock="Right"
 			ColumnDefinitions="Auto,*"
-			RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			RowDefinitions="Auto,Auto,Auto,*"
 			Margin="5 0 5 0"
 		>
 			<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBreakpointType}" />
@@ -75,15 +75,16 @@
 			</StackPanel>
 
 			<TextBlock Grid.Column="0" Grid.Row="3" Text="{l:Translate lblCondition}" />
-			<Grid ColumnDefinitions="*, Auto, Auto" Grid.Column="1" Grid.Row="3">
+			<Grid ColumnDefinitions="*,Auto,Auto" Grid.Column="1" Grid.Row="3">
 				<TextBox
 					AcceptsReturn="True"
 					TextWrapping="Wrap"
+					Height="NaN"
 					Text="{CompiledBinding Breakpoint.Condition}"
 				/>
 
-				<Image Grid.Column="1" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{CompiledBinding !IsConditionValid}" />
-				<Image Grid.Column="2" Source="/Assets/Help.png" ToolTip.Tip="{CompiledBinding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
+				<Image Grid.Column="1" Stretch="None" Source="/Assets/Warning.png" ToolTip.Tip="{l:Translate lblConditionError}" IsVisible="{CompiledBinding !IsConditionValid}" />
+				<Image Grid.Column="2" Stretch="None" Source="/Assets/Help.png" ToolTip.Tip="{CompiledBinding HelpTooltip}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 			</Grid>
 		</Grid>
 	</DockPanel>
