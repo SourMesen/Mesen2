@@ -27,6 +27,7 @@ Sa1Cpu::~Sa1Cpu()
 void Sa1Cpu::Exec()
 {
 	_immediateMode = false;
+	_readWriteMask = 0xFFFFFF;
 
 	if(_state.StopState == SnesCpuStopState::Running) {
 		_emu->ProcessInstruction<CpuType::Sa1>();
