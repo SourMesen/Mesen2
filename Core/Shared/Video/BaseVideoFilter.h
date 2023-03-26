@@ -14,6 +14,7 @@ private:
 	SimpleLock _frameLock;
 	OverscanDimensions _overscan = {};
 	bool _isOddFrame = false;
+	uint32_t _videoPhase = 0;
 
 	void UpdateBufferSize();
 
@@ -32,6 +33,7 @@ protected:
 	virtual void ApplyFilter(uint16_t *ppuOutputBuffer) = 0;
 	virtual void OnBeforeApplyFilter();
 	bool IsOddFrame();
+	uint32_t GetVideoPhase();
 	uint32_t GetBufferSize();
 	
 	template<typename T> bool NtscFilterOptionsChanged(T& ntscSetup);
@@ -42,7 +44,7 @@ public:
 	virtual ~BaseVideoFilter();
 
 	uint32_t* GetOutputBuffer();
-	FrameInfo SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData, bool enableOverscan = true);
+	FrameInfo SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, uint32_t videoPhase, void* frameData, bool enableOverscan = true);
 	void TakeScreenshot(string romName, VideoFilterType filterType);
 	void TakeScreenshot(VideoFilterType filterType, string filename, std::stringstream *stream = nullptr);
 

@@ -11,6 +11,7 @@ struct RenderedFrame
 	uint32_t Height = 240;
 	double Scale = 1.0;
 	uint32_t FrameNumber = 0;
+	uint32_t VideoPhase = 0;
 	vector<ControllerData> InputData;
 
 	RenderedFrame()
@@ -26,13 +27,14 @@ struct RenderedFrame
 		InputData({})
 	{}
 
-	RenderedFrame(void* buffer, uint32_t width, uint32_t height, double scale, uint32_t frameNumber, vector<ControllerData> inputData) :
+	RenderedFrame(void* buffer, uint32_t width, uint32_t height, double scale, uint32_t frameNumber, vector<ControllerData> inputData, uint32_t videoPhase = 0) :
 		FrameBuffer(buffer),
 		Data(nullptr),
 		Width(width),
 		Height(height),
 		Scale(scale),
 		FrameNumber(frameNumber),
-		InputData(inputData)
+		InputData(inputData),
+		VideoPhase(videoPhase)
 	{}
 };

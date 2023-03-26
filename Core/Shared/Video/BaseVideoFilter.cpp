@@ -70,16 +70,22 @@ bool BaseVideoFilter::IsOddFrame()
 	return _isOddFrame;
 }
 
+uint32_t BaseVideoFilter::GetVideoPhase()
+{
+	return _videoPhase;
+}
+
 uint32_t BaseVideoFilter::GetBufferSize()
 {
 	return _bufferSize * sizeof(uint32_t);
 }
 
-FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, void* frameData, bool enableOverscan)
+FrameInfo BaseVideoFilter::SendFrame(uint16_t *ppuOutputBuffer, uint32_t frameNumber, uint32_t videoPhase, void* frameData, bool enableOverscan)
 {
 	auto lock = _frameLock.AcquireSafe();
 	_overscan = enableOverscan ? _emu->GetSettings()->GetOverscan() : OverscanDimensions{};
 	_isOddFrame = frameNumber % 2;
+	_videoPhase = videoPhase;
 	_frameData = frameData;
 	_ppuOutputBuffer = ppuOutputBuffer;
 	OnBeforeApplyFilter();

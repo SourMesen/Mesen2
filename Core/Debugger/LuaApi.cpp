@@ -608,7 +608,7 @@ std::pair<unique_ptr<BaseVideoFilter>, FrameInfo> LuaApi::GetRenderedFrame()
 
 	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 	filter->SetBaseFrameInfo(frameSize);
-	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), nullptr, false);
+	frameSize = filter->SendFrame((uint16_t*)frame.FrameBuffer, _emu->GetFrameCount(), _emu->GetFrameCount() & 0x01, nullptr, false);
 	return std::make_pair(std::move(filter), frameSize);
 }
 

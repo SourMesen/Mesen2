@@ -1094,7 +1094,10 @@ template<class T> void NesPpu<T>::SendFrame()
 		_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone, _currentOutputBuffer);
 	}
 
-	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates());
+	//Get phase at the start of the current frame (341*241 cycles ago)
+	uint32_t videoPhase = ((_masterClock / _masterClockDivider) - 82181) % 3;
+
+	RenderedFrame frame(_currentOutputBuffer, NesConstants::ScreenWidth, NesConstants::ScreenHeight, 1.0, _frameCount, _console->GetControlManager()->GetPortStates(), videoPhase);
 	frame.Data = frameData; //HD packs
 
 	if(_console->GetVsMainConsole() || _console->GetVsSubConsole()) {
