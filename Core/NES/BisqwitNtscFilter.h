@@ -10,7 +10,6 @@ class BisqwitNtscFilter : public BaseVideoFilter
 {
 private:
 	const uint16_t _bitmaskLut[12] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800 };
-	static constexpr int _paddingSize = 6;
 	static constexpr int _signalsPerPixel = 8;
 	static constexpr int _signalWidth = 258;
 
