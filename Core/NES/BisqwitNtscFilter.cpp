@@ -106,9 +106,9 @@ void BisqwitNtscFilter::OnBeforeApplyFilter()
 		_sinetable[i] = (int8_t)(8 * std::sin(i * 2 * pi / 12 + cfg.Hue * pi));
 	}
 
-	_yWidth = (int)(12 + cfg.NtscYFilterLength * 22);
-	_iWidth = (int)(12 + cfg.NtscIFilterLength * 22);
-	_qWidth = (int)(12 + cfg.NtscQFilterLength * 22);
+	_yWidth = std::max(1, (int)(12 + cfg.NtscYFilterLength * 24));
+	_iWidth = std::max(12, (int)(12 + cfg.NtscIFilterLength * 24));
+	_qWidth = std::max(12, (int)(12 + cfg.NtscQFilterLength * 24));
 
 	_y = contrast / _yWidth;
 
@@ -246,7 +246,7 @@ void BisqwitNtscFilter::DecodeFrame(int startRow, int endRow, uint16_t *ppuOutpu
 */
 void BisqwitNtscFilter::NtscDecodeLine(int width, const int8_t* signal, uint32_t* target, int phase0)
 {
-	auto Read = [=](int pos) -> char { return pos >= 0 ? signal[pos] : 0; };
+	auto Read = [=](int pos) -> char { return pos >= 0 && pos < width ? signal[pos] : 0; };
 	auto Cos = [=](int pos) -> char { return _sinetable[(pos + 36) % 12 + phase0]; };
 	auto Sin = [=](int pos) -> char { return _sinetable[(pos + 36) % 12 + 3 + phase0]; };
 
@@ -256,12 +256,17 @@ void BisqwitNtscFilter::NtscDecodeLine(int width, const int8_t* signal, uint32_t
 	int leftOverscan = (GetOverscan().Left + _paddingSize) * 8 + offset;
 	int rightOverscan = width - (GetOverscan().Right + _paddingSize) * 8 + offset;
 
-	for(int s = 0; s < rightOverscan; s++) {
-		ysum += Read(s) - Read(s - _yWidth);
-		isum += Read(s) * Cos(s) - Read(s - _iWidth) * Cos(s - _iWidth);
-		qsum += Read(s) * Sin(s) - Read(s - _qWidth) * Sin(s - _qWidth);
+	int maxFilter = std::max(_yWidth, std::max(_iWidth, _qWidth)) / 2;
 
-		if(!(s % _resDivider) && s >= leftOverscan) {
+	for(int s = -maxFilter; s < rightOverscan; s++) {
+		int sy = s + _yWidth / 2;
+		int si = s + _iWidth / 2;
+		int sq = s + _qWidth / 2;
+		ysum += Read(sy) - Read(sy - _yWidth);
+		isum += Read(si) * Cos(si) - Read(si - _iWidth) * Cos(si - _iWidth);
+		qsum += Read(sq) * Sin(sq) - Read(sq - _qWidth) * Sin(sq - _qWidth);
+
+		if(s >= leftOverscan && !(s % _resDivider)) {
 			int r = std::min(255, std::max(0, (ysum*_y + isum*_ir + qsum*_qr) / 65536));
 			int g = std::min(255, std::max(0, (ysum*_y + isum*_ig + qsum*_qg) / 65536));
 			int b = std::min(255, std::max(0, (ysum*_y + isum*_ib + qsum*_qb) / 65536));
