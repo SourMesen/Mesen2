@@ -309,20 +309,34 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 	}
 
 	bool checkFallbackTiles = _console->GetMapper()->HasChrRom();
-
+	unordered_set<HdTileKey> tilesWithoutAdditions;
 	for(int32_t j = 0; j < NesConstants::ScreenPixelCount; j++) {
 		HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[j];
 		for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
+			int32_t fallbackTile = checkFallbackTiles ? GetFallbackTile(pixelInfo.Sprite[i].TileIndex) : -1;
+
+			if(tilesWithoutAdditions.find(pixelInfo.Sprite[i]) != tilesWithoutAdditions.end()) {
+				//Already tried this sprite and it has no matching addition rules, skip it
+				continue;
+			}
+
+			bool matchFound = false;
 			for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
 				if(pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
 					InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+					matchFound = true;
 				} else if(checkFallbackTiles) {
 					if(pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
-						if(GetFallbackTile(pixelInfo.Sprite[i].TileIndex) == additionalSprite.OriginalTile.TileIndex) {
+						if(fallbackTile == additionalSprite.OriginalTile.TileIndex) {
 							InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+							matchFound = true;
 						}
 					}
 				}
+			}
+
+			if(!matchFound) {
+				tilesWithoutAdditions.emplace(pixelInfo.Sprite[i]);
 			}
 		}
 	}
