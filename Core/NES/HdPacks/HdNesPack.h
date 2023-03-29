@@ -64,6 +64,8 @@ private:
 	bool _cacheEnabled = false;
 	bool _useCachedTile = false;
 	int32_t _scrollX = 0;
+	
+	unordered_map<HdTileKey, vector<HdPackAdditionalSpriteInfo>> _additionalTilesByKey;
 
 	template<HdPackBlendMode blendMode>
 	__forceinline void BlendColors(uint8_t output[4], uint8_t input[4]);

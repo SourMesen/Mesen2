@@ -309,34 +309,40 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 	}
 
 	bool checkFallbackTiles = _console->GetMapper()->HasChrRom();
-	unordered_set<HdTileKey> tilesWithoutAdditions;
 	for(int32_t j = 0; j < NesConstants::ScreenPixelCount; j++) {
+		while(_hdScreenInfo->ScreenTiles[j].SpriteCount == 0) {
+			if(++j >= NesConstants::ScreenPixelCount) {
+				return;
+			}
+		}
+
 		HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[j];
 		for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
-			int32_t fallbackTile = checkFallbackTiles ? GetFallbackTile(pixelInfo.Sprite[i].TileIndex) : -1;
-
-			if(tilesWithoutAdditions.find(pixelInfo.Sprite[i]) != tilesWithoutAdditions.end()) {
-				//Already tried this sprite and it has no matching addition rules, skip it
-				continue;
-			}
-
-			bool matchFound = false;
-			for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
-				if(pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
+			auto result = _additionalTilesByKey.find(pixelInfo.Sprite[i]);
+			if(result != _additionalTilesByKey.end()) {
+				//Used cached list to draw additional sprites
+				for(auto& additionalSprite : result->second) {
 					InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-					matchFound = true;
-				} else if(checkFallbackTiles) {
-					if(pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
-						if(fallbackTile == additionalSprite.OriginalTile.TileIndex) {
-							InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-							matchFound = true;
+				}
+			} else {
+				vector<HdPackAdditionalSpriteInfo> additions;
+				for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
+					if(pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
+						InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+						additions.push_back(additionalSprite);
+					} else if(checkFallbackTiles) {
+						int32_t fallbackTile = checkFallbackTiles ? GetFallbackTile(pixelInfo.Sprite[i].TileIndex) : -1;
+						if(pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
+							if(fallbackTile == additionalSprite.OriginalTile.TileIndex) {
+								InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+								additions.push_back(additionalSprite);
+							}
 						}
 					}
 				}
-			}
 
-			if(!matchFound) {
-				tilesWithoutAdditions.emplace(pixelInfo.Sprite[i]);
+				//Cache list of additional tiles linked to this sprite
+				_additionalTilesByKey.emplace(pixelInfo.Sprite[i], additions);
 			}
 		}
 	}
