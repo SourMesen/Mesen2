@@ -83,6 +83,7 @@ uint32_t DisassemblySearch::SearchDisassembly(CpuType cpuType, const char* searc
 				if(maxResultCount == ++resultCount) {
 					return resultCount;
 				}
+				continue;
 			}
 
 			if(TextContains(searchStr, lineData.Comment, 1000, options)) {
@@ -90,9 +91,10 @@ uint32_t DisassemblySearch::SearchDisassembly(CpuType cpuType, const char* searc
 				if(maxResultCount == ++resultCount) {
 					return resultCount;
 				}
+				continue;
 			}
 
-			if(lineData.EffectiveAddress.Address >= 0) {
+			if(lineData.EffectiveAddress.ShowAddress && lineData.EffectiveAddress.Address >= 0) {
 				txt = _labelManager->GetLabel({ lineData.EffectiveAddress.Address, memType });
 				if(txt.empty()) {
 					txt = "[$" + DebugUtilities::AddressToHex(lineData.LineCpuType, lineData.EffectiveAddress.Address) + "]";
@@ -105,6 +107,7 @@ uint32_t DisassemblySearch::SearchDisassembly(CpuType cpuType, const char* searc
 					if(maxResultCount == ++resultCount) {
 						return resultCount;
 					}
+					continue;
 				}
 			}
 
@@ -115,6 +118,7 @@ uint32_t DisassemblySearch::SearchDisassembly(CpuType cpuType, const char* searc
 					if(maxResultCount == ++resultCount) {
 						return resultCount;
 					}
+					continue;
 				}
 			}
 		}
