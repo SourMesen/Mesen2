@@ -2817,6 +2817,7 @@
 			<Value ID="BreakpointList_Add">Breakpoint List: Add Breakpoint</Value>
 			<Value ID="BreakpointList_Edit">Breakpoint List: Edit Breakpoint</Value>
 			<Value ID="BreakpointList_GoToLocation">Breakpoint List: Go to Location</Value>
+			<Value ID="BreakpointList_ViewInMemoryViewer">Breakpoint List: View in Memory Viewer</Value>
 			<Value ID="BreakpointList_Delete">Breakpoint List: Delete Breakpoint</Value>
 			<Value ID="BreakpointList_EnableBreakpoint">Breakpoint List: Enable Breakpoint</Value>
 			<Value ID="BreakpointList_DisableBreakpoint">Breakpoint List: Disable Breakpoint</Value>

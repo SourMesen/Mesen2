@@ -180,6 +180,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Add, KeyBinding = new(Key.Insert) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Edit, KeyBinding = new(Key.F2) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_GoToLocation, KeyBinding = new() });
+			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_ViewInMemoryViewer, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_Delete, KeyBinding = new(Key.Delete) });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_EnableBreakpoint, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.BreakpointList_DisableBreakpoint, KeyBinding = new() });
@@ -370,6 +371,7 @@ namespace Mesen.Config
 		BreakpointList_Add,
 		BreakpointList_Edit,
 		BreakpointList_GoToLocation,
+		BreakpointList_ViewInMemoryViewer,
 		BreakpointList_Delete,
 		BreakpointList_EnableBreakpoint,
 		BreakpointList_DisableBreakpoint,
