@@ -450,6 +450,10 @@ namespace Mesen.Debugger.Controls
 
 			if(p.X >= RowHeaderWidth + ContentLeftPadding && p.Y >= ColumnHeaderHeight) {
 				int row = (int)((p.Y - ColumnHeaderHeight) / RowHeight);
+				if(TopRow + row != 0 && (TopRow + row + 1) * BytesPerRow > DataProvider.Length) {
+					//Out of range
+					return null;
+				}
 
 				if(ShowStringView && p.X >= RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin) {
 					//String view
