@@ -16,6 +16,7 @@
 		</Style>
 		<Style Selector="TextBox">
 			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="VerticalAlignment" Value="Top" />
 		</Style>
 		<Style Selector="StackPanel.mono TextBox">
 			<Setter Property="FontFamily" Value="{DynamicResource MesenMonospaceFont}" />

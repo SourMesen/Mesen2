@@ -172,9 +172,9 @@ namespace Mesen.Debugger.Utilities
 			TooltipEntries items = new();
 
 			if(codeLoc.Symbol != null) {
-				items.AddEntry("Symbol", codeLoc.Symbol.Value.Name + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), true);
+				items.AddEntry("Symbol", codeLoc.Symbol.Value.Name + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""));
 			} else if(codeLoc.Label != null) {
-				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""), true);
+				items.AddEntry("Label", codeLoc.Label.Label + (codeLoc.LabelAddressOffset != null ? ("+" + codeLoc.LabelAddressOffset) : ""));
 			}
 
 			bool showPreview = false;

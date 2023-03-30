@@ -117,7 +117,8 @@ namespace Mesen.Debugger.Windows
 					LocationInfo locInfo = new() {
 						RelAddress = relAddr.Address >= 0 ? relAddr : null,
 						AbsAddress = absAddr.Address >= 0 ? absAddr : null,
-						Label = label
+						Label = label,
+						LabelAddressOffset = label?.Length > 1 && absAddr.Address >= label.Address ? (absAddr.Address - (int)label.Address) : null
 					};
 
 					_prevTooltip = CodeTooltipHelper.GetCodeAddressTooltip(cpuType, locInfo, !addr.Type.IsRelativeMemory());
