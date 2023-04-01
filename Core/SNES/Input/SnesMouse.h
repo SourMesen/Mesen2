@@ -13,6 +13,10 @@ class SnesMouse : public BaseControlDevice
 private:
 	uint32_t _stateBuffer = 0;
 	uint8_t _sensitivity = 0;
+	uint8_t _sensitivityMediumSNES[8] = {0, 1, 2, 3, 8, 10, 12, 21};
+	uint8_t _sensitivityFastSNES[8] = {0, 1, 4, 9, 12, 20, 24, 28};
+	int32_t dxPrevious = 0;
+	int32_t dyPrevious = 0;
 	EmuSettings* _settings = nullptr;
 
 protected:
@@ -71,12 +75,53 @@ public:
 
 	void RefreshStateBuffer() override
 	{
+		// uint8_t _sensitivityMediumSNES = { 0, 1, 2, 3, 8, 10, 12, 21 };
+		// uint8_t _sensitivityFastSNES = { 0, 1, 4, 9, 12, 20, 24, 28 };
+		bool mouseAccuracyMode = true; // pull this from a UI checkbox?
+
 		MouseMovement mov = GetMovement();
-		int32_t dx = mov.dx * (1 + _sensitivity);
-		int32_t dy = mov.dy * (1 + _sensitivity);
+
+		int32_t dx = mov.dx;
+		int32_t dy = mov.dy;
 
 		uint32_t upFlag = dy < 0 ? 0x80 : 0;
 		uint32_t leftFlag = dx < 0 ? 0x80 : 0;
+
+		// Classic Mesen behavior, except let the mouse move 1 pixel despite sensitivity settings
+		if(!mouseAccuracyMode) {
+			if(dx <= 1 && dx >= -1) {} else {
+				dx = dx * (1 + _sensitivity);
+				dy = dy * (1 + _sensitivity);
+			}
+		}
+		// SNES accurate behavior
+		else {
+			// Scale 4 modern monitor pixels for 1 SNES pixel
+			int8_t moveScale = 4; 
+
+			// Slow SNES sensitivity is just 1:1
+			dx = dx + dxPrevious;
+			dy = dy + dyPrevious;
+
+			dxPrevious = dx % moveScale;
+			dyPrevious = dy % moveScale;
+
+			dx = (dx - (dx % moveScale)) / moveScale;
+			dy = (dy - (dy % moveScale)) / moveScale;
+
+			if(_sensitivity > 0) {
+				if(dx > 7) { dx = 7; } else if(dx < -7) { dx = -7; }
+				if(dy > 7) { dy = 7; } else if(dy < -7) { dy = -7; }
+
+				if(_sensitivity == 1) {
+					dx = _sensitivityMediumSNES[std::abs(dx)];
+					dy = _sensitivityMediumSNES[std::abs(dy)];
+				} else { // (_sensitivity == 2) {
+					dx = _sensitivityFastSNES[std::abs(dx)];
+					dy = _sensitivityFastSNES[std::abs(dy)];
+				}
+			}
+		}
 
 		dx = std::min(std::abs(dx), 127);
 		dy = std::min(std::abs(dy), 127);
