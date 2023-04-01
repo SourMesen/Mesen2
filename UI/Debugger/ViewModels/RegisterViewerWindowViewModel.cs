@@ -1233,6 +1233,17 @@ namespace Mesen.Debugger.ViewModels
 
 				new RegEntry("", "VDC Registers"),
 
+				new RegEntry("", "Status"),
+				new RegEntry("$00.0", "Sprite 0 Hit", vdc.Sprite0Hit),
+				new RegEntry("$00.1", "Sprite Overflow", vdc.SpriteOverflow),
+				new RegEntry("$00.2", "RCR Scanline Detected", vdc.ScanlineDetected),
+				new RegEntry("$00.3", "SATB Transfer Completed", vdc.SatbTransferDone),
+				new RegEntry("$00.4", "VRAM Transfer Completed", vdc.VramTransferDone),
+				new RegEntry("$00.5", "Vertical Blank", vdc.VerticalBlank),
+				//TODOv2
+				//new RegEntry("$00.6", "Busy", ...),
+
+				new RegEntry("", "VRAM Address/Data"),
 				new RegEntry("$00", "MAWR - Memory Write Address", vdc.MemAddrWrite, Format.X16),
 				new RegEntry("$01", "MARR - Memory Read Address", vdc.MemAddrRead, Format.X16),
 				new RegEntry("$02", "VWR - VRAM Write Data", vdc.VramData, Format.X16),
@@ -1307,6 +1318,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$C00.0-6", "Reload Value", timer.ReloadValue, Format.X8),
 				new RegEntry("$C01.0", "Enabled", timer.Enabled),
 				new RegEntry("", "Counter", timer.Counter, Format.X8),
+				new RegEntry("", "Scaler", timer.Scaler, Format.X16),
 
 				new RegEntry("", "IRQ"),
 				new RegEntry("$1402", "Disabled IRQs"),
