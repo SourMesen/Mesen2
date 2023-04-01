@@ -39,7 +39,7 @@ private:
 	uint16_t _operand3;
 	bool _memoryFlag = false;
 
-	bool _needIrq = false;
+	uint8_t _pendingIrqs = 0;
 	PceAddrMode _instAddrMode;
 
 private:

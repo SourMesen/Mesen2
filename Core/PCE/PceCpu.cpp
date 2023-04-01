@@ -106,7 +106,7 @@ void PceCpu::Exec()
 	FetchOperand();
 	(this->*_opTable[opCode])();
 
-	if(_needIrq && _memoryManager->HasPendingIrq()) {
+	if(_pendingIrqs) {
 		ProcessIrq(false);
 	}
 }
@@ -273,7 +273,7 @@ void PceCpu::ProcessCpuCycle()
 	_state.CycleCount++;
 	_memoryManager->Exec();
 
-	_needIrq = _memoryManager->HasPendingIrq() && !CheckFlag(PceCpuFlags::Interrupt);
+	_pendingIrqs = CheckFlag(PceCpuFlags::Interrupt) ? 0 : _memoryManager->GetPendingIrqs();
 }
 
 #ifndef DUMMYCPU
@@ -383,6 +383,10 @@ uint16_t PceCpu::GetIndYAddr()
 
 void PceCpu::ProcessIrq(bool forBrk)
 {
+	//Keep a copy of _pendingIrqs here, because its value can change
+	//by the cycles the CPU runs before the value is used at the end
+	uint8_t pendingIrqs = _pendingIrqs;
+
 #ifndef DUMMYCPU
 	uint16_t originalPc = PC();
 #endif
@@ -412,11 +416,11 @@ void PceCpu::ProcessIrq(bool forBrk)
 
 	if(forBrk) {
 		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
-	} else if(_memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
+	} else if(pendingIrqs & (uint8_t)PceIrqSource::TimerIrq) {
 		SetPC(MemoryReadWord(PceCpu::TimerIrqVector));
-	} else if(_memoryManager->HasIrqSource(PceIrqSource::Irq1)) {
+	} else if(pendingIrqs & (uint8_t)PceIrqSource::Irq1) {
 		SetPC(MemoryReadWord(PceCpu::Irq1Vector));
-	} else if(_memoryManager->HasIrqSource(PceIrqSource::Irq2)) {
+	} else if(pendingIrqs & (uint8_t)PceIrqSource::Irq2) {
 		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
 	}
 

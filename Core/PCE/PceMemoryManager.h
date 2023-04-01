@@ -92,8 +92,7 @@ public:
 	AddressInfo GetRelativeAddress(AddressInfo absAddr);
 
 	void SetIrqSource(PceIrqSource source) { _state.ActiveIrqs |= (int)source; }
-	__forceinline bool HasPendingIrq() { return (_state.ActiveIrqs & ~_state.DisabledIrqs) != 0; }
-	__forceinline bool HasIrqSource(PceIrqSource source) { return (_state.ActiveIrqs & ~_state.DisabledIrqs & (int)source) != 0; }
+	__forceinline uint8_t GetPendingIrqs() { return (_state.ActiveIrqs & ~_state.DisabledIrqs); }
 	void ClearIrqSource(PceIrqSource source) { _state.ActiveIrqs &= ~(int)source; }
 
 	void Serialize(Serializer& s);
