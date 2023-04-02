@@ -192,8 +192,8 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 		
 		uint32_t pixelCount = PceConstants::ClockPerScanline / _vce->GetClockDivider();
 		for(uint32_t i = 0; i < pixelCount; i++) {
-			PceVpcPriorityMode prio = (PceVpcPriorityMode)((i < _state.Window1) | ((i < _state.Window2) << 1));
-			PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)prio];
+			PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < _state.Window1) | ((i < _state.Window2) << 1));
+			PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)wndType];
 			uint8_t enabledLayers = (uint8_t)cfg.Vdc1Enabled | ((uint8_t)cfg.Vdc2Enabled << 1);
 			uint16_t color;
 			switch(enabledLayers) {
@@ -215,6 +215,7 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 							break;
 
 						case PceVpcPriorityMode::Vdc2SpritesAboveVdc1Bg:
+							//VDC2 sprites are shown above VDC1 background, but below VDC1 sprites
 							if(isTransparentVdc1 || (isSpriteVdc2 && !isSpriteVdc1)) {
 								//VDC1 transparent, show VDC2, or
 								//VDC2 is a sprite and VDC1 is not a sprite, show VDC2
@@ -224,15 +225,18 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 							}
 							break;
 
-						case PceVpcPriorityMode::Vdc1SpritesBelowVdc2Bg:
-							if(isTransparentVdc1 || (isSpriteVdc1 && !isSpriteVdc2)) {
+						case PceVpcPriorityMode::Vdc1SpritesBelowVdc2Bg: {
+							//VDC1 sprites are shown behind VDC2 background, but above VDC2 sprites(?)
+							bool isTransparentVdc2 = (rowBufferVdc2[i] & PceVpc::TransparentPixelFlag) != 0;
+							if(isTransparentVdc1 || (isSpriteVdc1 && !isSpriteVdc2 && !isTransparentVdc2)) {
 								//VDC1 transparent, show VDC2, or
-								//VDC1 is a sprite, show VDC2
+								//VDC1 is a sprite, show VDC2 (unless VDC2 is a transparent color or the background layer)
 								color = rowBufferVdc2[i];
 							} else {
 								color = rowBuffer[i];
 							}
 							break;
+						}
 					}
 					break;
 				}
