@@ -175,7 +175,7 @@ namespace Mesen.Utilities
 		{
 			get
 			{
-				if(!EmuApi.IsRunning() || EmuApi.IsPaused()) {
+				if(!EmuApi.IsRunning() || EmuApi.IsPaused() || !_wnd.IsActive) {
 					return false;
 				}
 
