@@ -25,7 +25,7 @@ protected:
 		for(KeyMapping& keyMapping : _keyMappings) {
 			SetPressedState(Buttons::Fire, KeyManager::IsKeyPressed(keyMapping.CustomKeys[0]));
 		}
-		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
+		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity));
 	}
 
 	void Serialize(Serializer& s) override

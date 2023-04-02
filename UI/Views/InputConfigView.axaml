@@ -51,7 +51,7 @@
 								Grid.Row="2"
 								Grid.Column="1"
 								Minimum="0"
-								Maximum="3"
+								Maximum="9"
 								TickFrequency="1"
 								Width="100"
 								HideValue="True"

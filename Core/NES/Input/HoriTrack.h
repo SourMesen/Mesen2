@@ -20,7 +20,7 @@ protected:
 	void InternalSetStateFromInput() override
 	{
 		NesController::InternalSetStateFromInput();
-		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity + 1));
+		SetMovement(KeyManager::GetMouseMovement(_emu, _emu->GetSettings()->GetInputConfig().MouseSensitivity));
 	}
 
 public:

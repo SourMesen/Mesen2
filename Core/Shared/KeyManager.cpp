@@ -86,13 +86,14 @@ void KeyManager::SetMouseMovement(int16_t x, int16_t y)
 	_yMouseMovement += y;
 }
 
-MouseMovement KeyManager::GetMouseMovement(Emulator* emu, double mouseSensitivity)
+MouseMovement KeyManager::GetMouseMovement(Emulator* emu, uint32_t mouseSensitivity)
 {
+	constexpr double divider[10] = { 0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.5, 2, 3, 4 };
 	FrameInfo rendererSize = emu->GetVideoRenderer()->GetRendererSize();
 	FrameInfo frameSize = emu->GetVideoDecoder()->GetFrameInfo();
 	double scale = (double)rendererSize.Width / frameSize.Width;
+	double factor = scale / divider[mouseSensitivity];
 
-	double factor = scale / mouseSensitivity;
 	MouseMovement mov = {};
 
 	auto lock = _lock.AcquireSafe();
