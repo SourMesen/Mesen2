@@ -152,7 +152,10 @@ void PceAdpcm::ProcessDmaRequest()
 	}
 
 	if(!_scsi->IsDataTransferInProgress()) {
-		_state.DmaControl = 0;
+		//Reset bit 0 only
+		//Resetting bit 1 breaks Record of Lodoss War (freezes when start is pressed)
+		//Not resetting bit 0 breaks Seiya Monogatari - Anearth (freezes on logo)
+		_state.DmaControl &= ~0x01;
 	}
 }
 
