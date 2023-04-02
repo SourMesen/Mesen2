@@ -15,6 +15,8 @@ private:
 
 	uint32_t _stateBuffer = 0;
 	uint8_t _sensitivity = 0;
+	uint32_t upFlag = 0;
+	uint32_t leftFlag = 0;
 	EmuSettings* _settings = nullptr;
 
 protected:
@@ -78,8 +80,9 @@ public:
 		int32_t dx = mov.dx;
 		int32_t dy = mov.dy;
 
-		uint32_t upFlag = dy < 0 ? 0x80 : 0;
-		uint32_t leftFlag = dx < 0 ? 0x80 : 0;
+		// These flags will maintain and report their last moved direction. It's a hardware quirk that the real mouse does. I don't know if any games used this information, or if it is helpful in any way whatsoever, but it is accurate. Cheers!
+		if(dx != 0) { leftFlag = dx < 0 ? 0x80 : 0; }
+		if(dy != 0) { upFlag = dy < 0 ? 0x80 : 0; }
 
 		dx = std::min(std::abs(dx), 127);
 		dy = std::min(std::abs(dy), 127);
