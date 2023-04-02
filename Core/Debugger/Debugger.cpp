@@ -267,6 +267,26 @@ bool Debugger::ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType o
 	return !_debuggers[(int)type].Debugger->GetFrozenAddressManager().IsFrozenAddress(addr);
 }
 
+template<CpuType cpuType, MemoryType memType, MemoryOperationType opType>
+void Debugger::ProcessMemoryAccess(uint32_t addr, uint8_t value)
+{
+	IDebugger* debugger = _debuggers[(int)cpuType].Debugger.get();
+
+	if(debugger->IsStepBack()) {
+		return;
+	}
+
+	AddressInfo addressInfo = { (int32_t)addr, memType };
+	MemoryOperationInfo operation(addr, value, opType, memType);
+
+	if constexpr(opType == MemoryOperationType::Write) {
+		_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _emu->GetMasterClock());
+	} else {
+		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _emu->GetMasterClock());
+	}
+	ProcessBreakConditions(cpuType, *debugger->GetStepRequest(), debugger->GetBreakpointManager(), operation, addressInfo);
+}
+
 template<CpuType type>
 void Debugger::ProcessIdleCycle()
 {
@@ -1030,6 +1050,9 @@ template bool Debugger::ProcessMemoryWrite<CpuType::Cx4>(uint32_t addr, uint8_t&
 template bool Debugger::ProcessMemoryWrite<CpuType::Gameboy>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Nes>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
 template bool Debugger::ProcessMemoryWrite<CpuType::Pce>(uint32_t addr, uint8_t& value, MemoryOperationType opType);
+
+template void Debugger::ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Write>(uint32_t addr, uint8_t value);
+template void Debugger::ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Read>(uint32_t addr, uint8_t value);
 
 template void Debugger::ProcessIdleCycle<CpuType::Snes>();
 template void Debugger::ProcessIdleCycle<CpuType::Sa1>();

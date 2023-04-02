@@ -265,6 +265,13 @@ public:
 		return true;
 	}
 
+	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType> __forceinline void ProcessMemoryAccess(uint32_t addr, uint8_t value)
+	{
+		if(_debugger) {
+			_debugger->ProcessMemoryAccess<cpuType, memType, opType>(addr, value);
+		}
+	}
+
 	template<CpuType type> __forceinline void ProcessIdleCycle()
 	{
 		if(_debugger) {

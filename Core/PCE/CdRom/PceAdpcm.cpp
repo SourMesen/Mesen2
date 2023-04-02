@@ -114,6 +114,7 @@ void PceAdpcm::ProcessReadOperation()
 	_state.ReadClockCounter--;
 	if(_state.ReadClockCounter == 0) {
 		_state.ReadBuffer = _ram[_state.ReadAddress];
+		_emu->ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Read>(_state.ReadAddress, _state.ReadBuffer);
 		_state.ReadAddress++;
 
 		if(_state.AdpcmLength > 0) {
@@ -129,6 +130,7 @@ void PceAdpcm::ProcessWriteOperation()
 {
 	_state.WriteClockCounter--;
 	if(_state.WriteClockCounter == 0) {
+		_emu->ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Write>(_state.WriteAddress, _state.WriteBuffer);
 		_ram[_state.WriteAddress] = _state.WriteBuffer;
 		_state.WriteAddress++;
 

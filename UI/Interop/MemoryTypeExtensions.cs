@@ -286,6 +286,21 @@ namespace Mesen.Interop
 			return true;
 		}
 
+		public static bool SupportsExecBreakpoints(this MemoryType memType)
+		{
+			if(memType.IsPpuMemory()) {
+				return false;
+			}
+
+			switch(memType) {
+				case MemoryType.PceAdpcmRam:
+					return false;
+			}
+
+			return true;
+		}
+
+
 		public static bool SupportsFreezeAddress(this MemoryType memType)
 		{
 			return memType.IsRelativeMemory() && !memType.IsPpuMemory();

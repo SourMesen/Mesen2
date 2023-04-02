@@ -54,7 +54,7 @@ namespace Mesen.Debugger.ViewModels
 			));
 
 			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.MemoryType).Subscribe(memoryType => {
-				CanExec = !memoryType.IsPpuMemory();
+				CanExec = memoryType.SupportsExecBreakpoints();
 			}));
 
 			AddDisposable(this.WhenAnyValue(x => x.Breakpoint.MemoryType).Subscribe(memoryType => {
