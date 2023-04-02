@@ -15,8 +15,8 @@ private:
 
 	uint32_t _stateBuffer = 0;
 	uint8_t _sensitivity = 0;
-	uint32_t upFlag = 0;
-	uint32_t leftFlag = 0;
+	uint8_t _upFlag = 0;
+	uint8_t _leftFlag = 0;
 	EmuSettings* _settings = nullptr;
 
 protected:
@@ -25,7 +25,10 @@ protected:
 	void Serialize(Serializer &s) override
 	{
 		BaseControlDevice::Serialize(s);
-		SV(_stateBuffer); SV(_sensitivity);
+		SV(_stateBuffer);
+		SV(_sensitivity);
+		SV(_upFlag);
+		SV(_leftFlag);
 	}
 
 	string GetKeyNames() override
@@ -80,9 +83,10 @@ public:
 		int32_t dx = mov.dx;
 		int32_t dy = mov.dy;
 
-		// These flags will maintain and report their last moved direction. It's a hardware quirk that the real mouse does. I don't know if any games used this information, or if it is helpful in any way whatsoever, but it is accurate. Cheers!
-		if(dx != 0) { leftFlag = dx < 0 ? 0x80 : 0; }
-		if(dy != 0) { upFlag = dy < 0 ? 0x80 : 0; }
+		//These flags will maintain and report their last moved direction.
+		//It's a hardware quirk that the real mouse does. (unknown if any games rely on this)
+		if(dx != 0) { _leftFlag = dx < 0 ? 0x80 : 0; }
+		if(dy != 0) { _upFlag = dy < 0 ? 0x80 : 0; }
 
 		dx = std::min(std::abs(dx), 127);
 		dy = std::min(std::abs(dy), 127);
@@ -94,8 +98,8 @@ public:
 
 		uint8_t byte1 = 0;
 		uint8_t byte2 = 0x01 | ((_sensitivity & 0x03) << 4) | (IsPressed(SnesMouse::Buttons::Left) ? 0x40 : 0) | (IsPressed(SnesMouse::Buttons::Right) ? 0x80 : 0);
-		uint8_t byte3 = dy | upFlag;
-		uint8_t byte4 = dx | leftFlag;
+		uint8_t byte3 = dy | _upFlag;
+		uint8_t byte4 = dx | _leftFlag;
 
 		_stateBuffer = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 	}
