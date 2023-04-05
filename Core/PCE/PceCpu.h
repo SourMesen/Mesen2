@@ -248,7 +248,7 @@ private:
 	uint8_t SP() { return _state.SP; }
 	void SetSP(uint8_t value) { _state.SP = value; }
 	uint8_t PS() { return _state.PS; }
-	void SetPS(uint8_t value) { _state.PS = value & 0xCF; }
+	void SetPS(uint8_t value) { _state.PS = value & 0xEF; }
 	uint16_t PC() { return _state.PC; }
 	void SetPC(uint16_t value) { _state.PC = value; }
 
