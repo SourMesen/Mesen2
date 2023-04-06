@@ -102,7 +102,7 @@ void GbSquareChannel::UpdateOutput()
 
 void GbSquareChannel::ClockEnvelope()
 {
-	if(_state.EnvTimer > 0 && !_state.EnvStopped) {
+	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0 && !_state.EnvStopped) {
 		_state.EnvTimer--;
 
 		if(_state.EnvTimer == 0) {
@@ -251,7 +251,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				}
 
 				//"Volume envelope timer is reloaded with period."
-				_state.EnvTimer = _state.EnvPeriod ? _state.EnvPeriod : 8;
+				_state.EnvTimer = _state.EnvPeriod;
 				_state.EnvStopped = false;
 
 				//"Channel volume is reloaded from NRx2."
