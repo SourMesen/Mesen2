@@ -119,7 +119,7 @@ namespace Mesen.Utilities
 				if(_mouseCaptured) {
 					if(AllowMouseCapture) {
 						GlobalMouse.SetCursorIcon(CursorIcon.Hidden);
-						PixelPoint rendererCenter = _renderer.PointToScreen(_renderer.Bounds.Center);
+						PixelPoint rendererCenter = _renderer.PointToScreen(new Point(rendererScreenRect.Width / 2, rendererScreenRect.Height / 2));
 						GlobalMouse.SetMousePosition((uint)rendererCenter.X, (uint)rendererCenter.Y);
 						_prevPosition = GlobalMouse.GetMousePosition(_renderer.Handle);
 					} else {
@@ -234,10 +234,10 @@ namespace Mesen.Utilities
 				EmuApi.DisplayMessage("Input", ResourceHelper.GetMessage("MouseModeEnabled"));
 				_mouseCaptured = true;
 				
-				PixelPoint topLeft = _renderer.PointToScreen(new Point(0, 0));
-				PixelPoint bottomRight = _renderer.PointToScreen(_renderer.Bounds.BottomRight);
-
-				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y, _renderer.Handle);
+				PixelPoint topLeft = _renderer.PointToScreen(new Point());
+				PixelRect rendererScreenRect = new PixelRect(topLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
+				
+				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, _renderer.Handle);
 			}
 		}
 
