@@ -607,10 +607,12 @@ void PceVdc::ProcessVramDmaTransfer()
 
 			if(_state.BlockLen == 0xFFFF) {
 				_vramDmaRunning = false;
+				_vramDmaPendingCycles = 0;
 				if(_state.VramVramIrqEnabled) {
 					_state.VramTransferDone = true;
 					_vpc->SetIrq(this);
 				}
+				break;
 			}
 		}
 
