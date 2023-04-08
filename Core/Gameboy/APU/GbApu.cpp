@@ -90,10 +90,10 @@ void GbApu::Run()
 			_noise->Exec(minTimer);
 
 			int16_t leftOutput = (
-				(_square1->GetOutput() & _state.EnableLeftSq1) * cfg.Square1Vol / 100 +
-				(_square2->GetOutput() & _state.EnableLeftSq2) * cfg.Square2Vol / 100 +
-				(_wave->GetOutput() & _state.EnableLeftWave) * cfg.WaveVol / 100 +
-				(_noise->GetOutput() & _state.EnableLeftNoise) * cfg.NoiseVol / 100
+				(_square1->GetOutput() & (int8_t)_state.EnableLeftSq1) * (int32_t)cfg.Square1Vol / 100 +
+				(_square2->GetOutput() & (int8_t)_state.EnableLeftSq2) * (int32_t)cfg.Square2Vol / 100 +
+				(_wave->GetOutput() & (int8_t)_state.EnableLeftWave) * (int32_t)cfg.WaveVol / 100 +
+				(_noise->GetOutput() & (int8_t)_state.EnableLeftNoise) * (int32_t)cfg.NoiseVol / 100
 				) * (_state.LeftVolume + 1) * 40;
 
 			if(_prevLeftOutput != leftOutput) {
@@ -102,10 +102,10 @@ void GbApu::Run()
 			}
 
 			int16_t rightOutput = (
-				(_square1->GetOutput() & _state.EnableRightSq1) * cfg.Square1Vol / 100 +
-				(_square2->GetOutput() & _state.EnableRightSq2) * cfg.Square2Vol / 100 +
-				(_wave->GetOutput() & _state.EnableRightWave) * cfg.WaveVol / 100 +
-				(_noise->GetOutput() & _state.EnableRightNoise) * cfg.NoiseVol / 100
+				(_square1->GetOutput() & (int8_t)_state.EnableRightSq1) * (int32_t)cfg.Square1Vol / 100 +
+				(_square2->GetOutput() & (int8_t)_state.EnableRightSq2) * (int32_t)cfg.Square2Vol / 100 +
+				(_wave->GetOutput() & (int8_t)_state.EnableRightWave) * (int32_t)cfg.WaveVol / 100 +
+				(_noise->GetOutput() & (int8_t)_state.EnableRightNoise) * (int32_t)cfg.NoiseVol / 100
 				) * (_state.RightVolume + 1) * 40;
 
 			if(_prevRightOutput != rightOutput) {
@@ -337,8 +337,8 @@ uint8_t GbApu::ReadCgbRegister(uint16_t addr)
 	Run();
 
 	switch(addr) {
-		case 0xFF76: return _square1->GetOutput() | (_square2->GetOutput() << 4);
-		case 0xFF77: return _wave->GetOutput() | (_noise->GetOutput() << 4);
+		case 0xFF76: return _square1->GetRawOutput() | (_square2->GetRawOutput() << 4);
+		case 0xFF77: return _wave->GetRawOutput() | (_noise->GetRawOutput() << 4);
 	}
 
 	//Should not be called

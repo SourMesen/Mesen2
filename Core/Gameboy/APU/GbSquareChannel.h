@@ -36,7 +36,8 @@ public:
 	void ClockLengthCounter();
 	void ClockEnvelope();
 
-	uint8_t GetOutput();
+	uint8_t GetRawOutput();
+	int8_t GetOutput();
 
 	void Exec(uint32_t clocksToRun);
 

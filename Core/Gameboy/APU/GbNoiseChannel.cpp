@@ -71,9 +71,24 @@ void GbNoiseChannel::ClockEnvelope()
 	}
 }
 
-uint8_t GbNoiseChannel::GetOutput()
+uint8_t GbNoiseChannel::GetRawOutput()
 {
 	return _state.Output;
+}
+
+int8_t GbNoiseChannel::GetOutput()
+{
+	//"Channel x’s DAC is enabled if and only if [NRx2] & $F8 != 0"
+	if(!_state.EnvRaiseVolume && _state.EnvVolume == 0) {
+		//"If a DAC is disabled, it fades to an analog value of 0"
+		return 0;
+	}
+
+	//"If a DAC is enabled, the digital range $0 to $F is linearly translated to the analog range -1 to 1, 
+	//in arbitrary units. Importantly, the slope is negative: “digital 0” maps to “analog 1”, not “analog -1”."	
+
+	//Return -7 to 7 "analog" range (higher digital value = lower analog value)
+	return 7 - (int8_t)_state.Output;
 }
 
 uint32_t GbNoiseChannel::GetPeriod()

@@ -24,7 +24,9 @@ public:
 	bool Enabled();
 	void Disable();
 	void ResetLengthCounter();
-	uint8_t GetOutput();
+	
+	uint8_t GetRawOutput();
+	int8_t GetOutput();
 
 	void ClockLengthCounter();
 

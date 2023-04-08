@@ -47,9 +47,24 @@ void GbWaveChannel::ClockLengthCounter()
 	}
 }
 
-uint8_t GbWaveChannel::GetOutput()
+uint8_t GbWaveChannel::GetRawOutput()
 {
 	return _state.Output;
+}
+
+int8_t GbWaveChannel::GetOutput()
+{
+	//"the exception is CH3, whose DAC is directly controlled by bit 7 of NR30 instead"
+	if(!_state.DacEnabled) {
+		//"If a DAC is disabled, it fades to an analog value of 0"
+		return 0;
+	}
+
+	//"If a DAC is enabled, the digital range $0 to $F is linearly translated to the analog range -1 to 1, 
+	//in arbitrary units. Importantly, the slope is negative: “digital 0” maps to “analog 1”, not “analog -1”."	
+
+	//Return -7 to 7 "analog" range (higher digital value = lower analog value)
+	return 7 - (int8_t)_state.Output;
 }
 
 void GbWaveChannel::UpdateOutput()
