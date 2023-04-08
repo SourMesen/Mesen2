@@ -77,7 +77,7 @@ namespace Mesen.Debugger.Views
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditSelectedCode),
 					IsEnabled = () => CpuType.SupportsAssembler() && EmuApi.IsPaused(),
 					OnClick = () => {
-						string code = Model.GetSelection(false, false, true, false, out int byteCount);
+						string code = Model.GetSelection(false, false, true, false, out int byteCount, true);
 						AssemblerWindow.EditCode(CpuType, Model.SelectionStart, code, byteCount);
 					}
 				},

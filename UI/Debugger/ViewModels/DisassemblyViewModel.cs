@@ -284,11 +284,11 @@ namespace Mesen.Debugger.ViewModels
 		public void CopySelection()
 		{
 			DebuggerConfig cfg = Config.Debugger;
-			string code = GetSelection(cfg.CopyAddresses, cfg.CopyByteCode, cfg.CopyComments, cfg.CopyBlockHeaders, out _);
+			string code = GetSelection(cfg.CopyAddresses, cfg.CopyByteCode, cfg.CopyComments, cfg.CopyBlockHeaders, out _, false);
 			Application.Current?.Clipboard?.SetTextAsync(code);
 		}
 
-		public string GetSelection(bool getAddresses, bool getByteCode, bool getComments, bool getHeaders, out int byteCount)
+		public string GetSelection(bool getAddresses, bool getByteCode, bool getComments, bool getHeaders, out int byteCount, bool skipGeneratedJmpSubLabels)
 		{
 			ICodeDataProvider dp = DataProvider;
 			
@@ -348,8 +348,11 @@ namespace Mesen.Debugger.ViewModels
 						line = line + lineData.Comment;
 					}
 
+					//Skip lines that contain a jump/sub "label" (these aren't 
+					bool skipLine = skipGeneratedJmpSubLabels && lineData.Flags.HasFlag(LineFlags.Label) && lineData.Text.StartsWith("$");
+
 					string result = line.TrimEnd();
-					if(result.Length > 0) {
+					if(!skipLine && result.Length > 0) {
 						sb.AppendLine(result);
 					}
 
