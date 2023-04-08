@@ -35,8 +35,10 @@ private:
 
 	//To finetune hue, you would have to recalculate sinetable[]. (Coarse changes can be made with Phase0.)
 	int8_t _sinetable[27]; // 8*sin(x*2pi/12)
-	int8_t _signalLow[0x40];
-	int8_t _signalHigh[0x40];
+	int8_t _signalLow[2][0x40];
+	int8_t _signalHigh[2][0x40];
+
+	uint32_t _brightness = 0;
 
 	void RecursiveBlend(int iterationCount, uint64_t *output, uint64_t *currentLine, uint64_t *nextLine, int pixelsPerCycle, bool verticalBlend);
 	
