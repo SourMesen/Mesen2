@@ -773,9 +773,9 @@ namespace Mesen.Debugger.ViewModels
 						ActionType = ActionType.ImportLabels,
 						Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ImportLabels),
 						OnClick = async () => {
-							string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.MesenLabelExt);
+							string? filename = await FileDialogHelper.OpenFile(null, wnd, FileDialogHelper.LabelFileExt);
 							if(filename != null) {
-								DebugWorkspaceManager.LoadMesenLabelFile(filename, true);
+								DebugWorkspaceManager.LoadSupportedFile(filename, true);
 							}
 						}
 					},

@@ -15,6 +15,7 @@ namespace Mesen.Utilities
 	{
 		public const string RomExt = "[[ROMFILES]]";
 		public const string FirmwareExt = "[[FIRMWAREFILES]]";
+		public const string LabelFileExt = "[[LABELFILES]]";
 		public const string MesenMovieExt = "mmo";
 		public const string TblExt = "tbl";
 		public const string PaletteExt = "pal";
@@ -54,6 +55,8 @@ namespace Mesen.Utilities
 						filter.Add(new FilePickerFileType("PC Engine ROM files") { Patterns = new List<string>() { "*.pce", "*.sgx", "*.cue", ".hes" } });
 					} else if(ext == FileDialogHelper.FirmwareExt) {
 						filter.Add(new FilePickerFileType("All firmware files") { Patterns = new List<string>() { "*.sfc", "*.pce", "*.nes", "*.bin", "*.rom" } });
+					} else if(ext == FileDialogHelper.LabelFileExt) {
+						filter.Add(new FilePickerFileType("All label files") { Patterns = new List<string>() { "*.mlb", "*.sym", "*.dbg", "*.fns" } });
 					} else {
 						filter.Add(new FilePickerFileType(ext.ToUpper() + " files") { Patterns = new List<string>() { "*." + ext } });
 					}
