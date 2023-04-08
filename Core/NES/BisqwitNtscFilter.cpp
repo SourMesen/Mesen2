@@ -37,8 +37,8 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 				q = signalLumaLow[0][1];
 			}
 
-			_signalLow[h][i] = m;
-			_signalHigh[h][i] = q;
+			_signalLow[(h ? 0x40 : 0) | i] = m;
+			_signalHigh[(h ? 0x40 : 0) | i] = q;
 		}
 	}
 
@@ -156,42 +156,38 @@ void BisqwitNtscFilter::RecursiveBlend(int iterationCount, uint64_t *output, uin
 
 void BisqwitNtscFilter::GenerateNtscSignal(int8_t *ntscSignal, int &phase, int rowNumber)
 {
+	static constexpr uint16_t emphasisLut[8] = {
+		//R: 0b000000111111, G: 0b001111110000, B: 0b111100000011
+		0,              0b000000111111, 0b001111110000, 0b001111111111,
+		0b111100000011, 0b111100111111, 0b111111110011, 0b111111111111
+	};
+
 	for(int x = 0; x < 256; x++) {
-		uint16_t pixel_color = _ppuOutputBuffer[(rowNumber << 8) | x];
+		uint16_t ppuData = _ppuOutputBuffer[(rowNumber << 8) | x];
+		
+		uint16_t pixelColor = ppuData & 0x3F;
+		uint8_t emphasis = ppuData >> 6;
+		uint8_t hue = ppuData & 0x0F;
 
-		int8_t emphasis = pixel_color >> 6;
-		int8_t color = pixel_color & 0x3F;
-		int8_t hue = color & 0x0F;
-
-		uint16_t emphasis_wave = 0;
+		uint16_t emphasisWave = 0;
 		if(emphasis) {
-			if(emphasis & 0b001)		// tint R; aligned to color phase C
-				emphasis_wave |= 0b000000111111;
-			if(emphasis & 0b010)		// tint G; aligned to color phase 4
-				emphasis_wave |= 0b001111110000;
-			if(emphasis & 0b100)		// tint B; aligned to color phase 8
-				emphasis_wave |= 0b111100000011;
 			// phase shift 12-bit waveform relative to pixel hue
-			emphasis_wave = ((emphasis_wave >> (hue % 12)) | (emphasis_wave << (12 - (hue % 12)))) & 0xFFFF;
+			emphasisWave = ((emphasisLut[emphasis] >> (hue % 12)) | (emphasisLut[emphasis] << (12 - (hue % 12)))) & 0xFFFF;
 		}
 
 		uint16_t phaseBitmask = _bitmaskLut[std::abs(phase - hue) % 12];
-		bool attenuate = 0;
-
-		int8_t voltage;
 		for(int j = 0; j < _signalsPerPixel; j++) {
 			phaseBitmask <<= 1;
-			attenuate = (phaseBitmask & emphasis_wave);
-
-			voltage = _signalHigh[attenuate][color];
+			
+			uint8_t color = pixelColor | ((phaseBitmask & emphasisWave) ? 0x40 : 0);
+			int8_t voltage = _signalHigh[color];
 
 			// 12 phases done, wrap back to beginning
 			if(phaseBitmask >= (1 << 12)) {
 				phaseBitmask = 1;
-			} else {
+			} else if(phaseBitmask >= (1 << 6)) {
 				// 6 out of 12 cycles
-				if(phaseBitmask >= (1 << 6))
-					voltage = _signalLow[attenuate][color];
+				voltage = _signalLow[color];
 			}
 			ntscSignal[(x << 3) | j] = voltage;
 		}
