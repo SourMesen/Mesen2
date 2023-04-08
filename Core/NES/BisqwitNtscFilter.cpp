@@ -15,22 +15,31 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 	_stopThread = false;
 	_workDone = false;
 
-	const int8_t signalLumaLow[4] = { -29, -15, 22, 71 };
-	const int8_t signalLumaHigh[4] = { 32, 66, 105, 105 };
+	const int8_t signalLumaLow[2][4] = { { -29, -15, 22, 71 }, { -38, -28, -1, 34 } };
+	const int8_t signalLumaHigh[2][4] = { { 32, 66, 105, 105 }, { 6, 31, 58, 58 } };
 
 	//Precalculate the low and high signal chosen for each 64 base colors
-	for(int i = 0; i <= 0x3F; i++) {
-		int r = (i & 0x0F) >= 0x0E ? 0x1D : i;
+	//with their respective attenuated values
+	for(int h = 0; h <= 1; h++) {
+		for(int i = 0; i <= 0x3F; i++) {
 
-		int m = signalLumaLow[r / 0x10];
-		int q = signalLumaHigh[r / 0x10];
-		if((r & 0x0F) == 13) {
-			q = m;
-		} else if((r & 0x0F) == 0) { 
-			m = q;
+			int m = signalLumaLow[h][i / 0x10];
+			int q = signalLumaHigh[h][i / 0x10];
+
+			if((i & 0x0F) == 0x0D) {
+				q = m;
+			} else if((i & 0x0F) == 0) {
+				m = q;
+			} else if((i & 0x0F) >= 0x0E) {
+				// colors $xE and $xF are not affected by emphasis
+				// https://forums.nesdev.org/viewtopic.php?p=160669#p160669
+				m = signalLumaLow[0][1];
+				q = signalLumaLow[0][1];
+			}
+
+			_signalLow[(h ? 0x40 : 0) | i] = m;
+			_signalHigh[(h ? 0x40 : 0) | i] = q;
 		}
-		_signalLow[i] = m;
-		_signalHigh[i] = q;
 	}
 
 	_extraThread = std::thread([=]() {
@@ -102,6 +111,9 @@ void BisqwitNtscFilter::OnBeforeApplyFilter()
 	const double pi = std::atan(1.0) * 4;
 	int contrast = (int)((cfg.Contrast + 1.0) * (cfg.Contrast + 1.0) * 167941);
 	int saturation = (int)((cfg.Saturation + 1.0) * (cfg.Saturation + 1.0) * 144044);
+
+	_brightness = (int)(cfg.Brightness * 750);
+
 	for(int i = 0; i < 27; i++) {
 		_sinetable[i] = (int8_t)(8 * std::sin(i * 2 * pi / 12 + cfg.Hue * pi));
 	}
@@ -144,31 +156,39 @@ void BisqwitNtscFilter::RecursiveBlend(int iterationCount, uint64_t *output, uin
 
 void BisqwitNtscFilter::GenerateNtscSignal(int8_t *ntscSignal, int &phase, int rowNumber)
 {
+	static constexpr uint16_t emphasisLut[8] = {
+		//R: 0b000000111111, G: 0b001111110000, B: 0b111100000011
+		0,              0b000000111111, 0b001111110000, 0b001111111111,
+		0b111100000011, 0b111100111111, 0b111111110011, 0b111111111111
+	};
+
 	for(int x = 0; x < 256; x++) {
-		uint16_t color = _ppuOutputBuffer[(rowNumber << 8) | x];
+		uint16_t ppuData = _ppuOutputBuffer[(rowNumber << 8) | x];
+		
+		uint16_t pixelColor = ppuData & 0x3F;
+		uint8_t emphasis = ppuData >> 6;
+		uint8_t hue = ppuData & 0x0F;
 
-		int8_t low = _signalLow[color & 0x3F];
-		int8_t high = _signalHigh[color & 0x3F];
-		int8_t emphasis = color >> 6;
+		uint16_t emphasisWave = 0;
+		if(emphasis) {
+			// phase shift 12-bit waveform relative to pixel hue
+			emphasisWave = ((emphasisLut[emphasis] >> (hue % 12)) | (emphasisLut[emphasis] << (12 - (hue % 12)))) & 0xFFFF;
+		}
 
-		uint16_t phaseBitmask = _bitmaskLut[std::abs(phase - (color & 0x0F)) % 12];
-
-		uint8_t voltage;
-		for(int j = 0; j < 8; j++) {
+		uint16_t phaseBitmask = _bitmaskLut[std::abs(phase - hue) % 12];
+		for(int j = 0; j < _signalsPerPixel; j++) {
 			phaseBitmask <<= 1;
-			voltage = high;
-			if(phaseBitmask >= 0x40) {
-				if(phaseBitmask == 0x1000) {
-					phaseBitmask = 1;
-				} else {
-					voltage = low;
-				}
-			}
+			
+			uint8_t color = pixelColor | ((phaseBitmask & emphasisWave) ? 0x40 : 0);
+			int8_t voltage = _signalHigh[color];
 
-			if(phaseBitmask & emphasis) {
-				voltage -= voltage / 4;
+			// 12 phases done, wrap back to beginning
+			if(phaseBitmask >= (1 << 12)) {
+				phaseBitmask = 1;
+			} else if(phaseBitmask >= (1 << 6)) {
+				// 6 out of 12 cycles
+				voltage = _signalLow[color];
 			}
-
 			ntscSignal[(x << 3) | j] = voltage;
 		}
 
@@ -250,8 +270,7 @@ void BisqwitNtscFilter::NtscDecodeLine(int width, const int8_t* signal, uint32_t
 	auto Cos = [=](int pos) -> char { return _sinetable[(pos + 36) % 12 + phase0]; };
 	auto Sin = [=](int pos) -> char { return _sinetable[(pos + 36) % 12 + 3 + phase0]; };
 
-	int brightness = (int)(_emu->GetSettings()->GetVideoConfig().Brightness * 750);
-	int ysum = brightness, isum = 0, qsum = 0;
+	int ysum = _brightness, isum = 0, qsum = 0;
 	int leftOverscan = GetOverscan().Left * 8;
 	int rightOverscan = width - GetOverscan().Right * 8;
 
