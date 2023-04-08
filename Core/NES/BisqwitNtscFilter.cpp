@@ -157,30 +157,25 @@ void BisqwitNtscFilter::RecursiveBlend(int iterationCount, uint64_t *output, uin
 void BisqwitNtscFilter::GenerateNtscSignal(int8_t *ntscSignal, int &phase, int rowNumber)
 {
 	for(int x = 0; x < 256; x++) {
-		uint16_t pixel_color = _ppuOutputBuffer[(rowNumber << 8) | (x < 0 ? 0 : (x >= 256 ? 255 : x))];
+		uint16_t pixel_color = _ppuOutputBuffer[(rowNumber << 8) | x];
 
 		int8_t emphasis = pixel_color >> 6;
 		int8_t color = pixel_color & 0x3F;
-
-		// phase shift 12-bit waveform 
-		auto phase_shift_up = [=](uint16_t value, uint16_t amt) {
-			amt = amt % 12;
-			uint16_t uint12_value = value & 0xFFF;
-			uint32_t result = (((uint12_value << 12) | uint12_value) & 0xFFFFFFFF);
-			return uint16_t((result >> (amt % 12)) & 0xFFFF);
-		};
+		int8_t hue = color & 0x0F;
 
 		uint16_t emphasis_wave = 0;
-		if(emphasis & 0b001)		// tint R; color phase C
-			emphasis_wave |= 0b000000111111;
-		if(emphasis & 0b010)		// tint G; color phase 4
-			emphasis_wave |= 0b001111110000;
-		if(emphasis & 0b100)		// tint B; color phase 8
-			emphasis_wave |= 0b111100000011;
-		if(emphasis)
-			emphasis_wave = phase_shift_up(emphasis_wave, (color & 0x0F));
+		if(emphasis) {
+			if(emphasis & 0b001)		// tint R; aligned to color phase C
+				emphasis_wave |= 0b000000111111;
+			if(emphasis & 0b010)		// tint G; aligned to color phase 4
+				emphasis_wave |= 0b001111110000;
+			if(emphasis & 0b100)		// tint B; aligned to color phase 8
+				emphasis_wave |= 0b111100000011;
+			// phase shift 12-bit waveform relative to pixel hue
+			emphasis_wave = ((emphasis_wave >> (hue % 12)) | (emphasis_wave << (12 - (hue % 12)))) & 0xFFFF;
+		}
 
-		uint16_t phaseBitmask = _bitmaskLut[std::abs(phase - (color & 0x0F)) % 12];
+		uint16_t phaseBitmask = _bitmaskLut[std::abs(phase - hue) % 12];
 		bool attenuate = 0;
 
 		int8_t voltage;
