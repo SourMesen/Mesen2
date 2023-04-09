@@ -90,6 +90,7 @@ void GbPpu::Exec()
 		if(_gameboy->GetApuCycleCount() - _lastFrameTime > 70224) {
 			//More than a full frame's worth of time has passed since the last frame, send another blank frame
 			_lastFrameTime = _gameboy->GetApuCycleCount();
+			_isFirstFrame = true;
 			SendFrame();
 		}
 		return;
@@ -659,14 +660,8 @@ void GbPpu::SendFrame()
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
 	if(_isFirstFrame) {
-		if(!_state.CgbEnabled) {
-			//Send blank frame on the first frame after enabling LCD (DMG only)
-			std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
-		} else {
-			//CGB repeats the previous frame?
-			uint16_t* src = _currentBuffer == _outputBuffers[0] ? _outputBuffers[1] : _outputBuffers[0];
-			std::copy(src, src + GbConstants::PixelCount, _currentBuffer);
-		}
+		//Send blank frame on the first frame after enabling LCD
+		std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
 	}
 	_isFirstFrame = false;
 
