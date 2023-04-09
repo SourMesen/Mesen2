@@ -38,12 +38,11 @@ bool GbCpu::IsHalted()
 
 void GbCpu::Exec()
 {
+#ifndef DUMMYCPU
 	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
 	if(irqVector) {
 		if(_state.IME) {
-#ifndef DUMMYCPU
 			uint16_t oldPc = _state.PC;
-#endif
 			IncCycleCount();
 			IncCycleCount();
 
@@ -60,9 +59,7 @@ void GbCpu::Exec()
 					break;
 
 				case GbIrqSource::VerticalBlank:
-#ifndef DUMMYCPU
 					_gameboy->RefreshRamCheats();
-#endif
 					_state.PC = 0x40;
 					break;
 
@@ -73,28 +70,25 @@ void GbCpu::Exec()
 			}
 			if(irqVector) {
 				//Only clear IRQ bit if an IRQ was processed
-#ifndef DUMMYCPU
 				_memoryManager->ClearIrqRequest(irqVector);
-#endif
 			}
 
 			_state.IME = false;
-#ifndef DUMMYCPU
 			_emu->ProcessInterrupt<CpuType::Gameboy>(oldPc, _state.PC, false);
-#endif
 		}
 		_state.HaltCounter = 0;
 	}
+#endif
 
 	if(_state.HaltCounter) {
 #ifndef DUMMYCPU
 		_emu->ProcessHaltedCpu<CpuType::Gameboy>();
-#endif
 		IncCycleCount();
 
 		if(_state.HaltCounter > 1) {
 			ProcessCgbSpeedSwitch();
 		}
+#endif
 		return;
 	}
 
