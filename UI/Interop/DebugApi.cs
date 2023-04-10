@@ -256,6 +256,12 @@ namespace Mesen.Interop
 			return buffer;
 		}
 
+		public static void GetMemoryValues(MemoryType type, UInt32 start, UInt32 end, ref byte[] dst)
+		{
+			Array.Resize(ref dst, (int)(end - start + 1));
+			DebugApi.GetMemoryValuesWrapper(type, start, end, dst);
+		}
+
 		[DllImport(DllPath, EntryPoint = "GetMemoryState")] private static extern void GetMemoryStateWrapper(MemoryType type, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryState(MemoryType type)
 		{
@@ -337,7 +343,7 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] private static extern void GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, IntPtr state, byte[] vram, byte[] spriteRam, UInt32[] palette, IntPtr sprites);
-		public unsafe static DebugSpriteInfo[] GetSpriteList(CpuType cpuType, GetSpritePreviewOptions options, BaseState state, byte[] vram, byte[] spriteRam, UInt32[] palette)
+		public unsafe static void GetSpriteList(ref DebugSpriteInfo[] result, CpuType cpuType, GetSpritePreviewOptions options, BaseState state, byte[] vram, byte[] spriteRam, UInt32[] palette)
 		{
 			Debug.Assert(state.GetType().IsValueType);
 			Debug.Assert(IsValidPpuState(ref state, cpuType));
@@ -345,11 +351,14 @@ namespace Mesen.Interop
 			byte* statePtr = stackalloc byte[Marshal.SizeOf(state.GetType())];
 			Marshal.StructureToPtr(state, (IntPtr)statePtr, false);
 
-			DebugSpriteInfo[] sprites = new DebugSpriteInfo[GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount];
-			fixed(DebugSpriteInfo* spritesPtr = sprites) {
+			int count = (int)GetSpritePreviewInfo(cpuType, options, (IntPtr)statePtr).SpriteCount;
+			if(count != result.Length) {
+				Array.Resize(ref result, count);
+			}
+
+			fixed(DebugSpriteInfo* spritesPtr = result) {
 				DebugApi.GetSpriteList(cpuType, options, (IntPtr)statePtr, vram, spriteRam, palette, (IntPtr)spritesPtr);
 			}
-			return sprites;
 		}
 
 		[DllImport(DllPath)] public static extern DebugPaletteInfo GetPaletteInfo(CpuType cpuType, GetPaletteInfoOptions options = new());
