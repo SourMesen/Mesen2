@@ -119,8 +119,7 @@ namespace Mesen.Utilities
 				if(_mouseCaptured) {
 					if(AllowMouseCapture) {
 						GlobalMouse.SetCursorIcon(CursorIcon.Hidden);
-						PixelPoint rendererCenter = _renderer.PointToScreen(new Point(rendererScreenRect.Width / 2, rendererScreenRect.Height / 2));
-						GlobalMouse.SetMousePosition((uint)rendererCenter.X, (uint)rendererCenter.Y);
+						GlobalMouse.SetMousePosition((uint)(rendererTopLeft.X + rendererScreenRect.Width / 2), (uint)(rendererTopLeft.Y + rendererScreenRect.Height / 2));
 						_prevPosition = GlobalMouse.GetMousePosition(_renderer.Handle);
 					} else {
 						ReleaseMouse();
