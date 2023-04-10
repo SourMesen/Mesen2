@@ -77,7 +77,11 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public SortState SortState { get; set; } = new();
 		public List<int> ColumnWidths { get; } = ConfigManager.Config.Debug.Profiler.ColumnWidths;
 
+		private object _updateLock = new();		
+		private int _dataSize = 0;
+		private ProfiledFunction[] _coreProfilerData = new ProfiledFunction[100000];
 		private ProfiledFunction[] _profilerData = Array.Empty<ProfiledFunction>();
+
 		private UInt64 _totalCycles;
 
 		public ProfilerTab()
@@ -104,11 +108,18 @@ namespace Mesen.Debugger.ViewModels
 
 		public void RefreshData()
 		{
-			_profilerData = DebugApi.GetProfilerData(CpuType);
+			lock(_updateLock) {
+				_dataSize = DebugApi.GetProfilerData(CpuType, ref _coreProfilerData);
+			}
 		}
 
 		public void RefreshGrid()
 		{
+			lock(_updateLock) {
+				Array.Resize(ref _profilerData, _dataSize);
+				Array.Copy(_coreProfilerData, _profilerData, _dataSize);
+			}
+
 			Sort();
 
 			UInt64 totalCycles = 0;

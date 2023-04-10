@@ -411,18 +411,13 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void ResetProfiler(CpuType type);
 		[DllImport(DllPath, EntryPoint = "GetProfilerData")] private static extern void GetProfilerDataWrapper(CpuType type, IntPtr profilerData, ref UInt32 functionCount);
-		public static unsafe ProfiledFunction[] GetProfilerData(CpuType type)
+		public static unsafe int GetProfilerData(CpuType type, ref ProfiledFunction[] profilerData)
 		{
-			ProfiledFunction[] profilerData = new ProfiledFunction[100000];
 			UInt32 functionCount = 0;
-
 			fixed(ProfiledFunction* ptr = profilerData) {
 				DebugApi.GetProfilerDataWrapper(type, (IntPtr)ptr, ref functionCount);
 			}
-
-			Array.Resize(ref profilerData, (int)functionCount);
-
-			return profilerData;
+			return (int)functionCount;
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetTokenList")] private static extern void GetTokenListWrapper(CpuType cpuType, IntPtr tokenListBuffer);
