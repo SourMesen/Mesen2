@@ -89,6 +89,8 @@ void GbApu::Run()
 			_wave->Exec(minTimer);
 			_noise->Exec(minTimer);
 
+			_clockCounter += minTimer;
+
 			int16_t leftOutput = (
 				(_square1->GetOutput() & (int8_t)_state.EnableLeftSq1) * (int32_t)cfg.Square1Vol / 100 +
 				(_square2->GetOutput() & (int8_t)_state.EnableLeftSq2) * (int32_t)cfg.Square2Vol / 100 +
@@ -112,8 +114,6 @@ void GbApu::Run()
 				blip_add_delta(_rightChannel, _clockCounter, rightOutput - _prevRightOutput);
 				_prevRightOutput = rightOutput;
 			}
-
-			_clockCounter += minTimer;
 		}
 	}
 

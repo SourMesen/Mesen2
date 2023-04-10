@@ -9,7 +9,7 @@ class GbApu;
 class GbSquareChannel final : public ISerializable
 {
 private:
-	const uint8_t _dutySequences[4][8] = {
+	static constexpr uint8_t _dutySequences[4][8] = {
 		{ 0, 0, 0, 0, 0, 0, 1, 0 },
 		{ 0, 0, 0, 0, 0, 0, 1, 1 },
 		{ 0, 0, 0, 0, 1, 1, 1, 1 },
