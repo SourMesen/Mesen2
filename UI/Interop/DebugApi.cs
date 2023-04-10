@@ -264,6 +264,13 @@ namespace Mesen.Interop
 			return buffer;
 		}
 
+		public static void GetMemoryState(MemoryType type, ref byte[] dst)
+		{
+			int length = DebugApi.GetMemorySize(type);
+			Array.Resize(ref dst, length);
+			DebugApi.GetMemoryStateWrapper(type, dst);
+		}
+
 		[DllImport(DllPath)] private static extern DebugTilemapInfo GetTilemap(CpuType cpuType, InteropGetTilemapOptions options, IntPtr state, byte[] vram, UInt32[] palette, IntPtr outputBuffer);
 		public unsafe static DebugTilemapInfo GetTilemap(CpuType cpuType, GetTilemapOptions options, BaseState state, byte[] vram, UInt32[] palette, IntPtr outputBuffer)
 		{
