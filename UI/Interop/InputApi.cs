@@ -35,14 +35,11 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetPressedKeys")] private static extern void GetPressedKeysWrapper(IntPtr keyBuffer);
-		public static List<UInt16> GetPressedKeys()
+		public static unsafe List<UInt16> GetPressedKeys()
 		{
 			UInt16[] keyBuffer = new UInt16[3];
-			GCHandle handle = GCHandle.Alloc(keyBuffer, GCHandleType.Pinned);
-			try {
-				InputApi.GetPressedKeysWrapper(handle.AddrOfPinnedObject());
-			} finally {
-				handle.Free();
+			fixed(UInt16* ptr = keyBuffer) {
+				InputApi.GetPressedKeysWrapper((IntPtr)ptr);
 			}
 
 			List<UInt16> keys = new List<UInt16>();

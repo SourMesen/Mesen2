@@ -30,14 +30,14 @@ namespace Mesen.Interop
 		public const int TraceLogBufferSize = 30000;
 		[DllImport(DllPath)] public static extern void ClearExecutionTrace();
 		[DllImport(DllPath, EntryPoint = "GetExecutionTrace")] private static extern UInt32 GetExecutionTraceWrapper(IntPtr output, UInt32 startOffset, UInt32 maxRowCount);
-		public static TraceRow[] GetExecutionTrace(UInt32 startOffset, UInt32 maxRowCount)
+		public static unsafe TraceRow[] GetExecutionTrace(UInt32 startOffset, UInt32 maxRowCount)
 		{
 			TraceRow[] rows = new TraceRow[maxRowCount];
 
-			GCHandle handle = GCHandle.Alloc(rows, GCHandleType.Pinned);
-			IntPtr ptr = handle.AddrOfPinnedObject();
-			UInt32 rowCount = DebugApi.GetExecutionTraceWrapper(ptr, startOffset, maxRowCount);
-			handle.Free();
+			UInt32 rowCount;
+			fixed(TraceRow* ptr = rows) {
+				rowCount = DebugApi.GetExecutionTraceWrapper((IntPtr)ptr, startOffset, maxRowCount);
+			}
 
 			Array.Resize(ref rows, (int)rowCount);
 
@@ -411,15 +411,14 @@ namespace Mesen.Interop
 
 		[DllImport(DllPath)] public static extern void ResetProfiler(CpuType type);
 		[DllImport(DllPath, EntryPoint = "GetProfilerData")] private static extern void GetProfilerDataWrapper(CpuType type, IntPtr profilerData, ref UInt32 functionCount);
-		public static ProfiledFunction[] GetProfilerData(CpuType type)
+		public static unsafe ProfiledFunction[] GetProfilerData(CpuType type)
 		{
 			ProfiledFunction[] profilerData = new ProfiledFunction[100000];
 			UInt32 functionCount = 0;
 
-			GCHandle handle = GCHandle.Alloc(profilerData, GCHandleType.Pinned);
-			IntPtr ptr = handle.AddrOfPinnedObject();
-			DebugApi.GetProfilerDataWrapper(type, ptr, ref functionCount);
-			handle.Free();
+			fixed(ProfiledFunction* ptr = profilerData) {
+				DebugApi.GetProfilerDataWrapper(type, (IntPtr)ptr, ref functionCount);
+			}
 
 			Array.Resize(ref profilerData, (int)functionCount);
 
@@ -427,14 +426,13 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetTokenList")] private static extern void GetTokenListWrapper(CpuType cpuType, IntPtr tokenListBuffer);
-		public static string[] GetTokenList(CpuType type)
+		public static unsafe string[] GetTokenList(CpuType type)
 		{
 			byte[] tokenListBuffer = new byte[1000];
 
-			GCHandle handle = GCHandle.Alloc(tokenListBuffer, GCHandleType.Pinned);
-			IntPtr ptr = handle.AddrOfPinnedObject();
-			DebugApi.GetTokenListWrapper(type, ptr);
-			handle.Free();
+			fixed(byte* ptr = tokenListBuffer) {
+				DebugApi.GetTokenListWrapper(type, (IntPtr)ptr);
+			}
 
 			int index = Array.IndexOf<byte>(tokenListBuffer, 0);
 			if(index >= 0) {
@@ -445,15 +443,14 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath)] public static extern void ResetMemoryAccessCounts();
-		public static void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counts)
+		public static unsafe void GetMemoryAccessCounts(MemoryType type, ref AddressCounters[] counts)
 		{
 			int size = DebugApi.GetMemorySize(type);
 			Array.Resize(ref counts, size);
 
-			GCHandle handle = GCHandle.Alloc(counts, GCHandleType.Pinned);
-			IntPtr ptr = handle.AddrOfPinnedObject();
-			DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, ptr);
-			handle.Free();
+			fixed(AddressCounters* ptr = counts) {
+				DebugApi.GetMemoryAccessCountsWrapper(0, (uint)size, type, (IntPtr)ptr);
+			}
 		}
 
 		public static AddressCounters[] GetMemoryAccessCounts(MemoryType type)
@@ -465,14 +462,13 @@ namespace Mesen.Interop
 		}
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryAccessCounts")] private static extern void GetMemoryAccessCountsWrapper(UInt32 offset, UInt32 length, MemoryType type, IntPtr counts);
-		public static AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, MemoryType type)
+		public static unsafe AddressCounters[] GetMemoryAccessCounts(UInt32 offset, UInt32 length, MemoryType type)
 		{
 			AddressCounters[] counts = new AddressCounters[length];
 
-			GCHandle handle = GCHandle.Alloc(counts, GCHandleType.Pinned);
-			IntPtr ptr = handle.AddrOfPinnedObject();
-			DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, ptr);
-			handle.Free();
+			fixed(AddressCounters* ptr = counts) {
+				DebugApi.GetMemoryAccessCountsWrapper(offset, length, type, (IntPtr)ptr);
+			}
 
 			return counts;
 		}
