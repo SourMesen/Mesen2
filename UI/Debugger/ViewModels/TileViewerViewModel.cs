@@ -68,6 +68,8 @@ namespace Mesen.Debugger.ViewModels
 		public int RowCount => Math.Clamp(Config.RowCount, 4, 256);
 
 		private BaseState? _ppuState;
+		private object _updateLock = new();
+		private byte[] _coreSourceData = Array.Empty<byte>();
 		private byte[] _sourceData = Array.Empty<byte>();
 
 		[Obsolete("For designer only")]
@@ -417,7 +419,10 @@ namespace Mesen.Debugger.ViewModels
 			_ppuState = DebugApi.GetPpuState(CpuType);
 			
 			RefreshPalette();
-			_sourceData = DebugApi.GetMemoryState(Config.Source);
+
+			lock(_updateLock) {
+				DebugApi.GetMemoryState(Config.Source, ref _coreSourceData);
+			}
 
 			RefreshTab();
 		}
@@ -442,6 +447,11 @@ namespace Mesen.Debugger.ViewModels
 		{
 			Dispatcher.UIThread.Post(() => {
 				InitBitmap();
+				
+				lock(_updateLock) {
+					Array.Resize(ref _sourceData, _coreSourceData.Length);
+					Array.Copy(_coreSourceData, _sourceData, _coreSourceData.Length);
+				}
 
 				using(var framebuffer = ViewerBitmap.Lock()) {
 					DebugApi.GetTileView(CpuType, GetOptions(), _sourceData, _sourceData.Length, PaletteColors, framebuffer.FrameBuffer.Address);
