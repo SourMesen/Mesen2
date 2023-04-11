@@ -25,9 +25,11 @@ PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(d
 	//Initialize save ram
 	_saveRamSize = 0x2000;
 	_saveRam = new uint8_t[_saveRamSize];
-	_console->InitializeRam(_saveRam, _saveRamSize);
 	_emu->RegisterMemory(MemoryType::PceSaveRam, _saveRam, _saveRamSize);
 
+	//Init the ram to be identical to the state the CD-ROM BIOS leaves it in when clearing all data
+	//Some games don't like having random data (e.g Far East of Eden), even if the first 8 bytes are initialized.
+	memset(_saveRam, 0, _saveRamSize);
 	_saveRam[0] = 0x48;
 	_saveRam[1] = 0x55;
 	_saveRam[2] = 0x42;
