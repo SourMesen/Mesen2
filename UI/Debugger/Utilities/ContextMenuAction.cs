@@ -154,7 +154,13 @@ namespace Mesen.Debugger.Utilities
 						} else {
 							try {
 								//TODOv2 use Post, otherwise the action stays permanently disabled (bug?)
-								Dispatcher.UIThread.Post(() => { value(); });
+								Dispatcher.UIThread.Post(() => {
+									try {
+										value();
+									} catch(Exception ex) {
+										MesenMsgBox.ShowException(ex);
+									}
+								});
 							} catch(Exception ex) {
 								Dispatcher.UIThread.Post(() => MesenMsgBox.ShowException(ex));
 							}

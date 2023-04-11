@@ -37,12 +37,12 @@ namespace Mesen.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(true);
-
 			MovieRecordConfigViewModel model = (MovieRecordConfigViewModel)DataContext!;
 			model.SaveConfig();
 
 			RecordApi.MovieRecord(new RecordMovieOptions(model.SavePath, model.Config.Author, model.Config.Description, model.Config.RecordFrom));
+
+			Close(true);
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

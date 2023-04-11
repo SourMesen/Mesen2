@@ -40,8 +40,6 @@ namespace Mesen.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(true);
-
 			VideoRecordConfigViewModel model = (VideoRecordConfigViewModel)DataContext!;
 			model.SaveConfig();
 
@@ -51,6 +49,8 @@ namespace Mesen.Windows
 				RecordSystemHud = model.Config.RecordSystemHud,
 				RecordInputHud = model.Config.RecordInputHud
 			});
+
+			Close(true);
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

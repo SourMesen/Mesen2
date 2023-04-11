@@ -26,12 +26,12 @@ namespace Mesen.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(true);
-
 			NetplayConfig cfg = (NetplayConfig)DataContext!;
 			ConfigManager.Config.Netplay = cfg.Clone();
 
-			NetplayApi.Connect(cfg.Host, cfg.Port, cfg.Password, false);
+			Close(true);
+
+			NetplayApi.Connect(cfg.Host, cfg.Port, cfg.Password, false); 
 		}
 
 		private void Cancel_OnClick(object sender, RoutedEventArgs e)

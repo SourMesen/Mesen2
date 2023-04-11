@@ -26,10 +26,10 @@ namespace Mesen.Windows
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
-			Close(true);
-
 			NetplayConfig cfg = (NetplayConfig)DataContext!;
 			ConfigManager.Config.Netplay = cfg.Clone();
+
+			Close(true);
 
 			NetplayApi.StartServer(cfg.ServerPort, cfg.ServerPassword);
 		}

@@ -138,8 +138,8 @@ namespace Mesen.Windows
 
 		protected override void OnClosed(EventArgs e)
 		{
+			((SelectRomViewModel?)DataContext)?.Dispose();
 			base.OnClosed(e);
-			((SelectRomViewModel)DataContext!).Dispose();
 		}
 	}
 
