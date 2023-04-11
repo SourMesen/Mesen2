@@ -394,7 +394,13 @@ double EmuSettings::GetAspectRatio(ConsoleRegion region, FrameInfo baseFrameSize
 		case VideoAspectRatio::NoStretching: return screenAspectRatio;
 		
 		//For auto, ntsc and pal, these are PAR ratios, so multiply them with the base screen's aspect ratio to get the expected screen aspect ratio
-		case VideoAspectRatio::Auto: return screenAspectRatio * ((region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0));
+		case VideoAspectRatio::Auto:
+			if(_emu->GetConsoleType() == ConsoleType::Gameboy) {
+				//GB shouldn't use NTSC/PAL aspect ratio when in auto mode
+				return screenAspectRatio;
+			}
+			return screenAspectRatio * ((region == ConsoleRegion::Pal || region == ConsoleRegion::Dendy) ? (11.0 / 8.0) : (8.0 / 7.0));
+
 		case VideoAspectRatio::NTSC: return screenAspectRatio * 8.0 / 7.0;
 		case VideoAspectRatio::PAL: return screenAspectRatio * 11.0 / 8.0;
 
