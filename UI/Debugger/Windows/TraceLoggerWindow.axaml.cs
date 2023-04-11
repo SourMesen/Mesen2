@@ -18,7 +18,7 @@ using System.IO;
 
 namespace Mesen.Debugger.Windows
 {
-	public class TraceLoggerWindow : Window, INotificationHandler
+	public class TraceLoggerWindow : MesenWindow, INotificationHandler
 	{
 		private TraceLoggerViewModel _model;
 		private CodeViewerSelectionHandler _selectionHandler;

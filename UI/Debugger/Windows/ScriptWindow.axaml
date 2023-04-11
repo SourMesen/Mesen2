@@ -30,11 +30,11 @@
 	</Window.Resources>
 
 	<DockPanel>
-		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
 			<MenuItem Header="{l:Translate mnuScript}" Items="{CompiledBinding ScriptMenuActions}" />
 			<MenuItem Header="{l:Translate mnuHelp}" Items="{CompiledBinding HelpMenuActions}" />
-		</Menu>
+		</c:MesenMenu>
 
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
 			<dc:ActionToolbar Items="{CompiledBinding ToolbarActions}" />

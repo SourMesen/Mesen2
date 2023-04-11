@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public partial class UpdatePromptWindow : Window
+	public partial class UpdatePromptWindow : MesenWindow
 	{
 		private UpdatePromptViewModel _model;
 

@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace Mesen.Windows
 {
-	public class CheatDatabaseWindow : Window
+	public class CheatDatabaseWindow : MesenWindow
 	{
 		private CheatDatabaseViewModel _model;
 		private bool _cancelled = true;

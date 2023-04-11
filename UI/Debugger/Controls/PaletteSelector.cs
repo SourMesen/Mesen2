@@ -257,7 +257,7 @@ namespace Mesen.Debugger.Controls
 					selectionRect = new Rect((SelectedPalette % (columnCount / 16)) * width, selectedRow * height, width * 16, height);
 				}
 
-				if(!selectionRect.IsDefault) {
+				if(selectionRect != default) {
 					context.DrawRectangle(new Pen(0x40000000, 2), selectionRect);
 					context.DrawRectangle(new Pen(Brushes.White, 2, dashes), selectionRect);
 				}

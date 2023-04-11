@@ -29,6 +29,9 @@
 			</FocusAdornerTemplate>
 		</Setter>
 	</Style>
+	<Style Selector="DataBoxRow TextBlock">
+		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+	</Style>
 	<Style Selector="DataBoxRow:selected TextBlock">
 		<Setter Property="Foreground" Value="White" />
 	</Style>

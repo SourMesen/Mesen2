@@ -114,22 +114,22 @@ namespace Mesen.Debugger.ViewModels
 			}
 		}
 
-		private int[] GetIndexes(IEnumerable<WatchValueInfo> items)
+		private int[] GetIndexes(IEnumerable<WatchValueInfo?> items)
 		{
-			return items.Select(x => WatchEntries.IndexOf(x)).ToArray();
+			return items.Cast<WatchValueInfo>().Select(x => WatchEntries.IndexOf(x)).ToArray();
 		}
 
-		internal void DeleteWatch(List<WatchValueInfo> items)
+		internal void DeleteWatch(List<WatchValueInfo?> items)
 		{
 			Manager.RemoveWatch(GetIndexes(items));
 		}
 
-		internal void SetSelectionFormat(WatchFormatStyle format, int byteLength, IEnumerable<WatchValueInfo> items)
+		internal void SetSelectionFormat(WatchFormatStyle format, int byteLength, IEnumerable<WatchValueInfo?> items)
 		{
 			Manager.SetSelectionFormat(format, byteLength, GetIndexes(items));
 		}
 
-		internal void ClearSelectionFormat(IEnumerable<WatchValueInfo> items)
+		internal void ClearSelectionFormat(IEnumerable<WatchValueInfo?> items)
 		{
 			Manager.ClearSelectionFormat(GetIndexes(items));
 		}

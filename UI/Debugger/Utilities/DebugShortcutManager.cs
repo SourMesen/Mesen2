@@ -22,7 +22,7 @@ namespace Mesen.Debugger.Utilities
 
 			ctrl.ContextMenu = new ContextMenu();
 			ctrl.ContextMenu.Name = "ActionMenu";
-			ctrl.ContextMenu.Items = actions;
+			ctrl.ContextMenu.ItemsSource = actions;
 			RegisterActions(ctrl, actions);
 
 			return ctrl.ContextMenu;

@@ -398,7 +398,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdatePreviewPanel()
 		{
-			if(SelectionRect.IsDefault) {
+			if(SelectionRect == default) {
 				PreviewPanel = null;
 			} else {
 				PreviewPanel = GetPreviewPanel(PixelPoint.FromPoint(SelectionRect.TopLeft, 1), PreviewPanel);
@@ -484,7 +484,7 @@ namespace Mesen.Debugger.ViewModels
 			if(ViewerMousePos.HasValue) {
 				p = ViewerMousePos.Value;
 			} else {
-				if(SelectionRect.IsDefault) {
+				if(SelectionRect == default) {
 					return -1;
 				}
 				p = PixelPoint.FromPoint(SelectionRect.TopLeft, 1);

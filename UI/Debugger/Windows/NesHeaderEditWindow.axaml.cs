@@ -12,7 +12,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class NesHeaderEditWindow : Window
+	public class NesHeaderEditWindow : MesenWindow
 	{
 		NesHeaderEditViewModel _model;
 

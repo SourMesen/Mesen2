@@ -54,12 +54,12 @@ namespace Mesen.Views
 			InitializeComponent();
 
 			ComboBox cboFontFamily = this.GetControl<ComboBox>("cboFontFamily");
-			List<string> fontFamilies = FontManager.Current.GetInstalledFontFamilyNames().ToList();
+			List<string> fontFamilies = FontManager.Current.SystemFonts.Select(x => x.Name).ToList();
 			fontFamilies.Sort();
-			cboFontFamily.Items = fontFamilies;
+			cboFontFamily.ItemsSource = fontFamilies;
 
 			ComboBox cboFontSize = this.GetControl<ComboBox>("cboFontSize");
-			cboFontSize.Items = new double[] { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
+			cboFontSize.ItemsSource = new double[] { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)

@@ -46,7 +46,7 @@ namespace Mesen.Utilities
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://Dock.Avalonia/Themes/DockFluentTheme.axaml") },
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/ThirdParty/ColorPicker/ColorPicker.axaml", UriKind.Relative) },
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/ThirdParty/DataBox/Themes/Fluent.axaml", UriKind.Relative) },
-				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/AvaloniaEdit.xaml") },
+				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml") },
 				new StyleInclude(new Uri("avares://Mesen/App.axaml")) { Source = new Uri("/Styles/DockStyles.xaml", UriKind.Relative) }
 			};
 

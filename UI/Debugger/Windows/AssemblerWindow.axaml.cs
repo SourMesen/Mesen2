@@ -21,7 +21,7 @@ using System.Xml;
 
 namespace Mesen.Debugger.Windows
 {
-	public class AssemblerWindow : Window, INotificationHandler
+	public class AssemblerWindow : MesenWindow, INotificationHandler
 	{
 		private static XshdSyntaxDefinition _syntaxDef;
 		private IHighlightingDefinition _highlighting;

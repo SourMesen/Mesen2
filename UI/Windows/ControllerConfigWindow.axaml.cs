@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Mesen.Windows
 {
-	public class ControllerConfigWindow : Window
+	public class ControllerConfigWindow : MesenWindow
 	{
 		private ControllerConfigViewModel Model => (ControllerConfigViewModel)DataContext!;
 		private bool _promptToSave = true;

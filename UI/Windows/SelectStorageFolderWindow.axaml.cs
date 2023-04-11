@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public class SelectStorageFolderWindow : Window
+	public class SelectStorageFolderWindow : MesenWindow
 	{
 		private SelectStorageFolderViewModel _model;
 

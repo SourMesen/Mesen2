@@ -20,7 +20,7 @@ using Avalonia.Layout;
 
 namespace Mesen.Windows
 {
-	public class GetKeyWindow : Window
+	public class GetKeyWindow : MesenWindow
 	{
 		private DispatcherTimer _timer; 
 		

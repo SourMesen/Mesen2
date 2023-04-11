@@ -14,7 +14,7 @@ using Mesen.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
-	public class PaletteViewerWindow : Window, INotificationHandler
+	public class PaletteViewerWindow : MesenWindow, INotificationHandler
 	{
 		private PaletteViewerViewModel _model;
 

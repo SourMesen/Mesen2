@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Mesen.Windows
 {
-	public class InputBarcodeWindow : Window
+	public class InputBarcodeWindow : MesenWindow
 	{
 		private static string _lastBarcode { get; set; } = "";
 

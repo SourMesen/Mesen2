@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace Mesen.Windows
 {
-	public class CheatListWindow : Window
+	public class CheatListWindow : MesenWindow
 	{
 		private CheatListWindowViewModel _model;
 		private NotificationListener _listener;
@@ -66,9 +66,11 @@ namespace Mesen.Windows
 		private void OnCellClick(DataBoxCell cell)
 		{
 			if(cell.DataContext is CheatCode && cell.Column?.ColumnName == "Enabled") {
-				bool newValue = !_model.Selection.SelectedItems.Any(cheat => cheat.Enabled);
-				foreach(CheatCode cheat in _model.Selection.SelectedItems) {
-					cheat.Enabled = newValue;
+				bool newValue = !_model.Selection.SelectedItems.Any(cheat => cheat?.Enabled == true);
+				foreach(CheatCode? cheat in _model.Selection.SelectedItems) {
+					if(cheat != null) {
+						cheat.Enabled = newValue;
+					}
 				}
 				_model.Sort();
 				_model.ApplyCheats();

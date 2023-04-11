@@ -35,12 +35,12 @@
 	</Window.Styles>
 
 	<DockPanel Margin="2">
-		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
 			<MenuItem Header="{l:Translate mnuSearch}" Items="{CompiledBinding SearchMenuItems}" />
 			<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuItems}" />
-		</Menu>
+		</c:MesenMenu>
 
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{CompiledBinding Config.ShowToolbar}">
 			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />

@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
 using System;
@@ -149,7 +150,7 @@ namespace Mesen.Debugger.Controls
 
 			int start = 0;
 			double x = 0;
-			Typeface typeface = new Typeface("Arial");
+			Typeface typeface = new Typeface(ConfigManager.Config.Preferences.MesenFont.FontFamily);
 			Pen borderPen = ColorHelper.GetPen(Color.FromRgb(0x60, 0x60, 0x60));
 			for(int i = 0; i < mappings.Count; i++) {
 				MemoryMappingBlock block = mappings[i];
@@ -181,7 +182,7 @@ namespace Mesen.Debugger.Controls
 				}
 
 				if(addressText != null && addressText.Height < blockWidth - 4) {
-					using var rotate = context.PushPostTransform(Matrix.CreateRotation(-Math.PI / 2));
+					using var rotate = context.PushTransform(Matrix.CreateRotation(-Math.PI / 2));
 					context.DrawText(addressText, new Point(-BlockHeight + (BlockHeight - addressText.Width) / 2, x));
 				}
 

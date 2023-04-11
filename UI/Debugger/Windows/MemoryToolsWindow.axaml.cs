@@ -21,7 +21,7 @@ using Mesen.Debugger.Disassembly;
 
 namespace Mesen.Debugger.Windows
 {
-	public class MemoryToolsWindow : Window, INotificationHandler
+	public class MemoryToolsWindow : MesenWindow, INotificationHandler
 	{
 		private HexEditor _editor;
 		private MemoryToolsViewModel _model;

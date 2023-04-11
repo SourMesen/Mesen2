@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class WatchWindow : Window, INotificationHandler
+	public class WatchWindow : MesenWindow, INotificationHandler
 	{
 		private WatchWindowViewModel _model;
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Mesen.Windows
 {
-	public class NetplayConnectWindow : Window
+	public class NetplayConnectWindow : MesenWindow
 	{
 		public NetplayConnectWindow()
 		{

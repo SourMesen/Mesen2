@@ -409,14 +409,16 @@ namespace Mesen.Debugger.Controls
 		{
 			var clipboard = Application.Current?.Clipboard;
 			if(clipboard != null) {
-				string text = await clipboard.GetTextAsync();
-				text = text.Replace("\n", "").Replace("\r", "");
-				if(Regex.IsMatch(text, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
-					byte[] pastedData = HexUtilities.HexToArray(text);
-					for(int i = 0; i < pastedData.Length; i++) {
-						RequestByteUpdate(_cursorPosition + i, pastedData[i]);
+				string? text = await clipboard.GetTextAsync();
+				if(text != null) {
+					text = text.Replace("\n", "").Replace("\r", "");
+					if(Regex.IsMatch(text, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
+						byte[] pastedData = HexUtilities.HexToArray(text);
+						for(int i = 0; i < pastedData.Length; i++) {
+							RequestByteUpdate(_cursorPosition + i, pastedData[i]);
+						}
+						InvalidateVisual();
 					}
-					InvalidateVisual();
 				}
 			}
 		}
@@ -629,11 +631,11 @@ namespace Mesen.Debugger.Controls
 
 			//Draw column headers
 			DrawColumnHeaders(context);
-			using var columnHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(0, ColumnHeaderHeight));
+			using var columnHeaderTranslation = context.PushTransform(Matrix.CreateTranslation(0, ColumnHeaderHeight));
 
 			//Draw row headers
 			DrawRowHeaders(context);
-			using var rowHeaderTranslation = context.PushPostTransform(Matrix.CreateTranslation(RowHeaderWidth + ContentLeftPadding, 0));
+			using var rowHeaderTranslation = context.PushTransform(Matrix.CreateTranslation(RowHeaderWidth + ContentLeftPadding, 0));
 
 			//Precalculate some values for data draw
 			int bytesPerRow = this.BytesPerRow;

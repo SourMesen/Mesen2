@@ -99,7 +99,7 @@
 		<Thickness x:Key="MenuFlyoutSeparatorThemePadding">30,2,0,2</Thickness>
 		<Thickness x:Key="MenuInputGestureTextMargin">27,2,0,0</Thickness>
 
-		<x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">1</x:Double>
+		<x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">0</x:Double>
 		<x:Double x:Key="MenuFlyoutThemeMinHeight">0</x:Double>
 		<StreamGeometry x:Key="MenuItemChevronPathData">M0,0L4,3.5 0,7z</StreamGeometry>
 	</Styles.Resources>

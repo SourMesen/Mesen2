@@ -9,7 +9,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class BreakInWindow : Window
+	public class BreakInWindow : MesenWindow
 	{
 		public static int _lastValue { get; set; } = 0;
 		public static StepType _lastStepType { get; set; } = StepType.Step;

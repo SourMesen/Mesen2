@@ -21,7 +21,7 @@ using System.IO;
 
 namespace Mesen.Debugger.Windows
 {
-	public class DebuggerWindow : Window, INotificationHandler
+	public class DebuggerWindow : MesenWindow, INotificationHandler
 	{
 		private DebuggerWindowViewModel _model;
 
@@ -230,7 +230,7 @@ namespace Mesen.Debugger.Windows
 
 		private void OnDrop(object? sender, DragEventArgs e)
 		{
-			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
+			string? filename = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
 			if(filename != null && File.Exists(filename)) {
 				Activate();
 				DebugWorkspaceManager.LoadSupportedFile(filename, true);

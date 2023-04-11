@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Windows
 {
-	public class GoToAllWindow : Window
+	public class GoToAllWindow : MesenWindow
 	{
 		private GoToAllViewModel _model;
 

@@ -64,7 +64,7 @@ namespace Mesen.Utilities
 				filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
 			IReadOnlyList<IStorageFile> files = await wnd.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions() {
-				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPath(initialFolder) : null,
+				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null,
 				AllowMultiple = false,
 				FileTypeFilter = filter
 			});
@@ -92,7 +92,7 @@ namespace Mesen.Utilities
 				filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
 			IStorageFile? file = await wnd.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions() {
-				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPath(initialFolder) : null,
+				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null,
 				DefaultExtension = extensions[0],
 				ShowOverwritePrompt = true,
 				SuggestedFileName = initialFile,

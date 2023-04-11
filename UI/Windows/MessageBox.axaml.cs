@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public partial class MessageBox : Window
+	public partial class MessageBox : MesenWindow
 	{
 		public MessageBox()
 		{

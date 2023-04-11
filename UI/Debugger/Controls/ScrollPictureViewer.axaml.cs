@@ -249,7 +249,7 @@ namespace Mesen.Debugger.Controls
 
 		public void ScrollToSelection()
 		{
-			if(SelectionRect.IsDefault) {
+			if(SelectionRect == default) {
 				return;
 			}
 

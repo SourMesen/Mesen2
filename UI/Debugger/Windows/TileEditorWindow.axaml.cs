@@ -17,7 +17,7 @@ using Avalonia.Input;
 
 namespace Mesen.Debugger.Windows
 {
-	public class TileEditorWindow : Window, INotificationHandler
+	public class TileEditorWindow : MesenWindow, INotificationHandler
 	{
 		private TileEditorViewModel _model;
 		private PictureViewer _picViewer;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Windows
 {
-	public class BreakpointEditWindow : Window
+	public class BreakpointEditWindow : MesenWindow
 	{
 		public BreakpointEditWindow()
 		{

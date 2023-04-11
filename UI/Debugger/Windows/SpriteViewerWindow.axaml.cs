@@ -13,7 +13,7 @@ using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
-	public class SpriteViewerWindow : Window, INotificationHandler
+	public class SpriteViewerWindow : MesenWindow, INotificationHandler
 	{
 		private SpriteViewerViewModel _model;
 

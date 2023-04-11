@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Mesen.Windows;
 
-public class GameConfigWindow : Window
+public class GameConfigWindow : MesenWindow
 {
 	private GameConfigViewModel _model;
 

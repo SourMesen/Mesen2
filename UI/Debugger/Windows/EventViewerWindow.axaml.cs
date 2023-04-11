@@ -18,7 +18,7 @@ using Mesen.Debugger.Utilities;
 
 namespace Mesen.Debugger.Windows
 {
-	public class EventViewerWindow : Window, INotificationHandler
+	public class EventViewerWindow : MesenWindow, INotificationHandler
 	{
 		private EventViewerViewModel _model;
 		private PixelPoint? _prevMousePos = null;

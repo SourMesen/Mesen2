@@ -19,7 +19,7 @@ namespace Mesen.Config
 			if(wnd.WindowState == WindowState.Normal) {
 				WindowLocation = wnd.Position;
 				WindowSize = new PixelSize((int)wnd.ClientSize.Width, (int)wnd.ClientSize.Height);
-			} else if(!_restoreBounds.IsDefault) {
+			} else if(_restoreBounds != default) {
 				WindowLocation = _restoreBounds.Position;
 				WindowSize = _restoreBounds.Size;
 			}

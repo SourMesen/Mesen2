@@ -19,7 +19,7 @@
 	</Design.DataContext>
 
 	<UserControl.Styles>
-		<Style Selector="DataBoxRow TextBlock">
+		<Style Selector="DataBoxRow">
 			<Setter Property="Foreground" Value="{Binding RowBrush}" />
 			<Setter Property="FontStyle" Value="{Binding RowStyle}" />
 		</Style>

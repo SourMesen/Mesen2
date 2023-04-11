@@ -24,7 +24,7 @@ using Mesen.Controls;
 
 namespace Mesen.Windows
 {
-	public class MainWindow : Window
+	public class MainWindow : MesenWindow
 	{
 		private DispatcherTimer _timerBackgroundFlag = new DispatcherTimer();
 		private MainWindowViewModel _model = null!;
@@ -166,7 +166,7 @@ namespace Mesen.Windows
 
 		private void OnDrop(object? sender, DragEventArgs e)
 		{
-			string? filename = e.Data.GetFileNames()?.FirstOrDefault();
+			string? filename = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
 			if(filename != null) {
 				if(File.Exists(filename)) {
 					LoadRomHelper.LoadFile(filename);
@@ -419,7 +419,7 @@ namespace Mesen.Windows
 		{
 			double aspectRatio = EmuApi.GetAspectRatio();
 
-			Size finalSize = _rendererSize.IsDefault ? _rendererPanel.Bounds.Size : _rendererSize;
+			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
 			double width = finalSize.Height * aspectRatio;
 			if(width > finalSize.Width) {
@@ -522,6 +522,16 @@ namespace Mesen.Windows
 				return true;
 			} else if(key == Key.F3) {
 				RomTestHelper.RunAllTests();
+				return true;
+			} else if(key == Key.F6) {
+				//For testing purposes (to test for memory leaks)
+				Task.Run(() => {
+					for(int i = 0; i < 50; i++) {
+						GC.Collect();
+						GC.WaitForPendingFinalizers();
+						Thread.Sleep(10);
+					}
+				});
 				return true;
 			}
 			return false;

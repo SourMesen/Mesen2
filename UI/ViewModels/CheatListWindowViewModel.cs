@@ -175,7 +175,7 @@ namespace Mesen.ViewModels
 					Shortcut = () => new DbgShortKeys(Key.Delete),
 					IsEnabled = () => Selection.SelectedItems.Count > 0,
 					OnClick = () => {
-						foreach(CheatCode cheat in Selection.SelectedItems.ToArray()) {
+						foreach(CheatCode cheat in Selection.SelectedItems.Cast<CheatCode>().ToArray()) {
 							Cheats.Remove(cheat);
 						}
 						ApplyCheats();

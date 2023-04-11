@@ -217,7 +217,7 @@ namespace Mesen.Debugger.Controls
 
 		private void timer_Tick(object? sender, EventArgs e)
 		{
-			if(!SelectionRect.IsDefault) {
+			if(SelectionRect != default) {
 				InvalidateVisual();
 			}
 		}
@@ -420,9 +420,9 @@ namespace Mesen.Debugger.Controls
 			int height = (int)(Source.Size.Height * Zoom);
 			
 			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
-			using var scale = context.PushPostTransform(Matrix.CreateScale(dpiScale, dpiScale));
+			using var scale = context.PushTransform(Matrix.CreateScale(dpiScale, dpiScale));
 
-			using var translation = context.PushPostTransform(Matrix.CreateTranslation(-LeftClipSize * Zoom, -TopClipSize * Zoom));
+			using var translation = context.PushTransform(Matrix.CreateTranslation(-LeftClipSize * Zoom, -TopClipSize * Zoom));
 			using var clip = context.PushClip(new Rect(0, 0, width, height));
 
 			if(Source is DynamicBitmap) {
@@ -444,7 +444,7 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			if(!OverlayRect.IsDefault) {
+			if(OverlayRect != default) {
 				Rect rect = ToDrawRect(OverlayRect);
 				Brush brush = new SolidColorBrush(Colors.Gray, 0.4);
 				Pen pen = new Pen(Brushes.White, 2);
@@ -478,14 +478,14 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			if(MouseOverRect != null && !MouseOverRect.Value.IsDefault) {
+			if(MouseOverRect != null && MouseOverRect.Value != default) {
 				Rect rect = ToDrawRect(MouseOverRect.Value);
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, 0);
 				context.DrawRectangle(new Pen(Brushes.DimGray, 2), rect.Inflate(0.5));
 				context.DrawRectangle(new Pen(Brushes.LightYellow, 2, dashes), rect.Inflate(0.5));
 			}
 
-			if(!SelectionRect.IsDefault) {
+			if(SelectionRect != default) {
 				Rect rect = ToDrawRect(SelectionRect);
 				
 				DashStyle dashes = new DashStyle(DashStyle.Dash.Dashes, _stopWatch.ElapsedMilliseconds / 250.0);

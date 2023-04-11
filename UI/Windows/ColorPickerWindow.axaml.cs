@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace Mesen.Windows
 {
-	public class ColorPickerWindow : Window
+	public class ColorPickerWindow : MesenWindow
 	{
 		public ColorPickerWindow()
 		{

@@ -71,7 +71,7 @@ namespace Mesen.Controls
 			ControllerConfig cfg = Config.Clone();
 			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg, Config);
 			
-			if(await wnd.ShowDialogAtPosition<bool>(btn.Parent?.GetVisualRoot() as Visual, startPosition)) {
+			if(await wnd.ShowDialogAtPosition<bool>(btn.GetVisualRoot() as Visual, startPosition)) {
 				Config = cfg;
 			}
 		}

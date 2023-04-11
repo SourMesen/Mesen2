@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class MemorySearchWindow : Window, INotificationHandler
+	public class MemorySearchWindow : MesenWindow, INotificationHandler
 	{
 		private MemorySearchViewModel _model;
 

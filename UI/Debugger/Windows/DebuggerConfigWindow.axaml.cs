@@ -15,7 +15,7 @@ using Avalonia.Input;
 
 namespace Mesen.Debugger.Windows
 {
-	public class DebuggerConfigWindow : Window
+	public class DebuggerConfigWindow : MesenWindow
 	{
 		private DebuggerConfigWindowViewModel _model;
 		private bool _promptToSave = true;

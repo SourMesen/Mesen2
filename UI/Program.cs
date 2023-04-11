@@ -160,7 +160,6 @@ namespace Mesen
 					.UseReactiveUI()
 					.UsePlatformDetect()
 					.With(new Win32PlatformOptions { AllowEglInitialization = true, UseWgl = useWgl })
-					.With(new FontManagerOptions() { DefaultFamilyName = "Liberation Mono" })
 					.With(new X11PlatformOptions { UseGpu = true, UseEGL = false })
 					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
 					.LogToTrace();

@@ -109,7 +109,7 @@ namespace Mesen.Config
 		private static string FindMatchingFont(string defaultFont, params string[] fontNames)
 		{
 			if(_installedFonts == null) {
-				_installedFonts = new(FontManager.Current.GetInstalledFontFamilyNames());
+				_installedFonts = new(FontManager.Current.SystemFonts.Select(x => x.Name));
 			}
 
 			foreach(string name in fontNames) {

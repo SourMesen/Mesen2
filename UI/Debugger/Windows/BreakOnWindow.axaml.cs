@@ -9,7 +9,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class BreakOnWindow : Window
+	public class BreakOnWindow : MesenWindow
 	{
 		public static int _lastValue { get; set; } = 0;
 		

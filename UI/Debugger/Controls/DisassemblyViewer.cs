@@ -419,8 +419,8 @@ namespace Mesen.Debugger.Controls
 		{
 			if(lineStyle.Symbol.HasFlag(LineSymbol.Circle) || lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline)) {
 				if(lineStyle.OutlineColor.HasValue) {
-					using var scale = context.PushPostTransform(Matrix.CreateScale(0.85, 0.85));
-					using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					using var translation = context.PushTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					using var scale = context.PushTransform(Matrix.CreateScale(0.85, 0.85));
 					EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
 					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
 					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
@@ -443,8 +443,8 @@ namespace Mesen.Debugger.Controls
 			if(lineStyle.Symbol.HasFlag(LineSymbol.Arrow)) {
 				if(lineStyle.TextBgColor.HasValue) {
 					double scaleFactor = LetterSize.Height / 16.0;
-					using var scale = context.PushPostTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
-					using var translation = context.PushPostTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					using var translation = context.PushTransform(Matrix.CreateTranslation(2.5, y + (LetterSize.Height * 0.15 / 2)));
+					using var scale = context.PushTransform(Matrix.CreateScale(scaleFactor * 0.85, scaleFactor * 0.85));
 					context.DrawGeometry(new SolidColorBrush(lineStyle.TextBgColor.Value), new Pen(Brushes.Black), DisassemblyViewer.ArrowShape);
 				}
 			}

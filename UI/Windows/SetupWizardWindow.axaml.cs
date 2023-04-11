@@ -10,7 +10,7 @@ using System;
 
 namespace Mesen.Windows
 {
-	public class SetupWizardWindow : Window
+	public class SetupWizardWindow : MesenWindow
 	{
 		private SetupWizardViewModel _model;
 

@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace Mesen.Windows
 {
-	public class HistoryViewerRangePickerWindow : Window
+	public class HistoryViewerRangePickerWindow : MesenWindow
 	{
 		public int MinValue { get; set; }
 		public int MaxValue { get; set; }

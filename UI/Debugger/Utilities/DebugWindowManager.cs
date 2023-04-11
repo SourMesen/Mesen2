@@ -19,7 +19,7 @@ namespace Mesen.Debugger.Utilities
 		private static object _windowNotifLock = new();
 		private static bool _loadingGame = false;
 
-		public static T CreateDebugWindow<T>(Func<T> createWindow) where T : Window
+		public static T CreateDebugWindow<T>(Func<T> createWindow) where T : MesenWindow
 		{
 			if(Interlocked.Increment(ref _debugWindowCounter) == 1) {
 				//Opened a debug window and nothing else was opened, load the saved workspace
@@ -27,27 +27,31 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			T wnd = createWindow();
-			wnd.Closed += (s, e) => {
-				if(s is Window window) {
-					if(window.DataContext is IDisposable disposable) {
-						disposable.Dispose();
-					}
-					CloseDebugWindow(window);
-					ConfigManager.Config.Save();
-				}
-			};
+			wnd.Closed += OnClosedHandler;
 			_openedWindows.TryAdd(wnd, true);
 			return wnd;
 		}
 
-		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		private static void OnClosedHandler(object? sender, EventArgs e)
+		{
+			if(sender is Window window) {
+				if(window.DataContext is IDisposable disposable) {
+					disposable.Dispose();
+				}
+				CloseDebugWindow(window);
+				ConfigManager.Config.Save();
+				window.Closed -= OnClosedHandler;
+			}
+		}
+
+		public static T OpenDebugWindow<T>(Func<T> createWindow) where T : MesenWindow
 		{
 			T wnd = CreateDebugWindow<T>(createWindow);
 			wnd.Show();
 			return wnd;
 		}
 
-		public static T GetOrOpenDebugWindow<T>(Func<T> createWindow) where T : Window
+		public static T GetOrOpenDebugWindow<T>(Func<T> createWindow) where T : MesenWindow
 		{
 			foreach(Window wnd in _openedWindows.Keys) {
 				if(wnd is T) {
@@ -58,7 +62,7 @@ namespace Mesen.Debugger.Utilities
 			return OpenDebugWindow<T>(createWindow);
 		}
 
-		public static T? GetDebugWindow<T>(Func<T, bool> isMatch) where T : Window
+		public static T? GetDebugWindow<T>(Func<T, bool> isMatch) where T : MesenWindow
 		{
 			foreach(Window wnd in _openedWindows.Keys) {
 				if(wnd is T tWnd && isMatch(tWnd)) {

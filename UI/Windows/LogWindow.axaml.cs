@@ -12,7 +12,7 @@ using Avalonia.Input;
 
 namespace Mesen.Windows
 {
-	public class LogWindow : Window
+	public class LogWindow : MesenWindow
 	{
 		private DispatcherTimer _timer;
 

@@ -11,7 +11,7 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class RegisterViewerWindow : Window, INotificationHandler
+	public class RegisterViewerWindow : MesenWindow, INotificationHandler
 	{
 		private RegisterViewerWindowViewModel _model;
 

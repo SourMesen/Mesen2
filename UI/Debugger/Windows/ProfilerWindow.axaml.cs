@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.Windows
 {
-	public class ProfilerWindow : Window, INotificationHandler
+	public class ProfilerWindow : MesenWindow, INotificationHandler
 	{
 		private ProfilerWindowViewModel _model;
 

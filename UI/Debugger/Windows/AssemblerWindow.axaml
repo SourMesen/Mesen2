@@ -33,10 +33,10 @@
 	</Window.Styles>
 
 	<DockPanel>
-		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
 			<MenuItem Header="{l:Translate mnuOptions}" Items="{CompiledBinding OptionsMenuActions}" />
-		</Menu>
+		</c:MesenMenu>
 		
 		<Grid Classes="main" ColumnDefinitions="1*, 300" RowDefinitions="3*,100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 			<Border Grid.Column="0">

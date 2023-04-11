@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public class CheatEditWindow : Window
+	public class CheatEditWindow : MesenWindow
 	{
 		private CheatEditWindowViewModel _model;
 

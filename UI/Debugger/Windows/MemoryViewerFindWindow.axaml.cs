@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Mesen.Debugger.Windows
 {
-	public class MemoryViewerFindWindow : Window
+	public class MemoryViewerFindWindow : MesenWindow
 	{
 		private MemoryViewerFindViewModel _model;
 		private MemoryToolsViewModel _viewerModel;

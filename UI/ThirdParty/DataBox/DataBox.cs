@@ -26,7 +26,8 @@ namespace DataBoxControl;
 public class DataBox : TemplatedControl
 {
     public static readonly DirectProperty<DataBox, IEnumerable?> ItemsProperty =
-        ItemsControl.ItemsProperty.AddOwner<DataBox>( 
+		  AvaloniaProperty.RegisterDirect<DataBox, IEnumerable?>(
+			  nameof(Items),
             o => o.Items, 
             (o, v) => {
 					o.Items = v;

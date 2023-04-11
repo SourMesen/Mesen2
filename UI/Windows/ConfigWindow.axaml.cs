@@ -13,7 +13,7 @@ using Avalonia.Input;
 
 namespace Mesen.Windows
 {
-	public class ConfigWindow : Window
+	public class ConfigWindow : MesenWindow
 	{
 		private ConfigViewModel _model;
 		private bool _promptToSave = true;

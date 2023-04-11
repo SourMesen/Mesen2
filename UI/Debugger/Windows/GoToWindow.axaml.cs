@@ -8,7 +8,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class GoToWindow : Window
+	public class GoToWindow : MesenWindow
 	{
 		private static int _lastAddress { get; set; } = 0;
 

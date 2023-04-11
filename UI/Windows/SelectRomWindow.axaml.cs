@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public partial class SelectRomWindow : Window
+	public partial class SelectRomWindow : MesenWindow
 	{
 		private ListBox _listBox;
 		private TextBox _searchBox;

@@ -13,7 +13,7 @@ using Mesen.Utilities;
 
 namespace Mesen.Windows
 {
-	public class CommandLineHelpWindow : Window
+	public class CommandLineHelpWindow : MesenWindow
 	{
 		public List<TabEntry> HelpTabs { get; } = new();
 

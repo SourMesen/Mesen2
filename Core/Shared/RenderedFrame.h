@@ -34,7 +34,7 @@ struct RenderedFrame
 		Height(height),
 		Scale(scale),
 		FrameNumber(frameNumber),
-		InputData(inputData),
-		VideoPhase(videoPhase)
+		VideoPhase(videoPhase),
+		InputData(inputData)
 	{}
 };

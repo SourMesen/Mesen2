@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Mesen.Windows
 {
-	public class MovieRecordWindow : Window
+	public class MovieRecordWindow : MesenWindow
 	{
 		public MovieRecordWindow()
 		{

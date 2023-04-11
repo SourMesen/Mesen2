@@ -13,7 +13,7 @@ using Avalonia.Input;
 
 namespace Mesen.Debugger.Windows
 {
-	public class DebugLogWindow : Window
+	public class DebugLogWindow : MesenWindow
 	{
 		private DispatcherTimer _timer;
 

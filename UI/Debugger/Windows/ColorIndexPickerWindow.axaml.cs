@@ -12,7 +12,7 @@ using Avalonia.Threading;
 
 namespace Mesen.Debugger.Windows
 {
-	public class ColorIndexPickerWindow : Window
+	public class ColorIndexPickerWindow : MesenWindow
 	{
 		public UInt32[] Palette { get; set; } = Array.Empty<UInt32>();
 		public int SelectedPalette { get; set; }

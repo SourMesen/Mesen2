@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Mesen.Windows
 {
-	public class NetplayStartServerWindow : Window
+	public class NetplayStartServerWindow : MesenWindow
 	{
 		public NetplayStartServerWindow()
 		{

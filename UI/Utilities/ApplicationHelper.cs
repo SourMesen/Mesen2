@@ -40,7 +40,7 @@ namespace Mesen.Utilities
 			return null;
 		}
 
-		public static T? GetExistingWindow<T>() where T : Window
+		public static T? GetExistingWindow<T>() where T : MesenWindow
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				return desktop.Windows.Where(w => w is T).FirstOrDefault() as T;
@@ -49,7 +49,7 @@ namespace Mesen.Utilities
 			return null;
 		}
 
-		public static T GetOrCreateUniqueWindow<T>(Control? centerParent, Func<T> createWindow) where T : Window
+		public static T GetOrCreateUniqueWindow<T>(Control? centerParent, Func<T> createWindow) where T : MesenWindow
 		{
 			if(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 				T? wnd = desktop.Windows.Where(w => w is T).FirstOrDefault() as T;

@@ -13,7 +13,7 @@ using Mesen.Utilities;
 
 namespace Mesen.Windows
 {
-	public class AboutWindow : Window
+	public class AboutWindow : MesenWindow
 	{
 		public class AboutListEntry
 		{

@@ -29,7 +29,7 @@ using System.Xml;
 
 namespace Mesen.Debugger.Windows
 {
-	public class ScriptWindow : Window, INotificationHandler
+	public class ScriptWindow : MesenWindow, INotificationHandler
 	{
 		private static XshdSyntaxDefinition _syntaxDef;
 		private IHighlightingDefinition _highlighting;

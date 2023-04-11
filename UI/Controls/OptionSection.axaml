@@ -22,7 +22,11 @@
 					<ContentControl Content="{Binding Button, ElementName=root}" />
 				</StackPanel>
 				<StackPanel Margin="10 0 0 0">
-					<ItemsControl Items="{Binding Items, ElementName=root}" />
+					<ItemsPresenter
+						AreVerticalSnapPointsRegular="{TemplateBinding AreVerticalSnapPointsRegular}"
+						AreHorizontalSnapPointsRegular="{TemplateBinding AreHorizontalSnapPointsRegular}"
+						ItemsPanel="{TemplateBinding ItemsPanel}"
+					/>
 				</StackPanel>
 			</StackPanel>
 		</ControlTemplate>

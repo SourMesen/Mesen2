@@ -264,6 +264,9 @@
 #define alloca __builtin_alloca
 #endif
 #elif !defined(_MSC_VER)
+#ifdef __forceinline
+#undef __forceinline
+#endif
 #if __GNUC__
 #define __forceinline inline
 #else

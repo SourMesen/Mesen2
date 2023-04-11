@@ -98,7 +98,7 @@ public:
 	HdNesPack(NesConsole* console, EmuSettings* settings, HdPackData* hdData);
 	virtual ~HdNesPack();
 
-	uint32_t GetScale() { return scale; }
+	uint32_t GetScale() override { return scale; }
 	
 	void Process(HdScreenInfo *hdScreenInfo, uint32_t *outputBuffer, OverscanDimensions &overscan) override;
 };

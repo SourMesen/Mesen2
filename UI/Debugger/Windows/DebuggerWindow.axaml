@@ -60,12 +60,12 @@
 	</Window.DataTemplates>
 	
 	<DockPanel>
-		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
 			<MenuItem Header="{l:Translate mnuSearch}" Items="{CompiledBinding SearchMenuItems}" />
 			<MenuItem Header="{l:Translate mnuOptions}" Items="{CompiledBinding OptionMenuItems}" />
-		</Menu>
+		</c:MesenMenu>
 		<DockPanel DockPanel.Dock="Top">
 			<c:IconButton
 				HorizontalAlignment="Right"

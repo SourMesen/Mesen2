@@ -17,7 +17,7 @@ using Mesen.Controls;
 
 namespace Mesen.Windows
 {
-	public class HistoryViewerWindow : Window
+	public class HistoryViewerWindow : MesenWindow
 	{
 		private HistoryViewerViewModel _model;
 		private DispatcherTimer _timer;
@@ -169,7 +169,7 @@ namespace Mesen.Windows
 		{
 			double aspectRatio = EmuApi.GetAspectRatio();
 
-			Size finalSize = _rendererSize.IsDefault ? _rendererPanel.Bounds.Size : _rendererSize;
+			Size finalSize = _rendererSize == default ? _rendererPanel.Bounds.Size : _rendererSize;
 			double height = finalSize.Height;
 			double width = finalSize.Height * aspectRatio;
 			if(width > finalSize.Width) {

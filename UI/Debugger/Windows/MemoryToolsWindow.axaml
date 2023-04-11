@@ -31,11 +31,11 @@
 	</Window.Styles>
 
 	<DockPanel>
-		<Menu DockPanel.Dock="Top" Name="ActionMenu">
+		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
 			<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuItems}" />
 			<MenuItem Header="{l:Translate mnuSearch}" Items="{CompiledBinding SearchMenuItems}" />
-		</Menu>
+		</c:MesenMenu>
 		<DockPanel DockPanel.Dock="Top" Margin="3 2">
 			<StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
 				<TextBlock VerticalAlignment="Center" Text="{l:Translate lblMemoryType}" />

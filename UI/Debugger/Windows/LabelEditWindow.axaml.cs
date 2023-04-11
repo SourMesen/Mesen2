@@ -10,7 +10,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class LabelEditWindow : Window
+	public class LabelEditWindow : MesenWindow
 	{
 		private LabelEditViewModel _model;
 		

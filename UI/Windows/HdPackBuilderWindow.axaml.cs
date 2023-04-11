@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Windows
 {
-	public class HdPackBuilderWindow : Window
+	public class HdPackBuilderWindow : MesenWindow
 	{
 		private HdPackBuilderViewModel _model;
 

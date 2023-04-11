@@ -8,7 +8,7 @@ using System;
 
 namespace Mesen.Debugger.Windows
 {
-	public class FindAllOccurrencesWindow : Window
+	public class FindAllOccurrencesWindow : MesenWindow
 	{
 		private static string _lastSearch { get; set; } = "";
 		private static bool _lastMatchCase { get; set; } = false;

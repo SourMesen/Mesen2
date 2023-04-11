@@ -12,7 +12,7 @@ using Mesen.Config;
 
 namespace Mesen.Debugger.Windows
 {
-	public class TileViewerWindow : Window, INotificationHandler
+	public class TileViewerWindow : MesenWindow, INotificationHandler
 	{
 		private TileViewerViewModel _model;
 

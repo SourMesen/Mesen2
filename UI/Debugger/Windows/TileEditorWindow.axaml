@@ -26,11 +26,11 @@
 	
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
-			<Menu DockPanel.Dock="Top" Name="ActionMenu">
+			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
 				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
 				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
 				<MenuItem Header="{l:Translate mnuTools}" Items="{CompiledBinding ToolsMenuActions}" />
-			</Menu>
+			</c:MesenMenu>
 		</Panel>
 
 		<dc:ActionToolbar Items="{CompiledBinding ToolbarActions}" DockPanel.Dock="Top" />

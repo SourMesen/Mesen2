@@ -513,7 +513,7 @@ namespace Mesen.Debugger.ViewModels
 					foreach(SpritePreviewModel sprite in SpritePreviews) {
 						(Rect mainRect, Rect altRect) = sprite.GetPreviewRect();
 						spriteRects.Add(mainRect);
-						if(!altRect.IsDefault) {
+						if(altRect != default) {
 							spriteRects.Add(altRect);
 						}
 					}
