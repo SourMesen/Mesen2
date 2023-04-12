@@ -70,7 +70,7 @@ public:
 
 	void DrawPartialFrame() override;
 
-	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
+	bool SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	void ProcessInputOverrides(DebugControllerState inputOverrides[8]) override;
 

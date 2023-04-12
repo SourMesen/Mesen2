@@ -463,7 +463,7 @@ PpuTools* NesDebugger::GetPpuTools()
 	return _ppuTools.get();
 }
 
-void NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+bool NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	vector<uint8_t> output;
 
@@ -496,7 +496,9 @@ void NesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 	if(file) {
 		file.write((char*)output.data(), output.size());
 		file.close();
+		return true;
 	}
+	return false;
 }
 
 void NesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])

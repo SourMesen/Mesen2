@@ -192,5 +192,5 @@ extern "C"
 
 	DllExport uint32_t __stdcall AssembleCode(CpuType cpuType, char* code, uint32_t startAddress, int16_t* assembledOutput) { return WithTool(uint32_t, GetAssembler(cpuType), AssembleCode(code, startAddress, assembledOutput)); }
 	
-	DllExport void __stdcall SaveRomToDisk(char* filename, bool saveIpsFile, CdlStripOption cdlStripOption) { WithDebugger(void, SaveRomToDisk(filename, saveIpsFile, cdlStripOption)); }
+	DllExport bool __stdcall SaveRomToDisk(char* filename, bool saveIpsFile, CdlStripOption cdlStripOption) { return WithDebugger(bool, SaveRomToDisk(filename, saveIpsFile, cdlStripOption)); }
 };

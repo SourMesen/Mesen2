@@ -412,7 +412,7 @@ PpuTools* GbDebugger::GetPpuTools()
 	return _ppuTools.get();
 }
 
-void GbDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+bool GbDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	vector<uint8_t> output;
 
@@ -440,7 +440,9 @@ void GbDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption s
 	if(file) {
 		file.write((char*)output.data(), output.size());
 		file.close();
+		return true;
 	}
+	return false;
 }
 
 void GbDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])

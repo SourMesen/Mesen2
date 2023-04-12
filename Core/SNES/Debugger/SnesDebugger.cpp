@@ -509,7 +509,7 @@ void SnesDebugger::SetPpuState(BaseState& srcState)
 	dstState = (SnesPpuState&)srcState;
 }
 
-void SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+bool SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	vector<uint8_t> output;
 	
@@ -537,7 +537,9 @@ void SnesDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption
 	if(file) {
 		file.write((char*)output.data(), output.size());
 		file.close();
+		return true;
 	}
+	return false;
 }
 
 void SnesDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])

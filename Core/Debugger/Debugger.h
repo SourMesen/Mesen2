@@ -170,7 +170,7 @@ public:
 	void Log(string message);
 	string GetLog();
 
-	void SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
+	bool SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption);
 
 	void ClearExecutionTrace();
 	uint32_t GetExecutionTrace(TraceRow output[], uint32_t startOffset, uint32_t maxLineCount);

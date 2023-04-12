@@ -246,7 +246,7 @@ namespace Mesen.Interop
 			return indexes;
 		}
 
-		[DllImport(DllPath)] public static extern void SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, [MarshalAs(UnmanagedType.I1)] bool saveAsIps, CdlStripOption cdlStripOption);
+		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool SaveRomToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, [MarshalAs(UnmanagedType.I1)] bool saveAsIps, CdlStripOption cdlStripOption);
 
 		[DllImport(DllPath, EntryPoint = "GetMemoryValues")] private static extern void GetMemoryValuesWrapper(MemoryType type, UInt32 start, UInt32 end, [In, Out] byte[] buffer);
 		public static byte[] GetMemoryValues(MemoryType type, UInt32 start, UInt32 end)

@@ -422,7 +422,7 @@ PpuTools* PceDebugger::GetPpuTools()
 	return _ppuTools.get();
 }
 
-void PceDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+bool PceDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	vector<uint8_t> output;
 
@@ -446,7 +446,9 @@ void PceDebugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption 
 	if(file) {
 		file.write((char*)output.data(), output.size());
 		file.close();
+		return true;
 	}
+	return false;
 }
 
 void PceDebugger::ProcessInputOverrides(DebugControllerState inputOverrides[8])

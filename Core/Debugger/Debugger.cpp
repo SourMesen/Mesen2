@@ -890,29 +890,20 @@ string Debugger::GetLog()
 	return ss.str();
 }
 
-void Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
+bool Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption stripOption)
 {
 	switch(_mainCpuType) {
 		case CpuType::Snes:
 			if(_debuggers[(int)CpuType::Gameboy].Debugger) {
 				//SGB
-				GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+				return GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 			} else {
-				GetDebugger<CpuType::Snes, SnesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+				return GetDebugger<CpuType::Snes, SnesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 			}
-			break;
 
-		case CpuType::Gameboy:
-			GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
-			break;
-
-		case CpuType::Nes:
-			GetDebugger<CpuType::Nes, NesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
-			break;
-
-		case CpuType::Pce:
-			GetDebugger<CpuType::Pce, PceDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
-			break;
+		case CpuType::Gameboy: return GetDebugger<CpuType::Gameboy, GbDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+		case CpuType::Nes: return GetDebugger<CpuType::Nes, NesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
+		case CpuType::Pce: return GetDebugger<CpuType::Pce, PceDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 	}
 }
 

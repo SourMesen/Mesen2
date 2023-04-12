@@ -55,7 +55,9 @@ namespace Mesen.Debugger.Utilities
 
 			string? filename = await FileDialogHelper.SaveFile(null, romName, wnd, ext);
 			if(filename != null) {
-				DebugApi.SaveRomToDisk(filename, saveAsIps, cdlOption);
+				if(!DebugApi.SaveRomToDisk(filename, saveAsIps, cdlOption)) {
+					await MesenMsgBox.Show(wnd, "FileSaveError", Mesen.Windows.MessageBoxButtons.OK, Mesen.Windows.MessageBoxIcon.Error);
+				}
 			}
 		}
 	}
