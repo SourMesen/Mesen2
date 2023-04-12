@@ -939,7 +939,7 @@ void GbPpu::ProcessOamCorruption(uint16_t addr)
 		return;
 	}
 
-	int row = (_state.Cycle - 2) >> 2;
+	int row = std::min(19, (_state.Cycle - 2) >> 2);
 
 	//Quotes from: https://gbdev.io/pandocs/OAM_Corruption_Bug.html
 	//"Sprites 1 & 2 ($FE00 & $FE04) are not affected by this bug"
