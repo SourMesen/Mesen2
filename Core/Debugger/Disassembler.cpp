@@ -209,6 +209,8 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 
 				if(labelInfo.Label.size()) {
 					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Label));
+				} else if(showJumpLabels && cdl && (cdl->IsJumpTarget(addrInfo.Address) || cdl->IsSubEntryPoint(addrInfo.Address))) {
+					results.push_back(DisassemblyResult(addrInfo, i, LineFlags::Label));
 				}
 
 				if(!hasMultipleComment && labelInfo.Comment.size()) {
