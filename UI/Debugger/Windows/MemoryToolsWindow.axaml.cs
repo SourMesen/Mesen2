@@ -180,6 +180,7 @@ namespace Mesen.Debugger.Windows
 				GetExportAction(),
 				new ContextMenuSeparator(),
 				SaveRomActionHelper.GetSaveRomAction(this),
+				SaveRomActionHelper.GetSaveRomAsAction(this),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(this),
 				new ContextMenuSeparator(),
 				GetResetAccessCountersAction(),

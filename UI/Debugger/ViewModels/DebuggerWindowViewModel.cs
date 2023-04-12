@@ -495,6 +495,7 @@ namespace Mesen.Debugger.ViewModels
 
 			FileMenuItems = AddDisposables(new List<ContextMenuAction>() {
 				SaveRomActionHelper.GetSaveRomAction(wnd),
+				SaveRomActionHelper.GetSaveRomAsAction(wnd),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
 				new ContextMenuSeparator(),
 				GetCdlActionMenu(wnd),
@@ -752,11 +753,11 @@ namespace Mesen.Debugger.ViewModels
 						SubActions = new() {
 							new ContextMenuAction() {
 								ActionType = ActionType.CdlRomStripUnused,
-								OnClick = () => SaveRomActionHelper.SaveRom(wnd, false, CdlStripOption.StripUnused)
+								OnClick = () => SaveRomActionHelper.SaveRomAs(wnd, false, CdlStripOption.StripUnused)
 							},
 							new ContextMenuAction() {
 								ActionType = ActionType.CdlRomStripUsed,
-								OnClick = () => SaveRomActionHelper.SaveRom(wnd, false, CdlStripOption.StripUsed)
+								OnClick = () => SaveRomActionHelper.SaveRomAs(wnd, false, CdlStripOption.StripUsed)
 							}
 						}
 					},

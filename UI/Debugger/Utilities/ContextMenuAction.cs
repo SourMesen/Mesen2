@@ -664,6 +664,7 @@ namespace Mesen.Debugger.Utilities
 		LoadLastSession,
 
 		[IconFile("SaveFloppy")]
+		SaveRom,
 		SaveRomAs,
 		[IconFile("CheatCode")]
 		SaveEditsAsIps,

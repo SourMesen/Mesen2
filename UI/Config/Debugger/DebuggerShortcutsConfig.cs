@@ -196,6 +196,7 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.FindResultList_GoToLocation, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.FindResultList_ToggleBreakpoint, KeyBinding = new() });
 
+			Add(new() { Shortcut = DebuggerShortcut.SaveRom, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveRomAs, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.SaveEditAsIps, KeyBinding = new() });
 			
@@ -385,6 +386,7 @@ namespace Mesen.Config
 		FindResultList_GoToLocation,
 		FindResultList_AddWatch,
 		FindResultList_ToggleBreakpoint,
+		SaveRom,
 		SaveRomAs,
 		SaveEditAsIps,
 		MemoryViewer_Freeze,

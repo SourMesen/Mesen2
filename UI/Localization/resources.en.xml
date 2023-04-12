@@ -3102,7 +3102,8 @@
 			<Value ID="SaveStateToFile">Save to file...</Value>
 
 			<Value ID="RecentFiles">Recent Files</Value>
-			
+
+			<Value ID="SaveRom">Save ROM</Value>
 			<Value ID="SaveRomAs">Save ROM as...</Value>
 			<Value ID="SaveEditsAsIps">Save edits as IPS patch...</Value>
 			<Value ID="ResetLayout">Reset to default layout</Value>

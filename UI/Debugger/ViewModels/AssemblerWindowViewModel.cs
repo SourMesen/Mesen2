@@ -70,6 +70,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			FileMenuActions = AddDisposables(new List<ContextMenuAction>() {
 				SaveRomActionHelper.GetSaveRomAction(wnd),
+				SaveRomActionHelper.GetSaveRomAsAction(wnd),
 				SaveRomActionHelper.GetSaveEditsAsIpsAction(wnd),
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {

@@ -295,6 +295,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.FindResultList_AddWatch,
 				DebuggerShortcut.FindResultList_GoToLocation,
 				DebuggerShortcut.FindResultList_ToggleBreakpoint,
+				DebuggerShortcut.SaveRom,
 				DebuggerShortcut.SaveRomAs,
 				DebuggerShortcut.SaveEditAsIps,
 				DebuggerShortcut.ResetCdl,

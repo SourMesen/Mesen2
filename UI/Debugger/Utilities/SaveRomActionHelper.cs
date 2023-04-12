@@ -2,6 +2,7 @@
 using Mesen.Config;
 using Mesen.Interop;
 using Mesen.Utilities;
+using Mesen.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +17,20 @@ namespace Mesen.Debugger.Utilities
 		public static ContextMenuAction GetSaveRomAction(Window wnd)
 		{
 			return new ContextMenuAction() {
+				ActionType = ActionType.SaveRom,
+				IsEnabled = () => IsSaveRomSupported() && !((ResourcePath)MainWindowViewModel.Instance.RomInfo.RomPath).Compressed,
+				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveRom),
+				OnClick = () => SaveRom(wnd)
+			};
+		}
+
+		public static ContextMenuAction GetSaveRomAsAction(Window wnd)
+		{
+			return new ContextMenuAction() {
 				ActionType = ActionType.SaveRomAs,
 				IsEnabled = () => IsSaveRomSupported(),
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveRomAs),
-				OnClick = () => SaveRom(wnd, false)
+				OnClick = () => SaveRomAs(wnd, false)
 			};
 		}
 
@@ -29,13 +40,13 @@ namespace Mesen.Debugger.Utilities
 				ActionType = ActionType.SaveEditsAsIps,
 				IsEnabled = () => IsSaveRomSupported(),
 				Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.SaveEditAsIps),
-				OnClick = () => SaveRom(wnd, true)
+				OnClick = () => SaveRomAs(wnd, true)
 			};
 		}
 
 		private static bool IsSaveRomSupported()
 		{
-			return EmuApi.GetRomInfo().Format switch {
+			return MainWindowViewModel.Instance.RomInfo.Format switch {
 				RomFormat.Sfc => true,
 				RomFormat.Gb => true,
 				RomFormat.Gbs => true,
@@ -47,9 +58,17 @@ namespace Mesen.Debugger.Utilities
 			};
 		}
 
-		public static async void SaveRom(Window wnd, bool saveAsIps, CdlStripOption cdlOption = CdlStripOption.StripNone)
+		private static async void SaveRom(Window wnd)
 		{
-			string romName = Path.GetFileName(EmuApi.GetRomInfo().RomPath);
+			string romName = MainWindowViewModel.Instance.RomInfo.RomPath;
+			if(!DebugApi.SaveRomToDisk(romName, false, CdlStripOption.StripNone)) {
+				await MesenMsgBox.Show(wnd, "FileSaveError", Mesen.Windows.MessageBoxButtons.OK, Mesen.Windows.MessageBoxIcon.Error);
+			}
+		}
+
+		public static async void SaveRomAs(Window wnd, bool saveAsIps, CdlStripOption cdlOption = CdlStripOption.StripNone)
+		{
+			string romName = Path.GetFileName(MainWindowViewModel.Instance.RomInfo.RomPath);
 			string ext = saveAsIps ? FileDialogHelper.IpsExt : Path.GetExtension(romName).Substring(1);
 			romName = Path.ChangeExtension(romName, ext);
 
