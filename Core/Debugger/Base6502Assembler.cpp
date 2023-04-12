@@ -7,7 +7,7 @@
 #include "Debugger/DisassemblyInfo.h"
 #include "Debugger/LabelManager.h"
 
-static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*):(.*)", std::regex_constants::icase);
+static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9+]*):(.*)", std::regex_constants::icase);
 static const std::regex byteRegex = std::regex("^\\s*[.]db\\s+((\\$[a-fA-F0-9]{1,2}[ ])*)(\\$[a-fA-F0-9]{1,2})+\\s*(;*)(.*)$", std::regex_constants::icase);
 
 template<class T>
@@ -97,7 +97,7 @@ AssemblerSpecialCodes Base6502Assembler<T>::ParseOperand(AssemblerLineData& line
 	}
 
 	//Check for operands that match
-	static const std::regex operandRegex = std::regex("^([(\\[]?)[\\s]*(((#?)[\\s]*([$%]?)(-?)([0-9a-f]{1,16}))|([@_a-zA-Z][@_a-zA-Z0-9]*))[\\s]*([\\])]?)[\\s]*$", std::regex_constants::icase);
+	static const std::regex operandRegex = std::regex("^([(\\[]?)[\\s]*(((#?)[\\s]*([$%]?)(-?)([0-9a-f]{1,16}))|([@_a-zA-Z][@_a-zA-Z0-9+]*))[\\s]*([\\])]?)[\\s]*$", std::regex_constants::icase);
 
 	std::smatch match;
 	if(std::regex_search(operandStr, match, operandRegex)) {

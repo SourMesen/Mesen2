@@ -6,7 +6,7 @@
 #include "Utilities/StringUtilities.h"
 #include "Utilities/HexUtilities.h"
 
-static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9]*)", std::regex_constants::icase);
+static const std::regex labelRegex = std::regex("^\\s*([@_a-zA-Z][@_a-zA-Z0-9+]*)", std::regex_constants::icase);
 
 GbAssembler::GbAssembler(LabelManager* labelManager)
 {
@@ -186,6 +186,10 @@ bool GbAssembler::IsMatch(ParamEntry& entry, string operand, uint32_t address, u
 		case ParamType::RelAddress: {
 			int value = ReadValue(operand, 0, 0xFFFF, localLabels, firstPass);
 			if(value >= 0) {
+				if(firstPass) {
+					//Behave as if the label was in range since the address is unknown
+					return true;
+				}
 				int offset = (value - (address + 2));
 				return offset >= -128 && offset <= 127;
 			} else if(firstPass) {
