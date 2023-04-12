@@ -737,7 +737,6 @@ namespace Mesen.Interop
 		public UInt16 CgbDmaSource;
 		public UInt16 CgbDmaDest;
 		public byte CgbDmaLength;
-		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaDone;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbHdmaRunning;
 	};
 

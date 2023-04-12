@@ -250,8 +250,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$FF51-52", "DMA Source", dma.CgbDmaSource, Format.X16),
 				new RegEntry("$FF53-54", "DMA Destination", dma.CgbDmaDest, Format.X16),
 				new RegEntry("$FF55.0-6", "DMA Length", dma.CgbDmaLength, Format.X8),
-				new RegEntry("$FF55.7", "HDMA Done", dma.CgbHdmaDone),
-				new RegEntry("", "HDMA Running", dma.CgbHdmaRunning),
+				new RegEntry("$FF55.7", "HDMA Inactive", !dma.CgbHdmaRunning),
 
 				new RegEntry("", "Palette registers"),
 				new RegEntry("$FF68", "BGPI - Background Palette Index"),

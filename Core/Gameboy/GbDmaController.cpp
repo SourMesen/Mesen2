@@ -101,7 +101,7 @@ void GbDmaController::Write(uint8_t value)
 uint8_t GbDmaController::ReadCgb(uint16_t addr)
 {
 	switch(addr) {
-		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaDone ? 0x80 : 0);
+		case 0xFF55: return _state.CgbDmaLength | (_state.CgbHdmaRunning ? 0 : 0x80);
 	}
 
 	return 0;
@@ -125,7 +125,6 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 					//  - New bit 7 is 1: Restart copy. New size is the value of written_value bits 0-6.
 					//This means that HDMA can't switch to GDMA with only one write. It must be stopped first."
 					_state.CgbHdmaRunning = false;
-					_state.CgbHdmaDone = true;
 				} else {
 					//4 cycles for setup
 					_memoryManager->Exec();
@@ -137,7 +136,6 @@ void GbDmaController::WriteCgb(uint16_t addr, uint8_t value)
 				}
 			} else {
 				//"After writing a value to HDMA5 that starts the HDMA copy, the upper bit (that indicates HDMA mode when set to '1') will be cleared"
-				_state.CgbHdmaDone = false;
 				_state.CgbHdmaRunning = true;
 
 				//"If a HDMA transfer is started when the screen is off, one block is copied. "
@@ -184,13 +182,12 @@ void GbDmaController::ProcessDmaBlock()
 
 	if(_state.CgbHdmaRunning && _state.CgbDmaLength == 0x7F) {
 		_state.CgbHdmaRunning = false;
-		_state.CgbHdmaDone = true;
 	}
 }
 
 void GbDmaController::Serialize(Serializer& s)
 {
 	SV(_state.OamDmaSource); SV(_state.DmaStartDelay); SV(_state.InternalDest); SV(_state.DmaCounter); SV(_state.DmaReadBuffer);
-	SV(_state.CgbDmaDest); SV(_state.CgbDmaLength); SV(_state.CgbDmaSource); SV(_state.CgbHdmaDone); SV(_state.CgbHdmaRunning);
+	SV(_state.CgbDmaDest); SV(_state.CgbDmaLength); SV(_state.CgbDmaSource); SV(_state.CgbHdmaRunning);
 	SV(_state.OamDmaRunning);
 }
