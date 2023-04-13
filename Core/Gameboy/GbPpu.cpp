@@ -660,8 +660,9 @@ void GbPpu::SendFrame()
 
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	if(_isFirstFrame) {
+	if(_isFirstFrame && !_gameboy->IsCgb()) {
 		//Send blank frame on the first frame after enabling LCD
+		//DMG-only? Some CGB games flicker if this is done for CGB (e.g Men in Black - The Series)
 		std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
 	}
 	_isFirstFrame = false;
