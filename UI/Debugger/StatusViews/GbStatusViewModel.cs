@@ -88,7 +88,7 @@ namespace Mesen.Debugger.StatusViews
 			Cycle = ppu.Cycle;
 
 			StringBuilder sb = new StringBuilder();
-			for(UInt32 i = (UInt32)cpu.SP; (i & 0x100) != 0; i++) {
+			for(UInt32 i = (UInt32)cpu.SP; (i & 0xFF) != 0; i++) {
 				sb.Append($"${DebugApi.GetMemoryValue(MemoryType.GameboyMemory, i):X2} ");
 			}
 			StackPreview = sb.ToString();
