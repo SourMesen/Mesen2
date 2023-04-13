@@ -42,6 +42,7 @@ private:
 	uint8_t _latchWindowX = 0;
 	uint8_t _latchWindowY = 0;
 	bool _latchWindowEnabled = false;
+	bool _wyEnableFlag = false;
 
 	int16_t _fetchSprite = -1;
 	uint8_t _spriteCount = 0;

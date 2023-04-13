@@ -196,6 +196,7 @@ void GbPpu::ProcessVblankScanline()
 				_state.Scanline = 0;
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
+				_wyEnableFlag = false;
 
 				if(_emu->IsDebugging()) {
 					_emu->ProcessEvent(EventType::StartFrame, CpuType::Gameboy);
@@ -273,6 +274,10 @@ void GbPpu::ProcessVisibleScanline()
 		case 4:
 			_spriteCount = 0;
 			_state.LyForCompare = _state.Scanline;
+			
+			//"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
+			_wyEnableFlag |= _state.Scanline == _latchWindowY;
+
 			_state.Mode = PpuMode::OamEvaluation;
 			_state.IrqMode = PpuMode::OamEvaluation;
 			break;
@@ -334,9 +339,9 @@ void GbPpu::RunDrawCycle()
 
 	//TODO fix/check behavior for WX=0 and WX=166
 	bool fetchWindow = (
-		_latchWindowEnabled && 
-		_drawnPixels >= _latchWindowX - 7 &&
-		_state.Scanline >= _latchWindowY && 
+		_latchWindowEnabled && //"Window enable bit in LCDC is set"
+		_drawnPixels >= _latchWindowX - 7 && //"the current X coordinate being rendered + 7 was equal to WX"
+		_wyEnableFlag && //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
 		(_latchWindowX != 0 || !_gameboy->IsCgb()) //Disable window on CGB if WX=0 (Fixes Warriors of Might And Magic)
 	);
 
@@ -770,6 +775,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.Ly = 0;
 					_state.LyForCompare = 0;
 					_state.Mode = PpuMode::HBlank;
+					_wyEnableFlag = false;
 
 					_lastFrameTime = _gameboy->GetApuCycleCount();
 					
@@ -1091,6 +1097,7 @@ void GbPpu::Serialize(Serializer& s)
 	SV(_state.CgbBgPalAutoInc); SV(_state.CgbBgPalPosition);
 	SV(_state.CgbObjPalAutoInc); SV(_state.CgbObjPalPosition); SV(_state.CgbVramBank); SV(_state.CgbEnabled);
 	SV(_latchWindowX); SV(_latchWindowY); SV(_latchWindowEnabled); SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
+	SV(_wyEnableFlag);
 	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
 	SV(_state.StatIrqFlag);
 
