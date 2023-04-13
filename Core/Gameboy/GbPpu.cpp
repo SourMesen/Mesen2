@@ -332,7 +332,14 @@ void GbPpu::RunDrawCycle()
 		return;
 	}
 
-	bool fetchWindow = _latchWindowEnabled && _drawnPixels >= _latchWindowX - 7 && _state.Scanline >= _latchWindowY;
+	//TODO fix/check behavior for WX=0 and WX=166
+	bool fetchWindow = (
+		_latchWindowEnabled && 
+		_drawnPixels >= _latchWindowX - 7 &&
+		_state.Scanline >= _latchWindowY && 
+		(_latchWindowX != 0 || !_gameboy->IsCgb()) //Disable window on CGB if WX=0 (Fixes Warriors of Might And Magic)
+	);
+
 	if(_fetchWindow != fetchWindow) {
 		//Switched between window & background, reset fetcher & pixel FIFO
 		_fetchWindow = fetchWindow;
