@@ -555,6 +555,8 @@ void GbPpu::ClockTileFetcher()
 
 void GbPpu::PushSpriteToPixelFifo()
 {
+	uint8_t spriteIndex = _fetchSprite >> 2;
+
 	_fetchSprite = -1;
 	_oamFetcher.Step = 0;
 
@@ -563,7 +565,6 @@ void GbPpu::PushSpriteToPixelFifo()
 	}
 
 	uint8_t pos = _oamFifo.Position;
-	uint8_t spriteIndex = _fetchSprite >> 2;
 
 	//Overlap sprite
 	for(int i = 0; i < 8; i++) {
@@ -571,7 +572,7 @@ void GbPpu::PushSpriteToPixelFifo()
 		uint8_t bits = ((_oamFetcher.LowByte >> shift) & 0x01);
 		bits |= ((_oamFetcher.HighByte >> shift) & 0x01) << 1;
 
-		if(bits > 0 && (_oamFifo.Content[pos].Color == 0 || (IsCgbEnabled() && spriteIndex >= _oamFifo.Content[pos].Index))) {
+		if(bits > 0 && (_oamFifo.Content[pos].Color == 0 || (IsCgbEnabled() && spriteIndex <= _oamFifo.Content[pos].Index))) {
 			_oamFifo.Content[pos].Color = bits;
 			_oamFifo.Content[pos].Attributes = _oamFetcher.Attributes;
 			_oamFifo.Content[pos].Index = spriteIndex;
