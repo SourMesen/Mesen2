@@ -1350,7 +1350,7 @@ namespace Mesen.Interop
 
 		public UInt64 GetAvgCycles()
 		{
-			return CallCount == 0 ? 0 : (ExclusiveCycles / CallCount);
+			return CallCount == 0 ? 0 : (InclusiveCycles / CallCount);
 		}
 	}
 
