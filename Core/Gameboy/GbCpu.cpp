@@ -786,10 +786,13 @@ void GbCpu::InvalidOp()
 
 void GbCpu::STOP()
 {
+	//Skip the next byte (unused operand)
+	ReadCode();
+
 	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
 #ifndef DUMMYCPU
-		//Stop for ~33942 cycles - most likely not accurate, but matches speed_switch_timing_stat test rom
-		_state.HaltCounter = 33943;
+		//Stop for ~33941 cycles - most likely not accurate, but matches speed_switch_timing_stat test rom
+		_state.HaltCounter = 33942;
 #endif
 	} else {
 		_state.HaltCounter = 1;

@@ -11,7 +11,7 @@
 
 constexpr const char* _opTemplate[256] = {
 	"NOP",			"LD BC, e",		"LD (BC), A",	"INC BC",	"INC B",			"DEC B",			"LD B, d",		"RLCA",		"LD (a), SP",	"ADD HL, BC",	"LD A, (BC)",	"DEC BC",	"INC C",		"DEC C",		"LD C, d",		"RRCA",
-	"STOP",			"LD DE, e",		"LD (DE), A",	"INC DE",	"INC D",			"DEC D",			"LD D, d",		"RLA",		"JR r",			"ADD HL, DE",	"LD A, (DE)",	"DEC DE",	"INC E",		"DEC E",		"LD E, d",		"RRA",
+	"STOP d",		"LD DE, e",		"LD (DE), A",	"INC DE",	"INC D",			"DEC D",			"LD D, d",		"RLA",		"JR r",			"ADD HL, DE",	"LD A, (DE)",	"DEC DE",	"INC E",		"DEC E",		"LD E, d",		"RRA",
 	"JR NZ, r",		"LD HL, e",		"LD (HL+), A",	"INC HL",	"INC H",			"DEC H",			"LD H, d",		"DAA",		"JR Z, r",		"ADD HL, HL",	"LD A, (HL+)",	"DEC HL",	"INC L",		"DEC L",		"LD L, d",		"CPL",
 	"JR NC, r",		"LD SP, e",		"LD (HL-), A",	"INC SP",	"INC (HL)",		"DEC (HL)",		"LD (HL), d",	"SCF",		"JR C, r",		"ADD HL, SP",	"LD A, (HL-)",	"DEC SP",	"INC A",		"DEC A",		"LD A, d",		"CCF",
 	"LD B, B",		"LD B, C",		"LD B, D",		"LD B, E",	"LD B, H",		"LD B, L",		"LD B, (HL)",	"LD B, A",	"LD C, B",		"LD C, C",		"LD C, D",		"LD C, E",	"LD C, H",	"LD C, L",	"LD C, (HL)",	"LD C, A",
@@ -49,7 +49,7 @@ constexpr const char* _cbTemplate[256] = {
 
 constexpr const uint8_t _opSize[256] = {
 	1,3,1,1,1,1,2,1,3,1,1,1,1,1,2,1,
-	1,3,1,1,1,1,2,1,2,1,1,1,1,1,2,1,
+	2,3,1,1,1,1,2,1,2,1,1,1,1,1,2,1,
 	2,3,1,1,1,1,2,1,2,1,1,1,1,1,2,1,
 	2,3,1,1,1,1,2,1,2,1,1,1,1,1,2,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
