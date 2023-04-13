@@ -382,6 +382,7 @@ void GbApu::Serialize(Serializer& s)
 	SV(_state.EnableRightSq1); SV(_state.EnableRightSq2); SV(_state.EnableRightWave); SV(_state.EnableRightNoise);
 	SV(_state.LeftVolume); SV(_state.RightVolume); SV(_state.ExtAudioLeftEnabled); SV(_state.ExtAudioRightEnabled);
 	SV(_prevLeftOutput); SV(_prevRightOutput); SV(_clockCounter); SV(_prevClockCount); SV(_skipFirstEventCounter);
+	SV(_powerOnCycle);
 
 	SV(_square1);
 	SV(_square2);
