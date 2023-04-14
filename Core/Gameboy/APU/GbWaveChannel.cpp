@@ -2,11 +2,28 @@
 #include "Gameboy/APU/GbWaveChannel.h"
 #include "Gameboy/APU/GbApu.h"
 #include "Gameboy/Gameboy.h"
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 
 GbWaveChannel::GbWaveChannel(GbApu* apu, Gameboy* gameboy)
 {
 	_gameboy = gameboy;
 	_apu = apu;
+
+	//"When the Game Boy is switched on (before the internal boot ROM executes),
+	//the values in the wave table depend on the model. On the DMG, they are somewhat
+	//random, though the particular pattern is generally the same for each individual Game Boy unit.
+	//The game R-Type doesn't initialize wave RAM and thus relies on these."
+
+	//Note: On CGB, the boot rom initalizes wave ram to 00, FF, 00, FF, etc. (so these values will be overwritten)
+	if(_gameboy->GetEmulator()->GetSettings()->GetGameboyConfig().RamPowerOnState == RamState::Random) {
+		//If random ram is turned on, randomize it completely instead
+		_gameboy->InitializeRam(_state.Ram, 0x10);
+	} else {
+		//Otherwise, use a preset to ensure the audio is still audible
+		constexpr uint8_t gbWaveRamDefault[0x10] = { 0x84, 0x40, 0x43, 0xAA, 0x2D, 0x78, 0x92, 0x3C, 0x60, 0x59, 0x59, 0xB0, 0x34, 0xB8, 0x2E, 0xDA };
+		memcpy(_state.Ram, gbWaveRamDefault, 0x10);
+	}
 }
 
 GbWaveState& GbWaveChannel::GetState()
