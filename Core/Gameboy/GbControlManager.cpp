@@ -107,7 +107,9 @@ uint8_t GbControlManager::ReadInputPort()
 
 void GbControlManager::WriteInputPort(uint8_t value)
 {
-	_state.InputSelect = value & 0x30;
+	//Changing the select bits can trigger the joypad IRQ (Fixes Double Dragon 3 input issues)
+	ProcessInputChange([&]() { _state.InputSelect = value & 0x30; });
+
 	SuperGameboy* sgb = _console->GetSgb();
 	if(sgb) {
 		sgb->ProcessInputPortWrite(_state.InputSelect);
