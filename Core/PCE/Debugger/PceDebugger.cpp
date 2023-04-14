@@ -179,7 +179,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Pce, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
-		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0) {
+		if(addressInfo.Type == MemoryType::PcePrgRom && addressInfo.Address >= 0 && operation.Type != MemoryOperationType::DummyRead) {
 			_codeDataLogger->SetData(addressInfo.Address);
 		}
 		
@@ -188,7 +188,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetState().CycleCount);
-		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
+		if(result != ReadResult::Normal && _enableBreakOnUninitRead && operation.Type != MemoryOperationType::DummyRead) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
 				//Only warn the first time

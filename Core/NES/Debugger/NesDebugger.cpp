@@ -208,7 +208,7 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _cpu->GetCycleCount());
-		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
+		if(result != ReadResult::Normal && _enableBreakOnUninitRead && operation.Type != MemoryOperationType::DummyRead) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
 				//Only warn the first time
