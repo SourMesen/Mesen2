@@ -414,6 +414,7 @@ bool SnesMemoryManager::IsWorkRam(uint32_t cpuAddress)
 void SnesMemoryManager::Serialize(Serializer &s)
 {
 	SV(_masterClock); SV(_openBus); SV(_cpuSpeed); SV(_hClock); SV(_dramRefreshPosition);
+	SV(_memTypeBusA); SV(_nextEvent); SV(_nextEventClock);
 	SVArray(_workRam, SnesMemoryManager::WorkRamSize);
 	SV(_registerHandlerB);
 }
