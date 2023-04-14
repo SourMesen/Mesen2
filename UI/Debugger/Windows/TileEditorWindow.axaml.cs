@@ -55,8 +55,14 @@ namespace Mesen.Debugger.Windows
 		{
 			if(e.OriginalEvent.KeyModifiers == KeyModifiers.Shift) {
 				_model.SelectColor(e.Position);
+			} else if(e.OriginalEvent.KeyModifiers == KeyModifiers.Control) {
+				_model.UpdatePixel(e.Position, true);
 			} else {
-				_model.UpdatePixel(e.Position, e.Properties.IsRightButtonPressed);
+				if(e.Properties.IsRightButtonPressed) {
+					_model.SelectColor(e.Position);
+				} else {
+					_model.UpdatePixel(e.Position, false);
+				}
 			}
 		}
 
