@@ -905,6 +905,8 @@ bool Debugger::SaveRomToDisk(string filename, bool saveAsIps, CdlStripOption str
 		case CpuType::Nes: return GetDebugger<CpuType::Nes, NesDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 		case CpuType::Pce: return GetDebugger<CpuType::Pce, PceDebugger>()->SaveRomToDisk(filename, saveAsIps, stripOption);
 	}
+
+	return false;
 }
 
 FrozenAddressManager* Debugger::GetFrozenAddressManager(CpuType cpuType)
