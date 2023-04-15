@@ -56,15 +56,7 @@ namespace Mesen.ViewModels
 			List<CheatCode> sortedCheats = new List<CheatCode>(Cheats);
 			SortHelper.SortList(sortedCheats, SortState.SortOrder, _comparers, "Codes");
 			Cheats.Replace(sortedCheats);
-			if(selectedIndexes.Count >= 0) {
-				foreach(int index in selectedIndexes) {
-					if(index < Cheats.Count) {
-						Selection.Select(index);
-					} else {
-						Selection.SelectedIndex = Cheats.Count - 1;
-					}
-				}
-			}
+			Selection.SelectIndexes(selectedIndexes, Cheats.Count);
 		}
 
 		public void LoadCheats()

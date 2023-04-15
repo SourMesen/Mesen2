@@ -58,21 +58,9 @@ namespace Mesen.Debugger.ViewModels
 			List<WatchValueInfo> newEntries = Manager.GetWatchContent(WatchEntries);
 
 			if(newEntries.Count != WatchEntries.Count) {
-				int selection = Selection.SelectedIndex;
-
+				List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 				WatchEntries.Replace(newEntries);
-				if(selection >= 0) {
-					if(selection < WatchEntries.Count) {
-						Selection.SelectedIndex = selection;
-					} else {
-						Selection.SelectedIndex = WatchEntries.Count - 1;
-					}
-				} else if(WatchEntries.Count > 0) {
-					//TODOv2 - fixes databox refresh issue that causes invisible scrollbar to toggle
-					//on/off when adding an element to the list while no selection is active
-					Selection.SelectedIndex = 0;
-					Selection.SelectedIndex = -1;
-				}
+				Selection.SelectIndexes(selectedIndexes, WatchEntries.Count);
 			} else {
 				for(int i = 0; i < newEntries.Count; i++) {
 					WatchEntries[i].Expression = newEntries[i].Expression;

@@ -56,7 +56,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateLabelList()
 		{
-			int selection = Selection.SelectedIndex;
+			List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 
 			List<LabelViewModel> sortedLabels = LabelManager.GetLabels(CpuType).Select(l => new LabelViewModel(l, CpuType)).ToList();
 
@@ -64,13 +64,7 @@ namespace Mesen.Debugger.ViewModels
 
 			Labels.Replace(sortedLabels);
 
-			if(selection >= 0) {
-				if(selection < Labels.Count) {
-					Selection.SelectedIndex = selection;
-				} else {
-					Selection.SelectedIndex = Labels.Count - 1;
-				}
-			}
+			Selection.SelectIndexes(selectedIndexes, Labels.Count);
 		}
 
 		public void RefreshLabelList()

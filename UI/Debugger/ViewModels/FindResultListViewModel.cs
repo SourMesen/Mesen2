@@ -67,21 +67,13 @@ public class FindResultListViewModel : ViewModelBase
 
 	private void UpdateResults(IEnumerable<FindResultViewModel> results)
 	{
-		int selection = Selection.SelectedIndex;
-
+		List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 		List<FindResultViewModel> sortedResults = results.ToList();
 
 		SortHelper.SortList(sortedResults, SortState.SortOrder, _comparers, "Address");
 
 		FindResults.Replace(sortedResults);
-
-		if(selection >= 0) {
-			if(selection < FindResults.Count) {
-				Selection.SelectedIndex = selection;
-			} else {
-				Selection.SelectedIndex = FindResults.Count - 1;
-			}
-		}
+		Selection.SelectIndexes(selectedIndexes, FindResults.Count);
 	}
 
 	public void GoToResult(FindResultViewModel result)

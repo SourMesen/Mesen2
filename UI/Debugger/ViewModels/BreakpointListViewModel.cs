@@ -63,21 +63,7 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			Breakpoints.Replace(sortedBreakpoints);
-
-			if(selectedIndexes.Count >= 0) {
-				foreach(int index in selectedIndexes) {
-					if(index < Breakpoints.Count) {
-						Selection.Select(index);
-					} else {
-						Selection.SelectedIndex = Breakpoints.Count - 1;
-					}
-				}
-			} else if(Breakpoints.Count > 0) {
-				//TODOv2 - fixes databox refresh issue that causes invisible scrollbar to toggle
-				//on/off when adding an element to the list while no selection is active
-				Selection.SelectedIndex = 0;
-				Selection.SelectedIndex = -1;
-			}
+			Selection.SelectIndexes(selectedIndexes, Breakpoints.Count);
 		}
 
 		public void RefreshBreakpointList()

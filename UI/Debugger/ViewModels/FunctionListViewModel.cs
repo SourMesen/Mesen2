@@ -56,7 +56,7 @@ namespace Mesen.Debugger.ViewModels
 
 		public void UpdateFunctionList()
 		{
-			int selection = Selection.SelectedIndex;
+			List<int> selectedIndexes = Selection.SelectedIndexes.ToList();
 
 			MemoryType prgMemType = CpuType.GetPrgRomMemoryType();
 			List<FunctionViewModel> sortedFunctions = DebugApi.GetCdlFunctions(CpuType.GetPrgRomMemoryType()).Select(f => new FunctionViewModel(new AddressInfo() { Address = (int)f, Type = prgMemType }, CpuType)).ToList();
@@ -64,14 +64,7 @@ namespace Mesen.Debugger.ViewModels
 			SortHelper.SortList(sortedFunctions, SortState.SortOrder, _comparers, "AbsAddr");
 
 			Functions.Replace(sortedFunctions);
-
-			if(selection >= 0) {
-				if(selection < Functions.Count) {
-					Selection.SelectedIndex = selection;
-				} else {
-					Selection.SelectedIndex = Functions.Count - 1;
-				}
-			}
+			Selection.SelectIndexes(selectedIndexes, Functions.Count);
 		}
 
 		public void InitContextMenu(Control parent)
