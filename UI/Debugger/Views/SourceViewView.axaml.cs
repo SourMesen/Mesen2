@@ -266,13 +266,15 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
+				new ContextMenuSeparator() { IsVisible = () => GetBreakpoint() == null && IsMarginClick },
 				new ContextMenuAction() {
-					ActionType = ActionType.RemoveBreakpoint,
+					ActionType = ActionType.CodeWindowEditBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => GetBreakpoint() != null && IsMarginClick,
+					IsVisible = () => IsMarginClick,
+					IsEnabled = () => GetBreakpoint() != null,
 					OnClick = () => {
-						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
+						if(GetBreakpoint() is Breakpoint bp) {
+							BreakpointEditWindow.EditBreakpoint(bp, this);
 						}
 					}
 				},
@@ -298,17 +300,17 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
+				new ContextMenuSeparator() { IsVisible = () => GetBreakpoint() != null && IsMarginClick },
 				new ContextMenuAction() {
-					ActionType = ActionType.CodeWindowEditBreakpoint,
+					ActionType = ActionType.RemoveBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => IsMarginClick,
-					IsEnabled = () => GetBreakpoint() != null,
+					IsVisible = () => GetBreakpoint() != null && IsMarginClick,
 					OnClick = () => {
-						if(GetBreakpoint() is Breakpoint bp) {
-							BreakpointEditWindow.EditBreakpoint(bp, this);
+						if(ActionLocation.AbsAddress != null) {
+							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
 						}
 					}
-				}
+				},
 			};
 		}
 
