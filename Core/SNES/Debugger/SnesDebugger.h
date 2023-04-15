@@ -60,7 +60,6 @@ class SnesDebugger final : public IDebugger
 
 	CpuType _cpuType;
 	MemoryType _cpuMemType;
-	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 

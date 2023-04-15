@@ -85,11 +85,6 @@ SnesDebugger::SnesDebugger(Debugger* debugger, CpuType cpuType) : IDebugger(debu
 	_assembler.reset(new SnesAssembler(_debugger->GetLabelManager()));
 
 	_dummyCpu.reset(new DummySnesCpu(_console, _cpuType));
-
-	if(_console->GetMasterClock() < 1000) {
-		//Enable breaking on uninit reads when debugger is opened at power on
-		_enableBreakOnUninitRead = true;
-	}
 }
 
 SnesDebugger::~SnesDebugger()
@@ -107,7 +102,6 @@ void SnesDebugger::Init()
 
 void SnesDebugger::Reset()
 {
-	_enableBreakOnUninitRead = true;
 	_callstackManager->Clear();
 	ResetPrevOpCode();
 }
@@ -235,7 +229,7 @@ void SnesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
-		if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
+		if(result != ReadResult::Normal) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
 				//Only warn the first time

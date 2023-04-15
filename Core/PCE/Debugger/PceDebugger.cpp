@@ -66,11 +66,6 @@ PceDebugger::PceDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator()
 	_breakpointManager.reset(new BreakpointManager(debugger, this, CpuType::Pce, _eventManager.get()));
 	_step.reset(new StepRequest());
 	_assembler.reset(new PceAssembler(_debugger->GetLabelManager()));
-
-	if(_console->GetMasterClock() < 1000) {
-		//Enable breaking on uninit reads when debugger is opened at power on
-		_enableBreakOnUninitRead = true;
-	}
 }
 
 PceDebugger::~PceDebugger()
@@ -80,7 +75,6 @@ PceDebugger::~PceDebugger()
 
 void PceDebugger::Reset()
 {
-	_enableBreakOnUninitRead = true;
 	_callstackManager->Clear();
 	ResetPrevOpCode();
 }
@@ -188,7 +182,7 @@ void PceDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		}
 
 		ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetState().CycleCount);
-		if(result != ReadResult::Normal && _enableBreakOnUninitRead && operation.Type != MemoryOperationType::DummyRead) {
+		if(result != ReadResult::Normal && operation.Type != MemoryOperationType::DummyRead) {
 			//Memory access was a read on an uninitialized memory address
 			if(result == ReadResult::FirstUninitRead) {
 				//Only warn the first time

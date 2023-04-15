@@ -4,18 +4,14 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugUtilities.h"
 #include "Debugger/MemoryDumper.h"
-#include "SNES/SnesMemoryManager.h"
-#include "SNES/SnesConsole.h"
-#include "SNES/Spc.h"
-#include "SNES/Coprocessors/SA1/Sa1.h"
-#include "SNES/Coprocessors/GSU/Gsu.h"
-#include "SNES/Coprocessors/CX4/Cx4.h"
-#include "SNES/BaseCartridge.h"
-#include "Gameboy/Gameboy.h"
+#include "Shared/Interfaces/IConsole.h"
 
 MemoryAccessCounter::MemoryAccessCounter(Debugger* debugger)
 {
 	_debugger = debugger;
+
+	//Enable breaking on uninit reads when debugger is opened at power on
+	_enableBreakOnUninitRead = _debugger->GetConsole()->GetMasterClock() < 1000;
 
 	for(int i = (int)DebugUtilities::GetLastCpuMemoryType() + 1; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		uint32_t memSize = _debugger->GetMemoryDumper()->GetMemorySize((MemoryType)i);
@@ -33,7 +29,7 @@ ReadResult MemoryAccessCounter::ProcessMemoryRead(AddressInfo &addressInfo, uint
 	}
 
 	AddressCounters& counts = _counters[(int)addressInfo.Type][addressInfo.Address];
-	if(counts.WriteStamp == 0 && DebugUtilities::IsVolatileRam(addressInfo.Type)) {
+	if(_enableBreakOnUninitRead && counts.WriteStamp == 0 && DebugUtilities::IsVolatileRam(addressInfo.Type)) {
 		ReadResult result = counts.ReadStamp == 0 ? ReadResult::FirstUninitRead : ReadResult::UninitRead;
 		counts.ReadStamp = masterClock;
 		counts.ReadCounter++;
@@ -73,6 +69,7 @@ void MemoryAccessCounter::ResetCounts()
 	for(int i = 0; i < DebugUtilities::GetMemoryTypeCount(); i++) {
 		memset(_counters[i].data(), 0, _counters[i].size() * sizeof(AddressCounters));
 	}
+	_enableBreakOnUninitRead = _debugger->GetConsole()->GetMasterClock() < 1000;
 }
 
 void MemoryAccessCounter::GetAccessCounts(uint32_t offset, uint32_t length, MemoryType memoryType, AddressCounters counts[])

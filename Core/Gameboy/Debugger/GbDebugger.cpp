@@ -66,11 +66,6 @@ GbDebugger::GbDebugger(Debugger* debugger) : IDebugger(debugger->GetEmulator())
 	
 	_dummyCpu.reset(new DummyGbCpu());
 	_dummyCpu->Init(_emu, _gameboy, _gameboy->GetMemoryManager());
-
-	if(_gameboy->GetMasterClock() < 1000) {
-		//Enable breaking on uninit reads when debugger is opened at power on
-		_enableBreakOnUninitRead = true;
-	}
 }
 
 GbDebugger::~GbDebugger()
@@ -170,7 +165,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 
 		if(addr < 0xFE00 || addr >= 0xFF80) {
 			ReadResult result = _memoryAccessCounter->ProcessMemoryRead(addressInfo, _gameboy->GetMasterClock());
-			if(result != ReadResult::Normal && _enableBreakOnUninitRead) {
+			if(result != ReadResult::Normal) {
 				//Memory access was a read on an uninitialized memory address
 				if(result == ReadResult::FirstUninitRead) {
 					//Only warn the first time

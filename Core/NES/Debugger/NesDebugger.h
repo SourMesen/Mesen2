@@ -48,7 +48,6 @@ class NesDebugger final : public IDebugger
 	unique_ptr<NesTraceLogger> _traceLogger;
 	unique_ptr<NesPpuTools> _ppuTools;
 
-	bool _enableBreakOnUninitRead = false;
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
 

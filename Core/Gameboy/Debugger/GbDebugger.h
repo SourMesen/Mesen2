@@ -45,7 +45,6 @@ class GbDebugger final : public IDebugger
 
 	uint8_t _prevOpCode = 0xFF;
 	uint32_t _prevProgramCounter = 0;
-	bool _enableBreakOnUninitRead = false;
 
 	string _cdlFile;
 

@@ -35,7 +35,8 @@ class MemoryAccessCounter
 private:
 	vector<AddressCounters> _counters[DebugUtilities::GetMemoryTypeCount()];
 
-	Debugger* _debugger;
+	Debugger* _debugger = nullptr;
+	bool _enableBreakOnUninitRead = false;
 
 public:
 	MemoryAccessCounter(Debugger *debugger);
