@@ -6,11 +6,12 @@ namespace Mesen.Debugger.Utilities
 {
 	internal class MarkSelectionHelper
 	{
-		public static ContextMenuAction GetAction(Func<MemoryType> getMemType, Func<int> getSelStart, Func<int> getSelEnd, Action refreshView)
+		public static ContextMenuAction GetAction(Func<MemoryType> getMemType, Func<int> getSelStart, Func<int> getSelEnd, Action refreshView, Func<bool>? isVisible = null)
 		{
 			return new ContextMenuAction() {
 				ActionType = ActionType.MarkSelectionAs,
 				HintText = () => GetAddressRange(getSelStart(), getSelEnd()),
+				IsVisible = isVisible,
 				SubActions = new() {
 					new ContextMenuAction() {
 						ActionType = ActionType.MarkAsCode,

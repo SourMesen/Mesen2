@@ -38,7 +38,8 @@ namespace Mesen.Debugger.Windows
 			
 			DisassemblyViewer viewer = this.GetControl<DisassemblyViewer>("disViewer");
 			_model.SetViewer(viewer);
-			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, (rowIndex, rowAddress) => rowIndex, InitContextMenu(viewer));
+			InitContextMenu(viewer);
+			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, (rowIndex, rowAddress) => rowIndex, false);
 
 			viewer.GetPropertyChangedObservable(DisassemblyViewer.VisibleRowCountProperty).Subscribe(x => {
 				_model.VisibleRowCount = viewer.VisibleRowCount - 1;
@@ -69,9 +70,9 @@ namespace Mesen.Debugger.Windows
 		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
 		private CpuType CpuType => ActionLocation?.RelAddress?.Type.ToCpuType() ?? ActionLocation?.AbsAddress?.Type.ToCpuType() ?? _model.SelectedTab.CpuType;
 
-		private ContextMenu InitContextMenu(DisassemblyViewer viewer)
+		private void InitContextMenu(DisassemblyViewer viewer)
 		{
-			return DebugShortcutManager.CreateContextMenu(viewer, new List<ContextMenuAction> {
+			DebugShortcutManager.CreateContextMenu(viewer, new List<ContextMenuAction> {
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),

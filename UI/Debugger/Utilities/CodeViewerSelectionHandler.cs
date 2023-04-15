@@ -16,25 +16,19 @@ namespace Mesen.Debugger.Utilities
 		private LocationInfo? _mouseOverCodeLocation;
 		private LocationInfo? _contextMenuLocation;
 		
-		private bool _allowMarginClick = false;
 		private bool _marginClicked = false;
+		private bool _allowMarginClick = false;
 		private Func<int, int, int> _getRowAddress;
 
-		private ContextMenu? _mainContextMenu;
-		private ContextMenu? _marginContextMenu;
-		
 		public CodeSegmentInfo? MouseOverSegment { get; private set; }
 		public bool IsMarginClick => _marginClicked;
 
-		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, Func<int, int, int> getRowAddress, ContextMenu? mainContextMenu = null, ContextMenu? marginContextMenu = null)
+		public CodeViewerSelectionHandler(DisassemblyViewer viewer, ISelectableModel model, Func<int, int, int> getRowAddress, bool allowMarginClick = false)
 		{
+			_allowMarginClick = allowMarginClick;
 			_viewer = viewer;
 			_model = model;
 			_getRowAddress = getRowAddress;
-
-			_mainContextMenu = mainContextMenu;
-			_marginContextMenu = marginContextMenu;
-			_allowMarginClick = _marginContextMenu != null;
 
 			_viewer.PointerExited += Viewer_PointerExited;
 			_viewer.RowClicked += Viewer_RowClicked;
@@ -60,8 +54,7 @@ namespace Mesen.Debugger.Utilities
 
 		public void Viewer_RowClicked(DisassemblyViewer sender, RowClickedEventArgs e)
 		{
-			_marginClicked = e.MarginClicked && _allowMarginClick;
-			_viewer.ContextMenu = _mainContextMenu;
+			_marginClicked = e.MarginClicked;
 
 			if(e.Properties.IsLeftButtonPressed) {
 				if(_marginClicked) {
@@ -84,9 +77,6 @@ namespace Mesen.Debugger.Utilities
 					}
 				}
 			} else if(e.Properties.IsRightButtonPressed) {
-				if(_marginClicked) {
-					_viewer.ContextMenu = _marginContextMenu;
-				}
 				_contextMenuLocation = _mouseOverCodeLocation;
 
 				if(!_model.IsSelected(GetAddress(e))) {
@@ -144,7 +134,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			get
 			{
-				if(_viewer.ContextMenu == _marginContextMenu) {
+				if(_marginClicked && _allowMarginClick) {
 					return GetSelectedRowLocation();
 				} else if(_viewer.ContextMenu?.IsOpen == true && _contextMenuLocation != null) {
 					return _contextMenuLocation;

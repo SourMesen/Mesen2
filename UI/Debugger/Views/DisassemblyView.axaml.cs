@@ -25,11 +25,10 @@ namespace Mesen.Debugger.Views
 		private DisassemblyViewModel Model => _model!;
 		private CpuType CpuType => Model.CpuType;
 		private LocationInfo ActionLocation => _selectionHandler?.ActionLocation ?? new LocationInfo();
+		private bool IsMarginClick => _selectionHandler?.IsMarginClick ?? false;
 
 		private DisassemblyViewModel? _model;
 		private CodeViewerSelectionHandler? _selectionHandler;
-		private ContextMenu _bpMarginContextMenu;
-		private ContextMenu _mainContextMenu;
 		private DisassemblyViewer _viewer;
 		private BaseToolContainerViewModel? _parentModel;
 
@@ -49,32 +48,32 @@ namespace Mesen.Debugger.Views
 				}
 			});
 
-			InitBreakpointContextMenu();
-			InitMainContextMenu();
+			InitContextMenu();
 		}
 
 		protected override void OnDataContextChanged(EventArgs e)
 		{
 			if(DataContext is DisassemblyViewModel model && _model != model) {
 				_model = model;
-				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowAddress, _mainContextMenu, _bpMarginContextMenu);
+				_selectionHandler = new CodeViewerSelectionHandler(_viewer, _model, (rowIndex, rowAddress) => rowAddress, true);
 			}
 			base.OnDataContextChanged(e);
 		}
 
-		[MemberNotNull(nameof(_mainContextMenu))]
-		private void InitMainContextMenu()
+		private void InitContextMenu()
 		{
-			_mainContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
+			List<ContextMenuAction> actions = new List<ContextMenuAction> {
 				MarkSelectionHelper.GetAction(
 					() => CpuType.ToMemoryType(),
 					() => Model.SelectionStart,
 					() => Model.SelectionEnd,
-					() => Model.Refresh()
+					() => Model.Refresh(),
+					() => !IsMarginClick
 				),
 				new ContextMenuAction() {
 					ActionType = ActionType.EditSelectedCode,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditSelectedCode),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => CpuType.SupportsAssembler() && EmuApi.IsPaused(),
 					OnClick = () => {
 						string code = Model.GetSelection(false, false, true, false, out int byteCount, true);
@@ -84,13 +83,15 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.Copy,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
+					IsVisible = () => !IsMarginClick,
 					OnClick = () => Model.CopySelection()
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ToggleBreakpoint),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -105,6 +106,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.AddWatch,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_AddToWatch),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.Label != null || ActionLocation.RelAddress != null,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -123,6 +125,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.EditLabel,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditLabel),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -138,6 +141,7 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ViewInMemoryViewer),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -148,10 +152,11 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
 				new ContextMenuAction() {
 					ActionType = ActionType.FindOccurrences,
 					HintText = () => GetSearchString() ?? "",
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => GetSearchString() != null,
 					OnClick = () => {
 						if(_model != null) {
@@ -163,11 +168,12 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
 				new ContextMenuAction() {
 					ActionType = ActionType.MoveProgramCounter,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_MoveProgramCounter),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.RelAddress != null && DebugApi.GetDebuggerFeatures(CpuType).ChangeProgramCounter,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -183,16 +189,18 @@ namespace Mesen.Debugger.Views
 					ActionType = ActionType.RunToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_RunToLocation),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
 						Model.Debugger.RunToLocation(ActionLocation);
 					}
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
 				new ContextMenuAction() {
 					ActionType = ActionType.GoToLocation,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_GoToLocation),
 					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => !IsMarginClick,
 					IsEnabled = () => ActionLocation.RelAddress != null,
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
@@ -201,7 +209,10 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				},
-			});
+			};
+
+			actions.AddRange(GetBreakpointContextMenu());
+			DebugShortcutManager.CreateContextMenu(_viewer, actions);
 		}
 
 		private string? GetSearchString()
@@ -238,19 +249,18 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
-		[MemberNotNull(nameof(_bpMarginContextMenu))]
-		private void InitBreakpointContextMenu()
+		private List<ContextMenuAction> GetBreakpointContextMenu()
 		{
 			Breakpoint? GetBreakpoint()
 			{
 				return ActionLocation.AbsAddress != null ? BreakpointManager.GetMatchingBreakpoint(ActionLocation.AbsAddress.Value, CpuType, true) : null;
 			}
 
-			_bpMarginContextMenu = DebugShortcutManager.CreateContextMenu(_viewer, new List<ContextMenuAction> {
+			return new List<ContextMenuAction>() {
 				new ContextMenuAction() {
 					ActionType = ActionType.SetBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => GetBreakpoint() == null,
+					IsVisible = () => GetBreakpoint() == null && IsMarginClick,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
 							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
@@ -260,7 +270,7 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.RemoveBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => GetBreakpoint() != null,
+					IsVisible = () => GetBreakpoint() != null && IsMarginClick,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
 							BreakpointManager.ToggleBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
@@ -270,7 +280,7 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.EnableBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => GetBreakpoint()?.Enabled == false,
+					IsVisible = () => GetBreakpoint()?.Enabled == false && IsMarginClick,
 					IsEnabled = () => GetBreakpoint()?.Enabled == false,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
@@ -281,7 +291,7 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.DisableBreakpoint,
 					HintText = () => GetHint(ActionLocation),
-					IsVisible = () => GetBreakpoint()?.Enabled != false,
+					IsVisible = () => GetBreakpoint()?.Enabled != false && IsMarginClick,
 					IsEnabled = () => GetBreakpoint()?.Enabled == true,
 					OnClick = () => {
 						if(ActionLocation.AbsAddress != null) {
@@ -292,6 +302,7 @@ namespace Mesen.Debugger.Views
 				new ContextMenuAction() {
 					ActionType = ActionType.CodeWindowEditBreakpoint,
 					HintText = () => GetHint(ActionLocation),
+					IsVisible =() => IsMarginClick,
 					IsEnabled = () => GetBreakpoint() != null,
 					OnClick = () => {
 						if(GetBreakpoint() is Breakpoint bp) {
@@ -299,7 +310,7 @@ namespace Mesen.Debugger.Views
 						}
 					}
 				}
-			});
+			};
 		}
 
 		private string GetFormatString()
