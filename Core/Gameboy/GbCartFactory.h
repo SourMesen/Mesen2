@@ -5,6 +5,7 @@
 #include "Gameboy/Carts/GbMbc2.h"
 #include "Gameboy/Carts/GbMbc3.h"
 #include "Gameboy/Carts/GbMbc5.h"
+#include "Gameboy/Carts/GbHuc1.h"
 
 class GbCartFactory
 {
@@ -12,23 +13,42 @@ public:
 	static GbCart* CreateCart(Emulator* emu, uint8_t cartType)
 	{
 		switch(cartType) {
-			case 0:
+			case 0x00:
 				return new GbCart();
 
-			case 1: case 2: case 3:
+			case 0x01: case 0x02: case 0x03:
 				return new GbMbc1();
 
-			case 5: case 6:
+			case 0x05: case 0x06:
 				return new GbMbc2();
 
-			case 15: case 16:
+			case 0x0B: case 0x0C: case 0x0D:
+				//MMM01
+				break;
+
+			case 0x0F: case 0x10:
 				return new GbMbc3(emu, true);
 
-			case 17: case 18: case 19:
+			case 0x11: case 0x12: case 0x13:
 				return new GbMbc3(emu, false);
 
-			case 25: case 26: case 27: case 28: case 29: case 30:
+			case 0x19: case 0x1A: case 0x1B: case 0x1C: case 0x1D: case 0x1E:
 				return new GbMbc5();
+
+			case 0x20:
+				//MBC6
+				break;
+
+			case 0x22:
+				//MBC7
+				break;
+
+			case 0xFE:
+				//HuC3
+				break;
+
+			case 0xFF:
+				return new GbHuc1();
 		};
 
 		return nullptr;
