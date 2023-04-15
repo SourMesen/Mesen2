@@ -833,6 +833,7 @@
 			<Control ID="mnuTools">_Tools</Control>
 
 			<Control ID="lblBackground">Background:</Control>
+			<Control ID="chkShowGrid">Show grid</Control>
 			<Control ID="lblPreview">Preview</Control>
 			
 			<Control ID="lblHint1">Select color by clicking above.</Control>

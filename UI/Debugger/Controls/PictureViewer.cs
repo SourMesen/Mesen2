@@ -168,7 +168,7 @@ namespace Mesen.Debugger.Controls
 				ShowGridProperty, SelectionRectProperty, OverlayRectProperty,
 				MouseOverRectProperty, GridHighlightProperty,
 				OverlayLinesProperty, TopClipSizeProperty, LeftClipSizeProperty,
-				BottomClipSizeProperty, RightClipSizeProperty
+				BottomClipSizeProperty, RightClipSizeProperty, CustomGridsProperty
 			);
 
 			SourceProperty.Changed.AddClassHandler<PictureViewer>((x, e) => {

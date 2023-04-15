@@ -52,6 +52,7 @@
 					<TextBlock Text="{l:Translate lblBackground}" VerticalAlignment="Center" DockPanel.Dock="Left" />
 					<c:EnumComboBox SelectedItem="{CompiledBinding Config.Background}" />
 				</DockPanel>
+				<CheckBox IsChecked="{CompiledBinding Config.ShowGrid}" Content="{l:Translate chkShowGrid}" />
 				<StackPanel Margin="3 0 3 5">
 					<TextBlock Text="{l:Translate lblHint1}" />
 					<TextBlock Text="{l:Translate lblHint2}" />
@@ -62,10 +63,11 @@
 				<c:GroupBox Header="{l:Translate lblPreview}">
 					<Border BorderBrush="Gray" Background="{StaticResource ViewerBgBrush}" BorderThickness="1" HorizontalAlignment="Left">
 						<dc:PictureViewer
-						  Zoom="4"
+							Zoom="4"
 							Source="{CompiledBinding ViewerBitmap}"
 							AllowSelection="False"
 							ShowMousePosition="False"
+							CustomGrids="{CompiledBinding CustomGrids}"
 						/>
 					</Border>
 				</c:GroupBox>
@@ -80,6 +82,7 @@
 			Source="{CompiledBinding ViewerBitmap}"
 			GridSizeX="1"
 			GridSizeY="1"
+			CustomGrids="{CompiledBinding CustomGrids}"
 		/>
 	</DockPanel>
 </Window>

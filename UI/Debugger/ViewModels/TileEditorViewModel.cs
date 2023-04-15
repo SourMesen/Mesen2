@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Mesen.Config;
@@ -28,6 +29,7 @@ public class TileEditorViewModel : DisposableViewModel
 	[Reactive] public RawPaletteFormat RawFormat { get; set; }
 	[Reactive] public int PaletteColumnCount { get; private set; } = 16;
 	[Reactive] public int SelectedColor { get; set; } = 0;
+	[Reactive] public List<GridDefinition>? CustomGrids { get; set; } = null;
 
 	public TileEditorConfig Config { get; }
 
@@ -67,6 +69,18 @@ public class TileEditorViewModel : DisposableViewModel
 
 		AddDisposable(this.WhenAnyValue(x => x.Config.Background).Subscribe(x => RefreshViewer()));
 		AddDisposable(this.WhenAnyValue(x => x.SelectedColor).Subscribe(x => RefreshViewer()));
+		AddDisposable(this.WhenAnyValue(x => x.Config.ShowGrid).Subscribe(x => {
+			if(Config.ShowGrid) {
+				PixelSize tileSize = _tileFormat.GetTileSize();
+				CustomGrids = new List<GridDefinition>() { new GridDefinition() {
+					SizeX = tileSize.Width,
+					SizeY = tileSize.Height,
+					Color = Color.FromArgb(192, Colors.LightBlue.R, Colors.LightBlue.G, Colors.LightBlue.B)
+				} };
+			} else {
+				CustomGrids = null;
+			}
+		}));
 		AddDisposable(this.WhenAnyValue(x => x.Config.ImageScale).Subscribe(x => {
 			if(Config.ImageScale < 4) {
 				Config.ImageScale = 4;
