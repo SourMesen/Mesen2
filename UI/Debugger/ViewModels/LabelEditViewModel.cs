@@ -45,6 +45,9 @@ namespace Mesen.Debugger.ViewModels
 
 			CpuType = cpuType;
 			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => cpuType.CanAccessMemoryType(t) && t.SupportsLabels() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
+			if(!AvailableMemoryTypes.Contains(Label.MemoryType)) {
+				Label.MemoryType = (MemoryType)AvailableMemoryTypes[0];
+			}
 
 			AddDisposable(this.WhenAnyValue(x => x.Label.MemoryType, (memoryType) => {
 				int maxAddress = DebugApi.GetMemorySize(memoryType) - 1;
