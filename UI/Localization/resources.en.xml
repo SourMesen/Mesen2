@@ -1560,7 +1560,8 @@
 		<Message ID="Player">Player</Message>
 
 		<Message ID="HexEditor_Location">Location: ${0}</Message>
-		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}, {2} bytes</Message>
+		<Message ID="HexEditor_Selection">Selection: ${0} - ${1}</Message>
+		<Message ID="HexEditor_Length">Length: {0} bytes (${1})</Message>
 
 		<Message ID="ViewInAction">View in {0}</Message>
 

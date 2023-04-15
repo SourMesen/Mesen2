@@ -30,7 +30,9 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public int SelectionStart { get; set; }
 		[Reactive] public int SelectionLength { get; set; }
-		[Reactive] public string StatusBarText { get; private set; } = "";
+		
+		[Reactive] public string LocationText { get; private set; } = "";
+		[Reactive] public string LengthText { get; private set; } = "";
 
 		[Reactive] public List<ContextMenuAction> FileMenuItems { get; set; } = new();
 		[Reactive] public List<ContextMenuAction> ViewMenuItems { get; set; } = new();
@@ -67,27 +69,30 @@ namespace Mesen.Debugger.ViewModels
 			UpdateAvailableMemoryTypes();
 
 			AddDisposable(this.WhenAnyValue(x => x.SelectionStart, x => x.SelectionLength).Subscribe(((int start, int length) o) => {
-				string text;
+				string location;
+				string length = "";
 				if(o.length <= 1) {
-					text = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
+					location = ResourceHelper.GetMessage("HexEditor_Location", o.start.ToString("X2"));
 				} else {
-					text = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"), o.length);
+					location = ResourceHelper.GetMessage("HexEditor_Selection", o.start.ToString("X2"), (o.start + o.length - 1).ToString("X2"));
+					length = ResourceHelper.GetMessage("HexEditor_Length", o.length, o.length.ToString("X2"));
 				}
 
 				if(Config.MemoryType.IsWordAddressing()) {
 					if(o.length <= 1) {
-						text += $" (${o.start / 2:X2}.w)";
+						location += $" (${o.start / 2:X2}.w)";
 					} else {
-						text += $" (${o.start / 2:X2}.w - ${(o.start + o.length - 1)/2:X2}.w)";
+						location += $" (${o.start / 2:X2}.w - ${(o.start + o.length - 1)/2:X2}.w)";
 					}
 				}
 
 				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = o.start, Type = Config.MemoryType });
 				if(label != null && (o.length <= 1 || o.length == label.Length)) {
-					text += $" ({label.Label})";
+					location += $" ({label.Label})";
 				}
 
-				StatusBarText = text;
+				LocationText = location;
+				LengthText = length;
 			}));
 
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => UpdateDataProvider()));
