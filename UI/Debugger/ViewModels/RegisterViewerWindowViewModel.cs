@@ -133,13 +133,14 @@ namespace Mesen.Debugger.ViewModels
 
 				if(cpuTypes.Contains(CpuType.Sa1)) {
 					tabs.Add(GetSnesSa1Tab(ref snesState));
-				}
-				if(cpuTypes.Contains(CpuType.Gameboy)) {
+				} else if(cpuTypes.Contains(CpuType.Gameboy)) {
 					GbState gbState = DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy);
 					string tabPrefix = "GB - ";
 					tabs.Add(GetGbLcdTab(ref gbState, tabPrefix));
 					tabs.Add(GetGbApuTab(ref gbState, tabPrefix));
 					tabs.Add(GetGbMiscTab(ref gbState, tabPrefix));
+				} else if(cpuTypes.Contains(CpuType.Gsu)) {
+					tabs.Add(GetSnesGsuTab(ref snesState.Gsu));
 				}
 			} else if(lastState is NesState nesState) {
 				tabs = new List<RegisterViewerTab>() {
@@ -430,6 +431,37 @@ namespace Mesen.Debugger.ViewModels
 			});
 
 			return new RegisterViewerTab(tabPrefix + "APU", entries, Config, CpuType.Gameboy, MemoryType.GameboyMemory);
+		}
+
+		private RegisterViewerTab GetSnesGsuTab(ref GsuState gsu)
+		{
+			List<RegEntry> entries = new List<RegEntry>() {
+				//new RegEntry("$3033.0", "Backup RAM Enabled", gsu.BackupRamEnabled),
+				new RegEntry("", "Registers"),
+				new RegEntry("$3037.5", "High Speed Mode", gsu.HighSpeedMode),
+				new RegEntry("$3037.7", "IRQ Disabled", gsu.IrqDisabled),
+				new RegEntry("$3038", "Screen Base Address", gsu.ScreenBase, Format.X8),
+				new RegEntry("$3039.0", "Clock Select", gsu.ClockSelect),
+				new RegEntry("$303A.0-1", "Color Gradient", gsu.PlotBpp + " BPP", gsu.ColorGradient),
+				new RegEntry("$303A.2+5", "Screen Height", gsu.ScreenHeight switch {
+					0 => "128 px",
+					1 => "160 px",
+					2 => "192 px",
+					3 or _ => "OBJ mode",
+				}, gsu.ScreenHeight),
+				new RegEntry("$303A.3", "GSU RAM Access Enabled", gsu.GsuRamAccess),
+				new RegEntry("$303A.4", "GSU ROM Access Enabled", gsu.GsuRomAccess),
+				
+				new RegEntry("", "Plot Option Register (CMODE)"),
+				new RegEntry("", "Transparent", gsu.PlotTransparent),
+				new RegEntry("", "Dither", gsu.PlotDither),
+				new RegEntry("", "Color High Nibble", gsu.ColorHighNibble),
+				new RegEntry("", "Color Freeze High", gsu.ColorFreezeHigh),
+				new RegEntry("", "Object Mode", gsu.ObjMode),
+				new RegEntry("", "Transparent", gsu.PlotTransparent),
+			};
+
+			return new RegisterViewerTab("GSU", entries, Config);
 		}
 
 		private RegisterViewerTab GetSnesSa1Tab(ref SnesState state)
