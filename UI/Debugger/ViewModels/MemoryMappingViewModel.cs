@@ -294,13 +294,7 @@ namespace Mesen.Debugger.ViewModels
 						color = altColors[memoryType];
 					}
 
-					int page = memoryType switch {
-						GbMemoryType.BootRom => -1,
-						GbMemoryType.WorkRam => (int)(state.MemoryOffset[startIndex] / wramBankSize),
-						GbMemoryType.CartRam => (int)(state.MemoryOffset[startIndex] / cartBankSize),
-						_ or GbMemoryType.PrgRom => (int)(state.MemoryOffset[startIndex] / prgBankSize)
-					};
-
+					int page = memoryType == GbMemoryType.BootRom ? -1 : (int)(state.MemoryOffset[startIndex] / currentSize);
 					mappings.Add(new MemoryMappingBlock() { Length = currentSize, Name = blockNames[memoryType], Page = page, Note = accessNotes[accessType], Color = color });
 				} else {
 					mappings.Add(new MemoryMappingBlock() { Length = currentSize, Name = "N/A", Note = accessNotes[accessType], Color = Color.FromRgb(222, 222, 222) });
@@ -312,7 +306,6 @@ namespace Mesen.Debugger.ViewModels
 				if(i == 0x80) {
 					addBlock(i);
 					mappings.Add(new MemoryMappingBlock() { Name = "VRAM", Length = 0x2000, Color = Color.FromRgb(0xFA, 0xDC, 0xCD) });
-					currentSize = 0;
 					memoryType = GbMemoryType.None;
 					accessType = GbRegisterAccess.None;
 					currentSize = 0;
