@@ -68,6 +68,7 @@
 						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
 						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
 					</StackPanel>
+					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.AllowInvalidInput}" Text="{l:Translate chkAllowInvalidInput}" />
 				</StackPanel>
 			</ScrollViewer>
 		</TabItem>

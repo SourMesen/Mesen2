@@ -35,6 +35,18 @@ protected:
 				SetPressedState(Buttons::A, keyMapping.TurboA);
 				SetPressedState(Buttons::B, keyMapping.TurboB);
 			}
+
+			if(!_emu->GetSettings()->GetGameboyConfig().AllowInvalidInput) {
+				//If both U+D or L+R are pressed at the same time, act as if neither is pressed
+				if(IsPressed(Buttons::Up) && IsPressed(Buttons::Down)) {
+					ClearBit(Buttons::Down);
+					ClearBit(Buttons::Up);
+				}
+				if(IsPressed(Buttons::Left) && IsPressed(Buttons::Right)) {
+					ClearBit(Buttons::Left);
+					ClearBit(Buttons::Right);
+				}
+			}
 		}
 	}
 

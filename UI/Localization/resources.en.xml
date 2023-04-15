@@ -324,6 +324,7 @@
 			
 			<Control ID="tpgEmulation">Emulation</Control>
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			<Control ID="chkAllowInvalidInput">Allow invalid input (e.g Down + Up or Left + Right at the same time)</Control>
 			
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblGameboyPalette">Game Boy (DMG) Palette</Control>
@@ -342,7 +343,7 @@
 			<Control ID="chkGbcAdjustColors">Enable GBC LCD color emulation</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>
-			
+
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkHideSgbBorders">Hide Super Game Boy borders</Control>
 

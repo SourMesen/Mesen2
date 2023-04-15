@@ -24,6 +24,7 @@ namespace Mesen.Config
 		[Reactive] public bool HideSgbBorders { get; set; } = false;
 
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
+		[Reactive] public bool AllowInvalidInput { get; set; } = false;
 
 		[Reactive] public UInt32[] BgColors { get; set; } = new UInt32[] { 0xFFFFFFFF, 0xFFB0B0B0, 0xFF686868, 0xFF000000 };
 		[Reactive] public UInt32[] Obj0Colors { get; set; } = new UInt32[] { 0xFFFFFFFF, 0xFFB0B0B0, 0xFF686868, 0xFF000000 };
@@ -48,6 +49,7 @@ namespace Mesen.Config
 				HideSgbBorders = HideSgbBorders,
 
 				RamPowerOnState = RamPowerOnState,
+				AllowInvalidInput = AllowInvalidInput,
 
 				BgColors = BgColors,
 				Obj0Colors = Obj0Colors,
@@ -117,6 +119,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool HideSgbBorders;
 
 		public RamState RamPowerOnState;
+		[MarshalAs(UnmanagedType.I1)] public bool AllowInvalidInput;
 
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
 		public UInt32[] BgColors;
