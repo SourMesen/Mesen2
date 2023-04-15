@@ -29,12 +29,13 @@ public:
 	void RefreshMappings() override
 	{
 		constexpr int prgBankSize = 0x4000;
+		constexpr int ramBankSize = 0x2000;
 
 		Map(0x0000, 0x3FFF, GbMemoryType::PrgRom, 0, true);
 		Map(0x4000, 0x7FFF, GbMemoryType::PrgRom, _prgBank * prgBankSize, true);
 
 		if(_ramRtcEnabled && _ramBank <= 3) {
-			Map(0xA000, 0xBFFF, GbMemoryType::CartRam, _ramBank, false);
+			Map(0xA000, 0xBFFF, GbMemoryType::CartRam, _ramBank * ramBankSize, false);
 			_memoryManager->MapRegisters(0xA000, 0xBFFF, RegisterAccess::None);
 		} else if(_hasRtcTimer && _ramRtcEnabled && _ramBank >= 0x08 && _ramBank <= 0x0C) {
 			_memoryManager->MapRegisters(0xA000, 0xBFFF, RegisterAccess::ReadWrite);
