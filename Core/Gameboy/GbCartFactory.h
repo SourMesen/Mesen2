@@ -6,6 +6,7 @@
 #include "Gameboy/Carts/GbMbc3.h"
 #include "Gameboy/Carts/GbMbc5.h"
 #include "Gameboy/Carts/GbMbc6.h"
+#include "Gameboy/Carts/GbMbc7.h"
 #include "Gameboy/Carts/GbHuc1.h"
 
 class GbCartFactory
@@ -40,8 +41,7 @@ public:
 				return new GbMbc6();
 
 			case 0x22:
-				//MBC7
-				break;
+				return new GbMbc7();
 
 			case 0xFE:
 				//HuC3

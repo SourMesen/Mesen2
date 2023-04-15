@@ -27,6 +27,7 @@
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />
+    <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
     <ClInclude Include="NES\Mappers\Audio\emu2413.h" />

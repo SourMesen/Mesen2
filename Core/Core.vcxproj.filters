@@ -2625,6 +2625,9 @@
     <ClInclude Include="Gameboy\Carts\GbMbc6.h">
       <Filter>Gameboy\Carts</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\Carts\GbMbc7.h">
+      <Filter>Gameboy\Carts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
