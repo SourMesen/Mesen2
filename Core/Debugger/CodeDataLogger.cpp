@@ -5,6 +5,7 @@
 #include "Debugger/Disassembler.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
+#include "Shared/MessageManager.h"
 #include "Utilities/VirtualFile.h"
 #include "Utilities/FolderUtilities.h"
 
@@ -63,6 +64,8 @@ bool CodeDataLogger::LoadCdlFile(string cdlFilepath, bool autoResetCdl)
 					InternalLoadCdlFile(cdlData.data() + CodeDataLogger::HeaderSize, (uint32_t)cdlData.size() - CodeDataLogger::HeaderSize);
 				}
 			} else {
+				MessageManager::Log("[Warning] CDL file doesn't contain header/CRC and may be incompatible.");
+
 				//Older CRC-less CDL file, use as-is without checking CRC to avoid data loss
 				memcpy(_cdlData, cdlData.data(), _memSize);
 				InternalLoadCdlFile(cdlData.data(), (uint32_t)cdlData.size());

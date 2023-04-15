@@ -13,7 +13,7 @@ namespace Mesen.Config
 	{
 		[Reactive] public bool AutoLoadDbgFiles { get; set; } = true;
 		[Reactive] public bool AutoLoadMlbFiles { get; set; } = true;
-		[Reactive] public bool AutoLoadCdlFiles { get; set; } = true;
+		[Reactive] public bool AutoLoadCdlFiles { get; set; } = false;
 		[Reactive] public bool AutoLoadSymFiles { get; set; } = true;
 		[Reactive] public bool AutoLoadFnsFiles { get; set; } = true;
 
