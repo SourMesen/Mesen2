@@ -34,7 +34,7 @@ public:
 		Map(0x0000, 0x3FFF, GbMemoryType::PrgRom, 0, true);
 		Map(0x4000, 0x7FFF, GbMemoryType::PrgRom, _prgBank * prgBankSize, true);
 
-		if(_ramRtcEnabled && _ramBank <= 3) {
+		if(_ramRtcEnabled && _ramBank <= 7) {
 			Map(0xA000, 0xBFFF, GbMemoryType::CartRam, _ramBank * ramBankSize, false);
 			_memoryManager->MapRegisters(0xA000, 0xBFFF, RegisterAccess::None);
 		} else if(_hasRtcTimer && _ramRtcEnabled && _ramBank >= 0x08 && _ramBank <= 0x0C) {
