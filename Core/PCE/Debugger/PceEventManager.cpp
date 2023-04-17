@@ -60,7 +60,7 @@ void PceEventManager::AddEvent(DebugEventType type)
 	evt.Cycle = _vdc->GetHClock();
 	evt.BreakpointId = -1;
 	evt.DmaChannel = -1;
-	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Pce, true);
+	evt.ProgramCounter = _cpu->GetState().PC;
 	_debugEvents.push_back(evt);
 }
 

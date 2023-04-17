@@ -88,7 +88,17 @@ void NesEventManager::AddEvent(DebugEventType type)
 	if(type == DebugEventType::BgColorChange) {
 		op.Address = _console->GetPpu()->GetCurrentBgColor();
 	}
-	AddEvent(type, op, -1);
+
+	BaseNesPpu* ppu = _console->GetPpu();
+	DebugEventInfo evt = {};
+	evt.Type = type;
+	evt.Operation = op;
+	evt.Scanline = (int16_t)ppu->GetCurrentScanline();
+	evt.Cycle = (uint16_t)ppu->GetCurrentCycle();
+	evt.BreakpointId = -1;
+	evt.ProgramCounter = _cpu->GetState().PC;
+	evt.DmaChannel = -1;
+	_debugEvents.push_back(evt);
 }
 
 void NesEventManager::ClearFrameEvents()

@@ -708,6 +708,7 @@ namespace Mesen.Debugger.Utilities
 		RunToLocation,
 
 		ShowToolbar,
+		ShowListView,
 
 		[IconFile("ResetSettings")]
 		ResetWorkspace,

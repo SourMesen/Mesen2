@@ -123,6 +123,11 @@ namespace Mesen.Debugger.ViewModels
 					IsSelected = () => Config.ShowSettingsPanel,
 					OnClick = () => Config.ShowSettingsPanel = !Config.ShowSettingsPanel
 				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ShowListView,
+					IsSelected = () => Config.ShowListView,
+					OnClick = () => Config.ShowListView = !Config.ShowListView
+				},
 				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.ZoomIn,

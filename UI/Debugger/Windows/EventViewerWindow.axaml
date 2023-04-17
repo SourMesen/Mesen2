@@ -106,6 +106,7 @@
 			
 			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2">
 				<DataBox
+					Name="lstEvents"
 					Items="{CompiledBinding ListView.DebugEvents}"
 					Selection="{CompiledBinding ListView.Selection}"
 					SortMode="Multiple"

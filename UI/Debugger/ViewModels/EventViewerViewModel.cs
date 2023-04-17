@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using DataBoxControl;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Utilities;
+using Mesen.Debugger.Windows;
 using Mesen.Interop;
 using Mesen.Localization;
 using Mesen.Utilities;
@@ -36,6 +38,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public double ListViewHeight { get; set; }
 		private DateTime _lastListRefresh = DateTime.MinValue;
 
+		[Reactive] public DebugEventInfo? SelectedEvent { get; set; }
 		[Reactive] public Rect SelectionRect { get; set; }
 
 		public EventViewerListViewModel ListView { get; }
@@ -51,9 +54,9 @@ namespace Mesen.Debugger.ViewModels
 		private PictureViewer _picViewer;
 
 		[Obsolete("For designer only")]
-		public EventViewerViewModel() : this(CpuType.Nes, new PictureViewer(), null) { }
+		public EventViewerViewModel() : this(CpuType.Nes, new PictureViewer(), null!, null) { }
 
-		public EventViewerViewModel(CpuType cpuType, PictureViewer picViewer, Window? wnd)
+		public EventViewerViewModel(CpuType cpuType, PictureViewer picViewer, DataBox listView, Window? wnd)
 		{
 			CpuType = cpuType;
 			ListView = new EventViewerListViewModel(this);
@@ -99,6 +102,11 @@ namespace Mesen.Debugger.ViewModels
 					OnClick = () => Config.ShowSettingsPanel = !Config.ShowSettingsPanel
 				},
 				new ContextMenuAction() {
+					ActionType = ActionType.ShowListView,
+					IsSelected = () => Config.ShowListView,
+					OnClick = () => Config.ShowListView = !Config.ShowListView
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.ShowToolbar,
 					IsSelected = () => Config.ShowToolbar,
 					OnClick = () => Config.ShowToolbar = !Config.ShowToolbar
@@ -119,6 +127,9 @@ namespace Mesen.Debugger.ViewModels
 			if(Design.IsDesignMode || wnd == null) {
 				return;
 			}
+
+			DebugShortcutManager.CreateContextMenu(_picViewer, GetContextMenuActions());
+			DebugShortcutManager.CreateContextMenu(listView, GetContextMenuActions());
 
 			UpdateConfig();
 			RefreshData();
@@ -157,6 +168,44 @@ namespace Mesen.Debugger.ViewModels
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuItems);
 		}
 
+		private List<ContextMenuAction> GetContextMenuActions()
+		{
+			return new List<ContextMenuAction> {
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewInDebugger,
+					IsEnabled = () => SelectedEvent != null,
+					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					OnClick = () => {
+						if(SelectedEvent != null) {
+							DebuggerWindow.OpenWindowAtAddress(CpuType, (int)SelectedEvent.Value.ProgramCounter);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ToggleBreakpoint,
+					IsEnabled = () => SelectedEvent != null,
+					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					OnClick = () => {
+						if(SelectedEvent != null) {
+							int addr = (int)SelectedEvent.Value.Operation.Address;
+							BreakpointManager.ToggleBreakpoint(new AddressInfo() { Address = addr, Type = CpuType.ToMemoryType() }, CpuType, true);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ToggleBreakpoint,
+					IsEnabled = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register,
+					HintText = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"${SelectedEvent.Value.Operation.Address:X4}" : "",
+					OnClick = () => {
+						if(SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register) {
+							int addr = (int)SelectedEvent.Value.Operation.Address;
+							BreakpointManager.ToggleBreakpoint(new AddressInfo() { Address = addr, Type = CpuType.ToMemoryType() }, CpuType, false);
+						}
+					}
+				},
+			};
+		}
+
 		private void Selection_SelectionChanged(object? sender, Avalonia.Controls.Selection.SelectionModelSelectionChangedEventArgs<DebugEventViewModel?> e)
 		{
 			if(e.SelectedItems.Count > 0 && e.SelectedItems[0] is DebugEventViewModel evt) {
@@ -170,8 +219,10 @@ namespace Mesen.Debugger.ViewModels
 		{
 			if(evt != null) {
 				PixelPoint p = GetEventLocation(evt.Value);
+				SelectedEvent = evt;
 				SelectionRect = new Rect(p.X - 2, p.Y - 2, 6, 6);
 			} else {
+				SelectedEvent = null;
 				SelectionRect = default;
 			}
 		}
@@ -206,6 +257,7 @@ namespace Mesen.Debugger.ViewModels
 			DebugApi.TakeEventSnapshot(CpuType, forAutoRefresh);
 			Dispatcher.UIThread.Post(() => {
 				SelectionRect = default;
+				SelectedEvent = null;
 			});
 
 			RefreshUi(forAutoRefresh);

@@ -3128,6 +3128,7 @@
 			<Value ID="RunToLocation">Run to Location</Value>
 
 			<Value ID="ShowToolbar">Show toolbar</Value>
+			<Value ID="ShowListView">Show list view</Value>
 
 			<Value ID="Workspace">Workspace</Value>
 			<Value ID="ResetWorkspace">Reset workspace</Value>

@@ -16,6 +16,7 @@ using System.Linq;
 using Avalonia.Threading;
 using Mesen.Debugger.Utilities;
 using DynamicData;
+using DataBoxControl;
 
 namespace Mesen.Debugger.Windows
 {
@@ -35,7 +36,8 @@ namespace Mesen.Debugger.Windows
 #endif
 
 			PictureViewer viewer = this.GetControl<ScrollPictureViewer>("picViewer").InnerViewer;
-			_model = new EventViewerViewModel(cpuType, viewer, this);
+			DataBox listView = this.GetControl<DataBox>("lstEvents");
+			_model = new EventViewerViewModel(cpuType, viewer, listView, this);
 			_model.Config.LoadWindowSettings(this);
 			DataContext = _model;
 
@@ -66,17 +68,22 @@ namespace Mesen.Debugger.Windows
 
 		private void Viewer_PointerPressed(object? sender, PointerPressedEventArgs e)
 		{
-			if(_prevMousePos == null) {
-				return;
-			}
+			if(sender is PictureViewer viewer) {
+				PixelPoint? point = viewer.GetGridPointFromMousePoint(e.GetCurrentPoint(viewer).Position);
+				if(point == null) {
+					return;
+				}
 
-			DebugEventInfo? evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)_prevMousePos.Value.Y, (ushort)_prevMousePos.Value.X);
-			if(evt != null) {
-				_model.UpdateSelectedEvent(evt);
-				int index = _model.ListView.RawDebugEvents.IndexOf(evt.Value);
-				if(index >= 0) {
-					_model.ListView.Selection.Clear();
-					_model.ListView.Selection.Select(index);
+				DebugEventInfo? evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)point.Value.Y, (ushort)point.Value.X);
+				if(evt != null) {
+					_model.UpdateSelectedEvent(evt);
+					int index = _model.ListView.RawDebugEvents.IndexOf(evt.Value);
+					if(index >= 0) {
+						_model.ListView.Selection.Clear();
+						_model.ListView.Selection.Select(index);
+					}
+				} else {
+					_model.UpdateSelectedEvent(null);
 				}
 			}
 		}
