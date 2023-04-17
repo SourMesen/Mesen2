@@ -14,16 +14,16 @@ namespace Mesen.Utilities
 	{
 		public static void CenterWindow(Window child, Visual parent)
 		{
-			child.WindowStartupLocation = WindowStartupLocation.Manual;
-			Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
-			PixelPoint controlPosition = parent.PointToScreen(new Point(0, 0));
-			PixelPoint screenCenter = new PixelPoint(controlPosition.X + (int)wndCenter.Width, controlPosition.Y + (int)wndCenter.Height);
-			PixelPoint startPosition = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
-			child.Position = startPosition;
-
-			//Set position again after opening
-			//Fixes KDE (or X11?) not showing the window in the specified position
-			child.Opened += (s,e) => { child.Position = startPosition; };
+			EventHandler? handler = null;
+			handler = (s, e) => {
+				Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
+				PixelPoint controlPosition = parent.PointToScreen(new Point(0, 0));
+				PixelPoint screenCenter = new PixelPoint(controlPosition.X + (int)wndCenter.Width, controlPosition.Y + (int)wndCenter.Height);
+				PixelPoint startPosition = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
+				child.Position = startPosition;
+				child.Opened -= handler;
+			};
+			child.Opened += handler;
 		}
 
 		public static void ShowCentered(this Window child, Visual? parent)
