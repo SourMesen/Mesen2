@@ -8,6 +8,7 @@
 	xmlns:cfg="using:Mesen.Config"
 	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:du="using:Mesen.Debugger.Utilities"
 	xmlns:v="using:Mesen.Debugger.Views"
 	xmlns:i="using:Mesen.Interop"
 	xmlns:l="using:Mesen.Localization"
@@ -24,6 +25,10 @@
 		<dvm:EventViewerViewModel />
 	</Design.DataContext>
 
+	<Window.Resources>
+		<du:GridLengthConverter x:Key="GridLengthConverter" />
+	</Window.Resources>
+	
 	<Window.DataTemplates>
 		<DataTemplate DataType="{x:Type cfg:SnesEventViewerConfig}">
 			<v:SnesEventViewerConfigView />
@@ -59,35 +64,50 @@
 			<dc:ActionToolbar Items="{CompiledBinding ToolbarItems}" />
 		</StackPanel>
 
-		<ScrollViewer DockPanel.Dock="Right" Margin="3" VerticalAlignment="Top" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
-			<StackPanel>
-				<ContentControl Content="{CompiledBinding ConsoleConfig}" />
-				<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-					<Button Command="{CompiledBinding EnableAllEventTypes}" Content="{l:Translate btnSelectAll}" />
-					<Button Command="{CompiledBinding DisableAllEventTypes}" Content="{l:Translate btnDeselectAll}" />
+		<Panel DockPanel.Dock="Right" Margin="3" IsVisible="{CompiledBinding Config.ShowSettingsPanel}">
+			<ScrollViewer VerticalAlignment="Top">
+				<StackPanel>
+					<ContentControl Content="{CompiledBinding ConsoleConfig}" />
+					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ShowListView}" />
+					<StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+						<Button Command="{CompiledBinding EnableAllEventTypes}" Content="{l:Translate btnSelectAll}" />
+						<Button Command="{CompiledBinding DisableAllEventTypes}" Content="{l:Translate btnDeselectAll}" />
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
-		</ScrollViewer>
+			</ScrollViewer>
+		</Panel>
 		
-		<TabStrip SelectedIndex="{CompiledBinding SelectedTab}" DockPanel.Dock="Top">
-			<TabStripItem Content="{l:Translate tabPpuView}" />
-			<TabStripItem Content="{l:Translate tabListView}" />
-		</TabStrip>
+		<Grid ColumnDefinitions="*">
+			<Grid.RowDefinitions>
+				<RowDefinition MinHeight="200" Height="*" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition
+					MinHeight="{CompiledBinding MinListViewHeight}"
+					Height="{CompiledBinding ListViewHeight, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+				/>
+			</Grid.RowDefinitions>
 
-		<Panel>
 			<dc:ScrollPictureViewer
 				x:Name="picViewer"
+				Grid.Row="0"
 				Source="{CompiledBinding ViewerBitmap}"
 				Zoom="{CompiledBinding Config.ImageScale}"
 				ShowMousePosition="False"
 				AllowSelection="False"
+				SelectionRect="{CompiledBinding SelectionRect}"
 				GridHighlight="{CompiledBinding GridHighlightPoint}"
-				IsVisible="{CompiledBinding ShowViewer}"
 			/>
 
-			<Border BorderBrush="Gray" BorderThickness="1" Height="{CompiledBinding ListHeight}">
+			<GridSplitter
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				IsVisible="{CompiledBinding Config.ShowListView}"
+			/>
+			
+			<Border BorderBrush="Gray" BorderThickness="1" Grid.Row="2">
 				<DataBox
 					Items="{CompiledBinding ListView.DebugEvents}"
+					Selection="{CompiledBinding ListView.Selection}"
 					SortMode="Multiple"
 					SortCommand="{CompiledBinding ListView.SortCommand}"
 					SortState="{CompiledBinding ListView.SortState}"
@@ -111,6 +131,6 @@
 					</DataBox.Columns>
 				</DataBox>
 			</Border>
-		</Panel>
+		</Grid>
 	</DockPanel>
 </Window>

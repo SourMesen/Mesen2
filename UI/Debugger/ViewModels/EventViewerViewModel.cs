@@ -27,16 +27,17 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public CpuType CpuType { get; set; }
 		[Reactive] public DynamicBitmap ViewerBitmap { get; private set; }
-		[Reactive] public EventViewerTab SelectedTab { get; set; }
 
-		//Used to speed up display of the DataBox when clicking on the list tab
-		//Faster to resize the list and always keep it mounted, rather than mounting it when tab is clicked
-		[Reactive] public bool ShowViewer { get; set; } = true;
-		[Reactive] public double ListHeight { get; set; } = 0;
-		
 		[Reactive] public ViewModelBase ConsoleConfig { get; set; }
 		[Reactive] public GridRowColumn? GridHighlightPoint { get; set; }
 		
+		[Reactive] public bool ShowListView { get; set; }
+		[Reactive] public double MinListViewHeight { get; set; }
+		[Reactive] public double ListViewHeight { get; set; }
+		private DateTime _lastListRefresh = DateTime.MinValue;
+
+		[Reactive] public Rect SelectionRect { get; set; }
+
 		public EventViewerListViewModel ListView { get; }
 
 		public EventViewerConfig Config { get; }
@@ -57,8 +58,12 @@ namespace Mesen.Debugger.ViewModels
 			CpuType = cpuType;
 			ListView = new EventViewerListViewModel(this);
 
+			ListView.Selection.SelectionChanged += Selection_SelectionChanged;
+
 			_picViewer = picViewer;
 			Config = ConfigManager.Config.Debug.EventViewer;
+			ShowListView = Config.ShowListView;
+
 			InitBitmap(new FrameInfo() { Width = 1, Height = 1 });
 			InitForCpuType();
 
@@ -126,17 +131,49 @@ namespace Mesen.Debugger.ViewModels
 				UpdateConfig();
 				RefreshData();
 			}));
-
-			AddDisposable(this.WhenAnyValue(x => x.SelectedTab).Subscribe(x => RefreshTab()));
 			
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => {
 				UpdateConfig();
-				RefreshTab();
+				RefreshUi(false);
+			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.ShowListView).Subscribe(showListView => {
+				Config.ShowListView = showListView;
+				ListViewHeight = showListView ? Config.ListViewHeight : 0;
+				MinListViewHeight = showListView ? 100 : 0;
+				RefreshUi(false);
+			}));
+
+			AddDisposable(this.WhenAnyValue(x => x.ListViewHeight).Subscribe(height => {
+				if(ShowListView) {
+					Config.ListViewHeight = height;
+				} else {
+					ListViewHeight = 0;
+				}
 			}));
 
 			DebugShortcutManager.RegisterActions(wnd, FileMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, DebugMenuItems);
 			DebugShortcutManager.RegisterActions(wnd, ViewMenuItems);
+		}
+
+		private void Selection_SelectionChanged(object? sender, Avalonia.Controls.Selection.SelectionModelSelectionChangedEventArgs<DebugEventViewModel?> e)
+		{
+			if(e.SelectedItems.Count > 0 && e.SelectedItems[0] is DebugEventViewModel evt) {
+				UpdateSelectedEvent(evt.RawEvent);
+			} else {
+				SelectionRect = default;
+			}
+		}
+
+		public void UpdateSelectedEvent(DebugEventInfo? evt)
+		{
+			if(evt != null) {
+				PixelPoint p = GetEventLocation(evt.Value);
+				SelectionRect = new Rect(p.X - 2, p.Y - 2, 6, 6);
+			} else {
+				SelectionRect = default;
+			}
 		}
 
 		[MemberNotNull(nameof(EventViewerViewModel.ConsoleConfig))]
@@ -167,39 +204,47 @@ namespace Mesen.Debugger.ViewModels
 		public void RefreshData(bool forAutoRefresh = false)
 		{
 			DebugApi.TakeEventSnapshot(CpuType, forAutoRefresh);
-			RefreshTab();
+			Dispatcher.UIThread.Post(() => {
+				SelectionRect = default;
+			});
+
+			RefreshUi(forAutoRefresh);
 		}
 
-		public void RefreshTab()
+		public void RefreshUi(bool forAutoRefresh)
 		{
 			Dispatcher.UIThread.Post(() => {
-				if(SelectedTab == EventViewerTab.PpuView) {
-					ListHeight = 0;
-					ShowViewer = true;
-					InitBitmap();
-					using(var bitmapLock = ViewerBitmap.Lock()) {
-						DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
+				InitBitmap();
+				using(var bitmapLock = ViewerBitmap.Lock()) {
+					DebugApi.GetEventViewerOutput(CpuType, bitmapLock.FrameBuffer.Address, (uint)(ViewerBitmap.Size.Width * ViewerBitmap.Size.Height * sizeof(UInt32)));
+				}
+
+				if(ShowListView) {
+					DateTime now = DateTime.Now;
+					if(!forAutoRefresh || (now - _lastListRefresh).TotalMilliseconds >= 66) {
+						_lastListRefresh = now;
+						ListView.RefreshList();
 					}
-				} else {
-					ShowViewer = false;
-					ListHeight = double.NaN;
-					ListView.RefreshList();
 				}
 			});
+		}
+
+		private PixelPoint GetEventLocation(DebugEventInfo evt)
+		{
+			return CpuType switch {
+				CpuType.Snes => new PixelPoint(evt.Cycle / 2, evt.Scanline * 2),
+				CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
+				CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
+				CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
+				_ => throw new Exception("Invalid cpu type")
+			};
 		}
 
 		public void UpdateHighlightPoint(PixelPoint p, DebugEventInfo? eventInfo)
 		{
 			if(eventInfo != null) {
 				//Snap the row/column highlight to the selected event
-				DebugEventInfo evt = eventInfo.Value;
-				p = CpuType switch {
-					CpuType.Snes => new PixelPoint(evt.Cycle / 2, evt.Scanline * 2),
-					CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
-					CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
-					CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
-					_ => throw new Exception("Invalid cpu type")
-				};
+				p = GetEventLocation(eventInfo.Value);
 			}
 
 			GridRowColumn result = new GridRowColumn() {
@@ -377,6 +422,8 @@ namespace Mesen.Debugger.ViewModels
 		public string Address { get; set; } = "";
 		public string Value { get; set; } = "";
 		public string Details { get; set; } = "";
+
+		public DebugEventInfo RawEvent => _events[_index];
 
 		public DebugEventViewModel(DebugEventInfo[] events, int index)
 		{

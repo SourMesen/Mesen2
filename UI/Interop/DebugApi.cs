@@ -391,7 +391,16 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropGbEventViewerConfig config);
 		[DllImport(DllPath)] public static extern void SetEventViewerConfig(CpuType cpuType, InteropPceEventViewerConfig config);
 
-		[DllImport(DllPath)] public static extern DebugEventInfo GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle);
+		[DllImport(DllPath, EntryPoint = "GetEventViewerEvent")] private static extern DebugEventInfo GetEventViewerEventWrapper(CpuType cpuType, UInt16 scanline, UInt16 cycle);
+		public static DebugEventInfo? GetEventViewerEvent(CpuType cpuType, UInt16 scanline, UInt16 cycle)
+		{
+			DebugEventInfo evt = DebugApi.GetEventViewerEventWrapper(cpuType, scanline, cycle);
+			if(evt.ProgramCounter != UInt32.MaxValue) {
+				return evt;
+			}
+			return null;
+		}
+
 		[DllImport(DllPath)] public static extern UInt32 TakeEventSnapshot(CpuType cpuType, [MarshalAs(UnmanagedType.I1)] bool forAutoRefresh);
 
 		[DllImport(DllPath)] public static extern FrameInfo GetEventViewerDisplaySize(CpuType cpuType);
@@ -691,7 +700,7 @@ namespace Mesen.Interop
 		HasTargetMemory = 8,
 	}
 
-	public struct DebugEventInfo
+	public record struct DebugEventInfo
 	{
 		public MemoryOperationInfo Operation;
 		public DebugEventType Type;

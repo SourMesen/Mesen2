@@ -15,6 +15,7 @@ using Mesen.Utilities;
 using System.Linq;
 using Avalonia.Threading;
 using Mesen.Debugger.Utilities;
+using DynamicData;
 
 namespace Mesen.Debugger.Windows
 {
@@ -44,6 +45,7 @@ namespace Mesen.Debugger.Windows
 
 			viewer.PointerMoved += Viewer_PointerMoved;
 			viewer.PointerExited += Viewer_PointerExited;
+			viewer.PointerPressed += Viewer_PointerPressed;
 		}
 
 		private void InitializeComponent()
@@ -60,6 +62,23 @@ namespace Mesen.Debugger.Windows
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_model.Config.ShowSettingsPanel = !_model.Config.ShowSettingsPanel;
+		}
+
+		private void Viewer_PointerPressed(object? sender, PointerPressedEventArgs e)
+		{
+			if(_prevMousePos == null) {
+				return;
+			}
+
+			DebugEventInfo? evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)_prevMousePos.Value.Y, (ushort)_prevMousePos.Value.X);
+			if(evt != null) {
+				_model.UpdateSelectedEvent(evt);
+				int index = _model.ListView.RawDebugEvents.IndexOf(evt.Value);
+				if(index >= 0) {
+					_model.ListView.Selection.Clear();
+					_model.ListView.Selection.Select(index);
+				}
+			}
 		}
 
 		private void Viewer_PointerExited(object? sender, PointerEventArgs e)
@@ -83,9 +102,6 @@ namespace Mesen.Debugger.Windows
 				DebugEventInfo? evt = null;
 				if(point != null) {
 					evt = DebugApi.GetEventViewerEvent(_model.CpuType, (ushort)point.Value.Y, (ushort)point.Value.X);
-					if(evt.Value.ProgramCounter == UInt32.MaxValue) {
-						evt = null;
-					}
 					_model.UpdateHighlightPoint(point.Value, evt);
 				}
 
@@ -156,8 +172,7 @@ namespace Mesen.Debugger.Windows
 
 				case ConsoleNotificationType.EventViewerRefresh:
 					CpuType cpuType = (CpuType)e.Parameter;
-					int fps = _model.SelectedTab == EventViewerViewModel.EventViewerTab.PpuView ? 80 : 15;
-					if(_model.CpuType == cpuType && _model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, fps)) {
+					if(_model.CpuType == cpuType && _model.Config.AutoRefresh && !ToolRefreshHelper.LimitFps(this, 80)) {
 						_model.RefreshData(true);
 					}
 					break;

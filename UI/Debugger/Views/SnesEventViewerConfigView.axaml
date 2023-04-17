@@ -74,8 +74,6 @@
 			</Grid>
 		</c:OptionSection>
 		
-		<c:OptionSection Header="Misc. Settings">
-			<CheckBox IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
-		</c:OptionSection>
+		<CheckBox Margin="0 10 0 0" IsChecked="{CompiledBinding ShowPreviousFrameEvents}" Content="Show previous frame events" />
 	</StackPanel>
 </UserControl>

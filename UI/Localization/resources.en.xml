@@ -1033,12 +1033,10 @@
 
 			<Control ID="btnToggleSettings">Toggle settings panel</Control>
 
+			<Control ID="chkShowListView">Show list view</Control>
 			<Control ID="btnSelectAll">Select all</Control>
 			<Control ID="btnDeselectAll">Deselect all</Control>
 			
-			<Control ID="tabPpuView">PPU View</Control>
-			<Control ID="tabListView">List View</Control>
-
 			<Control ID="colPc">PC</Control>
 			<Control ID="colScanline">Scanline</Control>
 			<Control ID="colCycle">Cycle</Control>

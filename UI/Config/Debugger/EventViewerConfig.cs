@@ -17,6 +17,9 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowToolbar { get; set; } = true;
 
+		[Reactive] public bool ShowListView { get; set; } = true;
+		[Reactive] public double ListViewHeight { get; set; } = 200;
+
 		[Reactive] public SnesEventViewerConfig SnesConfig { get; set; } = new SnesEventViewerConfig();
 		[Reactive] public NesEventViewerConfig NesConfig { get; set; } = new NesEventViewerConfig();
 		[Reactive] public GbEventViewerConfig GbConfig { get; set; } = new GbEventViewerConfig();

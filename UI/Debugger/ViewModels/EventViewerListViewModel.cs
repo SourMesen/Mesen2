@@ -1,4 +1,5 @@
 ﻿using Avalonia.Collections;
+using Avalonia.Controls.Selection;
 using DataBoxControl;
 using Mesen.Config;
 using Mesen.Interop;
@@ -17,9 +18,11 @@ namespace Mesen.Debugger.ViewModels
 {
 	public class EventViewerListViewModel : DisposableViewModel
 	{
+		public DebugEventInfo[] RawDebugEvents => _debugEvents;
 		private DebugEventInfo[] _debugEvents = new DebugEventInfo[0];
 
 		public MesenList<DebugEventViewModel> DebugEvents { get; }
+		public SelectionModel<DebugEventViewModel?> Selection { get; set; } = new();
 		public EventViewerViewModel EventViewer { get; }
 
 		[Reactive] public SortState SortState { get; set; } = new();
