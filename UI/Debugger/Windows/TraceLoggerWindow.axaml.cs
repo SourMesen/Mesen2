@@ -90,10 +90,15 @@ namespace Mesen.Debugger.Windows
 					HintText = () => GetHint(ActionLocation),
 					IsEnabled = () => ActionLocation.RelAddress != null || ActionLocation.AbsAddress != null,
 					OnClick = () => {
-						if(ActionLocation.AbsAddress != null) {
-							BreakpointManager.AddBreakpoint(ActionLocation.AbsAddress.Value, CpuType);
-						} else if(ActionLocation.RelAddress != null) {
-							BreakpointManager.AddBreakpoint(ActionLocation.RelAddress.Value, CpuType);
+						AddressInfo? addr = ActionLocation.AbsAddress ?? ActionLocation.RelAddress;
+						if(addr != null) {
+							Breakpoint bp = new Breakpoint() {
+								BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true,
+								StartAddress = (uint)addr.Value.Address,
+								EndAddress = (uint)addr.Value.Address,
+								CpuType = CpuType
+							};
+							BreakpointEditWindow.EditBreakpoint(bp, viewer);
 						}
 					}
 				},
