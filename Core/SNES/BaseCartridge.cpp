@@ -60,6 +60,8 @@ unique_ptr<BaseCartridge> BaseCartridge::CreateCartridge(SnesConsole* console, V
 			if(!FirmwareHelper::LoadBsxFirmware(cart->_emu, &cart->_prgRom, cart->_prgRomSize)) {
 				return nullptr;
 			}
+			cart->LoadRom();
+			cart->_emu->RegisterMemory(MemoryType::SnesPrgRom, cart->_prgRom, cart->_prgRomSize);
 		} else if(fileExt == ".gb" || fileExt == ".gbc") {
 			if(cart->LoadGameboy(romFile)) {
 				return cart;
