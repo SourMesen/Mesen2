@@ -1436,6 +1436,7 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$180E", "Playback Rate", Math.Round(32000.0 / (16 - adpcm.PlaybackRate)) + " Hz", adpcm.PlaybackRate),
 				new RegEntry("", "Half Reached", adpcm.HalfReached),
 				new RegEntry("", "ADPCM Length", adpcm.AdpcmLength, Format.X16),
+				new RegEntry("", "Read Address", adpcm.ReadAddress, Format.X16),
 				new RegEntry("", "Write Address", adpcm.WriteAddress, Format.X16),
 
 				new RegEntry("$1802.2-6", "Enabled IRQs"),

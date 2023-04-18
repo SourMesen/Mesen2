@@ -80,7 +80,7 @@ void PceAdpcm::SetControl(uint8_t value)
 		LogDebug("[ADPCM] Update write addr");
 	}
 
-	if(value & 0x08) {
+	if((value & 0x08) && !(_state.Control & 0x08)) {
 		_state.ReadAddress = _state.AddressPort - ((value & 0x04) ? 0 : 1);
 		LogDebug("[ADPCM] Update read addr");
 	}
