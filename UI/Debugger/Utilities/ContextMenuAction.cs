@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Mesen.Debugger.Utilities
 {
@@ -127,10 +128,10 @@ namespace Mesen.Debugger.Utilities
 		
 		[Reactive] public string TooltipText { get; set; } = "";
 
-		private static ReactiveCommand<Unit, Unit> _emptyCommand = ReactiveCommand.Create(() => { });
+		private static SimpleCommand _emptyCommand = new SimpleCommand(() => { });
 
-		private ReactiveCommand<Unit, Unit>? _clickCommand;
-		public ReactiveCommand<Unit, Unit>? ClickCommand
+		private SimpleCommand? _clickCommand;
+		public SimpleCommand? ClickCommand
 		{
 			get
 			{
@@ -153,21 +154,14 @@ namespace Mesen.Debugger.Utilities
 							Dispatcher.UIThread.Post(() => { value(); });
 						} else {
 							try {
-								//TODOv2 use Post, otherwise the action stays permanently disabled (bug?)
-								Dispatcher.UIThread.Post(() => {
-									try {
-										value();
-									} catch(Exception ex) {
-										MesenMsgBox.ShowException(ex);
-									}
-								});
+								value();
 							} catch(Exception ex) {
 								Dispatcher.UIThread.Post(() => MesenMsgBox.ShowException(ex));
 							}
 						}
 					}
 				};
-				_clickCommand = ReactiveCommand.Create(_onClick);
+				_clickCommand = new SimpleCommand(_onClick);
 			}
 		}
 
@@ -198,7 +192,6 @@ namespace Mesen.Debugger.Utilities
 		public virtual void Dispose()
 		{
 			_onClick = () => { };
-			_clickCommand?.Dispose();
 			_clickCommand = null;
 			IsSelected = null;
 			IsEnabled = null;
@@ -273,6 +266,28 @@ namespace Mesen.Debugger.Utilities
 		public ContextMenuSeparator()
 		{
 			IsEnabled = () => false;
+		}
+	}
+
+	public class SimpleCommand : ICommand
+	{
+		private Action _commandAction;
+
+		public event EventHandler? CanExecuteChanged;
+
+		public SimpleCommand(Action action)
+		{
+			this._commandAction = action;
+		}
+
+		public bool CanExecute(object? parameter)
+		{
+			return true;
+		}
+
+		public void Execute(object? parameter)
+		{
+			_commandAction();
 		}
 	}
 
