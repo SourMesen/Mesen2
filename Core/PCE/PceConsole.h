@@ -15,6 +15,7 @@ class IPceMapper;
 class Emulator;
 struct PceVideoState;
 struct HesFileData;
+struct DiscInfo;
 enum class PceConsoleType;
 
 class PceConsole final: public IConsole
@@ -40,6 +41,7 @@ private:
 	static bool IsSuperGrafxCard(uint32_t crc32);
 
 	bool LoadHesFile(VirtualFile& hesFile);
+	bool LoadFirmware(DiscInfo& disc, vector<uint8_t>& romData);
 
 public:
 	PceConsole(Emulator* emu);

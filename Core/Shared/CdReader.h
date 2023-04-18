@@ -110,7 +110,8 @@ struct DiscInfo
 		return -1;
 	}
 
-	void ReadDataSector(uint32_t sector, deque<uint8_t>& outData)
+	template<typename T>
+	void ReadDataSector(uint32_t sector, T& outData)
 	{
 		constexpr int Mode1_2352_SectorHeaderSize = 16;
 

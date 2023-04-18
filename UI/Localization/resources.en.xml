@@ -2381,6 +2381,7 @@
 			<Value ID="FDS">Famicom Disk System</Value>
 			<Value ID="StudyBox">Study Box</Value>
 			<Value ID="PceSuperCd">Super CD-ROM²</Value>
+			<Value ID="PceGamesExpress">Games Express Card</Value>
 		</Enum>
 
 		<Enum ID="CpuType">

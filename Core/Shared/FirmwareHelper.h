@@ -24,7 +24,8 @@ enum class FirmwareType
 	SGB2,
 	FDS,
 	StudyBox,
-	PceSuperCd
+	PceSuperCd,
+	PceGamesExpress,
 };
 
 struct MissingFirmwareMessage
@@ -32,13 +33,15 @@ struct MissingFirmwareMessage
 	const char* Filename = {};
 	FirmwareType Firmware;
 	uint32_t Size = 0;
+	uint32_t AltSize = 0;
 	const char* FileHashes[5] = {};
 
-	MissingFirmwareMessage(const char* filename, FirmwareType type, uint32_t size)
+	MissingFirmwareMessage(const char* filename, FirmwareType type, uint32_t size, uint32_t altSize = 0)
 	{
 		Filename = filename;
 		Firmware = type;
 		Size = size;
+		AltSize = altSize;
 
 		switch(type) {
 			case FirmwareType::CX4: FileHashes[0] = "AE8D4D1961B93421FF00B3CAA1D0F0CE7783E749772A3369C36B3DBF0D37EF18"; break;
@@ -92,6 +95,11 @@ struct MissingFirmwareMessage
 
 			case FirmwareType::PceSuperCd:
 				FileHashes[0] = "E11527B3B96CE112A037138988CA72FD117A6B0779C2480D9E03EAEBECE3D9CE";
+				break;
+
+			case FirmwareType::PceGamesExpress:
+				FileHashes[0] = "4B86BB96A48A4CA8375FC0109631D0B1D64F255A03B01DE70594D40788BA6C3D";
+				FileHashes[1] = "DA173B20694C2B52087B099B8C44E471D3EE08A666C90D4AFD997F8E1382ADD8";
 				break;
 
 			default:
@@ -174,11 +182,11 @@ private:
 	}
 
 public:
-	static bool LoadDspFirmware(Emulator* emu, FirmwareType type, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
+	static bool LoadDspFirmware(Emulator* emu, FirmwareType type, string combinedFilename, string splitFilenameProgram, string splitFilenameData, vector<uint8_t> &programRom, vector<uint8_t> &dataRom, vector<uint8_t> &embeddedFirmware, uint32_t programSize = 0x1800, uint32_t dataSize = 0x800)
 	{
-		if(embeddedFirware.size() == programSize + dataSize) {
-			programRom.insert(programRom.end(), embeddedFirware.begin(), embeddedFirware.begin() + programSize);
-			dataRom.insert(dataRom.end(), embeddedFirware.begin() + programSize, embeddedFirware.end());
+		if(embeddedFirmware.size() == programSize + dataSize) {
+			programRom.insert(programRom.end(), embeddedFirmware.begin(), embeddedFirmware.begin() + programSize);
+			dataRom.insert(dataRom.end(), embeddedFirmware.begin() + programSize, embeddedFirmware.end());
 			return true;
 		} else if(AttemptLoadDspFirmware(combinedFilename, splitFilenameProgram, splitFilenameData, programRom, dataRom, programSize, dataSize)) {
 			return true;
@@ -317,7 +325,26 @@ public:
 			return true;
 		}
 
-		MessageManager::DisplayMessage("Error", "Could not find firmware file for Famicom Disk System");
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for PC Engine CD-ROM");
+		return false;
+	}
+
+	static bool LoadPceGamesExpressFirmware(Emulator* emu, vector<uint8_t>& biosRom)
+	{
+		string filename = "[BIOS] Games Express CD Card (Japan).pce";
+		string altName = "gecard.pce";
+		if(AttemptLoadFirmware(biosRom, filename, 0x8000, altName) || AttemptLoadFirmware(biosRom, filename, 0x4000, altName)) {
+			return true;
+		}
+
+		MissingFirmwareMessage msg(filename.c_str(), FirmwareType::PceGamesExpress, 0x8000, 0x4000);
+		emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::MissingFirmware, &msg);
+
+		if(AttemptLoadFirmware(biosRom, filename, 0x8000, altName) || AttemptLoadFirmware(biosRom, filename, 0x4000, altName)) {
+			return true;
+		}
+
+		MessageManager::DisplayMessage("Error", "Could not find firmware file for the Games Express Card");
 		return false;
 	}
 };

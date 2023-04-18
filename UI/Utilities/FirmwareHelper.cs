@@ -45,14 +45,15 @@ namespace Mesen.Utilities
 					if(selectedFile != null) {
 						try {
 							List<string> expectedHashes = msg.GetFileHashes();
-							if(new FileInfo(selectedFile).Length != msg.Size) {
+							long fileSize = new FileInfo(selectedFile).Length;
+							if(fileSize != msg.Size && (msg.AltSize == 0 || fileSize != msg.AltSize)) {
 								await MesenMsgBox.Show(wnd, "FirmwareFileWrongSize", MessageBoxButtons.OK, MessageBoxIcon.Error, msg.Size.ToString());
 								continue;
 							}
 
-							string filehash = GetFileHash(selectedFile);
-							if(!expectedHashes.Contains(filehash)) {
-								if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, ResourceHelper.GetEnumText(msg.Firmware), expectedHashes[0], filehash) != DialogResult.OK) {
+							string fileHash = GetFileHash(selectedFile);
+							if(!expectedHashes.Contains(fileHash)) {
+								if(await MesenMsgBox.Show(wnd, "FirmwareMismatch", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, ResourceHelper.GetEnumText(msg.Firmware), expectedHashes[0], fileHash) != DialogResult.OK) {
 									//Files don't match and user cancelled the action
 									return;
 								}

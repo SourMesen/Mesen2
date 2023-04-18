@@ -49,12 +49,12 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 		}
 		romData = _hesData->RomData;
 	} else if(romFile.GetFileExtension() == ".cue") {
-		if(!FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData)) {
+		DiscInfo disc = {};
+		if(!CdReader::LoadCue(romFile, disc)) {
 			return LoadRomResult::Failure;
 		}
 
-		DiscInfo disc = {};
-		if(!CdReader::LoadCue(romFile, disc)) {
+		if(!LoadFirmware(disc, romData)) {
 			return LoadRomResult::Failure;
 		}
 
@@ -124,6 +124,21 @@ LoadRomResult PceConsole::LoadRom(VirtualFile& romFile)
 	MessageManager::Log("-----------------");
 
 	return LoadRomResult::Success;
+}
+
+bool PceConsole::LoadFirmware(DiscInfo& disc, vector<uint8_t>& romData)
+{
+	if(disc.Tracks[0].Format != TrackFormat::Audio) {
+		//All Games Express discs have these 8 bytes at the start of sector 0x10 (which is the first sector read by the firmware)
+		constexpr uint8_t signature[8] { 0x01, 0x43, 0x44, 0x30, 0x30, 0x31, 0x01, 0x00 };
+		vector<uint8_t> data;
+		disc.ReadDataSector(0x10, data);
+		if(memcmp(data.data(), signature, sizeof(signature)) == 0) {
+			return FirmwareHelper::LoadPceGamesExpressFirmware(_emu, romData);
+		}
+	}
+
+	return FirmwareHelper::LoadPceSuperCdFirmware(_emu, romData);
 }
 
 bool PceConsole::IsPopulousCard(uint32_t crc32)

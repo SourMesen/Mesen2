@@ -241,5 +241,5 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	}
 	MessageManager::Log("---- END TRACKS ----");
 
-	return true;
+	return disc.Tracks.size() > 0;
 }

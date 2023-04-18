@@ -254,7 +254,8 @@ namespace Mesen.Interop
 		SGB2,
 		FDS,
 		StudyBox,
-		PceSuperCd
+		PceSuperCd,
+		PceGamesExpress
 	}
 
 	public struct MissingFirmwareMessage
@@ -262,7 +263,8 @@ namespace Mesen.Interop
 		public IntPtr Filename;
 		public FirmwareType Firmware;
 		public UInt32 Size;
-		
+		public UInt32 AltSize;
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
 		public IntPtr[] FileHashes;
 
