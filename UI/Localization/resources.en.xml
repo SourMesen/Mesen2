@@ -1390,7 +1390,7 @@
 			<Control ID="btnOk">OK</Control>
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
-		
+
 		<Form ID="LabelEditWindow">
 			<Control ID="wndTitle">Edit label...</Control>
 			<Control ID="lblMemoryType">Memory type:</Control>
@@ -1404,6 +1404,12 @@
 			<Control ID="btnCancel">Cancel</Control>
 		</Form>
 		
+		<Form ID="CommentEditWindow">
+			<Control ID="wndTitle">Edit comment...</Control>
+			<Control ID="btnOk">OK</Control>
+			<Control ID="btnCancel">Cancel</Control>
+		</Form>
+
 		<Form ID="RegisterViewerWindow">
 			<Control ID="wndTitle">Register Viewer</Control>
 
@@ -2798,6 +2804,7 @@
 			<Value ID="CodeWindow_EditSelectedCode">Code Window: Edit Selected Code</Value>
 			<Value ID="CodeWindow_EditSourceFile">Code Window: Edit Source File (Source View)</Value>
 			<Value ID="CodeWindow_EditLabel">Code Window: Edit Label</Value>
+			<Value ID="CodeWindow_EditComment">Code Window: Edit Comment</Value>
 			<Value ID="CodeWindow_NavigateBack">Code Window: Navigate Back</Value>
 			<Value ID="CodeWindow_NavigateForward">Code Window: Navigate Forward</Value>
 			<Value ID="CodeWindow_ToggleBreakpoint">Code Window: Toggle Breakpoint</Value>
@@ -2912,6 +2919,7 @@
 			<Value ID="MoveDown">Move Down</Value>
 
 			<Value ID="EditLabel">Edit Label</Value>
+			<Value ID="EditComment">Edit Comment</Value>
 			<Value ID="AddWatch">Add to Watch</Value>
 			<Value ID="AddBreakpoint">Add Breakpoint</Value>
 			<Value ID="EditTilemapBreakpoint">Edit Breakpoint (Tilemap)</Value>

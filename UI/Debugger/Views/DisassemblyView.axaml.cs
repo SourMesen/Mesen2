@@ -138,6 +138,23 @@ namespace Mesen.Debugger.Views
 					}
 				},
 				new ContextMenuAction() {
+					ActionType = ActionType.EditComment,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_EditComment),
+					HintText = () => GetHint(ActionLocation),
+					IsVisible = () => false,
+					AllowedWhenHidden = true,
+					IsEnabled = () => ActionLocation.Label != null || ActionLocation.AbsAddress != null,
+					OnClick = () => {
+						LocationInfo loc = ActionLocation;
+						CodeLabel? label = loc.Label ?? (loc.AbsAddress.HasValue ? LabelManager.GetLabel(loc.AbsAddress.Value) : null);
+						if(label != null) {
+							CommentEditWindow.EditComment(this, label);
+						} else if(loc.AbsAddress != null) {
+							CommentEditWindow.EditComment(this, new CodeLabel(loc.AbsAddress.Value));
+						}
+					}
+				},
+				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_ViewInMemoryViewer),
 					HintText = () => GetHint(ActionLocation),

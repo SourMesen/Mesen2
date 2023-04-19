@@ -306,6 +306,9 @@ namespace Mesen.Debugger.Utilities
 
 		[IconFile("EditLabel")]
 		EditLabel,
+		
+		[IconFile("EditLabel")]
+		EditComment,
 
 		[IconFile("Add")]
 		AddWatch,

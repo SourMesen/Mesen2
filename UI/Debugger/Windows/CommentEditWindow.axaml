@@ -1,0 +1,42 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:vm="using:Mesen.Debugger.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="50"
+	x:Class="Mesen.Debugger.Windows.CommentEditWindow"
+	x:DataType="vm:CommentEditViewModel"
+	Icon="/Assets/EditLabel.png"
+	Width="350"
+	MinWidth="350"
+	CanResize="False"
+	ShowInTaskbar="False"
+	SizeToContent="Height"
+	Title="{l:Translate wndTitle}"
+>
+	<Design.DataContext>
+		<vm:CommentEditViewModel />
+	</Design.DataContext>
+
+	<DockPanel>
+		<StackPanel HorizontalAlignment="Right" Orientation="Horizontal" DockPanel.Dock="Bottom">
+			<Button MinWidth="70" HorizontalContentAlignment="Center" IsDefault="True" Click="Ok_OnClick" Content="{l:Translate btnOk}" />
+			<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+		</StackPanel>
+
+		<TextBox
+			Name="txtComment"
+			FontFamily="{DynamicResource MesenMonospaceFont}"
+			FontSize="{DynamicResource MesenMonospaceFontSize}"
+			AcceptsReturn="True"
+			ScrollViewer.HorizontalScrollBarVisibility="Auto"
+			Height="NaN"
+			MinHeight="21"
+			MaxHeight="200"
+			VerticalContentAlignment="Top"
+			Text="{CompiledBinding Label.Comment}"
+		/>
+	</DockPanel>
+</Window>

@@ -69,6 +69,8 @@
 				MinHeight="100"
 				VerticalContentAlignment="Top"
 				Text="{CompiledBinding Label.Comment}"
+				FontFamily="{DynamicResource MesenMonospaceFont}"
+				FontSize="{DynamicResource MesenMonospaceFontSize}"
 			/>
 
 			<TextBlock Grid.Column="0" Grid.Row="4" Text="{l:Translate lblLength}" />

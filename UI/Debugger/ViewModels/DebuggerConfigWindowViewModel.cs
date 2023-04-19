@@ -260,6 +260,7 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.CodeWindow_AddToWatch,
 				DebuggerShortcut.CodeWindow_ViewInMemoryViewer,
 				DebuggerShortcut.CodeWindow_EditLabel,
+				DebuggerShortcut.CodeWindow_EditComment,
 				//DebuggerShortcut.CodeWindow_NavigateBack,
 				//DebuggerShortcut.CodeWindow_NavigateForward,
 				DebuggerShortcut.CodeWindow_ToggleBreakpoint,

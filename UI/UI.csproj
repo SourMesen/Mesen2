@@ -227,6 +227,9 @@
     <Compile Update="Debugger\Views\RefreshTimingView.axaml.cs">
       <DependentUpon>RefreshTimingView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\Windows\CommentEditWindow.axaml.cs">
+      <DependentUpon>CommentEditWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\FontOptionsView.axaml.cs">
       <DependentUpon>FontOptionsView.axaml</DependentUpon>
     </Compile>
