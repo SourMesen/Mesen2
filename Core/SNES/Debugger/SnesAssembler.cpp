@@ -118,41 +118,34 @@ AssemblerSpecialCodes SnesAssembler::ResolveOpMode(AssemblerLineData& op, uint32
 			return AssemblerSpecialCodes::ParsingError;
 		}
 	} else if(op.OperandCount == 1) {
-		switch(operand.ByteCount) {
-			case 1:
-				op.AddrMode = IsOpModeAvailable(op.OpCode, SnesAddrMode::Rel) ? SnesAddrMode::Rel : SnesAddrMode::Dir;
-				break;
+		if(operand.ByteCount >= 2 || operand.ValueType == OperandValueType::Label) {
+			if(IsOpModeAvailable(op.OpCode, SnesAddrMode::Rel)) {
+				op.AddrMode = SnesAddrMode::Rel;
 
-			case 2:
-			case 3:
-			{
-				if(IsOpModeAvailable(op.OpCode, SnesAddrMode::Rel)) {
-					op.AddrMode = SnesAddrMode::Rel;
-
-					//Convert "absolute" jump to a relative jump
-					int32_t addressGap = operand.Value - (instructionAddress + 2);
-					bool lngBranch = addressGap < -128 || addressGap > 127;
-					int16_t maxPosGap = lngBranch ? 32767 : 127;
-					int16_t maxNegGap = lngBranch ? -32768 : -128;
-					if(addressGap > maxPosGap || addressGap < maxNegGap) {
-						//Gap too long, can't jump that far
-						if(!firstPass) {
-							//Pretend this is ok on first pass, we're just trying to find all labels
-							return AssemblerSpecialCodes::OutOfRangeJump;
-						}
+				//Convert "absolute" jump to a relative jump
+				int32_t addressGap = operand.Value - (instructionAddress + 2);
+				bool lngBranch = addressGap < -128 || addressGap > 127;
+				int16_t maxPosGap = lngBranch ? 32767 : 127;
+				int16_t maxNegGap = lngBranch ? -32768 : -128;
+				if(addressGap > maxPosGap || addressGap < maxNegGap) {
+					//Gap too long, can't jump that far
+					if(!firstPass) {
+						//Pretend this is ok on first pass, we're just trying to find all labels
+						return AssemblerSpecialCodes::OutOfRangeJump;
 					}
-
-					//Update data to match relative jump
-					operand.ByteCount = lngBranch ? 2 : 1;
-					operand.Value = lngBranch ? (uint16_t)addressGap : (uint8_t)addressGap;
-				} else {
-					op.AddrMode = operand.ByteCount == 3 ? SnesAddrMode::AbsLng : SnesAddrMode::Abs;
 				}
-				break;
-			}
 
-			default: 
-				return AssemblerSpecialCodes::ParsingError;
+				//Update data to match relative jump
+				operand.ByteCount = lngBranch ? 2 : 1;
+				operand.Value = lngBranch ? (uint16_t)addressGap : (uint8_t)addressGap;
+			} else {
+				operand.ByteCount = std::max(2, operand.ByteCount);
+				op.AddrMode = operand.ByteCount == 3 ? SnesAddrMode::AbsLng : SnesAddrMode::Abs;
+			}
+		} else if(operand.ByteCount == 1) {
+			op.AddrMode = IsOpModeAvailable(op.OpCode, SnesAddrMode::Rel) ? SnesAddrMode::Rel : SnesAddrMode::Dir;
+		} else {
+			return AssemblerSpecialCodes::ParsingError;
 		}
 	} else if(op.OperandCount == 0) {
 		op.AddrMode = IsOpModeAvailable(op.OpCode, SnesAddrMode::Acc) ? SnesAddrMode::Acc : (IsOpModeAvailable(op.OpCode, SnesAddrMode::Stk) ? SnesAddrMode::Stk : SnesAddrMode::Imp);

@@ -90,7 +90,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 		} else if(op.OperandCount == 0) {
 			op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Acc) ? NesAddrMode::Acc : NesAddrMode::Imp;
 		} else if(op.OperandCount == 1) {
-			if(operand.ByteCount == 2) {
+			if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
 				if(IsOpModeAvailable(op.OpCode, NesAddrMode::Rel)) {
 					op.AddrMode = NesAddrMode::Rel;
 
@@ -108,6 +108,7 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 					operand.ByteCount = 1;
 					operand.Value = (uint8_t)addressGap;
 				} else {
+					operand.ByteCount = 2;
 					op.AddrMode = NesAddrMode::Abs;
 				}
 			} else if(operand.ByteCount == 1) {

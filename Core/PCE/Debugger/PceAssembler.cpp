@@ -65,7 +65,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 	} else if(operand2.Type == OperandType::Custom) {
 		//ImZero, ImAbs, ZeroRel
 		if(!operand.IsImmediate && operand.ByteCount == 1) {
-			if(operand2.ByteCount == 2) {
+			if(operand2.ByteCount == 2 || operand2.ValueType == OperandValueType::Label) {
 				int16_t addressGap = operand2.Value - (instructionAddress + 3);
 				if(addressGap > 127 || addressGap < -128) {
 					//Gap too long, can't jump that far
@@ -154,7 +154,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 		} else if(op.OperandCount == 0) {
 			op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Acc) ? PceAddrMode::Acc : PceAddrMode::Imp;
 		} else if(op.OperandCount == 1) {
-			if(operand.ByteCount == 2) {
+			if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
 				if(IsOpModeAvailable(op.OpCode, PceAddrMode::Rel)) {
 					op.AddrMode = PceAddrMode::Rel;
 
@@ -172,6 +172,7 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 					operand.ByteCount = 1;
 					operand.Value = (uint8_t)addressGap;
 				} else {
+					operand.ByteCount = 2;
 					op.AddrMode = PceAddrMode::Abs;
 				}
 			} else if(operand.ByteCount == 1) {
