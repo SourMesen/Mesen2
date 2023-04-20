@@ -14,7 +14,7 @@
 
 using namespace ScsiSignal;
 
-PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(disc), _scsi(console, this, _disc), _adpcm(console, emu, this, &_scsi), _audioFader(console), _audioPlayer(emu, this, _disc)
+PceCdRom::PceCdRom(Emulator* emu, PceConsole* console, DiscInfo& disc) : _disc(disc), _scsi(emu, console, this, _disc), _adpcm(console, emu, this, &_scsi), _audioFader(console), _audioPlayer(emu, this, _disc)
 {
 	_emu = emu;
 	_console = console;

@@ -3,6 +3,7 @@
 #include "PCE/PceTypes.h"
 #include "Utilities/ISerializable.h"
 
+class Emulator;
 class PceConsole;
 class PceCdRom;
 struct DiscInfo;
@@ -44,7 +45,8 @@ class PceScsiBus : public ISerializable
 {
 private:
 	constexpr static int ReadBytesPerSecond = 153600; //75 frames/sectors of 2048 bytes per second, like audio
-
+	
+	Emulator* _emu = nullptr;
 	DiscInfo* _disc = nullptr;
 	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
@@ -88,6 +90,7 @@ private:
 
 	uint8_t GetCommandSize(ScsiCommand cmd);
 	void ExecCommand(ScsiCommand cmd);
+	void LogCommand(string msg);
 	void ProcessCommandPhase();
 	
 	int64_t GetSeekTime(uint32_t startLba, uint32_t targetLba);
@@ -97,14 +100,14 @@ private:
 	void CmdAudioStartPos();
 	void CmdAudioEndPos();
 	void CmdPause();
-
+	void CmdTestReadyUnit();
 	void CmdReadSubCodeQ();
 	void CmdReadToc();
 
 	void ProcessDiscRead();
 
 public:
-	PceScsiBus(PceConsole* console, PceCdRom* cdRom, DiscInfo& disc);
+	PceScsiBus(Emulator* emu, PceConsole* console, PceCdRom* cdRom, DiscInfo& disc);
 
 	PceScsiBusState& GetState() { return _state; }
 

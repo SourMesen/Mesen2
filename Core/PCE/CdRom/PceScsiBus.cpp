@@ -5,6 +5,7 @@
 #include "PCE/PceConsole.h"
 #include "PCE/PceTypes.h"
 #include "Shared/CdReader.h"
+#include "Shared/Emulator.h"
 #include "Shared/MessageManager.h"
 #include "Utilities/HexUtilities.h"
 #include "Utilities/StringUtilities.h"
@@ -12,8 +13,9 @@
 
 using namespace ScsiSignal;
 
-PceScsiBus::PceScsiBus(PceConsole* console, PceCdRom* cdrom, DiscInfo& disc)
+PceScsiBus::PceScsiBus(Emulator* emu, PceConsole* console, PceCdRom* cdrom, DiscInfo& disc)
 {
+	_emu = emu;
 	_disc = &disc;
 	_console = console;
 	_cdrom = cdrom;
@@ -130,7 +132,7 @@ uint8_t PceScsiBus::GetCommandSize(ScsiCommand cmd)
 void PceScsiBus::ExecCommand(ScsiCommand cmd)
 {
 	switch(cmd) {
-		case ScsiCommand::TestUnitReady: SetStatusMessage(ScsiStatus::Good, 0); break;
+		case ScsiCommand::TestUnitReady: CmdTestReadyUnit(); break;
 		case ScsiCommand::Read: CmdRead(); break;
 		case ScsiCommand::AudioStartPos: CmdAudioStartPos(); break;
 		case ScsiCommand::AudioEndPos: CmdAudioEndPos(); break;
@@ -138,6 +140,19 @@ void PceScsiBus::ExecCommand(ScsiCommand cmd)
 		case ScsiCommand::ReadSubCodeQ: CmdReadSubCodeQ(); break;
 		case ScsiCommand::ReadToc: CmdReadToc(); break;
 	}
+}
+
+void PceScsiBus::LogCommand(string msg)
+{
+	if(!_emu->IsDebugging()) {
+		return;
+	}
+
+	msg = "[SCSI] CMD: " + msg + " - ";
+	for(size_t i = 0, len = _cmdBuffer.size(); i < len; i++) {
+		msg += " $" + HexUtilities::ToHex(_cmdBuffer[i]);
+	}
+	_emu->DebugLog(msg);
 }
 
 void PceScsiBus::ProcessCommandPhase()
@@ -150,7 +165,9 @@ void PceScsiBus::ProcessCommandPhase()
 		uint8_t cmdSize = GetCommandSize(cmd);
 		if(cmdSize == 0) {
 			//Unknown/unsupported command
-			LogDebug("[SCSI] Unknown command: " + HexUtilities::ToHex(_cmdBuffer[0]));
+			if(_emu->IsDebugging()) {
+				LogCommand("Unknown command - " + HexUtilities::ToHex(_cmdBuffer[0]));
+			}
 			SetStatusMessage(ScsiStatus::Good, 0);
 		} else if(cmdSize <= _cmdBuffer.size()) {
 			//All bytes received - command has been processed
@@ -178,6 +195,7 @@ void PceScsiBus::CmdRead()
 	uint8_t sectorsToRead = _cmdBuffer[4];
 
 	if(sectorsToRead == 0) {
+		LogCommand("Read - No sectors to read");
 		SetStatusMessage(ScsiStatus::Good, 0);
 		return;
 	}
@@ -188,7 +206,9 @@ void PceScsiBus::CmdRead()
 	_state.SectorsToRead = sectorsToRead;
 
 	_cdrom->GetAudioPlayer().SetIdle();
-	LogDebug("[SCSI] Read sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1));
+	if(_emu->IsDebugging()) {
+		LogCommand("Read - Sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1));
+	}
 }
 
 uint32_t PceScsiBus::GetAudioLbaPos()
@@ -220,7 +240,9 @@ void PceScsiBus::CmdAudioStartPos()
 {
 	uint32_t startSector = GetAudioLbaPos();
 
-	LogDebug("[SCSI] CMD: Audio start pos: " + std::to_string(startSector));
+	if(_emu->IsDebugging()) {
+		LogCommand("Audio Start Position - " + std::to_string(startSector));
+	}
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	if(_cmdBuffer[1] == 0) {
@@ -237,8 +259,6 @@ void PceScsiBus::CmdAudioEndPos()
 {
 	uint32_t endSector = GetAudioLbaPos();
 
-	LogDebug("[SCSI] CMD: Audio end pos: " + std::to_string(endSector));
-	
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	switch(_cmdBuffer[1]) {
 		case 0: player.Stop(); break;
@@ -246,20 +266,36 @@ void PceScsiBus::CmdAudioEndPos()
 		case 2: player.SetEndPosition(endSector, CdPlayEndBehavior::Irq); break;
 		case 3: player.SetEndPosition(endSector, CdPlayEndBehavior::Stop); break;
 	}
-	
+
+	if(_emu->IsDebugging()) {
+		LogCommand("Audio End Position - " + std::to_string(endSector));
+	}
+
 	SetStatusMessage(ScsiStatus::Good, 0);
 }
 
 void PceScsiBus::CmdPause()
 {
-	LogDebug("[SCSI] CMD: Audio pause");
+	if(_emu->IsDebugging()) {
+		LogCommand("Audio Pause");
+	}
 	_cdrom->GetAudioPlayer().Pause();
+	SetStatusMessage(ScsiStatus::Good, 0);
+}
+
+void PceScsiBus::CmdTestReadyUnit()
+{
+	if(_emu->IsDebugging()) {
+		LogCommand("Test Ready Unit");
+	}
 	SetStatusMessage(ScsiStatus::Good, 0);
 }
 
 void PceScsiBus::CmdReadSubCodeQ()
 {
-	LogDebug("[SCSI] CMD: Read Sub Code Q");
+	if(_emu->IsDebugging()) {
+		LogCommand("Read Sub Code Q");
+	}
 	
 	_dataBuffer.clear();
 
@@ -297,10 +333,13 @@ void PceScsiBus::CmdReadSubCodeQ()
 
 void PceScsiBus::CmdReadToc()
 {
-	LogDebug("[SCSI] CMD: Read ToC");
 	switch(_cmdBuffer[1]) {
 		case 0:
 			//Number of tracks
+			if(_emu->IsDebugging()) {
+				LogCommand("Read ToC - Number of Tracks");
+			}
+
 			_dataBuffer.clear();
 			_dataBuffer.push_back(1);
 			_dataBuffer.push_back(CdReader::ToBcd((uint8_t)_disc->Tracks.size()));
@@ -310,6 +349,10 @@ void PceScsiBus::CmdReadToc()
 
 		case 1: {
 			//Total disc length
+			if(_emu->IsDebugging()) {
+				LogCommand("Read ToC - Disc Length");
+			}
+
 			_dataBuffer.clear();
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Minutes));
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Seconds));
@@ -321,6 +364,10 @@ void PceScsiBus::CmdReadToc()
 
 		case 2: {
 			uint8_t track = CdReader::FromBcd(_cmdBuffer[2]);
+			if(_emu->IsDebugging()) {
+				LogCommand("Read ToC - Track #" + std::to_string(track) + " Length");
+			}
+
 			if(track == 0) {
 				track = 1;
 			}
@@ -348,7 +395,9 @@ void PceScsiBus::CmdReadToc()
 		}
 
 		default:
-			LogDebug("[SCSI] CMD Read ToC: Unsupported parameters");
+			if(_emu->IsDebugging()) {
+				LogCommand("Read ToC - Unsupported parameters - " + HexUtilities::ToHex(_cmdBuffer[1]));
+			}
 			break;
 	}
 }
