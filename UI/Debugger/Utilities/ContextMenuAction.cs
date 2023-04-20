@@ -273,7 +273,9 @@ namespace Mesen.Debugger.Utilities
 	{
 		private Action _commandAction;
 
+#pragma warning disable CS0067 // The event 'SimpleCommand.CanExecuteChanged' is never used
 		public event EventHandler? CanExecuteChanged;
+#pragma warning restore CS0067 // The event 'SimpleCommand.CanExecuteChanged' is never used
 
 		public SimpleCommand(Action action)
 		{
