@@ -2,6 +2,7 @@
 #include "NES/Loaders/iNesLoader.h"
 #include "Utilities/CRC32.h"
 #include "Utilities/HexUtilities.h"
+#include "NES/MapperFactory.h"
 #include "NES/NesHeader.h"
 #include "NES/RomData.h"
 #include "NES/GameDatabase.h"
@@ -146,5 +147,8 @@ void iNesLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, NesHeader *
 		if(romData.Info.VsType == VsSystemType::VsDualSystem) {
 			romData.Info.Format = RomFormat::VsDualSystem;
 		}
+	} else if(romData.Info.System == GameSystem::FamicomNetworkSystem) {
+		//temporary code
+		romData.Info.MapperID = MapperFactory::FamicomNetworkSystemMapperID;
 	}
 }

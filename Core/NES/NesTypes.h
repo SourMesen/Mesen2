@@ -347,6 +347,7 @@ enum class GameSystem
 	VsSystem,
 	Playchoice,
 	FDS,
+	FamicomNetworkSystem,
 	Unknown,
 };
 

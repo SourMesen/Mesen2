@@ -110,6 +110,7 @@
 #include "NES/Mappers/Nintendo/CNROM.h"
 #include "NES/Mappers/Nintendo/CpRom.h"
 #include "NES/Mappers/Nintendo/FamicomBox.h"
+#include "NES/Mappers/Nintendo/FnsMmc1.h"
 #include "NES/Mappers/Nintendo/GxRom.h"
 #include "NES/Mappers/Nintendo/MMC1.h"
 #include "NES/Mappers/Nintendo/MMC1_105.h"
@@ -624,6 +625,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case UnifBoards::Unl8237A: return new Unl8237A(); //mapper 215.1
 		case UnifBoards::UnlPuzzle: return new UnlPuzzle();
 
+		case MapperFactory::FamicomNetworkSystemMapperID: return new FnsMmc1();
 		case MapperFactory::StudyBoxMapperID: return new StudyBox();
 		case MapperFactory::NsfMapperID: return new NsfMapper();
 		case MapperFactory::FdsMapperID: return new Fds();

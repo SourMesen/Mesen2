@@ -49,10 +49,11 @@ GameSystem NesHeader::GetGameSystem()
 			case 1: return GameSystem::VsSystem;
 			case 2: return GameSystem::Playchoice;
 			case 3:
-				switch(Byte13) {
-					case 0: return GetNesGameSystem();
-					case 1: return GameSystem::VsSystem;
-					case 2: return GameSystem::Playchoice;
+				switch(Byte13 & 0x0F) {
+					case 0x0: return GetNesGameSystem();
+					case 0x1: return GameSystem::VsSystem;
+					case 0x2: return GameSystem::Playchoice;
+					case 0xC: return GameSystem::FamicomNetworkSystem;
 					default:
 						MessageManager::Log("[iNes] Unsupported console type detected (using NES NTSC instead)");
 						return GameSystem::NesNtsc;
