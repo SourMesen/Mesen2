@@ -94,6 +94,7 @@ namespace Mesen.Debugger.Windows
 						if(addr != null) {
 							Breakpoint bp = new Breakpoint() {
 								BreakOnRead = true, BreakOnWrite = true, BreakOnExec = true,
+								MemoryType = addr.Value.Type,
 								StartAddress = (uint)addr.Value.Address,
 								EndAddress = (uint)addr.Value.Address,
 								CpuType = CpuType
