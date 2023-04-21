@@ -169,6 +169,7 @@ void PceScsiBus::ProcessCommandPhase()
 				LogCommand("Unknown command - " + HexUtilities::ToHex(_cmdBuffer[0]));
 			}
 			SetStatusMessage(ScsiStatus::Good, 0);
+			_cmdBuffer.clear();
 		} else if(cmdSize <= _cmdBuffer.size()) {
 			//All bytes received - command has been processed
 			//LogDebug("[SCSI] Command recv: " + HexUtilities::ToHex(_cmdBuffer, ' '));
