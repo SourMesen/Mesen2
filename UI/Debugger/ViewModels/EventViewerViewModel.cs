@@ -174,7 +174,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInDebugger,
 					IsEnabled = () => SelectedEvent != null,
-					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					HintText = () => "PC - " + (SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : ""),
 					OnClick = () => {
 						if(SelectedEvent != null) {
 							DebuggerWindow.OpenWindowAtAddress(CpuType, (int)SelectedEvent.Value.ProgramCounter);
@@ -184,7 +184,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
 					IsEnabled = () => SelectedEvent != null,
-					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					HintText = () => "PC - " + (SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : ""),
 					OnClick = () => {
 						if(SelectedEvent != null) {
 							int addr = (int)SelectedEvent.Value.Operation.Address;
@@ -195,7 +195,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
 					IsEnabled = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register,
-					HintText = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"${SelectedEvent.Value.Operation.Address:X4}" : "",
+					HintText = () => "Address - " + (SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"${SelectedEvent.Value.Operation.Address:X4}" : ""),
 					OnClick = () => {
 						if(SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register) {
 							int addr = (int)SelectedEvent.Value.Operation.Address;
