@@ -138,6 +138,14 @@
 		</Setter>
 	</Style>
 	
+	<Style Selector="ComboBox">
+		<Setter Property="ItemsPanel">
+			<ItemsPanelTemplate>
+				<StackPanel />
+			</ItemsPanelTemplate>
+		</Setter>
+	</Style>
+	
 	<Style Selector="ItemsControl,ItemsPresenter">
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
 	</Style>
