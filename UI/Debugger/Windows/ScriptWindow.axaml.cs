@@ -12,6 +12,7 @@ using AvaloniaEdit.Editing;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using DynamicData;
+using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Views;
@@ -43,7 +44,7 @@ namespace Mesen.Debugger.Windows
 		private DispatcherTimer _timer;
 		private ScriptWindowViewModel _model;
 		private Process _lspServer = null!;
-		private LanguageClient _lspClient = null!;
+		private LanguageClient? _lspClient = null!;
 
 		static ScriptWindow()
 		{
@@ -100,12 +101,15 @@ namespace Mesen.Debugger.Windows
 		private async Task InitializeLspClientAsync()
 		{
 			_lspServer = new Process();
-			// TODO config for lsp
-			_lspServer.StartInfo.FileName = @"C:\Users\SalHe\.vscode\extensions\sumneko.lua-3.6.18-win32-x64\server\bin\lua-language-server.exe";
+			_lspServer.StartInfo.FileName = LspServerHelper.ExecutableFullName;
 			_lspServer.StartInfo.RedirectStandardInput = true;
 			_lspServer.StartInfo.RedirectStandardOutput = true;
 			_lspServer.StartInfo.CreateNoWindow = true;
-			_lspServer.Start();
+			try {
+				_lspServer.Start();
+			} catch(Exception) {
+				return;
+			}
 
 			_lspClient = LanguageClient.Create(options =>
 				options
@@ -246,7 +250,7 @@ namespace Mesen.Debugger.Windows
 		{
 			// TODO handle open/change/save/... for editing code
 			var uri = _model.GetCodeUri();
-			_lspClient.DidOpenTextDocument(new() {
+			_lspClient?.DidOpenTextDocument(new() {
 				TextDocument = new() { Uri = uri, Text = _model.Code },
 			});
 			return uri;
@@ -255,6 +259,8 @@ namespace Mesen.Debugger.Windows
 		private void HandleEditorHover(int line, int column)
 		{
 			_ = Task.Run(async () => {
+				if(_lspClient == null) return;
+
 				var hoverResult = await _lspClient.RequestHover(new() {
 					TextDocument = new() { Uri = OpenCodeForLsp() },
 					Position = new(line, column)
@@ -319,6 +325,8 @@ namespace Mesen.Debugger.Windows
 		private void ShowCompletions()
 		{
 			_ = Task.Run(async () => {
+				if(_lspClient == null) return;
+
 				var completions = await _lspClient.RequestCompletion(new() {
 					TextDocument = new() { Uri = OpenCodeForLsp() },
 					Position = new(_textEditor.TextArea.Caret.Line - 1, _textEditor.TextArea.Caret.Column - 1)
