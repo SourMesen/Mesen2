@@ -413,6 +413,7 @@ namespace Mesen.Debugger.ViewModels
 			for(int i = rows.Length - 1; i >= 0; i--) {
 				lines.Add(new CodeLineData(rows[i].Type) {
 					Address = (int)rows[i].ProgramCounter,
+					AbsoluteAddress = new() { Address = -1 },
 					Text = rows[i].GetOutput(),
 					OpSize = rows[i].ByteCodeSize,
 					ByteCode = rows[i].GetByteCode(),
