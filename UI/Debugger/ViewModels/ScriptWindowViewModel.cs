@@ -139,7 +139,7 @@ namespace Mesen.Debugger.ViewModels
 				ActionType = ActionType.BuiltInScripts,
 				AlwaysShowLabel = true,
 				SubActions = GetBuiltInScriptActions()
-			});			
+			});
 			return actions;
 		}
 
@@ -195,7 +195,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private List<ContextMenuAction> GetScriptMenuActions()
 		{
-			 return new() {
+			return new() {
 				new ContextMenuAction() {
 					ActionType = ActionType.RunScript,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.ScriptWindow_RunScript),
@@ -347,5 +347,24 @@ namespace Mesen.Debugger.ViewModels
 			}
 			return false;
 		}
+
+		public Uri GetCodeUri()
+		{
+			return FilePath.Length > 0
+				// TODO handle uri for document
+				? new UriBuilder { }.Uri
+				: new UriBuilder { Scheme = UriSchema, Path = "script.lua" }.Uri;
+		}
+
+		public Uri GetWorkspaceUri()
+		{
+			return new UriBuilder { Scheme = UriSchema, Path = "/" }.Uri;
+		}
+		public Uri GetMetaLuaUri()
+		{
+			return new UriBuilder { Scheme = UriSchema, Path = "meta.lua" }.Uri;
+		}
+
+		public static string UriSchema = "MesenLua";
 	}
 }
