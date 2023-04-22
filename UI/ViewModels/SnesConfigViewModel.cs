@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Mesen.Config;
+using Mesen.Localization;
 using Mesen.Utilities;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 
@@ -14,10 +16,13 @@ namespace Mesen.ViewModels
 
 		public SnesInputConfigViewModel Input { get; private set; }
 
+		[Reactive] public bool IsDefaultSpcClockSpeed { get; set; } = true;
+		[Reactive] public string SpcEffectiveClockSpeed { get; set; } = "";
+
 		public Enum[] AvailableRegions => new Enum[] {
 			ConsoleRegion.Auto,
 			ConsoleRegion.Ntsc,
-			ConsoleRegion.Pal			
+			ConsoleRegion.Pal
 		};
 
 		public SnesConfigViewModel()
@@ -32,6 +37,11 @@ namespace Mesen.ViewModels
 
 			AddDisposable(Input);
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(Config, (s, e) => { Config.ApplyConfig(); }));
+
+			AddDisposable(this.WhenAnyValue(x => x.Config.SpcClockSpeedAdjustment).Subscribe(x => {
+				SpcEffectiveClockSpeed = ResourceHelper.GetMessage("SpcClockSpeedMsg", ((32000 + x) * 32).ToString());
+				IsDefaultSpcClockSpeed = x == 40;
+			}));
 		}
    }
 

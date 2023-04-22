@@ -18,7 +18,16 @@
 	<Design.DataContext>
 		<vm:SnesConfigViewModel />
 	</Design.DataContext>
-
+	
+	<UserControl.Styles>
+		<Style Selector="TextBlock.red">
+			<Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+		</Style>
+		<Style Selector="TextBlock.gray">
+			<Setter Property="Foreground" Value="{DynamicResource MesenNotRecommendedInactiveBrush}" />
+		</Style>
+	</UserControl.Styles>
+	
 	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
@@ -74,11 +83,28 @@
 		<TabItem Header="{l:Translate tpgEmulation}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<StackPanel Orientation="Horizontal">
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
 						<TextBlock Text="{l:Translate lblRamPowerOnState}" />
-						<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
-					</StackPanel>
+						<c:EnumComboBox HorizontalAlignment="Left" Grid.Column="1" SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
 
+						<TextBlock Grid.Row="1" Text="{l:Translate lblSpcClockSpeedAdjustment}" />
+						<StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+							<NumericUpDown
+								Minimum="-999"
+								Maximum="999"
+								Value="{CompiledBinding Config.SpcClockSpeedAdjustment}"
+							/>
+							<TextBlock Margin="5 0 0 0" Text="{CompiledBinding SpcEffectiveClockSpeed}" />
+							<TextBlock
+								VerticalAlignment="Center"
+								Margin="2 0 0 0"
+								Classes.red="{CompiledBinding !IsDefaultSpcClockSpeed}"
+								Classes.gray="{CompiledBinding IsDefaultSpcClockSpeed}"
+								Text="{l:Translate lblNotRecommended}"
+							/>
+						</StackPanel>
+					</Grid>
+					
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableRandomPowerOnState}" Text="{l:Translate chkRandomPowerOnState}" />
 					<c:CheckBoxWarning IsChecked="{CompiledBinding Config.EnableStrictBoardMappings}" Text="{l:Translate chkStrictBoardMappings}" />
 				</StackPanel>
