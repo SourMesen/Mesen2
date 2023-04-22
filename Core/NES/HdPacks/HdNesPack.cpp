@@ -308,7 +308,7 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 		return;
 	}
 
-	bool checkFallbackTiles = _console->GetMapper()->HasChrRom();
+	bool checkFallbackTiles = _console->GetMapper()->HasChrRom() && _fallbackTiles.size() > 0;
 	for(int32_t j = 0; j < NesConstants::ScreenPixelCount; j++) {
 		while(_hdScreenInfo->ScreenTiles[j].SpriteCount == 0) {
 			if(++j >= NesConstants::ScreenPixelCount) {
@@ -327,13 +327,15 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 			} else {
 				vector<HdPackAdditionalSpriteInfo> additions;
 				for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
-					if(pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
+					if(!additionalSprite.IgnorePalette && pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
+						InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
+						additions.push_back(additionalSprite);
+					} else if(additionalSprite.IgnorePalette && pixelInfo.Sprite[i].GetKey(true) == additionalSprite.OriginalTile.GetKey(true)) {
 						InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
 						additions.push_back(additionalSprite);
 					} else if(checkFallbackTiles) {
-						int32_t fallbackTile = checkFallbackTiles ? GetFallbackTile(pixelInfo.Sprite[i].TileIndex) : -1;
-						if(pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
-							if(fallbackTile == additionalSprite.OriginalTile.TileIndex) {
+						if(additionalSprite.IgnorePalette || pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
+							if(GetFallbackTile(pixelInfo.Sprite[i].TileIndex) == additionalSprite.OriginalTile.TileIndex) {
 								InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
 								additions.push_back(additionalSprite);
 							}
@@ -403,7 +405,10 @@ HdPackTileInfo* HdNesPack<scale>::GetMatchingTile(uint32_t x, uint32_t y, HdPpuT
 			tile->TileIndex = fallbackTileIndex;
 			hdTile = _hdData->TileByKey.find(*tile);
 			if(hdTile == _hdData->TileByKey.end()) {
-				tile->TileIndex = orgIndex;
+				hdTile = _hdData->TileByKey.find(tile->GetKey(true));
+				if(hdTile == _hdData->TileByKey.end()) {
+					tile->TileIndex = orgIndex;
+				}
 			}
 		}
 	

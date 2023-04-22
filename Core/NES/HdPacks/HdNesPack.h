@@ -12,7 +12,7 @@ protected:
 	HdScreenInfo* _hdScreenInfo = nullptr;
 
 public:
-	static constexpr uint32_t CurrentVersion = 107;
+	static constexpr uint32_t CurrentVersion = 108;
 
 	virtual uint32_t GetScale() = 0;
 

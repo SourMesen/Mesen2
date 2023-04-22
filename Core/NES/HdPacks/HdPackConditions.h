@@ -13,14 +13,16 @@ struct HdPackBaseTileCondition : public HdPackCondition
 	uint8_t TileData[16] = {};
 	int32_t TileIndex = 0;
 	int32_t PixelOffset = 0;
+	bool IgnorePalette = false;
 
-	void Initialize(int32_t x, int32_t y, uint32_t palette, int32_t tileIndex, string tileData = "")
+	void Initialize(int32_t x, int32_t y, uint32_t palette, int32_t tileIndex, string tileData, bool ignorePalette)
 	{
 		TileX = x;
 		TileY = y;
 		PixelOffset = (y * 256) + x;
 		PaletteColors = palette;
 		TileIndex = tileIndex;
+		IgnorePalette = ignorePalette;
 		if(tileData.size() == 32) {
 			for(int i = 0; i < 16; i++) {
 				TileData[i] = HexUtilities::FromHex(tileData.substr(i * 2, 2));
@@ -228,9 +230,13 @@ struct HdPackTileAtPositionCondition : public HdPackBaseTileCondition
 	{
 		HdPpuTileInfo& target = _screenInfo->ScreenTiles[PixelOffset].Tile;
 		if(TileIndex >= 0) {
-			return target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
+			return (target.PaletteColors == PaletteColors || IgnorePalette) && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
 		} else {
-			return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			if(IgnorePalette) {
+				return memcmp(&target.TileData, &TileData, sizeof(TileData)) == 0;
+			} else {
+				return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			}
 		}
 	}
 };
@@ -246,11 +252,13 @@ struct HdPackSpriteAtPositionCondition : public HdPackBaseTileCondition
 		for(int i = 0, len = _screenInfo->ScreenTiles[PixelOffset].SpriteCount; i < len;  i++) {
 			HdPpuTileInfo& target = _screenInfo->ScreenTiles[PixelOffset].Sprite[i];
 			if(TileIndex >= 0) {
-				if(target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
+				if((target.PaletteColors == PaletteColors || IgnorePalette) && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
 					return true;
 				}
 			} else {
-				if(memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
+				if(IgnorePalette && memcmp(&target.TileData, &TileData, sizeof(TileData)) == 0) {
+					return true;
+				} else if(!IgnorePalette && memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
 					return true;
 				}
 			}
@@ -273,9 +281,13 @@ struct HdPackTileNearbyCondition : public HdPackBaseTileCondition
 
 		HdPpuTileInfo& target = _screenInfo->ScreenTiles[pixelIndex].Tile;
 		if(TileIndex >= 0) {
-			return target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
+			return (target.PaletteColors == PaletteColors || IgnorePalette) && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex);
 		} else {
-			return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			if(IgnorePalette) {
+				return memcmp(&target.TileData, &TileData, sizeof(TileData)) == 0;
+			} else {
+				return memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0;
+			}
 		}
 	}
 };
@@ -298,11 +310,13 @@ struct HdPackSpriteNearbyCondition : public HdPackBaseTileCondition
 		for(int i = 0, len = _screenInfo->ScreenTiles[pixelIndex].SpriteCount; i < len;  i++) {
 			HdPpuTileInfo& target = _screenInfo->ScreenTiles[pixelIndex].Sprite[i];
 			if(TileIndex >= 0) {
-				if(target.PaletteColors == PaletteColors && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
+				if((target.PaletteColors == PaletteColors || IgnorePalette) && (target.TileIndex == TileIndex || _hdPack->GetFallbackTile(target.TileIndex) == TileIndex)) {
 					return true;
 				}
 			} else {
-				if(memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
+				if(IgnorePalette && memcmp(&target.TileData, &TileData, sizeof(TileData)) == 0) {
+					return true;
+				} else if(!IgnorePalette && memcmp(&target.PaletteColors, &PaletteColors, sizeof(PaletteColors) + sizeof(TileData)) == 0) {
 					return true;
 				}
 			}
