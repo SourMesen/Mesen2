@@ -162,7 +162,13 @@ namespace Mesen.Debugger.Windows
 				.Where(x =>
 					!string.IsNullOrWhiteSpace(x.EventArgs.Text)
 					&& !x.EventArgs.Text.EndsWith(")"))
+				.Select(x => new {
+					Raw = x,
+					_textEditor.TextArea.Caret.Position,
+				})
 				.Throttle(TimeSpan.FromSeconds(0.5))
+				// if caret moved after input, don't show completion
+				.Where(x => x.Position.Equals(_textEditor.TextArea.Caret.Position))
 				.Subscribe(_ => ShowCompletions());
 		}
 
@@ -300,6 +306,8 @@ namespace Mesen.Debugger.Windows
 		{
 			if(e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl || e.KeyModifiers.HasFlag(KeyModifiers.Control)) {
 				_ctrlPressed = true;
+			} else if(e.Key == Key.Escape) {
+				TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
 			}
 		}
 
