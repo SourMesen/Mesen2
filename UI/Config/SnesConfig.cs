@@ -54,6 +54,7 @@ namespace Mesen.Config
 		[Reactive] public bool EnableRandomPowerOnState { get; set; } = false;
 		[Reactive] public bool EnableStrictBoardMappings { get; set; } = false;
 		[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
+		[Reactive] [MinMax(-999, 999)] public Int32 SpcClockSpeedAdjustment { get; set; } = 40;
 
 		//Overclocking
 		[Reactive] [MinMax(0, 1000)] public UInt32 PpuExtraScanlinesBeforeNmi { get; set; } = 0;
@@ -111,6 +112,7 @@ namespace Mesen.Config
 				PpuExtraScanlinesAfterNmi = this.PpuExtraScanlinesAfterNmi,
 				GsuClockSpeed = this.GsuClockSpeed,
 				RamPowerOnState = this.RamPowerOnState,
+				SpcClockSpeedAdjustment = this.SpcClockSpeedAdjustment,
 				BsxCustomDate = this.BsxCustomDate.Ticks + this.BsxCustomTime.Ticks
 			});
 		}
@@ -198,6 +200,7 @@ namespace Mesen.Config
 		[MarshalAs(UnmanagedType.I1)] public bool EnableRandomPowerOnState;
 		[MarshalAs(UnmanagedType.I1)] public bool EnableStrictBoardMappings;
 		public RamState RamPowerOnState;
+		public Int32 SpcClockSpeedAdjustment;
 
 		public UInt32 PpuExtraScanlinesBeforeNmi;
 		public UInt32 PpuExtraScanlinesAfterNmi;

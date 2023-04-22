@@ -174,7 +174,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInDebugger,
 					IsEnabled = () => SelectedEvent != null,
-					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					HintText = () => SelectedEvent != null ? $"PC -${SelectedEvent.Value.ProgramCounter:X4}" : "",
 					OnClick = () => {
 						if(SelectedEvent != null) {
 							DebuggerWindow.OpenWindowAtAddress(CpuType, (int)SelectedEvent.Value.ProgramCounter);
@@ -184,7 +184,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
 					IsEnabled = () => SelectedEvent != null,
-					HintText = () => SelectedEvent != null ? $"${SelectedEvent.Value.ProgramCounter:X4}" : "",
+					HintText = () => SelectedEvent != null ? $"PC - ${SelectedEvent.Value.ProgramCounter:X4}" : "",
 					OnClick = () => {
 						if(SelectedEvent != null) {
 							int addr = (int)SelectedEvent.Value.Operation.Address;
@@ -195,7 +195,7 @@ namespace Mesen.Debugger.ViewModels
 				new ContextMenuAction() {
 					ActionType = ActionType.ToggleBreakpoint,
 					IsEnabled = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register,
-					HintText = () => SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"${SelectedEvent.Value.Operation.Address:X4}" : "",
+					HintText = () => (SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register ? $"Address - ${SelectedEvent.Value.Operation.Address:X4}" : ""),
 					OnClick = () => {
 						if(SelectedEvent != null && SelectedEvent?.Type == DebugEventType.Register) {
 							int addr = (int)SelectedEvent.Value.Operation.Address;
@@ -458,22 +458,23 @@ namespace Mesen.Debugger.ViewModels
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
-		private string _programCounter = "";
-		public string ProgramCounter
-		{
-			get
-			{
-				UpdateFields();
-				return _programCounter;
-			}
-		}
-
+		public string ProgramCounter { get; set; } = "";
 		public string Scanline { get; set; } = "";
 		public string Cycle { get; set; } = "";
 		public string Type { get; set; } = "";
 		public string Address { get; set; } = "";
 		public string Value { get; set; } = "";
 		public string Details { get; set; } = "";
+
+		private UInt32 _color = 0;
+		public UInt32 Color
+		{
+			get
+			{
+				UpdateFields();
+				return _color;
+			}
+		}
 
 		public DebugEventInfo RawEvent => _events[_index];
 
@@ -494,12 +495,14 @@ namespace Mesen.Debugger.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Address"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Details"));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Color"));
 		}
 
 		private void UpdateFields()
 		{
 			DebugEventInfo evt = _events[_index];
-			_programCounter = "$" + evt.ProgramCounter.ToString("X4");
+			_color = evt.Color;
+			ProgramCounter = "$" + evt.ProgramCounter.ToString("X4");
 			Scanline = evt.Scanline.ToString();
 			Cycle = evt.Cycle.ToString();
 			string address = "";

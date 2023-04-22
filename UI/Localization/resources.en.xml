@@ -211,7 +211,8 @@
 			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
 			<Control ID="chkRandomPowerOnState">Randomize power-on state</Control>
 			<Control ID="chkStrictBoardMappings">Use strict board mappings (breaks some romhacks)</Control>
-
+			<Control ID="lblSpcClockSpeedAdjustment">SPC clock speed adjustment: </Control>
+			<Control ID="lblNotRecommended">(not recommended)</Control>
 			<Control ID="tpgInput">Input</Control>
 
 			<Control ID="tpgOverclocking">Overclocking</Control>
@@ -1475,6 +1476,8 @@
 
 		<Message ID="ClearHistory">Clear History</Message>
 
+		<Message ID="SpcClockSpeedMsg">= {0} Hz (default: 40)</Message>
+E
 		<Message ID="FirmwareNotFound">This game requires a firmware file for the: {0}&#xA;&#xA;  Filename: {1}&#xA;  Size: {2} bytes&#xA;&#xA;Would you like to select it now?</Message>
 		<Message ID="FirmwareMismatch">The selected file does not match the firmware required for the: {0}&#xA;&#xA;Firmware SHA-256:&#xA;{1}&#xA;&#xA;Selected file's SHA-256:&#xA;{2}&#xA;&#xA;Would you like to use this file anyway?</Message>
 		<Message ID="FirmwareFileWrongSize">The selected file does not match the required size ({0} bytes) and cannot be used.</Message>

@@ -478,6 +478,7 @@ struct SnesConfig
 	bool EnableRandomPowerOnState = false;
 	bool EnableStrictBoardMappings = false;
 	RamState RamPowerOnState = RamState::Random;
+	int32_t SpcClockSpeedAdjustment = 0;
 
 	uint32_t PpuExtraScanlinesBeforeNmi = 0;
 	uint32_t PpuExtraScanlinesAfterNmi = 0;

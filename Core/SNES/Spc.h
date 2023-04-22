@@ -25,7 +25,7 @@ class Spc : public ISerializable
 public:
 	static constexpr int SpcRamSize = 0x10000;
 	static constexpr int SpcRomSize = 0x40;
-	static constexpr int SpcSampleRate = 32040;
+	static constexpr int SpcSampleRate = 32000;
 
 private:
 	static constexpr int SampleBufferSize = 0x20000;
@@ -49,6 +49,7 @@ private:
 	uint8_t _opSubStep = 0;
 
 	bool _enabled = false;
+	uint32_t _spcSampleRate = Spc::SpcSampleRate;
 
 	SpcState _state;
 	uint8_t* _ram;

@@ -51,6 +51,7 @@ Spc::Spc(SnesConsole* console)
 	_operandA = 0;
 	_operandB = 0;
 	_enabled = true;
+	_spcSampleRate = Spc::SpcSampleRate + _emu->GetSettings()->GetSnesConfig().SpcClockSpeedAdjustment;
 
 	UpdateClockRatio();
 }
@@ -122,7 +123,7 @@ void Spc::SetSpcState(bool enabled)
 
 void Spc::UpdateClockRatio()
 {
-	_clockRatio = (double)(Spc::SpcSampleRate * 64) / _console->GetMasterClockRate();
+	_clockRatio = (double)(_spcSampleRate * 64) / _console->GetMasterClockRate();
 
 	//If the target cycle is off by more than 20 cycles, reset the counter to match what was expected
 	//This can happen due to overclocking (which disables the SPC for some scanlines) or if the SPC's 
@@ -411,7 +412,7 @@ void Spc::ProcessEndFrame()
 
 	uint16_t sampleCount = _dsp->GetSampleCount();
 	if(sampleCount != 0) {
-		_emu->GetSoundMixer()->PlayAudioBuffer(_dsp->GetSamples(), sampleCount / 2, Spc::SpcSampleRate);
+		_emu->GetSoundMixer()->PlayAudioBuffer(_dsp->GetSamples(), sampleCount / 2, _spcSampleRate);
 	}
 	_dsp->ResetOutput();
 }

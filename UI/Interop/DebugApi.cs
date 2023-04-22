@@ -713,6 +713,7 @@ namespace Mesen.Interop
 		public EventFlags Flags;
 		public Int32 RegisterId;
 		public MemoryOperationInfo TargetMemory;
+		public UInt32 Color;
 	};
 
 	[StructLayout(LayoutKind.Sequential)]
