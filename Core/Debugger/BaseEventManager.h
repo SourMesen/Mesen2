@@ -26,6 +26,7 @@ struct DebugEventInfo
 	uint32_t Flags;
 	int32_t RegisterId = -1;
 	MemoryOperationInfo TargetMemory;
+	uint32_t Color = 0;
 };
 
 struct EventViewerCategoryCfg

@@ -9,6 +9,7 @@
 	xmlns:c="using:Mesen.Controls"
 	xmlns:dc="using:Mesen.Debugger.Controls"
 	xmlns:du="using:Mesen.Debugger.Utilities"
+	xmlns:u="using:Mesen.Utilities"
 	xmlns:v="using:Mesen.Debugger.Views"
 	xmlns:i="using:Mesen.Interop"
 	xmlns:l="using:Mesen.Localization"
@@ -27,6 +28,7 @@
 
 	<Window.Resources>
 		<du:GridLengthConverter x:Key="GridLengthConverter" />
+		<u:ArgbColorToBrushConverter x:Key="ArgbColorToBrushConverter"/>
 	</Window.Resources>
 	
 	<Window.DataTemplates>
@@ -122,9 +124,24 @@
 					</DataBox.Styles>
 
 					<DataBox.Columns>
-						<DataBoxTextColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62" Binding="{Binding ProgramCounter}" />
+						<DataBoxTemplateColumn
+							Header=""
+							ColumnName="Color"
+							InitialWidth="16"
+						>
+							<DataTemplate>
+								<Border
+									BorderBrush="{DynamicResource MesenBlackBorderColor}"
+									BorderThickness="1"
+									Background="{Binding Color, Converter={StaticResource ArgbColorToBrushConverter}}"
+									Width="12"
+									Height="12"
+								/>
+							</DataTemplate>
+						</DataBoxTemplateColumn>
 						<DataBoxTextColumn Header="{l:Translate colScanline}" ColumnName="Scanline" InitialWidth="88" Binding="{Binding Scanline}" />
 						<DataBoxTextColumn Header="{l:Translate colCycle}" ColumnName="Cycle" InitialWidth="77" Binding="{Binding Cycle}" />
+						<DataBoxTextColumn Header="{l:Translate colPc}" ColumnName="ProgramCounter" InitialWidth="62" Binding="{Binding ProgramCounter}" />
 						<DataBoxTextColumn Header="{l:Translate colType}" ColumnName="Type" InitialWidth="77" Binding="{Binding Type}" />
 						<DataBoxTextColumn Header="{l:Translate colAddress}" ColumnName="Address" InitialWidth="68" Binding="{Binding Address}" />
 						<DataBoxTextColumn Header="{l:Translate colValue}" ColumnName="Value" InitialWidth="50" Binding="{Binding Value}" />

@@ -44,6 +44,7 @@ namespace Mesen.Debugger.ViewModels
 		}
 
 		private Dictionary<string, Func<DebugEventInfo, DebugEventInfo, int>> _comparers = new() {
+			{ "Color", (a, b) => a.Color.CompareTo(b.Color) },
 			{ "ProgramCounter", (a, b) => a.ProgramCounter.CompareTo(b.ProgramCounter) },
 			{ "Scanline", (a, b) => a.Scanline.CompareTo(b.Scanline) },
 			{ "Cycle", (a, b) => a.Cycle.CompareTo(b.Cycle) },
