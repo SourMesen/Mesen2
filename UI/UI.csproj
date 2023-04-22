@@ -89,11 +89,12 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview6" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
+    <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.0-preview6" />
     <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview6" />
     <PackageReference Include="Dock.Model.Avalonia" Version="11.0.0-preview6" />
     <PackageReference Include="Dock.Model.ReactiveUI" Version="11.0.0-preview6" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
-    <PackageReference Include="Markdown.Avalonia" Version="11.0.0-b1" />
+    <PackageReference Include="Markdown.Avalonia.Tight" Version="11.0.0-b1" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="Octokit" Version="5.0.4" />
     <PackageReference Include="OmniSharp.Extensions.LanguageClient" Version="0.19.7" />
@@ -563,6 +564,9 @@
     <EmbeddedResource Include="Utilities\DipSwitchDefinitions.xml" />
 	  <EmbeddedResource Include="Debugger\Documentation\meta.lua" />
 
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Markdown.Avalonia.SyntaxHigh\Markdown.Avalonia.SyntaxHigh.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuildWindows" BeforeTargets="PreBuildEvent" Condition="'$(RuntimeIdentifier)'=='win-x64'">

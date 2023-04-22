@@ -12,7 +12,6 @@ using AvaloniaEdit.Editing;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
 using DynamicData;
-using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Views;
@@ -56,6 +55,9 @@ namespace Mesen.Debugger.Windows
 				using var metaReader = new StreamReader(stream);
 				_luaMetaDefinition = metaReader.ReadToEnd();
 			}
+
+			// Install syntax for document in completion and hover (here to initialize looks good now).
+			MarkdownCodeBlockHelper.Install();
 		}
 
 		[Obsolete("For designer only")]

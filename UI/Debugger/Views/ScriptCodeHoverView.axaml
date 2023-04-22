@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:AvalonEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dc="using:Mesen.Debugger.Controls"
     xmlns:lspModel="clr-namespace:OmniSharp.Extensions.LanguageServer.Protocol.Models;assembly=OmniSharp.Extensions.LanguageProtocol"
@@ -13,7 +14,12 @@
     x:DataType="lspModel:MarkupContent"
     mc:Ignorable="d">
 
-    <!--  TODO Resolve code syntax highlight  -->
-    <md:MarkdownScrollViewer Markdown="{CompiledBinding Value}" />
+    <md:MarkdownScrollViewer Name="Viewer" Markdown="{CompiledBinding Value}">
+        <md:MarkdownScrollViewer.Styles>
+            <Style Selector="ae|TextEditor">
+                <Setter Property="WordWrap" Value="True" />
+            </Style>
+        </md:MarkdownScrollViewer.Styles>
+    </md:MarkdownScrollViewer>
 
 </UserControl>
