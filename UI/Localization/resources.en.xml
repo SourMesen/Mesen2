@@ -2802,6 +2802,8 @@ E
 			<Value ID="CodeWindow_ViewInMemoryViewer">Code Window: View in Memory Viewer</Value>
 			<Value ID="CodeWindow_AddToWatch">Code Window: Add to Watch</Value>
 			<Value ID="CodeWindow_GoToLocation">Code Window: Go to Location</Value>
+			<Value ID="CodeWindow_NavigateBack">Code Window: Navigate Backward</Value>
+			<Value ID="CodeWindow_NavigateForward">Code Window: Navigate Forward</Value>
 			<Value ID="CodeWindow_MoveProgramCounter">Code Window: Move Program Counter</Value>
 			<Value ID="CodeWindow_RunToLocation">Code Window: Run to Location</Value>
 			<Value ID="CodeWindow_EditSelectedCode">Code Window: Edit Selected Code</Value>
@@ -3206,6 +3208,9 @@ E
 			<Value ID="TranslateRight">Translate right</Value>
 			<Value ID="TranslateUp">Translate up</Value>
 			<Value ID="TranslateDown">Translate down</Value>
+
+			<Value ID="NavigateBack">Navigate Backward</Value>
+			<Value ID="NavigateForward">Navigate Forward</Value>
 		</Enum>
 	</Enums>
 </Resources>

@@ -162,6 +162,9 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_EditComment, KeyBinding = new(Key.OemSemicolon) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_ToggleBreakpoint, KeyBinding = new(Key.F9) });
 			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_SwitchView, KeyBinding = new(KeyModifiers.Control, Key.Q) });
+			
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateBack, KeyBinding = new(KeyModifiers.Control, Key.OemMinus) });
+			Add(new() { Shortcut = DebuggerShortcut.CodeWindow_NavigateForward, KeyBinding = new(KeyModifiers.Control | KeyModifiers.Shift, Key.OemMinus) });
 
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Add, KeyBinding = new(Key.Insert) });
 			Add(new() { Shortcut = DebuggerShortcut.LabelList_Edit, KeyBinding = new(Key.F2) });
@@ -356,6 +359,7 @@ namespace Mesen.Config
 		CodeWindow_EditLabel,
 		CodeWindow_EditComment,
 		CodeWindow_NavigateBack,
+		CodeWindow_NavigateForward,
 		CodeWindow_ToggleBreakpoint,
 		CodeWindow_SwitchView,
 		LabelList_Add,

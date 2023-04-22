@@ -193,6 +193,25 @@ namespace Mesen.Debugger.Views
 					IsEnabled = () => ActionLocation.Symbol != null || ActionLocation.RelAddress != null,
 					OnClick = () => GoToLocation(ActionLocation)
 				},
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
+				new ContextMenuAction() {
+					ActionType = ActionType.NavigateBack,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_NavigateBack),
+					IsVisible = () => !IsMarginClick,
+					IsEnabled = () => Model.History.CanGoBack(),
+					OnClick = () => {
+						Model.GoBack();
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.NavigateForward,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_NavigateForward),
+					IsVisible = () => !IsMarginClick,
+					IsEnabled = () => Model.History.CanGoForward(),
+					OnClick = () => {
+						Model.GoForward();
+					}
+				},
 			};
 
 			actions.AddRange(GetBreakpointContextMenu());
@@ -206,11 +225,11 @@ namespace Mesen.Debugger.Views
 				if(addr?.Address > 0) {
 					SourceCodeLocation? srcLoc = DebugWorkspaceManager.SymbolProvider?.GetSourceCodeLineInfo(addr.Value);
 					if(srcLoc != null) {
-						_model?.ScrollToLocation(srcLoc.Value);
+						_model?.ScrollToLocation(srcLoc.Value, true);
 					}
 				}
 			} else if(loc.RelAddress != null) {
-				_model?.GoToRelativeAddress(loc.RelAddress.Value.Address);
+				_model?.GoToRelativeAddress(loc.RelAddress.Value.Address, true);
 			}
 		}
 
@@ -367,8 +386,15 @@ namespace Mesen.Debugger.Views
 			base.OnPointerPressed(e);
 
 			//Navigate on double-click left click
-			if(e.Source is DisassemblyViewer && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
-				GoToLocation(ActionLocation);
+			if(e.Source is DisassemblyViewer) {
+				PointerPointProperties props = e.GetCurrentPoint(this).Properties;
+				if(_selectionHandler?.IsMarginClick == false && props.IsLeftButtonPressed && e.ClickCount == 2) {
+					GoToLocation(ActionLocation);
+				} else if(props.IsXButton1Pressed) {
+					Model.GoBack();
+				} else if(props.IsXButton2Pressed) {
+					Model.GoForward();
+				}
 			}
 		}
 

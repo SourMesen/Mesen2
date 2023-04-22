@@ -71,7 +71,7 @@ namespace Mesen.Debugger.Integration
 		}
 	}
 
-	public readonly struct SourceCodeLocation
+	public readonly struct SourceCodeLocation : IEquatable<SourceCodeLocation>
 	{
 		public SourceFileInfo File { get; }
 		public int LineNumber { get; }
@@ -82,6 +82,11 @@ namespace Mesen.Debugger.Integration
 			File = file;
 			LineNumber = lineNumber;
 			InternalLine = internalLine;
+		}
+
+		public bool Equals(SourceCodeLocation other)
+		{
+			return File == other.File && LineNumber == other.LineNumber;
 		}
 	}
 }
