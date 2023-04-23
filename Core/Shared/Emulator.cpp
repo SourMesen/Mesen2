@@ -122,6 +122,7 @@ void Emulator::Run()
 	_isRunAheadFrame = false;
 
 	PlatformUtilities::EnableHighResolutionTimer();
+	PlatformUtilities::DisableScreensaver();
 
 	_emulationThreadId = std::this_thread::get_id();
 
@@ -162,6 +163,7 @@ void Emulator::Run()
 		_runLock.Release();
 	}
 
+	PlatformUtilities::EnableScreensaver();
 	PlatformUtilities::RestoreTimerResolution();
 }
 
