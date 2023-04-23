@@ -598,6 +598,14 @@ void Gameboy::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	}
 }
 
+void Gameboy::InitGbsPlayback(uint8_t selectedTrack)
+{
+	GbsCart* cart = dynamic_cast<GbsCart*>(_cart.get());
+	if(cart) {
+		cart->InitPlayback(selectedTrack);
+	}
+}
+
 ConsoleRegion Gameboy::GetRegion()
 {
 	return ConsoleRegion::Ntsc;

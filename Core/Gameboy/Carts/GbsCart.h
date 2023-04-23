@@ -138,9 +138,10 @@ public:
 		//Asynchronously move to the next file
 		//Can't do this in the current thread in some contexts (e.g when track reaches end)
 		//because this is called from the emulation thread, which may cause infinite recursion
-		thread switchTrackTask([this, selectedTrack]() {
-			auto lock = _gameboy->GetEmulator()->AcquireLock(false);
-			InitPlayback(selectedTrack);
+		Emulator* emu = _gameboy->GetEmulator();
+		thread switchTrackTask([emu, selectedTrack]() {
+			auto lock = emu->AcquireLock(false);
+			((Gameboy*)emu->GetConsole().get())->InitGbsPlayback((uint8_t)selectedTrack);
 		});
 		switchTrackTask.detach();
 	}

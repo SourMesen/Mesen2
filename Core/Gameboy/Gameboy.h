@@ -130,6 +130,7 @@ public:
 	RomFormat GetRomFormat() override;
 	AudioTrackInfo GetAudioTrackInfo() override;
 	void ProcessAudioPlayerAction(AudioPlayerActionParams p) override;
+	void InitGbsPlayback(uint8_t selectedTrack);
 
 	void RefreshRamCheats();
 	void InitializeRam(void* data, uint32_t length);
