@@ -87,7 +87,7 @@ public:
 		return info;
 	}
 
-	virtual BaseVideoFilter* GetVideoFilter() = 0;
+	virtual BaseVideoFilter* GetVideoFilter(bool getDefaultFilter) = 0;
 
 	virtual PpuFrameInfo GetPpuFrame() = 0;
 	

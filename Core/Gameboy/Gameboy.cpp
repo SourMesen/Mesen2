@@ -558,9 +558,9 @@ uint32_t Gameboy::GetMasterClockRate()
 	return _memoryManager->IsHighSpeed() ? 4194304*2 : 4194304;
 }
 
-BaseVideoFilter* Gameboy::GetVideoFilter()
+BaseVideoFilter* Gameboy::GetVideoFilter(bool getDefaultFilter)
 {
-	if(GetRomFormat() == RomFormat::Gbs) {
+	if(getDefaultFilter || GetRomFormat() == RomFormat::Gbs) {
 		return new GbDefaultVideoFilter(_emu);
 	}
 

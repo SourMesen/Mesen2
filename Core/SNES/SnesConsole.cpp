@@ -256,9 +256,9 @@ void SnesConsole::SaveBattery()
 	}
 }
 
-BaseVideoFilter* SnesConsole::GetVideoFilter()
+BaseVideoFilter* SnesConsole::GetVideoFilter(bool getDefaultFilter)
 {
-	if(GetRomFormat() == RomFormat::Spc) {
+	if(getDefaultFilter || GetRomFormat() == RomFormat::Spc) {
 		return new SnesDefaultVideoFilter(_emu);
 	}
 

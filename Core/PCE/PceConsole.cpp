@@ -233,9 +233,9 @@ double PceConsole::GetFps()
 	return (double)PceConstants::MasterClockRate / PceConstants::ClockPerScanline / _vce->GetState().ScanlineCount;
 }
 
-BaseVideoFilter* PceConsole::GetVideoFilter()
+BaseVideoFilter* PceConsole::GetVideoFilter(bool getDefaultFilter)
 {
-	if(_romFormat == RomFormat::PceHes) {
+	if(getDefaultFilter || _romFormat == RomFormat::PceHes) {
 		return new PceDefaultVideoFilter(_emu);
 	}
 

@@ -200,7 +200,7 @@ public:
 	GameClient* GetGameClient() { return _gameClient.get(); }
 	shared_ptr<SystemActionManager> GetSystemActionManager() { return _systemActionManager; }
 
-	BaseVideoFilter* GetVideoFilter();
+	BaseVideoFilter* GetVideoFilter(bool getDefaultFilter = false);
 
 	void InputBarcode(uint64_t barcode, uint32_t digitCount);
 	void ProcessTapeRecorderAction(TapeRecorderAction action, string filename);

@@ -122,7 +122,7 @@ public:
 	vector<CpuType> GetCpuTypes() override;
 	void SaveBattery() override;
 
-	BaseVideoFilter* GetVideoFilter() override;
+	BaseVideoFilter* GetVideoFilter(bool getDefaultFilter) override;
 
 	RomFormat GetRomFormat() override;
 	AudioTrackInfo GetAudioTrackInfo() override;

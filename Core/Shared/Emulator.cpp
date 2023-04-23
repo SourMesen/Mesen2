@@ -925,10 +925,10 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 	return true;
 }
 
-BaseVideoFilter* Emulator::GetVideoFilter()
+BaseVideoFilter* Emulator::GetVideoFilter(bool getDefaultFilter)
 {
 	shared_ptr<IConsole> console = GetConsole();
-	return console ? console->GetVideoFilter() : new SnesDefaultVideoFilter(this);
+	return console ? console->GetVideoFilter(getDefaultFilter) : new SnesDefaultVideoFilter(this);
 }
 
 void Emulator::InputBarcode(uint64_t barcode, uint32_t digitCount)

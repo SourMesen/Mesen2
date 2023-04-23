@@ -417,12 +417,12 @@ ShortcutState NesConsole::IsShortcutAllowed(EmulatorShortcut shortcut, uint32_t 
 	return ShortcutState::Default;
 }
 
-BaseVideoFilter* NesConsole::GetVideoFilter()
+BaseVideoFilter* NesConsole::GetVideoFilter(bool getDefaultFilter)
 {
-	if(_hdData && !_hdPackBuilder) {
-		return new HdVideoFilter(this, _emu, _hdData.get());
-	} else if(GetRomFormat() == RomFormat::Nsf) {
+	if(getDefaultFilter || GetRomFormat() == RomFormat::Nsf) {
 		return new NesDefaultVideoFilter(_emu);
+	} else if(_hdData && !_hdPackBuilder) {
+		return new HdVideoFilter(this, _emu, _hdData.get());
 	} else {
 		VideoFilterType filterType = _emu->GetSettings()->GetVideoConfig().VideoFilter;
 
