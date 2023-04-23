@@ -19,6 +19,7 @@ namespace Mesen.Debugger
 
 		[Reactive] public bool Enabled { get; set; } = true;
 		[Reactive] public bool MarkEvent { get; set; }
+		[Reactive] public bool IgnoreDummyOperations { get; set; } = true;
 		[Reactive] public MemoryType MemoryType { get; set; }
 		[Reactive] public UInt32 StartAddress { get; set; }
 		[Reactive] public UInt32 EndAddress { get; set; }
@@ -93,6 +94,7 @@ namespace Mesen.Debugger
 				MemoryType = MemoryType,
 				Type = Type,
 				MarkEvent = MarkEvent,
+				IgnoreDummyOperations = IgnoreDummyOperations,
 				Enabled = Enabled,
 				StartAddress = (Int32)StartAddress,
 				EndAddress = (Int32)EndAddress
@@ -161,6 +163,7 @@ namespace Mesen.Debugger
 			EndAddress = copy.EndAddress;
 			MemoryType = copy.MemoryType;
 			MarkEvent = copy.MarkEvent;
+			IgnoreDummyOperations = copy.IgnoreDummyOperations;
 			Enabled = copy.Enabled;
 			Condition = copy.Condition;
 			BreakOnExec = copy.BreakOnExec;

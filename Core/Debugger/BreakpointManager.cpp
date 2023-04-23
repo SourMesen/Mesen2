@@ -39,7 +39,9 @@ void BreakpointManager::SetBreakpoints(Breakpoint breakpoints[], uint32_t count)
 					continue;
 				}
 
-				_breakpoints[i].push_back(bp);
+				if(bp.IsAllowedForOpType(opType)) {
+					_breakpoints[i].push_back(bp);
+				}
 
 				if(bp.HasCondition()) {
 					bool success = true;

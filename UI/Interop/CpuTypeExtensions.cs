@@ -191,6 +191,19 @@ namespace Mesen.Interop
 			};
 		}
 
+		public static bool HasDummyOperations(this CpuType cpuType)
+		{
+			switch(cpuType) {
+				case CpuType.Spc:
+				case CpuType.Nes:
+				case CpuType.Pce:
+					return true;
+
+				default:
+					return false;
+			};
+		}
+
 		public static byte GetNopOpCode(this CpuType cpuType)
 		{
 			return cpuType switch {

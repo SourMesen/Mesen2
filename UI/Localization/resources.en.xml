@@ -1438,7 +1438,8 @@
 			<Control ID="lblAddressTo">to $</Control>
 			
 			<Control ID="lblCondition">Condition:</Control>
-			
+
+			<Control ID="chkIgnoreDummyOperations">Ignore dummy reads/writes</Control>
 			<Control ID="chkMark">Mark on Event Viewer</Control>
 			<Control ID="chkEnable">Break Execution</Control>
 
