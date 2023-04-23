@@ -71,6 +71,7 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_snes.Port1.Type); SV(_snes.Port1SubPorts[0].Type); SV(_snes.Port1SubPorts[1].Type); SV(_snes.Port1SubPorts[2].Type); SV(_snes.Port1SubPorts[3].Type);
 			SV(_snes.Port2.Type); SV(_snes.Port2SubPorts[0].Type); SV(_snes.Port2SubPorts[1].Type); SV(_snes.Port2SubPorts[2].Type); SV(_snes.Port2SubPorts[3].Type);
 			SV(_snes.BsxCustomDate);
+			SV(_snes.SpcClockSpeedAdjustment);
 			
 			if(_emu->GetRomInfo().Format == RomFormat::Gb) {
 				SV(_gameboy.RamPowerOnState);
