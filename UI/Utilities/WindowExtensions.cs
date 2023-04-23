@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
+using Avalonia.Platform;
 using Avalonia.Rendering;
 using Avalonia.VisualTree;
 using System;
@@ -16,14 +18,53 @@ namespace Mesen.Utilities
 		{
 			EventHandler? handler = null;
 			handler = (s, e) => {
-				Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2);
+				//This logic is inside the Opened event because running it immediately
+				//before showing the window appears to break some things in some configurations (multi-monitor+high DPI)
+
+				WindowBase? parentWnd = parent.GetVisualRoot() as WindowBase;
+				Screen? screen = null;
+				double scale = 1;
+				if(parentWnd != null) {
+					screen = parentWnd.Screens.ScreenFromVisual(parent);
+					scale = LayoutHelper.GetLayoutScale(parentWnd);
+				}
+
+				Size wndCenter = new Size(parent.Bounds.Width / 2, parent.Bounds.Height / 2) * scale;
+				int childWidth = (int)((child.FrameSize?.Width ?? child.Width) * scale);
+				int childHeight = (int)((child.FrameSize?.Height ?? child.Height) * scale);
 				PixelPoint controlPosition = parent.PointToScreen(new Point(0, 0));
 				PixelPoint screenCenter = new PixelPoint(controlPosition.X + (int)wndCenter.Width, controlPosition.Y + (int)wndCenter.Height);
-				PixelPoint startPosition = new PixelPoint(screenCenter.X - (int)child.Width / 2, screenCenter.Y - (int)child.Height / 2);
+				PixelPoint startPosition = new PixelPoint(screenCenter.X - childWidth / 2, screenCenter.Y - childHeight / 2);
+
+				startPosition = FitToScreenBounds(screen, childWidth, childHeight, startPosition);
+
 				child.Position = startPosition;
 				child.Opened -= handler;
 			};
 			child.Opened += handler;
+		}
+
+		private static PixelPoint FitToScreenBounds(Screen? screen, int childWidth, int childHeight, PixelPoint startPosition)
+		{
+			if(screen != null) {
+				PixelPoint bottomRight = startPosition + new PixelVector(childWidth, childHeight);
+
+				//Try to reposition window to ensure it appears on the parent's screen
+				if(startPosition.X < screen.Bounds.X + 10) {
+					startPosition = startPosition.WithX(screen.Bounds.X + 10);
+				}
+				if(startPosition.Y < screen.Bounds.Y + 10) {
+					startPosition = startPosition.WithY(screen.Bounds.Y + 10);
+				}
+				if(bottomRight.X > screen.Bounds.Right - 10) {
+					startPosition = startPosition.WithX(screen.Bounds.Right - childWidth - 10);
+				}
+				if(bottomRight.Y > screen.Bounds.Bottom - 50) {
+					startPosition = startPosition.WithY(screen.Bounds.Bottom - childHeight - 50);
+				}
+			}
+
+			return startPosition;
 		}
 
 		public static void ShowCentered(this Window child, Visual? parent)
@@ -58,9 +99,23 @@ namespace Mesen.Utilities
 			child.WindowStartupLocation = WindowStartupLocation.Manual;
 			child.Position = startPosition;
 
-			//Set position again after opening
-			//Fixes KDE (or X11?) not showing the window in the specified position
-			child.Opened += (s, e) => { child.Position = startPosition; };
+			EventHandler? handler = null;
+			handler = (s, e) => {
+				WindowBase? parentWnd = parent?.GetVisualRoot() as WindowBase;
+				if(parentWnd != null && parent != null) {
+					Screen? screen = parentWnd.Screens.ScreenFromVisual(parent);
+					double scale = LayoutHelper.GetLayoutScale(parentWnd);
+
+					int childWidth = (int)((child.FrameSize?.Width ?? child.Width) * scale);
+					int childHeight = (int)((child.FrameSize?.Height ?? child.Height) * scale);
+
+					startPosition = FitToScreenBounds(screen, childWidth, childHeight, startPosition);
+				}
+
+				child.Position = startPosition;
+				child.Opened -= handler;
+			};
+			child.Opened += handler;
 
 			return InternalShowDialog<TResult>(child, parent);
 		}
