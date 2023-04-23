@@ -385,6 +385,9 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		return LoadRomResult::Failure;
 	}
 
+	MessageManager::Log("-----------------------------");
+	MessageManager::Log("File: " + romFile.GetFileName());
+
 	GbsHeader gbsHeader = {};
 	memcpy(&gbsHeader, romData.data(), sizeof(GbsHeader));
 	if(!_allowSgb && memcmp(gbsHeader.Header, "GBS", sizeof(gbsHeader.Header)) == 0) {
@@ -414,8 +417,6 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 			return LoadRomResult::UnknownType;
 		}
 
-		MessageManager::Log("-----------------------------");
-		MessageManager::Log("File: " + romFile.GetFileName());
 		MessageManager::Log("Game: " + header.GetCartName());
 		MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
 		switch((CgbCompat)((int)header.CgbFlag & 0xC0)) {
