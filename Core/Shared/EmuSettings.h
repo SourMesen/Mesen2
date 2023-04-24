@@ -108,7 +108,8 @@ public:
 	void SetDebuggerFlag(DebuggerFlags flag, bool enabled);
 	bool CheckDebuggerFlag(DebuggerFlags flags);
 
-	RamState GetDefaultRamPowerOnState(ConsoleType consoleType);	
+	bool HasRandomPowerOnState(ConsoleType consoleType);
+	RamState GetDefaultRamPowerOnState(ConsoleType consoleType);
 	int GetRandomValue(int maxValue);
 	bool GetRandomBool();
 	void InitializeRam(RamState state, void* data, uint32_t length);

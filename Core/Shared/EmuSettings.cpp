@@ -464,6 +464,18 @@ bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 	return (_debuggerFlags & (uint64_t)flag) != 0;
 }
 
+bool EmuSettings::HasRandomPowerOnState(ConsoleType consoleType)
+{
+	switch(consoleType) {
+		case ConsoleType::Snes: return _snes.RamPowerOnState == RamState::Random || _snes.EnableRandomPowerOnState;
+		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState == RamState::Random;
+		case ConsoleType::Nes: return _nes.RamPowerOnState == RamState::Random || _nes.RandomizeCpuPpuAlignment || _nes.RandomizeMapperPowerOnState;
+		case ConsoleType::PcEngine: return _pce.RamPowerOnState == RamState::Random || _pce.EnableRandomPowerOnState;
+	}
+
+	return false;
+}
+
 RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)
 {
 	switch(consoleType) {
