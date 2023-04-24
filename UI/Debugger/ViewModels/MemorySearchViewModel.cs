@@ -162,6 +162,10 @@ public class MemorySearchViewModel : DisposableViewModel
 
 	private void RefreshUiList(byte[] memoryState)
 	{
+		if(Disposed) {
+			return;
+		}
+
 		MemoryType memType = MemoryType;
 
 		if(_innerData.Count < memoryState.Length) {
