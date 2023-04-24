@@ -185,11 +185,14 @@ namespace Mesen.Config
 		private void UpdateFonts()
 		{
 			if(Application.Current != null) {
-				if(Application.Current.Resources["MesenFont"] is FontFamily curMesenFont && curMesenFont != MesenFont.FontFamily) {
-					Application.Current.Resources["MesenFont"] = new FontFamily(MesenFont.FontFamily);
+				string mesenFont = Configuration.GetValidFontFamily(MesenFont.FontFamily, false);
+				string menuFont = Configuration.GetValidFontFamily(MesenMenuFont.FontFamily, false);
+
+				if(Application.Current.Resources["MesenFont"] is FontFamily curMesenFont && curMesenFont.Name != mesenFont) {
+					Application.Current.Resources["MesenFont"] = new FontFamily(mesenFont);
 				}
-				if(Application.Current.Resources["MesenMenuFont"] is FontFamily curMesenMenuFont && curMesenMenuFont != MesenMenuFont.FontFamily) {
-					Application.Current.Resources["MesenMenuFont"] = new FontFamily(MesenMenuFont.FontFamily);
+				if(Application.Current.Resources["MesenMenuFont"] is FontFamily curMesenMenuFont && curMesenMenuFont.Name != menuFont) {
+					Application.Current.Resources["MesenMenuFont"] = new FontFamily(menuFont);
 				}
 
 				if(Application.Current.Resources["MesenFontSize"] is double curMesenFontSize && curMesenFontSize != MesenFont.FontSize) {
