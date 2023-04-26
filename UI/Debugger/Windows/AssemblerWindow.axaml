@@ -85,7 +85,7 @@
 							Text="{l:Translate btnOk}"
 							IsEnabled="{CompiledBinding OkEnabled}"
 						/>
-						<Button MinWidth="70" HorizontalContentAlignment="Center" IsCancel="True" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
+						<Button MinWidth="70" HorizontalContentAlignment="Center" Click="Cancel_OnClick" Content="{l:Translate btnCancel}" />
 					</StackPanel>
 					<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 						<TextBlock Text="{l:Translate lblStartAddress}" />
