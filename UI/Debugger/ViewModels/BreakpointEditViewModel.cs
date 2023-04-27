@@ -23,6 +23,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public bool OkEnabled { get; private set; }
 		[Reactive] public string MaxAddress { get; private set; } = "";
 		[Reactive] public bool CanExec { get; private set; } = false;
+		[Reactive] public bool HasDummyOperations { get; private set; } = false;
 
 		public Enum[] AvailableMemoryTypes { get; private set; } = Array.Empty<Enum>();
 
@@ -37,6 +38,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
+			HasDummyOperations = bp.CpuType.HasDummyOperations();
 			HelpTooltip = ExpressionTooltipHelper.GetHelpTooltip(bp.CpuType, false);
 			AvailableMemoryTypes = Enum.GetValues<MemoryType>().Where(t => bp.CpuType.CanAccessMemoryType(t) && t.SupportsBreakpoints() && DebugApi.GetMemorySize(t) > 0).Cast<Enum>().ToArray();
 			if(!AvailableMemoryTypes.Contains(Breakpoint.MemoryType)) {

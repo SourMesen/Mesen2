@@ -71,6 +71,7 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_snes.Port1.Type); SV(_snes.Port1SubPorts[0].Type); SV(_snes.Port1SubPorts[1].Type); SV(_snes.Port1SubPorts[2].Type); SV(_snes.Port1SubPorts[3].Type);
 			SV(_snes.Port2.Type); SV(_snes.Port2SubPorts[0].Type); SV(_snes.Port2SubPorts[1].Type); SV(_snes.Port2SubPorts[2].Type); SV(_snes.Port2SubPorts[3].Type);
 			SV(_snes.BsxCustomDate);
+			SV(_snes.SpcClockSpeedAdjustment);
 			
 			if(_emu->GetRomInfo().Format == RomFormat::Gb) {
 				SV(_gameboy.RamPowerOnState);
@@ -461,6 +462,18 @@ void EmuSettings::SetDebuggerFlag(DebuggerFlags flag, bool enabled)
 bool EmuSettings::CheckDebuggerFlag(DebuggerFlags flag)
 {
 	return (_debuggerFlags & (uint64_t)flag) != 0;
+}
+
+bool EmuSettings::HasRandomPowerOnState(ConsoleType consoleType)
+{
+	switch(consoleType) {
+		case ConsoleType::Snes: return _snes.RamPowerOnState == RamState::Random || _snes.EnableRandomPowerOnState;
+		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState == RamState::Random;
+		case ConsoleType::Nes: return _nes.RamPowerOnState == RamState::Random || _nes.RandomizeCpuPpuAlignment || _nes.RandomizeMapperPowerOnState;
+		case ConsoleType::PcEngine: return _pce.RamPowerOnState == RamState::Random || _pce.EnableRandomPowerOnState;
+	}
+
+	return false;
 }
 
 RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)

@@ -344,7 +344,7 @@ int32_t SaveStateManager::GetSaveStatePreview(string saveStatePath, uint8_t* png
 			baseFrameInfo.Width = frame.Width;
 			baseFrameInfo.Height = frame.Height;
 			
-			unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
+			unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter(true));
 			filter->SetBaseFrameInfo(baseFrameInfo);
 			FrameInfo frameInfo = filter->SendFrame((uint16_t*)frameData.data(), 0, 0, nullptr);
 

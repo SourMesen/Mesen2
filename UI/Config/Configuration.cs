@@ -121,14 +121,35 @@ namespace Mesen.Config
 			return defaultFont;
 		}
 
+		public static string GetValidFontFamily(string requestedFont, bool preferMonoFont)
+		{
+			if(_installedFonts == null) {
+				_installedFonts = new(FontManager.Current.SystemFonts.Select(x => x.Name));
+			}
+
+			if(_installedFonts.Contains(requestedFont)) {
+				return requestedFont;
+			}
+
+			foreach(string name in _installedFonts) {
+				if(preferMonoFont && name.Contains("Mono", StringComparison.InvariantCultureIgnoreCase)) {
+					return name;
+				} else if(!preferMonoFont && name.Contains("Sans", StringComparison.InvariantCultureIgnoreCase)) {
+					return name;
+				}
+			}
+
+			return _installedFonts.First();
+		}
+
 		public static FontConfig GetDefaultFont()
 		{
 			if(OperatingSystem.IsWindows()) {
 				return new FontConfig() { FontFamily = "Microsoft Sans Serif", FontSize = 11 };
 			} else if(OperatingSystem.IsMacOS()) {
-				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "Microsoft Sans Serif"), FontSize = 11 };
+				return new FontConfig() { FontFamily = FindMatchingFont("Microsoft Sans Serif"), FontSize = 11 };
 			} else {
-				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 11 };
+				return new FontConfig() { FontFamily = FindMatchingFont("FreeSans", "DejaVu Sans", "Noto Sans"), FontSize = 11 };
 			}
 		}
 
@@ -137,9 +158,9 @@ namespace Mesen.Config
 			if(OperatingSystem.IsWindows()) {
 				return new FontConfig() { FontFamily = "Segoe UI", FontSize = 12 };
 			} else if(OperatingSystem.IsMacOS()) {
-				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "Microsoft Sans Serif"), FontSize = 12 };
+				return new FontConfig() { FontFamily = FindMatchingFont("Microsoft Sans Serif"), FontSize = 12 };
 			} else {
-				return new FontConfig() { FontFamily = FindMatchingFont("sans-serif", "DejaVu Sans", "Noto Sans"), FontSize = 12 };
+				return new FontConfig() { FontFamily = FindMatchingFont("FreeSans", "DejaVu Sans", "Noto Sans"), FontSize = 12 };
 			}
 		}
 
@@ -148,9 +169,9 @@ namespace Mesen.Config
 			if(OperatingSystem.IsWindows()) {
 				return new FontConfig() { FontFamily = "Consolas", FontSize = useSmallFont ? 12 : 14 };
 			} else if(OperatingSystem.IsMacOS()) {
-				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "PT Mono"), FontSize = useSmallFont ? 11 : 12 };
+				return new FontConfig() { FontFamily = FindMatchingFont("PT Mono"), FontSize = useSmallFont ? 11 : 12 };
 			} else {
-				return new FontConfig() { FontFamily = FindMatchingFont("monospace", "DejaVu Sans Mono", "Noto Sans Mono"), FontSize = 12 };
+				return new FontConfig() { FontFamily = FindMatchingFont("FreeMono", "DejaVu Sans Mono", "Noto Sans Mono"), FontSize = 12 };
 			}
 		}
 

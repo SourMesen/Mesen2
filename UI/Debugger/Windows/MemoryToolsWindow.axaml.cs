@@ -613,8 +613,13 @@ namespace Mesen.Debugger.Windows
 		public void ProcessNotification(NotificationEventArgs e)
 		{
 			switch(e.NotificationType) {
-				case ConsoleNotificationType.PpuFrameDone:
 				case ConsoleNotificationType.CodeBreak:
+					Dispatcher.UIThread.Post(() => {
+						_editor.InvalidateVisual();
+					});
+					break;
+
+				case ConsoleNotificationType.PpuFrameDone:
 					if(!ToolRefreshHelper.LimitFps(this, 80)) {
 						Dispatcher.UIThread.Post(() => {
 							_editor.InvalidateVisual();

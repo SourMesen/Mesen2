@@ -451,6 +451,7 @@ struct HdPackAdditionalSpriteInfo
 
 	int32_t OffsetX;
 	int32_t OffsetY;
+	bool IgnorePalette;
 };
 
 struct FallbackTileInfo

@@ -27,7 +27,6 @@ private:
 	stringstream _saveStateData;
 
 	void GetGameSettings(stringstream &out);
-	//void WriteCheat(stringstream &out, CodeInfo &code);
 	void WriteString(stringstream &out, string name, string value);
 	void WriteInt(stringstream &out, string name, uint32_t value);
 	void WriteBool(stringstream &out, string name, bool enabled);

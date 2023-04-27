@@ -18,7 +18,10 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)]
 		public bool MarkEvent;
-		
+
+		[MarshalAs(UnmanagedType.I1)]
+		public bool IgnoreDummyOperations;
+
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1000)]
 		public byte[] Condition;
 	}

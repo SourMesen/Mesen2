@@ -645,7 +645,7 @@ namespace Mesen.Debugger.ViewModels
 
 		private void DrawMode7Overlay()
 		{
-			if(_data.PpuToolsState is SnesPpuToolsState toolsState && _data.PpuState is SnesPpuState ppuState) {
+			if(_data.PpuToolsState is SnesPpuToolsState toolsState && _data.PpuState is SnesPpuState ppuState && ppuState.BgMode == 7) {
 				List<PictureViewerLine> lines = new();
 
 				Point prevStart = new();

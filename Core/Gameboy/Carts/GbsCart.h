@@ -20,6 +20,14 @@ public:
 	GbsCart(GbsHeader header)
 	{
 		_header = header;
+
+		MessageManager::Log("[GBS] Load: $" + HexUtilities::ToHex(header.LoadAddress[0] | (header.LoadAddress[1] << 8)));
+		MessageManager::Log("[GBS] Init: $" + HexUtilities::ToHex(header.InitAddress[0] | (header.InitAddress[1] << 8)));
+		MessageManager::Log("[GBS] Play: $" + HexUtilities::ToHex(header.PlayAddress[0] | (header.PlayAddress[1] << 8)));
+		MessageManager::Log("[GBS] Timer Control: $" + HexUtilities::ToHex(header.TimerControl));
+		MessageManager::Log("[GBS] Timer Modulo: $" + HexUtilities::ToHex(header.TimerModulo));
+		MessageManager::Log("-----------------------------");
+		
 		_currentTrack = header.FirstTrack - 1;
 	}
 
@@ -41,28 +49,51 @@ public:
 
 		//Patch ROM to call INIT and PLAY routines
 
-		//CALL [INIT]
-		prg[0] = 0xCD;
-		prg[1] = _header.InitAddress[0];
-		prg[2] = _header.InitAddress[1];
+		uint16_t loadAddress = _header.LoadAddress[0] | (_header.LoadAddress[1] << 8);
 
-		//Infinite loop (JP $0003)
-		prg[3] = 0xC3;
-		prg[4] = 0x03;
-		prg[5] = 0x00;
+		//Make RST xx calls jump to [LOAD+0/$8/$10/etc]
+		for(int i = 0; i <= 0x38; i += 8) {
+			//JP LoadAddress+i
+			prg[i+0] = 0xC3;
+			prg[i+1] = (loadAddress + i) & 0xFF;
+			prg[i+2] = ((loadAddress + i) >> 8) & 0xFF;
+		}
 
-		//CALL [PLAY]
+		//Vertical Blank IRQ: CALL [PLAY]
+		prg[0x40] = 0xCD;
+		prg[0x41] = _header.PlayAddress[0];
+		prg[0x42] = _header.PlayAddress[1];
+		prg[0x43] = 0xD9; //RETI
+
+		//Stat IRQ: CALL [PLAY]
+		prg[0x48] = 0xCD;
+		prg[0x49] = _header.PlayAddress[0];
+		prg[0x4A] = _header.PlayAddress[1];
+		prg[0x4B] = 0xD9; //RETI
+
+		//Timer IRQ: CALL [PLAY]
 		prg[0x50] = 0xCD;
 		prg[0x51] = _header.PlayAddress[0];
 		prg[0x52] = _header.PlayAddress[1];
+		prg[0x53] = 0xD9; //RETI
 
-		//RETI
-		prg[0x53] = 0xD9;
+		//Joypad/Serial IRQ - RETI
+		prg[0x58] = 0xD9;
+		prg[0x60] = 0xD9;
+
+		//Init (PC starts at 0x70), CALL [INIT]
+		prg[0x70] = 0xCD;
+		prg[0x71] = _header.InitAddress[0];
+		prg[0x72] = _header.InitAddress[1];
+		//Infinite loop
+		prg[0x73] = 0xC3;
+		prg[0x74] = 0x73;
+		prg[0x75] = 0x00;
 
 		GbCpuState& state = _gameboy->GetCpu()->GetState();
 		state = {};
 		state.SP = _header.StackPointer[0] | (_header.StackPointer[1] << 8);
-		state.PC = 0;
+		state.PC = 0x70;
 		state.A = (uint8_t)selectedTrack;
 		state.IME = true; //enable CPU interrupts
 
@@ -138,9 +169,10 @@ public:
 		//Asynchronously move to the next file
 		//Can't do this in the current thread in some contexts (e.g when track reaches end)
 		//because this is called from the emulation thread, which may cause infinite recursion
-		thread switchTrackTask([this, selectedTrack]() {
-			auto lock = _gameboy->GetEmulator()->AcquireLock(false);
-			InitPlayback(selectedTrack);
+		Emulator* emu = _gameboy->GetEmulator();
+		thread switchTrackTask([emu, selectedTrack]() {
+			auto lock = emu->AcquireLock(false);
+			((Gameboy*)emu->GetConsole().get())->InitGbsPlayback((uint8_t)selectedTrack);
 		});
 		switchTrackTask.detach();
 	}

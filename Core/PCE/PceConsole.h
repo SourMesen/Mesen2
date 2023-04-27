@@ -79,7 +79,7 @@ public:
 	uint32_t GetMasterClockRate() override;
 	double GetFps() override;
 
-	BaseVideoFilter* GetVideoFilter() override;
+	BaseVideoFilter* GetVideoFilter(bool getDefaultFilter) override;
 
 	PpuFrameInfo GetPpuFrame() override;
 	RomFormat GetRomFormat() override;

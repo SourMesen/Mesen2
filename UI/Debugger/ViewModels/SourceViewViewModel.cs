@@ -42,6 +42,7 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 	[Reactive] public int VisibleRowCount { get; set; } = 100;
 	public DebuggerWindowViewModel Debugger { get; }
 
+	public NavigationHistory<SourceCodeLocation> History { get; } = new();
 	private DisassemblyViewer? _viewer = null;
 	private Action? _refreshScrollbar = null;
 
@@ -215,22 +216,28 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		}
 	}
 
-	public void GoToRelativeAddress(int address)
+	public void GoToRelativeAddress(int address, bool addToHistory = false)
 	{
 		AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = CpuType.ToMemoryType() });
 		SourceCodeLocation? location = SymbolProvider.GetSourceCodeLineInfo(absAddress);
 		if(location != null) {
-			SelectedFile = location.Value.File;
-			SetSelectedRow(location.Value.LineNumber);
-			ScrollToRowNumber(location.Value.LineNumber, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+			ScrollToLocation(location.Value, addToHistory);
 		}
 	}
 
-	public void ScrollToLocation(SourceCodeLocation loc)
+	public void ScrollToLocation(SourceCodeLocation loc, bool addToHistory = false)
 	{
+		SourceCodeLocation? prevLoc = SelectedFile != null ? new SourceCodeLocation(SelectedFile, SelectedRow) : null;
 		SelectedFile = loc.File;
 		SetSelectedRow(loc.LineNumber);
 		ScrollToRowNumber(loc.LineNumber, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+
+		if(addToHistory) {
+			if(prevLoc != null) {
+				History.AddHistory(prevLoc.Value);
+			}
+			History.AddHistory(loc);
+		}
 	}
 
 	public void ResizeSelectionTo(int rowNumber)
@@ -296,14 +303,28 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		ScrollPosition = Math.Max(0, Math.Min(newPos, MaxScrollPosition));
 	}
 
+	public void GoBack()
+	{
+		ScrollToLocation(History.GoBack(), false);
+	}
+
+	public void GoForward()
+	{
+		ScrollToLocation(History.GoForward(), false);
+	}
+
 	public void ScrollToTop()
 	{
-		SetSelectedRow(0);
+		if(SelectedFile != null) {
+			ScrollToLocation(new SourceCodeLocation(SelectedFile, 0), true);
+		}
 	}
 
 	public void ScrollToBottom()
 	{
-		SetSelectedRow((SelectedFile?.Data.Length ?? 1) - 1);
+		if(SelectedFile != null) {
+			ScrollToLocation(new SourceCodeLocation(SelectedFile, SelectedFile.Data.Length - 1), true);
+		}
 	}
 
 	public void SetSelectedRow(int rowNumber)

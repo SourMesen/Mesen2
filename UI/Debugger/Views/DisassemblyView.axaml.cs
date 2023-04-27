@@ -222,8 +222,27 @@ namespace Mesen.Debugger.Views
 					OnClick = () => {
 						LocationInfo loc = ActionLocation;
 						if(loc.RelAddress != null) {
-							Model.SetSelectedRow(loc.RelAddress.Value.Address, true);
+							Model.SetSelectedRow(loc.RelAddress.Value.Address, true, true);
 						}
+					}
+				},
+				new ContextMenuSeparator() { IsVisible = () => !IsMarginClick },
+				new ContextMenuAction() {
+					ActionType = ActionType.NavigateBack,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_NavigateBack),
+					IsVisible = () => !IsMarginClick,
+					IsEnabled = () => Model.History.CanGoBack(),
+					OnClick = () => {
+						Model.GoBack();
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.NavigateForward,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.CodeWindow_NavigateForward),
+					IsVisible = () => !IsMarginClick,
+					IsEnabled = () => Model.History.CanGoForward(),
+					OnClick = () => {
+						Model.GoForward();
 					}
 				},
 			};
@@ -385,8 +404,15 @@ namespace Mesen.Debugger.Views
 			base.OnPointerPressed(e);
 
 			//Navigate on double-click left click
-			if(e.Source is DisassemblyViewer && _selectionHandler?.IsMarginClick == false && ActionLocation.RelAddress != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && e.ClickCount == 2) {
-				Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true);
+			if(e.Source is DisassemblyViewer) {
+				PointerPointProperties props = e.GetCurrentPoint(this).Properties;
+				if(_selectionHandler?.IsMarginClick == false && ActionLocation.RelAddress != null && props.IsLeftButtonPressed && e.ClickCount == 2) {
+					Model.SetSelectedRow(ActionLocation.RelAddress.Value.Address, true, true);
+				} else if(props.IsXButton1Pressed) {
+					Model.GoBack();
+				} else if(props.IsXButton2Pressed) {
+					Model.GoForward();
+				}
 			}
 		}
 

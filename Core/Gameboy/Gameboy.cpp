@@ -385,6 +385,9 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		return LoadRomResult::Failure;
 	}
 
+	MessageManager::Log("-----------------------------");
+	MessageManager::Log("File: " + romFile.GetFileName());
+
 	GbsHeader gbsHeader = {};
 	memcpy(&gbsHeader, romData.data(), sizeof(GbsHeader));
 	if(!_allowSgb && memcmp(gbsHeader.Header, "GBS", sizeof(gbsHeader.Header)) == 0) {
@@ -414,8 +417,6 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 			return LoadRomResult::UnknownType;
 		}
 
-		MessageManager::Log("-----------------------------");
-		MessageManager::Log("File: " + romFile.GetFileName());
 		MessageManager::Log("Game: " + header.GetCartName());
 		MessageManager::Log("Cart Type: " + std::to_string(header.CartType));
 		switch((CgbCompat)((int)header.CgbFlag & 0xC0)) {
@@ -558,9 +559,9 @@ uint32_t Gameboy::GetMasterClockRate()
 	return _memoryManager->IsHighSpeed() ? 4194304*2 : 4194304;
 }
 
-BaseVideoFilter* Gameboy::GetVideoFilter()
+BaseVideoFilter* Gameboy::GetVideoFilter(bool getDefaultFilter)
 {
-	if(GetRomFormat() == RomFormat::Gbs) {
+	if(getDefaultFilter || GetRomFormat() == RomFormat::Gbs) {
 		return new GbDefaultVideoFilter(_emu);
 	}
 
@@ -595,6 +596,14 @@ void Gameboy::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	GbsCart* cart = dynamic_cast<GbsCart*>(_cart.get());
 	if(cart) {
 		cart->ProcessAudioPlayerAction(p);
+	}
+}
+
+void Gameboy::InitGbsPlayback(uint8_t selectedTrack)
+{
+	GbsCart* cart = dynamic_cast<GbsCart*>(_cart.get());
+	if(cart) {
+		cart->InitPlayback(selectedTrack);
 	}
 }
 

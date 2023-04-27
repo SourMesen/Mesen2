@@ -169,8 +169,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public void ScrollToAddress(int address)
 		{
-			Disassembly.SetSelectedRow(address, true);
-			SourceView?.GoToRelativeAddress(address);
+			Disassembly.SetSelectedRow(address, true, true);
+			SourceView?.GoToRelativeAddress(address, true);
 
 			IDockable codeTool = GetActiveCodeTool();
 			DockFactory.SetFocusedDockable(DockLayout, codeTool);

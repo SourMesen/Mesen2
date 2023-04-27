@@ -63,10 +63,10 @@ void BaseEventManager::GetEvents(DebugEventInfo* eventArray, uint32_t& maxEventC
 {
 	auto lock = _lock.AcquireSafe();
 	uint32_t eventCount = std::min(maxEventCount, (uint32_t)_sentEvents.size());
-	memcpy(eventArray, _sentEvents.data(), eventCount * sizeof(DebugEventInfo));
 	for(uint32_t i = 0; i < eventCount; i++) {
-		eventArray[i].Color = GetEventConfig(eventArray[i]).Color;
+		_sentEvents[i].Color = GetEventConfig(_sentEvents[i]).Color;
 	}
+	memcpy(eventArray, _sentEvents.data(), eventCount * sizeof(DebugEventInfo));
 	maxEventCount = eventCount;
 }
 

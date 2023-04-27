@@ -53,3 +53,11 @@ bool Breakpoint::IsMarked()
 {
 	return _markEvent;
 }
+
+bool Breakpoint::IsAllowedForOpType(MemoryOperationType opType)
+{
+	if(_ignoreDummyOperations) {
+		return opType != MemoryOperationType::DummyRead && opType != MemoryOperationType::DummyWrite;
+	}
+	return true;
+}

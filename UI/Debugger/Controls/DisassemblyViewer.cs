@@ -9,6 +9,7 @@ using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reactive.Disposables;
 
 namespace Mesen.Debugger.Controls
 {
@@ -90,20 +91,31 @@ namespace Mesen.Debugger.Controls
 		private List<CodeSegmentInfo> _visibleCodeSegments = new();
 		private Point _previousPointerPos;
 		private CodeSegmentInfo? _prevPointerOverSegment = null;
+		private CompositeDisposable _disposables = new();
 
 		static DisassemblyViewer()
 		{
 			AffectsRender<DisassemblyViewer>(FontFamilyProperty, FontSizeProperty, StyleProviderProperty, ShowByteCodeProperty, LinesProperty, SearchStringProperty, AddressDisplayTypeProperty);
-
-			FontSizeProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
-			FontFamilyProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
-			BoundsProperty.Changed.AddClassHandler<DisassemblyViewer>((s, e) => s.InitFontAndLetterSize());
 		}
 
 		public DisassemblyViewer()
 		{
 			Focusable = true;
 			ClipToBounds = true;
+		}
+
+		protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			base.OnAttachedToVisualTree(e);
+			_disposables.Add(FontSizeProperty.Changed.Subscribe(_ => InitFontAndLetterSize()));
+			_disposables.Add(FontFamilyProperty.Changed.Subscribe(_ => InitFontAndLetterSize()));
+			_disposables.Add(BoundsProperty.Changed.Subscribe(_ => InitFontAndLetterSize()));
+		}
+
+		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+		{
+			_disposables.Dispose();
+			base.OnDetachedFromVisualTree(e);
 		}
 
 		protected override void OnPointerPressed(PointerPressedEventArgs e)

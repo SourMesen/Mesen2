@@ -7,6 +7,7 @@ struct AddressInfo;
 enum class BreakpointType;
 enum class BreakpointTypeFlags;
 enum class BreakpointCategory;
+enum class MemoryOperationType;
 struct MemoryOperationInfo;
 
 class Breakpoint
@@ -21,7 +22,8 @@ public:
 	CpuType GetCpuType();
 	bool IsEnabled();
 	bool IsMarked();
-	
+	bool IsAllowedForOpType(MemoryOperationType opType);
+
 private:
 	uint32_t _id;
 	CpuType _cpuType;
@@ -31,5 +33,6 @@ private:
 	int32_t _endAddr;
 	bool _enabled;
 	bool _markEvent;
+	bool _ignoreDummyOperations;
 	char _condition[1000];
 };

@@ -482,7 +482,13 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 			}
 			uint32_t palette = HexUtilities::FromHex(tokens[index++]);
 
-			((HdPackBaseTileCondition*)condition.get())->Initialize(x, y, palette, tileIndex, tileData);
+			bool ignorePalette = false;
+			if(tokens.size() >= 7) {
+				checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 108+ of HD Packs");
+				ignorePalette = tokens[index++] == "Y" ? true : false;
+			}
+			
+			((HdPackBaseTileCondition*)condition.get())->Initialize(x, y, palette, tileIndex, tileData, ignorePalette);
 			break;
 		}
 
@@ -679,6 +685,12 @@ void HdPackLoader::ProcessAdditionTag(vector<string>& tokens)
 	info.OffsetX = std::stoi(tokens[2]);
 	info.OffsetY = std::stoi(tokens[3]);
 	ReadTileData(info.AdditionalTile, tokens[4], tokens[5]);
+
+	info.IgnorePalette = false;
+	if(tokens.size() >= 7) {
+		checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 108+ of HD Packs");
+		info.IgnorePalette = tokens[6] == "Y" ? true : false;
+	}
 }
 
 void HdPackLoader::ProcessFallbackTag(vector<string>& tokens)

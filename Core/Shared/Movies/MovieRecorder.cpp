@@ -48,6 +48,7 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 		_emu->Lock();
 		_emu->GetNotificationManager()->RegisterNotificationListener(shared_from_this());
 
+		bool needSaveState = _emu->GetSettings()->HasRandomPowerOnState(_emu->GetConsoleType());
 		if(options.RecordFrom == RecordMovieFrom::StartWithoutSaveData) {
 			//Power cycle and ignore save data that exists on the disk
 			_emu->GetBatteryManager()->SetBatteryProvider(shared_from_this());
@@ -59,6 +60,10 @@ bool MovieRecorder::Record(RecordMovieOptions options)
 		} else if(options.RecordFrom == RecordMovieFrom::CurrentState) {
 			//Record from current state, store a save state in the movie file
 			_emu->RegisterInputRecorder(this);
+			needSaveState = true;
+		}
+
+		if(needSaveState) {
 			_emu->GetSaveStateManager()->SaveState(_saveStateData);
 			_hasSaveState = true;
 		}
@@ -200,8 +205,8 @@ bool MovieRecorder::CreateMovie(string movieFile, deque<RewindData> &data, uint3
 	if(startPosition < data.size() && endPosition <= data.size() && _writer->Initialize(_filename)) {
 		vector<shared_ptr<BaseControlDevice>> devices = console->GetControlManager()->GetControlDevices();
 		
-		if(startPosition > 0 || hasBattery || _emu->GetSettings()->GetDefaultRamPowerOnState(_emu->GetConsoleType()) == RamState::Random) {
-			//Create a movie from a savestate if we don't start from the beginning (or if the game has save ram, or if the power on ram state is random)
+		if(startPosition > 0 || hasBattery || _emu->GetSettings()->HasRandomPowerOnState(_emu->GetConsoleType())) {
+			//Create a movie from a savestate if we don't start from the beginning (or if the game has save ram, or if the power on state is random)
 			_hasSaveState = true;
 			_saveStateData = stringstream();
 			_emu->GetSaveStateManager()->GetSaveStateHeader(_saveStateData);

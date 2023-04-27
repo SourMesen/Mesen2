@@ -15,6 +15,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Linq;
 using System.Text;
+using Tmds.DBus.Protocol;
 
 namespace Mesen.Debugger.ViewModels
 {
@@ -37,6 +38,7 @@ namespace Mesen.Debugger.ViewModels
 		[Reactive] public int SelectionEnd { get; set; }
 
 		public QuickSearchViewModel QuickSearch { get; } = new QuickSearchViewModel();
+		public NavigationHistory<int> History { get; } = new();
 
 		public bool ShowScrollBarMarkers => CpuType != CpuType.NecDsp;
 
@@ -103,7 +105,7 @@ namespace Mesen.Debugger.ViewModels
 			int findAddress = DebugApi.SearchDisassembly(CpuType, e.SearchString.ToLowerInvariant().Trim(), SelectedRowAddress, options);
 			if(findAddress >= 0) {
 				Dispatcher.UIThread.Post(() => {
-					SetSelectedRow(findAddress, true);
+					SetSelectedRow(findAddress, true, true);
 				});
 				e.Success = true;
 			} else {
@@ -123,14 +125,14 @@ namespace Mesen.Debugger.ViewModels
 
 		public void ScrollToTop()
 		{
-			SetSelectedRow(0);
+			SetSelectedRow(0, false, true);
 			ScrollToAddress(0, ScrollDisplayPosition.Top);
 		}
 
 		public void ScrollToBottom()
 		{
 			int address = DataProvider.GetLineCount() - 1;
-			SetSelectedRow(address);
+			SetSelectedRow(address, false, true);
 			ScrollToAddress((uint)address, ScrollDisplayPosition.Bottom);
 		}
 
@@ -172,8 +174,15 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ActiveAddress = pc;
 			if(pc != null) {
+				int currentAddress = SelectedRowAddress;
 				SetSelectedRow((int)pc);
-				ScrollToAddress((uint)pc, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+				bool scrolled = ScrollToAddress((uint)pc, ScrollDisplayPosition.Center, Config.Debugger.KeepActiveStatementInCenter);
+				if(scrolled) {
+					if(currentAddress != 0 || History.CanGoBack()) {
+						History.AddHistory(currentAddress);
+					}
+					History.AddHistory((int)pc);
+				}
 			}
 		}
 
@@ -190,17 +199,35 @@ namespace Mesen.Debugger.ViewModels
 			};
 		}
 
+		public void GoBack()
+		{
+			SetSelectedRow(History.GoBack(), true, false);
+		}
+
+		public void GoForward()
+		{
+			SetSelectedRow(History.GoForward(), true, false);
+		}
+
 		public void SetSelectedRow(int address)
 		{
 			SetSelectedRow(address, false);
 		}
 
-		public void SetSelectedRow(int address, bool scrollToRow = false)
+		public void SetSelectedRow(int address, bool scrollToRow = false, bool addToHistory = false)
 		{
+			int currentAddress = SelectedRowAddress;
 			SelectionStart = address;
 			SelectionEnd = address;
 			SelectedRowAddress = address;
 			SelectionAnchor = address;
+
+			if(addToHistory) {
+				if(currentAddress != 0 || History.CanGoBack()) {
+					History.AddHistory(currentAddress);
+				}
+				History.AddHistory(address);
+			}
 
 			InvalidateVisual();
 
@@ -261,11 +288,11 @@ namespace Mesen.Debugger.ViewModels
 			return false;
 		}
 
-		private void ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center, bool forceScroll = false)
+		private bool ScrollToAddress(uint pc, ScrollDisplayPosition position = ScrollDisplayPosition.Center, bool forceScroll = false)
 		{
 			if(!forceScroll && IsAddressVisible((int)pc)) {
 				//Row is already visible, don't scroll
-				return;
+				return false;
 			}
 
 			ICodeDataProvider dp = DataProvider;
@@ -279,6 +306,7 @@ namespace Mesen.Debugger.ViewModels
 			if(!IsAddressVisible((int)pc)) {
 				TopAddress = dp.GetRowAddress(TopAddress, TopAddress < pc ? 1 : -1);
 			}
+			return true;
 		}
 
 		public void CopySelection()

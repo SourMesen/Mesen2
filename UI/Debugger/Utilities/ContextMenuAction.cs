@@ -847,6 +847,11 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("TranslateUp")]
 		TranslateUp,
 		[IconFile("TranslateDown")]
-		TranslateDown
+		TranslateDown,
+
+		[IconFile("PreviousArrow")]
+		NavigateBack,
+		[IconFile("NextArrow")]
+		NavigateForward,
 	}
 }

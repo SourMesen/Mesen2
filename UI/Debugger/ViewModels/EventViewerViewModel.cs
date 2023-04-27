@@ -488,6 +488,7 @@ namespace Mesen.Debugger.ViewModels
 			_events = events;
 			_index = index;
 			
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Color"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProgramCounter"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Scanline"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cycle"));
@@ -495,7 +496,6 @@ namespace Mesen.Debugger.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Address"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Details"));
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Color"));
 		}
 
 		private void UpdateFields()

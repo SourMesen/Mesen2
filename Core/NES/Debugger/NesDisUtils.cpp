@@ -166,8 +166,9 @@ uint32_t NesDisUtils::GetOperandAddress(DisassemblyInfo& info, uint32_t memoryAd
 EffectiveAddressInfo NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, NesCpuState& state, MemoryDumper* memoryDumper)
 {
 	bool isJump = NesDisUtils::IsUnconditionalJump(info.GetOpCode()) || NesDisUtils::IsConditionalJump(info.GetOpCode());
-	if(isJump) {
-		//For jumps, show no address/value
+	NesAddrMode addrMode = _opMode[info.GetOpCode()];
+	if(isJump && addrMode != NesAddrMode::Ind) {
+		//For jumps, show no address/value (except indirect jump)
 		return { };
 	}
 
@@ -195,14 +196,10 @@ EffectiveAddressInfo NesDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Nes
 
 		case NesAddrMode::Ind: {
 			uint16_t addr = byteCode[1] | (byteCode[2] << 8);
-			if((addr & 0xFF) == 0xFF) {
-				//CPU bug when indirect address starts at the end of a page
-				uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
-				uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr & 0xFF00);
-				return { lo | (hi << 8), 1, true };
-			} else {
-				return { memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr), 1, true };
-			}
+			uint8_t lo = memoryDumper->GetMemoryValue(MemoryType::NesMemory, addr);
+			//CPU bug when indirect address starts at the end of a page
+			uint8_t hi = memoryDumper->GetMemoryValue(MemoryType::NesMemory, (addr & 0xFF00) | ((addr + 1) & 0xFF));
+			return { lo | (hi << 8), 1, true };
 		}
 	
 		case NesAddrMode::AbsX:
