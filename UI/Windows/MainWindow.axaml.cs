@@ -95,7 +95,7 @@ namespace Mesen.Windows
 			_mainMenu = this.GetControl<MainMenuView>("MainMenu");
 			_mouseManager = new MouseManager(this, _renderer, _mainMenu);
 			ConfigManager.Config.MainWindow.LoadWindowSettings(this);
-
+			App.Clipboard = GetTopLevel(this)?.Clipboard;
 #if DEBUG
 			this.AttachDevTools();
 #endif
@@ -205,7 +205,7 @@ namespace Mesen.Windows
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
 				_cmdLine = cmdLine;
 
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
 
 				ConfigManager.Config.RemoveObsoleteConfig();
 				
@@ -490,7 +490,7 @@ namespace Mesen.Windows
 					WindowState = WindowState.FullScreen;
 
 					Task.Run(() => {
-						EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
+						EmuApi.SetExclusiveFullscreenMode(true, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero);
 						_preventFullscreenToggle = false;
 					});
 				} else {

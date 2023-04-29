@@ -21,7 +21,7 @@
 	<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1">
 		<DataBox
 			Name="lstRegisterTab"
-			Items="{CompiledBinding Data}"
+			ItemsSource="{CompiledBinding Data}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			ColumnWidths="{CompiledBinding ColumnWidths}"

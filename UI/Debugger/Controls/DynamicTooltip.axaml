@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:l="using:Mesen.Localization"
 	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:system="clr-namespace:System;assembly=System.Runtime"
 	mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="50"
 	x:Name="root"
 	HorizontalAlignment="Stretch"
@@ -98,7 +99,7 @@
 								/>
 							</Border>
 						</DataTemplate>
-						<DataTemplate DataType="x:Array">
+						<DataTemplate DataType="system:Array">
 							<Border BorderBrush="Gray" BorderThickness="1" Margin="0 1" VerticalAlignment="Top">
 								<dc:PaletteSelector
 									PaletteColors="{Binding}"
@@ -114,5 +115,5 @@
 		</DataTemplate>
 	</UserControl.DataTemplates>
 	
-	<ItemsControl DataContext="{Binding, ElementName=root}" Items="{Binding Items}" />
+	<ItemsControl DataContext="{Binding, ElementName=root}" ItemsSource="{Binding Items}" />
 </UserControl>

@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Mesen.Interop;
 using System;
 using System.Collections.Generic;
@@ -70,7 +71,7 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			if(hdPackTile.Length > 0) {
-				Application.Current?.Clipboard?.SetTextAsync(hdPackTile);
+				App.Clipboard?.SetTextAsync(hdPackTile);
 			}
 		}
 	}

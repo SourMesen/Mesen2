@@ -27,7 +27,7 @@
 		</Border>
 		
 		<ScrollViewer AllowAutoHide="False">
-			<ItemsControl Items="{Binding Shortcuts}">
+			<ItemsControl ItemsSource="{Binding Shortcuts}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<VirtualizingStackPanel />

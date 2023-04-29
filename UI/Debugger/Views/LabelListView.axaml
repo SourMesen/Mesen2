@@ -33,7 +33,7 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="#80808080">
 		<DataBox
-			Items="{CompiledBinding Labels}"
+			ItemsSource="{CompiledBinding Labels}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"

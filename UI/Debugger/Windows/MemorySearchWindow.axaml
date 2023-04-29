@@ -163,7 +163,7 @@
 
 		<Border BorderBrush="Gray" BorderThickness="1">
 			<DataBox
-				Items="{Binding ListData}"
+				ItemsSource="{Binding ListData}"
 				Selection="{Binding Selection}"
 				SortState="{Binding SortState}"
 				SortMode="Multiple"

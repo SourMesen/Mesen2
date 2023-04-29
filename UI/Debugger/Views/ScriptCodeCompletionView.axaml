@@ -36,21 +36,21 @@
 
 			<TextBlock Text="Parameters" TextDecorations="Underline" Margin="0 10 0 0" />
 			<Grid IsVisible="{CompiledBinding Parameters.Count}" ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto" Margin="5 3 0 0" >
-				<ItemsControl Items="{CompiledBinding Parameters}" Grid.Column="0">
+				<ItemsControl ItemsSource="{CompiledBinding Parameters}" Grid.Column="0">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{CompiledBinding Name}" FontWeight="Bold" Padding="2 0" />
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-				<ItemsControl Items="{CompiledBinding Parameters}" Grid.Column="1">
+				<ItemsControl ItemsSource="{CompiledBinding Parameters}" Grid.Column="1">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{CompiledBinding CalculatedType}" FontStyle="Italic" Margin="5 0" Padding="5 0" />
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-				<ItemsControl Items="{CompiledBinding Parameters}" Grid.Column="2">
+				<ItemsControl ItemsSource="{CompiledBinding Parameters}" Grid.Column="2">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
@@ -76,14 +76,14 @@
 		<StackPanel IsVisible="{CompiledBinding EnumValues.Count}">
 			<TextBlock Text="Values" TextDecorations="Underline" Margin="0 10 0 0" />
 			<Grid IsVisible="{CompiledBinding EnumValues.Count}" ColumnDefinitions="Auto,Auto" RowDefinitions="Auto" Margin="5 3 0 0" >
-				<ItemsControl Items="{CompiledBinding EnumValues}" Grid.Column="0">
+				<ItemsControl ItemsSource="{CompiledBinding EnumValues}" Grid.Column="0">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{CompiledBinding Name}" FontWeight="Bold" Padding="2 0" />
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-				<ItemsControl Items="{CompiledBinding EnumValues}" Grid.Column="1">
+				<ItemsControl ItemsSource="{CompiledBinding EnumValues}" Grid.Column="1">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{CompiledBinding Description}" Padding="5 0" />

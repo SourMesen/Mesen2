@@ -32,7 +32,7 @@
 
 		<ListBox
 			Name="ListBox"
-			Items="{CompiledBinding FilteredEntries}"
+			ItemsSource="{CompiledBinding FilteredEntries}"
 			SelectedItem="{CompiledBinding SelectedEntry}"
 			DoubleTapped="OnDoubleTapped"
 			PointerReleased="OnPointerReleased"

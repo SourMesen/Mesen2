@@ -31,7 +31,7 @@
 		</Border>
 		
 		<ScrollViewer AllowAutoHide="False">
-			<ItemsControl Items="{Binding ShortcutKeys}">
+			<ItemsControl ItemsSource="{Binding ShortcutKeys}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>

@@ -35,7 +35,7 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<ItemsControl DataContext="{Binding ElementName=root}" Items="{Binding Items}">
+	<ItemsControl DataContext="{Binding ElementName=root}" ItemsSource="{Binding Items}">
 		<ItemsControl.ItemsPanel>
 			<ItemsPanelTemplate>
 				<StackPanel Orientation="Horizontal" />
@@ -82,7 +82,7 @@
 						<ContextMenu
 							IsEnabled="{Binding SubActions, Converter={x:Static ObjectConverters.IsNotNull}}"
 							Name="ActionMenu"
-						  Items="{Binding SubActions}"
+							ItemsSource="{Binding SubActions}"
 						/>
 					</Button.ContextMenu>
 				</Button>

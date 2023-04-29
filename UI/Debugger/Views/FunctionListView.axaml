@@ -27,7 +27,7 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding Functions}"
+			ItemsSource="{CompiledBinding Functions}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			SelectionMode="Multiple"

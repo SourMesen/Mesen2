@@ -44,7 +44,7 @@
 								Name="AudioDevice"
 								Grid.Row="0"
 								Grid.Column="1"
-								Items="{CompiledBinding AudioDevices}"
+								ItemsSource="{CompiledBinding AudioDevices}"
 								SelectedItem="{CompiledBinding Config.AudioDevice}"
 								Width="200"
 							/>

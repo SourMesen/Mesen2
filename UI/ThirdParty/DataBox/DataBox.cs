@@ -25,12 +25,12 @@ namespace DataBoxControl;
 
 public class DataBox : TemplatedControl
 {
-    public static readonly DirectProperty<DataBox, IEnumerable?> ItemsProperty =
+    public static readonly DirectProperty<DataBox, IEnumerable?> ItemsSourceProperty =
 		  AvaloniaProperty.RegisterDirect<DataBox, IEnumerable?>(
-			  nameof(Items),
-            o => o.Items, 
+			  nameof(ItemsSource),
+            o => o.ItemsSource, 
             (o, v) => {
-					o.Items = v;
+					o.ItemsSource = v;
 					if(o.Selection != null) {
 						o.Selection.Source = v;
 					}
@@ -41,7 +41,7 @@ public class DataBox : TemplatedControl
 		  o => o.Selection,
 		  (o, v) => {
 			  if(v != null) {
-				  v.Source = o.Items;
+				  v.Source = o.ItemsSource;
 			     o.Selection = v;
 			  }
 		  },
@@ -97,10 +97,10 @@ public class DataBox : TemplatedControl
     }
 
     [Content]
-    public IEnumerable? Items
+    public IEnumerable? ItemsSource
     {
         get { return _items; }
-        set { SetAndRaise(ItemsProperty, ref _items, value); }
+        set { SetAndRaise(ItemsSourceProperty, ref _items, value); }
     }
 
 	public ISelectionModel Selection
@@ -231,7 +231,7 @@ public class DataBox : TemplatedControl
         {
             _rowsPresenter.DataBox = this;
 
-            _rowsPresenter[!!ItemsControl.ItemsProperty] = this[!!ItemsProperty];
+            _rowsPresenter[!!ItemsControl.ItemsSourceProperty] = this[!!ItemsSourceProperty];
             _rowsPresenter[!!ListBox.SelectionProperty] = this[!!SelectionProperty];
 
             _rowsPresenter.TemplateApplied += (_, _) =>
@@ -318,7 +318,7 @@ public class DataBox : TemplatedControl
 
 	private void ProcessKeyPress(string keyText)
 	{
-		if(Items == null || _rowsPresenter == null) {
+		if(ItemsSource == null || _rowsPresenter == null) {
 			return;
 		}
 
@@ -346,13 +346,13 @@ public class DataBox : TemplatedControl
 
 	private bool SearchColumn(DataBoxColumn column)
 	{
-		if(Items == null || _rowsPresenter == null) {
+		if(ItemsSource == null || _rowsPresenter == null) {
 			return false;
 		}
 
 		if(column is DataBoxTextColumn textColumn && textColumn.Binding is Binding columnBinding) {
 			Binding binding = new Binding(columnBinding.Path, BindingMode.OneTime);
-			foreach(object item in Items) {
+			foreach(object item in ItemsSource) {
 				binding.Source = item;
 				ValueGetter getter = new ValueGetter();
 				getter.Bind(ValueGetter.ValueProperty, binding);

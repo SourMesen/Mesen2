@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
+using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using Mesen.Config;
@@ -18,6 +19,8 @@ namespace Mesen
 	public class App : Application
 	{
 		public static bool ShowConfigWindow { get; set; }
+		
+		public static IClipboard? Clipboard { get; set; }
 
 		public override void Initialize()
 		{

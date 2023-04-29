@@ -15,7 +15,7 @@ namespace Mesen.Interop
 {
 	public class EmuApi
 	{
-		public const string DllName = "MesenCore.dll";
+		public const string DllName = "MesenCore.dylib";
 		private const string DllPath = EmuApi.DllName;
 
 		[DllImport(DllPath)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool TestDll();

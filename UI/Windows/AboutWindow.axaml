@@ -88,7 +88,7 @@
 					<TextBlock Text="{l:Translate lblAcknowledgeList}" Margin="0 5 0 5" TextWrapping="Wrap" />
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<ListBox
-							Items="{CompiledBinding AcknowledgeList, ElementName=root}"
+							ItemsSource="{CompiledBinding AcknowledgeList, ElementName=root}"
 							Background="Transparent"
 							ScrollViewer.AllowAutoHide="False"
 						/>
@@ -99,7 +99,7 @@
 					<TextBlock Text="{l:Translate lblUsedSoftware}" Margin="0 15 0 5" />
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<ListBox
-							Items="{CompiledBinding LibraryList, ElementName=root}"
+							ItemsSource="{CompiledBinding LibraryList, ElementName=root}"
 							Height="130"
 							Background="Transparent"
 							ScrollViewer.AllowAutoHide="False"

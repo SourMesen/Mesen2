@@ -30,7 +30,7 @@
 		</Style>
 	</Window.Styles>
 
-	<TabControl Items="{CompiledBinding ProfilerTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
+	<TabControl ItemsSource="{CompiledBinding ProfilerTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
 		<TabControl.ItemTemplate>
 			<DataTemplate>
 				<TextBlock Text="{Binding TabName}" />
@@ -49,7 +49,7 @@
 
 					<Border BorderBrush="Gray" BorderThickness="1">
 						<DataBox
-							Items="{Binding GridData}"
+							ItemsSource="{Binding GridData}"
 							Selection="{Binding Selection}"
 							SortState="{Binding SortState}"
 							CellDoubleClick="OnCellDoubleClick"

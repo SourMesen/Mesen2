@@ -17,7 +17,7 @@
 
 	<Border MaxWidth="500" MaxHeight="300" BorderBrush="Gray" BorderThickness="1" Margin="5">
 		<ScrollViewer>
-			<ItemsControl Items="{CompiledBinding CustomKeys}">
+			<ItemsControl ItemsSource="{CompiledBinding CustomKeys}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<StackPanel>

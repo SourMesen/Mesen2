@@ -43,13 +43,13 @@
 			</TabItem>
 			<TabItem Header="{l:Translate tabDipSwitches}" IsVisible="{CompiledBinding DipSwitches.DipSwitches.Count}">
 				<ScrollViewer>
-					<ItemsControl Items="{CompiledBinding DipSwitches.DipSwitches}">
+					<ItemsControl ItemsSource="{CompiledBinding DipSwitches.DipSwitches}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto">
 									<TextBlock Text="{Binding Name}" />
 									<ComboBox
-										Items="{Binding Options}"
+										ItemsSource="{Binding Options}"
 										SelectedIndex="{Binding SelectedOption}"
 										Grid.Column="2"
 										HorizontalAlignment="Stretch"

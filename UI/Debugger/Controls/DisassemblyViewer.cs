@@ -20,7 +20,7 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<string> SearchStringProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(SearchString), string.Empty);
 
-		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamilyName));
+		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, FontFamily>(nameof(FontFamily), FontManager.Current.DefaultFontFamily);
 		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(FontSize), 12);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);

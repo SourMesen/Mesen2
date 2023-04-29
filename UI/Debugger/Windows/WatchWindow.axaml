@@ -32,7 +32,7 @@
 	</Window.Styles>
 	
 	<Panel>
-		<TabControl Items="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
+		<TabControl ItemsSource="{CompiledBinding WatchTabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding TabName}" />

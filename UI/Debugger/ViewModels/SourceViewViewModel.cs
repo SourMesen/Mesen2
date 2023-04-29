@@ -193,7 +193,7 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 			for(int i = SelectionStart; i <= SelectionEnd; i++) {
 				sb.AppendLine(SelectedFile.Data[i]);
 			}
-			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+			App.Clipboard?.SetTextAsync(sb.ToString());
 		}
 	}
 

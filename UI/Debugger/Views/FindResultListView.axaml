@@ -19,7 +19,7 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding FindResults}"
+			ItemsSource="{CompiledBinding FindResults}"
 			Selection="{CompiledBinding Selection}"
 			CellDoubleClick="OnCellDoubleClick"
 			SelectionMode="Single"

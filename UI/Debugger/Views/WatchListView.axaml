@@ -52,7 +52,7 @@
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
 			Name="WatchList"
-			Items="{CompiledBinding WatchEntries}"
+			ItemsSource="{CompiledBinding WatchEntries}"
 			Selection="{CompiledBinding Selection}"
 			SelectionMode="Multiple"
 			GridLinesVisibility="All"

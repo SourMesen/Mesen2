@@ -21,7 +21,7 @@
 	<DockPanel>
 		<DockPanel DockPanel.Dock="Top" Margin="2">
 			<TextBlock Text="{l:Translate lblFile}" VerticalAlignment="Center" DockPanel.Dock="Left" Margin="3 0" />
-			<ComboBox Items="{CompiledBinding SourceFiles}" SelectedItem="{CompiledBinding SelectedFile}" HorizontalAlignment="Stretch" />
+			<ComboBox ItemsSource="{CompiledBinding SourceFiles}" SelectedItem="{CompiledBinding SelectedFile}" HorizontalAlignment="Stretch" />
 		</DockPanel>
 
 		<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="0 1 0 0">

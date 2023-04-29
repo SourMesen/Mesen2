@@ -126,7 +126,7 @@
 				<TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">Columns: </TextBlock>
 				<ComboBox
 					SelectedItem="{CompiledBinding Config.BytesPerRow}"
-					Items="{CompiledBinding AvailableWidths}"
+					ItemsSource="{CompiledBinding AvailableWidths}"
 				/>
 			</StackPanel>
 			<CheckBox

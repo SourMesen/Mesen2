@@ -26,7 +26,7 @@
 
 	<Border BorderThickness="0 1 0 0" BorderBrush="{StaticResource MesenGrayBorderColor}">
 		<DataBox
-			Items="{CompiledBinding CallStackContent}"
+			ItemsSource="{CompiledBinding CallStackContent}"
 			Selection="{CompiledBinding Selection}"
 			GridLinesVisibility="All"
 			CellDoubleClick="OnCellDoubleClick"

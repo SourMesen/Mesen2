@@ -17,8 +17,8 @@
 													Grid.RowSpan="1"
 													Grid.ColumnSpan="1"
 													Background="{TemplateBinding Background}"
-													CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
-													CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}"
+													CanHorizontallyScroll="{Binding CanHorizontallyScroll, ElementName=PART_ContentPresenter}"
+													CanVerticallyScroll="{Binding CanVerticallyScroll, ElementName=PART_ContentPresenter}"
 													Content="{TemplateBinding Content}"
 													Extent="{TemplateBinding Extent, Mode=TwoWay}"
 													Margin="{TemplateBinding Padding}"
@@ -26,29 +26,29 @@
 													Viewport="{TemplateBinding Viewport, Mode=TwoWay}">
 						<ScrollContentPresenter.GestureRecognizers>
 							<ScrollGestureRecognizer
-							  CanHorizontallyScroll="{TemplateBinding CanHorizontallyScroll}"
-							  CanVerticallyScroll="{TemplateBinding CanVerticallyScroll}" />
+							  CanHorizontallyScroll="{Binding CanHorizontallyScroll, ElementName=PART_ContentPresenter}"
+							  CanVerticallyScroll="{Binding CanVerticallyScroll, ElementName=PART_ContentPresenter}" />
 						</ScrollContentPresenter.GestureRecognizers>
 					</c:MesenScrollContentPresenter>
+					<!-- Maximum="{TemplateBinding HorizontalScrollBarMaximum}" -->
+					<!-- Value="{TemplateBinding HorizontalScrollBarValue, Mode=TwoWay}" -->
+					<!-- ViewportSize="{TemplateBinding HorizontalScrollBarViewportSize}" -->
 					<ScrollBar Name="PART_HorizontalScrollBar"
-								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
-								  Orientation="Horizontal"
-								  LargeChange="{Binding LargeChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
-								  SmallChange="{Binding SmallChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
-								  Maximum="{TemplateBinding HorizontalScrollBarMaximum}"
-								  Value="{TemplateBinding HorizontalScrollBarValue, Mode=TwoWay}"
-								  ViewportSize="{TemplateBinding HorizontalScrollBarViewportSize}"
-								  Visibility="{TemplateBinding HorizontalScrollBarVisibility}"
-								  Grid.Row="1"
-								  Focusable="False" />
+					           AllowAutoHide="{TemplateBinding AllowAutoHide}"
+					           Orientation="Horizontal"
+					           LargeChange="{Binding LargeChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
+					           SmallChange="{Binding SmallChange.Width, RelativeSource={RelativeSource TemplatedParent}}"
+					           Visibility="{TemplateBinding HorizontalScrollBarVisibility}"
+					           Grid.Row="1"
+					           Focusable="False" />
+					<!-- Maximum="{TemplateBinding VerticalScrollBarMaximum}" -->
+					<!-- Value="{TemplateBinding VerticalScrollBarValue, Mode=TwoWay}" -->
+					<!-- ViewportSize="{TemplateBinding VerticalScrollBarViewportSize}" -->
 					<ScrollBar Name="PART_VerticalScrollBar"
 								  AllowAutoHide="{TemplateBinding AllowAutoHide}"
 								  Orientation="Vertical"
 								  LargeChange="{Binding LargeChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
 								  SmallChange="{Binding SmallChange.Height, RelativeSource={RelativeSource TemplatedParent}}"
-								  Maximum="{TemplateBinding VerticalScrollBarMaximum}"
-								  Value="{TemplateBinding VerticalScrollBarValue, Mode=TwoWay}"
-								  ViewportSize="{TemplateBinding VerticalScrollBarViewportSize}"
 								  Visibility="{TemplateBinding VerticalScrollBarVisibility}"
 								  Grid.Column="1"
 								  Focusable="False" />

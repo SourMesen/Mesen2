@@ -313,7 +313,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebuggerConfig cfg = Config.Debugger;
 			string code = GetSelection(cfg.CopyAddresses, cfg.CopyByteCode, cfg.CopyComments, cfg.CopyBlockHeaders, out _, false);
-			Application.Current?.Clipboard?.SetTextAsync(code);
+			App.Clipboard?.SetTextAsync(code);
 		}
 
 		public string GetSelection(bool getAddresses, bool getByteCode, bool getComments, bool getHeaders, out int byteCount, bool skipGeneratedJmpSubLabels)

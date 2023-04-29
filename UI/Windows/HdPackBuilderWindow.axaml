@@ -33,11 +33,11 @@
 			<c:OptionSection Grid.Row="1" Grid.ColumnSpan="2" Header="{l:Translate grpOptions}">
 				<Grid ColumnDefinitions="Auto,150,Auto" RowDefinitions="Auto,Auto">
 					<TextBlock VerticalAlignment="Center" Text="{l:Translate lblScale}" />
-					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" Items="{CompiledBinding Filters}" SelectedItem="{CompiledBinding SelectedFilter}" />
+					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{CompiledBinding Filters}" SelectedItem="{CompiledBinding SelectedFilter}" />
 					<Image Grid.Column="2" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblScaleHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" />
 
 					<TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{l:Translate lblBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
-					<ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Items="{CompiledBinding BankSizes}" SelectedItem="{CompiledBinding SelectedBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
+					<ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" ItemsSource="{CompiledBinding BankSizes}" SelectedItem="{CompiledBinding SelectedBankSize}" IsVisible="{CompiledBinding IsBankSizeVisible}" />
 					<Image Grid.Column="2" Grid.Row="1" Stretch="None" Margin="5 0" Source="/Assets/Help.png" ToolTip.Tip="{l:Translate lblBankSizeHelp}" ToolTip.Placement="Right" ToolTip.ShowDelay="100" IsVisible="{CompiledBinding IsBankSizeVisible}" />
 				</Grid>
 				<WrapPanel>

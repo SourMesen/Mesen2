@@ -45,8 +45,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -64,10 +64,10 @@
 				<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 					<TextBlock Text="{l:Translate lblPresets}" Margin="0 5 0 0 " VerticalAlignment="Top" />
 					<Panel Grid.Column="1" MaxWidth="160" HorizontalAlignment="Left">
-						<ItemsControl Items="{CompiledBinding ConfigPresetRows}">
+						<ItemsControl ItemsSource="{CompiledBinding ConfigPresetRows}">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
-									<ItemsControl Items="{Binding}">
+									<ItemsControl ItemsSource="{Binding}">
 										<ItemsControl.ItemsPanel>
 											<ItemsPanelTemplate>
 												<WrapPanel />
