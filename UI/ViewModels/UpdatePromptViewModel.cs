@@ -34,7 +34,7 @@ namespace Mesen.ViewModels
 			_updateInfo = updateInfo;
 		}
 
-		public static async Task<UpdatePromptViewModel?> GetUpdateInformation()
+		public static async Task<UpdatePromptViewModel?> GetUpdateInformation(bool silent)
 		{
 			UpdateInfo? updateInfo = null;
 			try {
@@ -58,7 +58,11 @@ namespace Mesen.ViewModels
 					}
 				}
 			} catch(Exception ex) {
-				await MesenMsgBox.ShowException(ex);
+				if(!silent) {
+					Dispatcher.UIThread.Post(() => {
+						MesenMsgBox.ShowException(ex);
+					});
+				}
 			}
 
 			return updateInfo != null ? new UpdatePromptViewModel(updateInfo) : null;

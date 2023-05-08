@@ -1052,7 +1052,7 @@ namespace Mesen.ViewModels
 		public void CheckForUpdate(Window mainWindow, bool silent)
 		{
 			Task.Run(async () => {
-				UpdatePromptViewModel? updateInfo = await UpdatePromptViewModel.GetUpdateInformation();
+				UpdatePromptViewModel? updateInfo = await UpdatePromptViewModel.GetUpdateInformation(silent);
 				if(updateInfo == null) {
 					if(!silent) {
 						Dispatcher.UIThread.Post(() => {
