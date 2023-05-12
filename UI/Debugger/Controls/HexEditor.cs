@@ -467,13 +467,13 @@ namespace Mesen.Debugger.Controls
 						double x = p.X - RowHeaderWidth - ContentLeftPadding - RowWidth - StringViewMargin;
 
 						int column = 0;
-						if(rowStart + BytesPerRow - 1 >= _startPositionByByte.Length) {
+						if(rowStart + BytesPerRow - 1 >= startPos.Length || endPos.Length != startPos.Length) {
 							return null;
-						} else if(x >= _startPositionByByte[rowStart + BytesPerRow - 1]) {
+						} else if(x >= startPos[rowStart + BytesPerRow - 1]) {
 							column = BytesPerRow - 1;
 						} else {
 							for(int i = 0, len = BytesPerRow - 1; i < len; i++) {
-								if(startPos[rowStart + i] <= x && _endPositionByByte[rowStart + i] >= x) {
+								if(startPos[rowStart + i] <= x && endPos[rowStart + i] >= x) {
 									column = i;
 									break;
 								}
@@ -643,7 +643,6 @@ namespace Mesen.Debugger.Controls
 			int position = this.TopRow * this.BytesPerRow;
 
 			Brush selectedRowColumnColor = ColorHelper.GetBrush(SelectedRowColumnColor);
-			Pen cursorPen = ColorHelper.GetPen(Colors.Black);
 
 			int selectionStart = this.SelectionStart;
 			int selectionLength = this.SelectionLength;
@@ -700,16 +699,23 @@ namespace Mesen.Debugger.Controls
 
 			if(selectedRow >= TopRow && selectedRow < TopRow + visibleRows) {
 				//Draw selected character/byte cursor
-				double xPos;
+				double xPos = -1;
 				if(ShowStringView && _inStringView) {
-					xPos = RowWidth + StringViewMargin + _startPositionByByte[(selectedRow - TopRow) * bytesPerRow + selectedColumn];
+					int index = (selectedRow - TopRow) * bytesPerRow + selectedColumn;
+					float[] startPos = _startPositionByByte;
+					if(index >= 0 && index < startPos.Length) {
+						xPos = RowWidth + StringViewMargin + startPos[index];
+					}
 				} else {
 					xPos = letterWidth * selectedColumn * 3 + (LastNibble ? letterWidth : 0);
 				}
 
-				xPos = (int)xPos;
-				double yPos = (int)((selectedRow - TopRow) * RowHeight);
-				context.DrawRectangle(cursorPen, new Rect(xPos, yPos, 1, (int)RowHeight));
+				if(xPos >= 0) {
+					xPos = (int)xPos;
+					double yPos = (int)((selectedRow - TopRow) * RowHeight);
+					Pen cursorPen = ColorHelper.GetPen(Colors.Black);
+					context.DrawRectangle(cursorPen, new Rect(xPos, yPos, 1, (int)RowHeight));
+				}
 			}
 		}
 
