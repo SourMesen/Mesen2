@@ -585,6 +585,28 @@ void Spc::LoadSpcFile(SpcFileData* data)
 {
 	memcpy(_ram, data->SpcRam, Spc::SpcRamSize);
 
+	if(data->HasExtraRam) {
+		bool extraRamContainsIpl = memcmp(data->SpcExtraRam, _spcBios, 0x40) == 0;
+		if(!extraRamContainsIpl) {
+			bool ramContainsIpl = memcmp(data->SpcRam + 0xFFC0, _spcBios, 0x40) == 0;
+			bool isSpcRamEmpty = true;
+			bool isExtraRamEmpty = true;
+			for(int i = 0; i < 0x40; i++) {
+				if(data->SpcExtraRam[i] != 0 && data->SpcExtraRam[i] != 0xFF) {
+					isExtraRamEmpty = false;
+				}
+				if(data->SpcRam[i+0xFFC0] != 0 && data->SpcRam[i + 0xFFC0] != 0xFF) {
+					isSpcRamEmpty = false;
+				}
+			}
+
+			if(ramContainsIpl || (isSpcRamEmpty && !isExtraRamEmpty)) {
+				//Use extra ram section only if the main spc FFC0-FFFF section is empty or contains the IPL code
+				memcpy(_ram + 0xFFC0, data->SpcExtraRam, 0x40);
+			}
+		}
+	}
+
 	_dsp->LoadSpcFileRegs(data->DspRegs);
 
 	_state.PC = data->PC;

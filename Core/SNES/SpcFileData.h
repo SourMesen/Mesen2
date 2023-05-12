@@ -27,6 +27,9 @@ public:
 	uint8_t DspRegs[128];
 	uint8_t SpcRam[0x10000];
 
+	bool HasExtraRam = false;
+	uint8_t SpcExtraRam[0x40] = {};
+
 	uint32_t TrackLength;
 	uint32_t FadeLength;
 
@@ -65,7 +68,8 @@ public:
 		memcpy(SpcRam, spcData + 0x100, 0x10000);
 		if(size >= 0x10200) {
 			//Some SPC files don't have this data (0x10180 bytes instead of 0x10200 bytes)
-			memcpy(SpcRam + 0xFFC0, spcData + 0x101C0, 0x40);
+			memcpy(SpcExtraRam, spcData + 0x101C0, 0x40);
+			HasExtraRam = true;
 		}
 
 		memcpy(DspRegs, spcData + 0x10100, 128);
