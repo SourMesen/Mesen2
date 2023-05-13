@@ -263,7 +263,7 @@ bool SpcDisUtils::IsConditionalJump(uint8_t opCode)
 
 bool SpcDisUtils::IsJumpToSub(uint8_t opCode)
 {
-	return opCode == 0x3F || opCode == 0x0F; //JSR, BRK
+	return opCode == 0x3F || opCode == 0x0F || opCode == 0x4F || (opCode&0x0F) == 0x01; //JSR, BRK, PCALL, TCALL
 }
 
 bool SpcDisUtils::IsReturnInstruction(uint8_t opCode)
