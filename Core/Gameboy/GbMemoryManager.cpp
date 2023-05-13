@@ -61,7 +61,7 @@ GbMemoryManagerState& GbMemoryManager::GetState()
 
 void GbMemoryManager::RefreshMappings()
 {
-	int wramBank = _ppu->IsCgbEnabled() ? _state.CgbWorkRamBank : 1;
+	int wramBank = _ppu->IsCgbEnabled() ? std::max<int>(1, _state.CgbWorkRamBank) : 1;
 	Map(0xC000, 0xCFFF, GbMemoryType::WorkRam, 0, false);
 	Map(0xD000, 0xDFFF, GbMemoryType::WorkRam, wramBank * 0x1000, false);
 	Map(0xE000, 0xEFFF, GbMemoryType::WorkRam, 0, false);
@@ -287,6 +287,10 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 					case 0xFF55: //CGB - DMA
 						return _ppu->IsCgbEnabled() ? _dmaController->ReadCgb(addr) : 0xFF;
 
+					case 0xFF56:
+						//TODO CGB - RP Infrared port
+						return _state.CgbRegRpInfrared | 0x3E;
+
 					case 0xFF4F: //CGB - VRAM bank
 					case 0xFF68: case 0xFF69: case 0xFF6A: case 0xFF6B: //CGB - Palette
 						return _ppu->ReadCgbRegister(addr);
@@ -322,7 +326,7 @@ uint8_t GbMemoryManager::ReadRegister(uint16_t addr)
 					return _controlManager->ReadInputPort();
 				
 				case 0xFF01: return _state.SerialData; //SB - Serial transfer data (R/W)
-				case 0xFF02: return _state.SerialControl | 0x7E; //SC - Serial Transfer Control (R/W)
+				case 0xFF02: return _state.SerialControl | (_gameboy->IsCgb() ? 0x7C : 0x7E); //SC - Serial Transfer Control (R/W)
 
 				case 0xFF04: case 0xFF05: case 0xFF06: case 0xFF07:
 					return _timer->Read(addr);
@@ -372,6 +376,13 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 						}
 						break;
 
+					case 0xFF56:
+						//TODO CGB - RP Infrared port
+						if(_ppu->IsCgbEnabled()) {
+							_state.CgbRegRpInfrared = value & 0xC1;
+						}
+						break;
+
 					case 0xFF4C: //CGB - "LCDMODE", set by boot rom to turn off CGB features for the LCD for DMG games
 						if(!_state.DisableBootRom) {
 							_ppu->WriteCgbRegister(addr, value);
@@ -386,7 +397,7 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 					case 0xFF70:
 						//FF70 - SVBK - CGB Mode Only - WRAM Bank
 						if(_ppu->IsCgbEnabled()) {
-							_state.CgbWorkRamBank = std::max(1, value & 0x07);
+							_state.CgbWorkRamBank = value & 0x07;
 							RefreshMappings();
 						}
 						break;
@@ -497,6 +508,7 @@ void GbMemoryManager::Serialize(Serializer& s)
 	SV(_state.ApuCycleCount); SV(_state.CgbHighSpeed); SV(_state.CgbSwitchSpeedRequest); SV(_state.CgbWorkRamBank);
 	SV(_state.SerialData); SV(_state.SerialControl); SV(_state.SerialBitCount);
 	SV(_state.CgbRegFF72); SV(_state.CgbRegFF73); SV(_state.CgbRegFF74); SV(_state.CgbRegFF75);
+	SV(_state.CgbRegRpInfrared);
 
 	SVArray(_state.MemoryType, 0x100);
 	SVArray(_state.MemoryOffset, 0x100);

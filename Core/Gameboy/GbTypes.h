@@ -364,6 +364,8 @@ struct GbMemoryManagerState
 	bool CgbSwitchSpeedRequest;
 	bool CgbHighSpeed;
 
+	uint8_t CgbRegRpInfrared;
+
 	uint8_t CgbRegFF72;
 	uint8_t CgbRegFF73;
 	uint8_t CgbRegFF74;

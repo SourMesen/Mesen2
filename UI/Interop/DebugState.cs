@@ -691,6 +691,8 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool CgbSwitchSpeedRequest;
 		[MarshalAs(UnmanagedType.I1)] public bool CgbHighSpeed;
 
+		public byte CgbRegRpInfrared;
+
 		public byte CgbRegFF72;
 		public byte CgbRegFF73;
 		public byte CgbRegFF74;
