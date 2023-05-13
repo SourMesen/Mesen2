@@ -61,7 +61,7 @@ void SpcDebugger::ProcessInstruction()
 	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
 	if(SpcDisUtils::IsJumpToSub(_prevOpCode)) {
-		//JSR, BRK
+		//JSR, BRK, PCALL, TCALL
 		uint8_t opSize = SpcDisUtils::GetOpSize(_prevOpCode);
 		uint16_t returnPc = _prevProgramCounter + opSize;
 		AddressInfo src = _spc->GetAbsoluteAddress(_prevProgramCounter);
@@ -185,8 +185,8 @@ void SpcDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::Step: step.StepCount = stepCount; break;
 		case StepType::StepOut: step.BreakAddress = _callstackManager->GetReturnAddress(); break;
 		case StepType::StepOver:
-			if(_prevOpCode == 0x3F || _prevOpCode == 0x0F) {
-				//JSR, BRK
+			if(_prevOpCode == 0x3F || _prevOpCode == 0x0F || _prevOpCode == 0x4F || (_prevOpCode&0x0F) == 0x01) {
+				//JSR, BRK, PCALL, TCALL
 				step.BreakAddress = _prevProgramCounter + SpcDisUtils::GetOpSize(_prevOpCode);
 			} else {
 				//For any other instruction, step over is the same as step into
