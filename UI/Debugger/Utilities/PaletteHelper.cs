@@ -26,7 +26,7 @@ namespace Mesen.Debugger.Utilities
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X4"));
 				entries.AddEntry("R", "$" + (rawPalette[index] & 0x1F).ToString("X2"));
 				entries.AddEntry("G", "$" + ((rawPalette[index] >> 5) & 0x1F).ToString("X2"));
-				entries.AddEntry("B", "$" + (rawPalette[index] >> 10).ToString("X2"));
+				entries.AddEntry("B", "$" + ((rawPalette[index] >> 10) & 0x1F).ToString("X2"));
 			} else if(format == RawPaletteFormat.Rgb333) {
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X3"));
 				entries.AddEntry("R", "$" + ((rawPalette[index] >> 3) & 0x07).ToString("X2"));

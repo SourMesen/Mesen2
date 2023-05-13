@@ -411,7 +411,7 @@ void GbPpu::RunDrawCycle()
 void GbPpu::WriteBgPixel(uint8_t colorIndex)
 {
 	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
-	_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex];
+	_currentBuffer[outOffset] = _state.CgbBgPalettes[colorIndex] & 0x7FFF;
 	if(_gameboy->IsSgb()) {
 		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
 	}
@@ -420,7 +420,7 @@ void GbPpu::WriteBgPixel(uint8_t colorIndex)
 void GbPpu::WriteObjPixel(uint8_t colorIndex)
 {
 	uint16_t outOffset = _state.Scanline * GbConstants::ScreenWidth + _drawnPixels;
-	_currentBuffer[outOffset] = _state.CgbObjPalettes[colorIndex];
+	_currentBuffer[outOffset] = _state.CgbObjPalettes[colorIndex] & 0x7FFF;
 	if(_gameboy->IsSgb()) {
 		_gameboy->GetSgb()->WriteLcdColor(_state.Scanline, (uint8_t)_drawnPixels, colorIndex & 0x03);
 	}
@@ -1026,9 +1026,9 @@ uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 	switch(addr) {
 		case 0xFF4F: return _state.CgbVramBank | 0xFE;
 		case 0xFF68: return _state.CgbBgPalPosition | (_state.CgbBgPalAutoInc ? 0x80 : 0) | 0x40;
-		case 0xFF69: return (_state.CgbBgPalettes[_state.CgbBgPalPosition >> 1] >> ((_state.CgbBgPalPosition & 0x01) ? 8 : 0) & 0xFF);
+		case 0xFF69: return ReadCgbPalette(_state.CgbBgPalPosition, _state.CgbBgPalettes);
 		case 0xFF6A: return _state.CgbObjPalPosition | (_state.CgbObjPalAutoInc ? 0x80 : 0) | 0x40;
-		case 0xFF6B: return (_state.CgbObjPalettes[_state.CgbObjPalPosition >> 1] >> ((_state.CgbObjPalPosition & 0x01) ? 8 : 0) & 0xFF);
+		case 0xFF6B: return ReadCgbPalette(_state.CgbObjPalPosition, _state.CgbObjPalettes);
 	}
 	LogDebug("[Debug] GBC - Missing read handler: $" + HexUtilities::ToHex(addr));
 	return 0xFF;
@@ -1073,11 +1073,19 @@ void GbPpu::WriteCgbRegister(uint16_t addr, uint8_t value)
 	}
 }
 
+uint8_t GbPpu::ReadCgbPalette(uint8_t& pos, uint16_t* pal)
+{
+	if(_state.Mode <= PpuMode::OamEvaluation) {
+		return (pal[pos >> 1] >> ((pos & 0x01) ? 8 : 0)) & 0xFF;
+	}
+	return 0xFF;
+}
+
 void GbPpu::WriteCgbPalette(uint8_t& pos, uint16_t* pal, bool autoInc, uint8_t value)
 {
 	if(_state.Mode <= PpuMode::OamEvaluation) {
 		if(pos & 0x01) {
-			pal[pos >> 1] = (pal[pos >> 1] & 0xFF) | ((value & 0x7F) << 8);
+			pal[pos >> 1] = (pal[pos >> 1] & 0xFF) | (value << 8);
 		} else {
 			pal[pos >> 1] = (pal[pos >> 1] & 0xFF00) | value;
 		}

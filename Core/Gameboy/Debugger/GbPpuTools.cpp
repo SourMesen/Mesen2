@@ -266,11 +266,11 @@ DebugPaletteInfo GbPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 
 		for(int i = 0; i < 8 * 4; i++) {
 			info.RawPalette[i] = state.CgbBgPalettes[i];
-			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[i]);
+			info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(state.CgbBgPalettes[i] & 0x7FFF);
 		}
 		for(int i = 0; i < 8 * 4; i++) {
 			info.RawPalette[i+32] = state.CgbObjPalettes[i];
-			info.RgbPalette[i+32] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[i]);
+			info.RgbPalette[i+32] = SnesDefaultVideoFilter::ToArgb(state.CgbObjPalettes[i] & 0x7FFF);
 		}
 	} else {
 		info.RawFormat = RawPaletteFormat::Indexed;
