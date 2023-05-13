@@ -435,7 +435,7 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		}
 		MessageManager::Log("-----------------------------");
 
-		GbCart* cart = GbCartFactory::CreateCart(_emu, header.CartType);
+		GbCart* cart = GbCartFactory::CreateCart(_emu, header);
 
 		if(cart) {
 			Init(cart, romData, header.GetCartRamSize(), header.HasBattery());

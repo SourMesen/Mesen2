@@ -12,9 +12,9 @@
 class GbCartFactory
 {
 public:
-	static GbCart* CreateCart(Emulator* emu, uint8_t cartType)
+	static GbCart* CreateCart(Emulator* emu, GameboyHeader& header)
 	{
-		switch(cartType) {
+		switch(header.CartType) {
 			case 0x00:
 				return new GbCart();
 
@@ -29,11 +29,12 @@ public:
 				break;
 
 			case 0x0F: case 0x10:
-				return new GbMbc3(emu, true);
-
-			case 0x11: case 0x12: case 0x13:
-				return new GbMbc3(emu, false);
-
+			case 0x11: case 0x12: case 0x13: {
+				bool isMbc30 = header.GetCartRamSize() >= 0x10000;
+				bool hasRtc = header.CartType <= 0x10;
+				return new GbMbc3(emu, hasRtc, isMbc30);
+			}
+							
 			case 0x19: case 0x1A: case 0x1B: case 0x1C: case 0x1D: case 0x1E:
 				return new GbMbc5();
 
