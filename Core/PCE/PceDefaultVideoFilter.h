@@ -172,7 +172,7 @@ public:
 			//Always output at 4x scale
 			for(uint32_t i = 0; i < rowCount; i++) {
 				uint8_t clockDivider = ppuOutputBuffer[clockDividerOffset + i + overscan.Top];
-				uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / clockDivider);
+				uint32_t xOffset = PceConstants::GetLeftOverscan(clockDivider) + (overscan.Left * 4 / (clockDivider ? clockDivider : 4));
 				uint32_t rowWidth = PceConstants::GetRowWidth(clockDivider);
 
 				//Interpolate row data across the whole screen
