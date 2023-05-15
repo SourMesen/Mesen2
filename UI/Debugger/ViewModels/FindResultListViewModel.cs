@@ -21,6 +21,7 @@ using Mesen.Debugger.Views.DebuggerDock;
 using Mesen.Debugger.ViewModels.DebuggerDock;
 using Dock.Model.Core;
 using Mesen.Debugger.Disassembly;
+using Avalonia.Threading;
 
 namespace Mesen.Debugger.ViewModels;
 
@@ -57,7 +58,10 @@ public class FindResultListViewModel : ViewModelBase
 		Selection.Clear();
 		UpdateResults(results);
 		Selection.SelectedIndex = 0;
-		Debugger.OpenTool(Debugger.DockFactory.FindResultListTool);
+		Dispatcher.UIThread.Post(() => {
+			//TODOv2 - run this in a post to bypass a bug that might be fixed in the latest Avalonia preview, to re-test after upgrading
+			Debugger.OpenTool(Debugger.DockFactory.FindResultListTool);
+		});
 	}
 
 	private Dictionary<string, Func<FindResultViewModel, FindResultViewModel, int>> _comparers = new() {
