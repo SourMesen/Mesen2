@@ -323,6 +323,7 @@ void SnesMemoryManager::Write(uint32_t addr, uint8_t value, MemoryOperationType 
 		} else {
 			LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 		}
+		_openBus = value;
 	}
 }
 
@@ -351,6 +352,7 @@ void SnesMemoryManager::WriteDma(uint32_t addr, uint8_t value, bool forBusA)
 		} else {
 			LogDebug("[Debug] Write - missing handler: $" + HexUtilities::ToHex(addr) + " = " + HexUtilities::ToHex(value));
 		}
+		_openBus = value;
 	}
 }
 

@@ -132,6 +132,7 @@ void NesMemoryManager::Write(uint16_t addr, uint8_t value, MemoryOperationType o
 {
 	if(_emu->ProcessMemoryWrite<CpuType::Nes>(addr, value, operationType)) {
 		_ramWriteHandlers[addr]->WriteRam(addr, value);
+		_openBusHandler.SetOpenBus(value);
 	}
 }
 
