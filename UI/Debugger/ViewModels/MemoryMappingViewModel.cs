@@ -375,6 +375,11 @@ namespace Mesen.Debugger.ViewModels
 
 			for(int i = 0; i < 8; i++) {
 				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = i * 0x2000, Type = MemoryType.PceMemory });
+				if(!mainColors.ContainsKey(absAddr.Type)) {
+					//Prevent crash when power cycling caused by core returning { 0, MemoryType.SnesMemory } (default value)
+					absAddr.Address = -1;
+				}
+
 				if(absAddr.Address >= 0) {
 					MemoryType memType = absAddr.Type;
 					string note = "";
