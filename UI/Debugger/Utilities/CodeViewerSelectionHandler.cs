@@ -57,7 +57,7 @@ namespace Mesen.Debugger.Utilities
 			_marginClicked = e.MarginClicked;
 
 			if(e.Properties.IsLeftButtonPressed) {
-				if(_marginClicked) {
+				if(_marginClicked && _allowMarginClick) {
 					CpuType cpuType = e.CodeLineData.CpuType;
 					if(e.CodeLineData.AbsoluteAddress.Address >= 0) {
 						BreakpointManager.ToggleBreakpoint(e.CodeLineData.AbsoluteAddress, cpuType);
