@@ -339,7 +339,13 @@ void Emulator::ReloadRom(bool forPowerCycle)
 	//Cast RomFile/PatchFile to string to make sure the file is reloaded from the disk
 	//In some scenarios, the file might be in memory already, which will prevent the reload
 	//from actually reloading the rom from the disk.
-	LoadRom((string)info.RomFile, (string)info.PatchFile, !forPowerCycle, forPowerCycle);
+	if(!LoadRom((string)info.RomFile, (string)info.PatchFile, !forPowerCycle, forPowerCycle)) {
+		if(forPowerCycle) {
+			//Power cycle failed (rom not longer exists, etc.), reset flag
+			//(otherwise power cycle will continue to be attempted on each frame)
+			_systemActionManager->ResetState();
+		}
+	}
 }
 
 void Emulator::PowerCycle()
