@@ -904,6 +904,7 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool EnvRaiseVolume;
 		public byte EnvPeriod;
 		public byte EnvTimer;
+		[MarshalAs(UnmanagedType.I1)] public bool EnvStopped;
 
 		public byte Length;
 		[MarshalAs(UnmanagedType.I1)] public bool LengthEnabled;

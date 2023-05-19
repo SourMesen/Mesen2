@@ -273,6 +273,7 @@ struct GbNoiseState
 	bool EnvRaiseVolume;
 	uint8_t EnvPeriod;
 	uint8_t EnvTimer;
+	bool EnvStopped;
 
 	uint8_t Length;
 	bool LengthEnabled;

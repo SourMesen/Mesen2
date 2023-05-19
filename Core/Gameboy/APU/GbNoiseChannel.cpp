@@ -53,7 +53,7 @@ void GbNoiseChannel::UpdateOutput()
 
 void GbNoiseChannel::ClockEnvelope()
 {
-	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0) {
+	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0 && !_state.EnvStopped) {
 		_state.EnvTimer--;
 
 		if(_state.EnvTimer == 0) {
@@ -61,12 +61,14 @@ void GbNoiseChannel::ClockEnvelope()
 				_state.Volume++;
 			} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
 				_state.Volume--;
+			} else {
+				_state.EnvStopped = true;
 			}
-
-			_state.EnvTimer = _state.EnvPeriod;
 
 			//Based on the channel_4_volume_div test, clocking the envelope updates the output immediately
 			UpdateOutput();
+
+			_state.EnvTimer = _state.EnvPeriod;
 		}
 	}
 }
@@ -168,7 +170,24 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 			_state.Length = 64 - (value & 0x3F);
 			break;
 
-		case 2:
+		case 2: {
+			if(_state.EnvPeriod == 0 && !_state.EnvStopped) {
+				//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
+				_state.Volume++;
+			} else if(!_state.EnvRaiseVolume) {
+				//"otherwise if the envelope was in subtract mode, volume is incremented by 2"
+				_state.Volume += 2;
+			}
+
+			bool raiseVolume = (value & 0x08) != 0;
+			if(raiseVolume != _state.EnvRaiseVolume) {
+				//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
+				_state.Volume = 16 - _state.Volume;
+			}
+
+			//"Only the low 4 bits of volume are kept after the above operations."
+			_state.Volume &= 0xF;
+
 			_state.EnvPeriod = value & 0x07;
 			_state.EnvRaiseVolume = (value & 0x08) != 0;
 			_state.EnvVolume = (value & 0xF0) >> 4;
@@ -177,6 +196,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 				_state.Enabled = false;
 			}
 			break;
+		}
 
 		case 3:
 			_state.PeriodShift = (value & 0xF0) >> 4;
@@ -230,6 +250,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 
 				//Volume envelope timer is reloaded with period.
 				_state.EnvTimer = _state.EnvPeriod;
+				_state.EnvStopped = false;
 
 				//Channel volume is reloaded from NRx2.
 				_state.Volume = _state.EnvVolume;
@@ -243,7 +264,7 @@ void GbNoiseChannel::Write(uint16_t addr, uint8_t value)
 
 void GbNoiseChannel::Serialize(Serializer& s)
 {
-	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer);
+	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.EnvStopped);
 	SV(_state.ShiftRegister); SV(_state.PeriodShift); SV(_state.Divisor); SV(_state.ShortWidthMode);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.Output);
 }
