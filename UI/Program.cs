@@ -14,6 +14,11 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Mesen.Interop;
+using System.Net;
+using System.Net.Http;
+using SharpCompress.Writers;
+using SharpCompress.Common;
+using SharpCompress.Readers;
 
 namespace Mesen
 {
@@ -66,6 +71,7 @@ namespace Mesen
 
 			//Extract core dll & other native dependencies
 			ExtractNativeDependencies(ConfigManager.HomeFolder);
+			Task.Run(async () => await DownloadLuaLsp(Path.Combine(ConfigManager.HomeFolder, LspServerHelper.LspDirectoryName)));
 
 			if(CommandLineHelper.IsTestRunner(args)) {
 				return TestRunner.Run(args);
@@ -81,6 +87,45 @@ namespace Mesen
 			}
 
 			return 0;
+		}
+
+		public static async Task DownloadLuaLsp(string dest)
+		{
+			// When `HomeFolder/LuaLSP/bin/lua-language-server[.exe]` doesn't exist, then
+			// AUTO Download latest lua lsp from https://github.com/LuaLS/lua-language-server/releases
+
+			if(File.Exists(Path.Combine(dest, "bin", LspServerHelper.ExecutableName)))
+				return;
+
+			// TODO test on different systems and processor
+			//		Windows X64: OK!
+
+			Directory.CreateDirectory(dest);
+
+			var downloadUrl = await LspServerHelper.GetDownloadUrl();
+			if(downloadUrl == null) return;
+
+			var fileName = Path.Combine(dest, Path.GetFileName(downloadUrl));
+			if(!File.Exists(fileName)) {
+				// Download only when archive file doesn't exist
+				// This could allow user to download by themselves.
+				using var ns = await new HttpClient().GetStreamAsync(downloadUrl);
+				using var fs = File.OpenWrite(fileName);
+				await ns.CopyToAsync(fs);
+			}
+
+			using var archiveStream = File.OpenRead(fileName);
+			if(fileName.EndsWith("tar.gz")) {
+				using var tar = ReaderFactory.Open(archiveStream);
+				tar.WriteAllToDirectory(dest, new() {
+					ExtractFullPath = true
+				});
+			} else if(fileName.EndsWith("zip")) {
+				using var zip = new ZipArchive(archiveStream);
+				zip.ExtractToDirectory(dest);
+			} else {
+				// unreachable
+			}
 		}
 
 		public static void ExtractNativeDependencies(string dest)

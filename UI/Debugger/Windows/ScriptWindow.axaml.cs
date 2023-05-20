@@ -1,11 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 using Avalonia.Threading;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
@@ -13,18 +11,24 @@ using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
-using Mesen.Config;
+using DynamicData;
 using Mesen.Debugger.Controls;
-using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Views;
 using Mesen.Interop;
 using Mesen.Utilities;
+using OmniSharp.Extensions.LanguageServer.Client;
+using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
+using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace Mesen.Debugger.Windows
@@ -32,16 +36,28 @@ namespace Mesen.Debugger.Windows
 	public class ScriptWindow : MesenWindow, INotificationHandler
 	{
 		private static XshdSyntaxDefinition _syntaxDef;
+		private static readonly string _luaMetaDefinition;
 		private IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
 		private TextBox _txtScriptLog;
 		private DispatcherTimer _timer;
 		private ScriptWindowViewModel _model;
+		private Process _lspServer = null!;
+		private LanguageClient? _lspClient = null!;
 
 		static ScriptWindow()
 		{
 			using XmlReader reader = XmlReader.Create(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.HighlightLua.xshd")!);
 			_syntaxDef = HighlightingLoader.LoadXshd(reader);
+
+			{
+				using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Documentation.meta.lua")!;
+				using var metaReader = new StreamReader(stream);
+				_luaMetaDefinition = metaReader.ReadToEnd();
+			}
+
+			// Install syntax for document in completion and hover (here to initialize looks good now).
+			MarkdownCodeBlockHelper.Install();
 		}
 
 		[Obsolete("For designer only")]
@@ -62,9 +78,8 @@ namespace Mesen.Debugger.Windows
 			_textEditor = this.GetControl<MesenTextEditor>("Editor");
 			_textEditor.TextArea.KeyDown += TextArea_KeyDown;
 			_textEditor.TextArea.KeyUp += TextArea_KeyUp;
-			_textEditor.TextArea.TextEntered += TextArea_TextEntered;
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
-			_textEditor.TextArea.TextView.PointerMoved += TextView_PointerMoved;
+			//_textEditor.TextArea.TextView.PointerMoved += TextView_PointerMoved;
 
 			_txtScriptLog = this.GetControl<TextBox>("txtScriptLog");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
@@ -77,6 +92,84 @@ namespace Mesen.Debugger.Windows
 			_model.Config.LoadWindowSettings(this);
 
 			_textEditor.SyntaxHighlighting = _highlighting;
+
+			#region Start Lsp
+
+			var _ = InitializeLspClientAsync();
+
+			#endregion
+		}
+
+		private async Task InitializeLspClientAsync()
+		{
+			_lspServer = new Process();
+			_lspServer.StartInfo.FileName = LspServerHelper.ExecutableFullName;
+			_lspServer.StartInfo.RedirectStandardInput = true;
+			_lspServer.StartInfo.RedirectStandardOutput = true;
+			_lspServer.StartInfo.CreateNoWindow = true;
+			try {
+				_lspServer.Start();
+			} catch(Exception) {
+				return;
+			}
+
+			_lspClient = LanguageClient.Create(options =>
+				options
+					.WithOutput(_lspServer.StandardInput.BaseStream)
+					.WithInput(_lspServer.StandardOutput.BaseStream)
+					.WithClientCapabilities(new() {
+						TextDocument = new() {
+							Completion = new CompletionCapability {
+								CompletionItem = new() {
+									InsertReplaceSupport = true,
+								}
+							}
+						}
+					})
+			);
+
+			// TODO handle for initializing lsp client
+			await _lspClient.Initialize(default);
+			_lspClient.DidOpenTextDocument(new() {
+				TextDocument = new() {
+					LanguageId = "lua",
+					Text = _luaMetaDefinition,
+					Uri = _model.GetMetaLuaUri(),
+				}
+			});
+
+			// mouse hover tips
+			Observable
+				.FromEventPattern<PointerEventArgs>(
+					_textEditor.TextArea.TextView,
+					nameof(_textEditor.TextArea.TextView.PointerMoved))
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.Select(p => _textEditor.TextArea.TextView.GetPosition(p.EventArgs.GetCurrentPoint(_textEditor.TextArea.TextView).Position + _textEditor.TextArea.TextView.ScrollOffset))
+				.Where(p => p != null)
+				.Select(p => (TextViewPosition)p!)
+				.Distinct(p => p.Location) //! i don't know why this event is keeping emitted even when I don't move my mouse
+				.Throttle(TimeSpan.FromSeconds(1))
+				.SubscribeOn(RxApp.TaskpoolScheduler)
+				.Subscribe(pos => HandleEditorHover(pos.Location.Line - 1, pos.Location.Column - 1));
+
+			// tips on fly
+			Observable
+				.FromEventPattern<TextInputEventArgs>(
+					_textEditor.TextArea,
+					nameof(_textEditor.TextArea.TextEntered))
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.SubscribeOn(RxApp.TaskpoolScheduler)
+				.Where(x =>
+					!string.IsNullOrWhiteSpace(x.EventArgs.Text)
+					&& !x.EventArgs.Text.EndsWith(")"))
+				.Select(x => new {
+					Raw = x,
+					_textEditor.TextArea.Caret.Position,
+				})
+				.Throttle(TimeSpan.FromSeconds(0.5))
+				// if caret moved after input, don't show completion
+				.Where(x => x.Position.Equals(_textEditor.TextArea.Caret.Position))
+				.Subscribe(_ => ShowCompletions());
 		}
 
 		protected override void OnOpened(EventArgs e)
@@ -107,6 +200,7 @@ namespace Mesen.Debugger.Windows
 			} else {
 				_model.StopScript();
 				_timer.Stop();
+				_lspServer.Kill();
 				_model.Config.SaveWindowSettings(this);
 			}
 		}
@@ -118,7 +212,7 @@ namespace Mesen.Debugger.Windows
 				Close();
 			}
 		}
-		
+
 		private void UpdateSyntaxDef()
 		{
 			Color[] colors = new Color[] { Colors.Green, Colors.SteelBlue, Colors.Blue, Colors.DarkMagenta, Colors.DarkRed, Colors.Black, Colors.Indigo };
@@ -158,68 +252,47 @@ namespace Mesen.Debugger.Windows
 
 		private CompletionWindow? _completionWindow;
 		private bool _ctrlPressed;
-		private DocEntryViewModel? _prevTooltipEntry;
+		private Hover? _previousHover;
 
-		private void TextView_PointerMoved(object? sender, PointerEventArgs e)
+		private Uri OpenCodeForLsp()
 		{
-			TextViewPosition? posResult = _textEditor.TextArea.TextView.GetPosition(e.GetCurrentPoint(_textEditor.TextArea.TextView).Position + _textEditor.TextArea.TextView.ScrollOffset);
-			if(posResult is TextViewPosition pos) {
-				int offset = _textEditor.TextArea.Document.GetOffset(pos.Location.Line, pos.Location.Column);
-				DocEntryViewModel? entry = GetTooltipEntry(offset);
-				if(_prevTooltipEntry != entry) {
-					if(entry != null) {
-						TooltipHelper.ShowTooltip(_textEditor.TextArea.TextView, new ScriptCodeCompletionView() { DataContext = entry }, 10);
-					} else {
-						TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
-					}
-					_prevTooltipEntry = entry;
-				}
-			}
+			// TODO handle open/change/save/... for editing code
+			var uri = _model.GetCodeUri();
+			_lspClient?.DidOpenTextDocument(new() {
+				TextDocument = new() { Uri = uri, Text = _model.Code },
+			});
+			return uri;
 		}
 
-		private DocEntryViewModel? GetTooltipEntry(int offset)
+		private void HandleEditorHover(int line, int column)
 		{
-			if(offset >= _model.Code.Length || _model.Code[offset] == '\r' || _model.Code[offset] == '\n') {
-				//End of line/document, close tooltip
-				return null;
-			}
+			_ = Task.Run(async () => {
+				if(_lspClient == null) return;
 
-			//Find the end of the expression
-			for(; offset < _model.Code.Length; offset++) {
-				if(!char.IsLetterOrDigit(_model.Code[offset]) && _model.Code[offset] != '.' && _model.Code[offset] != '_') {
-					break;
+				var hoverResult = await _lspClient.RequestHover(new() {
+					TextDocument = new() { Uri = OpenCodeForLsp() },
+					Position = new(line, column)
+				});
+
+				if(_previousHover == null
+				// TODO identify whether updated
+				|| !string.Equals(
+					_previousHover.Contents.MarkupContent?.ToString(),
+					hoverResult?.Contents.MarkupContent?.ToString())
+				) {
+					Dispatcher.UIThread.Post(() => {
+						if(hoverResult != null) {
+							TooltipHelper.ShowTooltip(
+								_textEditor.TextArea.TextView,
+								new ScriptCodeHoverView() { DataContext = hoverResult.Contents.MarkupContent },
+								10);
+						} else {
+							TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
+						}
+						_previousHover = hoverResult;
+					});
 				}
-			}
-
-			//Find the start of the expression
-			int i = offset - 1;
-			for(; i >= 0 && i < _model.Code.Length; i--) {
-				if(!char.IsLetterOrDigit(_model.Code[i]) && _model.Code[i] != '.' && _model.Code[i] != '_') {
-					break;
-				}
-			}
-
-			string expr = _model.Code.Substring(i + 1, offset - i - 1);
-			if(expr.StartsWith("emu.")) {
-				expr = expr.Substring(4);
-				bool hasTrailingDot = expr.EndsWith(".");
-				if(hasTrailingDot) {
-					expr = expr.Substring(0, expr.Length - 1);
-				}
-
-				DocEntryViewModel? entry = null;
-				if(expr.Contains(".")) {
-					string[] parts = expr.Split('.');
-					entry = CodeCompletionHelper.GetEntry(parts[0]);
-					if(parts.Length == 2 && entry != null && entry.EnumValues.Count > 0) {
-						return entry;
-					}
-				}
-
-				return CodeCompletionHelper.GetEntry(expr);
-			}
-
-			return null;
+			});
 		}
 
 		private void TextArea_KeyUp(object? sender, KeyEventArgs e)
@@ -233,6 +306,8 @@ namespace Mesen.Debugger.Windows
 		{
 			if(e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl || e.KeyModifiers.HasFlag(KeyModifiers.Control)) {
 				_ctrlPressed = true;
+			} else if(e.Key == Key.Escape) {
+				TooltipHelper.HideTooltip(_textEditor.TextArea.TextView);
 			}
 		}
 
@@ -250,136 +325,113 @@ namespace Mesen.Debugger.Windows
 				//Don't type the space if pressing ctrl+space
 				e.Handled = true;
 
-				OpenCompletionWindow();
+				ShowCompletions();
 			}
 
 			// Do not set e.Handled=true.
 			// We still want to insert the character that was typed.
 		}
 
-		private void TextArea_TextEntered(object? sender, TextInputEventArgs e)
+		private void ShowCompletions()
 		{
-			if(e.Text == ".") {
-				OpenCompletionWindow();
-			}
+			_ = Task.Run(async () => {
+				if(_lspClient == null) return;
+
+				var completions = await _lspClient.RequestCompletion(new() {
+					TextDocument = new() { Uri = OpenCodeForLsp() },
+					Position = new(_textEditor.TextArea.Caret.Line - 1, _textEditor.TextArea.Caret.Column - 1)
+				});
+				if(completions is null) return;
+
+				Dispatcher.UIThread.Post(() => {
+					_completionWindow = new CompletionWindow(_textEditor.TextArea);
+					_completionWindow
+						.CompletionList
+						.CompletionData
+						.AddRange(completions.Select(x => new LspCompletionData(x, async () => await _lspClient.ResolveCompletion(x))));
+					_completionWindow.Closed += (sender, e) => _completionWindow = null;
+					_completionWindow.Show();
+				});
+			});
 		}
 
-		private void OpenCompletionWindow()
+		public class LspCompletionData : ICompletionData
 		{
-			int offset = _textEditor.TextArea.Caret.Offset;
-			//Find the start of the expression
-			int i = offset - 1;
-			for(; i >= 0 && i < _model.Code.Length; i--) {
-				if(!char.IsLetterOrDigit(_model.Code[i]) && _model.Code[i] != '.' && _model.Code[i] != '_') {
-					break;
-				}
-			}
-
-			string expr = _model.Code.Substring(i + 1, offset - i - 1);
-			if(expr.StartsWith("emu.")) {
-				expr = expr.Substring(4);
-				bool hasTrailingDot = expr.EndsWith(".");
-				if(hasTrailingDot) {
-					expr = expr.Substring(0, expr.Length - 1);
-				}
-
-				DocEntryViewModel? entry = null;
-				if(expr.Contains(".")) {
-					string[] parts = expr.Split('.');
-					entry = CodeCompletionHelper.GetEntry(parts[0]);
-					if(parts.Length == 2 && entry != null && entry.EnumValues.Count > 0) {
-						OpenCompletionWindow(entry.EnumValues.Select(x => x.Name), expr, parts[1], parts[1].Length);
-						return;
-					}
-				}
-
-				entry = CodeCompletionHelper.GetEntry(expr);
-				if(entry != null && entry.EnumValues.Count > 0 && hasTrailingDot) {
-					OpenCompletionWindow(entry.EnumValues.Select(x => x.Name), expr, "", 0);
-				} else {
-					if(!hasTrailingDot) {
-						OpenCompletionWindow(CodeCompletionHelper.GetEntries(), null, expr, expr.Length);
-					}
-				}
-			}
-		}
-
-		private void OpenCompletionWindow(IEnumerable<string> entries, string? enumName, string defaultFilter, int insertOffset)
-		{
-			_completionWindow = new CompletionWindow(_textEditor.TextArea);
-			IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
-			foreach(string name in entries) {
-				data.Add(new MyCompletionData(name, enumName, -insertOffset));
-			}
-			_completionWindow.Closed += delegate {
-				_completionWindow = null;
-			};
-			_completionWindow.Show();
-			if(defaultFilter.Length > 0) {
-				_completionWindow.CompletionList.SelectItem(defaultFilter);
-			}
-		}
-
-		public class MyCompletionData : ICompletionData
-		{
-			private string? _enumName;
-			private int _insertOffset;
-
-			public MyCompletionData(string text, string? enumName = null, int insertOffset = 0)
-			{
-				Text = text;
-				_enumName = enumName;
-				_insertOffset = insertOffset;
-			}
-
-			public IBitmap Image
+			private readonly CompletionItem _completionItem;
+			private CompletionItem? _completionDetailed = null;
+			private Func<CompletionItem> _detailsResolver;
+			private CompletionItem CompletionDetailed
 			{
 				get
 				{
-					if(_enumName != null) {
-						return ImageUtilities.BitmapFromAsset("Assets/Enum.png")!;
-					} else {
-						return ImageUtilities.BitmapFromAsset(CodeCompletionHelper.GetEntry(Text)?.EnumValues.Count > 0 ? "Assets/Enum.png" : "Assets/Function.png")!;
+					if(_completionDetailed == null) {
+						_completionDetailed = _detailsResolver() ?? _completionItem;
 					}
+					return _completionDetailed;
 				}
 			}
 
-			public string Text { get; private set; }
-
-			public object Content
+			public LspCompletionData(CompletionItem completionItem, Func<Task<CompletionItem>> detailsResolver)
 			{
-				get { return new TextBlock() { Text = this.Text }; }
+				_completionItem = completionItem;
+				_detailsResolver = () => {
+					// TODO clean up code
+					var task = Task.Run(async () => await detailsResolver());
+					task.Wait();
+					return task.Result;
+				};
 			}
 
-			public object Description
+			// TODO handle image for kinds except enum and function
+			public IBitmap Image => ImageUtilities.BitmapFromAsset(_completionItem.Kind == CompletionItemKind.Function ? "Assets/Function.png" : "Assets/Enum.png")!;
+			public string Text => _completionItem.Label;
+			public object Content => new TextBlock { Text = _completionItem.Label };
+			public object Description => new ScriptCodeHoverView {
+				DataContext = CompletionDetailed.Documentation?.MarkupContent,
+				MaxHeight = 800,
+				MaxWidth = 400
+			};
+			public double Priority
 			{
-				get 
+				get
 				{
-					if(_enumName != null) {
-						DocEntryViewModel? enumEntry = CodeCompletionHelper.GetEntry(_enumName);
-						if(enumEntry != null) {
-							foreach(DocEnumValue val in enumEntry.EnumValues) {
-								if(val.Name == Text) {
-									return val.Description;
-								}
-							}
-						}
-					} else {
-						DocEntryViewModel? entry = CodeCompletionHelper.GetEntry(Text);
-						if(entry != null) {
-							return new ScriptCodeCompletionView() { DataContext = entry };
-						}
-					}
-					return null!;
+					if(double.TryParse(_completionItem.SortText, out var priority))
+						return priority;
+
+					return 0;
 				}
 			}
-
-			public double Priority => 1.0;
 
 			public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 			{
-				textArea.Document.Replace(completionSegment.Offset + _insertOffset, completionSegment.Length - _insertOffset, this.Text);
+				// TODO CompletionDetailed.AdditionalTextEdits; CompletionDetailed.TextEdit; may be better.
+				// However LSP server doesn't response with these fields and I don't know reason yet.
+				// See `textEdit?: TextEdit | InsertReplaceEdit;` from https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#completionItem
+				// May be helpful.
+
+				var toInsert = CompletionDetailed.InsertText ?? _completionItem.Label;
+				var caretPosition = textArea.Caret.Position;
+				int offset = completionSegment.Offset;
+				int length = completionSegment.Length;
+				if(completionSegment.Length == 0) {
+					length = 1;
+
+					// find the real offset and length to replace existing partial code.
+					int newLength = 0;
+					for(; completionSegment.Offset - length > textArea.Document.GetOffset(caretPosition.Line, 1); length++) {
+						if(toInsert.StartsWith(textArea.Document.GetText(completionSegment.Offset - length, length))) {
+							// match as long as much
+							newLength = Math.Max(newLength, length);
+						}
+					}
+
+					length = newLength;
+					offset = completionSegment.Offset - length;
+				}
+
+				textArea.Document.Replace(offset, length, toInsert);
 			}
 		}
+
 	}
 }
