@@ -17,11 +17,11 @@
 	</Design.DataContext>
 
 	<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-		<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
-		<MenuItem Header="{l:Translate mnuGame}" Items="{CompiledBinding GameMenuItems}" />
-		<MenuItem Header="{l:Translate mnuOptions}" Items="{CompiledBinding OptionsMenuItems}" />
-		<MenuItem Header="{l:Translate mnuTools}" Items="{CompiledBinding ToolsMenuItems}" SubmenuOpened="mnuTools_Opened" />
-		<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
-		<MenuItem Header="{l:Translate mnuHelp}" Items="{CompiledBinding HelpMenuItems}" />
+		<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
+		<MenuItem Header="{l:Translate mnuGame}" ItemsSource="{CompiledBinding GameMenuItems}" />
+		<MenuItem Header="{l:Translate mnuOptions}" ItemsSource="{CompiledBinding OptionsMenuItems}" />
+		<MenuItem Header="{l:Translate mnuTools}" ItemsSource="{CompiledBinding ToolsMenuItems}" SubmenuOpened="mnuTools_Opened" />
+		<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
+		<MenuItem Header="{l:Translate mnuHelp}" ItemsSource="{CompiledBinding HelpMenuItems}" />
 	</c:MesenMenu>
 </UserControl>

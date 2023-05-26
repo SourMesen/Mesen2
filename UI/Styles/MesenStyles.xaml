@@ -156,7 +156,7 @@
 		<Setter Property="IsVisible" Value="{Binding Visible}" />
 		<Setter Property="IsEnabled" Value="{Binding Enabled}" />
 		<Setter Property="Tag" Value="{Binding ShortcutText}" />
-		<Setter Property="Items" Value="{Binding SubActions}" />
+		<Setter Property="ItemsSource" Value="{Binding SubActions}" />
 		<Setter Property="Command" Value="{Binding ClickCommand}" />
 	</Style>
 	
@@ -504,7 +504,10 @@
 		<Setter Property="MinHeight" Value="0" />
 		<Setter Property="Margin" Value="0 0 -5 0" />
 	</Style>
-	
+	<Style Selector="ToolChromeControl > Grid > Border Button Path">
+		<Setter Property="Fill" Value="{DynamicResource ThemeForegroundBrush}" />
+	</Style>
+
 	<Style Selector="TabControl[TabStripPlacement=Left] TabControl[TabStripPlacement=Top]">
 		<Setter Property="Template">
 			<ControlTemplate>

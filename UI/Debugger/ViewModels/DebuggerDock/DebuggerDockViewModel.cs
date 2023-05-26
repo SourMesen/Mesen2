@@ -1,5 +1,5 @@
 ﻿using Dock.Model.Core;
-using Dock.Model.ReactiveUI.Controls;
+using Dock.Model.Mvvm.Controls;
 
 namespace Mesen.Debugger.ViewModels.DebuggerDock
 {

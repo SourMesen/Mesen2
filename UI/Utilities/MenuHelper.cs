@@ -45,8 +45,8 @@ namespace Mesen.Utilities
 			}
 
 			if(menu.Items != null) {
-				foreach(MenuItem item in menu.Items) {
-					if(IsPointerInItem(item)) {
+				foreach(MenuItem? item in menu.Items) {
+					if(item != null && IsPointerInItem(item)) {
 						return true;
 					}
 				}

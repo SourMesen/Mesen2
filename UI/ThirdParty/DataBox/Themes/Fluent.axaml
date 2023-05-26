@@ -123,7 +123,7 @@
 
   <Style Selector="DataBoxPanel">
     <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
 	  <Setter Property="Orientation" Value="Vertical" />
 	  <Setter Property="Margin" Value="-1 0 0 0" />
   </Style>

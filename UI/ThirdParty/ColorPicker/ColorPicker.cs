@@ -25,7 +25,7 @@ namespace ThemeEditor.Controls.ColorPicker
 
 		public static string ToHexColor(Color color)
 		{
-			return "#" + (color.ToUint32() & 0xFFFFFF).ToString("X6");
+			return "#" + (color.ToUInt32() & 0xFFFFFF).ToString("X6");
 		}
 
 		public static Color FromHexColor(string hex)

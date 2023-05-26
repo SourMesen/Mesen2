@@ -15,7 +15,7 @@ namespace Mesen.Utilities.Json
 
 		public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
 		{
-			writer.WriteNumberValue(value.ToUint32());
+			writer.WriteNumberValue(value.ToUInt32());
 		}
 	}
 }

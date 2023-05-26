@@ -166,19 +166,6 @@ namespace Mesen.Config
 
 		public void ApplyFontOptions()
 		{
-			if(FontAntialiasing != FontAntialiasing.SubPixelAntialias) {
-				Type? renderInterface = typeof(Avalonia.Skia.SkiaPlatform).Assembly.GetType("Avalonia.Skia.PlatformRenderInterface");
-				FieldInfo? prop = renderInterface?.GetField("s_font", BindingFlags.Static | BindingFlags.NonPublic);
-				if(prop?.GetValue(null) is SkiaSharp.SKFont font) {
-					font.Edging = FontAntialiasing switch {
-						FontAntialiasing.Disabled => SkiaSharp.SKFontEdging.Alias,
-						FontAntialiasing.Antialias => SkiaSharp.SKFontEdging.Antialias,
-						FontAntialiasing.SubPixelAntialias or _ => SkiaSharp.SKFontEdging.SubpixelAntialias
-					};
-					font.Subpixel = FontAntialiasing == FontAntialiasing.SubPixelAntialias;
-				}
-			}
-
 			UpdateFonts();
 		}
 

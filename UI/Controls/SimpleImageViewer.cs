@@ -18,7 +18,6 @@ namespace Mesen.Controls
 	public class SimpleImageViewer : Control
 	{
 		public static readonly StyledProperty<IImage> SourceProperty = AvaloniaProperty.Register<SimpleImageViewer, IImage>(nameof(Source));
-		public static readonly StyledProperty<BitmapInterpolationMode> InterpolationModeProperty = AvaloniaProperty.Register<SimpleImageViewer, BitmapInterpolationMode>(nameof(InterpolationMode), BitmapInterpolationMode.Default);
 
 		public IImage Source
 		{
@@ -26,15 +25,9 @@ namespace Mesen.Controls
 			set { SetValue(SourceProperty, value); }
 		}
 
-		public BitmapInterpolationMode InterpolationMode
-		{
-			get { return GetValue(InterpolationModeProperty); }
-			set { SetValue(InterpolationModeProperty, value); }
-		}
-
 		static SimpleImageViewer()
 		{
-			AffectsRender<SimpleImageViewer>(SourceProperty, InterpolationModeProperty);
+			AffectsRender<SimpleImageViewer>(SourceProperty);
 		}
 
 		public SimpleImageViewer()
@@ -50,8 +43,7 @@ namespace Mesen.Controls
 			context.DrawImage(
 				Source,
 				new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
-				new Rect(0, 0, Bounds.Width, Bounds.Height),
-				InterpolationMode
+				new Rect(0, 0, Bounds.Width, Bounds.Height)
 			);
 		}
 	}

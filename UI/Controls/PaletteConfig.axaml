@@ -32,7 +32,7 @@
 				Click="btnSelectPalette_OnClick"
 			>
 				<Button.ContextMenu>
-					<ContextMenu Name="Preset" PlacementMode="Bottom" Items="{CompiledBinding PalettePresets, ElementName=root}">
+					<ContextMenu Name="Preset" PlacementMode="Bottom" ItemsSource="{CompiledBinding PalettePresets, ElementName=root}">
 						<ContextMenu.Styles>
 							<Style Selector="MenuItem">
 								<Setter Property="Header" Value="{Binding Name}" />

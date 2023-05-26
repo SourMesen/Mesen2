@@ -55,7 +55,7 @@ namespace Mesen.Debugger.Controls
 				if(activeAddress >= 0) {
 					int position = (int)(((double)activeAddress.Value / maxAddress) * height) - 2;
 					SolidColorBrush brush = new(ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor);
-					Pen pen = new Pen(Colors.Black.ToUint32());
+					Pen pen = new Pen(Colors.Black.ToUInt32());
 					context.FillRectangle(brush, new Rect(0.5, position - 0.5, width, 3));
 					context.DrawRectangle(pen, new Rect(0.5, position - 0.5, width, 3));
 				}
@@ -68,7 +68,7 @@ namespace Mesen.Debugger.Controls
 							SolidColorBrush brush = new(bp.GetColor());
 							context.FillRectangle(brush, new Rect(0, position, 4, 4));
 						} else {
-							Pen pen = new Pen(bp.GetColor().ToUint32());
+							Pen pen = new Pen(bp.GetColor().ToUInt32());
 							SolidColorBrush brush = new(Colors.White);
 							context.FillRectangle(brush, new Rect(0, position, 4, 4));
 							context.DrawRectangle(pen, new Rect(0.5, position + 0.5, 3, 3));
@@ -80,7 +80,7 @@ namespace Mesen.Debugger.Controls
 				if(activeLine >= 0) {
 					int position = (int)(((double)activeLine.Value / srcModel.SelectedFile.Data.Length) * height) - 2;
 					SolidColorBrush brush = new(ConfigManager.Config.Debug.Debugger.CodeActiveStatementColor);
-					Pen pen = new Pen(Colors.Black.ToUint32());
+					Pen pen = new Pen(Colors.Black.ToUInt32());
 					context.FillRectangle(brush, new Rect(0.5, position - 0.5, width, 3));
 					context.DrawRectangle(pen, new Rect(0.5, position - 0.5, width, 3));
 				}
@@ -93,7 +93,7 @@ namespace Mesen.Debugger.Controls
 							SolidColorBrush brush = new SolidColorBrush(bp.GetColor());
 							context.FillRectangle(brush, new Rect(0, position, 4, 4));
 						} else {
-							Pen pen = new Pen(bp.GetColor().ToUint32());
+							Pen pen = new Pen(bp.GetColor().ToUInt32());
 							context.DrawRectangle(pen, new Rect(0.5, position + 0.5, 3, 3));
 						}
 					}

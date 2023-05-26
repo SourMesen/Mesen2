@@ -105,7 +105,7 @@ namespace Mesen.Windows
 				return;
 			}
 
-			HistoryApi.HistoryViewerInitialize(PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle);
+			HistoryApi.HistoryViewerInitialize(TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, _renderer.Handle);
 			_model.SetCoreOptions();
 			_model.Update();
 			_model.InitActions(this);

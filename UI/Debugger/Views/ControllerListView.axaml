@@ -18,7 +18,7 @@
 	</Design.DataContext>
 
 	<ScrollViewer AllowAutoHide="False">
-		<ItemsControl Items="{CompiledBinding Controllers}" VerticalAlignment="Center">
+		<ItemsControl ItemsSource="{CompiledBinding Controllers}" VerticalAlignment="Center">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel />

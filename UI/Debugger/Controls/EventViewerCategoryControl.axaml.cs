@@ -44,7 +44,7 @@ namespace Mesen.Debugger.Controls
 
 			bool success = await wnd.ShowCenteredDialog<bool>(this);
 			if(success) {
-				Config.Color = model.Color.ToUint32();
+				Config.Color = model.Color.ToUInt32();
 			}
 		}
 	}

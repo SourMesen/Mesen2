@@ -53,7 +53,7 @@ namespace Mesen.Views
 		{
 			Color color = await SelectColor(e.Color);
 			UInt32[] colors = (UInt32[])_model.Config.BgColors.Clone();
-			colors[e.ColorIndex] = color.ToUint32();
+			colors[e.ColorIndex] = color.ToUInt32();
 			_model.Config.BgColors = colors;
 		}
 
@@ -61,7 +61,7 @@ namespace Mesen.Views
 		{
 			Color color = await SelectColor(e.Color);
 			UInt32[] colors = (UInt32[])_model.Config.Obj0Colors.Clone();
-			colors[e.ColorIndex] = color.ToUint32();
+			colors[e.ColorIndex] = color.ToUInt32();
 			_model.Config.Obj0Colors = colors;
 		}
 
@@ -69,7 +69,7 @@ namespace Mesen.Views
 		{
 			Color color = await SelectColor(e.Color);
 			UInt32[] colors = (UInt32[])_model.Config.Obj1Colors.Clone();
-			colors[e.ColorIndex] = color.ToUint32();
+			colors[e.ColorIndex] = color.ToUInt32();
 			_model.Config.Obj1Colors = colors;
 		}
 
@@ -100,9 +100,9 @@ namespace Mesen.Views
 
 		private void SetPalette(Color color0, Color color1, Color color2, Color color3)
 		{
-			_model.Config.BgColors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
-			_model.Config.Obj0Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
-			_model.Config.Obj1Colors = new UInt32[] { color0.ToUint32(), color1.ToUint32(), color2.ToUint32(), color3.ToUint32() };
+			_model.Config.BgColors = new UInt32[] { color0.ToUInt32(), color1.ToUInt32(), color2.ToUInt32(), color3.ToUInt32() };
+			_model.Config.Obj0Colors = new UInt32[] { color0.ToUInt32(), color1.ToUInt32(), color2.ToUInt32(), color3.ToUInt32() };
+			_model.Config.Obj1Colors = new UInt32[] { color0.ToUInt32(), color1.ToUInt32(), color2.ToUInt32(), color3.ToUInt32() };
 		}
 	}
 }

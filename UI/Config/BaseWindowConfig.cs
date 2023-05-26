@@ -103,7 +103,7 @@ namespace Mesen.Config
 				}
 			}
 
-			if(wnd.WindowState == WindowState.Normal && (wnd.Position.X > 0 || wnd.Position.Y > 0) && wnd.PlatformImpl != null && wnd.Width != wnd.Screens.ScreenFromWindow(wnd.PlatformImpl)?.Bounds.Width) {
+			if(wnd.WindowState == WindowState.Normal && (wnd.Position.X > 0 || wnd.Position.Y > 0) && wnd.PlatformImpl != null && wnd.Width != wnd.Screens.ScreenFromWindow(wnd)?.Bounds.Width) {
 				//If window is not maximized/minimized, save current position+size
 				_restoreBounds = new PixelRect(wnd.Position.X, wnd.Position.Y, (int)wnd.Width, (int)wnd.Height);
 			}

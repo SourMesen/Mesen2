@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Dock.Model.ReactiveUI.Controls;
 using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.Localization;

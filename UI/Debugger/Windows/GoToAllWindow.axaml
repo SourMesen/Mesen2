@@ -72,7 +72,7 @@
 			<ListBox
 				Name="lstResults"
 				Background="Transparent"
-				Items="{CompiledBinding SearchResults}"
+				ItemsSource="{CompiledBinding SearchResults}"
 				Selection="{CompiledBinding SelectionModel}"
 				ScrollViewer.AllowAutoHide="False"
 			>

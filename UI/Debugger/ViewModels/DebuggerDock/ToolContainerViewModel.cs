@@ -1,4 +1,4 @@
-﻿using Dock.Model.ReactiveUI.Controls;
+﻿using Dock.Model.Mvvm.Controls;
 using Mesen.Debugger.Utilities;
 using ReactiveUI.Fody.Helpers;
 using System;

@@ -15,7 +15,7 @@ namespace Mesen.Config
 
 		public EventViewerCategoryCfg(Color color)
 		{
-			Color = color.ToUint32();
+			Color = color.ToUInt32();
 		}
 
 		public static implicit operator InteropEventViewerCategoryCfg(EventViewerCategoryCfg cfg)

@@ -114,5 +114,5 @@
 		</DataTemplate>
 	</UserControl.DataTemplates>
 	
-	<ItemsControl DataContext="{Binding, ElementName=root}" Items="{Binding Items}" />
+	<ItemsControl DataContext="{Binding, ElementName=root}" ItemsSource="{Binding Items}" />
 </UserControl>

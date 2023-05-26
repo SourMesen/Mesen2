@@ -2,13 +2,13 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Dock.Model.Core;
-using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Views;
 using Mesen.Interop;
+using Mesen.Utilities;
 using Mesen.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -313,7 +313,7 @@ namespace Mesen.Debugger.ViewModels
 		{
 			DebuggerConfig cfg = Config.Debugger;
 			string code = GetSelection(cfg.CopyAddresses, cfg.CopyByteCode, cfg.CopyComments, cfg.CopyBlockHeaders, out _, false);
-			Application.Current?.Clipboard?.SetTextAsync(code);
+			ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(code);
 		}
 
 		public string GetSelection(bool getAddresses, bool getByteCode, bool getComments, bool getHeaders, out int byteCount, bool skipGeneratedJmpSubLabels)

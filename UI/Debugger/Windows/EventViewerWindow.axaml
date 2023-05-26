@@ -49,9 +49,9 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
-				<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
-				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuItems}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
+				<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuItems}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"

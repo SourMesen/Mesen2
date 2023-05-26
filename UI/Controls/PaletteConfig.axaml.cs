@@ -95,7 +95,7 @@ namespace Mesen.Controls
 			bool success = await wnd.ShowCenteredDialog<bool>(this.GetVisualRoot() as Visual);
 			if(success) {
 				UInt32[] colors = (UInt32[])Palette.Clone();
-				colors[e.ColorIndex] = model.Color.ToUint32();
+				colors[e.ColorIndex] = model.Color.ToUInt32();
 				Palette = colors;
 			}
 		}

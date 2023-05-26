@@ -22,7 +22,7 @@ namespace Mesen.Debugger.Controls
 		public static readonly StyledProperty<int> SelectionStartProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionStart), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 		public static readonly StyledProperty<int> SelectionLengthProperty = AvaloniaProperty.Register<HexEditor, int>(nameof(SelectionLength), 0, defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
-		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamilyName));
+		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<HexEditor, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamily.Name));
 		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<HexEditor, double>(nameof(FontSize), 12);
 
 		public static readonly StyledProperty<bool> ShowStringViewProperty = AvaloniaProperty.Register<HexEditor, bool>(nameof(ShowStringView), false);
@@ -402,12 +402,12 @@ namespace Mesen.Debugger.Controls
 				}
 			}
 
-			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+			ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 
 		public async void PasteSelection()
 		{
-			var clipboard = Application.Current?.Clipboard;
+			var clipboard = ApplicationHelper.GetMainWindow()?.Clipboard;
 			if(clipboard != null) {
 				string? text = await clipboard.GetTextAsync();
 				if(text != null) {
@@ -808,7 +808,7 @@ namespace Mesen.Debugger.Controls
 
 		public override int GetHashCode()
 		{
-			return (int)(this.BackColor.ToUint32() ^ this.BorderColor.ToUint32() ^ this.ForeColor.ToUint32() ^ (this.Selected ? 1 : 0));
+			return (int)(this.BackColor.ToUInt32() ^ this.BorderColor.ToUInt32() ^ this.ForeColor.ToUInt32() ^ (this.Selected ? 1 : 0));
 		}
 	}
 }

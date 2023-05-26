@@ -153,7 +153,7 @@ namespace Mesen.Debugger.ViewModels
 				ColorPickerWindow colorPicker = new ColorPickerWindow() { DataContext = model };
 				bool success = await colorPicker.ShowCenteredDialog<bool>(wnd);
 				if(success) {
-					DebugApi.SetPaletteColor(CpuType, selectedPalette, model.Color.ToUint32());
+					DebugApi.SetPaletteColor(CpuType, selectedPalette, model.Color.ToUInt32());
 					RefreshData();
 				}
 			} else {

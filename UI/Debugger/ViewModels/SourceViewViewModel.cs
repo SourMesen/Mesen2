@@ -14,6 +14,7 @@ using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Utilities;
 using System.Text;
 using Mesen.Debugger.Controls;
+using Mesen.Utilities;
 
 namespace Mesen.Debugger.ViewModels;
 
@@ -193,7 +194,7 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 			for(int i = SelectionStart; i <= SelectionEnd; i++) {
 				sb.AppendLine(SelectedFile.Data[i]);
 			}
-			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+			ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 	}
 

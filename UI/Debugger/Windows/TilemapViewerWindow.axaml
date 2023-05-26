@@ -33,8 +33,8 @@
 	<DockPanel>
 		<Panel DockPanel.Dock="Top">
 			<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-				<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuActions}" />
-				<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuActions}" />
+				<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuActions}" />
+				<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuActions}" />
 			</c:MesenMenu>
 			<c:IconButton
 				HorizontalAlignment="Right"
@@ -86,7 +86,7 @@
 		</ScrollViewer>
 
 		<TabControl
-			Items="{CompiledBinding Tabs}"
+			ItemsSource="{CompiledBinding Tabs}"
 			SelectedItem="{CompiledBinding SelectedTab}"
 			IsVisible="{CompiledBinding ShowTabs}"
 			Padding="1"

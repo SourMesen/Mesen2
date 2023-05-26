@@ -19,7 +19,7 @@ namespace Mesen.Utilities
 		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
 			if(value is SolidColorBrush b && targetType == typeof(UInt32)) {
-				return b.Color.ToUint32();
+				return b.Color.ToUInt32();
 			}
 			return AvaloniaProperty.UnsetValue;
 		}

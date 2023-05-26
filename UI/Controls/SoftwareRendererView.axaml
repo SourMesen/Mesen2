@@ -29,12 +29,14 @@
 			Source="{CompiledBinding EmuHudSurface}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
+			RenderOptions.TextRenderingMode="Alias"
 		/>
 		<c:SimpleImageViewer
 			Name="ScriptHud"
 			Source="{CompiledBinding ScriptHudSurface}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
+			RenderOptions.TextRenderingMode="Alias"
 		/>
 	</Panel>
 </UserControl>

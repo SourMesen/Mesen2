@@ -35,7 +35,7 @@
 		<Border BorderThickness="1" BorderBrush="{StaticResource MesenGrayBorderColor}" Margin="2">
 			<ListBox
 				Name="ListBox"
-				Items="{CompiledBinding FilteredEntries}"
+				ItemsSource="{CompiledBinding FilteredEntries}"
 				Selection="{CompiledBinding SelectionModel}"
 				DoubleTapped="OnDoubleTapped"
 				PointerReleased="OnPointerReleased"

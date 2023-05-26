@@ -30,7 +30,7 @@
 			/>
 		</StackPanel>
 
-		<TabControl Items="{CompiledBinding HelpTabs, ElementName=root}">
+		<TabControl ItemsSource="{CompiledBinding HelpTabs, ElementName=root}">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding Name}" />

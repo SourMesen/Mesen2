@@ -376,7 +376,7 @@ namespace Mesen.Debugger.ViewModels
 				string addrFormat = "X" + lines[i].CpuType.GetAddressSize();
 				sb.AppendLine(lines[i].GetAddressText(AddressDisplayType.CpuAddress, addrFormat).PadRight(6) + " " + lines[i].Text);
 			}
-			Application.Current?.Clipboard?.SetTextAsync(sb.ToString());
+			ApplicationHelper.GetMainWindow()?.Clipboard?.SetTextAsync(sb.ToString());
 		}
 
 		private bool IsRowVisible(int rowNumber)

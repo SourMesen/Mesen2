@@ -1,5 +1,4 @@
-﻿using Dock.Model.ReactiveUI.Controls;
-using Mesen.Debugger.Labels;
+﻿using Mesen.Debugger.Labels;
 using Mesen.Interop;
 using Mesen.ViewModels;
 using ReactiveUI;

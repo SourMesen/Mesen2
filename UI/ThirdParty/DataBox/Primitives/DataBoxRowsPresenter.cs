@@ -15,8 +15,8 @@ public class DataBoxRowsPresenter : ListBox, IStyleable
 	internal DataBox? DataBox { get; set; }
 
 	Type IStyleable.StyleKey => typeof(DataBoxRowsPresenter);
-	
-	protected override Control CreateContainerForItemOverride()
+
+	protected override Control CreateContainerForItemOverride(object? item, int index, object? recycleKey)
 	{
 		return new DataBoxRow {
 			DataBox = DataBox

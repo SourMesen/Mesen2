@@ -231,7 +231,7 @@ public class DataBox : TemplatedControl
         {
             _rowsPresenter.DataBox = this;
 
-            _rowsPresenter[!!ItemsControl.ItemsProperty] = this[!!ItemsProperty];
+            _rowsPresenter[!!ItemsControl.ItemsSourceProperty] = this[!!ItemsProperty];
             _rowsPresenter[!!ListBox.SelectionProperty] = this[!!SelectionProperty];
 
             _rowsPresenter.TemplateApplied += (_, _) =>

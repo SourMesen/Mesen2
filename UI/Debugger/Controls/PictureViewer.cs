@@ -391,7 +391,7 @@ namespace Mesen.Debugger.Controls
 				int gridSizeY = (int)(gridDef.SizeY * Zoom);
 				double gridRestartY = (int)(gridDef.RestartY * Zoom) + 0.5;
 
-				Pen pen = new Pen(gridDef.Color.ToUint32(), 1);
+				Pen pen = new Pen(gridDef.Color.ToUInt32(), 1);
 				double offset = 0.5;
 				for(int i = 1; i <= width / gridSizeX; i++) {
 					double x = i * gridSizeX + offset;
@@ -431,8 +431,7 @@ namespace Mesen.Debugger.Controls
 				context.DrawImage(
 					Source,
 					new Rect(0, 0, (int)Source.Size.Width, (int)Source.Size.Height),
-					new Rect(0, 0, width, height),
-					BitmapInterpolationMode.Default
+					new Rect(0, 0, width, height)
 				);
 			}
 
@@ -473,7 +472,7 @@ namespace Mesen.Debugger.Controls
 
 			if(OverlayLines?.Count > 0) {
 				foreach(PictureViewerLine line in OverlayLines) {
-					Pen pen = new Pen(line.Color.ToUint32(), line.Width ?? 2, line.DashStyle);
+					Pen pen = new Pen(line.Color.ToUInt32(), line.Width ?? 2, line.DashStyle);
 					context.DrawLine(pen, line.Start * Zoom, line.End * Zoom);
 				}
 			}
@@ -579,9 +578,9 @@ namespace Mesen.Debugger.Controls
 			);
 		}
 
-		public void Render(IDrawingContextImpl context)
+		public void Render(ImmediateDrawingContext context)
 		{
-			var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+			var leaseFeature = context.PlatformImpl.GetFeature<ISkiaSharpApiLeaseFeature>();
 			if(leaseFeature != null) {
 				using var lease = leaseFeature.Lease();
 				var canvas = lease.SkCanvas;

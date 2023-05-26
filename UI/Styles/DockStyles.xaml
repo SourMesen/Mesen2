@@ -10,10 +10,17 @@
 		<Setter Property="IsVisible" Value="False" />
 	</Style>
 	<Style Selector="ToolControl /template/ Border#PART_Border">
-		<Setter Property="BorderThickness" Value="1 0 1 0" />
+		<Setter Property="BorderThickness" Value="1 0 1 1" />
+	</Style>
+	<Style Selector="ToolControl /template/ Border#PART_BorderFill">
+		<Setter Property="BorderThickness" Value="0 0 0 0" />
 	</Style>
 	<Style Selector="ToolControl /template/ DockPanel#PART_DockPanel">
 		<Setter Property="Margin" Value="0 0 0 1" />
+	</Style>
+	<Style Selector="ToolControl /template/ ToolTabStrip#PART_TabStrip">
+		<Setter Property="Margin" Value="0 -1 0 0" />
+		<Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
 	</Style>
 	<Style Selector="ToolControl /template/ ToolTabStrip#PART_TabStrip ToolTabStripItem:pointerover">
 		<Setter Property="Background" Value="{DynamicResource MesenDockTabPointerOverBrush}" />
@@ -66,8 +73,7 @@
 										  Command="{Binding Owner.Factory.CloseDockable}"
 										  CommandParameter="{Binding ActiveDockable}"
 										  IsVisible="{Binding ActiveDockable.CanClose, FallbackValue=False}"
-										  DockPanel.Dock="Right"
-										  x:CompileBindings="False">
+										  DockPanel.Dock="Right">
 									<Viewbox>
 										<Path x:Name="PART_ClosePath" />
 									</Viewbox>
@@ -76,8 +82,7 @@
 										  Command="{Binding Owner.Factory.PinDockable}"
 										  CommandParameter="{Binding ActiveDockable}"
 										  IsVisible="{Binding ActiveDockable.CanPin, FallbackValue=False}"
-										  DockPanel.Dock="Right"
-										  x:CompileBindings="False">
+										  DockPanel.Dock="Right">
 									<Viewbox>
 										<Path x:Name="PART_PinPath" />
 									</Viewbox>

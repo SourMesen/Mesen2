@@ -20,7 +20,7 @@ namespace Mesen.Debugger.Controls
 
 		public static readonly StyledProperty<string> SearchStringProperty = AvaloniaProperty.Register<DisassemblyViewer, string>(nameof(SearchString), string.Empty);
 
-		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamilyName));
+		public static readonly StyledProperty<FontFamily> FontFamilyProperty = AvaloniaProperty.Register<DisassemblyViewer, FontFamily>(nameof(FontFamily), new FontFamily(FontManager.Current.DefaultFontFamily.Name));
 		public static readonly StyledProperty<double> FontSizeProperty = AvaloniaProperty.Register<DisassemblyViewer, double>(nameof(FontSize), 12);
 		public static readonly StyledProperty<bool> ShowByteCodeProperty = AvaloniaProperty.Register<DisassemblyViewer, bool>(nameof(ShowByteCode), false);
 		public static readonly StyledProperty<AddressDisplayType> AddressDisplayTypeProperty = AvaloniaProperty.Register<DisassemblyViewer, AddressDisplayType>(nameof(AddressDisplayType), AddressDisplayType.CpuAddress);
@@ -309,8 +309,8 @@ namespace Mesen.Debugger.Controls
 					if(lineStyle.TextBgColor.HasValue || lineStyle.OutlineColor.HasValue) {
 						text = FormatText(GetHighlightedText(line, lineParts, out double leftMargin));
 
-						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUint32()) : null;
-						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
+						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUInt32()) : null;
+						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
 						if(b != null) {
 							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.WidthIncludingTrailingWhitespace), Math.Round(LetterSize.Height) - 1));
 						}
@@ -435,12 +435,12 @@ namespace Mesen.Debugger.Controls
 					using var scale = context.PushTransform(Matrix.CreateScale(0.85, 0.85));
 					EllipseGeometry geometry = new EllipseGeometry(new Rect(0, 0, LetterSize.Height, LetterSize.Height));
 					IBrush? b = lineStyle.Symbol.HasFlag(LineSymbol.Circle) ? new SolidColorBrush(lineStyle.OutlineColor.Value) : null;
-					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUint32()) : null;
+					IPen? p = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
 					context.DrawGeometry(b, p, geometry);
 
 					if(lineStyle.Symbol.HasFlag(LineSymbol.Plus)) {
 						Color c = lineStyle.Symbol.HasFlag(LineSymbol.CircleOutline) ? lineStyle.OutlineColor.Value : Colors.White;
-						p = new Pen(c.ToUint32(), 2);
+						p = new Pen(c.ToUInt32(), 2);
 						context.DrawLine(p, new Point(2, LetterSize.Height / 2), new Point(LetterSize.Height - 2, LetterSize.Height / 2));
 						context.DrawLine(p, new Point(LetterSize.Height / 2, 2), new Point(LetterSize.Height / 2, LetterSize.Height - 2));
 					}

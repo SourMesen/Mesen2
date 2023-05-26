@@ -16,6 +16,7 @@ using Mesen.Interop;
 using Splat.ModeDetection;
 using Mesen.ViewModels;
 using ReactiveUI.Fody.Helpers;
+using Avalonia.Media;
 
 namespace Mesen.Controls
 {
@@ -71,7 +72,7 @@ namespace Mesen.Controls
 			UpdateSurface(frameInfo.ScriptHud, _model.ScriptHudSurface, s => _model.ScriptHudSurface = s);
 
 			Dispatcher.UIThread.Post(() => {
-				_frame.InterpolationMode = ConfigManager.Config.Video.UseBilinearInterpolation ? BitmapInterpolationMode.LowQuality : BitmapInterpolationMode.Default;
+				RenderOptions.SetBitmapInterpolationMode(_frame, ConfigManager.Config.Video.UseBilinearInterpolation ? BitmapInterpolationMode.LowQuality : BitmapInterpolationMode.None);
 				_frame.InvalidateVisual();
 				_emuHud.InvalidateVisual();
 				_scriptHud.InvalidateVisual();

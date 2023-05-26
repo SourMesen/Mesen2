@@ -1,5 +1,4 @@
-﻿using Dock.Model.ReactiveUI.Controls;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

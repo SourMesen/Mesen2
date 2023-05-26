@@ -169,7 +169,7 @@
 					</c:OptionSection>
 
 					<c:OptionSection Header="{l:Translate lblFontSettings}">
-						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto" Margin="0 0 0 5" IsVisible="False">
+						<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto" Margin="0 0 0 5">
 							<TextBlock Text="{l:Translate lblFontAntialiasing}" />
 							<StackPanel Orientation="Horizontal" Grid.Column="1" >
 								<c:EnumComboBox

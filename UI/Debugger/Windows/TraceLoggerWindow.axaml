@@ -36,10 +36,10 @@
 
 	<DockPanel Margin="2">
 		<c:MesenMenu DockPanel.Dock="Top" Name="ActionMenu">
-			<MenuItem Header="{l:Translate mnuFile}" Items="{CompiledBinding FileMenuItems}" />
-			<MenuItem Header="{l:Translate mnuDebug}" Items="{CompiledBinding DebugMenuItems}" />
-			<MenuItem Header="{l:Translate mnuSearch}" Items="{CompiledBinding SearchMenuItems}" />
-			<MenuItem Header="{l:Translate mnuView}" Items="{CompiledBinding ViewMenuItems}" />
+			<MenuItem Header="{l:Translate mnuFile}" ItemsSource="{CompiledBinding FileMenuItems}" />
+			<MenuItem Header="{l:Translate mnuDebug}" ItemsSource="{CompiledBinding DebugMenuItems}" />
+			<MenuItem Header="{l:Translate mnuSearch}" ItemsSource="{CompiledBinding SearchMenuItems}" />
+			<MenuItem Header="{l:Translate mnuView}" ItemsSource="{CompiledBinding ViewMenuItems}" />
 		</c:MesenMenu>
 
 		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" IsVisible="{CompiledBinding Config.ShowToolbar}">
@@ -78,7 +78,7 @@
 			/>
 		</Grid>
 		
-		<TabControl Items="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1" DockPanel.Dock="Bottom">
+		<TabControl ItemsSource="{CompiledBinding Tabs}" SelectedItem="{CompiledBinding SelectedTab}" Padding="1" DockPanel.Dock="Bottom">
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">

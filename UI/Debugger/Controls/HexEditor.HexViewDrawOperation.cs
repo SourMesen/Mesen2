@@ -62,9 +62,9 @@ namespace Mesen.Debugger.Controls
 
 				foreach(ByteInfo byteInfo in dataToDraw) {
 					if(!_skFillPaints.ContainsKey(byteInfo.BackColor)) {
-						_skFillPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUint32()) };
+						_skFillPaints[byteInfo.BackColor] = new SKPaint() { Color = new SKColor(ColorHelper.GetColor(byteInfo.BackColor).ToUInt32()) };
 					} else if(!_skBorderPaints.ContainsKey(byteInfo.BorderColor)) {
-						_skBorderPaints[byteInfo.BorderColor] = new SKPaint() { Style = SKPaintStyle.Stroke, Color = new SKColor(ColorHelper.GetColor(byteInfo.BorderColor).ToUint32()) };
+						_skBorderPaints[byteInfo.BorderColor] = new SKPaint() { Style = SKPaintStyle.Stroke, Color = new SKColor(ColorHelper.GetColor(byteInfo.BorderColor).ToUInt32()) };
 					}
 				}
 			}
@@ -88,9 +88,9 @@ namespace Mesen.Debugger.Controls
 			public bool Equals(ICustomDrawOperation? other) => false;
 			public bool HitTest(Point p) => false;
 
-			public void Render(IDrawingContextImpl context)
+			public void Render(ImmediateDrawingContext context)
 			{
-				var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+				var leaseFeature = context.PlatformImpl.GetFeature<ISkiaSharpApiLeaseFeature>();
 				using var lease = leaseFeature?.Lease();
 				var canvas = lease?.SkCanvas;
 				if(canvas == null) {
@@ -119,7 +119,7 @@ namespace Mesen.Debugger.Controls
 			private void DrawHexView(SKCanvas canvas, Color color)
 			{
 				SKPaint paint = new SKPaint();
-				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
+				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUInt32());
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont font = new SKFont(typeface, _fontSize);
@@ -227,7 +227,7 @@ namespace Mesen.Debugger.Controls
 			private void DrawStringView(SKCanvas canvas, Color color)
 			{
 				SKPaint paint = new SKPaint();
-				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUint32());
+				paint.Color = new SKColor(ColorHelper.GetColor(color).ToUInt32());
 
 				SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 				SKFont monoFont = new SKFont(typeface, _fontSize);
@@ -453,9 +453,9 @@ namespace Mesen.Debugger.Controls
 			public bool Equals(ICustomDrawOperation? other) => false;
 			public bool HitTest(Point p) => false;
 
-			public void Render(IDrawingContextImpl context)
+			public void Render(ImmediateDrawingContext context)
 			{
-				var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+				var leaseFeature = context.PlatformImpl.GetFeature<ISkiaSharpApiLeaseFeature>();
 				using var lease = leaseFeature?.Lease();
 				var canvas = lease?.SkCanvas;
 				if(canvas == null) {
@@ -466,7 +466,7 @@ namespace Mesen.Debugger.Controls
 					canvas.Translate(0, 0);
 
 					SKPaint paint = new SKPaint();
-					paint.Color = new SKColor(ColorHelper.GetColor(_headerForeground).ToUint32());
+					paint.Color = new SKColor(ColorHelper.GetColor(_headerForeground).ToUInt32());
 
 					SKTypeface typeface = SKTypeface.FromFamilyName(_fontFamily);
 					SKFont font = new SKFont(typeface, _fontSize);

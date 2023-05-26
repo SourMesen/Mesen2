@@ -205,7 +205,7 @@ namespace Mesen.Windows
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
 				_cmdLine = cmdLine;
 
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, PlatformImpl?.Handle.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
+				EmuApi.InitializeEmu(ConfigManager.HomeFolder, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
 
 				ConfigManager.Config.RemoveObsoleteConfig();
 				
@@ -490,7 +490,7 @@ namespace Mesen.Windows
 					WindowState = WindowState.FullScreen;
 
 					Task.Run(() => {
-						EmuApi.SetExclusiveFullscreenMode(true, PlatformImpl?.Handle.Handle ?? IntPtr.Zero);
+						EmuApi.SetExclusiveFullscreenMode(true, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero);
 						_preventFullscreenToggle = false;
 					});
 				} else {

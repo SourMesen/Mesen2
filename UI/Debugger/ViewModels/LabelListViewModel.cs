@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Media;
 using DataBoxControl;
-using Dock.Model.ReactiveUI.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;

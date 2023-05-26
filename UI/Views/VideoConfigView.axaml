@@ -64,14 +64,14 @@
 									<ComboBox
 										Grid.Row="1" Grid.Column="1"
 										SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRateNtsc}"
-										Items="{CompiledBinding AvailableRefreshRates}"
+										ItemsSource="{CompiledBinding AvailableRefreshRates}"
 									/>
 
 									<TextBlock Grid.Row="2" Grid.Column="0" Text="{l:Translate lblRequestedRefreshRatePal}" />
 									<ComboBox
 										Grid.Row="2" Grid.Column="1"
 										SelectedItem="{CompiledBinding Config.ExclusiveFullscreenRefreshRatePal}"
-										Items="{CompiledBinding AvailableRefreshRates}"
+										ItemsSource="{CompiledBinding AvailableRefreshRates}"
 									/>
 								</Grid>
 							</StackPanel>

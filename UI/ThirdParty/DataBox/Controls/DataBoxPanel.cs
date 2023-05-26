@@ -9,7 +9,7 @@ using DataBoxControl.Primitives.Layout;
 
 namespace DataBoxControl.Controls;
 
-public class DataBoxPanel : MesenVirtualizingStackPanel, IStyleable
+public class DataBoxPanel : VirtualizingStackPanel, IStyleable
 {
 	Type IStyleable.StyleKey => typeof(DataBoxPanel);
 

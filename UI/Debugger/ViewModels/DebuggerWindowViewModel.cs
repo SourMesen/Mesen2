@@ -3,7 +3,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Dock.Model.Controls;
 using Dock.Model.Core;
-using Dock.Model.ReactiveUI.Controls;
+using Dock.Model.Mvvm.Controls;
 using Mesen.Config;
 using Mesen.Debugger.Disassembly;
 using Mesen.Debugger.Integration;
