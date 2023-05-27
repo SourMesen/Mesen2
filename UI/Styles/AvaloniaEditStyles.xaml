@@ -55,6 +55,12 @@
 			<ControlTemplate>
 				<Border BorderBrush="Gray" BorderThickness="1">
 					<cc:CompletionListBox Name="PART_ListBox" FontSize="11">
+						<cc:CompletionListBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<!-- Disable virtualization for auto-complete popup to prevent display bugs -->
+								<StackPanel />
+							</ItemsPanelTemplate>
+						</cc:CompletionListBox.ItemsPanel>
 						<cc:CompletionListBox.ItemTemplate>
 							<DataTemplate>
 								<StackPanel Orientation="Horizontal" Margin="0">
