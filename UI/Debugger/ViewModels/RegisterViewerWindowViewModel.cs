@@ -942,6 +942,8 @@ namespace Mesen.Debugger.ViewModels
 			AluState alu = state.Alu;
 
 			List<RegEntry> entries = new List<RegEntry>() {
+				new RegEntry("$2181 - $2183", "Work RAM Position", state.WramPosition, Format.X24),
+
 				new RegEntry("$4200 - $4201", "IRQ/NMI/Autopoll Enabled"),
 				new RegEntry("$4200.0", "Auto Joypad Poll", regs.EnableAutoJoypadRead),
 				new RegEntry("$4200.4", "H IRQ Enabled", regs.EnableHorizontalIrq),

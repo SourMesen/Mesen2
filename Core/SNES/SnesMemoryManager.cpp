@@ -413,6 +413,11 @@ bool SnesMemoryManager::IsWorkRam(uint32_t cpuAddress)
 	return handler && handler->GetMemoryType() == MemoryType::SnesWorkRam;
 }
 
+uint32_t SnesMemoryManager::GetWramPosition()
+{
+	return _registerHandlerB->GetWramPosition();
+}
+
 void SnesMemoryManager::Serialize(Serializer &s)
 {
 	SV(_masterClock); SV(_openBus); SV(_cpuSpeed); SV(_hClock); SV(_dramRefreshPosition);

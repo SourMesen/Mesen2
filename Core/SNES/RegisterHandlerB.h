@@ -34,6 +34,8 @@ public:
 	void Write(uint32_t addr, uint8_t value) override;
 
 	AddressInfo GetAbsoluteAddress(uint32_t address) override;
+	
+	uint32_t GetWramPosition();
 
 	void Serialize(Serializer &s) override;
 };

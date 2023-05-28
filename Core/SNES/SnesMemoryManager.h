@@ -103,5 +103,7 @@ public:
 	bool IsRegister(uint32_t cpuAddress);
 	bool IsWorkRam(uint32_t cpuAddress);
 
+	uint32_t GetWramPosition();
+
 	void Serialize(Serializer &s) override;
 };

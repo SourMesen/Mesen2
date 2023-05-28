@@ -27,4 +27,6 @@ struct SnesState
 	SnesDmaControllerState Dma;
 	InternalRegisterState InternalRegs;
 	AluState Alu;
+
+	uint32_t WramPosition;
 };

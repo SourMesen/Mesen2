@@ -1010,6 +1010,8 @@ namespace Mesen.Interop
 		public SnesDmaControllerState Dma;
 		public InternalRegisterState InternalRegs;
 		public AluState Alu;
+
+		public UInt32 WramPosition;
 	}
 
 	public struct EmptyPpuToolsState : BaseState

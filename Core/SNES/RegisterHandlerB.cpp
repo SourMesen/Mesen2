@@ -61,7 +61,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 {
 	addr &= 0xFFFF;
 	if(addr >= 0x2140 && addr <= 0x217F) {
-		return _spc->CpuWriteRegister(addr & 0x03, value);
+		_spc->CpuWriteRegister(addr & 0x03, value);
 	} if(addr >= 0x2180 && addr <= 0x2183) {
 		switch(addr & 0xFFFF) {
 			case 0x2180:
@@ -78,7 +78,7 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 	} else if(addr >= 0x2200 && addr <= 0x22FF && _console->GetCartridge()->GetSa1()) {
 		_console->GetCartridge()->GetSa1()->CpuRegisterWrite(addr, value);
 	} else if(_msu1 && addr <= 0x2007) {
-		return _msu1->Write(addr, value);
+		_msu1->Write(addr, value);
 	} else {
 		_ppu->Write(addr, value);
 	}
@@ -87,6 +87,11 @@ void RegisterHandlerB::Write(uint32_t addr, uint8_t value)
 AddressInfo RegisterHandlerB::GetAbsoluteAddress(uint32_t address)
 {
 	return { -1, MemoryType::SnesMemory };
+}
+
+uint32_t RegisterHandlerB::GetWramPosition()
+{
+	return _wramPosition;
 }
 
 void RegisterHandlerB::Serialize(Serializer &s)

@@ -513,6 +513,7 @@ void SnesConsole::GetConsoleState(BaseState& baseState, ConsoleType consoleType)
 
 	SnesState& state = (SnesState&)baseState;
 	state.MasterClock = GetMasterClock();
+	state.WramPosition = _memoryManager->GetWramPosition();
 	state.Cpu = _cpu->GetState();
 	_ppu->GetState(state.Ppu, false);
 	state.Spc = _spc->GetState();
