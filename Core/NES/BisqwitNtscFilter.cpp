@@ -15,16 +15,25 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 	_stopThread = false;
 	_workDone = false;
 
-	const int8_t signalLumaLow[2][4] = { { -29, -15, 22, 71 }, { -38, -28, -1, 34 } };
-	const int8_t signalLumaHigh[2][4] = { { 32, 66, 105, 105 }, { 6, 31, 58, 58 } };
+	// from https ://forums.nesdev.org/viewtopic.php?p=159266#p159266
+	const double signalLumaLow[2][4] = {
+		{ 0.228, 0.312, 0.552, 0.880 },
+		{ 0.192, 0.256, 0.448, 0.712 }
+	};
+	const double signalLumaHigh[2][4] = {
+		{ 0.616, 0.840, 1.100, 1.100 },
+		{ 0.500, 0.676, 0.896, 0.896 }
+	};
+	double signal_blank = signalLumaLow[0][1];
+	double signal_white = signalLumaHigh[0][3];
 
 	//Precalculate the low and high signal chosen for each 64 base colors
 	//with their respective attenuated values
 	for(int h = 0; h <= 1; h++) {
 		for(int i = 0; i <= 0x3F; i++) {
 
-			int m = signalLumaLow[h][i / 0x10];
-			int q = signalLumaHigh[h][i / 0x10];
+			double m = signalLumaLow[h][i / 0x10];
+			double q = signalLumaHigh[h][i / 0x10];
 
 			if((i & 0x0F) == 0x0D) {
 				q = m;
@@ -37,8 +46,8 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 				q = signalLumaLow[0][1];
 			}
 
-			_signalLow[(h ? 0x40 : 0) | i] = m;
-			_signalHigh[(h ? 0x40 : 0) | i] = q;
+			_signalLow[(h ? 0x40 : 0) | i] = int8_t(std::floor(((m - signal_blank) / (signal_white - signal_blank)) * 100));
+			_signalHigh[(h ? 0x40 : 0) | i] = int8_t(std::floor(((q - signal_blank) / (signal_white - signal_blank)) * 100));
 		}
 	}
 
@@ -243,15 +252,13 @@ void BisqwitNtscFilter::DecodeFrame(int startRow, int endRow, uint16_t *ppuOutpu
 *        For a 256 pixels wide screen, this would be 256*8. 283*8 if you include borders.
 *
 * Signal: An array of Width samples.
-*         The following sample values are recognized:
-*          -29 = Luma 0 low   32 = Luma 0 high (-38 and  6 when attenuated)
-*          -15 = Luma 1 low   66 = Luma 1 high (-28 and 31 when attenuated)
-*           22 = Luma 2 low  105 = Luma 2 high ( -1 and 58 when attenuated)
-*           71 = Luma 3 low  105 = Luma 3 high ( 34 and 58 when attenuated)
-*         In this scale, sync signal would be -59 and colorburst would be -40 and 19,
-*         but these are not interpreted specially in this function.
-*         The value is calculated from the relative voltage with:
-*                   floor((voltage-0.518)*1000/12)-15
+*         Sample values are scaled such that black = 0 and white = 100.
+*         The values are calculated from the set of terminated voltage measurements by lidnariq
+*         with the following formula:
+*                   floor(((voltage - signal_blank) / (signal_white - signal_blank)) * 100)
+*         Where:
+*                   signal_blank = unemphasized $0D = 0.312
+*                   signal_white = unemphasized $20 = 1.100
 *
 * Target: Pointer to a storage for Width RGB32 samples (00rrggbb).
 *         Note that the function will produce a RGB32 value for _every_ half-clock-cycle.
