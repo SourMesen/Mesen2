@@ -63,11 +63,11 @@ namespace Mesen.Utilities
 				}
 				filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
-			IReadOnlyList<IStorageFile> files = await wnd.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions() {
-				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null,
-				AllowMultiple = false,
-				FileTypeFilter = filter
-			});
+				IReadOnlyList<IStorageFile> files = await wnd.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions() {
+					SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null,
+					AllowMultiple = false,
+					FileTypeFilter = filter
+				});
 
 				if(files.Count > 0) {
 					return files[0].Path.LocalPath;
@@ -91,13 +91,19 @@ namespace Mesen.Utilities
 				}
 				filter.Add(new FilePickerFileType("All files") { Patterns = new List<string>() { "*" } });
 
-			IStorageFile? file = await wnd.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions() {
-				SuggestedStartLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null,
-				DefaultExtension = extensions[0],
-				ShowOverwritePrompt = true,
-				SuggestedFileName = initialFile,
-				FileTypeChoices = filter
-			});
+				IStorageFolder? startLocation = initialFolder != null ? await wnd.StorageProvider.TryGetFolderFromPathAsync(initialFolder) : null;
+				if(OperatingSystem.IsLinux()) {
+					//TODOv2 - setting a start location appears to cause crashes on Linux (dbus crash), force it to null for now
+					startLocation = null;
+				}
+
+				IStorageFile? file = await wnd.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions() {
+					SuggestedStartLocation = startLocation,
+					DefaultExtension = extensions[0],
+					ShowOverwritePrompt = true,
+					SuggestedFileName = initialFile,
+					FileTypeChoices = filter
+				});
 
 				if(file != null) {
 					return file.Path.LocalPath;
