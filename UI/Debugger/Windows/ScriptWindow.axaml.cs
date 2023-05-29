@@ -34,7 +34,7 @@ namespace Mesen.Debugger.Windows
 		private static XshdSyntaxDefinition _syntaxDef;
 		private IHighlightingDefinition _highlighting;
 		private MesenTextEditor _textEditor;
-		private TextBox _txtScriptLog;
+		private MesenTextEditor _txtScriptLog;
 		private DispatcherTimer _timer;
 		private ScriptWindowViewModel _model;
 
@@ -66,7 +66,7 @@ namespace Mesen.Debugger.Windows
 			_textEditor.TextArea.TextEntering += TextArea_TextEntering;
 			_textEditor.TextArea.TextView.PointerMoved += TextView_PointerMoved;
 
-			_txtScriptLog = this.GetControl<TextBox>("txtScriptLog");
+			_txtScriptLog = this.GetControl<MesenTextEditor>("txtScriptLog");
 			_timer = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => UpdateLog());
 
 			if(Design.IsDesignMode) {
@@ -133,7 +133,7 @@ namespace Mesen.Debugger.Windows
 				string log = DebugApi.GetScriptLog(_model.ScriptId);
 				if(log != _model.Log) {
 					_model.Log = log;
-					_txtScriptLog.CaretIndex = Int32.MaxValue;
+					_txtScriptLog.ScrollToEnd();
 				}
 			}
 		}
