@@ -64,6 +64,7 @@
 	  <None Remove="Debugger\Utilities\LuaScripts\NesDmcCapture.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\NesGameBoyMode.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\NesLogParallax.lua" />
+	  <None Remove="Debugger\Utilities\LuaScripts\NesPianoRoll.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\NesSpriteBox.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\ReverseMode.lua" />
@@ -551,6 +552,7 @@
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesLogParallax.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesSpriteBox.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesPianoRoll.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\ReverseMode.lua" />
     <EmbeddedResource Include="Dependencies.zip" />
     <EmbeddedResource Include="Localization\resources.en.xml" WithCulture="false" Type="Non-Resx" />
