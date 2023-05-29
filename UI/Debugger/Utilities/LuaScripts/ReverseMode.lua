@@ -11,11 +11,12 @@ function Main()
   input = emu.getInput(0)
   input.left, input.right = input.right, input.left
   emu.setInput(input, 0)
+  local size = emu.getScreenSize()
   bufferI = emu.getScreenBuffer()
-  for y = 0, 239 do
-    local offset = y*256;
-    for x = 0, 255 do
-      bufferO[offset + x] = bufferI[offset + 255 - x]
+  for y = 0, size.height do
+    local offset = y*size.width;
+    for x = 1, size.width do
+      bufferO[offset + x] = bufferI[offset + size.width - x + 1]
     end
   end
   emu.setScreenBuffer(bufferO)
