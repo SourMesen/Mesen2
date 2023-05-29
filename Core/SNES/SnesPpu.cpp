@@ -64,6 +64,10 @@ void SnesPpu::PowerOn()
 
 	_console->InitializeRam(_vram, SnesPpu::VideoRamSize);
 	_console->InitializeRam(_cgram, SnesPpu::CgRamSize);
+	for(int i = 0; i < SnesPpu::CgRamSize / 2; i++) {
+		_cgram[i] &= 0x7FFF;
+	}
+
 	_console->InitializeRam(_oamRam, SnesPpu::SpriteRamSize);
 
 	memset(_spriteIndexes, 0xFF, sizeof(_spriteIndexes));

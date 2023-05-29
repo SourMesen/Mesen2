@@ -228,6 +228,14 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);
 			if(src) {
+				//TODOv2 find a cleaner way to implement this
+				//Prevent invalid memory values
+				switch(memoryType) {
+					case MemoryType::SnesCgRam: if(address & 0x01) value &= 0x7F; break;
+					case MemoryType::NesPaletteRam: value &= 0x3F; break;
+					case MemoryType::PcePaletteRam: if(address & 0x01) value &= 0x01; break;
+				}
+
 				src[address] = value;
 				invalidateCache();
 			}
