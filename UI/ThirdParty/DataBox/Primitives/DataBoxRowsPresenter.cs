@@ -10,11 +10,11 @@ using Avalonia.VisualTree;
 
 namespace DataBoxControl.Primitives;
 
-public class DataBoxRowsPresenter : ListBox, IStyleable
+public class DataBoxRowsPresenter : ListBox
 {
 	internal DataBox? DataBox { get; set; }
 
-	Type IStyleable.StyleKey => typeof(DataBoxRowsPresenter);
+	protected override Type StyleKeyOverride => typeof(DataBoxRowsPresenter);
 
 	protected override Control CreateContainerForItemOverride(object? item, int index, object? recycleKey)
 	{

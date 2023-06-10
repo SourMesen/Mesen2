@@ -9,9 +9,9 @@ using DataBoxControl.Primitives.Layout;
 
 namespace DataBoxControl.Controls;
 
-public class DataBoxPanel : VirtualizingStackPanel, IStyleable
+public class DataBoxPanel : VirtualizingStackPanel
 {
-	Type IStyleable.StyleKey => typeof(DataBoxPanel);
+	protected override Type StyleKeyOverride => typeof(DataBoxPanel);
 
 	internal DataBox? DataBox { get; set; }
 	

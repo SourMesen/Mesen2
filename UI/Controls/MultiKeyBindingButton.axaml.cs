@@ -11,9 +11,9 @@ using System;
 
 namespace Mesen.Controls
 {
-	public class MultiKeyBindingButton : Button, IStyleable
+	public class MultiKeyBindingButton : Button
 	{
-		Type IStyleable.StyleKey => typeof(Button);
+		protected override Type StyleKeyOverride => typeof(Button);
 
 		public static readonly StyledProperty<KeyCombination> KeyBindingProperty = AvaloniaProperty.Register<KeyBindingButton, KeyCombination>(nameof(KeyBinding), new KeyCombination(), false, Avalonia.Data.BindingMode.TwoWay);
 

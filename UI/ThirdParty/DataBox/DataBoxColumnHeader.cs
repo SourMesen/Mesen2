@@ -17,7 +17,7 @@ using DataBoxControl.Controls;
 namespace DataBoxControl;
 
 [PseudoClasses(":pressed", ":sortascending", ":sortdescending")]
-public class DataBoxColumnHeader : ContentControl, IStyleable
+public class DataBoxColumnHeader : ContentControl
 {
     public static readonly StyledProperty<IBrush?> SeparatorBrushProperty =
         AvaloniaProperty.Register<DataBoxColumnHeader, IBrush?>(nameof(SeparatorBrush));
@@ -39,7 +39,7 @@ public class DataBoxColumnHeader : ContentControl, IStyleable
         UpdatePseudoClassesIsPressed(IsPressed);
     }
 
-    Type IStyleable.StyleKey => typeof(DataBoxColumnHeader);
+    protected override Type StyleKeyOverride => typeof(DataBoxColumnHeader);
 
     internal DataBox? DataBox { get; set; }
 

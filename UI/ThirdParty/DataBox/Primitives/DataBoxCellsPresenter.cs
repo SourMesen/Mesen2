@@ -11,9 +11,9 @@ using DataBoxControl.Primitives.Layout;
 
 namespace DataBoxControl.Primitives;
 
-public class DataBoxCellsPresenter : Panel, IStyleable
+public class DataBoxCellsPresenter : Panel
 {
-    Type IStyleable.StyleKey => typeof(DataBoxCellsPresenter);
+    protected override Type StyleKeyOverride => typeof(DataBoxCellsPresenter);
 
     internal DataBox? DataBox { get; set; }
 

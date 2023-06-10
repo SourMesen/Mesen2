@@ -95,9 +95,9 @@ namespace Mesen.Debugger.Views
 		}
 	}
 
-	public class WatchListTextBox : TextBox, IStyleable
+	public class WatchListTextBox : TextBox
 	{
-		Type IStyleable.StyleKey => typeof(TextBox);
+		protected override Type StyleKeyOverride => typeof(TextBox);
 
 		private WatchListView? _listView;
 		private bool _inOnGotFocus = false;

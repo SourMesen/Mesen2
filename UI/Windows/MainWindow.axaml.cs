@@ -103,8 +103,12 @@ namespace Mesen.Windows
 
 		private static void InitGlobalShortcuts()
 		{
-			PlatformHotkeyConfiguration hotkeyConfig = AvaloniaLocator.Current.GetRequiredService<PlatformHotkeyConfiguration>();
-			List<KeyGesture> gestures = hotkeyConfig.OpenContextMenu;
+			if(Application.Current?.PlatformSettings == null) {
+				return;
+			}
+
+			PlatformHotkeyConfiguration hotkeyConfig = Application.Current.PlatformSettings.HotkeyConfiguration;
+			List <KeyGesture> gestures = hotkeyConfig.OpenContextMenu;
 			for(int i = gestures.Count - 1; i >= 0; i--) {
 				if(gestures[i].Key == Key.F10 && gestures[i].KeyModifiers == KeyModifiers.Shift) {
 					//Disable Shift-F10 shortcut to open context menu - interferes with default shortcut for step back
