@@ -164,6 +164,26 @@
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>
+				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
+				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>COLOR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegColor}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<WrapPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagPlotTransparent}" Content="PlotTransparent" />
+							<CheckBox IsChecked="{CompiledBinding FlagPlotDither}" Content="PlotDither" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagColorHighNibble}" Content="ColorSrcHigh" />
+							<CheckBox IsChecked="{CompiledBinding FlagColorFreezeHigh}" Content="ColorFreezeHigh" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagObjMode}" Content="ObjMode" />
+						</StackPanel>
+					</WrapPanel>
+				</WrapPanel>
 			</StackPanel>
 		</DockPanel>
 	</ScrollViewer>

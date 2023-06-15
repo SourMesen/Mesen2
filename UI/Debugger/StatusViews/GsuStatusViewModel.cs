@@ -30,6 +30,7 @@ namespace Mesen.Debugger.StatusViews
 
 		[Reactive] public byte RegSrc { get; set; }
 		[Reactive] public byte RegDst { get; set; }
+		[Reactive] public byte RegColor { get; set; }
 
 		[Reactive] public byte RegPbr { get; set; }
 		[Reactive] public byte RomBank { get; set; }
@@ -49,6 +50,12 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public bool FlagImmLow { get; set; }
 		[Reactive] public bool FlagImmHigh { get; set; }
 		[Reactive] public bool FlagPrefix { get; set; }
+
+		[Reactive] public bool FlagPlotTransparent { get; set; }
+		[Reactive] public bool FlagPlotDither { get; set; }
+		[Reactive] public bool FlagColorHighNibble { get; set; }
+		[Reactive] public bool FlagColorFreezeHigh { get; set; }
+		[Reactive] public bool FlagObjMode { get; set; }
 
 		public GsuStatusViewModel()
 		{
@@ -100,6 +107,7 @@ namespace Mesen.Debugger.StatusViews
 
 			RegSrc = cpu.SrcReg;
 			RegDst = cpu.DestReg;
+			RegColor = cpu.ColorReg;
 			RegPbr = cpu.ProgramBank;
 			RomBank = cpu.RomBank;
 			RamBank = cpu.RamBank;
@@ -116,6 +124,12 @@ namespace Mesen.Debugger.StatusViews
 			FlagImmHigh = cpu.SFR.ImmHigh;
 			FlagPrefix = cpu.SFR.Prefix;
 			FlagIrq = cpu.SFR.Irq;
+
+			FlagPlotTransparent = cpu.PlotTransparent;
+			FlagPlotDither = cpu.PlotDither;
+			FlagColorHighNibble = cpu.ColorHighNibble;
+			FlagColorFreezeHigh = cpu.ColorFreezeHigh;
+			FlagObjMode = cpu.ObjMode;
 		}
 
 		protected override void InternalUpdateConsoleState()
@@ -141,6 +155,7 @@ namespace Mesen.Debugger.StatusViews
 
 			cpu.SrcReg = RegSrc;
 			cpu.DestReg = RegDst;
+			cpu.ColorReg = RegColor;
 			cpu.ProgramBank = RegPbr;
 			cpu.RomBank = RomBank;
 			cpu.RamBank = RamBank;
@@ -157,6 +172,12 @@ namespace Mesen.Debugger.StatusViews
 			cpu.SFR.ImmHigh = FlagImmHigh;
 			cpu.SFR.Prefix = FlagPrefix;
 			cpu.SFR.Irq = FlagIrq;
+
+			cpu.PlotTransparent = FlagPlotTransparent;
+			cpu.PlotDither = FlagPlotDither;
+			cpu.ColorHighNibble = FlagColorHighNibble;
+			cpu.ColorFreezeHigh = FlagColorFreezeHigh;
+			cpu.ObjMode = FlagObjMode;
 
 			DebugApi.SetCpuState(cpu, CpuType.Gsu);
 		}
