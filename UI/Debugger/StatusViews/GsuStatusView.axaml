@@ -115,7 +115,7 @@
 					</StackPanel>
 				</WrapPanel>
 				
-				<WrapPanel>
+				<WrapPanel Margin="0 5">
 					<StackPanel Orientation="Horizontal">
 						<TextBlock>PBR:</TextBlock>
 						<c:MesenNumericTextBox Value="{CompiledBinding RegPbr}" Hex="True" Max="0xFF" />
@@ -129,7 +129,12 @@
 						<c:MesenNumericTextBox Value="{CompiledBinding RamBank}" Hex="True" Max="0xFF" />
 					</StackPanel>
 				</WrapPanel>
-				
+				<WrapPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>RAM ADDR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RamAddrCache}" Hex="True" Max="0xFFFF" />
+					</StackPanel>
+				</WrapPanel>
 				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
 
 				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
@@ -161,6 +166,30 @@
 						<StackPanel>
 							<CheckBox IsChecked="{CompiledBinding FlagPrefix}" Content="Prefix" />
 							<CheckBox IsChecked="{CompiledBinding FlagIrq}" Content="IRQ" />
+						</StackPanel>
+					</WrapPanel>
+				</WrapPanel>
+				<Rectangle Stroke="{StaticResource MesenGrayBorderColor}" StrokeThickness="1" Margin="5 5 5 2" />
+				<WrapPanel Margin="0 2 0 0" DockPanel.Dock="Top">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>COLOR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegColor}" Hex="True" Max="0xFF" />
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock>POR:</TextBlock>
+						<c:MesenNumericTextBox Value="{CompiledBinding RegPor}" Hex="True" Max="0xFF" IsEnabled="False" />
+					</StackPanel>
+					<WrapPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagPlotTransparent}" Content="Plot Transparent" />
+							<CheckBox IsChecked="{CompiledBinding FlagPlotDither}" Content="Plot Dither" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagColorHighNibble}" Content="Color Src High" />
+							<CheckBox IsChecked="{CompiledBinding FlagColorFreezeHigh}" Content="Color Freeze High" />
+						</StackPanel>
+						<StackPanel>
+							<CheckBox IsChecked="{CompiledBinding FlagObjMode}" Content="Obj Mode" />
 						</StackPanel>
 					</WrapPanel>
 				</WrapPanel>
