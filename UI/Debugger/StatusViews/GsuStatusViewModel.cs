@@ -27,10 +27,12 @@ namespace Mesen.Debugger.StatusViews
 		[Reactive] public UInt16 Reg15 { get; set; }
 
 		[Reactive] public UInt16 RegSfr { get; set; }
+		[Reactive] public UInt16 RamAddrCache { get; set; }
 
 		[Reactive] public byte RegSrc { get; set; }
 		[Reactive] public byte RegDst { get; set; }
 		[Reactive] public byte RegColor { get; set; }
+		[Reactive] public byte RegPor { get; set;}
 
 		[Reactive] public byte RegPbr { get; set; }
 		[Reactive] public byte RomBank { get; set; }
@@ -62,6 +64,9 @@ namespace Mesen.Debugger.StatusViews
 			this.WhenAnyValue(x => x.FlagZero, x => x.FlagCarry, x => x.FlagSign, x => x.FlagOverflow).Subscribe(x => UpdateSfrValue());
 			this.WhenAnyValue(x => x.FlagAlt1, x => x.FlagAlt2, x => x.FlagIrq, x => x.FlagRomReadPending).Subscribe(x => UpdateSfrValue());
 			this.WhenAnyValue(x => x.FlagRunning, x => x.FlagImmLow, x => x.FlagImmHigh, x => x.FlagPrefix).Subscribe(x => UpdateSfrValue());
+
+			this.WhenAnyValue(x => x.FlagPlotTransparent, x => x.FlagPlotDither, x => x.FlagColorHighNibble).Subscribe(x => UpdatePorValue());
+			this.WhenAnyValue(x => x.FlagColorFreezeHigh, x => x.FlagObjMode).Subscribe(x => UpdatePorValue());
 		}
 
 		private void UpdateSfrValue()
@@ -79,6 +84,17 @@ namespace Mesen.Debugger.StatusViews
 				(FlagImmHigh ? 0x800 : 0) |
 				(FlagPrefix ? 0x1000 : 0) |
 				(FlagIrq ? 0x8000 : 0)
+			);
+		}
+
+		private void UpdatePorValue()
+		{
+			RegPor = (byte)(
+				(FlagPlotTransparent ? 0x01 : 0) |
+				(FlagPlotDither ? 0x02 : 0) |
+				(FlagColorHighNibble ? 0x04 : 0) |
+				(FlagColorFreezeHigh ? 0x08 : 0) |
+				(FlagObjMode ? 0x10 : 0)
 			);
 		}
 
@@ -111,6 +127,7 @@ namespace Mesen.Debugger.StatusViews
 			RegPbr = cpu.ProgramBank;
 			RomBank = cpu.RomBank;
 			RamBank = cpu.RamBank;
+			RamAddrCache = cpu.RamAddress;
 
 			FlagCarry = cpu.SFR.Carry;
 			FlagZero = cpu.SFR.Zero;
@@ -159,6 +176,7 @@ namespace Mesen.Debugger.StatusViews
 			cpu.ProgramBank = RegPbr;
 			cpu.RomBank = RomBank;
 			cpu.RamBank = RamBank;
+			cpu.RamAddress = RamAddrCache;
 
 			cpu.SFR.Carry = FlagCarry;
 			cpu.SFR.Zero = FlagZero;
