@@ -48,6 +48,8 @@ void GsuDebugger::ProcessInstruction()
 	uint32_t addr = _gsu->DebugGetProgramCounter();
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, state.ProgramReadBuffer, MemoryOperationType::ExecOpCode, MemoryType::GsuMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
 		_codeDataLogger->SetCode<SnesCdlFlags::Gsu>(addressInfo.Address);
@@ -70,6 +72,7 @@ void GsuDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
+	InstructionProgress.LastMemOperation = operation;
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled()) {
@@ -98,6 +101,8 @@ void GsuDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _gsu->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GsuMemory);
+	InstructionProgress.LastMemOperation = operation;
+
 	_debugger->ProcessBreakConditions(CpuType::Gsu, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
 	if(_traceLogger->IsEnabled()) {
@@ -145,6 +150,11 @@ uint32_t GsuDebugger::GetProgramCounter(bool getInstPc)
 {
 	GsuState& state = _gsu->GetState();
 	return getInstPc ? _prevProgramCounter : ((state.ProgramBank << 16) | state.R[15]);
+}
+
+uint64_t GsuDebugger::GetCpuCycleCount()
+{
+	return _gsu->GetState().CycleCount;
 }
 
 DebuggerFeatures GsuDebugger::GetSupportedFeatures()

@@ -53,6 +53,8 @@ void Cx4Debugger::ProcessInstruction()
 	uint16_t opCode = mappings->PeekWord(pc);
 	AddressInfo addressInfo = mappings->GetAbsoluteAddress(pc);
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::Cx4Memory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
 		_codeDataLogger->SetCode<SnesCdlFlags::Cx4>(addressInfo.Address);
@@ -104,6 +106,7 @@ void Cx4Debugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
+	InstructionProgress.LastMemOperation = operation;
 
 	if(addressInfo.Type == MemoryType::SnesPrgRom) {
 		_codeDataLogger->SetData<SnesCdlFlags::Cx4>(addressInfo.Address);
@@ -120,6 +123,7 @@ void Cx4Debugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo = _cx4->GetMemoryMappings()->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::Cx4Memory);
+	InstructionProgress.LastMemOperation = operation;
 	_debugger->ProcessBreakConditions(CpuType::Cx4, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	if(_traceLogger->IsEnabled()) {
@@ -179,6 +183,11 @@ uint32_t Cx4Debugger::GetProgramCounter(bool getInstPc)
 {
 	Cx4State& state = _cx4->GetState();
 	return getInstPc ? _prevProgramCounter : ((state.Cache.Address[state.Cache.Page] + (state.PC * 2)) & 0xFFFFFF);
+}
+
+uint64_t Cx4Debugger::GetCpuCycleCount()
+{
+	return _cx4->GetState().CycleCount;
 }
 
 DebuggerFeatures Cx4Debugger::GetSupportedFeatures()

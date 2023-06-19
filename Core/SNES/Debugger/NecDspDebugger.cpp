@@ -43,10 +43,13 @@ void NecDspDebugger::Reset()
 
 void NecDspDebugger::ProcessInstruction()
 {
-	uint32_t pc = _dsp->GetState().PC * 3;
-	uint32_t opCode = _dsp->GetOpCode(_dsp->GetState().PC);
+	NecDspState& state = _dsp->GetState();
+	uint32_t pc = state.PC * 3;
+	uint32_t opCode = _dsp->GetOpCode(state.PC);
 	AddressInfo addressInfo = { (int32_t)pc, MemoryType::DspProgramRom };
 	MemoryOperationInfo operation(pc, opCode, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::NecDsp);
 
@@ -77,6 +80,7 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 	if(type == MemoryOperationType::ExecOpCode) {
 		AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspProgramRom };
 		MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::NecDspMemory);
+		InstructionProgress.LastMemOperation = operation;
 
 		if(_traceLogger->IsEnabled()) {
 			DisassemblyInfo disInfo = _disassembler->GetDisassemblyInfo(addressInfo, addr, 0, CpuType::NecDsp);
@@ -88,6 +92,8 @@ void NecDspDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationTy
 
 		AddressInfo addressInfo = { (int32_t)addr, memType };
 		MemoryOperationInfo operation(addr, value, type, memType);
+		InstructionProgress.LastMemOperation = operation;
+
 		_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 		_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 		if(_traceLogger->IsEnabled()) {
@@ -100,6 +106,7 @@ void NecDspDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationT
 {
 	AddressInfo addressInfo = { (int32_t)addr, MemoryType::DspDataRam };
 	MemoryOperationInfo operation(addr, value, type, MemoryType::DspDataRam);
+	InstructionProgress.LastMemOperation = operation;
 	_debugger->ProcessBreakConditions(CpuType::NecDsp, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	_memoryAccessCounter->ProcessMemoryWrite(addressInfo, _memoryManager->GetMasterClock());
 	if(_traceLogger->IsEnabled()) {
@@ -158,6 +165,11 @@ void NecDspDebugger::SetProgramCounter(uint32_t addr, bool updateDebuggerOnly)
 uint32_t NecDspDebugger::GetProgramCounter(bool getInstPc)
 {
 	return getInstPc ? _prevProgramCounter : (_dsp->GetState().PC * 3);
+}
+
+uint64_t NecDspDebugger::GetCpuCycleCount()
+{
+	return _dsp->GetState().CycleCount;
 }
 
 CallstackManager* NecDspDebugger::GetCallstackManager()

@@ -86,6 +86,8 @@ void GbDebugger::ProcessInstruction()
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(pc);
 	uint8_t value = _gameboy->GetMemoryManager()->DebugRead(pc);
 	MemoryOperationInfo operation(pc, value, MemoryOperationType::ExecOpCode, MemoryType::GameboyMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.CycleCount;
 
 	if(addressInfo.Address >= 0) {
 		if(addressInfo.Type == MemoryType::GbPrgRom) {
@@ -136,6 +138,7 @@ void GbDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType t
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
+	InstructionProgress.LastMemOperation = operation;
 
 	if(type == MemoryOperationType::ExecOpCode) {
 		if(_traceLogger->IsEnabled()) {
@@ -188,6 +191,7 @@ void GbDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType 
 {
 	AddressInfo addressInfo = _gameboy->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, type, MemoryType::GameboyMemory);
+	InstructionProgress.LastMemOperation = operation;
 	_debugger->ProcessBreakConditions(CpuType::Gameboy, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 
 	if(addressInfo.Type == MemoryType::GbWorkRam || addressInfo.Type == MemoryType::GbCartRam || addressInfo.Type == MemoryType::GbHighRam) {

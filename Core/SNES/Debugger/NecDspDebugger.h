@@ -46,7 +46,7 @@ public:
 	DebuggerFeatures GetSupportedFeatures() override;
 	void SetProgramCounter(uint32_t addr, bool updateDebuggerOnly = false) override;
 	uint32_t GetProgramCounter(bool getInstPc) override;
-
+	uint64_t GetCpuCycleCount() override;
 	CallstackManager* GetCallstackManager() override;
 	BreakpointManager* GetBreakpointManager() override;
 	IAssembler* GetAssembler() override;
