@@ -57,6 +57,8 @@ void SpcDebugger::ProcessInstruction()
 	uint8_t value = _spc->DebugRead(addr);
 	AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
 	MemoryOperationInfo operation(addr, value, MemoryOperationType::ExecOpCode, MemoryType::SpcMemory);
+	InstructionProgress.LastMemOperation = operation;
+	InstructionProgress.StartCycle = state.Cycle;
 
 	_disassembler->BuildCache(addressInfo, 0, CpuType::Spc);
 
@@ -109,10 +111,12 @@ void SpcDebugger::ProcessInstruction()
 template<MemoryAccessFlags flags>
 void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType type)
 {
+	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
+	InstructionProgress.LastMemOperation = operation;
+
 	if constexpr(flags == MemoryAccessFlags::None) {
 		//SPC read
 		AddressInfo addressInfo = _spc->GetAbsoluteAddress(addr);
-		MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 
 		if(type == MemoryOperationType::ExecOpCode) {
 			if(_traceLogger->IsEnabled()) {
@@ -138,7 +142,6 @@ void SpcDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		//DSP read
 		if(!_ignoreDspReadWrites) {
 			AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //DSP reads never read from the IPL ROM
-			MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
 
 			_memoryAccessCounter->ProcessMemoryRead(addressInfo, _memoryManager->GetMasterClock());
 			_debugger->ProcessBreakConditions(CpuType::Spc, *_step.get(), _breakpointManager.get(), operation, addressInfo);
@@ -151,6 +154,7 @@ void SpcDebugger::ProcessWrite(uint32_t addr, uint8_t value, MemoryOperationType
 {
 	AddressInfo addressInfo { (int32_t)addr, MemoryType::SpcRam }; //Writes never affect the IPL ROM
 	MemoryOperationInfo operation(addr, value, type, MemoryType::SpcMemory);
+	InstructionProgress.LastMemOperation = operation;
 
 	//Always invalidate cache, even if DSP writes are ignored
 	_disassembler->InvalidateCache(addressInfo, CpuType::Spc);
