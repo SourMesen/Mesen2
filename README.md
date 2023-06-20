@@ -22,7 +22,9 @@ To run Mesen, the following prerequisites must be installed:
 
 **Windows**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
 **Linux**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), SDL2
-	- When using an AppImage build, these prerequisites would not be necessary to be installed on the Linux machine.
+	
+ - When using an AppImage build, these prerequisites would not be necessary to be installed on the Linux machine.
+
 **macOS**: [.NET 6 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0), SDL2  
 
 ## Compiling
