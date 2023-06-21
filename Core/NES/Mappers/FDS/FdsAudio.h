@@ -13,6 +13,7 @@ class FdsAudio : public BaseExpansionAudio
 {
 private:
 	const uint32_t WaveVolumeTable[4] = { 36, 24, 17, 14 };
+	double DACTable[64][4] = {};
 
 	//Register values
 	uint8_t _waveTable[64] = {};

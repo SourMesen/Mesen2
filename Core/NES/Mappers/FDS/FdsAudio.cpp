@@ -8,6 +8,7 @@
 #include "NES/APU/NesApu.h"
 #include "NES/APU/BaseExpansionAudio.h"
 #include "Utilities/Serializer.h"
+#include "FDS_LUT_norm.h"
 
 void FdsAudio::Serialize(Serializer& s)
 {
@@ -51,8 +52,8 @@ void FdsAudio::ClockAudio()
 
 void FdsAudio::UpdateOutput()
 {
-	uint32_t level = std::min((int)_volume.GetGain(), 32) * WaveVolumeTable[_masterVolume];
-	uint8_t outputLevel = (_waveTable[_wavePosition] * level) / 1152;
+	uint32_t level = std::min((int)_volume.GetGain(), 32);
+	uint8_t outputLevel = uint8_t(DACTable[_waveTable[_wavePosition]][_masterVolume] * level);
 
 
 	if(_lastOutput != outputLevel) {
@@ -63,6 +64,15 @@ void FdsAudio::UpdateOutput()
 
 FdsAudio::FdsAudio(NesConsole* console) : BaseExpansionAudio(console)
 {
+	// initialize DAC LUT
+	// data comes from plgDavid's DC capture of an FDS's DAC output
+	// data capture shared from the NESDev server
+
+	for(int masterlevel = 0; masterlevel < 4; masterlevel++)
+		for(int wavelevel = 0; wavelevel < 64; wavelevel++)
+			DACTable[wavelevel][masterlevel] = float(
+					(FDS_LUT_norm[wavelevel] * 64.0 * double(WaveVolumeTable[masterlevel])) / 1152.0
+				);
 }
 
 uint8_t FdsAudio::ReadRegister(uint16_t addr)
