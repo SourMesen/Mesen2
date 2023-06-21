@@ -2586,6 +2586,9 @@
     <ClInclude Include="NES\Mappers\Nintendo\FnsMmc1.h">
       <Filter>NES\Mappers\Nintendo</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\FDS\FDS_LUT_norm.h">
+      <Filter>NES\Mappers\FDS</Filter>
+    </ClInclude>
     <ClInclude Include="SMS\SmsConsole.h">
       <Filter>SMS</Filter>
     </ClInclude>
