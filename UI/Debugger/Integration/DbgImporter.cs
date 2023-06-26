@@ -506,8 +506,11 @@ namespace Mesen.Debugger.Integration
 			});
 
 			if(id != null && symbolName != null) {
-				SymbolInfo symbol = new SymbolInfo(id.Value, symbolName, address, segmentId, exportSymbolId, size, definitions, references, type);
-				_symbols.Add(symbol.ID, symbol);
+				//Ignore negative addresses (e.g 0xFFFF8000)
+				if((address == null || address >= 0) && (size == null || size >= 0)) {
+					SymbolInfo symbol = new SymbolInfo(id.Value, symbolName, address, segmentId, exportSymbolId, size, definitions, references, type);
+					_symbols.Add(symbol.ID, symbol);
+				}
 				return true;
 			} else {
 				System.Diagnostics.Debug.Fail("Regex doesn't match sym");
@@ -546,6 +549,9 @@ namespace Mesen.Debugger.Integration
 
 		private void GetRamLabelAddressAndType(int address, out int absoluteAddress, out MemoryType? memoryType)
 		{
+			if(address < 0) {
+
+			}
 			AddressInfo absAddress = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = address, Type = _cpuMemType });
 			absoluteAddress = absAddress.Address;
 			if(absoluteAddress >= 0) {

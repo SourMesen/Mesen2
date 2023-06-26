@@ -926,7 +926,7 @@ void BaseMapper::CopyChrTile(uint32_t address, uint8_t *dest)
 	}
 }
 
-AddressInfo BaseMapper::GetAbsoluteAddress(uint32_t relativeAddr)
+AddressInfo BaseMapper::GetAbsoluteAddress(uint16_t relativeAddr)
 {
 	AddressInfo info;
 	if(relativeAddr < 0x2000) {
@@ -951,7 +951,7 @@ AddressInfo BaseMapper::GetAbsoluteAddress(uint32_t relativeAddr)
 	return info;
 }
 
-void BaseMapper::GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info)
+void BaseMapper::GetPpuAbsoluteAddress(uint16_t relativeAddr, AddressInfo& info)
 {
 	if(relativeAddr >= 0x3F00) {
 		info.Address = relativeAddr & 0x1F;

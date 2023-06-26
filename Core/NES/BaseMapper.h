@@ -212,8 +212,8 @@ public:
 
 	CartridgeState GetState();
 	
-	AddressInfo GetAbsoluteAddress(uint32_t relativeAddr);
-	void GetPpuAbsoluteAddress(uint32_t relativeAddr, AddressInfo& info);
+	AddressInfo GetAbsoluteAddress(uint16_t relativeAddr);
+	void GetPpuAbsoluteAddress(uint16_t relativeAddr, AddressInfo& info);
 	AddressInfo GetPpuAbsoluteAddress(uint32_t relativeAddr);
 	AddressInfo GetRelativeAddress(AddressInfo& addr);
 	int32_t GetPpuRelativeAddress(AddressInfo& addr);
