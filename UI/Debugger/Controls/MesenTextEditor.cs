@@ -12,9 +12,9 @@ using System.Xml;
 
 namespace Mesen.Debugger.Controls
 {
-	public class MesenTextEditor : TextEditor
+	public class MesenTextEditor : TextEditor, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(TextEditor);
+		Type IStyleable.StyleKey => typeof(TextEditor);
 
 		public static readonly StyledProperty<string> TextBindingProperty = AvaloniaProperty.Register<MesenTextEditor, string>(nameof(TextBinding), "", defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 

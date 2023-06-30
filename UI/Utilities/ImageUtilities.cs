@@ -10,12 +10,22 @@ namespace Mesen.Utilities
 	{
 		public static Image FromAsset(string source)
 		{
-			return new Image() { Source = new Bitmap(AssetLoader.Open(new Uri("avares://Mesen/" + source))) };
+			IAssetLoader? assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+			if(assetLoader != null) {
+				return new Image() { Source = new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source))) };
+			} else {
+				throw new Exception("AssetLoader unavailable");
+			}
 		}
 
 		public static Bitmap BitmapFromAsset(string source)
 		{
-			return new Bitmap(AssetLoader.Open(new Uri("avares://Mesen/" + source)));
+			IAssetLoader? assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
+			if(assetLoader != null) {
+				return new Bitmap(assetLoader.Open(new Uri("avares://Mesen/" + source)));
+			} else {
+				throw new Exception("AssetLoader unavailable");
+			}
 		}
 	}
 }

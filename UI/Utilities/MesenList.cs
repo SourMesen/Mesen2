@@ -52,7 +52,7 @@ namespace Mesen.Utilities
 	/// </item>
 	/// </list>
 	/// </remarks>
-	public partial class MesenList<T> : IAvaloniaList<T>, IList
+	public partial class MesenList<T> : IAvaloniaList<T>, IList, INotifyCollectionChangedDebug
 	{
 		private readonly List<T> _inner;
 		private NotifyCollectionChangedEventHandler? _collectionChanged;
@@ -619,6 +619,9 @@ namespace Mesen.Utilities
 				}
 			}
 		}
+
+		/// <inheritdoc/>
+		Delegate[]? INotifyCollectionChangedDebug.GetCollectionChangedSubscribers() => _collectionChanged?.GetInvocationList();
 
 		/// <summary>
 		/// Raises the <see cref="CollectionChanged"/> event with an add action.

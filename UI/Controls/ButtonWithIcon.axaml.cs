@@ -10,9 +10,9 @@ using System;
 
 namespace Mesen.Controls
 {
-	public class ButtonWithIcon : Button
+	public class ButtonWithIcon : Button, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(Button);
+		Type IStyleable.StyleKey => typeof(Button);
 
 		public static readonly StyledProperty<string> TextProperty = AvaloniaProperty.Register<ButtonWithIcon, string>(nameof(Text), "");
 		public static readonly StyledProperty<string> IconProperty = AvaloniaProperty.Register<ButtonWithIcon, string>(nameof(Icon), "");

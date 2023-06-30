@@ -9,9 +9,9 @@ using System.Collections;
 
 namespace Mesen.Controls
 {
-	public class MesenMenu : Menu
+	public class MesenMenu : Menu, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(Menu);
+		Type IStyleable.StyleKey => typeof(Menu);
 
 		private void SubmenuOpened(object? sender, RoutedEventArgs e) {
 			MenuItem menuItem = (MenuItem)sender!;

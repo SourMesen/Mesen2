@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace Mesen.Controls
 {
-	public class MesenScrollContentPresenter : ScrollContentPresenter
+	public class MesenScrollContentPresenter : ScrollContentPresenter, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(ScrollContentPresenter);
+		Type IStyleable.StyleKey => typeof(ScrollContentPresenter);
 
 		protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
 		{

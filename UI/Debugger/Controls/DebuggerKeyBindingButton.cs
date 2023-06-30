@@ -13,9 +13,9 @@ using System;
 
 namespace Mesen.Debugger.Controls
 {
-	public class DebuggerKeyBindingButton : Button
+	public class DebuggerKeyBindingButton : Button, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(Button);
+		Type IStyleable.StyleKey => typeof(Button);
 
 		public static readonly StyledProperty<DbgShortKeys> KeyBindingProperty = AvaloniaProperty.Register<DebuggerKeyBindingButton, DbgShortKeys>(nameof(KeyBinding), new DbgShortKeys(), false, Avalonia.Data.BindingMode.TwoWay);
 

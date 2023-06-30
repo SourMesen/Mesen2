@@ -8,12 +8,12 @@ using DataBoxControl.Primitives.Layout;
 
 namespace DataBoxControl.Primitives;
 
-public class DataBoxColumnHeadersPresenter : Panel
+public class DataBoxColumnHeadersPresenter : Panel, IStyleable
 {
     private List<IDisposable>? _columnActualWidthDisposables;
     private List<DataBoxColumnHeader>? _columnHeaders;
 
-	protected override Type StyleKeyOverride => typeof(DataBoxColumnHeadersPresenter);
+    Type IStyleable.StyleKey => typeof(DataBoxColumnHeadersPresenter);
         
     internal DataBox? DataBox { get; set; }
 

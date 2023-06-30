@@ -310,7 +310,7 @@ public class DataBox : TemplatedControl
 		if(e.Key == Key.Space) {
 			ProcessKeyPress(" ");
 			e.Handled = true;
-		} else if(IsKeyboardFocusWithin && TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is CheckBox) {
+		} else if(IsKeyboardFocusWithin && FocusManager.Instance?.Current is CheckBox) {
 			//Allow up/down arrow keys to work properly when focus is on a checkbox column
 			_rowsPresenter?.ContainerFromIndex(Selection.SelectedIndex)?.Focus();
 		}

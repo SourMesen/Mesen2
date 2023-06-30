@@ -54,7 +54,7 @@ namespace Mesen.Debugger.Windows
 					break;
 
 				case ConsoleNotificationType.PpuFrameDone:
-					if(TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is TextBox) {
+					if(FocusManager.Instance?.Current is TextBox) {
 						return;
 					}
 

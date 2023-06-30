@@ -207,7 +207,7 @@ namespace Mesen.Debugger.Windows
 						Dispatcher.UIThread.Post(() => {
 							if(!ToolRefreshHelper.LimitFps(this, 20)) {
 								//Prevent watch update when user is typing a new watch entry
-								bool updatingWatchEntry = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is TextBox txt && txt.FindAncestorOfType<WatchListView>() != null;
+								bool updatingWatchEntry = FocusManager.Instance?.Current is TextBox txt && txt.FindAncestorOfType<WatchListView>() != null;
 								_model.PartialRefresh(!updatingWatchEntry);
 							}
 						});

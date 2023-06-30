@@ -16,7 +16,7 @@
 	xmlns:dm="clr-namespace:Dock.Model;assembly=Dock.Model.Avalonia"
 	xmlns:dmc="clr-namespace:Dock.Model.Controls;assembly=Dock.Model.Avalonia"
 	mc:Ignorable="d"
-	DragDrop.AllowDrop="True"  
+  DragDrop.AllowDrop="True"  
 	x:Class="Mesen.Debugger.Windows.DebuggerWindow"
 	x:DataType="vm:DebuggerWindowViewModel"
 	Title="{CompiledBinding Title}"
@@ -130,7 +130,7 @@
 				DockPanel.Dock="Bottom"
 		  />
 			
-			<idc:DockControl Layout="{CompiledBinding DockLayout}" />
+			<idc:DockControl Layout="{CompiledBinding DockLayout}"/>
 		</DockPanel>
 	</DockPanel>
 </Window>

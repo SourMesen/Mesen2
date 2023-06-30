@@ -9,9 +9,9 @@ using System.Globalization;
 
 namespace Mesen.Controls
 {
-	public class MesenNumericTextBox : TextBox
+	public class MesenNumericTextBox : TextBox, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(TextBox);
+		Type IStyleable.StyleKey => typeof(TextBox);
 
 		private static HexConverter _hexConverter = new HexConverter();
 		

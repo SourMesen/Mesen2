@@ -9,9 +9,9 @@ using System.Globalization;
 
 namespace Mesen.Controls
 {
-	public class ImageAspectRatio : Image
+	public class ImageAspectRatio : Image, IStyleable
 	{
-		protected override Type StyleKeyOverride => typeof(Image);
+		Type IStyleable.StyleKey => typeof(Image);
 
 		public ImageAspectRatio()
 		{

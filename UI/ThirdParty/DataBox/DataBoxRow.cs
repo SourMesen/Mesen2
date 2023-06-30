@@ -7,11 +7,11 @@ using DataBoxControl.Primitives;
 
 namespace DataBoxControl;
 
-public class DataBoxRow : ListBoxItem
+public class DataBoxRow : ListBoxItem, IStyleable
 {
     private Rectangle? _bottomGridLine;
 
-    protected override Type StyleKeyOverride => typeof(DataBoxRow);
+    Type IStyleable.StyleKey => typeof(DataBoxRow);
 
     internal DataBox? DataBox { get; set; }
 
