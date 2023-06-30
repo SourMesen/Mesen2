@@ -276,7 +276,7 @@ void GbPpu::ProcessVisibleScanline()
 			_state.LyForCompare = _state.Scanline;
 			
 			//"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-			_wyEnableFlag |= _state.Scanline == _latchWindowY;
+			_wyEnableFlag |= _state.Scanline == _latchWindowY && _state.WindowEnabled;
 
 			_state.Mode = PpuMode::OamEvaluation;
 			_state.IrqMode = PpuMode::OamEvaluation;
@@ -341,8 +341,7 @@ void GbPpu::RunDrawCycle()
 	bool fetchWindow = (
 		_latchWindowEnabled && //"Window enable bit in LCDC is set"
 		_drawnPixels >= _latchWindowX - 7 && //"the current X coordinate being rendered + 7 was equal to WX"
-		_wyEnableFlag && //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-		(_latchWindowX != 0 || !_gameboy->IsCgb()) //Disable window on CGB if WX=0 (Fixes Warriors of Might And Magic)
+		_wyEnableFlag //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
 	);
 
 	if(_fetchWindow != fetchWindow) {
