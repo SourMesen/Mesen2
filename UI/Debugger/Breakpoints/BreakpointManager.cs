@@ -167,6 +167,16 @@ namespace Mesen.Debugger
 			} else {
 				bool execBreakpoint = forceExecBreakpoint || info.Type.IsRomMemory();
 				bool readWriteBreakpoint = !info.Type.IsRomMemory() || info.Type.IsRelativeMemory();
+				if(info.Type.SupportsCdl()) {
+					CdlFlags cdlData = DebugApi.GetCdlData((uint)info.Address, 1, info.Type)[0];
+					bool isCode = cdlData.HasFlag(CdlFlags.Code);
+					bool isData = cdlData.HasFlag(CdlFlags.Data);
+					if(isCode || isData) {
+						readWriteBreakpoint = !isCode;
+						execBreakpoint = isCode;
+					}
+				}
+
 				breakpoint = new Breakpoint() {
 					CpuType = cpuType,
 					Enabled = true,
