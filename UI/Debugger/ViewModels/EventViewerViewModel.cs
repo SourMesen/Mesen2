@@ -187,7 +187,7 @@ namespace Mesen.Debugger.ViewModels
 					HintText = () => SelectedEvent != null ? $"PC - ${SelectedEvent.Value.ProgramCounter:X4}" : "",
 					OnClick = () => {
 						if(SelectedEvent != null) {
-							int addr = (int)SelectedEvent.Value.Operation.Address;
+							int addr = (int)SelectedEvent.Value.ProgramCounter;
 							BreakpointManager.ToggleBreakpoint(new AddressInfo() { Address = addr, Type = CpuType.ToMemoryType() }, CpuType, true);
 						}
 					}
