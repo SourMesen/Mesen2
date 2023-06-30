@@ -62,6 +62,8 @@ public:
 
 	void UpdateFrame(RenderedFrame frame, bool sync, bool forRewind);
 
+	void WaitForAsyncFrameDecode();
+
 	bool IsRunning();
 	void StartThread();
 	void StopThread();

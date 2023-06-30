@@ -659,6 +659,8 @@ void NesConsole::StartRecordingHdPack(HdPackBuilderOptions options)
 {
 	auto lock = _emu->AcquireLock();
 
+	_emu->GetVideoDecoder()->WaitForAsyncFrameDecode();
+
 	std::stringstream saveState;
 	_emu->Serialize(saveState, false, 0);
 
@@ -679,6 +681,8 @@ void NesConsole::StopRecordingHdPack()
 {
 	if(_hdPackBuilder) {
 		auto lock = _emu->AcquireLock();
+		
+		_emu->GetVideoDecoder()->WaitForAsyncFrameDecode();
 
 		std::stringstream saveState;
 		_emu->Serialize(saveState, false, 0);

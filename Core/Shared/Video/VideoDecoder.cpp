@@ -168,6 +168,14 @@ uint32_t VideoDecoder::GetFrameCount()
 	return _frameCount;
 }
 
+void VideoDecoder::WaitForAsyncFrameDecode()
+{
+	while(_frameChanged) {
+		//Spin until decode is done
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(15));
+	}
+}
+
 void VideoDecoder::UpdateFrame(RenderedFrame frame, bool sync, bool forRewind)
 {
 	if(_emu->IsRunAheadFrame()) {
