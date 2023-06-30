@@ -166,12 +166,13 @@ namespace Mesen.Debugger
 				BreakpointManager.RemoveBreakpoint(breakpoint);
 			} else {
 				bool execBreakpoint = forceExecBreakpoint || info.Type.IsRomMemory();
+				bool readWriteBreakpoint = !info.Type.IsRomMemory() || info.Type.IsRelativeMemory();
 				breakpoint = new Breakpoint() {
 					CpuType = cpuType,
 					Enabled = true,
 					BreakOnExec = execBreakpoint,
-					BreakOnRead = !execBreakpoint,
-					BreakOnWrite = !execBreakpoint,
+					BreakOnRead = readWriteBreakpoint,
+					BreakOnWrite = readWriteBreakpoint,
 					StartAddress = (UInt32)info.Address,
 					EndAddress = (UInt32)info.Address
 				};
