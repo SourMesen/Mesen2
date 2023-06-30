@@ -102,7 +102,7 @@ namespace Mesen.Debugger.ViewModels
 		private void QuickSearch_OnFind(OnFindEventArgs e)
 		{
 			DisassemblySearchOptions options = new() { SearchBackwards = e.Direction == SearchDirection.Backward, SkipFirstLine = e.SkipCurrent };
-			int findAddress = DebugApi.SearchDisassembly(CpuType, e.SearchString.ToLowerInvariant().Trim(), SelectedRowAddress, options);
+			int findAddress = DebugApi.SearchDisassembly(CpuType, e.SearchString.ToLowerInvariant(), SelectedRowAddress, options);
 			if(findAddress >= 0) {
 				Dispatcher.UIThread.Post(() => {
 					SetSelectedRow(findAddress, true, true);

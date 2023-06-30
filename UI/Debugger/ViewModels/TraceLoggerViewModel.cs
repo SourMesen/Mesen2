@@ -112,7 +112,7 @@ namespace Mesen.Debugger.ViewModels
 		private void QuickSearch_OnFind(OnFindEventArgs e)
 		{
 			CodeLineData[] lines = GetCodeLines(0, DebugApi.TraceLogBufferSize);
-			string needle = e.SearchString.ToLowerInvariant().Trim();
+			string needle = e.SearchString.ToLowerInvariant();
 			
 			int startRow = SelectedRow;
 			if(e.Direction == SearchDirection.Backward) {
