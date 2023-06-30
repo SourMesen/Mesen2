@@ -84,7 +84,7 @@ public:
 
 			bool hasBgSprite = false;
 			if(_lastSprite && _mask.SpritesEnabled) {
-				uint8_t spriteIndex = (uint8_t)((_lastSprite - _spriteTiles) / sizeof(NesSpriteInfo));
+				uint8_t spriteIndex = (uint8_t)(_lastSprite - _spriteTiles);
 				NesSpriteInfoEx& spriteInfoEx = _exSpriteInfo[spriteIndex];
 
 				if(backgroundColor == 0) {
