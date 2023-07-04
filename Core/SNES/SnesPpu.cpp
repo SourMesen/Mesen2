@@ -1508,7 +1508,9 @@ void SnesPpu::SendFrame()
 
 void SnesPpu::DebugSendFrame()
 {
-	RenderScanline();
+	if(_scanline < _vblankStartScanline) {
+		RenderScanline();
+	}
 
 	uint16_t width = _useHighResOutput ? 512 : 256;
 	uint16_t height = _useHighResOutput ? 478 : 239;
