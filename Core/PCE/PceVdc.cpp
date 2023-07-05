@@ -915,20 +915,25 @@ void PceVdc::InternalDrawScanline()
 void PceVdc::ProcessVramRead()
 {
 	_state.ReadBuffer = ReadVram(_state.MemAddrRead);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), _state.ReadBuffer, _vramType);
-	_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, _state.ReadBuffer, _vramType);
+	if(_state.MemAddrRead < 0x8000) {
+		_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1), _state.ReadBuffer, _vramType);
+		_emu->ProcessPpuRead<CpuType::Pce>((_state.MemAddrRead << 1) + 1, _state.ReadBuffer, _vramType);
+	}
+	_state.MemAddrRead += _state.VramAddrIncrement;
 	_pendingMemoryRead = false;
 }
 
 void PceVdc::ProcessVramWrite()
 {
 	if(_state.MemAddrWrite < 0x8000) {
-		//Ignore writes to mirror at $8000+
+		//Ignore writes at $8000+
 		_emu->ProcessPpuWrite<CpuType::Pce>(_state.MemAddrWrite << 1, _state.VramData, _vramType);
 		_emu->ProcessPpuWrite<CpuType::Pce>((_state.MemAddrWrite << 1) + 1, _state.VramData, _vramType);
 		_vram[_state.MemAddrWrite] = _state.VramData;
-		_state.MemAddrWrite += _state.VramAddrIncrement;
+	} else {
+		_emu->BreakIfDebugging(CpuType::Pce, BreakSource::PceBreakOnInvalidVramAddress);
 	}
+	_state.MemAddrWrite += _state.VramAddrIncrement;
 	_pendingMemoryWrite = false;
 }
 
@@ -991,7 +996,6 @@ uint8_t PceVdc::ReadRegister(uint16_t addr)
 
 			uint8_t value = _state.ReadBuffer >> 8;
 			if(_state.CurrentReg == 0x02) {
-				_state.MemAddrRead += _state.VramAddrIncrement;
 				_pendingMemoryRead = true;
 			}
 			return value;
