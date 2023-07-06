@@ -805,10 +805,12 @@ void GbCpu::HALT()
 		_state.HaltCounter = 1;
 	} else {
 		//HALT bug, execution continues, but PC isn't incremented for the first byte
+#ifndef DUMMYCPU
 		HalfCycle();
 		uint8_t opCode = ReadMemory<MemoryOperationType::ExecOpCode, GbOamCorruptionType::Read>(_state.PC);
 		HalfCycle();
 		ExecOpCode(opCode);
+#endif
 	}
 }
 
