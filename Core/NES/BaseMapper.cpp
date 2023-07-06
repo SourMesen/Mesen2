@@ -945,7 +945,7 @@ AddressInfo BaseMapper::GetAbsoluteAddress(uint16_t relativeAddr)
 			info.Type = MemoryType::NesSaveRam;
 		} else {
 			info.Address = -1;
-			info.Type = MemoryType::NesInternalRam;
+			info.Type = MemoryType::None;
 		}
 	}
 	return info;
@@ -969,7 +969,7 @@ void BaseMapper::GetPpuAbsoluteAddress(uint16_t relativeAddr, AddressInfo& info)
 			info.Type = MemoryType::NesNametableRam;
 		} else {
 			info.Address = -1;
-			info.Type = MemoryType::NesMemory;
+			info.Type = MemoryType::None;
 		}
 	}
 }

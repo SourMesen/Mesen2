@@ -237,7 +237,7 @@ vector<DisassemblyResult> Disassembler::Disassemble(CpuType cpuType, uint16_t ba
 			for(int j = 1; j < opSize && i + j < bankEnd; j++) {
 				relAddress.Address = i + 1;
 				addrInfo = _console->GetAbsoluteAddress(relAddress);
-				if(addrInfo.Type != prevMemType || src.Cache[addrInfo.Address].IsInitialized()) {
+				if(addrInfo.Type != prevMemType || addrInfo.Address < 0 || src.Cache[addrInfo.Address].IsInitialized()) {
 					break;
 				}
 				i++;
