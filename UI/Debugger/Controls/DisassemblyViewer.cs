@@ -312,10 +312,10 @@ namespace Mesen.Debugger.Controls
 						Brush? b = lineStyle.TextBgColor.HasValue ? new SolidColorBrush(lineStyle.TextBgColor.Value.ToUInt32()) : null;
 						Pen? p = lineStyle.OutlineColor.HasValue ? new Pen(lineStyle.OutlineColor.Value.ToUInt32()) : null;
 						if(b != null) {
-							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.WidthIncludingTrailingWhitespace), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(b, null, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
 						}
 						if(p != null) {
-							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin), Math.Round(y), Math.Round(text.WidthIncludingTrailingWhitespace), Math.Round(LetterSize.Height) - 1));
+							context.DrawRectangle(p, new Rect(Math.Round(x + codeIndent + leftMargin) - 0.5, Math.Round(y) - 0.5, Math.Round(text.WidthIncludingTrailingWhitespace) + 1, Math.Round(LetterSize.Height)));
 						}
 					}
 

@@ -13,6 +13,7 @@
 	VerticalAlignment="Center"  
 	HorizontalContentAlignment="Stretch"
 	VerticalContentAlignment="Stretch"
+	Focusable="True"
 >
 	<Panel
 		HorizontalAlignment="Stretch"

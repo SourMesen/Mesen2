@@ -75,8 +75,7 @@ namespace Mesen
 			instance.Init(args);
 			if(instance.FirstInstance) {
 				Program.CommandLineArgs = (string[])args.Clone();
-				bool useWgl = args.Any(arg => arg.ToLowerInvariant() == "-wgl");
-				BuildAvaloniaApp(useWgl).StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
+				BuildAvaloniaApp().StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 				EmuApi.Release();
 			}
 
@@ -151,17 +150,12 @@ namespace Mesen
 
 		// Avalonia configuration, don't remove; also used by visual designer.
 		public static AppBuilder BuildAvaloniaApp()
-		{
-			return BuildAvaloniaApp(false);
-		}
-
-		public static AppBuilder BuildAvaloniaApp(bool useWgl)
 			 => AppBuilder.Configure<App>()
 					.UseReactiveUI()
 					.UsePlatformDetect()
-					.With(new Win32PlatformOptions { AllowEglInitialization = true, UseWgl = useWgl })
-					.With(new X11PlatformOptions { UseGpu = true, UseEGL = false })
-					.With(new AvaloniaNativePlatformOptions { UseGpu = true })
+					.With(new Win32PlatformOptions { })
+					.With(new X11PlatformOptions { })
+					.With(new AvaloniaNativePlatformOptions { })
 					.LogToTrace();
 	}
 }

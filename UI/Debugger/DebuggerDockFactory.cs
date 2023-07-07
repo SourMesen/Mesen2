@@ -55,8 +55,12 @@ namespace Mesen.Debugger
 		{
 			if(_savedRootDef != null) {
 				//Restore previous layout
-				if(FromDockDefinition(_savedRootDef) is IRootDock savedRootLayout) {
-					return savedRootLayout;
+				try {
+					if(FromDockDefinition(_savedRootDef) is IRootDock savedRootLayout) {
+						return savedRootLayout;
+					}
+				} catch {
+					//Reset layout if any error occurs
 				}
 			}
 
@@ -68,55 +72,55 @@ namespace Mesen.Debugger
 			var mainLayout = new ProportionalDock {
 				Orientation = Orientation.Vertical,
 				VisibleDockables = CreateList<IDockable>(
-								new ProportionalDock {
-									Proportion = 0.75,
-									Orientation = Orientation.Horizontal,
-									ActiveDockable = null,
-									VisibleDockables = CreateList<IDockable>(
-										new ToolDock {
-											Proportion = 0.60,
-											VisibleDockables = CreateList<IDockable>(DisassemblyTool)
-										},
-										new ProportionalDockSplitter(),
-										new ProportionalDock {
-											Proportion = 0.40,
-											Orientation = Orientation.Vertical,
-											VisibleDockables = CreateList<IDockable>(
-												new ToolDock {
-													Proportion = 0.5,
-													VisibleDockables = CreateList<IDockable>(StatusTool)
-												},
-												new ProportionalDockSplitter(),
-												new ToolDock {
-													Proportion = 0.5,
-													VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool, ControllerListTool)
-												}
-											)
-										}
-									)
-								},
-								new ProportionalDockSplitter(),
-								new ProportionalDock {
-									Proportion = 0.25,
-									Orientation = Orientation.Horizontal,
-									VisibleDockables = CreateList<IDockable>(
-										new ToolDock {
-											Proportion = 0.33,
-											VisibleDockables = CreateList<IDockable>(WatchListTool)
-										},
-										new ProportionalDockSplitter(),
-										new ToolDock {
-											Proportion = 0.33,
-											VisibleDockables = CreateList<IDockable>(BreakpointListTool)
-										},
-										new ProportionalDockSplitter(),
-										new ToolDock {
-											Proportion = 0.33,
-											VisibleDockables = CreateList<IDockable>(CallStackTool)
-										}
-									)
-								}
-							)
+					new ProportionalDock {
+						Proportion = 0.75,
+						Orientation = Orientation.Horizontal,
+						ActiveDockable = null,
+						VisibleDockables = CreateList<IDockable>(
+							new ToolDock {
+								Proportion = 0.60,
+								VisibleDockables = CreateList<IDockable>(DisassemblyTool)
+							},
+							new ProportionalDockSplitter(),
+							new ProportionalDock {
+								Proportion = 0.40,
+								Orientation = Orientation.Vertical,
+								VisibleDockables = CreateList<IDockable>(
+									new ToolDock {
+										Proportion = 0.5,
+										VisibleDockables = CreateList<IDockable>(StatusTool)
+									},
+									new ProportionalDockSplitter(),
+									new ToolDock {
+										Proportion = 0.5,
+										VisibleDockables = CreateList<IDockable>(LabelListTool, FunctionListTool, FindResultListTool, ControllerListTool)
+									}
+								)
+							}
+						)
+					},
+					new ProportionalDockSplitter(),
+					new ProportionalDock {
+						Proportion = 0.25,
+						Orientation = Orientation.Horizontal,
+						VisibleDockables = CreateList<IDockable>(
+							new ToolDock {
+								Proportion = 0.33,
+								VisibleDockables = CreateList<IDockable>(WatchListTool)
+							},
+							new ProportionalDockSplitter(),
+							new ToolDock {
+								Proportion = 0.33,
+								VisibleDockables = CreateList<IDockable>(BreakpointListTool)
+							},
+							new ProportionalDockSplitter(),
+							new ToolDock {
+								Proportion = 0.33,
+								VisibleDockables = CreateList<IDockable>(CallStackTool)
+							}
+						)
+					}
+				)
 			};
 
 			var root = CreateRootDock();

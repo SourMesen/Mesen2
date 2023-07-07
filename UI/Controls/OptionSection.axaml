@@ -23,8 +23,6 @@
 				</StackPanel>
 				<StackPanel Margin="10 0 0 0">
 					<ItemsPresenter
-						AreVerticalSnapPointsRegular="{TemplateBinding AreVerticalSnapPointsRegular}"
-						AreHorizontalSnapPointsRegular="{TemplateBinding AreHorizontalSnapPointsRegular}"
 						ItemsPanel="{TemplateBinding ItemsPanel}"
 					/>
 				</StackPanel>

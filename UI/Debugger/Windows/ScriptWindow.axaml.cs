@@ -332,7 +332,7 @@ namespace Mesen.Debugger.Windows
 				_insertOffset = insertOffset;
 			}
 
-			public IBitmap Image
+			public IImage Image
 			{
 				get
 				{

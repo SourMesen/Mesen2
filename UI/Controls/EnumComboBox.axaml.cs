@@ -70,9 +70,9 @@ namespace Mesen.Controls
 			AvaloniaXamlLoader.Load(this);
 		}
 
-		protected override void OnLoaded()
+		protected override void OnLoaded(RoutedEventArgs e)
 		{
-			base.OnLoaded();
+			base.OnLoaded(e);
 			InitComboBox(true);
 		}
 

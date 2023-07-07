@@ -13,6 +13,7 @@ namespace Mesen
 	{
 		public NativeRenderer()
 		{
+			Focusable = true;
 		}
 
 		public IntPtr Handle { get; private set; }

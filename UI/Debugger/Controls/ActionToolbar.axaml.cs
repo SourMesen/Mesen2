@@ -65,9 +65,11 @@ namespace Mesen.Debugger.Controls
 
 		private void UpdateToolbar()
 		{
-			foreach(object item in Items) {
-				if(item is ContextMenuAction act) {
-					act.Update();
+			if(Items != null) {
+				foreach(object item in Items) {
+					if(item is ContextMenuAction act) {
+						act.Update();
+					}
 				}
 			}
 		}

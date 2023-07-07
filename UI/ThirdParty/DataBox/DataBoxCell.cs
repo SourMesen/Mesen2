@@ -7,10 +7,10 @@ using Avalonia.Styling;
 
 namespace DataBoxControl;
 
-public class DataBoxCell : ContentControl, IStyleable
+public class DataBoxCell : ContentControl
 {
     internal DataBox? DataBox { get; set; }
     internal DataBoxColumn? Column { get; set; }
 
-    Type IStyleable.StyleKey => typeof(DataBoxCell);
+    protected override Type StyleKeyOverride => typeof(DataBoxCell);
 }

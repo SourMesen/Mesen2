@@ -83,14 +83,14 @@
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview8" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview8" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview8" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview8" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview8" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview8" />
-    <PackageReference Include="Dock.Avalonia" Version="11.0.0-preview8.2" />
-    <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0-preview8.2" />
+    <PackageReference Include="Avalonia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
+    <PackageReference Include="Dock.Avalonia" Version="11.0.0" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />

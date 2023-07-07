@@ -9,9 +9,9 @@ using Mesen.Localization;
 
 namespace Mesen.Controls
 {
-	public class EnumRadioButton : RadioButton, IStyleable
+	public class EnumRadioButton : RadioButton
 	{
-		Type IStyleable.StyleKey => typeof(RadioButton);
+		protected override Type StyleKeyOverride => typeof(RadioButton);
 
 		public static readonly StyledProperty<Enum> ValueProperty = AvaloniaProperty.Register<EnumRadioButton, Enum>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<Enum> CheckedWhenProperty = AvaloniaProperty.Register<EnumRadioButton, Enum>(nameof(CheckedWhen));

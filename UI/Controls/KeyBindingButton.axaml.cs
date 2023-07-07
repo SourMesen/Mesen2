@@ -13,9 +13,9 @@ using System;
 
 namespace Mesen.Controls
 {
-	public class KeyBindingButton : Button, IStyleable
+	public class KeyBindingButton : Button
 	{
-		Type IStyleable.StyleKey => typeof(Button);
+		protected override Type StyleKeyOverride => typeof(Button);
 
 		public static readonly StyledProperty<UInt16> KeyBindingProperty = AvaloniaProperty.Register<KeyBindingButton, UInt16>(nameof(KeyBinding), 0, false, Avalonia.Data.BindingMode.TwoWay);
 
