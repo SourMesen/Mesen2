@@ -804,6 +804,7 @@ namespace Mesen.Interop
 
 		[MarshalAs(UnmanagedType.I1)] public bool EiPending;
 		[MarshalAs(UnmanagedType.I1)] public bool IME;
+		[MarshalAs(UnmanagedType.I1)] public bool HaltBug;
 	}
 
 	public enum PpuMode

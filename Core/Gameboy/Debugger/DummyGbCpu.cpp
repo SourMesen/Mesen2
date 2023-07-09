@@ -12,6 +12,7 @@ void DummyGbCpu::SetDummyState(GbCpuState& state)
 	_memOpCounter = 0;
 	_state = state;
 	_state.HaltCounter = 0;
+	_state.HaltBug = false;
 }
 
 uint32_t DummyGbCpu::GetOperationCount()

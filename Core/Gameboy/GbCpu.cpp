@@ -40,7 +40,7 @@ void GbCpu::Exec()
 {
 #ifndef DUMMYCPU
 	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
-	if(irqVector) {
+	if(irqVector && !_state.HaltBug) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
 			IncCycleCount();
@@ -81,14 +81,17 @@ void GbCpu::Exec()
 #endif
 
 	if(_state.HaltCounter) {
+		if(_state.HaltBug) {
+			ProcessHaltBug();
+		} else {
 #ifndef DUMMYCPU
-		_emu->ProcessHaltedCpu<CpuType::Gameboy>();
-		IncCycleCount();
-
-		if(_state.HaltCounter > 1) {
-			ProcessCgbSpeedSwitch();
-		}
+			_emu->ProcessHaltedCpu<CpuType::Gameboy>();
+			IncCycleCount();
+			if(_state.HaltCounter > 1) {
+				ProcessCgbSpeedSwitch();
+			}
 #endif
+		}
 		return;
 	}
 
@@ -101,6 +104,25 @@ void GbCpu::Exec()
 	_emu->ProcessInstruction<CpuType::Gameboy>();
 #endif
 	ExecOpCode(ReadOpCode());
+}
+
+void GbCpu::ProcessHaltBug()
+{
+	if(_state.EiPending) {
+		_state.EiPending = false;
+		_state.IME = true;
+	}
+
+#ifndef DUMMYCPU
+	_emu->ProcessInstruction<CpuType::Gameboy>();
+#endif
+
+	//HALT bug, execution continues, but PC isn't incremented for the first byte
+	uint8_t opCode = ReadOpCode();
+	_state.PC--;
+	_state.HaltCounter = 0;
+	_state.HaltBug = false;
+	ExecOpCode(opCode);
 }
 
 void GbCpu::ExecOpCode(uint8_t opCode)
@@ -805,12 +827,8 @@ void GbCpu::HALT()
 		_state.HaltCounter = 1;
 	} else {
 		//HALT bug, execution continues, but PC isn't incremented for the first byte
-#ifndef DUMMYCPU
-		HalfCycle();
-		uint8_t opCode = ReadMemory<MemoryOperationType::ExecOpCode, GbOamCorruptionType::Read>(_state.PC);
-		HalfCycle();
-		ExecOpCode(opCode);
-#endif
+		_state.HaltCounter = 1;
+		_state.HaltBug = true;
 	}
 }
 
@@ -1463,4 +1481,5 @@ void GbCpu::Serialize(Serializer& s)
 	SV(_state.C); SV(_state.D); SV(_state.E); SV(_state.H); SV(_state.L); SV(_state.IME); SV(_state.HaltCounter);
 	SV(_state.EiPending);
 	SV(_state.CycleCount);
+	SV(_state.HaltBug);
 }

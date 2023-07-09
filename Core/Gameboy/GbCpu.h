@@ -32,6 +32,7 @@ private:
 	void ExecOpCode(uint8_t opCode);
 
 	void ProcessCgbSpeedSwitch();
+	__noinline void ProcessHaltBug();
 
 	__forceinline void IncCycleCount();
 	__forceinline void HalfCycle();
@@ -166,7 +167,7 @@ public:
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 
 	void Exec();
-	
+
 	void Serialize(Serializer& s) override;
 
 #ifdef DUMMYCPU
