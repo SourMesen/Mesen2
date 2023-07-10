@@ -90,34 +90,28 @@ AssemblerSpecialCodes NesAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 		} else if(op.OperandCount == 0) {
 			op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Acc) ? NesAddrMode::Acc : NesAddrMode::Imp;
 		} else if(op.OperandCount == 1) {
-			if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
-				if(IsOpModeAvailable(op.OpCode, NesAddrMode::Rel)) {
-					op.AddrMode = NesAddrMode::Rel;
+			if(IsOpModeAvailable(op.OpCode, NesAddrMode::Rel)) {
+				op.AddrMode = NesAddrMode::Rel;
 
-					//Convert "absolute" jump to a relative jump
-					int16_t addressGap = operand.Value - (instructionAddress + 2);
-					if(addressGap > 127 || addressGap < -128) {
-						//Gap too long, can't jump that far
-						if(!firstPass) {
-							//Pretend this is ok on first pass, we're just trying to find all labels
-							return AssemblerSpecialCodes::OutOfRangeJump;
-						}
+				//Convert "absolute" jump to a relative jump
+				int16_t addressGap = operand.Value - (instructionAddress + 2);
+				if(addressGap > 127 || addressGap < -128) {
+					//Gap too long, can't jump that far
+					if(!firstPass) {
+						//Pretend this is ok on first pass, we're just trying to find all labels
+						return AssemblerSpecialCodes::OutOfRangeJump;
 					}
+				}
 
-					//Update data to match relative jump
-					operand.ByteCount = 1;
-					operand.Value = (uint8_t)addressGap;
-				} else {
-					operand.ByteCount = 2;
-					op.AddrMode = NesAddrMode::Abs;
-				}
+				//Update data to match relative jump
+				operand.ByteCount = 1;
+				operand.Value = (uint8_t)addressGap;
+			} else if(operand.ByteCount == 2) {
+				op.AddrMode = NesAddrMode::Abs;
 			} else if(operand.ByteCount == 1) {
-				if(IsOpModeAvailable(op.OpCode, NesAddrMode::Rel)) {
-					op.AddrMode = NesAddrMode::Rel;
-				} else {
-					//Sometimes zero page addressing is not available, even if the operand is in the zero page
-					op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Zero) ? NesAddrMode::Zero : NesAddrMode::Abs;
-				}
+				//Sometimes zero page addressing is not available, even if the operand is in the zero page
+				op.AddrMode = IsOpModeAvailable(op.OpCode, NesAddrMode::Zero) ? NesAddrMode::Zero : NesAddrMode::Abs;
+				operand.ByteCount = 1;
 			} else {
 				return AssemblerSpecialCodes::ParsingError;
 			}

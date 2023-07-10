@@ -12,6 +12,8 @@ private:
 	string GetOpName(uint8_t opcode) override;
 	PceAddrMode GetOpMode(uint8_t opcode) override;
 	bool IsOfficialOp(uint8_t opcode) override;
+	void AdjustLabelOperand(AssemblerOperand& operand);
+	void AdjustLabelOperands(AssemblerLineData& op);
 	AssemblerSpecialCodes ResolveOpMode(AssemblerLineData& op, uint32_t instructionAddress, bool firstPass) override;
 
 public:

@@ -27,6 +27,24 @@ bool PceAssembler::IsOfficialOp(uint8_t opcode)
 	return true;
 }
 
+void PceAssembler::AdjustLabelOperand(AssemblerOperand& operand)
+{
+	if(operand.ValueType == OperandValueType::Label) {
+		if(operand.ByteCount == 1) {
+			operand.ByteCount = 2;
+		} else if(operand.ByteCount == 2 && operand.Value >= 0x2000 && operand.Value <= 0x20FF) {
+			operand.ByteCount = 1;
+		}
+	}
+}
+
+void PceAssembler::AdjustLabelOperands(AssemblerLineData& op)
+{
+	AdjustLabelOperand(op.Operands[0]);
+	AdjustLabelOperand(op.Operands[1]);
+	AdjustLabelOperand(op.Operands[2]);
+}
+
 AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_t instructionAddress, bool firstPass)
 {
 	AssemblerOperand& operand = op.Operands[0];
@@ -36,6 +54,8 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 		return AssemblerSpecialCodes::InvalidOperands;
 	}
 
+	AdjustLabelOperands(op);
+
 	if(operand3.Type != OperandType::None) {
 		if(operand3.ByteCount > 0) {
 			//Block transfer
@@ -43,6 +63,9 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 				if(operand.IsImmediate || operand.HasParenOrBracket() || operand2.IsImmediate || operand2.HasParenOrBracket() || !operand3.IsImmediate || operand3.HasParenOrBracket()) {
 					return AssemblerSpecialCodes::InvalidOperands;
 				} else {
+					operand.ByteCount = 2;
+					operand2.ByteCount = 2;
+					operand3.ByteCount = 2;
 					op.AddrMode = PceAddrMode::Block;
 				}
 			} else {
@@ -154,34 +177,29 @@ AssemblerSpecialCodes PceAssembler::ResolveOpMode(AssemblerLineData& op, uint32_
 		} else if(op.OperandCount == 0) {
 			op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Acc) ? PceAddrMode::Acc : PceAddrMode::Imp;
 		} else if(op.OperandCount == 1) {
-			if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
-				if(IsOpModeAvailable(op.OpCode, PceAddrMode::Rel)) {
-					op.AddrMode = PceAddrMode::Rel;
+			bool allowRelMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Rel);
+			if(allowRelMode) {
+				op.AddrMode = PceAddrMode::Rel;
 
-					//Convert "absolute" jump to a relative jump
-					int16_t addressGap = operand.Value - (instructionAddress + 2);
-					if(addressGap > 127 || addressGap < -128) {
-						//Gap too long, can't jump that far
-						if(!firstPass) {
-							//Pretend this is ok on first pass, we're just trying to find all labels
-							return AssemblerSpecialCodes::OutOfRangeJump;
-						}
+				//Convert "absolute" jump to a relative jump
+				int16_t addressGap = operand.Value - (instructionAddress + 2);
+				if(addressGap > 127 || addressGap < -128) {
+					//Gap too long, can't jump that far
+					if(!firstPass) {
+						//Pretend this is ok on first pass, we're just trying to find all labels
+						return AssemblerSpecialCodes::OutOfRangeJump;
 					}
+				}
 
-					//Update data to match relative jump
-					operand.ByteCount = 1;
-					operand.Value = (uint8_t)addressGap;
-				} else {
-					operand.ByteCount = 2;
-					op.AddrMode = PceAddrMode::Abs;
-				}
+				//Update data to match relative jump
+				operand.ByteCount = 1;
+				operand.Value = (uint8_t)addressGap;
+			} else if(operand.ByteCount == 2 || operand.ValueType == OperandValueType::Label) {
+				op.AddrMode = PceAddrMode::Abs;
+				operand.ByteCount = 2;
 			} else if(operand.ByteCount == 1) {
-				if(IsOpModeAvailable(op.OpCode, PceAddrMode::Rel)) {
-					op.AddrMode = PceAddrMode::Rel;
-				} else {
-					//Sometimes zero page addressing is not available, even if the operand is in the zero page
-					op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Zero) ? PceAddrMode::Zero : PceAddrMode::Abs;
-				}
+				//Sometimes zero page addressing is not available, even if the operand is in the zero page
+				op.AddrMode = IsOpModeAvailable(op.OpCode, PceAddrMode::Zero) ? PceAddrMode::Zero : PceAddrMode::Abs;
 			} else {
 				return AssemblerSpecialCodes::InvalidOperands;
 			}
