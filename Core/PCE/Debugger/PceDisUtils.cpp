@@ -11,7 +11,7 @@
 #include "Utilities/FastString.h"
 #include "Shared/MemoryType.h"
 
-static constexpr uint8_t _opSize[24] = {
+static constexpr uint8_t _opSize[22] = {
 	1, 1, 1, 2, 2,
 	2, 3, 2, 2,
 	3, 2, 2,

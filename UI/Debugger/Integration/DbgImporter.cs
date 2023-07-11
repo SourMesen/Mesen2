@@ -901,16 +901,20 @@ namespace Mesen.Debugger.Integration
 		protected abstract bool IsJumpToSubroutine(byte opCode);
 		protected abstract CdlFlags GetOpFlags(byte opCode, int opSize);
 
-		public static DbgImporter Import(RomFormat romFormat, string path, bool importComments, bool showResult)
+		public static DbgImporter? Import(RomFormat romFormat, string path, bool importComments, bool showResult)
 		{
 			DbgImporter? importer = romFormat switch {
 				RomFormat.Sfc => new SnesDbgImporter(romFormat),
-				RomFormat.iNes or RomFormat.Nsf => new NesDbgImporter(romFormat),
-				RomFormat.Pce or RomFormat.PceCdRom => new PceDbgImporter(romFormat),
-				_ => throw new NotImplementedException()
+				RomFormat.iNes or RomFormat.Nsf or RomFormat.VsSystem or RomFormat.VsDualSystem => new NesDbgImporter(romFormat),
+				RomFormat.Pce or RomFormat.PceHes => new PceDbgImporter(romFormat),
+				_ => null
 			};
 
-			importer.Import(path, importComments, showResult);
+			if(importer == null) {
+				EmuApi.WriteLogEntry("[Debugger] Error: Attempted to load .dbg file for an unsupported file format: " + romFormat);
+			}
+
+			importer?.Import(path, importComments, showResult);
 
 			return importer;
 		}
