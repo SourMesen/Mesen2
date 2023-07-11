@@ -16,11 +16,14 @@ namespace Mesen.Debugger.Labels
 			HashSet<CpuType> cpuTypes = EmuApi.GetRomInfo().CpuTypes;
 			if(cpuTypes.Contains(CpuType.Gameboy)) {
 				SetGameboyDefaultLabels();
-			} else if(cpuTypes.Contains(CpuType.Nes)) {
+			} 
+			if(cpuTypes.Contains(CpuType.Nes)) {
 				SetDefaultNesLabels();
-			} else if(cpuTypes.Contains(CpuType.Snes)) {
+			} 
+			if(cpuTypes.Contains(CpuType.Snes)) {
 				SetSnesDefaultLabels();
-			} else if(cpuTypes.Contains(CpuType.Pce)) {
+			} 
+			if(cpuTypes.Contains(CpuType.Pce)) {
 				SetPceDefaultLabels();
 			}
 		}
