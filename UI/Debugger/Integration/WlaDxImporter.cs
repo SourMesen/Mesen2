@@ -210,6 +210,12 @@ public class WlaDxImporter : ISymbolProvider
 							int fileId = Int32.Parse(m.Groups[field_idx].Value, System.Globalization.NumberStyles.HexNumber);
 							int lineNumber = Int32.Parse(m.Groups[line_idx].Value, System.Globalization.NumberStyles.HexNumber);
 
+							if(fileId == 0) {
+								// WLA-DX can generate invalid file mappings if a file is optimized away. Ignore these mappings.
+								errorCount++;
+								continue;
+							}
+
 							if(lineNumber <= 1) {
 								//Ignore line number 0 and 1, seems like bad data?
 								errorCount++;
