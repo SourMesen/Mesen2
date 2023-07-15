@@ -463,14 +463,14 @@ void Spc::Addr_AbsIdxXInd()
 			case 1: _tmp2 = ReadOperandByte(); break;
 			case 2: Idle(); break;
 			case 3:
-			{
-				uint16_t addr = ((_tmp2 << 8) | _tmp1);
-				_tmp1 = Read(addr + _state.X);
-				_tmp2 = Read(addr + _state.X + 1);
-				_operandA = (_tmp2 << 8) | _tmp1;
+				_tmp3 = ((_tmp2 << 8) | _tmp1);
+				_tmp1 = Read(_tmp3 + _state.X);
+				break;
+
+			case 4:
+				_operandA = (Read(_tmp3 + _state.X + 1) << 8) | _tmp1;
 				EndAddr();
 				break;
-			}
 		}
 	}
 }
@@ -1015,14 +1015,18 @@ void Spc::INCW()
 	if(_opStep == SpcOpStep::Operation) {
 		switch(_opSubStep++) {
 			case 0: _tmp1 = Read(_operandA); break;
-			case 1:
-				Write(_operandA, _tmp1 + 1);
+			case 1: Write(_operandA, _tmp1 + 1); break;
 
-				uint16_t msbAddress = GetDirectAddress(_operandA + 1);
-				uint8_t msb = Read(msbAddress);
-				uint16_t value = ((msb << 8) | _tmp1) + 1;
-				Write(msbAddress, value >> 8);
-				SetZeroNegativeFlags16(value);
+			case 2: {
+				_tmp2 = GetDirectAddress(_operandA + 1);
+				uint8_t msb = Read(_tmp2);
+				_tmp3 = ((msb << 8) | _tmp1) + 1;
+				break;
+			}
+
+			case 3:
+				Write(_tmp2, _tmp3 >> 8);
+				SetZeroNegativeFlags16(_tmp3);
 				EndOp();
 				break;
 		}
@@ -1072,14 +1076,18 @@ void Spc::DECW()
 	if(_opStep == SpcOpStep::Operation) {
 		switch(_opSubStep++) {
 			case 0: _tmp1 = Read(_operandA); break;
-			case 1:
-				Write(_operandA, _tmp1 - 1);
+			case 1: Write(_operandA, _tmp1 - 1); break;
 
-				uint16_t msbAddress = GetDirectAddress(_operandA + 1);
-				uint8_t msb = Read(msbAddress);
-				uint16_t value = ((msb << 8) | _tmp1) - 1;
-				Write(msbAddress, value >> 8);
-				SetZeroNegativeFlags16(value);
+			case 2: {
+				_tmp2 = GetDirectAddress(_operandA + 1);
+				uint8_t msb = Read(_tmp2);
+				_tmp3 = ((msb << 8) | _tmp1) - 1;
+				break;
+			}
+
+			case 3:
+				Write(_tmp2, _tmp3 >> 8);
+				SetZeroNegativeFlags16(_tmp3);
 				EndOp();
 				break;
 		}
