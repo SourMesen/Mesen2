@@ -54,7 +54,9 @@ endif
 
 MESENFLAGS += -m64
 
-ifeq ($(DEBUG),)
+DEBUG ?= 0
+
+ifeq ($(DEBUG),0)
 	MESENFLAGS += -O3
 	ifneq ($(LTO),false)
 		MESENFLAGS += -flto -DHAVE_LTO
@@ -96,9 +98,17 @@ CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I
 CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 OBJFOLDER := obj.$(MESENPLATFORM)
+DEBUGFOLDER := bin/$(MESENPLATFORM)/Debug
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
+ifeq ($(DEBUG), 0)
+	OUTFOLDER = $(RELEASEFOLDER)
+	BUILD_TYPE = Release
+else
+	OUTFOLDER = $(DEBUGFOLDER)
+	BUILD_TYPE = Debug
+endif
 
-PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
+PUBLISHFLAGS :=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
 
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)
@@ -140,12 +150,12 @@ endif
 all: ui
 
 ui: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
-	mkdir -p $(RELEASEFOLDER)/Dependencies
-	rm -fr $(RELEASEFOLDER)/Dependencies/*
-	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) bin/$(MESENPLATFORM)/Release/$(SHAREDLIB)
+	mkdir -p $(OUTFOLDER)/Dependencies
+	rm -fr $(OUTFOLDER)/Dependencies/*
+	cp InteropDLL/$(OBJFOLDER)/$(SHAREDLIB) $(OUTFOLDER)/$(SHAREDLIB)
 	#Called twice because the first call copies native libraries to the bin folder which need to be included in Dependencies.zip
-	cd UI && dotnet publish -c Release -p:OptimizeUi="true" $(PUBLISHFLAGS)
-	cd UI && dotnet publish -c Release -p:OptimizeUi="true" $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
+	cd UI && dotnet publish -c $(BUILD_TYPE) -p:OptimizeUi="true" $(PUBLISHFLAGS)
 
 core: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 
@@ -169,7 +179,7 @@ pgo:
 	./buildPGO.sh
 
 run:
-	./bin/$(MESENPLATFORM)/Release/$(MESENPLATFORM)/publish/Mesen
+	$(OUTFOLDER)/$(MESENPLATFORM)/publish/Mesen
 
 clean:
 	rm -r -f $(COREOBJ)
