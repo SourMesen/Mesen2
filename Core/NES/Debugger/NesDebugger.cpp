@@ -185,16 +185,14 @@ void NesDebugger::ProcessRead(uint32_t addr, uint8_t value, MemoryOperationType 
 		_step->ProcessCpuCycle();
 		_debugger->ProcessBreakConditions(CpuType::Nes, *_step.get(), _breakpointManager.get(), operation, addressInfo);
 	} else {
-		if(operation.Type == MemoryOperationType::DmaRead && _cpu->IsDmcDma()) {
-			_eventManager->AddEvent(DebugEventType::DmcDmaRead, operation);
-		}
-
-		if(addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
-			if(operation.Type == MemoryOperationType::DmaRead) {
+		if(operation.Type == MemoryOperationType::DmaRead) {
+			bool isDmcDma = _cpu->IsDmcDma();
+			_eventManager->AddEvent(isDmcDma ? DebugEventType::DmcDmaRead : DebugEventType::DmaRead, operation);
+			if(isDmcDma && addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
 				_codeDataLogger->SetData<NesCdlFlags::PcmData>(addressInfo.Address);
-			} else if(operation.Type != MemoryOperationType::DummyRead) {
-				_codeDataLogger->SetData(addressInfo.Address);
 			}
+		} else if(operation.Type != MemoryOperationType::DummyRead && addressInfo.Type == MemoryType::NesPrgRom && addressInfo.Address >= 0) {
+			_codeDataLogger->SetData(addressInfo.Address);
 		}
 		
 		if(_traceLogger->IsEnabled()) {

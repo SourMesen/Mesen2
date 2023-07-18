@@ -287,7 +287,8 @@ enum class DebugEventType
 	Breakpoint,
 	BgColorChange,
 	SpriteZeroHit,
-	DmcDmaRead
+	DmcDmaRead,
+	DmaRead
 };
 
 enum class BreakSource

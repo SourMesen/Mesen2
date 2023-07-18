@@ -11,6 +11,7 @@
 	HorizontalAlignment="Stretch"
 	x:DataType="cfg:NesEventViewerConfig"
 	x:Class="Mesen.Debugger.Views.NesEventViewerConfigView"
+	Design.Height="600"
 >
 	<Design.DataContext>
 		<cfg:NesEventViewerConfig />
@@ -46,6 +47,7 @@
 
 		<c:OptionSection Header="Other events">
 			<dc:EventViewerCategoryControl Text="DMC DMA Read" Config="{CompiledBinding DmcDmaReads}" />
+			<dc:EventViewerCategoryControl Text="OAM/Other DMA Reads" Config="{CompiledBinding OtherDmaReads}" />
 			<dc:EventViewerCategoryControl Text="Sprite Zero Hit" Config="{CompiledBinding SpriteZeroHit}" />
 
 			<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding Irq}" />

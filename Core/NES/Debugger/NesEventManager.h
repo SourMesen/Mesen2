@@ -38,6 +38,7 @@ struct NesEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg Ppu2007Read;
 
 	EventViewerCategoryCfg DmcDmaReads;
+	EventViewerCategoryCfg OtherDmaReads;
 	EventViewerCategoryCfg SpriteZeroHit;
 
 	bool ShowPreviousFrameEvents;

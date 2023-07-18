@@ -663,6 +663,7 @@ namespace Mesen.Interop
 		BgColorChange,
 		SpriteZeroHit,
 		DmcDmaRead,
+		DmaRead
 	}
 
 	public struct DmaChannelConfig
@@ -782,6 +783,7 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg Ppu2007Read;
 
 		public InteropEventViewerCategoryCfg DmcDmaReads;
+		public InteropEventViewerCategoryCfg OtherDmaReads;
 		public InteropEventViewerCategoryCfg SpriteZeroHit;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;

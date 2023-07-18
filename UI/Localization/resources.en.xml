@@ -2674,6 +2674,7 @@ E
 			<Value ID="BgColorChange">BG Change</Value>
 			<Value ID="SpriteZeroHit">Sprite 0 Hit</Value>
 			<Value ID="DmcDmaRead">DMC Read</Value>
+			<Value ID="DmaRead">OAM/Other DMA Read</Value>
 		</Enum>
 		<Enum ID="AddrMode">
 			<Value ID="None">None</Value>

@@ -29,6 +29,7 @@ namespace Mesen.Config
 		[Reactive] public EventViewerCategoryCfg Ppu2007Read { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xFF, 0x7D, 0x7D));
 
 		[Reactive] public EventViewerCategoryCfg DmcDmaReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xC9, 0xFF, 0xFD));
+		[Reactive] public EventViewerCategoryCfg OtherDmaReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xFF, 0xC9, 0xFD));
 		[Reactive] public EventViewerCategoryCfg SpriteZeroHit { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x84, 0x73, 0xC0));
 
 		[Reactive] public EventViewerCategoryCfg Nmi { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xAB, 0xAD, 0xAC));
@@ -60,6 +61,7 @@ namespace Mesen.Config
 				Ppu2004Read = this.Ppu2004Read,
 				Ppu2007Read = this.Ppu2007Read,
 				DmcDmaReads = this.DmcDmaReads,
+				OtherDmaReads = this.OtherDmaReads,
 				SpriteZeroHit = this.SpriteZeroHit,
 				
 				Nmi = this.Nmi,

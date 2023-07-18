@@ -59,6 +59,7 @@ private:
 	bool _needNmi = false;
 
 	uint64_t _lastCrashWarning = 0;
+	bool _isDmcDmaRead = false;
 
 	__forceinline void StartCpuCycle(bool forRead);
 	__forceinline void ProcessPendingDma(uint16_t readAddress);
@@ -789,7 +790,7 @@ public:
 	void StartDmcTransfer();
 
 	bool IsCpuWrite() { return _cpuWrite; }
-	bool IsDmcDma() { return _dmcDmaRunning; }
+	bool IsDmcDma() { return _isDmcDmaRead; }
 
 	void Reset(bool softReset, ConsoleRegion region);
 	void Exec();

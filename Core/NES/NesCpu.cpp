@@ -91,6 +91,8 @@ void NesCpu::Reset(bool softReset, ConsoleRegion region)
 	_spriteDmaOffset = 0;
 	_needHalt = false;
 	_dmcDmaRunning = false;
+	_isDmcDmaRead = false;
+	_cpuWrite = false;
 	_lastCrashWarning = 0;
 
 	//Use _memoryManager->Read() directly to prevent clocking the PPU/APU when setting PC at reset
@@ -357,7 +359,7 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 	//"If this cycle is a read, hijack the read, discard the value, and prevent all other actions that occur on this cycle (PC not incremented, etc)"
 	StartCpuCycle(true);
 	if(isNtscInputBehavior && !skipFirstInputClock) {
-		_memoryManager->Read(readAddress, MemoryOperationType::DummyRead);
+		_memoryManager->Read(readAddress, MemoryOperationType::DmaRead);
 	}
 	EndCpuCycle(true);
 	_needHalt = false;
@@ -388,8 +390,10 @@ void NesCpu::ProcessPendingDma(uint16_t readAddress)
 			if(_dmcDmaRunning && !_needHalt && !_needDummyRead) {
 				//DMC DMA is ready to read a byte (both halt and dummy read cycles were performed before this)
 				processCycle();
+				_isDmcDmaRead = true; //used by debugger to distinguish between dmc and oam/dummy dma reads
 				readValue = ProcessDmaRead(_console->GetApu()->GetDmcReadAddress(), prevReadAddress, enableInternalRegReads, isNesBehavior);
-				EndCpuCycle(true); 
+				_isDmcDmaRead = false;
+				EndCpuCycle(true);
 				_console->GetApu()->SetDmcReadBuffer(readValue);
 				_dmcDmaRunning = false;
 			} else if(_spriteDmaTransfer) {
