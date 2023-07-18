@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Icon=Mesen
+Exec=Mesen %f
+Terminal=false
+Type=Application
+Categories=Game;Emulator;
+Name=Mesen
+GenericName=Multi-system emulator
+Comment=Multi-system emulator (NES, SNES, GB, PCE)

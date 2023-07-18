@@ -98,7 +98,7 @@ CFLAGS = -fPIC -Wall $(MESENFLAGS)
 OBJFOLDER := obj.$(MESENPLATFORM)
 RELEASEFOLDER := bin/$(MESENPLATFORM)/Release
 
-PUBLISHFLAGS :=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
+PUBLISHFLAGS ?=  -r $(MESENPLATFORM) --no-self-contained true -p:PublishSingleFile=true
 
 CORESRC := $(shell find Core -name '*.cpp')
 COREOBJ := $(CORESRC:.cpp=.o)

@@ -95,6 +95,35 @@ jobs:
           name: Mesen (Linux - ${{ matrix.os }} - ${{ matrix.compiler }})
           path: bin/linux-x64/Release/linux-x64/publish/Mesen
 
+  appimage:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.x
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -qy libsdl2-dev libfuse2 # The compilers are already installed on GitHub's runners.
+
+      - name: Build Mesen (AppImage)
+        run: |
+          Linux/appimage/appimage.sh
+      - name: Upload Mesen (AppImage)
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mesen (Linux x64 - AppImage)
+          path: Mesen.AppImage
+
+
   macos:
     strategy:
       matrix:
