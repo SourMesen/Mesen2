@@ -263,7 +263,10 @@ public class TileEditorViewModel : DisposableViewModel
 	private void SetPixelColor(PixelPoint position, int color)
 	{
 		TilePixelPositionInfo pos = GetPositionInfo(position);
-		DebugApi.SetTilePixel(_tileAddresses[pos.Column + pos.Row * _columnCount], _tileFormat, pos.TileX, pos.TileY, color);
+		int tileIndex = pos.Column + pos.Row * _columnCount;
+		if (tileIndex < _tileAddresses.Count) {
+			DebugApi.SetTilePixel(_tileAddresses[tileIndex], _tileFormat, pos.TileX, pos.TileY, color);
+		}
 	}
 
 	public void UpdatePixel(PixelPoint position, bool clearPixel)
