@@ -352,9 +352,11 @@ namespace Mesen.Debugger.Controls
 
 		public PixelPoint? GetGridPointFromMousePoint(Point p)
 		{
-			p = new Point(p.X + LeftClipSize * Zoom, p.Y + TopClipSize * Zoom);
+			double leftClip = LeftClipSize * Zoom / LayoutHelper.GetLayoutScale(this);
+			double topClip = TopClipSize * Zoom / LayoutHelper.GetLayoutScale(this);
+			p = new Point(p.X + leftClip, p.Y + topClip);
 
-			if(p.X < 0 || p.Y < 0 || p.X >= MinWidth + LeftClipSize * Zoom || p.Y >= MinHeight + TopClipSize * Zoom) {
+			if(p.X < 0 || p.Y < 0 || p.X >= MinWidth + leftClip || p.Y >= MinHeight + topClip) {
 				return null;
 			}
 
