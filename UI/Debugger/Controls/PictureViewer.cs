@@ -359,7 +359,12 @@ namespace Mesen.Debugger.Controls
 			}
 
 			double scale = LayoutHelper.GetLayoutScale(this) / Zoom;
-			return PixelPoint.FromPoint(p, scale);
+			PixelPoint point = PixelPoint.FromPoint(p, scale);
+			if(point.X < 0 || point.Y < 0 || point.X >= Source.Size.Width || point.Y >= Source.Size.Height) {
+				return null;
+			}
+
+			return point;
 		}
 
 		private Rect GetTileRect(PixelPoint p)
