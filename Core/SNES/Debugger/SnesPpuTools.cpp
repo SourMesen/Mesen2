@@ -344,8 +344,17 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 
 	for(int y = 0; y < sprite.Height; y++) {
 		if(sprite.VerticalMirror) {
-			yOffset = (sprite.Height - y - 1) & 0x07;
-			rowOffset = (sprite.Height - y - 1) >> 3;
+			int pos;
+			if(y < sprite.Width) {
+				//Square sprites
+				pos = sprite.Width - 1 - y;
+			} else {
+				//When using rectangular sprites (undocumented), vertical mirroring doesn't work properly
+				//The top and bottom halves are mirrored separately and don't swap positions
+				pos = sprite.Width * 3 - 1 - y;
+			}
+			yOffset = pos & 0x07;
+			rowOffset = pos >> 3;
 		} else {
 			yOffset = y & 0x07;
 			rowOffset = y >> 3;

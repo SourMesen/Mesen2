@@ -708,8 +708,17 @@ void SnesPpu::FetchSpriteAttributes(uint16_t oamAddress)
 
 	bool verticalMirror = (flags & 0x80) != 0;
 	if(verticalMirror) {
-		yOffset = (_currentSprite.Height - 1 - yGap) & 0x07;
-		rowOffset = (_currentSprite.Height - 1 - yGap) >> 3;
+		int pos;
+		if(yGap < _currentSprite.Width) {
+			//Square sprites
+			pos = _currentSprite.Width - 1 - yGap;
+		} else {
+			//When using rectangular sprites (undocumented), vertical mirroring doesn't work properly
+			//The top and bottom halves are mirrored separately and don't swap positions
+			pos = _currentSprite.Width * 3 - 1 - yGap;
+		}
+		yOffset = pos & 0x07;
+		rowOffset = pos >> 3;
 	} else {
 		yOffset = yGap & 0x07;
 		rowOffset = yGap >> 3;
