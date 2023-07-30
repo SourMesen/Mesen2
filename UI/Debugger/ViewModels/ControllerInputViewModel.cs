@@ -52,6 +52,11 @@ namespace Mesen.Debugger.ViewModels
 
 		private void ControllerInputViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
+			SetInputOverrides();
+		}
+
+		public void SetInputOverrides()
+		{
 			DebugApi.SetInputOverrides((uint)ControllerIndex - 1, new DebugControllerState() {
 				A = ButtonA,
 				B = ButtonB,

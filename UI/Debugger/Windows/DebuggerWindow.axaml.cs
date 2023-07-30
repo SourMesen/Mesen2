@@ -187,6 +187,8 @@ namespace Mesen.Debugger.Windows
 								DataContext = _model;
 							});
 						}
+					} else {
+						_model.ControllerList.SetInputOverrides();
 					}
 
 					GameLoadedEventParams evtParams = Marshal.PtrToStructure<GameLoadedEventParams>(e.Parameter);

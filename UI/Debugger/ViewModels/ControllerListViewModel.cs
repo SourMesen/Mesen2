@@ -24,5 +24,12 @@ namespace Mesen.Debugger.ViewModels
 				Controllers.Add(new ControllerInputViewModel(consoleType, index));
 			}
 		}
+
+		public void SetInputOverrides()
+		{
+			foreach(ControllerInputViewModel controller in Controllers) {
+				controller.SetInputOverrides();
+			}
+		}
 	}
 }
