@@ -42,6 +42,9 @@ namespace Mesen.Windows
 			_allowKeyboardOnly = allowKeyboardOnly;
 			HintLabel = ResourceHelper.GetMessage(_allowKeyboardOnly ? "SetKeyHint" : "SetKeyMouseHint");
 
+			//Required for keyboard input to work properly in Linux/macOS
+			this.Focusable = true;
+
 			InitializeComponent();
 
 			lblCurrentKey = this.GetControl<TextBlock>("lblCurrentKey");
