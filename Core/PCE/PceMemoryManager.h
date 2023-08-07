@@ -93,6 +93,7 @@ public:
 
 	void SetIrqSource(PceIrqSource source) { _state.ActiveIrqs |= (int)source; }
 	__forceinline uint8_t GetPendingIrqs() { return (_state.ActiveIrqs & ~_state.DisabledIrqs); }
+	__forceinline bool HasIrqSource(PceIrqSource source) { return (_state.ActiveIrqs & ~_state.DisabledIrqs & (int)source) != 0; }
 	void ClearIrqSource(PceIrqSource source) { _state.ActiveIrqs &= ~(int)source; }
 
 	void Serialize(Serializer& s);

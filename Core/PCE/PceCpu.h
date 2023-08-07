@@ -40,6 +40,7 @@ private:
 	bool _memoryFlag = false;
 
 	uint8_t _pendingIrqs = 0;
+	bool _prevInterruptFlag = false;
 	PceAddrMode _instAddrMode;
 
 private:

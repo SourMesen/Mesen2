@@ -106,7 +106,7 @@ void PceCpu::Exec()
 	FetchOperand();
 	(this->*_opTable[opCode])();
 
-	if(_pendingIrqs) {
+	if(_pendingIrqs || _memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
 		ProcessIrq(false);
 	}
 }
@@ -274,6 +274,7 @@ void PceCpu::ProcessCpuCycle()
 	_memoryManager->Exec();
 
 	_pendingIrqs = CheckFlag(PceCpuFlags::Interrupt) ? 0 : _memoryManager->GetPendingIrqs();
+	_prevInterruptFlag = CheckFlag(PceCpuFlags::Interrupt);
 }
 
 #ifndef DUMMYCPU
@@ -383,9 +384,34 @@ uint16_t PceCpu::GetIndYAddr()
 
 void PceCpu::ProcessIrq(bool forBrk)
 {
-	//Keep a copy of _pendingIrqs here, because its value can change
-	//by the cycles the CPU runs before the value is used at the end
-	uint8_t pendingIrqs = _pendingIrqs;
+	//Check target vector before dummy reads, pushing PC/flags, etc.
+	uint16_t vector;
+	if(forBrk) {
+		vector = PceCpu::Irq2Vector;
+	} else if(!_prevInterruptFlag && _memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
+		//Timer IRQ appears to  behave differently from the VDC IRQ2
+		//When a timer IRQ is pending and the following sequence runs:
+		//  CLI         ;enable interrupts
+		//  STA $1403   ;acknowledge timer IRQ
+		//"D&D: Order of the Griffon" expects the timer IRQ to NOT occur after the STA
+		//despite the IRQ being active until the last cycle of the STA instruction
+		vector = PceCpu::TimerIrqVector;
+	} else if(_pendingIrqs & (uint8_t)PceIrqSource::Irq1) {
+		vector = PceCpu::Irq1Vector;
+	} else if(_pendingIrqs & (uint8_t)PceIrqSource::Irq2) {
+		//In constrast to the timer IRQ above, when a VDC IRQ is pending and the following sequence runs:
+		//  CLI         ;enable interrupts
+		//  LDA $0000   ;acknowledge VDC IRQ
+		//Games expect the VDC IRQ to occur after the LDA because the IRQ
+		//was active on the before-last cycle of the LDA instruction
+		//"Jackie Chan" and "Final Soldier" both shake if the IRQ does not occur in this scenario.
+		//Unsure why both IRQs appear to behave differently (or if there is another explanation for this)
+		//This has not been tested on hardware.
+		vector = PceCpu::Irq2Vector;
+	} else {
+		//No IRQ actually needs to be processed
+		return;
+	}
 
 #ifndef DUMMYCPU
 	uint16_t originalPc = PC();
@@ -414,15 +440,7 @@ void PceCpu::ProcessIrq(bool forBrk)
 	ClearFlags(PceCpuFlags::Decimal | PceCpuFlags::Memory);
 	SetFlags(PceCpuFlags::Interrupt);
 
-	if(forBrk) {
-		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
-	} else if(pendingIrqs & (uint8_t)PceIrqSource::TimerIrq) {
-		SetPC(MemoryReadWord(PceCpu::TimerIrqVector));
-	} else if(pendingIrqs & (uint8_t)PceIrqSource::Irq1) {
-		SetPC(MemoryReadWord(PceCpu::Irq1Vector));
-	} else if(pendingIrqs & (uint8_t)PceIrqSource::Irq2) {
-		SetPC(MemoryReadWord(PceCpu::Irq2Vector));
-	}
+	SetPC(MemoryReadWord(vector));
 
 	if(!forBrk) {
 #ifndef DUMMYCPU
