@@ -122,7 +122,9 @@ shared_ptr<BaseControlDevice> NesControlManager::CreateControllerDevice(Controll
 		
 		case ControllerType::FourScore: {
 			std::copy(cfg.Port1SubPorts, cfg.Port1SubPorts + 4, controllers);
+			//Use the p1/p2 bindings for the first 2 ports (the UI does this, too)
 			controllers[0].Keys = cfg.Port1.Keys;
+			controllers[1].Keys = cfg.Port2.Keys;
 			device.reset(new FourScore(_emu, type, 0, controllers));
 			break;
 		}
