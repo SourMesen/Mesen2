@@ -22,7 +22,7 @@ private:
 	uint16_t InternalGetPrgPageSize();
 	uint16_t InternalGetSaveRamPageSize();
 	uint16_t InternalGetWorkRamPageSize();
-	uint16_t InternalGetChrPageSize();
+	uint16_t InternalGetChrRomPageSize();
 	uint16_t InternalGetChrRamPageSize();
 	bool ValidateAddressRange(uint16_t startAddr, uint16_t endAddr);
 
@@ -132,7 +132,7 @@ protected:
 	string GetBatteryFilename();
 
 	uint32_t GetPrgPageCount();
-	uint32_t GetChrPageCount();
+	uint32_t GetChrRomPageCount();
 
 	uint8_t GetPowerOnByte(uint8_t defaultValue = 0);
 	uint32_t GetDipSwitches();

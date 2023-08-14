@@ -28,7 +28,7 @@ void BaseMapper::Reset(bool softReset) { }
 uint16_t BaseMapper::InternalGetPrgPageSize() { return std::min((uint32_t)GetPrgPageSize(), _prgSize); }
 uint16_t BaseMapper::InternalGetSaveRamPageSize() { return std::min((uint32_t)GetSaveRamPageSize(), _saveRamSize); }
 uint16_t BaseMapper::InternalGetWorkRamPageSize() { return std::min((uint32_t)GetWorkRamPageSize(), _workRamSize); }
-uint16_t BaseMapper::InternalGetChrPageSize() { return std::min((uint32_t)GetChrPageSize(), _chrRomSize); }
+uint16_t BaseMapper::InternalGetChrRomPageSize() { return std::min((uint32_t)GetChrPageSize(), _chrRomSize); }
 uint16_t BaseMapper::InternalGetChrRamPageSize() { return std::min((uint32_t)GetChrRamPageSize(), _chrRamSize); }
 	
 bool BaseMapper::ValidateAddressRange(uint16_t startAddr, uint16_t endAddr)
@@ -204,14 +204,14 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint1
 	switch(type) {
 		case ChrMemoryType::Default:
 		case ChrMemoryType::ChrRom:
-			pageSize = InternalGetChrPageSize();
+			pageSize = InternalGetChrRomPageSize();
 			if(pageSize == 0) {
 				#ifdef _DEBUG
 				MessageManager::DisplayMessage("Debug", "Tried to map undefined chr rom.");
 				#endif
 				return;
 			}
-			pageCount = GetChrPageCount();
+			pageCount = GetChrRomPageCount();
 			break;
 
 		case ChrMemoryType::ChrRam:
@@ -397,7 +397,7 @@ void BaseMapper::SelectChrPage(uint16_t slot, uint16_t page, ChrMemoryType memor
 		if(memoryType == ChrMemoryType::Default) {
 			memoryType = _chrRomSize > 0 ? ChrMemoryType::ChrRom : ChrMemoryType::ChrRam;
 		}
-		pageSize = memoryType == ChrMemoryType::ChrRam ? InternalGetChrRamPageSize() : InternalGetChrPageSize();
+		pageSize = memoryType == ChrMemoryType::ChrRam ? InternalGetChrRamPageSize() : InternalGetChrRomPageSize();
 	}
 
 	uint16_t startAddr = slot * pageSize;
@@ -456,9 +456,9 @@ uint32_t BaseMapper::GetPrgPageCount()
 	return pageSize ? (_prgSize / pageSize) : 0;
 }
 
-uint32_t BaseMapper::GetChrPageCount()
+uint32_t BaseMapper::GetChrRomPageCount()
 {
-	uint16_t pageSize = InternalGetChrPageSize();
+	uint16_t pageSize = InternalGetChrRomPageSize();
 	return pageSize ? (_chrRomSize / pageSize) : 0;
 }
 
@@ -1052,8 +1052,8 @@ CartridgeState BaseMapper::GetState()
 
 	state.PrgPageCount = GetPrgPageCount();
 	state.PrgPageSize = InternalGetPrgPageSize();
-	state.ChrPageCount = GetChrPageCount();
-	state.ChrPageSize = InternalGetChrPageSize();
+	state.ChrPageCount = GetChrRomPageCount();
+	state.ChrPageSize = InternalGetChrRomPageSize();
 	state.ChrRamPageSize = InternalGetChrRamPageSize();
 	for(int i = 0; i < 0x100; i++) {
 		state.PrgMemoryOffset[i] = _prgMemoryOffset[i];
