@@ -6,6 +6,7 @@
 #include "SNES/Spc.h"
 #include "SNES/InternalRegisters.h"
 #include "SNES/SnesControlManager.h"
+#include "SNES/InternalRegisters.h"
 #include "SNES/SnesDmaController.h"
 #include "SNES/Debugger/SnesPpuTools.h"
 #include "Debugger/Debugger.h"
@@ -458,6 +459,8 @@ bool SnesPpu::ProcessEndOfScanline(uint16_t& hClock)
 
 		_scanline++;
 		hClock = 0;
+
+		_console->GetInternalRegisters()->ProcessAutoJoypad();
 
 		if(_scanline == _nmiScanline) {
 			ProcessLocationLatchRequest();

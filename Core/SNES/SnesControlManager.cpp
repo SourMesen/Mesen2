@@ -2,6 +2,7 @@
 #include "SNES/SnesControlManager.h"
 #include "SNES/SnesConsole.h"
 #include "SNES/SnesMemoryManager.h"
+#include "SNES/InternalRegisters.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyManager.h"
@@ -87,6 +88,7 @@ void SnesControlManager::UpdateControlDevices()
 uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 {
 	if(!forAutoRead) {
+		_console->GetInternalRegisters()->ProcessAutoJoypad();
 		SetInputReadFlag();
 	}
 
@@ -98,9 +100,11 @@ uint8_t SnesControlManager::Read(uint16_t addr, bool forAutoRead)
 	return value;
 }
 
-void SnesControlManager::Write(uint16_t addr, uint8_t value)
+void SnesControlManager::Write(uint16_t addr, uint8_t value, bool forAutoRead)
 {
-	_lastWriteValue = value;
+	if(!forAutoRead) {
+		_lastWriteValue = value;
+	}
 
 	for(shared_ptr<BaseControlDevice> &device : _controlDevices) {
 		device->WriteRam(addr, value);

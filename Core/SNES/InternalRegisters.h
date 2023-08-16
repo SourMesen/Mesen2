@@ -28,8 +28,7 @@ private:
 	bool _irqFlag = false;
 
 	uint64_t _autoReadClockStart = 0;
-	uint16_t _newControllerData[4] = {};
-	bool _newControllerDataPending = false;
+	uint64_t _autoReadNextClock = 0;
 
 	void SetIrqFlag(bool irqFlag);
 	
@@ -42,7 +41,8 @@ public:
 
 	void Reset();
 
-	void ProcessAutoJoypadRead();
+	void SetAutoJoypadReadClock();
+	void ProcessAutoJoypad();
 
 	__forceinline void ProcessIrqCounters();
 

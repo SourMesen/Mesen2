@@ -77,7 +77,7 @@ void SnesConsole::ProcessEndOfFrame()
 
 	_controlManager->UpdateControlDevices();
 	_controlManager->UpdateInputState();
-	_internalRegisters->ProcessAutoJoypadRead();
+	_internalRegisters->SetAutoJoypadReadClock();
 	_frameRunning = false;
 }
 

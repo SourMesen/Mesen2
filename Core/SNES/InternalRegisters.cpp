@@ -7,6 +7,7 @@
 #include "SNES/SnesMemoryManager.h"
 #include "SNES/InternalRegisterTypes.h"
 #include "Shared/MessageManager.h"
+#include "Shared/Emulator.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/HexUtilities.h"
 
@@ -41,72 +42,94 @@ void InternalRegisters::Reset()
 	_irqLevel = false;
 	_needIrq = false;
 	_irqFlag = false;
+	_autoReadClockStart = 0;
+	_autoReadNextClock = 0;
 }
 
-void InternalRegisters::ProcessAutoJoypadRead()
+void InternalRegisters::SetAutoJoypadReadClock()
 {
-	if(_autoReadClockStart == 0) {
-		//"[..] Specifically, it begins at dot 74.5 on the first frame" (74.5*4 = 298)
-		_autoReadClockStart = _console->GetMasterClock() + 298;
-	} else {
-		//"This begins between dots 32.5 and 95.5 of the first V-Blank scanline" (32.5*4 = 130)
-		//"and thereafter some multiple of 256 cycles after the start of the previous read that falls within the observed range."
-		uint64_t rangeStart = (_console->GetMasterClock() + 130);
-		uint64_t elapsed = rangeStart - _autoReadClockStart;
-		uint64_t gap = elapsed % 256;
-		_autoReadClockStart = rangeStart + gap;
-	}
+	//Auto-read starts at the first multiple of 256 master clocks after dot 32.5 (hclock 130)
+	uint64_t rangeStart = _console->GetMasterClock() + 130;
+	_autoReadClockStart = rangeStart + ((rangeStart & 0xFF) ? (256 - (rangeStart & 0xFF)) : 0);
+	_autoReadNextClock = _autoReadClockStart;
+}
 
-	if(!_state.EnableAutoJoypadRead) {
+void InternalRegisters::ProcessAutoJoypad()
+{
+	if(_autoReadNextClock == 0) {
 		return;
 	}
 
-	//TODO what happens if CPU reads or writes to 4016/4017 while this is running?
+	for(uint64_t clock = _autoReadNextClock; clock <= _console->GetMasterClock(); clock += 128) {
+		_autoReadNextClock = clock + 128;
 
-	//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
-	//causing the controllers to continuously report the value of the B button
-	if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
-		_controlManager->Write(0x4016, 1);
-		_controlManager->Write(0x4016, 0);
+		if(!_state.EnableAutoJoypadRead) {
+			continue;
+		}
+
+		int step = (clock - _autoReadClockStart) / 128;
+
+		switch(step) {
+			case 0: 
+				//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
+				//causing the controllers to continuously report the value of the B button
+				if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
+					_controlManager->Write(0x4016, 1, true);
+				}
+				break;
+
+			case 1:
+				//If bit 0 was set to 1 by a CPU write, auto-read can't set the value back to 0
+				//causing the controllers to continuously report the value of the B button
+				if((_controlManager->GetLastWriteValue() & 0x01) == 0) {
+					_controlManager->Write(0x4016, 0, true);
+				}
+
+				_state.ControllerData[0] = 0;
+				_state.ControllerData[1] = 0;
+				_state.ControllerData[2] = 0;
+				_state.ControllerData[3] = 0;
+				break;
+
+			default:
+				if((step & 0x01) == 0) {
+					uint8_t port1 = _controlManager->Read(0x4016, true);
+					uint8_t port2 = _controlManager->Read(0x4017, true);
+
+					_state.ControllerData[0] <<= 1;
+					_state.ControllerData[1] <<= 1;
+					_state.ControllerData[2] <<= 1;
+					_state.ControllerData[3] <<= 1;
+
+					_state.ControllerData[0] |= (port1 & 0x01);
+					_state.ControllerData[1] |= (port2 & 0x01);
+					_state.ControllerData[2] |= (port1 & 0x02) >> 1;
+					_state.ControllerData[3] |= (port2 & 0x02) >> 1;
+				}
+				break;
+		}
+
+		if(step > 32) {
+			_autoReadNextClock = 0;
+			break;
+		}
 	}
-
-	for(int i = 0; i < 4; i++) {
-		_state.ControllerData[i] = _newControllerData[i];
-		_newControllerData[i] = 0;
-	}
-
-	for(int i = 0; i < 16; i++) {
-		uint8_t port1 = _controlManager->Read(0x4016, true);
-		uint8_t port2 = _controlManager->Read(0x4017, true);
-
-		_newControllerData[0] <<= 1;
-		_newControllerData[1] <<= 1;
-		_newControllerData[2] <<= 1;
-		_newControllerData[3] <<= 1;
-
-		_newControllerData[0] |= (port1 & 0x01);
-		_newControllerData[1] |= (port2 & 0x01);
-		_newControllerData[2] |= (port1 & 0x02) >> 1;
-		_newControllerData[3] |= (port2 & 0x02) >> 1;
-	}
-
-	_newControllerDataPending = true;
 }
 
 bool InternalRegisters::IsAutoReadActive()
 {
-	//Auto-read is active for 4224 master cycles
-	return _state.EnableAutoJoypadRead && _console->GetMasterClock() >= _autoReadClockStart && _console->GetMasterClock() < _autoReadClockStart + 4224;
+	uint64_t masterClock = _console->GetMasterClock();
+	return (
+		_state.EnableAutoJoypadRead &&
+		_autoReadClockStart > 0 &&
+		masterClock >= _autoReadClockStart &&
+		masterClock <= _autoReadClockStart + 128 * 33 //4224 master clocks
+	);
 }
 
 uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
 {
-	if(_newControllerDataPending && _console->GetMasterClock() > _autoReadClockStart + 4224) {
-		for(int i = 0; i < 4; i++) {
-			_state.ControllerData[i] = _newControllerData[i];
-		}
-		_newControllerDataPending = false;
-	}
+	ProcessAutoJoypad();
 
 	//When auto-poll registers are read, don't count frame as a lag frame
 	_controlManager->SetInputReadFlag();
@@ -119,18 +142,11 @@ uint8_t InternalRegisters::ReadControllerData(uint8_t port, bool getMsb)
 	}
 
 	if(IsAutoReadActive()) {
-		if(value == 0) {
-			//"The only reliable value is that no buttons pressed will return 0"
-			return 0;
-		} else {
-			//TODO not accurate
-			//"Reading $4218-f during this time will read back incorrect values."
-			//Return bad data when reading during auto-read while buttons are pressed
-			return (value ^ 0xFF) >> 2;
-		}
-	} else {
-		return value;
+		//TODO add a break option for this?
+		_console->GetEmulator()->DebugLog("[Input] Read input during auto-read - results may be invalid.");
 	}
+
+	return value;
 }
 
 uint8_t InternalRegisters::GetIoPortOutput()
@@ -239,18 +255,34 @@ uint8_t InternalRegisters::Read(uint16_t addr)
 void InternalRegisters::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
-		case 0x4200:
+		case 0x4200: {
+			//Catch up auto-read logic before modifying the auto-read flag
+			bool autoRead = (value & 0x01) != 0;
+			if(_state.EnableAutoJoypadRead != autoRead) {
+				ProcessAutoJoypad();
+				if(!autoRead) {
+					_autoReadClockStart = 0;
+					_autoReadNextClock = 0;
+				}
+			}
+
 			_state.EnableNmi = (value & 0x80) != 0;
 			_state.EnableVerticalIrq = (value & 0x20) != 0;
 			_state.EnableHorizontalIrq = (value & 0x10) != 0;
-			_state.EnableAutoJoypadRead = (value & 0x01) != 0;
+			_state.EnableAutoJoypadRead = autoRead;
 			
 			SetNmiFlag(_nmiFlag);
 			SetIrqFlag(_irqFlag);
 			break;
+		}
 
 		case 0x4201:
 			//TODO WRIO - Programmable I/O port (out-port)
+			
+			//The IO port's value affects the multitap - make sure to catch-up on the auto-read logic first to
+			//ensure the reads get the correct data, otherwise it might return the data for the wrong controllers
+			ProcessAutoJoypad();
+
 			if((_state.IoPortOutput & 0x80) && !(value & 0x80)) {
 				_ppu->LatchLocationValues();
 			}
@@ -316,6 +348,5 @@ void InternalRegisters::Serialize(Serializer &s)
 	SV(_aluMulDiv);
 
 	SV(_autoReadClockStart);
-	SV(_newControllerData[0]); SV(_newControllerData[1]); SV(_newControllerData[2]); SV(_newControllerData[3]);
-	SV(_newControllerDataPending);
+	SV(_autoReadNextClock);
 }
