@@ -194,6 +194,7 @@ public:
 			case MemoryType::GbCartRam:
 			case MemoryType::SnesSaveRam:
 			case MemoryType::PceSaveRam:
+			case MemoryType::SnesRegister:
 				return false;
 
 			default:
