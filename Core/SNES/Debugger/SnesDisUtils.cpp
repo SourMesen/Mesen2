@@ -250,6 +250,7 @@ bool SnesDisUtils::IsUnconditionalJump(uint8_t opCode)
 		case 0x6C: //JMP
 		case 0x7C: //JMP
 		case 0x80: //BRA
+		case 0x82: //BRL
 		case 0xDC: //JMP
 		case 0xFC: //JSR
 			return true;
@@ -300,6 +301,7 @@ CdlFlags::CdlFlags SnesDisUtils::GetOpFlags(uint8_t opCode, uint32_t pc, uint32_
 		case 0x6C: //JMP
 		case 0x7C: //JMP
 		case 0x80: //BRA
+		case 0x82: //BRL
 		case 0xDC: //JMP
 			return pc != prevPc + SnesDisUtils::GetOpSize(opCode, 0) ? CdlFlags::JumpTarget : CdlFlags::None;
 
