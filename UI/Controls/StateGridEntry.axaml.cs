@@ -124,18 +124,20 @@ namespace Mesen.Controls
 						if(Path.GetExtension(game.FileName) == "." + FileDialogHelper.MesenSaveStateExt) {
 							img = EmuApi.GetSaveStatePreview(game.FileName);
 						} else {
-							using FileStream fs = File.Open(game.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-							ZipArchive zip = new ZipArchive(fs);
-							ZipArchiveEntry? entry = zip.GetEntry("Screenshot.png");
-							if(entry != null) {
-								using Stream stream = entry.Open();
+							using FileStream? fs = FileHelper.OpenRead(game.FileName);
+							if(fs != null) {
+								ZipArchive zip = new ZipArchive(fs);
+								ZipArchiveEntry? entry = zip.GetEntry("Screenshot.png");
+								if(entry != null) {
+									using Stream stream = entry.Open();
 
-								//Copy to a memory stream (to avoid what looks like a Skia or Avalonia issue?)
-								using MemoryStream ms = new MemoryStream();
-								stream.CopyTo(ms);
-								ms.Seek(0, SeekOrigin.Begin);
+									//Copy to a memory stream (to avoid what looks like a Skia or Avalonia issue?)
+									using MemoryStream ms = new MemoryStream();
+									stream.CopyTo(ms);
+									ms.Seek(0, SeekOrigin.Begin);
 
-								img = new Bitmap(ms);
+									img = new Bitmap(ms);
+								}
 							}
 						}
 					} catch { }

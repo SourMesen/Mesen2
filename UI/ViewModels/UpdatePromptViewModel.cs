@@ -103,12 +103,13 @@ namespace Mesen.ViewModels
 						downloadPath += Path.GetExtension(entry.Name);
 						entry.ExtractToFile(downloadPath, true);
 
-						string hash;
-						using(SHA256 sha256 = SHA256.Create()) {
-							using(FileStream fileStream = File.OpenRead(downloadPath)) {
-								hash = BitConverter.ToString(sha256.ComputeHash(fileStream)).Replace("-", "");
-							}
+						string? hash = null;
+						using SHA256 sha256 = SHA256.Create();
+						using FileStream? fileStream = FileHelper.OpenRead(downloadPath);
+						if(fileStream != null) {
+							hash = BitConverter.ToString(sha256.ComputeHash(fileStream)).Replace("-", "");
 						}
+
 						if(hash != _updateInfo.Hash) {
 							File.Delete(downloadPath);
 						}

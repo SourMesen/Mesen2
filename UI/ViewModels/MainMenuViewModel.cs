@@ -1085,7 +1085,11 @@ namespace Mesen.ViewModels
 			}
 
 			try {
-				using(FileStream stream = File.Open(filename, FileMode.Open)) {
+				using(FileStream? stream = FileHelper.OpenRead(filename)) {
+					if(stream == null) {
+						return;
+					}
+
 					ZipArchive zip = new ZipArchive(stream);
 
 					//Find the hires.txt file

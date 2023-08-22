@@ -123,7 +123,10 @@ namespace Mesen.Controls
 
 		public void LoadPaletteFile(string filename)
 		{
-			using FileStream paletteFile = File.OpenRead(filename);
+			using FileStream? paletteFile = FileHelper.OpenRead(filename);
+			if(paletteFile == null) {
+				return;
+			}
 
 			byte[] paletteFileData = new byte[LargePaletteSize * 3 + 1];
 			int byteCount = paletteFile.Read(paletteFileData, 0, LargePaletteSize * 3 + 1);

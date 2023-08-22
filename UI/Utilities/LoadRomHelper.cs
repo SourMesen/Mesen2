@@ -119,13 +119,15 @@ namespace Mesen.Utilities
 
 		private static bool IsPatchFile(string filename)
 		{
-			using(FileStream stream = File.OpenRead(filename)) {
-				byte[] header = new byte[5];
-				stream.Read(header, 0, 5);
-				if(header[0] == 'P' && header[1] == 'A' && header[2] == 'T' && header[3] == 'C' && header[4] == 'H') {
-					return true;
-				} else if((header[0] == 'U' || header[0] == 'B') && header[1] == 'P' && header[2] == 'S' && header[3] == '1') {
-					return true;
+			using(FileStream? stream = FileHelper.OpenRead(filename)) {
+				if(stream != null) {
+					byte[] header = new byte[5];
+					stream.Read(header, 0, 5);
+					if(header[0] == 'P' && header[1] == 'A' && header[2] == 'T' && header[3] == 'C' && header[4] == 'H') {
+						return true;
+					} else if((header[0] == 'U' || header[0] == 'B') && header[1] == 'P' && header[2] == 'S' && header[3] == '1') {
+						return true;
+					}
 				}
 			}
 			return false;

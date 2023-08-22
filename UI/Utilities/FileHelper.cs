@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Threading;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,6 +41,13 @@ namespace Mesen.Utilities
 			});
 		}
 
+		public static FileStream? OpenRead(string filepath)
+		{
+			return AttemptOperation(() => {
+				return File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			});
+		}
+
 		private static T? AttemptOperation<T>(Func<T> action)
 		{
 			int retry = 3;
@@ -49,7 +57,13 @@ namespace Mesen.Utilities
 				} catch(Exception ex) {
 					retry--;
 					if(retry == 0) {
-						MesenMsgBox.ShowException(ex);
+						if(Dispatcher.UIThread.CheckAccess()) {
+							MesenMsgBox.ShowException(ex);
+						} else {
+							Dispatcher.UIThread.Post(() => {
+								MesenMsgBox.ShowException(ex);
+							});
+						}
 						return default;
 					} else {
 						System.Threading.Thread.Sleep(50);
