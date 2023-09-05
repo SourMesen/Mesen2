@@ -697,6 +697,10 @@ bool Debugger::IsBreakOptionEnabled(BreakSource src)
 
 void Debugger::BreakImmediately(CpuType sourceCpu, BreakSource source)
 {
+	if(_debuggers[(int)sourceCpu].Debugger->IsStepBack()) {
+		return;
+	}
+
 	if(IsDebugWindowOpened(sourceCpu) && IsBreakOptionEnabled(source)) {
 		SleepUntilResume(sourceCpu, source);
 	}
