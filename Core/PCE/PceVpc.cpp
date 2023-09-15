@@ -191,8 +191,11 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 		uint16_t* rowBufferVdc2 = _vdc2->GetRowBuffer();
 		
 		uint32_t pixelCount = PceConstants::ClockPerScanline / _vce->GetClockDivider();
+		int windowOffset = (_vce->GetClockDivider() == 3 ? 8 : -16);
+		uint16_t wnd1 = std::max(0, (int16_t)_state.Window1 + windowOffset);
+		uint16_t wnd2 = std::max(0, (int16_t)_state.Window2 + windowOffset);
 		for(uint32_t i = 0; i < pixelCount; i++) {
-			PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < _state.Window1) | ((i < _state.Window2) << 1));
+			PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < wnd1) | ((i < wnd2) << 1));
 			PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)wndType];
 			uint8_t enabledLayers = (uint8_t)cfg.Vdc1Enabled | ((uint8_t)cfg.Vdc2Enabled << 1);
 			uint16_t color;
