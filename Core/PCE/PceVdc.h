@@ -98,7 +98,7 @@ private:
 
 	bool _pendingMemoryRead = false;
 	bool _pendingMemoryWrite = false;
-	
+
 	bool _vramDmaRunning = false;
 	bool _vramDmaReadCycle = false;
 	uint16_t _vramDmaBuffer = 0;
@@ -145,6 +145,7 @@ private:
 	__noinline void ProcessEndOfVisibleFrame();
 	__noinline void ProcessSatbTransfer();
 	__noinline void ProcessVramDmaTransfer();
+	__noinline void SetVertMode(PceVdcModeV vMode);
 	__noinline void SetHorizontalMode(PceVdcModeH hMode);
 
 	__noinline void ProcessVdcEvents();

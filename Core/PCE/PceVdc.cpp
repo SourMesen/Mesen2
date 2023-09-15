@@ -614,6 +614,43 @@ void PceVdc::ProcessVramDmaTransfer()
 	}
 }
 
+void PceVdc::SetVertMode(PceVdcModeV vMode)
+{
+	if(_vMode == PceVdcModeV::Vdw && vMode != PceVdcModeV::Vdw) {
+		//Some games (e.g Madou King Granzort) expect the DMA to run even if
+		//VDE is never reached (e.g because VDS+VDW take too much time)
+		//Run it as soon as we leave VDW
+		if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
+			_state.SatbTransferPending = false;
+			_state.SatbTransferRunning = true;
+			_state.SatbTransferNextWordCounter = 0;
+			_state.SatbTransferOffset = 0;
+		}
+	}
+
+	_vMode = vMode;
+	switch(_vMode) {
+		default:
+		case PceVdcModeV::Vds:
+			_vModeCounter = _state.HvLatch.VertDisplayStart + 2;
+			break;
+
+		case PceVdcModeV::Vdw:
+			_vModeCounter = _state.HvLatch.VertDisplayWidth + 1;
+			_state.RcrCounter = 0;
+			break;
+
+		case PceVdcModeV::Vde:
+			_vModeCounter = _state.HvLatch.VertEndPosVcr;
+			break;
+
+		case PceVdcModeV::Vsw:
+			ProcessVerticalSyncStart();
+			_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
+			break;
+	}
+}
+
 void PceVdc::IncrementRcrCounter()
 {
 	_state.RcrCounter++;
@@ -622,27 +659,7 @@ void PceVdc::IncrementRcrCounter()
 
 	_vModeCounter--;
 	if(_vModeCounter == 0) {
-		_vMode = (PceVdcModeV)(((int)_vMode + 1) % 4);
-		switch(_vMode) {
-			default:
-			case PceVdcModeV::Vds:
-				_vModeCounter = _state.HvLatch.VertDisplayStart + 2;
-				break;
-
-			case PceVdcModeV::Vdw:
-				_vModeCounter = _state.HvLatch.VertDisplayWidth + 1;
-				_state.RcrCounter = 0;
-				break;
-
-			case PceVdcModeV::Vde:
-				_vModeCounter = _state.HvLatch.VertEndPosVcr;
-				break;
-
-			case PceVdcModeV::Vsw:
-				ProcessVerticalSyncStart();
-				_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
-				break;
-		}
+		SetVertMode((PceVdcModeV)(((int)_vMode + 1) % 4));
 	}
 
 	if(_vMode == PceVdcModeV::Vde && _state.RcrCounter == _state.HvLatch.VertDisplayWidth + 1) {
@@ -723,9 +740,7 @@ void PceVdc::ProcessEndOfScanline()
 
 	if(_state.Scanline == GetScanlineCount() - 3) {
 		//VCE sets VBLANK for 3 scanlines at the end of every frame
-		_vMode = PceVdcModeV::Vsw;
-		ProcessVerticalSyncStart();
-		_vModeCounter = _state.HvLatch.VertSyncWidth + 1;
+		SetVertMode(PceVdcModeV::Vsw);
 	} else if(_state.Scanline == GetScanlineCount() - 2) {
 		if(!_verticalBlankDone) {
 			_needVertBlankIrq = true;
@@ -736,13 +751,6 @@ void PceVdc::ProcessEndOfScanline()
 void PceVdc::ProcessEndOfVisibleFrame()
 {
 	//End of display, trigger irq?
-	if(_state.SatbTransferPending || _state.RepeatSatbTransfer) {
-		_state.SatbTransferPending = false;
-		_state.SatbTransferRunning = true;
-		_state.SatbTransferNextWordCounter = 0;
-		_state.SatbTransferOffset = 0;
-	}
-
 	if(_state.EnableVerticalBlankIrq) {
 		_state.VerticalBlank = true;
 		_vpc->SetIrq(this);
