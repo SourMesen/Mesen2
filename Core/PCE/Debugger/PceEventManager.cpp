@@ -19,6 +19,7 @@ PceEventManager::PceEventManager(Debugger *debugger, PceConsole *console)
 {
 	_debugger = debugger;
 	_emu = debugger->GetEmulator();
+	_console = console;
 	_cpu = console->GetCpu();
 	_vdc = console->GetVdc();
 	_vpc = console->GetVpc();
@@ -45,8 +46,18 @@ void PceEventManager::AddEvent(DebugEventType type, MemoryOperationInfo &operati
 	evt.DmaChannel = -1;
 	evt.ProgramCounter = _debugger->GetProgramCounter(CpuType::Pce, true);
 
-	if(operation.Type == MemoryOperationType::Write && (operation.Address & 0x1FFF) < 0x400 && (operation.Address & 0x03) >= 2) {
-		evt.RegisterId = _vdc->GetState().CurrentReg; //VDC reg
+	if(operation.Type == MemoryOperationType::Write && (operation.Address & 0x1FFF) < 0x400) {
+		if(_console->IsSuperGrafx()) {
+			if((operation.Address & 0x1A) == 2) {
+				evt.RegisterId = _vdc->GetState().CurrentReg; //VDC reg
+			} else {
+				//TODOv2 - supergrafx VPC writes, not VDC
+			}
+		} else {
+			if((operation.Address & 0x03) >= 2) {
+				evt.RegisterId = _vdc->GetState().CurrentReg; //VDC reg
+			}
+		}
 	}
 
 	_debugEvents.push_back(evt);

@@ -58,6 +58,7 @@ class PceEventManager final : public BaseEventManager
 private:
 	PceEventViewerConfig _config;
 	Emulator* _emu;
+	PceConsole* _console;
 	PceCpu* _cpu;
 	PceVdc* _vdc;
 	PceVpc* _vpc;
