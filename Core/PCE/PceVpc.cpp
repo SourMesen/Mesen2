@@ -198,7 +198,7 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 			uint16_t color;
 			switch(enabledLayers) {
 				default:
-				case 0: color = 0; break;
+				case 0: color = _vce->GetPalette(0); break;
 				case 1: color = rowBuffer[i]; break;
 				case 2: color = rowBufferVdc2[i]; break;
 
