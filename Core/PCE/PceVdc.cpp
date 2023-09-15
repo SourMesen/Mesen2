@@ -581,13 +581,7 @@ void PceVdc::ProcessVramDmaTransfer()
 
 	_vramDmaPendingCycles += 3;
 
-	uint8_t hClocksPerDmaCycle;
-	switch(_state.VramAccessMode) {
-		default:
-		case 0: hClocksPerDmaCycle = GetClockDivider(); break;
-		case 1: case 2: hClocksPerDmaCycle = GetClockDivider() * 2; break;
-		case 3: hClocksPerDmaCycle = GetClockDivider() * 4; break;
-	}
+	uint8_t hClocksPerDmaCycle = GetClockDivider() * 2;
 
 	while(_vramDmaPendingCycles >= hClocksPerDmaCycle) {
 		if(_vramDmaReadCycle) {
