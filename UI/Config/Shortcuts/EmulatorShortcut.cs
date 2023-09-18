@@ -151,7 +151,7 @@ namespace Mesen.Config.Shortcuts
 			if(keyIndex >= 0) {
 				if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
 					return cfg.ShortcutKeys[keyIndex].KeyCombination;
-				} else if(!cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
+				} else if(cfg.ShortcutKeys[keyIndex].KeyCombination.IsEmpty) {
 					return cfg.ShortcutKeys[keyIndex].KeyCombination2;
 				}
 			}
