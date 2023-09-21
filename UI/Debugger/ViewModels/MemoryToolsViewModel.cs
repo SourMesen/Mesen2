@@ -228,15 +228,20 @@ namespace Mesen.Debugger.ViewModels
 
 			int offset = direction == SearchDirection.Forward ? 1 : -1;
 			int endPos = SelectionStart;
-			int startPos = endPos + offset;
-
 			int memSize = DebugApi.GetMemorySize(memType);
+			int searchLen = data.Data.Length;
+
+			int startPos = endPos + ((direction == SearchDirection.Backward || SelectionLength != 0) ? offset : 0);
+			if(startPos < 0) {
+				//Wrap around to the end
+				startPos = memSize - searchLen;
+			}
+
 			//TODO this can be a bit slow in edge cases depending on search+filters.
 			//(e.g search 00 00 00 in a code segment with no matches)
 			VirtualArray<byte> mem = new VirtualArray<byte>(memSize, (start, end) => {
 				return DebugApi.GetMemoryValues(memType, (uint)start, (uint)end);
 			});
-			int searchLen = data.Data.Length;
 
 			bool firstLoop = true;
 			for(int i = startPos; ; i += offset) {
