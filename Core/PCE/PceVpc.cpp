@@ -202,9 +202,8 @@ void PceVpc::ProcessScanline()
 	uint16_t* rowBuffer = _vdc1->GetRowBuffer();
 	uint16_t* rowBufferVdc2 = _vdc2->GetRowBuffer();
 
-	int windowOffset = (_vce->GetClockDivider() == 3 ? 8 : -16);
-	uint16_t wnd1 = std::max(0, (int16_t)_state.Window1 + windowOffset);
-	uint16_t wnd2 = std::max(0, (int16_t)_state.Window2 + windowOffset);
+	uint16_t wnd1 = std::max(0, (int16_t)_state.Window1 - 16);
+	uint16_t wnd2 = std::max(0, (int16_t)_state.Window2 - 16);
 	for(uint32_t i = _xStart; i < xMax; i++) {
 		PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < wnd1) | ((i < wnd2) << 1));
 		PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)wndType];
