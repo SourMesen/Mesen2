@@ -24,6 +24,7 @@ private:
 
 	uint16_t* _outBuffer[2] = {};
 	uint16_t* _currentOutBuffer = nullptr;
+	uint16_t _xStart = 0;
 
 	Timer _frameSkipTimer;
 	bool _skipRender = false;
@@ -50,6 +51,7 @@ public:
 	void DrawScanline();
 	void ProcessStartFrame();
 	void ProcessScanlineStart(PceVdc* vdc, uint16_t scanline);
+	void ProcessScanline();
 	void ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer);
 	void SendFrame(PceVdc* vdc);
 	

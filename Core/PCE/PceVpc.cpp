@@ -85,6 +85,12 @@ uint8_t PceVpc::Read(uint16_t addr)
 void PceVpc::Write(uint16_t addr, uint8_t value)
 {
 	if(_vdc2) {
+		if((addr & 0x1F) >= 0x08 && (addr & 0x1F) <= 0x0E) {
+			//Process scanline up to this point before changing window/priority settings
+			DrawScanline();
+			ProcessScanline();
+		}
+
 		//SuperGrafx enabled
 		switch(addr & 0x1F) {
 			case 0: case 1: case 2: case 3:
@@ -168,6 +174,8 @@ void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 		return;
 	}
 
+	_xStart = 0;
+
 	if(scanline >= 14 && scanline < 256) {
 		uint16_t row = scanline - 14;
 		if(row == 0) {
@@ -179,76 +187,92 @@ void PceVpc::ProcessScanlineStart(PceVdc* vdc, uint16_t scanline)
 	}
 }
 
+void PceVpc::ProcessScanline()
+{
+	uint16_t scanline = _vdc1->GetScanline();
+	if(scanline < 14 || scanline >= 256) {
+		return;
+	}
+
+	uint16_t pixelCount = PceConstants::ClockPerScanline / _vce->GetClockDivider();
+	uint16_t xMax = std::min<uint16_t>(pixelCount, _vdc1->GetHClock() / _vce->GetClockDivider());
+
+	//Supergrafx mode, merge outputs
+	uint32_t offset = (scanline - 14) * PceConstants::MaxScreenWidth;
+	uint16_t* rowBuffer = _vdc1->GetRowBuffer();
+	uint16_t* rowBufferVdc2 = _vdc2->GetRowBuffer();
+
+	int windowOffset = (_vce->GetClockDivider() == 3 ? 8 : -16);
+	uint16_t wnd1 = std::max(0, (int16_t)_state.Window1 + windowOffset);
+	uint16_t wnd2 = std::max(0, (int16_t)_state.Window2 + windowOffset);
+	for(uint32_t i = _xStart; i < xMax; i++) {
+		PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < wnd1) | ((i < wnd2) << 1));
+		PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)wndType];
+		uint8_t enabledLayers = (uint8_t)cfg.Vdc1Enabled | ((uint8_t)cfg.Vdc2Enabled << 1);
+		uint16_t color;
+		switch(enabledLayers) {
+			default:
+			case 0: color = _vce->GetPalette(0); break;
+			case 1: color = rowBuffer[i]; break;
+			case 2: color = rowBufferVdc2[i]; break;
+
+			case 3:
+			{
+				bool isSpriteVdc1 = (rowBuffer[i] & PceVpc::SpritePixelFlag) != 0;
+				bool isSpriteVdc2 = (rowBufferVdc2[i] & PceVpc::SpritePixelFlag) != 0;
+				bool isTransparentVdc1 = (rowBuffer[i] & PceVpc::TransparentPixelFlag) != 0;
+
+				switch(cfg.PriorityMode) {
+					default:
+					case PceVpcPriorityMode::Default:
+						color = isTransparentVdc1 ? rowBufferVdc2[i] : rowBuffer[i];
+						break;
+
+					case PceVpcPriorityMode::Vdc2SpritesAboveVdc1Bg:
+						//VDC2 sprites are shown above VDC1 background, but below VDC1 sprites
+						if(isTransparentVdc1 || (isSpriteVdc2 && !isSpriteVdc1)) {
+							//VDC1 transparent, show VDC2, or
+							//VDC2 is a sprite and VDC1 is not a sprite, show VDC2
+							color = rowBufferVdc2[i];
+						} else {
+							color = rowBuffer[i];
+						}
+						break;
+
+					case PceVpcPriorityMode::Vdc1SpritesBelowVdc2Bg: {
+						//VDC1 sprites are shown behind VDC2 background, but above VDC2 sprites(?)
+						bool isTransparentVdc2 = (rowBufferVdc2[i] & PceVpc::TransparentPixelFlag) != 0;
+						if(isTransparentVdc1 || (isSpriteVdc1 && !isSpriteVdc2 && !isTransparentVdc2)) {
+							//VDC1 transparent, show VDC2, or
+							//VDC1 is a sprite, show VDC2 (unless VDC2 is a transparent color or the background layer)
+							color = rowBufferVdc2[i];
+						} else {
+							color = rowBuffer[i];
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
+
+		_currentOutBuffer[offset + i] = color;
+	}
+
+	_xStart = xMax;
+}
+
 void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuffer)
 {
 	if(vdc == _vdc2 || _skipRender) {
 		return;
 	}
 
-	uint32_t offset = (scanline - 14) * PceConstants::MaxScreenWidth;
 	if(_vdc2) {
-		//Supergrafx mode, merge outputs
-		uint16_t* rowBufferVdc2 = _vdc2->GetRowBuffer();
-		
-		uint32_t pixelCount = PceConstants::ClockPerScanline / _vce->GetClockDivider();
-		int windowOffset = (_vce->GetClockDivider() == 3 ? 8 : -16);
-		uint16_t wnd1 = std::max(0, (int16_t)_state.Window1 + windowOffset);
-		uint16_t wnd2 = std::max(0, (int16_t)_state.Window2 + windowOffset);
-		for(uint32_t i = 0; i < pixelCount; i++) {
-			PceVpcPixelWindow wndType = (PceVpcPixelWindow)((i < wnd1) | ((i < wnd2) << 1));
-			PceVpcPriorityConfig& cfg = _state.WindowCfg[(int)wndType];
-			uint8_t enabledLayers = (uint8_t)cfg.Vdc1Enabled | ((uint8_t)cfg.Vdc2Enabled << 1);
-			uint16_t color;
-			switch(enabledLayers) {
-				default:
-				case 0: color = _vce->GetPalette(0); break;
-				case 1: color = rowBuffer[i]; break;
-				case 2: color = rowBufferVdc2[i]; break;
-
-				case 3:
-				{
-					bool isSpriteVdc1 = (rowBuffer[i] & PceVpc::SpritePixelFlag) != 0;
-					bool isSpriteVdc2 = (rowBufferVdc2[i] & PceVpc::SpritePixelFlag) != 0;
-					bool isTransparentVdc1 = (rowBuffer[i] & PceVpc::TransparentPixelFlag) != 0;
-
-					switch(cfg.PriorityMode) {
-						default:
-						case PceVpcPriorityMode::Default:
-							color = isTransparentVdc1 ? rowBufferVdc2[i] : rowBuffer[i];
-							break;
-
-						case PceVpcPriorityMode::Vdc2SpritesAboveVdc1Bg:
-							//VDC2 sprites are shown above VDC1 background, but below VDC1 sprites
-							if(isTransparentVdc1 || (isSpriteVdc2 && !isSpriteVdc1)) {
-								//VDC1 transparent, show VDC2, or
-								//VDC2 is a sprite and VDC1 is not a sprite, show VDC2
-								color = rowBufferVdc2[i];
-							} else {
-								color = rowBuffer[i];
-							}
-							break;
-
-						case PceVpcPriorityMode::Vdc1SpritesBelowVdc2Bg: {
-							//VDC1 sprites are shown behind VDC2 background, but above VDC2 sprites(?)
-							bool isTransparentVdc2 = (rowBufferVdc2[i] & PceVpc::TransparentPixelFlag) != 0;
-							if(isTransparentVdc1 || (isSpriteVdc1 && !isSpriteVdc2 && !isTransparentVdc2)) {
-								//VDC1 transparent, show VDC2, or
-								//VDC1 is a sprite, show VDC2 (unless VDC2 is a transparent color or the background layer)
-								color = rowBufferVdc2[i];
-							} else {
-								color = rowBuffer[i];
-							}
-							break;
-						}
-					}
-					break;
-				}
-			}
-
-			_currentOutBuffer[offset + i] = color;
-		}
+		ProcessScanline();
 	} else {
 		//PC Engine, display VDC1's data
+		uint32_t offset = (scanline - 14) * PceConstants::MaxScreenWidth;
 		memcpy(_currentOutBuffer + offset, rowBuffer, PceConstants::ClockPerScanline / _vce->GetClockDivider() * sizeof(uint16_t));
 	}
 }
