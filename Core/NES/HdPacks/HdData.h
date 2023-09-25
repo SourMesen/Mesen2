@@ -36,8 +36,7 @@ struct HdTileKey
 		if(IsChrRamTile) {
 			return CalculateHash((uint8_t*)&PaletteColors, sizeof(PaletteColors) + sizeof(TileData));
 		} else {
-			uint64_t key = TileIndex | ((uint64_t)PaletteColors << 32);
-			return CalculateHash((uint8_t*)&key, sizeof(key));
+			return (uint32_t)TileIndex ^ PaletteColors;
 		}
 	}
 

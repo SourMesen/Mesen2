@@ -309,45 +309,77 @@ void HdNesPack<scale>::ProcessAdditionalSprites()
 	}
 
 	bool checkFallbackTiles = _console->GetMapper()->HasChrRom() && _fallbackTiles.size() > 0;
-	for(int32_t j = 0; j < NesConstants::ScreenPixelCount; j++) {
-		while(_hdScreenInfo->ScreenTiles[j].SpriteCount == 0) {
-			if(++j >= NesConstants::ScreenPixelCount) {
-				return;
-			}
+	HdPpuPixelInfo& lineFirstPixel = _hdScreenInfo->ScreenTiles[0];
+	uint32_t yScroll = (((lineFirstPixel.TmpVideoRamAddr & 0x3E0) >> 2) | ((lineFirstPixel.TmpVideoRamAddr & 0x7000) >> 12)) + ((lineFirstPixel.TmpVideoRamAddr & 0x800) ? 240 : 0);
+	uint16_t tmpVramAddr = lineFirstPixel.TmpVideoRamAddr;
+	bool processBgNextRow = true;
+
+	for(int32_t y = 0; y < NesConstants::ScreenHeight; y++) {
+		lineFirstPixel = _hdScreenInfo->ScreenTiles[y << 8];
+
+		//Only process the first scanline for each row of tiles (if no additions are found)
+		if(((yScroll + y) & 0x07) == 0 || tmpVramAddr != lineFirstPixel.TmpVideoRamAddr) {
+			yScroll = (((lineFirstPixel.TmpVideoRamAddr & 0x3E0) >> 2) | ((lineFirstPixel.TmpVideoRamAddr & 0x7000) >> 12)) + ((lineFirstPixel.TmpVideoRamAddr & 0x800) ? 240 : 0);
+			tmpVramAddr = lineFirstPixel.TmpVideoRamAddr;
+			processBgNextRow = true;
 		}
 
-		HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[j];
-		for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
-			auto result = _additionalTilesByKey.find(pixelInfo.Sprite[i]);
-			if(result != _additionalTilesByKey.end()) {
-				//Used cached list to draw additional sprites
-				for(auto& additionalSprite : result->second) {
-					InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-				}
-			} else {
-				vector<HdPackAdditionalSpriteInfo> additions;
-				for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
-					if(!additionalSprite.IgnorePalette && pixelInfo.Sprite[i] == additionalSprite.OriginalTile) {
-						InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-						additions.push_back(additionalSprite);
-					} else if(additionalSprite.IgnorePalette && pixelInfo.Sprite[i].GetKey(true) == additionalSprite.OriginalTile.GetKey(true)) {
-						InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-						additions.push_back(additionalSprite);
-					} else if(checkFallbackTiles) {
-						if(additionalSprite.IgnorePalette || pixelInfo.Sprite[i].PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
-							if(GetFallbackTile(pixelInfo.Sprite[i].TileIndex) == additionalSprite.OriginalTile.TileIndex) {
-								InsertAdditionalSprite(j & 0xFF, j >> 8, pixelInfo.Sprite[i], additionalSprite);
-								additions.push_back(additionalSprite);
-							}
-						}
-					}
+		if(processBgNextRow) {
+			processBgNextRow = false;
+			for(int32_t x = 0; x < NesConstants::ScreenWidth; x++) {
+				HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[(y << 8) | x];
+				for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
+					DrawAdditionalTiles(x, y, pixelInfo.Sprite[i], checkFallbackTiles);
 				}
 
-				//Cache list of additional tiles linked to this sprite
-				_additionalTilesByKey.emplace(pixelInfo.Sprite[i], additions);
+				processBgNextRow |= DrawAdditionalTiles(x, y, pixelInfo.Tile, checkFallbackTiles);
+			}
+		} else {
+			for(int32_t x = 0; x < NesConstants::ScreenWidth; x++) {
+				HdPpuPixelInfo& pixelInfo = _hdScreenInfo->ScreenTiles[(y << 8) | x];
+				for(uint8_t i = 0; i < pixelInfo.SpriteCount; i++) {
+					DrawAdditionalTiles(x, y, pixelInfo.Sprite[i], checkFallbackTiles);
+				}
 			}
 		}
 	}
+}
+
+template<uint32_t scale>
+bool HdNesPack<scale>::DrawAdditionalTiles(int32_t x, int32_t y, HdPpuTileInfo& tile, bool checkFallbackTiles)
+{
+	auto result = _additionalTilesByKey.find(tile);
+	if(result == _additionalTilesByKey.end()) {
+		BuildAdditionalTileCache(x, y, tile, checkFallbackTiles);
+		result = _additionalTilesByKey.find(tile);
+	}
+
+	for(auto& additionalSprite : result->second) {
+		InsertAdditionalSprite(x, y, tile, additionalSprite);
+	}
+	return result->second.size() > 0;
+}
+
+template<uint32_t scale>
+void HdNesPack<scale>::BuildAdditionalTileCache(int32_t x, int32_t y, HdPpuTileInfo& tile, bool checkFallbackTiles)
+{
+	vector<HdPackAdditionalSpriteInfo> additions;
+	for(HdPackAdditionalSpriteInfo& additionalSprite : _hdData->AdditionalSprites) {
+		if(!additionalSprite.IgnorePalette && tile == additionalSprite.OriginalTile) {
+			additions.push_back(additionalSprite);
+		} else if(additionalSprite.IgnorePalette && tile.GetKey(true) == additionalSprite.OriginalTile.GetKey(true)) {
+			additions.push_back(additionalSprite);
+		} else if(checkFallbackTiles) {
+			if(additionalSprite.IgnorePalette || tile.PaletteColors == additionalSprite.OriginalTile.PaletteColors) {
+				if(GetFallbackTile(tile.TileIndex) == additionalSprite.OriginalTile.TileIndex) {
+					additions.push_back(additionalSprite);
+				}
+			}
+		}
+	}
+
+	//Cache list of additional tiles linked to this sprite
+	_additionalTilesByKey.emplace(tile, additions);
 }
 
 template<uint32_t scale>
