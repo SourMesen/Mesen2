@@ -78,14 +78,17 @@ void GbPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& ba
 {
 	GbPpuState& state = (GbPpuState&)baseState;
 
-	std::fill(outBuffer, outBuffer + 256 * 256, 0xFF333333);
+	std::fill(outBuffer, outBuffer + 256 * 256, GetSpriteBackgroundColor(options.Background, palette, true));
 	for(int i = 16; i < 16 + 144; i++) {
-		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, 0xFF666666);
+		std::fill(outBuffer + i * 256 + 8, outBuffer + i * 256 + 168, GetSpriteBackgroundColor(options.Background, palette, false));
 	}
+
+	GetSpritePreviewOptions sprOptions = {};
+	sprOptions.Background = SpriteBackground::Transparent;
 
 	DebugSpriteInfo sprite;
 	for(int i = 0; i < 0xA0; i += 4) {
-		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
+		GetSpriteInfo(sprite, i / 4, sprOptions, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			if(sprite.Y + y >= 256) {
@@ -236,7 +239,7 @@ void GbPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t i, GetSpritePre
 					sprite.SpritePreview[outOffset] = palette[32 + (sprite.Palette * 4) + color];
 				}
 			} else {
-				sprite.SpritePreview[outOffset] = 0;
+				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
 			}
 		}
 	}

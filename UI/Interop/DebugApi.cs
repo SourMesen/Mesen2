@@ -911,6 +911,16 @@ namespace Mesen.Interop
 		Magenta,
 	}
 
+	public enum SpriteBackground
+	{
+		Gray,
+		Background,
+		Transparent,
+		Black,
+		White,
+		Magenta,
+	}
+
 	public enum NullableBoolean
 	{
 		Undefined = -1,
@@ -995,7 +1005,7 @@ namespace Mesen.Interop
 
 	public struct GetSpritePreviewOptions
 	{
-		public Int32 SelectedSprite;
+		public SpriteBackground Background;
 	}
 
 	public struct GetPaletteInfoOptions

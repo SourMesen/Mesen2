@@ -57,6 +57,16 @@
 					<CheckBox Content="{l:Translate chkShowOffscreenRegions}" IsChecked="{CompiledBinding Config.ShowOffscreenRegions}" />
 					<CheckBox Content="{l:Translate chkShowListView}" IsChecked="{CompiledBinding ListView.ShowListView}" />
 
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+						<TextBlock Grid.Column="0" Grid.Row="0" Text="{l:Translate lblBackground}" />
+						<c:EnumComboBox
+							HorizontalAlignment="Left"
+							Width="120"
+							Grid.Column="1" Grid.Row="0"
+							SelectedItem="{CompiledBinding Config.Background}"
+						/>
+					</Grid>
+					
 					<c:OptionSection Header="{l:Translate lblDataSource}">
 						<Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
 							<TextBlock Text="{l:Translate lblSource}" />

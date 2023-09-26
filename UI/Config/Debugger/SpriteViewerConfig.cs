@@ -1,4 +1,5 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using Mesen.Interop;
+using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
 
 namespace Mesen.Config
@@ -9,6 +10,7 @@ namespace Mesen.Config
 
 		[Reactive] public bool ShowOutline { get; set; } = false;
 		[Reactive] public bool ShowOffscreenRegions { get; set; } = false;
+		[Reactive] public SpriteBackground Background { get; set; } = SpriteBackground.Gray;
 
 		[Reactive] public SpriteViewerSource Source { get; set; } = SpriteViewerSource.SpriteRam;
 		[Reactive] public int SourceOffset { get; set; } = 0;

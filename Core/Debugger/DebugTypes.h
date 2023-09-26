@@ -251,9 +251,19 @@ struct GetTileViewOptions
 	bool UseGrayscalePalette;
 };
 
+enum class SpriteBackground
+{
+	Gray,
+	Background,
+	Transparent,
+	Black,
+	White,
+	Magenta,
+};
+
 struct GetSpritePreviewOptions
 {
-	int32_t SelectedSprite;
+	SpriteBackground Background;
 };
 
 struct GetPaletteInfoOptions

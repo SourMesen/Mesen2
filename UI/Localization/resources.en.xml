@@ -899,6 +899,7 @@
 			<Control ID="chkShowOutline">Show outline around sprites</Control>
 			<Control ID="chkShowListView">Show list view</Control>
 			<Control ID="chkShowOffscreenRegions">Show offscreen regions</Control>
+			<Control ID="lblBackground">Background:</Control>
 			<Control ID="lblDataSource">Data Source</Control>
 			<Control ID="lblSource">Source:</Control>
 			<Control ID="lblSourceOffset">Offset:</Control>
@@ -2510,10 +2511,18 @@ E
 		<Enum ID="TileBackground">
 			<Value ID="Default">Default (Color 0)</Value>
 			<Value ID="PaletteColor">Palette Color 0</Value>
+			<Value ID="Transparent">Transparent</Value>
 			<Value ID="Black">Black</Value>
 			<Value ID="White">White</Value>
 			<Value ID="Magenta">Magenta</Value>
+		</Enum>
+		<Enum ID="SpriteBackground">
+			<Value ID="Gray">Gray</Value>
+			<Value ID="Background">Color 0</Value>
 			<Value ID="Transparent">Transparent</Value>
+			<Value ID="Black">Black</Value>
+			<Value ID="White">White</Value>
+			<Value ID="Magenta">Magenta</Value>
 		</Enum>
 		<Enum ID="TilemapDisplayMode">
 			<Value ID="Default">Default</Value>

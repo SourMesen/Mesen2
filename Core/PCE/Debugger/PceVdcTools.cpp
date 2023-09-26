@@ -132,16 +132,19 @@ void PceVdcTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 	PceVdcState& state = ((PceVideoState&)baseState).Vdc;
 
 	uint32_t screenWidth = std::min<uint32_t>(PceConstants::MaxScreenWidth, (state.HvLatch.HorizDisplayWidth + 1) * 8);
-	std::fill(outBuffer, outBuffer + 1024*1024, 0xFF333333);
+	std::fill(outBuffer, outBuffer + 1024*1024, GetSpriteBackgroundColor(options.Background, palette, true));
 	for(int i = 64; i < state.HvLatch.VertDisplayWidth + 64; i++) {
-		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, 0xFF666666);
+		std::fill(outBuffer + i * 1024 + 32, outBuffer + i * 1024 + 32 + screenWidth, GetSpriteBackgroundColor(options.Background, palette, false));
 	}
 
 	int spriteCount = _console->IsSuperGrafx() ? 128 : 64;
 
+	GetSpritePreviewOptions sprOptions = {};
+	sprOptions.Background = SpriteBackground::Transparent;
+
 	DebugSpriteInfo sprite;
 	for(int i = spriteCount - 1; i >= 0; i--) {
-		GetSpriteInfo(state, sprite, i, options, vram, oamRam, palette);
+		GetSpriteInfo(state, sprite, i, sprOptions, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			if(sprite.Y + y >= 1024) {
@@ -290,7 +293,7 @@ void PceVdcTools::InternalGetSpriteInfo(DebugSpriteInfo& sprite, uint16_t sprite
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = palette[color + sprite.Palette * 16 + 16*16];
 			} else {
-				sprite.SpritePreview[outOffset] = 0;
+				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
 			}
 		}
 	}

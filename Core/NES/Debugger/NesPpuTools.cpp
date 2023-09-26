@@ -194,12 +194,15 @@ void NesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& b
 {
 	NesPpuState& state = (NesPpuState&)baseState;
 	
-	std::fill(outBuffer, outBuffer + 256 * 240, 0xFF666666);
-	std::fill(outBuffer + 256 * 240, outBuffer + 256 * 256, 0xFF333333);
+	std::fill(outBuffer, outBuffer + 256 * 240, GetSpriteBackgroundColor(options.Background, palette, false));
+	std::fill(outBuffer + 256 * 240, outBuffer + 256 * 256, GetSpriteBackgroundColor(options.Background, palette, true));
+
+	GetSpritePreviewOptions sprOptions = {};
+	sprOptions.Background = SpriteBackground::Transparent;
 
 	DebugSpriteInfo sprite;
 	for(int i = 0x100 - 4; i >= 0; i -= 4) {
-		GetSpriteInfo(sprite, i / 4, options, state, vram, oamRam, palette);
+		GetSpriteInfo(sprite, i / 4, sprOptions, state, vram, oamRam, palette);
 		int spritePosY = sprite.Y + 1;
 
 		for(int y = 0; y < sprite.Height; y++) {
@@ -335,7 +338,7 @@ void NesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint32_t i, GetSpritePr
 			if(color > 0) {
 				sprite.SpritePreview[outOffset] = palette[16 + (sprite.Palette * 4) + color];
 			} else {
-				sprite.SpritePreview[outOffset] = 0;
+				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
 			}
 		}
 	}

@@ -45,6 +45,32 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t* source, uint32_t
 	}
 }
 
+uint32_t PpuTools::GetBackgroundColor(TileBackground bgColor, const uint32_t* colors, uint8_t paletteIndex, uint8_t bpp)
+{
+	switch(bgColor) {
+		default:
+		case TileBackground::Default: return colors[0];
+		case TileBackground::PaletteColor: return colors[paletteIndex * (1 << bpp)];
+		case TileBackground::Black: return 0xFF000000;
+		case TileBackground::White: return 0xFFFFFFFF;
+		case TileBackground::Magenta: return 0xFFFF00FF;
+		case TileBackground::Transparent: return 0;
+	}
+}
+
+uint32_t PpuTools::GetSpriteBackgroundColor(SpriteBackground bgColor, const uint32_t* colors, bool useDarkerColor)
+{
+	switch(bgColor) {
+		default:
+		case SpriteBackground::Gray: return useDarkerColor ? 0xFF333333 : 0xFF666666;
+		case SpriteBackground::Background: return useDarkerColor ? (((colors[0] >> 1) & 0x7F7F7F) | 0xFF000000) : colors[0];
+		case SpriteBackground::Black: return useDarkerColor ? 0xFF000000 : 0xFF202020;
+		case SpriteBackground::White: return useDarkerColor ? 0xFFEEEEEE : 0xFFFFFFFF;
+		case SpriteBackground::Magenta: return useDarkerColor ? 0xFFCC00CC : 0xFFFF00FF;
+		case SpriteBackground::Transparent: return 0;
+	}
+}
+
 template<TileFormat format>
 void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t *colors, uint32_t *outBuffer)
 {
@@ -91,15 +117,7 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 		colorMask = bpp == 2 ? 0x03 : 0x0F;
 	}
 
-	uint32_t bgColor = 0;
-	switch(options.Background) {
-		case TileBackground::Default: bgColor = colors[0]; break;
-		case TileBackground::PaletteColor: bgColor = colors[options.Palette * (1 << bpp)]; break;
-		case TileBackground::Black: bgColor = 0xFF000000; break;
-		case TileBackground::White: bgColor = 0xFFFFFFFF; break;
-		case TileBackground::Magenta: bgColor = 0xFFFF00FF; break;
-		case TileBackground::Transparent: bgColor = 0; break;
-	}
+	uint32_t bgColor = GetBackgroundColor(options.Background, colors, options.Palette, bpp);
 
 	uint32_t outputSize = tileCount * tileWidth * tileHeight;
 	for(uint32_t i = 0; i < outputSize; i++) {

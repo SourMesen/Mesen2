@@ -196,6 +196,9 @@ protected:
 	
 	bool IsTileHidden(MemoryType memType, uint32_t addr, GetTileViewOptions& options);
 
+	uint32_t GetBackgroundColor(TileBackground bgColor, const uint32_t* colors, uint8_t paletteIndex = 0, uint8_t bpp = 0);
+	uint32_t GetSpriteBackgroundColor(SpriteBackground bgColor, const uint32_t* colors, bool useDarkerColor);
+
 	void GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t& color, bool forGet);
 
 	uint8_t Rgb555to8Bit(uint8_t color) { return (color << 3) + (color >> 2); }
@@ -217,7 +220,7 @@ public:
 	virtual DebugPaletteInfo GetPaletteInfo(GetPaletteInfoOptions options) = 0;
 
 	void GetTileView(GetTileViewOptions options, uint8_t *source, uint32_t srcSize, const uint32_t* palette, uint32_t *outBuffer);
-	
+
 	virtual DebugTilemapTileInfo GetTilemapTileInfo(uint32_t x, uint32_t y, uint8_t* vram, GetTilemapOptions options, BaseState& baseState) = 0;
 	virtual FrameInfo GetTilemapSize(GetTilemapOptions options, BaseState& state) = 0;
 	virtual DebugTilemapInfo GetTilemap(GetTilemapOptions options, BaseState& state, uint8_t* vram, uint32_t* palette, uint32_t* outBuffer) = 0;

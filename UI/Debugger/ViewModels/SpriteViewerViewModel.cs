@@ -497,7 +497,7 @@ namespace Mesen.Debugger.ViewModels
 				}
 
 				GetSpritePreviewOptions options = new GetSpritePreviewOptions() {
-					SelectedSprite = -1
+					Background = Config.Background
 				};
 
 				DebugSpritePreviewInfo previewInfo = DebugApi.GetSpritePreviewInfo(CpuType, options, _data.PpuState);

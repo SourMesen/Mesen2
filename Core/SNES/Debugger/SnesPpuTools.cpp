@@ -234,10 +234,13 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 	SnesPpuState& state = (SnesPpuState&)baseState;
 	DebugSpritePreviewInfo size = GetSpritePreviewInfo(options, state);
 	
-	std::fill(outBuffer, outBuffer + size.Width * size.Height, 0xFF333333);
+	std::fill(outBuffer, outBuffer + size.Width * size.Height, GetSpriteBackgroundColor(options.Background, palette, true));
 	for(int i = 0; i < (state.OverscanMode ? 239 : 224); i++) {
-		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, 0xFF666666);
+		std::fill(outBuffer + size.Width * i + 256, outBuffer + size.Width * i + 512, GetSpriteBackgroundColor(options.Background, palette, false));
 	}
+
+	GetSpritePreviewOptions sprOptions = {};
+	sprOptions.Background = SpriteBackground::Transparent;
 
 	int startIndex = state.EnableOamPriority ? (state.OamRamAddress >> 1) : 0;
 	DebugSpriteInfo sprite;
@@ -247,7 +250,7 @@ void SnesPpuTools::GetSpritePreview(GetSpritePreviewOptions options, BaseState& 
 			spriteIndex += 128;
 		}
 
-		GetSpriteInfo(sprite, spriteIndex, options, state, vram, oamRam, palette);
+		GetSpriteInfo(sprite, spriteIndex, sprOptions, state, vram, oamRam, palette);
 
 		for(int y = 0; y < sprite.Height; y++) {
 			int yPos = sprite.Y + y;
@@ -383,7 +386,7 @@ void SnesPpuTools::GetSpriteInfo(DebugSpriteInfo& sprite, uint16_t spriteIndex, 
 			if(color != 0) {
 				sprite.SpritePreview[outOffset] = GetRgbPixelColor<TileFormat::Bpp4>(palette, color, sprite.Palette + 8);
 			} else {
-				sprite.SpritePreview[outOffset] = 0;
+				sprite.SpritePreview[outOffset] = GetSpriteBackgroundColor(options.Background, palette, false);
 			}
 		}
 	}
