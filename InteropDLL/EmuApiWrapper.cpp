@@ -35,6 +35,7 @@ unique_ptr<IRenderingDevice> _renderer;
 unique_ptr<IAudioDevice> _soundManager;
 unique_ptr<IKeyManager> _keyManager;
 unique_ptr<Emulator> _emu(new Emulator());
+bool _softwareRenderer = false;
 
 static void* _windowHandle = nullptr;
 static void* _viewerHandle = nullptr;
@@ -69,22 +70,27 @@ extern "C" {
 		KeyManager::SetSettings(_emu->GetSettings());
 	}
 
-	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool noAudio, bool noVideo, bool noInput)
+	DllExport void __stdcall InitializeEmu(const char* homeFolder, void *windowHandle, void *viewerHandle, bool softwareRenderer, bool noAudio, bool noVideo, bool noInput)
 	{
 		FolderUtilities::SetHomeFolder(homeFolder);
 
 		if(windowHandle != nullptr && viewerHandle != nullptr) {
 			_windowHandle = windowHandle;
 			_viewerHandle = viewerHandle;
+			_softwareRenderer = softwareRenderer;
 
 			if(!noVideo) {
-				#ifdef _WIN32
-					_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle));
-				#elif __APPLE__
+				if(softwareRenderer) {
 					_renderer.reset(new SoftwareRenderer(_emu.get()));
-				#else
-					_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle));
-				#endif
+				} else {
+					#ifdef _WIN32
+						_renderer.reset(new Renderer(_emu.get(), (HWND)_viewerHandle));
+					#elif __APPLE__
+						_renderer.reset(new SoftwareRenderer(_emu.get()));
+					#else
+						_renderer.reset(new SdlRenderer(_emu.get(), _viewerHandle));
+					#endif
+				}
 			} 
 
 			if(!noAudio) {

@@ -28,7 +28,7 @@ namespace Mesen.Utilities
 			int timeout = commandLineHelper.TestRunnerTimeout;
 			ConfigManager.Config.ApplyConfig();
 
-			EmuApi.InitializeEmu(ConfigManager.HomeFolder, IntPtr.Zero, IntPtr.Zero, true, true, true);
+			EmuApi.InitializeEmu(ConfigManager.HomeFolder, IntPtr.Zero, IntPtr.Zero, true, true, true, true);
 			EmuApi.Pause();
 
 			if(!EmuApi.LoadRom(commandLineHelper.FilesToLoad[0], string.Empty)) {

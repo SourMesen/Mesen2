@@ -51,10 +51,19 @@
 						</Grid>
 
 						<CheckBox Content="{l:Translate chkIntegerFpsMode}" IsChecked="{CompiledBinding Config.IntegerFpsMode}" />
-						<CheckBox Content="{l:Translate chkVerticalSync}" IsChecked="{CompiledBinding Config.VerticalSync}" />
+						<CheckBox
+							Content="{l:Translate chkVerticalSync}"
+							IsVisible="{CompiledBinding !IsMacOs}"
+							IsEnabled="{CompiledBinding !Config.UseSoftwareRenderer}"
+							IsChecked="{CompiledBinding Config.VerticalSync}"
+						/>
 
 						<StackPanel IsVisible="{CompiledBinding IsWindows}">
-							<CheckBox Content="{l:Translate chkUseExclusiveFullscreen}" IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}" />
+							<CheckBox
+								Content="{l:Translate chkUseExclusiveFullscreen}"
+								IsChecked="{CompiledBinding Config.UseExclusiveFullscreen}"
+								IsEnabled="{CompiledBinding !Config.UseSoftwareRenderer}"
+							/>
 							<StackPanel Orientation="Horizontal" IsVisible="{CompiledBinding Config.UseExclusiveFullscreen}" Margin="35 3 0 10">
 								<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
 									<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblFullscreenResolution}" />
@@ -160,6 +169,7 @@
 		<TabItem Header="{l:Translate tpgAdvanced}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
+					<c:CheckBoxWarning IsVisible="{CompiledBinding !IsMacOs}" IsChecked="{CompiledBinding Config.UseSoftwareRenderer}" Text="{l:Translate chkUseSoftwareRenderer}" />
 					<StackPanel Orientation="Horizontal" Margin="0 5 0 0">
 						<TextBlock Text="{l:Translate lblScreenRotation}" VerticalAlignment="Center" />
 						<c:EnumComboBox SelectedItem="{CompiledBinding Config.ScreenRotation}" />

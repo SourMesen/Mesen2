@@ -209,7 +209,15 @@ namespace Mesen.Windows
 				CommandLineHelper cmdLine = new CommandLineHelper(Program.CommandLineArgs, true);
 				_cmdLine = cmdLine;
 
-				EmuApi.InitializeEmu(ConfigManager.HomeFolder, TryGetPlatformHandle()?.Handle ?? IntPtr.Zero, _renderer.Handle, cmdLine.NoAudio, cmdLine.NoVideo, cmdLine.NoInput);
+				EmuApi.InitializeEmu(
+					ConfigManager.HomeFolder,
+					TryGetPlatformHandle()?.Handle ?? IntPtr.Zero,
+					_renderer.Handle,
+					ConfigManager.Config.Video.UseSoftwareRenderer || OperatingSystem.IsMacOS(),
+					cmdLine.NoAudio,
+					cmdLine.NoVideo,
+					cmdLine.NoInput
+				);
 
 				ConfigManager.Config.RemoveObsoleteConfig();
 				

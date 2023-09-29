@@ -34,6 +34,9 @@ namespace Mesen.Controls
 			_frame = this.GetControl<SimpleImageViewer>("Frame");
 			_emuHud = this.GetControl<SimpleImageViewer>("EmuHud");
 			_scriptHud = this.GetControl<SimpleImageViewer>("ScriptHud");
+
+			RenderOptions.SetBitmapInterpolationMode(_emuHud, BitmapInterpolationMode.None);
+			RenderOptions.SetBitmapInterpolationMode(_scriptHud, BitmapInterpolationMode.None);
 		}
 
 		private void InitializeComponent()

@@ -27,6 +27,8 @@ void SoftwareRenderer::SetScreenSize(uint32_t width, uint32_t height)
 	delete[] _textureBuffer[1];
 	_textureBuffer[0] = new uint32_t[width * height];
 	_textureBuffer[1] = new uint32_t[width * height];
+	memset(_textureBuffer[0], 0, width * height * sizeof(uint32_t));
+	memset(_textureBuffer[1], 0, width * height * sizeof(uint32_t));
 }
 
 void SoftwareRenderer::UpdateFrame(RenderedFrame& frame)

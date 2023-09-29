@@ -18,6 +18,7 @@ namespace Mesen.Config
 		[Reactive] public VideoAspectRatio AspectRatio { get; set; } = VideoAspectRatio.NoStretching;
 
 		[Reactive] public bool UseBilinearInterpolation { get; set; } = false;
+		[Reactive] public bool UseSoftwareRenderer { get; set; } = false;
 		[Reactive] public bool UseSrgbTextureFormat { get; set; } = false;
 		[Reactive] public bool VerticalSync { get; set; } = false;
 		[Reactive] public bool IntegerFpsMode { get; set; } = false;

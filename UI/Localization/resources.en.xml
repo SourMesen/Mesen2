@@ -177,6 +177,7 @@
 
 			<Control ID="tpgAdvanced">Advanced</Control>
 			<Control ID="lblScreenRotation">Screen Rotation:</Control>
+			<Control ID="chkUseSoftwareRenderer">Use software renderer (requires restart)</Control>
 		</Form>
 		<Form ID="EmulationConfigView">
 			<Control ID="tpgGeneral">General</Control>

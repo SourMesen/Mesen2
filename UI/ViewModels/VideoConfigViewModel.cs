@@ -16,6 +16,7 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool ShowNtscBlarggSettings { get; }
 		[ObservableAsProperty] public bool ShowNtscBisqwitSettings { get; }
 		public bool IsWindows { get; }
+		public bool IsMacOs { get; }
 
 		public ReactiveCommand<Unit, Unit> PresetCompositeCommand { get; }
 		public ReactiveCommand<Unit, Unit> PresetSVideoCommand { get; }
@@ -41,9 +42,19 @@ namespace Mesen.ViewModels
 			AddDisposable(this.WhenAnyValue(_ => _.Config.AspectRatio).Select(_ => _ == VideoAspectRatio.Custom).ToPropertyEx(this, _ => _.ShowCustomRatio));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBlargg).ToPropertyEx(this, _ => _.ShowNtscBlarggSettings));
 			AddDisposable(this.WhenAnyValue(_ => _.Config.VideoFilter).Select(_ => _ == VideoFilterType.NtscBisqwit).ToPropertyEx(this, _ => _.ShowNtscBisqwitSettings));
+			AddDisposable(this.WhenAnyValue(_ => _.Config.UseSoftwareRenderer).Subscribe(softwareRenderer => {
+				if(softwareRenderer) {
+					//Not supported
+					Config.UseExclusiveFullscreen = false;
+					Config.VerticalSync = false;
+				}
+			}));
 
 			//Exclusive fullscreen is only supported on Windows currently
 			IsWindows = OperatingSystem.IsWindows();
+
+			//MacOS only supports the software renderer
+			IsMacOs = OperatingSystem.IsMacOS();
 
 			if(Design.IsDesignMode) {
 				return;
