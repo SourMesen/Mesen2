@@ -53,7 +53,7 @@ namespace Mesen.Config
 			}
 			Program.ExtractNativeDependencies(homeFolder);
 			_homeFolder = homeFolder;
-			LoadConfig();
+			Config.Save();
 		}
 		
 		public static void LoadConfig()
@@ -64,9 +64,7 @@ namespace Mesen.Config
 						if(File.Exists(ConfigFile) && !Design.IsDesignMode) {
 							_config = Configuration.Deserialize(ConfigFile);
 						} else {
-							//Create new config file and save it to disk
 							_config = new Configuration();
-							_config.Save();
 						}
 						ConfigManager.ActiveTheme = _config.Preferences.Theme;
 					}
