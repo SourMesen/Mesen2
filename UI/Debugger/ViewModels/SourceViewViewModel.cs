@@ -59,7 +59,13 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 		StyleProvider = new SourceViewStyleProvider(cpuType, this);
 
 		SourceFiles = SymbolProvider.SourceFiles.Where(f => f.Data.Length > 0 && !f.Name.EndsWith(".chr", StringComparison.OrdinalIgnoreCase)).ToList();
-		SourceFiles.Sort((a, b) => a.ToString().CompareTo(b.ToString()));
+		SourceFiles.Sort((a, b) => {
+			int result = a.IsAssembly.CompareTo(b.IsAssembly);
+			if(result != 0) {
+				return result;
+			}
+			return a.ToString().CompareTo(b.ToString());
+		});
 		if(SourceFiles.Count > 0) {
 			SelectedFile = SourceFiles[0];
 		}
