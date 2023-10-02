@@ -199,6 +199,7 @@ namespace Mesen.Debugger.Controls
 			VerticalAlignment = VerticalAlignment.Top;
 			HorizontalAlignment = HorizontalAlignment.Left;
 			ClipToBounds = true;
+			RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.None);
 		}
 
 		private void OnSourceInvalidated(object? sender, EventArgs e)
