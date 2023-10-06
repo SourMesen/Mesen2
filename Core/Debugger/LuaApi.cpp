@@ -162,8 +162,7 @@ int LuaApi::GetLibrary(lua_State *lua)
 		string name = string(entry.second);
 		name[0] = ::tolower(name[0]);
 		if(DebugUtilities::IsRelativeMemory(entry.first)) {
-			name = name.substr(0, name.size() - 6);
-			string debugName = name + "Debug";
+			string debugName = name.substr(0, name.size() - 6) + "Debug";
 			LuaPushIntValue(lua, debugName, (int)entry.first | 0x100);
 		}
 		LuaPushIntValue(lua, name, (int)entry.first);
