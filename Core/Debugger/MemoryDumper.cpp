@@ -220,7 +220,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::GsuMemory: _cartridge->GetGsu()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case MemoryType::Cx4Memory: _cartridge->GetCx4()->GetMemoryMappings()->DebugWrite(address, value); break;
 		case MemoryType::GameboyMemory: _gameboy->GetMemoryManager()->DebugWrite(address, value); break;
-		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value); break;
+		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value, disableSideEffects); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
 		case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
 		case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;

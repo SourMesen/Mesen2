@@ -473,9 +473,9 @@ uint8_t NesConsole::DebugRead(uint16_t addr)
 	return _memoryManager->DebugRead(addr);
 }
 
-void NesConsole::DebugWrite(uint16_t addr, uint8_t value)
+void NesConsole::DebugWrite(uint16_t addr, uint8_t value, bool disableSideEffects)
 {
-	_memoryManager->DebugWrite(addr, value);
+	_memoryManager->DebugWrite(addr, value, disableSideEffects);
 }
 
 uint8_t NesConsole::DebugReadVram(uint16_t addr)
