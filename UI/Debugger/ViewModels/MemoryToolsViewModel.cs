@@ -232,10 +232,6 @@ namespace Mesen.Debugger.ViewModels
 			int searchLen = data.Data.Length;
 
 			int startPos = endPos + ((direction == SearchDirection.Backward || SelectionLength != 0) ? offset : 0);
-			if(startPos < 0) {
-				//Wrap around to the end
-				startPos = memSize - searchLen;
-			}
 
 			//TODO this can be a bit slow in edge cases depending on search+filters.
 			//(e.g search 00 00 00 in a code segment with no matches)
@@ -253,10 +249,16 @@ namespace Mesen.Debugger.ViewModels
 					i = 0;
 				}
 
-				if(!firstLoop && i == startPos) {
-					break;
+				if(firstLoop) {
+					//Adjust startPos based on wrap around calculated above
+					startPos = i;
+					firstLoop = false;
+				} else {
+					if(i == startPos) {
+						//Break if all start positions were checked
+						break;
+					}
 				}
-				firstLoop = false;
 
 				int j = 0;
 				while(j < searchLen && i + j < memSize) {
