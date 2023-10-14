@@ -16,6 +16,6 @@ public:
 	~AutoResetEvent();
 
 	void Reset();
-	void Wait(int timeoutDelay = 0);
+	bool Wait(int timeoutDelay = 0);
 	void Signal();
 };

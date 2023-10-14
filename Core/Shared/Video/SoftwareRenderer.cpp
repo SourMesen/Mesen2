@@ -58,6 +58,7 @@ struct SoftwareRendererSurface
 	uint32_t* Buffer = nullptr;
 	uint32_t Width = 0;
 	uint32_t Height = 0;
+	bool IsDirty = true;
 };
 
 struct SoftwareRendererFrame
@@ -78,9 +79,9 @@ void SoftwareRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scri
 	}
 
 	SoftwareRendererFrame frame = {
-		{ _textureBuffer[1], _frameWidth, _frameHeight },
-		{ emuHud.Buffer, emuHud.Width, emuHud.Height },
-		{ scriptHud.Buffer, scriptHud.Width, scriptHud.Height }
+		{ _textureBuffer[1], _frameWidth, _frameHeight, true },
+		{ emuHud.Buffer, emuHud.Width, emuHud.Height, emuHud.IsDirty },
+		{ scriptHud.Buffer, scriptHud.Width, scriptHud.Height, scriptHud.IsDirty }
 	};
 
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::RefreshSoftwareRenderer, &frame);

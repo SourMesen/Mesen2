@@ -71,8 +71,12 @@ namespace Mesen.Controls
 		public unsafe void UpdateSoftwareRenderer(SoftwareRendererFrame frameInfo)
 		{
 			UpdateSurface(frameInfo.Frame, _model.FrameSurface, s => _model.FrameSurface = s);
-			UpdateSurface(frameInfo.EmuHud, _model.EmuHudSurface, s => _model.EmuHudSurface = s);
-			UpdateSurface(frameInfo.ScriptHud, _model.ScriptHudSurface, s => _model.ScriptHudSurface = s);
+			if(frameInfo.EmuHud.IsDirty) {
+				UpdateSurface(frameInfo.EmuHud, _model.EmuHudSurface, s => _model.EmuHudSurface = s);
+			}
+			if(frameInfo.ScriptHud.IsDirty) {
+				UpdateSurface(frameInfo.ScriptHud, _model.ScriptHudSurface, s => _model.ScriptHudSurface = s);
+			}
 
 			Dispatcher.UIThread.Post(() => {
 				RenderOptions.SetBitmapInterpolationMode(_frame, ConfigManager.Config.Video.UseBilinearInterpolation ? BitmapInterpolationMode.LowQuality : BitmapInterpolationMode.None);

@@ -454,10 +454,14 @@ void Renderer::DrawScreen()
 	}
 	uint8_t* surfacePointer = (uint8_t*)dd.pData;
 	uint8_t* videoBuffer = _textureBuffer[1];
-	for(uint32_t i = 0, iMax = _emuFrameHeight; i < iMax; i++) {
-		memcpy(surfacePointer, videoBuffer, rowPitch);
-		videoBuffer += rowPitch;
-		surfacePointer += dd.RowPitch;
+	if(rowPitch != dd.RowPitch) {
+		for(uint32_t i = 0, iMax = _emuFrameHeight; i < iMax; i++) {
+			memcpy(surfacePointer, videoBuffer, rowPitch);
+			videoBuffer += rowPitch;
+			surfacePointer += dd.RowPitch;
+		}
+	} else {
+		memcpy(surfacePointer, videoBuffer, rowPitch * _emuFrameHeight);
 	}
 	_pDeviceContext->Unmap(_pTexture, 0);
 
@@ -496,35 +500,47 @@ bool Renderer::CreateHudTexture(HudRenderInfo& hud, uint32_t newWidth, uint32_t 
 	return true;
 }
 
-void Renderer::DrawHud(HudRenderInfo& hud, uint32_t* hudBuffer, uint32_t newWidth, uint32_t newHeight)
+void Renderer::DrawHud(HudRenderInfo& hud, RenderSurfaceInfo& hudSurface)
 {
+	uint32_t* hudBuffer = hudSurface.Buffer;
+	uint32_t newWidth = hudSurface.Width;
+	uint32_t newHeight = hudSurface.Height;
+
 	if(newWidth == 0 && newHeight == 0) {
 		return;
 	}
 
+	bool needRedraw = hudSurface.IsDirty;
 	if(hud.Width != newWidth || hud.Height != newHeight || !hud.Texture || !hud.Shader) {
+		needRedraw = true;
 		if(!CreateHudTexture(hud, newWidth, newHeight)) {
 			return;
 		}
 	}
 
-	//Copy buffer to texture
-	uint32_t rowPitch = hud.Width * sizeof(uint32_t);
-	D3D11_MAPPED_SUBRESOURCE dd;
-	HRESULT hr = _pDeviceContext->Map(hud.Texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
-	if(FAILED(hr)) {
-		MessageManager::Log("DeviceContext::Map() failed - Error:" + std::to_string(hr));
-		return;
+	if(needRedraw) {
+		//Copy buffer to texture
+		uint32_t rowPitch = hud.Width * sizeof(uint32_t);
+		D3D11_MAPPED_SUBRESOURCE dd;
+		HRESULT hr = _pDeviceContext->Map(hud.Texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &dd);
+		if(FAILED(hr)) {
+			MessageManager::Log("DeviceContext::Map() failed - Error:" + std::to_string(hr));
+			return;
+		}
+		uint8_t* surfacePointer = (uint8_t*)dd.pData;
+		uint8_t* videoBuffer = (uint8_t*)hudBuffer;
+		if(rowPitch != dd.RowPitch) {
+			for(uint32_t i = 0, iMax = hud.Height; i < iMax; i++) {
+				memcpy(surfacePointer, videoBuffer, rowPitch);
+				videoBuffer += rowPitch;
+				surfacePointer += dd.RowPitch;
+			}
+		} else {
+			memcpy(surfacePointer, videoBuffer, hud.Height * rowPitch);
+		}
+		_pDeviceContext->Unmap(hud.Texture, 0);
 	}
-	uint8_t* surfacePointer = (uint8_t*)dd.pData;
-	uint8_t* videoBuffer = (uint8_t*)hudBuffer;
-	for(uint32_t i = 0, iMax = hud.Height; i < iMax; i++) {
-		memcpy(surfacePointer, videoBuffer, rowPitch);
-		videoBuffer += rowPitch;
-		surfacePointer += dd.RowPitch;
-	}
-	_pDeviceContext->Unmap(hud.Texture, 0);
-
+	
 	RECT destRect;
 	destRect.left = _leftMargin;
 	destRect.top = _topMargin;
@@ -562,8 +578,8 @@ void Renderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud)
 
 	//Draw HUD
 	_spriteBatch->Begin(SpriteSortMode_Immediate, false);
-	DrawHud(_scriptHud, scriptHud.Buffer, scriptHud.Width, scriptHud.Height);
-	DrawHud(_emuHud, emuHud.Buffer, emuHud.Width, emuHud.Height);
+	DrawHud(_scriptHud, scriptHud);
+	DrawHud(_emuHud, emuHud);
 	_spriteBatch->End();
 
 	// Present the information rendered to the back buffer to the front buffer (the screen)

@@ -71,7 +71,7 @@ void VideoRenderer::RenderThread()
 {
 	while(!_stopFlag.load()) {
 		//Wait until a frame is ready, or until 32ms have passed (to allow HUD to update at ~30fps when paused)
-		_waitForRender.Wait(32);
+		bool forceRender = _waitForRender.Wait(32);
 		if(_renderer) {
 			FrameInfo size = _emu->GetVideoDecoder()->GetBaseFrameInfo(true);
 			_scriptHudSurface.UpdateSize(size.Width * _scriptHudScale, size.Height * _scriptHudScale);
@@ -85,17 +85,19 @@ void VideoRenderer::RenderThread()
 				frame = _lastFrame;
 			}
 
-			_emuHudSurface.Clear();
 			_inputHud->DrawControllers(size, frame.InputData);
 			{
 				auto lock = _hudLock.AcquireSafe();
 				_systemHud->Draw(_rendererHud.get(), size.Width, size.Height);
 			}
-			_rendererHud->Draw(_emuHudSurface.Buffer, size, {}, 0, false);
+			
+			_emuHudSurface.IsDirty = _rendererHud->Draw(_emuHudSurface.Buffer, size, {}, 0, false, 0, true);
+			_scriptHudSurface.IsDirty = DrawScriptHud(frame);
 
-			DrawScriptHud(frame);
-
-			_renderer->Render(_emuHudSurface, _scriptHudSurface);
+			if(forceRender || _needRedraw || _emuHudSurface.IsDirty || _scriptHudSurface.IsDirty) {
+				_needRedraw = false;
+				_renderer->Render(_emuHudSurface, _scriptHudSurface);
+			}
 		}
 	}
 }
@@ -116,8 +118,9 @@ FrameInfo VideoRenderer::GetEmuHudSize(FrameInfo baseFrameSize)
 	return size;
 }
 
-void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
+bool VideoRenderer::DrawScriptHud(RenderedFrame& frame)
 {
+	bool needRedraw = false;
 	if(_lastScriptHudFrameNumber != frame.FrameNumber) {
 		//Clear+draw HUD for scripts
 		//-Only when frame number changes (to prevent the HUD from disappearing when paused, etc.)
@@ -125,6 +128,7 @@ void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
 		if(_needScriptHudClear) {
 			_scriptHudSurface.Clear();
 			_needScriptHudClear = false;
+			needRedraw = true;
 		}
 
 		if(_emu->GetScriptHud()->HasCommands()) {
@@ -132,8 +136,10 @@ void VideoRenderer::DrawScriptHud(RenderedFrame& frame)
 			_emu->GetScriptHud()->Draw(_scriptHudSurface.Buffer, size, overscan, frame.FrameNumber, false);
 			_needScriptHudClear = true;
 			_lastScriptHudFrameNumber = frame.FrameNumber;
+			needRedraw = true;
 		}
 	}
+	return needRedraw;
 }
 
 std::pair<FrameInfo, OverscanDimensions> VideoRenderer::GetScriptHudSize()
@@ -163,6 +169,7 @@ void VideoRenderer::UpdateFrame(RenderedFrame& frame)
 
 	if(_renderer) {
 		_renderer->UpdateFrame(frame);
+		_needRedraw = true;
 		_waitForRender.Signal();
 	}
 }

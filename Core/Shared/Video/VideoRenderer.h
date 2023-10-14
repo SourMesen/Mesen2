@@ -52,6 +52,7 @@ private:
 	bool _needScriptHudClear = false;
 	uint32_t _scriptHudScale = 2;
 	uint32_t _lastScriptHudFrameNumber = 0;
+	bool _needRedraw = true;
 
 	RenderedFrame _lastFrame;
 	SimpleLock _frameLock;
@@ -59,7 +60,7 @@ private:
 	safe_ptr<IVideoRecorder> _recorder;
 
 	void RenderThread();
-	void DrawScriptHud(RenderedFrame& frame);
+	bool DrawScriptHud(RenderedFrame& frame);
 	
 	FrameInfo GetEmuHudSize(FrameInfo baseFrameSize);
 

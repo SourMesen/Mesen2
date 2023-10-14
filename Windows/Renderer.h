@@ -82,7 +82,7 @@ private:
 	void DrawScreen();
 
 	bool CreateHudTexture(HudRenderInfo& hud, uint32_t newWidth, uint32_t newHeight);
-	void DrawHud(HudRenderInfo& hud, uint32_t* hudBuffer, uint32_t newWidth, uint32_t newHeight);
+	void DrawHud(HudRenderInfo& hud, RenderSurfaceInfo& hudSurface);
 		
 	HRESULT CreateRenderTargetView();
 	void ReleaseRenderTargetView();

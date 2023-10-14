@@ -12,18 +12,21 @@ AutoResetEvent::~AutoResetEvent()
 	//application is exiting.
 }
 
-void AutoResetEvent::Wait(int timeoutDelay)
+bool AutoResetEvent::Wait(int timeoutDelay)
 {
 	std::unique_lock<std::mutex> lock(_mutex);
+	bool receivedSignal = false;
 	if(timeoutDelay == 0) {
 		//Wait until signaled
 		_signal.wait(lock, [this] { return _signaled; });
+		receivedSignal = true;
 	} else {
 		//Wait until signaled or timeout
 		auto timeoutTime = std::chrono::system_clock::now() + std::chrono::duration<int, std::milli>(timeoutDelay);
-		_signal.wait_until(lock, timeoutTime, [this] { return _signaled; });
+		receivedSignal = _signal.wait_until(lock, timeoutTime, [this] { return _signaled; });
 	}
 	_signaled = false;
+	return receivedSignal;
 }
 
 void AutoResetEvent::Reset()

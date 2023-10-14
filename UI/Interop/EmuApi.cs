@@ -375,6 +375,7 @@ namespace Mesen.Interop
 		public IntPtr FrameBuffer;
 		public UInt32 Width;
 		public UInt32 Height;
+		[MarshalAs(UnmanagedType.I1)] public bool IsDirty;
 	}
 
 	public struct SoftwareRendererFrame

@@ -10,6 +10,7 @@ struct RenderSurfaceInfo
 	uint32_t* Buffer = nullptr;
 	uint32_t Width = 0;
 	uint32_t Height = 0;
+	bool IsDirty = true;
 
 	void UpdateSize(uint32_t width, uint32_t height)
 	{
@@ -25,6 +26,7 @@ struct RenderSurfaceInfo
 	void Clear()
 	{
 		memset(Buffer, 0, Width * Height * sizeof(uint32_t));
+		IsDirty = true;
 	}
 
 	~RenderSurfaceInfo()

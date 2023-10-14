@@ -25,14 +25,52 @@ void DebugHud::ClearScreen()
 	_commands.clear();
 }
 
-void DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale, float forcedScale)
+bool DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, bool autoScale, float forcedScale, bool clearAndUpdate)
 {
 	auto lock = _commandLock.AcquireSafe();
-	for(unique_ptr<DrawCommand> &command : _commands) {
-		command->Draw(argbBuffer, frameInfo, overscan, frameNumber, autoScale, forcedScale);
+
+	bool isDirty = false;
+	if(clearAndUpdate) {
+		unordered_map<uint32_t, uint32_t> drawPixels;
+		drawPixels.reserve(1000);
+		for(unique_ptr<DrawCommand>& command : _commands) {
+			command->Draw(&drawPixels, argbBuffer, frameInfo, overscan, frameNumber, autoScale, forcedScale);
+		}
+
+		isDirty = drawPixels.size() != _drawPixels.size();
+		if(!isDirty) {
+			for(auto keyValue : drawPixels) {
+				auto match = _drawPixels.find(keyValue.first);
+				if(match != _drawPixels.end()) {
+					if(keyValue.second != match->second) {
+						isDirty = true;
+						break;
+					}
+				} else {
+					isDirty = true;
+					break;
+				}
+			}
+		}
+
+		if(isDirty) {
+			memset(argbBuffer, 0, frameInfo.Height * frameInfo.Width * sizeof(uint32_t));
+			for(auto keyValue : drawPixels) {
+				argbBuffer[keyValue.first] = keyValue.second;
+			}
+			_drawPixels = drawPixels;
+		}
+	} else {
+		isDirty = true;
+		for(unique_ptr<DrawCommand>& command : _commands) {
+			command->Draw(nullptr, argbBuffer, frameInfo, overscan, frameNumber, autoScale, forcedScale);
+		}
 	}
+
 	_commands.erase(std::remove_if(_commands.begin(), _commands.end(), [](const unique_ptr<DrawCommand>& c) { return c->Expired(); }), _commands.end());
 	_commandCount = (uint32_t)_commands.size();
+
+	return isDirty;
 }
 
 void DebugHud::DrawPixel(int x, int y, int color, int frameCount, int startFrame)

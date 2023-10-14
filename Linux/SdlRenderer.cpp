@@ -224,10 +224,14 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 		auto frameLock = _frameLock.AcquireSafe();
 		if(_frameBuffer && _frameWidth == _requiredWidth && _frameHeight == _requiredHeight) {
 			uint32_t* ppuFrameBuffer = _frameBuffer;
-			for(uint32_t i = 0, iMax = _frameHeight; i < iMax; i++) {
-				memcpy(textureBuffer, ppuFrameBuffer, _frameWidth*_bytesPerPixel);
-				ppuFrameBuffer += _frameWidth;
-				textureBuffer += rowPitch;
+			if(rowPitch != _frameWidth) {
+				for(uint32_t i = 0, iMax = _frameHeight; i < iMax; i++) {
+					memcpy(textureBuffer, ppuFrameBuffer, _frameWidth*_bytesPerPixel);
+					ppuFrameBuffer += _frameWidth;
+					textureBuffer += rowPitch;
+				}
+			} else {
+				memcpy(textureBuffer, ppuFrameBuffer, _frameHeight * _frameWidth * _bytesPerPixel);
 			}
 		}
 	} else {
@@ -236,14 +240,18 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 	
 	SDL_UnlockTexture(_sdlTexture);
 
-	UpdateHudTexture(_emuHud, emuHud.Buffer);
-	UpdateHudTexture(_scriptHud, scriptHud.Buffer);
+	if(emuHud.IsDirty) {
+		UpdateHudTexture(_emuHud, emuHud.Buffer);
+	}
+	if(scriptHud.IsDirty) {
+		UpdateHudTexture(_scriptHud, scriptHud.Buffer);
+	}
 
 	SDL_Rect source = {0, 0, (int)_frameWidth, (int)_frameHeight };
 	SDL_Rect dest = {0, 0, (int)_screenWidth, (int)_screenHeight };
 	
 	if(SDL_RenderCopy(_sdlRenderer, _sdlTexture, &source, &dest) != 0) {
-			LogSdlError("SDL_RenderCopy failed");	
+		LogSdlError("SDL_RenderCopy failed");	
 	}
 
 	SDL_Rect scriptHudSource = { 0, 0, (int)_scriptHud.Width, (int)_scriptHud.Height };

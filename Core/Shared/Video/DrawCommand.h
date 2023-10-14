@@ -10,6 +10,7 @@ private:
 	bool _disableAutoScale = false;
 
 protected:
+	unordered_map<uint32_t, uint32_t>* _drawnPixels = nullptr;
 	uint32_t* _argbBuffer = nullptr;
 	FrameInfo _frameInfo = {};
 	OverscanDimensions _overscan = {};
@@ -21,16 +22,33 @@ protected:
 
 	__forceinline void InternalDrawPixel(int32_t offset, int color, uint32_t alpha)
 	{
-		if(alpha != 0xFF000000) {
-			if(_argbBuffer[offset] == 0) {
-				//When drawing on an empty background, premultiply channels & preserve alpha value
-				//This is needed for hardware blending between the HUD and the game screen
-				BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color, true);
+		if(_drawnPixels) {
+			//Log modified pixels
+			if(alpha != 0xFF000000) {
+				if(_drawnPixels->find(offset) == _drawnPixels->end()) {
+					//When drawing on an empty background, premultiply channels & preserve alpha value
+					//This is needed for hardware blending between the HUD and the game screen
+					(*_drawnPixels)[offset] = color;
+					BlendColors((uint8_t*)&(*_drawnPixels)[offset], (uint8_t*)&color, true);
+				} else {
+					BlendColors((uint8_t*)&(*_drawnPixels)[offset], (uint8_t*)&color);
+				}
 			} else {
-				BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
+				(*_drawnPixels)[offset] = color;
 			}
 		} else {
-			_argbBuffer[offset] = color;
+			//Draw pixels directly to the buffer
+			if(alpha != 0xFF000000) {
+				if(_argbBuffer[offset] == 0) {
+					//When drawing on an empty background, premultiply channels & preserve alpha value
+					//This is needed for hardware blending between the HUD and the game screen
+					BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color, true);
+				} else {
+					BlendColors((uint8_t*)&_argbBuffer[offset], (uint8_t*)&color);
+				}
+			} else {
+				_argbBuffer[offset] = color;
+			}
 		}
 	}
 
@@ -106,7 +124,7 @@ public:
 	{
 	}
 
-	void Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, bool autoScale, float forcedScale = 0)
+	void Draw(unordered_map<uint32_t, uint32_t>* drawnPixels, uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, bool autoScale, float forcedScale = 0)
 	{
 		if(_startFrame < 0) {
 			//When no start frame was specified, start on the next drawn frame
@@ -115,6 +133,7 @@ public:
 
 		if(_startFrame <= (int32_t)frameNumber) {
 			_argbBuffer = argbBuffer;
+			_drawnPixels = drawnPixels;
 			_frameInfo = frameInfo;
 			_overscan = overscan;
 
