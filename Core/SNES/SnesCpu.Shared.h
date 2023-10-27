@@ -466,62 +466,68 @@ uint16_t SnesCpu::GetWordValue()
 	}
 }
 
-void SnesCpu::PushByte(uint8_t value)
+void SnesCpu::PushByte(uint8_t value, bool allowEmulationMode)
 {
 	Write(_state.SP, value);
-	SetSP(_state.SP - 1);
+	SetSP(_state.SP - 1, allowEmulationMode);
 }
 
-uint8_t SnesCpu::PopByte()
+uint8_t SnesCpu::PopByte(bool allowEmulationMode)
 {
-	SetSP(_state.SP + 1);
+	SetSP(_state.SP + 1, allowEmulationMode);
 	return ReadData(_state.SP);
 }
 
-void SnesCpu::PushWord(uint16_t value)
+void SnesCpu::PushWord(uint16_t value, bool allowEmulationMode)
 {
-	PushByte(value >> 8);
-	PushByte((uint8_t)value);
+	PushByte(value >> 8, allowEmulationMode);
+	PushByte((uint8_t)value, allowEmulationMode);
 }
 
-uint16_t SnesCpu::PopWord()
+uint16_t SnesCpu::PopWord(bool allowEmulationMode)
 {
-	uint8_t lo = PopByte();
-	uint8_t hi = PopByte();
+	uint8_t lo = PopByte(allowEmulationMode);
+	uint8_t hi = PopByte(allowEmulationMode);
 	return lo | hi << 8;
 }
 
 uint16_t SnesCpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
 {
 	if(allowEmulationMode && _state.EmulationMode && (_state.D & 0xFF) == 0) {
-		//TODO: Check if new instruction or not (PEI)
 		return (uint16_t)((_state.D & 0xFF00) | (offset & 0xFF));
 	} else {
 		return (uint16_t)(_state.D + offset);
 	}
 }
 
-uint16_t SnesCpu::GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode)
+uint16_t SnesCpu::GetDirectAddressIndirectWord(uint16_t offset)
 {
 	uint8_t lsb = ReadData(GetDirectAddress(offset + 0));
 	uint8_t msb = ReadData(GetDirectAddress(offset + 1));
 	return (msb << 8) | lsb;
 }
 
-uint32_t SnesCpu::GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode)
+uint32_t SnesCpu::GetDirectAddressIndirectLong(uint16_t offset)
 {
-	uint8_t b1 = ReadData(GetDirectAddress(offset + 0, allowEmulationMode));
-	uint8_t b2 = ReadData(GetDirectAddress(offset + 1, allowEmulationMode));
-	uint8_t b3 = ReadData(GetDirectAddress(offset + 2, allowEmulationMode));
+	uint8_t b1 = ReadData(GetDirectAddress(offset + 0, false));
+	uint8_t b2 = ReadData(GetDirectAddress(offset + 1, false));
+	uint8_t b3 = ReadData(GetDirectAddress(offset + 2, false));
 	return (b3 << 16) | (b2 << 8) | b1;
 }
 
-void SnesCpu::SetSP(uint16_t sp)
+void SnesCpu::SetSP(uint16_t sp, bool allowEmulationMode)
 {
-	if(_state.EmulationMode) {
+	if(allowEmulationMode && _state.EmulationMode) {
 		_state.SP = 0x100 | (sp & 0xFF);
 	} else {
 		_state.SP = sp;
+	}
+}
+
+void SnesCpu::RestrictStackPointerValue()
+{
+	if(_state.EmulationMode) {
+		_state.SP = 0x100 | (_state.SP & 0xFF);
 	}
 }
 

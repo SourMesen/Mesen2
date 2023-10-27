@@ -37,8 +37,8 @@ private:
 
 	uint16_t GetDirectAddress(uint16_t offset, bool allowEmulationMode = true);
 
-	uint16_t GetDirectAddressIndirectWord(uint16_t offset, bool allowEmulationMode = true);
-	uint32_t GetDirectAddressIndirectLong(uint16_t offset, bool allowEmulationMode = true);
+	uint16_t GetDirectAddressIndirectWord(uint16_t offset);
+	uint32_t GetDirectAddressIndirectLong(uint16_t offset);
 
 	uint8_t GetOpCode();
 
@@ -64,7 +64,8 @@ private:
 
 	uint8_t Read(uint32_t addr, MemoryOperationType type);
 
-	void SetSP(uint16_t sp);
+	void SetSP(uint16_t sp, bool allowEmulationMode = true);
+	__forceinline void RestrictStackPointerValue();
 	void SetPS(uint8_t ps);
 
 	void SetRegister(uint8_t &reg, uint8_t value);
@@ -92,11 +93,11 @@ private:
 
 	uint16_t GetWordValue();
 
-	void PushByte(uint8_t value);
-	uint8_t PopByte();
+	void PushByte(uint8_t value, bool allowEmulationMode = true);
+	uint8_t PopByte(bool allowEmulationMode = true);
 
-	void PushWord(uint16_t value);
-	uint16_t PopWord();
+	void PushWord(uint16_t value, bool allowEmulationMode = true);
+	uint16_t PopWord(bool allowEmulationMode = true);
 
 	//Add/subtract instructions
 	void Add8(uint8_t value);

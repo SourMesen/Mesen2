@@ -411,15 +411,16 @@ void SnesCpu::JSL()
 	uint8_t b1 = ReadOperandByte();
 	uint8_t b2 = ReadOperandByte();
 
-	PushByte(_state.K);
+	PushByte(_state.K, false);
 	Idle();
 
 	uint8_t b3 = ReadOperandByte();
 
-	PushWord(_state.PC - 1);
+	PushWord(_state.PC - 1, false);
 
 	_state.K = b3;
 	_state.PC = b1 | (b2 << 8);
+	RestrictStackPointerValue();
 	IdleEndJump();
 }
 
@@ -445,7 +446,7 @@ void SnesCpu::JMP_AbsIdxXInd()
 void SnesCpu::JSR_AbsIdxXInd()
 {
 	uint8_t lsb = ReadOperandByte();
-	PushWord(_state.PC);
+	PushWord(_state.PC, false);
 	uint8_t msb = ReadOperandByte();
 
 	uint16_t baseAddr = (lsb | (msb << 8)) + _state.X;
@@ -455,6 +456,7 @@ void SnesCpu::JSR_AbsIdxXInd()
 	msb = ReadData(GetProgramAddress(baseAddr + 1));
 
 	_state.PC = (uint16_t)GetProgramAddress(lsb | (msb << 8));
+	RestrictStackPointerValue();
 	IdleEndJump();
 }
 
@@ -479,9 +481,10 @@ void SnesCpu::RTL()
 	Idle();
 	Idle();
 
-	_state.PC = PopWord();
+	_state.PC = PopWord(false);
 	_state.PC++;
-	_state.K = PopByte();
+	_state.K = PopByte(false);
+	RestrictStackPointerValue();
 	IdleEndJump();
 }
 
@@ -771,19 +774,22 @@ Push/pull operations
 void SnesCpu::PEA()
 {
 	//Push Effective Address
-	PushWord((uint16_t)_operand);
+	PushWord((uint16_t)_operand, false);
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PEI()
 {
 	//Push Effective Indirect address
-	PushWord(ReadDataWord(_operand));
+	PushWord(ReadDataWord(_operand), false);
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PER()
 {
 	//Push Effective Relative address
-	PushWord((uint16_t)((int16_t)_operand + _state.PC));
+	PushWord((uint16_t)((int16_t)_operand + _state.PC), false);
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PHB()
@@ -795,7 +801,8 @@ void SnesCpu::PHB()
 void SnesCpu::PHD()
 {
 	Idle();
-	PushWord(_state.D);
+	PushWord(_state.D, false);
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PHK()
@@ -817,7 +824,8 @@ void SnesCpu::PLB()
 	//"PHP, PHK, PHP, PLB, and PLP push and pull one byte from the stack"
 	Idle();
 	Idle();
-	SetRegister(_state.DBR, PopByte());
+	SetRegister(_state.DBR, PopByte(false));
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PLD()
@@ -825,7 +833,8 @@ void SnesCpu::PLD()
 	//"PHD and PLD push and pull two bytes from the stack."
 	Idle();
 	Idle();
-	SetRegister(_state.D, PopWord(), false);
+	SetRegister(_state.D, PopWord(false), false);
+	RestrictStackPointerValue();
 }
 
 void SnesCpu::PLP()
@@ -1286,7 +1295,7 @@ void SnesCpu::AddrMode_DirIndIdxY(bool isWrite)
 
 void SnesCpu::AddrMode_DirIndLng()
 {
-	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte(), false);
+	_operand = GetDirectAddressIndirectLong(ReadDirectOperandByte());
 }
 
 void SnesCpu::AddrMode_DirIndLngIdxY()
