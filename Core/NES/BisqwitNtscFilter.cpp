@@ -63,7 +63,8 @@ BisqwitNtscFilter::BisqwitNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
 			FrameInfo frameInfo = _frameInfo;
 
 			//Adjust outputbuffer to start at the middle of the picture
-			outputBuffer += frameInfo.Width * (frameInfo.Height / 2);
+			int scale = 8 / _resDivider;
+			outputBuffer += frameInfo.Width * ((120 - GetOverscan().Top) * scale);
 
 			DecodeFrame(120, 239 - GetOverscan().Bottom, _ppuOutputBuffer, outputBuffer, (GetVideoPhase() * 4) + 327360);
 
