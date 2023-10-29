@@ -1280,7 +1280,7 @@ void SnesCpu::AddrMode_DirIdxIndX()
 {
 	uint8_t operandByte = ReadDirectOperandByte();
 	Idle();
-	_operand = GetDataAddress(GetDirectAddressIndirectWord(operandByte + _state.X));
+	_operand = GetDataAddress(GetDirectAddressIndirectWordWithPageWrap(operandByte + _state.X));
 }
 
 void SnesCpu::AddrMode_DirIndIdxY(bool isWrite)

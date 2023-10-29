@@ -500,6 +500,24 @@ uint16_t SnesCpu::GetDirectAddress(uint16_t offset, bool allowEmulationMode)
 	}
 }
 
+uint16_t SnesCpu::GetDirectAddressIndirectWordWithPageWrap(uint16_t offset)
+{
+	uint8_t lsb = ReadData(GetDirectAddress(offset + 0));
+	if(!_state.EmulationMode || (_state.D & 0xFF) == 0) {
+		return (ReadData(GetDirectAddress(offset + 1)) << 8) | lsb;
+	} else {
+		uint16_t addr = GetDirectAddress(offset + 1);
+		uint8_t msb;
+		if((addr & 0xFF) == 0) {
+			//Crossed to next page, wrap around to start of previous page instead (cpu bug?)
+			msb = ReadData((uint16_t)(addr - 0x100));
+		} else {
+			msb = ReadData(addr);
+		}
+		return (msb << 8) | lsb;
+	}
+}
+
 uint16_t SnesCpu::GetDirectAddressIndirectWord(uint16_t offset)
 {
 	uint8_t lsb = ReadData(GetDirectAddress(offset + 0));

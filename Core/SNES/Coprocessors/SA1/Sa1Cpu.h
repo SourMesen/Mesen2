@@ -38,6 +38,7 @@ private:
 	uint16_t GetDirectAddress(uint16_t offset, bool allowEmulationMode = true);
 
 	uint16_t GetDirectAddressIndirectWord(uint16_t offset);
+	uint16_t GetDirectAddressIndirectWordWithPageWrap(uint16_t offset);
 	uint32_t GetDirectAddressIndirectLong(uint16_t offset);
 
 	uint8_t GetOpCode();
