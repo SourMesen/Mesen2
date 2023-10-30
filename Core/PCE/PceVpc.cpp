@@ -269,10 +269,13 @@ void PceVpc::ProcessScanlineEnd(PceVdc* vdc, uint16_t scanline, uint16_t* rowBuf
 
 	if(_vdc2) {
 		ProcessScanline();
+		memset(_vdc1->GetRowBuffer(), 0, PceConstants::MaxScreenWidth * sizeof(uint16_t));
+		memset(_vdc2->GetRowBuffer(), 0, PceConstants::MaxScreenWidth * sizeof(uint16_t));
 	} else {
 		//PC Engine, display VDC1's data
 		uint32_t offset = (scanline - 14) * PceConstants::MaxScreenWidth;
 		memcpy(_currentOutBuffer + offset, rowBuffer, PceConstants::MaxScreenWidth * sizeof(uint16_t));
+		memset(rowBuffer, 0, PceConstants::MaxScreenWidth * sizeof(uint16_t));
 	}
 }
 

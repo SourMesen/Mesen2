@@ -908,7 +908,6 @@ void PceVdc::InternalDrawScanline()
 
 	if(_state.HClock == 1365) {
 		_vpc->ProcessScanlineEnd(this, _state.Scanline, _rowBuffer);
-		memset(_rowBuffer, 0, PceConstants::MaxScreenWidth * sizeof(uint16_t));
 	}
 
 	_xStart = xStart;
