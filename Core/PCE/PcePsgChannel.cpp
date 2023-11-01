@@ -17,9 +17,9 @@ void PcePsgChannel::Init(uint8_t index, PcePsg* psg)
 uint32_t PcePsgChannel::GetNoisePeriod()
 {
 	if(_state.NoiseFrequency == 0x1F) {
-		return (0x1F + 1) * 128;
+		return (0x1F + 1) * 64;
 	} else {
-		return ((~_state.NoiseFrequency) & 0x1F) * 128;
+		return ((~_state.NoiseFrequency) & 0x1F) * 64;
 	}
 }
 
