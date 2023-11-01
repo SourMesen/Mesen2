@@ -1407,7 +1407,6 @@ namespace Mesen.Debugger.ViewModels
 					entries.Add(new RegEntry("", "Noise Timer", ch.NoiseTimer));
 					entries.Add(new RegEntry("", "Noise Output", ch.NoiseOutput == 0x0F ? 1 : 0));
 					entries.Add(new RegEntry("", "Noise LSFR", ch.NoiseLfsr, Format.X24));
-					entries.Add(new RegEntry("", "Noise Output", ch.NoiseLfsr, Format.X24));
 				}
 			}
 
