@@ -10,8 +10,6 @@
 class MMC3 : public BaseMapper
 {
 private:
-	NesCpu* _cpu = nullptr;
-
 	uint8_t _currentRegister = 0;
 
 	bool _wramEnabled = false;
@@ -195,8 +193,6 @@ protected:
 
 	void InitMapper() override
 	{
-		_cpu = _console->GetCpu();
-
 		//Force MMC3A irqs for boards that are known to use the A revision.
 		//Some MMC3B boards also have the A behavior, but currently no way to tell them apart.
 		_forceMmc3RevAIrqs = _romInfo.DatabaseInfo.Chip.substr(0, 5).compare("MMC3A") == 0;
@@ -245,7 +241,7 @@ protected:
 
 			case 0xE000:
 				_irqEnabled = false;
-				_cpu->ClearIrqSource(IRQSource::External);
+				_console->GetCpu()->ClearIrqSource(IRQSource::External);
 				break;
 
 			case 0xE001:
@@ -256,7 +252,7 @@ protected:
 
 	virtual void TriggerIrq()
 	{
-		_cpu->SetIrqSource(IRQSource::External);
+		_console->GetCpu()->SetIrqSource(IRQSource::External);
 	}
 
 	vector<MapperStateEntry> GetMapperStateEntries() override
