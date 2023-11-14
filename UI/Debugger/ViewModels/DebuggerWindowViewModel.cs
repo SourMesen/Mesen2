@@ -211,10 +211,21 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ISymbolProvider? provider = DebugWorkspaceManager.SymbolProvider;
 			if(provider != null) {
+				bool wasActive = IsToolActive(DockFactory.SourceViewTool);
+
+				//Close the source view tab if it's already visible, to ensure it gets refreshed properly
+				DockFactory.CloseDockable(DockFactory.SourceViewTool);
+
 				SourceView = new SourceViewViewModel(this, provider, CpuType);
 				DockFactory.SourceViewTool.Model = SourceView;
-				if(!IsToolVisible(DockFactory.SourceViewTool) && DockFactory.DisassemblyTool.Owner is IDock dock) {
-					DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
+				if(DockFactory.DisassemblyTool.Owner is IDock dock) {
+					if(!IsToolVisible(DockFactory.SourceViewTool)) {
+						DockFactory.AddDockable(dock, DockFactory.SourceViewTool);
+					}
+					if(wasActive) {
+						//Re-select the source view tab if it was selected before the update
+						dock.ActiveDockable = DockFactory.SourceViewTool;
+					}
 				}
 			} else {
 				SourceView = null;
