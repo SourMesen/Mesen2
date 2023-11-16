@@ -20,7 +20,7 @@ void GsuDisUtils::GetDisassembly(DisassemblyInfo &info, string &out, uint32_t me
 	FastString str(settings->GetDebugConfig().UseLowerCaseDisassembly);
 
 	auto getJumpTarget = [&str, labelManager, memoryAddr, &info]() {
-		uint32_t jmpTarget = memoryAddr + (int8_t)info.GetByteCode()[1] + 2;
+		uint32_t jmpTarget = (memoryAddr + (int8_t)info.GetByteCode()[1] + 2) & 0xFFFFFF;
 		AddressInfo address = { (int32_t)jmpTarget, MemoryType::GsuMemory };
 		string label = labelManager ? labelManager->GetLabel(address) : "";
 		if(label.empty()) {
