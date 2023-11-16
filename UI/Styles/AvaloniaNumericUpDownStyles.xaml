@@ -25,10 +25,10 @@
 							MinHeight="{TemplateBinding MinHeight}">
 					<DockPanel>
 						<Border BorderThickness="1 0 0 0" BorderBrush="Gray" DockPanel.Dock="Right">
-							<StackPanel Name="PART_SpinnerPanel"
-											Orientation="Vertical"
+							<Grid Name="PART_SpinnerPanel" RowDefinitions="*,Auto,*"
 											IsVisible="{TemplateBinding ShowButtonSpinner}">
 								<RepeatButton Name="PART_IncreaseButton"
+												  Grid.Row="0"
 													BorderBrush="{TemplateBinding BorderBrush}"
 													BorderThickness="0"
 													VerticalAlignment="Stretch"
@@ -40,11 +40,12 @@
 										>
 									<PathIcon
 											Width="10"
+											Margin="0 -2 0 0"
 											Height="8"
 											Data="{StaticResource ButtonSpinnerIncreaseButtonIcon}" />
 								</RepeatButton>
-								<Rectangle Fill="Gray" Height="1" />
-								<RepeatButton Name="PART_DecreaseButton"
+								<Rectangle Fill="Gray" Height="1" Grid.Row="1" />
+								<RepeatButton Name="PART_DecreaseButton" Grid.Row="2"
 													BorderBrush="{TemplateBinding BorderBrush}"
 													BorderThickness="0 0 0 0"
 													VerticalAlignment="Stretch"
@@ -56,10 +57,11 @@
 										>
 									<PathIcon
 											Width="10"
+											Margin="0 -1 0 0"
 											Height="8"
 											Data="{StaticResource ButtonSpinnerDecreaseButtonIcon}" />
 								</RepeatButton>
-							</StackPanel>
+							</Grid>
 						</Border>
 						<ContentPresenter Name="PART_ContentPresenter"
 												Grid.Column="1"
