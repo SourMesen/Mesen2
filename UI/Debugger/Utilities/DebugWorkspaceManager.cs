@@ -95,13 +95,25 @@ namespace Mesen.Debugger.Utilities
 		public static void LoadSymFile(string path, bool showResult)
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.SymFileExt) {
-				ResetLabels();
-
 				string symContent = File.ReadAllText(path);
 				if(symContent.Contains("[labels]")) {
 					//Assume WLA-DX symbol files
-					if(_romInfo.ConsoleType == ConsoleType.Snes || _romInfo.CpuTypes.Contains(CpuType.Gameboy)) {
-						WlaDxImporter importer = new();
+					WlaDxImporter? importer = null;
+					switch(_romInfo.ConsoleType) {
+						case ConsoleType.Snes:
+							if(_romInfo.CpuTypes.Contains(CpuType.Gameboy)) {
+								importer = new GbWlaDxImporter();
+							} else {
+								importer = new SnesWlaDxImporter();
+							}
+							break;
+
+						case ConsoleType.Gameboy: importer = new GbWlaDxImporter(); break;
+						case ConsoleType.PcEngine: importer = new PceWlaDxImporter(); break;
+					}
+
+					if(importer != null) {
+						ResetLabels();
 						importer.Import(path, showResult);
 						SymbolProvider = importer;
 					}

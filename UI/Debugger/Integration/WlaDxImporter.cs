@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Mesen.Debugger.Integration;
 
-public class WlaDxImporter : ISymbolProvider
+public abstract class WlaDxImporter : ISymbolProvider
 {
 	private static Regex _labelRegex = new Regex(@"^([0-9a-fA-F]{2,4}):([0-9a-fA-F]{4}) ([^\s]*)", RegexOptions.Compiled);
 	private static Regex _fileRegex = new Regex(@"^([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
@@ -21,9 +21,10 @@ public class WlaDxImporter : ISymbolProvider
 	private static Regex _fileV2Regex = new Regex(@"^([0-9a-fA-F]{4}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{8}) (.*)", RegexOptions.Compiled);
 	private static Regex _addrV2Regex = new Regex(@"^([0-9a-fA-F]{8}) ([0-9a-fA-F]{2}):([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}) ([0-9a-fA-F]{4}):([0-9a-fA-F]{4}):([0-9a-fA-F]{8})", RegexOptions.Compiled);
 
-	private Dictionary<int, SourceFileInfo> _sourceFiles = new Dictionary<int, SourceFileInfo>();
-	private Dictionary<string, AddressInfo> _addressByLine = new Dictionary<string, AddressInfo>();
-	private Dictionary<string, SourceCodeLocation> _linesByAddress = new Dictionary<string, SourceCodeLocation>();
+	private Dictionary<int, SourceFileInfo> _sourceFiles = new();
+	private Dictionary<string, AddressInfo> _addressByLine = new();
+	private Dictionary<string, SourceCodeLocation> _linesByAddress = new();
+	private List<SymbolInfo> _symbols = new();
 
 	public DateTime SymbolFileStamp { get; private set; }
 	public string SymbolPath { get; private set; } = "";
@@ -61,11 +62,20 @@ public class WlaDxImporter : ISymbolProvider
 
 	public SourceSymbol? GetSymbol(string word, int scopeStart, int scopeEnd)
 	{
+		foreach(SymbolInfo symbol in _symbols) {
+			if(symbol.Name == word) {
+				//TODOv2 SCOPE
+				return symbol.SourceSymbol;
+			}
+		}
 		return null;
 	}
 
 	public AddressInfo? GetSymbolAddressInfo(SourceSymbol symbol)
 	{
+		if(symbol.InternalSymbol is SymbolInfo dbgSymbol) {
+			return dbgSymbol.Address;
+		}
 		return null;
 	}
 
@@ -76,7 +86,7 @@ public class WlaDxImporter : ISymbolProvider
 
 	public List<SourceSymbol> GetSymbols()
 	{
-		return new List<SourceSymbol>();
+		return _symbols.Select(s => s.SourceSymbol).ToList();
 	}
 
 	public int GetSymbolSize(SourceSymbol srcSymbol)
@@ -95,7 +105,6 @@ public class WlaDxImporter : ISymbolProvider
 
 		Dictionary<string, CodeLabel> labels = new Dictionary<string, CodeLabel>();
 
-		bool isGameboy = EmuApi.GetRomInfo().CpuTypes.Contains(CpuType.Gameboy);
 		int errorCount = 0;
 
 		for(int i = 0; i < lines.Length; i++) {
@@ -106,6 +115,7 @@ public class WlaDxImporter : ISymbolProvider
 						Match m = _labelRegex.Match(lines[i]);
 						if(m.Success) {
 							int bank = Int32.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+							int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
 							string label = m.Groups[3].Value;
 							label = label.Replace('.', '_').Replace(':', '_').Replace('$', '_');
 
@@ -115,25 +125,15 @@ public class WlaDxImporter : ISymbolProvider
 								continue;
 							}
 
-							AddressInfo absAddr;
-							if(isGameboy) {
-								int addr = Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-								if(addr >= 0x8000) {
-									AddressInfo relAddr = new AddressInfo() { Address = addr, Type = MemoryType.GameboyMemory };
-									absAddr = DebugApi.GetAbsoluteAddress(relAddr);
-								} else {
-									absAddr = new AddressInfo() { Address = bank * 0x4000 + (addr & 0x3FFF), Type = MemoryType.GbPrgRom };
-								}
-							} else {
-								int addr = (bank << 16) | Int32.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
-								AddressInfo relAddr = new AddressInfo() { Address = addr, Type = MemoryType.SnesMemory };
-								absAddr = DebugApi.GetAbsoluteAddress(relAddr);
-							}
+							AddressInfo absAddr = GetLabelAddress(bank, addr);
 
 							if(absAddr.Address < 0) {
 								errorCount++;
 								continue;
 							}
+
+							SymbolInfo symbol = new(label, absAddr);
+							_symbols.Add(symbol);
 
 							string orgLabel = label;
 							int j = 1;
@@ -160,13 +160,13 @@ public class WlaDxImporter : ISymbolProvider
 			} else if(str == "[source files]" || str == "[source files v2]") {
 				int file_idx = 1;
 				int path_idx = 3;
-				ref Regex regex = ref _fileRegex;
+				Regex regex = _fileRegex;
 
 				// Conversion of indices for supporting WLA-DX V2
 				if (str == "[source files v2]") {
 					file_idx = 2;
 					path_idx = 4;
-					regex = ref _fileV2Regex;
+					regex = _fileV2Regex;
 				}
 
 				for(; i < lines.Length; i++) {
@@ -189,7 +189,7 @@ public class WlaDxImporter : ISymbolProvider
 				int addr_idx = 2;
 				int field_idx = 3;
 				int line_idx = 4;
-				ref Regex regex = ref _addrRegex;
+				Regex regex = _addrRegex;
 
 				// Conversion of indices for supporting WLA-DX V2
 				if (str == "[addr-to-line mapping v2]") {
@@ -197,7 +197,7 @@ public class WlaDxImporter : ISymbolProvider
 					addr_idx = 3;
 					field_idx = 6;
 					line_idx = 7;
-					regex = ref _addrV2Regex;
+					regex = _addrV2Regex;
 				}
 
 				for(; i < lines.Length; i++) {
@@ -244,8 +244,54 @@ public class WlaDxImporter : ISymbolProvider
 		}
 	}
 
+	protected abstract AddressInfo GetLabelAddress(int bank, int addr);
+
 	class WlaDxFile : IFileDataProvider
 	{
 		public string[] Data { get; init; } = Array.Empty<string>();
+	}
+
+	private readonly struct SymbolInfo
+	{
+		public string Name { get; }
+		public AddressInfo Address { get; }
+		public SourceSymbol SourceSymbol { get => new SourceSymbol(Name, Address.Address, this); }
+
+		public SymbolInfo(string name, AddressInfo address)
+		{
+			Name = name;
+			Address = address;
+		}
+	}
+}
+
+public class SnesWlaDxImporter : WlaDxImporter
+{
+	protected override AddressInfo GetLabelAddress(int bank, int addr)
+	{
+		AddressInfo relAddr = new AddressInfo() { Address = (bank << 16) | addr, Type = MemoryType.SnesMemory };
+		return DebugApi.GetAbsoluteAddress(relAddr);
+	}
+}
+
+public class GbWlaDxImporter : WlaDxImporter
+{
+	protected override AddressInfo GetLabelAddress(int bank, int addr)
+	{
+		if(addr >= 0x8000) {
+			AddressInfo relAddr = new AddressInfo() { Address = addr, Type = MemoryType.GameboyMemory };
+			return DebugApi.GetAbsoluteAddress(relAddr);
+		} else {
+			return new AddressInfo() { Address = bank * 0x4000 + (addr & 0x3FFF), Type = MemoryType.GbPrgRom };
+		}
+	}
+}
+
+public class PceWlaDxImporter : WlaDxImporter
+{
+	protected override AddressInfo GetLabelAddress(int bank, int addr)
+	{
+		//TODOv2 RAM labels seem to be missing from .sym file?
+		return new AddressInfo() { Address = bank * 0x2000 + (addr & 0x1FFF), Type = MemoryType.PcePrgRom };
 	}
 }
