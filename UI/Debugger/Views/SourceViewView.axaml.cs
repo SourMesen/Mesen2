@@ -16,6 +16,7 @@ using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.ViewModels.DebuggerDock;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -368,7 +369,7 @@ namespace Mesen.Debugger.Views
 			}
 
 			_model?.SetViewer(_viewer);
-			_viewer.Focus();
+			FocusViewer();
 		}
 
 		protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -398,12 +399,19 @@ namespace Mesen.Debugger.Views
 			}
 		}
 
-		private void Parent_Selected(object? sender, EventArgs e)
+		private void FocusViewer()
 		{
 			Dispatcher.UIThread.Post(() => {
 				//Focus source view when selected by code
-				_viewer.Focus();
+				if(_viewer.IsParentWindowFocused()) {
+					_viewer.Focus();
+				}
 			});
+		}
+
+		private void Parent_Selected(object? sender, EventArgs e)
+		{
+			this.FocusViewer();
 		}
 	}
 }
