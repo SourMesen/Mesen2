@@ -116,6 +116,8 @@ protected:
 
 	void Serialize(Serializer& s) override
 	{
+		BaseMapper::Serialize(s);
+
 		SV(_a12Watcher);
 		SVArray(_mmc3Registers, 12);
 

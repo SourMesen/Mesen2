@@ -31,6 +31,7 @@ protected:
 	
 	void Serialize(Serializer& s) override
 	{
+		BaseMapper::Serialize(s);
 		SVArray(_registers, 8);
 		SV(_currentReg);
 		SV(_outerChrBank);

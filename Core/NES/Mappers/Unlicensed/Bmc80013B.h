@@ -25,6 +25,7 @@ protected:
 
 	void Serialize(Serializer& s) override
 	{
+		BaseMapper::Serialize(s);
 		SV(_regs[0]);
 		SV(_regs[1]);
 		SV(_mode);
