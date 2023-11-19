@@ -34,6 +34,10 @@ void PceCdAudioPlayer::Play(uint32_t startSector, bool pause)
 
 void PceCdAudioPlayer::SetEndPosition(uint32_t endSector, CdPlayEndBehavior endBehavior)
 {
+	if(endSector >= _disc->DiscSectorCount) {
+		endSector = _disc->DiscSectorCount - 1;
+	}
+
 	_state.EndSector = endSector;
 	_state.EndBehavior = endBehavior;
 	_state.Status = CdAudioStatus::Playing;
@@ -53,6 +57,9 @@ void PceCdAudioPlayer::PlaySample()
 			_state.CurrentSector++;
 
 			if(_state.CurrentSector > _state.EndSector) {
+				if(_state.CurrentSector >= _disc->DiscSectorCount) {
+					_state.CurrentSector = _disc->DiscSectorCount - 1;
+				}
 				switch(_state.EndBehavior) {
 					case CdPlayEndBehavior::Stop: _state.Status = CdAudioStatus::Stopped; break;
 					case CdPlayEndBehavior::Loop: _state.CurrentSector = _state.StartSector; break;

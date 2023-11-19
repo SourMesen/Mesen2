@@ -98,6 +98,12 @@ struct DiscInfo
 	{
 		if(track < Tracks.size()) {
 			return Tracks[track].FirstSector;
+		} else if(track > 0 && track == Tracks.size()) {
+			//Tenshi no Uta 2 intro sets the end of the audio playback to track 0x35, but the last track is 0x34
+			//The expected behavior is probably that audio should end at the of track 0x34
+			//Without this code, the end gets set to sector 0, which immediately triggers an IRQ and restarts the
+			//intro sequence early, making it impossible to start playing the game.
+			return Tracks[track - 1].LastSector;
 		}
 		return -1;
 	}
