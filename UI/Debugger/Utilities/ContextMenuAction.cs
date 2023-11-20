@@ -119,8 +119,9 @@ namespace Mesen.Debugger.Utilities
 		public bool AlwaysShowLabel { get; set; }
 		public RoutingStrategies RoutingStrategy { get; set; } = RoutingStrategies.Bubble;
 
-		public abstract string ShortcutText { get; }
+		protected abstract string InternalShortcutText { get; }
 
+		[Reactive] public string ShortcutText { get; set; } = "";
 		[Reactive] public string ActionName { get; set; } = "";
 		[Reactive] public Image? ActionIcon { get; set; }
 		[Reactive] public bool Enabled { get; set; }
@@ -169,6 +170,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			ActionName = Name;
 
+			ShortcutText = InternalShortcutText;
 			if(ShortcutText.Length > 0) {
 				TooltipText = $"{Name} ({ShortcutText})";
 			} else {
@@ -233,7 +235,7 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
-		public override string ShortcutText
+		protected override string InternalShortcutText
 		{
 			get
 			{
@@ -250,7 +252,7 @@ namespace Mesen.Debugger.Utilities
 	public class ContextMenuAction : BaseMenuAction
 	{
 		public Func<DbgShortKeys>? Shortcut { get; set; }
-		public override string ShortcutText => Shortcut?.Invoke().ToString() ?? "";
+		protected override string InternalShortcutText => Shortcut?.Invoke().ToString() ?? "";
 
 		public override void Dispose()
 		{
