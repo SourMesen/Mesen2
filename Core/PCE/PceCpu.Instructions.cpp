@@ -681,7 +681,6 @@ void PceCpu::TDD()
 	uint16_t dst = _operand2;
 	uint16_t length = _operand3;
 
-	uint32_t count = 0;
 	do {
 		DummyRead();
 		uint8_t value = MemoryRead(src);
@@ -694,7 +693,6 @@ void PceCpu::TDD()
 		src--;
 		dst--;
 
-		count++;
 		length--;
 	} while(length);
 
@@ -737,7 +735,6 @@ void PceCpu::TII()
 	uint16_t dst = _operand2;
 	uint16_t length = _operand3;
 
-	uint32_t count = 0;
 	do {
 		DummyRead();
 		uint8_t value = MemoryRead(src);
@@ -750,7 +747,6 @@ void PceCpu::TII()
 		src++;
 		dst++;
 
-		count++;
 		length--;
 	} while(length);
 
@@ -765,7 +761,6 @@ void PceCpu::TIN()
 	uint16_t dst = _operand2;
 	uint16_t length = _operand3;
 
-	uint32_t count = 0;
 	do {
 		DummyRead();
 		uint8_t value = MemoryRead(src);
@@ -777,7 +772,6 @@ void PceCpu::TIN()
 
 		src++;
 
-		count++;
 		length--;
 	} while(length);
 
