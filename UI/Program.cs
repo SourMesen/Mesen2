@@ -30,7 +30,11 @@ namespace Mesen
 
 		static Program()
 		{
-			Program.OriginalFolder = Environment.CurrentDirectory;
+			try {
+				Program.OriginalFolder = Environment.CurrentDirectory;
+			} catch {
+				Program.OriginalFolder = Path.GetDirectoryName(ExePath) ?? "";
+			}
 		}
 
 		[STAThread]
