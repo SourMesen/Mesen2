@@ -58,7 +58,7 @@ public:
 		_previousTileEx = _currentTileEx;
 		_currentTileEx = _nextTileEx;
 
-		uint8_t tileIndex = ReadVram(GetNameTableAddr());
+		uint8_t tileIndex = _mapper->DebugReadVram(GetNameTableAddr());
 		uint16_t tileAddr = (tileIndex << 4) | (_videoRamAddr >> 12) | _control.BackgroundPatternAddr;
 
 		_nextTileEx.OffsetY = _videoRamAddr >> 12;
