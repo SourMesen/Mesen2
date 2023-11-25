@@ -30,6 +30,10 @@ namespace Mesen.Debugger.Utilities
 			} else if(seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 				string labelText = seg.Text.Trim(' ', ',', ':', ']', '[');
 				int addressOffset = GetAddressOffset(seg);
+				int plusIndex = labelText.IndexOf("+");
+				if(plusIndex > 0) {
+					labelText = labelText.Substring(0, plusIndex);
+				}
 
 				int lineAbsAddress = seg.Data.AbsoluteAddress.Address;
 				SourceSymbol? symbol = lineAbsAddress >= 0 ? DebugWorkspaceManager.SymbolProvider?.GetSymbol(labelText, lineAbsAddress, lineAbsAddress + seg.Data.OpSize) : null;
@@ -97,6 +101,20 @@ namespace Mesen.Debugger.Utilities
 					}
 					return addressOffset;
 				}
+			} else if(seg.Text.Trim().StartsWith("[") && seg.Text.Contains("+")) {
+				//Effective address that contains a multi-byte label
+				string lbl = seg.Text.Trim(' ', ',', ':', ']', '[');
+				int start = lbl.IndexOf('+') + 1;
+				int i = start;
+				while(i < lbl.Length && char.IsDigit(lbl[i])) {
+					i++;
+				}
+
+				if(i > start) {
+					Int32.TryParse(lbl.Substring(start, i - start), out addressOffset);
+				}
+
+				return addressOffset;
 			}
 
 			return 0;
