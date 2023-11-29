@@ -123,7 +123,12 @@ EffectiveAddressInfo SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Sn
 	if(isJump) {
 		if(info.GetOpSize() == 3) {
 			//For 3-byte jumps, return the target address, and show no value
-			return { dummyCpu.GetLastOperand(), 0, true };
+			if(SnesDisUtils::IsUnconditionalJump(info.GetOpCode())) {
+				//Display the dummy cpu's current address - this allows indirect jumps to display the correct address based on K
+				return { (dummyCpu.GetState().K << 16) | dummyCpu.GetState().PC, 0, true };
+			} else {
+				return { dummyCpu.GetLastOperand(), 0, true };
+			}
 		} else {
 			//Relative or long jumps already show the final address in the disassembly, show nothing
 			return {};
