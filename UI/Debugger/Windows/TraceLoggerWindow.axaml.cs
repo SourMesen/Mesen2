@@ -42,7 +42,7 @@ namespace Mesen.Debugger.Windows
 			_selectionHandler = new CodeViewerSelectionHandler(viewer, _model, (rowIndex, rowAddress) => rowIndex, false);
 
 			viewer.GetPropertyChangedObservable(DisassemblyViewer.VisibleRowCountProperty).Subscribe(x => {
-				_model.VisibleRowCount = viewer.VisibleRowCount - 1;
+				_model.VisibleRowCount = Math.Max(1, viewer.VisibleRowCount - 1);
 				_model.MaxScrollPosition = DebugApi.TraceLogBufferSize - _model.VisibleRowCount;
 			});
 
