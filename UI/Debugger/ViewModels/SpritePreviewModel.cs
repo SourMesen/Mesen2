@@ -40,6 +40,8 @@ namespace Mesen.Debugger.ViewModels
 
 		[Reactive] public NullableBoolean UseSecondTable { get; set; }
 
+		private UInt32[] _rawPreview = new UInt32[64 * 64];
+
 		[Reactive] public DynamicBitmap? SpritePreview { get; set; }
 		[Reactive] public double SpritePreviewZoom { get; set; }
 
@@ -79,13 +81,26 @@ namespace Mesen.Debugger.ViewModels
 			}
 
 			fixed(UInt32* p = sprite.SpritePreview) {
+				bool needUpdate = false;
+				
 				if(SpritePreview == null || SpritePreview.PixelSize.Width != sprite.Width || SpritePreview.PixelSize.Height != sprite.Height) {
 					SpritePreview = new DynamicBitmap(new PixelSize(Width, Height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
+					needUpdate = true;
 				}
 
-				int spriteSize = Width * Height * sizeof(UInt32);
-				using(var bitmapLock = SpritePreview.Lock()) {
-					Buffer.MemoryCopy(p, (void*)bitmapLock.FrameBuffer.Address, spriteSize, spriteSize);
+				int len = Width * Height;
+				for(int i = 0; i < len; i++) {
+					if(_rawPreview[i] != p[i]) {
+						needUpdate = true;
+					}
+					_rawPreview[i] = p[i];
+				}
+
+				if(needUpdate) {
+					int spriteSize = len * sizeof(UInt32);
+					using(var bitmapLock = SpritePreview.Lock()) {
+						Buffer.MemoryCopy(p, (void*)bitmapLock.FrameBuffer.Address, spriteSize, spriteSize);
+					}
 				}
 			}
 			
