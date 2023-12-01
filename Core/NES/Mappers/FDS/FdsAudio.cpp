@@ -70,9 +70,7 @@ FdsAudio::FdsAudio(NesConsole* console) : BaseExpansionAudio(console)
 
 	for(int masterlevel = 0; masterlevel < 4; masterlevel++)
 		for(int wavelevel = 0; wavelevel < 64; wavelevel++)
-			DACTable[wavelevel][masterlevel] = float(
-					(FDS_LUT_norm[wavelevel] * 64.0 * double(WaveVolumeTable[masterlevel])) / 1152.0
-				);
+			DACTable[wavelevel][masterlevel] = (FDS_LUT_norm[wavelevel] * 64.0 * float(WaveVolumeTable[masterlevel])) / 1152.0;
 }
 
 uint8_t FdsAudio::ReadRegister(uint16_t addr)
