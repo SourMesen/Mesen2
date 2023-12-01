@@ -597,19 +597,20 @@ namespace Mesen.Debugger.Controls
 				int width = (int)(_source.Size.Width * _zoom);
 				int height = (int)(_source.Size.Height * _zoom);
 
-				_source.Draw(canvas, _bitmap,
-					new SKRect(0, 0, (int)_source.Size.Width, (int)_source.Size.Height),
-					new SKRect(0, 0, width, height)
-				);
+				using(_source.Lock(true)) {
+					canvas.DrawBitmap(_bitmap,
+						new SKRect(0, 0, (int)_source.Size.Width, (int)_source.Size.Height),
+						new SKRect(0, 0, width, height)
+					);
 
-				List<Rect>? highlightRects = _source.HighlightRects;
-				if(highlightRects?.Count > 0) {
-					foreach(Rect highlightRect in highlightRects) {
-						SKRect rect = ToDrawRect(highlightRect);
-						canvas.DrawRect(rect, _highlightPaint);
+					List<Rect>? highlightRects = _source.HighlightRects;
+					if(highlightRects?.Count > 0) {
+						foreach(Rect highlightRect in highlightRects) {
+							SKRect rect = ToDrawRect(highlightRect);
+							canvas.DrawRect(rect, _highlightPaint);
+						}
 					}
 				}
-
 				canvas.Restore();
 			}
 		}

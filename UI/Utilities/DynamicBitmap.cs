@@ -1,11 +1,8 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Mesen.Utilities
 {
@@ -13,7 +10,6 @@ namespace Mesen.Utilities
 	{
 		public event EventHandler? Invalidated;
 
-		private object _dynBitmapLock = new();
 		public List<Rect>? HighlightRects { get; set; }
 
 		public DynamicBitmap(PixelSize size, Vector dpi, PixelFormat format, AlphaFormat alphaFormat)
@@ -26,16 +22,9 @@ namespace Mesen.Utilities
 			Invalidated?.Invoke(this, EventArgs.Empty);
 		}
 
-		public void Draw(SKCanvas canvas, SKBitmap bitmap, SKRect sourceRect, SKRect destRect)
+		public DynamicBitmapLock Lock(bool forReadAccess = false)
 		{
-			lock(_dynBitmapLock) {
-				canvas.DrawBitmap(bitmap, sourceRect, destRect);
-			}
-		}
-
-		public new DynamicBitmapLock Lock()
-		{
-			return new DynamicBitmapLock(this, _dynBitmapLock, () => base.Lock());
+			return new DynamicBitmapLock(this, () => base.Lock(), forReadAccess);
 		}
 	}
 
@@ -49,34 +38,21 @@ namespace Mesen.Utilities
 	{
 		public ILockedFramebuffer FrameBuffer { get; private set; }
 		private DynamicBitmap _bitmap;
-		private object _dynBitmapLock;
+		private bool _forReadAccess;
 
-		public DynamicBitmapLock(DynamicBitmap bitmap, object dynBitmapLock, Func<ILockedFramebuffer> lockWriteableBitmap)
+		public DynamicBitmapLock(DynamicBitmap bitmap, Func<ILockedFramebuffer> lockWriteableBitmap, bool forReadAccess)
 		{
-			while(true) {
-				FrameBuffer = lockWriteableBitmap();
-
-				//Use TryEnter to avoid deadlocks due to the locks potentially causing the message pump to
-				//be processed, which in turn can lead to a deadlock caused by the rendering thread.
-				//By using TryEnter, the code waits for 20ms and then unlocks everything (to let other threads continue)
-				//and then tries to take both locks again.
-				if(Monitor.TryEnter(dynBitmapLock, 20)) {
-					_bitmap = bitmap;
-					_dynBitmapLock = dynBitmapLock;
-					break;
-				} else {
-					FrameBuffer?.Dispose();
-					FrameBuffer = null!;
-					Thread.Sleep(10);
-				}
-			}
+			FrameBuffer = lockWriteableBitmap();
+			_bitmap = bitmap;
+			_forReadAccess = forReadAccess;
 		}
 
 		public void Dispose()
 		{
 			FrameBuffer.Dispose();
-			_bitmap.Invalidate();
-			Monitor.Exit(_dynBitmapLock);
+			if(!_forReadAccess) {
+				_bitmap.Invalidate();
+			}
 		}
 	}
 }
