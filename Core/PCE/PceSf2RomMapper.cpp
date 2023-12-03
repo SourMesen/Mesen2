@@ -12,8 +12,8 @@ PceSf2RomMapper::PceSf2RomMapper(PceConsole* console)
 
 void PceSf2RomMapper::Write(uint8_t bank, uint16_t addr, uint8_t value)
 {
-	if((addr & 0x1FFC) == 0x1FF0) {
-		_selectedBank = addr & 0x03;
+	if((addr & 0x1FF0) == 0x1FF0) {
+		_selectedBank = addr & 0x0F;
 		UpdateMappings();
 	}
 }
