@@ -1062,15 +1062,20 @@ template<class T> uint8_t NesPpu<T>::ReadSpriteRam(uint8_t addr)
 		uint64_t elapsedCycles = _console->GetCpu()->GetCycleCount() - _oamDecayCycles[addr >> 3];
 		if(elapsedCycles <= NesPpu<T>::OamDecayCycleCount) {
 			_oamDecayCycles[addr >> 3] = _console->GetCpu()->GetCycleCount();
-			return _spriteRam[addr];
 		} else {
 			if(_mask.SpritesEnabled) {
 				//When debugging with the break on decayed oam read flag turned on, break (only if sprite rendering is enabled to avoid false positives)
 				_emu->BreakIfDebugging(CpuType::Nes, BreakSource::NesBreakOnDecayedOamRead);
 			}
-			//If this 8-byte row hasn't been read/written to in over 3000 cpu cycles (~1.7ms), return 0x10 to simulate decay
-			return 0x10;
+
+			//If this 8-byte row hasn't been read/written to in over 3000 cpu cycles (~1.7ms),
+			//decay the row (set it to addr, clear the bits that don't exist on some bytes)
+			for(int i = 0; i < 8; i++) {
+				int sprAddr = (addr & 0xF8) | i;
+				_spriteRam[sprAddr] = (sprAddr & 0x03) == 0x02 ? (sprAddr & 0xE3) : sprAddr;
+			}
 		}
+		return _spriteRam[addr];
 	}
 }
 
@@ -1426,20 +1431,6 @@ template<class T> void NesPpu<T>::UpdateState()
 		_needVideoRamIncrement = false;
 		UpdateVideoRamAddr();
 	}
-}
-
-template<class T> uint8_t* NesPpu<T>::GetSpriteRam()
-{
-	//Used by debugger
-	if(_enableOamDecay) {
-		for(int i = 0; i < 0x100; i++) {
-			//Apply OAM decay to sprite RAM before letting debugger access it
-			if((_console->GetCpu()->GetCycleCount() - _oamDecayCycles[i >> 3]) > NesPpu<T>::OamDecayCycleCount) {
-				_spriteRam[i] = 0x10;
-			}
-		}
-	}
-	return _spriteRam;
 }
 
 template<class T> uint32_t NesPpu<T>::GetPixelBrightness(uint8_t x, uint8_t y)

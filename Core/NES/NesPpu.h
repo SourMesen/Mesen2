@@ -127,13 +127,6 @@ public:
 	__forceinline void Exec();
 	void Run(uint64_t runTo) override;
 
-	uint8_t* GetSpriteRam();
-
-	uint8_t* GetSecondarySpriteRam()
-	{
-		return _secondarySpriteRam;
-	}
-
 	uint32_t GetPixelBrightness(uint8_t x, uint8_t y) override;
 
 	uint16_t GetPixel(uint8_t x, uint8_t y)

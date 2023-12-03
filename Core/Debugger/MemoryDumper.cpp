@@ -231,13 +231,16 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 				//TODOv2 find a cleaner way to implement this
 				//Prevent invalid memory values
 				switch(memoryType) {
-					case MemoryType::SnesCgRam: if(address & 0x01) value &= 0x7F; break;
-					case MemoryType::NesPaletteRam: value &= 0x3F; break;
-					case MemoryType::PcePaletteRam: if(address & 0x01) value &= 0x01; break;
-				}
+					case MemoryType::SnesCgRam: src[address] = (address & 0x01) ? (value & 0x7F) : value; break;
+					case MemoryType::NesSpriteRam: case MemoryType::NesSecondarySpriteRam: src[address] = (address & 0x03) == 0x02 ? (value & 0xE3) : value; break;
+					case MemoryType::NesPaletteRam: src[address] = value & 0x3F; break;
+					case MemoryType::PcePaletteRam: src[address] = (address & 0x01) ? (value & 0x01) : value; break;
 
-				src[address] = value;
-				invalidateCache();
+					default:
+						src[address] = value;
+						invalidateCache();
+						break;
+				}
 			}
 			break;
 	}
