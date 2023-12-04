@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Metadata;
@@ -258,7 +259,8 @@ namespace Mesen.Debugger.Controls
 			Size viewport = viewer.Viewport;
 			Vector offset = ScrollOffset;
 
-			Rect rect = SelectionRect * Zoom;
+			double dpiScale = 1 / LayoutHelper.GetLayoutScale(this);
+			Rect rect = SelectionRect * Zoom * dpiScale;
 
 			Rect visibleWindow = new Rect(new Point(offset.X, offset.Y), viewport);
 
