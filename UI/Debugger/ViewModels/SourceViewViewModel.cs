@@ -130,6 +130,11 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 				endAddress = SymbolProvider.GetLineAddress(file, nextLine);
 				nextLine++;
 			}
+
+			if(endAddress != null && endAddress.Value.Address >= 1) {
+				//Set the end of the current row to the byte before the start of the next row
+				endAddress = new() { Address = endAddress.Value.Address - 1, Type = endAddress.Value.Type };
+			}
 		}
 
 		if(endAddress?.Type == address?.Type && endAddress?.Address >= address?.Address) {
