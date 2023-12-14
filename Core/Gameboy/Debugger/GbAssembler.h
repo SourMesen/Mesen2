@@ -4,34 +4,34 @@
 
 class LabelManager;
 
-enum class ParamType
-{
-	None,
-	Literal,
-	Byte,
-	Short,
-	Address,
-	HighAddress,
-	RelAddress,
-	StackOffset
-};
-
-struct ParamEntry
-{
-	string Param;
-	ParamType Type;
-};
-
-struct OpCodeEntry
-{
-	uint16_t OpCode;
-	int ParamCount;
-	ParamEntry Param1;
-	ParamEntry Param2;
-};
-
 class GbAssembler : public IAssembler
 {
+	enum class ParamType
+	{
+		None,
+		Literal,
+		Byte,
+		Short,
+		Address,
+		HighAddress,
+		RelAddress,
+		StackOffset
+	};
+
+	struct ParamEntry
+	{
+		string Param;
+		ParamType Type;
+	};
+
+	struct OpCodeEntry
+	{
+		uint16_t OpCode;
+		int ParamCount;
+		ParamEntry Param1;
+		ParamEntry Param2;
+	};
+
 private:
 	unordered_map<string, vector<OpCodeEntry>> _opCodes;
 	LabelManager* _labelManager;

@@ -23,16 +23,31 @@ namespace Mesen.Debugger.Utilities
 			}
 
 			if(format == RawPaletteFormat.Rgb555) {
+				//SNES / GBC
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X4"));
 				entries.AddEntry("R", "$" + (rawPalette[index] & 0x1F).ToString("X2"));
 				entries.AddEntry("G", "$" + ((rawPalette[index] >> 5) & 0x1F).ToString("X2"));
 				entries.AddEntry("B", "$" + ((rawPalette[index] >> 10) & 0x1F).ToString("X2"));
 			} else if(format == RawPaletteFormat.Rgb333) {
+				//PC Engine
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X3"));
 				entries.AddEntry("R", "$" + ((rawPalette[index] >> 3) & 0x07).ToString("X2"));
 				entries.AddEntry("G", "$" + (rawPalette[index] >> 6).ToString("X2"));
 				entries.AddEntry("B", "$" + (rawPalette[index] & 0x07).ToString("X2"));
+			} else if(format == RawPaletteFormat.Rgb222) {
+				//SMS
+				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X2"));
+				entries.AddEntry("R", "$" + (rawPalette[index] & 0x03).ToString());
+				entries.AddEntry("G", "$" + ((rawPalette[index] >> 2) & 0x03).ToString());
+				entries.AddEntry("B", "$" + ((rawPalette[index] >> 4) & 0x03).ToString());
+			} else if(format == RawPaletteFormat.Rgb444) {
+				//Game Gear
+				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X3"));
+				entries.AddEntry("R", "$" + (rawPalette[index] & 0x0F).ToString());
+				entries.AddEntry("G", "$" + ((rawPalette[index] >> 4) & 0x0F).ToString());
+				entries.AddEntry("B", "$" + ((rawPalette[index] >> 8) & 0x0F).ToString());
 			} else {
+				//NES/GB
 				entries.AddEntry("Value", "$" + rawPalette[index].ToString("X2"));
 			}
 			entries.AddEntry("Color Code (Hex)", "#" + rgbPalette[index].ToString("X8").Substring(2));

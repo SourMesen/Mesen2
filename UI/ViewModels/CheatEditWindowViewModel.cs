@@ -75,6 +75,9 @@ namespace Mesen.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.MainWndModel.RomInfo).Subscribe(romInfo => {
 				AvailableCheatTypes = Enum.GetValues<CheatType>().Where(e => romInfo.CpuTypes.Contains(e.ToCpuType())).Cast<Enum>().ToArray();
+				if(!AvailableCheatTypes.Contains(Cheat.Type)) {
+					Cheat.Type = (CheatType)AvailableCheatTypes[0];
+				}
 			}));
 		}
 	}

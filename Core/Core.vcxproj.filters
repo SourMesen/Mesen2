@@ -2601,9 +2601,6 @@
     <ClInclude Include="Shared\DebuggerRequest.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="NES\Mappers\Audio\emu2413.h">
-      <Filter>NES\Mappers\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h">
       <Filter>NES\HdPacks</Filter>
     </ClInclude>
@@ -2630,6 +2627,96 @@
     </ClInclude>
     <ClInclude Include="NES\Mappers\Nintendo\FnsMmc1.h">
       <Filter>NES\Mappers\Nintendo</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsConsole.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsDefaultVideoFilter.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsControlManager.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsCpu.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsMemoryManager.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsVdp.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsTypes.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsDebugger.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\DummySmsCpu.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsAssembler.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsDisUtils.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsTraceLogger.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsEventManager.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Debugger\SmsVdpTools.h">
+      <Filter>SMS\Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsCart.h">
+      <Filter>SMS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsSegaCart.h">
+      <Filter>SMS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsPsg.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Input\SmsController.h">
+      <Filter>SMS\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsNtscFilter.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsCodemasterCart.h">
+      <Filter>SMS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger\AddressInfo.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Input\SmsLightPhaser.h">
+      <Filter>SMS\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsFmAudio.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Utilities\Emu2413Serializer.h">
+      <Filter>Shared\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Utilities\emu2413.h">
+      <Filter>Shared\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\SmsBiosMapper.h">
+      <Filter>SMS</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\ColorUtilities.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsMsxCart.h">
+      <Filter>SMS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsKoreanCart.h">
+      <Filter>SMS\Carts</Filter>
+    </ClInclude>
+    <ClInclude Include="SMS\Carts\SmsNemesisCart.h">
+      <Filter>SMS\Carts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2759,14 +2846,68 @@
     <ClCompile Include="Shared\DebuggerRequest.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
-    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp">
-      <Filter>NES\Mappers\Audio</Filter>
-    </ClCompile>
     <ClCompile Include="NES\HdPacks\HdPackBuilder.cpp">
       <Filter>NES\HdPacks</Filter>
     </ClCompile>
     <ClCompile Include="Shared\Video\SoftwareRenderer.cpp">
       <Filter>Shared\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsConsole.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsCpu.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsControlManager.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsDebugger.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\DummySmsCpu.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsAssembler.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsDisUtils.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsTraceLogger.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsEventManager.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Debugger\SmsVdpTools.cpp">
+      <Filter>SMS\Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\ExpressionEvaluator.Sms.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\Carts\SmsCart.cpp">
+      <Filter>SMS\Carts</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsVdp.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsNtscFilter.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsPsg.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsMemoryManager.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsFmAudio.cpp">
+      <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="Shared\Utilities\emu2413.cpp">
+      <Filter>Shared\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SMS\SmsBiosMapper.cpp">
+      <Filter>SMS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2841,6 +2982,21 @@
     </Filter>
     <Filter Include="NES\Mappers\NSF">
       <UniqueIdentifier>{a27bca76-05ce-4940-a583-d50aef2668f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SMS">
+      <UniqueIdentifier>{418fea7a-2766-464e-a553-e0647531fca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SMS\Debugger">
+      <UniqueIdentifier>{21c80d33-0dc1-40df-9182-68fc4454d2f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SMS\Carts">
+      <UniqueIdentifier>{ecb64e96-ce0e-4b2e-a232-61b6c441f72b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SMS\Input">
+      <UniqueIdentifier>{29ab9afb-6064-4e72-9652-6a0affa636e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Utilities">
+      <UniqueIdentifier>{9c5b1b92-fa62-42bf-9102-9cc5d35262b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

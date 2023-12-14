@@ -39,7 +39,7 @@ namespace Mesen.ViewModels
 			PixelPoint startPosition = btn.PointToScreen(new Point(-7, btn.Bounds.Height));
 			ControllerConfigWindow wnd = new ControllerConfigWindow();
 			ControllerConfig cfg = Config.Controller.Clone();
-			wnd.DataContext = new ControllerConfigViewModel(ControllerType.GameboyController, cfg, Config.Controller);
+			wnd.DataContext = new ControllerConfigViewModel(ControllerType.GameboyController, cfg, Config.Controller, 0);
 
 			if(await wnd.ShowDialogAtPosition<bool>(btn.GetVisualRoot() as Visual, startPosition)) {
 				Config.Controller = cfg;

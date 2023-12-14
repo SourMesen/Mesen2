@@ -23,6 +23,10 @@ enum class RomFormat
 	Pce,
 	PceCdRom,
 	PceHes,
+
+	Sms,
+	GameGear,
+	Sg,
 };
 
 struct DipSwitchInfo

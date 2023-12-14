@@ -8,7 +8,7 @@
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Debugger/BaseEventManager.h"
-#include "SNES/SnesDefaultVideoFilter.h"
+#include "Shared/ColorUtilities.h"
 
 SnesEventManager::SnesEventManager(Debugger *debugger, SnesCpu *cpu, SnesPpu *ppu, SnesMemoryManager *memoryManager, SnesDmaController *dmaController)
 {
@@ -201,7 +201,7 @@ void SnesEventManager::DrawScreen(uint32_t *buffer)
 	for(uint32_t y = 0, len = _overscanMode ? 239*2 : 224*2; y < len; y++) {
 		for(uint32_t x = 0; x < 512; x++) {
 			int srcOffset = _useHighResOutput ? ((y << 9) | x) : (((y >> 1) << 8) | (x >> 1));
-			buffer[(y + 2)*SnesEventManager::ScanlineWidth + x + 22*2] = SnesDefaultVideoFilter::ToArgb(src[srcOffset]);
+			buffer[(y + 2)*SnesEventManager::ScanlineWidth + x + 22*2] = ColorUtilities::Rgb555ToArgb(src[srcOffset]);
 		}
 	}
 }

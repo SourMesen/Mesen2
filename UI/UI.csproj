@@ -52,6 +52,7 @@
 	  <None Remove="Debugger\Documentation\GbDocumentation.json" />
 	  <None Remove="Debugger\Documentation\NesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\PceDocumentation.json" />
+	  <None Remove="Debugger\Documentation\SmsDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SnesDocumentation.json" />
 	  <None Remove="Debugger\Documentation\SpcDocumentation.json" />
 	  <None Remove="Debugger\HighlightAssembly.xshd" />
@@ -140,6 +141,9 @@
     <Compile Update="Controls\OptionSection.axaml.cs">
       <DependentUpon>OptionSection.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Debugger\StatusViews\SmsStatusView.axaml.cs">
+      <DependentUpon>SmsStatusView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Debugger\Views\ControllerListView.axaml.cs">
       <DependentUpon>ControllerListView.axaml</DependentUpon>
     </Compile>
@@ -205,6 +209,9 @@
     </Compile>
     <Compile Update="Debugger\Views\FunctionListView.axaml.cs">
       <DependentUpon>FunctionListView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Debugger\Views\SmsEventViewerConfigView.axaml.cs">
+      <DependentUpon>SmsEventViewerConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Debugger\Views\RegisterTabView.axaml.cs">
       <DependentUpon>RegisterTabView.axaml</DependentUpon>
@@ -340,6 +347,15 @@
     </Compile>
     <Compile Update="Views\PceAvenuePad6View.axaml.cs">
       <DependentUpon>PceAvenuePad6View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SmsInputConfigView.axaml.cs">
+      <DependentUpon>SmsInputConfigView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SmsControllerView.axaml.cs">
+      <DependentUpon>SmsControllerView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SmsConfigView.axaml.cs">
+      <DependentUpon>SmsConfigView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\PceControllerView.axaml.cs">
       <DependentUpon>PceControllerView.axaml</DependentUpon>
@@ -535,6 +551,7 @@
     <AvaloniaResource Include="Assets\NesIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Debugger\Documentation\SmsDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\SpcDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\PceDocumentation.json" />
     <EmbeddedResource Include="Debugger\Documentation\GbDocumentation.json" />

@@ -39,12 +39,24 @@ enum class RowDataType
 	E,
 	F,
 	H,
+	I,
 	K,
 	L,
 	M,
 	N,
+	R,
 	X,
 	Y,
+	AltA,
+	AltB,
+	AltC,
+	AltD,
+	AltE,
+	AltF,
+	AltH,
+	AltL,
+	IX,
+	IY,
 	DB,
 	SP,
 	PS,
@@ -174,9 +186,10 @@ protected:
 	void WriteEffectiveAddress(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType cpuMemoryType, CpuType cpuType)
 	{
 		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress.ShowAddress && effectiveAddress.Address >= 0) {
+		if(effectiveAddress.ShowAddress && effectiveAddress.Address.Address >= 0) {
+			MemoryType effectiveMemType = effectiveAddress.Address.Type == MemoryType::None ? cpuMemoryType : effectiveAddress.Address.Type;
 			if(_options.UseLabels) {
-				AddressInfo addr { effectiveAddress.Address, cpuMemoryType };
+				AddressInfo addr { effectiveAddress.Address.Address, effectiveMemType };
 				string label = _labelManager->GetLabel(addr);
 				if(!label.empty()) {
 					WriteStringValue(output, " [" + label + "]", rowPart);
@@ -184,15 +197,16 @@ protected:
 				}
 			}
 
-			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress.Address) + "]", rowPart);
+			WriteStringValue(output, " [$" + DebugUtilities::AddressToHex(cpuType, effectiveAddress.Address.Address) + "]", rowPart);
 		}
 	}
 
 	void WriteMemoryValue(DisassemblyInfo& info, RowPart& rowPart, void* cpuState, string& output, MemoryType memType, CpuType cpuType)
 	{
 		EffectiveAddressInfo effectiveAddress = info.GetEffectiveAddress(_debugger, cpuState, cpuType);
-		if(effectiveAddress.Address >= 0 && effectiveAddress.ValueSize > 0) {
-			uint16_t value = info.GetMemoryValue(effectiveAddress, _memoryDumper, memType);
+		if(effectiveAddress.Address.Address >= 0 && effectiveAddress.ValueSize > 0) {
+			MemoryType effectiveMemType = effectiveAddress.Address.Type == MemoryType::None ? memType : effectiveAddress.Address.Type;
+			uint16_t value = info.GetMemoryValue(effectiveAddress, _memoryDumper, effectiveMemType);
 			if(rowPart.DisplayInHex) {
 				output += "= $";
 				if(effectiveAddress.ValueSize == 2) {

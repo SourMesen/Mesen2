@@ -26,18 +26,18 @@ namespace Mesen.ViewModels
 		[Reactive] public bool ShowTurbo { get; set; } = false;
 
 		[Obsolete("For designer only")]
-		public ControllerConfigViewModel() : this(ControllerType.SnesController, new ControllerConfig(), new ControllerConfig()) { }
+		public ControllerConfigViewModel() : this(ControllerType.SnesController, new ControllerConfig(), new ControllerConfig(), 0) { }
 
-		public ControllerConfigViewModel(ControllerType type, ControllerConfig config, ControllerConfig originalConfig)
+		public ControllerConfigViewModel(ControllerType type, ControllerConfig config, ControllerConfig originalConfig, int port)
 		{
 			Config = config;
 			OriginalConfig = originalConfig;
 			Type = type;
-
-			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1, 0);
-			KeyMapping2 = new KeyMappingViewModel(type, config.Mapping2, 1);
-			KeyMapping3 = new KeyMappingViewModel(type, config.Mapping3, 2);
-			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4, 3);
+			
+			KeyMapping1 = new KeyMappingViewModel(type, config.Mapping1, 0, port);
+			KeyMapping2 = new KeyMappingViewModel(type, config.Mapping2, 1, port);
+			KeyMapping3 = new KeyMappingViewModel(type, config.Mapping3, 2, port);
+			KeyMapping4 = new KeyMappingViewModel(type, config.Mapping4, 3, port);
 
 			ShowPresets = type.HasPresets();
 			IsTwoButtonController = type.IsTwoButtonController();
@@ -49,17 +49,19 @@ namespace Mesen.ViewModels
 	{
 		[Reactive] public ControllerType Type { get; set; }
 		[Reactive] public KeyMapping Mapping { get; set; }
+		[Reactive] public int Port { get; set; }
 		[Reactive] public List<CustomKeyMapping> CustomKeys { get; set; } = new();
 
 		private int _mappingIndex = 0;
 
 		[Obsolete("For designer only")]
-		public KeyMappingViewModel() : this(ControllerType.None, new(), 0) { }
+		public KeyMappingViewModel() : this(ControllerType.None, new(), 0, 0) { }
 
-		public KeyMappingViewModel(ControllerType type, KeyMapping mapping, int mappingIndex)
+		public KeyMappingViewModel(ControllerType type, KeyMapping mapping, int mappingIndex, int port)
 		{
 			Type = type;
 			Mapping = mapping;
+			Port = port;
 			_mappingIndex = mappingIndex;
 
 			CustomKeys = Mapping.ToCustomKeys(type, _mappingIndex);

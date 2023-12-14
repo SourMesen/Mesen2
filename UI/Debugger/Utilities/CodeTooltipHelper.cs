@@ -16,16 +16,38 @@ namespace Mesen.Debugger.Utilities
 		public static LocationInfo? GetLocation(CpuType cpuType, CodeSegmentInfo seg)
 		{
 			int address = -1;
-			if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress) {
+			if(seg.Type == CodeSegmentType.EffectiveAddress) {
+				if(seg.Data.EffectiveAddress.Address >= 0) {
+					if(seg.Data.EffectiveAddress.Type.IsRelativeMemory()) {
+						AddressInfo relAddress = seg.Data.EffectiveAddress;
+						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+						return new LocationInfo {
+							RelAddress = relAddress,
+							AbsAddress = absAddress.Address >= 0 ? absAddress : null,
+						};
+					} else {
+						return new LocationInfo {
+							AbsAddress = seg.Data.EffectiveAddress
+						};
+					}
+				}
+			} else if(seg.Type == CodeSegmentType.Address) {
 				string addressText = seg.Text.Trim(' ', '[', ']', '$');
 				int.TryParse(addressText, System.Globalization.NumberStyles.HexNumber, null, out address);
 				if(address >= 0) {
-					AddressInfo relAddress = new AddressInfo() { Address = address, Type = cpuType.ToMemoryType() };
-					AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
-					return new LocationInfo { 
-						RelAddress = relAddress,
-						AbsAddress = absAddress.Address >= 0 ? absAddress : null,
-					};
+					MemoryType memType = seg.Data.EffectiveAddress.Address >= 0 && seg.Data.EffectiveAddress.Type != MemoryType.None ? seg.Data.EffectiveAddress.Type : cpuType.ToMemoryType();
+					if(memType.IsRelativeMemory()) {
+						AddressInfo relAddress = new AddressInfo() { Address = address, Type = memType };
+						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
+						return new LocationInfo {
+							RelAddress = relAddress,
+							AbsAddress = absAddress.Address >= 0 ? absAddress : null,
+						};
+					} else {
+						return new LocationInfo {
+							AbsAddress = new AddressInfo() { Address = address, Type = memType }
+						};
+					}
 				}
 			} else if(seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 				string labelText = seg.Text.Trim(' ', ',', ':', ']', '[');
@@ -131,8 +153,8 @@ namespace Mesen.Debugger.Utilities
 			} else {
 				if(seg.Type == CodeSegmentType.Address || seg.Type == CodeSegmentType.EffectiveAddress || seg.Type == CodeSegmentType.Label || seg.Type == CodeSegmentType.LabelDefinition) {
 					LocationInfo? codeLoc = GetLocation(cpuType, seg);
-					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.Label != null || codeLoc.Symbol != null)) {
-						return GetCodeAddressTooltip(cpuType, codeLoc);
+					if(codeLoc != null && (codeLoc.RelAddress?.Address >= 0 || codeLoc.AbsAddress?.Address >= 0 || codeLoc.Label != null || codeLoc.Symbol != null)) {
+						return GetCodeAddressTooltip(cpuType, codeLoc, !codeLoc.RelAddress.HasValue || codeLoc.RelAddress?.Address < 0);
 					}
 				}
 			}

@@ -207,6 +207,7 @@ namespace Mesen.Debugger.ViewModels
 
 			AddDisposable(this.WhenAnyValue(x => x.Config.Format).Subscribe(x => {
 				PaletteSelectionMode = x.GetBitsPerPixel() switch {
+					1 => PaletteSelectionMode.TwoColors,
 					2 => PaletteSelectionMode.FourColors,
 					4 => PaletteSelectionMode.SixteenColors,
 					_ => PaletteSelectionMode.None
@@ -276,6 +277,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Nes => new Enum[] { TileFormat.NesBpp2 },
 				CpuType.Gameboy => new Enum[] { TileFormat.Bpp2 },
 				CpuType.Pce => new Enum[] { TileFormat.Bpp4, TileFormat.PceSpriteBpp4, TileFormat.PceSpriteBpp2Sp01, TileFormat.PceSpriteBpp2Sp23, TileFormat.PceBackgroundBpp2Cg0, TileFormat.PceBackgroundBpp2Cg1 },
+				CpuType.Sms => new Enum[] { TileFormat.SmsBpp4, TileFormat.SmsSgBpp1 },
 				_ => throw new Exception("Unsupported CPU type")
 			};
 
@@ -748,6 +750,12 @@ namespace Mesen.Debugger.ViewModels
 							CreatePreset(0, "ROM", () => ApplyPrgPreset()),
 						};
 					}
+				
+				case CpuType.Sms:
+					return new() {
+						CreatePreset(0, "VDP", () => ApplyPpuPreset()),
+						CreatePreset(0, "ROM", () => ApplyPrgPreset())
+					};
 
 				default:
 					throw new Exception("Unsupported CPU type");
@@ -815,6 +823,20 @@ namespace Mesen.Debugger.ViewModels
 					preset.RowCount = 32;
 					preset.Layout = TileLayout.Normal;
 					preset.Format = TileFormat.Bpp2;
+					break;
+				}
+
+				case CpuType.Sms: {
+					SmsVdpState vdp = (SmsVdpState)state;
+					preset.Source = MemoryType.SmsVideoRam;
+					preset.StartAddress = 0;
+					preset.ColumnCount = vdp.UseMode4 ? 16 : 32;
+					preset.RowCount = vdp.UseMode4 ? 32 : 64;
+					preset.Layout = TileLayout.Normal;
+					preset.Format = vdp.UseMode4 ? TileFormat.SmsBpp4 : TileFormat.SmsSgBpp1;
+					if(!vdp.UseMode4) {
+						preset.SelectedPalette = 1;
+					}
 					break;
 				}
 			}

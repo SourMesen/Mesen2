@@ -217,6 +217,10 @@ enum class ControllerType
 	PceController,
 	PceTurboTap,
 	PceAvenuePad6,
+
+	//SMS
+	SmsController,
+	SmsLightPhaser
 };
 
 struct KeyMapping
@@ -332,7 +336,8 @@ enum class ConsoleType
 	Snes = 0,
 	Gameboy = 1,
 	Nes = 2,
-	PcEngine = 3
+	PcEngine = 3,
+	Sms = 4
 };
 
 enum class GameboyModel
@@ -590,6 +595,36 @@ struct NesConfig
 	int32_t StereoCombFilterStrength = 0;
 };
 
+enum class SmsRevision
+{
+	Compatibility,
+	Sms1,
+	Sms2
+};
+
+struct SmsConfig
+{
+	ControllerConfig Port1;
+	ControllerConfig Port2;
+	
+	ConsoleRegion Region = ConsoleRegion::Auto;
+	RamState RamPowerOnState = RamState::Random;
+
+	SmsRevision Revision = SmsRevision::Compatibility;
+
+	bool UseSgPalette = false;
+	bool RemoveSpriteLimit = false;
+	bool DisableSprites = false;
+	bool DisableBackground = false;
+
+	uint32_t ChannelVolumes[4] = {};
+	uint32_t FmAudioVolume = 100;
+	bool EnableFmAudio = true;
+
+	OverscanDimensions NtscOverscan = {};
+	OverscanDimensions PalOverscan = {};
+};
+
 struct AudioPlayerConfig
 {
 	uint32_t Volume = 100;
@@ -644,6 +679,8 @@ struct DebugConfig
 	bool PceBreakOnBrk = false;
 	bool PceBreakOnUnofficialOpCode = false;
 	bool PceBreakOnInvalidVramAddress = false;
+
+	bool SmsBreakOnNopLoad = false;
 
 	bool ScriptAllowIoOsAccess = false;
 	bool ScriptAllowNetworkAccess = false;
@@ -877,4 +914,5 @@ enum class DebuggerFlags
 	GbDebuggerEnabled = (1 << 6),
 	NesDebuggerEnabled = (1 << 7),
 	PceDebuggerEnabled = (1 << 8),
+	SmsDebuggerEnabled = (1 << 9),
 };

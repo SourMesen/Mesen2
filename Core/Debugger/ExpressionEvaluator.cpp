@@ -68,6 +68,7 @@ unordered_map<string, int64_t>* ExpressionEvaluator::GetAvailableTokens()
 		case CpuType::Gameboy: return &GetGameboyTokens();
 		case CpuType::Nes: return &GetNesTokens();
 		case CpuType::Pce: return &GetPceTokens();
+		case CpuType::Sms: return &GetSmsTokens();
 	}
 
 	return nullptr;
@@ -80,7 +81,7 @@ bool ExpressionEvaluator::CheckSpecialTokens(string expression, size_t &pos, str
 	size_t len = expression.size();
 	do {
 		char c = std::tolower(expression[pos]);
-		if((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '@') {
+		if((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '@' || c == '\'') {
 			//Only letters, numbers and underscore are allowed in code labels
 			token += c;
 			pos++;
@@ -203,7 +204,7 @@ string ExpressionEvaluator::GetNextToken(string expression, size_t &pos, Express
 				break;
 			}
 		}
-	} else if((c < 'a' || c > 'z') && c != '_' && c != '@') {
+	} else if((c < 'a' || c > 'z') && c != '_' && c != '@' && c != '\'') {
 		//Operators
 		string operatorToken;
 		for(size_t len = expression.size(); pos < len; pos++) {
@@ -414,6 +415,7 @@ int32_t ExpressionEvaluator::Evaluate(ExpressionData &data, EvalResultType &resu
 								case CpuType::Gameboy: token = GetGameboyTokenValue(token, resultType); break;
 								case CpuType::Nes: token = GetNesTokenValue(token, resultType); break;
 								case CpuType::Pce: token = GetPceTokenValue(token, resultType); break;
+								case CpuType::Sms: token = GetSmsTokenValue(token, resultType); break;
 							}
 						}
 						break;

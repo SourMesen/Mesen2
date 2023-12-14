@@ -157,8 +157,7 @@ public class SourceViewViewModel : DisposableViewModel, ISelectableModel
 			Flags = LineFlags.VerifiedCode | (!showLineAddress ? LineFlags.Empty : LineFlags.None),
 			Text = file.Data[lineNumber],
 			ByteCode = byteCode ?? Array.Empty<byte>(),
-			OpSize = (byte)opSize,
-			EffectiveAddress = -1
+			OpSize = (byte)opSize
 		};
 	}
 

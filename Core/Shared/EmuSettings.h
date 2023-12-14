@@ -27,6 +27,7 @@ private:
 	GameboyConfig _gameboy;
 	NesConfig _nes;
 	PcEngineConfig _pce;
+	SmsConfig _sms;
 
 	atomic<uint32_t> _flags;
 	atomic<uint64_t> _debuggerFlags;
@@ -80,6 +81,9 @@ public:
 	void SetPcEngineConfig(PcEngineConfig& config);
 	PcEngineConfig& GetPcEngineConfig();
 
+	void SetSmsConfig(SmsConfig& config);
+	SmsConfig& GetSmsConfig();
+
 	void SetGameConfig(GameConfig& config);
 	GameConfig& GetGameConfig();
 
@@ -109,7 +113,6 @@ public:
 	bool CheckDebuggerFlag(DebuggerFlags flags);
 
 	bool HasRandomPowerOnState(ConsoleType consoleType);
-	RamState GetDefaultRamPowerOnState(ConsoleType consoleType);
 	int GetRandomValue(int maxValue);
 	bool GetRandomBool();
 	void InitializeRam(RamState state, void* data, uint32_t length);

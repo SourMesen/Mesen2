@@ -82,6 +82,16 @@ namespace Mesen.Interop
 				case MemoryType.PceSpriteRamVdc2:
 					return CpuType.Pce;
 
+				case MemoryType.SmsMemory:
+				case MemoryType.SmsPrgRom:
+				case MemoryType.SmsWorkRam:
+				case MemoryType.SmsCartRam:
+				case MemoryType.SmsBootRom:
+				case MemoryType.SmsVideoRam:
+				case MemoryType.SmsPaletteRam:
+				case MemoryType.SmsPort:
+					return CpuType.Sms;
+
 				default:
 					throw new NotImplementedException("Unsupported cpu type");
 			}
@@ -110,6 +120,9 @@ namespace Mesen.Interop
 				case MemoryType.PcePaletteRam:
 				case MemoryType.PceSpriteRam:
 				case MemoryType.PceSpriteRamVdc2:
+				
+				case MemoryType.SmsVideoRam:
+				case MemoryType.SmsPaletteRam:
 					return true;
 
 				default:
@@ -121,6 +134,7 @@ namespace Mesen.Interop
 		{
 			switch(memType) {
 				case MemoryType.SnesRegister:
+				case MemoryType.SmsPort:
 					return false;
 			}
 			return true;
@@ -137,6 +151,7 @@ namespace Mesen.Interop
 				case MemoryType.SpcMemory:
 				case MemoryType.SnesRegister:
 
+				case MemoryType.GbBootRom:
 				case MemoryType.GbSpriteRam:
 
 				case MemoryType.NesSecondarySpriteRam:
@@ -148,6 +163,10 @@ namespace Mesen.Interop
 				case MemoryType.PceSpriteRam:
 				case MemoryType.PceSpriteRamVdc2:
 				case MemoryType.PcePaletteRam:
+				
+				case MemoryType.SmsBootRom:
+				case MemoryType.SmsPaletteRam:
+				case MemoryType.SmsPort:
 					return false;
 			}
 
@@ -167,6 +186,7 @@ namespace Mesen.Interop
 				case MemoryType.NesMemory:
 				case MemoryType.NesPpuMemory:
 				case MemoryType.PceMemory:
+				case MemoryType.SmsMemory:
 					return true;
 			}
 			return false;
@@ -184,6 +204,8 @@ namespace Mesen.Interop
 				case MemoryType.DspDataRom:
 				case MemoryType.DspProgramRom:
 				case MemoryType.SpcRom:
+				case MemoryType.SmsPrgRom:
+				case MemoryType.SmsBootRom:
 					return true;
 			}
 			return false;
@@ -223,6 +245,13 @@ namespace Mesen.Interop
 				case MemoryType.PceSaveRam:
 				case MemoryType.PceCdromRam:
 				case MemoryType.PceCardRam:
+
+				//SMS
+				case MemoryType.SmsPrgRom:
+				case MemoryType.SmsWorkRam:
+				case MemoryType.SmsCartRam:
+				case MemoryType.SmsBootRom:
+				case MemoryType.SmsPort:
 					return true;
 			}
 
@@ -241,6 +270,7 @@ namespace Mesen.Interop
 				case MemoryType.GameboyMemory:
 				case MemoryType.NesMemory:
 				case MemoryType.PceMemory:
+				case MemoryType.SmsMemory:
 					return true;
 			}
 
@@ -265,6 +295,9 @@ namespace Mesen.Interop
 
 				case MemoryType.PceMemory:
 				case MemoryType.PcePrgRom:
+
+				case MemoryType.SmsMemory:
+				case MemoryType.SmsPrgRom:
 					return true;
 
 				case MemoryType.NesPpuMemory:
@@ -294,6 +327,7 @@ namespace Mesen.Interop
 
 			switch(memType) {
 				case MemoryType.PceAdpcmRam:
+				case MemoryType.SmsPort:
 					return false;
 			}
 
@@ -375,6 +409,15 @@ namespace Mesen.Interop
 				MemoryType.PcePaletteRam => "PAL",
 				MemoryType.PceSpriteRam => "SPR",
 				MemoryType.PceSpriteRamVdc2 => "SPR2",
+				
+				MemoryType.SmsMemory => "CPU",
+				MemoryType.SmsPrgRom => "ROM",
+				MemoryType.SmsWorkRam => "WRAM",
+				MemoryType.SmsCartRam => "SRAM",
+				MemoryType.SmsBootRom => "BIOS",
+				MemoryType.SmsVideoRam => "VRAM",
+				MemoryType.SmsPaletteRam => "PAL",
+				MemoryType.SmsPort => "PORT",
 
 				MemoryType.None => "n/a",
 

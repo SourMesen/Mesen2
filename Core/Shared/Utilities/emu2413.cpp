@@ -1,4 +1,3 @@
-#define VRC7AUDIO
 //Disable warnings
 #if defined(_MSC_VER)
 	#pragma warning(push, 0)
@@ -999,9 +998,9 @@ static void update_output(OPLL *opll) {
   int i;
 
   update_ampm(opll);
-#ifndef VRC7AUDIO
-  update_short_noise(opll);
-#endif
+  if(opll->chip_type == 0) {
+    update_short_noise(opll);
+  }
   update_slots(opll);
 
   out = opll->ch_out;
@@ -1013,60 +1012,62 @@ static void update_output(OPLL *opll) {
     }
   }
 
-#ifndef VRC7AUDIO
-  /* CH7 */
-  if (!opll->rhythm_mode) {
-    if (!(opll->mask & OPLL_MASK_CH(6))) {
-      out[6] = _MO(calc_slot_car(opll, 6, calc_slot_mod(opll, 6)));
+  if(opll->chip_type == 0) {
+    /* CH7 */
+    if (!opll->rhythm_mode) {
+      if (!(opll->mask & OPLL_MASK_CH(6))) {
+        out[6] = _MO(calc_slot_car(opll, 6, calc_slot_mod(opll, 6)));
+      }
+    } else {
+      if (!(opll->mask & OPLL_MASK_BD)) {
+        out[9] = _RO(calc_slot_car(opll, 6, calc_slot_mod(opll, 6)));
+      }
     }
-  } else {
-    if (!(opll->mask & OPLL_MASK_BD)) {
-      out[9] = _RO(calc_slot_car(opll, 6, calc_slot_mod(opll, 6)));
-    }
-  }
-  update_noise(opll, 14);
+    update_noise(opll, 14);
 
-  /* CH8 */
-  if (!opll->rhythm_mode) {
-    if (!(opll->mask & OPLL_MASK_CH(7))) {
-      out[7] = _MO(calc_slot_car(opll, 7, calc_slot_mod(opll, 7)));
+    /* CH8 */
+    if (!opll->rhythm_mode) {
+      if (!(opll->mask & OPLL_MASK_CH(7))) {
+        out[7] = _MO(calc_slot_car(opll, 7, calc_slot_mod(opll, 7)));
+      }
+    } else {
+      if (!(opll->mask & OPLL_MASK_HH)) {
+        out[10] = _RO(calc_slot_hat(opll));
+      }
+      if (!(opll->mask & OPLL_MASK_SD)) {
+        out[11] = _RO(calc_slot_snare(opll));
+      }
     }
-  } else {
-    if (!(opll->mask & OPLL_MASK_HH)) {
-      out[10] = _RO(calc_slot_hat(opll));
+    update_noise(opll, 2);
+   
+    /* CH9 */
+    if (!opll->rhythm_mode) {
+      if (!(opll->mask & OPLL_MASK_CH(8))) {
+        out[8] = _MO(calc_slot_car(opll, 8, calc_slot_mod(opll, 8)));
+      }
+    } else {
+      if (!(opll->mask & OPLL_MASK_TOM)) {
+        out[12] = _RO(calc_slot_tom(opll));
+      }
+      if (!(opll->mask & OPLL_MASK_CYM)) {
+        out[13] = _RO(calc_slot_cym(opll));
+      }
     }
-    if (!(opll->mask & OPLL_MASK_SD)) {
-      out[11] = _RO(calc_slot_snare(opll));
-    }
+    update_noise(opll, 2);
   }
-  update_noise(opll, 2);
-
-  /* CH9 */
-  if (!opll->rhythm_mode) {
-    if (!(opll->mask & OPLL_MASK_CH(8))) {
-      out[8] = _MO(calc_slot_car(opll, 8, calc_slot_mod(opll, 8)));
-    }
-  } else {
-    if (!(opll->mask & OPLL_MASK_TOM)) {
-      out[12] = _RO(calc_slot_tom(opll));
-    }
-    if (!(opll->mask & OPLL_MASK_CYM)) {
-      out[13] = _RO(calc_slot_cym(opll));
-    }
-  }
-  update_noise(opll, 2);
-#endif
 }
 
 INLINE static void mix_output(OPLL *opll) {
   int16_t out = 0;
   int i;
-#ifdef VRC7AUDIO
-  for (i = 0; i < 6; i++) {
-#else
-  for (i = 0; i < 14; i++) {
-#endif
-    out += opll->ch_out[i];
+  if(opll->chip_type == 0) {
+    for (i = 0; i < 14; i++) {
+      out += opll->ch_out[i];
+    }
+  } else {
+    for(i = 0; i < 6; i++) {
+       out += opll->ch_out[i];
+    }
   }
   if (opll->conv) {
     OPLL_RateConv_putData(opll->conv, 0, out);
@@ -1339,11 +1340,10 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x13:
   case 0x14:
   case 0x15:
-#ifndef VRC7AUDIO
   case 0x16:
   case 0x17:
   case 0x18:
-#endif
+    if(opll->chip_type == 1 && reg >= 0x16) break;
     ch = reg - 0x10;
     set_fnumber(opll, ch, data + ((opll->reg[0x20 + ch] & 1) << 8));
     break;
@@ -1354,11 +1354,10 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x23:
   case 0x24:
   case 0x25:
-#ifndef VRC7AUDIO
   case 0x26:
   case 0x27:
   case 0x28:
-#endif
+    if(opll->chip_type == 1 && reg >= 0x26) break;
     ch = reg - 0x20;
     set_fnumber(opll, ch, ((data & 1) << 8) + opll->reg[0x10 + ch]);
     set_block(opll, ch, (data >> 1) & 7);
@@ -1372,11 +1371,10 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   case 0x33:
   case 0x34:
   case 0x35:
-#ifndef VRC7AUDIO
   case 0x36:
   case 0x37:
   case 0x38:
-#endif
+    if(opll->chip_type == 1 && reg >= 0x36) break;
     if ((opll->reg[0x0e] & 32) && (reg >= 0x36)) {
       switch (reg) {
       case 0x37:

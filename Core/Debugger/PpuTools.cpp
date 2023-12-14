@@ -4,9 +4,6 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
 #include "Shared/SettingTypes.h"
-#include "SNES/SnesDefaultVideoFilter.h"
-#include "SNES/SnesPpu.h"
-#include "Gameboy/GbTypes.h"
 
 PpuTools::PpuTools(Debugger* debugger, Emulator *emu)
 {
@@ -42,6 +39,9 @@ void PpuTools::GetTileView(GetTileViewOptions options, uint8_t* source, uint32_t
 		case TileFormat::PceBackgroundBpp2Cg1: InternalGetTileView<TileFormat::PceBackgroundBpp2Cg1>(options, source, srcSize, colors, outBuffer); break;
 		case TileFormat::PceSpriteBpp2Sp01: InternalGetTileView<TileFormat::PceSpriteBpp2Sp01>(options, source, srcSize, colors, outBuffer); break;
 		case TileFormat::PceSpriteBpp2Sp23: InternalGetTileView<TileFormat::PceSpriteBpp2Sp23>(options, source, srcSize, colors, outBuffer); break;
+		
+		case TileFormat::SmsBpp4: InternalGetTileView<TileFormat::SmsBpp4>(options, source, srcSize, colors, outBuffer); break;
+		case TileFormat::SmsSgBpp1: InternalGetTileView<TileFormat::SmsSgBpp1>(options, source, srcSize, colors, outBuffer); break;
 	}
 }
 
@@ -103,6 +103,9 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 		//2BPP, but use BPP=4 because tiles are arranged in the regular 4BPP layout
 		case TileFormat::PceBackgroundBpp2Cg0: bpp = 4; break;
 		case TileFormat::PceBackgroundBpp2Cg1: bpp = 4; break;
+		
+		case TileFormat::SmsBpp4: bpp = 4; rowOffset = 4; break;
+		case TileFormat::SmsSgBpp1: bpp = 1; rowOffset = 1; break;
 
 		default: bpp = 8; break;
 	}
@@ -113,8 +116,11 @@ void PpuTools::InternalGetTileView(GetTileViewOptions options, uint8_t *source, 
 	uint8_t colorMask = 0xFF;
 	if(options.UseGrayscalePalette) {
 		options.Palette = 0;
-		colors = bpp == 2 ? _grayscaleColorsBpp2 : _grayscaleColorsBpp4;
-		colorMask = bpp == 2 ? 0x03 : 0x0F;
+		switch(bpp) {
+			case 1: colors = _grayscaleColorsBpp1; colorMask = 0x01; break;
+			case 2: colors = _grayscaleColorsBpp2; colorMask = 0x03; break;
+			default: colors = _grayscaleColorsBpp4; colorMask = 0x0F; break;
+		}
 	}
 
 	uint32_t bgColor = GetBackgroundColor(options.Background, colors, options.Palette, bpp);
@@ -227,6 +233,8 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 
 		case TileFormat::NesBpp2: rowOffset = 1; break;
 		case TileFormat::PceSpriteBpp4: rowOffset = 2; break;
+		case TileFormat::SmsBpp4: rowOffset = 4; break;
+		case TileFormat::SmsSgBpp1: rowOffset = 1; break;
 	}
 
 	uint8_t* ram = (uint8_t*)memInfo.Memory;
@@ -325,6 +333,17 @@ void PpuTools::GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32
 		case TileFormat::PceBackgroundBpp2Cg1:
 			setBit(rowStart + 16, shift, 2);
 			setBit(rowStart + 17, shift, 3);
+			break;
+
+		case TileFormat::SmsBpp4:
+			setBit(rowStart, shift, 0);
+			setBit(rowStart + 1, shift, 1);
+			setBit(rowStart + 2, shift, 2);
+			setBit(rowStart + 3, shift, 3);
+			break;
+
+		case TileFormat::SmsSgBpp1:
+			setBit(rowStart, shift, 0);
 			break;
 
 		default:

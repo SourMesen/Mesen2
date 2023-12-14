@@ -207,6 +207,7 @@ namespace Mesen.Utilities
 				bool hasLightGun = (
 					InputApi.HasControlDevice(ControllerType.FamicomZapper) ||
 					InputApi.HasControlDevice(ControllerType.NesZapper) ||
+					InputApi.HasControlDevice(ControllerType.SmsLightPhaser) ||
 					InputApi.HasControlDevice(ControllerType.SuperScope) ||
 					InputApi.HasControlDevice(ControllerType.BandaiHyperShot)
 				);

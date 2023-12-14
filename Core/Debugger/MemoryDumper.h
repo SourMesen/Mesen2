@@ -11,6 +11,7 @@ class BaseCartridge;
 class Spc;
 class Gameboy;
 class PceConsole;
+class SmsConsole;
 class Emulator;
 class Debugger;
 
@@ -23,6 +24,7 @@ private:
 	SnesMemoryManager* _memoryManager = nullptr;
 	NesConsole* _nesConsole = nullptr;
 	PceConsole* _pceConsole = nullptr;
+	SmsConsole* _smsConsole = nullptr;
 	BaseCartridge* _cartridge = nullptr;
 	Debugger* _debugger = nullptr;
 	bool _isMemorySupported[DebugUtilities::GetMemoryTypeCount()] = {};

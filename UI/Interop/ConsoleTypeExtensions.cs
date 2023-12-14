@@ -11,6 +11,7 @@ namespace Mesen.Interop
 				ConsoleType.Nes => CpuType.Nes,
 				ConsoleType.Gameboy => CpuType.Gameboy,
 				ConsoleType.PcEngine => CpuType.Pce,
+				ConsoleType.Sms => CpuType.Sms,
 				_ => throw new Exception("Invalid type")
 			};
 		}

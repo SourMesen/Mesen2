@@ -113,6 +113,8 @@ int GbAssembler::ReadValue(string operand, int min, int max, unordered_map<strin
 					if(labelAddress >= 0) {
 						//Matching label found
 						value = labelAddress;
+					} else {
+						return -1;
 					}
 				}
 			} else {

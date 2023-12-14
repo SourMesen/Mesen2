@@ -416,8 +416,7 @@ namespace Mesen.Debugger.ViewModels
 					AbsoluteAddress = new() { Address = -1 },
 					Text = rows[i].GetOutput(),
 					OpSize = rows[i].ByteCodeSize,
-					ByteCode = rows[i].GetByteCode(),
-					EffectiveAddress = -1
+					ByteCode = rows[i].GetByteCode()
 				});
 			}
 
@@ -579,6 +578,16 @@ namespace Mesen.Debugger.ViewModels
 					});
 					addTag(cfg.ShowRegisters, "HL:[H,2h][L,2h] S:[SP,4h] ");
 					break;
+
+				case CpuType.Sms:
+					addTag(cfg.ShowRegisters, "A:[A,2h] B:[B,2h] C:[C,2h] D:[D,2h] E:[E,2h] ");
+					addTag(cfg.ShowStatusFlags, cfg.StatusFormat switch {
+						StatusFlagFormat.Hexadecimal => "F:[PS,h] ",
+						StatusFlagFormat.CompactText => "F:[PS] ",
+						StatusFlagFormat.Text or _ => "F:[PS,8] "
+					});
+					addTag(cfg.ShowRegisters, "HL:[H,2h][L,2h] IX:[IX,4h] IY:[IY,4h] S:[SP,4h] ");
+					break;
 			}
 
 			addTag(cfg.ShowFramePosition, "V:[Scanline,3] H:[Cycle,3] ");
@@ -629,6 +638,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Gameboy => new string[] { "A", "B", "C", "D", "E", "F", "H", "L", "PS", "SP" },
 				CpuType.Nes => new string[] { "A", "X", "Y", "P", "SP" },
 				CpuType.Pce => new string[] { "A", "X", "Y", "P", "SP" },
+				CpuType.Sms => new string[] { "A", "B", "C", "D", "E", "F", "H", "L", "IX", "IY", "A'", "B'", "C'", "D'", "E'", "F'", "H'", "L'", "I", "R", "PS", "SP" },
 				_ => throw new Exception("unsupported cpu type")
 			};
 

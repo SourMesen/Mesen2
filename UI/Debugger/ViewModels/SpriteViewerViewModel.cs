@@ -201,7 +201,7 @@ namespace Mesen.Debugger.ViewModels
 					if(sprite?.TileAddress >= 0 && _data.Palette != null) {
 						PixelSize size = sprite.Format.GetTileSize();
 						DebugPaletteInfo pal = _data.Palette.Value;
-						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
+						int paletteOffset = (int)(pal.SpritePaletteOffset / pal.ColorsPerPalette);
 						TileEditorWindow.OpenAtTile(
 							sprite.TileAddresses.Select(x => new AddressInfo() { Address = (int)x, Type = CpuType.GetVramMemoryType(sprite.UseExtendedVram) }).ToList(),
 							sprite.Width / size.Width,
@@ -237,7 +237,7 @@ namespace Mesen.Debugger.ViewModels
 					SpritePreviewModel? sprite = GetSelectedSprite();
 					if(sprite?.TileAddress >= 0 && _data.Palette != null) {
 						DebugPaletteInfo pal = _data.Palette.Value;
-						int paletteOffset = (int)(pal.BgColorCount / pal.ColorsPerPalette);
+						int paletteOffset = (int)(pal.SpritePaletteOffset / pal.ColorsPerPalette);
 						TileViewerWindow.OpenAtTile(CpuType, CpuType.GetVramMemoryType(sprite.UseExtendedVram), sprite.TileAddress, sprite.Format, TileLayout.Normal, sprite.Palette + paletteOffset);
 					}
 				}
@@ -297,8 +297,10 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugPaletteInfo palette = _data.Palette.Value;
 			int paletteSize = (int)Math.Pow(2, sprite.Bpp);
-			int paletteIndex = (sprite.Palette >= 0 ? sprite.Palette : 0) + (int)(palette.BgColorCount / paletteSize);
-			entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, palette.GetRgbPalette(), palette.GetRawPalette(), palette.RawFormat));
+			int paletteIndex = (sprite.Palette >= 0 ? sprite.Palette : 0) + (int)(palette.SpritePaletteOffset / paletteSize);
+			if(sprite.Bpp > 1) {
+				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, palette.GetRgbPalette(), palette.GetRawPalette(), palette.RawFormat));
+			}
 
 			entries.AddEntry("Sprite index", sprite.SpriteIndex.ToString());
 			entries.AddEntry("X, Y",
@@ -327,7 +329,9 @@ namespace Mesen.Debugger.ViewModels
 			entries.AddEntry("Visible", sprite.Visible);
 			entries.AddEntry("Horizontal mirror", sprite.HorizontalMirror);
 			entries.AddEntry("Vertical mirror", sprite.VerticalMirror);
-			entries.AddEntry("Priority", ResourceHelper.GetEnumText(sprite.Priority));
+			if(sprite.Priority != DebugSpritePriority.Undefined) {
+				entries.AddEntry("Priority", ResourceHelper.GetEnumText(sprite.Priority));
+			}
 			if(sprite.UseSecondTable != NullableBoolean.Undefined) {
 				entries.AddEntry("Second table", sprite.UseSecondTable == NullableBoolean.True);
 			}
@@ -439,14 +443,23 @@ namespace Mesen.Debugger.ViewModels
 
 		private void UpdateRamData(ref byte[] baseRam, ref byte[] extRam, ref byte[] combinedRam, MemoryType baseType, MemoryType extType)
 		{
-			DebugApi.GetMemoryState(extType, ref extRam);
-			if(extRam.Length > 0) {
-				DebugApi.GetMemoryState(baseType, ref baseRam);
+			if(baseType == MemoryType.None) {
+				Array.Resize(ref baseRam, 0);
+				Array.Resize(ref extRam, 0);
+				Array.Resize(ref combinedRam, 0);
+			} else if(extType != baseType) {
+				DebugApi.GetMemoryState(extType, ref extRam);
+				if(extRam.Length > 0) {
+					DebugApi.GetMemoryState(baseType, ref baseRam);
 
-				Array.Resize(ref combinedRam, extRam.Length + baseRam.Length);
-				Array.Copy(baseRam, 0, combinedRam, 0, baseRam.Length);
-				Array.Copy(extRam, 0, combinedRam, baseRam.Length, extRam.Length);
+					Array.Resize(ref combinedRam, extRam.Length + baseRam.Length);
+					Array.Copy(baseRam, 0, combinedRam, 0, baseRam.Length);
+					Array.Copy(extRam, 0, combinedRam, baseRam.Length, extRam.Length);
+				} else {
+					DebugApi.GetMemoryState(baseType, ref combinedRam);
+				}
 			} else {
+				Array.Resize(ref extRam, 0);
 				DebugApi.GetMemoryState(baseType, ref combinedRam);
 			}
 		}
@@ -468,7 +481,19 @@ namespace Mesen.Debugger.ViewModels
 
 				UpdateVramData();
 
-				int spriteRamSize = DebugApi.GetMemorySize(CpuType.GetSpriteRamMemoryType()) + DebugApi.GetMemorySize(CpuType.GetSpriteRamMemoryType(getExtendedRam: true));
+				int spriteRamSize;
+				MemoryType spriteRamType = CpuType.GetSpriteRamMemoryType();
+				if(spriteRamType == MemoryType.None) {
+					//SMS-specific
+					spriteRamSize = 0x100;
+				} else {
+					spriteRamSize = DebugApi.GetMemorySize(spriteRamType);
+					MemoryType spriteRamExtType = CpuType.GetSpriteRamMemoryType(getExtendedRam: true);
+					if(spriteRamType != spriteRamExtType) {
+						spriteRamSize += DebugApi.GetMemorySize(spriteRamExtType);
+					}
+				}
+
 				if(Config.Source == SpriteViewerSource.SpriteRam) {
 					UpdateSpriteRamData();
 				} else {
@@ -476,7 +501,7 @@ namespace Mesen.Debugger.ViewModels
 					DebugApi.GetMemoryValues(cpuMemory, (uint)Config.SourceOffset, (uint)(Config.SourceOffset + spriteRamSize - 1), ref _coreData.SpriteRam);
 
 					Dispatcher.UIThread.Post(() => {
-						MaxSourceOffset = DebugApi.GetMemorySize(cpuMemory) - spriteRamSize;
+						MaxSourceOffset = Math.Max(0, DebugApi.GetMemorySize(cpuMemory) - spriteRamSize);
 					});
 				}
 

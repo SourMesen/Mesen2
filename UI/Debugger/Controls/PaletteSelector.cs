@@ -164,6 +164,7 @@ namespace Mesen.Debugger.Controls
 				switch(selector.SelectionMode) {
 					default: maxPalette = 0; break;
 					case PaletteSelectionMode.SingleColor: maxPalette = colorCount - 1; break;
+					case PaletteSelectionMode.TwoColors: maxPalette = (colorCount / 2) - 1; break;
 					case PaletteSelectionMode.FourColors: maxPalette = (colorCount / 4) - 1; break;
 					case PaletteSelectionMode.SixteenColors: maxPalette = (colorCount / 16) -1; break;
 				}
@@ -183,6 +184,7 @@ namespace Mesen.Debugger.Controls
 				case Key.Up:
 					switch(SelectionMode) {
 						case PaletteSelectionMode.SingleColor: SelectedPalette -= ColumnCount; break;
+						case PaletteSelectionMode.TwoColors: SelectedPalette -= ColumnCount / 2; break;
 						case PaletteSelectionMode.FourColors: SelectedPalette -= ColumnCount / 4; break;
 						case PaletteSelectionMode.SixteenColors: SelectedPalette -= ColumnCount / 16; break;
 					}
@@ -191,6 +193,7 @@ namespace Mesen.Debugger.Controls
 				case Key.Down:
 					switch(SelectionMode) {
 						case PaletteSelectionMode.SingleColor: SelectedPalette += ColumnCount; break;
+						case PaletteSelectionMode.TwoColors: SelectedPalette += ColumnCount / 2; break;
 						case PaletteSelectionMode.FourColors: SelectedPalette += ColumnCount / 4; break;
 						case PaletteSelectionMode.SixteenColors: SelectedPalette += ColumnCount / 16; break;
 					}
@@ -249,6 +252,9 @@ namespace Mesen.Debugger.Controls
 				if(SelectionMode == PaletteSelectionMode.SingleColor) {
 					int selectedRow = SelectedPalette / columnCount;
 					selectionRect = new Rect((SelectedPalette % columnCount) * width, selectedRow * height, width, height);
+				} else if(SelectionMode == PaletteSelectionMode.TwoColors && columnCount >= 2) {
+					int selectedRow = (SelectedPalette * 2) / columnCount;
+					selectionRect = new Rect((SelectedPalette % (columnCount / 2)) * width * 2, selectedRow * height, width * 2, height);
 				} else if(SelectionMode == PaletteSelectionMode.FourColors && columnCount >= 4) {
 					int selectedRow = (SelectedPalette * 4) / columnCount;
 					selectionRect = new Rect((SelectedPalette % (columnCount / 4)) * width * 4, selectedRow * height, width * 4, height);
@@ -327,6 +333,8 @@ namespace Mesen.Debugger.Controls
 			}
 			if(SelectionMode == PaletteSelectionMode.SingleColor) {
 				paletteIndex /= 1;
+			} else if(SelectionMode == PaletteSelectionMode.TwoColors) {
+				paletteIndex /= 2;
 			} else if(SelectionMode == PaletteSelectionMode.FourColors) {
 				paletteIndex /= 4;
 			} else if(SelectionMode == PaletteSelectionMode.SixteenColors) {
@@ -351,6 +359,7 @@ namespace Mesen.Debugger.Controls
 	{
 		None,
 		SingleColor,
+		TwoColors,
 		FourColors,
 		SixteenColors
 	}

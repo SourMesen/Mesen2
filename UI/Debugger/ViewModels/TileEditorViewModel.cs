@@ -313,6 +313,7 @@ public class TileEditorViewModel : DisposableViewModel
 	private int GetColorsPerPalette(TileFormat format)
 	{
 		return format.GetBitsPerPixel() switch {
+			1 => 2, //2-color palettes
 			2 => 4, //4-color palettes
 			4 => 16, //16-color palettes
 			_ => 256

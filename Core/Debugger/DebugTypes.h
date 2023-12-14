@@ -3,15 +3,10 @@
 #include "Shared/MemoryOperationType.h"
 #include "Shared/CpuType.h"
 #include "Debugger/DisassemblyInfo.h"
+#include "Debugger/AddressInfo.h"
 
 enum class MemoryType;
 enum class CpuType : uint8_t;
-
-struct AddressInfo
-{
-	int32_t Address;
-	MemoryType Type;
-};
 
 struct MemoryOperationInfo
 {
@@ -211,6 +206,8 @@ enum class TileFormat
 	PceSpriteBpp2Sp23,
 	PceBackgroundBpp2Cg0,
 	PceBackgroundBpp2Cg1,
+	SmsBpp4,
+	SmsSgBpp1
 };
 
 enum class TileLayout
@@ -336,7 +333,9 @@ enum class BreakSource
 	NesBreakOnCpuCrash,
 	NesBreakOnExtOutputMode,
 
-	PceBreakOnInvalidVramAddress
+	PceBreakOnInvalidVramAddress,
+
+	SmsNopLoad,
 };
 
 struct BreakEvent

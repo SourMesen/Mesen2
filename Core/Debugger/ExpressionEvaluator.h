@@ -53,38 +53,6 @@ enum EvalValues : int64_t
 	RegA = 20000000100,
 	RegX,
 	RegY,
-	RegSP,
-	RegDB,
-
-	RegPS,
-	RegPS_Carry,
-	RegPS_Zero,
-	RegPS_Interrupt,
-	RegPS_Memory,
-	RegPS_Index,
-	RegPS_Decimal,
-	RegPS_Overflow,
-	RegPS_Negative,
-
-	RegPC,
-	PpuFrameCount,
-	PpuCycle,
-	PpuHClock,
-	PpuScanline,
-	
-	PpuVramAddress,
-	PpuTmpVramAddress,
-
-	Nmi,
-	Irq,
-	Value,
-	Address,
-	MemoryAddress,
-	IsWrite,
-	IsRead,
-	IsDma,
-	IsDummy,
-	OpProgramCounter,
 
 	R0,
 	R1,
@@ -120,6 +88,23 @@ enum EvalValues : int64_t
 	RegBC,
 	RegDE,
 	RegHL,
+	RegIX,
+	RegIY,
+
+	RegAltA,
+	RegAltB,
+	RegAltC,
+	RegAltD,
+	RegAltE,
+	RegAltF,
+	RegAltH,
+	RegAltL,
+	RegAltAF,
+	RegAltBC,
+	RegAltDE,
+	RegAltHL,
+	RegI,
+	RegR,
 
 	RegTR,
 	RegTRB,
@@ -139,9 +124,43 @@ enum EvalValues : int64_t
 	RegMAR,
 	RegDPR,
 
+	RegSP,
+	RegDB,
+	RegPS,
+
+	RegPC,
+	PpuFrameCount,
+	PpuCycle,
+	PpuHClock,
+	PpuScanline,
+
+	PpuVramAddress,
+	PpuTmpVramAddress,
+
+	Nmi,
+	Irq,
+	Value,
+	Address,
+	MemoryAddress,
+	IsWrite,
+	IsRead,
+	IsDma,
+	IsDummy,
+	OpProgramCounter,
+
+	RegPS_Carry,
+	RegPS_Zero,
+	RegPS_Interrupt,
+	RegPS_Memory,
+	RegPS_Index,
+	RegPS_Decimal,
+	RegPS_Overflow,
+	RegPS_Negative,
+
 	Sprite0Hit,
 	VerticalBlank,
 	SpriteOverflow,
+	SpriteCollision,
 
 	SpcDspReg,
 
@@ -151,6 +170,9 @@ enum EvalValues : int64_t
 	PceIrqVdc2,
 	PceSelectedPsgChannel,
 	PceSelectedVdcRegister,
+
+	SmsVdpAddressReg,
+	SmsVdpCodeReg,
 
 	FirstLabelIndex,
 };
@@ -226,6 +248,9 @@ private:
 
 	unordered_map<string, int64_t>& GetPceTokens();
 	int64_t GetPceTokenValue(int64_t token, EvalResultType& resultType);
+
+	unordered_map<string, int64_t>& GetSmsTokens();
+	int64_t GetSmsTokenValue(int64_t token, EvalResultType& resultType);
 
 	bool ReturnBool(int64_t value, EvalResultType& resultType);
 

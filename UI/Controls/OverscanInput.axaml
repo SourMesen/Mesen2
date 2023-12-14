@@ -12,7 +12,7 @@
 >
 	<StackPanel>
 		<TextBlock Text="{l:Translate lblTop}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{CompiledBinding Overscan.Top, ElementName=root}" Minimum="0" Maximum="100" HorizontalAlignment="Center"/>
+		<NumericUpDown Value="{CompiledBinding Overscan.Top, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center"/>
 
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -39,6 +39,6 @@
 		</StackPanel>
 
 		<TextBlock Text="{l:Translate lblBottom}" HorizontalAlignment="Center" />
-		<NumericUpDown Value="{CompiledBinding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="100" HorizontalAlignment="Center" />
+		<NumericUpDown Value="{CompiledBinding Overscan.Bottom, ElementName=root}" Minimum="0" Maximum="95" HorizontalAlignment="Center" />
 	</StackPanel>
 </UserControl>

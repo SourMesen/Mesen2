@@ -17,6 +17,9 @@
 #include "NES/NesConsole.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceMemoryManager.h"
+#include "SMS/SmsConsole.h"
+#include "SMS/SmsVdp.h"
+#include "SMS/SmsMemoryManager.h"
 #include "Shared/Video/VideoDecoder.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/DebugBreakHelper.h"
@@ -41,6 +44,8 @@ MemoryDumper::MemoryDumper(Debugger* debugger)
 		_gameboy = gb;
 	} else if(PceConsole* pce = dynamic_cast<PceConsole*>(console)) {
 		_pceConsole = pce;
+	} else if(SmsConsole* sms = dynamic_cast<SmsConsole*>(console)) {
+		_smsConsole = sms;
 	}
 
 	for(int i = 0; i < DebugUtilities::GetMemoryTypeCount(); i++) {
@@ -85,7 +90,9 @@ uint32_t MemoryDumper::GetMemorySize(MemoryType type)
 		case MemoryType::NesMemory: return 0x10000;
 		case MemoryType::NesPpuMemory: return 0x4000;
 		case MemoryType::PceMemory: return 0x10000;
+		case MemoryType::SmsMemory: return 0x10000;
 		case MemoryType::SnesRegister: return 0x10000;
+		case MemoryType::SmsPort: return 0x100;
 		default: return _emu->GetMemory(type).Size;
 	}
 }
@@ -115,6 +122,10 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 					_cartridge->GetSa1()->GetMemoryMappings()->PeekBlock(i, buffer + i);
 				}
 			}
+			break;
+
+		case MemoryType::NecDspMemory:
+			GetMemoryState(MemoryType::DspProgramRom, buffer);
 			break;
 
 		case MemoryType::GsuMemory:
@@ -171,9 +182,15 @@ void MemoryDumper::GetMemoryState(MemoryType type, uint8_t *buffer)
 			break;
 		}
 
-		case MemoryType::NecDspMemory:
-			GetMemoryState(MemoryType::DspProgramRom, buffer);
+		case MemoryType::SmsMemory: {
+			if(_smsConsole) {
+				SmsMemoryManager* memManager = _smsConsole->GetMemoryManager();
+				for(int i = 0; i <= 0xFFFF; i++) {
+					buffer[i] = memManager->DebugRead(i);
+				}
+			}
 			break;
+		}
 
 		default: 
 			uint8_t* src = GetMemoryBuffer(type);
@@ -194,7 +211,8 @@ void MemoryDumper::SetMemoryValues(MemoryType memoryType, uint32_t address, uint
 
 void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8_t value, bool disableSideEffects)
 {
-	if(address >= GetMemorySize(memoryType)) {
+	uint32_t memSize = GetMemorySize(memoryType);
+	if(address >= memSize) {
 		return;
 	}
 
@@ -223,6 +241,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 		case MemoryType::NesMemory: _nesConsole->DebugWrite(address, value, disableSideEffects); break;
 		case MemoryType::NesPpuMemory: _nesConsole->DebugWriteVram(address, value); break;
 		case MemoryType::PceMemory: _pceConsole->GetMemoryManager()->DebugWrite(address, value); break;
+		case MemoryType::SmsMemory: _smsConsole->GetMemoryManager()->DebugWrite(address, value); break;
 		case MemoryType::SpcDspRegisters: _spc->DebugWriteDspReg(address, value); break;
 
 		default:
@@ -235,6 +254,7 @@ void MemoryDumper::SetMemoryValue(MemoryType memoryType, uint32_t address, uint8
 					case MemoryType::NesSpriteRam: case MemoryType::NesSecondarySpriteRam: src[address] = (address & 0x03) == 0x02 ? (value & 0xE3) : value; break;
 					case MemoryType::NesPaletteRam: src[address] = value & 0x3F; break;
 					case MemoryType::PcePaletteRam: src[address] = (address & 0x01) ? (value & 0x01) : value; break;
+					case MemoryType::SmsPaletteRam: _smsConsole->GetVdp()->DebugWritePalette(address, value); break;
 
 					default:
 						src[address] = value;
@@ -277,6 +297,7 @@ uint8_t MemoryDumper::InternalGetMemoryValue(MemoryType memoryType, uint32_t add
 		case MemoryType::NesMemory: return _nesConsole->DebugRead(address);
 		case MemoryType::NesPpuMemory: return _nesConsole->DebugReadVram(address);
 		case MemoryType::PceMemory: return _pceConsole->GetMemoryManager()->DebugRead(address);
+		case MemoryType::SmsMemory: return _smsConsole->GetMemoryManager()->DebugRead(address);
 
 		default:
 			uint8_t* src = GetMemoryBuffer(memoryType);

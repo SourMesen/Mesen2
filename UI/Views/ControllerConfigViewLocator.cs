@@ -27,6 +27,7 @@ namespace Mesen.Views
 					ControllerType.GameboyController => new NesControllerView(),
 					ControllerType.PceController => new PceControllerView(),
 					ControllerType.PceAvenuePad6 => new PceAvenuePad6View(),
+					ControllerType.SmsController => new SmsControllerView(),
 					_ => new DefaultControllerView()
 				};
 			}

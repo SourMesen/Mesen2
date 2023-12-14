@@ -20,6 +20,7 @@ public:
 
 	SystemActionManager(Emulator* emu) : BaseControlDevice(emu, ControllerType::None, BaseControlDevice::ConsoleInputPort)
 	{
+		_connected = false;
 	}
 
 	uint8_t ReadRam(uint16_t addr) override

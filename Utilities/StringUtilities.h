@@ -57,4 +57,15 @@ public:
 	{
 		memcpy(outBuffer, str.c_str(), std::min<uint32_t>((uint32_t)str.size(), maxSize));
 	}
+
+	static bool StartsWith(string& str, const char* content)
+	{
+		size_t length = strlen(content);
+		for(size_t i = 0; i < length; i++) {
+			if(str[i] != content[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
 };

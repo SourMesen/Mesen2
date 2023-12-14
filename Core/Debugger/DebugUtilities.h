@@ -19,6 +19,7 @@ public:
 			case CpuType::Gameboy: return MemoryType::GameboyMemory;
 			case CpuType::Nes: return MemoryType::NesMemory;
 			case CpuType::Pce: return MemoryType::PceMemory;
+			case CpuType::Sms: return MemoryType::SmsMemory;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -36,6 +37,7 @@ public:
 			case CpuType::Gameboy: return 4;
 			case CpuType::Nes: return 4;
 			case CpuType::Pce: return 4;
+			case CpuType::Sms: return 4;
 		}
 
 		throw std::runtime_error("Invalid CPU type");
@@ -118,6 +120,16 @@ public:
 			case MemoryType::PceSpriteRam:
 			case MemoryType::PceSpriteRamVdc2:
 				return CpuType::Pce;
+		
+			case MemoryType::SmsMemory:
+			case MemoryType::SmsPrgRom:
+			case MemoryType::SmsWorkRam:
+			case MemoryType::SmsCartRam:
+			case MemoryType::SmsBootRom:
+			case MemoryType::SmsVideoRam:
+			case MemoryType::SmsPaletteRam:
+			case MemoryType::SmsPort:
+				return CpuType::Sms;
 
 			default:
 				throw std::runtime_error("Invalid CPU type");
@@ -126,12 +138,12 @@ public:
 
 	static constexpr bool IsRelativeMemory(MemoryType memType)
 	{
-		return memType <= MemoryType::PceMemory;
+		return memType <= GetLastCpuMemoryType();
 	}
 
 	static constexpr MemoryType GetLastCpuMemoryType()
 	{
-		return MemoryType::PceMemory;
+		return MemoryType::SmsMemory;
 	}
 
 	static constexpr bool IsPpuMemory(MemoryType memType)
@@ -159,6 +171,10 @@ public:
 			case MemoryType::PceSpriteRamVdc2:
 				return true;
 
+			case MemoryType::SmsVideoRam:
+			case MemoryType::SmsPaletteRam:
+				return true;
+
 			default: 
 				return false;
 		}
@@ -176,6 +192,8 @@ public:
 			case MemoryType::DspDataRom:
 			case MemoryType::DspProgramRom:
 			case MemoryType::SpcRom:
+			case MemoryType::SmsPrgRom:
+			case MemoryType::SmsBootRom:
 				return true;
 
 			default:
@@ -195,6 +213,7 @@ public:
 			case MemoryType::SnesSaveRam:
 			case MemoryType::PceSaveRam:
 			case MemoryType::SnesRegister:
+			case MemoryType::SmsCartRam:
 				return false;
 
 			default:
@@ -204,7 +223,7 @@ public:
 
 	static constexpr CpuType GetLastCpuType()
 	{
-		return CpuType::Pce;
+		return CpuType::Sms;
 	}
 
 	static string AddressToHex(CpuType cpuType, int32_t address)

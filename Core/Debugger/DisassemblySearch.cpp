@@ -94,10 +94,10 @@ uint32_t DisassemblySearch::SearchDisassembly(CpuType cpuType, const char* searc
 				continue;
 			}
 
-			if(lineData.EffectiveAddress.ShowAddress && lineData.EffectiveAddress.Address >= 0) {
-				txt = _labelManager->GetLabel({ lineData.EffectiveAddress.Address, memType });
+			if(lineData.EffectiveAddress.ShowAddress && lineData.EffectiveAddress.Address.Address >= 0) {
+				txt = _labelManager->GetLabel(lineData.EffectiveAddress.Address);
 				if(txt.empty()) {
-					txt = "[$" + DebugUtilities::AddressToHex(lineData.LineCpuType, lineData.EffectiveAddress.Address) + "]";
+					txt = "[$" + DebugUtilities::AddressToHex(lineData.LineCpuType, lineData.EffectiveAddress.Address.Address) + "]";
 				} else {
 					txt = "[" + txt + "]";
 				}

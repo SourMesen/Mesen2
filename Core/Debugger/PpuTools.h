@@ -3,6 +3,7 @@
 #include "Debugger/DebugTypes.h"
 #include "Shared/NotificationManager.h"
 #include "Shared/Emulator.h"
+#include "Shared/ColorUtilities.h"
 
 class Debugger;
 
@@ -158,7 +159,9 @@ enum class RawPaletteFormat
 {
 	Indexed,
 	Rgb555,
-	Rgb333
+	Rgb333,
+	Rgb222,
+	Rgb444
 };
 
 struct DebugPaletteInfo
@@ -169,6 +172,8 @@ struct DebugPaletteInfo
 	uint32_t ColorCount;
 	uint32_t BgColorCount;
 	uint32_t SpriteColorCount;
+	uint32_t SpritePaletteOffset;
+
 	uint32_t ColorsPerPalette;
 
 	RawPaletteFormat RawFormat;
@@ -179,6 +184,7 @@ struct DebugPaletteInfo
 class PpuTools
 {
 protected:
+	static constexpr uint32_t _grayscaleColorsBpp1[2] = { 0xFF000000, 0xFFFFFFFF };
 	static constexpr uint32_t _grayscaleColorsBpp2[4] = { 0xFF000000, 0xFF666666, 0xFFBBBBBB, 0xFFFFFFFF };
 	static constexpr uint32_t _grayscaleColorsBpp4[16] = {
 		0xFF000000, 0xFF303030, 0xFF404040, 0xFF505050, 0xFF606060, 0xFF707070, 0xFF808080, 0xFF909090,
@@ -200,17 +206,6 @@ protected:
 	uint32_t GetSpriteBackgroundColor(SpriteBackground bgColor, const uint32_t* colors, bool useDarkerColor);
 
 	void GetSetTilePixel(AddressInfo tileAddress, TileFormat format, int32_t x, int32_t y, int32_t& color, bool forGet);
-
-	uint8_t Rgb555to8Bit(uint8_t color) { return (color << 3) + (color >> 2); }
-
-	uint32_t Rgb555ToArgb(uint16_t rgb555)
-	{
-		uint8_t b = Rgb555to8Bit(rgb555 >> 10);
-		uint8_t g = Rgb555to8Bit((rgb555 >> 5) & 0x1F);
-		uint8_t r = Rgb555to8Bit(rgb555 & 0x1F);
-
-		return 0xFF000000 | (r << 16) | (g << 8) | b;
-	}
 
 public:
 	PpuTools(Debugger* debugger, Emulator *emu);
@@ -250,7 +245,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 {
 	switch(format) {
 		case TileFormat::DirectColor:
-			return Rgb555ToArgb(
+			return ColorUtilities::Rgb555ToArgb(
 				((((colorIndex & 0x07) << 1) | (palette & 0x01)) << 1) |
 				(((colorIndex & 0x38) | ((palette & 0x02) << 1)) << 4) |
 				(((colorIndex & 0xC0) | ((palette & 0x04) << 3)) << 7)
@@ -261,6 +256,7 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 			return colors[palette * 4 + colorIndex];
 
 		case TileFormat::Bpp4:
+		case TileFormat::SmsBpp4:
 		case TileFormat::PceSpriteBpp4:
 		case TileFormat::PceSpriteBpp2Sp01:
 		case TileFormat::PceSpriteBpp2Sp23:
@@ -274,7 +270,10 @@ template<TileFormat format> uint32_t PpuTools::GetRgbPixelColor(const uint32_t* 
 			return colors[colorIndex];
 
 		case TileFormat::Mode7DirectColor:
-			return Rgb555ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
+			return ColorUtilities::Rgb555ToArgb(((colorIndex & 0x07) << 2) | ((colorIndex & 0x38) << 4) | ((colorIndex & 0xC0) << 7));
+
+		case TileFormat::SmsSgBpp1:
+			return colors[palette * 2 + colorIndex];
 
 		default:
 			throw std::runtime_error("unsupported format");
@@ -363,6 +362,17 @@ template<TileFormat format> uint8_t PpuTools::GetTilePixelColor(const uint8_t* r
 
 		case TileFormat::Mode7ExtBg:
 			return ram[(rowStart + pixelIndex * 2 + 1) & ramMask] & 0x7F;
+
+		case TileFormat::SmsBpp4:
+			color = (((ram[(rowStart + 0) & ramMask] >> shift) & 0x01) << 0);
+			color |= (((ram[(rowStart + 1) & ramMask] >> shift) & 0x01) << 1);
+			color |= (((ram[(rowStart + 2) & ramMask] >> shift) & 0x01) << 2);
+			color |= (((ram[(rowStart + 3) & ramMask] >> shift) & 0x01) << 3);
+			return color;
+
+		case TileFormat::SmsSgBpp1:
+			color = ((ram[rowStart & ramMask] >> shift) & 0x01);
+			return color;
 
 		default:
 			throw std::runtime_error("unsupported format");

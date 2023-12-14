@@ -19,6 +19,7 @@ namespace Mesen.ViewModels
 		[Reactive] public NesConfigViewModel? Nes { get; set; }
 		[Reactive] public GameboyConfigViewModel? Gameboy { get; set; }
 		[Reactive] public PceConfigViewModel? PcEngine { get; set; }
+		[Reactive] public SmsConfigViewModel? Sms { get; set; }
 
 		[Reactive] public ConfigWindowTab SelectedIndex { get; set; }
 		public bool AlwaysOnTop { get; }
@@ -54,6 +55,7 @@ namespace Mesen.ViewModels
 				case ConfigWindowTab.Snes: Snes ??= AddDisposable(new SnesConfigViewModel()); break;
 				case ConfigWindowTab.Gameboy: Gameboy ??= AddDisposable(new GameboyConfigViewModel()); break;
 				case ConfigWindowTab.PcEngine: PcEngine ??= AddDisposable(new PceConfigViewModel()); break;
+				case ConfigWindowTab.Sms: Sms ??= AddDisposable(new SmsConfigViewModel()); break;
 
 				case ConfigWindowTab.Preferences: Preferences ??= AddDisposable(new PreferencesConfigViewModel()); break;
 			}
@@ -79,6 +81,7 @@ namespace Mesen.ViewModels
 			ConfigManager.Config.Snes = Snes?.OriginalConfig ?? ConfigManager.Config.Snes;
 			ConfigManager.Config.Gameboy = Gameboy?.OriginalConfig ?? ConfigManager.Config.Gameboy;
 			ConfigManager.Config.PcEngine = PcEngine?.OriginalConfig ?? ConfigManager.Config.PcEngine;
+			ConfigManager.Config.Sms = Sms?.OriginalConfig ?? ConfigManager.Config.Sms;
 			ConfigManager.Config.ApplyConfig();
 			ConfigManager.Config.Save();
 		}
@@ -94,7 +97,8 @@ namespace Mesen.ViewModels
 				Nes?.OriginalConfig.IsIdentical(ConfigManager.Config.Nes) == false ||
 				Snes?.OriginalConfig.IsIdentical(ConfigManager.Config.Snes) == false ||
 				Gameboy?.OriginalConfig.IsIdentical(ConfigManager.Config.Gameboy) == false ||
-				PcEngine?.OriginalConfig.IsIdentical(ConfigManager.Config.PcEngine) == false
+				PcEngine?.OriginalConfig.IsIdentical(ConfigManager.Config.PcEngine) == false ||
+				Sms?.OriginalConfig.IsIdentical(ConfigManager.Config.Sms) == false
 			);
 		}
    }
@@ -110,7 +114,8 @@ namespace Mesen.ViewModels
 		Snes = 6,
 		Gameboy = 7,
 		PcEngine = 8,
+		Sms = 9,
 		//separator
-		Preferences = 10
+		Preferences = 11
 	}
 }

@@ -42,6 +42,9 @@ namespace Mesen.Config
 		[Reactive] public bool AssociateGbMusicFiles { get; set; } = false;
 		[Reactive] public bool AssociatePceRomFiles { get; set; } = false;
 		[Reactive] public bool AssociatePceMusicFiles { get; set; } = false;
+		[Reactive] public bool AssociateSmsRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateGameGearRomFiles { get; set; } = false;
+		[Reactive] public bool AssociateSgRomFiles { get; set; } = false;
 
 		[Reactive] public bool EnableAutoSaveState { get; set; } = true;
 		[Reactive] public UInt32 AutoSaveStateDelay { get; set; } = 5;
@@ -119,6 +122,7 @@ namespace Mesen.Config
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.PowerCycle, KeyCombination = new KeyCombination() { Key1 = ctrl, Key2 = InputApi.GetKeyCode("T") } });
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.ReloadRom, KeyCombination = new KeyCombination() { Key1 = ctrl, Key2 = shift, Key3 = InputApi.GetKeyCode("R") } });
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.Pause, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("Esc") } });
+			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.RunSingleFrame, KeyCombination = new KeyCombination() { Key1 = InputApi.GetKeyCode("`") } });
 
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale1x, KeyCombination = new KeyCombination() { Key1 = alt, Key2 = InputApi.GetKeyCode("1") } });
 			AddShortcut(new ShortcutKeyInfo { Shortcut = EmulatorShortcut.SetScale2x, KeyCombination = new KeyCombination() { Key1 = alt, Key2 = InputApi.GetKeyCode("2") } });

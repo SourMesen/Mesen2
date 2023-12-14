@@ -29,7 +29,7 @@ shared_ptr<BaseControlDevice> GbControlManager::CreateControllerDevice(Controlle
 
 	shared_ptr<BaseControlDevice> device;
 
-	GameboyConfig cfg = _emu->GetSettings()->GetGameboyConfig();
+	GameboyConfig& cfg = _emu->GetSettings()->GetGameboyConfig();
 
 	switch(type) {
 		default:

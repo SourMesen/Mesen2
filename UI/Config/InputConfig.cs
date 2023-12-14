@@ -333,7 +333,11 @@ namespace Mesen.Config
 		//PC Engine
 		PceController,
 		PceTurboTap,
-		PceAvenuePad6
+		PceAvenuePad6,
+
+		//SMS
+		SmsController,
+		SmsLightPhaser,
 	}
 
 	public static class ControllerTypeExtensions
@@ -350,6 +354,7 @@ namespace Mesen.Config
 				case ControllerType.PceAvenuePad6:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
+				case ControllerType.SmsController:
 					return true;
 			}
 
@@ -369,6 +374,7 @@ namespace Mesen.Config
 				case ControllerType.Pachinko:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
+				case ControllerType.SmsController:
 					return true;
 			}
 
@@ -408,6 +414,8 @@ namespace Mesen.Config
 				case ControllerType.NesArkanoidController:
 				case ControllerType.SuperScope:
 				case ControllerType.BandaiMicrophone:
+				case ControllerType.SmsController:
+				case ControllerType.SmsLightPhaser:
 					return true;
 			}
 
@@ -424,6 +432,7 @@ namespace Mesen.Config
 				case ControllerType.PceController:
 				case ControllerType.HoriTrack:
 				case ControllerType.BandaiHyperShot:
+				case ControllerType.SmsController:
 					return true;
 			}
 

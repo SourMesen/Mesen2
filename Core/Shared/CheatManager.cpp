@@ -25,6 +25,8 @@ optional<InternalCheatCode> CheatManager::TryConvertCode(CheatCode code)
 		case CheatType::GbGameGenie: return ConvertFromGbGameGenie(code.Code);
 		case CheatType::PceRaw: return ConvertFromPceRaw(code.Code);
 		case CheatType::PceAddress: return ConvertFromPceAddress(code.Code);
+		case CheatType::SmsGameGenie: return ConvertFromSmsGameGenie(code.Code);
+		case CheatType::SmsProActionReplay: return ConvertFromSmsProActionReplay(code.Code);
 
 		default: throw std::runtime_error("unsupported cheat type");
 	}
@@ -381,6 +383,51 @@ optional<InternalCheatCode> CheatManager::ConvertFromPceAddress(string code)
 	return cheat;
 }
 
+optional<InternalCheatCode> CheatManager::ConvertFromSmsGameGenie(string code)
+{
+	static regex _validator = regex("^[a-f0-9]{3}-[a-f0-9]{3}(-[a-f0-9]{3}){0,1}$", std::regex_constants::icase);
+	if(!std::regex_match(code, _validator)) {
+		return std::nullopt;
+	}
+
+	uint8_t value = (uint8_t)HexUtilities::FromHex(code.substr(0, 2));
+
+	int16_t compare = -1;
+	if(code.length() > 7) {
+		compare = (uint8_t)HexUtilities::FromHex(code.substr(8, 1) + code[10]);
+		compare = (uint8_t)(((compare >> 2) | ((compare & 0x03) << 6)) ^ 0xBA);
+	}
+
+	uint16_t address = (uint16_t)(HexUtilities::FromHex(code.substr(6, 1) + code[2] + code[4] + code[5]) ^ 0xF000);
+
+	InternalCheatCode cheat = {};
+	cheat.Type = CheatType::SmsGameGenie;
+	cheat.Cpu = CpuType::Sms;
+	cheat.Address = address;
+	cheat.Value = value;
+	cheat.Compare = compare;
+	return cheat;
+}
+
+optional<InternalCheatCode> CheatManager::ConvertFromSmsProActionReplay(string code)
+{
+	static regex _validator = regex("^[a-f0-9]{8}$", std::regex_constants::icase);
+	if(!std::regex_match(code, _validator)) {
+		return std::nullopt;
+	}
+
+	uint32_t codeValue = HexUtilities::FromHex(code);
+
+	InternalCheatCode cheat = {};
+	cheat.Type = CheatType::SmsProActionReplay;
+	cheat.Cpu = CpuType::Sms;
+	cheat.Address = (codeValue >> 8) & 0xFFFF;
+	cheat.Value = (uint8_t)(codeValue & 0xFF);
+	cheat.IsRamCode = true;
+	cheat.IsAbsoluteAddress = false;
+	return cheat;
+}
+
 vector<CheatCode> CheatManager::GetCheats()
 {
 	return _cheats;
@@ -432,3 +479,4 @@ template void CheatManager::ApplyCheat<CpuType::Nes>(uint32_t addr, uint8_t& val
 template void CheatManager::ApplyCheat<CpuType::Snes>(uint32_t addr, uint8_t& value);
 template void CheatManager::ApplyCheat<CpuType::Pce>(uint32_t addr, uint8_t& value);
 template void CheatManager::ApplyCheat<CpuType::Gameboy>(uint32_t addr, uint8_t& value);
+template void CheatManager::ApplyCheat<CpuType::Sms>(uint32_t addr, uint8_t& value);

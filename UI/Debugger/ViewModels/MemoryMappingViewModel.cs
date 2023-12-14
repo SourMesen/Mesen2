@@ -45,6 +45,8 @@ namespace Mesen.Debugger.ViewModels
 					CpuMappings = UpdateMappings(CpuMappings, GetGameboyCpuMappings(DebugApi.GetConsoleState<GbState>(ConsoleType.Gameboy)));
 				} else if(_cpuType == CpuType.Pce) {
 					CpuMappings = UpdateMappings(CpuMappings, GetPceCpuMappings(DebugApi.GetConsoleState<PceState>(ConsoleType.PcEngine).MemoryManager));
+				} else if(_cpuType == CpuType.Sms) {
+					CpuMappings = UpdateMappings(CpuMappings, GetSmsCpuMappings(DebugApi.GetConsoleState<SmsState>(ConsoleType.Sms).MemoryManager));
 				}
 			} catch { }
 		}
@@ -410,6 +412,69 @@ namespace Mesen.Debugger.ViewModels
 						Color = Color.FromRgb(222, 222, 222)
 					});
 				}
+			}
+
+			return mappings;
+		}
+
+
+		private List<MemoryMappingBlock> GetSmsCpuMappings(SmsMemoryManagerState state)
+		{
+			List<MemoryMappingBlock> mappings = new();
+
+			Dictionary<MemoryType, Color> mainColors = new() {
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.SmsWorkRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
+				{ MemoryType.SmsCartRam, Color.FromRgb(0xCD, 0xDC, 0xFA) },
+				{ MemoryType.SmsPrgRom, Color.FromRgb(0xC4, 0xE7, 0xD4) },
+				{ MemoryType.SmsBootRom, Color.FromRgb(222, 222, 222)  }
+			};
+
+			Dictionary<MemoryType, Color> altColors = new() {
+				{ MemoryType.None, Color.FromRgb(222, 222, 222) },
+				{ MemoryType.SmsWorkRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
+				{ MemoryType.SmsCartRam, Color.FromRgb(0xBD, 0xCC, 0xEA) },
+				{ MemoryType.SmsPrgRom, Color.FromRgb(0xA4, 0xD7, 0xB4) },
+				{ MemoryType.SmsBootRom, Color.FromRgb(222, 222, 222)  }
+			};
+
+			Dictionary<MemoryType, string> accessNotes = new() {
+				{ MemoryType.None, "RW" },
+				{ MemoryType.SmsWorkRam, "RW" },
+				{ MemoryType.SmsCartRam, "RW" },
+				{ MemoryType.SmsPrgRom, "R" },
+				{ MemoryType.SmsBootRom, "R" },
+			};
+
+			AddressInfo prevAddr = new();
+			for(int i = 0; i < 64; i++) {
+				AddressInfo absAddr = DebugApi.GetAbsoluteAddress(new AddressInfo() { Address = i * 0x400, Type = MemoryType.SmsMemory });
+				if(!mainColors.ContainsKey(absAddr.Type)) {
+					//Prevent crash when power cycling caused by core returning { 0, MemoryType.SnesMemory } (default value)
+					absAddr.Address = -1;
+				}
+
+				if(prevAddr.Type == absAddr.Type && prevAddr.Address + 0x400 == absAddr.Address && mappings[^1].Length < 0x4000) {
+					mappings[^1].Length += 0x400;
+					mappings[^1].Page = (absAddr.Address + 0x400 - mappings[^1].Length) / mappings[^1].Length;
+				} else if(absAddr.Address >= 0) {
+					MemoryType memType = absAddr.Type;
+					mappings.Add(new MemoryMappingBlock() {
+						Length = 0x400,
+						Name = memType.GetShortName(),
+						Page = absAddr.Address / 0x400,
+						Note = accessNotes[memType],
+						Color = (i % 4 == 0) ? mainColors[memType] : altColors[memType]
+					});
+				} else {
+					mappings.Add(new MemoryMappingBlock() {
+						Length = 0x400,
+						Name = "N/A",
+						Note = "OB",
+						Color = Color.FromRgb(222, 222, 222)
+					});
+				}
+				prevAddr = absAddr;
 			}
 
 			return mappings;

@@ -287,6 +287,13 @@ namespace Mesen.Utilities
 						case VideoLayer.Sprite2: return (() => ConfigManager.Config.PcEngine.DisableSpritesVdc2, (val) => ConfigManager.Config.PcEngine.DisableSpritesVdc2 = val);
 					}
 					break;
+
+				case ConsoleType.Sms:
+					switch(layer) {
+						case VideoLayer.Bg1: return (() => ConfigManager.Config.Sms.DisableBackground, (val) => ConfigManager.Config.Sms.DisableBackground = val);
+						case VideoLayer.Sprite1: return (() => ConfigManager.Config.Sms.DisableSprites, (val) => ConfigManager.Config.Sms.DisableSprites = val);
+					}
+					break;
 			}
 
 			return (null, null);
@@ -302,6 +309,7 @@ namespace Mesen.Utilities
 				ConfigManager.Config.Nes.ApplyConfig();
 				ConfigManager.Config.Gameboy.ApplyConfig();
 				ConfigManager.Config.PcEngine.ApplyConfig();
+				ConfigManager.Config.Sms.ApplyConfig();
 			}
 		}
 
@@ -320,10 +328,13 @@ namespace Mesen.Utilities
 			ConfigManager.Config.PcEngine.DisableBackgroundVdc2 = false;
 			ConfigManager.Config.PcEngine.DisableSprites = false;
 			ConfigManager.Config.PcEngine.DisableSpritesVdc2 = false;
+			ConfigManager.Config.Sms.DisableBackground = false;
+			ConfigManager.Config.Sms.DisableSprites = false;
 			ConfigManager.Config.Snes.ApplyConfig();
 			ConfigManager.Config.Nes.ApplyConfig();
 			ConfigManager.Config.Gameboy.ApplyConfig();
 			ConfigManager.Config.PcEngine.ApplyConfig();
+			ConfigManager.Config.Sms.ApplyConfig();
 
 			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
 		}

@@ -16,6 +16,7 @@ namespace Mesen.Controls
 	{
 		public static readonly StyledProperty<ControllerType> ControllerTypeProperty = AvaloniaProperty.Register<InputComboBox, ControllerType>(nameof(ControllerType), defaultBindingMode: BindingMode.TwoWay);
 		public static readonly StyledProperty<ControllerConfig> ConfigProperty = AvaloniaProperty.Register<InputComboBox, ControllerConfig>(nameof(Config), defaultBindingMode: BindingMode.TwoWay);
+		public static readonly StyledProperty<int> PortProperty = AvaloniaProperty.Register<InputComboBox, int>(nameof(Port), 0);
 
 		public static readonly StyledProperty<Enum[]> AvailableValuesProperty = AvaloniaProperty.Register<InputComboBox, Enum[]>(nameof(AvailableValues));
 		public static readonly StyledProperty<bool> SetupEnabledProperty = AvaloniaProperty.Register<InputComboBox, bool>(nameof(SetupEnabled));
@@ -36,6 +37,12 @@ namespace Mesen.Controls
 		{
 			get { return GetValue(SetupEnabledProperty); }
 			set { SetValue(SetupEnabledProperty, value); }
+		}
+		
+		public int Port
+		{
+			get { return GetValue(PortProperty); }
+			set { SetValue(PortProperty, value); }
 		}
 
 		public Enum[] AvailableValues
@@ -69,7 +76,7 @@ namespace Mesen.Controls
 			
 			ControllerConfigWindow wnd = new ControllerConfigWindow();
 			ControllerConfig cfg = Config.Clone();
-			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg, Config);
+			wnd.DataContext = new ControllerConfigViewModel(ControllerType, cfg, Config, Port);
 			
 			if(await wnd.ShowDialogAtPosition<bool>(btn.GetVisualRoot() as Visual, startPosition)) {
 				Config = cfg;

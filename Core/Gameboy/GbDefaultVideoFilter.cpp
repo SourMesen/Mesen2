@@ -7,6 +7,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/RewindManager.h"
 #include "Shared/SettingTypes.h"
+#include "Shared/ColorUtilities.h"
 
 GbDefaultVideoFilter::GbDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
@@ -51,9 +52,9 @@ void GbDefaultVideoFilter::InitLookupTable()
 			g = g2;
 			b = b2;
 		} else {
-			r = To8Bit(r);
-			g = To8Bit(g);
-			b = To8Bit(b);
+			r = ColorUtilities::Convert5BitTo8Bit(r);
+			g = ColorUtilities::Convert5BitTo8Bit(g);
+			b = ColorUtilities::Convert5BitTo8Bit(b);
 		}
 
 		if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
@@ -83,11 +84,6 @@ void GbDefaultVideoFilter::OnBeforeApplyFilter()
 		memset(_prevFrame, 0, 160 * 144 * sizeof(uint16_t));
 	}
 	_videoConfig = config;
-}
-
-uint8_t GbDefaultVideoFilter::To8Bit(uint8_t color)
-{
-	return (color << 3) + (color >> 2);
 }
 
 void GbDefaultVideoFilter::ApplyFilter(uint16_t* ppuOutputBuffer)

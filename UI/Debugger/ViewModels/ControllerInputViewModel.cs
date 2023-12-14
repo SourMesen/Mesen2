@@ -34,6 +34,8 @@ namespace Mesen.Debugger.ViewModels
 
 		public int ControllerIndex { get; }
 		public bool IsSnes { get; }
+		public bool HasSelectButton { get; }
+		public bool HasStartButton { get; }
 
 		[Obsolete("For designer only")]
 		public ControllerInputViewModel() : this(ConsoleType.Snes, 0) { }
@@ -42,6 +44,8 @@ namespace Mesen.Debugger.ViewModels
 		{
 			ControllerIndex = index + 1;
 			IsSnes = consoleType == ConsoleType.Snes;
+			HasSelectButton = consoleType != ConsoleType.Sms;
+			HasStartButton = consoleType != ConsoleType.Sms || index == 0;
 
 			if(Design.IsDesignMode) {
 				return;

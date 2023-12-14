@@ -8,9 +8,10 @@
 enum class EventFlags
 {
 	PreviousFrame = 1,
-	NesPpuFirstWrite = 2,
-	NesPpuSecondWrite = 4,
-	WithTargetMemory = 8
+	RegFirstWrite = 2,
+	RegSecondWrite = 4,
+	WithTargetMemory = 8,
+	SmsVdpPaletteWrite = 16
 };
 
 struct DebugEventInfo

@@ -19,6 +19,8 @@ enum class CheatType : uint8_t
 	SnesProActionReplay,
 	PceRaw,
 	PceAddress,
+	SmsProActionReplay,
+	SmsGameGenie
 };
 
 struct InternalCheatCode
@@ -66,6 +68,9 @@ private:
 	optional<InternalCheatCode> ConvertFromNesProActionRocky(string code);
 	optional<InternalCheatCode> ConvertFromNesCustomCode(string code);
 
+	optional<InternalCheatCode> ConvertFromSmsGameGenie(string code);
+	optional<InternalCheatCode> ConvertFromSmsProActionReplay(string code);
+
 	__forceinline constexpr int GetBankShift(CpuType cpuType)
 	{
 		switch(cpuType) {
@@ -73,6 +78,7 @@ private:
 			case CpuType::Gameboy: return 8;
 			case CpuType::Nes: return 8;
 			case CpuType::Pce: return 13;
+			case CpuType::Sms: return 8;
 			default: throw std::runtime_error("unsupported cpu type");
 		}
 	}

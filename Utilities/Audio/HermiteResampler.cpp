@@ -69,6 +69,9 @@ template<bool addMode>
 uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t* out, size_t maxOutSampleCount)
 {
 	maxOutSampleCount *= 2;
+	if(_pendingSamples.size() >= maxOutSampleCount) {
+		_pendingSamples.clear();
+	}
 
 	uint32_t outPos = (uint32_t)_pendingSamples.size();
 	for(uint32_t i = 0; i < outPos; i += 2) {

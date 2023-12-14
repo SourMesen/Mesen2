@@ -103,6 +103,15 @@ void EmuSettings::Serialize(Serializer& s)
 			SV(_pce.Port1SubPorts[4].Type);
 			break;
 
+		case ConsoleType::Sms:
+			SV(_sms.RamPowerOnState);
+			SV(_sms.Port1.Type);
+			SV(_sms.Port2.Type);
+			SV(_sms.Region);
+			SV(_sms.Revision);
+			SV(_sms.EnableFmAudio);
+			break;
+
 		default:
 			throw std::runtime_error("unsupported console type");
 	}
@@ -213,6 +222,16 @@ void EmuSettings::SetPcEngineConfig(PcEngineConfig& config)
 PcEngineConfig& EmuSettings::GetPcEngineConfig()
 {
 	return _pce;
+}
+
+void EmuSettings::SetSmsConfig(SmsConfig& config)
+{
+	_sms = config;
+}
+
+SmsConfig& EmuSettings::GetSmsConfig()
+{
+	return _sms;
 }
 
 void EmuSettings::SetGameConfig(GameConfig& config)
@@ -343,6 +362,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case RomFormat::Gbs:
 		case RomFormat::Nsf:
 		case RomFormat::PceHes:
+		case RomFormat::GameGear:
 			//No overscan for music players
 			return OverscanDimensions {};
 
@@ -366,6 +386,7 @@ OverscanDimensions EmuSettings::GetOverscan()
 		case ConsoleType::Snes: return _snes.Overscan;
 		case ConsoleType::Nes: return _emu->GetRegion() == ConsoleRegion::Ntsc ? _nes.NtscOverscan : _nes.PalOverscan;
 		case ConsoleType::PcEngine: return _pce.Overscan;
+		case ConsoleType::Sms: return  _emu->GetRegion() == ConsoleRegion::Ntsc ? _sms.NtscOverscan : _sms.PalOverscan;
 
 		case ConsoleType::Gameboy:
 			break;
@@ -471,21 +492,10 @@ bool EmuSettings::HasRandomPowerOnState(ConsoleType consoleType)
 		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState == RamState::Random;
 		case ConsoleType::Nes: return _nes.RamPowerOnState == RamState::Random || _nes.RandomizeCpuPpuAlignment || _nes.RandomizeMapperPowerOnState;
 		case ConsoleType::PcEngine: return _pce.RamPowerOnState == RamState::Random || _pce.EnableRandomPowerOnState;
+		case ConsoleType::Sms: return _sms.RamPowerOnState == RamState::Random;
 	}
 
 	return false;
-}
-
-RamState EmuSettings::GetDefaultRamPowerOnState(ConsoleType consoleType)
-{
-	switch(consoleType) {
-		case ConsoleType::Snes: return _snes.RamPowerOnState;
-		case ConsoleType::Gameboy: return _gameboy.RamPowerOnState;
-		case ConsoleType::Nes: return _nes.RamPowerOnState;
-		case ConsoleType::PcEngine: return _pce.RamPowerOnState;
-	}
-
-	return RamState::AllZeros;
 }
 
 void EmuSettings::InitializeRam(RamState state, void* data, uint32_t length)

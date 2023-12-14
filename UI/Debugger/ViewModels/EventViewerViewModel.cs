@@ -235,6 +235,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Nes => Config.NesConfig,
 				CpuType.Gameboy => Config.GbConfig,
 				CpuType.Pce => Config.PceConfig,
+				CpuType.Sms => Config.SmsConfig,
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -288,6 +289,7 @@ namespace Mesen.Debugger.ViewModels
 				CpuType.Nes => new PixelPoint(evt.Cycle * 2, (evt.Scanline + 1) * 2),
 				CpuType.Gameboy => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 				CpuType.Pce => new PixelPoint(evt.Cycle, evt.Scanline * 2),
+				CpuType.Sms => new PixelPoint(evt.Cycle * 2, evt.Scanline * 2),
 				_ => throw new Exception("Invalid cpu type")
 			};
 		}
@@ -326,6 +328,11 @@ namespace Mesen.Debugger.ViewModels
 					result.DisplayValue = $"{result.X}, {result.Y / 2}";
 					break;
 
+				case CpuType.Sms:
+					result.X = p.X / 2 * 2;
+					result.DisplayValue = $"{result.X / 2}, {result.Y / 2}";
+					break;
+
 				default:
 					throw new Exception("Invalid cpu type");
 			}
@@ -343,6 +350,8 @@ namespace Mesen.Debugger.ViewModels
 				DebugApi.SetEventViewerConfig(CpuType, gbCfg.ToInterop());
 			} else if(ConsoleConfig is PceEventViewerConfig pceCfg) {
 				DebugApi.SetEventViewerConfig(CpuType, pceCfg.ToInterop());
+			} else if(ConsoleConfig is SmsEventViewerConfig smsCfg) {
+				DebugApi.SetEventViewerConfig(CpuType, smsCfg.ToInterop());
 			}
 		}
 
@@ -378,9 +387,9 @@ namespace Mesen.Debugger.ViewModels
 			if(evt.Flags.HasFlag(EventFlags.PreviousFrame)) {
 				details.Add("Previous frame");
 			}
-			if(evt.Flags.HasFlag(EventFlags.NesPpuSecondWrite)) {
+			if(evt.Flags.HasFlag(EventFlags.RegSecondWrite)) {
 				details.Add("Second register write");
-			} else if(evt.Flags.HasFlag(EventFlags.NesPpuFirstWrite)) {
+			} else if(evt.Flags.HasFlag(EventFlags.RegFirstWrite)) {
 				details.Add("First register write");
 			}
 			if(evt.Flags.HasFlag(EventFlags.HasTargetMemory)) {
@@ -508,8 +517,13 @@ namespace Mesen.Debugger.ViewModels
 			string address = "";
 			if(evt.Type == DebugEventType.Register) {
 				address += "$" + evt.Operation.Address.ToString("X4");
+				string regName = evt.GetRegisterName();
 				if(evt.RegisterId >= 0) {
-					address += $" ({evt.GetRegisterName()} - ${evt.RegisterId:X2})";
+					if(string.IsNullOrEmpty(regName)) {
+						address += $" (${evt.RegisterId:X2})";
+					} else {
+						address += $" ({regName} - ${evt.RegisterId:X2})";
+					}
 				}
 			}
 			Address = address;

@@ -36,6 +36,7 @@
 #include "NES/NesConsole.h"
 #include "Gameboy/Gameboy.h"
 #include "PCE/PceConsole.h"
+#include "SMS/SmsConsole.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/BaseEventManager.h"
 #include "Debugger/DebugTypes.h"
@@ -550,6 +551,7 @@ void Emulator::TryLoadRom(VirtualFile& romFile, LoadRomResult& result, unique_pt
 	TryLoadRom<SnesConsole>(romFile, result, console, useFileSignature);
 	TryLoadRom<Gameboy>(romFile, result, console, useFileSignature);
 	TryLoadRom<PceConsole>(romFile, result, console, useFileSignature);
+	TryLoadRom<SmsConsole>(romFile, result, console, useFileSignature);
 }
 
 template<typename T>
@@ -1100,14 +1102,6 @@ void Emulator::ProcessAudioPlayerAction(AudioPlayerActionParams p)
 	}
 }
 
-template<CpuType type>
-void Emulator::ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
-{
-	if(_debugger) {
-		_debugger->ProcessInterrupt<type>(originalPc, currentPc, forNmi);
-	}
-}
-
 void Emulator::ProcessEvent(EventType type, std::optional<CpuType> cpuType)
 {
 	if(_debugger) {
@@ -1129,12 +1123,6 @@ void Emulator::BreakIfDebugging(CpuType sourceCpu, BreakSource source)
 		_debugger->BreakImmediately(sourceCpu, source);
 	}
 }
-
-template void Emulator::ProcessInterrupt<CpuType::Snes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-template void Emulator::ProcessInterrupt<CpuType::Sa1>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-template void Emulator::ProcessInterrupt<CpuType::Gameboy>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-template void Emulator::ProcessInterrupt<CpuType::Nes>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
-template void Emulator::ProcessInterrupt<CpuType::Pce>(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 
 template void Emulator::AddDebugEvent<CpuType::Snes>(DebugEventType evtType);
 template void Emulator::AddDebugEvent<CpuType::Gameboy>(DebugEventType evtType);

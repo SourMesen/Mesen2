@@ -230,7 +230,7 @@ namespace Mesen.Controls
 			} else if(min == null && val.CompareTo(Convert.ChangeType(0, val.GetType())) < 0) {
 				val = 0;
 			}
-			if(Value != val) {
+			if(!object.Equals(Value, val)) {
 				Value = val;
 			}
 		}

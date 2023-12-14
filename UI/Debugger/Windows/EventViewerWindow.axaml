@@ -44,6 +44,9 @@
 		<DataTemplate DataType="{x:Type cfg:PceEventViewerConfig}">
 			<v:PceEventViewerConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type cfg:SmsEventViewerConfig}">
+			<v:SmsEventViewerConfigView />
+		</DataTemplate>
 	</Window.DataTemplates>
 	
 	<DockPanel>

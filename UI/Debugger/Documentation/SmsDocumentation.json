@@ -1,0 +1,391 @@
+{
+	"instructions": [
+		{
+			"op": "nop",
+			"name": "NOP - No operation",
+			"description": ""
+		},
+		{
+			"op": "ld",
+			"name": "LD - Load",
+			"description": "LD destination, source\nLoads the destination with the value specified by the source."
+		},
+		{
+			"op": "inc",
+			"name": "INC - Increment",
+			"description": "Increments the specified value",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "dec",
+			"name": "DEC - Decrement",
+			"description": "Decrements the specified value",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rlca",
+			"name": "RLCA - Rotate Left Circular Accumulator",
+			"description": "Rotates the accumulator's bits to the left. MSB is moved to the LSB, and also set as the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "F3", "F5" ]
+		},
+		{
+			"op": "rla",
+			"name": "RLA - Rotate Left Accumulator",
+			"description": "Rotates the accumulator's bits to the left. MSB is moved to the carry flag, and the LSB is set to the value of the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "F3", "F5" ]
+		},
+		{
+			"op": "rrca",
+			"name": "RRCA - Rotate Right Circular Accumulator",
+			"description": "Rotates the accumulator's bits to the right. LSB is moved to the MSB, and also set as the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "F3", "F5" ]
+		},
+		{
+			"op": "rra",
+			"name": "RRA - Rotate Right Accumulator",
+			"description": "Rotates the accumulator's bits to the right. LSB is moved to the carry flag, and the MSB is set to the value of the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "F3", "F5" ]
+		},
+		{
+			"op": "add",
+			"name": "ADD - Add",
+			"description": "Adds the value of both operands together and stores the result in the first operand.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "adc",
+			"name": "ADC - Add With Carry",
+			"description": "Adds the accumulator, carry flag and the second operand together. Stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "jr",
+			"name": "JR - Jump Relative",
+			"description": "Jumps to the relative address specified. When a condition is specified, only jumps if the condition is true."
+		},
+		{
+			"op": "daa",
+			"name": "DAA - Decimal Adjust Accumulator",
+			"description": "Adjusts the value of the accumulator for BCD addition and subtraction operations.",
+			"flags": [ "Zero", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "scf",
+			"name": "SCF - Set Carry Flag",
+			"description": "Sets the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ccf",
+			"name": "CCF - Complement Carry Flag",
+			"description": "Inverts the value of the carry flag.",
+			"flags": [ "Negative", "HalfCarry", "Carry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cpl",
+			"name": "CPL - Complement (Accumulator)",
+			"description": "Inverts all bits in the accumulator.",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "halt",
+			"name": "HALT - Halt",
+			"description": "Halts the CPU until the next interrupt or until reset."
+		},
+		{
+			"op": "sub",
+			"name": "SUB - Subtract",
+			"description": "Subtract the value of the second operand from the accumulator and stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "sbc",
+			"name": "SBC - Subtract With Carry",
+			"description": "Subtract the value of the second operand and the carry flag from the accumulator and stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "and",
+			"name": "AND - Bitwise AND",
+			"description": "Performs a bitwise AND operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "or",
+			"name": "OR - Bitwise OR",
+			"description": "Performs a bitwise OR operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "xor",
+			"name": "XOR - Bitwise XOR",
+			"description": "Performs a bitwise XOR operation between the operand and the value of the accumulator and stores the result in the accumulator.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cp",
+			"name": "CP - Compare",
+			"description": "The content of the operand is compared with the accumulator (A - operand) and flags are updated.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ret",
+			"name": "RET - Return",
+			"description": "Returns from a routine called by CALL. When a condition is specified, only returns if the condition is true."
+		},
+		{
+			"op": "pop",
+			"name": "POP - Pop",
+			"description": "Pops 2 bytes from the stack, stores them in the operand."
+		},
+		{
+			"op": "jp",
+			"name": "JP - Jump",
+			"description": "Jumps to the specified address. When a condition is specified, only jumps if the condition is true."
+		},
+		{
+			"op": "call",
+			"name": "CALL - Call",
+			"description": "Calls a routine. When a condition is specified, only jumps to the routine if the condition is true."
+		},
+		{
+			"op": "push",
+			"name": "PUSH - Push",
+			"description": "Pushes the value of the operand (2 bytes) to the stack."
+		},
+		{
+			"op": "rst",
+			"name": "RST - Restart",
+			"description": "Calls the routine defined at the predefined address (operand)."
+		},
+		{
+			"op": "reti",
+			"name": "RETI - Return from Interrupt",
+			"description": "Returns from an interrupt handler."
+		},
+		{
+			"op": "ei",
+			"name": "EI - Enable Interrupts",
+			"description": "Enables interrupts."
+		},
+		{
+			"op": "di",
+			"name": "DI - Disable Interrupts",
+			"description": "Disables interrupts."
+		},
+		{
+			"op": "ldh",
+			"name": "LDH - Load High",
+			"description": "Reads (or writes) value from \"high RAM\" at $FFxx, based on the operands."
+		},
+		{
+			"op": "rlc",
+			"name": "RLC - Rotate Left Carry",
+			"description": "Rotates the operand's bits to the left. MSB is moved to the LSB, and also set as the carry flag.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rrc",
+			"name": "RRC - Rotate Right Carry",
+			"description": "Rotates the operand's bits to the right. LSB is moved to the MSB, and also set as the carry flag.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rl",
+			"name": "RL - Rotate Left",
+			"description": "Rotates the operand's bits to the left. MSB is moved to the carry flag, and the LSB is set to the value of the carry flag.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rr",
+			"name": "RR - Rotate Right",
+			"description": "Rotates the operand's bits to the right. LSB is moved to the carry flag, and the MSB is set to the value of the carry flag.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "sla",
+			"name": "SLA - Shift Left Arithmetic",
+			"description": "Shifts content of operand to the left. MSB is moved to the carry flag, LSB is set to 0.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "sra",
+			"name": "SRA - Shift Right Arithmetic",
+			"description": "Shifts content of operand to the right. LSB is moved to the carry flag, MSB does not change.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "srl",
+			"name": "SRL - Shift Right Logical",
+			"description": "Shifts content of operand to the right. LSB is moved to the carry flag, MSB is set to 0.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "sll",
+			"name": "SLL - Shift Left Logical",
+			"description": "Shifts content of operand to the left. MSB is moved to the carry flag, LSB is set to 1.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "bit",
+			"name": "BIT - Test Bit",
+			"description": "Tests the specified bit of the specified value. Sets zero flag if bit is clear, clears it if set.",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "res",
+			"name": "RES - Reset Bit",
+			"description": "Clears the specified bit of the operand value."
+		},
+		{
+			"op": "set",
+			"name": "SET - Set Bit",
+			"description": "Sets the specified bit of the operand value."
+		},
+		{
+			"op": "exx",
+			"name": "EXX - Exchange",
+			"description": ""
+		},
+		{
+			"op": "ex",
+			"name": "EX - Exchange",
+			"description": ""
+		},
+		{
+			"op": "in",
+			"name": "IN - Input",
+			"description": "",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "out",
+			"name": "OUT - Output",
+			"description": ""
+		},
+		{
+			"op": "djnz",
+			"name": "DJNZ - Decrement and Jump if Not Zero",
+			"description": ""
+		},
+		{
+			"op": "im",
+			"name": "IM - Interrupt Mode",
+			"description": ""
+		},
+		{
+			"op": "neg",
+			"name": "NEG - Negate",
+			"description": "",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Carry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rrd",
+			"name": "RRD - Rotate Right Decimal",
+			"description": "",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "rld",
+			"name": "RLD - Rotate Left Decimal",
+			"description": "",
+			"flags": [ "Zero", "Negative", "HalfCarry", "Sign", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ldi",
+			"name": "LDI - Load and Increment",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ldir",
+			"name": "LDIR - Load, Increment and Repeat",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ldd",
+			"name": "LDD - Load and Decrement",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "lddr",
+			"name": "LDDR - Load, Decrement and Repeat",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cpi",
+			"name": "CPI - Compare and Increment",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cpir",
+			"name": "CPIR - Compare, Increment and Repeat",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cpd",
+			"name": "CPD - Compare and Decrement",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "cpdr",
+			"name": "CPDR - Compare, Decrement and Repeat",
+			"description": "",
+			"flags": [ "Negative", "HalfCarry", "OverflowParity", "F3", "F5" ]
+		},
+		{
+			"op": "ini",
+			"name": "INI - Input and Increment",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "inir",
+			"name": "INIR - Input, Increment and Repeat",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "ind",
+			"name": "IND - Input and Decrement",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "indr",
+			"name": "INDR - Input, Decrement and Repeat",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "outi",
+			"name": "OUTI - Output and Increment",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "otir",
+			"name": "OTIR - Output, Increment and Repeat",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "outd",
+			"name": "OUTD - Output and Decrement",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		},
+		{
+			"op": "otdr",
+			"name": "OTDR - Output, Decrement and Repeat",
+			"description": "",
+			"flags": [ "Zero", "Negative", "Sign", "F3", "F5" ]
+		}
+	]
+}

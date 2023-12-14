@@ -62,9 +62,9 @@ void NesEventManager::AddEvent(DebugEventType type, MemoryOperationInfo& operati
 			case 6:
 				//2005/2006 PPU register writes, mark as 2nd write when needed
 				if(state.WriteToggle) {
-					evt.Flags = (uint32_t)EventFlags::NesPpuSecondWrite;
+					evt.Flags = (uint32_t)EventFlags::RegSecondWrite;
 				} else {
-					evt.Flags = (uint32_t)EventFlags::NesPpuFirstWrite;
+					evt.Flags = (uint32_t)EventFlags::RegFirstWrite;
 				}
 				break;
 

@@ -332,6 +332,7 @@ namespace Mesen.Debugger.ViewModels
 					break;
 
 				case CpuType.Nes:
+				case CpuType.Sms:
 					Tabs = new List<TilemapViewerTab>() {
 						new() { Title = "", Layer = 0 }
 					};
@@ -547,7 +548,7 @@ namespace Mesen.Debugger.ViewModels
 
 			entries.AddPicture("Tile", ViewerBitmap, 6, cropRect);
 
-			if(_data.TilemapInfo.Bpp <= 4) {
+			if(_data.TilemapInfo.Bpp >= 2 && _data.TilemapInfo.Bpp <= 4) {
 				int paletteSize = (int)Math.Pow(2, _data.TilemapInfo.Bpp);
 				int paletteIndex = tileInfo.PaletteIndex >= 0 ? tileInfo.PaletteIndex : 0;
 				entries.AddEntry("Palette", new TooltipPaletteEntry(paletteIndex, paletteSize, _data.RgbPalette, _data.RawPalette, _data.RawFormat));

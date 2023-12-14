@@ -44,6 +44,9 @@
 		<DataTemplate DataType="{x:Type vm:PceConfigViewModel}">
 			<v:PceConfigView />
 		</DataTemplate>
+		<DataTemplate DataType="{x:Type vm:SmsConfigViewModel}">
+			<v:SmsConfigView />
+		</DataTemplate>
 		<DataTemplate DataType="{x:Type vm:PreferencesConfigViewModel}">
 			<v:PreferencesConfigView />
 		</DataTemplate>
@@ -132,6 +135,15 @@
 					<StackPanel Orientation="Horizontal">
 						<Image Source="/Assets/PceIcon.png" Margin="0 0 10 0" />
 						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabPcEngine}" />
+					</StackPanel>
+				</TabItem.Header>
+			</TabItem>
+
+			<TabItem Content="{CompiledBinding Sms}">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="/Assets/SmsIcon.png" Margin="0 0 10 0" />
+						<TextBlock VerticalAlignment="Center" Text="{l:Translate tabSms}" />
 					</StackPanel>
 				</TabItem.Header>
 			</TabItem>

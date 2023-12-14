@@ -23,6 +23,7 @@ public static class OpCodeHelper
 		InitSnesDocumentation();
 		InitPceDocumentation();
 		InitGbDocumentation();
+		InitSmsDocumentation();
 	}
 
 	public static DynamicTooltip? GetTooltip(CodeSegmentInfo seg)
@@ -114,6 +115,12 @@ public static class OpCodeHelper
 		InitDocumentation(CpuType.Gameboy, ReadDocumentationFile("GbDocumentation.json"));
 	}
 
+	private static void InitSmsDocumentation()
+	{
+		//TODOSMS add missing descriptions, etc.
+		InitDocumentation(CpuType.Sms, ReadDocumentationFile("SmsDocumentation.json"));
+	}
+
 	private static DocFileFormat ReadDocumentationFile(string filename)
 	{
 		using StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Mesen.Debugger.Documentation." + filename)!);
@@ -158,7 +165,11 @@ public static class OpCodeHelper
 		Index,
 		Emulation,
 		HalfCarry,
-		DirectPage
+		DirectPage,
+		Sign,
+		OverflowParity,
+		F3,
+		F5
 	}
 
 	private class DocFileFormat

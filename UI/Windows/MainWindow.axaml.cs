@@ -223,6 +223,7 @@ namespace Mesen.Windows
 				
 				//InitializeDefaults must be after InitializeEmu, otherwise keybindings will be empty
 				ConfigManager.Config.InitializeDefaults();
+				ConfigManager.Config.UpgradeConfig();
 
 				_listener = new NotificationListener();
 				_listener.OnNotification += OnNotification;

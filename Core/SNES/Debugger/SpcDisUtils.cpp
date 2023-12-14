@@ -170,10 +170,10 @@ EffectiveAddressInfo SpcDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Sne
 			EffectiveAddressInfo result;
 			if(prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 1) {
 				//For 16-bit read/writes, return the first address
-				result.Address = prevOpInfo.Address;
+				result.Address = { (int)prevOpInfo.Address, prevOpInfo.MemType };
 				result.ValueSize = 2;
 			} else {
-				result.Address = opInfo.Address;
+				result.Address = { (int)opInfo.Address, opInfo.MemType };
 				result.ValueSize = 1;
 			}
 			result.ShowAddress = _needAddress[info.GetOpCode()];

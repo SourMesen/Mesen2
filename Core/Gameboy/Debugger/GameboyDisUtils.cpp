@@ -290,7 +290,7 @@ CdlFlags::CdlFlags GameboyDisUtils::GetOpFlags(uint8_t opCode, uint16_t pc, uint
 		case 0xEF: //RST 28H
 		case 0xF7: //RST 30H
 		case 0xFF: //RST 38H
-			return CdlFlags::SubEntryPoint;
+			return (pc != prevPc + GameboyDisUtils::GetOpSize(opCode)) ? CdlFlags::SubEntryPoint : CdlFlags::None;
 
 		case 0x18: //JR r8
 		case 0xC3: //JP a16
@@ -303,7 +303,7 @@ CdlFlags::CdlFlags GameboyDisUtils::GetOpFlags(uint8_t opCode, uint16_t pc, uint
 		case 0xCA: //JP Z,a16
 		case 0xD2: //JP NC,a16
 		case 0xDA: //JP C,a16
-			return pc != prevPc + GameboyDisUtils::GetOpSize(opCode) ? CdlFlags::JumpTarget : CdlFlags::None;
+			return (pc != prevPc + GameboyDisUtils::GetOpSize(opCode)) ? CdlFlags::JumpTarget : CdlFlags::None;
 
 		default:
 			return CdlFlags::None;

@@ -25,6 +25,8 @@ namespace Mesen.Debugger.Labels
 			} 
 			if(cpuTypes.Contains(CpuType.Pce)) {
 				SetPceDefaultLabels();
+			} else if(cpuTypes.Contains(CpuType.Sms)) {
+				SetSmsDefaultLabels();
 			}
 		}
 
@@ -357,6 +359,18 @@ namespace Mesen.Debugger.Labels
 
 			LabelManager.SetLabel(0x1402, MemoryType.PceMemory, "IRQ_DISABLE_1402", "IRQ Disable toggle");
 			LabelManager.SetLabel(0x1403, MemoryType.PceMemory, "IRQ_STATUS_1403", "IRQ Status (Read); Acknowledge Timer interrupt (write)");
+		}
+
+		private static void SetSmsDefaultLabels()
+		{
+			LabelManager.SetLabel(0x3E, MemoryType.SmsPort, "MEMORY_ENABLE_3E", "");
+			LabelManager.SetLabel(0x3F, MemoryType.SmsPort, "IO_3F", "");
+			LabelManager.SetLabel(0x7E, MemoryType.SmsPort, "VDP_V_COUNTER_7E", "");
+			LabelManager.SetLabel(0x7F, MemoryType.SmsPort, "PSG_7F", "");
+			LabelManager.SetLabel(0xBE, MemoryType.SmsPort, "VDP_DATA_BE", "");
+			LabelManager.SetLabel(0xBF, MemoryType.SmsPort, "VDP_CMD_STATUS_BF", "");
+			LabelManager.SetLabel(0xDC, MemoryType.SmsPort, "JOY1_DC", "");
+			LabelManager.SetLabel(0xDD, MemoryType.SmsPort, "JOY2_DD", "");
 		}
 	}
 }

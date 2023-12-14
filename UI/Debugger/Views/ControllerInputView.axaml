@@ -53,8 +53,8 @@
 				<Button CommandParameter="Down" Canvas.Top="20" Canvas.Left="10" Classes.selected="{CompiledBinding ButtonDown}"  />
 				<Button CommandParameter="Right" Canvas.Top="12" Canvas.Left="18" Classes.selected="{CompiledBinding ButtonRight}" />
 
-				<Button CommandParameter="Select" Canvas.Top="20" Canvas.Left="32" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonSelect}" CornerRadius="3"  />
-				<Button CommandParameter="Start" Canvas.Top="20" Canvas.Left="45" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonStart}" CornerRadius="3" />
+				<Button IsVisible="{CompiledBinding HasSelectButton}" CommandParameter="Select" Canvas.Top="20" Canvas.Left="32" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonSelect}" CornerRadius="3"  />
+				<Button IsVisible="{CompiledBinding HasStartButton}" CommandParameter="Start" Canvas.Top="20" Canvas.Left="45" Width="11" Height="7" Classes.selected="{CompiledBinding ButtonStart}" CornerRadius="3" />
 			</Canvas>
 			<Canvas IsVisible="{CompiledBinding !IsSnes}" Width="25" Height="15" HorizontalAlignment="Right" VerticalAlignment="Bottom">
 				<Button CommandParameter="B" Canvas.Top="0" Canvas.Left="0" Classes.selected="{CompiledBinding ButtonB}" CornerRadius="6" Width="10" Height="10" />

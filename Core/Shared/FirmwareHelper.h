@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Shared/Emulator.h"
+#include "Shared/MessageManager.h"
 #include "Shared/NotificationManager.h"
 #include "Utilities/FolderUtilities.h"
 
@@ -345,6 +346,18 @@ public:
 		}
 
 		MessageManager::DisplayMessage("Error", "Could not find firmware file for the Games Express Card");
+		return false;
+	}
+
+	static bool LoadSmsBios(Emulator* emu, vector<uint8_t>& biosRom, bool forGameGear)
+	{
+		string filename = forGameGear ? "bios.gg" : "bios.sms";
+		string path = FolderUtilities::CombinePath(FolderUtilities::GetFirmwareFolder(), filename);
+		VirtualFile firmware(path);
+		if(firmware.IsValid()) {
+			firmware.ReadFile(biosRom);
+			return true;
+		}
 		return false;
 	}
 };

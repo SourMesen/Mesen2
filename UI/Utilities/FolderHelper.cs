@@ -14,7 +14,8 @@ namespace Mesen.Utilities
 			".sfc", ".smc", ".fig", ".swc", ".bs",
 			".gb", ".gbc",
 			".nes", ".unif", ".unf", ".fds", ".studybox",
-			".pce", ".sgx", ".cue"
+			".pce", ".sgx", ".cue",
+			".sms", ".gg", ".sg"
 		};
 
 		public static bool IsRomFile(string path)

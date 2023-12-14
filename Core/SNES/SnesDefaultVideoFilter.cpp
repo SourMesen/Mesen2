@@ -5,6 +5,7 @@
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
+#include "Shared/ColorUtilities.h"
 
 SnesDefaultVideoFilter::SnesDefaultVideoFilter(Emulator* emu) : BaseVideoFilter(emu)
 {
@@ -47,9 +48,9 @@ void SnesDefaultVideoFilter::InitLookupTable()
 	InitConversionMatrix(config.Hue, config.Saturation);
 
 	for(int rgb555 = 0; rgb555 < 0x8000; rgb555++) {
-		uint8_t r = To8Bit(rgb555 & 0x1F);
-		uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
-		uint8_t b = To8Bit((rgb555 >> 10) & 0x1F);
+		uint8_t r = ColorUtilities::Convert5BitTo8Bit(rgb555 & 0x1F);
+		uint8_t g = ColorUtilities::Convert5BitTo8Bit((rgb555 >> 5) & 0x1F);
+		uint8_t b = ColorUtilities::Convert5BitTo8Bit((rgb555 >> 10) & 0x1F);
 
 		if(config.Hue != 0 || config.Saturation != 0 || config.Brightness != 0 || config.Contrast != 0) {
 			ApplyColorOptions(r, g, b, config.Brightness, config.Contrast);
@@ -73,20 +74,6 @@ void SnesDefaultVideoFilter::OnBeforeApplyFilter()
 	_forceFixedRes = snesConfig.ForceFixedResolution;
 	_blendHighRes = snesConfig.BlendHighResolutionModes;
 	_videoConfig = config;
-}
-
-uint8_t SnesDefaultVideoFilter::To8Bit(uint8_t color)
-{
-	return (color << 3) + (color >> 2);
-}
-
-uint32_t SnesDefaultVideoFilter::ToArgb(uint16_t rgb555)
-{
-	uint8_t b = To8Bit(rgb555 >> 10);
-	uint8_t g = To8Bit((rgb555 >> 5) & 0x1F);
-	uint8_t r = To8Bit(rgb555 & 0x1F);
-
-	return 0xFF000000 | (r << 16) | (g << 8) | b;
 }
 
 void SnesDefaultVideoFilter::ApplyFilter(uint16_t *ppuOutputBuffer)

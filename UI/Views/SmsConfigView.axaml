@@ -1,0 +1,117 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:dc="using:Mesen.Debugger.Controls"
+	xmlns:cfg="using:Mesen.Config"
+	xmlns:v="using:Mesen.Views"
+	xmlns:l="using:Mesen.Localization"
+	mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="350"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:SmsConfigViewModel"
+	x:Class="Mesen.Views.SmsConfigView"
+>
+	<Design.DataContext>
+		<vm:SmsConfigViewModel />
+	</Design.DataContext>
+
+	<TabControl TabStripPlacement="Top" SelectedIndex="{CompiledBinding SelectedTab}">
+		<TabItem Header="{l:Translate tpgGeneral}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
+						<TextBlock Text="{l:Translate lblRegion}"/>
+						<c:EnumComboBox
+							SelectedItem="{CompiledBinding Config.Region}"
+							Grid.Column="1"
+							MinWidth="130"
+							AvailableValues="{CompiledBinding AvailableRegions}"
+						/>
+					</Grid>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		<TabItem Header="{l:Translate tpgAudio}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<CheckBox Content="{l:Translate chkEnableFmAudio}" IsChecked="{CompiledBinding Config.EnableFmAudio}" />
+					<c:GroupBox Header="{l:Translate grpVolume}" HorizontalAlignment="Left">
+						<StackPanel Orientation="Horizontal" Height="150">
+							<StackPanel.Styles>
+								<Style Selector="c|MesenSlider">
+									<Setter Property="Minimum" Value="0" />
+									<Setter Property="Maximum" Value="100" />
+									<Setter Property="Orientation" Value="Vertical" />
+									<Setter Property="Margin" Value="5 0" />
+								</Style>
+							</StackPanel.Styles>
+
+							<c:MesenSlider Text="{l:Translate lblChannel1}" Value="{CompiledBinding Config.Tone1Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel2}" Value="{CompiledBinding Config.Tone2Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel3}" Value="{CompiledBinding Config.Tone3Vol}" />
+							<c:MesenSlider Text="{l:Translate lblChannel4}" Value="{CompiledBinding Config.NoiseVol}" />
+							<c:MesenSlider
+								Text="{l:Translate lblChannel5}"
+								IsEnabled="{CompiledBinding Config.EnableFmAudio}"
+								Value="{CompiledBinding Config.FmAudioVolume}"
+							/>
+						</StackPanel>
+					</c:GroupBox>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgEmulation}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblDeveloperSettings}" Margin="0">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblRamPowerOnState}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.RamPowerOnState}" Width="200" />
+						</StackPanel>
+					</c:OptionSection>
+					<c:OptionSection Header="{l:Translate lblMiscSettings}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{l:Translate lblSmsRevision}" />
+							<c:EnumComboBox SelectedItem="{CompiledBinding Config.Revision}" Width="200" />
+						</StackPanel>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+
+		<TabItem Header="{l:Translate tpgInput}">
+			<v:SmsInputConfigView DataContext="{CompiledBinding Input}" />
+		</TabItem>
+		
+		<TabItem Header="{l:Translate tpgVideo}">
+			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+				<StackPanel>
+					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
+						<CheckBox IsChecked="{CompiledBinding Config.UseSgPalette}" Content="{l:Translate chkUseSgPalette}" />
+						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
+						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableSprites}" Text="{l:Translate chkDisableSprites}" />
+					</c:OptionSection>
+					
+					<c:OptionSection Header="{l:Translate lblOverscan}" HorizontalAlignment="Left">
+						<Border BorderBrush="{StaticResource MesenGrayBorderColor}" BorderThickness="1" Margin="0 0 0 5">
+							<TabControl>
+								<TabItem Header="{l:Translate lblOverscanNtsc}">
+									<c:OverscanInput Overscan="{CompiledBinding Config.NtscOverscan}" Margin="5" />
+								</TabItem>
+								<TabItem Header="{l:Translate lblOverscanPal}">
+									<c:OverscanInput Overscan="{CompiledBinding Config.PalOverscan}" Margin="5" />
+								</TabItem>
+							</TabControl>
+						</Border>
+					</c:OptionSection>
+				</StackPanel>
+			</ScrollViewer>
+		</TabItem>
+	</TabControl>
+</UserControl>

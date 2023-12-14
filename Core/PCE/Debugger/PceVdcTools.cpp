@@ -2,10 +2,10 @@
 #include "PCE/Debugger/PceVdcTools.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceConstants.h"
-#include "PCE/PceDefaultVideoFilter.h"
 #include "PCE/PceTypes.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/MemoryDumper.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/SettingTypes.h"
 
 PceVdcTools::PceVdcTools(Debugger* debugger, Emulator *emu, PceConsole* console) : PpuTools(debugger, emu)
@@ -336,6 +336,7 @@ DebugPaletteInfo PceVdcTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	info.RawFormat = RawPaletteFormat::Rgb333;
 	info.ColorsPerPalette = 16;
 	info.BgColorCount = 16 * 16;
+	info.SpritePaletteOffset = info.BgColorCount;
 	info.SpriteColorCount = 16 * 16;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 

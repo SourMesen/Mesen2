@@ -64,7 +64,7 @@ namespace Mesen.Config
 						if(File.Exists(ConfigFile) && !Design.IsDesignMode) {
 							_config = Configuration.Deserialize(ConfigFile);
 						} else {
-							_config = new Configuration();
+							_config = Configuration.CreateConfig();
 						}
 						ConfigManager.ActiveTheme = _config.Preferences.Theme;
 					}
@@ -245,9 +245,10 @@ namespace Mesen.Config
 		public static void ResetSettings()
 		{
 			DefaultKeyMappingType defaultMappings = Config.DefaultKeyMappings;
-			_config = new Configuration();
+			_config = Configuration.CreateConfig();
 			Config.DefaultKeyMappings = defaultMappings;
 			Config.InitializeDefaults();
+			Config.ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
 			Config.Save();
 			Config.ApplyConfig();
 		}

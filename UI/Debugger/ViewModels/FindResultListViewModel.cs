@@ -159,7 +159,7 @@ public class FindResultViewModel
 		string format = "X" + line.CpuType.GetAddressSize();
 		Address = "$" + line.Address.ToString(format);
 		Text = line.Text;
-		if(line.EffectiveAddress >= 0) {
+		if(line.EffectiveAddress.Address >= 0) {
 			Text += " " + line.GetEffectiveAddressString(format, out _);
 		}
 	}

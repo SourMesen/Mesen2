@@ -400,7 +400,7 @@
 			<Control ID="lblOverscan">Overscan</Control>
 			<Control ID="lblPalette">Palette</Control>
 		</Form>
-
+		
 		<Form ID="ColorPickerWindow">
 			<Control ID="wndTitle">Color picker</Control>
 			<Control ID="btnOk">OK</Control>
@@ -429,6 +429,48 @@
 			<Control ID="chkPreventSelectRunReset">Disable Run+Select combination (to avoid resets in games)</Control>
 		</Form>
 
+		<Form ID="SmsConfigView">
+			<Control ID="tpgGeneral">General</Control>
+			<Control ID="lblRegion">Region:</Control>
+
+			<Control ID="tpgAudio">Audio</Control>
+			<Control ID="grpVolume">Volume</Control>
+			<Control ID="lblChannel1">Tone 1</Control>
+			<Control ID="lblChannel2">Tone 2</Control>
+			<Control ID="lblChannel3">Tone 3</Control>
+			<Control ID="lblChannel4">Noise</Control>
+			<Control ID="lblChannel5">YM2413</Control>
+			<Control ID="chkEnableFmAudio">Enable FM audio (YM2413)</Control>
+
+			<Control ID="tpgEmulation">Emulation</Control>
+			<Control ID="lblDeveloperSettings">Recommended settings for developers (homebrew / ROM hacking)</Control>
+			<Control ID="lblRamPowerOnState">Default power on state for RAM: </Control>
+			<Control ID="lblSmsRevision">SMS Revision: </Control>
+
+			<Control ID="tpgInput">Input</Control>
+
+			<Control ID="tpgVideo">Video</Control>
+			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
+			<Control ID="chkUseSgPalette">Use SG-1000 palette in legacy video modes</Control>
+			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
+			<Control ID="chkDisableBackground">Disable background</Control>
+			<Control ID="chkDisableSprites">Disable sprites</Control>
+
+			<Control ID="lblOverscan">Overscan</Control>
+			<Control ID="lblOverscanNtsc">NTSC</Control>
+			<Control ID="lblOverscanPal">PAL</Control>
+		</Form>
+
+		<Form ID="SmsInputConfigView">
+			<Control ID="grpControllers">Controllers</Control>
+
+			<Control ID="btnSetup">Setup</Control>
+			<Control ID="lblController1">Port 1:</Control>
+			<Control ID="lblController2">Port 2:</Control>
+
+			<Control ID="grpGeneral">General</Control>
+		</Form>
+		
 		<Form ID="ShortcutKeysTabView">
 			<Control ID="lblShortcutWarning">Warning: Your current configuration contains conflicting key bindings. If this is not intentional, please review and correct your key bindings.</Control>
 			<Control ID="colAction">Action</Control>
@@ -451,6 +493,7 @@
 			<Control ID="tabSnes">SNES</Control>
 			<Control ID="tabGameboy">Game Boy</Control>
 			<Control ID="tabPcEngine">PC Engine</Control>
+			<Control ID="tabSms">SMS</Control>
 			<Control ID="tabPreferences">Preferences</Control>
 
 			<Control ID="btnOpenMesenFolder">Open Mesen folder</Control>
@@ -500,6 +543,9 @@
 			<Control ID="chkGbMusicFiles">Game Boy music: .gbs</Control>
 			<Control ID="chkPceRomFiles">PC Engine roms: .pce, .sgx</Control>
 			<Control ID="chkPceMusicFiles">PC Engine music: .hes</Control>
+			<Control ID="chkSmsRomFiles">SMS roms: .sms</Control>
+			<Control ID="chkGameGearRomFiles">Game Gear roms: .gg</Control>
+			<Control ID="chkSgRomFiles">SG-1000 roms: .sg</Control>
 
 			<Control ID="grpDataStorageLocation">Data Storage Folder</Control>
 			<Control ID="btnChangeStorageFolder">Change folder...</Control>
@@ -796,6 +842,7 @@
 			<Control ID="lblSnes">SNES</Control>
 			<Control ID="lblGameboy">Game Boy</Control>
 			<Control ID="lblPcEngine">PC Engine</Control>
+			<Control ID="lblSms">SMS</Control>
 		</Form>
 		
 		<Form ID="AudioPlayerView">
@@ -1748,9 +1795,13 @@ E
 			<Value ID="DatachBarcodeReader">Datach Barcode Reader</Value>
 
 			<Value ID="GameboyController">Gameboy Controller</Value>
+			
 			<Value ID="PceController">2-button Controller</Value>
 			<Value ID="PceAvenuePad6">6-button Controller</Value>
 			<Value ID="PceTurboTap">Turbo Tap</Value>
+
+			<Value ID="SmsController">SMS Controller</Value>
+			<Value ID="SmsLightPhaser">Light Phaser</Value>
 		</Enum>
 		<Enum ID="NesJissenMahjongButtons">
 			<Value ID="A">A</Value>
@@ -2048,6 +2099,10 @@ E
 			<Value ID="Unknown2">Unknown 2</Value>
 			<Value ID="Unknown3">Unknown 3</Value>
 		</Enum>
+		<Enum ID="SmsLightPhaserButtons">
+			<Value ID="Fire">Fire</Value>
+			<Value ID="AimOffscreen">Aim offscreen (hold)</Value>
+		</Enum>
 		<Enum ID="NesConsoleType">
 			<Value ID="Nes001">NES - Front loader (NES-001)</Value>
 			<Value ID="Nes101">NES - Top loader (NES-101)</Value>
@@ -2168,7 +2223,7 @@ E
 			<Value ID="Arcade">Arcade CD-ROM² (recommended)</Value>
 		</Enum>
 		<Enum ID="RamState">
-			<Value ID="Random">Random Values (Default)</Value>
+			<Value ID="Random">Random Values (default)</Value>
 			<Value ID="AllZeros">All 0s</Value>
 			<Value ID="AllOnes">All 1s</Value>
 		</Enum>
@@ -2229,6 +2284,8 @@ E
 			<Value ID="SnesProActionReplay">SNES - Pro Action Replay (AAAAAAVV)</Value>
 			<Value ID="PceRaw">Raw (AAAAAA:VV)</Value>
 			<Value ID="PceAddress">Physical Address (AAAAAA:VV)</Value>
+			<Value ID="SmsGameGenie">Game Genie (e.g A1B-2C3-D4E)</Value>
+			<Value ID="SmsProActionReplay">Pro Action Replay (e.g 00AAAAVV)</Value>
 		</Enum>
 		<Enum ID="VideoLayer">
 			<Value ID="Bg1">BG layer 1</Value>
@@ -2239,6 +2296,12 @@ E
 			<Value ID="Sprite2">Sprite layer 2</Value>
 		</Enum>
 
+		<Enum ID="SmsRevision">
+			<Value ID="Compatibility">Compatibility (default)</Value>
+			<Value ID="Sms1">SMS 1</Value>
+			<Value ID="Sms2">SMS 2</Value>
+		</Enum>
+		
 		<Enum ID="MemorySizes">
 			<Value ID="None">None</Value>
 			<Value ID="_128Bytes">128 bytes</Value>
@@ -2406,6 +2469,7 @@ E
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="Nes">NES</Value>
 			<Value ID="Pce">PC Engine</Value>
+			<Value ID="Sms">SMS</Value>
 		</Enum>
 		
 		<Enum ID="MemoryType">
@@ -2469,7 +2533,16 @@ E
 			<Value ID="PcePaletteRam">Palette RAM</Value>
 			<Value ID="PceSpriteRam">Sprite RAM</Value>
 			<Value ID="PceSpriteRamVdc2">Sprite RAM (VDC2)</Value>
-
+			
+			<Value ID="SmsMemory">CPU Memory</Value>
+			<Value ID="SmsPrgRom">ROM</Value>
+			<Value ID="SmsWorkRam">System RAM</Value>
+			<Value ID="SmsCartRam">Cart RAM</Value>
+			<Value ID="SmsBootRom">BIOS ROM</Value>
+			<Value ID="SmsVideoRam">Video RAM</Value>
+			<Value ID="SmsPaletteRam">Palette RAM</Value>
+			<Value ID="SmsPort">I/O Port</Value>
+			
 			<Value ID="None">None</Value>
 		</Enum>
 		<Enum ID="GameboyModel">
@@ -2498,6 +2571,8 @@ E
 			<Valid ID="PceSpriteBpp2Sp23">2 bpp (sprites - SP23)</Valid>
 			<Valid ID="PceBackgroundBpp2Cg0">2 bpp (background - CG0)</Valid>
 			<Valid ID="PceBackgroundBpp2Cg1">2 bpp (background - CG1)</Valid>
+			<Value ID="SmsBpp4">4 bpp</Value>
+			<Value ID="SmsSgBpp1">1 bpp</Value>
 		</Enum>
 		<Enum ID="TileLayout">
 			<Value ID="Normal">Normal</Value>
@@ -2578,6 +2653,8 @@ E
 			<Value ID="NesBreakOnExtOutputMode">PPU EXT output mode</Value>
 			
 			<Value ID="PceBreakOnInvalidVramAddress">Invalid VRAM address (>= $8000)</Value>
+			
+			<Value ID="SmsNopLoad">LD B,B (NOP)</Value>
 		</Enum>
 		<Enum ID="MemoryOperationType">
 			<Value ID="Read">Read</Value>
@@ -2668,7 +2745,7 @@ E
 			<Value ID="CpuMemory">CPU Memory</Value>
 		</Enum>
 		<Enum ID="DebugSpritePriority">
-			<Value ID="Undefined">Undefined</Value>
+			<Value ID="Undefined">-</Value>
 			<Value ID="Number0">0</Value>
 			<Value ID="Number1">1</Value>
 			<Value ID="Number2">2</Value>
@@ -3106,6 +3183,7 @@ E
 			<Value ID="Snes">SNES</Value>
 			<Value ID="Gameboy">Game Boy</Value>
 			<Value ID="PcEngine">PC Engine</Value>
+			<Value ID="Sms">SMS</Value>
 
 			<Value ID="Resume">Resume</Value>
 			<Value ID="Pause">Pause</Value>

@@ -214,6 +214,9 @@
     <ClInclude Include="NTSC\nes_ntsc.h" />
     <ClInclude Include="NTSC\nes_ntsc_config.h" />
     <ClInclude Include="NTSC\nes_ntsc_impl.h" />
+    <ClInclude Include="NTSC\sms_ntsc.h" />
+    <ClInclude Include="NTSC\sms_ntsc_config.h" />
+    <ClInclude Include="NTSC\sms_ntsc_impl.h" />
     <ClInclude Include="NTSC\snes_ntsc.h" />
     <ClInclude Include="NTSC\snes_ntsc_config.h" />
     <ClInclude Include="NTSC\snes_ntsc_impl.h" />
@@ -318,6 +321,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="NTSC\nes_ntsc.cpp" />
+    <ClCompile Include="NTSC\sms_ntsc.cpp" />
     <ClCompile Include="NTSC\snes_ntsc.cpp" />
     <ClCompile Include="Patches\BpsPatcher.cpp" />
     <ClCompile Include="Patches\IpsPatcher.cpp" />

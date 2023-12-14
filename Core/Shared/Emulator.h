@@ -307,6 +307,13 @@ public:
 		}
 	}
 
+	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi)
+	{
+		if(_debugger) {
+			_debugger->ProcessInterrupt<type>(originalPc, currentPc, forNmi);
+		}
+	}
+
 	__forceinline void DebugLog(string log)
 	{
 		if(_debugger) {
@@ -314,7 +321,6 @@ public:
 		}
 	}
 
-	template<CpuType type> void ProcessInterrupt(uint32_t originalPc, uint32_t currentPc, bool forNmi);
 	void ProcessEvent(EventType type, std::optional<CpuType> cpuType = std::nullopt);
 	template<CpuType cpuType> void AddDebugEvent(DebugEventType evtType);
 	void BreakIfDebugging(CpuType sourceCpu, BreakSource source);

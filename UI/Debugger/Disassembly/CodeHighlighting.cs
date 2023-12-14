@@ -92,7 +92,7 @@ namespace Mesen.Debugger.Disassembly
 					colors.Add(new CodeColor(codeString, textColor ?? defaultColor, CodeSegmentType.None, pos));
 				}
 
-				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress >= 0) {
+				if(lineData.ShowEffectiveAddress && lineData.EffectiveAddress.Address >= 0) {
 					string effAddress = lineData.GetEffectiveAddressString(addressFormat, out CodeSegmentType type);
 					colors.Add(new CodeColor(" " + effAddress, cfg.CodeEffectiveAddressColor, type));
 				}

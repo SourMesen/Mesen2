@@ -31,6 +31,26 @@
 						case 0x13: return "DVSSR";
 					}
 					break;
+
+				case CpuType.Sms:
+					byte codeReg = (byte)(evt.Operation.Value >> 6);
+					byte regNumber = (byte)(evt.Operation.Value & 0x0F);
+					if(codeReg == 2) {
+						switch(regNumber) {
+							case 0: return "Mode1";
+							case 1: return "Mode2";
+							case 2: return "NtAddress";
+							case 3: return "CtAddress";
+							case 4: return "PgtAddress";
+							case 5: return "SatAddress";
+							case 6: return "SpgtAddress";
+							case 7: return "BgColor";
+							case 8: return "BgXScroll";
+							case 9: return "BgYScroll";
+							case 10: return "LineCounter";
+						}
+					}
+					break;
 			}
 
 			return "";

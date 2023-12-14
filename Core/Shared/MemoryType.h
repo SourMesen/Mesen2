@@ -12,6 +12,7 @@ enum class MemoryType
 	NesMemory,
 	NesPpuMemory,
 	PceMemory,
+	SmsMemory,
 
 	SnesPrgRom,
 	SnesWorkRam,
@@ -63,6 +64,14 @@ enum class MemoryType
 	PceSpriteRam,
 	PceSpriteRamVdc2,
 	PcePaletteRam,
+
+	SmsPrgRom,
+	SmsWorkRam,
+	SmsCartRam,
+	SmsBootRom,
+	SmsVideoRam,
+	SmsPaletteRam,
+	SmsPort,
 
 	None
 };

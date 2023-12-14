@@ -379,6 +379,7 @@ DebugPaletteInfo NesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	info.RawFormat = RawPaletteFormat::Indexed;
 	info.ColorsPerPalette = 4;
 	info.BgColorCount = 4 * 4;
+	info.SpritePaletteOffset = info.BgColorCount;
 	info.SpriteColorCount = 4 * 4;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 

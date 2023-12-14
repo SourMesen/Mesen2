@@ -167,6 +167,12 @@
 					Content="{l:Translate chkPceBreakOnInvalidVramAddress}"
 				/>
 			</StackPanel>
+			<StackPanel IsVisible="{CompiledBinding IsSms}">
+				<CheckBox
+					IsChecked="{CompiledBinding Config.Sms.BreakOnNopLoad}"
+					Content="{l:Translate chkGbBreakOnNopLoad}"
+				/>
+			</StackPanel>
 			<Rectangle Stroke="#AAA" Height="1" StrokeThickness="1" HorizontalAlignment="Stretch" Margin="0 2" />
 			<CheckBox
 				IsChecked="{CompiledBinding Config.BreakOnUninitRead}"

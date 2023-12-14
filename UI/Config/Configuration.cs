@@ -19,7 +19,8 @@ namespace Mesen.Config
 		private string _fileData = "";
 
 		public string Version { get; set; } = "2.0.0";
-		
+		public int ConfigUpgrade { get; set; } = 0;
+
 		[Reactive] public VideoConfig Video { get; set; } = new();
 		[Reactive] public AudioConfig Audio { get; set; } = new();
 		[Reactive] public InputConfig Input { get; set; } = new();
@@ -28,6 +29,7 @@ namespace Mesen.Config
 		[Reactive] public NesConfig Nes { get; set; } = new();
 		[Reactive] public GameboyConfig Gameboy { get; set; } = new();
 		[Reactive] public PcEngineConfig PcEngine { get; set; } = new();
+		[Reactive] public SmsConfig Sms { get; set; } = new();
 		[Reactive] public PreferencesConfig Preferences { get; set; } = new();
 		[Reactive] public AudioPlayerConfig AudioPlayer { get; set; } = new();
 		[Reactive] public DebugConfig Debug { get; set; } = new();
@@ -40,11 +42,18 @@ namespace Mesen.Config
 		[Reactive] public HistoryViewerConfig HistoryViewer { get; set; } = new();
 		[Reactive] public MainWindowConfig MainWindow { get; set; } = new();
 		
-		public bool FirstRun { get; set; } = true;
 		public DefaultKeyMappingType DefaultKeyMappings { get; set; } = DefaultKeyMappingType.Xbox | DefaultKeyMappingType.ArrowKeys;
 
 		public Configuration()
 		{
+			//Used by JSON deserializer, don't call directly - use CreateConfig
+		}
+
+		public static Configuration CreateConfig()
+		{
+			Configuration cfg = new();
+			cfg.ConfigUpgrade = (int)ConfigUpgradeHint.FirstRun;
+			return cfg;
 		}
 
 		~Configuration()
@@ -73,6 +82,7 @@ namespace Mesen.Config
 			PcEngine.ApplyConfig();
 			Nes.ApplyConfig();
 			Snes.ApplyConfig();
+			Sms.ApplyConfig();
 			Preferences.ApplyConfig();
 			AudioPlayer.ApplyConfig();
 			Debug.ApplyConfig();
@@ -80,7 +90,7 @@ namespace Mesen.Config
 
 		public void InitializeFontDefaults()
 		{
-			if(FirstRun) {
+			if(ConfigUpgrade == (int)ConfigUpgradeHint.FirstRun) {
 				Preferences.InitializeFontDefaults();
 
 				Debug.Fonts.DisassemblyFont = GetDefaultMonospaceFont();
@@ -92,14 +102,24 @@ namespace Mesen.Config
 			}
 		}
 
+		public void UpgradeConfig()
+		{
+			if(ConfigUpgrade < (int)ConfigUpgradeHint.SmsInput) {
+				Sms.InitializeDefaults(DefaultKeyMappings);
+			}
+
+			ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
+		}
+
 		public void InitializeDefaults()
 		{
-			if(FirstRun) {
+			if(ConfigUpgrade == (int)ConfigUpgradeHint.FirstRun) {
 				Snes.InitializeDefaults(DefaultKeyMappings);
 				Nes.InitializeDefaults(DefaultKeyMappings);
 				Gameboy.InitializeDefaults(DefaultKeyMappings);
 				PcEngine.InitializeDefaults(DefaultKeyMappings);
-				FirstRun = false;
+				Sms.InitializeDefaults(DefaultKeyMappings);
+				ConfigUpgrade = (int)ConfigUpgradeHint.NextValue - 1;
 			}
 			Preferences.InitializeDefaultShortcuts();
 		}
@@ -181,7 +201,7 @@ namespace Mesen.Config
 
 			try {
 				string fileData = File.ReadAllText(configFile);
-				config = JsonSerializer.Deserialize<Configuration>(fileData, JsonHelper.Options) ?? new Configuration();
+				config = JsonSerializer.Deserialize<Configuration>(fileData, JsonHelper.Options) ?? Configuration.CreateConfig();
 				config._fileData = fileData;
 			} catch {
 				try {
@@ -192,7 +212,7 @@ namespace Mesen.Config
 					}
 				} catch { }
 
-				config = new Configuration();
+				config = Configuration.CreateConfig();
 			}
 
 			return config;
@@ -230,5 +250,13 @@ namespace Mesen.Config
 		Ps4 = 2,
 		WasdKeys = 4,
 		ArrowKeys = 8
+	}
+
+	public enum ConfigUpgradeHint
+	{
+		Uninitialized = 0,
+		FirstRun,
+		SmsInput,
+		NextValue,
 	}
 }

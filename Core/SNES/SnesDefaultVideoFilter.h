@@ -15,7 +15,6 @@ private:
 
 	void InitLookupTable();
 
-	__forceinline static uint8_t To8Bit(uint8_t color);
 	__forceinline static uint32_t BlendPixels(uint32_t a, uint32_t b);
 	__forceinline uint32_t GetPixel(uint16_t* ppuFrame, uint32_t offset);
 
@@ -28,6 +27,4 @@ public:
 	
 	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
 	OverscanDimensions GetOverscan() override;
-
-	static uint32_t ToArgb(uint16_t rgb555);
 };

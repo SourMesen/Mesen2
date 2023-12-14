@@ -58,15 +58,18 @@
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate grpFileAssociations}" Margin="0" IsVisible="{CompiledBinding !IsOsx}">
-						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+						<Grid ColumnDefinitions="Auto,20,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 							<CheckBox Grid.Row="0" Content="{l:Translate chkNesRomFiles}" IsChecked="{CompiledBinding Config.AssociateNesRomFiles}" />
 							<CheckBox Grid.Row="1" Content="{l:Translate chkNesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateNesMusicFiles}" />
 							<CheckBox Grid.Row="2" Content="{l:Translate chkSnesRomFiles}" IsChecked="{CompiledBinding Config.AssociateSnesRomFiles}" />
 							<CheckBox Grid.Row="3" Content="{l:Translate chkSnesMusicFiles}" IsChecked="{CompiledBinding Config.AssociateSnesMusicFiles}" />
+							<CheckBox Grid.Row="4" Content="{l:Translate chkSmsRomFiles}" IsChecked="{CompiledBinding Config.AssociateSmsRomFiles}" />
+							<CheckBox Grid.Row="5" Content="{l:Translate chkSgRomFiles}" IsChecked="{CompiledBinding Config.AssociateSgRomFiles}" />
 							<CheckBox Grid.Row="0" Grid.Column="2" Content="{l:Translate chkGbRomFiles}" IsChecked="{CompiledBinding Config.AssociateGbRomFiles}" />
 							<CheckBox Grid.Row="1" Grid.Column="2" Content="{l:Translate chkGbMusicFiles}" IsChecked="{CompiledBinding Config.AssociateGbMusicFiles}" />
 							<CheckBox Grid.Row="2" Grid.Column="2" Content="{l:Translate chkPceRomFiles}" IsChecked="{CompiledBinding Config.AssociatePceRomFiles}" />
 							<CheckBox Grid.Row="3" Grid.Column="2" Content="{l:Translate chkPceMusicFiles}" IsChecked="{CompiledBinding Config.AssociatePceMusicFiles}" />
+							<CheckBox Grid.Row="4" Grid.Column="2" Content="{l:Translate chkGameGearRomFiles}" IsChecked="{CompiledBinding Config.AssociateGameGearRomFiles}" />
 						</Grid>
 					</c:OptionSection>
 

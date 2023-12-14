@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.h"
+#include "Debugger/AddressInfo.h"
+#include "Shared/MemoryType.h"
 
 class IConsole;
 class MemoryDumper;
@@ -12,9 +14,19 @@ enum class CpuType : uint8_t;
 
 struct EffectiveAddressInfo
 {
-	int32_t Address = -1;
+	AddressInfo Address = { -1, MemoryType::None };
 	uint8_t ValueSize = 0;
 	bool ShowAddress = false;
+
+	EffectiveAddressInfo(int32_t address = -1, uint8_t valueSize = 1, bool showAddress = true, MemoryType memType = MemoryType::None)
+	{
+		if(address >= 0) {
+			Address.Address = address;
+			Address.Type = memType;
+			ValueSize = valueSize;
+			ShowAddress = showAddress;
+		}
+	}
 };
 
 class DisassemblyInfo
@@ -46,7 +58,7 @@ public:
 	void GetByteCode(uint8_t copyBuffer[8]);
 	void GetByteCode(string &out);
 
-	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type);
+	static uint8_t GetOpSize(uint8_t opCode, uint8_t flags, CpuType type, uint32_t cpuAddress, MemoryType memType, MemoryDumper* memoryDumper);
 	bool IsJumpToSub();
 	bool IsReturnInstruction();
 	

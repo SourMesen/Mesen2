@@ -46,6 +46,11 @@ namespace Mesen.Debugger.Windows
 					SelectedPalette = selectedPalette % 4;
 					break;
 
+				case CpuType.Sms:
+					Palette = GenerateSmsPalette();
+					ColumnCount = 8;
+					break;
+
 				default:
 					throw new NotImplementedException();
 			}
@@ -54,6 +59,29 @@ namespace Mesen.Debugger.Windows
 #if DEBUG
 			this.AttachDevTools();
 #endif
+		}
+
+		private static UInt32[] GenerateSmsPalette()
+		{
+			UInt32[] pal = new UInt32[0x40];
+			for(int i = 0; i < 0x40; i++) {
+				pal[i] = Rgb222ToArgb((byte)i);
+			}
+			return pal;
+		}
+
+		private static byte Rgb222To8Bit(byte color)
+		{
+			return (byte)((byte)(color << 6) | (byte)(color << 4) | (byte)(color << 2) | color);
+		}
+
+		private static UInt32 Rgb222ToArgb(byte rgb222)
+		{
+			byte b = Rgb222To8Bit((byte)(rgb222 >> 4));
+			byte g = Rgb222To8Bit((byte)((rgb222 >> 2) & 0x3));
+			byte r = Rgb222To8Bit((byte)(rgb222 & 0x3));
+
+			return 0xFF000000 | (UInt32)(r << 16) | (UInt32)(g << 8) | b;
 		}
 
 		private void InitializeComponent()

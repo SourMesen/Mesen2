@@ -7,7 +7,6 @@
 #include "PCE/PceVpc.h"
 #include "PCE/PceMemoryManager.h"
 #include "PCE/PceConstants.h"
-#include "PCE/PceDefaultVideoFilter.h"
 #include "Debugger/DebugTypes.h"
 #include "Debugger/Debugger.h"
 #include "Debugger/DebugBreakHelper.h"

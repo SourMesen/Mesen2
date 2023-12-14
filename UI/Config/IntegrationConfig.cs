@@ -38,6 +38,7 @@ namespace Mesen.Config
 				case MemoryType.NesMemory:
 				case MemoryType.NesPpuMemory:
 				case MemoryType.PceMemory:
+				case MemoryType.SmsMemory:
 				case MemoryType.SnesVideoRam:
 				case MemoryType.SnesSpriteRam:
 				case MemoryType.SnesCgRam:
@@ -61,6 +62,7 @@ namespace Mesen.Config
 				case MemoryType.GbPrgRom:
 				case MemoryType.NesPrgRom:
 				case MemoryType.PcePrgRom:
+				case MemoryType.SmsPrgRom:
 				case MemoryType.SpcRom:
 				case MemoryType.DspProgramRom:
 				case MemoryType.DspDataRom:
@@ -82,6 +84,7 @@ namespace Mesen.Config
 				case MemoryType.GbHighRam:
 				case MemoryType.NesInternalRam:
 				case MemoryType.NesWorkRam:
+				case MemoryType.SmsWorkRam:
 				case MemoryType.BsxPsRam:
 					return ImportWorkRamLabels;
 
@@ -89,6 +92,7 @@ namespace Mesen.Config
 				case MemoryType.NesSaveRam:
 				case MemoryType.PceSaveRam:
 				case MemoryType.GbCartRam:
+				case MemoryType.SmsCartRam:
 				case MemoryType.BsxMemoryPack:
 					return ImportSaveRamLabels;
 

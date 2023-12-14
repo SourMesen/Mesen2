@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger\AddressInfo.h" />
     <ClInclude Include="Debugger\Base6502Assembler.h" />
     <ClInclude Include="Debugger\CdlManager.h" />
     <ClInclude Include="Debugger\DisassemblySearch.h" />
@@ -30,10 +31,38 @@
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
-    <ClInclude Include="NES\Mappers\Audio\emu2413.h" />
+    <ClInclude Include="Shared\ColorUtilities.h" />
+    <ClInclude Include="Shared\Utilities\emu2413.h" />
     <ClInclude Include="NES\Mappers\Nintendo\FnsMmc1.h" />
     <ClInclude Include="Shared\SaveStateCompatInfo.h" />
+    <ClInclude Include="Shared\Utilities\Emu2413Serializer.h" />
     <ClInclude Include="Shared\Video\SoftwareRenderer.h" />
+    <ClInclude Include="SMS\Carts\SmsCodemasterCart.h" />
+    <ClInclude Include="SMS\Carts\SmsNemesisCart.h" />
+    <ClInclude Include="SMS\Carts\SmsKoreanCart.h" />
+    <ClInclude Include="SMS\Carts\SmsMsxCart.h" />
+    <ClInclude Include="SMS\Carts\SmsSegaCart.h" />
+    <ClInclude Include="SMS\Carts\SmsCart.h" />
+    <ClInclude Include="SMS\Debugger\DummySmsCpu.h" />
+    <ClInclude Include="SMS\Debugger\SmsAssembler.h" />
+    <ClInclude Include="SMS\Debugger\SmsDebugger.h" />
+    <ClInclude Include="SMS\Debugger\SmsDisUtils.h" />
+    <ClInclude Include="SMS\Debugger\SmsEventManager.h" />
+    <ClInclude Include="SMS\Debugger\SmsTraceLogger.h" />
+    <ClInclude Include="SMS\Debugger\SmsVdpTools.h" />
+    <ClInclude Include="SMS\Input\SmsController.h" />
+    <ClInclude Include="SMS\Input\SmsLightPhaser.h" />
+    <ClInclude Include="SMS\SmsBiosMapper.h" />
+    <ClInclude Include="SMS\SmsConsole.h" />
+    <ClInclude Include="SMS\SmsControlManager.h" />
+    <ClInclude Include="SMS\SmsCpu.h" />
+    <ClInclude Include="SMS\SmsDefaultVideoFilter.h" />
+    <ClInclude Include="SMS\SmsFmAudio.h" />
+    <ClInclude Include="SMS\SmsMemoryManager.h" />
+    <ClInclude Include="SMS\SmsNtscFilter.h" />
+    <ClInclude Include="SMS\SmsPsg.h" />
+    <ClInclude Include="SMS\SmsTypes.h" />
+    <ClInclude Include="SMS\SmsVdp.h" />
     <ClInclude Include="SNES\DSP\DspInterpolation.h" />
     <ClInclude Include="SNES\DSP\Dsp.h" />
     <ClInclude Include="NES\Debugger\NesCodeDataLogger.h" />
@@ -692,6 +721,7 @@
     <ClCompile Include="Debugger\ExpressionEvaluator.NecDsp.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Nes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Pce.cpp" />
+    <ClCompile Include="Debugger\ExpressionEvaluator.Sms.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
     <ClCompile Include="Debugger\StepBackManager.cpp" />
@@ -722,7 +752,7 @@
     <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp" />
     <ClCompile Include="NES\Loaders\UnifLoader.cpp" />
-    <ClCompile Include="NES\Mappers\Audio\emu2413.cpp">
+    <ClCompile Include="Shared\Utilities\emu2413.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -784,6 +814,23 @@
     <ClCompile Include="Shared\Video\RotateFilter.cpp" />
     <ClCompile Include="Shared\Video\SoftwareRenderer.cpp" />
     <ClCompile Include="Shared\Video\SystemHud.cpp" />
+    <ClCompile Include="SMS\Carts\SmsCart.cpp" />
+    <ClCompile Include="SMS\Debugger\DummySmsCpu.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsAssembler.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsDebugger.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsDisUtils.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsEventManager.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsTraceLogger.cpp" />
+    <ClCompile Include="SMS\Debugger\SmsVdpTools.cpp" />
+    <ClCompile Include="SMS\SmsBiosMapper.cpp" />
+    <ClCompile Include="SMS\SmsConsole.cpp" />
+    <ClCompile Include="SMS\SmsControlManager.cpp" />
+    <ClCompile Include="SMS\SmsCpu.cpp" />
+    <ClCompile Include="SMS\SmsFmAudio.cpp" />
+    <ClCompile Include="SMS\SmsMemoryManager.cpp" />
+    <ClCompile Include="SMS\SmsNtscFilter.cpp" />
+    <ClCompile Include="SMS\SmsPsg.cpp" />
+    <ClCompile Include="SMS\SmsVdp.cpp" />
     <ClCompile Include="SNES\AluMulDiv.cpp" />
     <ClCompile Include="SNES\Debugger\DummySnesCpu.cpp" />
     <ClCompile Include="SNES\Debugger\DummySpc.cpp" />

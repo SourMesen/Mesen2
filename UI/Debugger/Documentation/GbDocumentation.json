@@ -222,7 +222,7 @@
 		{
 			"op": "srl",
 			"name": "SRL - Shift Right Logical",
-			"description": "Shifts content of operand to the right. MSB is moved to the carry flag, MSB is set to 0.",
+			"description": "Shifts content of operand to the right. LSB is moved to the carry flag, MSB is set to 0.",
 			"flags": ["Zero", "Negative", "HalfCarry", "Carry"]
 		},
 		{

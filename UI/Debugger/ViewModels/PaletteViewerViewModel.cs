@@ -117,7 +117,7 @@ namespace Mesen.Debugger.ViewModels
 						});
 					}
 				},
-				new ContextMenuSeparator(),
+				new ContextMenuSeparator() { IsVisible = () => _palette != null && _palette.Get().HasMemType },
 				new ContextMenuAction() {
 					ActionType = ActionType.ViewInMemoryViewer,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.PaletteViewer_ViewInMemoryViewer),
@@ -148,7 +148,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			if(palette.RawFormat == RawPaletteFormat.Rgb555) {
+			if(palette.RawFormat == RawPaletteFormat.Rgb555 || palette.RawFormat == RawPaletteFormat.Rgb444) {
 				ColorPickerViewModel model = new ColorPickerViewModel() { Color = Color.FromUInt32(palette.GetRgbPalette()[selectedPalette]) };
 				ColorPickerWindow colorPicker = new ColorPickerWindow() { DataContext = model };
 				bool success = await colorPicker.ShowCenteredDialog<bool>(wnd);

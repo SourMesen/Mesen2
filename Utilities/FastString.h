@@ -11,9 +11,15 @@ private:
 	void WriteAll() {}
 
 public:
+#ifdef _MSC_VER
+#pragma warning(disable : 26495)
+#endif
 	FastString(bool lowerCase = false) { _lowerCase = lowerCase; }
 	FastString(const char* str, int size) { Write(str, size); }
 	FastString(string &str) { Write(str); }
+#ifdef _MSC_VER
+#pragma warning(default : 26495)
+#endif
 
 	void WriteSafe(char c)
 	{

@@ -1,0 +1,46 @@
+<UserControl
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:vm="using:Mesen.ViewModels"
+	xmlns:l="using:Mesen.Localization"
+	xmlns:c="using:Mesen.Controls"
+	xmlns:v="using:Mesen.Views"
+	xmlns:cfg="using:Mesen.Config"
+	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+	VerticalAlignment="Stretch"
+	HorizontalAlignment="Stretch"
+	x:DataType="vm:SmsInputConfigViewModel"
+	x:Class="Mesen.Views.SmsInputConfigView"
+>
+	<Design.DataContext>
+		<vm:SmsInputConfigViewModel />
+	</Design.DataContext>
+
+	<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
+		<StackPanel>
+			<c:OptionSection Header="{l:Translate grpControllers}" Margin="0">
+				<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Left">
+					<TextBlock Grid.Row="0" Grid.Column="0" Text="{l:Translate lblController1}" />
+					<c:InputComboBox
+						Grid.Row="0" Grid.Column="1"
+						Port="0"
+						Config="{CompiledBinding Config.Port1}"
+						ControllerType="{CompiledBinding Config.Port1.Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+					/>
+					
+					<TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Translate lblController2}" />
+					<c:InputComboBox
+						Grid.Row="1" Grid.Column="1"
+						Port="1"
+						Config="{CompiledBinding Config.Port2}"
+						ControllerType="{CompiledBinding Config.Port2.Type}"
+						AvailableValues="{CompiledBinding AvailableControllerTypesP12}"
+					/>
+				</Grid>
+			</c:OptionSection>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

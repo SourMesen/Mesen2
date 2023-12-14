@@ -172,6 +172,10 @@ namespace Mesen.Interop
 		Pce,
 		PceCdRom,
 		PceHes,
+
+		Sms,
+		GameGear,
+		Sg
 	}
 
 	public enum ConsoleType
@@ -179,7 +183,8 @@ namespace Mesen.Interop
 		Snes = 0,
 		Gameboy = 1,
 		Nes = 2,
-		PcEngine = 3
+		PcEngine = 3,
+		Sms = 4
 	}
 
 	public struct InteropDipSwitchInfo
@@ -319,6 +324,8 @@ namespace Mesen.Interop
 		SnesProActionReplay,
 		PceRaw,
 		PceAddress,
+		SmsProActionReplay,
+		SmsGameGenie
 	}
 
 	public static class CheatTypeExtensions
@@ -330,6 +337,7 @@ namespace Mesen.Interop
 				CheatType.SnesGameGenie or CheatType.SnesProActionReplay => CpuType.Snes,
 				CheatType.GbGameGenie or CheatType.GbGameShark => CpuType.Gameboy,
 				CheatType.PceRaw or CheatType.PceAddress => CpuType.Pce,
+				CheatType.SmsGameGenie or CheatType.SmsProActionReplay => CpuType.Sms,
 				_ => throw new NotImplementedException("unsupported cheat type")
 			};
 		}

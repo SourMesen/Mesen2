@@ -227,7 +227,7 @@ namespace Mesen.ViewModels
 				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy },
 				new MainMenuAction() { 
 					ActionType = ActionType.GameConfig,
-					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy,
+					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear,
 					IsEnabled = () => IsGameRunning,
 					OnClick = () => {
 						new GameConfigWindow().ShowCenteredDialog((Control)wnd);
@@ -410,7 +410,10 @@ namespace Mesen.ViewModels
 				new MainMenuAction() {
 					ActionType = ActionType.Region,
 					IsEnabled = () => IsGameRunning,
-					IsVisible = () => !IsGameRunning || MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy,
+					IsVisible = () => (
+						!IsGameRunning || 
+						(MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy && MainWindow.RomInfo.Format != RomFormat.GameGear)
+					),
 					SubActions = new List<object>() {
 						GetRegionMenuItem(ConsoleRegion.Auto),
 						GetPcEngineModelMenuItem(PceConsoleType.Auto),
@@ -476,6 +479,10 @@ namespace Mesen.ViewModels
 					ActionType = ActionType.PcEngine,
 					OnClick = () => OpenConfig(wnd, ConfigWindowTab.PcEngine)
 				},
+				new MainMenuAction() {
+					ActionType = ActionType.Sms,
+					OnClick = () => OpenConfig(wnd, ConfigWindowTab.Sms)
+				},
 
 				new ContextMenuSeparator(),
 
@@ -519,6 +526,7 @@ namespace Mesen.ViewModels
 				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
 					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
 					ConsoleType.Nes => ConfigManager.Config.Nes.Region == region,
+					ConsoleType.Sms => ConfigManager.Config.Sms.Region == region,
 					_ => region == ConsoleRegion.Auto
 				},
 				OnClick = () => {
@@ -531,6 +539,11 @@ namespace Mesen.ViewModels
 						case ConsoleType.Nes:
 							ConfigManager.Config.Nes.Region = region;
 							ConfigManager.Config.Nes.ApplyConfig();
+							break;
+
+						case ConsoleType.Sms:
+							ConfigManager.Config.Sms.Region = region;
+							ConfigManager.Config.Sms.ApplyConfig();
 							break;
 
 						default:

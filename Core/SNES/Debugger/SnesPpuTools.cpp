@@ -3,8 +3,8 @@
 #include "Debugger/DebugTypes.h"
 #include "Debugger/MemoryDumper.h"
 #include "Shared/SettingTypes.h"
-#include "SNES/SnesDefaultVideoFilter.h"
 #include "SNES/SnesPpu.h"
+#include "Shared/ColorUtilities.h"
 
 static constexpr uint8_t layerBpp[8][4] = {
 	{ 2,2,2,2 }, { 4,4,2,0 }, { 4,4,0,0 }, { 8,4,0,0 }, { 8,2,0,0 }, { 4,2,0,0 }, { 4,0,0,0 }, { 8,8,0,0 }
@@ -213,7 +213,7 @@ DebugTilemapInfo SnesPpuTools::RenderScreenView(uint8_t layer, uint32_t* outBuff
 {
 	uint16_t* src = layer == SnesPpuTools::MainScreenViewLayer ? _mainScreenBuffer : _subScreenBuffer;
 	for(int i = 0; i < 256 * 239; i++) {
-		outBuffer[i] = Rgb555ToArgb(src[i]);
+		outBuffer[i] = ColorUtilities::Rgb555ToArgb(src[i]);
 	}
 	return {};
 }
@@ -541,6 +541,7 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 	info.RawFormat = RawPaletteFormat::Rgb555;
 	info.ColorsPerPalette = 16;
 	info.BgColorCount = 16 * 8;
+	info.SpritePaletteOffset = info.BgColorCount;
 	info.SpriteColorCount = 16 * 8;
 	info.ColorCount = info.BgColorCount + info.SpriteColorCount;
 
@@ -549,7 +550,7 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 		case TileFormat::Mode7DirectColor:
 			for(int i = 0; i < 256; i++) {
 				info.RawPalette[i] = ((i & 0x07) << 2) | ((i & 0x38) << 4) | ((i & 0xC0) << 7);
-				info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+				info.RgbPalette[i] = ColorUtilities::Rgb555ToArgb(info.RawPalette[i]);
 			}
 			break;
 
@@ -558,7 +559,7 @@ DebugPaletteInfo SnesPpuTools::GetPaletteInfo(GetPaletteInfoOptions options)
 			uint8_t* cgram = _debugger->GetMemoryDumper()->GetMemoryBuffer(MemoryType::SnesCgRam);
 			for(int i = 0; i < 256; i++) {
 				info.RawPalette[i] = cgram[(i & mask) * 2] | (cgram[(i & mask) * 2 + 1] << 8);
-				info.RgbPalette[i] = SnesDefaultVideoFilter::ToArgb(info.RawPalette[i]);
+				info.RgbPalette[i] = ColorUtilities::Rgb555ToArgb(info.RawPalette[i]);
 			}
 			break;
 	}

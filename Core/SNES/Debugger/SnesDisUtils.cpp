@@ -145,14 +145,14 @@ EffectiveAddressInfo SnesDisUtils::GetEffectiveAddress(DisassemblyInfo &info, Sn
 			EffectiveAddressInfo result;
 			if(prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address - 1) {
 				//For 16-bit read/writes, return the first address
-				result.Address = prevOpInfo.Address;
+				result.Address = { (int)prevOpInfo.Address, prevOpInfo.MemType };
 				result.ValueSize = 2;
 			} else if(opInfo.Type == MemoryOperationType::Write && prevOpInfo.Type == opInfo.Type && prevOpInfo.Address == opInfo.Address + 1) {
 				//For 16-bit RMW instructions, the 2nd byte is written first
-				result.Address = opInfo.Address;
+				result.Address = { (int)opInfo.Address, opInfo.MemType };
 				result.ValueSize = 2;
 			} else {
-				result.Address = opInfo.Address;
+				result.Address = { (int)opInfo.Address, opInfo.MemType };
 				result.ValueSize = 1;
 			}
 			result.ShowAddress = showEffectiveAddress;
