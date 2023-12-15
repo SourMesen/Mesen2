@@ -1,10 +1,6 @@
 # Mesen
 
-Mesen is a multi-system emulator (NES, SNES, Game Boy and PC Engine) for Windows, Linux and macOS built in C++ and C#.  
-
-## Releases
-
-The latest release is available from the [releases](https://github.com/SourMesen/Mesen2/releases) page.
+Mesen is a multi-system emulator (NES, SNES, Game Boy, PC Engine, Master System/Game Gear) for Windows, Linux and macOS built in C++ and C#.  
 
 ## Development Builds
 
@@ -14,7 +10,7 @@ Latest development builds:
 [Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%29.zip)  
 [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
 
-**macOS**: Dev builds aren't available for ARM Macs. It's recommended to build it yourself by running `make`. The macOS build is still **experimental** and a number of issues/bugs/limitations remain, but it seems to be usable for the most part.
+**macOS**: Builds aren't available for ARM Macs, see [COMPILING.md](COMPILING.md) to build it yourself. The macOS build still has a number of limitations (e.g no gamepad support).
 
 ## Requirements
 
