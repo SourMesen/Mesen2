@@ -919,19 +919,19 @@ void SmsCpu::WritePort(uint8_t port, uint8_t value)
 template<uint8_t mask>
 void SmsCpu::SetStandardFlags(uint8_t value)
 {
-	if constexpr(mask & SmsCpuFlags::Sign) {
+	if constexpr((mask & SmsCpuFlags::Sign) != 0) {
 		SetFlagState(SmsCpuFlags::Sign, value & 0x80);
 	}
-	if constexpr(mask & SmsCpuFlags::Zero) {
+	if constexpr((mask & SmsCpuFlags::Zero) != 0) {
 		SetFlagState(SmsCpuFlags::Zero, value == 0);
 	}
-	if constexpr(mask & SmsCpuFlags::F5) {
+	if constexpr((mask & SmsCpuFlags::F5) != 0) {
 		SetFlagState(SmsCpuFlags::F5, value & SmsCpuFlags::F5);
 	}
-	if constexpr(mask & SmsCpuFlags::F3) {
+	if constexpr((mask & SmsCpuFlags::F3) != 0) {
 		SetFlagState(SmsCpuFlags::F3, value & SmsCpuFlags::F3);
 	}
-	if constexpr(mask & SmsCpuFlags::Parity) {
+	if constexpr((mask & SmsCpuFlags::Parity) != 0) {
 		SetFlagState(SmsCpuFlags::Parity, _parity.CheckParity(value));
 	}
 }

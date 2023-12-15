@@ -7,7 +7,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/Audio/blip_buf.h"
 
-class SmsPsg : public ISerializable
+class SmsPsg final : public ISerializable
 {
 private:
 	static constexpr int SampleRate = 96000;

@@ -16,7 +16,7 @@ class SmsConsole;
 class SmsMemoryManager;
 class SmsCpuParityTable;
 
-class SmsCpu : public ISerializable
+class SmsCpu final : public ISerializable
 {
 private:
 	static SmsCpuParityTable _parity;

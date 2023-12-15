@@ -175,10 +175,6 @@ struct SmsMemoryManagerState
 	bool IsReadRegister[0x100];
 	bool IsWriteRegister[0x100];
 
-	MemoryType MemoryType[0x100];
-	uint32_t MemoryOffset[0x100];
-	SmsRegisterAccess MemoryAccessType[0x100];
-
 	uint8_t OpenBus;
 
 	bool ExpEnabled;

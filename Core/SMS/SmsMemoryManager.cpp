@@ -210,10 +210,6 @@ void SmsMemoryManager::Map(uint16_t start, uint16_t end, MemoryType type, uint32
 			_reads[i >> 8] = src;
 			_writes[i >> 8] = readonly ? nullptr : src;
 
-			_state.MemoryType[i >> 8] = type;
-			_state.MemoryOffset[i >> 8] = offset;
-			_state.MemoryAccessType[i >> 8] = readonly ? SmsRegisterAccess::Read : SmsRegisterAccess::ReadWrite;
-
 			if(src) {
 				src += 0x100;
 				offset = (offset + 0x100);
@@ -233,10 +229,6 @@ void SmsMemoryManager::Unmap(uint16_t start, uint16_t end)
 	for(int i = start; i < end; i += 0x100) {
 		_reads[i >> 8] = nullptr;
 		_writes[i >> 8] = nullptr;
-
-		_state.MemoryType[i >> 8] = MemoryType::None;
-		_state.MemoryOffset[i >> 8] = 0;
-		_state.MemoryAccessType[i >> 8] = SmsRegisterAccess::None;
 	}
 }
 

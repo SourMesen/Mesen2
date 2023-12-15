@@ -1937,15 +1937,6 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
 		public byte[] IsWriteRegister;
 
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
-		public MemoryType[] MemoryType;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
-		public UInt32[] MemoryOffset;
-
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
-		public SmsRegisterAccess[] MemoryAccessType;
-
 		public byte OpenBus;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ExpEnabled;

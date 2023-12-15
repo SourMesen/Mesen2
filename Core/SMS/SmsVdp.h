@@ -11,7 +11,7 @@ class SmsCpu;
 class SmsControlManager;
 class SmsMemoryManager;
 
-class SmsVdp : public ISerializable
+class SmsVdp final : public ISerializable
 {
 public:
 	static constexpr int SmsVdpLeftBorder = 13;

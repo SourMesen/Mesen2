@@ -6,7 +6,7 @@ class Emulator;
 class SmsConsole;
 typedef struct __OPLL OPLL;
 
-class SmsFmAudio : public ISerializable, public IAudioProvider
+class SmsFmAudio final : public ISerializable, public IAudioProvider
 {
 private:
 	Emulator* _emu = nullptr;

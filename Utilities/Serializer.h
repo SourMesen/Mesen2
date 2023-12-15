@@ -106,7 +106,7 @@ private:
 		uint8_t* ptr = (uint8_t*)&value;
 		constexpr bool isBigEndian = false;
 		constexpr int mask = isBigEndian ? sizeof(T) - 1 : 0;
-		for(int i = 0; i < sizeof(T); i++) {
+		for(int i = 0; i < (int)sizeof(T); i++) {
 			_data.push_back(ptr[i ^ mask]);
 		}
 	}
@@ -117,7 +117,7 @@ private:
 		uint8_t* ptr = (uint8_t*)&value;
 		constexpr bool isBigEndian = false;
 		constexpr int mask = isBigEndian ? sizeof(T) - 1 : 0;
-		for(int i = 0; i < sizeof(T); i++) {
+		for(int i = 0; i < (int)sizeof(T); i++) {
 			ptr[i ^ mask] = src[i];
 		}
 	}

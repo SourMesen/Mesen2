@@ -18,7 +18,7 @@ class SmsPsg;
 class SmsFmAudio;
 class SmsBiosMapper;
 
-class SmsMemoryManager : public ISerializable
+class SmsMemoryManager final : public ISerializable
 {
 private:
 	static constexpr uint32_t WorkRamSize = 0x2000;
@@ -120,5 +120,5 @@ public:
 	uint8_t ReadGameGearPort(uint8_t port);
 	void WriteGameGearPort(uint8_t port, uint8_t value);
 
-	void Serialize(Serializer& s);
+	void Serialize(Serializer& s) override;
 };

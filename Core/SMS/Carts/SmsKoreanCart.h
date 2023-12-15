@@ -33,7 +33,7 @@ public:
 		}
 	}
 
-	void Serialize(Serializer& s)
+	void Serialize(Serializer& s) override
 	{
 		SV(_prgBank);
 	}

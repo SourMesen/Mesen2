@@ -64,7 +64,7 @@ public:
 		}
 	}
 
-	void Serialize(Serializer& s)
+	void Serialize(Serializer& s) override
 	{
 		SVArray(_prgBanks, 3);
 		SVArray(_ramEnabled, 2);

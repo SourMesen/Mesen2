@@ -169,7 +169,7 @@ bool DisassemblySearch::TextContains(string& needle, const char* hay, int size, 
 			}
 
 			pos++;
-			if(pos == needle.size()) {
+			if(pos == (int)needle.size()) {
 				if(options.MatchWholeWord && j < size - 1 && !IsWordSeparator(hay[j + 1])) {
 					j -= pos - 1;
 					pos = 0;

@@ -176,7 +176,7 @@ void SmsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 			}
 
 			case 'v':
-				switch(opInfo.HlRegType) {
+				switch(opInfo.HlType) {
 					default: str.Write(""); break;
 					case HlRegType::IX: str.WriteAll("(IX+$", HexUtilities::ToHex(opInfo.IndexOffset), "), "); break;
 					case HlRegType::IY: str.WriteAll("(IY+$", HexUtilities::ToHex(opInfo.IndexOffset), "), "); break;
@@ -184,7 +184,7 @@ void SmsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 				break;
 
 			case 'w': 
-				switch(opInfo.HlRegType) {
+				switch(opInfo.HlType) {
 					default: str.Write("HL"); break;
 					case HlRegType::IX: str.Write("IX"); break;
 					case HlRegType::IY: str.Write("IY"); break;
@@ -192,12 +192,12 @@ void SmsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 				break;
 
 			case 'x':
-				if(opInfo.IndexOffset < 0 && opInfo.HlRegType != HlRegType::HL) {
+				if(opInfo.IndexOffset < 0 && opInfo.HlType != HlRegType::HL) {
 					opInfo.ByteCode++;
 					opInfo.IndexOffset = opInfo.ByteCode[0];
 				}
 
-				switch(opInfo.HlRegType) {
+				switch(opInfo.HlType) {
 					default: str.Write("(HL)"); break;
 					case HlRegType::IX: str.WriteAll("(IX+$", HexUtilities::ToHex(opInfo.IndexOffset), ")"); break;
 					case HlRegType::IY: str.WriteAll("(IY+$", HexUtilities::ToHex(opInfo.IndexOffset), ")"); break;
@@ -205,7 +205,7 @@ void SmsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 				break;
 
 			case 'y':
-				switch(opInfo.HlRegType) {
+				switch(opInfo.HlType) {
 					default: str.Write('H'); break;
 					case HlRegType::IX: str.Write("IXH"); break;
 					case HlRegType::IY: str.Write("IYH"); break;
@@ -213,7 +213,7 @@ void SmsDisUtils::GetDisassembly(DisassemblyInfo& info, string& out, uint32_t me
 				break;
 
 			case 'z':
-				switch(opInfo.HlRegType) {
+				switch(opInfo.HlType) {
 					default: str.Write('L'); break;
 					case HlRegType::IX: str.Write("IXL"); break;
 					case HlRegType::IY: str.Write("IYL"); break;
@@ -241,7 +241,7 @@ SmsOpInfo SmsDisUtils::GetSmsOpInfo(DisassemblyInfo& info)
 				break;
 
 			case 0xCB:
-				if(result.HlRegType != HlRegType::HL) {
+				if(result.HlType != HlRegType::HL) {
 					result.ByteCode++;
 					result.IndexOffset = result.ByteCode[0];
 				}
@@ -251,19 +251,19 @@ SmsOpInfo SmsDisUtils::GetSmsOpInfo(DisassemblyInfo& info)
 				break;
 
 			case 0xDD:
-				result.HlRegType = HlRegType::IX;
+				result.HlType = HlRegType::IX;
 				result.ByteCode++;
 				break;
 
 			case 0xFD:
-				result.HlRegType = HlRegType::IY;
+				result.HlType = HlRegType::IY;
 				result.ByteCode++;
 				break;
 
 			case 0xED:
 				result.ByteCode++;
 				result.IsEdPrefix = true;
-				result.HlRegType = HlRegType::HL;
+				result.HlType = HlRegType::HL;
 				result.Op = _edTemplate[result.ByteCode[0]];
 				break;
 		}
@@ -316,7 +316,7 @@ EffectiveAddressInfo SmsDisUtils::GetEffectiveAddress(DisassemblyInfo& info, Sms
 			result.ShowAddress = (
 				(strstr(smsOp.Op, "(") != nullptr && strstr(smsOp.Op, "(a)") == nullptr && strstr(smsOp.Op, "(p)") == nullptr) ||
 				strstr(smsOp.Op, "x") != nullptr ||
-				(smsOp.HlRegType != HlRegType::HL && strstr(smsOp.Op, "v") != nullptr) ||
+				(smsOp.HlType != HlRegType::HL && strstr(smsOp.Op, "v") != nullptr) ||
 				(smsOp.IsEdPrefix && smsOp.ByteCode[0] >= 0xA0 && smsOp.ByteCode[0] <= 0xAF)
 			);
 			return result;

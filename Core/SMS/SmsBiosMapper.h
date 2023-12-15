@@ -4,7 +4,7 @@
 
 class SmsMemoryManager;
 
-class SmsBiosMapper : public ISerializable
+class SmsBiosMapper final : public ISerializable
 {
 private:
 	SmsMemoryManager* _memoryManager = nullptr;
@@ -16,5 +16,5 @@ public:
 	void WriteRegister(uint16_t addr, uint8_t value);
 	void RefreshMappings();
 
-	void Serialize(Serializer& s);
+	void Serialize(Serializer& s) override;
 };

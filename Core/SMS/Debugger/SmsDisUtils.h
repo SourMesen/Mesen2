@@ -17,7 +17,7 @@ enum class HlRegType
 
 struct SmsOpInfo
 {
-	HlRegType HlRegType = HlRegType::HL;
+	HlRegType HlType = HlRegType::HL;
 	const char* Op = nullptr;
 	int16_t IndexOffset = -1;
 	uint8_t* ByteCode = nullptr;
