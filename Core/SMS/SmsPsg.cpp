@@ -137,6 +137,7 @@ void SmsPsg::Write(uint8_t value)
 				_state.Noise.Volume = value & 0x0F;
 			} else {
 				_state.Noise.Control = value & 0x07;
+				_state.Noise.Lfsr = 0x8000;
 			}
 			break;
 	}
