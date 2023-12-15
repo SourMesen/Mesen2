@@ -26,5 +26,5 @@ public:
 	double GetRateAdjustment();
 	uint32_t GetTargetRate();
 
-	uint32_t Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples);
+	uint32_t Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples, uint32_t maxOutCount);
 };

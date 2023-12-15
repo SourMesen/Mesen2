@@ -94,8 +94,8 @@ void SoundResampler::UpdateTargetSampleRate(uint32_t sourceRate, uint32_t sample
 	}
 }
 
-uint32_t SoundResampler::Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples)
+uint32_t SoundResampler::Resample(int16_t *inSamples, uint32_t sampleCount, uint32_t sourceRate, uint32_t sampleRate, int16_t *outSamples, uint32_t maxOutCount)
 {
 	UpdateTargetSampleRate(sourceRate, sampleRate);
-	return _resampler.Resample<false>(inSamples, sampleCount, outSamples, 0);
+	return _resampler.Resample<false>(inSamples, sampleCount, outSamples, maxOutCount);
 }

@@ -92,7 +92,7 @@ uint32_t HermiteResampler::Resample(int16_t* in, uint32_t inSampleCount, int16_t
 	for(uint32_t i = 0; i < inSampleCount * 2; i += 2) {
 		while(_fraction <= 1.0) {
 			//Generate interpolated samples until we have enough samples for the current source sample
-			if(maxOutSampleCount == 0 || outPos <= maxOutSampleCount - 2) {
+			if(outPos <= maxOutSampleCount - 2) {
 				WriteSample<addMode>(out, outPos, HermiteInterpolate(_prevLeft, _fraction), HermiteInterpolate(_prevRight, _fraction));
 				outPos += 2;
 			} else {
