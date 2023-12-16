@@ -18,14 +18,16 @@ namespace Mesen.Debugger.Utilities
 			int address = -1;
 			if(seg.Type == CodeSegmentType.EffectiveAddress) {
 				if(seg.Data.EffectiveAddress.Address >= 0) {
-					if(seg.Data.EffectiveAddress.Type.IsRelativeMemory()) {
-						AddressInfo relAddress = seg.Data.EffectiveAddress;
+					MemoryType memType = seg.Data.EffectiveAddress.Type != MemoryType.None ? seg.Data.EffectiveAddress.Type : cpuType.ToMemoryType();
+					if(memType.IsRelativeMemory()) {
+						AddressInfo relAddress = new AddressInfo() { Address = seg.Data.EffectiveAddress.Address, Type = memType };
 						AddressInfo absAddress = DebugApi.GetAbsoluteAddress(relAddress);
 						return new LocationInfo {
 							RelAddress = relAddress,
 							AbsAddress = absAddress.Address >= 0 ? absAddress : null,
 						};
 					} else {
+						//Used by e.g ports on the SMS
 						return new LocationInfo {
 							AbsAddress = seg.Data.EffectiveAddress
 						};
