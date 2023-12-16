@@ -453,6 +453,7 @@
 			<Control ID="tpgVideo">Video</Control>
 			<Control ID="lblMiscSettings">Miscellaneous Settings</Control>
 			<Control ID="chkUseSgPalette">Use SG-1000 palette in legacy video modes</Control>
+			<Control ID="chkGgBlendFrames">Enable LCD frame blending (Game Gear)</Control>
 			<Control ID="chkRemoveSpriteLimit">Remove sprite limit</Control>
 			<Control ID="chkDisableBackground">Disable background</Control>
 			<Control ID="chkDisableSprites">Disable sprites</Control>

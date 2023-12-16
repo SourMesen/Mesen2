@@ -615,6 +615,7 @@ struct SmsConfig
 	SmsRevision Revision = SmsRevision::Compatibility;
 
 	bool UseSgPalette = false;
+	bool GgBlendFrames = true;
 	bool RemoveSpriteLimit = false;
 	bool DisableSprites = false;
 	bool DisableBackground = false;

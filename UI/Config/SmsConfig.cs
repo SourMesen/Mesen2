@@ -23,6 +23,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 	[Reactive] public SmsRevision Revision { get; set; } = SmsRevision.Compatibility;
 
 	[Reactive] public bool UseSgPalette { get; set; } = true;
+	[Reactive] public bool GgBlendFrames { get; set; } = true;
 	[Reactive] public bool RemoveSpriteLimit { get; set; } = false;
 	[Reactive] public bool DisableSprites { get; set; } = false;
 	[Reactive] public bool DisableBackground { get; set; } = false;
@@ -49,6 +50,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 			Revision = Revision,
 
 			UseSgPalette = UseSgPalette,
+			GgBlendFrames = GgBlendFrames,
 			RemoveSpriteLimit = RemoveSpriteLimit,
 			DisableBackground = DisableBackground,
 			DisableSprites = DisableSprites,
@@ -118,6 +120,7 @@ public struct InteropSmsConfig
 	public SmsRevision Revision;
 
 	[MarshalAs(UnmanagedType.I1)] public bool UseSgPalette;
+	[MarshalAs(UnmanagedType.I1)] public bool GgBlendFrames;
 	[MarshalAs(UnmanagedType.I1)] public bool RemoveSpriteLimit;
 	[MarshalAs(UnmanagedType.I1)] public bool DisableSprites;
 	[MarshalAs(UnmanagedType.I1)] public bool DisableBackground;

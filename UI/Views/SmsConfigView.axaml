@@ -100,6 +100,7 @@
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
 					<c:OptionSection Header="{l:Translate lblMiscSettings}" Margin="0">
+						<CheckBox IsChecked="{CompiledBinding Config.GgBlendFrames}" Content="{l:Translate chkGgBlendFrames}" />
 						<CheckBox IsChecked="{CompiledBinding Config.UseSgPalette}" Content="{l:Translate chkUseSgPalette}" />
 						<CheckBox IsChecked="{CompiledBinding Config.RemoveSpriteLimit}" Content="{l:Translate chkRemoveSpriteLimit}" />
 						<c:CheckBoxWarning IsChecked="{CompiledBinding Config.DisableBackground}" Text="{l:Translate chkDisableBackground}" />
