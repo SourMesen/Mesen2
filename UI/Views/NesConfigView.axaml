@@ -64,6 +64,7 @@
 							Grid.Column="1"
 							Width="130"
 							SelectedItem="{CompiledBinding Config.Region}"
+							AvailableValues="{CompiledBinding AvailableRegions}"
 						/>
 					</StackPanel>
 					<CheckBox IsChecked="{CompiledBinding Config.EnableHdPacks}" Content="{l:Translate chkEnableHdPacks}" />

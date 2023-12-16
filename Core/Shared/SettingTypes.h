@@ -328,7 +328,8 @@ enum class ConsoleRegion
 	Auto = 0,
 	Ntsc = 1,
 	Pal = 2,
-	Dendy = 3
+	Dendy = 3,
+	NtscJapan = 4
 };
 
 enum class ConsoleType
@@ -608,6 +609,7 @@ struct SmsConfig
 	ControllerConfig Port2;
 	
 	ConsoleRegion Region = ConsoleRegion::Auto;
+	ConsoleRegion GameGearRegion = ConsoleRegion::Auto;
 	RamState RamPowerOnState = RamState::Random;
 
 	SmsRevision Revision = SmsRevision::Compatibility;

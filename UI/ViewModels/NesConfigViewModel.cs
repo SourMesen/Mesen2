@@ -28,6 +28,13 @@ namespace Mesen.ViewModels
 		[ObservableAsProperty] public bool IsDelayStereoEffect { get; }
 		[ObservableAsProperty] public bool IsPanningStereoEffect { get; }
 		[ObservableAsProperty] public bool IsCombStereoEffect { get; }
+		
+		public Enum[] AvailableRegions => new Enum[] {
+			ConsoleRegion.Auto,
+			ConsoleRegion.Ntsc,
+			ConsoleRegion.Pal,
+			ConsoleRegion.Dendy
+		};
 
 		public NesInputConfigViewModel Input { get; private set; }
 

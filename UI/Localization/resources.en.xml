@@ -431,7 +431,8 @@
 
 		<Form ID="SmsConfigView">
 			<Control ID="tpgGeneral">General</Control>
-			<Control ID="lblRegion">Region:</Control>
+			<Control ID="lblRegionSms">Region (Master System):</Control>
+			<Control ID="lblRegionGg">Region (Game Gear):</Control>
 
 			<Control ID="tpgAudio">Audio</Control>
 			<Control ID="grpVolume">Volume</Control>
@@ -2119,6 +2120,7 @@ E
 			<Value ID="Ntsc">NTSC (60 FPS)</Value>
 			<Value ID="Pal">PAL (50 FPS)</Value>
 			<Value ID="Dendy">Dendy (50 FPS)</Value>
+			<Value ID="NtscJapan">NTSC - Japan (60 FPS)</Value>
 		</Enum>
 		<Enum ID="VideoAspectRatio">
 			<Value ID="NoStretching">No Stretching (default)</Value>

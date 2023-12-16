@@ -20,9 +20,16 @@ namespace Mesen.ViewModels
 
 		public SmsInputConfigViewModel Input { get; private set; }
 		
-		public Enum[] AvailableRegions => new Enum[] {
+		public Enum[] AvailableRegionsSms => new Enum[] {
 			ConsoleRegion.Auto,
 			ConsoleRegion.Ntsc,
+			ConsoleRegion.Pal
+		};
+
+		public Enum[] AvailableRegionsGg => new Enum[] {
+			ConsoleRegion.Auto,
+			ConsoleRegion.Ntsc,
+			ConsoleRegion.NtscJapan,
 			ConsoleRegion.Pal
 		};
 

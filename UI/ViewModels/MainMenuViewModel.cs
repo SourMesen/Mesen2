@@ -224,7 +224,7 @@ namespace Mesen.ViewModels
 				new ContextMenuSeparator(),
 				new MainMenuAction(EmulatorShortcut.PowerOff) { ActionType = ActionType.PowerOff },
 				
-				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy },
+				new ContextMenuSeparator() { IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear },
 				new MainMenuAction() { 
 					ActionType = ActionType.GameConfig,
 					IsVisible = () => IsGameRunning && RomInfo.ConsoleType != ConsoleType.Gameboy && RomInfo.Format != RomFormat.GameGear,
@@ -412,13 +412,14 @@ namespace Mesen.ViewModels
 					IsEnabled = () => IsGameRunning,
 					IsVisible = () => (
 						!IsGameRunning || 
-						(MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy && MainWindow.RomInfo.Format != RomFormat.GameGear)
+						MainWindow.RomInfo.ConsoleType != ConsoleType.Gameboy
 					),
 					SubActions = new List<object>() {
 						GetRegionMenuItem(ConsoleRegion.Auto),
 						GetPcEngineModelMenuItem(PceConsoleType.Auto),
 						new ContextMenuSeparator(),
 						GetRegionMenuItem(ConsoleRegion.Ntsc),
+						GetRegionMenuItem(ConsoleRegion.NtscJapan),
 						GetRegionMenuItem(ConsoleRegion.Pal),
 						GetRegionMenuItem(ConsoleRegion.Dendy),
 						GetPcEngineModelMenuItem(PceConsoleType.PcEngine),
@@ -510,7 +511,12 @@ namespace Mesen.ViewModels
 		{
 			return new MainMenuAction() {
 				ActionType = ActionType.Custom,
-				CustomText = ResourceHelper.GetEnumText(region),
+				DynamicText = () => {
+					if(region == ConsoleRegion.Pal && MainWindow.RomInfo.Format == RomFormat.GameGear) {
+						return "PAL (60 FPS)"; //GG is 60fps even when region is PAL
+					}
+					return ResourceHelper.GetEnumText(region);
+				},
 				IsVisible = () => {
 					if(MainWindow.RomInfo.ConsoleType == ConsoleType.PcEngine || MainWindow.RomInfo.ConsoleType == ConsoleType.Gameboy) {
 						return false;
@@ -518,6 +524,7 @@ namespace Mesen.ViewModels
 
 					return region switch {
 						ConsoleRegion.Ntsc => true,
+						ConsoleRegion.NtscJapan => MainWindow.RomInfo.Format == RomFormat.GameGear,
 						ConsoleRegion.Pal => true,
 						ConsoleRegion.Dendy => MainWindow.RomInfo.ConsoleType == ConsoleType.Nes,
 						ConsoleRegion.Auto or _ => true
@@ -526,7 +533,7 @@ namespace Mesen.ViewModels
 				IsSelected = () => MainWindow.RomInfo.ConsoleType switch {
 					ConsoleType.Snes => ConfigManager.Config.Snes.Region == region,
 					ConsoleType.Nes => ConfigManager.Config.Nes.Region == region,
-					ConsoleType.Sms => ConfigManager.Config.Sms.Region == region,
+					ConsoleType.Sms => (MainWindow.RomInfo.Format == RomFormat.GameGear ? ConfigManager.Config.Sms.GameGearRegion : ConfigManager.Config.Sms.Region) == region,
 					_ => region == ConsoleRegion.Auto
 				},
 				OnClick = () => {
@@ -542,7 +549,11 @@ namespace Mesen.ViewModels
 							break;
 
 						case ConsoleType.Sms:
-							ConfigManager.Config.Sms.Region = region;
+							if(MainWindow.RomInfo.Format == RomFormat.GameGear) {
+								ConfigManager.Config.Sms.GameGearRegion = region;
+							} else {
+								ConfigManager.Config.Sms.Region = region;
+							}
 							ConfigManager.Config.Sms.ApplyConfig();
 							break;
 

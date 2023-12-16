@@ -17,6 +17,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 	[Reactive] public SmsControllerConfig Port2 { get; set; } = new();
 
 	[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
+	[Reactive] public ConsoleRegion GameGearRegion { get; set; } = ConsoleRegion.Auto;
 	[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 
 	[Reactive] public SmsRevision Revision { get; set; } = SmsRevision.Compatibility;
@@ -43,6 +44,7 @@ public class SmsConfig : BaseConfig<SmsConfig>
 			Port2 = Port2.ToInterop(),
 
 			Region = Region,
+			GameGearRegion = GameGearRegion,
 			RamPowerOnState = RamPowerOnState,
 			Revision = Revision,
 
@@ -111,6 +113,7 @@ public struct InteropSmsConfig
 	public InteropControllerConfig Port2;
 
 	public ConsoleRegion Region;
+	public ConsoleRegion GameGearRegion;
 	public RamState RamPowerOnState;
 	public SmsRevision Revision;
 

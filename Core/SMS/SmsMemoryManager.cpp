@@ -404,13 +404,15 @@ void SmsMemoryManager::WritePort(uint8_t port, uint8_t value)
 uint8_t SmsMemoryManager::ReadGameGearPort(uint8_t port)
 {
 	switch(port) {
-		case 0:
+		case 0: {
 			//start button, region, pal/ntsc
+			ConsoleRegion region = _console->GetRegion();
 			return (
 				(_controlManager->IsPausePressed() ? 0x00 : 0x80) |
-				0x00 | //TODOSMS add UI option for japan vs overseas model
-				(_console->GetRegion() == ConsoleRegion::Pal ? 0x10 : 0x00)
+				(region == ConsoleRegion::NtscJapan ? 0x00 : 0x40) |
+				(region == ConsoleRegion::Pal ? 0x20 : 0x00)
 			);
+		}
 
 		//TODOSMS GG - input/output ext port
 		case 1: return 0x7F;

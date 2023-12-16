@@ -23,13 +23,21 @@
 		<TabItem Header="{l:Translate tpgGeneral}">
 			<ScrollViewer AllowAutoHide="False" HorizontalScrollBarVisibility="Auto" Padding="0 0 2 0">
 				<StackPanel>
-					<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
-						<TextBlock Text="{l:Translate lblRegion}"/>
+					<Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
+						<TextBlock Text="{l:Translate lblRegionSms}"/>
 						<c:EnumComboBox
 							SelectedItem="{CompiledBinding Config.Region}"
 							Grid.Column="1"
 							MinWidth="130"
-							AvailableValues="{CompiledBinding AvailableRegions}"
+							AvailableValues="{CompiledBinding AvailableRegionsSms}"
+						/>
+						<TextBlock Grid.Row="1" Text="{l:Translate lblRegionGg}"/>
+						<c:EnumComboBox
+							SelectedItem="{CompiledBinding Config.GameGearRegion}"
+							Grid.Row="1"
+							Grid.Column="1"
+							MinWidth="130"
+							AvailableValues="{CompiledBinding AvailableRegionsGg}"
 						/>
 					</Grid>
 				</StackPanel>

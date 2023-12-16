@@ -143,21 +143,25 @@ void SmsConsole::ProcessEndOfFrame()
 
 void SmsConsole::UpdateRegion(bool forceUpdate)
 {
-	ConsoleRegion region = _emu->GetSettings()->GetSmsConfig().Region;
-	if(_romFormat == RomFormat::GameGear) {
-		region = ConsoleRegion::Ntsc;
-	} else if(region == ConsoleRegion::Auto) {
+	SmsConfig& cfg = _emu->GetSettings()->GetSmsConfig();
+	ConsoleRegion region = _romFormat == RomFormat::GameGear ? cfg.GameGearRegion : cfg.Region;
+
+	if(region == ConsoleRegion::Auto) {
 		string filename = StringUtilities::ToLower(_emu->GetRomInfo().RomFile.GetFileName());
 		if(filename.find("(europe)") != string::npos || filename.find("(e)") != string::npos) {
 			region = ConsoleRegion::Pal;
 		} else {
-			region = ConsoleRegion::Ntsc;
+			if(_romFormat == RomFormat::GameGear && (filename.find("(japan)") != string::npos || filename.find("(j)") != string::npos)) {
+				region = ConsoleRegion::NtscJapan;
+			} else {
+				region = ConsoleRegion::Ntsc;
+			}
 		}
 	}
 
 	if(_region != region || forceUpdate) {
 		_region = region;
-		_vdp->SetRegion(_region);
+		_vdp->SetRegion(_model == SmsModel::GameGear ? ConsoleRegion::Ntsc : _region);
 	}
 }
 
@@ -213,12 +217,12 @@ uint64_t SmsConsole::GetMasterClock()
 
 uint32_t SmsConsole::GetMasterClockRate()
 {
-	return _region == ConsoleRegion::Pal ? 3546895 : 3579545;
+	return (_model == SmsModel::Sms && _region == ConsoleRegion::Pal) ? 3546895 : 3579545;
 }
 
 double SmsConsole::GetFps()
 {
-	return _region == ConsoleRegion::Pal ? 49.701460 :  59.9227434;
+	return (_model == SmsModel::Sms && _region == ConsoleRegion::Pal) ? 49.701460 :  59.9227434;
 }
 
 BaseVideoFilter* SmsConsole::GetVideoFilter(bool getDefaultFilter)

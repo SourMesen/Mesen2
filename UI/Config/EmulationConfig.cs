@@ -44,7 +44,8 @@ namespace Mesen.Config
 		Auto = 0,
 		Ntsc = 1,
 		Pal = 2,
-		Dendy = 3
+		Dendy = 3,
+		NtscJapan = 4
 	}
 
 	public enum RamState
