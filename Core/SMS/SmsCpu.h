@@ -84,6 +84,7 @@ private:
 	uint16_t PopWord();
 
 	void LD(uint8_t& dst, uint8_t value);
+	void LD_IR(uint8_t& dst, uint8_t value);
 	void LD(uint16_t& dst, uint16_t value);
 	void LD(Register16& dst, uint16_t value);
 	void LD_Indirect(uint16_t dst, uint8_t value);

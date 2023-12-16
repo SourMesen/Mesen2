@@ -408,7 +408,7 @@ void SmsCpu::PREFIX_ED()
 		case 0x54: NEG(); break;
 		case 0x55: RETI(); break;
 		case 0x56: IM(1); break;
-		case 0x57: LD(_state.A, _state.I); ExecCycles(1); break;
+		case 0x57: LD_IR(_state.A, _state.I); break;
 		case 0x58: IN(_state.E, _state.C); break;
 		case 0x59: OUT(_state.E, _state.C); break;
 		case 0x5A: ADC16(_regDE); break;
@@ -416,7 +416,7 @@ void SmsCpu::PREFIX_ED()
 		case 0x5C: NEG(); break;
 		case 0x5D: RETI(); break;
 		case 0x5E: IM(2); break;
-		case 0x5F: LD(_state.A, _state.R); ExecCycles(1); break;
+		case 0x5F: LD_IR(_state.A, _state.R); break;
 		case 0x60: IN(_state.H, _state.C); break;
 		case 0x61: OUT(_state.H, _state.C); break;
 		case 0x62: SBC16(_regHL); break;
@@ -986,6 +986,17 @@ uint16_t SmsCpu::PopWord()
 void SmsCpu::LD(uint8_t& dst, uint8_t value)
 {
 	dst = value;
+}
+
+void SmsCpu::LD_IR(uint8_t& dst, uint8_t value)
+{
+	dst = value;
+
+	SetStandardFlags<0xE4>(value);
+	SetFlagState(SmsCpuFlags::Parity, _state.IFF2);
+	ClearFlag(SmsCpuFlags::HalfCarry);
+	ClearFlag(SmsCpuFlags::AddSub);
+	ExecCycles(1);
 }
 
 void SmsCpu::LD(uint16_t& dst, uint16_t value)
