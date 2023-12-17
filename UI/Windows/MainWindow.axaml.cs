@@ -21,6 +21,7 @@ using Mesen.Debugger.Windows;
 using Avalonia.Input.Platform;
 using System.Collections.Generic;
 using Mesen.Controls;
+using Mesen.Localization;
 
 namespace Mesen.Windows
 {
@@ -176,7 +177,7 @@ namespace Mesen.Windows
 					LoadRomHelper.LoadFile(filename);
 					Activate();
 				} else {
-					EmuApi.DisplayMessage("Error", "File not found: " + filename);
+					DisplayMessageHelper.DisplayMessage("Error", ResourceHelper.GetMessage("FileNotFound", filename));
 				}
 			}
 		}

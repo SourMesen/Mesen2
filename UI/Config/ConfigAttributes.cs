@@ -20,11 +20,11 @@ namespace Mesen.Config
 
 	public class ValidValuesAttribute : Attribute
 	{
-		public uint[] ValidValues { get; set; }
+		public Enum[] ValidValues { get; set; }
 
-		public ValidValuesAttribute(params uint[] validValues)
+		public ValidValuesAttribute(params object[] validValues)
 		{
-			this.ValidValues = validValues;
+			this.ValidValues = validValues.Cast<Enum>().ToArray();
 		}
 	}
 }

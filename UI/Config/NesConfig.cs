@@ -33,7 +33,9 @@ namespace Mesen.Config
 		[Reactive] public bool AutoConfigureInput { get; set; } = true;
 
 		//General
+		[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.Pal, ConsoleRegion.Dendy)]
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
+
 		[Reactive] public bool EnableHdPacks { get; set; } = true;
 		[Reactive] public bool DisableGameDatabase { get; set; } = false;
 		[Reactive] public bool FdsAutoLoadDisk { get; set; } = true;

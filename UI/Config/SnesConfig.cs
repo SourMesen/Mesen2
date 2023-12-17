@@ -25,6 +25,7 @@ namespace Mesen.Config
 		[Reactive] public SnesControllerConfig Port2C { get; set; } = new SnesControllerConfig();
 		[Reactive] public SnesControllerConfig Port2D { get; set; } = new SnesControllerConfig();
 
+		[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.Pal)]
 		[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
 
 		//Video

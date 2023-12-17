@@ -301,10 +301,14 @@ namespace Mesen.Utilities
 
 		private void ToggleVideoLayer(VideoLayer layer)
 		{
+			if(!EmuApi.IsRunning()) {
+				return;
+			}
+
 			(Func<bool>? get, Action<bool>? set) = GetFlagSetterGetter(layer);
 			if(get != null && set != null) {
 				set(!get());
-				EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage(get() ? "VideoLayerDisabled" : "VideoLayerEnabled", ResourceHelper.GetEnumText(layer)));
+				DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage(get() ? "VideoLayerDisabled" : "VideoLayerEnabled", ResourceHelper.GetEnumText(layer)));
 				ConfigManager.Config.Snes.ApplyConfig();
 				ConfigManager.Config.Nes.ApplyConfig();
 				ConfigManager.Config.Gameboy.ApplyConfig();
@@ -336,7 +340,7 @@ namespace Mesen.Utilities
 			ConfigManager.Config.PcEngine.ApplyConfig();
 			ConfigManager.Config.Sms.ApplyConfig();
 
-			EmuApi.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
+			DisplayMessageHelper.DisplayMessage("Debug", ResourceHelper.GetMessage("AllLayersEnabled"));
 		}
 
 		private void SetEmulationSpeed(uint emulationSpeed)
@@ -345,9 +349,9 @@ namespace Mesen.Utilities
 			ConfigManager.Config.Emulation.ApplyConfig();
 
 			if(emulationSpeed == 0) {
-				EmuApi.DisplayMessage("EmulationSpeed", "EmulationMaximumSpeed");
+				DisplayMessageHelper.DisplayMessage("EmulationSpeed", "EmulationMaximumSpeed");
 			} else {
-				EmuApi.DisplayMessage("EmulationSpeed", "EmulationSpeedPercent", emulationSpeed.ToString());
+				DisplayMessageHelper.DisplayMessage("EmulationSpeed", "EmulationSpeedPercent", emulationSpeed.ToString());
 			}
 		}
 

@@ -16,8 +16,12 @@ public class SmsConfig : BaseConfig<SmsConfig>
 	[Reactive] public SmsControllerConfig Port1 { get; set; } = new();
 	[Reactive] public SmsControllerConfig Port2 { get; set; } = new();
 
+	[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.Pal)]
 	[Reactive] public ConsoleRegion Region { get; set; } = ConsoleRegion.Auto;
+
+	[ValidValues(ConsoleRegion.Auto, ConsoleRegion.Ntsc, ConsoleRegion.NtscJapan, ConsoleRegion.Pal)]
 	[Reactive] public ConsoleRegion GameGearRegion { get; set; } = ConsoleRegion.Auto;
+
 	[Reactive] public RamState RamPowerOnState { get; set; } = RamState.Random;
 
 	[Reactive] public SmsRevision Revision { get; set; } = SmsRevision.Compatibility;

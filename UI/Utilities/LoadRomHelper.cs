@@ -2,6 +2,7 @@
 using Avalonia.Threading;
 using Mesen.Config;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.ViewModels;
 using Mesen.Windows;
 using System;
@@ -145,6 +146,8 @@ namespace Mesen.Utilities
 				} else {
 					LoadRom(filename);
 				}
+			} else {
+				DisplayMessageHelper.DisplayMessage("Error", ResourceHelper.GetMessage("FileNotFound", filename));
 			}
 		}
 	}

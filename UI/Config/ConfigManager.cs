@@ -74,12 +74,12 @@ namespace Mesen.Config
 
 		public static MesenTheme ActiveTheme { get; private set; }
 
-		private static void ApplySetting(object instance, PropertyInfo property, string value)
+		private static bool ApplySetting(object instance, PropertyInfo property, string value)
 		{
 			Type t = property.PropertyType;
 			try {
 				if(!property.CanWrite) {
-					return;
+					return false;
 				}
 
 				if(t == typeof(int) || t == typeof(uint) || t == typeof(double)) {
@@ -88,26 +88,24 @@ namespace Mesen.Config
 							if(int.TryParse(value, out int result)) {
 								if(result >= (int)minMaxAttribute.Min && result <= (int)minMaxAttribute.Max) {
 									property.SetValue(instance, result);
+								} else {
+									return false;
 								}
 							}
 						} else if(t == typeof(uint)) {
 							if(uint.TryParse(value, out uint result)) {
 								if(result >= (uint)(int)minMaxAttribute.Min && result <= (uint)(int)minMaxAttribute.Max) {
 									property.SetValue(instance, result);
+								} else {
+									return false;
 								}
 							}
 						} else if(t == typeof(double)) {
 							if(double.TryParse(value, out double result)) {
 								if(result >= (double)minMaxAttribute.Min && result <= (double)minMaxAttribute.Max) {
 									property.SetValue(instance, result);
-								}
-							}
-						}
-					} else {
-						if(property.GetCustomAttribute<ValidValuesAttribute>() is ValidValuesAttribute validValuesAttribute) {
-							if(uint.TryParse(value, out uint result)) {
-								if(validValuesAttribute.ValidValues.Contains(result)) {
-									property.SetValue(instance, result);
+								} else {
+									return false;
 								}
 							}
 						}
@@ -115,18 +113,31 @@ namespace Mesen.Config
 				} else if(t == typeof(bool)) {
 					if(bool.TryParse(value, out bool boolValue)) {
 						property.SetValue(instance, boolValue);
+					} else {
+						return false;
 					}
 				} else if(t.IsEnum) {
-					int indexOf = Enum.GetNames(t).Select((enumValue) => enumValue.ToLower()).ToList().IndexOf(value.ToLower());
-					if(indexOf >= 0) {
-						property.SetValue(instance, indexOf);
+					if(Enum.TryParse(t, value, true, out object? enumValue)) {
+						if(property.GetCustomAttribute<ValidValuesAttribute>() is ValidValuesAttribute validValuesAttribute) {
+							if(validValuesAttribute.ValidValues.Contains(enumValue)) {
+								property.SetValue(instance, enumValue);
+							} else {
+								return false;
+							}
+						} else {
+							property.SetValue(instance, enumValue);
+						}
+					} else {
+						return false;
 					}
 				}
 			} catch {
+				return false;
 			}
+			return true;
 		}
 
-		public static void ProcessSwitch(string switchArg)
+		public static bool ProcessSwitch(string switchArg)
 		{
 			Regex regex = new Regex("([a-z0-9_A-Z.]+)=([a-z0-9_A-Z.\\-]+)");
 			Match match = regex.Match(switchArg);
@@ -140,20 +151,22 @@ namespace Mesen.Config
 					property = cfg.GetType().GetProperty(switchPath[i], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 					if(property == null) {
 						//Invalid switch name
-						return;
+						return false;
 					}
 
 					if(i < switchPath.Length - 1) {
 						cfg = property.GetValue(cfg);
 						if(cfg == null) {
 							//Invalid
-							return;
+							return false;
 						}
 					} else {
-						ApplySetting(cfg, property, switchValue);
+						return ApplySetting(cfg, property, switchValue);
 					}
 				}
 			}
+
+			return false;
 		}
 
 		public static void ResetHomeFolder()

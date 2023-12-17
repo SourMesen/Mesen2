@@ -3,6 +3,7 @@ using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
+using Mesen.Localization;
 using Mesen.Utilities;
 using Mesen.ViewModels;
 using Mesen.Windows;
@@ -31,6 +32,8 @@ public class CommandLineHelper
 	public List<string> LuaScriptsToLoad { get; private set; } = new();
 	public List<string> FilesToLoad { get; private set; } = new();
 
+	private List<string> _errorMessages = new();
+
 	public CommandLineHelper(string[] args, bool forStartup)
 	{
 		ProcessCommandLineArgs(args, forStartup);
@@ -51,7 +54,7 @@ public class CommandLineHelper
 					case ".lua": LuaScriptsToLoad.Add(absPath); break;
 					default: FilesToLoad.Add(absPath); break;
 				}
-			} else {
+			} else if(arg.StartsWith("-") || arg.StartsWith("/")) {
 				string switchArg = ConvertArg(arg).ToLowerInvariant();
 				switch(switchArg) {
 					case "novideo": NoVideo = true; break;
@@ -88,10 +91,14 @@ public class CommandLineHelper
 								TestRunnerTimeout = timeout;
 							}
 						} else {
-							ConfigManager.ProcessSwitch(switchArg);
+							if(!ConfigManager.ProcessSwitch(switchArg)) {
+								_errorMessages.Add(ResourceHelper.GetMessage("InvalidArgument", arg));
+							}
 						}
 						break;
 				}
+			} else {
+				_errorMessages.Add(ResourceHelper.GetMessage("FileNotFound", arg));
 			}
 		}
 	}
@@ -154,6 +161,10 @@ public class CommandLineHelper
 		foreach(string file in FilesToLoad) {
 			LoadRomHelper.LoadFile(file);
 		}
+
+		foreach(string msg in _errorMessages) {
+			DisplayMessageHelper.DisplayMessage("Error", msg);
+		}
 	}
 
 	public static Dictionary<string, string> GetAvailableSwitches()
@@ -175,6 +186,7 @@ public class CommandLineHelper
 		result["Snes"] = GetSwichesForObject("snes.", typeof(SnesConfig));
 		result["Game Boy"] = GetSwichesForObject("gameBoy.", typeof(GameboyConfig));
 		result["PC Engine"] = GetSwichesForObject("pcEngine.", typeof(PcEngineConfig));
+		result["SMS"] = GetSwichesForObject("sms.", typeof(SmsConfig));
 
 		return result;
 	}
@@ -193,17 +205,17 @@ public class CommandLineHelper
 				MinMaxAttribute? minMaxAttribute = info.GetCustomAttribute(typeof(MinMaxAttribute)) as MinMaxAttribute;
 				if(minMaxAttribute != null) {
 					sb.AppendLine("--" + prefix + name + "=[" + minMaxAttribute.Min.ToString() + " - " + minMaxAttribute.Max.ToString() + "]");
-				} else {
-					ValidValuesAttribute? validValuesAttribute = info.GetCustomAttribute(typeof(ValidValuesAttribute)) as ValidValuesAttribute;
-					if(validValuesAttribute != null) {
-						sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", validValuesAttribute.ValidValues) + "]");
-					}
 				}
 			} else if(info.PropertyType == typeof(bool)) {
 				sb.AppendLine("--" + prefix + name + "=[true | false]");
 			} else if(info.PropertyType.IsEnum) {
 				if(info.PropertyType != typeof(ControllerType)) {
-					sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", Enum.GetNames(info.PropertyType)) + "]");
+					ValidValuesAttribute? validValuesAttribute = info.GetCustomAttribute(typeof(ValidValuesAttribute)) as ValidValuesAttribute;
+					if(validValuesAttribute != null) {
+						sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", validValuesAttribute.ValidValues.Select(v => Enum.GetName(info.PropertyType, v))) + "]");
+					} else {
+						sb.AppendLine("--" + prefix + name + "=[" + string.Join(" | ", Enum.GetNames(info.PropertyType)) + "]");
+					}
 				}
 			} else if(info.PropertyType.IsClass && !info.PropertyType.IsGenericType) {
 				string content = GetSwichesForObject(prefix + name + ".", info.PropertyType);

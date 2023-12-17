@@ -233,7 +233,7 @@ namespace Mesen.Utilities
 		private void CaptureMouse()
 		{
 			if(!_mouseCaptured && AllowMouseCapture) {
-				EmuApi.DisplayMessage("Input", ResourceHelper.GetMessage("MouseModeEnabled"));
+				DisplayMessageHelper.DisplayMessage("Input", ResourceHelper.GetMessage("MouseModeEnabled"));
 				_mouseCaptured = true;
 				
 				PixelPoint topLeft = _renderer.PointToScreen(new Point());
