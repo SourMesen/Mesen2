@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <algorithm>
+#include <regex>
 #include "Lua/lua.hpp"
 #include "Lua/luasocket.hpp"
 #include "Debugger/ScriptingContext.h"
@@ -50,7 +51,7 @@ ScriptingContext::~ScriptingContext()
 	}
 }
 
-bool ScriptingContext::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
+bool ScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger)
 {
 	_scriptName = scriptName;
 
@@ -76,6 +77,17 @@ bool ScriptingContext::LoadScript(string scriptName, string scriptContent, Debug
 		lua_pushcfunction(_lua, luaopen_mime_core);
 		lua_setfield(_lua, -2, "mime.core");
 		lua_pop(_lua, 2);
+	}
+
+	if(allowIoOsAccess) {
+		//Escape backslashes
+		std::regex r("\\\\");
+		path = std::regex_replace(path, r, "\\\\");
+
+		//Add path for the current Lua script to package.path to allow
+		//using require() without specifying an absolute path, etc.
+		string cmd = "package.path = package.path .. ';" + path + "?.lua'";
+		luaL_dostring(_lua, cmd.c_str());
 	}
 
 	luaL_requiref(_lua, "emu", LuaApi::GetLibrary, 1);

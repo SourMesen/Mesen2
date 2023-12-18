@@ -181,7 +181,7 @@ extern "C"
 	DllExport DebugEventInfo __stdcall GetEventViewerEvent(CpuType cpuType, uint16_t scanline, uint16_t cycle) { return WithTool(DebugEventInfo, GetEventManager(cpuType), GetEvent(scanline, cycle)); }
 	DllExport uint32_t __stdcall TakeEventSnapshot(CpuType cpuType, bool forAutoRefresh) { return WithTool(uint32_t, GetEventManager(cpuType), TakeEventSnapshot(forAutoRefresh)); }
 
-	DllExport int32_t __stdcall LoadScript(char* name, char* content, int32_t scriptId) { return WithTool(int32_t, GetScriptManager(), LoadScript(name, content, scriptId)); }
+	DllExport int32_t __stdcall LoadScript(char* name, char* path, char* content, int32_t scriptId) { return WithTool(int32_t, GetScriptManager(), LoadScript(name, path, content, scriptId)); }
 	DllExport void __stdcall RemoveScript(int32_t scriptId) { WithToolVoid(GetScriptManager(), RemoveScript(scriptId)); }
 
 	DllExport void __stdcall GetScriptLog(int32_t scriptId, char* outScriptLog, uint32_t maxLength)

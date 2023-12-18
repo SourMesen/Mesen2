@@ -21,10 +21,10 @@ string ScriptHost::GetLog()
 	return context ? context->GetLog() : "";
 }
 
-bool ScriptHost::LoadScript(string scriptName, string scriptContent, Debugger* debugger)
+bool ScriptHost::LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger)
 {
 	_context.reset(new ScriptingContext(debugger));
-	if(!_context->LoadScript(scriptName, scriptContent, debugger)) {
+	if(!_context->LoadScript(scriptName, path, scriptContent, debugger)) {
 		return false;
 	}
 	return true;

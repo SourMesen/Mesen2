@@ -26,7 +26,7 @@ public:
 	~ScriptManager();
 
 	__forceinline bool HasScript() { return _hasScript; }
-	int32_t LoadScript(string name, string content, int32_t scriptId);
+	int32_t LoadScript(string name, string path, string content, int32_t scriptId);
 	void RemoveScript(int32_t scriptId);
 	string GetScriptLog(int32_t scriptId);
 	void ProcessEvent(EventType type, CpuType cpuType);

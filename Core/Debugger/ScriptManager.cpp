@@ -20,14 +20,14 @@ ScriptManager::~ScriptManager()
 	_debugger->GetEmulator()->GetScriptHud()->ClearScreen();
 }
 
-int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
+int ScriptManager::LoadScript(string name, string path, string content, int32_t scriptId)
 {
 	DebugBreakHelper helper(_debugger);
 	auto lock = _scriptLock.AcquireSafe();
 
 	if(scriptId < 0) {
 		unique_ptr<ScriptHost> script(new ScriptHost(_nextScriptId++));
-		script->LoadScript(name, content, _debugger);
+		script->LoadScript(name, path, content, _debugger);
 		scriptId = script->GetScriptId();
 		_scripts.push_back(std::move(script));
 		_hasScript = true;
@@ -40,7 +40,7 @@ int ScriptManager::LoadScript(string name, string content, int32_t scriptId)
 			//Send a ScriptEnded event before reloading the code
 			(*result)->ProcessEvent(EventType::ScriptEnded, _debugger->GetMainCpuType());
 
-			(*result)->LoadScript(name, content, _debugger);
+			(*result)->LoadScript(name, path, content, _debugger);
 			RefreshMemoryCallbackFlags();
 			return scriptId;
 		}

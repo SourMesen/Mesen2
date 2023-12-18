@@ -181,7 +181,8 @@ namespace Mesen.Debugger.ViewModels
 				await SaveScript();
 			}
 
-			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, ScriptId));
+			string path = (Path.GetDirectoryName(FilePath) ?? Program.OriginalFolder) + Path.DirectorySeparatorChar;
+			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, path, Code, ScriptId));
 		}
 
 		private void UpdateScriptId(int scriptId)
@@ -224,7 +225,8 @@ namespace Mesen.Debugger.ViewModels
 		public void RestartScript()
 		{
 			DebugApi.RemoveScript(ScriptId);
-			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, Code, -1));
+			string path = (Path.GetDirectoryName(FilePath) ?? Program.OriginalFolder) + Path.DirectorySeparatorChar;
+			UpdateScriptId(DebugApi.LoadScript(ScriptName.Length == 0 ? "DefaultName" : ScriptName, path, Code, -1));
 		}
 
 		private string? InitialFolder
