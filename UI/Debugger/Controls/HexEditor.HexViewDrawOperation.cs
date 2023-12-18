@@ -169,8 +169,6 @@ namespace Mesen.Debugger.Controls
 				int pos = 0;
 
 				using var measureText = new SKTextBlobBuilder();
-				var measureBuffer = measureText.AllocateRun(altFont, 1, 0, 0);
-
 				float[] startPositionByByte = new float[_dataToDraw.Count];
 				float[] endPositionByByte = new float[_dataToDraw.Count];
 				while(pos < _dataToDraw.Count) {
@@ -198,6 +196,7 @@ namespace Mesen.Debugger.Controls
 
 						int codepoint = Char.ConvertToUtf32(str, 0);
 						if(codepoint > 0x024F) {
+							SKRunBuffer measureBuffer = measureText.AllocateRun(altFont, altFont.CountGlyphs(str), 0, 0);
 							byteInfo.UseAltFont = true;
 							altFont.GetGlyphs(str, measureBuffer.GetGlyphSpan());
 							startPositionByByte[index] = (float)xPos;
