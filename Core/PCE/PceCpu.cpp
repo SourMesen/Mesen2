@@ -274,7 +274,6 @@ void PceCpu::ProcessCpuCycle()
 	_memoryManager->Exec();
 
 	_pendingIrqs = CheckFlag(PceCpuFlags::Interrupt) ? 0 : _memoryManager->GetPendingIrqs();
-	_prevInterruptFlag = CheckFlag(PceCpuFlags::Interrupt);
 }
 
 #ifndef DUMMYCPU
@@ -388,7 +387,7 @@ void PceCpu::ProcessIrq(bool forBrk)
 	uint16_t vector;
 	if(forBrk) {
 		vector = PceCpu::Irq2Vector;
-	} else if(!_prevInterruptFlag && _memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
+	} else if((_pendingIrqs & (uint8_t)PceIrqSource::TimerIrq) && _memoryManager->HasIrqSource(PceIrqSource::TimerIrq)) {
 		//Timer IRQ appears to  behave differently from the VDC IRQ2
 		//When a timer IRQ is pending and the following sequence runs:
 		//  CLI         ;enable interrupts
