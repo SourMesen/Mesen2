@@ -98,6 +98,7 @@ private:
 
 	bool _pendingMemoryRead = false;
 	bool _pendingMemoryWrite = false;
+	int8_t _transferDelay = 0;
 
 	bool _vramDmaRunning = false;
 	bool _vramDmaReadCycle = false;
@@ -133,6 +134,10 @@ private:
 	void ProcessVramRead();
 	void ProcessVramWrite();
 	__noinline void ProcessVramAccesses();
+
+	void QueueMemoryRead();
+	void QueueMemoryWrite();
+	void WaitForVramAccess();
 
 	uint8_t GetClockDivider();
 	uint16_t GetScanlineCount();
@@ -172,9 +177,6 @@ private:
 
 	__forceinline uint16_t ReadVram(uint16_t addr);
 
-	void WaitForVramAccess();
-	bool IsVramAccessBlocked();
-	
 	template<bool hasSprites, bool hasSprite0, bool skipRender> __forceinline void InternalDrawScanline();
 
 public:

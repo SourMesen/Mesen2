@@ -426,9 +426,11 @@ void PceVdc::LoadBackgroundTiles()
 void PceVdc::LoadBackgroundTilesWidth2(uint16_t end, uint16_t scrollOffset, uint16_t columnMask, uint16_t row)
 {
 	for(uint16_t i = _loadBgLastCycle; i < end; i++) {
+		_allowVramAccess = false;
 		switch(i & 0x07) {
 			case 1: LoadBatEntry(scrollOffset, columnMask, row); break;
 			case 2: _allowVramAccess = true; break; //CPU
+			case 3: _allowVramAccess = true; break; //CPU
 			case 5: LoadTileDataCg0(row); break;
 			case 7: LoadTileDataCg1(row); break;
 		}
@@ -446,7 +448,6 @@ void PceVdc::LoadBackgroundTilesWidth4(uint16_t end, uint16_t scrollOffset, uint
 				//Load CG0 or CG1 based on CG mode flag
 				_tiles[_tileCount].TileData[0] = ReadVram(_tiles[_tileCount].TileAddr + (row & 0x07) + (_state.CgMode ? 8 : 0));
 				_tiles[_tileCount].TileData[1] = 0;
-				_allowVramAccess = false;
 				_tileCount++;
 				break;
 		}
@@ -941,13 +942,29 @@ void PceVdc::ProcessVramWrite()
 
 void PceVdc::ProcessVramAccesses()
 {
+	if(_transferDelay) {
+		_transferDelay -= 3;
+		if(_transferDelay > 0) {
+			return;
+		}
+	}
+
+	_transferDelay = 0;
+
 	bool inBgFetch = !_state.BurstModeEnabled && _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
-	bool accessBlocked = (
-		_state.SatbTransferRunning ||
-		(_vramDmaRunning && _vMode != PceVdcModeV::Vdw) ||
-		(inBgFetch && !_allowVramAccess) ||
-		(_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw)
-	);
+	bool accessBlocked;
+
+	if(_vMode != PceVdcModeV::Vdw || _state.BurstModeEnabled || ((!_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw))) {
+		//During SATB/VRAM DMA, prevent all transfers
+		//During vblank, forced blank (burst mode) or sprite fetching while sprites are disabled, allow a VRAM read/write every other dot
+		accessBlocked = (_state.SatbTransferRunning || _vramDmaRunning || ((_state.HClock / GetClockDivider()) & 0x01)) ? true : false;
+	} else {
+		//During active rendering, only allow access on the CPU slots available during background tile fetches
+		accessBlocked = (
+			(inBgFetch && !_allowVramAccess) ||
+			(_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw)
+		);
+	}
 
 	if(!accessBlocked) {
 		if(_pendingMemoryRead) {
@@ -955,6 +972,42 @@ void PceVdc::ProcessVramAccesses()
 		} else if(_pendingMemoryWrite) {
 			ProcessVramWrite();
 		}
+	}
+}
+
+void PceVdc::QueueMemoryRead()
+{
+	//All of this is guesswork based on results from a test rom
+	//Read operations appear to be processed slightly slower than writes?
+	_pendingMemoryRead = true;
+	switch(GetClockDivider()) {
+		case 2: _transferDelay = 15; break; //5 exec ticks
+		case 3: _transferDelay = 24; break; //8 exec ticks
+		case 4: _transferDelay = 24; break; //8 exec ticks
+	}
+}
+
+void PceVdc::QueueMemoryWrite()
+{
+	//All of this is guesswork based on results from a test rom
+	//Write operations appear to be processed slightly faster than reads?
+	_pendingMemoryWrite = true;
+	switch(GetClockDivider()) {
+		case 2: _transferDelay = 12; break; //4 exec ticks
+		case 3: _transferDelay = 18; break; //6 exec ticks
+		case 4: _transferDelay = 21; break; //7 exec ticks
+	}
+}
+
+void PceVdc::WaitForVramAccess()
+{
+	//Stall the CPU when a read/write operation is pending
+	while(_pendingMemoryRead || _pendingMemoryWrite) {
+		//TODO timing, this is probably not quite right. CPU will be stalled until
+		//a VDC cycle that allows VRAM access is reached. This isn't always going to
+		//be a multiple of 3 master clocks like this currently assumes
+		_console->GetMemoryManager()->ExecFastCycle();
+		DrawScanline();
 	}
 }
 
@@ -989,45 +1042,22 @@ uint8_t PceVdc::ReadRegister(uint16_t addr)
 
 		//Reads to 2/3 will always return the read buffer, but the
 		//read address will only increment when register 2 is selected
-		case 2: 
-			WaitForVramAccess();
+		case 2:
+			if(_pendingMemoryRead) {
+				//D&D Order of the Griffon breaks without this
+				WaitForVramAccess();
+			}
 			return (uint8_t)_state.ReadBuffer;
 
 		case 3:
-			WaitForVramAccess();
-
+			if(_pendingMemoryRead) {
+				WaitForVramAccess();
+			}
 			uint8_t value = _state.ReadBuffer >> 8;
 			if(_state.CurrentReg == 0x02) {
-				_pendingMemoryRead = true;
+				QueueMemoryRead();
 			}
 			return value;
-	}
-}
-
-bool PceVdc::IsVramAccessBlocked()
-{
-	bool inBgFetch = !_state.BurstModeEnabled && _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
-	//TODO timing:
-	//does disabling sprites allow vram access during hblank?
-	//can you access vram after the VDC is done loading sprites for that scanline?
-	return (
-		_pendingMemoryRead ||
-		_pendingMemoryWrite ||
-		_state.SatbTransferRunning ||
-		(_vramDmaRunning && _vMode != PceVdcModeV::Vdw) ||
-		(inBgFetch && !_allowVramAccess) || 
-		(_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw)
-	);
-}
-
-void PceVdc::WaitForVramAccess()
-{
-	while(IsVramAccessBlocked()) {
-		//TODO timing, this is probably not quite right. CPU will be stalled until
-		//a VDC cycle that allows VRAM access is reached. This isn't always going to
-		//be a multiple of 3 master clocks like this currently assumes
-		_console->GetMemoryManager()->ExecFastCycle();
-		DrawScanline();
 	}
 }
 
@@ -1045,20 +1075,24 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 			bool msb = (addr & 0x03) == 0x03;
 
 			switch(_state.CurrentReg) {
-				case 0x00: UpdateReg(_state.MemAddrWrite, value, msb); break;
+				case 0x00:
+					WaitForVramAccess(); //Wonder Momo has graphical issues without this
+					UpdateReg(_state.MemAddrWrite, value, msb);
+					break;
 
 				case 0x01:
+					WaitForVramAccess();
 					UpdateReg(_state.MemAddrRead, value, msb);
 					if(msb) {
-						_pendingMemoryRead = true;
+						QueueMemoryRead();
 					}
 					break;
 
 				case 0x02:
+					WaitForVramAccess();
 					if(msb) {
-						WaitForVramAccess();
 						UpdateReg(_state.VramData, value, true);
-						_pendingMemoryWrite = true;
+						QueueMemoryWrite();
 					} else {
 						UpdateReg(_state.VramData, value, false);
 					}
@@ -1279,6 +1313,7 @@ void PceVdc::Serialize(Serializer& s)
 
 		SV(_pendingMemoryRead);
 		SV(_pendingMemoryWrite);
+		SV(_transferDelay);
 
 		SV(_vramDmaRunning);
 		SV(_vramDmaReadCycle);

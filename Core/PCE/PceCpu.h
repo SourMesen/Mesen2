@@ -296,6 +296,8 @@ public:
 	PceCpu(Emulator* emu, PceMemoryManager* memoryManager);
 
 	PceCpuState& GetState() { return _state; }
+	
+	void RunIdleCpuCycle();
 
 	void Exec();
 

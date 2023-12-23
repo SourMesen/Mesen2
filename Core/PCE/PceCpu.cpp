@@ -268,6 +268,11 @@ void PceCpu::SetZeroNegativeFlags(uint8_t value)
 	}
 }
 
+void PceCpu::RunIdleCpuCycle()
+{
+	ProcessCpuCycle();
+}
+
 void PceCpu::ProcessCpuCycle()
 {
 	_state.CycleCount++;

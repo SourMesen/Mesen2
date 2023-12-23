@@ -5,6 +5,7 @@
 #include "PCE/PceVce.h"
 #include "PCE/PceTimer.h"
 #include "PCE/PcePsg.h"
+#include "PCE/PceCpu.h"
 #include "PCE/PceControlManager.h"
 #include "PCE/CdRom/PceCdRom.h"
 #include "Shared/MessageManager.h"
@@ -173,8 +174,8 @@ void PceMemoryManager::UpdateExecCallback()
 		}
 	}
 
+	_fastExec = _exec;
 	if(!_state.FastCpuSpeed) {
-		_fastExec = _exec;
 		_exec = &PceMemoryManager::ExecSlow;
 	}
 }
@@ -268,12 +269,12 @@ uint8_t PceMemoryManager::ReadRegister(uint16_t addr)
 void PceMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 {
 	if(addr <= 0x3FF) {
+		_console->GetCpu()->RunIdleCpuCycle(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 		_vpc->Write(addr, value);
-		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	} else if(addr <= 0x7FF) {
+		_console->GetCpu()->RunIdleCpuCycle(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 		_vpc->DrawScanline();
 		_vce->Write(addr, value);
-		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	} else if(addr <= 0xBFF) {
 		//PSG
 		_psg->Write(addr, value);
@@ -310,8 +311,8 @@ void PceMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 void PceMemoryManager::WriteVdc(uint16_t addr, uint8_t value)
 {
 	if(_emu->ProcessMemoryWrite<CpuType::Pce>(addr, value, MemoryOperationType::Write)) {
+		_console->GetCpu()->RunIdleCpuCycle(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 		_vpc->StVdcWrite(addr, value);
-		Exec(); //CPU is delayed by 1 CPU cycle when reading/writing to VDC/VCE
 	}
 }
 
