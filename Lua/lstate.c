@@ -263,6 +263,10 @@ static void preinit_thread (lua_State *L, global_State *g) {
   L->status = LUA_OK;
   L->errfunc = 0;
   L->oldpc = 0;
+  // ##### MESEN MODIFICATION #####
+  L->watchdoghook = NULL;
+  L->watchdogtimer = 0;
+  // ##### MESEN MODIFICATION #####
 }
 
 
@@ -303,10 +307,6 @@ LUA_API lua_State *lua_newthread (lua_State *L) {
   L1->hookmask = L->hookmask;
   L1->basehookcount = L->basehookcount;
   L1->hook = L->hook;
-  // ##### MESEN MODIFICATION #####
-  L1->watchdoghook = NULL;
-  L1->watchdogtimer = 0;
-  // ##### MESEN MODIFICATION #####
   resethookcount(L1);
   /* initialize L1 extra space */
   memcpy(lua_getextraspace(L1), lua_getextraspace(g->mainthread),
