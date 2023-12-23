@@ -954,15 +954,18 @@ void PceVdc::ProcessVramAccesses()
 	bool inBgFetch = !_state.BurstModeEnabled && _state.HClock >= _loadBgStart && _state.HClock < _loadBgEnd;
 	bool accessBlocked;
 
-	if(_vMode != PceVdcModeV::Vdw || _state.BurstModeEnabled || ((!_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw))) {
-		//During SATB/VRAM DMA, prevent all transfers
-		//During vblank, forced blank (burst mode) or sprite fetching while sprites are disabled, allow a VRAM read/write every other dot
+	if(_vMode != PceVdcModeV::Vdw || _state.BurstModeEnabled || (((!_state.SpritesEnabled || _spriteCount == 0) && !inBgFetch && _vMode == PceVdcModeV::Vdw))) {
+		//-During SATB/VRAM DMA, prevent all transfers.
+		//-Allow a VRAM read/write every other dot during:
+		//  -vblank
+		//  -forced blank (burst mode)
+		//  -sprite fetching when no sprites need to be fetched (sprites disabled or no sprites were found during sprite evaluation)
 		accessBlocked = (_state.SatbTransferRunning || _vramDmaRunning || ((_state.HClock / GetClockDivider()) & 0x01)) ? true : false;
 	} else {
-		//During active rendering, only allow access on the CPU slots available during background tile fetches
+		//During tile/sprite fetching, only allow access on the CPU slots available during background tile fetches
 		accessBlocked = (
 			(inBgFetch && !_allowVramAccess) ||
-			(_state.SpritesEnabled && !inBgFetch && _vMode == PceVdcModeV::Vdw)
+			(!inBgFetch && _state.SpritesEnabled)
 		);
 	}
 
