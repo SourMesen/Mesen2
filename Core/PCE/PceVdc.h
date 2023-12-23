@@ -107,6 +107,7 @@ private:
 
 	PceVdcEvent _nextEvent = PceVdcEvent::None;
 	uint16_t _nextEventCounter = 0;
+	uint64_t _hSyncStartClock = 0;
 
 	bool _isVdc2 = false;
 	MemoryType _vramType = MemoryType::PceVideoRam;

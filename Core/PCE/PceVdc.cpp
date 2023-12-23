@@ -201,6 +201,7 @@ void PceVdc::SetHorizontalMode(PceVdcModeH hMode)
 			_loadBgStart = UINT16_MAX;
 			_evalStartCycle = UINT16_MAX;
 			_hModeCounter = DotsToClocks((_state.HvLatch.HorizSyncWidth + 1) * 8);
+			_hSyncStartClock = _console->GetMasterClock();
 			ProcessHorizontalSyncStart();
 			//LogDebug("H: " + std::to_string(_state.HClock) + " - HSW");
 			break;
@@ -728,7 +729,11 @@ void PceVdc::ProcessEndOfScanline()
 	
 	//VCE sets HBLANK to low every 1365 clocks, interrupting what 
 	//the VDC was doing and starting a HSW phase
-	_hMode = PceVdcModeH::Hsw;
+	if(_hMode != PceVdcModeH::Hsw) {
+		_hMode = PceVdcModeH::Hsw;
+		_hSyncStartClock = _console->GetMasterClock();
+	}
+
 	_loadBgStart = UINT16_MAX;
 	_evalStartCycle = UINT16_MAX;
 
@@ -971,6 +976,11 @@ void PceVdc::ProcessVramAccesses()
 	}
 
 	if(!accessBlocked) {
+		if(_hMode == PceVdcModeH::Hds && _console->GetMasterClock() - _hSyncStartClock < 8 * GetClockDivider()) {
+			//VRAM accesses appear to be blocked during the first 8 dots of horizontal sync
+			return;
+		}
+
 		if(_pendingMemoryRead) {
 			ProcessVramRead();
 		} else if(_pendingMemoryWrite) {
@@ -1337,6 +1347,7 @@ void PceVdc::Serialize(Serializer& s)
 
 		SV(_nextEvent);
 		SV(_nextEventCounter);
+		SV(_hSyncStartClock);
 
 		SV(_drawSpriteCount);
 		SV(_totalSpriteCount);
