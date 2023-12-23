@@ -6,8 +6,9 @@
 #include "PCE/PceConstants.h"
 #include "PCE/PceConsole.h"
 #include "Shared/EmuSettings.h"
-#include "Utilities/Serializer.h"
 #include "Shared/EventType.h"
+#include "Shared/MessageManager.h"
+#include "Utilities/Serializer.h"
 
 PceVdc::PceVdc(Emulator* emu, PceConsole* console, PceVpc* vpc, PceVce* vce, bool isVdc2)
 {
@@ -576,7 +577,7 @@ void PceVdc::ProcessSatbTransfer()
 
 void PceVdc::ProcessVramDmaTransfer()
 {
-	if(_vMode == PceVdcModeV::Vdw) {
+	if(_vMode == PceVdcModeV::Vdw && !_state.BurstModeEnabled) {
 		return;
 	}
 
@@ -1184,6 +1185,7 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 
 				case 0x0F:
 					if(!msb) {
+						LogDebugIf(_vramDmaRunning, "[VRAM DMA] Write to register while running");
 						_state.VramSatbIrqEnabled = (value & 0x01) != 0;
 						_state.VramVramIrqEnabled = (value & 0x02) != 0;
 						_state.DecrementSrc = (value & 0x04) != 0;
@@ -1192,9 +1194,18 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 					}
 					break;
 
-				case 0x10: UpdateReg(_state.BlockSrc, value, msb); break;
-				case 0x11: UpdateReg(_state.BlockDst, value, msb); break;
+				case 0x10:
+					LogDebugIf(_vramDmaRunning, "[VRAM DMA] Write to register while running");
+					UpdateReg(_state.BlockSrc, value, msb);
+					break;
+
+				case 0x11:
+					LogDebugIf(_vramDmaRunning, "[VRAM DMA] Write to register while running");
+					UpdateReg(_state.BlockDst, value, msb);
+					break;
+
 				case 0x12:
+					LogDebugIf(_vramDmaRunning, "[VRAM DMA] Write to register while running");
 					UpdateReg(_state.BlockLen, value, msb);
 					if(msb) {
 						_vramDmaRunning = true;
@@ -1203,6 +1214,7 @@ void PceVdc::WriteRegister(uint16_t addr, uint8_t value)
 					break;
 
 				case 0x13:
+					LogDebugIf(_state.SatbTransferRunning, "[Sprite DMA] Write to register while running");
 					UpdateReg(_state.SatbBlockSrc, value, msb);
 					if(msb) {
 						_state.SatbTransferPending = true;
