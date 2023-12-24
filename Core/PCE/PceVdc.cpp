@@ -976,7 +976,7 @@ void PceVdc::ProcessVramAccesses()
 	}
 
 	if(!accessBlocked) {
-		if(_hMode == PceVdcModeH::Hds && _console->GetMasterClock() - _hSyncStartClock < 8 * GetClockDivider()) {
+		if(_hMode == PceVdcModeH::Hsw && _console->GetMasterClock() - _hSyncStartClock < 8 * GetClockDivider()) {
 			//VRAM accesses appear to be blocked during the first 8 dots of horizontal sync
 			return;
 		}
