@@ -495,7 +495,7 @@ void PceVdc::LoadSpriteTiles()
 	_drawSpriteCount = 0;
 	_rowHasSprite0 = false;
 
-	if(_state.BurstModeEnabled) {
+	if(_state.BurstModeEnabled || (_loadSpriteStart >= _loadBgStart && _loadSpriteStart < _loadBgEnd)) {
 		return;
 	}
 
@@ -969,10 +969,25 @@ void PceVdc::ProcessVramAccesses()
 		accessBlocked = (_state.SatbTransferRunning || _vramDmaRunning || ((_state.HClock / GetClockDivider()) & 0x01)) ? true : false;
 	} else {
 		//During tile/sprite fetching, only allow access on the CPU slots available during background tile fetches
-		accessBlocked = (
-			(inBgFetch && !_allowVramAccess) ||
-			(!inBgFetch && _state.SpritesEnabled)
-		);
+		accessBlocked = inBgFetch && !_allowVramAccess;
+		if(!accessBlocked && !inBgFetch && _state.SpritesEnabled) {
+			//Find how many clocks have elapsed since sprite fetching started
+			uint16_t clockCount = _state.HClock > _loadBgEnd ? (_state.HClock - _loadBgEnd) : (PceConstants::ClockPerScanline - _loadBgEnd + _state.HClock);
+			uint16_t dotCount = clockCount / GetClockDivider();
+			uint16_t clocksPerSprite;
+			switch(_state.SpriteAccessMode) {
+				default: case 0: case 1: clocksPerSprite = 4; break;
+				case 2: clocksPerSprite = 8; break;
+				case 3: clocksPerSprite = 16; break;
+			}
+			if(dotCount < _spriteCount * clocksPerSprite) {
+				//VDC is still fetching sprites, block access
+				accessBlocked = true;
+			} else {
+				//Sprite fetching is done, allow access every other dot
+				accessBlocked = ((_state.HClock / GetClockDivider()) & 0x01) ? true : false;
+			}
+		}
 	}
 
 	if(!accessBlocked) {
