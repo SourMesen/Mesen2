@@ -49,6 +49,8 @@ struct PceEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg CdRomReads;
 	EventViewerCategoryCfg AdpcmWrites;
 	EventViewerCategoryCfg AdpcmReads;
+	EventViewerCategoryCfg ArcadeCardWrites;
+	EventViewerCategoryCfg ArcadeCardReads;
 
 	bool ShowPreviousFrameEvents;
 };

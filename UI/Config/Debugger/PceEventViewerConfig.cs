@@ -22,6 +22,8 @@ namespace Mesen.Config
 		[Reactive] public EventViewerCategoryCfg CdRomReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x44, 0x53, 0xD7));
 		[Reactive] public EventViewerCategoryCfg AdpcmWrites { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xD7, 0x7A, 0xDA));
 		[Reactive] public EventViewerCategoryCfg AdpcmReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xB4, 0x53, 0x44));
+		[Reactive] public EventViewerCategoryCfg ArcadeCardWrites { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x7A, 0xDA, 0xD7));
+		[Reactive] public EventViewerCategoryCfg ArcadeCardReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x44, 0xB4, 0x53));
 
 		[Reactive] public EventViewerCategoryCfg VceWrites { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0xB4, 0x7A, 0xDA));
 		[Reactive] public EventViewerCategoryCfg VceReads { get; set; } = new EventViewerCategoryCfg(Color.FromRgb(0x53, 0xD7, 0x44));
@@ -72,6 +74,8 @@ namespace Mesen.Config
 				CdRomReads = this.CdRomReads,
 				AdpcmWrites = this.AdpcmWrites,
 				AdpcmReads = this.AdpcmReads,
+				ArcadeCardReads = this.ArcadeCardReads,
+				ArcadeCardWrites = this.ArcadeCardWrites,
 
 				Irq = this.Irq,
 				MarkedBreakpoints = this.MarkedBreakpoints,

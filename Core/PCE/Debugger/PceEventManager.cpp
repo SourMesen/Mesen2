@@ -161,15 +161,19 @@ EventViewerCategoryCfg PceEventManager::GetEventConfig(DebugEventInfo& evt)
 			} else if(reg <= 0x17FF) {
 				return isWrite ? _config.IrqControlWrites : _config.IrqControlReads;
 			} else if(reg <= 0x1BFF) {
-				switch(reg & 0x0F) {
-					case 8:
-						return isWrite ? _config.AdpcmWrites : _config.CdRomReads;
+				if(reg & 0x200) {
+					return isWrite ? _config.ArcadeCardWrites : _config.ArcadeCardReads;
+				} else {
+					switch(reg & 0x0F) {
+						case 8:
+							return isWrite ? _config.AdpcmWrites : _config.CdRomReads;
 
-					case 9: case 0xA: case 0xB: case 0xC: case 0xD: case 0xE:
-						return isWrite ? _config.AdpcmWrites : _config.AdpcmReads;
-					
-					default:
-						return isWrite ? _config.CdRomWrites : _config.CdRomReads;
+						case 9: case 0xA: case 0xB: case 0xC: case 0xD: case 0xE:
+							return isWrite ? _config.AdpcmWrites : _config.AdpcmReads;
+
+						default:
+							return isWrite ? _config.CdRomWrites : _config.CdRomReads;
+					}
 				}
 			}
 

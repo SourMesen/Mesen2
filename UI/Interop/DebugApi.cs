@@ -862,6 +862,8 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg CdRomReads;
 		public InteropEventViewerCategoryCfg AdpcmWrites;
 		public InteropEventViewerCategoryCfg AdpcmReads;
+		public InteropEventViewerCategoryCfg ArcadeCardWrites;
+		public InteropEventViewerCategoryCfg ArcadeCardReads;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}

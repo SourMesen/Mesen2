@@ -171,6 +171,12 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 		case 0x0F:
 			_audioFader.Write(value);
 			break;
+
+		default:
+			if(!(addr & 0x200)) {
+				LogDebug("Write unknown CDROM register: " + HexUtilities::ToHex(addr));
+			}
+			break;
 	}
 }
 
@@ -219,7 +225,9 @@ uint8_t PceCdRom::Read(uint16_t addr)
 			}
 
 		default:
-			LogDebug("Read unknown CDROM register: " + HexUtilities::ToHex(addr));
+			if(!(addr & 0x200)) {
+				LogDebug("Read unknown CDROM register: " + HexUtilities::ToHex(addr));
+			}
 			break;
 	}
 

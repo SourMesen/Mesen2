@@ -49,6 +49,7 @@
 				<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding IrqControlWrites}" />
 				<dc:EventViewerCategoryControl Text="CD-ROM" Config="{CompiledBinding CdRomWrites}" />
 				<dc:EventViewerCategoryControl Text="ADPCM" Config="{CompiledBinding AdpcmWrites}" />
+				<dc:EventViewerCategoryControl Text="Arcade" Config="{CompiledBinding ArcadeCardWrites}" />
 			</StackPanel>
 			<StackPanel Grid.Column="3" Grid.Row="1">
 				<dc:EventViewerCategoryControl Text="VCE" Config="{CompiledBinding VceReads}" />
@@ -58,6 +59,7 @@
 				<dc:EventViewerCategoryControl Text="IRQ" Config="{CompiledBinding IrqControlReads}" />
 				<dc:EventViewerCategoryControl Text="CD-ROM" Config="{CompiledBinding CdRomReads}" />
 				<dc:EventViewerCategoryControl Text="ADPCM" Config="{CompiledBinding AdpcmReads}" />
+				<dc:EventViewerCategoryControl Text="Arcade" Config="{CompiledBinding ArcadeCardReads}" />
 			</StackPanel>
 		</Grid>
 
