@@ -22,6 +22,7 @@ namespace Mesen.ViewModels
 		public Enum[] AvailableControllerTypesTurboTap => new Enum[] {
 			ControllerType.None,
 			ControllerType.PceController,
+			ControllerType.PceAvenuePad6,
 		};
 
 		[Obsolete("For designer only")]

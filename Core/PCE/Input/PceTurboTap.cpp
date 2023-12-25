@@ -12,7 +12,6 @@ uint8_t PceTurboTap::ReadRam(uint16_t addr)
 
 void PceTurboTap::WriteRam(uint16_t addr, uint8_t value)
 {
-	ControllerHub::WriteRam(addr, value);
 	bool sel = (value & 0x01) != 0;
 	bool prevSel = (_prevValue & 0x01) != 0;
 	bool clr = (value & 0x02) != 0;
@@ -27,4 +26,6 @@ void PceTurboTap::WriteRam(uint16_t addr, uint8_t value)
 	}
 
 	_prevValue = value;
+
+	WritePort(_index, value);
 }

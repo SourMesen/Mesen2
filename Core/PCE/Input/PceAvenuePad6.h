@@ -70,7 +70,7 @@ public:
 	uint8_t ReadRam(uint16_t addr) override
 	{
 		if(_disableInput) {
-			return 0;
+			return 0x0F;
 		}
 
 		uint8_t result = 0x0F;
@@ -102,12 +102,12 @@ public:
 
 	void WriteRam(uint16_t addr, uint8_t value) override
 	{
-		bool disableInput = (value & 0x02) != 0;
-		if(disableInput && !_disableInput) {
+		bool select = (value & 0x01) != 0;
+		if(!_selectDPad && select) {
 			_selectExtraButtons = !_selectExtraButtons;
 		}
-		_disableInput = disableInput;
-		_selectDPad = (value & 0x01) != 0;
+		_disableInput = (value & 0x02) != 0;
+		_selectDPad = select;
 	}
 
 	void InternalDrawController(InputHud& hud) override

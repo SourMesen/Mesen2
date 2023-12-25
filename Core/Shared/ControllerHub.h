@@ -8,6 +8,7 @@
 #include "SNES/Input/SnesMouse.h"
 #include "NES/Input/NesController.h"
 #include "PCE/Input/PceController.h"
+#include "PCE/Input/PceAvenuePad6.h"
 #include "Utilities/Serializer.h"
 #include "Utilities/StringUtilities.h"
 
@@ -48,6 +49,13 @@ protected:
 		}
 	}
 
+	void WritePort(int i, uint8_t value)
+	{
+		if(_ports[i]) {
+			_ports[i]->WriteRam(0x4016, value);
+		}
+	}
+
 public:
 	ControllerHub(Emulator* emu, ControllerType type, int port, ControllerConfig controllers[]) : BaseControlDevice(emu, type, port)
 	{
@@ -71,6 +79,10 @@ public:
 
 				case ControllerType::PceController:
 					_ports[i].reset(new PceController(emu, 0, controllers[i].Keys));
+					break;
+
+				case ControllerType::PceAvenuePad6:
+					_ports[i].reset(new PceAvenuePad6(emu, 0, controllers[i].Keys));
 					break;
 			}
 		}
