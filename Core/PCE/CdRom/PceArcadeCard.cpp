@@ -161,8 +161,8 @@ uint8_t PceArcadeCard::Read(uint8_t bank, uint16_t addr, uint8_t value)
 	if(bank == 0xFF) {
 		addr &= 0x1FFF;
 
-		if(addr >= 0x1A00) {
-			if(addr <= 0x1A3F) {
+		if(addr >= 0x1A00 && addr <= 0x1BFF) {
+			if(addr <= 0x1A7F) {
 				return ReadPortRegister((addr & 0x30) >> 4, addr & 0x0F);
 			} else {
 				//LogDebug("[Arcade Card] Register read: $" + HexUtilities::ToHex(addr));
@@ -198,8 +198,8 @@ void PceArcadeCard::Write(uint8_t bank, uint16_t addr, uint8_t value)
 	if(bank == 0xFF) {
 		addr &= 0x1FFF;
 
-		if(addr >= 0x1A00) {
-			if(addr <= 0x1A3F) {
+		if(addr >= 0x1A00 && addr <= 0x1BFF) {
+			if(addr <= 0x1A7F) {
 				WritePortRegister((addr & 0x30) >> 4, addr & 0x0F, value);
 			} else {
 				//LogDebug("[Arcade Card] Register write: $" + HexUtilities::ToHex(addr) + " = $" + HexUtilities::ToHex(value));
