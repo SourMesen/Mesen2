@@ -184,6 +184,10 @@ namespace Mesen.Debugger.Windows
 					}
 					break;
 
+				case ConsoleNotificationType.StateLoaded:
+					_model.RefreshData();
+					break;
+
 				case ConsoleNotificationType.CodeBreak:
 					if(_model.Config.RefreshOnBreakPause) {
 						_model.RefreshData();

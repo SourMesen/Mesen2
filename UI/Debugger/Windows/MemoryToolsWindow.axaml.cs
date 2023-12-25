@@ -614,6 +614,7 @@ namespace Mesen.Debugger.Windows
 		{
 			switch(e.NotificationType) {
 				case ConsoleNotificationType.CodeBreak:
+				case ConsoleNotificationType.StateLoaded:
 					Dispatcher.UIThread.Post(() => {
 						_editor.InvalidateVisual();
 					});

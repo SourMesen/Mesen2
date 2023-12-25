@@ -103,6 +103,10 @@ namespace Mesen.Debugger.Utilities
 					}
 					break;
 
+				case ConsoleNotificationType.StateLoaded:
+					refresh();
+					break;
+
 				case ConsoleNotificationType.CodeBreak:
 					if(cfg.Config.RefreshOnBreakPause) {
 						refresh();
