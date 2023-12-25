@@ -163,22 +163,22 @@ uint8_t PceArcadeCard::Read(uint8_t bank, uint16_t addr, uint8_t value)
 
 		if(addr >= 0x1A00) {
 			if(addr <= 0x1A3F) {
-			return ReadPortRegister((addr & 0x30) >> 4, addr & 0x0F);
-		} else {
+				return ReadPortRegister((addr & 0x30) >> 4, addr & 0x0F);
+			} else {
 				//LogDebug("[Arcade Card] Register read: $" + HexUtilities::ToHex(addr));
 
-			switch(addr) {
-				case 0x1AE0: return _state.ValueReg & 0xFF;
-				case 0x1AE1: return (_state.ValueReg >> 8) & 0xFF;
-				case 0x1AE2: return (_state.ValueReg >> 16) & 0xFF;
-				case 0x1AE3: return (_state.ValueReg >> 24) & 0xFF;
+				switch(addr) {
+					case 0x1AE0: return _state.ValueReg & 0xFF;
+					case 0x1AE1: return (_state.ValueReg >> 8) & 0xFF;
+					case 0x1AE2: return (_state.ValueReg >> 16) & 0xFF;
+					case 0x1AE3: return (_state.ValueReg >> 24) & 0xFF;
 
-				case 0x1AE4: return _state.ShiftReg;
-				case 0x1AE5: return _state.RotateReg;
+					case 0x1AE4: return _state.ShiftReg;
+					case 0x1AE5: return _state.RotateReg;
 
-				//Arcade card version+signature
-				case 0x1AFE: return 0x10;
-				case 0x1AFF: return 0x51;
+					//Arcade card version+signature
+					case 0x1AFE: return 0x10;
+					case 0x1AFF: return 0x51;
 
 					default:
 						LogDebug("[Arcade Card] Unknown register read: $" + HexUtilities::ToHex(addr));
@@ -200,46 +200,46 @@ void PceArcadeCard::Write(uint8_t bank, uint16_t addr, uint8_t value)
 
 		if(addr >= 0x1A00) {
 			if(addr <= 0x1A3F) {
-			WritePortRegister((addr & 0x30) >> 4, addr & 0x0F, value);
-		} else {
+				WritePortRegister((addr & 0x30) >> 4, addr & 0x0F, value);
+			} else {
 				//LogDebug("[Arcade Card] Register write: $" + HexUtilities::ToHex(addr) + " = $" + HexUtilities::ToHex(value));
 
-			switch(addr) {
-				case 0x1AE0: _state.ValueReg = (_state.ValueReg & 0xFFFFFF00) | value; break;
-				case 0x1AE1: _state.ValueReg = (_state.ValueReg & 0xFFFF00FF) | (value << 8); break;
-				case 0x1AE2: _state.ValueReg = (_state.ValueReg & 0xFF00FFFF) | (value << 16); break;
-				case 0x1AE3: _state.ValueReg = (_state.ValueReg & 0x00FFFFFF) | (value << 24); break;
+				switch(addr) {
+					case 0x1AE0: _state.ValueReg = (_state.ValueReg & 0xFFFFFF00) | value; break;
+					case 0x1AE1: _state.ValueReg = (_state.ValueReg & 0xFFFF00FF) | (value << 8); break;
+					case 0x1AE2: _state.ValueReg = (_state.ValueReg & 0xFF00FFFF) | (value << 16); break;
+					case 0x1AE3: _state.ValueReg = (_state.ValueReg & 0x00FFFFFF) | (value << 24); break;
 
-				case 0x1AE4:
-					_state.ShiftReg = value;
-					if(value) {
-						if(value & 0x08) {
-							_state.ValueReg >>= ~(value & 0x07) + 1;
-						} else {
-							_state.ValueReg <<= (value & 0x07);
+					case 0x1AE4:
+						_state.ShiftReg = value;
+						if(value) {
+							if(value & 0x08) {
+								_state.ValueReg >>= (~value & 0x07) + 1;
+							} else {
+								_state.ValueReg <<= (value & 0x07);
+							}
 						}
-					}
-					break;
+						break;
 
-				case 0x1AE5:
-					//untested
-					_state.RotateReg = value;
-					if(value) {
-						if(value & 0x08) {
-							uint8_t rotateRight = ~(value & 0x07) + 1;
-							_state.ValueReg = (_state.ValueReg >> rotateRight) | (_state.ValueReg << (32 - rotateRight));
-						} else {
-							uint8_t rotateLeft = (value & 0x07);
-							_state.ValueReg = (_state.ValueReg << rotateLeft) | (_state.ValueReg >> (32 - rotateLeft));
+					case 0x1AE5:
+						//untested
+						_state.RotateReg = value;
+						if(value) {
+							if(value & 0x08) {
+								uint8_t rotateRight = (~value & 0x07) + 1;
+								_state.ValueReg = (_state.ValueReg >> rotateRight) | (_state.ValueReg << (32 - rotateRight));
+							} else {
+								uint8_t rotateLeft = (value & 0x07);
+								_state.ValueReg = (_state.ValueReg << rotateLeft) | (_state.ValueReg >> (32 - rotateLeft));
+							}
 						}
-					}
-					break;
+						break;
 
 					default:
 						LogDebug("[Arcade Card] Unknown register write: $" + HexUtilities::ToHex(addr) + " = $" + HexUtilities::ToHex(value));
 						break;
+				}
 			}
-		}
 		}
 	} else if(bank >= 0x40 && bank <= 0x43) {
 		WritePortValue(bank & 0x03, value);
