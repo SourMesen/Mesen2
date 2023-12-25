@@ -1517,7 +1517,7 @@ namespace Mesen.Debugger.ViewModels
 					new RegEntry("", "Port " + (i + 1)),
 					new RegEntry("$1A" + i + "2-4", "Base Address", port.BaseAddress, Format.X24),
 					new RegEntry("$1A" + i + "5-6", "Offset", port.Offset, Format.X16),
-					new RegEntry("$1A" + i + "7-8", "Increment Value", port.Offset, Format.X16),
+					new RegEntry("$1A" + i + "7-8", "Increment Value", port.IncValue, Format.X16),
 					new RegEntry("$1A" + i + "9", "Control", port.Control, Format.X8),
 					new RegEntry("$1A" + i + "9.0", "Auto-increment", port.AutoIncrement),
 					new RegEntry("$1A" + i + "9.1", "Add offset", port.AddOffset),
