@@ -55,6 +55,7 @@ namespace Mesen.Debugger.Views
 						}
 					}
 
+					DebugWorkspaceManager.AutoSave();
 					BreakpointManager.RefreshBreakpoints();
 				}
 			}

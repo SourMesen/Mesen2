@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media;
 using Mesen.Config;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
 using Mesen.Interop;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -226,6 +227,7 @@ namespace Mesen.Debugger
 				}
 				WatchChanged?.Invoke(null, EventArgs.Empty);
 			}
+			DebugWorkspaceManager.AutoSave();
 		}
 
 		public void RemoveWatch(params int[] indexes)

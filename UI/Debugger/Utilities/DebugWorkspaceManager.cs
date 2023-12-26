@@ -176,6 +176,16 @@ namespace Mesen.Debugger.Utilities
 				_workspace = null;
 			}
 		}
+
+		private static DateTime _previousAutoSave = DateTime.MinValue;
+		public static void AutoSave()
+		{
+			//Automatically save when changing a label/breakpoint/watch to avoid losing progress if a crash occurs
+			if((DateTime.Now - _previousAutoSave).TotalSeconds >= 60) {
+				_workspace?.Save(_path, _romInfo.CpuTypes);
+				_previousAutoSave = DateTime.Now;
+			}
+		}
 	}
 
 	public class CpuDebugWorkspace

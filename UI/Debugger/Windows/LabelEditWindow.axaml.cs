@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mesen.Debugger.Labels;
+using Mesen.Debugger.Utilities;
 using Mesen.Debugger.ViewModels;
 using Mesen.Interop;
 using Mesen.Utilities;
@@ -58,6 +59,7 @@ namespace Mesen.Debugger.Windows
 				model.Commit();
 				LabelManager.DeleteLabel(label, false);
 				LabelManager.SetLabel(copy ?? label, true);
+				DebugWorkspaceManager.AutoSave();
 			}
 
 			model.Dispose();

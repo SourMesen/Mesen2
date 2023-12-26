@@ -1,4 +1,5 @@
-﻿using Mesen.Interop;
+﻿using Mesen.Debugger.Utilities;
+using Mesen.Interop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,7 +65,9 @@ namespace Mesen.Debugger
 
 		public static void RemoveBreakpoint(Breakpoint bp)
 		{
-			_breakpoints.Remove(bp);
+			if(_breakpoints.Remove(bp)) {
+				DebugWorkspaceManager.AutoSave();
+			}
 			RefreshBreakpoints(bp);
 		}
 
@@ -80,6 +83,7 @@ namespace Mesen.Debugger
 		{
 			if(!_breakpoints.Contains(bp)) {
 				_breakpoints.Add(bp);
+				DebugWorkspaceManager.AutoSave();
 			}
 			RefreshBreakpoints(bp);
 		}
@@ -149,6 +153,7 @@ namespace Mesen.Debugger
 			Breakpoint? breakpoint = BreakpointManager.GetMatchingBreakpoint(info, cpuType);
 			if(breakpoint != null) {
 				breakpoint.Enabled = !breakpoint.Enabled;
+				DebugWorkspaceManager.AutoSave();
 				RefreshBreakpoints();
 				return true;
 			}
