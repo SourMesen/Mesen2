@@ -257,6 +257,7 @@ namespace Mesen.Controls
 			ControllerConfig snesPort = ConfigManager.Config.Snes.Port1;
 			ControllerConfig pcePort = ConfigManager.Config.PcEngine.Port1;
 			ControllerConfig gbPort = ConfigManager.Config.Gameboy.Controller;
+			ControllerConfig smsPort = ConfigManager.Config.Sms.Port1;
 
 			List<ushort> keyCodes = InputApi.GetPressedKeys();
 			ushort keyCode = keyCodes.Count > 0 ? keyCodes[0] : (ushort)0;
@@ -268,6 +269,7 @@ namespace Mesen.Controls
 						snesPort.Mapping1, snesPort.Mapping2, snesPort.Mapping3, snesPort.Mapping4,
 						pcePort.Mapping1, pcePort.Mapping2, pcePort.Mapping3, pcePort.Mapping4,
 						gbPort.Mapping1, gbPort.Mapping2, gbPort.Mapping3, gbPort.Mapping4,
+						smsPort.Mapping1, smsPort.Mapping2, smsPort.Mapping3,	smsPort.Mapping4
 					};
 
 					foreach(KeyMapping mapping in mappings) {
