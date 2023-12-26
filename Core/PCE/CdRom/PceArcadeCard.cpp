@@ -8,6 +8,7 @@
 
 PceArcadeCard::PceArcadeCard(PceConsole* console, Emulator* emu)
 {
+	_emu = emu;
 	_ram = new uint8_t[PceArcadeCard::ArcadeRamMemSize];
 	_isRamUsed = false;
 	console->InitializeRam(_ram, PceArcadeCard::ArcadeRamMemSize);
@@ -62,7 +63,9 @@ uint8_t PceArcadeCard::ReadPortValue(uint8_t portNumber)
 	PceArcadeCardPortConfig& port = _state.Port[portNumber];
 	uint32_t addr = GetAddress(port);
 	ProcessAutoInc(port);
-	return _ram[addr];
+	uint8_t value = _ram[addr];
+	_emu->ProcessMemoryAccess<CpuType::Pce, MemoryType::PceArcadeCardRam, MemoryOperationType::Read>(addr, value);
+	return value;
 }
 
 void PceArcadeCard::WritePortValue(uint8_t portNumber, uint8_t value)
@@ -71,6 +74,7 @@ void PceArcadeCard::WritePortValue(uint8_t portNumber, uint8_t value)
 	uint32_t addr = GetAddress(port);
 	ProcessAutoInc(port);
 	_isRamUsed = true;
+	_emu->ProcessMemoryAccess<CpuType::Pce, MemoryType::PceArcadeCardRam, MemoryOperationType::Write>(addr, value);
 	_ram[addr] = value;
 }
 
