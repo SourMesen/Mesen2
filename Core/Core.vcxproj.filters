@@ -1659,20 +1659,8 @@
     <ClInclude Include="PCE\PcePsgChannel.h">
       <Filter>PCE</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceCdRom.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceScsiBus.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceAdpcm.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
     <ClInclude Include="Shared\CdReader.h">
       <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceCdAudioPlayer.h">
-      <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\Input\PceController.h">
       <Filter>PCE\Input</Filter>
@@ -1696,9 +1684,6 @@
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\IPceMapper.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceArcadeCard.h">
       <Filter>PCE</Filter>
     </ClInclude>
     <ClInclude Include="PCE\Debugger\PceAssembler.h">
@@ -2556,9 +2541,6 @@
     <ClInclude Include="Shared\HistoryViewer.h">
       <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="PCE\CdRom\PceAudioFader.h">
-      <Filter>PCE</Filter>
-    </ClInclude>
     <ClInclude Include="NES\Mappers\Mmc3Variants\Sachen9602.h">
       <Filter>NES\Mappers\Mmc3Variants</Filter>
     </ClInclude>
@@ -2718,6 +2700,27 @@
     <ClInclude Include="SMS\Carts\SmsNemesisCart.h">
       <Filter>SMS\Carts</Filter>
     </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceAdpcm.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceArcadeCard.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceAudioFader.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceCdAudioPlayer.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceCdRom.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceCdSeekDelay.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
+    <ClInclude Include="PCE\CdRom\PceScsiBus.h">
+      <Filter>PCE\CdRom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2774,20 +2777,8 @@
     <ClCompile Include="PCE\PcePsgChannel.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceCdRom.cpp">
-      <Filter>PCE</Filter>
-    </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceScsiBus.cpp">
-      <Filter>PCE</Filter>
-    </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceAdpcm.cpp">
-      <Filter>PCE</Filter>
-    </ClCompile>
     <ClCompile Include="Shared\CdReader.cpp">
       <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceCdAudioPlayer.cpp">
-      <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\Input\PceTurboTap.cpp">
       <Filter>PCE\Input</Filter>
@@ -2796,9 +2787,6 @@
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceVce.cpp">
-      <Filter>PCE</Filter>
-    </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceArcadeCard.cpp">
       <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\Debugger\PceAssembler.cpp">
@@ -2827,9 +2815,6 @@
     </ClCompile>
     <ClCompile Include="Shared\HistoryViewer.cpp">
       <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="PCE\CdRom\PceAudioFader.cpp">
-      <Filter>PCE</Filter>
     </ClCompile>
     <ClCompile Include="PCE\PceMemoryManager.cpp">
       <Filter>PCE</Filter>
@@ -2908,6 +2893,24 @@
     </ClCompile>
     <ClCompile Include="SMS\SmsBiosMapper.cpp">
       <Filter>SMS</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceAdpcm.cpp">
+      <Filter>PCE\CdRom</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceArcadeCard.cpp">
+      <Filter>PCE\CdRom</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceAudioFader.cpp">
+      <Filter>PCE\CdRom</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceCdAudioPlayer.cpp">
+      <Filter>PCE\CdRom</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceCdRom.cpp">
+      <Filter>PCE\CdRom</Filter>
+    </ClCompile>
+    <ClCompile Include="PCE\CdRom\PceScsiBus.cpp">
+      <Filter>PCE\CdRom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2997,6 +3000,9 @@
     </Filter>
     <Filter Include="Shared\Utilities">
       <UniqueIdentifier>{9c5b1b92-fa62-42bf-9102-9cc5d35262b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PCE\CdRom">
+      <UniqueIdentifier>{d8c09137-ed0d-4674-8017-a1f3be7cf2a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

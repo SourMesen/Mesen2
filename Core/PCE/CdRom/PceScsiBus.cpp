@@ -2,6 +2,7 @@
 #include "PCE/CdRom/PceScsiBus.h"
 #include "PCE/CdRom/PceCdRom.h"
 #include "PCE/CdRom/PceCdAudioPlayer.h"
+#include "PCE/CdRom/PceCdSeekDelay.h"
 #include "PCE/PceConsole.h"
 #include "PCE/PceTypes.h"
 #include "Shared/CdReader.h"
@@ -184,10 +185,12 @@ void PceScsiBus::ProcessCommandPhase()
 
 int64_t PceScsiBus::GetSeekTime(uint32_t startLba, uint32_t targetLba)
 {
-	//This should yield the same seek times as the code in ares?
-	int gap = std::abs((int)startLba - (int)targetLba);
-	int frameCount = 17 + std::pow(std::sqrt(gap), 0.99) * 0.3;
-	return _console->GetMasterClockRate() * frameCount / 75;
+	return _console->GetMasterClockRate() * (PceCdSeekDelay::GetSeekTimeMs(startLba, targetLba) / 1000.0);
+}
+
+uint64_t PceScsiBus::GetSectorLoadTime()
+{
+	return (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
 }
 
 void PceScsiBus::CmdRead()
@@ -201,14 +204,16 @@ void PceScsiBus::CmdRead()
 		return;
 	}
 
-	_readSectorCounter = GetSeekTime(_state.Sector, sector);
+	uint32_t seekTime = GetSeekTime(_state.Sector, sector);
+	_readSectorCounter = seekTime + GetSectorLoadTime();
 	_needExec = true;
 	_state.Sector = sector;
 	_state.SectorsToRead = sectorsToRead;
 
 	_cdrom->GetAudioPlayer().SetIdle();
 	if(_emu->IsDebugging()) {
-		LogCommand("Read - Sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1));
+		uint32_t seekTimeMs = (seekTime * 1000 / _console->GetMasterClockRate());
+		LogCommand("Read - Sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1) + " - Seek time: " + std::to_string(seekTimeMs) + " ms");
 	}
 }
 
@@ -242,7 +247,8 @@ void PceScsiBus::CmdAudioStartPos()
 	uint32_t startSector = GetAudioLbaPos();
 
 	if(_emu->IsDebugging()) {
-		LogCommand("Audio Start Position - " + std::to_string(startSector));
+		uint32_t seekTime = PceCdSeekDelay::GetSeekTimeMs(_cdrom->GetCurrentSector(), startSector);
+		LogCommand("Audio Start Position - " + std::to_string(startSector) + " - Seek time: " + std::to_string(seekTime) + " ms");
 	}
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
@@ -303,7 +309,7 @@ void PceScsiBus::CmdReadSubCodeQ()
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
 	
 	CdAudioStatus audioStatus = player.GetStatus();
-	uint32_t sector = audioStatus != CdAudioStatus::Inactive ? player.GetCurrentSector() : _state.Sector;
+	uint32_t sector = _cdrom->GetCurrentSector();
 	uint32_t track = _disc->GetTrack(sector);
 
 	bool isData = _disc->Tracks[track].Format != TrackFormat::Audio;
@@ -433,13 +439,13 @@ void PceScsiBus::ProcessDiscRead()
 					LogDebug("[SCSI] Read operation done");
 				} else {
 					_state.DataTransferDone = false;
-					_readSectorCounter = (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
+					_readSectorCounter = GetSectorLoadTime();
 				}
 
 				SetPhase(ScsiPhase::DataIn);
 			} else {
 				LogDebug("[SCSI] Read sector done but buffer not empty, delay");
-				_readSectorCounter = (int64_t)((double)_console->GetMasterClockRate() * 2048 / PceScsiBus::ReadBytesPerSecond);
+				_readSectorCounter = GetSeekTime(_state.Sector + 1, _state.Sector) + GetSectorLoadTime();
 				_needExec = true;
 			}
 		}
@@ -485,10 +491,10 @@ void PceScsiBus::SetSignalValue(::ScsiSignal::ScsiSignal signal, bool val)
 
 void PceScsiBus::SetAckWithAutoClear()
 {
-	//Set the Ack signal for 60 master clocks (and then clear it again)
+	//Set the Ack signal for 45 master clocks (and then clear it again)
 	//Used after manually reading a byte of data (or after ADPCM DMA reads one)
 	SetSignals(Ack);
-	_ackClearCounter = 20*3;
+	_ackClearCounter = 15*3;
 	_needExec = true;
 }
 

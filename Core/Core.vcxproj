@@ -31,6 +31,7 @@
     <ClInclude Include="Gameboy\Carts\GbMbc7.h" />
     <ClInclude Include="NES\HdPacks\HdBuilderPpu.h" />
     <ClInclude Include="NES\HdPacks\HdPackBuilder.h" />
+    <ClInclude Include="PCE\CdRom\PceCdSeekDelay.h" />
     <ClInclude Include="Shared\ColorUtilities.h" />
     <ClInclude Include="Shared\Utilities\emu2413.h" />
     <ClInclude Include="NES\Mappers\Nintendo\FnsMmc1.h" />

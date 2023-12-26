@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PCE/CdRom/PceCdAudioPlayer.h"
 #include "PCE/CdRom/PceCdRom.h"
+#include "PCE/CdRom/PceCdSeekDelay.h"
 #include "PCE/PceTypes.h"
 #include "Shared/Emulator.h"
 #include "Shared/EmuSettings.h"
@@ -19,6 +20,9 @@ void PceCdAudioPlayer::Play(uint32_t startSector, bool pause)
 {
 	int32_t track = _disc->GetTrack(startSector);
 	if(track >= 0) {
+		uint32_t startLba = _cdrom->GetCurrentSector();
+		_seekDelay = (uint32_t)((PceCdSeekDelay::GetSeekTimeMs(startLba, startSector) / 1000.0) * _emu->GetMasterClockRate());
+
 		_state.StartSector = startSector;
 		_state.Status = pause ? CdAudioStatus::Paused : CdAudioStatus::Playing;
 

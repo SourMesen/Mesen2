@@ -59,6 +59,8 @@ public:
 
 	PceCdAudioPlayer& GetAudioPlayer() { return _audioPlayer; }
 	PceAudioFader& GetAudioFader() { return _audioFader; }
+	
+	uint32_t GetCurrentSector();
 
 	void SetIrqSource(PceCdRomIrqSource src);
 	void ClearIrqSource(PceCdRomIrqSource src);

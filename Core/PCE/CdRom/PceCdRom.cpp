@@ -85,6 +85,15 @@ void PceCdRom::InitMemoryBanks(uint8_t* readBanks[0x100], uint8_t* writeBanks[0x
 	}
 }
 
+uint32_t PceCdRom::GetCurrentSector()
+{
+	if(_audioPlayer.GetStatus() == CdAudioStatus::Inactive) {
+		return _scsi.GetState().Sector;
+	} else {
+		return _audioPlayer.GetCurrentSector();
+	}
+}
+
 void PceCdRom::SetIrqSource(PceCdRomIrqSource src)
 {
 	//LogDebug("Set IRQ source: " + HexUtilities::ToHex((uint8_t)src));

@@ -15,6 +15,7 @@ class PceAdpcm final : public IAudioProvider, public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;
+	PceConsole* _console = nullptr;
 	PceCdRom* _cdrom = nullptr;
 	PceScsiBus* _scsi = nullptr;
 	uint8_t* _ram = nullptr;
@@ -91,6 +92,7 @@ private:
 	void ProcessReadOperation();
 	void ProcessWriteOperation();
 	void ProcessDmaRequest();
+	uint8_t GetClocksToNextSlot(bool forRead);
 	void PlaySample();
 
 public:

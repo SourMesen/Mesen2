@@ -94,6 +94,7 @@ private:
 	void ProcessCommandPhase();
 	
 	int64_t GetSeekTime(uint32_t startLba, uint32_t targetLba);
+	uint64_t GetSectorLoadTime();
 	void CmdRead();
 	
 	uint32_t GetAudioLbaPos();

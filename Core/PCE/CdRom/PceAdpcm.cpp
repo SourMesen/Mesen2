@@ -16,6 +16,7 @@ using namespace ScsiSignal;
 PceAdpcm::PceAdpcm(PceConsole* console, Emulator* emu, PceCdRom* cdrom, PceScsiBus* scsi)
 {
 	_state = {};
+	_console = console;
 	_cdrom = cdrom;
 	_scsi = scsi;
 	_emu = emu;
@@ -146,7 +147,7 @@ void PceAdpcm::ProcessDmaRequest()
 {
 	if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
 		_needExec = true;
-		_state.WriteClockCounter = 24;
+		_state.WriteClockCounter = GetClocksToNextSlot(false);
 		_state.WriteBuffer = _scsi->GetDataPort();
 		_scsi->SetAckWithAutoClear();
 	}
@@ -157,6 +158,22 @@ void PceAdpcm::ProcessDmaRequest()
 		//Not resetting bit 0 breaks Seiya Monogatari - Anearth (freezes on logo)
 		_state.DmaControl &= ~0x01;
 	}
+}
+
+uint8_t PceAdpcm::GetClocksToNextSlot(bool forRead)
+{
+	uint64_t slotIndex = _console->GetMasterClock() / 9;
+	uint8_t slotType = slotIndex & 0x03;
+	uint8_t gap;
+	switch(slotType) {
+		default: case 0: gap = forRead ? 3 : 1; break; //Refresh slot (ADPCM uses DRAM - needs periodic refresh)
+		case 1: gap = forRead ? 2 : 1; break; //Write slot
+		case 2: gap = forRead ? 1 : 3; break; //Write slot
+		case 3: gap = forRead ? 4 : 2; break; //Read slot
+	}
+
+	uint64_t nextSlotClock = (slotIndex + gap) * 9;
+	return (nextSlotClock - _console->GetMasterClock()) / 3;
 }
 
 void PceAdpcm::Exec()
@@ -193,7 +210,7 @@ void PceAdpcm::Write(uint16_t addr, uint8_t value)
 		case 0x09: _state.AddressPort = (_state.AddressPort & 0xFF) | (value << 8); break;
 
 		case 0x0A:
-			_state.WriteClockCounter = 24;
+			_state.WriteClockCounter = GetClocksToNextSlot(false);
 			_state.WriteBuffer = value;
 			_needExec = true;
 			break;
@@ -222,7 +239,7 @@ uint8_t PceAdpcm::Read(uint16_t addr)
 {
 	switch(addr & 0x3FF) {
 		case 0x0A:
-			_state.ReadClockCounter = 24;
+			_state.ReadClockCounter = GetClocksToNextSlot(true);
 			_needExec = true;
 			return _state.ReadBuffer;
 
