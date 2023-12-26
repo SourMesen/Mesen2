@@ -510,17 +510,7 @@ void GbMemoryManager::Serialize(Serializer& s)
 	SV(_state.CgbRegFF72); SV(_state.CgbRegFF73); SV(_state.CgbRegFF74); SV(_state.CgbRegFF75);
 	SV(_state.CgbRegRpInfrared);
 
-	SVArray(_state.MemoryType, 0x100);
-	SVArray(_state.MemoryOffset, 0x100);
-	SVArray(_state.MemoryAccessType, 0x100);
-	SVArray(_state.IsReadRegister, 0x100);
-	SVArray(_state.IsWriteRegister, 0x100);
-
 	if(!s.IsSaving()) {
-		//Restore mappings based on state
-		for(int i = 0; i < 0x100; i++) {
-			Map(i*0x100, i*0x100+0xFF, _state.MemoryType[i], _state.MemoryOffset[i], _state.MemoryAccessType[i] == RegisterAccess::ReadWrite ? false : true);
-		}
 		RefreshMappings();
 	}
 }
