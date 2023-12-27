@@ -8,8 +8,14 @@ PceAudioFader::PceAudioFader(PceConsole* console)
 	_console = console;
 }
 
+uint8_t PceAudioFader::Read()
+{
+	return _state.RegValue;
+}
+
 void PceAudioFader::Write(uint8_t value)
 {
+	_state.RegValue = value;
 	_state.Enabled = (value & 0x08) != 0;
 	_state.Target = (value & 0x02) ? PceAudioFaderTarget::Adpcm : PceAudioFaderTarget::CdAudio;
 	_state.StartClock = _console->GetMasterClock();
@@ -34,4 +40,5 @@ void PceAudioFader::Serialize(Serializer& s)
 	SV(_state.Target);
 	SV(_state.StartClock);
 	SV(_state.FastFade);
+	SV(_state.RegValue);
 }

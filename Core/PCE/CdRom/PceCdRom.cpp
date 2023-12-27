@@ -140,7 +140,7 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 			_scsi.SetSignalValue(Ack, (value & 0x80) != 0);
 			_scsi.UpdateState();
 
-			_state.EnabledIrqs = value & 0x7C;
+			_state.EnabledIrqs = value & 0x7F;
 			UpdateIrqState();
 			break;
 
@@ -160,17 +160,21 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 		}
 
 		case 0x05:
-		case 0x06:
-			//Readonly
+			_state.ReadRightChannel = !_state.ReadRightChannel;
+			_state.AudioSampleLatch = _state.ReadRightChannel ? _audioPlayer.GetRightSample() : _audioPlayer.GetLeftSample();
 			break;
 
-		case 0x07:
-			//BRAM unlock
-			if((value & 0x80) != 0) {
-				_state.BramLocked = false;
+		case 0x06: break; //readonly
+
+		case 0x07: {
+			//BRAM control
+			bool bramLocked = (value & 0x80) == 0;
+			if(_state.BramLocked != bramLocked) {
+				_state.BramLocked = bramLocked;
 				_console->GetMemoryManager()->UpdateCdRomBanks();
 			}
 			break;
+		}
 
 		case 0x08: case 0x09: case 0x0A: case 0x0B:
 		case 0x0C: case 0x0D: case 0x0E:
@@ -198,17 +202,17 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x03:
 			_state.BramLocked = true;
 			_console->GetMemoryManager()->UpdateCdRomBanks();
-			_state.ReadRightChannel = !_state.ReadRightChannel;
-
+			
 			return (
-				_state.ActiveIrqs |
+				_state.ActiveIrqs | 
+				0x10 | //drive enabled/active?
 				(_state.ReadRightChannel ? 0 : 0x02)
 			);
 
 		case 0x04: return _scsi.CheckSignal(Rst) ? 0x02 : 0;
 
-		case 0x05: return (uint8_t)(_state.ReadRightChannel ? _audioPlayer.GetRightSample() : _audioPlayer.GetLeftSample());
-		case 0x06: return (uint8_t)((_state.ReadRightChannel ? _audioPlayer.GetRightSample() : _audioPlayer.GetLeftSample()) >> 8);
+		case 0x05: return (uint8_t)_state.AudioSampleLatch;
+		case 0x06: return (uint8_t)(_state.AudioSampleLatch >> 8);
 			
 		case 0x07: return _state.BramLocked ? 0 : 0x80;
 
@@ -224,6 +228,8 @@ uint8_t PceCdRom::Read(uint16_t addr)
 		case 0x09: case 0x0A: case 0x0B:
 		case 0x0C: case 0x0D: case 0x0E:
 			return _adpcm.Read(addr);
+
+		case 0x0F: return _audioFader.Read();
 
 		case 0xC0: case 0xC1: case 0xC2: case 0xC3: 
 			if(_emu->GetSettings()->GetPcEngineConfig().CdRomType == PceCdRomType::CdRom) {
@@ -249,6 +255,7 @@ void PceCdRom::Serialize(Serializer& s)
 	SV(_state.BramLocked);
 	SV(_state.EnabledIrqs);
 	SV(_state.ReadRightChannel);
+	SV(_state.AudioSampleLatch);
 
 	SVArray(_saveRam, _saveRamSize);
 	SVArray(_cdromRam, _cdromRamSize);

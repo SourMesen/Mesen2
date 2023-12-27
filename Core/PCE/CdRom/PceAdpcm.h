@@ -88,6 +88,8 @@ private:
 	void Reset();
 	void SetHalfReached(bool value);
 	void SetEndReached(bool value);
+	bool IsLengthLatchEnabled();
+	void ProcessFlags();
 	void SetControl(uint8_t value);
 	void ProcessReadOperation();
 	void ProcessWriteOperation();

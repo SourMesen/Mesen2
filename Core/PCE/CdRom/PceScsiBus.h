@@ -56,6 +56,7 @@ private:
 	
 	int64_t _readSectorCounter = 0;
 	int32_t _ackClearCounter = 0;
+	int32_t _dataInEndCounter = 0;
 	bool _needExec = true;
 
 	vector<uint8_t> _cmdBuffer;
@@ -114,6 +115,7 @@ public:
 
 	uint8_t GetStatus();
 	bool IsDataTransferInProgress() { return _readSectorCounter > 0 || _state.DataTransferDone; }
+	bool IsDataBlockReady() { return _dataBuffer.size() > 0; }
 	
 	void SetDataPort(uint8_t data);
 	uint8_t GetDataPort();

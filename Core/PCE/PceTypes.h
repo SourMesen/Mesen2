@@ -300,13 +300,13 @@ enum class PceCdRomIrqSource
 {
 	Adpcm = 0x04,
 	Stop = 0x08,
-	SubChannel = 0x10,
 	DataTransferDone = 0x20,
 	DataTransferReady = 0x40
 };
 
 struct PceCdRomState
 {
+	uint16_t AudioSampleLatch = 0;
 	uint8_t ActiveIrqs = 0;
 	uint8_t EnabledIrqs = 0;
 	bool ReadRightChannel = false;
@@ -325,7 +325,7 @@ struct PceAdpcmState
 	uint8_t Control;
 	uint8_t PlaybackRate;
 
-	uint16_t AdpcmLength;
+	uint32_t AdpcmLength;
 	bool EndReached;
 	bool HalfReached;
 
@@ -388,6 +388,7 @@ struct PceScsiBusState
 	bool MessageDone;
 	uint8_t MessageData;
 	uint8_t DataPort;
+	uint8_t ReadDataPort;
 
 	bool DataTransferDone;
 	uint32_t Sector;
@@ -406,6 +407,7 @@ struct PceAudioFaderState
 	PceAudioFaderTarget Target;
 	bool FastFade;
 	bool Enabled;
+	uint8_t RegValue;
 };
 
 struct PceState
