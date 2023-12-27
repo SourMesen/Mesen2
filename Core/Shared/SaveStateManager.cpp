@@ -90,10 +90,10 @@ bool SaveStateManager::SaveState(string filepath, bool showSuccessMessage)
 		{
 			auto lock = _emu->AcquireLock();
 			SaveState(file);
+			_emu->ProcessEvent(EventType::StateSaved);
 		}
 		file.close();
 
-		_emu->ProcessEvent(EventType::StateSaved);
 		if(showSuccessMessage) {
 			MessageManager::DisplayMessage("SaveStates", "SaveStateSavedFile", filepath);
 		}
@@ -227,11 +227,13 @@ bool SaveStateManager::LoadState(string filepath, bool showSuccessMessage)
 		{
 			auto lock = _emu->AcquireLock();
 			result = LoadState(file);
+			if(result) {
+				_emu->ProcessEvent(EventType::StateLoaded);
+			}
 		}
 		file.close();
 
 		if(result) {
-			_emu->ProcessEvent(EventType::StateLoaded);
 			if(showSuccessMessage) {
 				MessageManager::DisplayMessage("SaveStates", "SaveStateLoadedFile", filepath);
 			}
