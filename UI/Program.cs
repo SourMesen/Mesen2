@@ -40,14 +40,6 @@ namespace Mesen
 		[STAThread]
 		public static int Main(string[] args)
 		{
-			if(OperatingSystem.IsLinux() && Environment.GetEnvironmentVariable("LIBGL_ALWAYS_INDIRECT") == null) {
-				//Workaround for SDL2 displaying a blank screen with recent OS/library updates on Linux
-				//Setting the LIBGL_ALWAYS_INDIRECT flag fixes this, so set the flag and restart the process
-				Environment.SetEnvironmentVariable("LIBGL_ALWAYS_INDIRECT", "true");
-				Process.Start(ExePath, args);
-				return 0;
-			}
-
 			if(!System.Diagnostics.Debugger.IsAttached) {
 				NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
 				NativeLibrary.SetDllImportResolver(typeof(SkiaSharp.SKGraphics).Assembly, DllImportResolver);
