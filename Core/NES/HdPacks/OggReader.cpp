@@ -71,7 +71,7 @@ void OggReader::ApplySamples(int16_t* buffer, size_t sampleCount, uint8_t volume
 		if(samplesLoaded < samplesToLoad) {
 			if(_loop) {
 				stb_vorbis_seek(_vorbis, _loopPosition);
-				samplesLoaded += stb_vorbis_get_samples_short_interleaved(_vorbis, 2, _oggBuffer + samplesLoaded * 2, samplesToLoad - samplesLoaded);
+				samplesLoaded += stb_vorbis_get_samples_short_interleaved(_vorbis, 2, _oggBuffer + samplesLoaded * 2, (samplesToLoad - samplesLoaded) * 2);
 			} else {
 				_done = true;
 			}
