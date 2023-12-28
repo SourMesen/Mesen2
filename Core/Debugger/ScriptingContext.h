@@ -31,7 +31,44 @@ enum class ScriptDrawSurface
 	ScriptHud
 };
 
-class ScriptingContext
+class IScriptingContext
+{
+public:
+	virtual ~IScriptingContext() {}
+
+	virtual bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) = 0;
+
+	virtual void Log(string message) = 0;
+	virtual string GetLog() = 0;
+
+	virtual Debugger* GetDebugger() = 0;
+	virtual string GetScriptName() = 0;
+
+	virtual void SetDrawSurface(ScriptDrawSurface surface) = 0;
+	virtual ScriptDrawSurface GetDrawSurface() = 0;
+
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) = 0;
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) = 0;
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) = 0;
+
+	virtual int CallEventCallback(EventType type, CpuType cpuType) = 0;
+	virtual bool CheckInitDone() = 0;
+	virtual bool IsSaveStateAllowed() = 0;
+
+	virtual CpuType GetDefaultCpuType() = 0;
+	virtual MemoryType GetDefaultMemType() = 0;
+
+	virtual void RefreshMemoryCallbackFlags() = 0;
+
+	virtual void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) = 0;
+	virtual void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) = 0;
+	virtual void RegisterEventCallback(EventType type, int reference) = 0;
+	virtual void UnregisterEventCallback(EventType type, int reference) = 0;
+};
+
+
+
+class ScriptingContext : public IScriptingContext
 {
 private:
 	static ScriptingContext* _context;
@@ -66,29 +103,32 @@ protected:
 public:
 	ScriptingContext(Debugger* debugger);
 	~ScriptingContext();
-	bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger);
+	bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) override;
 
-	void Log(string message);
-	string GetLog();
+	void Log(string message) override;
+	string GetLog() override;
 
-	Debugger* GetDebugger();
-	string GetScriptName();
+	Debugger* GetDebugger() override;
+	string GetScriptName() override;
 
-	void SetDrawSurface(ScriptDrawSurface surface) { _drawSurface = surface; }
-	ScriptDrawSurface GetDrawSurface() { return _drawSurface; }
+	void SetDrawSurface(ScriptDrawSurface surface) override { _drawSurface = surface; }
+	ScriptDrawSurface GetDrawSurface() override { return _drawSurface; }
 
-	template<typename T> void CallMemoryCallback(AddressInfo relAddr, T& value, CallbackType type, CpuType cpuType);
-	int CallEventCallback(EventType type, CpuType cpuType);
-	bool CheckInitDone();
-	bool IsSaveStateAllowed();
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) override;
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) override;
+	virtual void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) override;
 
-	CpuType GetDefaultCpuType() { return _defaultCpuType; }
-	MemoryType GetDefaultMemType() { return _defaultMemType; }
+	int CallEventCallback(EventType type, CpuType cpuType) override;
+	bool CheckInitDone() override;
+	bool IsSaveStateAllowed() override;
+
+	CpuType GetDefaultCpuType() override { return _defaultCpuType; }
+	MemoryType GetDefaultMemType() override { return _defaultMemType; }
 	
-	void RefreshMemoryCallbackFlags();
+	void RefreshMemoryCallbackFlags() override;
 
-	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
-	void RegisterEventCallback(EventType type, int reference);
-	void UnregisterEventCallback(EventType type, int reference);
+	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
+	void RegisterEventCallback(EventType type, int reference) override;
+	void UnregisterEventCallback(EventType type, int reference) override;
 };

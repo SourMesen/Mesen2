@@ -177,8 +177,21 @@ string ScriptingContext::GetScriptName()
 	return _scriptName;
 }
 
-template<typename T>
-void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, T &value, CallbackType type, CpuType cpuType)
+void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t&value, CallbackType type, CpuType cpuType)
+{
+	_allowSaveState = type == CallbackType::Exec && cpuType == _defaultCpuType;
+	InternalCallMemoryCallback(relAddr, value, type, cpuType);
+	_allowSaveState = false;
+}
+
+void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType)
+{
+	_allowSaveState = type == CallbackType::Exec && cpuType == _defaultCpuType;
+	InternalCallMemoryCallback(relAddr, value, type, cpuType);
+	_allowSaveState = false;
+}
+
+void ScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType)
 {
 	_allowSaveState = type == CallbackType::Exec && cpuType == _defaultCpuType;
 	InternalCallMemoryCallback(relAddr, value, type, cpuType);
@@ -340,7 +353,3 @@ int ScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 	}
 	return l.ReturnCount();
 }
-
-template void ScriptingContext::CallMemoryCallback<uint8_t>(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType);
-template void ScriptingContext::CallMemoryCallback<uint16_t>(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType);
-template void ScriptingContext::CallMemoryCallback<uint32_t>(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType);

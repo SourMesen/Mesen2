@@ -11,7 +11,7 @@ class Debugger;
 class ScriptHost
 {
 private:
-	safe_ptr<ScriptingContext> _context;
+	safe_ptr<IScriptingContext> _context;
 	int _scriptId = 0;
 
 public:

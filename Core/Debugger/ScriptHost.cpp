@@ -17,7 +17,7 @@ int ScriptHost::GetScriptId()
 
 string ScriptHost::GetLog()
 {
-	shared_ptr<ScriptingContext> context = _context.lock();
+	shared_ptr<IScriptingContext> context = _context.lock();
 	return context ? context->GetLog() : "";
 }
 
