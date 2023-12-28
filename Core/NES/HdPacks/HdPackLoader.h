@@ -4,6 +4,8 @@
 #include "Utilities/ZipReader.h"
 #include "Utilities/VirtualFile.h"
 
+enum class HdPackConditionOperator;
+
 class HdPackLoader
 {
 public:
@@ -39,6 +41,7 @@ private:
 	void ProcessPatchTag(vector<string> &tokens);
 	void ProcessOverscanTag(vector<string> &tokens);
 	void ProcessConditionTag(vector<string> &tokens, bool createInvertedCondition);
+	HdPackConditionOperator ParseConditionOperator(string& opString);
 	void ProcessTileTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
 	void ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions);
 	void ProcessAdditionTag(vector<string>& tokens);

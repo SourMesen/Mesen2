@@ -355,6 +355,8 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 		HdPackConditionType type = condition->GetConditionType();
 		switch(type){
 			case HdPackConditionType::SpriteNearby: tileInfo->ForceDisableCache = true; break;
+			case HdPackConditionType::PositionCheckX: tileInfo->ForceDisableCache = true; break;
+			case HdPackConditionType::PositionCheckY: tileInfo->ForceDisableCache = true; break;
 			case HdPackConditionType::TileNearby:
 				HdPackTileNearbyCondition* tileNearby = (HdPackTileNearbyCondition*)condition;
 				if(tileNearby->TileX % 8 > 0 || tileNearby->TileY % 8 > 0) {
@@ -445,6 +447,10 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 		condition.reset(new HdPackMemoryCheckConstantCondition());
 	} else if(tokens[1] == "frameRange") {
 		condition.reset(new HdPackFrameRangeCondition());
+	} else if(tokens[1] == "positionCheckX") {
+		condition.reset(new HdPackPositionCheckXCondition());
+	} else if(tokens[1] == "positionCheckY") {
+		condition.reset(new HdPackPositionCheckYCondition());
 	} else {
 		MessageManager::Log("[HDPack] Invalid condition type: " + tokens[1]);
 		return;
@@ -507,24 +513,9 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 				checkConstraint(operandA <= 0xFFFF, "[HDPack] Out of range memoryCheck operand");
 			}
 
-			HdPackConditionOperator op;
-			string opString = tokens[index++];
-			if(opString == "==") {
-				op = HdPackConditionOperator::Equal;
-			} else if(opString == "!=") {
-				op = HdPackConditionOperator::NotEqual;
-			} else if(opString == ">") {
-				op = HdPackConditionOperator::GreaterThan;
-			} else if(opString == "<") {
-				op = HdPackConditionOperator::LowerThan;
-			} else if(opString == "<=") {
-				op = HdPackConditionOperator::LowerThanOrEqual;
-			} else if(opString == ">=") {
-				op = HdPackConditionOperator::GreaterThanOrEqual;
-			} else {
-				checkConstraint(false, "[HDPack] Invalid operator.");
-			}
-
+			HdPackConditionOperator op = ParseConditionOperator(tokens[index++]);
+			checkConstraint(op != HdPackConditionOperator::Invalid, "[HDPack] Invalid operator.");
+			
 			uint32_t operandB = HexUtilities::FromHex(tokens[index++]);
 			uint32_t mask = 0xFF;
 			if(tokens.size() > 5 && _data->Version >= 103) {
@@ -550,6 +541,21 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 
 			_data->WatchedMemoryAddresses.emplace(operandA);
 			((HdPackBaseMemoryCondition*)condition.get())->Initialize(operandA, op, operandB, (uint8_t)mask);
+			break;
+		}
+
+		case HdPackConditionType::PositionCheckX:
+		case HdPackConditionType::PositionCheckY: {
+			checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 109+ of HD Packs");
+			checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
+
+			HdPackConditionOperator op = ParseConditionOperator(tokens[index++]);
+			checkConstraint(op != HdPackConditionOperator::Invalid, "[HDPack] Invalid operator.");
+
+			uint32_t operand = HexUtilities::FromHex(tokens[index++]);
+
+			checkConstraint(operand <= 0xFFFF, "[HDPack] Out of range positionCheck operand");
+			((HdPackBasePositionCheckCondition*)condition.get())->Initialize(op, operand);
 			break;
 		}
 
@@ -580,6 +586,24 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 	condition.release();
 	_data->Conditions.emplace_back(unique_ptr<HdPackCondition>(cond));
 	_conditionsByName[cond->Name] = cond;
+}
+
+HdPackConditionOperator HdPackLoader::ParseConditionOperator(string& opString)
+{
+	if(opString == "==") {
+		return HdPackConditionOperator::Equal;
+	} else if(opString == "!=") {
+		return HdPackConditionOperator::NotEqual;
+	} else if(opString == ">") {
+		return HdPackConditionOperator::GreaterThan;
+	} else if(opString == "<") {
+		return HdPackConditionOperator::LowerThan;
+	} else if(opString == "<=") {
+		return HdPackConditionOperator::LowerThanOrEqual;
+	} else if(opString == ">=") {
+		return HdPackConditionOperator::GreaterThanOrEqual;
+	}
+	return HdPackConditionOperator::Invalid;
 }
 
 void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCondition*> conditions)
@@ -631,7 +655,7 @@ void HdPackLoader::ProcessBackgroundTag(vector<string> &tokens, vector<HdPackCon
 
 				default:
 					MessageManager::Log("[HDPack] Invalid condition type for background: " + tokens[0]);
-					return;
+					break;
 			}
 		}
 
