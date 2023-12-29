@@ -66,8 +66,6 @@ public:
 	virtual void UnregisterEventCallback(EventType type, int reference) = 0;
 };
 
-
-
 class ScriptingContext : public IScriptingContext
 {
 private:
@@ -114,9 +112,9 @@ public:
 	void SetDrawSurface(ScriptDrawSurface surface) override { _drawSurface = surface; }
 	ScriptDrawSurface GetDrawSurface() override { return _drawSurface; }
 
-	virtual void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) override;
-	virtual void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) override;
-	virtual void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) override;
+	void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) override;
+	void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) override;
+	void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) override;
 
 	int CallEventCallback(EventType type, CpuType cpuType) override;
 	bool CheckInitDone() override;
@@ -125,6 +123,62 @@ public:
 	CpuType GetDefaultCpuType() override { return _defaultCpuType; }
 	MemoryType GetDefaultMemType() override { return _defaultMemType; }
 	
+	void RefreshMemoryCallbackFlags() override;
+
+	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
+	void RegisterEventCallback(EventType type, int reference) override;
+	void UnregisterEventCallback(EventType type, int reference) override;
+};
+
+struct PythonState;
+
+class PythonScriptingContext : public IScriptingContext
+{
+protected:
+	static bool _pythonInitialized;
+
+	deque<string> _logRows;
+	SimpleLock _logLock;
+
+	Debugger* _debugger = nullptr;
+	EmuSettings* _settings = nullptr;
+	CpuType _defaultCpuType = {};
+	MemoryType _defaultMemType = {};
+
+	PythonState *_python = nullptr;
+
+	bool _allowSaveState = true;
+
+	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
+
+	void LogError();
+
+public:
+	PythonScriptingContext(Debugger* debugger);
+	~PythonScriptingContext();
+	bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) override;
+
+	void Log(string message) override;
+	string GetLog() override;
+
+	Debugger* GetDebugger() override;
+	string GetScriptName() override;
+
+	void SetDrawSurface(ScriptDrawSurface surface) override { _drawSurface = surface; }
+	ScriptDrawSurface GetDrawSurface() override { return _drawSurface; }
+
+	void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) override;
+	void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) override;
+	void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) override;
+
+	int CallEventCallback(EventType type, CpuType cpuType) override;
+	bool CheckInitDone() override;
+	bool IsSaveStateAllowed() override;
+
+	CpuType GetDefaultCpuType() override { return _defaultCpuType; }
+	MemoryType GetDefaultMemType() override { return _defaultMemType; }
+
 	void RefreshMemoryCallbackFlags() override;
 
 	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;

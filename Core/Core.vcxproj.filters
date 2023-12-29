@@ -2912,6 +2912,9 @@
     <ClCompile Include="PCE\CdRom\PceScsiBus.cpp">
       <Filter>PCE\CdRom</Filter>
     </ClCompile>
+    <ClCompile Include="PythonScriptingContext.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
