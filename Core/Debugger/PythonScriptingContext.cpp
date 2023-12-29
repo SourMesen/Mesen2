@@ -20,7 +20,7 @@ void* PythonScriptingContext::RegisterFrameMemory(MemoryType type, const std::ve
 	if (addresses.empty())
 		return nullptr;
 
-	uint8_t *result = new uint8_t[addresses.size() * 2];
+	uint8_t *result = new uint8_t[addresses.size()];
 	memset(result, 0, addresses.size() * sizeof(uint8_t));
 
 	MemoryRegistry reg = {};
