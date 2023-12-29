@@ -11,9 +11,12 @@
 #include "Utilities/magic_enum.hpp"
 #include "Shared/EventType.h"
 #include "Utilities/FolderUtilities.h"
+#include "Debugger/MemoryDumper.h"
 
+#ifdef _WIN32
 /* struct timeval */
 #include <winsock2.h>
+#endif
 
 #ifdef _DEBUG
 #undef _DEBUG
@@ -26,10 +29,13 @@
 #define _DEBUG
 #endif
 
-static PyObject* EmuLog(PyObject* self, PyObject* args);
+static PyObject* PythonEmuLog(PyObject* self, PyObject* args);
+
+static PyObject* PythonRead8(PyObject* self, PyObject* args);
 
 static PyMethodDef MyMethods[] = {
-	{"log", EmuLog, METH_VARARGS, "Logging function"},
+	{"log", PythonEmuLog, METH_VARARGS, "Logging function"},
+//	{"read8", PythonRead8, METH_VARARGS, "Read 8-bit value from memory"},
 	{NULL, NULL, 0, NULL}
 };
 
@@ -49,7 +55,7 @@ PyMODINIT_FUNC PyInit_mesen(void)
 
 static PythonScriptingContext* s_context = nullptr;
 
-static PyObject* EmuLog(PyObject* self, PyObject* args)
+static PyObject* PythonEmuLog(PyObject* self, PyObject* args)
 {
 	const char* message;
 	if(!PyArg_ParseTuple(args, "s", &message)) {
@@ -64,11 +70,49 @@ static PyObject* EmuLog(PyObject* self, PyObject* args)
 	Py_RETURN_NONE;
 }
 
+static PyObject* PythonRead8(PyObject* self, PyObject* args)
+{
+	if (!s_context)
+		return nullptr;
 
+	int address, kind;
+	PyObject* py_signed;
+
+	// Unpack the Python arguments. Expected: two integers and a boolean
+	if(!PyArg_ParseTuple(args, "iiO", &address, &kind, &py_signed))
+		return nullptr;
+
+	// Check if py_signed is a boolean
+	if (!PyBool_Check(py_signed))
+	{
+		PyErr_SetString(PyExc_TypeError, "Third argument must be a boolean");
+		return nullptr;
+	}
+
+	// Convert the PyObject to a C++ boolean
+	bool sgn = PyObject_IsTrue(py_signed);
+
+	uint8_t result = 0;
+	bool success = s_context->ReadMemory(address, static_cast<MemoryType>(kind), sgn, result);
+
+	// Convert the result to a Python object based on is_signed
+	if (sgn)
+		return PyLong_FromLong(static_cast<int8_t>(result));
+	else
+		return PyLong_FromUnsignedLong(result);
+}
+
+bool PythonScriptingContext::ReadMemory(uint32_t addr, MemoryType memType, bool sgned, uint8_t& result)
+{
+	uint8_t value = _memoryDumper->GetMemoryValue(memType, addr, true);
+	result = value;
+	return true;
+}
 
 PythonScriptingContext::PythonScriptingContext(Debugger* debugger)
 {
 	_debugger = debugger;
+	_memoryDumper = debugger->GetMemoryDumper();
 	_settings = debugger->GetEmulator()->GetSettings();
 	_defaultCpuType = debugger->GetEmulator()->GetCpuTypes()[0];
 	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);

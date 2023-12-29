@@ -141,6 +141,7 @@ protected:
 	SimpleLock _logLock;
 
 	Debugger* _debugger = nullptr;
+	MemoryDumper* _memoryDumper = nullptr;
 	EmuSettings* _settings = nullptr;
 	CpuType _defaultCpuType = {};
 	MemoryType _defaultMemType = {};
@@ -154,6 +155,10 @@ protected:
 	void LogError();
 	void InitializePython();
 	string ReadFileContents(const string &path);
+
+public:
+	// Python apis
+	bool ReadMemory(uint32_t addr, MemoryType mem, bool sgned, uint8_t& result);
 
 public:
 	PythonScriptingContext(Debugger* debugger);

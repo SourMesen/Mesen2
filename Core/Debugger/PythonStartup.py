@@ -1,10 +1,9 @@
 import emu
 class LogStream(object):
 	def __init__(self):
-		from emu import log
 		import sys
 		
-		self.log = log
+		self.log = emu.log
 		sys.stdout = self
 		sys.stderr = self
 		
@@ -30,3 +29,20 @@ class eventType:
 		self.scriptEnded = 10
 
 eventType = eventType()
+
+class memoryType:
+	def __init__(self):
+		self.nesMemory = 7
+		self.ppuMemory = 8
+		self.NesPrgRom = 36
+		self.NesInternalRam = 37
+		self.NesWorkRam = 38
+		self.NesSaveRam = 39
+		self.NesNametableRam = 40
+		self.NesSpriteRam = 41
+		self.NesSecondarySpriteRam = 42
+		self.NesPaletteRam = 43
+		self.NesChrRam = 44
+		self.NesChrRom = 45
+
+memoryType = memoryType()
