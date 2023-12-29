@@ -18,4 +18,5 @@
 #undef DEBUG_WAS_DEFINED
 #endif
 
-bool InitializePython();
+
+PyThreadState *InitializePython();

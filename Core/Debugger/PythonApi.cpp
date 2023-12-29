@@ -245,18 +245,29 @@ static string ReadFileContents(const string& path)
 	return buffer.str();
 }
 
-bool InitializePython()
+PyThreadState *InitializePython()
 {
-	if(Py_IsInitialized())
-		return true;
+	if(!Py_IsInitialized())
+	{
+		PyImport_AppendInittab("emu", PyInit_mesen);
+		Py_Initialize();
+	}
 
-	PyImport_AppendInittab("emu", PyInit_mesen);
-	Py_Initialize();
+	PyThreadState* curr = Py_NewInterpreter();
+	PyThreadState* old = PyThreadState_Swap(curr);
 
 	string startupPath = FolderUtilities::GetHomeFolder();
 	startupPath += "\\";
 	startupPath += "PythonStartup.py";
 	string startupScript = ReadFileContents(startupPath);
 
-	return !PyRun_SimpleString(startupScript.c_str());
+	bool result = !PyRun_SimpleString(startupScript.c_str());
+	if(!result)
+	{
+		PyErr_Print();
+		Py_EndInterpreter(curr);
+		curr = nullptr;
+	}
+
+	return curr;
 }

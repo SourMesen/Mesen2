@@ -25,28 +25,20 @@ int ScriptManager::LoadScript(string name, string path, string content, int32_t 
 	DebugBreakHelper helper(_debugger);
 	auto lock = _scriptLock.AcquireSafe();
 
-	if(scriptId < 0) {
-		unique_ptr<ScriptHost> script(new ScriptHost(_nextScriptId++));
-		script->LoadScript(name, path, content, _debugger);
-		scriptId = script->GetScriptId();
-		_scripts.push_back(std::move(script));
-		_hasScript = true;
-		return scriptId;
-	} else {
-		auto result = std::find_if(_scripts.begin(), _scripts.end(), [=](unique_ptr<ScriptHost> &script) {
-			return script->GetScriptId() == scriptId;
-		});
-		if(result != _scripts.end()) {
-			//Send a ScriptEnded event before reloading the code
-			(*result)->ProcessEvent(EventType::ScriptEnded, _debugger->GetMainCpuType());
 
-			(*result)->LoadScript(name, path, content, _debugger);
-			RefreshMemoryCallbackFlags();
-			return scriptId;
-		}
-	}
+	auto result = std::find_if(_scripts.begin(), _scripts.end(), [=](unique_ptr<ScriptHost>& script) {
+		return script->GetScriptId() == scriptId;
+	});
 
-	return -1;
+	if(result != _scripts.end())
+		RemoveScript(scriptId);
+
+	unique_ptr<ScriptHost> script(new ScriptHost(_nextScriptId++));
+	script->LoadScript(name, path, content, _debugger);
+	scriptId = script->GetScriptId();
+	_scripts.push_back(std::move(script));
+	_hasScript = true;
+	return scriptId;
 }
 
 void ScriptManager::RemoveScript(int32_t scriptId)

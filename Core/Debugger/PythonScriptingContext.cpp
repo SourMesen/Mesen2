@@ -84,10 +84,6 @@ PythonScriptingContext::PythonScriptingContext(Debugger* debugger)
 PythonScriptingContext::~PythonScriptingContext()
 {
 	s_context = nullptr;
-
-	Py_IsInitialized();
-	if (Py_IsInitialized())
-		Py_Finalize();
 }
 
 void PythonScriptingContext::LogError()
@@ -119,13 +115,17 @@ void PythonScriptingContext::LogError()
 
 bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
 {
-	if(!InitializePython())
+	PyThreadState *state = InitializePython();
+	if (!state)
 	{
 		LogError();
 		return false;
 	}
 
+	_python = PythonInterpreterHandler(state);
 	_scriptName = scriptName;
+
+	auto lock = _python.AcquireSafe();
 
 	int error = PyRun_SimpleString(scriptContent.c_str());
 	if (error)
@@ -180,6 +180,13 @@ void PythonScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint32_t& v
 
 int PythonScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 {
+	if(type == EventType::ScriptEnded) {
+		_python.Detach();
+		return 0;
+	}
+
+	auto lock = _python.AcquireSafe();
+
 	if (type == EventType::StartFrame)
 		UpdateFrameMemory();
 
@@ -215,7 +222,7 @@ bool PythonScriptingContext::CheckInitDone()
 
 bool PythonScriptingContext::IsSaveStateAllowed()
 {
-	return _allowSaveState;
+	return !_python.IsExecuting();
 }
 
 
