@@ -753,7 +753,6 @@
     <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp" />
     <ClCompile Include="NES\Loaders\UnifLoader.cpp" />
-    <ClCompile Include="Debugger\PythonScriptingContext.cpp" />
     <ClCompile Include="Shared\Utilities\emu2413.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -940,6 +939,7 @@
     <ClCompile Include="Shared\Video\ScaleFilter.cpp" />
     <ClCompile Include="Debugger\ScriptHost.cpp" />
     <ClCompile Include="Debugger\ScriptingContext.cpp" />
+    <ClCompile Include="Debugger\PythonScriptingContext.cpp" />
     <ClCompile Include="Debugger\ScriptManager.cpp" />
     <ClCompile Include="SNES\Coprocessors\SDD1\Sdd1.cpp" />
     <ClCompile Include="SNES\Coprocessors\SDD1\Sdd1Decomp.cpp" />
