@@ -38,7 +38,6 @@ void PceAdpcm::Reset()
 	_state.ReadAddress = 0;
 	_state.WriteAddress = 0;
 	_state.AddressPort = 0;
-	_state.Playing = false;
 	SetEndReached(false);
 	SetHalfReached(false);
 	_state.AdpcmLength = 0;
@@ -86,17 +85,10 @@ void PceAdpcm::ProcessFlags()
 	}
 
 	if(_state.Control & 0x80) {
-		LogDebug("[ADPCM] Reset");
 		Reset();
 	}
 
-	if(!(_state.Control & 0x20)) {
-		_state.Playing = false;
-		LogDebugIf(_state.Playing, "[ADPCM] Stop");
-	} else if(!_state.Playing) {
-		LogDebug("[ADPCM] Play");
-		_state.Playing = true;
-		_currentOutput = 2048;
+	if(_state.Control & 0x20) {
 		_needExec = true;
 	}
 }
@@ -115,7 +107,6 @@ void PceAdpcm::SetControl(uint8_t value)
 
 	_state.Control = value;
 	ProcessFlags();
-
 }
 
 void PceAdpcm::ProcessReadOperation()
@@ -126,7 +117,7 @@ void PceAdpcm::ProcessReadOperation()
 		_emu->ProcessMemoryAccess<CpuType::Pce, MemoryType::PceAdpcmRam, MemoryOperationType::Read>(_state.ReadAddress, _state.ReadBuffer);
 		_state.ReadAddress++;
 
-		if(!IsLengthLatchEnabled() && !_state.EndReached) {
+		if(!IsLengthLatchEnabled()) {
 			if(_state.AdpcmLength > 0) {
 				_state.AdpcmLength--;
 				SetHalfReached(_state.AdpcmLength < 0x8000);
@@ -159,18 +150,27 @@ void PceAdpcm::ProcessWriteOperation()
 
 void PceAdpcm::ProcessDmaRequest()
 {
-	if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
-		_needExec = true;
-		_state.WriteClockCounter = GetClocksToNextSlot(false);
-		_state.WriteBuffer = _scsi->GetDataPort();
-		_scsi->SetAckWithAutoClear();
-	}
+	if(_dmaWriteCounter) {
+		if(--_dmaWriteCounter == 0) {
+			if(!_state.WriteClockCounter) {
+				_state.WriteClockCounter = GetClocksToNextSlot(false);
+				_state.WriteBuffer = _scsi->GetDataPort();
+				_scsi->SetAckWithAutoClear();
 
-	if(!_scsi->IsDataBlockReady()) {
-		//Reset bit 0 only
-		//Resetting bit 1 breaks Record of Lodoss War (freezes when start is pressed)
-		//Not resetting bit 0 breaks Seiya Monogatari - Anearth (freezes on logo)
-		_state.DmaControl &= ~0x01;
+				if(!_scsi->IsDataBlockReady()) {
+					//Reset bit 0 only
+					//Resetting bit 1 breaks Record of Lodoss War (freezes when start is pressed)
+					//Not resetting bit 0 breaks Seiya Monogatari - Anearth (freezes on logo)
+					_state.DmaControl &= ~0x01;
+				}
+			} else {
+				_dmaWriteCounter++;
+			}
+		}
+	} else if(!_scsi->CheckSignal(Ack) && !_scsi->CheckSignal(Cd) && _scsi->CheckSignal(Io) && _scsi->CheckSignal(Req)) {
+		//Some delay is required here according to test rom
+		//Valid range is 10-14 (higher or lower fails the test)
+		_dmaWriteCounter = 12;
 	}
 }
 
@@ -195,7 +195,7 @@ void PceAdpcm::Exec()
 	//Called every 3 master clocks
 	ProcessFlags();
 
-	if(_state.Playing) {
+	if(_state.Playing || (_state.Control & 0x20)) {
 		_nextSampleCounter += 3;
 		if(_nextSampleCounter >= _clocksPerSample) {
 			PlaySample();
@@ -212,13 +212,13 @@ void PceAdpcm::Exec()
 	}
 
 	bool dmaRequested = (_state.DmaControl & 0x03) != 0;
-	if(dmaRequested && !_state.WriteClockCounter) {
+	if(dmaRequested) {
 		ProcessDmaRequest();
 	}
 
 	ProcessFlags();
 
-	_needExec = _state.Playing || _state.ReadClockCounter > 0 || _state.WriteClockCounter > 0 || dmaRequested;
+	_needExec = _state.Playing || (_state.Control & 0x20) || _state.ReadClockCounter || _state.WriteClockCounter || dmaRequested || _dmaWriteCounter;
 }
 
 void PceAdpcm::Write(uint16_t addr, uint8_t value)
@@ -291,7 +291,22 @@ void PceAdpcm::PlaySample()
 {
 	if(_state.Control & 0x80) {
 		//Reset flag is enabled
+		_state.Playing = (_state.Control & 0x20) != 0;
 		return;
+	}
+
+	if((_state.Control & 0x40) && _state.AdpcmLength == 0) {
+		_state.Control &= ~0x20;
+	}
+
+	if(!(_state.Control & 0x20)) {
+		_state.Playing = false;
+		return;
+	}
+
+	if(!_state.Playing) {
+		_state.Playing = true;
+		_currentOutput = 2048;
 	}
 
 	uint8_t data;
@@ -299,7 +314,7 @@ void PceAdpcm::PlaySample()
 		_state.Nibble = false;
 		data = _ram[_state.ReadAddress] & 0x0F;
 		_state.ReadAddress++;
-		_state.AdpcmLength--;
+		_state.AdpcmLength = (_state.AdpcmLength - 1) & 0x1FFFF;
 	} else {
 		_state.Nibble = true;
 		data = (_ram[_state.ReadAddress] >> 4) & 0x0F;
@@ -315,8 +330,6 @@ void PceAdpcm::PlaySample()
 
 	SetHalfReached(_state.AdpcmLength <= 0x8000);
 	if(_state.AdpcmLength == 0) {
-		_state.Playing = false;
-		_state.Control &= ~0x20; //disable play flag in control register
 		SetEndReached(true);
 	}
 
@@ -359,6 +372,7 @@ void PceAdpcm::Serialize(Serializer& s)
 	SV(_magnitude);
 	SV(_clocksPerSample);
 	SV(_nextSampleCounter);
+	SV(_dmaWriteCounter);
 
 	if(!s.IsSaving()) {
 		_needExec = true;

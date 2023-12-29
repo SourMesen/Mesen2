@@ -14,11 +14,11 @@ namespace ScsiSignal
 	{
 		Ack,
 		Atn,
-		Bsy,
-		Cd,
-		Io,
-		Msg,
-		Req,
+		Bsy, //Set when an operation is in progress
+		Cd, //Set when the current transfer contains commands/messages/status (cleared when actual data)
+		Io, //Set when drive is sending data to the software (cleared when receiving)
+		Msg, //Set when a message is being sent/received
+		Req, //Set when drive is waiting for the software to reply
 		Rst,
 		Sel,
 	};
@@ -41,6 +41,16 @@ enum class ScsiCommand
 	ReadToc = 0xDE
 };
 
+enum class ScsiUpdateType
+{
+	SetCmdPhase,
+	SetReqSignal,
+	ClearReqSignal,
+	SetDataInPhase,
+	SetTransferDoneIrq,
+	SetGoodStatus
+};
+
 class PceScsiBus : public ISerializable
 {
 private:
@@ -56,7 +66,8 @@ private:
 	
 	int64_t _readSectorCounter = 0;
 	int32_t _ackClearCounter = 0;
-	int32_t _dataInEndCounter = 0;
+	int32_t _updateCounter = 0;
+	ScsiUpdateType _updateType = {};
 	bool _needExec = true;
 
 	vector<uint8_t> _cmdBuffer;
@@ -87,6 +98,7 @@ private:
 
 	void ProcessStatusPhase();
 	void ProcessMessageInPhase();
+	void QueueDriveUpdate(ScsiUpdateType action, uint32_t delay);
 	void ProcessDataInPhase();
 
 	uint8_t GetCommandSize(ScsiCommand cmd);

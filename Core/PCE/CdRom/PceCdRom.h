@@ -25,7 +25,8 @@ private:
 	PceAudioFader _audioFader;
 	PceCdAudioPlayer _audioPlayer;
 	PceCdRomState _state = {};
-	
+	uint64_t _latchChannelStamp = 0;
+
 	uint8_t* _cdromRam = nullptr;
 	uint32_t _cdromRamSize = 0;
 	uint8_t* _saveRam = nullptr;

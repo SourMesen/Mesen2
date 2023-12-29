@@ -160,8 +160,14 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 		}
 
 		case 0x05:
-			_state.ReadRightChannel = !_state.ReadRightChannel;
-			_state.AudioSampleLatch = _state.ReadRightChannel ? _audioPlayer.GetRightSample() : _audioPlayer.GetLeftSample();
+			if(_console->GetMasterClock() >= _latchChannelStamp) {
+				//Prevent multiple calls in a row - the delay is required to pass test rom
+				//The value of the L/R flag changes immediately, and writing to the register
+				//again within a short timeframe appears to be ignored.
+				_state.ReadRightChannel = !_state.ReadRightChannel;
+				_state.AudioSampleLatch = _state.ReadRightChannel ? _audioPlayer.GetRightSample() : _audioPlayer.GetLeftSample();
+				_latchChannelStamp = _console->GetMasterClock() + 700; //less than a 700 clock delay causes the test to fail
+			}
 			break;
 
 		case 0x06: break; //readonly
@@ -259,6 +265,8 @@ void PceCdRom::Serialize(Serializer& s)
 
 	SVArray(_saveRam, _saveRamSize);
 	SVArray(_cdromRam, _cdromRamSize);
+
+	SV(_latchChannelStamp);
 
 	SV(_scsi);
 	SV(_adpcm);

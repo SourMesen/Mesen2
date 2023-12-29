@@ -25,8 +25,9 @@ private:
 	vector<int16_t> _samplesToPlay;
 	int16_t _currentOutput = 0;
 	uint8_t _magnitude = 0;
+	uint8_t _dmaWriteCounter = 0;
 	bool _needExec = true;
-	
+
 	double _clocksPerSample = PceConstants::MasterClockRate / 32000.0;
 	double _nextSampleCounter = 0;
 
