@@ -109,23 +109,42 @@ void PythonScriptingContext::LogError()
 	}
 }
 
-bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
+
+void PythonScriptingContext::InitializePython()
 {
-	_scriptName = scriptName;
+	if(Py_IsInitialized())
+		return;
 
 	PyImport_AppendInittab("emu", PyInit_mesen);
-	if(!Py_IsInitialized())
-		Py_Initialize();
+	Py_Initialize();
 
+	string startupPath = FolderUtilities::GetHomeFolder();
+	startupPath += "\\";
+	startupPath += "PythonStartup.py";
+	string startupScript = ReadFileContents(startupPath);
+
+	if(startupScript.empty())
+	{
+		Log("Failed to load Python startup script.");
+	}
+	else
+	{
+		int error = PyRun_SimpleString(startupScript.c_str());
+
+		if(error)
+			LogError();
+	}
+}
+
+
+string PythonScriptingContext::ReadFileContents(const string& path)
+{
 	FILE* f = nullptr;
-	string startup = FolderUtilities::GetHomeFolder();
-	startup += "\\";
-	startup += "PythonStartup.py";
-	auto err = fopen_s(&f, startup.c_str(), "r");
+	auto err = fopen_s(&f, path.c_str(), "r");
 
 	if(err != 0 || f == nullptr) {
 		std::cerr << "Failed to open file." << std::endl;
-		return 1; // Or handle the error as needed
+		return ""; // Or handle the error as needed
 	}
 
 	std::stringstream buffer;
@@ -136,16 +155,19 @@ bool PythonScriptingContext::LoadScript(string scriptName, string path, string s
 	}
 
 	fclose(f);
-	string str = buffer.str();
+	return buffer.str();
+}
 
-	int error = PyRun_SimpleString(str.c_str());
-	
+bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
+{
+	_scriptName = scriptName;
+
+	int error = PyRun_SimpleString(scriptContent.c_str());
 	if (error)
+	{
 		LogError();
-
-	error = PyRun_SimpleString(scriptContent.c_str());
-	if(error)
-		LogError();
+		return false;
+	}
 
 	return true;
 }

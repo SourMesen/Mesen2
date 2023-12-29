@@ -152,6 +152,8 @@ protected:
 	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
 
 	void LogError();
+	void InitializePython();
+	string ReadFileContents(const string &path);
 
 public:
 	PythonScriptingContext(Debugger* debugger);
