@@ -12,9 +12,6 @@
 #include "Debugger/MemoryDumper.h"
 #include "PythonApi.h"
 
-PythonScriptingContext* s_context;
-
-
 void* PythonScriptingContext::RegisterFrameMemory(MemoryType type, const std::vector<int>& addresses)
 {
 	if (addresses.empty())
@@ -77,13 +74,11 @@ PythonScriptingContext::PythonScriptingContext(Debugger* debugger)
 	_settings = debugger->GetEmulator()->GetSettings();
 	_defaultCpuType = debugger->GetEmulator()->GetCpuTypes()[0];
 	_defaultMemType = DebugUtilities::GetCpuMemoryType(_defaultCpuType);
-
-	s_context = this;
 }
 
 PythonScriptingContext::~PythonScriptingContext()
 {
-	s_context = nullptr;
+	ReportEndScriptingContext(this);
 }
 
 void PythonScriptingContext::LogError()
@@ -115,7 +110,7 @@ void PythonScriptingContext::LogError()
 
 bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
 {
-	PyThreadState *state = InitializePython();
+	PyThreadState *state = InitializePython(this);
 	if (!state)
 	{
 		LogError();

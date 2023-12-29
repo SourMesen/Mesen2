@@ -19,4 +19,5 @@
 #endif
 
 
-PyThreadState *InitializePython();
+PyThreadState *InitializePython(PythonScriptingContext *ctx);
+void ReportEndScriptingContext(PythonScriptingContext *ctx);

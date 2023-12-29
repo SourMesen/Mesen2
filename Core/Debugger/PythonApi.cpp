@@ -34,7 +34,7 @@ PyMODINIT_FUNC PyInit_mesen(void)
 	return PyModule_Create(&emumodule);
 }
 
-extern PythonScriptingContext* s_context;
+static PythonScriptingContext* s_context;
 
 static PyObject* PythonEmuLog(PyObject* self, PyObject* args)
 {
@@ -245,8 +245,10 @@ static string ReadFileContents(const string& path)
 	return buffer.str();
 }
 
-PyThreadState *InitializePython()
+PyThreadState *InitializePython(PythonScriptingContext* ctx)
 {
+	s_context = ctx;
+
 	if(!Py_IsInitialized())
 	{
 		PyImport_AppendInittab("emu", PyInit_mesen);
@@ -270,4 +272,10 @@ PyThreadState *InitializePython()
 	}
 
 	return curr;
+}
+
+void ReportEndScriptingContext(PythonScriptingContext* ctx)
+{
+	if (s_context == ctx)
+		s_context = nullptr;
 }
