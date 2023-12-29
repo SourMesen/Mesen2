@@ -136,8 +136,7 @@ struct PythonState;
 class PythonScriptingContext : public IScriptingContext
 {
 protected:
-	static bool _pythonInitialized;
-
+	string _scriptName;
 	deque<string> _logRows;
 	SimpleLock _logLock;
 

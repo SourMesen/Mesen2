@@ -110,6 +110,8 @@ void PythonScriptingContext::LogError()
 
 bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
 {
+	_scriptName = scriptName;
+
 	if(!Py_IsInitialized())
 	{
 		Py_Initialize();
@@ -166,7 +168,7 @@ Debugger* PythonScriptingContext::GetDebugger()
 
 string PythonScriptingContext::GetScriptName()
 {
-	return "";
+	return _scriptName;
 }
 
 void PythonScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType)
