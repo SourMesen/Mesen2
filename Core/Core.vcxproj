@@ -753,7 +753,7 @@
     <ClCompile Include="NES\APU\BaseExpansionAudio.cpp" />
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp" />
     <ClCompile Include="NES\Loaders\UnifLoader.cpp" />
-    <ClCompile Include="PythonScriptingContext.cpp" />
+    <ClCompile Include="Debugger\PythonScriptingContext.cpp" />
     <ClCompile Include="Shared\Utilities\emu2413.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -968,7 +968,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Core.ruleset" />
-    <None Include="PythonStartup.py">
+    <None Include="Debugger\PythonStartup.py">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
