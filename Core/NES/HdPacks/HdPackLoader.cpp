@@ -354,9 +354,14 @@ void HdPackLoader::ProcessTileTag(vector<string> &tokens, vector<HdPackCondition
 	for(HdPackCondition* condition : conditions) {
 		HdPackConditionType type = condition->GetConditionType();
 		switch(type){
-			case HdPackConditionType::SpriteNearby: tileInfo->ForceDisableCache = true; break;
-			case HdPackConditionType::PositionCheckX: tileInfo->ForceDisableCache = true; break;
-			case HdPackConditionType::PositionCheckY: tileInfo->ForceDisableCache = true; break;
+			case HdPackConditionType::SpriteNearby:
+			case HdPackConditionType::PositionCheckX:
+			case HdPackConditionType::PositionCheckY:
+			case HdPackConditionType::OriginPositionCheckX:
+			case HdPackConditionType::OriginPositionCheckY:
+				tileInfo->ForceDisableCache = true;
+				break;
+
 			case HdPackConditionType::TileNearby:
 				HdPackTileNearbyCondition* tileNearby = (HdPackTileNearbyCondition*)condition;
 				if(tileNearby->TileX % 8 > 0 || tileNearby->TileY % 8 > 0) {
@@ -451,6 +456,10 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 		condition.reset(new HdPackPositionCheckXCondition());
 	} else if(tokens[1] == "positionCheckY") {
 		condition.reset(new HdPackPositionCheckYCondition());
+	} else if(tokens[1] == "originPositionCheckX") {
+		condition.reset(new HdPackOriginPositionCheckXCondition());
+	} else if(tokens[1] == "originPositionCheckY") {
+		condition.reset(new HdPackOriginPositionCheckYCondition());
 	} else {
 		MessageManager::Log("[HDPack] Invalid condition type: " + tokens[1]);
 		return;
@@ -545,14 +554,16 @@ void HdPackLoader::ProcessConditionTag(vector<string> &tokens, bool createInvert
 		}
 
 		case HdPackConditionType::PositionCheckX:
-		case HdPackConditionType::PositionCheckY: {
+		case HdPackConditionType::PositionCheckY:
+		case HdPackConditionType::OriginPositionCheckX:
+		case HdPackConditionType::OriginPositionCheckY: {
 			checkConstraint(_data->Version >= 108, "[HDPack] This feature requires version 109+ of HD Packs");
 			checkConstraint(tokens.size() >= 4, "[HDPack] Condition tag should contain at least 4 parameters");
 
 			HdPackConditionOperator op = ParseConditionOperator(tokens[index++]);
 			checkConstraint(op != HdPackConditionOperator::Invalid, "[HDPack] Invalid operator.");
 
-			uint32_t operand = HexUtilities::FromHex(tokens[index++]);
+			uint32_t operand = std::stoi(tokens[index++]);
 
 			checkConstraint(operand <= 0xFFFF, "[HDPack] Out of range positionCheck operand");
 			((HdPackBasePositionCheckCondition*)condition.get())->Initialize(op, operand);

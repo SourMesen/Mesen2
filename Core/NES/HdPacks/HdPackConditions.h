@@ -150,7 +150,15 @@ struct HdPackBasePositionCheckCondition : public HdPackCondition
 	HdPackConditionType Type = {};
 
 	HdPackBasePositionCheckCondition() { _useCache = false; }
-	string GetConditionName() override { return GetConditionType() == HdPackConditionType::PositionCheckX ? "positionCheckX" : "positionCheckY"; }
+	string GetConditionName() override
+	{
+		switch(GetConditionType()) {
+			default: case HdPackConditionType::PositionCheckX: return "positionCheckX";
+			case HdPackConditionType::PositionCheckY: return "positionCheckY";
+			case HdPackConditionType::OriginPositionCheckX: return "originPositionCheckX";
+			case HdPackConditionType::OriginPositionCheckY: return "originPositionCheckY";
+		}
+	}
 
 	void Initialize(HdPackConditionOperator op, uint32_t operand)
 	{
@@ -161,7 +169,14 @@ struct HdPackBasePositionCheckCondition : public HdPackCondition
 
 	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
 	{
-		uint32_t val = (uint32_t)(Type == HdPackConditionType::PositionCheckX ? x : y);
+		uint32_t val;
+		switch(Type) {
+			default: case HdPackConditionType::PositionCheckX: val = (uint32_t)x; break;
+			case HdPackConditionType::PositionCheckY: val = (uint32_t)y; break;
+			case HdPackConditionType::OriginPositionCheckX: val = tile->HorizontalMirroring ? (uint32_t)(x - (7 - tile->OffsetX)) : (uint32_t)(x - tile->OffsetX); break;
+			case HdPackConditionType::OriginPositionCheckY: val = tile->VerticalMirroring ? (uint32_t)(y - (7 - tile->OffsetY)) : (uint32_t)(y - tile->OffsetY); break;
+		}
+		
 		switch(Operator) {
 			case HdPackConditionOperator::Equal: return val == Operand;
 			case HdPackConditionOperator::NotEqual: return val != Operand;
@@ -200,6 +215,16 @@ struct HdPackPositionCheckXCondition : public HdPackBasePositionCheckCondition
 struct HdPackPositionCheckYCondition : public HdPackBasePositionCheckCondition
 {
 	HdPackConditionType GetConditionType() override { return HdPackConditionType::PositionCheckY; }
+};
+
+struct HdPackOriginPositionCheckXCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::OriginPositionCheckX; }
+};
+
+struct HdPackOriginPositionCheckYCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::OriginPositionCheckY; }
 };
 
 struct HdPackMemoryCheckCondition : public HdPackBaseMemoryCondition
