@@ -24,6 +24,8 @@
     <ClInclude Include="Debugger\CdlManager.h" />
     <ClInclude Include="Debugger\DisassemblySearch.h" />
     <ClInclude Include="Debugger\FrozenAddressManager.h" />
+    <ClInclude Include="Debugger\PythonApi.h" />
+    <ClInclude Include="Debugger\PythonScriptingContext.h" />
     <ClInclude Include="Debugger\StepBackManager.h" />
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
@@ -725,6 +727,7 @@
     <ClCompile Include="Debugger\ExpressionEvaluator.Sms.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Snes.cpp" />
     <ClCompile Include="Debugger\ExpressionEvaluator.Spc.cpp" />
+    <ClCompile Include="Debugger\PythonApi.cpp" />
     <ClCompile Include="Debugger\StepBackManager.cpp" />
     <ClCompile Include="Gameboy\Debugger\DummyGbCpu.cpp" />
     <ClCompile Include="Gameboy\Debugger\GbTraceLogger.cpp" />

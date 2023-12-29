@@ -2724,6 +2724,12 @@
     <ClInclude Include="PCE\CdRom\PceScsiBus.h">
       <Filter>PCE\CdRom</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger\PythonScriptingContext.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger\PythonApi.h">
+      <Filter>Debugger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2916,6 +2922,9 @@
       <Filter>PCE\CdRom</Filter>
     </ClCompile>
     <ClCompile Include="Debugger\PythonScriptingContext.cpp">
+      <Filter>Debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger\PythonApi.cpp">
       <Filter>Debugger</Filter>
     </ClCompile>
   </ItemGroup>

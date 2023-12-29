@@ -4,6 +4,7 @@
 #include "Debugger/ScriptingContext.h"
 #include "Shared/EventType.h"
 #include "Shared/MemoryOperationType.h"
+#include "PythonScriptingContext.h"
 
 ScriptHost::ScriptHost(int scriptId)
 {

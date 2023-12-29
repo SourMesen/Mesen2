@@ -148,7 +148,7 @@ void ScriptingContext::LuaOpenLibs(lua_State* L, bool allowIoOsAccess)
 	}
 }
 
-void ScriptingContext::Log(string message)
+void ScriptingContext::Log(const string& message)
 {
 	auto lock = _logLock.AcquireSafe();
 	_logRows.push_back(message);

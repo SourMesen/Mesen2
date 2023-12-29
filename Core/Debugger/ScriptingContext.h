@@ -38,7 +38,7 @@ public:
 
 	virtual bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) = 0;
 
-	virtual void Log(string message) = 0;
+	virtual void Log(const string &message) = 0;
 	virtual string GetLog() = 0;
 
 	virtual Debugger* GetDebugger() = 0;
@@ -98,7 +98,7 @@ public:
 	~ScriptingContext();
 	bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) override;
 
-	void Log(string message) override;
+	void Log(const string& message) override;
 	string GetLog() override;
 
 	Debugger* GetDebugger() override;
@@ -124,81 +124,4 @@ public:
 	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
 	void RegisterEventCallback(EventType type, int reference);
 	void UnregisterEventCallback(EventType type, int reference);
-};
-
-struct PythonState;
-struct PyObject;
-
-class PythonScriptingContext : public IScriptingContext
-{
-protected:
-	string _scriptName;
-	deque<string> _logRows;
-	SimpleLock _logLock;
-
-	Debugger* _debugger = nullptr;
-	MemoryDumper* _memoryDumper = nullptr;
-	EmuSettings* _settings = nullptr;
-	CpuType _defaultCpuType = {};
-	MemoryType _defaultMemType = {};
-
-	PythonState *_python = nullptr;
-
-	bool _allowSaveState = true;
-
-	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
-	vector<PyObject*> _eventCallbacks[(int)EventType::LastValue + 1];
-
-	void LogError();
-	void InitializePython();
-	string ReadFileContents(const string &path);
-
-	struct MemoryRegistry
-	{
-		uint16_t* BaseAddress;
-		std::vector<std::pair<uint16_t, MemoryType>> Values;
-	};
-
-	std::vector<MemoryRegistry> _frameMemory;
-
-	void FillOneFrameMemory(MemoryRegistry &reg);
-	void UpdateFrameMemory();
-
-public:
-	// Python apis
-	bool ReadMemory(uint32_t addr, MemoryType mem, bool sgned, uint8_t& result);
-	void *RegisterFrameMemory(const std::vector<std::pair<uint16_t, MemoryType>> &addresses);
-	bool UnregisterFrameMemory(void *ptr);
-
-public:
-	PythonScriptingContext(Debugger* debugger);
-	~PythonScriptingContext();
-	bool LoadScript(string scriptName, string path, string scriptContent, Debugger* debugger) override;
-
-	void Log(string message) override;
-	string GetLog() override;
-
-	Debugger* GetDebugger() override;
-	string GetScriptName() override;
-
-	void SetDrawSurface(ScriptDrawSurface surface) override { _drawSurface = surface; }
-	ScriptDrawSurface GetDrawSurface() override { return _drawSurface; }
-
-	void CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType) override;
-	void CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType) override;
-	void CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType) override;
-
-	int CallEventCallback(EventType type, CpuType cpuType) override;
-	bool CheckInitDone() override;
-	bool IsSaveStateAllowed() override;
-
-	CpuType GetDefaultCpuType() override { return _defaultCpuType; }
-	MemoryType GetDefaultMemType() override { return _defaultMemType; }
-
-	void RefreshMemoryCallbackFlags() override;
-
-	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, PyObject *obj);
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, PyObject* obj);
-	void RegisterEventCallback(EventType type, PyObject* obj);
-	void UnregisterEventCallback(EventType type, PyObject* obj);
 };
