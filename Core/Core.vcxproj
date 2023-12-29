@@ -968,6 +968,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Core.ruleset" />
+    <None Include="PythonStartup.py">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='PGO Optimize|x64'">true</DeploymentContent>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{78FEF1A1-6DF1-4CBB-A373-AE6FA7CE5CE0}</ProjectGuid>

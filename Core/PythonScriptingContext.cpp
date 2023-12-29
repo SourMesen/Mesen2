@@ -10,6 +10,7 @@
 #include "Shared/SaveStateManager.h"
 #include "Utilities/magic_enum.hpp"
 #include "Shared/EventType.h"
+#include "Utilities/FolderUtilities.h"
 
 /* struct timeval */
 #include <winsock2.h>
@@ -25,7 +26,6 @@
 #define _DEBUG
 #endif
 
-
 static PyObject* EmuLog(PyObject* self, PyObject* args);
 
 static PyMethodDef MyMethods[] = {
@@ -40,6 +40,7 @@ static struct PyModuleDef emumodule = {
 	 -1,
 	 MyMethods
 };
+
 
 PyMODINIT_FUNC PyInit_mesen(void)
 {
@@ -112,31 +113,38 @@ bool PythonScriptingContext::LoadScript(string scriptName, string path, string s
 {
 	_scriptName = scriptName;
 
+	PyImport_AppendInittab("emu", PyInit_mesen);
 	if(!Py_IsInitialized())
-	{
 		Py_Initialize();
-		PyImport_AppendInittab("emu", PyInit_mesen);
+
+	FILE* f = nullptr;
+	string startup = FolderUtilities::GetHomeFolder();
+	startup += "\\";
+	startup += "PythonStartup.py";
+	auto err = fopen_s(&f, startup.c_str(), "r");
+
+	if(err != 0 || f == nullptr) {
+		std::cerr << "Failed to open file." << std::endl;
+		return 1; // Or handle the error as needed
 	}
 
-	int result = PyRun_SimpleString("import sys\n"
-							 "class LogStream(object):\n"
-							 "    def __init__(self):\n"
-							 "        from emu import log\n"
-							 "        self.log = log\n"
-							 "    def write(self, msg):\n"
-							 "        self.log(msg)\n"
-							 "    def flush(self):\n"
-							 "        pass\n"
-							 "stream = LogStream()\n"
-							 "sys.stdout = stream\n"
-							 "sys.stderr = stream\n"
-							 "del stream\n");
+	std::stringstream buffer;
+	char ch;
 
-	if (!result)
+	while((ch = fgetc(f)) != EOF) {
+		buffer << ch;
+	}
+
+	fclose(f);
+	string str = buffer.str();
+
+	int error = PyRun_SimpleString(str.c_str());
+	
+	if (error)
 		LogError();
 
-	result = PyRun_SimpleString(scriptContent.c_str());
-	if(!result)
+	error = PyRun_SimpleString(scriptContent.c_str());
+	if(error)
 		LogError();
 
 	return true;
