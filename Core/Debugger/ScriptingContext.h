@@ -59,11 +59,6 @@ public:
 	virtual MemoryType GetDefaultMemType() = 0;
 
 	virtual void RefreshMemoryCallbackFlags() = 0;
-
-	virtual void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) = 0;
-	virtual void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) = 0;
-	virtual void RegisterEventCallback(EventType type, int reference) = 0;
-	virtual void UnregisterEventCallback(EventType type, int reference) = 0;
 };
 
 class ScriptingContext : public IScriptingContext
@@ -125,13 +120,14 @@ public:
 	
 	void RefreshMemoryCallbackFlags() override;
 
-	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
-	void RegisterEventCallback(EventType type, int reference) override;
-	void UnregisterEventCallback(EventType type, int reference) override;
+	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference);
+	void RegisterEventCallback(EventType type, int reference);
+	void UnregisterEventCallback(EventType type, int reference);
 };
 
 struct PythonState;
+struct PyObject;
 
 class PythonScriptingContext : public IScriptingContext
 {
@@ -151,14 +147,28 @@ protected:
 	bool _allowSaveState = true;
 
 	ScriptDrawSurface _drawSurface = ScriptDrawSurface::ConsoleScreen;
+	vector<PyObject*> _eventCallbacks[(int)EventType::LastValue + 1];
 
 	void LogError();
 	void InitializePython();
 	string ReadFileContents(const string &path);
 
+	struct MemoryRegistry
+	{
+		uint16_t* BaseAddress;
+		std::vector<std::pair<uint16_t, MemoryType>> Values;
+	};
+
+	std::vector<MemoryRegistry> _frameMemory;
+
+	void FillOneFrameMemory(MemoryRegistry &reg);
+	void UpdateFrameMemory();
+
 public:
 	// Python apis
 	bool ReadMemory(uint32_t addr, MemoryType mem, bool sgned, uint8_t& result);
+	void *RegisterFrameMemory(const std::vector<std::pair<uint16_t, MemoryType>> &addresses);
+	bool UnregisterFrameMemory(void *ptr);
 
 public:
 	PythonScriptingContext(Debugger* debugger);
@@ -187,8 +197,8 @@ public:
 
 	void RefreshMemoryCallbackFlags() override;
 
-	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
-	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, int reference) override;
-	void RegisterEventCallback(EventType type, int reference) override;
-	void UnregisterEventCallback(EventType type, int reference) override;
+	void RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, PyObject *obj);
+	void UnregisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, PyObject* obj);
+	void RegisterEventCallback(EventType type, PyObject* obj);
+	void UnregisterEventCallback(EventType type, PyObject* obj);
 };
