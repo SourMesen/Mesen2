@@ -268,7 +268,7 @@ namespace Mesen.Debugger.ViewModels
 				return;
 			}
 
-			string? filename = await FileDialogHelper.OpenFile(InitialFolder, _wnd, FileDialogHelper.LuaExt);
+			string? filename = await FileDialogHelper.OpenFile(InitialFolder, _wnd, FileDialogHelper.LuaExt, FileDialogHelper.PythonExt);
 			if(filename != null) {
 				LoadScript(filename);
 			}
@@ -351,7 +351,15 @@ namespace Mesen.Debugger.ViewModels
 
 		private async Task<bool> SaveAs(string newName)
 		{
-			string? filename = await FileDialogHelper.SaveFile(InitialFolder, newName, _wnd, FileDialogHelper.LuaExt);
+			string[] exts;
+			if (newName.EndsWith(".py")) {
+				exts = new string[] { FileDialogHelper.PythonExt, FileDialogHelper.LuaExt };
+			}
+			else {
+				exts = new string[] { FileDialogHelper.LuaExt, FileDialogHelper.PythonExt };
+			}
+
+			string? filename = await FileDialogHelper.SaveFile(InitialFolder, newName, _wnd, exts);
 			if(filename != null) {
 				if(FileHelper.WriteAllText(filename, Code, Encoding.UTF8)) {
 					AddRecentScript(filename);

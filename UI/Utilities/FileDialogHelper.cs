@@ -27,6 +27,7 @@ namespace Mesen.Utilities
 		public const string MesenSaveStateExt = "mss";
 		public const string WatchFileExt = "txt";
 		public const string LuaExt = "lua";
+		public const string PythonExt = "py";
 		public const string PngExt = "png";
 		public const string DmpExt = "dmp";
 		public const string IpsExt = "ips";
