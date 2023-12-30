@@ -59,8 +59,6 @@ static PyObject* PythonEmuLog(PyObject* self, PyObject* args)
 	}
 
 	string message = PyUnicode_AsUTF8(pyStr);
-	message += "\n";
-
 	context->Log(message);
 
 	Py_RETURN_NONE;
