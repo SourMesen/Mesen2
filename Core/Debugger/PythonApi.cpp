@@ -34,11 +34,10 @@ PyMODINIT_FUNC PyInit_mesen(void)
 	return PyModule_Create(&emumodule);
 }
 
-static PythonScriptingContext* s_context;
-
 static PyObject* PythonEmuLog(PyObject* self, PyObject* args)
 {
-	if(!s_context)
+	PythonScriptingContext *context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context)
 	{
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
@@ -62,14 +61,15 @@ static PyObject* PythonEmuLog(PyObject* self, PyObject* args)
 	string message = PyUnicode_AsUTF8(pyStr);
 	message += "\n";
 
-	s_context->Log(message);
+	context->Log(message);
 
 	Py_RETURN_NONE;
 }
 
 static PyObject* PythonRead8(PyObject* self, PyObject* args)
 {
-	if(!s_context) {
+	PythonScriptingContext* context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context) {
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
 	}
@@ -91,7 +91,7 @@ static PyObject* PythonRead8(PyObject* self, PyObject* args)
 	bool sgn = PyObject_IsTrue(py_signed);
 
 	uint8_t result = 0;
-	bool success = s_context->ReadMemory(address, static_cast<MemoryType>(kind), sgn, result);
+	bool success = context->ReadMemory(address, static_cast<MemoryType>(kind), sgn, result);
 
 	// Convert the result to a Python object based on is_signed
 	PyObject* pyResult = nullptr;
@@ -105,7 +105,8 @@ static PyObject* PythonRead8(PyObject* self, PyObject* args)
 
 static PyObject* PythonRegisterFrameMemory(PyObject* self, PyObject* args)
 {
-	if(!s_context) {
+	PythonScriptingContext* context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context) {
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
 	}
@@ -136,7 +137,7 @@ static PyObject* PythonRegisterFrameMemory(PyObject* self, PyObject* args)
 		result.push_back(addr);
 	}
 
-	void* ptr = s_context->RegisterFrameMemory(static_cast<MemoryType>(memType), result);
+	void* ptr = context->RegisterFrameMemory(static_cast<MemoryType>(memType), result);
 	if(ptr == nullptr)
 		Py_RETURN_NONE;
 
@@ -145,16 +146,18 @@ static PyObject* PythonRegisterFrameMemory(PyObject* self, PyObject* args)
 
 static PyObject* PythonUnregisterFrameMemory(PyObject* self, PyObject* args)
 {
-	if(!s_context) {
+	PythonScriptingContext* context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context) {
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
 	}
+
 
 	void* ptr;
 	if(!PyArg_ParseTuple(args, "p", &ptr))
 		return nullptr;
 
-	bool result = s_context->UnregisterFrameMemory(ptr);
+	bool result = context->UnregisterFrameMemory(ptr);
 	if(result)
 		Py_RETURN_TRUE;
 
@@ -163,7 +166,8 @@ static PyObject* PythonUnregisterFrameMemory(PyObject* self, PyObject* args)
 
 static PyObject* PythonAddEventCallback(PyObject* self, PyObject* args)
 {
-	if(!s_context) {
+	PythonScriptingContext* context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context) {
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
 	}
@@ -187,17 +191,19 @@ static PyObject* PythonAddEventCallback(PyObject* self, PyObject* args)
 	}
 
 	// Add the callback to the list of callbacks
-	s_context->RegisterEventCallback(static_cast<EventType>(eventType), pyFunc);
+	context->RegisterEventCallback(static_cast<EventType>(eventType), pyFunc);
 
 	Py_RETURN_NONE;
 }
 
 static PyObject* PythonRemoveEventCallback(PyObject* self, PyObject* args)
 {
-	if(!s_context) {
+	PythonScriptingContext* context = GetScriptingContextFromThreadState(PyThreadState_Get());
+	if(!context) {
 		PyErr_SetString(PyExc_TypeError, "No registered python context.");
 		return nullptr;
 	}
+
 
 	// Extract args as a (PyObject function, EventType enum)
 	PyObject* pyFunc;
@@ -218,7 +224,7 @@ static PyObject* PythonRemoveEventCallback(PyObject* self, PyObject* args)
 	}
 
 	// Remove the callback from the list of callbacks
-	s_context->UnregisterEventCallback(static_cast<EventType>(eventType), pyFunc);
+	context->UnregisterEventCallback(static_cast<EventType>(eventType), pyFunc);
 
 	Py_RETURN_NONE;
 }
@@ -245,10 +251,10 @@ static string ReadFileContents(const string& path)
 	return buffer.str();
 }
 
-PyThreadState *InitializePython(PythonScriptingContext* ctx)
-{
-	s_context = ctx;
+std::unordered_map<PyThreadState*, PythonScriptingContext*> s_pythonContexts;
 
+PyThreadState *InitializePython(PythonScriptingContext *context)
+{
 	if(!Py_IsInitialized())
 	{
 		PyImport_AppendInittab("emu", PyInit_mesen);
@@ -256,6 +262,8 @@ PyThreadState *InitializePython(PythonScriptingContext* ctx)
 	}
 
 	PyThreadState* curr = Py_NewInterpreter();
+	s_pythonContexts[curr] = context;
+
 	PyThreadState* old = PyThreadState_Swap(curr);
 
 	string startupPath = FolderUtilities::GetHomeFolder();
@@ -276,6 +284,21 @@ PyThreadState *InitializePython(PythonScriptingContext* ctx)
 
 void ReportEndScriptingContext(PythonScriptingContext* ctx)
 {
-	if (s_context == ctx)
-		s_context = nullptr;
+	for(auto it = s_pythonContexts.begin(); it != s_pythonContexts.end(); ++it)
+	{
+		if(it->second == ctx)
+		{
+			s_pythonContexts.erase(it);
+			break;
+		}
+	}
+}
+
+PythonScriptingContext* GetScriptingContextFromThreadState(PyThreadState* state)
+{
+	auto it = s_pythonContexts.find(state);
+	if(it != s_pythonContexts.end())
+		return it->second;
+
+	return nullptr;
 }

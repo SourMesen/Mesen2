@@ -14,10 +14,10 @@
 
 void* PythonScriptingContext::RegisterFrameMemory(MemoryType type, const std::vector<int>& addresses)
 {
-	if (addresses.empty())
+	if(addresses.empty())
 		return nullptr;
 
-	uint8_t *result = new uint8_t[addresses.size()];
+	uint8_t* result = new uint8_t[addresses.size()];
 	memset(result, 0, addresses.size() * sizeof(uint8_t));
 
 	MemoryRegistry reg = {};
@@ -37,7 +37,7 @@ bool PythonScriptingContext::UnregisterFrameMemory(void* ptr)
 
 	_frameMemory.erase(std::remove_if(_frameMemory.begin(), _frameMemory.end(), [ptr](const MemoryRegistry& entry) { return ptr == entry.BaseAddress; }), _frameMemory.end());
 
-	if (count == _frameMemory.size())
+	if(count == _frameMemory.size())
 		return false;
 
 	delete[] ptr;
@@ -47,8 +47,7 @@ bool PythonScriptingContext::UnregisterFrameMemory(void* ptr)
 void PythonScriptingContext::FillOneFrameMemory(const MemoryRegistry& reg)
 {
 	auto ptr = reg.BaseAddress;
-	for(auto addr : reg.Addresses)
-	{
+	for(auto addr : reg.Addresses) {
 		uint8_t value = _memoryDumper->GetMemoryValue(reg.Type, addr, true);
 		*ptr++ = value;
 	}
@@ -56,7 +55,7 @@ void PythonScriptingContext::FillOneFrameMemory(const MemoryRegistry& reg)
 
 void PythonScriptingContext::UpdateFrameMemory()
 {
-	for (auto& reg : _frameMemory)
+	for(auto& reg : _frameMemory)
 		FillOneFrameMemory(reg);
 }
 
@@ -110,9 +109,8 @@ void PythonScriptingContext::LogError()
 
 bool PythonScriptingContext::LoadScript(string scriptName, string path, string scriptContent, Debugger*)
 {
-	PyThreadState *state = InitializePython(this);
-	if (!state)
-	{
+	PyThreadState* state = InitializePython(this);
+	if(!state) {
 		LogError();
 		return false;
 	}
@@ -123,8 +121,7 @@ bool PythonScriptingContext::LoadScript(string scriptName, string path, string s
 	auto lock = _python.AcquireSafe();
 
 	int error = PyRun_SimpleString(scriptContent.c_str());
-	if (error)
-	{
+	if(error) {
 		LogError();
 		return false;
 	}
@@ -162,16 +159,13 @@ string PythonScriptingContext::GetScriptName()
 }
 
 void PythonScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint8_t& value, CallbackType type, CpuType cpuType)
-{
-}
+{}
 
 void PythonScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint16_t& value, CallbackType type, CpuType cpuType)
-{
-}
+{}
 
 void PythonScriptingContext::CallMemoryCallback(AddressInfo relAddr, uint32_t& value, CallbackType type, CpuType cpuType)
-{
-}
+{}
 
 int PythonScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 {
@@ -182,13 +176,12 @@ int PythonScriptingContext::CallEventCallback(EventType type, CpuType cpuType)
 
 	auto lock = _python.AcquireSafe();
 
-	if (type == EventType::StartFrame)
+	if(type == EventType::StartFrame)
 		UpdateFrameMemory();
 
 	int count = 0;
-	for(PyObject* callback : _eventCallbacks[(int)type])
-	{
- 		PyObject* pFunc = callback;
+	for(PyObject* callback : _eventCallbacks[(int)type]) {
+		PyObject* pFunc = callback;
 		PyObject* pArgs = PyTuple_New(1);
 		PyObject* pValue = PyLong_FromLong((int)cpuType);
 		if(!pValue) {
@@ -222,8 +215,7 @@ bool PythonScriptingContext::IsSaveStateAllowed()
 
 
 void PythonScriptingContext::RefreshMemoryCallbackFlags()
-{
-}
+{}
 
 void PythonScriptingContext::RegisterMemoryCallback(CallbackType type, int startAddr, int endAddr, MemoryType memType, CpuType cpuType, PyObject* obj)
 {
@@ -233,7 +225,7 @@ void PythonScriptingContext::UnregisterMemoryCallback(CallbackType type, int sta
 {
 
 }
-void PythonScriptingContext::RegisterEventCallback(EventType type, PyObject *obj)
+void PythonScriptingContext::RegisterEventCallback(EventType type, PyObject* obj)
 {
 	_eventCallbacks[(int)type].push_back(obj);
 }

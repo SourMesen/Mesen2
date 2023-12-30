@@ -18,6 +18,8 @@
 #undef DEBUG_WAS_DEFINED
 #endif
 
+struct PythonScriptingContext;
 
+PythonScriptingContext* GetScriptingContextFromThreadState(PyThreadState *state);
 PyThreadState *InitializePython(PythonScriptingContext *ctx);
 void ReportEndScriptingContext(PythonScriptingContext *ctx);
