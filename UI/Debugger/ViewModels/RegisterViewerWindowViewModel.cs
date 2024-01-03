@@ -1468,17 +1468,22 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Transfer Ready IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
 
 				new RegEntry("", "SCSI Drive"),
-				new RegEntry("", "Transfering Data", scsi.DataTransfer),
 				new RegEntry("", "Data Transfer Completed", scsi.DataTransferDone),
-				new RegEntry("", "Disc Reading", scsi.DiscReading),
 				new RegEntry("", "Current Sector", scsi.Sector),
 				new RegEntry("", "Read Until Sector", scsi.Sector + scsi.SectorsToRead),
 				new RegEntry("$1801", "Data Port (Write)", scsi.DataPort),
 				new RegEntry("$1801", "Data Port (Read)", scsi.ReadDataPort),
 				new RegEntry("", "SCSI Phase", scsi.Phase),
 				new RegEntry("", "SCSI Signals"),
+				new RegEntry("$1800.3-7", "Status", (
+					(scsi.Signals[4] != 0 ? 0x08 : 0) |
+					(scsi.Signals[3] != 0 ? 0x10 : 0) |
+					(scsi.Signals[5] != 0 ? 0x20 : 0) |
+					(scsi.Signals[6] != 0 ? 0x40 : 0) |
+					(scsi.Signals[2] != 0 ? 0x80 : 0)
+				)),
 				new RegEntry("", "ACK", scsi.Signals[0] != 0),
-				new RegEntry("", "ATN", scsi.Signals[1] != 0),
+				//new RegEntry("", "ATN", scsi.Signals[1] != 0), //unused
 				new RegEntry("$1800.7", "BSY", scsi.Signals[2] != 0),
 				new RegEntry("$1800.4", "CD", scsi.Signals[3] != 0),
 				new RegEntry("$1800.3", "IO", scsi.Signals[4] != 0),

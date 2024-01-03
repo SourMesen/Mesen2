@@ -1645,6 +1645,7 @@ namespace Mesen.Interop
 		public byte EnabledIrqs;
 		[MarshalAs(UnmanagedType.I1)] public bool ReadRightChannel;
 		[MarshalAs(UnmanagedType.I1)] public bool BramLocked;
+		public byte ResetRegValue;
 	}
 
 	public struct PceAdpcmState
@@ -1726,8 +1727,6 @@ namespace Mesen.Interop
 		public byte DataPort;
 		public byte ReadDataPort;
 
-		[MarshalAs(UnmanagedType.I1)] public bool DiscReading;
-		[MarshalAs(UnmanagedType.I1)] public bool DataTransfer;
 		[MarshalAs(UnmanagedType.I1)] public bool DataTransferDone;
 
 		public UInt32 Sector;

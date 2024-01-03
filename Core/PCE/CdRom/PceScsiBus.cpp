@@ -44,9 +44,7 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 			break;
 
 		case ScsiPhase::DataIn: SetSignals(Bsy, Io); break;
-		case ScsiPhase::DataOut: SetSignals(Bsy, Req); break;
 		case ScsiPhase::MessageIn: SetSignals(Bsy, Cd, Io, Msg, Req); break;
-		case ScsiPhase::MessageOut: SetSignals(Bsy, Cd, Msg, Req); break;
 		case ScsiPhase::Status: SetSignals(Bsy, Cd, Io, Req); break;
 	}
 }
@@ -550,15 +548,11 @@ void PceScsiBus::UpdateState()
 
 		if(_state.Signals[Sel]) {
 			QueueDriveUpdate(ScsiUpdateType::SetCmdPhase, 2500);
-		} else if(!_state.Signals[Ack] && _state.Signals[Atn] && !_state.Signals[Req]) {
-			SetPhase(ScsiPhase::MessageOut);
 		} else {
 			switch(_state.Phase) {
 				case ScsiPhase::Command: ProcessCommandPhase(); break;
 				case ScsiPhase::DataIn: ProcessDataInPhase(); break;
-				//case ScsiPhase::DataOut: ProcessDataOutPhase(); break;
 				case ScsiPhase::MessageIn: ProcessMessageInPhase(); break;
-				//case ScsiPhase::MessageOut: ProcessMessageOutPhase(); break;
 				case ScsiPhase::Status: ProcessStatusPhase(); break;
 			}
 		}

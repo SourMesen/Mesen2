@@ -148,6 +148,8 @@ void PceCdRom::Write(uint16_t addr, uint8_t value)
 
 		case 0x04: {
 			//Reset
+			_state.ResetRegValue = value & 0x0F;
+
 			bool reset = (value & 0x02) != 0;
 			_scsi.SetSignalValue(Rst, reset);
 			_scsi.UpdateState();
@@ -210,12 +212,12 @@ uint8_t PceCdRom::Read(uint16_t addr)
 			_console->GetMemoryManager()->UpdateCdRomBanks();
 			
 			return (
-				_state.ActiveIrqs | 
-				0x10 | //drive enabled/active?
+				_state.ActiveIrqs |
+				0x10 | //drive active flag
 				(_state.ReadRightChannel ? 0 : 0x02)
 			);
 
-		case 0x04: return _scsi.CheckSignal(Rst) ? 0x02 : 0;
+		case 0x04: return _state.ResetRegValue;
 
 		case 0x05: return (uint8_t)_state.AudioSampleLatch;
 		case 0x06: return (uint8_t)(_state.AudioSampleLatch >> 8);
@@ -262,6 +264,7 @@ void PceCdRom::Serialize(Serializer& s)
 	SV(_state.EnabledIrqs);
 	SV(_state.ReadRightChannel);
 	SV(_state.AudioSampleLatch);
+	SV(_state.ResetRegValue);
 
 	SVArray(_saveRam, _saveRamSize);
 	SVArray(_cdromRam, _cdromRamSize);

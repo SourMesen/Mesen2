@@ -311,6 +311,7 @@ struct PceCdRomState
 	uint8_t EnabledIrqs = 0;
 	bool ReadRightChannel = false;
 	bool BramLocked = false;
+	uint8_t ResetRegValue = 0;
 };
 
 struct PceAdpcmState
@@ -373,9 +374,9 @@ enum class ScsiPhase
 	BusFree,
 	Command,
 	DataIn,
-	DataOut,
+	DataOut, //unused
 	MessageIn,
-	MessageOut,
+	MessageOut, //unused
 	Status
 };
 

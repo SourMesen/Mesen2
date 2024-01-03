@@ -13,7 +13,7 @@ namespace ScsiSignal
 	enum ScsiSignal
 	{
 		Ack,
-		Atn,
+		Atn, //Unused
 		Bsy, //Set when an operation is in progress
 		Cd, //Set when the current transfer contains commands/messages/status (cleared when actual data)
 		Io, //Set when drive is sending data to the software (cleared when receiving)
@@ -126,7 +126,6 @@ public:
 	PceScsiBusState& GetState() { return _state; }
 
 	uint8_t GetStatus();
-	bool IsDataTransferInProgress() { return _readSectorCounter > 0 || _state.DataTransferDone; }
 	bool IsDataBlockReady() { return _dataBuffer.size() > 0; }
 	
 	void SetDataPort(uint8_t data);
