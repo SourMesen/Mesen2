@@ -276,7 +276,7 @@ void PceVdc::ProcessHorizontalSyncStart()
 
 void PceVdc::ProcessSpriteEvaluation()
 {
-	if(_state.HClock < _evalStartCycle || _hasSpriteOverflow || _evalLastCycle >= 64 || _state.BurstModeEnabled) {
+	if(_state.HClock < _evalStartCycle || _evalLastCycle >= 64 || _state.BurstModeEnabled) {
 		return;
 	}
 
