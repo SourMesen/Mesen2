@@ -445,19 +445,28 @@ namespace Mesen.Debugger.Controls
 			}
 		}
 
-		private GridPoint? GetGridPosition(Point p)
+		private bool IsPointInLeftMargin(Point p, bool inStringView)
+		{
+			if(inStringView) {
+				return p.X + 3 < RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin;
+			} else {
+				return p.X + 3 < RowHeaderWidth + ContentLeftPadding;
+			}
+		}
+
+		private GridPoint? GetGridPosition(Point p, bool allowLeftMargin = false, bool stringViewOnly = false)
 		{
 			//+ 5 pixels for gap between mouse position X vs mouse icon I-bar
 			p = p.WithX(p.X + 3);
 
-			if(p.X >= RowHeaderWidth + ContentLeftPadding && p.Y >= ColumnHeaderHeight) {
+			if((allowLeftMargin || p.X >= RowHeaderWidth + ContentLeftPadding) && p.Y >= ColumnHeaderHeight) {
 				int row = (int)((p.Y - ColumnHeaderHeight) / RowHeight);
 				if(TopRow + row != 0 && (TopRow + row + 1) * BytesPerRow > DataProvider.Length) {
 					//Out of range
 					return null;
 				}
 
-				if(ShowStringView && p.X >= RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin) {
+				if(ShowStringView && ((stringViewOnly && allowLeftMargin) || p.X >= RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin)) {
 					//String view
 					try {
 						int rowStart = row * BytesPerRow;
@@ -465,6 +474,9 @@ namespace Mesen.Debugger.Controls
 						float[] endPos = _endPositionByByte;
 
 						double x = p.X - RowHeaderWidth - ContentLeftPadding - RowWidth - StringViewMargin;
+						if(allowLeftMargin && x < 0) {
+							x = 0;
+						}
 
 						int column = 0;
 						if(rowStart + BytesPerRow - 1 >= startPos.Length || endPos.Length != startPos.Length) {
@@ -486,6 +498,9 @@ namespace Mesen.Debugger.Controls
 					}
 				} else {
 					double column = (p.X - RowHeaderWidth - ContentLeftPadding) / (LetterSize.Width * 3) + 0.33/2;
+					if(allowLeftMargin && column < 0) {
+						column = 0;
+					}
 					if(column > BytesPerRow || column < 0) {
 						return null;
 					}
@@ -569,8 +584,11 @@ namespace Mesen.Debugger.Controls
 
 		private void MoveSelectionWithMouse(GridPoint gridPos)
 		{
-			int currentPos = GetByteOffset(gridPos);
-
+			MoveSelectionWithMouse(GetByteOffset(gridPos));
+		}
+		
+		private void MoveSelectionWithMouse(int currentPos)
+		{
 			if(currentPos < _lastClickedPosition) {
 				this.SelectionStart = currentPos;
 				this.SelectionLength = _lastClickedPosition - currentPos;
@@ -604,15 +622,27 @@ namespace Mesen.Debugger.Controls
 				p = p.WithY(ColumnHeaderHeight);
 			}
 
-			GridPoint? gridPos = GetGridPosition(p);
+			bool isMargin = IsPointInLeftMargin(p, _inStringView);
+			GridPoint? gridPos = GetGridPosition(p, isMargin, _inStringView);
 			LastNibble = false;
 
 			if(gridPos != null) {
 				if(gridPos.Value.InStringView != _inStringView) {
 					return;
 				}
-				
-				MoveSelectionWithMouse(gridPos.Value);
+
+				if(isMargin) {
+					int offset = GetByteOffset(gridPos.Value);
+					if(_lastClickedPosition < offset) {
+						offset--;
+					}
+
+					if(offset >= 0) {
+						MoveSelectionWithMouse(offset);
+					}
+				} else {
+					MoveSelectionWithMouse(gridPos.Value);
+				}
 			}
 		}
 
