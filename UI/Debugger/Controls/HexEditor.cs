@@ -345,15 +345,12 @@ namespace Mesen.Debugger.Controls
 				char c = e.Text[0];
 
 				if(_inStringView) {
-					SelectionLength = 0;
 					NewByteValue = DataProvider.ConvertCharToByte(c);
 					CommitByteChanges();
-					MoveCursor(1);
+					MoveCursor(SelectionLength == 0 ? 1 : SelectionLength);
 				} else {
 					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 						int keyValue = Int32.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber);
-
-						SelectionLength = 0;
 
 						if(NewByteValue < 0) {
 							NewByteValue = DataProvider.GetByte(SelectionStart).Value;
@@ -364,7 +361,7 @@ namespace Mesen.Debugger.Controls
 							NewByteValue &= 0xF0;
 							NewByteValue |= keyValue;
 							CommitByteChanges();
-							MoveCursor(1);
+							MoveCursor(SelectionLength == 0 ? 1 : SelectionLength);
 						} else {
 							NewByteValue &= 0x0F;
 							NewByteValue |= (keyValue << 4);
@@ -432,7 +429,7 @@ namespace Mesen.Debugger.Controls
 		private void CommitByteChanges()
 		{
 			if(NewByteValue >= 0) {
-				RequestByteUpdate(_cursorPosition, (byte)NewByteValue);
+				RequestByteUpdate(SelectionStart, (byte)NewByteValue);
 				LastNibble = false;
 				NewByteValue = -1;
 			}
@@ -441,7 +438,7 @@ namespace Mesen.Debugger.Controls
 		private void RequestByteUpdate(int position, byte value)
 		{
 			if(position < DataProvider.Length) {
-				ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = position, Value = value });
+				ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = position, Length = SelectionLength == 0 ? 1 : SelectionLength, Value = value });
 			}
 		}
 
@@ -714,7 +711,7 @@ namespace Mesen.Debugger.Controls
 				ByteInfo byteInfo = dataProvider.GetByte(position);
 				byteInfo.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
-				if(position == SelectionStart && NewByteValue >= 0) {
+				if(((SelectionLength == 0 && position == SelectionStart) || (SelectionLength > 0 && position >= SelectionStart && position < SelectionStart + SelectionLength)) && NewByteValue >= 0) {
 					//About to draw the selected byte, draw anything that's pending, and then the current byte
 					byteInfo.ForeColor = Colors.DarkOrange;
 					byteInfo.Value = (byte)NewByteValue;
@@ -814,6 +811,7 @@ namespace Mesen.Debugger.Controls
 	public class ByteUpdatedEventArgs : EventArgs
 	{
 		public int ByteOffset;
+		public int Length;
 		public byte Value;
 	}
 
