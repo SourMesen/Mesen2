@@ -10,11 +10,12 @@ class PceDefaultVideoFilter : public BaseVideoFilter
 private:
 	uint32_t _calculatedPalette[0x400] = {};
 	VideoConfig _videoConfig = {};
-	PcEngineConfig _pceConfig = {};
-	FrameInfo _pceFrameSize = { 256, 242 };
-	uint8_t _frameDivider = 0;
 
 protected:
+	PcEngineConfig _pceConfig = {};
+	uint8_t _frameDivider = 0;
+	FrameInfo _pceFrameSize = { 256, 242 };
+
 	FrameInfo GetFrameInfo() override
 	{
 		if(_emu->GetRomInfo().Format == RomFormat::PceHes) {
@@ -24,6 +25,7 @@ protected:
 			frame.Height = 240;
 			return frame;
 		} else {
+			PceDefaultVideoFilter::GetPceFrameSize(_pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
 			return _pceFrameSize;
 		}
 	}
@@ -33,13 +35,28 @@ protected:
 		return _calculatedPalette[ppuFrame[offset] & 0x3FF];
 	}
 
+	HudScaleFactors GetScaleFactor() override
+	{
+		if(_frameDivider == 0) {
+			return { PceConstants::InternalResMultipler, PceConstants::InternalResMultipler };
+		} else {
+			return { (double)4 / _frameDivider, 1 };
+		}
+	}
+
 	OverscanDimensions GetOverscan() override
 	{
 		OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
-		overscan.Top *= PceConstants::InternalResMultipler;
-		overscan.Bottom *= PceConstants::InternalResMultipler;
-		overscan.Left *= PceConstants::InternalResMultipler;
-		overscan.Right *= PceConstants::InternalResMultipler;
+		uint8_t frameDivider = _frameDivider;
+		if(frameDivider == 0) {
+			overscan.Top *= PceConstants::InternalResMultipler;
+			overscan.Bottom *= PceConstants::InternalResMultipler;
+			overscan.Left *= PceConstants::InternalResMultipler;
+			overscan.Right *= PceConstants::InternalResMultipler;
+		} else {
+			overscan.Left *= 4.0 / frameDivider;
+			overscan.Right *= 4.0 / frameDivider;
+		}
 		return overscan;
 	}
 
@@ -90,8 +107,6 @@ protected:
 
 		_videoConfig = config;
 		_pceConfig = pceConfig;
-
-		PceDefaultVideoFilter::GetPceFrameSize(pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
 	}
 
 public:

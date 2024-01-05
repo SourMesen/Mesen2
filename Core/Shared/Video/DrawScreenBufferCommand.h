@@ -16,14 +16,18 @@ protected:
 		int left = (int)_overscan.Left;
 		int width = _frameInfo.Width;
 		int srcOffset = top * _width + left;
+		uint32_t bufferSize = _frameInfo.Width * _frameInfo.Height;
 
 		for(uint32_t y = 0; y < _frameInfo.Height; y++) {
+			if(y * _frameInfo.Width + width > bufferSize) {
+				break;
+			}
 			memcpy(_argbBuffer + y * _frameInfo.Width, _screenBuffer + srcOffset + y * _width, width * sizeof(uint32_t));
 		}
 	}
 
 public:
-	DrawScreenBufferCommand(uint32_t width, uint32_t height, int startFrame) : DrawCommand(startFrame, 1, false, true)
+	DrawScreenBufferCommand(uint32_t width, uint32_t height, int startFrame) : DrawCommand(startFrame, 1, false)
 	{
 		_width = width;
 		_height = height;

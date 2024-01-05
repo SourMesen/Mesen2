@@ -54,7 +54,7 @@ void RecordedRomTest::ValidateFrame()
 	PpuFrameInfo frame = _emu->GetPpuFrame();
 
 	uint8_t md5Hash[16];
-	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.Width * frame.Height * sizeof(uint16_t));
+	GetMd5Sum(md5Hash, frame.FrameBuffer, frame.FrameBufferSize);
 
 	if(_currentCount == 0) {
 		_currentCount = _repetitionCount.front();

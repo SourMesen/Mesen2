@@ -30,7 +30,7 @@ void SnesController::InternalSetStateFromInput()
 		SetPressedState(Buttons::Right, keyMapping.Right);
 
 		uint8_t turboFreq = 1 << (4 - _turboSpeed);
-		bool turboOn = (uint8_t)(_emu->GetPpuFrame().FrameCount % turboFreq) < turboFreq / 2;
+		bool turboOn = (uint8_t)(_emu->GetFrameCount() % turboFreq) < turboFreq / 2;
 		if(turboOn) {
 			SetPressedState(Buttons::A, keyMapping.TurboA);
 			SetPressedState(Buttons::B, keyMapping.TurboB);

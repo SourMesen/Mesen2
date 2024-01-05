@@ -35,6 +35,11 @@ FrameInfo NesNtscFilter::GetFrameInfo()
 	return frameInfo;
 }
 
+HudScaleFactors NesNtscFilter::GetScaleFactor()
+{
+	return { (double)NES_NTSC_OUT_WIDTH(256) / 256, 2 };
+}
+
 void NesNtscFilter::OnBeforeApplyFilter()
 {
 	NesConfig& nesCfg = _emu->GetSettings()->GetNesConfig();

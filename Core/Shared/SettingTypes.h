@@ -726,6 +726,12 @@ struct FrameInfo
 	uint32_t Height;
 };
 
+struct HudScaleFactors
+{
+	double X;
+	double Y;
+};
+
 enum class EmulatorShortcut
 {
 	FastForward,

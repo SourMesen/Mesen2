@@ -7,7 +7,6 @@ class DrawCommand
 private:
 	int _frameCount = 0;
 	int32_t _startFrame = 0;
-	bool _disableAutoScale = false;
 
 protected:
 	unordered_map<uint32_t, uint32_t>* _drawnPixels = nullptr;
@@ -112,19 +111,18 @@ protected:
 	}
 
 public:
-	DrawCommand(int startFrame, int frameCount, bool useIntegerScaling = false, bool disableAutoScale = false)
+	DrawCommand(int startFrame, int frameCount, bool useIntegerScaling = false)
 	{ 
 		_frameCount = frameCount > 0 ? frameCount : -1;
 		_startFrame = startFrame;
 		_useIntegerScaling = useIntegerScaling;
-		_disableAutoScale = disableAutoScale;
 	}
 
 	virtual ~DrawCommand()
 	{
 	}
 
-	void Draw(unordered_map<uint32_t, uint32_t>* drawnPixels, uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, bool autoScale, float forcedScale = 0)
+	void Draw(unordered_map<uint32_t, uint32_t>* drawnPixels, uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions &overscan, uint32_t frameNumber, HudScaleFactors &scaleFactors)
 	{
 		if(_startFrame < 0) {
 			//When no start frame was specified, start on the next drawn frame
@@ -137,14 +135,9 @@ public:
 			_frameInfo = frameInfo;
 			_overscan = overscan;
 
-			if(forcedScale != 0) {
-				_xScale = forcedScale;
-				_yScale = forcedScale;
-			} else if(autoScale && !_disableAutoScale) {
-				//TODOv2 review
-				float scale = _frameInfo.Width + _overscan.Left + _overscan.Right > 256 ? (_frameInfo.Width + _overscan.Left + _overscan.Right) / 256.0f : 1;
-				_yScale = _frameInfo.Height + _overscan.Top + _overscan.Bottom > 240 ? (int)scale : 1;
-				_xScale = (float)scale;
+			if(scaleFactors.X != 0 && scaleFactors.Y != 0) {
+				_xScale = scaleFactors.X;
+				_yScale = scaleFactors.Y;
 			} else {
 				_yScale = 1;
 				_xScale = 1;
