@@ -497,7 +497,7 @@ namespace Mesen.Debugger.Controls
 						return null;
 					}
 				} else {
-					double column = (p.X - RowHeaderWidth - ContentLeftPadding) / (LetterSize.Width * 3) + 0.33/2;
+					double column = (p.X - RowHeaderWidth - ContentLeftPadding) / (LetterSize.Width * 3);
 					if(allowLeftMargin && column < 0) {
 						column = 0;
 					}
@@ -505,7 +505,12 @@ namespace Mesen.Debugger.Controls
 						return null;
 					}
 
-					bool middle = (column - Math.Floor(column)) >= 0.4;
+					bool middle = (column - Math.Floor(column)) >= 0.30;
+					bool nextByte = (column - Math.Floor(column)) >= 0.80;
+					if(nextByte && column < BytesPerRow) {
+						middle = false;
+						column++;
+					}
 
 					return new GridPoint { X = (int)column, Y = row, LastNibble = middle, InStringView = false };
 				}
@@ -631,17 +636,15 @@ namespace Mesen.Debugger.Controls
 					return;
 				}
 
-				if(isMargin) {
-					int offset = GetByteOffset(gridPos.Value);
-					if(_lastClickedPosition < offset) {
-						offset--;
-					}
+				int offset = GetByteOffset(gridPos.Value);
+				if(offset > SelectionStart + SelectionLength - 1 && !gridPos.Value.LastNibble) {
+					offset--;
+				} else if(isMargin && _lastClickedPosition < offset) {
+					offset--;
+				}
 
-					if(offset >= 0) {
-						MoveSelectionWithMouse(offset);
-					}
-				} else {
-					MoveSelectionWithMouse(gridPos.Value);
+				if(offset >= 0) {
+					MoveSelectionWithMouse(offset);
 				}
 			}
 		}
