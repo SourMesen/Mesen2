@@ -202,3 +202,8 @@ void LinuxKeyManager::SetDisabled(bool disabled)
 {
 	_disableAllKeys = disabled;
 }
+
+void LinuxKeyManager::SetLocalHandlingDisabled(bool disabled)
+{
+	//Not needed for LinuxKeyManager
+}

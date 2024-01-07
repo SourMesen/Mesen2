@@ -50,6 +50,7 @@ public:
 	bool SetKeyState(uint16_t scanCode, bool state);
 	void ResetKeyState();
 	void SetDisabled(bool disabled);
+	void SetLocalHandlingDisabled(bool disabled);
 
 	void UpdateDevices();
 };

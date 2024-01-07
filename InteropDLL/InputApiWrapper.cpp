@@ -42,6 +42,13 @@ extern "C"
 		}
 	}
 
+	DllExport void __stdcall DisableLocalHandling(bool disabled)
+	{
+		if(_keyManager) {
+			_keyManager->SetLocalHandlingDisabled(disabled);
+		}
+	}
+
 	DllExport void __stdcall SetKeyState(uint16_t scanCode, bool state)
 	{
 		if(_keyManager) {

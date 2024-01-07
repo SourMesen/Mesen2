@@ -94,7 +94,12 @@ ifneq ($(STATICLINK),false)
 	LINKOPTIONS += -static-libgcc -static-libstdc++ 
 endif
 
-CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux)
+ifeq ($(MESENOS),osx)
+	LINKOPTIONS += -framework Foundation -framework Cocoa
+endif
+
+CXXFLAGS = -fPIC -Wall --std=c++17 $(MESENFLAGS) $(SDL2INC) -I $(realpath ./) -I $(realpath ./Core) -I $(realpath ./Utilities) -I $(realpath ./Linux) -I $(realpath ./MacOS)
+OBJCXXFLAGS = $(CXXFLAGS) -framework Foundation -framework Cocoa
 CFLAGS = -fPIC -Wall $(MESENFLAGS)
 
 OBJFOLDER := obj.$(MESENPLATFORM)
@@ -124,6 +129,13 @@ SEVENZIPOBJ := $(SEVENZIPSRC:.c=.o)
 
 LUASRC := $(shell find Lua -name '*.c')
 LUAOBJ := $(LUASRC:.c=.o)
+
+ifeq ($(MESENOS),osx)
+	MACOSSRC := $(shell find MacOS -name '*.mm')
+else
+	MACOSSRC :=
+endif
+MACOSOBJ := $(MACOSSRC:.mm=.o)
 
 DLLSRC := $(shell find InteropDLL -name '*.cpp')
 DLLOBJ := $(DLLSRC:.cpp=.o)
@@ -168,10 +180,13 @@ pgohelper: InteropDLL/$(OBJFOLDER)/$(SHAREDLIB)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ)
+%.o: %.mm
+	$(CXX) $(OBJCXXFLAGS) -c $< -o $@
+
+InteropDLL/$(OBJFOLDER)/$(SHAREDLIB): $(SEVENZIPOBJ) $(LUAOBJ) $(UTILOBJ) $(COREOBJ) $(LIBEVDEVOBJ) $(LINUXOBJ) $(DLLOBJ) $(MACOSOBJ)
 	mkdir -p bin
 	mkdir -p InteropDLL/$(OBJFOLDER)
-	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) $(LINKCHECKUNRESOLVED) -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
+	$(CXX) $(CXXFLAGS) $(LINKOPTIONS) $(LINKCHECKUNRESOLVED) -shared -o $(SHAREDLIB) $(DLLOBJ) $(SEVENZIPOBJ) $(LUAOBJ) $(LINUXOBJ) $(MACOSOBJ) $(LIBEVDEVOBJ) $(UTILOBJ) $(COREOBJ) $(SDL2INC) -pthread $(FSLIB) $(SDL2LIB) $(LIBEVDEVLIB)
 	cp $(SHAREDLIB) bin/pgohelperlib.so
 	mv $(SHAREDLIB) InteropDLL/$(OBJFOLDER)
 
@@ -187,4 +202,5 @@ clean:
 	rm -r -f $(LINUXOBJ) $(LIBEVDEVOBJ)
 	rm -r -f $(SEVENZIPOBJ)
 	rm -r -f $(LUAOBJ)
+	rm -r -f $(MACOSOBJ)
 	rm -r -f $(DLLOBJ)

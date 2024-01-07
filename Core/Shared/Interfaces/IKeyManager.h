@@ -40,4 +40,5 @@ public:
 	virtual bool SetKeyState(uint16_t scanCode, bool state) = 0;
 	virtual void ResetKeyState() = 0;
 	virtual void SetDisabled(bool disabled) = 0;
+	virtual void SetLocalHandlingDisabled(bool disabled) = 0;
 };

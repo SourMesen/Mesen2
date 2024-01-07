@@ -16,6 +16,7 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void SetMouseMovement(Int16 x, Int16 y);
 		[DllImport(DllPath)] public static extern void SetMousePosition(double x, double y);
 		[DllImport(DllPath)] public static extern void DisableAllKeys([MarshalAs(UnmanagedType.I1)]bool disabled);
+		[DllImport(DllPath)] public static extern void DisableLocalHandling([MarshalAs(UnmanagedType.I1)]bool disabled);
 		[DllImport(DllPath)] public static extern void UpdateInputDevices();
 
 		[DllImport(DllPath)] public static extern UInt16 GetKeyCode([MarshalAs(UnmanagedType.LPUTF8Str)]string keyName);

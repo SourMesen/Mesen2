@@ -47,4 +47,5 @@ public:
 	void ResetKeyState();
 
 	void SetDisabled(bool disabled);
+	void SetLocalHandlingDisabled(bool disabled);
 };
