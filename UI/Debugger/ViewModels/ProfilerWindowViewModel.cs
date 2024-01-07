@@ -18,7 +18,7 @@ using System.ComponentModel;
 
 namespace Mesen.Debugger.ViewModels
 {
-	public class ProfilerWindowViewModel : ViewModelBase
+	public class ProfilerWindowViewModel : DisposableViewModel
 	{
 		[Reactive] public List<ProfilerTab> ProfilerTabs { get; set; } = new List<ProfilerTab>();
 		[Reactive] public ProfilerTab? SelectedTab { get; set; } = null;
@@ -39,6 +39,21 @@ namespace Mesen.Debugger.ViewModels
 				if(SelectedTab != null && EmuApi.IsPaused()) {
 					RefreshData();
 				}
+			});
+
+			LabelManager.OnLabelUpdated += LabelManager_OnLabelUpdated;
+		}
+
+		protected override void DisposeView()
+		{
+			LabelManager.OnLabelUpdated -= LabelManager_OnLabelUpdated;
+		}
+
+		private void LabelManager_OnLabelUpdated(object? sender, EventArgs e)
+		{
+			ProfilerTab tab = (SelectedTab ?? ProfilerTabs[0]);
+			Dispatcher.UIThread.Post(() => {
+				tab?.RefreshGrid();
 			});
 		}
 

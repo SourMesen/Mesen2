@@ -84,17 +84,17 @@
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.5" />
+    <PackageReference Include="Avalonia" Version="11.0.6" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
-    <PackageReference Include="Dock.Avalonia" Version="11.0.0.2" />
-    <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.6" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Dock.Avalonia" Version="11.0.0.5" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0.5" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.31" />
    </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">

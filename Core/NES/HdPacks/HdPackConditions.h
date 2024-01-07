@@ -52,6 +52,7 @@ struct HdPackBaseTileCondition : public HdPackCondition
 
 enum class HdPackConditionOperator
 {
+	Invalid = -1,
 	Equal = 0,
 	NotEqual = 1,
 	GreaterThan = 2,
@@ -140,6 +141,90 @@ struct HdPackBgPriorityCondition : public HdPackCondition
 	{
 		return tile && tile->BackgroundPriority;
 	}
+};
+
+struct HdPackBasePositionCheckCondition : public HdPackCondition
+{
+	HdPackConditionOperator Operator = {};
+	uint32_t Operand = 0;
+	HdPackConditionType Type = {};
+
+	HdPackBasePositionCheckCondition() { _useCache = false; }
+	string GetConditionName() override
+	{
+		switch(GetConditionType()) {
+			default: case HdPackConditionType::PositionCheckX: return "positionCheckX";
+			case HdPackConditionType::PositionCheckY: return "positionCheckY";
+			case HdPackConditionType::OriginPositionCheckX: return "originPositionCheckX";
+			case HdPackConditionType::OriginPositionCheckY: return "originPositionCheckY";
+		}
+	}
+
+	void Initialize(HdPackConditionOperator op, uint32_t operand)
+	{
+		Operator = op;
+		Operand = operand;
+		Type = GetConditionType();
+	}
+
+	bool InternalCheckCondition(int x, int y, HdPpuTileInfo* tile) override
+	{
+		uint32_t val;
+		switch(Type) {
+			default: case HdPackConditionType::PositionCheckX: val = (uint32_t)x; break;
+			case HdPackConditionType::PositionCheckY: val = (uint32_t)y; break;
+			case HdPackConditionType::OriginPositionCheckX: val = tile->HorizontalMirroring ? (uint32_t)(x - (7 - tile->OffsetX)) : (uint32_t)(x - tile->OffsetX); break;
+			case HdPackConditionType::OriginPositionCheckY: val = tile->VerticalMirroring ? (uint32_t)(y - (7 - tile->OffsetY)) : (uint32_t)(y - tile->OffsetY); break;
+		}
+		
+		switch(Operator) {
+			case HdPackConditionOperator::Equal: return val == Operand;
+			case HdPackConditionOperator::NotEqual: return val != Operand;
+			case HdPackConditionOperator::GreaterThan: return val > Operand;
+			case HdPackConditionOperator::LowerThan: return val < Operand;
+			case HdPackConditionOperator::LowerThanOrEqual: return val <= Operand;
+			case HdPackConditionOperator::GreaterThanOrEqual: return val >= Operand;
+		}
+		return false;
+	}
+
+	string ToString() override
+	{
+		stringstream out;
+		out << "<condition>" << Name << "," << GetConditionName() << ",";
+		switch(Operator) {
+			case HdPackConditionOperator::Equal: out << "=="; break;
+			case HdPackConditionOperator::NotEqual: out << "!="; break;
+			case HdPackConditionOperator::GreaterThan: out << ">"; break;
+			case HdPackConditionOperator::LowerThan: out << "<"; break;
+			case HdPackConditionOperator::LowerThanOrEqual: out << "<="; break;
+			case HdPackConditionOperator::GreaterThanOrEqual: out << ">="; break;
+		}
+		out << ",";
+		out << HexUtilities::ToHex(Operand & 0xFFFF) << ",";
+
+		return out.str();
+	}
+};
+
+struct HdPackPositionCheckXCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::PositionCheckX; }
+};
+
+struct HdPackPositionCheckYCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::PositionCheckY; }
+};
+
+struct HdPackOriginPositionCheckXCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::OriginPositionCheckX; }
+};
+
+struct HdPackOriginPositionCheckYCondition : public HdPackBasePositionCheckCondition
+{
+	HdPackConditionType GetConditionType() override { return HdPackConditionType::OriginPositionCheckY; }
 };
 
 struct HdPackMemoryCheckCondition : public HdPackBaseMemoryCondition

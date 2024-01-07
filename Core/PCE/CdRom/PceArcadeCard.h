@@ -13,6 +13,7 @@ private:
 	static constexpr int ArcadeRamMemSize = 0x200000;
 
 	PceArcadeCardState _state = {};
+	Emulator* _emu = nullptr;
 	uint8_t* _ram = nullptr;
 	bool _isRamUsed = false;
 

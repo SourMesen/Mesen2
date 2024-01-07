@@ -114,6 +114,12 @@ FrameInfo BisqwitNtscFilter::GetFrameInfo()
 	return frameInfo;
 }
 
+HudScaleFactors BisqwitNtscFilter::GetScaleFactor()
+{
+	double scale = 8 / _resDivider;
+	return { scale, scale };
+}
+
 void BisqwitNtscFilter::OnBeforeApplyFilter()
 {
 	VideoConfig& cfg = _emu->GetSettings()->GetVideoConfig();

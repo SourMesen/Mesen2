@@ -34,6 +34,11 @@ OverscanDimensions SnesNtscFilter::GetOverscan()
 	return overscan;
 }
 
+HudScaleFactors SnesNtscFilter::GetScaleFactor()
+{
+	return { (double)SNES_NTSC_OUT_WIDTH(256) / 256, 2 };
+}
+
 void SnesNtscFilter::OnBeforeApplyFilter()
 {
 	if(NtscFilterOptionsChanged(_ntscSetup)) {

@@ -54,6 +54,11 @@ FrameInfo SmsNtscFilter::GetFrameInfo()
 	return frameInfo;
 }
 
+HudScaleFactors SmsNtscFilter::GetScaleFactor()
+{
+	return { (double)SMS_NTSC_OUT_WIDTH(256) / 256, 2 };
+}
+
 void SmsNtscFilter::OnBeforeApplyFilter()
 {
 	if(NtscFilterOptionsChanged(*_ntscSetup.get())) {

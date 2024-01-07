@@ -125,11 +125,6 @@ bool SmsMemoryManager::HasBios()
 
 void SmsMemoryManager::LoadBattery()
 {
-	if(_originalCartRam == nullptr) {
-		//SG-1000 with ext ram adapter (Taiwanese games)
-		return;
-	}
-	
 	_emu->GetBatteryManager()->LoadBattery(".sav", _cartRam, SmsMemoryManager::CartRamMaxSize);
 }
 

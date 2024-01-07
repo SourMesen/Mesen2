@@ -5,7 +5,7 @@
 #include "Shared/Emulator.h"
 #include "PCE/PceDefaultVideoFilter.h"
 
-PceNtscFilter::PceNtscFilter(Emulator* emu) : BaseVideoFilter(emu)
+PceNtscFilter::PceNtscFilter(Emulator* emu) : PceDefaultVideoFilter(emu)
 {
 	memset(&_ntscData, 0, sizeof(_ntscData));
 	_ntscSetup = { };
@@ -22,9 +22,9 @@ PceNtscFilter::~PceNtscFilter()
 
 FrameInfo PceNtscFilter::GetFrameInfo()
 {
-	FrameInfo frameInfo = _pceFrameSize;
+	FrameInfo frameInfo = PceDefaultVideoFilter::GetFrameInfo();
 	if(_frameDivider == 0) {
-		frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width / 2);
+		frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width) / 2;
 	} else {
 		frameInfo.Width = SNES_NTSC_OUT_WIDTH(frameInfo.Width);
 	}
@@ -33,23 +33,29 @@ FrameInfo PceNtscFilter::GetFrameInfo()
 
 OverscanDimensions PceNtscFilter::GetOverscan()
 {
-	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
-	overscan.Top *= PceConstants::InternalResMultipler;
-	overscan.Bottom *= PceConstants::InternalResMultipler;
-	overscan.Left *= PceConstants::InternalResMultipler;
-	overscan.Right *= PceConstants::InternalResMultipler;
+	OverscanDimensions overscan = PceDefaultVideoFilter::GetOverscan();
+	if(_frameDivider != 0) {
+		overscan.Left = (uint32_t)(overscan.Left * 2 * 1.2);
+		overscan.Right = (uint32_t)(overscan.Right * 2 * 1.2);
+	}
 	return overscan;
+}
+
+HudScaleFactors PceNtscFilter::GetScaleFactor()
+{
+	HudScaleFactors scaleFactors = PceDefaultVideoFilter::GetScaleFactor();
+	scaleFactors.X *= (double)SNES_NTSC_OUT_WIDTH(256) / (256 * (_frameDivider == 0 ? 2 : 1));
+	return scaleFactors;
 }
 
 void PceNtscFilter::OnBeforeApplyFilter()
 {
+	_pceConfig = _emu->GetSettings()->GetPcEngineConfig();
+
 	if(NtscFilterOptionsChanged(_ntscSetup)) {
 		InitNtscFilter(_ntscSetup);
 		snes_ntsc_init(&_ntscData, &_ntscSetup);
 	}
-
-	PcEngineConfig& pceConfig = _emu->GetSettings()->GetPcEngineConfig();
-	PceDefaultVideoFilter::GetPceFrameSize(pceConfig, BaseVideoFilter::GetFrameInfo(), _ppuOutputBuffer, BaseVideoFilter::GetOverscan(), _pceFrameSize, _frameDivider);
 }
 
 void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
@@ -57,8 +63,6 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 	FrameInfo frameInfo = _frameInfo;
 	FrameInfo baseFrameInfo = _baseFrameInfo;
 	OverscanDimensions overscan = BaseVideoFilter::GetOverscan();
-
-	PcEngineConfig& pceCfg = _emu->GetSettings()->GetPcEngineConfig();
 
 	constexpr uint32_t clockDividerOffset = PceConstants::MaxScreenWidth * PceConstants::ScreenHeight;
 	uint32_t rowCount = PceConstants::ScreenHeight - overscan.Top - overscan.Bottom;
@@ -84,7 +88,7 @@ void PceNtscFilter::ApplyFilter(uint16_t *ppuOutputBuffer)
 		uint32_t baseOffset = i * frameWidth;
 		for(uint32_t j = 0; j < frameWidth; j++) {
 			int pos = (int)(j * ratio);
-			uint32_t color = pceCfg.Palette[ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + yOffset + xOffset] & 0x1FF];
+			uint32_t color = _pceConfig.Palette[ppuOutputBuffer[i * PceConstants::MaxScreenWidth + pos + yOffset + xOffset] & 0x1FF];
 
 			uint8_t r = (color >> 19) & 0x1F;
 			uint8_t g = (color >> 11) & 0x1F;

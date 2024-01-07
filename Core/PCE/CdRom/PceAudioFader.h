@@ -16,6 +16,7 @@ public:
 
 	PceAudioFaderState& GetState() { return _state; }
 
+	uint8_t Read();
 	void Write(uint8_t value);
 	double GetVolume(PceAudioFaderTarget target);
 	void Serialize(Serializer& s);

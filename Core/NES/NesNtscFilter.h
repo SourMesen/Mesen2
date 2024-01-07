@@ -25,6 +25,7 @@ public:
 	virtual ~NesNtscFilter();
 	
 	OverscanDimensions GetOverscan() override;
+	HudScaleFactors GetScaleFactor() override;
 
 	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
 };

@@ -108,7 +108,7 @@ public:
 	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> void ProcessMemoryRead(uint32_t addr, T& value, MemoryOperationType opType);
 	template<CpuType type, MemoryAccessFlags flags = MemoryAccessFlags::None, typename T> bool ProcessMemoryWrite(uint32_t addr, T& value, MemoryOperationType opType);
 
-	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType> void ProcessMemoryAccess(uint32_t addr, uint8_t value);
+	template<CpuType cpuType, MemoryType memType, MemoryOperationType opType, typename T> void ProcessMemoryAccess(uint32_t addr, T& value);
 
 	template<CpuType type> void ProcessIdleCycle();
 	template<CpuType type> void ProcessHaltedCpu();

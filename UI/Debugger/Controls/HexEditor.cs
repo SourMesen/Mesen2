@@ -345,15 +345,12 @@ namespace Mesen.Debugger.Controls
 				char c = e.Text[0];
 
 				if(_inStringView) {
-					SelectionLength = 0;
 					NewByteValue = DataProvider.ConvertCharToByte(c);
 					CommitByteChanges();
-					MoveCursor(1);
+					MoveCursor(SelectionLength == 0 ? 1 : SelectionLength);
 				} else {
 					if((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 						int keyValue = Int32.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber);
-
-						SelectionLength = 0;
 
 						if(NewByteValue < 0) {
 							NewByteValue = DataProvider.GetByte(SelectionStart).Value;
@@ -364,7 +361,7 @@ namespace Mesen.Debugger.Controls
 							NewByteValue &= 0xF0;
 							NewByteValue |= keyValue;
 							CommitByteChanges();
-							MoveCursor(1);
+							MoveCursor(SelectionLength == 0 ? 1 : SelectionLength);
 						} else {
 							NewByteValue &= 0x0F;
 							NewByteValue |= (keyValue << 4);
@@ -432,7 +429,7 @@ namespace Mesen.Debugger.Controls
 		private void CommitByteChanges()
 		{
 			if(NewByteValue >= 0) {
-				RequestByteUpdate(_cursorPosition, (byte)NewByteValue);
+				RequestByteUpdate(SelectionStart, (byte)NewByteValue);
 				LastNibble = false;
 				NewByteValue = -1;
 			}
@@ -441,23 +438,32 @@ namespace Mesen.Debugger.Controls
 		private void RequestByteUpdate(int position, byte value)
 		{
 			if(position < DataProvider.Length) {
-				ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = position, Value = value });
+				ByteUpdated?.Invoke(this, new ByteUpdatedEventArgs() { ByteOffset = position, Length = SelectionLength == 0 ? 1 : SelectionLength, Value = value });
 			}
 		}
 
-		private GridPoint? GetGridPosition(Point p)
+		private bool IsPointInLeftMargin(Point p, bool inStringView)
+		{
+			if(inStringView) {
+				return p.X + 3 < RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin;
+			} else {
+				return p.X + 3 < RowHeaderWidth + ContentLeftPadding;
+			}
+		}
+
+		private GridPoint? GetGridPosition(Point p, bool allowLeftMargin = false, bool stringViewOnly = false)
 		{
 			//+ 5 pixels for gap between mouse position X vs mouse icon I-bar
 			p = p.WithX(p.X + 3);
 
-			if(p.X >= RowHeaderWidth + ContentLeftPadding && p.Y >= ColumnHeaderHeight) {
+			if((allowLeftMargin || p.X >= RowHeaderWidth + ContentLeftPadding) && p.Y >= ColumnHeaderHeight) {
 				int row = (int)((p.Y - ColumnHeaderHeight) / RowHeight);
 				if(TopRow + row != 0 && (TopRow + row + 1) * BytesPerRow > DataProvider.Length) {
 					//Out of range
 					return null;
 				}
 
-				if(ShowStringView && p.X >= RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin) {
+				if(ShowStringView && ((stringViewOnly && allowLeftMargin) || p.X >= RowHeaderWidth + ContentLeftPadding + RowWidth + StringViewMargin)) {
 					//String view
 					try {
 						int rowStart = row * BytesPerRow;
@@ -465,6 +471,9 @@ namespace Mesen.Debugger.Controls
 						float[] endPos = _endPositionByByte;
 
 						double x = p.X - RowHeaderWidth - ContentLeftPadding - RowWidth - StringViewMargin;
+						if(allowLeftMargin && x < 0) {
+							x = 0;
+						}
 
 						int column = 0;
 						if(rowStart + BytesPerRow - 1 >= startPos.Length || endPos.Length != startPos.Length) {
@@ -485,12 +494,20 @@ namespace Mesen.Debugger.Controls
 						return null;
 					}
 				} else {
-					double column = (p.X - RowHeaderWidth - ContentLeftPadding) / (LetterSize.Width * 3) + 0.33/2;
+					double column = (p.X - RowHeaderWidth - ContentLeftPadding) / (LetterSize.Width * 3);
+					if(allowLeftMargin && column < 0) {
+						column = 0;
+					}
 					if(column > BytesPerRow || column < 0) {
 						return null;
 					}
 
-					bool middle = (column - Math.Floor(column)) >= 0.4;
+					bool middle = (column - Math.Floor(column)) >= 0.30;
+					bool nextByte = (column - Math.Floor(column)) >= 0.80;
+					if(nextByte && column < BytesPerRow) {
+						middle = false;
+						column++;
+					}
 
 					return new GridPoint { X = (int)column, Y = row, LastNibble = middle, InStringView = false };
 				}
@@ -569,8 +586,11 @@ namespace Mesen.Debugger.Controls
 
 		private void MoveSelectionWithMouse(GridPoint gridPos)
 		{
-			int currentPos = GetByteOffset(gridPos);
-
+			MoveSelectionWithMouse(GetByteOffset(gridPos));
+		}
+		
+		private void MoveSelectionWithMouse(int currentPos)
+		{
 			if(currentPos < _lastClickedPosition) {
 				this.SelectionStart = currentPos;
 				this.SelectionLength = _lastClickedPosition - currentPos;
@@ -604,15 +624,25 @@ namespace Mesen.Debugger.Controls
 				p = p.WithY(ColumnHeaderHeight);
 			}
 
-			GridPoint? gridPos = GetGridPosition(p);
+			bool isMargin = IsPointInLeftMargin(p, _inStringView);
+			GridPoint? gridPos = GetGridPosition(p, isMargin, _inStringView);
 			LastNibble = false;
 
 			if(gridPos != null) {
 				if(gridPos.Value.InStringView != _inStringView) {
 					return;
 				}
-				
-				MoveSelectionWithMouse(gridPos.Value);
+
+				int offset = GetByteOffset(gridPos.Value);
+				if(offset > SelectionStart + SelectionLength - 1 && !gridPos.Value.LastNibble) {
+					offset--;
+				} else if(isMargin && _lastClickedPosition < offset) {
+					offset--;
+				}
+
+				if(offset >= 0) {
+					MoveSelectionWithMouse(offset);
+				}
 			}
 		}
 
@@ -681,7 +711,7 @@ namespace Mesen.Debugger.Controls
 				ByteInfo byteInfo = dataProvider.GetByte(position);
 				byteInfo.Selected = selectionLength > 0 && position >= selectionStart && position < selectionStart + selectionLength;
 
-				if(position == SelectionStart && NewByteValue >= 0) {
+				if(((SelectionLength == 0 && position == SelectionStart) || (SelectionLength > 0 && position >= SelectionStart && position < SelectionStart + SelectionLength)) && NewByteValue >= 0) {
 					//About to draw the selected byte, draw anything that's pending, and then the current byte
 					byteInfo.ForeColor = Colors.DarkOrange;
 					byteInfo.Value = (byte)NewByteValue;
@@ -781,6 +811,7 @@ namespace Mesen.Debugger.Controls
 	public class ByteUpdatedEventArgs : EventArgs
 	{
 		public int ByteOffset;
+		public int Length;
 		public byte Value;
 	}
 

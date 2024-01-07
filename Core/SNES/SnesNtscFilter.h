@@ -22,4 +22,5 @@ public:
 	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
 	FrameInfo GetFrameInfo() override;
 	OverscanDimensions GetOverscan() override;
+	HudScaleFactors GetScaleFactor() override;
 };

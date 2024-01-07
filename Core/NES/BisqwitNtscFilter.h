@@ -52,6 +52,7 @@ public:
 	BisqwitNtscFilter(Emulator* emu);
 	virtual ~BisqwitNtscFilter();
 
-	virtual void ApplyFilter(uint16_t *ppuOutputBuffer);
-	virtual FrameInfo GetFrameInfo();
+	void ApplyFilter(uint16_t *ppuOutputBuffer) override;
+	FrameInfo GetFrameInfo() override;
+	HudScaleFactors GetScaleFactor() override;
 };

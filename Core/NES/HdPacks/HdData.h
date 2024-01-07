@@ -154,6 +154,10 @@ enum class HdPackConditionType
 	SpriteAtPos,
 	SpriteNearby,
 	SpritePalette,
+	PositionCheckX,
+	PositionCheckY,
+	OriginPositionCheckX,
+	OriginPositionCheckY,
 };
 
 struct HdPackCondition

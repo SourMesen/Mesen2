@@ -223,9 +223,9 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 	}
 
 	TrackInfo& discLastTrk = disc.Tracks[disc.Tracks.size() - 1];
-	disc.EndPosition = discLastTrk.EndPosition;
 	disc.DiscSize = discLastTrk.FileOffset + discLastTrk.Size;
 	disc.DiscSectorCount = discLastTrk.LastSector + 1;
+	disc.EndPosition = DiscPosition::FromLba(disc.DiscSectorCount + 2 * 75);
 
 	MessageManager::Log("---- DISC TRACKS ----");
 	int i = 1;

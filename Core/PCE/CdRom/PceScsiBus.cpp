@@ -37,11 +37,14 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 
 	switch(_state.Phase) {
 		case ScsiPhase::BusFree: _cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferDone); break;
-		case ScsiPhase::Command: SetSignals(Bsy, Cd, Req); break;
+		
+		case ScsiPhase::Command:
+			_readSectorCounter = 0; //stop any pending disc access?
+			SetSignals(Bsy, Cd, Req);
+			break;
+
 		case ScsiPhase::DataIn: SetSignals(Bsy, Io); break;
-		case ScsiPhase::DataOut: SetSignals(Bsy, Req); break;
 		case ScsiPhase::MessageIn: SetSignals(Bsy, Cd, Io, Msg, Req); break;
-		case ScsiPhase::MessageOut: SetSignals(Bsy, Cd, Msg, Req); break;
 		case ScsiPhase::Status: SetSignals(Bsy, Cd, Io, Req); break;
 	}
 }
@@ -51,6 +54,7 @@ void PceScsiBus::Reset()
 	ClearSignals(Ack, Atn, Cd, Io, Msg, Req);
 	_state.Phase = ScsiPhase::BusFree;
 	_state.DataPort = 0;
+	_state.ReadDataPort = 0;
 	_state.DataTransferDone = false;
 	_readSectorCounter = 0;
 	_cmdBuffer.clear();
@@ -64,7 +68,7 @@ void PceScsiBus::SetStatusMessage(ScsiStatus status, uint8_t data)
 	_state.MessageData = data;
 	_state.StatusDone = false;
 	_state.MessageDone = false;
-	_state.DataPort = (uint8_t)status;
+	_state.ReadDataPort = (uint8_t)status;
 	SetPhase(ScsiPhase::Status);
 }
 
@@ -75,7 +79,7 @@ void PceScsiBus::ProcessStatusPhase()
 		_state.StatusDone = true;
 	} else if(!_state.Signals[Req] && !_state.Signals[Ack] && _state.StatusDone) {
 		_state.StatusDone = false;
-		_state.DataPort = _state.MessageData;
+		_state.ReadDataPort = _state.MessageData;
 		SetPhase(ScsiPhase::MessageIn);
 	}
 }
@@ -91,21 +95,31 @@ void PceScsiBus::ProcessMessageInPhase()
 	}
 }
 
+void PceScsiBus::QueueDriveUpdate(ScsiUpdateType action, uint32_t delay)
+{
+	//The delays used with QueueDriveUpdate are all approximations
+	//and haven't been validated beyond what the validator.pce test rom checks
+	_updateType = action;
+	_updateCounter = delay;
+	_needExec = true;
+}
+
 void PceScsiBus::ProcessDataInPhase()
 {
 	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
 	} else if(!_state.Signals[Req] && !_state.Signals[Ack]) {
 		if(_dataBuffer.size() > 0) {
-			_state.DataPort = _dataBuffer.front();
+			_state.ReadDataPort = _dataBuffer.front();
 			_dataBuffer.pop_front();
 			SetSignals(Req);
 		} else {
-			_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
-			if(_state.DataTransferDone) {
-				_state.DataTransferDone = false;
-				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
-				SetStatusMessage(ScsiStatus::Good, 0);
+			if(_readSectorCounter == 0) {
+				//If there's no data in the buffer and the disc isn't loading anything, the transfer is done
+				_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
+				if(_state.DataTransferDone) {
+					QueueDriveUpdate(ScsiUpdateType::SetTransferDoneIrq, 1000);
+				}
 			}
 		}
 	}
@@ -178,7 +192,7 @@ void PceScsiBus::ProcessCommandPhase()
 			_cmdBuffer.clear();
 		} else {
 			//Command still requires more byte to be executed
-			SetSignals(Req);
+			QueueDriveUpdate(ScsiUpdateType::SetReqSignal, 1000);
 		}
 	}
 }
@@ -204,16 +218,25 @@ void PceScsiBus::CmdRead()
 		return;
 	}
 
-	uint32_t seekTime = GetSeekTime(_state.Sector, sector);
+	uint32_t fromSector = _state.Sector;
+	uint32_t seekTime = GetSeekTime(fromSector, sector);
 	_readSectorCounter = seekTime + GetSectorLoadTime();
 	_needExec = true;
 	_state.Sector = sector;
 	_state.SectorsToRead = sectorsToRead;
 
+	//Set the phase to "data in" right away
+	//Ys IV appears to expect this to happen relatively quickly after
+	//sending the read command to the drive. Otherwise it keeps waiting in a loop
+	//until the first sector is read, which makes it display single-line graphical
+	//glitches during the introduction sequence, and pause the animations for a frame
+	SetPhase(ScsiPhase::DataIn);
+
 	_cdrom->GetAudioPlayer().SetIdle();
 	if(_emu->IsDebugging()) {
-		uint32_t seekTimeMs = (seekTime * 1000 / _console->GetMasterClockRate());
-		LogCommand("Read - Sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1) + " - Seek time: " + std::to_string(seekTimeMs) + " ms");
+		uint32_t seekTimeMs = (double)seekTime / _console->GetMasterClockRate() * 1000;
+		LogCommand("Read - Sector: " + std::to_string(_state.Sector) + " to " + std::to_string(_state.Sector + _state.SectorsToRead - 1) +
+			" - Seek time (" + std::to_string(fromSector) + "->" + std::to_string(sector) + "): " + std::to_string(seekTimeMs) + " ms");
 	}
 }
 
@@ -310,15 +333,15 @@ void PceScsiBus::CmdReadSubCodeQ()
 	
 	CdAudioStatus audioStatus = player.GetStatus();
 	uint32_t sector = _cdrom->GetCurrentSector();
-	uint32_t track = _disc->GetTrack(sector);
+	int32_t track = _disc->GetTrack(sector);
 
-	bool isData = _disc->Tracks[track].Format != TrackFormat::Audio;
+	bool isData = track >= 0 ? _disc->Tracks[track].Format != TrackFormat::Audio : false;
 	uint8_t adrControl = (
 		0x01 | //ADR - 1 = "sub-channel Q encodes current position data"
 		(isData ? 0x40 : 0x00) //Control field - Bit 2: clear = audio track, set = data track
 	);
 
-	uint32_t sectorGap = _disc->Tracks[track].FirstSector - sector;
+	uint32_t sectorGap = track >= 0 ? (_disc->Tracks[track].FirstSector - sector) : 0;
 	DiscPosition relPos = DiscPosition::FromLba(sectorGap);
 	DiscPosition absPos = DiscPosition::FromLba(sector);
 
@@ -334,8 +357,7 @@ void PceScsiBus::CmdReadSubCodeQ()
 	_dataBuffer.push_back(CdReader::ToBcd(absPos.Seconds));
 	_dataBuffer.push_back(CdReader::ToBcd(absPos.Frames));
 
-	_state.DataTransferDone = true;
-	SetPhase(ScsiPhase::DataIn);
+	QueueDriveUpdate(ScsiUpdateType::SetDataInPhase, 1000);
 }
 
 void PceScsiBus::CmdReadToc()
@@ -350,8 +372,9 @@ void PceScsiBus::CmdReadToc()
 			_dataBuffer.clear();
 			_dataBuffer.push_back(1);
 			_dataBuffer.push_back(CdReader::ToBcd((uint8_t)_disc->Tracks.size()));
-			_state.DataTransferDone = true;
-			SetPhase(ScsiPhase::DataIn);
+			_dataBuffer.push_back(0);
+			_dataBuffer.push_back(0);
+			QueueDriveUpdate(ScsiUpdateType::SetDataInPhase, 3000);
 			break;
 
 		case 1: {
@@ -364,8 +387,8 @@ void PceScsiBus::CmdReadToc()
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Minutes));
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Seconds));
 			_dataBuffer.push_back(CdReader::ToBcd(_disc->EndPosition.Frames));
-			_state.DataTransferDone = true;
-			SetPhase(ScsiPhase::DataIn);
+			_dataBuffer.push_back(0);
+			QueueDriveUpdate(ScsiUpdateType::SetDataInPhase, 3000);
 			break;
 		}
 
@@ -396,8 +419,7 @@ void PceScsiBus::CmdReadToc()
 				_dataBuffer.push_back(4);
 			}
 
-			_state.DataTransferDone = true;
-			SetPhase(ScsiPhase::DataIn);
+			QueueDriveUpdate(ScsiUpdateType::SetDataInPhase, 3000);
 			break;
 		}
 
@@ -444,8 +466,12 @@ void PceScsiBus::ProcessDiscRead()
 
 				SetPhase(ScsiPhase::DataIn);
 			} else {
-				LogDebug("[SCSI] Read sector done but buffer not empty, delay");
-				_readSectorCounter = GetSeekTime(_state.Sector + 1, _state.Sector) + GetSectorLoadTime();
+				//Software did not read the previous sector's data in time
+				//There's a time penalty for this (drive most likely needs to re-seek to the position & re-load the sector, etc.)
+				//Sherlock Holmes triggers this often and seems to want something around 290ms worth of delay in this case
+				_readSectorCounter = _console->GetMasterClockRate() * (290.0 / 1000.0);
+				uint32_t seekTimeMs = (_readSectorCounter * 1000 / _console->GetMasterClockRate());
+				LogDebug("[SCSI] Read sector done but buffer not empty, delay: " + std::to_string(seekTimeMs) + " ms");
 				_needExec = true;
 			}
 		}
@@ -472,7 +498,15 @@ void PceScsiBus::SetDataPort(uint8_t data)
 uint8_t PceScsiBus::GetDataPort()
 {
 	//LogDebug("[SCSI] CPU data port read: " + HexUtilities::ToHex(_state.DataPort));
-	return _state.DataPort;
+	switch(_state.Phase) {
+		case ScsiPhase::Status:
+		case ScsiPhase::DataIn:
+		case ScsiPhase::MessageIn:
+			return _state.ReadDataPort;
+
+		default:
+			return _state.DataPort;
+	}
 }
 
 bool PceScsiBus::CheckSignal(::ScsiSignal::ScsiSignal signal)
@@ -512,17 +546,13 @@ void PceScsiBus::UpdateState()
 	do {
 		_stateChanged = false;
 
-		if(!_state.Signals[Bsy] && _state.Signals[Sel]) {
-			SetPhase(ScsiPhase::Command);
-		} else if(!_state.Signals[Ack] && _state.Signals[Atn] && !_state.Signals[Req]) {
-			SetPhase(ScsiPhase::MessageOut);
+		if(_state.Signals[Sel]) {
+			QueueDriveUpdate(ScsiUpdateType::SetCmdPhase, 2500);
 		} else {
 			switch(_state.Phase) {
 				case ScsiPhase::Command: ProcessCommandPhase(); break;
 				case ScsiPhase::DataIn: ProcessDataInPhase(); break;
-				//case ScsiPhase::DataOut: ProcessDataOutPhase(); break;
 				case ScsiPhase::MessageIn: ProcessMessageInPhase(); break;
-				//case ScsiPhase::MessageOut: ProcessMessageOutPhase(); break;
 				case ScsiPhase::Status: ProcessStatusPhase(); break;
 			}
 		}
@@ -538,6 +568,24 @@ void PceScsiBus::Exec()
 		}
 	}
 
+	if(_updateCounter && --_updateCounter == 0) {
+		switch(_updateType) {
+			case ScsiUpdateType::SetCmdPhase: SetPhase(ScsiPhase::Command); break;
+			case ScsiUpdateType::SetReqSignal: SetSignals(Req); break;
+
+			case ScsiUpdateType::SetDataInPhase:
+				_state.DataTransferDone = true;
+				SetPhase(ScsiPhase::DataIn);
+				break;
+
+			case ScsiUpdateType::SetTransferDoneIrq:
+				_state.DataTransferDone = false;
+				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+				SetStatusMessage(ScsiStatus::Good, 0);
+				break;
+		}
+	}
+
 	if(_readSectorCounter > 0) {
 		ProcessDiscRead();
 	}
@@ -546,7 +594,7 @@ void PceScsiBus::Exec()
 		UpdateState();
 	}
 
-	_needExec = _stateChanged || _readSectorCounter > 0 || _ackClearCounter > 0;
+	_needExec = _stateChanged || _readSectorCounter > 0 || _ackClearCounter > 0 || _updateCounter > 0;
 }
 
 void PceScsiBus::Serialize(Serializer& s)
@@ -560,6 +608,7 @@ void PceScsiBus::Serialize(Serializer& s)
 	SV(_state.MessageDone);
 	SV(_state.MessageData);
 	SV(_state.DataPort);
+	SV(_state.ReadDataPort);
 	SV(_state.DataTransferDone);
 	SV(_state.Sector);
 	SV(_state.SectorsToRead);
@@ -567,6 +616,8 @@ void PceScsiBus::Serialize(Serializer& s)
 	SV(_stateChanged);
 	SV(_readSectorCounter);
 	SV(_ackClearCounter);
+	SV(_updateCounter);
+	SV(_updateType);
 	SV(_cmdBuffer);
 
 	if(s.IsSaving()) {

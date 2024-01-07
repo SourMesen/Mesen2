@@ -1634,17 +1634,18 @@ namespace Mesen.Interop
 	{
 		Adpcm = 0x04,
 		Stop = 0x08,
-		SubChannel = 0x10,
 		DataTransferDone = 0x20,
 		DataTransferReady = 0x40
 	}
 
 	public struct PceCdRomState
 	{
+		public UInt16 AudioSampleLatch;
 		public byte ActiveIrqs;
 		public byte EnabledIrqs;
 		[MarshalAs(UnmanagedType.I1)] public bool ReadRightChannel;
 		[MarshalAs(UnmanagedType.I1)] public bool BramLocked;
+		public byte ResetRegValue;
 	}
 
 	public struct PceAdpcmState
@@ -1659,7 +1660,7 @@ namespace Mesen.Interop
 		public byte Control;
 		public byte PlaybackRate;
 
-		public UInt16 AdpcmLength;
+		public UInt32 AdpcmLength;
 		[MarshalAs(UnmanagedType.I1)] public bool EndReached;
 		[MarshalAs(UnmanagedType.I1)] public bool HalfReached;
 
@@ -1724,9 +1725,8 @@ namespace Mesen.Interop
 		[MarshalAs(UnmanagedType.I1)] public bool MessageDone;
 		public byte MessageData;
 		public byte DataPort;
+		public byte ReadDataPort;
 
-		[MarshalAs(UnmanagedType.I1)] public bool DiscReading;
-		[MarshalAs(UnmanagedType.I1)] public bool DataTransfer;
 		[MarshalAs(UnmanagedType.I1)] public bool DataTransferDone;
 
 		public UInt32 Sector;
@@ -1745,6 +1745,7 @@ namespace Mesen.Interop
 		public PceAudioFaderTarget Target;
 		[MarshalAs(UnmanagedType.I1)] public bool FastFade;
 		[MarshalAs(UnmanagedType.I1)] public bool Enabled;
+		public byte RegValue;
 	}
 
 	public struct PceState : BaseState

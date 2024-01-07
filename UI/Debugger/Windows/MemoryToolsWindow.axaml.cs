@@ -136,7 +136,9 @@ namespace Mesen.Debugger.Windows
 
 		private void editor_ByteUpdated(object? sender, ByteUpdatedEventArgs e)
 		{
-			DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)e.ByteOffset, e.Value);
+			for(int i = 0; i < e.Length; i++) {
+				DebugApi.SetMemoryValue(_model.Config.MemoryType, (uint)(e.ByteOffset+i), e.Value);
+			}
 		}
 
 		private void InitializeActions()

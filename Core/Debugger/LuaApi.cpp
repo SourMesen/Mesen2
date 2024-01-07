@@ -552,7 +552,7 @@ FrameInfo LuaApi::InternalGetScreenSize()
 	unique_ptr<BaseVideoFilter> filter(_emu->GetVideoFilter());
 	filter->SetBaseFrameInfo(frameSize);
 	filter->SetOverscan({});
-	return filter->GetFrameInfo();
+	return filter->GetFrameInfo((uint16_t*)frame.FrameBuffer, false);
 }
 
 int LuaApi::GetScreenSize(lua_State* lua)

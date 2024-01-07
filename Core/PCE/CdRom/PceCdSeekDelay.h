@@ -62,13 +62,12 @@ public:
 			trackGap += (1606.48 * (src - dst - 1));
 		}
 
-		constexpr double shortSeekFactor = 1.45; //A 1.45 factor allows both Ys IV and F1 Team Simulation to work properly
 		if(lbaGap < 2) {
-			return shortSeekFactor * (3 * 1000 / 60);
+			return 3 * 1000 / 60;
 		} else if(lbaGap < 5) {
-			return shortSeekFactor * ((9 * 1000 / 60) + (_sectorList[dst].RotationMs / 2));
+			return (9 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 80) {
-			return shortSeekFactor * ((16 * 1000 / 60) + (_sectorList[dst].RotationMs / 2));
+			return (16 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 160) {
 			return (22 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 644) {
