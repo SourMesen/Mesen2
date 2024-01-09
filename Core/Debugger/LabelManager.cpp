@@ -137,6 +137,11 @@ AddressInfo LabelManager::GetLabelAbsoluteAddress(string& label)
 int32_t LabelManager::GetLabelRelativeAddress(string &label, CpuType cpuType)
 {
 	auto result = _codeLabelReverseLookup.find(label);
+	if(result == _codeLabelReverseLookup.end()) {
+		//Label doesn't exist, try to find a matching multi-byte label
+		result = _codeLabelReverseLookup.find(label + "+0");
+	}
+
 	if(result != _codeLabelReverseLookup.end()) {
 		uint64_t key = result->second;
 		MemoryType type = GetKeyMemoryType(key);
