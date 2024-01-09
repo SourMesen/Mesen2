@@ -22,6 +22,8 @@ private:
 	void* _eventMonitor;
 	bool _disableHandling;
 
+	//Mapping of MacOS keycodes to Avalonia keycodes
+	//TODO Only had keys available on laptops tested (no numpad-keys etc)
 	uint16_t _keyCodeMap[128] = {
 		 44,  62,  47,  49,  51,  50,  69,  67,  46,  65,
 		154,  45,  60,  66,  48,  61,  68,  63,  35,  36,
