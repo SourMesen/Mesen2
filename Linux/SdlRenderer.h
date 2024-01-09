@@ -55,7 +55,7 @@ private:
 	void LogSdlError(const char* msg);
 	void SetScreenSize(uint32_t width, uint32_t height);
 	
-	void UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height);
+	bool UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height);
 	void UpdateHudTexture(HudRenderInfo& hud, uint32_t* src);
 
 public:

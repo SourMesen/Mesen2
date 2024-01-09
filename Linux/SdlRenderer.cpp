@@ -81,9 +81,7 @@ bool SdlRenderer::InitTexture()
 		return false;
 	}
 
-#ifndef __APPLE__
 	SDL_SetWindowSize(_sdlWindow, _screenWidth, _screenHeight);
-#endif
 
 	return true;
 }
@@ -110,19 +108,12 @@ void SdlRenderer::Cleanup()
 
 void SdlRenderer::Reset()
 {
-	if(_sdlTexture) {
-		//Only reset the texture when screen size changes
-		SDL_DestroyTexture(_sdlTexture);
-		_sdlTexture = nullptr;
+	Cleanup();
+	if(Init()) {
 		InitTexture();
+		_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
 	} else {
 		Cleanup();
-		if(Init()) {
-			InitTexture();
-			_emu->GetVideoRenderer()->RegisterRenderingDevice(this);
-		} else {
-			Cleanup();
-		}
 	}
 }
 
@@ -175,7 +166,7 @@ void SdlRenderer::UpdateFrame(RenderedFrame& frame)
 	_frameChanged = true;	
 }
 
-void SdlRenderer::UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height)
+bool SdlRenderer::UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t height)
 {
 	if(!hud.Texture || hud.Width != width || hud.Height != height) {
 		if(hud.Texture) {
@@ -185,7 +176,9 @@ void SdlRenderer::UpdateHudSize(HudRenderInfo& hud, uint32_t width, uint32_t hei
 		hud.Height = height;
 		hud.Texture = SDL_CreateTexture(_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 		SDL_SetTextureBlendMode(hud.Texture, SDL_BLENDMODE_BLEND);
+		return true;
 	}
+	return false;
 }
 
 void SdlRenderer::UpdateHudTexture(HudRenderInfo& hud, uint32_t* src)
@@ -211,8 +204,9 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 		return;
 	}
 
-	UpdateHudSize(_emuHud, emuHud.Width, emuHud.Height);
-	UpdateHudSize(_scriptHud, scriptHud.Width, scriptHud.Height);
+	bool needUpdate = false;
+	needUpdate |= UpdateHudSize(_emuHud, emuHud.Width, emuHud.Height);
+	needUpdate |= UpdateHudSize(_scriptHud, scriptHud.Width, scriptHud.Height);
 
 	if(SDL_RenderClear(_sdlRenderer) != 0) {
 		LogSdlError("SDL_RenderClear failed");
@@ -240,10 +234,10 @@ void SdlRenderer::Render(RenderSurfaceInfo& emuHud, RenderSurfaceInfo& scriptHud
 	
 	SDL_UnlockTexture(_sdlTexture);
 
-	if(emuHud.IsDirty) {
+	if(needUpdate || emuHud.IsDirty) {
 		UpdateHudTexture(_emuHud, emuHud.Buffer);
 	}
-	if(scriptHud.IsDirty) {
+	if(needUpdate || scriptHud.IsDirty) {
 		UpdateHudTexture(_scriptHud, scriptHud.Buffer);
 	}
 

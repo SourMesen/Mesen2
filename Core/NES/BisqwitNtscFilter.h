@@ -46,7 +46,7 @@ private:
 	
 	void GenerateNtscSignal(int8_t *ntscSignal, int &phase, int rowNumber);
 	void DecodeFrame(int startRow, int endRow, uint16_t *ppuOutputBuffer, uint32_t* outputBuffer, int startPhase);
-	void OnBeforeApplyFilter();
+	void OnBeforeApplyFilter() override;
 
 public:
 	BisqwitNtscFilter(Emulator* emu);

@@ -470,8 +470,7 @@ void PceScsiBus::ProcessDiscRead()
 				//There's a time penalty for this (drive most likely needs to re-seek to the position & re-load the sector, etc.)
 				//Sherlock Holmes triggers this often and seems to want something around 290ms worth of delay in this case
 				_readSectorCounter = _console->GetMasterClockRate() * (290.0 / 1000.0);
-				uint32_t seekTimeMs = (_readSectorCounter * 1000 / _console->GetMasterClockRate());
-				LogDebug("[SCSI] Read sector done but buffer not empty, delay: " + std::to_string(seekTimeMs) + " ms");
+				LogDebug("[SCSI] Read sector done but buffer not empty, delay: " + std::to_string(_readSectorCounter * 1000 / _console->GetMasterClockRate()) + " ms");
 				_needExec = true;
 			}
 		}

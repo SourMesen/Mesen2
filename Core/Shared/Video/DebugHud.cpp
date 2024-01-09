@@ -23,6 +23,7 @@ void DebugHud::ClearScreen()
 {
 	auto lock = _commandLock.AcquireSafe();
 	_commands.clear();
+	_drawPixels.clear();
 }
 
 bool DebugHud::Draw(uint32_t* argbBuffer, FrameInfo frameInfo, OverscanDimensions overscan, uint32_t frameNumber, HudScaleFactors scaleFactors, bool clearAndUpdate)
