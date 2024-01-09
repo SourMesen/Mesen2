@@ -469,6 +469,11 @@ namespace Mesen.Debugger.ViewModels
 			AddDisposable(ReactiveHelper.RegisterRecursiveObserver(options, OnOptionsChanged));
 			UpdateFormat();
 
+			if(string.IsNullOrWhiteSpace(Options.Format)) {
+				//Set custom format to the default if it's empty
+				Options.Format = GetAutoFormat(Options, CpuType);
+			}
+
 			TabName = ResourceHelper.GetEnumText(cpuType);
 			LogOptionsTitle = string.Format(ResourceHelper.GetViewLabel(nameof(TraceLoggerWindow), "grpLogOptions"), ResourceHelper.GetEnumText(cpuType));
 		}
@@ -477,7 +482,8 @@ namespace Mesen.Debugger.ViewModels
 		{
 			UpdateFormat();
 
-			if(Options.UseCustomFormat && string.IsNullOrWhiteSpace(Options.Format)) {
+			if(e.PropertyName == nameof(TraceLoggerCpuConfig.UseCustomFormat) && Options.UseCustomFormat && string.IsNullOrWhiteSpace(Options.Format)) {
+				//Set custom format to the default if it's empty
 				Options.Format = Format;
 			}
 
@@ -505,10 +511,6 @@ namespace Mesen.Debugger.ViewModels
 
 		public static string GetAutoFormat(TraceLoggerCpuConfig cfg, CpuType cpuType)
 		{
-			if(cfg.UseCustomFormat) {
-				return "";
-			}
-
 			string format = "";
 			int alignValue = 24;
 
