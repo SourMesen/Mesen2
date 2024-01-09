@@ -77,7 +77,9 @@ void VideoRenderer::RenderThread()
 			_scriptHudSurface.UpdateSize(size.Width * _scriptHudScale, size.Height * _scriptHudScale);
 
 			size = GetEmuHudSize(size);
-			_emuHudSurface.UpdateSize(size.Width, size.Height);
+			if(_emuHudSurface.UpdateSize(size.Width, size.Height)) {
+				_rendererHud->ClearScreen();
+			}
 
 			RenderedFrame frame;
 			{
