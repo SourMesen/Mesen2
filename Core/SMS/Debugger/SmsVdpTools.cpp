@@ -168,7 +168,7 @@ DebugTilemapTileInfo SmsVdpTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 		}
 		result.TileMapAddress = ntAddr;
 		result.TileIndex = tileIndex;
-		result.TileAddress = tileIndex * 8;
+		result.TileAddress = tileAddr;
 
 		uint16_t colorTableAddr;
 		if(state.M2_AllowHeightChange) {
