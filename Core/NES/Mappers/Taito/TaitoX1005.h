@@ -24,6 +24,11 @@ protected:
 	uint32_t GetSaveRamSize() override { return 0x100; }
 	uint32_t GetSaveRamPageSize() override { return 0x100; }
 
+	// FIXME: SRAM/WRAM size is actually 128 bytes, and mirrored once on $7F00-$7FFF.
+	// reference: https://www.nesdev.org/wiki/INES_Mapper_080
+	bool ForceSaveRamSize() override { return HasBattery(); }
+	bool ForceWorkRamSize() override { return !HasBattery(); }
+
 	void InitMapper() override
 	{
 		_ramPermission = 0;
