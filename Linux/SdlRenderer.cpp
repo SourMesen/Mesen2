@@ -106,6 +106,13 @@ void SdlRenderer::Cleanup()
 	}
 }
 
+void SdlRenderer::OnRendererThreadStarted()
+{
+	//SDL stops working if the rendering moves to a new thread
+	//Reset everything to make it work again
+	Reset();
+}
+
 void SdlRenderer::Reset()
 {
 	Cleanup();
