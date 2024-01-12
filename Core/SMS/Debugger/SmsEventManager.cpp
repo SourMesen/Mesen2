@@ -184,6 +184,7 @@ uint32_t SmsEventManager::TakeEventSnapshot(bool forAutoRefresh)
 	_snapshotCycle = cycle;
 	_forAutoRefresh = forAutoRefresh;
 	_visibleScanlineCount = _vdp->GetState().VisibleScanlineCount;
+	_scanlineCount = _vdp->GetScanlineCount();
 	return _scanlineCount;
 }
 

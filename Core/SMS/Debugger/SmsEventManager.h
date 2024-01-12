@@ -51,7 +51,7 @@ private:
 	SmsConsole* _console;
 	Debugger* _debugger;
 
-	uint32_t _scanlineCount = SmsEventManager::ScreenHeight;
+	uint32_t _scanlineCount = 262;
 	uint32_t _visibleScanlineCount = 192;
 	uint16_t* _ppuBuffer = nullptr;
 
