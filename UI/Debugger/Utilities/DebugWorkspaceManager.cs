@@ -96,7 +96,7 @@ namespace Mesen.Debugger.Utilities
 		{
 			if(File.Exists(path) && Path.GetExtension(path).ToLower() == "." + FileDialogHelper.SymFileExt) {
 				string symContent = File.ReadAllText(path);
-				if(symContent.Contains("[labels]")) {
+				if(symContent.Contains("[labels]") || symContent.Contains("this file was created with wlalink")) {
 					//Assume WLA-DX symbol files
 					WlaDxImporter? importer = null;
 					switch(_romInfo.ConsoleType) {
@@ -110,6 +110,7 @@ namespace Mesen.Debugger.Utilities
 
 						case ConsoleType.Gameboy: importer = new GbWlaDxImporter(); break;
 						case ConsoleType.PcEngine: importer = new PceWlaDxImporter(); break;
+						case ConsoleType.Sms: importer = new SmsWlaDxImporter(); break;
 					}
 
 					if(importer != null) {

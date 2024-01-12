@@ -108,9 +108,12 @@ public abstract class WlaDxImporter : ISymbolProvider
 		int errorCount = 0;
 		bool isAsar = false;
 
+		//When [labels] tag isn't found, the symbols were output using the "nocash" symbol format (-s vs -S command line option)
+		bool labelsOnly = !lines.Contains("[labels]");
+
 		for(int i = 0; i < lines.Length; i++) {
 			string str = lines[i].Trim();
-			if(str == "[labels]") {
+			if(labelsOnly || str == "[labels]") {
 				for(; i < lines.Length; i++) {
 					if(lines[i].Length > 0) {
 						Match m = _labelRegex.Match(lines[i]);
@@ -301,5 +304,17 @@ public class PceWlaDxImporter : WlaDxImporter
 	{
 		//TODOv2 RAM labels seem to be missing from .sym file?
 		return new AddressInfo() { Address = bank * 0x2000 + (addr & 0x1FFF), Type = MemoryType.PcePrgRom };
+	}
+}
+
+public class SmsWlaDxImporter : WlaDxImporter
+{
+	protected override AddressInfo GetLabelAddress(int bank, int addr)
+	{
+		if(addr >= 0xC000) {
+			return new AddressInfo() { Address = addr - 0xC000, Type = MemoryType.SmsWorkRam };
+		} else {
+			return new AddressInfo() { Address = bank * 0x4000 + (addr & 0x3FFF), Type = MemoryType.SmsPrgRom };
+		}
 	}
 }
