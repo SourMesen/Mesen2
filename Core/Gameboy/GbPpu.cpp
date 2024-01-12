@@ -265,9 +265,6 @@ void GbPpu::ProcessVisibleScanline()
 				//On scanlines 1-143, the OAM IRQ fires 1 cycle early
 				_state.IrqMode = PpuMode::OamEvaluation;
 				_state.LyForCompare = -1;
-			} else {
-				//On scanline 0, hblank gets set for 1 cycle here
-				_state.Mode = PpuMode::HBlank;
 			}
 			break;
 
