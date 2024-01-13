@@ -348,7 +348,13 @@ void Fds::ProcessCpuClock()
 			//Wait a bit before ejecting the disk (eject in ~77 frames)
 			_autoDiskEjectCounter = 77;
 		} else {
-			_delay = 150;
+			//This delay used to be 150, but this triggers a bug in Ai Senshi Nicol
+			//during the transition from level 2 to 3 - the 150 value causes an NMI
+			//to occur between 2 writes to $2006 (vram addr), which ends up breaking
+			//the PPU update logic and causes broken graphics when stage 3 loads
+			//Both 149 or 151 fix the issue because they change the timing enough
+			//that the NMI no longer interrupts the vram update routine.
+			_delay = 149;
 		}
 	}
 }
