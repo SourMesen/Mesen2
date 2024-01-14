@@ -191,14 +191,25 @@ namespace Mesen.Debugger.Utilities
 			items.AddEntry("Address", addressField, true);
 
 			bool isCode = false;
+			bool indexMode8 = false;
+			bool memoryMode8 = false;
 			if(address >= 0) {
-				isCode = DebugApi.GetCdlData((uint)address, 1, memType)[0].HasFlag(CdlFlags.Code);
+				var cdl = DebugApi.GetCdlData((uint)address, 1, memType)[0];
+				isCode = cdl.HasFlag(CdlFlags.Code);
+				indexMode8 = cdl.HasFlag(CdlFlags.IndexMode8);
+				memoryMode8 = cdl.HasFlag(CdlFlags.MemoryMode8);
 			} else if(seg.Data.AbsoluteAddress.Address >= 0) {
-				isCode = DebugApi.GetCdlData((uint)seg.Data.AbsoluteAddress.Address, 1, seg.Data.AbsoluteAddress.Type)[0].HasFlag(CdlFlags.Code);
+				var cdl = DebugApi.GetCdlData((uint)seg.Data.AbsoluteAddress.Address, 1, seg.Data.AbsoluteAddress.Type)[0];
+				isCode = cdl.HasFlag(CdlFlags.Code);
+				indexMode8 = cdl.HasFlag(CdlFlags.IndexMode8);
+				memoryMode8 = cdl.HasFlag(CdlFlags.MemoryMode8);
+
 			}
 
 			if(isCode) {
 				items.AddEntry("Byte code", seg.Data.ByteCodeStr, true);
+				items.AddEntry("Index Mode", indexMode8 ? "8-bit" : "16-bit", true);
+				items.AddEntry("Memory Mode", memoryMode8 ? "8-bit" : "16-bit", true);
 			}
 
 			return new DynamicTooltip() { Items = items };
