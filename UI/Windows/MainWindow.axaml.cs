@@ -604,7 +604,6 @@ namespace Mesen.Windows
 		private void OnActiveChanged()
 		{
 			ConfigApi.SetEmulationFlag(EmulationFlags.InBackground, !IsActive);
-			InputApi.DisableLocalHandling(!IsActive);
 			InputApi.ResetKeyState();
 		}
 

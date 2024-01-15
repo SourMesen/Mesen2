@@ -3,10 +3,19 @@
 
 #include <algorithm>
 #include "MacOSKeyManager.h"
+//The MacOS SDK defines a global function 'Debugger', colliding with Mesen's Debugger class
+//Redefine it temporarily so the headers don't cause compilation errors due to this
+#define Debugger MesenDebugger
+#include "Shared/Emulator.h"
+#include "Shared/EmuSettings.h"
 #include "Shared/KeyDefinitions.h"
+#include "Shared/SettingTypes.h"
+#undef Debugger
 
-MacOSKeyManager::MacOSKeyManager()
+MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 {
+	_emu = emu;
+
 	ResetKeyState();
 
 	_keyDefinitions = KeyDefinition::GetSharedKeyDefinitions();
@@ -19,8 +28,8 @@ MacOSKeyManager::MacOSKeyManager()
 	_disableAllKeys = false;
 
 	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged)
-													 handler:^ NSEvent* (NSEvent* event) {
-		if(_disableHandling) {
+	                         handler:^ NSEvent* (NSEvent* event) {
+		if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
 			//Allow UI to handle key-events when main window is not in focus
 			return event;
 		}
@@ -39,8 +48,6 @@ MacOSKeyManager::MacOSKeyManager()
 
 		return nil;
 	}];
-
-	_disableHandling = false;
 }
 
 MacOSKeyManager::~MacOSKeyManager()
@@ -136,9 +143,4 @@ void MacOSKeyManager::ResetKeyState()
 void MacOSKeyManager::SetDisabled(bool disabled)
 {
 	_disableAllKeys = disabled;
-}
-
-void MacOSKeyManager::SetLocalHandlingDisabled(bool disabled)
-{
-	_disableHandling = disabled;
 }

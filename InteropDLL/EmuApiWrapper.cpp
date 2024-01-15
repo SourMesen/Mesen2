@@ -108,7 +108,7 @@ extern "C" {
 				#ifdef _WIN32
 					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
 				#elif __APPLE__
-					_keyManager.reset(new MacOSKeyManager());
+					_keyManager.reset(new MacOSKeyManager(_emu.get()));
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
 				#endif
@@ -303,7 +303,6 @@ extern "C" {
 		bool SetKeyState(uint16_t scanCode, bool state) { return false; }
 		void ResetKeyState() {}
 		void SetDisabled(bool disabled) {}
-		void SetLocalHandlingDisabled(bool disabled) {}
 	};
 
 	DllExport void __stdcall PgoRunTest(vector<string> testRoms, bool enableDebugger)

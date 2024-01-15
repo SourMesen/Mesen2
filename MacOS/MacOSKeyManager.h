@@ -6,11 +6,15 @@
 #include "Shared/Interfaces/IKeyManager.h"
 #include "Shared/KeyDefinitions.h"
 
+class Emulator;
+
 class MacOSKeyManager : public IKeyManager
 {
 private:
 	static constexpr int BaseMouseButtonIndex = 0x200;
 	static constexpr int BaseGamepadIndex = 0x1000;
+
+	Emulator* _emu;
 
 	vector<KeyDefinition> _keyDefinitions;
 	bool _keyState[0x205];
@@ -20,7 +24,6 @@ private:
 	bool _disableAllKeys;
 
 	void* _eventMonitor;
-	bool _disableHandling;
 
 	//Mapping of MacOS keycodes to Avalonia keycodes
 	uint16_t _keyCodeMap[128] = {
@@ -31,7 +34,7 @@ private:
 		 54, 140, 150, 142, 145,  57,  56, 144,   3,  18,
 		146,   2,   6,  13,  71,  70, 116,   8, 120, 118,
 		117, 121, 119,   0, 106,  88,   0,  84,   0,  85,
-			0,   5, 131, 130, 129,  89,   6,   0,  87, 107,
+		  0,   5, 131, 130, 129,  89,   6,   0,  87, 107,
 		108, 141,  74,  75,  76,  77,  78,  79,  80,  81,
 		109,  82,  83, 150, 154, 148,  94,  95,  96,  92,
 		 97,  98,  12, 100,   9, 102, 105, 103,   0,  99,
@@ -42,7 +45,7 @@ private:
 	void HandleModifiers(uint32_t flags);
 
 public:
-	MacOSKeyManager();
+	MacOSKeyManager(Emulator* emu);
 	virtual ~MacOSKeyManager();
 
 	void RefreshState();
@@ -57,6 +60,4 @@ public:
 	void ResetKeyState();
 
 	void SetDisabled(bool disabled);
-
-	void SetLocalHandlingDisabled(bool disabled);
 };

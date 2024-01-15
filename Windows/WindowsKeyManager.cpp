@@ -185,8 +185,3 @@ void WindowsKeyManager::ResetKeyState()
 {
 	memset(_keyState, 0, sizeof(_keyState));
 }
-
-void WindowsKeyManager::SetLocalHandlingDisabled(bool disabled)
-{
-	//Not needed for WindowsKeyManager
-}
