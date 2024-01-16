@@ -562,6 +562,11 @@ namespace Mesen.Windows
 				return;
 			}
 
+			if(OperatingSystem.IsMacOS()) {
+				//Keyhandler handles key internally on macOS
+				return;
+			}
+
 			if(e.Key != Key.None) {
 				if(_isLinux && _pendingKeyUpEvents.TryGetValue(e.Key, out IDisposable? cancelTimer)) {
 					//Cancel any pending key up event
@@ -576,15 +581,15 @@ namespace Mesen.Windows
 				//Prevent menu/window from handling these keys to avoid issue with custom shortcuts
 				e.Handled = true;
 			}
-
-			if(OperatingSystem.IsMacOS() && !IsModifierKey(e.Key) && e.KeyModifiers != KeyModifiers.Meta) {
-				//Prevent alert sound on macOS
-				e.Handled = true;
-			}
 		}
 
 		private void OnPreviewKeyUp(object? sender, KeyEventArgs e)
 		{
+			if(OperatingSystem.IsMacOS()) {
+				//Keyhandler handles key internally on macOS
+				return;
+			}
+
 			if(e.Key != Key.None) {
 				if(_isLinux) {
 					//Process keyup events after 1ms on Linux to prevent key repeat from triggering key up/down repeatedly

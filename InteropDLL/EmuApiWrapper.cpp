@@ -23,6 +23,9 @@
 	#include "Windows/Renderer.h"
 	#include "Windows/SoundManager.h"
 	#include "Windows/WindowsKeyManager.h"
+#elif __APPLE__
+	#include "Linux/SdlSoundManager.h"
+	#include "MacOS/MacOSKeyManager.h"
 #else
 	#include "Linux/SdlRenderer.h"
 	#include "Linux/SdlSoundManager.h"
@@ -104,6 +107,8 @@ extern "C" {
 			if(!noInput) {
 				#ifdef _WIN32
 					_keyManager.reset(new WindowsKeyManager(_emu.get(), (HWND)_windowHandle));
+				#elif __APPLE__
+					_keyManager.reset(new MacOSKeyManager(_emu.get()));
 				#else 
 					_keyManager.reset(new LinuxKeyManager(_emu.get()));
 				#endif
