@@ -48,25 +48,26 @@ private:
 	uint8_t _spriteIndexes[10] = {};
 
 	bool _isFirstFrame = true;
+	bool _forceBlankFrame = true;
 	bool _rendererIdle = false;
 
-	__forceinline void WriteBgPixel(uint8_t colorIndex);
-	__forceinline void WriteObjPixel(uint8_t colorIndex);
+	__noinline void WriteBgPixel(uint8_t colorIndex);
+	__noinline void WriteObjPixel(uint8_t colorIndex);
 
-	__forceinline void ProcessPpuCycle();
+	__noinline void ProcessPpuCycle();
 
-	__forceinline void ExecCycle();
-	__forceinline void ProcessVblankScanline();
+	__noinline void ExecCycle();
+	__noinline void ProcessVblankScanline();
 	void ProcessFirstScanlineAfterPowerOn();
-	__forceinline void ProcessVisibleScanline();
-	__forceinline void RunDrawCycle();
-	__forceinline void RunSpriteEvaluation();
+	__noinline void ProcessVisibleScanline();
+	__noinline void RunDrawCycle();
+	__noinline void RunSpriteEvaluation();
 	void ResetRenderer();
 	void ClockSpriteFetcher();
 	void FindNextSprite();
-	__forceinline void ClockTileFetcher();
-	__forceinline void PushSpriteToPixelFifo();
-	__forceinline void PushTileToPixelFifo();
+	__noinline void ClockTileFetcher();
+	__noinline void PushSpriteToPixelFifo();
+	__noinline void PushTileToPixelFifo();
 
 	void UpdateStatIrq();
 

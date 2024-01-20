@@ -89,9 +89,10 @@ void GbPpu::Exec(bool singleStep)
 		//Not quite correct in terms of frame pacing
 		if(_gameboy->GetApuCycleCount() - _lastFrameTime > 70224) {
 			//More than a full frame's worth of time has passed since the last frame, send another blank frame
-			_lastFrameTime = _gameboy->GetApuCycleCount();
-			_isFirstFrame = true;
+			_forceBlankFrame = true;
 			SendFrame();
+			_forceBlankFrame = true;
+			_lastFrameTime = _gameboy->GetApuCycleCount();
 		}
 		return;
 	}
@@ -682,6 +683,7 @@ void GbPpu::SendFrame()
 
 	if(_gameboy->IsSgb()) {
 		_isFirstFrame = false;
+		_forceBlankFrame = false;
 		return;
 	}
 
@@ -689,11 +691,14 @@ void GbPpu::SendFrame()
 
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	if(_isFirstFrame && !_gameboy->IsCgb()) {
+	if(_forceBlankFrame) {
 		//Send blank frame on the first frame after enabling LCD
-		//DMG-only? Some CGB games flicker if this is done for CGB (e.g Men in Black - The Series)
-		std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
+		//On CGB some games flicker if this is done when the LCD is only off for a short time (e.g Men in Black - The Series)
+		//So for CGB, the screen is only cleared if the LCD has been turned off for a while
+		std::fill(_outputBuffers[0], _outputBuffers[0] + GbConstants::PixelCount, 0x7FFF);
+		std::fill(_outputBuffers[1], _outputBuffers[1] + GbConstants::PixelCount, 0x7FFF);
 	}
+	_forceBlankFrame = false;
 	_isFirstFrame = false;
 
 	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount, _gameboy->GetControlManager()->GetPortStates());
@@ -801,6 +806,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_dmaController->ProcessHdma();
 				} else {
 					_isFirstFrame = true;
+					_forceBlankFrame = !_gameboy->IsCgb() || (_gameboy->GetApuCycleCount() - _lastFrameTime) > 5000;
 					_state.Cycle = -1;
 					_state.IdleCycles = 0;
 					_state.IrqMode = PpuMode::NoIrq;
@@ -1120,12 +1126,10 @@ void GbPpu::Serialize(Serializer& s)
 	SV(_state.Scanline); SV(_state.Cycle); SV(_state.Mode); SV(_state.LyCompare); SV(_state.BgPalette); SV(_state.ObjPalette0); SV(_state.ObjPalette1);
 	SV(_state.ScrollX); SV(_state.ScrollY); SV(_state.WindowX); SV(_state.WindowY); SV(_state.Control); SV(_state.LcdEnabled); SV(_state.WindowTilemapSelect);
 	SV(_state.WindowEnabled); SV(_state.BgTileSelect); SV(_state.BgTilemapSelect); SV(_state.LargeSprites); SV(_state.SpritesEnabled); SV(_state.BgEnabled);
-	SV(_state.Status); SV(_state.FrameCount); SV(_lastFrameTime); SV(_state.LyCoincidenceFlag);
+	SV(_state.Status); SV(_state.FrameCount); SV(_state.LyCoincidenceFlag);
 	SV(_state.CgbBgPalAutoInc); SV(_state.CgbBgPalPosition);
 	SV(_state.CgbObjPalAutoInc); SV(_state.CgbObjPalPosition); SV(_state.CgbVramBank); SV(_state.CgbEnabled);
-	SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
-	SV(_wyEnableFlag); SV(_wxEnableFlag);
-	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
+	SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
 	SV(_state.StatIrqFlag);
 
 	if(_gameboy->IsCgb()) {
@@ -1138,6 +1142,11 @@ void GbPpu::Serialize(Serializer& s)
 
 	if(s.GetFormat() != SerializeFormat::Map) {
 		//Hide these entries from the Lua API
+		SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle); SV(_forceBlankFrame);
+		SV(_wyEnableFlag); SV(_wxEnableFlag);
+		SV(_state.IdleCycles);
+		SV(_lastFrameTime);
+
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
 		SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
