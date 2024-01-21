@@ -375,6 +375,16 @@ void GbPpu::RunDrawCycle()
 			_evtColor = EvtColor::RenderingIdle;
 			return;
 		}
+
+		if(!_gameboy->IsCgb() && !_state.WindowEnabled && _windowCounter > 0 && _wxEnableFlag && ((int)_state.WindowX & 0x07) == 7 - ((int)_state.ScrollX & 0x07)) {
+			//Emulate a DMG-only glitch that occurs in the following conditions (from the Windesync-validate test rom readme):
+			//After the window is active at some point in the frame, an extra pixel is added to the BG FIFO on all other lines when:
+			//  -The window is disabled AND
+			//  -A window X hit occurs AND
+			//  -(WindowX & 7) == 7 - (ScrollX & 7)
+			//This glitch also occurs in Star Trek 25th anniversary's intro - not emulating it causes the graphics to be offset by a pixel
+			_insertGlitchBgPixel = true;
+		}
 	}
 
 	FindNextSprite();
@@ -389,7 +399,7 @@ void GbPpu::RunDrawCycle()
 		if(_drawnPixels >= 0) {
 			GameboyConfig& cfg = _emu->GetSettings()->GetGameboyConfig();
 
-			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
+			GbFifoEntry entry = _insertGlitchBgPixel ? GbFifoEntry{} : _bgFifo.Content[_bgFifo.Position];
 			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
 			if(!cfg.DisableSprites && sprite.Color != 0 && (entry.Color == 0 || (!(sprite.Attributes & 0x80) && !(entry.Attributes & 0x80)) || (_state.CgbEnabled && !_state.BgEnabled))) {
 				//Use sprite pixel if:
@@ -418,7 +428,10 @@ void GbPpu::RunDrawCycle()
 			}
 		}
 
-		_bgFifo.Pop();
+		if(!_insertGlitchBgPixel) {
+			_bgFifo.Pop();
+		}
+		_insertGlitchBgPixel = false;
 		_drawnPixels++;
 
 		if(_oamFifo.Size > 0) {
@@ -478,6 +491,8 @@ void GbPpu::ResetRenderer()
 	_fetchSprite = -1;
 	_fetchWindow = false;
 	_fetchColumn = _state.ScrollX / 8;
+
+	_insertGlitchBgPixel = false;
 }
 
 void GbPpu::ClockSpriteFetcher()
@@ -1170,6 +1185,7 @@ void GbPpu::Serialize(Serializer& s)
 
 		SV(_lastPixelType);
 		SV(_lastBgColor);
+		SV(_insertGlitchBgPixel);
 
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);

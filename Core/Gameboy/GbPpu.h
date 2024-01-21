@@ -41,6 +41,7 @@ private:
 	int16_t _windowCounter = -1;
 	bool _wyEnableFlag = false;
 	bool _wxEnableFlag = false;
+	bool _insertGlitchBgPixel = false;
 
 	int16_t _fetchSprite = -1;
 	uint8_t _spriteCount = 0;
