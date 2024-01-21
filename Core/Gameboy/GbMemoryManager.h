@@ -52,7 +52,7 @@ public:
 	void Unmap(uint16_t start, uint16_t end);
 	void RefreshMappings();
 
-	void ExecHalt();
+	void ExecMasterCycle();
 	void Exec();
 
 	template<MemoryOperationType type, GbOamCorruptionType oamCorruptionType = GbOamCorruptionType::Read>
@@ -68,6 +68,8 @@ public:
 	uint8_t PeekRegister(uint16_t addr);
 	uint8_t ReadRegister(uint16_t addr);
 	void WriteRegister(uint16_t addr, uint8_t value);
+
+	void ProcessCpuWrite(uint16_t addr, uint8_t value);
 
 	void RequestIrq(uint8_t source);
 	void ClearIrqRequest(uint8_t source);

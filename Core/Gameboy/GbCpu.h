@@ -34,8 +34,8 @@ private:
 	void ProcessCgbSpeedSwitch();
 	__noinline void ProcessHaltBug();
 
-	__forceinline void IncCycleCount();
-	__forceinline void HalfCycle();
+	__forceinline void ExecCpuCycle();
+	__forceinline void ExecMasterCycle();
 	__forceinline uint8_t ReadOpCode();
 	__forceinline uint8_t ReadCode();
 	__forceinline uint16_t ReadCodeWord();

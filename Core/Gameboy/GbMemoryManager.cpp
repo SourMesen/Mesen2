@@ -98,7 +98,7 @@ void GbMemoryManager::ExecTimerDmaSerial()
 	}
 }
 
-void GbMemoryManager::ExecHalt()
+void GbMemoryManager::ExecMasterCycle()
 {
 	uint64_t& cycleCount = _cpu->GetState().CycleCount;
 	cycleCount++;
@@ -464,6 +464,28 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 		_ppu->WriteVram(addr, value);
 	} else {
 		_cart->WriteRegister(addr, value);
+	}
+}
+
+void GbMemoryManager::ProcessCpuWrite(uint16_t addr, uint8_t value)
+{
+	if(addr != 0xFF47) {
+		Exec();
+		Exec();
+		Write(addr, value);
+	} else {
+		//BGP writes appear to be effective slightly earlier than other writes?
+		//This allows the ppu_scanline_bgp and m3_bgp_change tests to display properly
+		if(!_gameboy->IsCgb()) {
+			ExecMasterCycle();
+		}
+		ExecMasterCycle();
+		ExecMasterCycle();
+		Write(addr, value);
+		if(_gameboy->IsCgb()) {
+			ExecMasterCycle();
+		}
+		ExecMasterCycle();
 	}
 }
 

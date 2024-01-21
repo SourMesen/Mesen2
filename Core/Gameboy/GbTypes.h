@@ -123,6 +123,12 @@ enum class EvtColor
 	LcdColor = 6,
 };
 
+enum class GbPixelType : uint8_t
+{
+	Background,
+	Object
+};
+
 struct GbFifoEntry
 {
 	uint8_t Color;

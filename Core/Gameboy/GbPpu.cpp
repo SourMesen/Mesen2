@@ -402,6 +402,7 @@ void GbPpu::RunDrawCycle()
 					uint8_t colorIndex = (((sprite.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (sprite.Color * 2)) & 0x03;
 					WriteObjPixel(((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex);
 				}
+				_lastPixelType = GbPixelType::Object;
 			} else {
 				if(!cfg.DisableBackground) {
 					if(_state.CgbEnabled) {
@@ -412,6 +413,8 @@ void GbPpu::RunDrawCycle()
 				} else {
 					WriteBgPixel(0);
 				}
+				_lastPixelType = GbPixelType::Background;
+				_lastBgColor = entry.Color;
 			}
 		}
 
@@ -856,7 +859,25 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			}
 			break;
 
-		case 0xFF47: _state.BgPalette = value; break;
+		case 0xFF47:
+			if(_state.Mode == PpuMode::Drawing && _drawnPixels > 0 && _lastPixelType == GbPixelType::Background) {
+				//When BGP is changed during rendering, the current pixel is affected.
+				//Re-draw the last pixel with the correct color.
+				
+				//On CGB, the pixel uses the new BGP value only
+				uint8_t bgpValue = value;
+				if(!_gameboy->IsCgb()) {
+					//On DMG, the pixel uses the new BGP value ORed with the old value
+					bgpValue |= _state.BgPalette;
+				}
+
+				_drawnPixels--;
+				WriteBgPixel((bgpValue >> (_lastBgColor * 2)) & 0x03);
+				_drawnPixels++;
+			}
+			_state.BgPalette = value;
+			break;
+
 		case 0xFF48: _state.ObjPalette0 = value; break;
 		case 0xFF49: _state.ObjPalette1 = value; break;
 		case 0xFF4A: _state.WindowY = value; break;
@@ -1146,6 +1167,9 @@ void GbPpu::Serialize(Serializer& s)
 		SV(_wyEnableFlag); SV(_wxEnableFlag);
 		SV(_state.IdleCycles);
 		SV(_lastFrameTime);
+
+		SV(_lastPixelType);
+		SV(_lastBgColor);
 
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);

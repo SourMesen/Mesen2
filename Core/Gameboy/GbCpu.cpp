@@ -39,15 +39,24 @@ bool GbCpu::IsHalted()
 void GbCpu::Exec()
 {
 	uint8_t irqVector;
-	if(_state.HaltCounter && !_gameboy->IsCgb()) {
-		//DMG HALT seems to check the irq state slightly earlier vs CGB and regular OPs?
-		_memoryManager->ExecHalt();
-		irqVector = _memoryManager->ProcessIrqRequests();
-		_memoryManager->ExecHalt();
-		_memoryManager->ExecHalt();
-		_memoryManager->ExecHalt();
+	if(_state.HaltCounter) {
+		//When halted, the timing at which the CPU checks the IRQ state seems
+		//to differ from the timing for other instructions. 
+		//This is needed to make various tests pass.
+		if(_gameboy->IsCgb()) {
+			//On CGB, it looks like the IRQ is checked slightly earlier?
+			irqVector = _memoryManager->ProcessIrqRequests();
+			ExecCpuCycle();
+		} else {
+			//DMG HALT seems to check the irq state slightly later vs CGB?
+			ExecMasterCycle();
+			irqVector = _memoryManager->ProcessIrqRequests();
+			ExecMasterCycle();
+			ExecMasterCycle();
+			ExecMasterCycle();
+		}
 	} else {
-		IncCycleCount();
+		ExecCpuCycle();
 		irqVector = _memoryManager->ProcessIrqRequests();
 	}
 
@@ -55,14 +64,14 @@ void GbCpu::Exec()
 	if(irqVector && !_state.HaltBug) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
-			IncCycleCount();
-			IncCycleCount();
+			ExecCpuCycle();
+			ExecCpuCycle();
 
 			PushByte(_state.PC >> 8);
 			irqVector = _memoryManager->ProcessIrqRequests(); //Check IRQ line again before jumping (ie_push)
 			PushByte((uint8_t)_state.PC);
 
-			IncCycleCount();
+			ExecCpuCycle();
 			
 			switch(irqVector) {
 				case 0:
@@ -129,7 +138,7 @@ void GbCpu::ProcessHaltBug()
 #endif
 
 	//HALT bug, execution continues, but PC isn't incremented for the first byte
-	IncCycleCount();
+	ExecCpuCycle();
 	uint8_t opCode = ReadOpCode();
 	_state.PC--;
 	_state.HaltCounter = 0;
@@ -389,7 +398,7 @@ void GbCpu::ExecOpCode(uint8_t opCode)
 		case 0xF6: OR(ReadCode()); break;
 		case 0xF7: RST(0x30); break;
 		case 0xF8: LD_HL(ReadCode()); break;
-		case 0xF9: LD(_state.SP, _regHL); IncCycleCount(); break;
+		case 0xF9: LD(_state.SP, _regHL); ExecCpuCycle(); break;
 		case 0xFA: LD(_state.A, Read(ReadCodeWord())); break;
 		case 0xFB: EI(); break;
 		case 0xFC: InvalidOp(); break;
@@ -413,7 +422,7 @@ void GbCpu::ProcessCgbSpeedSwitch()
 	}
 }
 
-void GbCpu::IncCycleCount()
+void GbCpu::ExecCpuCycle()
 {
 #ifndef DUMMYCPU
 	_memoryManager->Exec();
@@ -421,10 +430,10 @@ void GbCpu::IncCycleCount()
 #endif
 }
 
-void GbCpu::HalfCycle()
+void GbCpu::ExecMasterCycle()
 {
 #ifndef DUMMYCPU
-	_memoryManager->Exec();
+	_memoryManager->ExecMasterCycle();
 #endif
 }
 
@@ -437,8 +446,7 @@ uint8_t GbCpu::ReadOpCode()
 
 uint8_t GbCpu::ReadCode()
 {
-	HalfCycle();
-	HalfCycle();
+	ExecCpuCycle();
 	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand, GbOamCorruptionType::ReadIncDec>(_state.PC);
 	_state.PC++;
 	return value;
@@ -454,8 +462,7 @@ uint16_t GbCpu::ReadCodeWord()
 template<GbOamCorruptionType oamCorruptionType>
 uint8_t GbCpu::Read(uint16_t addr)
 {
-	HalfCycle();
-	HalfCycle();
+	ExecCpuCycle();
 	uint8_t value = ReadMemory<MemoryOperationType::Read, oamCorruptionType>(addr);
 	return value;
 }
@@ -474,12 +481,10 @@ uint8_t GbCpu::ReadMemory(uint16_t addr)
 
 void GbCpu::Write(uint16_t addr, uint8_t value)
 {
-	HalfCycle();
-	HalfCycle();
 #ifdef DUMMYCPU
 	LogMemoryOperation(addr, value, MemoryOperationType::Write);
 #else
-	_memoryManager->Write(addr, value);
+	_memoryManager->ProcessCpuWrite(addr, value);
 #endif
 }
 
@@ -571,7 +576,7 @@ void GbCpu::LD_HL(int8_t value)
 	ClearFlag(GbCpuFlags::AddSub);
 	ClearFlag(GbCpuFlags::Zero);
 
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 // inc  r           xx         4 z0h- r=r+1
@@ -588,7 +593,7 @@ void GbCpu::INC(uint8_t& dst)
 void GbCpu::INC(Register16& dst)
 {
 	//16-bit inc does not alter flags
-	IncCycleCount();
+	ExecCpuCycle();
 #ifndef DUMMYCPU
 	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(dst.Read());
 #endif
@@ -598,7 +603,7 @@ void GbCpu::INC(Register16& dst)
 // inc  rr        x3           8 ---- rr = rr+1      ;rr may be BC,DE,HL,SP
 void GbCpu::INC_SP()
 {
-	IncCycleCount();
+	ExecCpuCycle();
 #ifndef DUMMYCPU
 	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(_state.SP);
 #endif
@@ -627,7 +632,7 @@ void GbCpu::DEC(uint8_t& dst)
 void GbCpu::DEC(Register16& dst)
 {
 	//16-bit dec does not alter flags
-	IncCycleCount();
+	ExecCpuCycle();
 #ifndef DUMMYCPU
 	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(dst.Read());
 #endif
@@ -649,7 +654,7 @@ void GbCpu::DEC_SP()
 	_ppu->ProcessOamCorruption<GbOamCorruptionType::Write>(_state.SP);
 #endif
 	_state.SP--;
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 // add  A,r         8x         4 z0hc A=A+r
@@ -683,8 +688,8 @@ void GbCpu::ADD_SP(int8_t value)
 	ClearFlag(GbCpuFlags::AddSub);
 	ClearFlag(GbCpuFlags::Zero);
 
-	IncCycleCount();
-	IncCycleCount();
+	ExecCpuCycle();
+	ExecCpuCycle();
 }
 
 // add  HL,rr     x9           8 -0hc HL = HL+rr     ;rr may be BC,DE,HL,SP
@@ -698,7 +703,7 @@ void GbCpu::ADD(Register16& reg, uint16_t value)
 
 	SetFlagState(GbCpuFlags::Carry, result > 0xFFFF);
 	ClearFlag(GbCpuFlags::AddSub);
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 // adc  A,r         8x         4 z0hc A=A+r+cy
@@ -824,7 +829,7 @@ void GbCpu::STOP()
 	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
 #ifndef DUMMYCPU
 		//Stop for ~33941 cycles - most likely not accurate, but matches speed_switch_timing_stat test rom
-		_state.HaltCounter = 33943;
+		_state.HaltCounter = 33942;
 #endif
 	} else {
 		_state.HaltCounter = 1;
@@ -1096,7 +1101,7 @@ void GbCpu::DAA()
 void GbCpu::JP(uint16_t dstAddr)
 {
 	_state.PC = dstAddr;
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 //jp   HL        E9           4 ---- jump to HL, PC=HL
@@ -1110,7 +1115,7 @@ void GbCpu::JP(bool condition, uint16_t dstAddr)
 {
 	if(condition) {
 		_state.PC = dstAddr;
-		IncCycleCount();
+		ExecCpuCycle();
 	}
 }
 
@@ -1118,7 +1123,7 @@ void GbCpu::JP(bool condition, uint16_t dstAddr)
 void GbCpu::JR(int8_t offset)
 {
 	_state.PC += offset;
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 //jr   f,PC+dd   xx dd     12;8 ---- conditional relative jump if nz,z,nc,c 
@@ -1126,14 +1131,14 @@ void GbCpu::JR(bool condition, int8_t offset)
 {
 	if(condition) {
 		_state.PC += offset;
-		IncCycleCount();
+		ExecCpuCycle();
 	}
 }
 
 //call nn        CD nn nn    24 ---- call to nn, SP=SP-2, (SP)=PC, PC=nn
 void GbCpu::CALL(uint16_t dstAddr)
 {
-	IncCycleCount();
+	ExecCpuCycle();
 	PushWord(_state.PC);
 	_state.PC = dstAddr;
 }
@@ -1142,7 +1147,7 @@ void GbCpu::CALL(uint16_t dstAddr)
 void GbCpu::CALL(bool condition, uint16_t dstAddr)
 {
 	if(condition) {
-		IncCycleCount();
+		ExecCpuCycle();
 		PushWord(_state.PC);
 		_state.PC = dstAddr;
 	}
@@ -1152,16 +1157,16 @@ void GbCpu::CALL(bool condition, uint16_t dstAddr)
 void GbCpu::RET()
 {
 	_state.PC = PopWord();
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 //ret  f         xx        20;8 ---- conditional return if nz,z,nc,c
 void GbCpu::RET(bool condition)
 {
-	IncCycleCount();
+	ExecCpuCycle();
 	if(condition) {
 		_state.PC = PopWord();
-		IncCycleCount();
+		ExecCpuCycle();
 	}
 }
 
@@ -1170,13 +1175,13 @@ void GbCpu::RETI()
 {
 	_state.PC = PopWord();
 	_state.IME = true;
-	IncCycleCount();
+	ExecCpuCycle();
 }
 
 //rst  n         xx          16 ---- call to 00,08,10,18,20,28,30,38
 void GbCpu::RST(uint8_t value)
 {
-	IncCycleCount();
+	ExecCpuCycle();
 	PushWord(_state.PC);
 	_state.PC = value;
 }
@@ -1188,7 +1193,7 @@ void GbCpu::POP(Register16& reg)
 
 void GbCpu::PUSH(Register16& reg)
 {
-	IncCycleCount();
+	ExecCpuCycle();
 	PushWord(reg);
 }
 
