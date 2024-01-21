@@ -16,6 +16,8 @@ namespace Mesen.Utilities.GlobalMouseLib
 				_impl = new GlobalMouseWindowsImpl();
 			} else if(OperatingSystem.IsLinux()) {
 				_impl = new GlobalMouseX11Impl();
+			} else if(OperatingSystem.IsMacOS()) {
+				_impl = new GlobalMouseMacOSImpl();
 			} else {
 				_impl = new GlobalMouseStubImpl();
 			}

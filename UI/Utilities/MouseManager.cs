@@ -27,7 +27,8 @@ namespace Mesen.Utilities
 
 		private DispatcherTimer _timer = new DispatcherTimer();
 
-		private NativeRenderer _renderer;
+		private Control _renderer;
+		private bool _usesSoftwareRenderer;
 		private MainMenuView _mainMenu;
 		private MainWindow _wnd;
 
@@ -35,11 +36,12 @@ namespace Mesen.Utilities
 		private bool _mouseCaptured = false;
 		private DateTime _lastMouseMove = DateTime.Now;
 
-		public MouseManager(MainWindow wnd, NativeRenderer renderer, MainMenuView mainMenu)
+		public MouseManager(MainWindow wnd, Control renderer, MainMenuView mainMenu, bool usesSoftwareRenderer)
 		{
 			_wnd = wnd;
 			_renderer = renderer;
 			_mainMenu = mainMenu;
+			_usesSoftwareRenderer = usesSoftwareRenderer;
 
 			_timer.Interval = TimeSpan.FromMilliseconds(15);
 			_timer.Tick += tmrProcessMouse;
@@ -71,9 +73,9 @@ namespace Mesen.Utilities
 			}
 
 			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
-			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
+			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetSystemPixelScale()));
 
-			MousePosition p = GlobalMouse.GetMousePosition(_renderer.Handle);
+			MousePosition p = GlobalMouse.GetMousePosition(GetRendererHandle());
 			if(_prevPosition.X != p.X || _prevPosition.Y != p.Y) {
 				//Send mouse movement x/y values to core
 				if(_mouseCaptured) {
@@ -96,7 +98,7 @@ namespace Mesen.Utilities
 
 			if(rendererScreenRect.Contains(mousePos)) {
 				//Send mouse state to emulation core
-				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd);
+				Point rendererPos = _renderer.PointToClient(mousePos) * LayoutHelper.GetLayoutScale(_wnd) / InputApi.GetSystemPixelScale();
 				InputApi.SetMousePosition(rendererPos.X / rendererScreenRect.Width, rendererPos.Y / rendererScreenRect.Height);
 
 				bool rightPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Right);
@@ -120,7 +122,7 @@ namespace Mesen.Utilities
 					if(AllowMouseCapture) {
 						GlobalMouse.SetCursorIcon(CursorIcon.Hidden);
 						GlobalMouse.SetMousePosition((uint)(rendererTopLeft.X + rendererScreenRect.Width / 2), (uint)(rendererTopLeft.Y + rendererScreenRect.Height / 2));
-						_prevPosition = GlobalMouse.GetMousePosition(_renderer.Handle);
+						_prevPosition = GlobalMouse.GetMousePosition(GetRendererHandle());
 					} else {
 						ReleaseMouse();
 					}
@@ -239,7 +241,7 @@ namespace Mesen.Utilities
 				PixelPoint topLeft = _renderer.PointToScreen(new Point());
 				PixelRect rendererScreenRect = new PixelRect(topLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(_wnd)));
 				
-				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, _renderer.Handle);
+				GlobalMouse.CaptureCursor(topLeft.X, topLeft.Y, rendererScreenRect.Width, rendererScreenRect.Height, GetRendererHandle());
 			}
 		}
 
@@ -249,6 +251,11 @@ namespace Mesen.Utilities
 				_mouseCaptured = false;
 				GlobalMouse.ReleaseCursor();
 			}
+		}
+
+		private IntPtr GetRendererHandle()
+		{
+			return _usesSoftwareRenderer ? IntPtr.Zero : (_renderer as NativeRenderer)!.Handle;
 		}
 
 		public void Dispose()

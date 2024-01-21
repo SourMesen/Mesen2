@@ -10,6 +10,7 @@
 #include "Shared/EmuSettings.h"
 #include "Shared/KeyDefinitions.h"
 #include "Shared/SettingTypes.h"
+#include "MacOS/MacOSMouseManager.h"
 #undef Debugger
 
 MacOSKeyManager::MacOSKeyManager(Emulator* emu)
@@ -27,8 +28,15 @@ MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 
 	_disableAllKeys = false;
 
-	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged)
-	                         handler:^ NSEvent* (NSEvent* event) {
+	NSEventMask eventMask = NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged | NSEventMaskMouseMoved | NSEventMaskLeftMouseDragged | NSEventMaskRightMouseDragged | NSEventMaskOtherMouseDragged;
+
+	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:eventMask handler:^ NSEvent* (NSEvent* event) {
+		if([event type] == NSEventTypeMouseMoved || [event type] == NSEventTypeLeftMouseDragged || [event type] == NSEventTypeRightMouseDragged || [event type] == NSEventMaskOtherMouseDragged) {
+			//Send mouse move events to MacOSMouseManager for captured movement and pass them to UI
+			MacOSMouseManager::SetRelativeMovement([event deltaX], [event deltaY]);
+			return event;
+		}
+
 		if(_emu->GetSettings()->CheckFlag(EmulationFlags::InBackground)) {
 			//Allow UI to handle key-events when main window is not in focus
 			return event;

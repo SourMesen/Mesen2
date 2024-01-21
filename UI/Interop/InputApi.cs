@@ -1,5 +1,6 @@
 ﻿using Mesen.Config;
 using Mesen.Utilities;
+using Mesen.Utilities.GlobalMouseLib;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -23,6 +24,16 @@ namespace Mesen.Interop
 		[DllImport(DllPath)] public static extern void ResetLagCounter();
 
 		[DllImport(DllPath)][return: MarshalAs(UnmanagedType.I1)] public static extern bool HasControlDevice(ControllerType type);
+
+		[DllImport(DllPath)] public static extern InteropMouseState GetSystemMouseState();
+
+		[DllImport(DllPath)] public static extern void SetSystemMouseCaptured([MarshalAs(UnmanagedType.I1)]bool enabled);
+
+		[DllImport(DllPath)] public static extern void SetSystemMousePosition(double x, double y);
+
+		[DllImport(DllPath)] public static extern void SetSystemCursorImage(CursorIcon cursor);
+
+		[DllImport(DllPath)] public static extern double GetSystemPixelScale();
 
 		[DllImport(DllPath, EntryPoint = "GetKeyName")] private static extern IntPtr GetKeyNameWrapper(UInt16 key, IntPtr outKeyName, Int32 maxLength);
 		public unsafe static string GetKeyName(UInt16 key)
@@ -50,5 +61,17 @@ namespace Mesen.Interop
 			}
 			return keys;
 		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct InteropMouseState
+	{
+		public double XPosition;
+		public double YPosition;
+		[MarshalAs(UnmanagedType.I1)] public bool LeftButton;
+		[MarshalAs(UnmanagedType.I1)] public bool RightButton;
+		[MarshalAs(UnmanagedType.I1)] public bool MiddleButton;
+		[MarshalAs(UnmanagedType.I1)] public bool Button4;
+		[MarshalAs(UnmanagedType.I1)] public bool Button5;
 	}
 }

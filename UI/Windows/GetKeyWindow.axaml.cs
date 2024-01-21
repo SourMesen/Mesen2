@@ -118,7 +118,7 @@ namespace Mesen.Windows
 			if(!_allowKeyboardOnly) {
 				MousePosition p = GlobalMouse.GetMousePosition(IntPtr.Zero);
 				PixelPoint mousePos = new PixelPoint(p.X, p.Y);
-				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this)));
+				PixelRect clientBounds = new PixelRect(this.PointToScreen(new Point(0, 0)), PixelSize.FromSize(Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetSystemPixelScale()));
 				bool mouseInsideWindow = clientBounds.Contains(mousePos);
 				InputApi.SetKeyState(MouseManager.LeftMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Left));
 				InputApi.SetKeyState(MouseManager.RightMouseButtonKeyCode, mouseInsideWindow && GlobalMouse.IsMouseButtonPressed(MouseButtons.Right));

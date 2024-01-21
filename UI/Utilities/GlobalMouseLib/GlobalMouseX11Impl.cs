@@ -39,6 +39,10 @@ public class GlobalMouseX11Impl : IGlobalMouseImpl
 
 	public void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 	{
+		if(rendererHandle == IntPtr.Zero) {
+			//TODO: Capturing the cursor when using the software renderer
+			return;
+		}
 		for(int i = 0; i < 10; i++) {
 			int result = X11Api.XGrabPointer(_x11.Display, rendererHandle, true, X11Api.EventMask.NoEventMask, X11Api.GrabMode.GrabModeAsync, X11Api.GrabMode.GrabModeAsync, rendererHandle, _x11.HiddenCursor, IntPtr.Zero);
 			X11Api.XFlush(_x11.Display);

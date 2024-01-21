@@ -72,14 +72,22 @@ namespace Mesen.Windows
 				return;
 			}
 
+			bool usesSoftwareRenderer = _model.IsSoftwareRendererVisible;
+
 			bool leftPressed = GlobalMouse.IsMouseButtonPressed(MouseButtons.Left);
-			MousePosition p = GlobalMouse.GetMousePosition(_renderer.Handle);
+			MousePosition p = GlobalMouse.GetMousePosition(usesSoftwareRenderer ? IntPtr.Zero : _renderer.Handle);
 			PixelPoint mousePos = new PixelPoint(p.X, p.Y);
-			PixelPoint rendererTopLeft = _renderer.PointToScreen(new Point());
-			PixelRect rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this)));
+			PixelPoint rendererTopLeft;
+			PixelRect rendererScreenRect;
+			if(usesSoftwareRenderer) {
+				rendererTopLeft = _softwareRenderer.PointToScreen(new Point());
+				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_softwareRenderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetSystemPixelScale()));
+			} else {
+				rendererTopLeft = _renderer.PointToScreen(new Point());
+				rendererScreenRect = new PixelRect(rendererTopLeft, PixelSize.FromSize(_renderer.Bounds.Size, LayoutHelper.GetLayoutScale(this) / InputApi.GetSystemPixelScale()));
+			}
 
 			if(rendererScreenRect.Contains(mousePos)) {
-				GlobalMouse.SetCursorIcon(CursorIcon.Arrow);
 				if(leftPressed && !_prevLeftPressed) {
 					if(_mainMenu.IsOpen) {
 						_mainMenu.Close();

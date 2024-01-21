@@ -4,6 +4,7 @@
 #include "Core/Shared/KeyManager.h"
 #include "Core/Shared/ShortcutKeyHandler.h"
 #include "Utilities/StringUtilities.h"
+#include "MacOS/MacOSMouseManager.h"
 
 extern unique_ptr<IKeyManager> _keyManager;
 extern unique_ptr<Emulator> _emu;
@@ -81,4 +82,37 @@ extern "C"
 	{
 		_emu->ResetLagCounter();
 	}
+
+#ifdef __APPLE__
+	DllExport MouseState __stdcall GetSystemMouseState()
+	{
+		return MacOSMouseManager::GetMouseState();
+	}
+
+	DllExport void __stdcall SetSystemMouseCaptured(bool enabled)
+	{
+		MacOSMouseManager::SetMouseCaptured(enabled);
+	}
+
+	DllExport void __stdcall SetSystemMousePosition(double x, double y)
+	{
+		MacOSMouseManager::SetMousePosition(x, y);
+	}
+
+	DllExport void __stdcall SetSystemCursorImage(CursorIcon image)
+	{
+		MacOSMouseManager::SetCursor(image);
+	}
+
+	DllExport double __stdcall GetSystemPixelScale()
+	{
+		return MacOSMouseManager::GetPixelScale();
+	}
+#else
+	DllExport MouseState __stdcall GetSystemMouseState() { MouseState state = {}; return state; }
+	DllExport void __stdcall SetSystemMouseCaptured(bool enabled) {}
+	DllExport void __stdcall SetSystemMousePosition(double x, double y) {}
+	DllExport void __stdcall SetSystemCursorImage(CursorIcon image) {}
+	DllExport double __stdcall GetSystemPixelScale() { return 1.0; }
+#endif
 }
