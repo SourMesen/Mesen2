@@ -419,7 +419,7 @@ void GbPpu::RunDrawCycle()
 					if(_state.CgbEnabled) {
 						WriteBgPixel(entry.Color | ((entry.Attributes & 0x07) << 2));
 					} else {
-						WriteBgPixel((_state.BgPalette >> (entry.Color * 2)) & 0x03);
+						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : 0);
 					}
 				} else {
 					WriteBgPixel(0);
@@ -639,7 +639,7 @@ void GbPpu::PushTileToPixelFifo()
 		uint8_t bits = ((_bgFetcher.LowByte >> shift) & 0x01);
 		bits |= ((_bgFetcher.HighByte >> shift) & 0x01) << 1;
 
-		_bgFifo.Content[i].Color = (_state.CgbEnabled || _state.BgEnabled) ? bits : 0;
+		_bgFifo.Content[i].Color = bits;
 		_bgFifo.Content[i].Attributes = _bgFetcher.Attributes;
 	}
 
