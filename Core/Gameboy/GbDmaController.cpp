@@ -13,6 +13,7 @@ void GbDmaController::Init(Gameboy* gameboy, GbMemoryManager* memoryManager, GbP
 	_ppu = ppu;
 	_cpu = cpu;
 	_state = {};
+	_state.OamDmaSource = 0xFF;
 }
 
 GbDmaControllerState GbDmaController::GetState()
