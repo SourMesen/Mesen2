@@ -230,17 +230,27 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 			break;
 
 		case 79:
-			_latchWindowX = _state.WindowX;
-			_latchWindowY = _state.WindowY;
-			_latchWindowEnabled = _state.WindowEnabled;
+			_wxEnableFlag = false;
 			_state.Mode = PpuMode::Drawing;
 			_state.IrqMode = PpuMode::Drawing;
 			ResetRenderer();
 			_rendererIdle = true;
 			break;
 
+		case 83:
+			if(_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
+			break;
+
 		case 84:
-			_rendererIdle = false;
+			if(!_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
 			break;
 
 		case 448:
@@ -272,9 +282,6 @@ void GbPpu::ProcessVisibleScanline()
 			_spriteCount = 0;
 			_state.LyForCompare = _state.Scanline;
 			
-			//"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-			_wyEnableFlag |= _state.Scanline == _latchWindowY && _state.WindowEnabled;
-
 			_state.Mode = PpuMode::OamEvaluation;
 			_state.IrqMode = PpuMode::OamEvaluation;
 			break;
@@ -286,17 +293,27 @@ void GbPpu::ProcessVisibleScanline()
 			break;
 
 		case 84:
-			_latchWindowX = _state.WindowX;
-			_latchWindowY = _state.WindowY;
-			_latchWindowEnabled = _state.WindowEnabled;
+			_wxEnableFlag = false;
 			_state.Mode = PpuMode::Drawing;
 			_state.IrqMode = PpuMode::Drawing;
 			_rendererIdle = true;
 			ResetRenderer();
 			break;
+		
+		case 88:
+			if(_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
+			break;
 
 		case 89:
-			_rendererIdle = false;
+			if(!_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
 			break;
 
 		case 456:
@@ -335,24 +352,28 @@ void GbPpu::RunDrawCycle()
 	}
 
 	//TODO fix/check behavior for WX=0 and WX=166
-	bool fetchWindow = (
-		_latchWindowEnabled && //"Window enable bit in LCDC is set"
-		_drawnPixels >= _latchWindowX - 7 && //"the current X coordinate being rendered + 7 was equal to WX"
-		_wyEnableFlag //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-	);
+	if(!_wxEnableFlag) {
+		_wxEnableFlag |= _drawnPixels == _state.WindowX - 7;
 
-	if(_fetchWindow != fetchWindow) {
-		//Switched between window & background, reset fetcher & pixel FIFO
-		_fetchWindow = fetchWindow;
-		_fetchColumn = 0;
-		_windowCounter++;
+		bool fetchWindow = (
+			_state.WindowEnabled && //"Window enable bit in LCDC is set"
+			_wxEnableFlag && //"the current X coordinate being rendered + 7 was equal to WX"
+			_wyEnableFlag //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
+		);
+		
+		if(_fetchWindow != fetchWindow) {
+			//Switched between window & background, reset fetcher & pixel FIFO
+			_fetchWindow = fetchWindow;
+			_fetchColumn = 0;
+			_windowCounter++;
 
-		_bgFetcher.Step = 0;
-		_bgFifo.Reset();
+			_bgFetcher.Step = 0;
+			_bgFifo.Reset();
 
-		//Idle cycle when switching to window
-		_evtColor = EvtColor::RenderingIdle;
-		return;
+			//Idle cycle when switching to window
+			_evtColor = EvtColor::RenderingIdle;
+			return;
+		}
 	}
 
 	FindNextSprite();
@@ -1102,8 +1123,8 @@ void GbPpu::Serialize(Serializer& s)
 	SV(_state.Status); SV(_state.FrameCount); SV(_lastFrameTime); SV(_state.LyCoincidenceFlag);
 	SV(_state.CgbBgPalAutoInc); SV(_state.CgbBgPalPosition);
 	SV(_state.CgbObjPalAutoInc); SV(_state.CgbObjPalPosition); SV(_state.CgbVramBank); SV(_state.CgbEnabled);
-	SV(_latchWindowX); SV(_latchWindowY); SV(_latchWindowEnabled); SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
-	SV(_wyEnableFlag);
+	SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
+	SV(_wyEnableFlag); SV(_wxEnableFlag);
 	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
 	SV(_state.StatIrqFlag);
 
