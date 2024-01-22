@@ -198,6 +198,11 @@ void GbPpu::ProcessVblankScanline()
 				_state.LyForCompare = 0;
 				_wyEnableFlag = false;
 
+				if(!_gameboy->IsCgb()) {
+					//On scanline 0, hblank gets set here (not on CGB)
+					_state.Mode = PpuMode::HBlank;
+				}
+
 				if(_emu->IsDebugging()) {
 					_emu->ProcessEvent(EventType::StartFrame, CpuType::Gameboy);
 					_currentEventViewerBuffer = _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
