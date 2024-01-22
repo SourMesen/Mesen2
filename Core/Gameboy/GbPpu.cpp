@@ -82,7 +82,8 @@ uint16_t* GbPpu::GetPreviousEventViewerBuffer()
 	return _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 }
 
-void GbPpu::Exec(bool singleStep)
+template<bool singleStep>
+void GbPpu::Exec()
 {
 	if(!_state.LcdEnabled) {
 		//LCD is disabled, prevent IRQs, etc.
@@ -332,7 +333,7 @@ void GbPpu::ProcessPpuCycle()
 {
 	if(_emu->IsDebugging()) {
 		_emu->ProcessPpuCycle<CpuType::Gameboy>();
-		if(_state.Mode <= PpuMode::OamEvaluation) {
+		if(_state.Mode != PpuMode::Drawing) {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_state.Mode];
 		} else if(_prevDrawnPixels != _drawnPixels && _drawnPixels > 0) {
 			uint16_t color = _currentBuffer[_state.Scanline * GbConstants::ScreenWidth + (_drawnPixels - 1)];
@@ -1205,3 +1206,6 @@ void GbPpu::Serialize(Serializer& s)
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Read>(uint16_t addr);
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::ReadIncDec>(uint16_t addr);
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Write>(uint16_t addr);
+
+template void GbPpu::Exec<true>();
+template void GbPpu::Exec<false>();

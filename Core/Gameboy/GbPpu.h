@@ -99,7 +99,8 @@ public:
 	bool IsCgbEnabled();
 	PpuMode GetMode();
 
-	void Exec(bool singleStep);
+	template<bool singleStep>
+	void Exec();
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);

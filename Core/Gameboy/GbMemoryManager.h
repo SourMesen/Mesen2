@@ -39,7 +39,7 @@ private:
 
 	GbMemoryManagerState _state = {};
 	
-	void ExecTimerDmaSerial();
+	__forceinline void ExecTimerDmaSerial();
 
 public:
 	virtual ~GbMemoryManager();

@@ -102,10 +102,10 @@ void GbMemoryManager::ExecMasterCycle()
 {
 	uint64_t& cycleCount = _cpu->GetState().CycleCount;
 	cycleCount++;
-	if(!(cycleCount & 1)) {
+	if(cycleCount & 1) {
 		ExecTimerDmaSerial();
 	}
-	_ppu->Exec(true);
+	_ppu->Exec<true>();
 }
 
 void GbMemoryManager::Exec()
@@ -113,7 +113,7 @@ void GbMemoryManager::Exec()
 	uint64_t& cycleCount = _cpu->GetState().CycleCount;
 	cycleCount += 2;
 	ExecTimerDmaSerial();
-	_ppu->Exec(false);
+	_ppu->Exec<false>();
 }
 
 void GbMemoryManager::MapRegisters(uint16_t start, uint16_t end, RegisterAccess access)

@@ -169,7 +169,7 @@ public:
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 
 	void Exec();
-	void ProcessNextCycleStart();
+	__forceinline void ProcessNextCycleStart();
 
 	void Serialize(Serializer& s) override;
 
