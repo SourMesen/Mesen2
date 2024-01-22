@@ -29,6 +29,8 @@ private:
 	Gameboy* _gameboy = nullptr;
 	GbPpu* _ppu = nullptr;
 
+	uint8_t _prevIrqVector = 0;
+
 	void ExecOpCode(uint8_t opCode);
 
 	void ProcessCgbSpeedSwitch();
@@ -167,6 +169,7 @@ public:
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 
 	void Exec();
+	void ProcessNextCycleStart();
 
 	void Serialize(Serializer& s) override;
 

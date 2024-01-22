@@ -38,37 +38,15 @@ bool GbCpu::IsHalted()
 
 void GbCpu::Exec()
 {
-	uint8_t irqVector;
-	if(_state.HaltCounter) {
-		//When halted, the timing at which the CPU checks the IRQ state seems
-		//to differ from the timing for other instructions. 
-		//This is needed to make various tests pass.
-		if(_gameboy->IsCgb()) {
-			//On CGB, it looks like the IRQ is checked slightly earlier?
-			irqVector = _memoryManager->ProcessIrqRequests();
-			ExecCpuCycle();
-		} else {
-			//DMG HALT seems to check the irq state slightly later vs CGB?
-			ExecMasterCycle();
-			irqVector = _memoryManager->ProcessIrqRequests();
-			ExecMasterCycle();
-			ExecMasterCycle();
-			ExecMasterCycle();
-		}
-	} else {
-		ExecCpuCycle();
-		irqVector = _memoryManager->ProcessIrqRequests();
-	}
-
 #ifndef DUMMYCPU
-	if(irqVector && !_state.HaltBug) {
+	if(_prevIrqVector && !_state.HaltBug) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
 			ExecCpuCycle();
 			ExecCpuCycle();
 
 			PushByte(_state.PC >> 8);
-			irqVector = _memoryManager->ProcessIrqRequests(); //Check IRQ line again before jumping (ie_push)
+			uint8_t irqVector = _memoryManager->ProcessIrqRequests(); //Check IRQ line again before jumping (ie_push)
 			PushByte((uint8_t)_state.PC);
 
 			ExecCpuCycle();
@@ -112,18 +90,43 @@ void GbCpu::Exec()
 			}
 #endif
 		}
-		return;
-	}
-
-	if(_state.EiPending) {
-		_state.EiPending = false;
-		_state.IME = true;
-	}
+	} else {
+		if(_state.EiPending) {
+			_state.EiPending = false;
+			_state.IME = true;
+		}
 
 #ifndef DUMMYCPU
-	_emu->ProcessInstruction<CpuType::Gameboy>();
+		_emu->ProcessInstruction<CpuType::Gameboy>();
 #endif
-	ExecOpCode(ReadOpCode());
+		ExecOpCode(ReadOpCode());
+	}
+
+	ProcessNextCycleStart();
+}
+
+void GbCpu::ProcessNextCycleStart()
+{
+	if(_state.HaltCounter) {
+		//When halted, the timing at which the CPU checks the IRQ state seems
+		//to differ from the timing for other instructions. 
+		//This is needed to make various tests pass.
+		if(_gameboy->IsCgb()) {
+			//On CGB, it looks like the IRQ is checked slightly earlier?
+			_prevIrqVector = _memoryManager->ProcessIrqRequests();
+			ExecCpuCycle();
+		} else {
+			//DMG HALT seems to check the irq state slightly later vs CGB?
+			ExecMasterCycle();
+			_prevIrqVector = _memoryManager->ProcessIrqRequests();
+			ExecMasterCycle();
+			ExecMasterCycle();
+			ExecMasterCycle();
+		}
+	} else {
+		ExecCpuCycle();
+		_prevIrqVector = _memoryManager->ProcessIrqRequests();
+	}
 }
 
 void GbCpu::ProcessHaltBug()
@@ -1497,4 +1500,5 @@ void GbCpu::Serialize(Serializer& s)
 	SV(_state.EiPending);
 	SV(_state.CycleCount);
 	SV(_state.HaltBug);
+	SV(_prevIrqVector);
 }
