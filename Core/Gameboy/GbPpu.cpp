@@ -776,6 +776,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.Ly = 0;
 					_state.LyForCompare = 0;
 					_state.Mode = PpuMode::HBlank;
+					_state.IrqMode = PpuMode::NoIrq;
 					_wyEnableFlag = false;
 
 					_lastFrameTime = _gameboy->GetApuCycleCount();
@@ -786,6 +787,7 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_isFirstFrame = true;
 					_state.Cycle = -1;
 					_state.IdleCycles = 0;
+					_state.IrqMode = PpuMode::NoIrq;
 					ResetRenderer();
 					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
