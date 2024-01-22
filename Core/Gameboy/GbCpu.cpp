@@ -19,7 +19,7 @@ void GbCpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 	_state.PC = 0;
 	_state.SP = 0xFFFF;
-	_state.CycleCount = 8; //Makes boot_sclk_align serial test pass
+	_state.CycleCount = 6; //Makes boot_sclk_align serial test pass
 }
 
 GbCpu::~GbCpu()
@@ -38,8 +38,20 @@ bool GbCpu::IsHalted()
 
 void GbCpu::Exec()
 {
+	uint8_t irqVector;
+	if(_state.HaltCounter && !_gameboy->IsCgb()) {
+		//DMG HALT seems to check the irq state slightly earlier vs CGB and regular OPs?
+		_memoryManager->ExecHalt();
+		irqVector = _memoryManager->ProcessIrqRequests();
+		_memoryManager->ExecHalt();
+		_memoryManager->ExecHalt();
+		_memoryManager->ExecHalt();
+	} else {
+		IncCycleCount();
+		irqVector = _memoryManager->ProcessIrqRequests();
+	}
+
 #ifndef DUMMYCPU
-	uint8_t irqVector = _memoryManager->ProcessIrqRequests();
 	if(irqVector && !_state.HaltBug) {
 		if(_state.IME) {
 			uint16_t oldPc = _state.PC;
@@ -86,7 +98,6 @@ void GbCpu::Exec()
 		} else {
 #ifndef DUMMYCPU
 			_emu->ProcessHaltedCpu<CpuType::Gameboy>();
-			IncCycleCount();
 			if(_state.HaltCounter > 1) {
 				ProcessCgbSpeedSwitch();
 			}
@@ -118,6 +129,7 @@ void GbCpu::ProcessHaltBug()
 #endif
 
 	//HALT bug, execution continues, but PC isn't incremented for the first byte
+	IncCycleCount();
 	uint8_t opCode = ReadOpCode();
 	_state.PC--;
 	_state.HaltCounter = 0;
@@ -418,9 +430,7 @@ void GbCpu::HalfCycle()
 
 uint8_t GbCpu::ReadOpCode()
 {
-	HalfCycle();
 	uint8_t value = ReadMemory<MemoryOperationType::ExecOpCode, GbOamCorruptionType::ReadIncDec>(_state.PC);
-	HalfCycle();
 	_state.PC++;
 	return value;
 }
@@ -428,8 +438,8 @@ uint8_t GbCpu::ReadOpCode()
 uint8_t GbCpu::ReadCode()
 {
 	HalfCycle();
-	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand, GbOamCorruptionType::ReadIncDec>(_state.PC);
 	HalfCycle();
+	uint8_t value = ReadMemory<MemoryOperationType::ExecOperand, GbOamCorruptionType::ReadIncDec>(_state.PC);
 	_state.PC++;
 	return value;
 }
@@ -445,8 +455,8 @@ template<GbOamCorruptionType oamCorruptionType>
 uint8_t GbCpu::Read(uint16_t addr)
 {
 	HalfCycle();
-	uint8_t value = ReadMemory<MemoryOperationType::Read, oamCorruptionType>(addr);
 	HalfCycle();
+	uint8_t value = ReadMemory<MemoryOperationType::Read, oamCorruptionType>(addr);
 	return value;
 }
 
@@ -465,12 +475,12 @@ uint8_t GbCpu::ReadMemory(uint16_t addr)
 void GbCpu::Write(uint16_t addr, uint8_t value)
 {
 	HalfCycle();
+	HalfCycle();
 #ifdef DUMMYCPU
 	LogMemoryOperation(addr, value, MemoryOperationType::Write);
 #else
 	_memoryManager->Write(addr, value);
 #endif
-	HalfCycle();
 }
 
 bool GbCpu::CheckFlag(uint8_t flag)
@@ -814,7 +824,7 @@ void GbCpu::STOP()
 	if(_gameboy->IsCgb() && _memoryManager->GetState().CgbSwitchSpeedRequest) {
 #ifndef DUMMYCPU
 		//Stop for ~33941 cycles - most likely not accurate, but matches speed_switch_timing_stat test rom
-		_state.HaltCounter = 33942;
+		_state.HaltCounter = 33943;
 #endif
 	} else {
 		_state.HaltCounter = 1;

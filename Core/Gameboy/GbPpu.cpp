@@ -82,7 +82,7 @@ uint16_t* GbPpu::GetPreviousEventViewerBuffer()
 	return _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 }
 
-void GbPpu::Exec()
+void GbPpu::Exec(bool singleStep)
 {
 	if(!_state.LcdEnabled) {
 		//LCD is disabled, prevent IRQs, etc.
@@ -96,7 +96,7 @@ void GbPpu::Exec()
 		return;
 	}
 
-	uint8_t cyclesToRun = _memoryManager->IsHighSpeed() ? 1 : 2;
+	uint8_t cyclesToRun = (_memoryManager->IsHighSpeed() || singleStep) ? 1 : 2;
 	for(int i = 0; i < cyclesToRun; i++) {
 		_state.Cycle++;
 		if(_state.IdleCycles > 0) {
@@ -126,8 +126,10 @@ void GbPpu::ExecCycle()
 	if(_state.Mode == PpuMode::Drawing) {
 		RunDrawCycle();
 		if(_drawnPixels == 160) {
-			//Mode turns to hblank on the same cycle as the last pixel is output (IRQ is on next cycle)
+			//Mode turns to hblank on the same cycle as the last pixel is output
 			_state.Mode = PpuMode::HBlank;
+			_state.IrqMode = PpuMode::HBlank;
+
 			if(_state.Scanline < 143) {
 				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 - 153)"
 				_dmaController->ProcessHdma();
@@ -218,8 +220,6 @@ void GbPpu::ProcessVblankScanline()
 void GbPpu::ProcessFirstScanlineAfterPowerOn()
 {
 	if(_drawnPixels == 160) {
-		//IRQ flag for Hblank is 1 cycle late compared to the mode register
-		_state.IrqMode = PpuMode::HBlank;
 		_drawnPixels = 0;
 		_state.IdleCycles = 448 - _state.Cycle - 1;
 	}
@@ -246,9 +246,8 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 		case 448:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_state.Ly = _state.Scanline;
 			_drawnPixels = 0;
-			_state.Mode = PpuMode::HBlank;
-			_state.IrqMode = PpuMode::HBlank;
 			break;
 	}
 }
@@ -256,16 +255,12 @@ void GbPpu::ProcessFirstScanlineAfterPowerOn()
 void GbPpu::ProcessVisibleScanline()
 {
 	if(_drawnPixels == 160) {
-		//IRQ flag for Hblank is 1 cycle late compared to the mode register
-		_state.IrqMode = PpuMode::HBlank;
 		_drawnPixels = 0;
 		_state.IdleCycles = 456 - _state.Cycle - 1;
 	}
 
 	switch(_state.Cycle) {
-		case 3:
-			_state.Ly = _state.Scanline;
-
+		case 2:
 			if(_state.Scanline > 0) {
 				//On scanlines 1-143, the OAM IRQ fires 1 cycle early
 				_state.IrqMode = PpuMode::OamEvaluation;
@@ -307,8 +302,8 @@ void GbPpu::ProcessVisibleScanline()
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_state.Ly = _state.Scanline;
 			if(_state.Scanline == 144) {
-				_state.Ly = 144;
 				_state.LyForCompare = -1;
 			}
 			break;
@@ -953,7 +948,7 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 template<GbOamCorruptionType oamCorruptionType>
 void GbPpu::ProcessOamCorruption(uint16_t addr)
 {
-	if(_gameboy->IsCgb() || _state.Mode != PpuMode::OamEvaluation || (addr & 0xFF00) != 0xFE00) {
+	if(_gameboy->IsCgb() || _state.Cycle >= 83 || _state.Mode != PpuMode::OamEvaluation || (addr & 0xFF00) != 0xFE00) {
 		return;
 	}
 

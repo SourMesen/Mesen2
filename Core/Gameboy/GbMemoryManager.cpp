@@ -77,18 +77,15 @@ void GbMemoryManager::RefreshMappings()
 	}
 }
 
-void GbMemoryManager::Exec()
+void GbMemoryManager::ExecTimerDmaSerial()
 {
-	uint64_t& cycleCount = _cpu->GetState().CycleCount;
-	cycleCount += 2;
 	_state.ApuCycleCount += _state.CgbHighSpeed ? 1 : 2;
 	_timer->Exec();
-	_ppu->Exec();
-	if((cycleCount & 0x03) == 0) {
+	if((_cpu->GetState().CycleCount & 0x03) == 0) {
 		_dmaController->Exec();
 	}
 
-	if(_state.SerialBitCount && (cycleCount & 0x1FF) == 0) {
+	if(_state.SerialBitCount && (_cpu->GetState().CycleCount & 0x1FF) == 0) {
 		_state.SerialData = (_state.SerialData << 1) | 0x01;
 		if(--_state.SerialBitCount == 0) {
 			//"It will be notified that the transfer is complete in two ways:
@@ -99,6 +96,24 @@ void GbMemoryManager::Exec()
 			RequestIrq(GbIrqSource::Serial);
 		}
 	}
+}
+
+void GbMemoryManager::ExecHalt()
+{
+	uint64_t& cycleCount = _cpu->GetState().CycleCount;
+	cycleCount++;
+	if(!(cycleCount & 1)) {
+		ExecTimerDmaSerial();
+	}
+	_ppu->Exec(true);
+}
+
+void GbMemoryManager::Exec()
+{
+	uint64_t& cycleCount = _cpu->GetState().CycleCount;
+	cycleCount += 2;
+	ExecTimerDmaSerial();
+	_ppu->Exec(false);
 }
 
 void GbMemoryManager::MapRegisters(uint16_t start, uint16_t end, RegisterAccess access)
