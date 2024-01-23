@@ -47,6 +47,11 @@ private:
 	uint8_t _spriteCount = 0;
 	uint8_t _spriteX[10] = {};
 	uint8_t _spriteIndexes[10] = {};
+	
+	bool _oamReadBlocked = false;
+	bool _oamWriteBlocked = false;
+	bool _vramReadBlocked = false;
+	bool _vramWriteBlocked = false;
 
 	bool _isFirstFrame = true;
 	bool _forceBlankFrame = true;

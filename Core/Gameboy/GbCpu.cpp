@@ -105,6 +105,11 @@ void GbCpu::Exec()
 	ProcessNextCycleStart();
 }
 
+void GbCpu::PowerOn()
+{
+	ProcessNextCycleStart();
+}
+
 void GbCpu::ProcessNextCycleStart()
 {
 	if(_state.HaltCounter) {

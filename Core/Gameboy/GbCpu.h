@@ -157,6 +157,8 @@ private:
 	void EI();
 	void DI();
 	void PREFIX();
+	
+	__forceinline void ProcessNextCycleStart();
 
 public:
 	virtual ~GbCpu();
@@ -169,7 +171,7 @@ public:
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 
 	void Exec();
-	__forceinline void ProcessNextCycleStart();
+	void PowerOn();
 
 	void Serialize(Serializer& s) override;
 
