@@ -33,6 +33,7 @@ MacOSKeyManager::MacOSKeyManager(Emulator* emu)
 	_eventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:eventMask handler:^ NSEvent* (NSEvent* event) {
 		if([event type] == NSEventTypeMouseMoved || [event type] == NSEventTypeLeftMouseDragged || [event type] == NSEventTypeRightMouseDragged || [event type] == NSEventMaskOtherMouseDragged) {
 			//Send mouse move events to MacOSMouseManager for captured movement and pass them to UI
+			//as when mouse is captured on MacOS, absolute position is frozen and only deltaX/Y gives movement data
 			MacOSMouseManager::SetRelativeMovement([event deltaX], [event deltaY]);
 			return event;
 		}

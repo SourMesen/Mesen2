@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
-#include <iostream>
 #include "MacOSMouseManager.h"
 
 double MacOSMouseManager::_relativeX = 0.0;
@@ -72,6 +71,9 @@ void MacOSMouseManager::SetCursor(CursorIcon cursor) {
 
 double MacOSMouseManager::GetPixelScale()
 {
+	//On MacOS, Avalonia seems to have a scaling-mismatch between getting/converting points and getting element sizes
+	//points seem to be given in DPI-aware pixels (as GetMouseState returns as well), but sizes in actual screen-pixels
+	//The result of this function is used in the UI to correct for this with mouse-related usage
 	NSScreen* screen = [NSScreen mainScreen];
 	if(screen == nil) {
 		return 1.0;

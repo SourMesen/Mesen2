@@ -40,7 +40,9 @@ public class GlobalMouseX11Impl : IGlobalMouseImpl
 	public void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 	{
 		if(rendererHandle == IntPtr.Zero) {
-			//TODO: Capturing the cursor when using the software renderer
+			//TODO Capturing the cursor when using the software renderer
+			//due to the mouse position constantly being set to the center of the window and the cursor being hidden
+			//not actually capturing the cursor does not seem to have a big negative impact
 			return;
 		}
 		for(int i = 0; i < 10; i++) {
