@@ -147,6 +147,8 @@ void Gameboy::PowerOn(SuperGameboy *sgb)
 	_cpu->Init(_emu, this, _memoryManager.get());
 	_ppu->Init(_emu, this, _memoryManager.get(), _dmaController.get(), _videoRam, _spriteRam);
 	_dmaController->Init(this, _memoryManager.get(), _ppu.get(), _cpu.get());
+
+	_cpu->PowerOn();
 }
 
 void Gameboy::Run(uint64_t runUntilClock)

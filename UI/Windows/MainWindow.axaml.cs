@@ -537,6 +537,12 @@ namespace Mesen.Windows
 			} else if(key == Key.F3) {
 				RomTestHelper.RunAllTests();
 				return true;
+			} else if(key == Key.F7) {
+				RomTestHelper.RunGbMicroTests(false);
+				return true;
+			} else if(key == Key.F8) {
+				RomTestHelper.RunGbMicroTests(true);
+				return true;
 			} else if(key == Key.F6) {
 				//For testing purposes (to test for memory leaks)
 				Task.Run(() => {

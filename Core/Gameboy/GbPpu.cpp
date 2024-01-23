@@ -42,7 +42,6 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 	_currentEventViewerBuffer = _eventViewerBuffers[0];
 
 	_state = {};
-	_state.Cycle = -1;
 	_state.Mode = PpuMode::HBlank;
 	_state.CgbEnabled = _gameboy->IsCgb();
 	_lastFrameTime = 0;
@@ -82,6 +81,7 @@ uint16_t* GbPpu::GetPreviousEventViewerBuffer()
 	return _currentEventViewerBuffer == _eventViewerBuffers[0] ? _eventViewerBuffers[1] : _eventViewerBuffers[0];
 }
 
+template<bool singleStep>
 void GbPpu::Exec()
 {
 	if(!_state.LcdEnabled) {
@@ -89,14 +89,15 @@ void GbPpu::Exec()
 		//Not quite correct in terms of frame pacing
 		if(_gameboy->GetApuCycleCount() - _lastFrameTime > 70224) {
 			//More than a full frame's worth of time has passed since the last frame, send another blank frame
-			_lastFrameTime = _gameboy->GetApuCycleCount();
-			_isFirstFrame = true;
+			_forceBlankFrame = true;
 			SendFrame();
+			_forceBlankFrame = true;
+			_lastFrameTime = _gameboy->GetApuCycleCount();
 		}
 		return;
 	}
 
-	uint8_t cyclesToRun = _memoryManager->IsHighSpeed() ? 1 : 2;
+	uint8_t cyclesToRun = (_memoryManager->IsHighSpeed() || singleStep) ? 1 : 2;
 	for(int i = 0; i < cyclesToRun; i++) {
 		_state.Cycle++;
 		if(_state.IdleCycles > 0) {
@@ -126,8 +127,16 @@ void GbPpu::ExecCycle()
 	if(_state.Mode == PpuMode::Drawing) {
 		RunDrawCycle();
 		if(_drawnPixels == 160) {
-			//Mode turns to hblank on the same cycle as the last pixel is output (IRQ is on next cycle)
+			//Mode turns to hblank on the same cycle as the last pixel is output
 			_state.Mode = PpuMode::HBlank;
+			_state.IrqMode = PpuMode::HBlank;
+			_state.IdleCycles = 456 - _state.Cycle - 1;
+			
+			_oamReadBlocked = false;
+			_oamWriteBlocked = false;
+			_vramReadBlocked = false;
+			_vramWriteBlocked = false;
+
 			if(_state.Scanline < 143) {
 				//"This mode will transfer one block (16 bytes) during each H-Blank. No data is transferred during VBlank (LY = 143 - 153)"
 				_dmaController->ProcessHdma();
@@ -191,12 +200,18 @@ void GbPpu::ProcessVblankScanline()
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_drawnPixels = 0;
 
 			if(_state.Scanline == 154) {
 				_state.Scanline = 0;
 				_state.Ly = 0;
 				_state.LyForCompare = 0;
 				_wyEnableFlag = false;
+
+				if(!_gameboy->IsCgb()) {
+					//On scanline 0, hblank gets set here (not on CGB)
+					_state.Mode = PpuMode::HBlank;
+				}
 
 				if(_emu->IsDebugging()) {
 					_emu->ProcessEvent(EventType::StartFrame, CpuType::Gameboy);
@@ -212,55 +227,51 @@ void GbPpu::ProcessVblankScanline()
 
 void GbPpu::ProcessFirstScanlineAfterPowerOn()
 {
-	if(_drawnPixels == 160) {
-		//IRQ flag for Hblank is 1 cycle late compared to the mode register
-		_state.IrqMode = PpuMode::HBlank;
-		_drawnPixels = 0;
-		_state.IdleCycles = 448 - _state.Cycle - 1;
-	}
-
 	switch(_state.Cycle) {
-		case 1:
-			_state.IrqMode = PpuMode::NoIrq;
-			break;
+		case 87:
+			_oamReadBlocked = true;
+			_oamWriteBlocked = true;
+			_vramReadBlocked = true;
+			_vramWriteBlocked = true;
 
-		case 79:
-			_latchWindowX = _state.WindowX;
-			_latchWindowY = _state.WindowY;
-			_latchWindowEnabled = _state.WindowEnabled;
+			_rendererIdle = true;
+			_wxEnableFlag = false;
 			_state.Mode = PpuMode::Drawing;
 			_state.IrqMode = PpuMode::Drawing;
 			ResetRenderer();
 			_rendererIdle = true;
 			break;
 
-		case 84:
-			_rendererIdle = false;
+		case 91:
+			if(_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
 			break;
 
-		case 448:
+		case 92:
+			if(!_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
+			break;
+
+		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
 			_drawnPixels = 0;
-			_state.Mode = PpuMode::HBlank;
-			_state.IrqMode = PpuMode::HBlank;
+			_state.Ly = _state.Scanline;
+			_drawnPixels = 0;
 			break;
 	}
 }
 
 void GbPpu::ProcessVisibleScanline()
 {
-	if(_drawnPixels == 160) {
-		//IRQ flag for Hblank is 1 cycle late compared to the mode register
-		_state.IrqMode = PpuMode::HBlank;
-		_drawnPixels = 0;
-		_state.IdleCycles = 456 - _state.Cycle - 1;
-	}
-
 	switch(_state.Cycle) {
-		case 3:
-			_state.Ly = _state.Scanline;
-
+		case 2:
 			if(_state.Scanline > 0) {
 				//On scanlines 1-143, the OAM IRQ fires 1 cycle early
 				_state.IrqMode = PpuMode::OamEvaluation;
@@ -268,13 +279,14 @@ void GbPpu::ProcessVisibleScanline()
 			}
 			break;
 
+		case 3:
+			_oamReadBlocked = true;
+			break;
+
 		case 4:
 			_spriteCount = 0;
 			_state.LyForCompare = _state.Scanline;
-			
-			//"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-			_wyEnableFlag |= _state.Scanline == _latchWindowY && _state.WindowEnabled;
-
+			_oamWriteBlocked = true;
 			_state.Mode = PpuMode::OamEvaluation;
 			_state.IrqMode = PpuMode::OamEvaluation;
 			break;
@@ -285,25 +297,44 @@ void GbPpu::ProcessVisibleScanline()
 			_state.IrqMode = PpuMode::NoIrq;
 			break;
 
+		case 80:
+			_oamWriteBlocked = false;
+			_oamReadBlocked = true;
+			_vramReadBlocked = true;
+			break;
+
 		case 84:
-			_latchWindowX = _state.WindowX;
-			_latchWindowY = _state.WindowY;
-			_latchWindowEnabled = _state.WindowEnabled;
+			_wxEnableFlag = false;
 			_state.Mode = PpuMode::Drawing;
 			_state.IrqMode = PpuMode::Drawing;
+			_oamWriteBlocked = true;
+			_vramWriteBlocked = true;
 			_rendererIdle = true;
 			ResetRenderer();
 			break;
+		
+		case 88:
+			if(_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
+			break;
 
 		case 89:
-			_rendererIdle = false;
+			if(!_gameboy->IsCgb()) {
+				_rendererIdle = false;
+				//"at some point in this frame the value of WY was equal to LY"
+				_wyEnableFlag |= _state.Scanline == _state.WindowY && _state.WindowEnabled;
+			}
 			break;
 
 		case 456:
 			_state.Cycle = 0;
 			_state.Scanline++;
+			_state.Ly = _state.Scanline;
+			_drawnPixels = 0;
 			if(_state.Scanline == 144) {
-				_state.Ly = 144;
 				_state.LyForCompare = -1;
 			}
 			break;
@@ -314,7 +345,7 @@ void GbPpu::ProcessPpuCycle()
 {
 	if(_emu->IsDebugging()) {
 		_emu->ProcessPpuCycle<CpuType::Gameboy>();
-		if(_state.Mode <= PpuMode::OamEvaluation) {
+		if(_state.Mode != PpuMode::Drawing) {
 			_currentEventViewerBuffer[456 * _state.Scanline + _state.Cycle] = evtColors[(int)_state.Mode];
 		} else if(_prevDrawnPixels != _drawnPixels && _drawnPixels > 0) {
 			uint16_t color = _currentBuffer[_state.Scanline * GbConstants::ScreenWidth + (_drawnPixels - 1)];
@@ -335,24 +366,38 @@ void GbPpu::RunDrawCycle()
 	}
 
 	//TODO fix/check behavior for WX=0 and WX=166
-	bool fetchWindow = (
-		_latchWindowEnabled && //"Window enable bit in LCDC is set"
-		_drawnPixels >= _latchWindowX - 7 && //"the current X coordinate being rendered + 7 was equal to WX"
-		_wyEnableFlag //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
-	);
+	if(!_wxEnableFlag) {
+		_wxEnableFlag |= _drawnPixels == _state.WindowX - 7;
 
-	if(_fetchWindow != fetchWindow) {
-		//Switched between window & background, reset fetcher & pixel FIFO
-		_fetchWindow = fetchWindow;
-		_fetchColumn = 0;
-		_windowCounter++;
+		bool fetchWindow = (
+			_state.WindowEnabled && //"Window enable bit in LCDC is set"
+			_wxEnableFlag && //"the current X coordinate being rendered + 7 was equal to WX"
+			_wyEnableFlag //"at some point in this frame the value of WY was equal to LY (checked at the start of Mode 2 only)"
+		);
+		
+		if(_fetchWindow != fetchWindow) {
+			//Switched between window & background, reset fetcher & pixel FIFO
+			_fetchWindow = fetchWindow;
+			_fetchColumn = 0;
+			_windowCounter++;
 
-		_bgFetcher.Step = 0;
-		_bgFifo.Reset();
+			_bgFetcher.Step = 0;
+			_bgFifo.Reset();
 
-		//Idle cycle when switching to window
-		_evtColor = EvtColor::RenderingIdle;
-		return;
+			//Idle cycle when switching to window
+			_evtColor = EvtColor::RenderingIdle;
+			return;
+		}
+
+		if(!_gameboy->IsCgb() && !_state.WindowEnabled && _windowCounter > 0 && _wxEnableFlag && ((int)_state.WindowX & 0x07) == 7 - ((int)_state.ScrollX & 0x07)) {
+			//Emulate a DMG-only glitch that occurs in the following conditions (from the Windesync-validate test rom readme):
+			//After the window is active at some point in the frame, an extra pixel is added to the BG FIFO on all other lines when:
+			//  -The window is disabled AND
+			//  -A window X hit occurs AND
+			//  -(WindowX & 7) == 7 - (ScrollX & 7)
+			//This glitch also occurs in Star Trek 25th anniversary's intro - not emulating it causes the graphics to be offset by a pixel
+			_insertGlitchBgPixel = true;
+		}
 	}
 
 	FindNextSprite();
@@ -367,7 +412,7 @@ void GbPpu::RunDrawCycle()
 		if(_drawnPixels >= 0) {
 			GameboyConfig& cfg = _emu->GetSettings()->GetGameboyConfig();
 
-			GbFifoEntry entry = _bgFifo.Content[_bgFifo.Position];
+			GbFifoEntry entry = _insertGlitchBgPixel ? GbFifoEntry{} : _bgFifo.Content[_bgFifo.Position];
 			GbFifoEntry sprite = _oamFifo.Content[_oamFifo.Position];
 			if(!cfg.DisableSprites && sprite.Color != 0 && (entry.Color == 0 || (!(sprite.Attributes & 0x80) && !(entry.Attributes & 0x80)) || (_state.CgbEnabled && !_state.BgEnabled))) {
 				//Use sprite pixel if:
@@ -380,20 +425,26 @@ void GbPpu::RunDrawCycle()
 					uint8_t colorIndex = (((sprite.Attributes & 0x10) ? _state.ObjPalette1 : _state.ObjPalette0) >> (sprite.Color * 2)) & 0x03;
 					WriteObjPixel(((sprite.Attributes & 0x10) ? 4 : 0) | colorIndex);
 				}
+				_lastPixelType = GbPixelType::Object;
 			} else {
 				if(!cfg.DisableBackground) {
 					if(_state.CgbEnabled) {
 						WriteBgPixel(entry.Color | ((entry.Attributes & 0x07) << 2));
 					} else {
-						WriteBgPixel((_state.BgPalette >> (entry.Color * 2)) & 0x03);
+						WriteBgPixel(_state.BgEnabled ? ((_state.BgPalette >> (entry.Color * 2)) & 0x03) : 0);
 					}
 				} else {
 					WriteBgPixel(0);
 				}
+				_lastPixelType = GbPixelType::Background;
+				_lastBgColor = entry.Color;
 			}
 		}
 
-		_bgFifo.Pop();
+		if(!_insertGlitchBgPixel) {
+			_bgFifo.Pop();
+		}
+		_insertGlitchBgPixel = false;
 		_drawnPixels++;
 
 		if(_oamFifo.Size > 0) {
@@ -453,6 +504,8 @@ void GbPpu::ResetRenderer()
 	_fetchSprite = -1;
 	_fetchWindow = false;
 	_fetchColumn = _state.ScrollX / 8;
+
+	_insertGlitchBgPixel = false;
 }
 
 void GbPpu::ClockSpriteFetcher()
@@ -598,7 +651,7 @@ void GbPpu::PushTileToPixelFifo()
 		uint8_t bits = ((_bgFetcher.LowByte >> shift) & 0x01);
 		bits |= ((_bgFetcher.HighByte >> shift) & 0x01) << 1;
 
-		_bgFifo.Content[i].Color = (_state.CgbEnabled || _state.BgEnabled) ? bits : 0;
+		_bgFifo.Content[i].Color = bits;
 		_bgFifo.Content[i].Attributes = _bgFetcher.Attributes;
 	}
 
@@ -661,6 +714,7 @@ void GbPpu::SendFrame()
 
 	if(_gameboy->IsSgb()) {
 		_isFirstFrame = false;
+		_forceBlankFrame = false;
 		return;
 	}
 
@@ -668,11 +722,14 @@ void GbPpu::SendFrame()
 
 	_emu->GetNotificationManager()->SendNotification(ConsoleNotificationType::PpuFrameDone);
 
-	if(_isFirstFrame && !_gameboy->IsCgb()) {
+	if(_forceBlankFrame) {
 		//Send blank frame on the first frame after enabling LCD
-		//DMG-only? Some CGB games flicker if this is done for CGB (e.g Men in Black - The Series)
-		std::fill(_currentBuffer, _currentBuffer + GbConstants::PixelCount, 0x7FFF);
+		//On CGB some games flicker if this is done when the LCD is only off for a short time (e.g Men in Black - The Series)
+		//So for CGB, the screen is only cleared if the LCD has been turned off for a while
+		std::fill(_outputBuffers[0], _outputBuffers[0] + GbConstants::PixelCount, 0x7FFF);
+		std::fill(_outputBuffers[1], _outputBuffers[1] + GbConstants::PixelCount, 0x7FFF);
 	}
+	_forceBlankFrame = false;
 	_isFirstFrame = false;
 
 	RenderedFrame frame(_currentBuffer, GbConstants::ScreenWidth, GbConstants::ScreenHeight, 1.0, _state.FrameCount, _gameboy->GetControlManager()->GetPortStates());
@@ -770,7 +827,14 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_state.Scanline = 0;
 					_state.Ly = 0;
 					_state.LyForCompare = 0;
+					
+					_oamReadBlocked = false;
+					_oamWriteBlocked = false;
+					_vramReadBlocked = false;
+					_vramWriteBlocked = false;
+
 					_state.Mode = PpuMode::HBlank;
+					_state.IrqMode = PpuMode::NoIrq;
 					_wyEnableFlag = false;
 
 					_lastFrameTime = _gameboy->GetApuCycleCount();
@@ -779,8 +843,10 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 					_dmaController->ProcessHdma();
 				} else {
 					_isFirstFrame = true;
-					_state.Cycle = -1;
+					_forceBlankFrame = !_gameboy->IsCgb() || (_gameboy->GetApuCycleCount() - _lastFrameTime) > 5000;
+					_state.Cycle = 7;
 					_state.IdleCycles = 0;
+					_state.IrqMode = PpuMode::NoIrq;
 					ResetRenderer();
 					_state.LyCoincidenceFlag = _state.LyCompare == _state.LyForCompare;
 					UpdateStatIrq();
@@ -827,7 +893,25 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			}
 			break;
 
-		case 0xFF47: _state.BgPalette = value; break;
+		case 0xFF47:
+			if(_state.Mode == PpuMode::Drawing && _drawnPixels > 0 && _lastPixelType == GbPixelType::Background) {
+				//When BGP is changed during rendering, the current pixel is affected.
+				//Re-draw the last pixel with the correct color.
+				
+				//On CGB, the pixel uses the new BGP value only
+				uint8_t bgpValue = value;
+				if(!_gameboy->IsCgb()) {
+					//On DMG, the pixel uses the new BGP value ORed with the old value
+					bgpValue |= _state.BgPalette;
+				}
+
+				_drawnPixels--;
+				WriteBgPixel((bgpValue >> (_lastBgColor * 2)) & 0x03);
+				_drawnPixels++;
+			}
+			_state.BgPalette = value;
+			break;
+
 		case 0xFF48: _state.ObjPalette0 = value; break;
 		case 0xFF49: _state.ObjPalette1 = value; break;
 		case 0xFF4A: _state.WindowY = value; break;
@@ -841,12 +925,12 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 
 bool GbPpu::IsVramReadAllowed()
 {
-	return _state.Mode <= PpuMode::VBlank || (_state.Mode == PpuMode::OamEvaluation && _state.Cycle < 80);
+	return !_vramReadBlocked;
 }
 
 bool GbPpu::IsVramWriteAllowed()
 {
-	return _state.Mode <= PpuMode::OamEvaluation;
+	return !_vramWriteBlocked;
 }
 
 uint8_t GbPpu::ReadVram(uint16_t addr)
@@ -879,28 +963,12 @@ void GbPpu::WriteVram(uint16_t addr, uint8_t value)
 
 bool GbPpu::IsOamWriteAllowed()
 {
-	if(_memoryManager->IsOamDmaRunning()) {
-		return false;
-	}
-
-	if(_state.Scanline == 0 && _isFirstFrame) {
-		return _state.Mode == PpuMode::HBlank && _state.Cycle != 77 && _state.Cycle != 78;
-	} else {
-		return _state.Mode <= PpuMode::VBlank || (_state.Cycle >= 80 && _state.Cycle < 84);
-	}
+	return !_oamWriteBlocked && !_memoryManager->IsOamDmaRunning();
 }
 
 bool GbPpu::IsOamReadAllowed()
 {
-	if(_memoryManager->IsOamDmaRunning()) {
-		return false;
-	}
-
-	if(_state.Scanline == 0 && _isFirstFrame) {
-		return _state.Mode == PpuMode::HBlank;
-	} else {
-		return _state.Mode == PpuMode::VBlank || (_state.Mode == PpuMode::HBlank && _state.Cycle != 3);
-	}
+	return !_oamReadBlocked && !_memoryManager->IsOamDmaRunning();
 }
 
 uint8_t GbPpu::PeekOam(uint8_t addr)
@@ -946,7 +1014,7 @@ void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
 template<GbOamCorruptionType oamCorruptionType>
 void GbPpu::ProcessOamCorruption(uint16_t addr)
 {
-	if(_gameboy->IsCgb() || _state.Mode != PpuMode::OamEvaluation || (addr & 0xFF00) != 0xFE00) {
+	if(_gameboy->IsCgb() || _state.Cycle >= 83 || _state.Mode != PpuMode::OamEvaluation || (addr & 0xFF00) != 0xFE00) {
 		return;
 	}
 
@@ -1015,6 +1083,7 @@ void GbPpu::ProcessOamIncDecCorruption(int row)
 
 uint8_t GbPpu::ReadCgbRegister(uint16_t addr)
 {
+	//TODOGBC restrict read/write access to GBC palette during rendering
 	if(!_state.CgbEnabled) {
 		return 0xFF;
 	}
@@ -1097,12 +1166,10 @@ void GbPpu::Serialize(Serializer& s)
 	SV(_state.Scanline); SV(_state.Cycle); SV(_state.Mode); SV(_state.LyCompare); SV(_state.BgPalette); SV(_state.ObjPalette0); SV(_state.ObjPalette1);
 	SV(_state.ScrollX); SV(_state.ScrollY); SV(_state.WindowX); SV(_state.WindowY); SV(_state.Control); SV(_state.LcdEnabled); SV(_state.WindowTilemapSelect);
 	SV(_state.WindowEnabled); SV(_state.BgTileSelect); SV(_state.BgTilemapSelect); SV(_state.LargeSprites); SV(_state.SpritesEnabled); SV(_state.BgEnabled);
-	SV(_state.Status); SV(_state.FrameCount); SV(_lastFrameTime); SV(_state.LyCoincidenceFlag);
+	SV(_state.Status); SV(_state.FrameCount); SV(_state.LyCoincidenceFlag);
 	SV(_state.CgbBgPalAutoInc); SV(_state.CgbBgPalPosition);
 	SV(_state.CgbObjPalAutoInc); SV(_state.CgbObjPalPosition); SV(_state.CgbVramBank); SV(_state.CgbEnabled);
-	SV(_latchWindowX); SV(_latchWindowY); SV(_latchWindowEnabled); SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle);
-	SV(_wyEnableFlag);
-	SV(_state.IdleCycles); SV(_state.Ly); SV(_state.LyForCompare); SV(_state.IrqMode);
+	SV(_state.Ly);
 	SV(_state.StatIrqFlag);
 
 	if(_gameboy->IsCgb()) {
@@ -1115,6 +1182,23 @@ void GbPpu::Serialize(Serializer& s)
 
 	if(s.GetFormat() != SerializeFormat::Map) {
 		//Hide these entries from the Lua API
+		SV(_windowCounter); SV(_isFirstFrame); SV(_rendererIdle); SV(_forceBlankFrame);
+		SV(_wyEnableFlag); SV(_wxEnableFlag);
+		SV(_state.IdleCycles);
+		SV(_lastFrameTime);
+
+		SV(_state.LyForCompare);
+		SV(_state.IrqMode);
+
+		SV(_oamReadBlocked);
+		SV(_oamWriteBlocked);
+		SV(_vramReadBlocked);
+		SV(_vramWriteBlocked);
+
+		SV(_lastPixelType);
+		SV(_lastBgColor);
+		SV(_insertGlitchBgPixel);
+
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
 		SV(_drawnPixels); SV(_fetchColumn); SV(_fetchWindow); SV(_fetchSprite); SV(_spriteCount);
@@ -1133,3 +1217,6 @@ void GbPpu::Serialize(Serializer& s)
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Read>(uint16_t addr);
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::ReadIncDec>(uint16_t addr);
 template void GbPpu::ProcessOamCorruption<GbOamCorruptionType::Write>(uint16_t addr);
+
+template void GbPpu::Exec<true>();
+template void GbPpu::Exec<false>();

@@ -136,7 +136,7 @@ void RecordedRomTest::Record(string filename, bool reset)
 		//Start recording movie alongside with screenshots
 		RecordMovieOptions options;
 		string movieFilename = FolderUtilities::CombinePath(FolderUtilities::GetFolderName(filename), FolderUtilities::GetFilename(filename, false) + ".mmo");
-		memcpy(options.Filename, movieFilename.c_str(), std::max(1000, (int)movieFilename.size()));
+		memcpy(options.Filename, movieFilename.c_str(), std::min(1000, (int)movieFilename.size()));
 		options.RecordFrom = reset ? RecordMovieFrom::StartWithSaveData : RecordMovieFrom::CurrentState;
 		_emu->GetMovieManager()->Record(options);
 

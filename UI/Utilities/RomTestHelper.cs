@@ -43,7 +43,7 @@ namespace Mesen.Utilities
 				ConcurrentDictionary<string, RomTestResult> results = new();
 
 				List<string> testFiles = Directory.EnumerateFiles(ConfigManager.TestFolder, "*.mtp", SearchOption.AllDirectories).ToList();
-				Parallel.ForEach(testFiles, new ParallelOptions() { MaxDegreeOfParallelism = 6 }, (string testFile) => {
+				Parallel.ForEach(testFiles, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount - 2 }, (string testFile) => {
 					string entryName = testFile.Substring(ConfigManager.TestFolder.Length);
 					results[entryName] = TestApi.RunRecordedTest(testFile, true);
 				});
@@ -68,11 +68,64 @@ namespace Mesen.Utilities
 
 				EmuApi.WriteLogEntry("==================");
 				if(failedTests.Count > 0) {
-					EmuApi.WriteLogEntry("Tests passed: " + (testFiles.Count - failedTests.Count));
-					EmuApi.WriteLogEntry("Tests failed: " + failedTests.Count);
 					foreach(string failedTest in failedTests) {
 						EmuApi.WriteLogEntry("  Failed: " + failedTest);
 					}
+					EmuApi.WriteLogEntry("==================");
+					EmuApi.WriteLogEntry("Tests passed: " + (testFiles.Count - failedTests.Count));
+					EmuApi.WriteLogEntry("Tests failed: " + failedTests.Count);
+				} else {
+					EmuApi.WriteLogEntry("All " + testFiles.Count + " tests passed!");
+				}
+				EmuApi.WriteLogEntry("==================");
+
+				Dispatcher.UIThread.Post(() => {
+					ApplicationHelper.GetOrCreateUniqueWindow<LogWindow>(null, () => new LogWindow());
+				});
+			});
+		}
+
+		public static void RunGbMicroTests(bool all)
+		{
+			Task.Run(() => {
+				ConcurrentDictionary<string, UInt32> results = new();
+
+				List<string> testFiles = Directory.EnumerateFiles(@"C:\Code\gbmicrotest-main\bin" + (all ? "" : "\\pass"), "*.gb", SearchOption.AllDirectories).ToList();
+				Parallel.ForEach(testFiles, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount - 2 }, (string testFile) => {
+					string entryName = Path.GetFileName(testFile);
+					results[entryName] = TestApi.RunTest(testFile);
+				});
+
+				EmuApi.WriteLogEntry("==================");
+				List<string> failedTests = new List<string>();
+				List<string> entries = results.Keys.ToList();
+				entries.Sort();
+
+				foreach(var entry in entries) {
+					UInt32 result = results[entry];
+					string msg = "[Test] ";
+					switch(result) {
+						case 1: msg += "Pass"; break;
+						case 0xFF: msg += "FAIL"; break;
+						default: msg += "UNKNOWN"; break;
+					}
+					msg += ": " + entry;
+
+					EmuApi.WriteLogEntry(msg);
+
+					if(result == 0xFF) {
+						failedTests.Add(entry);
+					}
+				}
+
+				EmuApi.WriteLogEntry("==================");
+				if(failedTests.Count > 0) {
+					foreach(string failedTest in failedTests) {
+						EmuApi.WriteLogEntry("  Failed: " + failedTest);
+					}
+					EmuApi.WriteLogEntry("==================");
+					EmuApi.WriteLogEntry("Tests passed: " + (testFiles.Count - failedTests.Count));
+					EmuApi.WriteLogEntry("Tests failed: " + failedTests.Count);
 				} else {
 					EmuApi.WriteLogEntry("All " + testFiles.Count + " tests passed!");
 				}

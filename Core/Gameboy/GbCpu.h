@@ -29,13 +29,15 @@ private:
 	Gameboy* _gameboy = nullptr;
 	GbPpu* _ppu = nullptr;
 
+	uint8_t _prevIrqVector = 0;
+
 	void ExecOpCode(uint8_t opCode);
 
 	void ProcessCgbSpeedSwitch();
 	__noinline void ProcessHaltBug();
 
-	__forceinline void IncCycleCount();
-	__forceinline void HalfCycle();
+	__forceinline void ExecCpuCycle();
+	__forceinline void ExecMasterCycle();
 	__forceinline uint8_t ReadOpCode();
 	__forceinline uint8_t ReadCode();
 	__forceinline uint16_t ReadCodeWord();
@@ -155,6 +157,8 @@ private:
 	void EI();
 	void DI();
 	void PREFIX();
+	
+	__forceinline void ProcessNextCycleStart();
 
 public:
 	virtual ~GbCpu();
@@ -167,6 +171,7 @@ public:
 	uint64_t GetCycleCount() { return _state.CycleCount; }
 
 	void Exec();
+	void PowerOn();
 
 	void Serialize(Serializer& s) override;
 
