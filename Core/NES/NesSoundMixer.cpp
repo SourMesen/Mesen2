@@ -177,7 +177,7 @@ double NesSoundMixer::GetChannelOutput(AudioChannel channel, bool forRightChanne
 int16_t NesSoundMixer::GetOutputVolume(bool forRightChannel)
 {
 	double squareOutput = GetChannelOutput(AudioChannel::Square1, forRightChannel) + GetChannelOutput(AudioChannel::Square2, forRightChannel);
-	double tndOutput = GetChannelOutput(AudioChannel::DMC, forRightChannel) + 2.7516713261 * GetChannelOutput(AudioChannel::Triangle, forRightChannel) + 1.8493587125 * GetChannelOutput(AudioChannel::Noise, forRightChannel);
+	double tndOutput = 1.0966713261 * GetChannelOutput(AudioChannel::DMC, forRightChannel) + 2.7516713261 * GetChannelOutput(AudioChannel::Triangle, forRightChannel) + 1.8493587125 * GetChannelOutput(AudioChannel::Noise, forRightChannel);
 
 	uint16_t squareVolume = (uint16_t)((95.88*5000.0) / (8128.0 / squareOutput + 100.0));
 	uint16_t tndVolume = (uint16_t)((159.79*5000.0) / (22638.0 / tndOutput + 100.0));
@@ -187,7 +187,7 @@ int16_t NesSoundMixer::GetOutputVolume(bool forRightChannel)
 		GetChannelOutput(AudioChannel::MMC5, forRightChannel) * 43 +
 		GetChannelOutput(AudioChannel::Namco163, forRightChannel) * 20 +
 		GetChannelOutput(AudioChannel::Sunsoft5B, forRightChannel) * 15 +
-		GetChannelOutput(AudioChannel::VRC6, forRightChannel) * 75 +
+		GetChannelOutput(AudioChannel::VRC6, forRightChannel) * 48 +
 		GetChannelOutput(AudioChannel::VRC7, forRightChannel));
 }
 void NesSoundMixer::AddDelta(AudioChannel channel, uint32_t time, int16_t delta)
