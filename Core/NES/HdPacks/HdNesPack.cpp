@@ -19,11 +19,23 @@ HdNesPack<scale>::HdNesPack(NesConsole* console, EmuSettings* settings, HdPackDa
 	_hdData = hdData;
 
 	InitializeFallbackTiles();
+	CleanupInvalidRules();
 }
 
 template<uint32_t scale>
 HdNesPack<scale>::~HdNesPack()
 {
+}
+
+template<uint32_t scale>
+void HdNesPack<scale>::CleanupInvalidRules()
+{
+	//Cleanup invalid <addition> tags
+	bool isChrRam = _console->GetMapper()->HasChrRam();
+	if(_hdData->AdditionalSprites.size()) {
+		vector<HdPackAdditionalSpriteInfo>& elems = _hdData->AdditionalSprites;
+		elems.erase(std::remove_if(elems.begin(), elems.end(), [isChrRam](const HdPackAdditionalSpriteInfo& o) { return o.AdditionalTile.IsChrRamTile != isChrRam; }), elems.end());
+	}
 }
 
 template<uint32_t scale>
