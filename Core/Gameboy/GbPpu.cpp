@@ -54,6 +54,10 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 GbPpu::~GbPpu()
 {
+	delete[] _outputBuffers[0];
+	delete[] _outputBuffers[1];
+	delete[] _eventViewerBuffers[0];
+	delete[] _eventViewerBuffers[1];
 }
 
 GbPpuState GbPpu::GetState()
