@@ -22,7 +22,7 @@ extern "C"
 		}
 	}
 
-	DllExport uint32_t __stdcall RunTest(char* filename)
+	DllExport uint64_t __stdcall RunTest(char* filename, uint32_t address, MemoryType memType)
 	{
 		unique_ptr<Emulator> emu(new Emulator());
 		emu->Initialize();
@@ -33,11 +33,20 @@ extern "C"
 		emu->GetSettings()->SetFlag(EmulationFlags::MaximumSpeed);
 
 		while(emu->GetFrameCount() < 500) {
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 		}
 
-		uint8_t result = ((uint8_t*)emu->GetMemory(MemoryType::GbHighRam).Memory)[2];
-
+		ConsoleMemoryInfo memInfo = emu->GetMemory(memType);
+		uint8_t* memBuffer = (uint8_t*)memInfo.Memory;
+		uint64_t result = memBuffer[address];
+		for(int i = 1; i < 8; i++) {
+			if(address + i < memInfo.Size) {
+				result |= ((uint64_t)memBuffer[address + i] << (8*i));
+			} else {
+				break;
+			}
+		}
+		
 		emu->Stop(false);
 		emu->Release();
 
