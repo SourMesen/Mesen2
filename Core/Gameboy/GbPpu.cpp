@@ -54,6 +54,10 @@ void GbPpu::Init(Emulator* emu, Gameboy* gameboy, GbMemoryManager* memoryManager
 
 GbPpu::~GbPpu()
 {
+	delete[] _outputBuffers[0];
+	delete[] _outputBuffers[1];
+	delete[] _eventViewerBuffers[0];
+	delete[] _eventViewerBuffers[1];
 }
 
 GbPpuState GbPpu::GetState()
@@ -990,7 +994,10 @@ uint8_t GbPpu::ReadOam(uint8_t addr)
 			return 0xFF;
 		}
 	}
-	return 0;
+	
+	//"This area returns $FF when OAM is blocked, and otherwise the behavior depends on the hardware revision."
+	//TODOGB CGB behavior
+	return _memoryManager->IsOamDmaRunning() ? 0xFF : 0;
 }
 
 void GbPpu::WriteOam(uint8_t addr, uint8_t value, bool forDma)
