@@ -27,6 +27,8 @@ public:
 
 	void Exec();
 
+	uint8_t GetLastWriteAddress();
+
 	bool IsOamDmaConflict(uint16_t addr);
 	uint16_t ProcessOamDmaReadConflict(uint16_t addr);
 	bool IsOamDmaRunning();

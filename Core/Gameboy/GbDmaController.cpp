@@ -51,6 +51,11 @@ void GbDmaController::Exec()
 	}
 }
 
+uint8_t GbDmaController::GetLastWriteAddress()
+{
+	return _state.DmaCounter <= 160 ? (160 - _state.DmaCounter) : 0;
+}
+
 bool GbDmaController::IsOamDmaConflict(uint16_t addr)
 {
 	uint8_t src = _state.OamDmaSource;
