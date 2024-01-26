@@ -239,6 +239,15 @@ void GbDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+StepBackConfig GbDebugger::GetStepBackConfig()
+{
+	return {
+		GetCpuCycleCount(),
+		456,
+		456 * 154
+	};
+}
+
 void GbDebugger::DrawPartialFrame()
 {
 	_ppu->DebugSendFrame();

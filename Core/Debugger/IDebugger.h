@@ -39,7 +39,8 @@ public:
 	bool CheckStepBack() { return _stepBackManager->CheckStepBack(); }
 	bool IsStepBack() { return _stepBackManager->IsRewinding(); }
 	void ResetStepBackCache() { return _stepBackManager->ResetCache(); }
-	void StepBack() { return _stepBackManager->StepBack(); }
+	void StepBack(int32_t stepCount) { return _stepBackManager->StepBack((StepBackType)stepCount); }
+	virtual StepBackConfig GetStepBackConfig() { return { GetCpuCycleCount(), 0, 0 }; }
 
 	FrozenAddressManager& GetFrozenAddressManager() { return _frozenAddressManager; }
 

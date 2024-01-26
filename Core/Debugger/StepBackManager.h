@@ -11,6 +11,20 @@ struct StepBackCacheEntry
 	uint64_t Clock;
 };
 
+struct StepBackConfig
+{
+	uint64_t CurrentCycle;
+	uint32_t CyclesPerScanline;
+	uint32_t CyclesPerFrame;
+};
+
+enum class StepBackType
+{
+	Instruction,
+	Scanline,
+	Frame
+};
+
 class StepBackManager
 {
 private:
@@ -30,7 +44,7 @@ private:
 public:
 	StepBackManager(Emulator* emu, IDebugger* debugger);
 
-	void StepBack();
+	void StepBack(StepBackType type);
 	bool CheckStepBack();
 
 	void ResetCache() { _cache.clear(); }

@@ -229,11 +229,20 @@ void SmsDebugger::Step(int32_t stepCount, StepType type)
 		case StepType::CpuCycleStep: step.CpuCycleStepCount = stepCount; break;
 		case StepType::PpuStep: step.PpuStepCount = stepCount; break;
 		case StepType::PpuScanline: step.PpuStepCount = 342 * stepCount; break;
-		case StepType::PpuFrame: step.PpuStepCount = 342 * (_console->GetModel() == SmsModel::Sms && _console->GetRegion() == ConsoleRegion::Pal ? 313 : 262) * stepCount; break;
+		case StepType::PpuFrame: step.PpuStepCount = 342 * _vdp->GetScanlineCount() * stepCount; break;
 		case StepType::SpecificScanline: step.BreakScanline = stepCount; break;
 	}
 
 	_step.reset(new StepRequest(step));
+}
+
+StepBackConfig SmsDebugger::GetStepBackConfig()
+{
+	return {
+		_cpu->GetCycleCount() * 3,
+		342 * 2,
+		342u * 2 * _vdp->GetScanlineCount()
+	};
 }
 
 void SmsDebugger::DrawPartialFrame()

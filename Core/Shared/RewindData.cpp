@@ -36,7 +36,7 @@ void RewindData::ProcessXorState(T& data, deque<RewindData>& prevStates, int32_t
 	}
 }
 
-void RewindData::LoadState(Emulator* emu, deque<RewindData>& prevStates, int32_t position)
+void RewindData::LoadState(Emulator* emu, deque<RewindData>& prevStates, int32_t position, bool sendNotification)
 {
 	if(_saveStateData.size() == 0) {
 		return;
@@ -54,7 +54,7 @@ void RewindData::LoadState(Emulator* emu, deque<RewindData>& prevStates, int32_t
 	stream.write((char*)data.data(), data.size());
 	stream.seekg(0, ios::beg);
 
-	emu->Deserialize(stream, SaveStateManager::FileFormatVersion, true);
+	emu->Deserialize(stream, SaveStateManager::FileFormatVersion, true, std::nullopt, sendNotification);
 }
 
 void RewindData::SaveState(Emulator* emu, deque<RewindData>& prevStates, int32_t position)

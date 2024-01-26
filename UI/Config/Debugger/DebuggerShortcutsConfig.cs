@@ -131,6 +131,8 @@ namespace Mesen.Config
 			Add(new() { Shortcut = DebuggerShortcut.StepOver, KeyBinding = new(Key.F10) });
 			Add(new() { Shortcut = DebuggerShortcut.StepOut, KeyBinding = new(KeyModifiers.Shift, Key.F11) });
 			Add(new() { Shortcut = DebuggerShortcut.StepBack, KeyBinding = new(KeyModifiers.Shift, Key.F10) });
+			Add(new() { Shortcut = DebuggerShortcut.StepBackScanline, KeyBinding = new(KeyModifiers.Shift, Key.F7) });
+			Add(new() { Shortcut = DebuggerShortcut.StepBackFrame, KeyBinding = new(KeyModifiers.Shift, Key.F8) });
 
 			Add(new() { Shortcut = DebuggerShortcut.RunCpuCycle, KeyBinding = new() });
 			Add(new() { Shortcut = DebuggerShortcut.RunPpuCycle, KeyBinding = new(Key.F6) });
@@ -340,6 +342,8 @@ namespace Mesen.Config
 		StepOver,
 		StepOut,
 		StepBack,
+		StepBackScanline,
+		StepBackFrame,
 		RunCpuCycle,
 		RunPpuCycle,
 		RunPpuScanline,

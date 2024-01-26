@@ -318,6 +318,19 @@ void SnesDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+StepBackConfig SnesDebugger::GetStepBackConfig()
+{
+	if(_cpuType == CpuType::Snes) {
+		return {
+			_memoryManager->GetMasterClock(),
+			1364,
+			1364u * (_ppu->GetVblankEndScanline() + 1)
+		};
+	} else {
+		return IDebugger::GetStepBackConfig();
+	}
+}
+
 void SnesDebugger::DrawPartialFrame()
 {
 	_ppu->DebugSendFrame();

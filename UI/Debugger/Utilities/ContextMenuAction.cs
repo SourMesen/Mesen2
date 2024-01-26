@@ -408,6 +408,12 @@ namespace Mesen.Debugger.Utilities
 		[IconFile("StepBack")]
 		StepBack,
 
+		[IconFile("StepBackScanline")]
+		StepBackScanline,
+
+		[IconFile("StepBackFrame")]
+		StepBackFrame,
+
 		[IconFile("RunCpuCycle")]
 		RunCpuCycle,
 

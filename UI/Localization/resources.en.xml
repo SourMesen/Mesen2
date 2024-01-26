@@ -2871,6 +2871,8 @@ E
 			<Value ID="StepOver">Step over</Value>
 			<Value ID="StepOut">Step out</Value>
 			<Value ID="StepBack">Step back</Value>
+			<Value ID="StepBackScanline">Step back (1 scanline)</Value>
+			<Value ID="StepBackFrame">Step back (1 frame)</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU Cycle</Value>
 			<Value ID="RunPpuScanline">Run one PPU Scanline</Value>
@@ -3069,6 +3071,8 @@ E
 			<Value ID="StepOut">Step out</Value>
 			<Value ID="StepOver">Step over</Value>
 			<Value ID="StepBack">Step back</Value>
+			<Value ID="StepBackScanline">Step back (1 scanline)</Value>
+			<Value ID="StepBackFrame">Step back (1 frame)</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
 			<Value ID="RunPpuScanline">Run one scanline</Value>
