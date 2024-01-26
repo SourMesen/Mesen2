@@ -47,6 +47,11 @@ namespace Mesen.Utilities.GlobalMouseLib
 
 		public void CaptureCursor(int x, int y, int width, int height, IntPtr rendererHandle)
 		{
+			if(rendererHandle == IntPtr.Zero) {
+				//TODO Attempting to capture the cursor when using the sofware renderer behaves really erratically
+				//cursor is not actually locked but clicks outside the window do nothing, and movement is really odd (not usable)
+				return;
+			}
 			ClipCursor(new WinRect() { Left = x, Top = y, Right = x + width, Bottom = y + height });
 		}
 
