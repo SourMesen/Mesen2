@@ -11,8 +11,14 @@ private:
 	uint8_t _prgBank = 1;
 	uint8_t _ramBank = 0;
 	bool _mode = false;
+	bool _isMbc1m = false;
 
 public:
+	GbMbc1(bool isMbc1m)
+	{
+		_isMbc1m = isMbc1m;
+	}
+
 	void InitCart() override
 	{
 		_memoryManager->MapRegisters(0x0000, 0x7FFF, RegisterAccess::Write);
@@ -23,9 +29,11 @@ public:
 		constexpr int prgBankSize = 0x4000;
 		constexpr int ramBankSize = 0x2000;
 
-		Map(0x0000, 0x3FFF, GbMemoryType::PrgRom, (_mode ? (_ramBank << 5) : 0) * prgBankSize, true);
+		int shift = _isMbc1m ? 4 : 5;
+		int mask = _isMbc1m ? 0x0F : 0x1F;
+		Map(0x0000, 0x3FFF, GbMemoryType::PrgRom, (_mode ? (_ramBank << shift) : 0) * prgBankSize, true);
 
-		uint8_t prgBank = _prgBank | (_ramBank << 5);
+		uint8_t prgBank = (_prgBank & mask) | (_ramBank << shift);
 		Map(0x4000, 0x7FFF, GbMemoryType::PrgRom, prgBank*prgBankSize, true);
 
 		if(_ramEnabled) {

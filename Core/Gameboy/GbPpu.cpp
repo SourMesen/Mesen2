@@ -482,9 +482,20 @@ void GbPpu::RunSpriteEvaluation()
 	if(_state.Cycle & 0x01) {
 		if(_spriteCount < 10) {
 			uint8_t spriteIndex = ((_state.Cycle - 4) >> 1) * 4;
-			int16_t sprY = _dmaController->IsOamDmaRunning() ? 0xFF : ((int16_t)_oam[spriteIndex] - 16);
+			
+			if(!_dmaController->IsOamDmaRunning()) {
+				//When DMA is running, the LCD appears to re-use the last values read from OAM
+				//These are shared with the sprite fetcher, so they can contain tile index/attributes
+				//instead of Y+X coordinates, depending on when the OAM DMA was started.
+				//This is needed to pass the "strikethrough" test rom
+				_oamReadBuffer[0] = _oam[spriteIndex]; //Y
+				_oamReadBuffer[1] = _oam[spriteIndex + 1]; //X
+			}
+
+			int16_t sprY = ((int16_t)_oamReadBuffer[0] - 16);
 			if(_state.Scanline >= sprY && _state.Scanline < sprY + (_state.LargeSprites ? 16 : 8)) {
-				_spriteX[_spriteCount] = _oam[spriteIndex + 1];
+				_spriteY[_spriteCount] = _oamReadBuffer[0];
+				_spriteX[_spriteCount] = _oamReadBuffer[1];
 				_spriteIndexes[_spriteCount] = spriteIndex;
 				_spriteCount++;
 			}
@@ -517,9 +528,22 @@ void GbPpu::ClockSpriteFetcher()
 	switch(_oamFetcher.Step++) {
 		case 1: {
 			//Fetch tile index
-			int16_t sprY = (int16_t)_oam[_fetchSprite] - 16;
-			uint8_t sprTile = _oam[_fetchSprite + 2];
-			uint8_t sprAttr = _oam[_fetchSprite + 3];
+			uint8_t sprAddr = _spriteIndexes[_fetchSprite];
+			int16_t sprY = (int16_t)_spriteY[_fetchSprite] - 16;
+
+			if(!_dmaController->IsOamDmaRunning()) {
+				_oamReadBuffer[0] = _oam[sprAddr + 2]; //Tile Index
+				_oamReadBuffer[1] = _oam[sprAddr + 3]; //Attributes
+			} else {
+				//When DMA is running, this data is replaced by the content
+				//at the address that the DMA unit was reading/writing at the time.
+				uint16_t addr = _dmaController->GetLastWriteAddress() & 0xFE;
+				_oamReadBuffer[0] = _oam[addr];
+				_oamReadBuffer[1] = _oam[addr+1];
+			}
+
+			uint8_t sprTile = _oamReadBuffer[0];
+			uint8_t sprAttr = _oamReadBuffer[1];
 			bool vMirror = (sprAttr & 0x40) != 0;
 			uint16_t tileBank = _state.CgbEnabled ? ((sprAttr & 0x08) ? 0x2000 : 0x0000) : 0;
 
@@ -550,7 +574,7 @@ void GbPpu::FindNextSprite()
 	if(_fetchSprite < 0 && (_state.SpritesEnabled || _state.CgbEnabled)) {
 		for(int i = 0; i < _spriteCount; i++) {
 			if((int)_spriteX[i] - 8 == _drawnPixels) {
-				_fetchSprite = _spriteIndexes[i];
+				_fetchSprite = i;
 				_spriteX[i] = 0xFF; //Prevent processing the same sprite again
 				_oamFetcher.Step = 0;
 				break;
@@ -620,7 +644,7 @@ void GbPpu::ClockTileFetcher()
 
 void GbPpu::PushSpriteToPixelFifo()
 {
-	uint8_t spriteIndex = _fetchSprite >> 2;
+	uint8_t spriteIndex = _fetchSprite;
 
 	_fetchSprite = -1;
 	_oamFetcher.Step = 0;
@@ -1216,7 +1240,9 @@ void GbPpu::Serialize(Serializer& s)
 			SVI(_oamFifo.Content[i].Color); SVI(_oamFifo.Content[i].Attributes);
 		}
 
+		SVArray(_oamReadBuffer, 2);
 		SVArray(_spriteX, 10);
+		SVArray(_spriteY, 10);
 		SVArray(_spriteIndexes, 10);
 	}
 }

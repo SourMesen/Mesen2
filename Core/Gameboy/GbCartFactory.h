@@ -12,14 +12,18 @@
 class GbCartFactory
 {
 public:
-	static GbCart* CreateCart(Emulator* emu, GameboyHeader& header)
+	static GbCart* CreateCart(Emulator* emu, GameboyHeader& header, vector<uint8_t>& prgRom)
 	{
 		switch(header.CartType) {
 			case 0x00:
 				return new GbCart();
 
-			case 0x01: case 0x02: case 0x03:
-				return new GbMbc1();
+			case 0x01: case 0x02: case 0x03: {
+				//When the boot rom logo appears at both of these offsets, this is usually a multicart collection
+				//which uses a MBC1 chip with slightly different wiring.
+				bool isMbc1m = prgRom.size() > 0x40134 && memcmp(&prgRom[0x104], &prgRom[0x40104], 0x30) == 0;
+				return new GbMbc1(isMbc1m);
+			}
 
 			case 0x05: case 0x06:
 				return new GbMbc2();

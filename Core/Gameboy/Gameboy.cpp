@@ -411,6 +411,11 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 
 		return LoadRomResult::Success;
 	} else {
+		if((romData.size() & 0x3FFF) != 0) {
+			//Pad to multiple of 16kb
+			romData.insert(romData.end(), 0x4000 - (romData.size() & 0x3FFF), 0);
+		}
+
 		GameboyHeader header;
 		memcpy(&header, romData.data() + Gameboy::HeaderOffset, sizeof(GameboyHeader));
 
@@ -437,7 +442,7 @@ LoadRomResult Gameboy::LoadRom(VirtualFile& romFile)
 		}
 		MessageManager::Log("-----------------------------");
 
-		GbCart* cart = GbCartFactory::CreateCart(_emu, header);
+		GbCart* cart = GbCartFactory::CreateCart(_emu, header, romData);
 
 		if(cart) {
 			Init(cart, romData, header.GetCartRamSize(), header.HasBattery());

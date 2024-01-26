@@ -25,14 +25,6 @@ struct GameboyHeader
 	uint8_t HeaderChecksum;
 	uint8_t GlobalChecksum[2];
 
-	uint32_t GetPrgRomSize()
-	{
-		if(PrgRomSize < 16) {
-			return 0x8000 << PrgRomSize;
-		}
-		return 0x8000;
-	}
-
 	uint32_t GetCartRamSize()
 	{
 		if(CartType == 5 || CartType == 6) {
