@@ -34,6 +34,21 @@ namespace Mesen.Debugger.Utilities
 			}
 		}
 
+		private static string? GetMatchingFile(string ext)
+		{
+			string path = Path.ChangeExtension(_romInfo.RomPath, ext);
+			if(File.Exists(path)) {
+				return path;
+			}
+
+			path = _romInfo.RomPath + "." + ext;
+			if(File.Exists(path)) {
+				return path;
+			}
+
+			return null;
+		}
+
 		[MemberNotNull(nameof(DebugWorkspaceManager._workspace))]
 		public static void Load()
 		{
@@ -49,28 +64,38 @@ namespace Mesen.Debugger.Utilities
 
 			SymbolProvider = null;
 			if(ConfigManager.Config.Debug.Integration.AutoLoadDbgFiles) {
-				string dbgPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.DbgFileExt);
-				LoadDbgSymbolFile(dbgPath, false);
+				string? dbgPath = GetMatchingFile(FileDialogHelper.DbgFileExt);
+				if(dbgPath != null) {
+					LoadDbgSymbolFile(dbgPath, false);
+				}
 			}
 
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadSymFiles) {
-				string symPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.SymFileExt);
-				LoadSymFile(symPath, false);
+				string? symPath = GetMatchingFile(FileDialogHelper.SymFileExt);
+				if(symPath != null) {
+					LoadSymFile(symPath, false);
+				}
 			}
 
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadMlbFiles) {
-				string mlbPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.MesenLabelExt);
-				LoadMesenLabelFile(mlbPath, false);
+				string? mlbPath = GetMatchingFile(FileDialogHelper.MesenLabelExt);
+				if(mlbPath != null) {
+					LoadMesenLabelFile(mlbPath, false);
+				}
 			}
 
 			if(SymbolProvider == null && ConfigManager.Config.Debug.Integration.AutoLoadFnsFiles) {
-				string fnsPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.NesAsmLabelExt);
-				LoadNesAsmLabelFile(fnsPath, false);
+				string? fnsPath = GetMatchingFile(FileDialogHelper.NesAsmLabelExt);
+				if(fnsPath != null) {
+					LoadNesAsmLabelFile(fnsPath, false);
+				}
 			}
 
 			if(ConfigManager.Config.Debug.Integration.AutoLoadCdlFiles) {
-				string cdlPath = Path.ChangeExtension(_romInfo.RomPath, FileDialogHelper.CdlExt);
-				LoadCdlFile(cdlPath);
+				string? cdlPath = GetMatchingFile(FileDialogHelper.CdlExt);
+				if(cdlPath != null) {
+					LoadCdlFile(cdlPath);
+				}
 			}
 			LabelManager.ResumeEvents();
 			SymbolProviderChanged?.Invoke(null, EventArgs.Empty);
