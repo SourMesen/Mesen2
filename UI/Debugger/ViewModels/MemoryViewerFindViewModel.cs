@@ -154,8 +154,12 @@ public class SearchData
 
 	public SearchData(byte[] data, byte[]? dataAlt = null)
 	{
-		Data = data.Cast<short>().ToArray();
-		DataAlt = dataAlt?.Cast<short>().ToArray();
+		Data = new short[data.Length];
+		Array.Copy(data, 0, Data, 0, data.Length);
+		if(dataAlt != null) {
+			DataAlt = new short[dataAlt.Length];
+			Array.Copy(dataAlt, 0, DataAlt, 0, dataAlt.Length);
+		}
 	}
 
 	public SearchData(short[] data)
