@@ -263,7 +263,7 @@ namespace Mesen.Debugger.ViewModels
 				int j = 0;
 				while(j < searchLen && i + j < memSize) {
 					byte val = mem[i + j];
-					if(data.Data[j] != val && (data.DataAlt == null || data.DataAlt[j] != val)) {
+					if(data.Data[j] >= 0 && data.Data[j] != val && (data.DataAlt == null || data.DataAlt[j] != val)) {
 						break;
 					} else if(j == searchLen - 1) {
 						//Match

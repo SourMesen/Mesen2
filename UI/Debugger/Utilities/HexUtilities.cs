@@ -59,5 +59,34 @@ namespace Mesen.Debugger.Utilities
 			}
 			return result;
 		}
+
+		public static short[] HexToArrayWithWildcards(string hex)
+		{
+			string[] sections = hex.Split("?");
+
+			StringBuilder sb = new();
+			for(int i = 0; i < sections.Length; i++) {
+				sb.Append(string.Join("", sections[i].Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(x => x.Length % 2 == 1 ? ("0" + x) : x)));
+				if(i < sections.Length - 1) {
+					sb.Append("??");
+				}
+			}
+
+			hex = sb.ToString();
+
+			short[] result = new short[hex.Length / 2];
+			for(int i = 0; i < hex.Length; i += 2) {
+				if(hex[i] == '?' && hex[i + 1] == '?') {
+					result[i / 2] = -1;
+				} else {
+					byte value = 0;
+					value |= _hexLookup[hex[i]];
+					value <<= 4;
+					value |= _hexLookup[hex[i + 1]];
+					result[i / 2] = value;
+				}
+			}
+			return result;
+		}
 	}
 }

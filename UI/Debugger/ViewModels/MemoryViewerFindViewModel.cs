@@ -60,8 +60,8 @@ public class MemoryViewerFindViewModel : ViewModelBase
 	{
 		switch(DataType) {
 			case SearchDataType.Hex:
-				if(Regex.IsMatch(SearchString, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
-					return new SearchData(HexUtilities.HexToArray(SearchString));
+				if(Regex.IsMatch(SearchString, "^[ a-f0-9?]+$", RegexOptions.IgnoreCase)) {
+					return new SearchData(HexUtilities.HexToArrayWithWildcards(SearchString));
 				}
 				break;
 
@@ -149,13 +149,18 @@ public class MemoryViewerFindViewModel : ViewModelBase
 
 public class SearchData
 {
-	public byte[] Data;
-	public byte[]? DataAlt; //used for case insensitive searches
+	public short[] Data;
+	public short[]? DataAlt; //used for case insensitive searches
 
 	public SearchData(byte[] data, byte[]? dataAlt = null)
 	{
+		Data = data.Cast<short>().ToArray();
+		DataAlt = dataAlt?.Cast<short>().ToArray();
+	}
+
+	public SearchData(short[] data)
+	{
 		Data = data;
-		DataAlt = dataAlt;
 	}
 }
 
