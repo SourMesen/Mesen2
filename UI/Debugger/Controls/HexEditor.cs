@@ -412,9 +412,14 @@ namespace Mesen.Debugger.Controls
 					if(Regex.IsMatch(text, "^[ a-f0-9]+$", RegexOptions.IgnoreCase)) {
 						byte[] pastedData = HexUtilities.HexToArray(text);
 						for(int i = 0; i < pastedData.Length; i++) {
+							if(_cursorPosition + i >= DataProvider.Length) {
+								break;
+							}
 							RequestByteUpdate(_cursorPosition + i, pastedData[i]);
 						}
-						InvalidateVisual();
+
+						//Move cursor to the end of the pasted section
+						SetCursorPosition(_cursorPosition + pastedData.Length, false);
 					}
 				}
 			}
