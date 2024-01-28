@@ -15,7 +15,6 @@ struct GbEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg Irq;
 	EventViewerCategoryCfg MarkedBreakpoints;
 
-	EventViewerCategoryCfg PpuRegisterReads;
 	EventViewerCategoryCfg PpuRegisterCgramWrites;
 	EventViewerCategoryCfg PpuRegisterVramWrites;
 	EventViewerCategoryCfg PpuRegisterOamWrites;
@@ -23,10 +22,27 @@ struct GbEventViewerConfig : public BaseEventViewerConfig
 	EventViewerCategoryCfg PpuRegisterWindowWrites;
 	EventViewerCategoryCfg PpuRegisterOtherWrites;
 
+	EventViewerCategoryCfg PpuRegisterCgramReads;
+	EventViewerCategoryCfg PpuRegisterVramReads;
+	EventViewerCategoryCfg PpuRegisterOamReads;
+	EventViewerCategoryCfg PpuRegisterBgScrollReads;
+	EventViewerCategoryCfg PpuRegisterWindowReads;
+	EventViewerCategoryCfg PpuRegisterOtherReads;
+
 	EventViewerCategoryCfg ApuRegisterReads;
 	EventViewerCategoryCfg ApuRegisterWrites;
-	EventViewerCategoryCfg CpuRegisterReads;
-	EventViewerCategoryCfg CpuRegisterWrites;
+
+	EventViewerCategoryCfg SerialReads;
+	EventViewerCategoryCfg SerialWrites;
+
+	EventViewerCategoryCfg TimerReads;
+	EventViewerCategoryCfg TimerWrites;
+
+	EventViewerCategoryCfg InputReads;
+	EventViewerCategoryCfg InputWrites;
+
+	EventViewerCategoryCfg OtherRegisterReads;
+	EventViewerCategoryCfg OtherRegisterWrites;
 
 	bool ShowPreviousFrameEvents;
 };
