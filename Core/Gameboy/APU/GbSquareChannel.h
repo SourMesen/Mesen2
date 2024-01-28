@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Gameboy/GbTypes.h"
+#include "Gameboy/APU/GbChannelDac.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
@@ -17,6 +18,7 @@ private:
 	};
 
 	GbSquareState _state = {};
+	GbChannelDac _dac = {};
 	GbApu* _apu = nullptr;
 
 	void UpdateOutput();
@@ -37,7 +39,7 @@ public:
 	void ClockEnvelope();
 
 	uint8_t GetRawOutput();
-	int8_t GetOutput();
+	double GetOutput();
 
 	void Exec(uint32_t clocksToRun);
 

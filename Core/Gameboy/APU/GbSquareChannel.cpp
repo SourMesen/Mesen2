@@ -124,26 +124,22 @@ void GbSquareChannel::ClockEnvelope()
 
 uint8_t GbSquareChannel::GetRawOutput()
 {
-	return _state.Output;
+	return (!_state.EnvRaiseVolume && _state.EnvVolume == 0) ? 0 : _state.Output;
 }
 
-int8_t GbSquareChannel::GetOutput()
+double GbSquareChannel::GetOutput()
 {
-	//"Channel x’s DAC is enabled if and only if [NRx2] & $F8 != 0"
-	if(!_state.EnvRaiseVolume && _state.EnvVolume == 0) {
-		//"If a DAC is disabled, it fades to an analog value of 0"
-		return 0;
-	}
-
 	//"If a DAC is enabled, the digital range $0 to $F is linearly translated to the analog range -1 to 1, 
 	//in arbitrary units. Importantly, the slope is negative: “digital 0” maps to “analog 1”, not “analog -1”."	
 	
 	//Return -7 to 7 "analog" range (higher digital value = lower analog value)
-	return 7 - (int8_t)_state.Output;
+	return (7 - (int8_t)_state.Output) * (double)_dac.GetDacVolume() / 100;
 }
 
 void GbSquareChannel::Exec(uint32_t clocksToRun)
 {
+	_dac.Exec(clocksToRun, _state.EnvVolume || _state.EnvRaiseVolume);
+
 	if(!_state.Enabled) {
 		return;
 	}
@@ -311,4 +307,5 @@ void GbSquareChannel::Serialize(Serializer& s)
 	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.Duty); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
 	SV(_state.SweepNegateCalcDone); SV(_state.EnvStopped);
+	SV(_dac);
 }

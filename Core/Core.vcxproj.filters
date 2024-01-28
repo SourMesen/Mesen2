@@ -175,12 +175,6 @@
     <ClInclude Include="Gameboy\GameboyHeader.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\APU\GbApu.cpp">
-      <Filter>Gameboy</Filter>
-    </ClCompile>
-    <ClInclude Include="Gameboy\APU\GbApu.h">
-      <Filter>Gameboy</Filter>
-    </ClInclude>
     <ClInclude Include="Gameboy\GbBootRom.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
@@ -220,12 +214,6 @@
     <ClInclude Include="Gameboy\GbMemoryManager.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\APU\GbNoiseChannel.cpp">
-      <Filter>Gameboy</Filter>
-    </ClCompile>
-    <ClInclude Include="Gameboy\APU\GbNoiseChannel.h">
-      <Filter>Gameboy</Filter>
-    </ClInclude>
     <ClCompile Include="Gameboy\GbPpu.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
@@ -235,12 +223,6 @@
     <ClInclude Include="Gameboy\GbsHeader.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
-    <ClCompile Include="Gameboy\APU\GbSquareChannel.cpp">
-      <Filter>Gameboy</Filter>
-    </ClCompile>
-    <ClInclude Include="Gameboy\APU\GbSquareChannel.h">
-      <Filter>Gameboy</Filter>
-    </ClInclude>
     <ClCompile Include="Gameboy\GbTimer.cpp">
       <Filter>Gameboy</Filter>
     </ClCompile>
@@ -248,12 +230,6 @@
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClInclude Include="Gameboy\GbTypes.h">
-      <Filter>Gameboy</Filter>
-    </ClInclude>
-    <ClCompile Include="Gameboy\APU\GbWaveChannel.cpp">
-      <Filter>Gameboy</Filter>
-    </ClCompile>
-    <ClInclude Include="Gameboy\APU\GbWaveChannel.h">
       <Filter>Gameboy</Filter>
     </ClInclude>
     <ClCompile Include="NES\BaseMapper.cpp">
@@ -2721,6 +2697,21 @@
     <ClInclude Include="PCE\CdRom\PceScsiBus.h">
       <Filter>PCE\CdRom</Filter>
     </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbApu.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbChannelDac.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbNoiseChannel.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbSquareChannel.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameboy\APU\GbWaveChannel.h">
+      <Filter>Gameboy\APU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Video\RotateFilter.cpp">
@@ -2912,6 +2903,18 @@
     <ClCompile Include="PCE\CdRom\PceScsiBus.cpp">
       <Filter>PCE\CdRom</Filter>
     </ClCompile>
+    <ClCompile Include="Gameboy\APU\GbApu.cpp">
+      <Filter>Gameboy\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameboy\APU\GbNoiseChannel.cpp">
+      <Filter>Gameboy\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameboy\APU\GbSquareChannel.cpp">
+      <Filter>Gameboy\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameboy\APU\GbWaveChannel.cpp">
+      <Filter>Gameboy\APU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PCE">
@@ -3003,6 +3006,9 @@
     </Filter>
     <Filter Include="PCE\CdRom">
       <UniqueIdentifier>{d8c09137-ed0d-4674-8017-a1f3be7cf2a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameboy\APU">
+      <UniqueIdentifier>{2ce2d3b6-58f7-4b68-bf2b-1236e5bbfaed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
