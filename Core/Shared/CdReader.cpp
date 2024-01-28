@@ -45,18 +45,37 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 		if(line.substr(0, 4) == string("FILE")) {
 			size_t start = line.find_first_of('"');
 			size_t end = line.find_last_of('"');
-			if(start != end && start != string::npos && end != string::npos) {
-				string filename = line.substr(start + 1, end - start - 1);
 
+			string filename;
+			if(start != end && start != string::npos && end != string::npos) {
+				filename = line.substr(start + 1, end - start - 1);
+			} else {
+				//No quotes found, use first and last space as delimiters
+				start = line.find_first_of(' ');
+				end = line.find_last_of(' ');
+				if(end == start && start != string::npos) {
+					//only 1 space found, use end of string instead
+					end = line.size();
+				}
+				if(start != end && start != string::npos && end != string::npos) {
+					filename = line.substr(start + 1, end - start - 1);
+				}
+			}
+			
+			filename = StringUtilities::Trim(filename);
+			if(!filename.empty()) {
 				VirtualFile dataFile = cueFile.GetFolderPath() + filename;
 				if(cueFile.IsArchive()) {
 					dataFile = VirtualFile(cueFile.GetFilePath(), filename);
 				}
 				files.push_back({ dataFile });
+			} else {
+				MessageManager::Log("[CUE] Invalid FILE entry");
+				return false;
 			}
 		} else if(line.substr(0, 5) == string("TRACK")) {
 			if(files.size() == 0) {
-				MessageManager::Log("[CUE] Unexcepted TRACK entry");
+				MessageManager::Log("[CUE] Unexpected TRACK entry");
 				return false;
 			}
 
@@ -79,7 +98,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 			files[files.size() - 1].Tracks.push_back(trk);
 		} else if(line.substr(0, 6) == string("PREGAP")) {
 			if(files.empty() || files[files.size() - 1].Tracks.empty()) {
-				MessageManager::Log("[CUE] Unexcepted PREGAP entry");
+				MessageManager::Log("[CUE] Unexpected PREGAP entry");
 				return false;
 			}
 			
@@ -106,7 +125,7 @@ bool CdReader::LoadCue(VirtualFile& cueFile, DiscInfo& disc)
 			files[files.size() - 1].Tracks[files[files.size() - 1].Tracks.size() - 1].PreGap = gap;
 		} else if(line.substr(0, 5) == string("INDEX")) {
 			if(files.empty() || files[files.size() - 1].Tracks.empty()) {
-				MessageManager::Log("[CUE] Unexcepted INDEX entry");
+				MessageManager::Log("[CUE] Unexpected INDEX entry");
 				return false;
 			}
 

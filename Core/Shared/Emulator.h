@@ -180,7 +180,7 @@ public:
 	void SuspendDebugger(bool release);
 
 	void Serialize(ostream& out, bool includeSettings, int compressionLevel = 1);
-	bool Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> consoleType = std::nullopt);
+	bool Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> consoleType = std::nullopt, bool sendNotification = true);
 
 	SoundMixer* GetSoundMixer() { return _soundMixer.get(); }
 	VideoRenderer* GetVideoRenderer() { return _videoRenderer.get(); }

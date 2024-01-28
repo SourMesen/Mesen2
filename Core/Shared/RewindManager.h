@@ -46,7 +46,6 @@ private:
 	EmuSettings* _settings = nullptr;
 	
 	bool _hasHistory = false;
-	bool _ignoreLoadState = false;
 
 	deque<RewindData> _history;
 	deque<RewindData> _historyBackup;
@@ -66,7 +65,7 @@ private:
 	void Start(bool forDebugger);
 	void InternalStart(bool forDebugger);
 	void Stop();
-	void ForceStop();
+	void ForceStop(bool deleteFutureData);
 
 	void ProcessFrame(RenderedFrame& frame, bool forRewind);
 	bool ProcessAudio(int16_t* soundBuffer, uint32_t sampleCount);
@@ -87,7 +86,7 @@ public:
 	bool SetInput(BaseControlDevice *device) override;
 
 	void StartRewinding(bool forDebugger = false);
-	void StopRewinding(bool forDebugger = false);
+	void StopRewinding(bool forDebugger = false, bool deleteFutureData = false);
 	bool IsRewinding();
 	bool IsStepBack();
 	void RewindSeconds(uint32_t seconds);
@@ -98,5 +97,4 @@ public:
 
 	void SendFrame(RenderedFrame& frame, bool forRewind);
 	bool SendAudio(int16_t *soundBuffer, uint32_t sampleCount);
-	void SetIgnoreLoadState(bool ignore);
 };

@@ -812,7 +812,6 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg Irq;
 		public InteropEventViewerCategoryCfg MarkedBreakpoints;
 
-		public InteropEventViewerCategoryCfg PpuRegisterReads;
 		public InteropEventViewerCategoryCfg PpuRegisterCgramWrites;
 		public InteropEventViewerCategoryCfg PpuRegisterVramWrites;
 		public InteropEventViewerCategoryCfg PpuRegisterOamWrites;
@@ -820,10 +819,27 @@ namespace Mesen.Interop
 		public InteropEventViewerCategoryCfg PpuRegisterWindowWrites;
 		public InteropEventViewerCategoryCfg PpuRegisterOtherWrites;
 
+		public InteropEventViewerCategoryCfg PpuRegisterCgramReads;
+		public InteropEventViewerCategoryCfg PpuRegisterVramReads;
+		public InteropEventViewerCategoryCfg PpuRegisterOamReads;
+		public InteropEventViewerCategoryCfg PpuRegisterBgScrollReads;
+		public InteropEventViewerCategoryCfg PpuRegisterWindowReads;
+		public InteropEventViewerCategoryCfg PpuRegisterOtherReads;
+
 		public InteropEventViewerCategoryCfg ApuRegisterReads;
 		public InteropEventViewerCategoryCfg ApuRegisterWrites;
-		public InteropEventViewerCategoryCfg CpuRegisterReads;
-		public InteropEventViewerCategoryCfg CpuRegisterWrites;
+
+		public InteropEventViewerCategoryCfg SerialReads;
+		public InteropEventViewerCategoryCfg SerialWrites;
+
+		public InteropEventViewerCategoryCfg TimerReads;
+		public InteropEventViewerCategoryCfg TimerWrites;
+
+		public InteropEventViewerCategoryCfg InputReads;
+		public InteropEventViewerCategoryCfg InputWrites;
+
+		public InteropEventViewerCategoryCfg OtherRegisterReads;
+		public InteropEventViewerCategoryCfg OtherRegisterWrites;
 
 		[MarshalAs(UnmanagedType.I1)] public bool ShowPreviousFrameEvents;
 	}

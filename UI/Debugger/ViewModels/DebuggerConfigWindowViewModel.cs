@@ -241,6 +241,8 @@ namespace Mesen.Debugger.ViewModels
 				DebuggerShortcut.StepOver,
 				DebuggerShortcut.StepOut,
 				DebuggerShortcut.StepBack,
+				DebuggerShortcut.StepBackScanline,
+				DebuggerShortcut.StepBackFrame,
 				DebuggerShortcut.RunCpuCycle,
 				DebuggerShortcut.RunPpuCycle,
 				DebuggerShortcut.RunPpuScanline,

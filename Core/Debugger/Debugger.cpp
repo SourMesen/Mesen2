@@ -617,7 +617,7 @@ void Debugger::Step(CpuType cpuType, int32_t stepCount, StepType type, BreakSour
 		if(type != StepType::StepBack) {
 			debugger->ResetStepBackCache();
 		} else {
-			debugger->StepBack();
+			debugger->StepBack(stepCount);
 		}
 
 		debugger->Step(stepCount, type);

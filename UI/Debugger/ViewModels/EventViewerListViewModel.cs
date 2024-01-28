@@ -68,17 +68,17 @@ namespace Mesen.Debugger.ViewModels
 
 			if(DebugEvents.Count < _debugEvents.Length) {
 				for(int i = 0; i < DebugEvents.Count; i++) {
-					DebugEvents[i].Update(_debugEvents, i);
+					DebugEvents[i].Update(_debugEvents, i, EventViewer.CpuType);
 				}
-				DebugEvents.AddRange(Enumerable.Range(DebugEvents.Count, _debugEvents.Length - DebugEvents.Count).Select(i => new DebugEventViewModel(_debugEvents, i)));
+				DebugEvents.AddRange(Enumerable.Range(DebugEvents.Count, _debugEvents.Length - DebugEvents.Count).Select(i => new DebugEventViewModel(_debugEvents, i, EventViewer.CpuType)));
 			} else if(DebugEvents.Count > _debugEvents.Length) {
 				for(int i = 0; i < _debugEvents.Length; i++) {
-					DebugEvents[i].Update(_debugEvents, i);
+					DebugEvents[i].Update(_debugEvents, i, EventViewer.CpuType);
 				}
 				DebugEvents.RemoveRange(_debugEvents.Length, DebugEvents.Count - _debugEvents.Length);
 			} else {
 				for(int i = 0; i < DebugEvents.Count; i++) {
-					DebugEvents[i].Update(_debugEvents, i);
+					DebugEvents[i].Update(_debugEvents, i, EventViewer.CpuType);
 				}
 			}
 		}

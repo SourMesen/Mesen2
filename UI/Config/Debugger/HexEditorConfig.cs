@@ -83,6 +83,10 @@ namespace Mesen.Config
 		[Reactive] public bool Highlight { get; set; }
 		[Reactive] public UInt32 ColorCode { get; set; }
 
-		public Color Color => Color.FromUInt32(ColorCode);
+		public Color Color
+		{
+			get { return Color.FromUInt32(ColorCode); }
+			set { ColorCode = value.ToUInt32(); }
+		}
 	}
 }

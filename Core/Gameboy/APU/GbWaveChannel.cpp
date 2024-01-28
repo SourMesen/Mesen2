@@ -59,34 +59,29 @@ void GbWaveChannel::ClockLengthCounter()
 		if(_state.Length == 0) {
 			//"Length becoming 0 should clear status"
 			_state.Enabled = false;
-			UpdateOutput();
+			_state.Output = 0;
 		}
 	}
 }
 
 uint8_t GbWaveChannel::GetRawOutput()
 {
-	return _state.Output;
+	//"Stopping channel 3 manually using the NR30 register affects PCM34 instantly" (SameSuite's channel_3_stop_delay test)
+	return _state.Enabled ? _state.Output : 0;
 }
 
-int8_t GbWaveChannel::GetOutput()
+double GbWaveChannel::GetOutput()
 {
-	//"the exception is CH3, whose DAC is directly controlled by bit 7 of NR30 instead"
-	if(!_state.DacEnabled) {
-		//"If a DAC is disabled, it fades to an analog value of 0"
-		return 0;
-	}
-
 	//"If a DAC is enabled, the digital range $0 to $F is linearly translated to the analog range -1 to 1, 
 	//in arbitrary units. Importantly, the slope is negative: “digital 0” maps to “analog 1”, not “analog -1”."	
 
 	//Return -7 to 7 "analog" range (higher digital value = lower analog value)
-	return 7 - (int8_t)_state.Output;
+	return (7 - (int8_t)_state.Output) * (double)_dac.GetDacVolume() / 100;
 }
 
 void GbWaveChannel::UpdateOutput()
 {
-	if(_state.Volume && _state.Enabled) {
+	if(_state.Volume) {
 		_state.Output = _state.SampleBuffer >> (_state.Volume - 1);
 	} else {
 		_state.Output = 0;
@@ -95,6 +90,8 @@ void GbWaveChannel::UpdateOutput()
 
 void GbWaveChannel::Exec(uint32_t clocksToRun)
 {
+	_dac.Exec(clocksToRun, _state.DacEnabled);
+
 	if(!_state.Enabled) {
 		return;
 	}
@@ -144,11 +141,6 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 		case 0:
 			_state.DacEnabled = (value & 0x80) != 0;
 			_state.Enabled &= _state.DacEnabled;
-
-			if(!_state.Enabled) {
-				//"Stopping channel 3 manually using the NR30 register affects PCM34 instantly" (SameSuite's channel_3_stop_delay test)
-				UpdateOutput();
-			}
 			break;
 
 		case 1:
@@ -178,6 +170,10 @@ void GbWaveChannel::Write(uint16_t addr, uint8_t value)
 
 				//Channel is enabled, if DAC is enabled
 				_state.Enabled = _state.DacEnabled;
+				
+				if(_state.Enabled) {
+					UpdateOutput();
+				}
 
 				//Frequency timer is reloaded with period.
 				_state.Timer = (2048 - _state.Frequency) * 2 + 6;
@@ -243,4 +239,5 @@ void GbWaveChannel::Serialize(Serializer& s)
 	SV(_state.DacEnabled); SV(_state.SampleBuffer); SV(_state.Position); SV(_state.Volume); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.Output);
 	SVArray(_state.Ram, 0x10); SV(_allowRamAccess);
+	SV(_dac);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Gameboy/GbTypes.h"
+#include "Gameboy/APU/GbChannelDac.h"
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
@@ -10,6 +11,7 @@ class GbNoiseChannel final : public ISerializable
 {
 private:
 	GbNoiseState _state = {};
+	GbChannelDac _dac = {};
 	GbApu* _apu = nullptr;
 	
 	void UpdateOutput();
@@ -26,7 +28,7 @@ public:
 	void ClockEnvelope();
 
 	uint8_t GetRawOutput();
-	int8_t GetOutput();
+	double GetOutput();
 	uint32_t GetPeriod();
 
 	void Exec(uint32_t clocksToRun);

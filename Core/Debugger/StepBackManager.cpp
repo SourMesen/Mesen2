@@ -13,10 +13,20 @@ StepBackManager::StepBackManager(Emulator* emu, IDebugger* debugger)
 	_debugger = debugger;
 }
 
-void StepBackManager::StepBack()
+void StepBackManager::StepBack(StepBackType type)
 {
 	if(!_active) {
-		_targetClock = _debugger->GetCpuCycleCount();
+		StepBackConfig cfg = _debugger->GetStepBackConfig();
+
+		int64_t target = 0;
+		switch(type) {
+			default: case StepBackType::Instruction: target = cfg.CurrentCycle; break;
+			case StepBackType::Scanline: target = (int64_t)cfg.CurrentCycle - cfg.CyclesPerScanline; break;
+			case StepBackType::Frame: target = (int64_t)cfg.CurrentCycle - cfg.CyclesPerFrame; break;
+		}
+
+		_targetClock = (uint64_t)std::max<int64_t>(0, target);
+		
 		_active = true;
 		_allowRetry = true;
 		_stateClockLimit = StepBackManager::DefaultClockLimit;
@@ -29,7 +39,7 @@ bool StepBackManager::CheckStepBack()
 		return false;
 	}
 
-	uint64_t clock = _debugger->GetCpuCycleCount();
+	uint64_t clock = _debugger->GetStepBackConfig().CurrentCycle;
 
 	if(!_rewindManager->IsStepBack()) {
 		if(_cache.size() > 1) {
@@ -39,11 +49,9 @@ bool StepBackManager::CheckStepBack()
 				_cache.pop_back();
 				if(_cache.size()) {
 					//If cache isn't empty, load the last state
-					_rewindManager->SetIgnoreLoadState(true);
-					_emu->Deserialize(_cache.back().SaveState, SaveStateManager::FileFormatVersion, true);
-					_rewindManager->SetIgnoreLoadState(false);
+					_emu->Deserialize(_cache.back().SaveState, SaveStateManager::FileFormatVersion, true, std::nullopt, false);
 
-					_emu->GetRewindManager()->StopRewinding(true);
+					_emu->GetRewindManager()->StopRewinding(true, true);
 					_active = false;
 					_prevClock = clock;
 					return true;
@@ -57,7 +65,7 @@ bool StepBackManager::CheckStepBack()
 		//Start rewinding on next instruction after StepBack() is called
 		_cache.clear();
 		_rewindManager->StartRewinding(true);
-		clock = _debugger->GetCpuCycleCount();
+		clock = _debugger->GetStepBackConfig().CurrentCycle;
 	}
 
 	if(clock < _targetClock && _targetClock - clock < _stateClockLimit) {
@@ -70,10 +78,8 @@ bool StepBackManager::CheckStepBack()
 	if(clock >= _targetClock) {
 		//If the CPU is back to where it was before step back, check if the cache contains data
 		if(_cache.size() > 0) {
-			//If it does, load the last state
-			_rewindManager->SetIgnoreLoadState(true);
-			_emu->Deserialize(_cache.back().SaveState, SaveStateManager::FileFormatVersion, true);
-			_rewindManager->SetIgnoreLoadState(false);
+			_emu->Deserialize(_cache.back().SaveState, SaveStateManager::FileFormatVersion, true, std::nullopt, false);
+			_rewindManager->StopRewinding(true, true);
 		} else if(_allowRetry && clock > _prevClock && (clock - _prevClock) > StepBackManager::DefaultClockLimit) {
 			//Cache is empty, this can happen when a single instruction takes more than X clocks (e.g block transfers, dma)
 			//In this case, re-run the step back process again but start recordings state earlier
@@ -82,10 +88,10 @@ bool StepBackManager::CheckStepBack()
 			_stateClockLimit = (clock - _prevClock) + StepBackManager::DefaultClockLimit;
 			_allowRetry = false;
 			return false;
+		} else {
+			//Stop rewinding, even if the target was not found
+			_rewindManager->StopRewinding(true);
 		}
-
-		//Stop rewinding, even if the target was not found
-		_rewindManager->StopRewinding(true);
 		_active = false;
 		_prevClock = clock;
 		return true;

@@ -13,6 +13,7 @@ void GbDmaController::Init(Gameboy* gameboy, GbMemoryManager* memoryManager, GbP
 	_ppu = ppu;
 	_cpu = cpu;
 	_state = {};
+	_state.OamDmaSource = 0xFF;
 }
 
 GbDmaControllerState GbDmaController::GetState()
@@ -48,6 +49,11 @@ void GbDmaController::Exec()
 			_state.OamDmaRunning = isRunning;
 		}
 	}
+}
+
+uint8_t GbDmaController::GetLastWriteAddress()
+{
+	return _state.DmaCounter <= 160 ? (160 - _state.DmaCounter) : 0;
 }
 
 bool GbDmaController::IsOamDmaConflict(uint16_t addr)

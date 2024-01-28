@@ -6,6 +6,7 @@ using Avalonia.Threading;
 using DataBoxControl;
 using Mesen.Config;
 using Mesen.Debugger.Controls;
+using Mesen.Debugger.Labels;
 using Mesen.Debugger.Utilities;
 using Mesen.Debugger.Windows;
 using Mesen.Interop;
@@ -464,6 +465,7 @@ namespace Mesen.Debugger.ViewModels
 	{
 		private DebugEventInfo[] _events = Array.Empty<DebugEventInfo>();
 		private int _index;
+		private CpuType _cpuType;
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -487,13 +489,14 @@ namespace Mesen.Debugger.ViewModels
 
 		public DebugEventInfo RawEvent => _events[_index];
 
-		public DebugEventViewModel(DebugEventInfo[] events, int index)
+		public DebugEventViewModel(DebugEventInfo[] events, int index, CpuType cpuType)
 		{
-			Update(events, index);
+			Update(events, index, cpuType);
 		}
 
-		public void Update(DebugEventInfo[] events, int index)
+		public void Update(DebugEventInfo[] events, int index, CpuType cpuType)
 		{
+			_cpuType = cpuType;
 			_events = events;
 			_index = index;
 			
@@ -517,8 +520,14 @@ namespace Mesen.Debugger.ViewModels
 			string address = "";
 			if(evt.Type == DebugEventType.Register) {
 				address += "$" + evt.Operation.Address.ToString("X4");
-				string regName = evt.GetRegisterName();
+
+				CodeLabel? label = LabelManager.GetLabel(new AddressInfo() { Address = (int)evt.Operation.Address, Type = _cpuType.ToMemoryType() });
+				if(label != null) {
+					address = label.Label + " (" + address + ")";
+				}
+				
 				if(evt.RegisterId >= 0) {
+					string regName = evt.GetRegisterName();
 					if(string.IsNullOrEmpty(regName)) {
 						address += $" (${evt.RegisterId:X2})";
 					} else {
@@ -526,6 +535,7 @@ namespace Mesen.Debugger.ViewModels
 					}
 				}
 			}
+
 			Address = address;
 			Value = evt.Type == DebugEventType.Register ? "$" + evt.Operation.Value.ToString("X2") : "";
 			Type = ResourceHelper.GetEnumText(evt.Type);

@@ -1254,6 +1254,9 @@
 			<Control ID="lblNoMatchFound">No match found!</Control>
 			<Control ID="btnFindPrev">Previous</Control>
 			<Control ID="btnFindNext">Next</Control>
+			
+			<Control ID="lblSearchHelp">When searching hexadecimal values, a question mark (?)&#10;can be used to define a byte that can take any value.&#10;&#10;e.g: "FF ? 55" will search for any set of three&#10;bytes that starts with FF and ends with 55.</Control>
+			
 			<Control ID="btnClose">Close</Control>
 		</Form>
 		<Form ID="FontOptionsView">
@@ -2871,6 +2874,8 @@ E
 			<Value ID="StepOver">Step over</Value>
 			<Value ID="StepOut">Step out</Value>
 			<Value ID="StepBack">Step back</Value>
+			<Value ID="StepBackScanline">Step back (1 scanline)</Value>
+			<Value ID="StepBackFrame">Step back (1 frame)</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU Cycle</Value>
 			<Value ID="RunPpuScanline">Run one PPU Scanline</Value>
@@ -3069,6 +3074,8 @@ E
 			<Value ID="StepOut">Step out</Value>
 			<Value ID="StepOver">Step over</Value>
 			<Value ID="StepBack">Step back</Value>
+			<Value ID="StepBackScanline">Step back (1 scanline)</Value>
+			<Value ID="StepBackFrame">Step back (1 frame)</Value>
 			<Value ID="RunCpuCycle">Run one CPU Cycle</Value>
 			<Value ID="RunPpuCycle">Run one PPU cycle</Value>
 			<Value ID="RunPpuScanline">Run one scanline</Value>

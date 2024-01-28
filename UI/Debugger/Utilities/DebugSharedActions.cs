@@ -62,13 +62,25 @@ namespace Mesen.Debugger.Utilities
 					AllowedWhenHidden = true,
 					OnClick = () => Step(getCpuType(), StepType.StepOut, 1)
 				},
+				new ContextMenuSeparator() { IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).StepBack },
 				new ContextMenuAction() {
 					ActionType = ActionType.StepBack,
 					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBack),
 					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).StepBack,
-					OnClick = () => Step(getCpuType(), StepType.StepBack, 1)
+					OnClick = () => Step(getCpuType(), StepType.StepBack, (int)StepBackType.Instruction)
 				},
-
+				new ContextMenuAction() {
+					ActionType = ActionType.StepBackScanline,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBackScanline),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).StepBack,
+					OnClick = () => Step(getCpuType(), StepType.StepBack, (int)StepBackType.Scanline)
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.StepBackFrame,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.StepBackFrame),
+					IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).StepBack,
+					OnClick = () => Step(getCpuType(), StepType.StepBack, (int)StepBackType.Frame)
+				},
 				new ContextMenuSeparator() { IsVisible = () => DebugApi.GetDebuggerFeatures(getCpuType()).CpuCycleStep },
 				new ContextMenuAction() {
 					ActionType = ActionType.RunCpuCycle,
@@ -94,12 +106,7 @@ namespace Mesen.Debugger.Utilities
 					OnClick = () => Step(getCpuType(), StepType.PpuFrame, 1)
 				},
 
-				new ContextMenuSeparator() {
-					IsVisible = () => {
-						DebuggerFeatures features = DebugApi.GetDebuggerFeatures(getCpuType());
-						return features.RunToNmi || features.RunToIrq;
-					}
-				},
+				new ContextMenuSeparator(),
 				
 				new ContextMenuAction() {
 					ActionType = ActionType.RunToNmi,
@@ -143,5 +150,12 @@ namespace Mesen.Debugger.Utilities
 					break;
 			}
 		}
+	}
+
+	enum StepBackType
+	{
+		Instruction,
+		Scanline,
+		Frame
 	}
 }

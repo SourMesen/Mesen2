@@ -268,6 +268,15 @@ void NesDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+StepBackConfig NesDebugger::GetStepBackConfig()
+{
+	return {
+		GetCpuCycleCount(),
+		341 / 3,
+		341u * _console->GetPpu()->GetScanlineCount() / 3
+	};
+}
+
 void NesDebugger::DrawPartialFrame()
 {
 	_console->GetPpu()->DebugSendFrame();

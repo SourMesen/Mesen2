@@ -896,7 +896,7 @@ void Emulator::Serialize(ostream& out, bool includeSettings, int compressionLeve
 	s.SaveTo(out, compressionLevel);
 }
 
-bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> srcConsoleType)
+bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool includeSettings, optional<ConsoleType> srcConsoleType, bool sendNotification)
 {
 	Serializer s(fileFormatVersion, false);
 	if(!s.LoadFrom(in)) {
@@ -931,7 +931,9 @@ bool Emulator::Deserialize(istream& in, uint32_t fileFormatVersion, bool include
 
 	s.Stream(_console, "");
 	
-	_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
+	if(sendNotification) {
+		_notificationManager->SendNotification(ConsoleNotificationType::StateLoaded);
+	}
 	return true;
 }
 

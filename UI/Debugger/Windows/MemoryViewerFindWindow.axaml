@@ -59,7 +59,7 @@
 			</StackPanel>
 		</StackPanel>
 
-		<Grid DockPanel.Dock="Top" VerticalAlignment="Top" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+		<Grid DockPanel.Dock="Top" VerticalAlignment="Top" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 			<TextBlock
 				Text="{l:Translate lblSearch}"
 				VerticalAlignment="Center"
@@ -72,6 +72,15 @@
 				Text="{CompiledBinding SearchString}"
 				MaxLength="300"
 			/>
+			<Image
+				Grid.Column="2"
+				Stretch="None"
+				Margin="2 -1 2 0"
+				Source="/Assets/Help.png"
+				ToolTip.Tip="{l:Translate lblSearchHelp}"
+				ToolTip.Placement="Bottom"
+				ToolTip.ShowDelay="0"
+			/>
 			<TextBlock
 				Grid.Row="1"
 				Text="{l:Translate lblDataType}"
@@ -81,6 +90,7 @@
 			<c:EnumComboBox
 				Grid.Row="1"
 				Grid.Column="1"
+				Grid.ColumnSpan="2"
 				SelectedItem="{CompiledBinding DataType}"
 		  />
 			<TextBlock
@@ -93,19 +103,20 @@
 			<c:EnumComboBox
 				Grid.Row="2"
 				Grid.Column="1"
+				Grid.ColumnSpan="2"
 				IsVisible="{CompiledBinding IsInteger}"
 				SelectedItem="{CompiledBinding IntType}"
 		  />
 			<CheckBox
 				Grid.Row="3"
-				Grid.ColumnSpan="2"
+				Grid.ColumnSpan="3"
 				IsVisible="{CompiledBinding IsString}"
 				IsChecked="{CompiledBinding CaseSensitive}"
 				Content="{l:Translate chkCaseSensitive}"
 		  />
 			<CheckBox
 				Grid.Row="4"
-				Grid.ColumnSpan="2"
+				Grid.ColumnSpan="3"
 				IsVisible="{CompiledBinding IsString}"
 				IsChecked="{CompiledBinding UseTblMappings}"
 				Content="{l:Translate chkUseTblMappings}"

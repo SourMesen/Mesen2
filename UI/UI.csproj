@@ -58,6 +58,7 @@
 	  <None Remove="Debugger\HighlightAssembly.xshd" />
 	  <None Remove="Debugger\HighlightLua.xshd" />
 	  <None Remove="Debugger\Utilities\LuaDocumentation.json" />
+	  <None Remove="Debugger\Utilities\LuaScripts\DisplayState.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\DrawMode.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Example.lua" />
 	  <None Remove="Debugger\Utilities\LuaScripts\Grid.lua" />
@@ -84,17 +85,17 @@
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.6" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.6" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia" Version="11.0.7" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.7" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
     <PackageReference Include="Dock.Avalonia" Version="11.0.0.5" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0.5" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-    <PackageReference Include="ReactiveUI.Fody" Version="19.5.31" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.39" />
    </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ButtonWithIcon.axaml.cs">
@@ -566,6 +567,7 @@
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesGameBoyMode.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesLogParallax.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesSpriteBox.lua" />
+    <EmbeddedResource Include="Debugger\Utilities\LuaScripts\DisplayState.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NtscSafeArea.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\NesPianoRoll.lua" />
     <EmbeddedResource Include="Debugger\Utilities\LuaScripts\ReverseMode.lua" />

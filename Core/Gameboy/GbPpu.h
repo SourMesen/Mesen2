@@ -39,18 +39,28 @@ private:
 	uint8_t _fetchColumn = 0;
 	bool _fetchWindow = false;
 	int16_t _windowCounter = -1;
-	uint8_t _latchWindowX = 0;
-	uint8_t _latchWindowY = 0;
-	bool _latchWindowEnabled = false;
 	bool _wyEnableFlag = false;
+	bool _wxEnableFlag = false;
+	bool _insertGlitchBgPixel = false;
 
 	int16_t _fetchSprite = -1;
 	uint8_t _spriteCount = 0;
 	uint8_t _spriteX[10] = {};
+	uint8_t _spriteY[10] = {};
 	uint8_t _spriteIndexes[10] = {};
+	uint8_t _oamReadBuffer[2] = {};
+	
+	bool _oamReadBlocked = false;
+	bool _oamWriteBlocked = false;
+	bool _vramReadBlocked = false;
+	bool _vramWriteBlocked = false;
 
 	bool _isFirstFrame = true;
+	bool _forceBlankFrame = true;
 	bool _rendererIdle = false;
+
+	GbPixelType _lastPixelType = {};
+	uint8_t _lastBgColor = 0;
 
 	__forceinline void WriteBgPixel(uint8_t colorIndex);
 	__forceinline void WriteObjPixel(uint8_t colorIndex);
@@ -96,6 +106,7 @@ public:
 	bool IsCgbEnabled();
 	PpuMode GetMode();
 
+	template<bool singleStep>
 	void Exec();
 
 	uint8_t Read(uint16_t addr);

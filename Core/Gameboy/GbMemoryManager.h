@@ -38,6 +38,8 @@ private:
 	uint8_t* _writes[0x100] = {};
 
 	GbMemoryManagerState _state = {};
+	
+	__forceinline void ExecTimerDmaSerial();
 
 public:
 	virtual ~GbMemoryManager();
@@ -50,6 +52,7 @@ public:
 	void Unmap(uint16_t start, uint16_t end);
 	void RefreshMappings();
 
+	void ExecMasterCycle();
 	void Exec();
 
 	template<MemoryOperationType type, GbOamCorruptionType oamCorruptionType = GbOamCorruptionType::Read>
@@ -65,6 +68,8 @@ public:
 	uint8_t PeekRegister(uint16_t addr);
 	uint8_t ReadRegister(uint16_t addr);
 	void WriteRegister(uint16_t addr, uint8_t value);
+
+	void ProcessCpuWrite(uint16_t addr, uint8_t value);
 
 	void RequestIrq(uint8_t source);
 	void ClearIrqRequest(uint8_t source);

@@ -66,6 +66,7 @@ public:
 
 	void Run() override;
 	void Step(int32_t stepCount, StepType type) override;
+	StepBackConfig GetStepBackConfig() override;
 
 	void DrawPartialFrame() override;
 

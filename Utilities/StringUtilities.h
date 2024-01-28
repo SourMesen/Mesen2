@@ -21,7 +21,9 @@ public:
 	static string TrimLeft(string str)
 	{
 		size_t startIndex = str.find_first_not_of("\t ");
-		if(startIndex > 0 && startIndex != string::npos) {
+		if(startIndex == string::npos) {
+			return "";
+		} else if(startIndex > 0) {
 			return str.substr(startIndex);
 		}
 		return str;
@@ -30,7 +32,9 @@ public:
 	static string TrimRight(string str)
 	{
 		size_t endIndex = str.find_last_not_of("\t\r\n ");
-		if(endIndex > 0 && endIndex != string::npos) {
+		if(endIndex == string::npos) {
+			return "";
+		} else if(endIndex > 0) {
 			return str.substr(0, endIndex + 1);
 		}
 		return str;

@@ -249,6 +249,15 @@ void PceDebugger::Step(int32_t stepCount, StepType type)
 	_step.reset(new StepRequest(step));
 }
 
+StepBackConfig PceDebugger::GetStepBackConfig()
+{
+	return {
+		_memoryManager->GetState().CycleCount,
+		PceConstants::ClockPerScanline,
+		PceConstants::ClockPerScanline * _vce->GetScanlineCount()
+	};
+}
+
 void PceDebugger::DrawPartialFrame()
 {
 	_vpc->DebugSendFrame();
