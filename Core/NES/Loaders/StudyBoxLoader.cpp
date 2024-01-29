@@ -128,7 +128,7 @@ void StudyBoxLoader::LoadRom(RomData& romData, vector<uint8_t>& romFile, string 
 
 	romData.Info.Format = RomFormat::StudyBox;
 	romData.Info.MapperID = MapperFactory::StudyBoxMapperID;
-	romData.Info.Mirroring = MirroringType::Vertical;
+	romData.Info.Mirroring = MirroringType::FourScreens;
 	romData.Info.System = GameSystem::Famicom;
 
 	romData.StudyBox.FileName = filepath;

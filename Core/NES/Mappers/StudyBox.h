@@ -75,8 +75,6 @@ protected:
 		SetCpuMemoryMapping(0x4000, 0x4FFF, 8, PrgMemoryType::WorkRam);
 		RemoveCpuMemoryMapping(0x4000, 0x43FF);
 
-		SetMirroringType(MirroringType::FourScreens);
-
 		_emu->GetSoundMixer()->RegisterAudioProvider(this);
 	}
 
