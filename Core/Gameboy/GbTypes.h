@@ -120,7 +120,6 @@ enum class EvtColor
 	RenderingIdle = 3,
 	RenderingBgLoad = 4,
 	RenderingOamLoad = 5,
-	LcdColor = 6,
 };
 
 enum class GbPixelType : uint8_t

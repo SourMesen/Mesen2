@@ -469,23 +469,58 @@ void GbMemoryManager::WriteRegister(uint16_t addr, uint8_t value)
 
 void GbMemoryManager::ProcessCpuWrite(uint16_t addr, uint8_t value)
 {
-	if(addr != 0xFF47) {
+	if((addr & 0xFFC0) != 0xFF40) {
 		Exec();
 		Exec();
 		Write(addr, value);
-	} else {
-		//BGP writes appear to be effective slightly earlier than other writes?
-		//This allows the ppu_scanline_bgp and m3_bgp_change tests to display properly
-		if(!_gameboy->IsCgb()) {
+		return;
+	}
+
+	//Special cases for LCD registers reads/writes where effects
+	//need to be triggered a bit earlier than other writes
+	switch(addr) {
+		default:
+			//Default case, same write timing as all other writes
+			Exec();
+			Exec();
+			Write(addr, value);
+			break;
+
+		case 0xFF47:
+			//BGP writes appear to be effective slightly earlier than other writes?
+			//This allows the ppu_scanline_bgp and m3_bgp_change tests to display properly
+			if(!_gameboy->IsCgb()) {
+				ExecMasterCycle();
+			}
 			ExecMasterCycle();
-		}
-		ExecMasterCycle();
-		ExecMasterCycle();
-		Write(addr, value);
-		if(_gameboy->IsCgb()) {
 			ExecMasterCycle();
-		}
-		ExecMasterCycle();
+			Write(addr, value);
+			if(_gameboy->IsCgb()) {
+				ExecMasterCycle();
+			}
+			ExecMasterCycle();
+			break;
+
+		case 0xFF40:
+			//LCDC - For GBC, clearing bit 4 (tile select) causes a glitch if done at the same time as
+			//the BG fetcher is loading tile data (either the LSB or MSB). When this bug is triggered,
+			//the tile data is replaced with the tile index (loaded at the first step of the fetching process)
+			//This needs to be triggered before running the last dot to get the correct result (cgb-acid-hell test)
+			Exec();
+			if(_gameboy->IsCgb()) {
+				ExecMasterCycle();
+				if((_ppu->GetState().Control & 0x10) && !(value & 0x10)) {
+					//Trigger GBC fetch glitch at the same time as the write occurs
+					_ppu->SetTileFetchGlitchState(true);
+				}
+				ExecMasterCycle();
+				Write(addr, value);
+				_ppu->SetTileFetchGlitchState(false);
+			} else {
+				Exec();
+				Write(addr, value);
+			}
+			break;
 	}
 }
 

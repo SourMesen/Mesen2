@@ -59,6 +59,9 @@ private:
 	bool _forceBlankFrame = true;
 	bool _rendererIdle = false;
 
+	uint8_t _tileIndex = 0;
+	uint8_t _gbcTileGlitch = 0;
+
 	GbPixelType _lastPixelType = {};
 	uint8_t _lastBgColor = 0;
 
@@ -111,6 +114,8 @@ public:
 
 	uint8_t Read(uint16_t addr);
 	void Write(uint16_t addr, uint8_t value);
+
+	void SetTileFetchGlitchState(bool enabled);
 
 	bool IsVramReadAllowed();
 	bool IsVramWriteAllowed();

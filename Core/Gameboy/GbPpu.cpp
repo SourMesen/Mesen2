@@ -405,7 +405,7 @@ void GbPpu::RunDrawCycle()
 	}
 
 	FindNextSprite();
-	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
+ 	if(_fetchSprite >= 0 && _bgFetcher.Step >= 5 && _bgFifo.Size > 0) {
 		_evtColor = EvtColor::RenderingOamLoad;
 		ClockSpriteFetcher();
 		FindNextSprite();
@@ -602,7 +602,7 @@ void GbPpu::ClockTileFetcher()
 
 			uint8_t row = yOffset >> 3;
 			uint16_t tileAddr = tilemapAddr + _fetchColumn + row * 32;
-			uint8_t tileIndex = _vram[tileAddr];
+			_tileIndex = _vram[tileAddr];
 
 			uint8_t attributes = _state.CgbEnabled ? _vram[tileAddr | 0x2000] : 0;
 			bool vMirror = (attributes & 0x40) != 0;
@@ -610,7 +610,7 @@ void GbPpu::ClockTileFetcher()
 
 			uint16_t baseTile = _state.BgTileSelect ? 0 : 0x1000;
 			uint8_t tileY = vMirror ? (7 - (yOffset & 0x07)) : (yOffset & 0x07);
-			uint16_t tileRowAddr = baseTile + (baseTile ? (int8_t)tileIndex * 16 : tileIndex * 16) + tileY * 2;
+			uint16_t tileRowAddr = baseTile + (baseTile ? (int8_t)_tileIndex * 16 : _tileIndex * 16) + tileY * 2;
 			tileRowAddr |= tileBank;
 			_bgFetcher.Addr = tileRowAddr;
 			_bgFetcher.Attributes = (attributes & 0xBF);
@@ -619,13 +619,21 @@ void GbPpu::ClockTileFetcher()
 
 		case 3: {
 			//Fetch tile data (low byte)
-			_bgFetcher.LowByte = _vram[_bgFetcher.Addr];
+			if(_gbcTileGlitch) {
+				_bgFetcher.LowByte = _tileIndex;
+			} else {
+				_bgFetcher.LowByte = _vram[_bgFetcher.Addr];
+			}
 			break;
 		}
 
 		case 5: {
 			//Fetch tile data (high byte)
-			_bgFetcher.HighByte = _vram[_bgFetcher.Addr + 1];
+			if(_gbcTileGlitch) {
+				_bgFetcher.HighByte = _tileIndex;
+			} else {
+				_bgFetcher.HighByte = _vram[_bgFetcher.Addr + 1];
+			}
 			
 			[[fallthrough]];
 		}
@@ -839,7 +847,7 @@ uint8_t GbPpu::Read(uint16_t addr)
 void GbPpu::Write(uint16_t addr, uint8_t value)
 {
 	switch(addr) {
-		case 0xFF40: 
+		case 0xFF40:
 			_state.Control = value; 
 			if(_state.LcdEnabled != ((value & 0x80) != 0)) {
 				_state.LcdEnabled = (value & 0x80) != 0;
@@ -949,6 +957,11 @@ void GbPpu::Write(uint16_t addr, uint8_t value)
 			LogDebug("[Debug] GB - Missing write handler: $" + HexUtilities::ToHex(addr));
 			break;
 	}
+}
+
+void GbPpu::SetTileFetchGlitchState(bool enabled)
+{
+	_gbcTileGlitch = enabled;
 }
 
 bool GbPpu::IsVramReadAllowed()
@@ -1229,6 +1242,9 @@ void GbPpu::Serialize(Serializer& s)
 		SV(_lastPixelType);
 		SV(_lastBgColor);
 		SV(_insertGlitchBgPixel);
+
+		SV(_gbcTileGlitch);
+		SV(_tileIndex);
 
 		SV(_bgFetcher.Attributes); SV(_bgFetcher.Step); SV(_bgFetcher.Addr); SV(_bgFetcher.LowByte); SV(_bgFetcher.HighByte);
 		SV(_oamFetcher.Attributes); SV(_oamFetcher.Step); SV(_oamFetcher.Addr); SV(_oamFetcher.LowByte); SV(_oamFetcher.HighByte);
