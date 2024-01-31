@@ -24,6 +24,7 @@ struct GbCpuState : BaseState
 	bool EiPending;
 	bool IME;
 	bool HaltBug;
+	bool Stopped;
 };
 
 namespace GbCpuFlags

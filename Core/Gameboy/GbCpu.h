@@ -159,6 +159,7 @@ private:
 	void PREFIX();
 	
 	__forceinline void ProcessNextCycleStart();
+	__noinline bool HandleStoppedState();
 
 public:
 	virtual ~GbCpu();

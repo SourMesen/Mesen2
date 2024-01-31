@@ -318,6 +318,11 @@ GameboyHeader Gameboy::GetHeader()
 	return header;
 }
 
+bool Gameboy::IsCpuStopped()
+{
+	return _cpu->GetState().Stopped;
+}
+
 bool Gameboy::IsCgb()
 {
 	return _model == GameboyModel::GameboyColor;

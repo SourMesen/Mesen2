@@ -85,19 +85,20 @@ uint8_t GbControlManager::ReadInputPort()
 			}
 		}
 	} else {
-		shared_ptr<BaseControlDevice> controller = GetControlDevice(0);
-		if(controller && controller->GetControllerType() == ControllerType::GameboyController) {
-			if(!(inputSelect & 0x20)) {
-				result &= ~(controller->IsPressed(GbController::A) ? 0x01 : 0);
-				result &= ~(controller->IsPressed(GbController::B) ? 0x02 : 0);
-				result &= ~(controller->IsPressed(GbController::Select) ? 0x04 : 0);
-				result &= ~(controller->IsPressed(GbController::Start) ? 0x08 : 0);
-			}
-			if(!(inputSelect & 0x10)) {
-				result &= ~(controller->IsPressed(GbController::Right) ? 0x01 : 0);
-				result &= ~(controller->IsPressed(GbController::Left) ? 0x02 : 0);
-				result &= ~(controller->IsPressed(GbController::Up) ? 0x04 : 0);
-				result &= ~(controller->IsPressed(GbController::Down) ? 0x08 : 0);
+		for(shared_ptr<BaseControlDevice>& controller : _controlDevices) {
+			if(controller->GetPort() == 0 && controller->GetControllerType() == ControllerType::GameboyController) {
+				if(!(inputSelect & 0x20)) {
+					result &= ~(controller->IsPressed(GbController::A) ? 0x01 : 0);
+					result &= ~(controller->IsPressed(GbController::B) ? 0x02 : 0);
+					result &= ~(controller->IsPressed(GbController::Select) ? 0x04 : 0);
+					result &= ~(controller->IsPressed(GbController::Start) ? 0x08 : 0);
+				}
+				if(!(inputSelect & 0x10)) {
+					result &= ~(controller->IsPressed(GbController::Right) ? 0x01 : 0);
+					result &= ~(controller->IsPressed(GbController::Left) ? 0x02 : 0);
+					result &= ~(controller->IsPressed(GbController::Up) ? 0x04 : 0);
+					result &= ~(controller->IsPressed(GbController::Down) ? 0x08 : 0);
+				}
 			}
 		}
 	}

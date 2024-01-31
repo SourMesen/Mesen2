@@ -50,6 +50,11 @@ private:
 	uint8_t _spriteIndexes[10] = {};
 	uint8_t _oamReadBuffer[2] = {};
 	
+	bool _lcdDisabled = true;
+	bool _stopOamBlocked = false;
+	bool _stopVramBlocked = false;
+	bool _stopPaletteBlocked = false;
+
 	bool _oamReadBlocked = false;
 	bool _oamWriteBlocked = false;
 	bool _vramReadBlocked = false;
@@ -85,6 +90,11 @@ private:
 
 	void UpdateStatIrq();
 
+	__forceinline uint8_t LcdReadOam(uint8_t addr);
+	__forceinline uint8_t LcdReadVram(uint16_t addr);
+	__forceinline uint16_t LcdReadBgPalette(uint8_t addr);
+	__forceinline uint16_t LcdReadObjPalette(uint8_t addr);
+
 	void SendFrame();
 	void UpdatePalette();
 
@@ -101,6 +111,8 @@ public:
 	uint16_t* GetOutputBuffer();
 	uint16_t* GetEventViewerBuffer();
 	uint16_t* GetPreviousEventViewerBuffer();
+
+	void SetCpuStopState(bool stopped);
 
 	uint32_t GetFrameCount();
 	uint8_t GetScanline();

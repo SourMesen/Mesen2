@@ -96,6 +96,7 @@ public:
 	AddressInfo GetAbsoluteAddress(uint16_t addr);
 	int32_t GetRelativeAddress(AddressInfo& absAddress);
 
+	bool IsCpuStopped();
 	bool IsCgb();
 	bool IsSgb();
 	SuperGameboy* GetSgb();
