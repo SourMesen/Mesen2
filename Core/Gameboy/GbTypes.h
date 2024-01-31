@@ -250,6 +250,7 @@ struct GbSquareState
 	uint16_t SweepTimer;
 	uint16_t SweepFreq;
 	uint16_t SweepPeriod;
+	uint8_t SweepUpdateDelay;
 	bool SweepNegate;
 	uint8_t SweepShift;
 

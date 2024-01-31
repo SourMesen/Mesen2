@@ -52,18 +52,16 @@ void GbSquareChannel::ClockSweepUnit()
 		if(newFreq >= 2048) {
 			_state.Enabled = false;
 			_state.SweepEnabled = false;
+			UpdateOutput();
 		} else {
 			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
 			if(_state.SweepShift) {
 				_state.Frequency = newFreq;
 				_state.SweepFreq = newFreq;
 
-				newFreq = GetSweepTargetFrequency();
-				if(newFreq >= 2048) {
-					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
-					_state.Enabled = false;
-					_state.SweepEnabled = false;
-				}
+				//8 cpu cycles later, the next frequency is checked
+				//This is checked by SameSuite's channel_1_sweep test
+				_state.SweepUpdateDelay = 8 * 4;
 			}
 		}
 	}
@@ -144,6 +142,26 @@ void GbSquareChannel::Exec(uint32_t clocksToRun)
 		return;
 	}
 
+	if(_state.SweepUpdateDelay) {
+		if(_state.SweepUpdateDelay > clocksToRun) {
+			_state.SweepUpdateDelay -= clocksToRun;
+		} else {
+			_state.SweepUpdateDelay = 0;
+			
+			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
+			if(_state.SweepShift) {
+				uint16_t newFreq = GetSweepTargetFrequency();
+				if(newFreq >= 2048) {
+					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
+					_state.Enabled = false;
+					_state.SweepEnabled = false;
+					UpdateOutput();
+					return;
+				}
+			}
+		}
+	}
+
 	_state.Timer -= clocksToRun;
 
 	if(_state.Timer == 0) {
@@ -196,6 +214,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//while negate mode was enabled will disable the channel
 				//Required for sweep-details tests 4, 5 and 6
 				_state.Enabled = false;
+				UpdateOutput();
 			}
 			break;
 
@@ -229,6 +248,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 			if(!(value & 0xF8)) {
 				_state.Enabled = false;
+				UpdateOutput();
 			}
 			break;
 		}
@@ -283,12 +303,8 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 
 				//"If the sweep shift is non-zero, frequency calculation and the overflow check are performed immediately."
 				if(_state.SweepShift > 0) {
-					//Calculate new frequency and disable channel as needed (but don't save it in SweepFreq - otherwise sweep-details #2 fails)
-					if(GetSweepTargetFrequency() > 2047) {
-						_state.Enabled = false;
-						_state.SweepEnabled = false;
-					}
-
+					//After ~8 cpu cycles, the next frequency is checked (which can disable the channel)
+					_state.SweepUpdateDelay = 8 * 4 + 2;
 					if(_state.SweepNegate) {
 						_state.SweepNegateCalcDone = true;
 					}
@@ -307,5 +323,6 @@ void GbSquareChannel::Serialize(Serializer& s)
 	SV(_state.Volume); SV(_state.EnvVolume); SV(_state.EnvRaiseVolume); SV(_state.EnvPeriod); SV(_state.EnvTimer); SV(_state.Duty); SV(_state.Frequency);
 	SV(_state.Length); SV(_state.LengthEnabled); SV(_state.Enabled); SV(_state.Timer); SV(_state.DutyPos); SV(_state.Output);
 	SV(_state.SweepNegateCalcDone); SV(_state.EnvStopped);
+	SV(_state.SweepUpdateDelay);
 	SV(_dac);
 }

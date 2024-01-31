@@ -875,6 +875,7 @@ namespace Mesen.Interop
 		public UInt16 SweepTimer;
 		public UInt16 SweepFreq;
 		public UInt16 SweepPeriod;
+		public byte SweepUpdateDelay;
 		[MarshalAs(UnmanagedType.I1)] public bool SweepNegate;
 		public byte SweepShift;
 
