@@ -7,8 +7,10 @@ Mesen is a multi-system emulator (NES, SNES, Game Boy, PC Engine, Master System/
 [![Mesen](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml/badge.svg)](https://github.com/SourMesen/Mesen2/actions/workflows/build.yml)
 
 Latest development builds:  
-[Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%29.zip)  
-[Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
+
+* [Windows](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Windows%29.zip)  
+* [Linux](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20%28Linux%20-%20ubuntu-20.04%20-%20clang%29.zip)  
+* [Linux - AppImage](https://nightly.link/SourMesen/Mesen2/workflows/build/master/Mesen%20(Linux%20x64%20-%20AppImage).zip)
 
 **macOS**: Builds aren't available for ARM Macs, see [COMPILING.md](COMPILING.md) to build it yourself. The macOS build still has a number of limitations (e.g no gamepad support).
 
