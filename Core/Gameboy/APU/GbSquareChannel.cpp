@@ -52,7 +52,7 @@ void GbSquareChannel::ClockSweepUnit()
 		if(newFreq >= 2048) {
 			_state.Enabled = false;
 			_state.SweepEnabled = false;
-			UpdateOutput();
+			_state.Output = 0;
 		} else {
 			//"If the new frequency is 2047 or less and the sweep shift is not zero, this new frequency is written back to the shadow frequency and square 1's frequency in NR13 and NR14,"
 			if(_state.SweepShift) {
@@ -84,26 +84,21 @@ void GbSquareChannel::ClockLengthCounter()
 		if(_state.Length == 0) {
 			//"Length becoming 0 should clear status"
 			_state.Enabled = false;
-			UpdateOutput();
+			_state.Output = 0;
 		}
 	}
 }
 
 void GbSquareChannel::UpdateOutput()
 {
-	if(_state.Enabled) {
-		_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
-	} else {
-		_state.Output = 0;
-	}
+	_state.Output = _dutySequences[_state.Duty][(_state.DutyPos - 1) & 0x07] * _state.Volume;
 }
 
 void GbSquareChannel::ClockEnvelope()
 {
-	if(_state.EnvTimer > 0 && _state.EnvPeriod > 0 && !_state.EnvStopped) {
-		_state.EnvTimer--;
-
-		if(_state.EnvTimer == 0) {
+	uint8_t timer = _state.EnvTimer;
+	if(_state.EnvTimer == 0 || --_state.EnvTimer == 0) {
+		if(_state.EnvPeriod > 0 && !_state.EnvStopped) {
 			if(_state.EnvRaiseVolume && _state.Volume < 0x0F) {
 				_state.Volume++;
 			} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
@@ -116,6 +111,12 @@ void GbSquareChannel::ClockEnvelope()
 			UpdateOutput();
 
 			_state.EnvTimer = _state.EnvPeriod;
+			if(timer == 0) {
+				//When the timer was already 0 (because period was 0), it looks like the next
+				//clock occurs earlier than expected.
+				//This fixes the last test result in channel_1_nrx2_glitch (but may be incorrect)
+				_state.EnvTimer--;
+			}
 		}
 	}
 }
@@ -155,7 +156,7 @@ void GbSquareChannel::Exec(uint32_t clocksToRun)
 					//"then frequency calculation and overflow check are run AGAIN immediately using this new value, but this second new frequency is not written back."
 					_state.Enabled = false;
 					_state.SweepEnabled = false;
-					UpdateOutput();
+					_state.Output = 0;
 					return;
 				}
 			}
@@ -214,7 +215,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//while negate mode was enabled will disable the channel
 				//Required for sweep-details tests 4, 5 and 6
 				_state.Enabled = false;
-				UpdateOutput();
+				_state.Output = 0;
 			}
 			break;
 
@@ -223,33 +224,55 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			_state.Duty = (value & 0xC0) >> 6;
 			break;
 
-		case 2:
-		{
-			if(_state.EnvPeriod == 0 && !_state.EnvStopped) {
-				//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume) {
-				//"otherwise if the envelope was in subtract mode, volume is incremented by 2"
-				_state.Volume += 2;
-			}
-
+		case 2: {
 			bool raiseVolume = (value & 0x08) != 0;
-			if(raiseVolume != _state.EnvRaiseVolume) {
-				//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
-				_state.Volume = 16 - _state.Volume;
+			uint8_t period = value & 0x07;
+
+			if((value & 0xF8) == 0) {
+				_state.Enabled = false;
+			} else {
+				//This implementation of the Zombie mode behavior differs from the description
+				//found here: https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware
+				//Instead, it's based on the behavior of the channel_1_nrx2_glitch test and
+				//and SameBoy's implementation of the glitch
+				bool preventIncrement = false;
+				if(raiseVolume != _state.EnvRaiseVolume) {
+					if(raiseVolume) {
+						if(!_state.EnvStopped && _state.EnvPeriod == 0) {
+							_state.Volume ^= 0x0F;
+						} else {
+							_state.Volume = 14 - _state.Volume;
+						}
+						preventIncrement = true;
+					} else {
+						//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
+						_state.Volume = 16 - _state.Volume;
+					}
+					
+					//"Only the low 4 bits of volume are kept"
+					_state.Volume &= 0xF;
+				}
+
+				if(!_state.EnvStopped && !preventIncrement) {
+					if(_state.EnvPeriod == 0 && (period || raiseVolume)) {
+						if(raiseVolume) {
+							//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
+							_state.Volume++;
+						} else {
+							_state.Volume--;
+						}
+						
+						//"Only the low 4 bits of volume are kept"
+						_state.Volume &= 0xF;
+					}
+				}
 			}
 
-			//"Only the low 4 bits of volume are kept after the above operations."
-			_state.Volume &= 0xF;
-
-			_state.EnvPeriod = value & 0x07;
+			_state.EnvPeriod = period;
 			_state.EnvRaiseVolume = raiseVolume;
 			_state.EnvVolume = (value & 0xF0) >> 4;
-
-			if(!(value & 0xF8)) {
-				_state.Enabled = false;
-				UpdateOutput();
-			}
+			
+			UpdateOutput();
 			break;
 		}
 
@@ -272,6 +295,15 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 					_state.Timer -= 4;
 				}
 
+				//"Channel volume is reloaded from NRx2."
+				_state.Volume = _state.EnvVolume;
+
+				if(_state.Enabled) {
+					//Updating the output here is needed to pass the channel_1_restart_nrx2_glitch test
+					//Only do this if the channel was already enabled, otherwise other tests fail
+					UpdateOutput();
+				}
+
 				//"Channel is enabled, if volume is not 0 or raise volume flag is set"
 				_state.Enabled = _state.EnvRaiseVolume || _state.EnvVolume > 0;
 
@@ -284,9 +316,6 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 				//"Volume envelope timer is reloaded with period."
 				_state.EnvTimer = _state.EnvPeriod;
 				_state.EnvStopped = false;
-
-				//"Channel volume is reloaded from NRx2."
-				_state.Volume = _state.EnvVolume;
 
 				//Sweep-related
 				//"During a trigger event, several things occur:"
