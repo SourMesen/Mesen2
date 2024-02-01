@@ -26,6 +26,7 @@
     <ClInclude Include="Debugger\FrozenAddressManager.h" />
     <ClInclude Include="Debugger\StepBackManager.h" />
     <ClInclude Include="Gameboy\APU\GbChannelDac.h" />
+    <ClInclude Include="Gameboy\APU\GbEnvelope.h" />
     <ClInclude Include="Gameboy\Carts\GbHuc1.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc3Rtc.h" />
     <ClInclude Include="Gameboy\Carts\GbMbc6.h" />

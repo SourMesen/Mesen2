@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Gameboy/APU/GbSquareChannel.h"
 #include "Gameboy/APU/GbApu.h"
+#include "Gameboy/APU/GbEnvelope.h"
 
 GbSquareChannel::GbSquareChannel(GbApu* apu)
 {
@@ -96,29 +97,7 @@ void GbSquareChannel::UpdateOutput()
 
 void GbSquareChannel::ClockEnvelope()
 {
-	uint8_t timer = _state.EnvTimer;
-	if(_state.EnvTimer == 0 || --_state.EnvTimer == 0) {
-		if(_state.EnvPeriod > 0 && !_state.EnvStopped) {
-			if(_state.EnvRaiseVolume && _state.Volume < 0x0F) {
-				_state.Volume++;
-			} else if(!_state.EnvRaiseVolume && _state.Volume > 0) {
-				_state.Volume--;
-			} else {
-				_state.EnvStopped = true;
-			}
-
-			//Clocking envelope should update output immediately (based on div_trigger_volume test)
-			UpdateOutput();
-
-			_state.EnvTimer = _state.EnvPeriod;
-			if(timer == 0) {
-				//When the timer was already 0 (because period was 0), it looks like the next
-				//clock occurs earlier than expected.
-				//This fixes the last test result in channel_1_nrx2_glitch (but may be incorrect)
-				_state.EnvTimer--;
-			}
-		}
-	}
+	GbEnvelope::ClockEnvelope(_state, *this);
 }
 
 uint8_t GbSquareChannel::GetRawOutput()
@@ -225,53 +204,7 @@ void GbSquareChannel::Write(uint16_t addr, uint8_t value)
 			break;
 
 		case 2: {
-			bool raiseVolume = (value & 0x08) != 0;
-			uint8_t period = value & 0x07;
-
-			if((value & 0xF8) == 0) {
-				_state.Enabled = false;
-			} else {
-				//This implementation of the Zombie mode behavior differs from the description
-				//found here: https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware
-				//Instead, it's based on the behavior of the channel_1_nrx2_glitch test and
-				//and SameBoy's implementation of the glitch
-				bool preventIncrement = false;
-				if(raiseVolume != _state.EnvRaiseVolume) {
-					if(raiseVolume) {
-						if(!_state.EnvStopped && _state.EnvPeriod == 0) {
-							_state.Volume ^= 0x0F;
-						} else {
-							_state.Volume = 14 - _state.Volume;
-						}
-						preventIncrement = true;
-					} else {
-						//"If the mode was changed (add to subtract or subtract to add), volume is set to 16 - volume."
-						_state.Volume = 16 - _state.Volume;
-					}
-					
-					//"Only the low 4 bits of volume are kept"
-					_state.Volume &= 0xF;
-				}
-
-				if(!_state.EnvStopped && !preventIncrement) {
-					if(_state.EnvPeriod == 0 && (period || raiseVolume)) {
-						if(raiseVolume) {
-							//"If the old envelope period was zero and the envelope is still doing automatic updates, volume is incremented by 1"
-							_state.Volume++;
-						} else {
-							_state.Volume--;
-						}
-						
-						//"Only the low 4 bits of volume are kept"
-						_state.Volume &= 0xF;
-					}
-				}
-			}
-
-			_state.EnvPeriod = period;
-			_state.EnvRaiseVolume = raiseVolume;
-			_state.EnvVolume = (value & 0xF0) >> 4;
-			
+			GbEnvelope::WriteRegister(_state, value, *this);
 			UpdateOutput();
 			break;
 		}
