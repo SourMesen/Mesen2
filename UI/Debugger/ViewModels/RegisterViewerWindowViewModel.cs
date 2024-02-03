@@ -1468,7 +1468,6 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("", "Transfer Ready IRQ", (cdrom.ActiveIrqs & (int)PceCdRomIrqSource.DataTransferReady) != 0),
 
 				new RegEntry("", "SCSI Drive"),
-				new RegEntry("", "Data Transfer Completed", scsi.DataTransferDone),
 				new RegEntry("", "Current Sector", scsi.Sector),
 				new RegEntry("", "Read Until Sector", scsi.Sector + scsi.SectorsToRead),
 				new RegEntry("$1801", "Data Port (Write)", scsi.DataPort),

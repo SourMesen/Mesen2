@@ -28,6 +28,7 @@ void PceScsiBus::SetPhase(ScsiPhase phase)
 		return;
 	}
 
+	_updateCounter = 0;
 	_stateChanged = true;
 	_needExec = true;
 	_state.Phase = phase;
@@ -55,7 +56,7 @@ void PceScsiBus::Reset()
 	_state.Phase = ScsiPhase::BusFree;
 	_state.DataPort = 0;
 	_state.ReadDataPort = 0;
-	_state.DataTransferDone = false;
+	_state.SectorsToRead = 0;
 	_readSectorCounter = 0;
 	_cmdBuffer.clear();
 	_dataBuffer.clear();
@@ -63,10 +64,9 @@ void PceScsiBus::Reset()
 	//LogDebug("[SCSI] Reset");
 }
 
-void PceScsiBus::SetStatusMessage(ScsiStatus status, uint8_t data)
+void PceScsiBus::SetStatusMessage(ScsiStatus status, uint8_t data, uint32_t length)
 {
-	_state.MessageData = data;
-	_state.StatusDone = false;
+	_dataBuffer = deque<uint8_t>(length, data);
 	_state.MessageDone = false;
 	_state.ReadDataPort = (uint8_t)status;
 	SetPhase(ScsiPhase::Status);
@@ -76,11 +76,16 @@ void PceScsiBus::ProcessStatusPhase()
 {
 	if(_state.Signals[Req] && _state.Signals[Ack]) {
 		ClearSignals(Req);
-		_state.StatusDone = true;
-	} else if(!_state.Signals[Req] && !_state.Signals[Ack] && _state.StatusDone) {
-		_state.StatusDone = false;
-		_state.ReadDataPort = _state.MessageData;
-		SetPhase(ScsiPhase::MessageIn);
+	} else if(!_state.Signals[Req] && !_state.Signals[Ack]) {
+		if(_dataBuffer.size() > 0) {
+			_state.ReadDataPort = _dataBuffer.front();
+			_dataBuffer.pop_front();
+			if(_dataBuffer.empty()) {
+				SetPhase(ScsiPhase::MessageIn);
+			} else {
+				SetSignals(Req);
+			}
+		}
 	}
 }
 
@@ -114,12 +119,12 @@ void PceScsiBus::ProcessDataInPhase()
 			_dataBuffer.pop_front();
 			SetSignals(Req);
 		} else {
-			if(_readSectorCounter == 0) {
-				//If there's no data in the buffer and the disc isn't loading anything, the transfer is done
-				_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
-				if(_state.DataTransferDone) {
-					QueueDriveUpdate(ScsiUpdateType::SetTransferDoneIrq, 1000);
-				}
+			//If there's no data in the buffer, clear the data ready IRQ
+			_cdrom->ClearIrqSource(PceCdRomIrqSource::DataTransferReady);
+
+			if(_state.SectorsToRead == 0) {
+				//If this is the last sector to read, set the transfer done irq (after a delay)
+				QueueDriveUpdate(ScsiUpdateType::SetTransferDoneIrq, 1000);
 			}
 		}
 	}
@@ -218,7 +223,7 @@ void PceScsiBus::CmdRead()
 		return;
 	}
 
-	uint32_t fromSector = _state.Sector;
+	uint32_t fromSector = _cdrom->GetCurrentSector();
 	uint32_t seekTime = GetSeekTime(fromSector, sector);
 	_readSectorCounter = seekTime + GetSectorLoadTime();
 	_needExec = true;
@@ -270,8 +275,12 @@ void PceScsiBus::CmdAudioStartPos()
 	uint32_t startSector = GetAudioLbaPos();
 
 	if(_emu->IsDebugging()) {
+		uint32_t fromSector = _cdrom->GetCurrentSector();
 		uint32_t seekTime = PceCdSeekDelay::GetSeekTimeMs(_cdrom->GetCurrentSector(), startSector);
-		LogCommand("Audio Start Position - " + std::to_string(startSector) + " - Seek time: " + std::to_string(seekTime) + " ms");
+		LogCommand(
+			"Audio Start Position - " + std::to_string(startSector) +
+			" - Seek time (" + std::to_string(fromSector) + "->" + std::to_string(startSector) + "): " + std::to_string(seekTime) + " ms"
+		);
 	}
 
 	PceCdAudioPlayer& player = _cdrom->GetAudioPlayer();
@@ -281,8 +290,7 @@ void PceScsiBus::CmdAudioStartPos()
 		player.Play(startSector, false);
 	}
 
-	SetStatusMessage(ScsiStatus::Good, 0);
-	_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+	ClearSignals(Req);
 }
 
 void PceScsiBus::CmdAudioEndPos()
@@ -318,7 +326,10 @@ void PceScsiBus::CmdTestReadyUnit()
 	if(_emu->IsDebugging()) {
 		LogCommand("Test Ready Unit");
 	}
-	SetStatusMessage(ScsiStatus::Good, 0);
+
+	//Emulating this delay accurately just makes booting up games longer and is very unlikely
+	//to have any impact on games, so the delay is set to a much smaller value. (~100x less)
+	QueueDriveUpdate(ScsiUpdateType::SetDataInPhase, 150000);
 }
 
 void PceScsiBus::CmdReadSubCodeQ()
@@ -456,11 +467,9 @@ void PceScsiBus::ProcessDiscRead()
 				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferReady);
 
 				if(_state.SectorsToRead == 0) {
-					_state.DataTransferDone = true;
 					_readSectorCounter = 0;
 					LogDebug("[SCSI] Read operation done");
 				} else {
-					_state.DataTransferDone = false;
 					_readSectorCounter = GetSectorLoadTime();
 				}
 
@@ -546,7 +555,17 @@ void PceScsiBus::UpdateState()
 		_stateChanged = false;
 
 		if(_state.Signals[Sel]) {
-			QueueDriveUpdate(ScsiUpdateType::SetCmdPhase, 2500);
+			_updateCounter = 0;
+			if(_state.Phase != ScsiPhase::DataIn) {
+				QueueDriveUpdate(ScsiUpdateType::SetCmdPhase, 25000);
+			} else {
+				//Aborting an on-going data transfer seems to produce an 8-byte message? (scsitest.pce)
+				SetStatusMessage(ScsiStatus::Good, 0, 8);
+
+				//But eventually it goes back to the command phase on its own? (verificator.pce)
+				QueueDriveUpdate(ScsiUpdateType::SetCmdPhase, 300000);
+				break;
+			}
 		} else {
 			switch(_state.Phase) {
 				case ScsiPhase::Command: ProcessCommandPhase(); break;
@@ -573,13 +592,15 @@ void PceScsiBus::Exec()
 			case ScsiUpdateType::SetReqSignal: SetSignals(Req); break;
 
 			case ScsiUpdateType::SetDataInPhase:
-				_state.DataTransferDone = true;
 				SetPhase(ScsiPhase::DataIn);
 				break;
 
 			case ScsiUpdateType::SetTransferDoneIrq:
-				_state.DataTransferDone = false;
 				_cdrom->SetIrqSource(PceCdRomIrqSource::DataTransferDone);
+				SetStatusMessage(ScsiStatus::Good, 0);
+				break;
+
+			case ScsiUpdateType::SetGoodStatus:
 				SetStatusMessage(ScsiStatus::Good, 0);
 				break;
 		}
@@ -603,12 +624,9 @@ void PceScsiBus::Serialize(Serializer& s)
 	}
 
 	SV(_state.Phase);
-	SV(_state.StatusDone);
 	SV(_state.MessageDone);
-	SV(_state.MessageData);
 	SV(_state.DataPort);
 	SV(_state.ReadDataPort);
-	SV(_state.DataTransferDone);
 	SV(_state.Sector);
 	SV(_state.SectorsToRead);
 	
@@ -624,7 +642,7 @@ void PceScsiBus::Serialize(Serializer& s)
 		SV(dataBuffer);
 	} else {
 		vector<uint8_t> dataBuffer;
-		SV(dataBuffer);		
+		SV(dataBuffer);
 		_dataBuffer.clear();
 		_dataBuffer.insert(_dataBuffer.end(), dataBuffer.begin(), dataBuffer.end());
 

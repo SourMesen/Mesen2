@@ -63,17 +63,17 @@ public:
 		}
 
 		if(lbaGap < 2) {
-			return 3 * 1000 / 60;
+			return 9 * 1000 / 60;
 		} else if(lbaGap < 5) {
 			return (9 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 80) {
-			return (16 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
+			return (18 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 160) {
 			return (22 * 1000 / 60) + (_sectorList[dst].RotationMs / 2);
 		} else if(trackGap <= 644) {
 			return (22 * 1000 / 60) + (_sectorList[dst].RotationMs / 2) + ((trackGap - 161) * 16.66 / 80);
 		} else {
-			return (36 * 1000 / 60) + ((trackGap - 644) * 16.66 / 195);
+			return (48 * 1000 / 60) + ((trackGap - 644) * 16.66 / 195);
 		}
 	}
 };

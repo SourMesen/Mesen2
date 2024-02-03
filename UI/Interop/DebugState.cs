@@ -1722,13 +1722,9 @@ namespace Mesen.Interop
 
 		public ScsiPhase Phase;
 
-		[MarshalAs(UnmanagedType.I1)] public bool StatusDone;
 		[MarshalAs(UnmanagedType.I1)] public bool MessageDone;
-		public byte MessageData;
 		public byte DataPort;
 		public byte ReadDataPort;
-
-		[MarshalAs(UnmanagedType.I1)] public bool DataTransferDone;
 
 		public UInt32 Sector;
 		public byte SectorsToRead;
