@@ -108,6 +108,8 @@ void Msu1::MixAudio(int16_t* buffer, uint32_t sampleCount, uint32_t sampleRate)
 	if(!_paused) {
 		_pcmReader.SetSampleRate(sampleRate);
 		_pcmReader.ApplySamples(buffer, (size_t)sampleCount, _spc->IsMuted() ? 0 : _volume);
+
+		_paused |= _pcmReader.IsPlaybackOver();
 	}
 }
 
