@@ -253,6 +253,9 @@ namespace Mesen.Debugger.ViewModels
 			GbPpuState ppu = gb.Ppu;
 			GbDmaControllerState dma = gb.Dma;
 			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("$FF4D.0", "CPU Switch Speed Request", gb.MemoryManager.CgbSwitchSpeedRequest),
+				new RegEntry("$FF4D.7", "CPU Speed", gb.MemoryManager.CgbHighSpeed ? "8.39 MHz" : "4.19 MHz", gb.MemoryManager.CgbHighSpeed),
+
 				new RegEntry("$FF4F.0", "Video RAM Bank", ppu.CgbVramBank),
 
 				new RegEntry("", "DMA registers"),
@@ -622,8 +625,8 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$2100.0-3", "Brightness", ppu.ScreenBrightness),
 				new RegEntry("$2100.7", "Forced Blank", ppu.ForcedBlank),
 				new RegEntry("$2101", "OAM Settings"),
-				new RegEntry("$2100.0-2", "OAM Table Address", ppu.OamBaseAddress, Format.X16),
-				new RegEntry("$2100.3-4", "OAM Second Table Address", (ppu.OamBaseAddress + ppu.OamAddressOffset) & 0x7FFF, Format.X16),
+				new RegEntry("$2101.0-2", "OAM Table Address", ppu.OamBaseAddress, Format.X16),
+				new RegEntry("$2101.3-4", "OAM Second Table Address", (ppu.OamBaseAddress + ppu.OamAddressOffset) & 0x7FFF, Format.X16),
 				new RegEntry("$2101.5-7", "OAM Size Mode", ppu.OamMode),
 				new RegEntry("$2102-2103", "OAM Base Address", ppu.OamRamAddress),
 				new RegEntry("$2103.7", "OAM Priority", ppu.EnableOamPriority),
