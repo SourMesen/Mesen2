@@ -84,13 +84,18 @@
 	  <None Remove="Styles\StartupStyles.xaml" />
 	  <None Remove="Utilities\DipSwitchDefinitions.xml" />
 	</ItemGroup>
+	<PropertyGroup>
+		<RestoreSources>
+			https://nuget-feed-nightly.avaloniaui.net/v3/index.json;https://api.nuget.org/v3/index.json
+		</RestoreSources>
+	</PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.9" />
+    <PackageReference Include="Avalonia" Version="11.0.999-cibuild0045373-beta" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.9" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.9" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.999-cibuild0045373-beta" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.999-cibuild0045373-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.999-cibuild0045373-beta" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.999-cibuild0045373-beta" />
     <PackageReference Include="Dock.Avalonia" Version="11.0.0.5" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.0.0.5" />
     <PackageReference Include="Dotnet.Bundle" Version="*" />
