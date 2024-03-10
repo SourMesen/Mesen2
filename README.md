@@ -15,7 +15,7 @@ Latest development builds:
 **macOS**: Builds aren't available for ARM Macs, see [COMPILING.md](COMPILING.md) to build it yourself. The macOS build still has a number of limitations (e.g no gamepad support).
 
 **SteamOS**: Running Mesen through the Steam Deck's _Game Mode_ is possible with some caveats regarding rendering the UI.
- 	<details open>
+ 	<details>
 	<summary>SteamOS instructions and caveats</summary>
 	<br>
 	Due to Gamescope (SteamOS' compositor) not handling Avalonia UI's popups very well (a [solution](https://github.com/AvaloniaUI/Avalonia/pull/14366) is available but [has been reverted due to other issues](https://github.com/AvaloniaUI/Avalonia/pull/14573)), Mesen's menus for settings are not working through Gamescope unless running Mesen [through running KDE Plasma's Desktop through a script](https://www.reddit.com/r/SteamDeck/comments/zqgx9g/desktop_mode_within_gaming_mode_updated_for_new/).

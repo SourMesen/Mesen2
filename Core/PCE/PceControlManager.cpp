@@ -45,11 +45,19 @@ uint8_t PceControlManager::ReadInputPort()
 	SetInputReadFlag();
 
 	uint8_t result = 0;
+	bool hasController = false;
 	for(shared_ptr<BaseControlDevice>& device : _controlDevices) {
 		if(device->IsConnected()) {
 			result |= device->ReadRam(0);
+			hasController |= device->GetPort() == 0;
 		}
 	}
+
+	if(!hasController) {
+		//When no controller is connected, bottom 4 bits will be open bus
+		result |= 0x0F;
+	}
+
 	return result;
 }
 
