@@ -386,9 +386,19 @@ namespace Mesen.Windows
 		{
 			double dpiScale = LayoutHelper.GetLayoutScale(this);
 			FrameInfo baseScreenSize = EmuApi.GetBaseScreenSize();
-			double xScale = ClientSize.Width * dpiScale / baseScreenSize.Width;
-			double yScale = ClientSize.Height * dpiScale / baseScreenSize.Height;
-			SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
+			if(WindowState == WindowState.Normal) {
+				double xScale = ClientSize.Width * dpiScale / baseScreenSize.Width;
+				double yScale = ClientSize.Height * dpiScale / baseScreenSize.Height;
+				SetScale(Math.Min(Math.Round(xScale), Math.Round(yScale)));
+			} else if(WindowState == WindowState.Maximized || WindowState == WindowState.FullScreen) {
+				if(_rendererSize == default) {
+					ResizeRenderer();
+				} else {
+					double xScale = _rendererSize.Width * dpiScale / baseScreenSize.Width;
+					double yScale = _rendererSize.Height * dpiScale / baseScreenSize.Height;
+					SetScale(Math.Min(Math.Round(xScale, 2), Math.Round(yScale, 2)));
+				}
+			}
 		}
 
 		public void SetScale(double scale)
