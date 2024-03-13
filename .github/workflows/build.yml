@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         compiler: [clang]
-        os: [macos-11, macos-12]
+        os: [macos-11, macos-12, macos-14]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
