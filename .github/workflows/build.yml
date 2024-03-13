@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         compiler: [clang]
-        os: [macos-11, macos-12]
+        os: [macos-11, macos-12, macos-14]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
@@ -154,7 +154,7 @@ jobs:
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
         run: |
-          make -j$(nproc)
+          make -j$(sysctl -n hw.logicalcpu)
 
       - name: Sign binary
         env:
