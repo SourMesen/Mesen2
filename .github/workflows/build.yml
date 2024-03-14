@@ -129,7 +129,6 @@ jobs:
       matrix:
         compiler: [clang]
         platform: [
-          {os: macos-11, arch: x64},
           {os: macos-12, arch: x64},
           {os: macos-14, arch: arm64}
         ]
