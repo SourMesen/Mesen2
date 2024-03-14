@@ -128,9 +128,13 @@ jobs:
     strategy:
       matrix:
         compiler: [clang]
-        os: [macos-11, macos-12, macos-14]
+        platform: [
+          {os: macos-11, arch: x64},
+          {os: macos-12, arch: x64},
+          {os: macos-14, arch: arm64}
+        ]
       fail-fast: false
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.platform.os }}
 
     steps:
       - name: Checkout repo
@@ -158,7 +162,7 @@ jobs:
 
       - name: Sign binary
         env:
-          APP_NAME: bin/osx-x64/Release/osx-x64/publish/Mesen.app
+          APP_NAME: bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app
           CERT_DATA: ${{ secrets.MACOS_CERTIFICATE }}
           CERT_PASS: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           ENTITLEMENTS: UI/Mesen.entitlements
@@ -183,10 +187,10 @@ jobs:
 
       - name: Zip Mesen.app
         run: |
-          ditto -c -k --sequesterRsrc --keepParent bin/osx-x64/Release/osx-x64/publish/Mesen.app bin/osx-x64/Release/Mesen.app.zip
+          ditto -c -k --sequesterRsrc --keepParent bin/osx-${{ matrix.platform.arch }}/Release/osx-${{ matrix.platform.arch }}/publish/Mesen.app bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
 
       - name: Upload Mesen
         uses: actions/upload-artifact@v3
         with:
-          name: Mesen (macOS - ${{ matrix.os }})
-          path: bin/osx-x64/Release/Mesen.app.zip
+          name: Mesen (macOS - ${{ matrix.platform.os }})
+          path: bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
