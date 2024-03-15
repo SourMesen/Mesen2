@@ -105,7 +105,7 @@ void VideoDecoder::DecodeFrame(bool forRewind)
 	}
 
 	_videoFilter->SetBaseFrameInfo(_baseFrameSize);
-	FrameInfo frameSize = _videoFilter->SendFrame((uint16_t*)_frame.FrameBuffer, _frame.FrameNumber, _frame.VideoPhase, _frame.Data);
+	FrameInfo frameSize = _videoFilter->SendFrame((uint16_t*)_frame.FrameBuffer, _frame.FrameNumber, _frame.VideoPhaseOffset, _frame.Data);
 
 	uint32_t* outputBuffer = _videoFilter->GetOutputBuffer();
 	
