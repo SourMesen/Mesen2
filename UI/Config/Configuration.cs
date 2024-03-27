@@ -7,6 +7,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -125,11 +126,42 @@ namespace Mesen.Config
 		}
 
 		private static HashSet<string>? _installedFonts = null;
+		private static List<string>? _sortedFonts = null;
+
+		[MemberNotNull(nameof(_installedFonts), nameof(_sortedFonts))]
+		private static void InitInstalledFonts()
+		{
+			_installedFonts = new();
+			_sortedFonts = new();
+			try {
+				int count = FontManager.Current.SystemFonts.Count;
+				for(int i = 0; i < count; i++) {
+					try {
+						string? fontName = FontManager.Current.SystemFonts[i]?.Name;
+						if(!string.IsNullOrWhiteSpace(fontName)) {
+							_installedFonts.Add(fontName);
+						}
+					} catch { }
+				}
+
+				_sortedFonts.AddRange(_installedFonts);
+				_sortedFonts.Sort();
+			} catch {
+			}
+		}
+
+		public static List<string> GetSortedFontList()
+		{
+			if(_sortedFonts == null) {
+				InitInstalledFonts();
+			}
+			return new List<string>(_sortedFonts);
+		}
 
 		private static string FindMatchingFont(string defaultFont, params string[] fontNames)
 		{
 			if(_installedFonts == null) {
-				_installedFonts = new(FontManager.Current.SystemFonts.Select(x => x.Name));
+				InitInstalledFonts();
 			}
 
 			foreach(string name in fontNames) {
@@ -144,7 +176,7 @@ namespace Mesen.Config
 		public static string GetValidFontFamily(string requestedFont, bool preferMonoFont)
 		{
 			if(_installedFonts == null) {
-				_installedFonts = new(FontManager.Current.SystemFonts.Select(x => x.Name));
+				InitInstalledFonts();
 			}
 
 			if(_installedFonts.Contains(requestedFont)) {
