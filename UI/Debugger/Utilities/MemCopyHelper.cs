@@ -38,9 +38,9 @@ namespace Mesen.Debugger.Utilities
 				case MemoryType.NesChrRom:
 				case MemoryType.NesChrRam:
 					for(int i = 0; i < len; i++) {
-            if (sb.Length > 0) {
-              sb.Append(" ");
-            }
+						if(sb.Length > 0) {
+							sb.Append(" ");
+						}
 						sb.Append(DebugApi.GetMemoryValue(tileAddr.Type, (uint)(tileAddr.Address + i)).ToString("X2"));
 					}
 					break;
