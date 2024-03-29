@@ -835,6 +835,12 @@ namespace Mesen.Debugger.Utilities
 		
 		[IconFile("HdPack")]
 		CopyToHdPackFormat,
+		
+		[IconFile("CheatCode")]
+		CopyTileMemory,
+
+		[IconFile("Paste")]
+		PasteTileMemory,
 
 		[IconFile("Find")]
 		CheatDatabase,
