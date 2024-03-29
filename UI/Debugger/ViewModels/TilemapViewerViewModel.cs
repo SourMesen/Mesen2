@@ -135,7 +135,7 @@ namespace Mesen.Debugger.ViewModels
 
 			DebugShortcutManager.CreateContextMenu(picViewer, new List<object>() {
 				new ContextMenuAction() {
-					ActionType = ActionType.ViewInMemoryViewer,
+					ActionType = ActionType.ViewTilemapInMemoryViewer,
 					HintText = () => {
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						return tile?.TileMapAddress > 0 ? $"${tile?.TileMapAddress:X4}" : "";
@@ -145,6 +145,19 @@ namespace Mesen.Debugger.ViewModels
 						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
 						if(tile != null && tile.Value.TileMapAddress >= 0) {
 							MemoryToolsWindow.ShowInMemoryTools(GetVramMemoryType(), tile.Value.TileMapAddress);
+						}
+					}
+				},
+				new ContextMenuAction() {
+					ActionType = ActionType.ViewAttributeInMemoryViewer,
+					HintText = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						return tile?.TileMapAddress > 0 ? $"${tile?.AttributeAddress:X4}" : "";
+					},
+					OnClick = () => {
+						DebugTilemapTileInfo? tile = GetSelectedTileInfo();
+						if(tile != null && tile.Value.AttributeAddress >= 0) {
+							MemoryToolsWindow.ShowInMemoryTools(GetVramMemoryType(), tile.Value.AttributeAddress);
 						}
 					}
 				},
