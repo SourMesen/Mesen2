@@ -186,7 +186,7 @@ namespace Mesen.Debugger.ViewModels
 						}
 					}
 				},
-				new ContextMenuSeparator() { IsVisible = () => CpuType == CpuType.Nes },
+				new ContextMenuSeparator(),
 				new ContextMenuAction() {
 					ActionType = ActionType.CopyToHdPackFormat,
 					IsVisible = () => CpuType == CpuType.Nes,
@@ -200,23 +200,23 @@ namespace Mesen.Debugger.ViewModels
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.CopyTileMemory,
-					IsVisible = () => CpuType == CpuType.Nes,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Copy),
 					IsEnabled = () => GetSelectedTileAddress() >= 0,
 					OnClick = () => {
 						int address = GetSelectedTileAddress();
 						if(address >= 0) {
-							MemCopyHelper.CopyTileMem(address, Config.Source);
+							MemCopyHelper.CopyTileMem(address, Config.Source, Config.Format);
 						}
 					}
 				},
 				new ContextMenuAction() {
 					ActionType = ActionType.PasteTileMemory,
-					IsVisible = () => CpuType == CpuType.Nes,
+					Shortcut = () => ConfigManager.Config.Debug.Shortcuts.Get(DebuggerShortcut.Paste),
 					IsEnabled = () => GetSelectedTileAddress() >= 0,
 					OnClick = () => {
 						int address = GetSelectedTileAddress();
 						if(address >= 0) {
-							MemCopyHelper.PasteTileMem(address, Config.Source);
+							MemCopyHelper.PasteTileMem(address, Config.Source, Config.Format);
 						}
 					}
 				}
