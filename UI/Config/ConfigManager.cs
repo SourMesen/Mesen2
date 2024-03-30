@@ -166,10 +166,13 @@ namespace Mesen.Config
 				}
 			}
 
-			return false;
-		}
+csharp
+// Code with added timeout for Regular Expressions
+Regex.IsMatch(input, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+return false;
+}
 
-		public static void ResetHomeFolder()
+public static void ResetHomeFolder()
 		{
 			_homeFolder = null;
 		}
