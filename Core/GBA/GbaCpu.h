@@ -25,8 +25,10 @@ private:
 	Emulator* _emu = nullptr;
 
 	typedef void(GbaCpu::* Func)();
-	Func _armTable[0x1000] = {};
-	Func _thumbTable[0x100] = {};
+	static Func _armTable[0x1000];
+	static Func _thumbTable[0x100];
+	static GbaArmOpCategory _armCategory[0x1000];
+	static GbaThumbOpCategory _thumbCategory[0x100];
 
 	uint32_t Add(uint32_t op1, uint32_t op2, bool carry, bool updateFlags);
 	uint32_t Sub(uint32_t op1, uint32_t op2, bool carry, bool updateFlags);
@@ -52,7 +54,7 @@ private:
 
 	GbaCpuFlags& GetSpsr();
 
-	void InitArmOpTable();
+	static void InitArmOpTable();
 	void ArmBranchExchangeRegister();
 	void ArmBranch();
 	void ArmMsr();
@@ -69,7 +71,7 @@ private:
 
 	bool CheckConditions(uint32_t condCode);
 
-	void InitThumbOpTable();
+	static void InitThumbOpTable();
 	void ThumbMoveShiftedRegister();
 	void ThumbAddSubtract();
 	void ThumbMoveCmpAddSub();
@@ -119,6 +121,8 @@ private:
 
 public:
 	virtual ~GbaCpu();
+
+	static void StaticInit();
 
 	void Init(Emulator* emu, GbaMemoryManager* memoryManager);
 

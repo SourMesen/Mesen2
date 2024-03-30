@@ -3,7 +3,8 @@
 #include "GBA/GbaMemoryManager.h"
 #include "Shared/Emulator.h"
 
-static GbaArmOpCategory _armCategory[0x1000] = {};
+GbaArmOpCategory GbaCpu::_armCategory[0x1000];
+GbaCpu::Func GbaCpu::_armTable[0x1000];
 
 GbaArmOpCategory GbaCpu::GetArmOpCategory(uint32_t opCode)
 {

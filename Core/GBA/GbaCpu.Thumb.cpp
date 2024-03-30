@@ -2,7 +2,8 @@
 #include "GBA/GbaCpu.h"
 #include "GBA/GbaMemoryManager.h"
 
-static GbaThumbOpCategory _thumbCategory[0x100] = {};
+GbaThumbOpCategory GbaCpu::_thumbCategory[0x100];
+GbaCpu::Func GbaCpu::_thumbTable[0x100];
 
 GbaThumbOpCategory GbaCpu::GetThumbOpCategory(uint16_t _opCode)
 {

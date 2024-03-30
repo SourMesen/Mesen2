@@ -10,9 +10,6 @@ void GbaCpu::Init(Emulator* emu, GbaMemoryManager* memoryManager)
 	_emu = emu;
 	_memoryManager = memoryManager;
 	
-	InitArmOpTable();
-	InitThumbOpTable();
-
 	_state = {};
 	_state.Pipeline.ReloadRequested = true;
 
@@ -35,6 +32,12 @@ void GbaCpu::Init(Emulator* emu, GbaMemoryManager* memoryManager)
 
 GbaCpu::~GbaCpu()
 {
+}
+
+void GbaCpu::StaticInit()
+{
+	InitArmOpTable();
+	InitThumbOpTable();
 }
 
 void GbaCpu::SwitchMode(GbaCpuMode mode)

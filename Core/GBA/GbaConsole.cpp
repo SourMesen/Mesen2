@@ -11,6 +11,7 @@
 #include "GBA/GbaDefaultVideoFilter.h"
 #include "GBA/Cart/GbaCart.h"
 #include "GBA/APU/GbaApu.h"
+#include "GBA/Debugger/DummyGbaCpu.h"
 #include "Debugger/DebugTypes.h"
 #include "Shared/CheatManager.h"
 #include "Shared/BatteryManager.h"
@@ -26,6 +27,9 @@
 GbaConsole::GbaConsole(Emulator* emu)
 {
 	_emu = emu;
+
+	GbaCpu::StaticInit();
+	DummyGbaCpu::StaticInit();
 }
 
 GbaConsole::~GbaConsole()
