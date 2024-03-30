@@ -26,7 +26,18 @@ namespace Mesen.Utilities
 			try {
 				//Use the downloaded .exe as an updater
 				if(File.Exists(srcFile) && new FileInfo(srcFile).Length > 0) {
-					Process.Start(srcFile, string.Format("--update \"{0}\" \"{1}\" \"{2}\"", srcFile, destFile, backupFilePath));
+c#
+//Use the downloaded .exe as an updater
+if (File.Exists(srcFile) && new FileInfo(srcFile).Length > 0)
+{
+    Process.Start(srcFile, string.Format("--update \"{0}\" \"{1}\" \"{2}\"", srcFile, destFile, backupFilePath));
+    return true;
+}
+else
+{
+    // Handle the case when the srcFile does not exist or is empty
+    return false;
+}
 					return true;
 				} else {
 					//Download failed, mismatching hashes
