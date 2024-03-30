@@ -103,11 +103,11 @@ void GbaPpu::ProcessEndOfScanline()
 
 	for(int i = 0; i < 2; i++) {
 		if(_state.Transform[i].PendingUpdateX) {
-			_state.Transform[i].LatchOriginY = (_state.Transform[i].OriginY << 4) >> 4; //sign extend
+			_state.Transform[i].LatchOriginX = (_state.Transform[i].OriginX << 4) >> 4; //sign extend
 			_state.Transform[i].PendingUpdateX = false;
 		}
 		if(_state.Transform[i].PendingUpdateY) {
-			_state.Transform[i].LatchOriginX = (_state.Transform[i].OriginX << 4) >> 4; //sign extend
+			_state.Transform[i].LatchOriginY = (_state.Transform[i].OriginY << 4) >> 4; //sign extend
 			_state.Transform[i].PendingUpdateY = false;
 		}
 	}
