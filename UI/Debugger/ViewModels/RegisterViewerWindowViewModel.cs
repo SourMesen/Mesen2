@@ -218,8 +218,24 @@ namespace Mesen.Debugger.ViewModels
 
 			GbaMemoryManagerState memManager = gbaState.MemoryManager;
 			entries.AddRange(new List<RegEntry>() {
+				new RegEntry("", "Input IRQ Control"),
+				new RegEntry("$4000132-3", "Register Value", gbaState.ControlManager.KeyControl, Format.X16),
+				new RegEntry("$4000132.0", "A", (gbaState.ControlManager.KeyControl & 0x01) != 0),
+				new RegEntry("$4000132.1", "B", (gbaState.ControlManager.KeyControl & 0x02) != 0),
+				new RegEntry("$4000132.2", "Select", (gbaState.ControlManager.KeyControl & 0x04) != 0),
+				new RegEntry("$4000132.3", "Start", (gbaState.ControlManager.KeyControl & 0x08) != 0),
+				new RegEntry("$4000132.4", "Right", (gbaState.ControlManager.KeyControl & 0x10) != 0),
+				new RegEntry("$4000132.5", "Left", (gbaState.ControlManager.KeyControl & 0x20) != 0),
+				new RegEntry("$4000132.6", "Up", (gbaState.ControlManager.KeyControl & 0x40) != 0),
+				new RegEntry("$4000132.7", "Down", (gbaState.ControlManager.KeyControl & 0x80) != 0),
+				new RegEntry("$4000133.0", "R", (gbaState.ControlManager.KeyControl & 0x100) != 0),
+				new RegEntry("$4000133.1", "L", (gbaState.ControlManager.KeyControl & 0x200) != 0),
+				new RegEntry("$4000133.6", "IRQ Enabled", (gbaState.ControlManager.KeyControl & 0x4000) != 0),
+				new RegEntry("$4000133.7", "IRQ Condition", (gbaState.ControlManager.KeyControl & 0x8000) == 0 ? "OR" : "AND", gbaState.ControlManager.KeyControl & 0x8000),
+
 				new RegEntry("", "IRQ"),
-				new RegEntry("$4000200-1", "IE - IRQ Enabled", memManager.IE, Format.X16),
+				new RegEntry("", "IE - IRQ Enabled"),
+				new RegEntry("$4000200-1", "IE - Register Value", memManager.IE, Format.X16),
 				new RegEntry("$4000200.0", "Vertical Blank IRQ Enabled", ((memManager.IE >> 0) & 0x01) != 0),
 				new RegEntry("$4000200.1", "Horizontal Blank IRQ Enabled", ((memManager.IE >> 1) & 0x01) != 0),
 				new RegEntry("$4000200.2", "LYC Match IRQ Enabled", ((memManager.IE >> 2) & 0x01) != 0),
@@ -235,7 +251,8 @@ namespace Mesen.Debugger.ViewModels
 				new RegEntry("$4000201.4", "Input IRQ Enabled", ((memManager.IE >> 12) & 0x01) != 0),
 				new RegEntry("$4000201.5", "Cartridge IRQ Enabled", ((memManager.IE >> 13) & 0x01) != 0),
 
-				new RegEntry("$4000202-3", "IF - IRQ Flags", memManager.IF, Format.X16),
+				new RegEntry("", "IE - IRQ Flags"),
+				new RegEntry("$4000202-3", "IF - Register Value", memManager.IF, Format.X16),
 				new RegEntry("$4000202.0", "Vertical Blank IRQ Active", ((memManager.IF >> 0) & 0x01) != 0),
 				new RegEntry("$4000202.1", "Horizontal Blank IRQ Active", ((memManager.IF >> 1) & 0x01) != 0),
 				new RegEntry("$4000202.2", "LYC Match IRQ Active", ((memManager.IF >> 2) & 0x01) != 0),
