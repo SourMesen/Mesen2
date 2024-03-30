@@ -12,7 +12,7 @@ enum class GbaEepromMode
 	WriteCommand,
 };
 
-class GbaEeprom : public ISerializable
+class GbaEeprom final : public ISerializable
 {
 private:
 	uint8_t* _saveRam = nullptr;

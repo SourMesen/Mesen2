@@ -17,7 +17,7 @@ class GbaWaveChannel;
 class EmuSettings;
 class SoundMixer;
 
-class GbaApu : public ISerializable
+class GbaApu final : public ISerializable
 {
 	static constexpr int MaxSampleRate = 256*1024;
 	static constexpr int MaxSamples = MaxSampleRate * 8 / 60;

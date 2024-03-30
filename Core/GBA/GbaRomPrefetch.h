@@ -4,7 +4,7 @@
 #include "Utilities/ISerializable.h"
 #include "Utilities/Serializer.h"
 
-class GbaRomPrefetch : ISerializable
+class GbaRomPrefetch final : ISerializable
 {
 private:
 	GbaRomPrefetchState _state = {};

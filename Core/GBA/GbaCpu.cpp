@@ -111,21 +111,6 @@ void GbaCpu::ReloadPipeline()
 	pipe.Fetch.OpCode = ReadCode(pipe.Mode, pipe.Fetch.Address);
 }
 
-void GbaCpu::ProcessPipeline()
-{
-	GbaCpuPipeline& pipe = _state.Pipeline;
-
-	if(pipe.ReloadRequested) {
-		ReloadPipeline();
-	}
-
-	pipe.Execute = pipe.Decode;
-	pipe.Decode = pipe.Fetch;
-
-	pipe.Fetch.Address = _state.R[15] = _state.CPSR.Thumb ? (_state.R[15] + 2) : (_state.R[15] + 4);
-	pipe.Fetch.OpCode = ReadCode(pipe.Mode, pipe.Fetch.Address);
-}
-
 void GbaCpu::CheckForIrqs()
 {
 	uint32_t originalPc = _state.Pipeline.Execute.Address;

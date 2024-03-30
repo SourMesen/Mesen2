@@ -4,7 +4,7 @@
 #include "Utilities/HexUtilities.h"
 #include "Utilities/Serializer.h"
 
-class GbaFlash : public ISerializable
+class GbaFlash final : public ISerializable
 {
 private:
 	enum class ChipMode

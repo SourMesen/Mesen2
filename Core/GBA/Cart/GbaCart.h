@@ -7,7 +7,7 @@ class Emulator;
 class GbaMemoryManager;
 class GbaFlash;
 
-class GbaCart : public ISerializable
+class GbaCart final : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;

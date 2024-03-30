@@ -93,7 +93,21 @@ private:
 	void SwitchMode(GbaCpuMode mode);
 
 	void ReloadPipeline();
-	__forceinline void ProcessPipeline();
+
+	__forceinline void ProcessPipeline()
+	{
+		GbaCpuPipeline& pipe = _state.Pipeline;
+
+		if(pipe.ReloadRequested) {
+			ReloadPipeline();
+		}
+
+		pipe.Execute = pipe.Decode;
+		pipe.Decode = pipe.Fetch;
+
+		pipe.Fetch.Address = _state.R[15] = _state.CPSR.Thumb ? (_state.R[15] + 2) : (_state.R[15] + 4);
+		pipe.Fetch.OpCode = ReadCode(pipe.Mode, pipe.Fetch.Address);
+	}
 
 	uint32_t ReadCode(GbaAccessModeVal mode, uint32_t addr);
 	uint32_t Read(GbaAccessModeVal mode, uint32_t addr);

@@ -6,7 +6,7 @@
 class GbaMemoryManager;
 class GbaCpu;
 
-class GbaDmaController : public ISerializable
+class GbaDmaController final : public ISerializable
 {
 private:
 	GbaCpu* _cpu = nullptr;

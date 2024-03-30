@@ -76,7 +76,7 @@ struct GbaPixelData
 	uint8_t Layer = 5;
 };
 
-class GbaPpu : public ISerializable
+class GbaPpu final : public ISerializable
 {
 private:
 	static constexpr int SpriteLayerIndex = 4;

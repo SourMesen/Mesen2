@@ -17,7 +17,7 @@ class GbaCart;
 class GbaSerial;
 class GbaRomPrefetch;
 
-class GbaMemoryManager : public ISerializable
+class GbaMemoryManager final : public ISerializable
 {
 private:
 	Emulator* _emu = nullptr;

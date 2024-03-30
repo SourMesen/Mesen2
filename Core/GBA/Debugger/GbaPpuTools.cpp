@@ -328,10 +328,6 @@ DebugTilemapTileInfo GbaPpuTools::GetTilemapTileInfo(uint32_t x, uint32_t y, uin
 		case 4:
 		case 5: {
 			uint16_t screenWidth = state.BgMode == 5 ? 160 : 240;
-			uint16_t screenHeight = state.BgMode == 5 ? 128 : 160;
-			if(state.BgMode >= 4) {
-				screenHeight *= 2;
-			}
 
 			column = x;
 			row = y;

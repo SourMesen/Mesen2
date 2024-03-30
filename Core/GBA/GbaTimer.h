@@ -6,7 +6,7 @@
 class GbaMemoryManager;
 class GbaApu;
 
-class GbaTimer : public ISerializable
+class GbaTimer final : public ISerializable
 {
 private:
 	GbaTimersState _state = {};

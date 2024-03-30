@@ -6,7 +6,7 @@
 #include "Utilities/BitUtilities.h"
 #include "Utilities/Serializer.h"
 
-class GbaSerial : public ISerializable
+class GbaSerial final : public ISerializable
 {
 private:
 	GbaSerialState _state = {};

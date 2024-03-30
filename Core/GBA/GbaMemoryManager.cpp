@@ -405,8 +405,8 @@ void GbaMemoryManager::InternalWrite(GbaAccessModeVal mode, uint32_t addr, uint8
 				_palette[addr & (GbaConsole::PaletteRamSize - 1)] = value;
 			} else {
 				//Mirror the value over a half-word
-				_palette[addr & (GbaConsole::PaletteRamSize - 1) & ~0x01] = value;
-				_palette[addr & (GbaConsole::PaletteRamSize - 1) | 0x01] = value;
+				_palette[(addr & (GbaConsole::PaletteRamSize - 1)) & ~0x01] = value;
+				_palette[(addr & (GbaConsole::PaletteRamSize - 1)) | 0x01] = value;
 			}
 			break;
 
