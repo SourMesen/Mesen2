@@ -44,11 +44,29 @@ namespace Mesen.Utilities
 				}
 			}
 			if(checkWritePermission) {
-				try {
-					string fileName = Guid.NewGuid().ToString() + ".txt";
-					File.WriteAllText(Path.Combine(folder, fileName), "");
-					File.Delete(Path.Combine(folder, fileName));
-				} catch {
+	csharp
+try 
+{
+    string fileName = Guid.NewGuid().ToString() + ".txt";
+    string sanitizedFolder = Path.GetFullPath(folder); // Sanitize the folder path
+    
+    // Validate directory exists before writing the file
+    if (!Directory.Exists(sanitizedFolder))
+    {
+        Directory.CreateDirectory(sanitizedFolder);
+    }
+    
+    File.WriteAllText(Path.Combine(sanitizedFolder, fileName), "");
+    
+    // Delete the file after writing
+    File.Delete(Path.Combine(sanitizedFolder, fileName));
+} 
+catch (Exception ex) 
+{
+    // Handle or log the exception
+    Console.WriteLine("An error occurred: " + ex.Message);
+}
+
 					return false;
 				}
 			}
